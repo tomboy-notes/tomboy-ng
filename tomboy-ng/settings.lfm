@@ -1,0 +1,393 @@
+object Sett: TSett
+  Left = 109
+  Height = 438
+  Top = 262
+  Width = 525
+  Caption = 'KTomboy-NG Settings'
+  ClientHeight = 438
+  ClientWidth = 525
+  OnCreate = FormCreate
+  LCLVersion = '1.8.0.3'
+  object PageControl1: TPageControl
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ButtonSaveConfig
+    Left = 0
+    Height = 382
+    Top = 0
+    Width = 525
+    ActivePage = TabBasic
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Bottom = 2
+    TabIndex = 0
+    TabOrder = 0
+    OnChange = PageControl1Change
+    object TabBasic: TTabSheet
+      Caption = 'Basic'
+      ClientHeight = 347
+      ClientWidth = 519
+      object ButtonSetNotePath: TButton
+        Left = 8
+        Height = 48
+        Top = 144
+        Width = 176
+        Caption = 'Set Path to Note Files'
+        OnClick = ButtonSetNotePathClick
+        TabOrder = 0
+      end
+      object LabelSettingPath: TLabel
+        Left = 8
+        Height = 17
+        Top = 40
+        Width = 119
+        Caption = 'LabelSettingPath'
+        ParentColor = False
+      end
+      object LabelNotesPath: TLabel
+        Left = 8
+        Height = 17
+        Top = 120
+        Width = 110
+        Caption = 'LabelNotesPath'
+        ParentColor = False
+      end
+      object Label1: TLabel
+        Left = 8
+        Height = 17
+        Top = 16
+        Width = 170
+        Caption = 'Settings will be saved in :'
+        ParentColor = False
+      end
+      object Label2: TLabel
+        Left = 11
+        Height = 17
+        Top = 96
+        Width = 257
+        Caption = 'Notes will be looked for and saved in :'
+        ParentColor = False
+      end
+    end
+    object TabDisplay: TTabSheet
+      Caption = 'Display'
+      ClientHeight = 347
+      ClientWidth = 519
+      object GroupBox5: TGroupBox
+        Left = 56
+        Height = 128
+        Top = 24
+        Width = 178
+        Caption = 'Font Size'
+        ClientHeight = 109
+        ClientWidth = 174
+        TabOrder = 0
+        object RadioFontBig: TRadioButton
+          Left = 16
+          Height = 18
+          Top = 16
+          Width = 40
+          Caption = 'Big'
+          Checked = True
+          OnChange = CheckReadOnlyChange
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioFontMedium: TRadioButton
+          Left = 16
+          Height = 18
+          Top = 44
+          Width = 69
+          Caption = 'Medium'
+          OnChange = CheckReadOnlyChange
+          TabOrder = 1
+        end
+        object RadioFontSmall: TRadioButton
+          Left = 16
+          Height = 18
+          Top = 72
+          Width = 53
+          Caption = 'Small'
+          OnChange = CheckReadOnlyChange
+          TabOrder = 2
+        end
+      end
+      object CheckShowIntLinks: TCheckBox
+        Left = 40
+        Height = 18
+        Top = 192
+        Width = 138
+        Caption = 'Show Internal Links'
+        Enabled = False
+        OnChange = CheckReadOnlyChange
+        TabOrder = 1
+      end
+      object CheckShowExtLinks: TCheckBox
+        Left = 40
+        Height = 18
+        Top = 224
+        Width = 145
+        Caption = 'Show External  Links'
+        Enabled = False
+        OnChange = CheckReadOnlyChange
+        TabOrder = 2
+      end
+    end
+    object TabSync: TTabSheet
+      Caption = 'Sync'
+      ClientHeight = 347
+      ClientWidth = 519
+      object GroupBox3: TGroupBox
+        Left = 8
+        Height = 66
+        Top = 6
+        Width = 504
+        Caption = '  Type  '
+        ClientHeight = 47
+        ClientWidth = 500
+        TabOrder = 0
+        object RadioFile: TRadioButton
+          Left = 56
+          Height = 18
+          Top = 0
+          Width = 194
+          Caption = 'File Sync using shared drive.'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioServer: TRadioButton
+          Left = 56
+          Height = 18
+          Top = 24
+          Width = 203
+          Caption = 'Network Server - not available'
+          Enabled = False
+          TabOrder = 1
+        end
+      end
+      object GroupBox4: TGroupBox
+        Left = 8
+        Height = 136
+        Top = 192
+        Width = 504
+        Caption = '  Options  '
+        ClientHeight = 117
+        ClientWidth = 500
+        TabOrder = 1
+        object Label3: TLabel
+          Left = 40
+          Height = 16
+          Top = 8
+          Width = 330
+          Caption = 'when a conflict is detected between a local note and'
+          ParentColor = False
+        end
+        object Label4: TLabel
+          Left = 40
+          Height = 16
+          Top = 24
+          Width = 311
+          Caption = 'a note on the configured synchronisation server :'
+          ParentColor = False
+        end
+        object RadioAlwaysAsk: TRadioButton
+          Left = 8
+          Height = 18
+          Top = 48
+          Width = 181
+          Caption = 'Always ask me what to do.'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioUseLocal: TRadioButton
+          Left = 9
+          Height = 18
+          Top = 70
+          Width = 272
+          Caption = 'Use Local note and overwrite server note.'
+          TabOrder = 1
+        end
+        object RadioUseServer: TRadioButton
+          Left = 9
+          Height = 18
+          Top = 92
+          Width = 253
+          Caption = 'Use server note and rename local one.'
+          TabOrder = 2
+        end
+      end
+      object ButtonSetSynServer: TButton
+        Left = 24
+        Height = 25
+        Top = 80
+        Width = 232
+        Caption = 'Change File Sync Repo'
+        OnClick = ButtonSetSynServerClick
+        TabOrder = 2
+      end
+      object Label5: TLabel
+        Left = 16
+        Height = 16
+        Top = 144
+        Width = 82
+        Caption = 'LocalConfig :'
+        ParentColor = False
+      end
+      object LabelLocalConfig: TLabel
+        Left = 16
+        Height = 16
+        Top = 160
+        Width = 107
+        Caption = 'LabelLocalConfig'
+        ParentColor = False
+      end
+      object LabelSyncRepo: TLabel
+        Left = 16
+        Height = 1
+        Top = 112
+        Width = 1
+        ParentColor = False
+      end
+    end
+    object TabBackUp: TTabSheet
+      Caption = 'BackUp'
+      ClientHeight = 347
+      ClientWidth = 519
+      object Panel1: TPanel
+        AnchorSideLeft.Control = TabBackUp
+        AnchorSideTop.Control = TabBackUp
+        AnchorSideRight.Control = TabBackUp
+        AnchorSideRight.Side = asrBottom
+        Left = 0
+        Height = 150
+        Top = 0
+        Width = 542
+        Anchors = [akTop, akLeft, akRight]
+        ClientHeight = 150
+        ClientWidth = 542
+        TabOrder = 0
+        object Label6: TLabel
+          Left = 33
+          Height = 17
+          Top = 33
+          Width = 438
+          Caption = 'Backup files are made when you delete a note or the sync system'
+          ParentColor = False
+        end
+        object Label7: TLabel
+          Left = 32
+          Height = 17
+          Top = 52
+          Width = 179
+          Caption = 'is about to overwrite one. '
+          ParentColor = False
+        end
+        object Label8: TLabel
+          Left = 32
+          Height = 17
+          Top = 72
+          Width = 407
+          Caption = 'They remain, for ever, unless you do something about them.'
+          ParentColor = False
+        end
+        object ButtonShowBackUp: TButton
+          Left = 400
+          Height = 25
+          Top = 96
+          Width = 75
+          Caption = 'Show Me'
+          OnClick = ButtonShowBackUpClick
+          TabOrder = 0
+        end
+      end
+      object Panel2: TPanel
+        AnchorSideLeft.Control = TabBackUp
+        AnchorSideTop.Control = Panel1
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = TabBackUp
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = TabBackUp
+        AnchorSideBottom.Side = asrBottom
+        Left = 0
+        Height = 197
+        Top = 150
+        Width = 542
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Caption = 'Panel2'
+        ClientHeight = 197
+        ClientWidth = 542
+        TabOrder = 1
+        object StringGridBackUp: TStringGrid
+          AnchorSideLeft.Control = Panel2
+          AnchorSideTop.Control = Panel2
+          AnchorSideRight.Control = Panel2
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = Panel2
+          AnchorSideBottom.Side = asrBottom
+          Left = 1
+          Height = 195
+          Top = 1
+          Width = 540
+          Anchors = [akTop, akLeft, akRight, akBottom]
+          ColCount = 4
+          ColumnClickSorts = True
+          FixedCols = 0
+          TabOrder = 0
+        end
+      end
+    end
+    object TabSnapshot: TTabSheet
+      Caption = 'SnapShot'
+      ClientHeight = 347
+      ClientWidth = 519
+      object Label9: TLabel
+        Left = 36
+        Height = 17
+        Top = 52
+        Width = 343
+        Caption = 'A snaphot is a copy of your current note directory, '
+        ParentColor = False
+      end
+      object Label10: TLabel
+        Left = 36
+        Height = 17
+        Top = 72
+        Width = 215
+        Caption = 'tucked away somewhere safely.'
+        ParentColor = False
+      end
+      object Label11: TLabel
+        Left = 36
+        Height = 17
+        Top = 90
+        Width = 216
+        Caption = '.... and its not available just yet !'
+        ParentColor = False
+      end
+    end
+  end
+  object ButtonSaveConfig: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 406
+    Height = 52
+    Top = 384
+    Width = 115
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 2
+    Caption = 'Save Config'
+    Enabled = False
+    OnClick = ButtonSaveConfigClick
+    TabOrder = 1
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    left = 88
+    top = 384
+  end
+end

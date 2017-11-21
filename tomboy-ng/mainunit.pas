@@ -1,0 +1,434 @@
+unit MainUnit;
+
+{
+ * Copyright (C) 2017 David Bannon
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining 
+ * a copy of this software and associated documentation files (the 
+ * "Software"), to deal in the Software without restriction, including 
+ * without limitation the rights to use, copy, modify, merge, publish, 
+ * distribute, sublicense, and/or sell copies of the Software, and to 
+ * permit persons to whom the Software is furnished to do so, subject to 
+ * the following conditions: 
+ *  
+ * The above copyright notice and this permission notice shall be 
+ * included in all copies or substantial portions of the Software. 
+ *  
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+}
+
+{	This is the Main unit (ie the main form) for RTomboy. It always exists while
+	RTomboy is running, when you cannot see it, its because its hidden. This
+	form will put its icon in the System Tray and its resposible for acting
+	on any of the menu choices from that tray icon.
+    The form, and therefore the application, does not close if the user clicks
+	the (typically top right) close box, just hides. It does not close until
+	the user clicks 'close' from the System Tray Menu.
+
+	It also displays the Search box showing all notes.
+}
+
+{	HISTORY
+	20170928 Added a function that returns true if passed string is in the
+	current title list.
+	20171005 - Added an ifdef Darwin to RecentNotes() to address a OSX bug that prevented
+    the recent file names being updated.
+	2017/10/10 - added a refresh button, need to make it auto but need to look at
+	timing implication for people with very big note sets first.
+
+	2017/10/10 - added the ability to update the stringlist when a new note is
+	created or an older one updated. So, recent notes list under TrayIcon is now
+	updated whenever a save is made.
+
+	2017/11/07 - switched over to using NoteLister, need to remove a lot of unused code.
+}
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+    Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
+    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Note_Lister, lazLogger;
+
+type
+
+    { TRTSearch }
+
+    TRTSearch = class(TForm)
+		ButtonRefresh: TButton;
+        ButtonClearSearch: TButton;
+        Edit1: TEdit;
+        Label1: TLabel;
+        LabelPath: TLabel;
+		MenuSynchronise: TMenuItem;
+        MenuItemSettings: TMenuItem;
+        TrayMenuAbout: TMenuItem;
+        MenuItem3: TMenuItem;
+        TrayMenuNew: TMenuItem;
+        MenuItem15: TMenuItem;
+        MenuQuit: TMenuItem;
+        TrayMenSearch: TMenuItem;
+        MenuItem4: TMenuItem;
+        TrayMenuRecent1: TMenuItem;
+        TrayMenuRecent2: TMenuItem;
+        TrayMenuRecent3: TMenuItem;
+        TrayMenuRecent4: TMenuItem;
+        TrayMenuRecent5: TMenuItem;
+        TrayMenuRecent6: TMenuItem;
+        TrayMenuRecent7: TMenuItem;
+        TrayMenuRecent8: TMenuItem;
+        TrayMenuRecent9: TMenuItem;
+        TrayMenuRecent10: TMenuItem;
+        PopupMenuTray: TPopupMenu;
+        SelectDirectoryDialog1: TSelectDirectoryDialog;
+        StringGrid1: TStringGrid;
+        TrayIcon: TTrayIcon;
+//        procedure ButtonOpenClick(Sender: TObject);
+		procedure ButtonClearSearchClick(Sender: TObject);
+  		procedure ButtonRefreshClick(Sender: TObject);
+		procedure Edit1EditingDone(Sender: TObject);
+		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+        procedure FormCreate(Sender: TObject);
+		procedure FormShow(Sender: TObject);
+        procedure MenuItemSettingsClick(Sender: TObject);
+        { Takes the app down when user clicks TrayIcon menu quit }
+        procedure MenuQuitClick(Sender: TObject);
+		procedure MenuSynchroniseClick(Sender: TObject);
+        procedure TrayIconClick(Sender: TObject);
+        procedure TrayMenSearchClick(Sender: TObject);
+        procedure StringGrid1DblClick(Sender: TObject);
+        procedure TrayMenuAboutClick(Sender: TObject);
+        procedure TrayMenuNewClick(Sender: TObject);
+        { Responds when any of the recent items is clicked in TrayIcon menu }
+        procedure TrayMenuRecent1Click(Sender: TObject);
+    private
+        StartUpMode : Boolean;		// Show needs to behave differently during startup if unconfigured
+        // TitleIndex : integer;
+        AllowClose : boolean;
+        NoteLister : TNoteLister;
+        procedure RecentMenu();
+		function TrimDateTime(const LongDate: ANSIString): ANSIString;
+        		{ Copies note data from internal list to StringGrid, sorts it and updates the
+                  TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
+		procedure UseList;
+    public
+        NoteDirectory : string;
+        { Updates the List with passed data. Either updates existing data or inserts new }
+        procedure UpdateList(const Title, LastChange, FullFileName: ANSIString);
+        { Reads header in each note in notes directory, updating Search List and
+          the recently used list under the TrayIcon. Downside is time it takes
+          to index. use UpdateList() if you just have updates. }
+        procedure IndexNotes;
+        { Returns true when passed string is the title of an existing note }
+        function IsThisaTitle(const Term: ANSIString): boolean;
+        procedure OpenNote(NoteTitle : String = ''; FileName : string = '');
+        { Returns True if it put next Note Title into SearchTerm }
+        function NextNoteTitle(out SearchTerm : string) : boolean;
+        { Initialises search of note titles, prior to calling NextNoteTitle() }
+        procedure StartSearch();
+        { Deletes the actual file then removes the indicated note from the internal
+        data about notes, refreshes Grid }
+        procedure DeleteNote(const FullFileName : ANSIString);
+    end;
+
+var
+    RTSearch: TRTSearch;
+
+implementation
+
+{$R *.lfm}
+
+uses EditBox,
+    settings,		// Manages settings.
+    SyncGUI,
+
+    LazFileUtils;  // LazFileUtils needed for TrimFileName(), cross platform stuff
+
+{ TRTSearch }
+
+const
+	MenuEmpty = '(empty)';
+
+{ -----   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ----- }
+
+procedure TRTSearch.StartSearch(); // Call before using NextNoteTitle() to list Titles.
+begin
+	NoteLister.StartSearch();
+  // TitleIndex := 1;
+end;
+
+procedure TRTSearch.DeleteNote(const FullFileName: ANSIString);
+begin
+	NoteLister.DeleteNote(ExtractFileNameOnly(FullFileName));
+    DeleteFileUTF8(FullFileName);
+    UseList();
+end;
+
+function TRTSearch.NextNoteTitle(out SearchTerm: string): boolean;
+begin
+	Result := NoteLister.NextNoteTitle(SearchTerm);
+end;
+
+function TRTSearch.IsThisaTitle(const Term : ANSIString) : boolean;
+begin
+	Result := NoteLister.IsThisATitle(Term);
+end;
+
+
+function TRTSearch.TrimDateTime(const LongDate : ANSIString ) : ANSIString;
+begin                          { TODO : Dont need this any more, delete when sure }
+  Result := LongDate;
+  Result[11] := ' '; 			// just looks nicer
+  Result := copy(Result, 1, 19);	{ TODO : Do UTF8 version of this }
+end;
+
+
+{ Sorts List and updates the recently used list under trayicon }
+procedure TRTSearch.UseList();
+begin
+  	NoteLister.LoadStGrid(StringGrid1);
+    Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
+    StringGrid1.SortColRow(True, 1);
+    RecentMenu();
+end;
+
+                           { TODO : Dont need this any more, delete when sure }
+procedure TRTSearch.UpdateList(const Title, LastChange, FullFileName : ANSIString );
+begin
+
+  	// Can we find line with passed file name ? If so, apply new data.
+	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then
+        DebugLn('Cannot update internal data for ', FullFileName, ' [', Title, ']');
+    UseList();
+end;
+
+procedure TRTSearch.RecentMenu();
+var
+      Count : integer = 1;
+      MenuCaption : string;
+begin
+	while (Count <= 10) do begin
+       if Count < StringGrid1.RowCount then
+             MenuCaption := StringGrid1.Cells[0, Count]
+       else  MenuCaption := MenuEmpty;
+       case Count of
+         1 : TrayMenuRecent1.Caption := MenuCaption;
+         2 : TrayMenuRecent2.Caption := MenuCaption;
+         3 : TrayMenuRecent3.Caption := MenuCaption;
+         4 : TrayMenuRecent4.Caption := MenuCaption;
+         5 : TrayMenuRecent5.Caption := MenuCaption;
+         6 : TrayMenuRecent6.Caption := MenuCaption;
+         7 : TrayMenuRecent7.Caption := MenuCaption;
+         8 : TrayMenuRecent8.Caption := MenuCaption;
+         9 : TrayMenuRecent9.Caption := MenuCaption;
+         10 : TrayMenuRecent10.Caption := MenuCaption;
+        end;
+      	inc(Count);
+  	end;
+    {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
+                        // Watch and see if it can be removed later. Oct 2017.
+    TrayIcon.InternalUpdate;
+    {$endif}
+
+end;
+
+procedure TRTSearch.ButtonRefreshClick(Sender: TObject);
+begin
+    IndexNotes();
+end;
+
+procedure TRTSearch.ButtonClearSearchClick(Sender: TObject);
+begin
+        NoteLister.LoadStGrid(StringGrid1);
+        ButtonClearSearch.Enabled := False;
+        Edit1.Text := 'Search';
+end;
+
+procedure TRTSearch.Edit1EditingDone(Sender: TObject);
+begin
+    	if Edit1.Text <> 'Search' then begin
+        	NoteLister.GetNotes(Edit1.Text);
+        	NoteLister.LoadSearchGrid(StringGrid1);
+        	ButtonClearSearch.Enabled := True;
+        end;
+end;
+
+procedure TRTSearch.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+    NoteLister.Free;
+    NoteLister := Nil;
+end;
+
+procedure TRTSearch.IndexNotes();
+// var
+	// TS1, TS2 : TTimeStamp;
+begin
+    if not Sett.HaveConfig then exit;
+    NoteLister.WorkingDir:=Sett.NoteDirectory;
+    NoteLister.GetNotes();		{ TODO : we should say how many we found }
+    UseList();
+    // TS1 := DateTimeToTimeStamp(Now);
+	// Edit1.Text := 'That took (mS) ' + inttostr(TS2.Time - TS1.Time);
+    UseList();
+end;
+
+procedure TRTSearch.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+    // If the user has clicked close on RTSearch form, we'll just hide
+    // But if its come via the TrayIcon, thats authorative so really close
+    if AllowClose then
+    	// showmessage('OK, looks like someone closed me ' + Sender.Classname)
+    else Hide();
+    CanClose := AllowClose;
+end;
+
+procedure TRTSearch.FormCreate(Sender: TObject);
+begin
+    StartUpMode := true;
+	TrayIcon.Show;
+    // that appears to cause a memory leak in the Mac
+    NoteLister := TNoteLister.Create;
+	RecentMenu();
+end;
+
+procedure TRTSearch.FormShow(Sender: TObject);
+begin
+    Top := Placement + random(Placement*2);
+    Left := Placement + random(Placement*2);
+    ButtonClearSearch.Enabled := False;
+    if not Sett.HaveConfig then
+        Sett.Show;
+    if StartUpMode then begin
+        IndexNotes();
+        StartUpMode := False;
+        LabelPath.Caption := Sett.NoteDirectory;
+        Hide;
+	end;
+    if Sett.RemoteRepo = '' then
+        MenuSynchronise.Enabled := False
+    else MenuSynchronise.Enabled := True;
+    {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
+                        // Watch and see if it can be removed later. Oct 2017.
+    TrayIcon.InternalUpdate;
+    {$endif}
+end;
+
+
+procedure TRTSearch.OpenNote(NoteTitle : String =''; FileName : string = '');
+// Might be called with no Title (NewNote) or a Title with or without a Filename
+var
+    EBox : TEditBoxForm;
+    NoteFileName : string;
+begin
+        EBox := TEditBoxForm.Create(Application);
+        EBox.NoteFileName:= '';
+        if NoteTitle <> '' then begin  			// We have a title
+        	if FileName = '' then begin         // but no filename ?
+                if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
+                    EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
+                else begin
+              		showmessage('Failed to find a note called ' + NoteTitle);  //  ???
+              		EBox.Free;
+              		exit();
+                end;
+         	end else begin
+        		EBox.NoteFileName := FileName;
+        	end;
+        end;
+        EBox.NoteTitle:= NoteTitle;
+        EBox.Top := Placement + random(Placement*2);
+        EBox.Left := Placement + random(Placement*2);
+        EBox.Show;
+        EBox.Dirty := False;
+end;
+
+procedure TRTSearch.StringGrid1DblClick(Sender: TObject);
+var
+    NoteTitle : ANSIstring;
+    FullFileName : string;
+begin
+	FullFileName := Sett.NoteDirectory + StringGrid1.Cells[3, StringGrid1.Row];
+  	if not FileExistsUTF8(FullFileName) then begin
+      	showmessage('Cannot open ' + FullFileName);
+      	exit();
+  	end;
+  	NoteTitle := StringGrid1.Cells[0, StringGrid1.Row];
+  	if length(NoteTitle) > 0 then
+        OpenNote(NoteTitle, FullFileName);
+end;
+
+{ ----------------- TRAY MENU STUFF -------------------}
+
+procedure TRTSearch.MenuItemSettingsClick(Sender: TObject);
+begin
+    Sett.Show;
+    if Sett.RemoteRepo = '' then MenuSynchronise.Enabled := False
+    else MenuSynchronise.Enabled := True;
+    {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
+                        // Watch and see if it can be removed later. Oct 2017.
+    TrayIcon.InternalUpdate;
+    {$endif}
+end;
+
+
+procedure TRTSearch.MenuQuitClick(Sender: TObject);
+begin
+  	AllowClose := True; // Cos it came from the trayIcon menu, we'll do it.
+    Close;      // This will call CanClose were we do whatever is necessary
+end;
+
+procedure TRTSearch.MenuSynchroniseClick(Sender: TObject);
+begin
+    FormSync.NoteDirectory := Sett.NoteDirectory;
+    FormSync.LocalConfig := Sett.LocalConfig;
+    FormSync.RemoteRepo := Sett.RemoteRepo;
+    FormSync.SetupFileSync := False;
+    FormSync.ShowModal;					// we don't care about result ...
+end;
+
+procedure TRTSearch.TrayIconClick(Sender: TObject);
+begin
+    PopUpMenuTray.Popup;    // Here so a right click works as well as left.
+end;
+
+procedure TRTSearch.TrayMenSearchClick(Sender: TObject);
+begin
+    Show;
+end;
+procedure TRTSearch.TrayMenuAboutClick(Sender: TObject);
+var
+    S1, S2, S3, S4, S5 : string;
+begin
+  S1 := 'This is an Alpha Test of a version of Tomboy Notes'#10;
+  S2 := 'using Lazarus and FPC. It is not ready for production'#10;
+  S3 := 'use unless you are very careful and have good backups.'#10;
+  S5 := '';
+  {$IFDEF DARWIN}
+  S5 := #10#10'WARNING - the Mac has a memory leak, working on it !';
+  {$ENDIF}
+  S4 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
+  Showmessage(S1 + S2 + S3 + S4 + S5);
+end;
+
+
+procedure TRTSearch.TrayMenuNewClick(Sender: TObject);
+begin
+    OpenNote();
+end;
+
+procedure TRTSearch.TrayMenuRecent1Click(Sender: TObject);
+begin
+	if TMenuItem(Sender).Caption <> MenuEmpty then
+		OpenNote(TMenuItem(Sender).Caption);
+end;
+
+end.
+

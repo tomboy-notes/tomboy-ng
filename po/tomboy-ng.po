@@ -1,0 +1,190 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: teditboxform.buttlink.caption
+msgid "Link"
+msgstr ""
+
+#: teditboxform.buttnotebook.caption
+msgid "Notebook"
+msgstr ""
+
+#: teditboxform.buttsearch.caption
+msgctxt "teditboxform.buttsearch.caption"
+msgid "Search"
+msgstr ""
+
+#: teditboxform.butttext.caption
+msgid "Text"
+msgstr ""
+
+#: teditboxform.caption
+msgid "EditBoxForm"
+msgstr ""
+
+#: teditboxform.label1.caption
+msgid "Label1"
+msgstr ""
+
+#: teditboxform.menubold.caption
+msgid "Bold"
+msgstr ""
+
+#: teditboxform.menubullet.caption
+msgid "Bullet"
+msgstr ""
+
+#: teditboxform.menufixedwidth.caption
+msgid "Fixed Width"
+msgstr ""
+
+#: teditboxform.menuhighlight.caption
+msgid "Highlight"
+msgstr ""
+
+#: teditboxform.menuhuge.caption
+msgid "Huge"
+msgstr ""
+
+#: teditboxform.menuitalic.caption
+msgid "Italic"
+msgstr ""
+
+#: teditboxform.menuitemcopy.caption
+msgid "Copy"
+msgstr ""
+
+#: teditboxform.menuitemcut.caption
+msgid "Cut"
+msgstr ""
+
+#: teditboxform.menuitemdelete.caption
+msgid "Delete"
+msgstr ""
+
+#: teditboxform.menuitemexporthtml.caption
+msgid "ExportHTML"
+msgstr ""
+
+#: teditboxform.menuitemfind.caption
+msgid "Find in this Note"
+msgstr ""
+
+#: teditboxform.menuitempaste.caption
+msgid "Paste"
+msgstr ""
+
+#: teditboxform.menuitemselectall.caption
+msgid "Select All"
+msgstr ""
+
+#: teditboxform.menuitemsync.caption
+msgid "Syncronize"
+msgstr ""
+
+#: teditboxform.menularge.caption
+msgid "Large  Font"
+msgstr ""
+
+#: teditboxform.menunormal.caption
+msgid "Normal Font"
+msgstr ""
+
+#: teditboxform.menusmall.caption
+msgid "Small Font"
+msgstr ""
+
+#: trtsearch.buttonclearsearch.caption
+msgid "Clear"
+msgstr ""
+
+#: trtsearch.buttonclearsearch.hint
+msgid "Not Implemented Yet"
+msgstr ""
+
+#: trtsearch.buttonrefresh.caption
+msgid "Refresh"
+msgstr ""
+
+#: trtsearch.caption
+msgid "RTSearch"
+msgstr ""
+
+#: trtsearch.edit1.text
+msgctxt "trtsearch.edit1.text"
+msgid "Search"
+msgstr ""
+
+#: trtsearch.label1.caption
+msgid "Warning ! We are playing with notes in -"
+msgstr ""
+
+#: trtsearch.labelpath.caption
+msgid "Hmm, I don't seem to have a Notes Path, risky ..."
+msgstr ""
+
+#: trtsearch.menuitemsettings.caption
+msgid "Settings"
+msgstr ""
+
+#: trtsearch.menuquit.caption
+msgid "Quit, Close and Go Away."
+msgstr ""
+
+#: trtsearch.menusynchronise.caption
+msgid "Synchronise"
+msgstr ""
+
+#: trtsearch.traymensearch.caption
+msgctxt "trtsearch.traymensearch.caption"
+msgid "Search"
+msgstr ""
+
+#: trtsearch.traymenuabout.caption
+msgid "About"
+msgstr ""
+
+#: trtsearch.traymenunew.caption
+msgid "New Note"
+msgstr ""
+
+#: trtsearch.traymenurecent1.caption
+msgid "MenuItem5"
+msgstr ""
+
+#: trtsearch.traymenurecent10.caption
+msgid "MenuItem14"
+msgstr ""
+
+#: trtsearch.traymenurecent2.caption
+msgid "MenuItem6"
+msgstr ""
+
+#: trtsearch.traymenurecent3.caption
+msgid "MenuItem7"
+msgstr ""
+
+#: trtsearch.traymenurecent4.caption
+msgid "MenuItem8"
+msgstr ""
+
+#: trtsearch.traymenurecent5.caption
+msgid "MenuItem9"
+msgstr ""
+
+#: trtsearch.traymenurecent6.caption
+msgid "MenuItem10"
+msgstr ""
+
+#: trtsearch.traymenurecent7.caption
+msgid "MenuItem11"
+msgstr ""
+
+#: trtsearch.traymenurecent8.caption
+msgid "MenuItem12"
+msgstr ""
+
+#: trtsearch.traymenurecent9.caption
+msgid "MenuItem13"
+msgstr ""
+
