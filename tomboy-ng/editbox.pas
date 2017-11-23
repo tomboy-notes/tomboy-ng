@@ -134,6 +134,7 @@ type
 		TaskDialogDelete: TTaskDialog;
 		Timer1: TTimer;
 		procedure ButtDeleteClick(Sender: TObject);
+		procedure ButtLinkClick(Sender: TObject);
         procedure ButtSearchClick(Sender: TObject);
         procedure ButtTextClick(Sender: TObject);
         procedure ButtToolsClick(Sender: TObject);
@@ -254,6 +255,27 @@ begin
         Dirty := False;
 		Close;
    end;
+end;
+
+procedure TEditBoxForm.ButtLinkClick(Sender: TObject);
+var
+    ThisTitle : ANSIString;
+    Index : integer;
+begin
+	if KMemo1.Blocks.RealSelLength > 1 then begin
+         ThisTitle := KMemo1.SelText;
+        // Titles must not start or end with space or contain low characters
+        while ThisTitle[1] = ' ' do UTF8Delete(ThisTitle, 1, 1);
+        while ThisTitle[UTF8Length(ThisTitle)] = ' ' do UTF8Delete(ThisTitle, UTF8Length(ThisTitle), 1);
+        Index := Length(ThisTitle);
+        While Index > 0 do begin
+            if ThisTitle[Index] < ' ' then delete(ThisTitle, Index, 1);
+            dec(Index);
+		end;
+		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
+        if UTF8Length(ThisTitle) > 1 then
+        	RTSearch.OpenNote(ThisTitle);
+	end;
 end;
 
 procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
@@ -510,21 +532,32 @@ end;
 
 procedure TEditBoxForm.FormShow(Sender: TObject);
 begin
+    if Ready then exit();				// its a "re-show" event. Already have a note loaded.
+    Label1.Caption := '';
     Timer1.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     Kmemo1.Clear;
     if Sett.RemoteRepo <> '' then
         MenuItemSync.Enabled := True
     else MenuItemSync.Enabled := False;
-    if length(NoteTitle) > 0 then begin
-       Caption := NoteTitle;
-       ImportNote(NoteFileName);
-    end else begin
-        CreateDate := '';
-        KMemo1.Clear;
+    if length(NoteTitle) > 0 then
+       Caption := NoteTitle
+    else
         Caption := 'untitled note';
+    if length(NoteFileName) > 0 then
+       ImportNote(NoteFileName)		// will clear kmemo1
+    else begin						// its a note without a file, set things up
+        CreateDate := '';
+    	KMemo1.Blocks.Text := Caption;
+    	KMemo1.Blocks.AddParagraph();
+    	KMemo1.Blocks.AddParagraph();
         Ready := true;
+        MarkTitle();
+        KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
+        KMemo1.SelEnd := Kmemo1.Text.Length;
     end;
+    KMemo1.SetFocus;
+    Ready := true;
     Dirty := False;
 end;
 
@@ -852,6 +885,8 @@ var
     Loader : TBLoadNote;
  	// TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
 begin
+    // if not FileExistsUTF8(FileName) then exit();	// safety....
+    { TODO 1 : Really should catch an bad file open inside Loader and tell user. }
     // TS1:=DateTimeToTimeStamp(Now);
     Loader := TBLoadNote.Create();
     Loader.FontNormal:= Sett.FontNormal;

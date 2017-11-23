@@ -34,7 +34,7 @@ unit Note_Lister;
 INTERFACE
 
 uses
-		Classes, SysUtils, Grids;
+		Classes, SysUtils, Grids, Forms;
 
 type
   	PNote=^TNote;
@@ -46,6 +46,7 @@ type
     	CreateDate : ANSIString;
                 { a 19 char date time string, updateable }
     	LastChange : ANSIString;
+        OpenNote : TForm;
 	end;
 
 type                                 { ---------- TNoteInfoList ---------}
@@ -83,6 +84,8 @@ type
     		{ The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
+    		{ Adds a note to main list, ie when user creates a new note }
+    procedure AddNote(const FileName, Title, LastChange : ANSIString);
     		{ Read the metadata from all the notes in internal data structure }
    	function GetNotes(const Term : ANSIstring = '') : longint;
     		{ Copy the internal data to the passed TStringGrid, empting it first }
@@ -131,7 +134,8 @@ begin
 	end;
 end;
 
-procedure TNoteLister.GetNoteDetails(const Dir, FileName : ANSIString; const SearchTerm : AnSIString = '');
+procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString;
+		const SearchTerm: ANSIString);
 			// This is how we search for XML elements, attributes are different.
 var
     NoteP : PNote;
@@ -188,7 +192,20 @@ begin
 	end else DebugLn('Error, found a note and lost it !', WorkingDir + Filename);
 end;
 
-function TNoteLister.GetNotes(const Term : ANSIString = '') : longint;
+procedure TNoteLister.AddNote(const FileName, Title, LastChange : ANSIString);
+var
+    NoteP : PNote;
+begin
+    new(NoteP);
+    NoteP^.ID := FileName;
+    NoteP^.LastChange := LastChange;
+    NoteP^.CreateDate := LastChange;
+    NoteP^.Title:= Title;
+    NoteP^.OpenNote := nil;
+    NoteList.Add(NoteP);
+end;
+
+function TNoteLister.GetNotes(const Term: ANSIstring): longint;
 var
     Info : TSearchRec;
 begin
@@ -360,6 +377,8 @@ function TNoteList.Add(ANote: PNote): integer;
 begin
     result := inherited Add(ANote);
 end;
+
+
 
 function TNoteList.FindID(const ID: ANSIString): PNote;
 var

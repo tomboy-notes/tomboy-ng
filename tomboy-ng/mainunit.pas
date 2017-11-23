@@ -129,6 +129,10 @@ type
         procedure IndexNotes;
         { Returns true when passed string is the title of an existing note }
         function IsThisaTitle(const Term: ANSIString): boolean;
+        { Gets called with a title and filename (clicking grid), with just a title
+          (clicked a note link or recent menu item or Link Button) or nothing
+          (new note). If its just Title but Title does not exist, its Link
+          Button. }
         procedure OpenNote(NoteTitle : String = ''; FileName : string = '');
         { Returns True if it put next Note Title into SearchTerm }
         function NextNoteTitle(out SearchTerm : string) : boolean;
@@ -205,9 +209,11 @@ procedure TRTSearch.UpdateList(const Title, LastChange, FullFileName : ANSIStrin
 begin
 
   	// Can we find line with passed file name ? If so, apply new data.
-	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then
-        DebugLn('Cannot update internal data for ', FullFileName, ' [', Title, ']');
-    UseList();
+	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
+        DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
+        NoteLister.AddNote(ExtractFileNameOnly(FullFileName)+'.note', Title, LastChange);
+	end;
+	UseList();
 end;
 
 procedure TRTSearch.RecentMenu();
@@ -334,11 +340,12 @@ begin
         	if FileName = '' then begin         // but no filename ?
                 if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
                     EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
-                else begin
-              		showmessage('Failed to find a note called ' + NoteTitle);  //  ???
+                // otherwise, its a new note with a title, user clicked "Link"
+{                else begin
+              		showmessage('Failed to find a note called ' + NoteTitle);
               		EBox.Free;
               		exit();
-                end;
+                end;               }
          	end else begin
         		EBox.NoteFileName := FileName;
         	end;
