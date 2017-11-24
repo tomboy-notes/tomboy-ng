@@ -114,6 +114,7 @@ type
         // TitleIndex : integer;
         AllowClose : boolean;
         NoteLister : TNoteLister;
+
         procedure RecentMenu();
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
@@ -121,8 +122,10 @@ type
 		procedure UseList;
     public
         NoteDirectory : string;
+        	{ Call this NoteLister no longer thinks of this as a Open note }
+        procedure NoteClosing(const ID: AnsiString);
         { Updates the List with passed data. Either updates existing data or inserts new }
-        procedure UpdateList(const Title, LastChange, FullFileName: ANSIString);
+        procedure UpdateList(const Title, LastChange, FullFileName: ANSIString; TheForm : TForm);
         { Reads header in each note in notes directory, updating Search List and
           the recently used list under the TrayIcon. Downside is time it takes
           to index. use UpdateList() if you just have updates. }
@@ -133,7 +136,7 @@ type
           (clicked a note link or recent menu item or Link Button) or nothing
           (new note). If its just Title but Title does not exist, its Link
           Button. }
-        procedure OpenNote(NoteTitle : String = ''; FileName : string = '');
+        procedure OpenNote(NoteTitle : String = ''; FullFileName : string = '');
         { Returns True if it put next Note Title into SearchTerm }
         function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
@@ -162,6 +165,11 @@ const
 	MenuEmpty = '(empty)';
 
 { -----   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ----- }
+
+procedure TRTSearch.NoteClosing(const ID : AnsiString);
+begin
+    NoteLister.ThisNoteIsOpen(ID, nil);
+end;
 
 procedure TRTSearch.StartSearch(); // Call before using NextNoteTitle() to list Titles.
 begin
@@ -204,15 +212,15 @@ begin
     RecentMenu();
 end;
 
-                           { TODO : Dont need this any more, delete when sure }
-procedure TRTSearch.UpdateList(const Title, LastChange, FullFileName : ANSIString );
-begin
 
+procedure TRTSearch.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
+begin
   	// Can we find line with passed file name ? If so, apply new data.
 	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
         DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
         NoteLister.AddNote(ExtractFileNameOnly(FullFileName)+'.note', Title, LastChange);
 	end;
+    NoteLister.ThisNoteIsOpen(FullFileName, TheForm);
 	UseList();
 end;
 
@@ -328,33 +336,68 @@ begin
 end;
 
 
-procedure TRTSearch.OpenNote(NoteTitle : String =''; FileName : string = '');
+procedure TRTSearch.OpenNote(NoteTitle : String =''; FullFileName : string = '');
 // Might be called with no Title (NewNote) or a Title with or without a Filename
 var
     EBox : TEditBoxForm;
     NoteFileName : string;
+    TheForm : TForm;
 begin
-        EBox := TEditBoxForm.Create(Application);
-        EBox.NoteFileName:= '';
-        if NoteTitle <> '' then begin  			// We have a title
-        	if FileName = '' then begin         // but no filename ?
-                if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
-                    EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
-                // otherwise, its a new note with a title, user clicked "Link"
-{                else begin
-              		showmessage('Failed to find a note called ' + NoteTitle);
-              		EBox.Free;
-              		exit();
-                end;               }
-         	end else begin
-        		EBox.NoteFileName := FileName;
-        	end;
+    if (NoteTitle <> '') then begin
+        if FullFileName = '' then Begin
+        	NoteLister.FileNameForTitle(NoteTitle, NoteFileName);
+            NoteFileName := Sett.NoteDirectory + NoteFileName;
+		end else NoteFileName := FullFileName;
+        // if we have a Title and a Filename, it might be open aleady
+        if NoteLister.IsThisNoteOpen(NoteFileName, TheForm) then begin
+            // if user opened and then closed, we won't know we cannot re-show
+            try
+            	TheForm.Show;
+                exit();
+			except on  EAccessViolation do
+            	DebugLn('Tried to re show a closed note, thats OK');
+			end;
+            // We catch the exception and proceed ....
+            { TODO 1 : Relying on catching the exception is dumb. We need to get the note
+				to tell us its closing and then we tell notelister that.
+                This really messes with debugger. }
         end;
-        EBox.NoteTitle:= NoteTitle;
-        EBox.Top := Placement + random(Placement*2);
-        EBox.Left := Placement + random(Placement*2);
-        EBox.Show;
-        EBox.Dirty := False;
+    end;
+    // if to here, we need open a new window. If Filename blank, its a new note
+	EBox := TEditBoxForm.Create(Application);
+    EBox.NoteTitle:= NoteTitle;
+    if NoteFileName <> '' then
+        // EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
+        EBox.NoteFileName := NoteFileName
+    else EBox.NoteFileName:= '';
+    EBox.Top := Placement + random(Placement*2);
+    EBox.Left := Placement + random(Placement*2);
+    EBox.Show;
+    EBox.Dirty := False;
+    NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
+    exit();
+
+
+
+	if NoteTitle <> '' then begin  			// We have a title
+	        if FullFileName = '' then begin         // but no filename ?
+	            if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
+	                EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
+	            // otherwise, its a new note with a title, user clicked "Link"
+	    {                else begin
+	          	    showmessage('Failed to find a note called ' + NoteTitle);
+	          	    EBox.Free;
+	          	    exit();
+	            end;               }
+	        end else begin
+	    	    EBox.NoteFileName := FullFileName;
+	        end;
+	    end;
+	    EBox.NoteTitle:= NoteTitle;
+	    EBox.Top := Placement + random(Placement*2);
+	    EBox.Left := Placement + random(Placement*2);
+	    EBox.Show;
+	    EBox.Dirty := False;
 end;
 
 procedure TRTSearch.StringGrid1DblClick(Sender: TObject);

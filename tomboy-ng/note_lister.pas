@@ -27,6 +27,11 @@ unit Note_Lister;
     Title, LastChange) can be updated (eg when a note is saved).
 
 	It keeps a second list if user has done a search.
+
+	History
+	2017/11/23 - added functions to save and retreive the Form when a note
+    is open. Also added a function to turn a fullfilename, a filename or an ID
+    into a filename of the form GID.note
 }
 
 {$mode objfpc}
@@ -76,7 +81,9 @@ type
    private
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
-   	procedure CleanupList(const Lst : TNoteList);
+    		{ Returns a simple note file name, accepts simple filename or ID }
+	function CleanFileName(const FileOrID: AnsiString): ANSIString;
+    procedure CleanupList(const Lst : TNoteList);
    	procedure GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm : ANSIString = '');
     		{ Returns True if indicated note contains term in its content }
    	function NoteContains(const Term, FileName : ANSIString) : boolean;
@@ -95,6 +102,10 @@ type
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
     		{ Destroy, destroy .... }
     function IsThisATitle(const Title : ANSIString) : boolean;
+    		{ Returns the Form this note is open on, Nil if its not open }
+    function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
+    		{ Tells the list that this note is open, pass NIL to indicate its now closed }
+    procedure ThisNoteIsOpen(const ID : ANSIString; const TheForm : TForm);
     		{ Returns true if it can find a FileName to Match this Title }
     function FileNameForTitle(const Title: ANSIString; out FileName : ANSIstring): boolean;
     procedure StartSearch();
@@ -155,6 +166,7 @@ begin
       		    NoteP^.Title := Node.FirstChild.NodeValue;
                 Node := Doc.DocumentElement.FindNode('last-change-date');
                 NoteP^.LastChange := Node.FirstChild.NodeValue;
+                NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
             except 		on EXMLReadError do DebugLn('Note has no Title');
@@ -197,7 +209,7 @@ var
     NoteP : PNote;
 begin
     new(NoteP);
-    NoteP^.ID := FileName;
+    NoteP^.ID := CleanFilename(FileName);
     NoteP^.LastChange := LastChange;
     NoteP^.CreateDate := LastChange;
     NoteP^.Title:= Title;
@@ -253,15 +265,16 @@ end;
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;
 var
     Index : integer;
-    TestID : ANSIString;
+    // TestID : ANSIString;
 begin
-  	if length(ID) = 36 then
+  {	if length(ID) = 36 then
         TestID := ID + '.note'
     else
-        TestID := ID;
+        TestID := ID;   }
+
 	result := False;
     for Index := 0 to NoteList.Count -1 do begin
-        if TestID = NoteList.Items[Index]^.ID then begin
+        if CleanFilename(ID) = NoteList.Items[Index]^.ID then begin
         	if Title <> '' then
             	NoteList.Items[Index]^.Title := Title;
         	if Change <> '' then
@@ -288,10 +301,56 @@ begin
 	end;
 end;
 
+function TNoteLister.CleanFileName(const FileOrID : AnsiString) : ANSIString;
+begin
+  	if length(ExtractFileNameOnly(FileOrID)) = 36 then
+        Result := ExtractFileNameOnly(FileOrID) + '.note'
+    else
+        Result := ExtractFileNameOnly(FileOrID);
+end;
+
+function TNoteLister.IsThisNoteOpen(const ID: ANSIString; out TheForm : TForm): boolean;
+var
+    Index : integer;
+    // ID1, ID2 : ANSIString;
+begin
+  	Result := False;
+    TheForm := Nil;
+    // ID1 := CleanFileName(ID);
+	for Index := 0 to NoteList.Count -1 do begin
+      	{ if NoteList.Items[Index]^.OpenNote = Nil then begin
+      		WriteLn('Yes ID='  + NoteList.Items[Index]^.ID );
+        end else begin
+            WriteLn('No ID=' + NoteList.Items[Index]^.ID);
+		end;  }
+		// ID2 := NoteList.Items[Index]^.ID;
+        if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
+        	TheForm := NoteList.Items[Index]^.OpenNote;
+            Result := not (NoteList.Items[Index]^.OpenNote = Nil);
+            break;
+		end;
+	end;
+end;
+
+procedure TNoteLister.ThisNoteIsOpen(const ID : ANSIString; const TheForm: TForm);
+var
+    Index : integer;
+begin
+	for Index := 0 to NoteList.Count -1 do begin
+      	//writeln('ID = ', ID, ' ListID = ', NoteList.Items[Index]^.ID);
+        if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
+            NoteList.Items[Index]^.OpenNote := TheForm;
+            break;
+		end;
+	end;
+    // if Index = (NoteList.Count -1) then DebugLn('Failed to find ID in List ', ID);
+end;
+
 function TNoteLister.FileNameForTitle(const Title: ANSIString; out FileName : ANSIstring): boolean;
 var
     Index : integer;
 begin
+    FileName := '';
   	Result := False;
 	for Index := 0 to NoteList.Count -1 do begin
         if Title = NoteList.Items[Index]^.Title then begin
@@ -320,22 +379,22 @@ end;
 function TNoteLister.DeleteNote(const ID: ANSIString): boolean;
 var
     Index : integer;
-    TestID : ANSIString;
+    // TestID : ANSIString;
 begin
-    if length(ID) = 36 then
+    {if length(ID) = 36 then
         TestID := ID + '.note'
     else
-    	TestID := ID;
+    	TestID := ID;  }
 	result := False;
     for Index := 0 to NoteList.Count -1 do begin
-        if TestID = NoteList.Items[Index]^.ID then begin
+        if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
           NoteList.Delete(Index);
           Result := True;
           break;
 		end;
 	end;
     if Result = false then
-        DebugLn('Failed to remove ref to note in NoteLister ', TestID);
+        DebugLn('Failed to remove ref to note in NoteLister ', ID);
 end;
 
 procedure TNoteLister.LoadSearchGrid(const Grid: TStringGrid);

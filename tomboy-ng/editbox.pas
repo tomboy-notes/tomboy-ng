@@ -578,6 +578,7 @@ begin
         SaveTheNote();
         // writeln('Saved');
 	end;
+    RTSearch.NoteClosing(NoteFileName);
 end;
 
 	{ Sets TheTitle to the first line of the KMemo, returning true is it
@@ -939,7 +940,7 @@ begin
     Caption := Saver.Title;
     Saver.CreateDate := CreateDate;
     Saver.Save(NoteFileName, KMemo1);
-    RTSearch.UpdateList(Caption, Saver.TimeStamp, NoteFileName);
+    RTSearch.UpdateList(Caption, Saver.TimeStamp, NoteFileName, self);
     Saver.Destroy;
     Dirty := false;
     // RTSearch.IndexNotes();
