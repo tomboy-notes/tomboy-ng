@@ -1,5 +1,5 @@
 object Sett: TSett
-  Left = 109
+  Left = 303
   Height = 438
   Top = 262
   Width = 525
@@ -32,7 +32,7 @@ object Sett: TSett
         Left = 8
         Height = 48
         Top = 144
-        Width = 176
+        Width = 216
         Caption = 'Set Path to Note Files'
         OnClick = ButtonSetNotePathClick
         TabOrder = 0
@@ -68,6 +68,15 @@ object Sett: TSett
         Width = 257
         Caption = 'Notes will be looked for and saved in :'
         ParentColor = False
+      end
+      object ButtDefaultNoteDir: TButton
+        Left = 232
+        Height = 48
+        Top = 144
+        Width = 200
+        Caption = 'Use default Notes location'
+        OnClick = ButtDefaultNoteDirClick
+        TabOrder = 1
       end
     end
     object TabDisplay: TTabSheet

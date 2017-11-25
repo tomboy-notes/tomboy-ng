@@ -199,7 +199,7 @@ function TRTSearch.TrimDateTime(const LongDate : ANSIString ) : ANSIString;
 begin                          { TODO : Dont need this any more, delete when sure }
   Result := LongDate;
   Result[11] := ' '; 			// just looks nicer
-  Result := copy(Result, 1, 19);	{ TODO : Do UTF8 version of this }
+  Result := copy(Result, 1, 19);	{ TODO : Do UTF8 version of this ? }
 end;
 
 

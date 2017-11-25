@@ -35,6 +35,9 @@ unit settings;
 
 	2017/10/15 - gave the setting form Tabs, lot less cluttered.
 
+	2017/11/25 - added a button to notes path config to use the 'default' path
+	that is, similar to what tomboy does. Code to make that path.
+
 }
 
 {$mode objfpc}{$H+}
@@ -52,6 +55,7 @@ type
     { TSett }
 
     TSett = class(TForm)
+			ButtDefaultNoteDir: TButton;
 			ButtonShowBackUp: TButton;
 			ButtonSaveConfig: TButton;
 
@@ -95,7 +99,8 @@ type
 		TabSnapshot: TTabSheet;
 		TabSync: TTabSheet;
 		TabDisplay: TTabSheet;
-		procedure ButtonSaveConfigClick(Sender: TObject);
+		procedure ButtDefaultNoteDirClick(Sender: TObject);
+  procedure ButtonSaveConfigClick(Sender: TObject);
 		procedure ButtonSetNotePathClick(Sender: TObject);
 		procedure ButtonSetSynServerClick(Sender: TObject);
 		procedure ButtonShowBackUpClick(Sender: TObject);
@@ -298,6 +303,30 @@ begin
     	ConfigFile.Free;
     end;
     ButtonSaveConfig.Enabled := False;
+end;
+
+procedure TSett.ButtDefaultNoteDirClick(Sender: TObject);
+begin
+    // GetEnvironmentVariable() seems utf8 ok ...
+    {$IFDEF UNIX}
+    NoteDirectory := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
+    {$ENDIF}                // WARNING !!!!!!! Untested on OSX.
+                            // WARNING !!!!!!! Untested windows code, take care
+    {$IFDEF WINDOWS}
+    NoteDirectory := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\'
+    // %APPDATA%\Tomboy\notes\
+    {$ENDIF}
+    if not ForceDirectoriesUTF8(NoteDirectory) then
+    	showmessage('Sorry, unable to create directory ' + NoteDirectory)
+    else begin
+    	LabelNotesPath.Caption := NoteDirectory;
+		ButtonSaveConfig.Enabled := True;
+    	CheckShowIntLinks.enabled := true;
+    	SyncSettings();
+    	RTSearch.IndexNotes();
+	end;
+
+
 end;
 
 	{ Allow user to point to what they want to call their notes dir. If there
