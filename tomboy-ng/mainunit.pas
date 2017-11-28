@@ -47,6 +47,9 @@ unit MainUnit;
 	updated whenever a save is made.
 
 	2017/11/07 - switched over to using NoteLister, need to remove a lot of unused code.
+
+	2017/11/28 - fixed a bug I introduced while restructuring  OpenNote to better
+	handle a note being auto saved. This bug killed the Link button in EditNote
 }
 
 {$mode objfpc}{$H+}
@@ -345,8 +348,9 @@ var
 begin
     if (NoteTitle <> '') then begin
         if FullFileName = '' then Begin
-        	NoteLister.FileNameForTitle(NoteTitle, NoteFileName);
-            NoteFileName := Sett.NoteDirectory + NoteFileName;
+        	if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
+            	NoteFileName := Sett.NoteDirectory + NoteFileName
+            else NoteFileName := '';
 		end else NoteFileName := FullFileName;
         // if we have a Title and a Filename, it might be open aleady
         if NoteLister.IsThisNoteOpen(NoteFileName, TheForm) then begin
@@ -357,10 +361,7 @@ begin
 			except on  EAccessViolation do
             	DebugLn('Tried to re show a closed note, thats OK');
 			end;
-            // We catch the exception and proceed ....
-            { TODO 1 : Relying on catching the exception is dumb. We need to get the note
-				to tell us its closing and then we tell notelister that.
-                This really messes with debugger. }
+            // We catch the exception and proceed .... but it should never happen.
         end;
     end;
     // if to here, we need open a new window. If Filename blank, its a new note
