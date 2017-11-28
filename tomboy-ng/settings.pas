@@ -38,6 +38,8 @@ unit settings;
 	2017/11/25 - added a button to notes path config to use the 'default' path
 	that is, similar to what tomboy does. Code to make that path.
 
+	2017/11/28 - put a ; after a line of windows only code.
+
 }
 
 {$mode objfpc}{$H+}
@@ -313,7 +315,7 @@ begin
     {$ENDIF}                // WARNING !!!!!!! Untested on OSX.
                             // WARNING !!!!!!! Untested windows code, take care
     {$IFDEF WINDOWS}
-    NoteDirectory := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\'
+    NoteDirectory := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
     // %APPDATA%\Tomboy\notes\
     {$ENDIF}
     if not ForceDirectoriesUTF8(NoteDirectory) then
