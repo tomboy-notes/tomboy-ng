@@ -32,6 +32,8 @@ unit Note_Lister;
 	2017/11/23 - added functions to save and retreive the Form when a note
     is open. Also added a function to turn a fullfilename, a filename or an ID
     into a filename of the form GID.note
+
+	2017/11/29 - Added FileName to "Note has no Title" error message.
 }
 
 {$mode objfpc}
@@ -169,8 +171,8 @@ begin
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
-            except 		on EXMLReadError do DebugLn('Note has no Title');
-            		    on EAccessViolation do DebugLn('Access Violation');
+            except 		on EXMLReadError do DebugLn('Note has no Title ' + FileName);
+            		    on EAccessViolation do DebugLn('Access Violation ' + FileName);
   		    end;
             if SearchTerm = '' then
             	NoteList.Add(NoteP)

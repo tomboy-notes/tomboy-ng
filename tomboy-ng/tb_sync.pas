@@ -284,9 +284,9 @@ begin
 				Node := Doc.DocumentElement.FindNode('title');
         		Report.Title := Node.FirstChild.NodeValue;
             except 	on EXMLReadError do
-            				Report.Title := 'Note has no Title';
+            				Report.Title := 'Note has no Title ' + Report.FullFileName;
               		on EAccessViolation do
-                            Report.Title := 'Access Violation';
+                            Report.Title := 'Access Violation ' + Report.FullFileName;
 			end;
 		finally
         	Doc.free;
@@ -611,9 +611,9 @@ begin
 				    Node := Doc.DocumentElement.FindNode('title');
 	    		    Result := Node.FirstChild.NodeValue;
 	            except 	on EXMLReadError do
-	        				    Result := 'Note has no Title';
+	        				    Result := 'Note has no Title ' + FullFileName;
 	          		    on EAccessViolation do
-	                            Result := 'Access Violation';
+	                            Result := 'Access Violation ' + FullFileName;
 			    end;
 		    finally
 	    	    Doc.free;
