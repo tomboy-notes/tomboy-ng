@@ -34,6 +34,8 @@ unit Note_Lister;
     into a filename of the form GID.note
 
 	2017/11/29 - Added FileName to "Note has no Title" error message.
+	2017/11/29 - check to see if NoteList is still valid before passing
+	on updates to a Note's status. If we are quiting, it may not be.
 }
 
 {$mode objfpc}
@@ -337,7 +339,11 @@ end;
 procedure TNoteLister.ThisNoteIsOpen(const ID : ANSIString; const TheForm: TForm);
 var
     Index : integer;
+    cnt : integer;
 begin
+    if NoteList = NIl then
+        exit;
+    cnt := NoteList.Count;
 	for Index := 0 to NoteList.Count -1 do begin
       	//writeln('ID = ', ID, ' ListID = ', NoteList.Items[Index]^.ID);
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
@@ -418,7 +424,9 @@ end;
 destructor TNoteLister.Destroy;
 begin
     SearchNoteList.Free;
+    SearchNoteList := Nil;
     NoteList.Free;
+    NoteList := Nil;
 	inherited Destroy;
 end;
 

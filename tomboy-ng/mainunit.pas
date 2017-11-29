@@ -50,6 +50,8 @@ unit MainUnit;
 
 	2017/11/28 - fixed a bug I introduced while restructuring  OpenNote to better
 	handle a note being auto saved. This bug killed the Link button in EditNote
+	2017/11/29 - check to see if NoteLister is still valid before passing
+	on updates to a Note's status. If we are quiting, it may not be.
 }
 
 {$mode objfpc}{$H+}
@@ -171,7 +173,8 @@ const
 
 procedure TRTSearch.NoteClosing(const ID : AnsiString);
 begin
-    NoteLister.ThisNoteIsOpen(ID, nil);
+    if NoteLister <> nil then         // else we are quitting the app !
+    	NoteLister.ThisNoteIsOpen(ID, nil);
 end;
 
 procedure TRTSearch.StartSearch(); // Call before using NextNoteTitle() to list Titles.
@@ -218,6 +221,7 @@ end;
 
 procedure TRTSearch.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
 begin
+    if NoteLister = Nil then exit;				// we are quitting the app !
   	// Can we find line with passed file name ? If so, apply new data.
 	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
         DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
