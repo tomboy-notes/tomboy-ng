@@ -214,6 +214,7 @@ object EditBoxForm: TEditBoxForm
       F4F4F3F4F4F3F4F4F3F4F4F3F4F4F3F4F4F3F4F4F3F4F4F3F4F4F3F4F4F3F4F4
       0000
     }
+    OnClick = ButtLinkClick
     ParentFont = False
     TabOrder = 1
   end
