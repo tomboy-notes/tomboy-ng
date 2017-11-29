@@ -384,7 +384,7 @@ begin
     if SplitStart then
 		FirstBlockNo := KMemo1.SplitAt(FirstChar);
     AlterBlockFont(FirstBlockNo, FirstBlockNo, Command, NewFontSize);
-    KMemo1.SelEnd := LastChar + 1;	// Any splitting above seems to subtly alter SelEnd, reset.
+    KMemo1.SelEnd := LastChar;	// Any splitting above seems to subtly alter SelEnd, reset.
 	Ready := True;
 end;
 
