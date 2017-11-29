@@ -82,6 +82,10 @@ unit EditBox;
 	2017/11/07 Fixes to CheckForLinks() and friends so it can again, handle the same
 	link mentioned several times in a note. And remember, UTF8Pos() does not like being
 	told to start at zero. Oh, yes, I remember, now!
+
+	2017/11/29 Issue #4, fixed AlterFont() and AlterBlockFont() so that when doing
+	Bold, Italics, Coloured we toggle on the basis of first character, not the
+	first character of each block.
 }
 
 
@@ -175,7 +179,7 @@ type
         { To save us checking the title if user is well beyond it }
         BlocksInTitle : integer;
         { Alters the Font of Block as indicated }
-        procedure AlterBlockFont(const BlockNo: longint; const Command : integer;
+        procedure AlterBlockFont(const FirstBlockNo : longint; const BlockNo: longint; const Command : integer;
             const NewFontSize: integer=0);
         { Alters the font etc of selected area as indicated }
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
@@ -351,6 +355,11 @@ const
   c. & f. Needs two splits. Split at SelStar and SelEnd-1, then as above.
 
   So, decide what blocks we apply to, then apply. Sounds easy.
+
+  AlterFont() is the entry point, it identifies and, if necessary splits blocks
+  and calls AlterBlockFont() to do the changes, block by block.
+  The decision as to turning [Colour,Bold,Italics] on or off SHOULD be made in
+  AlterFont based on first char of selection and passed to AlterBlockFont.
 }
 
 procedure TEditBoxForm.AlterFont(const Command : integer; const NewFontSize : integer = 0);
@@ -368,23 +377,25 @@ begin
     if IntIndex <> (length(Kmemo1.Blocks.Items[LastBlockNo].Text) -1) then 	// Not Last char in block
         LastBlockNo := KMemo1.SplitAt(LastChar) -1;       // we want whats before the split.
     while LastBlockNo > FirstBlockNo do begin
-        AlterBlockFont(LastBlockNo, Command, NewFontSize);
+        AlterBlockFont(FirstBlockNo, LastBlockNo, Command, NewFontSize);
         dec(LastBlockNo);
     end;
     // Now, only First Block to deal with
     if SplitStart then
 		FirstBlockNo := KMemo1.SplitAt(FirstChar);
-    AlterBlockFont(FirstBlockNo, Command, NewFontSize);
+    AlterBlockFont(FirstBlockNo, FirstBlockNo, Command, NewFontSize);
     KMemo1.SelEnd := LastChar + 1;	// Any splitting above seems to subtly alter SelEnd, reset.
 	Ready := True;
 end;
 
 
 	{  Takes a Block number and applies changes to that block }
-procedure TEditBoxForm.AlterBlockFont(const BlockNo : longint; const Command : integer; const NewFontSize : integer = 0);
+procedure TEditBoxForm.AlterBlockFont(const FirstBlockNo : longint; const BlockNo : longint; const Command : integer; const NewFontSize : integer = 0);
 var
-	Block : TKMemoTextBlock;
+	Block, FirstBlock : TKMemoTextBlock;
+
 begin
+    FirstBlock := TKMemoTextBlock(KMemo1.Blocks.Items[FirstBlockNo]);
 	Block := TKMemoTextBlock(KMemo1.Blocks.Items[BlockNo]);
     if (Command = ChangeSize) and (NewFontSize = Sett.FontNormal) then begin  // Don't toggle, just set to FontNormal
          Block.TextStyle.Font.Size := Sett.FontNormal;
@@ -396,18 +407,18 @@ begin
 					end else begin
  						Block.TextStyle.Font.Size := NewFontSize;
 					end;
-		ChangeBold :   	if fsBold in Block.TextStyle.Font.style then begin
+		ChangeBold :   	if fsBold in FirstBlock.TextStyle.Font.style then begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsBold];
 					end else begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsBold];
 					end;
 		ChangeItalic :
-					if fsItalic in Block.TextStyle.Font.style then begin
+					if fsItalic in FirstBlock.TextStyle.Font.style then begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsItalic];
 					end else begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsItalic];
 					end;
-		ChangeColor : 	if Block.TextStyle.Font.Color = NormalColor then begin
+		ChangeColor : 	if FirstBlock.TextStyle.Font.Color = NormalColor then begin
                         Block.TextStyle.Font.Color := HiColor;
                     end else begin
                         Block.TextStyle.Font.Color := NormalColor;
