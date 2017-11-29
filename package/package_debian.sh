@@ -8,82 +8,80 @@
 PRODUCT="tomboy-ng"
 VERSION="0.1"
 OS="linux"
-CPU="x86_64"
-#x86_64 or i386 (good luck with the others), these are what the FPC/Lazarus expect.
 
 SOURCE_DIR="../tomboy-ng"
 
 MANUALS_DIR="docs"
 MANUALS="Notes.txt"
 
-USR_DIR="usr"
+
 
 # ----------------------
 
-BuildIt ()
-{
-  cd $SOURCE_DIR
-  lazbuild -B --cpu="$CPU" --build-mode=Release --os="$OS" Tomboy_NG.lpi
-  cd ../package
+# Build four binaries. Note that build-mode must be one already defined
+# typically in the IDE.
+# Lazbuild expects cpu=[x86_64, i386] (good luck with the others)
+
+function BuildIt () {
+	cd $SOURCE_DIR
+	echo "Building x86_64 Linux"
+	lazbuild -B --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
+	echo "Building i386 Linux"
+	lazbuild -B --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
+	echo "Building x86_64 Windows"
+	lazbuild -B --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
+	echo "Building i386 Windows"
+	lazbuild -B --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
+	echo "Building x86_64 Linux"
+	# Todo - should check we now have binaries with todays date.
+	ls -l "tomboy-ng*"
+	cd ../package
 }	
 
 # -----------------------
 
-DebianPackage ()
-{
-	# This is a remote chance someone might run this script in /
-	# doing so would trash their /usr directory, a bad thing. 
-	if mkdir $USR_DIR; then		 
-		echo "OK $USR_DIR correctly made"
+function DebianPackage () {
+	# We build a debian tree in BUILD and call dpkg-deb -b 
+	#  BUILD/DEBIAN control,debian-binary and any scripts
+        #	/usr/bin/tomboy-ng
+	#	    /share/tomboy-ng/Notes.txt,license.txt (todo)
+ 	mkdir BUILD
+	mkdir BUILD/DEBIAN
+	mkdir BUILD/usr
+	mkdir BUILD/usr/bin
+	mkdir BUILD/usr/share
+	mkdir "BUILD/usr/share/$PRODUCT"
+	if [ "$1" = "amd64" ]; then
+		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng
 	else
-		echo "DANGER - do not run this script in root"
-		exit
+		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
 	fi
-	mkdir $USR_DIR/bin
-	mkdir $USR_DIR/share
-	mkdir $USR_DIR/share/$PRODUCT
-	cp $SOURCE_DIR/tomboy-ng $USR_DIR/bin/tomboy-ng
-	cp "$SOURCE_DIR/$MANUALS" "$USR_DIR/share/tomboy-ng"
+	cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/$PRODUCT/"
 
-	tar -cvf data.tar $USR_DIR
- 	gzip data.tar
+	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
+	echo "Version: $VERSION" >> BUILD/DEBIAN/control
+	echo "Architecture: $1" >> BUILD/DEBIAN/control
+	echo "Maintainer: David Bannon" >> BUILD/DEBIAN/control
+	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
+	echo "Depends: libgtk2.0-0 (>= 2.6)" >> BUILD/DEBIAN/control
+	echo "Priority: optional" >> BUILD/DEBIAN/control
+	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
+	echo "Section: x11" >> BUILD/DEBIAN/control
+	echo "Description: Alpha Test of a Tomboy Notes rewritten to make installation easy." >> BUILD/DEBIAN/control
 
- 	mkdir DEBIAN
-
-	echo "Package: $PRODUCT" > DEBIAN/control
-	echo "Version: $VERSION" >> DEBIAN/control
-	echo "Architecture: $ARCH" >> DEBIAN/control
-	echo "Maintainer: David Bannon" >> DEBIAN/control
-	echo "Installed-Size: 4096" >> DEBIAN/control
-	echo "Depends: libgtk2.0-0 (>= 2.6)" >> DEBIAN/control
-	echo "Priority: optional" >> DEBIAN/control
-	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> DEBIAN/control
-	echo "Section: x11" >> DEBIAN/control
-	echo "Description: Alpha Test of a Tomboy Notes rewritten to make installation easy." >> DEBIAN/control
-
-  	mv data.tar.gz DEBIAN/
-  	echo "2.0" >> DEBIAN/debian-binary
-
-	echo "calling dpkg for $CPU $ARCH"
-  	dpkg -b ./ "$PRODUCT""_$VERSION-0_$ARCH.deb"
-
-  	echo "all done, lets tidy up now"
-	rm -rf $USR_DIR	# Danger Will Robertson, Danger, that usr
-	rm -rf ./DEBIAN		
-
-#  return
+  	echo "2.0" >> BUILD/DEBIAN/debian-binary
+	# echo "calling dpkg for ""$PRODUCT""_$VERSION-0_$1.deb"
+  	dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
+	rm -rf BUILD
 }
 
 # --------------------------------------
 # It all starts here
 
-if [ "$CPU" = "x86_64" ]; then
-	ARCH="amd64"				# These are what appears in the deb file name
-else
-	ARCH="i386"
-fi
-BuildIt
-DebianPackage
+# BuildIt
+DebianPackage "i386"
+DebianPackage "amd64"
+
 
 
 
