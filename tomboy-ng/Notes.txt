@@ -52,9 +52,8 @@ TrayIcon, in MainUnit.  A bit of extra Window code needed in EditBox because of
 Windows insistence on two character line endings.
 
 Ah, and its possible and undesirable, to run two or more instances of this App.
-
-And to open two or more instances of a note. Thats been handy while debugging
-but it needs to go in any sort of testing release (other than proof of concept).
+And there is a memory leak in the Mac version so, to be safe, don't let it sit
+running for a long length of time, we are working on this upstream problem.
 
 Over time, expect this file to contain quite a lot about tomboy-ng's internal workings
 
