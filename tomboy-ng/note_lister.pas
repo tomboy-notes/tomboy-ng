@@ -36,6 +36,8 @@ unit Note_Lister;
 	2017/11/29 - Added FileName to "Note has no Title" error message.
 	2017/11/29 - check to see if NoteList is still valid before passing
 	on updates to a Note's status. If we are quiting, it may not be.
+	2017/11/29 - Fixed a memory leak that occured when Delete-ing a entry in the list
+	Turns out you must dispose() that allocation before calling Delete.
 }
 
 {$mode objfpc}
@@ -395,9 +397,10 @@ begin
 	result := False;
     for Index := 0 to NoteList.Count -1 do begin
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
-          NoteList.Delete(Index);
-          Result := True;
-          break;
+        	dispose(NoteList.Items[Index]);
+        	NoteList.Delete(Index);     { TODO : Should I overload 'Delete' and call dispose in the that function before  inherited Delete ? }
+        	Result := True;
+        	break;
 		end;
 	end;
     if Result = false then
@@ -436,6 +439,7 @@ destructor TNoteList.Destroy;
 var
   I : integer;
 begin
+    DebugLn('NoteList - disposing of items x ' + inttostr(Count));
 	for I := 0 to Count-1 do
     	dispose(Items[I]);
 	inherited Destroy;
