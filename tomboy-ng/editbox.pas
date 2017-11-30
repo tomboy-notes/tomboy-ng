@@ -86,6 +86,10 @@ unit EditBox;
 	2017/11/29 Issue #4, fixed AlterFont() and AlterBlockFont() so that when doing
 	Bold, Italics, Coloured we toggle on the basis of first character, not the
 	first character of each block.
+
+	2017/11/30 Issue #12. An new note created by user clicking Link in another note
+	is now auto saved. And the selected text from the first note now becomes, immediatly
+	a link.
 }
 
 
@@ -278,8 +282,10 @@ begin
             dec(Index);
 		end;
 		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
-        if UTF8Length(ThisTitle) > 1 then
+        if UTF8Length(ThisTitle) > 1 then begin
         	RTSearch.OpenNote(ThisTitle);
+            KMemo1Change(self);
+		end;
 	end;
 end;
 
