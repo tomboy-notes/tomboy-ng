@@ -214,12 +214,15 @@ var
 begin
     new(NoteP);
     NoteP^.ID := CleanFilename(FileName);
-    NoteP^.LastChange := LastChange;
-    NoteP^.CreateDate := LastChange;
+    NoteP^.LastChange := copy(LastChange, 1, 19);
+    NoteP^.LastChange[11] := ' ';
+    NoteP^.CreateDate := copy(LastChange, 1, 19);
+    NoteP^.CreateDate[11] := ' ';
     NoteP^.Title:= Title;
     NoteP^.OpenNote := nil;
     NoteList.Add(NoteP);
 end;
+
 
 function TNoteLister.GetNotes(const Term: ANSIstring): longint;
 var
@@ -271,19 +274,15 @@ var
     Index : integer;
     // TestID : ANSIString;
 begin
-  {	if length(ID) = 36 then
-        TestID := ID + '.note'
-    else
-        TestID := ID;   }
-
 	result := False;
     for Index := 0 to NoteList.Count -1 do begin
         if CleanFilename(ID) = NoteList.Items[Index]^.ID then begin
         	if Title <> '' then
             	NoteList.Items[Index]^.Title := Title;
         	if Change <> '' then
-            	NoteList.Items[Index]^.LastChange := Change;
-            	NoteList.Items[Index]^.LastChange := copy(NoteList.Items[Index]^.LastChange, 1, 19);
+            	// NoteList.Items[Index]^.LastChange := Change;
+            	// NoteList.Items[Index]^.LastChange := copy(NoteList.Items[Index]^.LastChange, 1, 19);
+                NoteList.Items[Index]^.LastChange := copy(Change, 1, 19);
             	NoteList.Items[Index]^.LastChange[11] := ' ';
             Result := True;
             exit();

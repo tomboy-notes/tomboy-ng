@@ -200,6 +200,7 @@ type
         procedure MarkTitle();
         { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
+        { Saves the note in KMemo1, must have title but can make up a file name if needed }
 		procedure SaveTheNote;
     public
         NoteFileName, NoteTitle : string;
@@ -567,6 +568,8 @@ begin
         KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
         KMemo1.SelEnd := Kmemo1.Text.Length;
     end;
+    if  (Caption <> 'untitled note') AND (length(NoteFileName) = 0) then
+       SaveTheNote();		// This is a note made with LINK button in another note
     KMemo1.SetFocus;
     Ready := true;
     Dirty := False;
