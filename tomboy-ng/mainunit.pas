@@ -295,7 +295,6 @@ begin
     if not Sett.HaveConfig then exit;
     NoteLister.WorkingDir:=Sett.NoteDirectory;
     NoteLister.GetNotes();		{ TODO : we should say how many we found }
-    UseList();
     // TS1 := DateTimeToTimeStamp(Now);
 	// Edit1.Text := 'That took (mS) ' + inttostr(TS2.Time - TS1.Time);
     UseList();
