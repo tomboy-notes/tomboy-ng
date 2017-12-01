@@ -90,6 +90,9 @@ unit EditBox;
 	2017/11/30 Issue #12. An new note created by user clicking Link in another note
 	is now auto saved. And the selected text from the first note now becomes, immediatly
 	a link.
+
+	2017/12/02 Little fix to AlterFont to ensure a selected bit of text remains
+	selected after a font change.
 }
 
 
@@ -392,6 +395,7 @@ begin
 		FirstBlockNo := KMemo1.SplitAt(FirstChar);
     AlterBlockFont(FirstBlockNo, FirstBlockNo, Command, NewFontSize);
     KMemo1.SelEnd := LastChar;	// Any splitting above seems to subtly alter SelEnd, reset.
+    KMemo1.SelStart := FirstChar;
 	Ready := True;
 end;
 
