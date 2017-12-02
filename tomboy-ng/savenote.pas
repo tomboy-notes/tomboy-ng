@@ -38,6 +38,12 @@ unit SaveNote;
 				into the time offset figure, eg +11:00. Old notes written
 				with previous vesions will fail with file sync until rewritten.
 	2017/11/12  Added code to replace < and > with char codes.
+	2017/12/02	Fixed a bug were we were skipping newline where there were 2 in a row
+	2017/12/02  Extensive changes to ensure font setting stanning part of a bullet
+				list are saved correctly.
+	2017/12/02	Restructured AddTag to ensure tags laid out in correct order.
+	2017/12/02	changed the way that we ensure there are no hanging tags at end of
+				a note.
 }
 
 {$mode objfpc}{$H+}
@@ -58,10 +64,16 @@ type
 			Bold : boolean;
 			Italics : boolean;
 			HiLight : boolean;
+            PrevFSize : integer;
+			PrevBold : boolean;
+			PrevItalics : boolean;
+			PrevHiLight : boolean;
 			InList : boolean;
             KM : TKMemo;
             function AddTag(const FT : TFont; var Buff : ANSIString) : ANSIString;
+			function BlockAttributes(Bk: TKMemoBlock): AnsiString;
 			procedure BulletList(var Buff: ANSIString);
+			function FontAttributes(Ft: TFont): ANSIString;
 			function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
           	function Header() : ANSIstring;
@@ -100,89 +112,122 @@ end;
 function TBSaveNote.AddTag(const FT : TFont; var Buff : ANSIString) : ANSIString;
 begin
     // Important that we keep the tag order consistent. Good xml requires no cross over
-    // tags. If the note is to be readable by Tomboy, must comply. (RTomboy does not care)
-    // FontSize, HiLite, Ital, Bold, Bullet, BulletOff, BoldOff, ItalOff, HiLiteOff
-    // Note Bullets are not dealt with here, have to be done later.
+    // tags. If the note is to be readable by Tomboy, must comply. (EditBox does not care)
+    // Tag order -
+    // FontSize HiLite Ital Bold Bullet TEXT BulletOff BoldOff ItalOff HiLiteOff FontSize
+	// Processing Order is the reverese -
+    // BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold
 
-    // When Bold Turns OFF
+writeln('Bold=', Bold=True, ' Italics=', Italics=True, ' Colour=', HiLight=True, ' ', inttostr(FSize));
+
+  // When Bold Turns OFF
     if (Bold and (not (fsBold in FT.Style))) then begin
-        if FSize <> Sett.FontNormal then
-            Buff := Buff + SetFontXML(FSize, false);
-        if Hilight then Buff := Buff + '</highlight>';
-        if Italics then Buff := Buff + '</italic>';
         Buff := Buff + '</bold>';
-        if Italics then Buff := Buff + '<italic>';
-        if Hilight then Buff := Buff + '<highlight>';
-        if FSize <> Sett.FontNormal then
-            Buff := Buff + SetFontXML(FSize, true);
         Bold := false;
     end;
+
     // When Italic turns OFF
     if (Italics and (not (fsItalic in FT.Style))) then begin
-        if FSize <> Sett.FontNormal then
-             Buff := Buff + SetFontXML(FSize, false);
-        if Hilight then Buff := Buff + '</highlight>';
-     	Buff := Buff + '</italic>';
-        if Hilight then Buff := Buff + '<highlight>';
-        if FSize <> Sett.FontNormal then
-            Buff := Buff + SetFontXML(FSize, true);
+		if Bold then Buff := Buff + '</bold>';
+        Buff := Buff + '</italic>';
+        if Bold then Buff := Buff + '<bold>';
         Italics := false;
     end;
+
     // When Highlight turns OFF
     if (HiLight and (not (FT.Color = HiColor))) then begin
-        if FSize <> Sett.FontNormal then
+
+		if Bold then Buff := Buff + '</bold>';
+        if Italics then Buff := Buff + '</italic>';
+        Buff := Buff + '</highlight>';
+        if Italics then Buff := Buff + '<italic>';
+        if Bold then Buff := Buff + '<bold>';
+
+{        if FSize <> Sett.FontNormal then
             Buff := Buff + SetFontXML(FSize, false);
         Buff := Buff + '</highlight>';
         if FSize <> Sett.FontNormal then
-            Buff := Buff + SetFontXML(FSize, true);
+            Buff := Buff + SetFontXML(FSize, true); }
         HiLight := false;
     end;
+
     // When Font size changes
-    if FSize <> FT.Size then begin
-        Buff := Buff + SetFontXML(FSize, false);
-        FSize := FT.Size;
-        Buff := Buff + SetFontXML(FSize, true);
-    end;
-    // Highlight turns ON
-    if ((not HiLight) and (FT.Color = HiColor)) then begin
-        if FSize <> Sett.FontNormal then
-             Buff := Buff + SetFontXML(FSize, false);
-        Buff := Buff + '<highlight>';
-        if FSize <> Sett.FontNormal then
-             Buff := Buff + SetFontXML(FSize, true);
-        HiLight := true;
-    end;
-    // Italic turns On
-    if ((not Italics) and (fsItalic in FT.Style)) then begin
-        if Hilight then Buff := Buff + '</highlight>';
-        if FSize <> Sett.FontNormal then
-        	Buff := Buff + SetFontXML(FSize, false);
-        Buff := Buff + '<italic>';
-        if FSize <> Sett.FontNormal then
-             Buff := Buff + SetFontXML(FSize, true);
-        if Hilight then Buff := Buff + '<highlight>';
-        Italics := true;
-    end;
-    // Bold turns On
-    if ((not Bold) and (fsBold in FT.Style)) then begin
+    if (FSize <> FT.Size) and (FT.Size <> Sett.FontTitle) then begin
+		if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
-        if Hilight then Buff := Buff + '</highlight>';
-        if FSize <> Sett.FontNormal then
-             Buff := Buff + SetFontXML(FSize, false);
-        Buff := Buff + '<bold>';
-        if FSize <> Sett.FontNormal then
-             Buff := Buff + SetFontXML(FSize, true);
-         if Hilight then Buff := Buff + '<highlight>';
-         if Italics then Buff := Buff + '<italic>';
-        Bold := true;
+        if HiLight then Buff := Buff + '</highlight>';
+        Buff := Buff + SetFontXML(FSize, false);
+        Buff := Buff + SetFontXML(FT.Size, true);
+        if HiLight then Buff := Buff + '<highlight>';
+        if Italics then Buff := Buff + '<italic>';
+        if Bold then Buff := Buff + '<bold>';
+        FSize := FT.Size;
     end;
 
+    // Highlight turns ON
+    if ((not HiLight) and (FT.Color = HiColor)) then begin
+        if Bold then Buff := Buff + '</bold>';
+        if Italics then Buff := Buff + '</italic>';
+        Buff := Buff + '<highlight>';
+        if Italics then Buff := Buff + '<italic>';
+        if Bold then Buff := Buff + '<bold>';
+        HiLight := true;
+    end;
+
+    // Italic turns On
+    if ((not Italics) and (fsItalic in FT.Style)) then begin
+        if Bold then Buff := Buff + '</bold>';
+        Buff := Buff + '<italic>';
+        if Bold then Buff := Buff + '<bold>';
+        Italics := true;
+    end;
+
+    // Bold turns On
+    if ((not Bold) and (fsBold in FT.Style)) then begin
+        Buff := Buff + '<bold>';
+        Bold := true;
+    end;
     Result := Buff;
 end;
 
 procedure TBSaveNote.BulletList(var Buff : ANSIString);
+var
+   StartStartSt, StartEndSt, EndStartSt, EndEndSt : ANSIString;
 begin
-    Buff := '<list><list-item dir="ltr">' + Buff + '</list-item></list>';
+    if PrevBold then begin
+        StartStartSt := '</bold>';
+        StartEndSt := '<bold>';
+	end;
+	if Bold then begin
+        EndStartSt := '</bold>';
+        EndEndSt := '<bold>';
+    end;
+    if PrevItalics then begin
+        StartStartSt := StartStartSt + '</italic>';
+        StartEndSt := '<italic>' + StartEndSt;
+	end;
+	if Italics then begin
+        EndStartSt := EndStartSt + '</italic>';
+        EndEndSt := '<italic>' + EndEndSt;
+	end;
+    if PrevHiLight then begin
+        StartStartSt := StartStartSt + '</highlight>';
+        StartEndSt := '<highlight>' + StartEndSt;
+	end;
+	if HiLight then begin
+        EndStartSt := EndStartSt + '</highlight>';
+        EndEndSt := '<highlight>' + EndEndSt;
+    end;
+    if PrevFSize <> Sett.FontNormal then begin
+        StartStartSt := StartStartSt + SetFontXML(PrevFSize, False);
+        StartEndSt := SetFontXML(PrevFSize, True);
+	end;
+    if FSize <> Sett.FontNormal then begin
+        EndStartSt := EndStartSt + SetFontXML(FSize, False);
+        EndEndSt := SetFontXML(FSize, True);
+	end;
+    Buff := StartStartSt + '<list><list-item dir="ltr">' + StartEndSt
+    		+ Buff + EndStartSt + '</list-item></list>' + EndEndSt;
 end;
 
 function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
@@ -212,6 +257,31 @@ begin
    Result := Result + UTF8Copy(InStr, Start, Index - Start);
 end;
 
+function TBSaveNote.BlockAttributes(Bk : TKMemoBlock) : AnsiString;
+begin
+   Result := '';
+   if fsBold in TKMemoTextBlock(BK).TextStyle.Font.Style then
+   Result := Result + ' Bold ';
+   if fsItalic in TKMemoTextBlock(BK).TextStyle.Font.Style then
+   Result := Result + ' Italic ';
+   if TKMemoTextBlock(BK).TextStyle.Font.Color = HiColor then
+   Result := Result + ' Colour ';
+   Result := Result + inttostr(TKMemoTextBlock(BK).TextStyle.Font.Size);
+
+end;
+
+function TBSaveNote.FontAttributes(Ft : TFont) : ANSIString;
+begin
+   Result := '';
+   if fsBold in Ft.Style then
+   Result := Result + ' Bold ';
+   if fsItalic in Ft.Style then
+   Result := Result + ' Italic ';
+   if Ft.Color = HiColor then
+   Result := Result + ' Colour ';
+   Result := Result + inttostr(Ft.Size);
+
+end;
 
 procedure TBSaveNote.Save(FileName : ANSIString; KM1 : TKMemo);
 var
@@ -222,7 +292,7 @@ var
    BlankFont : TFont;
  begin
     KM := KM1;
-    FSize := 0;
+    FSize := Sett.FontNormal;
 	Bold := false;
  	Italics := False;
  	HiLight := False;
@@ -238,18 +308,27 @@ var
         Buff := '';
         try
             repeat
+                PrevFSize := FSize;
+				PrevBold := Bold;
+ 				PrevItalics := Italics;
+ 				PrevHiLight := HiLight;
+                PrevFSize := FSize;
                 repeat
                     Block := KM1.Blocks.Items[BlockNo];
+                    if Block.ClassNameIs('TKMemoParagraph') then break;	// two newlines
                     if Block.ClassNameIs('TKMemoTextBlock') then begin
-                        AddTag(TKMemoTextBlock(Block).TextStyle.Font, Buff);
-                        Buff := Buff + RemoveBadCharacters(Block.Text);
-                    end;
+                         if Block.Text.Length > 0 then begin
+                        	AddTag(TKMemoTextBlock(Block).TextStyle.Font, Buff);
+                        	Buff := Buff + RemoveBadCharacters(Block.Text);
+						 end;
+					end;
                     if Block.ClassNameIs('TKMemoHyperlink') then begin
                         AddTag(TKMemoHyperlink(Block).TextStyle.Font, Buff);
                         Buff := Buff + RemoveBadCharacters(Block.Text);
                     end;
                     inc(BlockNo);
                     if BlockNo >= KM1.Blocks.Count then break;
+
 				until KM1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
                 if BlockNo >= KM1.Blocks.Count then break;
                 if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
@@ -266,20 +345,14 @@ var
               could still have hanging xml tags. So either case, send it to add tag with
               an empty Font.
             }
-
-
-            if not KM1.Blocks.LastBlock.ClassNameIs('TKMemoParagraph') then begin
-                 // If we don't finish with a Para block, then we need to
-                 // add it in as well.
-                 BlankFont := TFont.Create();
-                 BlankFont.Size := Sett.FontNormal;
-                 BlankFont.Color := NormalColor;
-                 BlankFont.Style := [];
-                 AddTag(BlankFont, Buff);
-                 Buff := Buff + KM1.Blocks.LastBlock.Text;
-                 OutStream.Write(Buff[1], length(Buff));
-                 BlankFont.Free;
-            end;
+            Buff := '';
+            if Bold then Buff := '</bold>';
+            if Italics then Buff := Buff + '</italic>';
+            if HiLight then Buff := Buff + '</highlight>';
+            if FSize <> Sett.FontNormal then
+                 Buff := Buff + SetFontXML(FSize, False);
+            if length(Buff) > 0 then
+                  OutStream.Write(Buff[1], length(Buff));
             Buff := Footer();
             OutStream.Write(Buff[1], length(Buff));
 
@@ -319,10 +392,6 @@ begin
 		Res := res + '00'
 	else Res := Res + inttostr(abs(Off mod 60));
     Result := Result + res;
-
-    { Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
-                   + FormatDateTime('hh:mm:ss.z',ThisMoment) + '0000+'
-                   + inttostr(GetLocalTimeOffset() div -60);   }
 end;
 
 Function TBSaveNote.Header() : ANSIstring;
