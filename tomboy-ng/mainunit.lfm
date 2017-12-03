@@ -1,7 +1,7 @@
 object RTSearch: TRTSearch
   Left = 354
   Height = 330
-  Top = 211
+  Top = 210
   Width = 495
   Caption = 'RTSearch'
   ClientHeight = 330
@@ -32,7 +32,7 @@ object RTSearch: TRTSearch
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll]
     RowCount = 1
     ScrollBars = ssAutoVertical
-    TabOrder = 1
+    TabOrder = 0
     OnDblClick = StringGrid1DblClick
     ColWidths = (
       267
@@ -59,7 +59,9 @@ object RTSearch: TRTSearch
     BorderSpacing.Left = 3
     BorderSpacing.Right = 1
     OnEditingDone = Edit1EditingDone
-    TabOrder = 0
+    OnEnter = Edit1Enter
+    OnExit = Edit1Exit
+    TabOrder = 1
     Text = 'Search'
   end
   object Label1: TLabel

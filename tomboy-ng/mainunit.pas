@@ -52,6 +52,7 @@ unit MainUnit;
 	handle a note being auto saved. This bug killed the Link button in EditNote
 	2017/11/29 - check to see if NoteLister is still valid before passing
 	on updates to a Note's status. If we are quiting, it may not be.
+	2017/12/03 Added code to clear Search box when it gets focus. Issue #9
 }
 
 {$mode objfpc}{$H+}
@@ -99,6 +100,8 @@ type
 		procedure ButtonClearSearchClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure Edit1EditingDone(Sender: TObject);
+		procedure Edit1Enter(Sender: TObject);
+		procedure Edit1Exit(Sender: TObject);
 		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
@@ -275,11 +278,21 @@ end;
 
 procedure TRTSearch.Edit1EditingDone(Sender: TObject);
 begin
-    	if Edit1.Text <> 'Search' then begin
+    	if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
         	NoteLister.GetNotes(Edit1.Text);
         	NoteLister.LoadSearchGrid(StringGrid1);
         	ButtonClearSearch.Enabled := True;
         end;
+end;
+
+procedure TRTSearch.Edit1Enter(Sender: TObject);
+begin
+	if Edit1.Text = 'Search' then Edit1.Text := '';
+end;
+
+procedure TRTSearch.Edit1Exit(Sender: TObject);
+begin
+	if Edit1.Text = '' then Edit1.Text := 'Search';
 end;
 
 procedure TRTSearch.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -461,8 +474,8 @@ procedure TRTSearch.TrayMenuAboutClick(Sender: TObject);
 var
     S1, S2, S3, S4, S5 : string;
 begin
-  S1 := 'This is an Alpha Test of a version of Tomboy Notes'#10;
-  S2 := 'using Lazarus and FPC. It is not ready for production'#10;
+  S1 := 'This is v0.1 alpha of tomboy-ng, a rewrite of Tomboy Notes'#10;
+  S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
   S3 := 'use unless you are very careful and have good backups.'#10;
   S5 := '';
   {$IFDEF DARWIN}
