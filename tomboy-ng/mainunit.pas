@@ -53,6 +53,8 @@ unit MainUnit;
 	2017/11/29 - check to see if NoteLister is still valid before passing
 	on updates to a Note's status. If we are quiting, it may not be.
 	2017/12/03 Added code to clear Search box when it gets focus. Issue #9
+	2017/12/05 Added tests that we have a Notes Directory before opening a new note
+	or the search box. Issue #23.
 }
 
 {$mode objfpc}{$H+}
@@ -468,7 +470,9 @@ end;
 
 procedure TRTSearch.TrayMenSearchClick(Sender: TObject);
 begin
-    Show;
+  	if Sett.NoteDirectory = '' then
+        showmessage('You have not set a notes directory. Please click Settings')
+    else  Show;
 end;
 procedure TRTSearch.TrayMenuAboutClick(Sender: TObject);
 var
@@ -488,7 +492,10 @@ end;
 
 procedure TRTSearch.TrayMenuNewClick(Sender: TObject);
 begin
-    OpenNote();
+  	if Sett.NoteDirectory = '' then
+        showmessage('You have not set a notes directory. Please click Settings')
+    else
+    	OpenNote();
 end;
 
 procedure TRTSearch.TrayMenuRecent1Click(Sender: TObject);
