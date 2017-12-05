@@ -1,5 +1,5 @@
 #!/bin/sh
-# A script to make tomboy-ng deb package
+# A script to build tomboy and make deb packages and zip up the other binaries
 # see https://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics
 # we can also add preinst, postinst, prerm, and postrm scripts if required
 # David Bannon, November, 2017
@@ -34,7 +34,9 @@ function BuildIt () {
 	lazbuild -B --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	# Todo - should check we now have binaries with todays date.
-	ls -l "tomboy-ng*"
+	echo "------------- FINISHED BUILDING -----------------"
+	ls -l tomboy-ng*
+	echo "-------------------------------------------------"
 	cd ../package
 }	
 
@@ -43,8 +45,8 @@ function BuildIt () {
 function DebianPackage () {
 	# We build a debian tree in BUILD and call dpkg-deb -b 
 	#  BUILD/DEBIAN control,debian-binary and any scripts
-        #	/usr/bin/tomboy-ng
-	#	    /share/tomboy-ng/Notes.txt,license.txt (todo)
+    #	/usr/bin/tomboy-ng
+	#	/share/tomboy-ng/Notes.txt,license.txt (todo)
  	mkdir BUILD
 	mkdir BUILD/DEBIAN
 	mkdir BUILD/usr
@@ -73,15 +75,41 @@ function DebianPackage () {
 	# echo "calling dpkg for ""$PRODUCT""_$VERSION-0_$1.deb"
   	dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
 	rm -rf BUILD
+	echo "----------------- FINISHED DEBs ----------------"
+	ls -l *.deb
+	echo "------------------------------------------------"
+}
+
+function DoZipping {
+	# Note windows cannot handle gzip'ed files, use zip. 
+	rm *.gz
+	cp ../tomboy-ng/tomboy-ng .
+	gzip -q tomboy-ng
+	mv tomboy-ng.gz tomboy-ng_$VERSION.gz
+
+	cp ../tomboy-ng/tomboy-ng32 .
+	gzip -q tomboy-ng32
+	mv tomboy-ng32.gz tomboy-ng32_$VERSION.gz
+
+	rm *.zip
+	cp ../tomboy-ng/tomboy-ng64.exe .
+	zip tomboy-ng_Win64_$VERSION.zip tomboy-ng64.exe 
+
+	cp ../tomboy-ng/tomboy-ng32.exe .
+	zip tomboy-ng_Win32_$VERSION.zip tomboy-ng32.exe
+
+	echo "--------------- FINISHED ZIPPING ----------------"
+	ls -l *.gz *.zip
+	echo "-------------------------------------------------"
 }
 
 # --------------------------------------
 # It all starts here
 
-# BuildIt
+BuildIt
 DebianPackage "i386"
 DebianPackage "amd64"
-
+DoZipping
 
 
 
