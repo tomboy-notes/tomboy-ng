@@ -299,7 +299,9 @@ var
 begin
       // if not KMemo1.SelAvail then exit();
       // Need a better test of valid  selection than that !
-
+      if not Dirty then Timer1.Enabled := true;
+      Dirty := true;
+      Label1.Caption := 'd';
       BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
       LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
 
@@ -378,6 +380,9 @@ var
 	SplitStart : boolean = false;
 begin
     Ready := False;
+    if not Dirty then Timer1.Enabled := true;
+    Dirty := true;
+    Label1.Caption := 'd';
 	LastChar := Kmemo1.RealSelEnd;			// SelEnd points to first non-selected char
     FirstChar := KMemo1.RealSelStart;
 	FirstBlockNo := Kmemo1.Blocks.IndexToBlockIndex(FirstChar, IntIndex);
@@ -459,8 +464,6 @@ begin
     AlterFont(ChangeSize, Sett.FontSmall);
 end;
 
-
-
 procedure TEditBoxForm.MenuHugeClick(Sender: TObject);
 begin
    AlterFont(ChangeSize, Sett.FontHuge);
@@ -518,12 +521,18 @@ end;
 procedure TEditBoxForm.MenuItemCutClick(Sender: TObject);
 begin
    KMemo1.ExecuteCommand(ecCut);
+   if not Dirty then Timer1.Enabled := true;
+   Dirty := true;
+   Label1.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemPasteClick(Sender: TObject);
 begin
     Ready := False;
     KMemo1.ExecuteCommand(ecPaste);
+   if not Dirty then Timer1.Enabled := true;
+   Dirty := true;
+   Label1.Caption := 'd';
     Ready := True;
 end;
 
@@ -835,7 +844,7 @@ begin
 	RTSearch.OpenNote(TKMemoHyperlink(Sender).Text);
 end;
 
-	{ Any change to the note and this gets called. So, vital it be quick }
+	{ Any change to the note text and this gets called. So, vital it be quick }
 procedure TEditBoxForm.KMemo1Change(Sender: TObject);
 var
     CurserPos, StartScan, EndScan, BlockNo, Blar : longint;
