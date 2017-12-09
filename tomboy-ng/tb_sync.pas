@@ -28,6 +28,9 @@ unit TB_Sync;
 	implemented here.
 }
 
+{	2017/12/06	Cleaned up some unimportant debug statements.
+}
+
 
 {$mode delphi} 			// This is just me being lazy, in Delphi mode we don't need to
 						// dereference pointers to record structures.
@@ -426,7 +429,7 @@ begin
     NoteInfoListLocalManifest := nil;
     ReportList.free;
     ReportList := nil;
-    if DebugMode then DeBugLn('Debug - Disposed of all lists.');
+    // if DebugMode then DeBugLn('Debug - Disposed of all lists.');
 end;
 
 procedure TTomboySyncCustom.TestProceed;
@@ -834,7 +837,7 @@ begin
         // CheckRemoteServerID();
         // if DebugMode then DebugLn('Debug DoSync useLocal ' + UseLocal + ' useRemote ', UseRemote, ' and TestMode ', TestMode);
         if ReportList <> Nil then begin
-            if DebugMode then DebugLn('Debug - Note reuse of list without freeing it.');
+            // if DebugMode then DebugLn('Debug - Note reuse of list without freeing it.');
             ClearLists();
 		end;
 		ReportList := TSyncReportList.Create;

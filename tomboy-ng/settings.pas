@@ -40,6 +40,8 @@ unit settings;
 
 	2017/11/28 - put a ; after a line of windows only code.
 
+	2017/12/08 - changed size of Mediun normal font, one size smaller
+
 }
 
 {$mode objfpc}{$H+}
@@ -179,10 +181,10 @@ begin
 	end;
     if RadioFontMedium.checked then begin
     	FontSmall  := 8;
- 		FontLarge  := 15;
+ 		FontLarge  := 14;
  		FontHuge   := 18;
  		FontTitle  := 16;			// Dont set this to one of the other sizes !
- 		FontNormal := 12;
+ 		FontNormal := 11;
 	end;
     if RadioFontSmall.Checked then begin
     	FontSmall  := 7;

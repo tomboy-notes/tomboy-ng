@@ -22,6 +22,10 @@ unit SyncGUI;
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 }
 
+{	History
+	2017/12/06	Marked FileSync debug mode off to quieten console output a little
+}
+
 {$mode objfpc}{$H+}
 
 
@@ -129,7 +133,7 @@ procedure TFormSync.FormShow(Sender: TObject);
 begin
 	FileSync := TTomboyFileSync.Create;
     FileSync.ProceedFunction:= @Proceed;
-	FileSync.DebugMode := True;
+	// FileSync.DebugMode := True;
 	FileSync.NotesDir:= NoteDirectory;
 	FileSync.RemoteManifestDir:=RemoteRepo;
 	FileSync.LocalManifestDir:=LocalConfig;

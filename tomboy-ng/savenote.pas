@@ -118,8 +118,6 @@ begin
 	// Processing Order is the reverese -
     // BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold
 
-writeln('Bold=', Bold=True, ' Italics=', Italics=True, ' Colour=', HiLight=True, ' ', inttostr(FSize));
-
   // When Bold Turns OFF
     if (Bold and (not (fsBold in FT.Style))) then begin
         Buff := Buff + '</bold>';
