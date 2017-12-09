@@ -167,7 +167,8 @@ uses EditBox,
     settings,		// Manages settings.
     SyncGUI,
 
-    LazFileUtils;  // LazFileUtils needed for TrimFileName(), cross platform stuff
+    LazFileUtils,  // LazFileUtils needed for TrimFileName(), cross platform stuff
+	uAppIsRunning;	// A small pas unit to test if another instance is already running.
 
 { TRTSearch }
 
@@ -336,6 +337,13 @@ end;
 
 procedure TRTSearch.FormShow(Sender: TObject);
 begin
+    if StartUpMode and AlreadyRunning() then begin
+        showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
+        AllowClose := True;
+        Debugln('Another instance of tomboy-ng appears to be running. Will exit.');
+        close;
+        exit();
+    end;
     Top := Placement + random(Placement*2);
     Left := Placement + random(Placement*2);
     ButtonClearSearch.Enabled := False;
