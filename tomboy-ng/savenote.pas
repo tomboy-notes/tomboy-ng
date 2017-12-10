@@ -39,11 +39,13 @@ unit SaveNote;
 				with previous vesions will fail with file sync until rewritten.
 	2017/11/12  Added code to replace < and > with char codes.
 	2017/12/02	Fixed a bug were we were skipping newline where there were 2 in a row
-	2017/12/02  Extensive changes to ensure font setting stanning part of a bullet
+	2017/12/02  Extensive changes to ensure font setting spanning part of a bullet
 				list are saved correctly.
 	2017/12/02	Restructured AddTag to ensure tags laid out in correct order.
 	2017/12/02	changed the way that we ensure there are no hanging tags at end of
 				a note.
+	2017/12/10  Fix a bug in BulletList() whereby font changes were not preserving
+				previous queued format changes. Possibly. This is not robust code.
 }
 
 {$mode objfpc}{$H+}
@@ -116,7 +118,7 @@ begin
     // Tag order -
     // FontSize HiLite Ital Bold Bullet TEXT BulletOff BoldOff ItalOff HiLiteOff FontSize
 	// Processing Order is the reverese -
-    // BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold
+    // ListOff BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold List
 
   // When Bold Turns OFF
     if (Bold and (not (fsBold in FT.Style))) then begin
@@ -134,18 +136,11 @@ begin
 
     // When Highlight turns OFF
     if (HiLight and (not (FT.Color = HiColor))) then begin
-
 		if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
         Buff := Buff + '</highlight>';
         if Italics then Buff := Buff + '<italic>';
         if Bold then Buff := Buff + '<bold>';
-
-{        if FSize <> Sett.FontNormal then
-            Buff := Buff + SetFontXML(FSize, false);
-        Buff := Buff + '</highlight>';
-        if FSize <> Sett.FontNormal then
-            Buff := Buff + SetFontXML(FSize, true); }
         HiLight := false;
     end;
 
@@ -188,10 +183,17 @@ begin
     Result := Buff;
 end;
 
+	{ This function takes an existing parsed string and wraps it in the necessary
+      bullet tags but has to resolve and pending formatting tags first and restore
+      then afterwards. Its horrible. If you are debugging this, I am truly sorry.
+    }
+
 procedure TBSaveNote.BulletList(var Buff : ANSIString);
 var
    StartStartSt, StartEndSt, EndStartSt, EndEndSt : ANSIString;
 begin
+
+// writeln('Status Bold', Bold=True, ' PBold', PrevBold=True, ' High', HiLight=True, ' PHigh', PrevHiLight=True);
     if PrevBold then begin
         StartStartSt := '</bold>';
         StartEndSt := '<bold>';
@@ -218,14 +220,18 @@ begin
     end;
     if PrevFSize <> Sett.FontNormal then begin
         StartStartSt := StartStartSt + SetFontXML(PrevFSize, False);
-        StartEndSt := SetFontXML(PrevFSize, True);
+        StartEndSt := SetFontXML(PrevFSize, True) + EndEndSt;
 	end;
     if FSize <> Sett.FontNormal then begin
         EndStartSt := EndStartSt + SetFontXML(FSize, False);
-        EndEndSt := SetFontXML(FSize, True);
+        EndEndSt := SetFontXML(FSize, True) + EndEndSt;
 	end;
+    // writeLn('Buff at Start [' + Buff + ']');        // #################################
+
     Buff := StartStartSt + '<list><list-item dir="ltr">' + StartEndSt
     		+ Buff + EndStartSt + '</list-item></list>' + EndEndSt;
+
+    // writeLn('Buff at End [' + Buff + ']');         // **************************************
 end;
 
 function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
