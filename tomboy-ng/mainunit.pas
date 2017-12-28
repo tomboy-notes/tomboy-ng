@@ -23,7 +23,7 @@ unit MainUnit;
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
 }
 
-{	This is the Main unit (ie the main form) for RTomboy. It always exists while
+{	This is NO LONGER the Main unit (ie the main form) for tomboy-ng. It always exists while
 	RTomboy is running, when you cannot see it, its because its hidden. This
 	form will put its icon in the System Tray and its resposible for acting
 	on any of the menu choices from that tray icon.
@@ -55,6 +55,10 @@ unit MainUnit;
 	2017/12/03 Added code to clear Search box when it gets focus. Issue #9
 	2017/12/05 Added tests that we have a Notes Directory before opening a new note
 	or the search box. Issue #23.
+	2017/12/27 Changes flowing from this no longer being the main form.
+		1. Setting is now main form. This is to deal with a Cocoa issue where we
+			we cannot Hide() in the OnShow event.
+
 }
 
 {$mode objfpc}{$H+}
@@ -105,7 +109,8 @@ type
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
 		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-        procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+        // procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormShow(Sender: TObject);
         procedure MenuItemSettingsClick(Sender: TObject);
@@ -164,7 +169,7 @@ implementation
 {$R *.lfm}
 
 uses EditBox,
-    settings,		// Manages settings.
+    settings,		// Manages settings.  This Main Form, close it to kill app.
     SyncGUI,
 
     LazFileUtils,  // LazFileUtils needed for TrimFileName(), cross platform stuff
@@ -304,6 +309,11 @@ begin
     NoteLister := Nil;
 end;
 
+procedure TRTSearch.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+        CanClose := True;
+end;
+
 procedure TRTSearch.IndexNotes();
 // var
 	// TS1, TS2 : TTimeStamp;
@@ -316,7 +326,10 @@ begin
     UseList();
 end;
 
-procedure TRTSearch.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+
+// Dec 2017 - need review this function now that Setting is main form.
+{ TODO : Need to review this proc now that Setting is now main form. }
+{procedure TRTSearch.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
     // If the user has clicked close on RTSearch form, we'll just hide
     // But if its come via the TrayIcon, thats authorative so really close
@@ -324,43 +337,56 @@ begin
     	// showmessage('OK, looks like someone closed me ' + Sender.Classname)
     else Hide();
     CanClose := AllowClose;
-end;
+end; }
 
 procedure TRTSearch.FormCreate(Sender: TObject);
 begin
-    StartUpMode := true;
-	TrayIcon.Show;
+    StartUpMode := true;			// Don't think we need this flag anymore
+    if AlreadyRunning() then begin
+    	showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
+        Sett.Close;
+	end;
+    if not Sett.HaveConfig then
+        Sett.Show;
     // that appears to cause a memory leak in the Mac
     NoteLister := TNoteLister.Create;
-	RecentMenu();
+    IndexNotes();
+    LabelPath.Caption := Sett.NoteDirectory;
+    { TODO : Must allow for fact some users insist on proceeding without setting Notes Dir }
+    if Sett.RemoteRepo = '' then
+        MenuSynchronise.Enabled := False
+    else MenuSynchronise.Enabled := True;
+	// RecentMenu();
+    { TODO : We must move much of startup code here from the OnShow event }
+    TrayIcon.Show;
 end;
 
 procedure TRTSearch.FormShow(Sender: TObject);
 begin
-    if StartUpMode and AlreadyRunning() then begin
+    {if StartUpMode and AlreadyRunning() then begin
         showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
         AllowClose := True;
         Debugln('Another instance of tomboy-ng appears to be running. Will exit.');
         close;
         exit();
-    end;
+    end;}
     Top := Placement + random(Placement*2);
     Left := Placement + random(Placement*2);
     ButtonClearSearch.Enabled := False;
-    if not Sett.HaveConfig then
-        Sett.Show;
-    if StartUpMode then begin
+    { if not Sett.HaveConfig then
+        Sett.Show;   }
+    {if StartUpMode then begin
         IndexNotes();
         StartUpMode := False;
         LabelPath.Caption := Sett.NoteDirectory;
         Hide;
-	end;
-    if Sett.RemoteRepo = '' then
+	end;}
+    {if Sett.RemoteRepo = '' then
         MenuSynchronise.Enabled := False
-    else MenuSynchronise.Enabled := True;
+    else MenuSynchronise.Enabled := True;}
     {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
                         // Watch and see if it can be removed later. Oct 2017.
-    TrayIcon.InternalUpdate;
+    // TrayIcon.InternalUpdate;
     {$endif}
 end;
 
@@ -403,8 +429,6 @@ begin
     EBox.Dirty := False;
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
     exit();
-
-
 
 	if NoteTitle <> '' then begin  			// We have a title
 	        if FullFileName = '' then begin         // but no filename ?
@@ -458,8 +482,8 @@ end;
 
 procedure TRTSearch.MenuQuitClick(Sender: TObject);
 begin
-  	AllowClose := True; // Cos it came from the trayIcon menu, we'll do it.
-    Close;      // This will call CanClose were we do whatever is necessary
+  	Sett.AllowClose := True; // Cos it came from the trayIcon menu, we'll do it.
+    Sett.Close;      // Close Setting Form, its the Main Form and that kills everything
 end;
 
 procedure TRTSearch.MenuSynchroniseClick(Sender: TObject);

@@ -1,5 +1,9 @@
 program Tomboy_NG;
 
+{ History
+	27/12/2017 - Altered order to make the settings form the main one instead of RTSearch
+}
+
 {$mode objfpc}{$H+}
 
 uses
@@ -16,8 +20,9 @@ begin
 	Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
-    Application.CreateForm(TRTSearch, RTSearch);
+    Application.ShowMainForm := False;
     Application.CreateForm(TSett, Sett);
+    Application.CreateForm(TRTSearch, RTSearch);
 	Application.CreateForm(TFormSync, FormSync);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);
     Application.Run;

@@ -6,6 +6,7 @@ object Sett: TSett
   Caption = 'KTomboy-NG Settings'
   ClientHeight = 438
   ClientWidth = 525
+  OnClose = FormClose
   OnCreate = FormCreate
   LCLVersion = '1.8.0.3'
   object PageControl1: TPageControl

@@ -110,6 +110,8 @@ type
 		procedure ButtonShowBackUpClick(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
+		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
    	private
@@ -117,6 +119,7 @@ type
 		procedure SetFontSizes;
 		procedure SyncSettings;
     public
+        AllowClose : Boolean;
         FontSmall  : Integer;
      	FontLarge  : Integer;
      	FontHuge   : Integer;
@@ -393,6 +396,14 @@ begin
     SyncSettings();
 end;
 
+// We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
+procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+	if AllowClose then begin
+    	CloseAction := caFree;
+        RTSearch.Close;
+	end else CloseAction := caHide;
+end;
 
 end.
 

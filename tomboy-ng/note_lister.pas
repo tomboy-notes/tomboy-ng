@@ -38,6 +38,7 @@ unit Note_Lister;
 	on updates to a Note's status. If we are quiting, it may not be.
 	2017/11/29 - Fixed a memory leak that occured when Delete-ing a entry in the list
 	Turns out you must dispose() that allocation before calling Delete.
+	2017/12/28 - Commented out unnecessary DebugLn
 }
 
 {$mode objfpc}
@@ -439,7 +440,7 @@ destructor TNoteList.Destroy;
 var
   I : integer;
 begin
-    DebugLn('NoteList - disposing of items x ' + inttostr(Count));
+    // DebugLn('NoteList - disposing of items x ' + inttostr(Count));
 	for I := 0 to Count-1 do
     	dispose(Items[I]);
 	inherited Destroy;
