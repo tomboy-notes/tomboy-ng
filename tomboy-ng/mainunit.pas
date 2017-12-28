@@ -60,7 +60,6 @@ unit MainUnit;
 			we cannot Hide() in the OnShow event.
 	2017/12/28 Ensured recent items in popup menu are marked as empty before user
 				sets a notes dir.
-
 }
 
 {$mode objfpc}{$H+}

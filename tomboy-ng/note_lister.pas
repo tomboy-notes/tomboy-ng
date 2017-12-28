@@ -33,12 +33,14 @@ unit Note_Lister;
     is open. Also added a function to turn a fullfilename, a filename or an ID
     into a filename of the form GID.note
 
-	2017/11/29 - Added FileName to "Note has no Title" error message.
-	2017/11/29 - check to see if NoteList is still valid before passing
-	on updates to a Note's status. If we are quiting, it may not be.
-	2017/11/29 - Fixed a memory leak that occured when Delete-ing a entry in the list
-	Turns out you must dispose() that allocation before calling Delete.
-	2017/12/28 - Commented out unnecessary DebugLn
+	2017/11/29  Added FileName to "Note has no Title" error message.
+	2017/11/29  check to see if NoteList is still valid before passing
+				on updates to a Note's status. If we are quiting, it may not be.
+	2017/11/29  Fixed a memory leak that occured when Delete-ing a entry in the list
+				Turns out you must dispose() that allocation before calling Delete.
+	2017/12/28  Commented out unnecessary DebugLn
+	2017/12/29  Added a debug line to ThisNoteIsOpen() to try and see if there is
+				a problem there. Really don't think there is but ...
 }
 
 {$mode objfpc}
@@ -318,18 +320,10 @@ end;
 function TNoteLister.IsThisNoteOpen(const ID: ANSIString; out TheForm : TForm): boolean;
 var
     Index : integer;
-    // ID1, ID2 : ANSIString;
 begin
   	Result := False;
     TheForm := Nil;
-    // ID1 := CleanFileName(ID);
 	for Index := 0 to NoteList.Count -1 do begin
-      	{ if NoteList.Items[Index]^.OpenNote = Nil then begin
-      		WriteLn('Yes ID='  + NoteList.Items[Index]^.ID );
-        end else begin
-            WriteLn('No ID=' + NoteList.Items[Index]^.ID);
-		end;  }
-		// ID2 := NoteList.Items[Index]^.ID;
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
         	TheForm := NoteList.Items[Index]^.OpenNote;
             Result := not (NoteList.Items[Index]^.OpenNote = Nil);
@@ -345,7 +339,13 @@ var
 begin
     if NoteList = NIl then
         exit;
-    cnt := NoteList.Count;
+    if NoteList.Count < 1 then begin
+        DebugLn('Error, called ThisNoteIsOpen() with empty but not NIL list');
+        // Occasionally I think we see a non reproducable error here.
+        // I believe is legal to start the for loop below with an empty list but ....
+        exit;
+	end;
+	cnt := NoteList.Count;
 	for Index := 0 to NoteList.Count -1 do begin
       	//writeln('ID = ', ID, ' ListID = ', NoteList.Items[Index]^.ID);
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
