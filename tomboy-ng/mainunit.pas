@@ -58,6 +58,8 @@ unit MainUnit;
 	2017/12/27 Changes flowing from this no longer being the main form.
 		1. Setting is now main form. This is to deal with a Cocoa issue where we
 			we cannot Hide() in the OnShow event.
+	2017/12/28 Ensured recent items in popup menu are marked as empty before user
+				sets a notes dir.
 
 }
 
@@ -327,18 +329,6 @@ begin
 end;
 
 
-// Dec 2017 - need review this function now that Setting is main form.
-{ TODO : Need to review this proc now that Setting is now main form. }
-{procedure TRTSearch.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-begin
-    // If the user has clicked close on RTSearch form, we'll just hide
-    // But if its come via the TrayIcon, thats authorative so really close
-    if AllowClose then
-    	// showmessage('OK, looks like someone closed me ' + Sender.Classname)
-    else Hide();
-    CanClose := AllowClose;
-end; }
-
 procedure TRTSearch.FormCreate(Sender: TObject);
 begin
     StartUpMode := true;			// Don't think we need this flag anymore
@@ -356,8 +346,7 @@ begin
     if Sett.RemoteRepo = '' then
         MenuSynchronise.Enabled := False
     else MenuSynchronise.Enabled := True;
-	// RecentMenu();
-    { TODO : We must move much of startup code here from the OnShow event }
+	RecentMenu();
     TrayIcon.Show;
 end;
 
