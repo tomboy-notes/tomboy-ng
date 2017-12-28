@@ -41,6 +41,11 @@ unit settings;
 	2017/11/28 - put a ; after a line of windows only code.
 
 	2017/12/08 - changed size of Mediun normal font, one size smaller
+	2017/12/28 - extensive changes so this form is now Main form. This is
+				because Cocoa cannot handle Hide() in main form OnShow event.
+				This makes more sense anyway.
+	2017/12/28 - Small change to force a Note Directory if user browses away
+				from Settings screen that urges them to set it first ! Sigh...
 
 }
 
@@ -273,7 +278,7 @@ end;
 
 procedure TSett.PageControl1Change(Sender: TObject);
 begin
-
+	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
 end;
 
 

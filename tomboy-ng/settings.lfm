@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 303
+  Left = 609
   Height = 438
-  Top = 262
+  Top = 257
   Width = 525
   Caption = 'KTomboy-NG Settings'
   ClientHeight = 438
