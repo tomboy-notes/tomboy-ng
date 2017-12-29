@@ -29,11 +29,13 @@ unit TB_Sync;
 }
 
 {	2017/12/06	Cleaned up some unimportant debug statements.
+	2017/12/29  Added some comments that may help someone understand sync process
+				No functional change.
 }
 
 
 {$mode delphi} 			// This is just me being lazy, in Delphi mode we don't need to
-						// dereference pointers to record structures.
+						// dereference pointers to record structures. I should fix it ....
 
 interface
 
@@ -735,11 +737,18 @@ begin
         if NoteInfoP = nil then begin
             // is it listed in local manifest as deleted ?
             NoteInfoP2 := NoteInfoListLocalManifest.FindID(NoteInfoListRem.Items[Index].ID);
-            if NoteInfoP2 = Nil then
+            if NoteInfoP2 = Nil then begin
                 // Its a note uploaded by another client, we'd better get it.
-                DownloadNote(NoteInfoListRem.Items[Index].ID, NoteInfoListRem.Items[Index].Rev)
-            else
-                if NoteInfoP2.Deleted then begin		// it must be 'deleted', but OK to test.
+                DownloadNote(NoteInfoListRem.Items[Index].ID, NoteInfoListRem.Items[Index].Rev);
+			end else begin
+                if NoteInfoP2.Deleted then begin		// it must be 'deleted', but OK to test - WRONG !
+                    { If doing a manual sync, a note that has been removed (not using the app)
+                    from the Notes Dir will not get picked up. It does not appear in local manifest
+                    as Deleted. Its not present in Notes dir. But is mentioned in Local Manifest as
+                    having been seen before. So, this code does nothing about it.
+                    But if you reinitialise the sync connection, the local sync manifest is not
+                    consulted and it will be brought down. Worth remembering ....
+                    }
                     // remove from remote /rev/.note, don't record in new manifest
                     // but do remember to write a new manifest after this session - continue
                     MakeNewRevision();
@@ -751,7 +760,8 @@ begin
 	                    else
 	                        DeleteFileUTF8(RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev));
 					end;
-				end;
+				end else DebugLn('A note we have seen before, not present locally now but not officially deleted. Will leave it alone. ' + NoteInfoListRem.Items[Index].ID);
+			end;
 		end;
  	end;
     Result := True;

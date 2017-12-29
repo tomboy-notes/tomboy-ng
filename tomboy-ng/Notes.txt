@@ -57,4 +57,19 @@ running for a long length of time, we are working on this upstream problem.
 
 Over time, expect this file to contain quite a lot about tomboy-ng's internal workings
 
+Release Test Plan
+-----------------
+One each platform, Linux, Windows and Mac we do this set of test. In addition,
+obviously, test any new features and things 'around' where changes have been made.
+Tests are made with full debugging on including heaptrc. Not from within the IDE.
+
+* Load up new binary and do a sync. Exit.
+* Remove config dir (eg) ~/.config/tomboy-ng and all notes ~/.local/share/tomboy-ng/*
+* Start App and point Notes Dir to default place.
+* Create a new note. Add a set of bullets and mix up some formatting. Exit and reload.
+* Config sync, pull in a set of notes. Load a large note and insert a link to another note.
+* Delete the note you made earlier. Is it gone ? Is it in the Backup dir ?
+
+
+
 
