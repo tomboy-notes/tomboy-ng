@@ -400,4 +400,9 @@ object Sett: TSett
     left = 88
     top = 384
   end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    left = 418
+    top = 28
+  end
 end

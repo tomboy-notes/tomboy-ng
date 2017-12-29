@@ -127,11 +127,7 @@ type
         { Responds when any of the recent items is clicked in TrayIcon menu }
         procedure TrayMenuRecent1Click(Sender: TObject);
     private
-        StartUpMode : Boolean;		// Show needs to behave differently during startup if unconfigured
-        // TitleIndex : integer;
-        AllowClose : boolean;
         NoteLister : TNoteLister;
-
         procedure RecentMenu();
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
@@ -173,9 +169,8 @@ implementation
 uses EditBox,
     settings,		// Manages settings.  This Main Form, close it to kill app.
     SyncGUI,
+    LazFileUtils;  // LazFileUtils needed for TrimFileName(), cross platform stuff
 
-    LazFileUtils,  // LazFileUtils needed for TrimFileName(), cross platform stuff
-	uAppIsRunning;	// A small pas unit to test if another instance is already running.
 
 { TRTSearch }
 
@@ -339,11 +334,6 @@ end;
 
 procedure TRTSearch.FormCreate(Sender: TObject);
 begin
-    StartUpMode := true;			// Don't think we need this flag anymore
-    if AlreadyRunning() then begin
-    	showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
-        Sett.Close;
-	end;
     if not Sett.HaveConfig then
         Sett.Show;
     // that appears to cause a memory leak in the Mac
@@ -360,31 +350,9 @@ end;
 
 procedure TRTSearch.FormShow(Sender: TObject);
 begin
-    {if StartUpMode and AlreadyRunning() then begin
-        showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
-        AllowClose := True;
-        Debugln('Another instance of tomboy-ng appears to be running. Will exit.');
-        close;
-        exit();
-    end;}
     Top := Placement + random(Placement*2);
     Left := Placement + random(Placement*2);
     ButtonClearSearch.Enabled := False;
-    { if not Sett.HaveConfig then
-        Sett.Show;   }
-    {if StartUpMode then begin
-        IndexNotes();
-        StartUpMode := False;
-        LabelPath.Caption := Sett.NoteDirectory;
-        Hide;
-	end;}
-    {if Sett.RemoteRepo = '' then
-        MenuSynchronise.Enabled := False
-    else MenuSynchronise.Enabled := True;}
-    {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
-                        // Watch and see if it can be removed later. Oct 2017.
-    // TrayIcon.InternalUpdate;
-    {$endif}
 end;
 
 

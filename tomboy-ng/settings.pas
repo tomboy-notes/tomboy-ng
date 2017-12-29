@@ -109,6 +109,7 @@ type
 		TabSnapshot: TTabSheet;
 		TabSync: TTabSheet;
 		TabDisplay: TTabSheet;
+		Timer1: TTimer;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
   procedure ButtonSaveConfigClick(Sender: TObject);
 		procedure ButtonSetNotePathClick(Sender: TObject);
@@ -120,6 +121,7 @@ type
 		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
+		procedure Timer1Timer(Sender: TObject);
    	private
  		procedure CheckConfigFile;
 		procedure SetFontSizes;
@@ -177,7 +179,9 @@ uses IniFiles,
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff;
     Note_Lister,	// List notes in BackUp and Snapshot tab
     MainUnit,		// So we can call IndexNotes() after altering Notes Dir
-    syncGUI;
+    syncGUI,
+    uAppIsRunning;	// A small pas unit to test if another instance is already running.
+
 
 procedure TSett.SetFontSizes();
 begin
@@ -266,20 +270,37 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
-    HaveConfig := false;
-    NoteDirectory := 'Set me first please';
-    labelNotesPath.Caption := NoteDirectory;
-    CheckShowIntLinks.Checked := true;
-    RadioFontMedium.checked := true;
-    //SetFontSizes();
-    CheckConfigFile();
-    if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
-        ButtonSetSynServer.Caption := 'Setup File Sync';
+     Timer1.Enabled:=False;
+
+    if AlreadyRunning() then begin
+    	showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
+        HaveConfig := True;		// Yes, I'm lying but don't want to see settings dialog
+        Timer1.Interval := 1000;
+        Timer1.Enabled := True;
+	end else begin
+    	HaveConfig := false;
+    	NoteDirectory := 'Set me first please';
+    	labelNotesPath.Caption := NoteDirectory;
+    	CheckShowIntLinks.Checked := true;
+    	RadioFontMedium.checked := true;
+    	//SetFontSizes();
+    	CheckConfigFile();
+    	if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
+        	ButtonSetSynServer.Caption := 'Setup File Sync';
+		end;
 end;
 
 procedure TSett.PageControl1Change(Sender: TObject);
 begin
 	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+end;
+
+	// This gets called a second after form create finishes IFF another instance is running
+procedure TSett.Timer1Timer(Sender: TObject);
+begin
+
+    AllowClose:=True;
+    Close;
 end;
 
 
