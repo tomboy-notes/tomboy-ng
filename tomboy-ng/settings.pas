@@ -46,6 +46,7 @@ unit settings;
 				This makes more sense anyway.
 	2017/12/28 - Small change to force a Note Directory if user browses away
 				from Settings screen that urges them to set it first ! Sigh...
+	2017/12/29  Further force of a Note Directory.
 
 }
 
@@ -287,6 +288,7 @@ procedure TSett.ButtonSaveConfigClick(Sender: TObject);
 var
 	ConfigFile : TINIFile;
 begin
+    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
       ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
@@ -315,6 +317,7 @@ begin
     	ConfigFile.Free;
     end;
     ButtonSaveConfig.Enabled := False;
+    Hide();
 end;
 
 procedure TSett.ButtDefaultNoteDirClick(Sender: TObject);
