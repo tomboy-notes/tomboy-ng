@@ -93,6 +93,8 @@ unit EditBox;
 
 	2017/12/02 Little fix to AlterFont to ensure a selected bit of text remains
 	selected after a font change.
+
+	2017/12/28  Added and then removed a ToDo, does not need to get pushed.
 }
 
 

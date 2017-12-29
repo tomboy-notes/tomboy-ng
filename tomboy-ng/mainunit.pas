@@ -60,6 +60,7 @@ unit MainUnit;
 			we cannot Hide() in the OnShow event.
 	2017/12/28 Ensured recent items in popup menu are marked as empty before user
 				sets a notes dir.
+	2017/12/29  DeleteNote() now moves file into Backup/.
 }
 
 {$mode objfpc}{$H+}
@@ -196,9 +197,17 @@ begin
 end;
 
 procedure TRTSearch.DeleteNote(const FullFileName: ANSIString);
+var
+    NewName : ANSIString;
 begin
 	NoteLister.DeleteNote(ExtractFileNameOnly(FullFileName));
-    DeleteFileUTF8(FullFileName);
+    // DeleteFileUTF8(FullFileName);
+    NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ExtractFileNameOnly(FullFileName) + '.note';
+    if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
+    	if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
+            DebugLn('Failed to make Backup dir, ' + Sett.NoteDirectory + 'Backup');
+    if not RenameFileUTF8(FullFileName, NewName)
+    	then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     UseList();
 end;
 
