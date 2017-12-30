@@ -49,6 +49,7 @@ unit settings;
 	2017/12/29  Further force of a Note Directory.
 	2017/12/30  We now set Search box lablepath after setting up a NotesPath
 				Added a caption to tell user we are setting up sync.
+	2017/12/30  Added a call to IndexNotes after setting up sync, potentially slow.
 
 }
 
@@ -409,6 +410,7 @@ begin
         	LabelSyncRepo.Caption := SyncNotConfig;
             RemoteRepo := SyncNotConfig;
 		end;
+        RTSearch.IndexNotes();
         LabelWaitForSync.Caption := '';
 	end;
 end;
