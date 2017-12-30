@@ -150,7 +150,8 @@ TTomboySyncCustom = Class
     			{ if set True, hopefully will prevent most writes to disk. Hopefully... }
 	TestMode : Boolean;
                 { Reports, to the console, on what its doing }
-    DebugMode : boolean;
+    VerboseMode : Boolean;
+    // DebugMode : boolean;
     			{ A list of data extracted from the existing Remote manifest file }
 	NoteInfoListRem : TNoteInfoList;
     			{ A list of data extracted from the existing local manifest file, it
@@ -387,7 +388,7 @@ begin
     finally
     	OutStream.Free;
 	end;
-    if debugMode then DeBugLn('Debug - written local manifest ');
+    if VerboseMode then DeBugLn('Debug - written local manifest ');
 end;
 
 procedure TTomboySyncCustom.AddReport(const Action, ID, Path, Message: ANSIString);
@@ -465,12 +466,12 @@ begin
 	            Result := True;
         except on EFOpenError do begin
             		ErrorMessage := 'Cannot open local manifest';
-                	if DebugMode then DebugLn('Debug - Cannot open local manifest');
+                	if VerboseMode then DebugLn('Debug - Cannot open local manifest');
                 	exit();
             	end;
 				on EXMLReadError do begin
                 	ErrorMessage := 'XML error in local manifest ';
-                	if DebugMode then DebugLn('Debug - Cannot open local manifest');
+                	if VerboseMode then DebugLn('Debug - Cannot open local manifest');
                 	exit();
 				end;
         end;
@@ -673,15 +674,17 @@ begin
                 AddReport('Backup', NoteInfoListLoc.Items[Index].ID, LocalPath(NoteInfoListLoc.Items[Index].ID, ''), '');
                 AddReport('Delete', NoteInfoListLoc.Items[Index].ID, LocalPath(NoteInfoListLoc.Items[Index].ID, ''), '');
                 if testMode then begin
-                   DebugLn('TEST backup ', LocalPath(NoteInfoListLoc.Items[Index].ID, ''),
-                   		LocalPath(NoteInfoListLoc.Items[Index].ID, 'Backup'));
-                   DebugLn('TEST delete ',LocalPath(NoteInfoListLoc.Items[Index].ID, ''));
-                end else begin
+                    if VerboseMode then begin
+                    	DebugLn('TEST backup ', LocalPath(NoteInfoListLoc.Items[Index].ID, ''),
+                   			LocalPath(NoteInfoListLoc.Items[Index].ID, 'Backup'));
+                   		DebugLn('TEST delete ',LocalPath(NoteInfoListLoc.Items[Index].ID, ''));
+					end;
+				end else begin
                    CopyFile( LocalPath(NoteInfoListLoc.Items[Index].ID, ''),
                     	LocalPath(NoteInfoListLoc.Items[Index].ID, 'Backup'),
                         	[cffOverwriteFile]);
                    DeleteFileUTF8(LocalPath(NoteInfoListLoc.Items[Index].ID, ''));
-                   if DebugMode then DebugLn('Debug - Delete ' + LocalPath(NoteInfoListLoc.Items[Index].ID, ''));
+                   if VerboseMode then DebugLn('Debug - Delete ' + LocalPath(NoteInfoListLoc.Items[Index].ID, ''));
                 end;
  			end;
 			continue;
@@ -756,7 +759,7 @@ begin
                     if FileExistsUTF8(RemotePath(NoteInfoListRem.Items[Index].ID, NoteInfoListRem.Items[Index].Rev) ) then begin
                         AddReport('Delete from Server', NoteInfoListRem.Items[Index].ID, RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev), '');
 	                    if TestMode then
-	                       DebugLn('TEST delete ' + RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev))
+	                       if VerboseMode then DebugLn('TEST delete ' + RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev))
 	                    else
 	                        DeleteFileUTF8(RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev));
 					end;
@@ -774,7 +777,7 @@ begin
     MakeNewRevision();
     AddReport('Upload', ID, LocalPath(ID, ''), '');
     if TestMode then
-       DebugLn('TESTUP copy', LocalPath(ID, ''), RemotePath(ID, NewRevision))
+       if VerboseMode then DebugLn('TESTUP copy', LocalPath(ID, ''), RemotePath(ID, NewRevision))
 	else
         if not CopyFile(LocalPath(ID, ''), RemotePath(ID, NewRevision), [cffOverwriteFile]) then begin
             ErrorMessage := 'Failed to copy ' + LocalPath(ID, '') + ' to ' + RemotePath(ID, NewRevision);
@@ -790,10 +793,11 @@ begin
     Result := False;
     AddReport('Download', ID, RemotePath(ID, Rev), '');
     if TestMode then
-       DebugLn('TESTBACKUP copy', LocalPath(ID, ''), LocalPath(ID, 'Backup'))
+       if FileExistsUTF8(LocalPath(ID, '')) then
+       		if VerboseMode then DebugLn('TESTBACKUP copy', LocalPath(ID, ''), LocalPath(ID, 'Backup'))
     else
         if FileExistsUTF8(LocalPath(ID, '')) then begin
-            if DebugMode then DebugLn('Debug - Copy ' + LocalPath(ID, '') + ' to ' + LocalPath(ID, 'Backup'));
+            if VerboseMode then DebugLn('Debug - Copy ' + LocalPath(ID, '') + ' to ' + LocalPath(ID, 'Backup'));
 			if not CopyFile( LocalPath(ID, ''), LocalPath(ID, 'Backup'), [cffOverwriteFile]) then begin
 	            ErrorMessage := 'Failed to copy ' + LocalPath(ID, '') + ' to ' + LocalPath(ID, 'Backup');
 	            // writeln('Failed to copy ' + LocalPath(ID, '') + ' to ' + LocalPath(ID, 'Backup'));             // DEBUG
@@ -802,7 +806,7 @@ begin
 			end;
 		end;
 	if TestMode then
-       DebugLn('TESTDOWN copy', RemotePath(ID, Rev),LocalPath(ID, ''))
+       if VerboseMode then DebugLn('TESTDOWN copy', RemotePath(ID, Rev),LocalPath(ID, ''))
     else begin
         // No test here, it SHOULD be there. Hmm.....
         // if DebugMode then writeln('DOWNLOAD ' + RemotePath(ID, Rev) + ' to ' + LocalPath(ID, ''));
@@ -877,7 +881,7 @@ begin
 				ReadXMLFile(Doc, RemoteManifestDir + 'manifest.xml');
         		Result := strtoint(Doc.DocumentElement.GetAttribute('revision'));
         except on EFOpenError do begin
-            		if DebugMode then DebugLn('Debug - Cannot get Remote Revision, will start at 0');
+            		if VerboseMode then DebugLn('Debug - Cannot get Remote Revision, will start at 0');
                     Result := -1;
         		end;
 		end;
@@ -944,13 +948,13 @@ var
 begin
 	// If we can get a remote ServerID we'll join in, else we'll create a new Repo and sync to it.
     if GetRemoteServerID(ServerID) then begin
-        if DebugMode then DebugLn('Debug - Joining an existing Repo, ', ServerID);
+        if VerboseMode then DebugLn('Debug - Joining an existing Repo, ', ServerID);
         Result := DoSync(False, True)
 	end
 	else begin
     	CreateGUID(GUID);
     	ServerID := copy(GUIDToString(GUID), 2, 36);
-        if DebugMode then DebugLn('Debug - Creating a new FileSync Repositary ', ServerID);
+        if VerboseMode then DebugLn('Debug - Creating a new FileSync Repositary ', ServerID);
         DoSync(False, False);
 	end;
 end;
@@ -969,10 +973,10 @@ begin
     NewDir := AppendPathDelim(NewDir) + NewRevision;
     // if DebugMode then writeln('Making a New Revision at ', NewDir);
     if CreateDirUTF8(NewDir) then
-        if debugMode then DebugLn('Debug - Made new rev dir at ', NewDir)
+        if VerboseMode then DebugLn('Debug - Made new rev dir at ', NewDir)
     else begin
         ErrorMessage := 'ERROR - Unable to create new revision dir ' + NewDir;
-        if debugMode then DebugLn('Debug - ERROR Cannot make rev dir at ', NewDir);
+        if VerboseMode then DebugLn('Debug - ERROR Cannot make rev dir at ', NewDir);
         Result := false;
         exit();
 	end;
@@ -988,7 +992,7 @@ var
         Index     : longint;
 begin
         Result := False;
-        if DebugMode then DebugLn('Debug - Making remote manifest at ', FullFileName);
+        if VerboseMode then DebugLn('Debug - Making remote manifest at ', FullFileName);
     	try
             outstream :=TFilestream.Create(FullFileName, fmCreate);
             Buff := '<?xml version="1.0" encoding="utf-8"?>' + LineEnding;

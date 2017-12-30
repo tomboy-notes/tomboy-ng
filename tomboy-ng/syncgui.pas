@@ -24,6 +24,8 @@ unit SyncGUI;
 
 {	History
 	2017/12/06	Marked FileSync debug mode off to quieten console output a little
+	2017/12/30  Changed above DebugMode to VerboseMode
+	2017/12/30  We now call IndexNotes() after a sync. Potentially slow.
 }
 
 {$mode objfpc}{$H+}
@@ -79,7 +81,7 @@ implementation
   process.
 }
 
-uses LazLogger;
+uses LazLogger, MainUnit;
 {$R *.lfm}
 
 var
@@ -133,7 +135,7 @@ procedure TFormSync.FormShow(Sender: TObject);
 begin
 	FileSync := TTomboyFileSync.Create;
     FileSync.ProceedFunction:= @Proceed;
-	// FileSync.DebugMode := True;
+	FileSync.VerboseMode := False;
 	FileSync.NotesDir:= NoteDirectory;
 	FileSync.RemoteManifestDir:=RemoteRepo;
 	FileSync.LocalManifestDir:=LocalConfig;
@@ -236,6 +238,7 @@ begin
     ButtonSave.Enabled := False;
     DoSetUp();
     ButtonOK.Enabled := True;
+    RTSearch.IndexNotes();        { TODO : Should make this call optional, its potentially slow }
 end;
 
 end.

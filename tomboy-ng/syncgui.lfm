@@ -1,7 +1,7 @@
 object FormSync: TFormSync
-  Left = 292
+  Left = 236
   Height = 366
-  Top = 320
+  Top = 192
   Width = 472
   Caption = 'FormSync'
   ClientHeight = 366
@@ -83,7 +83,7 @@ object FormSync: TFormSync
       Top = 1
       Width = 150
       Anchors = [akTop, akLeft, akBottom]
-      Caption = 'OK'
+      Caption = 'Close'
       OnClick = ButtonOKClick
       TabOrder = 1
     end
