@@ -79,8 +79,6 @@ type
 		ButtonRefresh: TButton;
         ButtonClearSearch: TButton;
         Edit1: TEdit;
-        Label1: TLabel;
-        LabelPath: TLabel;
 		MenuSynchronise: TMenuItem;
         MenuItemSettings: TMenuItem;
         TrayMenuAbout: TMenuItem;
@@ -334,7 +332,6 @@ begin
     // that appears to cause a memory leak in the Mac
     NoteLister := TNoteLister.Create;
     IndexNotes();
-    LabelPath.Caption := Sett.NoteDirectory;
     { TODO : Must allow for fact some users insist on proceeding without setting Notes Dir }
     if Sett.RemoteRepo = '' then
         MenuSynchronise.Enabled := False

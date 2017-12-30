@@ -47,6 +47,7 @@ unit settings;
 	2017/12/28 - Small change to force a Note Directory if user browses away
 				from Settings screen that urges them to set it first ! Sigh...
 	2017/12/29  Further force of a Note Directory.
+	2017/12/30  We now set Search box lablepath after setting up a NotesPath
 
 }
 
