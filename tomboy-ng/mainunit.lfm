@@ -6,9 +6,9 @@ object RTSearch: TRTSearch
   Caption = 'RTSearch'
   ClientHeight = 330
   ClientWidth = 495
-  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.8.0.3'
   object StringGrid1: TStringGrid

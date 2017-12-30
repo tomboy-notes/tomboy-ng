@@ -110,10 +110,10 @@ type
 		procedure Edit1EditingDone(Sender: TObject);
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
-		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         // procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
+		procedure FormDestroy(Sender: TObject);
 		procedure FormShow(Sender: TObject);
         procedure MenuItemSettingsClick(Sender: TObject);
         { Takes the app down when user clicks TrayIcon menu quit }
@@ -308,11 +308,6 @@ begin
 	if Edit1.Text = '' then Edit1.Text := 'Search';
 end;
 
-procedure TRTSearch.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-    NoteLister.Free;
-    NoteLister := Nil;
-end;
 
 procedure TRTSearch.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
@@ -346,6 +341,13 @@ begin
     else MenuSynchronise.Enabled := True;
 	RecentMenu();
     TrayIcon.Show;
+end;
+
+procedure TRTSearch.FormDestroy(Sender: TObject);
+begin
+  DebugLn('Freeing Note Lister');
+  NoteLister.Free;
+  NoteLister := Nil;
 end;
 
 procedure TRTSearch.FormShow(Sender: TObject);

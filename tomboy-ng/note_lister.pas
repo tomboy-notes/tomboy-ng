@@ -340,10 +340,11 @@ begin
     if NoteList = NIl then
         exit;
     if NoteList.Count < 1 then begin
-        DebugLn('Error, called ThisNoteIsOpen() with empty but not NIL list');
+        DebugLn('Called ThisNoteIsOpen() with empty but not NIL list. Count is '
+        		+ inttostr(NoteList.Count) + ' ' + ID);
         // Occasionally I think we see a non reproducable error here.
         // I believe is legal to start the for loop below with an empty list but ....
-        exit;
+        // When we are creating the very first note in a dir, this haappens. Count should be exactly zero.
 	end;
 	cnt := NoteList.Count;
 	for Index := 0 to NoteList.Count -1 do begin
