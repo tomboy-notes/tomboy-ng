@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 609
+  Left = 151
   Height = 438
-  Top = 257
+  Top = 196
   Width = 525
   Caption = 'KTomboy-NG Settings'
   ClientHeight = 438
@@ -159,9 +159,9 @@ object Sett: TSett
         TabOrder = 0
         object RadioFile: TRadioButton
           Left = 56
-          Height = 18
+          Height = 22
           Top = 0
-          Width = 194
+          Width = 215
           Caption = 'File Sync using shared drive.'
           Checked = True
           TabOrder = 0
@@ -169,9 +169,9 @@ object Sett: TSett
         end
         object RadioServer: TRadioButton
           Left = 56
-          Height = 18
+          Height = 22
           Top = 24
-          Width = 203
+          Width = 229
           Caption = 'Network Server - not available'
           Enabled = False
           TabOrder = 1
@@ -188,25 +188,25 @@ object Sett: TSett
         TabOrder = 1
         object Label3: TLabel
           Left = 40
-          Height = 16
+          Height = 17
           Top = 8
-          Width = 330
+          Width = 355
           Caption = 'when a conflict is detected between a local note and'
           ParentColor = False
         end
         object Label4: TLabel
           Left = 40
-          Height = 16
+          Height = 17
           Top = 24
-          Width = 311
+          Width = 335
           Caption = 'a note on the configured synchronisation server :'
           ParentColor = False
         end
         object RadioAlwaysAsk: TRadioButton
           Left = 8
-          Height = 18
+          Height = 22
           Top = 48
-          Width = 181
+          Width = 203
           Caption = 'Always ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -214,17 +214,17 @@ object Sett: TSett
         end
         object RadioUseLocal: TRadioButton
           Left = 9
-          Height = 18
+          Height = 22
           Top = 70
-          Width = 272
+          Width = 307
           Caption = 'Use Local note and overwrite server note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 9
-          Height = 18
+          Height = 22
           Top = 92
-          Width = 253
+          Width = 282
           Caption = 'Use server note and rename local one.'
           TabOrder = 2
         end
@@ -240,17 +240,17 @@ object Sett: TSett
       end
       object Label5: TLabel
         Left = 16
-        Height = 16
+        Height = 17
         Top = 144
-        Width = 82
+        Width = 89
         Caption = 'LocalConfig :'
         ParentColor = False
       end
       object LabelLocalConfig: TLabel
         Left = 16
-        Height = 16
+        Height = 17
         Top = 160
-        Width = 107
+        Width = 119
         Caption = 'LabelLocalConfig'
         ParentColor = False
       end
@@ -259,6 +259,14 @@ object Sett: TSett
         Height = 1
         Top = 112
         Width = 1
+        ParentColor = False
+      end
+      object LabelWaitForSync: TLabel
+        Left = 272
+        Height = 17
+        Top = 88
+        Width = 123
+        Caption = 'LabelWaitForSync'
         ParentColor = False
       end
     end

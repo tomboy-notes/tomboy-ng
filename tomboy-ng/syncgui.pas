@@ -55,19 +55,25 @@ type
 				Panel3: TPanel;
 				Splitter3: TSplitter;
 				StringGridReport: TStringGrid;
+				Timer1: TTimer;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonOKClick(Sender: TObject);
     			procedure ButtonSaveClick(Sender: TObject);
 				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 				procedure FormShow(Sender: TObject);
+				procedure Timer1Timer(Sender: TObject);
+
 		private
+
 				procedure ShowReport;
             	procedure TestRepo();
         		procedure DoSetUp();
 
 		public
+
               	RemoteRepo, LocalConfig, NoteDirectory : ANSIString;
               	SetupFileSync : boolean;
+                procedure ManualSync;
                 function Proceed(const ClashRec : TClashRecord) : TClashDecision;
 		end;
 
@@ -133,6 +139,7 @@ end;
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
+    Timer1.enabled := false;
 	FileSync := TTomboyFileSync.Create;
     FileSync.ProceedFunction:= @Proceed;
 	FileSync.VerboseMode := False;
@@ -152,11 +159,24 @@ begin
     	Label2.Caption:='If the report below makes sense, click Save and Sync !';
         TestRepo();
     end else begin
+        Timer1.Interval := 1000;
+        Timer1.enabled := true;
         ButtonCancel.Enabled:=False;
         ButtonOK.Enabled := False;
         ButtonSave.Enabled := False;
     	Label1.Caption := 'Manual Sync';
     	Label2.Caption:='Doing a manual sync, please report any surprises !';
+	end;
+end;
+
+procedure TFormSync.Timer1Timer(Sender: TObject);
+begin
+    Timer1.Enabled := false;
+    ManualSync();
+end;
+
+procedure TFormSync.ManualSync();
+begin
         if FileSync.GetLocalServerID then
             Memo1.Append('Found local manifest, good !')
         else begin
@@ -173,7 +193,7 @@ begin
 	    		Memo1.Append('DoSync reported an error - ' + FileSync.ErrorMessage);
         ShowReport();
         ButtonOK.Enabled := True;
-    end;
+
 end;
 
 procedure TFormSync.ShowReport();

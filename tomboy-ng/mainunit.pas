@@ -457,6 +457,15 @@ begin
     FormSync.RemoteRepo := Sett.RemoteRepo;
     FormSync.SetupFileSync := False;
     FormSync.ShowModal;					// we don't care about result ...
+{    Application.ProcessMessages;
+    FormSync.ManualSync;           }
+
+    { TODO : It may be possible to have sync dialog show immedaltly by moving the sync code out of the onShow event and having a seperate SyncManual() pocedure.
+FormSync.ShowModal;
+(FormSync.Update;)
+Application.ProcessMessages;
+FormSync.ManualSync;
+ }
 end;
 
 procedure TRTSearch.TrayIconClick(Sender: TObject);

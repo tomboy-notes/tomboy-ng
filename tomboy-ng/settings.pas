@@ -48,6 +48,7 @@ unit settings;
 				from Settings screen that urges them to set it first ! Sigh...
 	2017/12/29  Further force of a Note Directory.
 	2017/12/30  We now set Search box lablepath after setting up a NotesPath
+				Added a caption to tell user we are setting up sync.
 
 }
 
@@ -80,6 +81,7 @@ type
 		Label1: TLabel;
 		Label10: TLabel;
 		Label11: TLabel;
+		LabelWaitForSync: TLabel;
 		Label2: TLabel;
 		Label3: TLabel;
 		Label4: TLabel;
@@ -271,8 +273,8 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
-     Timer1.Enabled:=False;
-
+    Timer1.Enabled:=False;
+    LabelWaitForSync.Caption := '';
     if AlreadyRunning() then begin
     	showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
         HaveConfig := True;		// Yes, I'm lying but don't want to see settings dialog
@@ -287,7 +289,7 @@ begin
     	//SetFontSizes();
     	CheckConfigFile();
     	if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
-        	ButtonSetSynServer.Caption := 'Setup File Sync';
+        	ButtonSetSynServer.Caption := 'Set File Sync Repo';
 		end;
 end;
 
@@ -389,6 +391,8 @@ end;
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
     if SelectDirectoryDialog1.Execute then begin
+        LabelWaitForSync.Caption := 'Ok, please wait .....';
+        Application.ProcessMessages;   		// That forces (eg) the above caption update.
 		RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         if RemoteRepo = '' then RemoteRepo := SyncNotConfig;
         LabelSyncRepo.Caption := RemoteRepo;
@@ -405,6 +409,7 @@ begin
         	LabelSyncRepo.Caption := SyncNotConfig;
             RemoteRepo := SyncNotConfig;
 		end;
+        LabelWaitForSync.Caption := '';
 	end;
 end;
 

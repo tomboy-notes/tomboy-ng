@@ -758,10 +758,11 @@ begin
                     NewManifest := True;
                     if FileExistsUTF8(RemotePath(NoteInfoListRem.Items[Index].ID, NoteInfoListRem.Items[Index].Rev) ) then begin
                         AddReport('Delete from Server', NoteInfoListRem.Items[Index].ID, RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev), '');
-	                    if TestMode then
-	                       if VerboseMode then DebugLn('TEST delete ' + RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev))
-	                    else
+	                    if TestMode then begin
+	                       if VerboseMode then DebugLn('TEST delete ' + RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev));
+	                    end else
 	                        DeleteFileUTF8(RemotePath(NoteInfoListRem.Items[Index].ID,NoteInfoListRem.Items[Index].Rev));
+						// end;
 					end;
 				end else DebugLn('A note we have seen before, not present locally now but not officially deleted. Will leave it alone. ' + NoteInfoListRem.Items[Index].ID);
 			end;
@@ -776,9 +777,9 @@ begin
     result := false;
     MakeNewRevision();
     AddReport('Upload', ID, LocalPath(ID, ''), '');
-    if TestMode then
-       if VerboseMode then DebugLn('TESTUP copy', LocalPath(ID, ''), RemotePath(ID, NewRevision))
-	else
+    if TestMode then begin
+       if VerboseMode then DebugLn('TESTUP copy', LocalPath(ID, ''), RemotePath(ID, NewRevision));
+	end else
         if not CopyFile(LocalPath(ID, ''), RemotePath(ID, NewRevision), [cffOverwriteFile]) then begin
             ErrorMessage := 'Failed to copy ' + LocalPath(ID, '') + ' to ' + RemotePath(ID, NewRevision);
             exit();
@@ -792,10 +793,10 @@ function TTomboyFileSync.DownLoadNote(const ID, Rev: ANSIString): boolean;
 begin
     Result := False;
     AddReport('Download', ID, RemotePath(ID, Rev), '');
-    if TestMode then
+    if TestMode then begin
        if FileExistsUTF8(LocalPath(ID, '')) then
-       		if VerboseMode then DebugLn('TESTBACKUP copy', LocalPath(ID, ''), LocalPath(ID, 'Backup'))
-    else
+       		if VerboseMode then DebugLn('TESTBACKUP copy', LocalPath(ID, ''), LocalPath(ID, 'Backup'));
+    end else
         if FileExistsUTF8(LocalPath(ID, '')) then begin
             if VerboseMode then DebugLn('Debug - Copy ' + LocalPath(ID, '') + ' to ' + LocalPath(ID, 'Backup'));
 			if not CopyFile( LocalPath(ID, ''), LocalPath(ID, 'Backup'), [cffOverwriteFile]) then begin
@@ -805,9 +806,9 @@ begin
 	            exit();
 			end;
 		end;
-	if TestMode then
-       if VerboseMode then DebugLn('TESTDOWN copy', RemotePath(ID, Rev),LocalPath(ID, ''))
-    else begin
+	if TestMode then begin
+       if VerboseMode then DebugLn('TESTDOWN copy', RemotePath(ID, Rev),LocalPath(ID, ''));
+    end else begin
         // No test here, it SHOULD be there. Hmm.....
         // if DebugMode then writeln('DOWNLOAD ' + RemotePath(ID, Rev) + ' to ' + LocalPath(ID, ''));
 		if not CopyFile(RemotePath(ID, Rev), LocalPath(ID, ''), [cffOverwriteFile]) then begin
@@ -972,9 +973,9 @@ begin
    	NewRevision := inttostr(GetCurrentRevision() + 1);
     NewDir := AppendPathDelim(NewDir) + NewRevision;
     // if DebugMode then writeln('Making a New Revision at ', NewDir);
-    if CreateDirUTF8(NewDir) then
-        if VerboseMode then DebugLn('Debug - Made new rev dir at ', NewDir)
-    else begin
+    if CreateDirUTF8(NewDir) then begin
+        if VerboseMode then DebugLn('Debug - Made new rev dir at ', NewDir);
+    end else begin
         ErrorMessage := 'ERROR - Unable to create new revision dir ' + NewDir;
         if VerboseMode then DebugLn('Debug - ERROR Cannot make rev dir at ', NewDir);
         Result := false;
@@ -1041,7 +1042,7 @@ var
 	Node : TDOMNode;
 begin
     if not FileExistsUTF8(FullFileName) then begin
-        DebugLn('ERROR - cant read note change date for ',  FullFileName);
+        DebugLn('ERROR - File not found, cant read note change date for ',  FullFileName);
         Result := 0.0;
         exit();
 	end;

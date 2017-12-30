@@ -1,7 +1,7 @@
 object FormSync: TFormSync
-  Left = 236
+  Left = 812
   Height = 366
-  Top = 192
+  Top = 293
   Width = 472
   Caption = 'FormSync'
   ClientHeight = 366
@@ -176,5 +176,11 @@ object FormSync: TFormSync
       Align = alNone
       Anchors = []
     end
+  end
+  object Timer1: TTimer
+    Enabled = False
+    OnTimer = Timer1Timer
+    left = 293
+    top = 50
   end
 end
