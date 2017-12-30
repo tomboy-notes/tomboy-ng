@@ -61,6 +61,7 @@ unit MainUnit;
 	2017/12/28 Ensured recent items in popup menu are marked as empty before user
 				sets a notes dir.
 	2017/12/29  DeleteNote() now moves file into Backup/.
+	2017/12/30  Removed commented out code relting to calling Manual Sync
 }
 
 {$mode objfpc}{$H+}
@@ -457,15 +458,6 @@ begin
     FormSync.RemoteRepo := Sett.RemoteRepo;
     FormSync.SetupFileSync := False;
     FormSync.ShowModal;					// we don't care about result ...
-{    Application.ProcessMessages;
-    FormSync.ManualSync;           }
-
-    { TODO : It may be possible to have sync dialog show immedaltly by moving the sync code out of the onShow event and having a seperate SyncManual() pocedure.
-FormSync.ShowModal;
-(FormSync.Update;)
-Application.ProcessMessages;
-FormSync.ManualSync;
- }
 end;
 
 procedure TRTSearch.TrayIconClick(Sender: TObject);

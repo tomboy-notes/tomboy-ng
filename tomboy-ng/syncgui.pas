@@ -26,6 +26,8 @@ unit SyncGUI;
 	2017/12/06	Marked FileSync debug mode off to quieten console output a little
 	2017/12/30  Changed above DebugMode to VerboseMode
 	2017/12/30  We now call IndexNotes() after a sync. Potentially slow.
+	2017/12/30  Added a seperate procedure to do manual Sync, its called
+				by a timer to ensure we can see dialog before it starts.
 }
 
 {$mode objfpc}{$H+}
@@ -159,7 +161,7 @@ begin
     	Label2.Caption:='If the report below makes sense, click Save and Sync !';
         TestRepo();
     end else begin
-        Timer1.Interval := 1000;
+        Timer1.Interval := 500;
         Timer1.enabled := true;
         ButtonCancel.Enabled:=False;
         ButtonOK.Enabled := False;
