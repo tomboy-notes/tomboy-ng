@@ -28,6 +28,10 @@ unit SyncGUI;
 	2017/12/30  We now call IndexNotes() after a sync. Potentially slow.
 	2017/12/30  Added a seperate procedure to do manual Sync, its called
 				by a timer to ensure we can see dialog before it starts.
+	2018/01/01  Added ID in sync report to make it easier to track errors.
+	2018/01/01  Set goThumbTracking true so contents of scroll box glide past as
+    			you move the "Thumb Slide".
+
 }
 
 {$mode objfpc}{$H+}
@@ -186,16 +190,17 @@ begin
             Label2.Caption:= 'Sorry, Sync does not appear to be setup yet';
             exit();
         end;
-		if not FileSync.CheckRemoteServerID() then
-	        Memo1.Append('Remote Server ID not found or does not match - ' + FileSync.ErrorMessage)
-	    else
+		if not FileSync.CheckRemoteServerID() then begin
+	        Memo1.Append('Remote Server ID not found or does not match - ' + FileSync.ErrorMessage);
+            DebugLn('ERROR - Remote Server ID not found or does not match - ' + FileSync.ErrorMessage);
+		end else begin
         	if FileSync.DoSync(True, True) then
                 Memo1.Append('Sync completed.')
             else
 	    		Memo1.Append('DoSync reported an error - ' + FileSync.ErrorMessage);
-        ShowReport();
+            ShowReport();
+		end;
         ButtonOK.Enabled := True;
-
 end;
 
 procedure TFormSync.ShowReport();
@@ -204,7 +209,8 @@ var
 begin
      	with FileSync.ReportList do begin
     		for Index := 0 to Count -1 do begin
-                StringGridReport.InsertRowWithValues(Index, [Items[Index]^.Action, Items[Index]^.Title]);
+                StringGridReport.InsertRowWithValues(Index,
+                	[Items[Index]^.Action, Items[Index]^.Title, Items[Index]^.ID]);
     		end
     	end;
         StringGridReport.AutoSizeColumn(0);
