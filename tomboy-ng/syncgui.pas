@@ -31,6 +31,7 @@ unit SyncGUI;
 	2018/01/01  Added ID in sync report to make it easier to track errors.
 	2018/01/01  Set goThumbTracking true so contents of scroll box glide past as
     			you move the "Thumb Slide".
+	2018/01/01  Changed ModalResult for cancel button to mrCancel
 
 }
 
@@ -252,7 +253,7 @@ end;
 
 procedure TFormSync.ButtonCancelClick(Sender: TObject);
 begin
-    ModalResult := mrNone;
+    ModalResult := mrCancel;
 end;
 
 procedure TFormSync.ButtonOKClick(Sender: TObject);
