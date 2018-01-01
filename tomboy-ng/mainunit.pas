@@ -66,6 +66,7 @@ unit MainUnit;
 	2018/01/01  Added code to mark a previously sync'ed and now deleted note in local manifest.
 	2018/01/01  Set goThumbTracking true so contents of scroll box glide past as
     			you move the "Thumb Slide".
+	2018/01/01  Moved call to enable/disable the sync menu item into RecentMenu();
 
 }
 
@@ -286,6 +287,10 @@ begin
         end;
       	inc(Count);
   	end;
+    if Sett.RemoteRepo = '' then
+        MenuSynchronise.Enabled := False
+    else MenuSynchronise.Enabled := True;
+
     {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
                         // Watch and see if it can be removed later. Oct 2017.
     TrayIcon.InternalUpdate;
@@ -351,9 +356,9 @@ begin
     NoteLister := TNoteLister.Create;
     IndexNotes();
     { TODO : Must allow for fact some users insist on proceeding without setting Notes Dir }
-    if Sett.RemoteRepo = '' then
+    { if Sett.RemoteRepo = '' then
         MenuSynchronise.Enabled := False
-    else MenuSynchronise.Enabled := True;
+    else MenuSynchronise.Enabled := True;  }
 	RecentMenu();
     TrayIcon.Show;
 end;
@@ -453,12 +458,13 @@ end;
 procedure TRTSearch.MenuItemSettingsClick(Sender: TObject);
 begin
     Sett.Show;
-    if Sett.RemoteRepo = '' then MenuSynchronise.Enabled := False
+    RecentMenu();
+{    if Sett.RemoteRepo = '' then MenuSynchronise.Enabled := False
     else MenuSynchronise.Enabled := True;
     {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
                         // Watch and see if it can be removed later. Oct 2017.
     TrayIcon.InternalUpdate;
-    {$endif}
+    {$endif}    }
 end;
 
 
