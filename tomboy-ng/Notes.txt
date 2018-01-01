@@ -72,6 +72,7 @@ Tests are made with full debugging on including heaptrc. Not from within the IDE
 * Config sync, pull in a set of notes. Load a large note and insert a link to another note.
 * Delete the note you made earlier. Is it gone ? Is it in the Backup dir ?
 * Do another sync, is deleted note listed as deleted from server ?
+* Quit - no memory leaks ?
 
 
 
