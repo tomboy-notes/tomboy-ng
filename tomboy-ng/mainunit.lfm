@@ -1,7 +1,7 @@
 object RTSearch: TRTSearch
-  Left = 354
+  Left = 792
   Height = 330
-  Top = 210
+  Top = 213
   Width = 495
   Caption = 'RTSearch'
   ClientHeight = 330
@@ -29,7 +29,7 @@ object RTSearch: TRTSearch
     ColumnClickSorts = True
     FixedCols = 0
     Flat = True
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll]
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
     RowCount = 1
     ScrollBars = ssAutoVertical
     TabOrder = 0

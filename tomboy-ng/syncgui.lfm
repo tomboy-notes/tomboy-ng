@@ -1,7 +1,7 @@
 object FormSync: TFormSync
-  Left = 799
+  Left = 515
   Height = 366
-  Top = 297
+  Top = 215
   Width = 472
   Caption = 'FormSync'
   ClientHeight = 366
@@ -156,6 +156,7 @@ object FormSync: TFormSync
       FixedRows = 0
       Font.Height = -12
       Font.Name = 'Sans'
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goThumbTracking, goSmoothScroll]
       ParentFont = False
       RowCount = 0
       TabOrder = 1
