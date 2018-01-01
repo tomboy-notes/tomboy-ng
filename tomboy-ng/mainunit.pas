@@ -501,7 +501,7 @@ procedure TRTSearch.TrayMenuAboutClick(Sender: TObject);
 var
     S1, S2, S3, S4, S5 : string;
 begin
-  S1 := 'This is v0.1 alpha of tomboy-ng, a rewrite of Tomboy Notes'#10;
+  S1 := 'This is v0.11 alpha of tomboy-ng, a rewrite of Tomboy Notes'#10;
   S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
   S3 := 'use unless you are very careful and have good backups.'#10;
   S5 := '';
