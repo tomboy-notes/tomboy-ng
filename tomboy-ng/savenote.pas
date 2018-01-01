@@ -46,6 +46,7 @@ unit SaveNote;
 				a note.
 	2017/12/10  Fix a bug in BulletList() whereby font changes were not preserving
 				previous queued format changes. Possibly. This is not robust code.
+	2018/01/01  Yet another bug fix for BulletList(), this time I've got it !
 }
 
 {$mode objfpc}{$H+}
@@ -184,23 +185,23 @@ begin
 end;
 
 	{ This function takes an existing parsed string and wraps it in the necessary
-      bullet tags but has to resolve and pending formatting tags first and restore
+      bullet tags but has to resolve any pending formatting tags first and restore
       then afterwards. Its horrible. If you are debugging this, I am truly sorry.
     }
+    // ListOff BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold List
 
 procedure TBSaveNote.BulletList(var Buff : ANSIString);
 var
    StartStartSt, StartEndSt, EndStartSt, EndEndSt : ANSIString;
 begin
-
-// writeln('Status Bold', Bold=True, ' PBold', PrevBold=True, ' High', HiLight=True, ' PHigh', PrevHiLight=True);
+	//writeln('Status Bold=', Bold=True, ' PBold=', PrevBold=True, ' High=', HiLight=True, ' PHigh=', PrevHiLight=True);
     if PrevBold then begin
-        StartStartSt := '</bold>';
-        StartEndSt := '<bold>';
+        StartStartSt := '</bold>';     // Starting String, Start
+        StartEndSt := '<bold>';        // Starting String, End
 	end;
 	if Bold then begin
-        EndStartSt := '</bold>';
-        EndEndSt := '<bold>';
+        EndStartSt := '</bold>';		// End String, start of it
+        EndEndSt := '<bold>';			// End String, end of it
     end;
     if PrevItalics then begin
         StartStartSt := StartStartSt + '</italic>';
@@ -220,18 +221,22 @@ begin
     end;
     if PrevFSize <> Sett.FontNormal then begin
         StartStartSt := StartStartSt + SetFontXML(PrevFSize, False);
-        StartEndSt := SetFontXML(PrevFSize, True) + EndEndSt;
+        StartEndSt := SetFontXML(PrevFSize, True) + StartEndSt;
 	end;
     if FSize <> Sett.FontNormal then begin
         EndStartSt := EndStartSt + SetFontXML(FSize, False);
         EndEndSt := SetFontXML(FSize, True) + EndEndSt;
 	end;
-    // writeLn('Buff at Start [' + Buff + ']');        // #################################
+    {writeLn('Buff at Start [' + Buff + ']');
+    writeln('StartStart    [' + StartStartSt + ']');
+    writeln('StartEnd      [' + StartEndSt + ']');
+    writeln('EndStart      [' + EndStartSt + ']');
+    writeln('EndEnd        [' + EndEndSt + ']');}
 
     Buff := StartStartSt + '<list><list-item dir="ltr">' + StartEndSt
     		+ Buff + EndStartSt + '</list-item></list>' + EndEndSt;
 
-    // writeLn('Buff at End [' + Buff + ']');         // **************************************
+    //writeLn('Buff at End [' + Buff + ']');         // **************************************
 end;
 
 function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
