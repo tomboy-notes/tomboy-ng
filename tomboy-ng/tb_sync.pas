@@ -26,11 +26,17 @@ unit TB_Sync;
 {	A class that knows broard rules about syncing. It will have (at least) two
 	children, one for file use, one for remote server use. Only the FileSync is
 	implemented here.
+	We also derive a simpler class that just knows how to update the local manifest
+	file when a tomboy-ng deletes a local note. It checks if the note already
+	appears in note-revsions and if it does, moves it to the note-deletions section.
+	Does nothing if the note has not yet been synced, that is, it does not appear
+	note-revisions.
 }
 
 {	2017/12/06	Cleaned up some unimportant debug statements.
 	2017/12/29  Added some comments that may help someone understand sync process
 				No functional change.
+	2017/12/31  Added TTomboyLocalManifest class.
 }
 
 
@@ -51,7 +57,8 @@ type                              // This record and its list are used for sever
     	CreateDate : ANSIString;
     	LastChange : ANSIString;
         Rev : ANSIString;
-        Deleted: Boolean
+        Deleted: Boolean;
+        Title : ANSIString;
 	end;
 
 type                                  { ----------- SyncReport ---------- }
@@ -76,7 +83,6 @@ type                                 { --------- TSyncReportList --------- }
         property Items[Index : integer] : PSyncReport read Get; default;
 	end;
 
-
 type                                 { ---------- TNoteInfoList ---------}
    TNoteInfoList = class(TList)
     private
@@ -88,7 +94,8 @@ type                                 { ---------- TNoteInfoList ---------}
         property Items[Index: integer]: PNoteInfo read Get; default;
     end;
 
-type    TClashRecord = record
+type								{ ------------- TClashRecord ------------- }
+	TClashRecord = record
     		Title : ANSIString;
     		NoteID : ANSIString;
             ServerLastChange : ANSIString;
@@ -109,6 +116,8 @@ TTomboySyncCustom = Class
     			{ Contains the local manifest version of Server ID }
 	ServerID : ANSIString;
     FNotesDir, FRemoteManifestDir, FLocalManifestDir : ANSIString;
+    LocalLastSyncDateSt : ANSIString;
+    LocalRevSt : ANSIString;
 
 	function GetNoteTitle(FullFileName: ANSIString): ANSIString;
     procedure SetNotesDir(Dir : ANSIString);
@@ -119,14 +128,13 @@ TTomboySyncCustom = Class
     			{ Returns a TDateTime from the passed date time string }
 	function GetDateFromStr(const DateStr : ANSIString) : TDateTime;
      			{ Puts data from local mainifest file into a LocalManifest : NoteInfoList
+                  Reads both additions and deletions.
                   Returns False if an error occured that would prevent proceeding.
                   Set SkipFile to .T. during initialisation. }
 	function ReadLocalManifest(SkipFile : boolean = False) : boolean;
-  				{ Fills the Regional NoteInfoList with info about all the notes the Server
-    			thinks we should have. Remember that this method will allocate memory.}
-	// procedure GetListRemoteNotes(); virtual; abstract;
-    			{ writes new local manifest file }
-    function WriteNewManifest() : boolean; virtual;
+    			{ writes new local manifest file, WriteDeletes is true when just
+                  adding a local deleted note to list, other info is preserved.}
+    function WriteNewManifest(WriteDeletes : boolean = false) : boolean; virtual;
     			{ Initiates a new revision, safe to call repeatedly. }
 	function MakeNewRevision() : boolean; virtual; abstract;
     			{ Reads a note last change date, returning GMTTime and puts actual string into LastChange }
@@ -142,7 +150,12 @@ TTomboySyncCustom = Class
           		bit lazy really, this is a copy of one in SaveNote.pas.   				}
 	function GetLocalTime(): ANSIstring;
     procedure ClearLists();
+    			{ Passes on users choice to Upload, download or nothing. Calls a function
+                  passed here from the calling process. }
+	function ProceedWith(FileID, Rev : ANSIString) : TClashDecision; virtual; abstract;
   public
+
+
     			{ the calling process must pass a function address to this var. It will
                   be called if the sync process finds a sync class where both copies
                   of a note have changed since last sync.}
@@ -173,8 +186,6 @@ TTomboySyncCustom = Class
     procedure TestProceed();
     			{ reads the last time this client was synced. Puts that into LastSyncDate }
 	function SetlastSyncdate() : boolean;
-    			{ Passes on users choice to Uplod, download or nothing. Hard wired to True for now }
-	function ProceedWith(FileID, Rev : ANSIString) : TClashDecision; virtual; abstract;
 	function DoSync(UseLocal, UseRemote : boolean) : boolean; virtual; abstract;
    				{ reads the local server manifest for the Server ID, puts it in ServerID,
           		returns False if its not present. That would indicate we are not
@@ -192,8 +203,6 @@ type				                          { -------- TTomboyFileSync ----------}
 { TTomboyFileSync }
 
 TTomboyFileSync = Class(TTomboySyncCustom)
-
-
 
 				{ Does the whole sync process, false if something went wrong, check ErrorMessage }
 	function DoSync(UseLocal, UseRemote : boolean) : boolean; override;
@@ -231,7 +240,7 @@ private
 				{ Initiates a new revision, true if all OK  }
 	function MakeNewRevision() : boolean; override;
 				{ writes new local manifest and, if necessay, a server and server rev, sets ErrorMessage }
-    function WriteNewManifest() : boolean; override;
+    function WriteNewManifest(WriteDeletes : boolean = false) : boolean; override;
 				{ writes out a remote style manifest to indicated file }
 	function WriteRemoteManifest(const FullFileName : AnsiString) : boolean;
 	        	{ Compares each entry in Remote list against Local List }
@@ -247,17 +256,112 @@ private
 	function ReadRemoteManifest(SkipFile : boolean = false) : boolean;
  end;
 
+ { ------------------------ TTomboyLocalManifest --------------------------}
+
+ { This class is to update the local manifest file (if it exists) when a file that
+   has previously be sync'ed is deleted.
+ }
+TTomboyLocalManifest = Class(TTomboySyncCustom)
+  		{ Has no function in this class, here to suppress error messages. }
+	function DoSync(UseLocal, UseRemote : boolean) : boolean; override;
+    	{ Response procedure for property IDToDelete }
+    procedure FNoteToDelete(ID : ANSIString);
+    	{ The note ID poked into here will be moved into local manifest deleted
+          section if it already appears in note-revision section. Does nothing
+          if ID not found in there already or if local manifest does not exist.
+          The ID is just that, no path and no '.note' is expected.            }
+    property IDToDelete : ANSIString write FNoteToDelete;
+private
+  				// Has no function in this class.
+  	function ProceedWith(FileID, Rev: ANSIString): TClashDecision; override;
+  				// Has no function in this class.
+	function DownLoadNote(const ID, Rev : ANSIString) : boolean; override;
+  				// Has no function in this class.
+	function MakeNewRevision() : boolean; override;
+  				{ rewrites local manifest with a note id marked as deleted }
+	function WriteNewManifest(WriteDeletes : boolean = false) : boolean; override;
+    			// Has no function in this class.
+	function UploadNote(const ID : ANSIString) : boolean; override;
+end;
 
 
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, DateUtils, LazLogger
         {$ifdef LINUX}, Unix {$endif};
-	// If you want to use this as a console app, must add LCL to Required Packages
+ 	// If you want to use this as a console app, must add LCL to Required Packages
     // in the Project Inspector. I guess there must be a command line alt ??
     // Thats to get LazFileUtils, preferable to FileUtils (also LCL) due to UFT8
     // But not everything is present in LazFileUtils (ie CopyFile() )
     // so list LazFileUtils after FileUtil
+
+
+{ ===========================  TTomboyLocalManifest ============================== }
+
+procedure TTomboyLocalManifest.FNoteToDelete(ID: ANSIString);
+var
+    i : integer;
+    NoteInfoP : PNoteInfo;
+    Found : boolean = false;
+begin
+	if not ReadLocalManifest(False) then exit(); 	// read the local manifest
+    for I := 0 to NoteInfoListLocalManifest.count -1 do  begin
+    	if NoteInfoListLocalManifest.Items[i].ID = ID then begin
+        	NoteInfoListLocalManifest.Items[i].Deleted:= True;
+            NoteInfoListLocalManifest.Items[i].Title :=
+            		GetNoteTitle(NotesDir + PathDelim + 'Backup' + PathDelim + ID + '.note');
+            Found := True;
+            break;
+        end;
+	end;
+    if not Found then exit();
+	ManifestList := TNoteInfoList.Create;   		// This for making new manifests
+    for I := 0 to NoteInfoListLocalManifest.count -1 do  begin
+        new(NoteInfoP);
+        NoteInfoP.Deleted:=NoteInfoListLocalManifest.Items[i].Deleted;
+        NoteInfoP.ID:=NoteInfoListLocalManifest.Items[i].ID;
+        NoteInfoP.Rev := NoteInfoListLocalManifest.Items[i].Rev;
+        NoteInfoP.Title := NoteInfoListLocalManifest.Items[i].Title;
+        ManifestList.Add(NoteInfoP);
+    	//writeln(NoteInfoListLocalManifest.Items[i].ID + ' ' + NoteInfoListLocalManifest.Items[i].Rev);
+	end;
+	TestMode := False;		// if true, will write a new manifest with -ref appended.
+    WriteNewManifest();
+
+end;
+
+function TTomboyLocalManifest.DoSync(UseLocal, UseRemote: boolean): boolean;
+begin
+    Result := False;
+end;
+
+function TTomboyLocalManifest.ProceedWith(FileID, Rev: ANSIString ): TClashDecision;
+begin
+	Result := cdDoNothing;
+end;
+
+function TTomboyLocalManifest.DownLoadNote(const ID, Rev: ANSIString): boolean;
+begin
+	Result := False;
+end;
+
+function TTomboyLocalManifest.MakeNewRevision: boolean;
+begin
+	Result := False;
+end;
+
+function TTomboyLocalManifest.WriteNewManifest(WriteDeletes : boolean = false) : boolean;
+begin
+		Result:=inherited WriteNewManifest(True);
+end;
+
+function TTomboyLocalManifest.UploadNote(const ID: ANSIString): boolean;
+begin
+	Result := False;
+end;
+
+
+
 
 
 { -----------   TSyncReportList ----------- }
@@ -338,11 +442,11 @@ begin
 end;
 
 
-{ -------------- TTomboySyncCustom ------------- }
+{ ==================================== TTomboySyncCustom ======================= }
 
 
 
-function TTomboySyncCustom.WriteNewManifest: boolean;
+function TTomboySyncCustom.WriteNewManifest(WriteDeletes : boolean = false) : boolean;
 var
     OutStream : TFilestream;
     Buff      : ANSIString;
@@ -368,21 +472,40 @@ begin
 	    OutStream.Write(Buff[1], length(Buff));
 	    Buff := '<manifest xmlns="http://beatniksoftware.com/tomboy">' + LineEnding;
 	    OutStream.Write(Buff[1], length(Buff));
-	    Buff := '  <last-sync-date>' + GetLocalTime();
+        if WriteDeletes then
+            Buff := '  <last-sync-date>' + LocalLastSyncDateSt
+        else
+            Buff := '  <last-sync-date>' + GetLocalTime();
 	    OutStream.Write(Buff[1], length(Buff));
         Buff := '</last-sync-date>' + LineEnding + '  <last-sync-rev>';
         OutStream.Write(Buff[1], length(Buff));
-        Buff := newRevision + '</last-sync-rev>' + LineEnding + '<server-id>';
+        if WriteDeletes then
+            Buff := LocalRevSt + '</last-sync-rev>' + LineEnding + '  <server-id>'
+        else
+        	Buff := newRevision + '</last-sync-rev>' + LineEnding + '  <server-id>';
         OutStream.Write(Buff[1], length(Buff));
-        Buff := ServerID + '</server-id>' + LineEnding + '<note-revisions>' + LineEnding ;
+        Buff := ServerID + '</server-id>' + LineEnding + '  <note-revisions>' + LineEnding ;
         OutStream.Write(Buff[1], length(Buff));
         for Index := 0 to ManifestList.Count -1 do begin
-        	Buff := '<note guid="' + ManifestList.Items[Index].ID + '" latest-revision="'
-        		+ ManifestList.Items[Index].Rev + '" />' + LineEnding;
-            OutStream.Write(Buff[1], length(Buff));
+            if not ManifestList.Items[Index].Deleted then begin;
+        		Buff := '    <note guid="' + ManifestList.Items[Index].ID + '" latest-revision="'
+        			+ ManifestList.Items[Index].Rev + '" />' + LineEnding;
+            	OutStream.Write(Buff[1], length(Buff));
+            end;
 		end;
-        Buff := '</note-revisions>' + LineEnding + '<note-deletions>'
-        	+ '</note-deletions>' + LineEnding + '</manifest>' + LineEnding;
+        Buff := '  </note-revisions>' + LineEnding + '  <note-deletions>' + LineEnding;
+        OutStream.Write(Buff[1], length(Buff));
+        // <note guid="8937a940-a97f-4744-bafa-076e5f16af61" title="32775" />
+        if WriteDeletes then begin
+            for Index := 0 to ManifestList.Count -1 do begin
+                if ManifestList.Items[Index].Deleted then begin;
+            		Buff := '    <note guid="' + ManifestList.Items[Index].ID + '" title="'
+            			+ ManifestList.Items[Index].Title + '" />' + LineEnding;
+                	OutStream.Write(Buff[1], length(Buff));
+                end;
+			end;
+		end;
+		Buff := '  </note-deletions>' + LineEnding + '</manifest>' + LineEnding;
         OutStream.Write(Buff[1], length(Buff));
         Result := True;
     finally
@@ -496,6 +619,7 @@ function TTomboySyncCustom.ReadLocalManifest(SkipFile : boolean = False) : boole
 var
     Doc : TXMLDocument;
     NodeList : TDOMNodeList;
+    Node : TDOMNode;
     j : integer;
     NoteInfoP : PNoteInfo;
 begin
@@ -505,11 +629,21 @@ begin
     try
     	try
     		ReadXMLFile(Doc, LocalManifestDir + 'manifest.xml');
+            Node := Doc.DocumentElement.FindNode('last-sync-date');
+        	LocalLastSyncDateSt := Node.FirstChild.NodeValue;
+            Node := Doc.DocumentElement.FindNode('last-sync-rev');
+        	LocalRevSt := Node.FirstChild.NodeValue;
             NodeList := Doc.DocumentElement.FindNode('note-revisions').ChildNodes;
             if assigned(NodeList) then
                for j := 0 to NodeList.Count-1 do begin
                    new(NoteInfoP);
                    NoteInfoP.ID := NodeList.Item[j].Attributes.GetNamedItem('guid').NodeValue;
+                   NoteInfoP.Rev := NodeList.Item[j].Attributes.GetNamedItem('latest-revision').NodeValue;
+
+
+                   // Danger Will Robinson, danger, I just added that line, will need widespread test
+
+
                    NoteInfoP.Deleted := False;
                    NoteInfoListLocalManifest.Add(NoteInfoP);
 			   end;
@@ -518,8 +652,10 @@ begin
                for j := 0 to NodeList.Count-1 do begin
                    new(NoteInfoP);
                    NoteInfoP.ID := NodeList.Item[j].Attributes.GetNamedItem('guid').NodeValue;
+                   NoteInfoP.Title := NodeList.Item[j].Attributes.GetNamedItem('title').NodeValue;
                    NoteInfoP.Deleted := True;
                    NoteInfoListLocalManifest.Add(NoteInfoP);
+                  writeln( NoteInfoP.Title);
 			   end;
 		finally
             Doc.Free;
@@ -1015,13 +1151,13 @@ begin
     	end;
 end;
 
-function TTomboyFileSync.WriteNewManifest: boolean;
+function TTomboyFileSync.WriteNewManifest(WriteDeletes : boolean = false) : boolean;
 var
     Filename : ANSIString;
 begin
     	Result := True;
     	if TestMode then exit();
-		Result:=inherited WriteNewManifest;			// always
+		Result:=inherited WriteNewManifest();			// always
         if Result = False then exit();
         if NewRevision = '' then exit();	// Only need remote manifests if we create a new revision
         Result := False;

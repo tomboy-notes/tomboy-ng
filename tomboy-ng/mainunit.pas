@@ -62,6 +62,11 @@ unit MainUnit;
 				sets a notes dir.
 	2017/12/29  DeleteNote() now moves file into Backup/.
 	2017/12/30  Removed commented out code relting to calling Manual Sync
+	2018/01/01  Added a check to see if FormSync is already visible before calling ShowModal
+	2018/01/01  Added code to mark a previously sync'ed and now deleted note in local manifest.
+	2018/01/01  Set goThumbTracking true so contents of scroll box glide past as
+    			you move the "Thumb Slide".
+
 }
 
 {$mode objfpc}{$H+}
@@ -168,7 +173,8 @@ implementation
 uses EditBox,
     settings,		// Manages settings.  This Main Form, close it to kill app.
     SyncGUI,
-    LazFileUtils;  // LazFileUtils needed for TrimFileName(), cross platform stuff
+    TB_Sync,		// So we can make changes to local manifest when a note is deleted.
+    LazFileUtils;   // LazFileUtils needed for TrimFileName(), cross platform stuff
 
 
 { TRTSearch }
@@ -193,6 +199,7 @@ end;
 procedure TRTSearch.DeleteNote(const FullFileName: ANSIString);
 var
     NewName : ANSIString;
+    LocalMan : TTomboyLocalManifest;
 begin
 	NoteLister.DeleteNote(ExtractFileNameOnly(FullFileName));
     // DeleteFileUTF8(FullFileName);
@@ -201,7 +208,17 @@ begin
     	if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
             DebugLn('Failed to make Backup dir, ' + Sett.NoteDirectory + 'Backup');
     if not RenameFileUTF8(FullFileName, NewName)
-    	then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
+    	then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName)
+    else begin
+ 		LocalMan := TTomboyLocalManifest.Create;
+  		LocalMan.LocalManifestDir:= Sett.LocalConfig;
+        LocalMan.NotesDir:=Sett.NoteDirectory;
+  		if LocalMan.GetLocalServerID() then
+ 			LocalMan.IDToDelete:= ExtractFileNameOnly(FullFileName)
+        else
+            DebugLn('ERROR, failed to move deleted ID in local manifest [' + ExtractFileNameOnly(FullFileName)+ ']');
+        LocalMan.Free;
+	end;
     UseList();
 end;
 
@@ -457,7 +474,10 @@ begin
     FormSync.LocalConfig := Sett.LocalConfig;
     FormSync.RemoteRepo := Sett.RemoteRepo;
     FormSync.SetupFileSync := False;
-    FormSync.ShowModal;					// we don't care about result ...
+    if FormSync.Visible then
+        FormSync.Show
+    else
+    	FormSync.ShowModal;					// we don't care about result ...
 end;
 
 procedure TRTSearch.TrayIconClick(Sender: TObject);
