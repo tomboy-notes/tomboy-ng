@@ -17,7 +17,7 @@ So far, it has a basic Tomboy Editor functional but lacks some things -
 
 On the other hand, it does read and write Tomboy's files .  Displays the small,
 normal, large and huge fonts Bold, Italics and bullets. Highlight is, at present
-replaced wit red coloured text. It links to notes with matching names (and has a
+replaced with red coloured text. It links to notes with matching names (and has a
 a switch to stop that).
 
 File syncs with Tomboy (and itself). Autosaves.
@@ -33,7 +33,7 @@ Notes about its internals -
 There are binary install kits for Linux, Windows and Mac.
 If you want to build your own (or, please, help with development) that too is easy.
 Requires Free Pascal, Lazarus and the KControls component to build. I have been
-working with Lazarus 1.8rc4. Its expected 1.8 will be formally released soon.
+working with Lazarus 1.8rc3 and 1.8, just released.
 Use the bitbucket version of KControls.
 
 Lazarus and Free Pascal support heaps of other platforms too and I suspect the
@@ -51,9 +51,14 @@ One to force a workaround on the Mac relating to updating menu captions in the
 TrayIcon, in MainUnit.  A bit of extra Window code needed in EditBox because of
 Windows insistence on two character line endings.
 
-Ah, and its possible and undesirable, to run two or more instances of this App.
 And there is a memory leak in the Mac version so, to be safe, don't let it sit
 running for a long length of time, we are working on this upstream problem.
+This release will also compile under Mac OSX 64bit Cocoa but there are even more
+memory leaks there and I do not recommend it for normal use.
+
+If you run it within the debugger, remember that there are several handled
+exceptions, the debugger insists on telling you about them so make sure you
+press "continue". Outside the debugger, you will not be aware of this happening.
 
 Over time, expect this file to contain quite a lot about tomboy-ng's internal workings
 
@@ -65,7 +70,7 @@ Tests are made with full debugging on including heaptrc. Not from within the IDE
 
 * Load up new binary and do a sync. Exit.
 * Remove config dir (eg) ~/.config/tomboy-ng and all notes ~/.local/share/tomboy-ng/*
-* Start App and point Notes Dir to default place.
+* Start App and point Notes Dir to default place, save config.
 * Make a new note. Exit note and then reload. Delete it. There is no local manifest
   at this stage so make sure thats the case.
 * Create a new note. Add a set of bullets and mix up some formatting. Exit and reload.
