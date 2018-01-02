@@ -37,6 +37,7 @@ unit TB_Sync;
 	2017/12/29  Added some comments that may help someone understand sync process
 				No functional change.
 	2017/12/31  Added TTomboyLocalManifest class.
+	2018/01/02  Removed a %#4## writeln that was crashing windows.
 }
 
 
@@ -655,8 +656,7 @@ begin
                    NoteInfoP.Title := NodeList.Item[j].Attributes.GetNamedItem('title').NodeValue;
                    NoteInfoP.Deleted := True;
                    NoteInfoListLocalManifest.Add(NoteInfoP);
-                  writeln( NoteInfoP.Title);
-			   end;
+   			   end;
 		finally
             Doc.Free;
 		end;
