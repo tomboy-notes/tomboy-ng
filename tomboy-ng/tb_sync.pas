@@ -38,6 +38,9 @@ unit TB_Sync;
 				No functional change.
 	2017/12/31  Added TTomboyLocalManifest class.
 	2018/01/02  Removed a %#4## writeln that was crashing windows.
+	2018/01/05  Added a try..except..on EObjectCheck to RealLocalManifest() so that
+				we can handle it being blank without panic. This might be a good
+				idea generally where a suitable value can be guessed.
 }
 
 
@@ -633,8 +636,12 @@ begin
             Node := Doc.DocumentElement.FindNode('last-sync-date');
         	LocalLastSyncDateSt := Node.FirstChild.NodeValue;
             Node := Doc.DocumentElement.FindNode('last-sync-rev');
-        	LocalRevSt := Node.FirstChild.NodeValue;
-            NodeList := Doc.DocumentElement.FindNode('note-revisions').ChildNodes;
+            try
+        		LocalRevSt := Node.FirstChild.NodeValue;
+			except
+                    on EObjectCheck do LocalRevSt := '0';
+			end;
+			NodeList := Doc.DocumentElement.FindNode('note-revisions').ChildNodes;
             if assigned(NodeList) then
                for j := 0 to NodeList.Count-1 do begin
                    new(NoteInfoP);
