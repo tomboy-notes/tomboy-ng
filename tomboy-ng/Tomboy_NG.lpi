@@ -10,8 +10,9 @@
       <UseXPManifest Value="True"/>
       <XPManifest>
         <TextName Value="DRB"/>
-        <TextDesc Value="Very unsafe test release."/>
+        <TextDesc Value="Not very safe test release."/>
       </XPManifest>
+      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N Value="True"/>

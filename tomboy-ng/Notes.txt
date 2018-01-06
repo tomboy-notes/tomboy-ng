@@ -79,6 +79,13 @@ Tests are made with full debugging on including heaptrc. Not from within the IDE
 * Do another sync, is deleted note listed as deleted from server ?
 * Quit - no memory leaks ?
 
+Application Icons
+-----------------
+There is a way to go but here is a start.
+Under "my Ubuntu Mate" install, it seems the Lazarus Application Icon is ignored. Instead, I can get a nice Icon displayed on the plank and on the top status bar by putting an 256x256 icon in  /usr/share/icons/hicolor/256x256/apps/tomboy-ng
 
+I'll also provide, in similar places 16x16, 22x22, 24x24, 48x48 because some docs I've read suggest they might be needed. Sigh ....
+
+In the Mac - setting a Lazarus Application Icon seems work. I'll need to test under Windows .... 
 
 
