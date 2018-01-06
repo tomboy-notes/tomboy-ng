@@ -6,10 +6,10 @@
 
 
 PRODUCT="tomboy-ng"
-VERSION="0.1"
-OS="linux"
+VERSION="0.11"
 
 SOURCE_DIR="../tomboy-ng"
+ICON_DIR="../glyphs"
 
 MANUALS_DIR="docs"
 MANUALS="Notes.txt"
@@ -52,6 +52,12 @@ function DebianPackage () {
 	mkdir BUILD/usr
 	mkdir BUILD/usr/bin
 	mkdir BUILD/usr/share
+	for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
+		mkdir -p "BUILD/usr/share/icons/hicolor/$i/apps";
+		cp "$ICON_DIR/$i.png" "BUILD/usr/share/icons/hicolor/$i/apps/$PRODUCT.png";
+	done;
+	mkdir BUILD/usr/share/applications
+	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
 	mkdir "BUILD/usr/share/$PRODUCT"
 	if [ "$1" = "amd64" ]; then
 		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng

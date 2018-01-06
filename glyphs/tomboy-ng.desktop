@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=tomboy-ng
+GenericName=Note Taker
+Comment=Cross Platform Notes
+Exec=tomboy-ng %f
+Icon=/usr/share/icons/hicolor/256x256/apps/tomboy-ng.png
+Terminal=false
+Type=Application
