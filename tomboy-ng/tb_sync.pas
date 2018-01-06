@@ -41,6 +41,10 @@ unit TB_Sync;
 	2018/01/05  Added a try..except..on EObjectCheck to RealLocalManifest() so that
 				we can handle it being blank without panic. This might be a good
 				idea generally where a suitable value can be guessed.
+	2018/01/06  Further attention to above item. We now default to lastRevNo := 0
+				before writing a localmanifest when deleting a synced local file.
+				And the try..except also responds to an EAccessViolation as it appears (?)
+				that the mac raises EObjectCheck and Linux raises EAccessError.
 }
 
 
@@ -483,9 +487,12 @@ begin
 	    OutStream.Write(Buff[1], length(Buff));
         Buff := '</last-sync-date>' + LineEnding + '  <last-sync-rev>';
         OutStream.Write(Buff[1], length(Buff));
-        if WriteDeletes then
+        if WriteDeletes then begin
+            if LocalRevSt = '' then
+                LocalRevSt := '0';
             Buff := LocalRevSt + '</last-sync-rev>' + LineEnding + '  <server-id>'
-        else
+		end
+		else
         	Buff := newRevision + '</last-sync-rev>' + LineEnding + '  <server-id>';
         OutStream.Write(Buff[1], length(Buff));
         Buff := ServerID + '</server-id>' + LineEnding + '  <note-revisions>' + LineEnding ;
@@ -639,7 +646,8 @@ begin
             try
         		LocalRevSt := Node.FirstChild.NodeValue;
 			except
-                    on EObjectCheck do LocalRevSt := '0';
+                    on EObjectCheck do LocalRevSt := '0';		// mac does this
+                    on EAccessViolation do LocalRevSt := '0';	// Lin does this
 			end;
 			NodeList := Doc.DocumentElement.FindNode('note-revisions').ChildNodes;
             if assigned(NodeList) then
