@@ -483,7 +483,8 @@ begin
     if FormSync.Visible then
         FormSync.Show
     else
-    	FormSync.ShowModal;					// we don't care about result ...
+    	if (FormSync.ShowModal = mrOK) then
+            IndexNotes();
 end;
 
 procedure TRTSearch.TrayIconClick(Sender: TObject);
