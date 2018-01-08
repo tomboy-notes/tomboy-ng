@@ -32,6 +32,7 @@ unit SyncGUI;
 	2018/01/01  Set goThumbTracking true so contents of scroll box glide past as
     			you move the "Thumb Slide".
 	2018/01/01  Changed ModalResult for cancel button to mrCancel
+	2018/01/08  Tidied up message box text displayed when a sync conflict happens.
 
 }
 
@@ -113,15 +114,15 @@ begin
           FooterText := 'Note ID ' + ClashRec.NoteID;
           CommonButtons := [];
           with TTaskDialogButtonItem(Buttons.Add) do begin
-            Caption := 'Download the remote note';
+            Caption := 'Download and use the remote note';
             ModalResult := TModalResult(cdDownload);
           end;
           with TTaskDialogButtonItem(Buttons.Add) do begin
-            Caption := 'Backup and overwrite the local note';
+            Caption := 'Upload and overwrite the remote note';
             ModalResult := TModalResult(cdUpload);
           end;
           with TTaskDialogButtonItem(Buttons.Add) do begin
-            Caption := 'Do nothing this for this sync run.';
+            Caption := 'Do nothing for this sync run.';
             ModalResult := TModalResult(cdDoNothing);
           end;
           MainIcon := tdiQuestion;
