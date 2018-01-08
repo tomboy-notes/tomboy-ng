@@ -100,6 +100,9 @@ unit EditBox;
 				I like what it does now but need to test on Win/Mac ....
 
 	2017/01/01  This Unit now has a public variable, Verbose that will tell tales....
+    2017/01/01  Added a test so we don't mess with backspace if there is some selected
+                text. Mac users, bless them, don't have a delete key. They use a
+                key labeled 'delete' thats really a backspace.
 }
 
 
@@ -997,6 +1000,8 @@ var
 begin
     if not Ready then exit();
     if Key <> 8 then exit();    // We are watching for a BS on a Bullet Marker
+    // Mac users don't have a del key, they use a backspace key thats labled 'delete'. Sigh...
+    if KMemo1.Blocks.RealSelEnd > KMemo1.Blocks.RealSelStart then exit();
     if not NearABulletPoint(LeadingBullet, UnderBullet, TrailingBullet, FirstChar, NoBulletPara,
     				BlockNo, TrailOffset, LeadOffset) then exit();
     if (not FirstChar) and (not UnderBullet) then exit();
