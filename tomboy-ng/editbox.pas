@@ -99,10 +99,11 @@ unit EditBox;
 	2017/01/08  Extensive changes to the way we handle backspace around Bullets.
 				I like what it does now but need to test on Win/Mac ....
 
-	2017/01/01  This Unit now has a public variable, Verbose that will tell tales....
-    2017/01/01  Added a test so we don't mess with backspace if there is some selected
+	2017/01/08  This Unit now has a public variable, Verbose that will tell tales....
+    2017/01/08  Added a test so we don't mess with backspace if there is some selected
                 text. Mac users, bless them, don't have a delete key. They use a
                 key labeled 'delete' thats really a backspace.
+	2017/01/09  Hmm, fixed a bug in new code that let BS code mess around in header.
 }
 
 
@@ -919,13 +920,19 @@ begin
   end;
   Index := 1;
   CharCount := PosInBlock;
-  while true do begin
+  while BlockNo >= Index do begin
 	if kmemo1.blocks.Items[BlockNo-Index].ClassNameIs('TKMemoParagraph') then break;
   	CharCount := CharCount + kmemo1.blocks.Items[BlockNo-Index].Text.Length;
 	inc(Index);
+
     // Danger - what if we don't find one going left ?
   end;
-  Leading := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo-Index]).Numbering = pnuBullets);
+  if BlockNo < Index then begin
+      Result := False;
+      if Verbose then debugln('Returning False as we appear to be playing in Heading.');
+      exit();
+  end
+  else Leading := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo-Index]).Numbering = pnuBullets);
   IsFirstChar := (CharCount = 0);
   LeadOffset := Index;
   Index := 0;
@@ -974,7 +981,6 @@ d   Again, we are on first char of the line after a bullet, this line is not a b
 	and it has some text after the cursor. We merge that text up to the bullet line above,
     retaining its bulletness. So, mark trailing para bullet, delete leading.
 
-e
 
 x	A blank line, no bullet between two bullet lines. Use BS line should dissapear.
     That is, delete para under cursor, move cursor to end line above. This same as c
