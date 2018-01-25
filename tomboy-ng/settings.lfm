@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 254
+  Left = 262
   Height = 438
-  Top = 151
+  Top = 170
   Width = 525
   Caption = 'KTomboy-NG Settings'
   ClientHeight = 438
@@ -79,6 +79,15 @@ object Sett: TSett
         OnClick = ButtDefaultNoteDirClick
         TabOrder = 1
       end
+      object CheckManyNotebooks: TCheckBox
+        Left = 18
+        Height = 22
+        Hint = 'This may adversly affect tradional Tomboy, take care.'
+        Top = 239
+        Width = 306
+        Caption = 'Allow a note to be in Multiple Notebooks.'
+        TabOrder = 2
+      end
     end
     object TabDisplay: TTabSheet
       Caption = 'Display'
@@ -95,9 +104,9 @@ object Sett: TSett
         TabOrder = 0
         object RadioFontBig: TRadioButton
           Left = 16
-          Height = 18
+          Height = 22
           Top = 16
-          Width = 40
+          Width = 47
           Caption = 'Big'
           Checked = True
           OnChange = CheckReadOnlyChange
@@ -106,18 +115,18 @@ object Sett: TSett
         end
         object RadioFontMedium: TRadioButton
           Left = 16
-          Height = 18
+          Height = 22
           Top = 44
-          Width = 69
+          Width = 80
           Caption = 'Medium'
           OnChange = CheckReadOnlyChange
           TabOrder = 1
         end
         object RadioFontSmall: TRadioButton
           Left = 16
-          Height = 18
+          Height = 22
           Top = 72
-          Width = 53
+          Width = 61
           Caption = 'Small'
           OnChange = CheckReadOnlyChange
           TabOrder = 2
@@ -125,9 +134,9 @@ object Sett: TSett
       end
       object CheckShowIntLinks: TCheckBox
         Left = 40
-        Height = 18
+        Height = 22
         Top = 192
-        Width = 138
+        Width = 158
         Caption = 'Show Internal Links'
         Enabled = False
         OnChange = CheckReadOnlyChange
@@ -135,9 +144,9 @@ object Sett: TSett
       end
       object CheckShowExtLinks: TCheckBox
         Left = 40
-        Height = 18
+        Height = 22
         Top = 224
-        Width = 145
+        Width = 165
         Caption = 'Show External  Links'
         Enabled = False
         OnChange = CheckReadOnlyChange

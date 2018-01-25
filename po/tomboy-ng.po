@@ -23,6 +23,7 @@ msgid "EditBoxForm"
 msgstr ""
 
 #: teditboxform.label1.caption
+msgctxt "teditboxform.label1.caption"
 msgid "Label1"
 msgstr ""
 
@@ -94,6 +95,81 @@ msgstr ""
 msgid "Small Font"
 msgstr ""
 
+#: tformsync.buttoncancel.caption
+msgctxt "tformsync.buttoncancel.caption"
+msgid "Cancel"
+msgstr ""
+
+#: tformsync.buttonok.caption
+msgid "Close"
+msgstr ""
+
+#: tformsync.buttonsave.caption
+msgid "Save and Sync"
+msgstr ""
+
+#: tformsync.caption
+msgid "FormSync"
+msgstr ""
+
+#: tformsync.label1.caption
+msgctxt "tformsync.label1.caption"
+msgid "Label1"
+msgstr ""
+
+#: tformsync.label2.caption
+msgctxt "tformsync.label2.caption"
+msgid "Label2"
+msgstr ""
+
+#: tformsync.panel3.caption
+msgid "Panel3"
+msgstr ""
+
+#: tnotebookpick.button1.caption
+msgctxt "tnotebookpick.button1.caption"
+msgid "Cancel"
+msgstr ""
+
+#: tnotebookpick.buttonok.caption
+msgid "OK"
+msgstr ""
+
+#: tnotebookpick.caption
+msgid "NoteBookPick"
+msgstr ""
+
+#: tnotebookpick.label1.caption
+msgctxt "tnotebookpick.label1.caption"
+msgid "Label1"
+msgstr ""
+
+#: tnotebookpick.label2.caption
+msgctxt "tnotebookpick.label2.caption"
+msgid "Label2"
+msgstr ""
+
+#: tnotebookpick.label3.caption
+msgid "Label3"
+msgstr ""
+
+#: tnotebookpick.label4.caption
+msgid "Name of the New Note Book"
+msgstr ""
+
+#: tnotebookpick.label5.caption
+msgid "Press OK and we will make the Note Book AND add this note to it."
+msgstr ""
+
+#: tnotebookpick.tabexisting.caption
+msgid "Existing Note Books"
+msgstr ""
+
+#: tnotebookpick.tabnewnotebook.caption
+msgctxt "tnotebookpick.tabnewnotebook.caption"
+msgid "New Note Book"
+msgstr ""
+
 #: trtsearch.buttonclearsearch.caption
 msgid "Clear"
 msgstr ""
@@ -102,8 +178,16 @@ msgstr ""
 msgid "Not Implemented Yet"
 msgstr ""
 
+#: trtsearch.buttonnotebookoptions.caption
+msgid "Notebook Options"
+msgstr ""
+
 #: trtsearch.buttonrefresh.caption
 msgid "Refresh"
+msgstr ""
+
+#: trtsearch.buttonshowallnotes.caption
+msgid "Show All Notes"
 msgstr ""
 
 #: trtsearch.caption
@@ -115,16 +199,22 @@ msgctxt "trtsearch.edit1.text"
 msgid "Search"
 msgstr ""
 
-#: trtsearch.label1.caption
-msgid "Warning ! We are playing with notes in -"
+#: trtsearch.menudeletenotebook.caption
+msgid "Delete Notebook"
 msgstr ""
 
-#: trtsearch.labelpath.caption
-msgid "Hmm, I don't seem to have a Notes Path, risky ..."
+#: trtsearch.menueditnotebooktemplate.caption
+msgctxt "trtsearch.menueditnotebooktemplate.caption"
+msgid "Edit Notebook Template"
 msgstr ""
 
 #: trtsearch.menuitemsettings.caption
 msgid "Settings"
+msgstr ""
+
+#: trtsearch.menunewnotefromtemplate.caption
+msgctxt "trtsearch.menunewnotefromtemplate.caption"
+msgid "Create New Note from Template"
 msgstr ""
 
 #: trtsearch.menuquit.caption
@@ -133,6 +223,11 @@ msgstr ""
 
 #: trtsearch.menusynchronise.caption
 msgid "Synchronise"
+msgstr ""
+
+#: trtsearch.panel1.caption
+msgctxt "trtsearch.panel1.caption"
+msgid "Panel1"
 msgstr ""
 
 #: trtsearch.traymensearch.caption
@@ -186,5 +281,173 @@ msgstr ""
 
 #: trtsearch.traymenurecent9.caption
 msgid "MenuItem13"
+msgstr ""
+
+#: tsett.buttdefaultnotedir.caption
+msgid "Use default Notes location"
+msgstr ""
+
+#: tsett.buttonsaveconfig.caption
+msgid "Save Config"
+msgstr ""
+
+#: tsett.buttonsetnotepath.caption
+msgid "Set Path to Note Files"
+msgstr ""
+
+#: tsett.buttonsetsynserver.caption
+msgid "Change File Sync Repo"
+msgstr ""
+
+#: tsett.buttonshowbackup.caption
+msgid "Show Me"
+msgstr ""
+
+#: tsett.caption
+msgid "KTomboy-NG Settings"
+msgstr ""
+
+#: tsett.checkmanynotebooks.caption
+msgid "Allow a note to be in Multiple Notebooks."
+msgstr ""
+
+#: tsett.checkmanynotebooks.hint
+msgid "This may adversly affect tradional Tomboy, take care."
+msgstr ""
+
+#: tsett.checkshowextlinks.caption
+msgid "Show External  Links"
+msgstr ""
+
+#: tsett.checkshowintlinks.caption
+msgid "Show Internal Links"
+msgstr ""
+
+#: tsett.groupbox3.caption
+msgid "  Type  "
+msgstr ""
+
+#: tsett.groupbox4.caption
+msgid "  Options  "
+msgstr ""
+
+#: tsett.groupbox5.caption
+msgid "Font Size"
+msgstr ""
+
+#: tsett.label1.caption
+msgid "Settings will be saved in :"
+msgstr ""
+
+#: tsett.label10.caption
+msgid "tucked away somewhere safely."
+msgstr ""
+
+#: tsett.label11.caption
+msgid ".... and its not available just yet !"
+msgstr ""
+
+#: tsett.label2.caption
+msgid "Notes will be looked for and saved in :"
+msgstr ""
+
+#: tsett.label3.caption
+msgid "when a conflict is detected between a local note and"
+msgstr ""
+
+#: tsett.label4.caption
+msgid "a note on the configured synchronisation server :"
+msgstr ""
+
+#: tsett.label5.caption
+msgid "LocalConfig :"
+msgstr ""
+
+#: tsett.label6.caption
+msgid "Backup files are made when you delete a note or the sync system"
+msgstr ""
+
+#: tsett.label7.caption
+msgid "is about to overwrite one. "
+msgstr ""
+
+#: tsett.label8.caption
+msgid "They remain, for ever, unless you do something about them."
+msgstr ""
+
+#: tsett.label9.caption
+msgid "A snaphot is a copy of your current note directory, "
+msgstr ""
+
+#: tsett.labellocalconfig.caption
+msgid "LabelLocalConfig"
+msgstr ""
+
+#: tsett.labelnotespath.caption
+msgid "LabelNotesPath"
+msgstr ""
+
+#: tsett.labelsettingpath.caption
+msgid "LabelSettingPath"
+msgstr ""
+
+#: tsett.labelwaitforsync.caption
+msgid "LabelWaitForSync"
+msgstr ""
+
+#: tsett.panel2.caption
+msgid "Panel2"
+msgstr ""
+
+#: tsett.radioalwaysask.caption
+msgid "Always ask me what to do."
+msgstr ""
+
+#: tsett.radiofile.caption
+msgid "File Sync using shared drive."
+msgstr ""
+
+#: tsett.radiofontbig.caption
+msgid "Big"
+msgstr ""
+
+#: tsett.radiofontmedium.caption
+msgid "Medium"
+msgstr ""
+
+#: tsett.radiofontsmall.caption
+msgid "Small"
+msgstr ""
+
+#: tsett.radioserver.caption
+msgid "Network Server - not available"
+msgstr ""
+
+#: tsett.radiouselocal.caption
+msgid "Use Local note and overwrite server note."
+msgstr ""
+
+#: tsett.radiouseserver.caption
+msgid "Use server note and rename local one."
+msgstr ""
+
+#: tsett.tabbackup.caption
+msgid "BackUp"
+msgstr ""
+
+#: tsett.tabbasic.caption
+msgid "Basic"
+msgstr ""
+
+#: tsett.tabdisplay.caption
+msgid "Display"
+msgstr ""
+
+#: tsett.tabsnapshot.caption
+msgid "SnapShot"
+msgstr ""
+
+#: tsett.tabsync.caption
+msgid "Sync"
 msgstr ""
 

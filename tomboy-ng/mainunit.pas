@@ -67,7 +67,7 @@ unit MainUnit;
 	2018/01/01  Set goThumbTracking true so contents of scroll box glide past as
     			you move the "Thumb Slide".
 	2018/01/01  Moved call to enable/disable the sync menu item into RecentMenu();
-
+    2018/01/25  Changes to support Notebooks
 }
 
 {$mode objfpc}{$H+}
@@ -83,11 +83,20 @@ type
     { TRTSearch }
 
     TRTSearch = class(TForm)
+			ButtonNotebookOptions: TButton;
+			ButtonShowAllNotes: TButton;
 		ButtonRefresh: TButton;
         ButtonClearSearch: TButton;
         Edit1: TEdit;
+		MenuEditNotebookTemplate: TMenuItem;
+		MenuDeleteNotebook: TMenuItem;
+		MenuNewNoteFromTemplate: TMenuItem;
 		MenuSynchronise: TMenuItem;
         MenuItemSettings: TMenuItem;
+		Panel1: TPanel;
+		PopupMenuNotebook: TPopupMenu;
+		Splitter1: TSplitter;
+		StringGridNotebooks: TStringGrid;
         TrayMenuAbout: TMenuItem;
         MenuItem3: TMenuItem;
         TrayMenuNew: TMenuItem;
@@ -111,7 +120,9 @@ type
         TrayIcon: TTrayIcon;
 //        procedure ButtonOpenClick(Sender: TObject);
 		procedure ButtonClearSearchClick(Sender: TObject);
+		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
+		procedure ButtonShowAllNotesClick(Sender: TObject);
 		procedure Edit1EditingDone(Sender: TObject);
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
@@ -120,10 +131,14 @@ type
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure FormShow(Sender: TObject);
+		procedure MenuDeleteNotebookClick(Sender: TObject);
+		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuItemSettingsClick(Sender: TObject);
+		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         { Takes the app down when user clicks TrayIcon menu quit }
         procedure MenuQuitClick(Sender: TObject);
 		procedure MenuSynchroniseClick(Sender: TObject);
+		procedure StringGridNotebooksClick(Sender: TObject);
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenSearchClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
@@ -132,13 +147,21 @@ type
         { Responds when any of the recent items is clicked in TrayIcon menu }
         procedure TrayMenuRecent1Click(Sender: TObject);
     private
-        NoteLister : TNoteLister;
+
+        { ----- A set of two horrible methods only needed on Mac to minimise memory leaks ---- }
+
+        	{ returns true if there is a note in top10 not present in Menu }
+        function MenuItemMissing: boolean;
+        	{ A butchered version of RecentMenu trying to avoid some of the Mac Memory leak issues }
+        procedure RecentMenuMac();
+        	{ Puts the names of recently used notes in the TrayMenu }
         procedure RecentMenu();
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList;
     public
+        NoteLister : TNoteLister;
         NoteDirectory : string;
         	{ Call this NoteLister no longer thinks of this as a Open note }
         procedure NoteClosing(const ID: AnsiString);
@@ -154,7 +177,7 @@ type
           (clicked a note link or recent menu item or Link Button) or nothing
           (new note). If its just Title but Title does not exist, its Link
           Button. }
-        procedure OpenNote(NoteTitle : String = ''; FullFileName : string = '');
+        procedure OpenNote(NoteTitle : String = ''; FullFileName : string = ''; TemplateIs : AnsiString = '');
         { Returns True if it put next Note Title into SearchTerm }
         function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
@@ -175,6 +198,7 @@ uses EditBox,
     settings,		// Manages settings.  This Main Form, close it to kill app.
     SyncGUI,
     TB_Sync,		// So we can make changes to local manifest when a note is deleted.
+    LCLType,		// For the MessageBox
     LazFileUtils;   // LazFileUtils needed for TrimFileName(), cross platform stuff
 
 
@@ -183,7 +207,7 @@ uses EditBox,
 const
 	MenuEmpty = '(empty)';
 
-{ -----   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ----- }
+{ -------------   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ------------ }
 
 procedure TRTSearch.NoteClosing(const ID : AnsiString);
 begin
@@ -199,27 +223,31 @@ end;
 
 procedure TRTSearch.DeleteNote(const FullFileName: ANSIString);
 var
-    NewName : ANSIString;
+    NewName, ShortFileName : ANSIString;
     LocalMan : TTomboyLocalManifest;
 begin
-	NoteLister.DeleteNote(ExtractFileNameOnly(FullFileName));
-    // DeleteFileUTF8(FullFileName);
-    NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ExtractFileNameOnly(FullFileName) + '.note';
-    if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
-    	if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
-            DebugLn('Failed to make Backup dir, ' + Sett.NoteDirectory + 'Backup');
-    if not RenameFileUTF8(FullFileName, NewName)
-    	then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName)
-    else begin
- 		LocalMan := TTomboyLocalManifest.Create;
-  		LocalMan.LocalManifestDir:= Sett.LocalConfig;
-        LocalMan.NotesDir:=Sett.NoteDirectory;
-  		if LocalMan.GetLocalServerID() then
- 			LocalMan.IDToDelete:= ExtractFileNameOnly(FullFileName)
-        else
-            DebugLn('ERROR, failed to move deleted ID in local manifest [' + ExtractFileNameOnly(FullFileName)+ ']');
-        LocalMan.Free;
-	end;
+    ShortFileName := ExtractFileNameOnly(FullFileName);
+    if NoteLister.IsATemplate(ShortFileName) then begin
+        NoteLister.DeleteNoteBookwithID(ShortFileName);
+      	DeleteFileUTF8(FullFileName);
+        ButtonShowAllNotesClick(self);
+    end else begin
+		NoteLister.DeleteNote(ShortFileName);
+     	NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ShortFileName + '.note';
+    	if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
+    		if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
+            	DebugLn('Failed to make Backup dir, ' + Sett.NoteDirectory + 'Backup');
+    	if not RenameFileUTF8(FullFileName, NewName)
+    		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
+    end;
+ 	LocalMan := TTomboyLocalManifest.Create;
+ 	LocalMan.LocalManifestDir:= Sett.LocalConfig;
+   	LocalMan.NotesDir:=Sett.NoteDirectory;
+	if LocalMan.GetLocalServerID() then
+		LocalMan.IDToDelete:= ShortFileName
+   	else
+    	DebugLn('ERROR, failed to move deleted ID in local manifest [' + ExtractFileNameOnly(FullFileName)+ ']');
+    LocalMan.Free;
     UseList();
 end;
 
@@ -245,9 +273,15 @@ end;
 { Sorts List and updates the recently used list under trayicon }
 procedure TRTSearch.UseList();
 begin
-  	NoteLister.LoadStGrid(StringGrid1);
-    Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
-    StringGrid1.SortColRow(True, 1);
+   if ButtonNotebookOptions.Enabled then
+		{ TODO :  We are in notebook mode, refresh the relevent notebook list, not the all notes one. For now, we'll do nothing but fix this ! }
+        NoteLister.LoadNotebookGrid(StringGrid1, StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
+  	else begin
+    	NoteLister.LoadStGrid(StringGrid1);
+    	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
+    	StringGrid1.SortColRow(True, 1);
+    	NoteLister.LoadStGridNotebooks(StringGridNotebooks);
+	end;
     RecentMenu();
 end;
 
@@ -261,7 +295,7 @@ begin
         NoteLister.AddNote(ExtractFileNameOnly(FullFileName)+'.note', Title, LastChange);
 	end;
     NoteLister.ThisNoteIsOpen(FullFileName, TheForm);
-	UseList();
+    UseList();
 end;
 
 procedure TRTSearch.RecentMenu();
@@ -269,7 +303,11 @@ var
       Count : integer = 1;
       MenuCaption : string;
 begin
-	while (Count <= 10) do begin
+    {$ifdef Darwin}
+    RecentMenuMac();		// Alt proc for memory leaking Mac
+    exit();
+    {$endif}
+    while (Count <= 10) do begin
        if Count < StringGrid1.RowCount then
              MenuCaption := StringGrid1.Cells[0, Count]
        else  MenuCaption := MenuEmpty;
@@ -290,12 +328,6 @@ begin
     if Sett.RemoteRepo = '' then
         MenuSynchronise.Enabled := False
     else MenuSynchronise.Enabled := True;
-
-    {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
-                        // Watch and see if it can be removed later. Oct 2017.
-    TrayIcon.InternalUpdate;
-    {$endif}
-
 end;
 
 procedure TRTSearch.ButtonRefreshClick(Sender: TObject);
@@ -352,20 +384,15 @@ procedure TRTSearch.FormCreate(Sender: TObject);
 begin
     if not Sett.HaveConfig then
         Sett.Show;
-    // that appears to cause a memory leak in the Mac
+    // that appears to cause a memory leak in the Mac  - what ? Sett ? don't think so ....
     NoteLister := TNoteLister.Create;
     IndexNotes();
-    { TODO : Must allow for fact some users insist on proceeding without setting Notes Dir }
-    { if Sett.RemoteRepo = '' then
-        MenuSynchronise.Enabled := False
-    else MenuSynchronise.Enabled := True;  }
-	RecentMenu();
     TrayIcon.Show;
 end;
 
 procedure TRTSearch.FormDestroy(Sender: TObject);
 begin
-  DebugLn('Freeing Note Lister');
+  // DebugLn('Freeing Note Lister');
   NoteLister.Free;
   NoteLister := Nil;
 end;
@@ -378,13 +405,15 @@ begin
 end;
 
 
-procedure TRTSearch.OpenNote(NoteTitle : String =''; FullFileName : string = '');
+procedure TRTSearch.OpenNote(NoteTitle: String; FullFileName: string;
+		TemplateIs: AnsiString);
 // Might be called with no Title (NewNote) or a Title with or without a Filename
 var
     EBox : TEditBoxForm;
     NoteFileName : string;
     TheForm : TForm;
 begin
+    NoteFileName := FullFileName;
     if (NoteTitle <> '') then begin
         if FullFileName = '' then Begin
         	if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
@@ -406,10 +435,9 @@ begin
     // if to here, we need open a new window. If Filename blank, its a new note
 	EBox := TEditBoxForm.Create(Application);
     EBox.NoteTitle:= NoteTitle;
-    if NoteFileName <> '' then
-        // EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
-        EBox.NoteFileName := NoteFileName
-    else EBox.NoteFileName:= '';
+
+    EBox.NoteFileName := NoteFileName;
+    Ebox.TemplateIs := TemplateIs;
     EBox.Top := Placement + random(Placement*2);
     EBox.Left := Placement + random(Placement*2);
     EBox.Show;
@@ -422,11 +450,6 @@ begin
 	            if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
 	                EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
 	            // otherwise, its a new note with a title, user clicked "Link"
-	    {                else begin
-	          	    showmessage('Failed to find a note called ' + NoteTitle);
-	          	    EBox.Free;
-	          	    exit();
-	            end;               }
 	        end else begin
 	    	    EBox.NoteFileName := FullFileName;
 	        end;
@@ -443,6 +466,7 @@ var
     NoteTitle : ANSIstring;
     FullFileName : string;
 begin
+    { TODO : If user double clicks title bar, we dont detect that and open some other note.  }
 	FullFileName := Sett.NoteDirectory + StringGrid1.Cells[3, StringGrid1.Row];
   	if not FileExistsUTF8(FullFileName) then begin
       	showmessage('Cannot open ' + FullFileName);
@@ -453,20 +477,69 @@ begin
         OpenNote(NoteTitle, FullFileName);
 end;
 
+
+{ ----------------- NOTEBOOK STUFF -------------------- }
+
+
+procedure TRTSearch.ButtonShowAllNotesClick(Sender: TObject);
+begin
+        ButtonNotebookOptions.Enabled := False;
+        UseList();		// Sadly, this will call RecentMenu() unnecessarily, bad on a Mac....
+        StringGridNoteBooks.Hint := '';
+        StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
+end;
+
+procedure TRTSearch.StringGridNotebooksClick(Sender: TObject);
+begin
+        ButtonNotebookOptions.Enabled := True;
+        StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
+        // NoteLister.LoadNotebookGrid(StringGrid1, StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+        UseList();
+        StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+end;
+
+procedure TRTSearch.ButtonNotebookOptionsClick(Sender: TObject);
+begin
+		// showmessage(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+    PopupMenuNotebook.Popup;
+end;
+
+procedure TRTSearch.MenuEditNotebookTemplateClick(Sender: TObject);
+var
+    NotebookID : ANSIString;
+begin
+    NotebookID := NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+    if NotebookID = '' then
+    	showmessage('Error, cannot open template for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
+    else
+    	OpenNote(StringGridNotebooks.Cells[0, StringGridNotebooks.Row] + ' Template',
+        		Sett.NoteDirectory + NotebookID);
+end;
+
+procedure TRTSearch.MenuDeleteNotebookClick(Sender: TObject);
+begin
+    if IDYES = Application.MessageBox('Delete this Notebook',
+    			PChar(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]),
+       			MB_ICONQUESTION + MB_YESNO) then
+		DeleteNote(Sett.NoteDirectory + NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]));
+end;
+
+procedure TRTSearch.MenuNewNoteFromTemplateClick(Sender: TObject);
+begin
+    OpenNote('', Sett.NoteDirectory
+    		+ NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]),
+            StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+end;
+
+
 { ----------------- TRAY MENU STUFF -------------------}
+
 
 procedure TRTSearch.MenuItemSettingsClick(Sender: TObject);
 begin
     Sett.Show;
     RecentMenu();
-{    if Sett.RemoteRepo = '' then MenuSynchronise.Enabled := False
-    else MenuSynchronise.Enabled := True;
-    {$ifdef Darwin}		// This to address a bug in current Lazarus on Mac
-                        // Watch and see if it can be removed later. Oct 2017.
-    TrayIcon.InternalUpdate;
-    {$endif}    }
 end;
-
 
 procedure TRTSearch.MenuQuitClick(Sender: TObject);
 begin
@@ -527,6 +600,77 @@ begin
 	if TMenuItem(Sender).Caption <> MenuEmpty then
 		OpenNote(TMenuItem(Sender).Caption);
 end;
+
+
+{ ----- Horrid 2 functions needing removal when Mac Memory Leak issues fixed ----- }
+function TRTSearch.MenuItemMissing() : boolean;
+var
+	I : integer = 1;
+    Count : integer;
+    Found : boolean;
+begin
+  	Result := True;
+  	while I <= StringGrid1.RowCount do begin	// check each entry and if not found, then return True
+        if I = 10 then break;
+        Found := False;
+   		for Count := 1 to 10 do begin
+            case Count of
+              1: if TrayMenuRecent1.Caption = StringGrid1.Cells[0, I] then Found := True;
+              2: if TrayMenuRecent2.Caption = StringGrid1.Cells[0, I] then Found := True;
+              3: if TrayMenuRecent3.Caption = StringGrid1.Cells[0, I] then Found := True;
+              4: if TrayMenuRecent4.Caption = StringGrid1.Cells[0, I] then Found := True;
+              5: if TrayMenuRecent5.Caption = StringGrid1.Cells[0, I] then Found := True;
+              6: if TrayMenuRecent6.Caption = StringGrid1.Cells[0, I] then Found := True;
+              7: if TrayMenuRecent7.Caption = StringGrid1.Cells[0, I] then Found := True;
+              8: if TrayMenuRecent8.Caption = StringGrid1.Cells[0, I] then Found := True;
+              9: if TrayMenuRecent9.Caption = StringGrid1.Cells[0, I] then Found := True;
+              10: if TrayMenuRecent10.Caption = StringGrid1.Cells[0, I] then Found := True;
+            end;
+   		end;
+        if not Found then exit();	// that entry not present in menu, so exit with True.
+        inc(I);
+    end;
+    // We got here because we did 'Found' each one we checked for, so nothing missing.
+    Result := False;
+end;
+
+ 	// OK, I know this is ugly but this is Mac own private version, it tries to avoid
+    // calling the InternalUpdate() function so as to minimise the memory leaks therein.
+procedure TRTSearch.RecentMenuMac();
+var
+	Count : integer = 1;
+	MenuCaption : string;
+begin
+    debugln('In Mac version of RecentMenu');
+    if ButtonNotebookOptions.Enabled then exit();		// to avoid issues with memory leak, we don't update RecentMenu in Notebook Mode
+    if MenuItemMissing() then begin
+		Count := 1;
+  		while (Count <= 10) do begin
+         	if Count < StringGrid1.RowCount then
+               	MenuCaption := StringGrid1.Cells[0, Count]
+         	else  MenuCaption := MenuEmpty;
+         	case Count of
+           		1 : TrayMenuRecent1.Caption := MenuCaption;
+          		2 : TrayMenuRecent2.Caption := MenuCaption;
+          		3 : TrayMenuRecent3.Caption := MenuCaption;
+          		4 : TrayMenuRecent4.Caption := MenuCaption;
+           		5 : TrayMenuRecent5.Caption := MenuCaption;
+           		6 : TrayMenuRecent6.Caption := MenuCaption;
+           		7 : TrayMenuRecent7.Caption := MenuCaption;
+           		8 : TrayMenuRecent8.Caption := MenuCaption;
+           		9 : TrayMenuRecent9.Caption := MenuCaption;
+           		10 : TrayMenuRecent10.Caption := MenuCaption;
+          	end;
+        	inc(Count);
+    	end;
+      if Sett.RemoteRepo = '' then
+          MenuSynchronise.Enabled := False
+      else MenuSynchronise.Enabled := True;
+      TrayIcon.InternalUpdate;				// we don't see changes unless we call this, and it leaks !
+      debugln('... and we did call InternalUpDate');
+	end;
+end;
+
 
 end.
 

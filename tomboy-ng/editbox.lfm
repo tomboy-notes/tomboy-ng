@@ -544,7 +544,6 @@ object EditBoxForm: TEditBoxForm
     Top = 0
     Width = 100
     Caption = 'Notebook'
-    Enabled = False
     Font.Height = -11
     Font.Name = 'Sans'
     Glyph.Data = {
@@ -638,6 +637,7 @@ object EditBoxForm: TEditBoxForm
       F3F4F3F3F4F3F3F4F3F3F4F3F3F4F3F3F4F3F3F4F3F3F4F3F3F4F3F3F4F3F3F4
       0000
     }
+    OnClick = ButtNotebookClick
     ParentFont = False
     TabOrder = 5
   end
@@ -672,7 +672,7 @@ object EditBoxForm: TEditBoxForm
   end
   object PopupMenuText: TPopupMenu
     left = 232
-    top = 192
+    top = 200
     object MenuBold: TMenuItem
       Caption = 'Bold'
       OnClick = MenuBoldClick
@@ -716,8 +716,8 @@ object EditBoxForm: TEditBoxForm
     end
   end
   object PopupMenuTools: TPopupMenu
-    left = 128
-    top = 120
+    left = 368
+    top = 200
     object MenuItemSync: TMenuItem
       Caption = 'Syncronize'
       Enabled = False
@@ -729,8 +729,8 @@ object EditBoxForm: TEditBoxForm
     end
   end
   object PopupMenuRightClick: TPopupMenu
-    left = 64
-    top = 256
+    left = 80
+    top = 200
     object MenuItemFind: TMenuItem
       Caption = 'Find in this Note'
       OnClick = MenuItemFindClick
@@ -765,19 +765,19 @@ object EditBoxForm: TEditBoxForm
     Width = 480
     Height = 136
     OnFind = FindDialog1Find
-    left = 315
-    top = 175
+    left = 232
+    top = 280
   end
   object Timer1: TTimer
     Interval = 10000
     OnTimer = Timer1Timer
-    left = 337
-    top = 60
+    left = 368
+    top = 280
   end
   object TaskDialogDelete: TTaskDialog
     Buttons = <>
     RadioButtons = <>
-    left = 194
-    top = 352
+    left = 80
+    top = 280
   end
 end

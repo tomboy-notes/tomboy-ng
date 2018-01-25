@@ -45,6 +45,8 @@ unit TB_Sync;
 				before writing a localmanifest when deleting a synced local file.
 				And the try..except also responds to an EAccessViolation as it appears (?)
 				that the mac raises EObjectCheck and Linux raises EAccessError.
+	2018/01/24  #638 moved an exit() above a create call - cos it should be ???
+	2018/01/25  Changes to support Notebooks
 }
 
 
@@ -635,8 +637,9 @@ var
     NoteInfoP : PNoteInfo;
 begin
     Result := true;
-    NoteInfoListLocalManifest := TNoteInfoList.Create;
     if SkipFile then exit();
+    NoteInfoListLocalManifest := TNoteInfoList.Create;
+
     try
     	try
     		ReadXMLFile(Doc, LocalManifestDir + 'manifest.xml');
@@ -655,11 +658,6 @@ begin
                    new(NoteInfoP);
                    NoteInfoP.ID := NodeList.Item[j].Attributes.GetNamedItem('guid').NodeValue;
                    NoteInfoP.Rev := NodeList.Item[j].Attributes.GetNamedItem('latest-revision').NodeValue;
-
-
-                   // Danger Will Robinson, danger, I just added that line, will need widespread test
-
-
                    NoteInfoP.Deleted := False;
                    NoteInfoListLocalManifest.Add(NoteInfoP);
 			   end;

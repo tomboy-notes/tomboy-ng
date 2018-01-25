@@ -203,7 +203,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="8">
+    <Units Count="9">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -253,6 +253,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SyncGUI"/>
       </Unit7>
+      <Unit8>
+        <Filename Value="notebook.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="NoteBookPick"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Notebook"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

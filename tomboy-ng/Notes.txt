@@ -88,4 +88,81 @@ I'll also provide, in similar places 16x16, 22x22, 24x24, 48x48 because some doc
 
 In the Mac - setting a Lazarus Application Icon seems work. I'll need to test under Windows .... 
 
+Notebooks
+------------
+Every note that is a member of a Notebook has an extra bit of XML down just after the <y>,</y>
+tag, in Tomboy it mentions only one Notebook, to remain compatable, so should we but there is
+no there reason. Tags look like this -
+  <tags>
+    <tag>system:notebook:DavosNotebook</tag>
+  </tags>
+In addition, Notebook Templates exist in Tomboy but I don't plan to rely on them, just
+ignore them if present. They are are identified by this
+  <tags>
+    <tag>system:template</tag>
+    <tag>system:notebook:DavosNotebook</tag>
+  </tags>
+The StartHere note has the system:template tag but not, obviously, the notebook one.
 
+POLICY (not sure is Tomboy does this too)
+ * If I find a note that thinks it is a member of a particular notebook, but I cannot
+   find a template for that note, then I will ignore that claim, not display that notebook
+   to user and remove the claim if and when I save the note.
+ * When a notebook is deleted, we delete the Notebook Template, not the notes that are
+   a member of the note.
+
+So, the plan is -
+* Ignore any note that has both above tags. We'll deal with (editing) Templates seperatly.
+* Note_Lister - If a note has just the Notebook one, use it normally and add a entry,
+  ID:NotebookName to NotebookList object in Note_Lister.   Done
+  - A function to return a list (TStringList ?) full of all the Notebooks, optionall
+    for an ID is a member of.  ie function TNoteLister.GetNotebooks(const ID = '') : TStrings
+  - I'll assume any change to a Note's membership is all handled by one function
+	that passes the ID of the note and a TStringList that contains all the notebooks
+	that note is a member of. So, delete existing and add new ones. TStringList might be empty
+	procedure SetNotesMembership(const ID : ansistring; const MemberList : TStringList);
+
+* Add code to SaveNote that when a note is being saved, we look at Note_Lister's
+  NotebookList and see if note is a member of a Notebook, if so put in appropriate
+  code.
+	- Add Note_Lister to uses clasue.                 - done
+	- Add a function that returns the Tags block if it finds this note is
+	  a member of any particular notebook. Tags specific code belongs here not
+	  in Note_Lister.                                 - done
+	- Call that function from the Footer() procedure. - done
+* Add some GUI to Editbox to allow user to make the current note join or leave
+  an existing Notebook or, if necessary, make a new notebook.
+* Add tools to NotebookList to list all known Notebooks and to remove an entry
+  when a note leaves a notebook.
+
+* Editbox stuff *
+GUI mode, add a popup menu to the notebook button, turn on checkbox options for it
+First item will be make a new notebook, others are added at runtime based on data
+in the NotebookList object.
+
+* MainUnit stuff *
+- Add strgrid to form for Notebook, "Notebooks" (not clickable);
+       - "Show all notes" - now a seperate button.    Done
+	   - "Templates" - will be Right Click in Notebook Name in str list - ToDo
+	   - List of know Notebooks from Note_Lister. Click and see members - Done
+- Interface between EditBox and Note_lister so we can add and remove Notebook-ness - ToDo
+- The DeleteNote() function must check to see if note is listed as having notebook - Hmm, why ?
+
+Make a New Notebook Process
+----------------------------
+User gets a dialog, Notebook, that can let them enter a new notebook name.
+User presses OK button and if the dialogs New Notebook tab is active it does this -
+* check that there is some text in text box
+* creates a new saver object.
+* calls Saver.SaveNewTemplate passing the name of the new Notebook.
+* That generates a GUID to name the template, and calls AddNoteBook() to put
+  a record of the notebook name and the ID of its Template into the notebook data
+  structure.
+* We then open a stream, save a simplified note with the name and read  Saver.NotebookTags
+  to put correct tags in, it gets this info from the Notebook data strusture, we put it
+  in there earlier.
+
+If user deletes a notebook, we delete the notebook template file and remove ref
+to it from the notebook structure. We do not, at this stage, make any changes to
+individual notebooks that may claim to be members of that notebook. If user loads
+such a note, the claims will be ignored and not resaved.

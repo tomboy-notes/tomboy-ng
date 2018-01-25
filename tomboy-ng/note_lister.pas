@@ -41,6 +41,7 @@ unit Note_Lister;
 	2017/12/28  Commented out unnecessary DebugLn
 	2017/12/29  Added a debug line to ThisNoteIsOpen() to try and see if there is
 				a problem there. Really don't think there is but ...
+	2018/01/25  Changes to support Notebooks
 }
 
 {$mode objfpc}
@@ -49,6 +50,38 @@ INTERFACE
 
 uses
 		Classes, SysUtils, Grids, Forms;
+
+type
+   PNotebook=^TNotebook;
+   TNotebook = record
+       // Name of the notebook
+       Name : ANSIString;
+       // The ID of the Template for this Notebook
+       Template : ANSIString;
+       // A list of the IDs of notes that are members of this Notebook.
+       Notes : TStringList;
+   end;
+
+type
+
+   { TNoteBookList }
+
+   TNoteBookList = class(TList)
+   private
+     	function Get(Index : integer) : PNoteBook;
+		procedure RemoveNoteBook(const NBName: AnsiString);
+   public
+        destructor Destroy; Override;
+        { Adds the ID to the Notebook, if Notebook does not already exist, creates it }
+        procedure Add(const ID, ANoteBook : ANSIString; IsTemplate : boolean);
+        { Returns True if the passed ID is in the passed Notebook }
+        function IDinNotebook(const ID, Notebook : ANSIstring) : boolean;
+        function FindNoteBook(const NoteBook : ANSIString) : PNoteBook;
+        { Removes any list entries that do not have a Template }
+        procedure CleanList();
+        property Items[Index : integer] : PNoteBook read Get; default;
+   end;
+
 
 type
   	PNote=^TNote;
@@ -60,6 +93,7 @@ type
     	CreateDate : ANSIString;
                 { a 19 char date time string, updateable }
     	LastChange : ANSIString;
+        IsTemplate : boolean;
         OpenNote : TForm;
 	end;
 
@@ -90,21 +124,46 @@ type
    private
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
+    NoteBookList : TNoteBookList;
     		{ Returns a simple note file name, accepts simple filename or ID }
-	function CleanFileName(const FileOrID: AnsiString): ANSIString;
+ function CleanFileName(const FileOrID: AnsiString): ANSIString;
     procedure CleanupList(const Lst : TNoteList);
    	procedure GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm : ANSIString = '');
     		{ Returns True if indicated note contains term in its content }
    	function NoteContains(const Term, FileName : ANSIString) : boolean;
+
    public
     		{ The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
-    		{ Adds a note to main list, ie when user creates a new note }
+    		{ Removes the Notebook entry with ID=Template from Notebook datastructure }
+    procedure DeleteNoteBookwithID(FileorID : AnsiString);
+    		{ Returns True if passed string is the ID or short Filename of a Template }
+    function IsATemplate(FileOrID : AnsiString) : boolean;
+			{ Adds a notebook to the internal data structure, probably only used
+              when making a new Notebook and its Template }
+	procedure AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate: Boolean);
+    		{ Sets the passed Notebooks as 'parents' of the passed note. Any pre
+              existing membership will be cancelled. The list can contain zero to
+              many notebooks.  }
+    procedure SetNotebookMembership(const ID: ansistring; const MemberList: TStringList);
+    		{ If ID is empty, always returns false, puts all Notebook names in strlist.
+            If ID is not empty, list is filtered for only ones that have that ID
+            and returns True iff the passed ID is that of a Template.  A Notebook
+            Template will have only one Notebook name in its Tags and that will
+            be added to strlist. The StartHere template won't have a Notebook Name
+            and therefore wont get mixed up here ???? }
+   function GetNotebooks(const NBList : TStringList; const ID : ANSIString = '') : boolean;
+    		{ Loads the Notebook StringGrid up with the Notebook names we know about }
+	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid);
+            { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
-    		{ Read the metadata from all the notes in internal data structure }
+    		{ Read the metadata from all the notes in internal data structure,
+              this is the main "go and do it" function.
+              If 'term' is present we'll just search for notes with that term
+              and store date in a different structure. }
    	function GetNotes(const Term : ANSIstring = '') : longint;
-    		{ Copy the internal data to the passed TStringGrid, empting it first }
+    		{ Copy the internal Note data to the passed TStringGrid, empting it first }
    	procedure LoadStGrid(const Grid : TStringGrid);
     		{ Returns True if its updated the internal record as indicated,
               will accept either an ID or a filename. }
@@ -123,6 +182,11 @@ type
     function DeleteNote(const ID : ANSIString) : boolean;
 			{ Copy the internal data to the passed TStringGrid, empting it first }
 	procedure LoadSearchGrid(const Grid : TStringGrid);
+    		{ Copy the internal data about notes in passed Notebook to passed TStringGrid }
+    procedure LoadNotebookGrid(const Grid : TStringGrid; const NotebookName : AnsiString);
+    		{ Returns the ID (inc .note) of the notebook Template, if an empty string we did
+              not find a) the Entry in NotebookList or b) the entry had a blank template. }
+    function NotebookTemplateID(const NotebookName : ANSIString) : AnsiString;
     destructor Destroy; override;
    end;
 
@@ -132,10 +196,261 @@ type
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger;
-
 { Projectinspector, double click Required Packages and add LCL }
 
-{ NoteLister }
+{ TNoteBookList }
+
+
+
+
+{ ========================= N O T E B O O K L I S T ======================== }
+
+function TNoteBookList.Get(Index: integer): PNoteBook;
+begin
+    Result := PNoteBook(inherited get(Index));
+end;
+
+destructor TNoteBookList.Destroy;
+var
+    I, X : Integer;
+begin
+        for I := 0 to Count-1 do begin
+            debugln(inttostr(I) + ' Destroying Notebook ' + Items[I]^.Name + '  template=' + Items[I]^.Template);
+            for X := 0 to Items[I]^.Notes.Count - 1 do
+            	debugln('Content ' + Items[I]^.Notes[X]);
+          	Items[I]^.Notes.free;
+    		dispose(Items[I]);
+		end;
+		inherited Destroy;
+end;
+
+procedure TNoteBookList.Add(const ID, ANoteBook: ANSIString; IsTemplate: boolean
+		);
+var
+    NB : PNoteBook;
+    NewRecord : boolean = False;
+begin
+    NB := FindNoteBook(ANoteBook);
+    if NB = Nil then begin
+        // debugln('Making a new record');
+        NewRecord := True;
+        new(NB);
+    	NB^.Name:= ANoteBook;
+        NB^.Template := '';
+        NB^.Notes := TStringList.Create;
+	end;
+    if IsTemplate then begin
+        // debugln('Its a Template');
+        NB^.Template:= ID
+    end else begin
+      NB^.Notes.Add(ID);
+      // debugln('Ordinary notebook entry');
+	end;
+	if NewRecord then inherited Add(NB);
+end;
+
+function TNoteBookList.IDinNotebook(const ID, Notebook: ANSIstring): boolean;
+var
+	Index : longint;
+    TheNoteBook : PNoteBook;
+begin
+	Result := False;
+    TheNoteBook := FindNoteBook(NoteBook);
+    if TheNoteBook = Nil then exit();
+    for Index := 0 to TheNoteBook^.Notes.Count-1 do
+        if ID = TheNoteBook^.Notes[Index] then begin
+            Result := True;
+            exit();
+		end;
+end;
+
+function TNoteBookList.FindNoteBook(const NoteBook: ANSIString): PNoteBook;
+var
+        Index : longint;
+        Test : integer;
+        TestSt : ansistring;
+begin
+        Result := Nil;
+        Test := Count;
+        for Index := 0 to Count-1 do begin
+            TestSt := Items[Index]^.Name;
+            if Items[Index]^.Name = NoteBook then begin
+                Result := Items[Index];
+                exit()
+    		end;
+    	end;
+end;
+
+procedure TNoteBookList.CleanList;
+var
+	Index : integer = 0;
+begin
+	while Index < Count do begin
+        if Items[Index]^.Template = '' then begin
+          	Items[Index]^.Notes.free;
+    		dispose(Items[Index]);
+            Delete(Index);
+		end else
+        	inc(Index);
+	end;
+end;
+
+		// Don't think we use this method  ?
+procedure TNoteBookList.RemoveNoteBook(const NBName: AnsiString);
+var
+	Index : integer;
+begin
+	for Index := 0 to Count-1 do
+    	if Items[Index]^.Name = NBName then begin
+          	Items[Index]^.Notes.free;
+    		dispose(Items[Index]);
+            Delete(Index);
+            break;
+		end;
+    debugln('ERROR, asked to remove a note book that I cannot find.');
+end;
+
+
+
+{ ====================== NoteLister ============================== }
+
+{ -------------  Things relating to NoteBooks ------------------ }
+
+
+procedure TNoteLister.AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate : Boolean);
+begin
+    NoteBookList.Add(ID, ANoteBook, IsTemplate);
+end;
+
+procedure TNoteLister.LoadNotebookGrid(const Grid: TStringGrid;
+		const NotebookName: AnsiString);
+var
+    Index : integer;
+    Test : Integer;
+    testID : AnsiString;
+begin
+  	Grid.Clear;
+    //Grid.Clean;
+    Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
+    Grid.FixedRows := 1;
+    // Scan the main list of notes looking for ones in this Notebook.
+	for Index := 0 to NoteList.Count -1 do begin
+        Test := NoteList.Count;
+        TestID := NoteList.Items[Index]^.ID;
+        if NotebookList.IDinNotebook(NoteList.Items[Index]^.ID, NoteBookName) then begin
+        	Grid.InsertRowWithValues(Grid.RowCount, [NoteList.Items[Index]^.Title,
+        			NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,
+            		NoteList.Items[Index]^.ID]);
+
+		end;
+	end;
+    Grid.AutoSizeColumns;
+end;
+
+function TNoteLister.NotebookTemplateID(const NotebookName: ANSIString): AnsiString;
+var
+    Index : integer;
+begin
+    for Index := 0 to NotebookList.Count - 1 do begin
+        if NotebookName = NotebookList.Items[Index]^.Name then begin
+            Result := NotebookList.Items[Index]^.Template;
+            exit();
+		end;
+	end;
+    debugln('ERROR - asked for the template for a non existing Notebook');
+    Result := '';
+end;
+
+procedure TNoteLister.DeleteNoteBookwithID(FileorID: AnsiString);
+var
+    Index : integer;
+begin
+    for Index := 0 to NotebookList.Count - 1 do begin
+        if CleanFileName(FileorID) = NotebookList.Items[Index]^.Template then begin
+          	NotebookList.Items[Index]^.Notes.free;
+    		dispose(NotebookList.Items[Index]);
+            NotebookList.Delete(Index);
+            exit();
+		end;
+	end;
+    debugln('ERROR - asked to delete a notebook by ID but cannot find it.');
+end;
+
+
+function TNoteLister.IsATemplate(FileOrID: AnsiString): boolean;
+var
+    SL : TStringList;
+begin
+	SL := TStringList.Create;
+    Result := GetNotebooks(SL, CleanFileName(FileOrID));
+    SL.Free;
+end;
+
+procedure TNoteLister.SetNotebookMembership(const ID : ansistring; const MemberList : TStringList);
+var
+    Index, BookIndex : integer;
+begin
+    // First, remove any mention of this ID from data structure
+	for Index := 0 to NotebookList.Count - 1 do begin
+        BookIndex := 0;
+        while BookIndex < NotebookList.Items[Index]^.Notes.Count do begin
+            if ID = NotebookList.Items[Index]^.Notes[BookIndex] then
+            	NotebookList.Items[Index]^.Notes.Delete(BookIndex);
+            inc(BookIndex);
+        end;
+	end;
+	// Now, put back the ones we want there.
+    for BookIndex := 0 to MemberList.Count -1 do
+        for Index := 0 to NotebookList.Count - 1 do
+            if MemberList[BookIndex] = NotebookList.Items[Index]^.Name then begin
+                NotebookList.Items[Index]^.Notes.Add(ID);
+                break;
+            end;
+end;
+
+procedure TNoteLister.LoadStGridNotebooks(const NotebookGrid : TStringGrid);
+var
+    Index : integer;
+begin
+    NotebookGrid.Clear;
+    NotebookGrid.InsertRowWithValues(0, ['Notebooks']);
+    NotebookGrid.FixedRows:=1;
+    for Index := 0 to NotebookList.Count - 1 do begin
+        NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
+        // debugln('Add row to grid');
+	end;
+    NotebookGrid.AutoSizeColumns;
+end;
+
+function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
+var
+    Index, I : Integer;
+begin
+    // debugln('In GetNotebooks ID=' + ID);
+	Result := false;
+ 	for Index := 0 to NoteBookList.Count -1 do begin
+      	if ID = '' then
+            NBList.Add(NotebookList.Items[Index]^.Name)
+        else begin
+            // I := NotebookList.Items[Index]^.Notes.Count;
+            // debugln('Comparing ' + ID + ' with ' + NotebookList.Items[Index]^.Template);
+            if ID = NotebookList.Items[Index]^.Template then begin
+                // debugln('Looks like we asking about a template ' + ID);
+                NBList.Add(NotebookList.Items[Index]^.Name);
+                if NBList.Count > 1 then
+                    debugln('Error, seem to have more than one Notebook Name for template ' + ID);
+                Result := True;
+                exit();
+			end;
+			for I := 0 to NotebookList.Items[Index]^.Notes.Count -1 do
+            	if ID = NotebookList.Items[Index]^.Notes[I] then
+                	NBList.Add(NotebookList.Items[Index]^.Name);
+		end;
+	end;
+end;
+
+{ -------------- Things relating to Notes -------------------- }
+
 
 procedure TNoteLister.CleanupList(const Lst : TNoteList);
 var
@@ -161,6 +476,7 @@ var
     NoteP : PNote;
     Doc : TXMLDocument;
 	Node : TDOMNode;
+    J : integer;
 begin
     // writeln('Checking note ', FileName);
   	if FileExistsUTF8(Dir + FileName) then begin
@@ -178,11 +494,30 @@ begin
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
+				NoteP^.IsTemplate := False;
+                Node := Doc.DocumentElement.FindNode('tags');
+                if Assigned(Node) then begin
+                  	for J := 0 to Node.ChildNodes.Count-1 do
+                      	if UTF8pos('system:template', Node.ChildNodes.Item[J].TextContent) > 0 then
+                            NoteP^.IsTemplate := True;
+                    for J := 0 to Node.ChildNodes.Count-1 do
+                        if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then
+                        	NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
+                        // Node.ChildNodes.Item[J].TextContent) may be something like -
+                        // * system:notebook:DavosNotebook - this note belongs to DavosNotebook
+                        // * system:template - this note is a template, if does not also have a
+                        // Notebook tag its the StartHere note, otherwise its the Template for
+                        // for the mentioned Notebook.
+				end;
             except 		on EXMLReadError do DebugLn('Note has no Title ' + FileName);
             		    on EAccessViolation do DebugLn('Access Violation ' + FileName);
   		    end;
-            if SearchTerm = '' then
-            	NoteList.Add(NoteP)
+            if NoteP^.IsTemplate then begin    // Don't show templates in normal note list
+                dispose(NoteP);
+                exit();
+			end;
+			if SearchTerm = '' then
+            		NoteList.Add(NoteP)
             else SearchNoteList.Add(NoteP);
   	    finally
       	    Doc.free;
@@ -213,6 +548,9 @@ begin
 	end else DebugLn('Error, found a note and lost it !', WorkingDir + Filename);
 end;
 
+
+
+
 procedure TNoteLister.AddNote(const FileName, Title, LastChange : ANSIString);
 var
     NoteP : PNote;
@@ -240,6 +578,8 @@ begin
         SearchNoteList.Free;
     	SearchNoteList := TNoteList.Create;
     end;
+    NoteBookList.Free;
+    NoteBookList := TNoteBookList.Create;
     if WorkingDir = '' then
     	DebugLn('In GetNotes with a blank working dir, thats going to lead to tears....');
 
@@ -251,6 +591,7 @@ begin
   	FindClose(Info);
     if Term = '' then begin
         CleanUpList(NoteList);
+        NotebookList.CleanList();
         Result := NoteList.Count;
 	end else begin
     	CleanUpList(SearchNoteList);
@@ -258,26 +599,43 @@ begin
 	end;
 end;
 
+
 procedure TNoteLister.LoadStGrid(const Grid : TStringGrid);
+var
+    Index : integer;
+begin
+  	Grid.Clear;                       { TODO : we call these three lines from three different places ! }
+    Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
+    Grid.FixedRows := 1;
+	for Index := 0 to NoteList.Count -1 do begin
+        Grid.InsertRowWithValues(Index+1, [NoteList.Items[Index]^.Title,
+        	NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,
+            NoteList.Items[Index]^.ID]);
+	end;
+    Grid.AutoSizeColumns;
+end;
+
+
+
+procedure TNoteLister.LoadSearchGrid(const Grid: TStringGrid);
 var
     Index : integer;
 begin
   	Grid.Clear;
     Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
-	for Index := 0 to NoteList.Count -1 do begin
-        Grid.InsertRowWithValues(Index+1, [NoteList.Items[Index]^.Title,
-        	NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,
-            NoteList.Items[Index]^.ID]);
-        { writeln(NoteList.Items[Index]^.ID, ' - ', NoteList.Items[Index]^.LastChange, ' - ',
-        NoteList.Items[Index]^.Title, ' - ', NoteList.Items[Index]^.CreateDate ); }
+    Grid.FixedRows := 1;
+    for Index := 0 to SearchNoteList.Count -1 do begin
+        Grid.InsertRowWithValues(Index+1, [SearchNoteList.Items[Index]^.Title,
+        	SearchNoteList.Items[Index]^.LastChange, SearchNoteList.Items[Index]^.CreateDate,
+            SearchNoteList.Items[Index]^.ID]);
 	end;
     Grid.AutoSizeColumns;
 end;
 
+
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;
 var
     Index : integer;
-    // TestID : ANSIString;
 begin
 	result := False;
     for Index := 0 to NoteList.Count -1 do begin
@@ -285,15 +643,12 @@ begin
         	if Title <> '' then
             	NoteList.Items[Index]^.Title := Title;
         	if Change <> '' then
-            	// NoteList.Items[Index]^.LastChange := Change;
-            	// NoteList.Items[Index]^.LastChange := copy(NoteList.Items[Index]^.LastChange, 1, 19);
                 NoteList.Items[Index]^.LastChange := copy(Change, 1, 19);
             	NoteList.Items[Index]^.LastChange[11] := ' ';
             Result := True;
             exit();
 		end;
 	end;
-    // DebugLn('Trying to match ', TestID);
 end;
 
 function TNoteLister.IsThisATitle(const Title: ANSIString): boolean;
@@ -335,7 +690,7 @@ end;
 procedure TNoteLister.ThisNoteIsOpen(const ID : ANSIString; const TheForm: TForm);
 var
     Index : integer;
-    cnt : integer;
+    //cnt : integer;
 begin
     if NoteList = NIl then
         exit;
@@ -346,7 +701,7 @@ begin
         // I believe is legal to start the for loop below with an empty list but ....
         // When we are creating the very first note in a dir, this haappens. Count should be exactly zero.
 	end;
-	cnt := NoteList.Count;
+	//cnt := NoteList.Count;
 	for Index := 0 to NoteList.Count -1 do begin
       	//writeln('ID = ', ID, ' ListID = ', NoteList.Items[Index]^.ID);
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
@@ -409,24 +764,12 @@ begin
         DebugLn('Failed to remove ref to note in NoteLister ', ID);
 end;
 
-procedure TNoteLister.LoadSearchGrid(const Grid: TStringGrid);
-var
-    Index : integer;
-begin
-  	Grid.Clear;
-    Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
-	for Index := 0 to SearchNoteList.Count -1 do begin
-        Grid.InsertRowWithValues(Index+1, [SearchNoteList.Items[Index]^.Title,
-        	SearchNoteList.Items[Index]^.LastChange, SearchNoteList.Items[Index]^.CreateDate,
-            SearchNoteList.Items[Index]^.ID]);
-        { writeln(NoteList.Items[Index]^.ID, ' - ', NoteList.Items[Index]^.LastChange, ' - ',
-        NoteList.Items[Index]^.Title, ' - ', NoteList.Items[Index]^.CreateDate ); }
-	end;
-    Grid.AutoSizeColumns;
-end;
+
 
 destructor TNoteLister.Destroy;
 begin
+    NoteBookList.Free;
+    NoteBookList := Nil;
     SearchNoteList.Free;
     SearchNoteList := Nil;
     NoteList.Free;
@@ -434,7 +777,7 @@ begin
 	inherited Destroy;
 end;
 
-{ TNoteList }
+{  =========================  TNoteList ====================== }
 
 
 destructor TNoteList.Destroy;
@@ -442,8 +785,9 @@ var
   I : integer;
 begin
     // DebugLn('NoteList - disposing of items x ' + inttostr(Count));
-	for I := 0 to Count-1 do
+	for I := 0 to Count-1 do begin
     	dispose(Items[I]);
+	end;
 	inherited Destroy;
 end;
 

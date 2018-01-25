@@ -47,6 +47,7 @@ unit SaveNote;
 	2017/12/10  Fix a bug in BulletList() whereby font changes were not preserving
 				previous queued format changes. Possibly. This is not robust code.
 	2018/01/01  Yet another bug fix for BulletList(), this time I've got it !
+	2018/01/25  Changes to support Notebooks
 }
 
 {$mode objfpc}{$H+}
@@ -54,7 +55,7 @@ unit SaveNote;
 interface
 
 uses
-    Classes, SysUtils, KMemo, Graphics;
+    Classes, SysUtils, KMemo, Graphics, LazLogger;
 
 type
 
@@ -63,6 +64,7 @@ type
  TBSaveNote = class
 
        private
+            ID : ANSIString;
             FSize : integer;
 			Bold : boolean;
 			Italics : boolean;
@@ -82,11 +84,13 @@ type
           	function Header() : ANSIstring;
          	Function Footer() : ANSIstring;
             function GetLocalTime():ANSIstring;
+            function NoteBookTags() : ANSIString;
        public
             TimeStamp : string;
             Title : ANSIString;
       //      FontNormal : integer;		// Needs to be set after class created (could get from settings??)
             CreateDate : ANSIString;
+            procedure SaveNewTemplate(NotebookName: ANSIString);
          	procedure Save(FileName : ANSIString; KM1 : TKMemo);
     end;
 
@@ -96,6 +100,8 @@ implementation
 uses FileUtil               // Graphics needed for font style defines
     ,LazUTF8
     ,Settings				// User settings and some defines across units.
+    ,MainUnit				// So we have access to NoteBookList
+    ,LazFileUtils           // For ExtractFileName...
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 
 
@@ -195,6 +201,10 @@ var
    StartStartSt, StartEndSt, EndStartSt, EndEndSt : ANSIString;
 begin
 	//writeln('Status Bold=', Bold=True, ' PBold=', PrevBold=True, ' High=', HiLight=True, ' PHigh=', PrevHiLight=True);
+    StartStartSt := '';
+    StartEndSt := '';
+    EndStartSt := '';
+    EndEndSt := '';
     if PrevBold then begin
         StartStartSt := '</bold>';     // Starting String, Start
         StartEndSt := '<bold>';        // Starting String, End
@@ -292,20 +302,44 @@ begin
 
 end;
 
+procedure TBSaveNote.SaveNewTemplate(NotebookName : ANSIString);
+var
+   GUID : TGUID;
+   OutStream:TFilestream;
+   Buff { TemplateID }: ANSIString;
+begin
+   CreateGUID(GUID);
+   Title := NotebookName  + ' Template';
+   ID := copy(GUIDToString(GUID), 2, 36) + '.note';
+   RTSearch.NoteLister.AddNoteBook(ID, NotebookName, True);
+   Outstream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
+   try
+   		Buff := Header();
+        OutStream.Write(Buff[1], length(Buff));
+        Buff := Title + #10#10#10;
+        OutStream.Write(Buff[1], length(Buff));
+        Buff := Footer();
+        OutStream.Write(Buff[1], length(Buff));
+   finally
+       OutStream.Free;
+   end;
+end;
+
 procedure TBSaveNote.Save(FileName : ANSIString; KM1 : TKMemo);
 var
    Buff : ANSIstring = '';
    OutStream:TFilestream;
    BlockNo : integer = 0;
    Block : TKMemoBlock;
-   BlankFont : TFont;
+   // BlankFont : TFont;
  begin
     KM := KM1;
     FSize := Sett.FontNormal;
 	Bold := false;
  	Italics := False;
  	HiLight := False;
- 	InList := false;     
+ 	InList := false;
+    ID := ExtractFileNameOnly(FileName) + '.note';
             // Must deal with an empty list !
     try
         outstream :=TFilestream.Create(FileName, fmCreate);
@@ -379,7 +413,7 @@ var
 end;
 
 
-Function TBSaveNote.GetLocalTime():ANSIstring;
+function TBSaveNote.GetLocalTime: ANSIstring;
 var
    ThisMoment : TDateTime;
    Res : ANSIString;
@@ -403,7 +437,28 @@ begin
     Result := Result + res;
 end;
 
-Function TBSaveNote.Header() : ANSIstring;
+function TBSaveNote.NoteBookTags: ANSIString;
+var
+        SL : TStringList;
+        Index : Integer;
+begin
+   Result := '';
+   SL := TStringList.Create;
+   if RTSearch.NoteLister.GetNotebooks(SL, ID) then begin  // its a template
+   		Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
+        if SL.Count > 0 then
+        	Result := Result + '    <tag>system:notebook:' + SL[0] + '</tag>'#10'  </tags>'#10;
+   end else
+   		if SL.Count > 0 then begin					// its a Notebook Member
+        	Result := '  <tags>'#10;
+        	for Index := 0 to SL.Count -1 do		// here, we auto support multiple notebooks.
+        		Result := Result + '    <tag>system:notebook:' + SL[Index] + '</tag>'#10;
+        	Result := Result + '  </tags>'#10;
+		end;
+    SL.Free;
+end;
+
+function TBSaveNote.Header: ANSIstring;
 var
    S1, S2, S3, S4 : ANSIString;
 begin
@@ -415,9 +470,9 @@ begin
 end;
 
 
-Function TBSaveNote.Footer() : ANSIstring;
+function TBSaveNote.Footer: ANSIstring;
 var
-   S1, S2, S3, S4, S5 : string;
+   S1, S2, S3, S4, S5, S6 : string;
 
 begin
   TimeStamp := GetLocalTime();   // get actual time date in format like Tomboy's
@@ -425,9 +480,10 @@ begin
   S2 := '</last-change-date>'#10'  <last-metadata-change-date>';
   S3 := '</last-metadata-change-date>'#10'  <create-date>';
   S4 := '</create-date>'#10'  <cursor-position>1</cursor-position>'#10'  <selection-bound-position>1</selection-bound-position>'#10;
-  S5 := '  <width>1000</width>'#10'  <height>626</height>'#10'  <x>0</x>'#10'  <y>0</y>'#10'  <open-on-startup>False</open-on-startup>'#10'</note>';
+  S5 := '  <width>1000</width>'#10'  <height>626</height>'#10'  <x>0</x>'#10'  <y>0</y>'#10;
+  S6 := '  <open-on-startup>False</open-on-startup>'#10'</note>';
   if CreateDate = '' then CreateDate := TimeStamp;
-  Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5;
+  Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + NoteBookTags + S6;
 end;
 
 end.

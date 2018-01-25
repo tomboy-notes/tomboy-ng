@@ -1,74 +1,37 @@
 object RTSearch: TRTSearch
-  Left = 792
-  Height = 330
-  Top = 213
-  Width = 495
+  Left = 407
+  Height = 339
+  Top = 170
+  Width = 719
   Caption = 'RTSearch'
-  ClientHeight = 330
-  ClientWidth = 495
+  ClientHeight = 339
+  ClientWidth = 719
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.8.0.3'
-  object StringGrid1: TStringGrid
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 3
-    Height = 287
-    Top = 40
-    Width = 489
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Left = 3
-    BorderSpacing.Right = 3
-    BorderSpacing.Bottom = 3
-    ColCount = 2
-    ColumnClickSorts = True
-    FixedCols = 0
-    Flat = True
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
-    RowCount = 1
-    ScrollBars = ssAutoVertical
-    TabOrder = 0
-    OnDblClick = StringGrid1DblClick
-    ColWidths = (
-      267
-      241
-    )
-    Cells = (
-      2
-      0
-      0
-      'Note'
-      1
-      0
-      'Last Changed'
-    )
-  end
   object Edit1: TEdit
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = ButtonClearSearch
     Left = 3
     Height = 27
     Top = 8
-    Width = 287
+    Width = 511
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 3
     BorderSpacing.Right = 1
     OnEditingDone = Edit1EditingDone
     OnEnter = Edit1Enter
     OnExit = Edit1Exit
-    TabOrder = 1
+    TabOrder = 0
     Text = 'Search'
   end
   object ButtonClearSearch: TButton
     AnchorSideLeft.Control = Edit1
     AnchorSideLeft.Side = asrBottom
     AnchorSideRight.Control = ButtonRefresh
-    Left = 291
+    Left = 515
     Height = 27
     Hint = 'Not Implemented Yet'
     Top = 8
@@ -79,12 +42,12 @@ object RTSearch: TRTSearch
     OnClick = ButtonClearSearchClick
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 2
+    TabOrder = 1
   end
   object ButtonRefresh: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 392
+    Left = 616
     Height = 27
     Top = 8
     Width = 100
@@ -92,11 +55,137 @@ object RTSearch: TRTSearch
     BorderSpacing.Right = 3
     Caption = 'Refresh'
     OnClick = ButtonRefreshClick
+    TabOrder = 2
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 304
+    Top = 35
+    Width = 719
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Caption = 'Panel1'
+    ClientHeight = 304
+    ClientWidth = 719
     TabOrder = 3
+    object Splitter1: TSplitter
+      AnchorSideTop.Control = Panel1
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 152
+      Height = 302
+      Top = 1
+      Width = 5
+      Align = alNone
+      Anchors = [akTop, akLeft, akBottom]
+    end
+    object StringGridNotebooks: TStringGrid
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = ButtonShowAllNotes
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Splitter1
+      AnchorSideBottom.Control = ButtonNotebookOptions
+      Left = 1
+      Height = 253
+      Top = 25
+      Width = 151
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ColCount = 1
+      FixedCols = 0
+      Flat = True
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll, goRowHighlight]
+      ParentShowHint = False
+      RowCount = 3
+      ShowHint = True
+      TabOrder = 1
+      OnClick = StringGridNotebooksClick
+      ColWidths = (
+        216
+      )
+      Cells = (
+        1
+        0
+        0
+        'Notebooks'
+      )
+    end
+    object StringGrid1: TStringGrid
+      AnchorSideLeft.Control = Splitter1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 160
+      Height = 299
+      Top = 1
+      Width = 555
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BorderSpacing.Left = 3
+      BorderSpacing.Right = 3
+      BorderSpacing.Bottom = 3
+      ColCount = 2
+      ColumnClickSorts = True
+      FixedCols = 0
+      FixedRows = 0
+      Flat = True
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
+      RowCount = 1
+      ScrollBars = ssAutoVertical
+      TabOrder = 2
+      OnDblClick = StringGrid1DblClick
+      ColWidths = (
+        267
+        241
+      )
+      Cells = (
+        2
+        0
+        0
+        'Note'
+        1
+        0
+        'Last Changed'
+      )
+    end
+    object ButtonShowAllNotes: TButton
+      AnchorSideRight.Control = Splitter1
+      Left = 1
+      Height = 25
+      Top = 0
+      Width = 151
+      Anchors = [akTop, akLeft, akRight]
+      Caption = 'Show All Notes'
+      OnClick = ButtonShowAllNotesClick
+      TabOrder = 3
+    end
+    object ButtonNotebookOptions: TButton
+      AnchorSideTop.Control = ButtonShowAllNotes
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Splitter1
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = -8
+      Height = 25
+      Top = 278
+      Width = 160
+      Anchors = [akLeft, akRight, akBottom]
+      Caption = 'Notebook Options'
+      Enabled = False
+      OnClick = ButtonNotebookOptionsClick
+      TabOrder = 4
+    end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 104
-    top = 216
+    left = 472
+    top = 112
   end
   object TrayIcon: TTrayIcon
     PopUpMenu = PopupMenuTray
@@ -181,8 +270,8 @@ object RTSearch: TRTSearch
       0000
     }
     OnClick = TrayIconClick
-    left = 222
-    top = 194
+    left = 312
+    top = 112
   end
   object PopupMenuTray: TPopupMenu
     left = 312
@@ -259,6 +348,22 @@ object RTSearch: TRTSearch
     object MenuQuit: TMenuItem
       Caption = 'Quit, Close and Go Away.'
       OnClick = MenuQuitClick
+    end
+  end
+  object PopupMenuNotebook: TPopupMenu
+    left = 472
+    top = 184
+    object MenuEditNotebookTemplate: TMenuItem
+      Caption = 'Edit Notebook Template'
+      OnClick = MenuEditNotebookTemplateClick
+    end
+    object MenuDeleteNotebook: TMenuItem
+      Caption = 'Delete Notebook'
+      OnClick = MenuDeleteNotebookClick
+    end
+    object MenuNewNoteFromTemplate: TMenuItem
+      Caption = 'Create New Note from Template'
+      OnClick = MenuNewNoteFromTemplateClick
     end
   end
 end

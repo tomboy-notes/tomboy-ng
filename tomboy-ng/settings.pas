@@ -50,7 +50,7 @@ unit settings;
 	2017/12/30  We now set Search box lablepath after setting up a NotesPath
 				Added a caption to tell user we are setting up sync.
 	2017/12/30  Added a call to IndexNotes after setting up sync, potentially slow.
-
+	2018/01/25  Changes to support Notebooks
 }
 
 {$mode objfpc}{$H+}
@@ -74,6 +74,7 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
+		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
 		GroupBox3: TGroupBox;
@@ -248,6 +249,9 @@ begin
                 CheckShowIntLinks.Checked := true
             else CheckShowIntLinks.Checked := false;
 
+            CheckManyNoteBooks.checked :=
+            	('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
+
             ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
             case ReqFontSize of
             	'big'    : RadioFontBig.Checked := true;
@@ -268,6 +272,7 @@ begin
 	 end else begin
          LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
          NoteDirectory := '';
+         CheckManyNoteBooks.Checked := False;
          HaveConfig := false;
      end;
 end;
@@ -321,6 +326,9 @@ begin
       { if CheckReadOnly.Checked then
           ConfigFile.writestring('BasicSettings', 'ReadOnly', 'true')
       else ConfigFile.writestring('BasicSettings', 'ReadOnly', 'false');  }
+      if CheckManyNoteBooks.checked then
+      	Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
+      else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
       if CheckShowIntLinks.Checked then
           ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
       else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');

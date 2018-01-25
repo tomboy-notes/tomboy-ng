@@ -1,0 +1,144 @@
+object NoteBookPick: TNoteBookPick
+  Left = 195
+  Height = 311
+  Top = 164
+  Width = 487
+  Anchors = []
+  Caption = 'NoteBookPick'
+  ClientHeight = 311
+  ClientWidth = 487
+  OnShow = FormShow
+  LCLVersion = '1.8.0.3'
+  object Panel1: TPanel
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 56
+    Top = 0
+    Width = 487
+    Anchors = [akTop, akLeft, akRight]
+    ClientHeight = 56
+    ClientWidth = 487
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 24
+      Height = 17
+      Top = 24
+      Width = 45
+      Caption = 'Label1'
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 24
+      Height = 17
+      Top = 8
+      Width = 45
+      Caption = 'Label3'
+      ParentColor = False
+    end
+  end
+  object ButtonOK: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 400
+    Height = 61
+    Top = 250
+    Width = 87
+    Anchors = [akLeft, akRight, akBottom]
+    Caption = 'OK'
+    OnClick = ButtonOKClick
+    TabOrder = 1
+  end
+  object Button1: TButton
+    AnchorSideRight.Control = ButtonOK
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 312
+    Height = 61
+    Top = 250
+    Width = 88
+    Anchors = [akLeft, akRight, akBottom]
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 2
+  end
+  object Label2: TLabel
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 16
+    Height = 39
+    Top = 272
+    Width = 45
+    Anchors = [akTop, akLeft, akBottom]
+    Caption = 'Label2'
+    ParentColor = False
+  end
+  object PageControl1: TPageControl
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Panel1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ButtonOK
+    Left = 0
+    Height = 194
+    Top = 56
+    Width = 487
+    ActivePage = TabNewNoteBook
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 1
+    TabOrder = 3
+    object TabExisting: TTabSheet
+      Caption = 'Existing Note Books'
+      ClientHeight = 159
+      ClientWidth = 481
+      object CheckListBox1: TCheckListBox
+        AnchorSideLeft.Control = TabExisting
+        AnchorSideTop.Control = TabExisting
+        AnchorSideRight.Control = TabExisting
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = TabExisting
+        AnchorSideBottom.Side = asrBottom
+        Left = 0
+        Height = 159
+        Top = 0
+        Width = 481
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ItemHeight = 0
+        OnClickCheck = CheckListBox1ClickCheck
+        TabOrder = 0
+        TopIndex = -1
+      end
+    end
+    object TabNewNoteBook: TTabSheet
+      Caption = 'New Note Book'
+      ClientHeight = 159
+      ClientWidth = 481
+      object EditNewNotebook: TEdit
+        Left = 24
+        Height = 27
+        Top = 56
+        Width = 248
+        TabOrder = 0
+      end
+      object Label4: TLabel
+        Left = 26
+        Height = 17
+        Top = 32
+        Width = 194
+        Caption = 'Name of the New Note Book'
+        ParentColor = False
+      end
+      object Label5: TLabel
+        Left = 29
+        Height = 17
+        Top = 104
+        Width = 445
+        Caption = 'Press OK and we will make the Note Book AND add this note to it.'
+        ParentColor = False
+      end
+    end
+  end
+end

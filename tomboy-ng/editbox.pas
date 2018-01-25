@@ -104,6 +104,7 @@ unit EditBox;
                 text. Mac users, bless them, don't have a delete key. They use a
                 key labeled 'delete' thats really a backspace.
 	2017/01/09  Hmm, fixed a bug in new code that let BS code mess around in header.
+	2018/01/25  Changes to support Notebooks
 }
 
 
@@ -157,12 +158,18 @@ type
 		Timer1: TTimer;
 		procedure ButtDeleteClick(Sender: TObject);
 		procedure ButtLinkClick(Sender: TObject);
+		procedure ButtNotebookClick(Sender: TObject);
         procedure ButtSearchClick(Sender: TObject);
         procedure ButtTextClick(Sender: TObject);
         procedure ButtToolsClick(Sender: TObject);
 		procedure FindDialog1Find(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 		procedure FormDestroy(Sender: TObject);
+        	{ gets called under a number of conditions, easy one is just a re-show,
+              or for a new note or a new note with a title from Link button
+              or for an existing note where we get note file name
+              or a new note from template where we have a note filename but IsTemplate
+              also set, here we discard file name and make a new one. }
         procedure FormShow(Sender: TObject);
         procedure KMemo1Change(Sender: TObject);
         	{ Watchs for  backspace affecting a bullet point, and ctrl x,c,v }
@@ -224,10 +231,13 @@ type
 		procedure OnUserClickLink(sender: TObject);
         { Saves the note in KMemo1, must have title but can make up a file name if needed }
 		procedure SaveTheNote;
+        	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
+        function NewNoteTitle() : ANSIString;
     public
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
         Verbose : boolean;
+        TemplateIs : AnsiString;
     end;
 
 var
@@ -249,7 +259,9 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     MainUnit,              // Is the main starting unit and the search tool.
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
 	LoadNote,           // Will know how to load a Tomboy formatted note.
-    SyncGUI;
+    SyncGUI,
+    LazFileUtils,		// For ExtractFileName()
+    NoteBook;
 
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
@@ -306,6 +318,13 @@ begin
             KMemo1Change(self);
 		end;
 	end;
+end;
+
+procedure TEditBoxForm.ButtNotebookClick(Sender: TObject);
+begin
+    	NotebookPick.FullFileName := NoteFileName;
+        NotebookPick.Title := NoteTitle;
+		if mrOK = NotebookPick.ShowModal then dirty := True;
 end;
 
 procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
@@ -577,37 +596,64 @@ begin
     Label1.Caption := 'c';
 end;
 
+{	FormShow gets called under a number of conditions Title    Filename       Template
+	- Re-show, everything all loaded.  Ready = true   yes      .              .
+      just exit
+    - New Note                                        no       no             no
+      GetNewTitle(), add CR, CR, Ready, MarkTitle(O),
+      zero dates.
+    - New Note from Template                          no       yes, dispose   yes   R1
+      ImportNote(), null out filename
+    - New Note from Link Button, save immediatly      yes      no             no
+      cp Title to Caption and to KMemo, Ready,
+      MarkTitle().
+    - Existing Note from eg Tray Menu, Searchbox      yes      yes            no    R1
+      ImportNote()
+}
+
 procedure TEditBoxForm.FormShow(Sender: TObject);
+var
+    ItsANewNote : boolean = false;
+    Test : ANSIString;
 begin
     if Ready then exit();				// its a "re-show" event. Already have a note loaded.
-    Label1.Caption := '';
+    //Label1.Caption := '';
     Timer1.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     Kmemo1.Clear;
-    if Sett.RemoteRepo <> '' then
-        MenuItemSync.Enabled := True
-    else MenuItemSync.Enabled := False;
-    if length(NoteTitle) > 0 then
-       Caption := NoteTitle
-    else
-        Caption := 'untitled note';
-    if length(NoteFileName) > 0 then
-       ImportNote(NoteFileName)		// will clear kmemo1
-    else begin						// its a note without a file, set things up
+    MenuItemSync.Enabled := (Sett.RemoteRepo <> '');
+    if NoteFileName = '' then begin		// might be a new note or a new note from Link
+        if NoteTitle = '' then              // New Note
+			NoteTitle := NewNoteTitle();
+        ItsANewNote := True;
+	end else begin
+        Test := KMemo1.Blocks.Text;
+    	ImportNote(NoteFileName);		// also sets Caption and Createdate
+        Test := KMemo1.Blocks.Text;
+        if TemplateIs <> '' then begin
+            NoteFilename := '';
+            NoteTitle := NewNoteTitle();
+            ItsANewNote := True;
+		end;
+	end;
+    if ItsANewNote then begin
         CreateDate := '';
-    	KMemo1.Blocks.Text := Caption;
+        Caption := NoteTitle;
     	KMemo1.Blocks.AddParagraph();
     	KMemo1.Blocks.AddParagraph();
-        Ready := true;
-        MarkTitle();
-        KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
-        KMemo1.SelEnd := Kmemo1.Text.Length;
-    end;
-    if  (Caption <> 'untitled note') AND (length(NoteFileName) = 0) then
-       SaveTheNote();		// This is a note made with LINK button in another note
-    KMemo1.SetFocus;
+        if kmemo1.blocks.Items[0].ClassNameIs('TKMemoParagraph') then
+        	Kmemo1.Blocks.DeleteEOL(0);
+        if kmemo1.blocks.Items[0].ClassNameIs('TKMemoTextBlock') then
+            Kmemo1.Blocks.DeleteEOL(0);
+        KMemo1.Blocks.AddTextBlock(NoteTitle, 0);
+	end;
     Ready := true;
+    MarkTitle();
+    KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
+    KMemo1.SelEnd := Kmemo1.Text.Length;
+    KMemo1.SetFocus;
     Dirty := False;
+    Label1.Caption := 'c';
 end;
 
 	{ This gets called when the TrayMemu quit entry is clicked }
@@ -1000,8 +1046,8 @@ x	A blank line, no bullet between two bullet lines. Use BS line should dissapear
 
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  TrailOffset, BlockNo, BlockIndex, LeadOffset  : longint;
-  LeadingBullet, UnderBullet, TrailingBullet, FirstChar, NearBullet : boolean;
+  TrailOffset, BlockNo, {BlockIndex,} LeadOffset  : longint;
+  LeadingBullet, UnderBullet, TrailingBullet, FirstChar {, NearBullet} : boolean;
   NoBulletPara : boolean = false;
 begin
     if not Ready then exit();
@@ -1060,6 +1106,7 @@ procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
  	// TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
+
 begin
     // if not FileExistsUTF8(FileName) then exit();	// safety....
     { TODO 1 : Really should catch an bad file open inside Loader and tell user. }
@@ -1071,6 +1118,7 @@ begin
     KMemo1.LockUpdate;                               // this block, 300mS, 20k Note
     KMemo1.Clear;                                    // consistenly faster on a beat up
     Loader.LoadFile(FileName, KMemo1);         		 // old Mac, slower on a new Windows
+
     KMemo1.UnlockUpdate;
     // TS2 := DateTimeToTimeStamp(Now);
     Createdate := Loader.CreateDate;
@@ -1100,6 +1148,7 @@ end;
 procedure TEditBoxForm.SaveTheNote();
 var
  	Saver : TBSaveNote;
+    SL : TStringList;
 begin
     if Sett.NotesReadOnly then begin
     //    showmessage('Sorry, Settings say we dont save.');
@@ -1114,13 +1163,30 @@ begin
     end;
     Caption := Saver.Title;
     Saver.CreateDate := CreateDate;
+    if TemplateIs <> '' then begin
+        SL := TStringList.Create();
+        SL.Add(TemplateIs);
+    	RTSearch.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
+        SL.Free;
+        TemplateIs := '';
+	end;
     Saver.Save(NoteFileName, KMemo1);
     RTSearch.UpdateList(Caption, Saver.TimeStamp, NoteFileName, self);
-    Saver.Destroy;
+    { TODO : That update call switches the main search box back to showing all notes. If its in one of the Notebooks, thats not what the user wants. }
+	Saver.Destroy;
     Dirty := false;
     // RTSearch.IndexNotes();
 
 end;
+
+function TEditBoxForm.NewNoteTitle(): ANSIString;
+{ var
+    ThisMoment : TDateTime;  }
+begin
+  // ThisMoment:=Now;
+  Result := 'New Note ' + FormatDateTime('YYYY-MM-DD hh:mm:ss.zzz', Now);
+end;
+
 
 
 function TEditBoxForm.GetAFilename() : ANSIString;

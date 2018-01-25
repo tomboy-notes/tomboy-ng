@@ -33,7 +33,7 @@ unit SyncGUI;
     			you move the "Thumb Slide".
 	2018/01/01  Changed ModalResult for cancel button to mrCancel
 	2018/01/08  Tidied up message box text displayed when a sync conflict happens.
-
+	2018/01/25  Changes to support Notebooks
 }
 
 {$mode objfpc}{$H+}
