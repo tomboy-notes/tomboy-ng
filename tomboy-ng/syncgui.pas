@@ -248,6 +248,7 @@ begin
     end else Memo1.Append('Wow, DoSync appears to be happy');
     StringGridReport.Clear;
     ShowReport();
+    Label2.Caption:='OK, finished that';
 end;
 
 
@@ -264,6 +265,8 @@ end;
 
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
+    Label2.Caption:='OK, finished that';
+    Application.ProcessMessages;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
     DoSetUp();

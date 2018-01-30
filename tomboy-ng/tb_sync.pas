@@ -47,6 +47,12 @@ unit TB_Sync;
 				that the mac raises EObjectCheck and Linux raises EAccessError.
 	2018/01/24  #638 moved an exit() above a create call - cos it should be ???
 	2018/01/25  Changes to support Notebooks
+	2018/01/27  We now check for existance of local manifest rather than relying
+				on an exception to handle it.
+	2018/01/27  Found very disturbing bug that seems to have been there for awhile
+				but have had no effect. If there is no local manifest, the localmanifest
+				data structure is not setup for initial test run of sync. And that
+				calls the localmanifest datastructure. Have added test to avoid that. ???
 }
 
 
@@ -594,6 +600,8 @@ var
 	Node : TDOMNode;
 begin
     Result := False;
+    if not FileExistsUTF8(LocalManifestDir + 'manifest.xml') then exit;
+    // We are not setup to sync so don't worry about it;
     try
         try
 			    ReadXMLFile(Doc, LocalManifestDir + 'manifest.xml');
@@ -807,7 +815,13 @@ begin
     	NoteInfoP := NoteInfoListRem.FindID(NoteInfoListLoc.Items[Index].ID);
     	if NoteInfoP = NIL then begin
             // OK, its here locally but not on Server, is it in local manifest ?
-            NoteInfoP2 := NoteInfoListLocalManifest.FindID(NoteInfoListLoc.Items[Index].ID);
+            NoteInfoP2 := Nil;	// to be sure, to be sure ..
+            if assigned(NoteInfoListLocalManifest) then
+            	NoteInfoP2 := NoteInfoListLocalManifest.FindID(NoteInfoListLoc.Items[Index].ID);
+            	// NoteInfoListLocalManifest may not exist at this stage. If thats the
+                // case, it does not have any interesting records.
+
+
             { if DebugMode then begin
                 write('matching ',NoteInfoListLoc.Items[Index].ID);
                 if NoteInfoP2 = nil then writeln(' - Not matched.')
@@ -888,7 +902,10 @@ begin
         // We only need to deal with ones not found here.
         if NoteInfoP = nil then begin
             // is it listed in local manifest as deleted ?
-            NoteInfoP2 := NoteInfoListLocalManifest.FindID(NoteInfoListRem.Items[Index].ID);
+            NoteInfoP2 := Nil;
+            if assigned(NoteInfoListLocalManifest) then
+            	NoteInfoP2 := NoteInfoListLocalManifest.FindID(NoteInfoListRem.Items[Index].ID);
+            	// It could be that its not ceated yet, so does not hold any useful info
             if NoteInfoP2 = Nil then begin
                 // Its a note uploaded by another client, we'd better get it.
                 DownloadNote(NoteInfoListRem.Items[Index].ID, NoteInfoListRem.Items[Index].Rev);

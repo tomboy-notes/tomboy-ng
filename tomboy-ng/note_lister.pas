@@ -212,12 +212,12 @@ end;
 
 destructor TNoteBookList.Destroy;
 var
-    I, X : Integer;
+    I{, X} : Integer;
 begin
         for I := 0 to Count-1 do begin
-            debugln(inttostr(I) + ' Destroying Notebook ' + Items[I]^.Name + '  template=' + Items[I]^.Template);
+            { debugln(inttostr(I) + ' Destroying Notebook ' + Items[I]^.Name + '  template=' + Items[I]^.Template);
             for X := 0 to Items[I]^.Notes.Count - 1 do
-            	debugln('Content ' + Items[I]^.Notes[X]);
+            	debugln('Content ' + Items[I]^.Notes[X]);   }
           	Items[I]^.Notes.free;
     		dispose(Items[I]);
 		end;
@@ -267,17 +267,13 @@ end;
 function TNoteBookList.FindNoteBook(const NoteBook: ANSIString): PNoteBook;
 var
         Index : longint;
-        Test : integer;
-        TestSt : ansistring;
 begin
         Result := Nil;
-        Test := Count;
         for Index := 0 to Count-1 do begin
-            TestSt := Items[Index]^.Name;
             if Items[Index]^.Name = NoteBook then begin
                 Result := Items[Index];
                 exit()
-    		end;
+    	    end;
     	end;
 end;
 
@@ -326,8 +322,6 @@ procedure TNoteLister.LoadNotebookGrid(const Grid: TStringGrid;
 		const NotebookName: AnsiString);
 var
     Index : integer;
-    Test : Integer;
-    testID : AnsiString;
 begin
   	Grid.Clear;
     //Grid.Clean;
@@ -335,8 +329,6 @@ begin
     Grid.FixedRows := 1;
     // Scan the main list of notes looking for ones in this Notebook.
 	for Index := 0 to NoteList.Count -1 do begin
-        Test := NoteList.Count;
-        TestID := NoteList.Items[Index]^.ID;
         if NotebookList.IDinNotebook(NoteList.Items[Index]^.ID, NoteBookName) then begin
         	Grid.InsertRowWithValues(Grid.RowCount, [NoteList.Items[Index]^.Title,
         			NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,

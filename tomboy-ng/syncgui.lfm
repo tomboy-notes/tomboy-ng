@@ -181,7 +181,7 @@ object FormSync: TFormSync
   object Timer1: TTimer
     Enabled = False
     OnTimer = Timer1Timer
-    left = 293
-    top = 50
+    left = 288
+    top = 32
   end
 end
