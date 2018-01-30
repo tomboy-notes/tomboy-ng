@@ -68,6 +68,8 @@ unit MainUnit;
     			you move the "Thumb Slide".
 	2018/01/01  Moved call to enable/disable the sync menu item into RecentMenu();
     2018/01/25  Changes to support Notebooks
+    2018/01/39  Altered the Mac only function that decides when we should update
+                the traymenu recent used list.
 }
 
 {$mode objfpc}{$H+}
@@ -244,9 +246,9 @@ begin
  	LocalMan.LocalManifestDir:= Sett.LocalConfig;
    	LocalMan.NotesDir:=Sett.NoteDirectory;
 	if LocalMan.GetLocalServerID() then
-		LocalMan.IDToDelete:= ShortFileName
-   	else
-    	DebugLn('ERROR, failed to move deleted ID in local manifest [' + ExtractFileNameOnly(FullFileName)+ ']');
+		LocalMan.IDToDelete:= ShortFileName;
+   	// else
+    //	DebugLn('ERROR, failed to move deleted ID in local manifest [' + ExtractFileNameOnly(FullFileName)+ ']');
     LocalMan.Free;
     UseList();
 end;
@@ -355,6 +357,7 @@ procedure TRTSearch.Edit1Enter(Sender: TObject);
 begin
 	if Edit1.Text = 'Search' then Edit1.Text := '';
 end;
+{ TODO : As we start with focus on Edit1 this method clears it and user sees empty box. Should say 'Search'. }
 
 procedure TRTSearch.Edit1Exit(Sender: TObject);
 begin
@@ -575,7 +578,7 @@ procedure TRTSearch.TrayMenuAboutClick(Sender: TObject);
 var
     S1, S2, S3, S4, S5 : string;
 begin
-  S1 := 'This is v0.11 alpha of tomboy-ng, a rewrite of Tomboy Notes'#10;
+  S1 := 'This is v0.12 of tomboy-ng, a rewrite of Tomboy Notes'#10;
   S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
   S3 := 'use unless you are very careful and have good backups.'#10;
   S5 := '';
@@ -608,9 +611,13 @@ var
 	I : integer = 1;
     Count : integer;
     Found : boolean;
+    TestCount : integer;
+    TestSt : ANSIString;
 begin
   	Result := True;
-  	while I <= StringGrid1.RowCount do begin	// check each entry and if not found, then return True
+    TestCount := StringGrid1.RowCount;
+  	while I < StringGrid1.RowCount do begin	// check each entry and if not found, then return True
+       TestSt := StringGrid1.Cells[0, I];
         if I = 10 then break;
         Found := False;
    		for Count := 1 to 10 do begin
@@ -630,7 +637,66 @@ begin
         if not Found then exit();	// that entry not present in menu, so exit with True.
         inc(I);
     end;
-    // We got here because we did 'Found' each one we checked for, so nothing missing.
+    // We got here because we got a 'Found' for each one we checked for, so nothing missing.
+    // So, now need to check all the entries in TrayMenu and make sure there is a matching
+    // entry in the StringGrid.
+    for Count := 1 to 10 do begin
+        I := 1;
+        Found := False;
+        case Count of
+            1: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent1.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            2: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent2.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            3: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent3.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            4: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent4.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            5: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent5.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            6: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent6.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            7: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent7.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            8: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent8.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            9: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent9.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+            10: while I < StringGrid1.RowCount do begin
+                    if I = 11 then break;
+                    if TrayMenuRecent10.caption = StringGrid1.Cells[0, I] then Found := True;
+                    inc(I);
+                end;
+        end;
+        if not Found then exit();       // Return True, something missing, must rewrite
+    end;
     Result := False;
 end;
 
