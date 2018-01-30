@@ -1,5 +1,39 @@
 unit Notebook;
 
+{
+ * Copyright (C) 2017 David Bannon
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}
+
+{  This GUI based unit has a form to allow user to see and select what notebooks
+    the current note is a member of. It looks at settings to see if we are allowing
+    a particular note to be a member of more than one notebook. If not, will cancel
+    a previous choice if a user selects a new notebook.
+
+    History -
+    2018/01/30 -replaced the function that cancels previous Notebook selection when
+                a new one is made (if settings so demand). This one works on Macs
+                and is a better job on the other platforms too.
+}
+
 {$mode objfpc}{$H+}
 
 interface
@@ -27,7 +61,7 @@ type
 				TabExisting: TTabSheet;
 				TabNewNoteBook: TTabSheet;
 				procedure ButtonOKClick(Sender: TObject);
-    procedure CheckListBox1ClickCheck(Sender: TObject);
+    procedure CheckListBox1ItemClick(Sender: TObject; Index: integer);
     procedure FormShow(Sender: TObject);
 		private
 
@@ -56,6 +90,7 @@ begin
     if Sett.CheckManyNotebooks.Checked then
         Label2.Caption := 'Settings allow multiple Notebooks'
     else Label2.Caption := 'Settings allow only one Notebook';
+    //CheckListBox1.MultiSelect:=Sett.CheckManyNotebooks.Checked;
     Label3.Caption := 'Set the notebooks this note is a member of';
     SL := TStringList.Create;
     RTSearch.NoteLister.GetNotebooks(SL);
@@ -63,6 +98,8 @@ begin
     SL.Free;
     SL := TStringList.Create;
     RTSearch.NoteLister.GetNotebooks(SL, ExtractFileNameOnly(FullFileName) + '.note');
+    for I := 0 to CheckListBox1.Count-1 do
+        CheckListBox1.Checked[I] := False;
     for Index := 0 to SL.Count -1 do
     	for I := 0 to CheckListBox1.Count-1 do
 			if SL[Index] = CheckListBox1.Items[I] then
@@ -70,16 +107,19 @@ begin
     SL.Free;
 end;
 
-procedure TNoteBookPick.CheckListBox1ClickCheck(Sender: TObject);
+
+
+procedure TNoteBookPick.CheckListBox1ItemClick(Sender: TObject; Index: integer);
 var
-	Index : integer;
+	I : integer;
 begin
     if Sett.CheckManyNotebooks.Checked then exit;
-    if CheckListBox1.Checked[CheckListBox1.ItemIndex] then begin
-        for Index := 0 to CheckListBox1.Count -1 do
-        	CheckListBox1.Checked[Index] := False;
-        CheckListBox1.Checked[CheckListBox1.ItemIndex] := True;
-	end;
+    // ensure only one clicked.
+    if (Sender as TCheckListBox).Checked[Index] then begin
+        for I := 0 to CheckListBox1.Count -1 do
+            CheckListBox1.Checked[I] := False;
+        CheckListBox1.Checked[Index] := True;
+    end;
 end;
 
 procedure TNoteBookPick.ButtonOKClick(Sender: TObject);
