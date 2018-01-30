@@ -105,6 +105,13 @@ unit EditBox;
                 key labeled 'delete' thats really a backspace.
 	2017/01/09  Hmm, fixed a bug in new code that let BS code mess around in header.
 	2018/01/25  Changes to support Notebooks
+	2018/01/27  if playing in a bullet and there is not a trailing nonbullet para marker,
+				thats bad, so I now auto add one. Thats case y - however its still not
+				perfect, really should add a test to see if we overran text looking
+				for an unfound para.
+    2018/01/29  Noted a crazy note that ended up with an empty hyperlink in title
+                and that messed MarkTitle() so altered its test to now find first
+                para marker rather than first non text block
 }
 
 
@@ -136,6 +143,9 @@ type
         MenuHuge: TMenuItem;
         MenuBullet: TMenuItem;
 		MenuItem1: TMenuItem;
+		MenuItemExportRTF: TMenuItem;
+		MenuItemExportPlainText: TMenuItem;
+		MenuItemPrint: TMenuItem;
 		MenuItemSelectAll: TMenuItem;
 		MenuItem5: TMenuItem;
 		MenuItemDelete: TMenuItem;
@@ -145,7 +155,7 @@ type
         MenuItem3: TMenuItem;
 		MenuItemCut: TMenuItem;
         MenuItemSync: TMenuItem;
-        MenuItemExportHTML: TMenuItem;
+        MenuItemExport: TMenuItem;
         MenuSmall: TMenuItem;
         MenuItem2: TMenuItem;
         MenuNormal: TMenuItem;
@@ -614,7 +624,6 @@ end;
 procedure TEditBoxForm.FormShow(Sender: TObject);
 var
     ItsANewNote : boolean = false;
-    Test : ANSIString;
 begin
     if Ready then exit();				// its a "re-show" event. Already have a note loaded.
     //Label1.Caption := '';
@@ -627,9 +636,7 @@ begin
 			NoteTitle := NewNoteTitle();
         ItsANewNote := True;
 	end else begin
-        Test := KMemo1.Blocks.Text;
     	ImportNote(NoteFileName);		// also sets Caption and Createdate
-        Test := KMemo1.Blocks.Text;
         if TemplateIs <> '' then begin
             NoteFilename := '';
             NoteTitle := NewNoteTitle();
@@ -682,12 +689,15 @@ end;
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
 var
     BlockNo : longint = 0;
+    TestSt : ANSIString;
 begin
     Result := False;
     TheTitle := '';
-	while Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoTextBlock' do begin
+    while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
+	// while Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoTextBlock' do begin
         TheTitle := TheTitle + Kmemo1.Blocks.Items[BlockNo].Text;
        	inc(BlockNo);
+        TestSt := Kmemo1.Blocks.Items[BlockNo].ClassName;
         if BlockNo >= Kmemo1.Blocks.Count then break;
     end;                            // Stopped at first TKMemoParagraph if it exists.
     if TheTitle <> '' then Result := True;
@@ -721,7 +731,8 @@ begin
     FT.Color := clBlue;
 
 	try
-    	while Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoTextBlock' do begin
+    	// while Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoTextBlock' do begin
+        while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
            	TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
            	inc(BlockNo);
             if BlockNo >= Kmemo1.Blocks.Count then begin
@@ -950,10 +961,21 @@ begin
     KMemo1.SelStart := CurserPos;
     KMemo1.SelEnd := CurserPos;
     // Memo1.append('Clear ' + inttostr(TS2.Time-TS1.Time) + 'ms  Check ' + inttostr(TS3.Time-TS2.Time));
+
+    { Some notes about timing, 'medium' powered Linux laptop, 20k note.
+      Checks and changes to Title - less than mS
+      ClearNearLinks (none present) - less than mS
+      CheckForLinks (none present) - 180mS, thats mostly used up by MakeLinks()
+      	but length(KMemo1.Blocks.text) needs about 7mS too.
+
+      Can do better !
+    }
+
 end;
 
 function TEditBoxForm.NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara : Boolean;
         								out BlockNo, TrailOffset, LeadOffset : longint ) : boolean;
+	// on medium linux laptop, 20k note this function takes less than a mS
 var
   PosInBlock, Index, CharCount : longint;
 begin
@@ -988,8 +1010,11 @@ begin
         debugln('Doing para seek, C=' + inttostr(KMemo1.Blocks.Count) + ' B=' + inttostr(BlockNo) + ' I=' + inttostr(Index));
     inc(Index);
     if (BlockNo + Index) >= (Kmemo1.Blocks.Count) then begin
-        debugln('Woops ! Overrun looking for a para marker. Going to end in tears');
+        if Verbose then debugln('Overrun looking for a para marker.');
         // means there are no para markers beyond here.  So cannot be TrailingBullet
+    		{KMemo1.Blocks.AddParagraph();
+    		KMemo1.ExecuteCommand(ecUp);
+   			KMemo1.ExecuteCommand(ecLineEnd);  }
         Index := 0;
         break;
     end;
@@ -1001,13 +1026,13 @@ begin
   else Trailing := False;
   Result := (Leading or Under or Trailing);
   if Verbose then begin
-	debugln('IsNearBullet ');
-    if Result then Debugln('   result=true ');
-    if Leading then Debugln('   leading=true ');
-    if Under then Debugln('   under=true ');
-    if Trailing then Debugln('   trailing=true ');
-    if IsFirstChar then Debugln('   FirstChar=True ');
-    if NoBulletPara then debugln('   NobulletPara=True')
+	debugln('IsNearBullet -----------------------------------');
+    Debugln('      Result      =' + booltostr(Result, true));
+    Debugln('      Leading     =' + booltostr(Leading, true));
+    Debugln('      Under       =' + booltostr(Under, true));
+    Debugln('      Trailing    =' + booltostr(Trailing, true));
+    Debugln('      IsFirstChar =' + booltostr(IsFirstChar, true));
+    Debugln('      NoBulletPara=' + booltostr(NoBulletPara, true));
   end;
 end;
 
@@ -1031,12 +1056,17 @@ d   Again, we are on first char of the line after a bullet, this line is not a b
 x	A blank line, no bullet between two bullet lines. Use BS line should dissapear.
     That is, delete para under cursor, move cursor to end line above. This same as c
 
+y   There is nothing after our bullet para marker. So, on an empty bulletline, user presses
+	BS to cancel bullet but that cancels bullet and moves us up to next (bulleted) line.
+    It has to, there is nowhere else to go. Verbose shows this as a case c ????
+
      	Lead Under Trail First OnPara(not bulleted)
     a     ?    T     ?    F        remove the last character of the visible string to left.
     b     ?    F     T    T    F   Cursor at start, cancel bullet, don't merge
 
     x     T    F     T    T    T   Just delete this para. if Trailing move cursor to end of line above.
     c     T    F     F    T    T   Just delete this para. if Trailing move cursor to end of line above.
+    y     T    T     F    T    F   Like c but add a para and move down. Not happy .....
     d     T    F     F    T    F   mark trailing para as bullet, delete leading.
     e     T    T     T    T    F   must remove Bullet for para under cursor
 
@@ -1085,7 +1115,14 @@ begin
             	KMemo1.ExecuteCommand(ecUp);
             	KMemo1.ExecuteCommand(ecLineEnd);
                 if Verbose then debugln('Case x');
-			end else debugln('Case c');
+			end else begin
+            	if UnderBullet then begin				// this test is wrong, real test is are we at end of text ?
+                    if Verbose then DebugLn('Case y');
+                    KMemo1.Blocks.AddParagraph();		// Maybe only need add that if at end of text, NearABulletPoint() could tell us ?
+                    KMemo1.ExecuteCommand(ecDown);
+                end else
+            		if Verbose then debugln('Case c');
+            end;
         end else begin				// merge the current line into bullet above.
             if kmemo1.blocks.Items[BlockNo+TrailOffset].ClassNameIs('TKMemoParagraph') then
             	TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]).Numbering := pnuBullets
@@ -1096,6 +1133,7 @@ begin
         	end;
     	end;
     Ready := True;
+    // most of the intevention paths through this method take ~180mS on medium powered linux laptop
 end;
 
 

@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 276
+  Left = 595
   Height = 488
-  Top = 140
+  Top = 96
   Width = 460
   Caption = 'EditBoxForm'
   ClientHeight = 488
@@ -9,7 +9,7 @@ object EditBoxForm: TEditBoxForm
   OnClose = FormClose
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.8.0.3'
+  LCLVersion = '1.8.0.6'
   object ButtSearch: TBitBtn
     Left = 0
     Height = 38
@@ -723,9 +723,19 @@ object EditBoxForm: TEditBoxForm
       Enabled = False
       OnClick = MenuItemSyncClick
     end
-    object MenuItemExportHTML: TMenuItem
-      Caption = 'ExportHTML'
-      Enabled = False
+    object MenuItemExport: TMenuItem
+      Caption = 'Export'
+      object MenuItemExportRTF: TMenuItem
+        Caption = 'MenuItemExportRTF'
+        Enabled = False
+      end
+      object MenuItemExportPlainText: TMenuItem
+        Caption = 'MenuItemExportPlainText'
+        Enabled = False
+      end
+    end
+    object MenuItemPrint: TMenuItem
+      Caption = 'MenuItemPrint'
     end
   end
   object PopupMenuRightClick: TPopupMenu
