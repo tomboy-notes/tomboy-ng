@@ -34,6 +34,10 @@ unit Notebook;
                 and is a better job on the other platforms too.
 }
 
+
+{ TODO : URGENT - This needs to be rewritten so that form is created on the fly.
+At present, if a user opens two notes and then opens the Notebook form for each, bad things happen. }
+
 {$mode objfpc}{$H+}
 
 interface
@@ -63,6 +67,7 @@ type
 				procedure ButtonOKClick(Sender: TObject);
     procedure CheckListBox1ItemClick(Sender: TObject; Index: integer);
     procedure FormShow(Sender: TObject);
+    // procedure PageControl1Change(Sender: TObject);
 		private
 
 		public
@@ -106,6 +111,8 @@ begin
             	CheckListBox1.Checked[I] := True;
     SL.Free;
 end;
+
+
 
 
 

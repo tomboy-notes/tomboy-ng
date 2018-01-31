@@ -22,17 +22,17 @@ object NoteBookPick: TNoteBookPick
     TabOrder = 0
     object Label1: TLabel
       Left = 24
-      Height = 16
+      Height = 17
       Top = 24
-      Width = 42
+      Width = 45
       Caption = 'Label1'
       ParentColor = False
     end
     object Label3: TLabel
       Left = 24
-      Height = 16
+      Height = 17
       Top = 8
-      Width = 42
+      Width = 45
       Caption = 'Label3'
       ParentColor = False
     end
@@ -70,7 +70,7 @@ object NoteBookPick: TNoteBookPick
     Left = 16
     Height = 39
     Top = 272
-    Width = 42
+    Width = 45
     Anchors = [akTop, akLeft, akBottom]
     Caption = 'Label2'
     ParentColor = False
@@ -92,7 +92,7 @@ object NoteBookPick: TNoteBookPick
     TabOrder = 3
     object TabExisting: TTabSheet
       Caption = 'Existing Note Books'
-      ClientHeight = 155
+      ClientHeight = 159
       ClientWidth = 481
       object CheckListBox1: TCheckListBox
         AnchorSideLeft.Control = TabExisting
@@ -102,18 +102,19 @@ object NoteBookPick: TNoteBookPick
         AnchorSideBottom.Control = TabExisting
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 155
+        Height = 159
         Top = 0
         Width = 481
         Anchors = [akTop, akLeft, akRight, akBottom]
         ItemHeight = 0
         OnItemClick = CheckListBox1ItemClick
         TabOrder = 0
+        TopIndex = -1
       end
     end
     object TabNewNoteBook: TTabSheet
       Caption = 'New Note Book'
-      ClientHeight = 155
+      ClientHeight = 159
       ClientWidth = 481
       object EditNewNotebook: TEdit
         Left = 24

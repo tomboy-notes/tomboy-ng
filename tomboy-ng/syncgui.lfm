@@ -1,14 +1,14 @@
 object FormSync: TFormSync
-  Left = 515
+  Left = 921
   Height = 366
-  Top = 212
+  Top = 221
   Width = 472
   Caption = 'FormSync'
   ClientHeight = 366
   ClientWidth = 472
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '1.8.0.3'
+  LCLVersion = '1.8.0.6'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
