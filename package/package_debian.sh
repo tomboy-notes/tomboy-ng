@@ -3,10 +3,12 @@
 # see https://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics
 # we can also add preinst, postinst, prerm, and postrm scripts if required
 # David Bannon, November, 2017
-
+# Assumes a working FPC/Lazarus install with cross compile tools as described in
+# http://wiki.lazarus.freepascal.org/Cross_compiling_for_Win32_under_Linux and
+# http://wiki.lazarus.freepascal.org/Cross_compiling
 
 PRODUCT="tomboy-ng"
-VERSION="0.11"
+VERSION="0.12"
 
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"
@@ -14,7 +16,7 @@ ICON_DIR="../glyphs"
 MANUALS_DIR="docs"
 MANUALS="Notes.txt"
 
-
+BUILDOPTS=" -B --quiet --quiet"
 
 # ----------------------
 
@@ -22,16 +24,17 @@ MANUALS="Notes.txt"
 # typically in the IDE.
 # Lazbuild expects cpu=[x86_64, i386] (good luck with the others)
 
+
 function BuildIt () {
 	cd $SOURCE_DIR
 	echo "Building x86_64 Linux"
-	lazbuild -B --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
+	lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
 	echo "Building i386 Linux"
-	lazbuild -B --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
+	lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Windows"
-	lazbuild -B --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
+	lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
 	echo "Building i386 Windows"
-	lazbuild -B --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
+	lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	# Todo - should check we now have binaries with todays date.
 	echo "------------- FINISHED BUILDING -----------------"
@@ -111,6 +114,7 @@ function DoZipping {
 
 # --------------------------------------
 # It all starts here
+
 
 BuildIt
 DebianPackage "i386"
