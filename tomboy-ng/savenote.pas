@@ -48,6 +48,7 @@ unit SaveNote;
 				previous queued format changes. Possibly. This is not robust code.
 	2018/01/01  Yet another bug fix for BulletList(), this time I've got it !
 	2018/01/25  Changes to support Notebooks
+    2018/01/31  Added code to reprocess &
 }
 
 {$mode objfpc}{$H+}
@@ -250,6 +251,7 @@ begin
 end;
 
 function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
+// It appears that Tomboy only processes <, > and &
 var
    //Res : ANSIString;
    Index : longint = 1;
@@ -271,6 +273,14 @@ begin
              Start := Index;
 			 continue;
 		end;
+  		if InStr[Index] = '&' then begin
+             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + '&amp;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+
         inc(Index);
    end;
    Result := Result + UTF8Copy(InStr, Start, Index - Start);

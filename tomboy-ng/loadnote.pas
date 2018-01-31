@@ -38,6 +38,7 @@ unit LoadNote;
 
 	20171007 - enabled bullets.
 	20171112 - added code to restore < and >
+    2018/01/31 - and &
 }
 
 {$mode objfpc}{$H+}
@@ -176,6 +177,12 @@ begin
       		Result := Result + UTF8Copy(Str, Start, Index - Start) + '>';
             inc(Index);
             Start := Index + 3;
+            Continue;
+	  end;
+      if '&amp;' = UTF8Copy(Str, Index, 5) then begin
+      		Result := Result + UTF8Copy(Str, Start, Index - Start) + '&';
+            inc(Index);
+            Start := Index + 4;
             Continue;
 	  end;
       inc(Index);
