@@ -10,22 +10,20 @@ If you're interested in discussing tomboy-ng, please consider our mailing list.
 To subscribe, visit [here](http://lists.beatniksoftware.com/listinfo.cgi/tomboy-list-beatniksoftware.com)
 or just send your questions and suggestions to <tomboy-list@beatniksoftware.com>.
 
-Tomboy is licensed under the LGPL, see [COPYING](./COPYING) for more details.
-
 ---
 
 Tomboy is a desktop note-taking application for Linux, Unix and Windows.
 Simple and easy to use, but with potential to help you organize the ideas
-and information you deal with every day (a direct quote from Tomboy's Readme.
+and information you deal with every day (a direct quote from Tomboy's Readme).
 
-tomboy-ng is a shameless copy of th origional Tomboy but rewritten in Free Pascal
-and Lazarus in an effort to deliver the usefullness of Tomboy but in an simpler
+tomboy-ng is a shameless copy of the origional Tomboy but rewritten in Free Pascal
+and Lazarus in an effort to deliver the usefullness of Tomboy but in a simpler
 to install and easier to maintain package.
 
-Have you ever felt the frustration at not being able to locate a website you
-wanted to check out, or find an email you found interesting, or remember an
-idea about the direction of the political landscape in post-industrial
-Australia? Or are you one of those desperate souls with home-made, buggy, or
-not-quite-perfect notes systems ?
+So far it supports much the same editing and formatting capabilities as Tomboy.
+It works seemlessly with Tomboy's file sync and supports the same Notebook
+model (and slightly extends it).
 
+And it works, out of the box, no extra libraries needed, on Linux (GTK), Windows
+and Mac. In most cases, all you really need is the 3Mbyte to 4Mbyte binary.
 
