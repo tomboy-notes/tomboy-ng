@@ -112,6 +112,7 @@ unit EditBox;
     2018/01/29  Noted a crazy note that ended up with an empty hyperlink in title
                 and that messed MarkTitle() so altered its test to now find first
                 para marker rather than first non text block
+    2018/02/01  Lock KMemo1 before saving. Noted a very occasional crash when first saving a new note.
 }
 
 
@@ -222,7 +223,7 @@ type
         { Returns a long random file name, Not checked for clashes }
         function GetAFilename() : ANSIString;
         procedure CheckForLinks(const StartScan : longint = 1; EndScan : longint = 0);
-        { Returns the title, that is the first line of note }
+        { Returns with the title, that is the first line of note, returns False if title is empty }
         function GetTitle(out TheTitle: ANSIString): boolean;
         procedure ImportNote(FileName : string);
         { Searches for all occurances of Term in the KMemo text, makes them Links }
@@ -924,12 +925,23 @@ var
     TempTitle : ANSIString;
     // TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
 begin
+
+    { A possibly better approach is to have this set or reset a timer and then, when
+      timer runs out, user is having a think, do our stuff then.
+      Thats could be updating link, title etc and even saving if a save is due.
+      We'd do something like -
+
+      if TimerQuiet.Enabled then
+         TimerQuiet.Enabled := False;
+      TimerQuiet.Enabled := True;
+      exit();
+    }
+    { TODO : Implement timer model to do stuff only when user has hands off  }
+
     if not Ready then exit();           // don't do any of this while starting up.
     if not Dirty then Timer1.Enabled := true;
     Dirty := true;
     Label1.Caption := 'd';
-    // Memo1.Clear;
-    // PopUpMenuTools.Items.Items[2].Enabled := true; // That is to allow saving
     CurserPos := KMemo1.RealSelStart;
     StartScan := CurserPos - LinkScanRange;
     if StartScan < length(Caption) then StartScan := length(Caption);
@@ -1187,34 +1199,45 @@ procedure TEditBoxForm.SaveTheNote();
 var
  	Saver : TBSaveNote;
     SL : TStringList;
+    TestI : integer;
 begin
     if Sett.NotesReadOnly then begin
-    //    showmessage('Sorry, Settings say we dont save.');
         exit();       { TODO : Remove this when we start doing auto save, right now, be scared ! }
 	end;
   	if length(NoteFileName) = 0 then
         NoteFileName := Sett.NoteDirectory + GetAFilename();
     Saver := TBSaveNote.Create();
-    if not GetTitle(Saver.Title) then begin
-        Saver.Destroy;
-        exit();
-    end;
-    Caption := Saver.Title;
-    Saver.CreateDate := CreateDate;
-    if TemplateIs <> '' then begin
-        SL := TStringList.Create();
-        SL.Add(TemplateIs);
-    	RTSearch.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
-        SL.Free;
-        TemplateIs := '';
-	end;
-    Saver.Save(NoteFileName, KMemo1);
-    RTSearch.UpdateList(Caption, Saver.TimeStamp, NoteFileName, self);
-    { TODO : That update call switches the main search box back to showing all notes. If its in one of the Notebooks, thats not what the user wants. }
-	Saver.Destroy;
-    Dirty := false;
-    // RTSearch.IndexNotes();
+    KMemo1.Blocks.LockUpdate;
+    try
+       if not GetTitle(Saver.Title) then begin
+           Saver.Destroy;
+           exit();
+       end;
+       {debugln('Saving Note, length of title =' + inttostr(length(Caption)) + ' No blocks =' + inttostr(KMemo1.Blocks.Count));
+       for TestI := 0 to KMemo1.Blocks.Count -1 do begin
+           debugln('Block=' + inttostr(TestI) + ' Type=' + KMemo1.Blocks[TestI].ClassName);
+       end;      }
 
+       Caption := Saver.Title;
+       Saver.CreateDate := CreateDate;
+       if TemplateIs <> '' then begin
+          SL := TStringList.Create();
+          SL.Add(TemplateIs);
+          RTSearch.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
+          SL.Free;
+          TemplateIs := '';
+	   end;
+       // debugln('about to save');
+       Saver.Save(NoteFileName, KMemo1);
+       // debugln('saved');
+       RTSearch.UpdateList(Caption, Saver.TimeStamp, NoteFileName, self);
+       // debugln('List updated');
+	   Saver.Destroy;
+       // debugln('All saved OK');
+    finally
+              Dirty := false;
+              KMemo1.Blocks.UnLockUpdate;
+    end;
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;
