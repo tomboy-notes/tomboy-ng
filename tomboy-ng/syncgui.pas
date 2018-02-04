@@ -181,7 +181,7 @@ begin
     if SetUpFileSync then begin
         if FileSync.GetLocalServerID() then
               memo1.append('Connection already setup, are you sure you want a NEW connection ?')
-        else memo1.Append('Could not find local mainfest, thats OK');
+        else memo1.Append('Could not find local manifest, thats OK');
         ButtonCancel.Enabled:=True;
         ButtonOK.Enabled := False;
         ButtonSave.Enabled := False;
