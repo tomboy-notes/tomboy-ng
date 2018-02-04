@@ -1,14 +1,15 @@
 object Sett: TSett
-  Left = 262
+  Left = 708
   Height = 438
-  Top = 170
+  Top = 165
   Width = 525
   Caption = 'KTomboy-NG Settings'
   ClientHeight = 438
   ClientWidth = 525
+  Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '1.8.0.3'
+  LCLVersion = '1.8.0.6'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -27,7 +28,7 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 347
+      ClientHeight = 343
       ClientWidth = 519
       object ButtonSetNotePath: TButton
         Left = 8
@@ -40,33 +41,33 @@ object Sett: TSett
       end
       object LabelSettingPath: TLabel
         Left = 8
-        Height = 17
+        Height = 16
         Top = 40
-        Width = 119
+        Width = 104
         Caption = 'LabelSettingPath'
         ParentColor = False
       end
       object LabelNotesPath: TLabel
         Left = 8
-        Height = 17
+        Height = 16
         Top = 120
-        Width = 110
+        Width = 97
         Caption = 'LabelNotesPath'
         ParentColor = False
       end
       object Label1: TLabel
         Left = 8
-        Height = 17
+        Height = 16
         Top = 16
-        Width = 170
+        Width = 160
         Caption = 'Settings will be saved in :'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 11
-        Height = 17
+        Height = 16
         Top = 96
-        Width = 257
+        Width = 242
         Caption = 'Notes will be looked for and saved in :'
         ParentColor = False
       end
@@ -81,10 +82,10 @@ object Sett: TSett
       end
       object CheckManyNotebooks: TCheckBox
         Left = 18
-        Height = 22
+        Height = 18
         Hint = 'This may adversly affect tradional Tomboy, take care.'
         Top = 239
-        Width = 306
+        Width = 268
         Caption = 'Allow a note to be in Multiple Notebooks.'
         TabOrder = 2
       end
@@ -99,8 +100,8 @@ object Sett: TSett
         Top = 24
         Width = 178
         Caption = 'Font Size'
-        ClientHeight = 109
-        ClientWidth = 174
+        ClientHeight = 106
+        ClientWidth = 170
         TabOrder = 0
         object RadioFontBig: TRadioButton
           Left = 16
@@ -163,8 +164,8 @@ object Sett: TSett
         Top = 6
         Width = 504
         Caption = '  Type  '
-        ClientHeight = 47
-        ClientWidth = 500
+        ClientHeight = 44
+        ClientWidth = 496
         TabOrder = 0
         object RadioFile: TRadioButton
           Left = 56
@@ -192,8 +193,8 @@ object Sett: TSett
         Top = 192
         Width = 504
         Caption = '  Options  '
-        ClientHeight = 117
-        ClientWidth = 500
+        ClientHeight = 114
+        ClientWidth = 496
         TabOrder = 1
         object Label3: TLabel
           Left = 40
@@ -424,5 +425,81 @@ object Sett: TSett
     OnTimer = Timer1Timer
     left = 418
     top = 28
+  end
+  object MainMenu1: TMainMenu
+    left = 402
+    top = 131
+    object MenuFile: TMenuItem
+      Caption = 'File'
+      Visible = False
+      object MMNewNote: TMenuItem
+        Caption = 'New Note'
+        OnClick = MMNewNoteClick
+      end
+      object MMSearch: TMenuItem
+        Caption = 'Search'
+        OnClick = MMSearchClick
+      end
+      object MMAbout: TMenuItem
+        Caption = 'About'
+        OnClick = MMAboutClick
+      end
+      object MMSync: TMenuItem
+        Caption = 'Syncronise'
+        OnClick = MMSyncClick
+      end
+      object MMSettings: TMenuItem
+        Caption = 'Settings'
+        OnClick = MMSettingsClick
+      end
+      object MMQuit: TMenuItem
+        Caption = 'Quit Close and Go Away'
+        OnClick = MMQuitClick
+      end
+    end
+    object MenuRecent: TMenuItem
+      Caption = 'Recent Notes'
+      Visible = False
+      object MMRecent1: TMenuItem
+        Caption = 'MenuItem4'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent2: TMenuItem
+        Caption = 'MenuItem5'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent3: TMenuItem
+        Caption = 'MenuItem6'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent4: TMenuItem
+        Caption = 'MenuItem8'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent5: TMenuItem
+        Caption = 'MenuItem9'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent6: TMenuItem
+        Caption = 'MenuItem10'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent7: TMenuItem
+        Caption = 'MenuItem11'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent8: TMenuItem
+        Caption = 'MenuItem12'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent9: TMenuItem
+        Caption = 'MenuItem13'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent10: TMenuItem
+        Caption = 'MenuItem14'
+        OnClick = MMRecent1Click
+      end
+    end
   end
 end

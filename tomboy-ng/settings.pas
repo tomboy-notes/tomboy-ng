@@ -51,6 +51,7 @@ unit settings;
 				Added a caption to tell user we are setting up sync.
 	2017/12/30  Added a call to IndexNotes after setting up sync, potentially slow.
 	2018/01/25  Changes to support Notebooks
+    2018/02/04  Added a Main menu because Macs work better with one.
 }
 
 {$mode objfpc}{$H+}
@@ -59,7 +60,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids; // Types;
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus; // Types;
 
 type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash
 
@@ -96,6 +97,25 @@ type
 		LabelLocalConfig: TLabel;
 		LabelNotesPath: TLabel;
 		LabelSettingPath: TLabel;
+        MainMenu1: TMainMenu;
+        MenuFile: TMenuItem;
+        MMRecent6: TMenuItem;
+        MMRecent7: TMenuItem;
+        MMRecent8: TMenuItem;
+        MMRecent9: TMenuItem;
+        MMRecent10: TMenuItem;
+        MenuRecent: TMenuItem;
+        MMNewNote: TMenuItem;
+        MMRecent1: TMenuItem;
+        MMRecent2: TMenuItem;
+        MMRecent3: TMenuItem;
+        MMRecent4: TMenuItem;
+        MMRecent5: TMenuItem;
+        MMSearch: TMenuItem;
+        MMAbout: TMenuItem;
+        MMSync: TMenuItem;
+        MMSettings: TMenuItem;
+        MMQuit: TMenuItem;
 		PageControl1: TPageControl;
 		Panel1: TPanel;
 		Panel2: TPanel;
@@ -125,6 +145,14 @@ type
 		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
+        procedure MMAboutClick(Sender: TObject);
+        procedure MMNewNoteClick(Sender: TObject);
+        procedure MMQuitClick(Sender: TObject);
+            { Responds to all 10 Main Menu Recent Menu Clicks }
+        procedure MMRecent1Click(Sender: TObject);
+        procedure MMSearchClick(Sender: TObject);
+        procedure MMSettingsClick(Sender: TObject);
+        procedure MMSyncClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
 		procedure Timer1Timer(Sender: TObject);
    	private
@@ -149,6 +177,16 @@ type
         ShowIntLinks : boolean;
         { Says Notes should be treated as read only, a safe choice }
         NotesReadOnly : boolean;
+            { A target for when a Sync menu is clicked }
+        procedure Synchronise();
+            { A target for when an About menu is clicked }
+        procedure ShowAboutBox();
+            { A target for when a SearchBox menu is clicked }
+        procedure ShowSearchBox();
+            { A target for when a New Note menu is clicked }
+        procedure MakeNewNote();
+            { A target for when a Settings menu is clicked }
+        procedure ShowSettings();
     end;
 
 var
@@ -188,7 +226,7 @@ uses IniFiles,
     uAppIsRunning;	// A small pas unit to test if another instance is already running.
 
 
-procedure TSett.SetFontSizes();
+procedure TSett.SetFontSizes;
 begin
 	if RadioFontBig.checked then begin
     	FontSmall  := 9;
@@ -215,7 +253,7 @@ begin
 end;
 
 	{ Make public things agree with internal ones. }
-procedure TSett.SyncSettings();
+procedure TSett.SyncSettings;
 begin
 	if NoteDirectory <> '' then begin
         LabelNotespath.Caption := NoteDirectory;
@@ -230,8 +268,54 @@ begin
 	end;
 end;
 
+procedure TSett.Synchronise();
+begin
+    FormSync.NoteDirectory := Sett.NoteDirectory;
+    FormSync.LocalConfig := Sett.LocalConfig;
+    FormSync.RemoteRepo := Sett.RemoteRepo;
+    FormSync.SetupFileSync := False;
+    if FormSync.Visible then
+        FormSync.Show
+    else
+    	if (FormSync.ShowModal = mrOK) then
+            RTSearch.IndexNotes;
+end;
+
+procedure TSett.ShowAboutBox();
+var
+    S1, S2, S3, S4, S5 : string;
+begin
+    S1 := 'This is v0.12b of tomboy-ng, a rewrite of Tomboy Notes'#10;
+    S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
+    S3 := 'use unless you are very careful and have good backups.'#10;
+    S5 := '';
+    S4 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
+    Showmessage(S1 + S2 + S3 + S4 + S5);
+end;
+
+procedure TSett.ShowSearchBox();
+begin
+    if NoteDirectory = '' then
+        showmessage('You have not set a notes directory. Please click Settings')
+    else  RTSearch.Show;
+end;
+
+procedure TSett.MakeNewNote();
+begin
+  	if NoteDirectory = '' then
+        showmessage('You have not set a notes directory. Please click Settings')
+    else
+    	RTSearch.OpenNote();
+end;
+
+procedure TSett.ShowSettings();
+begin
+    Show;
+    RTSearch. RecentMenu();
+end;
+
 	{ Read config file if it exists }
-procedure TSett.CheckConfigFile();
+procedure TSett.CheckConfigFile;
 var
 	ConfigFile : TINIFile;
     // FileName : ANSIString;
@@ -279,6 +363,10 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+     {$ifdef DARWIN}        // Only Mac needs the main menu, confusing for others
+        MenuFile.Visible:=True;
+        MenuRecent.Visible:=True;
+     {$endif}
     Timer1.Enabled:=False;
     LabelWaitForSync.Caption := '';
     if AlreadyRunning() then begin
@@ -299,6 +387,43 @@ begin
 		end;
 end;
 
+procedure TSett.MMAboutClick(Sender: TObject);
+begin
+    ShowAboutBox();
+end;
+
+procedure TSett.MMNewNoteClick(Sender: TObject);
+begin
+    MakeNewNote();
+end;
+
+procedure TSett.MMQuitClick(Sender: TObject);
+begin
+  AllowClose:=True;
+  Close;
+end;
+
+procedure TSett.MMRecent1Click(Sender: TObject);
+begin
+	if TMenuItem(Sender).Caption <> RTSearch.MenuEmpty then
+		RTSearch.OpenNote(TMenuItem(Sender).Caption);
+end;
+
+procedure TSett.MMSearchClick(Sender: TObject);
+begin
+  ShowSearchBox();
+end;
+
+procedure TSett.MMSettingsClick(Sender: TObject);
+begin
+  ShowSettings();
+end;
+
+procedure TSett.MMSyncClick(Sender: TObject);
+begin
+  Synchronise();
+end;
+
 procedure TSett.PageControl1Change(Sender: TObject);
 begin
 	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
@@ -307,10 +432,10 @@ end;
 	// This gets called a second after form create finishes IFF another instance is running
 procedure TSett.Timer1Timer(Sender: TObject);
 begin
-
     AllowClose:=True;
     Close;
 end;
+
 
 
 	{ Save the settings, this will become auto in a later and braver release.}

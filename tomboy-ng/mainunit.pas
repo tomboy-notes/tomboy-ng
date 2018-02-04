@@ -70,6 +70,8 @@ unit MainUnit;
     2018/01/25  Changes to support Notebooks
     2018/01/39  Altered the Mac only function that decides when we should update
                 the traymenu recent used list.
+    2018/02/04  Don't show or populate the TrayIcon for Macs. Hooked into Sett's Main Menu
+                for Mac and now most IconTray/Main menu items are responded to in Sett.
 }
 
 {$mode objfpc}{$H+}
@@ -149,15 +151,13 @@ type
         { Responds when any of the recent items is clicked in TrayIcon menu }
         procedure TrayMenuRecent1Click(Sender: TObject);
     private
-
+        (*
         { ----- A set of two horrible methods only needed on Mac to minimise memory leaks ---- }
 
         	{ returns true if there is a note in top10 not present in Menu }
         function MenuItemMissing: boolean;
         	{ A butchered version of RecentMenu trying to avoid some of the Mac Memory leak issues }
-        procedure RecentMenuMac();
-        	{ Puts the names of recently used notes in the TrayMenu }
-        procedure RecentMenu();
+        procedure RecentMenuMac(); *)
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
@@ -165,7 +165,9 @@ type
     public
         NoteLister : TNoteLister;
         NoteDirectory : string;
-        	{ Call this NoteLister no longer thinks of this as a Open note }
+         	{ Puts the names of recently used notes in the TrayMenu }
+        procedure RecentMenu();
+       	{ Call this NoteLister no longer thinks of this as a Open note }
         procedure NoteClosing(const ID: AnsiString);
         { Updates the List with passed data. Either updates existing data or inserts new }
         procedure UpdateList(const Title, LastChange, FullFileName: ANSIString; TheForm : TForm);
@@ -187,6 +189,9 @@ type
         { Deletes the actual file then removes the indicated note from the internal
         data about notes, refreshes Grid }
         procedure DeleteNote(const FullFileName : ANSIString);
+const
+	MenuEmpty = '(empty)';
+
     end;
 
 var
@@ -206,8 +211,7 @@ uses EditBox,
 
 { TRTSearch }
 
-const
-	MenuEmpty = '(empty)';
+
 
 { -------------   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ------------ }
 
@@ -305,15 +309,16 @@ var
       Count : integer = 1;
       MenuCaption : string;
 begin
-    {$ifdef Darwin}
-    RecentMenuMac();		// Alt proc for memory leaking Mac
-    exit();
-    {$endif}
+    //{$ifdef Darwin}
+    //RecentMenuMac();		// Alt proc for memory leaking Mac
+    //exit();
+    //{$endif}
     while (Count <= 10) do begin
        if Count < StringGrid1.RowCount then
              MenuCaption := StringGrid1.Cells[0, Count]
        else  MenuCaption := MenuEmpty;
        case Count of
+           {$ifndef DARWIN}
          1 : TrayMenuRecent1.Caption := MenuCaption;
          2 : TrayMenuRecent2.Caption := MenuCaption;
          3 : TrayMenuRecent3.Caption := MenuCaption;
@@ -324,6 +329,18 @@ begin
          8 : TrayMenuRecent8.Caption := MenuCaption;
          9 : TrayMenuRecent9.Caption := MenuCaption;
          10 : TrayMenuRecent10.Caption := MenuCaption;
+            {$else}
+         1 : Sett.MMRecent1.Caption := MenuCaption;
+         2 : Sett.MMRecent2.Caption := MenuCaption;
+         3 : Sett.MMRecent3.Caption := MenuCaption;
+         4 : Sett.MMRecent4.Caption := MenuCaption;
+         5 : Sett.MMRecent5.Caption := MenuCaption;
+         6 : Sett.MMRecent6.Caption := MenuCaption;
+         7 : Sett.MMRecent7.Caption := MenuCaption;
+         8 : Sett.MMRecent8.Caption := MenuCaption;
+         9 : Sett.MMRecent9.Caption := MenuCaption;
+         10 : Sett.MMRecent10.Caption := MenuCaption;
+            {$endif}
         end;
       	inc(Count);
   	end;
@@ -390,7 +407,9 @@ begin
     // that appears to cause a memory leak in the Mac  - what ? Sett ? don't think so ....
     NoteLister := TNoteLister.Create;
     IndexNotes();
-    TrayIcon.Show;
+    {$ifndef DARWIN}
+    TrayIcon.Show;       // we don't use TrayIcon on Mac, inconsistent with Mac approach AND leaks !
+    {$endif}
 end;
 
 procedure TRTSearch.FormDestroy(Sender: TObject);
@@ -540,6 +559,9 @@ end;
 
 procedure TRTSearch.MenuItemSettingsClick(Sender: TObject);
 begin
+    Sett.ShowSettings;
+    exit();
+
     Sett.Show;
     RecentMenu();
 end;
@@ -552,6 +574,9 @@ end;
 
 procedure TRTSearch.MenuSynchroniseClick(Sender: TObject);
 begin
+    Sett.Synchronise();
+    exit();
+
     FormSync.NoteDirectory := Sett.NoteDirectory;
     FormSync.LocalConfig := Sett.LocalConfig;
     FormSync.RemoteRepo := Sett.RemoteRepo;
@@ -570,28 +595,25 @@ end;
 
 procedure TRTSearch.TrayMenSearchClick(Sender: TObject);
 begin
+    Sett.ShowSearchBox();
+    exit();
+
   	if Sett.NoteDirectory = '' then
         showmessage('You have not set a notes directory. Please click Settings')
     else  Show;
 end;
+
 procedure TRTSearch.TrayMenuAboutClick(Sender: TObject);
-var
-    S1, S2, S3, S4, S5 : string;
 begin
-  S1 := 'This is v0.12 of tomboy-ng, a rewrite of Tomboy Notes'#10;
-  S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
-  S3 := 'use unless you are very careful and have good backups.'#10;
-  S5 := '';
-  {$IFDEF DARWIN}
-  S5 := #10#10'WARNING - the Mac has a memory leak, working on it !';
-  {$ENDIF}
-  S4 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
-  Showmessage(S1 + S2 + S3 + S4 + S5);
+    Sett.ShowAboutBox();
 end;
 
 
 procedure TRTSearch.TrayMenuNewClick(Sender: TObject);
 begin
+    Sett.MakeNewNote();
+    exit();
+
   	if Sett.NoteDirectory = '' then
         showmessage('You have not set a notes directory. Please click Settings')
     else
@@ -606,18 +628,19 @@ end;
 
 
 { ----- Horrid 2 functions needing removal when Mac Memory Leak issues fixed ----- }
+(*
 function TRTSearch.MenuItemMissing() : boolean;
 var
 	I : integer = 1;
     Count : integer;
     Found : boolean;
-    TestCount : integer;
-    TestSt : ANSIString;
+    //TestCount : integer;
+    //TestSt : ANSIString;
 begin
   	Result := True;
-    TestCount := StringGrid1.RowCount;
+    //TestCount := StringGrid1.RowCount;
   	while I < StringGrid1.RowCount do begin	// check each entry and if not found, then return True
-       TestSt := StringGrid1.Cells[0, I];
+       //TestSt := StringGrid1.Cells[0, I];
         if I = 10 then break;
         Found := False;
    		for Count := 1 to 10 do begin
@@ -716,9 +739,9 @@ begin
                	MenuCaption := StringGrid1.Cells[0, Count]
          	else  MenuCaption := MenuEmpty;
          	case Count of
-           		1 : TrayMenuRecent1.Caption := MenuCaption;
-          		2 : TrayMenuRecent2.Caption := MenuCaption;
-          		3 : TrayMenuRecent3.Caption := MenuCaption;
+           		1 : Sett.MMRecent1.Caption := MenuCaption;
+          		2 : Sett.MMRecent2.Caption := MenuCaption;
+          	//	3 : 3.Caption := MenuCaption;
           		4 : TrayMenuRecent4.Caption := MenuCaption;
            		5 : TrayMenuRecent5.Caption := MenuCaption;
            		6 : TrayMenuRecent6.Caption := MenuCaption;
@@ -735,7 +758,7 @@ begin
       TrayIcon.InternalUpdate;				// we don't see changes unless we call this, and it leaks !
       debugln('... and we did call InternalUpDate');
 	end;
-end;
+end;                      *)
 
 
 end.
