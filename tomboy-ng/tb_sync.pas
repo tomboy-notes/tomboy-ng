@@ -53,6 +53,7 @@ unit TB_Sync;
 				but have had no effect. If there is no local manifest, the localmanifest
 				data structure is not setup for initial test run of sync. And that
 				calls the localmanifest datastructure. Have added test to avoid that. ???
+    2018/01/04  Added some debugging around #500, why does local manifest sometimes have empty rev version ?
 }
 
 
@@ -496,12 +497,22 @@ begin
         Buff := '</last-sync-date>' + LineEnding + '  <last-sync-rev>';
         OutStream.Write(Buff[1], length(Buff));
         if WriteDeletes then begin
-            if LocalRevSt = '' then
+            debugln('LocalRevSt is [' + LocalRevSt + ']');
+            if LocalRevSt = '' then begin
+                debugln('ERROR - writing local manifest but LocalRevSt is empty -----------------');
                 LocalRevSt := '0';
+            end;
             Buff := LocalRevSt + '</last-sync-rev>' + LineEnding + '  <server-id>'
 		end
-		else
+		else begin
+            debugln('newRevision is [' + newrevision + ']');
+            if newRevision = '' then begin
+                debugln('ERROR - writing local manifest but newRevision is empty -----------------');
+                newRevision := '0';
+            end;
         	Buff := newRevision + '</last-sync-rev>' + LineEnding + '  <server-id>';
+        end;
+
         OutStream.Write(Buff[1], length(Buff));
         Buff := ServerID + '</server-id>' + LineEnding + '  <note-revisions>' + LineEnding ;
         OutStream.Write(Buff[1], length(Buff));

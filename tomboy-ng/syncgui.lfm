@@ -1,12 +1,14 @@
 object FormSync: TFormSync
-  Left = 921
+  Left = 582
   Height = 366
-  Top = 221
+  Top = 269
   Width = 472
   Caption = 'FormSync'
   ClientHeight = 366
   ClientWidth = 472
   OnClose = FormClose
+  OnHide = FormHide
+  OnPaint = FormPaint
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
   object Panel1: TPanel

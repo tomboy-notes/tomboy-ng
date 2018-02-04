@@ -34,6 +34,7 @@ unit SyncGUI;
 	2018/01/01  Changed ModalResult for cancel button to mrCancel
 	2018/01/08  Tidied up message box text displayed when a sync conflict happens.
 	2018/01/25  Changes to support Notebooks
+    2018/01/04  Forced a screen update before manual sync so user knows whats happening.
 }
 
 {$mode objfpc}{$H+}
@@ -68,12 +69,16 @@ type
 				procedure ButtonOKClick(Sender: TObject);
     			procedure ButtonSaveClick(Sender: TObject);
 				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+                procedure FormHide(Sender: TObject);
+                procedure FormPaint(Sender: TObject);
 				procedure FormShow(Sender: TObject);
 				procedure Timer1Timer(Sender: TObject);
 
 		private
-
-				procedure ShowReport;
+                FormShown : boolean;
+                LocalTimer : TTimer;
+                procedure AfterShown(Sender : TObject);
+    procedure ShowReport;
             	procedure TestRepo();
         		procedure DoSetUp();
 
@@ -143,10 +148,42 @@ begin
 	FileSync.Free;
 end;
 
+procedure TFormSync.FormHide(Sender: TObject);
+begin
+    if LocalTimer = Nil then exit();
+    LocalTimer.Free;
+    LocalTimer := nil;
+end;
+
+procedure TFormSync.FormPaint(Sender: TObject);
+begin
+{    inherited;
+    showmessage('In Paint');
+    if not FormShown then begin
+        FormShown := True;
+        if SetUpFileSync then begin
+        	Label2.Caption:='If the report below makes sense, click Save and Sync !';
+            TestRepo();
+        end;
+    end;          }
+end;
+
+procedure TFormSync.AfterShown(Sender : TObject);
+begin
+        LocalTimer.Enabled := False;             // Don't want to hear from you again
+        if SetUpFileSync then begin
+            TestRepo();
+        	Label2.Caption:='If the report below makes sense, click Save and Sync !';
+            ButtonSave.Enabled := True;
+        end;
+end;
+
 
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
+    FormShown := False;
+    Memo1.Clear;
     Timer1.enabled := false;
 	FileSync := TTomboyFileSync.Create;
     FileSync.ProceedFunction:= @Proceed;
@@ -162,10 +199,17 @@ begin
         else memo1.Append('Could not find local mainfest, thats OK');
         ButtonCancel.Enabled:=True;
         ButtonOK.Enabled := False;
-        ButtonSave.Enabled := True;
+        ButtonSave.Enabled := False;
     	Label1.Caption := 'Testing Sync';
-    	Label2.Caption:='If the report below makes sense, click Save and Sync !';
-        TestRepo();
+        LocalTimer := TTimer.Create(Nil);
+        LocalTimer.OnTimer:= @AfterShown;
+        LocalTimer.Interval:=500;
+        LocalTimer.Enabled := True;
+        Label2.Caption := 'Looking at the files and repo, please wait .....';
+
+        // Application.ProcessMessages;     // did not help, do I need to let Show complete, not another timer ???? see https://forum.lazarus-ide.org/index.php/topic,32805.15.html
+    	// Label2.Caption:='If the report below makes sense, click Save and Sync !';
+        // TestRepo();
     end else begin
         Timer1.Interval := 500;
         Timer1.enabled := true;
@@ -183,6 +227,7 @@ begin
     ManualSync();
 end;
 
+
 procedure TFormSync.ManualSync();
 begin
         if FileSync.GetLocalServerID then
@@ -196,6 +241,7 @@ begin
 	        Memo1.Append('Remote Server ID not found or does not match - ' + FileSync.ErrorMessage);
             DebugLn('ERROR - Remote Server ID not found or does not match - ' + FileSync.ErrorMessage);
 		end else begin
+            Application.ProcessMessages;
         	if FileSync.DoSync(True, True) then
                 Memo1.Append('Sync completed.')
             else
@@ -265,13 +311,14 @@ end;
 
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
-    Label2.Caption:='OK, finished that';
+    Label2.Caption:='OK, I''ll do it, please wait .....';
     Application.ProcessMessages;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
     DoSetUp();
     ButtonOK.Enabled := True;
     RTSearch.IndexNotes();        { TODO : Should make this call optional, its potentially slow }
+    Label2.Caption:='OK, finished that';
 end;
 
 end.

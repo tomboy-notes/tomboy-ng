@@ -525,7 +525,7 @@ end;
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
     if SelectDirectoryDialog1.Execute then begin
-        LabelWaitForSync.Caption := 'Ok, please wait .....';
+        LabelWaitForSync.Caption := 'Ok, please wait, might take a few minutes .....';
         Application.ProcessMessages;   		// That forces (eg) the above caption update.
 		RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         if RemoteRepo = '' then RemoteRepo := SyncNotConfig;
