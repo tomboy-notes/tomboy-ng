@@ -8,7 +8,6 @@ object FormSync: TFormSync
   ClientWidth = 472
   OnClose = FormClose
   OnHide = FormHide
-  OnPaint = FormPaint
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
   object Panel1: TPanel
@@ -179,11 +178,5 @@ object FormSync: TFormSync
       Align = alNone
       Anchors = []
     end
-  end
-  object Timer1: TTimer
-    Enabled = False
-    OnTimer = Timer1Timer
-    left = 288
-    top = 32
   end
 end

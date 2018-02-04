@@ -151,7 +151,7 @@ TTomboySyncCustom = Class
 	function ReadLocalManifest(SkipFile : boolean = False) : boolean;
     			{ writes new local manifest file, WriteDeletes is true when just
                   adding a local deleted note to list, other info is preserved.}
-    function WriteNewManifest(WriteDeletes : boolean = false) : boolean; virtual;
+    function WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean; virtual;
     			{ Initiates a new revision, safe to call repeatedly. }
 	function MakeNewRevision() : boolean; virtual; abstract;
     			{ Reads a note last change date, returning GMTTime and puts actual string into LastChange }
@@ -194,9 +194,10 @@ TTomboySyncCustom = Class
     			{ We keep details of all note file actions, whether we do them or not }
     ReportList : TSyncReportList;
 	ErrorMessage : ANSIString;
-     			{ is empty until a new revision has been initiated }
+     			{ is empty until a new revision has been initiated, empty means dont write a remote manifest }
 	NewRevision : ANSIString;
-    			{ Indicates we need new mainifests generated, set if any uploads or down loads or deletes happen }
+    			{ Indicates we need new mainifests generated, set if any uploads or down loads or deletes happen
+                  however, if a we made no changes to server, its only a new local manifest.}
     NewManifest : Boolean;
 	LastSyncDate : TDateTime;
     			{ just a temp function to test the Proceed callback, delete at some stage }
@@ -223,7 +224,7 @@ TTomboyFileSync = Class(TTomboySyncCustom)
 
 				{ Does the whole sync process, false if something went wrong, check ErrorMessage }
 	function DoSync(UseLocal, UseRemote : boolean) : boolean; override;
-				{ Returns the current remote manifest revision number }
+				{ Returns the current remote manifest revision number, -1 if it cannot get it }
 	function GetCurrentRevision() : longint;
              { Gets the ServerID from remote manifest and compares it to the local value
                previously stored in ServerID. Returns False if the two ServerID's
@@ -253,11 +254,10 @@ private
 	function RemotePath(const ID, Rev : ANSIString; ItsANote : Boolean = True) : ANSIString;
 				{ Returns a string being a full path to the file mentioned, empty string OK }
 	function LocalPath(const ID, Backup: ANSIString; ItsANote : Boolean = True) : ANSIString;
-	// procedure GetListRemoteNotes(); override;
 				{ Initiates a new revision, true if all OK  }
 	function MakeNewRevision() : boolean; override;
 				{ writes new local manifest and, if necessay, a server and server rev, sets ErrorMessage }
-    function WriteNewManifest(WriteDeletes : boolean = false) : boolean; override;
+    function WriteNewManifest(WriteDeletes : boolean = false; CurrRev : longint = 0) : boolean; override;
 				{ writes out a remote style manifest to indicated file }
 	function WriteRemoteManifest(const FullFileName : AnsiString) : boolean;
 	        	{ Compares each entry in Remote list against Local List }
@@ -296,7 +296,7 @@ private
   				// Has no function in this class.
 	function MakeNewRevision() : boolean; override;
   				{ rewrites local manifest with a note id marked as deleted }
-	function WriteNewManifest(WriteDeletes : boolean = false) : boolean; override;
+	function WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean; override;
     			// Has no function in this class.
 	function UploadNote(const ID : ANSIString) : boolean; override;
 end;
@@ -343,7 +343,7 @@ begin
     	//writeln(NoteInfoListLocalManifest.Items[i].ID + ' ' + NoteInfoListLocalManifest.Items[i].Rev);
 	end;
 	TestMode := False;		// if true, will write a new manifest with -ref appended.
-    WriteNewManifest();
+    WriteNewManifest(True);
 
 end;
 
@@ -367,9 +367,9 @@ begin
 	Result := False;
 end;
 
-function TTomboyLocalManifest.WriteNewManifest(WriteDeletes : boolean = false) : boolean;
+function TTomboyLocalManifest.WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean;
 begin
-		Result:=inherited WriteNewManifest(True);
+		Result:=inherited WriteNewManifest(WriteDeletes);
 end;
 
 function TTomboyLocalManifest.UploadNote(const ID: ANSIString): boolean;
@@ -463,7 +463,7 @@ end;
 
 
 
-function TTomboySyncCustom.WriteNewManifest(WriteDeletes : boolean = false) : boolean;
+function TTomboySyncCustom.WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean;
 var
     OutStream : TFilestream;
     Buff      : ANSIString;
@@ -496,7 +496,7 @@ begin
 	    OutStream.Write(Buff[1], length(Buff));
         Buff := '</last-sync-date>' + LineEnding + '  <last-sync-rev>';
         OutStream.Write(Buff[1], length(Buff));
-        if WriteDeletes then begin
+        if WriteDeletes then begin                                       // this when called by Local
             debugln('LocalRevSt is [' + LocalRevSt + ']');
             if LocalRevSt = '' then begin
                 debugln('ERROR - writing local manifest but LocalRevSt is empty -----------------');
@@ -504,13 +504,12 @@ begin
             end;
             Buff := LocalRevSt + '</last-sync-rev>' + LineEnding + '  <server-id>'
 		end
-		else begin
-            debugln('newRevision is [' + newrevision + ']');
-            if newRevision = '' then begin
-                debugln('ERROR - writing local manifest but newRevision is empty -----------------');
-                newRevision := '0';
-            end;
-        	Buff := newRevision + '</last-sync-rev>' + LineEnding + '  <server-id>';
+		else begin                                                      // this when called by FileSync
+            // debugln('newRevision is [' + newrevision + ']');
+            if newRevision = '' then begin              // not a new rev so might be just a download or even a new repo
+               Buff :=  inttostr(CurrRev) + '</last-sync-rev>' + LineEnding + '  <server-id>';
+            end else
+        	    Buff := newRevision + '</last-sync-rev>' + LineEnding + '  <server-id>';
         end;
 
         OutStream.Write(Buff[1], length(Buff));
@@ -1054,6 +1053,8 @@ var
 	// NodeList : TDOMNodeList;
 	// Node : TDOMNode;
 begin
+    Result := -1;
+    if not FileExistsUTF8(RemoteManifestDir + 'manifest.xml') then exit();  // Must be a new Repo
     try
         try
 				ReadXMLFile(Doc, RemoteManifestDir + 'manifest.xml');
@@ -1133,7 +1134,7 @@ begin
     	CreateGUID(GUID);
     	ServerID := copy(GUIDToString(GUID), 2, 36);
         if VerboseMode then DebugLn('Debug - Creating a new FileSync Repositary ', ServerID);
-        DoSync(False, False);
+        Result := DoSync(False, False);
 	end;
 end;
 
@@ -1192,13 +1193,19 @@ begin
     	end;
 end;
 
-function TTomboyFileSync.WriteNewManifest(WriteDeletes : boolean = false) : boolean;
+function TTomboyFileSync.WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean;
 var
     Filename : ANSIString;
+    CurrRevI : longint;
 begin
     	Result := True;
     	if TestMode then exit();
-		Result:=inherited WriteNewManifest();			// always
+        CurrRevI := GetCurrentRevision();
+        if 0 > CurrRevI then begin
+            debugln('Warning - No current rev available, perhaps its a new Repo ?');
+            CurrRevI := 0;
+        end;
+		Result:=inherited WriteNewManifest(False, CurrRevI);	// CurrRevI will be used if newRevison turns out to be ''
         if Result = False then exit();
         if NewRevision = '' then exit();	// Only need remote manifests if we create a new revision
         Result := False;

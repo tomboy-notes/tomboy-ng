@@ -64,15 +64,12 @@ type
 				Panel3: TPanel;
 				Splitter3: TSplitter;
 				StringGridReport: TStringGrid;
-				Timer1: TTimer;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonOKClick(Sender: TObject);
     			procedure ButtonSaveClick(Sender: TObject);
 				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
                 procedure FormHide(Sender: TObject);
-                procedure FormPaint(Sender: TObject);
 				procedure FormShow(Sender: TObject);
-				procedure Timer1Timer(Sender: TObject);
 
 		private
                 FormShown : boolean;
@@ -155,18 +152,6 @@ begin
     LocalTimer := nil;
 end;
 
-procedure TFormSync.FormPaint(Sender: TObject);
-begin
-{    inherited;
-    showmessage('In Paint');
-    if not FormShown then begin
-        FormShown := True;
-        if SetUpFileSync then begin
-        	Label2.Caption:='If the report below makes sense, click Save and Sync !';
-            TestRepo();
-        end;
-    end;          }
-end;
 
 procedure TFormSync.AfterShown(Sender : TObject);
 begin
@@ -175,7 +160,8 @@ begin
             TestRepo();
         	Label2.Caption:='If the report below makes sense, click Save and Sync !';
             ButtonSave.Enabled := True;
-        end;
+        end else
+            ManualSync();
 end;
 
 
@@ -184,7 +170,6 @@ procedure TFormSync.FormShow(Sender: TObject);
 begin
     FormShown := False;
     Memo1.Clear;
-    Timer1.enabled := false;
 	FileSync := TTomboyFileSync.Create;
     FileSync.ProceedFunction:= @Proceed;
 	FileSync.VerboseMode := False;
@@ -201,30 +186,17 @@ begin
         ButtonOK.Enabled := False;
         ButtonSave.Enabled := False;
     	Label1.Caption := 'Testing Sync';
-        LocalTimer := TTimer.Create(Nil);
-        LocalTimer.OnTimer:= @AfterShown;
-        LocalTimer.Interval:=500;
-        LocalTimer.Enabled := True;
-        Label2.Caption := 'Looking at the files and repo, please wait .....';
-
-        // Application.ProcessMessages;     // did not help, do I need to let Show complete, not another timer ???? see https://forum.lazarus-ide.org/index.php/topic,32805.15.html
-    	// Label2.Caption:='If the report below makes sense, click Save and Sync !';
-        // TestRepo();
     end else begin
-        Timer1.Interval := 500;
-        Timer1.enabled := true;
         ButtonCancel.Enabled:=False;
         ButtonOK.Enabled := False;
         ButtonSave.Enabled := False;
     	Label1.Caption := 'Manual Sync';
     	Label2.Caption:='Doing a manual sync, please report any surprises !';
 	end;
-end;
-
-procedure TFormSync.Timer1Timer(Sender: TObject);
-begin
-    Timer1.Enabled := false;
-    ManualSync();
+    LocalTimer := TTimer.Create(Nil);
+    LocalTimer.OnTimer:= @AfterShown;
+    LocalTimer.Interval:=500;
+    LocalTimer.Enabled := True;
 end;
 
 
