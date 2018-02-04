@@ -122,7 +122,6 @@ type
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         StringGrid1: TStringGrid;
         TrayIcon: TTrayIcon;
-//        procedure ButtonOpenClick(Sender: TObject);
 		procedure ButtonClearSearchClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
@@ -131,7 +130,6 @@ type
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
-        // procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -151,13 +149,6 @@ type
         { Responds when any of the recent items is clicked in TrayIcon menu }
         procedure TrayMenuRecent1Click(Sender: TObject);
     private
-        (*
-        { ----- A set of two horrible methods only needed on Mac to minimise memory leaks ---- }
-
-        	{ returns true if there is a note in top10 not present in Menu }
-        function MenuItemMissing: boolean;
-        	{ A butchered version of RecentMenu trying to avoid some of the Mac Memory leak issues }
-        procedure RecentMenuMac(); *)
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
@@ -203,7 +194,7 @@ implementation
 
 uses EditBox,
     settings,		// Manages settings.  This Main Form, close it to kill app.
-    SyncGUI,
+    // SyncGUI,
     TB_Sync,		// So we can make changes to local manifest when a note is deleted.
     LCLType,		// For the MessageBox
     LazFileUtils;   // LazFileUtils needed for TrimFileName(), cross platform stuff
@@ -506,7 +497,7 @@ end;
 procedure TRTSearch.ButtonShowAllNotesClick(Sender: TObject);
 begin
         ButtonNotebookOptions.Enabled := False;
-        UseList();		// Sadly, this will call RecentMenu() unnecessarily, bad on a Mac....
+        UseList();
         StringGridNoteBooks.Hint := '';
         StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
 end;
@@ -515,14 +506,12 @@ procedure TRTSearch.StringGridNotebooksClick(Sender: TObject);
 begin
         ButtonNotebookOptions.Enabled := True;
         StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
-        // NoteLister.LoadNotebookGrid(StringGrid1, StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
         UseList();
         StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
 
 procedure TRTSearch.ButtonNotebookOptionsClick(Sender: TObject);
 begin
-		// showmessage(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
     PopupMenuNotebook.Popup;
 end;
 
@@ -575,17 +564,6 @@ end;
 procedure TRTSearch.MenuSynchroniseClick(Sender: TObject);
 begin
     Sett.Synchronise();
-    exit();
-
-    FormSync.NoteDirectory := Sett.NoteDirectory;
-    FormSync.LocalConfig := Sett.LocalConfig;
-    FormSync.RemoteRepo := Sett.RemoteRepo;
-    FormSync.SetupFileSync := False;
-    if FormSync.Visible then
-        FormSync.Show
-    else
-    	if (FormSync.ShowModal = mrOK) then
-            IndexNotes();
 end;
 
 procedure TRTSearch.TrayIconClick(Sender: TObject);
@@ -596,11 +574,6 @@ end;
 procedure TRTSearch.TrayMenSearchClick(Sender: TObject);
 begin
     Sett.ShowSearchBox();
-    exit();
-
-  	if Sett.NoteDirectory = '' then
-        showmessage('You have not set a notes directory. Please click Settings')
-    else  Show;
 end;
 
 procedure TRTSearch.TrayMenuAboutClick(Sender: TObject);
@@ -612,12 +585,6 @@ end;
 procedure TRTSearch.TrayMenuNewClick(Sender: TObject);
 begin
     Sett.MakeNewNote();
-    exit();
-
-  	if Sett.NoteDirectory = '' then
-        showmessage('You have not set a notes directory. Please click Settings')
-    else
-    	OpenNote();
 end;
 
 procedure TRTSearch.TrayMenuRecent1Click(Sender: TObject);
@@ -625,141 +592,6 @@ begin
 	if TMenuItem(Sender).Caption <> MenuEmpty then
 		OpenNote(TMenuItem(Sender).Caption);
 end;
-
-
-{ ----- Horrid 2 functions needing removal when Mac Memory Leak issues fixed ----- }
-(*
-function TRTSearch.MenuItemMissing() : boolean;
-var
-	I : integer = 1;
-    Count : integer;
-    Found : boolean;
-    //TestCount : integer;
-    //TestSt : ANSIString;
-begin
-  	Result := True;
-    //TestCount := StringGrid1.RowCount;
-  	while I < StringGrid1.RowCount do begin	// check each entry and if not found, then return True
-       //TestSt := StringGrid1.Cells[0, I];
-        if I = 10 then break;
-        Found := False;
-   		for Count := 1 to 10 do begin
-            case Count of
-              1: if TrayMenuRecent1.Caption = StringGrid1.Cells[0, I] then Found := True;
-              2: if TrayMenuRecent2.Caption = StringGrid1.Cells[0, I] then Found := True;
-              3: if TrayMenuRecent3.Caption = StringGrid1.Cells[0, I] then Found := True;
-              4: if TrayMenuRecent4.Caption = StringGrid1.Cells[0, I] then Found := True;
-              5: if TrayMenuRecent5.Caption = StringGrid1.Cells[0, I] then Found := True;
-              6: if TrayMenuRecent6.Caption = StringGrid1.Cells[0, I] then Found := True;
-              7: if TrayMenuRecent7.Caption = StringGrid1.Cells[0, I] then Found := True;
-              8: if TrayMenuRecent8.Caption = StringGrid1.Cells[0, I] then Found := True;
-              9: if TrayMenuRecent9.Caption = StringGrid1.Cells[0, I] then Found := True;
-              10: if TrayMenuRecent10.Caption = StringGrid1.Cells[0, I] then Found := True;
-            end;
-   		end;
-        if not Found then exit();	// that entry not present in menu, so exit with True.
-        inc(I);
-    end;
-    // We got here because we got a 'Found' for each one we checked for, so nothing missing.
-    // So, now need to check all the entries in TrayMenu and make sure there is a matching
-    // entry in the StringGrid.
-    for Count := 1 to 10 do begin
-        I := 1;
-        Found := False;
-        case Count of
-            1: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent1.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            2: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent2.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            3: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent3.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            4: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent4.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            5: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent5.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            6: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent6.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            7: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent7.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            8: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent8.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            9: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent9.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-            10: while I < StringGrid1.RowCount do begin
-                    if I = 11 then break;
-                    if TrayMenuRecent10.caption = StringGrid1.Cells[0, I] then Found := True;
-                    inc(I);
-                end;
-        end;
-        if not Found then exit();       // Return True, something missing, must rewrite
-    end;
-    Result := False;
-end;
-
- 	// OK, I know this is ugly but this is Mac own private version, it tries to avoid
-    // calling the InternalUpdate() function so as to minimise the memory leaks therein.
-procedure TRTSearch.RecentMenuMac();
-var
-	Count : integer = 1;
-	MenuCaption : string;
-begin
-    debugln('In Mac version of RecentMenu');
-    if ButtonNotebookOptions.Enabled then exit();		// to avoid issues with memory leak, we don't update RecentMenu in Notebook Mode
-    if MenuItemMissing() then begin
-		Count := 1;
-  		while (Count <= 10) do begin
-         	if Count < StringGrid1.RowCount then
-               	MenuCaption := StringGrid1.Cells[0, Count]
-         	else  MenuCaption := MenuEmpty;
-         	case Count of
-           		1 : Sett.MMRecent1.Caption := MenuCaption;
-          		2 : Sett.MMRecent2.Caption := MenuCaption;
-          	//	3 : 3.Caption := MenuCaption;
-          		4 : TrayMenuRecent4.Caption := MenuCaption;
-           		5 : TrayMenuRecent5.Caption := MenuCaption;
-           		6 : TrayMenuRecent6.Caption := MenuCaption;
-           		7 : TrayMenuRecent7.Caption := MenuCaption;
-           		8 : TrayMenuRecent8.Caption := MenuCaption;
-           		9 : TrayMenuRecent9.Caption := MenuCaption;
-           		10 : TrayMenuRecent10.Caption := MenuCaption;
-          	end;
-        	inc(Count);
-    	end;
-      if Sett.RemoteRepo = '' then
-          MenuSynchronise.Enabled := False
-      else MenuSynchronise.Enabled := True;
-      TrayIcon.InternalUpdate;				// we don't see changes unless we call this, and it leaks !
-      debugln('... and we did call InternalUpDate');
-	end;
-end;                      *)
-
 
 end.
 

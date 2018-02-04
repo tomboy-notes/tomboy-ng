@@ -15,7 +15,7 @@ object RTSearch: TRTSearch
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = ButtonClearSearch
     Left = 3
-    Height = 22
+    Height = 27
     Top = 8
     Width = 511
     Anchors = [akTop, akLeft, akRight]
@@ -66,12 +66,12 @@ object RTSearch: TRTSearch
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 309
-    Top = 30
+    Height = 304
+    Top = 35
     Width = 719
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel1'
-    ClientHeight = 309
+    ClientHeight = 304
     ClientWidth = 719
     TabOrder = 3
     object Splitter1: TSplitter
@@ -79,7 +79,7 @@ object RTSearch: TRTSearch
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 152
-      Height = 307
+      Height = 302
       Top = 1
       Width = 5
       Align = alNone
@@ -92,7 +92,7 @@ object RTSearch: TRTSearch
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = ButtonNotebookOptions
       Left = 1
-      Height = 258
+      Height = 253
       Top = 25
       Width = 151
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -124,7 +124,7 @@ object RTSearch: TRTSearch
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 160
-      Height = 304
+      Height = 299
       Top = 1
       Width = 555
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -174,7 +174,7 @@ object RTSearch: TRTSearch
       AnchorSideBottom.Side = asrBottom
       Left = -8
       Height = 25
-      Top = 283
+      Top = 278
       Width = 160
       Anchors = [akLeft, akRight, akBottom]
       Caption = 'Notebook Options'
