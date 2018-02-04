@@ -113,6 +113,7 @@ unit EditBox;
                 and that messed MarkTitle() so altered its test to now find first
                 para marker rather than first non text block
     2018/02/01  Lock KMemo1 before saving. Noted a very occasional crash when first saving a new note.
+    2018/02/04  Added some ifdef to suppress needless warnings
 }
 
 
@@ -531,7 +532,9 @@ end;
 procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
 var
 	FindStart : longint;
+    {$ifdef WINDOWS}
     Ptr, EndP : PChar;			// Will generate "not used" warnings in Unix
+    {$endif}
     NumbCR : longint = 0;
 begin
    	FindStart := UTF8Pos(TFindDialog(Sender).FindText, KMemo1.Blocks.text, LastFind);
@@ -690,7 +693,7 @@ end;
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
 var
     BlockNo : longint = 0;
-    TestSt : ANSIString;
+    //TestSt : ANSIString;
 begin
     Result := False;
     TheTitle := '';
@@ -698,7 +701,7 @@ begin
 	// while Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoTextBlock' do begin
         TheTitle := TheTitle + Kmemo1.Blocks.Items[BlockNo].Text;
        	inc(BlockNo);
-        TestSt := Kmemo1.Blocks.Items[BlockNo].ClassName;
+        //TestSt := Kmemo1.Blocks.Items[BlockNo].ClassName;
         if BlockNo >= Kmemo1.Blocks.Count then break;
     end;                            // Stopped at first TKMemoParagraph if it exists.
     if TheTitle <> '' then Result := True;
@@ -804,7 +807,9 @@ end;
 procedure TEditBoxForm.MakeAllLinks(const Term : ANSIString; const StartScan : longint =1; EndScan : longint = 0);
 var
 	Offset, NumbCR   : longint;
+    {$ifdef WINDOWS}
     Ptr, EndP : PChar;                  // Will generate "not used" warning in Unix
+    {$endif}
 begin
     // CRCount := 0;
     Offset := UTF8Pos(Term, KMemo1.Blocks.text, StartScan);
@@ -932,7 +937,7 @@ begin
       We'd do something like -
 
       if TimerQuiet.Enabled then
-         TimerQuiet.Enabled := False;
+         TimerQuiet.Enabled := False;            // restart timer cos user is still typing
       TimerQuiet.Enabled := True;
       exit();
     }
@@ -1199,7 +1204,7 @@ procedure TEditBoxForm.SaveTheNote();
 var
  	Saver : TBSaveNote;
     SL : TStringList;
-    TestI : integer;
+    // TestI : integer;
 begin
     if Sett.NotesReadOnly then begin
         exit();       { TODO : Remove this when we start doing auto save, right now, be scared ! }
