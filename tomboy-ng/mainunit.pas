@@ -72,6 +72,7 @@ unit MainUnit;
                 the traymenu recent used list.
     2018/02/04  Don't show or populate the TrayIcon for Macs. Hooked into Sett's Main Menu
                 for Mac and now most IconTray/Main menu items are responded to in Sett.
+    2018/02/04  Now control MMSync when we do the Popup One.
 }
 
 {$mode objfpc}{$H+}
@@ -335,9 +336,8 @@ begin
         end;
       	inc(Count);
   	end;
-    if Sett.RemoteRepo = '' then
-        MenuSynchronise.Enabled := False
-    else MenuSynchronise.Enabled := True;
+    MenuSynchronise.Enabled := not (Sett.RemoteRepo = '');
+    Sett.MMSync.Enabled := not (Sett.RemoteRepo = '');
 end;
 
 procedure TRTSearch.ButtonRefreshClick(Sender: TObject);

@@ -87,6 +87,7 @@ object Sett: TSett
         Top = 239
         Width = 306
         Caption = 'Allow a note to be in Multiple Notebooks.'
+        OnChange = CheckManyNotebooksChange
         TabOrder = 2
       end
     end

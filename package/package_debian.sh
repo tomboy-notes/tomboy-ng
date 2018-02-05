@@ -8,7 +8,7 @@
 # http://wiki.lazarus.freepascal.org/Cross_compiling
 
 PRODUCT="tomboy-ng"
-VERSION="0.12"
+VERSION="0.13"
 
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"

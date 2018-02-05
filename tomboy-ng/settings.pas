@@ -140,6 +140,7 @@ type
 		procedure ButtonSetNotePathClick(Sender: TObject);
 		procedure ButtonSetSynServerClick(Sender: TObject);
 		procedure ButtonShowBackUpClick(Sender: TObject);
+        procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
 		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -285,7 +286,7 @@ procedure TSett.ShowAboutBox();
 var
     S1, S2, S3, S4, S5 : string;
 begin
-    S1 := 'This is v0.12b of tomboy-ng, a rewrite of Tomboy Notes'#10;
+    S1 := 'This is v0.13 of tomboy-ng, a rewrite of Tomboy Notes'#10;
     S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
     S3 := 'use unless you are very careful and have good backups.'#10;
     S5 := '';
@@ -386,6 +387,8 @@ begin
         	ButtonSetSynServer.Caption := 'Set File Sync Repo';
 		end;
 end;
+
+
 
 procedure TSett.MMAboutClick(Sender: TObject);
 begin
@@ -557,6 +560,11 @@ begin
     NoteLister.GetNotes();
     NoteLister.LoadStGrid(StringGridBackUp);
     NoteLister.Free;
+end;
+
+procedure TSett.CheckManyNotebooksChange(Sender: TObject);
+begin
+    ButtonSaveConfig.Enabled := True;
 end;
 
 	{ Called when ANY of the setting check boxes change so use can save. }
