@@ -497,7 +497,7 @@ begin
         Buff := '</last-sync-date>' + LineEnding + '  <last-sync-rev>';
         OutStream.Write(Buff[1], length(Buff));
         if WriteDeletes then begin                                       // this when called by Local
-            debugln('LocalRevSt is [' + LocalRevSt + ']');
+            // debugln('LocalRevSt is [' + LocalRevSt + ']');
             if LocalRevSt = '' then begin
                 debugln('ERROR - writing local manifest but LocalRevSt is empty -----------------');
                 LocalRevSt := '0';
@@ -1060,7 +1060,8 @@ begin
 				ReadXMLFile(Doc, RemoteManifestDir + 'manifest.xml');
         		Result := strtoint(Doc.DocumentElement.GetAttribute('revision'));
         except on EFOpenError do begin
-            		if VerboseMode then DebugLn('Debug - Cannot get Remote Revision, will start at 0');
+            		// if VerboseMode then
+                    DebugLn('Warning - Cannot get Remote Revision, is this a new Repo ?');
                     Result := -1;
         		end;
 		end;

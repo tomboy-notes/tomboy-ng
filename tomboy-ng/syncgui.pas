@@ -186,6 +186,7 @@ begin
         ButtonOK.Enabled := False;
         ButtonSave.Enabled := False;
     	Label1.Caption := 'Testing Sync';
+        Label2.Caption := 'Please wait a minute or two ...';
     end else begin
         ButtonCancel.Enabled:=False;
         ButtonOK.Enabled := False;

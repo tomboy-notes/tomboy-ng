@@ -6,11 +6,11 @@ and lazarus.
 The intention is to stick to Tomboy's basic principles of simple user interface,
 cross platform and syncronisation between those platforms. Long term ....
 
-So far, it has a basic Tomboy Editor functional but lacks some things -
+So far, it has a basic Tomboy Editor functional but lacks some things I think it needs -
 
 * Spell Checking (hard)
 * Monospaced Font (easy)
-* Printing       (easy)
+* Printing
 * Table of Contents (a plugin I use a LOT)
 * Tools to manage (re-use or delete) deleted files that end up n Backup/.
 
@@ -18,7 +18,8 @@ So far, it has a basic Tomboy Editor functional but lacks some things -
 On the other hand, it does read and write Tomboy's files .  Displays the small,
 normal, large and huge fonts Bold, Italics and bullets. Highlight is, at present
 replaced with red coloured text. It links to notes with matching names (and has a
-a switch to stop that).
+a switch to stop that). Supports Tomboy's Notebook model and extends it in that
+it allows a Note to be in more than one Notebook.
 
 File syncs with Tomboy (and itself). Autosaves.
 
@@ -33,7 +34,7 @@ Notes about its internals -
 There are binary install kits for Linux, Windows and Mac.
 If you want to build your own (or, please, help with development) that too is easy.
 Requires Free Pascal, Lazarus and the KControls component to build. I have been
-working with Lazarus 1.8rc3 and 1.8, just released.
+working with Lazarus 1.8, just released late 2017
 Use the bitbucket version of KControls.
 
 Lazarus and Free Pascal support heaps of other platforms too and I suspect the
@@ -47,14 +48,11 @@ fooled if its been running for a long time when we hit Daylight Saving Time.
 This call will make sure the process clock and system clock agree.
 Please see https://xkcd.com/1883/
 
-One to force a workaround on the Mac relating to updating menu captions in the
-TrayIcon, in MainUnit.  A bit of extra Window code needed in EditBox because of
-Windows insistence on two character line endings.
+We now display Mac quite differently that Linux/Windows as it appears Mac and Mac
+users prefer a Main Menu rather than the TrayIcon one. A bit of extra Window code
+needed in EditBox because of Windows insistence on two character line endings.
 
-And there is a memory leak in the Mac version so, to be safe, don't let it sit
-running for a long length of time, we are working on this upstream problem.
-This release will also compile under Mac OSX 64bit Cocoa but there are even more
-memory leaks there and I do not recommend it for normal use.
+This release should also compile under Mac OSX 64bit Cocoa but watch for memory leaks.
 
 If you run it within the debugger, remember that there are several handled
 exceptions, the debugger insists on telling you about them so make sure you
@@ -69,7 +67,7 @@ obviously, test any new features and things 'around' where changes have been mad
 Tests are made with full debugging on including heaptrc. Not from within the IDE.
 
 * Load up new binary, remove any rubbish short term notes, notebooks and do a sync. Exit.
-* Remove config dir (eg) ~/.config/tomboy-ng and all notes ~/.local/share/tomboy-ng/*
+* Remove config and all notes, eg rm -Rf ~/.config/tomboy-ng; rm -Rf ~/.local/share/tomboy-ng
 * Start App and point Notes Dir to default place, save config.
 * Make a new note. Exit note and then reload. Delete it. There is no local manifest
   at this stage so make sure thats the case.
@@ -87,39 +85,43 @@ Tests are made with full debugging on including heaptrc. Not from within the IDE
 Application Icons
 -----------------
 There is a way to go but here is a start.
-Under "my Ubuntu Mate" install, it seems the Lazarus Application Icon is ignored. Instead, I can get a nice Icon displayed on the plank and on the top status bar by putting an 256x256 icon in  /usr/share/icons/hicolor/256x256/apps/tomboy-ng
+Under "my Ubuntu Mate" install, it seems the Lazarus Application Icon is ignored. Instead,
+I can get a nice Icon displayed on the plank and on the top status bar by putting an 256x256
+icon in  /usr/share/icons/hicolor/256x256/apps/tomboy-ng
 
-I'll also provide, in similar places 16x16, 22x22, 24x24, 48x48 because some docs I've read suggest they might be needed. Sigh ....
+I'll also provide, in similar places 16x16, 22x22, 24x24, 48x48 because some docs I've read
+suggest they might be needed. Sigh ....
 
-In the Mac - setting a Lazarus Application Icon seems work. I'll need to test under Windows .... 
+In the Mac - setting a Lazarus Application Icon seems work. Gee, its easy under Windows, never
+thought I'd say that !
 
 Notebooks
 ------------
 Every note that is a member of a Notebook has an extra bit of XML down just after the <y>,</y>
-tag, in Tomboy it mentions only one Notebook, to remain compatable, so should we but there is
-no there reason. Tags look like this -
+tag. Tomboy mentions only one Notebook, to remain compatable, so should we but there is
+apparently no there reason. So, provide user with an option in Settings. Tags look like this -
   <tags>
     <tag>system:notebook:DavosNotebook</tag>
   </tags>
-In addition, Notebook Templates exist in Tomboy but I don't plan to rely on them, just
-ignore them if present. They are are identified by this
+In addition, Notebook Templates exist in Tomboy. They are are identified by this
   <tags>
     <tag>system:template</tag>
     <tag>system:notebook:DavosNotebook</tag>
   </tags>
 The StartHere note has the system:template tag but not, obviously, the notebook one.
 
-POLICY (not sure is Tomboy does this too)
+POLICY (not sure if Tomboy does this too, don't assume)
  * If I find a note that thinks it is a member of a particular notebook, but I cannot
    find a template for that note, then I will ignore that claim, not display that notebook
    to user and remove the claim if and when I save the note.
  * When a notebook is deleted, we delete the Notebook Template, not the notes that are
-   a member of the note.
+   a member of the note. We make no change to the notes, thier tag remains until the
+   note is rewritten.
 
 So, the plan is -
-* Ignore any note that has both above tags. We'll deal with (editing) Templates seperatly.
+
 * Note_Lister - If a note has just the Notebook one, use it normally and add a entry,
-  ID:NotebookName to NotebookList object in Note_Lister.   Done
+  ID:NotebookName to NotebookList object in Note_Lister.
   - A function to return a list (TStringList ?) full of all the Notebooks, optionall
     for an ID is a member of.  ie function TNoteLister.GetNotebooks(const ID = '') : TStrings
   - I'll assume any change to a Note's membership is all handled by one function
@@ -127,14 +129,14 @@ So, the plan is -
 	that note is a member of. So, delete existing and add new ones. TStringList might be empty
 	procedure SetNotesMembership(const ID : ansistring; const MemberList : TStringList);
 
-* Add code to SaveNote that when a note is being saved, we look at Note_Lister's
+* Code added to SaveNote that when a note is being saved, we look at Note_Lister's
   NotebookList and see if note is a member of a Notebook, if so put in appropriate
   code.
-	- Add Note_Lister to uses clasue.                 - done
+	- Add Note_Lister to uses clause.
 	- Add a function that returns the Tags block if it finds this note is
 	  a member of any particular notebook. Tags specific code belongs here not
-	  in Note_Lister.                                 - done
-	- Call that function from the Footer() procedure. - done
+	  in Note_Lister.
+	- Call that function from the Footer() procedure.
 * Add some GUI to Editbox to allow user to make the current note join or leave
   an existing Notebook or, if necessary, make a new notebook.
 * Add tools to NotebookList to list all known Notebooks and to remove an entry
@@ -171,3 +173,36 @@ If user deletes a notebook, we delete the notebook template file and remove ref
 to it from the notebook structure. We do not, at this stage, make any changes to
 individual notebooks that may claim to be members of that notebook. If user loads
 such a note, the claims will be ignored and not resaved.
+
+How FileSync Works
+================
+
+Starts with FileSync.DoSync(). It builds a list based on Local Manifest, remote manifest and
+actual local notes. And then a list that will become the new manifest if necessary.
+
+It then compares against the local notes, then against the remote notes. These two
+compare functions may delete, upload or download, if any uploads take place or deletes from
+server, a new revision is indicted. MakeNewRevision() will, if necessary, create new working
+directories and (always) a new revision directory. It reads the remote manifest's idea of what
+revision we are up to and adds one.  Mhh, show new revision number in GUI so user can see it
+climbing ?
+
+If we are only downloading, then no new revision is required, we should copy the current
+revision not inc for a rewrite of the local manifest, do not write a new remote manifest.
+
+When we call WriteNewManifest() it first calls the parent version where local manifest
+is dealt with. It has two modes, firstly where we are just updating local manifest with
+filenames that have been deleted, secondly, where there is a sync in progress and a new
+revision is happening. In the first case, we should write back the same revision number
+as we started with. In the second case, we'll use NewRevision that has previously been set
+by MakeNewRevision()
+
+We should regard an empty NewRevision in the second case as meaning that we have
+• just joined the sync repo or we are making a new repo.
+• or we've downloaded but not uploaded.
+In either of the (immediate) above, we should read the remote manifest and use what ever
+its got for us. Remember that a blank NewRevision means don't write an new remote
+manifest.
+
+
+
