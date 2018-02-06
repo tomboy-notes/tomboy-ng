@@ -6,6 +6,7 @@
 # Assumes a working FPC/Lazarus install with cross compile tools as described in
 # http://wiki.lazarus.freepascal.org/Cross_compiling_for_Win32_under_Linux and
 # http://wiki.lazarus.freepascal.org/Cross_compiling
+# and that a 'Release' mode exists.
 
 PRODUCT="tomboy-ng"
 VERSION="0.13"
@@ -13,6 +14,7 @@ VERSION="0.13"
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"
 
+WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="docs"
 MANUALS="Notes.txt"
 
@@ -48,10 +50,7 @@ function BuildIt () {
 function DebianPackage () {
 	# We build a debian tree in BUILD and call dpkg-deb -b 
 	#  BUILD/DEBIAN control,debian-binary and any scripts
-    #	/usr/bin/tomboy-ng
-	#	/share/tomboy-ng/Notes.txt,license.txt (todo)
- 	mkdir BUILD
-	mkdir BUILD/DEBIAN
+	mkdir -p BUILD/DEBIAN
 	mkdir BUILD/usr
 	mkdir BUILD/usr/bin
 	mkdir BUILD/usr/share
@@ -59,30 +58,40 @@ function DebianPackage () {
 		mkdir -p "BUILD/usr/share/icons/hicolor/$i/apps";
 		cp "$ICON_DIR/$i.png" "BUILD/usr/share/icons/hicolor/$i/apps/$PRODUCT.png";
 	done;
+	mkdir -p BUILD/usr/share/doc/$PRODUCT
+	# cp ../copyright BUILD/usr/share/doc/$PRODUCT/copyright
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
-	mkdir "BUILD/usr/share/$PRODUCT"
 	if [ "$1" = "amd64" ]; then
 		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng
 	else
 		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
 	fi
-	cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/$PRODUCT/"
+	cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/doc/$PRODUCT/"
 
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
 	echo "Architecture: $1" >> BUILD/DEBIAN/control
-	echo "Maintainer: David Bannon" >> BUILD/DEBIAN/control
+	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
 	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
-	echo "Depends: libgtk2.0-0 (>= 2.6)" >> BUILD/DEBIAN/control
+	echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14)" >> BUILD/DEBIAN/control
 	echo "Priority: optional" >> BUILD/DEBIAN/control
 	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
 	echo "Description: Alpha Test of a Tomboy Notes rewritten to make installation easy." >> BUILD/DEBIAN/control
+	echo "  please report your experiences." >> BUILD/DEBIAN/control
+
+	echo "Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135" > BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Name: tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Maintainer: $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Source: https://github.com/tomboy-notes/tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Copyright: 2017-2018 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "License: GPL-3+" >> BUILD/usr/share/doc/$PRODUCT/copyright
 
   	echo "2.0" >> BUILD/DEBIAN/debian-binary
 	# echo "calling dpkg for ""$PRODUCT""_$VERSION-0_$1.deb"
-  	dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
+	chmod -R g-w BUILD
+  	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
 	rm -rf BUILD
 	echo "----------------- FINISHED DEBs ----------------"
 	ls -l *.deb
@@ -94,7 +103,7 @@ function DoZipping {
 	rm *.gz
 	cp ../tomboy-ng/tomboy-ng .
 	gzip -q tomboy-ng
-	mv tomboy-ng.gz tomboy-ng_$VERSION.gz
+	mv tomboy-ng.gz tomboy-ng64_$VERSION.gz
 
 	cp ../tomboy-ng/tomboy-ng32 .
 	gzip -q tomboy-ng32
