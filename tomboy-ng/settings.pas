@@ -52,6 +52,7 @@ unit settings;
 	2017/12/30  Added a call to IndexNotes after setting up sync, potentially slow.
 	2018/01/25  Changes to support Notebooks
     2018/02/04  Added a Main menu because Macs work better with one.
+    2018/02/09  Added a means save export path but only until app exits, not saved to disk.
 }
 
 {$mode objfpc}{$H+}
@@ -157,8 +158,9 @@ type
 		procedure PageControl1Change(Sender: TObject);
 		procedure Timer1Timer(Sender: TObject);
    	private
+        fExportPath : ANSIString;  { TODO : This will need to be a property }
  		procedure CheckConfigFile;
-		procedure SetFontSizes;
+        procedure SetFontSizes;
 		procedure SyncSettings;
     public
         AllowClose : Boolean;
@@ -188,6 +190,7 @@ type
         procedure MakeNewNote();
             { A target for when a Settings menu is clicked }
         procedure ShowSettings();
+        property ExportPath : ANSIString Read fExportPath write fExportPath;
     end;
 
 var
@@ -268,6 +271,7 @@ begin
         else if RadioUseServer.Checked then SyncOption := UseServer;
 	end;
 end;
+
 
 procedure TSett.Synchronise();
 begin
@@ -368,6 +372,7 @@ begin
         MenuFile.Visible:=True;
         MenuRecent.Visible:=True;
      {$endif}
+     ExportPath := '';
     Timer1.Enabled:=False;
     LabelWaitForSync.Caption := '';
     if AlreadyRunning() then begin

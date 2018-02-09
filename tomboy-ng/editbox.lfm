@@ -726,12 +726,12 @@ object EditBoxForm: TEditBoxForm
     object MenuItemExport: TMenuItem
       Caption = 'Export'
       object MenuItemExportRTF: TMenuItem
-        Caption = 'MenuItemExportRTF'
-        Enabled = False
+        Caption = 'Export as RTF'
+        OnClick = MenuItemExportRTFClick
       end
       object MenuItemExportPlainText: TMenuItem
-        Caption = 'MenuItemExportPlainText'
-        Enabled = False
+        Caption = 'Export Plain Text'
+        OnClick = MenuItemExportPlainTextClick
       end
     end
     object MenuItemPrint: TMenuItem

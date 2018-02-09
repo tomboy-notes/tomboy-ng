@@ -114,6 +114,7 @@ unit EditBox;
                 para marker rather than first non text block
     2018/02/01  Lock KMemo1 before saving. Noted a very occasional crash when first saving a new note.
     2018/02/04  Added some ifdef to suppress needless warnings
+    2018/02/09  Export as RTF and TXT, untested on mac + windows
 }
 
 
@@ -194,6 +195,8 @@ type
         procedure MenuItalicClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
 		procedure MenuItemCutClick(Sender: TObject);
+        procedure MenuItemExportPlainTextClick(Sender: TObject);
+        procedure MenuItemExportRTFClick(Sender: TObject);
 		procedure MenuItemFindClick(Sender: TObject);
 		procedure MenuItemPasteClick(Sender: TObject);
 		procedure MenuItemSelectAllClick(Sender: TObject);
@@ -245,6 +248,8 @@ type
 		procedure SaveTheNote;
         	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
         function NewNoteTitle() : ANSIString;
+                 { Saves the note as text or rtf, consulting user about path and file name }
+        procedure SaveNoteAs(TheExt: string);
     public
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
@@ -573,6 +578,44 @@ begin
    if not Dirty then Timer1.Enabled := true;
    Dirty := true;
    Label1.Caption := 'd';
+end;
+
+procedure TEditBoxForm.MenuItemExportPlainTextClick(Sender: TObject);
+begin
+     SaveNoteAs('txt');
+end;
+
+procedure TEditBoxForm.MenuItemExportRTFClick(Sender: TObject);
+begin
+   SaveNoteAs('rtf');
+end;
+
+procedure TEditBoxForm.SaveNoteAs(TheExt : string);
+var
+    SaveExport : TSaveDialog;
+begin
+     SaveExport := TSaveDialog.Create(self);
+     SaveExport.DefaultExt := TheExt;
+     if Sett.ExportPath <> '' then
+        SaveExport.InitialDir := Sett.ExportPath
+     else begin
+          {$ifdef UNIX}
+          SaveExport.InitialDir :=  GetEnvironmentVariable('HOME');
+          {$endif}
+          {$ifdef WINDOWS}
+          SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
+          {$endif}
+     end;
+     SaveExport.Filename := StringReplace(Caption, #32, '', [rfReplaceAll]) + '.' + TheExt;
+     if SaveExport.Execute then begin
+        if 'txt' = TheExt then
+           KMemo1.SaveToTXT(SaveExport.FileName)
+        else if 'rtf' = TheExt then
+           KMemo1.SaveToRTF(SaveExport.FileName);
+        Sett.ExportPath := ExtractFilePath(SaveExport.FileName);  // Hmm, UTF8 ?
+     end;
+     //showmessage(SaveExport.FileName);
+     SaveExport.Free;
 end;
 
 procedure TEditBoxForm.MenuItemPasteClick(Sender: TObject);
@@ -922,6 +965,7 @@ procedure TEditBoxForm.OnUserClickLink(sender : TObject);
 begin
 	RTSearch.OpenNote(TKMemoHyperlink(Sender).Text);
 end;
+
 
 	{ Any change to the note text and this gets called. So, vital it be quick }
 procedure TEditBoxForm.KMemo1Change(Sender: TObject);

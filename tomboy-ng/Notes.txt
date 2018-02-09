@@ -205,4 +205,20 @@ its got for us. Remember that a blank NewRevision means don't write an new remot
 manifest.
 
 
+Exporting
+==========
+This is too easy, KMemo has the code built in, all I have to do is determine a place to save the file.
+
+a) Add menu items for Export RTF, Export TXT
+b) A new form, FormExport that will need to be told the format we are exporting; the KMemo we are
+   exporting and the title of the note. We will have to make up a file name based on title
+   and ask user where to save. Now, thats an issue, whats the default place ?  Linux is $HOME, I
+   think I can read that, Mac may be the same, Windows some %BLAR% line thing ?
+c) A SaveFile dialog, should be save that place in settings for next time ?
+
+   GetEnvironmentVariable('PATH')
+   http://wiki.freepascal.org/Command_line_parameters_and_environment_variables
+
+
+
 

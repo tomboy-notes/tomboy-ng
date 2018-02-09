@@ -63,8 +63,16 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: teditboxform.menuitemexporthtml.caption
-msgid "ExportHTML"
+#: teditboxform.menuitemexport.caption
+msgid "Export"
+msgstr ""
+
+#: teditboxform.menuitemexportplaintext.caption
+msgid "Export Plain Text"
+msgstr ""
+
+#: teditboxform.menuitemexportrtf.caption
+msgid "Export as RTF"
 msgstr ""
 
 #: teditboxform.menuitemfind.caption
@@ -73,6 +81,10 @@ msgstr ""
 
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
+msgstr ""
+
+#: teditboxform.menuitemprint.caption
+msgid "MenuItemPrint"
 msgstr ""
 
 #: teditboxform.menuitemselectall.caption
@@ -209,6 +221,7 @@ msgid "Edit Notebook Template"
 msgstr ""
 
 #: trtsearch.menuitemsettings.caption
+msgctxt "trtsearch.menuitemsettings.caption"
 msgid "Settings"
 msgstr ""
 
@@ -236,22 +249,27 @@ msgid "Search"
 msgstr ""
 
 #: trtsearch.traymenuabout.caption
+msgctxt "trtsearch.traymenuabout.caption"
 msgid "About"
 msgstr ""
 
 #: trtsearch.traymenunew.caption
+msgctxt "trtsearch.traymenunew.caption"
 msgid "New Note"
 msgstr ""
 
 #: trtsearch.traymenurecent1.caption
+msgctxt "trtsearch.traymenurecent1.caption"
 msgid "MenuItem5"
 msgstr ""
 
 #: trtsearch.traymenurecent10.caption
+msgctxt "trtsearch.traymenurecent10.caption"
 msgid "MenuItem14"
 msgstr ""
 
 #: trtsearch.traymenurecent2.caption
+msgctxt "trtsearch.traymenurecent2.caption"
 msgid "MenuItem6"
 msgstr ""
 
@@ -260,26 +278,32 @@ msgid "MenuItem7"
 msgstr ""
 
 #: trtsearch.traymenurecent4.caption
+msgctxt "trtsearch.traymenurecent4.caption"
 msgid "MenuItem8"
 msgstr ""
 
 #: trtsearch.traymenurecent5.caption
+msgctxt "trtsearch.traymenurecent5.caption"
 msgid "MenuItem9"
 msgstr ""
 
 #: trtsearch.traymenurecent6.caption
+msgctxt "trtsearch.traymenurecent6.caption"
 msgid "MenuItem10"
 msgstr ""
 
 #: trtsearch.traymenurecent7.caption
+msgctxt "trtsearch.traymenurecent7.caption"
 msgid "MenuItem11"
 msgstr ""
 
 #: trtsearch.traymenurecent8.caption
+msgctxt "trtsearch.traymenurecent8.caption"
 msgid "MenuItem12"
 msgstr ""
 
 #: trtsearch.traymenurecent9.caption
+msgctxt "trtsearch.traymenurecent9.caption"
 msgid "MenuItem13"
 msgstr ""
 
@@ -393,6 +417,91 @@ msgstr ""
 
 #: tsett.labelwaitforsync.caption
 msgid "LabelWaitForSync"
+msgstr ""
+
+#: tsett.menufile.caption
+msgid "File"
+msgstr ""
+
+#: tsett.menurecent.caption
+msgid "Recent Notes"
+msgstr ""
+
+#: tsett.mmabout.caption
+msgctxt "tsett.mmabout.caption"
+msgid "About"
+msgstr ""
+
+#: tsett.mmnewnote.caption
+msgctxt "tsett.mmnewnote.caption"
+msgid "New Note"
+msgstr ""
+
+#: tsett.mmquit.caption
+msgid "Quit Close and Go Away"
+msgstr ""
+
+#: tsett.mmrecent1.caption
+msgid "MenuItem4"
+msgstr ""
+
+#: tsett.mmrecent10.caption
+msgctxt "tsett.mmrecent10.caption"
+msgid "MenuItem14"
+msgstr ""
+
+#: tsett.mmrecent2.caption
+msgctxt "tsett.mmrecent2.caption"
+msgid "MenuItem5"
+msgstr ""
+
+#: tsett.mmrecent3.caption
+msgctxt "tsett.mmrecent3.caption"
+msgid "MenuItem6"
+msgstr ""
+
+#: tsett.mmrecent4.caption
+msgctxt "tsett.mmrecent4.caption"
+msgid "MenuItem8"
+msgstr ""
+
+#: tsett.mmrecent5.caption
+msgctxt "tsett.mmrecent5.caption"
+msgid "MenuItem9"
+msgstr ""
+
+#: tsett.mmrecent6.caption
+msgctxt "tsett.mmrecent6.caption"
+msgid "MenuItem10"
+msgstr ""
+
+#: tsett.mmrecent7.caption
+msgctxt "tsett.mmrecent7.caption"
+msgid "MenuItem11"
+msgstr ""
+
+#: tsett.mmrecent8.caption
+msgctxt "tsett.mmrecent8.caption"
+msgid "MenuItem12"
+msgstr ""
+
+#: tsett.mmrecent9.caption
+msgctxt "tsett.mmrecent9.caption"
+msgid "MenuItem13"
+msgstr ""
+
+#: tsett.mmsearch.caption
+msgctxt "tsett.mmsearch.caption"
+msgid "Search"
+msgstr ""
+
+#: tsett.mmsettings.caption
+msgctxt "tsett.mmsettings.caption"
+msgid "Settings"
+msgstr ""
+
+#: tsett.mmsync.caption
+msgid "Syncronise"
 msgstr ""
 
 #: tsett.panel2.caption
