@@ -743,6 +743,7 @@ object EditBoxForm: TEditBoxForm
     top = 200
     object MenuItemFind: TMenuItem
       Caption = 'Find in this Note'
+      ShortCut = 16454
       OnClick = MenuItemFindClick
     end
     object MenuItem1: TMenuItem

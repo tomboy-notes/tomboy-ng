@@ -9,6 +9,7 @@ object RTSearch: TRTSearch
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
   object Edit1: TEdit
@@ -24,6 +25,7 @@ object RTSearch: TRTSearch
     OnEditingDone = Edit1EditingDone
     OnEnter = Edit1Enter
     OnExit = Edit1Exit
+    OnKeyDown = FormKeyDown
     TabOrder = 0
     Text = 'Search'
   end
@@ -40,6 +42,7 @@ object RTSearch: TRTSearch
     BorderSpacing.Right = 1
     Caption = 'Clear'
     OnClick = ButtonClearSearchClick
+    OnKeyDown = FormKeyDown
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
@@ -55,6 +58,7 @@ object RTSearch: TRTSearch
     BorderSpacing.Right = 3
     Caption = 'Refresh'
     OnClick = ButtonRefreshClick
+    OnKeyDown = FormKeyDown
     TabOrder = 2
   end
   object Panel1: TPanel
@@ -105,6 +109,7 @@ object RTSearch: TRTSearch
       ShowHint = True
       TabOrder = 1
       OnClick = StringGridNotebooksClick
+      OnKeyDown = FormKeyDown
       ColWidths = (
         216
       )
@@ -141,6 +146,7 @@ object RTSearch: TRTSearch
       ScrollBars = ssAutoVertical
       TabOrder = 2
       OnDblClick = StringGrid1DblClick
+      OnKeyDown = FormKeyDown
       ColWidths = (
         267
         241
@@ -164,6 +170,7 @@ object RTSearch: TRTSearch
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Show All Notes'
       OnClick = ButtonShowAllNotesClick
+      OnKeyDown = FormKeyDown
       TabOrder = 3
     end
     object ButtonNotebookOptions: TButton
@@ -180,6 +187,7 @@ object RTSearch: TRTSearch
       Caption = 'Notebook Options'
       Enabled = False
       OnClick = ButtonNotebookOptionsClick
+      OnKeyDown = FormKeyDown
       TabOrder = 4
     end
   end
@@ -278,6 +286,7 @@ object RTSearch: TRTSearch
     top = 184
     object TrayMenuNew: TMenuItem
       Caption = 'New Note'
+      ShortCut = 16462
       OnClick = TrayMenuNewClick
     end
     object TrayMenSearch: TMenuItem

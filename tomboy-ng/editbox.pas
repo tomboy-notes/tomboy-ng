@@ -1142,6 +1142,13 @@ var
   NoBulletPara : boolean = false;
 begin
     if not Ready then exit();
+    if ssCtrl in Shift then begin
+       if key = ord('F') then begin MenuItemFindClick(self); Key := 0; exit(); end;
+       if key = ord('N') then begin RTSearch.TrayMenuNewClick(self); Key := 0; exit(); end;
+    end;
+    if [ssCtrl, ssShift] = Shift then begin
+       if key = ord('F') then begin ButtSearchClick(self); Key := 0; exit(); end;
+    end;
     if Key <> 8 then exit();    // We are watching for a BS on a Bullet Marker
     // Mac users don't have a del key, they use a backspace key thats labled 'delete'. Sigh...
     if KMemo1.Blocks.RealSelEnd > KMemo1.Blocks.RealSelStart then exit();

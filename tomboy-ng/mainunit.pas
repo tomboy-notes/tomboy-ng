@@ -133,6 +133,8 @@ type
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
+        procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+            );
 		procedure FormShow(Sender: TObject);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
@@ -153,7 +155,7 @@ type
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
-		procedure UseList;
+		procedure UseList();
     public
         NoteLister : TNoteLister;
         NoteDirectory : string;
@@ -166,7 +168,7 @@ type
         { Reads header in each note in notes directory, updating Search List and
           the recently used list under the TrayIcon. Downside is time it takes
           to index. use UpdateList() if you just have updates. }
-        procedure IndexNotes;
+        procedure IndexNotes();
         { Returns true when passed string is the title of an existing note }
         function IsThisaTitle(const Term: ANSIString): boolean;
         { Gets called with a title and filename (clicking grid), with just a title
@@ -296,6 +298,7 @@ begin
     UseList();
 end;
 
+
 procedure TRTSearch.RecentMenu();
 var
       Count : integer = 1;
@@ -408,6 +411,15 @@ begin
   // DebugLn('Freeing Note Lister');
   NoteLister.Free;
   NoteLister := Nil;
+end;
+
+procedure TRTSearch.FormKeyDown(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+     if ssCtrl in Shift then begin
+       if key = ord('N') then begin TrayMenuNewClick(self); Key := 0; exit(); end;
+     end;
+
 end;
 
 procedure TRTSearch.FormShow(Sender: TObject);
@@ -565,6 +577,8 @@ procedure TRTSearch.MenuSynchroniseClick(Sender: TObject);
 begin
     Sett.Synchronise();
 end;
+
+
 
 procedure TRTSearch.TrayIconClick(Sender: TObject);
 begin
