@@ -81,14 +81,40 @@ object Sett: TSett
         TabOrder = 1
       end
       object CheckManyNotebooks: TCheckBox
-        Left = 18
+        Left = 16
         Height = 22
         Hint = 'This may adversly affect tradional Tomboy, take care.'
-        Top = 239
+        Top = 224
         Width = 306
         Caption = 'Allow a note to be in Multiple Notebooks.'
         OnChange = CheckManyNotebooksChange
         TabOrder = 2
+      end
+      object CheckCaseSensitive: TCheckBox
+        Left = 40
+        Height = 22
+        Top = 280
+        Width = 121
+        Caption = 'Case Sensitive'
+        OnChange = CheckReadOnlyChange
+        TabOrder = 3
+      end
+      object CheckAnyCombination: TCheckBox
+        Left = 40
+        Height = 22
+        Top = 304
+        Width = 142
+        Caption = 'Any Combination'
+        OnChange = CheckReadOnlyChange
+        TabOrder = 4
+      end
+      object Label12: TLabel
+        Left = 16
+        Height = 17
+        Top = 256
+        Width = 134
+        Caption = 'Main Search Box is :'
+        ParentColor = False
       end
     end
     object TabDisplay: TTabSheet

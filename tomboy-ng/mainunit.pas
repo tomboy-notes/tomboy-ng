@@ -356,9 +356,16 @@ begin
 end;
 
 procedure TRTSearch.Edit1EditingDone(Sender: TObject);
+//var
+//   TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
 begin
+
+    { TODO : Unintended - when user clicks "Show All Notes" after using this edit box, this event is triggered. And its slow. Better to make this respond to an Enter Key from OnKeyDown  }
     	if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
-        	NoteLister.GetNotes(Edit1.Text);
+            //TS1:=DateTimeToTimeStamp(Now);
+        	NoteLister.GetNotes(Edit1.Text);        // 2.7 sec on my not so fast laptop !
+            //TS2:=DateTimeToTimeStamp(Now);
+            //debugln('Search ' + inttostr(TS2.Time-TS1.Time) + 'ms');    // lower, lower - 2.7S
         	NoteLister.LoadSearchGrid(StringGrid1);
         	ButtonClearSearch.Enabled := True;
         end;

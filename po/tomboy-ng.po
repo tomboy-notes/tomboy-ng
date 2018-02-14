@@ -331,6 +331,14 @@ msgstr ""
 msgid "KTomboy-NG Settings"
 msgstr ""
 
+#: tsett.checkanycombination.caption
+msgid "Any Combination"
+msgstr ""
+
+#: tsett.checkcasesensitive.caption
+msgid "Case Sensitive"
+msgstr ""
+
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a note to be in Multiple Notebooks."
 msgstr ""
@@ -369,6 +377,10 @@ msgstr ""
 
 #: tsett.label11.caption
 msgid ".... and its not available just yet !"
+msgstr ""
+
+#: tsett.label12.caption
+msgid "Main Search Box is :"
 msgstr ""
 
 #: tsett.label2.caption

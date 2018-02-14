@@ -53,6 +53,7 @@ unit settings;
 	2018/01/25  Changes to support Notebooks
     2018/02/04  Added a Main menu because Macs work better with one.
     2018/02/09  Added a means save export path but only until app exits, not saved to disk.
+    2018/02/14  Added check boxes to control search box
 }
 
 {$mode objfpc}{$H+}
@@ -76,6 +77,8 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
+        CheckCaseSensitive: TCheckBox;
+        CheckAnyCombination: TCheckBox;
 		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
@@ -85,6 +88,7 @@ type
 		Label1: TLabel;
 		Label10: TLabel;
 		Label11: TLabel;
+        Label12: TLabel;
 		LabelWaitForSync: TLabel;
 		Label2: TLabel;
 		Label3: TLabel;
@@ -286,17 +290,6 @@ begin
             RTSearch.IndexNotes;
 end;
 
-procedure TSett.ShowAboutBox();
-var
-    S1, S2, S3, S4, S5 : string;
-begin
-    S1 := 'This is v0.13 of tomboy-ng, a rewrite of Tomboy Notes'#10;
-    S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
-    S3 := 'use unless you are very careful and have good backups.'#10;
-    S5 := '';
-    S4 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
-    Showmessage(S1 + S2 + S3 + S4 + S5);
-end;
 
 procedure TSett.ShowSearchBox();
 begin
@@ -340,6 +333,13 @@ begin
 
             CheckManyNoteBooks.checked :=
             	('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
+
+            CheckCaseSensitive.Checked :=
+                ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
+
+            CheckAnyCombination.Checked :=
+                ('true' = Configfile.readstring('BasicSettings', 'AnyCombination', 'true'));
+
 
             ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
             case ReqFontSize of
@@ -462,6 +462,15 @@ begin
       if CheckManyNoteBooks.checked then
       	Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
       else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
+      if CheckCaseSensitive.checked then
+      	Configfile.writestring('BasicSettings', 'CaseSensitive', 'true')
+      else Configfile.writestring('BasicSettings', 'CaseSensitive', 'false');
+      if CheckAnyCombination.checked then
+      	Configfile.writestring('BasicSettings', 'AnyCombination', 'true')
+      else Configfile.writestring('BasicSettings', 'AnyCombination', 'false');
+
+
+
       if CheckShowIntLinks.Checked then
           ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
       else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
@@ -491,8 +500,7 @@ begin
     // GetEnvironmentVariable() seems utf8 ok ...
     {$IFDEF UNIX}
     NoteDirectory := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
-    {$ENDIF}                // WARNING !!!!!!! Untested on OSX.
-                            // WARNING !!!!!!! Untested windows code, take care
+    {$ENDIF}
     {$IFDEF WINDOWS}
     NoteDirectory := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
     // %APPDATA%\Tomboy\notes\
@@ -586,6 +594,18 @@ begin
     	CloseAction := caFree;
         RTSearch.Close;
 	end else CloseAction := caHide;
+end;
+
+procedure TSett.ShowAboutBox();
+var
+    S1, S2, S3, S4, S5 : string;
+begin
+    S1 := 'This is v0.13 of tomboy-ng, a rewrite of Tomboy Notes'#10;
+    S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
+    S3 := 'use unless you are very careful and have good backups.'#10;
+    S5 := '';
+    S4 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
+    Showmessage(S1 + S2 + S3 + S4 + S5);
 end;
 
 end.

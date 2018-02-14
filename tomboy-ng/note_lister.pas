@@ -42,6 +42,8 @@ unit Note_Lister;
 	2017/12/29  Added a debug line to ThisNoteIsOpen() to try and see if there is
 				a problem there. Really don't think there is but ...
 	2018/01/25  Changes to support Notebooks
+    2018/02/14  Changed code that does Search All Notes stuff cos old code stopped on a tag
+    2018/02/15  Can now search case sensitive or not and any combination or exact match
 }
 
 {$mode objfpc}
@@ -131,6 +133,8 @@ type
    	procedure GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm : ANSIString = '');
     		{ Returns True if indicated note contains term in its content }
    	function NoteContains(const Term, FileName : ANSIString) : boolean;
+    function NoteContent(const FullName: ANSIString; out Content : ANSIString) : boolean;
+    function ReadTheTag(const fs: TFileStream): ANSIString;
 
    public
     		{ The directory, with trailing seperator, that the notes are in }
@@ -195,7 +199,7 @@ type
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger;
+uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger;
 { Projectinspector, double click Required Packages and add LCL }
 
 { TNoteBookList }
@@ -517,30 +521,81 @@ begin
   end else DebugLn('Error, found a note and lost it !');
 end;
 
-function TNoteLister.NoteContains(const Term, FileName: ANSIString): boolean;
+function TNoteLister.ReadTheTag(const fs : TFileStream) : ANSIString;
 var
-	Doc : TXMLDocument;
-	Node : TDOMNode;
-    Content : ANSIString;
+    Ch : char = ' ';
 begin
-  	Result := False;
-	if FileExistsUTF8(WorkingDir + FileName) then begin
-      	try
-    		try
-	  			ReadXMLFile(Doc, WorkingDir + FileName);
-	  			Node := Doc.DocumentElement.FindNode('text');
-	      		Content := Node.FirstChild.FirstChild.NodeValue;
-            except	on EXMLReadError do DebugLn('Note has bad xml', WorkingDir + Filename);
-                	on EAccessViolation do DebugLn('Access Violation on Note Content ', WorkingDir + Filename);
-      		end;
-      	finally
-        	Doc.free;
-      	end;
-        if UTF8Pos(Term, Content) > 0 then Result := True;
-	end else DebugLn('Error, found a note and lost it !', WorkingDir + Filename);
+     Result := '<';
+     while fs.Position < fs.Size do begin
+           fs.read(ch, 1);
+           if Ch = '>' then begin
+              Result := Result + '>';
+              if Result = '<note-content version="0.1">' then
+                 Result := '<note-content version="0.3">';
+              exit();
+           end;
+           Result := Result + Ch;
+     end;
+     debugln('Tag=' + Result);
+end;
+
+function TNoteLister.NoteContent(const FullName : ANSIString; out Content : ANSIString ) : boolean;
+var
+    fs : TFileStream;
+    ch : char = ' ';
+    inContent : boolean = False;
+begin
+    Content := '';
+  	fs := TFileStream.Create(Utf8ToAnsi(FullName), fmOpenRead or fmShareDenyNone);
+    try
+       while fs.Position < fs.Size do begin
+         fs.read(ch, 1);
+         //if Ch < ' ' then continue;        // newline, line feed, cr etc
+         if (Ch = '<') then begin          // thats start of a tag
+             if InContent then begin
+                 if '</note-content>' = ReadTheTag(fs) then break;
+             end else
+                 if '<note-content version="0.3">' = ReadTheTag(fs) then InContent := true;
+             continue;
+         end;
+         if InContent then Content := Content + Ch;
+       end;
+    finally
+        FreeAndNil(fs);
+    end;
+    Result := length(Content) > 1;
 end;
 
 
+function TNoteLister.NoteContains(const Term, FileName: ANSIString): boolean;
+var
+    SL : TStringList;
+    Content : ANSIString;
+    I : integer;
+begin
+    Result := False;
+    if not NoteContent(WorkingDir + FileName, Content) then exit();
+    if Sett.CheckAnyCombination.Checked then begin
+        SL := TStringList.Create;
+        SL.LineBreak:=' ';          // break up Term at each space
+        SL.AddText(trim(Term));
+        for I := 0 to SL.Count -1 do begin
+            if Sett.CheckCaseSensitive.Checked then
+                Result := (UTF8Pos(SL.Strings[I], Content) > 0)
+            else
+                Result := (UTF8Pos(UTF8LowerString(SL.Strings[I]), UTF8LowerString(Content)) > 0);
+            if Result = False then break;
+        end;
+        SL.Free;
+        exit();
+    end;
+    // if FileExistsUTF8(WorkingDir + FileName) then begin
+        if Sett.CheckCaseSensitive.Checked then
+            Result := (UTF8Pos(Term, Content) > 0)
+        else
+            Result := (UTF8Pos(UTF8LowerString(Term), UTF8LowerString(Content)) > 0);
+	// end else DebugLn('Error, found a note and lost it !', WorkingDir + Filename);
+end;
 
 
 procedure TNoteLister.AddNote(const FileName, Title, LastChange : ANSIString);
