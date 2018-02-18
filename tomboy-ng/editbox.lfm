@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 595
+  Left = 544
   Height = 488
-  Top = 96
+  Top = 145
   Width = 460
   Caption = 'EditBoxForm'
   ClientHeight = 488
@@ -779,9 +779,9 @@ object EditBoxForm: TEditBoxForm
     left = 232
     top = 280
   end
-  object Timer1: TTimer
+  object TimerSave: TTimer
     Interval = 10000
-    OnTimer = Timer1Timer
+    OnTimer = TimerSaveTimer
     left = 368
     top = 280
   end
@@ -790,5 +790,11 @@ object EditBoxForm: TEditBoxForm
     RadioButtons = <>
     left = 80
     top = 280
+  end
+  object TimerHousekeeping: TTimer
+    Interval = 4000
+    OnTimer = TimerHousekeepingTimer
+    left = 376
+    top = 127
   end
 end

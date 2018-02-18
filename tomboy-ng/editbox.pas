@@ -115,6 +115,9 @@ unit EditBox;
     2018/02/01  Lock KMemo1 before saving. Noted a very occasional crash when first saving a new note.
     2018/02/04  Added some ifdef to suppress needless warnings
     2018/02/09  Export as RTF and TXT, untested on mac + windows
+    2018/02/17  Moved housekeeping stuff in a method and now call that method from
+                a timer, reset by user activity. Same with Save time too.
+                Should speed things up.
 }
 
 
@@ -168,7 +171,8 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
 		TaskDialogDelete: TTaskDialog;
-		Timer1: TTimer;
+		TimerSave: TTimer;
+        TimerHousekeeping: TTimer;
 		procedure ButtDeleteClick(Sender: TObject);
 		procedure ButtLinkClick(Sender: TObject);
 		procedure ButtNotebookClick(Sender: TObject);
@@ -205,7 +209,8 @@ type
         procedure MenuLargeClick(Sender: TObject);
         procedure MenuNormalClick(Sender: TObject);
         procedure MenuSmallClick(Sender: TObject);
-		procedure Timer1Timer(Sender: TObject);
+		procedure TimerSaveTimer(Sender: TObject);
+        procedure TimerHousekeepingTimer(Sender: TObject);
 
     private
         CreateDate : string;		// Will be '' if new note
@@ -224,6 +229,7 @@ type
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
         { Clears links near where user is working }
         procedure ClearNearLink(const CurrentPos: longint);
+        procedure DoHousekeeping();
         { Returns a long random file name, Not checked for clashes }
         function GetAFilename() : ANSIString;
         procedure CheckForLinks(const StartScan : longint = 1; EndScan : longint = 0);
@@ -245,7 +251,7 @@ type
         { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
         { Saves the note in KMemo1, must have title but can make up a file name if needed }
-		procedure SaveTheNote;
+		procedure SaveTheNote();
         	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
         function NewNoteTitle() : ANSIString;
                  { Saves the note as text or rtf, consulting user about path and file name }
@@ -306,7 +312,7 @@ begin
     St := Caption;
    if IDYES = Application.MessageBox('Delete this Note', PChar(St),
    									MB_ICONQUESTION + MB_YESNO) then begin
-		Timer1.Enabled := False;
+		TimerSave.Enabled := False;
    		if NoteFileName <> '' then
 	   		    RTSearch.DeleteNote(NoteFileName);
         Dirty := False;
@@ -351,7 +357,7 @@ var
 begin
       // if not KMemo1.SelAvail then exit();
       // Need a better test of valid  selection than that !
-      if not Dirty then Timer1.Enabled := true;
+      if not Dirty then TimerSave.Enabled := true;
       Dirty := true;
       Label1.Caption := 'd';
       BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
@@ -432,7 +438,7 @@ var
 	SplitStart : boolean = false;
 begin
     Ready := False;
-    if not Dirty then Timer1.Enabled := true;
+    if not Dirty then TimerSave.Enabled := true;
     Dirty := true;
     Label1.Caption := 'd';
 	LastChar := Kmemo1.RealSelEnd;			// SelEnd points to first non-selected char
@@ -575,7 +581,7 @@ end;
 procedure TEditBoxForm.MenuItemCutClick(Sender: TObject);
 begin
    KMemo1.ExecuteCommand(ecCut);
-   if not Dirty then Timer1.Enabled := true;
+   if not Dirty then TimerSave.Enabled := true;
    Dirty := true;
    Label1.Caption := 'd';
 end;
@@ -622,7 +628,7 @@ procedure TEditBoxForm.MenuItemPasteClick(Sender: TObject);
 begin
     Ready := False;
     KMemo1.ExecuteCommand(ecPaste);
-   if not Dirty then Timer1.Enabled := true;
+   if not Dirty then TimerSave.Enabled := true;
    Dirty := true;
    Label1.Caption := 'd';
    Ready := True;
@@ -645,13 +651,15 @@ end;
 
 { - - - H O U S E   K E E P I N G   F U C T I O N S ----- }
 
-procedure TEditBoxForm.Timer1Timer(Sender: TObject);
+procedure TEditBoxForm.TimerSaveTimer(Sender: TObject);
 begin
-    Timer1.Enabled:=False;
+    TimerSave.Enabled:=False;
 	// showmessage('Time is up');
     SaveTheNote();
     Label1.Caption := 'c';
 end;
+
+
 
 {	FormShow gets called under a number of conditions Title    Filename       Template
 	- Re-show, everything all loaded.  Ready = true   yes      .              .
@@ -674,7 +682,7 @@ var
 begin
     if Ready then exit();				// its a "re-show" event. Already have a note loaded.
     //Label1.Caption := '';
-    Timer1.Enabled := False;
+    TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     Kmemo1.Clear;
     MenuItemSync.Enabled := (Sett.RemoteRepo <> '');
@@ -967,71 +975,76 @@ begin
 end;
 
 
-	{ Any change to the note text and this gets called. So, vital it be quick }
-procedure TEditBoxForm.KMemo1Change(Sender: TObject);
+procedure TEditBoxForm.DoHousekeeping();
 var
     CurserPos, StartScan, EndScan, BlockNo, Blar : longint;
     TempTitle : ANSIString;
     // TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
 begin
+  CurserPos := KMemo1.RealSelStart;
+  StartScan := CurserPos - LinkScanRange;
+  if StartScan < length(Caption) then StartScan := length(Caption);
+  EndScan := CurserPos + LinkScanRange;
+  if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);
+  // TS1:=DateTimeToTimeStamp(Now);
 
-    { A possibly better approach is to have this set or reset a timer and then, when
-      timer runs out, user is having a think, do our stuff then.
-      Thats could be updating link, title etc and even saving if a save is due.
-      We'd do something like -
+  BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
 
-      if TimerQuiet.Enabled then
-         TimerQuiet.Enabled := False;            // restart timer cos user is still typing
-      TimerQuiet.Enabled := True;
-      exit();
-    }
-    { TODO : Implement timer model to do stuff only when user has hands off  }
+  if ((BlocksInTitle + 3) > BlockNo) then begin
+      // We don't check title if user is not close the it.
+  	MarkTitle();
+  	GetTitle(TempTitle);
+      Caption := TempTitle;
+  end;
 
+  // OK, if we are in the first or second (?) block, no chance of a link anyway.
+  if BlockNo < 2 then begin
+      if KMemo1.Blocks.Count = 0 then 		// But bad things happen if its really empty !
+          KMemo1.Blocks.AddParagraph();
+  	exit();
+  end;
+  if Sett.ShowIntLinks then begin
+  	ClearNearLink(CurserPos);
+  	// TS2:=DateTimeToTimeStamp(Now);
+  	CheckForLinks(StartScan, EndScan);
+  	// TS3:=DateTimeToTimeStamp(Now);
+  end;
+  KMemo1.SelStart := CurserPos;
+  KMemo1.SelEnd := CurserPos;
+  //Debugln('Housekeeper called');
+
+  // Memo1.append('Clear ' + inttostr(TS2.Time-TS1.Time) + 'ms  Check ' + inttostr(TS3.Time-TS2.Time));
+
+  { Some notes about timing, 'medium' powered Linux laptop, 20k note.
+    Checks and changes to Title - less than mS
+    ClearNearLinks (none present) - less than mS
+    CheckForLinks (none present) - 180mS, thats mostly used up by MakeLinks()
+    	but length(KMemo1.Blocks.text) needs about 7mS too.
+
+    Can do better !
+  }
+end;
+
+procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
+begin
+    TimerHouseKeeping.Enabled := False;
+    DoHouseKeeping();
+    { TODO : Hmm, do we have race conditions here ?  A change happens during housekeeping, it will restart timer, thats OK. }
+end;
+
+	{ Any change to the note text and this gets called. So, vital it be quick }
+procedure TEditBoxForm.KMemo1Change(Sender: TObject);
+begin
     if not Ready then exit();           // don't do any of this while starting up.
-    if not Dirty then Timer1.Enabled := true;
+    //if not Dirty then TimerSave.Enabled := true;
     Dirty := true;
     Label1.Caption := 'd';
-    CurserPos := KMemo1.RealSelStart;
-    StartScan := CurserPos - LinkScanRange;
-    if StartScan < length(Caption) then StartScan := length(Caption);
-    EndScan := CurserPos + LinkScanRange;
-    if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);
-    // TS1:=DateTimeToTimeStamp(Now);
 
-    BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
-
-    if ((BlocksInTitle + 3) > BlockNo) then begin
-        // We don't check title if user is not close the it.
-    	MarkTitle();
-    	GetTitle(TempTitle);
-        Caption := TempTitle;
-    end;
-
-    // OK, if we are in the first or second (?) block, no chance of a link anyway.
-    if BlockNo < 2 then begin
-        if KMemo1.Blocks.Count = 0 then 		// But bad things happen if its really empty !
-            KMemo1.Blocks.AddParagraph();
-    	exit();
-    end;
-    if Sett.ShowIntLinks then begin
-    	ClearNearLink(CurserPos);
-    	// TS2:=DateTimeToTimeStamp(Now);
-    	CheckForLinks(StartScan, EndScan);
-    	// TS3:=DateTimeToTimeStamp(Now);
-    end;
-    KMemo1.SelStart := CurserPos;
-    KMemo1.SelEnd := CurserPos;
-    // Memo1.append('Clear ' + inttostr(TS2.Time-TS1.Time) + 'ms  Check ' + inttostr(TS3.Time-TS2.Time));
-
-    { Some notes about timing, 'medium' powered Linux laptop, 20k note.
-      Checks and changes to Title - less than mS
-      ClearNearLinks (none present) - less than mS
-      CheckForLinks (none present) - 180mS, thats mostly used up by MakeLinks()
-      	but length(KMemo1.Blocks.text) needs about 7mS too.
-
-      Can do better !
-    }
-
+    TimerHouseKeeping.Enabled := False;
+    TimerHouseKeeping.Enabled := True;
+    TimerSave.Enabled := False;
+    TimerSave.Enabled := True;
+    //DoHouseKeeping();
 end;
 
 function TEditBoxForm.NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara : Boolean;
@@ -1257,9 +1270,6 @@ var
     SL : TStringList;
     // TestI : integer;
 begin
-    if Sett.NotesReadOnly then begin
-        exit();       { TODO : Remove this when we start doing auto save, right now, be scared ! }
-	end;
   	if length(NoteFileName) = 0 then
         NoteFileName := Sett.NoteDirectory + GetAFilename();
     Saver := TBSaveNote.Create();
