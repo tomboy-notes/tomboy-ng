@@ -118,6 +118,7 @@ unit EditBox;
     2018/02/17  Moved housekeeping stuff in a method and now call that method from
                 a timer, reset by user activity. Same with Save time too.
                 Should speed things up.
+    2018/02/18  Minor correction to Ctrl-Shift-F shortcut
 }
 
 
@@ -1155,7 +1156,7 @@ var
   NoBulletPara : boolean = false;
 begin
     if not Ready then exit();
-    if ssCtrl in Shift then begin
+    if [ssCtrl] = Shift then begin
        if key = ord('F') then begin MenuItemFindClick(self); Key := 0; exit(); end;
        if key = ord('N') then begin RTSearch.TrayMenuNewClick(self); Key := 0; exit(); end;
     end;

@@ -1,7 +1,7 @@
 object RTSearch: TRTSearch
-  Left = 700
+  Left = 169
   Height = 339
-  Top = 198
+  Top = 47
   Width = 719
   Caption = 'RTSearch'
   ClientHeight = 339

@@ -1,7 +1,7 @@
 object FormSync: TFormSync
-  Left = 582
+  Left = 307
   Height = 366
-  Top = 269
+  Top = 168
   Width = 472
   Caption = 'FormSync'
   ClientHeight = 366
