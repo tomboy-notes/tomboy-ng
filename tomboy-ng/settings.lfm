@@ -1,8 +1,9 @@
 object Sett: TSett
-  Left = 430
+  Left = 425
   Height = 431
-  Top = 181
+  Top = 180
   Width = 525
+  BorderIcons = []
   Caption = 'KTomboy-NG Settings'
   ClientHeight = 429
   ClientWidth = 525
@@ -19,18 +20,18 @@ object Sett: TSett
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonSaveConfig
     Left = 0
-    Height = 373
+    Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabSpell
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object ButtonSetNotePath: TButton
         Left = 8
@@ -121,7 +122,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Display'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object GroupBox5: TGroupBox
         Left = 56
@@ -185,7 +186,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object GroupBox3: TGroupBox
         Left = 8
@@ -311,7 +312,7 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -401,7 +402,7 @@ object Sett: TSett
     end
     object TabSnapshot: TTabSheet
       Caption = 'SnapShot'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object Label9: TLabel
         Left = 36
@@ -430,7 +431,7 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object Label13: TLabel
         Left = 12
@@ -529,13 +530,12 @@ object Sett: TSett
     end
   end
   object ButtonSaveConfig: TButton
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
+    AnchorSideRight.Control = ButtonHide
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 406
-    Height = 52
-    Top = 375
+    Left = 289
+    Height = 54
+    Top = 373
     Width = 115
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 4
@@ -544,6 +544,22 @@ object Sett: TSett
     Enabled = False
     OnClick = ButtonSaveConfigClick
     TabOrder = 1
+  end
+  object ButtonHide: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 408
+    Height = 54
+    Top = 373
+    Width = 113
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 2
+    Caption = 'Close'
+    OnClick = ButtonHideClick
+    TabOrder = 2
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 88

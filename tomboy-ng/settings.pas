@@ -55,6 +55,10 @@ unit settings;
     2018/02/09  Added a means save export path but only until app exits, not saved to disk.
     2018/02/14  Added check boxes to control search box
     2018/02/23  Added capabily to configure spell check.
+    2018/03/18  Added a close button (really a hide button) and an ifdef to close
+                on the Mac when ever asked to do so. Have disabled close icon but seems
+                it still works on Linux but not mac, so thats OK (but funny).
+                Issue #25 relates, untested.
 }
 
 {$mode objfpc}{$H+}
@@ -73,6 +77,7 @@ type
 
     TSett = class(TForm)
 			ButtDefaultNoteDir: TButton;
+            ButtonHide: TButton;
 			ButtonShowBackUp: TButton;
 			ButtonSaveConfig: TButton;
 
@@ -154,6 +159,7 @@ type
 		TabDisplay: TTabSheet;
 		Timer1: TTimer;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
+        procedure ButtonHideClick(Sender: TObject);
         procedure ButtonSaveConfigClick(Sender: TObject);
 		procedure ButtonSetNotePathClick(Sender: TObject);
 		procedure ButtonSetSynServerClick(Sender: TObject);
@@ -513,6 +519,10 @@ end;
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
 procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+    {$ifdef DARWIN}
+    CloseAction := caFree;
+    exit();
+    {$endif}    // mac has a hidden form close button so any call to here is from Main Menu
 	if AllowClose then begin
     	CloseAction := caFree;
         RTSearch.Close;
@@ -671,6 +681,11 @@ begin
     	SyncSettings();
     	RTSearch.IndexNotes();
 	end;
+end;
+
+procedure TSett.ButtonHideClick(Sender: TObject);
+begin
+    Hide;
 end;
 
 	{ Allow user to point to what they want to call their notes dir. If there

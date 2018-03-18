@@ -3,6 +3,7 @@ object EditBoxForm: TEditBoxForm
   Height = 488
   Top = 145
   Width = 460
+  ActiveControl = ButtSearch
   Caption = 'EditBoxForm'
   ClientHeight = 488
   ClientWidth = 460

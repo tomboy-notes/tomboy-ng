@@ -121,14 +121,13 @@ unit EditBox;
     2018/02/18  Minor correction to Ctrl-Shift-F shortcut
     2018/03/03  Changes housekeeping timer from 4sec to 2sec - change in object inspector
     2018/03/17  Lockupdate was applied to KMemo, not KMemo.Blocks, in ImportNote(), 800ms hit !
-                maybe related to Mac's need for for a paragraph 'kick' after loading.
+                Related to Mac's need for for a paragraph 'kick' after loading.
                 Changed CheckForLinks() so it keeps a single copy of KMemo.Blocks.Text for its
                 complete run, passing it to MakeAllLinks() rather than creating a new
                 copy each iteration. Appears to deliver a usefull speedup !  Test !!
                 But must, apparently unlock before calling some other functions.
+    2018/03/18  Removed the add a para on opening at last !
 
-    ********    Must check to see if additional para we add at end is still required in Mac
-                probably not, it was there 'cos I was calling KMemo.Lock() instead of KMemo.Blocks.Lock()
 
 }
 
@@ -1260,18 +1259,8 @@ begin
     if Sett.ShowIntLinks then
     	CheckForLinks();                     		// 360mS
     Loader.Free;
-    {$ifdef DARWIN}                           // This is a problem, OSX needs this.
-    KMemo1.Blocks.AddParagraph();             // 350ms
-    {$endif}
     TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
     debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
-
-     { TODO : The Mac seems to need some kick along after we release the LockUpdate.
-    Adding a block works, if the note aleady ends with a newline, then, easy, we remove
-    it and then add one. But how to remove ?? My early sandbox tests saw a similar
-    problem, Linux also needed that kick. But not in the real app, I assumed something
-    else, such as writing links was providing that kick. }
-
 end;
 
 procedure TEditBoxForm.MenuItemWriteClick(Sender: TObject);
