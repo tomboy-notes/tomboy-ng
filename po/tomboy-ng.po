@@ -355,6 +355,24 @@ msgstr ""
 msgid "Show Internal Links"
 msgstr ""
 
+#: tsett.editdic.hint
+msgctxt "tsett.editdic.hint"
+msgid "Leave blank if using selection above"
+msgstr ""
+
+#: tsett.editdic.text
+msgid "EditDic"
+msgstr ""
+
+#: tsett.editlibrary.hint
+msgctxt "tsett.editlibrary.hint"
+msgid "Leave Blank if using selection above"
+msgstr ""
+
+#: tsett.editlibrary.text
+msgid "EditLibrary"
+msgstr ""
+
 #: tsett.groupbox3.caption
 msgid "  Type  "
 msgstr ""
@@ -381,6 +399,14 @@ msgstr ""
 
 #: tsett.label12.caption
 msgid "Main Search Box is :"
+msgstr ""
+
+#: tsett.label13.caption
+msgid "Spell Check requires the Hunspell Libraries and"
+msgstr ""
+
+#: tsett.label14.caption
+msgid "an appropriate Hunspell Dictionary set."
 msgstr ""
 
 #: tsett.label2.caption
@@ -413,6 +439,30 @@ msgstr ""
 
 #: tsett.label9.caption
 msgid "A snaphot is a copy of your current note directory, "
+msgstr ""
+
+#: tsett.labeldic.caption
+msgid "LabelDic"
+msgstr ""
+
+#: tsett.labeldicprompt.caption
+msgid "LabelDicPrompt"
+msgstr ""
+
+#: tsett.labeldicstatus.caption
+msgid "LabelDicStatus"
+msgstr ""
+
+#: tsett.labelerror.caption
+msgid "LabelError"
+msgstr ""
+
+#: tsett.labellibrary.caption
+msgid "LabelLibrary"
+msgstr ""
+
+#: tsett.labellibrarystatus.caption
+msgid "LabelLibraryStatus"
 msgstr ""
 
 #: tsett.labellocalconfig.caption
@@ -566,6 +616,10 @@ msgstr ""
 
 #: tsett.tabsnapshot.caption
 msgid "SnapShot"
+msgstr ""
+
+#: tsett.tabspell.caption
+msgid "Spell"
 msgstr ""
 
 #: tsett.tabsync.caption

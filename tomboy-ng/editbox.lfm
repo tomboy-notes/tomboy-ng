@@ -737,6 +737,10 @@ object EditBoxForm: TEditBoxForm
     object MenuItemPrint: TMenuItem
       Caption = 'MenuItemPrint'
     end
+    object MenuItemSpell: TMenuItem
+      Caption = 'Spell Check'
+      OnClick = MenuItemSpellClick
+    end
   end
   object PopupMenuRightClick: TPopupMenu
     left = 80
@@ -792,7 +796,6 @@ object EditBoxForm: TEditBoxForm
     top = 280
   end
   object TimerHousekeeping: TTimer
-    Interval = 4000
     OnTimer = TimerHousekeepingTimer
     left = 376
     top = 127

@@ -54,6 +54,7 @@ unit settings;
     2018/02/04  Added a Main menu because Macs work better with one.
     2018/02/09  Added a means save export path but only until app exits, not saved to disk.
     2018/02/14  Added check boxes to control search box
+    2018/02/23  Added capabily to configure spell check.
 }
 
 {$mode objfpc}{$H+}
@@ -62,7 +63,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus; // Types;
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, CheckLst; // Types;
 
 type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash
 
@@ -82,6 +83,8 @@ type
 		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
+        EditLibrary: TEdit;
+        EditDic: TEdit;
 		GroupBox3: TGroupBox;
 		GroupBox4: TGroupBox;
 		GroupBox5: TGroupBox;
@@ -89,6 +92,14 @@ type
 		Label10: TLabel;
 		Label11: TLabel;
         Label12: TLabel;
+        Label13: TLabel;
+        Label14: TLabel;
+        LabelDicPrompt: TLabel;
+        LabelDic: TLabel;
+        LabelError: TLabel;
+        LabelLibrary: TLabel;
+        LabelDicStatus: TLabel;
+        LabelLibraryStatus: TLabel;
 		LabelWaitForSync: TLabel;
 		Label2: TLabel;
 		Label3: TLabel;
@@ -102,6 +113,7 @@ type
 		LabelLocalConfig: TLabel;
 		LabelNotesPath: TLabel;
 		LabelSettingPath: TLabel;
+        ListBoxDic: TListBox;
         MainMenu1: TMainMenu;
         MenuFile: TMenuItem;
         MMRecent6: TMenuItem;
@@ -136,21 +148,26 @@ type
 		StringGridBackUp: TStringGrid;
 		TabBasic: TTabSheet;
 		TabBackUp: TTabSheet;
+        TabSpell: TTabSheet;
 		TabSnapshot: TTabSheet;
 		TabSync: TTabSheet;
 		TabDisplay: TTabSheet;
 		Timer1: TTimer;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
-  procedure ButtonSaveConfigClick(Sender: TObject);
+        procedure ButtonSaveConfigClick(Sender: TObject);
 		procedure ButtonSetNotePathClick(Sender: TObject);
 		procedure ButtonSetSynServerClick(Sender: TObject);
 		procedure ButtonShowBackUpClick(Sender: TObject);
         procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
+        procedure EditDicKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
+        procedure FormHide(Sender: TObject);
+        procedure FormShow(Sender: TObject);
+        procedure ListBoxDicClick(Sender: TObject);
         procedure MMAboutClick(Sender: TObject);
         procedure MMNewNoteClick(Sender: TObject);
         procedure MMQuitClick(Sender: TObject);
@@ -164,6 +181,8 @@ type
    	private
         fExportPath : ANSIString;  { TODO : This will need to be a property }
  		procedure CheckConfigFile;
+        function CheckForDict(const DictPath : ANSIString): boolean;
+        procedure CheckSpelling;
         procedure SetFontSizes;
 		procedure SyncSettings;
     public
@@ -184,6 +203,9 @@ type
         ShowIntLinks : boolean;
         { Says Notes should be treated as read only, a safe choice }
         NotesReadOnly : boolean;
+            { Indicates Spell is configured and LabelLibrary and LabelDic should
+            contain valid full file names.}
+        SpellConfig : boolean;
             { A target for when a Sync menu is clicked }
         procedure Synchronise();
             { A target for when an About menu is clicked }
@@ -199,6 +221,7 @@ type
 
 var
     Sett : TSett;
+
 
 const
      								// These const are used 'regionally' !
@@ -226,13 +249,18 @@ implementation
 
 { TSett }
 
+
 uses IniFiles,
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff;
     Note_Lister,	// List notes in BackUp and Snapshot tab
     MainUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
+    hunspell,       // spelling check
     uAppIsRunning;	// A small pas unit to test if another instance is already running.
 
+var
+    Spell: THunspell;
+     DicPath : AnsiString;
 
 procedure TSett.SetFontSizes;
 begin
@@ -277,19 +305,7 @@ begin
 end;
 
 
-procedure TSett.Synchronise();
-begin
-    FormSync.NoteDirectory := Sett.NoteDirectory;
-    FormSync.LocalConfig := Sett.LocalConfig;
-    FormSync.RemoteRepo := Sett.RemoteRepo;
-    FormSync.SetupFileSync := False;
-    if FormSync.Visible then
-        FormSync.Show
-    else
-    	if (FormSync.ShowModal = mrOK) then
-            RTSearch.IndexNotes;
-end;
-
+{ ------------------ M A I N   M E N U   S T U F F -----------------}
 
 procedure TSett.ShowSearchBox();
 begin
@@ -305,94 +321,6 @@ begin
     else
     	RTSearch.OpenNote();
 end;
-
-procedure TSett.ShowSettings();
-begin
-    Show;
-    RTSearch. RecentMenu();
-end;
-
-	{ Read config file if it exists }
-procedure TSett.CheckConfigFile;
-var
-	ConfigFile : TINIFile;
-    // FileName : ANSIString;
-    ReqFontSize : ANSIString;
-begin
-     // LabelSettingPath.Caption := GetAppConfigFile(False);
-     LabelSettingPath.Caption := AppendPathDelim(GetAppConfigDir(False)) + 'tomboy-ng.cfg';
-     LocalConfig := GetAppConfigDir(False);
-     LabelLocalConfig.Caption := LocalConfig;
-     if fileexists(LabelSettingPath.Caption) then begin
-     	ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
-     	try
-       		NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', '');
-            if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
-                CheckShowIntLinks.Checked := true
-            else CheckShowIntLinks.Checked := false;
-
-            CheckManyNoteBooks.checked :=
-            	('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
-
-            CheckCaseSensitive.Checked :=
-                ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
-
-            CheckAnyCombination.Checked :=
-                ('true' = Configfile.readstring('BasicSettings', 'AnyCombination', 'true'));
-
-
-            ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
-            case ReqFontSize of
-            	'big'    : RadioFontBig.Checked := true;
-                'medium' : RadioFontMedium.Checked := true;
-                'small'  : RadioFontSmall.Checked := true;
-            end;
-            case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
-                'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
-                'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
-                'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
-			end;
-			LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', SyncNotConfig);
-            RemoteRepo := LabelSyncRepo.Caption;
-		finally
-            ConfigFile.free;
-		end;
-		SyncSettings();
-	 end else begin
-         LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
-         NoteDirectory := '';
-         CheckManyNoteBooks.Checked := False;
-         HaveConfig := false;
-     end;
-end;
-
-procedure TSett.FormCreate(Sender: TObject);
-begin
-     {$ifdef DARWIN}        // Only Mac needs the main menu, confusing for others
-        MenuFile.Visible:=True;
-        MenuRecent.Visible:=True;
-     {$endif}
-     ExportPath := '';
-    Timer1.Enabled:=False;
-    LabelWaitForSync.Caption := '';
-    if AlreadyRunning() then begin
-    	showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
-        HaveConfig := True;		// Yes, I'm lying but don't want to see settings dialog
-        Timer1.Interval := 1000;
-        Timer1.Enabled := True;
-	end else begin
-    	HaveConfig := false;
-    	NoteDirectory := 'Set me first please';
-    	labelNotesPath.Caption := NoteDirectory;
-    	CheckShowIntLinks.Checked := true;
-    	RadioFontMedium.checked := true;
-    	//SetFontSizes();
-    	CheckConfigFile();
-    	if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
-        	ButtonSetSynServer.Caption := 'Set File Sync Repo';
-		end;
-end;
-
 
 
 procedure TSett.MMAboutClick(Sender: TObject);
@@ -437,6 +365,144 @@ begin
 	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
 end;
 
+    { ----------------- S P E L L I N G ----------------------}
+
+function TSett.CheckForDict(const DictPath : ANSIString) : boolean;
+var
+    Info : TSearchRec;
+begin
+    Result := False;
+    LabelError.Caption := '';
+    ListBoxDic.Clear;
+    ListBoxDic.Enabled := False;
+    if FindFirst(AppendPathDelim(DictPath) + '*.dic', faAnyFile and faDirectory, Info)=0 then begin
+        repeat
+            ListBoxDic.Items.Add(Info.Name);
+        until FindNext(Info) <> 0;
+    end;
+    FindClose(Info);
+    if ListBoxDic.Items.Count = 0 then begin
+       LabelDicStatus.Caption := 'No Dictionary Found';
+       LabelDic.Caption := 'Enter a new path to Dictionaries :';
+       EditDic.Text := DictPath;
+    end;
+    if ListBoxDic.Items.Count = 1 then begin                   // Exactly one returned.
+        if not Spell.SetDictionary(AppendPathDelim(DictPath) + ListBoxDic.Items.Strings[0]) then begin
+            LabelError.Caption := 'ERROR ' + Spell.ErrorMessage;
+            LabelDicStatus.Caption := 'A Dictionary Found, but Failed to Load';
+            LabelDic.Caption := 'Enter a new path to Dictionaries :'
+        end else begin
+            LabelDicStatus.Caption := 'Dictionary Loaded OK';
+            LabelDic.Caption := DictPath + ListBoxDic.Items.Strings[0];
+        end;
+    end;
+    if ListBoxDic.Items.Count > 1 then begin
+       LabelDicStatus.Caption := 'Choose a dictionary from right';
+       LabelDic.Caption := 'or or enter a new dictionary path';
+       LabelDicPrompt.Caption := 'Click a Dictionary';
+       LabelDicPrompt.Visible := True;
+       ListBoxDic.Enabled := True;
+    end;
+    Result := Spell.GoodToGo;   // only true if count was exactly one or FindDict failed and nothing changed
+end;
+
+
+procedure TSett.ListBoxDicClick(Sender: TObject);
+begin
+    if ListBoxDic.ItemIndex > -1 then
+        SpellConfig := Spell.SetDictionary(AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex]);
+    LabelError.Caption := Spell.ErrorMessage;
+    if SpellConfig then begin
+        LabelDicStatus.Caption := 'Dictionary Loaded OK';
+        LabelDic.Caption := AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex];
+    end else begin
+        LabelDicStatus.Caption := 'Dictionary Failed to Load';
+        LabelDic.Caption := 'Enter a new path to Dictionaries :'
+    end;
+end;
+
+procedure TSett.EditDicKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+    if Key = 13 then begin
+        Key := 0;
+        DicPath := AppendPathDelim(trim(EditDic.Text));
+        SpellConfig := CheckForDict(DicPath);
+    end;
+end;
+
+procedure TSett.CheckSpelling;
+var
+    DicPathAlt : AnsiString;
+begin
+    DicPathAlt := ExtractFilePath(Application.ExeName);
+    {$ifdef WINDOWS}
+    DicPath := 'C:\Program Files\LibreOffice 5\share\extensions\dict-en\';
+    {$ENDIF}
+    {$ifdef DARWIN}
+    DicPath := '/Applications/Firefox.app/Contents/Resources/dictionaries/';
+    {$endif}
+    {$ifdef LINUX}
+    DicPath := '/usr/share/hunspell/';
+    DicPathAlt := DicPath;
+    {$ENDIF}
+    LabelError.Caption:='';
+    ListBoxDic.enabled:= False;
+    LabelDic.Visible := False;
+    LabelDicStatus.Visible := False;
+    LabelDicPrompt.Visible := False;
+    EditLibrary.Text := '';
+    EditDic.Text := '';
+    EditDic.Visible:= False;
+    Spell :=  THunspell.Create(LabelLibrary.Caption);
+    if Spell.ErrorMessage = '' then begin
+        LabelLibraryStatus.caption := 'Library Loaded OK';
+        LabelLibrary.Caption := Spell.LibraryFullName;
+        EditDic.Visible := True;
+        LabelDicStatus.Visible := True;
+        LabelDic.Visible := True;
+        if LabelDic.Caption <> '' then begin
+            SpellConfig := Spell.SetDictionary(LabelDic.Caption);
+            if SpellConfig then begin
+               LabelDicStatus.Caption := 'Dictionary Loaded OK';
+            end else begin
+                LabelDicStatus.Caption := 'No Dictionary Found';
+                EditDic.Text := ExtractFilePath(LabelDic.Caption);
+                LabelDic.Caption := 'Enter a new path to Dictionaries :';
+            end;
+        end
+        else begin
+            SpellConfig := CheckForDict(DicPath);
+            if not SpellConfig then
+                SpellConfig := CheckForDict(DicPathAlt);
+        end;
+    end
+    else begin
+        LabelLibraryStatus.Caption := 'Library Not Loaded';
+        LabelLibrary.Caption := 'Enter a full library name below :';
+        EditLibrary.Text := Spell.LibraryFullName;
+        SpellConfig := False;
+    end;
+end;
+
+procedure TSett.FormHide(Sender: TObject);
+begin
+    FreeandNil(Spell);
+end;
+
+procedure TSett.FormShow(Sender: TObject);
+begin
+    CheckSpelling;
+end;
+
+
+{ --------------------- H O U S E    K E E P I NG -------------------- }
+
+procedure TSett.ShowSettings();
+begin
+    Show;
+    RTSearch. RecentMenu();
+end;
+
 	// This gets called a second after form create finishes IFF another instance is running
 procedure TSett.Timer1Timer(Sender: TObject);
 begin
@@ -444,7 +510,98 @@ begin
     Close;
 end;
 
+// We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
+procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+	if AllowClose then begin
+    	CloseAction := caFree;
+        RTSearch.Close;
+	end else CloseAction := caHide;
+end;
 
+procedure TSett.FormCreate(Sender: TObject);
+begin
+     {$ifdef DARWIN}        // Only Mac needs the main menu, confusing for others
+        MenuFile.Visible:=True;
+        MenuRecent.Visible:=True;
+     {$endif}
+     ExportPath := '';
+    Timer1.Enabled:=False;
+    LabelWaitForSync.Caption := '';
+    LabelLibrary.Caption := '';
+    if AlreadyRunning() then begin
+    	showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
+        HaveConfig := True;		// Yes, I'm lying but don't want to see settings dialog
+        Timer1.Interval := 1000;
+        Timer1.Enabled := True;
+	end else begin
+    	HaveConfig := false;
+    	NoteDirectory := 'Set me first please';
+    	labelNotesPath.Caption := NoteDirectory;
+    	CheckShowIntLinks.Checked := true;
+    	RadioFontMedium.checked := true;
+    	//SetFontSizes();
+    	CheckConfigFile();
+    	if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
+        	ButtonSetSynServer.Caption := 'Set File Sync Repo';
+		end;
+end;
+
+{ --------------------- F I L E    I / O --------------------------- }
+
+{ Read config file if it exists }
+procedure TSett.CheckConfigFile;
+var
+    ConfigFile : TINIFile;
+    ReqFontSize : ANSIString;
+begin
+    LabelSettingPath.Caption := AppendPathDelim(GetAppConfigDir(False)) + 'tomboy-ng.cfg';
+    LocalConfig := GetAppConfigDir(False);
+    LabelLocalConfig.Caption := LocalConfig;
+    if fileexists(LabelSettingPath.Caption) then begin
+ 	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
+ 	    try
+   		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', '');
+            if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
+                CheckShowIntLinks.Checked := true
+            else CheckShowIntLinks.Checked := false;
+
+            CheckManyNoteBooks.checked :=
+        	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
+
+            CheckCaseSensitive.Checked :=
+                ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
+
+            CheckAnyCombination.Checked :=
+                ('true' = Configfile.readstring('BasicSettings', 'AnyCombination', 'true'));
+
+            ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
+            case ReqFontSize of
+        	    'big'    : RadioFontBig.Checked := true;
+                'medium' : RadioFontMedium.Checked := true;
+                'small'  : RadioFontSmall.Checked := true;
+            end;
+            case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
+                'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
+                'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
+                'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
+		    end;
+            LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
+            LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
+            SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
+		    LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', SyncNotConfig);
+            RemoteRepo := LabelSyncRepo.Caption;
+	    finally
+            ConfigFile.free;
+	    end;
+	    SyncSettings();
+    end else begin
+        LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
+        NoteDirectory := '';
+        CheckManyNoteBooks.Checked := False;
+        HaveConfig := false;
+    end;
+end;
 
 	{ Save the settings, this will become auto in a later and braver release.}
 procedure TSett.ButtonSaveConfigClick(Sender: TObject);
@@ -468,26 +625,26 @@ begin
       if CheckAnyCombination.checked then
       	Configfile.writestring('BasicSettings', 'AnyCombination', 'true')
       else Configfile.writestring('BasicSettings', 'AnyCombination', 'false');
-
-
-
       if CheckShowIntLinks.Checked then
           ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
       else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
-
       if RadioFontBig.Checked then
           ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
       else if RadioFontMedium.Checked then
           ConfigFile.writestring('BasicSettings', 'FontSize', 'medium')
       else if RadioFontSmall.Checked then
           ConfigFile.writestring('BasicSettings', 'FontSize', 'small');
-
 		if RadioAlwaysAsk.Checked then
             ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
         else if RadioUseLocal.Checked then
             ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
         else if RadioUseServer.Checked then
             ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
+
+        if SpellConfig then begin
+            ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
+            ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
+        end;
     finally
     	ConfigFile.Free;
     end;
@@ -514,8 +671,6 @@ begin
     	SyncSettings();
     	RTSearch.IndexNotes();
 	end;
-
-
 end;
 
 	{ Allow user to point to what they want to call their notes dir. If there
@@ -537,6 +692,22 @@ begin
         RTSearch.IndexNotes();
 	end;
 end;
+
+{ ------------------------ S Y N C -------------------------- }
+
+procedure TSett.Synchronise();
+begin
+    FormSync.NoteDirectory := Sett.NoteDirectory;
+    FormSync.LocalConfig := Sett.LocalConfig;
+    FormSync.RemoteRepo := Sett.RemoteRepo;
+    FormSync.SetupFileSync := False;
+    if FormSync.Visible then
+        FormSync.Show
+    else
+    	if (FormSync.ShowModal = mrOK) then
+            RTSearch.IndexNotes;
+end;
+
 
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
@@ -575,6 +746,7 @@ begin
     NoteLister.Free;
 end;
 
+
 procedure TSett.CheckManyNotebooksChange(Sender: TObject);
 begin
     ButtonSaveConfig.Enabled := True;
@@ -587,14 +759,8 @@ begin
     SyncSettings();
 end;
 
-// We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
-procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-	if AllowClose then begin
-    	CloseAction := caFree;
-        RTSearch.Close;
-	end else CloseAction := caHide;
-end;
+
+
 
 procedure TSett.ShowAboutBox();
 var

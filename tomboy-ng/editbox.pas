@@ -119,6 +119,17 @@ unit EditBox;
                 a timer, reset by user activity. Same with Save time too.
                 Should speed things up.
     2018/02/18  Minor correction to Ctrl-Shift-F shortcut
+    2018/03/03  Changes housekeeping timer from 4sec to 2sec - change in object inspector
+    2018/03/17  Lockupdate was applied to KMemo, not KMemo.Blocks, in ImportNote(), 800ms hit !
+                maybe related to Mac's need for for a paragraph 'kick' after loading.
+                Changed CheckForLinks() so it keeps a single copy of KMemo.Blocks.Text for its
+                complete run, passing it to MakeAllLinks() rather than creating a new
+                copy each iteration. Appears to deliver a usefull speedup !  Test !!
+                But must, apparently unlock before calling some other functions.
+
+    ********    Must check to see if additional para we add at end is still required in Mac
+                probably not, it was there 'cos I was calling KMemo.Lock() instead of KMemo.Blocks.Lock()
+
 }
 
 
@@ -150,6 +161,7 @@ type
         MenuHuge: TMenuItem;
         MenuBullet: TMenuItem;
 		MenuItem1: TMenuItem;
+        MenuItemSpell: TMenuItem;
 		MenuItemExportRTF: TMenuItem;
 		MenuItemExportPlainText: TMenuItem;
 		MenuItemPrint: TMenuItem;
@@ -205,6 +217,7 @@ type
 		procedure MenuItemFindClick(Sender: TObject);
 		procedure MenuItemPasteClick(Sender: TObject);
 		procedure MenuItemSelectAllClick(Sender: TObject);
+        procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
         procedure MenuItemWriteClick(Sender: TObject);
         procedure MenuLargeClick(Sender: TObject);
@@ -238,7 +251,7 @@ type
         function GetTitle(out TheTitle: ANSIString): boolean;
         procedure ImportNote(FileName : string);
         { Searches for all occurances of Term in the KMemo text, makes them Links }
-		procedure MakeAllLinks(const Term: ANSIString; const StartScan : longint =1; EndScan : longint = 0);
+		procedure MakeAllLinks(const MText : ANSIString; const Term: ANSIString; const StartScan : longint =1; EndScan : longint = 0);
         { Makes the passed location a link if its not already one }
 		procedure MakeLink(const Link: ANSIString; const Index, Len: longint);
         { Makes the top line look like a title. }
@@ -285,6 +298,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
 	LoadNote,           // Will know how to load a Tomboy formatted note.
     SyncGUI,
     LazFileUtils,		// For ExtractFileName()
+    Spelling,
     NoteBook;
 
 
@@ -640,6 +654,18 @@ begin
 	KMemo1.ExecuteCommand(ecSelectAll);
 end;
 
+procedure TEditBoxForm.MenuItemSpellClick(Sender: TObject);
+var
+    SpellBox : TFormSpell;
+begin
+    SpellBox := TFormSpell.Create(Application);
+    // SpellBox.Top := Placement + random(Placement*2);
+    // SpellBox.Left := Placement + random(Placement*2);
+    SpellBox.TextToCheck:= KMemo1.Blocks.Text;
+    SpellBox.TheKMemo := KMemo1;
+    SpellBox.ShowModal;
+end;
+
 procedure TEditBoxForm.MenuItemSyncClick(Sender: TObject);
 begin
 	if Dirty then SaveTheNote();
@@ -739,9 +765,6 @@ begin
     RTSearch.NoteClosing(NoteFileName);
 end;
 
-	{ Sets TheTitle to the first line of the KMemo, returning true is it
-      found something.
-    }
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
 var
     BlockNo : longint = 0;
@@ -838,7 +861,7 @@ begin
 	// Is it all in the same block ?
     if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
     if length(Kmemo1.Blocks.Items[BlockNo].Text) = length(Link) then DontSplit := True;
-    KMemo1.Select(Index, 0);
+//    KMemo1.Select(Index, 0);
     while Cnt < Len do begin                 // The ~.DeleteChar() function takes an Index but if
   		KMemo1.Blocks.DeleteChar(Index);    // there is a Selected Area, it deletes that instead. Nasty !
   		inc(Cnt);
@@ -849,14 +872,14 @@ begin
 	Hyperlink.Text := Link;
 	Hyperlink.OnClick := @OnUserClickLink;
 	KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
-    KMemo1.Select(Index, Len);
+//    KMemo1.Select(Index, Len);
 end;
 
 { Searches for all occurances of Term in the KMemo text. Does
   not bother with single char terms. Some potential to speed up
   things here I am sure.
 }
-procedure TEditBoxForm.MakeAllLinks(const Term : ANSIString; const StartScan : longint =1; EndScan : longint = 0);
+procedure TEditBoxForm.MakeAllLinks(const MText : ANSIString; const Term : ANSIString; const StartScan : longint =1; EndScan : longint = 0);
 var
 	Offset, NumbCR   : longint;
     {$ifdef WINDOWS}
@@ -864,11 +887,11 @@ var
     {$endif}
 begin
     // CRCount := 0;
-    Offset := UTF8Pos(Term, KMemo1.Blocks.text, StartScan);
+    Offset := UTF8Pos(Term, MText, StartScan);
     while Offset > 0 do begin
     	NumbCR := 0;
         {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
-        Ptr := PChar(KMemo1.Blocks.text);
+        Ptr := PChar(Mtext);
         EndP := Ptr + Offset-1;
         while Ptr < EndP do begin
             if Ptr^ = #13 then inc(NumbCR);
@@ -876,36 +899,30 @@ begin
 		end;
         {$endif}
 		MakeLink(Term, Offset -1 -NumbCR, UTF8length(Term));
-        Offset := UTF8Pos(Term, KMemo1.Blocks.text, Offset+1);
+        Offset := UTF8Pos(Term, MText, Offset+1);
         if EndScan > 0 then
         	if Offset> EndScan then break;
     end;
 end;
 
 
-{ OK, update early Nov, restructured CheckForLinks() and MakeAllLinks() because of
-  UTF8 issues.
-}
-
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
-	// Ptr : PChar;
     Searchterm : ANSIstring;
-    // BlockNo : longint;
-    // TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
+    Len : longint;
+    MemoText : AnsiString;
 begin
-    // TS1:=DateTimeToTimeStamp(Now);
 	if not Ready then exit();
-    if StartScan >= length(KMemo1.Blocks.text) then exit();   // prevent crash when memo almost empty
-    if EndScan > length(KMemo1.Blocks.text) then EndScan := length(KMemo1.Blocks.text);
-
-    // TS2:=DateTimeToTimeStamp(Now);
+    Len := length(KMemo1.Blocks.text);      // saves 7mS by calling length() only once ! But still 8mS
+    if StartScan >= Len then exit;   // prevent crash when memo almost empty
+    if EndScan > Len then EndScan := Len;
     Ready := False;
 	RtSearch.StartSearch();
     KMemo1.Blocks.LockUpdate;
+    MemoText := KMemo1.Blocks.text;     // Make one copy and use it repeatadly, actual text does not change
     while RTSearch.NextNoteTitle(SearchTerm) do
         if SearchTerm <> NoteTitle then
-        	MakeAllLinks(SearchTerm, StartScan, EndScan);
+        	MakeAllLinks(MemoText, SearchTerm, StartScan, EndScan);
     KMemo1.Blocks.UnLockUpdate;
     Ready := True;
 end;
@@ -986,13 +1003,13 @@ begin
   StartScan := CurserPos - LinkScanRange;
   if StartScan < length(Caption) then StartScan := length(Caption);
   EndScan := CurserPos + LinkScanRange;
-  if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);
+  if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);   // Danger - should be KMemo1.Blocks.Text !!!
   // TS1:=DateTimeToTimeStamp(Now);
 
   BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
 
   if ((BlocksInTitle + 3) > BlockNo) then begin
-      // We don't check title if user is not close the it.
+      // We don't check title if user is not close to it.
   	MarkTitle();
   	GetTitle(TempTitle);
       Caption := TempTitle;
@@ -1225,31 +1242,29 @@ end;
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
- 	// TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
-
+ 	T1 : qword;          // Temp time stamping to test speed
 begin
-    // if not FileExistsUTF8(FileName) then exit();	// safety....
-    { TODO 1 : Really should catch an bad file open inside Loader and tell user. }
-    // TS1:=DateTimeToTimeStamp(Now);
+    // Timing numbers below using MyRecipes on my Acer linux laptop. For local comparison only !
+    T1 := gettickcount64();
     Loader := TBLoadNote.Create();
     Loader.FontNormal:= Sett.FontNormal;
     // Loader.FontName := FontName;
     Loader.FontSize:= Sett.FontNormal;
-    KMemo1.LockUpdate;                               // this block, 300mS, 20k Note
-    KMemo1.Clear;                                    // consistenly faster on a beat up
-    Loader.LoadFile(FileName, KMemo1);         		 // old Mac, slower on a new Windows
-
-    KMemo1.UnlockUpdate;
-    // TS2 := DateTimeToTimeStamp(Now);
+    KMemo1.Blocks.LockUpdate;
+    KMemo1.Clear;
+    Loader.LoadFile(FileName, KMemo1);                        // 340mS
+    KMemo1.Blocks.UnlockUpdate;                             // 370mS
     Createdate := Loader.CreateDate;
     Ready := true;
     Caption := Loader.Title;
-    // TS3 := DateTimeToTimeStamp(Now);
     if Sett.ShowIntLinks then
-    	CheckForLinks();                     			// 200mS, 20k note
-    // TS4 := DateTimeToTimeStamp(Now);
+    	CheckForLinks();                     		// 360mS
     Loader.Free;
-    KMemo1.Blocks.AddParagraph(); 				// This is a problem, OSX needs this.
+    {$ifdef DARWIN}                           // This is a problem, OSX needs this.
+    KMemo1.Blocks.AddParagraph();             // 350ms
+    {$endif}
+    TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
+    debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
 
      { TODO : The Mac seems to need some kick along after we release the LockUpdate.
     Adding a block works, if the note aleady ends with a newline, then, easy, we remove
@@ -1257,7 +1272,6 @@ begin
     problem, Linux also needed that kick. But not in the real app, I assumed something
     else, such as writing links was providing that kick. }
 
-    // Memo1.append('Load ' + inttostr(TS2.Time-TS1.Time) + 'ms, CheckLink ' + inttostr(TS4.Time-TS3.Time));
 end;
 
 procedure TEditBoxForm.MenuItemWriteClick(Sender: TObject);

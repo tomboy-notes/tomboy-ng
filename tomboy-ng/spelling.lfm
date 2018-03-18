@@ -1,0 +1,110 @@
+object FormSpell: TFormSpell
+  Left = 733
+  Height = 223
+  Top = 318
+  Width = 421
+  Caption = 'Spell'
+  ClientHeight = 223
+  ClientWidth = 421
+  OnHide = FormHide
+  OnShow = FormShow
+  LCLVersion = '1.8.0.6'
+  object ListBox1: TListBox
+    Left = 248
+    Height = 128
+    Top = 40
+    Width = 152
+    ItemHeight = 0
+    OnClick = ListBox1Click
+    ScrollWidth = 150
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object LabelPrompt: TLabel
+    Left = 256
+    Height = 17
+    Top = 20
+    Width = 144
+    Caption = 'Click a word to use it.'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 19
+    Height = 17
+    Top = 16
+    Width = 100
+    Caption = 'Suspect word -'
+    ParentColor = False
+  end
+  object LabelSuspect: TLabel
+    Left = 19
+    Height = 17
+    Top = 48
+    Width = 97
+    Caption = 'LabelSuspect'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object ButtonUseAndNextWord: TButton
+    Left = 16
+    Height = 25
+    Top = 112
+    Width = 173
+    Caption = 'Use and Next Word'
+    OnClick = ButtonUseAndNextWordClick
+    TabOrder = 1
+  end
+  object LabelStatus: TLabel
+    Left = 19
+    Height = 17
+    Top = 192
+    Width = 81
+    Caption = 'LabelStatus'
+    ParentColor = False
+  end
+  object LabelContext: TLabel
+    Left = 19
+    Height = 17
+    Top = 80
+    Width = 92
+    Caption = 'LabelContext'
+    ParentColor = False
+  end
+  object ButtonSkip: TButton
+    Left = 16
+    Height = 25
+    Top = 136
+    Width = 173
+    Caption = 'Skip'
+    OnClick = ButtonSkipClick
+    TabOrder = 2
+  end
+  object ButtonIgnore: TButton
+    Left = 16
+    Height = 25
+    Top = 160
+    Width = 173
+    Caption = 'Ignore'
+    OnClick = ButtonIgnoreClick
+    TabOrder = 3
+  end
+  object BitBtn1: TBitBtn
+    Left = 248
+    Height = 30
+    Top = 179
+    Width = 152
+    DefaultCaption = True
+    Kind = bkClose
+    ModalResult = 11
+    TabOrder = 4
+  end
+  object Label1: TLabel
+    Left = 136
+    Height = 17
+    Top = 0
+    Width = 45
+    Caption = 'Label1'
+    ParentColor = False
+  end
+end

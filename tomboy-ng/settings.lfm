@@ -1,14 +1,16 @@
 object Sett: TSett
-  Left = 708
-  Height = 438
-  Top = 165
+  Left = 430
+  Height = 431
+  Top = 181
   Width = 525
   Caption = 'KTomboy-NG Settings'
-  ClientHeight = 436
+  ClientHeight = 429
   ClientWidth = 525
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
+  OnHide = FormHide
+  OnShow = FormShow
   LCLVersion = '1.8.0.6'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
@@ -17,18 +19,18 @@ object Sett: TSett
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonSaveConfig
     Left = 0
-    Height = 380
+    Height = 373
     Top = 0
     Width = 525
-    ActivePage = TabBasic
+    ActivePage = TabSpell
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = 5
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 345
+      ClientHeight = 338
       ClientWidth = 519
       object ButtonSetNotePath: TButton
         Left = 8
@@ -119,7 +121,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Display'
-      ClientHeight = 345
+      ClientHeight = 338
       ClientWidth = 519
       object GroupBox5: TGroupBox
         Left = 56
@@ -183,7 +185,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 345
+      ClientHeight = 338
       ClientWidth = 519
       object GroupBox3: TGroupBox
         Left = 8
@@ -309,7 +311,7 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 345
+      ClientHeight = 338
       ClientWidth = 519
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -399,7 +401,7 @@ object Sett: TSett
     end
     object TabSnapshot: TTabSheet
       Caption = 'SnapShot'
-      ClientHeight = 345
+      ClientHeight = 338
       ClientWidth = 519
       object Label9: TLabel
         Left = 36
@@ -426,6 +428,105 @@ object Sett: TSett
         ParentColor = False
       end
     end
+    object TabSpell: TTabSheet
+      Caption = 'Spell'
+      ClientHeight = 338
+      ClientWidth = 519
+      object Label13: TLabel
+        Left = 12
+        Height = 17
+        Top = 19
+        Width = 319
+        Caption = 'Spell Check requires the Hunspell Libraries and'
+        ParentColor = False
+      end
+      object Label14: TLabel
+        Left = 12
+        Height = 17
+        Top = 40
+        Width = 268
+        Caption = 'an appropriate Hunspell Dictionary set.'
+        ParentColor = False
+      end
+      object EditLibrary: TEdit
+        Left = 16
+        Height = 27
+        Hint = 'Leave Blank if using selection above'
+        Top = 136
+        Width = 328
+        TabOrder = 0
+        Text = 'EditLibrary'
+      end
+      object LabelError: TLabel
+        Left = 16
+        Height = 17
+        Top = 288
+        Width = 73
+        Caption = 'LabelError'
+        ParentColor = False
+      end
+      object EditDic: TEdit
+        Left = 16
+        Height = 27
+        Hint = 'Leave blank if using selection above'
+        Top = 240
+        Width = 328
+        OnKeyDown = EditDicKeyDown
+        TabOrder = 1
+        Text = 'EditDic'
+      end
+      object LabelLibraryStatus: TLabel
+        Left = 16
+        Height = 17
+        Top = 96
+        Width = 129
+        Caption = 'LabelLibraryStatus'
+        ParentColor = False
+      end
+      object LabelDicStatus: TLabel
+        Left = 16
+        Height = 17
+        Top = 200
+        Width = 103
+        Caption = 'LabelDicStatus'
+        ParentColor = False
+      end
+      object LabelLibrary: TLabel
+        Left = 16
+        Height = 17
+        Top = 112
+        Width = 85
+        Caption = 'LabelLibrary'
+        ParentColor = False
+      end
+      object LabelDic: TLabel
+        Left = 16
+        Height = 17
+        Top = 216
+        Width = 59
+        Caption = 'LabelDic'
+        ParentColor = False
+      end
+      object ListBoxDic: TListBox
+        Left = 368
+        Height = 131
+        Top = 136
+        Width = 133
+        ItemHeight = 0
+        OnClick = ListBoxDicClick
+        ScrollWidth = 131
+        TabOrder = 2
+        TopIndex = -1
+      end
+      object LabelDicPrompt: TLabel
+        Left = 376
+        Height = 17
+        Top = 112
+        Width = 111
+        Caption = 'LabelDicPrompt'
+        ParentColor = False
+      end
+    end
   end
   object ButtonSaveConfig: TButton
     AnchorSideRight.Control = Owner
@@ -434,7 +535,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 406
     Height = 52
-    Top = 382
+    Top = 375
     Width = 115
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 4
@@ -450,12 +551,12 @@ object Sett: TSett
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    left = 418
-    top = 28
+    left = 448
+    top = 40
   end
   object MainMenu1: TMainMenu
-    left = 402
-    top = 131
+    left = 368
+    top = 40
     object MenuFile: TMenuItem
       Caption = 'File'
       Visible = False

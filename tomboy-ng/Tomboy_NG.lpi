@@ -203,7 +203,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -261,6 +261,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Notebook"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="spelling.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormSpell"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Spelling"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

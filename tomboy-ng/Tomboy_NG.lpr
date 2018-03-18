@@ -11,7 +11,7 @@ uses
     cthreads,
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
-    Forms, MainUnit, { EditBox, SaveNote, LoadNote,} settings, SyncGUI, Notebook
+    Forms, MainUnit, settings, SyncGUI, Notebook, Spelling
     { you can add units after this };
 
 {$R *.res}
@@ -24,7 +24,8 @@ begin
     Application.CreateForm(TSett, Sett);
     Application.CreateForm(TRTSearch, RTSearch);
 	Application.CreateForm(TFormSync, FormSync);
-		Application.CreateForm(TNoteBookPick, NoteBookPick);
+	Application.CreateForm(TNoteBookPick, NoteBookPick);
+    // Application.CreateForm(TFormSpell, FormSpell);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);
     Application.Run;
 end.

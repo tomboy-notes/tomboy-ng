@@ -39,6 +39,7 @@ unit LoadNote;
 	20171007 - enabled bullets.
 	20171112 - added code to restore < and >
     2018/01/31 - and &
+    2018/03/18  Nothing
 }
 
 {$mode objfpc}{$H+}
@@ -78,14 +79,12 @@ type
 
     end;
 
-
-
 implementation
 
 uses Graphics,     		// For some font style defs
     LazUTF8,
-    Settings;			// User settings and some defines across units.
-
+    Settings,			// User settings and some defines across units.
+    LazLogger;
 
 procedure TBLoadNote.LoadFile(FileName : ANSIString; RM : TKMemo);
 var
@@ -101,12 +100,10 @@ begin
          fs.read(ch, 1);
          if Ch = #13 then fs.read(ch, 1);   // drop #13 on floor. Silly Windows double newline.
          if (Ch = '<') or (Ch < ' ')then begin
-             if (Ch < ' ') then       // thats a newline
+             if (Ch < ' ') then             // thats a newline
                  	AddText(True)
              else ReadTag(fs);
              inc(Blocks);
-             if Blocks = 3 then begin           // ???????????????????
-             end;
              InStr := '';
           end else
                 InStr := InStr + ch;
@@ -124,7 +121,7 @@ var
     FT : TFont;
     TB : TKMemoTextBlock;
     PB : TKMemoParagraph;
-    // Sty : TKMemoTextStyle;
+    T1, T2 : qword;
 begin
   if not InContent then exit;
   if (InStr = '') and (not AddPara) then exit;
