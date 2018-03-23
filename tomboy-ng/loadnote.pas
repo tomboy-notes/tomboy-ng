@@ -40,6 +40,7 @@ unit LoadNote;
 	20171112 - added code to restore < and >
     2018/01/31 - and &
     2018/03/18  Nothing
+    2018/03/18  Added a test it AddText to ensure we don't put an empty text block in. Issue #27
 }
 
 {$mode objfpc}{$H+}
@@ -125,24 +126,24 @@ var
 begin
   if not InContent then exit;
   if (InStr = '') and (not AddPara) then exit;
-  FT := TFont.Create();
-
-  if FirstTime then begin                 // Title
-  	FT.Style := [fsUnderline];
-    Title := InStr;
-    FT.Size := Sett.FontTitle;
-    FT.Color := clBlue;
-  end else begin
-    FT.Style := [];
-    FT.Size:= FontSize;
+  if InStr <> '' then begin
+    FT := TFont.Create();
+      if FirstTime then begin                 // Title
+  	    FT.Style := [fsUnderline];
+        Title := InStr;
+        FT.Size := Sett.FontTitle;
+        FT.Color := clBlue;
+      end else begin
+        FT.Style := [];
+        FT.Size:= FontSize;
+      end;
+      if Bold then FT.Style := FT.Style + [fsBold];
+      if Italic then FT.Style := FT.Style + [fsItalic];
+      if HighLight then FT.Color := HiColor;
+      TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));			// We have to scan InStr for &lt; and &gt;  being < and >
+      TB.TextStyle.Font := Ft;
+      FT.Free;
   end;
-
-  if Bold then FT.Style := FT.Style + [fsBold];
-  if Italic then FT.Style := FT.Style + [fsItalic];
-  if HighLight then FT.Color := HiColor;
-  TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));			// We have to scan InStr for &lt; and &gt;  being < and >
-  TB.TextStyle.Font := Ft;
-  FT.Free;
   if AddPara then begin
   	PB := KM.Blocks.AddParagraph;
     // BulletOwing means we had a bullet tag but encountered the /tag before writing to KMemo
