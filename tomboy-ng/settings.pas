@@ -59,6 +59,8 @@ unit settings;
                 on the Mac when ever asked to do so. Have disabled close icon but seems
                 it still works on Linux but not mac, so thats OK (but funny).
                 Issue #25 relates, untested.
+	2018/03/24	Added some checks to make sure spell libary and dictionary mentioned
+				in config file is still valid.
 }
 
 {$mode objfpc}{$H+}
@@ -67,7 +69,9 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, CheckLst; // Types;
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus {, CheckLst};
+
+// Types;
 
 type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash
 
@@ -459,14 +463,17 @@ begin
     EditLibrary.Text := '';
     EditDic.Text := '';
     EditDic.Visible:= False;
-    Spell :=  THunspell.Create(LabelLibrary.Caption);
+    if fileexists(LabelLibrary.Caption) then		// make sure file from config is still valid
+    	Spell :=  THunspell.Create(LabelLibrary.Caption)
+    else Spell :=  THunspell.Create();
     if Spell.ErrorMessage = '' then begin
         LabelLibraryStatus.caption := 'Library Loaded OK';
         LabelLibrary.Caption := Spell.LibraryFullName;
         EditDic.Visible := True;
         LabelDicStatus.Visible := True;
         LabelDic.Visible := True;
-        if LabelDic.Caption <> '' then begin
+        // if LabelDic.Caption <> '' then begin
+        if fileexists(LabelDic.Caption) then begin	// check that config dic is still valid
             SpellConfig := Spell.SetDictionary(LabelDic.Caption);
             if SpellConfig then begin
                LabelDicStatus.Caption := 'Dictionary Loaded OK';
@@ -490,6 +497,8 @@ begin
     end;
 end;
 
+{ --------------------- H O U S E    K E E P I NG -------------------- }
+
 procedure TSett.FormHide(Sender: TObject);
 begin
     FreeandNil(Spell);
@@ -499,9 +508,6 @@ procedure TSett.FormShow(Sender: TObject);
 begin
     CheckSpelling;
 end;
-
-
-{ --------------------- H O U S E    K E E P I NG -------------------- }
 
 procedure TSett.ShowSettings();
 begin
@@ -781,9 +787,9 @@ procedure TSett.ShowAboutBox();
 var
     S1, S2, S3, S4, S5 : string;
 begin
-    S1 := 'This is v0.13 of tomboy-ng, a rewrite of Tomboy Notes'#10;
+    S1 := 'This is v0.14 of tomboy-ng, a rewrite of Tomboy Notes'#10;
     S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
-    S3 := 'use unless you are very careful and have good backups.'#10;
+    S3 := 'use unless you are careful and have good backups.'#10;
     S5 := '';
     S4 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
     Showmessage(S1 + S2 + S3 + S4 + S5);

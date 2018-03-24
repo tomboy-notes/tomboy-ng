@@ -27,7 +27,8 @@ unit Spelling;
 
 {  HISTORY -
     2018/03/03 Initial Commit
-
+	2018/03/24	Win only bug, missed counting a #13 when replacing first word on line.
+				Win only - allow for #13 in a selected block
 }
 
 {$mode objfpc}{$H+}
@@ -47,7 +48,7 @@ type
         ButtonSkip: TButton;
         ButtonIgnore: TButton;
         ButtonUseAndNextWord: TButton;
-        Label1: TLabel;
+        //Label1: TLabel;
         LabelContext: TLabel;
         LabelPrompt: TLabel;
         Label4: TLabel;
@@ -62,6 +63,8 @@ type
         procedure ListBox1Click(Sender: TObject);
     private
         function CleanContext(): AnsiString;
+        	{ Returns the number of #13 before the indicated location - bloody windows ! }
+		function NewLinesBefore(const Idx: integer): integer;
             { Returns True if it found another mis spelt word }
         procedure PreviousWord(var TheIndex: longint);
         procedure ReplaceWord(const NewWord: AnsiString);
@@ -102,24 +105,41 @@ var
 
 { TFormSpell }
 
+function TFormSpell.NewLinesBefore(const Idx : integer) : integer;
+var
+    BlockNo, LocalOffset : integer;
+begin
+	Result := 0;
+   BlockNo := TheKmemo.Blocks.IndexToBlockIndex(Idx, LocalOffset);
+   while BlockNo > 0 do begin
+       if TheKmemo.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then
+           inc(Result);
+       dec(BlockNo);
+   end;
+end;
+
 procedure TFormSpell.FormShow(Sender: TObject);
 begin
     // ShowContents();
     SaveSelStart := TheKmemo.RealSelStart;
     SaveSelEnd := TheKMemo.RealSelEnd;          // SelEnd points to first non-selected char
-    if SaveSelEnd > SaveSelStart then begin     // Something was selected ...
-        Index := SaveSelEnd;
+    if SaveSelEnd > (SaveSelStart+1) then begin     // Something was selected ...
+        Index := SaveSelEnd + 1;
         FinishIndex := SaveSelStart;
+        {$ifdef WINDOWS}						// yet again, Windows silly line endings in .Text property
+        Index := Index + NewLinesBefore(Index);
+        FinishIndex := FinishIndex + NewLinesBefore(FinishIndex);
+        {$endif}
         LabelStatus.Caption := 'Checking selection';
-    end else begin
+    end else begin								// note only one char selected, we treat as check whole doc
         FinishIndex := 0;
         Index := UTF8Length(TheKMemo.Blocks.Text);
         LabelStatus.Caption := 'Checking full document';
     end;
-    TheKMemo.SelEnd := TheKMemo.SelStart;   // Now, nothing selected.
+    TheKMemo.SelEnd := TheKMemo.SelStart;   	// Now, nothing selected.
     LabelStatus.Caption := '';
     TheKMemo.Blocks.LockUpdate;
-    Str_Text := TheKMemo.Blocks.Text;       // Make a copy to work with, faster
+    Str_Text := TheKMemo.Blocks.Text;       	// Make a copy to work with, faster
     if Sett.SpellConfig then begin
         Spell :=  THunspell.Create(Sett.LabelLibrary.Caption);
         if Spell.ErrorMessage = '' then begin
@@ -150,8 +170,8 @@ begin
     //NumbCR := 0;
     TempIndex := Index;
     {$ifdef WINDOWS}
-    I := length(copy(Str_Text, 1, Index));     // we need a byte count, not char
-    Label1.Caption := 'I=' + inttostr(I) + '  Index=' + inttostr(Index) + copy(Str_Text, 1, Index);
+    I := length(copy(Str_Text, 1, Index+1));     // One based St, we need a byte count, not char
+    // Label1.Caption := 'I=' + inttostr(I) + '  Index=' + inttostr(Index) + copy(Str_Text, 1, Index);
     while I > 0 do begin
         if Str_Text[I] = #13 then dec(TempIndex);
         dec(I);
@@ -159,8 +179,12 @@ begin
     {$endif}
 
     BlockNo := TheKmemo.Blocks.IndexToBlockIndex(TempIndex+1, LocalIndex);
+
+	// debugln('Operating on BK=' + inttostr(BlockNo) + ' Loc=' + inttostr(LocalIndex) + ' TempIndex=' + inttostr(TempIndex) + ' Index=' + inttostr(Index));
+
+
     TextSize := TKMemoTextBlock(TheKmemo.Blocks.Items[BlockNo]).TextStyle.Font.Size;         // and Style ????
-    TheKMemo.SelStart := TempIndex;
+    TheKMemo.SelStart := TempIndex;					// zero based
     TheKMemo.SelEnd := TempIndex + UTF8Length(TheWord);
     TheKMemo.Blocks.DeleteChar(0);                 // will delete selected text, maybe use ClearSelection() ??
     if TheKmemo.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
@@ -168,6 +192,7 @@ begin
         TB.TextStyle.Font.Size := TextSize;
     end else
         TheKmemo.Blocks.Items[BlockNo].InsertString(NewWord, LocalIndex-1);     // TKSelectionIndex is 0 based
+    LabelStatus.Caption := '';
 
     { ShowContents();             O T H E R    W A Y    T O     D O     I T
     debugln('Index=' + inttostr(Index) + ' BlockNo=' + inttostr(BlockNo) + ' LocalIndex=' + inttostr(LocalIndex)
@@ -215,6 +240,7 @@ begin
         ShowSuggestions();
         LabelSuspect.Caption := TheWord;
         LabelContext.Caption := CleanContext();
+        // ShowContents();
     end else
         TheWord := ''
 end;
@@ -284,13 +310,14 @@ begin
     TheKMemo.SelStart := SaveSelStart;  // but if spelling has changed size of intermediate text .....
 end;
 
-procedure TFormSpell.ShowContents;      // this method for debug only, delete it !
+procedure TFormSpell.ShowContents;      // this method for debug only, delete it ?
 var
     Cnt : integer = 0;
 begin
     debugln('------------');
     while Cnt < TheKMemo.Blocks.Count do begin
-        debugln(TheKMemo.Blocks.Items[Cnt].ClassName + '=' + inttostr(Cnt) + ' ' + TheKMemo.Blocks.Items[Cnt].Text);
+        debugln(TheKMemo.Blocks.Items[Cnt].ClassName + '=' + inttostr(Cnt) + ' ' + TheKMemo.Blocks.Items[Cnt].Text
+        	+ ' starts at ' + inttostr(TheKMemo.Blocks.BlockToIndex(TheKMemo.Blocks.Items[Cnt])) );
         inc(Cnt);
     end;
     debugln('------------');

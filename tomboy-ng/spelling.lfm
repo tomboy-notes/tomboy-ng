@@ -1,17 +1,17 @@
 object FormSpell: TFormSpell
   Left = 733
-  Height = 223
+  Height = 227
   Top = 318
   Width = 421
   Caption = 'Spell'
-  ClientHeight = 223
+  ClientHeight = 227
   ClientWidth = 421
   OnHide = FormHide
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
   object ListBox1: TListBox
     Left = 248
-    Height = 128
+    Height = 136
     Top = 40
     Width = 152
     ItemHeight = 0
@@ -48,7 +48,7 @@ object FormSpell: TFormSpell
   end
   object ButtonUseAndNextWord: TButton
     Left = 16
-    Height = 25
+    Height = 49
     Top = 112
     Width = 173
     Caption = 'Use and Next Word'
@@ -58,7 +58,7 @@ object FormSpell: TFormSpell
   object LabelStatus: TLabel
     Left = 19
     Height = 17
-    Top = 192
+    Top = 199
     Width = 81
     Caption = 'LabelStatus'
     ParentColor = False
@@ -74,37 +74,35 @@ object FormSpell: TFormSpell
   object ButtonSkip: TButton
     Left = 16
     Height = 25
-    Top = 136
-    Width = 173
+    Hint = 'Skip just this instance'
+    Top = 160
+    Width = 88
     Caption = 'Skip'
     OnClick = ButtonSkipClick
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 2
   end
   object ButtonIgnore: TButton
-    Left = 16
+    Left = 104
     Height = 25
+    Hint = 'Ignore all instances for the run'
     Top = 160
-    Width = 173
+    Width = 85
     Caption = 'Ignore'
     OnClick = ButtonIgnoreClick
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 3
   end
   object BitBtn1: TBitBtn
     Left = 248
     Height = 30
-    Top = 179
+    Top = 184
     Width = 152
     DefaultCaption = True
     Kind = bkClose
     ModalResult = 11
     TabOrder = 4
-  end
-  object Label1: TLabel
-    Left = 136
-    Height = 17
-    Top = 0
-    Width = 45
-    Caption = 'Label1'
-    ParentColor = False
   end
 end

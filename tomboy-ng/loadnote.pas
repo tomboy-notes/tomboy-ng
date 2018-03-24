@@ -122,7 +122,7 @@ var
     FT : TFont;
     TB : TKMemoTextBlock;
     PB : TKMemoParagraph;
-    T1, T2 : qword;
+    //T1, T2 : qword;
 begin
   if not InContent then exit;
   if (InStr = '') and (not AddPara) then exit;
