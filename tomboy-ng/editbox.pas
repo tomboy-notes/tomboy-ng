@@ -127,6 +127,7 @@ unit EditBox;
                 copy each iteration. Appears to deliver a usefull speedup !  Test !!
                 But must, apparently unlock before calling some other functions.
     2018/03/18  Removed the add a para on opening at last !
+	2018/04/07	A UTF8 correction in MakeAllLinks() to how we count the #13 in Windows.
 
 
 }
@@ -891,11 +892,15 @@ begin
     	NumbCR := 0;
         {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
         Ptr := PChar(Mtext);
-        EndP := Ptr + Offset-1;
+        EndP := Ptr + length(UTF8Copy(MText, 1, Offset-1));
+
+        //EndP := Ptr + Offset-1;
         while Ptr < EndP do begin
             if Ptr^ = #13 then inc(NumbCR);
+debugln('ch ' + inttostr(ord(Ptr^)));
             inc(Ptr);
 		end;
+debugln('Corrected for ' + inttostr(NumbCR) + ' #13s');
         {$endif}
 		MakeLink(Term, Offset -1 -NumbCR, UTF8length(Term));
         Offset := UTF8Pos(Term, MText, Offset+1);
