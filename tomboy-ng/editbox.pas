@@ -897,10 +897,8 @@ begin
         //EndP := Ptr + Offset-1;
         while Ptr < EndP do begin
             if Ptr^ = #13 then inc(NumbCR);
-debugln('ch ' + inttostr(ord(Ptr^)));
             inc(Ptr);
 		end;
-debugln('Corrected for ' + inttostr(NumbCR) + ' #13s');
         {$endif}
 		MakeLink(Term, Offset -1 -NumbCR, UTF8length(Term));
         Offset := UTF8Pos(Term, MText, Offset+1);
@@ -1265,7 +1263,7 @@ begin
     	CheckForLinks();                     		// 360mS
     Loader.Free;
     TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
-    debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
+    // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
 end;
 
 procedure TEditBoxForm.MenuItemWriteClick(Sender: TObject);
