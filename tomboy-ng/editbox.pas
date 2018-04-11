@@ -128,6 +128,9 @@ unit EditBox;
                 But must, apparently unlock before calling some other functions.
     2018/03/18  Removed the add a para on opening at last !
 	2018/04/07	A UTF8 correction in MakeAllLinks() to how we count the #13 in Windows.
+    2018/04/11  Replaced a loom and delchar() with setting selection and calling ClearSelection im MakeLink
+                Added a function to deal with Delete menu selection.
+                Restored selection properly after housekeeping.
 
 
 }
@@ -212,6 +215,7 @@ type
         procedure MenuItalicClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
 		procedure MenuItemCutClick(Sender: TObject);
+        procedure MenuItemDeleteClick(Sender: TObject);
         procedure MenuItemExportPlainTextClick(Sender: TObject);
         procedure MenuItemExportRTFClick(Sender: TObject);
 		procedure MenuItemFindClick(Sender: TObject);
@@ -601,6 +605,16 @@ begin
    Label1.Caption := 'd';
 end;
 
+procedure TEditBoxForm.MenuItemDeleteClick(Sender: TObject);
+begin
+  // KMemo1.ExecuteCommand(ecClearSelection);
+  KMemo1.Blocks.ClearSelection;
+  if not Dirty then TimerSave.Enabled := true;
+  Dirty := true;
+  Label1.Caption := 'd';
+
+end;
+
 procedure TEditBoxForm.MenuItemExportPlainTextClick(Sender: TObject);
 begin
      SaveNoteAs('txt');
@@ -851,7 +865,7 @@ end;
 procedure TEditBoxForm.MakeLink(const Link : ANSIString; const Index, Len : longint);
 var
 	Hyperlink: TKMemoHyperlink;
-	Cnt : integer = 0;
+	//Cnt : integer = 0;
 	BlockNo, Blar : longint;
 	DontSplit : Boolean = false;
 begin
@@ -862,10 +876,15 @@ begin
     if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
     if length(Kmemo1.Blocks.Items[BlockNo].Text) = length(Link) then DontSplit := True;
 //    KMemo1.Select(Index, 0);
-    while Cnt < Len do begin                 // The ~.DeleteChar() function takes an Index but if
+
+    KMemo1.SelStart:= Index;
+    KMemo1.SelLength:=Len;
+    KMemo1.ClearSelection();
+
+    { while Cnt < Len do begin                 // The ~.DeleteChar() function takes an Index but if
   		KMemo1.Blocks.DeleteChar(Index);    // there is a Selected Area, it deletes that instead. Nasty !
   		inc(Cnt);
-	end;
+	end;     }
 	if not DontSplit then
 		BlockNo := KMemo1.SplitAt(Index);
 	Hyperlink := TKMemoHyperlink.Create;
@@ -997,11 +1016,12 @@ end;
 
 procedure TEditBoxForm.DoHousekeeping();
 var
-    CurserPos, StartScan, EndScan, BlockNo, Blar : longint;
+    CurserPos, SelLen, StartScan, EndScan, BlockNo, Blar : longint;
     TempTitle : ANSIString;
     // TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
 begin
   CurserPos := KMemo1.RealSelStart;
+  SelLen := KMemo1.RealSelLength;
   StartScan := CurserPos - LinkScanRange;
   if StartScan < length(Caption) then StartScan := length(Caption);
   EndScan := CurserPos + LinkScanRange;
@@ -1030,7 +1050,7 @@ begin
   	// TS3:=DateTimeToTimeStamp(Now);
   end;
   KMemo1.SelStart := CurserPos;
-  KMemo1.SelEnd := CurserPos;
+  KMemo1.SelLength := SelLen;
   //Debugln('Housekeeper called');
 
   // Memo1.append('Clear ' + inttostr(TS2.Time-TS1.Time) + 'ms  Check ' + inttostr(TS3.Time-TS2.Time));

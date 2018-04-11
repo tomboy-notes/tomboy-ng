@@ -768,6 +768,7 @@ object EditBoxForm: TEditBoxForm
     end
     object MenuItemDelete: TMenuItem
       Caption = 'Delete'
+      OnClick = MenuItemDeleteClick
     end
     object MenuItem5: TMenuItem
       Caption = '-'
