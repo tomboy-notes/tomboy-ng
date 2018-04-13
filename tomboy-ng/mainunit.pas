@@ -73,6 +73,9 @@ unit MainUnit;
     2018/02/04  Don't show or populate the TrayIcon for Macs. Hooked into Sett's Main Menu
                 for Mac and now most IconTray/Main menu items are responded to in Sett.
     2018/02/04  Now control MMSync when we do the Popup One.
+    2018/04/12  Added ability to call MarkNoteReadOnly() to cover case where user has unchanged
+                note open while sync process downloads or deletes that note from disk.
+    2018/04/13  Taught MarkNoteReadOnly() to also delete ref in NoteLister to a sync deleted note
 }
 
 {$mode objfpc}{$H+}
@@ -152,6 +155,8 @@ type
         { Responds when any of the recent items is clicked in TrayIcon menu }
         procedure TrayMenuRecent1Click(Sender: TObject);
     private
+
+
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
@@ -159,6 +164,10 @@ type
     public
         NoteLister : TNoteLister;
         NoteDirectory : string;
+
+            { If there is an open note from the passed filename, it will be marked read Only,
+              If deleted, remove entry from NoteLister, will accept a GUID, Filename or FullFileName inc path }
+        procedure MarkNoteReadOnly(const FullFileName: string; const WasDeleted : boolean);
          	{ Puts the names of recently used notes in the TrayMenu }
         procedure RecentMenu();
        	{ Call this NoteLister no longer thinks of this as a Open note }
@@ -220,6 +229,7 @@ begin
 	NoteLister.StartSearch();
   // TitleIndex := 1;
 end;
+
 
 procedure TRTSearch.DeleteNote(const FullFileName: ANSIString);
 var
@@ -304,10 +314,7 @@ var
       Count : integer = 1;
       MenuCaption : string;
 begin
-    //{$ifdef Darwin}
-    //RecentMenuMac();		// Alt proc for memory leaking Mac
-    //exit();
-    //{$endif}
+    //debugln('Called Recent Menu');
     while (Count <= 10) do begin
        if Count < StringGrid1.RowCount then
              MenuCaption := StringGrid1.Cells[0, Count]
@@ -436,6 +443,22 @@ begin
     ButtonClearSearch.Enabled := False;
 end;
 
+procedure TRTSearch.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
+var
+    TheForm : TForm;
+begin
+    if NoteLister.IsThisNoteOpen(FullFileName, TheForm) then begin
+       // if user opened and then closed, we won't know we cannot access
+        try
+       	    TEditBoxForm(TheForm).SetReadOnly();
+            exit();
+        except on  EAccessViolation do
+       	    DebugLn('Tried to mark a closed note as readOnly, thats OK');
+   	    end;
+    end;
+    if WasDeleted then
+        NoteLister.DeleteNote(FullFileName);
+end;
 
 procedure TRTSearch.OpenNote(NoteTitle: String; FullFileName: string;
 		TemplateIs: AnsiString);

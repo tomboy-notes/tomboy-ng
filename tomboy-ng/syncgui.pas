@@ -35,6 +35,9 @@ unit SyncGUI;
 	2018/01/08  Tidied up message box text displayed when a sync conflict happens.
 	2018/01/25  Changes to support Notebooks
     2018/01/04  Forced a screen update before manual sync so user knows whats happening.
+    2018/04/12  Added ability to call MarkNoteReadOnly() to cover case where user has unchanged
+                note open while sync process downloads or deletes that note from disk.
+    2018/04/13  Taught MarkNoteReadOnly() to also delete ref in NoteLister to a sync deleted note
 }
 
 {$mode objfpc}{$H+}
@@ -75,6 +78,7 @@ type
                 FormShown : boolean;
                 LocalTimer : TTimer;
                 procedure AfterShown(Sender : TObject);
+
     procedure ShowReport;
             	procedure TestRepo();
         		procedure DoSetUp();
@@ -84,6 +88,9 @@ type
               	RemoteRepo, LocalConfig, NoteDirectory : ANSIString;
               	SetupFileSync : boolean;
                 procedure ManualSync;
+                    { we will pass address of this function to TB_Sync }
+                procedure MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
+                    { we will pass address of this function to TB_Sync }
                 function Proceed(const ClashRec : TClashRecord) : TClashDecision;
 		end;
 
@@ -103,6 +110,12 @@ uses LazLogger, MainUnit;
 var
     FileSync : TTomboyFileSync;
 { TFormSync }
+
+
+procedure TFormSync.MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
+begin
+    RTSearch.MarkNoteReadOnly(FileName, WasDeleted);
+end;
 
 function TFormSync.Proceed(const ClashRec : TClashRecord) : TClashDecision;
 begin
@@ -172,6 +185,7 @@ begin
     Memo1.Clear;
 	FileSync := TTomboyFileSync.Create;
     FileSync.ProceedFunction:= @Proceed;
+    FileSync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
 	FileSync.VerboseMode := False;
 	FileSync.NotesDir:= NoteDirectory;
 	FileSync.RemoteManifestDir:=RemoteRepo;

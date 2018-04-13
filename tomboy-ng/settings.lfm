@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 460
+  Left = 767
   Height = 431
-  Top = 192
+  Top = 154
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabSync
+    ActivePage = TabSpell
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 5
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -44,78 +44,81 @@ object Sett: TSett
       end
       object LabelSettingPath: TLabel
         Left = 8
-        Height = 15
+        Height = 17
         Top = 40
-        Width = 89
+        Width = 119
         Caption = 'LabelSettingPath'
         ParentColor = False
       end
       object LabelNotesPath: TLabel
         Left = 8
-        Height = 15
+        Height = 17
         Top = 120
-        Width = 83
+        Width = 110
         Caption = 'LabelNotesPath'
         ParentColor = False
       end
       object Label1: TLabel
         Left = 8
-        Height = 15
+        Height = 17
         Top = 16
-        Width = 131
+        Width = 170
         Caption = 'Settings will be saved in :'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 11
-        Height = 15
+        Height = 17
         Top = 96
-        Width = 200
+        Width = 257
         Caption = 'Notes will be looked for and saved in :'
         ParentColor = False
       end
       object ButtDefaultNoteDir: TButton
         Left = 232
         Height = 48
+        Hint = 'Will work for many new users'
         Top = 144
         Width = 200
         Caption = 'Use default Notes location'
         OnClick = ButtDefaultNoteDirClick
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 1
       end
       object CheckManyNotebooks: TCheckBox
         Left = 16
-        Height = 19
+        Height = 22
         Hint = 'This may adversly affect tradional Tomboy, take care.'
         Top = 224
-        Width = 240
+        Width = 306
         Caption = 'Allow a note to be in Multiple Notebooks.'
         OnChange = CheckManyNotebooksChange
         TabOrder = 2
       end
       object CheckCaseSensitive: TCheckBox
         Left = 40
-        Height = 19
+        Height = 22
         Top = 280
-        Width = 94
+        Width = 121
         Caption = 'Case Sensitive'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
       object CheckAnyCombination: TCheckBox
         Left = 40
-        Height = 19
+        Height = 22
         Top = 304
-        Width = 114
+        Width = 142
         Caption = 'Any Combination'
         OnChange = CheckReadOnlyChange
         TabOrder = 4
       end
       object Label12: TLabel
         Left = 16
-        Height = 15
+        Height = 17
         Top = 256
-        Width = 104
+        Width = 134
         Caption = 'Main Search Box is :'
         ParentColor = False
       end
@@ -370,12 +373,12 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 197
+        Height = 186
         Top = 150
         Width = 519
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 197
+        ClientHeight = 186
         ClientWidth = 519
         TabOrder = 1
         object StringGridBackUp: TStringGrid
@@ -386,7 +389,7 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 195
+          Height = 184
           Top = 1
           Width = 517
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -435,23 +438,23 @@ object Sett: TSett
       ClientWidth = 519
       object Label13: TLabel
         Left = 12
-        Height = 15
+        Height = 17
         Top = 19
-        Width = 246
+        Width = 319
         Caption = 'Spell Check requires the Hunspell Libraries and'
         ParentColor = False
       end
       object Label14: TLabel
         Left = 12
-        Height = 15
+        Height = 17
         Top = 40
-        Width = 205
+        Width = 268
         Caption = 'an appropriate Hunspell Dictionary set.'
         ParentColor = False
       end
       object EditLibrary: TEdit
         Left = 16
-        Height = 23
+        Height = 27
         Hint = 'Leave Blank if using selection above'
         Top = 136
         Width = 328
@@ -460,15 +463,15 @@ object Sett: TSett
       end
       object LabelError: TLabel
         Left = 16
-        Height = 15
+        Height = 17
         Top = 288
-        Width = 53
+        Width = 73
         Caption = 'LabelError'
         ParentColor = False
       end
       object EditDic: TEdit
         Left = 16
-        Height = 23
+        Height = 27
         Hint = 'Leave blank if using selection above'
         Top = 240
         Width = 328
@@ -478,33 +481,33 @@ object Sett: TSett
       end
       object LabelLibraryStatus: TLabel
         Left = 16
-        Height = 15
+        Height = 17
         Top = 96
-        Width = 96
+        Width = 129
         Caption = 'LabelLibraryStatus'
         ParentColor = False
       end
       object LabelDicStatus: TLabel
         Left = 16
-        Height = 15
+        Height = 17
         Top = 200
-        Width = 77
+        Width = 103
         Caption = 'LabelDicStatus'
         ParentColor = False
       end
       object LabelLibrary: TLabel
         Left = 16
-        Height = 15
+        Height = 17
         Top = 112
-        Width = 64
+        Width = 85
         Caption = 'LabelLibrary'
         ParentColor = False
       end
       object LabelDic: TLabel
         Left = 16
-        Height = 15
+        Height = 17
         Top = 216
-        Width = 45
+        Width = 59
         Caption = 'LabelDic'
         ParentColor = False
       end
@@ -521,9 +524,9 @@ object Sett: TSett
       end
       object LabelDicPrompt: TLabel
         Left = 376
-        Height = 15
+        Height = 17
         Top = 112
-        Width = 85
+        Width = 111
         Caption = 'LabelDicPrompt'
         ParentColor = False
       end

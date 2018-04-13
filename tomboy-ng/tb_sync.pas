@@ -54,6 +54,9 @@ unit TB_Sync;
 				data structure is not setup for initial test run of sync. And that
 				calls the localmanifest datastructure. Have added test to avoid that. ???
     2018/01/04  Added some debugging around #500, why does local manifest sometimes have empty rev version ?
+    2018/04/12  Added ability to call MarkNoteReadOnly() to cover case where user has unchanged
+                note open while sync process downloads or deletes that note from disk.
+    2018/04/13  Added WasDeleted param to MarkNoteReadOnly() so notelister gets updated
 }
 
 
@@ -119,9 +122,16 @@ type								{ ------------- TClashRecord ------------- }
             LocalLastChange : ANSIString;
 		end;
 
+
 type	TClashDecision = (cdDownload, cdUpload, cdDoNothing);
 
+       { these next two definitions are how we allow TB_Sync to manipulate the
+          GUI objects around it. We will declare a variable of the type and the
+          calling process will put the address of the functions it wants called
+          in that var when it creates this object. }
 type    TProceedFunction = function(const ClashRec : TClashRecord): TClashDecision of object;
+
+type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
 
 
 type                                { ---------  TTomboySyncCustom -------- }
@@ -171,12 +181,16 @@ TTomboySyncCustom = Class
                   passed here from the calling process. }
 	function ProceedWith(FileID, Rev : ANSIString) : TClashDecision; virtual; abstract;
   public
-
-
     			{ the calling process must pass a function address to this var. It will
                   be called if the sync process finds a sync class where both copies
                   of a note have changed since last sync.}
     ProceedFunction : TProceedFunction;
+
+                { The calling process must set this to the address of a function to call
+                  every time a local note is deleted or overwritten during Sync. Its to
+                  deal with the case where a note is open but unchanged during sync.  }
+    MarkNoteReadOnlyProcedure : TMarkNotereadOnlyProcedure;
+
     			{ if set True, hopefully will prevent most writes to disk. Hopefully... }
 	TestMode : Boolean;
                 { Reports, to the console, on what its doing }
@@ -857,6 +871,7 @@ begin
                     	LocalPath(NoteInfoListLoc.Items[Index].ID, 'Backup'),
                         	[cffOverwriteFile]);
                    DeleteFileUTF8(LocalPath(NoteInfoListLoc.Items[Index].ID, ''));
+                   MarkNoteReadonlyProcedure(NoteInfoListLoc.Items[Index].ID, True);
                    if VerboseMode then DebugLn('Debug - Delete ' + LocalPath(NoteInfoListLoc.Items[Index].ID, ''));
                 end;
  			end;
@@ -993,6 +1008,7 @@ begin
              // writeln('Failed to copy ' + RemotePath(ID, Rev) + ' to ' + LocalPath(ID, ''));					// DEBUG
             exit();
 		end;
+        MarkNoteReadonlyProcedure(ID);
 	end;
 	UpdateNextManifest(ID, Rev);
     NewManifest := true;

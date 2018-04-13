@@ -131,6 +131,9 @@ unit EditBox;
     2018/04/11  Replaced a loom and delchar() with setting selection and calling ClearSelection im MakeLink
                 Added a function to deal with Delete menu selection.
                 Restored selection properly after housekeeping.
+    2018/04/12  Added a function to set the KMemo to readonly (for when the Sync Process
+                has replaced or deleted the on disk copy of this note).  SetReadOnly();
+    2018/04/13  Added calls to start Housekeeping and Save times when editing inside bullets !
 
 
 }
@@ -158,6 +161,9 @@ type
 		FindDialog1: TFindDialog;
         KMemo1: TKMemo;
 		Label1: TLabel;
+        Label2: TLabel;
+        Label3: TLabel;
+        Label4: TLabel;
         MenuBold: TMenuItem;
         MenuItalic: TMenuItem;
         MenuHighLight: TMenuItem;
@@ -183,6 +189,7 @@ type
         MenuNormal: TMenuItem;
         MenuLarge: TMenuItem;
         MenuFixedWidth: TMenuItem;
+        PanelReadOnly: TPanel;
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
@@ -279,6 +286,9 @@ type
         Dirty : boolean;
         Verbose : boolean;
         TemplateIs : AnsiString;
+            { Will mark this note as ReadOnly and not to be saved because the Sync Process
+              has either replaced or deleted this note. User can still read and copy content. }
+        procedure SetReadOnly();
     end;
 
 var
@@ -328,6 +338,7 @@ procedure TEditBoxForm.ButtDeleteClick(Sender: TObject);
 var
     St : string;
 begin
+    if KMemo1.ReadOnly then exit();
     St := Caption;
    if IDYES = Application.MessageBox('Delete this Note', PChar(St),
    									MB_ICONQUESTION + MB_YESNO) then begin
@@ -344,6 +355,7 @@ var
     ThisTitle : ANSIString;
     Index : integer;
 begin
+   if KMemo1.ReadOnly then exit();
 	if KMemo1.Blocks.RealSelLength > 1 then begin
          ThisTitle := KMemo1.SelText;
         // Titles must not start or end with space or contain low characters
@@ -364,9 +376,10 @@ end;
 
 procedure TEditBoxForm.ButtNotebookClick(Sender: TObject);
 begin
-    	NotebookPick.FullFileName := NoteFileName;
-        NotebookPick.Title := NoteTitle;
-		if mrOK = NotebookPick.ShowModal then dirty := True;
+    if KMemo1.ReadOnly then exit();
+    NotebookPick.FullFileName := NoteFileName;
+    NotebookPick.Title := NoteTitle;
+	if mrOK = NotebookPick.ShowModal then dirty := True;
 end;
 
 procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
@@ -376,6 +389,7 @@ var
 begin
       // if not KMemo1.SelAvail then exit();
       // Need a better test of valid  selection than that !
+      if KMemo1.ReadOnly then exit();
       if not Dirty then TimerSave.Enabled := true;
       Dirty := true;
       Label1.Caption := 'd';
@@ -456,6 +470,7 @@ var
 	FirstBlockNo, LastBlockNo, IntIndex, LastChar, FirstChar : longint;
 	SplitStart : boolean = false;
 begin
+    if KMemo1.ReadOnly then exit();
     Ready := False;
     if not Dirty then TimerSave.Enabled := true;
     Dirty := true;
@@ -599,20 +614,21 @@ end;
 
 procedure TEditBoxForm.MenuItemCutClick(Sender: TObject);
 begin
-   KMemo1.ExecuteCommand(ecCut);
-   if not Dirty then TimerSave.Enabled := true;
-   Dirty := true;
-   Label1.Caption := 'd';
+    if KMemo1.ReadOnly then exit();
+    KMemo1.ExecuteCommand(ecCut);
+    if not Dirty then TimerSave.Enabled := true;
+    Dirty := true;
+    Label1.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemDeleteClick(Sender: TObject);
 begin
-  // KMemo1.ExecuteCommand(ecClearSelection);
-  KMemo1.Blocks.ClearSelection;
-  if not Dirty then TimerSave.Enabled := true;
-  Dirty := true;
-  Label1.Caption := 'd';
-
+    if KMemo1.ReadOnly then exit();
+    // KMemo1.ExecuteCommand(ecClearSelection);
+    KMemo1.Blocks.ClearSelection;
+    if not Dirty then TimerSave.Enabled := true;
+    Dirty := true;
+    Label1.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemExportPlainTextClick(Sender: TObject);
@@ -653,14 +669,21 @@ begin
      SaveExport.Free;
 end;
 
+procedure TEditBoxForm.SetReadOnly();
+begin
+   PanelReadOnly.Height:= 60;
+   KMemo1.ReadOnly := True;
+end;
+
 procedure TEditBoxForm.MenuItemPasteClick(Sender: TObject);
 begin
+    if KMemo1.ReadOnly then exit();
     Ready := False;
     KMemo1.ExecuteCommand(ecPaste);
-   if not Dirty then TimerSave.Enabled := true;
-   Dirty := true;
-   Label1.Caption := 'd';
-   Ready := True;
+    if not Dirty then TimerSave.Enabled := true;
+    Dirty := true;
+    Label1.Caption := 'd';
+    Ready := True;
 end;
 
 procedure TEditBoxForm.MenuItemSelectAllClick(Sender: TObject);
@@ -672,6 +695,7 @@ procedure TEditBoxForm.MenuItemSpellClick(Sender: TObject);
 var
     SpellBox : TFormSpell;
 begin
+    if KMemo1.ReadOnly then exit();
     SpellBox := TFormSpell.Create(Application);
     // SpellBox.Top := Placement + random(Placement*2);
     // SpellBox.Left := Placement + random(Placement*2);
@@ -682,12 +706,13 @@ end;
 
 procedure TEditBoxForm.MenuItemSyncClick(Sender: TObject);
 begin
+    if KMemo1.ReadOnly then exit();
 	if Dirty then SaveTheNote();
-   FormSync.NoteDirectory := Sett.NoteDirectory;
-   FormSync.LocalConfig := Sett.LocalConfig;
-   FormSync.RemoteRepo := Sett.RemoteRepo;
-   FormSync.SetupFileSync := False;
-   FormSync.ShowModal;					// we don't care about result ...
+    FormSync.NoteDirectory := Sett.NoteDirectory;
+    FormSync.LocalConfig := Sett.LocalConfig;
+    FormSync.RemoteRepo := Sett.RemoteRepo;
+    FormSync.SetupFileSync := False;
+    FormSync.ShowModal;					// we don't care about result ...
 end;
 
 { - - - H O U S E   K E E P I N G   F U C T I O N S ----- }
@@ -723,6 +748,7 @@ var
 begin
     if Ready then exit();				// its a "re-show" event. Already have a note loaded.
     //Label1.Caption := '';
+    PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     Kmemo1.Clear;
@@ -771,7 +797,7 @@ end;
   powerdown ?   Seems a good place to save if we are dirty.... }
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
 begin
-    if Dirty then begin
+    if Dirty and (not KMemo1.ReadOnly)then begin
         // debugln('Going to save.');
         SaveTheNote();
         // debugln('Saved');
@@ -1020,38 +1046,39 @@ var
     TempTitle : ANSIString;
     // TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
 begin
-  CurserPos := KMemo1.RealSelStart;
-  SelLen := KMemo1.RealSelLength;
-  StartScan := CurserPos - LinkScanRange;
-  if StartScan < length(Caption) then StartScan := length(Caption);
-  EndScan := CurserPos + LinkScanRange;
-  if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);   // Danger - should be KMemo1.Blocks.Text !!!
-  // TS1:=DateTimeToTimeStamp(Now);
+    if KMemo1.ReadOnly then exit();
+    CurserPos := KMemo1.RealSelStart;
+    SelLen := KMemo1.RealSelLength;
+    StartScan := CurserPos - LinkScanRange;
+    if StartScan < length(Caption) then StartScan := length(Caption);
+    EndScan := CurserPos + LinkScanRange;
+    if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);   // Danger - should be KMemo1.Blocks.Text !!!
+    // TS1:=DateTimeToTimeStamp(Now);
 
-  BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
+    BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
 
-  if ((BlocksInTitle + 3) > BlockNo) then begin
-      // We don't check title if user is not close to it.
-  	MarkTitle();
-  	GetTitle(TempTitle);
-      Caption := TempTitle;
-  end;
+    if ((BlocksInTitle + 3) > BlockNo) then begin
+          // We don't check title if user is not close to it.
+  	    MarkTitle();
+  	    GetTitle(TempTitle);
+        Caption := TempTitle;
+    end;
 
-  // OK, if we are in the first or second (?) block, no chance of a link anyway.
-  if BlockNo < 2 then begin
-      if KMemo1.Blocks.Count = 0 then 		// But bad things happen if its really empty !
-          KMemo1.Blocks.AddParagraph();
-  	exit();
-  end;
-  if Sett.ShowIntLinks then begin
-  	ClearNearLink(CurserPos);
-  	// TS2:=DateTimeToTimeStamp(Now);
-  	CheckForLinks(StartScan, EndScan);
-  	// TS3:=DateTimeToTimeStamp(Now);
-  end;
-  KMemo1.SelStart := CurserPos;
-  KMemo1.SelLength := SelLen;
-  //Debugln('Housekeeper called');
+    // OK, if we are in the first or second (?) block, no chance of a link anyway.
+    if BlockNo < 2 then begin
+        if KMemo1.Blocks.Count = 0 then 		// But bad things happen if its really empty !
+            KMemo1.Blocks.AddParagraph();
+  	        exit();
+    end;
+    if Sett.ShowIntLinks then begin
+  	    ClearNearLink(CurserPos);
+  	    // TS2:=DateTimeToTimeStamp(Now);
+        CheckForLinks(StartScan, EndScan);
+        // TS3:=DateTimeToTimeStamp(Now);
+    end;
+    KMemo1.SelStart := CurserPos;
+    KMemo1.SelLength := SelLen;
+    //Debugln('Housekeeper called');
 
   // Memo1.append('Clear ' + inttostr(TS2.Time-TS1.Time) + 'ms  Check ' + inttostr(TS3.Time-TS2.Time));
 
@@ -1091,63 +1118,61 @@ function TEditBoxForm.NearABulletPoint(out Leading, Under, Trailing, IsFirstChar
         								out BlockNo, TrailOffset, LeadOffset : longint ) : boolean;
 	// on medium linux laptop, 20k note this function takes less than a mS
 var
-  PosInBlock, Index, CharCount : longint;
+    PosInBlock, Index, CharCount : longint;
 begin
-  Under := False;
-  NoBulletPara := False;
-  BlockNo := kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, PosInBlock);
-  if kmemo1.blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+    Under := False;
+    NoBulletPara := False;
+    BlockNo := kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, PosInBlock);
+    if kmemo1.blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
   		Under := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo]).Numbering = pnuBullets);
         NoBulletPara := not Under;
-  end;
-  Index := 1;
-  CharCount := PosInBlock;
-  while BlockNo >= Index do begin
-	if kmemo1.blocks.Items[BlockNo-Index].ClassNameIs('TKMemoParagraph') then break;
-  	CharCount := CharCount + kmemo1.blocks.Items[BlockNo-Index].Text.Length;
-	inc(Index);
-
-    // Danger - what if we don't find one going left ?
-  end;
-  if BlockNo < Index then begin
-      Result := False;
-      if Verbose then debugln('Returning False as we appear to be playing in Heading.');
-      exit();
-  end
-  else Leading := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo-Index]).Numbering = pnuBullets);
-  IsFirstChar := (CharCount = 0);
-  LeadOffset := Index;
-  Index := 0;
-  while true do begin
-    // must not call Classnameis with blockno = count
-    if Verbose then
-        debugln('Doing para seek, C=' + inttostr(KMemo1.Blocks.Count) + ' B=' + inttostr(BlockNo) + ' I=' + inttostr(Index));
-    inc(Index);
-    if (BlockNo + Index) >= (Kmemo1.Blocks.Count) then begin
-        if Verbose then debugln('Overrun looking for a para marker.');
-        // means there are no para markers beyond here.  So cannot be TrailingBullet
+    end;
+    Index := 1;
+    CharCount := PosInBlock;
+    while BlockNo >= Index do begin
+	    if kmemo1.blocks.Items[BlockNo-Index].ClassNameIs('TKMemoParagraph') then break;
+  	    CharCount := CharCount + kmemo1.blocks.Items[BlockNo-Index].Text.Length;
+	    inc(Index);
+        // Danger - what if we don't find one going left ?
+    end;
+    if BlockNo < Index then begin
+        Result := False;
+        if Verbose then debugln('Returning False as we appear to be playing in Heading.');
+        exit();
+    end else Leading := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo-Index]).Numbering = pnuBullets);
+    IsFirstChar := (CharCount = 0);
+    LeadOffset := Index;
+    Index := 0;
+    while true do begin
+        // must not call Classnameis with blockno = count
+        if Verbose then
+            debugln('Doing para seek, C=' + inttostr(KMemo1.Blocks.Count) + ' B=' + inttostr(BlockNo) + ' I=' + inttostr(Index));
+        inc(Index);
+        if (BlockNo + Index) >= (Kmemo1.Blocks.Count) then begin
+            if Verbose then debugln('Overrun looking for a para marker.');
+            // means there are no para markers beyond here.  So cannot be TrailingBullet
     		{KMemo1.Blocks.AddParagraph();
     		KMemo1.ExecuteCommand(ecUp);
    			KMemo1.ExecuteCommand(ecLineEnd);  }
-        Index := 0;
-        break;
+            Index := 0;
+            break;
+        end;
+	    if kmemo1.blocks.Items[BlockNo+Index].ClassNameIs('TKMemoParagraph') then break;
     end;
-	if kmemo1.blocks.Items[BlockNo+Index].ClassNameIs('TKMemoParagraph') then break;
-  end;
-  TrailOffset := Index;
-  if TrailOffset > 0 then
-  	Trailing := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo+Index]).Numbering = pnuBullets)
-  else Trailing := False;
-  Result := (Leading or Under or Trailing);
-  if Verbose then begin
-	debugln('IsNearBullet -----------------------------------');
-    Debugln('      Result      =' + booltostr(Result, true));
-    Debugln('      Leading     =' + booltostr(Leading, true));
-    Debugln('      Under       =' + booltostr(Under, true));
-    Debugln('      Trailing    =' + booltostr(Trailing, true));
-    Debugln('      IsFirstChar =' + booltostr(IsFirstChar, true));
-    Debugln('      NoBulletPara=' + booltostr(NoBulletPara, true));
-  end;
+    TrailOffset := Index;
+    if TrailOffset > 0 then
+  	    Trailing := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo+Index]).Numbering = pnuBullets)
+    else Trailing := False;
+    Result := (Leading or Under or Trailing);
+    if Verbose then begin
+	    debugln('IsNearBullet -----------------------------------');
+        Debugln('      Result      =' + booltostr(Result, true));
+        Debugln('      Leading     =' + booltostr(Leading, true));
+        Debugln('      Under       =' + booltostr(Under, true));
+        Debugln('      Trailing    =' + booltostr(Trailing, true));
+        Debugln('      IsFirstChar =' + booltostr(IsFirstChar, true));
+        Debugln('      NoBulletPara=' + booltostr(NoBulletPara, true));
+    end;
 end;
 
 {	To behave like end users expect when pressing BackSpace we have to alter KMemo's way of thinking.
@@ -1194,11 +1219,25 @@ var
   LeadingBullet, UnderBullet, TrailingBullet, FirstChar {, NearBullet} : boolean;
   NoBulletPara : boolean = false;
 begin
-    if not Ready then exit();
+    if not Ready then exit();                   // should we drop key on floor ????
     if [ssCtrl] = Shift then begin
        if key = ord('F') then begin MenuItemFindClick(self); Key := 0; exit(); end;
        if key = ord('N') then begin RTSearch.TrayMenuNewClick(self); Key := 0; exit(); end;
+       if Key = ord('R') then begin
+            if KMemo1.ReadOnly then begin
+               PanelReadOnly.Height:= 5;
+               KMemo1.ReadOnly := False;
+            end else begin
+                PanelReadOnly.Height:= 60;
+                KMemo1.ReadOnly := True;
+            end;
+            Key := 0;
+            exit();
+       end;
     end;
+
+    if KMemo1.ReadOnly then begin Key := 0; exit(); end;
+
     if [ssCtrl, ssShift] = Shift then begin
        if key = ord('F') then begin ButtSearchClick(self); Key := 0; exit(); end;
     end;
@@ -1211,6 +1250,13 @@ begin
     // We do have to act, don't pass key on.
     Key := 0;
     Ready := False;
+    Dirty := true;
+    Label1.Caption := 'd';
+    TimerHouseKeeping.Enabled := False;
+    TimerHouseKeeping.Enabled := True;
+    TimerSave.Enabled := False;
+    TimerSave.Enabled := True;
+
     // KMemo1.Blocks.LockUpdate;  Dont lock because we move the cursor down here.
     	if UnderBullet and (not FirstChar) then begin   // case a
             KMemo1.ExecuteCommand(ecDeleteLastChar);
@@ -1288,6 +1334,7 @@ end;
 
 procedure TEditBoxForm.MenuItemWriteClick(Sender: TObject);
 begin
+    if KMemo1.ReadOnly then exit();
     SaveTheNote();
 end;
 
@@ -1297,6 +1344,7 @@ var
     SL : TStringList;
     // TestI : integer;
 begin
+    if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
         NoteFileName := Sett.NoteDirectory + GetAFilename();
     Saver := TBSaveNote.Create();
