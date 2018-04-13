@@ -134,6 +134,7 @@ unit EditBox;
     2018/04/12  Added a function to set the KMemo to readonly (for when the Sync Process
                 has replaced or deleted the on disk copy of this note).  SetReadOnly();
     2018/04/13  Added calls to start Housekeeping and Save times when editing inside bullets !
+    2018/04/13  Now call NotebookPick Form dynamically and ShowModal to ensure two notes don't share.
 
 
 }
@@ -375,11 +376,21 @@ begin
 end;
 
 procedure TEditBoxForm.ButtNotebookClick(Sender: TObject);
+var
+    NotebookPick : TNotebookPick;
 begin
-    if KMemo1.ReadOnly then exit();
+    NotebookPick := TNotebookPick.Create(Application);
     NotebookPick.FullFileName := NoteFileName;
     NotebookPick.Title := NoteTitle;
-	if mrOK = NotebookPick.ShowModal then dirty := True;
+    NotebookPick.Top := Top;
+    NotebookPick.Left := Left;
+    if mrOK = NotebookPick.ShowModal then dirty := True;
+    NotebookPick.Free;
+
+{    if KMemo1.ReadOnly then exit();
+    NotebookPick.FullFileName := NoteFileName;
+    NotebookPick.Title := NoteTitle;
+	if mrOK = NotebookPick.ShowModal then dirty := True;      }
 end;
 
 procedure TEditBoxForm.MenuBulletClick(Sender: TObject);

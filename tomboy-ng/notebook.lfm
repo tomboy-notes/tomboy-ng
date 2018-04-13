@@ -118,24 +118,24 @@ object NoteBookPick: TNoteBookPick
       ClientWidth = 481
       object EditNewNotebook: TEdit
         Left = 24
-        Height = 22
+        Height = 27
         Top = 56
         Width = 248
         TabOrder = 0
       end
       object Label4: TLabel
         Left = 26
-        Height = 16
+        Height = 17
         Top = 32
-        Width = 177
+        Width = 194
         Caption = 'Name of the New Note Book'
         ParentColor = False
       end
       object Label5: TLabel
         Left = 29
-        Height = 16
+        Height = 17
         Top = 104
-        Width = 415
+        Width = 445
         Caption = 'Press OK and we will make the Note Book AND add this note to it.'
         ParentColor = False
       end

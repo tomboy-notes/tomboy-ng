@@ -28,15 +28,17 @@ unit Notebook;
     a particular note to be a member of more than one notebook. If not, will cancel
     a previous choice if a user selects a new notebook.
 
+    This form is created dynamically and shown modal, the user can only open one
+    at a time. If shown non-modal, there is a danger form will get lost ....
+
     History -
     2018/01/30 -replaced the function that cancels previous Notebook selection when
                 a new one is made (if settings so demand). This one works on Macs
                 and is a better job on the other platforms too.
+    2018/04/13  Now call NotebookPick Form dynamically and ShowModal to ensure two notes don't share.
+
 }
 
-
-{ TODO : URGENT - This needs to be rewritten so that form is created on the fly.
-At present, if a user opens two notes and then opens the Notebook form for each, bad things happen. }
 
 {$mode objfpc}{$H+}
 
@@ -75,8 +77,8 @@ type
     Title : ANSIString;
 		end;
 
-var
-		NoteBookPick: TNoteBookPick;
+{var
+		NoteBookPick: TNoteBookPick;   }
 
 implementation
 

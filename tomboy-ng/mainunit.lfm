@@ -1,7 +1,7 @@
 object RTSearch: TRTSearch
-  Left = 139
+  Left = 428
   Height = 339
-  Top = 155
+  Top = 207
   Width = 719
   Caption = 'RTSearch'
   ClientHeight = 339
@@ -35,7 +35,7 @@ object RTSearch: TRTSearch
     AnchorSideRight.Control = ButtonRefresh
     Left = 515
     Height = 27
-    Hint = 'Not Implemented Yet'
+    Hint = 'Clears the search'
     Top = 8
     Width = 100
     Anchors = [akTop, akRight]
@@ -52,6 +52,7 @@ object RTSearch: TRTSearch
     AnchorSideRight.Side = asrBottom
     Left = 616
     Height = 27
+    Hint = 'Indexes on disk notes'
     Top = 8
     Width = 100
     Anchors = [akTop, akRight]
@@ -59,6 +60,8 @@ object RTSearch: TRTSearch
     Caption = 'Refresh'
     OnClick = ButtonRefreshClick
     OnKeyDown = FormKeyDown
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 2
   end
   object Panel1: TPanel
@@ -181,6 +184,7 @@ object RTSearch: TRTSearch
       AnchorSideBottom.Side = asrBottom
       Left = -8
       Height = 25
+      Hint = 'Manage the Notebooks'
       Top = 278
       Width = 160
       Anchors = [akLeft, akRight, akBottom]
@@ -188,6 +192,8 @@ object RTSearch: TRTSearch
       Enabled = False
       OnClick = ButtonNotebookOptionsClick
       OnKeyDown = FormKeyDown
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 4
     end
   end
