@@ -44,6 +44,7 @@ unit Note_Lister;
 	2018/01/25  Changes to support Notebooks
     2018/02/14  Changed code that does Search All Notes stuff cos old code stopped on a tag
     2018/02/15  Can now search case sensitive or not and any combination or exact match
+    2018/04/28  Set FixedRows to zero after Clean-ing strgrid, seems necessary in Trunk
 }
 
 {$mode objfpc}
@@ -329,6 +330,7 @@ var
 begin
   	Grid.Clear;
     //Grid.Clean;
+    Grid.FixedRows := 0;
     Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
     Grid.FixedRows := 1;
     // Scan the main list of notes looking for ones in this Notebook.
@@ -409,6 +411,7 @@ var
     Index : integer;
 begin
     NotebookGrid.Clear;
+    NotebookGrid.FixedRows:=0;
     NotebookGrid.InsertRowWithValues(0, ['Notebooks']);
     NotebookGrid.FixedRows:=1;
     for Index := 0 to NotebookList.Count - 1 do begin
@@ -634,6 +637,7 @@ var
     Index : integer;
 begin
   	Grid.Clear;                       { TODO : we call these three lines from three different places ! }
+    Grid.FixedRows := 0;
     Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
     Grid.FixedRows := 1;
 	for Index := 0 to NoteList.Count -1 do begin
@@ -644,13 +648,12 @@ begin
     Grid.AutoSizeColumns;
 end;
 
-
-
 procedure TNoteLister.LoadSearchGrid(const Grid: TStringGrid);
 var
     Index : integer;
 begin
   	Grid.Clear;
+    Grid.FixedRows := 0;
     Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
     Grid.FixedRows := 1;
     for Index := 0 to SearchNoteList.Count -1 do begin
