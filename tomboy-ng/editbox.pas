@@ -135,7 +135,8 @@ unit EditBox;
                 has replaced or deleted the on disk copy of this note).  SetReadOnly();
     2018/04/13  Added calls to start Housekeeping and Save times when editing inside bullets !
     2018/04/13  Now call NotebookPick Form dynamically and ShowModal to ensure two notes don't share.
-
+    2018/05/02  Enabled untested code to print.
+    2018/05/03  Now put a * ahead of note name to indicate its unsaved.
 
 }
 
@@ -161,7 +162,6 @@ type
         ButtSearch: TBitBtn;
 		FindDialog1: TFindDialog;
         KMemo1: TKMemo;
-		Label1: TLabel;
         Label2: TLabel;
         Label3: TLabel;
         Label4: TLabel;
@@ -284,6 +284,9 @@ type
         function NewNoteTitle() : ANSIString;
                  { Saves the note as text or rtf, consulting user about path and file name }
         procedure SaveNoteAs(TheExt: string);
+        procedure MarkDirty();
+        procedure MarkClean();
+        function CleanCaption() : ANSIString;
     public
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
@@ -349,7 +352,7 @@ begin
 		TimerSave.Enabled := False;
    		if NoteFileName <> '' then
 	   		    RTSearch.DeleteNote(NoteFileName);
-        Dirty := False;
+        MarkClean();
 		Close;
    end;
 end;
@@ -387,7 +390,7 @@ begin
     NotebookPick.Title := NoteTitle;
     NotebookPick.Top := Top;
     NotebookPick.Left := Left;
-    if mrOK = NotebookPick.ShowModal then dirty := True;
+    if mrOK = NotebookPick.ShowModal then MarkDirty();
     NotebookPick.Free;
 
 {    if KMemo1.ReadOnly then exit();
@@ -404,9 +407,10 @@ begin
       // if not KMemo1.SelAvail then exit();
       // Need a better test of valid  selection than that !
       if KMemo1.ReadOnly then exit();
-      if not Dirty then TimerSave.Enabled := true;
-      Dirty := true;
-      Label1.Caption := 'd';
+      MarkDirty();
+      //if not Dirty then TimerSave.Enabled := true;
+      //Dirty := true;
+      //Label1.Caption := 'd';
       BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
       LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
 
@@ -486,9 +490,10 @@ var
 begin
     if KMemo1.ReadOnly then exit();
     Ready := False;
-    if not Dirty then TimerSave.Enabled := true;
-    Dirty := true;
-    Label1.Caption := 'd';
+    MarkDirty();
+    //if not Dirty then TimerSave.Enabled := true;
+    //Dirty := true;
+    //Label1.Caption := 'd';
 	LastChar := Kmemo1.RealSelEnd;			// SelEnd points to first non-selected char
     FirstChar := KMemo1.RealSelStart;
 	FirstBlockNo := Kmemo1.Blocks.IndexToBlockIndex(FirstChar, IntIndex);
@@ -630,9 +635,10 @@ procedure TEditBoxForm.MenuItemCutClick(Sender: TObject);
 begin
     if KMemo1.ReadOnly then exit();
     KMemo1.ExecuteCommand(ecCut);
-    if not Dirty then TimerSave.Enabled := true;
-    Dirty := true;
-    Label1.Caption := 'd';
+    MarkDirty();
+    //if not Dirty then TimerSave.Enabled := true;
+    //Dirty := true;
+    //Label1.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemDeleteClick(Sender: TObject);
@@ -640,9 +646,10 @@ begin
     if KMemo1.ReadOnly then exit();
     // KMemo1.ExecuteCommand(ecClearSelection);
     KMemo1.Blocks.ClearSelection;
-    if not Dirty then TimerSave.Enabled := true;
-    Dirty := true;
-    Label1.Caption := 'd';
+    MarkDirty();
+    //if not Dirty then TimerSave.Enabled := true;
+    //Dirty := true;
+    //Label1.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemExportPlainTextClick(Sender: TObject);
@@ -683,6 +690,26 @@ begin
      SaveExport.Free;
 end;
 
+procedure TEditBoxForm.MarkDirty();
+begin
+    if not Dirty then TimerSave.Enabled := true;
+    Dirty := true;
+    if Caption[1] <> '*' then
+        Caption := '* ' + Caption;
+end;
+
+procedure TEditBoxForm.MarkClean();
+begin
+    Caption := CleanCaption();
+end;
+
+function TEditBoxForm.CleanCaption(): ANSIString;
+begin
+    if Caption[1] = '*' then
+        Result := Copy(Caption, 3, 256)
+    else Result := Caption;
+end;
+
 procedure TEditBoxForm.SetReadOnly();
 begin
    PanelReadOnly.Height:= 60;
@@ -694,9 +721,10 @@ begin
     if KMemo1.ReadOnly then exit();
     Ready := False;
     KMemo1.ExecuteCommand(ecPaste);
-    if not Dirty then TimerSave.Enabled := true;
-    Dirty := true;
-    Label1.Caption := 'd';
+    MarkDirty();
+    //if not Dirty then TimerSave.Enabled := true;
+    //Dirty := true;
+    //Label1.Caption := 'd';
     Ready := True;
 end;
 
@@ -748,7 +776,6 @@ begin
     TimerSave.Enabled:=False;
 	// showmessage('Time is up');
     SaveTheNote();
-    Label1.Caption := 'c';
 end;
 
 
@@ -807,8 +834,9 @@ begin
     KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
     KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
-    Dirty := False;
-    Label1.Caption := 'c';
+    MarkClean();
+    //Dirty := False;
+    //Label1.Caption := 'c';
 end;
 
 	{ This gets called when the TrayMemu quit entry is clicked }
@@ -1130,13 +1158,14 @@ procedure TEditBoxForm.KMemo1Change(Sender: TObject);
 begin
     if not Ready then exit();           // don't do any of this while starting up.
     //if not Dirty then TimerSave.Enabled := true;
-    Dirty := true;
-    Label1.Caption := 'd';
+    MarkDirty();
+    //Dirty := true;
+    //Label1.Caption := 'd';
+    //TimerSave.Enabled := False;
+    //TimerSave.Enabled := True;
 
     TimerHouseKeeping.Enabled := False;
     TimerHouseKeeping.Enabled := True;
-    TimerSave.Enabled := False;
-    TimerSave.Enabled := True;
     //DoHouseKeeping();
 end;
 
@@ -1276,12 +1305,13 @@ begin
     // We do have to act, don't pass key on.
     Key := 0;
     Ready := False;
-    Dirty := true;
-    Label1.Caption := 'd';
+    MarkDirty();
+    //Dirty := true;
+    //Label1.Caption := 'd';
     TimerHouseKeeping.Enabled := False;
     TimerHouseKeeping.Enabled := True;
-    TimerSave.Enabled := False;
-    TimerSave.Enabled := True;
+    //TimerSave.Enabled := False;
+    //TimerSave.Enabled := True;
 
     // KMemo1.Blocks.LockUpdate;  Dont lock because we move the cursor down here.
     	if UnderBullet and (not FirstChar) then begin   // case a
@@ -1402,8 +1432,9 @@ begin
 	   Saver.Destroy;
        // debugln('All saved OK');
     finally
-              Dirty := false;
-              KMemo1.Blocks.UnLockUpdate;
+        MarkClean();
+        // Dirty := false;
+        KMemo1.Blocks.UnLockUpdate;
     end;
 end;
 

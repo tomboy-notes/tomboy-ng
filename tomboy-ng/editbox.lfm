@@ -682,14 +682,6 @@ object EditBoxForm: TEditBoxForm
     OnKeyDown = KMemo1KeyDown
     OnMouseDown = KMemo1MouseDown
   end
-  object Label1: TLabel
-    Left = 424
-    Height = 17
-    Top = 8
-    Width = 45
-    Caption = 'Label1'
-    ParentColor = False
-  end
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = KMemo1
