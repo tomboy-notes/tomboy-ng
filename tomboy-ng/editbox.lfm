@@ -802,7 +802,8 @@ object EditBoxForm: TEditBoxForm
       end
     end
     object MenuItemPrint: TMenuItem
-      Caption = 'MenuItemPrint'
+      Caption = 'Print'
+      OnClick = MenuItemPrintClick
     end
     object MenuItemSpell: TMenuItem
       Caption = 'Spell Check'
@@ -867,5 +868,9 @@ object EditBoxForm: TEditBoxForm
     OnTimer = TimerHousekeepingTimer
     left = 376
     top = 127
+  end
+  object PrintDialog1: TPrintDialog
+    left = 496
+    top = 119
   end
 end

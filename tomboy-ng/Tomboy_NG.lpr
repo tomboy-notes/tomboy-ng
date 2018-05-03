@@ -11,7 +11,7 @@ uses
     cthreads,
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
-    Forms, MainUnit, settings, SyncGUI, Notebook, Spelling
+    Forms, printer4lazarus, MainUnit, settings, SyncGUI, Notebook, Spelling
     { you can add units after this };
 
 {$R *.res}

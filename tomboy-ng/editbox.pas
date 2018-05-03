@@ -146,7 +146,7 @@ interface
 
 uses
     Classes, SysUtils, { FileUtil,} Forms, Controls, Graphics, Dialogs, ExtCtrls,
-    Menus, StdCtrls, Buttons, kmemo, LazLogger ;
+    Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs ;
 
 type
 
@@ -194,6 +194,7 @@ type
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
+        PrintDialog1: TPrintDialog;
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
@@ -228,6 +229,7 @@ type
         procedure MenuItemExportRTFClick(Sender: TObject);
 		procedure MenuItemFindClick(Sender: TObject);
 		procedure MenuItemPasteClick(Sender: TObject);
+        procedure MenuItemPrintClick(Sender: TObject);
 		procedure MenuItemSelectAllClick(Sender: TObject);
         procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
@@ -314,7 +316,8 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     SyncGUI,
     LazFileUtils,		// For ExtractFileName()
     Spelling,
-    NoteBook;
+    NoteBook,
+    K_Prn;              // Custom print unit.
 
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
@@ -695,6 +698,18 @@ begin
     Dirty := true;
     Label1.Caption := 'd';
     Ready := True;
+end;
+
+
+procedure TEditBoxForm.MenuItemPrintClick(Sender: TObject);
+var
+    KPrint : TKprn;
+begin
+    if PrintDialog1.Execute then begin
+      KPrint := TKPrn.Create;
+      KPrint.PrintKmemo(KMemo1);
+      FreeandNil(KPrint);
+    end;
 end;
 
 procedure TEditBoxForm.MenuItemSelectAllClick(Sender: TObject);
