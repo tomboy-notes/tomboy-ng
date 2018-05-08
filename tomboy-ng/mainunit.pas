@@ -209,6 +209,7 @@ uses EditBox,
     // SyncGUI,
     TB_Sync,		// So we can make changes to local manifest when a note is deleted.
     LCLType,		// For the MessageBox
+    fix_gtk_clip,   // fix linux problem of clearing clipboard on app exit.
     LazFileUtils;   // LazFileUtils needed for TrimFileName(), cross platform stuff
 
 
