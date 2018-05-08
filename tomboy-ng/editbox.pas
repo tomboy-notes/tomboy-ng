@@ -137,7 +137,11 @@ unit EditBox;
     2018/04/13  Now call NotebookPick Form dynamically and ShowModal to ensure two notes don't share.
     2018/05/02  Enabled untested code to print.
     2018/05/03  Now put a * ahead of note name to indicate its unsaved.
-
+    2018/05/04  Use CleanCaption() when using Caption elsewhere.
+    2018/05/07  Bug in MarkDirty(), now always enable SaveTimer
+    2018/05/07  Added a paste command into FormShow() that appears to fix strange bug where the first
+                copy (as in Copy and paste) fails. This is a nasty fudge, perhapse related to
+                http://bugs.freepascal.org/view.php?id=28679    Linux only ?
 }
 
 
@@ -285,7 +289,7 @@ type
                  { Saves the note as text or rtf, consulting user about path and file name }
         procedure SaveNoteAs(TheExt: string);
         procedure MarkDirty();
-        procedure MarkClean();
+        //procedure MarkClean();
         function CleanCaption() : ANSIString;
     public
         NoteFileName, NoteTitle : string;
@@ -346,13 +350,14 @@ var
     St : string;
 begin
     if KMemo1.ReadOnly then exit();
-    St := Caption;
+    St := CleanCaption();
    if IDYES = Application.MessageBox('Delete this Note', PChar(St),
    									MB_ICONQUESTION + MB_YESNO) then begin
 		TimerSave.Enabled := False;
    		if NoteFileName <> '' then
 	   		    RTSearch.DeleteNote(NoteFileName);
-        MarkClean();
+        Dirty := False;
+        //MarkClean();
 		Close;
    end;
 end;
@@ -678,7 +683,7 @@ begin
           SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
           {$endif}
      end;
-     SaveExport.Filename := StringReplace(Caption, #32, '', [rfReplaceAll]) + '.' + TheExt;
+     SaveExport.Filename := StringReplace(CleanCaption(), #32, '', [rfReplaceAll]) + '.' + TheExt;
      if SaveExport.Execute then begin
         if 'txt' = TheExt then
            KMemo1.SaveToTXT(SaveExport.FileName)
@@ -692,16 +697,16 @@ end;
 
 procedure TEditBoxForm.MarkDirty();
 begin
-    if not Dirty then TimerSave.Enabled := true;
+    {if not Dirty then} TimerSave.Enabled := true;
     Dirty := true;
     if Caption[1] <> '*' then
         Caption := '* ' + Caption;
 end;
 
-procedure TEditBoxForm.MarkClean();
+{procedure TEditBoxForm.MarkClean();
 begin
     Caption := CleanCaption();
-end;
+end; }
 
 function TEditBoxForm.CleanCaption(): ANSIString;
 begin
@@ -804,6 +809,9 @@ begin
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
+    {$ifdef LINUX}
+    KMemo1.ExecuteCommand(ecPaste);         // this to deal with a "first copy" issue.
+    {$endif}
     Kmemo1.Clear;
     MenuItemSync.Enabled := (Sett.RemoteRepo <> '');
     if NoteFileName = '' then begin		// might be a new note or a new note from Link
@@ -834,8 +842,8 @@ begin
     KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
     KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
-    MarkClean();
-    //Dirty := False;
+    // MarkClean();
+    Dirty := False;
     //Label1.Caption := 'c';
 end;
 
@@ -1115,7 +1123,10 @@ begin
           // We don't check title if user is not close to it.
   	    MarkTitle();
   	    GetTitle(TempTitle);
-        Caption := TempTitle;
+        if Dirty then
+            Caption := '* ' + TempTitle
+        else
+            Caption := TempTitle;
     end;
 
     // OK, if we are in the first or second (?) block, no chance of a link anyway.
@@ -1427,13 +1438,14 @@ begin
        // debugln('about to save');
        Saver.Save(NoteFileName, KMemo1);
        // debugln('saved');
-       RTSearch.UpdateList(Caption, Saver.TimeStamp, NoteFileName, self);
+       RTSearch.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
        // debugln('List updated');
 	   Saver.Destroy;
        // debugln('All saved OK');
     finally
-        MarkClean();
-        // Dirty := false;
+        //MarkClean();
+        Dirty := false;
+        Caption := CleanCaption();
         KMemo1.Blocks.UnLockUpdate;
     end;
 end;
