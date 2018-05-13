@@ -272,7 +272,7 @@ begin
         inc(ItemNo);
     end;
     Result := Result + Round(0.2 * BlankLineHeight);
-    writeln('Line Height=' + inttostr(Result));
+    //writeln('Line Height=' + inttostr(Result));
 end;
 
 procedure TKPrn.CopyFont(FromFont, ToFont : TFont);

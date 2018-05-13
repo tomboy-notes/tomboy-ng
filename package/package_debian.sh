@@ -9,7 +9,7 @@
 # and that a 'Release' mode exists.
 
 PRODUCT="tomboy-ng"
-VERSION="0.13"
+VERSION="0.15"
 
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"
@@ -93,9 +93,6 @@ function DebianPackage () {
 	chmod -R g-w BUILD
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
 	rm -rf BUILD
-	echo "----------------- FINISHED DEBs ----------------"
-	ls -l *.deb
-	echo "------------------------------------------------"
 }
 
 function DoZipping {
@@ -110,11 +107,15 @@ function DoZipping {
 	mv tomboy-ng32.gz tomboy-ng32_$VERSION.gz
 
 	rm *.zip
-	cp ../tomboy-ng/tomboy-ng64.exe .
-	zip tomboy-ng_Win64_$VERSION.zip tomboy-ng64.exe 
+	rm -Rf "$PRODUCT"_"$VERSION"
+	mkdir "$PRODUCT"_"$VERSION"
+	cp ../tomboy-ng/tomboy-ng64.exe "$PRODUCT"_"$VERSION/."
+	cp ../../DLL_64bit/libhunspell.dll "$PRODUCT"_"$VERSION/."
+	cp ../../DLL_64bit/libhunspell.license "$PRODUCT"_"$VERSION/."
+	zip "$PRODUCT"_win64_"$VERSION.zip" "$PRODUCT"_"$VERSION"/* 
 
 	cp ../tomboy-ng/tomboy-ng32.exe .
-	zip tomboy-ng_Win32_$VERSION.zip tomboy-ng32.exe
+	zip "$PRODUCT"_win32_"$VERSION.zip" tomboy-ng32.exe
 
 	echo "--------------- FINISHED ZIPPING ----------------"
 	ls -l *.gz *.zip
@@ -128,6 +129,9 @@ function DoZipping {
 BuildIt
 DebianPackage "i386"
 DebianPackage "amd64"
+echo "----------------- FINISHED DEBs ----------------"
+ls -l *.deb
+echo "------------------------------------------------"
 DoZipping
 
 
