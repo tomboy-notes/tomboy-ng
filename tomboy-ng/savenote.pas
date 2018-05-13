@@ -49,6 +49,9 @@ unit SaveNote;
 	2018/01/01  Yet another bug fix for BulletList(), this time I've got it !
 	2018/01/25  Changes to support Notebooks
     2018/01/31  Added code to reprocess &
+    2018/05/12  Extensive changes - MainUnit is now just that. Only change here relates
+                to naming of MainUnit and SearchUnit.
+
 }
 
 {$mode objfpc}{$H+}

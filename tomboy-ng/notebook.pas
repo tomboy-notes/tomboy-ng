@@ -36,7 +36,8 @@ unit Notebook;
                 a new one is made (if settings so demand). This one works on Macs
                 and is a better job on the other platforms too.
     2018/04/13  Now call NotebookPick Form dynamically and ShowModal to ensure two notes don't share.
-
+    2018/05/12  Extensive changes - MainUnit is now just that. Only change here relates
+                to naming of MainUnit and SearchUnit.
 }
 
 

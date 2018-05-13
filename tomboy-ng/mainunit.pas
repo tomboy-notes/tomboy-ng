@@ -3,7 +3,8 @@ unit Mainunit;
 {$mode objfpc}{$H+}
 
 {   HISTORY
-    2018/05/12  Extensive changes - MainUnit is now just that.
+    2018/05/12  Extensive changes - MainUnit is now just that. This is not the same
+                unit that used this name previously!
 }
 interface
 
@@ -18,14 +19,14 @@ type
     TMainForm = class(TForm)
         ButtonDismiss: TButton;
         ButtonConfig: TButton;
-        ImageConfigCross1: TImage;
-        ImageConfigTick1: TImage;
+        ImageSpellCross: TImage;
+        ImageSpellTick: TImage;
         ImageNotesDirCross: TImage;
         ImageConfigTick: TImage;
         ImageConfigCross: TImage;
-        ImageNotesDirCross1: TImage;
+        ImageSyncCross: TImage;
         ImageNotesDirTick: TImage;
-        ImageNotesDirTick1: TImage;
+        ImageSyncTick: TImage;
         Label1: TLabel;
         Label2: TLabel;
         Label3: TLabel;
@@ -115,10 +116,10 @@ begin
         showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
         close();
     end else begin
-//        {$ifdef DARWIN}                  // Only Mac users want to see this
+        {$ifdef DARWIN}                  // Only Mac users want to see this
         MMFile.Visible := True;
         MMRecent.Visible := True;
-//        {$endif}
+        {$endif}
         Label7.Caption:='';
         Label8.Caption := '';
         CheckStatus();
@@ -136,11 +137,21 @@ end;
 procedure TMainForm.CheckStatus();
 begin
      ImageConfigCross.Left := ImageConfigTick.Left;
-     ImageNotesDirCross.Left := ImageNotesDirTick.Left;
      ImageConfigTick.Visible := Sett.HaveConfig;
      ImageConfigCross.Visible := not ImageConfigTick.Visible;
+
+     ImageNotesDirCross.Left := ImageNotesDirTick.Left;
      ImageNotesDirTick.Visible := (Sett.NoteDirectory <> '');
      ImageNotesDirCross.Visible := not ImageNotesDirTick.Visible;
+
+     ImageSpellCross.Left := ImageSpellTick.Left;
+     ImageSpellTick.Visible := Sett.SpellConfig;
+     ImageSpellCross.Visible := not ImageSpellTick.Visible;
+
+     ImageSyncCross.Left := ImageSyncTick.Left;
+     ImageSyncTick.Visible := (Sett.RemoteRepo <> '');
+     ImageSyncCross.Visible := not ImageSyncTick.Visible;
+
      if (ImageConfigTick.Visible and ImageNotesDirTick.Visible) then begin
         ButtonDismiss.Enabled := True;
         SearchForm.IndexNotes();

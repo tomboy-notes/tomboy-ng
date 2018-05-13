@@ -12,6 +12,7 @@
         <TextName Value="DRB"/>
         <TextDesc Value="Not very safe test release."/>
       </XPManifest>
+      <Icon Value="0"/>
     </General>
     <i18n>
       <EnableI18N Value="True"/>

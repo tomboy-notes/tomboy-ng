@@ -38,6 +38,9 @@ unit SyncGUI;
     2018/04/12  Added ability to call MarkNoteReadOnly() to cover case where user has unchanged
                 note open while sync process downloads or deletes that note from disk.
     2018/04/13  Taught MarkNoteReadOnly() to also delete ref in NoteLister to a sync deleted note
+    2018/05/12  Extensive changes - MainUnit is now just that. Only change here relates
+                to naming of MainUnit and SearchUnit.
+
 }
 
 {$mode objfpc}{$H+}

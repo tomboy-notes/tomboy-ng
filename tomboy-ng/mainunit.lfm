@@ -148,7 +148,7 @@ object MainForm: TMainForm
   object ButtonDismiss: TButton
     Left = 256
     Height = 33
-    Hint = 'Dismiss this windown but leave tomboy-ng running'
+    Hint = 'Dismiss this window but leave tomboy-ng running'
     Top = 224
     Width = 88
     Caption = 'Dismiss'
@@ -184,7 +184,7 @@ object MainForm: TMainForm
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
-  object ImageConfigTick1: TImage
+  object ImageSpellTick: TImage
     Left = 24
     Height = 18
     Top = 136
@@ -210,7 +210,7 @@ object MainForm: TMainForm
       50D4BF67F42F557996F53F6FF18A0000000049454E44AE426082
     }
   end
-  object ImageConfigCross1: TImage
+  object ImageSpellCross: TImage
     Left = 8
     Height = 18
     Top = 136
@@ -243,7 +243,7 @@ object MainForm: TMainForm
       44225A800000000049454E44AE426082
     }
   end
-  object ImageNotesDirTick1: TImage
+  object ImageSyncTick: TImage
     Left = 24
     Height = 18
     Top = 160
@@ -269,7 +269,7 @@ object MainForm: TMainForm
       50D4BF67F42F557996F53F6FF18A0000000049454E44AE426082
     }
   end
-  object ImageNotesDirCross1: TImage
+  object ImageSyncCross: TImage
     Left = 8
     Height = 18
     Top = 160
