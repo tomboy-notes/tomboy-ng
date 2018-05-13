@@ -11,7 +11,8 @@ uses
     cthreads,
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
-    Forms, printer4lazarus, MainUnit, settings, SyncGUI, Notebook, Spelling
+    Forms, printer4lazarus, SearchUnit, settings, SyncGUI, Notebook, Spelling,
+    Mainunit
     { you can add units after this };
 
 {$R *.res}
@@ -20,10 +21,10 @@ begin
 	Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
-    Application.ShowMainForm := False;
+    Application.CreateForm(TMainForm, MainForm);
+    Application.CreateForm(TSearchForm, SearchForm);
     Application.CreateForm(TSett, Sett);
-    Application.CreateForm(TRTSearch, RTSearch);
-	Application.CreateForm(TFormSync, FormSync);
+    Application.CreateForm(TFormSync, FormSync);
 	// Application.CreateForm(TNoteBookPick, NoteBookPick);
     // Application.CreateForm(TFormSpell, FormSpell);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);

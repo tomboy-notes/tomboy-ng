@@ -142,6 +142,7 @@ unit EditBox;
     2018/05/07  Added a paste command into FormShow() that appears to fix strange bug where the first
                 copy (as in Copy and paste) fails. This is a nasty fudge, perhapse related to
                 http://bugs.freepascal.org/view.php?id=28679    Linux only ?
+    2018/05/12  Extensive changes - MainUnit is now just that.
 }
 
 
@@ -317,13 +318,14 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     LCLType,			// For the MessageBox
     keditcommon,        // Holds some editing defines
     settings,			// User settings and some defines used across units.
-    MainUnit,              // Is the main starting unit and the search tool.
+    SearchUnit,              // Is the main starting unit and the search tool.
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
 	LoadNote,           // Will know how to load a Tomboy formatted note.
     SyncGUI,
     LazFileUtils,		// For ExtractFileName()
     Spelling,
     NoteBook,
+    MainUnit,
     K_Prn;              // Custom print unit.
 
 
@@ -342,7 +344,7 @@ end;
 
 procedure TEditBoxForm.ButtSearchClick(Sender: TObject);
 begin
-	RTSearch.Show;
+	SearchForm.Show;
 end;
 
 procedure TEditBoxForm.ButtDeleteClick(Sender: TObject);
@@ -355,7 +357,7 @@ begin
    									MB_ICONQUESTION + MB_YESNO) then begin
 		TimerSave.Enabled := False;
    		if NoteFileName <> '' then
-	   		    RTSearch.DeleteNote(NoteFileName);
+	   		    SearchForm.DeleteNote(NoteFileName);
         Dirty := False;
         //MarkClean();
 		Close;
@@ -380,7 +382,7 @@ begin
 		end;
 		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
         if UTF8Length(ThisTitle) > 1 then begin
-        	RTSearch.OpenNote(ThisTitle);
+        	SearchForm.OpenNote(ThisTitle);
             KMemo1Change(self);
 		end;
 	end;
@@ -764,6 +766,7 @@ begin
 end;
 
 procedure TEditBoxForm.MenuItemSyncClick(Sender: TObject);
+          // Hmmm, wonder why I don't call TSett.Synchronise(); here instead.
 begin
     if KMemo1.ReadOnly then exit();
 	if Dirty then SaveTheNote();
@@ -864,7 +867,7 @@ begin
         SaveTheNote();
         // debugln('Saved');
 	end;
-    RTSearch.NoteClosing(NoteFileName);
+    SearchForm.NoteClosing(NoteFileName);
 end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
@@ -1026,10 +1029,10 @@ begin
     if StartScan >= Len then exit;   // prevent crash when memo almost empty
     if EndScan > Len then EndScan := Len;
     Ready := False;
-	RtSearch.StartSearch();
+	SearchForm.StartSearch();
     KMemo1.Blocks.LockUpdate;
     MemoText := KMemo1.Blocks.text;     // Make one copy and use it repeatadly, actual text does not change
-    while RTSearch.NextNoteTitle(SearchTerm) do
+    while SearchForm.NextNoteTitle(SearchTerm) do
         if SearchTerm <> NoteTitle then
         	MakeAllLinks(MemoText, SearchTerm, StartScan, EndScan);
     KMemo1.Blocks.UnLockUpdate;
@@ -1047,7 +1050,7 @@ begin
     LinkText := Kmemo1.Blocks.Items[BlockNo].Text;              // debug
     if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then begin
         LinkText := Kmemo1.Blocks.Items[BlockNo].Text;
-    	if Not RTSearch.IsThisaTitle(LinkText) then begin
+    	if Not SearchForm.IsThisaTitle(LinkText) then begin
         	KMemo1.Blocks.LockUpdate;                         // I don't think we should lock here.
     		Kmemo1.Blocks.Delete(BlockNo);
     		KMemo1.Blocks.AddTextBlock(Linktext, BlockNo);
@@ -1058,7 +1061,7 @@ begin
 
     if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then begin
         LinkText := Kmemo1.Blocks.Items[BlockNo].Text;
-        if Not RTSearch.IsThisaTitle(LinkText) then begin
+        if Not SearchForm.IsThisaTitle(LinkText) then begin
         	KMemo1.Blocks.LockUpdate;
     		Kmemo1.Blocks.Delete(BlockNo);
     		KMemo1.Blocks.AddTextBlock(Linktext, BlockNo);
@@ -1098,7 +1101,7 @@ end;
 
 procedure TEditBoxForm.OnUserClickLink(sender : TObject);
 begin
-	RTSearch.OpenNote(TKMemoHyperlink(Sender).Text);
+	SearchForm.OpenNote(TKMemoHyperlink(Sender).Text);
 end;
 
 
@@ -1288,7 +1291,7 @@ begin
     if not Ready then exit();                   // should we drop key on floor ????
     if [ssCtrl] = Shift then begin
        if key = ord('F') then begin MenuItemFindClick(self); Key := 0; exit(); end;
-       if key = ord('N') then begin RTSearch.TrayMenuNewClick(self); Key := 0; exit(); end;
+       if key = ord('N') then begin MainForm.MMNewNoteClick(self); Key := 0; exit(); end;
        if Key = ord('R') then begin
             if KMemo1.ReadOnly then begin
                PanelReadOnly.Height:= 5;
@@ -1431,14 +1434,14 @@ begin
        if TemplateIs <> '' then begin
           SL := TStringList.Create();
           SL.Add(TemplateIs);
-          RTSearch.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
+          SearchForm.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
           SL.Free;
           TemplateIs := '';
 	   end;
        // debugln('about to save');
        Saver.Save(NoteFileName, KMemo1);
        // debugln('saved');
-       RTSearch.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
+       SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
        // debugln('List updated');
 	   Saver.Destroy;
        // debugln('All saved OK');

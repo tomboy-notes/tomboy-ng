@@ -1,12 +1,24 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: teditboxform.buttdelete.hint
+msgid "Delete This Note"
+msgstr ""
+
 #: teditboxform.buttlink.caption
 msgid "Link"
 msgstr ""
 
+#: teditboxform.buttlink.hint
+msgid "Link to a new Note"
+msgstr ""
+
 #: teditboxform.buttnotebook.caption
 msgid "Notebook"
+msgstr ""
+
+#: teditboxform.buttnotebook.hint
+msgid "Manage Note Books"
 msgstr ""
 
 #: teditboxform.buttsearch.caption
@@ -14,17 +26,36 @@ msgctxt "teditboxform.buttsearch.caption"
 msgid "Search"
 msgstr ""
 
+#: teditboxform.buttsearch.hint
+msgid "Search All Notes Ctrl-Shift-F"
+msgstr ""
+
 #: teditboxform.butttext.caption
 msgid "Text"
+msgstr ""
+
+#: teditboxform.butttext.hint
+msgid "Font Size, Bold, Italics, Bullets etc"
+msgstr ""
+
+#: teditboxform.butttools.hint
+msgid "Tools - Sync, Export, Spell"
 msgstr ""
 
 #: teditboxform.caption
 msgid "EditBoxForm"
 msgstr ""
 
-#: teditboxform.label1.caption
-msgctxt "teditboxform.label1.caption"
-msgid "Label1"
+#: teditboxform.label2.caption
+msgid "Read Only"
+msgstr ""
+
+#: teditboxform.label3.caption
+msgid "This note has been changed by the Sync Process"
+msgstr ""
+
+#: teditboxform.label4.caption
+msgid "Please close it (and re-open if it was a download)"
 msgstr ""
 
 #: teditboxform.menubold.caption
@@ -84,11 +115,15 @@ msgid "Paste"
 msgstr ""
 
 #: teditboxform.menuitemprint.caption
-msgid "MenuItemPrint"
+msgid "Print"
 msgstr ""
 
 #: teditboxform.menuitemselectall.caption
 msgid "Select All"
+msgstr ""
+
+#: teditboxform.menuitemspell.caption
+msgid "Spell Check"
 msgstr ""
 
 #: teditboxform.menuitemsync.caption
@@ -107,12 +142,59 @@ msgstr ""
 msgid "Small Font"
 msgstr ""
 
+#: tformspell.buttonignore.caption
+msgid "Ignore"
+msgstr ""
+
+#: tformspell.buttonignore.hint
+msgid "Ignore all instances for the run"
+msgstr ""
+
+#: tformspell.buttonskip.caption
+msgid "Skip"
+msgstr ""
+
+#: tformspell.buttonskip.hint
+msgid "Skip just this instance"
+msgstr ""
+
+#: tformspell.buttonuseandnextword.caption
+msgid "Use and Next Word"
+msgstr ""
+
+#: tformspell.caption
+msgctxt "tformspell.caption"
+msgid "Spell"
+msgstr ""
+
+#: tformspell.label4.caption
+msgid "Suspect word -"
+msgstr ""
+
+#: tformspell.labelcontext.caption
+msgid "LabelContext"
+msgstr ""
+
+#: tformspell.labelprompt.caption
+msgctxt "tformspell.labelprompt.caption"
+msgid "Click a word to use it."
+msgstr ""
+
+#: tformspell.labelstatus.caption
+msgid "LabelStatus"
+msgstr ""
+
+#: tformspell.labelsuspect.caption
+msgid "LabelSuspect"
+msgstr ""
+
 #: tformsync.buttoncancel.caption
 msgctxt "tformsync.buttoncancel.caption"
 msgid "Cancel"
 msgstr ""
 
 #: tformsync.buttonok.caption
+msgctxt "tformsync.buttonok.caption"
 msgid "Close"
 msgstr ""
 
@@ -136,6 +218,220 @@ msgstr ""
 
 #: tformsync.panel3.caption
 msgid "Panel3"
+msgstr ""
+
+#: tmainform.buttonconfig.caption
+msgid "Config"
+msgstr ""
+
+#: tmainform.buttondismiss.caption
+msgid "Dismiss"
+msgstr ""
+
+#: tmainform.buttondismiss.hint
+msgid "Dismiss this windown but leave tomboy-ng running"
+msgstr ""
+
+#: tmainform.caption
+msgid "MainForm"
+msgstr ""
+
+#: tmainform.label1.caption
+msgid "Have Config"
+msgstr ""
+
+#: tmainform.label2.caption
+msgid "Have Notes Dir"
+msgstr ""
+
+#: tmainform.label3.caption
+msgid "Dictionary Config (optional)"
+msgstr ""
+
+#: tmainform.label4.caption
+msgid "Sync Config (optional)"
+msgstr ""
+
+#: tmainform.label5.caption
+msgid "Welcome to tomboy-ng !"
+msgstr ""
+
+#: tmainform.label6.caption
+msgid "Lets See if we are ready to go -"
+msgstr ""
+
+#: tmainform.label7.caption
+msgid "Label7"
+msgstr ""
+
+#: tmainform.label8.caption
+msgid "Label8"
+msgstr ""
+
+#: tmainform.menuquit.caption
+msgctxt "tmainform.menuquit.caption"
+msgid "Quit, Close and Go Away."
+msgstr ""
+
+#: tmainform.mmabout.caption
+msgctxt "tmainform.mmabout.caption"
+msgid "About"
+msgstr ""
+
+#: tmainform.mmfile.caption
+msgctxt "tmainform.mmfile.caption"
+msgid "File"
+msgstr ""
+
+#: tmainform.mmnewnote.caption
+msgctxt "tmainform.mmnewnote.caption"
+msgid "New Note"
+msgstr ""
+
+#: tmainform.mmquit.caption
+msgid "Quit"
+msgstr ""
+
+#: tmainform.mmrecent.caption
+msgid "Recent"
+msgstr ""
+
+#: tmainform.mmrecent1.caption
+msgid "MenuItem1"
+msgstr ""
+
+#: tmainform.mmrecent10.caption
+msgctxt "tmainform.mmrecent10.caption"
+msgid "MenuItem12"
+msgstr ""
+
+#: tmainform.mmrecent2.caption
+msgid "MenuItem2"
+msgstr ""
+
+#: tmainform.mmrecent3.caption
+msgctxt "tmainform.mmrecent3.caption"
+msgid "MenuItem5"
+msgstr ""
+
+#: tmainform.mmrecent4.caption
+msgctxt "tmainform.mmrecent4.caption"
+msgid "MenuItem6"
+msgstr ""
+
+#: tmainform.mmrecent5.caption
+msgctxt "tmainform.mmrecent5.caption"
+msgid "MenuItem7"
+msgstr ""
+
+#: tmainform.mmrecent6.caption
+msgctxt "tmainform.mmrecent6.caption"
+msgid "MenuItem8"
+msgstr ""
+
+#: tmainform.mmrecent7.caption
+msgctxt "tmainform.mmrecent7.caption"
+msgid "MenuItem9"
+msgstr ""
+
+#: tmainform.mmrecent8.caption
+msgctxt "tmainform.mmrecent8.caption"
+msgid "MenuItem10"
+msgstr ""
+
+#: tmainform.mmrecent9.caption
+msgctxt "tmainform.mmrecent9.caption"
+msgid "MenuItem11"
+msgstr ""
+
+#: tmainform.mmsearch.caption
+msgctxt "tmainform.mmsearch.caption"
+msgid "Search"
+msgstr ""
+
+#: tmainform.mmsettings.caption
+msgctxt "tmainform.mmsettings.caption"
+msgid "Settings"
+msgstr ""
+
+#: tmainform.mmsync.caption
+msgctxt "tmainform.mmsync.caption"
+msgid "Sync"
+msgstr ""
+
+#: tmainform.traymensearch.caption
+msgctxt "tmainform.traymensearch.caption"
+msgid "Search"
+msgstr ""
+
+#: tmainform.traymenuabout.caption
+msgctxt "tmainform.traymenuabout.caption"
+msgid "About"
+msgstr ""
+
+#: tmainform.traymenuitemsettings.caption
+msgctxt "tmainform.traymenuitemsettings.caption"
+msgid "Settings"
+msgstr ""
+
+#: tmainform.traymenunew.caption
+msgctxt "tmainform.traymenunew.caption"
+msgid "New Note"
+msgstr ""
+
+#: tmainform.traymenurecent1.caption
+msgctxt "tmainform.traymenurecent1.caption"
+msgid "MenuItem5"
+msgstr ""
+
+#: tmainform.traymenurecent10.caption
+msgctxt "tmainform.traymenurecent10.caption"
+msgid "MenuItem14"
+msgstr ""
+
+#: tmainform.traymenurecent2.caption
+msgctxt "tmainform.traymenurecent2.caption"
+msgid "MenuItem6"
+msgstr ""
+
+#: tmainform.traymenurecent3.caption
+msgctxt "tmainform.traymenurecent3.caption"
+msgid "MenuItem7"
+msgstr ""
+
+#: tmainform.traymenurecent4.caption
+msgctxt "tmainform.traymenurecent4.caption"
+msgid "MenuItem8"
+msgstr ""
+
+#: tmainform.traymenurecent5.caption
+msgctxt "tmainform.traymenurecent5.caption"
+msgid "MenuItem9"
+msgstr ""
+
+#: tmainform.traymenurecent6.caption
+msgctxt "tmainform.traymenurecent6.caption"
+msgid "MenuItem10"
+msgstr ""
+
+#: tmainform.traymenurecent7.caption
+msgctxt "tmainform.traymenurecent7.caption"
+msgid "MenuItem11"
+msgstr ""
+
+#: tmainform.traymenurecent8.caption
+msgctxt "tmainform.traymenurecent8.caption"
+msgid "MenuItem12"
+msgstr ""
+
+#: tmainform.traymenurecent9.caption
+msgctxt "tmainform.traymenurecent9.caption"
+msgid "MenuItem13"
+msgstr ""
+
+#: tmainform.traymenusynchronise.caption
+msgctxt "tmainform.traymenusynchronise.caption"
+msgid "Synchronise"
 msgstr ""
 
 #: tnotebookpick.button1.caption
@@ -187,15 +483,23 @@ msgid "Clear"
 msgstr ""
 
 #: trtsearch.buttonclearsearch.hint
-msgid "Not Implemented Yet"
+msgid "Clears the search"
 msgstr ""
 
 #: trtsearch.buttonnotebookoptions.caption
 msgid "Notebook Options"
 msgstr ""
 
+#: trtsearch.buttonnotebookoptions.hint
+msgid "Manage the Notebooks"
+msgstr ""
+
 #: trtsearch.buttonrefresh.caption
 msgid "Refresh"
+msgstr ""
+
+#: trtsearch.buttonrefresh.hint
+msgid "Indexes on disk notes"
 msgstr ""
 
 #: trtsearch.buttonshowallnotes.caption
@@ -231,10 +535,12 @@ msgid "Create New Note from Template"
 msgstr ""
 
 #: trtsearch.menuquit.caption
+msgctxt "trtsearch.menuquit.caption"
 msgid "Quit, Close and Go Away."
 msgstr ""
 
 #: trtsearch.menusynchronise.caption
+msgctxt "trtsearch.menusynchronise.caption"
 msgid "Synchronise"
 msgstr ""
 
@@ -274,6 +580,7 @@ msgid "MenuItem6"
 msgstr ""
 
 #: trtsearch.traymenurecent3.caption
+msgctxt "trtsearch.traymenurecent3.caption"
 msgid "MenuItem7"
 msgstr ""
 
@@ -309,6 +616,15 @@ msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use default Notes location"
+msgstr ""
+
+#: tsett.buttdefaultnotedir.hint
+msgid "Will work for many new users"
+msgstr ""
+
+#: tsett.buttonhide.caption
+msgctxt "tsett.buttonhide.caption"
+msgid "Close"
 msgstr ""
 
 #: tsett.buttonsaveconfig.caption
@@ -482,6 +798,7 @@ msgid "LabelWaitForSync"
 msgstr ""
 
 #: tsett.menufile.caption
+msgctxt "tsett.menufile.caption"
 msgid "File"
 msgstr ""
 
@@ -619,10 +936,12 @@ msgid "SnapShot"
 msgstr ""
 
 #: tsett.tabspell.caption
+msgctxt "tsett.tabspell.caption"
 msgid "Spell"
 msgstr ""
 
 #: tsett.tabsync.caption
+msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr ""
 

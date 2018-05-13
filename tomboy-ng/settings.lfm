@@ -1,18 +1,17 @@
 object Sett: TSett
-  Left = 767
+  Left = 441
   Height = 431
-  Top = 154
+  Top = 164
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
-  ClientHeight = 429
+  ClientHeight = 431
   ClientWidth = 525
-  Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '1.9.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -20,18 +19,18 @@ object Sett: TSett
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonSaveConfig
     Left = 0
-    Height = 371
+    Height = 373
     Top = 0
     Width = 525
-    ActivePage = TabSpell
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 5
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 336
+      ClientHeight = 334
       ClientWidth = 519
       object ButtonSetNotePath: TButton
         Left = 8
@@ -44,33 +43,33 @@ object Sett: TSett
       end
       object LabelSettingPath: TLabel
         Left = 8
-        Height = 17
+        Height = 16
         Top = 40
-        Width = 119
+        Width = 104
         Caption = 'LabelSettingPath'
         ParentColor = False
       end
       object LabelNotesPath: TLabel
         Left = 8
-        Height = 17
+        Height = 16
         Top = 120
-        Width = 110
+        Width = 97
         Caption = 'LabelNotesPath'
         ParentColor = False
       end
       object Label1: TLabel
         Left = 8
-        Height = 17
+        Height = 16
         Top = 16
-        Width = 170
+        Width = 160
         Caption = 'Settings will be saved in :'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 11
-        Height = 17
+        Height = 16
         Top = 96
-        Width = 257
+        Width = 242
         Caption = 'Notes will be looked for and saved in :'
         ParentColor = False
       end
@@ -88,37 +87,37 @@ object Sett: TSett
       end
       object CheckManyNotebooks: TCheckBox
         Left = 16
-        Height = 22
+        Height = 18
         Hint = 'This may adversly affect tradional Tomboy, take care.'
         Top = 224
-        Width = 306
+        Width = 268
         Caption = 'Allow a note to be in Multiple Notebooks.'
         OnChange = CheckManyNotebooksChange
         TabOrder = 2
       end
       object CheckCaseSensitive: TCheckBox
         Left = 40
-        Height = 22
+        Height = 18
         Top = 280
-        Width = 121
+        Width = 109
         Caption = 'Case Sensitive'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
       object CheckAnyCombination: TCheckBox
         Left = 40
-        Height = 22
+        Height = 18
         Top = 304
-        Width = 142
+        Width = 124
         Caption = 'Any Combination'
         OnChange = CheckReadOnlyChange
         TabOrder = 4
       end
       object Label12: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 256
-        Width = 134
+        Width = 126
         Caption = 'Main Search Box is :'
         ParentColor = False
       end
@@ -133,8 +132,8 @@ object Sett: TSett
         Top = 24
         Width = 178
         Caption = 'Font Size'
-        ClientHeight = 109
-        ClientWidth = 174
+        ClientHeight = 106
+        ClientWidth = 170
         TabOrder = 0
         object RadioFontBig: TRadioButton
           Left = 16
@@ -197,8 +196,8 @@ object Sett: TSett
         Top = 6
         Width = 504
         Caption = '  Type  '
-        ClientHeight = 47
-        ClientWidth = 500
+        ClientHeight = 44
+        ClientWidth = 496
         TabOrder = 0
         object RadioFile: TRadioButton
           Left = 56
@@ -226,8 +225,8 @@ object Sett: TSett
         Top = 192
         Width = 504
         Caption = '  Options  '
-        ClientHeight = 117
-        ClientWidth = 500
+        ClientHeight = 114
+        ClientWidth = 496
         TabOrder = 1
         object Label3: TLabel
           Left = 40
@@ -434,27 +433,27 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 336
+      ClientHeight = 334
       ClientWidth = 519
       object Label13: TLabel
         Left = 12
-        Height = 17
+        Height = 16
         Top = 19
-        Width = 319
+        Width = 298
         Caption = 'Spell Check requires the Hunspell Libraries and'
         ParentColor = False
       end
       object Label14: TLabel
         Left = 12
-        Height = 17
+        Height = 16
         Top = 40
-        Width = 268
+        Width = 247
         Caption = 'an appropriate Hunspell Dictionary set.'
         ParentColor = False
       end
       object EditLibrary: TEdit
         Left = 16
-        Height = 27
+        Height = 22
         Hint = 'Leave Blank if using selection above'
         Top = 136
         Width = 328
@@ -463,15 +462,15 @@ object Sett: TSett
       end
       object LabelError: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 288
-        Width = 73
+        Width = 64
         Caption = 'LabelError'
         ParentColor = False
       end
       object EditDic: TEdit
         Left = 16
-        Height = 27
+        Height = 22
         Hint = 'Leave blank if using selection above'
         Top = 240
         Width = 328
@@ -481,33 +480,33 @@ object Sett: TSett
       end
       object LabelLibraryStatus: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 96
-        Width = 129
+        Width = 115
         Caption = 'LabelLibraryStatus'
         ParentColor = False
       end
       object LabelDicStatus: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 200
-        Width = 103
+        Width = 92
         Caption = 'LabelDicStatus'
         ParentColor = False
       end
       object LabelLibrary: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 112
-        Width = 85
+        Width = 77
         Caption = 'LabelLibrary'
         ParentColor = False
       end
       object LabelDic: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 216
-        Width = 59
+        Width = 53
         Caption = 'LabelDic'
         ParentColor = False
       end
@@ -518,15 +517,13 @@ object Sett: TSett
         Width = 133
         ItemHeight = 0
         OnClick = ListBoxDicClick
-        ScrollWidth = 131
         TabOrder = 2
-        TopIndex = -1
       end
       object LabelDicPrompt: TLabel
         Left = 376
-        Height = 17
+        Height = 16
         Top = 112
-        Width = 111
+        Width = 99
         Caption = 'LabelDicPrompt'
         ParentColor = False
       end
@@ -538,7 +535,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 289
     Height = 54
-    Top = 373
+    Top = 375
     Width = 115
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 4
@@ -554,7 +551,7 @@ object Sett: TSett
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 408
-    Height = 54
+    Height = 56
     Top = 373
     Width = 113
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -567,86 +564,5 @@ object Sett: TSett
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 88
     top = 384
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    left = 448
-    top = 40
-  end
-  object MainMenu1: TMainMenu
-    left = 368
-    top = 40
-    object MenuFile: TMenuItem
-      Caption = 'File'
-      Visible = False
-      object MMNewNote: TMenuItem
-        Caption = 'New Note'
-        OnClick = MMNewNoteClick
-      end
-      object MMSearch: TMenuItem
-        Caption = 'Search'
-        OnClick = MMSearchClick
-      end
-      object MMAbout: TMenuItem
-        Caption = 'About'
-        OnClick = MMAboutClick
-      end
-      object MMSync: TMenuItem
-        Caption = 'Syncronise'
-        OnClick = MMSyncClick
-      end
-      object MMSettings: TMenuItem
-        Caption = 'Settings'
-        OnClick = MMSettingsClick
-      end
-      object MMQuit: TMenuItem
-        Caption = 'Quit Close and Go Away'
-        OnClick = MMQuitClick
-      end
-    end
-    object MenuRecent: TMenuItem
-      Caption = 'Recent Notes'
-      Visible = False
-      object MMRecent1: TMenuItem
-        Caption = 'MenuItem4'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent2: TMenuItem
-        Caption = 'MenuItem5'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent3: TMenuItem
-        Caption = 'MenuItem6'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent4: TMenuItem
-        Caption = 'MenuItem8'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent5: TMenuItem
-        Caption = 'MenuItem9'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent6: TMenuItem
-        Caption = 'MenuItem10'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent7: TMenuItem
-        Caption = 'MenuItem11'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent8: TMenuItem
-        Caption = 'MenuItem12'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent9: TMenuItem
-        Caption = 'MenuItem13'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent10: TMenuItem
-        Caption = 'MenuItem14'
-        OnClick = MMRecent1Click
-      end
-    end
   end
 end

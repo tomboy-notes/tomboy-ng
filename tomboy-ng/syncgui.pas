@@ -104,7 +104,7 @@ implementation
   process.
 }
 
-uses LazLogger, MainUnit;
+uses LazLogger, SearchUnit;
 {$R *.lfm}
 
 var
@@ -114,7 +114,7 @@ var
 
 procedure TFormSync.MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
 begin
-    RTSearch.MarkNoteReadOnly(FileName, WasDeleted);
+    SearchForm.MarkNoteReadOnly(FileName, WasDeleted);
 end;
 
 function TFormSync.Proceed(const ClashRec : TClashRecord) : TClashDecision;
@@ -304,7 +304,7 @@ begin
     ButtonSave.Enabled := False;
     DoSetUp();
     ButtonOK.Enabled := True;
-    RTSearch.IndexNotes();        { TODO : Should make this call optional, its potentially slow }
+    SearchForm.IndexNotes();        { TODO : Should make this call optional, its potentially slow }
     Label2.Caption:='OK, finished that';
 end;
 

@@ -1,205 +1,423 @@
-object RTSearch: TRTSearch
-  Left = 428
-  Height = 339
-  Top = 207
-  Width = 719
-  Caption = 'RTSearch'
-  ClientHeight = 339
-  ClientWidth = 719
-  OnCloseQuery = FormCloseQuery
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
+object MainForm: TMainForm
+  Left = 403
+  Height = 292
+  Top = 146
+  Width = 355
+  Caption = 'MainForm'
+  ClientHeight = 290
+  ClientWidth = 355
+  Menu = MainMenu1
+  OnActivate = FormActivate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
-  object Edit1: TEdit
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = ButtonClearSearch
-    Left = 3
-    Height = 27
-    Top = 8
-    Width = 511
-    Anchors = [akTop, akLeft, akRight]
-    BorderSpacing.Left = 3
-    BorderSpacing.Right = 1
-    OnEditingDone = Edit1EditingDone
-    OnEnter = Edit1Enter
-    OnExit = Edit1Exit
-    OnKeyDown = FormKeyDown
-    TabOrder = 0
-    Text = 'Search'
+  object ImageConfigTick: TImage
+    Left = 24
+    Height = 18
+    Top = 88
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B477261706869631E02000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000019749444154388DA5D0CF2BE4711CC7F1E730
+      6D0C22318C0B6DC248898C03263F929264C6CCC9D59FE0B6873D3BC9EDFBF163
+      E4A01C8861C45CA444324A0AED8E3DEC2E11B71529F39DF9BEF7C0C6C14EBE5F
+      EFEBFBDDE3FD7ABFC16A69E4382384ED21BA2D1B28F22AB6D8F1EB48E3297FD0
+      70675840B2CBAB586BF0D2AA27E0EA37516CFC348BD85C1B2CF81248FF03E28C
+      3083C27C98FC05BEF4DD213E1D298BB28C22D334629BA4C57B811E3090CA5D8E
+      D0709846D0C872C7880705F1C4B94551691E010A16F93AF088F4DE228E39862D
+      2168B83C71EE030652B1C526CA1A43F12AE38329A4ED1C1D45DDFF271505256B
+      6C664ED3F5469AC2A6EF4F695C1BCCA6DDE88CB03898443AAF4939236828F2FE
+      F572E719F1E948DB392914D569A18C29DA6B0FF8E14B207E1DA93BE4973D440F
+      0A6A0F38090AF2799B68FA07BC9CE7280A33D67E49322848D70D46D10AE18E2B
+      8CFE07C41E62E87DD073D92669A9D9E7DBC023E24F220103693E238146BE2908
+      008DACC22546BD17E84141DC3162E691D7E926F054ED715CBACEF4872000149F
+      50D4BF67F42F557996F53F6FF18A0000000049454E44AE426082
+    }
   end
-  object ButtonClearSearch: TButton
-    AnchorSideLeft.Control = Edit1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideRight.Control = ButtonRefresh
-    Left = 515
-    Height = 27
-    Hint = 'Clears the search'
-    Top = 8
-    Width = 100
-    Anchors = [akTop, akRight]
-    BorderSpacing.Right = 1
-    Caption = 'Clear'
-    OnClick = ButtonClearSearchClick
-    OnKeyDown = FormKeyDown
+  object ImageConfigCross: TImage
+    Left = 8
+    Height = 18
+    Top = 88
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B47726170686963F402000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000026D49444154388D9D53CF4B5451183D6FE6DD
+      F7DB99FBE65DB3D060A468DFA2A085B46C13D4AA558B3641EBA06DCBFE84DECD
+      C47E410BCD858D36686AA66262669458915112280646A64433BE79EF6B31EF99
+      9A8ED2D95DEEC7B9E79CEF5C2086CFA1E13FE073300050004072384702FDF94A
+      AAD2F55D0D6F5CF9B12F02E4A2F455AFA25E9AD3CB2DB86502DD0EEB08206835
+      95A35E873DF0DDDAEA7C0E5670D8ED95548E2A105470580F00A095E3D48CEE7C
+      8B20A80C8F862C7D58BAE0BB90D43DB5F5FE92E2510441EF3467B98DE3F4E681
+      E609C3FC1042500841E3A639E373346E26911C0DA3A6315D81A008825E1AD627
+      C971EC9FD72487376C19E3413C3865585F24C7D1F8A1FCA4617D8C20A8024123
+      A631255D1CD8D5BFE4B0FA6DBD584655FA1BDD5E941CE7A775FB6B0441EB1034
+      68E98392A3AE568E559B2EB4A2AD75FE8E73584C738A20A8A478D4676B8F2587
+      B127C9863217E982C3BAD62188504F0104F53A5A6FD29BED48EDCA4438DC1868
+      27D4F89806D014B0E38A82FCBED5F82E0E4E1AD65C6267C43416129BAF0C6BDE
+      77D1B437094766CC345F27C1F6D95A41BA308BB6D6992CE08569CEFA1CB95A4A
+      D880A50F54E2150F5AFA9074ABC1FA1C5ABFAD1783B867CF2C7D34B9DBAE0405
+      87B5278D1DADF664CB8AA50B6BD832C643085A87474F1CEDA1E4D5FFBA818E4C
+      FADACF54EE6F635D34ECA45A727813A6F93E82A03525478FEAD4EB1B97ED59E5
+      CCA29AAD10EA6956739677ACFDD6089ADFEAF612A19E96D23CBC9B55CEE14E1E
+      E876586749F1685ECD94DA385A6A912468E538F999657E95E151C1613D4AEC9D
+      1D0AD8CDB55438767135BAB71F2200B89F4D5DE061FAEC821A5CFE031665FE71
+      44225A800000000049454E44AE426082
+    }
+  end
+  object Label1: TLabel
+    Left = 56
+    Height = 17
+    Top = 90
+    Width = 84
+    Caption = 'Have Config'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 56
+    Height = 17
+    Top = 112
+    Width = 103
+    Caption = 'Have Notes Dir'
+    ParentColor = False
+  end
+  object ImageNotesDirTick: TImage
+    Left = 24
+    Height = 18
+    Top = 112
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B477261706869631E02000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000019749444154388DA5D0CF2BE4711CC7F1E730
+      6D0C22318C0B6DC248898C03263F929264C6CCC9D59FE0B6873D3BC9EDFBF163
+      E4A01C8861C45CA444324A0AED8E3DEC2E11B71529F39DF9BEF7C0C6C14EBE5F
+      EFEBFBDDE3FD7ABFC16A69E4382384ED21BA2D1B28F22AB6D8F1EB48E3297FD0
+      70675840B2CBAB586BF0D2AA27E0EA37516CFC348BD85C1B2CF81248FF03E28C
+      3083C27C98FC05BEF4DD213E1D298BB28C22D334629BA4C57B811E3090CA5D8E
+      D0709846D0C872C7880705F1C4B94551691E010A16F93AF088F4DE228E39862D
+      2168B83C71EE030652B1C526CA1A43F12AE38329A4ED1C1D45DDFF271505256B
+      6C664ED3F5469AC2A6EF4F695C1BCCA6DDE88CB03898443AAF4939236828F2FE
+      F572E719F1E948DB392914D569A18C29DA6B0FF8E14B207E1DA93BE4973D440F
+      0A6A0F38090AF2799B68FA07BC9CE7280A33D67E49322848D70D46D10AE18E2B
+      8CFE07C41E62E87DD073D92669A9D9E7DBC023E24F220103693E238146BE2908
+      008DACC22546BD17E84141DC3162E691D7E926F054ED715CBACEF4872000149F
+      50D4BF67F42F557996F53F6FF18A0000000049454E44AE426082
+    }
+  end
+  object ImageNotesDirCross: TImage
+    Left = 8
+    Height = 18
+    Top = 112
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B47726170686963F402000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000026D49444154388D9D53CF4B5451183D6FE6DD
+      F7DB99FBE65DB3D060A468DFA2A085B46C13D4AA558B3641EBA06DCBFE84DECD
+      C47E410BCD858D36686AA66262669458915112280646A64433BE79EF6B31EF99
+      9A8ED2D95DEEC7B9E79CEF5C2086CFA1E13FE073300050004072384702FDF94A
+      AAD2F55D0D6F5CF9B12F02E4A2F455AFA25E9AD3CB2DB86502DD0EEB08206835
+      95A35E873DF0DDDAEA7C0E5670D8ED95548E2A105470580F00A095E3D48CEE7C
+      8B20A80C8F862C7D58BAE0BB90D43DB5F5FE92E2510441EF3467B98DE3F4E681
+      E609C3FC1042500841E3A639E373346E26911C0DA3A6315D81A008825E1AD627
+      C971EC9FD72487376C19E3413C3865585F24C7D1F8A1FCA4617D8C20A8024123
+      A631255D1CD8D5BFE4B0FA6DBD584655FA1BDD5E941CE7A775FB6B0441EB1034
+      68E98392A3AE568E559B2EB4A2AD75FE8E73584C738A20A8A478D4676B8F2587
+      B127C9863217E982C3BAD62188504F0104F53A5A6FD29BED48EDCA4438DC1868
+      27D4F89806D014B0E38A82FCBED5F82E0E4E1AD65C6267C43416129BAF0C6BDE
+      77D1B437094766CC345F27C1F6D95A41BA308BB6D6992CE08569CEFA1CB95A4A
+      D880A50F54E2150F5AFA9074ABC1FA1C5ABFAD1783B867CF2C7D34B9DBAE0405
+      87B5278D1DADF664CB8AA50B6BD832C643085A87474F1CEDA1E4D5FFBA818E4C
+      FADACF54EE6F635D34ECA45A727813A6F93E82A03525478FEAD4EB1B97ED59E5
+      CCA29AAD10EA6956739677ACFDD6089ADFEAF612A19E96D23CBC9B55CEE14E1E
+      E876586749F1685ECD94DA385A6A912468E538F999657E95E151C1613D4AEC9D
+      1D0AD8CDB55438767135BAB71F2200B89F4D5DE061FAEC821A5CFE031665FE71
+      44225A800000000049454E44AE426082
+    }
+  end
+  object ButtonDismiss: TButton
+    Left = 256
+    Height = 33
+    Hint = 'Dismiss this windown but leave tomboy-ng running'
+    Top = 224
+    Width = 88
+    Caption = 'Dismiss'
+    Enabled = False
+    OnClick = ButtonDismissClick
     ParentShowHint = False
     ShowHint = True
+    TabOrder = 0
+    TabStop = False
+  end
+  object ButtonConfig: TButton
+    Left = 152
+    Height = 33
+    Top = 224
+    Width = 91
+    Caption = 'Config'
+    OnClick = ButtonConfigClick
     TabOrder = 1
   end
-  object ButtonRefresh: TButton
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 616
-    Height = 27
-    Hint = 'Indexes on disk notes'
-    Top = 8
-    Width = 100
-    Anchors = [akTop, akRight]
-    BorderSpacing.Right = 3
-    Caption = 'Refresh'
-    OnClick = ButtonRefreshClick
-    OnKeyDown = FormKeyDown
+  object Label3: TLabel
+    Left = 56
+    Height = 17
+    Top = 136
+    Width = 191
+    Caption = 'Dictionary Config (optional)'
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 56
+    Height = 17
+    Top = 160
+    Width = 151
+    Caption = 'Sync Config (optional)'
+    ParentColor = False
+  end
+  object ImageConfigTick1: TImage
+    Left = 24
+    Height = 18
+    Top = 136
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B477261706869631E02000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000019749444154388DA5D0CF2BE4711CC7F1E730
+      6D0C22318C0B6DC248898C03263F929264C6CCC9D59FE0B6873D3BC9EDFBF163
+      E4A01C8861C45CA444324A0AED8E3DEC2E11B71529F39DF9BEF7C0C6C14EBE5F
+      EFEBFBDDE3FD7ABFC16A69E4382384ED21BA2D1B28F22AB6D8F1EB48E3297FD0
+      70675840B2CBAB586BF0D2AA27E0EA37516CFC348BD85C1B2CF81248FF03E28C
+      3083C27C98FC05BEF4DD213E1D298BB28C22D334629BA4C57B811E3090CA5D8E
+      D0709846D0C872C7880705F1C4B94551691E010A16F93AF088F4DE228E39862D
+      2168B83C71EE030652B1C526CA1A43F12AE38329A4ED1C1D45DDFF271505256B
+      6C664ED3F5469AC2A6EF4F695C1BCCA6DDE88CB03898443AAF4939236828F2FE
+      F572E719F1E948DB392914D569A18C29DA6B0FF8E14B207E1DA93BE4973D440F
+      0A6A0F38090AF2799B68FA07BC9CE7280A33D67E49322848D70D46D10AE18E2B
+      8CFE07C41E62E87DD073D92669A9D9E7DBC023E24F220103693E238146BE2908
+      008DACC22546BD17E84141DC3162E691D7E926F054ED715CBACEF4872000149F
+      50D4BF67F42F557996F53F6FF18A0000000049454E44AE426082
+    }
+  end
+  object ImageConfigCross1: TImage
+    Left = 8
+    Height = 18
+    Top = 136
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B47726170686963F402000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000026D49444154388D9D53CF4B5451183D6FE6DD
+      F7DB99FBE65DB3D060A468DFA2A085B46C13D4AA558B3641EBA06DCBFE84DECD
+      C47E410BCD858D36686AA66262669458915112280646A64433BE79EF6B31EF99
+      9A8ED2D95DEEC7B9E79CEF5C2086CFA1E13FE073300050004072384702FDF94A
+      AAD2F55D0D6F5CF9B12F02E4A2F455AFA25E9AD3CB2DB86502DD0EEB08206835
+      95A35E873DF0DDDAEA7C0E5670D8ED95548E2A105470580F00A095E3D48CEE7C
+      8B20A80C8F862C7D58BAE0BB90D43DB5F5FE92E2510441EF3467B98DE3F4E681
+      E609C3FC1042500841E3A639E373346E26911C0DA3A6315D81A008825E1AD627
+      C971EC9FD72487376C19E3413C3865585F24C7D1F8A1FCA4617D8C20A8024123
+      A631255D1CD8D5BFE4B0FA6DBD584655FA1BDD5E941CE7A775FB6B0441EB1034
+      68E98392A3AE568E559B2EB4A2AD75FE8E73584C738A20A8A478D4676B8F2587
+      B127C9863217E982C3BAD62188504F0104F53A5A6FD29BED48EDCA4438DC1868
+      27D4F89806D014B0E38A82FCBED5F82E0E4E1AD65C6267C43416129BAF0C6BDE
+      77D1B437094766CC345F27C1F6D95A41BA308BB6D6992CE08569CEFA1CB95A4A
+      D880A50F54E2150F5AFA9074ABC1FA1C5ABFAD1783B867CF2C7D34B9DBAE0405
+      87B5278D1DADF664CB8AA50B6BD832C643085A87474F1CEDA1E4D5FFBA818E4C
+      FADACF54EE6F635D34ECA45A727813A6F93E82A03525478FEAD4EB1B97ED59E5
+      CCA29AAD10EA6956739677ACFDD6089ADFEAF612A19E96D23CBC9B55CEE14E1E
+      E876586749F1685ECD94DA385A6A912468E538F999657E95E151C1613D4AEC9D
+      1D0AD8CDB55438767135BAB71F2200B89F4D5DE061FAEC821A5CFE031665FE71
+      44225A800000000049454E44AE426082
+    }
+  end
+  object ImageNotesDirTick1: TImage
+    Left = 24
+    Height = 18
+    Top = 160
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B477261706869631E02000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000019749444154388DA5D0CF2BE4711CC7F1E730
+      6D0C22318C0B6DC248898C03263F929264C6CCC9D59FE0B6873D3BC9EDFBF163
+      E4A01C8861C45CA444324A0AED8E3DEC2E11B71529F39DF9BEF7C0C6C14EBE5F
+      EFEBFBDDE3FD7ABFC16A69E4382384ED21BA2D1B28F22AB6D8F1EB48E3297FD0
+      70675840B2CBAB586BF0D2AA27E0EA37516CFC348BD85C1B2CF81248FF03E28C
+      3083C27C98FC05BEF4DD213E1D298BB28C22D334629BA4C57B811E3090CA5D8E
+      D0709846D0C872C7880705F1C4B94551691E010A16F93AF088F4DE228E39862D
+      2168B83C71EE030652B1C526CA1A43F12AE38329A4ED1C1D45DDFF271505256B
+      6C664ED3F5469AC2A6EF4F695C1BCCA6DDE88CB03898443AAF4939236828F2FE
+      F572E719F1E948DB392914D569A18C29DA6B0FF8E14B207E1DA93BE4973D440F
+      0A6A0F38090AF2799B68FA07BC9CE7280A33D67E49322848D70D46D10AE18E2B
+      8CFE07C41E62E87DD073D92669A9D9E7DBC023E24F220103693E238146BE2908
+      008DACC22546BD17E84141DC3162E691D7E926F054ED715CBACEF4872000149F
+      50D4BF67F42F557996F53F6FF18A0000000049454E44AE426082
+    }
+  end
+  object ImageNotesDirCross1: TImage
+    Left = 8
+    Height = 18
+    Top = 160
+    Width = 18
+    Picture.Data = {
+      1754506F727461626C654E6574776F726B47726170686963F402000089504E47
+      0D0A1A0A0000000D494844520000001200000012080600000056CE8E57000000
+      32695458744465736372697074696F6E000100000078DA4B5448CE484DCE56C8
+      4D2CCA5648CC4B514854482ECA2F2E060B000095390A3495891EA60000000473
+      424954080808087C0864880000026D49444154388D9D53CF4B5451183D6FE6DD
+      F7DB99FBE65DB3D060A468DFA2A085B46C13D4AA558B3641EBA06DCBFE84DECD
+      C47E410BCD858D36686AA66262669458915112280646A64433BE79EF6B31EF99
+      9A8ED2D95DEEC7B9E79CEF5C2086CFA1E13FE073300050004072384702FDF94A
+      AAD2F55D0D6F5CF9B12F02E4A2F455AFA25E9AD3CB2DB86502DD0EEB08206835
+      95A35E873DF0DDDAEA7C0E5670D8ED95548E2A105470580F00A095E3D48CEE7C
+      8B20A80C8F862C7D58BAE0BB90D43DB5F5FE92E2510441EF3467B98DE3F4E681
+      E609C3FC1042500841E3A639E373346E26911C0DA3A6315D81A008825E1AD627
+      C971EC9FD72487376C19E3413C3865585F24C7D1F8A1FCA4617D8C20A8024123
+      A631255D1CD8D5BFE4B0FA6DBD584655FA1BDD5E941CE7A775FB6B0441EB1034
+      68E98392A3AE568E559B2EB4A2AD75FE8E73584C738A20A8A478D4676B8F2587
+      B127C9863217E982C3BAD62188504F0104F53A5A6FD29BED48EDCA4438DC1868
+      27D4F89806D014B0E38A82FCBED5F82E0E4E1AD65C6267C43416129BAF0C6BDE
+      77D1B437094766CC345F27C1F6D95A41BA308BB6D6992CE08569CEFA1CB95A4A
+      D880A50F54E2150F5AFA9074ABC1FA1C5ABFAD1783B867CF2C7D34B9DBAE0405
+      87B5278D1DADF664CB8AA50B6BD832C643085A87474F1CEDA1E4D5FFBA818E4C
+      FADACF54EE6F635D34ECA45A727813A6F93E82A03525478FEAD4EB1B97ED59E5
+      CCA29AAD10EA6956739677ACFDD6089ADFEAF612A19E96D23CBC9B55CEE14E1E
+      E876586749F1685ECD94DA385A6A912468E538F999657E95E151C1613D4AEC9D
+      1D0AD8CDB55438767135BAB71F2200B89F4D5DE061FAEC821A5CFE031665FE71
+      44225A800000000049454E44AE426082
+    }
+  end
+  object Label5: TLabel
+    Left = 30
+    Height = 21
+    Top = 19
+    Width = 224
+    Caption = 'Welcome to tomboy-ng !'
+    Font.Height = -18
+    Font.Name = 'Lucida Grande'
+    ParentColor = False
+    ParentFont = False
+  end
+  object Label6: TLabel
+    Left = 31
+    Height = 17
+    Top = 56
+    Width = 204
+    Caption = 'Lets See if we are ready to go -'
+    ParentColor = False
+  end
+  object Label7: TLabel
+    Left = 40
+    Height = 17
+    Top = 192
+    Width = 45
+    Caption = 'Label7'
+    ParentColor = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 2
   end
-  object Panel1: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Edit1
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 0
-    Height = 304
-    Top = 35
-    Width = 719
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Caption = 'Panel1'
-    ClientHeight = 304
-    ClientWidth = 719
-    TabOrder = 3
-    object Splitter1: TSplitter
-      AnchorSideTop.Control = Panel1
-      AnchorSideBottom.Control = Panel1
-      AnchorSideBottom.Side = asrBottom
-      Left = 152
-      Height = 302
-      Top = 1
-      Width = 5
-      Align = alNone
-      Anchors = [akTop, akLeft, akBottom]
-    end
-    object StringGridNotebooks: TStringGrid
-      AnchorSideLeft.Control = Panel1
-      AnchorSideTop.Control = ButtonShowAllNotes
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Splitter1
-      AnchorSideBottom.Control = ButtonNotebookOptions
-      Left = 1
-      Height = 253
-      Top = 25
-      Width = 151
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      ColCount = 1
-      FixedCols = 0
-      Flat = True
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll, goRowHighlight]
-      ParentShowHint = False
-      RowCount = 3
-      ShowHint = True
-      TabOrder = 1
-      OnClick = StringGridNotebooksClick
-      OnKeyDown = FormKeyDown
-      ColWidths = (
-        216
-      )
-      Cells = (
-        1
-        0
-        0
-        'Notebooks'
-      )
-    end
-    object StringGrid1: TStringGrid
-      AnchorSideLeft.Control = Splitter1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
-      AnchorSideRight.Control = Panel1
-      AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = Panel1
-      AnchorSideBottom.Side = asrBottom
-      Left = 160
-      Height = 299
-      Top = 1
-      Width = 555
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      BorderSpacing.Left = 3
-      BorderSpacing.Right = 3
-      BorderSpacing.Bottom = 3
-      ColCount = 2
-      ColumnClickSorts = True
-      FixedCols = 0
-      FixedRows = 0
-      Flat = True
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
-      RowCount = 1
-      ScrollBars = ssAutoVertical
-      TabOrder = 2
-      OnDblClick = StringGrid1DblClick
-      OnKeyDown = FormKeyDown
-      ColWidths = (
-        267
-        241
-      )
-      Cells = (
-        2
-        0
-        0
-        'Note'
-        1
-        0
-        'Last Changed'
-      )
-    end
-    object ButtonShowAllNotes: TButton
-      AnchorSideRight.Control = Splitter1
-      Left = 1
-      Height = 25
-      Top = 0
-      Width = 151
-      Anchors = [akTop, akLeft, akRight]
-      Caption = 'Show All Notes'
-      OnClick = ButtonShowAllNotesClick
-      OnKeyDown = FormKeyDown
-      TabOrder = 3
-    end
-    object ButtonNotebookOptions: TButton
-      AnchorSideTop.Control = ButtonShowAllNotes
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Splitter1
-      AnchorSideBottom.Control = Panel1
-      AnchorSideBottom.Side = asrBottom
-      Left = -8
-      Height = 25
-      Hint = 'Manage the Notebooks'
-      Top = 278
-      Width = 160
-      Anchors = [akLeft, akRight, akBottom]
-      Caption = 'Notebook Options'
-      Enabled = False
-      OnClick = ButtonNotebookOptionsClick
-      OnKeyDown = FormKeyDown
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 4
-    end
+  object Label8: TLabel
+    Left = 40
+    Height = 17
+    Top = 208
+    Width = 45
+    Caption = 'Label8'
+    ParentColor = False
+    ParentShowHint = False
+    ShowHint = True
   end
-  object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 472
-    top = 112
+  object PopupMenuTray: TPopupMenu
+    left = 272
+    top = 64
+    object TrayMenuNew: TMenuItem
+      Caption = 'New Note'
+      ShortCut = 16462
+      OnClick = MMNewNoteClick
+    end
+    object TrayMenSearch: TMenuItem
+      Caption = 'Search'
+      OnClick = MMSearchClick
+    end
+    object MenuItem4: TMenuItem
+      Caption = '-'
+    end
+    object TrayMenuRecent1: TMenuItem
+      Caption = 'MenuItem5'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent2: TMenuItem
+      Caption = 'MenuItem6'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent3: TMenuItem
+      Caption = 'MenuItem7'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent4: TMenuItem
+      Caption = 'MenuItem8'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent5: TMenuItem
+      Caption = 'MenuItem9'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent6: TMenuItem
+      Caption = 'MenuItem10'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent7: TMenuItem
+      Caption = 'MenuItem11'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent8: TMenuItem
+      Caption = 'MenuItem12'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent9: TMenuItem
+      Caption = 'MenuItem13'
+      OnClick = MMRecent1Click
+    end
+    object TrayMenuRecent10: TMenuItem
+      Caption = 'MenuItem14'
+      OnClick = MMRecent1Click
+    end
+    object MenuItem3: TMenuItem
+      Caption = '-'
+    end
+    object TrayMenuAbout: TMenuItem
+      Caption = 'About'
+      OnClick = MMAboutClick
+    end
+    object TrayMenuSynchronise: TMenuItem
+      Caption = 'Synchronise'
+      OnClick = MMSyncClick
+    end
+    object TrayMenuItemSettings: TMenuItem
+      Caption = 'Settings'
+      OnClick = MMSettingsClick
+    end
+    object MenuItem15: TMenuItem
+      Caption = '-'
+    end
+    object MenuQuit: TMenuItem
+      Caption = 'Quit, Close and Go Away.'
+      OnClick = MMQuitClick
+    end
   end
   object TrayIcon: TTrayIcon
     PopUpMenu = PopupMenuTray
@@ -284,101 +502,83 @@ object RTSearch: TRTSearch
       0000
     }
     OnClick = TrayIconClick
-    left = 312
-    top = 112
+    left = 272
+    top = 120
   end
-  object PopupMenuTray: TPopupMenu
-    left = 312
-    top = 184
-    object TrayMenuNew: TMenuItem
-      Caption = 'New Note'
-      ShortCut = 16462
-      OnClick = TrayMenuNewClick
+  object MainMenu1: TMainMenu
+    left = 272
+    top = 8
+    object MMFile: TMenuItem
+      Caption = 'File'
+      Visible = False
+      object MMNewNote: TMenuItem
+        Caption = 'New Note'
+        OnClick = MMNewNoteClick
+      end
+      object MMSearch: TMenuItem
+        Caption = 'Search'
+        OnClick = MMSearchClick
+      end
+      object MMAbout: TMenuItem
+        Caption = 'About'
+        OnClick = MMAboutClick
+      end
+      object MMSync: TMenuItem
+        Caption = 'Sync'
+        OnClick = MMSyncClick
+      end
+      object MMSettings: TMenuItem
+        Caption = 'Settings'
+        OnClick = MMSettingsClick
+      end
+      object MMQuit: TMenuItem
+        Caption = 'Quit'
+        OnClick = MMQuitClick
+      end
     end
-    object TrayMenSearch: TMenuItem
-      Caption = 'Search'
-      OnClick = TrayMenSearchClick
-    end
-    object MenuItem4: TMenuItem
-      Caption = '-'
-    end
-    object TrayMenuRecent1: TMenuItem
-      Caption = 'MenuItem5'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent2: TMenuItem
-      Caption = 'MenuItem6'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent3: TMenuItem
-      Caption = 'MenuItem7'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent4: TMenuItem
-      Caption = 'MenuItem8'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent5: TMenuItem
-      Caption = 'MenuItem9'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent6: TMenuItem
-      Caption = 'MenuItem10'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent7: TMenuItem
-      Caption = 'MenuItem11'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent8: TMenuItem
-      Caption = 'MenuItem12'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent9: TMenuItem
-      Caption = 'MenuItem13'
-      OnClick = TrayMenuRecent1Click
-    end
-    object TrayMenuRecent10: TMenuItem
-      Caption = 'MenuItem14'
-      OnClick = TrayMenuRecent1Click
-    end
-    object MenuItem3: TMenuItem
-      Caption = '-'
-    end
-    object TrayMenuAbout: TMenuItem
-      Caption = 'About'
-      OnClick = TrayMenuAboutClick
-    end
-    object MenuSynchronise: TMenuItem
-      Caption = 'Synchronise'
-      OnClick = MenuSynchroniseClick
-    end
-    object MenuItemSettings: TMenuItem
-      Caption = 'Settings'
-      OnClick = MenuItemSettingsClick
-    end
-    object MenuItem15: TMenuItem
-      Caption = '-'
-    end
-    object MenuQuit: TMenuItem
-      Caption = 'Quit, Close and Go Away.'
-      OnClick = MenuQuitClick
-    end
-  end
-  object PopupMenuNotebook: TPopupMenu
-    left = 472
-    top = 184
-    object MenuEditNotebookTemplate: TMenuItem
-      Caption = 'Edit Notebook Template'
-      OnClick = MenuEditNotebookTemplateClick
-    end
-    object MenuDeleteNotebook: TMenuItem
-      Caption = 'Delete Notebook'
-      OnClick = MenuDeleteNotebookClick
-    end
-    object MenuNewNoteFromTemplate: TMenuItem
-      Caption = 'Create New Note from Template'
-      OnClick = MenuNewNoteFromTemplateClick
+    object MMRecent: TMenuItem
+      Caption = 'Recent'
+      Visible = False
+      object MMRecent1: TMenuItem
+        Caption = 'MenuItem1'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent2: TMenuItem
+        Caption = 'MenuItem2'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent3: TMenuItem
+        Caption = 'MenuItem5'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent4: TMenuItem
+        Caption = 'MenuItem6'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent5: TMenuItem
+        Caption = 'MenuItem7'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent6: TMenuItem
+        Caption = 'MenuItem8'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent7: TMenuItem
+        Caption = 'MenuItem9'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent8: TMenuItem
+        Caption = 'MenuItem10'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent9: TMenuItem
+        Caption = 'MenuItem11'
+        OnClick = MMRecent1Click
+      end
+      object MMRecent10: TMenuItem
+        Caption = 'MenuItem12'
+        OnClick = MMRecent1Click
+      end
     end
   end
 end

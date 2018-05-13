@@ -61,6 +61,7 @@ unit settings;
                 Issue #25 relates, untested.
 	2018/03/24	Added some checks to make sure spell libary and dictionary mentioned
 				in config file is still valid.
+    2018/05/12  Extensive changes - MainUnit is now just that.
 }
 
 {$mode objfpc}{$H+}
@@ -123,25 +124,6 @@ type
 		LabelNotesPath: TLabel;
 		LabelSettingPath: TLabel;
         ListBoxDic: TListBox;
-        MainMenu1: TMainMenu;
-        MenuFile: TMenuItem;
-        MMRecent6: TMenuItem;
-        MMRecent7: TMenuItem;
-        MMRecent8: TMenuItem;
-        MMRecent9: TMenuItem;
-        MMRecent10: TMenuItem;
-        MenuRecent: TMenuItem;
-        MMNewNote: TMenuItem;
-        MMRecent1: TMenuItem;
-        MMRecent2: TMenuItem;
-        MMRecent3: TMenuItem;
-        MMRecent4: TMenuItem;
-        MMRecent5: TMenuItem;
-        MMSearch: TMenuItem;
-        MMAbout: TMenuItem;
-        MMSync: TMenuItem;
-        MMSettings: TMenuItem;
-        MMQuit: TMenuItem;
 		PageControl1: TPageControl;
 		Panel1: TPanel;
 		Panel2: TPanel;
@@ -161,7 +143,6 @@ type
 		TabSnapshot: TTabSheet;
 		TabSync: TTabSheet;
 		TabDisplay: TTabSheet;
-		Timer1: TTimer;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
         procedure ButtonHideClick(Sender: TObject);
         procedure ButtonSaveConfigClick(Sender: TObject);
@@ -178,16 +159,8 @@ type
         procedure FormHide(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
-        procedure MMAboutClick(Sender: TObject);
-        procedure MMNewNoteClick(Sender: TObject);
-        procedure MMQuitClick(Sender: TObject);
-            { Responds to all 10 Main Menu Recent Menu Clicks }
-        procedure MMRecent1Click(Sender: TObject);
-        procedure MMSearchClick(Sender: TObject);
-        procedure MMSettingsClick(Sender: TObject);
-        procedure MMSyncClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
-		procedure Timer1Timer(Sender: TObject);
+		//procedure Timer1Timer(Sender: TObject);
    	private
         fExportPath : ANSIString;  { TODO : This will need to be a property }
  		procedure CheckConfigFile;
@@ -216,16 +189,8 @@ type
             { Indicates Spell is configured and LabelLibrary and LabelDic should
             contain valid full file names.}
         SpellConfig : boolean;
-            { A target for when a Sync menu is clicked }
+            { A target for mainunit ? }
         procedure Synchronise();
-            { A target for when an About menu is clicked }
-        procedure ShowAboutBox();
-            { A target for when a SearchBox menu is clicked }
-        procedure ShowSearchBox();
-            { A target for when a New Note menu is clicked }
-        procedure MakeNewNote();
-            { A target for when a Settings menu is clicked }
-        procedure ShowSettings();
         property ExportPath : ANSIString Read fExportPath write fExportPath;
     end;
 
@@ -263,10 +228,10 @@ implementation
 uses IniFiles,
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff;
     Note_Lister,	// List notes in BackUp and Snapshot tab
-    MainUnit,		// So we can call IndexNotes() after altering Notes Dir
+    SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
-    hunspell,       // spelling check
-    uAppIsRunning;	// A small pas unit to test if another instance is already running.
+    hunspell;       // spelling check
+    //uAppIsRunning;	// A small pas unit to test if another instance is already running.
 
 var
     Spell: THunspell;
@@ -312,62 +277,6 @@ begin
         else if RadioUseLocal.Checked then SyncOption := UseLocal
         else if RadioUseServer.Checked then SyncOption := UseServer;
 	end;
-end;
-
-
-{ ------------------ M A I N   M E N U   S T U F F -----------------}
-
-procedure TSett.ShowSearchBox();
-begin
-    if NoteDirectory = '' then
-        showmessage('You have not set a notes directory. Please click Settings')
-    else  RTSearch.Show;
-end;
-
-procedure TSett.MakeNewNote();
-begin
-  	if NoteDirectory = '' then
-        showmessage('You have not set a notes directory. Please click Settings')
-    else
-    	RTSearch.OpenNote();
-end;
-
-
-procedure TSett.MMAboutClick(Sender: TObject);
-begin
-    ShowAboutBox();
-end;
-
-procedure TSett.MMNewNoteClick(Sender: TObject);
-begin
-    MakeNewNote();
-end;
-
-procedure TSett.MMQuitClick(Sender: TObject);
-begin
-  AllowClose:=True;
-  Close;
-end;
-
-procedure TSett.MMRecent1Click(Sender: TObject);
-begin
-	if TMenuItem(Sender).Caption <> RTSearch.MenuEmpty then
-		RTSearch.OpenNote(TMenuItem(Sender).Caption);
-end;
-
-procedure TSett.MMSearchClick(Sender: TObject);
-begin
-  ShowSearchBox();
-end;
-
-procedure TSett.MMSettingsClick(Sender: TObject);
-begin
-  ShowSettings();
-end;
-
-procedure TSett.MMSyncClick(Sender: TObject);
-begin
-  Synchronise();
 end;
 
 procedure TSett.PageControl1Change(Sender: TObject);
@@ -509,58 +418,51 @@ begin
     CheckSpelling;
 end;
 
+{
 procedure TSett.ShowSettings();
 begin
     Show;
-    RTSearch. RecentMenu();
+    SearchForm.RecentMenu();
 end;
+}
 
 	// This gets called a second after form create finishes IFF another instance is running
-procedure TSett.Timer1Timer(Sender: TObject);
+{procedure TSett.Timer1Timer(Sender: TObject);
 begin
-    AllowClose:=True;
-    Close;
-end;
+    SearchForm.AllowClose:=True;
+    SearchForm.Close;
+end; }
 
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
 procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-    {$ifdef DARWIN}
-    CloseAction := caFree;
-    exit();
+    {$ifdef DARWIN}                        // 64BIT
+//    CloseAction := caFree;
+//    exit();
     {$endif}    // mac has a hidden form close button so any call to here is from Main Menu
 	if AllowClose then begin
     	CloseAction := caFree;
-        RTSearch.Close;
+        SearchForm.Close;
 	end else CloseAction := caHide;
 end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
-     {$ifdef DARWIN}        // Only Mac needs the main menu, confusing for others
+    {$ifdef DARWIN}        // Only Mac needs the main menu, confusing for others
         MenuFile.Visible:=True;
         MenuRecent.Visible:=True;
-     {$endif}
-     ExportPath := '';
-    Timer1.Enabled:=False;
+    {$endif}
+    ExportPath := '';
     LabelWaitForSync.Caption := '';
     LabelLibrary.Caption := '';
-    if AlreadyRunning() then begin
-    	showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
-        HaveConfig := True;		// Yes, I'm lying but don't want to see settings dialog
-        Timer1.Interval := 1000;
-        Timer1.Enabled := True;
-	end else begin
-    	HaveConfig := false;
-    	NoteDirectory := 'Set me first please';
-    	labelNotesPath.Caption := NoteDirectory;
-    	CheckShowIntLinks.Checked := true;
-    	RadioFontMedium.checked := true;
-    	//SetFontSizes();
-    	CheckConfigFile();
-    	if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
-        	ButtonSetSynServer.Caption := 'Set File Sync Repo';
-		end;
+    HaveConfig := false;
+    NoteDirectory := 'Set me first please';
+    labelNotesPath.Caption := NoteDirectory;
+    CheckShowIntLinks.Checked := true;
+   	RadioFontMedium.checked := true;
+    CheckConfigFile();
+    if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
+        ButtonSetSynServer.Caption := 'Set File Sync Repo';
 end;
 
 { --------------------- F I L E    I / O --------------------------- }
@@ -685,7 +587,7 @@ begin
 		ButtonSaveConfig.Enabled := True;
     	CheckShowIntLinks.enabled := true;
     	SyncSettings();
-    	RTSearch.IndexNotes();
+    	SearchForm.IndexNotes();
 	end;
 end;
 
@@ -710,7 +612,7 @@ begin
         CheckShowIntLinks.enabled := true;
         // CheckReadOnly.enabled := true;
         SyncSettings();
-        RTSearch.IndexNotes();
+        SearchForm.IndexNotes();
 	end;
 end;
 
@@ -726,7 +628,7 @@ begin
         FormSync.Show
     else
     	if (FormSync.ShowModal = mrOK) then
-            RTSearch.IndexNotes;
+            SearchForm.IndexNotes;
 end;
 
 
@@ -751,7 +653,7 @@ begin
         	LabelSyncRepo.Caption := SyncNotConfig;
             RemoteRepo := SyncNotConfig;
 		end;
-        RTSearch.IndexNotes();
+        SearchForm.IndexNotes();
         LabelWaitForSync.Caption := '';
 	end;
 end;
@@ -778,21 +680,6 @@ procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
     ButtonSaveConfig.Enabled := True;
     SyncSettings();
-end;
-
-
-
-
-procedure TSett.ShowAboutBox();
-var
-    S1, S2, S3, S4, S5 : string;
-begin
-    S1 := 'This is v0.14 of tomboy-ng, a rewrite of Tomboy Notes'#10;
-    S2 := 'using Lazarus and FPC. It is not quite ready for production'#10;
-    S3 := 'use unless you are careful and have good backups.'#10;
-    S5 := '';
-    S4 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
-    Showmessage(S1 + S2 + S3 + S4 + S5);
 end;
 
 end.

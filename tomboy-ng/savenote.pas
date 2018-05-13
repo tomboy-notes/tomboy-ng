@@ -101,7 +101,7 @@ implementation
 uses FileUtil               // Graphics needed for font style defines
     ,LazUTF8
     ,Settings				// User settings and some defines across units.
-    ,MainUnit				// So we have access to NoteBookList
+    ,SearchUnit				// So we have access to NoteBookList
     ,LazFileUtils           // For ExtractFileName...
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 
@@ -321,7 +321,7 @@ begin
    CreateGUID(GUID);
    Title := NotebookName  + ' Template';
    ID := copy(GUIDToString(GUID), 2, 36) + '.note';
-   RTSearch.NoteLister.AddNoteBook(ID, NotebookName, True);
+   SearchForm.NoteLister.AddNoteBook(ID, NotebookName, True);
    Outstream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
    try
    		Buff := Header();
@@ -454,7 +454,7 @@ var
 begin
    Result := '';
    SL := TStringList.Create;
-   if RTSearch.NoteLister.GetNotebooks(SL, ID) then begin  // its a template
+   if SearchForm.NoteLister.GetNotebooks(SL, ID) then begin  // its a template
    		Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
         if SL.Count > 0 then
         	Result := Result + '    <tag>system:notebook:' + SL[0] + '</tag>'#10'  </tags>'#10;

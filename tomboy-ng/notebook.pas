@@ -86,7 +86,7 @@ implementation
 
 { TNoteBookPick }
 
-uses MainUnit, LazFileUtils, Settings, SaveNote;
+uses SearchUnit, LazFileUtils, Settings, SaveNote;
 
 procedure TNoteBookPick.FormShow(Sender: TObject);
 var
@@ -100,11 +100,11 @@ begin
     //CheckListBox1.MultiSelect:=Sett.CheckManyNotebooks.Checked;
     Label3.Caption := 'Set the notebooks this note is a member of';
     SL := TStringList.Create;
-    RTSearch.NoteLister.GetNotebooks(SL);
+    SearchForm.NoteLister.GetNotebooks(SL);
     CheckListBox1.Items.Assign(SL);
     SL.Free;
     SL := TStringList.Create;
-    RTSearch.NoteLister.GetNotebooks(SL, ExtractFileNameOnly(FullFileName) + '.note');
+    SearchForm.NoteLister.GetNotebooks(SL, ExtractFileNameOnly(FullFileName) + '.note');
     for I := 0 to CheckListBox1.Count-1 do
         CheckListBox1.Checked[I] := False;
     for Index := 0 to SL.Count -1 do
@@ -142,14 +142,14 @@ begin
         if PageControl1.ActivePage = TabExisting then begin
 			for Index := 0 to CheckListBox1.Count -1 do
         		if CheckListBox1.Checked[Index] then SL.Add(CheckListBox1.Items[Index]);
-    		RTSearch.NoteLister.SetNotebookMembership(ExtractFileNameOnly(FullFileName) + '.note', SL);
+    		SearchForm.NoteLister.SetNotebookMembership(ExtractFileNameOnly(FullFileName) + '.note', SL);
 		end else begin
           	if EditNewNotebook.Text <> '' then begin
             	Saver := TBSaveNote.Create();
                 try
                     Saver.SaveNewTemplate(EditNewNotebook.Text);
                     // OK, now add current note to the new Notebook
-                    RTSearch.NoteLister.AddNoteBook(ExtractFileNameOnly(FullFileName) + '.note', EditNewNotebook.Text, False);
+                    SearchForm.NoteLister.AddNoteBook(ExtractFileNameOnly(FullFileName) + '.note', EditNewNotebook.Text, False);
 				finally
                 	Saver.Destroy;
 				end;
