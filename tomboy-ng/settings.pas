@@ -436,10 +436,6 @@ end; }
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
 procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-    {$ifdef DARWIN}                        // 64BIT
-//    CloseAction := caFree;
-//    exit();
-    {$endif}    // mac has a hidden form close button so any call to here is from Main Menu
 	if AllowClose then begin
     	CloseAction := caFree;
         SearchForm.Close;

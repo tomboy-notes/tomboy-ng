@@ -111,7 +111,7 @@ uses settings,
 procedure TMainForm.FormShow(Sender: TObject);
 begin
     Left := 10;
-    Top := 10;
+    Top := 40;
     if AlreadyRunning() then begin
         showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
         close();
