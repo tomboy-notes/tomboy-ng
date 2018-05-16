@@ -104,27 +104,8 @@ type
 		PopupMenuNotebook: TPopupMenu;
 		Splitter1: TSplitter;
 		StringGridNotebooks: TStringGrid;
-        {TrayMenuAbout: TMenuItem;
-        MenuItem3: TMenuItem;
-        TrayMenuNew: TMenuItem;
-        MenuItem15: TMenuItem;
-        MenuQuit: TMenuItem;
-        TrayMenSearch: TMenuItem;
-        MenuItem4: TMenuItem;
-        TrayMenuRecent1: TMenuItem;
-        TrayMenuRecent2: TMenuItem;
-        TrayMenuRecent3: TMenuItem;
-        TrayMenuRecent4: TMenuItem;
-        TrayMenuRecent5: TMenuItem;
-        TrayMenuRecent6: TMenuItem;
-        TrayMenuRecent7: TMenuItem;
-        TrayMenuRecent8: TMenuItem;
-        TrayMenuRecent9: TMenuItem;
-        TrayMenuRecent10: TMenuItem;
-        PopupMenuTray: TPopupMenu;        }
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         StringGrid1: TStringGrid;
-        // TrayIcon: TTrayIcon;
 		procedure ButtonClearSearchClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
@@ -424,13 +405,6 @@ end;
 
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
-     {if not Sett.HaveConfig then
-         Sett.Show;}
-{     if NoteLister = Nil then begin
-        NoteLister := TNoteLister.Create;
-        IndexNotes();
-        //TrayIcon.Show;
-     end;      }
     Left := Placement + random(Placement*2);
     ButtonClearSearch.Enabled := False;
 end;
@@ -575,15 +549,6 @@ begin
     		+ NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]),
             StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
 end;
-
-
-{
-procedure TSearchForm.TrayIconClick(Sender: TObject);
-begin
-    PopUpMenuTray.Popup;    // Here so a right click works as well as left.
-end;
-}
-
 
 end.
 

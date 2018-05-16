@@ -108,7 +108,6 @@ uses settings,
     SearchUnit,
     {$ifdef LINUX}
     gtk2, gdk2, Clipbrd,
-    // fix_gtk_clip,
     {$endif}   // Stop linux clearing clipboard on app exit.
     uAppIsRunning;
 

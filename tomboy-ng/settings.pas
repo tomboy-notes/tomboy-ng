@@ -199,14 +199,6 @@ var
 
 
 const
-     								// These const are used 'regionally' !
-     // Font sizes, no text should be other than these sizes. Note TheFont and (FontNormal ?) are vars
-
-  {   FSmall = 8;
-     FLarge = 15;
-     FHuge = 18;
-     FTitle = 16;				// Dont set this to one of the other sizes !
-     FNormal = 12;       }
 
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
 
@@ -231,7 +223,7 @@ uses IniFiles,
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
     hunspell;       // spelling check
-    //uAppIsRunning;	// A small pas unit to test if another instance is already running.
+
 
 var
     Spell: THunspell;
@@ -418,21 +410,6 @@ begin
     CheckSpelling;
 end;
 
-{
-procedure TSett.ShowSettings();
-begin
-    Show;
-    SearchForm.RecentMenu();
-end;
-}
-
-	// This gets called a second after form create finishes IFF another instance is running
-{procedure TSett.Timer1Timer(Sender: TObject);
-begin
-    SearchForm.AllowClose:=True;
-    SearchForm.Close;
-end; }
-
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
 procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
@@ -527,9 +504,6 @@ begin
     try
       ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
       ConfigFile.writestring('SyncSettings', 'SyncRepo', RemoteRepo);
-      { if CheckReadOnly.Checked then
-          ConfigFile.writestring('BasicSettings', 'ReadOnly', 'true')
-      else ConfigFile.writestring('BasicSettings', 'ReadOnly', 'false');  }
       if CheckManyNoteBooks.checked then
       	Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
       else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');

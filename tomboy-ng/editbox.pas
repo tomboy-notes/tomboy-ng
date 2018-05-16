@@ -413,13 +413,8 @@ var
       BlockNo : longint = 1;
       LastBlock,  Blar : longint;
 begin
-      // if not KMemo1.SelAvail then exit();
-      // Need a better test of valid  selection than that !
       if KMemo1.ReadOnly then exit();
       MarkDirty();
-      //if not Dirty then TimerSave.Enabled := true;
-      //Dirty := true;
-      //Label1.Caption := 'd';
       BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
       LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
 
@@ -500,9 +495,6 @@ begin
     if KMemo1.ReadOnly then exit();
     Ready := False;
     MarkDirty();
-    //if not Dirty then TimerSave.Enabled := true;
-    //Dirty := true;
-    //Label1.Caption := 'd';
 	LastChar := Kmemo1.RealSelEnd;			// SelEnd points to first non-selected char
     FirstChar := KMemo1.RealSelStart;
 	FirstBlockNo := Kmemo1.Blocks.IndexToBlockIndex(FirstChar, IntIndex);
@@ -707,10 +699,6 @@ begin
         Caption := '* ' + Caption;
 end;
 
-{procedure TEditBoxForm.MarkClean();
-begin
-    Caption := CleanCaption();
-end; }
 
 function TEditBoxForm.CleanCaption(): ANSIString;
 begin
@@ -731,9 +719,6 @@ begin
     Ready := False;
     KMemo1.ExecuteCommand(ecPaste);
     MarkDirty();
-    //if not Dirty then TimerSave.Enabled := true;
-    //Dirty := true;
-    //Label1.Caption := 'd';
     Ready := True;
 end;
 
@@ -924,7 +909,6 @@ begin
     FT.Color := clBlue;
 
 	try
-    	// while Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoTextBlock' do begin
         while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
            	TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
            	inc(BlockNo);
@@ -975,16 +959,9 @@ begin
 	// Is it all in the same block ?
     if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
     if length(Kmemo1.Blocks.Items[BlockNo].Text) = length(Link) then DontSplit := True;
-//    KMemo1.Select(Index, 0);
-
     KMemo1.SelStart:= Index;
     KMemo1.SelLength:=Len;
     KMemo1.ClearSelection();
-
-    { while Cnt < Len do begin                 // The ~.DeleteChar() function takes an Index but if
-  		KMemo1.Blocks.DeleteChar(Index);    // there is a Selected Area, it deletes that instead. Nasty !
-  		inc(Cnt);
-	end;     }
 	if not DontSplit then
 		BlockNo := KMemo1.SplitAt(Index);
 	Hyperlink := TKMemoHyperlink.Create;
@@ -1005,7 +982,6 @@ var
     Ptr, EndP : PChar;                  // Will generate "not used" warning in Unix
     {$endif}
 begin
-    // CRCount := 0;
     Offset := UTF8Pos(Term, MText, StartScan);
     while Offset > 0 do begin
     	NumbCR := 0;
@@ -1182,14 +1158,9 @@ begin
     if not Ready then exit();           // don't do any of this while starting up.
     //if not Dirty then TimerSave.Enabled := true;
     MarkDirty();
-    //Dirty := true;
-    //Label1.Caption := 'd';
-    //TimerSave.Enabled := False;
-    //TimerSave.Enabled := True;
-
     TimerHouseKeeping.Enabled := False;
     TimerHouseKeeping.Enabled := True;
-    //DoHouseKeeping();
+    // HouseKeeping is now driven by a timer;
 end;
 
 function TEditBoxForm.NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara : Boolean;
@@ -1229,9 +1200,6 @@ begin
         if (BlockNo + Index) >= (Kmemo1.Blocks.Count) then begin
             if Verbose then debugln('Overrun looking for a para marker.');
             // means there are no para markers beyond here.  So cannot be TrailingBullet
-    		{KMemo1.Blocks.AddParagraph();
-    		KMemo1.ExecuteCommand(ecUp);
-   			KMemo1.ExecuteCommand(ecLineEnd);  }
             Index := 0;
             break;
         end;
@@ -1329,12 +1297,8 @@ begin
     Key := 0;
     Ready := False;
     MarkDirty();
-    //Dirty := true;
-    //Label1.Caption := 'd';
     TimerHouseKeeping.Enabled := False;
     TimerHouseKeeping.Enabled := True;
-    //TimerSave.Enabled := False;
-    //TimerSave.Enabled := True;
 
     // KMemo1.Blocks.LockUpdate;  Dont lock because we move the cursor down here.
     	if UnderBullet and (not FirstChar) then begin   // case a
