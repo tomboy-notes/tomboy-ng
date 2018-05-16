@@ -78,6 +78,7 @@ type
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
         procedure FormActivate(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure FormShow(Sender: TObject);
         procedure MMAboutClick(Sender: TObject);
@@ -105,7 +106,10 @@ implementation
 
 uses settings,
     SearchUnit,
-    {$ifdef LINUX}fix_gtk_clip,{$endif}   // Stop linux clearing clipboard on app exit.
+    {$ifdef LINUX}
+    gtk2, gdk2, Clipbrd,
+    // fix_gtk_clip,
+    {$endif}   // Stop linux clearing clipboard on app exit.
     uAppIsRunning;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -167,6 +171,19 @@ end;
 procedure TMainForm.FormActivate(Sender: TObject);
 begin
 
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  c: PGtkClipboard;
+  t: string;
+begin
+    {$ifdef LINUX}
+    c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+    t := Clipboard.AsText;
+    gtk_clipboard_set_text(c, PChar(t), Length(t));
+    gtk_clipboard_store(c);
+    {$endif}
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;

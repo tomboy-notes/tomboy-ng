@@ -8,6 +8,7 @@ object MainForm: TMainForm
   ClientWidth = 355
   Menu = MainMenu1
   OnActivate = FormActivate
+  OnClose = FormClose
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
