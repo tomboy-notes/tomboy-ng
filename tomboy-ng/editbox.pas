@@ -143,6 +143,7 @@ unit EditBox;
                 copy (as in Copy and paste) fails. This is a nasty fudge, perhapse related to
                 http://bugs.freepascal.org/view.php?id=28679    Linux only ?
     2018/05/12  Extensive changes - MainUnit is now just that.
+    2018/05/16  Disable Print menu option in Cocoa.
 }
 
 
@@ -211,6 +212,7 @@ type
         procedure ButtToolsClick(Sender: TObject);
 		procedure FindDialog1Find(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
         	{ gets called under a number of conditions, easy one is just a re-show,
               or for a new note or a new note with a title from Link button
@@ -855,6 +857,13 @@ end;
 procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
     Release;
+end;
+
+procedure TEditBoxForm.FormCreate(Sender: TObject);
+begin
+    {$ifdef LCLCOCOA}
+    MenuItemPrint.Enabled := False;     // Cocoa cannot print (May 2018)
+    {$endif}
 end;
 
 

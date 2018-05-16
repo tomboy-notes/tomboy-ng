@@ -8,6 +8,7 @@ object EditBoxForm: TEditBoxForm
   ClientHeight = 497
   ClientWidth = 617
   OnClose = FormClose
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
