@@ -288,31 +288,32 @@ begin
        if Count < StringGrid1.RowCount then
              MenuCaption := StringGrid1.Cells[0, Count]
        else  MenuCaption := MenuEmpty;
-       case Count of
-         1 : MainForm.TrayMenuRecent1.Caption := MenuCaption;
-         2 : MainForm.TrayMenuRecent2.Caption := MenuCaption;
-         3 : MainForm.TrayMenuRecent3.Caption := MenuCaption;
-         4 : MainForm.TrayMenuRecent4.Caption := MenuCaption;
-         5 : MainForm.TrayMenuRecent5.Caption := MenuCaption;
-         6 : MainForm.TrayMenuRecent6.Caption := MenuCaption;
-         7 : MainForm.TrayMenuRecent7.Caption := MenuCaption;
-         8 : MainForm.TrayMenuRecent8.Caption := MenuCaption;
-         9 : MainForm.TrayMenuRecent9.Caption := MenuCaption;
-         10 : MainForm.TrayMenuRecent10.Caption := MenuCaption;
-       end;
-       {$ifdef DARWIN}
-       case Count of
-         1 : MainForm.MMRecent1.Caption := MenuCaption;
-         2 : MainForm.MMRecent2.Caption := MenuCaption;
-         3 : MainForm.MMRecent3.Caption := MenuCaption;
-         4 : MainForm.MMRecent4.Caption := MenuCaption;
-         5 : MainForm.MMRecent5.Caption := MenuCaption;
-         6 : MainForm.MMRecent6.Caption := MenuCaption;
-         7 : MainForm.MMRecent7.Caption := MenuCaption;
-         8 : MainForm.MMRecent8.Caption := MenuCaption;
-         9 : MainForm.MMRecent9.Caption := MenuCaption;
-         10 : MainForm.MMRecent10.Caption := MenuCaption;
-        end;{$endif}
+//       if MainForm.UseTrayMenu then   // always load up the Popup menu, its not just Tray
+           case Count of
+             1 : MainForm.TrayMenuRecent1.Caption := MenuCaption;
+             2 : MainForm.TrayMenuRecent2.Caption := MenuCaption;
+             3 : MainForm.TrayMenuRecent3.Caption := MenuCaption;
+             4 : MainForm.TrayMenuRecent4.Caption := MenuCaption;
+             5 : MainForm.TrayMenuRecent5.Caption := MenuCaption;
+             6 : MainForm.TrayMenuRecent6.Caption := MenuCaption;
+             7 : MainForm.TrayMenuRecent7.Caption := MenuCaption;
+             8 : MainForm.TrayMenuRecent8.Caption := MenuCaption;
+             9 : MainForm.TrayMenuRecent9.Caption := MenuCaption;
+             10 : MainForm.TrayMenuRecent10.Caption := MenuCaption;
+           end;
+       if MainForm.UseMainMenu then
+           case Count of
+             1 : MainForm.MMRecent1.Caption := MenuCaption;
+             2 : MainForm.MMRecent2.Caption := MenuCaption;
+             3 : MainForm.MMRecent3.Caption := MenuCaption;
+             4 : MainForm.MMRecent4.Caption := MenuCaption;
+             5 : MainForm.MMRecent5.Caption := MenuCaption;
+             6 : MainForm.MMRecent6.Caption := MenuCaption;
+             7 : MainForm.MMRecent7.Caption := MenuCaption;
+             8 : MainForm.MMRecent8.Caption := MenuCaption;
+             9 : MainForm.MMRecent9.Caption := MenuCaption;
+             10 : MainForm.MMRecent10.Caption := MenuCaption;
+            end;
       	inc(Count);
   	end;
     MainForm.MMSync.Enabled := not (Sett.RemoteRepo = '');

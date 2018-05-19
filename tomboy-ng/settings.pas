@@ -421,10 +421,6 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
-    {$ifdef DARWIN}        // Only Mac needs the main menu, confusing for others
-        MenuFile.Visible:=True;
-        MenuRecent.Visible:=True;
-    {$endif}
     ExportPath := '';
     LabelWaitForSync.Caption := '';
     LabelLibrary.Caption := '';
