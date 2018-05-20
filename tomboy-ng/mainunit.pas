@@ -222,6 +222,7 @@ begin
     end;
     {$ifdef LCLCOCOA}
     AllowDismiss := False;
+    UseMainMenu := True;
     {$endif}
     {$ifdef LCLCARBON}
     UseMainMenu := true;

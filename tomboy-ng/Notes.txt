@@ -220,5 +220,23 @@ c) A SaveFile dialog, should be save that place in settings for next time ?
    http://wiki.freepascal.org/Command_line_parameters_and_environment_variables
 
 
+Mac Icon ICNS
+===============
+Now have a icns file in glyphs.
+The lazarus "make bundle" tool does not address application bundle so must add
+two lines to tmboy-ng.app/Contents/Info.plist. Add two middle lines between other two
+<string>tomboy-ng</string>
+<key>CFBundleIconFile</key>
+<string>macicon.icns</string>
+<key>CFBundleIdentifier</key>
+
+Then copy the tomboy-ng.icns file to tomboy-ng.app/Content/Resources/. and build
+
+My immediate solution is to grab a copy of the edited Info.plist and put it into
+git. Then during the dmg build, overwrite the (possibly newly created) one with
+this one. Does not seem to change ....
+
+
+
 
 
