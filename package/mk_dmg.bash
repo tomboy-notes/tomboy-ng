@@ -9,21 +9,32 @@
 # Todo - Generate a Mac icon and sensible background image.
 #		 Probably should put license and readme in there too.
 # -------------------------------------------------------------
+
+PRODUCT=tomboy-ng
+WORK=source_folder
+CONTENTS="$WORK/""$PRODUCT".app/Contents
+
 cd ../tomboy-ng
 lazbuild -B --cpu="i386" --build-mode=Release --os="darwin" Tomboy_NG.lpi
 cd ../package
-rm -Rf source_folder
 
-mkdir source_folder
-ln -s /Applications source_folder/Applications
-cp -R ../tomboy-ng/tomboy-ng.app source_folder/.
-rm source_folder/tomboy-ng.app/Contents/MacOS/tomboy-ng
-mv ../tomboy-ng/tomboy-ng source_folder/tomboy-ng.app/Contents/MacOS/.
+rm -Rf $WORK
 
-ls -n source_folder/
+mkdir $WORK
+ln -s /Applications $WORK/Applications
+cp -R ../"$PRODUCT"/"$PRODUCT".app $WORK/.
+cp Info.plist "$CONTENTS/."
+cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
+rm "$CONTENTS/MacOS/""$PRODUCT"
+mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
 
-rm tomboy-ng.dmg
+ls -n $WORK/
+
+rm "$PRODUCT"32.dmg
 
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" --background ../glyphs/Note_Large.png tomboy-ng.dmg ./source_folder/
-~/create-dmg-master/create-dmg --volname "tomboy-ng" tomboy-ng.dmg ./source_folder/
+# ~/create-dmg-master/create-dmg --volname "tomboy-ng" tomboy-ng.dmg ./source_folder/
+
+~/create-dmg-master/create-dmg --volname "$PRODUCT32" --volicon "../glyphs/tomboy-ng.icns" "$PRODUCT"32.dmg "./$WORK/"
+
 
