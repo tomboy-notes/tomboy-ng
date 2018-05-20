@@ -175,6 +175,7 @@ begin
         ButtonDismiss.Enabled := AllowDismiss;
         if UseTrayMenu then
             TrayIcon.Show;
+
      end;
 end;
 
@@ -256,7 +257,9 @@ end;
 
 procedure TMainForm.MMNewNoteClick(Sender: TObject);
 begin
-    SearchForm.OpenNote();
+    if (Sett.NoteDirectory = '') then
+        ShowMessage('Please setup a notes directory first')
+    else SearchForm.OpenNote();
 end;
 
 procedure TMainForm.MMSettingsClick(Sender: TObject);
