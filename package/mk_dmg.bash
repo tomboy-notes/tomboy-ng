@@ -35,6 +35,6 @@ rm "$PRODUCT"32.dmg
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" --background ../glyphs/Note_Large.png tomboy-ng.dmg ./source_folder/
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" tomboy-ng.dmg ./source_folder/
 
-~/create-dmg-master/create-dmg --volname "$PRODUCT32" --volicon "../glyphs/tomboy-ng.icns" "$PRODUCT"32.dmg "./$WORK/"
+~/create-dmg-master/create-dmg --volname "$PRODUCT32" --volicon "../glyphs/vol.icns" "$PRODUCT"32.dmg "./$WORK/"
 
 

@@ -35,5 +35,5 @@ ls -n $WORK/
 rm "$PRODUCT"64.dmg
 
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" --background ../glyphs/Note_Large.png tomboy-ng.dmg ./source_folder/
-~/create-dmg-master/create-dmg --volname "$PRODUCT64" --volicon "../glyphs/tomboy-ng.icns" "$PRODUCT"64.dmg "./$WORK/"
+~/create-dmg-master/create-dmg --volname "$PRODUCT64" --volicon "../glyphs/vol.icns" "$PRODUCT"64.dmg "./$WORK/"
 
