@@ -77,6 +77,7 @@ unit SearchUnit;
                 note open while sync process downloads or deletes that note from disk.
     2018/04/13  Taught MarkNoteReadOnly() to also delete ref in NoteLister to a sync deleted note
     2018/05/12  Extensive changes - MainUnit is now just that. Name of this unit changed.
+    2018/05/20  Alterations to way we startup, wrt mainform status report.
 }
 
 {$mode objfpc}{$H+}
@@ -372,6 +373,7 @@ procedure TSearchForm.IndexNotes();
 // var
 	// TS1, TS2 : TTimeStamp;
 begin
+    MainForm.CheckStatus();
     if not Sett.HaveConfig then exit;
     if NoteLister = Nil then begin
        NoteLister := TNoteLister.Create;

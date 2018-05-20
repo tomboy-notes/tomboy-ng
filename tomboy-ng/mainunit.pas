@@ -7,6 +7,7 @@ unit Mainunit;
                 unit that used this name previously!
     2018/05/19  Control if we allow opening window to be dismissed and show TrayIcon
                 and MainMenu.
+    2018/05/20  Alterations to way we startup, wrt mainform status report.
 
 
     CommandLine Switches
@@ -103,11 +104,11 @@ type
         procedure TrayIconClick(Sender: TObject);
     private
         AllowDismiss : boolean; // Allow user to dismiss (ie hide) the opening window.
-        procedure CheckStatus();
+
     public
         UseTrayMenu : boolean;
         UseMainMenu : boolean;
-
+        procedure CheckStatus();
     end;
 
 var
@@ -141,6 +142,7 @@ begin
         Label7.Caption:='';
         Label8.Caption := '';
         CheckStatus();
+        SearchForm.IndexNotes(); // also calls Checkstatus but safe to call anytime
         if not AllowDismiss then begin
             Label7.Caption := 'Sadely, on this OS, I cannot';
             Label8.Caption := 'let you dismiss this window';
@@ -171,7 +173,6 @@ begin
 
      if (ImageConfigTick.Visible and ImageNotesDirTick.Visible) then begin
         ButtonDismiss.Enabled := AllowDismiss;
-        SearchForm.IndexNotes();
         if UseTrayMenu then
             TrayIcon.Show;
      end;

@@ -62,6 +62,7 @@ unit settings;
 	2018/03/24	Added some checks to make sure spell libary and dictionary mentioned
 				in config file is still valid.
     2018/05/12  Extensive changes - MainUnit is now just that.
+    2018/05/20  NeedRefresh to indicate when need to refresh menus and mainform status.
 }
 
 {$mode objfpc}{$H+}
@@ -169,7 +170,8 @@ type
         procedure SetFontSizes;
 		procedure SyncSettings;
     public
-        AllowClose : Boolean;
+        AllowClose : Boolean;           // review need for this
+        NeedRefresh : Boolean;
         FontSmall  : Integer;
      	FontLarge  : Integer;
      	FontHuge   : Integer;
@@ -403,6 +405,10 @@ end;
 procedure TSett.FormHide(Sender: TObject);
 begin
     FreeandNil(Spell);
+    if NeedRefresh then begin
+        SearchForm.IndexNotes();
+        NeedRefresh := False;
+    end;
 end;
 
 procedure TSett.FormShow(Sender: TObject);
@@ -421,6 +427,7 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+    NeedRefresh := False;
     ExportPath := '';
     LabelWaitForSync.Caption := '';
     LabelLibrary.Caption := '';
@@ -553,7 +560,8 @@ begin
 		ButtonSaveConfig.Enabled := True;
     	CheckShowIntLinks.enabled := true;
     	SyncSettings();
-    	SearchForm.IndexNotes();
+        NeedRefresh := True;
+        //SearchForm.IndexNotes();            // Must bring this under control of NeedRefresh
 	end;
 end;
 
@@ -578,7 +586,8 @@ begin
         CheckShowIntLinks.enabled := true;
         // CheckReadOnly.enabled := true;
         SyncSettings();
-        SearchForm.IndexNotes();
+        NeedRefresh := False;
+        // SearchForm.IndexNotes();
 	end;
 end;
 
@@ -593,8 +602,7 @@ begin
     if FormSync.Visible then
         FormSync.Show
     else
-    	if (FormSync.ShowModal = mrOK) then
-            SearchForm.IndexNotes;
+    	NeedRefresh := (FormSync.ShowModal = mrOK);
 end;
 
 
