@@ -40,6 +40,7 @@ unit SyncGUI;
     2018/04/13  Taught MarkNoteReadOnly() to also delete ref in NoteLister to a sync deleted note
     2018/05/12  Extensive changes - MainUnit is now just that. Only change here relates
                 to naming of MainUnit and SearchUnit.
+    2018/05/21  Show any sync errors as hints in the StringGrid.
 
 }
 
@@ -76,6 +77,9 @@ type
 				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
                 procedure FormHide(Sender: TObject);
 				procedure FormShow(Sender: TObject);
+                                procedure StringGridReportGetCellHint(
+                                  Sender: TObject; ACol, ARow: Integer;
+                                  var HintText: String);
 
 		private
                 FormShown : boolean;
@@ -180,8 +184,6 @@ begin
             ManualSync();
 end;
 
-
-
 procedure TFormSync.FormShow(Sender: TObject);
 begin
     FormShown := False;
@@ -216,6 +218,8 @@ begin
     LocalTimer.Interval:=500;
     LocalTimer.Enabled := True;
 end;
+
+
 
 
 procedure TFormSync.ManualSync();
@@ -258,6 +262,11 @@ begin
         else Memo1.Append(inttostr(FileSync.ReportList.Count) + ' notes were dealt with.');
 end;
 
+procedure TFormSync.StringGridReportGetCellHint(Sender: TObject; ACol,
+  ARow: Integer; var HintText: String);
+begin
+HintText := FileSync.ReportList.Items[ARow]^.Message;
+end;
 procedure TFormSync.TestRepo;	// called OnShow()
 var
         ServerID : ANSIString;

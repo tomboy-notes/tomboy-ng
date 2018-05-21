@@ -157,12 +157,15 @@ object FormSync: TFormSync
       FixedRows = 0
       Font.Height = -12
       Font.Name = 'Sans'
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goThumbTracking, goSmoothScroll]
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goThumbTracking, goSmoothScroll, goCellHints]
       ParentFont = False
+      ParentShowHint = False
       RowCount = 0
+      ShowHint = True
       TabOrder = 1
       TitleFont.Height = -12
       TitleFont.Name = 'Sans'
+      OnGetCellHint = StringGridReportGetCellHint
     end
     object Splitter3: TSplitter
       AnchorSideLeft.Control = StringGridReport

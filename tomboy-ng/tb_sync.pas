@@ -57,6 +57,7 @@ unit TB_Sync;
     2018/04/12  Added ability to call MarkNoteReadOnly() to cover case where user has unchanged
                 note open while sync process downloads or deletes that note from disk.
     2018/04/13  Added WasDeleted param to MarkNoteReadOnly() so notelister gets updated
+    2018/05/21  At start of sync, check to see if the Backup directory exists, make it if necessary
 }
 
 
@@ -392,9 +393,6 @@ begin
 end;
 
 
-
-
-
 { -----------   TSyncReportList ----------- }
 
 function TSyncReportList.Get(Index: integer): PSyncReport;
@@ -474,7 +472,6 @@ end;
 
 
 { ==================================== TTomboySyncCustom ======================= }
-
 
 
 function TTomboySyncCustom.WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean;
@@ -628,20 +625,20 @@ begin
     // We are not setup to sync so don't worry about it;
     try
         try
-			    ReadXMLFile(Doc, LocalManifestDir + 'manifest.xml');
-			    Node := Doc.DocumentElement.FindNode('server-id');
-	            ServerID := Node.FirstChild.NodeValue;
-	            Result := True;
+		    ReadXMLFile(Doc, LocalManifestDir + 'manifest.xml');
+			Node := Doc.DocumentElement.FindNode('server-id');
+	        ServerID := Node.FirstChild.NodeValue;
+	        Result := True;
         except on EFOpenError do begin
-            		ErrorMessage := 'Cannot open local manifest';
-                	if VerboseMode then DebugLn('Debug - Cannot open local manifest');
-                	exit();
-            	end;
-				on EXMLReadError do begin
+            ErrorMessage := 'Cannot open local manifest';
+            if VerboseMode then DebugLn('Debug - Cannot open local manifest');
+                exit();
+            end;
+			on EXMLReadError do begin
                 	ErrorMessage := 'XML error in local manifest ';
                 	if VerboseMode then DebugLn('Debug - Cannot open local manifest');
                 	exit();
-				end;
+			end;
         end;
 	finally
         Doc.free;
@@ -791,20 +788,20 @@ var
 begin
 	Result := 'File Not Found';
 	if FileExistsUTF8(FullFileName) then begin
-		    try
-	            Result := 'Unknown Title';
-	            try
-				    ReadXMLFile(Doc, FullFileName);
-				    Node := Doc.DocumentElement.FindNode('title');
-	    		    Result := Node.FirstChild.NodeValue;
-	            except 	on EXMLReadError do
-	        				    Result := 'Note has no Title ' + FullFileName;
-	          		    on EAccessViolation do
-	                            Result := 'Access Violation ' + FullFileName;
-			    end;
-		    finally
-	    	    Doc.free;
-		    end;
+	try
+	    Result := 'Unknown Title';
+	    try
+		    ReadXMLFile(Doc, FullFileName);
+			Node := Doc.DocumentElement.FindNode('title');
+	    	Result := Node.FirstChild.NodeValue;
+	    except 	on EXMLReadError do
+	        Result := 'Note has no Title ' + FullFileName;
+	        on EAccessViolation do
+	            Result := 'Access Violation ' + FullFileName;
+		end;
+	finally
+	    Doc.free;
+	end;
     end;
 end;
 
@@ -1024,7 +1021,7 @@ begin
     if ItsANote then Result := Result + '.note';
 end;
 
-
+                // this should really be a parent function
 function TTomboyFileSync.LocalPath(const ID, Backup : ANSIString; ItsANote : Boolean = True): ANSIString;
 begin
     if Backup = '' then
@@ -1037,6 +1034,12 @@ end;
 function TTomboyFileSync.DoSync(UseLocal, UseRemote: boolean): boolean;
 begin
     Result := False;
+    if not DirectoryExistsUTF8(LocalPath('', 'Backup', False)) then
+       if not CreateDirUTF8(LocalPath('', 'Backup', False)) then begin
+           ErrorMessage := 'Cannot create Backup dir : ' +  LocalPath('', 'Backup', False);
+           exit();
+       end;
+
     { TODO : Lock the repo, file lock ? }
     // Any function here that returns false aborts the sync, it should set ErrorMessage
 
@@ -1180,8 +1183,7 @@ begin
     Result := true;
 end;
 
-function TTomboyFileSync.WriteRemoteManifest(const FullFileName: AnsiString
-		): boolean;
+function TTomboyFileSync.WriteRemoteManifest(const FullFileName: AnsiString): boolean;
 var
         OutStream : TFilestream;
         Buff      : ANSIString;
@@ -1215,24 +1217,24 @@ var
     Filename : ANSIString;
     CurrRevI : longint;
 begin
-    	Result := True;
-    	if TestMode then exit();
-        CurrRevI := GetCurrentRevision();
-        if 0 > CurrRevI then begin
-            debugln('Warning - No current rev available, perhaps its a new Repo ?');
-            CurrRevI := 0;
-        end;
-		Result:=inherited WriteNewManifest(False, CurrRevI);	// CurrRevI will be used if newRevison turns out to be ''
-        if Result = False then exit();
-        if NewRevision = '' then exit();	// Only need remote manifests if we create a new revision
-        Result := False;
-        FileName := RemoteManifestDir +'manifest.xml';
-        // if DebugMode then writeln('In WriteNewManifest with ', FileName, ' TestMode=', TestMode);
-        if not WriteRemoteManifest( FileName) then begin
-            ErrorMessage := 'ERROR writing ' + FileName;
-        	exit();
-		end;
-        Result := True;
+    Result := True;
+    if TestMode then exit();
+    CurrRevI := GetCurrentRevision();
+    if 0 > CurrRevI then begin
+        debugln('Warning - No current rev available, perhaps its a new Repo ?');
+        CurrRevI := 0;
+    end;
+	Result:=inherited WriteNewManifest(False, CurrRevI);	// CurrRevI will be used if newRevison turns out to be ''
+    if Result = False then exit();
+    if NewRevision = '' then exit();	// Only need remote manifests if we create a new revision
+    Result := False;
+    FileName := RemoteManifestDir +'manifest.xml';
+    // if DebugMode then writeln('In WriteNewManifest with ', FileName, ' TestMode=', TestMode);
+    if not WriteRemoteManifest( FileName) then begin
+        ErrorMessage := 'ERROR writing ' + FileName;
+        exit();
+	end;
+    Result := True;
 end;
 
 
@@ -1248,10 +1250,10 @@ begin
         exit();
 	end;
 	try
-			ReadXMLFile(Doc, FullFileName);
-			Node := Doc.DocumentElement.FindNode('last-change-date');
-        	LastChange := Node.FirstChild.NodeValue;
-    		Result := GetDateFromStr(Node.FirstChild.NodeValue);
+		ReadXMLFile(Doc, FullFileName);
+		Node := Doc.DocumentElement.FindNode('last-change-date');
+        LastChange := Node.FirstChild.NodeValue;
+    	Result := GetDateFromStr(Node.FirstChild.NodeValue);
 	finally
         Doc.free;		// xml errors are caught in calling process
 	end;
