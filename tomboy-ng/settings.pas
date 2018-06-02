@@ -63,6 +63,9 @@ unit settings;
 				in config file is still valid.
     2018/05/12  Extensive changes - MainUnit is now just that.
     2018/05/20  NeedRefresh to indicate when need to refresh menus and mainform status.
+    2018/05/23  Added /usr/share/myspell/ to linux dictionary search path.
+                Enabled Save button after dictionary selection.
+
 }
 
 {$mode objfpc}{$H+}
@@ -328,6 +331,8 @@ begin
     if SpellConfig then begin
         LabelDicStatus.Caption := 'Dictionary Loaded OK';
         LabelDic.Caption := AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex];
+        ButtonSaveConfig.Enabled := True;
+        NeedRefresh := True;
     end else begin
         LabelDicStatus.Caption := 'Dictionary Failed to Load';
         LabelDic.Caption := 'Enter a new path to Dictionaries :'
@@ -356,7 +361,7 @@ begin
     {$endif}
     {$ifdef LINUX}
     DicPath := '/usr/share/hunspell/';
-    DicPathAlt := DicPath;
+    DicPathAlt := '/usr/share/myspell/';
     {$ENDIF}
     LabelError.Caption:='';
     ListBoxDic.enabled:= False;

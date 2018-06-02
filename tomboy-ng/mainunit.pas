@@ -8,14 +8,22 @@ unit Mainunit;
     2018/05/19  Control if we allow opening window to be dismissed and show TrayIcon
                 and MainMenu.
     2018/05/20  Alterations to way we startup, wrt mainform status report.
+    2018/05/20  Set the recent menu items caption to be 'empty' in case user looks
+                before having set a notes directory.
+    2018/06/02  Added a cli switch to debug sync
+
+
 
 
     CommandLine Switches
     --gnome3    Turns on MainMenu, TrayMenu off and prevents dismmiss of this
     -g
+    --debug-sync Turn on Verbose mode during sync
+
     --help -h   Shows and exits (not implemented)
                 something to divert debug msg to a file ??
                 something to do more debugging ?
+
 }
 interface
 
@@ -303,14 +311,14 @@ procedure TMainForm.MMAboutClick(Sender: TObject);
 var
         S1, S2, S3, S4, S5, S6 : string;
 begin
-        S1 := 'This is v0.15 of tomboy-ng, a rewrite of Tomboy Notes'#10;
+        S1 := 'This is v0.16a of tomboy-ng, a rewrite of Tomboy Notes'#10;
         S2 := 'using Lazarus and FPC. While its getting close to being'#10;
         S3 := 'ready for production use, you still need to be careful and'#10;
         S4 := 'have good backups.'#10;
         S5 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
         S6 := '';
         {$ifdef LCLCOCOA}S6 := ' 64bit Cocoa Version';{$endif}
-        S6 := S6 + ' ' + GetEnvironmentVariable('DESKTOP_SESSION');
+        S6 := S6 + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
         Showmessage(S1 + S2 + S3 + S4 + S5 + S6);
 end;
 

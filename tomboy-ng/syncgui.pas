@@ -41,6 +41,7 @@ unit SyncGUI;
     2018/05/12  Extensive changes - MainUnit is now just that. Only change here relates
                 to naming of MainUnit and SearchUnit.
     2018/05/21  Show any sync errors as hints in the StringGrid.
+    2018/06/02  Honor a cli --debug-sync
 
 }
 
@@ -191,7 +192,10 @@ begin
 	FileSync := TTomboyFileSync.Create;
     FileSync.ProceedFunction:= @Proceed;
     FileSync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
-	FileSync.VerboseMode := False;
+    if Application.HasOption('s', 'debug-sync') then
+         FileSync.VerboseMode := True
+    else
+	    FileSync.VerboseMode := False;
 	FileSync.NotesDir:= NoteDirectory;
 	FileSync.RemoteManifestDir:=RemoteRepo;
 	FileSync.LocalManifestDir:=LocalConfig;

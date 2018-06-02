@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 441
+  Left = 486
   Height = 431
-  Top = 164
+  Top = 199
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -22,10 +22,10 @@ object Sett: TSett
     Height = 373
     Top = 0
     Width = 525
-    ActivePage = TabBasic
+    ActivePage = TabSpell
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = 5
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -437,23 +437,23 @@ object Sett: TSett
       ClientWidth = 519
       object Label13: TLabel
         Left = 12
-        Height = 16
+        Height = 17
         Top = 19
-        Width = 298
+        Width = 319
         Caption = 'Spell Check requires the Hunspell Libraries and'
         ParentColor = False
       end
       object Label14: TLabel
         Left = 12
-        Height = 16
+        Height = 17
         Top = 40
-        Width = 247
+        Width = 268
         Caption = 'an appropriate Hunspell Dictionary set.'
         ParentColor = False
       end
       object EditLibrary: TEdit
         Left = 16
-        Height = 22
+        Height = 27
         Hint = 'Leave Blank if using selection above'
         Top = 136
         Width = 328
@@ -462,15 +462,15 @@ object Sett: TSett
       end
       object LabelError: TLabel
         Left = 16
-        Height = 16
+        Height = 17
         Top = 288
-        Width = 64
+        Width = 73
         Caption = 'LabelError'
         ParentColor = False
       end
       object EditDic: TEdit
         Left = 16
-        Height = 22
+        Height = 27
         Hint = 'Leave blank if using selection above'
         Top = 240
         Width = 328
@@ -480,33 +480,33 @@ object Sett: TSett
       end
       object LabelLibraryStatus: TLabel
         Left = 16
-        Height = 16
+        Height = 17
         Top = 96
-        Width = 115
+        Width = 129
         Caption = 'LabelLibraryStatus'
         ParentColor = False
       end
       object LabelDicStatus: TLabel
         Left = 16
-        Height = 16
+        Height = 17
         Top = 200
-        Width = 92
+        Width = 103
         Caption = 'LabelDicStatus'
         ParentColor = False
       end
       object LabelLibrary: TLabel
         Left = 16
-        Height = 16
+        Height = 17
         Top = 112
-        Width = 77
+        Width = 85
         Caption = 'LabelLibrary'
         ParentColor = False
       end
       object LabelDic: TLabel
         Left = 16
-        Height = 16
+        Height = 17
         Top = 216
-        Width = 53
+        Width = 59
         Caption = 'LabelDic'
         ParentColor = False
       end
@@ -523,9 +523,9 @@ object Sett: TSett
       end
       object LabelDicPrompt: TLabel
         Left = 376
-        Height = 16
+        Height = 17
         Top = 112
-        Width = 99
+        Width = 111
         Caption = 'LabelDicPrompt'
         ParentColor = False
       end

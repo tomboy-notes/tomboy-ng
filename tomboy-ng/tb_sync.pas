@@ -58,6 +58,8 @@ unit TB_Sync;
                 note open while sync process downloads or deletes that note from disk.
     2018/04/13  Added WasDeleted param to MarkNoteReadOnly() so notelister gets updated
     2018/05/21  At start of sync, check to see if the Backup directory exists, make it if necessary
+    2018/06/02  Extra debug info if VerboseMode on.
+
 }
 
 
@@ -320,7 +322,7 @@ end;
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, DateUtils, LazLogger
-        {$ifdef LINUX}, Unix {$endif};
+        {$ifdef LINUX}, Unix {$endif}, UnityWSCtrls;
  	// If you want to use this as a console app, must add LCL to Required Packages
     // in the Project Inspector. I guess there must be a command line alt ??
     // Thats to get LazFileUtils, preferable to FileUtils (also LCL) due to UFT8
@@ -833,6 +835,7 @@ var
 begin
     result := false;
     for Index := 0 to NoteInfoListLoc.Count -1 do begin
+        if VerboseMode then debugln('Local sync ' + NoteInfoListLoc.Items[Index].ID);
     	NoteInfoP := NoteInfoListRem.FindID(NoteInfoListLoc.Items[Index].ID);
     	if NoteInfoP = NIL then begin
             // OK, its here locally but not on Server, is it in local manifest ?
@@ -920,6 +923,7 @@ var
 begin
     result := false;
     for Index := 0 to NoteInfoListRem.Count -1 do begin
+        if VerboseMode then debugln('Remote Compare ' + NoteInfoListRem.Items[Index].ID);
     	NoteInfoP := NoteInfoListLoc.FindID(NoteInfoListRem.Items[Index].ID);
         // We only need to deal with ones not found here.
         if NoteInfoP = nil then begin

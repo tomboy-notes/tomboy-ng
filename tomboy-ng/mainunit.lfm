@@ -360,43 +360,43 @@ object MainForm: TMainForm
       Caption = '-'
     end
     object TrayMenuRecent1: TMenuItem
-      Caption = 'MenuItem5'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent2: TMenuItem
-      Caption = 'MenuItem6'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent3: TMenuItem
-      Caption = 'MenuItem7'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent4: TMenuItem
-      Caption = 'MenuItem8'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent5: TMenuItem
-      Caption = 'MenuItem9'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent6: TMenuItem
-      Caption = 'MenuItem10'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent7: TMenuItem
-      Caption = 'MenuItem11'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent8: TMenuItem
-      Caption = 'MenuItem12'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent9: TMenuItem
-      Caption = 'MenuItem13'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object TrayMenuRecent10: TMenuItem
-      Caption = 'MenuItem14'
+      Caption = 'empty'
       OnClick = MMRecent1Click
     end
     object MenuItem3: TMenuItem
