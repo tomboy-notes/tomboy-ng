@@ -1,0 +1,48 @@
+--- lcl/interfaces/gtk2/gtk2wsfactory.pas	(revision 50009)
++++ lcl/interfaces/gtk2/gtk2wsfactory.pas	(working copy)
+@@ -120,7 +120,8 @@
+   Gtk2WSSpin,
+   Gtk2WSStdCtrls,
+   Gtk2WSPairSplitter,
+-  Gtk2WSPrivate;
++  Gtk2WSPrivate,
++  UnityWSCtrls;
+ 
+ // imglist
+ function RegisterCustomImageList: Boolean; alias : 'WSRegisterCustomImageList';
+@@ -460,7 +461,10 @@
+ 
+ function RegisterCustomTrayIcon: Boolean; alias : 'WSRegisterCustomTrayIcon';
+ begin
+-  RegisterWSComponent(TCustomTrayIcon, TGtk2WSCustomTrayIcon);
++  if UnityAppIndicatorInit then
++    RegisterWSComponent(TCustomTrayIcon, TUnityWSCustomTrayIcon)
++  else
++    RegisterWSComponent(TCustomTrayIcon, TGtk2WSCustomTrayIcon);
+   Result := True;
+ end;
+ 
+Index: lcl/interfaces/lcl.lpk
+===================================================================
+--- lcl/interfaces/lcl.lpk	(revision 50009)
++++ lcl/interfaces/lcl.lpk	(working copy)
+@@ -128,7 +128,7 @@
+     <License Value="modified LGPL-2
+ "/>
+     <Version Major="1" Minor="5"/>
+-    <Files Count="438">
++    <Files Count="439">
+       <Item1>
+         <Filename Value="carbon/agl.pp"/>
+         <AddToUsesPkgSection Value="False"/>
+@@ -2176,6 +2176,10 @@
+         <AddToUsesPkgSection Value="False"/>
+         <UnitName Value="Gtk3WSExtDlgs"/>
+       </Item438>
++      <Item439>
++        <Filename Value="gtk2/unitywsctrls.pas"/>
++        <Type Value="Include"/>
++      </Item439>
+     </Files>
+     <LazDoc Paths="../../docs/xml/lcl"/>
+     <i18n>

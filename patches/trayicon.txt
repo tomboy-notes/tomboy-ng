@@ -1,0 +1,14 @@
+This patch has been applied to Lazarus trunk (r58021) so is only needed for 1.8 series.
+It solves an issue of the trayicon not showing on recent releases of eg Ubuntu, 17.10 and beyond. The same issue still exists (ie is not fixed by this patch) in other distro if they have chosen to stick with Gnome's hard line about what goes into AppIndicator.
+
+To see if this patch will help your end user, look to see if the distro where your Lazarus application is going to run has libappindicator and libappindicator3.
+
+If it has libappindicator, then you probably don't need to do anything, the old SystemTray model will work (but the patch will do no harm). If it has only ~3 you will need the patch. If it has no version of libappindicator, the patch will do no harm but no good either, the distro simply does not want you poping icons up in in its AppIndicator tray. Change distros.
+
+The patch is intended to be smart enough to work out when it should use the AppIndicator model instead of the older SystemTray model. 
+
+At time of writing, May 2018, debian is OK,, its still using an earlier Gnome, one that shows the tray icon on the lower left in a little slid out that appears if you move the mouse there.
+
+It should be applied in /usr/share/lazarus/1.8.0/lcl/interfaces/gtk2 and targets gtk2wsfactory.pas
+
+David, 25th May, 2018
