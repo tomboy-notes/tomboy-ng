@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 486
+  Left = 307
   Height = 431
-  Top = 199
+  Top = 153
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -17,7 +17,6 @@ object Sett: TSett
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ButtonSaveConfig
     Left = 0
     Height = 373
     Top = 0
@@ -35,10 +34,13 @@ object Sett: TSett
       object ButtonSetNotePath: TButton
         Left = 8
         Height = 48
+        Hint = 'If you have notes somewhere else.'
         Top = 144
         Width = 216
         Caption = 'Set Path to Note Files'
         OnClick = ButtonSetNotePathClick
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
       end
       object LabelSettingPath: TLabel
@@ -92,7 +94,7 @@ object Sett: TSett
         Top = 224
         Width = 306
         Caption = 'Allow a note to be in Multiple Notebooks.'
-        OnChange = CheckManyNotebooksChange
+        OnChange = CheckReadOnlyChange
         TabOrder = 2
       end
       object CheckCaseSensitive: TCheckBox
@@ -457,6 +459,8 @@ object Sett: TSett
         Hint = 'Leave Blank if using selection above'
         Top = 136
         Width = 328
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         Text = 'EditLibrary'
       end
@@ -475,6 +479,8 @@ object Sett: TSett
         Top = 240
         Width = 328
         OnKeyDown = EditDicKeyDown
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 1
         Text = 'EditDic'
       end
@@ -531,22 +537,6 @@ object Sett: TSett
       end
     end
   end
-  object ButtonSaveConfig: TButton
-    AnchorSideRight.Control = ButtonHide
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 289
-    Height = 54
-    Top = 375
-    Width = 115
-    Anchors = [akRight, akBottom]
-    BorderSpacing.Right = 4
-    BorderSpacing.Bottom = 2
-    Caption = 'Save Config'
-    Enabled = False
-    OnClick = ButtonSaveConfigClick
-    TabOrder = 1
-  end
   object ButtonHide: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -554,6 +544,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 408
     Height = 56
+    Hint = 'Unsaved setting will remain for this session only'
     Top = 373
     Width = 113
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -561,7 +552,9 @@ object Sett: TSett
     BorderSpacing.Bottom = 2
     Caption = 'Close'
     OnClick = ButtonHideClick
-    TabOrder = 2
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 88

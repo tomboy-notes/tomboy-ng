@@ -77,7 +77,8 @@ unit SearchUnit;
                 note open while sync process downloads or deletes that note from disk.
     2018/04/13  Taught MarkNoteReadOnly() to also delete ref in NoteLister to a sync deleted note
     2018/05/12  Extensive changes - MainUnit is now just that. Name of this unit changed.
-    2018/05/20  Alterations to way we startup, wrt mainform status report.
+    2018/05/20  Alterations to way we startup, wrt mainform status report.  Mark
+    2018/06/04  NoteReadOnly() now checks if NoteLister is valid before calling.
 }
 
 {$mode objfpc}{$H+}
@@ -416,6 +417,7 @@ procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDel
 var
     TheForm : TForm;
 begin
+    if NoteLister = nil then exit;
     if NoteLister.IsThisNoteOpen(FullFileName, TheForm) then begin
        // if user opened and then closed, we won't know we cannot access
         try

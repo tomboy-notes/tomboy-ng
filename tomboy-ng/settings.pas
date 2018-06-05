@@ -65,6 +65,9 @@ unit settings;
     2018/05/20  NeedRefresh to indicate when need to refresh menus and mainform status.
     2018/05/23  Added /usr/share/myspell/ to linux dictionary search path.
                 Enabled Save button after dictionary selection.
+    2018/06/06  Substantial changes. Now create config dir at form creation.
+                User no longer manually saves, config file is updated at each change.
+                Extensive checks of config and notes directory before proceeding.
 
 }
 
@@ -73,7 +76,7 @@ unit settings;
 interface
 
 uses
-    Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+    Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Grids, Menus {, CheckLst};
 
 // Types;
@@ -88,7 +91,6 @@ type
 			ButtDefaultNoteDir: TButton;
             ButtonHide: TButton;
 			ButtonShowBackUp: TButton;
-			ButtonSaveConfig: TButton;
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
@@ -149,11 +151,11 @@ type
 		TabDisplay: TTabSheet;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
         procedure ButtonHideClick(Sender: TObject);
-        procedure ButtonSaveConfigClick(Sender: TObject);
+        //procedure ButtonSaveConfigClick(Sender: TObject);
 		procedure ButtonSetNotePathClick(Sender: TObject);
 		procedure ButtonSetSynServerClick(Sender: TObject);
 		procedure ButtonShowBackUpClick(Sender: TObject);
-        procedure CheckManyNotebooksChange(Sender: TObject);
+        //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
         procedure EditDicKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -167,13 +169,23 @@ type
 		//procedure Timer1Timer(Sender: TObject);
    	private
         fExportPath : ANSIString;  { TODO : This will need to be a property }
+        // Reads an existing config file OR writes a new, default one if necessary.
  		procedure CheckConfigFile;
+        // Checks and/or makes indicatd dir, warns user if not there and writable.
+        function CheckDirectory(DirPath: string): boolean;
         function CheckForDict(const DictPath : ANSIString): boolean;
         procedure CheckSpelling;
+        // Returns the default place to store notes. It may not be present.
+        function GetDefaultNoteDir: string;
         procedure SetFontSizes;
+        // Saves all current settings to disk. Call when any change is made.
+        procedure SettingsChanged();
 		procedure SyncSettings;
     public
+        // Indicates SettingsChanged should not write out a new file cos we are loading from one.
+        MaskSettingsChanged : boolean;
         AllowClose : Boolean;           // review need for this
+        // Indicates we should re-index notes when form hides
         NeedRefresh : Boolean;
         FontSmall  : Integer;
      	FontLarge  : Integer;
@@ -222,7 +234,7 @@ implementation
 { TSett }
 
 
-uses IniFiles,
+uses IniFiles, LazLogger,
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff;
     Note_Lister,	// List notes in BackUp and Snapshot tab
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
@@ -265,8 +277,7 @@ procedure TSett.SyncSettings;
 begin
 	if NoteDirectory <> '' then begin
         LabelNotespath.Caption := NoteDirectory;
-        if NoteDirectory = '' then HaveConfig := False
-        else HaveConfig := true;
+        HaveConfig := (NoteDirectory <> '');
         CheckShowIntLinks.enabled := true;
         ShowIntLinks := CheckShowIntLinks.Checked;
         SetFontSizes();
@@ -331,7 +342,8 @@ begin
     if SpellConfig then begin
         LabelDicStatus.Caption := 'Dictionary Loaded OK';
         LabelDic.Caption := AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex];
-        ButtonSaveConfig.Enabled := True;
+        //ButtonSaveConfig.Enabled := True;
+        SettingsChanged();
         NeedRefresh := True;
     end else begin
         LabelDicStatus.Caption := 'Dictionary Failed to Load';
@@ -392,8 +404,9 @@ begin
             end;
         end
         else begin
-            SpellConfig := CheckForDict(DicPath);
-            if not SpellConfig then
+            SpellConfig := CheckForDict(DicPath);  // if we find 1, use it, 0 try again.
+            if ListBoxDic.Items.Count = 0 then
+            // if not SpellConfig then
                 SpellConfig := CheckForDict(DicPathAlt);
         end;
     end
@@ -410,6 +423,7 @@ end;
 procedure TSett.FormHide(Sender: TObject);
 begin
     FreeandNil(Spell);
+    MaskSettingsChanged := True;
     if NeedRefresh then begin
         SearchForm.IndexNotes();
         NeedRefresh := False;
@@ -419,6 +433,7 @@ end;
 procedure TSett.FormShow(Sender: TObject);
 begin
     CheckSpelling;
+    MaskSettingsChanged := False;
 end;
 
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
@@ -432,21 +447,36 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+    MaskSettingsChanged := true;
     NeedRefresh := False;
     ExportPath := '';
     LabelWaitForSync.Caption := '';
     LabelLibrary.Caption := '';
     HaveConfig := false;
-    NoteDirectory := 'Set me first please';
+    NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
-    CheckShowIntLinks.Checked := true;
-   	RadioFontMedium.checked := true;
-    CheckConfigFile();
+    CheckConfigFile();                      // write a new, default one if necessary
     if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
         ButtonSetSynServer.Caption := 'Set File Sync Repo';
 end;
 
 { --------------------- F I L E    I / O --------------------------- }
+
+function TSett.CheckDirectory(DirPath : string) : boolean;
+begin
+    Result := False;
+    if not DirectoryExistsUTF8(DirPath) then
+        ForceDirectoriesUTF8(DirPath);
+    if not DirectoryExistsUTF8(DirPath) then begin
+        ShowMessage('Unable to Create Directory [' + DirPath + ']');
+        Debugln('Settings is unable to Create Directory [' + DirPath + ']');
+        exit(False);
+    end;
+    if DirectoryIsWritable(DirPath) then
+        exit(True);
+    ShowMessage('Cannot write into [' + DirPath + ']');
+    DebugLn('Settings cannot write into [' + DirPath + ']');
+end;
 
 { Read config file if it exists }
 procedure TSett.CheckConfigFile;
@@ -454,12 +484,18 @@ var
     ConfigFile : TINIFile;
     ReqFontSize : ANSIString;
 begin
-    LabelSettingPath.Caption := AppendPathDelim(GetAppConfigDir(False)) + 'tomboy-ng.cfg';
-    LocalConfig := GetAppConfigDir(False);
+    if Application.HasOption('config-dir') then
+        LocalConfig := Application.GetOptionValue('config-dir')
+    else
+        LocalConfig := GetAppConfigDirUTF8(False);
+    if LocalConfig = '' then LocalConfig := GetAppConfigDirUTF8(False);
+    LabelSettingPath.Caption := AppendPathDelim(LocalConfig) + 'tomboy-ng.cfg';
     LabelLocalConfig.Caption := LocalConfig;
+    if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
  	    try
+            MaskSettingsChanged := True;    // should be true anyway ?
    		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', '');
             if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
                 CheckShowIntLinks.Checked := true
@@ -492,22 +528,34 @@ begin
             RemoteRepo := LabelSyncRepo.Caption;
 	    finally
             ConfigFile.free;
+            // MaskSettingsChanged := False;
 	    end;
 	    SyncSettings();
+        NeedRefresh := True;                // Needed ???
+        // ButtonSaveConfig.Enabled := False;
     end else begin
-        LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
-        NoteDirectory := '';
-        CheckManyNoteBooks.Checked := False;
-        HaveConfig := false;
+        if CheckDirectory(NoteDirectory) then begin
+            MaskSettingsChanged := False;
+            SettingsChanged();    // write a initial default file
+            MaskSettingsChanged := True;
+            HaveConfig := True;
+        end else begin
+            // Only get to here becasue we have failed to setup an initial notes dir
+            // and we don't even have a settings file in place. Directories may not be present.
+            LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
+            NoteDirectory := '';
+            CheckManyNoteBooks.Checked := False;
+            HaveConfig := false;
+            Debugln('We have issues with you directories, suggest you do not proceed !');
+        end;
     end;
 end;
 
-	{ Save the settings, this will become auto in a later and braver release.}
-procedure TSett.ButtonSaveConfigClick(Sender: TObject);
+procedure TSett.SettingsChanged();
 var
 	ConfigFile : TINIFile;
 begin
-    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    if MaskSettingsChanged then exit();
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
       ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
@@ -544,30 +592,30 @@ begin
     finally
     	ConfigFile.Free;
     end;
-    ButtonSaveConfig.Enabled := False;
-    Hide();
+    // debugln('just wrote a settings file out');
+end;
+
+function TSett.GetDefaultNoteDir : string;
+begin
+    {$IFDEF UNIX}
+    Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
+    {$ENDIF}
+    {$IFDEF WINDOWS}
+    Result := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
+    // %APPDATA%\Tomboy\notes\
+    {$ENDIF}
 end;
 
 procedure TSett.ButtDefaultNoteDirClick(Sender: TObject);
 begin
-    // GetEnvironmentVariable() seems utf8 ok ...
-    {$IFDEF UNIX}
-    NoteDirectory := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
-    {$ENDIF}
-    {$IFDEF WINDOWS}
-    NoteDirectory := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
-    // %APPDATA%\Tomboy\notes\
-    {$ENDIF}
-    if not ForceDirectoriesUTF8(NoteDirectory) then
-    	showmessage('Sorry, unable to create directory ' + NoteDirectory)
+    NoteDirectory := GetDefaultNoteDir();
+    if not CheckDirectory(NoteDirectory) then
+        NoteDirectory := Sett.LabelNotesPath.Caption
     else begin
-    	LabelNotesPath.Caption := NoteDirectory;
-		ButtonSaveConfig.Enabled := True;
-    	CheckShowIntLinks.enabled := true;
-    	SyncSettings();
+        SettingsChanged();
+        SyncSettings();
         NeedRefresh := True;
-        //SearchForm.IndexNotes();            // Must bring this under control of NeedRefresh
-	end;
+    end;
 end;
 
 procedure TSett.ButtonHideClick(Sender: TObject);
@@ -583,15 +631,20 @@ var
 begin
 	if SelectDirectoryDialog1.Execute then begin
 		NoteDirectory := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-        LabelNotesPath.Caption := NoteDirectory;
-        if not FindFirst(NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
-           showmessage('That directory does not contain any notes. Thats OK, if I can make my own there.');
-		end;
-		ButtonSaveConfig.Enabled := True;
-        CheckShowIntLinks.enabled := true;
-        // CheckReadOnly.enabled := true;
-        SyncSettings();
-        NeedRefresh := False;
+        if CheckDirectory(NoteDirectory) then begin
+            if not FindFirst(NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
+               showmessage('That directory does not contain any notes. Thats OK, if I can make my own there.');
+		    end;
+            FindClose(Info);
+            // LabelNotesPath.Caption := NoteDirectory;
+		    // ButtonSaveConfig.Enabled := True;
+            CheckShowIntLinks.enabled := true;
+            // CheckReadOnly.enabled := true;
+            SettingsChanged();
+            SyncSettings();
+            NeedRefresh := True;
+        end else
+            NoteDirectory := LabelNotesPath.caption;
         // SearchForm.IndexNotes();
 	end;
 end;
@@ -613,6 +666,7 @@ end;
 
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
+    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     if SelectDirectoryDialog1.Execute then begin
         LabelWaitForSync.Caption := 'Ok, please wait, might take a few minutes .....';
         Application.ProcessMessages;   		// That forces (eg) the above caption update.
@@ -625,9 +679,10 @@ begin
         FormSync.SetupFileSync := True;
         if mrOK = FormSync.ShowModal then begin
             RemoteRepo := LabelSyncRepo.Caption;
-           	ButtonSaveConfigClick(self);
+           	// ButtonSaveConfigClick(self);
             ButtonSetSynServer.Caption:='Change File Sync';
         	// OK, user has tested, done first sync, is happy. Save this config.
+            SettingsChanged();
         end else begin
         	LabelSyncRepo.Caption := SyncNotConfig;
             RemoteRepo := SyncNotConfig;
@@ -648,16 +703,11 @@ begin
     NoteLister.Free;
 end;
 
-
-procedure TSett.CheckManyNotebooksChange(Sender: TObject);
-begin
-    ButtonSaveConfig.Enabled := True;
-end;
-
 	{ Called when ANY of the setting check boxes change so use can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
-    ButtonSaveConfig.Enabled := True;
+    // ButtonSaveConfig.Enabled := True;
+    SettingsChanged();
     SyncSettings();
 end;
 

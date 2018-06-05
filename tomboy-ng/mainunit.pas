@@ -20,6 +20,8 @@ unit Mainunit;
     -g
     --debug-sync Turn on Verbose mode during sync
 
+    --config=<some_dir> Directory to keep config and sync manifest in
+
     --help -h   Shows and exits (not implemented)
                 something to divert debug msg to a file ??
                 something to do more debugging ?

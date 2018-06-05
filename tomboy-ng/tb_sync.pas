@@ -491,10 +491,13 @@ begin
 	            outstream :=TFilestream.Create(LocalManifestDir + 'manifest.xml', fmCreate);
         except on EAccessViolation do begin
     	    			ErrorMessage := 'Failed to open ' + LocalManifestDir + 'manifest.xml';
+                        DeBugLn('AccessViolation Failed to open ' + LocalManifestDir + 'manifest.xml');
     	    			exit();
     	            end;
     	        on EFCreateError do begin
     	    			ErrorMessage := 'Failed to open ' + LocalManifestDir + 'manifest.xml';
+                        debugln('ERROR - cannot write a new local manifest file.');
+                        DeBugLn('FCreateError Failed to open ' + LocalManifestDir + 'manifest.xml');
     	    			exit();
     	        end;
     	end;
@@ -632,14 +635,15 @@ begin
 	        ServerID := Node.FirstChild.NodeValue;
 	        Result := True;
         except on EFOpenError do begin
-            ErrorMessage := 'Cannot open local manifest';
-            if VerboseMode then DebugLn('Debug - Cannot open local manifest');
+                ErrorMessage := 'Cannot open local manifest';
+                if VerboseMode then DebugLn('Debug - Cannot open local manifest');
+                DebugLn('ERROR File - Cannot open local manifest ' + LocalManifestDir + 'manifest.xml');
                 exit();
             end;
 			on EXMLReadError do begin
-                	ErrorMessage := 'XML error in local manifest ';
-                	if VerboseMode then DebugLn('Debug - Cannot open local manifest');
-                	exit();
+                ErrorMessage := 'XML error in local manifest ';
+                DebugLn('ERROR XML - Cannot read local manifest ' + LocalManifestDir + 'manifest.xml');
+                exit();
 			end;
         end;
 	finally
@@ -1043,7 +1047,7 @@ begin
            ErrorMessage := 'Cannot create Backup dir : ' +  LocalPath('', 'Backup', False);
            exit();
        end;
-
+       if VerboseMode then debugln('Backup Dir Checked');
     { TODO : Lock the repo, file lock ? }
     // Any function here that returns false aborts the sync, it should set ErrorMessage
 
@@ -1054,17 +1058,24 @@ begin
             // if DebugMode then DebugLn('Debug - Note reuse of list without freeing it.');
             ClearLists();
 		end;
+        if VerboseMode then debugln('TB_Sync - Lists Cleared');
 		ReportList := TSyncReportList.Create;
     	if UseLocal then SetlastSyncdate();
 		if not ReadRemoteManifest(not UseRemote) then exit();	// read the remote manifest
+        if VerboseMode then debugln('TB_Sync - ReadRemoteManifest Done');
         if not ReadLocalManifest(not UseLocal) then exit(); 	// read the local manifest
+        if VerboseMode then debugln('TB_Sync - ReadLocalManifest Done');
     	GetListLocalNotes();						// read the actual Notes directory
+        if VerboseMode then debugln('TB_Sync - GetListLocalNotes Done');
         ManifestList := TNoteInfoList.Create;   	// This for making new manifests
+        if VerboseMode then debugln('TB_Sync - ManifestList Created Done');
     	if not CompareUsingLocal() then exit;
+         if VerboseMode then debugln('TB_Sync - CompareUsingLocal Done');
         if not CompareUsingRemote() then exit;
         // We MUST write a new local mainfest if joining even if we have no notes
         if (NewRevision <> '') or (not UseLocal) or NewManifest then
            	if not WriteNewManifest() then exit();
+        if VerboseMode then debugln('TB_Sync - WriteNewManifest Done');
 		Result := True;
 end;
 
@@ -1083,7 +1094,6 @@ begin
 				ReadXMLFile(Doc, RemoteManifestDir + 'manifest.xml');
         		Result := strtoint(Doc.DocumentElement.GetAttribute('revision'));
         except on EFOpenError do begin
-            		// if VerboseMode then
                     DebugLn('Warning - Cannot get Remote Revision, is this a new Repo ?');
                     Result := -1;
         		end;
@@ -1179,7 +1189,7 @@ begin
         if VerboseMode then DebugLn('Debug - Made new rev dir at ', NewDir);
     end else begin
         ErrorMessage := 'ERROR - Unable to create new revision dir ' + NewDir;
-        if VerboseMode then DebugLn('Debug - ERROR Cannot make rev dir at ', NewDir);
+        if VerboseMode then DebugLn('ERROR - Cannot make rev dir at ', NewDir);
         Result := false;
         exit();
 	end;
@@ -1196,7 +1206,20 @@ begin
         Result := False;
         if VerboseMode then DebugLn('Debug - Making remote manifest at ', FullFileName);
     	try
-            outstream :=TFilestream.Create(FullFileName, fmCreate);
+            try
+                outstream :=TFilestream.Create(FullFileName, fmCreate);
+            except on EAccessViolation do begin
+        	    			ErrorMessage := 'Failed to open ' + FullFileName;
+                            DeBugLn('AccessViolation Failed to open ' + FullFileName);
+        	    			exit();
+        	        end;
+        	        on EFCreateError do begin
+        	    			ErrorMessage := 'Failed to open ' + FullFileName;
+                            debugln('ERROR - cannot write a new local manifest file.');
+                            DeBugLn('FCreateError Failed to open ' + FullFileName);
+        	    			exit();
+        	        end;
+            end;
             Buff := '<?xml version="1.0" encoding="utf-8"?>' + LineEnding;
             OutStream.Write(Buff[1], length(Buff));
             Buff := '<sync revision="' + newRevision + '" server-id="';
