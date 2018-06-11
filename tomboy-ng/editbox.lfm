@@ -682,6 +682,7 @@ object EditBoxForm: TEditBoxForm
     OnChange = KMemo1Change
     OnKeyDown = KMemo1KeyDown
     OnMouseDown = KMemo1MouseDown
+    OnMouseUp = KMemo1MouseUp
   end
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner

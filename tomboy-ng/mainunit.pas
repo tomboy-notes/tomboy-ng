@@ -313,7 +313,7 @@ procedure TMainForm.MMAboutClick(Sender: TObject);
 var
         S1, S2, S3, S4, S5, S6 : string;
 begin
-        S1 := 'This is v0.16a of tomboy-ng, a rewrite of Tomboy Notes'#10;
+        S1 := 'This is v0.15-b of tomboy-ng, a rewrite of Tomboy Notes'#10;
         S2 := 'using Lazarus and FPC. While its getting close to being'#10;
         S3 := 'ready for production use, you still need to be careful and'#10;
         S4 := 'have good backups.'#10;
