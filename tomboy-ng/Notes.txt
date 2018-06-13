@@ -1,4 +1,6 @@
 
+tomboy-ng
+==========
 
 This is a draft or proof of concept for rewriting Tomboy Notes in FreePascal
 and lazarus.
@@ -6,26 +8,29 @@ and lazarus.
 The intention is to stick to Tomboy's basic principles of simple user interface,
 cross platform and syncronisation between those platforms. Long term ....
 
-So far, it has a basic Tomboy Editor functional but lacks some things I think it needs -
+Here is a todo list (last updated 2018/06/13) -
 
-* Spell Checking (hard)
-* Monospaced Font (easy)
-* Printing
+* Monospaced Font  - in progress, Ben
+* Strikeout        - in progress, Ben
+* Underline        - in progress, Ben
+* Printing (all working except on Cocoa) - wait until Cocoa more advanced
 * Table of Contents (a plugin I use a LOT)
-* Tools to manage (re-use or delete) deleted files that end up n Backup/.
+* Tools to manage (re-use or delete) deleted files that end up in Backup/.
+* Network Sync
+* A mobile device solution (or will netsync make Tomdroid viable ?)
+* Restoring cursor position on note load.
+* A viable backup solution.
+* A proper highlight
+* Stop house keeping from moving viewport.
 
+Grey Areas
+* Move notes into database (ie sqlite for small users, something bigger for BIG users).
+* Better export abilities - at present plain text and RTF. What about html, PDF etc ?
+* Import ability. Import a directory of Tomboy notes. Import other formats.
+* Revise controls, at present modelled on Tomboy, we can improve.
+* Whats this about Gnome3 not wanting to play trayicon, AppIndicator etc ?
+* Install models - Flatpack, Snap etc ?  RPM, a proper Windows installer.
 
-On the other hand, it does read and write Tomboy's files .  Displays the small,
-normal, large and huge fonts Bold, Italics and bullets. Highlight is, at present
-replaced with red coloured text. It links to notes with matching names (and has a
-a switch to stop that). Supports Tomboy's Notebook model and extends it in that
-it allows a Note to be in more than one Notebook.
-
-File syncs with Tomboy (and itself). Autosaves.
-
-But the real feature is that it compiles cleanly under (gtk) Linux, Win10 and Mac.
-From same source with only a couple of IFDEFs.  The resulting  binary is all you need.
-No additional libraries.
 
 I have tested it on Debian XFCE and Gnome 3, Ubuntu Mate, Win10  Mac Sierra
 
@@ -52,7 +57,8 @@ We now display Mac quite differently that Linux/Windows as it appears Mac and Ma
 users prefer a Main Menu rather than the TrayIcon one. A bit of extra Window code
 needed in EditBox because of Windows insistence on two character line endings.
 
-This release should also compile under Mac OSX 64bit Cocoa but watch for memory leaks.
+This release should also compile under Mac OSX 64bit Cocoa but as soon as you hid
+the main window the whole thing disappears forever.
 
 If you run it within the debugger, remember that there are several handled
 exceptions, the debugger insists on telling you about them so make sure you
@@ -88,6 +94,7 @@ There is a way to go but here is a start.
 Under "my Ubuntu Mate" install, it seems the Lazarus Application Icon is ignored. Instead,
 I can get a nice Icon displayed on the plank and on the top status bar by putting an 256x256
 icon in  /usr/share/icons/hicolor/256x256/apps/tomboy-ng
+         /usr/share/icons/hicolor/256x256/apps/tomboy.png
 
 I'll also provide, in similar places 16x16, 22x22, 24x24, 48x48 because some docs I've read
 suggest they might be needed. Sigh ....
@@ -175,7 +182,7 @@ individual notebooks that may claim to be members of that notebook. If user load
 such a note, the claims will be ignored and not resaved.
 
 How FileSync Works
-================
+==================
 
 Starts with FileSync.DoSync(). It builds a list based on Local Manifest, remote manifest and
 actual local notes. And then a list that will become the new manifest if necessary.

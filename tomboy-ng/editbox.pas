@@ -144,6 +144,9 @@ unit EditBox;
                 http://bugs.freepascal.org/view.php?id=28679    Linux only ?
     2018/05/12  Extensive changes - MainUnit is now just that.
     2018/05/16  Disable Print menu option in Cocoa.
+    2018/06/13  Drop copy on selection and add Ben's Underline, strikethrough and Fixedwidth !
+    2018/06/13  Reinstate copy on selection, middle button click, Linux & (in app only) Windows only
+
 }
 
 
@@ -153,7 +156,9 @@ interface
 
 uses
     Classes, SysUtils, { FileUtil,} Forms, Controls, Graphics, Dialogs, ExtCtrls,
-    Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs ;
+    Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs,
+    clipbrd, lcltype      // required up here for copy on selection stuff.
+    ;
 
 type
 
@@ -225,6 +230,8 @@ type
         	{ Watchs for  backspace affecting a bullet point, and ctrl x,c,v }
 		procedure KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+        procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
+            Shift: TShiftState; X, Y: Integer);
         procedure MenuBoldClick(Sender: TObject);
         procedure MenuBulletClick(Sender: TObject);
         procedure MenuFixedWidthClick(Sender: TObject);
@@ -289,6 +296,11 @@ type
             	out BlockNo, TrailOffset, LeadOffset: longint): boolean;
         { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
+        // A method called by this or other apps to get what we might have selected
+        procedure PrimaryCopy(const RequestedFormatID: TClipboardFormat;
+            Data: TStream);
+        // Pastes into KMemo whatever is returned by the PrimarySelection system.
+        procedure PrimaryPaste(SelIndex: integer);
         { Saves the note in KMemo1, must have title but can make up a file name if needed }
 		procedure SaveTheNote();
         	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
@@ -298,6 +310,10 @@ type
         procedure MarkDirty();
         //procedure MarkClean();
         function CleanCaption() : ANSIString;
+        // Advises other apps we can do middle button paste
+        procedure SetPrimarySelection;
+        // Cancels any indication we can do middle button paste 'cos nothing is selected
+        procedure UnsetPrimarySelection;
     public
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
@@ -321,7 +337,7 @@ implementation
 { TEditBoxForm }
 uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     LazUTF8,
-    LCLType,			// For the MessageBox
+    //LCLType,			// For the MessageBox
     keditcommon,        // Holds some editing defines
     settings,			// User settings and some defines used across units.
     SearchUnit,              // Is the main starting unit and the search tool.
@@ -449,6 +465,69 @@ procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
 begin
 	if Button = mbRight then PopupMenuRightClick.PopUp;
+end;
+
+
+// ------------------  COPY ON SELECTION METHODS for LINUX and Windows ------
+
+procedure TEditBoxForm.KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
+    Shift: TShiftState; X, Y: Integer);
+var
+    Point : TPoint;
+    LinePos : TKmemoLinePosition;
+begin
+    {$IFNDEF DARWIN}
+    if Button = mbMiddle then begin
+      Point := TPoint.Create(X, Y);
+      PrimaryPaste(KMemo1.PointToIndex(Point, true, true, LinePos));
+      exit();
+    end;
+    if KMemo1.SelAvail and
+        (Kmemo1.Blocks.SelLength <> 0) then
+            SetPrimarySelection()
+        else
+            UnsetPrimarySelection();
+    {$endif}
+end;
+procedure TEditBoxForm.SetPrimarySelection;
+var
+  FormatList: Array [0..1] of TClipboardFormat;
+begin
+  if (PrimarySelection.OnRequest=@PrimaryCopy) then exit;
+  FormatList[0] := CF_TEXT;
+  try
+    PrimarySelection.SetSupportedFormats(1, @FormatList[0]);
+    PrimarySelection.OnRequest:=@PrimaryCopy;
+  except
+  end;
+end;
+
+procedure TEditBoxForm.UnsetPrimarySelection;
+begin
+  if PrimarySelection.OnRequest=@PrimaryCopy then
+    PrimarySelection.OnRequest:=nil;
+end;
+
+procedure TEditBoxForm.PrimaryCopy(
+  const RequestedFormatID: TClipboardFormat;  Data: TStream);
+var
+  s : string;
+begin
+    S := KMemo1.Blocks.SelText;
+    if RequestedFormatID = CF_TEXT then
+        if length(S) > 0 then
+            Data.Write(s[1],length(s));
+end;
+
+procedure TEditBoxForm.PrimaryPaste(SelIndex : integer);
+var
+  Buff : string;
+begin
+    if PrimarySelection.HasFormat(CF_TEXT) then begin  // I don't know if this is useful at all.
+        Buff := PrimarySelection().AsText;
+        if Buff <> '' then
+            KMemo1.Blocks.InsertPlainText(SelIndex, Buff);
+    end;
 end;
 
 
@@ -901,6 +980,7 @@ begin
         // debugln('Saved');
 	end;
     SearchForm.NoteClosing(NoteFileName);
+    UnsetPrimarySelection;                  // tidy up copy on selection.
 end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;

@@ -59,7 +59,7 @@ unit TB_Sync;
     2018/04/13  Added WasDeleted param to MarkNoteReadOnly() so notelister gets updated
     2018/05/21  At start of sync, check to see if the Backup directory exists, make it if necessary
     2018/06/02  Extra debug info if VerboseMode on.
-
+    2018/06/13  UnityWSCtrls removed from Uses, no idea why it was there !
 }
 
 
@@ -322,7 +322,7 @@ end;
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, DateUtils, LazLogger
-        {$ifdef LINUX}, Unix {$endif}, UnityWSCtrls;
+        {$ifdef LINUX}, Unix {$endif} {, UnityWSCtrls};
  	// If you want to use this as a console app, must add LCL to Required Packages
     // in the Project Inspector. I guess there must be a command line alt ??
     // Thats to get LazFileUtils, preferable to FileUtils (also LCL) due to UFT8
