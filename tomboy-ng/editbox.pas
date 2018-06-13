@@ -144,8 +144,6 @@ unit EditBox;
                 http://bugs.freepascal.org/view.php?id=28679    Linux only ?
     2018/05/12  Extensive changes - MainUnit is now just that.
     2018/05/16  Disable Print menu option in Cocoa.
-    2018/06/11  Added capability to do Copy on Selection, Paste on middle button
-                aka PrimarySelection. For Linux and (in app only) Windows.
 }
 
 
@@ -155,9 +153,7 @@ interface
 
 uses
     Classes, SysUtils, { FileUtil,} Forms, Controls, Graphics, Dialogs, ExtCtrls,
-    Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs,
-    clipbrd, lcltype      // required up here for copy on selection stuff.
-    ;
+    Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs ;
 
 type
 
@@ -180,7 +176,6 @@ type
         MenuHighLight: TMenuItem;
         MenuHuge: TMenuItem;
         MenuBullet: TMenuItem;
-		MenuItem1: TMenuItem;
         MenuItemSpell: TMenuItem;
 		MenuItemExportRTF: TMenuItem;
 		MenuItemExportPlainText: TMenuItem;
@@ -200,6 +195,8 @@ type
         MenuNormal: TMenuItem;
         MenuLarge: TMenuItem;
         MenuFixedWidth: TMenuItem;
+        MenuUnderline: TMenuItem;
+        MenuStrikeout: TMenuItem;
         PanelReadOnly: TPanel;
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
@@ -228,13 +225,14 @@ type
         	{ Watchs for  backspace affecting a bullet point, and ctrl x,c,v }
 		procedure KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-        procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
-            Shift: TShiftState; X, Y: Integer);
         procedure MenuBoldClick(Sender: TObject);
         procedure MenuBulletClick(Sender: TObject);
+        procedure MenuFixedWidthClick(Sender: TObject);
         procedure MenuHighLightClick(Sender: TObject);
         procedure MenuHugeClick(Sender: TObject);
         procedure MenuItalicClick(Sender: TObject);
+        procedure MenuUnderlineClick(Sender: TObject);
+        procedure MenuStrikeoutClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
 		procedure MenuItemCutClick(Sender: TObject);
         procedure MenuItemDeleteClick(Sender: TObject);
@@ -291,11 +289,6 @@ type
             	out BlockNo, TrailOffset, LeadOffset: longint): boolean;
         { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
-        // A method called by this or other apps to get what we might have selected
-        procedure PrimaryCopy(const RequestedFormatID: TClipboardFormat;
-            Data: TStream);
-        // Pastes into KMemo whatever is returned by the PrimarySelection system.
-        procedure PrimaryPaste(SelIndex: integer);
         { Saves the note in KMemo1, must have title but can make up a file name if needed }
 		procedure SaveTheNote();
         	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
@@ -305,10 +298,6 @@ type
         procedure MarkDirty();
         //procedure MarkClean();
         function CleanCaption() : ANSIString;
-        // Advises other apps we can do middle button paste
-        procedure SetPrimarySelection;
-        // Cancels any indication we can do middle button paste 'cos nothing is selected
-        procedure UnsetPrimarySelection;
     public
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
@@ -332,7 +321,7 @@ implementation
 { TEditBoxForm }
 uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     LazUTF8,
-    //LCLType,			// For the MessageBox
+    LCLType,			// For the MessageBox
     keditcommon,        // Holds some editing defines
     settings,			// User settings and some defines used across units.
     SearchUnit,              // Is the main starting unit and the search tool.
@@ -456,75 +445,10 @@ begin
       }
 end;
 
-
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
 begin
 	if Button = mbRight then PopupMenuRightClick.PopUp;
-end;
-
-
-// ------------------  COPY ON SELECTION METHODS for LINUX and Windows -----------
-
-procedure TEditBoxForm.KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
-    Shift: TShiftState; X, Y: Integer);
-var
-    Point : TPoint;
-    LinePos : TKmemoLinePosition;
-begin
-    {$IFNDEF DARWIN}
-    if Button = mbMiddle then begin
-      Point := TPoint.Create(X, Y);
-      PrimaryPaste(KMemo1.PointToIndex(Point, true, true, LinePos));
-      exit();
-    end;
-    if KMemo1.SelAvail and
-        (Kmemo1.Blocks.SelLength <> 0) then
-            SetPrimarySelection()
-        else
-            UnsetPrimarySelection();
-    {$endif}
-end;
-
-procedure TEditBoxForm.SetPrimarySelection;
-var
-  FormatList: Array [0..1] of TClipboardFormat;
-begin
-  if (PrimarySelection.OnRequest=@PrimaryCopy) then exit;
-  FormatList[0] := CF_TEXT;
-  try
-    PrimarySelection.SetSupportedFormats(1, @FormatList[0]);
-    PrimarySelection.OnRequest:=@PrimaryCopy;
-  except
-  end;
-end;
-
-procedure TEditBoxForm.UnsetPrimarySelection;
-begin
-  if PrimarySelection.OnRequest=@PrimaryCopy then
-    PrimarySelection.OnRequest:=nil;
-end;
-
-procedure TEditBoxForm.PrimaryCopy(
-  const RequestedFormatID: TClipboardFormat;  Data: TStream);
-var
-  s : string;
-begin
-    S := KMemo1.Blocks.SelText;
-    if RequestedFormatID = CF_TEXT then
-        if length(S) > 0 then
-            Data.Write(s[1],length(s));
-end;
-
-procedure TEditBoxForm.PrimaryPaste(SelIndex : integer);
-var
-  Buff : string;
-begin
-    if PrimarySelection.HasFormat(CF_TEXT) then begin  // I don't know if this is useful at all.
-        Buff := PrimarySelection().AsText;
-        if Buff <> '' then
-            KMemo1.Blocks.InsertPlainText(SelIndex, Buff);
-    end;
 end;
 
 
@@ -535,6 +459,9 @@ const
  ChangeBold   = 2;
  ChangeItalic = 3;
  ChangeColor  = 4;
+ ChangeFixedWidth = 5;
+ ChangeStrikeout = 6;
+ ChangeUnderline = 7;
 
 { This complex function will set font size, Bold or Italic or Color depending on the
   constant passed as first parameter. NewFontSize is ignored (and can be ommitted)
@@ -625,11 +552,30 @@ begin
 					end else begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsItalic];
 					end;
-		ChangeColor : 	if FirstBlock.TextStyle.Font.Color = NormalColor then begin
-                        Block.TextStyle.Font.Color := HiColor;
-                    end else begin
-                        Block.TextStyle.Font.Color := NormalColor;
-                    end;
+                ChangeFixedWidth :
+		                        if FirstBlock.TextStyle.Font.Name = 'Lucida Console' then begin
+				                Block.TextStyle.Font.Name := 'Arial';  // or perhaps DefaultFont ?
+			                end else begin
+				                Block.TextStyle.Font.Name := 'Lucida Console';
+		                        end;
+                ChangeStrikeout :
+					if fsStrikeout in FirstBlock.TextStyle.Font.style then begin
+						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsStrikeout];
+					end else begin
+						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsStrikeout];
+					end;
+                ChangeUnderline :
+					if fsUnderline in FirstBlock.TextStyle.Font.style then begin
+						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsUnderline];
+					end else begin
+						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsUnderline];
+					end;
+
+		ChangeColor :           if FirstBlock.TextStyle.Font.Color = NormalColor then begin
+                                                Block.TextStyle.Font.Color := HiColor;
+                                        end else begin
+                                                Block.TextStyle.Font.Color := NormalColor;
+                                        end;
 	end;
 end;
 
@@ -670,6 +616,20 @@ begin
 	AlterFont(ChangeItalic);
 end;
 
+procedure TEditBoxForm.MenuUnderlineClick(Sender: TObject);
+begin
+    AlterFont(ChangeUnderline);
+end;
+
+procedure TEditBoxForm.MenuStrikeoutClick(Sender: TObject);
+begin
+        AlterFont(ChangeStrikeout);
+end;
+
+procedure TEditBoxForm.MenuFixedWidthClick(Sender: TObject);
+begin
+       AlterFont(ChangeFixedWidth);
+end;
 
 { ------- S T A N D A R D    E D I T I N G    F U N C T I O N S ----- }
 
@@ -941,7 +901,6 @@ begin
         // debugln('Saved');
 	end;
     SearchForm.NoteClosing(NoteFileName);
-    UnsetPrimarySelection;                  // tidy up copy on selection.
 end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
