@@ -8,4 +8,4 @@ To Fix   : KMemo has problems exporting and importing UTF8 encoded text
 Warning  : Untested in Delphi, may not apply there as different Unicode Model
 ----------------------------------
 
-This patch is applied from top of kmemo tree (where you can see, eg, kmemo_readme.txt and the 'source' directory) to fix two bugs present on most versions before May 2018 (and still at time of writing, unfixed).
+This patch is applied from kcontrols source directory to fix two bugs present on most versions before May 2018 (and still at time of writing, unfixed).

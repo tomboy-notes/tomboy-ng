@@ -1,48 +1,52 @@
---- lcl/interfaces/gtk2/gtk2wsfactory.pas	(revision 50009)
-+++ lcl/interfaces/gtk2/gtk2wsfactory.pas	(working copy)
-@@ -120,7 +120,8 @@
-   Gtk2WSSpin,
-   Gtk2WSStdCtrls,
-   Gtk2WSPairSplitter,
--  Gtk2WSPrivate;
-+  Gtk2WSPrivate,
-+  UnityWSCtrls;
+--- unitywsctrls.pas-ref	2018-05-23 13:51:53.546732550 +1000
++++ unitywsctrls.pas	2018-05-23 21:17:36.609914889 +1000
+@@ -12,6 +12,13 @@
+   Classes, SysUtils, dynlibs,
+   Graphics, Controls, Forms, ExtCtrls, WSExtCtrls, LCLType, LazUTF8;
  
- // imglist
- function RegisterCustomImageList: Boolean; alias : 'WSRegisterCustomImageList';
-@@ -460,7 +461,10 @@
++{ Very minor changes suggested May 2018 so that -
++  1. Tries a later version of libappindicator library if old one not present
++  2. Now defaults to try and use this unit if above lib is present.
++  3. Still resorts to System Tray model if all else fails.
++  DRB
++}
++
+ { TUnityWSCustomTrayIcon is the class for tray icons on systems
+   running the Unity desktop environment.
  
- function RegisterCustomTrayIcon: Boolean; alias : 'WSRegisterCustomTrayIcon';
- begin
--  RegisterWSComponent(TCustomTrayIcon, TGtk2WSCustomTrayIcon);
-+  if UnityAppIndicatorInit then
-+    RegisterWSComponent(TCustomTrayIcon, TUnityWSCustomTrayIcon)
-+  else
-+    RegisterWSComponent(TCustomTrayIcon, TGtk2WSCustomTrayIcon);
-   Result := True;
- end;
+@@ -49,7 +56,8 @@
+ implementation
  
-Index: lcl/interfaces/lcl.lpk
-===================================================================
---- lcl/interfaces/lcl.lpk	(revision 50009)
-+++ lcl/interfaces/lcl.lpk	(working copy)
-@@ -128,7 +128,7 @@
-     <License Value="modified LGPL-2
- "/>
-     <Version Major="1" Minor="5"/>
--    <Files Count="438">
-+    <Files Count="439">
-       <Item1>
-         <Filename Value="carbon/agl.pp"/>
-         <AddToUsesPkgSection Value="False"/>
-@@ -2176,6 +2176,10 @@
-         <AddToUsesPkgSection Value="False"/>
-         <UnitName Value="Gtk3WSExtDlgs"/>
-       </Item438>
-+      <Item439>
-+        <Filename Value="gtk2/unitywsctrls.pas"/>
-+        <Type Value="Include"/>
-+      </Item439>
-     </Files>
-     <LazDoc Paths="../../docs/xml/lcl"/>
-     <i18n>
+ const
+-  libappindicator = 'libappindicator.so.1';
++  libappindicator_1 = 'libappindicator.so.1';
++  libappindicator_3 = 'libappindicator3.so.1';
+ 
+ {const
+   APP_INDICATOR_SIGNAL_NEW_ICON = 'new-icon';
+@@ -258,16 +266,20 @@
+   if Loaded then
+     Exit(Initialized);
+   Loaded:= True;
+-  if GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP') <> 'Unity' then
++{  if GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP') <> 'Unity' then
+   begin
+     Initialized := False;
+     Exit;
+-  end;
++  end;        }
+   if Initialized then
+     Exit(True);
+-  Module := LoadLibrary(libappindicator);
+-  if Module = 0 then
+-    Exit;
++  // we'll reject if _3 not present or if both present, accept if ONLY _3 is present.
++  Module := LoadLibrary(libappindicator_1);
++  if Module <> 0 then       // if _1 present, will probably work with old SystemTray
++     exit;                  // and may not work with this Unit. So let SystemTray do it.
++  Module := LoadLibrary(libappindicator_3);        // thats the one we want here.
++  if Module = 0 then                               // no libappindicator ....
++     Exit;                                         // hope SystemTray can help you ....
+   Result :=
+     TryLoad('app_indicator_get_type', @app_indicator_get_type) and
+     TryLoad('app_indicator_new', @app_indicator_new) and

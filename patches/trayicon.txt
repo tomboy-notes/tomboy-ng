@@ -9,6 +9,6 @@ The patch is intended to be smart enough to work out when it should use the AppI
 
 At time of writing, May 2018, debian is OK,, its still using an earlier Gnome, one that shows the tray icon on the lower left in a little slid out that appears if you move the mouse there.
 
-It should be applied in /usr/share/lazarus/1.8.0/lcl/interfaces/gtk2 and targets gtk2wsfactory.pas
+It should be applied in /usr/share/lazarus/1.8.0/lcl/interfaces/gtk2 and targets unitywsctrls.pas
 
 David, 25th May, 2018
