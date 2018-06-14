@@ -68,6 +68,8 @@ unit settings;
     2018/06/06  Substantial changes. Now create config dir at form creation.
                 User no longer manually saves, config file is updated at each change.
                 Extensive checks of config and notes directory before proceeding.
+    2018/06/14  Moved call to CheckSpelling() from OnShow to OnCreate.
+                Select MediumFont in default settings.
 
 }
 
@@ -432,7 +434,7 @@ end;
 
 procedure TSett.FormShow(Sender: TObject);
 begin
-    CheckSpelling;
+    //CheckSpelling;
     MaskSettingsChanged := False;
 end;
 
@@ -455,6 +457,7 @@ begin
     HaveConfig := false;
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
+    CheckSpelling();
     CheckConfigFile();                      // write a new, default one if necessary
     if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
         ButtonSetSynServer.Caption := 'Set File Sync Repo';
@@ -536,6 +539,7 @@ begin
     end else begin
         if CheckDirectory(NoteDirectory) then begin
             MaskSettingsChanged := False;
+            RadioFontMedium.Checked := True;
             SettingsChanged();    // write a initial default file
             MaskSettingsChanged := True;
             HaveConfig := True;

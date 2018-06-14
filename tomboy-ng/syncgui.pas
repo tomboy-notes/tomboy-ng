@@ -42,6 +42,7 @@ unit SyncGUI;
                 to naming of MainUnit and SearchUnit.
     2018/05/21  Show any sync errors as hints in the StringGrid.
     2018/06/02  Honor a cli --debug-sync
+    2018/06/14  Update labels when transitioning from Testing Sync to Manual Sync
 
 }
 
@@ -315,6 +316,8 @@ end;
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
     Label2.Caption:='OK, I''ll do it, please wait .....';
+    Label1.Caption:='Manual Sync';
+    Memo1.Clear;
     Application.ProcessMessages;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
