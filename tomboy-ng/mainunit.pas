@@ -94,7 +94,6 @@ type
         TrayMenuRecent5: TMenuItem;
         TrayMenuRecent6: TMenuItem;
         TrayMenuRecent7: TMenuItem;
-        TrayMenuRecent8: TMenuItem;
         TrayMenuRecent9: TMenuItem;
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
@@ -154,7 +153,7 @@ begin
         CheckStatus();
         SearchForm.IndexNotes(); // also calls Checkstatus but safe to call anytime
         if not AllowDismiss then begin
-            Label7.Caption := 'Sadely, on this OS, I cannot';
+            Label7.Caption := 'Sadly, on this OS, I cannot';
             Label8.Caption := 'let you dismiss this window';
             Label7.Hint:='are you trying to shut me down ? Dave ?';
             Label8.Hint := Label7.Hint;
