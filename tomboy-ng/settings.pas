@@ -221,7 +221,7 @@ const
 
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
 
-     HiColor      = clRed;
+     HiColor      = clYellow;
      NormalColor  = clDefault; 		// Must somewhere set this to be sure ?
 
      LinkScanRange = 50;		// when the user changes a Note, we search +/- around
