@@ -660,9 +660,9 @@ begin
 					end;
 
 		ChangeColor :           if FirstBlock.TextStyle.Font.Color = NormalColor then begin
-                                                Block.TextStyle.Font.Color := HiColor;
+                                                Block.TextStyle.Brush.Color := HiColor;
                                         end else begin
-                                                Block.TextStyle.Font.Color := NormalColor;
+                                                Block.TextStyle.Brush.Color := NormalColor;
                                         end;
 	end;
 end;
