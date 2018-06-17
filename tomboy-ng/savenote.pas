@@ -73,10 +73,16 @@ type
 			Bold : boolean;
 			Italics : boolean;
 			HiLight : boolean;
+                        Underline : boolean;
+                        Strikeout : boolean;
+                        FixedWidth : boolean;
             PrevFSize : integer;
 			PrevBold : boolean;
 			PrevItalics : boolean;
 			PrevHiLight : boolean;
+                        PrevUnderline : boolean;
+                        PrevStrikeout : boolean;
+                        PrevFixedWidth : boolean;
 			InList : boolean;
             KM : TKMemo;
             function AddTag(const FT : TFont; var Buff : ANSIString) : ANSIString;
@@ -108,7 +114,16 @@ uses FileUtil               // Graphics needed for font style defines
     ,LazFileUtils           // For ExtractFileName...
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 
-
+const
+  {$ifdef LINUX}
+  MonospaceFont = 'monospace';
+  {$ifend}
+  {$ifdef WINDOWS}
+  MonospaceFont = 'Lucida Console';
+  {$ifend}
+  {$ifdef DARWIN}
+  MonospaceFont = 'Lucida Console';
+  {$ifend}
 
 function TBSaveNote.SetFontXML(Size : integer; TurnOn : boolean) : string;
 begin
@@ -124,6 +139,7 @@ end;
 
 function TBSaveNote.AddTag(const FT : TFont; var Buff : ANSIString) : ANSIString;
 begin
+     Writeln(FT.Name);
     // Important that we keep the tag order consistent. Good xml requires no cross over
     // tags. If the note is to be readable by Tomboy, must comply. (EditBox does not care)
     // Tag order -
@@ -155,17 +171,105 @@ begin
         HiLight := false;
     end;
 
+    // When Underline turns OFF
+    if (Underline and (not (fsUnderline in FT.Style))) then begin
+                  if Bold then Buff := Buff + '</bold>';
+                  if Italics then Buff := Buff + '</italics>';
+                  if HiLight then Buff := Buff + '</highlight>';
+                  Buff := Buff + '</underline>';
+                  if HiLight then Buff := Buff + '<highlight>';
+                  if Italics then Buff := Buff + '<italics>';
+                  if Bold then Buff := Buff + '<bold>';
+                  Underline := false;
+    end;
+
+    // When Strikeout turns OFF
+    if (Strikeout and (not (fsStrikeout in FT.Style))) then begin
+                  if Bold then Buff := Buff + '</bold>';
+                  if Italics then Buff := Buff + '</italics>';
+                  if HiLight then Buff := Buff + '</highlight>';
+                  if Underline then Buff := Buff + '</underline>';
+                  Buff := Buff + '</strikeout>';
+                  if Underline then Buff := Buff + '<underline>';
+                  if HiLight then Buff := Buff + '<highlight>';
+                  if Italics then Buff := Buff + '<italics>';
+                  if Bold then Buff := Buff + '<bold>';
+                  Strikeout := false;
+    end;
+
+    // When FixedWidth turns OFF
+    if (FixedWidth <> (FT.Pitch = fpFixed) or (FT.Name = MonospaceFont)) then begin
+                  Writeln(MonospaceFont + 'from FixedWidth turns OFF');
+                  if Bold then Buff := Buff + '</bold>';
+                  if Italics then Buff := Buff + '</italics>';
+                  if HiLight then Buff := Buff + '</highlight>';
+                  if Underline then Buff := Buff + '</underline>';
+                  if Strikeout then Buff := Buff + '</strikeout>';
+                  Buff := Buff + '</monospace>';
+                  if Strikeout then Buff := Buff + '<strikeout>';
+                  if Underline then Buff := Buff + '<underline>';
+                  if HiLight then Buff := Buff + '<highlight>';
+                  if Italics then Buff := Buff + '<italics>';
+                  if Bold then Buff := Buff + '<bold>';
+                  FixedWidth := false;
+    end;
+
     // When Font size changes
     if (FSize <> FT.Size) and (FT.Size <> Sett.FontTitle) then begin
 		if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
         if HiLight then Buff := Buff + '</highlight>';
+                              // if strikeout, underline, fixedwidth here?
         Buff := Buff + SetFontXML(FSize, false);
         Buff := Buff + SetFontXML(FT.Size, true);
         if HiLight then Buff := Buff + '<highlight>';
         if Italics then Buff := Buff + '<italic>';
         if Bold then Buff := Buff + '<bold>';
         FSize := FT.Size;
+    end;
+
+    // FixedWidth turns ON
+    if (FixedWidth and (FT.Name = MonospaceFont) or (FT.Pitch = fpFixed)) then begin
+        Writeln(MonospaceFont + 'from FixedWidth turns ON');
+        if Bold then Buff := Buff + '</bold>';
+        if Italics then Buff := Buff + '</italics>';
+        if HiLight then Buff := Buff + '</highlight>';
+        if Underline then Buff := Buff + '</underline>';
+        if Strikeout then Buff := Buff + '</strikeout>';
+        Buff := Buff + '<monospace>';
+        if Strikeout then Buff := Buff + '<strikeout>';
+        if Underline then Buff := Buff + '<underline>';
+        if HiLight then Buff := Buff + '<highlight>';
+        if Italics then Buff := Buff + '<italics>';
+        if Bold then Buff := Buff + '<bold>';
+        FixedWidth := true;
+    end;
+
+    // Strikeout turns ON
+    if ((not Strikeout) and (fsStrikeout in FT.Style)) then begin
+        if Bold then Buff := Buff + '</bold>';
+        if Italics then Buff := Buff + '</italics>';
+        if HiLight then Buff := Buff + '</highlight>';
+        if Underline then Buff := Buff + '</underline>';
+        Buff := Buff + '<strikeout>';
+        if Underline then Buff := Buff + '<underline>';
+        if HiLight then Buff := Buff + '<highlight>';
+        if Italics then Buff := Buff + '<italics>';
+        if Bold then Buff := Buff + '<bold>';
+        Strikeout := true;
+    end;
+
+
+    // Underline turns ON
+    if ((not Underline) and (fsUnderline in FT.Style)) then begin
+       if Bold then Buff := Buff + '</bold>';
+       if Italics then Buff := Buff + '</italics>';
+       if HiLight then Buff := Buff + '</highlight>';
+       Buff := Buff + '<underline>';
+       if HiLight then Buff := Buff + '<highlight>';
+       if Italics then Buff := Buff + '<italics>';
+       if Bold then Buff := Buff + '<bold>';
+       Underline := true;
     end;
 
     // Highlight turns ON
@@ -232,7 +336,34 @@ begin
 	if HiLight then begin
         EndStartSt := EndStartSt + '</highlight>';
         EndEndSt := '<highlight>' + EndEndSt;
-    end;
+    if PrevUnderline then begin
+        StartStartSt := StartStartSt + '</underline>';
+        EndEndSt := '<underline>' + EndEndSt;
+        end;
+        if Underline then begin
+        EndStartSt := EndStartSt + '</underline>';
+        EndEndSt := '<underline>' + EndEndSt;
+        end;
+    if PrevStrikeout then begin
+                     Writeln('Adding PrevStrikeout');
+        StartStartSt := StartStartSt + '</strikeout>';
+        EndEndSt := '<strikeout>' + EndEndSt;
+        end;
+        if Strikeout then begin
+                     Writeln('Adding just Strikeout');
+        EndStartSt := EndStartSt + '</strikeout>';
+        EndEndSt := '<strikeout>' + EndEndSt;
+        end;
+    if PrevFixedWidth then begin
+                      Writeln('Adding PrevFixedWidth');
+        StartStartSt := StartStartSt + '</monospace>';
+        EndEndSt := '<monospace>' + EndEndSt;
+        end;
+        if FixedWidth then begin
+                      Writeln('Adding just FixedWidth');
+        EndStartSt := EndStartSt + '</monospace>';
+        EndEndSt := '<monospace>' + EndEndSt;
+        end;
     if PrevFSize <> Sett.FontNormal then begin
         StartStartSt := StartStartSt + SetFontXML(PrevFSize, False);
         StartEndSt := SetFontXML(PrevFSize, True) + StartEndSt;
@@ -241,6 +372,8 @@ begin
         EndStartSt := EndStartSt + SetFontXML(FSize, False);
         EndEndSt := SetFontXML(FSize, True) + EndEndSt;
 	end;
+end;
+
     {writeLn('Buff at Start [' + Buff + ']');
     writeln('StartStart    [' + StartStartSt + ']');
     writeln('StartEnd      [' + StartEndSt + ']');
@@ -299,6 +432,13 @@ begin
    if TKMemoTextBlock(BK).TextStyle.Font.Color = HiColor then
    Result := Result + ' Colour ';
    Result := Result + inttostr(TKMemoTextBlock(BK).TextStyle.Font.Size);
+   if fsUnderline in TKMemoTextBlock(BK).TextStyle.Font.Style then
+   Result := Result + ' Underline ';
+   if fsStrikeout in TKMemoTextBlock(BK).TextStyle.Font.Style then
+   Result := Result + ' Strikeout ';
+   if TKMemoTextBlock(BK).TextStyle.Font.Pitch = fpFixed then
+   Writeln('Reading FixedWidth from line 440');
+   Result := Result + ' FixedWidth ';
 
 end;
 
@@ -312,7 +452,13 @@ begin
    if Ft.Color = HiColor then
    Result := Result + ' Colour ';
    Result := Result + inttostr(Ft.Size);
-
+   if fsUnderline in Ft.Style then
+   Result := Result + ' Underline ';
+   if fsStrikeout in Ft.Style then
+   Result := Result + ' Strikeout ';
+   if Ft.Pitch = fpFixed then
+   Writeln('Reading FixedWidth from ln460');
+   Result := Result + ' FixedWidth ';
 end;
 
 procedure TBSaveNote.SaveNewTemplate(NotebookName : ANSIString);
@@ -351,6 +497,7 @@ var
 	Bold := false;
  	Italics := False;
  	HiLight := False;
+        Underline := False;
  	InList := false;
     ID := ExtractFileNameOnly(FileName) + '.note';
             // Must deal with an empty list !
@@ -368,6 +515,9 @@ var
 				PrevBold := Bold;
  				PrevItalics := Italics;
  				PrevHiLight := HiLight;
+                                PrevUnderline := Underline;
+                                PrevStrikeout := Strikeout;
+                                PrevFixedWidth := FixedWidth;
                 PrevFSize := FSize;
                 repeat
                     Block := KM1.Blocks.Items[BlockNo];
@@ -405,6 +555,9 @@ var
             if Bold then Buff := '</bold>';
             if Italics then Buff := Buff + '</italic>';
             if HiLight then Buff := Buff + '</highlight>';
+            if Underline then Buff := Buff + '</underline>';
+            if Strikeout then Buff := Buff + '</strikeout>';
+            if FixedWidth then Buff := Buff + '</monospace>';
             if FSize <> Sett.FontNormal then
                  Buff := Buff + SetFontXML(FSize, False);
             if length(Buff) > 0 then
@@ -500,4 +653,3 @@ begin
 end;
 
 end.
-

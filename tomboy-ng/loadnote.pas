@@ -62,7 +62,9 @@ type
          Bold : boolean;
          Italic : boolean;
          HighLight : boolean;
-
+         Underline : boolean;
+         Strikeout : boolean;
+         FixedWidth : boolean;
          InBullet, BulletOwing : boolean;
          InStr : ANSIString;
          KM : TKMemo;
@@ -118,6 +120,18 @@ end;
     the Global constants (in the Settings Unit) to tell it about style, and
     size. The Regional InStr has what to write. }
 procedure TBLoadNote.AddText(AddPara : Boolean);
+
+const
+ {$ifdef LINUX}
+ MonospaceFont = 'monospace';
+ {$ifend}
+ {$ifdef WINDOWS}
+ MonospaceFont = 'Lucida Console';
+ {$ifend}
+ {$ifdef DARWIN}
+ MonospaceFont = 'Lucida Console';
+ {$ifend}
+
 var
     FT : TFont;
     TB : TKMemoTextBlock;
@@ -140,6 +154,11 @@ begin
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
       if HighLight then FT.Color := HiColor;
+      if Underline then FT.Style := Ft.Style + [fsUnderline];
+      if Strikeout then FT.Style := Ft.Style + [fsStrikeout];
+      if FixedWidth then FT.Name := MonospaceFont;
+      if FixedWidth then FT.Pitch := fpFixed;
+      if not FixedWidth then FT.Name := 'default'; // Because 'FixedWidth := false;' does not specify a font to return to
       TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));			// We have to scan InStr for &lt; and &gt;  being < and >
       TB.TextStyle.Font := Ft;
       FT.Free;
@@ -210,6 +229,12 @@ begin
             '/italic' : Italic := false;
             'highlight' : HighLight := true;
             '/highlight' : HighLight := false;
+            'underline' : Underline := true;
+            '/underline' : Underline := false;
+            'strikeout' : Strikeout := true;
+            '/strikeout' : Strikeout := false;
+            'monospace' : FixedWidth := true;
+            '/monospace' : FixedWidth := false;
             'size:small' : FontSize := Sett.FontSmall;
             '/size:small' : FontSize := Sett.FontNormal;
             'size:large' : FontSize := Sett.FontLarge;
@@ -224,4 +249,3 @@ begin
 end;
 
 end.
-

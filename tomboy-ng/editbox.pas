@@ -541,6 +541,12 @@ const
  ChangeFixedWidth = 5;
  ChangeStrikeout = 6;
  ChangeUnderline = 7;
+ DefaultFontName = 'default';
+ {$ifdef LINUX}
+   MonospaceFont = 'monospace';
+ {$else}
+   MonospaceFont = 'Lucida Console';
+ {$ifend}
 
 { This complex function will set font size, Bold or Italic or Color depending on the
   constant passed as first parameter. NewFontSize is ignored (and can be ommitted)
@@ -632,11 +638,14 @@ begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsItalic];
 					end;
                 ChangeFixedWidth :
-		                        if FirstBlock.TextStyle.Font.Name = 'Lucida Console' then begin
-				                Block.TextStyle.Font.Name := 'Arial';  // or perhaps DefaultFont ?
-			                end else begin
-				                Block.TextStyle.Font.Name := 'Lucida Console';
-		                        end;
+                                        if FirstBlock.TextStyle.Font.Name <> MonospaceFont then begin
+                                           Block.TextStyle.Font.Pitch := fpFixed;
+                                           Block.TextStyle.Font.Name := MonospaceFont;
+                                        end else begin
+                                           Block.TextStyle.Font.Pitch := fpVariable;
+	                                   Block.TextStyle.Font.Name := DefaultFontName;
+                                        end;
+
                 ChangeStrikeout :
 					if fsStrikeout in FirstBlock.TextStyle.Font.style then begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsStrikeout];
@@ -651,9 +660,9 @@ begin
 					end;
 
 		ChangeColor :           if FirstBlock.TextStyle.Font.Color = NormalColor then begin
-                                                Block.TextStyle.Font.Color := HiColor;
+                                                Block.TextStyle.Brush.Color := HiColor;
                                         end else begin
-                                                Block.TextStyle.Font.Color := NormalColor;
+                                                Block.TextStyle.Brush.Color := NormalColor;
                                         end;
 	end;
 end;
@@ -891,8 +900,6 @@ begin
     SaveTheNote();
 end;
 
-
-
 {	FormShow gets called under a number of conditions Title    Filename       Template
 	- Re-show, everything all loaded.  Ready = true   yes      .              .
       just exit
@@ -963,7 +970,13 @@ begin
 end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
+
+ //   DefaultFontName : string;
+ //   MonospaceFont : string;
+
 begin
+ //   DefaultFontName := TKMemoTextBlock(Kmemo1.Blocks.Items[0]).TextStyle.Font.Name;
+ //   Kmemo1.Clear;
     {$ifdef LCLCOCOA}
     MenuItemPrint.Enabled := False;     // Cocoa cannot print (May 2018)
     {$endif}
@@ -1564,4 +1577,3 @@ begin
 end;
 
 end.
-
