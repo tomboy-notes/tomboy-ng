@@ -134,8 +134,8 @@ const
 
 var
     FT : TFont;
-    TB : TKMemoTextBlock;
     PB : TKMemoParagraph;
+    TB : TKMemoTextBlock ;
     //T1, T2 : qword;
 begin
   if not InContent then exit;
@@ -150,16 +150,17 @@ begin
       end else begin
         FT.Style := [];
         FT.Size:= FontSize;
+
       end;
+      TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));  // We have to scan InStr for &lt; and &gt;  being < and >
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
-      if HighLight then FT.Color := HiColor;
+      if HighLight then TB.TextStyle.Brush.Color := HiColor;
       if Underline then FT.Style := Ft.Style + [fsUnderline];
       if Strikeout then FT.Style := Ft.Style + [fsStrikeout];
       if FixedWidth then FT.Name := MonospaceFont;
       if FixedWidth then FT.Pitch := fpFixed;
-      if not FixedWidth then FT.Name := 'default'; // Because 'FixedWidth := false;' does not specify a font to return to
-      TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));			// We have to scan InStr for &lt; and &gt;  being < and >
+      if not FixedWidth then FT.Name := 'default';    // Because 'FixedWidth := false;' does not specify a font to return to
       TB.TextStyle.Font := Ft;
       FT.Free;
   end;
