@@ -659,10 +659,10 @@ begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsUnderline];
 					end;
 
-		ChangeColor :           if FirstBlock.TextStyle.Font.Color = NormalColor then begin
+		ChangeColor :           if FirstBlock.TextStyle.Brush.Color <> HiColor then begin
                                                 Block.TextStyle.Brush.Color := HiColor;
                                         end else begin
-                                                Block.TextStyle.Brush.Color := NormalColor;
+                                                Block.TextStyle.Brush.Color := clDefault;
                                         end;
 	end;
 end;
