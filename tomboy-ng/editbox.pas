@@ -662,7 +662,7 @@ begin
 		ChangeColor :           if FirstBlock.TextStyle.Brush.Color <> HiColor then begin
                                                 Block.TextStyle.Brush.Color := HiColor;
                                         end else begin
-                                                Block.TextStyle.Brush.Color := clWhite;
+                                                Block.TextStyle.Brush.Color := clDefault;
                                         end;
 	end;
 end;
