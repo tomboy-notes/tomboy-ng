@@ -12,6 +12,8 @@ unit Mainunit;
                 before having set a notes directory.
     2018/06/02  Added a cli switch to debug sync
 
+    2018/06/19  Got some stuff for singlenotemode() - almost working.
+
 
 
 
@@ -20,7 +22,13 @@ unit Mainunit;
     -g
     --debug-sync Turn on Verbose mode during sync
 
-    --config=<some_dir> Directory to keep config and sync manifest in
+    --config-dir=<some_dir> Directory to keep config and sync manifest in.
+
+    -o note_fullfilename
+    --open=<note_fullfilename> Opens, in standalone mode, a note. Does not check
+                to see if another copy of tomboy-ng is open but will prevent a
+                normal startup of tomboy-ng. Won't interfere with an existing copy
+                however.
 
     --help -h   Shows and exits (not implemented)
                 something to divert debug msg to a file ??
@@ -94,6 +102,7 @@ type
         TrayMenuRecent5: TMenuItem;
         TrayMenuRecent6: TMenuItem;
         TrayMenuRecent7: TMenuItem;
+        TrayMenuRecent8: TMenuItem;
         TrayMenuRecent9: TMenuItem;
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
@@ -112,7 +121,10 @@ type
         procedure MMSyncClick(Sender: TObject);
         procedure TrayIconClick(Sender: TObject);
     private
+        CmdLineErrorMsg : string;
         AllowDismiss : boolean; // Allow user to dismiss (ie hide) the opening window.
+        function CommandLineError() : boolean;
+        procedure SingleNoteMode(FullFileName: string);
 
     public
         UseTrayMenu : boolean;
@@ -129,17 +141,51 @@ implementation
 
 { TMainForm }
 
-uses settings,
+uses LazLogger, LazFileUtils,
+    settings,
     SearchUnit,
     {$ifdef LINUX}
     gtk2, gdk2, Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
-    uAppIsRunning;
+    uAppIsRunning,
+    Editbox;    // Used only in SingleNoteMode
+
+procedure TMainForm.SingleNoteMode(FullFileName : string);
+var
+    EBox : TEditBoxForm;
+begin
+    if FileExistsUTF8(FullFileName) then begin
+	    EBox := TEditBoxForm.Create(Application);
+        EBox.SingleNoteMode:=True;
+        EBox.NoteTitle:= '';
+        EBox.NoteFileName := FullFileName;
+        Ebox.TemplateIs := '';
+        EBox.Top := Placement + random(Placement*2);
+        EBox.Left := Placement + random(Placement*2);
+        EBox.Dirty := False;
+        EBox.ShowModal;
+        FreeandNil(EBox);
+    end else
+        DebugLn('Sorry, cannot find a note called ' + FullFileName);
+    Close;
+    // if that editBox calls SaveNote, SaveNote will call its NoteBookTags() which
+    // will call SearchForm.NoteLister.GetNotebooks(SL, ID). And crash because we don't
+    // at this stage have a NoteLister declared. So, maybe, test in NoteBookTags() to see if
+    // SearchForm.NoteLister = nil   ??
+    // Also need to restrict what a user can do in the note in this mode.
+    // No notebooks, no auto linking ......
+end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
+    if CmdLineErrorMsg <> '' then close;    // cannot close in OnCreate()
     Left := 10;
     Top := 40;
+    if Application.HasOption('o', 'open-note') then begin
+        SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
+        exit();
+    end;
+
     if AlreadyRunning() then begin
         showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
         close();
@@ -218,10 +264,29 @@ begin
     {$endif}
 end;
 
-procedure TMainForm.FormCreate(Sender: TObject);
-var
-  I : integer;
+function TMainForm.CommandLineError() : boolean;
 begin
+    Result := false;
+    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'help gnome3 open-note: debug-sync config-dir:');
+    if Application.HasOption('h', 'help') then
+        CmdLineErrorMsg := 'Show Help Message';
+    if CmdLineErrorMsg <> '' then begin
+       debugln('Usage  -');
+       debugln('    -h --help      Show this help and exit.');
+       debugln('    -g --gnome3    Run in (non ubuntu) gnome3 mode, no Tray Icon');
+       debugln('    --debug-sync   Show whats happening during sync process');
+       debugln('    --config-dir PATH_to_DIR      Create or use an alternative config');
+       debugln('    -o --open-note PATH_to_NOTE   Open a note in single note mode');
+       debugln('Error message is [' + CmdLineErrorMsg + ']');
+       result := true;
+    end;
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+//var
+//  I : integer;
+begin
+    if CommandLineError() then exit;    // We will close in OnShow
     UseMainMenu := false;
     UseTrayMenu := true;
     AllowDismiss := true;

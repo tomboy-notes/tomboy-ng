@@ -164,6 +164,7 @@ type
 		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
+        procedure FormDestroy(Sender: TObject);
         procedure FormHide(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
@@ -461,6 +462,11 @@ begin
     CheckConfigFile();                      // write a new, default one if necessary
     if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
         ButtonSetSynServer.Caption := 'Set File Sync Repo';
+end;
+
+procedure TSett.FormDestroy(Sender: TObject);
+begin
+    FreeandNil(Spell);
 end;
 
 { --------------------- F I L E    I / O --------------------------- }

@@ -599,6 +599,7 @@ var
         Index : Integer;
 begin
    Result := '';
+   if SearchForm.NoteLister = nil then exit;
    SL := TStringList.Create;
    if SearchForm.NoteLister.GetNotebooks(SL, ID) then begin  // its a template
    		Result := '  <tags>'#10'    <tag>system:template</tag>'#10;

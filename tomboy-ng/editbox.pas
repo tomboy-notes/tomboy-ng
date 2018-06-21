@@ -217,6 +217,7 @@ type
         procedure ButtTextClick(Sender: TObject);
         procedure ButtToolsClick(Sender: TObject);
 		procedure FindDialog1Find(Sender: TObject);
+        procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
@@ -259,6 +260,7 @@ type
         procedure TimerHousekeepingTimer(Sender: TObject);
 
     private
+
         CreateDate : string;		// Will be '' if new note
         // CtrlKeyDown : boolean;
         Ready : boolean;
@@ -315,6 +317,7 @@ type
         // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
     public
+        SingleNoteMode : Boolean;
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
         Verbose : boolean;
@@ -744,6 +747,16 @@ begin
         KMemo1.SelStart := FindStart -1 -NumbCR;
         KMemo1.SelLength := length(TFindDialog(Sender).FindText);
    	end;
+end;
+
+procedure TEditBoxForm.FormActivate(Sender: TObject);
+begin
+    if SingleNoteMode then begin
+        ButtSearch.Enabled := False;
+        ButtLink.Enabled := False;
+        MenuItemSync.Enabled := False;
+        ButtNotebook.Enabled := False;
+    end;
 end;
 
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);

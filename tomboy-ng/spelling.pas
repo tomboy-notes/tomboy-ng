@@ -31,6 +31,7 @@ unit Spelling;
 				Win only - allow for #13 in a selected block
 	2018/04/07	Changes in ReplaceWord to really get it right for Windows UTF8 but
 				some changes outside ifdef so must check on Linux too.
+    2018/06/21  Hide an unnecessary debug line
 }
 
 {$mode objfpc}{$H+}
@@ -177,7 +178,7 @@ begin
     {$endif}
     //BlockNo := TheKmemo.Blocks.IndexToBlockIndex(TempIndex+1, LocalIndex);
     BlockNo := TheKmemo.Blocks.IndexToBlockIndex(TempIndex, LocalIndex);
-	debugln('Operating on BK=' + inttostr(BlockNo) + ' Loc=' + inttostr(LocalIndex) + ' TempIndex=' + inttostr(TempIndex) + ' Index=' + inttostr(Index));
+	//debugln('Operating on BK=' + inttostr(BlockNo) + ' Loc=' + inttostr(LocalIndex) + ' TempIndex=' + inttostr(TempIndex) + ' Index=' + inttostr(Index));
 
 
     TextSize := TKMemoTextBlock(TheKmemo.Blocks.Items[BlockNo]).TextStyle.Font.Size;         // and Style ????

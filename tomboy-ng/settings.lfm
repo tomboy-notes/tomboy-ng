@@ -9,6 +9,7 @@ object Sett: TSett
   ClientWidth = 525
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
