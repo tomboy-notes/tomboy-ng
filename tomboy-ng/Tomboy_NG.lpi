@@ -273,6 +273,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="-o E9127280-33D5-444D-82CB-E862111B0663.note"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">

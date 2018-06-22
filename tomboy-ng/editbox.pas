@@ -146,6 +146,7 @@ unit EditBox;
     2018/05/16  Disable Print menu option in Cocoa.
     2018/06/13  Drop copy on selection and add Ben's Underline, strikethrough and Fixedwidth !
     2018/06/13  Reinstate copy on selection, middle button click, Linux & (in app only) Windows only
+    2018/06/22  DRB added LoadSingleNote and related to do just that. Needs more testing.
 
 }
 
@@ -284,6 +285,8 @@ type
         { Returns with the title, that is the first line of note, returns False if title is empty }
         function GetTitle(out TheTitle: ANSIString): boolean;
         procedure ImportNote(FileName : string);
+        { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
+        function LoadSingleNote() : boolean;
         { Searches for all occurances of Term in the KMemo text, makes them Links }
 		procedure MakeAllLinks(const MText : ANSIString; const Term: ANSIString; const StartScan : longint =1; EndScan : longint = 0);
         { Makes the passed location a link if its not already one }
@@ -928,6 +931,69 @@ end;
       ImportNote()
 }
 
+function TEditBoxForm.LoadSingleNote() : boolean;
+var
+    SLNote : TStringList;
+    FileType : string;
+begin
+    { Here we do some checks of the file name the user put on command line.
+      If the file is not present, we assume that want to make a new note by that name.
+      If its a Tomboy note (and all we test for is 'xml' in first line, 'tomboy' in
+      second, then proceed normally.
+      Note that the rtf import is not working but it loads fine as text, rtf being the
+      kmemo's underlying lang.
+      If we load a Text file, I either append or change extension to .note as by
+      default, it becomes a note.
+    }
+    Result := False;
+{
+    debugln('Path = [' + ExtractFilePath(NoteFileName) + ']');
+    debugln('Filename = [' + ExtractFileNameOnly(NoteFileName) + ']');
+    if DirectoryExistsUTF8(ExtractFilePath(NoteFileName)) then
+        debugln('Dir is writable');
+    debugln('New name =' + AppendPathDelim(ExtractFilePath(NoteFileName)) +
+        ExtractFileNameOnly(NoteFileName) + '.note');    }
+
+    FileType := '';
+    if not FileExistsUTF8(NoteFileName) then FileType := 'new'
+    else begin
+          try
+          SLNote := TStringList.Create;
+          //try
+              SlNote.LoadFromFile(NoteFileName);
+              if (UTF8Pos('xml', SLNote.Strings[0]) > 0)  and
+                  (UTF8Pos('tomboy', SLNote.Strings[1]) > 0) then
+                      FileType := 'tomboy'
+     //         else if (UTF8Pos('{\rtf1', SLNote.Strings[0]) > 0) then
+     //                 FileType := 'rft'
+              else
+                    if FileIsText(NoteFileName) then
+                        FileType := 'text';        // Wow, thats brave !
+          //except on
+
+          //end;
+          finally
+            FreeAndNil(SLNote);
+          end;
+    end;
+      debugln('Decided the file is of type ' + FileType);
+      case FileType of
+          'tomboy' : ImportNote(NoteFileName);
+     //     'rtf'    : KMemo1.LoadFromRTF(NoteFileName);  // Wrong, will write back there !
+          'text'   : begin
+                        KMemo1.LoadFromFile(NoteFileName);
+                        NoteFileName := AppendPathDelim(ExtractFilePath(NoteFileName)) +
+                            ExtractFileNameOnly(NoteFileName) + '.note';
+                     end;
+          'new'    : begin
+                        Result := True;
+                        NoteTitle := NewNoteTitle();
+                    end;
+          ''       : debugln('Error, cannot identify that file type');
+      end;
+
+end;
+
 procedure TEditBoxForm.FormShow(Sender: TObject);
 var
     ItsANewNote : boolean = false;
@@ -938,22 +1004,28 @@ begin
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     {$ifdef LINUX}
+    {$DEFINE DEBUG_CLIPBOARD}
     KMemo1.ExecuteCommand(ecPaste);         // this to deal with a "first copy" issue.
+                                            // note, in singlenotemode it triggers a GTK Assertion
+    {$UNDEF DEBUG_CLIPBOARD}
     {$endif}
     Kmemo1.Clear;
     MenuItemSync.Enabled := (Sett.RemoteRepo <> '');
+    if SingleNoteMode then
+            ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
+    else
     if NoteFileName = '' then begin		// might be a new note or a new note from Link
         if NoteTitle = '' then              // New Note
 			NoteTitle := NewNoteTitle();
         ItsANewNote := True;
 	end else begin
-    	ImportNote(NoteFileName);		// also sets Caption and Createdate
-        if TemplateIs <> '' then begin
-            NoteFilename := '';
-            NoteTitle := NewNoteTitle();
-            ItsANewNote := True;
-		end;
-	end;
+     	    ImportNote(NoteFileName);		// also sets Caption and Createdate
+            if TemplateIs <> '' then begin
+                NoteFilename := '';
+                NoteTitle := NewNoteTitle();
+                ItsANewNote := True;
+		    end;
+    end;
     if ItsANewNote then begin
         CreateDate := '';
         Caption := NoteTitle;

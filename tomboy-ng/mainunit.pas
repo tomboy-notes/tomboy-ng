@@ -13,6 +13,7 @@ unit Mainunit;
     2018/06/02  Added a cli switch to debug sync
 
     2018/06/19  Got some stuff for singlenotemode() - almost working.
+    2018/06/22  As above but maybe working now ?  DRB
 
 
 
@@ -154,7 +155,8 @@ procedure TMainForm.SingleNoteMode(FullFileName : string);
 var
     EBox : TEditBoxForm;
 begin
-    if FileExistsUTF8(FullFileName) then begin
+    if DirectoryExistsUTF8(ExtractFilePath(FullFileName))
+        or (ExtractFilePath(FullFileName) = '') then begin
 	    EBox := TEditBoxForm.Create(Application);
         EBox.SingleNoteMode:=True;
         EBox.NoteTitle:= '';
@@ -166,14 +168,8 @@ begin
         EBox.ShowModal;
         FreeandNil(EBox);
     end else
-        DebugLn('Sorry, cannot find a note called ' + FullFileName);
+        DebugLn('Sorry, cannot find that directory [' + ExtractFilePath(FullFileName) + ']');
     Close;
-    // if that editBox calls SaveNote, SaveNote will call its NoteBookTags() which
-    // will call SearchForm.NoteLister.GetNotebooks(SL, ID). And crash because we don't
-    // at this stage have a NoteLister declared. So, maybe, test in NoteBookTags() to see if
-    // SearchForm.NoteLister = nil   ??
-    // Also need to restrict what a user can do in the note in this mode.
-    // No notebooks, no auto linking ......
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
