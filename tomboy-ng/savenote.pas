@@ -51,6 +51,8 @@ unit SaveNote;
     2018/01/31  Added code to reprocess &
     2018/05/12  Extensive changes - MainUnit is now just that. Only change here relates
                 to naming of MainUnit and SearchUnit.
+    2018/06/26  Some <italic> tags an an 's' at the end.  Changed the test for when
+                FixedWidth turns on in AddTag().
 }
 
 {$mode objfpc}{$H+}
@@ -172,11 +174,11 @@ begin
     // When Underline turns OFF
     if (Underline and (not (fsUnderline in FT.TextStyle.Font.Style))) then begin
                   if Bold then Buff := Buff + '</bold>';
-                  if Italics then Buff := Buff + '</italics>';
+                  if Italics then Buff := Buff + '</italic>';
                   if HiLight then Buff := Buff + '</highlight>';
                   Buff := Buff + '</underline>';
                   if HiLight then Buff := Buff + '<highlight>';
-                  if Italics then Buff := Buff + '<italics>';
+                  if Italics then Buff := Buff + '<italic>';
                   if Bold then Buff := Buff + '<bold>';
                   Underline := false;
     end;
@@ -184,21 +186,22 @@ begin
     // When Strikeout turns OFF
     if (Strikeout and (not (fsStrikeout in FT.TextStyle.Font.Style))) then begin
                   if Bold then Buff := Buff + '</bold>';
-                  if Italics then Buff := Buff + '</italics>';
+                  if Italics then Buff := Buff + '</italic>';
                   if HiLight then Buff := Buff + '</highlight>';
                   if Underline then Buff := Buff + '</underline>';
                   Buff := Buff + '</strikeout>';
                   if Underline then Buff := Buff + '<underline>';
                   if HiLight then Buff := Buff + '<highlight>';
-                  if Italics then Buff := Buff + '<italics>';
+                  if Italics then Buff := Buff + '<italic>';
                   if Bold then Buff := Buff + '<bold>';
                   Strikeout := false;
     end;
 
     // When FixedWidth turns OFF
-    if (FixedWidth <> (FT.TextStyle.Font.Pitch = fpFixed) or (FT.TextStyle.Font.Name = MonospaceFont)) then begin
+    //if (FixedWidth <> (FT.TextStyle.Font.Pitch = fpFixed) or (FT.TextStyle.Font.Name = MonospaceFont)) then begin
+    if (FixedWidth and ((FT.TextStyle.Font.Pitch <> fpFixed) or (FT.TextStyle.Font.Name <> MonospaceFont))) then begin
                   if Bold then Buff := Buff + '</bold>';
-                  if Italics then Buff := Buff + '</italics>';
+                  if Italics then Buff := Buff + '</italic>';
                   if HiLight then Buff := Buff + '</highlight>';
                   if Underline then Buff := Buff + '</underline>';
                   if Strikeout then Buff := Buff + '</strikeout>';
@@ -206,7 +209,7 @@ begin
                   if Strikeout then Buff := Buff + '<strikeout>';
                   if Underline then Buff := Buff + '<underline>';
                   if HiLight then Buff := Buff + '<highlight>';
-                  if Italics then Buff := Buff + '<italics>';
+                  if Italics then Buff := Buff + '<italic>';
                   if Bold then Buff := Buff + '<bold>';
                   FixedWidth := false;
     end;
@@ -228,7 +231,7 @@ begin
     // FixedWidth turns ON
     if (FixedWidth and (FT.TextStyle.Font.Name = MonospaceFont) or (FT.TextStyle.Font.Pitch = fpFixed)) then begin
         if Bold then Buff := Buff + '</bold>';
-        if Italics then Buff := Buff + '</italics>';
+        if Italics then Buff := Buff + '</italic>';
         if HiLight then Buff := Buff + '</highlight>';
         if Underline then Buff := Buff + '</underline>';
         if Strikeout then Buff := Buff + '</strikeout>';
@@ -236,7 +239,7 @@ begin
         if Strikeout then Buff := Buff + '<strikeout>';
         if Underline then Buff := Buff + '<underline>';
         if HiLight then Buff := Buff + '<highlight>';
-        if Italics then Buff := Buff + '<italics>';
+        if Italics then Buff := Buff + '<italic>';
         if Bold then Buff := Buff + '<bold>';
         FixedWidth := true;
     end;
@@ -244,13 +247,13 @@ begin
     // Strikeout turns ON
     if ((not Strikeout) and (fsStrikeout in FT.TextStyle.Font.Style)) then begin
         if Bold then Buff := Buff + '</bold>';
-        if Italics then Buff := Buff + '</italics>';
+        if Italics then Buff := Buff + '</italic>';
         if HiLight then Buff := Buff + '</highlight>';
         if Underline then Buff := Buff + '</underline>';
         Buff := Buff + '<strikeout>';
         if Underline then Buff := Buff + '<underline>';
         if HiLight then Buff := Buff + '<highlight>';
-        if Italics then Buff := Buff + '<italics>';
+        if Italics then Buff := Buff + '<italic>';
         if Bold then Buff := Buff + '<bold>';
         Strikeout := true;
     end;
@@ -259,11 +262,11 @@ begin
     // Underline turns ON
     if ((not Underline) and (fsUnderline in FT.TextStyle.Font.Style)) then begin
        if Bold then Buff := Buff + '</bold>';
-       if Italics then Buff := Buff + '</italics>';
+       if Italics then Buff := Buff + '</italic>';
        if HiLight then Buff := Buff + '</highlight>';
        Buff := Buff + '<underline>';
        if HiLight then Buff := Buff + '<highlight>';
-       if Italics then Buff := Buff + '<italics>';
+       if Italics then Buff := Buff + '<italic>';
        if Bold then Buff := Buff + '<bold>';
        Underline := true;
     end;

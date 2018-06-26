@@ -978,12 +978,16 @@ begin
     end;
       debugln('Decided the file is of type ' + FileType);
       case FileType of
-          'tomboy' : ImportNote(NoteFileName);
+          'tomboy' : try ImportNote(NoteFileName); except on E: Exception do debugln('!!! EXCEPTION during IMPORT ' + E.Message); end;
      //     'rtf'    : KMemo1.LoadFromRTF(NoteFileName);  // Wrong, will write back there !
           'text'   : begin
+                        try
                         KMemo1.LoadFromFile(NoteFileName);
                         NoteFileName := AppendPathDelim(ExtractFilePath(NoteFileName)) +
                             ExtractFileNameOnly(NoteFileName) + '.note';
+
+                        except on E: Exception do debugln('!!! EXCEPTION during LoadFromFile ' + E.Message);
+                        end;
                      end;
           'new'    : begin
                         Result := True;
@@ -1026,6 +1030,7 @@ begin
                 ItsANewNote := True;
 		    end;
     end;
+    debugln('OK, back in EditBox.OnShow');
     if ItsANewNote then begin
         CreateDate := '';
         Caption := NoteTitle;
@@ -1045,6 +1050,7 @@ begin
     // MarkClean();
     Dirty := False;
     //Label1.Caption := 'c';
+    debugln('Finished in EditBox.OnShow');
 end;
 
 	{ This gets called when the TrayMemu quit entry is clicked }

@@ -157,31 +157,64 @@ var
 begin
     if DirectoryExistsUTF8(ExtractFilePath(FullFileName))
         or (ExtractFilePath(FullFileName) = '') then begin
-	    EBox := TEditBoxForm.Create(Application);
-        EBox.SingleNoteMode:=True;
-        EBox.NoteTitle:= '';
-        EBox.NoteFileName := FullFileName;
-        Ebox.TemplateIs := '';
-        EBox.Top := Placement + random(Placement*2);
-        EBox.Left := Placement + random(Placement*2);
-        EBox.Dirty := False;
-        EBox.ShowModal;
-        FreeandNil(EBox);
+        try
+            try
+            EBox := TEditBoxForm.Create(Application);
+            EBox.SingleNoteMode:=True;
+            EBox.NoteTitle:= '';
+            EBox.NoteFileName := FullFileName;
+            Ebox.TemplateIs := '';
+            EBox.Top := Placement + random(Placement*2);
+            EBox.Left := Placement + random(Placement*2);
+            EBox.Dirty := False;
+            EBox.ShowModal;
+            except on E: Exception do debugln('!!! EXCEPTION - ' + E.Message);
+            end;
+        finally
+            try
+            FreeandNil(EBox);
+            except on E: Exception do debugln('!!! EXCEPTION - What ? no FreeAndNil ?' + E.Message);
+            end;
+        end;
     end else
         DebugLn('Sorry, cannot find that directory [' + ExtractFilePath(FullFileName) + ']');
     Close;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
+// WARNING - the options here MUST match the options list in CommandLineError()
+var
+    I: Integer;
+    Params : TStringList;   { TODO : Document this in http://wiki.freepascal.org/Command_line_parameters_and_environment_variables }
+    LongOpts : array [1..4] of string = ('gnome3','debug-sync', 'config-dir:','open-note:');
 begin
-    if CmdLineErrorMsg <> '' then close;    // cannot close in OnCreate()
+    if CmdLineErrorMsg <> '' then begin
+        close;    // cannot close in OnCreate();
+        exit;       // otherwise we execute rest of this method before closing.
+    end;
     Left := 10;
     Top := 40;
     if Application.HasOption('o', 'open-note') then begin
         SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
         exit();
     end;
-
+    Params := TStringList.Create;
+    try
+        Application.GetNonOptions('hgo:', LongOpts, Params);
+        {for I := 0 to Params.Count -1 do
+            debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
+        if Params.Count = 1 then begin
+            SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
+            exit();
+        end;
+        if Params.Count > 1 then begin
+            debugln('Unrecognised parameters on command line');
+            close;
+            exit();                     // Call exit to ensure remaining part method is not executed
+        end;
+    finally
+        FreeAndNil(Params);
+    end;
     if AlreadyRunning() then begin
         showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
         close();
@@ -261,6 +294,7 @@ begin
 end;
 
 function TMainForm.CommandLineError() : boolean;
+// WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
     CmdLineErrorMsg := Application.CheckOptions('hgo:', 'help gnome3 open-note: debug-sync config-dir:');
@@ -268,19 +302,17 @@ begin
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
        debugln('Usage  -');
-       debugln('    -h --help      Show this help and exit.');
-       debugln('    -g --gnome3    Run in (non ubuntu) gnome3 mode, no Tray Icon');
-       debugln('    --debug-sync   Show whats happening during sync process');
-       debugln('    --config-dir PATH_to_DIR      Create or use an alternative config');
-       debugln('    -o --open-note PATH_to_NOTE   Open a note in single note mode');
-       debugln('Error message is [' + CmdLineErrorMsg + ']');
+       debugln('   -h --help                    Show this help and exit.');
+       debugln('   -g --gnome3                  Run in (non ubuntu) gnome3 mode, no Tray Icon');
+       debugln('   --debug-sync                 Show whats happening during sync process');
+       debugln('   --config-dir=PATH_to_DIR     Create or use an alternative config');
+       debugln('   -o --open-note=PATH_to_NOTE  Open indicated note, switch is optional');
+       debugln(CmdLineErrorMsg);
        result := true;
     end;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-//var
-//  I : integer;
 begin
     if CommandLineError() then exit;    // We will close in OnShow
     UseMainMenu := false;
