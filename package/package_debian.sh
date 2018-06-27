@@ -9,16 +9,17 @@
 # and that a 'Release' mode exists.
 
 PRODUCT="tomboy-ng"
-VERSION="0.15"
+VERSION="0.16"
 
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"
 
 WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
-MANUALS_DIR="docs"
+MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
 MANUALS="Notes.txt"
 
 BUILDOPTS=" -B --quiet --quiet"
+BUILDDATE=`date -R`
 
 # ----------------------
 
@@ -62,6 +63,9 @@ function DebianPackage () {
 	# cp ../copyright BUILD/usr/share/doc/$PRODUCT/copyright
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
+	mkdir -p BUILD/usr/share/man/man1
+	gzip -9kn ../doc/$PRODUCT.1
+	mv ../doc/$PRODUCT.1.gz BUILD/usr/share/man/man1/.
 	if [ "$1" = "amd64" ]; then
 		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng
 	else
@@ -78,8 +82,13 @@ function DebianPackage () {
 	echo "Priority: optional" >> BUILD/DEBIAN/control
 	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
-	echo "Description: Alpha Test of a Tomboy Notes rewritten to make installation easy." >> BUILD/DEBIAN/control
-	echo "  please report your experiences." >> BUILD/DEBIAN/control
+	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier." >> BUILD/DEBIAN/control
+	echo " Please report your experiences." >> BUILD/DEBIAN/control
+
+	echo "tomboy-ng ($VERSION)  unsable;  urgency=medium" >> "$MANUALS_DIR"changelog
+	echo "  * Initial release" >> "$MANUALS_DIR"changelog
+	echo "-- David Bannon <tomboy-ng@bannons.id.au>  $BUILDDATE" >> "$MANUALS_DIR"changelog
+	gzip -9n "$MANUALS_DIR"changelog
 
 	echo "Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135" > BUILD/usr/share/doc/$PRODUCT/copyright
 	echo "Name: tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright
@@ -88,7 +97,7 @@ function DebianPackage () {
 	echo "Copyright: 2017-2018 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
 	echo "License: GPL-3+" >> BUILD/usr/share/doc/$PRODUCT/copyright
 
-  	echo "2.0" >> BUILD/DEBIAN/debian-binary
+  	# echo "2.0" >> BUILD/DEBIAN/debian-binary
 	# echo "calling dpkg for ""$PRODUCT""_$VERSION-0_$1.deb"
 	chmod -R g-w BUILD
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
