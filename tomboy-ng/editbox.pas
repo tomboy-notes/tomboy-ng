@@ -1233,6 +1233,7 @@ var
     MemoText : AnsiString;
 begin
 	if not Ready then exit();
+    if SingleNoteMode then exit();
     Len := length(KMemo1.Blocks.text);      // saves 7mS by calling length() only once ! But still 8mS
     if StartScan >= Len then exit;   // prevent crash when memo almost empty
     if EndScan > Len then EndScan := Len;

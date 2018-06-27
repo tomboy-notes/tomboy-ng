@@ -273,7 +273,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="../Docs/Sync.note"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
