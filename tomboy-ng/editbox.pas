@@ -1050,6 +1050,7 @@ begin
     // MarkClean();
     Dirty := False;
     //Label1.Caption := 'c';
+    KMemo1.executecommand(ecEditorTop); // Scroll to the top of the editor when the note is loaded.
     debugln('Finished in EditBox.OnShow');
 end;
 
