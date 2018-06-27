@@ -1,0 +1,53 @@
+.TH TOMBOY-NG 1
+.SH NAME 
+tomboy-ng \- manage a collection of notes using a simple markup
+.SH SYNOPSIS 
+.B tomboy-ng
+[\fB\-h\fR]
+[\fB\-g\fR]
+[\fB-\-gnome3\fR]
+[\fB\-\-debug\-sync\fR] 
+[\fB\-\-config\-dir\fR=\fIPATH_to_DIR\fR]
+[\fB\-o\fR \fIPATH_to_NOTE\fR] 
+[\fB\-\-open-note\fR=\fIPATH_to_NOTE\fR]
+[\fIPATH_to_NOTE\fR]
+
+.SH DESCRIPTION
+.B tomboy-ng
+is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is possibly file compatible with Tomdroid and GNote. Tomboy-ng notes support Blod, Italic, Strikethrough, Highlight and underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model but not yet Network Sync using Rainy or Graphal.
+
+Many users will want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can interact with it via that Icon. However, a small window is also opened, it can be dismissed if you see the system tray icon. Sadly, some Gnome3 distros do not show the system tray icon and you must keep that small window visible. A command line switch (-g or --gnome3) protects the small window from accidental dismissal.
+
+Tomboy-ng requires the gtk2 libraries be available.
+
+.SH OPTIONS
+.TP
+.BR \-h 
+Print some help and exit.
+
+.TP
+.BR \-g ", " \-\-gnome3\fR 
+Run gnome3 mode, needed on Linux releases based on gnome3 3.28 or later but not the Ubuntu flavoured ones as they include a usable System Tray. Prevents the application from completely hiding when not in use.
+
+.TP
+.BR \-\-debug-sync
+Generate a lot of logging information on the console during a sync process. Intended for debugging.
+
+.TP
+.BR \-o ", " \-\-config\-dir=\fIPATH_to_DIR\fR
+Create or use an alternative config. That config could, for example, specify an alterative location to store notes and sync against a different file sync repository.
+
+.TP
+.BR \-o ", " \-\-open-note=\fIPATH_to_NOTE\fR
+Open a note in single note mode. In this mode, a seperate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a plain text file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remans in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switches are optional, \fBtomboy-ng\fR \fIsome.note\fR will works as well.
+
+.SH "SEE ALSO"
+.I https://github.com/tomboy-notes/tomboy-ng
+
+.SH BUGS
+Please send bug reports to the Tomboy mailing list
+(tomboy-list@beatniksoftware.com) or via Github see above.
+
+
+
+
