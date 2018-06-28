@@ -1023,6 +1023,7 @@ begin
 			NoteTitle := NewNoteTitle();
         ItsANewNote := True;
 	end else begin
+	    Caption := NoteFileName;
      	    ImportNote(NoteFileName);		// also sets Caption and Createdate
             if TemplateIs <> '' then begin
                 NoteFilename := '';
@@ -1050,6 +1051,7 @@ begin
     // MarkClean();
     Dirty := False;
     //Label1.Caption := 'c';
+    KMemo1.executecommand(ecEditorTop);
     debugln('Finished in EditBox.OnShow');
 end;
 
