@@ -1492,6 +1492,13 @@ begin
     if [ssCtrl] = Shift then begin
        if key = ord('F') then begin MenuItemFindClick(self); Key := 0; exit(); end;
        if key = ord('N') then begin MainForm.MMNewNoteClick(self); Key := 0; exit(); end;
+       if key = ord('B') then begin MenuBoldClick(self); Key := 0; exit(); end;
+       if key = ord('I') then begin MenuItalicClick(self); Key := 0; exit(); end;
+       if key = ord('T') then begin MenuFixedWidthClick(self); Key := 0; exit(); end;
+       if key = ord('S') then begin MenuStrikeoutClick(self); Key := 0; exit(); end;
+       if key = ord('H') then begin MenuHighLightClick(self); Key := 0; exit(); end;
+       if key = ord('U') then begin MenuUnderlineClick(self); Key := 0; exit(); end;
+       if key = ord('0') then begin MenuNormalClick(self); Key := 0; exit(); end;  
        if Key = ord('R') then begin
             if KMemo1.ReadOnly then begin
                PanelReadOnly.Height:= 5;
