@@ -225,8 +225,16 @@ begin
     FullAff := FullDictName;
     UTF8Delete(FullAff, UTF8Length(FullAff) - 2, 3);
     FullAff := FullAff + 'aff';
+    {
+    I have seen an access violaton occasionally in the next l
+    reproducable. I think it happens when a new startup and,
+    ShowLinks on and then go to Spell tab and choose a dictio
+    }
+    try
     if Speller <> Nil then
         hunspell_destroy(Speller);
+    except on E: Exception do writeln('Hunspell ' + E.Message);
+    end;
     Speller := hunspell_create(PChar(FullAff), PChar(FullDictName));
                     // Create does not test the dictionaries !
     GoodToGo := Speller <> Nil;

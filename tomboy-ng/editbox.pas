@@ -313,7 +313,6 @@ type
                  { Saves the note as text or rtf, consulting user about path and file name }
         procedure SaveNoteAs(TheExt: string);
         procedure MarkDirty();
-        //procedure MarkClean();
         function CleanCaption() : ANSIString;
         // Advises other apps we can do middle button paste
         procedure SetPrimarySelection;
@@ -387,7 +386,6 @@ begin
    		if NoteFileName <> '' then
 	   		    SearchForm.DeleteNote(NoteFileName);
         Dirty := False;
-        //MarkClean();
 		Close;
    end;
 end;
@@ -1008,10 +1006,10 @@ begin
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     {$ifdef LINUX}
-    {$DEFINE DEBUG_CLIPBOARD}
+    //{$DEFINE DEBUG_CLIPBOARD}
     KMemo1.ExecuteCommand(ecPaste);         // this to deal with a "first copy" issue.
                                             // note, in singlenotemode it triggers a GTK Assertion
-    {$UNDEF DEBUG_CLIPBOARD}
+    //{$UNDEF DEBUG_CLIPBOARD}
     {$endif}
     Kmemo1.Clear;
     MenuItemSync.Enabled := (Sett.RemoteRepo <> '');
@@ -1031,7 +1029,7 @@ begin
                 ItsANewNote := True;
 		    end;
     end;
-    debugln('OK, back in EditBox.OnShow');
+    //debugln('OK, back in EditBox.OnShow');
     if ItsANewNote then begin
         CreateDate := '';
         Caption := NoteTitle;
@@ -1048,11 +1046,10 @@ begin
     KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
     KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
-    // MarkClean();
     Dirty := False;
     //Label1.Caption := 'c';
     KMemo1.executecommand(ecEditorTop);
-    debugln('Finished in EditBox.OnShow');
+    KMemo1.ExecuteCommand(ecDown);          // DRB Playing
 end;
 
 	{ This gets called when the TrayMemu quit entry is clicked }
@@ -1579,10 +1576,10 @@ end;
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
- 	T1 : qword;          // Temp time stamping to test speed
+ 	//T1 : qword;          // Temp time stamping to test speed
 begin
     // Timing numbers below using MyRecipes on my Acer linux laptop. For local comparison only !
-    T1 := gettickcount64();
+    //T1 := gettickcount64();
     Loader := TBLoadNote.Create();
     Loader.FontNormal:= Sett.FontNormal;
     // Loader.FontName := FontName;
@@ -1645,7 +1642,6 @@ begin
 	   Saver.Destroy;
        // debugln('All saved OK');
     finally
-        //MarkClean();
         Dirty := false;
         Caption := CleanCaption();
         KMemo1.Blocks.UnLockUpdate;
