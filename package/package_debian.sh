@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # A script to build tomboy and make deb packages and zip up the other binaries
 # see https://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics
 # we can also add preinst, postinst, prerm, and postrm scripts if required
@@ -61,6 +61,7 @@ function DebianPackage () {
 	done;
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
 	# cp ../copyright BUILD/usr/share/doc/$PRODUCT/copyright
+	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
 	mkdir -p BUILD/usr/share/man/man1

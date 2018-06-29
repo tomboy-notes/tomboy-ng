@@ -1,0 +1,16 @@
+Authors
+=======
+
+tomboy-ng is built using -
+
+   The Free Pascal Compiler and Lazarus, http://wiki.freepascal.org 
+
+   KControls - http://www.tkweb.eu/en/delphicomp/kcontrols.html
+
+Much thanks due to the authors and developers of the above. Thanks are also due to the many people involved with the FPC/Lazarus Forum without who's help and patience this project would not have every got off the ground.
+
+The user interface and design of Tomboy, indeed, the very idea, is a product of the origional Tomboy authors, see - https://wiki.gnome.org/Apps/Tomboy
+
+tomboy-ng is primarily written by David Bannon, tomboy-ng@bannons.id.au
+
+Significent contributions made by Benjamin Brandall - me@benj.email
