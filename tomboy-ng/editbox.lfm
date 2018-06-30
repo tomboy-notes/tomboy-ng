@@ -737,26 +737,32 @@ object EditBoxForm: TEditBoxForm
     top = 200
     object MenuBold: TMenuItem
       Caption = 'Bold'
+      ShortCut = 16450
       OnClick = MenuBoldClick
     end
     object MenuItalic: TMenuItem
       Caption = 'Italic'
+      ShortCut = 16457
       OnClick = MenuItalicClick
     end
     object MenuStrikeout: TMenuItem
       Caption = 'Strikeout'
+      ShortCut = 16467
       OnClick = MenuStrikeoutClick
     end
     object MenuHighLight: TMenuItem
       Caption = 'Highlight'
+      ShortCut = 16456
       OnClick = MenuHighLightClick
     end
     object MenuFixedWidth: TMenuItem
       Caption = 'Fixed Width'
+      ShortCut = 16468
       OnClick = MenuFixedWidthClick
     end
     object MenuUnderline: TMenuItem
       Caption = 'Underline'
+      ShortCut = 16469
       OnClick = MenuUnderlineClick
     end
     object MenuItem2: TMenuItem

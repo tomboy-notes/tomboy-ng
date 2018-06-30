@@ -1490,9 +1490,15 @@ var
 begin
     if not Ready then exit();                   // should we drop key on floor ????
     if [ssCtrl] = Shift then begin
+        if key = ord('B') then begin Key := 0; MenuBoldClick(Sender); exit(); end;
+        if key = ord('I') then begin Key := 0; MenuItalicClick(Sender); exit(); end;
+        if key = ord('S') then begin Key := 0; MenuStrikeOutClick(Sender); exit(); end;
+        if key = ord('T') then begin Key := 0; MenuFixedWidthClick(Sender); exit(); end;
+        if key = ord('H') then begin Key := 0; MenuHighLightClick(Sender); exit(); end;
+        if key = ord('U') then begin Key := 0; MenuUnderLineClick(Sender); exit(); end;
        if key = ord('F') then begin MenuItemFindClick(self); Key := 0; exit(); end;
        if key = ord('N') then begin MainForm.MMNewNoteClick(self); Key := 0; exit(); end;
-       if Key = ord('R') then begin
+{       if Key = ord('R') then begin
             if KMemo1.ReadOnly then begin
                PanelReadOnly.Height:= 5;
                KMemo1.ReadOnly := False;
@@ -1502,7 +1508,7 @@ begin
             end;
             Key := 0;
             exit();
-       end;
+       end;         }   // this was for testing only
     end;
 
     if KMemo1.ReadOnly then begin Key := 0; exit(); end;
