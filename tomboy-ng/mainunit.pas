@@ -301,7 +301,11 @@ begin
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
-       debugln('Usage  -');
+       debugln('Usage - ');
+       {$ifdef DARWIN}
+       debugln('eg   open tomboy-ng.app');
+       debugln('eg   open tomboy-ng.app --args -o Note.txt|.note');
+       {$endif}
        debugln('   -h --help                    Show this help and exit.');
        debugln('   -g --gnome3                  Run in (non ubuntu) gnome3 mode, no Tray Icon');
        debugln('   --debug-sync                 Show whats happening during sync process');
