@@ -1,0 +1,39 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns:link="http://beatniksoftware.com/tomboy/link"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Contributing to tomboy-ng</title><style type="text/css">
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Contributing to tomboy-ng"><a name="contributing to tomboy-ng"></a><h1>Contributing to tomboy-ng</h1>
+<span style="font-size:large">Setting up your development environment</span>
+
+The process for setting up a tomboy-ng development environment is much the same as the one described in <a style="color:#204A87" href="Building tomboy-ng from source.html">Building tomboy-ng from source</a>.
+
+Refer to the linked note above. After Lazarus and KControls are installed, open the Tomboy_NG.lpi file in the repository in Lazarus.
+
+<span style="font-size:large">Release test plan</span>
+
+One each platform, Linux, Windows and Mac we do this set of tests. In addition, obviously, test any new features and things 'around' where changes have been made. Tests are made with full debugging on including heaptrc. Not from within the IDE.
+
+<ul><li dir="ltr">Load up new binary, remove any rubbish short term notes, notebooks and do a sync. Exit.
+</li><li dir="ltr">Remove config and all notes, eg rm -Rf <a style="color:#3465A4" href="~/.config/tomboy-ng;">~/.config/tomboy-ng;</a> rm -Rf <a style="color:#3465A4" href="~/.local/share/tomboy-ng">~/.local/share/tomboy-ng</a>
+</li><li dir="ltr">Start App and point Notes Dir to default place, save config.
+</li><li dir="ltr">Make a new note. Exit note and then reload. Delete it. There is no local manifest at this stage so make sure that's the case.
+</li><li dir="ltr">Create a new note. Paste something in from outside and copy something from the note elsewhere. Add a set of bullets and mix up some formatting. Exit and reload.
+</li><li dir="ltr">Config sync, pull in a set of notes. Load a large note and insert a link to another note.
+</li><li dir="ltr">Make a Notebook, add several notes to it. Sync.
+</li><li dir="ltr">Remove that notebook, sync. Exit and reload.
+</li><li dir="ltr">Make another notebook, add notes
+</li><li dir="ltr">Delete the note you made earlier. Is it gone ? Is it in the Backup dir ?
+</li><li dir="ltr">Do another sync, is deleted note listed as deleted from server ?
+</li><li dir="ltr">One off extra - inspect local manifest and ensure syncrev is not blank.
+</li><li dir="ltr">Quit - no memory leaks ?</li></ul></div></body></html>

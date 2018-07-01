@@ -1,0 +1,76 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns:link="http://beatniksoftware.com/tomboy/link"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Notes on synchronisation</title><style type="text/css">
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Notes on synchronisation"><a name="notes on synchronisation"></a><h1>Notes on synchronisation</h1>
+Note this is how I implemented tomboy-ng's sync process. It's NOT a design document for Tomboy's XML standard; unfortunately such a definitive standard document does not appear to exist.
+
+<span style="font-size:large">How FileSync Works</span>
+
+Starts with FileSync.DoSync(). It builds a list based on Local Manifest, remote manifest and actual local notes. And then a list that will become the new manifest if necessary.
+
+It then compares against the local notes, then against the remote notes. These two compare functions may delete, upload or download, if any uploads take place or deletes from server, a new revision is indicted. MakeNewRevision() will, if necessary, create new working directories and (always) a new revision directory. It reads the remote manifest's idea of what revision we are up to and adds one.  Mhh, show new revision number in GUI so user can see it climbing ?
+
+If we are only downloading, then no new revision is required, we should copy the current revision not inc for a rewrite of the local manifest, do not write a new remote manifest.
+
+When we call WriteNewManifest() it first calls the parent version where local manifest is dealt with. It has two modes, firstly where we are just updating local manifest with filenames that have been deleted, secondly, where there is a sync in progress and a new revision is happening. In the first case, we should write back the same revision number as we started with. In the second case, we'll use NewRevision that has previously been set by MakeNewRevision()
+
+We should regard an empty NewRevision in the second case as meaning that we have:
+
+<ul><li dir="ltr">just joined the sync or we are making a new repo
+</li><li dir="ltr">or we've downloaded but not uploaded</li></ul>
+
+In either of the (immediate) above, we should read the remote manifest and use what ever its got for us. Remember that a blank NewRevision means don't write an new remote manifest.
+
+<span style="font-size:large">Tomboy's Sync Policies</span>
+
+(This was posted to Tomboy's issues list late 2017, it is quite probably is incomplete)
+
+We like to think that the Ancients had a secret knowledge that we don't have anymore. That does seem to be the case with Tomboy design. The Masters Of Old Tomboy, MOOT, worked very hard on a number of points that have made Tomboy as robust and reliable as it is. Sadly, no one thought to summarize those MOOT Points, we are left to read back over old discussions or reverse engineer the code.
+This page is about just that.
+
+<span style="font-size:large">Sync Model</span>
+
+Broadly, with sync, we have a server and a client. The client is the bit of Tomboy the user sees on his or her desktop. The server may be a Tomboy-web-sync system such as Rainy or Grauphel or may just be a file repository that is somehow shared (Google Drive, Dropbox, etc.) between systems we sync with. Much of the policy does not care. Here I talk about File Based Sync, tomboy-web-sync is probably similar with a network layer between. And obviously, it has server code to implement this policy.
+
+Every note has a (hopefully) unique ID that identifies it and is also used as its filename. Here we will just call that an ID. A Server may be connected to from multiple clients, any of whom may add, remove or edit a note. It seems to be assumed a client can only ever connect to one server without reconfiguration.
+
+The Sync Repository has a file, manifest.xml that lists all IDs it believes, at the time, should be in a client. It lists a revision number [0..x] for the ID that refers to a directory that contains the most current revision of the note. All revision directories are under a directory called '0', I don't know why nor do I know if that zero can ever change. That's an outstanding issue. The revision directories also contain a backup manifest file that could potentially be used to recover from an error.
+
+At the client end, there is also a manifest.xml file (in e.g. $USER/.config/tomboy/.). It contains a last sync date and a server ID. It also lists IDs and revision numbers of notes it has sent to or received from the Server, updated at sync time. Between Syncs, the ID of any locally deleted note is added.
+
+That's how the sync process can tell the difference between a new note introduced to the server from another client and a note that was deleted from this client after the previous sync. I think it makes sense to only list deleted notes that have previously been synced, unnecessary to list ones that were created and then deleted between sync events ? Unnecessary but does no harm ?
+
+There are a number of situations that can happen, in no particular order (remember, its intended to be a REST system) 
+
+CaseA - A client makes a new note then syncs. We check that it really is a new note, i.e. not present in local manifest. The new note is added to Sync Repo. It's ID now appears in Sync Repo /manifest and a copy of the note is in <a style="color:#3465A4" href="/0/$RevNo/.">/0/$RevNo/.</a>
+
+CaseB - A client deletes a note (previously synced or not), then syncs. The client moves the note to <a style="color:#3465A4" href="~/BackUp/.">~/BackUp/.</a> When syncing, it may observe that the server knows about a note it does not have, so, check local manifest, ah, its been deleted. Tell Server to delete it from whatever previous revision directory it was in. Remove reference to it from local manifest.
+
+CaseC - A client, when syncing, gets told about a note it does not have. A bit similar to above but this time the note is not in the deleted list (local manifest) so pulls it down and adopts it locally.
+
+CaseD - A client, when syncing, has a note that has been deleted by another client. This is initially similar to case A. We'll assume CaseB ran to completion. The server does not have the note, so before the client kindly offers to upload it, the client checks to see if it has been uploaded or downloaded before by checking the local manifest. If its there, it has been deleted by another client, move to Backup, effectively, delete it locally
+
+Pretty obvious how we deal with updates to existing notes, as long as one or the other dates back to the client's last sync. But if both copies have been updated since last client sync date, thats a clash.
+
+Ref -
+<a style="color:#3465A4" href="https://bugzilla.gnome.org/show_bug.cgi?id=321037">https://bugzilla.gnome.org/show_bug.cgi?id=321037</a>
+<a style="color:#3465A4" href="https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007">https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007</a>
+<a style="color:#3465A4" href="https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming">https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming</a>
+
+"Many weird situations can be avoided by performing an update in three distinct steps: deletes, then updates, then adds." repeated again and again. But not what happens in the code.
+
+
+
+</div></body></html>

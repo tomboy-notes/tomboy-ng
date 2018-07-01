@@ -1,0 +1,49 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns:link="http://beatniksoftware.com/tomboy/link"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Building tomboy-ng from source</title><style type="text/css">
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Building tomboy-ng from source"><a name="building tomboy-ng from source"></a><h1>Building tomboy-ng from source</h1>
+You can build tomboy-ng on Windows (tested on 10), Mac (tested on Sierra and El Capitan) and Linux (tested on Ubuntu Mate 16.04, Ubuntu GNOME 18.04, Lubuntu 18.04, and Manjaro 17.1.0).
+
+There are binary install kits for Linux, Windows and Mac. If you want to build your own (or, please, help with development) that too is easy. Requires Free Pascal, Lazarus and the KControls component to build. I have been working with Lazarus 1.8, just released late 2017.
+
+If you run tomboy-ng within the debugger, remember that there are several handled exceptions, the debugger insists on telling you about them so make sure you press "continue". Outside the debugger, you will not be aware of this happening.
+
+You will need:
+
+<ul><li dir="ltr">An install of Lazarus and Free Pascal. See here for a guide: <a style="color:#3465A4" href="http://wiki.freepascal.org/Installing_Lazarus">http://wiki.freepascal.org/Installing_Lazarus</a>
+</li><li dir="ltr">The Bitbucket version of KControls installed to your Lazarus: <a style="color:#3465A4" href="https://bitbucket.org/tkweb/kcontrols/downloads/">https://bitbucket.org/tkweb/kcontrols/downloads/</a></li></ul>
+
+<span style="font-size:large">Preparing to build</span>
+
+<span style="font-family:monospace">git clone <a style="color:#3465A4" href="https://github.com/tomboy-notes/tomboy-ng.git">https://github.com/tomboy-notes/tomboy-ng.git</a></span><span style="font-family:monospace">
+cd tomboy-ng/tomboy-ng</span>
+
+Next, depending on your operating system, you'll build in one of the following ways:
+
+<span style="font-size:large">Building x86_64 Linux</span>
+
+<span style="font-family:monospace">lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi</span>
+
+<span style="font-size:large">Building i386 Linux</span>
+
+<span style="font-family:monospace">lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi</span>
+
+<span style="font-size:large">Building x86_64 Windows</span>
+
+<span style="font-family:monospace">lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi</span>
+
+<span style="font-size:large">Building i386 Windows</span>
+
+<span style="font-family:monospace">lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi</span></div></body></html>

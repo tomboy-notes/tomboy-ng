@@ -1,0 +1,32 @@
+<html xmlns:tomboy="http://beatniksoftware.com/tomboy" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns:link="http://beatniksoftware.com/tomboy/link"><head><META http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Release013Alpha</title><style type="text/css">
+	body {  }
+	h1 { font-size: xx-large;
+     	     font-weight: bold;
+     	     border-bottom: 1px solid black; }
+	div.note {
+		   position: relative;
+		   display: block;
+		   padding: 5pt;
+		   margin: 5pt; 
+		   white-space: -moz-pre-wrap; /* Mozilla */
+ 	      	   white-space: -pre-wrap;     /* Opera 4 - 6 */
+ 	      	   white-space: -o-pre-wrap;   /* Opera 7 */
+ 	      	   white-space: pre-wrap;      /* CSS3 */
+ 	      	   word-wrap: break-word;      /* IE 5.5+ */ }
+	</style></head><body><div class="note" id="Release013Alpha"><a name="release013alpha"></a><h1>Release013Alpha</h1>
+<a style="color:#3465A4" href="https://github.com/tomboy-notes/tomboy-ng/releases/tag/v0.13">https://github.com/tomboy-notes/tomboy-ng/releases/tag/v0.13</a>
+
+Very shortly after the last release and that's because of valuable feedback from, particularly but not exclusively, Mac users. Changes:
+
+<ul><li dir="ltr">Now a more compliant Mac application, not completely because we don't respond to Command Q by quitting. But we do have a nice main menu and the File Menu has a functioning "Quit, Close and go away" menu item. And, joy of joy, its now free of memory leaks. See below for details.
+</li><li dir="ltr">Possibly fixed a bug that seemed to occur when editing the title of a new note during its first save. Negative feedback very welcome.
+</li><li dir="ltr">Some changes to the UI during a sync, its now much easier for user to see whats happening. Sync is still a 'wordy' process, I show lots of info because lots can go wrong. I don't think it will but if it does, I want to hear about it please!</li></ul>
+
+<b>Linux</b> The gz files will work on many Linux systems that have gtk available. The deb files include some icon and desktop files so are preferable for Debian, Ubuntu etc. 32 and 64 bit available. If you use the .gz files, you will need to restore the executable bit before using it, eg chmod u+x tomboy-ng
+
+<b>Windows</b> users should download either the Win32 or Win64 zip files. No installer yet, just unzip and copy the single binary somewhere. Your desktop would be fine. You will need to reassure Windows that the binary is safe. I hope it is.
+
+<b>Mac</b> users should download the dmg file, double click it and drag the (generic) icon into the Application icon. You can then close that window, unmount the install kit and even delete the dmg file if you like. Sorry about the icon, I'll try harder if you indicate the app is useful to you. Because I have not, as a developer (?) paid a fee to Apple, you will initially need to hold down the Control Key and click the icon rather than the familiar double click. You can then choose Open and get an option to run it. Note that when you start tomboy-ng on the Mac, you see a green Icon down on the plank, you no longer get a TrayIcon top right. Click the icon you do see and you get a tomboy-ng menu. To close the app, click File not the "tomboy-ng". That too might be fixed at some stage....
+
+Please let me know what you find.
+David</div></body></html>
