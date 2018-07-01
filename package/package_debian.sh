@@ -73,6 +73,7 @@ function DebianPackage () {
 		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
 	fi
 	cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/doc/$PRODUCT/"
+	cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
 
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
@@ -142,7 +143,7 @@ DebianPackage "amd64"
 echo "----------------- FINISHED DEBs ----------------"
 ls -l *.deb
 echo "------------------------------------------------"
-DoZipping
+ DoZipping
 
 
 

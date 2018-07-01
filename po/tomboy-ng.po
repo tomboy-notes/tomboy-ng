@@ -142,6 +142,14 @@ msgstr ""
 msgid "Small Font"
 msgstr ""
 
+#: teditboxform.menustrikeout.caption
+msgid "Strikeout"
+msgstr ""
+
+#: teditboxform.menuunderline.caption
+msgid "Underline"
+msgstr ""
+
 #: tformspell.buttonignore.caption
 msgid "Ignore"
 msgstr ""
@@ -229,7 +237,7 @@ msgid "Dismiss"
 msgstr ""
 
 #: tmainform.buttondismiss.hint
-msgid "Dismiss this windown but leave tomboy-ng running"
+msgid "Dismiss this window but leave tomboy-ng running"
 msgstr ""
 
 #: tmainform.caption
@@ -381,52 +389,52 @@ msgstr ""
 
 #: tmainform.traymenurecent1.caption
 msgctxt "tmainform.traymenurecent1.caption"
-msgid "MenuItem5"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent10.caption
 msgctxt "tmainform.traymenurecent10.caption"
-msgid "MenuItem14"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent2.caption
 msgctxt "tmainform.traymenurecent2.caption"
-msgid "MenuItem6"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent3.caption
 msgctxt "tmainform.traymenurecent3.caption"
-msgid "MenuItem7"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent4.caption
 msgctxt "tmainform.traymenurecent4.caption"
-msgid "MenuItem8"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent5.caption
 msgctxt "tmainform.traymenurecent5.caption"
-msgid "MenuItem9"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent6.caption
 msgctxt "tmainform.traymenurecent6.caption"
-msgid "MenuItem10"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent7.caption
 msgctxt "tmainform.traymenurecent7.caption"
-msgid "MenuItem11"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent8.caption
 msgctxt "tmainform.traymenurecent8.caption"
-msgid "MenuItem12"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenurecent9.caption
 msgctxt "tmainform.traymenurecent9.caption"
-msgid "MenuItem13"
+msgid "empty"
 msgstr ""
 
 #: tmainform.traymenusynchronise.caption
@@ -479,30 +487,37 @@ msgid "New Note Book"
 msgstr ""
 
 #: trtsearch.buttonclearsearch.caption
+msgctxt "trtsearch.buttonclearsearch.caption"
 msgid "Clear"
 msgstr ""
 
 #: trtsearch.buttonclearsearch.hint
+msgctxt "trtsearch.buttonclearsearch.hint"
 msgid "Clears the search"
 msgstr ""
 
 #: trtsearch.buttonnotebookoptions.caption
+msgctxt "trtsearch.buttonnotebookoptions.caption"
 msgid "Notebook Options"
 msgstr ""
 
 #: trtsearch.buttonnotebookoptions.hint
+msgctxt "trtsearch.buttonnotebookoptions.hint"
 msgid "Manage the Notebooks"
 msgstr ""
 
 #: trtsearch.buttonrefresh.caption
+msgctxt "trtsearch.buttonrefresh.caption"
 msgid "Refresh"
 msgstr ""
 
 #: trtsearch.buttonrefresh.hint
+msgctxt "trtsearch.buttonrefresh.hint"
 msgid "Indexes on disk notes"
 msgstr ""
 
 #: trtsearch.buttonshowallnotes.caption
+msgctxt "trtsearch.buttonshowallnotes.caption"
 msgid "Show All Notes"
 msgstr ""
 
@@ -516,6 +531,7 @@ msgid "Search"
 msgstr ""
 
 #: trtsearch.menudeletenotebook.caption
+msgctxt "trtsearch.menudeletenotebook.caption"
 msgid "Delete Notebook"
 msgstr ""
 
@@ -614,6 +630,70 @@ msgctxt "trtsearch.traymenurecent9.caption"
 msgid "MenuItem13"
 msgstr ""
 
+#: tsearchform.buttonclearsearch.caption
+msgctxt "tsearchform.buttonclearsearch.caption"
+msgid "Clear"
+msgstr ""
+
+#: tsearchform.buttonclearsearch.hint
+msgctxt "tsearchform.buttonclearsearch.hint"
+msgid "Clears the search"
+msgstr ""
+
+#: tsearchform.buttonnotebookoptions.caption
+msgctxt "tsearchform.buttonnotebookoptions.caption"
+msgid "Notebook Options"
+msgstr ""
+
+#: tsearchform.buttonnotebookoptions.hint
+msgctxt "tsearchform.buttonnotebookoptions.hint"
+msgid "Manage the Notebooks"
+msgstr ""
+
+#: tsearchform.buttonrefresh.caption
+msgctxt "tsearchform.buttonrefresh.caption"
+msgid "Refresh"
+msgstr ""
+
+#: tsearchform.buttonrefresh.hint
+msgctxt "tsearchform.buttonrefresh.hint"
+msgid "Indexes on disk notes"
+msgstr ""
+
+#: tsearchform.buttonshowallnotes.caption
+msgctxt "tsearchform.buttonshowallnotes.caption"
+msgid "Show All Notes"
+msgstr ""
+
+#: tsearchform.caption
+msgid "SearchForm"
+msgstr ""
+
+#: tsearchform.edit1.text
+msgctxt "tsearchform.edit1.text"
+msgid "Search"
+msgstr ""
+
+#: tsearchform.menudeletenotebook.caption
+msgctxt "tsearchform.menudeletenotebook.caption"
+msgid "Delete Notebook"
+msgstr ""
+
+#: tsearchform.menueditnotebooktemplate.caption
+msgctxt "tsearchform.menueditnotebooktemplate.caption"
+msgid "Edit Notebook Template"
+msgstr ""
+
+#: tsearchform.menunewnotefromtemplate.caption
+msgctxt "tsearchform.menunewnotefromtemplate.caption"
+msgid "Create New Note from Template"
+msgstr ""
+
+#: tsearchform.panel1.caption
+msgctxt "tsearchform.panel1.caption"
+msgid "Panel1"
+msgstr ""
+
 #: tsett.buttdefaultnotedir.caption
 msgid "Use default Notes location"
 msgstr ""
@@ -627,12 +707,16 @@ msgctxt "tsett.buttonhide.caption"
 msgid "Close"
 msgstr ""
 
-#: tsett.buttonsaveconfig.caption
-msgid "Save Config"
+#: tsett.buttonhide.hint
+msgid "Unsaved setting will remain for this session only"
 msgstr ""
 
 #: tsett.buttonsetnotepath.caption
 msgid "Set Path to Note Files"
+msgstr ""
+
+#: tsett.buttonsetnotepath.hint
+msgid "If you have notes somewhere else."
 msgstr ""
 
 #: tsett.buttonsetsynserver.caption
@@ -669,6 +753,10 @@ msgstr ""
 
 #: tsett.checkshowintlinks.caption
 msgid "Show Internal Links"
+msgstr ""
+
+#: tsett.edit1.text
+msgid "Edit1"
 msgstr ""
 
 #: tsett.editdic.hint
@@ -795,92 +883,6 @@ msgstr ""
 
 #: tsett.labelwaitforsync.caption
 msgid "LabelWaitForSync"
-msgstr ""
-
-#: tsett.menufile.caption
-msgctxt "tsett.menufile.caption"
-msgid "File"
-msgstr ""
-
-#: tsett.menurecent.caption
-msgid "Recent Notes"
-msgstr ""
-
-#: tsett.mmabout.caption
-msgctxt "tsett.mmabout.caption"
-msgid "About"
-msgstr ""
-
-#: tsett.mmnewnote.caption
-msgctxt "tsett.mmnewnote.caption"
-msgid "New Note"
-msgstr ""
-
-#: tsett.mmquit.caption
-msgid "Quit Close and Go Away"
-msgstr ""
-
-#: tsett.mmrecent1.caption
-msgid "MenuItem4"
-msgstr ""
-
-#: tsett.mmrecent10.caption
-msgctxt "tsett.mmrecent10.caption"
-msgid "MenuItem14"
-msgstr ""
-
-#: tsett.mmrecent2.caption
-msgctxt "tsett.mmrecent2.caption"
-msgid "MenuItem5"
-msgstr ""
-
-#: tsett.mmrecent3.caption
-msgctxt "tsett.mmrecent3.caption"
-msgid "MenuItem6"
-msgstr ""
-
-#: tsett.mmrecent4.caption
-msgctxt "tsett.mmrecent4.caption"
-msgid "MenuItem8"
-msgstr ""
-
-#: tsett.mmrecent5.caption
-msgctxt "tsett.mmrecent5.caption"
-msgid "MenuItem9"
-msgstr ""
-
-#: tsett.mmrecent6.caption
-msgctxt "tsett.mmrecent6.caption"
-msgid "MenuItem10"
-msgstr ""
-
-#: tsett.mmrecent7.caption
-msgctxt "tsett.mmrecent7.caption"
-msgid "MenuItem11"
-msgstr ""
-
-#: tsett.mmrecent8.caption
-msgctxt "tsett.mmrecent8.caption"
-msgid "MenuItem12"
-msgstr ""
-
-#: tsett.mmrecent9.caption
-msgctxt "tsett.mmrecent9.caption"
-msgid "MenuItem13"
-msgstr ""
-
-#: tsett.mmsearch.caption
-msgctxt "tsett.mmsearch.caption"
-msgid "Search"
-msgstr ""
-
-#: tsett.mmsettings.caption
-msgctxt "tsett.mmsettings.caption"
-msgid "Settings"
-msgstr ""
-
-#: tsett.mmsync.caption
-msgid "Syncronise"
 msgstr ""
 
 #: tsett.panel2.caption
