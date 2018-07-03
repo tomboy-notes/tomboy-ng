@@ -20,6 +20,7 @@ MANUALS="Notes.txt"
 
 BUILDOPTS=" -B --quiet --quiet"
 BUILDDATE=`date -R`
+LAZ_DIR=/home/dbannon/lazarus/lazarus_1_8_4
 
 # ----------------------
 
@@ -31,13 +32,13 @@ BUILDDATE=`date -R`
 function BuildIt () {
 	cd $SOURCE_DIR
 	echo "Building x86_64 Linux"
-	lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
+	$LAZ_DIR/lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
 	echo "Building i386 Linux"
-	lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
+	$LAZ_DIR/lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Windows"
-	lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
+	$LAZ_DIR/lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
 	echo "Building i386 Windows"
-	lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
+	$LAZ_DIR/lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	# Todo - should check we now have binaries with todays date.
 	echo "------------- FINISHED BUILDING -----------------"
@@ -74,6 +75,8 @@ function DebianPackage () {
 	fi
 	cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/doc/$PRODUCT/"
 	cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
+	chmod 0755 "BUILD/usr/share/doc/$PRODUCT/html" 
+	chmod 0744 "BUILD/usr/share/doc/$PRODUCT/html/*"
 
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control

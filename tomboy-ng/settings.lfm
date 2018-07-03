@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 307
+  Left = 931
   Height = 431
-  Top = 152
+  Top = 295
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -166,6 +166,14 @@ object Sett: TSett
           Caption = 'Small'
           OnChange = CheckReadOnlyChange
           TabOrder = 2
+        end
+        object Edit1: TEdit
+          Left = 4
+          Height = 27
+          Top = 63
+          Width = 80
+          TabOrder = 3
+          Text = 'Edit1'
         end
       end
       object CheckShowIntLinks: TCheckBox

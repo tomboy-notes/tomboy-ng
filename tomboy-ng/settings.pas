@@ -101,6 +101,7 @@ type
 		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
+        Edit1: TEdit;
         EditLibrary: TEdit;
         EditDic: TEdit;
 		GroupBox3: TGroupBox;

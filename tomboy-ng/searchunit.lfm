@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 188
+  Left = 219
   Height = 342
-  Top = 189
+  Top = 316
   Width = 724
   Caption = 'SearchForm'
   ClientHeight = 342
