@@ -147,7 +147,7 @@ unit EditBox;
     2018/06/13  Drop copy on selection and add Ben's Underline, strikethrough and Fixedwidth !
     2018/06/13  Reinstate copy on selection, middle button click, Linux & (in app only) Windows only
     2018/06/22  DRB added LoadSingleNote and related to do just that. Needs more testing.
-
+    2018/07/05  Changed MonospaceFont to 'Monaco' on the Mac, apparently universal...
 }
 
 
@@ -550,6 +550,7 @@ const
    MonospaceFont = 'monospace';
  {$else}
    MonospaceFont = 'Lucida Console';
+   MonospaceFont = 'Monaco';        // might be a better choice
  {$ifend}
 
 { This complex function will set font size, Bold or Italic or Color depending on the
