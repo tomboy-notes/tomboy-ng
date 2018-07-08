@@ -7,20 +7,28 @@
 
 The intention is to stick to Tomboy's basic principles of simple user interface, cross platform and syncronisation between those platforms. Long term ....
 
+<size:large><bold>Specific Targets for next release
+</bold><list><list-item dir="ltr"><bold></bold></size:large>When you paste into a note and the focus point is beyond a newline, the pasted text appears on the next line. We should test for a newline to the left and if there is one, ensure paste happens before the newline. </list-item></list>
+<list><list-item dir="ltr">Maybe - interprocess communication that allows an existing running process to be told to upen a new note.</list-item></list>
+<list><list-item dir="ltr"><highlight>check printing now that Ben has got highlight working, I suspect Brush may be out of scope.</highlight></list-item></list><highlight>
+</highlight><list><list-item dir="ltr"><highlight></highlight>Help - have tomboy-ng start an external (or internal ?) browser to view the html documentation.</list-item></list>
+<list><list-item dir="ltr">Can we make instrutions on how (eg) Fedora users can install something to make the SystemTray Icon work as it should ?  eg </list-item></list>
+https://github.com/phocean/TopIcons-plus
+
 <size:large><bold>Here is a todo list (last updated 2018/06/13) -
 
-</bold><list><list-item dir="ltr"><bold></bold></size:large>Monospaced Font  - in progress, Ben</list-item></list>
+</bold><list><list-item dir="ltr"><bold></bold></size:large><strikeout>Monospaced Font   - in progress, Ben </list-item></list>
 <list><list-item dir="ltr">Strikeout        - in progress, Ben</list-item></list>
 <list><list-item dir="ltr">Underline        - in progress, Ben</list-item></list>
-<list><list-item dir="ltr">Printing (all working except on Cocoa) - wait until Cocoa more advanced <highlight>Memo - check printing now that Ben has got highlight working, suspect Brush may be out of scope.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight></highlight>Table of Contents (a plugin I use a LOT)</list-item></list>
+<list><list-item dir="ltr"></strikeout>Printing on  Cocoa</list-item></list>
+<list><list-item dir="ltr">Table of Contents (a Tomboy plugin I use a LOT)</list-item></list>
 <list><list-item dir="ltr">Tools to manage (re-use or delete) deleted files that end up in Backup/.</list-item></list>
 <list><list-item dir="ltr">Network Sync</list-item></list>
 <list><list-item dir="ltr">A mobile device solution (or will netsync make Tomdroid viable ?)</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
 <list><list-item dir="ltr">A viable backup solution.</list-item></list>
-<list><list-item dir="ltr">A proper highlight - Ben</list-item></list>
-<list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
+<list><list-item dir="ltr"><strikeout>A proper highlight - Ben</list-item></list>
+<list><list-item dir="ltr"></strikeout> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Almost anyone could make Bullets work better ! Firstly, we should have second and subsquent lines in a bullet left offset. And, despite the quantity of code in EditBox trying to make bullets work as expected, there are still the occasional surprise. Sigh.</list-item></list>
 
 
@@ -30,10 +38,10 @@ The intention is to stick to Tomboy's basic principles of simple user interface,
 <list><list-item dir="ltr"> Import ability. Import a directory of Tomboy notes. Import other formats.</list-item></list>
 <list><list-item dir="ltr">Revise controls, at present modelled on Tomboy, we can improve.</list-item></list>
 <list><list-item dir="ltr">Whats this about Gnome3 not wanting to play trayicon, AppIndicator etc ?</list-item></list>
-<list><list-item dir="ltr">Install models - Flatpack, Snap etc ?  RPM, a proper Windows installer.</list-item></list>
+<list><list-item dir="ltr">Install models - Flatpack, Snap etc ?  <strikeout>RPM</strikeout>, a proper Windows installer.</list-item></list>
 
-<size:large><bold>Creating Man Pages
-</bold></size:large>This is a dual issue, or two issues with one solution ?  I make an export filter to convert an open note to man format. And use that to write a tomboy-ng man page.
+<size:large><strikeout><bold>Creating Man Pages
+</bold></strikeout></size:large>This is a dual issue, or two issues with one solution ?  I make an export filter to convert an open note to man format. And use that to write a tomboy-ng man page.
 
 Export in POD format and then use pod2man ?  Or directly write the man page ?
 
@@ -57,7 +65,7 @@ In the Mac - setting a Lazarus Application Icon seems work. Gee, its easy under 
 </bold>Now have a icns file in glyphs.
 The lazarus "make bundle" tool does not address application bundle so must add two lines to tmboy-ng.app/Contents/Info.plist. Add two middle lines between other two 
 
-</monospace><monospace>&lt;string&gt;tomboy-ng&lt;/string&gt;
+<monospace>&lt;string&gt;tomboy-ng&lt;/string&gt;
 <monospace><highlight>&lt;key&gt;CFBundleIconFile&lt;/key&gt;
 </highlight><monospace><highlight>&lt;string&gt;macicon.icns&lt;/string&gt;
 </highlight><monospace>&lt;key&gt;CFBundleIdentifier&lt;/key&gt;
@@ -75,8 +83,8 @@ My immediate solution is to grab a copy of the edited Info.plist and put it into
 
 
 </note-content></text>
-  <last-change-date>2018-06-23T16:35:54.3240000+10:00</last-change-date>
-  <last-metadata-change-date>2018-06-23T16:35:54.3240000+10:00</last-metadata-change-date>
+  <last-change-date>2018-07-08T11:45:18.0210000+10:00</last-change-date>
+  <last-metadata-change-date>2018-07-08T11:45:18.0210000+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
