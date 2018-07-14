@@ -53,6 +53,7 @@ unit SaveNote;
                 to naming of MainUnit and SearchUnit.
     2018/06/26  Some <italic> tags an an 's' at the end.  Changed the test for when
                 FixedWidth turns on in AddTag().
+    2018/07/14  Fixed a misplaced 'end' in BulletList() that was skipping some of its tests.
 }
 
 {$mode objfpc}{$H+}
@@ -335,30 +336,31 @@ begin
 	if HiLight then begin
         EndStartSt := EndStartSt + '</highlight>';
         EndEndSt := '<highlight>' + EndEndSt;
+    end;
     if PrevUnderline then begin
         StartStartSt := StartStartSt + '</underline>';
         EndEndSt := '<underline>' + EndEndSt;
-        end;
-        if Underline then begin
+    end;
+    if Underline then begin
         EndStartSt := EndStartSt + '</underline>';
         EndEndSt := '<underline>' + EndEndSt;
-        end;
+    end;
     if PrevStrikeout then begin
         StartStartSt := StartStartSt + '</strikeout>';
         EndEndSt := '<strikeout>' + EndEndSt;
-        end;
-        if Strikeout then begin
+    end;
+    if Strikeout then begin
         EndStartSt := EndStartSt + '</strikeout>';
         EndEndSt := '<strikeout>' + EndEndSt;
-        end;
+    end;
     if PrevFixedWidth then begin
         StartStartSt := StartStartSt + '</monospace>';
         EndEndSt := '<monospace>' + EndEndSt;
-        end;
-        if FixedWidth then begin
+    end;
+    if FixedWidth then begin
         EndStartSt := EndStartSt + '</monospace>';
         EndEndSt := '<monospace>' + EndEndSt;
-        end;
+    end;
     if PrevFSize <> Sett.FontNormal then begin
         StartStartSt := StartStartSt + SetFontXML(PrevFSize, False);
         StartEndSt := SetFontXML(PrevFSize, True) + StartEndSt;
@@ -367,7 +369,6 @@ begin
         EndStartSt := EndStartSt + SetFontXML(FSize, False);
         EndEndSt := SetFontXML(FSize, True) + EndEndSt;
 	end;
-end;
 
     {writeLn('Buff at Start [' + Buff + ']');
     writeln('StartStart    [' + StartStartSt + ']');
@@ -508,9 +509,9 @@ var
 				PrevBold := Bold;
  				PrevItalics := Italics;
  				PrevHiLight := HiLight;
-                                PrevUnderline := Underline;
-                                PrevStrikeout := Strikeout;
-                                PrevFixedWidth := FixedWidth;
+                PrevUnderline := Underline;
+                PrevStrikeout := Strikeout;
+                PrevFixedWidth := FixedWidth;
                 PrevFSize := FSize;
                 repeat
                     Block := KM1.Blocks.Items[BlockNo];
