@@ -148,6 +148,7 @@ unit EditBox;
     2018/06/13  Reinstate copy on selection, middle button click, Linux & (in app only) Windows only
     2018/06/22  DRB added LoadSingleNote and related to do just that. Needs more testing.
     2018/07/05  Changed MonospaceFont to 'Monaco' on the Mac, apparently universal...
+    2018/07/20  Force copy on selection paste to always paste to left of a newline.
 }
 
 
@@ -482,7 +483,13 @@ var
 begin
     {$IFNDEF DARWIN}
     if Button = mbMiddle then begin
-      Point := TPoint.Create(X, Y);
+      Point := TPoint.Create(X, Y); // X and Y are pixels, not char positions !
+      LinePos := eolEnd;
+      while X > 0 do begin          // we might be right of the eol marker.
+            KMemo1.PointToIndex(Point, true, true, LinePos);
+            if LinePos = eolInside then break;
+            dec(Point.X);
+      end;
       PrimaryPaste(KMemo1.PointToIndex(Point, true, true, LinePos));
       exit();
     end;
@@ -529,8 +536,11 @@ var
 begin
     if PrimarySelection.HasFormat(CF_TEXT) then begin  // I don't know if this is useful at all.
         Buff := PrimarySelection().AsText;
-        if Buff <> '' then
+        if Buff <> '' then begin
             KMemo1.Blocks.InsertPlainText(SelIndex, Buff);
+            KMemo1.SelStart := SelIndex;
+            Kmemo1.SelEnd := SelIndex + length(Buff);
+        end;
     end;
 end;
 
