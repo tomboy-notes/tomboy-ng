@@ -126,6 +126,8 @@ function DoZipping {
 	cp ../tomboy-ng/tomboy-ng64.exe "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.dll "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.license "$PRODUCT"_"$VERSION/."
+	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$PRODUCT"_"$VERSION/readme.txt"
+	unix2dos "$PRODUCT"_"$VERSION/readme.txt"
 	zip "$PRODUCT"_win64_"$VERSION.zip" "$PRODUCT"_"$VERSION"/* 
 
 	cp ../tomboy-ng/tomboy-ng32.exe .

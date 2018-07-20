@@ -8,12 +8,13 @@
 The intention is to stick to Tomboy's basic principles of simple user interface, cross platform and syncronisation between those platforms. Long term ....
 
 <size:large><bold>Specific Targets for next release
-</bold><list><list-item dir="ltr"><bold></bold></size:large>When you paste into a note and the focus point is beyond a newline, the pasted text appears on the next line. We should test for a newline to the left and if there is one, ensure paste happens before the newline. </list-item></list>
-<list><list-item dir="ltr">Maybe - interprocess communication that allows an existing running process to be told to upen a new note.</list-item></list>
+</bold><list><list-item dir="ltr"><bold></bold></size:large><strikeout>When you paste into a note and the focus point is beyond a newline, the pasted text appears on the next line. We should test for a newline to the left and if there is one, ensure paste happens before the newline.</strikeout> Will be fixed in v0.17</list-item></list>
+<list><list-item dir="ltr">Maybe - interprocess communication that allows an existing running process to be told to open a new note.</list-item></list>
 <list><list-item dir="ltr"><highlight>check printing now that Ben has got highlight working, I suspect Brush may be out of scope.</highlight></list-item></list><highlight>
 </highlight><list><list-item dir="ltr"><highlight></highlight>Help - have tomboy-ng start an external (or internal ?) browser to view the html documentation.</list-item></list>
 <list><list-item dir="ltr">Can we make instrutions on how (eg) Fedora users can install something to make the SystemTray Icon work as it should ?  eg </list-item></list>
-https://github.com/phocean/TopIcons-plus
+https://github.com/phocean/TopIcons-plus or 
+https://extensions.gnome.org/extension/615/appindicator-support/
 
 <size:large><bold>Here is a todo list (last updated 2018/06/13) -
 
@@ -83,8 +84,8 @@ My immediate solution is to grab a copy of the edited Info.plist and put it into
 
 
 </note-content></text>
-  <last-change-date>2018-07-08T11:45:18.0210000+10:00</last-change-date>
-  <last-metadata-change-date>2018-07-08T11:45:18.0210000+10:00</last-metadata-change-date>
+  <last-change-date>2018-07-20T14:06:41.1100000+10:00</last-change-date>
+  <last-metadata-change-date>2018-07-20T14:06:41.1100000+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

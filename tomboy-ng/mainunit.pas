@@ -335,6 +335,7 @@ begin
     UseMainMenu := true;
     UseTrayMenu := false;
     {$endif}
+    end;
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;

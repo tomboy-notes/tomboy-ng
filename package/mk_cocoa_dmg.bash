@@ -5,10 +5,14 @@
 
 # NOTE - hack up to build 64bit cocoa from 32bit IDE base. May 2018
 #
+# call with a path set to trunk version of Lazarus, ie
+# PATH=/somewhere/:$PATH bash mk_cocoa.bash
+# edit the bit before lazbuild...... and where the config file is
+#
 # Depends (heavily) on https://github.com/andreyvit/create-dmg
 # which must be installed.
 #
-# Todo - Generate a Mac icon and sensible background image.
+# Todo - 
 #		 Probably should put license and readme in there too.
 # -------------------------------------------------------------
 PRODUCT=tomboy-ng
@@ -25,6 +29,9 @@ rm -Rf $WORK
 mkdir $WORK
 ln -s /Applications $WORK/Applications
 cp -R ../"$PRODUCT"/"$PRODUCT".app $WORK/.
+mkdir "$CONTENTS"/SharedSupport
+MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt"
+cp -R ../doc/html "$CONTENTS"/SharedSupport/.
 cp Info.plist "$CONTENTS/."
 cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
 rm "$CONTENTS/MacOS/""$PRODUCT"

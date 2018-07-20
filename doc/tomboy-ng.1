@@ -14,7 +14,7 @@ tomboy-ng \- manage a collection of notes using a simple markup
 
 .SH DESCRIPTION
 .B tomboy-ng
-is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is possibly file compatible with Tomdroid and GNote. Tomboy-ng notes support Blod, Italic, Strikethrough, Highlight and underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model but not yet Network Sync using Rainy or Graphal.
+is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is possibly file compatible with Tomdroid and GNote. Tomboy-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model but not yet Network Sync using Rainy or Graphal.
 
 Many users will want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can interact with it via that Icon. However, a small window is also opened, it can be dismissed if you see the system tray icon. Sadly, some Gnome3 distros do not show the system tray icon and you must keep that small window visible. A command line switch (-g or --gnome3) protects the small window from accidental dismissal.
 
@@ -34,15 +34,27 @@ Run gnome3 mode, needed on Linux releases based on gnome3 3.28 or later but not 
 Generate a lot of logging information on the console during a sync process. Intended for debugging.
 
 .TP
-.BR \-o ", " \-\-config\-dir=\fIPATH_to_DIR\fR
+.BR \-c ", " \-\-config\-dir=\fIPATH_to_DIR\fR
 Create or use an alternative config. That config could, for example, specify an alterative location to store notes and sync against a different file sync repository.
 
 .TP
 .BR \-o ", " \-\-open-note=\fIPATH_to_NOTE\fR
-Open a note in single note mode. In this mode, a seperate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a plain text file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remans in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switches are optional, \fBtomboy-ng\fR \fIsome.note\fR will works as well.
+Open a note in single note mode. In this mode, a seperate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a plain text file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that this switches are optional, "tomboy-ng some.note" will works as well.
+
+.SH DEBUGGING
+tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows does not, for this purpose, have a console. But it can be told to capture this log info to a file using another command line switch or by setting an env variable that specifices a file name. Please ensure you have permission to write to the location specified.
+
+tomboy-ng \-\-debug-sync \-\-debug-log=c:\\debug.txt
+
+set tomboy-ng_debuglog=c:\\debug.txt
+
+Linux and mac users can do something similar. If you intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see.
+
 
 .SH "SEE ALSO"
 .I https://github.com/tomboy-notes/tomboy-ng
+
+On some platforms, tomboy-ng is distributed with a directory, html, that contains further documentation.
 
 .SH BUGS
 Please send bug reports to the Tomboy mailing list
