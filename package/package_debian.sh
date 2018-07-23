@@ -9,7 +9,7 @@
 # and that a 'Release' mode exists.
 
 PRODUCT="tomboy-ng"
-VERSION="0.16"
+VERSION="0.16a"
 
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"

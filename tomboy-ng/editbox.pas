@@ -149,6 +149,8 @@ unit EditBox;
     2018/06/22  DRB added LoadSingleNote and related to do just that. Needs more testing.
     2018/07/05  Changed MonospaceFont to 'Monaco' on the Mac, apparently universal...
     2018/07/20  Force copy on selection paste to always paste to left of a newline.
+    2018/07/23  If a note has no title in content but does have one in xml, caption is
+                left blank and that crashes things that look for * in first char. Fixed
 }
 
 
@@ -559,7 +561,7 @@ const
  {$ifdef LINUX}
    MonospaceFont = 'monospace';
  {$else}
-   MonospaceFont = 'Lucida Console';
+   //MonospaceFont = 'Lucida Console';
    MonospaceFont = 'Monaco';        // might be a better choice
  {$ifend}
 
@@ -847,13 +849,15 @@ procedure TEditBoxForm.MarkDirty();
 begin
     {if not Dirty then} TimerSave.Enabled := true;
     Dirty := true;
-    if Caption[1] <> '*' then
+    if Caption = '' then Caption := '*'
+    else if Caption[1] <> '*' then
         Caption := '* ' + Caption;
 end;
 
 
 function TEditBoxForm.CleanCaption(): ANSIString;
 begin
+    if Caption = '' then exit('');
     if Caption[1] = '*' then
         Result := Copy(Caption, 3, 256)
     else Result := Caption;
