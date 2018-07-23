@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 931
+  Left = 512
   Height = 431
-  Top = 295
+  Top = 233
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -22,10 +22,10 @@ object Sett: TSett
     Height = 373
     Top = 0
     Width = 525
-    ActivePage = TabDisplay
+    ActivePage = TabBackUp
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 3
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -166,14 +166,6 @@ object Sett: TSett
           Caption = 'Small'
           OnChange = CheckReadOnlyChange
           TabOrder = 2
-        end
-        object Edit1: TEdit
-          Left = 4
-          Height = 27
-          Top = 63
-          Width = 80
-          TabOrder = 3
-          Text = 'Edit1'
         end
       end
       object CheckShowIntLinks: TCheckBox
@@ -383,12 +375,12 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 186
+        Height = 188
         Top = 150
         Width = 519
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 186
+        ClientHeight = 188
         ClientWidth = 519
         TabOrder = 1
         object StringGridBackUp: TStringGrid
@@ -399,7 +391,7 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 184
+          Height = 186
           Top = 1
           Width = 517
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -410,6 +402,7 @@ object Sett: TSett
           FixedCols = 0
           Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goThumbTracking, goSmoothScroll]
           TabOrder = 0
+          OnDblClick = StringGridBackUpDblClick
         end
       end
     end

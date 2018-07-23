@@ -286,7 +286,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="12">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -360,6 +360,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Mainunit"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="backupview.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormBackupView"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="BackupView"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

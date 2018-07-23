@@ -91,6 +91,7 @@ msgid "Cut"
 msgstr ""
 
 #: teditboxform.menuitemdelete.caption
+msgctxt "teditboxform.menuitemdelete.caption"
 msgid "Delete"
 msgstr ""
 
@@ -148,6 +149,44 @@ msgstr ""
 
 #: teditboxform.menuunderline.caption
 msgid "Underline"
+msgstr ""
+
+#: tformbackupview.buttondelete.caption
+msgctxt "tformbackupview.buttondelete.caption"
+msgid "Delete"
+msgstr ""
+
+#: tformbackupview.buttondelete.hint
+msgid "Really, totally delete this note."
+msgstr ""
+
+#: tformbackupview.buttonok.caption
+msgctxt "tformbackupview.buttonok.caption"
+msgid "OK"
+msgstr ""
+
+#: tformbackupview.buttonok.hint
+msgid "My work here is done."
+msgstr ""
+
+#: tformbackupview.buttonopen.caption
+msgid "Open"
+msgstr ""
+
+#: tformbackupview.buttonopen.hint
+msgid "Open and view the whole note"
+msgstr ""
+
+#: tformbackupview.buttonrecover.caption
+msgid "Recover"
+msgstr ""
+
+#: tformbackupview.buttonrecover.hint
+msgid "Restore this note to main repo"
+msgstr ""
+
+#: tformbackupview.caption
+msgid "FormBackupView"
 msgstr ""
 
 #: tformspell.buttonignore.caption
@@ -448,6 +487,7 @@ msgid "Cancel"
 msgstr ""
 
 #: tnotebookpick.buttonok.caption
+msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr ""
 
@@ -753,10 +793,6 @@ msgstr ""
 
 #: tsett.checkshowintlinks.caption
 msgid "Show Internal Links"
-msgstr ""
-
-#: tsett.edit1.text
-msgid "Edit1"
 msgstr ""
 
 #: tsett.editdic.hint

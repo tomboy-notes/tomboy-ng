@@ -70,6 +70,7 @@ unit settings;
                 Extensive checks of config and notes directory before proceeding.
     2018/06/14  Moved call to CheckSpelling() from OnShow to OnCreate.
                 Select MediumFont in default settings.
+    2018/07/22  Removed an errant editbox that somehow appeared over small font button.
 
 }
 
@@ -79,7 +80,7 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus {, CheckLst};
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, BackUpView {, CheckLst};
 
 // Types;
 
@@ -101,7 +102,6 @@ type
 		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
-        Edit1: TEdit;
         EditLibrary: TEdit;
         EditDic: TEdit;
 		GroupBox3: TGroupBox;
@@ -170,6 +170,7 @@ type
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
+        procedure StringGridBackUpDblClick(Sender: TObject);
 		//procedure Timer1Timer(Sender: TObject);
    	private
         fExportPath : ANSIString;  { TODO : This will need to be a property }
@@ -294,6 +295,32 @@ end;
 procedure TSett.PageControl1Change(Sender: TObject);
 begin
 	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+end;
+
+procedure TSett.StringGridBackUpDblClick(Sender: TObject);
+var
+    BV : TFormBackupView;
+    NoteTitle : ANSIstring;
+    FileName : string;
+begin
+	FileName := StringGridBackUp.Cells[3, StringGridBackUp.Row];
+    if FileName = '' then exit();
+  	if not FileExistsUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
+      	showmessage('Cannot open ' + Sett.NoteDirectory + 'Backup' + PathDelim + FileName);
+      	exit();
+  	end;
+  	NoteTitle := StringGridBackup.Cells[0, StringGridBackUp.Row];
+//  	if length(NoteTitle) > 0 then
+//        OpenNote(NoteTitle, FullFileName);
+    BV := TFormBackupView.Create(self);
+    try
+        BV.FileName := FileName;
+        BV.NoteTitle := NoteTitle;
+        BV.ShowModal;
+        if BV.NotesChanged then ButtonShowBackUpClick(self);
+    finally
+        FreeandNil(BV);
+    end;
 end;
 
     { ----------------- S P E L L I N G ----------------------}

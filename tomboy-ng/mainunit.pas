@@ -125,12 +125,11 @@ type
         CmdLineErrorMsg : string;
         AllowDismiss : boolean; // Allow user to dismiss (ie hide) the opening window.
         function CommandLineError() : boolean;
-        procedure SingleNoteMode(FullFileName: string);
-
     public
         UseTrayMenu : boolean;
         UseMainMenu : boolean;
         procedure CheckStatus();
+        procedure SingleNoteMode(FullFileName: string; CloseOnFinish : boolean = True);
     end;
 
 var
@@ -151,7 +150,7 @@ uses LazLogger, LazFileUtils,
     uAppIsRunning,
     Editbox;    // Used only in SingleNoteMode
 
-procedure TMainForm.SingleNoteMode(FullFileName : string);
+procedure TMainForm.SingleNoteMode(FullFileName : string; CloseOnFinish : boolean = True);
 var
     EBox : TEditBoxForm;
 begin
@@ -178,7 +177,7 @@ begin
         end;
     end else
         DebugLn('Sorry, cannot find that directory [' + ExtractFilePath(FullFileName) + ']');
-    Close;
+    if CloseOnFinish then Close;      // we also use singlenotemode when looking at backup files
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -335,7 +334,6 @@ begin
     UseMainMenu := true;
     UseTrayMenu := false;
     {$endif}
-    end;
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;

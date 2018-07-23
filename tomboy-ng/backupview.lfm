@@ -1,0 +1,83 @@
+object FormBackupView: TFormBackupView
+  Left = 418
+  Height = 190
+  Top = 273
+  Width = 335
+  Caption = 'FormBackupView'
+  ClientHeight = 190
+  ClientWidth = 335
+  OnShow = FormShow
+  LCLVersion = '1.8.0.6'
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
+    Left = 0
+    Height = 161
+    Top = 0
+    Width = 335
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Lines.Strings = (
+      'Memo1'
+    )
+    OnChange = Memo1Change
+    TabOrder = 0
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 29
+    Top = 161
+    Width = 335
+    Anchors = [akLeft, akRight, akBottom]
+    ClientHeight = 29
+    ClientWidth = 335
+    TabOrder = 1
+    object ButtonOpen: TButton
+      Left = 2
+      Height = 25
+      Hint = 'Open and view the whole note'
+      Top = 2
+      Width = 75
+      Caption = 'Open'
+      OnClick = ButtonOpenClick
+      TabOrder = 0
+    end
+    object ButtonRecover: TButton
+      Left = 79
+      Height = 25
+      Hint = 'Restore this note to main repo'
+      Top = 2
+      Width = 75
+      Caption = 'Recover'
+      OnClick = ButtonRecoverClick
+      TabOrder = 1
+    end
+    object ButtonDelete: TButton
+      Left = 156
+      Height = 25
+      Hint = 'Really, totally delete this note.'
+      Top = 2
+      Width = 75
+      Caption = 'Delete'
+      OnClick = ButtonDeleteClick
+      TabOrder = 2
+    end
+    object ButtonOK: TButton
+      Left = 233
+      Height = 25
+      Hint = 'My work here is done.'
+      Top = 2
+      Width = 75
+      Caption = 'OK'
+      ModalResult = 1
+      TabOrder = 3
+    end
+  end
+end
