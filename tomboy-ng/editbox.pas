@@ -151,6 +151,7 @@ unit EditBox;
     2018/07/20  Force copy on selection paste to always paste to left of a newline.
     2018/07/23  If a note has no title in content but does have one in xml, caption is
                 left blank and that crashes things that look for * in first char. Fixed
+    2018/07/23  Fixed a bug that crashed when deleting a note in SingleNoteMode.
 }
 
 
@@ -386,7 +387,9 @@ begin
    if IDYES = Application.MessageBox('Delete this Note', PChar(St),
    									MB_ICONQUESTION + MB_YESNO) then begin
 		TimerSave.Enabled := False;
-   		if NoteFileName <> '' then
+        if SingleNoteMode then
+            DeleteFileUTF8(NoteFileName)
+   		else if NoteFileName <> '' then
 	   		    SearchForm.DeleteNote(NoteFileName);
         Dirty := False;
 		Close;
