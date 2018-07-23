@@ -23,6 +23,8 @@ unit Mainunit;
     -g
     --debug-sync Turn on Verbose mode during sync
 
+    --debug-index Verbose mode when reading the notes directory.
+
     --config-dir=<some_dir> Directory to keep config and sync manifest in.
 
     -o note_fullfilename
@@ -185,7 +187,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     I: Integer;
     Params : TStringList;   { TODO : Document this in http://wiki.freepascal.org/Command_line_parameters_and_environment_variables }
-    LongOpts : array [1..4] of string = ('gnome3','debug-sync', 'config-dir:','open-note:');
+    LongOpts : array [1..5] of string = ('gnome3','debug-sync', 'debug-index', 'config-dir:','open-note:');
 begin
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
@@ -296,7 +298,7 @@ function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'help gnome3 open-note: debug-sync config-dir:');
+    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'help gnome3 open-note: debug-sync debug-index config-dir:');
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
@@ -308,6 +310,7 @@ begin
        debugln('   -h --help                    Show this help and exit.');
        debugln('   -g --gnome3                  Run in (non ubuntu) gnome3 mode, no Tray Icon');
        debugln('   --debug-sync                 Show whats happening during sync process');
+       debugln('   --debug-index                Show whats happening during initial index of notes');
        debugln('   --config-dir=PATH_to_DIR     Create or use an alternative config');
        debugln('   -o --open-note=PATH_to_NOTE  Open indicated note, switch is optional');
        debugln(CmdLineErrorMsg);
@@ -408,7 +411,7 @@ procedure TMainForm.MMAboutClick(Sender: TObject);
 var
         S1, S2, S3, S4, S5, S6 : string;
 begin
-        S1 := 'This is v0.16 of tomboy-ng, a rewrite of Tomboy Notes'#10;
+        S1 := 'This is v0.16a of tomboy-ng, a rewrite of Tomboy Notes'#10;
         S2 := 'using Lazarus and FPC. While its getting close to being'#10;
         S3 := 'ready for production use, you still need to be careful and'#10;
         S4 := 'have good backups.'#10;

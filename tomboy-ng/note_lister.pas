@@ -126,6 +126,7 @@ type
 
    TNoteLister = class
    private
+    DebugMode : boolean;
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
     NoteBookList : TNoteBookList;
@@ -604,6 +605,7 @@ function TNoteLister.GetNotes(const Term: ANSIstring): longint;
 var
     Info : TSearchRec;
 begin
+    DebugMode := Application.HasOption('debug-index');
 	if Term = '' then begin
         NoteList.Free;
     	NoteList := TNoteList.Create;
@@ -613,15 +615,18 @@ begin
     end;
     NoteBookList.Free;
     NoteBookList := TNoteBookList.Create;
+    if DebugMode then debugln('Empty Lists created');
     if WorkingDir = '' then
     	DebugLn('In GetNotes with a blank working dir, thats going to lead to tears....');
-
+    if DebugMode then debugln('Looking for notes in [' + WorkingDir + ']');
   	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then begin
   		repeat
+            if DebugMode then debugln('Checking note [' + Info.Name + ']');
   			GetNoteDetails(WorkingDir, Info.Name, Term);
   		until FindNext(Info) <> 0;
   	end;
   	FindClose(Info);
+    if DebugMode then debugLn('Finished indexing notes');
     if Term = '' then begin
         CleanUpList(NoteList);
         NotebookList.CleanList();

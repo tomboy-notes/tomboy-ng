@@ -364,6 +364,7 @@
         <Filename Value="backupview.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormBackupView"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="BackupView"/>
       </Unit11>
