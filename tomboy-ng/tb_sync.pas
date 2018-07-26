@@ -332,6 +332,22 @@ uses  laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, DateUtils, LazLogger
 
 { ===========================  TTomboyLocalManifest ============================== }
 
+function EscapedXML(Title : String) : String;
+var
+    EndStr : String;
+    Count : Integer;
+    CharactersToEscape : Array[0..4] of String = ('&', '<', '>', '"' , '#0027');
+    XMLEscapedForm : Array[0..4] of String = ('&amp;', '&lt;', '&gt;', '&quot;', '&apos;');
+
+begin
+     EndStr := stringReplace(Title, CharactersToEscape[0], XMLEscapedForm[0], [rfReplaceAll, rfIgnoreCase]);
+     for Count := 0 to Length(CharactersToEscape) do
+         begin
+            EndStr := stringReplace(EndStr, CharactersToEscape[Count], XMLEscapedForm[Count], [rfReplaceAll, rfIgnoreCase]);
+        end;
+     EscapedXML := EndStr;
+end;
+
 procedure TTomboyLocalManifest.FNoteToDelete(ID: ANSIString);
 var
     i : integer;
@@ -544,6 +560,7 @@ begin
         if WriteDeletes then begin
             for Index := 0 to ManifestList.Count -1 do begin
                 if ManifestList.Items[Index].Deleted then begin;
+                   { The call to EscapedXML could go here? }
             		Buff := '    <note guid="' + ManifestList.Items[Index].ID + '" title="'
             			+ ManifestList.Items[Index].Title + '" />' + LineEnding;
                 	OutStream.Write(Buff[1], length(Buff));
@@ -1393,7 +1410,3 @@ begin
 end;
 
 end.
-
-
-
-
