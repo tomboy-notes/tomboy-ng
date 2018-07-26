@@ -273,7 +273,6 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--config-dir=/home/dbannon/Desktop --debug-index"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">

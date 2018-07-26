@@ -849,6 +849,10 @@ msgstr ""
 msgid "an appropriate Hunspell Dictionary set."
 msgstr ""
 
+#: tsett.label15.caption
+msgid "Label15"
+msgstr ""
+
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr ""

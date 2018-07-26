@@ -113,6 +113,7 @@ type
         Label12: TLabel;
         Label13: TLabel;
         Label14: TLabel;
+        Label15: TLabel;
         LabelDicPrompt: TLabel;
         LabelDic: TLabel;
         LabelError: TLabel;
@@ -465,6 +466,8 @@ procedure TSett.FormShow(Sender: TObject);
 begin
     //CheckSpelling;
     MaskSettingsChanged := False;
+    Label15.Caption:='';
+    StringGridBackUp.Clean;
 end;
 
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
@@ -739,6 +742,7 @@ begin
     NoteLister.GetNotes();
     NoteLister.LoadStGrid(StringGridBackUp);
     NoteLister.Free;
+    Label15.caption := 'double click a note ...';
 end;
 
 	{ Called when ANY of the setting check boxes change so use can save. }

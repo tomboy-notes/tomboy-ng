@@ -558,6 +558,14 @@ object Sett: TSett
     ShowHint = True
     TabOrder = 1
   end
+  object Label15: TLabel
+    Left = 168
+    Height = 17
+    Top = 384
+    Width = 53
+    Caption = 'Label15'
+    ParentColor = False
+  end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 88
     top = 384
