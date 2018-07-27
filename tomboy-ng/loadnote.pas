@@ -41,6 +41,7 @@ unit LoadNote;
     2018/01/31 - and &
     2018/03/18  Nothing
     2018/03/18  Added a test it AddText to ensure we don't put an empty text block in. Issue #27
+    2018/07/27  Called ReplaceAngles() on string assigned to Title.
 }
 
 {$mode objfpc}{$H+}
@@ -144,7 +145,7 @@ begin
     FT := TFont.Create();
       if FirstTime then begin                 // Title
   	    FT.Style := [fsUnderline];
-        Title := InStr;
+        Title := ReplaceAngles(InStr);
         FT.Size := Sett.FontTitle;
         FT.Color := clBlue;
       end else begin

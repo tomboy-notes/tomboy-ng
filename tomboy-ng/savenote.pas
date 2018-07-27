@@ -54,6 +54,7 @@ unit SaveNote;
     2018/06/26  Some <italic> tags an an 's' at the end.  Changed the test for when
                 FixedWidth turns on in AddTag().
     2018/07/14  Fixed a misplaced 'end' in BulletList() that was skipping some of its tests.
+    2018/07/27  Call RemoveBadCharacters(Title) in Header()
 }
 
 {$mode objfpc}{$H+}
@@ -627,7 +628,7 @@ begin
   S2 := 'http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"';
   S3 := ' xmlns="http://beatniksoftware.com/tomboy">'#10'  <title>';
   S4 := '</title>'#10'  <text xml:space="preserve"><note-content version="0.1">';
-  Result := S1 + S2 + S3 + Title + S4;
+  Result := S1 + S2 + S3 + RemoveBadCharacters(Title) + S4;
 end;
 
 
