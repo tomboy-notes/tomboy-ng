@@ -385,6 +385,7 @@ end;
 
 function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
 // It appears that Tomboy only processes <, > and &
+// An exact copy of this function exists in TB_Sync
 var
    //Res : ANSIString;
    Index : longint = 1;

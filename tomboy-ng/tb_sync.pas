@@ -60,6 +60,7 @@ unit TB_Sync;
     2018/05/21  At start of sync, check to see if the Backup directory exists, make it if necessary
     2018/06/02  Extra debug info if VerboseMode on.
     2018/06/13  UnityWSCtrls removed from Uses, no idea why it was there !
+    2018/07/27  Correctly save XML special char <>& in local manifest deleted note titles.
 }
 
 
@@ -150,6 +151,7 @@ TTomboySyncCustom = Class
     LocalRevSt : ANSIString;
 
 	function GetNoteTitle(FullFileName: ANSIString): ANSIString;
+    function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
     procedure SetNotesDir(Dir : ANSIString);
     procedure SetRemoteManifestDir(Dir : ANSIString);
 	procedure SetLocalManifestDir(Dir : ANSIString);
@@ -322,7 +324,8 @@ end;
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, DateUtils, LazLogger
-        {$ifdef LINUX}, Unix {$endif} {, UnityWSCtrls};
+        {$ifdef LINUX}, Unix {$endif}
+        , LazUTF8;     // Req for UTF8Length and UTF8Copy
  	// If you want to use this as a console app, must add LCL to Required Packages
     // in the Project Inspector. I guess there must be a command line alt ??
     // Thats to get LazFileUtils, preferable to FileUtils (also LCL) due to UFT8
@@ -545,7 +548,7 @@ begin
             for Index := 0 to ManifestList.Count -1 do begin
                 if ManifestList.Items[Index].Deleted then begin;
             		Buff := '    <note guid="' + ManifestList.Items[Index].ID + '" title="'
-            			+ ManifestList.Items[Index].Title + '" />' + LineEnding;
+            			+ RemoveBadCharacters(ManifestList.Items[Index].Title) + '" />' + LineEnding;
                 	OutStream.Write(Buff[1], length(Buff));
                 end;
 			end;
@@ -557,6 +560,44 @@ begin
     	OutStream.Free;
 	end;
     if VerboseMode then DeBugLn('Debug - written local manifest ');
+end;
+
+function TTomboySyncCustom.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
+// It appears that Tomboy only processes <, > and &
+// An exact copy of this function exists in tomboy-ng.SaveNote. Kept sep so this
+// unit remains reasonably standalone.
+var
+   //Res : ANSIString;
+   Index : longint = 1;
+   Start : longint = 1;
+begin
+    Result := '';
+   while Index <= UTF8length(InStr) do begin
+   		if InStr[Index] = '<' then begin
+             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + '&lt;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+  		if InStr[Index] = '>' then begin
+             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + '&gt;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+  		if InStr[Index] = '&' then begin
+             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + '&amp;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+
+        inc(Index);
+   end;
+   Result := Result + UTF8Copy(InStr, Start, Index - Start);
 end;
 
 procedure TTomboySyncCustom.AddReport(const Action, ID, Path, Message: ANSIString);

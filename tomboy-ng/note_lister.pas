@@ -490,6 +490,7 @@ begin
   			    ReadXMLFile(Doc, Dir + FileName);
   			    Node := Doc.DocumentElement.FindNode('title');
       		    NoteP^.Title := Node.FirstChild.NodeValue;
+                if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
                 Node := Doc.DocumentElement.FindNode('last-change-date');
                 NoteP^.LastChange := Node.FirstChild.NodeValue;
                 NoteP^.OpenNote := nil;
