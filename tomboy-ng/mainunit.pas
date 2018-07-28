@@ -330,7 +330,7 @@ begin
         UseTrayMenu := false;
     end;
     {$ifdef LCLCOCOA}
-    AllowDismiss := False;
+    //AllowDismiss := False;
     UseMainMenu := True;
     {$endif}
     {$ifdef LCLCARBON}

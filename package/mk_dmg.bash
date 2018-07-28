@@ -24,7 +24,7 @@ mkdir $WORK
 ln -s /Applications $WORK/Applications
 cp -R ../"$PRODUCT"/"$PRODUCT".app $WORK/.
 mkdir "$CONTENTS"/SharedSupport
-MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt"
+MANWIDTH=70 man ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt
 cp -R ../doc/html "$CONTENTS"/SharedSupport/.
 cp Info.plist "$CONTENTS/."
 cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
