@@ -47,13 +47,21 @@ Create or use an alternative config. That config could, for example, specify an 
 Open a note in single note mode. In this mode, a seperate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a plain text file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that this switches are optional, "tomboy-ng some.note" will works as well.
 
 .SH DEBUGGING
-tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows does not, for this purpose, have a console. But it can be told to capture this log info to a file using another command line switch or by setting an env variable that specifices a file name. Please ensure you have permission to write to the location specified.
+tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows does not, for this purpose, have a console. But it can be told to capture this log info to a file using another command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
 
 tomboy-ng \-\-debug-sync \-\-debug-log=c:\\debug.txt
 
 set tomboy-ng_debuglog=c:\\debug.txt
 
-Linux and mac users can do something similar. If you intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see.
+Mac users can do something similar : 
+
+open tomboy-ng.app \-\-args "\-\-debug_sync \-\-debug-log=$HOME/tomboy-ng.log"
+
+Linux users who need a file can also :
+
+tomboy-ng \-\-debug_sync \-\-debug-log=$HOME/tomboy-ng.log
+
+If you intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see.
 
 
 .SH "SEE ALSO"

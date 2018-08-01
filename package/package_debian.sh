@@ -8,6 +8,11 @@
 # http://wiki.lazarus.freepascal.org/Cross_compiling
 # and that a 'Release' mode exists.
 
+# ----------------------------------------------------------------------------
+# Typical usage -
+#          PATH="$HOME"/lazarus/lazarus_1_8_4:"$PATH" bash ./package_debian.sh
+# ----------------------------------------------------------------------------
+
 PRODUCT="tomboy-ng"
 VERSION="0.16a"
 
@@ -20,7 +25,6 @@ MANUALS="Notes.txt"
 
 BUILDOPTS=" -B --quiet --quiet"
 BUILDDATE=`date -R`
-LAZ_DIR=/home/dbannon/lazarus/lazarus_1_8_4
 
 # ----------------------
 
@@ -148,7 +152,7 @@ DebianPackage "amd64"
 echo "----------------- FINISHED DEBs ----------------"
 ls -l *.deb
 echo "------------------------------------------------"
- DoZipping
+DoZipping
 
 
 

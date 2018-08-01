@@ -563,9 +563,10 @@ begin
 end;
 
 function TTomboySyncCustom.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
-// It appears that Tomboy only processes <, > and &
-// An exact copy of this function exists in tomboy-ng.SaveNote. Kept sep so this
-// unit remains reasonably standalone.
+// It appears that Tomboy only processes <, > and & but the local manifest, deleted
+// notes must not allow single or double inverted commas in the title of deleted notes.
+// This is NOT an exact copy of the function in tomboy-ng.SaveNote.
+
 var
    //Res : ANSIString;
    Index : longint = 1;
@@ -594,6 +595,21 @@ begin
              Start := Index;
 			 continue;
 		end;
+  		if InStr[Index] = '"' then begin
+             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + '&quot;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+  		if InStr[Index] = '''' then begin
+             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + '&apos;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+
 
         inc(Index);
    end;
