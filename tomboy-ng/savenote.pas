@@ -356,7 +356,8 @@ begin
     end;
     if PrevFixedWidth then begin
         StartStartSt := StartStartSt + '</monospace>';
-        EndEndSt := '<monospace>' + EndEndSt;
+        StartEndSt := '<monospace>' + StartEndSt;
+        // EndEndSt := '<monospace>' + EndEndSt;
     end;
     if FixedWidth then begin
         EndStartSt := EndStartSt + '</monospace>';
@@ -375,7 +376,7 @@ begin
     writeln('StartStart    [' + StartStartSt + ']');
     writeln('StartEnd      [' + StartEndSt + ']');
     writeln('EndStart      [' + EndStartSt + ']');
-    writeln('EndEnd        [' + EndEndSt + ']');}
+    writeln('EndEnd        [' + EndEndSt + ']');          }
 
     Buff := StartStartSt + '<list><list-item dir="ltr">' + StartEndSt
     		+ Buff + EndStartSt + '</list-item></list>' + EndEndSt;
@@ -493,8 +494,9 @@ var
 	Bold := false;
  	Italics := False;
  	HiLight := False;
-        Underline := False;
+    Underline := False;
  	InList := false;
+    FixedWidth := False;
     ID := ExtractFileNameOnly(FileName) + '.note';
             // Must deal with an empty list !
     try
