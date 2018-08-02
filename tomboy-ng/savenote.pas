@@ -55,6 +55,7 @@ unit SaveNote;
                 FixedWidth turns on in AddTag().
     2018/07/14  Fixed a misplaced 'end' in BulletList() that was skipping some of its tests.
     2018/07/27  Call RemoveBadCharacters(Title) in Header()
+    2018/08/02  Fix to fixed width, better brackets and a 'not' where needed.
 }
 
 {$mode objfpc}{$H+}
@@ -88,9 +89,10 @@ type
                         PrevFixedWidth : boolean;
 			InList : boolean;
             KM : TKMemo;
-            function AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString) : ANSIString;
+            function AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
 			function BlockAttributes(Bk: TKMemoBlock): AnsiString;
 			procedure BulletList(var Buff: ANSIString);
+            procedure CopyLastFontAttr();
 			function FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle): ANSIString;
 			function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
@@ -140,7 +142,9 @@ begin
 end;
 
 
-function TBSaveNote.AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString) : ANSIString;
+function TBSaveNote.AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
+{var
+   TestVar : Boolean;}
 begin
     // Important that we keep the tag order consistent. Good xml requires no cross over
     // tags. If the note is to be readable by Tomboy, must comply. (EditBox does not care)
@@ -148,6 +152,8 @@ begin
     // FontSize HiLite Ital Bold Bullet TEXT BulletOff BoldOff ItalOff HiLiteOff FontSize
 	// Processing Order is the reverese -
     // ListOff BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold List
+
+    //debugln(BlockAttributes(FT));
 
   // When Bold Turns OFF
     if (Bold and (not (fsBold in FT.TextStyle.Font.Style))) then begin
@@ -202,6 +208,8 @@ begin
     // When FixedWidth turns OFF
     //if (FixedWidth <> (FT.TextStyle.Font.Pitch = fpFixed) or (FT.TextStyle.Font.Name = MonospaceFont)) then begin
     if (FixedWidth and ((FT.TextStyle.Font.Pitch <> fpFixed) or (FT.TextStyle.Font.Name <> MonospaceFont))) then begin
+                  //TestVar := (FT.TextStyle.Font.Pitch <> fpFixed);
+                  //TestVar := (FT.TextStyle.Font.Name <> MonospaceFont);
                   if Bold then Buff := Buff + '</bold>';
                   if Italics then Buff := Buff + '</italic>';
                   if HiLight then Buff := Buff + '</highlight>';
@@ -223,6 +231,7 @@ begin
         if HiLight then Buff := Buff + '</highlight>';
                               // if strikeout, underline, fixedwidth here?
         Buff := Buff + SetFontXML(FSize, false);
+        // better for pretty tags but generates invalid tags ! See below ....
         Buff := Buff + SetFontXML(FT.TextStyle.Font.Size, true);
         if HiLight then Buff := Buff + '<highlight>';
         if Italics then Buff := Buff + '<italic>';
@@ -230,8 +239,17 @@ begin
         FSize := FT.TextStyle.Font.Size;
     end;
 
+    if CloseOnly then exit(Buff);
+    // this is not ideal, it should happen after we have closed all fonts, before
+    // we write new sizes but that difficult as we have only one flag, "FSize"
+    // difficulity is that font size change is two step, other things are On/Off
+    // Result is that xml tag for a new font jumps up blank lines. Not pretty
+    // be nice to find another way..... DRB
+
     // FixedWidth turns ON
-    if (FixedWidth and (FT.TextStyle.Font.Name = MonospaceFont) or (FT.TextStyle.Font.Pitch = fpFixed)) then begin
+    if ((not FixedWidth) and ((FT.TextStyle.Font.Name = MonospaceFont) or (FT.TextStyle.Font.Pitch = fpFixed))) then begin
+        //TestVar := (FT.TextStyle.Font.Name = MonospaceFont);
+        //TestVar :=  (FT.TextStyle.Font.Pitch = fpFixed);
         if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
         if HiLight then Buff := Buff + '</highlight>';
@@ -340,7 +358,8 @@ begin
     end;
     if PrevUnderline then begin
         StartStartSt := StartStartSt + '</underline>';
-        EndEndSt := '<underline>' + EndEndSt;
+        StartEndSt := '<underline>' + StartEndSt;
+        // EndEndSt := '<underline>' + EndEndSt;
     end;
     if Underline then begin
         EndStartSt := EndStartSt + '</underline>';
@@ -423,7 +442,7 @@ end;
 
 function TBSaveNote.BlockAttributes(Bk : TKMemoBlock) : AnsiString;
 begin
-   Result := '';
+   Result := TKMemoTextBlock(BK).ClassName;
    if fsBold in TKMemoTextBlock(BK).TextStyle.Font.Style then
    Result := Result + ' Bold ';
    if fsItalic in TKMemoTextBlock(BK).TextStyle.Font.Style then
@@ -437,6 +456,8 @@ begin
    Result := Result + ' Strikeout ';
    if TKMemoTextBlock(BK).TextStyle.Font.Pitch = fpFixed then
    Result := Result + ' FixedWidth ';
+   if Result <> '' then Result := Result + ' ' + TKMemoTextBlock(BK).Text
+   else Result := 'Not Text';
 
 end;
 
@@ -480,6 +501,17 @@ begin
        OutStream.Free;
    end;
 end;
+procedure TBSaveNote.CopyLastFontAttr();
+begin
+  PrevFSize := FSize;
+  PrevBold := Bold;
+   PrevItalics := Italics;
+   PrevHiLight := HiLight;
+  PrevUnderline := Underline;
+  PrevStrikeout := Strikeout;
+  PrevFixedWidth := FixedWidth;
+  PrevFSize := FSize;
+end;
 
 procedure TBSaveNote.Save(FileName : ANSIString; KM1 : TKMemo);
 var
@@ -487,16 +519,18 @@ var
    OutStream:TFilestream;
    BlockNo : integer = 0;
    Block : TKMemoBlock;
+   NextBlock : integer;
    // BlankFont : TFont;
  begin
     KM := KM1;
     FSize := Sett.FontNormal;
-	Bold := false;
- 	Italics := False;
- 	HiLight := False;
+    Bold := false;
+     Italics := False;
+     HiLight := False;
     Underline := False;
- 	InList := false;
+     InList := false;
     FixedWidth := False;
+
     ID := ExtractFileNameOnly(FileName) + '.note';
             // Must deal with an empty list !
     try
@@ -507,18 +541,13 @@ var
         Buff := Header();
         OutStream.Write(Buff[1], length(Buff));
         Buff := '';
+
         try
             repeat
-                PrevFSize := FSize;
-				PrevBold := Bold;
- 				PrevItalics := Italics;
- 				PrevHiLight := HiLight;
-                PrevUnderline := Underline;
-                PrevStrikeout := Strikeout;
-                PrevFixedWidth := FixedWidth;
-                PrevFSize := FSize;
+                CopyLastFontAttr();
                 repeat
                     Block := KM1.Blocks.Items[BlockNo];
+
                     if Block.ClassNameIs('TKMemoParagraph') then break;	// two newlines
                     if Block.ClassNameIs('TKMemoTextBlock') then begin
                          if Block.Text.Length > 0 then begin
@@ -530,6 +559,7 @@ var
                         AddTag(TKMemoHyperlink(Block), Buff);
                         Buff := Buff + RemoveBadCharacters(Block.Text);
                     end;
+                    // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(Block));
                     inc(BlockNo);
                     if BlockNo >= KM1.Blocks.Count then break;
 
@@ -537,9 +567,22 @@ var
                 if BlockNo >= KM1.Blocks.Count then break;
                 if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
                      BulletList(Buff);
+
+                // Add tags about to terminate to end of line, pretty XML
+                // However does not work for font size changes !
+
+                // Note - para blocks CAN have font attributs (eg, underline etc).
+                NextBlock := BlockNo + 1;
+                while NextBlock < KM1.Blocks.Count do begin
+                    if KM1.Blocks.Items[NextBlock].ClassNameIs('TKMemoTextBlock') then begin
+                        AddTag(TKMemoTextBlock(KM1.Blocks.Items[NextBlock]), Buff, True);
+                        break;
+                    end else inc(NextBlock);
+                end;
                 Buff := Buff + LineEnding;
                 OutStream.Write(Buff[1], length(Buff));
                 Buff := '';
+                // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(KM1.Blocks.Items[BlockNo]));
                 inc(BlockNo);
                 if BlockNo >= KM1.Blocks.Count then break;
 			until false;
