@@ -6,6 +6,7 @@ object FormBackupView: TFormBackupView
   Caption = 'FormBackupView'
   ClientHeight = 190
   ClientWidth = 335
+  OnClose = FormClose
   OnShow = FormShow
   LCLVersion = '1.8.0.6'
   object Memo1: TMemo

@@ -1,5 +1,14 @@
 unit BackupView;
 
+{ A unit to manage the Backup capability of tomboy-ng.
+    It allows viewing, deleting or restoring a backed up note. Note, in Tomboy
+    speak, Backup means backup of deleted or overwritten by sync process.
+}
+
+{ History
+    2018/07/03  Finished the recver a backup note code
+}
+
 {$mode objfpc}{$H+}
 
 interface
@@ -22,10 +31,12 @@ type
         procedure ButtonDeleteClick(Sender: TObject);
         procedure ButtonOpenClick(Sender: TObject);
         procedure ButtonRecoverClick(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
         procedure Memo1Change(Sender: TObject);
     private
         ExistsInRepo : boolean;
+        NeedUpDate : boolean;
     public
         FileName : string;
         NoteTitle : string;
@@ -42,7 +53,8 @@ implementation
 { TFormBackupView }
 
 uses  settings, LazFileUtils, LCLType,
-    MainUnit;   // For SingleNoteMode()
+    MainUnit,   // For SingleNoteMode()
+    SearchUnit; // access the notelister object
 
 procedure TFormBackupView.Memo1Change(Sender: TObject);
 begin
@@ -53,6 +65,7 @@ procedure TFormBackupView.FormShow(Sender: TObject);
 begin
     NotesChanged := false;
     ExistsInRepo := false;
+    NeedUpDate := False;
     Memo1.Clear;
     Memo1.Append('Title :');
     Memo1.Append(NoteTitle);
@@ -79,29 +92,60 @@ begin
 end;
 
 procedure TFormBackupView.ButtonRecoverClick(Sender: TObject);
+var
+    AForm : TForm;
+    InString : string;
+    InFile, OutFile: TextFile;
 begin
     if ExistsInRepo then
         if IDYES <> Application.MessageBox('Overwrite newer version of that note', 'Note already in Repo',
-            MB_ICONQUESTION + MB_YESNO) then
+                    MB_ICONQUESTION + MB_YESNO) then
             exit();
-    showmessage('sorry, not functional yet.');
-    exit();
+    if SearchForm.NoteLister.IsThisNoteOpen(FileName, AForm) then begin
+        showmessage('You have that note open, please close and try again');
+        exit();
+    end;
+    if ExistsInRepo then
+    if not RenameFileUTF8(Sett.NoteDirectory + FileName, Sett.NoteDirectory + 'Backup'
+                + PathDelim + FileName + 'TMP') then begin
+        showmessage('copy orig to back dir failed');
+        exit;
+    end;
+    // OK, if to here, user really wants it back, no reason why not.
+    AssignFile(InFile, Sett.NoteDirectory + 'Backup' + PathDelim + Filename);
+    AssignFile(OutFile, Sett.NoteDirectory + Filename);
+    try
+        try
+            Reset(InFile);
+            Rewrite(OutFile);
+            while not eof(InFile) do begin
+                readln(InFile, InString);
+                if Pos('<last-change-date>', InString) > 0 then
+                    writeln(OutFile, ' <last-change-date>' +  Sett.GetLocalTime() + '</last-change-date>')
+                else writeln(OutFile, InString);
+            end;
+        finally
+            CloseFile(OutFile);
+            CloseFile(InFile);
+        end;
+        if not RenameFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP',
+                Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
+            showmessage('Failed to move temp backup file');
+        end;
+        NeedUpDate := false;
+    except
+        on E: EInOutError do
+        writeln('File handling error occurred. Details: ', E.Message);
+    end;
+end;
 
-    //if ExistsInRepo then
-
-    { This needs to move the file from Backup back into the main repo AND
-    update the notes last change date.
-    Open file, read, line by line until we ge to last change date, insert new data, continue.
-
-    if note already exists in repo, make sure its not open, make a copy in Backup called Temp.note.
-    Open backup file, read, line by line until we ge to last change date, insert new data, continue.
-    if it was already exist, remove backup, rename Temp.note to actual name.
-    notify Note_Lister of change.AlterNote() if ExistInRepo, else Note_Lister.AddNote()
-    if note turned out to be invalid, that is we did not detect last change, restore.
-
-    }
-    //    copyfile(
-   //     SearchForm.NoteLister.IsThisNoteOpen(FullFileName, TheForm)
+procedure TFormBackupView.FormClose(Sender: TObject;
+    var CloseAction: TCloseAction);
+begin
+    if NeedUpDate then begin
+        SearchForm.RecentMenu();
+        Sett.ButtonShowBackUp.click;
+    end;
 end;
 
 end.

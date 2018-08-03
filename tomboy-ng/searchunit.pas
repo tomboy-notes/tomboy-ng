@@ -127,6 +127,7 @@ type
 		procedure StringGridNotebooksClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
     private
+
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
@@ -135,7 +136,8 @@ type
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
-
+            { returns True if user has note open, accepts ID or simple file name }
+        {function IsNoteOpen(const ID: String): boolean;  }
             { If there is an open note from the passed filename, it will be marked read Only,
               If deleted, remove entry from NoteLister, will accept a GUID, Filename or FullFileName inc path }
         procedure MarkNoteReadOnly(const FullFileName: string; const WasDeleted : boolean);
@@ -188,7 +190,18 @@ uses MainUnit,      // Opening form, manages startup and Menus
 
 
 { -------------   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ------------ }
-
+{
+function TSearchForm.IsNoteOpen(const ID : String) : boolean;
+var
+    AForm : TForm;
+begin
+    if NoteLister = nil then begin
+        debugln('Error, asking about a note when notelister is nil');
+        exit(false);
+    end;
+    Result := NoteLister.IsThisNoteOpen(ID, AForm);
+end;
+}
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
     if NoteLister <> nil then         // else we are quitting the app !

@@ -80,8 +80,8 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, BackUpView {, CheckLst};
-
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, BackUpView
+    {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 // Types;
 
 type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash
@@ -212,6 +212,9 @@ type
             { Indicates Spell is configured and LabelLibrary and LabelDic should
             contain valid full file names.}
         SpellConfig : boolean;
+        // service functon to other units, returns a string with current datetime
+        // in a format like the Tomboy schema.
+        function GetLocalTime: ANSIstring;
             { A target for mainunit ? }
         procedure Synchronise();
         property ExportPath : ANSIString Read fExportPath write fExportPath;
@@ -751,6 +754,30 @@ begin
     // ButtonSaveConfig.Enabled := True;
     SettingsChanged();
     SyncSettings();
+end;
+
+function TSett.GetLocalTime: ANSIstring;
+var
+   ThisMoment : TDateTime;
+   Res : ANSIString;
+   Off : longint;
+begin
+   // Note this function is duplicated in TB_Sync.
+    {$ifdef LINUX}
+    ReReadLocalTime();    // in case we are near daylight saving time changeover
+    {$endif}
+    ThisMoment:=Now;
+    Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
+                   + FormatDateTime('hh:mm:ss.zzz"0000"',ThisMoment);
+    Off := GetLocalTimeOffset();
+    if (Off div -60) >= 0 then Res := '+'
+	else Res := '-';
+	if abs(Off div -60) < 10 then Res := Res + '0';
+	Res := Res + inttostr(abs(Off div -60)) + ':';
+       	if (Off mod 60) = 0 then
+		Res := res + '00'
+	else Res := Res + inttostr(abs(Off mod 60));
+    Result := Result + res;
 end;
 
 end.

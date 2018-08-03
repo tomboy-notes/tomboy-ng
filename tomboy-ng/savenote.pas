@@ -98,7 +98,7 @@ type
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
           	function Header() : ANSIstring;
          	Function Footer() : ANSIstring;
-            function GetLocalTime():ANSIstring;
+            //function GetLocalTime():ANSIstring;
             function NoteBookTags() : ANSIString;
        public
             TimeStamp : string;
@@ -116,8 +116,8 @@ uses FileUtil               // Graphics needed for font style defines
     ,LazUTF8
     ,Settings				// User settings and some defines across units.
     ,SearchUnit				// So we have access to NoteBookList
-    ,LazFileUtils           // For ExtractFileName...
-    {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
+    ,LazFileUtils;           // For ExtractFileName...
+    // {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 
 const
   {$ifdef LINUX}
@@ -619,7 +619,7 @@ var
     end;
 end;
 
-
+{  moved to settings, aug 18
 function TBSaveNote.GetLocalTime: ANSIstring;
 var
    ThisMoment : TDateTime;
@@ -643,6 +643,7 @@ begin
 	else Res := Res + inttostr(abs(Off mod 60));
     Result := Result + res;
 end;
+}
 
 function TBSaveNote.NoteBookTags: ANSIString;
 var
@@ -683,7 +684,7 @@ var
    S1, S2, S3, S4, S5, S6 : string;
 
 begin
-  TimeStamp := GetLocalTime();   // get actual time date in format like Tomboy's
+  TimeStamp := Sett.GetLocalTime();   // get actual time date in format like Tomboy's
   S1 := '</note-content></text>'#10'  <last-change-date>';
   S2 := '</last-change-date>'#10'  <last-metadata-change-date>';
   S3 := '</last-metadata-change-date>'#10'  <create-date>';

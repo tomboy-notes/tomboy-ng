@@ -178,9 +178,6 @@ TTomboySyncCustom = Class
 	function DownLoadNote(const FileName, Rev : ANSIString) : boolean; virtual; abstract;
     			{ Does the whole sync process, false if something went wrong, check ErrorMessage }
 	procedure UpdateNextManifest(const ID, Rev : ANSIString);
- 				{ Returns a string with a timestamp smilar to Tomboy uses in its XML files
-          		bit lazy really, this is a copy of one in SaveNote.pas.   				}
-	function GetLocalTime(): ANSIstring;
     procedure ClearLists();
     			{ Passes on users choice to Upload, download or nothing. Calls a function
                   passed here from the calling process. }
@@ -323,9 +320,10 @@ end;
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, DateUtils, LazLogger
-        {$ifdef LINUX}, Unix {$endif}
-        , LazUTF8;     // Req for UTF8Length and UTF8Copy
+uses  laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, DateUtils, LazLogger,
+        LazUTF8,     // Req for UTF8Length and UTF8Copy
+        settings;   // Only used for GetLocalTime() (?)
+
  	// If you want to use this as a console app, must add LCL to Required Packages
     // in the Project Inspector. I guess there must be a command line alt ??
     // Thats to get LazFileUtils, preferable to FileUtils (also LCL) due to UFT8
@@ -511,7 +509,7 @@ begin
         if WriteDeletes then
             Buff := '  <last-sync-date>' + LocalLastSyncDateSt
         else
-            Buff := '  <last-sync-date>' + GetLocalTime();
+            Buff := '  <last-sync-date>' + Sett.GetLocalTime();
 	    OutStream.Write(Buff[1], length(Buff));
         Buff := '</last-sync-date>' + LineEnding + '  <last-sync-rev>';
         OutStream.Write(Buff[1], length(Buff));
@@ -804,8 +802,8 @@ begin
 end;
 
 
+(*
 function TTomboySyncCustom.GetLocalTime: ANSIstring;
-	{ Tomboy uses this as a time stamp - 2017-10-24T17:38:35.7759840+11:00  }
 var
    ThisMoment : TDateTime;
    Res : ANSIString;
@@ -828,6 +826,7 @@ begin
 	else Res := Res + inttostr(abs(Off mod 60));
     Result := Result + res;
 end;
+*)
 
 procedure TTomboySyncCustom.SetNotesDir(Dir: ANSIString);
 begin
