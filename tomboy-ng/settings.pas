@@ -187,6 +187,7 @@ type
         // Saves all current settings to disk. Call when any change is made.
         procedure SettingsChanged();
 		procedure SyncSettings;
+
     public
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;

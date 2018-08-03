@@ -139,8 +139,7 @@ begin
     end;
 end;
 
-procedure TFormBackupView.FormClose(Sender: TObject;
-    var CloseAction: TCloseAction);
+procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
     if NeedUpDate then begin
         SearchForm.RecentMenu();

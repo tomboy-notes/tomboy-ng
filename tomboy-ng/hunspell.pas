@@ -191,6 +191,7 @@ var
 begin
     Result := False;
     {$IFDEF LINUX}
+    Mask := '';         // just suppress some warning
     // Assumes ldconfig always returns same format, better than searching several dirs
     if RunCommand('/bin/bash',['-c','ldconfig -p | grep hunspell'], FullName) then begin
         while UTF8Pos(' ', FullName, I) <> 0 do inc(I);

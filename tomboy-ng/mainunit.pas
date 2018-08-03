@@ -185,7 +185,7 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
 var
-    I: Integer;
+    //I: Integer;
     Params : TStringList;   { TODO : Document this in http://wiki.freepascal.org/Command_line_parameters_and_environment_variables }
     LongOpts : array [1..5] of string = ('gnome3','debug-sync', 'debug-index', 'config-dir:','open-note:');
 begin
