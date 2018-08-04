@@ -1,10 +1,10 @@
 object MainForm: TMainForm
   Left = 403
-  Height = 292
+  Height = 318
   Top = 146
   Width = 355
   Caption = 'MainForm'
-  ClientHeight = 290
+  ClientHeight = 316
   ClientWidth = 355
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -341,6 +341,27 @@ object MainForm: TMainForm
     Width = 45
     Caption = 'Label8'
     ParentColor = False
+    ParentShowHint = False
+    ShowHint = True
+  end
+  object LabelNotesFound: TLabel
+    Left = 24
+    Height = 1
+    Top = 256
+    Width = 1
+    ParentColor = False
+  end
+  object LabelError: TLabel
+    Left = 24
+    Height = 18
+    Hint = 'Launch from commandline to see errors. See website'
+    Top = 277
+    Width = 11
+    Caption = 'X'
+    Font.Height = -16
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
     ParentShowHint = False
     ShowHint = True
   end

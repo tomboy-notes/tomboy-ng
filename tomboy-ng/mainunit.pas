@@ -14,6 +14,7 @@ unit Mainunit;
 
     2018/06/19  Got some stuff for singlenotemode() - almost working.
     2018/06/22  As above but maybe working now ?  DRB
+    2018/07/04  Display number of notes found and a warning if indexing error occured.
 
 
 
@@ -60,6 +61,7 @@ type
         ImageNotesDirTick: TImage;
         ImageSyncTick: TImage;
         Label1: TLabel;
+        LabelError: TLabel;
         Label2: TLabel;
         Label3: TLabel;
         Label4: TLabel;
@@ -67,6 +69,7 @@ type
         Label6: TLabel;
         Label7: TLabel;
         Label8: TLabel;
+        LabelNotesFound: TLabel;
         MainMenu1: TMainMenu;
         MMRecent1: TMenuItem;
         MMRecent8: TMenuItem;
@@ -227,7 +230,11 @@ begin
         Label7.Caption:='';
         Label8.Caption := '';
         CheckStatus();
-        SearchForm.IndexNotes(); // also calls Checkstatus but safe to call anytime
+        LabelNotesFound.Caption := 'Found ' + inttostr(SearchForm.IndexNotes())
+            + ' notes'; // also calls Checkstatus but safe to call anytime
+        if SearchForm.NoteLister.XMLError then
+            LabelError.Caption := 'Failed to index one or more notes.'
+        else LabelError.Caption := '';
         if not AllowDismiss then begin
             Label7.Caption := 'Sadly, on this OS, I cannot';
             Label8.Caption := 'let you dismiss this window';

@@ -79,6 +79,7 @@ unit SearchUnit;
     2018/05/12  Extensive changes - MainUnit is now just that. Name of this unit changed.
     2018/05/20  Alterations to way we startup, wrt mainform status report.  Mark
     2018/06/04  NoteReadOnly() now checks if NoteLister is valid before calling.
+    2018/07/04  Pass back some info about how the note indexing went.
 }
 
 {$mode objfpc}{$H+}
@@ -150,7 +151,7 @@ type
         { Reads header in each note in notes directory, updating Search List and
           the recently used list under the TrayIcon. Downside is time it takes
           to index. use UpdateList() if you just have updates. }
-        procedure IndexNotes();
+        function IndexNotes() : integer;
         { Returns true when passed string is the title of an existing note }
         function IsThisaTitle(const Term: ANSIString): boolean;
         { Gets called with a title and filename (clicking grid), with just a title
@@ -383,7 +384,7 @@ begin
     if not AllowClose then hide();        }
 end;
 
-procedure TSearchForm.IndexNotes();
+function TSearchForm.IndexNotes() : integer;
 // var
 	// TS1, TS2 : TTimeStamp;
 begin
@@ -393,7 +394,7 @@ begin
        NoteLister := TNoteLister.Create;
        NoteLister.WorkingDir:=Sett.NoteDirectory;
     end;
-    NoteLister.GetNotes();		{ TODO : we should say how many we found }
+    Result := NoteLister.GetNotes();
     // TS1 := DateTimeToTimeStamp(Now);
 	// Edit1.Text := 'That took (mS) ' + inttostr(TS2.Time - TS1.Time);
     UseList();

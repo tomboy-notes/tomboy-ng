@@ -315,6 +315,14 @@ msgstr ""
 msgid "Label8"
 msgstr ""
 
+#: tmainform.labelerror.caption
+msgid "X"
+msgstr ""
+
+#: tmainform.labelerror.hint
+msgid "Launch from commandline to see errors. See website"
+msgstr ""
+
 #: tmainform.menuquit.caption
 msgctxt "tmainform.menuquit.caption"
 msgid "Quit, Close and Go Away."
