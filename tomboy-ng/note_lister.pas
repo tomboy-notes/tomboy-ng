@@ -800,7 +800,7 @@ begin
     for Index := 0 to NoteList.Count -1 do begin
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
         	dispose(NoteList.Items[Index]);
-        	NoteList.Delete(Index);     { TODO : Should I overload 'Delete' and call dispose in the that function before  inherited Delete ? }
+        	NoteList.Delete(Index);
         	Result := True;
         	break;
 		end;

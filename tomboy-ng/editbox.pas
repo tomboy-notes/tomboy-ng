@@ -690,8 +690,6 @@ end;
 procedure TEditBoxForm.MenuHighLightClick(Sender: TObject);
 begin
     AlterFont(ChangeColor);
-    { TODO 1 : OK, real highlight is quite hard, lets just color text for now.
-    }
 end;
 
 procedure TEditBoxForm.MenuLargeClick(Sender: TObject);
@@ -751,8 +749,7 @@ var
 begin
    	FindStart := UTF8Pos(TFindDialog(Sender).FindText, KMemo1.Blocks.text, LastFind);
    	if FindStart > 0 then begin
-		{ TODO : Must allow for Windows extra CR in newline }
-        {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
+		{$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
         Ptr := PChar(KMemo1.Blocks.text);
         EndP := Ptr + FindStart-1;
         while Ptr < EndP do begin
@@ -1390,7 +1387,6 @@ procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
 begin
     TimerHouseKeeping.Enabled := False;
     DoHouseKeeping();
-    { TODO : Hmm, do we have race conditions here ?  A change happens during housekeeping, it will restart timer, thats OK. }
 end;
 
 	{ Any change to the note text and this gets called. So, vital it be quick }

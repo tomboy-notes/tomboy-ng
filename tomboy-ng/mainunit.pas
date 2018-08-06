@@ -189,7 +189,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
 var
     //I: Integer;
-    Params : TStringList;   { TODO : Document this in http://wiki.freepascal.org/Command_line_parameters_and_environment_variables }
+    Params : TStringList;
     LongOpts : array [1..5] of string = ('gnome3','debug-sync', 'debug-index', 'config-dir:','open-note:');
 begin
     if CmdLineErrorMsg <> '' then begin
@@ -418,7 +418,7 @@ procedure TMainForm.MMAboutClick(Sender: TObject);
 var
         S1, S2, S3, S4, S5, S6 : string;
 begin
-        S1 := 'This is v0.16a of tomboy-ng, a rewrite of Tomboy Notes'#10;
+        S1 := 'This is v0.17 of tomboy-ng, a rewrite of Tomboy Notes'#10;
         S2 := 'using Lazarus and FPC. While its getting close to being'#10;
         S3 := 'ready for production use, you still need to be careful and'#10;
         S4 := 'have good backups.'#10;

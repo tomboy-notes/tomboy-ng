@@ -174,7 +174,7 @@ type
         procedure StringGridBackUpDblClick(Sender: TObject);
 		//procedure Timer1Timer(Sender: TObject);
    	private
-        fExportPath : ANSIString;  { TODO : This will need to be a property }
+        fExportPath : ANSIString;
         // Reads an existing config file OR writes a new, default one if necessary.
  		procedure CheckConfigFile;
         // Checks and/or makes indicatd dir, warns user if not there and writable.

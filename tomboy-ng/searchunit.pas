@@ -261,7 +261,7 @@ function TSearchForm.TrimDateTime(const LongDate : ANSIString ) : ANSIString;
 begin                          { TODO : Dont need this any more, delete when sure }
   Result := LongDate;
   Result[11] := ' '; 			// just looks nicer
-  Result := copy(Result, 1, 19);	{ TODO : Do UTF8 version of this ? }
+  Result := copy(Result, 1, 19);
 end;
 
 
@@ -425,6 +425,7 @@ procedure TSearchForm.FormShow(Sender: TObject);
 begin
     Left := Placement + random(Placement*2);
     ButtonClearSearch.Enabled := False;
+    // Edit1.Text:= 'Search';
 end;
 
 procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
@@ -505,7 +506,9 @@ procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
 var
     NoteTitle : ANSIstring;
     FullFileName : string;
+    //blar : integer;
 begin
+    //blar := StringGrid1.Row;
     { TODO : If user double clicks title bar, we dont detect that and open some other note.  }
 	FullFileName := Sett.NoteDirectory + StringGrid1.Cells[3, StringGrid1.Row];
   	if not FileExistsUTF8(FullFileName) then begin
