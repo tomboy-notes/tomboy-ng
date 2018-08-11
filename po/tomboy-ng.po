@@ -271,6 +271,10 @@ msgstr ""
 msgid "Config"
 msgstr ""
 
+#: tmainform.buttonconfig.hint
+msgid "Open the Config Window"
+msgstr ""
+
 #: tmainform.buttondismiss.caption
 msgid "Dismiss"
 msgstr ""
@@ -281,6 +285,10 @@ msgstr ""
 
 #: tmainform.caption
 msgid "MainForm"
+msgstr ""
+
+#: tmainform.hint
+msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
 msgstr ""
 
 #: tmainform.label1.caption

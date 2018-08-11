@@ -1,7 +1,8 @@
 object MainForm: TMainForm
-  Left = 403
+  Left = 145
   Height = 318
-  Top = 146
+  Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
+  Top = 385
   Width = 355
   Caption = 'MainForm'
   ClientHeight = 316
@@ -13,7 +14,8 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '1.8.0.6'
+  ShowHint = True
+  LCLVersion = '1.8.4.0'
   object ImageConfigTick: TImage
     Left = 24
     Height = 18
@@ -77,7 +79,7 @@ object MainForm: TMainForm
     Left = 56
     Height = 17
     Top = 90
-    Width = 84
+    Width = 79
     Caption = 'Have Config'
     ParentColor = False
   end
@@ -85,7 +87,7 @@ object MainForm: TMainForm
     Left = 56
     Height = 17
     Top = 112
-    Width = 103
+    Width = 100
     Caption = 'Have Notes Dir'
     ParentColor = False
   end
@@ -165,6 +167,7 @@ object MainForm: TMainForm
   object ButtonConfig: TButton
     Left = 152
     Height = 33
+    Hint = 'Open the Config Window'
     Top = 224
     Width = 91
     Caption = 'Config'
@@ -175,7 +178,7 @@ object MainForm: TMainForm
     Left = 56
     Height = 17
     Top = 136
-    Width = 191
+    Width = 185
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
@@ -183,7 +186,7 @@ object MainForm: TMainForm
     Left = 56
     Height = 17
     Top = 160
-    Width = 151
+    Width = 146
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
@@ -307,7 +310,7 @@ object MainForm: TMainForm
   end
   object Label5: TLabel
     Left = 30
-    Height = 21
+    Height = 22
     Top = 19
     Width = 224
     Caption = 'Welcome to tomboy-ng !'
@@ -320,7 +323,7 @@ object MainForm: TMainForm
     Left = 31
     Height = 17
     Top = 56
-    Width = 204
+    Width = 202
     Caption = 'Lets See if we are ready to go -'
     ParentColor = False
   end
@@ -353,7 +356,7 @@ object MainForm: TMainForm
   end
   object LabelError: TLabel
     Left = 24
-    Height = 18
+    Height = 19
     Hint = 'Launch from commandline to see errors. See website'
     Top = 277
     Width = 11

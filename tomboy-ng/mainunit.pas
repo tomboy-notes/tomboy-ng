@@ -15,6 +15,10 @@ unit Mainunit;
     2018/06/19  Got some stuff for singlenotemode() - almost working.
     2018/06/22  As above but maybe working now ?  DRB
     2018/07/04  Display number of notes found and a warning if indexing error occured.
+    2018/07/11  Added --version and --no-splash to options, this form now has a main menu
+                and does not respond to clicks anywhere with the popup menu, seems GTK
+                does not like sharing menus (eg between here and the trayIcon) in gtk3 !
+                So, in interests of uniformity, everyone gets a Main Menu and no Popup.
 
 
 
@@ -38,8 +42,15 @@ unit Mainunit;
                 something to divert debug msg to a file ??
                 something to do more debugging ?
 
+    --no-splash Dont show the small opening status/splash window on startup
+
+    --version   Print version no and exit.
+
 }
+
 interface
+
+
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
@@ -146,6 +157,7 @@ implementation
 
 { TMainForm }
 
+
 uses LazLogger, LazFileUtils,
     settings,
     SearchUnit,
@@ -154,6 +166,12 @@ uses LazLogger, LazFileUtils,
     {$endif}   // Stop linux clearing clipboard on app exit.
     uAppIsRunning,
     Editbox;    // Used only in SingleNoteMode
+
+
+{ =================================== V E R S I O N    H E R E =============}
+const Version_string  = 'v0.18';
+
+
 
 procedure TMainForm.SingleNoteMode(FullFileName : string; CloseOnFinish : boolean = True);
 var
@@ -190,18 +208,28 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     //I: Integer;
     Params : TStringList;
-    LongOpts : array [1..5] of string = ('gnome3','debug-sync', 'debug-index', 'config-dir:','open-note:');
+    LongOpts : array [1..7] of string = ('no-splash', 'version', 'gnome3','debug-sync', 'debug-index', 'config-dir:','open-note:');
 begin
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
         exit;       // otherwise we execute rest of this method before closing.
     end;
+    if Application.HasOption('version') then begin
+        Enabled := False;
+         debugln(Version_String);
+         close();
+         exit();
+     end;
+     if Application.HasOption('no-splash') then begin
+         hide;
+     end;
     Left := 10;
     Top := 40;
     if Application.HasOption('o', 'open-note') then begin
         SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
         exit();
     end;
+
     Params := TStringList.Create;
     try
         Application.GetNonOptions('hgo:', LongOpts, Params);
@@ -223,7 +251,7 @@ begin
         showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
         close();
     end else begin
-        if UseMainMenu then begin                  // Only Mac users want to see this
+        if UseMainMenu then begin
             MMFile.Visible := True;
             MMRecent.Visible := True;
         end;
@@ -283,7 +311,7 @@ end;
 
 procedure TMainForm.FormClick(Sender: TObject);
 begin
-    PopupMenuTray.PopUp();
+    // PopupMenuTray.PopUp();
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -305,7 +333,7 @@ function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'help gnome3 open-note: debug-sync debug-index config-dir:');
+    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'no-splash version help gnome3 open-note: debug-sync debug-index config-dir:');
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
@@ -315,7 +343,9 @@ begin
        debugln('eg   open tomboy-ng.app --args -o Note.txt|.note');
        {$endif}
        debugln('   -h --help                    Show this help and exit.');
+       debugln('   --version                    Print version and exit');
        debugln('   -g --gnome3                  Run in (non ubuntu) gnome3 mode, no Tray Icon');
+       debugln('   --no-splash                  Dont show small status/splash window');
        debugln('   --debug-sync                 Show whats happening during sync process');
        debugln('   --debug-index                Show whats happening during initial index of notes');
        debugln('   --config-dir=PATH_to_DIR     Create or use an alternative config');
@@ -328,13 +358,14 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
     if CommandLineError() then exit;    // We will close in OnShow
-    UseMainMenu := false;
+    UseMainMenu := True;
     UseTrayMenu := true;
     AllowDismiss := true;
     if Application.HasOption('g', 'gnome3') then begin
         UseMainMenu := true;
         AllowDismiss := false;
         UseTrayMenu := false;
+        ShowHint := False;
     end;
     {$ifdef LCLCOCOA}
     //AllowDismiss := False;
@@ -418,10 +449,10 @@ procedure TMainForm.MMAboutClick(Sender: TObject);
 var
         S1, S2, S3, S4, S5, S6 : string;
 begin
-        S1 := 'This is v0.17 of tomboy-ng, a rewrite of Tomboy Notes'#10;
-        S2 := 'using Lazarus and FPC. While its getting close to being'#10;
-        S3 := 'ready for production use, you still need to be careful and'#10;
-        S4 := 'have good backups.'#10;
+        S1 := 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus'#10;
+        S2 := 'and FPC. While its getting close to being ready for production'#10;
+        S3 := 'use, you still need to be careful and have good backups.'#10;
+        S4 := 'Version ' + Version_String + #10;
         S5 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
         S6 := '';
         {$ifdef LCLCOCOA}S6 := ' 64bit Cocoa Version';{$endif}
