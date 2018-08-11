@@ -433,7 +433,7 @@ begin
 		finally
         	Doc.free;
 		end;
-    end;
+    end else debugln('Add : File not found ' + Report.FullFileName);
     result := inherited Add(Report);
 end;
 
@@ -864,7 +864,7 @@ begin
 	finally
 	    Doc.free;
 	end;
-    end;
+    end else debugln('GNT: Failed to find ' + FullFileName);
 end;
 
 
