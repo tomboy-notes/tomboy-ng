@@ -43,6 +43,7 @@ unit SyncGUI;
     2018/05/21  Show any sync errors as hints in the StringGrid.
     2018/06/02  Honor a cli --debug-sync
     2018/06/14  Update labels when transitioning from Testing Sync to Manual Sync
+    2018/08/14  Added SDiff to replace clumbsy dialog when sync clash happens.
 
 }
 
@@ -79,10 +80,8 @@ type
 				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
                 procedure FormHide(Sender: TObject);
 				procedure FormShow(Sender: TObject);
-                                procedure StringGridReportGetCellHint(
-                                  Sender: TObject; ACol, ARow: Integer;
+                procedure StringGridReportGetCellHint(Sender: TObject; ACol, ARow: Integer;
                                   var HintText: String);
-
 		private
                 FormShown : boolean;
                 LocalTimer : TTimer;
@@ -113,7 +112,7 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit;
+uses LazLogger, SearchUnit, TB_SDiff;
 {$R *.lfm}
 
 var
@@ -127,9 +126,30 @@ begin
 end;
 
 function TFormSync.Proceed(const ClashRec : TClashRecord) : TClashDecision;
+var
+    SDiff : TFormSDiff;
+    Res : integer;
 begin
 	// showmessage(TheAction + ' ' + FileName);
-    with TTaskDialog.Create(self) do
+    SDiff := TFormSDiff.Create(self);
+    SDiff.RemoteFilename := ClashRec.ServerFileName;
+    SDiff.LocalFilename := ClashRec.LocalFileName;
+    SDiff.NoteTitle:= ClashRec.Title;
+    SDiff.LabelRemote.Caption:=ClashRec.ServerLastChange;
+    SDiff.LabelLocal.Caption := ClashRec.LocalLastChange;
+    Res := SDiff.ShowModal;
+    SDiff.Free;
+    Result := cdDoNothing;
+    case Res of
+            mrYes : Result := cdDownLoad;
+            mrNo  : Result := cdUpLoad;
+    end;
+
+    // Use Remote, Yellow is mrYes, File1
+    // Use Local, Aqua is mrNo, File2
+    // Anything else is DoNothing !
+
+ {   with TTaskDialog.Create(self) do
         try
           Caption := 'Note clash has been detected';
           Title := 'Please indicate what you would like to do';
@@ -154,7 +174,9 @@ begin
             Result := TClashDecision(ModalResult);
         finally
           Free;
-        end;
+        end;                   }
+
+    // Result := TClashDecision(cdDoNothing);          // test
 	case Result of
 		cdUpload : ShowMessage('we''ll upload');
 		cdDownLoad : ShowMessage('we''ll download');

@@ -9,7 +9,7 @@ object FormSync: TFormSync
   OnClose = FormClose
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '1.8.4.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

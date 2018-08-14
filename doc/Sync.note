@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>tomboy-ng Sync Process</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Sync Process
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Sync Process</underline>
 
-</underline>Note this is how I implemented tomboy-ng's sync process. Its NOT a designe document for the Tomboy's XML standard, unfortunatly such a definitive standard document does not appear to exist.
+Note this is how I implemented tomboy-ng's sync process. Its NOT a designe document for the Tomboy's XML standard, unfortunatly such a definitive standard document does not appear to exist.<size:huge>
 
-<size:huge>How FileSync Works
+How FileSync Works</size:huge>
 
-</size:huge>Starts with FileSync.DoSync(). It builds a list based on Local Manifest, remote manifest and actual local notes. And then a list that will become the new manifest if necessary.
+Starts with FileSync.DoSync(). It builds a list based on Local Manifest, remote manifest and actual local notes. And then a list that will become the new manifest if necessary.
 
 It then compares against the local notes, then against the remote notes. These two compare functions may delete, upload or download, if any uploads take place or deletes from server, a new revision is indicted. MakeNewRevision() will, if necessary, create new working directories and (always) a new revision directory. It reads the remote manifest's idea of what revision we are up to and adds one.  Mhh, show new revision number in GUI so user can see it climbing ?
 
@@ -20,9 +20,23 @@ We should regard an empty NewRevision in the second case as meaning that we have
 • or we've downloaded but not uploaded.
 In either of the (immediate) above, we should read the remote manifest and use what ever its got for us. Remember that a blank NewRevision means don't write an new remote manifest.
 
+<bold>Clash</bold>
+We develop a Sync Clash when  the following DOES NOT APPLY - 
+a. Its here but not on the server - easy decision
+b. Its on the server but not here - easy decision
+c. Its has the same change date here and on server - leave 'em alone
+d. The note in the local directory is dated before last sync date - must ask user !
 
-<size:huge><bold>Tomboy's Sync Policies
-</bold></size:huge>(This was posted to Tomboy's issues list late 2017, it is quite probably is incomplete)
+We do -
+* when note exists both locally and on server, (ie, we have to chose) and
+* the last change dates are not the same, (ie, we did not put it there)  and
+* the local note is more recent than the last sync date.
+
+<highlight>Note : when a user says No sync please, lets sync run to completion, client last sync date is updated and its now later than the clashing note's last change. So, next run, free for all.</highlight><size:huge>
+
+
+<bold>Tomboy's Sync Policies</bold></size:huge>
+(I  posted to Tomboy's issues list late 2017, it is quite probably is incomplete but sadly prompted no further info. I have updated it a little in light of what I have learnt along the way.)
 
 We like to think that the Ancients had a secret knowledge that we don't have anymore. That does seem to be the case with Tomboy design. The Masters Of Old Tomboy, MOOT, worked very hard on a number of points that have made Tomboy as robust and reliable as it is. Sadly, no one thought to summarize those MOOT Points, we are left to read back over old discussions or reverse engineer the code.
 This page is about just that.
@@ -43,17 +57,17 @@ There are a number of situations that can happen, in no particular order (rememb
 <list><list-item dir="ltr">CaseD - A client, when syncing, has a note that has been deleted by another client. This is initially similar to case A. We'll assume CaseB ran to completion. The server does not have the note, so before the client kindly offers to upload it, the client checks to see if it has been uploaded or downloaded before by checking the local manifest. If its there, it has been deleted by another client, move to Backup, effectively, delete it locally</list-item></list>
 <list><list-item dir="ltr">Pretty obvious how we deal with updates to existing notes, as long as one or the other dates back to the client's last sync. But if both copies have been updated since last client sync date, thats a clash.</list-item></list>
 
-<bold>Ref -
-</bold></monospace><monospace>https://bugzilla.gnome.org/show_bug.cgi?id=321037
-<monospace>https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007
-<monospace>https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming
-</monospace>"Many weird situations can be avoided by performing an update in three distinct steps: deletes, then updates, then adds." repeated again and again. But not what happens in the code.
+<bold>Ref -</bold>
+<monospace>https://bugzilla.gnome.org/show_bug.cgi?id=321037
+https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007
+https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming</monospace>
+"Many weird situations can be avoided by performing an update in three distinct steps: deletes, then updates, then adds." repeated again and again. But not what happens in the code.
 
 
 
 </note-content></text>
-  <last-change-date>2018-06-23T13:14:34.4600000+10:00</last-change-date>
-  <last-metadata-change-date>2018-06-23T13:14:34.4600000+10:00</last-metadata-change-date>
+  <last-change-date>2018-08-13T17:51:11.2020000+10:00</last-change-date>
+  <last-metadata-change-date>2018-08-13T17:51:11.2020000+10:00</last-metadata-change-date>
   <create-date>2018-06-23T13:14:34.4600000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

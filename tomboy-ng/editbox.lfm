@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 741
+  Left = 186
   Height = 497
-  Top = 232
+  Top = 101
   Width = 617
   ActiveControl = ButtSearch
   Caption = 'EditBoxForm'
@@ -12,7 +12,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '1.8.4.0'
   object ButtSearch: TBitBtn
     Left = 0
     Height = 38
@@ -719,7 +719,7 @@ object EditBoxForm: TEditBoxForm
       Left = 120
       Height = 17
       Top = 8
-      Width = 324
+      Width = 315
       Caption = 'This note has been changed by the Sync Process'
       ParentColor = False
     end
@@ -727,7 +727,7 @@ object EditBoxForm: TEditBoxForm
       Left = 120
       Height = 17
       Top = 32
-      Width = 329
+      Width = 324
       Caption = 'Please close it (and re-open if it was a download)'
       ParentColor = False
     end

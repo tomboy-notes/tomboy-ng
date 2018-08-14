@@ -61,6 +61,7 @@ unit TB_Sync;
     2018/06/02  Extra debug info if VerboseMode on.
     2018/06/13  UnityWSCtrls removed from Uses, no idea why it was there !
     2018/07/27  Correctly save XML special char <>& in local manifest deleted note titles.
+    2018/08/14  Added fields to TClash record for SDiff unit.
 }
 
 
@@ -124,6 +125,8 @@ type								{ ------------- TClashRecord ------------- }
     		NoteID : ANSIString;
             ServerLastChange : ANSIString;
             LocalLastChange : ANSIString;
+            ServerFileName : string;
+            LocalFileName : string;
 		end;
 
 
@@ -195,7 +198,7 @@ TTomboySyncCustom = Class
 
     			{ if set True, hopefully will prevent most writes to disk. Hopefully... }
 	TestMode : Boolean;
-                { Reports, to the console, on what its doing }
+                { Reports, to the console, on what its doing, -s --debug-sync }
     VerboseMode : Boolean;
     // DebugMode : boolean;
     			{ A list of data extracted from the existing Remote manifest file }
@@ -882,10 +885,11 @@ begin
     ClashRec.LocalLastChange := ChangeDate;
     GetNoteChangeGMT(RemotePath(FileID, Rev), ChangeDate);
     ClashRec.ServerLastChange := ChangeDate;
+    ClashRec.ServerFileName := LocalPath(FileID, '');
+    ClashRec.LocalFileName := RemotePath(FileID, Rev);
     Result := ProceedFunction(Clashrec);
 end;
-
-
+{ }
 function TTomboyFileSync.CompareUsingLocal() : boolean;
 var
     Index : Longint;
@@ -937,7 +941,10 @@ begin
  			end;
 			continue;
         end;
-
+        if VerboseMode then
+           if NoteInfoP.Title = 'Test Sync' then begin
+           debugln(NoteInfoP.Title, NoteInfoP.LastChange, NoteInfoListLoc.Items[Index].LastChange);
+           end;
         // OK, if to here, exists in both manifests. Do change dates match ?
 		if NoteInfoP.LastChange = NoteInfoListLoc.Items[Index].LastChange then begin
             // Ignore - dates match, mention in new manifest - continue
@@ -1029,6 +1036,7 @@ begin
     result := false;
     MakeNewRevision();
     AddReport('Upload', ID, LocalPath(ID, ''), '');
+    if VerboseMode then DebugLn('TESTUP copy', LocalPath(ID, ''), RemotePath(ID, NewRevision));
     if TestMode then begin
        if VerboseMode then DebugLn('TESTUP copy', LocalPath(ID, ''), RemotePath(ID, NewRevision));
 	end else

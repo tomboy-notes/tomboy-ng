@@ -278,6 +278,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--debug-sync"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
