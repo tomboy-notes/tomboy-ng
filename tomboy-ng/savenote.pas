@@ -56,6 +56,7 @@ unit SaveNote;
     2018/07/14  Fixed a misplaced 'end' in BulletList() that was skipping some of its tests.
     2018/07/27  Call RemoveBadCharacters(Title) in Header()
     2018/08/02  Fix to fixed width, better brackets and a 'not' where needed.
+    2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
 }
 
 {$mode objfpc}{$H+}
@@ -404,6 +405,7 @@ begin
 end;
 
 function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
+// Don't use UTF8 versions of Copy() and Length(), we are working bytes !
 // It appears that Tomboy only processes <, > and &
 // An exact copy of this function exists in TB_Sync
 var
@@ -412,32 +414,32 @@ var
    Start : longint = 1;
 begin
     Result := '';
-   while Index <= UTF8length(InStr) do begin
+   while Index <= length(InStr) do begin
    		if InStr[Index] = '<' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + Copy(InStr, Start, Index - Start);
              Result := Result + '&lt;';
              inc(Index);
              Start := Index;
 			 continue;
 		end;
   		if InStr[Index] = '>' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + Copy(InStr, Start, Index - Start);
              Result := Result + '&gt;';
              inc(Index);
              Start := Index;
 			 continue;
 		end;
   		if InStr[Index] = '&' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+            debugln('Start=' + inttostr(Start) + ' Index=' + inttostr(Index));
+             Result := Result + Copy(InStr, Start, Index - Start);
              Result := Result + '&amp;';
              inc(Index);
              Start := Index;
 			 continue;
 		end;
-
         inc(Index);
    end;
-   Result := Result + UTF8Copy(InStr, Start, Index - Start);
+   Result := Result + Copy(InStr, Start, Index - Start);
 end;
 
 function TBSaveNote.BlockAttributes(Bk : TKMemoBlock) : AnsiString;

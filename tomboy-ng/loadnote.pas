@@ -42,6 +42,7 @@ unit LoadNote;
     2018/03/18  Nothing
     2018/03/18  Added a test it AddText to ensure we don't put an empty text block in. Issue #27
     2018/07/27  Called ReplaceAngles() on string assigned to Title.
+    2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
 }
 
 {$mode objfpc}{$H+}
@@ -184,29 +185,30 @@ var
     index : longint = 1;
     Start : longint = 1;
 begin
+  // Don't use UTF8 functions here, we are working with bytes !
   Result := '';
-    while Index <= UTF8Length(Str) do begin
-      if '&lt;' = UTF8Copy(Str, Index, 4) then begin
-      		Result := Result + UTF8Copy(Str, Start, Index - Start) + '<';
+    while Index <= Length(Str) do begin
+      if '&lt;' = Copy(Str, Index, 4) then begin
+      		Result := Result + Copy(Str, Start, Index - Start) + '<';
             inc(Index);
             Start := Index + 3;
             Continue;
 	  end;
-      if '&gt;' = UTF8Copy(Str, Index, 4) then begin
-      		Result := Result + UTF8Copy(Str, Start, Index - Start) + '>';
+      if '&gt;' = Copy(Str, Index, 4) then begin
+      		Result := Result + Copy(Str, Start, Index - Start) + '>';
             inc(Index);
             Start := Index + 3;
             Continue;
 	  end;
-      if '&amp;' = UTF8Copy(Str, Index, 5) then begin
-      		Result := Result + UTF8Copy(Str, Start, Index - Start) + '&';
+      if '&amp;' = Copy(Str, Index, 5) then begin
+      		Result := Result + Copy(Str, Start, Index - Start) + '&';
             inc(Index);
             Start := Index + 4;
             Continue;
 	  end;
       inc(Index);
 	end;
-    Result := Result + UTF8Copy(Str, Start, Index - Start);
+    Result := Result + Copy(Str, Start, Index - Start);
 end;
 
 

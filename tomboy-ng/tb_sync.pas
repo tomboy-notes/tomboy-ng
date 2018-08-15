@@ -62,6 +62,7 @@ unit TB_Sync;
     2018/06/13  UnityWSCtrls removed from Uses, no idea why it was there !
     2018/07/27  Correctly save XML special char <>& in local manifest deleted note titles.
     2018/08/14  Added fields to TClash record for SDiff unit.
+    2018/08/14  LastChange now means latest of last-change-date and last-metadata-change-date
 }
 
 
@@ -152,6 +153,9 @@ TTomboySyncCustom = Class
     FNotesDir, FRemoteManifestDir, FLocalManifestDir : ANSIString;
     LocalLastSyncDateSt : ANSIString;
     LocalRevSt : ANSIString;
+    { A list of full file names of notes that need their last-metadata-change-date
+      updated because user chose doNothing during a Sync Clash }
+    Note_DoNothing : TStringList;
 
 	function GetNoteTitle(FullFileName: ANSIString): ANSIString;
     function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
@@ -167,6 +171,8 @@ TTomboySyncCustom = Class
                   Returns False if an error occured that would prevent proceeding.
                   Set SkipFile to .T. during initialisation. }
 	function ReadLocalManifest(SkipFile : boolean = False) : boolean;
+                { Writes a current last-metadata-change-date to notes in NoteDoNothing list }
+    procedure UpdateDoNothingNotes();
     			{ writes new local manifest file, WriteDeletes is true when just
                   adding a local deleted note to list, other info is preserved.}
     function WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean; virtual;
@@ -218,6 +224,7 @@ TTomboySyncCustom = Class
     			{ Indicates we need new mainifests generated, set if any uploads or down loads or deletes happen
                   however, if a we made no changes to server, its only a new local manifest.}
     NewManifest : Boolean;
+                { this is a numeric, can compare }
 	LastSyncDate : TDateTime;
     			{ just a temp function to test the Proceed callback, delete at some stage }
     procedure TestProceed();
@@ -568,43 +575,44 @@ function TTomboySyncCustom.RemoveBadCharacters(const InStr : ANSIString) : ANSIS
 // notes must not allow single or double inverted commas in the title of deleted notes.
 // This is NOT an exact copy of the function in tomboy-ng.SaveNote.
 
+// Do not use UTF8 ver of Copy() and Length(), we are working with Bytes !
 var
    //Res : ANSIString;
    Index : longint = 1;
    Start : longint = 1;
 begin
     Result := '';
-   while Index <= UTF8length(InStr) do begin
+   while Index <= {UTF8}length(InStr) do begin
    		if InStr[Index] = '<' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + {UTF8}Copy(InStr, Start, Index - Start);
              Result := Result + '&lt;';
              inc(Index);
              Start := Index;
 			 continue;
 		end;
   		if InStr[Index] = '>' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + {UTF8}Copy(InStr, Start, Index - Start);
              Result := Result + '&gt;';
              inc(Index);
              Start := Index;
 			 continue;
 		end;
   		if InStr[Index] = '&' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + {UTF8}Copy(InStr, Start, Index - Start);
              Result := Result + '&amp;';
              inc(Index);
              Start := Index;
 			 continue;
 		end;
   		if InStr[Index] = '"' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + {UTF8}Copy(InStr, Start, Index - Start);
              Result := Result + '&quot;';
              inc(Index);
              Start := Index;
 			 continue;
 		end;
   		if InStr[Index] = '''' then begin
-             Result := Result + UTF8Copy(InStr, Start, Index - Start);
+             Result := Result + {UTF8}Copy(InStr, Start, Index - Start);
              Result := Result + '&apos;';
              inc(Index);
              Start := Index;
@@ -614,7 +622,7 @@ begin
 
         inc(Index);
    end;
-   Result := Result + UTF8Copy(InStr, Start, Index - Start);
+   Result := Result + {UTF8}Copy(InStr, Start, Index - Start);
 end;
 
 procedure TTomboySyncCustom.AddReport(const Action, ID, Path, Message: ANSIString);
@@ -629,7 +637,7 @@ begin
     ReportList.Add(report);
 end;
 
-function TTomboySyncCustom.SetlastSyncdate: boolean;
+function TTomboySyncCustom.SetlastSyncdate(): boolean;
 var
 	Doc : TXMLDocument;
 	// NodeList : TDOMNodeList;
@@ -658,10 +666,11 @@ begin
     NoteInfoListLocalManifest := nil;
     ReportList.free;
     ReportList := nil;
+    FreeandNil(Note_DoNothing);
     // if DebugMode then DeBugLn('Debug - Disposed of all lists.');
 end;
 
-procedure TTomboySyncCustom.TestProceed;
+procedure TTomboySyncCustom.TestProceed();
 var
     Rec : TClashRecord;
 begin
@@ -677,7 +686,7 @@ begin
     inherited;
 end;
 
-function TTomboySyncCustom.GetLocalServerID: boolean;
+function TTomboySyncCustom.GetLocalServerID(): boolean;
 var
 	Doc : TXMLDocument;
 	// NodeList : TDOMNodeList;
@@ -769,6 +778,40 @@ begin
 	except
       on EAccessViolation do Result := false; // probably means we did not find an expected attribute
 	end;
+end;
+
+procedure TTomboySyncCustom.UpdateDoNothingNotes();
+var
+    I : integer;
+    InFile, OutFile: TextFile;
+    InString : ANSIString;
+begin
+    for I := 0 to Note_DoNothing.Count -1 do begin
+        debugln('DoNothing on ', Note_DoNothing[I]);
+        AssignFile(InFile, Note_DoNothing[I]);
+        AssignFile(OutFile, Note_DoNothing[I] + '-TMP');
+        try
+            try
+                Reset(InFile);
+                Rewrite(OutFile);
+                while not eof(InFile) do begin
+                    readln(InFile, InString);
+                    if Pos('<last-metadata-change-date>', InString) > 0 then
+                        writeln(OutFile, ' <last-metadata-change-date>' +  Sett.GetLocalTime() + '</last-metadata-change-date>')
+                    else writeln(OutFile, InString);
+                end;
+            finally
+                CloseFile(OutFile);
+                CloseFile(InFile);
+            end;
+            if not RenameFileUTF8(Note_DoNothing[I] + '-TMP', Note_DoNothing[I]) then begin
+                debugln('Failed to move temp backup file');
+            end;
+        except
+            on E: EInOutError do
+            debugln('File handling error occurred. Details: ', E.Message);
+        end;
+    end;
 end;
 
 
@@ -961,8 +1004,11 @@ begin
               	case ProceedWith(NoteInfoP.ID, NoteInfoP.Rev) of
             		cdUpload : UpLoadNote(NoteInfoP.ID);
                 	cdDownLoad : DownloadNote(NoteInfoP.ID, NoteInfoP.Rev);
-                	cdDoNothing : continue;
-				end;
+                	cdDoNothing :   begin
+                                        Note_DoNothing.Add(LocalPath(NoteInfoP.ID, ''));
+                                        continue;
+                                    end;
+                end;
          	end else
             	// No - no clashes, just download as planned.
                 DownloadNote(NoteInfoP.ID, NoteInfoP.Rev);
@@ -1114,15 +1160,15 @@ begin
        if VerboseMode then debugln('Backup Dir Checked');
     { TODO : Lock the repo, file lock ? }
     // Any function here that returns false aborts the sync, it should set ErrorMessage
-
-    	// GetLocalServerID();                      // we call these in parent app.
-        // CheckRemoteServerID();
-        // if DebugMode then DebugLn('Debug DoSync useLocal ' + UseLocal + ' useRemote ', UseRemote, ' and TestMode ', TestMode);
-        if ReportList <> Nil then begin
+       if Note_DoNothing <> nil then begin
+            ClearLists();
+       end;
+       if ReportList <> Nil then begin
             // if DebugMode then DebugLn('Debug - Note reuse of list without freeing it.');
             ClearLists();
 		end;
         if VerboseMode then debugln('TB_Sync - Lists Cleared');
+        Note_DoNothing := TStringList.Create;
 		ReportList := TSyncReportList.Create;
     	if UseLocal then SetlastSyncdate();
 		if not ReadRemoteManifest(not UseRemote) then exit();	// read the remote manifest
@@ -1136,6 +1182,8 @@ begin
     	if not CompareUsingLocal() then exit;
          if VerboseMode then debugln('TB_Sync - CompareUsingLocal Done');
         if not CompareUsingRemote() then exit;
+        if VerboseMode then debugln('Must update metadata date for ' + inttostr(Note_DoNothing.Count) + ' notes');
+        UpdateDoNothingNotes();
         // We MUST write a new local mainfest if joining even if we have no notes
         if (NewRevision <> '') or (not UseLocal) or NewManifest then
            	if not WriteNewManifest() then exit();
@@ -1334,6 +1382,7 @@ var
 	Doc : TXMLDocument;
 	// NodeList : TDOMNodeList;
 	Node : TDOMNode;
+    MChange : string;
 begin
     if not FileExistsUTF8(FullFileName) then begin
         DebugLn('ERROR - File not found, cant read note change date for ',  FullFileName);
@@ -1344,10 +1393,15 @@ begin
 		ReadXMLFile(Doc, FullFileName);
 		Node := Doc.DocumentElement.FindNode('last-change-date');
         LastChange := Node.FirstChild.NodeValue;
-    	Result := GetDateFromStr(Node.FirstChild.NodeValue);
+        Node := Doc.DocumentElement.FindNode('last-metadata-change-date');
+        MChange := Node.FirstChild.NodeValue;
+    	//Result := GetDateFromStr(Node.FirstChild.NodeValue);
 	finally
         Doc.free;		// xml errors are caught in calling process
 	end;
+    if GetDateFromStr(MChange) >  GetDateFromStr(LastChange) then
+        LastChange := MChange;
+    Result := GetDateFromStr(LastChange);
 end;
 
 function TTomboySyncCustom.GetDateFromStr(const DateStr: ANSIString): TDateTime;
