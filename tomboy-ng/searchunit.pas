@@ -389,7 +389,7 @@ function TSearchForm.IndexNotes() : integer;
 	// TS1, TS2 : TTimeStamp;
 begin
     MainForm.CheckStatus();
-    if not Sett.HaveConfig then exit;
+    if not Sett.HaveConfig then exit(0);
     if NoteLister = Nil then begin
        NoteLister := TNoteLister.Create;
        NoteLister.WorkingDir:=Sett.NoteDirectory;

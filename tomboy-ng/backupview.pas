@@ -7,6 +7,8 @@ unit BackupView;
 
 { History
     2018/07/03  Finished the recver a backup note code
+    2018/08/14  Update the last-metadata-change-date instead of last-change-date
+                when restoring a Backup file. See Sync spec.
 }
 
 {$mode objfpc}{$H+}
@@ -120,8 +122,8 @@ begin
             Rewrite(OutFile);
             while not eof(InFile) do begin
                 readln(InFile, InString);
-                if Pos('<last-change-date>', InString) > 0 then
-                    writeln(OutFile, ' <last-change-date>' +  Sett.GetLocalTime() + '</last-change-date>')
+                if Pos('<last-metadata-change-date>', InString) > 0 then
+                    writeln(OutFile, ' <last-metadata-change-date>' +  Sett.GetLocalTime() + '</last-metadata-change-date>')
                 else writeln(OutFile, InString);
             end;
         finally
@@ -135,7 +137,7 @@ begin
         NeedUpDate := false;
     except
         on E: EInOutError do
-        writeln('File handling error occurred. Details: ', E.Message);
+            showmessage('File handling error occurred. Details: ' + E.Message);
     end;
 end;
 

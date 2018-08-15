@@ -3,7 +3,7 @@
   <title>tomboy-ng Sync Process</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Sync Process</underline>
 
-Note this is how I implemented tomboy-ng's sync process. Its NOT a designe document for the Tomboy's XML standard, unfortunatly such a definitive standard document does not appear to exist.<size:huge>
+Note this is how I implemented tomboy-ng's sync process. Its NOT a design document for the Tomboy's XML standard, unfortunatly such a definitive standard document does not appear to exist.<size:huge>
 
 How FileSync Works</size:huge>
 
@@ -27,20 +27,25 @@ b. Its on the server but not here - easy decision
 c. Its has the same change date here and on server - leave 'em alone
 d. The note in the local directory is dated before last sync date - must ask user !
 
-We do -
+So, its a clash when -
 * when note exists both locally and on server, (ie, we have to chose) and
 * the last change dates are not the same, (ie, we did not put it there)  and
 * the local note is more recent than the last sync date.
 
-<highlight>Note : when a user says No sync please, lets sync run to completion, client last sync date is updated and its now later than the clashing note's last change. So, next run, free for all.</highlight><size:huge>
+<highlight>Note : when a user says No sync please, lets sync run to completion, client last sync date is updated and its now later than the clashing note's last change. So, next run, free for all.</highlight>
 
+<bold>New addition to deal with above -</bold>
+When determining last change date for a local note, we will use the latest of last-change and last-metadata-change-date. This will accomodate to features -
+* Notes restored from backup. They will retain origional last-change-date because its of interest to user but will get a current last-metadate-change-date to ensure they enter the sync system as user obviously intended them to when opting to restore them.
+* Notes that the user decided to "doNothing" with during a sync clash. It seem obvious that if a user makes that choice, then they will continue to be offered that choice every time they run a sync. So, when that happens, the local note concerned will have its last-metadata-change date set to some time after the current sync's date stamp.<size:huge>
 
 <bold>Tomboy's Sync Policies</bold></size:huge>
 (I  posted to Tomboy's issues list late 2017, it is quite probably is incomplete but sadly prompted no further info. I have updated it a little in light of what I have learnt along the way.)
 
 We like to think that the Ancients had a secret knowledge that we don't have anymore. That does seem to be the case with Tomboy design. The Masters Of Old Tomboy, MOOT, worked very hard on a number of points that have made Tomboy as robust and reliable as it is. Sadly, no one thought to summarize those MOOT Points, we are left to read back over old discussions or reverse engineer the code.
-This page is about just that.
-Sync Model.
+This page is about just that.<size:large>
+
+<bold>Sync Model.</bold></size:large>
 
 Broadly, with sync, we have a server and a client. The client is the bit of Tomboy the user sees on his or her desktop. The server may be a Tomboy-web-sync system such as Rainy or Grauphel or may just be a file repository that is somehow shared (Google Drive, Dropbox etc) between systems we sync with. Much of the policy does not care. Here I talk about File Based Sync, tomboy-web-sync is probably similar with a network layer between. And obviously, it has server code to implement this policy.
 
@@ -57,6 +62,8 @@ There are a number of situations that can happen, in no particular order (rememb
 <list><list-item dir="ltr">CaseD - A client, when syncing, has a note that has been deleted by another client. This is initially similar to case A. We'll assume CaseB ran to completion. The server does not have the note, so before the client kindly offers to upload it, the client checks to see if it has been uploaded or downloaded before by checking the local manifest. If its there, it has been deleted by another client, move to Backup, effectively, delete it locally</list-item></list>
 <list><list-item dir="ltr">Pretty obvious how we deal with updates to existing notes, as long as one or the other dates back to the client's last sync. But if both copies have been updated since last client sync date, thats a clash.</list-item></list>
 
+<italic>Note that as of August, 2018, between release of 0.17 and 0.18, it was decided to use the lastes of last-change-date and last-metadata-change-date n the decision making mentioned above. </italic>
+
 <bold>Ref -</bold>
 <monospace>https://bugzilla.gnome.org/show_bug.cgi?id=321037
 https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007
@@ -65,9 +72,10 @@ https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming</monospace>
 
 
 
+
 </note-content></text>
-  <last-change-date>2018-08-13T17:51:11.2020000+10:00</last-change-date>
-  <last-metadata-change-date>2018-08-13T17:51:11.2020000+10:00</last-metadata-change-date>
+  <last-change-date>2018-08-14T18:27:46.4890000+10:00</last-change-date>
+  <last-metadata-change-date>2018-08-14T18:27:46.4890000+10:00</last-metadata-change-date>
   <create-date>2018-06-23T13:14:34.4600000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
