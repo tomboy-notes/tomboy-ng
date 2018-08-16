@@ -154,8 +154,8 @@ TTomboySyncCustom = Class
     LocalLastSyncDateSt : ANSIString;
     LocalRevSt : ANSIString;
     { A list of full file names of notes that need their last-metadata-change-date
-      updated because user chose doNothing during a Sync Clash }
-    Note_DoNothing : TStringList;
+      updated because user chose doNothing during a Sync Clash
+    Note_DoNothing : TStringList;                              }
 
 	function GetNoteTitle(FullFileName: ANSIString): ANSIString;
     function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
@@ -171,8 +171,9 @@ TTomboySyncCustom = Class
                   Returns False if an error occured that would prevent proceeding.
                   Set SkipFile to .T. during initialisation. }
 	function ReadLocalManifest(SkipFile : boolean = False) : boolean;
-                { Writes a current last-metadata-change-date to notes in NoteDoNothing list }
-    procedure UpdateDoNothingNotes();
+                (* Writes a current last-metadata-change-date to notes in NoteDoNothing list
+    procedure UpdateDoNothingNotes();   *)
+
     			{ writes new local manifest file, WriteDeletes is true when just
                   adding a local deleted note to list, other info is preserved.}
     function WriteNewManifest(WriteDeletes : boolean; CurrRev : longint = 0) : boolean; virtual;
@@ -666,7 +667,7 @@ begin
     NoteInfoListLocalManifest := nil;
     ReportList.free;
     ReportList := nil;
-    FreeandNil(Note_DoNothing);
+    //FreeandNil(Note_DoNothing);
     // if DebugMode then DeBugLn('Debug - Disposed of all lists.');
 end;
 
@@ -780,6 +781,7 @@ begin
 	end;
 end;
 
+(*
 procedure TTomboySyncCustom.UpdateDoNothingNotes();
 var
     I : integer;
@@ -813,7 +815,7 @@ begin
             debugln('File handling error occurred. Details: ', E.Message);
         end;
     end;
-end;
+end; *)
 
 
 procedure TTomboySyncCustom.GetListLocalNotes();
@@ -934,7 +936,7 @@ begin
     Result := ProceedFunction(Clashrec);
 end;
 
-{$DEFINE NOTE_TRACE }
+//{$DEFINE NOTE_TRACE }
 function TTomboyFileSync.CompareUsingLocal() : boolean;
 var
     {$ifdef NOTE_TRACE}Trace_ID : string = 'AFB3657F-B204-4BC4-806E-E831BD427CA6'; {$endif}
@@ -1009,7 +1011,7 @@ begin
             		cdUpload : UpLoadNote(NoteInfoP.ID);
                 	cdDownLoad : DownloadNote(NoteInfoP.ID, NoteInfoP.Rev);
                 	cdDoNothing :   begin
-                                        Note_DoNothing.Add(LocalPath(NoteInfoP.ID, ''));
+                                        //Note_DoNothing.Add(LocalPath(NoteInfoP.ID, ''));
                                         debugln('--------- gasp ! cdDoNothing is no longer an option !');
                                         continue;
                                     end;
@@ -1165,15 +1167,15 @@ begin
        if VerboseMode then debugln('Backup Dir Checked');
     { TODO : Lock the repo, file lock ? }
     // Any function here that returns false aborts the sync, it should set ErrorMessage
-       if Note_DoNothing <> nil then begin
+       {if Note_DoNothing <> nil then begin
             ClearLists();
-       end;
+       end;}
        if ReportList <> Nil then begin
             // if DebugMode then DebugLn('Debug - Note reuse of list without freeing it.');
             ClearLists();
 		end;
         if VerboseMode then debugln('TB_Sync - Lists Cleared');
-        Note_DoNothing := TStringList.Create;
+        //Note_DoNothing := TStringList.Create;
 		ReportList := TSyncReportList.Create;
     	if UseLocal then SetlastSyncdate();
 		if not ReadRemoteManifest(not UseRemote) then exit();	// read the remote manifest
@@ -1187,8 +1189,8 @@ begin
     	if not CompareUsingLocal() then exit;
          if VerboseMode then debugln('TB_Sync - CompareUsingLocal Done');
         if not CompareUsingRemote() then exit;
-        if VerboseMode then debugln('Must update metadata date for ' + inttostr(Note_DoNothing.Count) + ' notes');
-        UpdateDoNothingNotes();
+        //if VerboseMode then debugln('Must update metadata date for ' + inttostr(Note_DoNothing.Count) + ' notes');
+        // UpdateDoNothingNotes();    -- further research is indicated .....
         // We MUST write a new local mainfest if joining even if we have no notes
         if (NewRevision <> '') or (not UseLocal) or NewManifest then
            	if not WriteNewManifest() then exit();

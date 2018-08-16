@@ -13,6 +13,7 @@
 PRODUCT=tomboy-ng
 WORK=source_folder
 CONTENTS="$WORK/""$PRODUCT".app/Contents
+VERSION=`cat version`
 
 cd ../tomboy-ng
 lazbuild -B --cpu="i386" --build-mode=Release --os="darwin" Tomboy_NG.lpi
@@ -40,4 +41,5 @@ rm "$PRODUCT"32.dmg
 
 ~/create-dmg-master/create-dmg --volname "$PRODUCT32" --volicon "../glyphs/vol.icns" "$PRODUCT"32.dmg "./$WORK/"
 
+mv "$PRODUCT"32.dmg "$PRODUCT"32_"$VERSION".dmg
 

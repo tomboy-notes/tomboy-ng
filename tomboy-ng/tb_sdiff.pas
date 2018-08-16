@@ -181,8 +181,8 @@ begin
         SL1.LoadFromFile(RemoteFileName);
         SL2.LoadFromFile(LocalFileName);
         AddHeader(NoteTitle);
-        AddDiffText('Remote File 1 ' + inttostr(SL1.Count-LinesXML) + ' lines ' + RemoteFileName, 1);
-        AddDiffText('Local File 2 ' + inttostr(SL2.Count-LinesXML) + ' lines ' + LocalFileName, 2);
+        AddDiffText('Remote File ' + inttostr(SL1.Count-LinesXML) + ' lines ', 1);
+        AddDiffText('Local File ' + inttostr(SL2.Count-LinesXML) + ' lines ', 2);
         while (Pos1 < SL1.Count) and (0 = pos('<note-content version', SL1[Pos1])) do
             inc(Pos1);
         while (Pos2 < SL2.Count) and (0 = pos('<note-content version', SL2[Pos2])) do
@@ -200,8 +200,8 @@ begin
                 inc(Pos1); inc(pos2);
             end else begin
                 AddDiffText('---- Out of Sync ----');
-                AddDiffText('local ' + RemoveXML(SL2[Pos2+Offset2]), 2);
-                AddDiffText('remote ' + RemoveXML(SL1[Pos1+Offset1]), 1);
+                AddDiffText(RemoveXML(SL2[Pos2+Offset2]), 2);
+                AddDiffText(RemoveXML(SL1[Pos1+Offset1]), 1);
                 inc(Pos1); inc(pos2);
                 Sync := CanReSync(SL1, Sl2, Pos1, Pos2, End1, End2);
                 case Sync of

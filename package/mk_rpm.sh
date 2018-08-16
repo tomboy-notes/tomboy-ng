@@ -11,7 +11,7 @@
 # ====================================================
 
 PROD=tomboy-ng
-VERS=0.17c
+VERS=`cat version`
 RDIR="$PROD"-"$VERS"
 
 

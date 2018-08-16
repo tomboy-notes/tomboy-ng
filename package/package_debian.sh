@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------------
 
 PRODUCT="tomboy-ng"
-VERSION="0.17c"
+VERSION=`cat version`
 
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"
@@ -36,13 +36,13 @@ BUILDDATE=`date -R`
 function BuildIt () {
 	cd $SOURCE_DIR
 	echo "Building x86_64 Linux"
-	lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
 	echo "Building i386 Linux"
-	lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Windows"
-	lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
 	echo "Building i386 Windows"
-	lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	# Todo - should check we now have binaries with todays date.
 	echo "------------- FINISHED BUILDING -----------------"
@@ -139,7 +139,7 @@ function DoZipping {
 
 	echo "--------------- FINISHED ZIPPING ----------------"
 	ls -l *.gz *.zip
-	echo "-------------------------------------------------"
+	echo "------------------ver $VERSION ------------------"
 }
 
 # --------------------------------------
@@ -149,7 +149,7 @@ function DoZipping {
 BuildIt
 DebianPackage "i386"
 DebianPackage "amd64"
-echo "----------------- FINISHED DEBs ----------------"
+echo "----------------- FINISHED DEBs ver $VERSION ------------"
 ls -l *.deb
 echo "------------------------------------------------"
 DoZipping
