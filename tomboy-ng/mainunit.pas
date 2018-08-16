@@ -169,7 +169,7 @@ uses LazLogger, LazFileUtils,
 
 
 { =================================== V E R S I O N    H E R E =============}
-const Version_string  = 'v0.17c';
+const Version_string  = {$I %TOMBOY_NG_VER};
 
 
 
