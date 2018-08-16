@@ -288,7 +288,7 @@ private
 	function WriteRemoteManifest(const FullFileName : AnsiString) : boolean;
 	        	{ Compares each entry in Remote list against Local List }
     function CompareUsingRemote() : boolean;
-        		{ Compares each entry in Local List against the Remote list }
+        		{ Compares each entry in Local List, one by one and tries to find it in the Remote list }
 	function CompareUsingLocal(): boolean;
         		{ iterates over the NoteInfoListRem filling in meta data, if it finds
                   a note with invalid XML, writes a warning to console and removes note
@@ -804,6 +804,7 @@ begin
                 CloseFile(OutFile);
                 CloseFile(InFile);
             end;
+            debugln('Renaming ' + Note_DoNothing[I] + '-TMP' + ' to ' + Note_DoNothing[I]);
             if not RenameFileUTF8(Note_DoNothing[I] + '-TMP', Note_DoNothing[I]) then begin
                 debugln('Failed to move temp backup file');
             end;
@@ -928,20 +929,23 @@ begin
     ClashRec.LocalLastChange := ChangeDate;
     GetNoteChangeGMT(RemotePath(FileID, Rev), ChangeDate);
     ClashRec.ServerLastChange := ChangeDate;
-    ClashRec.ServerFileName := LocalPath(FileID, '');
-    ClashRec.LocalFileName := RemotePath(FileID, Rev);
+    ClashRec.ServerFileName := RemotePath(FileID, Rev);
+    ClashRec.LocalFileName := LocalPath(FileID, '');
     Result := ProceedFunction(Clashrec);
 end;
-{ }
+
+{$DEFINE NOTE_TRACE }
 function TTomboyFileSync.CompareUsingLocal() : boolean;
 var
+    {$ifdef NOTE_TRACE}Trace_ID : string = 'AFB3657F-B204-4BC4-806E-E831BD427CA6'; {$endif}
     Index : Longint;
-    NoteInfoP, NoteInfoP2 : PNoteInfo;
     // NoteInfoP may contain details from the remote server about the local note we are looking at.
+    NoteInfoP : PNoteInfo;
+    NoteInfoP2 : PNoteInfo;
     // The local note is always "NoteInfoListLoc.Items[Index]"
 begin
     result := false;
-    for Index := 0 to NoteInfoListLoc.Count -1 do begin
+    for Index := 0 to NoteInfoListLoc.Count -1 do begin     // iterate over local list
         if VerboseMode then debugln('Local sync ' + NoteInfoListLoc.Items[Index].ID);
     	NoteInfoP := NoteInfoListRem.FindID(NoteInfoListLoc.Items[Index].ID);
     	if NoteInfoP = NIL then begin
@@ -951,13 +955,6 @@ begin
             	NoteInfoP2 := NoteInfoListLocalManifest.FindID(NoteInfoListLoc.Items[Index].ID);
             	// NoteInfoListLocalManifest may not exist at this stage. If thats the
                 // case, it does not have any interesting records.
-
-
-            { if DebugMode then begin
-                write('matching ',NoteInfoListLoc.Items[Index].ID);
-                if NoteInfoP2 = nil then writeln(' - Not matched.')
-                else writeln(' - matched.')
-            end;   }
             if NoteInfoP2 = nil then
                 // Ah, its a new local note.
                 UpLoadNote(NoteInfoListLoc.Items[Index].ID)
@@ -984,10 +981,8 @@ begin
  			end;
 			continue;
         end;
-        if VerboseMode then
-           if NoteInfoP.Title = 'Test Sync' then begin
-           debugln(NoteInfoP.Title, NoteInfoP.LastChange, NoteInfoListLoc.Items[Index].LastChange);
-           end;
+        if VerboseMode then debugln('In both manifests R=' + NoteInfoP.LastChange
+            + ' L=' + NoteInfoListLoc.Items[Index].LastChange);
         // OK, if to here, exists in both manifests. Do change dates match ?
 		if NoteInfoP.LastChange = NoteInfoListLoc.Items[Index].LastChange then begin
             // Ignore - dates match, mention in new manifest - continue
@@ -995,17 +990,27 @@ begin
     		UPDateNextManifest(NoteInfoP.ID, NoteInfoP.Rev );
 			continue;
 		end;
-
+        {$IFDEF NOTE_TRACE}if NoteInfoP.ID = Trace_ID then
+           debugln('-----No Match, LocalrevSt=' + LocalRevSt + ' RemRev=' + NoteInfoP.Rev);{$ENDIF}
         // they both exist but don't match, we need do something !
-		if NoteInfoP.GMTDate > NoteInfoListLoc.Items[Index].GMTDate then begin
+        // Lets compare remote date with local date.
+
+        if strtoint(NoteInfoP.Rev) > strtoint(LocalRevSt) then begin
+//		if NoteInfoP.GMTDate > NoteInfoListLoc.Items[Index].GMTDate then begin
+//        if NoteInfoP.GMTDate > LastSyncDate then begin
+                {$IFDEF NOTE_TRACE}if NoteInfoP.ID = Trace_ID then
+                       debugln('-----Remote Newer than sync');{$ENDIF}
             // That says get remote but what if loc has also changed since last sync ?
-            if NoteInfoListLoc.Items[Index].GMTDate > LastSyncDate then begin       // <<== test this code
+            if NoteInfoListLoc.Items[Index].GMTDate > LastSyncDate then begin
+                    {$IFDEF NOTE_TRACE}if NoteInfoP.ID = Trace_ID then
+                           debugln('-----And local newer than last sync');{$ENDIF}
                 // Yes - ask user to indicate continue download, upload or nothing ?
               	case ProceedWith(NoteInfoP.ID, NoteInfoP.Rev) of
             		cdUpload : UpLoadNote(NoteInfoP.ID);
                 	cdDownLoad : DownloadNote(NoteInfoP.ID, NoteInfoP.Rev);
                 	cdDoNothing :   begin
                                         Note_DoNothing.Add(LocalPath(NoteInfoP.ID, ''));
+                                        debugln('--------- gasp ! cdDoNothing is no longer an option !');
                                         continue;
                                     end;
                 end;
@@ -1013,8 +1018,8 @@ begin
             	// No - no clashes, just download as planned.
                 DownloadNote(NoteInfoP.ID, NoteInfoP.Rev);
             continue;
-        end;
-
+        end {$IFDEF NOTE_TRACE}else if NoteInfoP.ID = Trace_ID then
+                       debugln('-----Local is Newer, uploading'){$ENDIF};
         // Ah, after all that, local note is newer, thats easy.
         UpLoadNote(NoteInfoP.ID);
 
@@ -1382,7 +1387,7 @@ var
 	Doc : TXMLDocument;
 	// NodeList : TDOMNodeList;
 	Node : TDOMNode;
-    MChange : string;
+    //MChange : string;
 begin
     if not FileExistsUTF8(FullFileName) then begin
         DebugLn('ERROR - File not found, cant read note change date for ',  FullFileName);
@@ -1393,14 +1398,14 @@ begin
 		ReadXMLFile(Doc, FullFileName);
 		Node := Doc.DocumentElement.FindNode('last-change-date');
         LastChange := Node.FirstChild.NodeValue;
-        Node := Doc.DocumentElement.FindNode('last-metadata-change-date');
-        MChange := Node.FirstChild.NodeValue;
+        { Node := Doc.DocumentElement.FindNode('last-metadata-change-date');
+        MChange := Node.FirstChild.NodeValue; }
     	//Result := GetDateFromStr(Node.FirstChild.NodeValue);
 	finally
         Doc.free;		// xml errors are caught in calling process
 	end;
-    if GetDateFromStr(MChange) >  GetDateFromStr(LastChange) then
-        LastChange := MChange;
+    {if GetDateFromStr(MChange) >  GetDateFromStr(LastChange) then
+        LastChange := MChange; }
     Result := GetDateFromStr(LastChange);
 end;
 

@@ -11,7 +11,7 @@
 # ====================================================
 
 PROD=tomboy-ng
-VERS=0.16a
+VERS=0.17c
 RDIR="$PROD"-"$VERS"
 
 
@@ -31,6 +31,6 @@ function DoAlien ()  {
 }
 
 DoAlien "0_amd64.deb"
-DoAlien "0_i386.deb"
+#DoAlien "0_i386.deb"
 
 

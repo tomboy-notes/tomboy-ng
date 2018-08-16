@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------------
 
 PRODUCT="tomboy-ng"
-VERSION="0.16a"
+VERSION="0.17c"
 
 SOURCE_DIR="../tomboy-ng"
 ICON_DIR="../glyphs"

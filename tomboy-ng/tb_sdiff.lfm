@@ -1,12 +1,12 @@
 object FormSDiff: TFormSDiff
-  Left = 588
-  Height = 438
-  Top = 228
-  Width = 770
+  Left = 378
+  Height = 437
+  Top = 236
+  Width = 488
   VertScrollBar.Visible = False
-  Caption = 'FormSDiff'
-  ClientHeight = 438
-  ClientWidth = 770
+  Caption = 'A Note Sync Clash has been Detected'
+  ClientHeight = 437
+  ClientWidth = 488
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '1.8.4.0'
@@ -17,9 +17,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Panel1
     Left = 0
-    Height = 351
+    Height = 350
     Top = 0
-    Width = 770
+    Width = 488
     Anchors = [akTop, akLeft, akRight, akBottom]
     ContentPadding.Left = 5
     ContentPadding.Top = 5
@@ -30,18 +30,18 @@ object FormSDiff: TFormSDiff
     Visible = True
   end
   object Button1: TButton
-    AnchorSideLeft.Control = ButtonDoNothing
-    AnchorSideLeft.Side = asrBottom
+    AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Panel1
     AnchorSideTop.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 122
+    Left = 2
     Height = 35
     Hint = 'Pull down remote note and backup local.'
-    Top = 401
+    Top = 400
     Width = 120
     Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 2
     BorderSpacing.Bottom = 2
     Caption = 'Use Remote'
     Color = clYellow
@@ -59,10 +59,10 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 242
+    Left = 122
     Height = 35
     Hint = 'Use and Push to Sync Repo'
-    Top = 401
+    Top = 400
     Width = 120
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 2
@@ -73,26 +73,6 @@ object FormSDiff: TFormSDiff
     ShowHint = True
     TabOrder = 2
   end
-  object ButtonDoNothing: TButton
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Panel1
-    AnchorSideTop.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 2
-    Height = 35
-    Hint = 'Do nothing for this run'
-    Top = 401
-    Width = 120
-    Anchors = [akLeft, akBottom]
-    BorderSpacing.Left = 2
-    BorderSpacing.Bottom = 2
-    Caption = 'Do Nothing'
-    ModalResult = 5
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 3
-  end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = Owner
@@ -100,13 +80,13 @@ object FormSDiff: TFormSDiff
     AnchorSideBottom.Control = Button1
     Left = 2
     Height = 50
-    Top = 351
-    Width = 768
+    Top = 350
+    Width = 486
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     ClientHeight = 50
-    ClientWidth = 768
-    TabOrder = 4
+    ClientWidth = 486
+    TabOrder = 3
     object LabelRemote: TLabel
       Left = 160
       Height = 17
@@ -141,28 +121,28 @@ object FormSDiff: TFormSDiff
     end
   end
   object RadioShort: TRadioButton
-    Left = 368
+    Left = 264
     Height = 22
     Hint = 'Easier to read'
-    Top = 400
+    Top = 401
     Width = 96
     Caption = 'ShortLines'
     Checked = True
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 5
+    TabOrder = 4
     TabStop = True
   end
   object RadioLong: TRadioButton
-    Left = 368
+    Left = 264
     Height = 22
     Hint = 'Maybe necessary to show difference'
-    Top = 416
+    Top = 417
     Width = 95
     Caption = 'Long Lines'
     OnChange = RadioLongChange
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 6
+    TabOrder = 5
   end
 end

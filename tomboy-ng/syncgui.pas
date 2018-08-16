@@ -144,7 +144,13 @@ begin
             mrYes : Result := cdDownLoad;
             mrNo  : Result := cdUpLoad;
     end;
+    // OK, it turns out that "Do Nothing" is not an option, it totally messes up.
+    // see sync.note for a model that does not work !
 
+    if Result = cdDoNothing then begin
+        showmessage('Will Download, you can recover local note from Settings->Backup');
+        Result := cdDownLoad;
+    end;
     // Use Remote, Yellow is mrYes, File1
     // Use Local, Aqua is mrNo, File2
     // Anything else is DoNothing !
@@ -174,14 +180,15 @@ begin
             Result := TClashDecision(ModalResult);
         finally
           Free;
-        end;                   }
+        end;
+    end;                      }
 
     // Result := TClashDecision(cdDoNothing);          // test
-	case Result of
+	{case Result of
 		cdUpload : ShowMessage('we''ll upload');
 		cdDownLoad : ShowMessage('we''ll download');
 		cdDoNothing : ShowMessage('we''ll do nothing');
-	end;
+	end;}
 end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
