@@ -87,7 +87,8 @@ function DebianPackage () {
 	echo "Architecture: $1" >> BUILD/DEBIAN/control
 	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
 	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
-	echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14)" >> BUILD/DEBIAN/control
+	# We don't use libcanberra-gtk-module but binary complains when on an OS that does not have it, sigh ...
+	echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module" >> BUILD/DEBIAN/control
 	echo "Priority: optional" >> BUILD/DEBIAN/control
 	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control

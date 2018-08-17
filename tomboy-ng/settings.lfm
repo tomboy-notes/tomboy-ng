@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 512
+  Left = 551
   Height = 431
-  Top = 233
+  Top = 166
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -12,25 +12,26 @@ object Sett: TSett
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '1.8.4.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ButtonHide
     Left = 0
-    Height = 373
+    Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabBackUp
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 3
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object ButtonSetNotePath: TButton
         Left = 8
@@ -127,7 +128,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Display'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object GroupBox5: TGroupBox
         Left = 56
@@ -191,7 +192,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object GroupBox3: TGroupBox
         Left = 8
@@ -206,7 +207,7 @@ object Sett: TSett
           Left = 56
           Height = 22
           Top = 0
-          Width = 215
+          Width = 209
           Caption = 'File Sync using shared drive.'
           Checked = True
           TabOrder = 0
@@ -216,7 +217,7 @@ object Sett: TSett
           Left = 56
           Height = 22
           Top = 24
-          Width = 229
+          Width = 225
           Caption = 'Network Server - not available'
           Enabled = False
           TabOrder = 1
@@ -235,7 +236,7 @@ object Sett: TSett
           Left = 40
           Height = 17
           Top = 8
-          Width = 355
+          Width = 347
           Caption = 'when a conflict is detected between a local note and'
           ParentColor = False
         end
@@ -243,7 +244,7 @@ object Sett: TSett
           Left = 40
           Height = 17
           Top = 24
-          Width = 335
+          Width = 323
           Caption = 'a note on the configured synchronisation server :'
           ParentColor = False
         end
@@ -251,7 +252,7 @@ object Sett: TSett
           Left = 8
           Height = 22
           Top = 48
-          Width = 203
+          Width = 200
           Caption = 'Always ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -261,7 +262,7 @@ object Sett: TSett
           Left = 9
           Height = 22
           Top = 70
-          Width = 307
+          Width = 301
           Caption = 'Use Local note and overwrite server note.'
           TabOrder = 1
         end
@@ -269,7 +270,7 @@ object Sett: TSett
           Left = 9
           Height = 22
           Top = 92
-          Width = 282
+          Width = 277
           Caption = 'Use server note and rename local one.'
           TabOrder = 2
         end
@@ -287,7 +288,7 @@ object Sett: TSett
         Left = 16
         Height = 17
         Top = 144
-        Width = 89
+        Width = 86
         Caption = 'LocalConfig :'
         ParentColor = False
       end
@@ -295,7 +296,7 @@ object Sett: TSett
         Left = 16
         Height = 17
         Top = 160
-        Width = 119
+        Width = 116
         Caption = 'LabelLocalConfig'
         ParentColor = False
       end
@@ -310,14 +311,14 @@ object Sett: TSett
         Left = 272
         Height = 17
         Top = 88
-        Width = 123
+        Width = 122
         Caption = 'LabelWaitForSync'
         ParentColor = False
       end
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -336,7 +337,7 @@ object Sett: TSett
           Left = 33
           Height = 17
           Top = 33
-          Width = 438
+          Width = 428
           Caption = 'Backup files are made when you delete a note or the sync system'
           ParentColor = False
         end
@@ -344,7 +345,7 @@ object Sett: TSett
           Left = 32
           Height = 17
           Top = 52
-          Width = 179
+          Width = 175
           Caption = 'is about to overwrite one. '
           ParentColor = False
         end
@@ -352,7 +353,7 @@ object Sett: TSett
           Left = 32
           Height = 17
           Top = 72
-          Width = 407
+          Width = 396
           Caption = 'They remain, for ever, unless you do something about them.'
           ParentColor = False
         end
@@ -375,12 +376,12 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 188
+        Height = 186
         Top = 150
         Width = 519
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 188
+        ClientHeight = 186
         ClientWidth = 519
         TabOrder = 1
         object StringGridBackUp: TStringGrid
@@ -391,7 +392,7 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 186
+          Height = 184
           Top = 1
           Width = 517
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -408,7 +409,7 @@ object Sett: TSett
     end
     object TabSnapshot: TTabSheet
       Caption = 'SnapShot'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object Label9: TLabel
         Left = 36
@@ -437,13 +438,13 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 338
+      ClientHeight = 336
       ClientWidth = 519
       object Label13: TLabel
         Left = 12
         Height = 17
         Top = 19
-        Width = 319
+        Width = 312
         Caption = 'Spell Check requires the Hunspell Libraries and'
         ParentColor = False
       end
@@ -451,7 +452,7 @@ object Sett: TSett
         Left = 12
         Height = 17
         Top = 40
-        Width = 268
+        Width = 262
         Caption = 'an appropriate Hunspell Dictionary set.'
         ParentColor = False
       end
@@ -470,7 +471,7 @@ object Sett: TSett
         Left = 16
         Height = 17
         Top = 288
-        Width = 73
+        Width = 72
         Caption = 'LabelError'
         ParentColor = False
       end
@@ -490,7 +491,7 @@ object Sett: TSett
         Left = 16
         Height = 17
         Top = 96
-        Width = 129
+        Width = 128
         Caption = 'LabelLibraryStatus'
         ParentColor = False
       end
@@ -498,7 +499,7 @@ object Sett: TSett
         Left = 16
         Height = 17
         Top = 200
-        Width = 103
+        Width = 101
         Caption = 'LabelDicStatus'
         ParentColor = False
       end
@@ -514,7 +515,7 @@ object Sett: TSett
         Left = 16
         Height = 17
         Top = 216
-        Width = 59
+        Width = 58
         Caption = 'LabelDic'
         ParentColor = False
       end
@@ -533,7 +534,7 @@ object Sett: TSett
         Left = 376
         Height = 17
         Top = 112
-        Width = 111
+        Width = 110
         Caption = 'LabelDicPrompt'
         ParentColor = False
       end
@@ -549,7 +550,7 @@ object Sett: TSett
     Hint = 'Unsaved setting will remain for this session only'
     Top = 373
     Width = 113
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Anchors = [akRight, akBottom]
     BorderSpacing.Right = 4
     BorderSpacing.Bottom = 2
     Caption = 'Close'

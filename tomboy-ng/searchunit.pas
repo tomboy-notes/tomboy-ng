@@ -286,7 +286,7 @@ begin
     if NoteLister = Nil then exit;				// we are quitting the app !
   	// Can we find line with passed file name ? If so, apply new data.
 	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
-        DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
+        // DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
         NoteLister.AddNote(ExtractFileNameOnly(FullFileName)+'.note', Title, LastChange);
 	end;
     NoteLister.ThisNoteIsOpen(FullFileName, TheForm);

@@ -9,6 +9,8 @@ unit BackupView;
     2018/07/03  Finished the recver a backup note code
     2018/08/14  Update the last-metadata-change-date instead of last-change-date
                 when restoring a Backup file. See Sync spec.
+    2018/08/16  We now update both last-metadata-change-date AND last-change-date
+                when restoring a backup file.
 }
 
 {$mode objfpc}{$H+}
@@ -122,9 +124,12 @@ begin
             Rewrite(OutFile);
             while not eof(InFile) do begin
                 readln(InFile, InString);
-                if Pos('<last-metadata-change-date>', InString) > 0 then
-                    writeln(OutFile, ' <last-metadata-change-date>' +  Sett.GetLocalTime() + '</last-metadata-change-date>')
-                else writeln(OutFile, InString);
+                if (Pos('<last-metadata-change-date>', InString) > 0) or
+                        (Pos('<last-change-date>', InString) > 0)  then begin
+                    if (Pos('<last-metadata-change-date>', InString) > 0) then
+                        writeln(OutFile, ' <last-metadata-change-date>' +  Sett.GetLocalTime() + '</last-metadata-change-date>')
+                    else writeln(OutFile, ' <last-change-date>' +  Sett.GetLocalTime() + '</last-change-date>');
+                end else writeln(OutFile, InString);
             end;
         finally
             CloseFile(OutFile);
