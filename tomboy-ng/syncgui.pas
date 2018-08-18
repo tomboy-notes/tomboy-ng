@@ -305,16 +305,24 @@ end;
 procedure TFormSync.TestRepo;	// called OnShow()
 var
         ServerID : ANSIString;
+        FatalError : boolean;
 begin
     FileSync.TestMode := True;
     Memo1.Append('Remote Repo is ' + RemoteRepo);
-    if FileSync.GetRemoteServerID(ServerID) then begin
+    if FileSync.GetRemoteServerID(ServerID, FatalError) then begin
         // Joining an existing Repo, we'll do Dummy run and ask user to confirm ?
         Memo1.Append('There is a Repo there already, suggest we join it.');
         FileSync.DoSync(False, True);
-    end else
-    	if FileSync.MakeConnection() then memo1.Append('Make connection True')
-        else memo1.append('make connection false');
+    end else begin
+        // No, if it turns out the remote manifest is not writeable or the directory is not ....
+        if FatalError then begin
+            showmessage('Error - that sync repo is unusable, check space, write permissions. '
+                + FileSync.ErrorMessage);
+            exit();
+        end;
+        if FileSync.MakeConnection() then memo1.Append('Make connection True')
+            else memo1.append('make connection false');
+    end;
     ShowReport();
 end;
 

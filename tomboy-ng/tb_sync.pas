@@ -266,7 +266,7 @@ TTomboyFileSync = Class(TTomboySyncCustom)
  	function MakeConnection() : boolean;
    				{ Returns True with the remote ServerID in SID. False if something
                   went wrong, ErrorMessage should be set. Assumes the file exists. }
-	function GetRemoteServerID(out SID: ANSIString): boolean;
+	function GetRemoteServerID(out SID: ANSIString; out FatalError : boolean): boolean;
 
 
 
@@ -1222,7 +1222,7 @@ begin
 	end;
 end;
 
-function TTomboyFileSync.GetRemoteServerID(out SID : ANSIString) : boolean;
+function TTomboyFileSync.GetRemoteServerID(out SID : ANSIString; out FatalError : boolean) : boolean;
 var
 	Doc : TXMLDocument;
 begin
@@ -1232,6 +1232,18 @@ begin
     	ErrorMessage := ' Can not find remote manifest file ' + RemoteManifestDir + 'manifest.xml';
     	exit();
 	end;
+    FatalError := False;
+    if not FileIsWritable(RemoteManifestDir + 'manifest.xml') then begin
+        // This is an error, one that must stop the process right now !
+        ErrorMessage := ' Cannot write to ' + RemoteManifestDir + 'manifest.xml';
+        FatalError := True;
+        exit();
+    end;
+    if not DirectoryIsWritable(RemoteManifestDir) then begin
+        ErrorMessage := ' Cannot write to ' + RemoteManifestDir;
+        FatalError := True;
+        exit();
+    end;
     try
 		try
 			ReadXMLFile(Doc, RemoteManifestDir + 'manifest.xml');
@@ -1262,13 +1274,14 @@ function TTomboyFileSync.CheckRemoteServerID: boolean;
     }
 var
     RemoteServerID : ANSIString;
+    FatalError : boolean;
 begin
     Result := False;
     if not FileExistsUTF8(RemoteManifestDir + 'manifest.xml') then begin
     	ErrorMessage := ' Can not find remote manifest file ' + RemoteManifestDir + 'manifest.xml';
         exit();
 	end;
-    if not GetRemoteServerID(RemoteServerID) then
+    if not GetRemoteServerID(RemoteServerID, FatalError) then
        exit();
     if RemoteServerID = ServerID then Result := True
     else ErrorMessage := ' Error matching local and remote ServerIDs';
@@ -1277,13 +1290,15 @@ end;
 function TTomboyFileSync.MakeConnection: boolean;
 var
     GUID : TGUID;
+    FatalError : Boolean;
 begin
 	// If we can get a remote ServerID we'll join in, else we'll create a new Repo and sync to it.
-    if GetRemoteServerID(ServerID) then begin
+    if GetRemoteServerID(ServerID, FatalError) then begin
         if VerboseMode then DebugLn('Debug - Joining an existing Repo, ', ServerID);
         Result := DoSync(False, True)
 	end
 	else begin
+        if FatalError then exit(False);
     	CreateGUID(GUID);
     	ServerID := copy(GUIDToString(GUID), 2, 36);
         if VerboseMode then DebugLn('Debug - Creating a new FileSync Repositary ', ServerID);
