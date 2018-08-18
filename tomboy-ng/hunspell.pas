@@ -210,7 +210,15 @@ begin
         UTF8Delete(FullName, 1, I-1);
         UTF8Delete(FullName, UTF8Pos(#10, FullName, 1), 1);
         Result := True;
-    end;
+    end else
+        if RunCommand('/bin/bash',['-c','/sbin/ldconfig -p | grep hunspell'], FullName) then begin
+            while UTF8Pos(' ', FullName, I) <> 0 do inc(I);
+            if I=1 then exit();
+            UTF8Delete(FullName, 1, I-1);
+            UTF8Delete(FullName, UTF8Pos(#10, FullName, 1), 1);
+            Result := True;
+        end else
+            Debugln('Spell Error - cannot find ldconfig despite heroic efforts');
     exit();
     {$ENDIF}
     {$IFDEF WINDOWS}		// Look for a dll in application home dir.
