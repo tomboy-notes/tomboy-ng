@@ -44,6 +44,7 @@ unit SyncGUI;
     2018/06/02  Honor a cli --debug-sync
     2018/06/14  Update labels when transitioning from Testing Sync to Manual Sync
     2018/08/14  Added SDiff to replace clumbsy dialog when sync clash happens.
+    2018/08/18  Improved test/reporting of file access during sync
 
 }
 
@@ -266,8 +267,8 @@ begin
             exit();
         end;
 		if not FileSync.CheckRemoteServerID() then begin
-	        Memo1.Append('Remote Server ID not found or does not match - ' + FileSync.ErrorMessage);
-            DebugLn('ERROR - Remote Server ID not found or does not match - ' + FileSync.ErrorMessage);
+	        Memo1.Append('ERROR - ' + FileSync.ErrorMessage);
+            DebugLn('ERROR - ' + FileSync.ErrorMessage);
 		end else begin
             Application.ProcessMessages;
         	if FileSync.DoSync(True, True) then begin
@@ -318,6 +319,7 @@ begin
         if FatalError then begin
             showmessage('Error - that sync repo is unusable, check space, write permissions. '
                 + FileSync.ErrorMessage);
+            close();
             exit();
         end;
         if FileSync.MakeConnection() then memo1.Append('Make connection True')

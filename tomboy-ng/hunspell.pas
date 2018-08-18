@@ -130,7 +130,7 @@ begin
             ErrorMessage := 'Failed to find functions in ' + LibraryName;
             if debugmode then debugln('Failed to find functions in ' + LibraryName);
         end;
-    if Result then  debugln('Loaded library OK ' + LibraryName);
+    if Result and debugmode then  debugln('Loaded library OK ' + LibraryName);
 end;
 
 constructor THunspell.Create(const Debug : boolean; const FullLibName : ANSIString = '');

@@ -63,6 +63,7 @@ unit TB_Sync;
     2018/07/27  Correctly save XML special char <>& in local manifest deleted note titles.
     2018/08/14  Added fields to TClash record for SDiff unit.
     2018/08/14  LastChange now means latest of last-change-date and last-metadata-change-date
+    2018/08/18  Better testing of file system access before sync
 }
 
 
@@ -1227,20 +1228,24 @@ var
 	Doc : TXMLDocument;
 begin
     Result := False;
+    FatalError := False;
+    if not DirectoryIsWritable(RemoteManifestDir) then begin
+        debugln('ERROR Suggested Repo is not writable - ' + RemoteManifestDir);
+        ErrorMessage := ' Cannot write to ' + RemoteManifestDir;
+        FatalError := True;
+        exit();
+    end;
+
     // This is not always a real error, a new connection eg.
 	if not FileExistsUTF8(RemoteManifestDir + 'manifest.xml') then begin
     	ErrorMessage := ' Can not find remote manifest file ' + RemoteManifestDir + 'manifest.xml';
     	exit();
 	end;
-    FatalError := False;
+
     if not FileIsWritable(RemoteManifestDir + 'manifest.xml') then begin
         // This is an error, one that must stop the process right now !
+        debugln('ERROR mainfest file is not writable' + RemoteManifestDir + 'manifest.xml';
         ErrorMessage := ' Cannot write to ' + RemoteManifestDir + 'manifest.xml';
-        FatalError := True;
-        exit();
-    end;
-    if not DirectoryIsWritable(RemoteManifestDir) then begin
-        ErrorMessage := ' Cannot write to ' + RemoteManifestDir;
         FatalError := True;
         exit();
     end;
