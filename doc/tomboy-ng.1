@@ -46,6 +46,43 @@ Create or use an alternative config. That config could, for example, specify an 
 .BR \-o ", " \-\-open-note=\fIPATH_to_NOTE\fR
 Open a note in single note mode. In this mode, a seperate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a plain text file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
 
+
+.SH EDITING KEYBOARD SHORTCUTS
+
+The following keyboard shortcuts apply when editing a note.
+
+.IB Ctrl\ B 
+Bold the selected Text
+
+.IB Ctrl\ I
+Italicise the selected Text
+
+.IB Ctrl\ S
+Strikeout the selected Text
+
+.IB Ctrl\ T 
+Fixed width font ('T' for typewriter ?)
+
+.IB Ctrl\ H
+Highlight the selected Text
+
+.IB Ctrl\ U
+Underline the selected font
+
+.IB Ctrl\ F
+Find in this note
+
+.IB Ctrl\ Shift\ F
+Open the Notes Search Box
+
+.IB Ctrl\ N
+Open a New Note
+
+.IB Ctrl\ F4
+Quit (ie close) this Note
+
+
+
 .SH DEBUGGING
 tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows does not, for this purpose, have a console. But it can be told to capture this log info to a file using another command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
 

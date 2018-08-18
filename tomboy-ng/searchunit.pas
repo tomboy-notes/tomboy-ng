@@ -80,6 +80,7 @@ unit SearchUnit;
     2018/05/20  Alterations to way we startup, wrt mainform status report.  Mark
     2018/06/04  NoteReadOnly() now checks if NoteLister is valid before calling.
     2018/07/04  Pass back some info about how the note indexing went.
+    2018/08/18  Can now set search option, Case Sensitive, Any Combination from here.
 }
 
 {$mode objfpc}{$H+}
@@ -88,13 +89,15 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
-    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Note_Lister, lazLogger;
+    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, CheckLst, Note_Lister,
+    lazLogger;
 
 type
 
     { TSearchForm }
 
     TSearchForm = class(TForm)
+        ButtonSearchMode: TButton;
 			ButtonNotebookOptions: TButton;
 			ButtonShowAllNotes: TButton;
 		ButtonRefresh: TButton;
@@ -102,14 +105,18 @@ type
         Edit1: TEdit;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
+        MenuCaseSensitive: TMenuItem;
+        MenuAnyCombination: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
+        PopupSearchMode: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
 		Splitter1: TSplitter;
 		StringGridNotebooks: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         StringGrid1: TStringGrid;
-		procedure ButtonClearSearchClick(Sender: TObject);
+        procedure ButtonSearchModeClick(Sender: TObject);
+  procedure ButtonClearSearchClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonShowAllNotesClick(Sender: TObject);
@@ -122,8 +129,10 @@ type
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
             );
 		procedure FormShow(Sender: TObject);
+        procedure MenuAnyCombinationClick(Sender: TObject);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
+        procedure MenuCaseSensitiveClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
 		procedure StringGridNotebooksClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
@@ -349,6 +358,22 @@ begin
         Edit1.Text := 'Search';
 end;
 
+procedure TSearchForm.ButtonSearchModeClick(Sender: TObject);
+begin
+    PopupSearchMode.PopUp();
+end;
+
+procedure TSearchForm.MenuAnyCombinationClick(Sender: TObject);
+begin
+    MenuAnyCombination.Checked := not MenuAnyCombination.Checked;
+    Sett.CheckAnyCombination.Checked := MenuAnyCombination.Checked;
+end;
+
+procedure TSearchForm.MenuCaseSensitiveClick(Sender: TObject);
+begin
+    MenuCaseSensitive.Checked:= not MenuCaseSensitive.Checked;
+    Sett.CheckCaseSensitive.Checked:= MenuCaseSensitive.Checked;
+end;
 procedure TSearchForm.Edit1EditingDone(Sender: TObject);
 //var
 //   TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
@@ -426,7 +451,10 @@ begin
     Left := Placement + random(Placement*2);
     ButtonClearSearch.Enabled := False;
     // Edit1.Text:= 'Search';
+    MenuCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
+    MenuAnyCombination.Checked := Sett.CheckAnyCombination.Checked;
 end;
+
 
 procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
 var
@@ -556,6 +584,8 @@ begin
     	OpenNote(StringGridNotebooks.Cells[0, StringGridNotebooks.Row] + ' Template',
         		Sett.NoteDirectory + NotebookID);
 end;
+
+
 
 procedure TSearchForm.MenuDeleteNotebookClick(Sender: TObject);
 begin

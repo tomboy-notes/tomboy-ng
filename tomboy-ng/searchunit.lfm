@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 219
+  Left = 446
   Height = 342
-  Top = 316
+  Top = 332
   Width = 724
   Caption = 'SearchForm'
   ClientHeight = 342
@@ -14,12 +14,12 @@ object SearchForm: TSearchForm
   LCLVersion = '1.8.4.0'
   object Edit1: TEdit
     AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = ButtonClearSearch
+    AnchorSideRight.Control = ButtonSearchMode
     Left = 3
     Height = 27
-    Top = 8
-    Width = 516
-    Anchors = [akTop, akLeft, akRight]
+    Top = 6
+    Width = 416
+    Anchors = [akLeft, akRight]
     BorderSpacing.Left = 3
     BorderSpacing.Right = 1
     OnEditingDone = Edit1EditingDone
@@ -36,9 +36,9 @@ object SearchForm: TSearchForm
     Left = 520
     Height = 27
     Hint = 'Clears the search'
-    Top = 8
+    Top = 6
     Width = 100
-    Anchors = [akTop, akRight]
+    Anchors = [akRight]
     BorderSpacing.Right = 1
     Caption = 'Clear'
     OnClick = ButtonClearSearchClick
@@ -53,9 +53,9 @@ object SearchForm: TSearchForm
     Left = 621
     Height = 27
     Hint = 'Indexes on disk notes'
-    Top = 8
+    Top = 6
     Width = 100
-    Anchors = [akTop, akRight]
+    Anchors = [akRight]
     BorderSpacing.Right = 3
     Caption = 'Refresh'
     OnClick = ButtonRefreshClick
@@ -73,12 +73,12 @@ object SearchForm: TSearchForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 307
-    Top = 35
+    Height = 309
+    Top = 33
     Width = 724
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel1'
-    ClientHeight = 307
+    ClientHeight = 309
     ClientWidth = 724
     TabOrder = 3
     object Splitter1: TSplitter
@@ -86,7 +86,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 152
-      Height = 305
+      Height = 307
       Top = 1
       Width = 5
       Align = alNone
@@ -99,7 +99,7 @@ object SearchForm: TSearchForm
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = ButtonNotebookOptions
       Left = 1
-      Height = 256
+      Height = 258
       Top = 25
       Width = 151
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -132,7 +132,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 160
-      Height = 302
+      Height = 304
       Top = 1
       Width = 560
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -185,7 +185,7 @@ object SearchForm: TSearchForm
       Left = -8
       Height = 25
       Hint = 'Manage the Notebooks'
-      Top = 281
+      Top = 283
       Width = 160
       Anchors = [akLeft, akRight, akBottom]
       Caption = 'Notebook Options'
@@ -196,6 +196,17 @@ object SearchForm: TSearchForm
       ShowHint = True
       TabOrder = 4
     end
+  end
+  object ButtonSearchMode: TButton
+    AnchorSideRight.Control = ButtonClearSearch
+    Left = 420
+    Height = 27
+    Top = 6
+    Width = 100
+    Anchors = [akRight]
+    Caption = 'Mode'
+    OnClick = ButtonSearchModeClick
+    TabOrder = 4
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 472
@@ -215,6 +226,20 @@ object SearchForm: TSearchForm
     object MenuNewNoteFromTemplate: TMenuItem
       Caption = 'Create New Note from Template'
       OnClick = MenuNewNoteFromTemplateClick
+    end
+  end
+  object PopupSearchMode: TPopupMenu
+    left = 248
+    top = 119
+    object MenuCaseSensitive: TMenuItem
+      Caption = 'Case Sensitive'
+      Checked = True
+      OnClick = MenuCaseSensitiveClick
+    end
+    object MenuAnyCombination: TMenuItem
+      Caption = 'Any Combination'
+      Checked = True
+      OnClick = MenuAnyCombinationClick
     end
   end
 end

@@ -360,6 +360,7 @@ msgid "Recent"
 msgstr ""
 
 #: tmainform.mmrecent1.caption
+msgctxt "tmainform.mmrecent1.caption"
 msgid "MenuItem1"
 msgstr ""
 
@@ -369,6 +370,7 @@ msgid "MenuItem12"
 msgstr ""
 
 #: tmainform.mmrecent2.caption
+msgctxt "tmainform.mmrecent2.caption"
 msgid "MenuItem2"
 msgstr ""
 
@@ -716,6 +718,10 @@ msgctxt "tsearchform.buttonrefresh.hint"
 msgid "Indexes on disk notes"
 msgstr ""
 
+#: tsearchform.buttonsearchmode.caption
+msgid "Mode"
+msgstr ""
+
 #: tsearchform.buttonshowallnotes.caption
 msgctxt "tsearchform.buttonshowallnotes.caption"
 msgid "Show All Notes"
@@ -728,6 +734,16 @@ msgstr ""
 #: tsearchform.edit1.text
 msgctxt "tsearchform.edit1.text"
 msgid "Search"
+msgstr ""
+
+#: tsearchform.menuanycombination.caption
+msgctxt "tsearchform.menuanycombination.caption"
+msgid "Any Combination"
+msgstr ""
+
+#: tsearchform.menucasesensitive.caption
+msgctxt "tsearchform.menucasesensitive.caption"
+msgid "Case Sensitive"
 msgstr ""
 
 #: tsearchform.menudeletenotebook.caption
@@ -788,10 +804,12 @@ msgid "KTomboy-NG Settings"
 msgstr ""
 
 #: tsett.checkanycombination.caption
+msgctxt "tsett.checkanycombination.caption"
 msgid "Any Combination"
 msgstr ""
 
 #: tsett.checkcasesensitive.caption
+msgctxt "tsett.checkcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 

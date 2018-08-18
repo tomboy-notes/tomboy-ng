@@ -152,6 +152,7 @@ unit EditBox;
     2018/07/23  If a note has no title in content but does have one in xml, caption is
                 left blank and that crashes things that look for * in first char. Fixed
     2018/07/23  Fixed a bug that crashed when deleting a note in SingleNoteMode.
+    2018/08/18  Added ^F4 to quit.  Prevented undefined ^keys being passed into Kmemo
 }
 
 
@@ -1504,14 +1505,17 @@ var
 begin
     if not Ready then exit();                   // should we drop key on floor ????
     if [ssCtrl] = Shift then begin
+        debugln('Ctrl pressed plus ' + inttostr(Key));
         if key = ord('B') then begin Key := 0; MenuBoldClick(Sender); exit(); end;
         if key = ord('I') then begin Key := 0; MenuItalicClick(Sender); exit(); end;
         if key = ord('S') then begin Key := 0; MenuStrikeOutClick(Sender); exit(); end;
         if key = ord('T') then begin Key := 0; MenuFixedWidthClick(Sender); exit(); end;
         if key = ord('H') then begin Key := 0; MenuHighLightClick(Sender); exit(); end;
         if key = ord('U') then begin Key := 0; MenuUnderLineClick(Sender); exit(); end;
-       if key = ord('F') then begin MenuItemFindClick(self); Key := 0; exit(); end;
-       if key = ord('N') then begin MainForm.MMNewNoteClick(self); Key := 0; exit(); end;
+       if key = ord('F') then begin Key := 0; MenuItemFindClick(self); Key := 0; exit(); end;
+       if key = ord('N') then begin Key := 0; MainForm.MMNewNoteClick(self); Key := 0; exit(); end;
+       if key = VK_F4 then begin Key := 0; SaveTheNote(); close; exit; end;
+       Key := 0;    // so we don't get a ctrl key character in the text
 {       if Key = ord('R') then begin
             if KMemo1.ReadOnly then begin
                PanelReadOnly.Height:= 5;
@@ -1529,6 +1533,7 @@ begin
 
     if [ssCtrl, ssShift] = Shift then begin
        if key = ord('F') then begin ButtSearchClick(self); Key := 0; exit(); end;
+       Key := 0;
     end;
     if Key <> 8 then exit();    // We are watching for a BS on a Bullet Marker
     // Mac users don't have a del key, they use a backspace key thats labled 'delete'. Sigh...
