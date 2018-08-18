@@ -144,7 +144,7 @@ begin
     TheKMemo.Blocks.LockUpdate;
     Str_Text := TheKMemo.Blocks.Text;       	// Make a copy to work with, faster
     if Sett.SpellConfig then begin
-        Spell :=  THunspell.Create(Sett.LabelLibrary.Caption);
+        Spell :=  THunspell.Create(Application.HasOption('debug-spell'), Sett.LabelLibrary.Caption);
         if Spell.ErrorMessage = '' then begin
             if Spell.SetDictionary(Sett.LabelDic.Caption) then
                 PreviousWord(Index);

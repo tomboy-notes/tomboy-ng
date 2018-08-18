@@ -81,6 +81,7 @@ unit SearchUnit;
     2018/06/04  NoteReadOnly() now checks if NoteLister is valid before calling.
     2018/07/04  Pass back some info about how the note indexing went.
     2018/08/18  Can now set search option, Case Sensitive, Any Combination from here.
+    2018/08/18  Update Mainform line about notes found whenever IndexNotes() is called.
 }
 
 {$mode objfpc}{$H+}
@@ -423,6 +424,7 @@ begin
     // TS1 := DateTimeToTimeStamp(Now);
 	// Edit1.Text := 'That took (mS) ' + inttostr(TS2.Time - TS1.Time);
     UseList();
+    MainForm.UpdateNotesFound(Result);
 end;
 
 

@@ -30,6 +30,8 @@ unit Mainunit;
 
     --debug-index Verbose mode when reading the notes directory.
 
+    --debug-spell  Verbose mode when setting up speller
+
     --config-dir=<some_dir> Directory to keep config and sync manifest in.
 
     -o note_fullfilename
@@ -144,6 +146,7 @@ type
     public
         UseTrayMenu : boolean;
         UseMainMenu : boolean;
+        procedure UpdateNotesFound(Numb: integer);
         procedure CheckStatus();
         procedure SingleNoteMode(FullFileName: string; CloseOnFinish : boolean = True);
     end;
@@ -208,7 +211,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     //I: Integer;
     Params : TStringList;
-    LongOpts : array [1..7] of string = ('no-splash', 'version', 'gnome3','debug-sync', 'debug-index', 'config-dir:','open-note:');
+    LongOpts : array [1..8] of string = ('no-splash', 'version', 'gnome3', 'debug-spell', 'debug-sync', 'debug-index', 'config-dir:','open-note:');
 begin
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
@@ -258,8 +261,7 @@ begin
         Label7.Caption:='';
         Label8.Caption := '';
         CheckStatus();
-        LabelNotesFound.Caption := 'Found ' + inttostr(SearchForm.IndexNotes())
-            + ' notes'; // also calls Checkstatus but safe to call anytime
+        SearchForm.IndexNotes(); // also calls Checkstatus but safe to call anytime, calls UpdateNotesFound()
         if SearchForm.NoteLister.XMLError then
             LabelError.Caption := 'Failed to index one or more notes.'
         else LabelError.Caption := '';
@@ -271,7 +273,10 @@ begin
         end;
     end;
 end;
-
+procedure TMainForm.UpdateNotesFound(Numb : integer);
+begin
+    LabelNotesFound.Caption := 'Found ' + inttostr(Numb) + ' notes';
+end;
 
 procedure TMainForm.CheckStatus();
 begin
@@ -333,7 +338,7 @@ function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'no-splash version help gnome3 open-note: debug-sync debug-index config-dir:');
+    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir:');
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
@@ -348,6 +353,7 @@ begin
        debugln('   --no-splash                  Dont show small status/splash window');
        debugln('   --debug-sync                 Show whats happening during sync process');
        debugln('   --debug-index                Show whats happening during initial index of notes');
+       debugln('   --debug-spell                Show whats happening during spell setup');
        debugln('   --config-dir=PATH_to_DIR     Create or use an alternative config');
        debugln('   -o --open-note=PATH_to_NOTE  Open indicated note, switch is optional');
        debugln(CmdLineErrorMsg);

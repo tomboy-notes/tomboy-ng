@@ -71,6 +71,8 @@ unit settings;
     2018/06/14  Moved call to CheckSpelling() from OnShow to OnCreate.
                 Select MediumFont in default settings.
     2018/07/22  Removed an errant editbox that somehow appeared over small font button.
+    2018/08/18  Now call SpellCheck() after loading settings. Note, if settings file
+                has an old library name and hunspell can find a new one, nothing is updated !
 
 }
 
@@ -399,7 +401,13 @@ end;
 procedure TSett.CheckSpelling;
 var
     DicPathAlt : AnsiString;
+    DebugSpell : boolean = false;
 begin
+    { The hunspell unit tries to find a library using some educated guesses.
+      Once found, its saved in config and we pass that to hunspell as a suggested
+      first place to try.
+      We set likely dictionary locations here.
+    }
     DicPathAlt := ExtractFilePath(Application.ExeName);
     {$ifdef WINDOWS}
     DicPath := 'C:\Program Files\LibreOffice 5\share\extensions\dict-en\';
@@ -419,12 +427,18 @@ begin
     EditLibrary.Text := '';
     EditDic.Text := '';
     EditDic.Visible:= False;
+    if  Application.HasOption('debug-spell') then begin
+        DebugSpell := True;
+        debugln('LabelLibrary=',LabelLibrary.Caption);
+    end;
     if fileexists(LabelLibrary.Caption) then		// make sure file from config is still valid
-    	Spell :=  THunspell.Create(LabelLibrary.Caption)
-    else Spell :=  THunspell.Create();
+    	Spell :=  THunspell.Create(DebugSpell, LabelLibrary.Caption)
+    else Spell :=  THunspell.Create(DebugSpell);
     if Spell.ErrorMessage = '' then begin
+        if DebugSpell then debugln('No Spell error');
         LabelLibraryStatus.caption := 'Library Loaded OK';
         LabelLibrary.Caption := Spell.LibraryFullName;
+        { ToDo - if config lists an old library and hunspell finds a newer one, nothing is updated }
         EditDic.Visible := True;
         LabelDicStatus.Visible := True;
         LabelDic.Visible := True;
@@ -440,6 +454,7 @@ begin
             end;
         end
         else begin
+            if DebugSpell then debugln('Spell error=[', Spell.ErrorMessage, ']');
             SpellConfig := CheckForDict(DicPath);  // if we find 1, use it, 0 try again.
             if ListBoxDic.Items.Count = 0 then
             // if not SpellConfig then
@@ -493,8 +508,9 @@ begin
     HaveConfig := false;
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
-    CheckSpelling();
+
     CheckConfigFile();                      // write a new, default one if necessary
+    CheckSpelling();
     if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
         ButtonSetSynServer.Caption := 'Set File Sync Repo';
 end;
@@ -728,6 +744,7 @@ begin
             ButtonSetSynServer.Caption:='Change File Sync';
         	// OK, user has tested, done first sync, is happy. Save this config.
             SettingsChanged();
+            NeedRefresh := True;
         end else begin
         	LabelSyncRepo.Caption := SyncNotConfig;
             RemoteRepo := SyncNotConfig;

@@ -51,9 +51,11 @@ type
     ErrorMessage : ANSIString;
             { Will have a full name to library if correctly loaded at create }
     LibraryFullName : string;
+            { if set t, typically by caller, prints a lot of whats happening }
+    DebugMode : boolean;
             { Will have a "first guess" as to where dictionaries are, poke another name in
             and call FindDictionary() if default did not work }
-    constructor Create(const FullLibName : ANSIString = '');
+    constructor Create(const Debug : boolean; const FullLibName : ANSIString = '');
     destructor Destroy; override;
             { Returns True if word spelt correctly }
     function Spell(Word: string): boolean;
@@ -86,8 +88,9 @@ var HunLibHandle: THandle;
 
 implementation
 
-uses LazUTF8, SysUtils, {$ifdef linux}Process,{$endif} LazFileUtils, Forms;
+uses LazUTF8, SysUtils, {$ifdef linux}Process,{$endif} LazFileUtils, Forms, lazlogger;
 // Forms needed so we can call Application.~
+// lazlogger for the debug lines.
 
 { THunspell }
 
@@ -95,9 +98,10 @@ function THunspell.LoadHunspellLibrary(libraryName: Ansistring): Boolean;
 begin
     Result := false;
     HunLibHandle := LoadLibrary(PAnsiChar(libraryName));
-    if HunLibHandle = NilHandle then
-        ErrorMessage := 'Failed to load library ' + libraryName
-    else begin
+    if HunLibHandle = NilHandle then begin
+        if Debugmode then debugln('Failed to load library ' + libraryName);
+        ErrorMessage := 'Failed to load library ' + libraryName;
+    end else begin
         Result := True;
         Hunspell_create := THunspell_create(GetProcAddress(HunLibHandle, 'Hunspell_create'));
         if not Assigned(Hunspell_create) then Result := False;
@@ -122,18 +126,25 @@ begin
         HunLibLoaded := Result;
     end;
     if ErrorMessage = '' then
-        if not Result then ErrorMessage := 'Failed to find functions in ' + LibraryName;
+        if not Result then begin
+            ErrorMessage := 'Failed to find functions in ' + LibraryName;
+            if debugmode then debugln('Failed to find functions in ' + LibraryName);
+        end;
+    if Result then  debugln('Loaded library OK ' + LibraryName);
 end;
 
-constructor THunspell.Create(const FullLibName : ANSIString = '');
+constructor THunspell.Create(const Debug : boolean; const FullLibName : ANSIString = '');
 begin
+    DebugMode := Debug;
     ErrorMessage := '';
     LibraryFullName := FullLibName;
     if LibraryFullName = '' then
         if Not FindLibrary(LibraryFullName) then begin
+            if debugmode then debugln('Cannot find Hunspell library');
             ErrorMessage := 'Cannot find Hunspell library';
             exit();
         end;
+    if debugmode then debugln('We have a library to use ' + LibraryFullName);
     LoadHunspellLibrary(LibraryFullName);    // will flag any errors it finds
     Speller := nil;           // we are not GoodToGo yet, need a dictionary ....
 end;
@@ -210,9 +221,11 @@ begin
     Mask := 'libhunspell*';
     FullName := '/usr/lib/';
     {$endif}
+    if DebugMode then debugln('Potential library starts with [', FullName + Mask, ']');
     if FindFirst(FullName + Mask, faAnyFile and faDirectory, Info)=0 then begin
         FullName := FullName + Info.name;
         Result := True;
+        if DebugMode then debugln('Library [', FullName, ']');
     end;
     FindClose(Info);
 end;

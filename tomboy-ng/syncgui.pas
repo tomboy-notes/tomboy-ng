@@ -270,9 +270,10 @@ begin
             DebugLn('ERROR - Remote Server ID not found or does not match - ' + FileSync.ErrorMessage);
 		end else begin
             Application.ProcessMessages;
-        	if FileSync.DoSync(True, True) then
-                Memo1.Append('Sync completed.')
-            else
+        	if FileSync.DoSync(True, True) then begin
+                Memo1.Append('Sync completed.');
+                SearchForm.IndexNotes();
+            end else
 	    		Memo1.Append('DoSync reported an error - ' + FileSync.ErrorMessage);
             ShowReport();
 		end;
