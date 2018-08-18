@@ -1244,7 +1244,7 @@ begin
 
     if not FileIsWritable(RemoteManifestDir + 'manifest.xml') then begin
         // This is an error, one that must stop the process right now !
-        debugln('ERROR mainfest file is not writable' + RemoteManifestDir + 'manifest.xml';
+        debugln('ERROR mainfest file is not writable' + RemoteManifestDir + 'manifest.xml');
         ErrorMessage := ' Cannot write to ' + RemoteManifestDir + 'manifest.xml';
         FatalError := True;
         exit();
