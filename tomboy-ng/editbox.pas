@@ -153,6 +153,7 @@ unit EditBox;
                 left blank and that crashes things that look for * in first char. Fixed
     2018/07/23  Fixed a bug that crashed when deleting a note in SingleNoteMode.
     2018/08/18  Added ^F4 to quit.  Prevented undefined ^keys being passed into Kmemo
+    2018/08/20  Above edit dropped ^X, ^C, ^V before kmemo sees them, fixed, refactored a bit
 }
 
 
@@ -1505,7 +1506,22 @@ var
 begin
     if not Ready then exit();                   // should we drop key on floor ????
     if [ssCtrl] = Shift then begin
-        debugln('Ctrl pressed plus ' + inttostr(Key));
+        // debugln('Ctrl pressed plus ' + inttostr(Key));
+        case key of
+            VK_B : MenuBoldClick(Sender);
+            VK_I : MenuItalicClick(Sender);
+            VK_S : MenuStrikeOutClick(Sender);
+            VK_T : MenuFixedWidthClick(Sender);
+            VK_H : MenuHighLightClick(Sender);
+            VK_U : MenuUnderLineClick(Sender);
+            VK_F : MenuItemFindClick(self);
+            VK_N : MainForm.MMNewNoteClick(self);
+            VK_F4 : begin SaveTheNote(); close; end;
+            VK_X, VK_C, VK_V : exit;    // so key is not set to 0 on the way out
+        end;
+        Key := 0;    // so we don't get a ctrl key character in the text
+        exit();
+        {
         if key = ord('B') then begin Key := 0; MenuBoldClick(Sender); exit(); end;
         if key = ord('I') then begin Key := 0; MenuItalicClick(Sender); exit(); end;
         if key = ord('S') then begin Key := 0; MenuStrikeOutClick(Sender); exit(); end;
@@ -1514,19 +1530,7 @@ begin
         if key = ord('U') then begin Key := 0; MenuUnderLineClick(Sender); exit(); end;
        if key = ord('F') then begin Key := 0; MenuItemFindClick(self); Key := 0; exit(); end;
        if key = ord('N') then begin Key := 0; MainForm.MMNewNoteClick(self); Key := 0; exit(); end;
-       if key = VK_F4 then begin Key := 0; SaveTheNote(); close; exit; end;
-       Key := 0;    // so we don't get a ctrl key character in the text
-{       if Key = ord('R') then begin
-            if KMemo1.ReadOnly then begin
-               PanelReadOnly.Height:= 5;
-               KMemo1.ReadOnly := False;
-            end else begin
-                PanelReadOnly.Height:= 60;
-                KMemo1.ReadOnly := True;
-            end;
-            Key := 0;
-            exit();
-       end;         }   // this was for testing only
+       if key = VK_F4 then begin Key := 0; SaveTheNote(); close; exit; end;   }
     end;
 
     if KMemo1.ReadOnly then begin Key := 0; exit(); end;
