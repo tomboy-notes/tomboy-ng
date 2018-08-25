@@ -418,6 +418,7 @@ begin
     if not Sett.HaveConfig then exit(0);
     if NoteLister = Nil then begin
        NoteLister := TNoteLister.Create;
+       NoteLister.DebugMode := Application.HasOption('debug-index');
        NoteLister.WorkingDir:=Sett.NoteDirectory;
     end;
     Result := NoteLister.GetNotes();

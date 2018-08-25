@@ -92,6 +92,11 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+          </Other>
         </CompilerOptions>
       </Item3>
       <Item4 Name="ReleaseWin64">
@@ -123,6 +128,9 @@
             </Options>
           </Linking>
           <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
             <CompilerPath Value="/usr/bin/ppcrossx64"/>
           </Other>
         </CompilerOptions>
@@ -196,6 +204,9 @@
             </Options>
           </Linking>
           <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
             <CompilerPath Value="/usr/local/bin/ppcx64"/>
           </Other>
         </CompilerOptions>
@@ -261,6 +272,9 @@
             </Options>
           </Linking>
           <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
             <CompilerPath Value="/usr/bin/fpc"/>
           </Other>
         </CompilerOptions>
@@ -278,7 +292,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="--debug-spell"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/TB_Test"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -292,7 +306,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="13">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -374,6 +388,13 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="BackupView"/>
       </Unit11>
+      <Unit12>
+        <Filename Value="recover.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormRecover"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit12>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

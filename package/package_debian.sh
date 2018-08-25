@@ -23,7 +23,8 @@ WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
 MANUALS="Notes.txt"
 
-BUILDOPTS=" -B --quiet --quiet"
+# BUILDOPTS=" -B --quiet --quiet"
+BUILDOPTS=" -B --quiet"
 BUILDDATE=`date -R`
 
 # ----------------------

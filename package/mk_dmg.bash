@@ -16,7 +16,7 @@ CONTENTS="$WORK/""$PRODUCT".app/Contents
 VERSION=`cat version`
 
 cd ../tomboy-ng
-lazbuild -B --cpu="i386" --build-mode=Release --os="darwin" Tomboy_NG.lpi
+TOMBOY_NG_VER="$VERSION" lazbuild -B --cpu="i386" --build-mode=Release --os="darwin" Tomboy_NG.lpi
 cd ../package
 
 rm -Rf $WORK
@@ -39,7 +39,6 @@ rm "$PRODUCT"32.dmg
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" --background ../glyphs/Note_Large.png tomboy-ng.dmg ./source_folder/
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" tomboy-ng.dmg ./source_folder/
 
-~/create-dmg-master/create-dmg --volname "$PRODUCT32" --volicon "../glyphs/vol.icns" "$PRODUCT"32.dmg "./$WORK/"
+~/create-dmg-master/create-dmg --volname "$PRODUCT32" --volicon "../glyphs/vol.icns" "$PRODUCT"32_"$VERSION".dmg "./$WORK/"
 
-mv "$PRODUCT"32.dmg "$PRODUCT"32_"$VERSION".dmg
 

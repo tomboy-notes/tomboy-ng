@@ -154,6 +154,7 @@ unit EditBox;
     2018/07/23  Fixed a bug that crashed when deleting a note in SingleNoteMode.
     2018/08/18  Added ^F4 to quit.  Prevented undefined ^keys being passed into Kmemo
     2018/08/20  Above edit dropped ^X, ^C, ^V before kmemo sees them, fixed, refactored a bit
+    2019/08/22  Add a whole lot more keys that KMemo auto supports, see AddKey(...) in keditcommon.pas
 }
 
 
@@ -1517,7 +1518,8 @@ begin
             VK_F : MenuItemFindClick(self);
             VK_N : MainForm.MMNewNoteClick(self);
             VK_F4 : begin SaveTheNote(); close; end;
-            VK_X, VK_C, VK_V : exit;    // so key is not set to 0 on the way out
+            VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_RETURN, VK_INSERT :
+                                exit;    // so key is not set to 0 on the way out
         end;
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();

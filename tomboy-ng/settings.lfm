@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 551
+  Left = 176
   Height = 431
-  Top = 166
+  Top = 161
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabSync
+    ActivePage = TabBackUp
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -49,7 +49,7 @@ object Sett: TSett
         Left = 8
         Height = 17
         Top = 40
-        Width = 119
+        Width = 116
         Caption = 'LabelSettingPath'
         ParentColor = False
       end
@@ -57,7 +57,7 @@ object Sett: TSett
         Left = 8
         Height = 17
         Top = 120
-        Width = 110
+        Width = 109
         Caption = 'LabelNotesPath'
         ParentColor = False
       end
@@ -65,7 +65,7 @@ object Sett: TSett
         Left = 8
         Height = 17
         Top = 16
-        Width = 170
+        Width = 165
         Caption = 'Settings will be saved in :'
         ParentColor = False
       end
@@ -73,7 +73,7 @@ object Sett: TSett
         Left = 11
         Height = 17
         Top = 96
-        Width = 257
+        Width = 253
         Caption = 'Notes will be looked for and saved in :'
         ParentColor = False
       end
@@ -94,7 +94,7 @@ object Sett: TSett
         Height = 22
         Hint = 'This may adversly affect tradional Tomboy, take care.'
         Top = 224
-        Width = 306
+        Width = 302
         Caption = 'Allow a note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 2
@@ -103,7 +103,7 @@ object Sett: TSett
         Left = 40
         Height = 22
         Top = 280
-        Width = 121
+        Width = 119
         Caption = 'Case Sensitive'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
@@ -112,7 +112,7 @@ object Sett: TSett
         Left = 40
         Height = 22
         Top = 304
-        Width = 142
+        Width = 139
         Caption = 'Any Combination'
         OnChange = CheckReadOnlyChange
         TabOrder = 4
@@ -121,7 +121,7 @@ object Sett: TSett
         Left = 16
         Height = 17
         Top = 256
-        Width = 134
+        Width = 131
         Caption = 'Main Search Box is :'
         ParentColor = False
       end
@@ -143,7 +143,7 @@ object Sett: TSett
           Left = 16
           Height = 22
           Top = 16
-          Width = 47
+          Width = 45
           Caption = 'Big'
           Checked = True
           OnChange = CheckReadOnlyChange
@@ -154,7 +154,7 @@ object Sett: TSett
           Left = 16
           Height = 22
           Top = 44
-          Width = 80
+          Width = 79
           Caption = 'Medium'
           OnChange = CheckReadOnlyChange
           TabOrder = 1
@@ -173,7 +173,7 @@ object Sett: TSett
         Left = 40
         Height = 22
         Top = 192
-        Width = 158
+        Width = 153
         Caption = 'Show Internal Links'
         Enabled = False
         OnChange = CheckReadOnlyChange
@@ -183,7 +183,7 @@ object Sett: TSett
         Left = 40
         Height = 22
         Top = 224
-        Width = 165
+        Width = 160
         Caption = 'Show External  Links'
         Enabled = False
         OnChange = CheckReadOnlyChange
@@ -408,32 +408,123 @@ object Sett: TSett
       end
     end
     object TabSnapshot: TTabSheet
+      BorderWidth = 1
       Caption = 'SnapShot'
       ClientHeight = 336
       ClientWidth = 519
       object Label9: TLabel
-        Left = 36
-        Height = 17
-        Top = 52
-        Width = 343
-        Caption = 'A snaphot is a copy of your current note directory, '
+        Left = 18
+        Height = 22
+        Top = 8
+        Width = 426
+        Caption = 'A snaphot is a copy of your current note directory.'
+        Font.Height = -19
         ParentColor = False
+        ParentFont = False
       end
-      object Label10: TLabel
-        Left = 36
-        Height = 17
-        Top = 72
-        Width = 215
-        Caption = 'tucked away somewhere safely.'
-        ParentColor = False
+      object ButtonManualSnap: TButton
+        AnchorSideLeft.Control = TabSnapshot
+        AnchorSideBottom.Control = TabSnapshot
+        AnchorSideBottom.Side = asrBottom
+        Left = 2
+        Height = 44
+        Top = 292
+        Width = 248
+        Anchors = [akLeft, akBottom]
+        BorderSpacing.Left = 2
+        Caption = 'Take a Manual Snapshot'
+        OnClick = ButtonManualSnapClick
+        TabOrder = 0
       end
-      object Label11: TLabel
-        Left = 36
-        Height = 17
-        Top = 90
-        Width = 216
-        Caption = '.... and its not available just yet !'
-        ParentColor = False
+      object ButtonSnapRecover: TButton
+        AnchorSideLeft.Control = ButtonManualSnap
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideBottom.Control = TabSnapshot
+        AnchorSideBottom.Side = asrBottom
+        Left = 250
+        Height = 44
+        Top = 292
+        Width = 248
+        Anchors = [akLeft, akBottom]
+        Caption = 'Recover one or more lost Notes'
+        OnClick = ButtonSnapRecoverClick
+        TabOrder = 1
+      end
+      object Panel3: TPanel
+        AnchorSideLeft.Control = TabSnapshot
+        AnchorSideRight.Control = TabSnapshot
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ButtonManualSnap
+        Left = 0
+        Height = 240
+        Top = 50
+        Width = 519
+        Anchors = [akLeft, akRight, akBottom]
+        BorderSpacing.Bottom = 2
+        ClientHeight = 240
+        ClientWidth = 519
+        TabOrder = 2
+        object ButtonSnapDays: TButton
+          Left = 24
+          Height = 36
+          Top = 40
+          Width = 104
+          Caption = 'Days'
+          OnClick = ButtonSnapDaysClick
+          TabOrder = 0
+        end
+        object ButtonSetSnapDir: TButton
+          Left = 144
+          Height = 36
+          Top = 40
+          Width = 99
+          Caption = 'Set Snap Dir'
+          OnClick = ButtonSetSnapDirClick
+          TabOrder = 1
+        end
+        object TimeEdit1: TTimeEdit
+          Left = 24
+          Height = 27
+          Top = 90
+          Width = 103
+          ButtonWidth = 23
+          NumGlyphs = 1
+          MaxLength = 0
+          TabOrder = 2
+          Text = 'TimeEdit1'
+        end
+        object LabelSnapDir: TLabel
+          Left = 144
+          Height = 17
+          Top = 98
+          Width = 212
+          Caption = '.... and its not available just yet !'
+          ParentColor = False
+        end
+        object CheckSnapMonthly: TCheckBox
+          Left = 24
+          Height = 22
+          Top = 146
+          Width = 79
+          Caption = 'Monthly'
+          TabOrder = 3
+        end
+        object CheckSnapEnabled: TCheckBox
+          Left = 24
+          Height = 22
+          Top = 178
+          Width = 85
+          Caption = 'Run Auto'
+          TabOrder = 4
+        end
+        object Label10: TLabel
+          Left = 28
+          Height = 17
+          Top = 8
+          Width = 55
+          Caption = 'Settings'
+          ParentColor = False
+        end
       end
     end
     object TabSpell: TTabSheet
@@ -570,5 +661,41 @@ object Sett: TSett
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 88
     top = 384
+  end
+  object PopupDay: TPopupMenu
+    left = 280
+    top = 376
+    object MenuMonday: TMenuItem
+      AutoCheck = True
+      Caption = 'Monday'
+    end
+    object MenuTuesday: TMenuItem
+      AutoCheck = True
+      Caption = 'Tuesday'
+    end
+    object MenuWednesday: TMenuItem
+      AutoCheck = True
+      Caption = 'Wednesday'
+    end
+    object MenuThursday: TMenuItem
+      AutoCheck = True
+      Caption = 'Thursday'
+    end
+    object MenuFriday: TMenuItem
+      AutoCheck = True
+      Caption = 'Friday'
+    end
+    object MenuSaturday: TMenuItem
+      AutoCheck = True
+      Caption = 'Saturday'
+    end
+    object MenuSunday: TMenuItem
+      AutoCheck = True
+      Caption = 'Sunday'
+    end
+  end
+  object SelectSnapDir: TSelectDirectoryDialog
+    left = 328
+    top = 376
   end
 end

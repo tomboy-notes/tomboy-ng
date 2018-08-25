@@ -178,6 +178,7 @@ msgid "Open and view the whole note"
 msgstr ""
 
 #: tformbackupview.buttonrecover.caption
+msgctxt "tformbackupview.buttonrecover.caption"
 msgid "Recover"
 msgstr ""
 
@@ -187,6 +188,109 @@ msgstr ""
 
 #: tformbackupview.caption
 msgid "FormBackupView"
+msgstr ""
+
+#: tformrecover.button4.caption
+msgid "Restore from Intro snap shot"
+msgstr ""
+
+#: tformrecover.buttondeletebadnotes.caption
+msgctxt "tformrecover.buttondeletebadnotes.caption"
+msgid "Delete Bad Notes"
+msgstr ""
+
+#: tformrecover.buttonmakeintrosnap.caption
+msgctxt "tformrecover.buttonmakeintrosnap.caption"
+msgid "Intro Snapshot"
+msgstr ""
+
+#: tformrecover.caption
+msgid "FormRecover"
+msgstr ""
+
+#: tformrecover.label1.caption
+msgctxt "tformrecover.label1.caption"
+msgid "Label1"
+msgstr ""
+
+#: tformrecover.label10.caption
+msgid "Please close any notes you may have open."
+msgstr ""
+
+#: tformrecover.label11.caption
+msgid "or you do do one of -"
+msgstr ""
+
+#: tformrecover.label2.caption
+msgid "Please be carefull, this is a dangerous place !"
+msgstr ""
+
+#: tformrecover.label3.caption
+msgid "Restore any notes in the snapshot that are not in the existing notes directory."
+msgstr ""
+
+#: tformrecover.label4.caption
+msgid "Remove all existing notes and replace them with the ones in the Snapshot."
+msgstr ""
+
+#: tformrecover.label5.caption
+msgid "Look firstly at your existing notes"
+msgstr ""
+
+#: tformrecover.label6.caption
+msgid "This tool might help you recover lost or damaged notes."
+msgstr ""
+
+#: tformrecover.label7.caption
+msgid "Before you start, you should take a Intro Snapshot of your notes directory."
+msgstr ""
+
+#: tformrecover.label8.caption
+msgid "Don't take repeated snap shots as each one overwrites the previous one."
+msgstr ""
+
+#: tformrecover.label9.caption
+msgid "From here you might be able to restore notes one by one."
+msgstr ""
+
+#: tformrecover.labelexistingadvice.caption
+msgid "LabelExistingAdvice"
+msgstr ""
+
+#: tformrecover.labelexistingadvice2.caption
+msgid "LabelExistingAdvice2"
+msgstr ""
+
+#: tformrecover.labelnoteerrors.caption
+msgid "LabelNoteErrors"
+msgstr ""
+
+#: tformrecover.panelnotelist.caption
+msgid "Notes in selected snapshot"
+msgstr ""
+
+#: tformrecover.panelsnapshots.caption
+msgid "Available Snapshots"
+msgstr ""
+
+#: tformrecover.tabsheet1.caption
+msgid "Merge Snapshot"
+msgstr ""
+
+#: tformrecover.tabsheet2.caption
+msgid "Recover Snapshot"
+msgstr ""
+
+#: tformrecover.tabsheetexisting.caption
+msgid "Existing Notes"
+msgstr ""
+
+#: tformrecover.tabsheetintro.caption
+msgid "Introduction"
+msgstr ""
+
+#: tformrecover.tabsheetsnapshots.caption
+msgid "Notes in a Snapshot"
 msgstr ""
 
 #: tformspell.buttonignore.caption
@@ -264,6 +368,7 @@ msgid "Label2"
 msgstr ""
 
 #: tformsync.panel3.caption
+msgctxt "tformsync.panel3.caption"
 msgid "Panel3"
 msgstr ""
 
@@ -783,6 +888,10 @@ msgstr ""
 msgid "Unsaved setting will remain for this session only"
 msgstr ""
 
+#: tsett.buttonmanualsnap.caption
+msgid "Take a Manual Snapshot"
+msgstr ""
+
 #: tsett.buttonsetnotepath.caption
 msgid "Set Path to Note Files"
 msgstr ""
@@ -791,12 +900,25 @@ msgstr ""
 msgid "If you have notes somewhere else."
 msgstr ""
 
+#: tsett.buttonsetsnapdir.caption
+msgid "Set Snap Dir"
+msgstr ""
+
 #: tsett.buttonsetsynserver.caption
 msgid "Change File Sync Repo"
 msgstr ""
 
 #: tsett.buttonshowbackup.caption
 msgid "Show Me"
+msgstr ""
+
+#: tsett.buttonsnapdays.caption
+msgid "Days"
+msgstr ""
+
+#: tsett.buttonsnaprecover.caption
+msgctxt "tsett.buttonsnaprecover.caption"
+msgid "Recover one or more lost Notes"
 msgstr ""
 
 #: tsett.caption
@@ -827,6 +949,14 @@ msgstr ""
 
 #: tsett.checkshowintlinks.caption
 msgid "Show Internal Links"
+msgstr ""
+
+#: tsett.checksnapenabled.caption
+msgid "Run Auto"
+msgstr ""
+
+#: tsett.checksnapmonthly.caption
+msgid "Monthly"
 msgstr ""
 
 #: tsett.editdic.hint
@@ -864,11 +994,8 @@ msgid "Settings will be saved in :"
 msgstr ""
 
 #: tsett.label10.caption
-msgid "tucked away somewhere safely."
-msgstr ""
-
-#: tsett.label11.caption
-msgid ".... and its not available just yet !"
+msgctxt "tsett.label10.caption"
+msgid "Settings"
 msgstr ""
 
 #: tsett.label12.caption
@@ -916,7 +1043,7 @@ msgid "They remain, for ever, unless you do something about them."
 msgstr ""
 
 #: tsett.label9.caption
-msgid "A snaphot is a copy of your current note directory, "
+msgid "A snaphot is a copy of your current note directory."
 msgstr ""
 
 #: tsett.labeldic.caption
@@ -955,8 +1082,41 @@ msgstr ""
 msgid "LabelSettingPath"
 msgstr ""
 
+#: tsett.labelsnapdir.caption
+msgctxt "tsett.labelsnapdir.caption"
+msgid ".... and its not available just yet !"
+msgstr ""
+
 #: tsett.labelwaitforsync.caption
 msgid "LabelWaitForSync"
+msgstr ""
+
+#: tsett.menufriday.caption
+msgid "Friday"
+msgstr ""
+
+#: tsett.menumonday.caption
+msgid "Monday"
+msgstr ""
+
+#: tsett.menusaturday.caption
+msgid "Saturday"
+msgstr ""
+
+#: tsett.menusunday.caption
+msgid "Sunday"
+msgstr ""
+
+#: tsett.menuthursday.caption
+msgid "Thursday"
+msgstr ""
+
+#: tsett.menutuesday.caption
+msgid "Tuesday"
+msgstr ""
+
+#: tsett.menuwednesday.caption
+msgid "Wednesday"
 msgstr ""
 
 #: tsett.panel2.caption
@@ -1019,5 +1179,9 @@ msgstr ""
 #: tsett.tabsync.caption
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
+msgstr ""
+
+#: tsett.timeedit1.text
+msgid "TimeEdit1"
 msgstr ""
 

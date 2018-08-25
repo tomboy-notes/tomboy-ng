@@ -73,6 +73,7 @@ unit settings;
     2018/07/22  Removed an errant editbox that somehow appeared over small font button.
     2018/08/18  Now call SpellCheck() after loading settings. Note, if settings file
                 has an old library name and hunspell can find a new one, nothing is updated !
+    2018/08/23  Ensured that an ini file without a notedir returns a sensible value, TEST
 
 }
 
@@ -82,7 +83,7 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, BackUpView
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, Spin, EditBtn, BackUpView
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 // Types;
 
@@ -94,6 +95,10 @@ type
 
     TSett = class(TForm)
 			ButtDefaultNoteDir: TButton;
+            ButtonManualSnap: TButton;
+            ButtonSetSnapDir: TButton;
+            ButtonSnapDays: TButton;
+            ButtonSnapRecover: TButton;
             ButtonHide: TButton;
 			ButtonShowBackUp: TButton;
 
@@ -104,14 +109,15 @@ type
 		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
+        CheckSnapEnabled: TCheckBox;
+        CheckSnapMonthly: TCheckBox;
         EditLibrary: TEdit;
         EditDic: TEdit;
 		GroupBox3: TGroupBox;
 		GroupBox4: TGroupBox;
 		GroupBox5: TGroupBox;
 		Label1: TLabel;
-		Label10: TLabel;
-		Label11: TLabel;
+        Label10: TLabel;
         Label12: TLabel;
         Label13: TLabel;
         Label14: TLabel;
@@ -122,6 +128,7 @@ type
         LabelLibrary: TLabel;
         LabelDicStatus: TLabel;
         LabelLibraryStatus: TLabel;
+        LabelSnapDir: TLabel;
 		LabelWaitForSync: TLabel;
 		Label2: TLabel;
 		Label3: TLabel;
@@ -136,9 +143,18 @@ type
 		LabelNotesPath: TLabel;
 		LabelSettingPath: TLabel;
         ListBoxDic: TListBox;
+        MenuFriday: TMenuItem;
+        MenuSaturday: TMenuItem;
+        MenuSunday: TMenuItem;
+        MenuMonday: TMenuItem;
+        MenuTuesday: TMenuItem;
+        MenuWednesday: TMenuItem;
+        MenuThursday: TMenuItem;
 		PageControl1: TPageControl;
 		Panel1: TPanel;
 		Panel2: TPanel;
+        Panel3: TPanel;
+        PopupDay: TPopupMenu;
 		RadioAlwaysAsk: TRadioButton;
 		RadioFile: TRadioButton;
 		RadioFontBig: TRadioButton;
@@ -148,6 +164,7 @@ type
 		RadioUseServer: TRadioButton;
 		RadioServer: TRadioButton;
 		SelectDirectoryDialog1: TSelectDirectoryDialog;
+        SelectSnapDir: TSelectDirectoryDialog;
 		StringGridBackUp: TStringGrid;
 		TabBasic: TTabSheet;
 		TabBackUp: TTabSheet;
@@ -155,12 +172,17 @@ type
 		TabSnapshot: TTabSheet;
 		TabSync: TTabSheet;
 		TabDisplay: TTabSheet;
+        TimeEdit1: TTimeEdit;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
         procedure ButtonHideClick(Sender: TObject);
+        procedure ButtonManualSnapClick(Sender: TObject);
         //procedure ButtonSaveConfigClick(Sender: TObject);
 		procedure ButtonSetNotePathClick(Sender: TObject);
+        procedure ButtonSetSnapDirClick(Sender: TObject);
 		procedure ButtonSetSynServerClick(Sender: TObject);
 		procedure ButtonShowBackUpClick(Sender: TObject);
+        procedure ButtonSnapDaysClick(Sender: TObject);
+        procedure ButtonSnapRecoverClick(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
@@ -189,6 +211,7 @@ type
         // Saves all current settings to disk. Call when any change is made.
         procedure SettingsChanged();
 		procedure SyncSettings;
+        function ZipDate: string;
 
     public
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
@@ -251,8 +274,9 @@ uses IniFiles, LazLogger,
     Note_Lister,	// List notes in BackUp and Snapshot tab
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
-    hunspell;       // spelling check
-
+    recover,        // Recover lost or damaged files
+    hunspell,       // spelling check
+    zipper;         // zipping up snapshots
 
 var
     Spell: THunspell;
@@ -556,7 +580,7 @@ begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
  	    try
             MaskSettingsChanged := True;    // should be true anyway ?
-   		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', '');
+   		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
             if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
                 CheckShowIntLinks.Checked := true
             else CheckShowIntLinks.Checked := false;
@@ -586,17 +610,21 @@ begin
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
 		    LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', SyncNotConfig);
             RemoteRepo := LabelSyncRepo.Caption;
+            LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
 	    finally
             ConfigFile.free;
             // MaskSettingsChanged := False;
 	    end;
+        CheckDirectory(NoteDirectory);
+        CheckDirectory(LabelSnapDir.Caption);
 	    SyncSettings();
         NeedRefresh := True;                // Needed ???
         // ButtonSaveConfig.Enabled := False;
-    end else begin
+    end else begin      // OK, no config eh ?  We'll set some defaults ...
         if CheckDirectory(NoteDirectory) then begin
             MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
+            LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
             SettingsChanged();    // write a initial default file
             MaskSettingsChanged := True;
             HaveConfig := True;
@@ -645,11 +673,11 @@ begin
             ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
         else if RadioUseServer.Checked then
             ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
-
         if SpellConfig then begin
             ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
             ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
         end;
+
     finally
     	ConfigFile.Free;
     end;
@@ -684,6 +712,8 @@ begin
     Hide;
 end;
 
+
+
 	{ Allow user to point to what they want to call their notes dir. If there
       are no notes there, pops up a warning and proceeds. }
 procedure TSett.ButtonSetNotePathClick(Sender: TObject);
@@ -709,6 +739,62 @@ begin
         // SearchForm.IndexNotes();
 	end;
 end;
+
+{ --------------------- S N A P S H O T S ------------------- }
+{ Totally invalid rule of thumb -
+  About a 100 notes = ~ 1Gbytes, we get about 4:1 compression with zipper.
+  120ms on lowend laptop.
+}
+
+procedure TSett.ButtonManualSnapClick(Sender: TObject);
+var
+    Zip : TZipper;
+    Info : TSearchRec;
+    Tick, Tock : DWord;
+begin
+    Zip := TZipper.Create;
+    try
+        Zip.FileName :=  LabelSnapDir.Caption + ZipDate() + '_Exist.zip';
+        Tick := GetTickCount64();
+      	if FindFirst(Sett.NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
+      		repeat
+                // debugln('Zipping note [' + Info.Name + ']');
+                Zip.Entries.AddFileEntry(Sett.NoteDirectory + Info.Name, Info.Name);
+      	    until FindNext(Info) <> 0;
+            Zip.ZipAllFiles;
+      	end;
+        Tock := GetTickCount64(); // 150mS, 120 notes on lowend laptop
+    finally
+        FindClose(Info);
+        Zip.Free;
+    end;
+    debugln('That all took ' + inttostr(Tock - Tick) + 'ms');
+end;
+
+procedure TSett.ButtonSetSnapDirClick(Sender: TObject);
+begin
+    SelectSnapDir.FileName := LabelSnapDir.Caption;
+    if SelectSnapDir.Execute then begin
+		LabelSnapDir.Caption := TrimFilename(SelectSnapDir.FileName + PathDelim);
+    end;
+    CheckDirectory(LabelSnapDir.Caption);
+end;
+
+function TSett.ZipDate : string;
+var
+   ThisMoment : TDateTime;
+begin
+    ThisMoment:=Now;
+    Result := FormatDateTime('YYYYMMDD',ThisMoment) + '_' + FormatDateTime('hhmm',ThisMoment);
+end;
+
+procedure TSett.ButtonSnapRecoverClick(Sender: TObject);
+begin
+    FormRecover.NoteDir := NoteDirectory;
+    FormRecover.SnapDir := LabelSnapDir.Caption;
+    FormRecover.Showmodal;
+end;
+
 
 { ------------------------ S Y N C -------------------------- }
 
@@ -765,6 +851,14 @@ begin
     NoteLister.Free;
     Label15.caption := 'double click a note ...';
 end;
+
+procedure TSett.ButtonSnapDaysClick(Sender: TObject);
+begin
+    PopupDay.PopUp();
+    TimeEdit1.Time := now();
+end;
+
+
 
 	{ Called when ANY of the setting check boxes change so use can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);

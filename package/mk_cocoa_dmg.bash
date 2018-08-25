@@ -18,10 +18,11 @@
 PRODUCT=tomboy-ng
 WORK=source_folder
 CONTENTS="$WORK/""$PRODUCT".app/Contents
+VERSION=`cat version`
 
 cd ../"$PRODUCT"
 # lazbuild -vm5024 --pcp=~/.laz-svn -B --compiler=ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
-../../../laz-svn/lazbuild  --pcp=~/.laz-svn -B --compiler=/usr/local/bin/ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
+TOMBOY_NG_VER="$VERSION" ../../../laz-svn/lazbuild  --pcp=~/.laz-svn -B --compiler=/usr/local/bin/ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
 cd ../package
 
 rm -Rf $WORK
@@ -42,5 +43,5 @@ ls -n $WORK/
 rm "$PRODUCT"64.dmg
 
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" --background ../glyphs/Note_Large.png tomboy-ng.dmg ./source_folder/
-~/create-dmg-master/create-dmg --volname "$PRODUCT64" --volicon "../glyphs/vol.icns" "$PRODUCT"64.dmg "./$WORK/"
+~/create-dmg-master/create-dmg --volname "$PRODUCT64" --volicon "../glyphs/vol.icns" "$PRODUCT"64_"$VERSION".dmg "./$WORK/"
 

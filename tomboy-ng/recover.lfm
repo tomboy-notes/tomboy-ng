@@ -1,0 +1,277 @@
+object FormRecover: TFormRecover
+  Left = 128
+  Height = 419
+  Top = 103
+  Width = 675
+  Caption = 'FormRecover'
+  ClientHeight = 419
+  ClientWidth = 675
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '1.8.4.0'
+  object Label1: TLabel
+    Left = 8
+    Height = 17
+    Top = 360
+    Width = 45
+    Caption = 'Label1'
+    ParentColor = False
+  end
+  object ListBoxSnapshots: TListBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = PanelSnapshots
+    AnchorSideTop.Side = asrBottom
+    Left = 2
+    Height = 110
+    Top = 242
+    Width = 216
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    ItemHeight = 0
+    OnDblClick = ListBoxSnapshotsDblClick
+    ScrollWidth = 214
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object PageControl1: TPageControl
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Panel1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 172
+    Top = 44
+    Width = 675
+    ActivePage = TabSheetExisting
+    Anchors = [akTop, akLeft, akRight]
+    TabIndex = 1
+    TabOrder = 1
+    object TabSheetIntro: TTabSheet
+      Caption = 'Introduction'
+      ClientHeight = 137
+      ClientWidth = 669
+      object Label6: TLabel
+        Left = 8
+        Height = 17
+        Top = 8
+        Width = 371
+        Caption = 'This tool might help you recover lost or damaged notes.'
+        ParentColor = False
+      end
+      object Label7: TLabel
+        Left = 8
+        Height = 17
+        Top = 56
+        Width = 495
+        Caption = 'Before you start, you should take a Intro Snapshot of your notes directory.'
+        ParentColor = False
+      end
+      object Label8: TLabel
+        Left = 8
+        Height = 17
+        Top = 80
+        Width = 483
+        Caption = 'Don''t take repeated snap shots as each one overwrites the previous one.'
+        ParentColor = False
+      end
+      object Label10: TLabel
+        Left = 8
+        Height = 17
+        Top = 32
+        Width = 282
+        Caption = 'Please close any notes you may have open.'
+        ParentColor = False
+      end
+      object ButtonMakeIntroSnap: TButton
+        Left = 544
+        Height = 65
+        Top = 62
+        Width = 120
+        Caption = 'Intro Snapshot'
+        OnClick = ButtonMakeIntroSnapClick
+        TabOrder = 0
+      end
+    end
+    object TabSheetExisting: TTabSheet
+      Caption = 'Existing Notes'
+      ClientHeight = 137
+      ClientWidth = 669
+      OnShow = TabSheetExistingShow
+      object Label5: TLabel
+        Left = 8
+        Height = 17
+        Top = 8
+        Width = 223
+        Caption = 'Look firstly at your existing notes'
+        ParentColor = False
+      end
+      object ButtonDeleteBadNotes: TButton
+        AnchorSideRight.Control = TabSheetExisting
+        AnchorSideRight.Side = asrBottom
+        Left = 432
+        Height = 32
+        Top = 32
+        Width = 237
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Delete Bad Notes'
+        OnClick = ButtonDeleteBadNotesClick
+        TabOrder = 0
+      end
+      object Button4: TButton
+        AnchorSideRight.Control = TabSheetExisting
+        AnchorSideRight.Side = asrBottom
+        Left = 432
+        Height = 32
+        Top = 64
+        Width = 237
+        Anchors = [akTop, akLeft, akRight]
+        Caption = 'Restore from Intro snap shot'
+        OnClick = Button4Click
+        TabOrder = 1
+      end
+      object LabelNoteErrors: TLabel
+        Left = 8
+        Height = 17
+        Top = 40
+        Width = 113
+        Caption = 'LabelNoteErrors'
+        ParentColor = False
+      end
+      object LabelExistingAdvice: TLabel
+        Left = 10
+        Height = 17
+        Top = 64
+        Width = 135
+        Caption = 'LabelExistingAdvice'
+        ParentColor = False
+      end
+      object LabelExistingAdvice2: TLabel
+        Left = 11
+        Height = 17
+        Top = 88
+        Width = 143
+        Caption = 'LabelExistingAdvice2'
+        ParentColor = False
+      end
+      object Label11: TLabel
+        Left = 434
+        Height = 17
+        Top = 13
+        Width = 137
+        Caption = 'or you do do one of -'
+        ParentColor = False
+      end
+    end
+    object TabSheetSnapshots: TTabSheet
+      Caption = 'Notes in a Snapshot'
+      ClientHeight = 137
+      ClientWidth = 669
+      object Label9: TLabel
+        Left = 10
+        Height = 17
+        Top = 8
+        Width = 381
+        Caption = 'From here you might be able to restore notes one by one.'
+        ParentColor = False
+      end
+    end
+    object TabSheet1: TTabSheet
+      Caption = 'Merge Snapshot'
+      ClientHeight = 137
+      ClientWidth = 669
+      object Label3: TLabel
+        Left = 9
+        Height = 17
+        Top = 8
+        Width = 513
+        Caption = 'Restore any notes in the snapshot that are not in the existing notes directory.'
+        ParentColor = False
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Recover Snapshot'
+      ClientHeight = 137
+      ClientWidth = 669
+      object Label4: TLabel
+        Left = 8
+        Height = 17
+        Top = 8
+        Width = 491
+        Caption = 'Remove all existing notes and replace them with the ones in the Snapshot.'
+        ParentColor = False
+      end
+    end
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 44
+    Top = 0
+    Width = 675
+    Anchors = [akTop, akLeft, akRight]
+    ClientHeight = 44
+    ClientWidth = 675
+    TabOrder = 2
+    object Label2: TLabel
+      Left = 40
+      Height = 22
+      Top = 8
+      Width = 378
+      Caption = 'Please be carefull, this is a dangerous place !'
+      Font.Height = -19
+      ParentColor = False
+      ParentFont = False
+    end
+  end
+  object StringGrid1: TStringGrid
+    AnchorSideLeft.Control = ListBoxSnapshots
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = PanelNoteList
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 220
+    Height = 110
+    Top = 242
+    Width = 455
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    TabOrder = 3
+    OnDblClick = StringGrid1DblClick
+  end
+  object PanelSnapshots: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = PageControl1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = ListBoxSnapshots
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 24
+    Top = 216
+    Width = 218
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'Available Snapshots'
+    TabOrder = 4
+  end
+  object PanelNoteList: TPanel
+    AnchorSideLeft.Control = StringGrid1
+    AnchorSideTop.Control = PageControl1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = PanelSnapshots
+    AnchorSideBottom.Side = asrBottom
+    Left = 220
+    Height = 24
+    Top = 216
+    Width = 455
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Caption = 'Notes in selected snapshot'
+    TabOrder = 5
+  end
+end
