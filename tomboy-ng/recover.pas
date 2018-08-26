@@ -13,6 +13,7 @@ type
     { TFormRecover }
 
     TFormRecover = class(TForm)
+        ButtonSnapHelp: TButton;
         ButtonDeleteBadNotes: TButton;
         Button4: TButton;
         ButtonMakeIntroSnap: TButton;
@@ -44,6 +45,7 @@ type
         procedure Button4Click(Sender: TObject);
         procedure ButtonMakeIntroSnapClick(Sender: TObject);
         procedure ButtonDeleteBadNotesClick(Sender: TObject);
+        procedure ButtonSnapHelpClick(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure ListBoxSnapshotsDblClick(Sender: TObject);
@@ -67,7 +69,8 @@ implementation
 
 { TFormRecover }
 
-uses LazFileUtils, Note_Lister, SearchUnit, process, LazLogger;
+uses LazFileUtils, Note_Lister, SearchUnit, process, LazLogger,
+    MainUnit;   // just for MainUnit.MainForm.SingleNoteMode(
 
 var
     SnapNoteLister : TNoteLister;
@@ -96,6 +99,17 @@ begin
         showmessage('Delete ' + StringGrid1.Cells[0, I]);
         // delete NotesDir + StringGrid1.Cells[0, I] + '.note'
     end;
+end;
+
+procedure TFormRecover.ButtonSnapHelpClick(Sender: TObject);
+var
+    DocsDir : string;   // this probably belongs in Settings.
+begin
+    DocsDir := '';   // that most certainly won't work for windows
+    {$ifdef LINUX}DocsDir := '/usr/share/doc/tomboy-ng/'; {$endif}
+    {$ifdef DARWIN}DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/'; {$endif}  // untested
+    showmessage('About to open ' + DocsDir + 'recover.note');
+    MainUnit.MainForm.SingleNoteMode(DocsDir + 'recover.note', False, True);
 end;
 
 procedure TFormRecover.ButtonMakeIntroSnapClick(Sender: TObject);
@@ -134,18 +148,7 @@ procedure TFormRecover.StringGrid1DblClick(Sender: TObject);
 var
     Dump : string;
 begin
-    //if RunCommand('/bin/bash',['-c','ldconfig -p | grep hunspell'], FullName)
-    showmessage('will run ' + NoteDir + StringGrid1.Cells[0, StringGrid1.Row] + '.note');
-    {$ifdef LINUX}
-    if not RunCommand('tomboy-ng -o ' + NoteDir + StringGrid1.Cells[0, StringGrid1.Row] + '.note', Dump) then
-        showmessage('cannot run ' + NoteDir + StringGrid1.Cells[0, StringGrid1.Row] + '.note');
-    {$endif}
-    {$ifdef WINDOWS}
-    showmessage('sorry, not working yet on Windows');
-    {$endif}
-    {$ifdef DARWIN}
-    showmessage('sorry, not working yet on Windows');
-    {$endif}
+    MainUnit.MainForm.SingleNoteMode(NoteDir + StringGrid1.Cells[0, StringGrid1.Row] + '.note', False, False);
 end;
 
 procedure TFormRecover.CleanAndUnzip(const FullDestDir, FullZipName : string);
@@ -176,7 +179,7 @@ end;
 procedure TFormRecover.ShowNotes(const FullSnapName : string);
 var
   ZipFile: TUnZipper;
-  I : integer;
+  //I : integer;
 begin
     PanelNoteList.Caption:='Notes in Snapshot ' + FullSnapName;
     ForceDirectory(SnapDir + 'temp');

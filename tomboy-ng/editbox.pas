@@ -332,8 +332,9 @@ type
         Verbose : boolean;
         TemplateIs : AnsiString;
             { Will mark this note as ReadOnly and not to be saved because the Sync Process
-              has either replaced or deleted this note. User can still read and copy content. }
-        procedure SetReadOnly();
+              has either replaced or deleted this note OR we are using it as an internal viewer.
+              Can still read and copy content. Viewer users don't need big ugly yellow warning}
+        procedure SetReadOnly(ShowWarning : Boolean = True);
     end;
 
 var
@@ -866,9 +867,9 @@ begin
     else Result := Caption;
 end;
 
-procedure TEditBoxForm.SetReadOnly();
+procedure TEditBoxForm.SetReadOnly(ShowWarning : Boolean = True);
 begin
-   PanelReadOnly.Height:= 60;
+   if ShowWarning then PanelReadOnly.Height:= 60;
    KMemo1.ReadOnly := True;
 end;
 

@@ -92,7 +92,7 @@ end;
 
 procedure TFormBackupView.ButtonOpenClick(Sender: TObject);
 begin
-    MainUnit.MainForm.SingleNoteMode(Sett.NoteDirectory + 'Backup' + PathDelim + FileName, False);
+    MainUnit.MainForm.SingleNoteMode(Sett.NoteDirectory + 'Backup' + PathDelim + FileName, False, True);
 end;
 
 procedure TFormBackupView.ButtonRecoverClick(Sender: TObject);

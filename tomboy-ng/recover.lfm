@@ -1,7 +1,7 @@
 object FormRecover: TFormRecover
-  Left = 128
+  Left = 348
   Height = 419
-  Top = 103
+  Top = 71
   Width = 675
   Caption = 'FormRecover'
   ClientHeight = 419
@@ -43,9 +43,9 @@ object FormRecover: TFormRecover
     Height = 172
     Top = 44
     Width = 675
-    ActivePage = TabSheetExisting
+    ActivePage = TabSheetIntro
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
@@ -84,13 +84,35 @@ object FormRecover: TFormRecover
         ParentColor = False
       end
       object ButtonMakeIntroSnap: TButton
+        AnchorSideTop.Control = ButtonSnapHelp
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = TabSheetIntro
+        AnchorSideRight.Side = asrBottom
         Left = 544
         Height = 65
-        Top = 62
-        Width = 120
+        Top = 69
+        Width = 123
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 2
         Caption = 'Intro Snapshot'
         OnClick = ButtonMakeIntroSnapClick
         TabOrder = 0
+      end
+      object ButtonSnapHelp: TButton
+        AnchorSideTop.Control = TabSheetIntro
+        AnchorSideRight.Control = TabSheetIntro
+        AnchorSideRight.Side = asrBottom
+        Left = 544
+        Height = 65
+        Top = 2
+        Width = 123
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 2
+        Caption = 'Help'
+        OnClick = ButtonSnapHelpClick
+        TabOrder = 1
       end
     end
     object TabSheetExisting: TTabSheet

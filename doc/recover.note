@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Recovering Lost Notes</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Recovering Lost Notes</underline>
+
+If you are reading this, odds are you are worried ! So, first bit of advice is <size:huge>
+<italic><bold>don't panic</bold></italic></size:huge><size:small><italic><bold> (1)</bold></italic></size:small>
+Its quite possible we can help you. That will depend on whats happened and if you have enabled auto snapshots (or took a manual one recently). Firstly, don't do a sync, and disable auto-snapshots. Thats to prevent bad data replacing what might be good data currently not obvious to you. Next,  take small steps. 
+
+Lets look at the possibilities -<size:large>
+
+<bold>I (or the sync) deleted a note I need</bold></size:large>
+That just might be easy. We keep a backup copy of every note you manually delete or is overwritten during a sync. But only one copy so if its been synced and overwritten again, its gone. Check by going back to the BackUp tab, click "Show Me", browse through the old notes there and and double click a likely candidate. You get a dialog that lets you view, delete or recover that note.<size:large>
+
+<bold>I have a corrupted note.</bold></size:large>
+When you start tomboy-ng up, you see a warning about an inability to index a note. That probably means the note's XML has somehow become corrupted <size:small>(2)</size:small>. The indexing mechanism in tomboy-ng is deliberately very strict in what it will accept, it errors if one field is unobtainable. However, depending on where the XML error in the note is, you can open it, decide if what you see is a good compromise and save it back with rewritten XML.   
+
+<bold>To try this quick fix, you should -</bold>
+<list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost notes". </list-item></list>
+<list><list-item dir="ltr">In this window, under "bad Notes in Notes Directory" is a list of just that. Double click a likely candidate and a new Edit window will open. If you see little or none of the content you expect, don't touch it, just close the window, there are better options <size:small>(3).</size:small></list-item></list><size:small></size:small>
+<list><list-item dir="ltr">If it looks like what you need is still there (or enough), make a trivial change to force a save and exit. </list-item></list>
+<list><list-item dir="ltr">You might want to back out now, click "Refresh" in the Search window. Good luck !</list-item></list><size:large>
+
+<bold>You're not listening, I have lost all my notes !</bold></size:large>
+OK, I get you, this is serious. But we at have two paths left, lets see -
+
+<bold>I sync my notes from somewhere else.</bold>
+Oh, that's good. Maybe all you need do is clean out your current notes directory <size:small>(4)</size:small>  and rejoin the sync network. Note, I emphasise, not just do a sync. You <highlight>MUST</highlight> go to the sync tab and click "<highlight>Set File Sync Repo</highlight>". That way, the sync system sees you as a new friend and sends you a full set of notes. Just how good an approach this is depends on how recently you last synced, obviously any changes since last sync will be lost.
+
+<bold>I have a auto-snapshot in place</bold>
+Great news (<highlight>although unlikely, its not enabled yet</highlight>). You can easily choose to roll back to a particular snapshot and blow away all your troubles. Too Easy !
+<list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost Notes". If you have not already, now would be a great time to click "Intro Snapshot", you are in seriously dangerous space right now.</list-item></list>
+<list><list-item dir="ltr">Go to the "Recover Snapshot" tab, choose the snapshot you wish to use and away you go <size:small>(5).</size:small></list-item></list><size:small></size:small>
+Back out, go to the Search and click "Refresh". After you have checked all is good, re enable auto-snapshots. Its your best friend !<size:large>
+
+<bold>Notes </bold></size:large>
+(1) By Douglas Adams, used without permission. 
+(2)  Corrupted notes should never happen, looks like it did. Power failure, program error, whatever. If its my fault, I am sincerely sorry ! Please report this experience to the Tomboy mailing list or Github. The only way I can rid of these problems is if people tell me about them.
+(3) In a classically corrupted XML file, the problem is often only one or two characters. If you open that note in a plain text editor, you will see the content and all the XML. Tomboy-ng has given you the line number where its unhappy, somewhere about there is an error, you may be able to edit it, save and either reload tomboy-ng or press the "refresh" button in the Search window. Don't try to use anything other than a plain text editor, if this is unclear seek help first.
+(4) Tomboy-ng tells you where your notes are stored, go there with a file manager and select all the note files. They are the ones with a 36 apparently random character name and ".note" extension. Only do this if you are a sync user !
+(5) If you (wisely) keep a copy elsewhere, bring it back, un-encrypt it if necessary. And, good work !
+
+
+</note-content></text>
+  <last-change-date>2018-08-26T15:34:22.8360000+10:00</last-change-date>
+  <last-metadata-change-date>2018-08-26T15:34:22.8360000+10:00</last-metadata-change-date>
+  <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>

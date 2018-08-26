@@ -148,7 +148,11 @@ type
         UseMainMenu : boolean;
         procedure UpdateNotesFound(Numb: integer);
         procedure CheckStatus();
-        procedure SingleNoteMode(FullFileName: string; CloseOnFinish : boolean = True);
+        { Opens a note in single note mode. Pass a full file name, a bool that closes whole app
+        on exit and one that indicates ReadOnly mode. }
+        procedure SingleNoteMode(FullFileName: string; const CloseOnExit, ViewerMode : boolean);
+        { Shortcut to SingleNoteMode(Fullfilename, True, False) }
+        procedure SingleNoteMode(FullFileName: string);
     end;
 
 var
@@ -175,8 +179,12 @@ uses LazLogger, LazFileUtils,
 const Version_string  = {$I %TOMBOY_NG_VER};
 
 
+procedure TMainForm.SingleNoteMode(FullFileName: string);
+begin
+     SingleNoteMode(FullFileName, True, False);
+end;
 
-procedure TMainForm.SingleNoteMode(FullFileName : string; CloseOnFinish : boolean = True);
+procedure TMainForm.SingleNoteMode(FullFileName : string; const CloseOnExit, ViewerMode : boolean);
 var
     EBox : TEditBoxForm;
 begin
@@ -192,6 +200,8 @@ begin
             EBox.Top := Placement + random(Placement*2);
             EBox.Left := Placement + random(Placement*2);
             EBox.Dirty := False;
+            if ViewerMode then
+                EBox.SetReadOnly(False);
             EBox.ShowModal;
             except on E: Exception do debugln('!!! EXCEPTION - ' + E.Message);
             end;
@@ -203,8 +213,10 @@ begin
         end;
     end else
         DebugLn('Sorry, cannot find that directory [' + ExtractFilePath(FullFileName) + ']');
-    if CloseOnFinish then Close;      // we also use singlenotemode when looking at backup files
+    if CloseOnExit then Close;      // we also use singlenotemode internally in several places
 end;
+
+
 
 procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
