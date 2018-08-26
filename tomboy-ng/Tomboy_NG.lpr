@@ -25,7 +25,6 @@ begin
     Application.CreateForm(TSearchForm, SearchForm);
     Application.CreateForm(TSett, Sett);
     Application.CreateForm(TFormSync, FormSync);
-    Application.CreateForm(TFormRecover, FormRecover);
 	// Application.CreateForm(TNoteBookPick, NoteBookPick);
     // Application.CreateForm(TFormSpell, FormSpell);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);

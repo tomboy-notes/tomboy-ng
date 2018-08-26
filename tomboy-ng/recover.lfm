@@ -1,11 +1,12 @@
 object FormRecover: TFormRecover
-  Left = 348
+  Left = 442
   Height = 419
-  Top = 71
+  Top = 164
   Width = 675
   Caption = 'FormRecover'
   ClientHeight = 419
   ClientWidth = 675
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.8.4.0'
@@ -43,14 +44,15 @@ object FormRecover: TFormRecover
     Height = 172
     Top = 44
     Width = 675
-    ActivePage = TabSheetIntro
+    ActivePage = TabSheetExisting
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
       ClientHeight = 137
       ClientWidth = 669
+      OnShow = TabSheetIntroShow
       object Label6: TLabel
         Left = 8
         Height = 17
@@ -107,7 +109,7 @@ object FormRecover: TFormRecover
         Height = 65
         Top = 2
         Width = 123
-        Anchors = [akTop, akLeft, akRight]
+        Anchors = [akTop, akRight]
         BorderSpacing.Top = 2
         BorderSpacing.Right = 2
         Caption = 'Help'
@@ -180,8 +182,8 @@ object FormRecover: TFormRecover
         Left = 434
         Height = 17
         Top = 13
-        Width = 137
-        Caption = 'or you do do one of -'
+        Width = 116
+        Caption = 'or you do one of -'
         ParentColor = False
       end
     end
@@ -189,6 +191,8 @@ object FormRecover: TFormRecover
       Caption = 'Notes in a Snapshot'
       ClientHeight = 137
       ClientWidth = 669
+      Enabled = False
+      OnShow = TabSheetSnapshotsShow
       object Label9: TLabel
         Left = 10
         Height = 17
@@ -198,10 +202,12 @@ object FormRecover: TFormRecover
         ParentColor = False
       end
     end
-    object TabSheet1: TTabSheet
+    object TabSheetMergeSnapshot: TTabSheet
       Caption = 'Merge Snapshot'
       ClientHeight = 137
       ClientWidth = 669
+      Enabled = False
+      OnShow = TabSheetMergeSnapshotShow
       object Label3: TLabel
         Left = 9
         Height = 17
@@ -211,16 +217,40 @@ object FormRecover: TFormRecover
         ParentColor = False
       end
     end
-    object TabSheet2: TTabSheet
+    object TabSheetRecoverSnapshot: TTabSheet
       Caption = 'Recover Snapshot'
       ClientHeight = 137
       ClientWidth = 669
+      OnShow = TabSheetRecoverSnapshotShow
       object Label4: TLabel
         Left = 8
         Height = 17
         Top = 8
         Width = 491
         Caption = 'Remove all existing notes and replace them with the ones in the Snapshot.'
+        ParentColor = False
+      end
+      object ButtonRecoverSnap: TButton
+        AnchorSideTop.Control = TabSheetRecoverSnapshot
+        AnchorSideRight.Control = TabSheetRecoverSnapshot
+        AnchorSideRight.Side = asrBottom
+        Left = 542
+        Height = 65
+        Top = 2
+        Width = 125
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 2
+        Caption = 'Recover'
+        OnClick = ButtonRecoverSnapClick
+        TabOrder = 0
+      end
+      object Label12: TLabel
+        Left = 8
+        Height = 17
+        Top = 32
+        Width = 492
+        Caption = 'Don''t even consider this unless you have a recent snapshot from Intro Tab.'
         ParentColor = False
       end
     end
@@ -293,7 +323,6 @@ object FormRecover: TFormRecover
     Top = 216
     Width = 455
     Anchors = [akTop, akLeft, akRight, akBottom]
-    Caption = 'Notes in selected snapshot'
     TabOrder = 5
   end
 end

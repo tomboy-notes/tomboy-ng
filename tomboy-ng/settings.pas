@@ -211,7 +211,7 @@ type
         // Saves all current settings to disk. Call when any change is made.
         procedure SettingsChanged();
 		procedure SyncSettings;
-        function ZipDate: string;
+        //function ZipDate: string;
 
     public
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
@@ -275,8 +275,8 @@ uses IniFiles, LazLogger,
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
     recover,        // Recover lost or damaged files
-    hunspell,       // spelling check
-    zipper;         // zipping up snapshots
+    hunspell;       // spelling check
+
 
 var
     Spell: THunspell;
@@ -748,27 +748,16 @@ end;
 
 procedure TSett.ButtonManualSnapClick(Sender: TObject);
 var
-    Zip : TZipper;
-    Info : TSearchRec;
-    Tick, Tock : DWord;
+   FR : TFormRecover;
 begin
-    Zip := TZipper.Create;
+    FR := TFormRecover.Create(self);
     try
-        Zip.FileName :=  LabelSnapDir.Caption + ZipDate() + '_Exist.zip';
-        Tick := GetTickCount64();
-      	if FindFirst(Sett.NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
-      		repeat
-                // debugln('Zipping note [' + Info.Name + ']');
-                Zip.Entries.AddFileEntry(Sett.NoteDirectory + Info.Name, Info.Name);
-      	    until FindNext(Info) <> 0;
-            Zip.ZipAllFiles;
-      	end;
-        Tock := GetTickCount64(); // 150mS, 120 notes on lowend laptop
+        FR.NoteDir := NoteDirectory;
+        FR.SnapDir := LabelSnapDir.Caption;
+        FR.CreateSnapshot(True, False);
     finally
-        FindClose(Info);
-        Zip.Free;
+        FR.Free;
     end;
-    debugln('That all took ' + inttostr(Tock - Tick) + 'ms');
 end;
 
 procedure TSett.ButtonSetSnapDirClick(Sender: TObject);
@@ -780,19 +769,18 @@ begin
     CheckDirectory(LabelSnapDir.Caption);
 end;
 
-function TSett.ZipDate : string;
-var
-   ThisMoment : TDateTime;
-begin
-    ThisMoment:=Now;
-    Result := FormatDateTime('YYYYMMDD',ThisMoment) + '_' + FormatDateTime('hhmm',ThisMoment);
-end;
-
 procedure TSett.ButtonSnapRecoverClick(Sender: TObject);
+var
+   FR : TFormRecover;
 begin
-    FormRecover.NoteDir := NoteDirectory;
-    FormRecover.SnapDir := LabelSnapDir.Caption;
-    FormRecover.Showmodal;
+    FR := TFormRecover.Create(self);
+    try
+        FR.NoteDir := NoteDirectory;
+        FR.SnapDir := LabelSnapDir.Caption;
+        FR.Showmodal;
+    finally
+        FR.Free;
+    end;
 end;
 
 

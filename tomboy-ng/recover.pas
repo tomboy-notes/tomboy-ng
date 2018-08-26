@@ -13,6 +13,7 @@ type
     { TFormRecover }
 
     TFormRecover = class(TForm)
+        ButtonRecoverSnap: TButton;
         ButtonSnapHelp: TButton;
         ButtonDeleteBadNotes: TButton;
         Button4: TButton;
@@ -20,6 +21,7 @@ type
         Label1: TLabel;
         Label10: TLabel;
         Label11: TLabel;
+        Label12: TLabel;
         LabelExistingAdvice2: TLabel;
         LabelExistingAdvice: TLabel;
         LabelNoteErrors: TLabel;
@@ -37,27 +39,38 @@ type
         PanelSnapshots: TPanel;
         PanelNoteList: TPanel;
         StringGrid1: TStringGrid;
-        TabSheet1: TTabSheet;
-        TabSheet2: TTabSheet;
+        TabSheetMergeSnapshot: TTabSheet;
+        TabSheetRecoverSnapshot: TTabSheet;
         TabSheetSnapshots: TTabSheet;
         TabSheetIntro: TTabSheet;
         TabSheetExisting: TTabSheet;
         procedure Button4Click(Sender: TObject);
         procedure ButtonMakeIntroSnapClick(Sender: TObject);
         procedure ButtonDeleteBadNotesClick(Sender: TObject);
+        procedure ButtonRecoverSnapClick(Sender: TObject);
         procedure ButtonSnapHelpClick(Sender: TObject);
+        procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure ListBoxSnapshotsDblClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
         procedure TabSheetExistingShow(Sender: TObject);
+        procedure TabSheetIntroShow(Sender: TObject);
+        procedure TabSheetMergeSnapshotShow(Sender: TObject);
+        procedure TabSheetRecoverSnapshotShow(Sender: TObject);
+        procedure TabSheetSnapshotsShow(Sender: TObject);
     private
         procedure CleanAndUnzip(const FullDestDir, FullZipName: string);
+        function ExpandZipName(AFileName: string): string;
         function FindSnapFiles(): integer;
         procedure ShowNotes(const FullSnapName: string);
+        function ZipDate(WithDay : Boolean): string;
 
     public
         SnapDir, NoteDir : string;
+        procedure CreateSnapshot(const FullSourceDir, FullZipName: string);
+        // procedure CreateSnapshot();
+        procedure CreateSnapshot(const Manual, Monthly : boolean);
     end;
 
 var
@@ -77,11 +90,16 @@ var
 
 procedure TFormRecover.FormShow(Sender: TObject);
 begin
-    PageControl1.ActivePageIndex:=0;
     StringGrid1.ColCount:=4;
     StringGrid1.FixedCols:=0;
     //stringgrid1.Options := [stringgrid1.options] + [goThumbTracking];
     Label1.Caption := 'We have ' + inttostr(FindSnapFiles()) + ' snapshots';
+end;
+
+procedure TFormRecover.FormCreate(Sender: TObject);
+begin
+    PageControl1.ActivePageIndex:=0;
+    ButtonRecoverSnap.Enabled := False;
 end;
 
 procedure TFormRecover.FormDestroy(Sender: TObject);
@@ -93,11 +111,20 @@ end;
 procedure TFormRecover.ButtonDeleteBadNotesClick(Sender: TObject);
 var I : integer;
 begin
-        //showmessage(inttostr(StringGrid1.RowCount));
-        //exit();
     for I := 1 to StringGrid1.RowCount-1 do begin     // includes header
         showmessage('Delete ' + StringGrid1.Cells[0, I]);
-        // delete NotesDir + StringGrid1.Cells[0, I] + '.note'
+        DeleteFile(NoteDir + StringGrid1.Cells[0, I] + '.note');
+    end;
+    showmessage('OK, deleted ' + inttostr(I) + ' damaged notes');
+end;
+
+procedure TFormRecover.ButtonRecoverSnapClick(Sender: TObject);
+var
+    ZName : string;
+begin
+    if (ListBoxSnapshots.ItemIndex >= 0) and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count) then begin
+        ZName := SnapDir + ListBoxSnapshots.Items[ListBoxSnapshots.ItemIndex];
+        showmessage('I''d use [' + ZName + '] and put it all in [' + NoteDir);
     end;
 end;
 
@@ -112,30 +139,10 @@ begin
     MainUnit.MainForm.SingleNoteMode(DocsDir + 'recover.note', False, True);
 end;
 
+
 procedure TFormRecover.ButtonMakeIntroSnapClick(Sender: TObject);
-var
-    Zip : TZipper;
-    Info : TSearchRec;
-    Tick, Tock : DWord;
 begin
-    Zip := TZipper.Create;
-    try
-        Zip.FileName :=  SnapDir + 'Exist.zip';
-        Tick := GetTickCount64();
-      	if FindFirst(NoteDir + '*.note', faAnyFile and faDirectory, Info)=0 then begin
-      		repeat
-                //debugln('Zipping note [' + Info.Name + ']');
-                Zip.Entries.AddFileEntry(NoteDir + Info.Name, Info.Name);
-      	    until FindNext(Info) <> 0;
-            Zip.ZipAllFiles;
-      	end;
-        Tock := GetTickCount64(); // 150mS, 120 notes on lowend laptop
-    finally
-        FindClose(Info);
-        Zip.Free;
-    end;
-    showmessage( SnapDir + 'Exist.zip created');
-    debugln('That all took ' + inttostr(Tock - Tick) + 'ms');
+    CreateSnapShot(NoteDir, SnapDir + 'Exist.zip');
 end;
 
 procedure TFormRecover.Button4Click(Sender: TObject);
@@ -146,9 +153,20 @@ end;
 
 procedure TFormRecover.StringGrid1DblClick(Sender: TObject);
 var
-    Dump : string;
+    NName : string;
 begin
-    MainUnit.MainForm.SingleNoteMode(NoteDir + StringGrid1.Cells[0, StringGrid1.Row] + '.note', False, False);
+    NName := StringGrid1.Cells[0, StringGrid1.Row] + '.note';
+    case PageControl1.ActivePageIndex of
+        0, 1 :  begin
+                NName := StringGrid1.Cells[0, StringGrid1.Row];
+                MainUnit.MainForm.SingleNoteMode(NoteDir + NName, False, False);
+                end;
+        2, 3, 4 : begin
+                NName := StringGrid1.Cells[3, StringGrid1.Row];
+                showmessage('We will open ' + SnapDir + 'temp' + PathDelim + NName);
+                MainUnit.MainForm.SingleNoteMode(SnapDir + 'temp' + PathDelim + NName, False, True);
+                end;
+    end;
 end;
 
 procedure TFormRecover.CleanAndUnzip(const FullDestDir, FullZipName : string);
@@ -160,38 +178,41 @@ begin
     if FindFirst(FullDestDir + '*.note', faAnyFile, Info)=0 then begin
         repeat
             Debugln('Deleting [' + FullDestDir + Info.Name + ']');
-            DeleteFileUTF8(FullDestDir + Info.Name);
+            DeleteFileUTF8(FullDestDir + Info.Name);                // should we test return value ?
 	    until FindNext(Info) <> 0;
 	end;
     FindClose(Info);
-    //exit();
     ZipFile := TUnZipper.Create;
     try
-          ZipFile.FileName := FullZipName;
-          ZipFile.OutputPath := FullDestDir;
-          ZipFile.Examine;
-          ZipFile.UnZipAllFiles;
+        ZipFile.FileName := FullZipName;
+        ZipFile.OutputPath := FullDestDir;
+        ZipFile.Examine;
+        ZipFile.UnZipAllFiles;
     finally
         ZipFile.Free;
     end;
 end;
 
-procedure TFormRecover.ShowNotes(const FullSnapName : string);
+function TFormRecover.ExpandZipName(AFileName : string) : string;
 var
-  ZipFile: TUnZipper;
-  //I : integer;
+    FName : string;
 begin
-    PanelNoteList.Caption:='Notes in Snapshot ' + FullSnapName;
-    ForceDirectory(SnapDir + 'temp');
-    ZipFile := TUnZipper.Create;
-    try
-      ZipFile.FileName := FullSnapName;
-      ZipFile.OutputPath := SnapDir  + 'temp';
-      ZipFile.Examine;
-      ZipFile.UnZipAllFiles;
-    finally
-      ZipFile.Free;
+    // gets eg /somepath/20180826_2135_Sun.zip, 20180826_2135_Sun_Man.zip, 20180826_2135_Sun_Month.zip
+    FName := ExtractFileName(AFileName);
+    if FName = 'Exist.zip' then
+        Result := 'Snapshot from Intro Tab'
+    else begin
+        Result := copy(FName, 1, 4) + '-' + copy(FName, 5, 2) + '-' + copy(FName, 7, 2);
+        Result := Result + ' ' + copy(FName, 10, 2) + ':' + copy(FName, 12, 2);
+        Result := Result + ' ' + copy(FName, 15, 3);
     end;
+end;
+
+procedure TFormRecover.ShowNotes(const FullSnapName : string);
+begin
+    PanelNoteList.Caption:='Notes in Snapshot ' + ExpandZipName(FullSnapName);
+    ForceDirectory(SnapDir + 'temp');
+    CleanAndUnZip(SnapDir + 'temp' + PathDelim, FullSnapName);
     if SnapNoteLister <> Nil then
         FreeAndNil(SnapNoteLister);
     SnapNoteLister := TNoteLister.Create;
@@ -201,6 +222,53 @@ begin
 	SnapNoteLister.LoadStGrid(StringGrid1);
 	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
 	StringGrid1.SortColRow(True, 1);
+    ButtonRecoverSnap.Enabled := True;
+end;
+
+function TFormRecover.ZipDate(WithDay : Boolean) : string;
+var
+   ThisMoment : TDateTime;
+begin
+    ThisMoment:=Now;
+    Result := FormatDateTime('YYYYMMDD',ThisMoment) + '_'
+        + FormatDateTime('hhmm',ThisMoment);
+    if WithDay then Result := Result + '_' + FormatDateTime('ddd', ThisMoment);
+end;
+
+procedure TFormRecover.CreateSnapshot(const Manual, Monthly : boolean);
+var
+   ZipName : string;
+begin
+    if not (Manual or Monthly) then ZipName := ZipDate(True)
+    else ZipName := ZipDate(True) + '_';
+    if Manual then ZipName := ZipName + 'Man';
+    if Monthly then ZipName := ZipName + 'Month';       // both true is silly, assert !
+    CreateSnapshot(NoteDir, SnapDir + ZipName + '.zip');
+end;
+
+procedure TFormRecover.CreateSnapshot(const FullSourceDir, FullZipName: string);
+var
+    Zip : TZipper;
+    Info : TSearchRec;
+    Tick, Tock : DWord;
+begin
+    Zip := TZipper.Create;
+    try
+        Zip.FileName := FullZipName;
+        Tick := GetTickCount64();
+      	if FindFirst(FullSourceDir + '*.note', faAnyFile, Info)=0 then begin
+      		repeat
+                debugln('Zipping note [' + FullSourceDir + Info.Name + ']');
+                Zip.Entries.AddFileEntry(FullSourceDir + Info.Name, Info.Name);
+      	    until FindNext(Info) <> 0;
+            Zip.ZipAllFiles;
+      	end;
+        Tock := GetTickCount64(); // 150mS, 120 notes on lowend laptop
+    finally
+        FindClose(Info);
+        Zip.Free;
+    end;
+    debugln('All notes in ' + FullSourceDir + ' to ' + FullZipName + ' took ' + inttostr(Tock - Tick) + 'ms');
 end;
 
 procedure TFormRecover.ListBoxSnapshotsDblClick(Sender: TObject);
@@ -215,6 +283,8 @@ var
   I : integer;
   Msg : string;
 begin
+    //showmessage('Existing Show');
+    ButtonDeleteBadNotes.Enabled := False;
     ListBoxSnapShots.Enabled:=False;
     PanelNoteList.Caption:='Bad Notes in Notes Directory';
     LabelNoteErrors.Caption := 'You have ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count)
@@ -235,6 +305,29 @@ begin
         StringGrid1.InsertRowWithValues(I + 1, [copy(Msg, 1, 36), copy(Msg, 44, 200)]);
     end;
     StringGrid1.AutoSizeColumns;
+    if I > 0 then ButtonDeleteBadNotes.Enabled:= True;
+end;
+
+procedure TFormRecover.TabSheetIntroShow(Sender: TObject);
+begin
+    ListBoxSnapShots.Enabled:=False;
+end;
+
+procedure TFormRecover.TabSheetMergeSnapshotShow(Sender: TObject);
+begin
+    ListBoxSnapShots.Enabled:=True;
+end;
+
+procedure TFormRecover.TabSheetRecoverSnapshotShow(Sender: TObject);
+begin
+    ListBoxSnapShots.Enabled:=True;
+    ButtonRecoverSnap.Enabled := (ListBoxSnapshots.ItemIndex >= 0)
+                and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count);
+end;
+
+procedure TFormRecover.TabSheetSnapshotsShow(Sender: TObject);
+begin
+    ListBoxSnapShots.Enabled:=True;
 end;
 
 function TFormRecover.FindSnapFiles() : integer;
