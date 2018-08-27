@@ -226,7 +226,9 @@ type
      	FontNormal : Integer;
         { The directory expected to hold existing or new notes }
         NoteDirectory : string;
+        { The dir expected to hold config file and, possibly local manifest }
         LocalConfig : string;
+        { relevent only when using file sync }
         RemoteRepo  : string;
         SyncOption : TSyncOption;
         { Indicates we have done a config, not necessarily a valid one }
@@ -754,6 +756,7 @@ begin
     try
         FR.NoteDir := NoteDirectory;
         FR.SnapDir := LabelSnapDir.Caption;
+        FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
         FR.CreateSnapshot(True, False);
     finally
         FR.Free;
@@ -777,6 +780,8 @@ begin
     try
         FR.NoteDir := NoteDirectory;
         FR.SnapDir := LabelSnapDir.Caption;
+        FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
+        // Danger Will Robertson ! We cannot assume LocalConfig has a trailing slash !
         FR.Showmodal;
     finally
         FR.Free;
@@ -789,7 +794,7 @@ end;
 procedure TSett.Synchronise();
 begin
     FormSync.NoteDirectory := Sett.NoteDirectory;
-    FormSync.LocalConfig := Sett.LocalConfig;
+    FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
     FormSync.RemoteRepo := Sett.RemoteRepo;
     FormSync.SetupFileSync := False;
     if FormSync.Visible then

@@ -1,5 +1,12 @@
 unit recover;
 
+{   History
+    2018/08/27  Now take config and local (sync) manifest with a snpshot, restore
+                on the main 'Restore' tab.
+
+}
+
+
 {$mode objfpc}{$H+}
 
 interface
@@ -67,7 +74,8 @@ type
         function ZipDate(WithDay : Boolean): string;
 
     public
-        SnapDir, NoteDir : string;
+        DebugMode : boolean;
+        SnapDir, NoteDir, ConfigDir : string;
         procedure CreateSnapshot(const FullSourceDir, FullZipName: string);
         // procedure CreateSnapshot();
         procedure CreateSnapshot(const Manual, Monthly : boolean);
@@ -148,7 +156,16 @@ end;
 procedure TFormRecover.Button4Click(Sender: TObject);
 begin
     CleanAndUnzip(NoteDir, SnapDir + 'Exist.zip');
-    showmessage('Notes Restored');
+    if FileExists(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg') then begin
+        CopyFile(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg', ConfigDir + 'tomboy-ng.cfg');
+        DeleteFile(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg');
+        if FileExists(NoteDir + 'config' + PathDelim + 'manifest.xml') then begin
+            CopyFile(NoteDir + 'config' + PathDelim + 'manifest.xml', ConfigDir + 'manifest.xml');
+            DeleteFile(NoteDir + 'config' + PathDelim + 'manifest.xml');
+        end;
+        DeleteDirectory(NoteDir + 'config', False);
+    end;
+    showmessage('Notes and config files Restored, restart suggested.');
 end;
 
 procedure TFormRecover.StringGrid1DblClick(Sender: TObject);
@@ -182,6 +199,10 @@ begin
 	    until FindNext(Info) <> 0;
 	end;
     FindClose(Info);
+    if FileExists(FullDestDir + 'config' + PathDelim + 'manifest.xml') then
+        DeleteFile(FullDestDir + 'config' + PathDelim + 'manifest.xml');
+    if FileExists(FullDestDir + 'config' + PathDelim + 'tomboy-ng.cfg') then
+        DeleteFile(FullDestDir + 'config' + PathDelim + 'tomboy-ng.cfg');
     ZipFile := TUnZipper.Create;
     try
         ZipFile.FileName := FullZipName;
@@ -252,6 +273,7 @@ var
     Info : TSearchRec;
     Tick, Tock : DWord;
 begin
+    debugln('--------- Config = ' + ConfigDir);
     Zip := TZipper.Create;
     try
         Zip.FileName := FullZipName;
@@ -261,6 +283,12 @@ begin
                 debugln('Zipping note [' + FullSourceDir + Info.Name + ']');
                 Zip.Entries.AddFileEntry(FullSourceDir + Info.Name, Info.Name);
       	    until FindNext(Info) <> 0;
+            if FileExists(ConfigDir + 'tomboy-ng.cfg')
+                then Zip.Entries.AddFileEntry(ConfigDir + 'tomboy-ng.cfg', 'config' + PathDelim + 'tomboy-ng.cfg')
+            else Debugln('ERROR - cannot locate ' + ConfigDir + 'tomboy-ng.cfg');
+            if FileExists(ConfigDir + 'manifest.xml')
+                then Zip.Entries.AddFileEntry(ConfigDir + 'manifest.xml', 'config' + PathDelim + 'manifest.xml')
+            else if DebugMode then debugln('NOTE : Local Manifest not found ' + ConfigDir + 'manifest.xml');
             Zip.ZipAllFiles;
       	end;
         Tock := GetTickCount64(); // 150mS, 120 notes on lowend laptop
