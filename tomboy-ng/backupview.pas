@@ -11,6 +11,7 @@ unit BackupView;
                 when restoring a Backup file. See Sync spec.
     2018/08/16  We now update both last-metadata-change-date AND last-change-date
                 when restoring a backup file.
+    2018/08/27  Now change the ID of a deleted (but not overwritten) Note to avoid Sync issues
 }
 
 {$mode objfpc}{$H+}
@@ -95,11 +96,17 @@ begin
     MainUnit.MainForm.SingleNoteMode(Sett.NoteDirectory + 'Backup' + PathDelim + FileName, False, True);
 end;
 
+// OK, overwriting an existing file is not an issue (as long as its not open).
+// However, if we are looking at a note that was deleted, it might be listed in
+// the Local Manifest as a deleted file. That will confuse the next sync.
+// So, lets just give those sort of notes a new ID.
 procedure TFormBackupView.ButtonRecoverClick(Sender: TObject);
 var
     AForm : TForm;
     InString : string;
     InFile, OutFile: TextFile;
+    NewFName : string;
+    GUID : TGUID;
 begin
     if ExistsInRepo then
         if IDYES <> Application.MessageBox('Overwrite newer version of that note', 'Note already in Repo',
@@ -109,11 +116,21 @@ begin
         showmessage('You have that note open, please close and try again');
         exit();
     end;
-    if ExistsInRepo then
-    if not RenameFileUTF8(Sett.NoteDirectory + FileName, Sett.NoteDirectory + 'Backup'
-                + PathDelim + FileName + 'TMP') then begin
-        showmessage('copy orig to back dir failed');
-        exit;
+    if ExistsInRepo then begin
+        if not RenameFileUTF8(Sett.NoteDirectory + FileName, Sett.NoteDirectory + 'Backup'
+                    + PathDelim + FileName + 'TMP') then begin
+            showmessage('Copying orig to Backup directory failed');
+            exit;
+        end;
+    end else begin
+        // Give the note a new name so that no issues about it being in delete section of Manifest.
+        CreateGUID(GUID);
+        NewFName := copy(GUIDToString(GUID), 2, 36) + '.note';
+        if RenameFile(Sett.NoteDirectory + 'Backup' + PathDelim + Filename,
+                Sett.NoteDirectory + 'Backup' + PathDelim + NewFName) then
+            FileName := NewFName
+        else
+          Showmessage('ERROR, could not rename Backup File ' + FileName);
     end;
     // OK, if to here, user really wants it back, no reason why not.
     AssignFile(InFile, Sett.NoteDirectory + 'Backup' + PathDelim + Filename);
@@ -135,15 +152,17 @@ begin
             CloseFile(OutFile);
             CloseFile(InFile);
         end;
-        if not RenameFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP',
-                Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
-            showmessage('Failed to move temp backup file');
-        end;
+        If ExistsInRepo then
+            if not RenameFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP',
+                    Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
+                showmessage('Failed to move temp backup file');
+            end;
         NeedUpDate := false;
     except
         on E: EInOutError do
             showmessage('File handling error occurred. Details: ' + E.Message);
     end;
+    Memo1.Append('OK, File recovered. You may need to do a Refresh (or restart)');
 end;
 
 procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
