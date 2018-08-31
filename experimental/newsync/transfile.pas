@@ -1,13 +1,18 @@
 unit transfile;
 
-{ A unit that does the file transfer side of a FileSync operation }
+{ A unit that does the file transfer side of a FileSync operation
+
+This is one implementation of layer 4 from here -
+https://github.com/tomboy-notes/tomboy-ng/wiki/Another-Sync-Model#implementation
+
+}
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-    Classes, SysUtils, trans;
+    Classes, SysUtils, trans, Sync;
 
 type
 

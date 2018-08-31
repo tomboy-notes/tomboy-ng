@@ -1,11 +1,18 @@
 unit transnet;
 
+{
+A unit that does the file transfer side of a NetSync operation
+
+This is one implementation of layer 4 from here -
+https://github.com/tomboy-notes/tomboy-ng/wiki/Another-Sync-Model#implementation
+
+}
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-    Classes, SysUtils, Trans;
+    Classes, SysUtils, Sync, Trans;
 
 type               { ----------- TNetSync ------------ }
 
