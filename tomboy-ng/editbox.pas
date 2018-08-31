@@ -1620,6 +1620,7 @@ begin
     KMemo1.Clear;
     Loader.LoadFile(FileName, KMemo1);                        // 340mS
     KMemo1.Blocks.UnlockUpdate;                             // 370mS
+    // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
     Createdate := Loader.CreateDate;
     Ready := true;
     Caption := Loader.Title;

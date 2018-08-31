@@ -414,6 +414,7 @@ function TSearchForm.IndexNotes() : integer;
 // var
 	// TS1, TS2 : TTimeStamp;
 begin
+    // TS1 := DateTimeToTimeStamp(Now);
     MainForm.CheckStatus();
     if not Sett.HaveConfig then exit(0);
     if NoteLister = Nil then begin
@@ -422,9 +423,9 @@ begin
        NoteLister.WorkingDir:=Sett.NoteDirectory;
     end;
     Result := NoteLister.GetNotes();
-    // TS1 := DateTimeToTimeStamp(Now);
-	// Edit1.Text := 'That took (mS) ' + inttostr(TS2.Time - TS1.Time);
     UseList();
+    // TS2 := DateTimeToTimeStamp(Now);
+	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
     MainForm.UpdateNotesFound(Result);
 end;
 

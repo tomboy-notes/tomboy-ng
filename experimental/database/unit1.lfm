@@ -1,0 +1,85 @@
+object Form1: TForm1
+  Left = 338
+  Height = 387
+  Top = 156
+  Width = 629
+  Caption = 'Form1'
+  ClientHeight = 387
+  ClientWidth = 629
+  OnShow = FormShow
+  LCLVersion = '1.8.4.0'
+  object ButtonImport: TButton
+    Left = 264
+    Height = 32
+    Top = 344
+    Width = 120
+    Caption = 'Import'
+    OnClick = ButtonImportClick
+    TabOrder = 0
+  end
+  object Label1: TLabel
+    Left = 368
+    Height = 17
+    Top = 224
+    Width = 45
+    Caption = 'Label1'
+    ParentColor = False
+  end
+  object LabelNoNotes: TLabel
+    Left = 368
+    Height = 17
+    Top = 248
+    Width = 98
+    Caption = 'LabelNoNotes'
+    ParentColor = False
+  end
+  object KMemo1: TKMemo
+    Left = 8
+    Top = 8
+    Width = 612
+    ContentPadding.Left = 5
+    ContentPadding.Top = 5
+    ContentPadding.Right = 5
+    ContentPadding.Bottom = 5
+    ParentFont = False
+    TabOrder = 1
+    Visible = True
+  end
+  object LabelTiming: TLabel
+    Left = 368
+    Height = 17
+    Top = 272
+    Width = 82
+    Caption = 'LabelTiming'
+    ParentColor = False
+  end
+  object StringGrid1: TStringGrid
+    Left = 8
+    Height = 120
+    Top = 216
+    Width = 352
+    TabOrder = 2
+    OnDblClick = StringGrid1DblClick
+  end
+  object ButtonIndex: TButton
+    Left = 400
+    Height = 33
+    Top = 345
+    Width = 131
+    Caption = 'Index'
+    OnClick = ButtonIndexClick
+    TabOrder = 3
+  end
+  object LabelDoubleClick: TLabel
+    Left = 8
+    Height = 17
+    Top = 344
+    Width = 172
+    Caption = 'Double Click a note above'
+    ParentColor = False
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    left = 544
+    top = 200
+  end
+end
