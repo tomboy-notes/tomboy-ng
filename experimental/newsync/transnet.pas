@@ -36,7 +36,15 @@ implementation
 
 function TNetSync.GetNewNotes(NoteMeta: TNoteInfoList; LocRev: integer): boolean;
 begin
-     result := True;
+    { Will call external ruby script that returns a list of notes that are newer
+      than LocRev. Probably does something like
+      Runcommand('ruby', ['sync.rb', 'newnotes', inttostr(LocRev)]);
+      we then capture the output from RunCommand(), parse it and put result in
+      the NoteMeta list. Capture at least ID and RevNo and ideally LastChangeDate.
+      If all worked as expected, set result to true, if not, False and put something
+      into ErrorString.
+      }
+    result := True;
 end;
 
 function TNetSync.DownloadNotes(const DownLoads: TStringList): boolean;
