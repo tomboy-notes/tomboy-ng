@@ -204,6 +204,15 @@ msgctxt "tformrecover.buttonmakeintrosnap.caption"
 msgid "Intro Snapshot"
 msgstr ""
 
+#: tformrecover.buttonrecoversnap.caption
+msgctxt "tformrecover.buttonrecoversnap.caption"
+msgid "Recover"
+msgstr ""
+
+#: tformrecover.buttonsnaphelp.caption
+msgid "Help"
+msgstr ""
+
 #: tformrecover.caption
 msgid "FormRecover"
 msgstr ""
@@ -218,7 +227,11 @@ msgid "Please close any notes you may have open."
 msgstr ""
 
 #: tformrecover.label11.caption
-msgid "or you do do one of -"
+msgid "or you do one of -"
+msgstr ""
+
+#: tformrecover.label12.caption
+msgid "Don't even consider this unless you have a recent snapshot from Intro Tab."
 msgstr ""
 
 #: tformrecover.label2.caption
@@ -265,20 +278,8 @@ msgstr ""
 msgid "LabelNoteErrors"
 msgstr ""
 
-#: tformrecover.panelnotelist.caption
-msgid "Notes in selected snapshot"
-msgstr ""
-
 #: tformrecover.panelsnapshots.caption
 msgid "Available Snapshots"
-msgstr ""
-
-#: tformrecover.tabsheet1.caption
-msgid "Merge Snapshot"
-msgstr ""
-
-#: tformrecover.tabsheet2.caption
-msgid "Recover Snapshot"
 msgstr ""
 
 #: tformrecover.tabsheetexisting.caption
@@ -287,6 +288,16 @@ msgstr ""
 
 #: tformrecover.tabsheetintro.caption
 msgid "Introduction"
+msgstr ""
+
+#: tformrecover.tabsheetmergesnapshot.caption
+msgctxt "tformrecover.tabsheetmergesnapshot.caption"
+msgid "Merge Snapshot"
+msgstr ""
+
+#: tformrecover.tabsheetrecoversnapshot.caption
+msgctxt "tformrecover.tabsheetrecoversnapshot.caption"
+msgid "Recover Snapshot"
 msgstr ""
 
 #: tformrecover.tabsheetsnapshots.caption

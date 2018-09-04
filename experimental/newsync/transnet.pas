@@ -12,7 +12,7 @@ https://github.com/tomboy-notes/tomboy-ng/wiki/Another-Sync-Model#implementation
 interface
 
 uses
-    Classes, SysUtils, Sync, Trans;
+    Classes, SysUtils, Trans, SyncUtils;
 
 type               { ----------- TNetSync ------------ }
 
@@ -24,7 +24,7 @@ TNetSync = Class(TTomboyTrans)
 
     public
         function GetNewNotes(NoteMeta : TNoteInfoList; LocRev : integer) : boolean; override;
-        function DownloadNotes(const DownLoads : TStringList) : boolean; override;
+        function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string{; var NewRev : integer}) : boolean; override;
         function UploadNotes(const Uploads : TStringList; var NewRev : integer) : boolean; override;
   end;
@@ -47,7 +47,7 @@ begin
     result := True;
 end;
 
-function TNetSync.DownloadNotes(const DownLoads: TStringList): boolean;
+function TNetSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 begin
      result := True;
 end;

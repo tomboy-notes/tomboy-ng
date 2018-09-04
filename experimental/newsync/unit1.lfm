@@ -1,8 +1,50 @@
 object Form1: TForm1
-  Left = 337
-  Height = 240
-  Top = 165
-  Width = 320
+  Left = 79
+  Height = 384
+  Top = 155
+  Width = 681
   Caption = 'Form1'
+  ClientHeight = 384
+  ClientWidth = 681
   LCLVersion = '1.8.4.0'
+  object Memo1: TMemo
+    Left = 12
+    Height = 172
+    Top = 20
+    Width = 644
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 16
+    Height = 25
+    Top = 280
+    Width = 75
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+  object LabelDir: TLabel
+    Left = 22
+    Height = 17
+    Top = 208
+    Width = 57
+    Caption = 'LabelDir'
+    ParentColor = False
+  end
+  object SpinEdit1: TSpinEdit
+    Left = 25
+    Height = 27
+    Top = 242
+    Width = 50
+    MaxValue = 1000
+    TabOrder = 2
+    Value = 100
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    left = 328
+    top = 16
+  end
 end

@@ -9,7 +9,7 @@ unit trans;
 interface
 
 uses
-    Classes, SysUtils, Sync;
+    Classes, SysUtils, SyncUtils;
 
 
 type
@@ -23,16 +23,19 @@ type
         DebugMode : boolean;
             // Set to '' is no errors.
         ErrorString : string;
-            // Local directories
+            // Local notes directory
         NotesDir, ConfigDir : string;
+            // A url to network server or 'remote' file directory for FileSync
+        RemoteAddress : string;
 
             {Request a list of new notes since nominated revision with, ideally,
-            last-change-date for each. We don't use all fields in TInfoList }
+            last-change-date for each. We don't use all fields in TInfoList
+            The list must have been created. }
         function GetNewNotes(NoteMeta : TNoteInfoList; LocRev : integer) : boolean; virtual; abstract;
 
             {Request that all the notes mentioned in the simple list be downloaded and,
             if necessary, any existing note be moved to Backup.  }
-        function DownloadNotes(const DownLoads : TStringList) : boolean; virtual; abstract;
+        function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; virtual; abstract;
 
             { Advise server that a note has been deleted (does this trigger a rev ??).
               Can it be a list of notes ? Does this trigger a new revision. }
