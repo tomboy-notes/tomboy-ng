@@ -168,15 +168,15 @@ var
 begin
     Result := True;
     for I := 0 to RemoteMetaData.Count -1 do begin
-        if RemoteMetaData.Items[I]^.Rev <= self.CurrRev then continue;      // skip old notes
+        if RemoteMetaData.Items[I]^.Rev <= self.CurrRev then continue;  // skip old notes
         ID := RemoteMetaData.Items[I]^.ID;
-        if LocalNoteExists(ID, CDate) then begin    // local copy exits.
+        if LocalNoteExists(ID, CDate) then begin                        // local copy exits.
             LocalNoteExists(ID, CDate, True);
-            if CDate = RemoteMetaData.Items[I]^.LastChange then begin        // We have identical note locally
+            if CDate = RemoteMetaData.Items[I]^.LastChange then begin   // We have identical note locally
                 RemoteMetaData.Items[I]^.Action:=Nothing;
                 continue;
             end;
-            if GetGMTFromStr(CDate) > LocalLastSyncDate then begin // Ahh, its been changed since last sync !
+            if GetGMTFromStr(CDate) > LocalLastSyncDate then begin      // Ahh, its been changed since last sync !
                 if DealWithClash(ID, CDate, RemoteMetaData.Items[I]^.LastChange) then
                     RemoteMetaData.Items[I]^.Action:= Upload
                 else RemoteMetaData.Items[I]^.Action:= Download;
