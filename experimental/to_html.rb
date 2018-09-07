@@ -4,10 +4,19 @@ require 'date'
 require 'fileutils'
 include REXML
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# This script accepts a note path as its only argument, and generates an HTML #
+# version of the file in the same dir as the script.                          #
+#                                                                             #
+# $ ruby to_html.rb /path/to/notes/0B430A52-C425-4E7F-8A0C-E259468BD0AB.note  #
+# => ./0B430A52-C425-4E7F-8A0C-E259468BD0AB.html                              #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-id = ARGV[0]
-notes_dir = "#{Dir.home}/Documents/Notes"
-path = "#{notes_dir}/#{id}.note"
+path = ARGV[0]
+id = File.basename(path).gsub(".note", "")
+p id
+#notes_dir = "#{Dir.home}/Documents/Notes"
+#path = "#{notes_dir}/#{id}.note"
 
 html_body = []
 xml_body = []
@@ -64,7 +73,10 @@ replacements = {
   "<size:huge>" => "<h1>",
   "</size:huge>" => "</h1>",
 
-  "<list><list-item dir='ltr'>" => "<li>",
+  # need to add one for retaining hyperlinks,
+  # perhaps for linking to other notes that are exported in the same dir?
+
+  "<list><list-item dir='ltr'>" => "<li>", # we also could do with a way to detect list start and end, adding in a <ul>
   "</list-item></list>" => "</li>"
 
 }
@@ -76,8 +88,8 @@ match = false
 xml_body.map do |xml_e|
   replacements.each do |k, v|
     if xml_e.include? k
-      match = true
-      xml_e.gsub!(k, v)
+      match = true # we found a replaceable XML element -
+      xml_e.gsub!(k, v) # - and so we sub it out with its HTML counterpart
     end
     match = false
   end
@@ -87,7 +99,11 @@ xml_body.map do |xml_e|
     end
   end
 
+head = "<html xmlns:tomboy=\"http://beatniksoftware.com/tomboy\" xmlns:size=\"http://beatniksoftware.com/tomboy/size\" xmlns:link=\"http://beatniksoftware.com/tomboy/link\"><head><META http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>#{title}</title></head><body>"
+
+xml_body.unshift(head)
 xml_body.delete_at(-1)
+xml_body.push("</body></html>")
 
 File.open("#{id}.html", 'w') do |f|
   f.puts(xml_body) # writes a html file in the same dir as the script
