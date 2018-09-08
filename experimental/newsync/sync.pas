@@ -2,9 +2,22 @@ unit sync;
 
 {$mode objfpc}{$H+}
 
+{ Operation of this unit -
+  If TestConnection is successful we'll have a list derived from the "Remote Manifest"
+  and from Local Manifest ready to use.
+  Call StartSync - that will scan the RemoteMetaData assigning an action to each item,
+  all items should be assigned .....
+  If we have an item locally that was previously synced (ie is in local manifest) but
+  did not appear in RemoteMetaData, then its been deleted by another client and should
+  be backed up and deleted locally.
+}
+
 interface
 uses
     Classes, SysUtils, SyncUtils;
+
+
+
 
 
 type                       { ----------------- T S Y N C --------------------- }
@@ -20,19 +33,42 @@ type                       { ----------------- T S Y N C --------------------- }
       // Goes over Remote list assigning an action to every note after our current rev.
       function CheckAgainstRemote(): boolean;
 
-      // True says keep local, false says use remote version
-      function DealWithClash(const ID, CDate, RemoteCDate: string): boolean;
+        {Notes we have deleted (and existed) here since last sync are marked DeleteRemote
+         because we must delete them from the server. For file sync, that means not
+         mentioning them in remote manifest any more. }
+      procedure CheckLocalDeletes();
 
-      // Just a debug procedure, dumps (some) contents of a list to console
+        {if we have a note prev synced (ie, in local manifest) but not now in RemoteMetaData,
+         it was deleted by another client, Mark these as DeleteLocal, will later backup and delete.}
+      procedure CheckRemoteDeletes();
+
+       // Just a debug procedure, dumps (some) contents of a list to console
       procedure DisplayNoteInfo(meta: TNoteInfoList);
 
         // Checks if local note exists, optionally returning with its last change date.
       function LocalNoteExists(const ID : string; out CDate: string; GetDate: boolean=false): Boolean;
 
+        // Call this when we are resolving a sync clash. Note : not fully implemented !
+      function ProceedWith(FullRemoteFileName: ANSIString): TClashDecision;
+
       // Reads through Local Manifest file, filling out LocalMetaData, LastSyncDateSt and CurrRev.
       function ReadLocalManifest(SkipFile: boolean=False): boolean;
 
+    (*			{ Passes on users choice to Upload, download or nothing. Calls a function
+                  passed here from the calling process. }
+	function ProceedWith(FileID, Rev : ANSIString) : TClashDecision;   *)
+
   public
+          { the calling process must pass a function address to this var. It will
+            be called if the sync process finds a sync class where both copies
+            of a note have changed since last sync.}
+    ProceedFunction : TProceedFunction;
+
+          { The calling process must set this to the address of a function to call
+            every time a local note is deleted or overwritten during Sync. Its to
+            deal with the case where a note is open but unchanged during sync.  }
+    MarkNoteReadOnlyProcedure : TMarkNotereadOnlyProcedure;
+
             // Where we find Tomboy style notes
     NotesDir : string;
             // Where we find config and local manifest files
@@ -73,12 +109,10 @@ type                       { ----------------- T S Y N C --------------------- }
         else we are a new join and expect to be passed back one if we are welcome. }
       function JoinSync(SyncID : string = '') : boolean;
 
-      { Do actual sync, but if TestRun=True just report on what you'd do. }
+        { Do actual sync, but if TestRun=True just report on what you'd do. }
       function StartSync() : boolean;
 
       destructor Destroy(); override;
-
-
 
   end;
 
@@ -98,6 +132,35 @@ begin
     ConfigDir := CConfigDir;
     CurrRev := CRev;
 end;  }
+
+    { Here we assemble all the info  we nee to present a good clash
+      report to end user. We access directly the remote file in the case
+      of FileSync, for Network Sync maybe we will have to download a copy
+      to, /temp/ or whatever ?  Need to know :
+      * ID
+      * Title
+      * last-change-date for each
+      * full file path to both
+    }
+
+function TSync.ProceedWith(FullRemoteFileName : ANSIString) : TClashDecision;
+var
+    ClashRec : TClashRecord;
+    ChangeDate : ANSIString;
+begin
+
+    // ToDo - must fill in this info ?
+
+    //ClashRec.NoteID := FileID;
+    //ClashRec.Title:= GetNoteTitle(LocalPath(FileID, ''));
+    //GetNoteChangeGMT(LocalPath(FileID, ''), ChangeDate);
+    //ClashRec.LocalLastChange := ChangeDate;
+    //GetNoteChangeGMT(RemotePath(FileID, Rev), ChangeDate);
+    //ClashRec.ServerLastChange := ChangeDate;
+    ClashRec.ServerFileName := FullRemoteFileName;
+    //ClashRec.LocalFileName := LocalPath(FileID, '');
+    Result := ProceedFunction(Clashrec);
+end;
 
 procedure TSync.SetMode(Mode: boolean);
 begin
@@ -125,7 +188,7 @@ begin
       ErrorString := Transport.ErrorString;
       exit(False);
     end;
-    DisplayNoteInfo(RemoteMetaData);
+    // DisplayNoteInfo(RemoteMetaData);
     Result := True;
 end;
 
@@ -134,16 +197,12 @@ var
     I : Integer;
     St : string;
 begin
+    debugln('-----------list dump for ' + Meta.ClassName);
     for I := 0 to Meta.Count -1 do begin
-        St := ' UNKNOWN ';
-        case Meta.Items[i]^.Action of
-            Nothing : St := ' Nothing ';
-            Upload  : St := ' Upload ';
-            Download: St := ' Download ';
-            DeleteLocal  : St := ' DeleteLocal ';
-            DeleteRemote : St := ' DeleteRemote ';
-        end;
-        debugln(Meta.Items[I]^.ID + ' ' + inttostr(Meta.Items[i]^.Rev) + St
+        St := ' ' + inttostr(Meta.Items[i]^.Rev);
+        while length(St) < 5 do St := St + ' ';
+        // St := Meta.ActionName(Meta.Items[i]^.Action);
+        debugln(Meta.Items[I]^.ID + St + Meta.ActionName(Meta.Items[i]^.Action)
             + Meta.Items[i]^.LastChange);
     end;
 end;
@@ -153,10 +212,40 @@ begin
     Result := True;
 end;
 
-
-function TSync.DealWithClash(const ID, CDate, RemoteCDate : string) : boolean;
+procedure TSync.CheckRemoteDeletes();
+var
+    Index : integer;
+    PNote : PNoteInfo;
 begin
-    Result := True;
+    // Iterate over LocalMetaData looking for notes listed a prev synced
+    // but are not listed in RemoteMetaData. We'll add a entry in RemoteMetaData
+    // for any we find.
+    for Index := 0 to LocalMetaData.Count -1 do begin
+        if not LocalMetaData.Items[Index]^.Deleted then
+            if nil = RemoteMetaData.FindID(LocalMetaData.Items[Index]^.ID) then begin   // That is, we did not find it
+                new(PNote);
+                PNote^.ID:= LocalMetaData.Items[Index]^.ID;
+                PNote^.Title := LocalMetaData.Items[Index]^.Title;                      // I think we know title, useful debug info here....
+                PNote^.Action := DeleteLocal;                                       // Was deleted elsewhere, do same here.
+                RemoteMetaData.Add(PNote);
+            end;
+    end;
+end;
+
+    // Iterate over LocalMetaData looking for notes that have been deleted
+    // locally and put them in RemoteMetaData to be deleted from the server.
+procedure TSync.CheckLocalDeletes();
+var
+    I : integer;
+    PNote : PNoteInfo;
+begin
+    for I := 0 to LocalMetaData.Count -1 do begin
+        if LocalMetaData.Items[i]^.Deleted then begin
+            PNote := RemoteMetaData.FindID(LocalMetaData.Items[i]^.ID);
+            if PNote <> nil then
+                PNote^.Action := DeleteRemote;
+        end;
+    end;
 end;
 
 function TSync.CheckAgainstRemote() : boolean;
@@ -164,22 +253,27 @@ var
     I : integer;
     ID : string;    // to make it a bit easier to read souce
     PNote : PNoteInfo;
-    CDate : string;
+    LocCDate : string;
 begin
     Result := True;
     for I := 0 to RemoteMetaData.Count -1 do begin
-        if RemoteMetaData.Items[I]^.Rev <= self.CurrRev then continue;  // skip old notes
+        // if RemoteMetaData.Items[I]^.Rev <= self.CurrRev then continue;  // skip old notes - why ???? better to check if they have changed locally
         ID := RemoteMetaData.Items[I]^.ID;
-        if LocalNoteExists(ID, CDate) then begin                        // local copy exits.
-            LocalNoteExists(ID, CDate, True);
-            if CDate = RemoteMetaData.Items[I]^.LastChange then begin   // We have identical note locally
+        if ID ='b53b2b13-2e4d-4eaf-833c-6f117c024bcb' then debugln('---- got it -----');
+        if LocalNoteExists(ID, LocCDate) then begin                        // local copy exits.
+            LocalNoteExists(ID, LocCDate, True);
+            if LocCDate = RemoteMetaData.Items[I]^.LastChange then begin   // We have identical note locally
                 RemoteMetaData.Items[I]^.Action:=Nothing;
                 continue;
             end;
-            if GetGMTFromStr(CDate) > LocalLastSyncDate then begin      // Ahh, its been changed since last sync !
-                if DealWithClash(ID, CDate, RemoteMetaData.Items[I]^.LastChange) then
+            // Dates don't match, must do something !
+            if GetGMTFromStr(LocCDate) > LocalLastSyncDate then begin      // Ahh, local version changed since last sync !
+                if RemoteMetaData.Items[I]^.Rev <= self.CurrRev then    // Remote version unchanged, easy - Flow chart does NOT show this test !!!!
+                    RemoteMetaData.Items[I]^.Action:= UpLoad
+                else RemoteMetaData.Items[I]^.Action := Clash;               // resolve later
+                {if DealWithClash(ID, CDate, RemoteMetaData.Items[I]^.LastChange) then
                     RemoteMetaData.Items[I]^.Action:= Upload
-                else RemoteMetaData.Items[I]^.Action:= Download;
+                else RemoteMetaData.Items[I]^.Action:= Download;}
             end else RemoteMetaData.Items[I]^.Action:= Download;
         end else begin      // Not here but maybe we deleted it previously ?
             Pnote := Self.LocalMetaData.FindID(ID);
@@ -188,6 +282,7 @@ begin
                    RemoteMetaData.Items[I]^.Action:=DeleteRemote;       // I have deleted that already.
             end else RemoteMetaData.Items[I]^.Action:=Download;         // its a new note from elsewhere
         end;
+        if RemoteMetaData.Items[I]^.Action = Unset then debugln('---- missed one -----');
     end;
 end;
 
@@ -195,13 +290,18 @@ function TSync.StartSync(): boolean;
 begin
     LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
     if (LocalLastSyncDate > now()) or (LocalLastSyncDate < (Now() - 36500))  then begin
-        // TDateTime has integer part no. of days, fraction part is frction of day.
+        // TDateTime has integer part no. of days, fraction part is fraction of day.
         // we have here in the future or more than 100years ago - Fail !
         ErrorString := 'Invalid last sync date in local manifest';
         exit(False);
     end;
-    CheckAgainstRemote();
-    // RemoteDeletes();
+    Result := CheckAgainstRemote(); // don't do anything at this stage, just assign actions.
+    CheckRemoteDeletes();           // if we have notes prev synced but not now in RemoteMetaData, it was deleted
+                                    // by another client, must (backup and) delete here. Mark these as DeleteLocal.
+    CheckLocalDeletes();            // Things mentioned as deleted in local manifest, delete remote copy too.
+                                    // Mark these as DeleteRemote. Does not make new rev.
+    if DebugMode then self.DisplayNoteInfo(RemoteMetaData);
+    // if TestMode then exit();
     // DoDownLoads();
     // DoUploads();
     Result := True;

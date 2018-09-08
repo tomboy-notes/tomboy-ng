@@ -82,6 +82,7 @@ begin
     		if assigned(NodeList) then begin
         		for j := 0 to NodeList.Count-1 do begin
                     new(NoteInfo);
+                    NoteInfo^.Action:=Unset;
                     Node := NodeList.Item[j].Attributes.GetNamedItem('id');
                     NoteInfo^.ID := Node.NodeValue;									// ID does not contain '.note';
 					Node := NodeList.Item[j].Attributes.GetNamedItem('rev');

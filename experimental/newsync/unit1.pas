@@ -6,7 +6,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, LazFileUtils, Forms, Controls, Graphics,
-    Dialogs, StdCtrls, Spin;
+    Dialogs, StdCtrls, Spin, SyncUtils;
 
 type
 
@@ -22,8 +22,9 @@ type
     private
 
     public
-
+        function Proceed(const ClashRec : TClashRecord) : TClashDecision;
     end;
+
 
 var
     Form1: TForm1;
@@ -45,6 +46,7 @@ begin
            //ASync := TSync.Create('/home/dbannon/.local/share/tomboy-ng/', '/home/dbannon/.config/', SpinEdit1.Value);
            ASync := TSync.Create();
            ASync.DebugMode:=True;
+           ASync.ProceedFunction:=@Proceed;
            ASync.NotesDir:='/home/dbannon/.local/share/tomboy-ng/';
            ASync.ConfigDir:='/home/dbannon/.config/';
            ASync.SyncAddress:= LabelDir.Caption;
@@ -61,6 +63,11 @@ begin
        end;
 
   end;
+end;
+
+function TForm1.Proceed(const ClashRec : TClashRecord) : TClashDecision;
+begin
+    result := cdDownload;
 end;
 
 end.

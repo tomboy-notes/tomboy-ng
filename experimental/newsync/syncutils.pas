@@ -7,7 +7,7 @@ interface
 uses
     Classes, SysUtils, dateutils, LazLogger;
 
-type TSyncAction=(Nothing, Upload, Download, DeleteLocal, DeleteRemote);
+type TSyncAction=(Unset, Nothing, Upload, Download, DeleteLocal, DeleteRemote, Clash);
 
 type
   	PNoteInfo=^TNoteInfo;
@@ -24,6 +24,9 @@ type
     end;
 
  type                                 { ---------- TNoteInfoList ---------}
+
+   { TNoteInfoList }
+
    TNoteInfoList = class(TList)
     private
      	function Get(Index: integer): PNoteInfo;
@@ -31,6 +34,7 @@ type
         destructor Destroy; override;
         function Add(ANote : PNoteInfo) : integer;
         function FindID(const ID : ANSIString) : PNoteInfo;
+        function ActionName(Act : TSyncAction) : string;
         property Items[Index: integer]: PNoteInfo read Get; default;
     end;
 
@@ -55,6 +59,36 @@ type
          property Items[Index : integer] : PSyncReport read Get; default;
  	end;
 
+
+                                    { ------------- TClashRecord ------------- }
+        { A couple of types used to manage the data involved in handling
+          a sync clash.
+        }
+ type
+    TClashRecord = record
+        Title : ANSIString;
+        NoteID : ANSIString;
+        ServerLastChange : ANSIString;
+        LocalLastChange : ANSIString;
+        ServerFileName : string;
+        LocalFileName : string;
+    end;
+
+            // Note that cdDoNothing may not be allowed .....
+ type    TClashDecision = (cdDownload, cdUpload, cdDoNothing);
+
+                 {  These next two definitions are how we allow TB_Sync to manipulate the
+                   GUI objects around it. We will declare a variable of the type and the
+                   calling process will put the address of the functions it wants called
+                   in that var when it creates this object. TClashRecord and TClashDecision
+                   are defined in SyncUtils.
+                }
+
+type    TProceedFunction = function(const ClashRec : TClashRecord): TClashDecision of object;
+
+type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
+
+
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 
 implementation
@@ -77,6 +111,21 @@ begin
             exit()
         end;
     end;
+end;
+
+function TNoteInfoList.ActionName(Act: TSyncAction): string;
+begin
+    Result := ' Unknown ';
+    case Act of
+        Unset : Result := ' Unset ';
+        Nothing : Result := ' Nothing ';
+        Upload  : Result := ' Upload ';
+        Download: Result := ' Download ';
+        DeleteLocal  : Result := ' DeleteLocal ';
+        DeleteRemote : Result := ' DeleteRemote ';
+        Clash : Result := ' Clash ';
+    end;
+    while length(result) < 15 do Result := Result + ' ';
 end;
 
 destructor TNoteInfoList.Destroy;
