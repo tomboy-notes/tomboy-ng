@@ -1,0 +1,148 @@
+object FormSDiff: TFormSDiff
+  Left = 378
+  Height = 437
+  Top = 134
+  Width = 488
+  VertScrollBar.Visible = False
+  Caption = 'A Note Sync Clash has been Detected'
+  ClientHeight = 437
+  ClientWidth = 488
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '1.8.4.0'
+  object KMemo1: TKMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
+    Left = 0
+    Height = 350
+    Top = 0
+    Width = 488
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ContentPadding.Left = 5
+    ContentPadding.Top = 5
+    ContentPadding.Right = 5
+    ContentPadding.Bottom = 5
+    ParentFont = False
+    TabOrder = 0
+    Visible = True
+  end
+  object Button1: TButton
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Panel1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 2
+    Height = 35
+    Hint = 'Pull down remote note and backup local.'
+    Top = 400
+    Width = 120
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 2
+    BorderSpacing.Bottom = 2
+    Caption = 'Use Remote'
+    Color = clYellow
+    ModalResult = 6
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
+  end
+  object Button2: TButton
+    AnchorSideLeft.Control = Button1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Panel1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 122
+    Height = 35
+    Hint = 'Use and Push to Sync Repo'
+    Top = 400
+    Width = 120
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Bottom = 2
+    Caption = 'Use Local'
+    Color = clAqua
+    ModalResult = 7
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 2
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Button1
+    Left = 2
+    Height = 50
+    Top = 350
+    Width = 486
+    Anchors = [akLeft, akRight, akBottom]
+    BorderSpacing.Left = 2
+    ClientHeight = 50
+    ClientWidth = 486
+    TabOrder = 3
+    object LabelRemote: TLabel
+      Left = 160
+      Height = 17
+      Top = 6
+      Width = 90
+      Caption = 'LabelRemote'
+      ParentColor = False
+    end
+    object LabelLocal: TLabel
+      Left = 160
+      Height = 17
+      Top = 24
+      Width = 73
+      Caption = 'LabelLocal'
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 11
+      Height = 17
+      Top = 6
+      Width = 138
+      Caption = 'Remote Last Change'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      Left = 11
+      Height = 17
+      Top = 24
+      Width = 121
+      Caption = 'Local Last Change'
+      ParentColor = False
+    end
+  end
+  object RadioShort: TRadioButton
+    Left = 264
+    Height = 22
+    Hint = 'Easier to read'
+    Top = 401
+    Width = 96
+    Caption = 'ShortLines'
+    Checked = True
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 4
+    TabStop = True
+  end
+  object RadioLong: TRadioButton
+    Left = 264
+    Height = 22
+    Hint = 'Maybe necessary to show difference'
+    Top = 417
+    Width = 96
+    Caption = 'Long Lines'
+    OnChange = RadioLongChange
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 5
+  end
+end

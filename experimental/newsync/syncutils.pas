@@ -7,7 +7,10 @@ interface
 uses
     Classes, SysUtils, dateutils, LazLogger;
 
-type TSyncAction=(Unset, Nothing, Upload, Download, DeleteLocal, DeleteRemote, Clash);
+type TSyncAction=(SyUnset, SyNothing, SyUploadNew, SyUploadEdit, SyDownload, SyDeleteLocal, SyDeleteRemote, SyClash);
+
+        // Indicates the readyness of a sync connection
+type TSyncAvailable=(SyncReady, SyncNoLocal, SyncNoRemoteMan, SyncNoRemoteDir, SyncNoRemoteWrite, SyncXMLError);
 
 type
   	PNoteInfo=^TNoteInfo;
@@ -66,16 +69,16 @@ type
         }
  type
     TClashRecord = record
-        Title : ANSIString;
+        //Title : ANSIString;
         NoteID : ANSIString;
-        ServerLastChange : ANSIString;
-        LocalLastChange : ANSIString;
+        //ServerLastChange : ANSIString;
+        //LocalLastChange : ANSIString;
         ServerFileName : string;
         LocalFileName : string;
     end;
 
             // Note that cdDoNothing may not be allowed .....
- type    TClashDecision = (cdDownload, cdUpload, cdDoNothing);
+// type    TClashDecision = (cdDownload, cdUpload, cdDoNothing);
 
                  {  These next two definitions are how we allow TB_Sync to manipulate the
                    GUI objects around it. We will declare a variable of the type and the
@@ -84,14 +87,41 @@ type
                    are defined in SyncUtils.
                 }
 
-type    TProceedFunction = function(const ClashRec : TClashRecord): TClashDecision of object;
+ //type    TProceedFunction = function(const ClashRec : TClashRecord): TClashDecision of object;
+ type    TProceedFunction = function(const ClashRec : TClashRecord): TSyncAction of object;
 
 type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
 
 
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
+function GetLocalTime: ANSIstring;      // Note this function is duplicated in TB_Sync.
 
 implementation
+
+function GetLocalTime: ANSIstring;
+var
+   ThisMoment : TDateTime;
+   Res : ANSIString;
+   Off : longint;
+begin
+   // Note this function exits in tomboy-ng's settings unit, here for testing
+    {$ifdef LINUX}
+    //ReReadLocalTime();    // in case we are near daylight saving time changeover
+    {$endif}
+    ThisMoment:=Now;
+    Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
+                   + FormatDateTime('hh:mm:ss.zzz"0000"',ThisMoment);
+    Off := GetLocalTimeOffset();
+    if (Off div -60) >= 0 then Res := '+'
+        else Res := '-';
+        if abs(Off div -60) < 10 then Res := Res + '0';
+        Res := Res + inttostr(abs(Off div -60)) + ':';
+        if (Off mod 60) = 0 then
+                Res := res + '00'
+        else Res := Res + inttostr(abs(Off mod 60));
+    Result := Result + res;
+end;
+
 { ----------------  TNoteInfoList ---------------- }
 
 function TNoteInfoList.Add(ANote : PNoteInfo) : integer;
@@ -117,13 +147,14 @@ function TNoteInfoList.ActionName(Act: TSyncAction): string;
 begin
     Result := ' Unknown ';
     case Act of
-        Unset : Result := ' Unset ';
-        Nothing : Result := ' Nothing ';
-        Upload  : Result := ' Upload ';
-        Download: Result := ' Download ';
-        DeleteLocal  : Result := ' DeleteLocal ';
-        DeleteRemote : Result := ' DeleteRemote ';
-        Clash : Result := ' Clash ';
+        SyUnset : Result := ' Unset ';
+        SyNothing : Result := ' Nothing ';
+        SyUploadNew  : Result := ' UploadNew ';   // we differentiate in case of a write to remote fail.
+        SyUpLoadEdit : Result := ' UpLoadEdit ';
+        SyDownload: Result := ' Download ';
+        SyDeleteLocal  : Result := ' DeleteLocal ';
+        SyDeleteRemote : Result := ' DeleteRemote ';
+        SyClash : Result := ' Clash ';
     end;
     while length(result) < 15 do Result := Result + ' ';
 end;

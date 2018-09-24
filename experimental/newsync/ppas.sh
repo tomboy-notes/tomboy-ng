@@ -7,6 +7,6 @@ echo Linking project1
 OFS=$IFS
 IFS="
 "
-/usr/bin/ld.bfd -b elf64-x86-64 -m elf_x86_64  --dynamic-linker=/lib64/ld-linux-x86-64.so.2    -L. -o project1 link.res
+/usr/bin/ld.bfd -b elf32-i386 -m elf_i386  --dynamic-linker=/lib/ld-linux.so.2    -L. -o project1 link.res
 if [ $? != 0 ]; then DoExitLink project1; fi
 IFS=$OFS
