@@ -30,6 +30,7 @@ TNetSync = Class(TTomboyTrans)
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
+        function SetRemoteRepo(ManFile : string = '') : boolean; override;
  end;
 
 
@@ -80,6 +81,11 @@ function TNetSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
 begin
     // Download indicated note and call it ConfigDir + 'remote.note';
     result := ConfigDir + 'remote.note';
+end;
+
+function TNetSync.SetRemoteRepo(ManFile: string = ''): boolean;
+begin
+
 end;
 
 end.

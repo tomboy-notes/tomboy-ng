@@ -22,7 +22,8 @@ type
     private
         function GetNoteLastChange(const FullFileName: string): string;
             // Reads the (filesync) remote Manifest for synced note details. It gets ID, RevNo
-            // and, if its there the LastChangeDate. If its not there, looks in File.
+            // and, if its there the LastChangeDate. If its not there, looks in File but only
+            // if rev no is greater than local revision level.
         function ReadRemoteManifest(const NoteMeta: TNoteInfoList; const LocRev : integer): boolean;
 
     public
@@ -34,6 +35,7 @@ type
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
+        function SetRemoteRepo(ManFile : string = '') : boolean; override;
   end;
 
 implementation
@@ -45,24 +47,39 @@ uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
 function TFileSync.TestTransport(out ServerID : string): TSyncAvailable;
 var
     Doc : TXMLDocument;
+    GUID : TGUID;
+    ManExists, ZeroExists : boolean; // for readability of code only
 begin
+    RemoteAddress := AppendPathDelim(RemoteAddress);
     if not DirectoryExists(RemoteAddress) then begin
 	    ErrorString := 'Remote Dir does not exist ' + RemoteAddress;
 	    exit(SyncNoRemoteDir);
     end;
-    if not DirectoryExists(RemoteAddress + '0') then begin
-	    ErrorString := 'Remote Revision Dir "0" does not exist ' + RemoteAddress;
-	    exit(SyncNoRemoteDir);
+    if not DirectoryIsWritable(RemoteAddress) then begin
+      ErrorString := 'Remote directory NOT writable ' + RemoteAddress;
+      exit(SyncNoRemoteWrite);
     end;
-
-    if not FileExists(RemoteAddress + 'manifest.xml') then begin
-	    ErrorString := 'Remote manifest does not exist ' + RemoteAddress + 'manifest.xml';
-	    exit(SyncNoRemoteMan);
+    if ANewRepo then begin
+        CreateGUID(GUID);
+        ServerID := copy(GUIDToString(GUID), 2, 36);
+        RemoteServerRev := -1;
+        exit(SyncReady);
     end;
-    if not FileIsWritable(RemoteAddress + 'manifest.xml') then begin
-	    ErrorString := 'Remote manifest NOT writable ' + RemoteAddress + 'manifest.xml';
-	    exit(SyncNoRemoteWrite);
+    ManExists := FileExists(RemoteAddress + 'manifest.xml');
+    ZeroExists := DirectoryExists(RemoteAddress + '0');
+    if (not ManExists) and (not ZeroExists) then begin
+        ErrorString := 'Remote dir does not contain a Repo ' + RemoteAddress;
+    	exit(SyncNoRemoteRepo);
+	end;
+    if (ManExists) and (not ZeroExists) then begin
+        ErrorString := 'Apparently damaged repo, missing 0 dir at ' + RemoteAddress;
+    	exit(SyncBadRemote);
     end;
+	if (not ManExists) and (ZeroExists) then begin
+        ErrorString := 'Apparently damaged repo, missing manifest at ' + RemoteAddress;
+    	exit(SyncBadRemote);
+    end;
+    // If to here, looks and feels like a repo, lets see what it can tell !
     try
 	        try
 	            ReadXMLFile(Doc, RemoteAddress + 'manifest.xml');
@@ -99,7 +116,8 @@ begin
       ErrorString := 'Passed an uncreated list to GetNewNotes()';
       exit(False);
   end;
-  ReadRemoteManifest(NoteMeta, LocRev);
+  if FileExists(RemoteAddress + 'manifest.xml') then
+    ReadRemoteManifest(NoteMeta, LocRev);           // No remote manifest is aceptable here, new repo
   result := True;
 end;
 
@@ -132,7 +150,7 @@ begin
                     Node := NodeList.Item[j].Attributes.GetNamedItem('last-change-date');
                     if assigned(node) then
                             NoteInfo^.LastChange:=Node.NodeValue
-                    else if NoteInfo^.Rev > LocRev then                             // Only bother to get it if fresh note
+                    else if NoteInfo^.Rev > LocRev then                   // Only bother to get it if fresh note
                         NoteInfo^.LastChange := GetNoteLastChange(RemoteAddress
                                 + '0' + pathdelim + inttostr(NoteInfo^.Rev)
                                 + pathdelim + NoteInfo^.ID + '.note');
@@ -183,7 +201,7 @@ begin
             ErrorString := 'Failed to create Backup directory.';
             exit(False);
         end;
-    for I := 0 to DownLoads.Count do begin
+    for I := 0 to DownLoads.Count-1 do begin
         if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
             // First make a Backup copy
             if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
@@ -212,6 +230,13 @@ function TFileSync.UploadNotes(const Uploads: TStringList): boolean;
 var
     Index : integer;
 begin
+    if ANewRepo then begin
+        if not ForceDirectory(self.RemoteAddress + '0' + PathDelim + '0') then begin
+            self.ErrorString:='Failed to write 0 dir to ' + RemoteAddress;
+            exit(False);
+		end;
+        ANewRepo := False;
+	end;
   for Index := 0 to Uploads.Count -1 do begin
       if not copyFile(NotesDir + Uploads.Strings[Index] + '.note',
                 self.RemoteAddress + inttostr(RemoteServerRev + 1) + PathDelim + Uploads.Strings[Index] + '.note')
@@ -227,11 +252,11 @@ end;
 
 function TFileSync.DoRemoteManifest(const RemoteManifest: string): boolean;
 begin
-  if not ForceDirectoriesUTF8(RemoteAddress + inttostr(self.RemoteServerRev + 1)) then begin
-      ErrorString := 'Failed to create new remote revision dir '
+    if not ForceDirectoriesUTF8(RemoteAddress + inttostr(self.RemoteServerRev + 1)) then begin
+        ErrorString := 'Failed to create new remote revision dir '
                 + inttostr(self.RemoteServerRev + 1);
-      debugln(ErrorString);
-      exit(False);
+        debugln(ErrorString);
+        exit(False);
   end;
   if not CopyFile(RemoteAddress + 'manifest.xml', RemoteAddress + inttostr(RemoteServerRev + 1)
                 + PathDelim + ('manifest.xml')) then begin
@@ -251,6 +276,25 @@ end;
 function TFileSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
 begin
     Result := RemoteAddress + inttostr(RevNo) + PathDelim + ID + '.note';
+end;
+
+function TFileSync.SetRemoteRepo(ManFile: string=''): boolean;
+begin
+    if ManFile = '' then begin
+        RemoteServerRev := -1;      // because Sync will add 1 when it decides a new rev happens.
+        AnewRepo := True;
+	end else begin
+        Result := ForceDirectory(RemoteAddress + '0' + pathDelim + inttostr(self.RemoteServerRev + 1));
+        if not Result then begin
+            self.ErrorString := 'Cannot create remote rev dir ' + inttostr(self.RemoteServerRev + 1);
+            exit(False);
+		end;
+        result := copyfile(ManFile, RemoteAddress + 'manifest.xml');
+            if not Result then begin
+                self.ErrorString := 'Cannot copy new remote manifest to ' + RemoteAddress;
+                exit(False);
+    		end;
+	end;
 end;
 
 

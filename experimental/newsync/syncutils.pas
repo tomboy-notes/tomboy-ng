@@ -7,10 +7,25 @@ interface
 uses
     Classes, SysUtils, dateutils, LazLogger;
 
-type TSyncAction=(SyUnset, SyNothing, SyUploadNew, SyUploadEdit, SyDownload, SyDeleteLocal, SyDeleteRemote, SyClash);
+type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
+                SyNothing,      // This note, previously sync'ed has not changed.
+                SyUploadNew,    // This a new local note, upload it.
+                SyUploadEdit,   // A previously synced note, edited locally, upload.
+                SyDownload,     // A new or edited note from elsewhere, download.
+                SyDeleteLocal,  // Synced previously but no longer present on server, delete locally
+                SyDeleteRemote, // Marked as having been deleted locally, so remove from server.
+                SyClash);       // Edited both locally and remotly, policy or user must decide.
 
         // Indicates the readyness of a sync connection
-type TSyncAvailable=(SyncReady, SyncNoLocal, SyncNoRemoteMan, SyncNoRemoteDir, SyncNoRemoteWrite, SyncXMLError);
+type TSyncAvailable=(SyncReady,         // We are ready to sync, looks good to go.
+                    SyncNoLocal,        // We don't have a local manifest, only an error if config things there should be one.
+                    SyncNoRemoteMan,    // No remote manifest, an uninitialized repo perhaps ?
+                    SyncNoRemoteRepo,   // Filesystem is OK but does not look like a repo.
+                    SyncBadRemote,      // Has either Manifest or '0' dir but not both.
+                    SyncNoRemoteDir,    // Perhaps sync device is not mounted ?
+                    SyncNoRemoteWrite,  // no write permission, do not proceed!
+                    SyncMismatch,       // Its a repo, Captain, but not as we know it.
+                    SyncXMLError);      // Housten, we have an XML error in a manifest !
 
 type
   	PNoteInfo=^TNoteInfo;
@@ -20,8 +35,8 @@ type
         LastChangeGMT : TDateTime;  // Compare less or greater than but not Equal !
         CreateDate : ANSIString;
         LastChange : ANSIString;    // leave as strings, need to compare and TDateTime uses real
-        Rev : Integer;              // Changed to int to force valid value !
-        Deleted: Boolean;
+        Rev : Integer;              // Not used for uploads, Trans knows how to inc its own.
+        Deleted: Boolean;           // don't think we use this .....
         Action : TSyncAction;
         Title : ANSIString;
     end;
@@ -177,6 +192,7 @@ function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 var
     TimeZone : TDateTime;
 begin
+    if DateStr = '' then exit(0);                // Empty string
     // A date string should look like this -     2018-01-27T17:13:03.1230000+11:00 33 characters !
     if length(DateStr) <> 33 then begin
         debugln('ERROR received invalid date string - [' + DateStr + ']');
@@ -237,7 +253,7 @@ begin
     inherited Destroy;
 end;
 
-
+        // Suspect we don't need this ....
 function TSyncReportList.Add(Report: PSyncReport): integer;
 {var
 	Doc : TXMLDocument;

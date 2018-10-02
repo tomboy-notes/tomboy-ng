@@ -21,6 +21,8 @@ type
 
     public
         DebugMode : boolean;
+            // Indicates its a new repo, don't look for remote manifest.
+        ANewRepo : Boolean;
             // Set to '' is no errors.
         ErrorString : string;
             // Local notes directory
@@ -34,6 +36,11 @@ type
             { The current Server Rev, before we upload. Is set with a successful
               TestTransport call. }
         RemoteServerRev : integer;
+
+            { Creates or updates a remote reop, if st is blank, its a new reop,
+            else we inc the remote rev number, creat a dir, copy existing manifest
+            there, copy the offered manifest over top of existing. Ret True is all OK. }
+        function SetRemoteRepo(ManFile : string = '') : boolean; virtual; abstract;
 
             {Tests availability of remote part of connection. For file sync thats
             existance of manifest and 0 dir, write access. Returns with ServerID.
@@ -59,7 +66,8 @@ type
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; virtual; abstract;
 
            { Push a list of notes up to the server. A new revision has been made and we
-             are passed its number. }
+             are passed its number. If it turns out to be a new Repo, we'll make the
+             necessary directories first. }
         function UploadNotes(const Uploads : TStringList) : boolean; virtual; abstract;
 
             { Tells Trans to deal with with remote mainfest. This is the trigger
