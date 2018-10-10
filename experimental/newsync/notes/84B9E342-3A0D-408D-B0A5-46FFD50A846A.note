@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>My very first note</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>My very first note</underline>
+great eh ?
+
+Well, even if you are not impressed, this version of the note should be in<highlight><bold> rev 2 of the sync repo.</bold></highlight>
+
+And i could write a lot more on the topic but really, no one cares.
+
+
+</note-content></text>
+  <last-change-date>2018-09-25T03:38:18.3050000+10:00</last-change-date>
+  <last-metadata-change-date>2018-09-25T03:38:18.3050000+10:00</last-metadata-change-date>
+  <create-date>2018-09-24T13:32:02.6160000+10:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>

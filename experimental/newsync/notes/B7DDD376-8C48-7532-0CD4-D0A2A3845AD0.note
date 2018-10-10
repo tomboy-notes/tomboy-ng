@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Stuff &amp; "More" Stuff</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Stuff &amp; "More" Stuff</underline>
+
+This version of this note should be in <highlight><bold>rev 4 of sync repo</bold></highlight>. Note how it has double inverted commas in the title, that was a problem in early versions of tomboy-ng. Otherwise, its not really very special IMHO.
+
+<list><list-item dir="ltr"><monospace>this line in mono</monospace></list-item></list><monospace>
+</monospace><list><list-item dir="ltr"><monospace>and this line too</monospace></list-item></list><monospace></monospace>
+
+<highlight>This is not </highlight><monospace><highlight>mono</highlight></monospace><highlight>, its highlight
+And this is </highlight><strikeout><highlight>not</highlight></strikeout><highlight>  <bold>highlight too</bold></highlight><bold>
+
+A </bold><size:large><bold>Large</bold></size:large><bold> Fo</bold>nt, a <size:huge>huge</size:huge> Font, and, <size:small>small</size:small> one.
+
+
+<bold>and a bold bit of text
+
+</bold></note-content></text>
+  <last-change-date>2018-09-25T03:47:08.5690000+10:00</last-change-date>
+  <last-metadata-change-date>2018-09-25T03:47:08.5690000+10:00</last-metadata-change-date>
+  <create-date>2018-07-28T10:42:29.4180000+10:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>

@@ -62,6 +62,7 @@ begin
     if ANewRepo then begin
         CreateGUID(GUID);
         ServerID := copy(GUIDToString(GUID), 2, 36);
+        RemoteServerID:= ServerID;
         RemoteServerRev := -1;
         exit(SyncReady);
     end;
@@ -150,12 +151,15 @@ begin
                     Node := NodeList.Item[j].Attributes.GetNamedItem('last-change-date');
                     if assigned(node) then
                             NoteInfo^.LastChange:=Node.NodeValue
-                    else if NoteInfo^.Rev > LocRev then                   // Only bother to get it if fresh note
+                    else if NoteInfo^.Rev >= LocRev then                // Only bother to get it if fresh note
                         NoteInfo^.LastChange := GetNoteLastChange(RemoteAddress
                                 + '0' + pathdelim + inttostr(NoteInfo^.Rev)
                                 + pathdelim + NoteInfo^.ID + '.note');
                     if NoteInfo^.LastChange <> '' then
                         NoteInfo^.LastChangeGMT := GetGMTFromStr(NoteInfo^.LastChange);
+                    debugln(NoteInfo^.ID + ' Remote Note Rev ' + inttostr(NoteInfo^.Rev)
+                            + ' and LocRev is ' + inttostr(LocRev) + ' LCD '
+                            + NoteInfo^.LastChange);
                     NoteMeta.Add(NoteInfo);
                 end;
 		end;
@@ -202,20 +206,22 @@ begin
             exit(False);
         end;
     for I := 0 to DownLoads.Count-1 do begin
-        if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
-            // First make a Backup copy
-            if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
+        if DownLoads.Items[I]^.Action = SyDownLoad then begin
+            if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
+                // First make a Backup copy
+                if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
                         NotesDir + 'Backup' + PathDelim + Downloads.Items[I]^.ID + '.note') then begin
-                ErrorString := 'Failed to copy file to Backup ' + NotesDir + Downloads.Items[I]^.ID + '.note';
-                exit(False);
-            end;
-        // OK, now copy the file.
-        if not CopyFile(RemoteAddress + '0' + pathdelim + inttostr(DownLoads.Items[i]^.Rev)
+                    ErrorString := 'Failed to copy file to Backup ' + NotesDir + Downloads.Items[I]^.ID + '.note';
+                    exit(False);
+                end;
+            // OK, now copy the file.
+            if not CopyFile(RemoteAddress + '0' + pathdelim + inttostr(DownLoads.Items[i]^.Rev)
                 + pathdelim + Downloads.Items[I]^.ID + '.note',
                 NotesDir + Downloads.Items[I]^.ID + '.note') then begin
                     ErrorString := 'Failed to copy ' + Downloads.Items[I]^.ID + '.note';
                     exit(False);
-                end;
+            end;
+        end;
     end;
     result := True;
 end;
@@ -230,19 +236,22 @@ function TFileSync.UploadNotes(const Uploads: TStringList): boolean;
 var
     Index : integer;
 begin
+    if debugmode then debugln('In File UpLoadNotes');
     if ANewRepo then begin
         if not ForceDirectory(self.RemoteAddress + '0' + PathDelim + '0') then begin
             self.ErrorString:='Failed to write 0 dir to ' + RemoteAddress;
+            if debugMode then debugln('UpLoadNotes() Error ' + ErrorString);
             exit(False);
 		end;
         ANewRepo := False;
 	end;
   for Index := 0 to Uploads.Count -1 do begin
+      if DebugMode then debugln('Uploading ' + Uploads.Strings[Index] + '.note');
       if not copyFile(NotesDir + Uploads.Strings[Index] + '.note',
-                self.RemoteAddress + inttostr(RemoteServerRev + 1) + PathDelim + Uploads.Strings[Index] + '.note')
+                RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1) + PathDelim + Uploads.Strings[Index] + '.note')
       then begin
           ErrorString := 'ERROR copying ' + NotesDir + Uploads.Strings[Index] + '.note to '
-            + RemoteAddress + inttostr(RemoteServerRev + 1) + PathDelim + Uploads.Strings[Index] + '.note';
+            + RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1) + PathDelim + Uploads.Strings[Index] + '.note';
           debugln(ErrorString);
           exit(False);
 	  end;
@@ -252,19 +261,23 @@ end;
 
 function TFileSync.DoRemoteManifest(const RemoteManifest: string): boolean;
 begin
-    if not ForceDirectoriesUTF8(RemoteAddress + inttostr(self.RemoteServerRev + 1)) then begin
+    if not ForceDirectoriesUTF8(RemoteAddress + '0' + PathDelim + inttostr(self.RemoteServerRev + 1)) then begin
         ErrorString := 'Failed to create new remote revision dir '
                 + inttostr(self.RemoteServerRev + 1);
         debugln(ErrorString);
         exit(False);
   end;
-  if not CopyFile(RemoteAddress + 'manifest.xml', RemoteAddress + inttostr(RemoteServerRev + 1)
-                + PathDelim + ('manifest.xml')) then begin
-      ErrorString := 'Failed to move root remote manifest to dir '
-                + RemoteAddress + inttostr(RemoteServerRev + 1);
-      debugln(ErrorString);
-      exit(False);
-  end;
+  if FileExists(RemoteAddress + 'manifest.xml') then
+        // Backup old remote manifest to new rev directory.
+	      if not CopyFile(RemoteAddress + 'manifest.xml', RemoteAddress + '0' + PathDelim
+	                    + inttostr(RemoteServerRev + 1) + PathDelim + 'manifest.xml') then begin
+	          ErrorString := 'ERROR - Failed to move ' + RemoteAddress + 'manifest.xml' + ' to '
+	                    + RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1)
+	                    + PathDelim + 'manifest.xml';
+	          debugln(ErrorString);
+	          exit(False);
+	      end;
+  {if debugmode then } debugln('Remote Manifest is ' + RemoteManifest);
   if not CopyFile(RemoteManifest, RemoteAddress + 'manifest.xml') then begin
       ErrorString := 'Failed to move new root remote manifest file ' + RemoteManifest;
       debugln(ErrorString);
@@ -277,6 +290,9 @@ function TFileSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
 begin
     Result := RemoteAddress + inttostr(RevNo) + PathDelim + ID + '.note';
 end;
+
+
+// WARNING -I don't think we need this function any more
 
 function TFileSync.SetRemoteRepo(ManFile: string=''): boolean;
 begin

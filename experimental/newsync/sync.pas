@@ -271,7 +271,8 @@ implementation
 
 { TSync }
 
-uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, LazLogger, LazFileUtils;
+uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, LazLogger, LazFileUtils,
+    FileUtil;
 
 var
     Transport : TTomboyTrans;
@@ -358,6 +359,7 @@ end;
 function TSync.TestConnection(): TSyncAvailable;
 var
     ServerID : string;
+    Nowish : TDateTime;
 begin
     if DebugMode then begin
         debugln('Remote address is ' + SyncAddress);
@@ -375,13 +377,21 @@ begin
     if not IgnoreLocalManifest then begin
 	    if not ReadLocalManifest() then exit(SyncXMLError);    // Error in local mainfest, OK or no manifest=true
 	    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
-	    if LocalLastSyncDate <> 0 then
-		    if (LocalLastSyncDate > now()) or (LocalLastSyncDate < (Now() - 36500))  then begin
+        Nowish := Now();
+	    if LocalLastSyncDate <> 0 then begin
+            {if LocalLastSyncDate > now() then
+                ErrorString := 'Invalid, future last sync date in local manifest ' + LocalLastSyncDateSt;
+            if LocalLastSyncDate < (now() - 36500) then
+                ErrorString := 'Invalid, too old last sync date in local manifest ' + LocalLastSyncDateSt;   }
+
+            if (LocalLastSyncDate > (now() + 36500)) or (LocalLastSyncDate < (Now() - 36500))  then begin
 		                // TDateTime has integer part no. of days, fraction part is fraction of day.
-		                // we have here in the future or more than 100years ago - Fail !
-		        ErrorString := 'Invalid last sync date in local manifest';
+		                // 100years ago or in future - Fail !
+		        ErrorString := 'Invalid last sync date in local manifest ' + LocalLastSyncDateSt;
+
 		        exit(SyncXMLError);
-		    end else if DebugMode then
+            end;
+		end else if DebugMode then
                Debugln('No local manifest, probably a new sync');
     end else begin
         LocalLastSyncDate := 0;
@@ -400,6 +410,8 @@ begin
     if not IgnoreLocalManifest then
 	    if ServerID <> LocalLastSyncID then begin
 	        ErrorString := 'ServerID Mismatch';
+            if DebugMode then
+                debugln('ERROR Server ID Mismatch Remote ' + ServerID + ' and local ' + LocalLastSyncID);
 	        exit(SyncMismatch);
 		end;
 end;
@@ -501,24 +513,33 @@ begin
         ID := NoteMetaData.Items[I]^.ID;
         if LocalNoteExists(ID, LocCDate) then begin                        // local copy exits.
             // We may not have a remote date if its remote note's rev is < lastsync
-            if NoteMetaData.Items[I]^.Rev < self.CurrRev then begin
+
+
+            // when looking at local notes, we must destinguish between ones that have changed since
+            // last sync or not. Compare thier lastchangedate with local lastsyncdate.
+
+
+            // this block is wrong !  Firstly, it does not sit well with flow chart
+            // and secondly, what if the note has been edited ???
+            {if NoteMetaData.Items[I]^.Rev < self.CurrRev then begin
                 NoteMetaData.Items[I]^.Action:=SyNothing;
                 continue;
-			end;
-			if debugmode then
-               debugln('Loc ' + LocCDate + ' and remote ' + NoteMetaData.Items[I]^.LastChange);
+			end;}
+
             LocalNoteExists(ID, LocCDate, True);
+			if debugmode then
+               debugln('Change Dates Loc ' + LocCDate + ' and remote ' + NoteMetaData.Items[I]^.LastChange);
+
             if LocCDate = NoteMetaData.Items[I]^.LastChange then begin   // We have identical note locally
                 NoteMetaData.Items[I]^.Action:=SyNothing;
-                // Maybe, check that revision numbers also match ?
                 continue;
             end;
             // Dates don't match, must do something, either upload, download or Clash.
-            if GetGMTFromStr(LocCDate) > LocalLastSyncDate then begin      // Ahh, local version changed since last sync !
-                if NoteMetaData.Items[I]^.Rev <= self.CurrRev then    // Remote version unchanged, easy - Flow chart does NOT show this test !!!!
+            if GetGMTFromStr(LocCDate) > LocalLastSyncDate then begin // local version changed since last sync !
+                if NoteMetaData.Items[I]^.Rev <= CurrRev then         // Remote version unchanged, easy !
                     NoteMetaData.Items[I]^.Action:= SyUpLoadEdit
-                else NoteMetaData.Items[I]^.Action := SyClash;               // resolve later
-            end else NoteMetaData.Items[I]^.Action:= SyDownload;
+                else NoteMetaData.Items[I]^.Action := SyClash;        // resolve later
+            end else NoteMetaData.Items[I]^.Action:= SyDownload;      // local note not edited since last sync
         end else begin      // OK, not here but maybe we deleted it previously ?
             Pnote := Self.LocalMetaData.FindID(ID);
             if PNote <> Nil then begin
@@ -527,6 +548,8 @@ begin
             end else NoteMetaData.Items[I]^.Action:=SyDownload;         // its a new note from elsewhere
         end;
         if NoteMetaData.Items[I]^.Action = SyUnset then debugln('---- missed one -----');
+        if NoteMetaData.Items[I]^.Action = SyUpLoadEdit then
+            NoteMetaData.Items[I]^.CreateDate := GetNoteLastChangeSt(NotesDir + ID + '.note', ErrorString);
     end;
 end;
 
@@ -564,11 +587,15 @@ var
     Uploads : TstringList;
     Index : integer;
 begin
+
+    debugln('------- RemoteServerRev is ' + inttostr(Transport.RemoteServerRev));
     try
         Uploads := TstringList.Create;
         for Index := 0 to NoteMetaData.Count -1 do begin
-            if NoteMetaData.Items[Index]^.Action in [SyUploadEdit, SyUploadNew] then
+            if NoteMetaData.Items[Index]^.Action in [SyUploadEdit, SyUploadNew] then begin
                Uploads.Add(NoteMetaData.Items[Index]^.ID);
+               NoteMetaData.Items[Index]^.Rev := Transport.RemoteServerRev + 1;
+			end;
 		end;
         if not TestRun then
            if not Transport.UploadNotes(Uploads) then begin
@@ -610,15 +637,14 @@ begin
         LoadMetaData;
     if not DoDownLoads() then exit(False);          // DoDownloads() will tell us what troubled it.
     Result := WriteRemoteManifest(NewRev);
-    if Result then begin;                           // false is an ERROR !
-        if (DoDeletes() and DoUploads()) then begin
-	        WriteLocalManifest(true, NewRev);
-	    end else begin
-            WriteLocalManifest(false, false);       // write a recovery local manifest. Downloads only noted.
-            Result := false;
-	    end;
+    if Result then begin                           // false is an ERROR !
+        Result := DoDeletes();
+        if Result then
+           if DoUploads() then
+	            WriteLocalManifest(true, NewRev);
     end;
-    Result := True;
+	if not Result then
+        WriteLocalManifest(false, false);       // write a recovery local manifest. Downloads only noted.
 end;
 
 
@@ -660,9 +686,11 @@ var
     Node : TDOMNode;
     j : integer;
     NoteInfoP : PNoteInfo;
+    RevStr : string;
 begin
     Result := true;
     if IgnoreLocalManifest then exit();
+    ErrorString := '';
     if not FileExists(ConfigDir + 'manifest.xml') then begin
         LocalLastSyncDateSt := '';
         CurrRev := 0;
@@ -678,21 +706,25 @@ begin
                 LocalLastSyncID := Node.FirstChild.NodeValue;
             Node := Doc.DocumentElement.FindNode('last-sync-rev');
             try
-        		CurrRev := strtoint(Node.FirstChild.NodeValue);     // Convert error ??
+                RevStr := Node.FirstChild.NodeValue;
+                if RevStr[1] = '"' then
+                   Revstr := copy(revStr, 2, length(RevStr) - 2);
+        		CurrRev := strtoint(RevStr);
 			except
-                    on EObjectCheck do begin                        // mac does this
+                    on EConvertError do                         // just a plain bad string
+                        ErrorString := 'Error converting Local Rev Version ' + RevStr;
+					on EObjectCheck do                         // mac does this
                         ErrorString := 'Error in local mainfest, check RevNo';
-                        CurrRev := 0;
-                        LocalLastSyncDateSt := '';
-                        exit(False);
-                    end;
-                    on EAccessViolation do begin	// Lin does this
+                    on EAccessViolation do                  	// Lin does this
                         ErrorString := 'Error in local mainfest, check RevNo';
-                        CurrRev := 0;
-                        LocalLastSyncDateSt := '';
-                        exit(False);
-                    end;
             end;
+            if ErrorString <> '' then begin
+                CurrRev := 0;
+                LocalLastSyncDateSt := '';
+                exit(False);
+			end;
+            if LocalLastSyncID[1] = '"' then
+               LocalLastSyncID := copy(LocalLastSyncID, 2, 36);
 			NodeList := Doc.DocumentElement.FindNode('note-revisions').ChildNodes;
             if assigned(NodeList) then
                for j := 0 to NodeList.Count-1 do begin
@@ -722,6 +754,7 @@ begin
               Result := false;
           end;
 	end;
+
 end;
 
 function TSync.WriteRemoteManifest(out NewRev : boolean): boolean;
@@ -754,6 +787,9 @@ begin
 	                    writeln(OutFile, NewRevString + '" />')
 	                else writeln(OutFile, inttostr(NoteMetaData.Items[Index]^.Rev) + '" />');
 				end;
+
+                // Must add last-change-date to that record, once I have valid date in NoteMetaData
+
 			end;
             writeln(OutFile, '</sync>');
         except
@@ -788,7 +824,9 @@ function TSync.WriteLocalManifest(const WriteOK, NewRev : boolean ): boolean;
 { We try and provide some recovery from a fail to write to remote repo. It should
   not happen but ... If WriteOk is false we write back local manifest that still
   mentions the previous deleted files and does not list locally new and changed
-  files. Such files retain their thier previous rev numbers. Test ! }
+  files. Such files retain their thier previous rev numbers. Test !
+
+  }
 var
     OutFile: TextFile;
     Index : integer;
@@ -811,10 +849,11 @@ begin
                     if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
                         if (not WriteOK) and (NoteMetaData[Index]^.Action = SyUpLoadNew) then continue;
                         write(Outfile, '    <note guid="' + NoteMetaData[Index]^.ID + '" latest-revision="');
-                        case NoteMetaData[Index]^.Action of
+                     {   case NoteMetaData[Index]^.Action of
                             SyUpLoadEdit, SyUpLoadNew : write(OutFile, inttostr(NoteMetaData[Index]^.Rev +IncRev));
                             SyDownload, SyNothing : write(OutFile, inttostr(NoteMetaData[Index]^.Rev));
-						end;
+						end;    }
+                        write(OutFile, inttostr(NoteMetaData[Index]^.Rev));
                         writeln(Outfile, '" />');
 					end;
 				end;
@@ -831,7 +870,8 @@ begin
 	end;
     // if to here, copy the file over top of existing local manifest
 	if not TestRun then
-	    Transport.SetRemoteRepo(ConfigDir + 'manifest.xml-local');
+       copyfile(ConfigDir + 'manifest.xml-local', ConfigDir + 'manifest.xml');
+	   // Transport.SetRemoteRepo(ConfigDir + 'manifest.xml-local');
 end;
 
 

@@ -110,8 +110,35 @@ type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const Wa
 
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 function GetLocalTime: ANSIstring;      // Note this function is duplicated in TB_Sync.
+        // Returns the LCD string, '' and setting Error to other than '' if something wrong
+function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
 
+            { -------------- implementation ---------------}
 implementation
+
+uses laz2_DOM, laz2_XMLRead, LazFileUtils;
+
+function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
+var
+	Doc : TXMLDocument;
+	Node : TDOMNode;
+    // LastChange : string;
+begin
+    if not FileExistsUTF8(FullFileName) then begin
+        Error := 'ERROR - File not found, cant read note change date for remote ' +  FullFileName;
+        exit('');
+	end;
+	try
+		ReadXMLFile(Doc, FullFileName);
+		Node := Doc.DocumentElement.FindNode('last-change-date');
+        Result := Node.FirstChild.NodeValue;
+	finally
+        Doc.free;		// xml errors are NOT caught in calling process
+	end;
+end;
+
+
+
 
 function GetLocalTime: ANSIstring;
 var

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Trailer and Aux Wiring</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Trailer and Aux Wiring</underline>
+
+This version of the note belongs <highlight><bold>in rev 3 of sync repo</bold></highlight>. The note is useful content (to me alone) about how to fix Ford's silly mistake with its trailer wiring. 
+
+
+<bold>Stop the flicker -</bold>
+I found that a 220ohm resistor across each indicator was enough to solve this problem. I did not have anything on brake or parkers.
+
+P = V2/R   
+two 390 ohm 1 watt in parallel.  Evidence something lower is needed, at night can still see flicker.
+
+-----------------<size:large>
+<bold>Trailer Wiring</bold></size:large>
+
+1 - Left-hand turn - yellow
+2 - Reversing signal - Black
+3 - Earth return - White - Black with white trace
+4 -Right-hand turn - Green
+5 - Service Brakes - Blue - seems to go no further than first loom ?
+6 - Stop Lamps - Red - Red
+7 - Rear Lamps, clearance abd side - Brown
+8 - battery supply - Orange, ford uses thick yellow - thick yellow, maybe go no further than first loom ??
+9 - Auxiliaries (fridge) - Pink - direct to 12+ in car, always on. Fuse F51 in engine bay fuse box. See below
+10 - Earth return - White
+11 - Rear fog lamp - Grey
+12 - Auxiliaries - Violet - has a thick green wire in the jayco, unused ?
+
+9 - pink currently goes to engine bay fuse box and was always on. I pulled the fuse, attach wires to a fuse, a relay and the current sensor. Sensor lights an "F" for fridge on dash. Relay will operate only when engine is running. Thus I don't need to unplug trailer cable or switch fridge. This is all in the fuse box inside engine bay. June 2016, saw anomoly, indicator light on dash went off on very hot trip, maybe a sensor issue, not repeated.....
+
+At some stage, need to find where the orange wire goes, I could use it to feed a caravan battery DC-DC charger.<size:large>
+
+
+<bold>Wiring to Aux (in car) battery.</bold></size:large>
+Thick twin wires connect directly to engine battery via a 40A in line fuse and run under car and pop up near aux battery. There is also a thin black wire in tubing going to same place, does it switch on/off the aux batter charger ?<size:large>
+
+<bold>Brake Controller</bold></size:large>
+
+OK, here is how I have done it.
+
+<bold>Four wires to controller -</bold>
+Twin red (+12v) and black (gnd) - power from battery
+Thin Brown - comes from red wire on trailer box, brake lights
+ Thick red - goes out through firewall (passenger side) under car to trailer socket - "service brake".
+
+<bold>From the forum</bold>
+I am not saying to cut the loom, just strip back the insulation and solder a wire into it (tap the signal) and it's the red wire pin 3 or 7 (both brake light to trailer plug)
+
+The blue wire I refer to is your normal everyday pin 5 service brake wire, when you run the wire from your brake controller to trailer plug you put it into pin 5. According to the trailer wiring diagram this blue wire is already in the harness, i just can't see where it is terminated on the wiring diagram. it could finish at the tow module under the seat in which case you only need to run 2 wires from the electrical brake controller to the tow module under the seat as you have the brake signal there and the spare blue wire that is connected straight to pin 5 (electric brakes) on your trailer plug
+
+also fuse 47 in the engine bay is the trailer tow module power and fuse 51 is direct power to the trailer plug
+For those who want to know the ins and outs (disclaimer, I'm not responFor those who want to know the ins and outs (disclaimer, I'm not responsible if this screws up something on your new Ranger...always use a qualified auto electrician blah blah):
+
+1. I mounted the Prodigy P2 just left of the steering column.
+2. I ran the positive and negative power cables behind the centre console along the floor carpet (plenty of room) then behind the firewall carpet and up to the firewall grommet.
+3. Under the bonnet now...on the passenger side there is a spare nipple on the grommet. Cut half way though (so you don't leave a dust hole if you remove later) with scissors and push through an old coat hanger.
+4. Attach the positve and negative cables with electrical tape and pull through to engine bay.
+5. Attach to battery ensuring you put a fuse in the positive cable close to the battery.
+6. Back inside run the blue brake power cable and the red brake light cable together up through the firewall.
+7. Once in the engine bay (passenger side) you should be able to run them down the brake lines attaching with cable ties then over te chassis rail behind te front plastic guard inner.
+8. Follow the brake/fuel lines all the way back past the fuel tank (above) then pick up the wiring loom for tail lights etc and cable tie to that all te way back to the tow plug.
+9. Remove the tow plug from the twbar then undo the screws on the top side to reveal the wiring.
+10. Hook the red brake light wire from the brake controller into the red connector with the existing wire. Hook the blue cable in with the blue.
+
+Put it all back together and seal with electrical tape. Oh I'd also change the position of the plug to go over the towbar somewhere near the tow hitch.
+
+Now go back to cab and plug the controller into the cradle and get the PL error!!! Wait 5-10 minutes trying it on and off then all of a sudden it connects with the NC message (ie no trailer connected). Should all work then I hope. Well it did for me.sible if this screws up something on your new Ranger...always use a qualified auto electrician blah blah):
+
+1. I mounted the Prodigy P2 just left of the steering column.
+2. I ran the positive and negative power cables behind the centre console along the floor carpet (plenty of room) then behind the firewall carpet and up to the firewall grommet.
+3. Under the bonnet now...on the passenger side there is a spare nipple on the grommet. Cut half way though (so you don't leave a dust hole if you remove later) with scissors and push through an old coat hanger.
+4. Attach the positve and negative cables with electrical tape and pull through to engine bay.
+5. Attach to battery ensuring you put a fuse in the positive cable close to the battery.
+6. Back inside run the blue brake power cable and the red brake light cable together up through the firewall.
+7. Once in the engine bay (passenger side) you should be able to run them down the brake lines attaching with cable ties then over te chassis rail behind te front plastic guard inner.
+8. Follow the brake/fuel lines all the way back past the fuel tank (above) then pick up the wiring loom for tail lights etc and cable tie to that all te way back to the tow plug.
+9. Remove the tow plug from the twbar then undo the screws on the top side to reveal the wiring.
+10. Hook the red brake light wire from the brake controller into the red connector with the existing wire. Hook the blue cable in with the blue.
+
+Put it all back together and seal with electrical tape. Oh I'd also change the position of the plug to go over the towbar somewhere near the tow hitch.
+
+Now go back to cab and plug the controller into the cradle and get the PL error!!! Wait 5-10 minutes trying it on and off then all of a sudden it connects with the NC message (ie no trailer connected). Should all work then I hope. Well it did for me.
+
+</note-content></text>
+  <last-change-date>2018-09-25T03:43:33.3840000+10:00</last-change-date>
+  <last-metadata-change-date>2018-09-25T03:43:33.3840000+10:00</last-metadata-change-date>
+  <create-date>1999-12-30T14:00:00.0000000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>

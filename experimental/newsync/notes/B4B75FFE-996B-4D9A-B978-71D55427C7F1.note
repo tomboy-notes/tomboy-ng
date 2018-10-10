@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Installing Lazarus Cross Compiler</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Installing Lazarus Cross Compiler</underline>
+
+<highlight><bold>This version should be in rev 3 of sync repo. </bold></highlight><bold>An earlier version exists in rev 2</bold>
+
+Note you must use the sourceforge debs to install FPC and FPC-SRC. The ubuntu distro ones work OK for most apps but the source is installed differently and if you want to build cross compilers, the Makefile is not where it is expected. Simpler to stick with sourceforge versions. But if fpc is already installed from the distro, you have a seriurs job removing it. In Synaptic, search for everything that starts with 'fp' and remove, in one sweep, everything that is part of Free Pascal.
+
+Check and cleanout, if necessary /usr/share/fpcsrc
+
+Then use (eg) Gdebi to install first the fpc then fpc-src. In this model, described here, I will then build the Lazarus IDE from source so all lazarus files end up in my home directory and I don't need to mess with permissions to to change them. The alt is to use the sourceforge lazarus deb but I found that a bit constricting. 
+
+So, in your home directory -
+
+mkdir lazarus; cd lazarus
+svn checkout  http://svn.freepascal.org/svn/lazarus/tags/lazarus_1_8_4
+svn checkout http://svn.freepascal.org/svn/fpcdocs/trunk fpcdocs
+cd lazarus_1_8_4
+make CPU_TARGET=x86_64
+
+mv ~/.lazarus ~/.lazarus-180
+./lazarus    // all good ? well done, thats a working Lazarus for this platform. Maybe all you need ?
+
+
+<bold>Setup Linux i386 compiler and Windows compilers</bold>
+
+we need libc6-dev-i386 (they are just little bash scripts that call ld and as with specific options) :
+which i386-linux-ld
+which i386-linux-as
+
+<highlight>This needs to be done as root as the FPC source files are in /usr/share</highlight>
+
+$!/usr/bin/bash
+FPCVER="3.0.4"
+# Setup i386 underlying stuff
+cd /usr/share/fpcsrc/$FPCVER
+make all CPU_TARGET=i386
+make crossinstall CPU_TARGET=i386
+
+# Setup 32bit and 64 bit Windows
+cd /usr/share/fpcsrc/$FPCVER
+make clean all OS_TARGET=win32 CPU_TARGET=i386
+make crossinstall OS_TARGET=win32 CPU_TARGET=i386 INSTALL_PREFIX=/usr
+ln -sf /usr/lib/fpc/$FPCVER/ppcross386 /usr/bin/ppcross386
+
+make clean all OS_TARGET=win64 CPU_TARGET=x86_64
+make crossinstall OS_TARGET=win64 CPU_TARGET=x86_64 INSTALL_PREFIX=/usr
+ln -sf /usr/lib/fpc/$FPCVER/ppcrossx64 /usr/bin/ppcrossx64
+
+# Make sure its all there (we should see ppcross386, ppcrossx64)
+echo "watch for ppcross386, ppcrossx64"
+ls -la /usr/lib/fpc/$FPCVER/ppcross*
+ls -la /usr/bin/ppcross*
+
+Test. In June 18 after upgrading desktop to 18.04 I found 32bit linux would <bold>fail</bold> because of three issues -
+1. In /usr/lib/i386-linux-gnu  libpangocairo-1.0.so was a broken link. pointed to ~.4 and should have pointed to .14
+2. In /usr/lib/i386-linux-gnu there was no libglib-2.0.so, however there was libglib-2.0.so.0 -&gt; libglib-2.0.so.0.5600.1
+3. the  fpc.cfg section #ifdef cpu386 needed to point to above
+eg
+-Fl/usr/lib/i386-linux-gnu
+-Fl/usr/lib/gcc/x86_64-linux-gnu/7/32
+-Fl/usr/lib32
+
+On 16.04, /lib/i386-linux-gnu/libglib-2.0.so.0
+
+--------------------
+
+Now, patch and install KControls from within the IDE, patch the LCL source (see tomboy-ng/patches dir); 
+
+I would dearly like to build with lazbuild without any dependencies on Lazarus IDE, at present, we use the Lazarus build modes. Should be possible to bypass that or do I need to resort to make files ?
+
+
+This is what Ubuntu distro looks like -
+===========================
+root@Desktop:/usr/share/fpcsrc/3.0.4# ls -l
+
+total 40
+-rw-r--r--   1 root root     6 Jan 29 14:09 base.build-stamp.i386-Linux
+-rw-r--r--   1 root root     6 Jan 29 13:35 base.build-stamp.x86_64-win64
+-rw-r--r--   1 root root     6 Jan 29 14:09 build-stamp.i386-linux
+-rw-r--r--   1 root root     6 Jan 29 13:35 build-stamp.x86_64-win64
+drwxr-xr-x  22 root root 12288 Jun 29 22:26 compiler
+drwxr-xr-x 134 root root  4096 Jun 29 22:26 packages
+drwxr-xr-x  58 root root  4096 Jun 29 22:26 rtl
+drwxr-xr-x   3 root root  4096 Jun 29 22:20 utils
+==============================
+
+This is what it looks like after removing and reinstalling from sourceforge via two debs -
+
+root@Desktop:/usr/share# ls -l  fpcsrc/3.0.4/
+total 132
+drwxr-xr-x  25 root root 12288 Jun 30 11:07 compiler
+-rw-r--r--   1 root root   254 Jun  3  2013 fpmake_add1.inc
+-rw-r--r--   1 root root  1189 Jun  3  2013 fpmake.pp
+-rw-r--r--   1 root root   194 Jun  3  2013 fpmake_proc1.inc
+drwxr-xr-x   4 root root  4096 Jun 30 11:07 ide
+drwxr-xr-x   2 root root  4096 Jun 30 11:07 installer
+-rw-r--r--   1 root root 71672 Dec 13  2017 Makefile
+-rw-r--r--   1 root root  9427 Dec 13  2017 Makefile.fpc
+drwxr-xr-x 134 root root  4096 Jun 30 11:07 packages
+drwxr-xr-x  58 root root  4096 Jun 30 11:07 rtl
+drwxr-xr-x  10 root root  4096 Jun 30 11:07 tests
+drwxr-xr-x  27 root root  4096 Jun 30 11:07 utils
+
+Note, in particular, we now have a Makefile.
+</note-content></text>
+  <last-change-date>2018-09-25T03:44:29.1940000+10:00</last-change-date>
+  <last-metadata-change-date>2018-09-25T03:44:29.1940000+10:00</last-metadata-change-date>
+  <create-date>2018-01-29T11:21:07.8490000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>
