@@ -155,6 +155,7 @@ unit EditBox;
     2018/08/18  Added ^F4 to quit.  Prevented undefined ^keys being passed into Kmemo
     2018/08/20  Above edit dropped ^X, ^C, ^V before kmemo sees them, fixed, refactored a bit
     2019/08/22  Add a whole lot more keys that KMemo auto supports, see AddKey(...) in keditcommon.pas
+    2018/10/13  Kmemo1KeyDown now deals with a Tab.
 }
 
 
@@ -1541,6 +1542,11 @@ begin
     if [ssCtrl, ssShift] = Shift then begin
        if key = ord('F') then begin ButtSearchClick(self); Key := 0; exit(); end;
        Key := 0;
+    end;
+    if Key = VK_TAB then begin
+      KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, #09);
+      Key := 0;
+      exit;
     end;
     if Key <> 8 then exit();    // We are watching for a BS on a Bullet Marker
     // Mac users don't have a del key, they use a backspace key thats labled 'delete'. Sigh...

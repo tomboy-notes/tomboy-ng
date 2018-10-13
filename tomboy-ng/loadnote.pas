@@ -43,6 +43,7 @@ unit LoadNote;
     2018/03/18  Added a test it AddText to ensure we don't put an empty text block in. Issue #27
     2018/07/27  Called ReplaceAngles() on string assigned to Title.
     2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
+    2018/10/13  Altered LoadFile() so Tabs are allowed through
 }
 
 {$mode objfpc}{$H+}
@@ -104,7 +105,7 @@ begin
        while fs.Position < fs.Size do begin
          fs.read(ch, 1);
          if Ch = #13 then fs.read(ch, 1);   // drop #13 on floor. Silly Windows double newline.
-         if (Ch = '<') or (Ch < ' ')then begin
+         if (Ch = '<') or ((Ch < ' ') and (Ch <> #09)) then begin     // 09 is Tab, let it through
              if (Ch < ' ') then             // thats a newline
                  	AddText(True)
              else ReadTag(fs);
