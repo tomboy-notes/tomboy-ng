@@ -1,12 +1,12 @@
 object FormSDiff: TFormSDiff
-  Left = 378
-  Height = 437
-  Top = 134
-  Width = 488
+  Left = 534
+  Height = 438
+  Top = 154
+  Width = 615
   VertScrollBar.Visible = False
   Caption = 'A Note Sync Clash has been Detected'
-  ClientHeight = 437
-  ClientWidth = 488
+  ClientHeight = 438
+  ClientWidth = 615
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '1.8.4.0'
@@ -17,9 +17,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Panel1
     Left = 0
-    Height = 350
+    Height = 346
     Top = 0
-    Width = 488
+    Width = 615
     Anchors = [akTop, akLeft, akRight, akBottom]
     ContentPadding.Left = 5
     ContentPadding.Top = 5
@@ -33,14 +33,15 @@ object FormSDiff: TFormSDiff
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Panel1
     AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Button2
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 2
-    Height = 35
+    Left = 375
+    Height = 40
     Hint = 'Pull down remote note and backup local.'
-    Top = 400
+    Top = 396
     Width = 120
-    Anchors = [akLeft, akBottom]
+    Anchors = [akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Bottom = 2
     Caption = 'Use Remote'
@@ -59,12 +60,12 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 122
-    Height = 35
+    Left = 495
+    Height = 40
     Hint = 'Use and Push to Sync Repo'
-    Top = 400
+    Top = 396
     Width = 120
-    Anchors = [akLeft, akBottom]
+    Anchors = [akRight, akBottom]
     BorderSpacing.Bottom = 2
     Caption = 'Use Local'
     Color = clAqua
@@ -80,15 +81,15 @@ object FormSDiff: TFormSDiff
     AnchorSideBottom.Control = Button1
     Left = 2
     Height = 50
-    Top = 350
-    Width = 486
+    Top = 346
+    Width = 613
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     ClientHeight = 50
-    ClientWidth = 486
+    ClientWidth = 613
     TabOrder = 3
     object LabelRemote: TLabel
-      Left = 160
+      Left = 140
       Height = 17
       Top = 6
       Width = 90
@@ -96,7 +97,7 @@ object FormSDiff: TFormSDiff
       ParentColor = False
     end
     object LabelLocal: TLabel
-      Left = 160
+      Left = 140
       Height = 17
       Top = 24
       Width = 73
@@ -107,42 +108,108 @@ object FormSDiff: TFormSDiff
       Left = 11
       Height = 17
       Top = 6
-      Width = 138
-      Caption = 'Remote Last Change'
+      Width = 114
+      Caption = 'Remote Changed'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 11
       Height = 17
       Top = 24
-      Width = 121
-      Caption = 'Local Last Change'
+      Width = 97
+      Caption = 'Local Changed'
       ParentColor = False
     end
+    object RadioLong: TRadioButton
+      Left = 488
+      Height = 22
+      Hint = 'Maybe necessary to show difference'
+      Top = 24
+      Width = 95
+      Caption = 'Long Lines'
+      OnChange = RadioLongChange
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+    end
+    object RadioShort: TRadioButton
+      Left = 488
+      Height = 22
+      Hint = 'Easier to read'
+      Top = 1
+      Width = 96
+      Caption = 'ShortLines'
+      Checked = True
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      TabStop = True
+    end
   end
-  object RadioShort: TRadioButton
-    Left = 264
-    Height = 22
-    Hint = 'Easier to read'
-    Top = 401
-    Width = 96
-    Caption = 'ShortLines'
-    Checked = True
-    ParentShowHint = False
-    ShowHint = True
+  object Label1: TLabel
+    AnchorSideBottom.Control = ButtAllRemote
+    Left = 24
+    Height = 17
+    Top = 394
+    Width = 282
+    Anchors = [akBottom]
+    Caption = 'Or make a choice for remainder of this run'
+    ParentColor = False
+  end
+  object ButtAllOldest: TButton
+    AnchorSideRight.Control = Button1
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 272
+    Height = 25
+    Top = 411
+    Width = 101
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Bottom = 2
+    Caption = 'Oldest'
+    ModalResult = 11
     TabOrder = 4
-    TabStop = True
   end
-  object RadioLong: TRadioButton
-    Left = 264
-    Height = 22
-    Hint = 'Maybe necessary to show difference'
-    Top = 417
-    Width = 96
-    Caption = 'Long Lines'
-    OnChange = RadioLongChange
-    ParentShowHint = False
-    ShowHint = True
+  object ButtAllNewest: TButton
+    AnchorSideRight.Control = ButtAllOldest
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 172
+    Height = 25
+    Top = 411
+    Width = 100
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Bottom = 2
+    Caption = 'Newest'
+    ModalResult = 8
     TabOrder = 5
+  end
+  object ButtAllLocal: TButton
+    AnchorSideRight.Control = ButtAllNewest
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 97
+    Height = 25
+    Top = 411
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Bottom = 2
+    Caption = 'Local'
+    ModalResult = 9
+    TabOrder = 6
+  end
+  object ButtAllRemote: TButton
+    AnchorSideRight.Control = ButtAllLocal
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 22
+    Height = 25
+    Top = 411
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Bottom = 2
+    Caption = 'Remote'
+    ModalResult = 10
+    TabOrder = 7
   end
 end

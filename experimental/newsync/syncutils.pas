@@ -14,11 +14,15 @@ type TSyncAction=(SyUnset,      // initial state, should not be like this at end
                 SyDownload,     // A new or edited note from elsewhere, download.
                 SyDeleteLocal,  // Synced previously but no longer present on server, delete locally
                 SyDeleteRemote, // Marked as having been deleted locally, so remove from server.
-                SyClash);       // Edited both locally and remotly, policy or user must decide.
+                SyClash,        // Edited both locally and remotly, policy or user must decide.
+                SyAllRemote,    // Clash Decision - Use remote note for all subsquent clashes
+                SyAllLocal,     // Clash Decision - Use local note for all subsquent clashes
+                SyAllNewest,    // Clash Decision - Use newest note for all subsquent clashes
+                SyAllOldest);   // Clash Decision - Use oldest note for all subsquent clashes
 
         // Indicates the readyness of a sync connection
 type TSyncAvailable=(SyncReady,         // We are ready to sync, looks good to go.
-                    SyncNoLocal,        // We don't have a local manifest, only an error if config things there should be one.
+                    SyncNoLocal,        // We don't have a local manifest, only an error if config thinks there should be one.
                     SyncNoRemoteMan,    // No remote manifest, an uninitialized repo perhaps ?
                     SyncNoRemoteRepo,   // Filesystem is OK but does not look like a repo.
                     SyncBadRemote,      // Has either Manifest or '0' dir but not both.
@@ -26,6 +30,14 @@ type TSyncAvailable=(SyncReady,         // We are ready to sync, looks good to g
                     SyncNoRemoteWrite,  // no write permission, do not proceed!
                     SyncMismatch,       // Its a repo, Captain, but not as we know it.
                     SyncXMLError);      // Housten, we have an XML error in a manifest !
+
+type TRepoAction = (
+                RepoJoin,               // Join (and use) an existing Repo
+                RepoNew,                // Create (and use) a new repo in presumably a blank dir
+                RepoUse);               // Go ahead and use this repo to sync
+
+type TConnection = (ConnFile, ConnNetRuby);
+
 
 type
   	PNoteInfo=^TNoteInfo;
@@ -133,7 +145,7 @@ begin
 		Node := Doc.DocumentElement.FindNode('last-change-date');
         Result := Node.FirstChild.NodeValue;
 	finally
-        Doc.free;		// xml errors are NOT caught in calling process
+        Doc.free;		// TODO - xml errors are NOT caught in calling process
 	end;
 end;
 
@@ -197,6 +209,10 @@ begin
         SyDeleteLocal  : Result := ' DeleteLocal ';
         SyDeleteRemote : Result := ' DeleteRemote ';
         SyClash : Result := ' Clash ';
+        SyAllLocal : Result := ' AllLocal ';
+        SyAllRemote : Result := ' AllRemote ';
+        SyAllNewest : Result := ' AllNewest ';
+        SyAllOldest : Result := ' AllOldest ';
     end;
     while length(result) < 15 do Result := Result + ' ';
 end;
@@ -261,6 +277,11 @@ begin
 
     	end;
     end;
+    if (Result > (now() + 36500)) or (Result < (Now() - 36500))  then
+        result := 0.0;
+		// TDateTime has integer part no. of days, fraction part is fraction of day.
+		// 100years ago or in future - Fail !
+
     { writeln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
 end;
 

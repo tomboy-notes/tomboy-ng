@@ -24,13 +24,13 @@ TNetSync = Class(TTomboyTrans)
 
     public
         function TestTransport(out ServerID : string) : TSyncAvailable; override;
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const LocRev : integer) : boolean; override;
+        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
-        function SetRemoteRepo(ManFile : string = '') : boolean; override;
+        //function SetRemoteRepo(ManFile : string = '') : boolean; override;
  end;
 
 
@@ -44,11 +44,11 @@ begin
         Result := SyncNoRemoteMan;
 end;
 
-function TNetSync.GetNewNotes(const NoteMeta: TNoteInfoList; const LocRev: integer): boolean;
+function TNetSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 begin
-    { Will call external ruby script that returns a list of notes that are newer
-      than LocRev. Probably does something like
-      Runcommand('ruby', ['sync.rb', 'newnotes', inttostr(LocRev)]);
+    { Will call external ruby script that returns a list of notes. Probably does
+      something like -
+      Runcommand('ruby', ['sync.rb', 'newnotes', booltostr(GetLCD)]);
       we then capture the output from RunCommand(), parse it and put result in
       the NoteMeta list. Capture at least ID and RevNo and ideally LastChangeDate.
       If all worked as expected, set result to true, if not, False and put something
@@ -83,10 +83,10 @@ begin
     result := ConfigDir + 'remote.note';
 end;
 
-function TNetSync.SetRemoteRepo(ManFile: string = ''): boolean;
+{function TNetSync.SetRemoteRepo(ManFile: string = ''): boolean;
 begin
 
-end;
+end; }
 
 end.
 

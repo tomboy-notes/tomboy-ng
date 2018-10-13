@@ -81,6 +81,7 @@ begin
 	    ASync.NotesDir:= EditNotes.Text;
 	    ASync.ConfigDir := EditConfig.Text;
 	    ASync.SyncAddress := EditSync.Text;
+        ASync.RepoAction:= RepoUse;
 	    //ASync.CurrRev:=SpinEdit1.Value;
 	    Async.SetMode(True);
 	       // SyncState := ASync.testConnection;
@@ -138,34 +139,34 @@ begin
             showmessage('ASync initial parameter error - ' + ASync.ErrorString);
             exit;
 		end;
-        ASync.IgnoreLocalManifest := True;          // because we asked to 'JOIN' !
+        ASync.RepoAction := RepoJoin;
 	    SyncState := Async.TestConnection();
         while SyncState <> SyncReady do
 	    case SyncState of
         // Ask user if we should proceed if we are SyncMisMatch, SyncNoRemoteRepo
         // quietlty proceed if NoLocal (but log to debug)
         // We cannot handle SyncXMLError, SyncBadRemote, SyncNoRemoteWrite
-	        SyncNoLocal : begin
+	    {    SyncNoLocal : begin
                 showmessage('No Local Manifest, Thats OK');
-                ASync.IgnoreLocalManifest := True;
+                ASync.UseLocalManifest := False;
                 SyncState := ASync.TestConnection();
-                end;
+                end;    }
 	        SyncNoRemoteRepo : begin ;
                     MR := QuestionDlg('Warning', 'Create a new Reop ?', mtConfirmation, [mrYes, mrNo], 'Blar');
                     if MR = mrYes then begin
-                        ASync.NewRepo:=True;
+                        ASync.RepoAction:= RepoNew;
                         SyncState := ASync.TestConnection();    // will try and create repo.
                         if SyncState = SyncNoRemoteRepo then
                             showmessage('ERROR ' + Async.ErrorString);
 					end else exit;
                 end;
-            SyncMisMatch : begin
+            { SyncMisMatch : begin
                     MR := QuestionDlg('Warning', 'Force Join of this Repo ?', mtConfirmation, [mrYes, mrNo], 'Blar');
                     if MR = mrYes then begin
-                        ASync.IgnoreLocalManifest := True;
+                        ASync.UseLocalManifest := False;
                         SyncState := ASync.TestConnection();
                     end;
-				end;
+				end; }
 	        SyncXMLError, SyncNoRemoteDir, SyncBadRemote, SyncNoRemoteWrite : begin
                         showmessage(ASync.ErrorString);
                         exit;
@@ -204,9 +205,13 @@ begin
     SDiff.LocalFilename := ClashRec.LocalFileName;
     Res := SDiff.ShowModal;
     case Res of
-            mrYes : Result := SyDownLoad;
-            mrNo  : Result := SyUpLoadEdit;
-    end;
+            mrYes      : Result := SyDownLoad;
+            mrNo       : Result := SyUpLoadEdit;
+            mrNoToAll  : Result := SyAllLocal;
+            mrYesToAll : Result := SyAllRemote;
+            mrAll      : Result := SyAllNewest;
+            mrClose    : Result := SyAllOldest;
+     end;
     SDiff.Free;
 end;
 

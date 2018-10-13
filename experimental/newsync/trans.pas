@@ -40,29 +40,28 @@ type
             { Creates or updates a remote reop, if st is blank, its a new reop,
             else we inc the remote rev number, creat a dir, copy existing manifest
             there, copy the offered manifest over top of existing. Ret True is all OK. }
-        function SetRemoteRepo(ManFile : string = '') : boolean; virtual; abstract;
+        // function SetRemoteRepo(ManFile : string = '') : boolean; virtual; abstract;
 
             {Tests availability of remote part of connection. For file sync thats
-            existance of manifest and 0 dir, write access. Returns with ServerID.
+            existance of manifest and 0 dir, write access. Sets and Returns with ServerID.
             This would be a good place to put lock or authenticate as  necessary}
         function TestTransport(out ServerID : string) : TSyncAvailable; virtual; abstract;
 
-            {Request a list of all notes the server knows about. Ones with a rev no higher
-            nominated revision should have a last-change-date. We don't use all fields
-            in TInfoList and the list must have been created.
-            This function gets, one way or another info that is in a RemoteManifest
-            it must return with the remote server ID so client knows it can trust
-            its local manifest. }
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const LocRev : integer
+            {Request a list of all notes the server knows about. Returns with Last Change
+            Date (LCD) if easily available and always if GetLCD is true. We don't use all
+            fields in TInfoList, the list must have been created.}
+        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean
                                    ) : boolean; virtual; abstract;
 
             {Request that all the notes mentioned in the simple list be downloaded and,
             if necessary, any existing note be moved to Backup.  }
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; virtual; abstract;
 
-            { Advise server that a note has been deleted, this does trigger a new rev.
-              must call note by note, returns false if Transport has an error. ExistRev is
-              rev number under which the note should be found in remote repo and deleted from.}
+            { --- Check if this function does actully need implementing ------
+              Advise server that a note has been deleted, a new rev has been triggered.
+              Would call note by note, returns false if Transport has an error.
+              ExistRev is rev number under which the note should be found in remote
+              repo and deleted from iff you feel so inclinded.}
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; virtual; abstract;
 
            { Push a list of notes up to the server. A new revision has been made and we

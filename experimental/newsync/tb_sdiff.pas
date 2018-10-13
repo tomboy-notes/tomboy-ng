@@ -5,7 +5,11 @@ unit TB_SDiff;
 
     // Use Remote, Yellow is mrYes, File1
     // Use Local, Aqua is mrNo, File2
-    // Anything else is DoNothing !
+    // Always Use Local is mrNoToAll
+    // Always Use Remote is mrYesToAll
+    // Always use newest mrAll
+    // Always use oldest mrClose
+    // Anything else is DoNothing - no, do not permit donothing
 }
 
 { History
@@ -29,14 +33,19 @@ type
     TFormSDiff = class(TForm)
         Button1: TButton;
         Button2: TButton;
+        ButtAllOldest: TButton;
+        ButtAllNewest: TButton;
+        ButtAllLocal: TButton;
+        ButtAllRemote: TButton;
         KMemo1: TKMemo;
+        Label1: TLabel;
         LabelRemote: TLabel;
         LabelLocal: TLabel;
         Label3: TLabel;
         Label4: TLabel;
         Panel1: TPanel;
-        RadioShort: TRadioButton;
         RadioLong: TRadioButton;
+        RadioShort: TRadioButton;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure RadioLongChange(Sender: TObject);
@@ -70,7 +79,7 @@ implementation
 
 {$R *.lfm}
 
-uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils;
+uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils, syncutils;
 
 { TFormSDiff }
 
@@ -170,6 +179,11 @@ begin
     if (TestDate > now()) or (TestDate < (Now() - 36500))  then
         // TDateTime has integer part no. of days, fraction part is fraction of day.
         // we have here in the future or more than 100years ago - Fail !
+
+        // +++++++++++++++++++++++++++++++++++++++++++++++++
+        // this is wrong, see how to do it in sync
+        // +++++++++++++++++++++++++++++++++++++++++++++++++
+
         Showmessage('Invalid last sync date in local version of note')
     else  LabelLocal.Caption := LastChange;
     GetNoteChangeGMT(RemoteFileName, LastChange);

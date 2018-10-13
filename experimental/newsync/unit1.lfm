@@ -32,7 +32,7 @@ object Form1: TForm1
     Left = 22
     Height = 17
     Top = 208
-    Width = 54
+    Width = 53
     Caption = 'Sync Dir'
     ParentColor = False
   end
@@ -40,7 +40,7 @@ object Form1: TForm1
     Left = 22
     Height = 17
     Top = 238
-    Width = 68
+    Width = 66
     Caption = 'Config Dir'
     ParentColor = False
   end
@@ -65,7 +65,7 @@ object Form1: TForm1
     Left = 22
     Height = 17
     Top = 264
-    Width = 65
+    Width = 64
     Caption = 'Notes Dir'
     ParentColor = False
   end
@@ -97,7 +97,7 @@ object Form1: TForm1
     Left = 159
     Height = 17
     Top = 296
-    Width = 238
+    Width = 237
     Caption = 'Note : we do not read the config file'
     ParentColor = False
   end
