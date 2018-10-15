@@ -77,7 +77,8 @@ type
             { Returns a full file name (inc path) to a (copy?) of indicated server
               version of a note. File sync will return just full path and name to the
               'remote' file but net sync will need to download the file and return
-              path and name to an overwriteable file, perhaps $CONFIG/remote.note ? }
+              path and name to an overwriteable file, perhaps $CONFIG/remote.note ?
+              We need this so we can compare notes when we are resolving a clash.}
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; virtual; abstract;
 
   end;

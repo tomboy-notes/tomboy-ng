@@ -14,6 +14,7 @@ type
 
     TForm1 = class(TForm)
 			Button1: TButton;
+            ButtonAltSync: TButton;
         ButtSyncExisting: TButton;
 		ButJoinNew: TButton;
 		CheckBoxTestRun: TCheckBox;
@@ -27,6 +28,7 @@ type
         Memo1: TMemo;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
 		procedure Button1Click(Sender: TObject);
+        procedure ButtonAltSyncClick(Sender: TObject);
         procedure ButtSyncExistingClick(Sender: TObject);
 		procedure ButJoinNewClick(Sender: TObject);
 		procedure FormCreate(Sender: TObject);
@@ -116,6 +118,11 @@ begin
     else if MR = mrNo then showmessage('no');
 end;
 
+procedure TForm1.ButtonAltSyncClick(Sender: TObject);
+begin
+    EditSync.text := '/run/user/1000/gvfs/smb-share:server=192.168.1.1,share=usbdisk/SanDisk_FirebirdUSBFlashDrive_1_ca4c/PascalTrans/Sync_TestRig/';
+end;
+
 // Join (possibly forcing a (new) join) connection or, if its not there
 // initialise that connection.
 
@@ -124,6 +131,7 @@ var
     SyncState : TSyncAvailable;
     MR : integer;
     //UseLocalManifest : boolean = True;
+    Tick1, Tick2, Tick3, Tick4 : DWord;
 begin
     Memo1.Clear;
 	try
@@ -140,7 +148,9 @@ begin
             exit;
 		end;
         ASync.RepoAction := RepoJoin;
+        Tick1 := GetTickCount64();
 	    SyncState := Async.TestConnection();
+        Tick2 := GetTickCount64();
         while SyncState <> SyncReady do
 	    case SyncState of
         // Ask user if we should proceed if we are SyncMisMatch, SyncNoRemoteRepo
@@ -160,7 +170,7 @@ begin
                             showmessage('ERROR ' + Async.ErrorString);
 					end else exit;
                 end;
-            { SyncMisMatch : begin
+            {SyncMisMatch : begin
                     MR := QuestionDlg('Warning', 'Force Join of this Repo ?', mtConfirmation, [mrYes, mrNo], 'Blar');
                     if MR = mrYes then begin
                         ASync.UseLocalManifest := False;
@@ -174,11 +184,13 @@ begin
 	    end;    // end of case statement
 	    if SyncState = SyncReady then begin
 	        ASync.StartSync();
+            Tick3 := GetTickCount64();
 	        DisplaySync();
 		end else showmessage('Cancelling operation');
     finally
         ASync.Free;
     end;
+    memo1.append('Test = ' + inttostr(Tick2 - Tick1) + ' and StartSync = ' + inttostr(Tick3 - Tick2));
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);

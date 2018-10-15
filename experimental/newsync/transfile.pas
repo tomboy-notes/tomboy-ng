@@ -238,7 +238,8 @@ begin
         debugln(ErrorString);
         exit(False);
     end;
-    if FileExists(RemoteAddress + 'manifest.xml') then
+
+    {if FileExists(RemoteAddress + 'manifest.xml') then
         // Backup old remote manifest to new rev directory.
 	      if not CopyFile(RemoteAddress + 'manifest.xml', RemoteAddress + '0' + PathDelim
 	                    + inttostr(RemoteServerRev + 1) + PathDelim + 'manifest.xml') then begin
@@ -247,13 +248,20 @@ begin
 	                    + PathDelim + 'manifest.xml';
 	          debugln(ErrorString);
 	          exit(False);
-	      end;
+	      end; }
   {if debugmode then } debugln('Remote Manifest is ' + RemoteManifest);
   if not CopyFile(RemoteManifest, RemoteAddress + 'manifest.xml') then begin
       ErrorString := 'Failed to move new root remote manifest file ' + RemoteManifest;
       debugln(ErrorString);
       exit(False);
   end;
+  if not CopyFile(RemoteManifest, RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1)
+        + PathDelim + 'manifest.xml') then begin
+      ErrorString := 'Failed to move new remote manifest file to revision dir';
+      debugln(ErrorString);
+      exit(False);
+  end;
+
   Result := True;
 end;
 

@@ -59,6 +59,12 @@ First time sync setup is easy but if has been synced elsewhere and there are Del
 listed in Local Manifest, warn user (ideally sync with the old repo first).
 Local Manifest will be ignored and overwritten if new sync is successful.
 
+When joining, we initially grab just data in remote manifest but then when we look at
+local notes, if we find just one potential clash (ie same ID) we go back and redo
+the remote data, this time getting LCD for every note. Substantially slower.....
+If there are only a few potential clashes, we'd be better to download each relevent
+file. But maybe the cost of finding out balances that out ?
+
 if not NewRepo
         Read Local Manifest into List  do need LCD for each note.  (Or, perhaps
         only get LCDs if we find clashes ? Will save time if really is new to client).
@@ -112,7 +118,7 @@ type                       { ----------------- T S Y N C --------------------- }
             { Scans Notes dir looking for each note in NoteMetaData. Any it finds
               are either clashes or SyNothing, anything left are downloads.
               Used when JOINING an existing repo.}
-      procedure CheckUsingLCD();
+      function CheckUsingLCD(AssumeNoClash : boolean) : boolean;
 
             { Looks at a clash and determines if its an up or down depending on
               possible higher order TSyncActions such as newer, older }
@@ -156,7 +162,7 @@ type                       { ----------------- T S Y N C --------------------- }
                 remote. Then looks to see if we have deleted any previously synced notes.
                 Then scans the local notes dir looking for any notes not listed in
                 NoteMetaData, they are new and must be uploaded. }
-	  function LoadRepoData(): boolean;
+	  function LoadRepoData(ForceLCD : boolean): boolean;
 
             { Searches list for any clashes, refering each one to user. Done after
               list is filled out in case we want to ask user for general instrucions }
@@ -378,7 +384,7 @@ begin
     debugln('NoteMetaData has ' + inttostr(NoteMetaData.Count) + ' entries.');
 end;
 
-procedure TSync.CheckUsingLCD();
+function TSync.CheckUsingLCD(AssumeNoClash : boolean) : boolean;
 var
     Index : integer;
     Info : TSearchRec;
@@ -391,6 +397,7 @@ begin
             LocLCD := GetNoteLastChangeSt(NotesDir + Info.Name, ErrorString);
             // hmm, not checking for errors there .....
             if PNote <> nil then begin
+                if AssumeNoClash then exit(false);      // might be a clash, go fill out LCD in remote data
                if PNote^.LastChange = LocLCD then
                   PNote^.Action := SyNothing
                else PNote^.Action := SyClash;
@@ -407,6 +414,7 @@ begin
     for Index := 0 to NoteMetaData.Count -1 do
         if NoteMetaData.Items[Index]^.Action = SyUnSet then
            NoteMetaData.Items[Index]^.Action := SyDownLoad;
+    exit(True);
 end;
 
 function TSync.TestConnection(): TSyncAvailable;
@@ -627,25 +635,16 @@ begin
 	Result := true;
 end;
 
-function TSync.LoadRepoData(): boolean;
+function TSync.LoadRepoData(ForceLCD : boolean): boolean;
 begin
     Result := True;
+    FreeAndNil(NoteMetaData);
+    NoteMetaData := TNoteInfoList.Create;
     case RepoAction of
         RepoUse : Result := Transport.GetNewNotes(NoteMetaData, False);
-        RepoJoin : Result := Transport.GetNewNotes(NoteMetaData, True);
+        RepoJoin : Result := Transport.GetNewNotes(NoteMetaData, ForceLCD);
     end;
     // We do not load remote metadata when creating a new repo !
-
- {   if not Transport.GetNewNotes(NoteMetaData, not UseLocalManifest) then begin
-          // if we are not using Local Manifest, must get full LCD data from remote
-          ErrorString := Transport.ErrorString;
-          exit(False);
-	end;
-    if UseLocalManifest then begin
-        Result := UseRemoteData();
-        CheckRemoteDeletes();
-        CheckLocalDeletes();
-    end;     }
 end;
 
                         { ---------- The Lets Do it Function ------------- }
@@ -653,16 +652,21 @@ end;
 function TSync.StartSync(): boolean;
 var
     NewRev : boolean;
+    // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
-    freeandnil(NoteMetaData);               // we may get here again and again
-    NoteMetaData := TNoteInfoList.Create;
     freeandNil(LocalMetaData);
     LocalMetaData := TNoteInfoList.Create;
-    if not LoadRepoData() then exit(False);
+    if not LoadRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
         RepoUse : begin UseRemoteData(); CheckRemoteDeletes(); CheckLocalDeletes(); end;
-        RepoJoin : CheckUsingLCD();
-        {RepoNew : }
+        RepoJoin : if not CheckUsingLCD(True) then begin    // at least 1 possible clash
+                 LoadRepoData(True);                        // start again, getting LCD this time
+                 CheckUsingLCD(False);
+            end;
+        RepoNew : begin
+                freeandNil(NoteMetaData);
+                NoteMetaData := TNoteInfoList.Create;
+            end
     end;
     CheckNewNotes();
     ProcessClashes();
@@ -736,10 +740,15 @@ begin
     try
     	try
     		ReadXMLFile(Doc, ConfigDir + 'manifest.xml');
-                Node := Doc.DocumentElement.FindNode('last-sync-date');
-                LocalLastSyncDateSt := Node.FirstChild.NodeValue;
-                Node := Doc.DocumentElement.FindNode('server-id');
-                LocalLastSyncID := Node.FirstChild.NodeValue;
+            Node := Doc.DocumentElement.FindNode('last-sync-date');
+            if assigned(Node) then
+                LocalLastSyncDateSt := Node.FirstChild.NodeValue
+            else begin
+                LocalLastSyncDateSt := '';
+                debugln('ERROR, cannot find LSD in ' + ConfigDir + 'manifest.xml');
+            end;
+            Node := Doc.DocumentElement.FindNode('server-id');
+            LocalLastSyncID := Node.FirstChild.NodeValue;
             Node := Doc.DocumentElement.FindNode('last-sync-rev');
             try
                 RevStr := Node.FirstChild.NodeValue;

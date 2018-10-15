@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 158
+  Left = 470
   Height = 384
-  Top = 161
+  Top = 215
   Width = 681
   Caption = 'Join New'
   ClientHeight = 384
@@ -31,7 +31,7 @@ object Form1: TForm1
   object LabelSync: TLabel
     Left = 22
     Height = 17
-    Top = 208
+    Top = 264
     Width = 53
     Caption = 'Sync Dir'
     ParentColor = False
@@ -39,7 +39,7 @@ object Form1: TForm1
   object LabelConfig: TLabel
     Left = 22
     Height = 17
-    Top = 238
+    Top = 200
     Width = 66
     Caption = 'Config Dir'
     ParentColor = False
@@ -62,9 +62,9 @@ object Form1: TForm1
     TabOrder = 3
   end
   object LabelNotes: TLabel
-    Left = 22
+    Left = 24
     Height = 17
-    Top = 264
+    Top = 232
     Width = 64
     Caption = 'Notes Dir'
     ParentColor = False
@@ -89,7 +89,7 @@ object Form1: TForm1
     Left = 119
     Height = 27
     Top = 264
-    Width = 241
+    Width = 537
     TabOrder = 6
     Text = 'EditSync'
   end
@@ -109,6 +109,15 @@ object Form1: TForm1
     Caption = 'Button1'
     OnClick = Button1Click
     TabOrder = 7
+  end
+  object ButtonAltSync: TButton
+    Left = 581
+    Height = 25
+    Top = 240
+    Width = 75
+    Caption = 'Alt Sync'
+    OnClick = ButtonAltSyncClick
+    TabOrder = 8
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 328
