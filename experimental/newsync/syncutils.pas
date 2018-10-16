@@ -1,11 +1,19 @@
 unit syncutils;
-
+{
+    A Unit to support the tomboy-ng sync unit
+    Copyright (C) 2018 David Bannon
+    See attached licence file.
+}
 {$mode objfpc}{$H+}
 
 interface
 
 uses
     Classes, SysUtils, dateutils, LazLogger;
+
+type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount OK
+                 SyncNextRuby,  // Sync to NextCloud using external Ruby modules
+                 SyncOther);
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.

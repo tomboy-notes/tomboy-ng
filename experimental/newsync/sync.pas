@@ -1,8 +1,42 @@
 unit sync;
+{
+    A Unit to manage tomboy-ng sync behaviour.
+    Copyright (C) 2018 David Bannon
+    See attached licence file.
+}
 
 {$mode objfpc}{$H+}
 
-{ Operation of this unit -
+{ How to use this Unit -
+
+    Syncutils will probably be needed in Interface Uses
+    Sync in implementation of Uses.
+
+  if we belive we have an existion Repo accessible -
+
+  	ASync := TSync.Create();
+	ASync.DebugMode:=True;
+	ASync.TestRun := ? ;
+	ASync.ProceedFunction:=@Proceed;    // A higher level function that can resolve clashes
+	ASync.NotesDir:= ?;
+	ASync.ConfigDir := ?;
+	ASync.SyncAddress := ?;
+    ASync.RepoAction:= RepoUse;         // RepoUse says its all there, ready to go.
+	Async.SetMode(SyncFile);            // SyncFile, SyncNextRuby ....
+    SyncReady <> ASync.TestConnection() then    // something bad happened, SyncReady only
+                                                // acceptable answer. Check ErrorString
+
+  If joining an existing or making a new repo, set RepoAction to RepoJoin, if TestConnection
+  returns SyncNoRemoteRepo then ask user if they want to create a new repo, try again with
+  RepoNew.
+
+  Other errors to be dealt with include -
+  SyncXMLError, SyncNoRemoteDir, SyncBadRemote, SyncNoRemoteWrite ....
+
+  -----------------------------------------------------------------------------
+
+
+Operation of this unit -
 
 Fistly, this unit depends on on the Trans unit, a virtual unit of which the TransFile
 has been implemented and TransNet partially. Further Transport layers should be easily
@@ -113,7 +147,7 @@ type                       { ----------------- T S Y N C --------------------- }
 	         // Where we find Tomboy style notes
 	    FNotesDir : string;
 	         // Where we find config and local manifest files
-	    FConfigDir : string;
+        FConfigDir : string;
 
             { Scans Notes dir looking for each note in NoteMetaData. Any it finds
               are either clashes or SyNothing, anything left are downloads.
@@ -239,7 +273,7 @@ type                       { ----------------- T S Y N C --------------------- }
 	    procedure ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing: integer);
 
                 { True=FileSync, False=Network Sync }
-        procedure SetMode(Mode : boolean);               // todo - use an enumerated type ....
+        procedure SetMode(Mode : TSyncTransport);               // todo - use an enumerated type ....
 
                 { Checks NoteMetaData for valid Actions }
         function CheckMetaData() : boolean;
@@ -335,17 +369,34 @@ begin
     end;
 end;
 
-procedure TSync.SetMode(Mode: boolean);
+procedure TSync.SetMode(Mode: TSyncTransport);
 begin
-    if Mode then begin
-        Transport := TFileSync.Create;
-        Transport.NotesDir:=NotesDir;
-        Transport.ConfigDir:=ConfigDir;
-        SyncAddress := AppendPathDelim(SyncAddress);
-        if debugmode then debugln('Notes are stored in ' + NotesDir);
-	end
-	else Transport := TNetSync.Create;
+    NotesDir := AppendPathDelim(NotesDir);
+    ConfigDir := AppendPathDelim(ConfigDir);
+    ErrorString := '';
+    FreeAndNil(Transport);
+    case Mode of
+        SyncFile : begin
+                SyncAddress := AppendPathDelim(SyncAddress);
+                Transport := TFileSync.Create;
+	        end;
+        SyncNextRuby : begin
+                Transport := TNetSync.Create;
+                // SyncAddress := AppendPathDelim(SyncAddress);       ??
+            end;
+        SyncOther : begin
+                debugln('Oh boy ! This will end in tears !');
+                ErrorString := 'SyncOther is not implemented !';
+        end;
+    end;
+    Transport.NotesDir := NotesDir;
+    Transport.ConfigDir := ConfigDir;
     Transport.RemoteAddress:= SyncAddress;
+    if DebugMode then begin
+        debugln('Remote address is ' + SyncAddress);
+        debugln('Local Config ' + ConfigDir);
+        debugln('Notes dir ' + NotesDir);
+	end;
 end;
 
 procedure TSync.ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer);
@@ -421,11 +472,6 @@ function TSync.TestConnection(): TSyncAvailable;
 var
     ServerID : string;
 begin
-    if DebugMode then begin
-        debugln('Remote address is ' + SyncAddress);
-        debugln('Local Config ' + ConfigDir);
-        debugln('Notes dir ' + NotesDir);
-	end;
     if RepoAction = RepoNew then begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';

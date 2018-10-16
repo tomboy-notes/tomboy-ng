@@ -85,7 +85,7 @@ begin
 	    ASync.SyncAddress := EditSync.Text;
         ASync.RepoAction:= RepoUse;
 	    //ASync.CurrRev:=SpinEdit1.Value;
-	    Async.SetMode(True);
+	    Async.SetMode(SyncFile);
 	       // SyncState := ASync.testConnection;
 	       {case SyncState of
 	               Syncready : Async.StartSync();
@@ -142,7 +142,7 @@ begin
 	    ASync.NotesDir:= EditNotes.Text;
 	    ASync.ConfigDir := EditConfig.Text;
 	    ASync.SyncAddress := EditSync.Text;
-	    Async.SetMode(True);         // Ie, Filesync
+	    Async.SetMode(SyncFile);
         if ASync.ErrorString <> '' then begin
             showmessage('ASync initial parameter error - ' + ASync.ErrorString);
             exit;

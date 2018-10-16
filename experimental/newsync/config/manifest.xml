@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns="http://beatniksoftware.com/tomboy">
-  <last-sync-date>2018-10-07T23:41:23.6850000-04:00</last-sync-date>
-  <last-sync-rev>"1"</last-sync-rev>
-  <server-id>"E2EB638A-62FC-4318-8D93-BBCA09157BE2"</server-id>
+  <last-sync-date>2018-10-15T19:57:13.3050000+11:00</last-sync-date>
+  <last-sync-rev>"0"</last-sync-rev>
+  <server-id>"A64DE8A7-342D-4E7D-B75F-BA34E8A6A56E"</server-id>
   <note-revisions>
-    <note guid="A1B372D4-BC28-477A-A853-7CA882861C60" latest-revision="1" />
-    <note guid="84B9E342-3A0D-408D-B0A5-46FFD50A846A" latest-revision="0" />
-    <note guid="88299c65-8858-44d0-9fa2-e78ca77749ba" latest-revision="0" />
-    <note guid="B4B75FFE-996B-4D9A-B978-71D55427C7F1" latest-revision="0" />
-    <note guid="8DEF7350-396C-4D11-B4A7-B74E75F56678" latest-revision="0" />
     <note guid="719CF8C9-BA9A-4A8C-9BD0-5DEDB9937B0E" latest-revision="0" />
+    <note guid="B4B75FFE-996B-4D9A-B978-71D55427C7F1" latest-revision="0" />
     <note guid="B7DDD376-8C48-7532-0CD4-D0A2A3845AD0" latest-revision="0" />
+    <note guid="88299c65-8858-44d0-9fa2-e78ca77749ba" latest-revision="0" />
+    <note guid="A1B372D4-BC28-477A-A853-7CA882861C60" latest-revision="0" />
+    <note guid="84B9E342-3A0D-408D-B0A5-46FFD50A846A" latest-revision="0" />
+    <note guid="8DEF7350-396C-4D11-B4A7-B74E75F56678" latest-revision="0" />
   </note-revisions>
   <note-deletions>
   </note-deletions>
