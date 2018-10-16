@@ -1,6 +1,10 @@
 unit TB_SDiff;
 {
     A unit that can display differences between two similar notes.
+      *  Copyright (C) 2018 David Bannon
+      *  See attached licence file.
+
+
     User can choose to DoNothing, use First (Remote) or Second (Local)
 
     // Use Remote, Yellow is mrYes, File1
@@ -17,6 +21,7 @@ unit TB_SDiff;
     2018/09/17  Changes to work with new sync model. We now just use the two
                 file names in TClashRec and we get the last-change-dates our
                 selves. Should be compatible with old sync model ....
+    2018/10/16  Options to apply choice to all notes.
 }
 
 {$mode objfpc}{$H+}

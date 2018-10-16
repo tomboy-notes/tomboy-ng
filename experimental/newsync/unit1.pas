@@ -1,5 +1,9 @@
 unit Unit1;
 
+{
+    A basic GUI to facilitate testing of the sync model.
+}
+
 {$mode objfpc}{$H+}
 
 interface
