@@ -83,11 +83,11 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, Spin, EditBtn, BackUpView
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, BackUpView
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 // Types;
 
-type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash
+type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash pref in config file
 
 type
 
@@ -229,7 +229,8 @@ type
         { The dir expected to hold config file and, possibly local manifest }
         LocalConfig : string;
         { relevent only when using file sync }
-        RemoteRepo  : string;
+        // RemoteRepo  : string;
+
         SyncOption : TSyncOption;
         { Indicates we have done a config, not necessarily a valid one }
         HaveConfig : boolean;
@@ -243,7 +244,7 @@ type
         // service functon to other units, returns a string with current datetime
         // in a format like the Tomboy schema.
         function GetLocalTime: ANSIstring;
-            { A target for mainunit ? }
+            { Triggers a Sync, if its not all setup aready and working, user show and error }
         procedure Synchronise();
         property ExportPath : ANSIString Read fExportPath write fExportPath;
     end;
@@ -276,6 +277,7 @@ uses IniFiles, LazLogger,
     Note_Lister,	// List notes in BackUp and Snapshot tab
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
+    syncutils,
     recover,        // Recover lost or damaged files
     hunspell;       // spelling check
 
@@ -319,7 +321,7 @@ begin
         CheckShowIntLinks.enabled := true;
         ShowIntLinks := CheckShowIntLinks.Checked;
         SetFontSizes();
-		if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
+	if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
         else if RadioUseLocal.Checked then SyncOption := UseLocal
         else if RadioUseServer.Checked then SyncOption := UseServer;
 	end;
@@ -575,7 +577,8 @@ begin
     else
         LocalConfig := GetAppConfigDirUTF8(False);
     if LocalConfig = '' then LocalConfig := GetAppConfigDirUTF8(False);
-    LabelSettingPath.Caption := AppendPathDelim(LocalConfig) + 'tomboy-ng.cfg';
+    LocalConfig := AppendPathDelim(LocalConfig);
+    LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
     LabelLocalConfig.Caption := LocalConfig;
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
@@ -611,7 +614,6 @@ begin
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
 		    LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', SyncNotConfig);
-            RemoteRepo := LabelSyncRepo.Caption;
             LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
 	    finally
             ConfigFile.free;
@@ -650,7 +652,7 @@ begin
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
       ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
-      ConfigFile.writestring('SyncSettings', 'SyncRepo', RemoteRepo);
+      ConfigFile.writestring('SyncSettings', 'SyncRepo', LabelSyncRepo.Caption);
       if CheckManyNoteBooks.checked then
       	Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
       else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
@@ -795,8 +797,11 @@ procedure TSett.Synchronise();
 begin
     FormSync.NoteDirectory := Sett.NoteDirectory;
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-    FormSync.RemoteRepo := Sett.RemoteRepo;
-    FormSync.SetupFileSync := False;
+    FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
+    FormSync.SetupSync := False;
+    if RadioFile.Checked then
+            FormSync.TransPort := SyncFile
+    else FormSync.TransPort := SyncNextRuby;
     if FormSync.Visible then
         FormSync.Show
     else
@@ -807,29 +812,23 @@ end;
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
     if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    if FileExists(LocalConfig + 'manifest.xml') then
+        if mrYes <> QuestionDlg('Warning', 'Drop existing sync connection ?', mtConfirmation, [mrYes, mrNo], 0) then exit;
     if SelectDirectoryDialog1.Execute then begin
-        LabelWaitForSync.Caption := 'Ok, please wait, might take a few minutes .....';
-        Application.ProcessMessages;   		// That forces (eg) the above caption update.
-		RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-        if RemoteRepo = '' then RemoteRepo := SyncNotConfig;
-        LabelSyncRepo.Caption := RemoteRepo;
         FormSync.NoteDirectory := NoteDirectory;
         FormSync.LocalConfig := LocalConfig;
-        FormSync.RemoteRepo := RemoteRepo;
-        FormSync.SetupFileSync := True;
+        FormSync.SetupSync := True;
+        if RadioFile.Checked then
+            FormSync.TransPort := SyncFile
+        else FormSync.TransPort := SyncNextRuby;
+        FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         if mrOK = FormSync.ShowModal then begin
-            RemoteRepo := LabelSyncRepo.Caption;
-           	// ButtonSaveConfigClick(self);
+            LabelSyncRepo.Caption := FormSync.RemoteRepo;
             ButtonSetSynServer.Caption:='Change File Sync';
-        	// OK, user has tested, done first sync, is happy. Save this config.
             SettingsChanged();
             NeedRefresh := True;
-        end else begin
+        end else
         	LabelSyncRepo.Caption := SyncNotConfig;
-            RemoteRepo := SyncNotConfig;
-		end;
-        SearchForm.IndexNotes();
-        LabelWaitForSync.Caption := '';
 	end;
 end;
 

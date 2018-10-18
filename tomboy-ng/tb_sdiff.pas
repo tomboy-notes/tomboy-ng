@@ -1,15 +1,27 @@
 unit TB_SDiff;
 {
     A unit that can display differences between two similar notes.
+      *  Copyright (C) 2018 David Bannon
+      *  See attached licence file.
+
+
     User can choose to DoNothing, use First (Remote) or Second (Local)
 
     // Use Remote, Yellow is mrYes, File1
     // Use Local, Aqua is mrNo, File2
-    // Anything else is DoNothing !
+    // Always Use Local is mrNoToAll
+    // Always Use Remote is mrYesToAll
+    // Always use newest mrAll
+    // Always use oldest mrClose
+    // Anything else is DoNothing - no, do not permit donothing
 }
 
 { History
     2018/08/14  Added to project
+    2018/09/17  Changes to work with new sync model. We now just use the two
+                file names in TClashRec and we get the last-change-dates our
+                selves. Should be compatible with old sync model ....
+    2018/10/16  Options to apply choice to all notes.
 }
 
 {$mode objfpc}{$H+}
@@ -19,7 +31,6 @@ interface
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
     ExtCtrls, ComCtrls, kmemo;
-
 type
 
     { TFormSDiff }
@@ -27,14 +38,19 @@ type
     TFormSDiff = class(TForm)
         Button1: TButton;
         Button2: TButton;
+        ButtAllOldest: TButton;
+        ButtAllNewest: TButton;
+        ButtAllLocal: TButton;
+        ButtAllRemote: TButton;
         KMemo1: TKMemo;
+        Label1: TLabel;
         LabelRemote: TLabel;
         LabelLocal: TLabel;
         Label3: TLabel;
         Label4: TLabel;
         Panel1: TPanel;
-        RadioShort: TRadioButton;
         RadioLong: TRadioButton;
+        RadioShort: TRadioButton;
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure RadioLongChange(Sender: TObject);
@@ -47,6 +63,9 @@ type
         function CanResync(const SL1, SL2: TStringList; const Spot1, Spot2, End1, End2: integer
             ): integer;
         procedure CheckFiles();
+		function GetDateFromStr(const DateStr: ANSIString): TDateTime;
+		function GetNoteChangeGMT(const FullFileName: ANSIString; out
+				LastChange: ANSIString): TDateTime;
         procedure GotoEnd(const NoteNo : integer; const SL: TStringList; const Spot, TheEnd: integer);
         function RemoveXml(const St: AnsiString): AnsiString;
         // Returns a new (synced) Pos, showing intermediate lines.
@@ -65,7 +84,7 @@ implementation
 
 {$R *.lfm}
 
-uses LazLogger;
+uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils, syncutils;
 
 { TFormSDiff }
 
@@ -156,8 +175,86 @@ begin
 end;
 
 procedure TFormSDiff.FormShow(Sender: TObject);
+var
+    TestDate: TDateTime;
+    LastChange : string;
 begin
+    // Go and get Title and last-change-date from both versions of note
+    TestDate := GetNoteChangeGMT(LocalFileName, LastChange);
+    if (TestDate > now()) or (TestDate < (Now() - 36500))  then
+        // TDateTime has integer part no. of days, fraction part is fraction of day.
+        // we have here in the future or more than 100years ago - Fail !
+
+        // +++++++++++++++++++++++++++++++++++++++++++++++++
+        // this is wrong, see how to do it in sync
+        // +++++++++++++++++++++++++++++++++++++++++++++++++
+
+        Showmessage('Invalid last sync date in local version of note')
+    else  LabelLocal.Caption := LastChange;
+    GetNoteChangeGMT(RemoteFileName, LastChange);
+    if (TestDate > now()) or (TestDate < (Now() - 36500))  then
+        Showmessage('Invalid last sync date in remote version of note')
+    else LabelRemote.Caption := LastChange;
     CheckFiles();
+end;
+
+function TFormSDiff.GetNoteChangeGMT(const FullFileName : ANSIString; out LastChange : ANSIString) : TDateTime;
+var
+        Doc : TXMLDocument;
+        Node : TDOMNode;
+begin
+    if not FileExistsUTF8(FullFileName) then begin
+        DebugLn('ERROR - File not found, cant read note change date for ',  FullFileName);
+        Result := 0.0;
+        exit();
+    end;
+    try
+        ReadXMLFile(Doc, FullFileName);
+        Node := Doc.DocumentElement.FindNode('last-change-date');
+        LastChange := Node.FirstChild.NodeValue;
+        finally
+            Doc.free;               // xml errors are caught in calling process
+        end;
+    Result := GetDateFromStr(LastChange);
+end;
+
+function TFormSDiff.GetDateFromStr(const DateStr: ANSIString): TDateTime;
+var
+    TimeZone : TDateTime;
+begin
+    try
+        if not TryEncodeTimeInterval(strtoint(copy(DateStr, 29, 2)),    // Hour
+                 strtoint(copy(DateStr, 32, 2)),                        // Minutes
+                 0,                                                     // Seconds
+                 0,                                                     // mSeconds
+                 TimeZone)  then DebugLn('Fail on interval encode ');
+    except on EConvertError do begin
+            DebugLn('FAIL on converting time interval ' + DateStr);
+            DebugLn('Hour ', copy(DateStr, 29, 2), ' minutes ', copy(DateStr, 32, 2));
+        end;
+    end;
+    try
+        if not TryEncodeDateTime(strtoint(copy(DateStr, 1, 4)),         // Year
+                strtoint(copy(DateStr, 6, 2)),                          // Month
+                strtoint(copy(DateStr, 9, 2)),                          // Day
+                strtoint(copy(DateStr, 12, 2)),                         // Hour
+                strtoint(copy(DateStr, 15, 2)),                         // Minutes
+                strtoint(copy(DateStr, 18, 2)),                         // Seconds
+                strtoint(copy(DateStr, 21, 3)),                         // mSeconds
+                Result)  then DebugLn('Fail on date time encode ');
+    except on EConvertError do begin
+            DebugLn('FAIL on converting date time ' + DateStr);
+        end;
+    end;
+    try
+        if DateStr[28] = '+' then Result := Result - TimeZone
+        else if DateStr[28] = '-' then Result := Result + TimeZone
+        else debugLn('******* Bugger, we are not parsing DATE String - Please Report ********');
+     except on EConvertError do begin
+            DebugLn('FAIL on calculating GMT ' + DateStr);
+        end;
+     end;
+     { debugln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
 end;
 
 procedure TFormSDiff.RadioLongChange(Sender: TObject);

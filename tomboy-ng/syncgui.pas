@@ -46,6 +46,8 @@ unit SyncGUI;
     2018/08/14  Added SDiff to replace clumbsy dialog when sync clash happens.
     2018/08/18  Improved test/reporting of file access during sync
 
+
+
 }
 
 {$mode objfpc}{$H+}
@@ -57,7 +59,7 @@ interface
 
 uses
 		Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-		StdCtrls, Grids, TB_Sync;
+		StdCtrls, Grids, Syncutils;
 
 type
 
@@ -66,7 +68,7 @@ type
   TFormSync = class(TForm)
 				ButtonSave: TButton;
 				ButtonCancel: TButton;
-				ButtonOK: TButton;
+				ButtonClose: TButton;
 				Label1: TLabel;
 				Label2: TLabel;
 				Memo1: TMemo;
@@ -76,10 +78,12 @@ type
 				Splitter3: TSplitter;
 				StringGridReport: TStringGrid;
 				procedure ButtonCancelClick(Sender: TObject);
-				procedure ButtonOKClick(Sender: TObject);
+				procedure ButtonCloseClick(Sender: TObject);
     			procedure ButtonSaveClick(Sender: TObject);
 				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
                 procedure FormHide(Sender: TObject);
+                { At Show, depending on SetUpSync, we'll either go ahead and do it, any
+                  error is fatal or, if True, walk user through process. }
 				procedure FormShow(Sender: TObject);
                 procedure StringGridReportGetCellHint(Sender: TObject; ACol, ARow: Integer;
                                   var HintText: String);
@@ -87,20 +91,32 @@ type
                 FormShown : boolean;
                 LocalTimer : TTimer;
                 procedure AfterShown(Sender : TObject);
+                procedure DisplaySync();
+                    { Called when user wants to join a (possibly uninitialised) Repo,
+                      will handle some problems with user's help. }
+                procedure JoinSync;
+                    { Called to do a sync assuming its all setup. Any problem is fatal }
+                procedure ManualSync;
 
     procedure ShowReport;
-            	procedure TestRepo();
-        		procedure DoSetUp();
+            	//procedure TestRepo();
+        		//procedure DoSetUp();
 
 		public
 
-              	RemoteRepo, LocalConfig, NoteDirectory : ANSIString;
-              	SetupFileSync : boolean;
-                procedure ManualSync;
-                    { we will pass address of this function to TB_Sync }
+                Transport : TSyncTransPort;
+
+                    // A string containg a URL to remote repo, just a dir for FileSync
+              	RemoteRepo : String;
+                LocalConfig, NoteDirectory : ANSIString;
+                    { Indicates we are doing a setup User has already agreed to abandon any
+                      existing Repo but we don't know if indicated spot already contains a
+                      repo or, maybe we want to make one. }
+              	SetupSync : boolean;
+                    { we will pass address of this function to Sync }
                 procedure MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
-                    { we will pass address of this function to TB_Sync }
-                function Proceed(const ClashRec : TClashRecord) : TClashDecision;
+                    { we will pass address of this function to Sync }
+                function Proceed(const ClashRec : TClashRecord) : TSyncAction;
 		end;
 
 var
@@ -113,11 +129,11 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff;
+uses LazLogger, SearchUnit, TB_SDiff, Sync;
 {$R *.lfm}
 
 var
-    FileSync : TTomboyFileSync;
+        ASync : TSync;
 { TFormSync }
 
 
@@ -126,75 +142,32 @@ begin
     SearchForm.MarkNoteReadOnly(FileName, WasDeleted);
 end;
 
-function TFormSync.Proceed(const ClashRec : TClashRecord) : TClashDecision;
+function TFormSync.Proceed(const ClashRec : TClashRecord) : TSyncAction;
 var
     SDiff : TFormSDiff;
     Res : integer;
 begin
-	// showmessage(TheAction + ' ' + FileName);
     SDiff := TFormSDiff.Create(self);
     SDiff.RemoteFilename := ClashRec.ServerFileName;
     SDiff.LocalFilename := ClashRec.LocalFileName;
-    SDiff.NoteTitle:= ClashRec.Title;
-    SDiff.LabelRemote.Caption:=ClashRec.ServerLastChange;
-    SDiff.LabelLocal.Caption := ClashRec.LocalLastChange;
-    Res := SDiff.ShowModal;
+    case SDiff.ShowModal of
+            mrYes      : Result := SyDownLoad;
+            mrNo       : Result := SyUpLoadEdit;
+            mrNoToAll  : Result := SyAllLocal;
+            mrYesToAll : Result := SyAllRemote;
+            mrAll      : Result := SyAllNewest;
+            mrClose    : Result := SyAllOldest;
+    else
+            Result := SyUnSet;      // Thats an ERROR !  What are you doing about it ?
+    end;
     SDiff.Free;
-    Result := cdDoNothing;
-    case Res of
-            mrYes : Result := cdDownLoad;
-            mrNo  : Result := cdUpLoad;
-    end;
-    // OK, it turns out that "Do Nothing" is not an option, it totally messes up.
-    // see sync.note for a model that does not work !
-
-    if Result = cdDoNothing then begin
-        showmessage('Will Download, you can recover local note from Settings->Backup');
-        Result := cdDownLoad;
-    end;
     // Use Remote, Yellow is mrYes, File1
     // Use Local, Aqua is mrNo, File2
-    // Anything else is DoNothing !
-
- {   with TTaskDialog.Create(self) do
-        try
-          Caption := 'Note clash has been detected';
-          Title := 'Please indicate what you would like to do';
-          Text := Clashrec.Title + 'Server Note Last Change ' + ClashRec.ServerLastChange
-          	+ '\n Local Note Last Change ' + ClashRec.LocalLastChange;
-          FooterText := 'Note ID ' + ClashRec.NoteID;
-          CommonButtons := [];
-          with TTaskDialogButtonItem(Buttons.Add) do begin
-            Caption := 'Download and use the remote note';
-            ModalResult := TModalResult(cdDownload);
-          end;
-          with TTaskDialogButtonItem(Buttons.Add) do begin
-            Caption := 'Upload and overwrite the remote note';
-            ModalResult := TModalResult(cdUpload);
-          end;
-          with TTaskDialogButtonItem(Buttons.Add) do begin
-            Caption := 'Do nothing for this sync run.';
-            ModalResult := TModalResult(cdDoNothing);
-          end;
-          MainIcon := tdiQuestion;
-          if Execute then
-            Result := TClashDecision(ModalResult);
-        finally
-          Free;
-        end;
-    end;                      }
-
-    // Result := TClashDecision(cdDoNothing);          // test
-	{case Result of
-		cdUpload : ShowMessage('we''ll upload');
-		cdDownLoad : ShowMessage('we''ll download');
-		cdDoNothing : ShowMessage('we''ll do nothing');
-	end;}
 end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-	FileSync.Free;
+	FreeandNil(ASync);          // probably not necessary but ....
 end;
 
 procedure TFormSync.FormHide(Sender: TObject);
@@ -205,61 +178,122 @@ begin
 end;
 
 
+
+
+procedure TFormSync.DisplaySync();
+var
+    UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
+begin
+    ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing);
+    Memo1.Append('New Uploads    ' + inttostr(UpNew));
+    Memo1.Append('Edit Uploads   ' + inttostr(UpEdit));
+    Memo1.Append('Downloads      ' + inttostr(Down));
+    Memo1.Append('Local Deletes  ' + inttostr(DelLoc));
+    Memo1.Append('Remote Deletes ' + inttostr(DelRem));
+    Memo1.Append('Clashes        ' + inttostr(Clash));
+    Memo1.Append('Do Nothing     ' + inttostr(DoNothing));
+    debugln('Display Sync called, DoNothings is ' + inttostr(DoNothing));
+end;
+
+    // User is only allowed to press Cancel or Save when this is finished.
+procedure TFormSync.JoinSync;
+var
+    SyncAvail : TSyncAvailable;
+    // ASync : TSync;
+    UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
+begin
+    freeandnil(ASync);
+	ASync := TSync.Create;
+    Label1.Caption:='Testing Repo ....';
+    Application.ProcessMessages;
+    ASync.ProceedFunction:= @Proceed;
+    // ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;      // This is a TODO !!
+    ASync.DebugMode := Application.HasOption('s', 'debug-sync');
+	ASync.NotesDir:= NoteDirectory;
+	ASync.SyncAddress := RemoteRepo;        // This is 'some' URL
+	ASync.ConfigDir := LocalConfig;
+    ASync.RepoAction:=RepoJoin;
+    Async.SetMode(TransPort);
+    SyncAvail := ASync.TestConnection();
+    if SyncAvail = SyncNoRemoteRepo then
+        if mrYes = QuestionDlg('Advice', 'Create a new Repo ?', mtConfirmation, [mrYes, mrNo], 0) then begin
+            ASync.RepoAction:=RepoNew;
+            SyncAvail := ASync.TestConnection();
+        end;
+    if SyncAvail <> SyncReady then begin
+        showmessage('Unable to proceed because ' + ASync.ErrorString);
+        ModalResult := mrCancel;
+    end;
+    Label1.Caption:='Looking at notes ....';
+    Application.ProcessMessages;
+    ASync.TestRun := True;
+    if ASync.StartSync() then begin
+        DisplaySync();
+        Label1.Caption:='Ready to proceed ....';
+        Label2.Caption := 'Press Save and Sync if this looks OK';
+        ButtonSave.Enabled := True;
+    end  else
+        Showmessage('A Sync Error occured ' + ASync.ErrorString);
+    ButtonCancel.Enabled := True;
+end;
+
 procedure TFormSync.AfterShown(Sender : TObject);
 begin
-        LocalTimer.Enabled := False;             // Don't want to hear from you again
-        if SetUpFileSync then begin
-            TestRepo();
-        	Label2.Caption:='If the report below makes sense, click Save and Sync !';
-            ButtonSave.Enabled := True;
-        end else
-            ManualSync();
+    LocalTimer.Enabled := False;             // Don't want to hear from you again
+    if SetUpSync then begin
+        JoinSync();
+    end else
+        ManualSync();
 end;
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
     FormShown := False;
-    Memo1.Clear;
-	FileSync := TTomboyFileSync.Create;
-    FileSync.ProceedFunction:= @Proceed;
-    FileSync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
-    if Application.HasOption('s', 'debug-sync') then
-         FileSync.VerboseMode := True
-    else
-	    FileSync.VerboseMode := False;
-	FileSync.NotesDir:= NoteDirectory;
-	FileSync.RemoteManifestDir:=RemoteRepo;
-	FileSync.LocalManifestDir:=LocalConfig;
+    Label2.Caption := 'Please wait a minute or two ...';
     Memo1.Clear;
     StringGridReport.Clear;
-    if SetUpFileSync then begin
-        if FileSync.GetLocalServerID() then
-              memo1.append('Connection already setup, are you sure you want a NEW connection ?')
-        else memo1.Append('Could not find local manifest, thats OK');
-        ButtonCancel.Enabled:=True;
-        ButtonOK.Enabled := False;
-        ButtonSave.Enabled := False;
-    	Label1.Caption := 'Testing Sync';
-        Label2.Caption := 'Please wait a minute or two ...';
-    end else begin
-        ButtonCancel.Enabled:=False;
-        ButtonOK.Enabled := False;
-        ButtonSave.Enabled := False;
-    	Label1.Caption := 'Manual Sync';
-    	Label2.Caption:='Doing a manual sync, please report any surprises !';
-	end;
+    ButtonSave.Enabled := False;
+    ButtonClose.Enabled := False;
+    ButtonCancel.Enabled := False;
+    // We call a timer to get out of OnShow so ProcessMessages works as expected
     LocalTimer := TTimer.Create(Nil);
     LocalTimer.OnTimer:= @AfterShown;
     LocalTimer.Interval:=500;
     LocalTimer.Enabled := True;
 end;
 
-
-
-
+        // User is only allowed to press Close when this is finished.
 procedure TFormSync.ManualSync();
 begin
-        if FileSync.GetLocalServerID then
+    Label1.Caption := 'Testing Sync';
+    Application.ProcessMessages;
+	ASync := TSync.Create;
+    try
+        ASync.ProceedFunction:= @Proceed;
+        // ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;      // This is a TODO !!
+        ASync.DebugMode := Application.HasOption('s', 'debug-sync');
+	    ASync.NotesDir:= NoteDirectory;
+	    ASync.SyncAddress := RemoteRepo;        // This is 'some' URL
+	    ASync.ConfigDir := LocalConfig;
+        ASync.RepoAction:=RepoUse;
+        Async.SetMode(TransPort);
+        if Syncready <> ASync.TestConnection() then begin
+            showmessage('Unable to sync because ' + ASync.ErrorString);
+            ModalResult := mrCancel;
+        end;
+        Label1.Caption:= 'Running Sync';
+        Application.ProcessMessages;
+        ASync.TestRun := False;                    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ASync.StartSync();
+        DisplaySync();
+        Label1.Caption:='All Done';
+        Label2.Caption := 'Press Close';
+        ButtonClose.Enabled := True;
+    finally
+        FreeandNil(ASync);
+    end;
+
+{        if FileSync.GetLocalServerID then
             Memo1.Append('Found local manifest, good !')
         else begin
 	     	DebugLn('Looks like we are not setup to sync - ', FileSync.ErrorMessage);
@@ -278,14 +312,14 @@ begin
 	    		Memo1.Append('DoSync reported an error - ' + FileSync.ErrorMessage);
             ShowReport();
 		end;
-        ButtonOK.Enabled := True;
+        ButtonClose.Enabled := True; }
 end;
 
 procedure TFormSync.ShowReport();
 var
         Index : integer;
 begin
-     	with FileSync.ReportList do begin
+{     	with FileSync.ReportList do begin
     		for Index := 0 to Count -1 do begin
                 StringGridReport.InsertRowWithValues(Index,
                 	[Items[Index]^.Action, Items[Index]^.Title, Items[Index]^.ID]);
@@ -295,15 +329,16 @@ begin
         StringGridReport.AutoSizeColumn(1);
         if  FileSync.ReportList.Count = 0 then
             Memo1.Append('No notes needed syncing. You need to write more.')
-        else Memo1.Append(inttostr(FileSync.ReportList.Count) + ' notes were dealt with.');
+        else Memo1.Append(inttostr(FileSync.ReportList.Count) + ' notes were dealt with.');    }
 end;
 
 procedure TFormSync.StringGridReportGetCellHint(Sender: TObject; ACol,
   ARow: Integer; var HintText: String);
 begin
-HintText := FileSync.ReportList.Items[ARow]^.Message;
+// HintText := FileSync.ReportList.Items[ARow]^.Message;
 end;
-procedure TFormSync.TestRepo;	// called OnShow()
+
+{procedure TFormSync.TestRepo;	// called OnShow()
 var
         ServerID : ANSIString;
         FatalError : boolean;
@@ -326,9 +361,9 @@ begin
             else memo1.append('make connection false');
     end;
     ShowReport();
-end;
+end; }
 
-procedure TFormSync.DoSetUp;
+{procedure TFormSync.DoSetUp;
 begin
     Memo1.Append('Remote Repo is ' + RemoteRepo);
     FileSync.TestMode := False;
@@ -339,7 +374,7 @@ begin
     StringGridReport.Clear;
     ShowReport();
     Label2.Caption:='OK, finished that';
-end;
+end;  }
 
 
 
@@ -348,23 +383,28 @@ begin
     ModalResult := mrCancel;
 end;
 
-procedure TFormSync.ButtonOKClick(Sender: TObject);
+procedure TFormSync.ButtonCloseClick(Sender: TObject);
 begin
 	ModalResult := mrOK;
 end;
 
+    // This only ever happens during a Join .....
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
     Label2.Caption:='OK, I''ll do it, please wait .....';
-    Label1.Caption:='Manual Sync';
+    Label1.Caption:='First Time Sync';
     Memo1.Clear;
     Application.ProcessMessages;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
-    DoSetUp();
-    ButtonOK.Enabled := True;
-    SearchForm.IndexNotes();        { TODO : Should make this call optional, its potentially slow }
-    Label2.Caption:='OK, finished that';
+    ASync.TestRun := False;
+    if ASync.StartSync() then begin
+        DisplaySync();
+        Label1.Caption:='All Done';
+        Label2.Caption := 'Press Close';
+    end  else
+        Showmessage('A Sync Error occured ' + ASync.ErrorString);
+    ButtonClose.Enabled := True;
 end;
 
 end.

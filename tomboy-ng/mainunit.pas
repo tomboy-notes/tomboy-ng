@@ -305,7 +305,8 @@ begin
      ImageSpellCross.Visible := not ImageSpellTick.Visible;
 
      ImageSyncCross.Left := ImageSyncTick.Left;
-     ImageSyncTick.Visible := (Sett.RemoteRepo <> '');
+     ImageSyncTick.Visible := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+                and (Sett.LabelSyncRepo.Caption <> '');
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 
      if (ImageConfigTick.Visible and ImageNotesDirTick.Visible) then begin

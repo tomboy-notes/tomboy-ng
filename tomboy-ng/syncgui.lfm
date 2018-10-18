@@ -1,11 +1,11 @@
 object FormSync: TFormSync
-  Left = 307
+  Left = 592
   Height = 366
-  Top = 168
-  Width = 472
+  Top = 167
+  Width = 631
   Caption = 'FormSync'
   ClientHeight = 366
-  ClientWidth = 472
+  ClientWidth = 631
   OnClose = FormClose
   OnHide = FormHide
   OnShow = FormShow
@@ -18,10 +18,10 @@ object FormSync: TFormSync
     Left = 0
     Height = 91
     Top = 0
-    Width = 472
+    Width = 631
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 91
-    ClientWidth = 472
+    ClientWidth = 631
     TabOrder = 0
     object Label1: TLabel
       Left = 35
@@ -54,10 +54,10 @@ object FormSync: TFormSync
     Left = 0
     Height = 37
     Top = 91
-    Width = 472
+    Width = 631
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 37
-    ClientWidth = 472
+    ClientWidth = 631
     TabOrder = 1
     object ButtonCancel: TButton
       AnchorSideLeft.Control = Panel2
@@ -73,7 +73,7 @@ object FormSync: TFormSync
       OnClick = ButtonCancelClick
       TabOrder = 0
     end
-    object ButtonOK: TButton
+    object ButtonClose: TButton
       AnchorSideLeft.Control = ButtonCancel
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Panel2
@@ -85,11 +85,11 @@ object FormSync: TFormSync
       Width = 150
       Anchors = [akTop, akLeft, akBottom]
       Caption = 'Close'
-      OnClick = ButtonOKClick
+      OnClick = ButtonCloseClick
       TabOrder = 1
     end
     object ButtonSave: TButton
-      AnchorSideLeft.Control = ButtonOK
+      AnchorSideLeft.Control = ButtonClose
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Panel2
       AnchorSideBottom.Control = Panel2
@@ -115,11 +115,11 @@ object FormSync: TFormSync
     Left = 0
     Height = 238
     Top = 128
-    Width = 472
+    Width = 631
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel3'
     ClientHeight = 238
-    ClientWidth = 472
+    ClientWidth = 631
     TabOrder = 2
     object Memo1: TMemo
       AnchorSideLeft.Control = Splitter3
@@ -128,10 +128,10 @@ object FormSync: TFormSync
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
-      Left = 258
+      Left = 311
       Height = 236
       Top = 1
-      Width = 213
+      Width = 319
       Align = alRight
       Anchors = [akTop, akLeft, akRight, akBottom]
       Lines.Strings = (
@@ -148,7 +148,7 @@ object FormSync: TFormSync
       Left = 1
       Height = 236
       Top = 1
-      Width = 247
+      Width = 300
       Align = alLeft
       AlternateColor = clWhite
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -174,7 +174,7 @@ object FormSync: TFormSync
       AnchorSideRight.Control = Memo1
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
-      Left = 248
+      Left = 301
       Height = 236
       Top = 8
       Width = 10

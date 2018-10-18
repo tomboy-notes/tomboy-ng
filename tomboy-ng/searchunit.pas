@@ -342,9 +342,10 @@ begin
             end;
       	inc(Count);
   	end;
-    MainForm.MMSync.Enabled := not (Sett.RemoteRepo = '');
-    MainForm.TrayMenuSynchronise.Enabled := not (Sett.RemoteRepo = '');
-    //Sett.MMSync.Enabled := not (Sett.RemoteRepo = '');
+    MainForm.MMSync.Enabled := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+                and (Sett.LabelSyncRepo.Caption <> '');
+    MainForm.TrayMenuSynchronise.Enabled := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+                and (Sett.LabelSyncRepo.Caption <> '');
 end;
 
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);

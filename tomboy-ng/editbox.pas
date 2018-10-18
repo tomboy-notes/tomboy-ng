@@ -918,11 +918,14 @@ procedure TEditBoxForm.MenuItemSyncClick(Sender: TObject);
 begin
     if KMemo1.ReadOnly then exit();
 	if Dirty then SaveTheNote();
-    FormSync.NoteDirectory := Sett.NoteDirectory;
+
+    Sett.Synchronise();
+
+    {FormSync.NoteDirectory := Sett.NoteDirectory;
     FormSync.LocalConfig := Sett.LocalConfig;
-    FormSync.RemoteRepo := Sett.RemoteRepo;
+    FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
     FormSync.SetupFileSync := False;
-    FormSync.ShowModal;					// we don't care about result ...
+    FormSync.ShowModal;}					// we don't care about result ...
 end;
 
 { - - - H O U S E   K E E P I N G   F U C T I O N S ----- }
@@ -1032,7 +1035,8 @@ begin
     //{$UNDEF DEBUG_CLIPBOARD}
     {$endif}
     Kmemo1.Clear;
-    MenuItemSync.Enabled := (Sett.RemoteRepo <> '');
+    MenuItemSync.Enabled := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+            and (Sett.LabelSyncRepo.Caption <> '');
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
     else
