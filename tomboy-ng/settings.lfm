@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabSync
+    ActivePage = TabSnapshot
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 4
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -525,6 +525,14 @@ object Sett: TSett
           Caption = 'Settings'
           ParentColor = False
         end
+      end
+      object Label11: TLabel
+        Left = 18
+        Height = 17
+        Top = 32
+        Width = 343
+        Caption = 'AUTO snapshots not implemented yet, use manual !'
+        ParentColor = False
       end
     end
     object TabSpell: TTabSheet

@@ -46,6 +46,8 @@ unit Mainunit;
 
     --no-splash Dont show the small opening status/splash window on startup
 
+    --save-exit (Single note only) after import, save and exit.
+
     --version   Print version no and exit.
 
 }
@@ -223,7 +225,8 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     //I: Integer;
     Params : TStringList;
-    LongOpts : array [1..8] of string = ('no-splash', 'version', 'gnome3', 'debug-spell', 'debug-sync', 'debug-index', 'config-dir:','open-note:');
+    LongOpts : array [1..9] of string = ('no-splash', 'version', 'gnome3', 'debug-spell',
+            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
@@ -351,7 +354,7 @@ function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir:');
+    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
@@ -369,6 +372,7 @@ begin
        debugln('   --debug-spell                Show whats happening during spell setup');
        debugln('   --config-dir=PATH_to_DIR     Create or use an alternative config');
        debugln('   -o --open-note=PATH_to_NOTE  Open indicated note, switch is optional');
+       debugln('   --save-exit                  (Single note only) after import, save and exit.');
        debugln(CmdLineErrorMsg);
        result := true;
     end;

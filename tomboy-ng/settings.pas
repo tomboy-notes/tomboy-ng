@@ -118,6 +118,7 @@ type
 		GroupBox5: TGroupBox;
 		Label1: TLabel;
         Label10: TLabel;
+        Label11: TLabel;
         Label12: TLabel;
         Label13: TLabel;
         Label14: TLabel;
@@ -330,6 +331,7 @@ end;
 procedure TSett.PageControl1Change(Sender: TObject);
 begin
 	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    Label15.Caption := '';
 end;
 
 procedure TSett.StringGridBackUpDblClick(Sender: TObject);

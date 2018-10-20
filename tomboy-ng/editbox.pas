@@ -156,6 +156,7 @@ unit EditBox;
     2018/08/20  Above edit dropped ^X, ^C, ^V before kmemo sees them, fixed, refactored a bit
     2019/08/22  Add a whole lot more keys that KMemo auto supports, see AddKey(...) in keditcommon.pas
     2018/10/13  Kmemo1KeyDown now deals with a Tab.
+    2018/10/20  Added --save-exit, only in single note mode.
 }
 
 
@@ -985,8 +986,8 @@ begin
               if (UTF8Pos('xml', SLNote.Strings[0]) > 0)  and
                   (UTF8Pos('tomboy', SLNote.Strings[1]) > 0) then
                       FileType := 'tomboy'
-     //         else if (UTF8Pos('{\rtf1', SLNote.Strings[0]) > 0) then
-     //                 FileType := 'rft'
+              else if (UTF8Pos('{\rtf1', SLNote.Strings[0]) > 0) then
+                      FileType := 'rtf'
               else
                     if FileIsText(NoteFileName) then
                         FileType := 'text';        // Wow, thats brave !
@@ -997,11 +998,11 @@ begin
             FreeAndNil(SLNote);
           end;
     end;
-      debugln('Decided the file is of type ' + FileType);
+      if Verbose then debugln('Decided the file is of type ' + FileType);
       case FileType of
           'tomboy' : try ImportNote(NoteFileName); except on E: Exception do debugln('!!! EXCEPTION during IMPORT ' + E.Message); end;
      //     'rtf'    : KMemo1.LoadFromRTF(NoteFileName);  // Wrong, will write back there !
-          'text'   : begin
+          'text', 'rtf'   : begin
                         try
                         KMemo1.LoadFromFile(NoteFileName);
                         NoteFileName := AppendPathDelim(ExtractFilePath(NoteFileName)) +
@@ -1017,6 +1018,12 @@ begin
           ''       : debugln('Error, cannot identify that file type');
       end;
 
+    if Application.HasOption('save-exit') then begin
+        MarkDirty();
+        SaveTheNote();
+        // debugln('hmm, this should be a close.');
+        close;
+    end;
 end;
 
 procedure TEditBoxForm.FormShow(Sender: TObject);
