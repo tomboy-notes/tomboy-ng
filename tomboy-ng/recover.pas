@@ -70,6 +70,7 @@ type
         procedure CleanAndUnzip(const FullDestDir, FullZipName: string);
         function ExpandZipName(AFileName: string): string;
         function FindSnapFiles(): integer;
+        procedure RestoreSnapshot(const Snapshot: string);
         procedure ShowNotes(const FullSnapName: string);
         function ZipDate(WithDay : Boolean): string;
 
@@ -130,9 +131,10 @@ procedure TFormRecover.ButtonRecoverSnapClick(Sender: TObject);
 var
     ZName : string;
 begin
-    if (ListBoxSnapshots.ItemIndex >= 0) and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count) then begin
-        ZName := SnapDir + ListBoxSnapshots.Items[ListBoxSnapshots.ItemIndex];
-        showmessage('I''d use [' + ZName + '] and put it all in [' + NoteDir);
+    if (ListBoxSnapshots.ItemIndex >= 0)
+                and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count) then begin
+        RestoreSnapshot(ListBoxSnapshots.Items[ListBoxSnapshots.ItemIndex]);
+        //showmessage('I''d use [' + ZName + '] and put it all in [' + NoteDir);
     end;
 end;
 
@@ -140,9 +142,12 @@ procedure TFormRecover.ButtonSnapHelpClick(Sender: TObject);
 var
     DocsDir : string;   // this probably belongs in Settings.
 begin
-    DocsDir := '';   // that most certainly won't work for windows
+    DocsDir := ExtractFileDir(Application.ExeName);                     // UNTESTED
     {$ifdef LINUX}DocsDir := '/usr/share/doc/tomboy-ng/'; {$endif}
-    {$ifdef DARWIN}DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/'; {$endif}  // untested
+    {$ifdef DARWIN}
+    DocsDir := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';
+    //DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/';
+    {$endif}  // untested
     showmessage('About to open ' + DocsDir + 'recover.note');
     MainUnit.MainForm.SingleNoteMode(DocsDir + 'recover.note', False, True);
 end;
@@ -153,9 +158,12 @@ begin
     CreateSnapShot(NoteDir, SnapDir + 'Exist.zip');
 end;
 
-procedure TFormRecover.Button4Click(Sender: TObject);
+procedure TFormRecover.RestoreSnapshot(const Snapshot : string);
 begin
-    CleanAndUnzip(NoteDir, SnapDir + 'Exist.zip');
+    if mrYes <> QuestionDlg('Notes at risk !', 'Delete all notes in ' + NoteDir + ' and replace with '
+            + Snapshot + ' ' + DateTimeToStr(FileDateToDateTime(FileAge(SnapDir + Snapshot))) + ' ?'
+            , mtConfirmation, [mrYes, mrNo], 0) then exit;
+    CleanAndUnzip(NoteDir, SnapDir + Snapshot);
     if FileExists(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg') then begin
         CopyFile(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg', ConfigDir + 'tomboy-ng.cfg');
         DeleteFile(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg');
@@ -166,6 +174,11 @@ begin
         DeleteDirectory(NoteDir + 'config', False);
     end;
     showmessage('Notes and config files Restored, restart suggested.');
+end;
+
+procedure TFormRecover.Button4Click(Sender: TObject);
+begin
+    RestoreSnapshot('Exist.zip');
 end;
 
 procedure TFormRecover.StringGrid1DblClick(Sender: TObject);
