@@ -118,7 +118,7 @@ Do any required Downloads (backing up first)
 Do any required LocalDeletes (backing up first)
 (note - we don't need write access to repo until to here.)
 if we have any uploads or RemoteDeletes to do,
-          write a local copy of Remote Manifest, include LCD if available.
+          write a local copy of Remote Manifest, include LCDs if available.
          Make a Remote directory '0' + PathDelim + inttostr(RemoteRevNo+1)
          Copy existing RemoteManifest into above dir (if and only if it exists !)
          Copy the local copy of Remote Manifest (we made a few steps back) into Repo dir.
@@ -127,8 +127,10 @@ if we have any uploads or RemoteDeletes to do,
 Write out a new local manifest, the list has everything we need.
 
 HISTROY
-    2018/10/18  Memory leak in ChechUsingLCD(), StartSync() should not call processClashes()
+    2018/10/18  Memory leak in CheckUsingLCD(), StartSync() should not call processClashes()
                 during a TestRun. Only during real thing.
+    2018/10/22  CheckMetaData() was returning wrong value.
+    2018/10/25  Much testing, support for Tomdroid.
 
 
 }
@@ -145,6 +147,12 @@ type                       { ----------------- T S Y N C --------------------- }
   TSync = class
 
   private
+            // Generally an empty string but in Android/Tomdroid something we prefix
+            // to local manifest file name to indicate which connection it relates to.
+        ManPrefix : string;
+
+        TransportMode : TSyncTransport;
+
             { Indicates an action to take on a Clash, the user can select this
             action when the first clash happens }
         ProceedAction : TSyncAction;
@@ -156,16 +164,25 @@ type                       { ----------------- T S Y N C --------------------- }
 
             { Scans Notes dir looking for each note in NoteMetaData. Any it finds
               are either clashes or SyNothing, anything left are downloads.
-              Used when JOINING an existing repo.}
+              If AssumeNoClash and we find a clash, unresolable 'cos LCD missing, ret False,
+              (and expect LoadRepoData to be called again. Used when JOINING an existing repo.}
       function CheckUsingLCD(AssumeNoClash : boolean) : boolean;
+
+            { Backs up and then removes any local local notes listed NoteMetaData as SyDeleteLocal }
+      function DoDeleteLocal(): boolean;
+
+            { Returns the title of given note, prefers the local version but if
+              it does not exist, then "downloads" remote one }
+      function GetNoteTitle(const ID : ANSIString; const Rev : integer): ANSIString;
+      // function IDLooksOK(const ID: string): boolean;
 
             { Looks at a clash and determines if its an up or down depending on
               possible higher order TSyncActions such as newer, older }
       function ResolveAllClash(const Act : TSyncAction; const ID, FullRemoteFileName : ANSIString): TSyncAction;
 
-      { Goes over NoteMetaData (which has only remote notes at this stage) assigning
-        an Action to each. Only called when using an established sync connection. }
-      function UseRemoteData(): boolean;
+          { Goes over NoteMetaData (which has only remote notes at this stage) assigning
+            an Action to each. Only called when using an established sync connection. }
+      function CheckUsingRev(): boolean;
 
         {Notes we have deleted (and existed) here since last sync are marked DeleteRemote
          because we must delete them from the server. For file sync, that means not
@@ -183,24 +200,20 @@ type                       { ----------------- T S Y N C --------------------- }
       procedure CheckRemoteDeletes();
 
        // Just a debug procedure, dumps (some) contents of a list to console
-      procedure DisplayNoteInfo(meta: TNoteInfoList);
+      procedure DisplayNoteInfo(const meta: TNoteInfoList; const ListTitle : string);
             // Based on NoteMetaData, calls transport to delete notes from Server.
 	  function DoDeletes(): boolean;
 
-      // We call transport for all the notes in the list we need download. Transport does most of the work.
+          { We call transport for all the notes in the list we need download.
+          Transport does most of the work. In TestMode, does nothing }
 	  function DoDownloads(): boolean;
 
             { Uploads any files it finds necessary in NoteMetaData. Returns false
               if anything goes wrong (such as a file error) }
 	  function DoUploads(): boolean;
 
-            {   Asks Transport for a list of the notes remote server knows about, then sets
-                thier Action. At this stage, any previously synced but recently edited notes
-                are detected and marked as uploads or clashes. Then looks for any that have
-                been deleted by another client, they still appear in local manifest but not
-                remote. Then looks to see if we have deleted any previously synced notes.
-                Then scans the local notes dir looking for any notes not listed in
-                NoteMetaData, they are new and must be uploaded. }
+            {   Asks Transport for a list of the notes remote server knows about.
+                If ForceLCD then make heroic efforts to get last-change-dates }
 	  function LoadRepoData(ForceLCD : boolean): boolean;
 
             { Searches list for any clashes, refering each one to user. Done after
@@ -224,8 +237,8 @@ type                       { ----------------- T S Y N C --------------------- }
       function WriteLocalManifest(const WriteOK, NewRev : boolean) : boolean;
 
             { We write a remote manifest out localy if we have any uploads or to handle
-              the delete from server a note that was deleted locally to do.
-              Then call Transport to deal with it. Writing it locally is fast
+              the delete from server a note that was deleted locally to do. Then, if
+              TestMode is false, call Transport to deal with it. Writing it locally is fast
               and we get to check for and isolate any data errors. Initially
               written to $CONFIG/manifest.xml-remote and copied (moved ?).}
 	  function WriteRemoteManifest(out NewRev: boolean): boolean;
@@ -253,8 +266,10 @@ type                       { ----------------- T S Y N C --------------------- }
                 // Revision number the client is currently on
         CurrRev : integer;
                 // A string of local last sync date. Empty if we have not synced before
+                // Available iff we are in RepoUse mode after TestConnection()
         LocalLastSyncDateSt : string;
                 // Last time this client synced (not this run), set and tested in call to StartSync()
+                // Available iff we are in RepoUse mode after TestConnection()
         LocalLastSyncDate : TDateTime;
                 // Write debug messages as we do things.
         DebugMode : boolean;
@@ -275,12 +290,14 @@ type                       { ----------------- T S Y N C --------------------- }
         Property NotesDir : string read FNotesDir write FSetNotesDir;
 
                 { Reports on contents of a created and filled list }
-	    procedure ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing: integer);
+	    procedure ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors: integer);
 
                 { True=FileSync, False=Network Sync }
-        procedure SetMode(Mode : TSyncTransport);               // todo - use an enumerated type ....
+        function SetTransport(Mode : TSyncTransport) : TSyncAvailable;               // todo - use an enumerated type ....
 
-                { Checks NoteMetaData for valid Actions }
+                { Checks NoteMetaData for valid Actions, writes error to console.
+                  Always returns True and does mark bad lines with Action=SyError
+                  Also fills in note Title for notes we will do something with.}
         function CheckMetaData() : boolean;
 
             { May return : SyncXMLError, SyncNoRemoteDir, SyncNoRemoteWrite,
@@ -306,7 +323,7 @@ implementation
 
 { TSync }
 
-uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, LazLogger, LazFileUtils,
+uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, TransAndroid, LazLogger, LazFileUtils,
     FileUtil;
 
 var
@@ -374,8 +391,9 @@ begin
     end;
 end;
 
-procedure TSync.SetMode(Mode: TSyncTransport);
+function TSync.SetTransport(Mode: TSyncTransport) : TSyncAvailable;
 begin
+    TransportMode := Mode;
     NotesDir := AppendPathDelim(NotesDir);
     ConfigDir := AppendPathDelim(ConfigDir);
     ErrorString := '';
@@ -389,14 +407,20 @@ begin
                 Transport := TNetSync.Create;
                 // SyncAddress := AppendPathDelim(SyncAddress);       ??
             end;
-        SyncOther : begin
-                debugln('Oh boy ! This will end in tears !');
-                ErrorString := 'SyncOther is not implemented !';
-        end;
+        SyncAndroid : begin
+                debugln('Oh boy ! We have called the android line !');
+                Transport := TAndSync.Create;
+            end;
     end;
     Transport.NotesDir := NotesDir;
+    Transport.DebugMode := DebugMode;
+    if TransportMode = SyncAndroid then begin
+        ConfigDir := ConfigDir + 'android' + PathDelim;
+        ForceDirectory(ConfigDir);
+    end;
     Transport.ConfigDir := ConfigDir;
     Transport.RemoteAddress:= SyncAddress;
+    Result := Transport.TestTransportEarly(ManPrefix);          // important Tomdroid, not Filesync
     if DebugMode then begin
         debugln('Remote address is ' + SyncAddress);
         debugln('Local Config ' + ConfigDir);
@@ -404,11 +428,11 @@ begin
 	end;
 end;
 
-procedure TSync.ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer);
+procedure TSync.ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer);
 var
     Index : integer;
 begin
-    UpNew := 0; UpEdit := 0; Down := 0;
+    UpNew := 0; UpEdit := 0; Down := 0; Errors := 0;
     DelLoc := 0; DelRem := 0; DoNothing := 0; Clash := 0;
     for Index := 0 to NoteMetaData.Count -1 do begin
         case NoteMetaData.Items[Index]^.Action of
@@ -419,6 +443,7 @@ begin
             SyDeleteRemote : inc(DelRem);
             SyClash : inc(Clash);
             SyNothing : inc(DoNothing);
+            SyError : inc(Errors);
 		end;
     end;
 end;
@@ -428,37 +453,101 @@ var
     Index : integer;
 begin
     Result := True;
-    debugln('-------- In CheckMetaData --------');
+    ErrorString := '';
     for Index := 0 to NoteMetaData.Count -1 do begin
-        if not (NoteMetaData[Index]^.Action in [SyNothing, SyUploadNew, SyUpLoadEdit, SyDownLoad,
-                SyDeleteLocal, SyDeleteRemote]) then
-           Debugln('ERROR note not assigned ' + NoteMetaData[Index]^.ID + ' '
+        if NoteMetaData[Index]^.Action = SyUnSet then begin
+            Debugln('ERROR note not assigned ' + NoteMetaData[Index]^.ID + ' '
                    + NoteMetaData.ActionName(NoteMetaData[Index]^.Action) + '  '
                    + NoteMetaData.ActionName(NoteMetaData[Index]^.Action));
-        result := False;
+            result := False;
+        end;
+        if IDLooksOK(NoteMetaData[Index]^.ID) then begin
+            if NoteMetaData[Index]^.Action in [SyNothing, SyUploadNew, SyUpLoadEdit, SyDownLoad,
+                    SyDeleteLocal, SyDeleteRemote, SyClash] then
+                NoteMetaData[Index]^.Title := GetNoteTitle(NoteMetaData[Index]^.ID, NoteMetaData[Index]^.Rev)
+        end else begin
+            NoteMetaData[Index]^.Title := GetNoteTitle(NoteMetaData[Index]^.ID, NoteMetaData[Index]^.Rev);
+            Debugln('ERROR - invalid ID detected when CheckMetaData [' + NoteMetaData[Index]^.ID + ']');
+            NoteMetaData[Index]^.Action := SyError;
+            ErrorString := 'ERROR - invalid ID detected when CheckMetaData [' + NoteMetaData[Index]^.ID + ']';
+        end;
     end;
-    debugln('NoteMetaData has ' + inttostr(NoteMetaData.Count) + ' entries.');
+    if debugmode then
+       debugln('CheckMetaData - NoteMetaData has ' + inttostr(NoteMetaData.Count) + ' entries.');
+end;
+
+function TSync.GetNoteTitle(const ID : ANSIString; const Rev : integer) : ANSIString;
+var
+        Doc : TXMLDocument;
+        Node : TDOMNode;
+        FileName : string;
+begin
+    Result := 'File Not Found';
+    if FileExistsUTF8(NotesDir + ID + '.note') then
+        FileName := NotesDir + ID + '.note'
+    else FileName := Transport.DownLoadNote(ID, Rev);
+    if FileExistsUTF8(FileName) then begin
+        try
+            Result := 'Unknown Title';
+            try
+                ReadXMLFile(Doc, FileName);
+                Node := Doc.DocumentElement.FindNode('title');
+                Result := Node.FirstChild.NodeValue;
+            except on EXMLReadError do
+                Result := 'Note has no Title ' + FileName;
+                on EAccessViolation do
+                    Result := 'Access Violation ' + FileName;
+            end;
+        finally
+            Doc.free;
+        end;
+    end else begin
+        debugln('ERROR - cannot get title for ' + FileName);
+        result := 'ERROR getting Title';
+    end;
 end;
 
 function TSync.CheckUsingLCD(AssumeNoClash : boolean) : boolean;
 var
     Index : integer;
+    Count : integer = 0;
     Info : TSearchRec;
     PNote : PNoteInfo;
-    LocLCD : string;
+    LocLCD : string;        // The local note's last change date
 begin
+    { We declare a clash if both notes exist and LCDs are not identical.
+      However, iff we have a local last sync date (LLSD) then if the
+      earlier note pre-dates it, its not a clash. So, not a 'pure' LCD model,
+
+    }
     if FindFirst(NotesDir + '*.note', faAnyFile, Info)=0 then begin
         try
         repeat
+            inc(Count);
             PNote := NoteMetaData.FindID(copy(Info.Name, 1, 36));
             LocLCD := GetNoteLastChangeSt(NotesDir + Info.Name, ErrorString);
             // hmm, not checking for errors there .....
-            if PNote <> nil then begin
-                if AssumeNoClash then exit(false);      // might be a clash, go fill out LCD in remote data
-               if PNote^.LastChange = LocLCD then
-                  PNote^.Action := SyNothing
-               else PNote^.Action := SyClash;
-            end else begin              // this note is a new upload, add it to list.
+            if PNote <> nil then begin                      // ie, note exists on both sides
+                if AssumeNoClash and (PNote^.LastChange = '')
+                    then begin
+                        if Debugmode then debugln('CheckUsingLCD exiting because if unresolved clash');
+                        exit(false);                        // might be a clash, go fill out LCD in remote data
+                    end;
+                if PNote^.LastChange = LocLCD then          // its the same note
+                    PNote^.Action := SyNothing
+                else  begin
+                    PNote^.Action := SyClash;             // Best we can do if last sync date not available.
+                    if LocalLastSyncDateSt <> '' then begin          // We can override that iff we have a LLSD
+                        if GetGMTFromStr(LocLCD) < LocalLastSyncDate then  PNote^.Action := SyDownload
+                        else if  PNote^.LastChangeGMT < LocalLastSyncDate then PNote^.Action := SyUploadEdit;
+                        if debugmode then
+                            debugln('GMTimes - loc=' + FormatDateTime( 'yyyy-mm-dd hh:mm:ss', GetGMTFromStr(LocLCD))
+                                     + '  rem=' + FormatDateTime( 'yyyy-mm-dd hh:mm:ss', PNote^.LastChangeGMT)
+                                     + '  LLSD=' + FormatDateTime( 'yyyy-mm-dd hh:mm:ss', LocalLastSyncDate)
+                                     + '  rem-st' + PNote^.LastChange);
+                    end;
+                end;
+            end else begin                                  // this note is a new upload, add it to list.
                 new(PNote);
                 PNote^.ID := copy(Info.Name, 1, 36);
                 PNote^.LastChange:=LocLCD;
@@ -473,12 +562,14 @@ begin
     for Index := 0 to NoteMetaData.Count -1 do
         if NoteMetaData.Items[Index]^.Action = SyUnSet then
            NoteMetaData.Items[Index]^.Action := SyDownLoad;
+    if DebugMode then
+       Debugln('CheckUsingLCD checked against ' + inttostr(Count) + ' local notes');
     exit(True);
 end;
 
 function TSync.TestConnection(): TSyncAvailable;
-var
-    ServerID : string;
+{var
+    XServerID : string;}
 begin
     if RepoAction = RepoNew then begin
         LocalLastSyncDate := 0;
@@ -491,15 +582,15 @@ begin
 	    if not ReadLocalManifest() then exit(SyncXMLError);    // Error in local mainfest, OK or no manifest=true
 	    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
 	    if LocalLastSyncDate < 1.0 then begin
-		        ErrorString := 'Invalid last sync date in local manifest ' + LocalLastSyncDateSt;
-		        exit(SyncXMLError);
+		    ErrorString := 'Invalid last sync date in local manifest ' + LocalLastSyncDateSt;
+		    exit(SyncXMLError);
         end;
     end;
     if RepoAction = RepoJoin then begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
     end;
-    Result := Transport.TestTransport(ServerID);
+    Result := Transport.TestTransport();
     if Result <> SyncReady then begin
       ErrorString := Transport.ErrorString;
       exit;
@@ -510,26 +601,33 @@ begin
         debugln('Config=' + ConfigDir + ' NotesDir=' + NotesDir);
     end;
     if RepoAction = RepoUse then
-	    if ServerID <> LocalLastSyncID then begin
+	    if Transport.ServerID <> LocalLastSyncID then begin
 	        ErrorString := 'ServerID Mismatch';
             if DebugMode then
-                debugln('ERROR Server ID Mismatch Remote ' + ServerID + ' and local ' + LocalLastSyncID);
+                debugln('ERROR Server ID Mismatch Remote ' + Transport.ServerID + ' and local ' + LocalLastSyncID);
 	        exit(SyncMismatch);
 		end;
+    if Result = SyncReady then
+        if not IDLooksOK(Transport.ServerID) then begin
+            ErrorString := 'An invalid serverID detected [' + Transport.ServerID + ']';
+            debugln('ERROR - completed TestConnection but ServerID is invalid ['
+                    + Transport.ServerID + ']');
+            Result :=  SyncBadError;
+        end;
 end;
 
-procedure TSync.DisplayNoteInfo(meta : TNoteInfoList);
+procedure TSync.DisplayNoteInfo(const meta : TNoteInfoList; const ListTitle : string);
 var
     I : Integer;
     St : string;
 begin
-    debugln('-----------list dump for ' + Meta.ClassName);
+    debugln('-----------list dump for ' + ListTitle);
     for I := 0 to Meta.Count -1 do begin
         St := ' ' + inttostr(Meta.Items[i]^.Rev);
         while length(St) < 5 do St := St + ' ';
         // St := Meta.ActionName(Meta.Items[i]^.Action);
         debugln(Meta.Items[I]^.ID + St + Meta.ActionName(Meta.Items[i]^.Action)
-            + Meta.Items[i]^.LastChange);
+            + Meta.Items[i]^.LastChange + '   ' + Meta.Items[I]^.Title);
     end;
 end;
 
@@ -538,20 +636,24 @@ procedure TSync.CheckRemoteDeletes();
 var
     Index : integer;
     PNote : PNoteInfo;
+    Count : integer = 0;
 begin
-    // Iterate over LocalMetaData looking for notes listed a prev synced
-    // but are not listed in NoteMetaData. We'll add a entry in RemoteMetaData
+    // Iterate over LocalMetaData looking for notes listed as prev synced
+    // but are not listed in NoteMetaData. We'll add a entry in NoteMetaData
     // for any we find.
     for Index := 0 to LocalMetaData.Count -1 do begin
         if not LocalMetaData.Items[Index]^.Deleted then
             if nil = NoteMetaData.FindID(LocalMetaData.Items[Index]^.ID) then begin   // That is, we did not find it
                 new(PNote);
                 PNote^.ID:= LocalMetaData.Items[Index]^.ID;
-                PNote^.Title := LocalMetaData.Items[Index]^.Title;                      // I think we know title, useful debug info here....
+                PNote^.Title := LocalMetaData.Items[Index]^.Title;                    // I think we know title, useful debug info here....
                 PNote^.Action := SyDeleteLocal;                                       // Was deleted elsewhere, do same here.
                 NoteMetaData.Add(PNote);
+                inc(Count);
             end;
     end;
+    if debugmode then debugln('CheckRemoteDeletes checked ' + inttostr(LocalMetaData.Count)
+            + ' and found ' + inttostr(Count) + ' notes ');
 end;
 
 procedure TSync.CheckNewNotes();
@@ -559,11 +661,14 @@ var
     Info : TSearchRec;
     PNote : PNoteInfo;
     ID, CDate : string;
+    Count : integer = 0;
+    CountNew : integer = 0;
 begin
     if FindFirst(NotesDir + '*.note', faAnyFile, Info)=0 then begin
         repeat
             ID := copy(Info.Name, 1, 36);
-            Debugln('Found [' + NotesDir+ Info.Name + ']');
+            inc(Count);
+            //Debugln('Found [' + NotesDir+ Info.Name + ']');
             PNote := NoteMetaData.FindID(ID);
             if PNote = nil then begin
                 if LocalNoteExists(ID, CDate, True) then begin
@@ -573,12 +678,13 @@ begin
                         // PNote^.Rev := self.;          // don't need, upload knows how to inc
 	                    PNote^.Action:=SyUploadNew;
                         NoteMetaData.Add(PNote);
+                        inc(CountNew);
 				end else Debugln('Failed to find lastchangedate in ' + Info.Name);
 			end;
 			until FindNext(Info) <> 0;
         end;
     FindClose(Info);
-
+    if debugMode then debugln('CheckNewNotes found ' + inttostr(Count) + ' notes in local dir and ' + inttostr(CountNew) + ' new ones.');
 end;
 
     // Iterate over LocalMetaData looking for notes that have been deleted
@@ -586,18 +692,21 @@ end;
 procedure TSync.CheckLocalDeletes();
 var
     I : integer;
+    Count : integer = 0;
     PNote : PNoteInfo;
 begin
     for I := 0 to LocalMetaData.Count -1 do begin
         if LocalMetaData.Items[i]^.Deleted then begin
+            inc(Count);
             PNote := NoteMetaData.FindID(LocalMetaData.Items[i]^.ID);
             if PNote <> nil then
                 PNote^.Action := SyDeleteRemote;
         end;
     end;
+    if DebugMode then debugln('CheckLocalDeletes found ' + inttostr(Count) + ' deleted notes in local manifest');
 end;
 
-function TSync.UseRemoteData() : boolean;
+function TSync.CheckUsingRev() : boolean;
 var
     I : integer;
     ID : string;    // to make it a bit easier to read souce
@@ -611,7 +720,9 @@ begin
         if LocalNoteExists(ID, LocCDate) then begin
             LocalNoteExists(ID, LocCDate, True);
             LocChange := GetGMTFromStr(LocCDate) > LocalLastSyncDate;       // TDateTime is a float
-            RemChange := NoteMetaData.Items[I]^.Rev > CurrRev;
+
+            RemChange := NoteMetaData.Items[I]^.Rev > CurrRev;              // This is not valid for Tomdroid
+
             if LocChange and RemChange then
                 NoteMetaData.Items[I]^.Action := SyClash
             else if LocChange then
@@ -635,16 +746,34 @@ begin
 end;
 
 function TSync.DoDownloads() : boolean;
+var
+    I : integer;
 begin
-    Result := True;
-    if not TestRun then begin
-        debugln('Downloading notes.');
-        Result := Transport.DownloadNotes(NoteMetaData);
-	end;
+    Result := Transport.DownloadNotes(NoteMetaData);
 	if Result = false then begin
        self.ErrorString:= Transport.ErrorString;
        debugln('ERROR - Download Notes reported ' + ErrorString);
 	end;
+    for I := 0 to NoteMetaData.Count -1 do
+        if Notemetadata.Items[i]^.Action = SyDownload then
+           MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, False);
+    if DebugMode then debugln('Downloaded notes.');
+end;
+
+function TSync.DoDeleteLocal() : boolean;
+var
+    I : integer;
+begin
+    for I := 0 to NoteMetaData.Count -1 do begin
+        if NoteMetaData.Items[i]^.Action = SyDeleteLocal then begin
+            if FileExists(NotesDir + NoteMetaData.Items[i]^.ID + '.note') then
+                if CopyFile(NotesDir + NoteMetaData.Items[i]^.ID + '.note', NotesDir + PathDelim
+                        + 'Backup' + Pathdelim + NoteMetaData.Items[i]^.ID + '.note') then
+                    DeleteFile(NotesDir + NoteMetaData.Items[i]^.ID + '.note');
+            MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, True);
+        end;
+    end;
+    result := true;
 end;
 
 function TSync.DoDeletes() : boolean;
@@ -655,10 +784,11 @@ begin
         if NoteMetaData[Index]^.Action = SyDeleteRemote then begin
             if DebugMode then
                Debugln('Delete remote note : ' + NoteMetaData.Items[Index]^.ID);
-            if not TestRun then
+            if not TestRun then begin
                if not Transport.DeleteNote(NoteMetaData.Items[Index]^.ID,
                             NoteMetaData.Items[Index]^.Rev) then Exit(False);
-		end;
+            end;
+        end;
 	end;
 	Result := true;
 end;
@@ -668,8 +798,8 @@ var
     Uploads : TstringList;
     Index : integer;
 begin
-
-    debugln('------- RemoteServerRev is ' + inttostr(Transport.RemoteServerRev));
+    if DebugMode then
+        debugln('Doing uploads and Remote ServerRev is ' + inttostr(Transport.RemoteServerRev));
     try
         Uploads := TstringList.Create;
         for Index := 0 to NoteMetaData.Count -1 do begin
@@ -698,6 +828,8 @@ begin
         RepoUse : Result := Transport.GetNewNotes(NoteMetaData, False);
         RepoJoin : Result := Transport.GetNewNotes(NoteMetaData, ForceLCD);
     end;
+    if DebugMode then
+        debugln('LoadRepoData found ' + inttostr(NoteMetaData.Count) + ' remote notes');
     // We do not load remote metadata when creating a new repo !
 end;
 
@@ -708,11 +840,15 @@ var
     NewRev : boolean;
     // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
-    freeandNil(LocalMetaData);
-    LocalMetaData := TNoteInfoList.Create;
+    Result := False;
+    // TestRun := True;
     if not LoadRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
-        RepoUse : begin UseRemoteData(); CheckRemoteDeletes(); CheckLocalDeletes(); end;
+        RepoUse : begin
+                    if TransportMode = SyncAndroid then CheckUsingLCD(False) else CheckUsingRev();
+                    CheckRemoteDeletes();
+                    CheckLocalDeletes();
+                end;
         RepoJoin : if not CheckUsingLCD(True) then begin    // at least 1 possible clash
                  LoadRepoData(True);                        // start again, getting LCD this time
                  CheckUsingLCD(False);
@@ -725,22 +861,17 @@ begin
     CheckNewNotes();
     if not TestRun then
        ProcessClashes();
-    if DebugMode then DisplayNoteInfo(NoteMetaData);
-    if CheckMetaData() then begin
-       debugln('------ Error in metadata list ----------');
-       exit(False);
-	end;
-
-    if not DoDownLoads() then exit(False);          // DoDownloads() will tell us what troubled it.
-    Result := WriteRemoteManifest(NewRev);
-    if Result then begin                           // false is an ERROR !
-        Result := DoDeletes();
-        if Result then
-            if DoUploads() then
-	            WriteLocalManifest(true, NewRev);
-    end;
-	if not Result then
-        WriteLocalManifest(false, false);       // write a recovery local manifest. Downloads only noted.
+    CheckMetaData();
+    if DebugMode then DisplayNoteInfo(NoteMetaData, 'NoteMetaData');
+    if TestRun then exit();
+    if DoDownLoads() then           // DoDownloads() will tell us what troubled it.
+        if WriteRemoteManifest(NewRev) then
+            if DoDeletes() then
+                if DoUploads() then
+                   if DoDeleteLocal() then
+	                    if not WriteLocalManifest(true, NewRev) then
+                              WriteLocalManifest(false, false);   // write a recovery local manifest. Downloads only noted.
+    Result := True;
 end;
 
 
@@ -766,12 +897,9 @@ end;
 
 destructor TSync.Destroy();
 begin
-    if LocalMetaData <> Nil then
-        LocalMetaData.Free;
-    if NoteMetaData <> Nil then
-        NoteMetaData.Free;
-     if Transport <> Nil then
-        Transport.Free;
+    FreeandNil(LocalMetaData);
+    FreeandNil(NoteMetaData);
+    FreeandNil(Transport);
     inherited Destroy();
 end;
 
@@ -786,15 +914,17 @@ var
 begin
     Result := true;
     ErrorString := '';
-    if not FileExists(ConfigDir + 'manifest.xml') then begin
+    freeandNil(LocalMetaData);
+    LocalMetaData := TNoteInfoList.Create;
+    if not FileExists(ConfigDir + ManPrefix + 'manifest.xml') then begin
         LocalLastSyncDateSt := '';
         CurrRev := 0;
         exit(True);                 // Its not an error, just never synced before
     end;
-    if DebugMode then debugln('Reading local mainfest');
+    if DebugMode then debugln('Reading local mainfest ' + ConfigDir + ManPrefix + 'manifest.xml');
     try
     	try
-    		ReadXMLFile(Doc, ConfigDir + 'manifest.xml');
+    		ReadXMLFile(Doc, ConfigDir + ManPrefix + 'manifest.xml');
             Node := Doc.DocumentElement.FindNode('last-sync-date');
             if assigned(Node) then
                 LocalLastSyncDateSt := Node.FirstChild.NodeValue
@@ -804,6 +934,14 @@ begin
             end;
             Node := Doc.DocumentElement.FindNode('server-id');
             LocalLastSyncID := Node.FirstChild.NodeValue;
+            if LocalLastSyncID[1] = '"' then
+               LocalLastSyncID := copy(LocalLastSyncID, 2, 36);
+            if length(LocalLastSyncID) <> 36 then begin
+                ErrorString := 'Local manifest contains an invalid serverID';
+                debugln('ERROR - local manifest contains an invalid serverID ');
+                debugln('Maybe you should delete it and rejoin the Repo. ?');
+                exit(false);
+            end;
             Node := Doc.DocumentElement.FindNode('last-sync-rev');
             try
                 RevStr := Node.FirstChild.NodeValue;
@@ -823,8 +961,6 @@ begin
                 LocalLastSyncDateSt := '';
                 exit(False);
 			end;
-            if LocalLastSyncID[1] = '"' then
-               LocalLastSyncID := copy(LocalLastSyncID, 2, 36);
 			NodeList := Doc.DocumentElement.FindNode('note-revisions').ChildNodes;
             if assigned(NodeList) then
                for j := 0 to NodeList.Count-1 do begin
@@ -854,7 +990,7 @@ begin
               Result := false;
           end;
 	end;
-
+    if Debugmode then DisplayNoteInfo(LocalMetaData, 'LocalMetaData');
 end;
 
 function TSync.WriteRemoteManifest(out NewRev : boolean): boolean;
@@ -863,6 +999,7 @@ var
     Index : integer;
     NewRevString : string;
 begin
+    if not IDLooksOK(Transport.ServerID) then exit(false);        // already checked but ....
     result := true;
     NewRev := False;
     for Index := 0 to NoteMetaData.Count - 1 do begin
@@ -879,7 +1016,7 @@ begin
 		    Rewrite(OutFile);
 	        writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
             write(OutFile, '<sync revision="' + NewRevString);
-            writeln(OutFile, '" server-id="' + Transport.RemoteServerID + '">');
+            writeln(OutFile, '" server-id="' + Transport.ServerID + '">');
 	        for Index := 0 to NoteMetaData.Count - 1 do begin
                 if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
 	                write(OutFile, '  <note id="' + NoteMetaData.Items[Index]^.ID + '" rev="');
@@ -905,6 +1042,8 @@ begin
         // do a safe version of this -
     if not TestRun then
            result := Transport.DoRemoteManifest(ConfigDir + 'manifest.xml-remote');
+    if debugmode then
+       debugln('Have written remote manifest to ' + ConfigDir + ManPrefix + 'manifest.xml-remote');
 end;
 
 procedure TSync.FSetConfigDir(Dir: string);
@@ -933,9 +1072,10 @@ var
     Index : integer;
     IncRev : integer = 0;
 begin
+    if not IDLooksOK(Transport.ServerID) then exit(false);        // already checked but ....
     result := true;
     if WriteOK and NewRev then IncRev := 1 else IncRev := 0;
-    AssignFile(OutFile, ConfigDir + 'manifest.xml-local');
+    AssignFile(OutFile, ConfigDir + ManPrefix + 'manifest.xml-local');  // ManPrefix is '' for most Modes.
     try
 	        try
 		        Rewrite(OutFile);
@@ -944,16 +1084,12 @@ begin
                 writeln(OutFile, '  <last-sync-date>' + GetLocalTime + '</last-sync-date>');
                 write(OutFile, '  <last-sync-rev>"' + inttostr(Transport.RemoteServerRev + IncRev));
                 writeln(OutFile, '"</last-sync-rev>');
-                writeln(OutFile, '  <server-id>"' + Transport.RemoteServerID + '"</server-id>');
+                writeln(OutFile, '  <server-id>"' + Transport.ServerID + '"</server-id>');
                 writeln(OutFile, '  <note-revisions>');
 		        for Index := 0 to NoteMetaData.Count - 1 do begin
                     if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
                         if (not WriteOK) and (NoteMetaData[Index]^.Action = SyUpLoadNew) then continue;
                         write(Outfile, '    <note guid="' + NoteMetaData[Index]^.ID + '" latest-revision="');
-                     {   case NoteMetaData[Index]^.Action of
-                            SyUpLoadEdit, SyUpLoadNew : write(OutFile, inttostr(NoteMetaData[Index]^.Rev +IncRev));
-                            SyDownload, SyNothing : write(OutFile, inttostr(NoteMetaData[Index]^.Rev));
-						end;    }
                         write(OutFile, inttostr(NoteMetaData[Index]^.Rev));
                         writeln(Outfile, '" />');
 					end;
@@ -971,8 +1107,9 @@ begin
 	end;
     // if to here, copy the file over top of existing local manifest
 	if not TestRun then
-       copyfile(ConfigDir + 'manifest.xml-local', ConfigDir + 'manifest.xml');
-	   // Transport.SetRemoteRepo(ConfigDir + 'manifest.xml-local');
+       copyfile(ConfigDir + ManPrefix + 'manifest.xml-local', ConfigDir + ManPrefix + 'manifest.xml');
+    if debugmode then
+       debugln('Have written local manifest to ' + ConfigDir + ManPrefix + 'manifest.xml-local');
 end;
 
 

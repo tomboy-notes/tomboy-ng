@@ -355,8 +355,8 @@ msgctxt "tformsync.buttoncancel.caption"
 msgid "Cancel"
 msgstr ""
 
-#: tformsync.buttonok.caption
-msgctxt "tformsync.buttonok.caption"
+#: tformsync.buttonclose.caption
+msgctxt "tformsync.buttonclose.caption"
 msgid "Close"
 msgstr ""
 
@@ -1007,6 +1007,10 @@ msgstr ""
 #: tsett.label10.caption
 msgctxt "tsett.label10.caption"
 msgid "Settings"
+msgstr ""
+
+#: tsett.label11.caption
+msgid "AUTO snapshots not implemented yet, use manual !"
 msgstr ""
 
 #: tsett.label12.caption

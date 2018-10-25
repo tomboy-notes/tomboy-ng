@@ -18,10 +18,16 @@ type
 
     TForm1 = class(TForm)
 			Button1: TButton;
+            ButtonAltNotes: TButton;
+            ButtonSetIP: TButton;
+            ButtonSyncDir: TButton;
+            ButtonNotesDir: TButton;
+            ButtonConfigDir: TButton;
             ButtonAltSync: TButton;
         ButtSyncExisting: TButton;
 		ButJoinNew: TButton;
 		CheckBoxTestRun: TCheckBox;
+        ComboBox1: TComboBox;
 		EditConfig: TEdit;
 		EditNotes: TEdit;
 		EditSync: TEdit;
@@ -32,7 +38,12 @@ type
         Memo1: TMemo;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
 		procedure Button1Click(Sender: TObject);
+        procedure ButtonAltNotesClick(Sender: TObject);
         procedure ButtonAltSyncClick(Sender: TObject);
+        procedure ButtonConfigDirClick(Sender: TObject);
+        procedure ButtonNotesDirClick(Sender: TObject);
+        procedure ButtonSetIPClick(Sender: TObject);
+        procedure ButtonSyncDirClick(Sender: TObject);
         procedure ButtSyncExistingClick(Sender: TObject);
 		procedure ButJoinNewClick(Sender: TObject);
 		procedure FormCreate(Sender: TObject);
@@ -52,7 +63,7 @@ implementation
 {$R *.lfm}
 
 { TForm1 }
-uses Sync, TB_SDiff;
+uses Sync, TB_SDiff, typInfo, LazLogger;
 
 var
     ASync : TSync;
@@ -72,8 +83,8 @@ begin
 end;
 
 procedure TForm1.ButtSyncExistingClick(Sender: TObject);
-// var
-//    SyncState : TSyncAvailable;
+var
+    Tick1, Tick2, Tick3, Tick4 : DWord;
 begin
     Memo1.clear;
   {if SelectDirectoryDialog1.Execute then begin
@@ -89,24 +100,23 @@ begin
 	    ASync.SyncAddress := EditSync.Text;
         ASync.RepoAction:= RepoUse;
 	    //ASync.CurrRev:=SpinEdit1.Value;
-	    Async.SetMode(SyncFile);
-	       // SyncState := ASync.testConnection;
-	       {case SyncState of
-	               Syncready : Async.StartSync();
-	               SyncNoLocal : begin
-	                                if ASync.JoinSync() then begin
-	                                    DisplaySync();
-	                                    ASync.StartSync()
-								    end
-								    else showmessage('Failed to join sync repo')
-				                end;
-		       end;  }
+        Tick1 := GetTickCount64();
+	    if SyncNetworkError = Async.SetTransport(TSyncTransport(ComboBox1.ItemIndex)) then begin
+            showmessage('Failed to connect ' + ASync.ErrorString);
+            exit;
+        end;
+        Tick2 := GetTickCount64();
         if SyncReady <> ASync.TestConnection() then begin
 	        Memo1.Append('Failed to find an existing connection. ' + ASync.ErrorString);
 	    end else begin
-	            // If to here, sync should be enabled and know about remote files it might need.
+	        // If to here, sync should be enabled and know about remote files it might need.
+           Memo1.append('Last sync date ' + ASync.LocalLastSyncDateSt);
+           Application.ProcessMessages;
+           Tick3 := GetTickCount64();
 	        ASync.StartSync();
+            Tick4 := GetTickCount64();
 	        DisplaySync();
+            memo1.Append(inttostr(Tick4 - Tick3) + 'mS ' + inttostr(Tick3 - Tick2) + 'mS ' + inttostr(Tick2 - Tick1) + 'mS');
 	    end;
     finally
 	    ASync.Free;
@@ -117,14 +127,44 @@ procedure TForm1.Button1Click(Sender: TObject);
 var
     MR : integer;
 begin
+    if selectdirectorydialog1.Execute then editSync.Text := selectdirectorydialog1.FileName;
+    {
     MR := QuestionDlg('Window Title', 'My question', mtConfirmation, [mrYes, mrNo], 'Blar');
     if Mr = mrYes  then showmessage('YES')
-    else if MR = mrNo then showmessage('no');
+    else if MR = mrNo then showmessage('no');}
+end;
+
+procedure TForm1.ButtonAltNotesClick(Sender: TObject);
+begin
+    EditNotes.Text := '/home/dbannon/.local/share/tomboy-ng/';
 end;
 
 procedure TForm1.ButtonAltSyncClick(Sender: TObject);
 begin
     EditSync.text := '/run/user/1000/gvfs/smb-share:server=192.168.1.1,share=usbdisk/SanDisk_FirebirdUSBFlashDrive_1_ca4c/PascalTrans/Sync_TestRig/';
+end;
+
+procedure TForm1.ButtonConfigDirClick(Sender: TObject);
+begin
+    if selectdirectorydialog1.Execute then
+        editConfig.Text := trim(appendpathdelim(selectdirectorydialog1.FileName));
+end;
+
+procedure TForm1.ButtonNotesDirClick(Sender: TObject);
+begin
+    if selectdirectorydialog1.Execute then
+        editNotes.Text := trim(appendpathdelim(selectdirectorydialog1.FileName));
+end;
+
+procedure TForm1.ButtonSetIPClick(Sender: TObject);
+begin
+    EditSync.Text := '192.168.1.174';
+end;
+
+procedure TForm1.ButtonSyncDirClick(Sender: TObject);
+begin
+    if selectdirectorydialog1.Execute then
+        editSync.Text := trim(appendpathdelim(selectdirectorydialog1.FileName));
 end;
 
 // Join (possibly forcing a (new) join) connection or, if its not there
@@ -138,6 +178,7 @@ var
     Tick1, Tick2, Tick3, Tick4 : DWord;
 begin
     Memo1.Clear;
+    Application.ProcessMessages;
 	try
 	    ASync := TSync.Create();
 	    ASync.DebugMode:=True;
@@ -146,13 +187,12 @@ begin
 	    ASync.NotesDir:= EditNotes.Text;
 	    ASync.ConfigDir := EditConfig.Text;
 	    ASync.SyncAddress := EditSync.Text;
-	    Async.SetMode(SyncFile);
-        if ASync.ErrorString <> '' then begin
-            showmessage('ASync initial parameter error - ' + ASync.ErrorString);
-            exit;
-		end;
         ASync.RepoAction := RepoJoin;
         Tick1 := GetTickCount64();
+        if SyncNetworkError = Async.SetTransport(TSyncTransport(ComboBox1.Itemindex))  then begin
+            showmessage('No net connection');
+            exit;
+        end;
 	    SyncState := Async.TestConnection();
         Tick2 := GetTickCount64();
         while SyncState <> SyncReady do
@@ -171,7 +211,7 @@ begin
                         ASync.RepoAction:= RepoNew;
                         SyncState := ASync.TestConnection();    // will try and create repo.
                         if SyncState = SyncNoRemoteRepo then
-                            showmessage('ERROR ' + Async.ErrorString);
+                            showmessage('ERROR no remote repo ' + Async.ErrorString);
 					end else exit;
                 end;
             {SyncMisMatch : begin
@@ -181,25 +221,34 @@ begin
                         SyncState := ASync.TestConnection();
                     end;
 				end; }
-	        SyncXMLError, SyncNoRemoteDir, SyncBadRemote, SyncNoRemoteWrite : begin
+	        SyncXMLError, SyncNoRemoteDir, SyncBadRemote, SyncNoRemoteWrite, SyncBadError : begin       // NOTE New SyncBadERROR !
                         showmessage(ASync.ErrorString);
                         exit;
                     end;
 	    end;    // end of case statement
 	    if SyncState = SyncReady then begin
-	        ASync.StartSync();
+	        if not ASync.StartSync() then
+                showmessage('StartSync ERROR ' + Async.ErrorString);
             Tick3 := GetTickCount64();
 	        DisplaySync();
 		end else showmessage('Cancelling operation');
     finally
         ASync.Free;
     end;
-    memo1.append('Test = ' + inttostr(Tick2 - Tick1) + ' and StartSync = ' + inttostr(Tick3 - Tick2));
+    memo1.append('Test = ' + inttostr(Tick2 - Tick1) + 'mS and StartSync = ' + inttostr(Tick3 - Tick2) + 'mS');
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+    I : integer;
+    St : string;
 begin
-
+      ComboBox1.Items.clear;
+      for i := Ord(Low(TSyncTransport)) to Ord(High(TSyncTransport)) do
+      begin
+         ComboBox1.Items.add(GetEnumName(TypeInfo(TSyncTransport), Ord(i)));
+      end;
+      ComboBox1.ItemIndex := 2;
 end;
 
 procedure TForm1.FormShow(Sender: TObject);

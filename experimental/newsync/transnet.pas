@@ -21,7 +21,8 @@ TNetSync = Class(TTomboyTrans)
     private
 
     public
-        function TestTransport(out ServerID : string) : TSyncAvailable; override;
+        function TestTransport(): TSyncAvailable; override;
+        function TestTransportEarly(out ManPrefix: string): TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
@@ -36,7 +37,12 @@ implementation
 
 { TNetSync }
 
-function TNetSync.TestTransport(out ServerID: string): TSyncAvailable;
+function TNetSync.TestTransport(): TSyncAvailable;
+begin
+    Result := SyncReady;
+end;
+
+function TNetSync.TestTransportEarly(out ManPrefix: string): TSyncAvailable;
 begin
         ServerID := '';
         Result := SyncNoRemoteMan;

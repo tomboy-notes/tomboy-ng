@@ -821,8 +821,8 @@ begin
         FormSync.LocalConfig := LocalConfig;
         FormSync.SetupSync := True;
         if RadioFile.Checked then
-            FormSync.TransPort := SyncFile
-        else FormSync.TransPort := SyncNextRuby;
+            FormSync.Transport := SyncFile
+        else FormSync.Transport := SyncNextRuby;
         FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         if mrOK = FormSync.ShowModal then begin
             LabelSyncRepo.Caption := FormSync.RemoteRepo;

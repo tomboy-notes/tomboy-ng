@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 470
-  Height = 384
-  Top = 215
-  Width = 681
+  Left = 615
+  Height = 471
+  Top = 111
+  Width = 707
   Caption = 'Join New'
-  ClientHeight = 384
-  ClientWidth = 681
+  ClientHeight = 471
+  ClientWidth = 707
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '1.8.4.0'
@@ -13,31 +13,31 @@ object Form1: TForm1
     Left = 12
     Height = 172
     Top = 20
-    Width = 644
+    Width = 684
     Lines.Strings = (
       'Memo1'
     )
     TabOrder = 0
   end
   object ButtSyncExisting: TButton
-    Left = 15
+    Left = 16
     Height = 25
-    Top = 328
+    Top = 411
     Width = 120
     Caption = 'Sync to Existing'
     OnClick = ButtSyncExistingClick
     TabOrder = 1
   end
   object LabelSync: TLabel
-    Left = 22
+    Left = 16
     Height = 17
-    Top = 264
+    Top = 312
     Width = 53
     Caption = 'Sync Dir'
     ParentColor = False
   end
   object LabelConfig: TLabel
-    Left = 22
+    Left = 16
     Height = 17
     Top = 200
     Width = 66
@@ -45,82 +45,136 @@ object Form1: TForm1
     ParentColor = False
   end
   object ButJoinNew: TButton
-    Left = 152
+    Left = 153
     Height = 25
-    Top = 328
+    Top = 411
     Width = 136
     Caption = 'Join New'
     OnClick = ButJoinNewClick
     TabOrder = 2
   end
   object CheckBoxTestRun: TCheckBox
-    Left = 22
+    Left = 23
     Height = 22
-    Top = 293
+    Top = 376
     Width = 113
     Caption = 'Test Run Only'
     TabOrder = 3
   end
   object LabelNotes: TLabel
-    Left = 24
+    Left = 16
     Height = 17
-    Top = 232
+    Top = 256
     Width = 64
     Caption = 'Notes Dir'
     ParentColor = False
   end
   object EditConfig: TEdit
-    Left = 120
+    Left = 16
     Height = 27
-    Top = 200
-    Width = 240
+    Top = 216
+    Width = 680
     TabOrder = 4
     Text = 'EditConfig'
   end
   object EditNotes: TEdit
-    Left = 119
+    Left = 16
     Height = 27
-    Top = 232
-    Width = 241
+    Top = 272
+    Width = 680
     TabOrder = 5
     Text = 'EditNotes'
   end
   object EditSync: TEdit
-    Left = 119
+    Left = 16
     Height = 27
-    Top = 264
-    Width = 537
+    Top = 328
+    Width = 680
     TabOrder = 6
     Text = 'EditSync'
   end
   object Label1: TLabel
-    Left = 159
+    Left = 160
     Height = 17
-    Top = 296
+    Top = 379
     Width = 237
     Caption = 'Note : we do not read the config file'
     ParentColor = False
   end
   object Button1: TButton
-    Left = 538
+    Left = 539
     Height = 25
-    Top = 336
+    Top = 419
     Width = 75
     Caption = 'Button1'
     OnClick = Button1Click
     TabOrder = 7
   end
   object ButtonAltSync: TButton
-    Left = 581
+    Left = 512
     Height = 25
-    Top = 240
+    Top = 304
     Width = 75
     Caption = 'Alt Sync'
     OnClick = ButtonAltSyncClick
     TabOrder = 8
   end
+  object ButtonSyncDir: TButton
+    Left = 592
+    Height = 25
+    Top = 304
+    Width = 104
+    Caption = 'Select'
+    OnClick = ButtonSyncDirClick
+    TabOrder = 9
+  end
+  object ButtonNotesDir: TButton
+    Left = 592
+    Height = 25
+    Top = 248
+    Width = 104
+    Caption = 'Select'
+    OnClick = ButtonNotesDirClick
+    TabOrder = 10
+  end
+  object ButtonConfigDir: TButton
+    Left = 592
+    Height = 25
+    Top = 192
+    Width = 104
+    Caption = 'Select'
+    OnClick = ButtonConfigDirClick
+    TabOrder = 11
+  end
+  object ComboBox1: TComboBox
+    Left = 539
+    Height = 29
+    Top = 376
+    Width = 145
+    ItemHeight = 0
+    TabOrder = 12
+    Text = 'ComboBox1'
+  end
+  object ButtonSetIP: TButton
+    Left = 432
+    Height = 25
+    Top = 304
+    Width = 75
+    Caption = 'Set IP'
+    OnClick = ButtonSetIPClick
+    TabOrder = 13
+  end
+  object ButtonAltNotes: TButton
+    Left = 512
+    Height = 25
+    Top = 248
+    Width = 75
+    Caption = 'Alt Notes'
+    OnClick = ButtonAltNotesClick
+    TabOrder = 14
+  end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 328
-    top = 16
+    left = 368
+    top = 400
   end
 end

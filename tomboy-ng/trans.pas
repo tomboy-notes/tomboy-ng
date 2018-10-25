@@ -4,6 +4,9 @@ unit trans;
   It moves files around, one way or another, determined by its children.
   *  Copyright (C) 2018 David Bannon
   *  See attached licence file.
+
+  HISTORY
+    2018/10/25  Much testing, support for Tomdroid.
 }
 
 {$mode objfpc}{$H+}
@@ -33,21 +36,23 @@ type
         RemoteAddress : string;
 
             { The current server ID. Is set with a successful TestTransport call. }
-        RemoteServerID : string;
+        ServerID : string;
 
             { The current Server Rev, before we upload. Is set with a successful
               TestTransport call. }
         RemoteServerRev : integer;
 
-            { Creates or updates a remote reop, if st is blank, its a new reop,
-            else we inc the remote rev number, creat a dir, copy existing manifest
-            there, copy the offered manifest over top of existing. Ret True is all OK. }
-        // function SetRemoteRepo(ManFile : string = '') : boolean; virtual; abstract;
-
-            {Tests availability of remote part of connection. For file sync thats
-            existance of manifest and 0 dir, write access. Sets and Returns with ServerID.
+            { Tests availability of remote part of connection. For file sync thats
+            existance of manifest and 0 dir, write access. Sets ServerID. And for
+            sync engines that need multiple local manifests (ie android) returns
+            with a prefix that is always prepended to Local and remote Manifests.
             This would be a good place to put lock or authenticate as  necessary}
-        function TestTransport(out ServerID : string) : TSyncAvailable; virtual; abstract;
+        function TestTransport() : TSyncAvailable; virtual; abstract;
+
+            { An alternative to TestTransport, called before loading (eg) Local
+            Manifest.  Returns only SyncReady or SyncNetworkError. Implementations
+            should only do one or the other. The 'other' should return SyncReady }
+        function TestTransportEarly(out ManPrefix : string) : TSyncAvailable; virtual; abstract;
 
             {Request a list of all notes the server knows about. Returns with Last Change
             Date (LCD) if easily available and always if GetLCD is true. We don't use all

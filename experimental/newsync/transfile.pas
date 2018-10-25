@@ -3,6 +3,9 @@ unit transfile;
 { A unit that does the file transfer side of a FileSync operation
   *  Copyright (C) 2018 David Bannon
   *  See attached licence file.
+
+  HISTORY
+  2018/10/25  Much testing, support for Tomdroid.
 }
 
 {$mode objfpc}{$H+}
@@ -24,9 +27,11 @@ type
             // is True, gets it from the file.
         function ReadRemoteManifest(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 
+
     public
         //RemoteDir : string; // where the remote filesync repo lives.
-        function TestTransport(out ServerID : string) : TSyncAvailable; override;
+        function TestTransportEarly(out ManPrefix : string): TSyncAvailable; override;
+        function TestTransport() : TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
@@ -43,7 +48,13 @@ uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
 
 { TFileSync }
 
-function TFileSync.TestTransport(out ServerID : string): TSyncAvailable;
+function TFileSync.TestTransportEarly(out ManPrefix : string): TSyncAvailable;
+begin
+    ManPrefix := '';
+    Result := SyncReady;
+end;
+
+function TFileSync.TestTransport(): TSyncAvailable;
 var
     Doc : TXMLDocument;
     GUID : TGUID;
@@ -60,8 +71,7 @@ begin
     end;
     if ANewRepo then begin
         CreateGUID(GUID);
-        ServerID := copy(GUIDToString(GUID), 2, 36);
-        RemoteServerID:= ServerID;
+        ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
         RemoteServerRev := -1;
         exit(SyncReady);
     end;
@@ -83,8 +93,8 @@ begin
     try
 	        try
 	            ReadXMLFile(Doc, RemoteAddress + 'manifest.xml');
+
 	            ServerID := Doc.DocumentElement.GetAttribute('server-id');
-                RemoteServerID := ServerID;
                 { ToDo - must check for error on next line }
                 RemoteServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
 		    finally
@@ -160,7 +170,7 @@ begin
       on E: EFOpenError do Result := False;		// File is not present.
 	end;
     if Result = True then
-    	Debugln('Seems we read the manifest OK')
+    	if debugmode then Debugln('Transfile.ReadRemoteManifest - read OK')
     else
         DebugLn('We failed to read the remote manifest file ', RemoteAddress + 'manifest.xml');
 end;
