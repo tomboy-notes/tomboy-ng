@@ -90,7 +90,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
-    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, CheckLst, Note_Lister,
+    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, {CheckLst,} Note_Lister,
     lazLogger;
 
 type

@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabSync
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -428,12 +428,15 @@ object Sett: TSett
         AnchorSideBottom.Side = asrBottom
         Left = 2
         Height = 44
+        Hint = 'Take a time stamped snapshot of notes and config'
         Top = 292
         Width = 248
         Anchors = [akLeft, akBottom]
         BorderSpacing.Left = 2
         Caption = 'Take a Manual Snapshot'
         OnClick = ButtonManualSnapClick
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
       end
       object ButtonSnapRecover: TButton
@@ -443,11 +446,14 @@ object Sett: TSett
         AnchorSideBottom.Side = asrBottom
         Left = 250
         Height = 44
+        Hint = 'If you have previously taken a snapshot......'
         Top = 292
         Width = 248
         Anchors = [akLeft, akBottom]
-        Caption = 'Recover one or more lost Notes'
+        Caption = 'Recover lost Notes'
         OnClick = ButtonSnapRecoverClick
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 1
       end
       object Panel3: TPanel

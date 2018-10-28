@@ -1,6 +1,7 @@
 unit TB_Sync;
 
-{
+{  NOTE -  This unit is no longer used in tomboy-ng, 2018/10/25
+
  * Copyright (C) 2017 David Bannon
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -64,6 +65,8 @@ unit TB_Sync;
     2018/08/14  Added fields to TClash record for SDiff unit.
     2018/08/14  LastChange now means latest of last-change-date and last-metadata-change-date
     2018/08/18  Better testing of file system access before sync
+
+    2018/10/25	This unit no longer used by tomboy-ng
 }
 
 

@@ -74,6 +74,7 @@ unit settings;
     2018/08/18  Now call SpellCheck() after loading settings. Note, if settings file
                 has an old library name and hunspell can find a new one, nothing is updated !
     2018/08/23  Ensured that an ini file without a notedir returns a sensible value, TEST
+    2018/10/28  Much changes, support Backup management, snapshots and new sync Model.
 
 }
 
@@ -83,7 +84,7 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, BackUpView
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 // Types;
 
@@ -755,13 +756,19 @@ end;
 procedure TSett.ButtonManualSnapClick(Sender: TObject);
 var
    FR : TFormRecover;
+   FullName : string;
 begin
     FR := TFormRecover.Create(self);
     try
         FR.NoteDir := NoteDirectory;
         FR.SnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
-        FR.CreateSnapshot(True, False);
+        FullName := FR.CreateSnapshot(True, False);
+        if mrYes = QuestionDlg('Snapshot created', FullName + ' created, do you want to copy it elsewhere ?'
+                    , mtConfirmation, [mrYes, mrNo], 0) then
+            if SelectSnapDir.Execute then
+                if not CopyFile(FullName, TrimFilename(SelectSnapDir.FileName + PathDelim) + ExtractFileNameOnly(FullName) + '.zip') then
+                    showmessage('Failed to copy file, does destination dir exist ?');
     finally
         FR.Free;
     end;

@@ -157,6 +157,7 @@ unit EditBox;
     2019/08/22  Add a whole lot more keys that KMemo auto supports, see AddKey(...) in keditcommon.pas
     2018/10/13  Kmemo1KeyDown now deals with a Tab.
     2018/10/20  Added --save-exit, only in single note mode.
+    2018/10/28  Support Backup management, snapshots and new sync Model.
 }
 
 
@@ -358,7 +359,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     SearchUnit,              // Is the main starting unit and the search tool.
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
 	LoadNote,           // Will know how to load a Tomboy formatted note.
-    SyncGUI,
+    {SyncGUI,}
     LazFileUtils,		// For ExtractFileName()
     Spelling,
     NoteBook,

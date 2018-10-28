@@ -46,7 +46,7 @@ unit SyncGUI;
     2018/08/14  Added SDiff to replace clumbsy dialog when sync clash happens.
     2018/08/18  Improved test/reporting of file access during sync
     2018/10/25  New sync model. Much testing, support for Tomdroid.
-
+    2018/10/28  Much tweaking and bug fixing.
 
 }
 
@@ -145,7 +145,7 @@ end;
 function TFormSync.Proceed(const ClashRec : TClashRecord) : TSyncAction;
 var
     SDiff : TFormSDiff;
-    Res : integer;
+    //Res : integer;
 begin
     SDiff := TFormSDiff.Create(self);
     SDiff.RemoteFilename := ClashRec.ServerFileName;

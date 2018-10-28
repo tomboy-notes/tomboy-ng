@@ -6,6 +6,7 @@ unit syncutils;
 
     HISTORY
     2018/10/25  Much testing, support for Tomdroid.
+    2018/10/28  Added SafeGetUTCC....
 }
 {$mode objfpc}{$H+}
 
@@ -100,6 +101,9 @@ type
  type    TProceedFunction = function(const ClashRec : TClashRecord): TSyncAction of object;
 
 type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
+
+                // A save, error checking method to convert Tomboy's ISO8601 33 char date string
+function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
 
                 // Ret GMT from tomboy date string, 0.0 on error or unlikely date.
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
@@ -227,6 +231,29 @@ begin
     Result := PNoteInfo(inherited get(Index));
 end;
 
+function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
+begin
+    ErrorMsg := '';
+    if length(DateStr) <> 33 then begin
+        ErrorMsg := 'Date String wrong length';
+        DateTime := 0.0;
+        exit(False);
+    end;
+    DateTime := GetGMTFromStr(DateStr);
+    if DateTime < 1.0 then begin
+        ErrorMsg := 'Invalid Date String';
+        exit(False);
+    end;
+    if (DateTime > (now() + 36500)) or (DateTime < (Now() - 36500))  then begin
+        ErrorMsg := 'Date beyond expected range';
+        DateTime := 0.0;
+        exit(False);
+    end;
+ 		// TDateTime has integer part, no. of days, fraction part is fraction of day.
+		// 100years ago or in future - Fail !
+    exit(True);
+end;
+
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 var
     TimeZone : TDateTime;
@@ -259,7 +286,7 @@ begin
 	                Result)  then DebugLn('Fail on date time encode ');
     except on EConvertError do begin
         	DebugLn('FAIL on converting date time ' + DateStr);
-
+            exit(0.0);
     	end;
     end;
     try
@@ -270,13 +297,9 @@ begin
 	    else debugLn('******* Bugger, we are not parsing DATE String ********');
     except on EConvertError do begin
         	DebugLn('FAIL on calculating GMT ' + DateStr);
+            exit(0.0);
     	end;
     end;
-    if (Result > (now() + 36500)) or (Result < (Now() - 36500))  then
-        result := 0.0;
-		// TDateTime has integer part no. of days, fraction part is fraction of day.
-		// 100years ago or in future - Fail !
-
     { writeln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
 end;
 
