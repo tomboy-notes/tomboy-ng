@@ -3,6 +3,10 @@ unit transandroid;
 { A unit that does the file transfer side of a very limited one to one Tomdroid Sync
   *  Copyright (C) 2018 David Bannon
   *  See attached licence file.
+
+  HISTORY
+  2018/10/28    Improve error checking on SetServerID(), needs to be applied to
+                all similar methods.
 }
 
 {$mode objfpc}{$H+}
@@ -48,7 +52,7 @@ implementation
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
 
 const // Must become config things eventually.
-  Password = 'admin';
+  //Password = 'admin';
   DevDir = '/storage/emulated/0/tomdroid/';
 
 { TAndSync }
@@ -68,10 +72,10 @@ begin
         AProcess.Execute;
         Result := (AProcess.ExitStatus = 0);        // says at least one packet got back
     except on
-        E: EProcess do ErrorString := 'EProcess Error during upload';
+        E: EProcess do ErrorString := 'EProcess Error during Ping';
     end;
     if not Result then
-        ErrorString := 'Not able to ping device ';
+        ErrorString := 'Not able to ping device, check its awake and IP is correct. ';
     List := TStringList.Create;
     List.LoadFromStream(AProcess.Output);       // just to clear it away.
     List.Free;
@@ -123,14 +127,28 @@ begin
     AProcess.Parameters.Add('root@' + self.RemoteAddress);
     AProcess.Parameters.Add('cat tomboy.serverid');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    // CL (eg) sshpass -p admin ssh -p2222 root@192.168.174 cat tomboy.serverid
     try
         AProcess.Execute;
         List := TStringList.Create;
         List.LoadFromStream(AProcess.Output);
+        if length(List.Text) = 0 then begin
+            List.LoadFromStream(AProcess.Stderr);
+                if length(List.Text) = 0 then
+                    ErrorString := 'Unable to connect, unknown error'
+                else if pos('Connection refused', List.Text) > 0 then
+                    ErrorString := 'Unable to connect, is ssh server running ?'
+                else if pos('Permission denied', List.Text) > 0 then
+                    ErrorString := 'Unable to connect, check password'
+                else ErrorString := List.Text;
+                exit(false);
+        end;
     except on
-        E: EProcess do ErrorString := 'EProcess Error ' + E.Message;
+        E: EProcess do begin
+            ErrorString := 'EProcess Error ' + E.Message;
+            debugln('SetServerID ' + ErrorString);
+        end
     end;
-    if pos('Connection refused', List.Text) > 0 then exit(false);           // sshserver not running ?
     if pos('No such file or directory', List.Text) > 0 then exit(True);     // no ID present, uninitialized ?
     if List.Count > 0 then
         ServerID := copy(List.Strings[List.Count-1], 1, 36);                // Thats, perhaps, a serverID
@@ -156,16 +174,16 @@ begin
   }
   T1 := GetTickCount64();
   ManPrefix := '';
-  ErrorString := 'Unable to Connect, is device awake and ssh server running ?';
+  ErrorString := '';
   if not Ping(1) then
     if not Ping(2) then
         if not Ping(5) then begin
-            debugln('Failed ping test');
+            debugln('Failed to ping ' + RemoteAddress);
             exit(SyncNetworkError);
         end;
   T2 := GetTickCount64();
   if not SetServerID() then begin
-      debugln('Failed connect test');
+      debugln(ErrorString);
       exit(SyncNetworkError);
   end;
   T3 := GetTickCount64();

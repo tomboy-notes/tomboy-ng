@@ -7,6 +7,7 @@ unit trans;
 
   HISTORY
     2018/10/25  Much testing, support for Tomdroid.
+    2018/10/28  Added password
 }
 
 {$mode objfpc}{$H+}
@@ -25,6 +26,9 @@ type
     private
 
     public
+            // A password for those Transports that need one.
+        Password : string;
+
         DebugMode : boolean;
             // Indicates its a new repo, don't look for remote manifest.
         ANewRepo : Boolean;
