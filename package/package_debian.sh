@@ -68,6 +68,7 @@ function DebianPackage () {
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
 	# cp ../copyright BUILD/usr/share/doc/$PRODUCT/copyright
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
+    cp ../doc/recover.note BUILD/usr/share/doc/$PRODUCT/.
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
 	mkdir -p BUILD/usr/share/man/man1
@@ -96,7 +97,7 @@ function DebianPackage () {
 	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier." >> BUILD/DEBIAN/control
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 
-	echo "tomboy-ng ($VERSION)  unsable;  urgency=medium" >> "$MANUALS_DIR"changelog
+	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
 	echo "  * Initial release" >> "$MANUALS_DIR"changelog
 	echo "-- David Bannon <tomboy-ng@bannons.id.au>  $BUILDDATE" >> "$MANUALS_DIR"changelog
 	gzip -9n "$MANUALS_DIR"changelog
@@ -132,6 +133,7 @@ function DoZipping {
 	cp ../tomboy-ng/tomboy-ng64.exe "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.dll "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.license "$PRODUCT"_"$VERSION/."
+    cp ../doc/recover.note "$PRODUCT"_"$VERSION/."
 	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$PRODUCT"_"$VERSION/readme.txt"
 	unix2dos "$PRODUCT"_"$VERSION/readme.txt"
 	zip "$PRODUCT"_win64_"$VERSION.zip" "$PRODUCT"_"$VERSION"/* 

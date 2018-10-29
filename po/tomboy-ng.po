@@ -238,10 +238,6 @@ msgstr ""
 msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
 msgstr ""
 
-#: tformrecover.label13.caption
-msgid "Label13"
-msgstr ""
-
 #: tformrecover.label14.caption
 msgid "Double click an available snapshot to see its contents."
 msgstr ""

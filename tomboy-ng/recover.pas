@@ -4,6 +4,7 @@ unit recover;
     2018/08/27  Now take config and local (sync) manifest with a snpshot, restore
                 on the main 'Restore' tab.
     2018/10/28  Much changes, now working reasonably well.
+    2018/10/29  Set attributes of Unzipped files on the Mac, it apparently leaves then 000
 
 }
 
@@ -30,7 +31,6 @@ type
         Label10: TLabel;
         Label11: TLabel;
         Label12: TLabel;
-        Label13: TLabel;
         Label14: TLabel;
         Label15: TLabel;
         Label16: TLabel;
@@ -84,6 +84,7 @@ type
     public
             // Note that, at present, this debugmode is not set automatically anywhere.
         DebugMode : boolean;
+        RequiresIndex : boolean;
         SnapDir, NoteDir, ConfigDir : string;
         procedure CreateSnapshot(const FullSourceDir, FullZipName: string);
         // Creates a snapshot, returning its full name.
@@ -100,6 +101,7 @@ implementation
 { TFormRecover }
 
 uses LazFileUtils, Note_Lister, SearchUnit, process, LazLogger,
+    {$ifdef DARWIN}baseunix,{$endif}            // for fpChmod
     MainUnit;   // just for MainUnit.MainForm.SingleNoteMode(
 
 var
@@ -107,6 +109,7 @@ var
 
 procedure TFormRecover.FormShow(Sender: TObject);
 begin
+    RequiresIndex := False;
     StringGrid1.ColCount:=4;
     StringGrid1.FixedCols:=0;
     //stringgrid1.Options := [stringgrid1.options] + [goThumbTracking];
@@ -185,6 +188,7 @@ begin
         DeleteDirectory(NoteDir + 'config', False);
     end;
     showmessage('Notes and config files Restored, restart suggested.');
+    RequiresIndex := true;
 end;
 
 procedure TFormRecover.Button4Click(Sender: TObject);
@@ -244,6 +248,18 @@ begin
     finally
         ZipFile.Free;
     end;
+    {$ifdef Darwin}                     // paszlib, on mac, leaves files with no permissions !
+    if FindFirst(FullDestDir + '*.note', faAnyFile, Info)=0 then begin
+        repeat
+            fpChmod(FullDestDir + Info.Name, &644);    // uses baseunix, should we test return value ?
+	    until FindNext(Info) <> 0;
+	end;
+    FindClose(Info);
+    if FileExists(FullDestDir + 'config' + PathDelim + 'manifest.xml') then
+        fpchmod(FullDestDir + 'config' + PathDelim + 'manifest.xml', &644);
+    if FileExists(FullDestDir + 'config' + PathDelim + 'tomboy-ng.cfg') then
+        fpchmod(FullDestDir + 'config' + PathDelim + 'tomboy-ng.cfg', &644);
+    {$endif}
 end;
 
 function TFormRecover.ExpandZipName(AFileName : string) : string;

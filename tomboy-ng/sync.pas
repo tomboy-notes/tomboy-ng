@@ -132,7 +132,7 @@ HISTROY
     2018/10/22  CheckMetaData() was returning wrong value.
     2018/10/25  Much testing, support for Tomdroid.
     2018/10/28  Much tweaking and bug fixing.
-
+    2018/10/29  Tell TB_Sdiff about note title before showing it.
 
 }
 
@@ -225,7 +225,7 @@ type                       { ----------------- T S Y N C --------------------- }
       function LocalNoteExists(const ID : string; out CDate: string; GetDate: boolean=false): Boolean;
 
         // Call this when we are resolving a sync clash. Note : not possible results make sense !
-      function ProceedWith(const ID, FullRemoteFileName: ANSIString): TSyncAction;
+      function ProceedWith(const ID, FullRemoteFileName, NTitle: ANSIString): TSyncAction;
 
                 { Reads through Local Manifest file, filling out LocalMetaData,
                 LastSyncDateSt and CurrRev. If local manifest does not exist, still
@@ -375,13 +375,14 @@ end;
 { =================   E X T E R N A L   C A L L   O U T S ===========================}
 
 
-function TSync.ProceedWith(const ID, FullRemoteFileName : ANSIString) : TSyncAction;
+function TSync.ProceedWith(const ID, FullRemoteFileName, NTitle : ANSIString) : TSyncAction;
 var
     ClashRec : TClashRecord;
     //ChangeDate : ANSIString;
 begin
     // Note - we no longer fill in all of clash record, let sdiff unit work it out.
     ClashRec.NoteID := ID;
+    ClashRec.Title:= NTitle;
     ClashRec.ServerFileName := FullRemoteFileName;
     ClashRec.LocalFileName := self.NotesDir + ID + '.note';
     Result := ProceedFunction(Clashrec);
@@ -419,7 +420,7 @@ begin
             if Action = SyClash then begin
                 RemoteNote := Transport.DownLoadNote(ID, Rev);
                 if ProceedAction = SyUnSet then begin       // let user decide
-                    Action := ProceedWith(ID, RemoteNote);
+                    Action := ProceedWith(ID, RemoteNote, NoteMetaData.Items[Index]^.Title);
                     if Action in [SyAllOldest, SyAllNewest, SyAllLocal, SyAllRemote] then
                         Action := ResolveAllClash(Action, ID, RemoteNote);
                 end else

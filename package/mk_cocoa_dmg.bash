@@ -22,7 +22,7 @@ VERSION=`cat version`
 
 cd ../"$PRODUCT"
 # lazbuild -vm5024 --pcp=~/.laz-svn -B --compiler=ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
-TOMBOY_NG_VER="$VERSION" ../../../laz-svn/lazbuild  --pcp=~/.laz-svn -B --compiler=/usr/local/bin/ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
+TOMBOY_NG_VER="$VERSION" ../../../lazarus_2_0_0_RC2/lazbuild  --pcp=~/.lazarus_2_0_0_RC2 -B --compiler=/usr/local/bin/ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
 cd ../package
 
 rm -Rf $WORK
@@ -35,6 +35,7 @@ MANWIDTH=70 man ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt
 cp -R ../doc/html "$CONTENTS"/SharedSupport/.
 cp Info.plist "$CONTENTS/."
 cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
+cp ../doc/recover.note "$CONTENTS/Resources/."
 rm "$CONTENTS/MacOS/""$PRODUCT"
 mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
 

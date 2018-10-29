@@ -29,6 +29,8 @@ MANWIDTH=70 man ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt
 cp -R ../doc/html "$CONTENTS"/SharedSupport/.
 cp Info.plist "$CONTENTS/."
 cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
+cp ../doc/recover.note "$CONTENTS/Resources/."
+
 rm "$CONTENTS/MacOS/""$PRODUCT"
 mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
 

@@ -1021,6 +1021,7 @@ begin
 
     if Application.HasOption('save-exit') then begin
         MarkDirty();
+        NoteFileName := '';
         SaveTheNote();
         // debugln('hmm, this should be a close.');
         close;

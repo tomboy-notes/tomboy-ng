@@ -47,6 +47,7 @@ unit SyncGUI;
     2018/08/18  Improved test/reporting of file access during sync
     2018/10/25  New sync model. Much testing, support for Tomdroid.
     2018/10/28  Much tweaking and bug fixing.
+    2018/10/29  Tell TB_Sdiff about note title before showing it.
 
 }
 
@@ -150,6 +151,7 @@ begin
     SDiff := TFormSDiff.Create(self);
     SDiff.RemoteFilename := ClashRec.ServerFileName;
     SDiff.LocalFilename := ClashRec.LocalFileName;
+    SDiff.NoteTitle := ClashRec.Title;
     case SDiff.ShowModal of
             mrYes      : Result := SyDownLoad;
             mrNo       : Result := SyUpLoadEdit;

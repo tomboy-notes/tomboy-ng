@@ -794,6 +794,8 @@ begin
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
         // Danger Will Robertson ! We cannot assume LocalConfig has a trailing slash !
         FR.Showmodal;
+        if FR.RequiresIndex then
+            NeedRefresh := True;
     finally
         FR.Free;
     end;

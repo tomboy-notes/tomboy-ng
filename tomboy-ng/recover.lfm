@@ -47,9 +47,9 @@ object FormRecover: TFormRecover
     Height = 172
     Top = 44
     Width = 675
-    ActivePage = TabSheetIntro
+    ActivePage = TabSheetRecoverSnapshot
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
@@ -355,13 +355,5 @@ object FormRecover: TFormRecover
     Width = 455
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabOrder = 5
-  end
-  object Label13: TLabel
-    Left = 374
-    Height = 17
-    Top = 63
-    Width = 53
-    Caption = 'Label13'
-    ParentColor = False
   end
 end

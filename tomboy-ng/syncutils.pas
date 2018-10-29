@@ -89,7 +89,7 @@ type
         }
  type
     TClashRecord = record
-        //Title : ANSIString;
+        Title : ANSIString;
         NoteID : ANSIString;
         //ServerLastChange : ANSIString;
         //LocalLastChange : ANSIString;
