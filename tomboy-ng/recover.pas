@@ -153,7 +153,7 @@ procedure TFormRecover.ButtonSnapHelpClick(Sender: TObject);
 var
     DocsDir : string;   // this probably belongs in Settings.
 begin
-    DocsDir := ExtractFileDir(Application.ExeName);                     // UNTESTED
+    DocsDir := AppendPathDelim(ExtractFileDir(Application.ExeName));                     // UNTESTED
     {$ifdef LINUX}DocsDir := '/usr/share/doc/tomboy-ng/'; {$endif}
     {$ifdef DARWIN}
     DocsDir := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';

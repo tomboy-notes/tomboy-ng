@@ -46,7 +46,7 @@ object FormBackupView: TFormBackupView
       Hint = 'Open and view the whole note'
       Top = 2
       Width = 75
-      Caption = 'Open'
+      Caption = 'View'
       OnClick = ButtonOpenClick
       TabOrder = 0
     end

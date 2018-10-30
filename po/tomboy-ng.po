@@ -170,7 +170,7 @@ msgid "My work here is done."
 msgstr ""
 
 #: tformbackupview.buttonopen.caption
-msgid "Open"
+msgid "View"
 msgstr ""
 
 #: tformbackupview.buttonopen.hint
@@ -464,7 +464,7 @@ msgid "X"
 msgstr ""
 
 #: tmainform.labelerror.hint
-msgid "Launch from commandline to see errors. See website"
+msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr ""
 
 #: tmainform.menuquit.caption

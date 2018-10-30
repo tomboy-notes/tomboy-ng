@@ -69,62 +69,66 @@ TestConnection() will establish indicated Repo dir exists and we have write perm
 there, does it look like an Existing Repo ? If an existing repo, get ServerID and
 RemoteRevNo. If we are making a new connection, make a GUID and set those vars appropriatly.
 
--------- When using an existing Sync ----------
-Only after we have established that the local and remote manifests agree on ServerID.
-Read remote manifest into list. Don't bother to get LCD from remote notes but do
-record them if its aready in Remote Manifest.
-For each entry in that list :
-        Check if note with same GUID exits in Notes dir, if so -
-                LocalChange := Local LCD > Local LSD
-                RemChange := Rem Note RevNo > Local RevNo
-                if LocalChange AND RemChange its a Clash
-                if LocalChange only its an EditUpLoad (update LCD).
-                if RemChange only its a download
-                if Neither, its a DoNothing.
-        If no GUID match, its either a down load or, if its mentioned in Local as
-        a delete, its a DeleteRemote.
-Then scan through local manifest, a note listed (in main section) that does not
-appear in the List is a LocalDelete
+The Model as implemented in tomboy-ng, October 2018
 
-Then scan over Notes directory looking for any note not already mentioned in List, it becomes an NewUpLoad (add LCD)
+We call TestTransportEarly() and/or TestTransport()
+Its tests and may, or may not populate NoteMetaData with remote notes.
 
---------- When Joining a Sync Repo -----------
-First time sync setup is easy but if has been synced elsewhere and there are Deletes
-listed in Local Manifest, warn user (ideally sync with the old repo first).
-Local Manifest will be ignored and overwritten if new sync is successful.
+We call StartSync() (not talking about Andro mode here.)
+---------------------
+RepoAction = RepoUse (that is, it all should be setup, just go and do it)
+CheckUsingRev() Assigned a action to each existing entry in NoteMetaData based on the
+    current revision number and notes present in NotesDir. Note this method is an alternative to CheckUsingLCD().
+CheckRemoteDeletes() Marks remote deletes, that is notes that are mentioned in
+    LocalManifets as having been synced in the past (but not deleted section) but
+    were not listed in NoteMetaData at this stage because the Remote Server does not
+    know about them. Note, this will override a local note that has been edited
+    since last sync - should this be a clash ?
+CheckLocalDeletes() looks at notes listed in LocalManifest as Deletes, it markes
+    them, in NoteMetaData as DeleteRemote to be deleted from remote system (maybe
+    just not mentioned in remote manifest any more).
+CheckNewNotes() looks in Notes dir for any notes there that are not yet listed in
+    NoteMetaData. These notes are UploadNew.
 
-When joining, we initially grab just data in remote manifest but then when we look at
-local notes, if we find just one potential clash (ie same ID) we go back and redo
-the remote data, this time getting LCD for every note. Substantially slower.....
-If there are only a few potential clashes, we'd be better to download each relevent
-file. But maybe the cost of finding out balances that out ?
+Call the General Write Behavour Block if not a TestRun.
 
-if not NewRepo
-        Read Local Manifest into List  do need LCD for each note.  (Or, perhaps
-        only get LCDs if we find clashes ? Will save time if really is new to client).
+RepoAction = RepoJoin
+---------------------
+CheckUsingLCD(True) Assignes an Action to each entry in NoteMetaData (which only
+    contains entries from remote repo at this stage) based on last-change-date.
+    If it finds a potential clash, aborts if it does not have last-change-date for
+    the remote note. In that case, we recall LoadReopData(True) this time demanding
+    last change date. And then run CheckUsingLCD again.  Note this method is an
+    alternative to CheckUsingRev()
+Because a join cannot use loacal manifest, we do not honour remote or local deletes.
+CheckNewNotes() looks in Notes dir for any notes there that are not yet listed
+    in NoteMetaData. These notes are UploadNew.
 
-For each entry in that list :                    // for new repo, list is empty so effort is trivial
-        Check if note with same GUID exits in Notes dir, if so -
-                Compare local and remote note's LCD (as a string), if identical
-                its a DoNothing else a Clash.
-        If no GUID match, its a down load.
+Call the General Write Behavour Block if not a TestRun.
 
-Then scan over Notes directory looking for any note not already mentioned in List,
-it becomes an NewUpLoad (add LCD).
+RepoAction = RepoNew (if we determine, during a RepoJoin, that the dir we are pointing to does not contain a repo, we create one in this mode. Must always call RepoJoin first)
+-----------------------
+CheckNewNotes() looks in Notes dir for any notes there that are not yet listed in NoteMetaData (which, is, of course empty at this stage). These notes are UploadNew.
+Call the General Write Behavour Block if not a TestRun.
 
---------- Processing List -----------------
-This is the same process for each of above cases.
-Do any required Downloads (backing up first)
-Do any required LocalDeletes (backing up first)
-(note - we don't need write access to repo until to here.)
-if we have any uploads or RemoteDeletes to do,
-          write a local copy of Remote Manifest, include LCDs if available.
-         Make a Remote directory '0' + PathDelim + inttostr(RemoteRevNo+1)
-         Copy existing RemoteManifest into above dir (if and only if it exists !)
-         Copy the local copy of Remote Manifest (we made a few steps back) into Repo dir.
-         Copy any uploads we have to the dir made above.
-         To do RemoteDeletes, all we do is not mention them in next Remote Manifest.
-Write out a new local manifest, the list has everything we need.
+General Write Behavour
+----------------------
+applies for all three cases above. Some methods are not relevent in some modes, they just
+    return true when they detect that themselves.)
+ProcessClashes()
+DoDownLoads()
+WriteRemoteManifest()   - writes out a local copy of remote manifest to be used later.
+    We always write it (except in TestRun) but only call Transport to deal with it
+    if we have notes changing.
+DoDeletes() - Deletes from remote server. In current implementations, does nothing.
+DoUploads()
+DoDeleteLocal()
+WriteLocalManifest()
+
+Note, we want to write a new local manifest even if there are no note changes taking place, that way, we get an updated Last-Sync-Date and possibly updated revnumber. If we have not changed any files, then RevNo is the one we found in RemoteManifest. So, we must step through the write stack.
+
+We make a half harted attempt to restore normality if we get to local manifest stage and somehow fail to write it out.
+-----------------------------------------------------------------------------------
 
 HISTROY
     2018/10/18  Memory leak in CheckUsingLCD(), StartSync() should not call processClashes()

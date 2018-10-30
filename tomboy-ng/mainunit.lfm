@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 145
+  Left = 290
   Height = 318
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 385
+  Top = 262
   Width = 355
   Caption = 'MainForm'
   ClientHeight = 316
@@ -357,7 +357,7 @@ object MainForm: TMainForm
   object LabelError: TLabel
     Left = 24
     Height = 19
-    Hint = 'Launch from commandline to see errors. See website'
+    Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
     Top = 277
     Width = 11
     Caption = 'X'

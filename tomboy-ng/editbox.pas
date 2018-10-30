@@ -316,7 +316,8 @@ type
             Data: TStream);
         // Pastes into KMemo whatever is returned by the PrimarySelection system.
         procedure PrimaryPaste(SelIndex: integer);
-        { Saves the note in KMemo1, must have title but can make up a file name if needed }
+        { Saves the note in KMemo1, must have title but can make up a file name if needed
+          If filename is invalid, bad GUID, asks user if they want to change it (they do !) }
 		procedure SaveTheNote();
         	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
         function NewNoteTitle() : ANSIString;
@@ -364,6 +365,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     Spelling,
     NoteBook,
     MainUnit,
+    SyncUtils,          // Just for IDLooksOK()
     K_Prn;              // Custom print unit.
 
 
@@ -1660,18 +1662,21 @@ procedure TEditBoxForm.SaveTheNote();
 var
  	Saver : TBSaveNote;
     SL : TStringList;
+    OldFileName : string ='';
     // TestI : integer;
 begin
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
         NoteFileName := Sett.NoteDirectory + GetAFilename();
+    if not IDLooksOK(ExtractFileNameOnly(NoteFileName)) then
+        if mrYes = QuestionDlg('Invalid GUID', 'Give this note a new GUID Filename (recommended) ?', mtConfirmation, [mrYes, mrNo], 0) then begin
+            OldFileName := NoteFileName;
+            NoteFileName := Sett.NoteDirectory + GetAFilename();
+    end;
     Saver := TBSaveNote.Create();
     KMemo1.Blocks.LockUpdate;
     try
-       if not GetTitle(Saver.Title) then begin
-           Saver.Destroy;
-           exit();
-       end;
+       if not GetTitle(Saver.Title) then exit();
        {debugln('Saving Note, length of title =' + inttostr(length(Caption)) + ' No blocks =' + inttostr(KMemo1.Blocks.Count));
        for TestI := 0 to KMemo1.Blocks.Count -1 do begin
            debugln('Block=' + inttostr(TestI) + ' Type=' + KMemo1.Blocks[TestI].ClassName);
@@ -1688,12 +1693,12 @@ begin
 	   end;
        // debugln('about to save');
        Saver.Save(NoteFileName, KMemo1);
-       // debugln('saved');
        SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
-       // debugln('List updated');
-	   Saver.Destroy;
-       // debugln('All saved OK');
+                                        // if we have rewrtten GUID, that will create new entry for it.
+        if OldFileName <> '' then
+            SearchForm.DeleteNote(OldFileName);
     finally
+        Saver.Destroy;
         Dirty := false;
         Caption := CleanCaption();
         KMemo1.Blocks.UnLockUpdate;
@@ -1701,14 +1706,9 @@ begin
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;
-{ var
-    ThisMoment : TDateTime;  }
 begin
-  // ThisMoment:=Now;
   Result := 'New Note ' + FormatDateTime('YYYY-MM-DD hh:mm:ss.zzz', Now);
 end;
-
-
 
 function TEditBoxForm.GetAFilename() : ANSIString;
 var

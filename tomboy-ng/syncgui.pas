@@ -48,6 +48,7 @@ unit SyncGUI;
     2018/10/25  New sync model. Much testing, support for Tomdroid.
     2018/10/28  Much tweaking and bug fixing.
     2018/10/29  Tell TB_Sdiff about note title before showing it.
+    2018/10/30  Don't show SyNothing in sync report
 
 }
 
@@ -304,17 +305,21 @@ end;
 procedure TFormSync.ShowReport();
 var
         Index : integer;
+        Rows : integer = 0;
 begin
      	with ASync.NoteMetaData do begin
     		for Index := 0 to Count -1 do begin
-                StringGridReport.InsertRowWithValues(Index
-                	, [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
-                    , Items[Index]^.Title, Items[Index]^.ID]);
+                if Items[Index]^.Action <> SyNothing then begin
+                        StringGridReport.InsertRowWithValues(Rows
+                	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
+                            , Items[Index]^.Title, Items[Index]^.ID]);
+                        inc(Rows);
+                    end;
     		end
     	end;
         StringGridReport.AutoSizeColumn(0);
         StringGridReport.AutoSizeColumn(1);
-        if  ASync.NoteMetaData.Count = 0 then
+        if  Rows = 0 then
             Memo1.Append('No notes needed syncing. You need to write more.')
         else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + ' notes were dealt with.');
 end;
