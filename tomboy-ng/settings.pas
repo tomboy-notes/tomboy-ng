@@ -75,7 +75,7 @@ unit settings;
                 has an old library name and hunspell can find a new one, nothing is updated !
     2018/08/23  Ensured that an ini file without a notedir returns a sensible value, TEST
     2018/10/28  Much changes, support Backup management, snapshots and new sync Model.
-
+    2018/11/01  Ensure we have a valid Spell, even after a hide !
 }
 
 {$mode objfpc}{$H+}
@@ -444,7 +444,8 @@ begin
     DicPath := 'C:\Program Files\LibreOffice 5\share\extensions\dict-en\';
     {$ENDIF}
     {$ifdef DARWIN}
-    DicPath := '/Applications/Firefox.app/Contents/Resources/dictionaries/';
+    DicPath := '/Library/Spelling/';
+    DicPathAlt := '/Applications/tomboy-ng.app/Contents/Resources/';
     {$endif}
     {$ifdef LINUX}
     DicPath := '/usr/share/hunspell/';
@@ -460,13 +461,14 @@ begin
     EditDic.Visible:= False;
     if  Application.HasOption('debug-spell') then begin
         DebugSpell := True;
-        debugln('LabelLibrary=',LabelLibrary.Caption);
+        debugln('LabelLibrary=', LabelLibrary.Caption);
     end;
+    // LabelLibrary.Caption := '/usr/local/Cellar/hunspell/1.6.2/lib/libhunspell-1.6.0.dylib';
     if fileexists(LabelLibrary.Caption) then		// make sure file from config is still valid
     	Spell :=  THunspell.Create(DebugSpell, LabelLibrary.Caption)
     else Spell :=  THunspell.Create(DebugSpell);
     if Spell.ErrorMessage = '' then begin
-        if DebugSpell then debugln('No Spell error');
+        if DebugSpell then debugln('No Spell error in check spelling');
         LabelLibraryStatus.caption := 'Library Loaded OK';
         LabelLibrary.Caption := Spell.LibraryFullName;
         { ToDo - if config lists an old library and hunspell finds a newer one, nothing is updated }
@@ -485,7 +487,7 @@ begin
             end;
         end
         else begin
-            if DebugSpell then debugln('Spell error=[', Spell.ErrorMessage, ']');
+            if DebugSpell then debugln('In CheckSpelling - Spell error=[', Spell.ErrorMessage, ']');
             SpellConfig := CheckForDict(DicPath);  // if we find 1, use it, 0 try again.
             if ListBoxDic.Items.Count = 0 then
             // if not SpellConfig then
@@ -515,6 +517,9 @@ end;
 procedure TSett.FormShow(Sender: TObject);
 begin
     //CheckSpelling;
+    if not assigned(Spell) then
+        Spell := THunspell.Create(Application.HasOption('debug-spell'), LabelLibrary.Caption);
+        // user user has 'closed' (ie hide) then Spell was freed.
     MaskSettingsChanged := False;
     Label15.Caption:='';
     StringGridBackUp.Clean;

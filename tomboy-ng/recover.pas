@@ -159,7 +159,7 @@ begin
     DocsDir := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';
     //DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/';
     {$endif}  // untested
-    showmessage('About to open ' + DocsDir + 'recover.note');
+    // showmessage('About to open ' + DocsDir + 'recover.note');
     MainUnit.MainForm.SingleNoteMode(DocsDir + 'recover.note', False, True);
 end;
 
@@ -363,7 +363,7 @@ begin
     //showmessage('Existing Show');
     ButtonDeleteBadNotes.Enabled := False;
     ListBoxSnapShots.Enabled:=False;
-    PanelNoteList.Caption:='Bad Notes in Notes Directory';
+    PanelNoteList.Caption:='Double click on any Bad Notes';
     LabelNoteErrors.Caption := 'You have ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count)
         + ' bad notes in Notes Directory';
   	StringGrid1.Clear;

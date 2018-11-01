@@ -18,6 +18,9 @@ unit hunspell;
     otherwise, look in ErrorString for what went wrong.
 
     Look in FindLibrary() for default locations of Library.
+    2018/10/31  Changed to TLibHandle to accomadate Mac 64bit
+    2018/11/01  Added /usr/local/Cellar/hunspell/1.6.2/lib/ as place to look
+                for hunspell library on Mac. Need to make that more flexible.
 }
 
 
@@ -84,7 +87,8 @@ var Hunspell_free_list: THunspell_free_list;
 var Hunspell_remove: THunspell_remove;
 
 var HunLibLoaded: Boolean = False;
-var HunLibHandle: THandle;
+var HunLibHandle: {THandle;} TLibHandle;     // 64bit requires use of TLibHandle
+    // see https://forum.lazarus.freepascal.org/index.php/topic,34352.msg225157.html
 
 implementation
 
@@ -104,8 +108,8 @@ begin
     end else begin
         Result := True;
         Hunspell_create := THunspell_create(GetProcAddress(HunLibHandle, 'Hunspell_create'));
-        if not Assigned(Hunspell_create) then Result := False;
-        Hunspell_destroy := Thunspell_destroy(GetProcAddress(HunLibHandle, 'Hunspell_destroy'));
+        if not Assigned(Hunspell_create) then Result := False; 
+    	Hunspell_destroy := Thunspell_destroy(GetProcAddress(HunLibHandle, 'Hunspell_destroy'));
         if not Assigned(Hunspell_destroy) then Result := False;
         Hunspell_spell := THunspell_spell(GetProcAddress(HunLibHandle, 'Hunspell_spell'));
         if not Assigned(Hunspell_spell) then Result := False;
@@ -128,7 +132,7 @@ begin
     if ErrorMessage = '' then
         if not Result then begin
             ErrorMessage := 'Failed to find functions in ' + LibraryName;
-            if debugmode then debugln('Failed to find functions in ' + LibraryName);
+            if debugmode then debugln('Hunspell Failed to find functions in ' + LibraryName);
         end;
     if Result and debugmode then  debugln('Loaded library OK ' + LibraryName);
 end;
@@ -151,6 +155,7 @@ end;
 
 destructor THunspell.Destroy;
 begin
+    if DebugMode then debugln('About to destry Hunspell');
     if (HunLibHandle <> 0) and HunLibLoaded then begin
         if Speller<>nil then hunspell_destroy(Speller);
         Speller:=nil;
@@ -217,49 +222,72 @@ begin
             UTF8Delete(FullName, 1, I-1);
             UTF8Delete(FullName, UTF8Pos(#10, FullName, 1), 1);
             Result := True;
-        end else
-            Debugln('Spell Error - cannot find ldconfig despite heroic efforts');
-    exit();
+        end;
     {$ENDIF}
-    {$IFDEF WINDOWS}		// Look for a dll in application home dir.
-    Mask := '*hunspell*.dll';
-    FullName := ExtractFilePath(Application.ExeName);
-    {$endif}
     {$ifdef DARWIN}
     Mask := 'libhunspell*';
-    FullName := '/usr/lib/';
-    {$endif}
-    if DebugMode then debugln('Potential library starts with [', FullName + Mask, ']');
+    FullName := '/usr/local/Cellar/hunspell/1.6.2/lib/';
+    //     /usr/local/Cellar/hunspell/1.6.2/lib/libhunspell-1.6.0.dylib
     if FindFirst(FullName + Mask, faAnyFile and faDirectory, Info)=0 then begin
         FullName := FullName + Info.name;
         Result := True;
-        if DebugMode then debugln('Library [', FullName, ']');
+    end;
+    if not result then begin
+        FullName := '/usr/lib/';
+        if FindFirst(FullName + Mask, faAnyFile and faDirectory, Info)=0 then begin
+            FullName := FullName + Info.name;
+            Result := True;
+        end;
     end;
     FindClose(Info);
+    {$endif}
+    {$ifdef WINDOWS}
+    // Now, only Windows left. Look for a dll in application home dir.
+    Mask := '*hunspell*.dll';
+    FullName := ExtractFilePath(Application.ExeName);
+    if FindFirst(FullName + Mask, faAnyFile and faDirectory, Info)=0 then begin
+        FullName := FullName + Info.name;
+        Result := True;
+    end;
+    FindClose(Info);
+    {$endif}
+    if Result then begin
+        if DebugMode then debugln('Library looks promising [', FullName, ']');
+    end else
+        if DebugMode then debugln('Failed to find a Hunspell Library', FullName, ']');
 end;
 
 function THunspell.SetDictionary(const FullDictName: string) : boolean;
 var
     FullAff : string;
 begin
+    if debugmode then debugln('about to try to set dictionary');
     Result := False;
     if not FileExistsUTF8(FullDictName) then exit();
     FullAff := FullDictName;
     UTF8Delete(FullAff, UTF8Length(FullAff) - 2, 3);
     FullAff := FullAff + 'aff';
+    if not FileExistsutf8(FullAFF) then exit();
     {
     I have seen an access violaton occasionally in the next l
     reproducable. I think it happens when a new startup and,
     ShowLinks on and then go to Spell tab and choose a dictio
+    OK, Nov 2018, think I got it ....
     }
     try
-    if Speller <> Nil then
-        hunspell_destroy(Speller);
-    except on E: Exception do writeln('Hunspell ' + E.Message);
+        if assigned(Speller) then begin
+                hunspell_destroy(Speller);
+                if debugmode then debugln('Speller destroyed');
+        end;
+        Speller := hunspell_create(PChar(FullAff), PChar(FullDictName));
+                        // Create does not test the dictionaries !
+    except
+        on E: Exception do debugln('Hunspell ' + E.Message);
+    else
+        debugln('Hunspell has lost it !');
     end;
-    Speller := hunspell_create(PChar(FullAff), PChar(FullDictName));
-                    // Create does not test the dictionaries !
-    GoodToGo := Speller <> Nil;
+    Result := false;
+    GoodToGo := assigned(Speller);
     if not GoodToGo then
         ErrorMessage := 'Failed to set Dictionary ' + FullDictName;
     Result := GoodToGo;

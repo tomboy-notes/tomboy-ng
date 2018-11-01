@@ -19,11 +19,15 @@ unit Mainunit;
                 and does not respond to clicks anywhere with the popup menu, seems GTK
                 does not like sharing menus (eg between here and the trayIcon) in gtk3 !
                 So, in interests of uniformity, everyone gets a Main Menu and no Popup.
+    2018/11/01  Now include --debug-log in list of INTERAL switches.
 
 
 
 
     CommandLine Switches
+
+    --debug-log=some.log
+
     --gnome3    Turns on MainMenu, TrayMenu off and prevents dismmiss of this
     -g
     --debug-sync Turn on Verbose mode during sync
@@ -225,7 +229,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     //I: Integer;
     Params : TStringList;
-    LongOpts : array [1..9] of string = ('no-splash', 'version', 'gnome3', 'debug-spell',
+    LongOpts : array [1..10] of string = ('debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
     if CmdLineErrorMsg <> '' then begin
@@ -354,7 +358,7 @@ function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
+    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'debug-log: no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
@@ -363,6 +367,7 @@ begin
        debugln('eg   open tomboy-ng.app');
        debugln('eg   open tomboy-ng.app --args -o Note.txt|.note');
        {$endif}
+       debugln('   --debug-log=SOME.LOG         Direct debug output to SOME.LOG.');
        debugln('   -h --help                    Show this help and exit.');
        debugln('   --version                    Print version and exit');
        debugln('   -g --gnome3                  Run in (non ubuntu) gnome3 mode, no Tray Icon');

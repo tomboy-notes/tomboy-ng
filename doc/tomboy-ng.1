@@ -19,7 +19,7 @@ is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS
 
 Many users will want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can interact with it via that Icon. However, a small window is also opened, it can be dismissed if you see the system tray icon. Sadly, some Gnome3 distros do not show the system tray icon and you must keep that small window visible. A command line switch (-g or --gnome3) protects the small window from accidental dismissal.
 
-Tomboy-ng requires the gtk2 libraries be available.
+Tomboy-ng requires the gtk2 libraries be available on Linux, uses native libraries on Windows and Mac.
 
 .SH OPTIONS
 .TP
@@ -86,17 +86,17 @@ Quit (ie close) this Note
 .SH DEBUGGING
 tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows does not, for this purpose, have a console. But it can be told to capture this log info to a file using another command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
 
-tomboy-ng \-\-debug-sync \-\-debug-log=c:\\debug.txt
+tomboy-ng  \-\-debug-log=c:\\debug.txt  \-\-debug-sync
 
 set tomboy-ng_debuglog=c:\\debug.txt
 
 Mac users can do something similar : 
 
-open tomboy-ng.app \-\-args "\-\-debug_sync \-\-debug-log=$HOME/tomboy-ng.log"
+open tomboy-ng.app \-\-args     "\-\-debug-log=$HOME/tomboy-ng.log"  "\-\-debug-sync"
 
 Linux users who need a file can also :
 
-tomboy-ng \-\-debug_sync \-\-debug-log=$HOME/tomboy-ng.log
+tomboy-ng \-\-debug-sync \-\-debug-log=$HOME/tomboy-ng.log
 
 If you intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see.
 
