@@ -137,7 +137,7 @@ HISTROY
     2018/10/25  Much testing, support for Tomdroid.
     2018/10/28  Much tweaking and bug fixing.
     2018/10/29  Tell TB_Sdiff about note title before showing it.
-
+    2018/11/03  Call checkmetadata before resolving clashes.
 }
 
 interface
@@ -1035,10 +1035,10 @@ begin
                 NoteMetaData := TNoteInfoList.Create;
             end
     end;
-    if not TestRun then
-       ProcessClashes();
     CheckNewNotes();
     CheckMetaData();
+    if not TestRun then
+       ProcessClashes();
     if DebugMode then DisplayNoteInfo(NoteMetaData, 'NoteMetaData');
     if TestRun then exit();
     // ====================== Set an exit here to do no-write tests
