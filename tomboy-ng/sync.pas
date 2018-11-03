@@ -759,7 +759,7 @@ begin
         if NoteMetaData.Items[I]^.Action = SyUnset then debugln('---- missed one -----');
         if NoteMetaData.Items[I]^.Action = SyUpLoadEdit then begin
             NoteMetaData.Items[I]^.LastChange := GetNoteLastChangeSt(NotesDir + ID + '.note', ErrorString);
-            debugln('=========== LCD is [' + NoteMetaData.Items[I]^.CreateDate + ']');
+            // debugln('=========== LCD is [' + NoteMetaData.Items[I]^.CreateDate + ']');
         end;
     end;
 end;
@@ -1035,12 +1035,13 @@ begin
                 NoteMetaData := TNoteInfoList.Create;
             end
     end;
-    CheckNewNotes();
     if not TestRun then
        ProcessClashes();
+    CheckNewNotes();
     CheckMetaData();
     if DebugMode then DisplayNoteInfo(NoteMetaData, 'NoteMetaData');
     if TestRun then exit();
+    // ====================== Set an exit here to do no-write tests
     if DoDownLoads() then           // DoDownloads() will tell us what troubled it.
         if WriteRemoteManifest(NewRev) then
             if DoDeletes() then

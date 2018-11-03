@@ -320,13 +320,13 @@ procedure TFormRecover.CreateSnapshot(const FullSourceDir, FullZipName: string);
 var
     Zip : TZipper;
     Info : TSearchRec;
-    Tick, Tock : DWord;
+    // Tick, Tock : DWord;
 begin
     //debugln('--------- Config = ' + ConfigDir);
     Zip := TZipper.Create;
     try
         Zip.FileName := FullZipName;
-        Tick := GetTickCount64();
+        // Tick := GetTickCount64();
       	if FindFirst(FullSourceDir + '*.note', faAnyFile, Info)=0 then begin
       		repeat
                 // debugln('Zipping note [' + FullSourceDir + Info.Name + ']');
@@ -340,7 +340,7 @@ begin
             else if DebugMode then debugln('NOTE : Local Manifest not found ' + ConfigDir + 'manifest.xml');
             Zip.ZipAllFiles;
       	end;
-        Tock := GetTickCount64(); // 150mS, 120 notes on lowend laptop
+        //Tock := GetTickCount64(); // 150mS, 120 notes on lowend laptop
     finally
         FindClose(Info);
         Zip.Free;

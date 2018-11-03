@@ -1,93 +1,29 @@
 object FormSDiff: TFormSDiff
-  Left = 534
-  Height = 438
-  Top = 154
-  Width = 615
+  Left = 493
+  Height = 481
+  Top = 107
+  Width = 588
   VertScrollBar.Visible = False
   Caption = 'A Note Sync Clash has been Detected'
-  ClientHeight = 438
-  ClientWidth = 615
+  ClientHeight = 481
+  ClientWidth = 588
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '1.8.4.0'
-  object KMemo1: TKMemo
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Panel1
-    Left = 0
-    Height = 346
-    Top = 0
-    Width = 615
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    ContentPadding.Left = 5
-    ContentPadding.Top = 5
-    ContentPadding.Right = 5
-    ContentPadding.Bottom = 5
-    ParentFont = False
-    TabOrder = 0
-    Visible = True
-  end
-  object Button1: TButton
-    AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Panel1
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Button2
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 375
-    Height = 40
-    Hint = 'Pull down remote note and backup local.'
-    Top = 396
-    Width = 120
-    Anchors = [akRight, akBottom]
-    BorderSpacing.Left = 2
-    BorderSpacing.Bottom = 2
-    Caption = 'Use Remote'
-    Color = clYellow
-    ModalResult = 6
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 1
-  end
-  object Button2: TButton
-    AnchorSideLeft.Control = Button1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = Panel1
-    AnchorSideTop.Side = asrBottom
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 495
-    Height = 40
-    Hint = 'Use and Push to Sync Repo'
-    Top = 396
-    Width = 120
-    Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 2
-    Caption = 'Use Local'
-    Color = clAqua
-    ModalResult = 7
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 2
-  end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Button1
+    AnchorSideBottom.Control = BitBtnUseLocal
     Left = 2
     Height = 50
-    Top = 346
-    Width = 613
+    Top = 389
+    Width = 586
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     ClientHeight = 50
-    ClientWidth = 613
-    TabOrder = 3
+    ClientWidth = 586
+    TabOrder = 0
     object LabelRemote: TLabel
       Left = 140
       Height = 17
@@ -148,68 +84,116 @@ object FormSDiff: TFormSDiff
   end
   object Label1: TLabel
     AnchorSideBottom.Control = ButtAllRemote
-    Left = 24
+    Left = 17
     Height = 17
-    Top = 394
+    Top = 438
     Width = 282
     Anchors = [akBottom]
     Caption = 'Or make a choice for remainder of this run'
     ParentColor = False
   end
   object ButtAllOldest: TButton
-    AnchorSideRight.Control = Button1
+    AnchorSideRight.Control = BitBtnUseRemote
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 272
+    Left = 267
     Height = 25
-    Top = 411
+    Top = 455
     Width = 101
     Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 2
+    BorderSpacing.Bottom = 1
     Caption = 'Oldest'
     ModalResult = 11
-    TabOrder = 4
+    TabOrder = 1
   end
   object ButtAllNewest: TButton
     AnchorSideRight.Control = ButtAllOldest
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 172
+    Left = 167
     Height = 25
-    Top = 411
+    Top = 455
     Width = 100
     Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 2
+    BorderSpacing.Bottom = 1
     Caption = 'Newest'
     ModalResult = 8
-    TabOrder = 5
+    TabOrder = 2
   end
   object ButtAllLocal: TButton
     AnchorSideRight.Control = ButtAllNewest
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 97
+    Left = 92
     Height = 25
-    Top = 411
+    Top = 455
     Width = 75
     Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 2
+    BorderSpacing.Bottom = 1
     Caption = 'Local'
     ModalResult = 9
-    TabOrder = 6
+    TabOrder = 3
   end
   object ButtAllRemote: TButton
     AnchorSideRight.Control = ButtAllLocal
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 22
+    Left = 17
     Height = 25
-    Top = 411
+    Top = 455
     Width = 75
     Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 2
+    BorderSpacing.Bottom = 1
     Caption = 'Remote'
     ModalResult = 10
+    TabOrder = 4
+  end
+  object BitBtnUseLocal: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 478
+    Height = 42
+    Top = 439
+    Width = 110
+    Anchors = [akRight, akBottom]
+    Caption = 'Use Local'
+    Color = clAqua
+    ModalResult = 7
+    TabOrder = 5
+  end
+  object BitBtnUseRemote: TBitBtn
+    AnchorSideRight.Control = BitBtnUseLocal
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 368
+    Height = 42
+    Top = 439
+    Width = 110
+    Anchors = [akRight, akBottom]
+    Caption = 'UseRemote'
+    Color = clYellow
+    ModalResult = 6
+    TabOrder = 6
+  end
+  object KMemo1: TKMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
+    Left = 0
+    Height = 389
+    Top = 0
+    Width = 588
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ContentPadding.Left = 5
+    ContentPadding.Top = 5
+    ContentPadding.Right = 5
+    ContentPadding.Bottom = 5
+    ParentFont = False
     TabOrder = 7
+    Visible = True
   end
 end

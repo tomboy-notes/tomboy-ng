@@ -30,14 +30,14 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    ExtCtrls, ComCtrls, kmemo;
+    ExtCtrls, ComCtrls, Buttons, kmemo;
 type
 
     { TFormSDiff }
 
     TFormSDiff = class(TForm)
-        Button1: TButton;
-        Button2: TButton;
+        BitBtnUseRemote: TBitBtn;
+        BitBtnUseLocal: TBitBtn;
         ButtAllOldest: TButton;
         ButtAllNewest: TButton;
         ButtAllLocal: TButton;
@@ -128,9 +128,9 @@ begin
         TB := KMemo1.Blocks.AddTextBlock(Copy(DiffText, 1, 50))
     else TB := KMemo1.Blocks.AddTextBlock(DiffText);
     if NoteNo = 1 then
-        TB.TextStyle.Brush.Color := Button1.Color;
+        TB.TextStyle.Brush.Color := BitBtnUseRemote.Color;
     if NoteNo = 2 then
-        TB.TextStyle.Brush.Color := Button2.Color;
+        TB.TextStyle.Brush.Color := BitBtnUseLocal.Color;
     KMemo1.blocks.AddParagraph();
 end;
 
