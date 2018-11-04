@@ -49,7 +49,7 @@ unit SyncGUI;
     2018/10/28  Much tweaking and bug fixing.
     2018/10/29  Tell TB_Sdiff about note title before showing it.
     2018/10/30  Don't show SyNothing in sync report
-
+    2018/11/04  Added support to update in memory NoteList after a sync.
 }
 
 {$mode objfpc}{$H+}
@@ -92,6 +92,7 @@ type
 		private
                 FormShown : boolean;
                 LocalTimer : TTimer;
+                procedure AdjustNoteList();
                 procedure AfterShown(Sender : TObject);
                 procedure DisplaySync();
                     { Called when user wants to join a (possibly uninitialised) Repo,
@@ -211,7 +212,7 @@ begin
     Label1.Caption:='Testing Repo ....';
     Application.ProcessMessages;
     ASync.ProceedFunction:= @Proceed;
-    ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
+//    ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
     ASync.DebugMode := Application.HasOption('s', 'debug-sync');
 	ASync.NotesDir:= NoteDirectory;
 	ASync.SyncAddress := RemoteRepo;        // This is 'some' URL
@@ -275,7 +276,7 @@ begin
 	ASync := TSync.Create;
     try
         ASync.ProceedFunction:= @Proceed;
-        ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
+//        ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
 	    ASync.NotesDir:= NoteDirectory;
 	    ASync.SyncAddress := RemoteRepo;        // This is 'some' URL
@@ -293,6 +294,7 @@ begin
             ASync.StartSync();
             DisplaySync();
             ShowReport();
+            AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Label1.Caption:='All Done';
             Label2.Caption := 'Press Close';
             ButtonClose.Enabled := True;
@@ -300,6 +302,26 @@ begin
     finally
         FreeandNil(ASync);
     end;
+end;
+procedure TFormSync.AdjustNoteList();
+var
+    DeletedList, DownList : TStringList;
+    Index : integer;
+begin
+    DeletedList := TStringList.Create;
+    DownList := TStringList.Create;
+ 	with ASync.NoteMetaData do begin
+		for Index := 0 to Count -1 do begin
+            if Items[Index]^.Action = SyDeleteLocal then
+                DeletedList.Add(Items[Index]^.ID);
+            if Items[Index]^.Action = SyDownload then
+                DownList.Add(Items[Index]^.ID);
+        end;
+    end;
+    if (DeletedList.Count > 0) or (DownList.Count > 0) then
+        SearchForm.ProcessSyncUpdates(DeletedList, DownList);
+   FreeandNil(DeletedList);
+   FreeandNil(DownList);
 end;
 
 procedure TFormSync.ShowReport();
@@ -352,6 +374,7 @@ begin
     ASync.TestRun := False;
     if ASync.StartSync() then begin
         DisplaySync();
+        AdjustNoteList();
         Label1.Caption:='All Done';
         Label2.Caption := 'Press Close';
     end  else

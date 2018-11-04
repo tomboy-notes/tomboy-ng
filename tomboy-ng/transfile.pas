@@ -169,9 +169,9 @@ begin
       on E: EAccessViolation do Result := false;	// probably means we did not find an expected attribute
       on E: EFOpenError do Result := False;		// File is not present.
 	end;
-    if Result = True then
-    	if debugmode then Debugln('Transfile.ReadRemoteManifest - read OK')
-    else
+    if Result = True then begin
+    	if debugmode then Debugln('Transfile.ReadRemoteManifest - read OK');
+    end else
         DebugLn('We failed to read the remote manifest file ', RemoteAddress + 'manifest.xml');
 end;
 

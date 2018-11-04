@@ -82,6 +82,7 @@ unit SearchUnit;
     2018/07/04  Pass back some info about how the note indexing went.
     2018/08/18  Can now set search option, Case Sensitive, Any Combination from here.
     2018/08/18  Update Mainform line about notes found whenever IndexNotes() is called.
+    2018/11/04  Added ProcessSyncUpdates to keep in memory model in line with on disk and recently used list
 }
 
 {$mode objfpc}{$H+}
@@ -137,7 +138,12 @@ type
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
 		procedure StringGridNotebooksClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
+        // Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
+        // other downloded note ID. Adjusts Note_Lister according and marks any
+        // note that is currently open as read only.
+        procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
     private
+
 
 		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
@@ -147,8 +153,6 @@ type
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
-            { returns True if user has note open, accepts ID or simple file name }
-        {function IsNoteOpen(const ID: String): boolean;  }
             { If there is an open note from the passed filename, it will be marked read Only,
               If deleted, remove entry from NoteLister, will accept a GUID, Filename or FullFileName inc path }
         procedure MarkNoteReadOnly(const FullFileName: string; const WasDeleted : boolean);
@@ -201,18 +205,31 @@ uses MainUnit,      // Opening form, manages startup and Menus
 
 
 { -------------   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ------------ }
-{
-function TSearchForm.IsNoteOpen(const ID : String) : boolean;
+
+
+procedure TSearchForm.ProcessSyncUpdates(const DeletedList, DownList : TStringList);
+// The lists arrive here with just the 36 char ID, some following functions are OK with that ????
 var
-    AForm : TForm;
+    Index : integer;
 begin
-    if NoteLister = nil then begin
-        debugln('Error, asking about a note when notelister is nil');
-        exit(false);
+    if NoteLister <> nil then begin
+        for Index := 0 to DeletedList.Count -1 do begin
+            MarkNoteReadOnly(DeletedList.Strings[Index], True);
+            //debugln('We have tried to mark read only on ' + DeletedList.Strings[Index]);
+        end;
+        for Index := 0 to DownList.Count -1 do begin
+            MarkNoteReadOnly(DownList.Strings[Index], False);
+            if NoteLister.IsIDPresent(DownList.Strings[Index]) then begin
+                NoteLister.DeleteNote(DownList.Strings[Index]);
+                //debugln('We have tried to delete ' + DownList.Strings[Index]);
+            end;
+            NoteLister.IndexThisNote(DownList.Strings[Index]);
+            //debugln('We have tried to reindex ' + DownList.Strings[Index]);
+        end;
+        UseList();
     end;
-    Result := NoteLister.IsThisNoteOpen(ID, AForm);
 end;
-}
+
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
     if NoteLister <> nil then         // else we are quitting the app !

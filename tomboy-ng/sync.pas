@@ -138,6 +138,7 @@ HISTROY
     2018/10/28  Much tweaking and bug fixing.
     2018/10/29  Tell TB_Sdiff about note title before showing it.
     2018/11/03  Call checkmetadata before resolving clashes.
+    2018/11/04  No longer call MarkNoteReadOnly as we now rely on searchForm.ProcessSyncUpdates
 }
 
 interface
@@ -268,7 +269,7 @@ type                       { ----------------- T S Y N C --------------------- }
           { The calling process must set this to the address of a function to call
             every time a local note is deleted or overwritten during Sync. Its to
             deal with the case where a note is open but unchanged during sync.  }
-        MarkNoteReadOnlyProcedure : TMarkNotereadOnlyProcedure;
+       // MarkNoteReadOnlyProcedure : TMarkNotereadOnlyProcedure;
 
                 // A URL or directory with trailing delim.
         SyncAddress : string;
@@ -343,7 +344,7 @@ begin
     NoteMetaData := TNoteInfoList.Create;
     LocalMetaData := TNoteInfoList.Create;
     Transport := nil;
-    MarkNoteReadonlyProcedure := nil;
+    //MarkNoteReadonlyProcedure := nil;
     //NewRepo := False;
 end;
 
@@ -768,21 +769,21 @@ end;
 { ========================  N O T E   M O V E M E N T    M E T H O D S ================}
 
 function TSync.DoDownloads() : boolean;
-var
-    I : integer;
+{var
+    I : integer; }
 begin
     Result := Transport.DownloadNotes(NoteMetaData);
 	if Result = false then begin
        self.ErrorString:= Transport.ErrorString;
        debugln('ERROR - Download Notes reported ' + ErrorString);
 	end;
-    if not assigned( MarkNoteReadonlyProcedure) then begin // it should be set but not in the test rig !
+{    if not assigned( MarkNoteReadonlyProcedure) then begin // it should be set but not in the test rig !
            debugln('ERROR - MarkNoteReadOnly does not appear to be assigned (OK in Test_Rig)');
            exit;
-       end;
-    for I := 0 to NoteMetaData.Count -1 do
+       end;         }
+{    for I := 0 to NoteMetaData.Count -1 do
         if Notemetadata.Items[i]^.Action = SyDownload then
-           MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, False);
+           MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, False);     }
     if DebugMode then debugln('Downloaded notes.');
 end;
 
@@ -796,7 +797,7 @@ begin
                 if CopyFile(NotesDir + NoteMetaData.Items[i]^.ID + '.note', NotesDir + PathDelim
                         + 'Backup' + Pathdelim + NoteMetaData.Items[i]^.ID + '.note') then
                     DeleteFile(NotesDir + NoteMetaData.Items[i]^.ID + '.note');
-            MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, True);
+            // MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, True);
         end;
     end;
     result := true;
