@@ -366,8 +366,8 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     NoteBook,
     MainUnit,
     SyncUtils,          // Just for IDLooksOK()
-    K_Prn;              // Custom print unit.
-
+    K_Prn,              // Custom print unit.
+    FileUtil;          // just for ExtractSimplePath ... ~#1620
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
@@ -1668,11 +1668,15 @@ begin
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
         NoteFileName := Sett.NoteDirectory + GetAFilename();
-    if not IDLooksOK(ExtractFileNameOnly(NoteFileName)) then
-        if mrYes = QuestionDlg('Invalid GUID', 'Give this note a new GUID Filename (recommended) ?', mtConfirmation, [mrYes, mrNo], 0) then begin
-            OldFileName := NoteFileName;
-            NoteFileName := Sett.NoteDirectory + GetAFilename();
-    end;
+    if Sett.NoteDirectory = CleanAndExpandDirectory(ExtractFilePath(NoteFileName)) then begin   // UTF8 OK
+        //debugln('Working in Notes dir ' + Sett.NoteDirectory + ' = ' + CleanAndExpandDirectory(ExtractFilePath(NoteFileName)));
+        if not IDLooksOK(ExtractFileNameOnly(NoteFileName)) then
+            if mrYes = QuestionDlg('Invalid GUID', 'Give this note a new GUID Filename (recommended) ?', mtConfirmation, [mrYes, mrNo], 0) then begin
+                OldFileName := NoteFileName;
+                NoteFileName := Sett.NoteDirectory + GetAFilename();
+        end;
+    end; //else debugln('NOT Working in Notes dir ' + Sett.NoteDirectory + ' <> ' + CleanAndExpandDirectory(extractFilePath(NoteFileName)));
+    // We do not enforce the valid GUID file name rule if note is not in official Notes Dir
     Saver := TBSaveNote.Create();
     KMemo1.Blocks.LockUpdate;
     try
@@ -1697,6 +1701,7 @@ begin
                                         // if we have rewrtten GUID, that will create new entry for it.
         if OldFileName <> '' then
             SearchForm.DeleteNote(OldFileName);
+
     finally
         Saver.Destroy;
         Dirty := false;

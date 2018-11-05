@@ -194,7 +194,9 @@ end;
 
 procedure TFormRecover.Button4Click(Sender: TObject);
 begin
-    RestoreSnapshot('Safety.zip');
+    if fileexists(SnapDir + 'Safety.zip') then
+        RestoreSnapshot('Safety.zip')
+    else showmessage('A Safety snapshot not found. Try setting Snapsot Dir to where you may have one.');
 end;
 
 procedure TFormRecover.StringGrid1DblClick(Sender: TObject);
@@ -202,9 +204,9 @@ var
     NName : string;
 begin
     case PageControl1.ActivePageIndex of
-        0, 1 :  begin
+        {0,} 1 :  begin
                     try
-                        NName := StringGrid1.Cells[0, StringGrid1.Row] + '.note';
+                        NName := StringGrid1.Cells[0, StringGrid1.Row];
                     except on EGridException do exit;
                     end;
                     if length(NName) <  9 then exit;            // empty returns ID.note from col(0) title
@@ -358,7 +360,7 @@ end;
 
 procedure TFormRecover.TabSheetExistingShow(Sender: TObject);
 var
-  I : integer;
+  I, Comma : integer;
   Msg : string;
 begin
     //showmessage('Existing Show');
@@ -380,7 +382,8 @@ begin
     StringGrid1.FixedRows := 1;
     for I := 0 to SearchForm.NoteLister.ErrorNotes.Count -1 do begin
         Msg := SearchForm.NoteLister.ErrorNotes.Strings[I];
-        StringGrid1.InsertRowWithValues(I + 1, [copy(Msg, 1, 36), copy(Msg, 44, 200)]);
+        Comma := pos(',', Msg);
+        StringGrid1.InsertRowWithValues(I + 1, [copy(Msg, 1, Comma-1), copy(Msg, Comma+1, 200)]);
     end;
     StringGrid1.AutoSizeColumns;
     if I > 0 then ButtonDeleteBadNotes.Enabled:= True;

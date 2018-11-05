@@ -5,7 +5,7 @@
 
 If you are reading this, odds are you are worried ! So, first bit of advice is <size:huge>
 <italic><bold>don't panic</bold></italic></size:huge><size:small><italic><bold> (1)</bold></italic></size:small>
-Its quite possible we can help you. That will depend on whats happened and if you have enabled auto snapshots (or took a manual one recently). Firstly, don't do a sync, and disable auto-snapshots. Thats to prevent bad data replacing what might be good data currently not obvious to you. Next,  take small steps. 
+Its quite possible we can help you. That will depend on whats happened and if you have enabled auto snapshots (or took a manual one recently). Firstly, don't do a sync. Thats to prevent bad data replacing what might be good data currently not obvious to you. Next,  take small steps.
 
 Lets look at the possibilities -<size:large>
 
@@ -27,11 +27,11 @@ OK, I get you, this is serious. But we at have two paths left, lets see -
 <bold>I sync my notes from somewhere else.</bold>
 Oh, that's good. Maybe all you need do is clean out your current notes directory <size:small>(4)</size:small>  and rejoin the sync network. Note, I emphasise, not just do a sync. You <highlight>MUST</highlight> go to the sync tab and click "<highlight>Set File Sync Repo</highlight>". That way, the sync system sees you as a new friend and sends you a full set of notes. Just how good an approach this is depends on how recently you last synced, obviously any changes since last sync will be lost.
 
-<bold>I have a auto-snapshot in place</bold>
-Great news (<highlight>although unlikely, its not enabled yet</highlight>). You can easily choose to roll back to a particular snapshot and blow away all your troubles. Too Easy !
-<list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost Notes". If you have not already, now would be a great time to click "Intro Snapshot", you are in seriously dangerous space right now.</list-item></list>
+<bold>I have a snapshot</bold>
+Great news ! You can easily choose to roll back to a particular snapshot and blow away all your troubles. Too Easy !
+<list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost Notes". If you have not already, now would be a great time to click "Safety Snapshot", you are in seriously dangerous space right now.</list-item></list>
 <list><list-item dir="ltr">Go to the "Recover Snapshot" tab, choose the snapshot you wish to use and away you go <size:small>(5).</size:small></list-item></list><size:small></size:small>
-Back out, go to the Search and click "Refresh". After you have checked all is good, re enable auto-snapshots. Its your best friend !<size:large>
+Back out, go to the Search and click "Refresh". After you have checked all is good, please remember to take a snapshot every now and again !<size:large>
 
 <bold>Notes </bold></size:large>
 (1) By Douglas Adams, used without permission. 
@@ -42,8 +42,8 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 
 
 </note-content></text>
-  <last-change-date>2018-08-26T15:34:22.8360000+10:00</last-change-date>
-  <last-metadata-change-date>2018-08-26T15:34:22.8360000+10:00</last-metadata-change-date>
+  <last-change-date>2018-11-05T21:34:54.4680000+11:00</last-change-date>
+  <last-metadata-change-date>2018-11-05T21:34:54.4680000+11:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
