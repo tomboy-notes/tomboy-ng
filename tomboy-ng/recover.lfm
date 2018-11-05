@@ -47,9 +47,9 @@ object FormRecover: TFormRecover
     Height = 172
     Top = 44
     Width = 675
-    ActivePage = TabSheetIntro
+    ActivePage = TabSheetSnapshots
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'

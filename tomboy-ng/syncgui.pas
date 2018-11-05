@@ -94,14 +94,15 @@ type
                 LocalTimer : TTimer;
                 procedure AdjustNoteList();
                 procedure AfterShown(Sender : TObject);
+                    // Display a summary of sync actions to user.
                 procedure DisplaySync();
                     { Called when user wants to join a (possibly uninitialised) Repo,
                       will handle some problems with user's help. }
                 procedure JoinSync;
                     { Called to do a sync assuming its all setup. Any problem is fatal }
                 procedure ManualSync;
-
-    procedure ShowReport;
+                    { Populates the string grid with details of notes to be actioned }
+                procedure ShowReport;
             	//procedure TestRepo();
         		//procedure DoSetUp();
 
@@ -374,6 +375,7 @@ begin
     ASync.TestRun := False;
     if ASync.StartSync() then begin
         DisplaySync();
+        ShowReport();
         AdjustNoteList();
         Label1.Caption:='All Done';
         Label2.Caption := 'Press Close';

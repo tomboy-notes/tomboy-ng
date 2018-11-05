@@ -72,7 +72,8 @@ RemoteRevNo. If we are making a new connection, make a GUID and set those vars a
 The Model as implemented in tomboy-ng, October 2018
 
 We call TestTransportEarly() and/or TestTransport()
-Its tests and may, or may not populate NoteMetaData with remote notes.
+Its tests and may, or may not populate NoteMetaData with remote notes. It may, or may not
+put the remote LCD in NoteMetaData.
 
 We call StartSync() (not talking about Andro mode here.)
 ---------------------
@@ -99,7 +100,8 @@ CheckUsingLCD(True) Assignes an Action to each entry in NoteMetaData (which only
     If it finds a potential clash, aborts if it does not have last-change-date for
     the remote note. In that case, we recall LoadReopData(True) this time demanding
     last change date. And then run CheckUsingLCD again.  Note this method is an
-    alternative to CheckUsingRev()
+    alternative to CheckUsingRev(). Any notes thats determined here to be an UpLoad
+    has its LCD (in NoteMetaData) set to the local note's LCD.
 Because a join cannot use loacal manifest, we do not honour remote or local deletes.
 CheckNewNotes() looks in Notes dir for any notes there that are not yet listed
     in NoteMetaData. These notes are UploadNew.
@@ -139,6 +141,7 @@ HISTROY
     2018/10/29  Tell TB_Sdiff about note title before showing it.
     2018/11/03  Call checkmetadata before resolving clashes.
     2018/11/04  No longer call MarkNoteReadOnly as we now rely on searchForm.ProcessSyncUpdates
+    2018/11/05  Now set Notemeatdata LCD to LCD of local note when Clash handler sets SyUpLoadEdit
 }
 
 interface
@@ -430,6 +433,13 @@ begin
                         Action := ResolveAllClash(Action, ID, RemoteNote);
                 end else
                     Action := ResolveAllClash(ProceedAction, ID, RemoteNote);  // user has already said "all something"
+            end;
+            if Action = SyUpLoadEdit then begin
+                LastChange := GetNoteLastChangeSt(NotesDir + ID + '.note', ErrorString);
+                if  LastChange <> '' then
+                    LastChangeGMT := GetGMTFromStr(LastChange)
+                else
+                    debugln('ERROR, Failed to get LCD from local ' + ID + ' --- ' + ErrorString);
             end;
     end;
 end;

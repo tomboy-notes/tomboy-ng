@@ -5,6 +5,7 @@ unit recover;
                 on the main 'Restore' tab.
     2018/10/28  Much changes, now working reasonably well.
     2018/10/29  Set attributes of Unzipped files on the Mac, it apparently leaves then 000
+    2018/11/05  Altered name of safety zip file
 
 }
 
@@ -268,8 +269,8 @@ var
 begin
     // gets eg /somepath/20180826_2135_Sun.zip, 20180826_2135_Sun_Man.zip, 20180826_2135_Sun_Month.zip
     FName := ExtractFileName(AFileName);
-    if FName = 'Exist.zip' then
-        Result := 'Snapshot from Intro Tab'
+    if FName = 'Safety.zip' then
+        Result := 'from Intro Tab'
     else begin
         Result := copy(FName, 1, 4) + '-' + copy(FName, 5, 2) + '-' + copy(FName, 7, 2);
         Result := Result + ' ' + copy(FName, 10, 2) + ':' + copy(FName, 12, 2);

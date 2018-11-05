@@ -76,6 +76,7 @@ unit settings;
     2018/08/23  Ensured that an ini file without a notedir returns a sensible value, TEST
     2018/10/28  Much changes, support Backup management, snapshots and new sync Model.
     2018/11/01  Ensure we have a valid Spell, even after a hide !
+    2018/11/05  Set default tab.
 }
 
 {$mode objfpc}{$H+}
@@ -536,6 +537,7 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+    PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;
     NeedRefresh := False;
     ExportPath := '';
