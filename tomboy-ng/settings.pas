@@ -106,6 +106,7 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
+        CheckShowTomdroid: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         CheckAnyCombination: TCheckBox;
 		CheckManyNotebooks: TCheckBox;
@@ -210,6 +211,7 @@ type
         procedure CheckSpelling;
         // Returns the default place to store notes. It may not be present.
         function GetDefaultNoteDir: string;
+        function MyBoolStr(const InBool: boolean) : string;
         procedure SetFontSizes;
         // Saves all current settings to disk. Call when any change is made.
         procedure SettingsChanged();
@@ -609,6 +611,9 @@ begin
             CheckAnyCombination.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'AnyCombination', 'true'));
 
+            CheckShowTomdroid.Checked :=
+                ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
+
             ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
             case ReqFontSize of
         	    'big'    : RadioFontBig.Checked := true;
@@ -653,6 +658,10 @@ begin
         end;
     end;
 end;
+function TSett.MyBoolStr(const InBool : boolean) : string;
+begin
+    if InBool then result := 'true' else result := 'false';
+end;
 
 procedure TSett.SettingsChanged();
 var
@@ -675,6 +684,7 @@ begin
       if CheckShowIntLinks.Checked then
           ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
       else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
+      ConfigFile.writestring('BasicSettings', 'ShowTomdroid', MyBoolStr(CheckShowTomdroid.Checked));
       if RadioFontBig.Checked then
           ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
       else if RadioFontMedium.Checked then
@@ -877,6 +887,7 @@ begin
     SettingsChanged();
     SyncSettings();
 end;
+
 
 function TSett.GetLocalTime: ANSIstring;
 var

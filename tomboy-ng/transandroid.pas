@@ -7,6 +7,54 @@ unit transandroid;
   HISTORY
   2018/10/28    Improve error checking on SetServerID(), needs to be applied to
                 all similar methods.
+  2018/11/20    Try Finally around SetsrverID() stuff to stop memory leak. Check
+                if that still handles a bad password ???
+
+
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  Must add -o StrickHostKeyChecking=no   to ssh command that initially looks for the serverID
+  on device. Maybe only for first run ?  A run that was saved in cfg file ?
+
+  So, if loaded profile is unchanged, we'll check for matching serverID and a corresponding
+  local profile.  If thats what happens, we'll proceed to sync.
+
+  A forcejoin is same as a new join (here), so, if above test fails, we'll ask user if they want to 'join' ?
+  A join will replace existing server.id (if it exists) and not load a local mainifest.
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+  Normal Sync assumes IP address of both PC and device have not changed.
+
+  Profile is loaded from config file, that will have name, server ID, IP address and password (?)
+
+  We call sync.Settransport and it calls Trans.TestTransport{early} [pings device, reads its serverID
+  and if not present or bad, creates a new one and puts it in place on device]
+
+  We then call sync.testconnection. In a RepoUse case, it reads local manifest,
+
+
+  ---------------------
+  All wrong !
+  ---------------------
+
+  get rid of the Trans TestTransportEarly and work the same as we do with other Trans.
+
+  Sync.SetTransport -
+        Selects a Trans layer, adjusts config dir,  Does this Ping device ? That would
+        indicate its there and its ssh server is running.
+
+  Sync.TestTransport
+        In repoUse mode - Reads Local Manifest (if exists), calls Trans.TestTransport,
+        currently does nothing but much of Trans.TestTransportEarly goes there.
+        compares localServerID (from config and local manifest).
+        If serverID problem, consult user.  rets SyncMismatch
+        In RepoNew mode, we ignore any local manifest and both local and remote
+        serverIDs. A fresh start.
+
+  Trans.TestTransport (here, for android)
+        If not NewRepo, grabs the devices serverID.
+        If NewRepo, generates a new ServerID and puts it on device.
+
 }
 
 {$mode objfpc}{$H+}
@@ -129,32 +177,38 @@ begin
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     // CL (eg) sshpass -p admin ssh -p2222 root@192.168.174 cat tomboy.serverid
     try
-        AProcess.Execute;
-        List := TStringList.Create;
-        List.LoadFromStream(AProcess.Output);
-        if length(List.Text) = 0 then begin
-            List.LoadFromStream(AProcess.Stderr);
-                if length(List.Text) = 0 then
-                    ErrorString := 'Unable to connect, unknown error'
-                else if pos('Connection refused', List.Text) > 0 then
-                    ErrorString := 'Unable to connect, is ssh server running ?'
-                else if pos('Permission denied', List.Text) > 0 then
-                    ErrorString := 'Unable to connect, check password'
-                else ErrorString := List.Text;
-                exit(false);
+        try
+            AProcess.Execute;
+            if debugmode then debugln('SetServerID - Executed');
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);
+            if debugmode then debugln('SetServerID - Loadfromstream');
+            if length(List.Text) = 0 then begin
+                if debugmode then debugln('SetServerID - Length was zero');
+                List.LoadFromStream(AProcess.Stderr);
+                    if length(List.Text) = 0 then
+                        ErrorString := 'Unable to connect, unknown error'
+                    else if pos('Connection refused', List.Text) > 0 then
+                        ErrorString := 'Unable to connect, is ssh server running ?'
+                    else if pos('Permission denied', List.Text) > 0 then
+                        ErrorString := 'Unable to connect, check password'
+                    else ErrorString := List.Text;
+                    exit(false);
+            end;
+        except on
+            E: EProcess do begin
+                ErrorString := 'EProcess Error ' + E.Message;
+                debugln('SetServerID ' + ErrorString);
+            end
         end;
-    except on
-        E: EProcess do begin
-            ErrorString := 'EProcess Error ' + E.Message;
-            debugln('SetServerID ' + ErrorString);
-        end
+        if pos('No such file or directory', List.Text) > 0 then exit(True);     // no ID present, uninitialized ?
+        if List.Count > 0 then
+            ServerID := copy(List.Strings[List.Count-1], 1, 36);                // Thats, perhaps, a serverID
+        if debugmode then debugln('GetServerID [' + ServerID + ']' + List.Text);
+    finally
+        FreeandNil(List);
+        AProcess.Free;
     end;
-    if pos('No such file or directory', List.Text) > 0 then exit(True);     // no ID present, uninitialized ?
-    if List.Count > 0 then
-        ServerID := copy(List.Strings[List.Count-1], 1, 36);                // Thats, perhaps, a serverID
-    if debugmode then debugln('GetServerID [' + ServerID + ']' + List.Text);
-    FreeandNil(List);
-    AProcess.Free;
 end;
 
 function TAndSync.TestTransport(): TSyncAvailable;

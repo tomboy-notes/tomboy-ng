@@ -1,7 +1,7 @@
 object FormBackupView: TFormBackupView
-  Left = 418
+  Left = 422
   Height = 190
-  Top = 273
+  Top = 297
   Width = 335
   Caption = 'FormBackupView'
   ClientHeight = 190

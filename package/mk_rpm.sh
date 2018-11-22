@@ -16,21 +16,21 @@ RDIR="$PROD"-"$VERS"
 
 
 function DoAlien ()  {
+	echo "------------- RDIR=$RDIR and building for $1 ---------"
 	rm -Rf "$RDIR"
-	# ls -l
 	# Note, debs have a dash after initial version number, RPM an underscore
-	alien -r -g -v "$PROD"_"$VERS"-"$1"
-	head "$RDIR"/"$RDIR"-2.spec
+	alien -r -g -v "$PROD"_"$VERS"-0_"$1".deb
+	# head "$RDIR"/"$RDIR"-2.spec
 	sed -i 's#%dir "/"##' "$RDIR"/"$RDIR"-2.spec
 	sed -i 's#%dir "/usr/bin/"##' "$RDIR"/"$RDIR"-2.spec
-	head "$RDIR"/"$RDIR"-2.spec
+	# head "$RDIR"/"$RDIR"-2.spec
 	cd "$RDIR"
-	sudo rpmbuild --buildroot "$PWD" -bb "$RDIR"-2.spec
+	rpmbuild --target "$1" --buildroot "$PWD" -bb "$RDIR"-2.spec
 	cd ..
-	ls -la *.rpm
 }
 
-DoAlien "0_amd64.deb"
-#DoAlien "0_i386.deb"
-
+DoAlien "i386"
+DoAlien "amd64"
+chown "$SUDO_USER" *.rpm
+ls -l *.rpm
 

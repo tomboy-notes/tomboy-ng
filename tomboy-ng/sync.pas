@@ -305,8 +305,8 @@ type                       { ----------------- T S Y N C --------------------- }
                 { Reports on contents of a created and filled list }
 	    procedure ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors: integer);
 
-                { True=FileSync, False=Network Sync }
-        function SetTransport(Mode : TSyncTransport) : TSyncAvailable;               // todo - use an enumerated type ....
+                { Selects a Trans layer, adjusts config dir, }
+        function SetTransport(Mode : TSyncTransport) : TSyncAvailable;
 
                 { Checks NoteMetaData for valid Actions, writes error to console.
                   Always returns True and does mark bad lines with Action=SyError
@@ -316,8 +316,10 @@ type                       { ----------------- T S Y N C --------------------- }
             { May return : SyncXMLError, SyncNoRemoteDir, SyncNoRemoteWrite,
               SyncNoRemoteRepo, SyncBadRemote, SyncMismatch. Checks if the connecton
               looks viable, either (fileSync) it has right files there and write access
-              OR (NetSync) network answers somehow (?). SyncReady can proceed to
-              StartSync, else must do something first, setup new connect, consult user etc.}
+              OR (NetSync) network answers somehow (?). Reads local manifest if
+              RepoAction=RepoUse and compares ts serverID with one found by
+              Trans.testConnection. SyncReady means we can proceed to StartSync, else must
+              do something first, setup new connect, consult user etc.}
         function TestConnection() : TSyncAvailable;
 
             { Do actual sync, but if TestRun=True just report on what you'd do.

@@ -90,6 +90,7 @@ type
         Label8: TLabel;
         LabelNotesFound: TLabel;
         MainMenu1: TMainMenu;
+        TrayMenuTomdroid: TMenuItem;
         MMRecent1: TMenuItem;
         MMRecent8: TMenuItem;
         MMRecent9: TMenuItem;
@@ -145,13 +146,17 @@ type
         procedure MMSettingsClick(Sender: TObject);
         procedure MMSyncClick(Sender: TObject);
         procedure TrayIconClick(Sender: TObject);
+        procedure TrayMenuTomdroidClick(Sender: TObject);
     private
         CmdLineErrorMsg : string;
         AllowDismiss : boolean; // Allow user to dismiss (ie hide) the opening window.
         function CommandLineError() : boolean;
+
     public
         UseTrayMenu : boolean;
         UseMainMenu : boolean;
+            { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode }
+        procedure ShowHelpNote(HelpNoteName: string);
         procedure UpdateNotesFound(Numb: integer);
         procedure CheckStatus();
         { Opens a note in single note mode. Pass a full file name, a bool that closes whole app
@@ -178,8 +183,8 @@ uses LazLogger, LazFileUtils,
     gtk2, gdk2, Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
     uAppIsRunning,
-    Editbox;    // Used only in SingleNoteMode
-
+    Editbox,    // Used only in SingleNoteMode
+    Tomdroid;
 
 { =================================== V E R S I O N    H E R E =============}
 const Version_string  = {$I %TOMBOY_NG_VER};
@@ -222,7 +227,19 @@ begin
     if CloseOnExit then Close;      // we also use singlenotemode internally in several places
 end;
 
-
+Procedure TMainForm.ShowHelpNote(HelpNoteName : string);
+var
+    DocsDir : string;
+begin
+    DocsDir := AppendPathDelim(ExtractFileDir(Application.ExeName));         // UNTESTED
+    {$ifdef LINUX}DocsDir := '/usr/share/doc/tomboy-ng/'; {$endif}
+    {$ifdef DARWIN}
+    DocsDir := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';
+    //DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/';
+    {$endif}  // untested
+    // showmessage('About to open ' + DocsDir + 'recover.note');
+    SingleNoteMode(DocsDir + HelpNoteName, False, True);
+end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
@@ -322,6 +339,7 @@ begin
             TrayIcon.Show;
 
      end;
+     TrayMenuTomdroid.Visible := Sett.CheckShowTomdroid.Checked;
 end;
 
 procedure TMainForm.ButtonDismissClick(Sender: TObject);
@@ -452,6 +470,10 @@ begin
     PopupMenuTray.PopUp();
 end;
 
+procedure TMainForm.TrayMenuTomdroidClick(Sender: TObject);
+begin
+    FormTomdroid.ShowModal;
+end;
 
 
 procedure TMainForm.MMQuitClick(Sender: TObject);

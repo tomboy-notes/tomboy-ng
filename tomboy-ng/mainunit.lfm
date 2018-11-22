@@ -434,6 +434,10 @@ object MainForm: TMainForm
       Caption = 'Synchronise'
       OnClick = MMSyncClick
     end
+    object TrayMenuTomdroid: TMenuItem
+      Caption = 'Tomdroid Sync'
+      OnClick = TrayMenuTomdroidClick
+    end
     object TrayMenuItemSettings: TMenuItem
       Caption = 'Settings'
       OnClick = MMSettingsClick

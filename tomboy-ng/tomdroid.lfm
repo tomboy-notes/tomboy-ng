@@ -1,0 +1,226 @@
+object FormTomdroid: TFormTomdroid
+  Left = 529
+  Height = 377
+  Top = 287
+  Width = 692
+  Caption = 'FormTomdroid'
+  ClientHeight = 377
+  ClientWidth = 692
+  OnShow = FormShow
+  LCLVersion = '1.8.4.0'
+  object ButtonClose: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 586
+    Height = 44
+    Top = 333
+    Width = 106
+    Anchors = [akRight, akBottom]
+    Caption = 'Close'
+    TabOrder = 0
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ButtonClose
+    Left = 0
+    Height = 333
+    Top = 0
+    Width = 692
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Caption = 'Panel1'
+    ClientHeight = 333
+    ClientWidth = 692
+    TabOrder = 1
+    object ComboBox1: TComboBox
+      Left = 16
+      Height = 29
+      Top = 88
+      Width = 272
+      ItemHeight = 0
+      OnSelect = ComboBox1Select
+      TabOrder = 0
+      Text = 'ComboBox1'
+    end
+    object EditProfileName: TEdit
+      Left = 16
+      Height = 27
+      Hint = 'eg MySamsungNote7'
+      Top = 148
+      Width = 180
+      TabOrder = 1
+      Text = 'EditProfileName'
+    end
+    object Label1: TLabel
+      Left = 28
+      Height = 21
+      Top = 17
+      Width = 332
+      Caption = 'Tomdroid Sync - be aware of limitations !'
+      Font.Height = 18
+      ParentColor = False
+      ParentFont = False
+    end
+    object Label3: TLabel
+      Left = 16
+      Height = 17
+      Top = 128
+      Width = 88
+      Caption = 'Profile Name'
+      ParentColor = False
+    end
+    object EditPassword: TEdit
+      Left = 16
+      Height = 27
+      Top = 268
+      Width = 120
+      TabOrder = 2
+      Text = 'EditPassword'
+    end
+    object EditIPAddress: TEdit
+      Left = 16
+      Height = 27
+      Top = 208
+      Width = 180
+      TabOrder = 3
+      Text = 'EditIPAddress'
+    end
+    object Label4: TLabel
+      Left = 16
+      Height = 17
+      Top = 188
+      Width = 134
+      Caption = 'IP address of device'
+      ParentColor = False
+    end
+    object Label5: TLabel
+      Left = 16
+      Height = 17
+      Top = 248
+      Width = 165
+      Caption = 'SSH Password for device'
+      ParentColor = False
+    end
+    object CheckSavePassword: TCheckBox
+      Left = 144
+      Height = 22
+      Top = 268
+      Width = 55
+      Caption = 'Save'
+      TabOrder = 4
+    end
+    object Panel2: TPanel
+      AnchorSideLeft.Control = ComboBox1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 308
+      Height = 227
+      Top = 89
+      Width = 367
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BorderSpacing.Left = 20
+      BorderSpacing.Top = 88
+      BorderSpacing.Right = 16
+      BorderSpacing.Bottom = 16
+      Caption = 'Panel2'
+      ClientHeight = 227
+      ClientWidth = 367
+      TabOrder = 5
+      object Memo1: TMemo
+        AnchorSideLeft.Control = Splitter1
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = Panel2
+        AnchorSideRight.Control = Panel2
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = Panel2
+        AnchorSideBottom.Side = asrBottom
+        Left = 147
+        Height = 225
+        Top = 1
+        Width = 219
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Lines.Strings = (
+          'Memo1'
+        )
+        TabOrder = 0
+      end
+      object Splitter1: TSplitter
+        AnchorSideTop.Control = Panel2
+        AnchorSideBottom.Control = Panel2
+        AnchorSideBottom.Side = asrBottom
+        Left = 135
+        Height = 225
+        Top = 1
+        Width = 12
+        Align = alNone
+        Anchors = [akTop, akBottom]
+        ResizeAnchor = akRight
+      end
+      object StringGridReport: TStringGrid
+        AnchorSideLeft.Control = Panel2
+        AnchorSideTop.Control = Panel2
+        AnchorSideRight.Control = Splitter1
+        AnchorSideBottom.Control = Panel2
+        AnchorSideBottom.Side = asrBottom
+        Left = 1
+        Height = 225
+        Top = 1
+        Width = 134
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ColCount = 0
+        FixedCols = 0
+        FixedRows = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goThumbTracking, goSmoothScroll, goCellHints]
+        RowCount = 0
+        TabOrder = 2
+      end
+    end
+  end
+  object ButtonSync: TButton
+    AnchorSideRight.Control = ButtonClose
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 486
+    Height = 45
+    Top = 332
+    Width = 100
+    Anchors = [akRight, akBottom]
+    Caption = 'Sync'
+    OnClick = ButtonSyncClick
+    TabOrder = 2
+  end
+  object ButtonSaveProfile: TButton
+    AnchorSideRight.Control = ButtonSync
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 386
+    Height = 45
+    Top = 332
+    Width = 100
+    Anchors = [akRight, akBottom]
+    Caption = 'Save Profile'
+    OnClick = ButtonSaveProfileClick
+    TabOrder = 3
+  end
+  object ButtonHelp: TButton
+    AnchorSideRight.Control = ButtonSaveProfile
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 286
+    Height = 45
+    Top = 332
+    Width = 100
+    Anchors = [akRight, akBottom]
+    Caption = 'Help'
+    OnClick = ButtonHelpClick
+    TabOrder = 4
+  end
+end

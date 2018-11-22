@@ -103,7 +103,7 @@ implementation
 
 uses LazFileUtils, Note_Lister, SearchUnit, process, LazLogger,
     {$ifdef DARWIN}baseunix,{$endif}            // for fpChmod
-    MainUnit;   // just for MainUnit.MainForm.SingleNoteMode(
+    MainUnit;   // just for MainUnit.MainForm.ShowHelpNote(
 
 var
     SnapNoteLister : TNoteLister;
@@ -151,9 +151,11 @@ begin
 end;
 
 procedure TFormRecover.ButtonSnapHelpClick(Sender: TObject);
-var
-    DocsDir : string;   // this probably belongs in Settings.
+{var
+    DocsDir : string;   // this probably belongs in Settings. }
 begin
+    MainUnit.MainForm.ShowHelpNote('recover.note');
+    (*
     DocsDir := AppendPathDelim(ExtractFileDir(Application.ExeName));                     // UNTESTED
     {$ifdef LINUX}DocsDir := '/usr/share/doc/tomboy-ng/'; {$endif}
     {$ifdef DARWIN}
@@ -162,6 +164,7 @@ begin
     {$endif}  // untested
     // showmessage('About to open ' + DocsDir + 'recover.note');
     MainUnit.MainForm.SingleNoteMode(DocsDir + 'recover.note', False, True);
+    *)
 end;
 
 

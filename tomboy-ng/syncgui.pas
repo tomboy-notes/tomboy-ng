@@ -337,7 +337,7 @@ begin
                 	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
                             , Items[Index]^.Title, Items[Index]^.ID]);
                         inc(Rows);
-                    end;
+                end;
     		end
     	end;
         StringGridReport.AutoSizeColumn(0);

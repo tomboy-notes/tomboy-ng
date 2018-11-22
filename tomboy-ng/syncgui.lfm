@@ -125,6 +125,7 @@ object FormSync: TFormSync
       AnchorSideLeft.Control = Splitter3
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Panel3
+      AnchorSideRight.Control = Panel3
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom

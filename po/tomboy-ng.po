@@ -214,6 +214,7 @@ msgid "Recover"
 msgstr ""
 
 #: tformrecover.buttonsnaphelp.caption
+msgctxt "tformrecover.buttonsnaphelp.caption"
 msgid "Help"
 msgstr ""
 
@@ -401,6 +402,79 @@ msgstr ""
 #: tformsync.panel3.caption
 msgctxt "tformsync.panel3.caption"
 msgid "Panel3"
+msgstr ""
+
+#: tformtomdroid.buttonclose.caption
+msgctxt "tformtomdroid.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformtomdroid.buttonhelp.caption
+msgctxt "tformtomdroid.buttonhelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tformtomdroid.buttonsaveprofile.caption
+msgid "Save Profile"
+msgstr ""
+
+#: tformtomdroid.buttonsync.caption
+msgctxt "tformtomdroid.buttonsync.caption"
+msgid "Sync"
+msgstr ""
+
+#: tformtomdroid.caption
+msgid "FormTomdroid"
+msgstr ""
+
+#: tformtomdroid.checksavepassword.caption
+msgid "Save"
+msgstr ""
+
+#: tformtomdroid.combobox1.text
+msgid "ComboBox1"
+msgstr ""
+
+#: tformtomdroid.editipaddress.text
+msgid "EditIPAddress"
+msgstr ""
+
+#: tformtomdroid.editpassword.text
+msgid "EditPassword"
+msgstr ""
+
+#: tformtomdroid.editprofilename.hint
+msgid "eg MySamsungNote7"
+msgstr ""
+
+#: tformtomdroid.editprofilename.text
+msgid "EditProfileName"
+msgstr ""
+
+#: tformtomdroid.label1.caption
+msgid "Tomdroid Sync - be aware of limitations !"
+msgstr ""
+
+#: tformtomdroid.label3.caption
+msgid "Profile Name"
+msgstr ""
+
+#: tformtomdroid.label4.caption
+msgid "IP address of device"
+msgstr ""
+
+#: tformtomdroid.label5.caption
+msgid "SSH Password for device"
+msgstr ""
+
+#: tformtomdroid.panel1.caption
+msgctxt "tformtomdroid.panel1.caption"
+msgid "Panel1"
+msgstr ""
+
+#: tformtomdroid.panel2.caption
+msgctxt "tformtomdroid.panel2.caption"
+msgid "Panel2"
 msgstr ""
 
 #: tmainform.buttonconfig.caption
@@ -633,6 +707,10 @@ msgstr ""
 #: tmainform.traymenusynchronise.caption
 msgctxt "tmainform.traymenusynchronise.caption"
 msgid "Synchronise"
+msgstr ""
+
+#: tmainform.traymenutomdroid.caption
+msgid "Tomdroid Sync"
 msgstr ""
 
 #: tnotebookpick.button1.caption
@@ -990,6 +1068,10 @@ msgstr ""
 msgid "Show Internal Links"
 msgstr ""
 
+#: tsett.checkshowtomdroid.caption
+msgid "Show Tomdroid Sync (experimental)"
+msgstr ""
+
 #: tsett.checksnapenabled.caption
 msgid "Run Auto"
 msgstr ""
@@ -1163,6 +1245,7 @@ msgid "Wednesday"
 msgstr ""
 
 #: tsett.panel2.caption
+msgctxt "tsett.panel2.caption"
 msgid "Panel2"
 msgstr ""
 
