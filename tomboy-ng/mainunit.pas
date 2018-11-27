@@ -309,6 +309,7 @@ begin
         end;
     end;
 end;
+
 procedure TMainForm.UpdateNotesFound(Numb : integer);
 begin
     LabelNotesFound.Caption := 'Found ' + inttostr(Numb) + ' notes';
@@ -472,7 +473,8 @@ end;
 
 procedure TMainForm.TrayMenuTomdroidClick(Sender: TObject);
 begin
-    FormTomdroid.ShowModal;
+    if FormTomdroid.Visible then FormTomdroid.BringToFront
+    else FormTomdroid.ShowModal;
 end;
 
 

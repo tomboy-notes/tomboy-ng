@@ -30,8 +30,8 @@ type
 
     public
         //RemoteDir : string; // where the remote filesync repo lives.
-        function TestTransportEarly(out ManPrefix : string): TSyncAvailable; override;
-        function TestTransport() : TSyncAvailable; override;
+        function SetTransport(): TSyncAvailable; override;
+        function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
@@ -48,13 +48,12 @@ uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
 
 { TFileSync }
 
-function TFileSync.TestTransportEarly(out ManPrefix : string): TSyncAvailable;
+function TFileSync.SetTransport(): TSyncAvailable;
 begin
-    ManPrefix := '';
     Result := SyncReady;
 end;
 
-function TFileSync.TestTransport(): TSyncAvailable;
+function TFileSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
 var
     Doc : TXMLDocument;
     GUID : TGUID;

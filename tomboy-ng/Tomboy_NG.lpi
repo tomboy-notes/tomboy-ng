@@ -292,6 +292,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/TB_Test --debug-sync"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
@@ -398,6 +399,7 @@
         <Filename Value="tomdroid.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTomdroid"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit13>
     </Units>

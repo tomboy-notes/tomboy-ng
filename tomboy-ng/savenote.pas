@@ -95,7 +95,7 @@ type
 			procedure BulletList(var Buff: ANSIString);
             procedure CopyLastFontAttr();
 			function FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle): ANSIString;
-			function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
+			//function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
           	function Header() : ANSIstring;
          	Function Footer() : ANSIstring;
@@ -117,7 +117,8 @@ uses FileUtil               // Graphics needed for font style defines
     ,LazUTF8
     ,Settings				// User settings and some defines across units.
     ,SearchUnit				// So we have access to NoteBookList
-    ,LazFileUtils;           // For ExtractFileName...
+    ,LazFileUtils           // For ExtractFileName...
+    ,SyncUtils;             // For removebadxmlcharacters()
     // {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 
 const
@@ -404,6 +405,7 @@ begin
     //writeLn('Buff at End [' + Buff + ']');         // **************************************
 end;
 
+(*   Moved to Sync Utils
 function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
 // Don't use UTF8 versions of Copy() and Length(), we are working bytes !
 // It appears that Tomboy only processes <, > and &
@@ -440,7 +442,7 @@ begin
         inc(Index);
    end;
    Result := Result + Copy(InStr, Start, Index - Start);
-end;
+end;   *)
 
 function TBSaveNote.BlockAttributes(Bk : TKMemoBlock) : AnsiString;
 begin
@@ -554,12 +556,12 @@ var
                     if Block.ClassNameIs('TKMemoTextBlock') then begin
                          if Block.Text.Length > 0 then begin
                         	AddTag(TKMemoTextBlock(Block), Buff);
-                        	Buff := Buff + RemoveBadCharacters(Block.Text);
+                        	Buff := Buff + RemoveBadXMLCharacters(Block.Text);
 						 end;
 					end;
                     if Block.ClassNameIs('TKMemoHyperlink') then begin
                         AddTag(TKMemoHyperlink(Block), Buff);
-                        Buff := Buff + RemoveBadCharacters(Block.Text);
+                        Buff := Buff + RemoveBadXMLCharacters(Block.Text);
                     end;
                     // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(Block));
                     inc(BlockNo);
@@ -651,7 +653,7 @@ begin
   S2 := 'http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"';
   S3 := ' xmlns="http://beatniksoftware.com/tomboy">'#10'  <title>';
   S4 := '</title>'#10'  <text xml:space="preserve"><note-content version="0.1">';
-  Result := S1 + S2 + S3 + RemoveBadCharacters(Title) + S4;
+  Result := S1 + S2 + S3 + RemoveBadXMLCharacters(Title) + S4;
 end;
 
 

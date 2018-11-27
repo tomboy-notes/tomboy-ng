@@ -39,7 +39,7 @@ type TSyncAvailable=(SyncReady,         // We are ready to sync, looks good to g
                     SyncNoRemoteMan,    // No remote manifest, an uninitialized repo perhaps ?
                     SyncNoRemoteRepo,   // Filesystem is OK but does not look like a repo.
                     SyncBadRemote,      // Has either Manifest or '0' dir but not both.
-                    SyncNoRemoteDir,    // Perhaps sync device is not mounted ?
+                    SyncNoRemoteDir,    // Perhaps sync device is not mounted, Tomdroid not installed ?
                     SyncNoRemoteWrite,  // no write permission, do not proceed!
                     SyncMismatch,       // Its a repo, Captain, but not as we know it.
                     SyncXMLError,       // Housten, we have an XML error in a manifest !
@@ -57,8 +57,7 @@ type TRepoAction = (
 type
   	PNoteInfo=^TNoteInfo;
   	TNoteInfo = record
-        // Value : integer;
-	    ID : ANSIString;
+        ID : ANSIString;            // The 36 char ID
         LastChangeGMT : TDateTime;  // Compare less or greater than but not Equal !
         CreateDate : ANSIString;
         LastChange : ANSIString;    // leave as strings, need to compare and TDateTime uses real
@@ -76,6 +75,10 @@ type
     private
      	function Get(Index: integer): PNoteInfo;
     public
+        ServerID : string;              // Partially implemented, don't rely yet ....
+        LastSyncDateSt : string;        // Partially implemented, don't rely yet ....
+        LastSyncDate : TDateTime;       // Partially implemented, don't rely yet ....
+        LastRev : integer;              // Partially implemented, don't rely yet ....
         destructor Destroy; override;
         function Add(ANote : PNoteInfo) : integer;
         function FindID(const ID : ANSIString) : PNoteInfo;
@@ -102,6 +105,9 @@ type
 
 type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
 
+   // Takes a normal Tomboy DateTime string and converts it to UTC, ie zero offset
+function ConvertDateStrAbsolute(const DateStr : string) : string;
+
                 // A save, error checking method to convert Tomboy's ISO8601 33 char date string
 function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
 
@@ -109,7 +115,7 @@ function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 
                 // Ret a tomboy date string for now.
-function GetLocalTime: ANSIstring;
+//function GetLocalTime: ANSIstring;
 
         // Returns the LCD string, '' and setting Error to other than '' if something wrong
 function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
@@ -117,10 +123,51 @@ function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : 
         // returns false if GUID does not look OK
 function IDLooksOK(const ID : string) : boolean;
 
+        // Use whenever we are writing content that may contain <>& to XML files
+function RemoveBadXMLCharacters(const InStr : ANSIString) : ANSIString;
+
             { -------------- implementation ---------------}
 implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils;
+
+function RemoveBadXMLCharacters(const InStr : ANSIString) : ANSIString;
+// Don't use UTF8 versions of Copy() and Length(), we are working bytes !
+// It appears that Tomboy only processes <, > and &
+// An exact copy of this function exists in TB_Sync
+var
+   //Res : ANSIString;
+   Index : longint = 1;
+   Start : longint = 1;
+begin
+    Result := '';
+   while Index <= length(InStr) do begin
+   		if InStr[Index] = '<' then begin
+             Result := Result + Copy(InStr, Start, Index - Start);
+             Result := Result + '&lt;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+  		if InStr[Index] = '>' then begin
+             Result := Result + Copy(InStr, Start, Index - Start);
+             Result := Result + '&gt;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+  		if InStr[Index] = '&' then begin
+            debugln('Start=' + inttostr(Start) + ' Index=' + inttostr(Index));
+             Result := Result + Copy(InStr, Start, Index - Start);
+             Result := Result + '&amp;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+        inc(Index);
+   end;
+   Result := Result + Copy(InStr, Start, Index - Start);
+end;
 
 function IDLooksOK(const ID : string) : boolean;
 begin
@@ -148,9 +195,7 @@ begin
 	end;
 end;
 
-
-
-
+(*
 function GetLocalTime: ANSIstring;
 var
    ThisMoment : TDateTime;
@@ -159,7 +204,7 @@ var
 begin
    // Note this function exits in tomboy-ng's settings unit, here for testing
     {$ifdef LINUX}
-    //ReReadLocalTime();    // in case we are near daylight saving time changeover
+    ReReadLocalTime();    // in case we are near daylight saving time changeover
     {$endif}
     ThisMoment:=Now;
     Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
@@ -173,7 +218,7 @@ begin
                 Res := res + '00'
         else Res := Res + inttostr(abs(Off mod 60));
     Result := Result + res;
-end;
+end;   *)
 
 { ----------------  TNoteInfoList ---------------- }
 
@@ -253,6 +298,24 @@ begin
 		// 100years ago or in future - Fail !
     exit(True);
 end;
+
+// Takes a normal Tomboy DateTime string and converts it to UTC, ie zero offset
+function ConvertDateStrAbsolute(const DateStr : string) : string;
+var
+    Temp : TDateTime;
+begin
+    if DateStr = '' then exit('');                // Empty string
+    // A date string should look like this -  2018-01-27T17:13:03.1230000+11:00 33 characters !
+    // but on Android, its always             2018-01-27T17:13:03.1230000+00:00  ie GMT absolute
+    if length(DateStr) <> 33 then begin
+        debugln('ERROR ConvertDateStrAbsolute received invalid date string - [' + DateStr + ']');
+        exit('');
+    end;
+    Temp := GetGMTFromStr(DateStr) {- GetLocalTimeOffset()};
+    Result := FormatDateTime('YYYY-MM-DD',Temp) + 'T'
+                   + FormatDateTime('hh:mm:ss.zzz"0000+00:00"',Temp);
+end;
+
 
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 var

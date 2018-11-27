@@ -46,17 +46,15 @@ type
               TestTransport call. }
         RemoteServerRev : integer;
 
-            { Tests availability of remote part of connection. For file sync thats
-            existance of manifest and 0 dir, write access. Sets ServerID. And for
-            sync engines that need multiple local manifests (ie android) returns
-            with a prefix that is always prepended to Local and remote Manifests.
+            { Tests availability of remote part of connection. For file sync (eg) thats
+            existance of remote manifest and 0 dir, write access. Sets its own ServerID.
             This would be a good place to put lock or authenticate as  necessary}
-        function TestTransport() : TSyncAvailable; virtual; abstract;
+        function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; virtual; abstract;
 
-            { An alternative to TestTransport, called before loading (eg) Local
-            Manifest.  Returns only SyncReady or SyncNetworkError. Implementations
-            should only do one or the other. The 'other' should return SyncReady }
-        function TestTransportEarly(out ManPrefix : string) : TSyncAvailable; virtual; abstract;
+            { May (or may not) do some early transport tests, ie, in Tomdroid sync
+              it pings the remote device. Should return SyncReady or an error value
+              if something failed.}
+        function SetTransport() : TSyncAvailable; virtual; abstract;
 
             {Request a list of all notes the server knows about. Returns with Last Change
             Date (LCD) if easily available and always if GetLCD is true. We don't use all

@@ -273,8 +273,6 @@ TTomboyFileSync = Class(TTomboySyncCustom)
 	function GetRemoteServerID(out SID: ANSIString; out FatalError : boolean): boolean;
 
 
-
-
 private
 	function ProceedWith(FileID, Rev: ANSIString): TClashDecision; override;
 				{ Takes a filename (or ID) and Rev, puts the file there. Assumes Dir is OK }
@@ -383,7 +381,7 @@ end;
 function TTomboyLocalManifest.DoSync(UseLocal, UseRemote: boolean): boolean;
 begin
     Result := False;
-end;
+end;                                                                                                                         xxxxxxxxxxxx
 
 function TTomboyLocalManifest.ProceedWith(FileID, Rev: ANSIString ): TClashDecision;
 begin

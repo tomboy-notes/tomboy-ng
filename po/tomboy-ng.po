@@ -409,9 +409,17 @@ msgctxt "tformtomdroid.buttonclose.caption"
 msgid "Close"
 msgstr ""
 
+#: tformtomdroid.buttondelete.caption
+msgid "Delete Profile"
+msgstr ""
+
 #: tformtomdroid.buttonhelp.caption
 msgctxt "tformtomdroid.buttonhelp.caption"
 msgid "Help"
+msgstr ""
+
+#: tformtomdroid.buttonjoin.caption
+msgid "Join"
 msgstr ""
 
 #: tformtomdroid.buttonsaveprofile.caption
@@ -427,12 +435,20 @@ msgstr ""
 msgid "FormTomdroid"
 msgstr ""
 
-#: tformtomdroid.checksavepassword.caption
-msgid "Save"
+#: tformtomdroid.checkboxdebugmode.caption
+msgid "Debug Mode"
 msgstr ""
 
-#: tformtomdroid.combobox1.text
-msgid "ComboBox1"
+#: tformtomdroid.checkboxdebugmode.hint
+msgid "writes debug messages to terminal"
+msgstr ""
+
+#: tformtomdroid.checkboxtestrun.caption
+msgid "Test Run"
+msgstr ""
+
+#: tformtomdroid.checksavepassword.caption
+msgid "Save"
 msgstr ""
 
 #: tformtomdroid.editipaddress.text
@@ -455,6 +471,10 @@ msgstr ""
 msgid "Tomdroid Sync - be aware of limitations !"
 msgstr ""
 
+#: tformtomdroid.label2.caption
+msgid "Select an existing profile (or enter data) "
+msgstr ""
+
 #: tformtomdroid.label3.caption
 msgid "Profile Name"
 msgstr ""
@@ -465,6 +485,10 @@ msgstr ""
 
 #: tformtomdroid.label5.caption
 msgid "SSH Password for device"
+msgstr ""
+
+#: tformtomdroid.labelserverid.caption
+msgid "LabelServerID"
 msgstr ""
 
 #: tformtomdroid.panel1.caption

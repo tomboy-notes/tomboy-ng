@@ -83,6 +83,7 @@ unit SearchUnit;
     2018/08/18  Can now set search option, Case Sensitive, Any Combination from here.
     2018/08/18  Update Mainform line about notes found whenever IndexNotes() is called.
     2018/11/04  Added ProcessSyncUpdates to keep in memory model in line with on disk and recently used list
+    2018/11/25  Now uses Sync.DeleteFromLocalManifest(), called when a previously synced not is deleted, TEST !
 }
 
 {$mode objfpc}{$H+}
@@ -195,9 +196,10 @@ implementation
 uses MainUnit,      // Opening form, manages startup and Menus
     EditBox,
     settings,		// Manages settings.
-    TB_Sync,		// So we can make changes to local manifest when a note is deleted.
+    //TB_Sync,		// So we can make changes to local manifest when a note is deleted.
     LCLType,		// For the MessageBox
-    LazFileUtils;   // LazFileUtils needed for TrimFileName(), cross platform stuff
+    LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff
+    sync;           // because we need it to manhandle local manifest when a file is deleted
 
 
 { TSearchForm }
@@ -246,9 +248,18 @@ end;
 procedure TSearchForm.DeleteNote(const FullFileName: ANSIString);
 var
     NewName, ShortFileName : ANSIString;
-    LocalMan : TTomboyLocalManifest;
+    // LocalMan : TTomboyLocalManifest;
+    LocalMan : TSync;
 begin
+    debugln('DeleteNote ' + FullFileName);
     ShortFileName := ExtractFileNameOnly(FullFileName);
+    LocalMan := TSync.Create;
+    LocalMan.DebugMode:=True;
+    LocalMan.ConfigDir:= Sett.LocalConfig;
+    LocalMan.NotesDir:= Sett.NoteDirectory;
+    if not LocalMan.DeleteFromLocalManifest(copy(ShortFileName, 1, 36)) then
+        showmessage('Error marking note delete in local manifest ' + LocalMan.ErrorString);
+    LocalMan.Free;
     if NoteLister.IsATemplate(ShortFileName) then begin
         NoteLister.DeleteNoteBookwithID(ShortFileName);
       	DeleteFileUTF8(FullFileName);
@@ -262,14 +273,6 @@ begin
     	if not RenameFileUTF8(FullFileName, NewName)
     		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     end;
- 	LocalMan := TTomboyLocalManifest.Create;
- 	LocalMan.LocalManifestDir:= Sett.LocalConfig;
-   	LocalMan.NotesDir:=Sett.NoteDirectory;
-	if LocalMan.GetLocalServerID() then
-		LocalMan.IDToDelete:= ShortFileName;
-   	// else
-    //	DebugLn('ERROR, failed to move deleted ID in local manifest [' + ExtractFileNameOnly(FullFileName)+ ']');
-    LocalMan.Free;
     UseList();
 end;
 

@@ -85,8 +85,8 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView
-    {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView;
+
 // Types;
 
 type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash pref in config file
@@ -284,8 +284,8 @@ uses IniFiles, LazLogger,
     syncGUI,
     syncutils,
     recover,        // Recover lost or damaged files
-    hunspell;       // spelling check
-
+    hunspell,       // spelling check
+    {$ifdef LINUX} Unix {$endif} ;              // We call a ReReadLocalTime();
 
 var
     Spell: THunspell;
@@ -658,6 +658,7 @@ begin
         end;
     end;
 end;
+
 function TSett.MyBoolStr(const InBool : boolean) : string;
 begin
     if InBool then result := 'true' else result := 'false';
@@ -735,7 +736,6 @@ procedure TSett.ButtonHideClick(Sender: TObject);
 begin
     Hide;
 end;
-
 
 
 	{ Allow user to point to what they want to call their notes dir. If there
@@ -879,7 +879,6 @@ begin
 end;
 
 
-
 	{ Called when ANY of the setting check boxes change so use can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
@@ -888,14 +887,12 @@ begin
     SyncSettings();
 end;
 
-
 function TSett.GetLocalTime: ANSIstring;
 var
    ThisMoment : TDateTime;
    Res : ANSIString;
    Off : longint;
 begin
-   // Note this function is duplicated in TB_Sync.
     {$ifdef LINUX}
     ReReadLocalTime();    // in case we are near daylight saving time changeover
     {$endif}

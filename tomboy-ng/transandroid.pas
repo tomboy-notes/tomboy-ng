@@ -11,50 +11,36 @@ unit transandroid;
                 if that still handles a bad password ???
 
 
-  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  Must add -o StrickHostKeyChecking=no   to ssh command that initially looks for the serverID
-  on device. Maybe only for first run ?  A run that was saved in cfg file ?
-
-  So, if loaded profile is unchanged, we'll check for matching serverID and a corresponding
-  local profile.  If thats what happens, we'll proceed to sync.
-
-  A forcejoin is same as a new join (here), so, if above test fails, we'll ask user if they want to 'join' ?
-  A join will replace existing server.id (if it exists) and not load a local mainifest.
-  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-  Normal Sync assumes IP address of both PC and device have not changed.
-
-  Profile is loaded from config file, that will have name, server ID, IP address and password (?)
-
-  We call sync.Settransport and it calls Trans.TestTransport{early} [pings device, reads its serverID
-  and if not present or bad, creates a new one and puts it in place on device]
-
-  We then call sync.testconnection. In a RepoUse case, it reads local manifest,
-
-
-  ---------------------
-  All wrong !
-  ---------------------
-
-  get rid of the Trans TestTransportEarly and work the same as we do with other Trans.
 
   Sync.SetTransport -
-        Selects a Trans layer, adjusts config dir,  Does this Ping device ? That would
-        indicate its there and its ssh server is running.
+        Selects a Trans layer, adjusts config dir,  Ping device ? That would
+        indicate its there.
 
   Sync.TestTransport
         In repoUse mode - Reads Local Manifest (if exists), calls Trans.TestTransport,
-        currently does nothing but much of Trans.TestTransportEarly goes there.
         compares localServerID (from config and local manifest).
-        If serverID problem, consult user.  rets SyncMismatch
+        If serverID problem, consult user,  rets SyncMismatch
         In RepoNew mode, we ignore any local manifest and both local and remote
         serverIDs. A fresh start.
 
   Trans.TestTransport (here, for android)
-        If not NewRepo, grabs the devices serverID.
-        If NewRepo, generates a new ServerID and puts it on device.
+        If not JoinRepo, grabs the devices serverID.
+        If JoinRepo, generates a new ServerID and puts it on device.
+        Checks for remote (Tomdroid made) directory. If there is no remote
+        serverID present, one is immedialy made (Thats not really as it should be !)
+        We should now have a valid Trans.ServerID, either the existing one or a new one.
 
+  Note that because of how the file based Tomdroid sync works, we set action to
+        either RepoUse or RepoJoin, not RepoNew ! Join here is effectivly a combination
+        of Join and New. A Join overwrites an existing ServerID with a new one.
+
+        Tomdroid seems to need to be stopped after each (internal) sync to be sure of
+        reliable notice of deleted notes. Otherwise, it sometimes seems to not notice that
+        a previously synced note has now dissapeared from its sync dir (as a result of
+        -ng syncing there) and therefore does not remove that note from its dbase
+        when syncing.
 }
 
 {$mode objfpc}{$H+}
@@ -70,10 +56,14 @@ type
 
   TAndSync = Class(TTomboyTrans)
     private
+        function ChangeNoteDateUTC(const ID: string): string;
+        function CheckRemoteDir: TSyncAvailable;
         function DownLoad(const ID, FullNoteName: string): boolean;
         function GetDroidMetaData(AStringList: TStringList): boolean;
         function GetNoteLastChange(const FullFileName: string): string;
-        function SetServerID(): boolean;
+        function RemoteFileExists(const ID: string): boolean;
+            // May return SyncReady, SyncNoRemoteRepo (if unable to find a remote ServerID), SyncNetworkError
+        function SetServerID(): TSyncAvailable;
         function Ping(const Count : integer): boolean;
         function StampServerID(const ID: string): boolean;
             // Reads the (filesync) remote Manifest for synced note details. It gets ID, RevNo
@@ -83,10 +73,13 @@ type
 
     public
         //RemoteDir : string; // where the remote filesync repo lives.
-        function TestTransport() : TSyncAvailable; override;
-        function TestTransportEarly(out ManPrefix : string) : TSyncAvailable; override;
+        function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
+        function SetTransport() : TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
+            { transandroid version - deletes the indicated note from remote device
+              returns False if the note was not found there to be deleted. Other error
+              are possible, ToDo }
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
@@ -142,58 +135,119 @@ begin
     AProcess.Parameters.Add(Password);
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
+    // AProcess.Parameters.Add('-o');
+    // AProcess.Parameters.Add('StrictHostKeyChecking=no');
     AProcess.Parameters.Add('root@' + self.RemoteAddress);
     AProcess.Parameters.Add('echo "' + ID + '" > tomboy.serverid');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
-        AProcess.Execute;
-        List := TStringList.Create;
-        List.LoadFromStream(AProcess.Output);
-    except on
-        E: EProcess do ErrorString := 'EProcess Error ' + E.Message;
-        on E: EExternal do ErrorString := 'Some process error ' + E.Message;
+        try
+            AProcess.Execute;
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);
+        except on
+            E: EProcess do ErrorString := 'EProcess Error ' + E.Message;
+            on E: EExternal do ErrorString := 'Some process error ' + E.Message;
+        end;
+        if debugmode then debugln('StampServerID [' + ID + ']  [' + List.Text + ']');
+        Result := (AProcess.ExitStatus = 0);
+    finally
+        FreeandNil(List);
+        AProcess.Free;
     end;
-    if debugmode then debugln('StampServerID [' + ID + ']  [' + List.Text + ']');
-    Result := (AProcess.ExitStatus = 0);
-    FreeandNil(List);
-    AProcess.Free;
 end;
 
-function TAndSync.SetServerID() : boolean;       // returns true if it connected but ServerID may still be empty
+    // May return SyncNetworkError, SyncNoRemoteDir, SyncReady
+function TAndSync.CheckRemoteDir : TSyncAvailable;
 var
     AProcess: TProcess;
     List : TStringList;
 begin
-    ServerID := '';
-    result := true;
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
     AProcess.Parameters.Add(Password);
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
+    AProcess.Parameters.Add('-o');
+    AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
     AProcess.Parameters.Add('root@' + self.RemoteAddress);
-    AProcess.Parameters.Add('cat tomboy.serverid');
+    AProcess.Parameters.Add('ls');
+    AProcess.Parameters.Add('-d');
+    AProcess.Parameters.Add(DevDir);
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
-    // CL (eg) sshpass -p admin ssh -p2222 root@192.168.174 cat tomboy.serverid
+    // CL (eg) sshpass -p admin ssh -p2222 -o StrictHostKeyChecking=no root@192.168.1.174 ls /storage/emulated/0/tomdroid/
     try
         try
             AProcess.Execute;
-            if debugmode then debugln('SetServerID - Executed');
+            //if debugmode then debugln('SetServerID - Executed');
             List := TStringList.Create;
             List.LoadFromStream(AProcess.Output);
-            if debugmode then debugln('SetServerID - Loadfromstream');
+            //if debugmode then debugln('SetServerID - Loadfromstream');
+            if length(List.Text) = 0 then begin
+                if debugmode then debugln('CheckRemoteDir - Length was zero');
+                List.LoadFromStream(AProcess.Stderr);
+                if length(List.Text) = 0 then
+                    ErrorString := 'Unable to connect, unknown error'
+                else if pos('Connection refused', List.Text) > 0 then
+                    ErrorString := 'Unable to connect, is ssh server running ?'
+                else if pos('Permission denied', List.Text) > 0 then
+                    ErrorString := 'Unable to connect, check password'
+                else ErrorString := List.Text;
+                if Debugmode then debugln('CheckRemoteDir returning SyncNetworkError ' + ErrorString);
+                exit(SyncNetworkError);
+            end;
+        except on
+            E: EProcess do begin
+                ErrorString := 'EProcess Error ' + E.Message;
+                debugln('SetServerID ' + ErrorString);
+                Result := SyncNetworkError;
+            end
+        end;
+        if pos('No such file or directory', List.Text) > 0 then exit(SyncNoRemoteDir);  // no ID present, uninitialized ?
+    finally
+        FreeandNil(List);
+        AProcess.Free;
+    end;
+    Result := SyncReady;
+end;
+
+function TAndSync.SetServerID() : TSyncAvailable;
+var
+    AProcess: TProcess;
+    List : TStringList;
+begin
+    ServerID := '';
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'sshpass';
+    AProcess.Parameters.Add('-p');
+    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add('ssh');
+    AProcess.Parameters.Add('-p2222');
+    AProcess.Parameters.Add('-o');
+    AProcess.Parameters.Add('StrictHostKeyChecking=no');
+    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('cat tomboy.serverid');
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    // CL (eg) sshpass -p admin ssh -p2222 root@192.168.1.174 cat tomboy.serverid
+    try
+        try
+            AProcess.Execute;
+            //if debugmode then debugln('SetServerID - Executed');
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);
+            //if debugmode then debugln('SetServerID - Loadfromstream');
             if length(List.Text) = 0 then begin
                 if debugmode then debugln('SetServerID - Length was zero');
                 List.LoadFromStream(AProcess.Stderr);
-                    if length(List.Text) = 0 then
-                        ErrorString := 'Unable to connect, unknown error'
-                    else if pos('Connection refused', List.Text) > 0 then
-                        ErrorString := 'Unable to connect, is ssh server running ?'
-                    else if pos('Permission denied', List.Text) > 0 then
-                        ErrorString := 'Unable to connect, check password'
-                    else ErrorString := List.Text;
-                    exit(false);
+                if length(List.Text) = 0 then
+                    ErrorString := 'Unable to connect, unknown error'
+                else if pos('Connection refused', List.Text) > 0 then
+                    ErrorString := 'Unable to connect, is ssh server running ?'
+                else if pos('Permission denied', List.Text) > 0 then
+                    ErrorString := 'Unable to connect, check password'
+                else ErrorString := List.Text;
+                exit(SyncNetworkError);
             end;
         except on
             E: EProcess do begin
@@ -201,59 +255,73 @@ begin
                 debugln('SetServerID ' + ErrorString);
             end
         end;
-        if pos('No such file or directory', List.Text) > 0 then exit(True);     // no ID present, uninitialized ?
+        if pos('No such file or directory', List.Text) > 0 then exit(SyncNoRemoteRepo); // no ID present, uninitialized ?
         if List.Count > 0 then
-            ServerID := copy(List.Strings[List.Count-1], 1, 36);                // Thats, perhaps, a serverID
-        if debugmode then debugln('GetServerID [' + ServerID + ']' + List.Text);
+            ServerID := copy(List.Strings[List.Count-1], 1, 36);                        // Thats, perhaps, a serverID
+        if debugmode then debugln('SetServerID [' + ServerID + ']' + List.Text);
     finally
         FreeandNil(List);
         AProcess.Free;
     end;
-end;
-
-function TAndSync.TestTransport(): TSyncAvailable;
-begin
+    if not IDLooksOK(ServerID) then begin
+        Debugln('SetServerID unable to read tomboy.serverid, we got [' + List.Text + ']');
+        exit(SyncNoRemoteRepo);     // No really NoRemoteRepo but a currupted ID ?
+    end;
     Result := SyncReady;
 end;
 
-function TAndSync.TestTransportEarly(out ManPrefix : string): TSyncAvailable;
+function TAndSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
+// OK, droping TestTransportEarly and merging most back here.
 var
     GUID : TGUID;
     T1, T2, T3, T4 : DWord;
 begin
-  { Here we must -
-    ping device, see if its there.
-    ssh in, read serverI file, its in <landing place> tomboy.serverid
+    { ssh in, read serverID file, its in <landing place> tomboy.serverid
     makes sure the expected Sync Dir exists
-  }
-  T1 := GetTickCount64();
-  ManPrefix := '';
-  ErrorString := '';
-  if not Ping(1) then
-    if not Ping(2) then
-        if not Ping(5) then begin
-            debugln('Failed to ping ' + RemoteAddress);
-            exit(SyncNetworkError);
+    }
+    ErrorString := '';
+    T1 := GetTickCount64();
+    Result := CheckRemoteDir();
+    if Result <> SyncReady then exit;
+    if ANewRepo then Result := SyncNoRemoteRepo
+    else Result := SetServerID();
+    T2 := GetTickCount64();
+    T3 := T2;
+    T4 := T2;
+    if Result <> SyncReady then begin
+        if Result = SyncNoRemoteRepo then begin
+            T3 := GetTickCount64();
+            CreateGUID(GUID);
+            ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
+            if WriteNewServerID and StampServerID(ServerID) then Result := SyncReady
+            else Result := SyncReady;
+            T3 := GetTickCount64();
+            if DebugMode then debugln('Made a new serverID ' + ServerID );
+        end else begin
+            debugln(ErrorString);
+            exit;
         end;
-  T2 := GetTickCount64();
-  if not SetServerID() then begin
-      debugln(ErrorString);
-      exit(SyncNetworkError);
-  end;
-  T3 := GetTickCount64();
-  ErrorString := '';
-  if not IDLooksOK(ServerID) then begin
-        CreateGUID(GUID);
-        ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
-        StampServerID(ServerID);
-        if DebugMode then debugln('Made a new serverID ' + ServerID );
-  end;
-  ManPrefix := copy(ServerID, 1, 8);
-  Result := SyncReady;
-  T4 := GetTickCount64();
-  if debugmode then
-      debugln('TestTransportEarly ID=' + ServerID + ' ' + inttostr(T2 - T1) + 'mS '
-            + inttostr(T3 - T2) + 'mS ' + inttostr(T4 - T3) + 'mS');
+    end;
+    if debugmode then
+        debugln('TestTransport ID=' + ServerID + ' SetServerID took ' + inttostr(T2 - T1)
+            + 'mS and StampID took ' + inttostr(T4 - T3));
+end;
+
+function TAndSync.SetTransport(): TSyncAvailable;
+var
+    T1, T2 : DWord;
+begin
+    T1 := GetTickCount64();
+    if not Ping(1) then
+        if not Ping(2) then
+            if not Ping(5) then begin
+                debugln('Failed to ping ' + RemoteAddress);
+                exit(SyncNetworkError);
+            end;
+    T2 := GetTickCount64();
+    if debugmode then
+        debugln('SetTransport Ping took ' + inttostr(T2 - T1));
+    result := SyncReady;
 end;
 
 
@@ -281,7 +349,6 @@ begin
     if not Result then
         ErrorString := 'something bad happened';
     AProcess.Free;
-
 end;
 
 function TAndSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
@@ -348,10 +415,92 @@ begin
     result := True;
 end;
 
-function TAndSync.DeleteNote(const ID: string; const ExistRev : integer ): boolean;
+function TAndSync.RemoteFileExists(const ID: string): boolean;
+var
+    AProcess: TProcess;
+    List : TStringList;
 begin
-    // This Sync Engine does not do deletes at either end.
-  result := True;
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'sshpass';
+    AProcess.Parameters.Add('-p');
+    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add('ssh');
+    AProcess.Parameters.Add('-p2222');
+    AProcess.Parameters.Add('-o');
+    AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
+    AProcess.Parameters.Add('root@' + RemoteAddress);
+    AProcess.Parameters.Add('ls');
+    AProcess.Parameters.Add(DevDir + ID + '.note');
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    { If we found the indicated file, its name will appear in stdout. There
+      will still be something in stderr, ssh prompts etc.
+      If we have NOT found it, then -
+      * Stdout is empty.
+      * The name will appear in stderror
+      * The phrase "No such file or directory" will appear in stderr
+    }
+    Result := False;
+    try
+        try
+            AProcess.Execute;
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);
+            if length(List.text) > 0 then
+                if pos(ID, List.Text) > 0 then
+                    Result := True;
+          except on
+            E: EProcess do begin
+                ErrorString := 'EProcess Error ' + E.Message;
+                debugln('RemoteFileExists ' + ErrorString);
+                Result := False;
+            end
+        end;
+    finally
+        FreeandNil(List);
+        AProcess.Free;
+    end;
+end;
+
+function TAndSync.DeleteNote(const ID: string; const ExistRev : integer ): boolean;
+var
+    AProcess: TProcess;
+    List : TStringList;
+begin
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'sshpass';
+    AProcess.Parameters.Add('-p');
+    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add('ssh');
+    AProcess.Parameters.Add('-p2222');
+    AProcess.Parameters.Add('-o');
+    AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
+    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('rm');
+    AProcess.Parameters.Add(DevDir + ID + '.note');
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        try
+            result := True;                             // hope for the best
+            AProcess.Execute;
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);
+            if length(List.Text) = 0 then begin         // thats good
+                List.LoadFromStream(AProcess.Stderr);
+                if length(List.Text) <> 0 then          // thats bad
+                    if pos('No such file or directory', List.Text) > 0 then exit(False);
+            end;
+        except on
+            E: EProcess do begin
+                ErrorString := 'EProcess Error ' + E.Message;
+                debugln('ERROR in DeleteNote ' + ErrorString);
+                Result := False;
+            end
+        end;
+        if Debugmode then debugln('Transandroid DeleteNote removed ' + ID +' from device');
+    finally
+        FreeandNil(List);
+        AProcess.Free;
+    end;
 end;
 
 function TAndSync.UploadNotes(const Uploads: TStringList): boolean;
@@ -370,8 +519,45 @@ end;
 
 function TAndSync.DoRemoteManifest(const RemoteManifest: string): boolean;
 begin
+
+
     // The Tomdroid sync model does not use a remote manifest.
   result := True;
+end;
+
+function TAndSync.ChangeNoteDateUTC(const ID : string) : string;
+var
+    InFile, OutFile: TextFile;
+    NoteDateSt, InString : string;
+begin
+    NoteDateSt := GetNoteLastChangeSt(NotesDir + ID + '.note', ErrorString);
+    // debugln('Upload note date was ' + NoteDateSt);
+    NoteDateSt := ConvertDateStrAbsolute(NoteDateSt);
+    // debugln('Upload note date is  ' + NoteDateSt);
+    AssignFile(InFile, NotesDir + ID + '.note');
+    AssignFile(OutFile, ConfigDir + 'remote.note');
+    try
+        try
+            Reset(InFile);
+            Rewrite(OutFile);
+            while not eof(InFile) do begin
+                readln(InFile, InString);
+                if (Pos('<last-metadata-change-date>', InString) > 0) or
+                        (Pos('<last-change-date>', InString) > 0)  then begin
+                    if (Pos('<last-metadata-change-date>', InString) > 0) then
+                        writeln(OutFile, ' <last-metadata-change-date>' +  NoteDateSt + '</last-metadata-change-date>')
+                    else writeln(OutFile, ' <last-change-date>' +  NoteDateSt + '</last-change-date>');
+                end else writeln(OutFile, InString);
+            end;
+        finally
+            CloseFile(OutFile);
+            CloseFile(InFile);
+        end;
+    except
+        on E: EInOutError do
+            debugln('File handling error occurred. Details: ' + E.Message);
+    end;
+    Result := ConfigDir + 'remote.note';
 end;
 
 function TAndSync.UpLoad(const ID : string ) : boolean;
@@ -379,13 +565,19 @@ var
     AProcess: TProcess;
     List : TStringList;
 begin
+    // OK, seems Tomdroid, likes its date strings in UTC with zero offset,
+    // messes with sync (I suspect).  So, before uploading a file, we'll
+    // stuff about with its date strings.....
+
+
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
     AProcess.Parameters.Add(Password);
     AProcess.Parameters.Add('scp');
     AProcess.Parameters.Add('-P2222');
-    AProcess.Parameters.Add(NotesDir + ID + '.note');
+    AProcess.Parameters.Add(ChangeNoteDateUTC(ID));
+    // AProcess.Parameters.Add(NotesDir + ID + '.note');
     AProcess.Parameters.Add('root@' + RemoteAddress + ':' + DevDir + ID + '.note');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
