@@ -32,6 +32,7 @@ unit Spelling;
 	2018/04/07	Changes in ReplaceWord to really get it right for Windows UTF8 but
 				some changes outside ifdef so must check on Linux too.
     2018/06/21  Hide an unnecessary debug line
+    2018/11/29  Fixed bug when spell checking a selection of text
 }
 
 {$mode objfpc}{$H+}
@@ -127,10 +128,10 @@ begin
     SaveSelStart := TheKmemo.RealSelStart;
     SaveSelEnd := TheKMemo.RealSelEnd;          // SelEnd points to first non-selected char
     if SaveSelEnd > (SaveSelStart+1) then begin     // Something was selected ...
-        {$ifdef WINDOWS}						// yet again, Windows silly line endings in .Text property
         Index := SaveSelEnd;
-        Index := Index + NewLinesBefore(Index) + 1;
         FinishIndex := SaveSelStart;
+        {$ifdef WINDOWS}        // yet again, Windows silly line endings in .Text property
+        Index := Index + NewLinesBefore(Index) + 1;
         FinishIndex := FinishIndex + NewLinesBefore(FinishIndex);
         {$endif}
         LabelStatus.Caption := 'Checking selection';

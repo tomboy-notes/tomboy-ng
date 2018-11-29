@@ -1029,6 +1029,10 @@ msgstr ""
 msgid "Take a time stamped snapshot of notes and config"
 msgstr ""
 
+#: tsett.buttonsetdictionary.caption
+msgid "Set Dictionary"
+msgstr ""
+
 #: tsett.buttonsetnotepath.caption
 msgid "Set Path to Note Files"
 msgstr ""
@@ -1039,6 +1043,10 @@ msgstr ""
 
 #: tsett.buttonsetsnapdir.caption
 msgid "Set Snap Dir"
+msgstr ""
+
+#: tsett.buttonsetspelllibrary.caption
+msgid "Set Spell Library"
 msgstr ""
 
 #: tsett.buttonsetsynserver.caption
@@ -1102,24 +1110,6 @@ msgstr ""
 
 #: tsett.checksnapmonthly.caption
 msgid "Monthly"
-msgstr ""
-
-#: tsett.editdic.hint
-msgctxt "tsett.editdic.hint"
-msgid "Leave blank if using selection above"
-msgstr ""
-
-#: tsett.editdic.text
-msgid "EditDic"
-msgstr ""
-
-#: tsett.editlibrary.hint
-msgctxt "tsett.editlibrary.hint"
-msgid "Leave Blank if using selection above"
-msgstr ""
-
-#: tsett.editlibrary.text
-msgid "EditLibrary"
 msgstr ""
 
 #: tsett.groupbox3.caption

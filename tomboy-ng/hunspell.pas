@@ -21,6 +21,7 @@ unit hunspell;
     2018/10/31  Changed to TLibHandle to accomadate Mac 64bit
     2018/11/01  Added /usr/local/Cellar/hunspell/1.6.2/lib/ as place to look
                 for hunspell library on Mac. Need to make that more flexible.
+    2018/11/29  Better debug messages
 }
 
 
@@ -148,7 +149,7 @@ begin
             ErrorMessage := 'Cannot find Hunspell library';
             exit();
         end;
-    if debugmode then debugln('We have a library to use ' + LibraryFullName);
+    if debugmode then debugln('Creating Hunspell with library = ' + LibraryFullName);
     LoadHunspellLibrary(LibraryFullName);    // will flag any errors it finds
     Speller := nil;           // we are not GoodToGo yet, need a dictionary ....
 end;
@@ -253,9 +254,9 @@ begin
     FindClose(Info);
     {$endif}
     if Result then begin
-        if DebugMode then debugln('Library looks promising [', FullName, ']');
+        if DebugMode then debugln('FindLibrary looks promising [', FullName, ']');
     end else
-        if DebugMode then debugln('Failed to find a Hunspell Library', FullName, ']');
+        if DebugMode then debugln('FindLibrary Failed to find a Hunspell Library', FullName, ']');
 end;
 
 function THunspell.SetDictionary(const FullDictName: string) : boolean;

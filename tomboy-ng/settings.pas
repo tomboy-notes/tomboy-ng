@@ -77,6 +77,7 @@ unit settings;
     2018/10/28  Much changes, support Backup management, snapshots and new sync Model.
     2018/11/01  Ensure we have a valid Spell, even after a hide !
     2018/11/05  Set default tab.
+    2018/11/29  Change Spelling UI when selecting Library and Dictionary
 }
 
 {$mode objfpc}{$H+}
@@ -97,6 +98,8 @@ type
 
     TSett = class(TForm)
 			ButtDefaultNoteDir: TButton;
+            ButtonSetSpellLibrary: TButton;
+            ButtonSetDictionary: TButton;
             ButtonManualSnap: TButton;
             ButtonSetSnapDir: TButton;
             ButtonSnapDays: TButton;
@@ -114,8 +117,6 @@ type
 		CheckShowIntLinks: TCheckBox;
         CheckSnapEnabled: TCheckBox;
         CheckSnapMonthly: TCheckBox;
-        EditLibrary: TEdit;
-        EditDic: TEdit;
 		GroupBox3: TGroupBox;
 		GroupBox4: TGroupBox;
 		GroupBox5: TGroupBox;
@@ -154,6 +155,8 @@ type
         MenuTuesday: TMenuItem;
         MenuWednesday: TMenuItem;
         MenuThursday: TMenuItem;
+        OpenDialogLibrary: TOpenDialog;
+        OpenDialogDictionary: TOpenDialog;
 		PageControl1: TPageControl;
 		Panel1: TPanel;
 		Panel2: TPanel;
@@ -180,9 +183,11 @@ type
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
         procedure ButtonHideClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
+        procedure ButtonSetDictionaryClick(Sender: TObject);
         //procedure ButtonSaveConfigClick(Sender: TObject);
 		procedure ButtonSetNotePathClick(Sender: TObject);
         procedure ButtonSetSnapDirClick(Sender: TObject);
+        procedure ButtonSetSpellLibraryClick(Sender: TObject);
 		procedure ButtonSetSynServerClick(Sender: TObject);
 		procedure ButtonShowBackUpClick(Sender: TObject);
         procedure ButtonSnapDaysClick(Sender: TObject);
@@ -190,7 +195,6 @@ type
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
-        procedure EditDicKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
@@ -205,10 +209,20 @@ type
         fExportPath : ANSIString;
         // Reads an existing config file OR writes a new, default one if necessary.
  		procedure CheckConfigFile;
+        // Ret true and displays on screen if passed Full name is a usable dictonary
+        // sets SpellConfig and triggers a config save if successful
+        function CheckDictionary(const FullDicName : string): boolean;
         // Checks and/or makes indicatd dir, warns user if not there and writable.
         function CheckDirectory(DirPath: string): boolean;
-        function CheckForDict(const DictPath : ANSIString): boolean;
-        procedure CheckSpelling;
+        // Returns the number of files that could be dictionaries in indicated directory
+        function CheckForDic(const DictPath: ANSIString): integer;
+        { If LabelLib has a valid full name (of hunspell library), tests it, otherwise asks hunspell
+          to guess some names. In either case, exits if fail, if successful then tries for
+          a dictionary, either using default directories and populating listbox or if it finds one
+          or a full name was provided in DicFullName, just tests that name.
+          If successfull show on screen and saves config }
+        procedure CheckSpelling(const DicFullName: string='');
+        procedure DicDefaults(var DicPathAlt: string);
         // Returns the default place to store notes. It may not be present.
         function GetDefaultNoteDir: string;
         function MyBoolStr(const InBool: boolean) : string;
@@ -219,6 +233,7 @@ type
         //function ZipDate: string;
 
     public
+        DebugModeSpell : boolean;
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;
         AllowClose : Boolean;           // review need for this
@@ -289,6 +304,8 @@ uses IniFiles, LazLogger,
 
 var
     Spell: THunspell;
+    // Initially the first place we look for dictionaries, later its the path to
+    // dictionaries listed in ListBoxDic
      DicPath : AnsiString;
 
 procedure TSett.SetFontSizes;
@@ -366,11 +383,30 @@ end;
 
     { ----------------- S P E L L I N G ----------------------}
 
-function TSett.CheckForDict(const DictPath : ANSIString) : boolean;
+procedure TSett.ButtonSetSpellLibraryClick(Sender: TObject);
+begin
+    OpenDialogLibrary.InitialDir := ExtractFilePath(LabelLibrary.Caption);
+    OpenDialogLibrary.Filter := 'Library|libhunspell*';
+    OpenDialogLibrary.Title := 'Select your hunspell library';
+    if OpenDialogLibrary.Execute then begin
+        LabelLibrary.Caption := TrimFilename(OpenDialogLibrary.FileName);
+        CheckSpelling();
+    end;
+end;
+
+procedure TSett.ButtonSetDictionaryClick(Sender: TObject);
+begin
+    OpenDialogDictionary.InitialDir := ExtractFilePath(LabelDic.Caption);
+    OpenDialogDictionary.Filter := 'Dictionary|*.dic';
+    OpenDialogDictionary.Title := 'Select the dictionary you want to use';
+    if OpenDialogDictionary.Execute then
+        CheckDictionary(TrimFilename(OpenDialogDictionary.FileName));
+end;
+
+function TSett.CheckForDic(const DictPath : ANSIString) : integer;
 var
     Info : TSearchRec;
 begin
-    Result := False;
     LabelError.Caption := '';
     ListBoxDic.Clear;
     ListBoxDic.Enabled := False;
@@ -380,35 +416,25 @@ begin
         until FindNext(Info) <> 0;
     end;
     FindClose(Info);
-    if ListBoxDic.Items.Count = 0 then begin
-       LabelDicStatus.Caption := 'No Dictionary Found';
-       LabelDic.Caption := 'Enter a new path to Dictionaries :';
-       EditDic.Text := DictPath;
+    if DebugModeSpell then debugln('CheckForDic searched ' + DictPath + ' and found ' + inttostr(ListBoxDic.Items.Count));
+    if ListBoxDic.Items.Count > 0 then begin
+        DicPath := DictPath;
+        LabelDic.Caption := DictPath;
     end;
-    if ListBoxDic.Items.Count = 1 then begin                   // Exactly one returned.
-        if not Spell.SetDictionary(AppendPathDelim(DictPath) + ListBoxDic.Items.Strings[0]) then begin
-            LabelError.Caption := 'ERROR ' + Spell.ErrorMessage;
-            LabelDicStatus.Caption := 'A Dictionary Found, but Failed to Load';
-            LabelDic.Caption := 'Enter a new path to Dictionaries :'
-        end else begin
-            LabelDicStatus.Caption := 'Dictionary Loaded OK';
-            LabelDic.Caption := DictPath + ListBoxDic.Items.Strings[0];
-        end;
-    end;
-    if ListBoxDic.Items.Count > 1 then begin
-       LabelDicStatus.Caption := 'Choose a dictionary from right';
-       LabelDic.Caption := 'or or enter a new dictionary path';
-       LabelDicPrompt.Caption := 'Click a Dictionary';
-       LabelDicPrompt.Visible := True;
-       ListBoxDic.Enabled := True;
-    end;
-    Result := Spell.GoodToGo;   // only true if count was exactly one or FindDict failed and nothing changed
+    exit(ListBoxDic.Items.Count);
 end;
 
 
 procedure TSett.ListBoxDicClick(Sender: TObject);
 begin
     if ListBoxDic.ItemIndex > -1 then
+        CheckDictionary(AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex]);
+
+
+
+
+    exit();
+
         SpellConfig := Spell.SetDictionary(AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex]);
     LabelError.Caption := Spell.ErrorMessage;
     if SpellConfig then begin
@@ -423,25 +449,28 @@ begin
     end;
 end;
 
-procedure TSett.EditDicKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+function TSett.CheckDictionary(const FullDicName : string) : boolean;
 begin
-    if Key = 13 then begin
-        Key := 0;
-        DicPath := AppendPathDelim(trim(EditDic.Text));
-        SpellConfig := CheckForDict(DicPath);
-    end;
+    result := false;
+    if fileexists(FullDicName) then begin
+        if assigned(Spell) then begin
+            SpellConfig := Spell.SetDictionary(FullDicName);
+            if SpellConfig then begin
+               LabelDicStatus.Caption := 'Dictionary Loaded OK';
+               LabelDic.Caption := FullDicName;
+               SettingsChanged();
+               NeedRefresh := True;
+               Result := True;
+            end else begin
+                LabelDicStatus.Caption := 'No Dictionary Found';
+            end;
+        end;
+    end else debugln('ERROR - called CheckDictionary with Spell nil');
+    if DebugModeSpell then debugln('CheckDictionary ' + FullDicName + ' return ' + booltostr(Result, True));
 end;
 
-procedure TSett.CheckSpelling;
-var
-    DicPathAlt : AnsiString;
-    DebugSpell : boolean = false;
+procedure TSett.DicDefaults(var DicPathAlt : string);
 begin
-    { The hunspell unit tries to find a library using some educated guesses.
-      Once found, its saved in config and we pass that to hunspell as a suggested
-      first place to try.
-      We set likely dictionary locations here.
-    }
     DicPathAlt := ExtractFilePath(Application.ExeName);
     {$ifdef WINDOWS}
     DicPath := 'C:\Program Files\LibreOffice 5\share\extensions\dict-en\';
@@ -454,55 +483,60 @@ begin
     DicPath := '/usr/share/hunspell/';
     DicPathAlt := '/usr/share/myspell/';
     {$ENDIF}
+end;
+
+procedure TSett.CheckSpelling(const DicFullName : string = '');
+var
+    DicPathAlt, DicToCheck : AnsiString;
+
+begin
+    { The hunspell unit tries to find a library using some educated guesses.
+      Once found, its saved in config and we pass that to hunspell as a suggested
+      first place to try.
+      We set likely dictionary locations here.
+    }
     LabelError.Caption:='';
     ListBoxDic.enabled:= False;
     LabelDic.Visible := False;
     LabelDicStatus.Visible := False;
     LabelDicPrompt.Visible := False;
-    EditLibrary.Text := '';
-    EditDic.Text := '';
-    EditDic.Visible:= False;
-    if  Application.HasOption('debug-spell') then begin
-        DebugSpell := True;
-        debugln('LabelLibrary=', LabelLibrary.Caption);
-    end;
+    SpellConfig := False;
+    if DicFullName = '' then DicDefaults(DicPathAlt);        // startup mode
+    DebugModeSpell := Application.HasOption('debug-spell');
     // LabelLibrary.Caption := '/usr/local/Cellar/hunspell/1.6.2/lib/libhunspell-1.6.0.dylib';
     if fileexists(LabelLibrary.Caption) then		// make sure file from config is still valid
-    	Spell :=  THunspell.Create(DebugSpell, LabelLibrary.Caption)
-    else Spell :=  THunspell.Create(DebugSpell);
-    if Spell.ErrorMessage = '' then begin
-        if DebugSpell then debugln('No Spell error in check spelling');
-        LabelLibraryStatus.caption := 'Library Loaded OK';
-        LabelLibrary.Caption := Spell.LibraryFullName;
-        { ToDo - if config lists an old library and hunspell finds a newer one, nothing is updated }
-        EditDic.Visible := True;
-        LabelDicStatus.Visible := True;
-        LabelDic.Visible := True;
-        // if LabelDic.Caption <> '' then begin
-        if fileexists(LabelDic.Caption) then begin	// check that config dic is still valid
-            SpellConfig := Spell.SetDictionary(LabelDic.Caption);
-            if SpellConfig then begin
-               LabelDicStatus.Caption := 'Dictionary Loaded OK';
-            end else begin
-                LabelDicStatus.Caption := 'No Dictionary Found';
-                EditDic.Text := ExtractFilePath(LabelDic.Caption);
-                LabelDic.Caption := 'Enter a new path to Dictionaries :';
-            end;
-        end
-        else begin
-            if DebugSpell then debugln('In CheckSpelling - Spell error=[', Spell.ErrorMessage, ']');
-            SpellConfig := CheckForDict(DicPath);  // if we find 1, use it, 0 try again.
-            if ListBoxDic.Items.Count = 0 then
-            // if not SpellConfig then
-                SpellConfig := CheckForDict(DicPathAlt);
-        end;
-    end
-    else begin
+    	Spell :=  THunspell.Create(DebugModeSpell, LabelLibrary.Caption)
+    else Spell :=  THunspell.Create(DebugModeSpell);
+    if Spell.ErrorMessage <> '' then begin
         LabelLibraryStatus.Caption := 'Library Not Loaded';
-        LabelLibrary.Caption := 'Enter a full library name below :';
-        EditLibrary.Text := Spell.LibraryFullName;
-        SpellConfig := False;
+        exit();
     end;
+    if DebugModeSpell then debugln('Library OK, lets look for dictionary');
+    LabelLibraryStatus.caption := 'Library Loaded OK';
+    LabelLibrary.Caption := Spell.LibraryFullName;
+    LabelDicStatus.Visible := True;
+    LabelDic.Visible := True;
+    if DicFullName = '' then begin
+        if (not DirectoryExistsUTF8(LabelDic.Caption))
+                    and (FileExistsUTF8(LabelDic.Caption)) then  // we have a nominated file from config
+            if CheckDictionary(LabelDic.Caption) then exit;      // All good, use it !
+        if  0 = CheckForDic(DicPath) then begin                  // We'll try our defaults ....
+            if 0 = CheckForDic(DicPathAlt) then begin
+                LabelDicStatus.Caption := 'Dictionary not found';
+                exit();
+            end;
+        end;
+     end else DicToCheck := DicFullName;
+     if ListBoxDic.Items.Count = 1 then
+         DicToCheck := AppendPathDelim(LabelDic.Caption) + ListBoxDic.Items.Strings[0];
+    if  ListBoxDic.Items.Count > 1 then begin                     // user must select
+        LabelDicStatus.Caption := 'Select a dictionary to use';
+        ListBoxDic.Enabled:= True;
+        exit();
+    end;
+     // if to here, we have 1 candidate dictionary, either exactly 1 found or DicFullName has content
+    if CheckDictionary(DicToCheck) then
+        if DebugModeSpell then debugln('Spelling Configured.');
 end;
 
 { --------------------- H O U S E    K E E P I NG -------------------- }
@@ -790,6 +824,8 @@ begin
         FR.Free;
     end;
 end;
+
+
 
 procedure TSett.ButtonSetSnapDirClick(Sender: TObject);
 begin

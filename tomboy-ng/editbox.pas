@@ -158,6 +158,7 @@ unit EditBox;
     2018/10/13  Kmemo1KeyDown now deals with a Tab.
     2018/10/20  Added --save-exit, only in single note mode.
     2018/10/28  Support Backup management, snapshots and new sync Model.
+    2018/11/29  Now check if Spell is configured before calling its GUI
 }
 
 
@@ -909,12 +910,14 @@ var
     SpellBox : TFormSpell;
 begin
     if KMemo1.ReadOnly then exit();
-    SpellBox := TFormSpell.Create(Application);
-    // SpellBox.Top := Placement + random(Placement*2);
-    // SpellBox.Left := Placement + random(Placement*2);
-    SpellBox.TextToCheck:= KMemo1.Blocks.Text;
-    SpellBox.TheKMemo := KMemo1;
-    SpellBox.ShowModal;
+    if Sett.SpellConfig then begin
+        SpellBox := TFormSpell.Create(Application);
+        // SpellBox.Top := Placement + random(Placement*2);
+        // SpellBox.Left := Placement + random(Placement*2);
+        SpellBox.TextToCheck:= KMemo1.Blocks.Text;
+        SpellBox.TheKMemo := KMemo1;
+        SpellBox.ShowModal;
+    end else showmessage('Sorry, spelling not configured');
 end;
 
 procedure TEditBoxForm.MenuItemSyncClick(Sender: TObject);

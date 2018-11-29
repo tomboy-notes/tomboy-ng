@@ -84,7 +84,7 @@ var
     ConfigFile : TINIFile;
 begin
     if not FileExists(Sett.LocalConfig + 'android' + pathdelim + 'tomdroid.cfg') then begin
-        showmessage('did not find ' + Sett.LocalConfig + 'android' + pathdelim + 'tomdroid.cfg');
+        // showmessage('did not find ' + Sett.LocalConfig + 'android' + pathdelim + 'tomdroid.cfg');
         exit(False);
     end;
     ConfigFile := TINIFile.Create(Sett.LocalConfig + 'android' + pathdelim + 'tomdroid.cfg');
@@ -116,6 +116,7 @@ procedure TFormTomdroid.FormShow(Sender: TObject);
 begin
     debugln('Tomdroid screen OnShow event');
     Memo1.Clear;
+    StringGridReport.Clear;
     ClearFields();
     ReadConfig;
     ButtonSaveProfile.Enabled := False;
@@ -195,7 +196,7 @@ begin
     EditIPAddress.Text := '';
     EditPassword.Text := '';
     CheckSavePassword.Checked := false;
-    CheckBoxTestRun.Checked := true;
+    CheckBoxTestRun.Checked := false;
     LabelServerID.Caption := '';
 end;
 

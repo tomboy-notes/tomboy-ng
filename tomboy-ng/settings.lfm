@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 675
+  Left = 622
   Height = 431
-  Top = 282
+  Top = 155
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabBackUp
+    ActivePage = TabSpell
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 3
+    TabIndex = 5
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -570,17 +570,6 @@ object Sett: TSett
         Caption = 'an appropriate Hunspell Dictionary set.'
         ParentColor = False
       end
-      object EditLibrary: TEdit
-        Left = 16
-        Height = 27
-        Hint = 'Leave Blank if using selection above'
-        Top = 136
-        Width = 328
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        Text = 'EditLibrary'
-      end
       object LabelError: TLabel
         Left = 16
         Height = 17
@@ -589,22 +578,10 @@ object Sett: TSett
         Caption = 'LabelError'
         ParentColor = False
       end
-      object EditDic: TEdit
-        Left = 16
-        Height = 27
-        Hint = 'Leave blank if using selection above'
-        Top = 240
-        Width = 328
-        OnKeyDown = EditDicKeyDown
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        Text = 'EditDic'
-      end
       object LabelLibraryStatus: TLabel
         Left = 16
         Height = 17
-        Top = 96
+        Top = 88
         Width = 128
         Caption = 'LabelLibraryStatus'
         ParentColor = False
@@ -612,7 +589,7 @@ object Sett: TSett
       object LabelDicStatus: TLabel
         Left = 16
         Height = 17
-        Top = 200
+        Top = 192
         Width = 101
         Caption = 'LabelDicStatus'
         ParentColor = False
@@ -620,7 +597,7 @@ object Sett: TSett
       object LabelLibrary: TLabel
         Left = 16
         Height = 17
-        Top = 112
+        Top = 104
         Width = 85
         Caption = 'LabelLibrary'
         ParentColor = False
@@ -628,7 +605,7 @@ object Sett: TSett
       object LabelDic: TLabel
         Left = 16
         Height = 17
-        Top = 216
+        Top = 208
         Width = 58
         Caption = 'LabelDic'
         ParentColor = False
@@ -641,7 +618,7 @@ object Sett: TSett
         ItemHeight = 0
         OnClick = ListBoxDicClick
         ScrollWidth = 131
-        TabOrder = 2
+        TabOrder = 0
         TopIndex = -1
       end
       object LabelDicPrompt: TLabel
@@ -651,6 +628,24 @@ object Sett: TSett
         Width = 110
         Caption = 'LabelDicPrompt'
         ParentColor = False
+      end
+      object ButtonSetSpellLibrary: TButton
+        Left = 16
+        Height = 25
+        Top = 128
+        Width = 143
+        Caption = 'Set Spell Library'
+        OnClick = ButtonSetSpellLibraryClick
+        TabOrder = 1
+      end
+      object ButtonSetDictionary: TButton
+        Left = 16
+        Height = 25
+        Top = 232
+        Width = 143
+        Caption = 'Set Dictionary'
+        OnClick = ButtonSetDictionaryClick
+        TabOrder = 2
       end
     end
   end
@@ -720,5 +715,14 @@ object Sett: TSett
   object SelectSnapDir: TSelectDirectoryDialog
     left = 328
     top = 376
+  end
+  object OpenDialogLibrary: TOpenDialog
+    Options = [ofPathMustExist, ofFileMustExist, ofNoDereferenceLinks, ofEnableSizing, ofViewDetail]
+    left = 232
+    top = 384
+  end
+  object OpenDialogDictionary: TOpenDialog
+    left = 223
+    top = 164
   end
 end
