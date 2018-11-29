@@ -172,6 +172,8 @@ begin
     // BulletOwing means we had a bullet tag but encountered the /tag before writing to KMemo
 	if InBullet or BulletOwing then begin
            PB.Numbering := pnuBullets;
+           PB.NumberingListLevel.FirstIndent := -20;    // Note, these numbers need match SettBullet() in editbox
+           PB.NumberingListLevel.LeftIndent := 30;
            BulletOwing := False;
 	end;
   end;

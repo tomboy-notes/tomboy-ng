@@ -326,6 +326,7 @@ type
         procedure SaveNoteAs(TheExt: string);
         procedure MarkDirty();
         function CleanCaption() : ANSIString;
+        procedure SetBullet(PB: TKMemoParagraph; Bullet: boolean);
         // Advises other apps we can do middle button paste
         procedure SetPrimarySelection;
         // Cancels any indication we can do middle button paste 'cos nothing is selected
@@ -471,7 +472,8 @@ begin
         if BlockNo >= Kmemo1.Blocks.count then	// no para after block (yet)
             Kmemo1.Blocks.AddParagraph();
     	if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then
-    		TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering := pnuBullets;
+            SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), True);
+    		// TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering := pnuBullets;
       until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
 
       { There is an issue on Linux and Mac that causes a crash when you turn Bullets off
@@ -1592,7 +1594,8 @@ begin
             if UnderBullet then  						// case e
               	TrailOffset := 0;
             if kmemo1.blocks.Items[BlockNo+TrailOffset].ClassNameIs('TKMemoParagraph') then
-            	TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]).Numbering := pnuNone
+                SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]), False)
+            	// TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]).Numbering := pnuNone
             else DebugLn('ERROR - this case b block should be a para');
             Ready := True;
             exit();
@@ -1614,7 +1617,8 @@ begin
             end;
         end else begin				// merge the current line into bullet above.
             if kmemo1.blocks.Items[BlockNo+TrailOffset].ClassNameIs('TKMemoParagraph') then
-            	TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]).Numbering := pnuBullets
+                SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]), True)
+            	// TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]).Numbering := pnuBullets;
             else DebugLn('ERROR - this case d block should be a para');
             if  kmemo1.blocks.Items[BlockNo-Leadoffset].ClassNameIs('TKMemoParagraph') then begin
             	KMemo1.Blocks.Delete(BlockNo-LeadOffset);
@@ -1625,7 +1629,18 @@ begin
     // most of the intevention paths through this method take ~180mS on medium powered linux laptop
 end;
 
-
+procedure TEditBoxForm.SetBullet(PB : TKMemoParagraph; Bullet : boolean);
+begin
+    if Bullet then begin
+        PB.Numbering:=pnuBullets;
+        PB.NumberingListLevel.FirstIndent:=-20;
+        PB.NumberingListLevel.LeftIndent:=30;
+    end else begin
+        PB.Numbering:=pnuNone;
+        PB.NumberingListLevel.FirstIndent:=0;
+        PB.NumberingListLevel.LeftIndent:=0;
+    end;
+end;
 
 	{ --- I M P O R T I N G   and   E X P O R T I N G    F U N C T I O N S  ---  }
 
