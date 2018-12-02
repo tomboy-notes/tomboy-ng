@@ -791,6 +791,9 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Bullet'
       OnClick = MenuBulletClick
     end
+    object MenuItem4: TMenuItem
+      Caption = 'Alt+Right to add, Alt+Left to remove'
+    end
   end
   object PopupMenuTools: TPopupMenu
     left = 368

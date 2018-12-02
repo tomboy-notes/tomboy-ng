@@ -21,7 +21,7 @@ ICON_DIR="../glyphs"
 
 WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
-MANUALS="Notes.txt"
+MANUALS="recover.note tomdroid.note"
 
 # BUILDOPTS=" -B --quiet --quiet"
 BUILDOPTS=" -B --quiet"
@@ -68,7 +68,10 @@ function DebianPackage () {
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
 	# cp ../copyright BUILD/usr/share/doc/$PRODUCT/copyright
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
-    cp ../doc/recover.note BUILD/usr/share/doc/$PRODUCT/.
+	for i in $MANUALS; do
+		cp ../doc/"$i" BUILD/usr/share/doc/$PRODUCT/.;
+	done;
+    # cp ../doc/recover.note BUILD/usr/share/doc/$PRODUCT/.
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
 	mkdir -p BUILD/usr/share/man/man1
@@ -79,7 +82,7 @@ function DebianPackage () {
 	else
 		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
 	fi
-	cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/doc/$PRODUCT/"
+	# cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/doc/$PRODUCT/"
 	cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
 	chmod 0755 "BUILD/usr/share/doc/$PRODUCT/html" 
 	chmod 0744 "BUILD/usr/share/doc/$PRODUCT/html/*"
@@ -133,7 +136,9 @@ function DoZipping {
 	cp ../tomboy-ng/tomboy-ng64.exe "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.dll "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.license "$PRODUCT"_"$VERSION/."
-    cp ../doc/recover.note "$PRODUCT"_"$VERSION/."
+	for i in $MANUALS; do
+		cp ../doc/$i "$PRODUCT"_"$VERSION/."
+	done;
 	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$PRODUCT"_"$VERSION/readme.txt"
 	unix2dos "$PRODUCT"_"$VERSION/readme.txt"
 	zip "$PRODUCT"_win64_"$VERSION.zip" "$PRODUCT"_"$VERSION"/* 

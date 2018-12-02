@@ -82,6 +82,10 @@ msgstr ""
 msgid "Italic"
 msgstr ""
 
+#: teditboxform.menuitem4.caption
+msgid "Alt+Right to add, Alt+Left to remove"
+msgstr ""
+
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
 msgstr ""

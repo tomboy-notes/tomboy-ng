@@ -159,6 +159,7 @@ unit EditBox;
     2018/10/20  Added --save-exit, only in single note mode.
     2018/10/28  Support Backup management, snapshots and new sync Model.
     2018/11/29  Now check if Spell is configured before calling its GUI
+    2018/12/02  Change to Bullet code, now support ALT+RGHT and ALT+Left, now can toggle bullet mode
 }
 
 
@@ -193,6 +194,8 @@ type
         MenuHighLight: TMenuItem;
         MenuHuge: TMenuItem;
         MenuBullet: TMenuItem;
+        MenuItem1: TMenuItem;
+        MenuItem4: TMenuItem;
         MenuItemSpell: TMenuItem;
 		MenuItemExportRTF: TMenuItem;
 		MenuItemExportPlainText: TMenuItem;
@@ -286,6 +289,10 @@ type
             const NewFontSize: integer=0);
         { Alters the font etc of selected area as indicated }
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
+        { If Toggle is true, sets bullets to what its currently no. Otherwise sets to TurnOn}
+        procedure BulletControl(const Toggle, TurnOn: boolean);
+        // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
+
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
         { Clears links near where user is working }
         procedure ClearNearLink(const CurrentPos: longint);
@@ -449,38 +456,89 @@ begin
 	if mrOK = NotebookPick.ShowModal then dirty := True;      }
 end;
 
+procedure TEditBoxForm.BulletControl(const Toggle, TurnOn : boolean);
+var
+      BlockNo : longint = 1;
+      LastBlock,  Blar : longint;
+      BulletOn : boolean;
+      FirstPass : boolean = True;
+begin
+    if not Toggle then begin    // We'll set it all to TurnOn
+        FirstPass := False;     // So its not changed
+        BulletOn := not TurnOn;
+    end;
+    if KMemo1.ReadOnly then exit();
+    MarkDirty();
+    BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
+    LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
+
+    if (BlockNo = LastBlock) and (BlockNo > 1) and
+        KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+        dec(LastBlock);
+        dec(BlockNo);
+    end;
+    // Don't change any trailing empty lines.
+    while KMemo1.Blocks.Items[LastBlock].ClassNameIs('TKMemoParagraph') do
+        if LastBlock > BlockNo then dec(LastBlock)
+        else break;
+
+    // OK, we are now in a TextBlock, possibly both start and end there. Must mark
+    // next para as numb and then all subsquent ones until we do the one after end.
+    repeat
+        inc(BlockNo);
+        if BlockNo >= Kmemo1.Blocks.count then	// no para after block (yet)
+            Kmemo1.Blocks.AddParagraph();
+        if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+            if FirstPass then begin
+                FirstPass := False;
+                BulletOn := (TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = pnuBullets);
+            end;
+            SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), not BulletOn);
+            // TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering := pnuBullets;
+        end;
+    until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
+end;
+
 procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
 var
       BlockNo : longint = 1;
       LastBlock,  Blar : longint;
+      BulletOn : boolean;
+      FirstPass : boolean = True;
 begin
-      if KMemo1.ReadOnly then exit();
-      MarkDirty();
-      BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
-      LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
+    BulletControl(True, False);
+    exit();
 
-      if (BlockNo = LastBlock) and (BlockNo > 1) and
-      		KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-            	dec(LastBlock);
-                dec(BlockNo);
-			end;
+{    if KMemo1.ReadOnly then exit();
+    MarkDirty();
+    BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
+    LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
 
-      // OK, we are now in a TextBlock, possibly both start and end there. Must mark
-      // next para as numb and then all subsquent ones until we do the one after end.
-      repeat
-    	inc(BlockNo);
+    if (BlockNo = LastBlock) and (BlockNo > 1) and
+        KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+        dec(LastBlock);
+        dec(BlockNo);
+    end;
+    // Don't change any trailing empty lines.
+    while KMemo1.Blocks.Items[LastBlock].ClassNameIs('TKMemoParagraph') do
+        if LastBlock > BlockNo then dec(LastBlock)
+        else break;
+
+    // OK, we are now in a TextBlock, possibly both start and end there. Must mark
+    // next para as numb and then all subsquent ones until we do the one after end.
+    repeat
+        inc(BlockNo);
         if BlockNo >= Kmemo1.Blocks.count then	// no para after block (yet)
             Kmemo1.Blocks.AddParagraph();
-    	if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then
-            SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), True);
-    		// TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering := pnuBullets;
-      until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
-
-      { There is an issue on Linux and Mac that causes a crash when you turn Bullets off
-        programaticly (ie TKMemoParagraph(KMemo1.Blocks.Items[6]).Numbering := pnuNone;)
-        so we avoid that here, if user wants bullets off, they can backspace over the bullet
-        marker itself.
-      }
+        if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+            if FirstPass then begin
+                FirstPass := False;
+                BulletOn := (TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = pnuBullets);
+            end;
+            SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), not BulletOn);
+            // TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering := pnuBullets;
+        end;
+    until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');   }
 end;
 
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -1480,8 +1538,29 @@ begin
         Debugln('      Trailing    =' + booltostr(Trailing, true));
         Debugln('      IsFirstChar =' + booltostr(IsFirstChar, true));
         Debugln('      NoBulletPara=' + booltostr(NoBulletPara, true));
+        Debugln('      LeadOffset  =' + inttostr(LeadOffset));
+        Debugln('      TrailOffset =' + inttostr(Trailoffset));
+        Debugln('      BlockNo     =' + inttostr(BlockNo));
+
     end;
 end;
+
+{
+procedure TEditBoxForm.CancelBullet(const BlockNo : longint; const UnderBullet : boolean);
+begin
+    debugln('Cancel this bullet');
+    if UnderBullet then begin
+            if Kmemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoParagraph') then
+                if TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
+                    SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo]), False);
+    end else
+        if (BlockNo+1) < Kmemo1.Blocks.Count then
+            if Kmemo1.Blocks.Items[BlockNo+1].ClassNameis('TKMemoParagraph') then begin
+                if TKMemoParagraph(KMemo1.Blocks.Items[BlockNo+1]).Numbering = pnuBullets then
+                    SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo+1]), False);
+            end;
+end;
+}
 
 {	To behave like end users expect when pressing BackSpace we have to alter KMemo's way of thinking.
 
@@ -1523,8 +1602,13 @@ y   There is nothing after our bullet para marker. So, on an empty bulletline, u
 
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  TrailOffset, BlockNo, {BlockIndex,} LeadOffset  : longint;
-  LeadingBullet, UnderBullet, TrailingBullet, FirstChar {, NearBullet} : boolean;
+  TrailOffset,
+  BlockNo,              // Will hold block number cursor is under.
+  LeadOffset  : longint;
+  LeadingBullet,        // The para immediatly previous to cursor is a bullet
+  UnderBullet,          // We are under a Para and its a Bullet
+  TrailingBullet,       // We are under Text but the block behind us is a Bullet.
+  FirstChar  : boolean; // Cursor is under the first character of a line of text.
   NoBulletPara : boolean = false;
 begin
     if not Ready then exit();                   // should we drop key on floor ????
@@ -1545,20 +1629,25 @@ begin
         end;
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();
-        {
-        if key = ord('B') then begin Key := 0; MenuBoldClick(Sender); exit(); end;
-        if key = ord('I') then begin Key := 0; MenuItalicClick(Sender); exit(); end;
-        if key = ord('S') then begin Key := 0; MenuStrikeOutClick(Sender); exit(); end;
-        if key = ord('T') then begin Key := 0; MenuFixedWidthClick(Sender); exit(); end;
-        if key = ord('H') then begin Key := 0; MenuHighLightClick(Sender); exit(); end;
-        if key = ord('U') then begin Key := 0; MenuUnderLineClick(Sender); exit(); end;
-       if key = ord('F') then begin Key := 0; MenuItemFindClick(self); Key := 0; exit(); end;
-       if key = ord('N') then begin Key := 0; MainForm.MMNewNoteClick(self); Key := 0; exit(); end;
-       if key = VK_F4 then begin Key := 0; SaveTheNote(); close; exit; end;   }
     end;
-
+    if [ssAlt] = Shift then begin
+        case key of
+             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
+             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
+            {
+            VK_RIGHT : begin MenuBulletClick(Sender); Key := 0; end;
+            VK_LEFT : begin
+                Verbose := True;
+                Key := 0;
+                if NearABulletPoint(LeadingBullet, UnderBullet, TrailingBullet, FirstChar, NoBulletPara,
+                				BlockNo, TrailOffset, LeadOffset) then
+                    if not NoBulletPara then CancelBullet(BlockNo, UnderBullet);
+                Verbose := False;
+            end; }
+        end;
+        exit();
+    end;
     if KMemo1.ReadOnly then begin Key := 0; exit(); end;
-
     if [ssCtrl, ssShift] = Shift then begin
        if key = ord('F') then begin ButtSearchClick(self); Key := 0; exit(); end;
        Key := 0;
@@ -1630,15 +1719,43 @@ begin
 end;
 
 procedure TEditBoxForm.SetBullet(PB : TKMemoParagraph; Bullet : boolean);
+var
+  Index : integer;
+  //Tick, Tock : qword;
 begin
-    if Bullet then begin
-        PB.Numbering:=pnuBullets;
-        PB.NumberingListLevel.FirstIndent:=-20;
-        PB.NumberingListLevel.LeftIndent:=30;
-    end else begin
-        PB.Numbering:=pnuNone;
-        PB.NumberingListLevel.FirstIndent:=0;
-        PB.NumberingListLevel.LeftIndent:=0;
+    // Note - do not play with the NumberingListLevel  thingos unless a bullet is set.
+    // =========== WARNING - very ugly code that needs fixing =======================
+    // I find that when you reset the NumberListLevel for one block, it changes every
+    // block in the document !  ????
+    // So, until  make sense of that, I'll scan over the whole document and set any
+    // existing bullets to the proper indent.  On a large doc with lots of bullets,
+    // this seems to take about 2mS on lower end laptop.
+    KMemo1.Blocks.lockUpdate;
+    try
+        if Bullet then begin
+            PB.Numbering:=pnuBullets;
+            PB.NumberingListLevel.FirstIndent:=-20;
+            PB.NumberingListLevel.LeftIndent:=30;
+        end else begin
+            if PB.Numbering <> pnuBullets then begin
+                debugln('ERROR - changing indent before Bullet set');
+                exit();
+            end;
+            PB.NumberingListLevel.FirstIndent:=0;
+            PB.NumberingListLevel.LeftIndent:=0;
+            PB.Numbering:=pnuNone;
+            //Tick := gettickcount64();
+            for Index := 0 to KMemo1.Blocks.Count-1 do
+                if KMemo1.Blocks.Items[Index].ClassNameIs('TKMemoParagraph') then
+                    if TKMemoParagraph(KMemo1.Blocks.Items[Index]).Numbering = pnuBullets then begin
+                        TKMemoParagraph(KMemo1.Blocks.Items[Index]).NumberingListLevel.FirstIndent:=-20;
+                        TKMemoParagraph(KMemo1.Blocks.Items[Index]).NumberingListLevel.LeftIndent:=30;
+                    end;
+            //Tock := gettickcount64();
+            // showmessage('Scan to reset bullet indent '+ inttostr(Tock-Tick) + 'mS');
+        end;
+    finally
+        KMemo1.Blocks.UnlockUpdate;
     end;
 end;
 

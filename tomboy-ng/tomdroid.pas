@@ -134,7 +134,7 @@ end;
 
 procedure TFormTomdroid.ButtonHelpClick(Sender: TObject);
 begin
-    MainUnit.MainForm.ShowHelpNote('recover.note');         // change the bloody name !
+    MainUnit.MainForm.ShowHelpNote('tomdroid.note');         // change the bloody name !
 end;
 
 procedure TFormTomdroid.ButtonDeleteClick(Sender: TObject);
