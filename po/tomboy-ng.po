@@ -1104,6 +1104,14 @@ msgstr ""
 msgid "Show Internal Links"
 msgstr ""
 
+#: tsett.checkshowsplash.caption
+msgid "Show Splash at Start"
+msgstr ""
+
+#: tsett.checkshowsplash.hint
+msgid "Always shown if error loading notes."
+msgstr ""
+
 #: tsett.checkshowtomdroid.caption
 msgid "Show Tomdroid Sync (experimental)"
 msgstr ""

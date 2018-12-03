@@ -21,7 +21,7 @@ unit Mainunit;
                 So, in interests of uniformity, everyone gets a Main Menu and no Popup.
     2018/11/01  Now include --debug-log in list of INTERAL switches.
     2018/12/02  Now support Alt-{Left, Right} to turn off or on Bullets.
-
+    2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
 
 
 
@@ -260,8 +260,8 @@ begin
          close();
          exit();
      end;
-     if Application.HasOption('no-splash') then begin
-         hide;
+     if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
+         if AllowDismiss then hide;
      end;
     Left := 10;
     Top := 40;
@@ -299,13 +299,15 @@ begin
         Label8.Caption := '';
         CheckStatus();
         SearchForm.IndexNotes(); // also calls Checkstatus but safe to call anytime, calls UpdateNotesFound()
-        if SearchForm.NoteLister.XMLError then
-            LabelError.Caption := 'Failed to index one or more notes.'
+        if SearchForm.NoteLister.XMLError then begin
+            LabelError.Caption := 'Failed to index one or more notes.';
+            AllowDismiss := False;
+        end
         else LabelError.Caption := '';
         if not AllowDismiss then begin
-            Label7.Caption := 'Sadly, on this OS, I cannot';
-            Label8.Caption := 'let you dismiss this window';
-            Label7.Hint:='are you trying to shut me down ? Dave ?';
+            Label7.Caption := 'Sadly, on this OS or because of a Bad Note,';
+            Label8.Caption := 'I cannon let you dismiss this window';
+            Label7.Hint:='Are you trying to shut me down ? Dave ?';
             Label8.Hint := Label7.Hint;
         end;
     end;
@@ -339,7 +341,6 @@ begin
         ButtonDismiss.Enabled := AllowDismiss;
         if UseTrayMenu then
             TrayIcon.Show;
-
      end;
      TrayMenuTomdroid.Visible := Sett.CheckShowTomdroid.Checked;
 end;

@@ -146,8 +146,6 @@ begin
     StringGridReport.clear;
 end;
 
-
-
 procedure TFormTomdroid.LoadProfile(Profile : string);
 var
     ConfigFile : TINIFile;
@@ -177,7 +175,6 @@ end;
 
         // Responds to changes to any of the three EditBoxes
 procedure TFormTomdroid.EditProfileNameChange(Sender: TObject);
-
 begin
     if (EditProfileName.Text <> '') and (EditIPAddress.Name <> '')
                                         and (EditPassword.Text <> '')  then begin

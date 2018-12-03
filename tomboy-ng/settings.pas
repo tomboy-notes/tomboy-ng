@@ -78,6 +78,9 @@ unit settings;
     2018/11/01  Ensure we have a valid Spell, even after a hide !
     2018/11/05  Set default tab.
     2018/11/29  Change Spelling UI when selecting Library and Dictionary
+    2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
+    2018/12/03  disable checkshowTomdroid on all except Linux
+
 }
 
 {$mode objfpc}{$H+}
@@ -109,6 +112,7 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
+        CheckShowSplash: TCheckBox;
         CheckShowTomdroid: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         CheckAnyCombination: TCheckBox;
@@ -299,8 +303,8 @@ uses IniFiles, LazLogger,
     syncGUI,
     syncutils,
     recover,        // Recover lost or damaged files
-    hunspell,       // spelling check
-    {$ifdef LINUX} Unix {$endif} ;              // We call a ReReadLocalTime();
+    hunspell       // spelling check
+    {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
 var
     Spell: THunspell;
@@ -582,7 +586,7 @@ begin
     HaveConfig := false;
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
-
+    CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
     CheckConfigFile();                      // write a new, default one if necessary
     CheckSpelling();
     if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
@@ -647,6 +651,9 @@ begin
 
             CheckShowTomdroid.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
+
+            CheckShowSplash.Checked :=
+                ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
 
             ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
             case ReqFontSize of
@@ -720,6 +727,7 @@ begin
           ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
       else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
       ConfigFile.writestring('BasicSettings', 'ShowTomdroid', MyBoolStr(CheckShowTomdroid.Checked));
+      ConfigFile.WriteString('BasicSettings', 'ShowSplash', MyBoolStr(CheckShowSplash.Checked));
       if RadioFontBig.Checked then
           ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
       else if RadioFontMedium.Checked then
@@ -915,7 +923,7 @@ begin
 end;
 
 
-	{ Called when ANY of the setting check boxes change so use can save. }
+	{ Called when ANY of the setting check boxes change so we can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
     // ButtonSaveConfig.Enabled := True;

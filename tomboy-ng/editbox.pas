@@ -160,6 +160,7 @@ unit EditBox;
     2018/10/28  Support Backup management, snapshots and new sync Model.
     2018/11/29  Now check if Spell is configured before calling its GUI
     2018/12/02  Change to Bullet code, now support ALT+RGHT and ALT+Left, now can toggle bullet mode
+    2018/12/03  Use command key instead of control on the Mac
 }
 
 
@@ -1158,15 +1159,18 @@ begin
 end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
-
- //   DefaultFontName : string;
- //   MonospaceFont : string;
-
 begin
- //   DefaultFontName := TKMemoTextBlock(Kmemo1.Blocks.Items[0]).TextStyle.Font.Name;
- //   Kmemo1.Clear;
     {$ifdef LCLCOCOA}
     MenuItemPrint.Enabled := False;     // Cocoa cannot print (May 2018)
+    {$endif}
+    {$ifdef DARWIN}
+    MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
+    MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
+    MenuStrikeout.ShortCut := KeyToShortCut(VK_S, [ssMeta]);
+    MenuHighLight.ShortCut := KeyToShortCut(VK_H, [ssMeta]);
+    MenuFixedWidth.ShortCut:= KeyToShortCut(VK_T, [ssMeta]);
+    MenuUnderline.ShortCut := KeyToShortCut(VK_U, [ssMeta]);
+    MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
     {$endif}
 end;
 
@@ -1612,8 +1616,8 @@ var
   NoBulletPara : boolean = false;
 begin
     if not Ready then exit();                   // should we drop key on floor ????
-    if [ssCtrl] = Shift then begin
-        // debugln('Ctrl pressed plus ' + inttostr(Key));
+
+    if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
             VK_B : MenuBoldClick(Sender);
             VK_I : MenuItalicClick(Sender);

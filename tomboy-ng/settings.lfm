@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabSpell
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 5
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -197,6 +197,18 @@ object Sett: TSett
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
+      end
+      object CheckShowSplash: TCheckBox
+        Left = 40
+        Height = 22
+        Hint = 'Always shown if error loading notes.'
+        Top = 300
+        Width = 161
+        Caption = 'Show Splash at Start'
+        OnChange = CheckReadOnlyChange
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 4
       end
     end
     object TabSync: TTabSheet
