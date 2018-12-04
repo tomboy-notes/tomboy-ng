@@ -801,7 +801,7 @@ begin
     FileName := '';
   	Result := False;
 	for Index := 0 to NoteList.Count -1 do begin
-        if Title = NoteList.Items[Index]^.Title then begin
+        if lowercase(Title) = lowercase(NoteList.Items[Index]^.Title) then begin
             FileName := NoteList.Items[Index]^.ID;
         	Result := True;
             break;

@@ -57,6 +57,7 @@ unit SaveNote;
     2018/07/27  Call RemoveBadCharacters(Title) in Header()
     2018/08/02  Fix to fixed width, better brackets and a 'not' where needed.
     2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
+    2018/12/04  Don't save hyperlinks's underline, its not real !
 }
 
 {$mode objfpc}{$H+}
@@ -283,14 +284,16 @@ begin
 
     // Underline turns ON
     if ((not Underline) and (fsUnderline in FT.TextStyle.Font.Style)) then begin
-       if Bold then Buff := Buff + '</bold>';
-       if Italics then Buff := Buff + '</italic>';
-       if HiLight then Buff := Buff + '</highlight>';
-       Buff := Buff + '<underline>';
-       if HiLight then Buff := Buff + '<highlight>';
-       if Italics then Buff := Buff + '<italic>';
-       if Bold then Buff := Buff + '<bold>';
-       Underline := true;
+       if not FT.ClassNameIs('TKMemoHyperlink') then begin                            // Hyperlinks also have underline, don't save
+           if Bold then Buff := Buff + '</bold>';
+           if Italics then Buff := Buff + '</italic>';
+           if HiLight then Buff := Buff + '</highlight>';
+           Buff := Buff + '<underline>';
+           if HiLight then Buff := Buff + '<highlight>';
+           if Italics then Buff := Buff + '<italic>';
+           if Bold then Buff := Buff + '<bold>';
+           Underline := true;
+       end;
     end;
 
     // Highlight turns ON
@@ -444,6 +447,7 @@ begin
    Result := Result + Copy(InStr, Start, Index - Start);
 end;   *)
 
+// This is just a debug function.
 function TBSaveNote.BlockAttributes(Bk : TKMemoBlock) : AnsiString;
 begin
    Result := TKMemoTextBlock(BK).ClassName;
@@ -455,7 +459,7 @@ begin
    Result := Result + ' HighLight ';
    Result := Result + inttostr(TKMemoTextBlock(BK).TextStyle.Font.Size);
    if fsUnderline in TKMemoTextBlock(BK).TextStyle.Font.Style then
-   Result := Result + ' Underline ';
+        Result := Result + ' Underline ';
    if fsStrikeout in TKMemoTextBlock(BK).TextStyle.Font.Style then
    Result := Result + ' Strikeout ';
    if TKMemoTextBlock(BK).TextStyle.Font.Pitch = fpFixed then
@@ -465,6 +469,7 @@ begin
 
 end;
 
+    // I suspect this function is no longer used.
 function TBSaveNote.FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle) : ANSIString;
 begin
    Result := '';
@@ -545,13 +550,11 @@ var
         Buff := Header();
         OutStream.Write(Buff[1], length(Buff));
         Buff := '';
-
         try
             repeat
                 CopyLastFontAttr();
                 repeat
                     Block := KM1.Blocks.Items[BlockNo];
-
                     if Block.ClassNameIs('TKMemoParagraph') then break;	// two newlines
                     if Block.ClassNameIs('TKMemoTextBlock') then begin
                          if Block.Text.Length > 0 then begin

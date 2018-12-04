@@ -161,6 +161,7 @@ unit EditBox;
     2018/11/29  Now check if Spell is configured before calling its GUI
     2018/12/02  Change to Bullet code, now support ALT+RGHT and ALT+Left, now can toggle bullet mode
     2018/12/03  Use command key instead of control on the Mac
+    2018/12/04  Links to other notes no longer case sensitive, a potential link needs to be surrounded by white-ish space
 }
 
 
@@ -378,6 +379,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
     FileUtil;          // just for ExtractSimplePath ... ~#1620
+
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
@@ -1306,7 +1308,7 @@ var
     Ptr, EndP : PChar;                  // Will generate "not used" warning in Unix
     {$endif}
 begin
-    Offset := UTF8Pos(Term, MText, StartScan);
+    Offset := UTF8Pos(lowercase(Term), lowercase(MText), StartScan);
     while Offset > 0 do begin
     	NumbCR := 0;
         {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
@@ -1319,8 +1321,11 @@ begin
             inc(Ptr);
 		end;
         {$endif}
-		MakeLink(Term, Offset -1 -NumbCR, UTF8length(Term));
-        Offset := UTF8Pos(Term, MText, Offset+1);
+        if (MText[Offset-1] in [' ', #10, #13, ',', '.']) and
+                        (MText[Offset + length(Term)] in [' ', #10, #13, ',', '.']) then
+            MakeLink(copy(MText, Offset,  UTF8length(Term)), Offset -1 -NumbCR, UTF8length(Term));
+		//MakeLink(Term, Offset -1 -NumbCR, UTF8length(Term));
+        Offset := UTF8Pos(lowercase(Term), lowercase(MText), Offset+1);
         if EndScan > 0 then
         	if Offset> EndScan then break;
     end;
@@ -1343,7 +1348,7 @@ begin
     KMemo1.Blocks.LockUpdate;
     MemoText := KMemo1.Blocks.text;     // Make one copy and use it repeatadly, actual text does not change
     while SearchForm.NextNoteTitle(SearchTerm) do
-        if SearchTerm <> NoteTitle then
+        if SearchTerm <> NoteTitle then            // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
         	MakeAllLinks(MemoText, SearchTerm, StartScan, EndScan);
     KMemo1.Blocks.UnLockUpdate;
     Ready := True;
@@ -1780,6 +1785,7 @@ begin
     KMemo1.Clear;
     Loader.LoadFile(FileName, KMemo1);                        // 340mS
     KMemo1.Blocks.UnlockUpdate;                             // 370mS
+    debugln(FileName + '========= Note loaded, blocks = ' + inttostr(KMemo1.Blocks.Count));
     // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
     Createdate := Loader.CreateDate;
     Ready := true;
