@@ -12,7 +12,7 @@ uses
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     Forms, printer4lazarus, SearchUnit, settings, SyncGUI, Notebook, Spelling,
-    Mainunit, BackupView, recover, tomdroid
+    Mainunit, BackupView, recover, tomdroid, markdown
     { you can add units after this };
 
 {$R *.res}
@@ -26,6 +26,7 @@ begin
     Application.CreateForm(TSett, Sett);
     Application.CreateForm(TFormSync, FormSync);
     Application.CreateForm(TFormTomdroid, FormTomdroid);
+    Application.CreateForm(TFormMarkdown, FormMarkdown);
 	// Application.CreateForm(TNoteBookPick, NoteBookPick);
     // Application.CreateForm(TFormSpell, FormSpell);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);

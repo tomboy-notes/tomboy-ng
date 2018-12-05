@@ -1,0 +1,100 @@
+object FormMarkdown: TFormMarkdown
+  Left = 250
+  Height = 462
+  Top = 150
+  Width = 821
+  Caption = 'FormMarkdown'
+  ClientHeight = 462
+  ClientWidth = 821
+  OnActivate = FormActivate
+  OnShow = FormShow
+  LCLVersion = '1.8.4.0'
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Panel1
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ButtonClose
+    Left = 0
+    Height = 387
+    Top = 50
+    Width = 821
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Lines.Strings = (
+      'Memo1'
+    )
+    ScrollBars = ssAutoVertical
+    TabOrder = 0
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 821
+    Anchors = [akTop, akLeft, akRight]
+    Caption = 'Markdown Exporter'
+    Font.Height = 20
+    ParentFont = False
+    TabOrder = 1
+  end
+  object ButtonClose: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 746
+    Height = 25
+    Top = 437
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Close'
+    OnClick = ButtonCloseClick
+    TabOrder = 2
+  end
+  object ButtonCopyAll: TButton
+    AnchorSideRight.Control = ButtonClose
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 671
+    Height = 25
+    Top = 437
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Copy All'
+    Enabled = False
+    OnClick = ButtonCopyAllClick
+    TabOrder = 3
+  end
+  object ButtonSave: TButton
+    AnchorSideRight.Control = ButtonCopyAll
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 596
+    Height = 25
+    Top = 437
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = 'Save'
+    Enabled = False
+    TabOrder = 4
+  end
+  object Label1: TLabel
+    AnchorSideRight.Control = ButtonSave
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 406
+    Height = 17
+    Top = 443
+    Width = 177
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 13
+    BorderSpacing.Bottom = 2
+    Caption = 'Press Ctrl-A, Ctrl-C to copy'
+    ParentColor = False
+  end
+end

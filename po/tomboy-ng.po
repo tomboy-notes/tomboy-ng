@@ -103,6 +103,10 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
+#: teditboxform.menuitemexportmarkdown.caption
+msgid "Export Markdown"
+msgstr ""
+
 #: teditboxform.menuitemexportplaintext.caption
 msgid "Export Plain Text"
 msgstr ""
@@ -192,6 +196,32 @@ msgstr ""
 
 #: tformbackupview.caption
 msgid "FormBackupView"
+msgstr ""
+
+#: tformmarkdown.buttonclose.caption
+msgctxt "tformmarkdown.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformmarkdown.buttoncopyall.caption
+msgid "Copy All"
+msgstr ""
+
+#: tformmarkdown.buttonsave.caption
+msgctxt "tformmarkdown.buttonsave.caption"
+msgid "Save"
+msgstr ""
+
+#: tformmarkdown.caption
+msgid "FormMarkdown"
+msgstr ""
+
+#: tformmarkdown.label1.caption
+msgid "Press Ctrl-A, Ctrl-C to copy"
+msgstr ""
+
+#: tformmarkdown.panel1.caption
+msgid "Markdown Exporter"
 msgstr ""
 
 #: tformrecover.button4.caption
@@ -452,6 +482,7 @@ msgid "Test Run"
 msgstr ""
 
 #: tformtomdroid.checksavepassword.caption
+msgctxt "tformtomdroid.checksavepassword.caption"
 msgid "Save"
 msgstr ""
 

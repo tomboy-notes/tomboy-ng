@@ -813,6 +813,10 @@ object EditBoxForm: TEditBoxForm
         Caption = 'Export Plain Text'
         OnClick = MenuItemExportPlainTextClick
       end
+      object MenuItemExportMarkdown: TMenuItem
+        Caption = 'Export Markdown'
+        OnClick = MenuItemExportMarkdownClick
+      end
     end
     object MenuItemPrint: TMenuItem
       Caption = 'Print'

@@ -198,6 +198,7 @@ type
         MenuBullet: TMenuItem;
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
+        MenuItemExportMarkdown: TMenuItem;
         MenuItemSpell: TMenuItem;
 		MenuItemExportRTF: TMenuItem;
 		MenuItemExportPlainText: TMenuItem;
@@ -256,6 +257,7 @@ type
         procedure MenuHighLightClick(Sender: TObject);
         procedure MenuHugeClick(Sender: TObject);
         procedure MenuItalicClick(Sender: TObject);
+        procedure MenuItemExportMarkdownClick(Sender: TObject);
         procedure MenuUnderlineClick(Sender: TObject);
         procedure MenuStrikeoutClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
@@ -378,6 +380,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     MainUnit,
     SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
+    Markdown,
     FileUtil;          // just for ExtractSimplePath ... ~#1620
 
 
@@ -503,11 +506,11 @@ begin
 end;
 
 procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
-var
+{var
       BlockNo : longint = 1;
       LastBlock,  Blar : longint;
       BulletOn : boolean;
-      FirstPass : boolean = True;
+      FirstPass : boolean = True;       }
 begin
     BulletControl(True, False);
     exit();
@@ -793,6 +796,12 @@ end;
 procedure TEditBoxForm.MenuItalicClick(Sender: TObject);
 begin
 	AlterFont(ChangeItalic);
+end;
+
+procedure TEditBoxForm.MenuItemExportMarkdownClick(Sender: TObject);
+begin
+  FormMarkDown.TheKMemo := KMemo1;
+  FormMarkDown.Show;
 end;
 
 procedure TEditBoxForm.MenuUnderlineClick(Sender: TObject);
@@ -1633,6 +1642,7 @@ begin
             VK_F : MenuItemFindClick(self);
             VK_N : MainForm.MMNewNoteClick(self);
             VK_F4 : begin SaveTheNote(); close; end;
+            VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
             VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_RETURN, VK_INSERT :
                                 exit;    // so key is not set to 0 on the way out
         end;
@@ -1785,7 +1795,6 @@ begin
     KMemo1.Clear;
     Loader.LoadFile(FileName, KMemo1);                        // 340mS
     KMemo1.Blocks.UnlockUpdate;                             // 370mS
-    debugln(FileName + '========= Note loaded, blocks = ' + inttostr(KMemo1.Blocks.Count));
     // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
     Createdate := Loader.CreateDate;
     Ready := true;
