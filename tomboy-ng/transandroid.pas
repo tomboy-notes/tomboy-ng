@@ -102,7 +102,7 @@ function TAndSync.Ping(const Count : integer) : boolean;
     // Ping retuns 0 of one or more packets came back, 1 if none, 2 for other error
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'ping';
@@ -126,7 +126,7 @@ end;
 function TAndSync.StampServerID(const ID : string) : boolean;
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     result := true;
     AProcess := TProcess.Create(nil);
@@ -161,7 +161,7 @@ end;
 function TAndSync.CheckRemoteDir : TSyncAvailable;
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
@@ -202,6 +202,7 @@ begin
                 ErrorString := 'EProcess Error ' + E.Message;
                 debugln('SetServerID ' + ErrorString);
                 Result := SyncNetworkError;
+                exit;
             end
         end;
         if pos('No such file or directory', List.Text) > 0 then exit(SyncNoRemoteDir);  // no ID present, uninitialized ?
@@ -215,7 +216,7 @@ end;
 function TAndSync.SetServerID() : TSyncAvailable;
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     ServerID := '';
     AProcess := TProcess.Create(nil);
@@ -253,6 +254,8 @@ begin
             E: EProcess do begin
                 ErrorString := 'EProcess Error ' + E.Message;
                 debugln('SetServerID ' + ErrorString);
+                Result :=  SyncNetworkError;
+                exit();
             end
         end;
         if pos('No such file or directory', List.Text) > 0 then exit(SyncNoRemoteRepo); // no ID present, uninitialized ?
@@ -353,7 +356,7 @@ end;
 
 function TAndSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 var
-        StList: TStringList;
+        StList: TStringList = nil;
         I : integer;
         NoteInfo : PNoteInfo;
 begin
@@ -418,7 +421,7 @@ end;
 function TAndSync.RemoteFileExists(const ID: string): boolean;
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
@@ -464,7 +467,7 @@ end;
 function TAndSync.DeleteNote(const ID: string; const ExistRev : integer ): boolean;
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
@@ -519,8 +522,6 @@ end;
 
 function TAndSync.DoRemoteManifest(const RemoteManifest: string): boolean;
 begin
-
-
     // The Tomdroid sync model does not use a remote manifest.
   result := True;
 end;
@@ -563,13 +564,11 @@ end;
 function TAndSync.UpLoad(const ID : string ) : boolean;
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     // OK, seems Tomdroid, likes its date strings in UTC with zero offset,
     // messes with sync (I suspect).  So, before uploading a file, we'll
     // stuff about with its date strings.....
-
-
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
@@ -597,7 +596,7 @@ end;
 function TAndSync.DownLoad(const ID, FullNoteName : string ) : boolean;
 var
     AProcess: TProcess;
-    List : TStringList;
+    List : TStringList = nil;
 begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';

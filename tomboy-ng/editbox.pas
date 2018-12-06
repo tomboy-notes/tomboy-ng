@@ -162,6 +162,7 @@ unit EditBox;
     2018/12/02  Change to Bullet code, now support ALT+RGHT and ALT+Left, now can toggle bullet mode
     2018/12/03  Use command key instead of control on the Mac
     2018/12/04  Links to other notes no longer case sensitive, a potential link needs to be surrounded by white-ish space
+    2018/12/05  Move highlight shortcut key on the Mac to Alt-H because Apple uses Cmd-H
 }
 
 
@@ -1178,7 +1179,7 @@ begin
     MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
     MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
     MenuStrikeout.ShortCut := KeyToShortCut(VK_S, [ssMeta]);
-    MenuHighLight.ShortCut := KeyToShortCut(VK_H, [ssMeta]);
+    MenuHighLight.ShortCut := KeyToShortCut(VK_H, [ssAlt]);
     MenuFixedWidth.ShortCut:= KeyToShortCut(VK_T, [ssMeta]);
     MenuUnderline.ShortCut := KeyToShortCut(VK_U, [ssMeta]);
     MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
@@ -1644,13 +1645,15 @@ begin
             VK_F4 : begin SaveTheNote(); close; end;
             VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
             VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_RETURN, VK_INSERT :
-                                exit;    // so key is not set to 0 on the way out
+                exit;    // so key is not set to 0 on the way out
         end;
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();
     end;
     if [ssAlt] = Shift then begin
         case key of
+                {$ifdef DARWIN}
+                VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
              VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
              VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
             {
