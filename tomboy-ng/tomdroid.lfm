@@ -1,7 +1,7 @@
 object FormTomdroid: TFormTomdroid
-  Left = 132
+  Left = 535
   Height = 377
-  Top = 142
+  Top = 182
   Width = 823
   Caption = 'FormTomdroid'
   ClientHeight = 377
@@ -82,7 +82,7 @@ object FormTomdroid: TFormTomdroid
       Top = 268
       Width = 120
       OnChange = EditProfileNameChange
-      TabOrder = 2
+      TabOrder = 3
       Text = 'EditPassword'
     end
     object EditIPAddress: TEdit
@@ -91,7 +91,7 @@ object FormTomdroid: TFormTomdroid
       Top = 208
       Width = 180
       OnChange = EditProfileNameChange
-      TabOrder = 3
+      TabOrder = 2
       Text = 'EditIPAddress'
     end
     object Label4: TLabel
@@ -235,7 +235,7 @@ object FormTomdroid: TFormTomdroid
     Anchors = [akRight, akBottom]
     Caption = 'Sync'
     OnClick = ButtonSyncClick
-    TabOrder = 2
+    TabOrder = 5
   end
   object ButtonSaveProfile: TButton
     AnchorSideRight.Control = ButtonJoin
@@ -248,7 +248,7 @@ object FormTomdroid: TFormTomdroid
     Anchors = [akRight, akBottom]
     Caption = 'Save Profile'
     OnClick = ButtonSaveProfileClick
-    TabOrder = 3
+    TabOrder = 2
   end
   object ButtonHelp: TButton
     AnchorSideRight.Control = ButtonDelete
@@ -261,7 +261,7 @@ object FormTomdroid: TFormTomdroid
     Anchors = [akRight, akBottom]
     Caption = 'Help'
     OnClick = ButtonHelpClick
-    TabOrder = 4
+    TabOrder = 3
   end
   object ButtonJoin: TButton
     AnchorSideRight.Control = ButtonSync
@@ -274,7 +274,7 @@ object FormTomdroid: TFormTomdroid
     Anchors = [akRight, akBottom]
     Caption = 'Join'
     OnClick = ButtonJoinClick
-    TabOrder = 5
+    TabOrder = 4
   end
   object ButtonDelete: TButton
     AnchorSideRight.Control = ButtonSaveProfile

@@ -29,6 +29,7 @@ Oh, that's good. Maybe all you need do is clean out your current notes directory
 
 <bold>I have a snapshot</bold>
 Great news ! You can easily choose to roll back to a particular snapshot and blow away all your troubles. Too Easy !
+If you wisely kept the snapshot elsewhere, copy it to your snapshot directory (shown on the settings -&gt; snapshots tab).
 <list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost Notes". If you have not already, now would be a great time to click "Safety Snapshot", you are in seriously dangerous space right now.</list-item></list>
 <list><list-item dir="ltr">Go to the "Recover Snapshot" tab, choose the snapshot you wish to use and away you go <size:small>(5).</size:small></list-item></list><size:small></size:small>
 Back out, go to the Search and click "Refresh". After you have checked all is good, please remember to take a snapshot every now and again !<size:large>
@@ -42,8 +43,8 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 
 
 </note-content></text>
-  <last-change-date>2018-11-05T21:34:54.4680000+11:00</last-change-date>
-  <last-metadata-change-date>2018-11-05T21:34:54.4680000+11:00</last-metadata-change-date>
+  <last-change-date>2018-12-06T15:46:27.0080000+11:00</last-change-date>
+  <last-metadata-change-date>2018-12-06T15:46:27.0080000+11:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

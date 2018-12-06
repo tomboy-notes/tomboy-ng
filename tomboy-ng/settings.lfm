@@ -205,9 +205,11 @@ object Sett: TSett
         Top = 300
         Width = 161
         Caption = 'Show Splash at Start'
+        Checked = True
         OnChange = CheckReadOnlyChange
         ParentShowHint = False
         ShowHint = True
+        State = cbChecked
         TabOrder = 4
       end
     end

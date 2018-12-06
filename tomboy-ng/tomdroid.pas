@@ -2,6 +2,12 @@ unit tomdroid;
 
 {$mode objfpc}{$H+}
 
+
+{ HISTORY
+    2018/12/06  Added AdjustNoteList() to call ProcessSyncUpdates at end of a sync
+
+}
+
 interface
 
 uses
@@ -48,6 +54,7 @@ type
         procedure FormShow(Sender: TObject);
     private
         ProfileName, IPAddress, Password : string;    // Keep copies to see if user changed after selection
+        procedure AdjustNoteList();
         procedure ClearFields();
         procedure DisplaySync();
         procedure DoNewSync();
@@ -74,7 +81,8 @@ implementation
 
 
 uses Settings, IniFiles, Sync, TB_SDiff, typInfo, LazLogger, LCLType,
-    MainUnit;   // just for MainUnit.MainForm.ShowHelpNote(
+    MainUnit,   // just for MainUnit.MainForm.ShowHelpNote(
+    SearchUnit; // Because we call ProcessSyncUpdates( at end of sync
 
 var
     ASync : TSync;
@@ -273,11 +281,33 @@ begin
         DisplaySync();
         memo1.Append('Set=' + inttostr(Tick2 - Tick1) + 'mS Test=' + inttostr(Tick3 - Tick2) + 'mS Sync=' + inttostr(Tick4 - Tick3) + 'mS ');
         ShowReport();
+        AdjustNoteList();
     finally
       ASync.Free;
       EnableButtons(True);
     end;
     ButtonSaveProfile.Enabled := NeedToSave();
+end;
+
+procedure TFormTomdroid.AdjustNoteList();
+var
+    DeletedList, DownList : TStringList;
+    Index : integer;
+begin
+    DeletedList := TStringList.Create;
+    DownList := TStringList.Create;
+ 	with ASync.NoteMetaData do begin
+		for Index := 0 to Count -1 do begin
+            if Items[Index]^.Action = SyDeleteLocal then
+                DeletedList.Add(Items[Index]^.ID);
+            if Items[Index]^.Action = SyDownload then
+                DownList.Add(Items[Index]^.ID);
+        end;
+    end;
+    if (DeletedList.Count > 0) or (DownList.Count > 0) then
+        SearchForm.ProcessSyncUpdates(DeletedList, DownList);
+   FreeandNil(DeletedList);
+   FreeandNil(DownList);
 end;
 
 procedure TFormTomdroid.ButtonJoinClick(Sender: TObject);
@@ -394,6 +424,7 @@ begin
         DisplaySync();
         memo1.Append('Set=' + inttostr(Tick2 - Tick1) + 'mS Test=' + inttostr(Tick3 - Tick2) + 'mS Sync=' + inttostr(Tick4 - Tick3) + 'mS ');
         ShowReport();
+        AdjustNoteList();
     finally
       ASync.Free;
       EnableButtons(True);
