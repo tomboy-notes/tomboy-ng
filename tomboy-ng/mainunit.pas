@@ -42,7 +42,7 @@ unit Mainunit;
                 does not like sharing menus (eg between here and the trayIcon) in gtk3 !
                 So, in interests of uniformity, everyone gets a Main Menu and no Popup.
     2018/11/01  Now include --debug-log in list of INTERAL switches.
-    2018/12/02  Now support Alt-{Left, Right} to turn off or on Bullets.
+    2018/12/02  Now support Alt-[Left, Right] to turn off or on Bullets.
     2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
 
 
@@ -386,8 +386,8 @@ procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
     {$ifdef LINUX}
   c: PGtkClipboard;
-  {$endif}
   t: string;
+  {$endif}
 begin
     {$ifdef LINUX}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);

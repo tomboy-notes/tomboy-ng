@@ -566,9 +566,10 @@ end;
 
 procedure TEditBoxForm.KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer);
+{$IFNDEF DARWIN}    // Mac cannot do Primary Paste, ie XWindows Paste
 var
     Point : TPoint;
-    LinePos : TKmemoLinePosition;
+    LinePos : TKmemoLinePosition; {$endif}
 begin
     {$IFNDEF DARWIN}
     if Button = mbMiddle then begin
@@ -589,6 +590,7 @@ begin
             UnsetPrimarySelection();
     {$endif}
 end;
+
 procedure TEditBoxForm.SetPrimarySelection;
 var
   FormatList: Array [0..1] of TClipboardFormat;
@@ -1657,9 +1659,18 @@ begin
     if not Ready then exit();                   // should we drop key on floor ????
 
     // don't let any ctrl char get through the kmemo on mac
-    {$ifdef DARWIN} if [ssCtrl] = Shift then begin Key = 0; exit; end;{$endif}
-
-
+    {$ifdef DARWIN}
+    if [ssCtrl] = Shift then begin
+        case Key of
+             VK_1 : MenuSmallClick(Sender);
+             VK_2 : MenuNormalClick(Sender);
+             VK_3 : MenuLargeClick(Sender);
+             VK_4 : MenuHugeClick(Sender);
+        end;
+        Key := 0;
+        exit;
+    end;
+    {$endif}
 
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of

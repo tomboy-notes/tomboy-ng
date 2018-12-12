@@ -499,6 +499,7 @@ begin
       first place to try.
       We set likely dictionary locations here.
     }
+    DicToCheck := '';
     LabelError.Caption:='';
     ListBoxDic.enabled:= False;
     LabelDic.Visible := False;

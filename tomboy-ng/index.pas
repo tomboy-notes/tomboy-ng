@@ -91,7 +91,7 @@ end;
 function TFormIndex.IsHeading(const BlkNo : integer) : integer;
 var
     Index : integer;
-    St : string;
+    St : string = '';
 begin
     Index := BlkNo;
     Result := BlkNo;

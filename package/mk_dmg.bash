@@ -38,7 +38,7 @@ mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
 
 ls -n $WORK/
 
-rm "$PRODUCT"32.dmg
+rm "$PRODUCT"32_"$VERSION".dmg
 
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" --background ../glyphs/Note_Large.png tomboy-ng.dmg ./source_folder/
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" tomboy-ng.dmg ./source_folder/

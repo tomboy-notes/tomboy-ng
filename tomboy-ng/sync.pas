@@ -433,6 +433,7 @@ begin
         end;
 	end;
     if Found then ReWriteLocalManifest(FullFileName);
+    Result := True;
 end;
 
 function TSync.ReWriteLocalManifest(const FullFileName : string) : boolean;
