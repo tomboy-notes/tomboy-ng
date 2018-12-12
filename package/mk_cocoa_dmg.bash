@@ -32,7 +32,8 @@ rm -Rf $WORK
 
 mkdir $WORK
 ln -s /Applications $WORK/Applications
-cp -R ../"$PRODUCT"/"$PRODUCT".app $WORK/.
+#cp -R ../"$PRODUCT"/"$PRODUCT".app $WORK/.
+cp -R ../../"$PRODUCT".app "$WORK"/.
 mkdir "$CONTENTS"/SharedSupport
 MANWIDTH=70 man ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt
 cp -R ../doc/html "$CONTENTS"/SharedSupport/.
@@ -46,7 +47,7 @@ mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
 
 ls -n $WORK/
 
-rm "$PRODUCT"64.dmg
+rm "$PRODUCT"64_"$VERSION".dmg
 
 # ~/create-dmg-master/create-dmg --volname "tomboy-ng" --background ../glyphs/Note_Large.png tomboy-ng.dmg ./source_folder/
 ~/create-dmg-master/create-dmg --volname "$PRODUCT64" --volicon "../glyphs/vol.icns" "$PRODUCT"64_"$VERSION".dmg "./$WORK/"

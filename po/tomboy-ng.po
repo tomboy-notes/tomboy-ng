@@ -119,6 +119,10 @@ msgstr ""
 msgid "Find in this Note"
 msgstr ""
 
+#: teditboxform.menuitemindex.caption
+msgid "Index"
+msgstr ""
+
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
 msgstr ""
@@ -196,6 +200,14 @@ msgstr ""
 
 #: tformbackupview.caption
 msgid "FormBackupView"
+msgstr ""
+
+#: tformindex.caption
+msgid "Heading in this Note"
+msgstr ""
+
+#: tformindex.panel1.caption
+msgid "Single lines, all Huge, Large Bold or Large"
 msgstr ""
 
 #: tformmarkdown.buttonclose.caption

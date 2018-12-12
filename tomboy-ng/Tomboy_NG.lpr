@@ -12,7 +12,7 @@ uses
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     Forms, printer4lazarus, SearchUnit, settings, SyncGUI, Notebook, Spelling,
-    Mainunit, BackupView, recover, tomdroid, markdown
+    Mainunit, BackupView, recover, tomdroid, markdown, Index
     { you can add units after this };
 
 {$R *.res}

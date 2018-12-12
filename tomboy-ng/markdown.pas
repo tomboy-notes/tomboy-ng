@@ -28,7 +28,7 @@ unit markdown;
 
 HISTORY
     2018/12/05  This unit is pleased th serve.
-
+    2018/12/06  Fixed a bug in Addtag, if Buff is only spaces.
 }
 
 interface
@@ -298,6 +298,7 @@ begin
        while Buff[length(Buff)] = ' ' do begin
             inc(BorrowedSpaces);
             delete(Buff, length(Buff), 1);
+            if Buff = '' then break;
        end;
 
    if CloseOnly then begin      // In closeonly mode, we are just shuttig them all done prior to newline

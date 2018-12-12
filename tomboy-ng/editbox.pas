@@ -163,6 +163,10 @@ unit EditBox;
     2018/12/03  Use command key instead of control on the Mac
     2018/12/04  Links to other notes no longer case sensitive, a potential link needs to be surrounded by white-ish space
     2018/12/05  Move highlight shortcut key on the Mac to Alt-H because Apple uses Cmd-H
+    2018/12/06  Drop all Ctrl Char on floor for the Mac. See if we are missing anything ?
+    2018/12/06  Added Ctrl 1, 2, 3, 4 as small, normal, large and huge fnt.
+                ---- This is not put on menus or doced anywhere, an experiment ------
+
 }
 
 
@@ -199,6 +203,7 @@ type
         MenuBullet: TMenuItem;
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
+        MenuItemIndex: TMenuItem;
         MenuItemExportMarkdown: TMenuItem;
         MenuItemSpell: TMenuItem;
 		MenuItemExportRTF: TMenuItem;
@@ -259,6 +264,7 @@ type
         procedure MenuHugeClick(Sender: TObject);
         procedure MenuItalicClick(Sender: TObject);
         procedure MenuItemExportMarkdownClick(Sender: TObject);
+        procedure MenuItemIndexClick(Sender: TObject);
         procedure MenuUnderlineClick(Sender: TObject);
         procedure MenuStrikeoutClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
@@ -382,6 +388,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
     Markdown,
+    Index,              // An Index of current note.
     FileUtil;          // just for ExtractSimplePath ... ~#1620
 
 
@@ -803,6 +810,23 @@ procedure TEditBoxForm.MenuItemExportMarkdownClick(Sender: TObject);
 begin
   FormMarkDown.TheKMemo := KMemo1;
   FormMarkDown.Show;
+end;
+
+procedure TEditBoxForm.MenuItemIndexClick(Sender: TObject);
+var
+    IForm : TFormIndex;
+begin
+    IForm := TFormIndex.Create(Self);
+    IForm.TheKMemo := KMemo1;
+    IForm.Left := Left;
+    IForm.Top := Top;
+    IForm.ShowModal;
+    if IForm.SelectedBlock >= 0 then begin
+        KMemo1.SelStart := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks.Items[IForm.SelectedBlock]);
+        KMemo1.SelLength := 0;
+    end;
+    IForm.Free;
+    KMemo1.SetFocus;
 end;
 
 procedure TEditBoxForm.MenuUnderlineClick(Sender: TObject);
@@ -1632,8 +1656,17 @@ var
 begin
     if not Ready then exit();                   // should we drop key on floor ????
 
+    // don't let any ctrl char get through the kmemo on mac
+    {$ifdef DARWIN} if [ssCtrl] = Shift then begin Key = 0; exit; end;{$endif}
+
+
+
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
+            VK_1 : MenuSmallClick(Sender);
+            VK_2 : MenuNormalClick(Sender);
+            VK_3 : MenuLargeClick(Sender);
+            VK_4 : MenuHugeClick(Sender);
             VK_B : MenuBoldClick(Sender);
             VK_I : MenuItalicClick(Sender);
             VK_S : MenuStrikeOutClick(Sender);

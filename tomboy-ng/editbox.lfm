@@ -826,6 +826,10 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Spell Check'
       OnClick = MenuItemSpellClick
     end
+    object MenuItemIndex: TMenuItem
+      Caption = 'Index'
+      OnClick = MenuItemIndexClick
+    end
   end
   object PopupMenuRightClick: TPopupMenu
     left = 80

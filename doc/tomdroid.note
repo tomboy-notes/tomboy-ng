@@ -3,25 +3,25 @@
   <title>Tomdroid Sync</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>Tomdroid Sync</underline>
 
-Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependant on what Tomdroid itself does. However, the author has been routinly using this model for a couple of weeks now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences.<size:large>
+Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of weeks now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences.<size:large>
 
 <bold>Background</bold></size:large>
 As a standalone app, <monospace>Tomdroid</monospace> works well enough but when synced to your notes  on a PC or Laptop, it really shines.  Tomdroid was built back in the Tomboy family's glory days. It worked fine doing a network sync with the Ubuntu One cloud service (although that may have been before we used that term). However, that service was withdrawn and Tomdroid  network users needed to provide their own Sync facilities. That means either running a Rainy server at home or setting up a grauphel  system. Not a trivial exercise.
 
-However, tomboy-ng  does not do network sync. Tomboy-ng does do a file based sync where a shared file service is visible to all parties.  Its quick and relativly simple but Tomdroid cannot be part of such a system. <size:large>
+However, tomboy-ng  does not do network sync. Tomboy-ng does do a file based sync where a shared file service is visible to all parties.  Its quick and relatively simple but Tomdroid cannot be part of such a system. <size:large>
 
 <bold>This Solution</bold></size:large>
 tomboy-ng, as of release V0.2 can do a <italic>one to one</italic> file sync between Tomdroid and a Linux Box. The Linux box may, or may not be part of a File Sync group. You can establish as many of these one to one connections as you have Tomdroid capable devices.<size:large>
 
 
 Whats needed</size:large>
-<list><list-item dir="ltr">A linux pc, laptop or what ever where tomboy-ng is running. Install sshpass on it, its almost certainly  available from your package repository. Note that sshpass does raise some security questions. I believe, not a problem in this case but do read the Security chapter below. </list-item></list>
+<list><list-item dir="ltr">A Linux pc, laptop or what ever where tomboy-ng is running. Install sshpass on it, its almost certainly  available from your package repository. Note that sshpass does raise some security questions. I believe, not a problem in this case but do read the Security chapter below. </list-item></list>
 <list><list-item dir="ltr">One or more Android devices (phone, tablets etc) with Tomdroid and sshdroid installed, both from the PlayStore.</list-item></list><size:large>
 
 <bold>SetUp</bold></size:large>
 Assuming you already have notes in your tomboy-ng and a fresh install of Tomdroid, you should -
 
-Fire up Tomdroid on the device. Touch the Menu, select Settings and find the Synchronization block. Check that Service is set to SD Card (note you don't need an external SDCard, Android directs that to some internal space) and that Location on SD Card is set to /storage/emulated/0/tomdroid/.  Close the Settings screen and touch the Sync symbol on the menu bar.
+Fire up Tomdroid on the device. Touch the Menu, select Settings and find the Synchronization block. Check that Service is set to SD Card (note you don't need an external SDCard, Android directs that to some internal space) and that Location on SD Card is set to /storage/emulated/0/Tomdroid/.  Close the Settings screen and touch the Sync symbol on the menu bar.
 
 Now, fire up sshdroid. First thing you should do is go into its Settings and change the default password to something you 'own'. Again, see the section below about security.
 
@@ -39,22 +39,22 @@ When it finishes (and all makes sense), click the Save button.  Now, back on you
 
 <bold>Routine Sync</bold></size:large>
 Important that this process be followed at each sync.
-<list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close TomdroidOpen sshdroid, noting the device's IP address.From within tomboy-ng, click Tomdroid Sync, choose a profile.Click the Sync button. Wait until finished.Back on the device, close sshdroid and open TomdroidTouch the Tomdroid Sync button.</list-item></list><size:large>
+<list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid Open sshdroid, noting the device's IP address.From within tomboy-ng, click Tomdroid Sync, choose a profile.Click the Sync button. Wait until finished.Back on the device, close sshdroid and open Tomdroid Touch the Tomdroid Sync button.</list-item></list><size:large>
 
 <bold>Security</bold></size:large>
-Important issue !  This approach has some weaknesses but if used as intended, I believe they are not significent. Here they are -
+Important issue !  This approach has some weaknesses but if used as intended, I believe they are not significant. Here they are -
 
 <list><list-item dir="ltr"><highlight><bold>sshdroid</bold> - has a well know default password. So, make sure you change it before you use it. Make sure you only start sshdroid when ready to sync and close it down when finished.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight><bold>password</bold> - in tomboy-ng, you can, if you wish, tick the box to have your sshdroid password saved in the config file. Its saved in plain text and its displayed in clear text on the screen. If you are in an envoirment where that is a significent risk, don't tick the box and enter the password each time. If you are worried about the clear text, let the author know and he might deal with that.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight><bold>sshpass</bold> - can be risky if used on a shared machine. Linux boxes are inheriently multiuser but if tomboy-ng is is on a personal, one user at a time machine, its not really a problem. IMHO. </highlight></list-item></list><highlight></highlight><size:large>
+</highlight><list><list-item dir="ltr"><highlight><bold>password</bold> - in tomboy-ng, you can, if you wish, tick the box to have your sshdroid password saved in the config file. Its saved in plain text and its displayed in clear text on the screen. If you are in an environment where that is a significant risk, don't tick the box and enter the password each time. If you are worried about the clear text, let the author know and he might deal with that.</highlight></list-item></list><highlight>
+</highlight><list><list-item dir="ltr"><highlight><bold>sshpass</bold> - can be risky if used on a shared machine. Linux boxes are inherently multi user but if tomboy-ng is is on a personal, one user at a time machine, its not really a problem. IMHO. </highlight></list-item></list><highlight></highlight><size:large>
 
 <bold>General Advice</bold>
 Tomdroid options and their effects.</size:large>
 <list><list-item dir="ltr"><italic><bold>Clear Notes - Clear all notes from local database.</bold></italic>  If you use this option and then touch (Tomdroid's) sync, you'll get a fresh set of notes based on whats currently in the sync dir. </list-item></list>
-<list><list-item dir="ltr"><italic><bold>Delete Remote Notes - Delete all notes from remote service.</bold></italic> <highlight>Carefull with this one ! </highlight>If you do this and then run a sync from tomboy-ng, all previously synced notes will be deleted (but, backed up first) from your tomboy-ng install.  Almost certainly not what you want, so, please be careful. If you find your self in this position, run a Join rather than a Sync, a Join does not delete files so is always safe. Remember that tomboy-ng has some tools to help recover from misuse of above tools.</list-item></list><size:large>
+<list><list-item dir="ltr"><italic><bold>Delete Remote Notes - Delete all notes from remote service.</bold></italic> <highlight>Careful with this one ! </highlight>If you do this and then run a sync from tomboy-ng, all previously synced notes will be deleted (but, backed up first) from your tomboy-ng install.  Almost certainly not what you want, so, please be careful. If you find your self in this position, run a Join rather than a Sync, a Join does not delete files so is always safe. Remember that tomboy-ng has some tools to help recover from misuse of above tools.</list-item></list><size:large>
 
 Other Matters.</size:large>
-<list><list-item dir="ltr"><bold>Joining v Syncing</bold> - These processes are similar except that we cannot use a local manifest during a Join. The local manifest contains data about deleted notes so running a Join instead of a Sync will  reserrect notes deleted at one end or the other.</list-item></list>
+<list><list-item dir="ltr"><bold>Joining v Syncing</bold> - These processes are similar except that we cannot use a local manifest during a Join. The local manifest contains data about deleted notes so running a Join instead of a Sync will  resurrect notes deleted at one end or the other.</list-item></list>
 <list><list-item dir="ltr"><bold>Multiple Profiles</bold> - While you can have as many profiles as you like, you can only use one per device. Remove old, unused profiles as tomboy-ng has to record any note deletions in all present profiles and a huge number may slow things down.</list-item></list>
 <list><list-item dir="ltr"><bold>Notebooks</bold> - Tomdroid does not understand notebooks.</list-item></list>
 <list><list-item dir="ltr"><bold>Tomdroid bugs and feature requests </bold>- No one is maintaining Tomdroid right now. All the source is there, want to try your hand ?</list-item></list>
@@ -67,26 +67,26 @@ The sync model here is another manifestation of the file sync used by tomboy-ng.
 
 Firstly, when making an initial connection to Tomdroid, tomboy-ng stamps a unique ID on the device and keeps a copy in its config file. It also uses that ID as part of a local manifest file. If the IDs don't match, a normal sync cannot proceed.
 
-tomboy-ng (here and elsewhere) uses the last-change-date in every note to determine if two notes are in fact identical and don't need any syncing. I don't believe Tomboy does this and that explains why when re-joining a sync we sometimes ended up with a number of (invalid) clashes and   duplicate notes. tomboy-ng should never exhibite this behavour.
+tomboy-ng (here and elsewhere) uses the last-change-date in every note to determine if two notes are in fact identical and don't need any syncing. I don't believe Tomboy does this and that explains why when re-joining a sync we sometimes ended up with a number of (invalid) clashes and   duplicate notes. tomboy-ng should never exhibit this behavior.
 
 As well as keeping track of revision numbers and last sync dates, the local manifest is important when a note from either end is deleted. It has two sections, the first, note-revisions, lists all notes that this client has seen in the sync repository. So, if the repository no longer has that note, we know its been deleted elsewhere and should be deleted locally.  The second section, notes-deletions, lists every note, previously synced, deleted from this client. At sync time, such notes should be deleted from remote repo (and no longer listed in local manifest).
 
-Note that (I believe) tomboy-ng behaves differently from the origional Tomboy in that Tomboy relied heavily on comparing sync revision numbers whereas tomboy-ng also considers the last-change-date.  
+Note that (I believe) tomboy-ng behaves differently from the original Tomboy in that Tomboy relied heavily on comparing sync revision numbers whereas tomboy-ng also considers the last-change-date.  
 
 <bold>Joining (or, more correctly Creating a Tomdroid Connection)</bold>
 
-First, we stamp a unique ID in sshdroid's home directory. Next, we record any notes in the remote directory (that is in the device) and then compare that list with the local notes. By definition, there is no local manifest in play so deletes don't happen. For each note we firstly check if there is a correponding  one at the other end. If their last-change-dates match, they are the same notes, do nothing.  If they have different last-change-dates, then its a clash, we'll ask user to decide later. if a notes exists at one end or the other but not both, its either an upload or a download.
+First, we stamp a unique ID in sshdroid's home directory. Next, we record any notes in the remote directory (that is in the device) and then compare that list with the local notes. By definition, there is no local manifest in play so deletes don't happen. For each note we firstly check if there is a corresponding  one at the other end. If their last-change-dates match, they are the same notes, do nothing.  If they have different last-change-dates, then its a clash, we'll ask user to decide later. if a notes exists at one end or the other but not both, its either an upload or a download.
 
 <bold>Routine Sync</bold>
 First, we check the unique ID, if they don't match, do not proceed, suggest user either find correct profile or Join again.
-Next, we read the local manifest and then do pretty much as above but use the local manifest data to determine what needs to be deteleted. 
+Next, we read the local manifest and then do pretty much as above but use the local manifest data to determine what needs to be deleted. 
 
 In both cases, once we have a full view of  what needs to happen, we do it. Firstly DownLoads, DoDeletes, Uploads, DeleteLocal, WriteLocalManifest.
 
 
 </note-content></text>
-  <last-change-date>2018-12-06T15:51:18.0180000+11:00</last-change-date>
-  <last-metadata-change-date>2018-12-06T15:51:18.0180000+11:00</last-metadata-change-date>
+  <last-change-date>2018-12-06T18:27:11.0300000+11:00</last-change-date>
+  <last-metadata-change-date>2018-12-06T18:27:11.0300000+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
