@@ -283,7 +283,7 @@ begin
          exit();
      end;
      if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
-         if AllowDismiss then hide;
+         if AllowDismiss then ButtonDismissClick(Self);
      end;
     Left := 10;
     Top := 40;
@@ -369,7 +369,12 @@ end;
 
 procedure TMainForm.ButtonDismissClick(Sender: TObject);
 begin
+    {$ifdef LCLCOCOA}
+    width := 0;
+    height := 0;
+    {$else}
     hide();
+    {$endif}
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);

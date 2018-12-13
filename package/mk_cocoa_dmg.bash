@@ -20,7 +20,7 @@ WORK=source_folder
 CONTENTS="$WORK/""$PRODUCT".app/Contents
 VERSION=`cat version`
 LAZ_DIR=fixes_2_0
-MANUALS="recover.note tomdroid.note"
+MANUALS="recover.note tomdroid.note sync-ng.note tomboy-ng.note"
 
 
 cd ../"$PRODUCT"
