@@ -383,8 +383,8 @@ begin
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-var
     {$ifdef LINUX}
+var
   c: PGtkClipboard;
   t: string;
   {$endif}

@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabDisplay
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -244,6 +244,16 @@ object Sett: TSett
           Caption = 'Network Server - not available'
           Enabled = False
           TabOrder = 1
+        end
+        object ButtonSyncHelp: TButton
+          Left = 425
+          Height = 47
+          Top = 0
+          Width = 75
+          Align = alRight
+          Caption = 'Help'
+          OnClick = ButtonSyncHelpClick
+          TabOrder = 2
         end
       end
       object GroupBox4: TGroupBox

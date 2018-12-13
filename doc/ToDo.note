@@ -1,79 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>tomboy-ng ToDo List</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng ToDo List
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng ToDo List</underline>
 
-</underline>This is a draft or proof of concept for rewriting Tomboy Notes in FreePascal and lazarus.
+Bugs and Know Issues.
 
-The intention is to stick to Tomboy's basic principles of simple user interface, cross platform and syncronisation between those platforms. Long term ....
+This is the tomboy-ng Known Issues and To-Do list.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.<size:huge>
 
-<size:large><bold>Specific Targets for next release
-</bold><list><list-item dir="ltr"><bold></bold></size:large><strikeout>When you paste into a note and the focus point is beyond a newline, the pasted text appears on the next line. We should test for a newline to the left and if there is one, ensure paste happens before the newline.</strikeout> Will be fixed in v0.17</list-item></list>
-<list><list-item dir="ltr">Maybe - interprocess communication that allows an existing running process to be told to open a new note.</list-item></list>
-<list><list-item dir="ltr"><highlight>check printing now that Ben has got highlight working, I suspect Brush may be out of scope.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight></highlight>Help - have tomboy-ng start an external (or internal ?) browser to view the html documentation.</list-item></list>
-<list><list-item dir="ltr">Can we make instrutions on how (eg) Fedora users can install something to make the SystemTray Icon work as it should ?  eg </list-item></list>
-https://github.com/phocean/TopIcons-plus or 
-https://extensions.gnome.org/extension/615/appindicator-support/
+<bold>Bugs and Feature Requests</bold></size:huge>
 
-<size:large><bold>Here is a todo list (last updated 2018/06/13) -
+The correct place to discuss issues relating to tomboy-ng is the existing Tomboy mailings list. See  http://lists.beatniksoftware.com/listinfo.cgi/tomboy-list-beatniksoftware.com
 
-</bold><list><list-item dir="ltr"><bold></bold></size:large><strikeout>Monospaced Font   - in progress, Ben </list-item></list>
-<list><list-item dir="ltr">Strikeout        - in progress, Ben</list-item></list>
-<list><list-item dir="ltr">Underline        - in progress, Ben</list-item></list>
-<list><list-item dir="ltr"></strikeout>Printing on  Cocoa</list-item></list>
-<list><list-item dir="ltr">Table of Contents (a Tomboy plugin I use a LOT)</list-item></list>
-<list><list-item dir="ltr">Tools to manage (re-use or delete) deleted files that end up in Backup/.</list-item></list>
+Formal bug reports and feature requests should be via Github https://github.com/tomboy-notes/tomboy-ng/issues<size:huge>
+
+<bold>Tested Platforms</bold></size:huge>
+
+tomboy-ng is currently tested on a number of platforms -
+
+<list><list-item dir="ltr">Centos 6.1 32bit; Ubuntu Mate 16.04; XUbuntu 18.04; Ubuntu 17.10; Ubuntu 18.04; SUSE Leap 15; Arch Linux, Manjaro 17.1.11 Deepin desktop. Fedora 28 )but see Known Issues)</list-item></list>
+<list><list-item dir="ltr">Windows 10 64 bit (but a 32bit binary is available and believed to behave identically to the 64bit one)</list-item></list>
+<list><list-item dir="ltr">Mac Sierra (64bit system but running a 32bit tomboy-ng, yes, Apple complains but it works fine for now). I have reports (that I cannot confirm) that icons may not display as well as expected at some (high ?) screen resolutions. We're working on it.</list-item></list>
+
+Reports of your experiences are very welcome ! <size:huge>
+
+<bold>Known Issues</bold></size:huge><size:large><bold>
+
+All Platforms</bold></size:large>
+We don't do multilevel bullet.<size:large>
+
+<bold>Linux</bold></size:large>
+'Pure' Gnome 3 systems (such as Fedora 28) have had their System Tray disabled (ask the Gnome developers, not me!).  That means you don't see the small green tomboy-ng icon in your System Tray. So, to interact with tomboy-ng you must leave the small splash screen visible. Perhaps start tomboy-ng with the -g option so you don't accidentally dismiss the splash screen. One possible solution is to install TopIcons.<size:large>
+
+<bold>Windows</bold></size:large>
+The author no longer has a 32bit windows test platform but indications are it will work as expected.<size:large>
+
+<bold>Mac</bold></size:large>
+The 64bit version is still less than perfect. In particular, printing does not work and if your speaker is enabled, you get a beep at each and every key press ! The 32bit versions works fine on all current Mac OSs so please continue using it for now.<size:huge>
+
+
+
+<bold>Here is a todo list (updated 2018/12/13)</bold></size:huge>
+
+Recent fixes show as strikeout.
+
+<list><list-item dir="ltr"><strikeout>Table of Contents (copy Tomboy plugin I use a LOT)</strikeout></list-item></list><strikeout>
+</strikeout><list><list-item dir="ltr">Tools to manage (re-use or delete) deleted files that end up in Backup/.</strikeout></list-item></list><strikeout><strikeout></strikeout>
 <list><list-item dir="ltr">Network Sync</list-item></list>
-<list><list-item dir="ltr">A mobile device solution (or will netsync make Tomdroid viable ?)</list-item></list>
+<list><list-item dir="ltr"><strikeout>Allow user to prevent splash screen showing at startup. Can force it to show with -g</strikeout></list-item></list><strikeout>
+</strikeout><list><list-item dir="ltr">A mobile device solution, sync to Tomdroid.</strikeout></list-item></list><strikeout><strikeout></strikeout>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
-<list><list-item dir="ltr">A viable backup solution.</list-item></list>
-<list><list-item dir="ltr"><strikeout>A proper highlight - Ben</list-item></list>
-<list><list-item dir="ltr"></strikeout> Stop house keeping from moving viewport.</list-item></list>
-<list><list-item dir="ltr">Almost anyone could make Bullets work better ! Firstly, we should have second and subsquent lines in a bullet left offset. And, despite the quantity of code in EditBox trying to make bullets work as expected, there are still the occasional surprise. Sigh.</list-item></list>
+<list><list-item dir="ltr"><strikeout>A viable backup solution.</strikeout></list-item></list><strikeout>
+</strikeout><list><list-item dir="ltr">Links to other notes should be case insensitive.</strikeout></list-item></list><strikeout><strikeout></strikeout>
+<list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
+<list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
+<list><list-item dir="ltr">Do we have an issue with Icons on Mac ?  Apparently at screen resolutions I don't (an maybe cannot ?) use ?</list-item></list>
+<list><list-item dir="ltr"><strikeout>Must make Bullets work better ! proper indent.</strikeout></list-item></list><strikeout>
+</strikeout><list><list-item dir="ltr">Sort out keyboard shortcuts</strikeout> and maybe even document ?</list-item></list><strikeout>
+<list><list-item dir="ltr">Can we make instructions on how (eg) Fedora users can install something to make the SystemTray Icon work as it should ?  eg </list-item></list>
+https://github.com/phocean/TopIcons-plus or 
+https://extensions.gnome.org/extension/615/appindicator-support/<size:large>
 
 
-<size:large><bold>Grey Areas
-</bold><list><list-item dir="ltr"><bold></bold></size:large>Move notes into database (ie sqlite for small users, something bigger for BIG users). </list-item></list>
-<list><list-item dir="ltr">Better export abilities - at present plain text and RTF. What about html, PDF etc ? Man Page</list-item></list>
+
+<bold>Long term 'maybe' stuff</bold></size:large>
+<list><list-item dir="ltr">Move notes into database (ie sqlite for small users, something bigger for BIG users). </list-item></list>
+<list><list-item dir="ltr">Better export abilities - at present plain text and RTF. What about html, PDF etc ? <strikeout>Man Page</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr"> Import ability. Import a directory of Tomboy notes. Import other formats.</list-item></list>
-<list><list-item dir="ltr">Revise controls, at present modelled on Tomboy, we can improve.</list-item></list>
+<list><list-item dir="ltr">Revise controls, at present modeled on Tomboy, we can improve.</list-item></list>
 <list><list-item dir="ltr">Whats this about Gnome3 not wanting to play trayicon, AppIndicator etc ?</list-item></list>
 <list><list-item dir="ltr">Install models - Flatpack, Snap etc ?  <strikeout>RPM</strikeout>, a proper Windows installer.</list-item></list>
 
-<size:large><strikeout><bold>Creating Man Pages
-</bold></strikeout></size:large>This is a dual issue, or two issues with one solution ?  I make an export filter to convert an open note to man format. And use that to write a tomboy-ng man page.
 
-Export in POD format and then use pod2man ?  Or directly write the man page ?
-
-https://en.wikipedia.org/wiki/Plain_Old_Documentation
-https://www.linuxjournal.com/content/creating-custom-man-pages
-https://liw.fi/manpages/
-
-
-<size:large><bold>Application Icons
-
-</bold></size:large>There is a way to go but here is a start.
-Under "my Ubuntu Mate" install, it seems the Lazarus Application Icon is ignored. Instead, I can get a nice Icon displayed on the plank and on the top status bar by putting an 256x256 icon in  /usr/share/icons/hicolor/256x256/apps/tomboy-ng
-         /usr/share/icons/hicolor/256x256/apps/tomboy.png
-
-I'll also provide, in similar places 16x16, 22x22, 24x24, 48x48 because some docs I've read suggest they might be needed. Sigh ....
-
-In the Mac - setting a Lazarus Application Icon seems work. Gee, its easy under Windows, never thought I'd say that !
-
-
-<bold>Mac Icon ICNS
-</bold>Now have a icns file in glyphs.
-The lazarus "make bundle" tool does not address application bundle so must add two lines to tmboy-ng.app/Contents/Info.plist. Add two middle lines between other two 
-
-<monospace>&lt;string&gt;tomboy-ng&lt;/string&gt;
-<monospace><highlight>&lt;key&gt;CFBundleIconFile&lt;/key&gt;
-</highlight><monospace><highlight>&lt;string&gt;macicon.icns&lt;/string&gt;
-</highlight><monospace>&lt;key&gt;CFBundleIdentifier&lt;/key&gt;
-
-</monospace>Then copy the tomboy-ng.icns file to tomboy-ng.app/Content/Resources/. and build
-
-My immediate solution is to grab a copy of the edited Info.plist and put it into git. Then during the dmg build, overwrite the (possibly newly created) one with this one. Does not seem to change ....
 
 
 
@@ -84,8 +81,8 @@ My immediate solution is to grab a copy of the edited Info.plist and put it into
 
 
 </note-content></text>
-  <last-change-date>2018-07-20T14:06:41.1100000+10:00</last-change-date>
-  <last-metadata-change-date>2018-07-20T14:06:41.1100000+10:00</last-metadata-change-date>
+  <last-change-date>2018-12-13T11:20:49.5250000+11:00</last-change-date>
+  <last-metadata-change-date>2018-12-13T11:20:49.5250000+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

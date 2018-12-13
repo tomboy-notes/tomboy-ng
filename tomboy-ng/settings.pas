@@ -101,6 +101,7 @@ type
 
     TSett = class(TForm)
 			ButtDefaultNoteDir: TButton;
+            ButtonSyncHelp: TButton;
             ButtonSetSpellLibrary: TButton;
             ButtonSetDictionary: TButton;
             ButtonManualSnap: TButton;
@@ -196,6 +197,7 @@ type
 		procedure ButtonShowBackUpClick(Sender: TObject);
         procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
+        procedure ButtonSyncHelpClick(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
@@ -303,6 +305,7 @@ uses IniFiles, LazLogger,
     syncGUI,
     syncutils,
     recover,        // Recover lost or damaged files
+    mainunit,       // so we can call ShowHelpNote()
     hunspell       // spelling check
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
@@ -861,6 +864,11 @@ begin
     finally
         FR.Free;
     end;
+end;
+
+procedure TSett.ButtonSyncHelpClick(Sender: TObject);
+begin
+    MainForm.ShowHelpNote('sync-ng.note');
 end;
 
 

@@ -21,7 +21,7 @@ ICON_DIR="../glyphs"
 
 WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
-MANUALS="recover.note tomdroid.note"
+MANUALS="recover.note tomdroid.note tomboy-ng.note ToDo.note"
 
 # BUILDOPTS=" -B --quiet --quiet"
 BUILDOPTS=" -B --quiet"

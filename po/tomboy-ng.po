@@ -1117,6 +1117,11 @@ msgstr ""
 msgid "If you have previously taken a snapshot......"
 msgstr ""
 
+#: tsett.buttonsynchelp.caption
+msgctxt "tsett.buttonsynchelp.caption"
+msgid "Help"
+msgstr ""
+
 #: tsett.caption
 msgid "KTomboy-NG Settings"
 msgstr ""

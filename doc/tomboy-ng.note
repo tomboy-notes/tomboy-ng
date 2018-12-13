@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>tomboy-ng help</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng help</underline>
+
+tomboy-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is possibly file compatible  with Tomdroid and GNote. Tomboy-ng notes support <bold>Bold</bold>, <italic>Italic</italic>, <strikeout>Strikethrough</strikeout>, <highlight>Highlight</highlight> and <underline>Underline</underline> in  four sizes, <size:small>small</size:small>, normal, <size:large>large</size:large> and <size:huge><highlight>huge</highlight></size:huge>. 
+
+It will sync notes with other systems using Tomboy's File Sync model but not yet Network  Sync  using Rainy or Graphal. There is a one to one sync capability to an Android phone running Tomdroid (but only from a Linux box). 
+
+Many  users  will  want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can  interact with it via that Icon. However, to ensure we support some difficult platforms, a small window or splash screen is also opened, it can be dismissed if you see the system tray  icon. But on some Gnome 3 distros, do make sure you can see that small green system tray icon first !  Once sure you can use the System Tray Icon, you can make a setting to not show the splashscreen unless a bad note is detected at startup. <size:large>
+
+<bold>Command Line Switches.</bold></size:large><bold>
+
+</bold><monospace><bold>-h or --help </bold></monospace>            
+ Show help and exit.
+
+<bold>-g or --gnome3</bold>
+Prevent splash screen from being closed. Only necessary if your Linux system does not show the tomboy-ng system tray icon. Some Gnome 3 systems.
+
+<bold>--version</bold>                 
+Print version and exit
+
+<monospace><bold>--no-splash</bold></monospace>
+ Do'nt show small status/splash window. Saves you from having to dismiss it at startup. Don't use unless you have checked you can see the small green system tray icon.
+
+<monospace><bold>--config-dir=PATH_to_DIR</bold></monospace>  
+Create or use an alternative config. Mainly a testng feature but useful if you want to have two (or more) sets of independant (but not concurrent) notes for example.
+
+<monospace><bold>--open-note=PATH_to_NOTE</bold></monospace>  
+Open  a  note  in  single note mode. In this mode, a seperate process runs, it does not have access to the  normal notes location, nor sync but can read, display and write back to a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the   command  line  but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
+
+<monospace><bold>--save-exit </bold></monospace>
+Works only with the single note mode, will import (.note, .rtf, plain text) the file, convert to .note format (and note standard filename format) and save in the configured notes directory. Note that tomboy-ng will require a restart or 'refresh' after this happens.
+
+
+<monospace><bold> --debug-sync       --debug-index       ---debug-spell </bold></monospace>
+Show whats happening during either sync, index or spell. Useful for debugging. They will write detailed progress reports relating  to their section of the application to the console. However, Windows does not, for this purpose, have a  console.  But  it  can  be  told  to capture this log info to a file using another command line switch or by setting an env  variable that specifies a file name. Please ensure you have permission to write to the location specified. For example -
+
+<monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace>
+
+Mac user require a slightly more complicated command line when using any of these command line switches. For example a Mac command line to generate a sync debug log would be -
+
+<monospace>open tomboy-ng.app --args "--debug-log=$HOME/tomboy-ng.log" "--debug-sync"
+
+
+
+</monospace></note-content></text>
+  <last-change-date>2018-12-13T11:42:39.4500000+11:00</last-change-date>
+  <last-metadata-change-date>2018-12-13T11:42:39.4500000+11:00</last-metadata-change-date>
+  <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>
