@@ -49,6 +49,8 @@ unit Note_Lister;
     2018/07/04  Added a flag, XMLError, set if we found a note unable to index.    Why ?
     2018/08/24  Debugmode now set by calling process.
     2018/11/04  Added support for updating NoteList after a sync.
+    2018/12/29  Small improvements in time to save a file.
+
 }
 
 {$mode objfpc}
@@ -685,17 +687,23 @@ end;
 procedure TNoteLister.LoadStGrid(const Grid : TStringGrid);
 var
     Index : integer;
+    // T1, T2, T3, T4 : dword;
 begin
+    // T1 := gettickcount64();
   	Grid.Clear;                       { TODO : we call these three lines from three different places ! }
     Grid.FixedRows := 0;
     Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
     Grid.FixedRows := 1;
+    // T2 := gettickcount64();    // 2mS
 	for Index := 0 to NoteList.Count -1 do begin
         Grid.InsertRowWithValues(Index+1, [NoteList.Items[Index]^.Title,
         	NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,
             NoteList.Items[Index]^.ID]);
 	end;
-    Grid.AutoSizeColumns;
+    // T3 := gettickcount64();     // 3mS
+    // Grid.AutoSizeColumns;            // Slow, so, instead, we call it on the SearchUnit.FormActivate()
+    //T4 := gettickcount64();     // 0mS
+    //debugln('NoteLister - LoadStGrid ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
 procedure TNoteLister.LoadSearchGrid(const Grid: TStringGrid);

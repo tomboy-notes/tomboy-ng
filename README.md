@@ -1,29 +1,22 @@
 ### tomboy-ng 
 
-Copyright (C) 2017 David Bannon <dbannon@internode.on.net>
+tomboy-ng is a note taking app that works and syncronises between Linux, Windows and MacOS. It will also Sync to Tomdroid on Android. It features a rich text markup, printing, spell check, backup and snapshot capability. Import and export (plain text, RFT, MarkDown). It has Tomboy's automatic linking between notes, searching abilities, NoteBooks and a similar interface. 
 
-The tomboy-ng homepage is part of the Tomboy homepage [here](https://wiki.gnome.org/Apps/Tomboy).
+Importantly, tomboy-ng has little or in most cases no dependancies and so is an easy and lightweight install. Most people use the binary install kits but you are welcome to build from source.
+
+[Screen_1](https://github.com/tomboy-notes/tomboy-ng/blob/master/doc/gallery/Screen_1.png)
+
+Please see the [Wiki](https://github.com/tomboy-notes/tomboy-ng/wiki) for further information.
 
 We use GitHub to store sources and track bugs, see [Tomboy](https://github.com/tomboy-notes/tomboy-ng).
+
+The tomboy-ng homepage also is part of the Tomboy homepage [here](https://wiki.gnome.org/Apps/Tomboy).
 
 If you're interested in discussing tomboy-ng, please consider our mailing list.
 To subscribe, visit [here](http://lists.beatniksoftware.com/listinfo.cgi/tomboy-list-beatniksoftware.com)
 or just send your questions and suggestions to <tomboy-list@beatniksoftware.com>.
 
+Copyright (C) 2018 David Bannon <dbannon@internode.on.net>
 ---
 
-Tomboy is a desktop note-taking application for Linux, Unix and Windows.
-Simple and easy to use, but with potential to help you organize the ideas
-and information you deal with every day (a direct quote from Tomboy's Readme).
-
-tomboy-ng is a shameless copy of the origional Tomboy but rewritten in Free Pascal
-and Lazarus in an effort to deliver the usefullness of Tomboy but in a simpler
-to install and easier to maintain package.
-
-So far it supports much the same editing and formatting capabilities as Tomboy.
-It works seemlessly with Tomboy's file sync and supports the same Notebook
-model (and slightly extends it).
-
-And it works, out of the box, no extra libraries needed, on Linux (GTK), Windows
-and Mac. In most cases, all you really need is the 3Mbyte to 4Mbyte binary.
 

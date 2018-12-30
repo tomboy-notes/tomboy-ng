@@ -166,6 +166,7 @@ unit EditBox;
     2018/12/06  Drop all Ctrl Char on floor for the Mac. See if we are missing anything ?
     2018/12/06  Added Ctrl 1, 2, 3, 4 as small, normal, large and huge fnt.
                 ---- This is not put on menus or doced anywhere, an experiment ------
+    2018/12/29  Small improvements in time to save a file.
 
 }
 
@@ -354,6 +355,7 @@ type
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
         Verbose : boolean;
+        // If a new note is a member of Notebook, this holds notebook name until first save.
         TemplateIs : AnsiString;
             { Will mark this note as ReadOnly and not to be saved because the Sync Process
               has either replaced or deleted this note OR we are using it as an internal viewer.
@@ -1657,7 +1659,6 @@ var
   NoBulletPara : boolean = false;
 begin
     if not Ready then exit();                   // should we drop key on floor ????
-
     // don't let any ctrl char get through the kmemo on mac
     {$ifdef DARWIN}
     if [ssCtrl] = Shift then begin
@@ -1864,8 +1865,11 @@ var
  	Saver : TBSaveNote;
     SL : TStringList;
     OldFileName : string ='';
+    // T1, T2, T3, T4, T5, T6, T7 : dword;
     // TestI : integer;
 begin
+    // T1 := gettickcount64();
+    Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
         NoteFileName := Sett.NoteDirectory + GetAFilename();
@@ -1878,37 +1882,44 @@ begin
         end;
     end; //else debugln('NOT Working in Notes dir ' + Sett.NoteDirectory + ' <> ' + CleanAndExpandDirectory(extractFilePath(NoteFileName)));
     // We do not enforce the valid GUID file name rule if note is not in official Notes Dir
+    if TemplateIs <> '' then begin
+        SL := TStringList.Create();
+        SL.Add(TemplateIs);
+        SearchForm.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
+        SL.Free;
+        TemplateIs := '';
+    end;
     Saver := TBSaveNote.Create();
-    KMemo1.Blocks.LockUpdate;
     try
-       if not GetTitle(Saver.Title) then exit();
-       {debugln('Saving Note, length of title =' + inttostr(length(Caption)) + ' No blocks =' + inttostr(KMemo1.Blocks.Count));
-       for TestI := 0 to KMemo1.Blocks.Count -1 do begin
-           debugln('Block=' + inttostr(TestI) + ' Type=' + KMemo1.Blocks[TestI].ClassName);
-       end;      }
-
-       Caption := Saver.Title;
-       Saver.CreateDate := CreateDate;
-       if TemplateIs <> '' then begin
-          SL := TStringList.Create();
-          SL.Add(TemplateIs);
-          SearchForm.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
-          SL.Free;
-          TemplateIs := '';
-	   end;
-       // debugln('about to save');
-       Saver.Save(NoteFileName, KMemo1);
-       SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
-                                        // if we have rewrtten GUID, that will create new entry for it.
+        Saver.CreateDate := CreateDate;
+        if not GetTitle(Saver.Title) then exit();
+        Caption := Saver.Title;
+        // T2 := GetTickCount64();                   // 0mS
+        KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
+        try
+           // debugln('about to save');
+            Saver.ReadKMemo(NoteFileName, KMemo1);
+            // T3 := GetTickCount64();               // 6mS
+        finally
+            KMemo1.Blocks.UnLockUpdate;
+        end;
+        // T4 := GetTickCount64();                   //  0mS
+        Saver.WriteToDisk(NoteFileName);
+        // T5 := GetTickCount64();                   // 1mS
+        // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid
+        SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
+                                        // if we have rewritten GUID, that will create new entry for it.
+        // T6 := GetTickCount64();                   //  14mS
         if OldFileName <> '' then
             SearchForm.DeleteNote(OldFileName);
-
     finally
-        Saver.Destroy;
+        if Saver <> Nil then Saver.Destroy;
         Dirty := false;
         Caption := CleanCaption();
-        KMemo1.Blocks.UnLockUpdate;
     end;
+    {T7 := GetTickCount64();                       // 0mS
+    debugln('EditBox.SaveTheNote Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3) + ' ' +
+            inttostr(T5 - T4) + ' ' + inttostr(T6 - T5) + ' ' + inttostr(T7 - T6));  }
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;
@@ -1923,5 +1934,7 @@ begin
    CreateGUID(GUID);
    Result := copy(GUIDToString(GUID), 2, 36) + '.note';
 end;
+
+
 
 end.

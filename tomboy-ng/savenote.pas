@@ -28,7 +28,7 @@ unit SaveNote;
 	size and the CreatDate if any. If the supplied CreatDate is '', it will
 	stamp it Now().
     All the work is done in the Save(..) function, it needs to be passed
-	the name of a file (that may or may not exist) and the RichMemo its
+	the name of a file (that may or may not exist) and the KMemo its
 	getting its content from.
 }
 
@@ -58,6 +58,7 @@ unit SaveNote;
     2018/08/02  Fix to fixed width, better brackets and a 'not' where needed.
     2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
     2018/12/04  Don't save hyperlinks's underline, its not real !
+    2018/12/29  Small improvements in time to save a file.
 }
 
 {$mode objfpc}{$H+}
@@ -74,6 +75,7 @@ type
  TBSaveNote = class
 
        private
+            OutStream:TMemoryStream;
             ID : ANSIString;
             FSize : integer;
 			Bold : boolean;
@@ -101,14 +103,20 @@ type
           	function Header() : ANSIstring;
          	Function Footer() : ANSIstring;
             //function GetLocalTime():ANSIstring;
+
+            // Assembles a list of tags this note is a member of, list is
+            // used in all note's footer - needs ID to have been set
             function NoteBookTags() : ANSIString;
        public
             TimeStamp : string;
             Title : ANSIString;
-      //      FontNormal : integer;		// Needs to be set after class created (could get from settings??)
+            // set to orig createdate if available, if blank, we'll use now()
             CreateDate : ANSIString;
             procedure SaveNewTemplate(NotebookName: ANSIString);
-         	procedure Save(FileName : ANSIString; KM1 : TKMemo);
+         	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
+            procedure WriteToDisk(FileName : ANSIString);
+            constructor Create;
+            destructor Destroy;  override;
     end;
 
 
@@ -132,6 +140,20 @@ const
   {$ifdef DARWIN}
   MonospaceFont = 'Lucida Console';
   {$ifend}
+
+constructor TBSaveNote.Create;
+begin
+    OutStream := Nil;
+end;
+
+destructor TBSaveNote.Destroy;
+begin
+    if OutStream <> Nil then begin
+        debugln('ERROR - ID=' + ID + '  outstream was not routinly freed .....');
+        OutStream.Free;
+        OutStream := Nil;
+    end;
+end;
 
 function TBSaveNote.SetFontXML(Size : integer; TurnOn : boolean) : string;
 begin
@@ -491,23 +513,23 @@ end;
 procedure TBSaveNote.SaveNewTemplate(NotebookName : ANSIString);
 var
    GUID : TGUID;
-   OutStream:TFilestream;
+   OStream:TFilestream;
    Buff { TemplateID }: ANSIString;
 begin
    CreateGUID(GUID);
    Title := NotebookName  + ' Template';
    ID := copy(GUIDToString(GUID), 2, 36) + '.note';
    SearchForm.NoteLister.AddNoteBook(ID, NotebookName, True);
-   Outstream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
+   Ostream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
    try
    		Buff := Header();
-        OutStream.Write(Buff[1], length(Buff));
+        OStream.Write(Buff[1], length(Buff));
         Buff := Title + #10#10#10;
-        OutStream.Write(Buff[1], length(Buff));
+        OStream.Write(Buff[1], length(Buff));
         Buff := Footer();
-        OutStream.Write(Buff[1], length(Buff));
+        OStream.Write(Buff[1], length(Buff));
    finally
-       OutStream.Free;
+       OStream.Free;
    end;
 end;
 procedure TBSaveNote.CopyLastFontAttr();
@@ -522,10 +544,10 @@ begin
   PrevFSize := FSize;
 end;
 
-procedure TBSaveNote.Save(FileName : ANSIString; KM1 : TKMemo);
+procedure TBSaveNote.ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
 var
    Buff : ANSIstring = '';
-   OutStream:TFilestream;
+   // OutStream:TFilestream;
    BlockNo : integer = 0;
    Block : TKMemoBlock;
    NextBlock : integer;
@@ -539,11 +561,11 @@ var
     Underline := False;
      InList := false;
     FixedWidth := False;
-
     ID := ExtractFileNameOnly(FileName) + '.note';
-            // Must deal with an empty list !
-    try
-        outstream :=TFilestream.Create(FileName, fmCreate);
+    // ID needs to be set so we can get list of notebooks for the footer.
+    // Must deal with an empty list !
+//    try
+        outstream :=TMemoryStream.Create({FileName, fmCreate});
         // Write and WriteBuffer accept a buffer, not a string !  Need to start at pos 1
         // when sending string or ANSIstring otherwise it uses first byte which makes it look like a binary file.
         // http://free-pascal-general.1045716.n5.nabble.com/Creating-text-files-with-TFileStream-td2824859.html
@@ -610,26 +632,43 @@ var
                  Buff := Buff + SetFontXML(FSize, False);
             if length(Buff) > 0 then
                   OutStream.Write(Buff[1], length(Buff));
-            Buff := Footer();
-            OutStream.Write(Buff[1], length(Buff));
+            //Buff := Footer();
+            //OutStream.Write(Buff[1], length(Buff));
 
          Except     { TODO 1 : Must test this to see what happens with an empty
          				list of blocks. Probably makes sense to not save anything
                         that does not have at least one TKMemotextBlock  }
             on EListError do begin
+                debugln('ERROR - EListError while writing note to stream.');
+                { we now do footer in the WriteToDisk()
             	Buff := Footer();
-            	OutStream.Write(Buff[1], length(Buff));
+            	OutStream.Write(Buff[1], length(Buff)); }
             end;
         end;
- 	finally
+{ 	finally
         OutStream.Free;
-    end;
+    end;       }
 end;
 
-function TBSaveNote.NoteBookTags: ANSIString;
+procedure TBSaveNote.WriteToDisk(FileName: ANSIString);
 var
-        SL : TStringList;
-        Index : Integer;
+   Buff : string = '';
+begin
+    // we write out the footer here so we can do the searching to notebook stuff
+    // after we have released to lock on KMemo.
+    Buff := Footer();
+    OutStream.Write(Buff[1], length(Buff));
+
+    OutStream.SaveToFile(FileName);
+    OutStream.Free;
+    OutStream := nil;
+end;
+
+
+function TBSaveNote.NoteBookTags(): ANSIString;
+var
+    SL : TStringList;
+    Index : Integer;
 begin
    Result := '';
    if SearchForm.NoteLister = nil then exit;
@@ -648,7 +687,7 @@ begin
     SL.Free;
 end;
 
-function TBSaveNote.Header: ANSIstring;
+function TBSaveNote.Header(): ANSIstring;
 var
    S1, S2, S3, S4 : ANSIString;
 begin
@@ -660,7 +699,7 @@ begin
 end;
 
 
-function TBSaveNote.Footer: ANSIstring;
+function TBSaveNote.Footer(): ANSIstring;
 var
    S1, S2, S3, S4, S5, S6 : string;
 

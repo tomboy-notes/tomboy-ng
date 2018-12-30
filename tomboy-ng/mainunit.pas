@@ -328,7 +328,7 @@ begin
         else LabelError.Caption := '';
         if not AllowDismiss then begin
             Label7.Caption := 'Sadly, on this OS or because of a Bad Note,';
-            Label8.Caption := 'I cannon let you dismiss this window';
+            Label8.Caption := 'I cannot let you dismiss this window';
             Label7.Hint:='Are you trying to shut me down ? Dave ?';
             Label8.Hint := Label7.Hint;
         end;

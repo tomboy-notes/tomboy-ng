@@ -1,11 +1,12 @@
 object SearchForm: TSearchForm
-  Left = 446
+  Left = 594
   Height = 342
-  Top = 332
+  Top = 323
   Width = 724
   Caption = 'SearchForm'
   ClientHeight = 342
   ClientWidth = 724
+  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy

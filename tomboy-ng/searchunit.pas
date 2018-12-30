@@ -84,6 +84,7 @@ unit SearchUnit;
     2018/08/18  Update Mainform line about notes found whenever IndexNotes() is called.
     2018/11/04  Added ProcessSyncUpdates to keep in memory model in line with on disk and recently used list
     2018/11/25  Now uses Sync.DeleteFromLocalManifest(), called when a previously synced not is deleted, TEST !
+    2018/12/29  Small improvements in time to save a file.
 }
 
 {$mode objfpc}{$H+}
@@ -126,6 +127,7 @@ type
 		procedure Edit1EditingDone(Sender: TObject);
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
+        procedure FormActivate(Sender: TObject);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
@@ -297,30 +299,45 @@ end;
 
 { Sorts List and updates the recently used list under trayicon }
 procedure TSearchForm.UseList();
+{var
+    T1, T2, T3, T4 : dword;}
 begin
-   if ButtonNotebookOptions.Enabled then
+    // WARNING - don't call useList() unnecessarily, its quite slow. LoadStGrid in particular !
+    if ButtonNotebookOptions.Enabled then
 		{ TODO :  We are in notebook mode, refresh the relevent notebook list, not the all notes one. For now, we'll do nothing but fix this ! }
         NoteLister.LoadNotebookGrid(StringGrid1, StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
   	else begin
+        // T1 := gettickcount64();
     	NoteLister.LoadStGrid(StringGrid1);
+        // T2 := gettickcount64();               // 5mS
     	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
     	StringGrid1.SortColRow(True, 1);
+        // T3 := gettickcount64();               // 7mS
     	NoteLister.LoadStGridNotebooks(StringGridNotebooks);
 	end;
+    // T4 := gettickcount64();                   // 1mS
     RecentMenu();
+    // debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
+{ var
+    T1, T2, T3, T4 : dword;    }
 begin
     if NoteLister = Nil then exit;				// we are quitting the app !
   	// Can we find line with passed file name ? If so, apply new data.
+    // T1 := gettickcount64();
 	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
         // DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
         NoteLister.AddNote(ExtractFileNameOnly(FullFileName)+'.note', Title, LastChange);
 	end;
+    // T2 := gettickcount64();
     NoteLister.ThisNoteIsOpen(FullFileName, TheForm);
-    UseList();
+    // T3 := gettickcount64();
+    UseList();          // 13mS ?
+    // T4 := gettickcount64();
+    // debugln('SearchUnit.UpdateList ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
 
@@ -397,17 +414,21 @@ begin
     Sett.CheckCaseSensitive.Checked:= MenuCaseSensitive.Checked;
 end;
 procedure TSearchForm.Edit1EditingDone(Sender: TObject);
-//var
-//   TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
+{var
+   TS1, TS2, TS3, TS4 : qword;           // Temp time stamping to test speed       }
 begin
 
     { TODO : Unintended - when user clicks "Show All Notes" after using this edit box, this event is triggered. And its slow. Better to make this respond to an Enter Key from OnKeyDown  }
     	if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
-            //TS1:=DateTimeToTimeStamp(Now);
-        	NoteLister.GetNotes(Edit1.Text);        // 2.7 sec on my not so fast laptop !
-            //TS2:=DateTimeToTimeStamp(Now);
-            //debugln('Search ' + inttostr(TS2.Time-TS1.Time) + 'ms');    // lower, lower - 2.7S
+            // TS1:=gettickcount64();
+        	NoteLister.GetNotes(Edit1.Text);
+            // TS2:=gettickcount64();
         	NoteLister.LoadSearchGrid(StringGrid1);
+            // TS3:=gettickcount64();
+            // showmessage('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
+            // debugln('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
+            // releasemode, 50mS-70mS, 4-40mS on my linux laptop, longer on common search terms eg "and"
+            // windows box, i5 with SSD, 1800 notes, 330mS + 30mS, 'blar'
         	ButtonClearSearch.Enabled := True;
         end;
 end;
@@ -421,6 +442,13 @@ end;
 procedure TSearchForm.Edit1Exit(Sender: TObject);
 begin
 	if Edit1.Text = '' then Edit1.Text := 'Search';
+end;
+
+procedure TSearchForm.FormActivate(Sender: TObject);
+begin
+    StringGrid1.AutoSizeColumns;
+    // This used to be called in NoteLister after filling grid with data, but its
+    // slow (50mS) and gets called everytime a note is saved.
 end;
 
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
