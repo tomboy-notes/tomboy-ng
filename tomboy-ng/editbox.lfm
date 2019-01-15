@@ -830,6 +830,11 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Index'
       OnClick = MenuItemIndexClick
     end
+    object MenuItemEvaluate: TMenuItem
+      Caption = 'Evaluate'
+      ShortCut = 16453
+      OnClick = MenuItemEvaluateClick
+    end
   end
   object PopupMenuRightClick: TPopupMenu
     left = 80

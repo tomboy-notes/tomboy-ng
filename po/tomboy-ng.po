@@ -99,6 +99,10 @@ msgctxt "teditboxform.menuitemdelete.caption"
 msgid "Delete"
 msgstr ""
 
+#: teditboxform.menuitemevaluate.caption
+msgid "Evaluate"
+msgstr ""
+
 #: teditboxform.menuitemexport.caption
 msgid "Export"
 msgstr ""

@@ -167,6 +167,7 @@ unit EditBox;
     2018/12/06  Added Ctrl 1, 2, 3, 4 as small, normal, large and huge fnt.
                 ---- This is not put on menus or doced anywhere, an experiment ------
     2018/12/29  Small improvements in time to save a file.
+    2019/01/15  Added Calculator, Ctrl-E for evaluate. Need to truncate floats .....
 
 }
 
@@ -204,6 +205,7 @@ type
         MenuBullet: TMenuItem;
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
+        MenuItemEvaluate: TMenuItem;
         MenuItemIndex: TMenuItem;
         MenuItemExportMarkdown: TMenuItem;
         MenuItemSpell: TMenuItem;
@@ -264,6 +266,7 @@ type
         procedure MenuHighLightClick(Sender: TObject);
         procedure MenuHugeClick(Sender: TObject);
         procedure MenuItalicClick(Sender: TObject);
+        procedure MenuItemEvaluateClick(Sender: TObject);
         procedure MenuItemExportMarkdownClick(Sender: TObject);
         procedure MenuItemIndexClick(Sender: TObject);
         procedure MenuUnderlineClick(Sender: TObject);
@@ -303,11 +306,19 @@ type
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
         { If Toggle is true, sets bullets to what its currently no. Otherwise sets to TurnOn}
         procedure BulletControl(const Toggle, TurnOn: boolean);
+        function ColumnCalculate(out AStr: string): boolean;
+        function ComplexCalculate(out AStr: string): boolean;
+        function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string
+            ): boolean;
+        function ParagraphTextTrunc(): string;
+        function PreviousParagraphText(const Backby: integer): string;
+        function SimpleCalculate(out AStr: string): boolean;
         // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
 
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
         { Clears links near where user is working }
         procedure ClearNearLink(const CurrentPos: longint);
+        function DoCalculate(CalcStr: string): string;
         procedure DoHousekeeping();
         { Returns a long random file name, Not checked for clashes }
         function GetAFilename() : ANSIString;
@@ -315,6 +326,7 @@ type
         { Returns with the title, that is the first line of note, returns False if title is empty }
         function GetTitle(out TheTitle: ANSIString): boolean;
         procedure ImportNote(FileName : string);
+        procedure InitiateCalc();
         { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
         function LoadSingleNote() : boolean;
         { Searches for all occurances of Term in the KMemo text, makes them Links }
@@ -391,8 +403,11 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     K_Prn,              // Custom print unit.
     Markdown,
     Index,              // An Index of current note.
-    FileUtil;          // just for ExtractSimplePath ... ~#1620
+    fpexprpars,         // for calc stuff
+    FileUtil, strutils;          // just for ExtractSimplePath ... ~#1620
 
+const
+    CalcChars : set of char =  ['0'..'9'] + ['*', '-', '+', '/'] + ['.', '=', ' ', '(', ')'];
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
@@ -810,6 +825,11 @@ begin
 	AlterFont(ChangeItalic);
 end;
 
+procedure TEditBoxForm.MenuItemEvaluateClick(Sender: TObject);
+begin
+   InitiateCalc();
+end;
+
 procedure TEditBoxForm.MenuItemExportMarkdownClick(Sender: TObject);
 begin
   FormMarkDown.TheKMemo := KMemo1;
@@ -1211,6 +1231,7 @@ begin
     MenuFixedWidth.ShortCut:= KeyToShortCut(VK_T, [ssMeta]);
     MenuUnderline.ShortCut := KeyToShortCut(VK_U, [ssMeta]);
     MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
+    MenuItemEvaluate.ShortCut := KeyToShortCut(VK_E, [ssMeta]);
     {$endif}
 end;
 
@@ -1519,6 +1540,220 @@ begin
     DoHouseKeeping();
 end;
 
+
+{ ---------------------- C A L C U L A T E    F U N C T I O N S ---------------}
+
+function TEditBoxForm.DoCalculate(CalcStr : string) : string;
+var
+    FParser: TFPExpressionParser;
+    parserResult: TFPExpressionResult;
+begin
+    result := '';
+    if length(CalcStr) < 1 then exit('');
+    if CalcStr[length(CalcStr)] = '=' then
+        CalcStr := copy(CalcStr, 1, length(CalcStr)-1);
+    FParser := TFPExpressionParser.Create(nil);
+    try
+        try
+            FParser.Builtins := [bcMath];
+            FParser.Expression := CalcStr;
+            parserResult := FParser.Evaluate;
+            case parserResult.ResultType of
+                rtInteger : result := inttostr(parserResult.ResInteger);
+                rtFloat : result := floattostr(parserResult.ResFloat);
+            end;
+        finally
+          FParser.Free;
+        end;
+    except on E: EExprParser do showmessage(E.Message);
+    end;
+end;
+
+// Called from a Ctrl-E, 'Equals', maybe 'Evaluate' ? Anyway, directs to appropriate
+// methods.
+procedure TEditBoxForm.InitiateCalc();
+var
+    AnsStr : string;
+begin
+    if Kmemo1.blocks.RealSelLength > 0 then begin
+        if not ComplexCalculate(AnsStr) then exit;
+        AnsStr := '=' + AnsStr;
+    end
+        else if not SimpleCalculate(AnsStr) then
+            if not ColumnCalculate(AnsStr) then exit;
+    if AnsStr = '' then
+        showmessage('Unable to find an expression to evaluate')
+    else begin
+        //debugln('KMemo1.SelStart=' + inttostr(KMemo1.SelStart) + 'KMemo1.RealSelStart=' + inttostr(KMemo1.RealSelStart));
+        KMemo1.SelStart := KMemo1.Blocks.RealSelEnd;
+        KMemo1.SelLength := 0;
+        KMemo1.Blocks.InsertPlainText(KMemo1.SelStart, AnsStr);
+        KMemo1.SelStart := KMemo1.SelStart + length(AnsStr);
+        KMemo1.SelLength := 0;
+        //debugln('KMemo1.SelStart=' + inttostr(KMemo1.SelStart) + 'KMemo1.RealSelStart=' + inttostr(KMemo1.RealSelStart));
+    end;
+end;
+
+// Returns all text in a para, 0 says current one, 1 previous para etc ...
+function TEditBoxForm.PreviousParagraphText(const Backby : integer) : string;
+var
+    BlockNo, StopBlockNo, Index : longint;
+begin
+     Result := '';
+    StopBlockNo := KMemo1.NearestParagraphIndex;   // if we are on first line, '1'.
+    Index := BackBy + 1;                           // we want to overshoot
+    BlockNo := StopBlockNo;
+    while Index > 0 do begin
+        dec(BlockNo);
+        dec(Index);
+        if BlockNo < 1 then begin debugln('underrun1'); exit; end;  // its all empty up there ....
+        while not Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') do begin
+            dec(BlockNo);
+            if BlockNo < 1 then begin debugln('Underrun 2'); exit; end;
+        end;
+        if Index = 1 then StopBlockNo := BlockNo;       // almost there yet ?
+    end;
+    inc(BlockNo);
+    while BlockNo < StopBlockNo do begin
+        Result := Result + Kmemo1.Blocks.Items[BlockNo].Text;
+        inc(BlockNo);
+    end;
+    //debugln('PREVIOUS BlockNo=' + inttostr(BlockNo) + '  StopBlockNo=' + inttostr(StopBlockNo));
+end;
+
+
+// Return content of paragraph that caret is within, up to caret pos.
+function TEditBoxForm.ParagraphTextTrunc() : string;
+var
+    BlockNo, StopBlockNo, PosInBlock : longint;
+begin
+    Result := '';
+    StopBlockNo := kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, PosInBlock);
+    if StopBlockNo < 0 then StopBlockNo := 0;
+    BlockNo := StopBlockNo-1;
+    while (BlockNo > 0) and (not Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph')) do
+        dec(BlockNo);
+    // debugln('BlockNo=' + inttostr(BlockNo) + ' StopBlock=' + inttostr(StopBlockNo) + '  PosInBlock=' + inttostr(PosInBlock));
+    if BlockNo > 0 then inc(BlockNo);
+    if BlockNo < 0 then BlockNo := 0;
+    if (BlockNo > StopBlockNo) then exit;
+    while BlockNo < StopBlockNo do begin
+        Result := Result + Kmemo1.Blocks.Items[BlockNo].Text;
+        inc(BlockNo);
+    end;
+    if (PosInBlock > 0) then begin
+        Result := Result + copy(KMemo1.Blocks.Items[BlockNo].Text, 1, PosInBlock);
+    end;
+end;
+
+// Looks for a number at both begining and end of string. Ret empty ones if unsuccessful
+function TEditBoxForm.FindNumbersInString(const AStr: string; out AtStart, AtEnd : string) : boolean;
+var
+    Index : integer = 1;
+begin
+    if AStr = '' then exit(false);
+    AtStart := '';
+    AtEnd := '';
+    while Index <= length(AStr) do begin
+        if AStr[Index] in ['0'..'9'] then AtStart := AtStart + AStr[Index]
+        else break;
+        inc(Index);
+    end;
+    Index := length(AStr);
+    while Index > 0 do begin
+        if AStr[Index] in ['0'..'9'] then AtEnd :=  AStr[Index] + AtEnd
+        else break;
+        dec(Index);
+    end;
+    result := (AtStart <> '') or (AtEnd <> '');
+end;
+
+// Tries to find a column of numbers above, trying to rhs, then lhs.
+// if we find tow or more lines, use it.
+function TEditBoxForm.ColumnCalculate(out AStr : string) : boolean;
+var
+    TheLine, AtStart, AtEnd, CalcStrStart, CalcStrEnd : string;
+    Index : integer = 1;
+    StartDone : boolean = False;
+    EndDone : boolean = False;
+begin
+    repeat
+        TheLine := PreviousParagraphText(Index);
+        FindNumbersInString(TheLine, AtStart, AtEnd);
+        //debugln('Scanned string [' + TheLine + '] and found [' + AtStart + '] and [' + atEnd + ']');
+        if AtStart = '' then
+            if EndDone then break
+            else StartDone := True;
+        if AtEnd = '' then
+            if StartDone then break
+            else EndDone := True;
+        if (AtStart <> '') and (not StartDone) then
+            if CalcStrStart = '' then CalcStrStart := AtStart
+            else CalcStrStart := CalcStrStart + ' + ' + AtStart;
+        if (AtEnd <> '') and (not EndDone) then
+            if CalcStrEnd = '' then CalcStrEnd := AtEnd
+            else CalcStrEnd := CalcStrEnd + ' + ' + AtEnd;
+        inc(Index);
+    until (AtStart = '') and (AtEnd = '');
+    if not EndDone then AStr := CalcStrEnd;
+    if not StartDone then AStr := CalcStrStart;
+    AStr := DoCalculate(AStr);
+    Result := (AStr <> '');
+end;
+
+// Assumes that the current selection contains a complex calc expression.
+function TEditBoxForm.ComplexCalculate(out AStr : string) : boolean;
+var
+    BlockNo, Temp : longint;
+begin
+    BlockNo := kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd-1, Temp);
+    if kmemo1.blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+        // debugln('Para cleanup in progress');
+        Temp := KMemo1.SelLength;
+        Kmemo1.SelStart := KMemo1.Blocks.RealSelStart;
+        KMemo1.SelLength := Temp-1;
+    end;
+    if abs(KMemo1.SelLength) < 1 then exit(false);
+   // debugln('Complex Calc [' + KMemo1.Blocks.SelText + ']');
+   AStr := DoCalculate(KMemo1.Blocks.SelText);
+   Result := (AStr <> '');
+end;
+
+// acts iff char under curser or to left is an '='
+function TEditBoxForm.SimpleCalculate(out AStr : string) : boolean;
+var
+    Index : longint;
+    GotEquals : boolean = false;
+begin
+    Result := False;
+    AStr := ParagraphTextTrunc();
+    // look for equals
+    while length(AStr) > 0 do begin
+        if AStr[length(AStr)] = ' ' then begin
+            delete(AStr, length(AStr), 1);
+            continue;
+        end;
+        if AStr[length(AStr)] = '=' then begin
+            delete(AStr, length(AStr), 1);
+            GotEquals := True;
+            continue;
+        end;
+        if not GotEquals then exit
+        else break;
+    end;
+    // if to here, we have a string that used to start with =, lets see what else it has ?
+    Index := length(AStr);
+    if Index = 0 then exit;
+    while AStr[Index] in CalcChars do begin
+        dec(Index);
+        if Index < 1 then break;
+    end;
+    delete(AStr, 1, Index);
+    // debugln('SimpleCalc=[' + AStr + ']');
+    AStr := DoCalculate(AStr);
+    exit(AStr <> '');
+end;
+
 	{ Any change to the note text and this gets called. So, vital it be quick }
 procedure TEditBoxForm.KMemo1Change(Sender: TObject);
 begin
@@ -1687,6 +1922,7 @@ begin
             VK_U : MenuUnderLineClick(Sender);
             VK_F : MenuItemFindClick(self);
             VK_N : MainForm.MMNewNoteClick(self);
+            VK_E : InitiateCalc();
             VK_F4 : begin SaveTheNote(); close; end;
             VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
             VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_RETURN, VK_INSERT :
