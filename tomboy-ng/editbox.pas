@@ -168,7 +168,9 @@ unit EditBox;
                 ---- This is not put on menus or doced anywhere, an experiment ------
     2018/12/29  Small improvements in time to save a file.
     2019/01/15  Added Calculator, Ctrl-E for evaluate. Need to truncate floats .....
-
+    2019/01/16  Tidy up of float display
+    2019/01/17  Added tan() to list of functions in Calc, go public with Ctrl1,2,3,4
+    2019/01/19  Can tolerate, in places, an imageblock
 }
 
 
@@ -179,8 +181,8 @@ interface
 uses
     Classes, SysUtils, { FileUtil,} Forms, Controls, Graphics, Dialogs, ExtCtrls,
     Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs,
-    clipbrd, lcltype      // required up here for copy on selection stuff.
-    ;
+    clipbrd, lcltype,      // required up here for copy on selection stuff.
+    fpexprpars;         // for calc stuff ;
 
 type
 
@@ -308,6 +310,8 @@ type
         procedure BulletControl(const Toggle, TurnOn: boolean);
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
+        procedure ExprTan(var Result: TFPExpressionResult;
+            const Args: TExprParameterArray);
         function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string
             ): boolean;
         function ParagraphTextTrunc(): string;
@@ -403,11 +407,9 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     K_Prn,              // Custom print unit.
     Markdown,
     Index,              // An Index of current note.
-    fpexprpars,         // for calc stuff
+    math,
     FileUtil, strutils;          // just for ExtractSimplePath ... ~#1620
 
-const
-    CalcChars : set of char =  ['0'..'9'] + ['*', '-', '+', '/'] + ['.', '=', ' ', '(', ')'];
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
@@ -1295,7 +1297,8 @@ begin
 
 	try
         while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
-           	TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
+            if Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock') then     // just possible its an image, ignore ....
+           	    TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
            	inc(BlockNo);
             if BlockNo >= Kmemo1.Blocks.Count then begin
                 AtTheEnd := True;
@@ -1310,11 +1313,15 @@ begin
         if not AtTheEnd then begin
         	inc(BlockNo);
             	// Make sure user has not smeared Title charactistics to next line
-        	while fsUnderline in TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style do begin
-        		TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
-            	inc(BlockNo);
-            	if BlockNo >= KMemo1.Blocks.Count then break;
-        	end;
+            debugln('MarkTitle-' + inttostr(BlockNo) + ' and count ' + inttostr(KMemo1.Blocks.Count));
+            debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
+            if (BlockNo < KMemo1.Blocks.Count) and (not KMemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoImageBlock')) then
+        	    while fsUnderline in TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style do begin
+        		    TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
+            	    inc(BlockNo);
+            	    if (BlockNo >= KMemo1.Blocks.Count) or KMemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoImageBlock') then break;
+                    debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
+        	    end;
         end;
 	finally
 		KMemo1.Blocks.UnLockUpdate;			// Clean up, needs to be in try.. finally loop.
@@ -1543,6 +1550,14 @@ end;
 
 { ---------------------- C A L C U L A T E    F U N C T I O N S ---------------}
 
+procedure TEditBoxForm.ExprTan(var Result: TFPExpressionResult; Const Args: TExprParameterArray);
+var
+  x: Double;
+begin
+  x := ArgToFloat(Args[0]);
+  Result.resFloat := tan(x);
+end;
+
 function TEditBoxForm.DoCalculate(CalcStr : string) : string;
 var
     FParser: TFPExpressionParser;
@@ -1555,12 +1570,13 @@ begin
     FParser := TFPExpressionParser.Create(nil);
     try
         try
+            FParser.Identifiers.AddFunction('tan', 'F', 'F', @ExprTan);
             FParser.Builtins := [bcMath];
             FParser.Expression := CalcStr;
             parserResult := FParser.Evaluate;
             case parserResult.ResultType of
                 rtInteger : result := inttostr(parserResult.ResInteger);
-                rtFloat : result := floattostr(parserResult.ResFloat);
+                rtFloat : result := floattostrf(parserResult.ResFloat, ffFixed, 0, 3);
             end;
         finally
           FParser.Free;
@@ -1655,13 +1671,13 @@ begin
     AtStart := '';
     AtEnd := '';
     while Index <= length(AStr) do begin
-        if AStr[Index] in ['0'..'9'] then AtStart := AtStart + AStr[Index]
+        if AStr[Index] in ['0'..'9', '.'] then AtStart := AtStart + AStr[Index]
         else break;
         inc(Index);
     end;
     Index := length(AStr);
     while Index > 0 do begin
-        if AStr[Index] in ['0'..'9'] then AtEnd :=  AStr[Index] + AtEnd
+        if AStr[Index] in ['0'..'9', '.'] then AtEnd :=  AStr[Index] + AtEnd
         else break;
         dec(Index);
     end;
@@ -1718,6 +1734,9 @@ begin
    AStr := DoCalculate(KMemo1.Blocks.SelText);
    Result := (AStr <> '');
 end;
+
+const
+    CalcChars : set of char =  ['0'..'9'] + ['^', '*', '-', '+', '/'] + ['.', '=', ' ', '(', ')'];
 
 // acts iff char under curser or to left is an '='
 function TEditBoxForm.SimpleCalculate(out AStr : string) : boolean;

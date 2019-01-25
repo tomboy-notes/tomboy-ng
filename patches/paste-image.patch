@@ -1,0 +1,12 @@
+Index: gtk2winapi.inc
+===================================================================
+--- gtk2winapi.inc	(revision 59976)
++++ gtk2winapi.inc	(working copy)
+@@ -432,7 +432,7 @@
+     Result:=true;
+   finally
+     if SupportedFormats<>nil then FreeMem(SupportedFormats);
+-    if SelData.Data<>nil then FreeMem(SelData.Data);
++    if (SelData.Data<>nil) and (PGdkAtom(SelData.Data)<>SupportedFormats) then FreeMem(SelData.Data);
+   end;
+ end;

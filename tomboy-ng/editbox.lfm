@@ -770,18 +770,22 @@ object EditBoxForm: TEditBoxForm
     end
     object MenuSmall: TMenuItem
       Caption = 'Small Font'
+      ShortCut = 16433
       OnClick = MenuSmallClick
     end
     object MenuNormal: TMenuItem
       Caption = 'Normal Font'
+      ShortCut = 16434
       OnClick = MenuNormalClick
     end
     object MenuLarge: TMenuItem
       Caption = 'Large  Font'
+      ShortCut = 16435
       OnClick = MenuLargeClick
     end
     object MenuHuge: TMenuItem
       Caption = 'Huge'
+      ShortCut = 16436
       OnClick = MenuHugeClick
     end
     object MenuItem3: TMenuItem
