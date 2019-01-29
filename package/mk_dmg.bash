@@ -14,7 +14,8 @@ PRODUCT=tomboy-ng
 WORK=source_folder
 CONTENTS="$WORK/""$PRODUCT".app/Contents
 VERSION=`cat version`
-MANUALS="recover.note tomdroid.note sync-ng.note tomboy-ng.note"
+#MANUALS="recover.note tomdroid.note sync-ng.note tomboy-ng.note"
+MANUALS=`note-files`
 
 cd ../tomboy-ng
 TOMBOY_NG_VER="$VERSION" lazbuild -B --cpu="i386" --build-mode=Release --os="darwin" Tomboy_NG.lpi

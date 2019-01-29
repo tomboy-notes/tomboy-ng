@@ -5,7 +5,7 @@ object MainForm: TMainForm
   Top = 262
   Width = 355
   Caption = 'MainForm'
-  ClientHeight = 316
+  ClientHeight = 318
   ClientWidth = 355
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -15,7 +15,7 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.3'
   object ImageConfigTick: TImage
     Left = 24
     Height = 18
@@ -77,17 +77,17 @@ object MainForm: TMainForm
   end
   object Label1: TLabel
     Left = 56
-    Height = 17
+    Height = 16
     Top = 90
-    Width = 79
+    Width = 76
     Caption = 'Have Config'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 56
-    Height = 17
+    Height = 16
     Top = 112
-    Width = 100
+    Width = 94
     Caption = 'Have Notes Dir'
     ParentColor = False
   end
@@ -176,17 +176,17 @@ object MainForm: TMainForm
   end
   object Label3: TLabel
     Left = 56
-    Height = 17
+    Height = 16
     Top = 136
-    Width = 185
+    Width = 174
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 17
+    Height = 16
     Top = 160
-    Width = 146
+    Width = 139
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
@@ -310,9 +310,9 @@ object MainForm: TMainForm
   end
   object Label5: TLabel
     Left = 30
-    Height = 22
+    Height = 21
     Top = 19
-    Width = 224
+    Width = 218
     Caption = 'Welcome to tomboy-ng !'
     Font.Height = -18
     Font.Name = 'Lucida Grande'
@@ -321,17 +321,17 @@ object MainForm: TMainForm
   end
   object Label6: TLabel
     Left = 31
-    Height = 17
+    Height = 16
     Top = 56
-    Width = 202
+    Width = 197
     Caption = 'Lets See if we are ready to go -'
     ParentColor = False
   end
   object Label7: TLabel
     Left = 40
-    Height = 17
+    Height = 16
     Top = 192
-    Width = 45
+    Width = 42
     Caption = 'Label7'
     ParentColor = False
     ParentShowHint = False
@@ -339,9 +339,9 @@ object MainForm: TMainForm
   end
   object Label8: TLabel
     Left = 40
-    Height = 17
+    Height = 16
     Top = 208
-    Width = 45
+    Width = 42
     Caption = 'Label8'
     ParentColor = False
     ParentShowHint = False
@@ -356,7 +356,7 @@ object MainForm: TMainForm
   end
   object LabelError: TLabel
     Left = 24
-    Height = 19
+    Height = 18
     Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
     Top = 277
     Width = 11
@@ -441,6 +441,33 @@ object MainForm: TMainForm
     object TrayMenuItemSettings: TMenuItem
       Caption = 'Settings'
       OnClick = MMSettingsClick
+    end
+    object MenuItemHelp: TMenuItem
+      Caption = 'Help'
+      object TrayHelpTomboy: TMenuItem
+        Caption = 'tomboy-ng'
+        OnClick = MMHelpTomboyClick
+      end
+      object TrayHelpKeyShortcuts: TMenuItem
+        Caption = 'Key shortcuts'
+        OnClick = MMHelpTomboyClick
+      end
+      object TrayHelpRecover: TMenuItem
+        Caption = 'Backup Recover'
+        OnClick = MMHelpTomboyClick
+      end
+      object TrayHelpSync: TMenuItem
+        Caption = 'Syncronise'
+        OnClick = MMHelpTomboyClick
+      end
+      object TrayHelpCalc: TMenuItem
+        Caption = 'Calculator'
+        OnClick = MMHelpTomboyClick
+      end
+      object TrayHelpTomdroid: TMenuItem
+        Caption = 'Tomdroid'
+        OnClick = MMHelpTomboyClick
+      end
     end
     object MenuItem15: TMenuItem
       Caption = '-'
@@ -561,6 +588,33 @@ object MainForm: TMainForm
       object MMSettings: TMenuItem
         Caption = 'Settings'
         OnClick = MMSettingsClick
+      end
+      object MenuHelp: TMenuItem
+        Caption = 'MenuHelp'
+        object MMHelpTomboy: TMenuItem
+          Caption = 'tomboy-ng'
+          OnClick = MMHelpTomboyClick
+        end
+        object MMHelpKeyShortcuts: TMenuItem
+          Caption = 'Key Shortcuts'
+          OnClick = MMHelpTomboyClick
+        end
+        object MMHelpRecover: TMenuItem
+          Caption = 'Backup & Recover'
+          OnClick = MMHelpTomboyClick
+        end
+        object MMHelpSync: TMenuItem
+          Caption = 'Syncronisation'
+          OnClick = MMHelpTomboyClick
+        end
+        object MMHelpCalc: TMenuItem
+          Caption = 'Calculator'
+          OnClick = MMHelpTomboyClick
+        end
+        object MMHelpTomdroid: TMenuItem
+          Caption = 'Tomdroid'
+          OnClick = MMHelpTomboyClick
+        end
       end
       object MMQuit: TMenuItem
         Caption = 'Quit'

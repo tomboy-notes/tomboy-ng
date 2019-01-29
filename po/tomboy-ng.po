@@ -167,391 +167,6 @@ msgstr ""
 msgid "Underline"
 msgstr ""
 
-#: tformbackupview.buttondelete.caption
-msgctxt "tformbackupview.buttondelete.caption"
-msgid "Delete"
-msgstr ""
-
-#: tformbackupview.buttondelete.hint
-msgid "Really, totally delete this note."
-msgstr ""
-
-#: tformbackupview.buttonok.caption
-msgctxt "tformbackupview.buttonok.caption"
-msgid "OK"
-msgstr ""
-
-#: tformbackupview.buttonok.hint
-msgid "My work here is done."
-msgstr ""
-
-#: tformbackupview.buttonopen.caption
-msgid "View"
-msgstr ""
-
-#: tformbackupview.buttonopen.hint
-msgid "Open and view the whole note"
-msgstr ""
-
-#: tformbackupview.buttonrecover.caption
-msgctxt "tformbackupview.buttonrecover.caption"
-msgid "Recover"
-msgstr ""
-
-#: tformbackupview.buttonrecover.hint
-msgid "Restore this note to main repo"
-msgstr ""
-
-#: tformbackupview.caption
-msgid "FormBackupView"
-msgstr ""
-
-#: tformindex.caption
-msgid "Heading in this Note"
-msgstr ""
-
-#: tformindex.panel1.caption
-msgid "Single lines, all Huge, Large Bold or Large"
-msgstr ""
-
-#: tformmarkdown.buttonclose.caption
-msgctxt "tformmarkdown.buttonclose.caption"
-msgid "Close"
-msgstr ""
-
-#: tformmarkdown.buttoncopyall.caption
-msgid "Copy All"
-msgstr ""
-
-#: tformmarkdown.buttonsave.caption
-msgctxt "tformmarkdown.buttonsave.caption"
-msgid "Save"
-msgstr ""
-
-#: tformmarkdown.caption
-msgid "FormMarkdown"
-msgstr ""
-
-#: tformmarkdown.label1.caption
-msgid "Press Ctrl-A, Ctrl-C to copy"
-msgstr ""
-
-#: tformmarkdown.panel1.caption
-msgid "Markdown Exporter"
-msgstr ""
-
-#: tformrecover.button4.caption
-msgid "Restore from Safety Snapshot"
-msgstr ""
-
-#: tformrecover.buttondeletebadnotes.caption
-msgctxt "tformrecover.buttondeletebadnotes.caption"
-msgid "Delete Bad Notes"
-msgstr ""
-
-#: tformrecover.buttonmakesafetysnap.caption
-msgid "Safety Snapshot"
-msgstr ""
-
-#: tformrecover.buttonmakesafetysnap.hint
-msgctxt "tformrecover.buttonmakesafetysnap.hint"
-msgid "Take a initial snapshot of your notes and config. Overwritten each time."
-msgstr ""
-
-#: tformrecover.buttonrecoversnap.caption
-msgctxt "tformrecover.buttonrecoversnap.caption"
-msgid "Recover"
-msgstr ""
-
-#: tformrecover.buttonsnaphelp.caption
-msgctxt "tformrecover.buttonsnaphelp.caption"
-msgid "Help"
-msgstr ""
-
-#: tformrecover.caption
-msgid "FormRecover"
-msgstr ""
-
-#: tformrecover.label1.caption
-msgctxt "tformrecover.label1.caption"
-msgid "Label1"
-msgstr ""
-
-#: tformrecover.label10.caption
-msgid "Please close any notes you may have open."
-msgstr ""
-
-#: tformrecover.label11.caption
-msgid "or you do one of -"
-msgstr ""
-
-#: tformrecover.label12.caption
-msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
-msgstr ""
-
-#: tformrecover.label14.caption
-msgid "Double click an available snapshot to see its contents."
-msgstr ""
-
-#: tformrecover.label15.caption
-msgid "Double click an available snapshot, click Recover"
-msgstr ""
-
-#: tformrecover.label16.caption
-msgid "You may chose to view, copy and paste into a new note."
-msgstr ""
-
-#: tformrecover.label2.caption
-msgid "Please be carefull, this is a dangerous place !"
-msgstr ""
-
-#: tformrecover.label3.caption
-msgid "Restore any notes in the snapshot that are not in the existing notes directory."
-msgstr ""
-
-#: tformrecover.label4.caption
-msgid "Remove all existing notes and use the ones in the Snapshot."
-msgstr ""
-
-#: tformrecover.label5.caption
-msgid "Look firstly at your existing notes"
-msgstr ""
-
-#: tformrecover.label6.caption
-msgid "This tool might help you recover lost or damaged notes."
-msgstr ""
-
-#: tformrecover.label7.caption
-msgid "Before you start, take a Safety Snapshot of your notes directory."
-msgstr ""
-
-#: tformrecover.label8.caption
-msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
-msgstr ""
-
-#: tformrecover.label9.caption
-msgid "From here you can view snapshot notes, one by one."
-msgstr ""
-
-#: tformrecover.labelexistingadvice.caption
-msgid "LabelExistingAdvice"
-msgstr ""
-
-#: tformrecover.labelexistingadvice2.caption
-msgid "LabelExistingAdvice2"
-msgstr ""
-
-#: tformrecover.labelnoteerrors.caption
-msgid "LabelNoteErrors"
-msgstr ""
-
-#: tformrecover.listboxsnapshots.hint
-msgid "These are the currently known snapshots. "
-msgstr ""
-
-#: tformrecover.panelsnapshots.caption
-msgid "Available Snapshots"
-msgstr ""
-
-#: tformrecover.tabsheetexisting.caption
-msgid "Existing Notes"
-msgstr ""
-
-#: tformrecover.tabsheetintro.caption
-msgid "Introduction"
-msgstr ""
-
-#: tformrecover.tabsheetmergesnapshot.caption
-msgctxt "tformrecover.tabsheetmergesnapshot.caption"
-msgid "Merge Snapshot"
-msgstr ""
-
-#: tformrecover.tabsheetrecoversnapshot.caption
-msgctxt "tformrecover.tabsheetrecoversnapshot.caption"
-msgid "Recover Snapshot"
-msgstr ""
-
-#: tformrecover.tabsheetsnapshots.caption
-msgid "Notes in a Snapshot"
-msgstr ""
-
-#: tformspell.buttonignore.caption
-msgid "Ignore"
-msgstr ""
-
-#: tformspell.buttonignore.hint
-msgid "Ignore all instances for the run"
-msgstr ""
-
-#: tformspell.buttonskip.caption
-msgid "Skip"
-msgstr ""
-
-#: tformspell.buttonskip.hint
-msgid "Skip just this instance"
-msgstr ""
-
-#: tformspell.buttonuseandnextword.caption
-msgid "Use and Next Word"
-msgstr ""
-
-#: tformspell.caption
-msgctxt "tformspell.caption"
-msgid "Spell"
-msgstr ""
-
-#: tformspell.label4.caption
-msgid "Suspect word -"
-msgstr ""
-
-#: tformspell.labelcontext.caption
-msgid "LabelContext"
-msgstr ""
-
-#: tformspell.labelprompt.caption
-msgctxt "tformspell.labelprompt.caption"
-msgid "Click a word to use it."
-msgstr ""
-
-#: tformspell.labelstatus.caption
-msgid "LabelStatus"
-msgstr ""
-
-#: tformspell.labelsuspect.caption
-msgid "LabelSuspect"
-msgstr ""
-
-#: tformsync.buttoncancel.caption
-msgctxt "tformsync.buttoncancel.caption"
-msgid "Cancel"
-msgstr ""
-
-#: tformsync.buttonclose.caption
-msgctxt "tformsync.buttonclose.caption"
-msgid "Close"
-msgstr ""
-
-#: tformsync.buttonsave.caption
-msgid "Save and Sync"
-msgstr ""
-
-#: tformsync.caption
-msgid "FormSync"
-msgstr ""
-
-#: tformsync.label1.caption
-msgctxt "tformsync.label1.caption"
-msgid "Label1"
-msgstr ""
-
-#: tformsync.label2.caption
-msgctxt "tformsync.label2.caption"
-msgid "Label2"
-msgstr ""
-
-#: tformsync.panel3.caption
-msgctxt "tformsync.panel3.caption"
-msgid "Panel3"
-msgstr ""
-
-#: tformtomdroid.buttonclose.caption
-msgctxt "tformtomdroid.buttonclose.caption"
-msgid "Close"
-msgstr ""
-
-#: tformtomdroid.buttondelete.caption
-msgid "Delete Profile"
-msgstr ""
-
-#: tformtomdroid.buttonhelp.caption
-msgctxt "tformtomdroid.buttonhelp.caption"
-msgid "Help"
-msgstr ""
-
-#: tformtomdroid.buttonjoin.caption
-msgid "Join"
-msgstr ""
-
-#: tformtomdroid.buttonsaveprofile.caption
-msgid "Save Profile"
-msgstr ""
-
-#: tformtomdroid.buttonsync.caption
-msgctxt "tformtomdroid.buttonsync.caption"
-msgid "Sync"
-msgstr ""
-
-#: tformtomdroid.caption
-msgid "FormTomdroid"
-msgstr ""
-
-#: tformtomdroid.checkboxdebugmode.caption
-msgid "Debug Mode"
-msgstr ""
-
-#: tformtomdroid.checkboxdebugmode.hint
-msgid "writes debug messages to terminal"
-msgstr ""
-
-#: tformtomdroid.checkboxtestrun.caption
-msgid "Test Run"
-msgstr ""
-
-#: tformtomdroid.checksavepassword.caption
-msgctxt "tformtomdroid.checksavepassword.caption"
-msgid "Save"
-msgstr ""
-
-#: tformtomdroid.editipaddress.text
-msgid "EditIPAddress"
-msgstr ""
-
-#: tformtomdroid.editpassword.text
-msgid "EditPassword"
-msgstr ""
-
-#: tformtomdroid.editprofilename.hint
-msgid "eg MySamsungNote7"
-msgstr ""
-
-#: tformtomdroid.editprofilename.text
-msgid "EditProfileName"
-msgstr ""
-
-#: tformtomdroid.label1.caption
-msgid "Tomdroid Sync - be aware of limitations !"
-msgstr ""
-
-#: tformtomdroid.label2.caption
-msgid "Select an existing profile (or enter data) "
-msgstr ""
-
-#: tformtomdroid.label3.caption
-msgid "Profile Name"
-msgstr ""
-
-#: tformtomdroid.label4.caption
-msgid "IP address of device"
-msgstr ""
-
-#: tformtomdroid.label5.caption
-msgid "SSH Password for device"
-msgstr ""
-
-#: tformtomdroid.labelserverid.caption
-msgid "LabelServerID"
-msgstr ""
-
-#: tformtomdroid.panel1.caption
-msgctxt "tformtomdroid.panel1.caption"
-msgid "Panel1"
-msgstr ""
-
-#: tformtomdroid.panel2.caption
-msgctxt "tformtomdroid.panel2.caption"
-msgid "Panel2"
-msgstr ""
-
 #: tmainform.buttonconfig.caption
 msgid "Config"
 msgstr ""
@@ -616,8 +231,15 @@ msgstr ""
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr ""
 
+#: tmainform.menuhelp.caption
+msgid "MenuHelp"
+msgstr ""
+
+#: tmainform.menuitemhelp.caption
+msgid "Help"
+msgstr ""
+
 #: tmainform.menuquit.caption
-msgctxt "tmainform.menuquit.caption"
 msgid "Quit, Close and Go Away."
 msgstr ""
 
@@ -627,8 +249,37 @@ msgid "About"
 msgstr ""
 
 #: tmainform.mmfile.caption
-msgctxt "tmainform.mmfile.caption"
 msgid "File"
+msgstr ""
+
+#: tmainform.mmhelpcalc.caption
+msgctxt "tmainform.mmhelpcalc.caption"
+msgid "Calculator"
+msgstr ""
+
+#: tmainform.mmhelpkeyshortcuts.caption
+msgctxt "tmainform.mmhelpkeyshortcuts.caption"
+msgid "Key Shortcuts"
+msgstr ""
+
+#: tmainform.mmhelprecover.caption
+msgctxt "tmainform.mmhelprecover.caption"
+msgid "Backup & Recover"
+msgstr ""
+
+#: tmainform.mmhelpsync.caption
+msgctxt "tmainform.mmhelpsync.caption"
+msgid "Syncronisation"
+msgstr ""
+
+#: tmainform.mmhelptomboy.caption
+msgctxt "tmainform.mmhelptomboy.caption"
+msgid "tomboy-ng"
+msgstr ""
+
+#: tmainform.mmhelptomdroid.caption
+msgctxt "tmainform.mmhelptomdroid.caption"
+msgid "Tomdroid"
 msgstr ""
 
 #: tmainform.mmnewnote.caption
@@ -645,52 +296,42 @@ msgid "Recent"
 msgstr ""
 
 #: tmainform.mmrecent1.caption
-msgctxt "tmainform.mmrecent1.caption"
 msgid "MenuItem1"
 msgstr ""
 
 #: tmainform.mmrecent10.caption
-msgctxt "tmainform.mmrecent10.caption"
 msgid "MenuItem12"
 msgstr ""
 
 #: tmainform.mmrecent2.caption
-msgctxt "tmainform.mmrecent2.caption"
 msgid "MenuItem2"
 msgstr ""
 
 #: tmainform.mmrecent3.caption
-msgctxt "tmainform.mmrecent3.caption"
 msgid "MenuItem5"
 msgstr ""
 
 #: tmainform.mmrecent4.caption
-msgctxt "tmainform.mmrecent4.caption"
 msgid "MenuItem6"
 msgstr ""
 
 #: tmainform.mmrecent5.caption
-msgctxt "tmainform.mmrecent5.caption"
 msgid "MenuItem7"
 msgstr ""
 
 #: tmainform.mmrecent6.caption
-msgctxt "tmainform.mmrecent6.caption"
 msgid "MenuItem8"
 msgstr ""
 
 #: tmainform.mmrecent7.caption
-msgctxt "tmainform.mmrecent7.caption"
 msgid "MenuItem9"
 msgstr ""
 
 #: tmainform.mmrecent8.caption
-msgctxt "tmainform.mmrecent8.caption"
 msgid "MenuItem10"
 msgstr ""
 
 #: tmainform.mmrecent9.caption
-msgctxt "tmainform.mmrecent9.caption"
 msgid "MenuItem11"
 msgstr ""
 
@@ -705,8 +346,34 @@ msgid "Settings"
 msgstr ""
 
 #: tmainform.mmsync.caption
-msgctxt "tmainform.mmsync.caption"
 msgid "Sync"
+msgstr ""
+
+#: tmainform.trayhelpcalc.caption
+msgctxt "tmainform.trayhelpcalc.caption"
+msgid "Calculator"
+msgstr ""
+
+#: tmainform.trayhelpkeyshortcuts.caption
+msgid "Key shortcuts"
+msgstr ""
+
+#: tmainform.trayhelprecover.caption
+msgid "Backup Recover"
+msgstr ""
+
+#: tmainform.trayhelpsync.caption
+msgid "Syncronise"
+msgstr ""
+
+#: tmainform.trayhelptomboy.caption
+msgctxt "tmainform.trayhelptomboy.caption"
+msgid "tomboy-ng"
+msgstr ""
+
+#: tmainform.trayhelptomdroid.caption
+msgctxt "tmainform.trayhelptomdroid.caption"
+msgid "Tomdroid"
 msgstr ""
 
 #: tmainform.traymensearch.caption
@@ -780,7 +447,6 @@ msgid "empty"
 msgstr ""
 
 #: tmainform.traymenusynchronise.caption
-msgctxt "tmainform.traymenusynchronise.caption"
 msgid "Synchronise"
 msgstr ""
 
@@ -788,222 +454,27 @@ msgstr ""
 msgid "Tomdroid Sync"
 msgstr ""
 
-#: tnotebookpick.button1.caption
-msgctxt "tnotebookpick.button1.caption"
-msgid "Cancel"
-msgstr ""
-
-#: tnotebookpick.buttonok.caption
-msgctxt "tnotebookpick.buttonok.caption"
-msgid "OK"
-msgstr ""
-
-#: tnotebookpick.caption
-msgid "NoteBookPick"
-msgstr ""
-
-#: tnotebookpick.label1.caption
-msgctxt "tnotebookpick.label1.caption"
-msgid "Label1"
-msgstr ""
-
-#: tnotebookpick.label2.caption
-msgctxt "tnotebookpick.label2.caption"
-msgid "Label2"
-msgstr ""
-
-#: tnotebookpick.label3.caption
-msgid "Label3"
-msgstr ""
-
-#: tnotebookpick.label4.caption
-msgid "Name of the New Note Book"
-msgstr ""
-
-#: tnotebookpick.label5.caption
-msgid "Press OK and we will make the Note Book AND add this note to it."
-msgstr ""
-
-#: tnotebookpick.tabexisting.caption
-msgid "Existing Note Books"
-msgstr ""
-
-#: tnotebookpick.tabnewnotebook.caption
-msgctxt "tnotebookpick.tabnewnotebook.caption"
-msgid "New Note Book"
-msgstr ""
-
-#: trtsearch.buttonclearsearch.caption
-msgctxt "trtsearch.buttonclearsearch.caption"
-msgid "Clear"
-msgstr ""
-
-#: trtsearch.buttonclearsearch.hint
-msgctxt "trtsearch.buttonclearsearch.hint"
-msgid "Clears the search"
-msgstr ""
-
-#: trtsearch.buttonnotebookoptions.caption
-msgctxt "trtsearch.buttonnotebookoptions.caption"
-msgid "Notebook Options"
-msgstr ""
-
-#: trtsearch.buttonnotebookoptions.hint
-msgctxt "trtsearch.buttonnotebookoptions.hint"
-msgid "Manage the Notebooks"
-msgstr ""
-
-#: trtsearch.buttonrefresh.caption
-msgctxt "trtsearch.buttonrefresh.caption"
-msgid "Refresh"
-msgstr ""
-
-#: trtsearch.buttonrefresh.hint
-msgctxt "trtsearch.buttonrefresh.hint"
-msgid "Indexes on disk notes"
-msgstr ""
-
-#: trtsearch.buttonshowallnotes.caption
-msgctxt "trtsearch.buttonshowallnotes.caption"
-msgid "Show All Notes"
-msgstr ""
-
-#: trtsearch.caption
-msgid "RTSearch"
-msgstr ""
-
-#: trtsearch.edit1.text
-msgctxt "trtsearch.edit1.text"
-msgid "Search"
-msgstr ""
-
-#: trtsearch.menudeletenotebook.caption
-msgctxt "trtsearch.menudeletenotebook.caption"
-msgid "Delete Notebook"
-msgstr ""
-
-#: trtsearch.menueditnotebooktemplate.caption
-msgctxt "trtsearch.menueditnotebooktemplate.caption"
-msgid "Edit Notebook Template"
-msgstr ""
-
-#: trtsearch.menuitemsettings.caption
-msgctxt "trtsearch.menuitemsettings.caption"
-msgid "Settings"
-msgstr ""
-
-#: trtsearch.menunewnotefromtemplate.caption
-msgctxt "trtsearch.menunewnotefromtemplate.caption"
-msgid "Create New Note from Template"
-msgstr ""
-
-#: trtsearch.menuquit.caption
-msgctxt "trtsearch.menuquit.caption"
-msgid "Quit, Close and Go Away."
-msgstr ""
-
-#: trtsearch.menusynchronise.caption
-msgctxt "trtsearch.menusynchronise.caption"
-msgid "Synchronise"
-msgstr ""
-
-#: trtsearch.panel1.caption
-msgctxt "trtsearch.panel1.caption"
-msgid "Panel1"
-msgstr ""
-
-#: trtsearch.traymensearch.caption
-msgctxt "trtsearch.traymensearch.caption"
-msgid "Search"
-msgstr ""
-
-#: trtsearch.traymenuabout.caption
-msgctxt "trtsearch.traymenuabout.caption"
-msgid "About"
-msgstr ""
-
-#: trtsearch.traymenunew.caption
-msgctxt "trtsearch.traymenunew.caption"
-msgid "New Note"
-msgstr ""
-
-#: trtsearch.traymenurecent1.caption
-msgctxt "trtsearch.traymenurecent1.caption"
-msgid "MenuItem5"
-msgstr ""
-
-#: trtsearch.traymenurecent10.caption
-msgctxt "trtsearch.traymenurecent10.caption"
-msgid "MenuItem14"
-msgstr ""
-
-#: trtsearch.traymenurecent2.caption
-msgctxt "trtsearch.traymenurecent2.caption"
-msgid "MenuItem6"
-msgstr ""
-
-#: trtsearch.traymenurecent3.caption
-msgctxt "trtsearch.traymenurecent3.caption"
-msgid "MenuItem7"
-msgstr ""
-
-#: trtsearch.traymenurecent4.caption
-msgctxt "trtsearch.traymenurecent4.caption"
-msgid "MenuItem8"
-msgstr ""
-
-#: trtsearch.traymenurecent5.caption
-msgctxt "trtsearch.traymenurecent5.caption"
-msgid "MenuItem9"
-msgstr ""
-
-#: trtsearch.traymenurecent6.caption
-msgctxt "trtsearch.traymenurecent6.caption"
-msgid "MenuItem10"
-msgstr ""
-
-#: trtsearch.traymenurecent7.caption
-msgctxt "trtsearch.traymenurecent7.caption"
-msgid "MenuItem11"
-msgstr ""
-
-#: trtsearch.traymenurecent8.caption
-msgctxt "trtsearch.traymenurecent8.caption"
-msgid "MenuItem12"
-msgstr ""
-
-#: trtsearch.traymenurecent9.caption
-msgctxt "trtsearch.traymenurecent9.caption"
-msgid "MenuItem13"
-msgstr ""
-
 #: tsearchform.buttonclearsearch.caption
-msgctxt "tsearchform.buttonclearsearch.caption"
 msgid "Clear"
 msgstr ""
 
 #: tsearchform.buttonclearsearch.hint
-msgctxt "tsearchform.buttonclearsearch.hint"
 msgid "Clears the search"
 msgstr ""
 
 #: tsearchform.buttonnotebookoptions.caption
-msgctxt "tsearchform.buttonnotebookoptions.caption"
 msgid "Notebook Options"
 msgstr ""
 
 #: tsearchform.buttonnotebookoptions.hint
-msgctxt "tsearchform.buttonnotebookoptions.hint"
 msgid "Manage the Notebooks"
 msgstr ""
 
 #: tsearchform.buttonrefresh.caption
-msgctxt "tsearchform.buttonrefresh.caption"
 msgid "Refresh"
 msgstr ""
 
 #: tsearchform.buttonrefresh.hint
-msgctxt "tsearchform.buttonrefresh.hint"
 msgid "Indexes on disk notes"
 msgstr ""
 
@@ -1012,7 +483,6 @@ msgid "Mode"
 msgstr ""
 
 #: tsearchform.buttonshowallnotes.caption
-msgctxt "tsearchform.buttonshowallnotes.caption"
 msgid "Show All Notes"
 msgstr ""
 
@@ -1026,366 +496,26 @@ msgid "Search"
 msgstr ""
 
 #: tsearchform.menuanycombination.caption
-msgctxt "tsearchform.menuanycombination.caption"
 msgid "Any Combination"
 msgstr ""
 
 #: tsearchform.menucasesensitive.caption
-msgctxt "tsearchform.menucasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 
 #: tsearchform.menudeletenotebook.caption
-msgctxt "tsearchform.menudeletenotebook.caption"
 msgid "Delete Notebook"
 msgstr ""
 
 #: tsearchform.menueditnotebooktemplate.caption
-msgctxt "tsearchform.menueditnotebooktemplate.caption"
 msgid "Edit Notebook Template"
 msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
-msgctxt "tsearchform.menunewnotefromtemplate.caption"
 msgid "Create New Note from Template"
 msgstr ""
 
 #: tsearchform.panel1.caption
-msgctxt "tsearchform.panel1.caption"
 msgid "Panel1"
-msgstr ""
-
-#: tsett.buttdefaultnotedir.caption
-msgid "Use default Notes location"
-msgstr ""
-
-#: tsett.buttdefaultnotedir.hint
-msgid "Will work for many new users"
-msgstr ""
-
-#: tsett.buttonhide.caption
-msgctxt "tsett.buttonhide.caption"
-msgid "Close"
-msgstr ""
-
-#: tsett.buttonhide.hint
-msgid "Unsaved setting will remain for this session only"
-msgstr ""
-
-#: tsett.buttonmanualsnap.caption
-msgid "Take a Manual Snapshot"
-msgstr ""
-
-#: tsett.buttonmanualsnap.hint
-msgid "Take a time stamped snapshot of notes and config"
-msgstr ""
-
-#: tsett.buttonsetdictionary.caption
-msgid "Set Dictionary"
-msgstr ""
-
-#: tsett.buttonsetnotepath.caption
-msgid "Set Path to Note Files"
-msgstr ""
-
-#: tsett.buttonsetnotepath.hint
-msgid "If you have notes somewhere else."
-msgstr ""
-
-#: tsett.buttonsetsnapdir.caption
-msgid "Set Snap Dir"
-msgstr ""
-
-#: tsett.buttonsetspelllibrary.caption
-msgid "Set Spell Library"
-msgstr ""
-
-#: tsett.buttonsetsynserver.caption
-msgid "Change File Sync Repo"
-msgstr ""
-
-#: tsett.buttonshowbackup.caption
-msgid "Show Me"
-msgstr ""
-
-#: tsett.buttonsnapdays.caption
-msgid "Days"
-msgstr ""
-
-#: tsett.buttonsnaprecover.caption
-msgctxt "tsett.buttonsnaprecover.caption"
-msgid "Recover lost Notes"
-msgstr ""
-
-#: tsett.buttonsnaprecover.hint
-msgid "If you have previously taken a snapshot......"
-msgstr ""
-
-#: tsett.buttonsynchelp.caption
-msgctxt "tsett.buttonsynchelp.caption"
-msgid "Help"
-msgstr ""
-
-#: tsett.caption
-msgid "KTomboy-NG Settings"
-msgstr ""
-
-#: tsett.checkanycombination.caption
-msgctxt "tsett.checkanycombination.caption"
-msgid "Any Combination"
-msgstr ""
-
-#: tsett.checkcasesensitive.caption
-msgctxt "tsett.checkcasesensitive.caption"
-msgid "Case Sensitive"
-msgstr ""
-
-#: tsett.checkmanynotebooks.caption
-msgid "Allow a note to be in Multiple Notebooks."
-msgstr ""
-
-#: tsett.checkmanynotebooks.hint
-msgid "This may adversly affect tradional Tomboy, take care."
-msgstr ""
-
-#: tsett.checkshowextlinks.caption
-msgid "Show External  Links"
-msgstr ""
-
-#: tsett.checkshowintlinks.caption
-msgid "Show Internal Links"
-msgstr ""
-
-#: tsett.checkshowsplash.caption
-msgid "Show Splash at Start"
-msgstr ""
-
-#: tsett.checkshowsplash.hint
-msgid "Always shown if error loading notes."
-msgstr ""
-
-#: tsett.checkshowtomdroid.caption
-msgid "Show Tomdroid Sync (experimental)"
-msgstr ""
-
-#: tsett.checksnapenabled.caption
-msgid "Run Auto"
-msgstr ""
-
-#: tsett.checksnapmonthly.caption
-msgid "Monthly"
-msgstr ""
-
-#: tsett.groupbox3.caption
-msgid "  Type  "
-msgstr ""
-
-#: tsett.groupbox4.caption
-msgid "  Options  "
-msgstr ""
-
-#: tsett.groupbox5.caption
-msgid "Font Size"
-msgstr ""
-
-#: tsett.label1.caption
-msgid "Settings will be saved in :"
-msgstr ""
-
-#: tsett.label10.caption
-msgctxt "tsett.label10.caption"
-msgid "Settings"
-msgstr ""
-
-#: tsett.label11.caption
-msgid "AUTO snapshots not implemented yet, use manual !"
-msgstr ""
-
-#: tsett.label12.caption
-msgid "Main Search Box is :"
-msgstr ""
-
-#: tsett.label13.caption
-msgid "Spell Check requires the Hunspell Libraries and"
-msgstr ""
-
-#: tsett.label14.caption
-msgid "an appropriate Hunspell Dictionary set."
-msgstr ""
-
-#: tsett.label15.caption
-msgid "Label15"
-msgstr ""
-
-#: tsett.label2.caption
-msgid "Notes will be looked for and saved in :"
-msgstr ""
-
-#: tsett.label3.caption
-msgid "when a conflict is detected between a local note and"
-msgstr ""
-
-#: tsett.label4.caption
-msgid "a note on the configured synchronisation server :"
-msgstr ""
-
-#: tsett.label5.caption
-msgid "LocalConfig :"
-msgstr ""
-
-#: tsett.label6.caption
-msgid "Backup files are made when you delete a note or the sync system"
-msgstr ""
-
-#: tsett.label7.caption
-msgid "is about to overwrite one. "
-msgstr ""
-
-#: tsett.label8.caption
-msgid "They remain, for ever, unless you do something about them."
-msgstr ""
-
-#: tsett.label9.caption
-msgid "A snaphot is a copy of your current note directory."
-msgstr ""
-
-#: tsett.labeldic.caption
-msgid "LabelDic"
-msgstr ""
-
-#: tsett.labeldicprompt.caption
-msgid "LabelDicPrompt"
-msgstr ""
-
-#: tsett.labeldicstatus.caption
-msgid "LabelDicStatus"
-msgstr ""
-
-#: tsett.labelerror.caption
-msgid "LabelError"
-msgstr ""
-
-#: tsett.labellibrary.caption
-msgid "LabelLibrary"
-msgstr ""
-
-#: tsett.labellibrarystatus.caption
-msgid "LabelLibraryStatus"
-msgstr ""
-
-#: tsett.labellocalconfig.caption
-msgid "LabelLocalConfig"
-msgstr ""
-
-#: tsett.labelnotespath.caption
-msgid "LabelNotesPath"
-msgstr ""
-
-#: tsett.labelsettingpath.caption
-msgid "LabelSettingPath"
-msgstr ""
-
-#: tsett.labelsnapdir.caption
-msgctxt "tsett.labelsnapdir.caption"
-msgid ".... and its not available just yet !"
-msgstr ""
-
-#: tsett.labelwaitforsync.caption
-msgid "LabelWaitForSync"
-msgstr ""
-
-#: tsett.menufriday.caption
-msgid "Friday"
-msgstr ""
-
-#: tsett.menumonday.caption
-msgid "Monday"
-msgstr ""
-
-#: tsett.menusaturday.caption
-msgid "Saturday"
-msgstr ""
-
-#: tsett.menusunday.caption
-msgid "Sunday"
-msgstr ""
-
-#: tsett.menuthursday.caption
-msgid "Thursday"
-msgstr ""
-
-#: tsett.menutuesday.caption
-msgid "Tuesday"
-msgstr ""
-
-#: tsett.menuwednesday.caption
-msgid "Wednesday"
-msgstr ""
-
-#: tsett.panel2.caption
-msgctxt "tsett.panel2.caption"
-msgid "Panel2"
-msgstr ""
-
-#: tsett.radioalwaysask.caption
-msgid "Always ask me what to do."
-msgstr ""
-
-#: tsett.radiofile.caption
-msgid "File Sync using shared drive."
-msgstr ""
-
-#: tsett.radiofontbig.caption
-msgid "Big"
-msgstr ""
-
-#: tsett.radiofontmedium.caption
-msgid "Medium"
-msgstr ""
-
-#: tsett.radiofontsmall.caption
-msgid "Small"
-msgstr ""
-
-#: tsett.radioserver.caption
-msgid "Network Server - not available"
-msgstr ""
-
-#: tsett.radiouselocal.caption
-msgid "Use Local note and overwrite server note."
-msgstr ""
-
-#: tsett.radiouseserver.caption
-msgid "Use server note and rename local one."
-msgstr ""
-
-#: tsett.tabbackup.caption
-msgid "BackUp"
-msgstr ""
-
-#: tsett.tabbasic.caption
-msgid "Basic"
-msgstr ""
-
-#: tsett.tabdisplay.caption
-msgid "Display"
-msgstr ""
-
-#: tsett.tabsnapshot.caption
-msgid "SnapShot"
-msgstr ""
-
-#: tsett.tabspell.caption
-msgctxt "tsett.tabspell.caption"
-msgid "Spell"
-msgstr ""
-
-#: tsett.tabsync.caption
-msgctxt "tsett.tabsync.caption"
-msgid "Sync"
-msgstr ""
-
-#: tsett.timeedit1.text
-msgid "TimeEdit1"
 msgstr ""
 

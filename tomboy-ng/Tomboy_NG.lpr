@@ -18,7 +18,7 @@ uses
 {$R *.res}
 
 begin
-	Application.Title:='tomboy-ng';
+  Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
     Application.CreateForm(TMainForm, MainForm);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="11"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -195,6 +195,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
@@ -230,6 +231,7 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <DebugInfoType Value="dsDwarf2Set"/>
               <UseHeaptrc Value="True"/>
             </Debugging>
             <Options>
@@ -239,7 +241,7 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="/usr/bin/fpc"/>
+            <CompilerPath Value="/usr/local/bin/fpc"/>
           </Other>
         </CompilerOptions>
       </Item7>
@@ -287,12 +289,12 @@
     <PublishOptions>
       <Version Value="2"/>
       <DestinationDirectory Value="$(ProjPath)/published/"/>
-      <IncludeFileFilter Value="*.(pas|pp|inc|lpr|lfm|lrs|lpi|lpk|xml|sh|txt)"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <FormatVersion Value="1"/>
-      </local>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
@@ -433,6 +435,7 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <DebugInfoType Value="dsDwarf2Set"/>
         <UseHeaptrc Value="True"/>
       </Debugging>
       <Options>

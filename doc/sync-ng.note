@@ -3,7 +3,7 @@
   <title>tomboy-ng sync</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng sync</underline>
 
-<italic>This about file syncing between Linux, Windows and Mac computers. See a separate document that talks about syncing to Tomdroid.</italic>
+<italic>This is about file syncing between Linux, Windows and Mac computers. See a separate document that talks about syncing to Tomdroid.</italic>
  
 Synchronising your tomboy-ng (and/or Tomboy) notes can be a very useful thing. Do it properly and all your notes on all your computers are the same. And you have a backup strategy for your note too !  Remember that the value of syncing is closely related to how often you do it !
  
@@ -40,8 +40,8 @@ Secondly, please try starting tomboy-ng from the command line. While its running
 
 
 </note-content></text>
-  <last-change-date>2018-12-13T14:42:15.0510000+11:00</last-change-date>
-  <last-metadata-change-date>2018-12-13T14:42:15.0510000+11:00</last-metadata-change-date>
+  <last-change-date>2019-01-29T22:47:32.8910000+11:00</last-change-date>
+  <last-metadata-change-date>2019-01-29T22:47:32.8910000+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

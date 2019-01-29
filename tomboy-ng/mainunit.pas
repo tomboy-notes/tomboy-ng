@@ -113,6 +113,20 @@ type
         Label8: TLabel;
         LabelNotesFound: TLabel;
         MainMenu1: TMainMenu;
+        MenuHelp: TMenuItem;
+        TrayHelpCalc: TMenuItem;
+        TrayHelpTomboy: TMenuItem;
+        TrayHelpKeyShortcuts: TMenuItem;
+        TrayHelpRecover: TMenuItem;
+        TrayHelpSync: TMenuItem;
+        TrayHelpTomdroid: TMenuItem;
+        MenuItemHelp: TMenuItem;
+        MMHelpTomdroid: TMenuItem;
+        MMHelpCalc: TMenuItem;
+        MMHelpTomboy: TMenuItem;
+        MMHelpKeyShortcuts: TMenuItem;
+        MMHelpRecover: TMenuItem;
+        MMHelpSync: TMenuItem;
         TrayMenuTomdroid: TMenuItem;
         MMRecent1: TMenuItem;
         MMRecent8: TMenuItem;
@@ -161,6 +175,7 @@ type
         procedure FormCreate(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure FormShow(Sender: TObject);
+        procedure MMHelpTomboyClick(Sender: TObject);
         procedure MMAboutClick(Sender: TObject);
         procedure MMNewNoteClick(Sender: TObject);
         procedure MMQuitClick(Sender: TObject);
@@ -237,7 +252,7 @@ begin
             if ViewerMode then
                 EBox.SetReadOnly(False);
             EBox.ShowModal;
-            except on E: Exception do debugln('!!! EXCEPTION - ' + E.Message);
+            except on E: Exception do begin debugln('!!! EXCEPTION - ' + E.Message); showmessage(E.Message); end;
             end;
         finally
             try
@@ -245,12 +260,15 @@ begin
             except on E: Exception do debugln('!!! EXCEPTION - What ? no FreeAndNil ?' + E.Message);
             end;
         end;
-    end else
+    end else begin
         DebugLn('Sorry, cannot find that directory [' + ExtractFilePath(FullFileName) + ']');
+        showmessage('Sorry, cannot find that directory [' + ExtractFilePath(FullFileName) + ']');
+    end;
     if CloseOnExit then Close;      // we also use singlenotemode internally in several places
 end;
 
 Procedure TMainForm.ShowHelpNote(HelpNoteName : string);
+          // cp doc/*.note tomboy-ng/tomboy-ng.app/Contents/Resources/.
 var
     DocsDir : string;
 begin
@@ -261,7 +279,9 @@ begin
     //DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/';
     {$endif}  // untested
     // showmessage('About to open ' + DocsDir + 'recover.note');
-    SingleNoteMode(DocsDir + HelpNoteName, False, True);
+    if FileExists(DocsDir + HelpNoteName) then
+       SingleNoteMode(DocsDir + HelpNoteName, False, True)
+    else showmessage('Unable to find ' + DocsDir + HelpNoteName);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -272,6 +292,7 @@ var
     LongOpts : array [1..10] of string = ('debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
+
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
         exit;       // otherwise we execute rest of this method before closing.
@@ -288,6 +309,7 @@ begin
     Left := 10;
     Top := 40;
     if Application.HasOption('o', 'open-note') then begin
+        //showmessage('Single note mode');
         SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
         exit();
     end;
@@ -332,6 +354,22 @@ begin
             Label7.Hint:='Are you trying to shut me down ? Dave ?';
             Label8.Hint := Label7.Hint;
         end;
+    end;
+end;
+
+
+
+
+// General response method to catch Menu Help click
+procedure TMainForm.MMHelpTomboyClick(Sender: TObject);
+begin
+    case TMenuItem(Sender).Name of
+         'MMHelpTomboy', 'TrayHelpTomboy'     :  ShowHelpNote('tomboy-ng.note');
+         'MMHelpKeyShortcuts', 'TrayHelpKeyShortcuts' : ShowHelpNote('key-shortcuts.note');
+         'MMHelpRecover', 'TrayHelpRecover'   :  ShowHelpNote('recover.note');
+         'MMHelpSync', 'TrayHelpSync'         :  ShowHelpNote('sync-ng.note');
+         'MMHelpCalc', 'TrayHelpCalc'         :  ShowHelpNote('calculator.note');
+         'MMHelpTomdroid', 'TrayHelpTomdroid' :  ShowHelpNote('tomdroid.note');
     end;
 end;
 

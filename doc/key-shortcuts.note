@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>tomboy-ng Keyboard Shortcuts</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Keyboard Shortcuts</underline><size:large>
+
+
+<bold>All Platforms</bold></size:large>
+<list><list-item dir="ltr">Alt-RightArrow : Turn a bullet point on.</list-item></list>
+<list><list-item dir="ltr">Alt-LeftArrow : Turn a bullet point off.</list-item></list>
+<list><list-item dir="ltr">Control-1 : Small Font</list-item></list>
+<list><list-item dir="ltr">Control-2 : normal font</list-item></list>
+<list><list-item dir="ltr">Control-3 : large font</list-item></list>
+<list><list-item dir="ltr">Control-4 : huge font</list-item></list><size:large>
+
+<bold>Windows / Linux</bold></size:large>
+<list><list-item dir="ltr">Control-X : Cut the selected text and copy it to the Clipboard.</list-item></list>
+<list><list-item dir="ltr">Control-C : Copy the selected text to the Clipboard. </list-item></list>
+<list><list-item dir="ltr">Control-V : Paste the contents of the Clipboard into the current note.</list-item></list>
+<list><list-item dir="ltr">Control-A : Select All items.</list-item></list>
+<list><list-item dir="ltr">Control-F : Open a Find window.</list-item></list>
+<list><list-item dir="ltr">Control-RightArrow : move word to the right.</list-item></list>
+<list><list-item dir="ltr">Control-LeftArrow : move word to the left.</list-item></list>
+
+<list><list-item dir="ltr">Control-B : Bold</list-item></list>
+<list><list-item dir="ltr">Control-I : Italics</list-item></list>
+<list><list-item dir="ltr">Control-S : Strikeout</list-item></list>
+<list><list-item dir="ltr">Control-U : Underline</list-item></list>
+<list><list-item dir="ltr">Control-H : Highlight</list-item></list>
+<list><list-item dir="ltr">Control-E : Expression calculator - see Calculator help note</list-item></list><size:large>
+
+<bold>Mac</bold></size:large>
+<italic>(Where Option key is also the Alt key)</italic>
+<list><list-item dir="ltr">Command-X : Cut the selected text and copy it to the Clipboard.</list-item></list>
+<list><list-item dir="ltr">Command-C : Copy the selected text to the Clipboard. </list-item></list>
+<list><list-item dir="ltr">Command-V : Paste the contents of the Clipboard into the current note.</list-item></list>
+<list><list-item dir="ltr">Command-A : Select All items.</list-item></list>
+<list><list-item dir="ltr">Command-F : Open a Find window.</list-item></list>
+<list><list-item dir="ltr">Command-RightArrow : go to end of line.</list-item></list>
+<list><list-item dir="ltr">Command-LeftArrow : go to start of line.</list-item></list>
+
+<list><list-item dir="ltr">Command-B : Bold</list-item></list>
+<list><list-item dir="ltr">Command-I : Italics</list-item></list>
+<list><list-item dir="ltr">Command-S : Strikeout</list-item></list>
+<list><list-item dir="ltr">Command-U : Underline</list-item></list>
+<list><list-item dir="ltr">Command-E : Expression calculator - see Calculator help note</list-item></list>
+<list><list-item dir="ltr">Option-H : Highlight</list-item></list>
+
+
+</note-content></text>
+  <last-change-date>2019-01-29T22:13:21.8790000+11:00</last-change-date>
+  <last-metadata-change-date>2019-01-29T22:13:21.8790000+11:00</last-metadata-change-date>
+  <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>

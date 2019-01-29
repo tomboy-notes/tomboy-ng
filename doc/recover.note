@@ -3,17 +3,17 @@
   <title>Recovering Lost Notes</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>Recovering Lost Notes</underline>
 
-If you are reading this, odds are you are worried ! So, first bit of advice is <size:huge>
-<italic><bold>don't panic</bold></italic></size:huge><size:small><italic><bold> (1)</bold></italic></size:small>
-Its quite possible we can help you. That will depend on whats happened and if you have enabled auto snapshots (or took a manual one recently). Firstly, don't do a sync. Thats to prevent bad data replacing what might be good data currently not obvious to you. Next,  take small steps.
+If you are reading this, odds are you are worried ! So, first bit of advice is <size:large>
+<italic><bold>don't panic</bold></italic></size:large><size:small><italic><bold> (1)</bold></italic></size:small>
+Its quite possible we can help you. That will depend on whats happened and if you have enabled auto snapshots (or took a manual one recently). Firstly, don't do a sync, it could replace good data with bad. Next,  take small steps.
 
 Lets look at the possibilities -<size:large>
 
 <bold>I (or the sync) deleted a note I need</bold></size:large>
-That just might be easy. We keep a backup copy of every note you manually delete or is overwritten during a sync. But only one copy so if its been synced and overwritten again, its gone. Check by going back to the BackUp tab, click "Show Me", browse through the old notes there and and double click a likely candidate. You get a dialog that lets you view, delete or recover that note.<size:large>
+That just might be easy. We keep a backup copy of every note you manually delete or is overwritten during a sync. But only one copy so if its been synced and overwritten again, its gone. Check by going back to the BackUp tab, click "Show Me", browse through the old notes there and double click a likely candidate. You'll get a dialog that lets you view, delete or recover that note.<size:large>
 
 <bold>I have a corrupted note.</bold></size:large>
-When you start tomboy-ng up, you see a warning about an inability to index a note. That probably means the note's XML has somehow become corrupted <size:small>(2)</size:small>. The indexing mechanism in tomboy-ng is deliberately very strict in what it will accept, it errors if one field is unobtainable. However, depending on where the XML error in the note is, you can open it, decide if what you see is a good compromise and save it back with rewritten XML.   
+When you start tomboy-ng, you see a warning about an inability to index a note. That probably means the note's XML has somehow become corrupted <size:small>(2)</size:small>. The indexing mechanism in tomboy-ng is deliberately very strict in what it will accept, it errors if one field is unobtainable. However, depending on where the XML error in the note is, you may be able to open it, decide if what you see is a good compromise and save it with rewritten XML.   
 
 <bold>To try this quick fix, you should -</bold>
 <list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost notes". </list-item></list>
@@ -43,8 +43,8 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 
 
 </note-content></text>
-  <last-change-date>2018-12-06T15:46:27.0080000+11:00</last-change-date>
-  <last-metadata-change-date>2018-12-06T15:46:27.0080000+11:00</last-metadata-change-date>
+  <last-change-date>2019-01-29T22:43:57.1520000+11:00</last-change-date>
+  <last-metadata-change-date>2019-01-29T22:43:57.1520000+11:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

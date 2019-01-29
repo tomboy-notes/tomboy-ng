@@ -6,7 +6,7 @@
 Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of weeks now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences.<size:large>
 
 <bold>Background</bold></size:large>
-As a standalone app, <monospace>Tomdroid</monospace> works well enough but when synced to your notes  on a PC or Laptop, it really shines.  Tomdroid was built back in the Tomboy family's glory days. It worked fine doing a network sync with the Ubuntu One cloud service (although that may have been before we used that term). However, that service was withdrawn and Tomdroid  network users needed to provide their own Sync facilities. That means either running a Rainy server at home or setting up a grauphel  system. Not a trivial exercise.
+As a standalone app, <monospace>Tomdroid</monospace> works well enough but when synced to your notes  on a PC or Laptop, it really shines.  Tomdroid was built back in the Tomboy family's glory days. It worked fine doing a network sync with the Ubuntu One cloud service (although that may have been before we used that term). However, that service was withdrawn and Tomdroid  network users needed to provide their own Sync facilities. That means either running a Rainy server at home or setting up a grauphel  system. Neither is a trivial exercise.
 
 However, tomboy-ng  does not do network sync. Tomboy-ng does do a file based sync where a shared file service is visible to all parties.  Its quick and relatively simple but Tomdroid cannot be part of such a system. <size:large>
 
@@ -39,7 +39,10 @@ When it finishes (and all makes sense), click the Save button.  Now, back on you
 
 <bold>Routine Sync</bold></size:large>
 Important that this process be followed at each sync.
-<list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid Open sshdroid, noting the device's IP address.From within tomboy-ng, click Tomdroid Sync, choose a profile.Click the Sync button. Wait until finished.Back on the device, close sshdroid and open Tomdroid Touch the Tomdroid Sync button.</list-item></list><size:large>
+<list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid.  </list-item></list>
+<list><list-item dir="ltr">Open sshdroid, noting the device's IP address.</list-item></list>
+<list><list-item dir="ltr">From within tomboy-ng, click Tomdroid Sync, choose a profile.Click the Sync button. Wait until finished. </list-item></list>
+<list><list-item dir="ltr">Back on the device, close sshdroid and open Tomdroid. Touch the Tomdroid Sync button.</list-item></list><size:large>
 
 <bold>Security</bold></size:large>
 Important issue !  This approach has some weaknesses but if used as intended, I believe they are not significant. Here they are -
@@ -85,8 +88,8 @@ In both cases, once we have a full view of  what needs to happen, we do it. Firs
 
 
 </note-content></text>
-  <last-change-date>2018-12-06T18:27:11.0300000+11:00</last-change-date>
-  <last-metadata-change-date>2018-12-06T18:27:11.0300000+11:00</last-metadata-change-date>
+  <last-change-date>2019-01-29T23:01:27.5660000+11:00</last-change-date>
+  <last-metadata-change-date>2019-01-29T23:01:27.5660000+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

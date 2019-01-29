@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 594
+  Left = 478
   Height = 342
-  Top = 323
+  Top = 176
   Width = 724
   Caption = 'SearchForm'
   ClientHeight = 342
@@ -12,13 +12,13 @@ object SearchForm: TSearchForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.3'
   object Edit1: TEdit
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = ButtonSearchMode
     Left = 3
-    Height = 27
-    Top = 6
+    Height = 22
+    Top = 8
     Width = 416
     Anchors = [akLeft, akRight]
     BorderSpacing.Left = 3
@@ -74,12 +74,12 @@ object SearchForm: TSearchForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 309
-    Top = 33
+    Height = 312
+    Top = 30
     Width = 724
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel1'
-    ClientHeight = 309
+    ClientHeight = 312
     ClientWidth = 724
     TabOrder = 3
     object Splitter1: TSplitter
@@ -87,7 +87,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 152
-      Height = 307
+      Height = 310
       Top = 1
       Width = 5
       Align = alNone
@@ -100,7 +100,7 @@ object SearchForm: TSearchForm
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = ButtonNotebookOptions
       Left = 1
-      Height = 258
+      Height = 261
       Top = 25
       Width = 151
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -133,7 +133,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 160
-      Height = 304
+      Height = 307
       Top = 1
       Width = 560
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -186,7 +186,7 @@ object SearchForm: TSearchForm
       Left = -8
       Height = 25
       Hint = 'Manage the Notebooks'
-      Top = 283
+      Top = 286
       Width = 160
       Anchors = [akLeft, akRight, akBottom]
       Caption = 'Notebook Options'

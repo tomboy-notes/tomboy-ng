@@ -20,8 +20,8 @@ WORK=source_folder
 CONTENTS="$WORK/""$PRODUCT".app/Contents
 VERSION=`cat version`
 LAZ_DIR=fixes_2_0
-MANUALS="recover.note tomdroid.note sync-ng.note tomboy-ng.note"
-
+#MANUALS="recover.note tomdroid.note sync-ng.note tomboy-ng.note"
+MANUALS=`cat note-files`
 
 cd ../"$PRODUCT"
 # lazbuild -vm5024 --pcp=~/.laz-svn -B --compiler=ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi

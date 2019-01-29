@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>tomboy-ng Calculator</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Calculator</underline>
+
+Versions of tomboy-ng after V0.20 include an expression calculator. It has three basic modes, all activated by pressing Ctrl-E (or Cmd-E on the Mac)  -
+
+
+<list><list-item dir="ltr"><bold>Simple Calc Mode, </bold>you type for example, 6+10= and press Ctrl-E, tomboy-ng will fill in '16' after the equals sign. This will work with any basic numerical calculations, (5*7)/(8.3+12)-0.724=<bold>1.000</bold>  In this mode, you can use  numerals, curved brackets, decimal points and the basic operators, + - / * and ^ (ie power).</list-item></list>
+<list><list-item dir="ltr"><bold>Complex Calc Mode,</bold> if you need to use, say trig functions, the Simple Calc won't find your full expression. So, type the expression, select it and, again, press Ctrl-E. Similar result.  In this mode you can use the above mentioned plus pi cos sin tan arctan abs sqr sqrt exp ln log frac int round and trunc. eg sin(0.5)^2 + cos(0.5)^2 =<bold>1</bold></list-item></list><bold>
+</bold><list><list-item dir="ltr"><bold>Column Mode,</bold> will add up a column of numbers in the lines above it.  'A column', in this case means all the numbers that appear at either the beginning of the lines or end of the lines. If there are numbers at both beginning and end of  lines, the longer column takes precedence.  The first line encounted that does not have a number at the appropriate end stops the column count. You can stop a number being considered by 'hiding' it with an alpha char and, then remove that character  after doing the calc. Only numerals and the decimal point are allowed in this mode.</list-item></list>
+
+Home to Axedale 5.5
+Axedale to Bendigo 19
+Bendigo to home via O'Briens Road 23
+round trip is <bold>47.500</bold>
+
+5 some text 7
+1 more text 
+3 blah 4
+<bold>9</bold>
+
+In the above example, the left column is used, it has three eligible numbers, the right column only has one, the '4', there is no number at the end of the "1 more text" line.
+
+The expression parser converts to using floating point numbers where necessary and displays its output with 3 digits after the decimal point. <italic>It would be easy to add a more flexible model here, one that suppresses trailing zeros and switched to scientific notation if there appears any demand for it. (see floattostrf()). That and the number of decimal places could become config options ?  </italic>
+
+Note in the examples above, I have manually bolded the answers for clarity, it does not happen automatically.
+
+ 
+
+
+
+</note-content></text>
+  <last-change-date>2019-01-29T19:35:51.9370000+11:00</last-change-date>
+  <last-metadata-change-date>2019-01-29T19:35:51.9370000+11:00</last-metadata-change-date>
+  <create-date>2019-01-15T21:32:06.9620000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>
