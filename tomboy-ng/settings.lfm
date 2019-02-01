@@ -12,7 +12,7 @@ object Sett: TSett
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.0.3'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabSync
+    ActivePage = TabBackUp
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -136,8 +136,8 @@ object Sett: TSett
         Top = 24
         Width = 178
         Caption = 'Font Size'
-        ClientHeight = 109
-        ClientWidth = 174
+        ClientHeight = 106
+        ClientWidth = 170
         TabOrder = 0
         object RadioFontBig: TRadioButton
           Left = 16
@@ -215,7 +215,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 336
+      ClientHeight = 332
       ClientWidth = 519
       object GroupBox3: TGroupBox
         Left = 8
@@ -223,14 +223,14 @@ object Sett: TSett
         Top = 6
         Width = 504
         Caption = '  Type  '
-        ClientHeight = 47
-        ClientWidth = 500
+        ClientHeight = 44
+        ClientWidth = 496
         TabOrder = 0
         object RadioFile: TRadioButton
           Left = 56
-          Height = 22
+          Height = 18
           Top = 0
-          Width = 209
+          Width = 194
           Caption = 'File Sync using shared drive.'
           Checked = True
           TabOrder = 0
@@ -238,16 +238,16 @@ object Sett: TSett
         end
         object RadioServer: TRadioButton
           Left = 56
-          Height = 22
+          Height = 18
           Top = 24
-          Width = 225
+          Width = 203
           Caption = 'Network Server - not available'
           Enabled = False
           TabOrder = 1
         end
         object ButtonSyncHelp: TButton
-          Left = 425
-          Height = 47
+          Left = 421
+          Height = 44
           Top = 0
           Width = 75
           Align = alRight
@@ -262,30 +262,30 @@ object Sett: TSett
         Top = 192
         Width = 504
         Caption = '  Options  '
-        ClientHeight = 117
-        ClientWidth = 500
+        ClientHeight = 114
+        ClientWidth = 496
         TabOrder = 1
         object Label3: TLabel
           Left = 40
-          Height = 17
+          Height = 16
           Top = 8
-          Width = 347
+          Width = 330
           Caption = 'when a conflict is detected between a local note and'
           ParentColor = False
         end
         object Label4: TLabel
           Left = 40
-          Height = 17
+          Height = 16
           Top = 24
-          Width = 323
+          Width = 311
           Caption = 'a note on the configured synchronisation server :'
           ParentColor = False
         end
         object RadioAlwaysAsk: TRadioButton
           Left = 8
-          Height = 22
+          Height = 18
           Top = 48
-          Width = 200
+          Width = 181
           Caption = 'Always ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -293,17 +293,17 @@ object Sett: TSett
         end
         object RadioUseLocal: TRadioButton
           Left = 9
-          Height = 22
+          Height = 18
           Top = 70
-          Width = 301
+          Width = 272
           Caption = 'Use Local note and overwrite server note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 9
-          Height = 22
+          Height = 18
           Top = 92
-          Width = 277
+          Width = 253
           Caption = 'Use server note and rename local one.'
           TabOrder = 2
         end
@@ -319,17 +319,17 @@ object Sett: TSett
       end
       object Label5: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 144
-        Width = 86
+        Width = 82
         Caption = 'LocalConfig :'
         ParentColor = False
       end
       object LabelLocalConfig: TLabel
         Left = 16
-        Height = 17
+        Height = 16
         Top = 160
-        Width = 116
+        Width = 107
         Caption = 'LabelLocalConfig'
         ParentColor = False
       end
@@ -342,16 +342,16 @@ object Sett: TSett
       end
       object LabelWaitForSync: TLabel
         Left = 272
-        Height = 17
+        Height = 16
         Top = 88
-        Width = 122
+        Width = 109
         Caption = 'LabelWaitForSync'
         ParentColor = False
       end
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 336
+      ClientHeight = 332
       ClientWidth = 519
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -368,25 +368,25 @@ object Sett: TSett
         TabOrder = 0
         object Label6: TLabel
           Left = 33
-          Height = 17
+          Height = 16
           Top = 33
-          Width = 428
+          Width = 411
           Caption = 'Backup files are made when you delete a note or the sync system'
           ParentColor = False
         end
         object Label7: TLabel
           Left = 32
-          Height = 17
+          Height = 16
           Top = 52
-          Width = 175
+          Width = 166
           Caption = 'is about to overwrite one. '
           ParentColor = False
         end
         object Label8: TLabel
           Left = 32
-          Height = 17
+          Height = 16
           Top = 72
-          Width = 396
+          Width = 383
           Caption = 'They remain, for ever, unless you do something about them.'
           ParentColor = False
         end
@@ -409,12 +409,12 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 186
+        Height = 182
         Top = 150
         Width = 519
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 186
+        ClientHeight = 182
         ClientWidth = 519
         TabOrder = 1
         object StringGridBackUp: TStringGrid
@@ -425,7 +425,7 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 184
+          Height = 180
           Top = 1
           Width = 517
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -641,9 +641,7 @@ object Sett: TSett
         Width = 133
         ItemHeight = 0
         OnClick = ListBoxDicClick
-        ScrollWidth = 131
         TabOrder = 0
-        TopIndex = -1
       end
       object LabelDicPrompt: TLabel
         Left = 376
@@ -694,9 +692,9 @@ object Sett: TSett
   end
   object Label15: TLabel
     Left = 168
-    Height = 17
+    Height = 16
     Top = 384
-    Width = 53
+    Width = 50
     Caption = 'Label15'
     ParentColor = False
   end

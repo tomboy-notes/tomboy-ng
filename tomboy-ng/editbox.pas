@@ -171,6 +171,9 @@ unit EditBox;
     2019/01/16  Tidy up of float display
     2019/01/17  Added tan() to list of functions in Calc, go public with Ctrl1,2,3,4
     2019/01/19  Can tolerate, in places, an imageblock
+    2019/02/01  ButtLinkClick() now provides a template name iff current note is a Notebook Member.
+                However, its the first notebook listed, if user has allowed multiple
+                notebooks per note, maybe not what they want. Maybe a selection list ?
 }
 
 
@@ -395,7 +398,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     //LCLType,			// For the MessageBox
     keditcommon,        // Holds some editing defines
     settings,			// User settings and some defines used across units.
-    SearchUnit,              // Is the main starting unit and the search tool.
+    SearchUnit,         // Is the main starting unit and the search tool.
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
 	LoadNote,           // Will know how to load a Tomboy formatted note.
     {SyncGUI,}
@@ -451,6 +454,7 @@ procedure TEditBoxForm.ButtLinkClick(Sender: TObject);
 var
     ThisTitle : ANSIString;
     Index : integer;
+    SL : TStringList;
 begin
    if KMemo1.ReadOnly then exit();
 	if KMemo1.Blocks.RealSelLength > 1 then begin
@@ -465,8 +469,13 @@ begin
 		end;
 		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
         if UTF8Length(ThisTitle) > 1 then begin
-        	SearchForm.OpenNote(ThisTitle);
+            SL := TStringList.Create;
+            SearchForm.NoteLister.GetNotebooks(SL, ExtractFileNameOnly(NoteFileName));      // that should be just ID
+            if SL.Count > 0 then
+                SearchForm.OpenNote(ThisTitle, '', SL.Strings[0])
+        	else SearchForm.OpenNote(ThisTitle);
             KMemo1Change(self);
+            SL.Free;
 		end;
 	end;
 end;
@@ -1694,6 +1703,8 @@ var
     EndDone : boolean = False;
 begin
     repeat
+        CalcStrStart := '';
+        CalcStrEnd := '';
         TheLine := PreviousParagraphText(Index);
         FindNumbersInString(TheLine, AtStart, AtEnd);
         //debugln('Scanned string [' + TheLine + '] and found [' + AtStart + '] and [' + atEnd + ']');

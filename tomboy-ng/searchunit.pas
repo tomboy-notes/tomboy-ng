@@ -85,6 +85,7 @@ unit SearchUnit;
     2018/11/04  Added ProcessSyncUpdates to keep in memory model in line with on disk and recently used list
     2018/11/25  Now uses Sync.DeleteFromLocalManifest(), called when a previously synced not is deleted, TEST !
     2018/12/29  Small improvements in time to save a file.
+    2019/02/01  OpenNote() now assignes a new note to the notebook if one is open (ie ButtonNotebookOptions is enabled)
 }
 
 {$mode objfpc}{$H+}
@@ -555,9 +556,10 @@ begin
         end;
     end;
     // if to here, we need open a new window. If Filename blank, its a new note
+    if (NoteFileName = '') and (NoteTitle ='') and ButtonNoteBookOptions.Enabled then  // a new note with notebook selected.
+       TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 	EBox := TEditBoxForm.Create(Application);
     EBox.NoteTitle:= NoteTitle;
-
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
     EBox.Top := Placement + random(Placement*2);
@@ -566,7 +568,7 @@ begin
     EBox.Dirty := False;
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
     exit();
-
+    showmessage('Executing unexecutable code - TSearchForm.OpenNote()');          // code below here needs be removed Feb 2019 ??
 	if NoteTitle <> '' then begin  			// We have a title
 	        if FullFileName = '' then begin         // but no filename ?
 	            if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
@@ -608,9 +610,10 @@ end;
 procedure TSearchForm.ButtonShowAllNotesClick(Sender: TObject);
 begin
         ButtonNotebookOptions.Enabled := False;
+        StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
         UseList();
         StringGridNoteBooks.Hint := '';
-        StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
+        StringGrid1.AutoSizeColumns;
 end;
 
 procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);

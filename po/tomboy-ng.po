@@ -236,6 +236,7 @@ msgid "MenuHelp"
 msgstr ""
 
 #: tmainform.menuitemhelp.caption
+msgctxt "tmainform.menuitemhelp.caption"
 msgid "Help"
 msgstr ""
 
@@ -346,6 +347,7 @@ msgid "Settings"
 msgstr ""
 
 #: tmainform.mmsync.caption
+msgctxt "tmainform.mmsync.caption"
 msgid "Sync"
 msgstr ""
 
@@ -496,10 +498,12 @@ msgid "Search"
 msgstr ""
 
 #: tsearchform.menuanycombination.caption
+msgctxt "tsearchform.menuanycombination.caption"
 msgid "Any Combination"
 msgstr ""
 
 #: tsearchform.menucasesensitive.caption
+msgctxt "tsearchform.menucasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 
@@ -517,5 +521,334 @@ msgstr ""
 
 #: tsearchform.panel1.caption
 msgid "Panel1"
+msgstr ""
+
+#: tsett.buttdefaultnotedir.caption
+msgid "Use default Notes location"
+msgstr ""
+
+#: tsett.buttdefaultnotedir.hint
+msgid "Will work for many new users"
+msgstr ""
+
+#: tsett.buttonhide.caption
+msgid "Close"
+msgstr ""
+
+#: tsett.buttonhide.hint
+msgid "Unsaved setting will remain for this session only"
+msgstr ""
+
+#: tsett.buttonmanualsnap.caption
+msgid "Take a Manual Snapshot"
+msgstr ""
+
+#: tsett.buttonmanualsnap.hint
+msgid "Take a time stamped snapshot of notes and config"
+msgstr ""
+
+#: tsett.buttonsetdictionary.caption
+msgid "Set Dictionary"
+msgstr ""
+
+#: tsett.buttonsetnotepath.caption
+msgid "Set Path to Note Files"
+msgstr ""
+
+#: tsett.buttonsetnotepath.hint
+msgid "If you have notes somewhere else."
+msgstr ""
+
+#: tsett.buttonsetsnapdir.caption
+msgid "Set Snap Dir"
+msgstr ""
+
+#: tsett.buttonsetspelllibrary.caption
+msgid "Set Spell Library"
+msgstr ""
+
+#: tsett.buttonsetsynserver.caption
+msgid "Change File Sync Repo"
+msgstr ""
+
+#: tsett.buttonshowbackup.caption
+msgid "Show Me"
+msgstr ""
+
+#: tsett.buttonsnapdays.caption
+msgid "Days"
+msgstr ""
+
+#: tsett.buttonsnaprecover.caption
+msgid "Recover lost Notes"
+msgstr ""
+
+#: tsett.buttonsnaprecover.hint
+msgid "If you have previously taken a snapshot......"
+msgstr ""
+
+#: tsett.buttonsynchelp.caption
+msgctxt "tsett.buttonsynchelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tsett.caption
+msgid "KTomboy-NG Settings"
+msgstr ""
+
+#: tsett.checkanycombination.caption
+msgctxt "tsett.checkanycombination.caption"
+msgid "Any Combination"
+msgstr ""
+
+#: tsett.checkcasesensitive.caption
+msgctxt "tsett.checkcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
+#: tsett.checkmanynotebooks.caption
+msgid "Allow a note to be in Multiple Notebooks."
+msgstr ""
+
+#: tsett.checkmanynotebooks.hint
+msgid "This may adversly affect tradional Tomboy, take care."
+msgstr ""
+
+#: tsett.checkshowextlinks.caption
+msgid "Show External  Links"
+msgstr ""
+
+#: tsett.checkshowintlinks.caption
+msgid "Show Internal Links"
+msgstr ""
+
+#: tsett.checkshowsplash.caption
+msgid "Show Splash at Start"
+msgstr ""
+
+#: tsett.checkshowsplash.hint
+msgid "Always shown if error loading notes."
+msgstr ""
+
+#: tsett.checkshowtomdroid.caption
+msgid "Show Tomdroid Sync (experimental)"
+msgstr ""
+
+#: tsett.checksnapenabled.caption
+msgid "Run Auto"
+msgstr ""
+
+#: tsett.checksnapmonthly.caption
+msgid "Monthly"
+msgstr ""
+
+#: tsett.groupbox3.caption
+msgid "  Type  "
+msgstr ""
+
+#: tsett.groupbox4.caption
+msgid "  Options  "
+msgstr ""
+
+#: tsett.groupbox5.caption
+msgid "Font Size"
+msgstr ""
+
+#: tsett.label1.caption
+msgid "Settings will be saved in :"
+msgstr ""
+
+#: tsett.label10.caption
+msgctxt "tsett.label10.caption"
+msgid "Settings"
+msgstr ""
+
+#: tsett.label11.caption
+msgid "AUTO snapshots not implemented yet, use manual !"
+msgstr ""
+
+#: tsett.label12.caption
+msgid "Main Search Box is :"
+msgstr ""
+
+#: tsett.label13.caption
+msgid "Spell Check requires the Hunspell Libraries and"
+msgstr ""
+
+#: tsett.label14.caption
+msgid "an appropriate Hunspell Dictionary set."
+msgstr ""
+
+#: tsett.label15.caption
+msgid "Label15"
+msgstr ""
+
+#: tsett.label2.caption
+msgid "Notes will be looked for and saved in :"
+msgstr ""
+
+#: tsett.label3.caption
+msgid "when a conflict is detected between a local note and"
+msgstr ""
+
+#: tsett.label4.caption
+msgid "a note on the configured synchronisation server :"
+msgstr ""
+
+#: tsett.label5.caption
+msgid "LocalConfig :"
+msgstr ""
+
+#: tsett.label6.caption
+msgid "Backup files are made when you delete a note or the sync system"
+msgstr ""
+
+#: tsett.label7.caption
+msgid "is about to overwrite one. "
+msgstr ""
+
+#: tsett.label8.caption
+msgid "They remain, for ever, unless you do something about them."
+msgstr ""
+
+#: tsett.label9.caption
+msgid "A snaphot is a copy of your current note directory."
+msgstr ""
+
+#: tsett.labeldic.caption
+msgid "LabelDic"
+msgstr ""
+
+#: tsett.labeldicprompt.caption
+msgid "LabelDicPrompt"
+msgstr ""
+
+#: tsett.labeldicstatus.caption
+msgid "LabelDicStatus"
+msgstr ""
+
+#: tsett.labelerror.caption
+msgid "LabelError"
+msgstr ""
+
+#: tsett.labellibrary.caption
+msgid "LabelLibrary"
+msgstr ""
+
+#: tsett.labellibrarystatus.caption
+msgid "LabelLibraryStatus"
+msgstr ""
+
+#: tsett.labellocalconfig.caption
+msgid "LabelLocalConfig"
+msgstr ""
+
+#: tsett.labelnotespath.caption
+msgid "LabelNotesPath"
+msgstr ""
+
+#: tsett.labelsettingpath.caption
+msgid "LabelSettingPath"
+msgstr ""
+
+#: tsett.labelsnapdir.caption
+msgid ".... and its not available just yet !"
+msgstr ""
+
+#: tsett.labelwaitforsync.caption
+msgid "LabelWaitForSync"
+msgstr ""
+
+#: tsett.menufriday.caption
+msgid "Friday"
+msgstr ""
+
+#: tsett.menumonday.caption
+msgid "Monday"
+msgstr ""
+
+#: tsett.menusaturday.caption
+msgid "Saturday"
+msgstr ""
+
+#: tsett.menusunday.caption
+msgid "Sunday"
+msgstr ""
+
+#: tsett.menuthursday.caption
+msgid "Thursday"
+msgstr ""
+
+#: tsett.menutuesday.caption
+msgid "Tuesday"
+msgstr ""
+
+#: tsett.menuwednesday.caption
+msgid "Wednesday"
+msgstr ""
+
+#: tsett.panel2.caption
+msgid "Panel2"
+msgstr ""
+
+#: tsett.radioalwaysask.caption
+msgid "Always ask me what to do."
+msgstr ""
+
+#: tsett.radiofile.caption
+msgid "File Sync using shared drive."
+msgstr ""
+
+#: tsett.radiofontbig.caption
+msgid "Big"
+msgstr ""
+
+#: tsett.radiofontmedium.caption
+msgid "Medium"
+msgstr ""
+
+#: tsett.radiofontsmall.caption
+msgid "Small"
+msgstr ""
+
+#: tsett.radioserver.caption
+msgid "Network Server - not available"
+msgstr ""
+
+#: tsett.radiouselocal.caption
+msgid "Use Local note and overwrite server note."
+msgstr ""
+
+#: tsett.radiouseserver.caption
+msgid "Use server note and rename local one."
+msgstr ""
+
+#: tsett.tabbackup.caption
+msgid "BackUp"
+msgstr ""
+
+#: tsett.tabbasic.caption
+msgid "Basic"
+msgstr ""
+
+#: tsett.tabdisplay.caption
+msgid "Display"
+msgstr ""
+
+#: tsett.tabsnapshot.caption
+msgid "SnapShot"
+msgstr ""
+
+#: tsett.tabspell.caption
+msgid "Spell"
+msgstr ""
+
+#: tsett.tabsync.caption
+msgctxt "tsett.tabsync.caption"
+msgid "Sync"
+msgstr ""
+
+#: tsett.timeedit1.text
+msgid "TimeEdit1"
 msgstr ""
 

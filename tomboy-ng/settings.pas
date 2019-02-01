@@ -922,6 +922,7 @@ begin
     NoteLister.GetNotes();
     NoteLister.LoadStGrid(StringGridBackUp);
     NoteLister.Free;
+    StringgridBackUp.AutoSizeColumns;
     Label15.caption := 'double click a note ...';
 end;
 
