@@ -2,10 +2,10 @@ Patch to kmemo to fix RTF UTF8 bug
 ----------------------------------
 Author   : David Bannon
 Date     : 25 May, 2018
-Target   : KControls, specificially KMemo under Lazarus
+Target   : KControls, specificially KMemo under Lazarus (kcontrols prior to 1.7.2)
 To Fix   : KMemo has problems exporting and importing UTF8 encoded text
 		   to RTF on linux systems. Also affects copy and paste.
 Warning  : Untested in Delphi, may not apply there as different Unicode Model
 ----------------------------------
 
-This patch is applied from kcontrols source directory to fix two bugs present on most versions before May 2018 (and still at time of writing, unfixed).
+This patch is applied from kcontrols source directory to fix two bugs present on most versions before May 2018, appears that TK has fixed this issue in late 2018, but has not acknoledged it ....

@@ -86,6 +86,7 @@ unit SearchUnit;
     2018/11/25  Now uses Sync.DeleteFromLocalManifest(), called when a previously synced not is deleted, TEST !
     2018/12/29  Small improvements in time to save a file.
     2019/02/01  OpenNote() now assignes a new note to the notebook if one is open (ie ButtonNotebookOptions is enabled)
+    2019/02/09  Move autosize stringgrid1 (back?) into UseList()
 }
 
 {$mode objfpc}{$H+}
@@ -313,9 +314,10 @@ begin
         // T2 := gettickcount64();               // 5mS
     	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
     	StringGrid1.SortColRow(True, 1);
+        StringGrid1.AutoSizeColumns;              // wots the time penalty there ? new, 9/2/2019
         // T3 := gettickcount64();               // 7mS
     	NoteLister.LoadStGridNotebooks(StringGridNotebooks);
-	end;
+    end;
     // T4 := gettickcount64();                   // 1mS
     RecentMenu();
     // debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
@@ -447,7 +449,7 @@ end;
 
 procedure TSearchForm.FormActivate(Sender: TObject);
 begin
-    StringGrid1.AutoSizeColumns;
+    // StringGrid1.AutoSizeColumns;         // now done in UseList() why not ?
     // This used to be called in NoteLister after filling grid with data, but its
     // slow (50mS) and gets called everytime a note is saved.
 end;

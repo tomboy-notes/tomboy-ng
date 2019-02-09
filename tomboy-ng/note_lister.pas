@@ -650,7 +650,7 @@ var
 begin
     XMLError := False;
     //DebugMode := Application.HasOption('debug-index');
-	if Term = '' then begin
+    if Term = '' then begin
         NoteList.Free;
     	NoteList := TNoteList.Create;
 	end else begin
