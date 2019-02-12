@@ -174,6 +174,7 @@ unit EditBox;
     2019/02/01  ButtLinkClick() now provides a template name iff current note is a Notebook Member.
                 However, its the first notebook listed, if user has allowed multiple
                 notebooks per note, maybe not what they want. Maybe a selection list ?
+    2019/02/12  Fixed UTF8 bug in MakeAllLinks(), a touch faster now too !
 }
 
 
@@ -318,6 +319,8 @@ type
         function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string
             ): boolean;
         function ParagraphTextTrunc(): string;
+        function RelativePos(const Term: ANSIString; const MText: PChar;
+            StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
         function SimpleCalculate(out AStr: string): boolean;
         // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
@@ -337,7 +340,14 @@ type
         { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
         function LoadSingleNote() : boolean;
         { Searches for all occurances of Term in the KMemo text, makes them Links }
-		procedure MakeAllLinks(const MText : ANSIString; const Term: ANSIString; const StartScan : longint =1; EndScan : longint = 0);
+        procedure MakeAllLinks(const PText: PChar; const Term: ANSIString;
+            const StartScan: longint=1; EndScan: longint=0);
+
+
+
+		// procedure MakeAllLinks(const MText : ANSIString; const Term: ANSIString; const StartScan : longint =1; EndScan : longint = 0);
+
+
         { Makes the passed location a link if its not already one }
 		procedure MakeLink(const Link: ANSIString; const Index, Len: longint);
         { Makes the top line look like a title. }
@@ -1322,14 +1332,14 @@ begin
         if not AtTheEnd then begin
         	inc(BlockNo);
             	// Make sure user has not smeared Title charactistics to next line
-            debugln('MarkTitle-' + inttostr(BlockNo) + ' and count ' + inttostr(KMemo1.Blocks.Count));
-            debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
+            //debugln('MarkTitle-' + inttostr(BlockNo) + ' and count ' + inttostr(KMemo1.Blocks.Count));
+            //debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
             if (BlockNo < KMemo1.Blocks.Count) and (not KMemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoImageBlock')) then
         	    while fsUnderline in TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style do begin
         		    TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
             	    inc(BlockNo);
             	    if (BlockNo >= KMemo1.Blocks.Count) or KMemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoImageBlock') then break;
-                    debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
+                    // debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
         	    end;
         end;
 	finally
@@ -1372,46 +1382,61 @@ begin
 //    KMemo1.Select(Index, Len);
 end;
 
+
+
+// Starts searching a string at StartAt for Term, returns 1 based offset from start of str if found, 0 if not. Like UTF8Pos(
+function TEditBoxForm.RelativePos(const Term : ANSIString; const MText : PChar; StartAt : integer) : integer;
+begin
+  result := Pos(Term, MText+StartAt);
+  if Result <> 0 then
+      Result := Result + StartAt;
+end;
+
+
 { Searches for all occurances of Term in the KMemo text. Does
-  not bother with single char terms. Some potential to speed up
-  things here I am sure.
-}
-procedure TEditBoxForm.MakeAllLinks(const MText : ANSIString; const Term : ANSIString; const StartScan : longint =1; EndScan : longint = 0);
+  not bother with single char terms. }
+procedure TEditBoxForm.MakeAllLinks(const PText : PChar; const Term : ANSIString; const StartScan : longint =1; EndScan : longint = 0);
 var
 	Offset, NumbCR   : longint;
     {$ifdef WINDOWS}
     Ptr, EndP : PChar;                  // Will generate "not used" warning in Unix
     {$endif}
 begin
-    Offset := UTF8Pos(lowercase(Term), lowercase(MText), StartScan);
+    Offset := RelativePos(Term, PText, StartScan);
     while Offset > 0 do begin
     	NumbCR := 0;
         {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
-        Ptr := PChar(Mtext);
+{        Ptr := PChar(Mtext);
         EndP := Ptr + length(UTF8Copy(MText, 1, Offset-1));
-
-        //EndP := Ptr + Offset-1;
         while Ptr < EndP do begin
             if Ptr^ = #13 then inc(NumbCR);
             inc(Ptr);
-		end;
+		end;               }
+
+        EndP := PText + Offset;         // This is windows only code, replace above once tested, don't need Ptr, 2 x EndP
+        while EndP > PText do begin
+            if EndP^ = #13 then inc(NumbCR);
+            dec(EndP);
+        end;
         {$endif}
-        if (MText[Offset-1] in [' ', #10, #13, ',', '.']) and
-                        (MText[Offset + length(Term)] in [' ', #10, #13, ',', '.']) then
-            MakeLink(copy(MText, Offset,  UTF8length(Term)), Offset -1 -NumbCR, UTF8length(Term));
-		//MakeLink(Term, Offset -1 -NumbCR, UTF8length(Term));
-        Offset := UTF8Pos(lowercase(Term), lowercase(MText), Offset+1);
+
+        if (PText[Offset-2] in [' ', #10, #13, ',', '.']) and
+                        (PText[Offset + length(Term) -1] in [' ', #10, #13, ',', '.']) then
+            MakeLink(Term, UTF8Length(PText, Offset) -1 -NumbCR, UTF8length(Term));
+        Offset := RelativePos(Term, PText, Offset + 1);
         if EndScan > 0 then
         	if Offset> EndScan then break;
     end;
 end;
 
 
+
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
     Searchterm : ANSIstring;
     Len : longint;
-    MemoText : AnsiString;
+    //Tick, Tock : qword;
+    pText : pchar;
 begin
 	if not Ready then exit();
     if SingleNoteMode then exit();
@@ -1421,11 +1446,14 @@ begin
     Ready := False;
 	SearchForm.StartSearch();
     KMemo1.Blocks.LockUpdate;
-    MemoText := KMemo1.Blocks.text;     // Make one copy and use it repeatadly, actual text does not change
+    //Tick := gettickcount64();
+    PText := PChar(lowerCase(KMemo1.Blocks.text));
     while SearchForm.NextNoteTitle(SearchTerm) do
         if SearchTerm <> NoteTitle then            // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
-        	MakeAllLinks(MemoText, SearchTerm, StartScan, EndScan);
+            MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
+    //Tock := gettickcount64();
     KMemo1.Blocks.UnLockUpdate;
+    //debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');
     Ready := True;
 end;
 
@@ -1702,6 +1730,7 @@ var
     StartDone : boolean = False;
     EndDone : boolean = False;
 begin
+    AStr := '';
     repeat
         CalcStrStart := '';
         CalcStrEnd := '';

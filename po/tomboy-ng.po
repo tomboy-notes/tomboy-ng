@@ -1,6 +1,171 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: teditboxform.buttdelete.hint
+msgid "Delete This Note"
+msgstr ""
+
+#: teditboxform.buttlink.caption
+msgid "Link"
+msgstr ""
+
+#: teditboxform.buttlink.hint
+msgid "Link to a new Note"
+msgstr ""
+
+#: teditboxform.buttnotebook.caption
+msgid "Notebook"
+msgstr ""
+
+#: teditboxform.buttnotebook.hint
+msgid "Manage Note Books"
+msgstr ""
+
+#: teditboxform.buttsearch.caption
+msgctxt "teditboxform.buttsearch.caption"
+msgid "Search"
+msgstr ""
+
+#: teditboxform.buttsearch.hint
+msgid "Search All Notes Ctrl-Shift-F"
+msgstr ""
+
+#: teditboxform.butttext.caption
+msgid "Text"
+msgstr ""
+
+#: teditboxform.butttext.hint
+msgid "Font Size, Bold, Italics, Bullets etc"
+msgstr ""
+
+#: teditboxform.butttools.hint
+msgid "Tools - Sync, Export, Spell"
+msgstr ""
+
+#: teditboxform.caption
+msgid "EditBoxForm"
+msgstr ""
+
+#: teditboxform.label2.caption
+msgid "Read Only"
+msgstr ""
+
+#: teditboxform.label3.caption
+msgid "This note has been changed by the Sync Process"
+msgstr ""
+
+#: teditboxform.label4.caption
+msgid "Please close it (and re-open if it was a download)"
+msgstr ""
+
+#: teditboxform.menubold.caption
+msgid "Bold"
+msgstr ""
+
+#: teditboxform.menubullet.caption
+msgid "Bullet"
+msgstr ""
+
+#: teditboxform.menufixedwidth.caption
+msgid "Fixed Width"
+msgstr ""
+
+#: teditboxform.menuhighlight.caption
+msgid "Highlight"
+msgstr ""
+
+#: teditboxform.menuhuge.caption
+msgid "Huge"
+msgstr ""
+
+#: teditboxform.menuitalic.caption
+msgid "Italic"
+msgstr ""
+
+#: teditboxform.menuitem4.caption
+msgid "Alt+Right to add, Alt+Left to remove"
+msgstr ""
+
+#: teditboxform.menuitemcopy.caption
+msgid "Copy"
+msgstr ""
+
+#: teditboxform.menuitemcut.caption
+msgid "Cut"
+msgstr ""
+
+#: teditboxform.menuitemdelete.caption
+msgid "Delete"
+msgstr ""
+
+#: teditboxform.menuitemevaluate.caption
+msgid "Evaluate"
+msgstr ""
+
+#: teditboxform.menuitemexport.caption
+msgid "Export"
+msgstr ""
+
+#: teditboxform.menuitemexportmarkdown.caption
+msgid "Export Markdown"
+msgstr ""
+
+#: teditboxform.menuitemexportplaintext.caption
+msgid "Export Plain Text"
+msgstr ""
+
+#: teditboxform.menuitemexportrtf.caption
+msgid "Export as RTF"
+msgstr ""
+
+#: teditboxform.menuitemfind.caption
+msgid "Find in this Note"
+msgstr ""
+
+#: teditboxform.menuitemindex.caption
+msgid "Index"
+msgstr ""
+
+#: teditboxform.menuitempaste.caption
+msgid "Paste"
+msgstr ""
+
+#: teditboxform.menuitemprint.caption
+msgid "Print"
+msgstr ""
+
+#: teditboxform.menuitemselectall.caption
+msgid "Select All"
+msgstr ""
+
+#: teditboxform.menuitemspell.caption
+msgid "Spell Check"
+msgstr ""
+
+#: teditboxform.menuitemsync.caption
+msgid "Syncronize"
+msgstr ""
+
+#: teditboxform.menularge.caption
+msgid "Large  Font"
+msgstr ""
+
+#: teditboxform.menunormal.caption
+msgid "Normal Font"
+msgstr ""
+
+#: teditboxform.menusmall.caption
+msgid "Small Font"
+msgstr ""
+
+#: teditboxform.menustrikeout.caption
+msgid "Strikeout"
+msgstr ""
+
+#: teditboxform.menuunderline.caption
+msgid "Underline"
+msgstr ""
+
 #: tsearchform.buttonclearsearch.caption
 msgid "Clear"
 msgstr ""

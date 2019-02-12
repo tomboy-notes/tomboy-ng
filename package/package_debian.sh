@@ -103,18 +103,16 @@ function DebianPackage () {
 
 	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
 	echo "  * Initial release" >> "$MANUALS_DIR"changelog
-	echo "-- David Bannon <tomboy-ng@bannons.id.au>  $BUILDDATE" >> "$MANUALS_DIR"changelog
+	echo "-- $WHOAMI  $BUILDDATE" >> "$MANUALS_DIR"changelog
 	gzip -9n "$MANUALS_DIR"changelog
 
-	echo "Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135" > BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Name: tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright
+    # See https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#file-syntax
+	echo "Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/" > BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Name: $PRODUCT" >> BUILD/usr/share/doc/$PRODUCT/copyright
 	echo "Maintainer: $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Source: https://github.com/tomboy-notes/tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Copyright: 2017-2018 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "License: GPL-3+" >> BUILD/usr/share/doc/$PRODUCT/copyright
-
-  	# echo "2.0" >> BUILD/DEBIAN/debian-binary
-	# echo "calling dpkg for ""$PRODUCT""_$VERSION-0_$1.deb"
+	echo "Source: https://github.com/tomboy-notes/tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright	
+	echo "License: GPL-3.0-or-later" >> BUILD/usr/share/doc/$PRODUCT/copyright
+    echo "Copyright: 2017-2019 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
 	chmod -R g-w BUILD
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
 	rm -rf BUILD
