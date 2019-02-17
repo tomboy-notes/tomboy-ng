@@ -87,6 +87,7 @@ unit SearchUnit;
     2018/12/29  Small improvements in time to save a file.
     2019/02/01  OpenNote() now assignes a new note to the notebook if one is open (ie ButtonNotebookOptions is enabled)
     2019/02/09  Move autosize stringgrid1 (back?) into UseList()
+    2019/02/16  Clear button now calls UseList() to ensure autosize happens.
 }
 
 {$mode objfpc}{$H+}
@@ -395,7 +396,8 @@ end;
 
 procedure TSearchForm.ButtonClearSearchClick(Sender: TObject);
 begin
-        NoteLister.LoadStGrid(StringGrid1);
+        //NoteLister.LoadStGrid(StringGrid1);
+        UseList();
         ButtonClearSearch.Enabled := False;
         Edit1.Text := 'Search';
 end;

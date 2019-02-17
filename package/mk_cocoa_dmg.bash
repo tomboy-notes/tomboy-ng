@@ -2,12 +2,10 @@
 # ------------------------------------------------------------
 #
 # A script to generate Mac's tomboy-ng dmg file
-
-# NOTE - hack up to build 64bit cocoa from 32bit IDE base. May 2018
 #
-# call with a path set to trunk version of Lazarus, ie
-# PATH=/somewhere/:$PATH bash mk_cocoa.bash
-# edit the bit before lazbuild...... and where the config file is
+# Typical Usage : ./mk_cocoa_dmg.bash $HOME/bin/lazarus/laz-200
+#
+# Note we assume config is named same as lazarus dir, ie .laz-200
 #
 # Depends (heavily) on https://github.com/andreyvit/create-dmg
 # which must be installed.
@@ -15,25 +13,33 @@
 # Todo - 
 #		 Probably should put license and readme in there too.
 # -------------------------------------------------------------
+
+
 PRODUCT=tomboy-ng
 WORK=source_folder
 CONTENTS="$WORK/""$PRODUCT".app/Contents
 VERSION=`cat version`
-LAZ_DIR=fixes_2_0
-#MANUALS="recover.note tomdroid.note sync-ng.note tomboy-ng.note"
+LAZ_FULL_DIR="$1"
+LAZ_DIR=`basename "$LAZ_FULL_DIR"`
+
 MANUALS=`cat note-files`
 
+echo "$LAZ_DIR is where we are heading and $LAZ_FULL_DIR is how we get there"
+
+if [ -z "$LAZ_DIR" ]; then
+	echo "Usage : $0 /Full/Path/Lazarus/dir"
+	echo "eg    : $0 \$HOME/bin/lazarus/laz-200"
+	exit
+fi
+
 cd ../"$PRODUCT"
-# lazbuild -vm5024 --pcp=~/.laz-svn -B --compiler=ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
-TOMBOY_NG_VER="$VERSION" ../../../"$LAZ_DIR"/lazbuild  --pcp=~/."$LAZ_DIR" -B --compiler=/usr/local/bin/ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
+TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild  --pcp=~/."$LAZ_DIR" -B --compiler=/usr/local/bin/ppcx64 --cpu="x86_64" --ws=cocoa --build-mode=Release --os="darwin" Tomboy_NG.lpi
 cd ../package
 
 rm -Rf $WORK
-
 mkdir $WORK
 ln -s /Applications $WORK/Applications
-#cp -R ../"$PRODUCT"/"$PRODUCT".app $WORK/.
-cp -R ../../"$PRODUCT".app "$WORK"/.
+cp -R "$PRODUCT".app-ref "$WORK"/"$PRODUCT".app
 mkdir "$CONTENTS"/SharedSupport
 MANWIDTH=70 man ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt
 cp -R ../doc/html "$CONTENTS"/SharedSupport/.

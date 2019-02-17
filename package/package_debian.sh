@@ -10,7 +10,9 @@
 
 # ----------------------------------------------------------------------------
 # Typical usage -
-#          PATH="$HOME"/lazarus/lazarus_1_8_4:"$PATH" bash ./package_debian.sh
+#          ./package_debian.sh $HOME"/lazarus/laz-200
+
+# Note we assume laz config has same name as Laz directory, ie .laz-200
 # ----------------------------------------------------------------------------
 
 PRODUCT="tomboy-ng"
@@ -21,13 +23,19 @@ ICON_DIR="../glyphs"
 
 WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
-# MANUALS="recover.note tomdroid.note tomboy-ng.note sync-ng.note ToDo.note"
 MANUALS=`cat note-files`
 
 # BUILDOPTS=" -B --quiet --quiet"
 BUILDOPTS=" -B --quiet"
 BUILDDATE=`date -R`
+LAZ_FULL_DIR="$1"
+LAZ_DIR=`basename "$LAZ_FULL_DIR"`
 
+if [ -z "$LAZ_DIR" ]; then
+	echo "Usage : $0 /Full/Path/Lazarus/dir"
+	echo "eg    : $0 \$HOME/bin/lazarus/laz-200"
+	exit
+fi
 # ----------------------
 
 # Build four binaries. Note that build-mode must be one already defined
@@ -38,13 +46,13 @@ BUILDDATE=`date -R`
 function BuildIt () {
 	cd $SOURCE_DIR
 	echo "Building x86_64 Linux"
-	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
 	echo "Building i386 Linux"
-	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Windows"
-	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
 	echo "Building i386 Windows"
-	TOMBOY_NG_VER="$VERSION" lazbuild $BUILDOPTS --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	# Todo - should check we now have binaries with todays date.
 	echo "------------- FINISHED BUILDING -----------------"
