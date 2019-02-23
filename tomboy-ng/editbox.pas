@@ -175,6 +175,7 @@ unit EditBox;
                 However, its the first notebook listed, if user has allowed multiple
                 notebooks per note, maybe not what they want. Maybe a selection list ?
     2019/02/12  Fixed UTF8 bug in MakeAllLinks(), a touch faster now too !
+    2019/02/23  Bug in column calc - how this that slip through ?
 }
 
 
@@ -1731,9 +1732,9 @@ var
     EndDone : boolean = False;
 begin
     AStr := '';
+    CalcStrStart := '';
+    CalcStrEnd := '';
     repeat
-        CalcStrStart := '';
-        CalcStrEnd := '';
         TheLine := PreviousParagraphText(Index);
         FindNumbersInString(TheLine, AtStart, AtEnd);
         //debugln('Scanned string [' + TheLine + '] and found [' + AtStart + '] and [' + atEnd + ']');

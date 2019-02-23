@@ -292,14 +292,13 @@ var
     LongOpts : array [1..10] of string = ('debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
-
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
         exit;       // otherwise we execute rest of this method before closing.
     end;
     if Application.HasOption('version') then begin
         Enabled := False;
-         debugln(Version_String);
+         debugln('tomboy-ng version ' + Version_String);
          close();
          exit();
      end;

@@ -10,7 +10,7 @@
       <UseXPManifest Value="True"/>
       <XPManifest>
         <TextName Value="DRB"/>
-        <TextDesc Value="Not very safe test release."/>
+        <TextDesc Value=""/>
       </XPManifest>
       <Icon Value="0"/>
     </General>
@@ -96,6 +96,16 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF"/>
+            <OtherDefines Count="4">
+              <Define0 Value="DisableLCLGIF"/>
+              <Define1 Value="DisableLCLJPEG"/>
+              <Define2 Value="DisableLCLPNM"/>
+              <Define3 Value="DisableLCLTIFF"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item3>
@@ -336,16 +346,9 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <CommandLineParams Value="--debug-log=$HOME/tomboy-ng.log"/>
-      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default">
-          <local>
-            <CommandLineParams Value="--debug-log=$HOME/tomboy-ng.log"/>
-          </local>
-        </Mode0>
+        <Mode0 Name="default"/>
       </Modes>
     </RunParams>
     <RequiredPackages Count="3">

@@ -717,17 +717,17 @@ object EditBoxForm: TEditBoxForm
     end
     object Label3: TLabel
       Left = 120
-      Height = 21
+      Height = 19
       Top = 8
-      Width = 379
+      Width = 343
       Caption = 'This note has been changed by the Sync Process'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 120
-      Height = 21
+      Height = 19
       Top = 32
-      Width = 382
+      Width = 345
       Caption = 'Please close it (and re-open if it was a download)'
       ParentColor = False
     end

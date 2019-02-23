@@ -5,7 +5,7 @@ object MainForm: TMainForm
   Top = 262
   Width = 355
   Caption = 'MainForm'
-  ClientHeight = 318
+  ClientHeight = 316
   ClientWidth = 355
   Menu = MainMenu1
   OnActivate = FormActivate
@@ -15,7 +15,7 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '2.0.0.3'
+  LCLVersion = '2.0.1.0'
   object ImageConfigTick: TImage
     Left = 24
     Height = 18
@@ -77,17 +77,17 @@ object MainForm: TMainForm
   end
   object Label1: TLabel
     Left = 56
-    Height = 16
+    Height = 19
     Top = 90
-    Width = 76
+    Width = 87
     Caption = 'Have Config'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 56
-    Height = 16
+    Height = 19
     Top = 112
-    Width = 94
+    Width = 108
     Caption = 'Have Notes Dir'
     ParentColor = False
   end
@@ -176,17 +176,17 @@ object MainForm: TMainForm
   end
   object Label3: TLabel
     Left = 56
-    Height = 16
+    Height = 19
     Top = 136
-    Width = 174
+    Width = 195
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 16
+    Height = 19
     Top = 160
-    Width = 139
+    Width = 156
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
@@ -310,9 +310,9 @@ object MainForm: TMainForm
   end
   object Label5: TLabel
     Left = 30
-    Height = 21
+    Height = 22
     Top = 19
-    Width = 218
+    Width = 224
     Caption = 'Welcome to tomboy-ng !'
     Font.Height = -18
     Font.Name = 'Lucida Grande'
@@ -321,17 +321,17 @@ object MainForm: TMainForm
   end
   object Label6: TLabel
     Left = 31
-    Height = 16
+    Height = 19
     Top = 56
-    Width = 197
+    Width = 221
     Caption = 'Lets See if we are ready to go -'
     ParentColor = False
   end
   object Label7: TLabel
     Left = 40
-    Height = 16
+    Height = 19
     Top = 192
-    Width = 42
+    Width = 47
     Caption = 'Label7'
     ParentColor = False
     ParentShowHint = False
@@ -339,9 +339,9 @@ object MainForm: TMainForm
   end
   object Label8: TLabel
     Left = 40
-    Height = 16
+    Height = 19
     Top = 208
-    Width = 42
+    Width = 47
     Caption = 'Label8'
     ParentColor = False
     ParentShowHint = False
@@ -356,7 +356,7 @@ object MainForm: TMainForm
   end
   object LabelError: TLabel
     Left = 24
-    Height = 18
+    Height = 19
     Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
     Top = 277
     Width = 11
