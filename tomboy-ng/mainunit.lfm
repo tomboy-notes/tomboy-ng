@@ -590,7 +590,7 @@ object MainForm: TMainForm
         OnClick = MMSettingsClick
       end
       object MenuHelp: TMenuItem
-        Caption = 'MenuHelp'
+        Caption = 'Help'
         object MMHelpTomboy: TMenuItem
           Caption = 'tomboy-ng'
           OnClick = MMHelpTomboyClick
