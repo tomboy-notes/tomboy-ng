@@ -1,0 +1,5 @@
+OK, looks like tomboy-ng is now installed.
+
+When it starts, it places a green icon in your System Tray, thats probably all you need to interact with it. If you cannot see it, click the ^ icon, "Show Hidden Icons". Depending on your existing setting, you may also see a small "spash screen" window showing some tomboy-ng status infomation. You can dismiss this and, if you wish, in Settings, ensure you don't see it again. If you close the small splash screen using top, right [X], that will close tomboy-ng.
+
+Please report you experiences with tomboy-ng.

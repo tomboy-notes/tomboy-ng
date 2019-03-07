@@ -143,6 +143,9 @@ function DoZipping {
 	cp ../tomboy-ng/tomboy-ng64.exe "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.dll "$PRODUCT"_"$VERSION/."
 	cp ../../DLL_64bit/libhunspell.license "$PRODUCT"_"$VERSION/."
+	cp ../COPYING "$PRODUCT"_"$VERSION/."
+	cp AfterInstall.txt "$PRODUCT"_"$VERSION/."
+	sed "s/MyAppVersion \"0.21\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$PRODUCT"_"$VERSION/tomboy-ng.iss"
 	for i in $MANUALS; do
 		cp ../doc/$i "$PRODUCT"_"$VERSION/."
 	done;
