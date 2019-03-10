@@ -113,6 +113,7 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
+        CheckBoxAutostart: TCheckBox;
         CheckShowSplash: TCheckBox;
         CheckShowTomdroid: TCheckBox;
         CheckCaseSensitive: TCheckBox;
@@ -198,6 +199,7 @@ type
         procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
+        procedure CheckBoxAutostartChange(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
@@ -306,7 +308,8 @@ uses IniFiles, LazLogger,
     syncutils,
     recover,        // Recover lost or damaged files
     mainunit,       // so we can call ShowHelpNote()
-    hunspell       // spelling check
+    hunspell,       // spelling check
+    Autostart
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
 var
@@ -869,6 +872,14 @@ end;
 procedure TSett.ButtonSyncHelpClick(Sender: TObject);
 begin
     MainForm.ShowHelpNote('sync-ng.note');
+end;
+
+procedure TSett.CheckBoxAutostartChange(Sender: TObject);
+var
+   Auto : TAutoStartCtrl;
+begin
+     Auto := TAutoStartCtrl.Create('tomboy-ng', CheckBoxAutoStart.Checked);
+     FreeAndNil(Auto);
 end;
 
 

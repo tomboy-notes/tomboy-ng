@@ -12,7 +12,7 @@ object Sett: TSett
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '2.0.0.3'
+  LCLVersion = '2.0.0.4'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -23,15 +23,15 @@ object Sett: TSett
     Height = 371
     Top = 0
     Width = 525
-    ActivePage = TabBackUp
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 336
+      ClientHeight = 334
       ClientWidth = 519
       object ButtonSetNotePath: TButton
         Left = 8
@@ -47,33 +47,33 @@ object Sett: TSett
       end
       object LabelSettingPath: TLabel
         Left = 8
-        Height = 17
+        Height = 19
         Top = 40
-        Width = 116
+        Width = 123
         Caption = 'LabelSettingPath'
         ParentColor = False
       end
       object LabelNotesPath: TLabel
         Left = 8
-        Height = 17
+        Height = 19
         Top = 120
-        Width = 109
+        Width = 114
         Caption = 'LabelNotesPath'
         ParentColor = False
       end
       object Label1: TLabel
         Left = 8
-        Height = 17
+        Height = 19
         Top = 16
-        Width = 165
+        Width = 179
         Caption = 'Settings will be saved in :'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 11
-        Height = 17
+        Height = 19
         Top = 96
-        Width = 253
+        Width = 270
         Caption = 'Notes will be looked for and saved in :'
         ParentColor = False
       end
@@ -91,44 +91,53 @@ object Sett: TSett
       end
       object CheckManyNotebooks: TCheckBox
         Left = 16
-        Height = 22
+        Height = 23
         Hint = 'This may adversly affect tradional Tomboy, take care.'
         Top = 224
-        Width = 302
+        Width = 320
         Caption = 'Allow a note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 2
       end
       object CheckCaseSensitive: TCheckBox
         Left = 40
-        Height = 22
+        Height = 23
         Top = 280
-        Width = 119
+        Width = 127
         Caption = 'Case Sensitive'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
       object CheckAnyCombination: TCheckBox
         Left = 40
-        Height = 22
+        Height = 23
         Top = 304
-        Width = 139
+        Width = 147
         Caption = 'Any Combination'
         OnChange = CheckReadOnlyChange
         TabOrder = 4
       end
       object Label12: TLabel
         Left = 16
-        Height = 17
+        Height = 19
         Top = 256
-        Width = 131
+        Width = 141
         Caption = 'Main Search Box is :'
         ParentColor = False
+      end
+      object CheckBoxAutostart: TCheckBox
+        Left = 280
+        Height = 23
+        Top = 256
+        Width = 158
+        Caption = 'Autostart at Logon'
+        OnChange = CheckBoxAutostartChange
+        TabOrder = 5
       end
     end
     object TabDisplay: TTabSheet
       Caption = 'Display'
-      ClientHeight = 336
+      ClientHeight = 334
       ClientWidth = 519
       object GroupBox5: TGroupBox
         Left = 56
@@ -136,8 +145,8 @@ object Sett: TSett
         Top = 24
         Width = 178
         Caption = 'Font Size'
-        ClientHeight = 106
-        ClientWidth = 170
+        ClientHeight = 107
+        ClientWidth = 174
         TabOrder = 0
         object RadioFontBig: TRadioButton
           Left = 16
@@ -215,7 +224,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 332
+      ClientHeight = 334
       ClientWidth = 519
       object GroupBox3: TGroupBox
         Left = 8
@@ -223,8 +232,8 @@ object Sett: TSett
         Top = 6
         Width = 504
         Caption = '  Type  '
-        ClientHeight = 44
-        ClientWidth = 496
+        ClientHeight = 45
+        ClientWidth = 500
         TabOrder = 0
         object RadioFile: TRadioButton
           Left = 56
@@ -262,8 +271,8 @@ object Sett: TSett
         Top = 192
         Width = 504
         Caption = '  Options  '
-        ClientHeight = 114
-        ClientWidth = 496
+        ClientHeight = 115
+        ClientWidth = 500
         TabOrder = 1
         object Label3: TLabel
           Left = 40
@@ -351,7 +360,7 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 332
+      ClientHeight = 334
       ClientWidth = 519
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -368,25 +377,25 @@ object Sett: TSett
         TabOrder = 0
         object Label6: TLabel
           Left = 33
-          Height = 16
+          Height = 19
           Top = 33
-          Width = 411
+          Width = 465
           Caption = 'Backup files are made when you delete a note or the sync system'
           ParentColor = False
         end
         object Label7: TLabel
           Left = 32
-          Height = 16
+          Height = 19
           Top = 52
-          Width = 166
+          Width = 187
           Caption = 'is about to overwrite one. '
           ParentColor = False
         end
         object Label8: TLabel
           Left = 32
-          Height = 16
+          Height = 19
           Top = 72
-          Width = 383
+          Width = 429
           Caption = 'They remain, for ever, unless you do something about them.'
           ParentColor = False
         end
@@ -409,12 +418,12 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 182
+        Height = 184
         Top = 150
         Width = 519
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 182
+        ClientHeight = 184
         ClientWidth = 519
         TabOrder = 1
         object StringGridBackUp: TStringGrid
@@ -425,7 +434,7 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 180
+          Height = 182
           Top = 1
           Width = 517
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -443,7 +452,7 @@ object Sett: TSett
     object TabSnapshot: TTabSheet
       BorderWidth = 1
       Caption = 'SnapShot'
-      ClientHeight = 336
+      ClientHeight = 334
       ClientWidth = 519
       object Label9: TLabel
         Left = 18
@@ -576,7 +585,7 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 336
+      ClientHeight = 334
       ClientWidth = 519
       object Label13: TLabel
         Left = 12
@@ -641,7 +650,9 @@ object Sett: TSett
         Width = 133
         ItemHeight = 0
         OnClick = ListBoxDicClick
+        ScrollWidth = 131
         TabOrder = 0
+        TopIndex = -1
       end
       object LabelDicPrompt: TLabel
         Left = 376
@@ -692,9 +703,9 @@ object Sett: TSett
   end
   object Label15: TLabel
     Left = 168
-    Height = 16
+    Height = 19
     Top = 384
-    Width = 50
+    Width = 56
     Caption = 'Label15'
     ParentColor = False
   end
