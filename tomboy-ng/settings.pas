@@ -113,7 +113,7 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
-        CheckBoxAutostart: TCheckBox;
+        CheckAutostart: TCheckBox;
         CheckShowSplash: TCheckBox;
         CheckShowTomdroid: TCheckBox;
         CheckCaseSensitive: TCheckBox;
@@ -199,7 +199,7 @@ type
         procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
-        procedure CheckBoxAutostartChange(Sender: TObject);
+        procedure CheckAutostartChange(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
@@ -649,18 +649,16 @@ begin
 
             CheckManyNoteBooks.checked :=
         	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
-
             CheckCaseSensitive.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
-
             CheckAnyCombination.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'AnyCombination', 'true'));
-
             CheckShowTomdroid.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
-
             CheckShowSplash.Checked :=
                 ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
+            CheckAutostart.Checked :=
+                ('true' = Configfile.ReadString('BasicSettings', 'Autostart', 'false'));
 
             ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
             case ReqFontSize of
@@ -719,29 +717,30 @@ begin
     if MaskSettingsChanged then exit();
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
-      ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
-      ConfigFile.writestring('SyncSettings', 'SyncRepo', LabelSyncRepo.Caption);
-      if CheckManyNoteBooks.checked then
-      	Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
-      else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
-      if CheckCaseSensitive.checked then
-      	Configfile.writestring('BasicSettings', 'CaseSensitive', 'true')
-      else Configfile.writestring('BasicSettings', 'CaseSensitive', 'false');
-      if CheckAnyCombination.checked then
-      	Configfile.writestring('BasicSettings', 'AnyCombination', 'true')
-      else Configfile.writestring('BasicSettings', 'AnyCombination', 'false');
-      if CheckShowIntLinks.Checked then
-          ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
-      else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
-      ConfigFile.writestring('BasicSettings', 'ShowTomdroid', MyBoolStr(CheckShowTomdroid.Checked));
-      ConfigFile.WriteString('BasicSettings', 'ShowSplash', MyBoolStr(CheckShowSplash.Checked));
-      if RadioFontBig.Checked then
-          ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
-      else if RadioFontMedium.Checked then
-          ConfigFile.writestring('BasicSettings', 'FontSize', 'medium')
-      else if RadioFontSmall.Checked then
-          ConfigFile.writestring('BasicSettings', 'FontSize', 'small');
-		if RadioAlwaysAsk.Checked then
+        ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
+        ConfigFile.writestring('SyncSettings', 'SyncRepo', LabelSyncRepo.Caption);
+        if CheckManyNoteBooks.checked then
+            Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
+        else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
+        if CheckCaseSensitive.checked then
+            Configfile.writestring('BasicSettings', 'CaseSensitive', 'true')
+        else Configfile.writestring('BasicSettings', 'CaseSensitive', 'false');
+        if CheckAnyCombination.checked then
+            Configfile.writestring('BasicSettings', 'AnyCombination', 'true')
+        else Configfile.writestring('BasicSettings', 'AnyCombination', 'false');
+        if CheckShowIntLinks.Checked then
+            ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
+        else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
+        ConfigFile.writestring('BasicSettings', 'ShowTomdroid', MyBoolStr(CheckShowTomdroid.Checked));
+        ConfigFile.WriteString('BasicSettings', 'ShowSplash', MyBoolStr(CheckShowSplash.Checked));
+        ConfigFile.WriteString('BasicSettings', 'Autostart', MyBoolStr(CheckAutostart.Checked));
+        if RadioFontBig.Checked then
+            ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
+        else if RadioFontMedium.Checked then
+            ConfigFile.writestring('BasicSettings', 'FontSize', 'medium')
+        else if RadioFontSmall.Checked then
+            ConfigFile.writestring('BasicSettings', 'FontSize', 'small');
+	    if RadioAlwaysAsk.Checked then
             ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
         else if RadioUseLocal.Checked then
             ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
@@ -751,7 +750,6 @@ begin
             ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
             ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
         end;
-
     finally
     	ConfigFile.Free;
     end;
@@ -874,12 +872,13 @@ begin
     MainForm.ShowHelpNote('sync-ng.note');
 end;
 
-procedure TSett.CheckBoxAutostartChange(Sender: TObject);
+procedure TSett.CheckAutostartChange(Sender: TObject);
 var
    Auto : TAutoStartCtrl;
 begin
-     Auto := TAutoStartCtrl.Create('tomboy-ng', CheckBoxAutoStart.Checked);
+     Auto := TAutoStartCtrl.Create('tomboy-ng', CheckAutostart.Checked);
      FreeAndNil(Auto);
+     CheckReadOnlyChange(Sender);
 end;
 
 

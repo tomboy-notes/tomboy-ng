@@ -598,7 +598,8 @@ msgctxt "tsett.checkanycombination.caption"
 msgid "Any Combination"
 msgstr ""
 
-#: tsett.checkboxautostart.caption
+#: tsett.checkautostart.caption
+msgctxt "tsett.checkautostart.caption"
 msgid "Autostart at Logon"
 msgstr ""
 
