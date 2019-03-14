@@ -176,6 +176,7 @@ unit EditBox;
                 notebooks per note, maybe not what they want. Maybe a selection list ?
     2019/02/12  Fixed UTF8 bug in MakeAllLinks(), a touch faster now too !
     2019/02/23  Bug in column calc - how this that slip through ?
+    2019/03/13  Better local search capability and go to first term if opening result of Search
 }
 
 
@@ -317,6 +318,8 @@ type
         function ComplexCalculate(out AStr: string): boolean;
         procedure ExprTan(var Result: TFPExpressionResult;
             const Args: TExprParameterArray);
+        function FindIt(Term: string; GoForward, CaseSensitive: boolean
+            ): boolean;
         function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string
             ): boolean;
         function ParagraphTextTrunc(): string;
@@ -385,6 +388,7 @@ type
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
         Verbose : boolean;
+        SearchedTerm : string;  // If not empty, opening is associated with a search, go straight there.
         // If a new note is a member of Notebook, this holds notebook name until first save.
         TemplateIs : AnsiString;
             { Will mark this note as ReadOnly and not to be saved because the Sync Process
@@ -597,7 +601,11 @@ end;
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
 begin
+    //{$ifdef LCLCOCOA}
+    if ssCtrl in Shift then PopupMenuRightClick.popup;
+    //{$else}
 	if Button = mbRight then PopupMenuRightClick.PopUp;
+    //{$endif}
 end;
 
 
@@ -892,28 +900,51 @@ end;
 
 { ------- S T A N D A R D    E D I T I N G    F U N C T I O N S ----- }
 
-procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
+    // Locates if it can Term and selects it. Ret False if not found.
+    // Uses regional var, LastFind to start its search from, set to 1 for new search
+function TEditBoxForm.FindIt(Term : string; GoForward, CaseSensitive : boolean) : boolean;
 var
-	FindStart : longint;
+    NewPos : integer = 0;
     {$ifdef WINDOWS}
-    Ptr, EndP : PChar;			// Will generate "not used" warnings in Unix
+    Ptr, EndP : PChar;
     {$endif}
-    NumbCR : longint = 0;
+    NumbCR : integer = 0;
 begin
-   	FindStart := UTF8Pos(TFindDialog(Sender).FindText, KMemo1.Blocks.text, LastFind);
-   	if FindStart > 0 then begin
-		{$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
+    Result := False;
+    if GoForward then begin
+        if CaseSensitive then
+            NewPos := PosEx(Term, KMemo1.Blocks.Text, LastFind + 1)
+        else
+            NewPos := PosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), LastFind + 1);
+    end else begin
+        if CaseSensitive then
+            NewPos := RPosEx(Term, KMemo1.Blocks.Text, LastFind)
+        else
+            NewPos := RPosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), LastFind);
+    end;
+    //Memo1.append('Pos = ' + inttostr(NewPos) + '  Found=' + inttostr(FoundPos));
+    if NewPos > 0 then begin
+        {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
         Ptr := PChar(KMemo1.Blocks.text);
-        EndP := Ptr + FindStart-1;
+        EndP := Ptr + NewPos-1;
         while Ptr < EndP do begin
             if Ptr^ = #13 then inc(NumbCR);
             inc(Ptr);
-		end;
+        end;
         {$endif}
-        LastFind := FindStart + 1;
-        KMemo1.SelStart := FindStart -1 -NumbCR;
-        KMemo1.SelLength := length(TFindDialog(Sender).FindText);
-   	end;
+        KMemo1.SelStart := UTF8Length(pchar(KMemo1.Blocks.Text), NewPos-1) - NumbCR;
+        LastFind := NewPos;
+        KMemo1.SelLength := UTF8length(Term);
+        Result := True;
+    end;
+end;
+
+
+procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
+begin
+    FindIt(FindDialog1.FindText,
+            frDown in FindDialog1.Options, frMatchCase in FindDialog1.Options);
+    // If above returns false, no more to be found, but how to tell user ?
 end;
 
 procedure TEditBoxForm.FormActivate(Sender: TObject);
@@ -929,8 +960,7 @@ end;
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
 begin
     LastFind := 1;
-//    FindDialog1.Options:=[frHideMatchCase, frHideWholeWord];
-    FindDialog1.Options:=[frHideMatchCase];
+    FindDialog1.Options := FindDialog1.Options + [frHideWholeWord, frEntireScope, frDown];
 	FindDialog1.Execute;
 end;
 
@@ -1087,20 +1117,6 @@ begin
     SaveTheNote();
 end;
 
-{	FormShow gets called under a number of conditions Title    Filename       Template
-	- Re-show, everything all loaded.  Ready = true   yes      .              .
-      just exit
-    - New Note                                        no       no             no
-      GetNewTitle(), add CR, CR, Ready, MarkTitle(O),
-      zero dates.
-    - New Note from Template                          no       yes, dispose   yes   R1
-      ImportNote(), null out filename
-    - New Note from Link Button, save immediatly      yes      no             no
-      cp Title to Caption and to KMemo, Ready,
-      MarkTitle().
-    - Existing Note from eg Tray Menu, Searchbox      yes      yes            no    R1
-      ImportNote()
-}
 
 function TEditBoxForm.LoadSingleNote() : boolean;
 var
@@ -1176,6 +1192,21 @@ begin
     end;
 end;
 
+{	FormShow gets called under a number of conditions Title    Filename       Template
+	- Re-show, everything all loaded.  Ready = true   yes      .              .
+      just exit
+    - New Note                                        no       no             no
+      GetNewTitle(), add CR, CR, Ready, MarkTitle(O),
+      zero dates.
+    - New Note from Template                          no       yes, dispose   yes   R1
+      ImportNote(), null out filename
+    - New Note from Link Button, save immediatly      yes      no             no
+      cp Title to Caption and to KMemo, Ready,
+      MarkTitle().
+    - Existing Note from eg Tray Menu, Searchbox      yes      yes            no    R1
+      ImportNote()
+}
+
 procedure TEditBoxForm.FormShow(Sender: TObject);
 var
     ItsANewNote : boolean = false;
@@ -1228,12 +1259,15 @@ begin
     KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
     Dirty := False;
-    //Label1.Caption := 'c';
-    KMemo1.executecommand(ecEditorTop);
-    KMemo1.ExecuteCommand(ecDown);          // DRB Playing
+    if SearchedTerm <> '' then
+        FindIt(SearchedTerm, True, False)
+    else begin
+        KMemo1.executecommand(ecEditorTop);
+        KMemo1.ExecuteCommand(ecDown);          // DRB Playing
+    end;
 end;
 
-	{ This gets called when the TrayMemu quit entry is clicked }
+	{ This gets called when the TrayMenu quit entry is clicked }
     { No it does not, only when user manually closes this form. }
 procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin

@@ -88,6 +88,7 @@ unit SearchUnit;
     2019/02/01  OpenNote() now assignes a new note to the notebook if one is open (ie ButtonNotebookOptions is enabled)
     2019/02/09  Move autosize stringgrid1 (back?) into UseList()
     2019/02/16  Clear button now calls UseList() to ensure autosize happens.
+    2019/03/13  Now pass editbox the searchterm (if any) so it can move cursor to first occurance in note
 }
 
 {$mode objfpc}{$H+}
@@ -563,6 +564,11 @@ begin
     if (NoteFileName = '') and (NoteTitle ='') and ButtonNoteBookOptions.Enabled then  // a new note with notebook selected.
        TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 	EBox := TEditBoxForm.Create(Application);
+    if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> 'Search') then
+        // Looks like we have a search in progress, lets take user there when note opens.
+        EBox.SearchedTerm := Edit1.Text
+    else
+        EBox.SearchedTerm := '';
     EBox.NoteTitle:= NoteTitle;
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
@@ -571,7 +577,7 @@ begin
     EBox.Show;
     EBox.Dirty := False;
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
-    exit();
+{    exit();
     showmessage('Executing unexecutable code - TSearchForm.OpenNote()');          // code below here needs be removed Feb 2019 ??
 	if NoteTitle <> '' then begin  			// We have a title
 	        if FullFileName = '' then begin         // but no filename ?
@@ -586,7 +592,7 @@ begin
 	    EBox.Top := Placement + random(Placement*2);
 	    EBox.Left := Placement + random(Placement*2);
 	    EBox.Show;
-	    EBox.Dirty := False;
+	    EBox.Dirty := False;     }
 end;
 
 procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
