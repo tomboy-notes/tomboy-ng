@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 478
+  Left = 480
   Height = 342
-  Top = 176
+  Top = 172
   Width = 724
   Caption = 'SearchForm'
   ClientHeight = 342
@@ -17,8 +17,8 @@ object SearchForm: TSearchForm
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = ButtonSearchMode
     Left = 3
-    Height = 29
-    Top = 5
+    Height = 27
+    Top = 6
     Width = 416
     Anchors = [akLeft, akRight]
     BorderSpacing.Left = 3
@@ -74,12 +74,12 @@ object SearchForm: TSearchForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 308
-    Top = 34
+    Height = 309
+    Top = 33
     Width = 724
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel1'
-    ClientHeight = 308
+    ClientHeight = 309
     ClientWidth = 724
     TabOrder = 3
     object Splitter1: TSplitter
@@ -87,7 +87,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 152
-      Height = 306
+      Height = 307
       Top = 1
       Width = 5
       Align = alNone
@@ -100,7 +100,7 @@ object SearchForm: TSearchForm
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = ButtonNotebookOptions
       Left = 1
-      Height = 257
+      Height = 258
       Top = 25
       Width = 151
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -133,7 +133,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 160
-      Height = 303
+      Height = 304
       Top = 1
       Width = 560
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -186,7 +186,7 @@ object SearchForm: TSearchForm
       Left = -8
       Height = 25
       Hint = 'Manage the Notebooks'
-      Top = 282
+      Top = 283
       Width = 160
       Anchors = [akLeft, akRight, akBottom]
       Caption = 'Notebook Options'

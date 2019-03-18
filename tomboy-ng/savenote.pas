@@ -195,7 +195,7 @@ begin
     end;
 
     // When Highlight turns OFF
-    if (HiLight and (not (FT.TextStyle.Brush.Color = HiColor))) then begin
+    if (HiLight and (not (FT.TextStyle.Brush.Color = Sett.HiColor))) then begin
 		if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
         Buff := Buff + '</highlight>';
@@ -319,7 +319,7 @@ begin
     end;
 
     // Highlight turns ON
-    if ((not HiLight) and (FT.TextStyle.Brush.Color = HiColor)) then begin
+    if ((not HiLight) and (FT.TextStyle.Brush.Color = Sett.HiColor)) then begin
         if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
         Buff := Buff + '<highlight>';
@@ -477,7 +477,7 @@ begin
    Result := Result + ' Bold ';
    if fsItalic in TKMemoTextBlock(BK).TextStyle.Font.Style then
    Result := Result + ' Italic ';
-   if TKMemoTextBlock(BK).TextStyle.Brush.Color = HiColor then
+   if TKMemoTextBlock(BK).TextStyle.Brush.Color = Sett.HiColor then
    Result := Result + ' HighLight ';
    Result := Result + inttostr(TKMemoTextBlock(BK).TextStyle.Font.Size);
    if fsUnderline in TKMemoTextBlock(BK).TextStyle.Font.Style then
@@ -499,7 +499,7 @@ begin
    Result := Result + ' Bold ';
    if fsItalic in Ft.Style then
    Result := Result + ' Italic ';
-   if Ts.Brush.Color = HiColor then
+   if Ts.Brush.Color = Sett.HiColor then
    Result := Result + ' HighLight ';
    Result := Result + inttostr(Ft.Size);
    if fsUnderline in Ft.Style then

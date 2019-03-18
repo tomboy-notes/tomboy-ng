@@ -158,12 +158,14 @@ begin
       TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));  // We have to scan InStr for &lt; and &gt;  being < and >
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
-      if HighLight then TB.TextStyle.Brush.Color := HiColor;
+      if HighLight then TB.TextStyle.Brush.Color := Sett.HiColor;
       if Underline then FT.Style := Ft.Style + [fsUnderline];
       if Strikeout then FT.Style := Ft.Style + [fsStrikeout];
       if FixedWidth then FT.Name := MonospaceFont;
       if FixedWidth then FT.Pitch := fpFixed;
       if not FixedWidth then FT.Name := 'default';    // Because 'FixedWidth := false;' does not specify a font to return to
+      // if Sett.DarkTheme then Ft.Color:=Sett.DarkTextColour;
+      Ft.Color:=Sett.TextColour;
       TB.TextStyle.Font := Ft;
       FT.Free;
   end;

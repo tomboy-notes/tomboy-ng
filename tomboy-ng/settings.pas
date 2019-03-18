@@ -241,6 +241,9 @@ type
         //function ZipDate: string;
 
     public
+        BackGndColour : TColor;     // Next three set in main unit.
+        TextColour : TColor;
+        HiColor : TColor;
         DebugModeSpell : boolean;
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;
@@ -282,11 +285,11 @@ var
 
 
 const
-
+                                // Note we set DarkTheme colors and all HiLight colours in MainUnit
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
 
-     HiColor      = clYellow;
-     NormalColor  = clDefault; 		// Must somewhere set this to be sure ?
+     // HiColor      = clYellow;
+     // NormalColor  = clDefault; 		// Must somewhere set this to be sure ? no, not used any more
 
      LinkScanRange = 50;		// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.

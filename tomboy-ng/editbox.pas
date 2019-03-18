@@ -812,8 +812,8 @@ begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsUnderline];
 					end;
 
-		ChangeColor :           if FirstBlock.TextStyle.Brush.Color <> HiColor then begin
-                                                Block.TextStyle.Brush.Color := HiColor;
+		ChangeColor :           if FirstBlock.TextStyle.Brush.Color <> Sett.HiColor then begin
+                                                Block.TextStyle.Brush.Color := Sett.HiColor;
                                         end else begin
                                                 Block.TextStyle.Brush.Color := clDefault;
                                         end;
@@ -1212,7 +1212,7 @@ var
     ItsANewNote : boolean = false;
 begin
     if Ready then exit();				// its a "re-show" event. Already have a note loaded.
-    //Label1.Caption := '';
+
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
@@ -1223,6 +1223,7 @@ begin
     //{$UNDEF DEBUG_CLIPBOARD}
     {$endif}
     Kmemo1.Clear;
+
     MenuItemSync.Enabled := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
             and (Sett.LabelSyncRepo.Caption <> '');
     if SingleNoteMode then
@@ -1234,7 +1235,9 @@ begin
         ItsANewNote := True;
 	end else begin
 	    Caption := NoteFileName;
+
      	    ImportNote(NoteFileName);		// also sets Caption and Createdate
+
             if TemplateIs <> '' then begin
                 NoteFilename := '';
                 NoteTitle := NewNoteTitle();
@@ -1265,6 +1268,8 @@ begin
         KMemo1.executecommand(ecEditorTop);
         KMemo1.ExecuteCommand(ecDown);          // DRB Playing
     end;
+    KMemo1.Colors.BkGnd:= Sett.BackGndColour;
+    Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
 end;
 
 	{ This gets called when the TrayMenu quit entry is clicked }

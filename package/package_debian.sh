@@ -156,6 +156,21 @@ function DoZipping {
 	cp ../tomboy-ng/tomboy-ng32.exe .
 	zip "$PRODUCT"_win32_"$VERSION.zip" tomboy-ng32.exe
 
+	# Make a zip containing everything we need to make a 32/64bit Inno Setup installer for Windows
+	mkdir WinPre_"$VERSION"
+	cp ../tomboy-ng/tomboy-ng64.exe WinPre_"$VERSION/."
+	cp ../../DLL_64bit/libhunspell.dll WinPre_"$VERSION/."
+	cp ../../DLL_64bit/libhunspell.license WinPre_"$VERSION/."
+	cp ../COPYING WinPre_"$VERSION/."
+	cp AfterInstall.txt WinPre_"$VERSION/."
+	sed "s/MyAppVersion \"0.21\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > WinPre_"$VERSION/tomboy-ng.iss"
+	for i in $MANUALS; do
+		cp ../doc/$i "$PRODUCT"_"$VERSION/."
+	done;
+	cp ../tomboy-ng/tomboy-ng32.exe WinPre_"$VERSION"/.
+	unix2dos WinPre_"$VERSION/readme.txt"
+	zip WinPre_"$VERSION.zip" WinPre_"$VERSION"
+	
 	echo "--------------- FINISHED ZIPPING ----------------"
 	ls -l *.gz *.zip
 	echo "------------------ver $VERSION ------------------"

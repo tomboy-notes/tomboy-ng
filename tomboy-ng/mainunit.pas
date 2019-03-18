@@ -189,6 +189,7 @@ type
         CmdLineErrorMsg : string;
         AllowDismiss : boolean; // Allow user to dismiss (ie hide) the opening window.
         function CommandLineError() : boolean;
+        procedure TestDarkThemeInUse();
 
     public
         UseTrayMenu : boolean;
@@ -292,6 +293,7 @@ var
     LongOpts : array [1..10] of string = ('debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
+    debugln('Form color is ' + inttostr(Color));
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
         exit;       // otherwise we execute rest of this method before closing.
@@ -312,7 +314,7 @@ begin
         SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
         exit();
     end;
-
+    TestDarkThemeInUse();
     Params := TStringList.Create;
     try
         Application.GetNonOptions('hgo:', LongOpts, Params);
@@ -470,6 +472,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    //color := clyellow;
     if CommandLineError() then exit;    // We will close in OnShow
     UseMainMenu := True;
     UseTrayMenu := true;
@@ -502,10 +505,30 @@ begin
      end;
 end;
 
-
+    // Attempt to detect we are in a dark theme, sets relevent colours.
+procedure TMainForm.TestDarkThemeInUse();
+var
+  Col : string;
+begin
+    // if char 3, 5 and 7 are all 'A' or above, we are not in a DarkTheme
+    Col := hexstr(qword(GetRGBColorResolvingParent()), 8);
+    if (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A') then begin
+        debugln('Its definltly a Dark Theme');
+        Sett.BackGndColour:= clBlack;
+        Sett.HiColor := clDkGray;
+        Sett.TextColour := clLtGray;
+    end else begin
+        Sett.BackGndColour := clCream;
+        Sett.HiColor := clYellow;
+        Sett.TextColour := clBlack;
+    end;
+end;
 
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
+    {debugln('Config - Form color is ' + hexstr(qword(Color), 8));
+    debugln('Config - Form color is ' + hexstr(qword(GetColorResolvingParent()), 8));
+    debugln('Config - Form color is ' + hexstr(qword(GetRGBColorResolvingParent()), 8)); }
     Sett.Show();
 end;
 
