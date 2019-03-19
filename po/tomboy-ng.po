@@ -639,6 +639,10 @@ msgstr ""
 msgid "Show Internal Links"
 msgstr ""
 
+#: tsett.checkshowsearchatstart.caption
+msgid "Show Search at Start"
+msgstr ""
+
 #: tsett.checkshowsplash.caption
 msgid "Show Splash at Start"
 msgstr ""

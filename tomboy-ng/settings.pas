@@ -80,7 +80,7 @@ unit settings;
     2018/11/29  Change Spelling UI when selecting Library and Dictionary
     2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
     2018/12/03  disable checkshowTomdroid on all except Linux
-
+    2019/03/19  Added setting option to show search box at startup
 }
 
 {$mode objfpc}{$H+}
@@ -114,6 +114,7 @@ type
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
         CheckAutostart: TCheckBox;
+        CheckShowSearchAtStart: TCheckBox;
         CheckShowSplash: TCheckBox;
         CheckShowTomdroid: TCheckBox;
         CheckCaseSensitive: TCheckBox;
@@ -662,7 +663,8 @@ begin
                 ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
             CheckAutostart.Checked :=
                 ('true' = Configfile.ReadString('BasicSettings', 'Autostart', 'false'));
-
+            CheckShowSearchAtStart.Checked :=
+                ('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
             ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
             case ReqFontSize of
         	    'big'    : RadioFontBig.Checked := true;
@@ -734,9 +736,10 @@ begin
         if CheckShowIntLinks.Checked then
             ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
         else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
-        ConfigFile.writestring('BasicSettings', 'ShowTomdroid', MyBoolStr(CheckShowTomdroid.Checked));
-        ConfigFile.WriteString('BasicSettings', 'ShowSplash', MyBoolStr(CheckShowSplash.Checked));
-        ConfigFile.WriteString('BasicSettings', 'Autostart', MyBoolStr(CheckAutostart.Checked));
+        ConfigFile.writestring('BasicSettings', 'ShowTomdroid',      MyBoolStr(CheckShowTomdroid.Checked));
+        ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
+        ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
+        ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));
         if RadioFontBig.Checked then
             ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
         else if RadioFontMedium.Checked then

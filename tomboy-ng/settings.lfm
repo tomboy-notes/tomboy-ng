@@ -140,7 +140,7 @@ object Sett: TSett
       ClientHeight = 334
       ClientWidth = 519
       object GroupBox5: TGroupBox
-        Left = 56
+        Left = 288
         Height = 128
         Top = 24
         Width = 178
@@ -179,9 +179,9 @@ object Sett: TSett
         end
       end
       object CheckShowIntLinks: TCheckBox
-        Left = 40
+        Left = 32
         Height = 23
-        Top = 192
+        Top = 120
         Width = 162
         Caption = 'Show Internal Links'
         Enabled = False
@@ -189,9 +189,9 @@ object Sett: TSett
         TabOrder = 1
       end
       object CheckShowExtLinks: TCheckBox
-        Left = 40
+        Left = 32
         Height = 23
-        Top = 224
+        Top = 158
         Width = 170
         Caption = 'Show External  Links'
         Enabled = False
@@ -199,19 +199,19 @@ object Sett: TSett
         TabOrder = 2
       end
       object CheckShowTomdroid: TCheckBox
-        Left = 40
+        Left = 32
         Height = 23
-        Top = 260
+        Top = 196
         Width = 281
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
       object CheckShowSplash: TCheckBox
-        Left = 40
+        Left = 32
         Height = 23
         Hint = 'Always shown if error loading notes.'
-        Top = 300
+        Top = 234
         Width = 170
         Caption = 'Show Splash at Start'
         Checked = True
@@ -220,6 +220,15 @@ object Sett: TSett
         ShowHint = True
         State = cbChecked
         TabOrder = 4
+      end
+      object CheckShowSearchAtStart: TCheckBox
+        Left = 32
+        Height = 23
+        Top = 272
+        Width = 172
+        Caption = 'Show Search at Start'
+        OnChange = CheckReadOnlyChange
+        TabOrder = 5
       end
     end
     object TabSync: TTabSheet
@@ -755,7 +764,7 @@ object Sett: TSett
     top = 384
   end
   object OpenDialogDictionary: TOpenDialog
-    left = 223
-    top = 164
+    left = 376
+    top = 56
   end
 end

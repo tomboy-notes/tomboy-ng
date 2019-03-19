@@ -45,7 +45,7 @@ unit Mainunit;
     2018/12/02  Now support Alt-[Left, Right] to turn off or on Bullets.
     2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
     2019/03/19  Added a checkbox to hide screen on future startups
-
+    2019/03/19  Added setting option to show search box at startup
 
 
     CommandLine Switches
@@ -363,6 +363,8 @@ begin
             Visible := True;
         end else
             CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
+        if Sett.CheckShowSearchAtStart.Checked then
+            SearchForm.Show;
     end;
 end;
 
