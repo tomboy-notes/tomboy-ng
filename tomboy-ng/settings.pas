@@ -880,6 +880,8 @@ var
    Auto : TAutoStartCtrl;
 begin
      Auto := TAutoStartCtrl.Create('tomboy-ng', CheckAutostart.Checked);
+     if Auto.ErrorMessage <> '' then
+        ShowMessage('Error setting autstart' + Auto.ErrorMessage);
      FreeAndNil(Auto);
      CheckReadOnlyChange(Sender);
 end;

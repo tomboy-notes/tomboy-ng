@@ -5,7 +5,7 @@ object MainForm: TMainForm
   Top = 258
   Width = 355
   Caption = 'MainForm'
-  ClientHeight = 318
+  ClientHeight = 316
   ClientWidth = 355
   Menu = MainMenu1
   OnActivate = FormActivate

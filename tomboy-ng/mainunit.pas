@@ -595,6 +595,8 @@ begin
         S3 := 'use, you still need to be careful and have good backups.'#10;
         S4 := 'Version ' + Version_String + #10;
         S5 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
+        // That may return, eg "Build date 2019/02/28 TargetCPU x86_64 OS Linux Mate"
+        // or, maybe "Build date 2019/03/19 TargetCPU i386 OS Win32"
         S6 := '';
         {$ifdef LCLCOCOA}S6 := ' 64bit Cocoa Version';{$endif}
         S6 := S6 + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');

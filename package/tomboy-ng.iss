@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "tomboy-ng"
-#define MyAppVersion "0.21"
+#define MyAppVersion "0.21a"
 #define MyAppPublisher "David Bannon"
 #define MyAppURL "https://github.com/tomboy-notes/tomboy-ng"
 #define MyAppExeName32 "tomboy-ng32.exe"
@@ -27,7 +27,7 @@ InfoAfterFile=AfterInstall.txt
 OutputBaseFilename=tomboy-ng-setup-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion={#MyAppVersion}
+; VersionInfoVersion={#MyAppVersion}
 
 ; "ArchitecturesInstallIn64BitMode=x64" requests that the install be
 ; done in "64-bit mode" on x64, meaning it should use the native

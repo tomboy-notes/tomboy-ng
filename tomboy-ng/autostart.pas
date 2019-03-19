@@ -79,6 +79,7 @@ begin
         ISLink.SetPath(pChar(TargetName));
         IsLink.SetWorkingDirectory(pChar(ExtractFilePath(TargetName)));
         IPFile.Save(PWChar(WideString(LinkDestination + LinkName)), false);
+        ErrorMessage := TargetName + ' --- ' + LinkDestination + LinkName);
     {$endif}
 end;
 
@@ -89,6 +90,7 @@ begin
 end;
 
 constructor TAutoStartCtrl.Create(AppName: string; StartIt: boolean);
+{$ifdef WINDOWS}var CPU : string;{$endif}
 begin
     inherited create;
     ErrorMessage := '';
@@ -98,7 +100,11 @@ begin
         LinkName := '/' + AppName + '.desktop';
     {$endif}
     {$ifdef WINDOWS}
-    TargetName := WindowsDirectory(CSIDL_PROGRAM_FILES) + '\' + AppName + '\' + AppName + '64.exe';
+    CPU := {$i %FPCTARGETCPU%};
+    if CPU = 'i386' then
+        CPU := '32'
+    else CPU := '64';
+    TargetName := WindowsDirectory(CSIDL_PROGRAM_FILES) + '\' + AppName + '\' + AppName + CPU + '.exe';
     LinkDestination := WindowsDirectory(CSIDL_STARTUP);
     LinkName := '\' + AppName + '.lnk';
     {$endif}
