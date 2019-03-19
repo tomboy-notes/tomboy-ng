@@ -879,6 +879,8 @@ procedure TSett.CheckAutostartChange(Sender: TObject);
 var
    Auto : TAutoStartCtrl;
 begin
+    // This is being called at startup, it should only be called when user changes it.
+    if not visible then exit;
      Auto := TAutoStartCtrl.Create('tomboy-ng', CheckAutostart.Checked);
      if Auto.ErrorMessage <> '' then
         ShowMessage('Error setting autstart' + Auto.ErrorMessage);

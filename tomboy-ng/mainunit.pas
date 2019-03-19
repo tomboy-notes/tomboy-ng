@@ -44,6 +44,7 @@ unit Mainunit;
     2018/11/01  Now include --debug-log in list of INTERAL switches.
     2018/12/02  Now support Alt-[Left, Right] to turn off or on Bullets.
     2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
+    2019/03/19  Added a checkbox to hide screen on future startups
 
 
 
@@ -94,6 +95,7 @@ type
     TMainForm = class(TForm)
         ButtonDismiss: TButton;
         ButtonConfig: TButton;
+        CheckBoxDontShow: TCheckBox;
         ImageSpellCross: TImage;
         ImageSpellTick: TImage;
         ImageNotesDirCross: TImage;
@@ -109,8 +111,8 @@ type
         Label4: TLabel;
         Label5: TLabel;
         Label6: TLabel;
-        Label7: TLabel;
-        Label8: TLabel;
+        LabelNoDismiss1: TLabel;
+        LabelNoDismiss2: TLabel;
         LabelNotesFound: TLabel;
         MainMenu1: TMainMenu;
         MenuHelp: TMenuItem;
@@ -169,12 +171,14 @@ type
         TrayMenuRecent9: TMenuItem;
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
+        procedure CheckBoxDontShowChange(Sender: TObject);
         procedure FormActivate(Sender: TObject);
         procedure FormClick(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure FormShow(Sender: TObject);
+        procedure LabelErrorClick(Sender: TObject);
         procedure MMHelpTomboyClick(Sender: TObject);
         procedure MMAboutClick(Sender: TObject);
         procedure MMNewNoteClick(Sender: TObject);
@@ -187,7 +191,8 @@ type
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
         CmdLineErrorMsg : string;
-        AllowDismiss : boolean; // Allow user to dismiss (ie hide) the opening window.
+        // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error or -g on commandline
+        AllowDismiss : boolean;
         function CommandLineError() : boolean;
         procedure TestDarkThemeInUse();
 
@@ -340,25 +345,33 @@ begin
             MMFile.Visible := True;
             MMRecent.Visible := True;
         end;
-        Label7.Caption:='';
-        Label8.Caption := '';
+        LabelNoDismiss1.Caption:='';
+        LabelNoDismiss2.Caption := '';
         CheckStatus();
         SearchForm.IndexNotes(); // also calls Checkstatus but safe to call anytime, calls UpdateNotesFound()
         if SearchForm.NoteLister.XMLError then begin
             LabelError.Caption := 'Failed to index one or more notes.';
             AllowDismiss := False;
-        end
-        else LabelError.Caption := '';
+        end else
+            LabelError.Caption := '';
         if not AllowDismiss then begin
-            Label7.Caption := 'Sadly, on this OS or because of a Bad Note,';
-            Label8.Caption := 'I cannot let you dismiss this window';
-            Label7.Hint:='Are you trying to shut me down ? Dave ?';
-            Label8.Hint := Label7.Hint;
-        end;
+            LabelNoDismiss1.Caption := 'Sadly, on this OS or because of a Bad Note,';
+            LabelNoDismiss2.Caption := 'I cannot let you dismiss this window';
+            LabelNoDismiss1.Hint:='Are you trying to shut me down ? Dave ?';
+            LabelNoDismiss2.Hint := LabelNoDismiss1.Hint;
+            CheckBoxDontShow.Enabled := False;
+            Visible := True;
+        end else
+            CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
     end;
 end;
 
-
+procedure TMainForm.LabelErrorClick(Sender: TObject);
+begin
+    if LabelError.Caption <> '' then
+        showmessage('Bad notes found, goto Settings -> Snapshots -> Existing Notes.'
+            + #10#13 + 'You should do so to ensure your notes are safe.');
+end;
 
 
 // General response method to catch Menu Help click
@@ -414,6 +427,20 @@ begin
     {$else}
     hide();
     {$endif}
+end;
+
+procedure TMainForm.CheckBoxDontShowChange(Sender: TObject);
+var
+    OldMask : boolean;
+begin
+    if Visible then begin
+        Sett.CheckShowSplash.Checked := not Sett.CheckShowSplash.Checked;
+        OldMask :=  Sett.MaskSettingsChanged;
+        Sett.MaskSettingsChanged := False;
+        Sett.CheckReadOnlyChange(Sender);
+        Sett.MaskSettingsChanged := OldMask;
+    end;
+    // showmessage('change dont show and Visible=' + booltostr(Visible, True));
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);

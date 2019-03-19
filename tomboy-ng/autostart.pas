@@ -79,7 +79,7 @@ begin
         ISLink.SetPath(pChar(TargetName));
         IsLink.SetWorkingDirectory(pChar(ExtractFilePath(TargetName)));
         IPFile.Save(PWChar(WideString(LinkDestination + LinkName)), false);
-        ErrorMessage := TargetName + ' --- ' + LinkDestination + LinkName);
+        // ErrorMessage := TargetName + ' --- ' + LinkDestination + LinkName;
     {$endif}
 end;
 

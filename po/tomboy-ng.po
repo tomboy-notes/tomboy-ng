@@ -167,7 +167,8 @@ msgid "Underline"
 msgstr ""
 
 #: tmainform.buttonconfig.caption
-msgid "Config"
+msgctxt "tmainform.buttonconfig.caption"
+msgid "Settings"
 msgstr ""
 
 #: tmainform.buttonconfig.hint
@@ -184,6 +185,14 @@ msgstr ""
 
 #: tmainform.caption
 msgid "MainForm"
+msgstr ""
+
+#: tmainform.checkboxdontshow.caption
+msgid "Dont Show for normal startup"
+msgstr ""
+
+#: tmainform.checkboxdontshow.hint
+msgid "You can reverse this from Settings"
 msgstr ""
 
 #: tmainform.hint
@@ -214,20 +223,26 @@ msgstr ""
 msgid "Lets See if we are ready to go -"
 msgstr ""
 
-#: tmainform.label7.caption
-msgid "Label7"
-msgstr ""
-
-#: tmainform.label8.caption
-msgid "Label8"
-msgstr ""
-
 #: tmainform.labelerror.caption
+msgctxt "tmainform.labelerror.caption"
 msgid "X"
 msgstr ""
 
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
+msgstr ""
+
+#: tmainform.labelnodismiss1.caption
+msgid "LabelNoDismiss1"
+msgstr ""
+
+#: tmainform.labelnodismiss2.caption
+msgid "LabelNoDismiss2"
+msgstr ""
+
+#: tmainform.labelnotesfound.caption
+msgctxt "tmainform.labelnotesfound.caption"
+msgid "X"
 msgstr ""
 
 #: tmainform.menuhelp.caption
