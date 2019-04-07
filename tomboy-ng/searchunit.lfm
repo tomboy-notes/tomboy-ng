@@ -16,11 +16,11 @@ object SearchForm: TSearchForm
   object Edit1: TEdit
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = ButtonSearchMode
-    Left = 3
-    Height = 27
-    Top = 6
-    Width = 416
-    Anchors = [akLeft, akRight]
+    Left = 56
+    Height = 29
+    Top = 5
+    Width = 363
+    Anchors = [akRight]
     BorderSpacing.Left = 3
     BorderSpacing.Right = 1
     OnEditingDone = Edit1EditingDone
@@ -74,12 +74,12 @@ object SearchForm: TSearchForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 309
-    Top = 33
+    Height = 308
+    Top = 34
     Width = 724
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel1'
-    ClientHeight = 309
+    ClientHeight = 308
     ClientWidth = 724
     TabOrder = 3
     object Splitter1: TSplitter
@@ -87,7 +87,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 152
-      Height = 307
+      Height = 306
       Top = 1
       Width = 5
       Align = alNone
@@ -100,7 +100,7 @@ object SearchForm: TSearchForm
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = ButtonNotebookOptions
       Left = 1
-      Height = 258
+      Height = 257
       Top = 25
       Width = 151
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -133,7 +133,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 160
-      Height = 304
+      Height = 303
       Top = 1
       Width = 560
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -186,7 +186,7 @@ object SearchForm: TSearchForm
       Left = -8
       Height = 25
       Hint = 'Manage the Notebooks'
-      Top = 283
+      Top = 282
       Width = 160
       Anchors = [akLeft, akRight, akBottom]
       Caption = 'Notebook Options'
@@ -208,6 +208,15 @@ object SearchForm: TSearchForm
     Caption = 'Mode'
     OnClick = ButtonSearchModeClick
     TabOrder = 4
+  end
+  object SpeedButton1: TSpeedButton
+    AnchorSideLeft.Control = Owner
+    Left = 3
+    Height = 22
+    Top = 5
+    Width = 23
+    BorderSpacing.Left = 3
+    OnClick = SpeedButton1Click
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 472

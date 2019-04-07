@@ -292,6 +292,7 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
+// ToDo - put options in a TStringList and share, less mistakes ....
 var
     //I: Integer;
     Params : TStringList;
@@ -452,7 +453,7 @@ end;
 
 procedure TMainForm.FormClick(Sender: TObject);
 begin
-    // PopupMenuTray.PopUp();
+    //PopupMenuTray.PopUp();
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -586,6 +587,7 @@ end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
+//    debugln('Popup =' + inttostr(TPopupMenu(Sender).PopupPoint.x) + ', ' + inttostr(TPopupMenu(Sender).PopupPoint.y));
     PopupMenuTray.PopUp();
 end;
 

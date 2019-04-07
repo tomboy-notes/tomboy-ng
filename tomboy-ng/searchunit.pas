@@ -97,8 +97,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
-    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, {CheckLst,} Note_Lister,
-    lazLogger;
+    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger;
 
 type
 
@@ -119,6 +118,7 @@ type
 		Panel1: TPanel;
         PopupSearchMode: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
+        SpeedButton1: TSpeedButton;
 		Splitter1: TSplitter;
 		StringGridNotebooks: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
@@ -143,6 +143,7 @@ type
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuCaseSensitiveClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
+        procedure SpeedButton1Click(Sender: TObject);
 		procedure StringGridNotebooksClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
         // Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
@@ -666,6 +667,14 @@ begin
     OpenNote('', Sett.NoteDirectory
     		+ NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]),
             StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+end;
+
+procedure TSearchForm.SpeedButton1Click(Sender: TObject);
+var
+    MM : TPopupMenu;
+begin
+    //MM := TPopupMenu(MainForm.PopupMenuTray.NewInstance);
+    //MainForm.PopupMenuTray.PopUp;
 end;
 
 end.

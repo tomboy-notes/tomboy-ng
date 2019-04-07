@@ -3,7 +3,6 @@
   <title>tomboy-ng ToDo List</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng ToDo List</underline>
 
-Bugs and Know Issues.
 
 This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.<size:huge>
 
@@ -17,9 +16,9 @@ Formal bug reports and feature requests should be via Github https://github.com/
 
 tomboy-ng is currently tested on a number of platforms -
 
-<list><list-item dir="ltr">Centos 6.1 32bit; Ubuntu Mate 16.04; XUbuntu 18.04; Ubuntu 17.10; Ubuntu 18.04; SUSE Leap 15; Arch Linux, Manjaro 17.1.11 Deepin desktop. Fedora 28 )but see Known Issues)</list-item></list>
-<list><list-item dir="ltr">Windows 10 64 bit (but a 32bit binary is available and believed to behave identically to the 64bit one)</list-item></list>
-<list><list-item dir="ltr">Mac Sierra (64bit system but running a 32bit tomboy-ng, yes, Apple complains but it works fine for now). I have reports (that I cannot confirm) that icons may not display as well as expected at some (high ?) screen resolutions. We're working on it.</list-item></list>
+<list><list-item dir="ltr">Ubuntu Mate 16.04 and 18.04; XUbuntu 18.04; Ubuntu 17.10; Ubuntu 18.04; SUSE Leap 15; Arch Linux, Mageia 6. Fedora 29 (but see Known Issues)</list-item></list>
+<list><list-item dir="ltr">Windows 10 64 bit and Windows 7 32bit</list-item></list>
+<list><list-item dir="ltr">Mac Sierra (64bit system but running a 32bit tomboy-ng, yes, Apple complains but it works fine for now). </list-item></list>
 
 Reports of your experiences are very welcome ! <size:huge>
 
@@ -30,48 +29,44 @@ We don't do multilevel bullets.
 Tabs do not work like real tabs should.<size:large>
 
 <bold>Linux</bold></size:large>
-'Pure' Gnome 3 systems (such as Fedora 28) have had their System Tray disabled (ask the Gnome developers, not me!).  That means you don't see the small green tomboy-ng icon in your System Tray. So, to interact with tomboy-ng you must leave the small splash screen visible. Perhaps start tomboy-ng with the -g option so you don't accidentally dismiss the splash screen. One possible solution is to install TopIcons.<size:large>
-
-<bold>Windows</bold></size:large>
-The author no longer has a 32bit windows test platform but indications are it will work as expected.<size:large>
+Some Gnome 3 systems (such as Fedora 28, 29) have had their System Tray disabled (ask the Gnome developers, not me!).  That means you don't see the small green tomboy-ng icon in your System Tray. So, to interact with tomboy-ng you must leave the small splash screen visible. Perhaps start tomboy-ng with the -g option so you don't accidentally dismiss the splash screen. You can restore a more normal behaviour by installing TopIcons, please see the Note titled "The Gnome Icon Issue".<size:large>
 
 <bold>Mac</bold></size:large>
-The 64bit version is still less than perfect. In particular, printing does not work.  The 32bit versions works fine on all current Mac OSs but next release of MacOS will be 64bit only.<size:huge>
+The 64bit version is still less than perfect. In particular, printing does not work and its substantially slower (a factor on older hardware and bigger notes).  The 32bit versions works fine on all current Mac OSs but next release of MacOS will be 64bit only.<size:huge>
 
 
 
-<bold>Here is a todo list (updated 2019/2/14)</bold></size:huge>
+<bold>Here is a todo list (updated 2019/02/19)</bold></size:huge>
 
 Recent fixes show as strikeout.
 
-<list><list-item dir="ltr">A dark theme ?</list-item></list>
+<list><list-item dir="ltr"><strikeout>A dark theme ?</strikeout>  after v0.21 Now working but ugly (but I reckon dark themes are always ugly)  feed back welcome</list-item></list>
 <list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
-<list><list-item dir="ltr">A proper installer for Windows.</list-item></list>
+<list><list-item dir="ltr"><strikeout>A proper installer for Windows.</strikeout> After v0.21 a single installer that works for both Win32 and Win64, tested on only Win10 64bit and Vista 32bit</list-item></list>
 <list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
-<list><list-item dir="ltr">Do we have an issue with Icons on Mac ?  Apparently at screen resolutions I don't (an maybe cannot ?) use ?</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
+<list><list-item dir="ltr"><strikeout>Startup option to show SearchWinow.</strikeout></list-item></list><strikeout></strikeout>
+<list><list-item dir="ltr">Add menus to search window ?   Is this an alternative to splash screen  for RedHat users who have not installed Top Icons ?</list-item></list>
 <list><list-item dir="ltr">Network Sync</list-item></list>
 <list><list-item dir="ltr"><strikeout>Table of Contents (copy Tomboy plugin I use a LOT)</strikeout></list-item></list><strikeout>
 </strikeout><list><list-item dir="ltr">Tools to manage (re-use or delete) deleted files that end up in Backup/.</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">Allow user to prevent splash screen showing at startup. Can force it to show with -g</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">A mobile device solution, sync to Tomdroid.</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">A viable backup solution.</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">Links to other notes should be case insensitive.</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">Must make Bullets work better ! proper indent.</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">Sort out keyboard shortcuts and maybe even document </strikeout>?</list-item></list><strikeout>
-<list><list-item dir="ltr">Can we make instructions on how (eg) Fedora users can install something to make the SystemTray Icon work as it should ?  eg </list-item></list>
-https://github.com/phocean/TopIcons-plus or 
-https://extensions.gnome.org/extension/615/appindicator-support/<size:large>
+</strikeout><list><list-item dir="ltr">Allow user to prevent splash screen showing at startup.</strikeout> Can force it to show with -g.  Setting option.</list-item></list><strikeout>
+<list><list-item dir="ltr"><strikeout>A mobile device solution, sync to Tomdroid.</strikeout> Linux only, connect over ssh.</list-item></list>
+<list><list-item dir="ltr"><strikeout>A viable backup solution.</strikeout></list-item></list><strikeout></strikeout>
+<list><list-item dir="ltr">Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</list-item></list>
+<list><list-item dir="ltr"><strikeout>Must make Bullets work better ! proper indent.</strikeout></list-item></list><strikeout>
+</strikeout><list><list-item dir="ltr">Sort out keyboard shortcuts and maybe even document ?</strikeout>  See help notes.</list-item></list><strikeout>
+<list><list-item dir="ltr"><strikeout>Can we make instructions on how (eg) Fedora users can install something to make the SystemTray Icon work as it should ?  eg https://github.com/phocean/TopIcons-plus or https://extensions.gnome.org/extension/615/appindicator-suppor</strikeout>t/</list-item></list><size:large>
 
 
 
 <bold>Long term 'maybe' stuff</bold></size:large>
 <list><list-item dir="ltr">Move notes into database (ie sqlite for small users, something bigger for BIG users). </list-item></list>
-<list><list-item dir="ltr">Better export abilities - at present plain text and RTF. What about html, PDF etc ? Man Page</list-item></list>
+<list><list-item dir="ltr">Better export abilities - at present plain text, markdown and RTF. What about html, PDF etc ? Man Page</list-item></list>
 <list><list-item dir="ltr">Import ability. Import a directory of Tomboy notes. Import other formats.</list-item></list>
 <list><list-item dir="ltr">Revise controls, at present modeled on Tomboy, we can improve.</list-item></list>
-<list><list-item dir="ltr">Install models - Flatpack, Snap etc ?  <strikeout>RPM</strikeout>, a proper Windows installer.</list-item></list>
+<list><list-item dir="ltr">Install models - Flatpack, Snap etc ?.</list-item></list>
 
 
 
@@ -84,8 +79,8 @@ https://extensions.gnome.org/extension/615/appindicator-support/<size:large>
 
 
 </note-content></text>
-  <last-change-date>2019-02-14T17:34:57.2910000+11:00</last-change-date>
-  <last-metadata-change-date>2019-02-14T17:34:57.2910000+11:00</last-metadata-change-date>
+  <last-change-date>2019-03-27T22:01:58.1380000+11:00</last-change-date>
+  <last-metadata-change-date>2019-03-27T22:01:58.1380000+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
