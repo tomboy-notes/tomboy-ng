@@ -138,7 +138,8 @@ type
     		{ Returns a simple note file name, accepts simple filename or ID }
  function CleanFileName(const FileOrID: AnsiString): ANSIString;
     procedure CleanupList(const Lst : TNoteList);
-   	procedure GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm : ANSIString = '');
+   	procedure GetNoteDetails(const Dir, FileName: ANSIString;
+        const SearchTerm: ANSIString; DontTestName: boolean=false);
     		{ Returns True if indicated note contains term in its content }
    	function NoteContains(const Term, FileName : ANSIString) : boolean;
             { Removes any complete xml tags from passed string, only matches '<' to '>' }
@@ -183,13 +184,14 @@ type
               this is the main "go and do it" function.
               If 'term' is present we'll just search for notes with that term
               and store date in a different structure. }
-   	function GetNotes(const Term : ANSIstring = '') : longint;
+   	function GetNotes(const Term: ANSIstring=''; DontTestName: boolean=false
+        ): longint;
     		{ Copy the internal Note data to the passed TStringGrid, empting it first }
    	procedure LoadStGrid(const Grid : TStringGrid);
     		{ Returns True if its updated the internal record as indicated,
               will accept either an ID or a filename. }
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
-    		{ Destroy, destroy .... }
+
     function IsThisATitle(const Title : ANSIString) : boolean;
     		{ Returns the Form this note is open on, Nil if its not open }
     function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
@@ -484,7 +486,7 @@ begin
 	end;
 end;
 
-procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm: ANSIString);
+procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm: ANSIString; DontTestName : boolean = false);
 			// This is how we search for XML elements, attributes are different.
 var
     NoteP : PNote;
@@ -492,12 +494,13 @@ var
 	Node : TDOMNode;
     J : integer;
 begin
-    // writeln('Checking note ', FileName);
-    if not IDLooksOK(copy(FileName, 1, 36)) then begin      // In syncutils !!!!
-        ErrorNotes.Append(FileName + ', ' + 'Invalid ID in note filename');
-        XMLError := True;
-        exit;
-    end;
+    // debugln('Checking note ', FileName);
+    if not DontTestName then
+        if not IDLooksOK(copy(FileName, 1, 36)) then begin      // In syncutils !!!!
+            ErrorNotes.Append(FileName + ', ' + 'Invalid ID in note filename');
+            XMLError := True;
+            exit;
+        end;
   	if FileExistsUTF8(Dir + FileName) then begin
         if SearchTerm <> '' then
         	if not NoteContains(SearchTerm, FileName) then exit();
@@ -574,7 +577,7 @@ end;
 
 procedure TNoteLister.IndexThisNote(const ID: String);
 begin
-    GetNoteDetails(WorkingDir, CleanFileName(ID));
+    GetNoteDetails(WorkingDir, CleanFileName(ID), '');
 end;
 
 function TNoteLister.IsIDPresent(ID: string): boolean;
@@ -644,7 +647,7 @@ begin
 end;
 
 
-function TNoteLister.GetNotes(const Term: ANSIstring): longint;
+function TNoteLister.GetNotes(const Term: ANSIstring = ''; DontTestName : boolean = false): longint;
 var
     Info : TSearchRec;
 begin
@@ -668,7 +671,7 @@ begin
   	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then begin
   		repeat
             if DebugMode then debugln('Checking note [' + Info.Name + ']');
-  			GetNoteDetails(WorkingDir, Info.Name, Term);
+  			GetNoteDetails(WorkingDir, Info.Name, Term, DontTestName);
   		until FindNext(Info) <> 0;
   	end;
   	FindClose(Info);

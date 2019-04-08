@@ -94,7 +94,7 @@ begin
 	            ReadXMLFile(Doc, RemoteAddress + 'manifest.xml');
 
 	            ServerID := Doc.DocumentElement.GetAttribute('server-id');
-                { ToDo - must check for error on next line }
+                { ToDo : must check for error on next line }
                 RemoteServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
 		    finally
 	            Doc.Free;

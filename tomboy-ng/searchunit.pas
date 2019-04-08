@@ -89,6 +89,7 @@ unit SearchUnit;
     2019/02/09  Move autosize stringgrid1 (back?) into UseList()
     2019/02/16  Clear button now calls UseList() to ensure autosize happens.
     2019/03/13  Now pass editbox the searchterm (if any) so it can move cursor to first occurance in note
+    2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
 }
 
 {$mode objfpc}{$H+}
@@ -131,7 +132,6 @@ type
 		procedure Edit1EditingDone(Sender: TObject);
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
-        procedure FormActivate(Sender: TObject);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
@@ -151,9 +151,6 @@ type
         // note that is currently open as read only.
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
     private
-
-
-		function TrimDateTime(const LongDate: ANSIString): ANSIString;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
@@ -203,7 +200,6 @@ implementation
 uses MainUnit,      // Opening form, manages startup and Menus
     EditBox,
     settings,		// Manages settings.
-    //TB_Sync,		// So we can make changes to local manifest when a note is deleted.
     LCLType,		// For the MessageBox
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff
     sync;           // because we need it to manhandle local manifest when a file is deleted
@@ -258,10 +254,10 @@ var
     // LocalMan : TTomboyLocalManifest;
     LocalMan : TSync;
 begin
-    debugln('DeleteNote ' + FullFileName);
+    // debugln('DeleteNote ' + FullFileName);
     ShortFileName := ExtractFileNameOnly(FullFileName);
     LocalMan := TSync.Create;
-    LocalMan.DebugMode:=True;
+    LocalMan.DebugMode:=false;
     LocalMan.ConfigDir:= Sett.LocalConfig;
     LocalMan.NotesDir:= Sett.NoteDirectory;
     if not LocalMan.DeleteFromLocalManifest(copy(ShortFileName, 1, 36)) then
@@ -292,15 +288,6 @@ function TSearchForm.IsThisaTitle(const Term : ANSIString) : boolean;
 begin
 	Result := NoteLister.IsThisATitle(Term);
 end;
-
-
-function TSearchForm.TrimDateTime(const LongDate : ANSIString ) : ANSIString;
-begin                          { TODO : Dont need this any more, delete when sure }
-  Result := LongDate;
-  Result[11] := ' '; 			// just looks nicer
-  Result := copy(Result, 1, 19);
-end;
-
 
 { Sorts List and updates the recently used list under trayicon }
 procedure TSearchForm.UseList();
@@ -350,45 +337,14 @@ end;
 procedure TSearchForm.RecentMenu();
 var
       Count : integer = 1;
-      MenuCaption : string;
 begin
-    //debugln('Called Recent Menu');
+    MainForm.ClearRecentMenuItems();
     while (Count <= 10) do begin
        if Count < StringGrid1.RowCount then
-             MenuCaption := StringGrid1.Cells[0, Count]
-       else  MenuCaption := MenuEmpty;
-//       if MainForm.UseTrayMenu then   // always load up the Popup menu, its not just Tray
-           case Count of
-             1 : MainForm.TrayMenuRecent1.Caption := MenuCaption;
-             2 : MainForm.TrayMenuRecent2.Caption := MenuCaption;
-             3 : MainForm.TrayMenuRecent3.Caption := MenuCaption;
-             4 : MainForm.TrayMenuRecent4.Caption := MenuCaption;
-             5 : MainForm.TrayMenuRecent5.Caption := MenuCaption;
-             6 : MainForm.TrayMenuRecent6.Caption := MenuCaption;
-             7 : MainForm.TrayMenuRecent7.Caption := MenuCaption;
-             8 : MainForm.TrayMenuRecent8.Caption := MenuCaption;
-             9 : MainForm.TrayMenuRecent9.Caption := MenuCaption;
-             10 : MainForm.TrayMenuRecent10.Caption := MenuCaption;
-           end;
-       if MainForm.UseMainMenu then
-           case Count of
-             1 : MainForm.MMRecent1.Caption := MenuCaption;
-             2 : MainForm.MMRecent2.Caption := MenuCaption;
-             3 : MainForm.MMRecent3.Caption := MenuCaption;
-             4 : MainForm.MMRecent4.Caption := MenuCaption;
-             5 : MainForm.MMRecent5.Caption := MenuCaption;
-             6 : MainForm.MMRecent6.Caption := MenuCaption;
-             7 : MainForm.MMRecent7.Caption := MenuCaption;
-             8 : MainForm.MMRecent8.Caption := MenuCaption;
-             9 : MainForm.MMRecent9.Caption := MenuCaption;
-             10 : MainForm.MMRecent10.Caption := MenuCaption;
-            end;
-      	inc(Count);
-  	end;
-    MainForm.MMSync.Enabled := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
-                and (Sett.LabelSyncRepo.Caption <> '');
-    MainForm.TrayMenuSynchronise.Enabled := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
-                and (Sett.LabelSyncRepo.Caption <> '');
+           MainForm.AddMenuItem(StringGrid1.Cells[0, Count], mtRecent, @(MainForm.RecentMenuClicked), mkRecentMenu)
+       else break;
+       inc(Count);
+    end;
 end;
 
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
@@ -398,7 +354,6 @@ end;
 
 procedure TSearchForm.ButtonClearSearchClick(Sender: TObject);
 begin
-        //NoteLister.LoadStGrid(StringGrid1);
         UseList();
         ButtonClearSearch.Enabled := False;
         Edit1.Text := 'Search';
@@ -451,19 +406,10 @@ begin
 	if Edit1.Text = '' then Edit1.Text := 'Search';
 end;
 
-procedure TSearchForm.FormActivate(Sender: TObject);
-begin
-    // StringGrid1.AutoSizeColumns;         // now done in UseList() why not ?
-    // This used to be called in NoteLister after filling grid with data, but its
-    // slow (50mS) and gets called everytime a note is saved.
-end;
-
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
     CanClose := False;
     hide();
-{    CanClose := AllowClose;
-    if not AllowClose then hide();        }
 end;
 
 function TSearchForm.IndexNotes() : integer;
@@ -578,22 +524,6 @@ begin
     EBox.Show;
     EBox.Dirty := False;
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
-{    exit();
-    showmessage('Executing unexecutable code - TSearchForm.OpenNote()');          // code below here needs be removed Feb 2019 ??
-	if NoteTitle <> '' then begin  			// We have a title
-	        if FullFileName = '' then begin         // but no filename ?
-	            if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
-	                EBox.NoteFileName := Sett.NoteDirectory + NoteFileName
-	            // otherwise, its a new note with a title, user clicked "Link"
-	        end else begin
-	    	    EBox.NoteFileName := FullFileName;
-	        end;
-	    end;
-	    EBox.NoteTitle:= NoteTitle;
-	    EBox.Top := Placement + random(Placement*2);
-	    EBox.Left := Placement + random(Placement*2);
-	    EBox.Show;
-	    EBox.Dirty := False;     }
 end;
 
 procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
@@ -670,11 +600,9 @@ begin
 end;
 
 procedure TSearchForm.SpeedButton1Click(Sender: TObject);
-var
-    MM : TPopupMenu;
 begin
-    //MM := TPopupMenu(MainForm.PopupMenuTray.NewInstance);
-    //MainForm.PopupMenuTray.PopUp;
+    // note - image is 24x24 tpopupmenu.png from lazarus source
+    MainForm.PopupMenuSearch.PopUp;
 end;
 
 end.

@@ -5,11 +5,9 @@ object MainForm: TMainForm
   Top = 179
   Width = 369
   Caption = 'MainForm'
-  ClientHeight = 361
+  ClientHeight = 363
   ClientWidth = 369
-  Menu = MainMenu1
   OnActivate = FormActivate
-  OnClick = FormClick
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
@@ -380,117 +378,7 @@ object MainForm: TMainForm
     OnChange = CheckBoxDontShowChange
     TabOrder = 2
   end
-  object PopupMenuTray: TPopupMenu
-    left = 272
-    top = 64
-    object TrayMenuNew: TMenuItem
-      Caption = 'New Note'
-      ShortCut = 16462
-      OnClick = MMNewNoteClick
-    end
-    object TrayMenSearch: TMenuItem
-      Caption = 'Search'
-      OnClick = MMSearchClick
-    end
-    object MenuItem4: TMenuItem
-      Caption = '-'
-    end
-    object TrayMenuRecent1: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent2: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent3: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent4: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent5: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent6: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent7: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent8: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent9: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object TrayMenuRecent10: TMenuItem
-      Caption = 'empty'
-      OnClick = MMRecent1Click
-    end
-    object MenuItem3: TMenuItem
-      Caption = '-'
-    end
-    object TrayMenuAbout: TMenuItem
-      Caption = 'About'
-      OnClick = MMAboutClick
-    end
-    object TrayMenuSynchronise: TMenuItem
-      Caption = 'Synchronise'
-      OnClick = MMSyncClick
-    end
-    object TrayMenuTomdroid: TMenuItem
-      Caption = 'Tomdroid Sync'
-      OnClick = TrayMenuTomdroidClick
-    end
-    object TrayMenuItemSettings: TMenuItem
-      Caption = 'Settings'
-      OnClick = MMSettingsClick
-    end
-    object MenuItemHelp: TMenuItem
-      Caption = 'Help'
-      object TrayHelpTomboy: TMenuItem
-        Caption = 'tomboy-ng'
-        OnClick = MMHelpTomboyClick
-      end
-      object TrayHelpKeyShortcuts: TMenuItem
-        Caption = 'Key shortcuts'
-        OnClick = MMHelpTomboyClick
-      end
-      object TrayHelpRecover: TMenuItem
-        Caption = 'Backup Recover'
-        OnClick = MMHelpTomboyClick
-      end
-      object TrayHelpSync: TMenuItem
-        Caption = 'Syncronise'
-        OnClick = MMHelpTomboyClick
-      end
-      object TrayHelpCalc: TMenuItem
-        Caption = 'Calculator'
-        OnClick = MMHelpTomboyClick
-      end
-      object TrayHelpTomdroid: TMenuItem
-        Caption = 'Tomdroid'
-        OnClick = MMHelpTomboyClick
-      end
-    end
-    object MenuItem15: TMenuItem
-      Caption = '-'
-    end
-    object MenuQuit: TMenuItem
-      Caption = 'Quit, Close and Go Away.'
-      OnClick = MMQuitClick
-    end
-  end
   object TrayIcon: TTrayIcon
-    PopUpMenu = PopupMenuTray
     Icon.Data = {
       9E09000000000100010018180000010020008809000016000000280000001800
       0000300000000100200000000000000900006400000064000000000000000000
@@ -574,108 +462,5 @@ object MainForm: TMainForm
     OnClick = TrayIconClick
     left = 272
     top = 120
-  end
-  object MainMenu1: TMainMenu
-    left = 272
-    top = 8
-    object MMFile: TMenuItem
-      Caption = 'File'
-      Visible = False
-      object MMNewNote: TMenuItem
-        Caption = 'New Note'
-        OnClick = MMNewNoteClick
-      end
-      object MMSearch: TMenuItem
-        Caption = 'Search'
-        OnClick = MMSearchClick
-      end
-      object MMAbout: TMenuItem
-        Caption = 'About'
-        OnClick = MMAboutClick
-      end
-      object MMSync: TMenuItem
-        Caption = 'Sync'
-        OnClick = MMSyncClick
-      end
-      object MMSettings: TMenuItem
-        Caption = 'Settings'
-        OnClick = MMSettingsClick
-      end
-      object MenuHelp: TMenuItem
-        Caption = 'Help'
-        object MMHelpTomboy: TMenuItem
-          Caption = 'tomboy-ng'
-          OnClick = MMHelpTomboyClick
-        end
-        object MMHelpKeyShortcuts: TMenuItem
-          Caption = 'Key Shortcuts'
-          OnClick = MMHelpTomboyClick
-        end
-        object MMHelpRecover: TMenuItem
-          Caption = 'Backup & Recover'
-          OnClick = MMHelpTomboyClick
-        end
-        object MMHelpSync: TMenuItem
-          Caption = 'Syncronisation'
-          OnClick = MMHelpTomboyClick
-        end
-        object MMHelpCalc: TMenuItem
-          Caption = 'Calculator'
-          OnClick = MMHelpTomboyClick
-        end
-        object MMHelpTomdroid: TMenuItem
-          Caption = 'Tomdroid'
-          OnClick = MMHelpTomboyClick
-        end
-      end
-      object MMQuit: TMenuItem
-        Caption = 'Quit'
-        OnClick = MMQuitClick
-      end
-    end
-    object MMRecent: TMenuItem
-      Caption = 'Recent'
-      Visible = False
-      object MMRecent1: TMenuItem
-        Caption = 'MenuItem1'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent2: TMenuItem
-        Caption = 'MenuItem2'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent3: TMenuItem
-        Caption = 'MenuItem5'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent4: TMenuItem
-        Caption = 'MenuItem6'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent5: TMenuItem
-        Caption = 'MenuItem7'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent6: TMenuItem
-        Caption = 'MenuItem8'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent7: TMenuItem
-        Caption = 'MenuItem9'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent8: TMenuItem
-        Caption = 'MenuItem10'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent9: TMenuItem
-        Caption = 'MenuItem11'
-        OnClick = MMRecent1Click
-      end
-      object MMRecent10: TMenuItem
-        Caption = 'MenuItem12'
-        OnClick = MMRecent1Click
-      end
-    end
   end
 end

@@ -405,7 +405,8 @@ begin
            finally
                FindClose(Info);
            end;
-    end else debugln('DeleteFromLocalManifest - cannot find ' + ConfigDir + 'android');
+    end else if DebugMode then
+       debugln('DeleteFromLocalManifest - cannot find ' + ConfigDir + 'android');
     exit(True);
 end;
 

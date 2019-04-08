@@ -77,9 +77,9 @@ type
         function SetTransport() : TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
-            { transandroid version - deletes the indicated note from remote device
-              returns False if the note was not found there to be deleted. Other error
-              are possible, ToDo }
+            { ToDo : transandroid version - deletes the indicated note from remote device
+              returns False if the note was not found there to be deleted.  Other error
+              are possible.}
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;

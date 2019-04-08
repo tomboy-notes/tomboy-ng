@@ -46,6 +46,7 @@ unit Mainunit;
     2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
     2019/03/19  Added a checkbox to hide screen on future startups
     2019/03/19  Added setting option to show search box at startup
+    2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
 
 
     CommandLine Switches
@@ -88,6 +89,12 @@ uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
     StdCtrls;
 
+// These are choices for main and main popup menus.
+type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
+
+// These are the possible kinds of main menu items
+type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu);
+
 type
 
     { TMainForm }
@@ -114,91 +121,50 @@ type
         LabelNoDismiss1: TLabel;
         LabelNoDismiss2: TLabel;
         LabelNotesFound: TLabel;
-        MainMenu1: TMainMenu;
-        MenuHelp: TMenuItem;
-        TrayHelpCalc: TMenuItem;
-        TrayHelpTomboy: TMenuItem;
-        TrayHelpKeyShortcuts: TMenuItem;
-        TrayHelpRecover: TMenuItem;
-        TrayHelpSync: TMenuItem;
-        TrayHelpTomdroid: TMenuItem;
-        MenuItemHelp: TMenuItem;
-        MMHelpTomdroid: TMenuItem;
-        MMHelpCalc: TMenuItem;
-        MMHelpTomboy: TMenuItem;
-        MMHelpKeyShortcuts: TMenuItem;
-        MMHelpRecover: TMenuItem;
-        MMHelpSync: TMenuItem;
-        TrayMenuTomdroid: TMenuItem;
-        MMRecent1: TMenuItem;
-        MMRecent8: TMenuItem;
-        MMRecent9: TMenuItem;
-        MMRecent10: TMenuItem;
-        MMRecent2: TMenuItem;
-        MMRecent3: TMenuItem;
-        MMRecent4: TMenuItem;
-        MMRecent5: TMenuItem;
-        MMRecent6: TMenuItem;
-        MMRecent7: TMenuItem;
-        MMRecent: TMenuItem;
-        MMSync: TMenuItem;
-        MMSettings: TMenuItem;
-        MMQuit: TMenuItem;
-        MenuItem15: TMenuItem;
-        MenuItem3: TMenuItem;
-        MenuItem4: TMenuItem;
-        TrayMenuItemSettings: TMenuItem;
-        MenuQuit: TMenuItem;
-        TrayMenuSynchronise: TMenuItem;
-        MMAbout: TMenuItem;
-        MMFile: TMenuItem;
-        MMNewNote: TMenuItem;
-        MMSearch: TMenuItem;
-        PopupMenuTray: TPopupMenu;
         TrayIcon: TTrayIcon;
-        TrayMenSearch: TMenuItem;
-        TrayMenuAbout: TMenuItem;
-        TrayMenuNew: TMenuItem;
-        TrayMenuRecent1: TMenuItem;
-        TrayMenuRecent10: TMenuItem;
-        TrayMenuRecent2: TMenuItem;
-        TrayMenuRecent3: TMenuItem;
-        TrayMenuRecent4: TMenuItem;
-        TrayMenuRecent5: TMenuItem;
-        TrayMenuRecent6: TMenuItem;
-        TrayMenuRecent7: TMenuItem;
-        TrayMenuRecent8: TMenuItem;
-        TrayMenuRecent9: TMenuItem;
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
         procedure CheckBoxDontShowChange(Sender: TObject);
         procedure FormActivate(Sender: TObject);
-        procedure FormClick(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure FormShow(Sender: TObject);
         procedure LabelErrorClick(Sender: TObject);
-        procedure MMHelpTomboyClick(Sender: TObject);
-        procedure MMAboutClick(Sender: TObject);
-        procedure MMNewNoteClick(Sender: TObject);
-        procedure MMQuitClick(Sender: TObject);
-        procedure MMRecent1Click(Sender: TObject);
-        procedure MMSearchClick(Sender: TObject);
-        procedure MMSettingsClick(Sender: TObject);
-        procedure MMSyncClick(Sender: TObject);
+        // procedure MMHelpTomboyClick(Sender: TObject);
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
         CmdLineErrorMsg : string;
         // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error or -g on commandline
         AllowDismiss : boolean;
+        procedure AddItemToAMenu(TheMenu: TMenu; Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
+
         function CommandLineError() : boolean;
+            // responds to any main or mainPopup menu clicks except recent note ones.
+        procedure FileMenuClicked(Sender: TObject);
+        function FindHelpFiles(): integer;
+        procedure ShowAbout();
         procedure TestDarkThemeInUse();
 
     public
+        HelpNotesPath : string;     // full path to help notes, with trailing delim.
         UseTrayMenu : boolean;
         UseMainMenu : boolean;
+        MainMenu : TMainMenu;
+        FileMenu, RecentMenu : TMenuItem;
+        PopupMenuSearch : TPopupMenu;
+        PopupMenuTray : TPopupMenu;
+        procedure ClearRecentMenuItems();
+            // builds the Menus and fills in all items except recent notes. Only
+            // called once, during startup except if ItsAnUpdate is True, thats triggered
+            // by Sett changes to Sync is config or Tomdroid mode enabled.
+        procedure FillInFileMenus(ItsAnUpdate: boolean=false);
+            // Here we will add a new item to each menu, one by one. Menus must be created and
+            // the top level entries, File and Recent, added to MainMenu
+        procedure AddMenuItem(Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
+            // This procedure responds to ALL recent note menu clicks !
+        procedure RecentMenuClicked(Sender: TObject);
             { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode }
         procedure ShowHelpNote(HelpNoteName: string);
         procedure UpdateNotesFound(Numb: integer);
@@ -228,7 +194,11 @@ uses LazLogger, LazFileUtils,
     {$endif}   // Stop linux clearing clipboard on app exit.
     uAppIsRunning,
     Editbox,    // Used only in SingleNoteMode
+    Note_Lister,
     Tomdroid;
+
+var
+    HelpNotes : TNoteLister;
 
 { =================================== V E R S I O N    H E R E =============}
 const Version_string  = {$I %TOMBOY_NG_VER};
@@ -274,32 +244,23 @@ begin
 end;
 
 Procedure TMainForm.ShowHelpNote(HelpNoteName : string);
-          // cp doc/*.note tomboy-ng/tomboy-ng.app/Contents/Resources/.
-var
-    DocsDir : string;
 begin
-    DocsDir := AppendPathDelim(ExtractFileDir(Application.ExeName));         // UNTESTED
-    {$ifdef LINUX}DocsDir := '/usr/share/doc/tomboy-ng/'; {$endif}
-    {$ifdef DARWIN}
-    DocsDir := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';
-    //DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/';
-    {$endif}  // untested
-    // showmessage('About to open ' + DocsDir + 'recover.note');
-    if FileExists(DocsDir + HelpNoteName) then
-       SingleNoteMode(DocsDir + HelpNoteName, False, True)
-    else showmessage('Unable to find ' + DocsDir + HelpNoteName);
+    if FileExists(HelpNotesPath + HelpNoteName) then
+       SingleNoteMode(HelpNotesPath + HelpNoteName, False, True)
+    else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
-// ToDo - put options in a TStringList and share, less mistakes ....
+ { ToDo : put options in a TStringList and share, less mistakes ....}
+
 var
     //I: Integer;
     Params : TStringList;
     LongOpts : array [1..10] of string = ('debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
-    debugln('Form color is ' + inttostr(Color));
+    // debugln('Form color is ' + inttostr(Color));
     if CmdLineErrorMsg <> '' then begin
         close;    // cannot close in OnCreate();
         exit;       // otherwise we execute rest of this method before closing.
@@ -343,8 +304,8 @@ begin
         close();
     end else begin
         if UseMainMenu then begin
-            MMFile.Visible := True;
-            MMRecent.Visible := True;
+            FileMenu.Visible := True;
+            RecentMenu.Visible := True;
         end;
         LabelNoDismiss1.Caption:='';
         LabelNoDismiss2.Caption := '';
@@ -376,20 +337,6 @@ begin
             + #10#13 + 'You should do so to ensure your notes are safe.');
 end;
 
-
-// General response method to catch Menu Help click
-procedure TMainForm.MMHelpTomboyClick(Sender: TObject);
-begin
-    case TMenuItem(Sender).Name of
-         'MMHelpTomboy', 'TrayHelpTomboy'     :  ShowHelpNote('tomboy-ng.note');
-         'MMHelpKeyShortcuts', 'TrayHelpKeyShortcuts' : ShowHelpNote('key-shortcuts.note');
-         'MMHelpRecover', 'TrayHelpRecover'   :  ShowHelpNote('recover.note');
-         'MMHelpSync', 'TrayHelpSync'         :  ShowHelpNote('sync-ng.note');
-         'MMHelpCalc', 'TrayHelpCalc'         :  ShowHelpNote('calculator.note');
-         'MMHelpTomdroid', 'TrayHelpTomdroid' :  ShowHelpNote('tomdroid.note');
-    end;
-end;
-
 procedure TMainForm.UpdateNotesFound(Numb : integer);
 begin
     LabelNotesFound.Caption := 'Found ' + inttostr(Numb) + ' notes';
@@ -419,7 +366,7 @@ begin
         if UseTrayMenu then
             TrayIcon.Show;
      end;
-     TrayMenuTomdroid.Visible := Sett.CheckShowTomdroid.Checked;
+     // TrayMenuTomdroid.Visible := Sett.CheckShowTomdroid.Checked;
 end;
 
 procedure TMainForm.ButtonDismissClick(Sender: TObject);
@@ -451,11 +398,6 @@ begin
 
 end;
 
-procedure TMainForm.FormClick(Sender: TObject);
-begin
-    //PopupMenuTray.PopUp();
-end;
-
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
     {$ifdef LINUX}
 var
@@ -469,6 +411,7 @@ begin
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
     {$endif}
+    freeandnil(HelpNotes);
 end;
 
 function TMainForm.CommandLineError() : boolean;
@@ -521,6 +464,9 @@ begin
     UseMainMenu := true;
     UseTrayMenu := false;
     {$endif}
+    {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName));{$endif}
+    {$ifdef LINUX}HelpNotesPath := '/usr/share/doc/tomboy-ng/'; {$endif}
+    {$ifdef DARWIN}HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';{$endif}
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -528,7 +474,7 @@ procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
 begin
      if ssCtrl in Shift then begin
        if key = ord('N') then begin
-         MMNewNoteClick(self);
+         SearchForm.OpenNote();     // MMNewNoteClick(self);    OK as long as Notes dir is set
          Key := 0;
          exit();
        end;
@@ -556,38 +502,166 @@ end;
 
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
-    {debugln('Config - Form color is ' + hexstr(qword(Color), 8));
-    debugln('Config - Form color is ' + hexstr(qword(GetColorResolvingParent()), 8));
-    debugln('Config - Form color is ' + hexstr(qword(GetRGBColorResolvingParent()), 8)); }
     Sett.Show();
 end;
 
 { ------------- M E N U   M E T H O D S ----------------}
 
-{ note these methods handle the Main Menu (Mac only ?)
-  and the TrayIcon popup menu }
-
-procedure TMainForm.MMNewNoteClick(Sender: TObject);
+function TMainForm.FindHelpFiles() : integer;
+    // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
+var
+  NoteTitle : string;
 begin
-    if (Sett.NoteDirectory = '') then
-        ShowMessage('Please setup a notes directory first')
-    else SearchForm.OpenNote();
+       HelpNotes := TNoteLister.Create;     // freed in OnClose event.
+       HelpNotes.DebugMode := Application.HasOption('debug-index');
+       HelpNotes.WorkingDir:=HelpNotesPath;
+    Result := HelpNotes.GetNotes('', true);
+    HelpNotes.StartSearch();
+    while HelpNotes.NextNoteTitle(NoteTitle) do
+        AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
 end;
 
-procedure TMainForm.MMSettingsClick(Sender: TObject);
+procedure TMainForm.FileMenuClicked(Sender : TObject);
+var
+    FileName : string;
 begin
-    Sett.Show;
-    SearchForm.RecentMenu();
+    case TMenuTarget(TMenuItem(Sender).Tag) of
+        mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
+        mtNewNote : if (Sett.NoteDirectory = '') then
+                            ShowMessage('Please setup a notes directory first')
+                    else SearchForm.OpenNote();
+        mtSearch :  if Sett.NoteDirectory = '' then
+                            showmessage('You have not set a notes directory. Please click Settings')
+                    else  SearchForm.Show;
+
+        mtAbout :    ShowAbout();
+        mtSync :     Sett.Synchronise();
+        mtSettings : begin
+                        Sett.Show;
+                        //SearchForm.RecentMenu();   // ToDo : wots this for ? commented out, April 2019
+                     end;
+        mtTomdroid : if FormTomdroid.Visible then
+                        FormTomdroid.BringToFront
+                     else FormTomdroid.ShowModal;
+        mtHelp :      begin
+                        if HelpNotes.FileNameForTitle(TMenuItem(Sender).Caption, FileName) then
+                            ShowHelpNote(FileName)
+                        else showMessage('ERROR, cannot find ' + TMenuItem(Sender).Caption);
+                    end;
+        mtQuit :      close;
+    end;
 end;
 
-procedure TMainForm.MMSyncClick(Sender: TObject);
+procedure TMainForm.FillInFileMenus(ItsAnUpdate : boolean = false);
 begin
-    Sett.Synchronise();
+    if not ItsAnUpdate then begin
+        PopupMenuSearch := TPopupMenu.Create(Self);
+        PopupMenuTray := TPopupMenu.Create(Self);
+        MainMenu := TMainMenu.Create(Self);
+        FileMenu := TMenuItem.Create(Self);
+        RecentMenu := TMenuItem.Create(self);
+        FileMenu.Caption := 'File';
+        RecentMenu.Caption := 'Recent';
+        MainMenu.Items.Add(FileMenu);
+        MainMenu.Items.Add(RecentMenu);
+        TrayIcon.PopUpMenu := PopupMenuTray;
+    end else begin
+        PopupMenuSearch.Items.Clear;
+        PopupMenuTray.Items.Clear;
+        FileMenu.Clear;
+        RecentMenu.Clear;
+    end;
+    AddMenuItem('New Note', mtNewNote, @FileMenuClicked, mkFileMenu);
+    AddMenuItem('Search', mtSearch,  @FileMenuClicked, mkFileMenu);
+    AddMenuItem('-', mtSep, nil, mkFileMenu);
+    AddMenuItem('-', mtSep, nil, mkFileMenu);   // Recent Notes will be inserted at last Separator
+    AddMenuItem('About', mtAbout, @FileMenuClicked, mkFileMenu);
+    if (Sett.LabelSyncRepo.Caption <> SyncNotConfig) then
+        AddMenuItem('Synchronise', mtSync,  @FileMenuClicked, mkFileMenu);
+    if Sett.CheckShowTomdroid.Checked then
+        AddMenuItem('Tomdroid', mtTomdroid,  @FileMenuClicked, mkFileMenu);
+    AddMenuItem('Settings', mtSettings, @FileMenuClicked, mkFileMenu);
+    AddMenuItem('Help', mtHelp,  nil, mkFileMenu);
+    AddMenuItem('Quit', mtQuit,  @FileMenuClicked, mkFileMenu);
+    if ItsAnUpdate then
+        SearchForm.RecentMenu;
+    FindHelpFiles();
+end;
+
+procedure TMainForm.AddItemToAMenu(TheMenu : TMenu; Item : string;
+                    mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
+var
+    MenuItem : TMenuItem;
+
+        function InsertIntoPopup() : boolean;
+        var
+            X : integer;
+        begin
+            if not TheMenu.ClassNameIs('TPopupMenu') then
+                exit(False);
+            X := TheMenu.Items.Count -1;
+            while X >= 0 do begin
+                if TheMenu.Items[X].IsLine then begin
+                    TheMenu.Items.Insert(X, MenuItem);
+                    exit(True);
+                end;
+                dec(X);
+            end;
+            Result := False;
+        end;
+
+        procedure AddHelpItem();
+        var
+            X : Integer = 0;
+        begin
+            if TheMenu.ClassNameIs('TPopupMenu') then begin
+                while X < TheMenu.Items.Count do begin
+                    if TheMenu.Items[X].Tag = ord(mtHelp) then begin
+                        TheMenu.Items[X].Add(MenuItem);
+                        exit;
+                    end;
+                    inc(X);
+                end;
+            end;
+            while X < FileMenu.Count do begin
+                if FileMenu.Items[X].Tag = ord(mtHelp) then begin
+                    FileMenu.Items[X].Add(MenuItem);
+                    exit;
+                end;
+                inc(X);
+            end;
+        end;
+
+
+begin
+    if Item = '-' then begin
+        if TheMenu.ClassNameIs('TPopupMenu') then
+            TheMenu.Items.AddSeparator;
+        exit;       // we only add separators to popup menus
+    end;
+    MenuItem := TMenuItem.Create(Self);
+    MenuItem.Tag := ord(mtTag);
+    MenuItem.Caption := Item;
+    MenuItem.OnClick := OC;
+    case MenuKind of
+        mkFileMenu   : if TheMenu.ClassNameIs('TPopupMenu') then
+                            TheMenu.Items.Add(MenuItem)
+                            else FileMenu.Add(MenuItem);
+        mkRecentMenu : if not InsertIntoPopup() then
+                            RecentMenu.Add(MenuItem);
+        mkHelpMenu   : AddHelpItem({TheMenu, MenuItem});
+    end;
+end;
+
+procedure TMainForm.AddMenuItem(Item : string; mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
+begin
+    AddItemToAMenu(PopupmenuTray, Item, mtTag, OC, MenuKind);
+    AddItemToAMenu(MainMenu, Item,  mtTag, OC, MenuKind);
+    AddItemToAMenu(PopupMenuSearch, Item, mtTag, OC, MenuKind);
 end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
-//    debugln('Popup =' + inttostr(TPopupMenu(Sender).PopupPoint.x) + ', ' + inttostr(TPopupMenu(Sender).PopupPoint.y));
     PopupMenuTray.PopUp();
 end;
 
@@ -597,27 +671,34 @@ begin
     else FormTomdroid.ShowModal;
 end;
 
-
-procedure TMainForm.MMQuitClick(Sender: TObject);
-begin
-     close;
-end;
-
-// This procedure responds to ALL recent note menu clicks !
-procedure TMainForm.MMRecent1Click(Sender: TObject);
+procedure TMainForm.RecentMenuClicked(Sender: TObject);
 begin
  	if TMenuItem(Sender).Caption <> SearchForm.MenuEmpty then
  		SearchForm.OpenNote(TMenuItem(Sender).Caption);
 end;
 
-procedure TMainForm.MMSearchClick(Sender: TObject);
+// will remove any recent items from all the menus.
+procedure TMainForm.ClearRecentMenuItems();
+var
+    X : integer = 0;
+
+    procedure RemoveRecentFromMenu(AMenu : TPopupMenu);
+    begin
+        X := AMenu.Items.Count;
+        while X > 0 do begin
+            dec(X);
+            if TMenuItem(AMenu.Items[X]).Tag = ord(mtRecent) then
+                AMenu.Items.Delete(X);
+        end;
+    end;
+
 begin
-    if Sett.NoteDirectory = '' then
-        showmessage('You have not set a notes directory. Please click Settings')
-    else  SearchForm.Show;
+    RecentMenu.Clear;
+    RemoveRecentFromMenu(PopupMenuTray);
+    RemoveRecentFromMenu(PopupMenuSearch);
 end;
 
-procedure TMainForm.MMAboutClick(Sender: TObject);
+procedure TMainForm.ShowAbout();
 var
         S1, S2, S3, S4, S5, S6 : string;
 begin

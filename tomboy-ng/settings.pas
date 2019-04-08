@@ -81,6 +81,7 @@ unit settings;
     2018/12/03  Added show splash screen to settings, -g or an indexing error will force show
     2018/12/03  disable checkshowTomdroid on all except Linux
     2019/03/19  Added setting option to show search box at startup
+    2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
 }
 
 {$mode objfpc}{$H+}
@@ -357,7 +358,7 @@ begin
         CheckShowIntLinks.enabled := true;
         ShowIntLinks := CheckShowIntLinks.Checked;
         SetFontSizes();
-	if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
+	    if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
         else if RadioUseLocal.Checked then SyncOption := UseLocal
         else if RadioUseServer.Checked then SyncOption := UseServer;
 	end;
@@ -446,7 +447,7 @@ begin
 
 
 
-
+    // ToDo : er, wots happening here ?  Should i remove code below ?
     exit();
 
         SpellConfig := Spell.SetDictionary(AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex]);
@@ -602,6 +603,7 @@ begin
     CheckSpelling();
     if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
         ButtonSetSynServer.Caption := 'Set File Sync Repo';
+    MainForm.FillInFileMenus();
 end;
 
 procedure TSett.FormDestroy(Sender: TObject);
@@ -928,6 +930,7 @@ begin
             ButtonSetSynServer.Caption:='Change File Sync';
             SettingsChanged();
             NeedRefresh := True;
+            MainForm.FillInFileMenus(True);
         end else
         	LabelSyncRepo.Caption := SyncNotConfig;
 	end;
@@ -956,9 +959,12 @@ end;
 	{ Called when ANY of the setting check boxes change so we can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
-    // ButtonSaveConfig.Enabled := True;
-    SettingsChanged();
+    SettingsChanged();      // Write to disk
     SyncSettings();
+    if not MaskSettingsChanged then
+        if Sender.ClassNameIs('TCheckBox') then
+            if TCheckBox(Sender).Name = 'CheckShowTomdroid' then
+                MainForm.FillInFileMenus(True);
 end;
 
 function TSett.GetLocalTime: ANSIstring;

@@ -2020,7 +2020,7 @@ begin
             VK_H : MenuHighLightClick(Sender);
             VK_U : MenuUnderLineClick(Sender);
             VK_F : MenuItemFindClick(self);
-            VK_N : MainForm.MMNewNoteClick(self);
+            VK_N : SearchForm.OpenNote();      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
             VK_E : InitiateCalc();
             VK_F4 : begin SaveTheNote(); close; end;
             VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;

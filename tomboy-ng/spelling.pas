@@ -256,7 +256,6 @@ begin
     Dec(TheIndex);
     TheWord := '';
     ButtonUseAndNextWord.Enabled := False;
-    { TODO : Should the assignment of ~.text to a local st be global ? }
     //Str_Text := TheKMemo.Blocks.Text;     // much faster ! but tough on memory ?
     while TheIndex > FinishIndex do begin     // remember, first char is #1
         UTFCode := UTF8Copy(Str_Text, TheIndex, 1);
