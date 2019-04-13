@@ -90,6 +90,7 @@ unit SearchUnit;
     2019/02/16  Clear button now calls UseList() to ensure autosize happens.
     2019/03/13  Now pass editbox the searchterm (if any) so it can move cursor to first occurance in note
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
+    2019/04/13  Don't call note_lister.GetNotes more than absolutly necessary.
 }
 
 {$mode objfpc}{$H+}
@@ -306,7 +307,7 @@ begin
     	StringGrid1.SortColRow(True, 1);
         StringGrid1.AutoSizeColumns;              // wots the time penalty there ? new, 9/2/2019
         // T3 := gettickcount64();               // 7mS
-    	NoteLister.LoadStGridNotebooks(StringGridNotebooks);
+     	NoteLister.LoadStGridNotebooks(StringGridNotebooks, not ButtonClearSearch.Enabled);    // ER ..... how do I test if a search is in progress ??
     end;
     // T4 := gettickcount64();                   // 1mS
     RecentMenu();
@@ -382,16 +383,17 @@ begin
 
     { TODO : Unintended - when user clicks "Show All Notes" after using this edit box, this event is triggered. And its slow. Better to make this respond to an Enter Key from OnKeyDown  }
     	if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
+            ButtonClearSearch.Enabled := True;
             // TS1:=gettickcount64();
         	NoteLister.GetNotes(Edit1.Text);
             // TS2:=gettickcount64();
         	NoteLister.LoadSearchGrid(StringGrid1);
+            NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
             // TS3:=gettickcount64();
             // showmessage('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
             // debugln('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
             // releasemode, 50mS-70mS, 4-40mS on my linux laptop, longer on common search terms eg "and"
             // windows box, i5 with SSD, 1800 notes, 330mS + 30mS, 'blar'
-        	ButtonClearSearch.Enabled := True;
         end;
 end;
 
@@ -417,23 +419,23 @@ function TSearchForm.IndexNotes() : integer;
 	// TS1, TS2 : TTimeStamp;
 begin
     // TS1 := DateTimeToTimeStamp(Now);
-    MainForm.CheckStatus();
+    // MainForm.CheckStatus();
     if not Sett.HaveConfig then exit(0);
-    if NoteLister = Nil then begin
-       NoteLister := TNoteLister.Create;
-       NoteLister.DebugMode := Application.HasOption('debug-index');
-       NoteLister.WorkingDir:=Sett.NoteDirectory;
-    end;
+    if NoteLister <> Nil then
+       freeandnil(NoteLister);
+    NoteLister := TNoteLister.Create;
+    NoteLister.DebugMode := Application.HasOption('debug-index');
+    NoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := NoteLister.GetNotes();
     UseList();
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
-    MainForm.UpdateNotesFound(Result);
+    MainForm.UpdateNotesFound(Result);      // Says how many notes found and runs over checklist.
 end;
-
 
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
+    NoteLister := nil;
      //AllowClose := False;
 end;
 

@@ -82,6 +82,7 @@ unit settings;
     2018/12/03  disable checkshowTomdroid on all except Linux
     2019/03/19  Added setting option to show search box at startup
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
+    2019/04/13  Almost rid of NeedRefresh, SearchForm.IndexNotes() instead.
 }
 
 {$mode objfpc}{$H+}
@@ -237,8 +238,9 @@ type
         function GetDefaultNoteDir: string;
         function MyBoolStr(const InBool: boolean) : string;
         procedure SetFontSizes;
-        // Saves all current settings to disk. Call when any change is made.
-        procedure SettingsChanged();
+        // Saves all current settings to disk. Call when any change is made. If unable
+        // to write to disk, returns False;
+        function SettingsChanged(): boolean;
 		procedure SyncSettings;
         //function ZipDate: string;
 
@@ -474,7 +476,7 @@ begin
                LabelDicStatus.Caption := 'Dictionary Loaded OK';
                LabelDic.Caption := FullDicName;
                SettingsChanged();
-               NeedRefresh := True;
+               // NeedRefresh := True;         // ToDo : April '19, don't need this ???
                Result := True;
             end else begin
                 LabelDicStatus.Caption := 'No Dictionary Found';
@@ -690,14 +692,15 @@ begin
         CheckDirectory(NoteDirectory);
         CheckDirectory(LabelSnapDir.Caption);
 	    SyncSettings();
-        NeedRefresh := True;                // Needed ???
+        // NeedRefresh := True;                // ToDo : Needed ??? April 19, dont think so ???
         // ButtonSaveConfig.Enabled := False;
     end else begin      // OK, no config eh ?  We'll set some defaults ...
         if CheckDirectory(NoteDirectory) then begin
             MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
-            SettingsChanged();    // write a initial default file
+            if not SettingsChanged() then // write a initial default file, shows user a message on error
+                HaveConfig := false;
             MaskSettingsChanged := True;
             HaveConfig := True;
         end else begin
@@ -707,59 +710,67 @@ begin
             NoteDirectory := '';
             CheckManyNoteBooks.Checked := False;
             HaveConfig := false;
-            Debugln('We have issues with you directories, suggest you do not proceed !');
+            Debugln('We have (write) issues with your directories, suggest you do not proceed !');
         end;
     end;
 end;
+
 
 function TSett.MyBoolStr(const InBool : boolean) : string;
 begin
     if InBool then result := 'true' else result := 'false';
 end;
 
-procedure TSett.SettingsChanged();
+function TSett.SettingsChanged() : boolean;
 var
 	ConfigFile : TINIFile;
 begin
+    Result := True;
     if MaskSettingsChanged then exit();
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
-        ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
-        ConfigFile.writestring('SyncSettings', 'SyncRepo', LabelSyncRepo.Caption);
-        if CheckManyNoteBooks.checked then
-            Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
-        else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
-        if CheckCaseSensitive.checked then
-            Configfile.writestring('BasicSettings', 'CaseSensitive', 'true')
-        else Configfile.writestring('BasicSettings', 'CaseSensitive', 'false');
-        if CheckAnyCombination.checked then
-            Configfile.writestring('BasicSettings', 'AnyCombination', 'true')
-        else Configfile.writestring('BasicSettings', 'AnyCombination', 'false');
-        if CheckShowIntLinks.Checked then
-            ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
-        else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
-        ConfigFile.writestring('BasicSettings', 'ShowTomdroid',      MyBoolStr(CheckShowTomdroid.Checked));
-        ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
-        ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
-        ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));
-        if RadioFontBig.Checked then
-            ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
-        else if RadioFontMedium.Checked then
-            ConfigFile.writestring('BasicSettings', 'FontSize', 'medium')
-        else if RadioFontSmall.Checked then
-            ConfigFile.writestring('BasicSettings', 'FontSize', 'small');
-	    if RadioAlwaysAsk.Checked then
-            ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
-        else if RadioUseLocal.Checked then
-            ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
-        else if RadioUseServer.Checked then
-            ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
-        if SpellConfig then begin
-            ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
-            ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
+        try
+            ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
+            ConfigFile.writestring('SyncSettings', 'SyncRepo', LabelSyncRepo.Caption);
+            if CheckManyNoteBooks.checked then
+                Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
+            else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
+            if CheckCaseSensitive.checked then
+                Configfile.writestring('BasicSettings', 'CaseSensitive', 'true')
+            else Configfile.writestring('BasicSettings', 'CaseSensitive', 'false');
+            if CheckAnyCombination.checked then
+                Configfile.writestring('BasicSettings', 'AnyCombination', 'true')
+            else Configfile.writestring('BasicSettings', 'AnyCombination', 'false');
+            if CheckShowIntLinks.Checked then
+                ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
+            else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
+            ConfigFile.writestring('BasicSettings', 'ShowTomdroid',      MyBoolStr(CheckShowTomdroid.Checked));
+            ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
+            ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
+            ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));
+            if RadioFontBig.Checked then
+                ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
+            else if RadioFontMedium.Checked then
+                ConfigFile.writestring('BasicSettings', 'FontSize', 'medium')
+            else if RadioFontSmall.Checked then
+                ConfigFile.writestring('BasicSettings', 'FontSize', 'small');
+	        if RadioAlwaysAsk.Checked then
+                ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
+            else if RadioUseLocal.Checked then
+                ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
+            else if RadioUseServer.Checked then
+                ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
+            if SpellConfig then begin
+                ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
+                ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
+            end;
+        finally
+    	    ConfigFile.Free;
         end;
-    finally
-    	ConfigFile.Free;
+    except on E: Exception do begin
+            showmessage('Unable to write config to ' + LabelSettingPath.Caption);
+            Result := False;
+        end;
     end;
     // debugln('just wrote a settings file out');
 end;
@@ -783,7 +794,8 @@ begin
     else begin
         SettingsChanged();
         SyncSettings();
-        NeedRefresh := True;
+        SearchForm.IndexNotes();
+        //NeedRefresh := True;
     end;
 end;
 
@@ -812,15 +824,15 @@ begin
             // CheckReadOnly.enabled := true;
             SettingsChanged();
             SyncSettings();
-            NeedRefresh := True;
+            // NeedRefresh := True;     // ToDo : April 19, not needed ?
+            SearchForm.IndexNotes();
         end else
             NoteDirectory := LabelNotesPath.caption;
-        // SearchForm.IndexNotes();
 	end;
 end;
 
 { --------------------- S N A P S H O T S ------------------- }
-{ Totally invalid rule of thumb -
+{ Totally unvalidated rule of thumb -
   About a 100 notes = ~ 1Gbytes, we get about 4:1 compression with zipper.
   120ms on lowend laptop.
 }
@@ -907,8 +919,8 @@ begin
     else FormSync.TransPort := SyncNextRuby;
     if FormSync.Visible then
         FormSync.Show
-    else
-    	NeedRefresh := (FormSync.ShowModal = mrOK);
+    else                                             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
+    	{NeedRefresh := (}FormSync.ShowModal{ = mrOK)};     // ToDo : test and remove this mess !
 end;
 
 
@@ -929,7 +941,7 @@ begin
             LabelSyncRepo.Caption := FormSync.RemoteRepo;
             ButtonSetSynServer.Caption:='Change File Sync';
             SettingsChanged();
-            NeedRefresh := True;
+            // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
             MainForm.FillInFileMenus(True);
         end else
         	LabelSyncRepo.Caption := SyncNotConfig;

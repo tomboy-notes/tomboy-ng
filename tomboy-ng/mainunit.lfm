@@ -81,14 +81,6 @@ object MainForm: TMainForm
     Caption = 'Have Config'
     ParentColor = False
   end
-  object Label2: TLabel
-    Left = 56
-    Height = 19
-    Top = 112
-    Width = 108
-    Caption = 'Have Notes Dir'
-    ParentColor = False
-  end
   object ImageNotesDirTick: TImage
     Left = 24
     Height = 18
@@ -346,9 +338,9 @@ object MainForm: TMainForm
     ShowHint = True
   end
   object LabelNotesFound: TLabel
-    Left = 8
+    Left = 56
     Height = 19
-    Top = 240
+    Top = 111
     Width = 10
     Caption = 'X'
     ParentColor = False

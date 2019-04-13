@@ -47,6 +47,7 @@ unit Mainunit;
     2019/03/19  Added a checkbox to hide screen on future startups
     2019/03/19  Added setting option to show search box at startup
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
+    2019/04/13  Mv numb notes to tick line, QT5, drop CheckStatus()
 
 
     CommandLine Switches
@@ -113,7 +114,6 @@ type
         ImageSyncTick: TImage;
         Label1: TLabel;
         LabelError: TLabel;
-        Label2: TLabel;
         Label3: TLabel;
         Label4: TLabel;
         Label5: TLabel;
@@ -167,8 +167,8 @@ type
         procedure RecentMenuClicked(Sender: TObject);
             { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode }
         procedure ShowHelpNote(HelpNoteName: string);
+            { Updates status data on MainForm, tick list }
         procedure UpdateNotesFound(Numb: integer);
-        procedure CheckStatus();
         { Opens a note in single note mode. Pass a full file name, a bool that closes whole app
         on exit and one that indicates ReadOnly mode. }
         procedure SingleNoteMode(FullFileName: string; const CloseOnExit, ViewerMode : boolean);
@@ -309,8 +309,8 @@ begin
         end;
         LabelNoDismiss1.Caption:='';
         LabelNoDismiss2.Caption := '';
-        CheckStatus();
-        SearchForm.IndexNotes(); // also calls Checkstatus but safe to call anytime, calls UpdateNotesFound()
+        // CheckStatus();
+        SearchForm.IndexNotes(); // also calls Checkstatus, calls UpdateNotesFound()
         if SearchForm.NoteLister.XMLError then begin
             LabelError.Caption := 'Failed to index one or more notes.';
             AllowDismiss := False;
@@ -340,16 +340,12 @@ end;
 procedure TMainForm.UpdateNotesFound(Numb : integer);
 begin
     LabelNotesFound.Caption := 'Found ' + inttostr(Numb) + ' notes';
-end;
-
-procedure TMainForm.CheckStatus();
-begin
-     ImageConfigCross.Left := ImageConfigTick.Left;
+         ImageConfigCross.Left := ImageConfigTick.Left;
      ImageConfigTick.Visible := Sett.HaveConfig;
      ImageConfigCross.Visible := not ImageConfigTick.Visible;
 
      ImageNotesDirCross.Left := ImageNotesDirTick.Left;
-     ImageNotesDirTick.Visible := (Sett.NoteDirectory <> '');
+     ImageNotesDirTick.Visible := Numb > 0;
      ImageNotesDirCross.Visible := not ImageNotesDirTick.Visible;
 
      ImageSpellCross.Left := ImageSpellTick.Left;
@@ -366,7 +362,6 @@ begin
         if UseTrayMenu then
             TrayIcon.Show;
      end;
-     // TrayMenuTomdroid.Visible := Sett.CheckShowTomdroid.Checked;
 end;
 
 procedure TMainForm.ButtonDismissClick(Sender: TObject);
@@ -406,10 +401,12 @@ var
   {$endif}
 begin
     {$ifdef LINUX}
+    {$ifndef LCLQT5}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     t := Clipboard.AsText;
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
+    {$endif}
     {$endif}
     freeandnil(HelpNotes);
 end;
@@ -667,8 +664,10 @@ end;
 
 procedure TMainForm.TrayMenuTomdroidClick(Sender: TObject);
 begin
+
     if FormTomdroid.Visible then FormTomdroid.BringToFront
     else FormTomdroid.ShowModal;
+
 end;
 
 procedure TMainForm.RecentMenuClicked(Sender: TObject);
@@ -709,8 +708,9 @@ begin
         S5 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
         // That may return, eg "Build date 2019/02/28 TargetCPU x86_64 OS Linux Mate"
         // or, maybe "Build date 2019/03/19 TargetCPU i386 OS Win32"
-        S6 := '';
-        {$ifdef LCLCOCOA}S6 := ' 64bit Cocoa Version';{$endif}
+        S6 := #10;
+        {$ifdef LCLCOCOA}S6 := S6 + ' 64bit Cocoa Version';{$endif}
+        {$ifdef LCLQT5}S6 := S6 + ' QT5 version'; {$endif}
         S6 := S6 + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
         Showmessage(S1 + S2 + S3 + S4 + S5 + S6);
 end;

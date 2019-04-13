@@ -50,7 +50,7 @@ unit Note_Lister;
     2018/08/24  Debugmode now set by calling process.
     2018/11/04  Added support for updating NoteList after a sync.
     2018/12/29  Small improvements in time to save a file.
-
+    2019/04/13  Tweaks to overload to read help nodes
 }
 
 {$mode objfpc}
@@ -136,7 +136,7 @@ type
    	SearchNoteList : TNoteList;
     NoteBookList : TNoteBookList;
     		{ Returns a simple note file name, accepts simple filename or ID }
- function CleanFileName(const FileOrID: AnsiString): ANSIString;
+    function CleanFileName(const FileOrID: AnsiString): ANSIString;
     procedure CleanupList(const Lst : TNoteList);
    	procedure GetNoteDetails(const Dir, FileName: ANSIString;
         const SearchTerm: ANSIString; DontTestName: boolean=false);
@@ -170,23 +170,27 @@ type
               many notebooks.  }
     procedure SetNotebookMembership(const ID: ansistring; const MemberList: TStringList);
     		{ If ID is empty, always returns false, puts all Notebook names in strlist.
-            If ID is not empty, list is filtered for only ones that have that ID
+            If ID is not empty, list is filtered for only notebooks that have that ID
             and returns True iff the passed ID is that of a Template.  A Notebook
             Template will have only one Notebook name in its Tags and that will
             be added to strlist. The StartHere template won't have a Notebook Name
             and therefore wont get mixed up here ???? }
    function GetNotebooks(const NBList : TStringList; const ID : ANSIString = '') : boolean;
-    		{ Loads the Notebook StringGrid up with the Notebook names we know about }
-	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid);
+    		{ Loads the Notebook StringGrid up with the Notebook names we know about.
+              Add a bool to indicate we should only show Notebooks that have one or more
+              notes mentioned in SearchNoteList. Call after GetNotes(Term) }
+	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid;
+        SearchListOnly: boolean);
             { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
     		{ Read the metadata from all the notes in internal data structure,
               this is the main "go and do it" function.
               If 'term' is present we'll just search for notes with that term
-              and store date in a different structure. }
+              and store date in a different structure. And probably call LoadSearchGrid() }
    	function GetNotes(const Term: ANSIstring=''; DontTestName: boolean=false
         ): longint;
-    		{ Copy the internal Note data to the passed TStringGrid, empting it first }
+    		{ Copy the internal Note data to the passed TStringGrid, empting it first.
+              This is the full note list.}
    	procedure LoadStGrid(const Grid : TStringGrid);
     		{ Returns True if its updated the internal record as indicated,
               will accept either an ID or a filename. }
@@ -203,13 +207,18 @@ type
     function NextNoteTitle(out SearchTerm : ANSIString) : boolean;
     		{ removes note from int data, accepting either an ID or Filename }
     function DeleteNote(const ID : ANSIString) : boolean;
-			{ Copy the internal data to the passed TStringGrid, empting it first }
+			{ Copy the internal data to the passed TStringGrid, empting it first
+              call after a call to GetNotes(term), a non empty term triggering a disk
+              search and filling in SearchNoteList.}
 	procedure LoadSearchGrid(const Grid : TStringGrid);
-    		{ Copy the internal data about notes in passed Notebook to passed TStringGrid }
+    		{ Copy the internal data about notes in passed Notebook to passed TStringGrid
+              for display. So, shown would be all the notes in the nominated notebook.}
     procedure LoadNotebookGrid(const Grid : TStringGrid; const NotebookName : AnsiString);
     		{ Returns the ID (inc .note) of the notebook Template, if an empty string we did
               not find a) the Entry in NotebookList or b) the entry had a blank template. }
     function NotebookTemplateID(const NotebookName : ANSIString) : AnsiString;
+
+    constructor Create;
     destructor Destroy; override;
    end;
 
@@ -377,6 +386,7 @@ begin
     Result := '';
 end;
 
+
 procedure TNoteLister.DeleteNoteBookwithID(FileorID: AnsiString);
 var
     Index : integer;
@@ -424,16 +434,31 @@ begin
             end;
 end;
 
-procedure TNoteLister.LoadStGridNotebooks(const NotebookGrid : TStringGrid);
+procedure TNoteLister.LoadStGridNotebooks(const NotebookGrid : TStringGrid; SearchListOnly : boolean);
 var
     Index : integer;
+
+    // D A N G E R     U N T E S T E D
+    function FindInSearchList(NB : PNoteBook) : boolean;
+    var  X : integer = 0;
+    begin
+        result := true;
+        while X < NB^.Notes.Count do begin
+            if Nil <> SearchNoteList.FindID(NB^.Notes[X]) then
+                exit;
+            inc(X);
+        end;
+        result := false;
+    end;
+
 begin
     NotebookGrid.Clear;
     NotebookGrid.FixedRows:=0;
     NotebookGrid.InsertRowWithValues(0, ['Notebooks']);
     NotebookGrid.FixedRows:=1;
     for Index := 0 to NotebookList.Count - 1 do begin
-        NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
+        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then
+            NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
         // debugln('Add row to grid');
 	end;
     NotebookGrid.AutoSizeColumns;
@@ -512,7 +537,7 @@ begin
   			    ReadXMLFile(Doc, Dir + FileName);
   			    Node := Doc.DocumentElement.FindNode('title');
       		    NoteP^.Title := Node.FirstChild.NodeValue;
-                if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
+                //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
                 Node := Doc.DocumentElement.FindNode('last-change-date');
                 NoteP^.LastChange := Node.FirstChild.NodeValue;
                 NoteP^.OpenNote := nil;
@@ -652,25 +677,26 @@ var
     Info : TSearchRec;
 begin
     XMLError := False;
-    //DebugMode := Application.HasOption('debug-index');
     if Term = '' then begin
         NoteList.Free;
     	NoteList := TNoteList.Create;
+        NoteBookList.Free;
+        NoteBookList := TNoteBookList.Create;
+        if DebugMode then debugln('Empty Note and Book Lists created');
 	end else begin
+        if DebugMode then debugln('Empty Search Lists created');
         SearchNoteList.Free;
     	SearchNoteList := TNoteList.Create;
     end;
-    NoteBookList.Free;
-    NoteBookList := TNoteBookList.Create;
     FreeandNil(ErrorNotes);
     ErrorNotes := TStringList.Create;
-    if DebugMode then debugln('Empty Lists created');
+
     if WorkingDir = '' then
     	DebugLn('In GetNotes with a blank working dir, thats going to lead to tears....');
     if DebugMode then debugln('Looking for notes in [' + WorkingDir + ']');
   	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then begin
   		repeat
-            if DebugMode then debugln('Checking note [' + Info.Name + ']');
+            //if DebugMode then debugln('Checking note [' + Info.Name + ']');
   			GetNoteDetails(WorkingDir, Info.Name, Term, DontTestName);
   		until FindNext(Info) <> 0;
   	end;
@@ -684,6 +710,11 @@ begin
     	CleanUpList(SearchNoteList);
 		result := NoteList.Count;
 	end;
+
+
+    debugln('Done GetNotes Notebooks = ' + inttostr(NotebookList.Count) + ' Term is [' + Term + '] and Working Dir=' + WorkingDir );
+
+
 end;
 
 
@@ -857,6 +888,13 @@ begin
         DebugLn('Failed to remove ref to note in NoteLister ', ID);
 end;
 
+constructor TNoteLister.Create;
+begin
+    SearchNoteList := nil;
+    NoteList := nil;
+    NoteBookList := Nil;
+    ErrorNotes := Nil;
+end;
 
 
 destructor TNoteLister.Destroy;

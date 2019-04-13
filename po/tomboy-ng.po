@@ -203,10 +203,6 @@ msgstr ""
 msgid "Have Config"
 msgstr ""
 
-#: tmainform.label2.caption
-msgid "Have Notes Dir"
-msgstr ""
-
 #: tmainform.label3.caption
 msgid "Dictionary Config (optional)"
 msgstr ""

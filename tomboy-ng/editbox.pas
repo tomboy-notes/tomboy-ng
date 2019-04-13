@@ -177,6 +177,7 @@ unit EditBox;
     2019/02/12  Fixed UTF8 bug in MakeAllLinks(), a touch faster now too !
     2019/02/23  Bug in column calc - how this that slip through ?
     2019/03/13  Better local search capability and go to first term if opening result of Search
+    2019/04/13  Lockupdate while setting whole note text colour.
 }
 
 
@@ -1212,7 +1213,6 @@ var
     ItsANewNote : boolean = false;
 begin
     if Ready then exit();				// its a "re-show" event. Already have a note loaded.
-
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
@@ -1229,15 +1229,13 @@ begin
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
     else
-    if NoteFileName = '' then begin		// might be a new note or a new note from Link
-        if NoteTitle = '' then              // New Note
-			NoteTitle := NewNoteTitle();
-        ItsANewNote := True;
-	end else begin
-	    Caption := NoteFileName;
-
+        if NoteFileName = '' then begin		// might be a new note or a new note from Link
+            if NoteTitle = '' then              // New Note
+			    NoteTitle := NewNoteTitle();
+            ItsANewNote := True;
+	    end else begin
+	        Caption := NoteFileName;
      	    ImportNote(NoteFileName);		// also sets Caption and Createdate
-
             if TemplateIs <> '' then begin
                 NoteFilename := '';
                 NoteTitle := NewNoteTitle();
@@ -1268,8 +1266,10 @@ begin
         KMemo1.executecommand(ecEditorTop);
         KMemo1.ExecuteCommand(ecDown);          // DRB Playing
     end;
+    KMemo1.Blocks.LockUpdate;
     KMemo1.Colors.BkGnd:= Sett.BackGndColour;
     Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
+    KMemo1.Blocks.UnLockUpdate;
 end;
 
 	{ This gets called when the TrayMenu quit entry is clicked }
