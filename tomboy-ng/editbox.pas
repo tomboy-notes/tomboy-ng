@@ -421,7 +421,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     LazFileUtils,		// For ExtractFileName()
     Spelling,
     NoteBook,
-    MainUnit,
+    {MainUnit,     }    // Not needed now, April, 2019 after menu and search restructure
     SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
     Markdown,

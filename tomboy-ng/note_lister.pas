@@ -438,11 +438,12 @@ procedure TNoteLister.LoadStGridNotebooks(const NotebookGrid : TStringGrid; Sear
 var
     Index : integer;
 
-    // D A N G E R     U N T E S T E D
     function FindInSearchList(NB : PNoteBook) : boolean;
     var  X : integer = 0;
     begin
         result := true;
+        if Nil = SearchNoteList then
+            exit;
         while X < NB^.Notes.Count do begin
             if Nil <> SearchNoteList.FindID(NB^.Notes[X]) then
                 exit;
@@ -457,9 +458,9 @@ begin
     NotebookGrid.InsertRowWithValues(0, ['Notebooks']);
     NotebookGrid.FixedRows:=1;
     for Index := 0 to NotebookList.Count - 1 do begin
-        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then
+        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then begin
             NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
-        // debugln('Add row to grid');
+        end;
 	end;
     NotebookGrid.AutoSizeColumns;
 end;
@@ -710,11 +711,6 @@ begin
     	CleanUpList(SearchNoteList);
 		result := NoteList.Count;
 	end;
-
-
-    debugln('Done GetNotes Notebooks = ' + inttostr(NotebookList.Count) + ' Term is [' + Term + '] and Working Dir=' + WorkingDir );
-
-
 end;
 
 

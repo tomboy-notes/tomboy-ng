@@ -2,10 +2,10 @@ object SearchForm: TSearchForm
   Left = 480
   Height = 342
   Top = 172
-  Width = 724
+  Width = 940
   Caption = 'SearchForm'
   ClientHeight = 342
-  ClientWidth = 724
+  ClientWidth = 940
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -15,13 +15,14 @@ object SearchForm: TSearchForm
   object Edit1: TEdit
     AnchorSideLeft.Control = SpeedButton1
     AnchorSideLeft.Side = asrBottom
-    AnchorSideRight.Control = ButtonSearchMode
-    Left = 35
+    AnchorSideTop.Control = ButtonRefresh
+    AnchorSideRight.Control = CheckBoxCaseSensitive
+    Left = 37
     Height = 29
-    Top = 5
-    Width = 384
-    Anchors = [akLeft, akRight]
-    BorderSpacing.Left = 3
+    Top = 6
+    Width = 555
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Left = 5
     BorderSpacing.Right = 1
     OnEditingDone = Edit1EditingDone
     OnEnter = Edit1Enter
@@ -30,28 +31,10 @@ object SearchForm: TSearchForm
     TabOrder = 0
     Text = 'Search'
   end
-  object ButtonClearSearch: TButton
-    AnchorSideLeft.Control = Edit1
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideRight.Control = ButtonRefresh
-    Left = 520
-    Height = 27
-    Hint = 'Clears the search'
-    Top = 6
-    Width = 100
-    Anchors = [akRight]
-    BorderSpacing.Right = 1
-    Caption = 'Clear'
-    OnClick = ButtonClearSearchClick
-    OnKeyDown = FormKeyDown
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 1
-  end
   object ButtonRefresh: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 621
+    Left = 837
     Height = 27
     Hint = 'Indexes on disk notes'
     Top = 6
@@ -63,7 +46,7 @@ object SearchForm: TSearchForm
     OnKeyDown = FormKeyDown
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 2
+    TabOrder = 1
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
@@ -74,20 +57,20 @@ object SearchForm: TSearchForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 308
-    Top = 34
-    Width = 724
+    Height = 307
+    Top = 35
+    Width = 940
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel1'
-    ClientHeight = 308
-    ClientWidth = 724
-    TabOrder = 3
+    ClientHeight = 307
+    ClientWidth = 940
+    TabOrder = 2
     object Splitter1: TSplitter
       AnchorSideTop.Control = Panel1
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 152
-      Height = 306
+      Height = 305
       Top = 1
       Width = 5
       Align = alNone
@@ -95,12 +78,12 @@ object SearchForm: TSearchForm
     end
     object StringGridNotebooks: TStringGrid
       AnchorSideLeft.Control = Panel1
-      AnchorSideTop.Control = ButtonShowAllNotes
+      AnchorSideTop.Control = ButtonClearFilters
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = ButtonNotebookOptions
       Left = 1
-      Height = 257
+      Height = 256
       Top = 25
       Width = 151
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -133,9 +116,9 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 160
-      Height = 303
+      Height = 302
       Top = 1
-      Width = 560
+      Width = 776
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 3
       BorderSpacing.Right = 3
@@ -165,20 +148,21 @@ object SearchForm: TSearchForm
         'Last Changed'
       )
     end
-    object ButtonShowAllNotes: TButton
+    object ButtonClearFilters: TButton
       AnchorSideRight.Control = Splitter1
       Left = 1
       Height = 25
       Top = 0
       Width = 151
       Anchors = [akTop, akLeft, akRight]
-      Caption = 'Show All Notes'
-      OnClick = ButtonShowAllNotesClick
+      Caption = 'Clear Filters'
+      Enabled = False
+      OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
       TabOrder = 3
     end
     object ButtonNotebookOptions: TButton
-      AnchorSideTop.Control = ButtonShowAllNotes
+      AnchorSideTop.Control = ButtonClearFilters
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = Panel1
@@ -186,7 +170,7 @@ object SearchForm: TSearchForm
       Left = -8
       Height = 25
       Hint = 'Manage the Notebooks'
-      Top = 282
+      Top = 281
       Width = 160
       Anchors = [akLeft, akRight, akBottom]
       Caption = 'Notebook Options'
@@ -197,17 +181,6 @@ object SearchForm: TSearchForm
       ShowHint = True
       TabOrder = 4
     end
-  end
-  object ButtonSearchMode: TButton
-    AnchorSideRight.Control = ButtonClearSearch
-    Left = 420
-    Height = 27
-    Top = 6
-    Width = 100
-    Anchors = [akRight]
-    Caption = 'Mode'
-    OnClick = ButtonSearchModeClick
-    TabOrder = 4
   end
   object SpeedButton1: TSpeedButton
     AnchorSideLeft.Control = Owner
@@ -294,6 +267,32 @@ object SearchForm: TSearchForm
     }
     OnClick = SpeedButton1Click
   end
+  object CheckBoxCaseSensitive: TCheckBox
+    AnchorSideTop.Control = ButtonRefresh
+    AnchorSideRight.Control = CheckBoxAnyCombo
+    Left = 593
+    Height = 23
+    Top = 6
+    Width = 127
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 5
+    Caption = 'Case Sensitive'
+    OnChange = CheckBoxCaseSensitiveChange
+    TabOrder = 3
+  end
+  object CheckBoxAnyCombo: TCheckBox
+    AnchorSideTop.Control = ButtonRefresh
+    AnchorSideRight.Control = ButtonRefresh
+    Left = 725
+    Height = 23
+    Top = 6
+    Width = 107
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 5
+    Caption = 'Any Combo'
+    OnChange = CheckBoxAnyComboChange
+    TabOrder = 4
+  end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 472
     top = 112
@@ -312,20 +311,6 @@ object SearchForm: TSearchForm
     object MenuNewNoteFromTemplate: TMenuItem
       Caption = 'Create New Note from Template'
       OnClick = MenuNewNoteFromTemplateClick
-    end
-  end
-  object PopupSearchMode: TPopupMenu
-    left = 248
-    top = 119
-    object MenuCaseSensitive: TMenuItem
-      Caption = 'Case Sensitive'
-      Checked = True
-      OnClick = MenuCaseSensitiveClick
-    end
-    object MenuAnyCombination: TMenuItem
-      Caption = 'Any Combination'
-      Checked = True
-      OnClick = MenuAnyCombinationClick
     end
   end
 end

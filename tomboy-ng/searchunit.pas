@@ -91,6 +91,7 @@ unit SearchUnit;
     2019/03/13  Now pass editbox the searchterm (if any) so it can move cursor to first occurance in note
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
     2019/04/13  Don't call note_lister.GetNotes more than absolutly necessary.
+    2019/04/15  One Clear Filters button to replace Clea and Show All Notes. Checkboxes Mode instead of menu
 }
 
 {$mode objfpc}{$H+}
@@ -106,19 +107,16 @@ type
     { TSearchForm }
 
     TSearchForm = class(TForm)
-        ButtonSearchMode: TButton;
 			ButtonNotebookOptions: TButton;
-			ButtonShowAllNotes: TButton;
+			ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
-        ButtonClearSearch: TButton;
+        CheckBoxCaseSensitive: TCheckBox;
+        CheckBoxAnyCombo: TCheckBox;
         Edit1: TEdit;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
-        MenuCaseSensitive: TMenuItem;
-        MenuAnyCombination: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
-        PopupSearchMode: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         SpeedButton1: TSpeedButton;
 		Splitter1: TSplitter;
@@ -126,10 +124,11 @@ type
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         StringGrid1: TStringGrid;
         procedure ButtonSearchModeClick(Sender: TObject);
-  procedure ButtonClearSearchClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
-		procedure ButtonShowAllNotesClick(Sender: TObject);
+		procedure ButtonClearFiltersClick(Sender: TObject);
+        procedure CheckBoxAnyComboChange(Sender: TObject);
+        procedure CheckBoxCaseSensitiveChange(Sender: TObject);
 		procedure Edit1EditingDone(Sender: TObject);
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
@@ -139,10 +138,8 @@ type
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
             );
 		procedure FormShow(Sender: TObject);
-        procedure MenuAnyCombinationClick(Sender: TObject);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
-        procedure MenuCaseSensitiveClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         procedure SpeedButton1Click(Sender: TObject);
 		procedure StringGridNotebooksClick(Sender: TObject);
@@ -267,7 +264,7 @@ begin
     if NoteLister.IsATemplate(ShortFileName) then begin
         NoteLister.DeleteNoteBookwithID(ShortFileName);
       	DeleteFileUTF8(FullFileName);
-        ButtonShowAllNotesClick(self);
+        ButtonClearFiltersClick(self);
     end else begin
 		NoteLister.DeleteNote(ShortFileName);
      	NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ShortFileName + '.note';
@@ -307,7 +304,7 @@ begin
     	StringGrid1.SortColRow(True, 1);
         StringGrid1.AutoSizeColumns;              // wots the time penalty there ? new, 9/2/2019
         // T3 := gettickcount64();               // 7mS
-     	NoteLister.LoadStGridNotebooks(StringGridNotebooks, not ButtonClearSearch.Enabled);    // ER ..... how do I test if a search is in progress ??
+     	NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
     end;
     // T4 := gettickcount64();                   // 1mS
     RecentMenu();
@@ -353,48 +350,35 @@ begin
     IndexNotes();
 end;
 
-procedure TSearchForm.ButtonClearSearchClick(Sender: TObject);
+procedure TSearchForm.CheckBoxCaseSensitiveChange(Sender: TObject);
 begin
-        UseList();
-        ButtonClearSearch.Enabled := False;
-        Edit1.Text := 'Search';
+     Sett.CheckCaseSensitive.Checked := CheckBoxCaseSensitive.Checked;
 end;
 
-procedure TSearchForm.ButtonSearchModeClick(Sender: TObject);
+procedure TSearchForm.CheckBoxAnyComboChange(Sender: TObject);
 begin
-    PopupSearchMode.PopUp();
+    Sett.CheckAnyCombination.Checked := CheckBoxAnyCombo.Checked;
 end;
 
-procedure TSearchForm.MenuAnyCombinationClick(Sender: TObject);
-begin
-    MenuAnyCombination.Checked := not MenuAnyCombination.Checked;
-    Sett.CheckAnyCombination.Checked := MenuAnyCombination.Checked;
-end;
-
-procedure TSearchForm.MenuCaseSensitiveClick(Sender: TObject);
-begin
-    MenuCaseSensitive.Checked:= not MenuCaseSensitive.Checked;
-    Sett.CheckCaseSensitive.Checked:= MenuCaseSensitive.Checked;
-end;
 procedure TSearchForm.Edit1EditingDone(Sender: TObject);
 {var
    TS1, TS2, TS3, TS4 : qword;           // Temp time stamping to test speed       }
 begin
-
-    { TODO : Unintended - when user clicks "Show All Notes" after using this edit box, this event is triggered. And its slow. Better to make this respond to an Enter Key from OnKeyDown  }
-    	if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
-            ButtonClearSearch.Enabled := True;
-            // TS1:=gettickcount64();
-        	NoteLister.GetNotes(Edit1.Text);
-            // TS2:=gettickcount64();
-        	NoteLister.LoadSearchGrid(StringGrid1);
-            NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
-            // TS3:=gettickcount64();
-            // showmessage('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
-            // debugln('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
-            // releasemode, 50mS-70mS, 4-40mS on my linux laptop, longer on common search terms eg "and"
-            // windows box, i5 with SSD, 1800 notes, 330mS + 30mS, 'blar'
-        end;
+    if (Edit1.Text = '') then
+        ButtonClearFiltersClick(self);
+    if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
+        ButtonClearFilters.Enabled := True;
+        // TS1:=gettickcount64();
+        NoteLister.GetNotes(Edit1.Text);
+        // TS2:=gettickcount64();
+        NoteLister.LoadSearchGrid(StringGrid1);
+        NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
+        // TS3:=gettickcount64();
+        // showmessage('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
+        // debugln('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
+        // releasemode, 50mS-70mS, 4-40mS on my linux laptop, longer on common search terms eg "and"
+        // windows box, i5 with SSD, 1800 notes, 330mS + 30mS, 'blar'
+    end;
 end;
 
 procedure TSearchForm.Edit1Enter(Sender: TObject);
@@ -457,10 +441,9 @@ end;
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
     Left := Placement + random(Placement*2);
-    ButtonClearSearch.Enabled := False;
     // Edit1.Text:= 'Search';
-    MenuCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
-    MenuAnyCombination.Checked := Sett.CheckAnyCombination.Checked;
+    CheckBoxCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
+    CheckBoxAnyCombo.Checked := Sett.CheckAnyCombination.Checked;
 end;
 
 
@@ -549,22 +532,33 @@ end;
 
 { ----------------- NOTEBOOK STUFF -------------------- }
 
-
-procedure TSearchForm.ButtonShowAllNotesClick(Sender: TObject);
+    // This button clears both search term (if any) and restores all notebooks and
+    // displays all available notes.
+procedure TSearchForm.ButtonClearFiltersClick(Sender: TObject);
 begin
         ButtonNotebookOptions.Enabled := False;
+        ButtonClearFilters.Enabled := False;
         StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
         UseList();
         StringGridNoteBooks.Hint := '';
         StringGrid1.AutoSizeColumns;
+        Edit1.Text := 'Search';
 end;
+
+
 
 procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
 begin
         ButtonNotebookOptions.Enabled := True;
+        ButtonClearFilters.Enabled := True;
         StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
         UseList();
         StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+end;
+
+procedure TSearchForm.ButtonSearchModeClick(Sender: TObject);
+begin
+
 end;
 
 procedure TSearchForm.ButtonNotebookOptionsClick(Sender: TObject);

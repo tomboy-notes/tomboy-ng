@@ -241,12 +241,8 @@ msgctxt "tmainform.labelnotesfound.caption"
 msgid "X"
 msgstr ""
 
-#: tsearchform.buttonclearsearch.caption
-msgid "Clear"
-msgstr ""
-
-#: tsearchform.buttonclearsearch.hint
-msgid "Clears the search"
+#: tsearchform.buttonclearfilters.caption
+msgid "Clear Filters"
 msgstr ""
 
 #: tsearchform.buttonnotebookoptions.caption
@@ -265,31 +261,22 @@ msgstr ""
 msgid "Indexes on disk notes"
 msgstr ""
 
-#: tsearchform.buttonsearchmode.caption
-msgid "Mode"
-msgstr ""
-
-#: tsearchform.buttonshowallnotes.caption
-msgid "Show All Notes"
-msgstr ""
-
 #: tsearchform.caption
 msgid "SearchForm"
+msgstr ""
+
+#: tsearchform.checkboxanycombo.caption
+msgid "Any Combo"
+msgstr ""
+
+#: tsearchform.checkboxcasesensitive.caption
+msgctxt "tsearchform.checkboxcasesensitive.caption"
+msgid "Case Sensitive"
 msgstr ""
 
 #: tsearchform.edit1.text
 msgctxt "tsearchform.edit1.text"
 msgid "Search"
-msgstr ""
-
-#: tsearchform.menuanycombination.caption
-msgctxt "tsearchform.menuanycombination.caption"
-msgid "Any Combination"
-msgstr ""
-
-#: tsearchform.menucasesensitive.caption
-msgctxt "tsearchform.menucasesensitive.caption"
-msgid "Case Sensitive"
 msgstr ""
 
 #: tsearchform.menudeletenotebook.caption
