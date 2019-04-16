@@ -1,11 +1,11 @@
 object SearchForm: TSearchForm
-  Left = 480
-  Height = 342
-  Top = 172
-  Width = 940
+  Left = 504
+  Height = 599
+  Top = 192
+  Width = 1037
   Caption = 'SearchForm'
-  ClientHeight = 342
-  ClientWidth = 940
+  ClientHeight = 599
+  ClientWidth = 1037
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -19,8 +19,8 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = CheckBoxCaseSensitive
     Left = 37
     Height = 29
-    Top = 6
-    Width = 555
+    Top = 3
+    Width = 652
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 5
     BorderSpacing.Right = 1
@@ -32,14 +32,16 @@ object SearchForm: TSearchForm
     Text = 'Search'
   end
   object ButtonRefresh: TButton
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 837
+    Left = 934
     Height = 27
     Hint = 'Indexes on disk notes'
-    Top = 6
+    Top = 3
     Width = 100
-    Anchors = [akRight]
+    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 3
     BorderSpacing.Right = 3
     Caption = 'Refresh'
     OnClick = ButtonRefreshClick
@@ -57,24 +59,25 @@ object SearchForm: TSearchForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 307
-    Top = 35
-    Width = 940
+    Height = 566
+    Top = 33
+    Width = 1037
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Top = 1
     Caption = 'Panel1'
-    ClientHeight = 307
-    ClientWidth = 940
+    ClientHeight = 566
+    ClientWidth = 1037
     TabOrder = 2
     object Splitter1: TSplitter
       AnchorSideTop.Control = Panel1
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
-      Left = 152
-      Height = 305
+      Left = 294
+      Height = 564
       Top = 1
       Width = 5
       Align = alNone
-      Anchors = [akTop, akLeft, akBottom]
+      Anchors = [akTop, akBottom]
     end
     object StringGridNotebooks: TStringGrid
       AnchorSideLeft.Control = Panel1
@@ -83,13 +86,12 @@ object SearchForm: TSearchForm
       AnchorSideRight.Control = Splitter1
       AnchorSideBottom.Control = ButtonNotebookOptions
       Left = 1
-      Height = 256
-      Top = 25
-      Width = 151
+      Height = 514
+      Top = 26
+      Width = 293
       Anchors = [akTop, akLeft, akRight, akBottom]
       ColCount = 1
       FixedCols = 0
-      Flat = True
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll, goRowHighlight]
       ParentShowHint = False
       RowCount = 3
@@ -107,6 +109,42 @@ object SearchForm: TSearchForm
         'Notebooks'
       )
     end
+    object ButtonClearFilters: TButton
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Splitter1
+      Left = 1
+      Height = 25
+      Top = 1
+      Width = 293
+      Anchors = [akTop, akLeft, akRight]
+      Caption = 'Clear Filters'
+      Enabled = False
+      OnClick = ButtonClearFiltersClick
+      OnKeyDown = FormKeyDown
+      TabOrder = 2
+    end
+    object ButtonNotebookOptions: TButton
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = ButtonClearFilters
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Splitter1
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 1
+      Height = 25
+      Hint = 'Manage the Notebooks'
+      Top = 540
+      Width = 293
+      Anchors = [akLeft, akRight, akBottom]
+      Caption = 'Notebook Options'
+      Enabled = False
+      OnClick = ButtonNotebookOptionsClick
+      OnKeyDown = FormKeyDown
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+    end
     object StringGrid1: TStringGrid
       AnchorSideLeft.Control = Splitter1
       AnchorSideLeft.Side = asrBottom
@@ -115,10 +153,10 @@ object SearchForm: TSearchForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
-      Left = 160
-      Height = 302
+      Left = 302
+      Height = 561
       Top = 1
-      Width = 776
+      Width = 731
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 3
       BorderSpacing.Right = 3
@@ -127,11 +165,10 @@ object SearchForm: TSearchForm
       ColumnClickSorts = True
       FixedCols = 0
       FixedRows = 0
-      Flat = True
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
       RowCount = 1
       ScrollBars = ssAutoVertical
-      TabOrder = 2
+      TabOrder = 4
       OnDblClick = StringGrid1DblClick
       OnKeyDown = FormKeyDown
       ColWidths = (
@@ -148,45 +185,13 @@ object SearchForm: TSearchForm
         'Last Changed'
       )
     end
-    object ButtonClearFilters: TButton
-      AnchorSideRight.Control = Splitter1
-      Left = 1
-      Height = 25
-      Top = 0
-      Width = 151
-      Anchors = [akTop, akLeft, akRight]
-      Caption = 'Clear Filters'
-      Enabled = False
-      OnClick = ButtonClearFiltersClick
-      OnKeyDown = FormKeyDown
-      TabOrder = 3
-    end
-    object ButtonNotebookOptions: TButton
-      AnchorSideTop.Control = ButtonClearFilters
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Splitter1
-      AnchorSideBottom.Control = Panel1
-      AnchorSideBottom.Side = asrBottom
-      Left = -8
-      Height = 25
-      Hint = 'Manage the Notebooks'
-      Top = 281
-      Width = 160
-      Anchors = [akLeft, akRight, akBottom]
-      Caption = 'Notebook Options'
-      Enabled = False
-      OnClick = ButtonNotebookOptionsClick
-      OnKeyDown = FormKeyDown
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 4
-    end
   end
   object SpeedButton1: TSpeedButton
     AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = ButtonRefresh
     Left = 3
     Height = 29
-    Top = 5
+    Top = 3
     Width = 29
     BorderSpacing.Left = 3
     Glyph.Data = {
@@ -270,9 +275,9 @@ object SearchForm: TSearchForm
   object CheckBoxCaseSensitive: TCheckBox
     AnchorSideTop.Control = ButtonRefresh
     AnchorSideRight.Control = CheckBoxAnyCombo
-    Left = 593
+    Left = 690
     Height = 23
-    Top = 6
+    Top = 3
     Width = 127
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 5
@@ -283,9 +288,9 @@ object SearchForm: TSearchForm
   object CheckBoxAnyCombo: TCheckBox
     AnchorSideTop.Control = ButtonRefresh
     AnchorSideRight.Control = ButtonRefresh
-    Left = 725
+    Left = 822
     Height = 23
-    Top = 6
+    Top = 3
     Width = 107
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 5

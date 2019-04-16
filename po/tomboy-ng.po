@@ -569,6 +569,7 @@ msgid "Wednesday"
 msgstr ""
 
 #: tsett.panel2.caption
+msgctxt "tsett.panel2.caption"
 msgid "Panel2"
 msgstr ""
 

@@ -92,6 +92,7 @@ unit SearchUnit;
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
     2019/04/13  Don't call note_lister.GetNotes more than absolutly necessary.
     2019/04/15  One Clear Filters button to replace Clea and Show All Notes. Checkboxes Mode instead of menu
+    2019/04/16  Fixed resizing atifacts on stringGrids by turning off 'Flat' property, Linux !
 }
 
 {$mode objfpc}{$H+}
@@ -120,9 +121,9 @@ type
 		PopupMenuNotebook: TPopupMenu;
         SpeedButton1: TSpeedButton;
 		Splitter1: TSplitter;
+        StringGrid1: TStringGrid;
 		StringGridNotebooks: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
-        StringGrid1: TStringGrid;
         procedure ButtonSearchModeClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
