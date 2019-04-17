@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 1288
+  Left = 908
   Height = 431
-  Top = 202
+  Top = 317
   Width = 525
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'

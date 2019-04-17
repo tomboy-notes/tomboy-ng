@@ -1,6 +1,85 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: mainunit.rsanotherinstancerunning
+msgid "Another instance of tomboy-ng appears to be running. Will exit."
+msgstr ""
+
+#: mainunit.rsbadnotesfound1
+msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
+msgstr ""
+
+#: mainunit.rsbadnotesfound2
+msgid "You should do so to ensure your notes are safe."
+msgstr ""
+
+#: mainunit.rscannotdismiss1
+msgid "Sadly, on this OS or because of a Bad Note,"
+msgstr ""
+
+#: mainunit.rscannotdismiss2
+msgid "I cannot let you dismiss this window"
+msgstr ""
+
+#: mainunit.rscannotdismiss3
+msgid "Are you trying to shut me down ? Dave ?"
+msgstr ""
+
+#: mainunit.rscannotfindnote
+msgid "ERROR, cannot find "
+msgstr ""
+
+#: mainunit.rsfailedtoindex
+msgid "Failed to index one or more notes."
+msgstr ""
+
+#: mainunit.rsmenuabout
+msgid "About"
+msgstr ""
+
+#: mainunit.rsmenufile
+msgid "File"
+msgstr ""
+
+#: mainunit.rsmenuhelp
+msgctxt "mainunit.rsmenuhelp"
+msgid "Help"
+msgstr ""
+
+#: mainunit.rsmenunewnote
+msgid "New Note"
+msgstr ""
+
+#: mainunit.rsmenuquit
+msgid "Quit"
+msgstr ""
+
+#: mainunit.rsmenurecent
+msgid "Recent"
+msgstr ""
+
+#: mainunit.rsmenusearch
+msgctxt "mainunit.rsmenusearch"
+msgid "Search"
+msgstr ""
+
+#: mainunit.rsmenusettings
+msgctxt "mainunit.rsmenusettings"
+msgid "Settings"
+msgstr ""
+
+#: mainunit.rsmenusync
+msgid "Synchronise"
+msgstr ""
+
+#: mainunit.rssetupnotesdirfirst
+msgid "Please setup a notes directory first"
+msgstr ""
+
+#: mainunit.rssetupsyncfirst
+msgid "Please config sync system first"
+msgstr ""
+
 #: teditboxform.buttdelete.hint
 msgid "Delete This Note"
 msgstr ""
@@ -166,6 +245,35 @@ msgstr ""
 msgid "Underline"
 msgstr ""
 
+#: tformsync.buttoncancel.caption
+msgid "Cancel"
+msgstr ""
+
+#: tformsync.buttonclose.caption
+msgctxt "tformsync.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformsync.buttonsave.caption
+msgid "Save and Sync"
+msgstr ""
+
+#: tformsync.caption
+msgid "FormSync"
+msgstr ""
+
+#: tformsync.label1.caption
+msgid "Label1"
+msgstr ""
+
+#: tformsync.label2.caption
+msgid "Label2"
+msgstr ""
+
+#: tformsync.panel3.caption
+msgid "Panel3"
+msgstr ""
+
 #: tmainform.buttonconfig.caption
 msgctxt "tmainform.buttonconfig.caption"
 msgid "Settings"
@@ -304,6 +412,7 @@ msgid "Will work for many new users"
 msgstr ""
 
 #: tsett.buttonhide.caption
+msgctxt "tsett.buttonhide.caption"
 msgid "Close"
 msgstr ""
 

@@ -204,6 +204,9 @@ var
 const Version_string  = {$I %TOMBOY_NG_VER};
 
 
+
+
+
 procedure TMainForm.SingleNoteMode(FullFileName: string);
 begin
      SingleNoteMode(FullFileName, True, False);
@@ -250,10 +253,17 @@ begin
     else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
 end;
 
+
+resourcestring
+  rsAnotherInstanceRunning = 'Another instance of tomboy-ng appears to be running. Will exit.';
+  rsFailedToIndex = 'Failed to index one or more notes.';
+  rsCannotDismiss1 = 'Sadly, on this OS or because of a Bad Note,';
+  rsCannotDismiss2 = 'I cannot let you dismiss this window';
+  rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';
+
 procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
  { ToDo : put options in a TStringList and share, less mistakes ....}
-
 var
     //I: Integer;
     Params : TStringList;
@@ -300,7 +310,7 @@ begin
         FreeAndNil(Params);
     end;
     if AlreadyRunning() then begin
-        showmessage('Another instance of tomboy-ng appears to be running. Will exit.');
+        showmessage(rsAnotherInstanceRunning);
         close();
     end else begin
         if UseMainMenu then begin
@@ -312,14 +322,14 @@ begin
         // CheckStatus();
         SearchForm.IndexNotes(); // also calls Checkstatus, calls UpdateNotesFound()
         if SearchForm.NoteLister.XMLError then begin
-            LabelError.Caption := 'Failed to index one or more notes.';
+            LabelError.Caption := rsFailedToIndex;
             AllowDismiss := False;
         end else
             LabelError.Caption := '';
         if not AllowDismiss then begin
-            LabelNoDismiss1.Caption := 'Sadly, on this OS or because of a Bad Note,';
-            LabelNoDismiss2.Caption := 'I cannot let you dismiss this window';
-            LabelNoDismiss1.Hint:='Are you trying to shut me down ? Dave ?';
+            LabelNoDismiss1.Caption := rsCannotDismiss1;
+            LabelNoDismiss2.Caption := rsCannotDismiss2;
+            LabelNoDismiss1.Hint:=rsCannotDismiss3;
             LabelNoDismiss2.Hint := LabelNoDismiss1.Hint;
             CheckBoxDontShow.Enabled := False;
             Visible := True;
@@ -330,11 +340,14 @@ begin
     end;
 end;
 
+resourcestring
+  rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshots -> Existing Notes.';
+  rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
+
 procedure TMainForm.LabelErrorClick(Sender: TObject);
 begin
     if LabelError.Caption <> '' then
-        showmessage('Bad notes found, goto Settings -> Snapshots -> Existing Notes.'
-            + #10#13 + 'You should do so to ensure your notes are safe.');
+        showmessage(rsBadNotesFound1 + #10#13 + rsBadNotesFound2);
 end;
 
 procedure TMainForm.UpdateNotesFound(Numb : integer);
@@ -518,6 +531,11 @@ begin
         AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
 end;
 
+resourcestring
+  rsSetupNotesDirFirst = 'Please setup a notes directory first';
+  rsSetupSyncFirst = 'Please config sync system first';
+  rsCannotFindNote = 'ERROR, cannot find ';
+
 procedure TMainForm.FileMenuClicked(Sender : TObject);
 var
     FileName : string;
@@ -525,14 +543,17 @@ begin
     case TMenuTarget(TMenuItem(Sender).Tag) of
         mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
         mtNewNote : if (Sett.NoteDirectory = '') then
-                            ShowMessage('Please setup a notes directory first')
+                            ShowMessage(rsSetupNotesDirFirst)
                     else SearchForm.OpenNote();
         mtSearch :  if Sett.NoteDirectory = '' then
-                            showmessage('You have not set a notes directory. Please click Settings')
+                            showmessage(rsSetupNotesDirFirst)
                     else  SearchForm.Show;
 
         mtAbout :    ShowAbout();
-        mtSync :     Sett.Synchronise();
+        mtSync :     if (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+                        and (Sett.LabelSyncRepo.Caption <> '') then
+                            Sett.Synchronise()
+                     else showmessage(rsSetupSyncFirst);
         mtSettings : begin
                         Sett.Show;
                         //SearchForm.RecentMenu();   // ToDo : wots this for ? commented out, April 2019
@@ -543,11 +564,22 @@ begin
         mtHelp :      begin
                         if HelpNotes.FileNameForTitle(TMenuItem(Sender).Caption, FileName) then
                             ShowHelpNote(FileName)
-                        else showMessage('ERROR, cannot find ' + TMenuItem(Sender).Caption);
+                        else showMessage(rsCannotFindNote + TMenuItem(Sender).Caption);
                     end;
         mtQuit :      close;
     end;
 end;
+
+ResourceString
+  rsMenuFile = 'File';
+  rsMenuRecent = 'Recent';
+  rsMenuNewNote = 'New Note';
+  rsMenuSearch = 'Search';
+  rsMenuAbout = 'About';
+  rsMenuSync = 'Synchronise';
+  rsMenuSettings = 'Settings';
+  rsMenuHelp = 'Help';
+  rsMenuQuit = 'Quit';
 
 procedure TMainForm.FillInFileMenus(ItsAnUpdate : boolean = false);
 begin
@@ -557,8 +589,8 @@ begin
         MainMenu := TMainMenu.Create(Self);
         FileMenu := TMenuItem.Create(Self);
         RecentMenu := TMenuItem.Create(self);
-        FileMenu.Caption := 'File';
-        RecentMenu.Caption := 'Recent';
+        FileMenu.Caption := rsMenuFile;
+        RecentMenu.Caption := rsMenuRecent;
         MainMenu.Items.Add(FileMenu);
         MainMenu.Items.Add(RecentMenu);
         TrayIcon.PopUpMenu := PopupMenuTray;
@@ -568,21 +600,24 @@ begin
         FileMenu.Clear;
         RecentMenu.Clear;
     end;
-    AddMenuItem('New Note', mtNewNote, @FileMenuClicked, mkFileMenu);
-    AddMenuItem('Search', mtSearch,  @FileMenuClicked, mkFileMenu);
+    AddMenuItem(rsMenuNewNote, mtNewNote, @FileMenuClicked, mkFileMenu);
+    AddMenuItem(rsMenuSearch, mtSearch,  @FileMenuClicked, mkFileMenu);
     AddMenuItem('-', mtSep, nil, mkFileMenu);
     AddMenuItem('-', mtSep, nil, mkFileMenu);   // Recent Notes will be inserted at last Separator
-    AddMenuItem('About', mtAbout, @FileMenuClicked, mkFileMenu);
+    AddMenuItem(rsMenuAbout, mtAbout, @FileMenuClicked, mkFileMenu);
     if (Sett.LabelSyncRepo.Caption <> SyncNotConfig) then
-        AddMenuItem('Synchronise', mtSync,  @FileMenuClicked, mkFileMenu);
+        AddMenuItem(rsMenuSync, mtSync,  @FileMenuClicked, mkFileMenu);
+    {$ifdef LINUX}
     if Sett.CheckShowTomdroid.Checked then
         AddMenuItem('Tomdroid', mtTomdroid,  @FileMenuClicked, mkFileMenu);
-    AddMenuItem('Settings', mtSettings, @FileMenuClicked, mkFileMenu);
-    AddMenuItem('Help', mtHelp,  nil, mkFileMenu);
-    AddMenuItem('Quit', mtQuit,  @FileMenuClicked, mkFileMenu);
+    {$endif}
+    AddMenuItem(rsMenuSettings, mtSettings, @FileMenuClicked, mkFileMenu);
+    AddMenuItem(rsMenuHelp, mtHelp,  nil, mkFileMenu);
+    AddMenuItem(rsMenuQuit, mtQuit,  @FileMenuClicked, mkFileMenu);
     if ItsAnUpdate then
         SearchForm.RecentMenu;
     FindHelpFiles();
+    ButtonConfig.Caption:= rsMenuSettings;
 end;
 
 procedure TMainForm.AddItemToAMenu(TheMenu : TMenu; Item : string;

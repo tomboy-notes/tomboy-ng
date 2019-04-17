@@ -389,11 +389,14 @@ var
     Info : TSearchRec;
 begin
     FullFileName := ConfigDir + 'manifest.xml';
+    if FileExists(FullFileName) then
         if not DeleteFromThisManifest(FullFileName, ID) then begin
            debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
             // Note - not finding the (first) manifest file is not an error, just unsynced.
             exit(False);
-        end;
+        end
+    else if DebugMode then
+       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not synced yet ?');
     if DirectoryExists(ConfigDir + 'android') then begin
         if FindFirst(ConfigDir + 'android' + pathdelim + '*.xml', faAnyFile, Info)=0 then
            try

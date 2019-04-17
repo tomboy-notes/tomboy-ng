@@ -591,6 +591,8 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+    Top := 200;
+    Left := 300;
     PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;
     NeedRefresh := False;
