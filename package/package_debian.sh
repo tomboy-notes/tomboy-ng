@@ -42,17 +42,38 @@ fi
 # typically in the IDE.
 # Lazbuild expects cpu=[x86_64, i386] (good luck with the others)
 
-
 function BuildIt () {
 	cd $SOURCE_DIR
 	echo "Building x86_64 Linux"
+	rm tomboy-ng
 	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode=Release --os="linux" Tomboy_NG.lpi
 	echo "Building i386 Linux"
+	rm tomboy-ng32
 	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode=ReleaseLin32 --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Windows"
+	rm tomboy-ng64.exe
 	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode=ReleaseWin64 --os="win64" Tomboy_NG.lpi
 	echo "Building i386 Windows"
+	rm tomboy-ng32.exe
 	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode=ReleaseWin32 --os="win32" Tomboy_NG.lpi
+	echo "Building x86_64 Linux"
+	# Todo - should check we now have binaries with todays date.
+	echo "------------- FINISHED BUILDING -----------------"
+	ls -l tomboy-ng*
+	echo "-------------------------------------------------"
+	cd ../package
+}	
+
+function BuildItLeakCheck () {
+	cd $SOURCE_DIR
+	echo "Building x86_64 Linux"
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode=LeakCheckLin64 --os="linux" Tomboy_NG.lpi
+	echo "Building i386 Linux"
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode=LeakCheckLin32 --os="linux" Tomboy_NG.lpi
+	echo "Building x86_64 Windows"
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode=LeakCheckWin64 --os="win64" Tomboy_NG.lpi
+	echo "Building i386 Windows"
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode=LeakCheckWin32 --os="win32" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	# Todo - should check we now have binaries with todays date.
 	echo "------------- FINISHED BUILDING -----------------"
@@ -182,8 +203,12 @@ function DoZipping {
 # --------------------------------------
 # It all starts here
 
+if [ "$2" -eq "LeakCheck" ]; then
+	BuildItLeakCheck
+else 
+	BuildIt
+fi
 
-BuildIt
 DebianPackage "i386"
 DebianPackage "amd64"
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
