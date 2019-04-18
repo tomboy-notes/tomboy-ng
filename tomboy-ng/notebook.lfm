@@ -1,38 +1,48 @@
 object NoteBookPick: TNoteBookPick
-  Left = 288
+  Left = 811
   Height = 311
-  Top = 99
+  Top = 385
   Width = 487
   Anchors = []
   Caption = 'NoteBookPick'
   ClientHeight = 311
   ClientWidth = 487
   OnShow = FormShow
-  LCLVersion = '1.8.0.6'
+  LCLVersion = '2.0.1.0'
   object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = -120
+    Left = 0
     Height = 56
-    Top = 8
-    Width = 607
+    Top = 0
+    Width = 487
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 56
-    ClientWidth = 607
+    ClientWidth = 487
     TabOrder = 0
     object Label1: TLabel
-      Left = 24
-      Height = 17
-      Top = 24
-      Width = 45
+      AnchorSideLeft.Control = Panel1
+      Left = 9
+      Height = 19
+      Top = 32
+      Width = 51
+      Anchors = [akLeft]
+      BorderSpacing.Left = 8
       Caption = 'Label1'
+      Font.Style = [fsBold]
       ParentColor = False
+      ParentFont = False
     end
     object Label3: TLabel
-      Left = 24
-      Height = 17
+      AnchorSideLeft.Control = Panel1
+      Left = 9
+      Height = 19
       Top = 8
-      Width = 45
+      Width = 47
+      Anchors = [akLeft]
+      BorderSpacing.Left = 8
       Caption = 'Label3'
       ParentColor = False
     end
@@ -70,7 +80,7 @@ object NoteBookPick: TNoteBookPick
     Left = 16
     Height = 39
     Top = 272
-    Width = 45
+    Width = 47
     Anchors = [akTop, akLeft, akBottom]
     Caption = 'Label2'
     ParentColor = False
@@ -83,8 +93,8 @@ object NoteBookPick: TNoteBookPick
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ButtonOK
     Left = 0
-    Height = 186
-    Top = 64
+    Height = 194
+    Top = 56
     Width = 487
     ActivePage = TabExisting
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -92,7 +102,7 @@ object NoteBookPick: TNoteBookPick
     TabOrder = 3
     object TabExisting: TTabSheet
       Caption = 'Existing Note Books'
-      ClientHeight = 151
+      ClientHeight = 157
       ClientWidth = 481
       object CheckListBox1: TCheckListBox
         AnchorSideLeft.Control = TabExisting
@@ -102,7 +112,7 @@ object NoteBookPick: TNoteBookPick
         AnchorSideBottom.Control = TabExisting
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 151
+        Height = 157
         Top = 0
         Width = 481
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -114,7 +124,7 @@ object NoteBookPick: TNoteBookPick
     end
     object TabNewNoteBook: TTabSheet
       Caption = 'New Note Book'
-      ClientHeight = 151
+      ClientHeight = 157
       ClientWidth = 481
       object EditNewNotebook: TEdit
         Left = 24

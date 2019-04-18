@@ -178,6 +178,7 @@ unit EditBox;
     2019/02/23  Bug in column calc - how this that slip through ?
     2019/03/13  Better local search capability and go to first term if opening result of Search
     2019/04/13  Lockupdate while setting whole note text colour.
+    2019/04/18  Replaced TBitBtns with Speedbuttons to fix memory leak in Cocoa
 }
 
 
@@ -196,12 +197,6 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
-        ButtLink: TBitBtn;
-        ButtText: TBitBtn;
-        ButtTools: TBitBtn;
-        ButtDelete: TBitBtn;
-        ButtNotebook: TBitBtn;
-        ButtSearch: TBitBtn;
 		FindDialog1: TFindDialog;
         KMemo1: TKMemo;
         Label2: TLabel;
@@ -238,20 +233,21 @@ type
         MenuFixedWidth: TMenuItem;
         MenuUnderline: TMenuItem;
         MenuStrikeout: TMenuItem;
+        Panel1: TPanel;
         PanelReadOnly: TPanel;
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
+        SpeedButtonSearch: TSpeedButton;
+        SpeedButtonLink: TSpeedButton;
+        SpeedButtonText: TSpeedButton;
+        SpeedButtonTools: TSpeedButton;
+        SpeedButtonDelete: TSpeedButton;
+        SpeedButtonNotebook: TSpeedButton;
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
-		procedure ButtDeleteClick(Sender: TObject);
-		procedure ButtLinkClick(Sender: TObject);
-		procedure ButtNotebookClick(Sender: TObject);
-        procedure ButtSearchClick(Sender: TObject);
-        procedure ButtTextClick(Sender: TObject);
-        procedure ButtToolsClick(Sender: TObject);
 		procedure FindDialog1Find(Sender: TObject);
         procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -295,6 +291,12 @@ type
         procedure MenuLargeClick(Sender: TObject);
         procedure MenuNormalClick(Sender: TObject);
         procedure MenuSmallClick(Sender: TObject);
+        procedure SpeedButtonDeleteClick(Sender: TObject);
+        procedure SpeedButtonLinkClick(Sender: TObject);
+        procedure SpeedButtonNotebookClick(Sender: TObject);
+        procedure SpeedButtonSearchClick(Sender: TObject);
+        procedure SpeedButtonTextClick(Sender: TObject);
+        procedure SpeedButtonToolsClick(Sender: TObject);
 		procedure TimerSaveTimer(Sender: TObject);
         procedure TimerHousekeepingTimer(Sender: TObject);
 
@@ -433,22 +435,23 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
 
-procedure TEditBoxForm.ButtTextClick(Sender: TObject);
+
+procedure TEditBoxForm.SpeedButtonTextClick(Sender: TObject);
 begin
-    PopupMenuText.PopUp;
+   PopupMenuText.PopUp;
 end;
 
-procedure TEditBoxForm.ButtToolsClick(Sender: TObject);
+procedure TEditBoxForm.SpeedButtonToolsClick(Sender: TObject);
 begin
-    PopupMenuTools.PopUp;
+   PopupMenuTools.PopUp;
 end;
 
-procedure TEditBoxForm.ButtSearchClick(Sender: TObject);
+procedure TEditBoxForm.SpeedButtonSearchClick(Sender: TObject);
 begin
-	SearchForm.Show;
+    SearchForm.Show;
 end;
 
-procedure TEditBoxForm.ButtDeleteClick(Sender: TObject);
+procedure TEditBoxForm.SpeedButtonDeleteClick(Sender: TObject);
 var
     St : string;
 begin
@@ -466,7 +469,7 @@ begin
    end;
 end;
 
-procedure TEditBoxForm.ButtLinkClick(Sender: TObject);
+procedure TEditBoxForm.SpeedButtonLinkClick(Sender: TObject);
 var
     ThisTitle : ANSIString;
     Index : integer;
@@ -496,7 +499,7 @@ begin
 	end;
 end;
 
-procedure TEditBoxForm.ButtNotebookClick(Sender: TObject);
+procedure TEditBoxForm.SpeedButtonNotebookClick(Sender: TObject);
 var
     NotebookPick : TNotebookPick;
 begin
@@ -507,11 +510,6 @@ begin
     NotebookPick.Left := Left;
     if mrOK = NotebookPick.ShowModal then MarkDirty();
     NotebookPick.Free;
-
-{    if KMemo1.ReadOnly then exit();
-    NotebookPick.FullFileName := NoteFileName;
-    NotebookPick.Title := NoteTitle;
-	if mrOK = NotebookPick.ShowModal then dirty := True;      }
 end;
 
 procedure TEditBoxForm.BulletControl(const Toggle, TurnOn : boolean);
@@ -841,6 +839,10 @@ begin
     AlterFont(ChangeSize, Sett.FontSmall);
 end;
 
+
+
+
+
 procedure TEditBoxForm.MenuHugeClick(Sender: TObject);
 begin
    AlterFont(ChangeSize, Sett.FontHuge);
@@ -951,10 +953,10 @@ end;
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 begin
     if SingleNoteMode then begin
-        ButtSearch.Enabled := False;
-        ButtLink.Enabled := False;
+        SpeedbuttonSearch.Enabled := False;
+        SpeedButtonLink.Enabled := False;
         MenuItemSync.Enabled := False;
-        ButtNotebook.Enabled := False;
+        SpeedButtonNotebook.Enabled := False;
     end;
 end;
 
@@ -2051,7 +2053,7 @@ begin
     end;
     if KMemo1.ReadOnly then begin Key := 0; exit(); end;
     if [ssCtrl, ssShift] = Shift then begin
-       if key = ord('F') then begin ButtSearchClick(self); Key := 0; exit(); end;
+       if key = ord('F') then begin SpeedButtonSearchClick(self); Key := 0; exit(); end;
        Key := 0;
     end;
     if Key = VK_TAB then begin

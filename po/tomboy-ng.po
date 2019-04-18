@@ -80,47 +80,6 @@ msgstr ""
 msgid "Please config sync system first"
 msgstr ""
 
-#: teditboxform.buttdelete.hint
-msgid "Delete This Note"
-msgstr ""
-
-#: teditboxform.buttlink.caption
-msgid "Link"
-msgstr ""
-
-#: teditboxform.buttlink.hint
-msgid "Link to a new Note"
-msgstr ""
-
-#: teditboxform.buttnotebook.caption
-msgid "Notebook"
-msgstr ""
-
-#: teditboxform.buttnotebook.hint
-msgid "Manage Note Books"
-msgstr ""
-
-#: teditboxform.buttsearch.caption
-msgctxt "teditboxform.buttsearch.caption"
-msgid "Search"
-msgstr ""
-
-#: teditboxform.buttsearch.hint
-msgid "Search All Notes Ctrl-Shift-F"
-msgstr ""
-
-#: teditboxform.butttext.caption
-msgid "Text"
-msgstr ""
-
-#: teditboxform.butttext.hint
-msgid "Font Size, Bold, Italics, Bullets etc"
-msgstr ""
-
-#: teditboxform.butttools.hint
-msgid "Tools - Sync, Export, Spell"
-msgstr ""
-
 #: teditboxform.caption
 msgid "EditBoxForm"
 msgstr ""
@@ -245,7 +204,39 @@ msgstr ""
 msgid "Underline"
 msgstr ""
 
+#: teditboxform.panel1.caption
+msgctxt "teditboxform.panel1.caption"
+msgid "Panel1"
+msgstr ""
+
+#: teditboxform.speedbuttondelete.hint
+msgid "Delete this note"
+msgstr ""
+
+#: teditboxform.speedbuttonlink.hint
+msgid "Link highlighted text to a new note"
+msgstr ""
+
+#: teditboxform.speedbuttonnotebook.hint
+msgid "Manage Notebooks"
+msgstr ""
+
+#: teditboxform.speedbuttonsearch.hint
+msgctxt "teditboxform.speedbuttonsearch.hint"
+msgid "Search All Notes Ctrl-Shift-F"
+msgstr ""
+
+#: teditboxform.speedbuttontext.hint
+msgid "Font size, bold, italics etc"
+msgstr ""
+
+#: teditboxform.speedbuttontools.hint
+msgctxt "teditboxform.speedbuttontools.hint"
+msgid "Tools - Sync, Export, Spell"
+msgstr ""
+
 #: tformsync.buttoncancel.caption
+msgctxt "tformsync.buttoncancel.caption"
 msgid "Cancel"
 msgstr ""
 
@@ -263,10 +254,12 @@ msgid "FormSync"
 msgstr ""
 
 #: tformsync.label1.caption
+msgctxt "tformsync.label1.caption"
 msgid "Label1"
 msgstr ""
 
 #: tformsync.label2.caption
+msgctxt "tformsync.label2.caption"
 msgid "Label2"
 msgstr ""
 
@@ -349,6 +342,49 @@ msgctxt "tmainform.labelnotesfound.caption"
 msgid "X"
 msgstr ""
 
+#: tnotebookpick.button1.caption
+msgctxt "tnotebookpick.button1.caption"
+msgid "Cancel"
+msgstr ""
+
+#: tnotebookpick.buttonok.caption
+msgid "OK"
+msgstr ""
+
+#: tnotebookpick.caption
+msgid "NoteBookPick"
+msgstr ""
+
+#: tnotebookpick.label1.caption
+msgctxt "tnotebookpick.label1.caption"
+msgid "Label1"
+msgstr ""
+
+#: tnotebookpick.label2.caption
+msgctxt "tnotebookpick.label2.caption"
+msgid "Label2"
+msgstr ""
+
+#: tnotebookpick.label3.caption
+msgid "Label3"
+msgstr ""
+
+#: tnotebookpick.label4.caption
+msgid "Name of the New Note Book"
+msgstr ""
+
+#: tnotebookpick.label5.caption
+msgid "Press OK and we will make the Note Book AND add this note to it."
+msgstr ""
+
+#: tnotebookpick.tabexisting.caption
+msgid "Existing Note Books"
+msgstr ""
+
+#: tnotebookpick.tabnewnotebook.caption
+msgid "New Note Book"
+msgstr ""
+
 #: tsearchform.buttonclearfilters.caption
 msgid "Clear Filters"
 msgstr ""
@@ -400,6 +436,7 @@ msgid "Create New Note from Template"
 msgstr ""
 
 #: tsearchform.panel1.caption
+msgctxt "tsearchform.panel1.caption"
 msgid "Panel1"
 msgstr ""
 
