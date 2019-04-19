@@ -203,7 +203,7 @@ function DoZipping {
 # --------------------------------------
 # It all starts here
 
-if [ "$2" -eq "LeakCheck" ]; then
+if [ "$2" == "LeakCheck" ]; then
 	BuildItLeakCheck
 else 
 	BuildIt
