@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 157
+  Left = 483
   Height = 401
-  Top = 190
+  Top = 291
   Width = 824
   Caption = 'SearchForm'
   ClientHeight = 401
@@ -52,7 +52,7 @@ object SearchForm: TSearchForm
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Edit1
+    AnchorSideTop.Control = SpeedButton1
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom

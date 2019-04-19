@@ -61,12 +61,6 @@
             <CompilerMessages>
               <IgnoredMessages idx5024="True"/>
             </CompilerMessages>
-            <OtherDefines Count="4">
-              <Define0 Value="DisableLCLGIF"/>
-              <Define1 Value="DisableLCLJPEG"/>
-              <Define2 Value="DisableLCLPNM"/>
-              <Define3 Value="DisableLCLTIFF"/>
-            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -574,7 +568,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -689,6 +683,11 @@
         <Filename Value="autostart.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="note_lister.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Note_Lister"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

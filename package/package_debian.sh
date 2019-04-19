@@ -25,8 +25,8 @@ WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
 MANUALS=`cat note-files`
 
-# BUILDOPTS=" -B --quiet --quiet"
-BUILDOPTS=" -B --quiet"
+BUILDOPTS=" -B --quiet --quiet"
+# BUILDOPTS=" -B --quiet"
 BUILDDATE=`date -R`
 LAZ_FULL_DIR="$1"
 LAZ_DIR=`basename "$LAZ_FULL_DIR"`
@@ -160,22 +160,24 @@ function DoZipping {
 
 	rm *.zip
 	rm -Rf "$PRODUCT"_"$VERSION"
-	mkdir "$PRODUCT"_"$VERSION"
-	cp ../tomboy-ng/tomboy-ng64.exe "$PRODUCT"_"$VERSION/."
-	cp ../../DLL_64bit/libhunspell.dll "$PRODUCT"_"$VERSION/."
-	cp ../../DLL_64bit/libhunspell.license "$PRODUCT"_"$VERSION/."
-	cp ../COPYING "$PRODUCT"_"$VERSION/."
-	cp AfterInstall.txt "$PRODUCT"_"$VERSION/."
-	sed "s/MyAppVersion \"0.21\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$PRODUCT"_"$VERSION/tomboy-ng.iss"
-	for i in $MANUALS; do
-		cp ../doc/$i "$PRODUCT"_"$VERSION/."
-	done;
-	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$PRODUCT"_"$VERSION/readme.txt"
-	unix2dos "$PRODUCT"_"$VERSION/readme.txt"
-	zip "$PRODUCT"_win64_"$VERSION.zip" "$PRODUCT"_"$VERSION"/* 
 
-	cp ../tomboy-ng/tomboy-ng32.exe .
-	zip "$PRODUCT"_win32_"$VERSION.zip" tomboy-ng32.exe
+    # we don't make individual win zip files anymore.
+	# mkdir "$PRODUCT"_"$VERSION"
+	# cp ../tomboy-ng/tomboy-ng64.exe "$PRODUCT"_"$VERSION/."
+	# cp ../../DLL_64bit/libhunspell.dll "$PRODUCT"_"$VERSION/."
+	# cp ../../DLL_64bit/libhunspell.license "$PRODUCT"_"$VERSION/."
+	# cp ../COPYING "$PRODUCT"_"$VERSION/."
+	# cp AfterInstall.txt "$PRODUCT"_"$VERSION/."
+	# sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$PRODUCT"_"$VERSION/tomboy-ng.iss"
+	# for i in $MANUALS; do
+	# 	cp ../doc/$i "$PRODUCT"_"$VERSION/."
+	# done;
+	# MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$PRODUCT"_"$VERSION/readme.txt"
+	# unix2dos "$PRODUCT"_"$VERSION/readme.txt"
+	# zip "$PRODUCT"_win64_"$VERSION.zip" "$PRODUCT"_"$VERSION"/* 
+	# cp ../tomboy-ng/tomboy-ng32.exe .
+	# zip "$PRODUCT"_win32_"$VERSION.zip" tomboy-ng32.exe
+
 
 	# Make a zip containing everything we need to make a 32/64bit Inno Setup installer for Windows
 	rm -Rf WinPre_"$VERSION"
@@ -185,7 +187,7 @@ function DoZipping {
 	cp ../../DLL_64bit/libhunspell.license WinPre_"$VERSION/."
 	cp ../COPYING WinPre_"$VERSION/."
 	cp AfterInstall.txt WinPre_"$VERSION/."
-	sed "s/MyAppVersion \"0.21\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > WinPre_"$VERSION/tomboy-ng.iss"
+	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > WinPre_"$VERSION/tomboy-ng.iss"
 	for i in $MANUALS; do
 		cp ../doc/$i WinPre_"$VERSION/."
 	done;
@@ -193,7 +195,7 @@ function DoZipping {
 	cp ../tomboy-ng/tomboy-ng32.exe WinPre_"$VERSION"/.
 	unix2dos WinPre_"$VERSION/readme.txt"
 	ls -la WinPre_"$VERSION"
-	zip WinPre_"$VERSION.zip" WinPre_"$VERSION"/*
+	# zip WinPre_"$VERSION.zip" WinPre_"$VERSION"/*
 	
 	echo "--------------- FINISHED ZIPPING ----------------"
 	ls -l *.gz *.zip

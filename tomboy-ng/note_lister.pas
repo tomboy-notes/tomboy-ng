@@ -503,13 +503,13 @@ begin
     for Index := 0 to Lst.count -1 do begin;
         while UTF8length(Lst.Items[Index]^.CreateDate) < 20 do
         	Lst.Items[Index]^.CreateDate :=  Lst.Items[Index]^.CreateDate + ' ';
-	  Lst.Items[Index]^.CreateDate := copy(Lst.Items[Index]^.CreateDate, 1, 19);
-      Lst.Items[Index]^.CreateDate[11] := ' ';
-      while UTF8length(Lst.Items[Index]^.LastChange) < 20 do
-          Lst.Items[Index]^.LastChange := Lst.Items[Index]^.LastChange + ' ';
-      Lst.Items[Index]^.LastChange := copy(Lst.Items[Index]^.LastChange, 1, 19);
-      Lst.Items[Index]^.LastChange[11] := ' ';
-	end;
+	Lst.Items[Index]^.CreateDate := copy(Lst.Items[Index]^.CreateDate, 1, 19);
+        Lst.Items[Index]^.CreateDate[11] := ' ';
+        while UTF8length(Lst.Items[Index]^.LastChange) < 20 do
+              Lst.Items[Index]^.LastChange := Lst.Items[Index]^.LastChange + ' ';
+        Lst.Items[Index]^.LastChange := copy(Lst.Items[Index]^.LastChange, 1, 19);
+        Lst.Items[Index]^.LastChange[11] := ' ';
+    end;
 end;
 
 procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm: ANSIString; DontTestName : boolean = false);
@@ -533,7 +533,7 @@ begin
         new(NoteP);
         NoteP^.IsTemplate := False;
   	    try
-			try
+	        try
                 NoteP^.ID:=FileName;
   			    ReadXMLFile(Doc, Dir + FileName);
   			    Node := Doc.DocumentElement.FindNode('title');
@@ -544,7 +544,6 @@ begin
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
-
                 Node := Doc.DocumentElement.FindNode('tags');
                 if Assigned(Node) then begin
                   	for J := 0 to Node.ChildNodes.Count-1 do
@@ -553,19 +552,19 @@ begin
                     for J := 0 to Node.ChildNodes.Count-1 do
                         if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then
                         	NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
-                        // Node.ChildNodes.Item[J].TextContent) may be something like -
-                        // * system:notebook:DavosNotebook - this note belongs to DavosNotebook
-                        // * system:template - this note is a template, if does not also have a
-                        // Notebook tag its the StartHere note, otherwise its the Template for
-                        // for the mentioned Notebook.
+                            // Node.ChildNodes.Item[J].TextContent) may be something like -
+                            // * system:notebook:DavosNotebook - this note belongs to DavosNotebook
+                            // * system:template - this note is a template, if does not also have a
+                            // Notebook tag its the StartHere note, otherwise its the Template for
+                            // for the mentioned Notebook.
 				end;
             except 		on E: EXMLReadError do begin
-                                                    DebugLn(E.Message);
-                                                    XMLError := True;
-                                                    dispose(NoteP);
-                                                    ErrorNotes.Append(FileName + ', ' + E.Message);
-                                                    exit();
-                                               end;
+                            DebugLn('XML ERROR' + E.Message);
+                            XMLError := True;
+                            dispose(NoteP);
+                            ErrorNotes.Append(FileName + ', ' + E.Message);
+                            exit();
+                        end;
             		    on EAccessViolation do DebugLn('Access Violation ' + FileName);
   		    end;
             if NoteP^.IsTemplate then begin    // Don't show templates in normal note list
@@ -815,8 +814,8 @@ begin
     if NoteList = NIl then
         exit;
     if NoteList.Count < 1 then begin
-        DebugLn('Called ThisNoteIsOpen() with empty but not NIL list. Count is '
-        		+ inttostr(NoteList.Count) + ' ' + ID);
+        //DebugLn('Called ThisNoteIsOpen() with empty but not NIL list. Count is '
+        //		+ inttostr(NoteList.Count) + ' ' + ID);
         // Occasionally I think we see a non reproducable error here.
         // I believe is legal to start the for loop below with an empty list but ....
         // When we are creating the very first note in a dir, this haappens. Count should be exactly zero.

@@ -143,7 +143,7 @@ type
         function CommandLineError() : boolean;
             // responds to any main or mainPopup menu clicks except recent note ones.
         procedure FileMenuClicked(Sender: TObject);
-        function FindHelpFiles(): integer;
+        procedure FindHelpFiles();
         procedure ShowAbout();
         procedure TestDarkThemeInUse();
 
@@ -338,6 +338,8 @@ begin
         if Sett.CheckShowSearchAtStart.Checked then
             SearchForm.Show;
     end;
+    if UseTrayMenu then
+       TrayIcon.Show;
 end;
 
 resourcestring
@@ -372,8 +374,6 @@ begin
 
      if (ImageConfigTick.Visible and ImageNotesDirTick.Visible) then begin
         ButtonDismiss.Enabled := AllowDismiss;
-        if UseTrayMenu then
-            TrayIcon.Show;
      end;
 end;
 
@@ -517,15 +517,17 @@ end;
 
 { ------------- M E N U   M E T H O D S ----------------}
 
-function TMainForm.FindHelpFiles() : integer;
+procedure TMainForm.FindHelpFiles();
     // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
 var
   NoteTitle : string;
 begin
+    if HelpNotes = Nil then begin
        HelpNotes := TNoteLister.Create;     // freed in OnClose event.
        HelpNotes.DebugMode := Application.HasOption('debug-index');
        HelpNotes.WorkingDir:=HelpNotesPath;
-    Result := HelpNotes.GetNotes('', true);
+       HelpNotes.GetNotes('', true);
+    end;
     HelpNotes.StartSearch();
     while HelpNotes.NextNoteTitle(NoteTitle) do
         AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
