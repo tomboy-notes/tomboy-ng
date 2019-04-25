@@ -597,6 +597,10 @@ msgstr ""
 msgid "Monthly"
 msgstr ""
 
+#: tsett.groupbox1.caption
+msgid "Main Search Window is : "
+msgstr ""
+
 #: tsett.groupbox3.caption
 msgid "  Type  "
 msgstr "  Tipo  "
@@ -627,10 +631,6 @@ msgctxt "tsett.label11.caption"
 msgid "AUTO snapshots not implemented yet, use manual !"
 msgstr ".... y ¡no está disponible todavía!"
 
-#: tsett.label12.caption
-msgid "Main Search Box is :"
-msgstr ""
-
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
 msgstr ""
@@ -648,16 +648,14 @@ msgid "Notes will be looked for and saved in :"
 msgstr "Se buscan y se guardan las notas en:"
 
 #: tsett.label3.caption
-msgid "when a conflict is detected between a local note and"
+#, fuzzy
+#| msgid "when a conflict is detected between a local note and"
+msgid "When a conflict is detected between a local note and"
 msgstr "cuando se detecta un conflicto entre una nota local y"
 
 #: tsett.label4.caption
 msgid "a note on the configured synchronisation server :"
 msgstr "una nota en el servidor de sincronización configurado:"
-
-#: tsett.label5.caption
-msgid "LocalConfig :"
-msgstr "ConfigLocal:"
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
@@ -701,10 +699,6 @@ msgstr ""
 msgid "LabelLibraryStatus"
 msgstr ""
 
-#: tsett.labellocalconfig.caption
-msgid "LabelLocalConfig"
-msgstr "EtiquetaConfigLocal"
-
 #: tsett.labelnotespath.caption
 msgid "LabelNotesPath"
 msgstr "EtiquetaRutaNotas"
@@ -716,6 +710,10 @@ msgstr "EtiquetaRutaPreferencias"
 #: tsett.labelsnapdir.caption
 msgctxt "tsett.labelsnapdir.caption"
 msgid ".... and its not available just yet !"
+msgstr ""
+
+#: tsett.labelsyncrepo.caption
+msgid "x"
 msgstr ""
 
 #: tsett.labelwaitforsync.caption
@@ -757,6 +755,10 @@ msgstr "Panel2"
 #: tsett.radioalwaysask.caption
 msgid "Always ask me what to do."
 msgstr "Siempre pregúnteme que hacer."
+
+#: tsett.radiobutton1.caption
+msgid "RadioButton1"
+msgstr ""
 
 #: tsett.radiofile.caption
 msgid "File Sync using shared drive."

@@ -115,24 +115,24 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
+        CheckAnyCombination: TCheckBox;
         CheckAutostart: TCheckBox;
+        CheckCaseSensitive: TCheckBox;
         CheckShowSearchAtStart: TCheckBox;
         CheckShowSplash: TCheckBox;
         CheckShowTomdroid: TCheckBox;
-        CheckCaseSensitive: TCheckBox;
-        CheckAnyCombination: TCheckBox;
 		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
         CheckSnapEnabled: TCheckBox;
         CheckSnapMonthly: TCheckBox;
+        GroupBox1: TGroupBox;
 		GroupBox3: TGroupBox;
 		GroupBox4: TGroupBox;
 		GroupBox5: TGroupBox;
 		Label1: TLabel;
         Label10: TLabel;
         Label11: TLabel;
-        Label12: TLabel;
         Label13: TLabel;
         Label14: TLabel;
         Label15: TLabel;
@@ -147,13 +147,11 @@ type
 		Label2: TLabel;
 		Label3: TLabel;
 		Label4: TLabel;
-		Label5: TLabel;
 		Label6: TLabel;
 		Label7: TLabel;
 		Label8: TLabel;
 		Label9: TLabel;
 		LabelSyncRepo: TLabel;
-		LabelLocalConfig: TLabel;
 		LabelNotesPath: TLabel;
 		LabelSettingPath: TLabel;
         ListBoxDic: TListBox;
@@ -172,6 +170,7 @@ type
         Panel3: TPanel;
         PopupDay: TPopupMenu;
 		RadioAlwaysAsk: TRadioButton;
+        RadioButton1: TRadioButton;
 		RadioFile: TRadioButton;
 		RadioFontBig: TRadioButton;
 		RadioFontMedium: TRadioButton;
@@ -215,6 +214,9 @@ type
         procedure ListBoxDicClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
+        procedure TabBasicResize(Sender: TObject);
+        procedure TabSpellResize(Sender: TObject);
+        procedure TabSyncResize(Sender: TObject);
 		//procedure Timer1Timer(Sender: TObject);
    	private
         fExportPath : ANSIString;
@@ -396,6 +398,22 @@ begin
     finally
         FreeandNil(BV);
     end;
+end;
+
+procedure TSett.TabBasicResize(Sender: TObject);
+begin
+    buttonSetNotePath.Width := (TabBasic.Width div 2) - 12;
+end;
+
+procedure TSett.TabSpellResize(Sender: TObject);
+begin
+    ButtonSetSpellLibrary.Width := (TabSpell.Width div 2) -7;
+    ButtonSetDictionary.Width := ButtonSetSpellLibrary.Width;
+end;
+
+procedure TSett.TabSyncResize(Sender: TObject);
+begin
+    ButtonSetSynServer.Width := (TabSync.Width div 2) - 7;
 end;
 
     { ----------------- S P E L L I N G ----------------------}
@@ -646,7 +664,7 @@ begin
     if LocalConfig = '' then LocalConfig := GetAppConfigDirUTF8(False);
     LocalConfig := AppendPathDelim(LocalConfig);
     LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
-    LabelLocalConfig.Caption := LocalConfig;
+    // LabelLocalConfig.Caption := LocalConfig;
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);

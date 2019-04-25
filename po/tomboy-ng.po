@@ -569,6 +569,10 @@ msgstr ""
 msgid "Monthly"
 msgstr ""
 
+#: tsett.groupbox1.caption
+msgid "Main Search Window is : "
+msgstr ""
+
 #: tsett.groupbox3.caption
 msgid "  Type  "
 msgstr ""
@@ -594,10 +598,6 @@ msgstr ""
 msgid "AUTO snapshots not implemented yet, use manual !"
 msgstr ""
 
-#: tsett.label12.caption
-msgid "Main Search Box is :"
-msgstr ""
-
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
 msgstr ""
@@ -615,15 +615,11 @@ msgid "Notes will be looked for and saved in :"
 msgstr ""
 
 #: tsett.label3.caption
-msgid "when a conflict is detected between a local note and"
+msgid "When a conflict is detected between a local note and"
 msgstr ""
 
 #: tsett.label4.caption
 msgid "a note on the configured synchronisation server :"
-msgstr ""
-
-#: tsett.label5.caption
-msgid "LocalConfig :"
 msgstr ""
 
 #: tsett.label6.caption
@@ -666,10 +662,6 @@ msgstr ""
 msgid "LabelLibraryStatus"
 msgstr ""
 
-#: tsett.labellocalconfig.caption
-msgid "LabelLocalConfig"
-msgstr ""
-
 #: tsett.labelnotespath.caption
 msgid "LabelNotesPath"
 msgstr ""
@@ -680,6 +672,10 @@ msgstr ""
 
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
+msgstr ""
+
+#: tsett.labelsyncrepo.caption
+msgid "x"
 msgstr ""
 
 #: tsett.labelwaitforsync.caption
@@ -721,6 +717,10 @@ msgstr ""
 
 #: tsett.radioalwaysask.caption
 msgid "Always ask me what to do."
+msgstr ""
+
+#: tsett.radiobutton1.caption
+msgid "RadioButton1"
 msgstr ""
 
 #: tsett.radiofile.caption
