@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "tomboy-ng"
-#define MyAppVersion "0.21a"
+#define MyAppVersion "REPLACEME"
 #define MyAppPublisher "David Bannon"
 #define MyAppURL "https://github.com/tomboy-notes/tomboy-ng"
 #define MyAppExeName32 "tomboy-ng32.exe"
@@ -59,6 +59,7 @@ Source: "sync-ng.note";        DestDir: "{app}"; Flags: ignoreversion
 Source: "tomboy-ng.note";      DestDir: "{app}"; Flags: ignoreversion
 Source: "tomdroid.note";       DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.txt";          DestDir: "{app}"; Flags: ignoreversion
+Source: "tomboy-ng.es.mo";     DestDir: "{app}\locale"; Flags; ignorerevision
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

@@ -14,11 +14,7 @@ Formal bug reports and feature requests should be via Github https://github.com/
 
 <bold>Tested Platforms</bold></size:huge>
 
-tomboy-ng is currently tested on a number of platforms -
-
-<list><list-item dir="ltr">Ubuntu Mate 16.04 and 18.04; XUbuntu 18.04; Ubuntu 17.10; Ubuntu 18.04; SUSE Leap 15; Arch Linux, Mageia 6. Fedora 29 (but see Known Issues)</list-item></list>
-<list><list-item dir="ltr">Windows 10 64 bit and Windows 7 32bit</list-item></list>
-<list><list-item dir="ltr">Mac Sierra (64bit system but running a 32bit tomboy-ng, yes, Apple complains but it works fine for now). </list-item></list>
+tomboy-ng is currently tested on a number of platforms , see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Requirements
 
 Reports of your experiences are very welcome ! <size:huge>
 
@@ -26,32 +22,24 @@ Reports of your experiences are very welcome ! <size:huge>
 
 All Platforms</bold></size:large>
 We don't do multilevel bullets.
-Tabs do not work like real tabs should.<size:large>
-
-<bold>Linux</bold></size:large>
-Some Gnome 3 systems (such as Fedora 28, 29) have had their System Tray disabled (ask the Gnome developers, not me!).  That means you don't see the small green tomboy-ng icon in your System Tray. So, to interact with tomboy-ng you must leave the small splash screen visible. Perhaps start tomboy-ng with the -g option so you don't accidentally dismiss the splash screen. You can restore a more normal behaviour by installing TopIcons, please see the Note titled "The Gnome Icon Issue".<size:large>
-
-<bold>Mac</bold></size:large>
-The 64bit version is still less than perfect. In particular, printing does not work and its substantially slower (a factor on older hardware and bigger notes).  The 32bit versions works fine on all current Mac OSs but next release of MacOS will be 64bit only.<size:huge>
-
-
+Tabs do not work like real tabs should.<size:huge>
 
 <bold>Here is a todo list (updated 2019/02/19)</bold></size:huge>
 
 Recent fixes show as strikeout.
 
-<list><list-item dir="ltr"><strikeout>A dark theme ?</strikeout>  after v0.21 Now working but ugly (but I reckon dark themes are always ugly)  feed back welcome</list-item></list>
+<list><list-item dir="ltr"><strikeout>A dark theme ?</strikeout>  after v0.22 Now working but ugly (but I reckon dark themes are always ugly)  feed back welcome</list-item></list>
 <list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
-<list><list-item dir="ltr"><strikeout>A proper installer for Windows.</strikeout> After v0.21 a single installer that works for both Win32 and Win64, tested on only Win10 64bit and Vista 32bit</list-item></list>
+<list><list-item dir="ltr"><strikeout>A proper installer for Windows.</strikeout> <strikeout>After v0.21 a single installer that works for both Win32 and Win64, tested on only Win10 64bit and Vista 32bit</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
 <list><list-item dir="ltr"><strikeout>Startup option to show SearchWinow.</strikeout></list-item></list><strikeout></strikeout>
-<list><list-item dir="ltr">Add menus to search window ?   Is this an alternative to splash screen  for RedHat users who have not installed Top Icons ?</list-item></list>
-<list><list-item dir="ltr">Network Sync</list-item></list>
-<list><list-item dir="ltr"><strikeout>Table of Contents (copy Tomboy plugin I use a LOT)</strikeout></list-item></list><strikeout>
-</strikeout><list><list-item dir="ltr">Tools to manage (re-use or delete) deleted files that end up in Backup/.</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">Allow user to prevent splash screen showing at startup.</strikeout> Can force it to show with -g.  Setting option.</list-item></list><strikeout>
+<list><list-item dir="ltr">Add <strikeout>menus to search window</strikeout> ?   Is this an alternative to splash screen  for RedHat users who have not installed Top Icons ?</list-item></list>
+<list><list-item dir="ltr"><strikeout>Network Sync</strikeout></list-item></list><strikeout>
+</strikeout><list><list-item dir="ltr">Table of Contents </strikeout>(copy Tomboy plugin I use a LOT)</list-item></list><strikeout>
+<list><list-item dir="ltr"><strikeout>Tools to manage (re-use or delete) deleted files that end up in Backup</strikeout>/.</list-item></list>
+<list><list-item dir="ltr"><strikeout>Allow user to prevent splash screen showing at startup. </strikeout>Can force it to show with -g.  Setting option.</list-item></list>
 <list><list-item dir="ltr"><strikeout>A mobile device solution, sync to Tomdroid.</strikeout> Linux only, connect over ssh.</list-item></list>
 <list><list-item dir="ltr"><strikeout>A viable backup solution.</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr">Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</list-item></list>
@@ -79,8 +67,8 @@ Recent fixes show as strikeout.
 
 
 </note-content></text>
-  <last-change-date>2019-03-27T22:01:58.1380000+11:00</last-change-date>
-  <last-metadata-change-date>2019-03-27T22:01:58.1380000+11:00</last-metadata-change-date>
+  <last-change-date>2019-04-20T17:08:22.7940000+10:00</last-change-date>
+  <last-metadata-change-date>2019-04-20T17:08:22.7940000+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

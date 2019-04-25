@@ -88,7 +88,7 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
-    StdCtrls;
+    StdCtrls, LCLTranslator, DefaultTranslator;
 
 // These are choices for main and main popup menus.
 type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
@@ -267,7 +267,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     //I: Integer;
     Params : TStringList;
-    LongOpts : array [1..10] of string = ('debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
+    LongOpts : array [1..11] of string = ('lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
     // debugln('Form color is ' + inttostr(Color));
@@ -428,7 +428,7 @@ function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:', 'debug-log: no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
+    CmdLineErrorMsg := Application.CheckOptions('hgo:l:', 'lang: debug-log: no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
@@ -437,6 +437,7 @@ begin
        debugln('eg   open tomboy-ng.app');
        debugln('eg   open tomboy-ng.app --args -o Note.txt|.note');
        {$endif}
+       debugln('   -l CCode  --lang=CCode       Force Language, supported es ');
        debugln('   --debug-log=SOME.LOG         Direct debug output to SOME.LOG.');
        debugln('   -h --help                    Show this help and exit.');
        debugln('   --version                    Print version and exit');
@@ -455,6 +456,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    // SetDefaultLang('es', 'locale', true);
     //color := clyellow;
     if CommandLineError() then exit;    // We will close in OnShow
     UseMainMenu := True;

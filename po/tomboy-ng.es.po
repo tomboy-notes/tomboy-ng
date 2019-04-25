@@ -1,0 +1,816 @@
+# Spanish translation for Tomboy-ng.
+# This file is put in the public domain.
+# Roy W. Reese <waterbearer54@gmx.com>, 2018.
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: mainunit.rsanotherinstancerunning
+msgid "Another instance of tomboy-ng appears to be running. Will exit."
+msgstr ""
+
+#: mainunit.rsbadnotesfound1
+msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
+msgstr ""
+
+#: mainunit.rsbadnotesfound2
+msgid "You should do so to ensure your notes are safe."
+msgstr ""
+
+#: mainunit.rscannotdismiss1
+msgid "Sadly, on this OS or because of a Bad Note,"
+msgstr ""
+
+#: mainunit.rscannotdismiss2
+msgid "I cannot let you dismiss this window"
+msgstr ""
+
+#: mainunit.rscannotdismiss3
+msgid "Are you trying to shut me down ? Dave ?"
+msgstr ""
+
+#: mainunit.rscannotfindnote
+msgid "ERROR, cannot find "
+msgstr ""
+
+#: mainunit.rsfailedtoindex
+msgid "Failed to index one or more notes."
+msgstr ""
+
+#: mainunit.rsmenuabout
+#, fuzzy
+msgctxt "mainunit.rsmenuabout"
+msgid "About"
+msgstr "Acerca de"
+
+#: mainunit.rsmenufile
+#, fuzzy
+msgctxt "mainunit.rsmenufile"
+msgid "File"
+msgstr "Archivo"
+
+#: mainunit.rsmenuhelp
+msgctxt "mainunit.rsmenuhelp"
+msgid "Help"
+msgstr ""
+
+#: mainunit.rsmenunewnote
+#, fuzzy
+msgctxt "mainunit.rsmenunewnote"
+msgid "New Note"
+msgstr "Nota nueva"
+
+#: mainunit.rsmenuquit
+msgid "Quit"
+msgstr ""
+
+#: mainunit.rsmenurecent
+msgid "Recent"
+msgstr ""
+
+#: mainunit.rsmenusearch
+#, fuzzy
+msgctxt "mainunit.rsmenusearch"
+msgid "Search"
+msgstr "Buscar"
+
+#: mainunit.rsmenusettings
+#, fuzzy
+msgctxt "mainunit.rsmenusettings"
+msgid "Settings"
+msgstr "Preferencias"
+
+#: mainunit.rsmenusync
+#, fuzzy
+msgctxt "mainunit.rsmenusync"
+msgid "Synchronise"
+msgstr "Sincronizar"
+
+#: mainunit.rssetupnotesdirfirst
+msgid "Please setup a notes directory first"
+msgstr ""
+
+#: mainunit.rssetupsyncfirst
+msgid "Please config sync system first"
+msgstr ""
+
+#: teditboxform.caption
+msgid "EditBoxForm"
+msgstr "EditarCaja"
+
+#: teditboxform.label2.caption
+msgid "Read Only"
+msgstr ""
+
+#: teditboxform.label3.caption
+msgid "This note has been changed by the Sync Process"
+msgstr ""
+
+#: teditboxform.label4.caption
+msgid "Please close it (and re-open if it was a download)"
+msgstr ""
+
+#: teditboxform.menubold.caption
+msgid "Bold"
+msgstr "Negrita"
+
+#: teditboxform.menubullet.caption
+msgid "Bullet"
+msgstr "Viñeta"
+
+#: teditboxform.menufixedwidth.caption
+msgid "Fixed Width"
+msgstr "Anchura fija"
+
+#: teditboxform.menuhighlight.caption
+msgid "Highlight"
+msgstr "Resaltada"
+
+#: teditboxform.menuhuge.caption
+msgid "Huge"
+msgstr "Enorme"
+
+#: teditboxform.menuitalic.caption
+msgid "Italic"
+msgstr "Cursiva"
+
+#: teditboxform.menuitem4.caption
+msgid "Alt+Right to add, Alt+Left to remove"
+msgstr ""
+
+#: teditboxform.menuitemcopy.caption
+msgid "Copy"
+msgstr "Copiar"
+
+#: teditboxform.menuitemcut.caption
+msgid "Cut"
+msgstr "Cortar"
+
+#: teditboxform.menuitemdelete.caption
+msgid "Delete"
+msgstr "Eliminar"
+
+#: teditboxform.menuitemevaluate.caption
+msgid "Evaluate"
+msgstr ""
+
+#: teditboxform.menuitemexport.caption
+msgid "Export"
+msgstr "Exportar"
+
+#: teditboxform.menuitemexportmarkdown.caption
+msgid "Export Markdown"
+msgstr ""
+
+#: teditboxform.menuitemexportplaintext.caption
+msgid "Export Plain Text"
+msgstr "Exportar sin formato"
+
+#: teditboxform.menuitemexportrtf.caption
+msgid "Export as RTF"
+msgstr "Exportar como RTF"
+
+#: teditboxform.menuitemfind.caption
+msgid "Find in this Note"
+msgstr "Buscar en esta nota"
+
+#: teditboxform.menuitemindex.caption
+msgid "Index"
+msgstr ""
+
+#: teditboxform.menuitempaste.caption
+msgid "Paste"
+msgstr "Pegar"
+
+#: teditboxform.menuitemprint.caption
+#, fuzzy
+#| msgid "MenuItemPrint"
+msgid "Print"
+msgstr "ImprimirElementoMenu"
+
+#: teditboxform.menuitemselectall.caption
+msgid "Select All"
+msgstr "Seleccionar todas"
+
+#: teditboxform.menuitemspell.caption
+msgid "Spell Check"
+msgstr ""
+
+#: teditboxform.menuitemsync.caption
+msgid "Syncronize"
+msgstr "Sincronizar"
+
+#: teditboxform.menularge.caption
+msgid "Large  Font"
+msgstr "Fuente Grande"
+
+#: teditboxform.menunormal.caption
+msgid "Normal Font"
+msgstr "Fuente Normal"
+
+#: teditboxform.menusmall.caption
+msgid "Small Font"
+msgstr "Fuente Pequeña"
+
+#: teditboxform.menustrikeout.caption
+msgid "Strikeout"
+msgstr ""
+
+#: teditboxform.menuunderline.caption
+msgid "Underline"
+msgstr ""
+
+#: teditboxform.panel1.caption
+#, fuzzy
+msgctxt "teditboxform.panel1.caption"
+msgid "Panel1"
+msgstr "Panel1"
+
+#: teditboxform.speedbuttondelete.hint
+msgid "Delete this note"
+msgstr ""
+
+#: teditboxform.speedbuttonlink.hint
+msgid "Link highlighted text to a new note"
+msgstr ""
+
+#: teditboxform.speedbuttonnotebook.hint
+msgid "Manage Notebooks"
+msgstr ""
+
+#: teditboxform.speedbuttonsearch.hint
+msgid "Search All Notes Ctrl-Shift-F"
+msgstr ""
+
+#: teditboxform.speedbuttontext.hint
+msgid "Font size, bold, italics etc"
+msgstr ""
+
+#: teditboxform.speedbuttontools.hint
+msgid "Tools - Sync, Export, Spell"
+msgstr ""
+
+#: tformsync.buttoncancel.caption
+msgctxt "tformsync.buttoncancel.caption"
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: tformsync.buttonclose.caption
+#, fuzzy
+msgctxt "tformsync.buttonclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
+#: tformsync.buttonsave.caption
+msgid "Save and Sync"
+msgstr "Guardar y Sincronizar"
+
+#: tformsync.caption
+msgid "FormSync"
+msgstr "FormaSinc"
+
+#: tformsync.label1.caption
+msgctxt "tformsync.label1.caption"
+msgid "Label1"
+msgstr "Etiqueta1"
+
+#: tformsync.label2.caption
+msgctxt "tformsync.label2.caption"
+msgid "Label2"
+msgstr "Etiqueta2"
+
+#: tformsync.panel3.caption
+msgid "Panel3"
+msgstr "Panel3"
+
+#: tmainform.buttonconfig.caption
+#, fuzzy
+msgctxt "tmainform.buttonconfig.caption"
+msgid "Settings"
+msgstr "Preferencias"
+
+#: tmainform.buttonconfig.hint
+msgid "Open the Config Window"
+msgstr ""
+
+#: tmainform.buttondismiss.caption
+msgid "Dismiss"
+msgstr ""
+
+#: tmainform.buttondismiss.hint
+msgid "Dismiss this window but leave tomboy-ng running"
+msgstr ""
+
+#: tmainform.caption
+msgid "MainForm"
+msgstr ""
+
+#: tmainform.checkboxdontshow.caption
+msgid "Dont Show for normal startup"
+msgstr ""
+
+#: tmainform.checkboxdontshow.hint
+msgid "You can reverse this from Settings"
+msgstr ""
+
+#: tmainform.hint
+msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+msgstr ""
+
+#: tmainform.label1.caption
+msgid "Have Config"
+msgstr ""
+
+#: tmainform.label3.caption
+msgid "Dictionary Config (optional)"
+msgstr ""
+
+#: tmainform.label4.caption
+msgid "Sync Config (optional)"
+msgstr ""
+
+#: tmainform.label5.caption
+msgid "Welcome to tomboy-ng !"
+msgstr ""
+
+#: tmainform.label6.caption
+msgid "Lets See if we are ready to go -"
+msgstr ""
+
+#: tmainform.labelerror.caption
+msgctxt "tmainform.labelerror.caption"
+msgid "X"
+msgstr ""
+
+#: tmainform.labelerror.hint
+msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
+msgstr ""
+
+#: tmainform.labelnodismiss1.caption
+msgid "LabelNoDismiss1"
+msgstr ""
+
+#: tmainform.labelnodismiss2.caption
+msgid "LabelNoDismiss2"
+msgstr ""
+
+#: tmainform.labelnotesfound.caption
+msgctxt "tmainform.labelnotesfound.caption"
+msgid "X"
+msgstr ""
+
+#: tnotebookpick.button1.caption
+msgctxt "tnotebookpick.button1.caption"
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: tnotebookpick.buttonok.caption
+msgid "OK"
+msgstr "OK"
+
+#: tnotebookpick.caption
+msgid "NoteBookPick"
+msgstr "SelecionarCuaderno"
+
+#: tnotebookpick.label1.caption
+msgctxt "tnotebookpick.label1.caption"
+msgid "Label1"
+msgstr "Etiqueta1"
+
+#: tnotebookpick.label2.caption
+msgctxt "tnotebookpick.label2.caption"
+msgid "Label2"
+msgstr "Etiqueta2"
+
+#: tnotebookpick.label3.caption
+msgid "Label3"
+msgstr "Etiqueta3"
+
+#: tnotebookpick.label4.caption
+msgid "Name of the New Note Book"
+msgstr "Nombre del cuaderno nuevo"
+
+#: tnotebookpick.label5.caption
+msgid "Press OK and we will make the Note Book AND add this note to it."
+msgstr "Pulse OK y haremos el cuaderno Y añadiremos a ello esta nota."
+
+#: tnotebookpick.tabexisting.caption
+msgid "Existing Note Books"
+msgstr "Cuadernos actuales"
+
+#: tnotebookpick.tabnewnotebook.caption
+msgctxt "tnotebookpick.tabnewnotebook.caption"
+msgid "New Note Book"
+msgstr "Nuevo cuaderno"
+
+#: tsearchform.buttonclearfilters.caption
+msgid "Clear Filters"
+msgstr ""
+
+#: tsearchform.buttonnotebookoptions.caption
+#, fuzzy
+msgctxt "tsearchform.buttonnotebookoptions.caption"
+msgid "Notebook Options"
+msgstr "Opciones del cuaderno"
+
+#: tsearchform.buttonnotebookoptions.hint
+msgid "Manage the Notebooks"
+msgstr ""
+
+#: tsearchform.buttonrefresh.caption
+#, fuzzy
+msgctxt "tsearchform.buttonrefresh.caption"
+msgid "Refresh"
+msgstr "Actualizar"
+
+#: tsearchform.buttonrefresh.hint
+msgid "Indexes on disk notes"
+msgstr ""
+
+#: tsearchform.caption
+msgid "SearchForm"
+msgstr ""
+
+#: tsearchform.checkboxanycombo.caption
+msgid "Any Combo"
+msgstr ""
+
+#: tsearchform.checkboxcasesensitive.caption
+msgctxt "tsearchform.checkboxcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
+#: tsearchform.edit1.text
+#, fuzzy
+msgctxt "tsearchform.edit1.text"
+msgid "Search"
+msgstr "Buscar"
+
+#: tsearchform.menudeletenotebook.caption
+#, fuzzy
+msgctxt "tsearchform.menudeletenotebook.caption"
+msgid "Delete Notebook"
+msgstr "Eliminar cuaderno"
+
+#: tsearchform.menueditnotebooktemplate.caption
+#, fuzzy
+msgctxt "tsearchform.menueditnotebooktemplate.caption"
+msgid "Edit Notebook Template"
+msgstr "Editar plantilla del cuaderno"
+
+#: tsearchform.menunewnotefromtemplate.caption
+#, fuzzy
+msgctxt "tsearchform.menunewnotefromtemplate.caption"
+msgid "Create New Note from Template"
+msgstr "Crear nueva nota usando la plantilla"
+
+#: tsearchform.panel1.caption
+#, fuzzy
+msgctxt "tsearchform.panel1.caption"
+msgid "Panel1"
+msgstr "Panel1"
+
+#: tsett.buttdefaultnotedir.caption
+msgid "Use default Notes location"
+msgstr "Usa ubicación predeterminada"
+
+#: tsett.buttdefaultnotedir.hint
+msgid "Will work for many new users"
+msgstr ""
+
+#: tsett.buttonhide.caption
+#, fuzzy
+msgctxt "tsett.buttonhide.caption"
+msgid "Close"
+msgstr "Cerrar"
+
+#: tsett.buttonhide.hint
+msgid "Unsaved setting will remain for this session only"
+msgstr ""
+
+#: tsett.buttonmanualsnap.caption
+msgid "Take a Manual Snapshot"
+msgstr ""
+
+#: tsett.buttonmanualsnap.hint
+msgid "Take a time stamped snapshot of notes and config"
+msgstr ""
+
+#: tsett.buttonsetdictionary.caption
+msgid "Set Dictionary"
+msgstr ""
+
+#: tsett.buttonsetnotepath.caption
+msgid "Set Path to Note Files"
+msgstr "Establecer ruta a las notas"
+
+#: tsett.buttonsetnotepath.hint
+msgid "If you have notes somewhere else."
+msgstr ""
+
+#: tsett.buttonsetsnapdir.caption
+msgid "Set Snap Dir"
+msgstr ""
+
+#: tsett.buttonsetspelllibrary.caption
+msgid "Set Spell Library"
+msgstr ""
+
+#: tsett.buttonsetsynserver.caption
+msgid "Change File Sync Repo"
+msgstr "Cambiar repositorio de sincronización"
+
+#: tsett.buttonshowbackup.caption
+msgid "Show Me"
+msgstr "Mostrar"
+
+#: tsett.buttonsnapdays.caption
+msgid "Days"
+msgstr ""
+
+#: tsett.buttonsnaprecover.caption
+msgid "Recover lost Notes"
+msgstr ""
+
+#: tsett.buttonsnaprecover.hint
+msgid "If you have previously taken a snapshot......"
+msgstr ""
+
+#: tsett.buttonsynchelp.caption
+msgctxt "tsett.buttonsynchelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tsett.caption
+msgid "KTomboy-NG Settings"
+msgstr "Preferencias KTomboy-NG"
+
+#: tsett.checkanycombination.caption
+msgid "Any Combination"
+msgstr ""
+
+#: tsett.checkautostart.caption
+msgid "Autostart at Logon"
+msgstr ""
+
+#: tsett.checkcasesensitive.caption
+msgctxt "tsett.checkcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
+#: tsett.checkmanynotebooks.caption
+msgid "Allow a note to be in Multiple Notebooks."
+msgstr "Permitir que una nota aparece en Cuadernos Multiples"
+
+#: tsett.checkmanynotebooks.hint
+msgid "This may adversly affect tradional Tomboy, take care."
+msgstr "Puede que prejudique Tomboy tradicional. ¡Tenga cuidado!"
+
+#: tsett.checkshowextlinks.caption
+msgid "Show External  Links"
+msgstr "Mostrar Enlaces Externos"
+
+#: tsett.checkshowintlinks.caption
+msgid "Show Internal Links"
+msgstr "Mostrar Enlaces Internos"
+
+#: tsett.checkshowsearchatstart.caption
+msgid "Show Search at Start"
+msgstr ""
+
+#: tsett.checkshowsplash.caption
+msgid "Show Splash at Start"
+msgstr ""
+
+#: tsett.checkshowsplash.hint
+msgid "Always shown if error loading notes."
+msgstr ""
+
+#: tsett.checkshowtomdroid.caption
+msgid "Show Tomdroid Sync (experimental)"
+msgstr ""
+
+#: tsett.checksnapenabled.caption
+msgid "Run Auto"
+msgstr ""
+
+#: tsett.checksnapmonthly.caption
+msgid "Monthly"
+msgstr ""
+
+#: tsett.groupbox3.caption
+msgid "  Type  "
+msgstr "  Tipo  "
+
+#: tsett.groupbox4.caption
+msgid "  Options  "
+msgstr "  Opciones  "
+
+#: tsett.groupbox5.caption
+msgid "Font Size"
+msgstr "Tamaño de fuente"
+
+#: tsett.label1.caption
+msgid "Settings will be saved in :"
+msgstr "Preferencias se guardarán en:"
+
+#: tsett.label10.caption
+#, fuzzy
+#| msgid "tucked away somewhere safely."
+msgctxt "tsett.label10.caption"
+msgid "Settings"
+msgstr "escondida en un lugar seguro."
+
+#: tsett.label11.caption
+#, fuzzy
+#| msgid ".... and its not available just yet !"
+msgctxt "tsett.label11.caption"
+msgid "AUTO snapshots not implemented yet, use manual !"
+msgstr ".... y ¡no está disponible todavía!"
+
+#: tsett.label12.caption
+msgid "Main Search Box is :"
+msgstr ""
+
+#: tsett.label13.caption
+msgid "Spell Check requires the Hunspell Libraries and"
+msgstr ""
+
+#: tsett.label14.caption
+msgid "an appropriate Hunspell Dictionary set."
+msgstr ""
+
+#: tsett.label15.caption
+msgid "Label15"
+msgstr ""
+
+#: tsett.label2.caption
+msgid "Notes will be looked for and saved in :"
+msgstr "Se buscan y se guardan las notas en:"
+
+#: tsett.label3.caption
+msgid "when a conflict is detected between a local note and"
+msgstr "cuando se detecta un conflicto entre una nota local y"
+
+#: tsett.label4.caption
+msgid "a note on the configured synchronisation server :"
+msgstr "una nota en el servidor de sincronización configurado:"
+
+#: tsett.label5.caption
+msgid "LocalConfig :"
+msgstr "ConfigLocal:"
+
+#: tsett.label6.caption
+msgid "Backup files are made when you delete a note or the sync system"
+msgstr "Se crean copias de seguridad cuando se borra una nota del sistema de sincronización"
+
+#: tsett.label7.caption
+msgid "is about to overwrite one. "
+msgstr "está a punto de sobreescribir una. "
+
+#: tsett.label8.caption
+msgid "They remain, for ever, unless you do something about them."
+msgstr "Se quedan para siempre al meno que haga algo al respecto."
+
+#: tsett.label9.caption
+#, fuzzy
+#| msgid "A snaphot is a copy of your current note directory, "
+msgid "A snaphot is a copy of your current note directory."
+msgstr "Una instantánea es una copia del directorio actual de las notas. "
+
+#: tsett.labeldic.caption
+msgid "LabelDic"
+msgstr ""
+
+#: tsett.labeldicprompt.caption
+msgid "LabelDicPrompt"
+msgstr ""
+
+#: tsett.labeldicstatus.caption
+msgid "LabelDicStatus"
+msgstr ""
+
+#: tsett.labelerror.caption
+msgid "LabelError"
+msgstr ""
+
+#: tsett.labellibrary.caption
+msgid "LabelLibrary"
+msgstr ""
+
+#: tsett.labellibrarystatus.caption
+msgid "LabelLibraryStatus"
+msgstr ""
+
+#: tsett.labellocalconfig.caption
+msgid "LabelLocalConfig"
+msgstr "EtiquetaConfigLocal"
+
+#: tsett.labelnotespath.caption
+msgid "LabelNotesPath"
+msgstr "EtiquetaRutaNotas"
+
+#: tsett.labelsettingpath.caption
+msgid "LabelSettingPath"
+msgstr "EtiquetaRutaPreferencias"
+
+#: tsett.labelsnapdir.caption
+msgctxt "tsett.labelsnapdir.caption"
+msgid ".... and its not available just yet !"
+msgstr ""
+
+#: tsett.labelwaitforsync.caption
+msgid "LabelWaitForSync"
+msgstr "EtiquetaEsperarSinc"
+
+#: tsett.menufriday.caption
+msgid "Friday"
+msgstr ""
+
+#: tsett.menumonday.caption
+msgid "Monday"
+msgstr ""
+
+#: tsett.menusaturday.caption
+msgid "Saturday"
+msgstr ""
+
+#: tsett.menusunday.caption
+msgid "Sunday"
+msgstr ""
+
+#: tsett.menuthursday.caption
+msgid "Thursday"
+msgstr ""
+
+#: tsett.menutuesday.caption
+msgid "Tuesday"
+msgstr ""
+
+#: tsett.menuwednesday.caption
+msgid "Wednesday"
+msgstr ""
+
+#: tsett.panel2.caption
+msgid "Panel2"
+msgstr "Panel2"
+
+#: tsett.radioalwaysask.caption
+msgid "Always ask me what to do."
+msgstr "Siempre pregúnteme que hacer."
+
+#: tsett.radiofile.caption
+msgid "File Sync using shared drive."
+msgstr "Sincronización utilizando un disco compartido."
+
+#: tsett.radiofontbig.caption
+msgid "Big"
+msgstr "Grande"
+
+#: tsett.radiofontmedium.caption
+msgid "Medium"
+msgstr "Media"
+
+#: tsett.radiofontsmall.caption
+msgid "Small"
+msgstr "Pequeña"
+
+#: tsett.radioserver.caption
+msgid "Network Server - not available"
+msgstr "Servidor de la red no disponible"
+
+#: tsett.radiouselocal.caption
+msgid "Use Local note and overwrite server note."
+msgstr "Usar nota local y sobreescribir nota del servidor"
+
+#: tsett.radiouseserver.caption
+msgid "Use server note and rename local one."
+msgstr "Usar nota del servidor y sobreescribir nota local"
+
+#: tsett.tabbackup.caption
+msgid "BackUp"
+msgstr "Copia Seguridad"
+
+#: tsett.tabbasic.caption
+msgid "Basic"
+msgstr "Basico"
+
+#: tsett.tabdisplay.caption
+msgid "Display"
+msgstr "Visualización"
+
+#: tsett.tabsnapshot.caption
+msgid "SnapShot"
+msgstr "Instantánea"
+
+#: tsett.tabspell.caption
+msgid "Spell"
+msgstr ""
+
+#: tsett.tabsync.caption
+msgid "Sync"
+msgstr "Sincronización"
+
+#: tsett.timeedit1.text
+msgid "TimeEdit1"
+msgstr ""
+
