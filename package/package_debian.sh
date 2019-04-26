@@ -113,13 +113,15 @@ function DebianPackage () {
     for i in `ls -b ../po/*.??.po`; do
         # echo "Name is $i"
         BASENAME=`basename -s.po "$i"`
-        #echo "BASENAME is $BASENAME"
-        msgfmt -o BUILD/usr/share/locale/"$BASENAME".mo "$i"
+        # echo "BASENAME is $BASENAME"
+        # msgfmt -o BUILD/usr/share/locale/"$BASENAME".mo "$i"
         CCODE=`echo "$BASENAME" | cut -d '.' -f2`
         # echo "CCode is $CCODE"
-        mkdir BUILD/usr/share/locale/"$CCODE"
+        mkdir -p BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES
         BASENAME=`basename -s."$CCODE" "$BASENAME"`
-        msgfmt -o BUILD/usr/share/locale/"$CCODE"/"$BASENAME".mo "$i"
+        msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
+	echo "~~~~~~~~~~~~~ Writing a MO for $i ~~~~~~~~~~"
+	echo " Its called BUILD/usr/share/locale/$CCODE/LC_MESSAGES/$BASENAME.mo"
     done
     # ------------ 
 	mkdir BUILD/usr/share/applications
