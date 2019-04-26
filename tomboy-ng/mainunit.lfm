@@ -11,6 +11,7 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
+  OnResize = FormResize
   OnShow = FormShow
   ShowHint = True
   LCLVersion = '2.0.1.0'
@@ -141,11 +142,15 @@ object MainForm: TMainForm
     }
   end
   object ButtonDismiss: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     Left = 272
     Height = 33
     Hint = 'Dismiss this window but leave tomboy-ng running'
     Top = 232
-    Width = 88
+    Width = 90
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 7
     Caption = 'Dismiss'
     Enabled = False
     OnClick = ButtonDismissClick
@@ -155,11 +160,14 @@ object MainForm: TMainForm
     TabStop = False
   end
   object ButtonConfig: TButton
-    Left = 176
+    AnchorSideRight.Control = ButtonDismiss
+    Left = 174
     Height = 33
     Hint = 'Open the Config Window'
     Top = 232
     Width = 91
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 7
     Caption = 'Settings'
     OnClick = ButtonConfigClick
     TabOrder = 1

@@ -113,6 +113,7 @@ msgid "Highlight"
 msgstr ""
 
 #: teditboxform.menuhuge.caption
+msgctxt "teditboxform.menuhuge.caption"
 msgid "Huge"
 msgstr ""
 
@@ -719,16 +720,17 @@ msgstr ""
 msgid "Always ask me what to do."
 msgstr ""
 
-#: tsett.radiobutton1.caption
-msgid "RadioButton1"
-msgstr ""
-
 #: tsett.radiofile.caption
 msgid "File Sync using shared drive."
 msgstr ""
 
 #: tsett.radiofontbig.caption
 msgid "Big"
+msgstr ""
+
+#: tsett.radiofonthuge.caption
+msgctxt "tsett.radiofonthuge.caption"
+msgid "Huge"
 msgstr ""
 
 #: tsett.radiofontmedium.caption

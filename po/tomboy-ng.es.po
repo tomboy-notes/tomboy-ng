@@ -126,6 +126,7 @@ msgid "Highlight"
 msgstr "Resaltada"
 
 #: teditboxform.menuhuge.caption
+msgctxt "teditboxform.menuhuge.caption"
 msgid "Huge"
 msgstr "Enorme"
 
@@ -756,10 +757,6 @@ msgstr "Panel2"
 msgid "Always ask me what to do."
 msgstr "Siempre pregúnteme que hacer."
 
-#: tsett.radiobutton1.caption
-msgid "RadioButton1"
-msgstr ""
-
 #: tsett.radiofile.caption
 msgid "File Sync using shared drive."
 msgstr "Sincronización utilizando un disco compartido."
@@ -767,6 +764,12 @@ msgstr "Sincronización utilizando un disco compartido."
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Grande"
+
+#: tsett.radiofonthuge.caption
+#, fuzzy
+msgctxt "tsett.radiofonthuge.caption"
+msgid "Huge"
+msgstr "Enorme"
 
 #: tsett.radiofontmedium.caption
 msgid "Medium"

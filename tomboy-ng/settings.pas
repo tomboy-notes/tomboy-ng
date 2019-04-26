@@ -170,7 +170,7 @@ type
         Panel3: TPanel;
         PopupDay: TPopupMenu;
 		RadioAlwaysAsk: TRadioButton;
-        RadioButton1: TRadioButton;
+        RadioFontHuge: TRadioButton;
 		RadioFile: TRadioButton;
 		RadioFontBig: TRadioButton;
 		RadioFontMedium: TRadioButton;
@@ -215,6 +215,7 @@ type
 		procedure PageControl1Change(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
+        procedure TabSnapshotResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
         procedure TabSyncResize(Sender: TObject);
 		//procedure Timer1Timer(Sender: TObject);
@@ -329,6 +330,13 @@ var
 
 procedure TSett.SetFontSizes;
 begin
+    if RadioFontBig.checked then begin
+        FontSmall  := 11;
+        FontLarge  := 20;
+        FontHuge   := 23;
+        FontTitle  := 21;			// Dont set this to one of the other sizes !
+        FontNormal := 16;
+    end;
 	if RadioFontBig.checked then begin
     	FontSmall  := 9;
      	FontLarge  := 17;
@@ -374,6 +382,8 @@ begin
     Label15.Caption := '';
 end;
 
+
+
 procedure TSett.StringGridBackUpDblClick(Sender: TObject);
 var
     BV : TFormBackupView;
@@ -403,6 +413,11 @@ end;
 procedure TSett.TabBasicResize(Sender: TObject);
 begin
     buttonSetNotePath.Width := (TabBasic.Width div 2) - 12;
+end;
+
+procedure TSett.TabSnapshotResize(Sender: TObject);
+begin
+    ButtonManualSnap.Width :=  (TabSnapshot.Width div 2) -10;
 end;
 
 procedure TSett.TabSpellResize(Sender: TObject);
@@ -691,6 +706,7 @@ begin
                 ('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
             ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
             case ReqFontSize of
+                'huge'   : RadioFontHuge.Checked := true;
         	    'big'    : RadioFontBig.Checked := true;
                 'medium' : RadioFontMedium.Checked := true;
                 'small'  : RadioFontSmall.Checked := true;
@@ -773,7 +789,9 @@ begin
             else if RadioFontMedium.Checked then
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'medium')
             else if RadioFontSmall.Checked then
-                ConfigFile.writestring('BasicSettings', 'FontSize', 'small');
+                ConfigFile.writestring('BasicSettings', 'FontSize', 'small')
+            else if RadioFontHuge.Checked then
+                ConfigFile.writestring('BasicSettings', 'FontSize', 'huge');
 	        if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then

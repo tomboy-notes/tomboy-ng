@@ -129,6 +129,7 @@ type
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+        procedure FormResize(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure LabelErrorClick(Sender: TObject);
         // procedure MMHelpTomboyClick(Sender: TObject);
@@ -491,6 +492,13 @@ begin
          exit();
        end;
      end;
+end;
+
+procedure TMainForm.FormResize(Sender: TObject);
+begin
+    ButtonConfig.Width := (Width div 3);
+    ButtonDismiss.Width := (Width div 3);
+    debugln('Third-' + inttostr(ButtonConfig.Left));
 end;
 
     // Attempt to detect we are in a dark theme, sets relevent colours.
