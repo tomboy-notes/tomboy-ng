@@ -553,13 +553,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--lang=es"/>
+        <CommandLineParams Value="--debug-sync"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--lang=es"/>
+            <CommandLineParams Value="--debug-sync"/>
           </local>
         </Mode0>
       </Modes>

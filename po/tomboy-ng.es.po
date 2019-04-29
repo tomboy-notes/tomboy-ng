@@ -292,6 +292,105 @@ msgstr "Etiqueta2"
 msgid "Panel3"
 msgstr "Panel3"
 
+#: tformtomdroid.buttonclose.caption
+msgctxt "tformtomdroid.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformtomdroid.buttondelete.caption
+msgid "Delete Profile"
+msgstr ""
+
+#: tformtomdroid.buttonhelp.caption
+msgctxt "tformtomdroid.buttonhelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tformtomdroid.buttonjoin.caption
+msgid "Join"
+msgstr ""
+
+#: tformtomdroid.buttonsaveprofile.caption
+msgid "Save Profile"
+msgstr ""
+
+#: tformtomdroid.buttonsync.caption
+#, fuzzy
+msgctxt "tformtomdroid.buttonsync.caption"
+msgid "Sync"
+msgstr "Sincronización"
+
+#: tformtomdroid.caption
+msgid "FormTomdroid"
+msgstr ""
+
+#: tformtomdroid.checkboxdebugmode.caption
+msgid "Debug Mode"
+msgstr ""
+
+#: tformtomdroid.checkboxdebugmode.hint
+msgid "writes debug messages to terminal"
+msgstr ""
+
+#: tformtomdroid.checkboxtestrun.caption
+msgid "Test Run"
+msgstr ""
+
+#: tformtomdroid.checksavepassword.caption
+msgid "Save"
+msgstr ""
+
+#: tformtomdroid.editipaddress.text
+msgid "EditIPAddress"
+msgstr ""
+
+#: tformtomdroid.editpassword.text
+msgid "EditPassword"
+msgstr ""
+
+#: tformtomdroid.editprofilename.hint
+msgid "eg MySamsungNote7"
+msgstr ""
+
+#: tformtomdroid.editprofilename.text
+msgid "EditProfileName"
+msgstr ""
+
+#: tformtomdroid.label1.caption
+msgid "Tomdroid Sync - be aware of limitations !"
+msgstr ""
+
+#: tformtomdroid.label2.caption
+msgid "Select an existing profile (or enter data) "
+msgstr ""
+
+#: tformtomdroid.label3.caption
+msgid "Profile Name"
+msgstr ""
+
+#: tformtomdroid.label4.caption
+msgid "IP address of device"
+msgstr ""
+
+#: tformtomdroid.label5.caption
+msgid "SSH Password for device"
+msgstr ""
+
+#: tformtomdroid.labelserverid.caption
+msgid "LabelServerID"
+msgstr ""
+
+#: tformtomdroid.panel1.caption
+msgctxt "tformtomdroid.panel1.caption"
+msgid "Panel1"
+msgstr ""
+
+#: tformtomdroid.panel2.caption
+#, fuzzy
+msgctxt "tformtomdroid.panel2.caption"
+msgid "Panel2"
+msgstr "Panel2"
+
 #: tmainform.buttonconfig.caption
 #, fuzzy
 msgctxt "tmainform.buttonconfig.caption"
@@ -759,6 +858,7 @@ msgid "Wednesday"
 msgstr ""
 
 #: tsett.panel2.caption
+msgctxt "tsett.panel2.caption"
 msgid "Panel2"
 msgstr "Panel2"
 
@@ -821,9 +921,11 @@ msgid "Spell"
 msgstr ""
 
 #: tsett.tabsync.caption
+msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
 
 #: tsett.timeedit1.text
 msgid "TimeEdit1"
 msgstr ""
+

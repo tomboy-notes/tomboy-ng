@@ -5,6 +5,7 @@ unit tomdroid;
 
 { HISTORY
     2018/12/06  Added AdjustNoteList() to call ProcessSyncUpdates at end of a sync
+    2018/04/28  Ensure user does not save profile after a Test run, the ID will change.
 
 }
 
@@ -187,8 +188,10 @@ begin
     if (EditProfileName.Text <> '') and (EditIPAddress.Name <> '')
                                         and (EditPassword.Text <> '')  then begin
         ButtonJoin.Enabled := True;
-        ButtonSync.Enabled := True;
         ButtonDelete.Enabled := False;
+        // A Join is OK if we have no existing config, a Sync is definitly not
+        if FileExists(Sett.LocalConfig + 'android' + pathdelim + 'tomdroid.cfg') then
+            ButtonSync.Enabled := True;
     end;
 end;
 
@@ -221,6 +224,8 @@ end;
 procedure TFormTomdroid.ButtonSyncClick(Sender: TObject);
 begin
     ButtonClose.Enabled := False;
+    // Todo - prevent a sync proceeding if its a new name in the edit box, that is, does not match the config file.
+    // Compare the profile in config file with one in edit boxes, any change, fail !!
     DoSync();
     ButtonClose.Enabled := True;
 end;
@@ -286,7 +291,8 @@ begin
       ASync.Free;
       EnableButtons(True);
     end;
-    ButtonSaveProfile.Enabled := NeedToSave();
+    if not CheckBoxTestRun.Checked then             // don't write a config if its only a test run.
+        ButtonSaveProfile.Enabled := NeedToSave();
 end;
 
 procedure TFormTomdroid.AdjustNoteList();

@@ -438,7 +438,7 @@ begin
        debugln('eg   open tomboy-ng.app');
        debugln('eg   open tomboy-ng.app --args -o Note.txt|.note');
        {$endif}
-       debugln('   -l CCode  --lang=CCode       Force Language, supported es ');
+       debugln('   -l CCode  --lang=CCode       Force Language, supported es ');    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   --debug-log=SOME.LOG         Direct debug output to SOME.LOG.');
        debugln('   -h --help                    Show this help and exit.');
        debugln('   --version                    Print version and exit');

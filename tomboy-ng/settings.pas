@@ -83,6 +83,7 @@ unit settings;
     2019/03/19  Added setting option to show search box at startup
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
     2019/04/13  Almost rid of NeedRefresh, SearchForm.IndexNotes() instead.
+    2019/04/27  Fix for Huge display font.
 }
 
 {$mode objfpc}{$H+}
@@ -330,7 +331,7 @@ var
 
 procedure TSett.SetFontSizes;
 begin
-    if RadioFontBig.checked then begin
+    if RadioFontHuge.checked then begin
         FontSmall  := 11;
         FontLarge  := 20;
         FontHuge   := 23;
