@@ -44,6 +44,7 @@ unit LoadNote;
     2018/07/27  Called ReplaceAngles() on string assigned to Title.
     2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
     2018/10/13  Altered LoadFile() so Tabs are allowed through
+    2019/04/29  Restore note's previous previous position and size.
 }
 
 {$mode objfpc}{$H+}
@@ -81,6 +82,8 @@ type
          // BulletString : ANSIString;		// as above
          FontNormal : integer;			// as above
          CreateDate : ANSIString;
+         X, Y : integer;
+         Height, Width : integer;
          procedure LoadFile(FileName : ANSIString; RM : TKMemo);
 
     end;
@@ -253,6 +256,10 @@ begin
             'list-item dir="ltr"' : begin InBullet := true; BulletOwing := True; end;
             '/list-item' : InBullet := false;
             '/create-date' : CreateDate := InStr;
+            '/x' : X := strtointDef(InStr, 20);
+            '/y' : Y := strtointDef(InStr, 20);
+            '/width' : Width := strtointdef(InStr, 300);
+            '/height' : height := strtointdef(InStr, 200);
       end;
   end;
 end;

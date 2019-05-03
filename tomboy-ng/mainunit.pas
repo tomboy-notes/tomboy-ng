@@ -101,6 +101,7 @@ type
     { TMainForm }
 
     TMainForm = class(TForm)
+        ApplicationProperties1: TApplicationProperties;
         ButtonDismiss: TButton;
         ButtonConfig: TButton;
         CheckBoxDontShow: TCheckBox;
@@ -122,10 +123,10 @@ type
         LabelNoDismiss2: TLabel;
         LabelNotesFound: TLabel;
         TrayIcon: TTrayIcon;
+        //procedure ApplicationProperties1EndSession(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
         procedure CheckBoxDontShowChange(Sender: TObject);
-        procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -145,6 +146,7 @@ type
             // responds to any main or mainPopup menu clicks except recent note ones.
         procedure FileMenuClicked(Sender: TObject);
         procedure FindHelpFiles();
+        //procedure OnEndSessionApp(Sender: TObject);
         procedure ShowAbout();
         procedure TestDarkThemeInUse();
 
@@ -262,6 +264,8 @@ resourcestring
   rsCannotDismiss2 = 'I cannot let you dismiss this window';
   rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';
 
+
+
 procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
  { ToDo : put options in a TStringList and share, less mistakes ....}
@@ -343,6 +347,16 @@ begin
        TrayIcon.Show;
 end;
 
+{procedure TMainForm.OnEndSessionApp(Sender: TObject);
+var
+  OutFile : TextFile;
+begin
+    AssignFile(OutFile, '/home/dbannon/closelogMainFormSession.txt');
+    Rewrite(OutFile);
+    writeln(OutFile, 'OnEndSessionApp Called');
+    CloseFile(OutFile);
+end;   }
+
 resourcestring
   rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshots -> Existing Notes.';
   rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
@@ -402,17 +416,14 @@ begin
     // showmessage('change dont show and Visible=' + booltostr(Visible, True));
 end;
 
-procedure TMainForm.FormActivate(Sender: TObject);
-begin
-
-end;
-
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
     {$ifdef LINUX}
 var
   c: PGtkClipboard;
   t: string;
   {$endif}
+  OutFile : TextFile;
+  AForm : TForm;
 begin
     {$ifdef LINUX}
     {$ifndef LCLQT5}
@@ -423,6 +434,17 @@ begin
     {$endif}
     {$endif}
     freeandnil(HelpNotes);
+    // ToDo : This might be good place to hook into a closing app and flush any open notes.
+    // but maybe its OnCloseSession too ?
+    {
+    AssignFile(OutFile, '/home/dbannon/closelogMainForm.txt');
+    Rewrite(OutFile);
+    writeln(OutFile, 'FormClose just closing ');
+    CloseFile(OutFile);
+    }
+    AForm := SearchForm.NoteLister.FindFirstOpenNote;
+    if AForm <> Nil then
+        AForm.close;
 end;
 
 function TMainForm.CommandLineError() : boolean;
@@ -457,6 +479,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    // Application.OnEndSession := @OnEndSessionApp;        // ToDo : maybe this works on Windows ?
     // SetDefaultLang('es', 'locale', true);
     //color := clyellow;
     if CommandLineError() then exit;    // We will close in OnShow
@@ -524,6 +547,16 @@ procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
     Sett.Show();
 end;
+
+{procedure TMainForm.ApplicationProperties1EndSession(Sender: TObject);
+var
+  OutFile : TextFile;
+begin
+    AssignFile(OutFile, '/home/dbannon/closelogMainFormProperties.txt');
+    Rewrite(OutFile);
+    writeln(OutFile, 'OnEndSessionAppProperties Called');
+    CloseFile(OutFile);
+end; }
 
 { ------------- M E N U   M E T H O D S ----------------}
 
@@ -711,10 +744,8 @@ end;
 
 procedure TMainForm.TrayMenuTomdroidClick(Sender: TObject);
 begin
-
     if FormTomdroid.Visible then FormTomdroid.BringToFront
     else FormTomdroid.ShowModal;
-
 end;
 
 procedure TMainForm.RecentMenuClicked(Sender: TObject);

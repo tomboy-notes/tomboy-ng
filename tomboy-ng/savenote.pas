@@ -59,6 +59,7 @@ unit SaveNote;
     2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
     2018/12/04  Don't save hyperlinks's underline, its not real !
     2018/12/29  Small improvements in time to save a file.
+    2019/04/29  Restore note's previous previous position and size.
 }
 
 {$mode objfpc}{$H+}
@@ -67,6 +68,11 @@ interface
 
 uses
     Classes, SysUtils, KMemo, Graphics, LazLogger;
+
+
+type TNoteLocation = record
+  X, Y, Width, Height : integer;
+end;
 
 type
 
@@ -101,7 +107,7 @@ type
 			//function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
           	function Header() : ANSIstring;
-         	Function Footer() : ANSIstring;
+         	function Footer(Loc: TNoteLocation): ANSIstring;
             //function GetLocalTime():ANSIstring;
 
             // Assembles a list of tags this note is a member of, list is
@@ -114,7 +120,7 @@ type
             CreateDate : ANSIString;
             procedure SaveNewTemplate(NotebookName: ANSIString);
          	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
-            procedure WriteToDisk(FileName : ANSIString);
+            procedure WriteToDisk(FileName: ANSIString; NoteLoc: TNoteLocation);
             constructor Create;
             destructor Destroy;  override;
     end;
@@ -515,18 +521,20 @@ var
    GUID : TGUID;
    OStream:TFilestream;
    Buff { TemplateID }: ANSIString;
+   Loc :  TNoteLocation;
 begin
    CreateGUID(GUID);
    Title := NotebookName  + ' Template';
    ID := copy(GUIDToString(GUID), 2, 36) + '.note';
    SearchForm.NoteLister.AddNoteBook(ID, NotebookName, True);
    Ostream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
+   Loc.Y := 20; Loc.X := 20; Loc.Height := 200; Loc.Width:=300;
    try
    		Buff := Header();
         OStream.Write(Buff[1], length(Buff));
         Buff := Title + #10#10#10;
         OStream.Write(Buff[1], length(Buff));
-        Buff := Footer();
+        Buff := Footer(Loc);
         OStream.Write(Buff[1], length(Buff));
    finally
        OStream.Free;
@@ -650,13 +658,13 @@ var
     end;       }
 end;
 
-procedure TBSaveNote.WriteToDisk(FileName: ANSIString);
+procedure TBSaveNote.WriteToDisk(FileName: ANSIString; NoteLoc : TNoteLocation);
 var
    Buff : string = '';
 begin
     // we write out the footer here so we can do the searching to notebook stuff
     // after we have released to lock on KMemo.
-    Buff := Footer();
+    Buff := Footer(NoteLoc);
     OutStream.Write(Buff[1], length(Buff));
 
     OutStream.SaveToFile(FileName);
@@ -699,7 +707,7 @@ begin
 end;
 
 
-function TBSaveNote.Footer(): ANSIstring;
+function TBSaveNote.Footer(Loc : TNoteLocation): ANSIstring;
 var
    S1, S2, S3, S4, S5, S6 : string;
 
@@ -709,7 +717,8 @@ begin
   S2 := '</last-change-date>'#10'  <last-metadata-change-date>';
   S3 := '</last-metadata-change-date>'#10'  <create-date>';
   S4 := '</create-date>'#10'  <cursor-position>1</cursor-position>'#10'  <selection-bound-position>1</selection-bound-position>'#10;
-  S5 := '  <width>1000</width>'#10'  <height>626</height>'#10'  <x>0</x>'#10'  <y>0</y>'#10;
+  S5 := '  <width>' + inttostr(Loc.Width) + '</width>'#10'  <height>' + inttostr(Loc.Height) + '</height>'#10'  <x>'
+        + inttostr(Loc.X) + '</x>'#10'  <y>' + inttostr(Loc.Y) + '</y>'#10;
   S6 := '  <open-on-startup>False</open-on-startup>'#10'</note>';
   if CreateDate = '' then CreateDate := TimeStamp;
   Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + NoteBookTags + S6;

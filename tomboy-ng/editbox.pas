@@ -179,6 +179,7 @@ unit EditBox;
     2019/03/13  Better local search capability and go to first term if opening result of Search
     2019/04/13  Lockupdate while setting whole note text colour.
     2019/04/18  Replaced TBitBtns with Speedbuttons to fix memory leak in Cocoa
+    2019/04/29  Restore note's previous previous position and size.
 }
 
 
@@ -251,6 +252,7 @@ type
 		procedure FindDialog1Find(Sender: TObject);
         procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
         	{ gets called under a number of conditions, easy one is just a re-show,
@@ -311,6 +313,7 @@ type
         { To save us checking the title if user is well beyond it }
         BlocksInTitle : integer;
         { Alters the Font of Block as indicated }
+        procedure AdjustFormPosition();
         procedure AlterBlockFont(const FirstBlockNo : longint; const BlockNo: longint; const Command : integer;
             const NewFontSize: integer=0);
         { Alters the font etc of selected area as indicated }
@@ -1277,8 +1280,25 @@ end;
 	{ This gets called when the TrayMenu quit entry is clicked }
     { No it does not, only when user manually closes this form. }
 procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+    OutFile: TextFile;
 begin
+    AssignFile(OutFile, '/home/dbannon/closelogEditFormClose.txt');
+    Rewrite(OutFile);
+    writeln(OutFile, 'FormClose just closing ' + self.NoteTitle);
+    CloseFile(OutFile);
     Release;
+end;
+
+procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+var
+    OutFile: TextFile;
+begin
+    AssignFile(OutFile, '/home/dbannon/closelogEditForm.txt');
+    Rewrite(OutFile);
+    writeln(OutFile, 'FormCloseQuery just closing ' + self.NoteTitle);
+    CloseFile(OutFile);
+    CanClose := True;
 end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
@@ -1302,6 +1322,17 @@ end;
 { This gets called when the main app goes down, presumably also in a controlled
   powerdown ?   Seems a good place to save if we are dirty.... }
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
+
+    procedure LogClose();
+    var
+        OutFile: TextFile;
+    begin
+        AssignFile(OutFile, '/home/dbannon/closelog.txt');
+        Rewrite(OutFile);
+        writeln(OutFile, 'just closing ' + self.NoteTitle);
+        CloseFile(OutFile);
+    end;
+
 begin
     if Dirty and (not KMemo1.ReadOnly)then begin
         // debugln('Going to save.');
@@ -1310,6 +1341,7 @@ begin
 	end;
     SearchForm.NoteClosing(NoteFileName);
     UnsetPrimarySelection;                  // tidy up copy on selection.
+    LogClose();
 end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
@@ -2165,6 +2197,21 @@ end;
 
 	{ --- I M P O R T I N G   and   E X P O R T I N G    F U N C T I O N S  ---  }
 
+    // ensure we don't start with more than two thirds beyond boundaries.
+    // don't seem to need this, on Linux at least, new window is always within screen. Test on Windows/Mac
+procedure TEditBoxForm.AdjustFormPosition();
+begin
+    exit;
+    if (Left + (Width div 3)) > Screen.Width then begin
+        Left := Screen.Width - (Width div 3);
+        if Left < 0 then Left := 10;
+    end;
+    if (Top + (Height div 3)) > Screen.Height then begin
+        Top := Screen.Height - (Height div 3);
+        if Top < 0 then Top := 10;
+    end;
+end;
+
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
@@ -2186,6 +2233,11 @@ begin
     Caption := Loader.Title;
     if Sett.ShowIntLinks then
     	CheckForLinks();                     		// 360mS
+    Left := Loader.X;
+    Top := Loader.Y;
+    Height := Loader.Height;
+    Width := Loader.Width;          // ToDo : must ensure these are not outside screen.height and screen.width
+    AdjustFormPosition();
     Loader.Free;
     TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
     // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
@@ -2202,6 +2254,7 @@ var
  	Saver : TBSaveNote;
     SL : TStringList;
     OldFileName : string ='';
+    Loc : TNoteLocation;
     // T1, T2, T3, T4, T5, T6, T7 : dword;
     // TestI : integer;
 begin
@@ -2241,7 +2294,11 @@ begin
             KMemo1.Blocks.UnLockUpdate;
         end;
         // T4 := GetTickCount64();                   //  0mS
-        Saver.WriteToDisk(NoteFileName);
+        Loc.Width:=Width;
+        Loc.Height:=Height;
+        Loc.X := Left;
+        Loc.Y := Top;
+        Saver.WriteToDisk(NoteFileName, Loc);
         // T5 := GetTickCount64();                   // 1mS
         // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid
         SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);

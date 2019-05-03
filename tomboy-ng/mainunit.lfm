@@ -7,7 +7,6 @@ object MainForm: TMainForm
   Caption = 'MainForm'
   ClientHeight = 363
   ClientWidth = 369
-  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
@@ -462,5 +461,9 @@ object MainForm: TMainForm
     OnClick = TrayIconClick
     left = 272
     top = 120
+  end
+  object ApplicationProperties1: TApplicationProperties
+    left = 332
+    top = 46
   end
 end

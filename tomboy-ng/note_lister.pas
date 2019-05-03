@@ -120,9 +120,6 @@ type                                 { ---------- TNoteInfoList ---------}
         property Items[Index: integer]: PNote read Get; default;
     end;
 
-
-
-
 type
 
    { NoteLister }
@@ -132,6 +129,7 @@ type
    TNoteLister = class
    private
     //DebugMode : boolean;
+    OpenNoteIndex : integer;        // Used for Find*OpenNote(), points to last found one, -1 meaning none found
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
     NoteBookList : TNoteBookList;
@@ -217,6 +215,8 @@ type
     		{ Returns the ID (inc .note) of the notebook Template, if an empty string we did
               not find a) the Entry in NotebookList or b) the entry had a blank template. }
     function NotebookTemplateID(const NotebookName : ANSIString) : AnsiString;
+            { Returns the Form of first open note and sets internal pointer to it, Nil if none found }
+    function FindFirstOpenNote(): TForm;
 
     constructor Create;
     destructor Destroy; override;
@@ -231,8 +231,6 @@ uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUt
 { Projectinspector, double click Required Packages and add LCL }
 
 { TNoteBookList }
-
-
 
 
 { ========================= N O T E B O O K L I S T ======================== }
@@ -617,6 +615,15 @@ begin
           exit(True);
 end;
 
+function TNoteLister.FindFirstOpenNote(): TForm;
+begin
+    OpenNoteIndex:=0;
+    while OpenNoteIndex < NoteList.Count do
+        if NoteList.Items[OpenNoteIndex]^.OpenNote <> nil then
+            exit(NoteList.Items[OpenNoteIndex]^.OpenNote)
+        else inc(OpenNoteIndex);
+    result := nil;
+end;
 
 function TNoteLister.NoteContains(const Term, FileName: ANSIString): boolean;
 var
