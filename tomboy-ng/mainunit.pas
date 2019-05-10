@@ -48,7 +48,7 @@ unit Mainunit;
     2019/03/19  Added setting option to show search box at startup
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
     2019/04/13  Mv numb notes to tick line, QT5, drop CheckStatus()
-
+    2019/05/06  Support saving pos and open on startup in note.
 
     CommandLine Switches
 
@@ -270,7 +270,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 // WARNING - the options here MUST match the options list in CommandLineError()
  { ToDo : put options in a TStringList and share, less mistakes ....}
 var
-    //I: Integer;
+    NoteID, NoteTitle : string;
     Params : TStringList;
     LongOpts : array [1..11] of string = ('lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
@@ -317,6 +317,7 @@ begin
     if AlreadyRunning() then begin
         showmessage(rsAnotherInstanceRunning);
         close();
+        exit();
     end else begin
         if UseMainMenu then begin
             FileMenu.Visible := True;
@@ -345,6 +346,11 @@ begin
     end;
     if UseTrayMenu then
        TrayIcon.Show;
+
+    if SearchForm.NoteLister.FindFirstOOSNote(NoteTitle, NoteID) then
+        repeat
+            SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
+        until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
 end;
 
 {procedure TMainForm.OnEndSessionApp(Sender: TObject);
@@ -442,9 +448,14 @@ begin
     writeln(OutFile, 'FormClose just closing ');
     CloseFile(OutFile);
     }
-    AForm := SearchForm.NoteLister.FindFirstOpenNote;
-    if AForm <> Nil then
-        AForm.close;
+    Sett.AreClosing:=True;
+    if assigned(SearchForm.NoteLister) then begin;
+      AForm := SearchForm.NoteLister.FindFirstOpenNote();
+      while AForm <> Nil do begin
+          AForm.close;
+          AForm := SearchForm.NoteLister.FindNextOpenNote();
+      end;
+    end;
 end;
 
 function TMainForm.CommandLineError() : boolean;
@@ -521,7 +532,6 @@ procedure TMainForm.FormResize(Sender: TObject);
 begin
     ButtonConfig.Width := (Width div 3);
     ButtonDismiss.Width := (Width div 3);
-    debugln('Third-' + inttostr(ButtonConfig.Left));
 end;
 
     // Attempt to detect we are in a dark theme, sets relevent colours.

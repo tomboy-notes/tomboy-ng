@@ -60,6 +60,7 @@ unit SaveNote;
     2018/12/04  Don't save hyperlinks's underline, its not real !
     2018/12/29  Small improvements in time to save a file.
     2019/04/29  Restore note's previous previous position and size.
+    2019/05/06  Support saving pos and open on startup in note.
 }
 
 {$mode objfpc}{$H+}
@@ -70,9 +71,18 @@ uses
     Classes, SysUtils, KMemo, Graphics, LazLogger;
 
 
-type TNoteLocation = record
+{type TNoteLocation = record
   X, Y, Width, Height : integer;
+end;}
+
+type TNoteUpdateRec = record
+     CPos : shortstring;
+     X, Y : shortstring;
+     Width, Height : shortstring;
+     OOS : shortstring;
+     FFName : string;
 end;
+
 
 type
 
@@ -107,7 +117,8 @@ type
 			//function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
           	function Header() : ANSIstring;
-         	function Footer(Loc: TNoteLocation): ANSIstring;
+         	//function Footer(Loc: TNoteLocation): ANSIstring;
+            function Footer(Loc : TNoteUpdateRec) : string;
             //function GetLocalTime():ANSIstring;
 
             // Assembles a list of tags this note is a member of, list is
@@ -120,7 +131,7 @@ type
             CreateDate : ANSIString;
             procedure SaveNewTemplate(NotebookName: ANSIString);
          	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
-            procedure WriteToDisk(FileName: ANSIString; NoteLoc: TNoteLocation);
+            procedure WriteToDisk(FileName: ANSIString; NoteLoc: TNoteUpdateRec {TNoteLocation});
             constructor Create;
             destructor Destroy;  override;
     end;
@@ -521,14 +532,15 @@ var
    GUID : TGUID;
    OStream:TFilestream;
    Buff { TemplateID }: ANSIString;
-   Loc :  TNoteLocation;
+   Loc :  TNoteUpdateRec {TNoteLocation};
 begin
    CreateGUID(GUID);
    Title := NotebookName  + ' Template';
    ID := copy(GUIDToString(GUID), 2, 36) + '.note';
    SearchForm.NoteLister.AddNoteBook(ID, NotebookName, True);
    Ostream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
-   Loc.Y := 20; Loc.X := 20; Loc.Height := 200; Loc.Width:=300;
+   Loc.Y := '20'; Loc.X := '20'; Loc.Height := '200'; Loc.Width:='300';
+   Loc.OOS := 'False'; Loc.CPos:='1';
    try
    		Buff := Header();
         OStream.Write(Buff[1], length(Buff));
@@ -658,7 +670,7 @@ var
     end;       }
 end;
 
-procedure TBSaveNote.WriteToDisk(FileName: ANSIString; NoteLoc : TNoteLocation);
+procedure TBSaveNote.WriteToDisk(FileName: ANSIString; NoteLoc : TNoteUpdateRec {TNoteLocation});
 var
    Buff : string = '';
 begin
@@ -707,7 +719,7 @@ begin
 end;
 
 
-function TBSaveNote.Footer(Loc : TNoteLocation): ANSIstring;
+function TBSaveNote.Footer(Loc : TNoteUpdateRec {TNoteLocation}): ANSIstring;
 var
    S1, S2, S3, S4, S5, S6 : string;
 
@@ -716,10 +728,10 @@ begin
   S1 := '</note-content></text>'#10'  <last-change-date>';
   S2 := '</last-change-date>'#10'  <last-metadata-change-date>';
   S3 := '</last-metadata-change-date>'#10'  <create-date>';
-  S4 := '</create-date>'#10'  <cursor-position>1</cursor-position>'#10'  <selection-bound-position>1</selection-bound-position>'#10;
-  S5 := '  <width>' + inttostr(Loc.Width) + '</width>'#10'  <height>' + inttostr(Loc.Height) + '</height>'#10'  <x>'
-        + inttostr(Loc.X) + '</x>'#10'  <y>' + inttostr(Loc.Y) + '</y>'#10;
-  S6 := '  <open-on-startup>False</open-on-startup>'#10'</note>';
+  S4 := '</create-date>'#10'  <cursor-position>' + Loc.CPos + '</cursor-position>'#10'  <selection-bound-position>1</selection-bound-position>'#10;
+  S5 := '  <width>' + Loc.Width + '</width>'#10'  <height>' + Loc.Height + '</height>'#10'  <x>'
+        + Loc.X + '</x>'#10'  <y>' + Loc.Y + '</y>'#10;
+  S6 := '  <open-on-startup>' + Loc.OOS + '</open-on-startup>'#10'</note>';
   if CreateDate = '' then CreateDate := TimeStamp;
   Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + NoteBookTags + S6;
 end;

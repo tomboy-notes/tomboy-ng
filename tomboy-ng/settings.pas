@@ -84,6 +84,7 @@ unit settings;
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
     2019/04/13  Almost rid of NeedRefresh, SearchForm.IndexNotes() instead.
     2019/04/27  Fix for Huge display font.
+    2019/05/06  Support saving pos and open on startup in note.
 }
 
 {$mode objfpc}{$H+}
@@ -249,6 +250,7 @@ type
         //function ZipDate: string;
 
     public
+        AreClosing : boolean;       // False until set true by mainUnit FormClose.
         BackGndColour : TColor;     // Next three set in main unit.
         TextColour : TColor;
         HiColor : TColor;
@@ -625,6 +627,7 @@ end;
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+    AreClosing := false;
     Top := 200;
     Left := 300;
     PageControl1.ActivePage := TabBasic;

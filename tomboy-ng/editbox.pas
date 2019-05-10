@@ -180,6 +180,7 @@ unit EditBox;
     2019/04/13  Lockupdate while setting whole note text colour.
     2019/04/18  Replaced TBitBtns with Speedbuttons to fix memory leak in Cocoa
     2019/04/29  Restore note's previous previous position and size.
+    2019/05/06  Support saving pos and open on startup in note.
 }
 
 
@@ -191,7 +192,10 @@ uses
     Classes, SysUtils, { FileUtil,} Forms, Controls, Graphics, Dialogs, ExtCtrls,
     Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs,
     clipbrd, lcltype,      // required up here for copy on selection stuff.
-    fpexprpars;         // for calc stuff ;
+    fpexprpars,         // for calc stuff ;
+    SaveNote;      		// Knows how to save a Note to disk in Tomboy's XML
+
+
 
 type
 
@@ -389,6 +393,7 @@ type
         procedure SetPrimarySelection;
         // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
+        function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
         SingleNoteMode : Boolean;
         NoteFileName, NoteTitle : string;
@@ -420,7 +425,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     keditcommon,        // Holds some editing defines
     settings,			// User settings and some defines used across units.
     SearchUnit,         // Is the main starting unit and the search tool.
-    SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
+
 	LoadNote,           // Will know how to load a Tomboy formatted note.
     {SyncGUI,}
     LazFileUtils,		// For ExtractFileName()
@@ -432,8 +437,9 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     Markdown,
     Index,              // An Index of current note.
     math,
-    FileUtil, strutils;          // just for ExtractSimplePath ... ~#1620
-
+    //LazFileUtils,       // ToDo : UTF8 complient, unlike FileUtil ...
+    FileUtil, strutils,          // just for ExtractSimplePath ... ~#1620
+    XMLRead, DOM, XMLWrite;     // For updating locations on a clean note
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
@@ -1318,12 +1324,92 @@ begin
     {$endif}
 end;
 
+function TEditBoxForm.UpdateNote(NRec : TNoteUpdaterec) : boolean;
+var
+    InFile, OutFile: TextFile;
+    NoteDateSt, InString, TempName : string;
+begin
+  TempName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
+  if not DirectoryExists(TempName) then
+      CreateDir(AppendPathDelim(tempname));
+  TempName := tempName + pathDelim + 'location.note';
+  AssignFile(InFile, NRec.FFName);
+  AssignFile(OutFile, TempName);
+  try
+      try
+          Reset(InFile);
+          Rewrite(OutFile);
+          while not eof(InFile) do begin
+              readln(InFile, InString);
+              if (Pos('<cursor-position>', InString) > 0) then break;
+              writeln(OutFile, InString);
+          end;
+          // OK, we are looking atthe part we want to change, ignore infile, we know better.
+          writeln(OutFile, '  <cursor-position>' + NRec.CPos + '</cursor-position>');
+          writeln(OutFile, '  <selection-bound-position>1</selection-bound-position>');
+          writeln(OutFile, '  <width>' + NRec.Width + '</width>');
+          writeln(OutFile, '  <height>' + NRec.height + '</height>');
+          writeln(OutFile, '  <x>' + NRec.X + '</x>');
+          writeln(OutFile, '  <y>' + NRec.Y + '</y>');
+          writeln(OutFile, '  <open-on-startup>' + NRec.OOS + '</open-on-startup>');
+          writeln(OutFile, '</note>');
+      finally
+          CloseFile(OutFile);
+          CloseFile(InFile);
+      end;
+  except
+    on E: EInOutError do begin
+        debugln('File handling error occurred updating clean note location. Details: ' + E.Message);
+        exit(False);
+    end;
+  end;
+  result := CopyFile(TempName, Nrec.FFName);
+  if result = false then debugln('ERROR moving [' + TempName + '] to [' + NRec.FFName + ']');
+end;
+
+{
+     Tomboy's loose xml definition prevents use of FPC xml unit. Sigh ....
+
+Doc: TXMLDocument;
+    ANode : TDomNode;
+
+    function UpdateXML(ElementName, ElementData : string) : boolean;
+    begin
+        ANode := nil;
+        ANode := Doc.DocumentElement.FindNode(ElementName);
+        if not assigned(ANode) then begin
+            debugln('ERROR - cannot find ' + ElementName + ' in ' + NRec.FFname);
+            exit(false);
+        end;
+        ANode.FirstChild.NodeValue:= ElementData;
+        result := true;
+    end;
+
+begin
+    Result := False;
+    if not FileExists(Nrec.FFname) then exit;
+    ReadXMLFile(Doc, NRec.FFname);
+    try
+        if not UpdateXML('cursor-position', Nrec.CPos) then exit;
+        if not UpdateXML('width', Nrec.width) then exit;
+        if not UpdateXML('height', Nrec.height) then exit;
+        if not UpdateXML('x', Nrec.x) then exit;
+        if not UpdateXML('y', Nrec.y) then exit;
+        if not UpdateXML('open-on-startup', Nrec.OOS) then exit;
+        writeXMLFile(Doc, NRec.FFName);
+    finally
+        Doc.Free;
+    end;
+    result := true;
+end;   }
 
 { This gets called when the main app goes down, presumably also in a controlled
   powerdown ?   Seems a good place to save if we are dirty.... }
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
+var
+    ARec : TNoteUpdateRec;
 
-    procedure LogClose();
+{    procedure LogClose();
     var
         OutFile: TextFile;
     begin
@@ -1331,17 +1417,34 @@ procedure TEditBoxForm.FormDestroy(Sender: TObject);
         Rewrite(OutFile);
         writeln(OutFile, 'just closing ' + self.NoteTitle);
         CloseFile(OutFile);
-    end;
+    end;   }
 
 begin
-    if Dirty and (not KMemo1.ReadOnly)then begin
+    if not Kmemo1.ReadOnly then
+        if Dirty then
+            SaveTheNote()
+        else begin
+            ARec.CPos:='1';
+            ARec.X := inttostr(Left);
+            ARec.Y := inttostr(top);
+            ARec.Width := inttostr(Width);
+            ARec.Height := inttostr(Height);
+            ARec.FFName := NoteFileName;
+            ARec.OOS := booltostr(Sett.AreClosing, True);
+            if Verbose then
+                debugln('Going to update note ' + self.NoteFileName + ' and Sett.AreClosing is ' + booltostr(Sett.AreClosing, True));
+            UpDateNote(ARec);
+        end;
+
+
+//    if Dirty and (not KMemo1.ReadOnly)then begin
         // debugln('Going to save.');
-        SaveTheNote();
+//        SaveTheNote();
         // debugln('Saved');
-	end;
+	//end;
     SearchForm.NoteClosing(NoteFileName);
     UnsetPrimarySelection;                  // tidy up copy on selection.
-    LogClose();
+    // LogClose();
 end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
@@ -2254,7 +2357,7 @@ var
  	Saver : TBSaveNote;
     SL : TStringList;
     OldFileName : string ='';
-    Loc : TNoteLocation;
+    Loc : TNoteUpdateRec;
     // T1, T2, T3, T4, T5, T6, T7 : dword;
     // TestI : integer;
 begin
@@ -2294,10 +2397,13 @@ begin
             KMemo1.Blocks.UnLockUpdate;
         end;
         // T4 := GetTickCount64();                   //  0mS
-        Loc.Width:=Width;
-        Loc.Height:=Height;
-        Loc.X := Left;
-        Loc.Y := Top;
+        Loc.Width:=inttostr(Width);
+        Loc.Height:=inttostr(Height);
+        Loc.X := inttostr(Left);
+        Loc.Y := inttostr(Top);
+        Loc.OOS := 'True';
+        Loc.CPos:='1';
+        loc.FFName:='';
         Saver.WriteToDisk(NoteFileName, Loc);
         // T5 := GetTickCount64();                   // 1mS
         // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid

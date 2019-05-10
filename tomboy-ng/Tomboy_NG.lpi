@@ -337,9 +337,6 @@
         </CompilerOptions>
       </Item9>
       <Item10 Name="QT5">
-        <MacroValues Count="1">
-          <Macro1 Name="LCLWidgetType" Value="qt5"/>
-        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>

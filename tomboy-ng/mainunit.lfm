@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnResize = FormResize
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '2.0.1.0'
+  LCLVersion = '2.0.2.0'
   object ImageConfigTick: TImage
     Left = 24
     Height = 18
@@ -75,9 +75,9 @@ object MainForm: TMainForm
   end
   object Label1: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 90
-    Width = 87
+    Width = 80
     Caption = 'Have Config'
     ParentColor = False
   end
@@ -173,17 +173,17 @@ object MainForm: TMainForm
   end
   object Label3: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 136
-    Width = 195
+    Width = 187
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 160
-    Width = 156
+    Width = 147
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
@@ -318,17 +318,17 @@ object MainForm: TMainForm
   end
   object Label6: TLabel
     Left = 31
-    Height = 19
+    Height = 17
     Top = 56
-    Width = 221
+    Width = 203
     Caption = 'Lets See if we are ready to go -'
     ParentColor = False
   end
   object LabelNoDismiss1: TLabel
     Left = 40
-    Height = 19
+    Height = 17
     Top = 192
-    Width = 122
+    Width = 118
     Caption = 'LabelNoDismiss1'
     ParentColor = False
     ParentShowHint = False
@@ -336,9 +336,9 @@ object MainForm: TMainForm
   end
   object LabelNoDismiss2: TLabel
     Left = 40
-    Height = 19
+    Height = 17
     Top = 208
-    Width = 122
+    Width = 118
     Caption = 'LabelNoDismiss2'
     ParentColor = False
     ParentShowHint = False
@@ -346,9 +346,9 @@ object MainForm: TMainForm
   end
   object LabelNotesFound: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 111
-    Width = 10
+    Width = 9
     Caption = 'X'
     ParentColor = False
   end
@@ -369,10 +369,10 @@ object MainForm: TMainForm
   end
   object CheckBoxDontShow: TCheckBox
     Left = 8
-    Height = 23
+    Height = 22
     Hint = 'You can reverse this from Settings'
     Top = 272
-    Width = 236
+    Width = 225
     Caption = 'Dont Show for normal startup'
     OnChange = CheckBoxDontShowChange
     TabOrder = 2

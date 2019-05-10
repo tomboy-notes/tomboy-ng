@@ -51,6 +51,7 @@ unit Note_Lister;
     2018/11/04  Added support for updating NoteList after a sync.
     2018/12/29  Small improvements in time to save a file.
     2019/04/13  Tweaks to overload to read help nodes
+    2019/05/06  Support saving pos and open on startup in note.
 }
 
 {$mode objfpc}
@@ -103,6 +104,7 @@ type
                 { a 19 char date time string, updateable }
     	LastChange : ANSIString;
         IsTemplate : boolean;
+        OpenOnStart : boolean;
         OpenNote : TForm;
 	end;
 
@@ -217,6 +219,13 @@ type
     function NotebookTemplateID(const NotebookName : ANSIString) : AnsiString;
             { Returns the Form of first open note and sets internal pointer to it, Nil if none found }
     function FindFirstOpenNote(): TForm;
+            { Call after FindFirstOpenNote(), it will return the next one or Nil if no more found }
+    function FindNextOpenNote() : TForm;
+        { Returns the ID of first note that should be opened on startup internal pointer
+          (which is same interger as FindFirstOpenNate) to it, '' if none found }
+    function FindFirstOOSNote(var NTitle, NID: ANSIstring): boolean;
+        { Call after FindFirstOOSNote(), it will return the next one or '' if no more found }
+    function FindNextOOSNote(var NTitle, NID: ANSIstring): boolean;
 
     constructor Create;
     destructor Destroy; override;
@@ -507,6 +516,10 @@ begin
               Lst.Items[Index]^.LastChange := Lst.Items[Index]^.LastChange + ' ';
         Lst.Items[Index]^.LastChange := copy(Lst.Items[Index]^.LastChange, 1, 19);
         Lst.Items[Index]^.LastChange[11] := ' ';
+
+if Lst.Items[Index]^.OpenOnStart then
+debugln('Found OOS Note : ' + Lst.Items[Index]^.Title + ' = ' + Lst.Items[Index]^.ID);
+
     end;
 end;
 
@@ -542,6 +555,8 @@ begin
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
+                Node := Doc.DocumentElement.FindNode('open-on-startup');
+                NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
                 Node := Doc.DocumentElement.FindNode('tags');
                 if Assigned(Node) then begin
                   	for J := 0 to Node.ChildNodes.Count-1 do
@@ -623,6 +638,48 @@ begin
             exit(NoteList.Items[OpenNoteIndex]^.OpenNote)
         else inc(OpenNoteIndex);
     result := nil;
+    OpenNoteIndex := -1;
+end;
+
+function TNoteLister.FindNextOpenNote(): TForm;
+begin
+    if OpenNoteIndex < 0 then exit(Nil);
+    inc(OpenNoteIndex);
+    while OpenNoteIndex < NoteList.Count do
+        if NoteList.Items[OpenNoteIndex]^.OpenNote <> nil then
+            exit(NoteList.Items[OpenNoteIndex]^.OpenNote)
+        else inc(OpenNoteIndex);
+    result := nil;
+    OpenNoteIndex := -1;
+end;
+
+function TNoteLister.FindFirstOOSNote(var NTitle, NID : ANSIstring): boolean;
+begin
+    OpenNoteIndex:=0;
+    while OpenNoteIndex < NoteList.Count do
+        if NoteList.Items[OpenNoteIndex]^.OpenOnStart then begin
+            NTitle := NoteList.Items[OpenNoteIndex]^.Title;
+            NID := NoteList.Items[OpenNoteIndex]^.ID;
+            exit(True)
+        end
+        else inc(OpenNoteIndex);
+    result := False;
+    OpenNoteIndex := -1;
+end;
+
+function TNoteLister.FindNextOOSNote(var NTitle, NID : ANSIstring): boolean;
+begin
+    if OpenNoteIndex < 0 then exit(False);
+    inc(OpenNoteIndex);
+    while OpenNoteIndex < NoteList.Count do
+        if NoteList.Items[OpenNoteIndex]^.OpenOnStart then begin
+            NTitle := NoteList.Items[OpenNoteIndex]^.Title;
+            NID := NoteList.Items[OpenNoteIndex]^.ID;
+            exit(True)
+        end
+        else inc(OpenNoteIndex);
+    result := False;
+    OpenNoteIndex := -1;
 end;
 
 function TNoteLister.NoteContains(const Term, FileName: ANSIString): boolean;

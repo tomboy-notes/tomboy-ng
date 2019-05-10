@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 459
+  Left = 388
   Height = 511
-  Top = 264
+  Top = 60
   Width = 628
   BorderIcons = []
   Caption = 'KTomboy-NG Settings'
@@ -12,7 +12,7 @@ object Sett: TSett
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '2.0.1.0'
+  LCLVersion = '2.0.2.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -31,7 +31,7 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 414
+      ClientHeight = 416
       ClientWidth = 622
       OnResize = TabBasicResize
       object ButtonSetNotePath: TButton
@@ -132,7 +132,7 @@ object Sett: TSett
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 7
         Caption = 'Main Search Window is : '
-        ClientHeight = 114
+        ClientHeight = 116
         ClientWidth = 378
         TabOrder = 4
         object CheckCaseSensitive: TCheckBox
@@ -157,7 +157,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Display'
-      ClientHeight = 414
+      ClientHeight = 416
       ClientWidth = 622
       object GroupBox5: TGroupBox
         Left = 32
@@ -165,15 +165,15 @@ object Sett: TSett
         Top = 24
         Width = 264
         Caption = 'Font Size'
-        ClientHeight = 139
+        ClientHeight = 141
         ClientWidth = 260
         TabOrder = 0
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 46
-          Width = 47
+          Height = 22
+          Top = 47
+          Width = 46
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Big'
@@ -185,9 +185,9 @@ object Sett: TSett
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 78
-          Width = 83
+          Height = 22
+          Top = 79
+          Width = 79
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
@@ -197,9 +197,9 @@ object Sett: TSett
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 110
-          Width = 63
+          Height = 22
+          Top = 112
+          Width = 61
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
@@ -209,9 +209,9 @@ object Sett: TSett
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
+          Height = 22
           Top = 14
-          Width = 62
+          Width = 59
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
@@ -221,9 +221,9 @@ object Sett: TSett
       end
       object CheckShowIntLinks: TCheckBox
         Left = 32
-        Height = 23
+        Height = 22
         Top = 200
-        Width = 162
+        Width = 153
         Caption = 'Show Internal Links'
         Enabled = False
         OnChange = CheckReadOnlyChange
@@ -231,9 +231,9 @@ object Sett: TSett
       end
       object CheckShowExtLinks: TCheckBox
         Left = 32
-        Height = 23
+        Height = 22
         Top = 240
-        Width = 170
+        Width = 160
         Caption = 'Show External  Links'
         Enabled = False
         OnChange = CheckReadOnlyChange
@@ -241,19 +241,19 @@ object Sett: TSett
       end
       object CheckShowTomdroid: TCheckBox
         Left = 32
-        Height = 23
+        Height = 22
         Top = 360
-        Width = 281
+        Width = 265
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
       object CheckShowSplash: TCheckBox
         Left = 32
-        Height = 23
+        Height = 22
         Hint = 'Always shown if error loading notes.'
         Top = 320
-        Width = 170
+        Width = 161
         Caption = 'Show Splash at Start'
         Checked = True
         OnChange = CheckReadOnlyChange
@@ -264,9 +264,9 @@ object Sett: TSett
       end
       object CheckShowSearchAtStart: TCheckBox
         Left = 32
-        Height = 23
+        Height = 22
         Top = 280
-        Width = 172
+        Width = 162
         Caption = 'Show Search at Start'
         OnChange = CheckReadOnlyChange
         TabOrder = 5
@@ -274,7 +274,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 414
+      ClientHeight = 416
       ClientWidth = 622
       OnResize = TabSyncResize
       object GroupBox3: TGroupBox
@@ -289,7 +289,7 @@ object Sett: TSett
         BorderSpacing.Left = 7
         BorderSpacing.Right = 7
         Caption = '  Type  '
-        ClientHeight = 69
+        ClientHeight = 71
         ClientWidth = 604
         TabOrder = 0
         object RadioFile: TRadioButton
@@ -343,7 +343,7 @@ object Sett: TSett
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 12
         Caption = '  Options  '
-        ClientHeight = 179
+        ClientHeight = 181
         ClientWidth = 604
         TabOrder = 1
         object Label3: TLabel
@@ -433,7 +433,7 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 414
+      ClientHeight = 416
       ClientWidth = 622
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -532,7 +532,7 @@ object Sett: TSett
     object TabSnapshot: TTabSheet
       BorderWidth = 1
       Caption = 'SnapShot'
-      ClientHeight = 414
+      ClientHeight = 416
       ClientWidth = 622
       OnResize = TabSnapshotResize
       object Label9: TLabel
@@ -671,7 +671,7 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 414
+      ClientHeight = 416
       ClientWidth = 622
       OnResize = TabSpellResize
       object Label13: TLabel
@@ -813,9 +813,9 @@ object Sett: TSett
     AnchorSideBottom.Control = ButtonHide
     AnchorSideBottom.Side = asrBottom
     Left = 24
-    Height = 19
-    Top = 483
-    Width = 56
+    Height = 17
+    Top = 485
+    Width = 53
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
     Caption = 'Label15'
