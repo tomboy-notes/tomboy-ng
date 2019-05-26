@@ -85,6 +85,7 @@ unit settings;
     2019/04/13  Almost rid of NeedRefresh, SearchForm.IndexNotes() instead.
     2019/04/27  Fix for Huge display font.
     2019/05/06  Support saving pos and open on startup in note.
+    2019/05/14  Display strings all (?) moved to resourcestrings
 }
 
 {$mode objfpc}{$H+}
@@ -304,7 +305,11 @@ const
      LinkScanRange = 50;		// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
 
-  	SyncNotConfig = 'not configured';
+
+
+ResourceString
+    rsSyncNotConfig = 'not configured';
+    // ToDo : is this a good idea ? string gets written to config file .....
 
 implementation
 
@@ -436,11 +441,18 @@ end;
 
     { ----------------- S P E L L I N G ----------------------}
 
+ResourceString
+    rsSelectLibrary = 'Select your hunspell library';
+    rsSelectDictionary = 'Select the dictionary you want to use';
+    rsDictionaryLoaded = 'Dictionary Loaded OK';
+    rsDictionaryFailed = 'Library Not Loaded';
+    rsDictionaryNotFound = 'No Dictionary Found';
+
 procedure TSett.ButtonSetSpellLibraryClick(Sender: TObject);
 begin
     OpenDialogLibrary.InitialDir := ExtractFilePath(LabelLibrary.Caption);
     OpenDialogLibrary.Filter := 'Library|libhunspell*';
-    OpenDialogLibrary.Title := 'Select your hunspell library';
+    OpenDialogLibrary.Title := rsSelectLibrary;
     if OpenDialogLibrary.Execute then begin
         LabelLibrary.Caption := TrimFilename(OpenDialogLibrary.FileName);
         CheckSpelling();
@@ -451,7 +463,7 @@ procedure TSett.ButtonSetDictionaryClick(Sender: TObject);
 begin
     OpenDialogDictionary.InitialDir := ExtractFilePath(LabelDic.Caption);
     OpenDialogDictionary.Filter := 'Dictionary|*.dic';
-    OpenDialogDictionary.Title := 'Select the dictionary you want to use';
+    OpenDialogDictionary.Title := rsSelectDictionary;
     if OpenDialogDictionary.Execute then
         CheckDictionary(TrimFilename(OpenDialogDictionary.FileName));
 end;
@@ -509,13 +521,13 @@ begin
         if assigned(Spell) then begin
             SpellConfig := Spell.SetDictionary(FullDicName);
             if SpellConfig then begin
-               LabelDicStatus.Caption := 'Dictionary Loaded OK';
+               LabelDicStatus.Caption := rsDictionaryLoaded;
                LabelDic.Caption := FullDicName;
                SettingsChanged();
                // NeedRefresh := True;         // ToDo : April '19, don't need this ???
                Result := True;
             end else begin
-                LabelDicStatus.Caption := 'No Dictionary Found';
+                LabelDicStatus.Caption := rsDictionaryNotFound;
             end;
         end;
     end else debugln('ERROR - called CheckDictionary with Spell nil');
@@ -562,11 +574,11 @@ begin
     	Spell :=  THunspell.Create(DebugModeSpell, LabelLibrary.Caption)
     else Spell :=  THunspell.Create(DebugModeSpell);
     if Spell.ErrorMessage <> '' then begin
-        LabelLibraryStatus.Caption := 'Library Not Loaded';
+        LabelLibraryStatus.Caption := rsDictionaryFailed;
         exit();
     end;
     if DebugModeSpell then debugln('Library OK, lets look for dictionary');
-    LabelLibraryStatus.caption := 'Library Loaded OK';
+    LabelLibraryStatus.caption := rsDictionaryLoaded;
     LabelLibrary.Caption := Spell.LibraryFullName;
     LabelDicStatus.Visible := True;
     LabelDic.Visible := True;
@@ -576,7 +588,7 @@ begin
             if CheckDictionary(LabelDic.Caption) then exit;      // All good, use it !
         if  0 = CheckForDic(DicPath) then begin                  // We'll try our defaults ....
             if 0 = CheckForDic(DicPathAlt) then begin
-                LabelDicStatus.Caption := 'Dictionary not found';
+                LabelDicStatus.Caption := rsDictionaryNotFound;
                 exit();
             end;
         end;
@@ -584,7 +596,7 @@ begin
      if ListBoxDic.Items.Count = 1 then
          DicToCheck := AppendPathDelim(LabelDic.Caption) + ListBoxDic.Items.Strings[0];
     if  ListBoxDic.Items.Count > 1 then begin                     // user must select
-        LabelDicStatus.Caption := 'Select a dictionary to use';
+        LabelDicStatus.Caption := rsSelectDictionary;
         ListBoxDic.Enabled:= True;
         exit();
     end;
@@ -625,6 +637,9 @@ begin
 	end else CloseAction := caHide;
 end;
 
+RESOURCESTRING
+    rsSetFileSyncRepo = 'Set File Sync Repo';
+
 procedure TSett.FormCreate(Sender: TObject);
 begin
     AreClosing := false;
@@ -642,8 +657,8 @@ begin
     CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
     CheckConfigFile();                      // write a new, default one if necessary
     CheckSpelling();
-    if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = SyncNotConfig) then
-        ButtonSetSynServer.Caption := 'Set File Sync Repo';
+    if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = rsSyncNotConfig) then
+        ButtonSetSynServer.Caption := rsSetFileSyncRepo;
     MainForm.FillInFileMenus();
 end;
 
@@ -654,19 +669,23 @@ end;
 
 { --------------------- F I L E    I / O --------------------------- }
 
+RESOURCESTRING
+    rsErrorCreateDir = 'Unable to Create Directory';
+    rsErrorCannotWrite = 'Cannot write into';
+
 function TSett.CheckDirectory(DirPath : string) : boolean;
 begin
     Result := False;
     if not DirectoryExistsUTF8(DirPath) then
         ForceDirectoriesUTF8(DirPath);
     if not DirectoryExistsUTF8(DirPath) then begin
-        ShowMessage('Unable to Create Directory [' + DirPath + ']');
+        ShowMessage(rsErrorCreateDir + ' [' + DirPath + ']');
         Debugln('Settings is unable to Create Directory [' + DirPath + ']');
         exit(False);
     end;
     if DirectoryIsWritable(DirPath) then
         exit(True);
-    ShowMessage('Cannot write into [' + DirPath + ']');
+    ShowMessage(rsErrorCannotWrite + ' [' + DirPath + ']');
     DebugLn('Settings cannot write into [' + DirPath + ']');
 end;
 
@@ -723,7 +742,7 @@ begin
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
-		    LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', SyncNotConfig);
+		    LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', rsSyncNotConfig);
             LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
 	    finally
             ConfigFile.free;
@@ -846,6 +865,8 @@ begin
     Hide;
 end;
 
+RESOURCESTRING
+    rsDirHasNoNotes = 'That directory does not contain any notes. Thats OK, if I can make my own there.';
 
 	{ Allow user to point to what they want to call their notes dir. If there
       are no notes there, pops up a warning and proceeds. }
@@ -857,7 +878,7 @@ begin
 		NoteDirectory := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         if CheckDirectory(NoteDirectory) then begin
             if not FindFirst(NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
-               showmessage('That directory does not contain any notes. Thats OK, if I can make my own there.');
+               showmessage(rsDirHasNoNotes);
 		    end;
             FindClose(Info);
             // LabelNotesPath.Caption := NoteDirectory;
@@ -879,6 +900,10 @@ end;
   120ms on lowend laptop.
 }
 
+RESOURCESTRING
+    rsSnapshotCreated = 'created, do you want to copy it elsewhere ?';
+    rsErrorCopyFile = 'Failed to copy file, does destination dir exist ?';
+
 procedure TSett.ButtonManualSnapClick(Sender: TObject);
 var
    FR : TFormRecover;
@@ -890,11 +915,11 @@ begin
         FR.SnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
         FullName := FR.CreateSnapshot(True, False);
-        if mrYes = QuestionDlg('Snapshot created', FullName + ' created, do you want to copy it elsewhere ?'
+        if mrYes = QuestionDlg('Snapshot created', FullName + ' ' + rsSnapShotCreated
                     , mtConfirmation, [mrYes, mrNo], 0) then
             if SelectSnapDir.Execute then
                 if not CopyFile(FullName, TrimFilename(SelectSnapDir.FileName + PathDelim) + ExtractFileNameOnly(FullName) + '.zip') then
-                    showmessage('Failed to copy file, does destination dir exist ?');
+                    showmessage(rsErrorCopyFile);
     finally
         FR.Free;
     end;
@@ -970,7 +995,7 @@ procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
     if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     if FileExists(LocalConfig + 'manifest.xml') then
-        if mrYes <> QuestionDlg('Warning', 'Drop existing sync connection ?', mtConfirmation, [mrYes, mrNo], 0) then exit;
+        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
     if SelectDirectoryDialog1.Execute then begin
         FormSync.NoteDirectory := NoteDirectory;
         FormSync.LocalConfig := LocalConfig;
@@ -986,9 +1011,12 @@ begin
             // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
             MainForm.FillInFileMenus(True);
         end else
-        	LabelSyncRepo.Caption := SyncNotConfig;
+        	LabelSyncRepo.Caption := rsSyncNotConfig;
 	end;
 end;
+
+RESOURCESTRING
+    rsDoubleclickNote = 'double click a note ...';
 
 procedure TSett.ButtonShowBackUpClick(Sender: TObject);
 var
@@ -1000,7 +1028,7 @@ begin
     NoteLister.LoadStGrid(StringGridBackUp);
     NoteLister.Free;
     StringgridBackUp.AutoSizeColumns;
-    Label15.caption := 'double click a note ...';
+    Label15.caption := rsDoubleClickNote;
 end;
 
 procedure TSett.ButtonSnapDaysClick(Sender: TObject);

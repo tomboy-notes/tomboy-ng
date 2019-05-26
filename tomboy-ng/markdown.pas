@@ -29,6 +29,7 @@ unit markdown;
 HISTORY
     2018/12/05  This unit is pleased th serve.
     2018/12/06  Fixed a bug in Addtag, if Buff is only spaces.
+    2019/05/14  Display strings all (?) moved to resourcestrings
 }
 
 interface

@@ -27,6 +27,9 @@ unit Index;
     A Heading is any complete line that is all either Large or Huge text.
     We indent Huge, Large Bold and just Large differently so easy to see
     relative heading importance.
+
+HISTORY
+    2019/05/14  Display strings all (?) moved to resourcestrings
 }
 
 {$mode objfpc}{$H+}

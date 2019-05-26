@@ -1,7 +1,7 @@
 object FormRecover: TFormRecover
-  Left = 442
+  Left = 341
   Height = 419
-  Top = 164
+  Top = 152
   Width = 675
   Caption = 'FormRecover'
   ClientHeight = 419
@@ -9,7 +9,7 @@ object FormRecover: TFormRecover
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.2.0'
   object Label1: TLabel
     Left = 8
     Height = 17
@@ -61,7 +61,7 @@ object FormRecover: TFormRecover
         Left = 8
         Height = 17
         Top = 8
-        Width = 371
+        Width = 373
         Caption = 'This tool might help you recover lost or damaged notes.'
         ParentColor = False
       end
@@ -77,7 +77,7 @@ object FormRecover: TFormRecover
         Left = 8
         Height = 17
         Top = 92
-        Width = 499
+        Width = 500
         Caption = 'Don''t take repeated Safety Snapshots as each overwrites the previous one.'
         ParentColor = False
       end

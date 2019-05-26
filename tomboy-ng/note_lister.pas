@@ -223,7 +223,7 @@ type
     function FindNextOpenNote() : TForm;
         { Returns the ID of first note that should be opened on startup internal pointer
           (which is same interger as FindFirstOpenNate) to it, '' if none found }
-    function FindFirstOOSNote(var NTitle, NID: ANSIstring): boolean;
+    function FindFirstOOSNote(out NTitle, NID: ANSIstring): boolean;
         { Call after FindFirstOOSNote(), it will return the next one or '' if no more found }
     function FindNextOOSNote(var NTitle, NID: ANSIstring): boolean;
 
@@ -653,7 +653,7 @@ begin
     OpenNoteIndex := -1;
 end;
 
-function TNoteLister.FindFirstOOSNote(var NTitle, NID : ANSIstring): boolean;
+function TNoteLister.FindFirstOOSNote(out NTitle, NID : ANSIstring): boolean;
 begin
     OpenNoteIndex:=0;
     while OpenNoteIndex < NoteList.Count do

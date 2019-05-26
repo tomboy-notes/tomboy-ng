@@ -28,7 +28,7 @@ unit recover;
     2018/10/28  Much changes, now working reasonably well.
     2018/10/29  Set attributes of Unzipped files on the Mac, it apparently leaves then 000
     2018/11/05  Altered name of safety zip file
-
+    2019/05/19  Display strings all (?) moved to resourcestrings
 }
 
 
@@ -130,13 +130,17 @@ uses LazFileUtils, Note_Lister, SearchUnit, process, LazLogger,
 var
     SnapNoteLister : TNoteLister;
 
+RESOURCESTRING
+  rsWeHaveSnapShots_1 = 'We have';
+  rsWeHaveSnapShots_2 = 'snapshots';
+
 procedure TFormRecover.FormShow(Sender: TObject);
 begin
     RequiresIndex := False;
     StringGrid1.ColCount:=4;
     StringGrid1.FixedCols:=0;
     //stringgrid1.Options := [stringgrid1.options] + [goThumbTracking];
-    Label1.Caption := 'We have ' + inttostr(FindSnapFiles()) + ' snapshots';
+    Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
 end;
 
 procedure TFormRecover.FormCreate(Sender: TObject);
@@ -151,6 +155,10 @@ begin
         FreeAndNil(SnapNoteLister);
 end;
 
+RESOURCESTRING
+  rsDeletedDamaged_1 = 'OK, deleted';
+  rsDeletedDamaged_2 = 'damaged notes';
+
 procedure TFormRecover.ButtonDeleteBadNotesClick(Sender: TObject);
 var I : integer;
 begin
@@ -158,7 +166,7 @@ begin
         showmessage('Delete ' + StringGrid1.Cells[0, I]);
         DeleteFile(NoteDir + StringGrid1.Cells[0, I] + '.note');
     end;
-    showmessage('OK, deleted ' + inttostr(I) + ' damaged notes');
+    showmessage(rsDeletedDamaged_1 + ' ' + inttostr(I) + ' ' + rsDeletedDamaged_2 );
 end;
 
 procedure TFormRecover.ButtonRecoverSnapClick(Sender: TObject);
@@ -193,13 +201,19 @@ end;
 procedure TFormRecover.ButtonMakeSafetySnapClick(Sender: TObject);
 begin
     CreateSnapShot(NoteDir, SnapDir + 'Safety.zip');
-    Label1.Caption := 'We have ' + inttostr(FindSnapFiles()) + ' snapshots';
+    Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
 end;
+
+RESOURCESTRING
+  rsDeleteAndReplace_1 = 'Notes at risk !';
+  rsDeleteAndReplace_2 = 'Delete all notes in';
+  rsDeleteAndReplace_3 = 'and replace with snapshot dated';
+  rsAllRestored = 'Notes and config files Restored, restart suggested.';
 
 procedure TFormRecover.RestoreSnapshot(const Snapshot : string);
 begin
-    if mrYes <> QuestionDlg('Notes at risk !', 'Delete all notes in ' + NoteDir
-            + ' and replace with snapshot dated '
+    if mrYes <> QuestionDlg(rsDeleteAndReplace_1, rsDeleteAndReplace_2 + ' ' + NoteDir
+            + ' '  + rsDeleteAndReplace_3 + ' '
             + FormatDateTime( 'yyyy-mm-dd hh:mm', FileDateToDateTime(FileAge(SnapDir + Snapshot))) + ' ?'
             // + Snapshot + ' ' + DateTimeToStr(FileDateToDateTime(FileAge(SnapDir + Snapshot))) + ' ?'
             , mtConfirmation, [mrYes, mrNo], 0) then exit;
@@ -213,15 +227,18 @@ begin
         end;
         DeleteDirectory(NoteDir + 'config', False);
     end;
-    showmessage('Notes and config files Restored, restart suggested.');
+    showmessage(rsAllRestored);
     RequiresIndex := true;
 end;
+
+RESOURCESTRING
+  rsNoSafetySnapshot = 'A Safety snapshot not found. Try setting Snapsot Dir to where you may have one.';
 
 procedure TFormRecover.Button4Click(Sender: TObject);
 begin
     if fileexists(SnapDir + 'Safety.zip') then
         RestoreSnapshot('Safety.zip')
-    else showmessage('A Safety snapshot not found. Try setting Snapsot Dir to where you may have one.');
+    else showmessage(rsNoSafetySnapshot);
 end;
 
 procedure TFormRecover.StringGrid1DblClick(Sender: TObject);
@@ -305,9 +322,12 @@ begin
     end;
 end;
 
+RESOURCESTRING
+  rsNotesInSnap = 'Notes in Snapshot';
+
 procedure TFormRecover.ShowNotes(const FullSnapName : string);
 begin
-    PanelNoteList.Caption:='Notes in Snapshot ' + ExpandZipName(FullSnapName);
+    PanelNoteList.Caption:=rsNotesInSnap +' ' + ExpandZipName(FullSnapName);
     ForceDirectory(SnapDir + 'temp');
     CleanAndUnZip(SnapDir + 'temp' + PathDelim, FullSnapName);
     if SnapNoteLister <> Nil then
@@ -383,6 +403,14 @@ begin
     end;
 end;
 
+RESOURCESTRING
+  rsBadNotes_1 = 'You have';
+  rsBadNotes_2 = ' bad notes in Notes Directory';
+  rsClickBadNote = 'Double click on any Bad Notes';
+  rsNoBadNotes = 'No errors, perhaps you should proceed to Snapshots';
+  rsTryRecover_1 = 'Proceed to Snapshots or try to recover by double clicking below,';
+  rsTryrecover_2 = 'if and only IF, you see useful content, make a small change, exit';
+
 procedure TFormRecover.TabSheetExistingShow(Sender: TObject);
 var
   I, Comma : integer;
@@ -391,16 +419,16 @@ begin
     //showmessage('Existing Show');
     ButtonDeleteBadNotes.Enabled := False;
     ListBoxSnapShots.Enabled:=False;
-    PanelNoteList.Caption:='Double click on any Bad Notes';
-    LabelNoteErrors.Caption := 'You have ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count)
-        + ' bad notes in Notes Directory';
+    PanelNoteList.Caption:=rsClickBadNote ;
+    LabelNoteErrors.Caption := rsBadNotes_1 + ' ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count)
+        + ' ' + rsBadNotes_2;
   	StringGrid1.Clear;
     LabelExistingAdvice2.Caption := '';
     if SearchForm.NoteLister.ErrorNotes.Count = 0 then
-        LabelExistingAdvice.Caption := 'No errors, perhaps you should proceed to Snapshots'
+        LabelExistingAdvice.Caption := rsNoBadNotes
     else begin
-        LabelExistingAdvice.Caption := 'Proceed to Snapshots or try to recover by double clicking below,';
-        LabelExistingAdvice2.Caption := 'if and only IF, you see useful content, make a small change, exit';
+        LabelExistingAdvice.Caption := rsTryRecover_1;
+        LabelExistingAdvice2.Caption := rsTryrecover_2;
     end;
     StringGrid1.FixedRows := 0;
     StringGrid1.InsertRowWithValues(0, ['ID', 'ErrorMessage']);
@@ -437,9 +465,12 @@ begin
                 and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count);
 end;
 
+RESOURCESTRING
+  rsClickSnapShot = 'Double Click an Available Snapshot';
+
 procedure TFormRecover.TabSheetSnapshotsShow(Sender: TObject);
 begin
-    PanelNoteList.Caption:='Double Click an Available Snapshot';
+    PanelNoteList.Caption:=rsClickSnapShot;
     ListBoxSnapShots.Enabled:=True;
 end;
 

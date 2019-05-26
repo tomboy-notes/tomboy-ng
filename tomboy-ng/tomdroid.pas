@@ -6,7 +6,7 @@ unit tomdroid;
 { HISTORY
     2018/12/06  Added AdjustNoteList() to call ProcessSyncUpdates at end of a sync
     2018/04/28  Ensure user does not save profile after a Test run, the ID will change.
-
+    2019/05/14  Display strings all (?) moved to resourcestrings
 }
 
 interface
@@ -85,6 +85,7 @@ uses Settings, IniFiles, Sync, TB_SDiff, typInfo, LazLogger, LCLType,
     MainUnit,   // just for MainUnit.MainForm.ShowHelpNote(
     SearchUnit; // Because we call ProcessSyncUpdates( at end of sync
 
+
 var
     ASync : TSync;
 
@@ -123,7 +124,7 @@ end;
 
 procedure TFormTomdroid.FormShow(Sender: TObject);
 begin
-    debugln('Tomdroid screen OnShow event');
+    //debugln('Tomdroid screen OnShow event');
     Memo1.Clear;
     StringGridReport.Clear;
     ClearFields();
@@ -143,7 +144,7 @@ end;
 
 procedure TFormTomdroid.ButtonHelpClick(Sender: TObject);
 begin
-    MainUnit.MainForm.ShowHelpNote('tomdroid.note');         // change the bloody name !
+    MainUnit.MainForm.ShowHelpNote('tomdroid.note');         // change the bloody name ! Er, why ?
 end;
 
 procedure TFormTomdroid.ButtonDeleteClick(Sender: TObject);
@@ -197,9 +198,12 @@ end;
 
 { --------------- S C R E E N   F U N C T I O N S    ---------------------------}
 
+RESOURCESTRING
+  rsSelectProfile = 'Select a profile';
+
 procedure TFormTomdroid.ClearFields();
 begin
-    ComboBox1.Text := 'Select a profile';
+    ComboBox1.Text := rsSelectProfile;
     EditProfileName.Text := '';
     EditIPAddress.Text := '';
     EditPassword.Text := '';
@@ -230,6 +234,17 @@ begin
     ButtonClose.Enabled := True;
 end;
 
+RESOURCESTRING
+  rsSetUpNewSync ='Setting up a new sync ....';
+  rsFailedToConnect = 'Failed to connect. ';
+  rsTalking = 'OK, talking to device. Wait for it ....';
+  rsNoTomdroid =  'Unable to find Tomdroid sync dir on that device.';
+  rsInstallTomdroid = 'Install Tomdroid, config filesync, and run a sync';
+  rsNoConnection = 'Failed to establish a connection. ';
+  rsFixConnection = 'If you are sure its there, check settings.';
+  rsConnectionGood = 'Connection is looking Good.';
+
+
 procedure TFormTomdroid.DoNewSync();
 var
     Tick1, Tick2, Tick3, Tick4 : DWord;
@@ -237,7 +252,7 @@ begin
     Memo1.clear;
     StringGridReport.Clear;
     EnableButtons(False);
-    Memo1.append('Setting up a new sync ....');
+    Memo1.append(rsSetUpNewSync);
     Application.ProcessMessages;
     try
         ASync := TSync.Create();
@@ -252,32 +267,32 @@ begin
         ASync.Password:= EditPassword.Text;
         Tick1 := GetTickCount64();
         if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin
-            memo1.append('Failed to connect. ' + ASync.ErrorString);
+            memo1.append(rsFailedToConnect + ' ' + ASync.ErrorString);
             exit();
         end;
-        Memo1.Append('OK, talking to device. Wait for it ....');
+        Memo1.Append(rsTalking);
         Application.ProcessMessages;
         Tick2 := GetTickCount64();
         case ASync.TestConnection() of
             SyncNoRemoteDir :
                 begin
-                    Memo1.append('Unable to find Tomdroid sync dir on that device.');
-                    Memo1.append('Install Tomdroid, config filesync, and run a sync');
+                    Memo1.append(rsNoTomdroid );
+                    Memo1.append(rsInstallTomdroid);
                     Memo1.Append(ASync.Errorstring);
                     exit();
                 end;
             SyncNetworkError :
                 begin
-                    Memo1.Append('Failed to establish a connection. ' + ASync.ErrorString);
-                    memo1.append('If you are sure its there, check settings.');
+                    Memo1.Append(rsNoConnection + ' ' + ASync.ErrorString);
+                    memo1.append(rsFixConnection);
                     exit();
                 end;
             SyncReady : ;
         else begin showmessage(ASync.ErrorString); exit(); end;
         end;
         // If to here, sync should be enabled and know about remote files it might need.
-        Memo1.append('Connection is looking Good.');
-        Memo1.append('Next bit can be a bit slow, please wait');
+        Memo1.append(rsConnectionGood);
+        Memo1.append(rsNextBitSlow);
         Application.ProcessMessages;
         Tick3 := GetTickCount64();
         ASync.StartSync();
@@ -320,9 +335,8 @@ procedure TFormTomdroid.ButtonJoinClick(Sender: TObject);
 begin
     if ProfileName <> '' then begin
         if (ProfileName = EditProfileName.Text) then
-            if IDYES <> Application.MessageBox('Change an Existing Sync Connection ?',
-                			'Generally not recommended.',
-                   			MB_ICONQUESTION + MB_YESNO) then exit;
+            if IDYES <> Application.MessageBox(pchar(rsChangeExistingSync),
+                    pchar(rsNotRecommend), MB_ICONQUESTION + MB_YESNO) then exit;
     end;
     EnableButtons(False);
     DoNewSync();
@@ -332,18 +346,20 @@ begin
 
 end;
 
+ // Following resourcestrings defined in syncUtils.pas
+
 procedure TFormTomdroid.DisplaySync();
 var
     UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
 begin
     ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors);
-    Memo1.Append('New Uploads    ' + inttostr(UpNew));
-    Memo1.Append('Edit Uploads   ' + inttostr(UpEdit));
-    Memo1.Append('Downloads      ' + inttostr(Down));
-    Memo1.Append('Local Deletes  ' + inttostr(DelLoc));
-    Memo1.Append('Remote Deletes ' + inttostr(DelRem));
-    Memo1.Append('Clashes        ' + inttostr(Clash));
-    Memo1.Append('Do Nothing     ' + inttostr(DoNothing));
+    Memo1.Append(rsNewUploads + inttostr(UpNew));
+    Memo1.Append(rsEditUploads + inttostr(UpEdit));
+    Memo1.Append(rsDownloads + inttostr(Down));
+    Memo1.Append(rsLocalDeletes + inttostr(DelLoc));
+    Memo1.Append(rsRemoteDeletes + inttostr(DelRem));
+    Memo1.Append(rsClashes + inttostr(Clash));
+    Memo1.Append(rsDoNothing + inttostr(DoNothing));
 end;
 
 procedure TFormTomdroid.ShowReport();
@@ -365,8 +381,8 @@ begin
     StringGridReport.AutoSizeColumn(0);
     StringGridReport.AutoSizeColumn(1);
     if  Rows = 0 then
-        Memo1.Append('No notes needed syncing. You need to write more.');
-    Memo1.Append(inttostr(ASync.NoteMetaData.Count) + ' notes were dealt with.');
+        Memo1.Append(rsNoNotesNeededSync);
+    Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
 end;
 
 function TFormTomdroid.NeedToSave() : boolean;
@@ -376,6 +392,17 @@ begin
                     or (Password <> EditPassword.Text);
 end;
 
+RESOURCESTRING
+  rsCheckingForExistingSync = 'Checking for an existing sync ....';
+  rsTalkingToDevice = 'OK, talking to device. Wait for it ....';
+  rsNotExistingRepo = 'Thats not an existing Repo, maybe click "Join" ?';
+  rsNotCorrectProfile = 'This is not correct profile for that device';
+  rsFailedToFindConnection_1 = 'Failed to find an existing connection. ';
+  rsFailedToFindConnection_2 = 'If you are sure there should be an existing connection, check settings.';
+  rsFailedToFindConnection_3 = 'Otherwise, try joining a new connection.';
+  rsHaveValidSync = 'Looking Good. Last sync date ';
+
+
 function TFormTomdroid.DoSync() : boolean;
 var
     Tick1, Tick2, Tick3, Tick4 : DWord;
@@ -383,7 +410,7 @@ begin
     Memo1.clear;
     StringGridReport.Clear;
     EnableButtons(False);
-    Memo1.append('Checking for an existing sync ....');
+    Memo1.append(rsCheckingForExistingSync);
     Application.ProcessMessages;
     try
         ASync := TSync.Create();
@@ -398,31 +425,31 @@ begin
         ASync.Password:= EditPassword.Text;
         Tick1 := GetTickCount64();
         if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin
-            memo1.append('Failed to connect. ' + ASync.ErrorString);
+            memo1.append(rsFailedToConnect + ASync.ErrorString);
             exit(false);
         end;
-        Memo1.Append('OK, talking to device. Wait for it ....');
+        Memo1.Append(rsTalkingToDevice);
         Application.ProcessMessages;
         Tick2 := GetTickCount64();
         case ASync.TestConnection() of
             // SyncXMLError, SyncNoRemoteWrite, SyncNoRemoteDir :
             SyncNoRemoteRepo :
-                begin Memo1.Append('Thats not an existing Repo, maybe click "Join" ?'); exit(False); end;
+                begin Memo1.Append(rsNotExistingRepo); exit(False); end;
             SyncMisMatch :
-                begin Memo1.Append('This is not correct profile for that device'); exit(False); end;
+                begin Memo1.Append(rsNotCorrectProfile); exit(False); end;
             SyncNetworkError :
                 begin
-                    Memo1.Append('Failed to find an existing connection. ' + ASync.ErrorString);
-                    memo1.append('If you are sure there should be an existing connection, check settings.');
-                    memo1.append('Otherwise, try joining a new connection.');
+                    Memo1.Append(rsFailedToFindConnection_1 + ASync.ErrorString);
+                    memo1.append(rsFailedToFindConnection_2);
+                    memo1.append(rsFailedToFindConnection_3);
                     exit(false);
                 end;
             SyncReady : ;
         else begin showmessage(ASync.ErrorString); exit(False); end;
         end;
         // If to here, sync should be enabled and know about remote files it might need.
-        Memo1.append('Looking Good. Last sync date ' + ASync.LocalLastSyncDateSt);
-        Memo1.append('Next bit can be a bit slow, please wait');
+        Memo1.append(rsHaveValidSync + ASync.LocalLastSyncDateSt);
+        Memo1.append(rsNextBitSlow);
         Application.ProcessMessages;
         Tick3 := GetTickCount64();
         ASync.StartSync();

@@ -34,6 +34,7 @@ unit BackupView;
     2018/08/16  We now update both last-metadata-change-date AND last-change-date
                 when restoring a backup file.
     2018/08/27  Now change the ID of a deleted (but not overwritten) Note to avoid Sync issues
+    2019/05/19  Display strings all (?) moved to resourcestrings
 }
 
 {$mode objfpc}{$H+}
@@ -88,6 +89,10 @@ begin
 
 end;
 
+RESOURCESTRING
+  rsNewerVersionExits = 'A newer version exists in main repo';
+  rsNotPresent = 'Not present in main repo';
+  rsCannotDelete = 'Cannot delete ';
 procedure TFormBackupView.FormShow(Sender: TObject);
 begin
     NotesChanged := false;
@@ -99,17 +104,17 @@ begin
     Memo1.Append('Filename :');
     Memo1.Append(FileName);
     if FileExistsUTF8(Sett.NoteDirectory + FileName) then begin
-        Memo1.Append('A newer version exists in main repo');
+        Memo1.Append(rsNewerVersionExits);
         ExistsInRepo := True;
     end else
-        Memo1.Append('Not present in main repo');
+        Memo1.Append(rsNotPresent);
 end;
 
 procedure TFormBackupView.ButtonDeleteClick(Sender: TObject);
 begin
     if DeleteFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then
         NotesChanged := True
-    else Showmessage('Cannot delete ' + Sett.NoteDirectory + 'Backup' + PathDelim + FileName);
+    else Showmessage(rsCannotDelete + Sett.NoteDirectory + 'Backup' + PathDelim + FileName);
     close;
 end;
 
@@ -117,6 +122,14 @@ procedure TFormBackupView.ButtonOpenClick(Sender: TObject);
 begin
     MainUnit.MainForm.SingleNoteMode(Sett.NoteDirectory + 'Backup' + PathDelim + FileName, False, True);
 end;
+
+RESOURCESTRING
+  rsOverwriteNote = 'Overwrite newer version of that note';
+  rsNoteAlreadyInRepo = 'Note already in Repo';
+  rsNoteOpen = 'You have that note open, please close and try again';
+  rsCopyFailed = 'Copying orig to Backup directory failed';
+  rsRenameFailed = 'ERROR, could not rename Backup File ';
+  rsRecoverOK = 'OK, File recovered. You may need to do a Refresh (or restart)';
 
 // OK, overwriting an existing file is not an issue (as long as its not open).
 // However, if we are looking at a note that was deleted, it might be listed in
@@ -131,17 +144,18 @@ var
     GUID : TGUID;
 begin
     if ExistsInRepo then
-        if IDYES <> Application.MessageBox('Overwrite newer version of that note', 'Note already in Repo',
+        if IDYES <> Application.MessageBox(pchar(rsOverwriteNote), pchar(rsNoteAlreadyInRepo),
+        // ToDo : check above works as expected, why do I need to cast ?
                     MB_ICONQUESTION + MB_YESNO) then
             exit();
     if SearchForm.NoteLister.IsThisNoteOpen(FileName, AForm) then begin
-        showmessage('You have that note open, please close and try again');
+        showmessage(rsNoteOpen);
         exit();
     end;
     if ExistsInRepo then begin
         if not RenameFileUTF8(Sett.NoteDirectory + FileName, Sett.NoteDirectory + 'Backup'
                     + PathDelim + FileName + 'TMP') then begin
-            showmessage('Copying orig to Backup directory failed');
+            showmessage(rsCopyFailed);
             exit;
         end;
     end else begin
@@ -152,7 +166,7 @@ begin
                 Sett.NoteDirectory + 'Backup' + PathDelim + NewFName) then
             FileName := NewFName
         else
-          Showmessage('ERROR, could not rename Backup File ' + FileName);
+          Showmessage(rsRenameFailed + ' ' + FileName);
     end;
     // OK, if to here, user really wants it back, no reason why not.
     AssignFile(InFile, Sett.NoteDirectory + 'Backup' + PathDelim + Filename);
@@ -184,7 +198,7 @@ begin
         on E: EInOutError do
             showmessage('File handling error occurred. Details: ' + E.Message);
     end;
-    Memo1.Append('OK, File recovered. You may need to do a Refresh (or restart)');
+    Memo1.Append(rsRecoverOK);  // ToDo : does userneed to reindex here or not ??
 end;
 
 procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);

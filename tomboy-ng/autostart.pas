@@ -1,5 +1,7 @@
 unit autostart;
-
+{
+    2019/05/24  Display strings all (?) moved to resourcestrings
+}
 {$mode objfpc}{$H+}
 
 interface

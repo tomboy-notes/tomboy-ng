@@ -126,6 +126,23 @@ function IDLooksOK(const ID : string) : boolean;
         // Use whenever we are writing content that may contain <>& to XML files
 function RemoveBadXMLCharacters(const InStr : ANSIString) : ANSIString;
 
+
+RESOURCESTRING
+  rsNewUploads = 'New Uploads    ';
+  rsEditUploads = 'Edit Uploads   ';
+  rsDownloads = 'Downloads      ';
+  rsLocalDeletes = 'Local Deletes  ';
+  rsRemoteDeletes = 'Remote Deletes ';
+  rsClashes = 'Clashes        ';
+  rsDoNothing = 'Do Nothing     ';
+  rsSyncERRORS = 'ERRORS (see consol log) ';
+
+  rsNoNotesNeededSync = 'No notes needed syncing. You need to write more.';
+  rsNotesWereDealt = ' notes were dealt with.';
+  rsChangeExistingSync = 'Change existing sync connection ?';
+  rsNotRecommend = 'Generally not recommended.';
+  rsNextBitSlow = 'Next bit can be a bit slow, please wait';
+
             { -------------- implementation ---------------}
 implementation
 

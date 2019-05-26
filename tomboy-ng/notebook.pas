@@ -39,6 +39,7 @@ unit Notebook;
     2018/05/12  Extensive changes - MainUnit is now just that. Only change here relates
                 to naming of MainUnit and SearchUnit.
     2019/05/18  Corrected alignment Label1 and 3
+    2019/05/19  Display strings all (?) moved to resourcestrings
 }
 
 
@@ -90,6 +91,11 @@ implementation
 
 uses SearchUnit, LazFileUtils, Settings, SaveNote;
 
+RESOURCESTRING
+  rsMultipleNoteBooks = 'Settings allow multiple Notebooks';
+  rsOneNoteBook = 'Settings allow only one Notebook';
+  rsSetTheNotebooks = 'Set the notebooks this note is a member of';
+
 procedure TNoteBookPick.FormShow(Sender: TObject);
 var
         SL : TStringList;
@@ -97,10 +103,10 @@ var
 begin
     Label1.Caption := Title;
     if Sett.CheckManyNotebooks.Checked then
-        Label2.Caption := 'Settings allow multiple Notebooks'
-    else Label2.Caption := 'Settings allow only one Notebook';
+        Label2.Caption := rsMultipleNoteBooks
+    else Label2.Caption := rsOneNoteBook;
     //CheckListBox1.MultiSelect:=Sett.CheckManyNotebooks.Checked;
-    Label3.Caption := 'Set the notebooks this note is a member of';
+    Label3.Caption := rsSetTheNotebooks;
     SL := TStringList.Create;
     SearchForm.NoteLister.GetNotebooks(SL);
     CheckListBox1.Items.Assign(SL);
@@ -133,6 +139,9 @@ begin
     end;
 end;
 
+RESOURCESTRING
+  rsEnterNewNotebook = 'Enter a new notebook name please';
+
 procedure TNoteBookPick.ButtonOKClick(Sender: TObject);
 var
         SL : TStringList;
@@ -155,7 +164,7 @@ begin
 				finally
                 	Saver.Destroy;
 				end;
-            end else showmessage('Enter a new Notebook Name please');
+            end else showmessage(rsEnterNewNotebook);
 		end;
 	finally
     	Sl.Free;

@@ -49,6 +49,7 @@ unit Mainunit;
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
     2019/04/13  Mv numb notes to tick line, QT5, drop CheckStatus()
     2019/05/06  Support saving pos and open on startup in note.
+    2019/05/14  Display strings all (?) moved to resourcestrings
 
     CommandLine Switches
 
@@ -389,7 +390,7 @@ begin
      ImageSpellCross.Visible := not ImageSpellTick.Visible;
 
      ImageSyncCross.Left := ImageSyncTick.Left;
-     ImageSyncTick.Visible := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+     ImageSyncTick.Visible := (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
                 and (Sett.LabelSyncRepo.Caption <> '');
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 
@@ -428,7 +429,7 @@ var
   c: PGtkClipboard;
   t: string;
   {$endif}
-  OutFile : TextFile;
+  // OutFile : TextFile;
   AForm : TForm;
 begin
     {$ifdef LINUX}
@@ -458,6 +459,25 @@ begin
     end;
 end;
 
+RESOURCESTRING
+    {$ifdef DARWIN}
+    rsMacHelp1 = 'eg   open tomboy-ng.app';
+    rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
+    {$endif}
+    rsHelpLang = 'Force Language, supported es';
+    rsHelpDebug = 'Direct debug output to SOME.LOG.';
+    rsHelpHelp = 'Show this help and exit.';
+    rsHelpVersion = 'Print version and exit';
+    rsHelpRedHat = 'Run in RedHatGnome mode, no TrayIcon';
+    rsHelpNoSplash = 'Dont show small status/splash window';
+    rsHelpDebugSync = 'Show debug messages during Sync';
+    rsHelpDebugIndex = 'Show debug messages during index of notes';
+    rsHelpDebugSpell = 'Show debug messages during spell setup';
+    rsHelpConfig = 'Create or use an alternative config';
+    rsHelpSingleNote = 'Open indicated note, switch is optional';
+    rsHelpSaveExit = 'After import single note, save and exit.';
+
+
 function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
@@ -468,21 +488,21 @@ begin
     if CmdLineErrorMsg <> '' then begin
        debugln('Usage - ');
        {$ifdef DARWIN}
-       debugln('eg   open tomboy-ng.app');
-       debugln('eg   open tomboy-ng.app --args -o Note.txt|.note');
+       debugln(rsMachelp1);
+       debugln(rsMacHelp2);
        {$endif}
-       debugln('   -l CCode  --lang=CCode       Force Language, supported es ');    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
-       debugln('   --debug-log=SOME.LOG         Direct debug output to SOME.LOG.');
-       debugln('   -h --help                    Show this help and exit.');
-       debugln('   --version                    Print version and exit');
-       debugln('   -g --gnome3                  Run in (non ubuntu) gnome3 mode, no Tray Icon');
-       debugln('   --no-splash                  Dont show small status/splash window');
-       debugln('   --debug-sync                 Show whats happening during sync process');
-       debugln('   --debug-index                Show whats happening during initial index of notes');
-       debugln('   --debug-spell                Show whats happening during spell setup');
-       debugln('   --config-dir=PATH_to_DIR     Create or use an alternative config');
-       debugln('   -o --open-note=PATH_to_NOTE  Open indicated note, switch is optional');
-       debugln('   --save-exit                  (Single note only) after import, save and exit.');
+       debugln('   -l CCode  --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
+       debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);
+       debugln('   -h --help                    ' + rsHelpHelp);
+       debugln('   --version                    ' + rsHelpVersion);
+       debugln('   -g --gnome3                  ' + rsHelpRedHat);
+       debugln('   --no-splash                  ' + rsHelpNoSplash);
+       debugln('   --debug-sync                 ' + rsHelpDebugSync);
+       debugln('   --debug-index                ' + rsHelpDebugIndex);
+       debugln('   --debug-spell                ' + rsHelpDebugSpell);
+       debugln('   --config-dir=PATH_to_DIR     ' + rsHelpConfig);
+       debugln('   -o --open-note=PATH_to_NOTE  ' + rsHelpSingleNote);
+       debugln('   --save-exit                  ' + rsHelpSaveExit);
        debugln(CmdLineErrorMsg);
        result := true;
     end;
@@ -605,7 +625,7 @@ begin
                     else  SearchForm.Show;
 
         mtAbout :    ShowAbout();
-        mtSync :     if (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+        mtSync :     if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
                         and (Sett.LabelSyncRepo.Caption <> '') then
                             Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
@@ -660,7 +680,7 @@ begin
     AddMenuItem('-', mtSep, nil, mkFileMenu);
     AddMenuItem('-', mtSep, nil, mkFileMenu);   // Recent Notes will be inserted at last Separator
     AddMenuItem(rsMenuAbout, mtAbout, @FileMenuClicked, mkFileMenu);
-    if (Sett.LabelSyncRepo.Caption <> SyncNotConfig) then
+    if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig) then
         AddMenuItem(rsMenuSync, mtSync,  @FileMenuClicked, mkFileMenu);
     {$ifdef LINUX}
     if Sett.CheckShowTomdroid.Checked then
@@ -785,20 +805,31 @@ begin
     RemoveRecentFromMenu(PopupMenuSearch);
 end;
 
+RESOURCESTRING
+    rsAbout1 = 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus';
+    rsAbout2 = 'and FPC. While its getting close to being ready for production';
+    rsAbout3 = 'use, you still need to be careful and have good backups.';
+    rsAboutVer = 'Version';
+    rsAboutBDate = 'Build date';
+    rsAboutCPU = 'TargetCPU';
+    rsAboutOperatingSystem = 'OS';
+
+
 procedure TMainForm.ShowAbout();
 var
         S1, S2, S3, S4, S5, S6 : string;
 begin
-        S1 := 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus'#10;
-        S2 := 'and FPC. While its getting close to being ready for production'#10;
-        S3 := 'use, you still need to be careful and have good backups.'#10;
-        S4 := 'Version ' + Version_String + #10;
-        S5 := 'Build date ' + {$i %DATE%} + '  TargetCPU ' + {$i %FPCTARGETCPU%} + '  OS ' + {$i %FPCTARGETOS%};
+        S1 := rsAbout1 + #10;
+        S2 := rsAbout2 + #10;
+        S3 := rsAbout3 + #10;
+        S4 := rsAboutVer + ' ' + Version_String + #10;
+        S5 := rsAboutBDate + ' ' + {$i %DATE%} + ' ' + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
+                + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%};
         // That may return, eg "Build date 2019/02/28 TargetCPU x86_64 OS Linux Mate"
         // or, maybe "Build date 2019/03/19 TargetCPU i386 OS Win32"
         S6 := #10;
-        {$ifdef LCLCOCOA}S6 := S6 + ' 64bit Cocoa Version';{$endif}
-        {$ifdef LCLQT5}S6 := S6 + ' QT5 version'; {$endif}
+        {$ifdef LCLCOCOA}S6 := S6 + ' 64bit Cocoa ' + rsAboutVer;{$endif}
+        {$ifdef LCLQT5}S6 := S6 + ' QT5' + rsAboutVer; {$endif}
         S6 := S6 + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
         Showmessage(S1 + S2 + S3 + S4 + S5 + S6);
 end;

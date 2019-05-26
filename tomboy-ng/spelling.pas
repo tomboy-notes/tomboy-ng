@@ -33,6 +33,7 @@ unit Spelling;
 				some changes outside ifdef so must check on Linux too.
     2018/06/21  Hide an unnecessary debug line
     2018/11/29  Fixed bug when spell checking a selection of text
+    2019/05/19  Display strings all (?) moved to resourcestrings
 }
 
 {$mode objfpc}{$H+}
@@ -122,6 +123,11 @@ begin
    end;
 end;
 
+RESOURCESTRING
+  rsCheckingFull = 'Checking full document';
+  rsCheckingSelection = 'Checking selection';
+  rsSpellNotConfig = 'Spelling not configured';
+
 procedure TFormSpell.FormShow(Sender: TObject);
 begin
     // ShowContents();
@@ -134,11 +140,11 @@ begin
         Index := Index + NewLinesBefore(Index) + 1;
         FinishIndex := FinishIndex + NewLinesBefore(FinishIndex);
         {$endif}
-        LabelStatus.Caption := 'Checking selection';
+        LabelStatus.Caption := rsCheckingSelection;
     end else begin								// note only one char selected, we treat as check whole doc
         FinishIndex := 0;
         Index := UTF8Length(TheKMemo.Blocks.Text);
-        LabelStatus.Caption := 'Checking full document';
+        LabelStatus.Caption := rsCheckingFull;
     end;
     TheKMemo.SelEnd := TheKMemo.SelStart;   	// Now, nothing selected.
     LabelStatus.Caption := '';
@@ -151,12 +157,16 @@ begin
                 PreviousWord(Index);
         end;
      end else
-        LabelStatus.Caption := 'Spelling not configured';
+        LabelStatus.Caption := rsSpellNotConfig;
 end;
+
+RESOURCESTRING
+  rsREPLACE_with_1 = 'replace';
+  rsReplace_WITH_2 = 'with';
 
 procedure TFormSpell.ListBox1Click(Sender: TObject);
 begin
-    LabelStatus.Caption := 'replace ' + TheWord + ' with ' + ListBox1.Items[ListBox1.ItemIndex];
+    LabelStatus.Caption := rsREPLACE_with_1 + ' ' + TheWord + ' ' + rsReplace_WITH_2 + ' ' + ListBox1.Items[ListBox1.ItemIndex];
     ButtonUseAndNextWord.Enabled := True;
 end;
 
@@ -236,9 +246,12 @@ begin
         TheWord := ''
 end;
 
+RESOURCESTRING
+    rsSpellComplete = 'Spell check complete';
+
 procedure TFormSpell.WeAreDone();
 begin
-    LabelStatus.Caption := 'Spell check complete';
+    LabelStatus.Caption := rsSpellComplete;
     LabelContext.Caption := '';
     ListBox1.Clear;
     LabelSuspect.Caption:='';

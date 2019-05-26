@@ -181,6 +181,7 @@ unit EditBox;
     2019/04/18  Replaced TBitBtns with Speedbuttons to fix memory leak in Cocoa
     2019/04/29  Restore note's previous previous position and size.
     2019/05/06  Support saving pos and open on startup in note.
+    2019/05/14  Display strings all (?) moved to resourcestrings
 }
 
 
@@ -438,8 +439,8 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     Index,              // An Index of current note.
     math,
     //LazFileUtils,       // ToDo : UTF8 complient, unlike FileUtil ...
-    FileUtil, strutils,          // just for ExtractSimplePath ... ~#1620
-    XMLRead, DOM, XMLWrite;     // For updating locations on a clean note
+    FileUtil, strutils;         // just for ExtractSimplePath ... ~#1620
+    // XMLRead, DOM, XMLWrite;     // For updating locations on a clean note (May 19, not needed ?)
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
@@ -1235,7 +1236,7 @@ begin
     {$endif}
     Kmemo1.Clear;
 
-    MenuItemSync.Enabled := (Sett.LabelSyncRepo.Caption <> SyncNotConfig)
+    MenuItemSync.Enabled := (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
             and (Sett.LabelSyncRepo.Caption <> '');
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
@@ -1289,6 +1290,7 @@ procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction)
 var
     OutFile: TextFile;
 begin
+    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1292 ^^^^^^^^^^^^^');
     AssignFile(OutFile, '/home/dbannon/closelogEditFormClose.txt');
     Rewrite(OutFile);
     writeln(OutFile, 'FormClose just closing ' + self.NoteTitle);
@@ -1300,6 +1302,7 @@ procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
     OutFile: TextFile;
 begin
+    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1304 ^^^^^^^^^^^^^');
     AssignFile(OutFile, '/home/dbannon/closelogEditForm.txt');
     Rewrite(OutFile);
     writeln(OutFile, 'FormCloseQuery just closing ' + self.NoteTitle);
@@ -1327,7 +1330,7 @@ end;
 function TEditBoxForm.UpdateNote(NRec : TNoteUpdaterec) : boolean;
 var
     InFile, OutFile: TextFile;
-    NoteDateSt, InString, TempName : string;
+    {NoteDateSt, }InString, TempName : string;
 begin
   TempName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
   if not DirectoryExists(TempName) then
@@ -1799,6 +1802,8 @@ begin
     end;
 end;
 
+RESOURCESTRING
+    rsUnabletoEvaluate = 'Unable to find an expression to evaluate';
 // Called from a Ctrl-E, 'Equals', maybe 'Evaluate' ? Anyway, directs to appropriate
 // methods.
 procedure TEditBoxForm.InitiateCalc();
@@ -1812,7 +1817,7 @@ begin
         else if not SimpleCalculate(AnsStr) then
             if not ColumnCalculate(AnsStr) then exit;
     if AnsStr = '' then
-        showmessage('Unable to find an expression to evaluate')
+        showmessage(rsUnabletoEvaluate)
     else begin
         //debugln('KMemo1.SelStart=' + inttostr(KMemo1.SelStart) + 'KMemo1.RealSelStart=' + inttostr(KMemo1.RealSelStart));
         KMemo1.SelStart := KMemo1.Blocks.RealSelEnd;

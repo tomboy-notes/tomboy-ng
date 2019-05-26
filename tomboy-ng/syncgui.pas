@@ -50,6 +50,7 @@ unit SyncGUI;
     2018/10/29  Tell TB_Sdiff about note title before showing it.
     2018/10/30  Don't show SyNothing in sync report
     2018/11/04  Added support to update in memory NoteList after a sync.
+    2019/05/19  Display strings all (?) moved to resourcestrings
 }
 
 {$mode objfpc}{$H+}
@@ -183,24 +184,31 @@ begin
 end;
 
 
-
+// Following resourcestrings defined in syncUtils.pas
 
 procedure TFormSync.DisplaySync();
 var
     UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
 begin
     ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors);
-    Memo1.Append('New Uploads    ' + inttostr(UpNew));
-    Memo1.Append('Edit Uploads   ' + inttostr(UpEdit));
-    Memo1.Append('Downloads      ' + inttostr(Down));
-    Memo1.Append('Local Deletes  ' + inttostr(DelLoc));
-    Memo1.Append('Remote Deletes ' + inttostr(DelRem));
-    Memo1.Append('Clashes        ' + inttostr(Clash));
-    Memo1.Append('Do Nothing     ' + inttostr(DoNothing));
-    Memo1.Append('ERRORS (see consol log) ' + inttostr(Errors));
+    Memo1.Append(rsNewUploads + inttostr(UpNew));
+    Memo1.Append(rsEditUploads + inttostr(UpEdit));
+    Memo1.Append(rsDownloads + inttostr(Down));
+    Memo1.Append(rsLocalDeletes + inttostr(DelLoc));
+    Memo1.Append(rsRemoteDeletes + inttostr(DelRem));
+    Memo1.Append(rsClashes + inttostr(Clash));
+    Memo1.Append(rsDoNothing + inttostr(DoNothing));
+    Memo1.Append(rsSyncERRORS + inttostr(Errors));
     // debugln('Display Sync called, DoNothings is ' + inttostr(DoNothing));
 end;
 
+RESOURCESTRING
+  rsTestingRepo = 'Testing Repo ....';
+  rsCreateNewRepo = 'Create a new Repo ?';
+  rsUnableToProceed = 'Unable to proceed because';
+  rsLookingatNotes = 'Looking at notes ....';
+  rsSaveAndSync = 'Press Save and Sync if this looks OK';
+  rsSyncError = 'A Sync Error occured';
     // User is only allowed to press Cancel or Save when this is finished.
 procedure TFormSync.JoinSync;
 var
@@ -210,7 +218,7 @@ var
 begin
     freeandnil(ASync);
 	ASync := TSync.Create;
-    Label1.Caption:='Testing Repo ....';
+    Label1.Caption:= rsTestingRepo;
     Application.ProcessMessages;
     ASync.ProceedFunction:= @Proceed;
 //    ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
@@ -222,25 +230,25 @@ begin
     Async.SetTransport(TransPort);
     SyncAvail := ASync.TestConnection();
     if SyncAvail = SyncNoRemoteRepo then
-        if mrYes = QuestionDlg('Advice', 'Create a new Repo ?', mtConfirmation, [mrYes, mrNo], 0) then begin
+        if mrYes = QuestionDlg('Advice', rsCreateNewRepo, mtConfirmation, [mrYes, mrNo], 0) then begin
             ASync.RepoAction:=RepoNew;
             SyncAvail := ASync.TestConnection();
         end;
     if SyncAvail <> SyncReady then begin
-        showmessage('Unable to proceed because ' + ASync.ErrorString);
+        showmessage(rsUnableToProceed + ' ' + ASync.ErrorString);
         ModalResult := mrCancel;
     end;
-    Label1.Caption:='Looking at notes ....';
+    Label1.Caption:=rsLookingatNotes;
     Application.ProcessMessages;
     ASync.TestRun := True;
     if ASync.StartSync() then begin
         DisplaySync();
         ShowReport();
-        Label1.Caption:='Ready to proceed ....';
-        Label2.Caption := 'Press Save and Sync if this looks OK';
+        Label1.Caption:=rsLookingatNotes;
+        Label2.Caption := rsSaveAndSync;
         ButtonSave.Enabled := True;
     end  else
-        Showmessage('A Sync Error occured ' + ASync.ErrorString);
+        Showmessage(rsSyncError + ' ' + ASync.ErrorString);
     ButtonCancel.Enabled := True;
 end;
 
@@ -253,10 +261,13 @@ begin
         ManualSync();
 end;
 
+//RESOURCESTRING
+//  rsPleaseWait = 'Please wait a minute or two ...';
+
 procedure TFormSync.FormShow(Sender: TObject);
 begin
     FormShown := False;
-    Label2.Caption := 'Please wait a minute or two ...';
+    Label2.Caption := rsNextBitSlow;
     Memo1.Clear;
     StringGridReport.Clear;
     ButtonSave.Enabled := False;
@@ -269,10 +280,18 @@ begin
     LocalTimer.Enabled := True;
 end;
 
+
+Resourcestring
+  rsTestingSync = 'Testing Sync';
+  rsUnableToSync = 'Unable to sync because ';
+  rsRunningSync = 'Running Sync';
+  rsAllDone = 'All Done';
+  rsPressClose = 'Press Close';
+
         // User is only allowed to press Close when this is finished.
 procedure TFormSync.ManualSync();
 begin
-    Label1.Caption := 'Testing Sync';
+    Label1.Caption := rsTestingSync;
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
@@ -285,19 +304,19 @@ begin
         ASync.RepoAction:=RepoUse;
         Async.SetTransport(TransPort);
         if Syncready <> ASync.TestConnection() then begin
-            showmessage('Unable to sync because ' + ASync.ErrorString);
+            showmessage(rsUnableToSync + ' ' + ASync.ErrorString);
             FormSync.ModalResult := mrAbort;
         end;
         if ModalResult <> mrAbort then begin    // Puzzel, setting mrAbort should have closed....
-            Label1.Caption:= 'Running Sync';
+            Label1.Caption:= rsRunningSync;
             Application.ProcessMessages;
             ASync.TestRun := False;
             ASync.StartSync();
             DisplaySync();
             ShowReport();
             AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Label1.Caption:='All Done';
-            Label2.Caption := 'Press Close';
+            Label1.Caption:=rsAllDone;
+            Label2.Caption := rsPressClose;
             ButtonClose.Enabled := True;
         end;
     finally
@@ -325,6 +344,8 @@ begin
    FreeandNil(DownList);
 end;
 
+
+
 procedure TFormSync.ShowReport();
 var
         Index : integer;
@@ -343,8 +364,8 @@ begin
         StringGridReport.AutoSizeColumn(0);
         StringGridReport.AutoSizeColumn(1);
         if  Rows = 0 then
-            Memo1.Append('No notes needed syncing. You need to write more.')
-        else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + ' notes were dealt with.');
+            Memo1.Append(rsNoNotesNeededSync)
+        else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
 end;
 
 procedure TFormSync.StringGridReportGetCellHint(Sender: TObject; ACol,
@@ -366,7 +387,7 @@ end;
     // This only ever happens during a Join .....
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
-    Label2.Caption:='OK, I''ll do it, please wait .....';
+    Label2.Caption:=rsNextBitSlow;
     Label1.Caption:='First Time Sync';
     Memo1.Clear;
     Application.ProcessMessages;
@@ -377,10 +398,10 @@ begin
         DisplaySync();
         ShowReport();
         AdjustNoteList();
-        Label1.Caption:='All Done';
-        Label2.Caption := 'Press Close';
+        Label1.Caption:=rsAllDone;
+        Label2.Caption := rsPressClose;
     end  else
-        Showmessage('A Sync Error occured ' + ASync.ErrorString);
+        Showmessage(rsSyncError + ASync.ErrorString);
     ButtonClose.Enabled := True;
 end;
 

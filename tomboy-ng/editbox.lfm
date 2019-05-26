@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 928
+  Left = 399
   Height = 497
-  Top = 233
+  Top = 74
   Width = 617
   Caption = 'EditBoxForm'
   ClientHeight = 497
@@ -12,7 +12,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.0.1.0'
+  LCLVersion = '2.0.2.0'
   object KMemo1: TKMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Panel1
@@ -69,17 +69,17 @@ object EditBoxForm: TEditBoxForm
     end
     object Label3: TLabel
       Left = 120
-      Height = 19
+      Height = 17
       Top = 8
-      Width = 343
+      Width = 316
       Caption = 'This note has been changed by the Sync Process'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 120
-      Height = 19
+      Height = 17
       Top = 32
-      Width = 345
+      Width = 324
       Caption = 'Please close it (and re-open if it was a download)'
       ParentColor = False
     end
