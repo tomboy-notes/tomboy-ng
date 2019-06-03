@@ -1,0 +1,58 @@
+--- unitywsctrls.pas-ref	2019-06-03 20:22:52.640356117 +1000
++++ unitywsctrls.pas	2019-06-03 22:34:45.668285649 +1000
+@@ -12,10 +12,12 @@
+   Classes, SysUtils, dynlibs,
+   Graphics, Controls, Forms, ExtCtrls, WSExtCtrls, LCLType, LazUTF8;
+ 
+-{ Very minor changes suggested May 2018 so that -
+-  1. Tries a later version of libappindicator library if old one not present
+-  2. Now defaults to try and use this unit if above lib is present.
+-  3. Still resorts to System Tray model if all else fails.
++{ Changed priority, now use libappindicator_3 if available.  ~_3 is, nominally
++  a Unity thing but Ubuntu and several other distros ship it (and support it) with
++  Gnome desktops.
++
++  As of U19.04, libappindicator_1, even if present, does not seem to work.
++
+   DRB
+ }
+ 
+@@ -49,14 +51,13 @@
+     class function GetPosition(const {%H-}ATrayIcon: TCustomTrayIcon): TPoint; override;
+   end;
+ 
+-{ UnityAppIndicatorInit returns true if appindicator libraries can be loaded }
++{ UnityAppIndicatorInit returns true if libappindicator_3 library can be loaded }
+ 
+ function UnityAppIndicatorInit: Boolean;
+ 
+ implementation
+ 
+ const
+-  libappindicator_1 = 'libappindicator.so.1';
+   libappindicator_3 = 'libappindicator3.so.1';
+ 
+ {const
+@@ -266,20 +267,11 @@
+   if Loaded then
+     Exit(Initialized);
+   Loaded:= True;
+-{  if GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP') <> 'Unity' then
+-  begin
+-    Initialized := False;
+-    Exit;
+-  end;        }
+   if Initialized then
+     Exit(True);
+-  // we'll reject if _3 not present or if both present, accept if ONLY _3 is present.
+-  Module := LoadLibrary(libappindicator_1);
+-  if Module <> 0 then       // if _1 present, will probably work with old SystemTray
+-     exit;                  // and may not work with this Unit. So let SystemTray do it.
+   Module := LoadLibrary(libappindicator_3);        // thats the one we want here.
+-  if Module = 0 then                               // no libappindicator ....
+-     Exit;                                         // hope SystemTray can help you ....
++  if Module = 0 then                               // no libappindicator_3
++     Exit;                                         // hope libappindicator_1 can help you ....
+   Result :=
+     TryLoad('app_indicator_get_type', @app_indicator_get_type) and
+     TryLoad('app_indicator_new', @app_indicator_new) and

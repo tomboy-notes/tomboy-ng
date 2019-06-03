@@ -1,0 +1,9 @@
+This patch builds on previous appindicator patch.
+It now forces LCL to use the libappindicator_3 if its available. Even
+if libappindicator_1 is present. It seem that at least U19.04 cannot
+use libappindicator_1 (maybe its only present because of a OS upgrade?).
+
+To apply, cd to YourLazDir/lcl/interfaces/gtk2 and type 
+patch < PATH_TO_Patchfile/use_AppInd_3.patch
+
+Davo, May 2019

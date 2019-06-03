@@ -1290,11 +1290,11 @@ procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction)
 var
     OutFile: TextFile;
 begin
-    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1292 ^^^^^^^^^^^^^');
+{    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1292 ^^^^^^^^^^^^^');
     AssignFile(OutFile, '/home/dbannon/closelogEditFormClose.txt');
     Rewrite(OutFile);
     writeln(OutFile, 'FormClose just closing ' + self.NoteTitle);
-    CloseFile(OutFile);
+    CloseFile(OutFile); }
     Release;
 end;
 
@@ -1302,11 +1302,11 @@ procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
     OutFile: TextFile;
 begin
-    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1304 ^^^^^^^^^^^^^');
+{    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1304 ^^^^^^^^^^^^^');
     AssignFile(OutFile, '/home/dbannon/closelogEditForm.txt');
     Rewrite(OutFile);
     writeln(OutFile, 'FormCloseQuery just closing ' + self.NoteTitle);
-    CloseFile(OutFile);
+    CloseFile(OutFile);   }
     CanClose := True;
 end;
 
