@@ -7,6 +7,7 @@ unit syncutils;
     HISTORY
     2018/10/25  Much testing, support for Tomdroid.
     2018/10/28  Added SafeGetUTCC....
+    2018/06/05  Func. to support Tomboy's sync dir names, rev 431 is in ~/4/341
 }
 {$mode objfpc}{$H+}
 
@@ -104,6 +105,16 @@ type
  type    TProceedFunction = function(const ClashRec : TClashRecord): TSyncAction of object;
 
 type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
+
+
+    { takes a path to the server and a rev number and returns a Tomboy style sync dir.
+      or, if NoteID (without '.note') is supplied, a FullNoteName   }
+function GetRevisionDirPath (ServerPath : string; Rev : integer; NoteID : string = '') : string;
+
+    { Returns True if this Sync Dir is in correct (ie Tomboy or tomboy-ng later
+      than may 2019 mode) place.
+      eg revision 431 should be in $SYNCDIR/4/431 but might be in 0/431 }
+function UsingRightRevisionPath(ServerPath : string; Rev : integer) : boolean;
 
    // Takes a normal Tomboy DateTime string and converts it to UTC, ie zero offset
 function ConvertDateStrAbsolute(const DateStr : string) : string;
@@ -314,6 +325,30 @@ begin
  		// TDateTime has integer part, no. of days, fraction part is fraction of day.
 		// 100years ago or in future - Fail !
     exit(True);
+end;
+
+function GetRevisionDirPath(ServerPath: string; Rev: integer; NoteID : string = ''): string;
+begin
+    result := appendpathDelim(appendpathdelim(serverPath)
+        + inttostr(Rev div 100) + pathDelim + inttostr(rev));
+    if NoteID <> '' then
+        result := result + NoteID + '.note';
+end;
+
+function UsingRightRevisionPath(ServerPath: string; Rev: integer): boolean;
+var
+    FullDirName : string;
+begin
+    FullDirname := GetRevisionDirPath(ServerPath, Rev);
+    debugln('Right sync Dir is ' + FullDirName);
+    if not DirectoryExists(FullDirName) then exit(False);   // we hope its in 'wrong' place ....
+    // Just to be carefull ...
+    FullDirname := appendpathdelim(serverPath) + '0' + pathDelim + inttostr(rev);
+    if DirectoryExists(FullDirName) then begin
+        debugln('ERROR, Sync Repo has two sync directories for rev no ' + inttostr(rev));
+        debugln('We will use ' + GetRevisionDirPath(ServerPath, Rev));
+    end;
+    result := true;
 end;
 
 // Takes a normal Tomboy DateTime string and converts it to UTC, ie zero offset

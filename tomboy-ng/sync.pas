@@ -42,7 +42,7 @@ Fistly, this unit depends on on the Trans unit, a virtual unit of which the Tran
 has been implemented and TransNet partially. Further Transport layers should be easily
 made.
 
-Two seperate approches are needed. In both cases we build a list of all the notes we
+Two seperate approaches are needed. In both cases we build a list of all the notes we
 know about and what we plan to do for each. The list is built differently for each
 case and, then, the same processes are applied to that list. Creating a new Repo is,
 effectivly, a variation of the second.
@@ -75,7 +75,7 @@ We call TestTransportEarly() and/or TestTransport()
 Its tests and may, or may not populate NoteMetaData with remote notes. It may, or may not
 put the remote LCD in NoteMetaData.
 
-We call StartSync() (not talking about Andro mode here.)
+We call StartSync() (not talking about Android mode here.)
 ---------------------
 RepoAction = RepoUse (that is, it all should be setup, just go and do it)
 CheckUsingRev() Assigned a action to each existing entry in NoteMetaData based on the
@@ -102,7 +102,7 @@ CheckUsingLCD(True) Assignes an Action to each entry in NoteMetaData (which only
     last change date. And then run CheckUsingLCD again.  Note this method is an
     alternative to CheckUsingRev(). Any notes thats determined here to be an UpLoad
     has its LCD (in NoteMetaData) set to the local note's LCD.
-Because a join cannot use loacal manifest, we do not honour remote or local deletes.
+Because a join cannot use local manifest, we do not honour remote or local deletes.
 CheckNewNotes() looks in Notes dir for any notes there that are not yet listed
     in NoteMetaData. These notes are UploadNew.
 
@@ -132,7 +132,7 @@ Note, we want to write a new local manifest even if there are no note changes ta
 We make a half harted attempt to restore normality if we get to local manifest stage and somehow fail to write it out.
 -----------------------------------------------------------------------------------
 
-HISTROY
+HISTORY
     2018/10/18  Memory leak in CheckUsingLCD(), StartSync() should not call processClashes()
                 during a TestRun. Only during real thing.
     2018/10/22  CheckMetaData() was returning wrong value.
@@ -143,6 +143,7 @@ HISTROY
     2018/11/04  No longer call MarkNoteReadOnly as we now rely on searchForm.ProcessSyncUpdates
     2018/11/05  Now set Notemeatdata LCD to LCD of local note when Clash handler sets SyUpLoadEdit
     2018/11/25  Added DeleteFromLocalManifest(), called from search unit, TEST !
+    2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341
 }
 
 interface

@@ -6,6 +6,7 @@ unit transfile;
 
   HISTORY
   2018/10/25  Much testing, support for Tomdroid.
+  2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341
 }
 
 {$mode objfpc}{$H+}
@@ -152,10 +153,15 @@ begin
                     Node := NodeList.Item[j].Attributes.GetNamedItem('last-change-date');
                     if assigned(node) then
                             NoteInfo^.LastChange:=Node.NodeValue
-                    else if GetLCD then                // Only bother to get it if we really need it
-                        NoteInfo^.LastChange := GetNoteLastChange(RemoteAddress
-                                + '0' + pathdelim + inttostr(NoteInfo^.Rev)
-                                + pathdelim + NoteInfo^.ID + '.note');
+                    else if GetLCD then begin               // Only bother to get it if we really need it
+                        if UsingRightRevisionPath(RemoteAddress, NoteInfo^.Rev) then
+                            NoteInfo^.LastChange :=
+                                GetNoteLastChange(GetRevisionDirPath(RemoteAddress, NoteInfo^.Rev, NoteInfo^.ID))
+                        else
+                            NoteInfo^.LastChange := GetNoteLastChange(RemoteAddress
+                                    + '0' + pathdelim + inttostr(NoteInfo^.Rev)           // Ugly Hack
+                                    + pathdelim + NoteInfo^.ID + '.note');
+                    end;
                     if NoteInfo^.LastChange <> '' then
                         NoteInfo^.LastChangeGMT := GetGMTFromStr(NoteInfo^.LastChange);
                     NoteMeta.Add(NoteInfo);
@@ -184,6 +190,7 @@ end;
 function TFileSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
     I : integer;
+    FullFileName : string;
 begin
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
@@ -200,9 +207,16 @@ begin
                     exit(False);
                 end;
             // OK, now copy the file.
-            if not CopyFile(RemoteAddress + '0' + pathdelim + inttostr(DownLoads.Items[i]^.Rev)
-                + pathdelim + Downloads.Items[I]^.ID + '.note',
-                NotesDir + Downloads.Items[I]^.ID + '.note') then begin
+
+            if UsingRightRevisionPath(RemoteAddress, DownLoads.Items[i]^.Rev) then
+                FullFilename := GetRevisionDirPath(RemoteAddress, DownLoads.Items[i]^.Rev
+                        , Downloads.Items[I]^.ID)
+            else
+                FullFilename := RemoteAddress + '0' + pathdelim + inttostr(DownLoads.Items[i]^.Rev)   // Ugly Hack
+                        + pathdelim + Downloads.Items[I]^.ID + '.note';
+            if DebugMode then debugln('Will download ' +  FullFilename);
+            if not CopyFile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note')
+            then begin
                     ErrorString := 'Failed to copy ' + Downloads.Items[I]^.ID + '.note';
                     exit(False);
             end;
@@ -221,14 +235,20 @@ end;
 function TFileSync.UploadNotes(const Uploads: TStringList): boolean;
 var
     Index : integer;
+    FullDirName : string;
 begin
+    if UsingRightRevisionPath(RemoteAddress, RemoteServerRev + 1) then
+        FullDirName := GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1)
+    else
+        FullDirName := RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1) + PathDelim; // Ugly Hack
+
   for Index := 0 to Uploads.Count -1 do begin
       if DebugMode then debugln('Uploading ' + Uploads.Strings[Index] + '.note');
       if not copyFile(NotesDir + Uploads.Strings[Index] + '.note',
-                RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1) + PathDelim + Uploads.Strings[Index] + '.note')
+                FullDirname + Uploads.Strings[Index] + '.note')
       then begin
           ErrorString := 'ERROR copying ' + NotesDir + Uploads.Strings[Index] + '.note to '
-            + RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1) + PathDelim + Uploads.Strings[Index] + '.note';
+            + FullDirName + Uploads.Strings[Index] + '.note';
           debugln(ErrorString);
           exit(False);
 	  end;
@@ -239,9 +259,11 @@ end;
 function TFileSync.DoRemoteManifest(const RemoteManifest: string): boolean;
 begin
     // I think that ForceDir will make intermediate dir too ......
-    if not ForceDirectoriesUTF8(RemoteAddress + '0' + PathDelim + inttostr(self.RemoteServerRev + 1)) then begin
+    // if not ForceDirectoriesUTF8(RemoteAddress + '0' + PathDelim + inttostr(self.RemoteServerRev + 1)) then begin
+    if not ForceDirectoriesUTF8(GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1)) then
+    begin
         ErrorString := 'Failed to create new remote revision dir '
-                + inttostr(self.RemoteServerRev + 1);
+                + GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1);
         debugln(ErrorString);
         exit(False);
     end;
@@ -251,44 +273,22 @@ begin
       debugln(ErrorString);
       exit(False);
   end;
-  if not CopyFile(RemoteManifest, RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1)
-        + PathDelim + 'manifest.xml') then begin
+  {if not CopyFile(RemoteManifest, RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1)
+        + PathDelim + 'manifest.xml') then begin }
+  if not CopyFile(RemoteManifest, GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1) + 'manifest.xml') then
+  begin
       ErrorString := 'Failed to move new remote manifest file to revision dir';
       debugln(ErrorString);
       exit(False);
   end;
-
   Result := True;
 end;
 
 function TFileSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
 begin
-    Result := RemoteAddress + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
+    //Result := RemoteAddress + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
+    Result := GetRevisionDirPath(RemoteAddress, RevNo, ID);
 end;
-
-
-// WARNING -I don't think we need this function any more
-{
-function TFileSync.SetRemoteRepo(ManFile: string=''): boolean;
-begin
-    if ManFile = '' then begin
-        RemoteServerRev := -1;      // because Sync will add 1 when it decides a new rev happens.
-        AnewRepo := True;
-	end else begin
-        Result := ForceDirectory(RemoteAddress + '0' + pathDelim + inttostr(self.RemoteServerRev + 1));
-        if not Result then begin
-            self.ErrorString := 'Cannot create remote rev dir ' + inttostr(self.RemoteServerRev + 1);
-            exit(False);
-		end;
-        result := copyfile(ManFile, RemoteAddress + 'manifest.xml');
-            if not Result then begin
-                self.ErrorString := 'Cannot copy new remote manifest to ' + RemoteAddress;
-                exit(False);
-    		end;
-	end;
-end;
-}
-
 
 end.
 
