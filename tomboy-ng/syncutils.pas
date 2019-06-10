@@ -8,6 +8,7 @@ unit syncutils;
     2018/10/25  Much testing, support for Tomdroid.
     2018/10/28  Added SafeGetUTCC....
     2018/06/05  Func. to support Tomboy's sync dir names, rev 431 is in ~/4/341
+    2019/06/07  Don't check for old sync dir model, for 0 its the same !
 }
 {$mode objfpc}{$H+}
 
@@ -185,7 +186,7 @@ begin
 			 continue;
 		end;
   		if InStr[Index] = '&' then begin
-            debugln('Start=' + inttostr(Start) + ' Index=' + inttostr(Index));
+             // debugln('Start=' + inttostr(Start) + ' Index=' + inttostr(Index));
              Result := Result + Copy(InStr, Start, Index - Start);
              Result := Result + '&amp;';
              inc(Index);
@@ -341,14 +342,14 @@ var
 begin
     FullDirname := GetRevisionDirPath(ServerPath, Rev);
     debugln('Right sync Dir is ' + FullDirName);
-    if not DirectoryExists(FullDirName) then exit(False);   // we hope its in 'wrong' place ....
+    Result :=  DirectoryExists(FullDirName);   // we hope its in 'wrong' place ....
     // Just to be carefull ...
-    FullDirname := appendpathdelim(serverPath) + '0' + pathDelim + inttostr(rev);
+    {FullDirname := appendpathdelim(serverPath) + '0' + pathDelim + inttostr(rev);
     if DirectoryExists(FullDirName) then begin
         debugln('ERROR, Sync Repo has two sync directories for rev no ' + inttostr(rev));
         debugln('We will use ' + GetRevisionDirPath(ServerPath, Rev));
-    end;
-    result := true;
+    end; }
+    //result := true;
 end;
 
 // Takes a normal Tomboy DateTime string and converts it to UTC, ie zero offset

@@ -61,6 +61,7 @@ unit SaveNote;
     2018/12/29  Small improvements in time to save a file.
     2019/04/29  Restore note's previous previous position and size.
     2019/05/06  Support saving pos and open on startup in note.
+    2019/06/07  Removed unused, historical func to clean xml
 }
 
 {$mode objfpc}{$H+}
@@ -446,45 +447,6 @@ begin
 
     //writeLn('Buff at End [' + Buff + ']');         // **************************************
 end;
-
-(*   Moved to Sync Utils
-function TBSaveNote.RemoveBadCharacters(const InStr : ANSIString) : ANSIString;
-// Don't use UTF8 versions of Copy() and Length(), we are working bytes !
-// It appears that Tomboy only processes <, > and &
-// An exact copy of this function exists in TB_Sync
-var
-   //Res : ANSIString;
-   Index : longint = 1;
-   Start : longint = 1;
-begin
-    Result := '';
-   while Index <= length(InStr) do begin
-   		if InStr[Index] = '<' then begin
-             Result := Result + Copy(InStr, Start, Index - Start);
-             Result := Result + '&lt;';
-             inc(Index);
-             Start := Index;
-			 continue;
-		end;
-  		if InStr[Index] = '>' then begin
-             Result := Result + Copy(InStr, Start, Index - Start);
-             Result := Result + '&gt;';
-             inc(Index);
-             Start := Index;
-			 continue;
-		end;
-  		if InStr[Index] = '&' then begin
-            debugln('Start=' + inttostr(Start) + ' Index=' + inttostr(Index));
-             Result := Result + Copy(InStr, Start, Index - Start);
-             Result := Result + '&amp;';
-             inc(Index);
-             Start := Index;
-			 continue;
-		end;
-        inc(Index);
-   end;
-   Result := Result + Copy(InStr, Start, Index - Start);
-end;   *)
 
 // This is just a debug function.
 function TBSaveNote.BlockAttributes(Bk : TKMemoBlock) : AnsiString;
