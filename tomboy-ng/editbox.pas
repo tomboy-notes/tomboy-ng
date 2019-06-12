@@ -182,6 +182,7 @@ unit EditBox;
     2019/04/29  Restore note's previous previous position and size.
     2019/05/06  Support saving pos and open on startup in note.
     2019/05/14  Display strings all (?) moved to resourcestrings
+    2019/06/12  Removed panel behind speedbuttons, Cocoa did not like them !
 }
 
 
@@ -239,18 +240,17 @@ type
         MenuFixedWidth: TMenuItem;
         MenuUnderline: TMenuItem;
         MenuStrikeout: TMenuItem;
-        Panel1: TPanel;
         PanelReadOnly: TPanel;
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
-        SpeedButtonSearch: TSpeedButton;
+        SpeedButtonDelete: TSpeedButton;
         SpeedButtonLink: TSpeedButton;
+        SpeedButtonNotebook: TSpeedButton;
+        SpeedButtonSearch: TSpeedButton;
         SpeedButtonText: TSpeedButton;
         SpeedButtonTools: TSpeedButton;
-        SpeedButtonDelete: TSpeedButton;
-        SpeedButtonNotebook: TSpeedButton;
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
@@ -1287,8 +1287,8 @@ end;
 	{ This gets called when the TrayMenu quit entry is clicked }
     { No it does not, only when user manually closes this form. }
 procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-var
-    OutFile: TextFile;
+{var
+    OutFile: TextFile; }
 begin
 {    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1292 ^^^^^^^^^^^^^');
     AssignFile(OutFile, '/home/dbannon/closelogEditFormClose.txt');
@@ -1299,8 +1299,8 @@ begin
 end;
 
 procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-var
-    OutFile: TextFile;
+{var
+    OutFile: TextFile;      }
 begin
 {    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1304 ^^^^^^^^^^^^^');
     AssignFile(OutFile, '/home/dbannon/closelogEditForm.txt');
@@ -2178,16 +2178,6 @@ begin
                 VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
              VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
              VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
-            {
-            VK_RIGHT : begin MenuBulletClick(Sender); Key := 0; end;
-            VK_LEFT : begin
-                Verbose := True;
-                Key := 0;
-                if NearABulletPoint(LeadingBullet, UnderBullet, TrailingBullet, FirstChar, NoBulletPara,
-                				BlockNo, TrailOffset, LeadOffset) then
-                    if not NoBulletPara then CancelBullet(BlockNo, UnderBullet);
-                Verbose := False;
-            end; }
         end;
         exit();
     end;

@@ -337,6 +337,9 @@
         </CompilerOptions>
       </Item9>
       <Item10 Name="QT5">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="qt5"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -549,16 +552,9 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/TB_Test"/>
-      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default">
-          <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/TB_Test"/>
-          </local>
-        </Mode0>
+        <Mode0 Name="default"/>
       </Modes>
     </RunParams>
     <RequiredPackages Count="3">

@@ -50,6 +50,7 @@ unit Mainunit;
     2019/04/13  Mv numb notes to tick line, QT5, drop CheckStatus()
     2019/05/06  Support saving pos and open on startup in note.
     2019/05/14  Display strings all (?) moved to resourcestrings
+    2019/06/11  Moved an ifdef
 
     CommandLine Switches
 
@@ -424,8 +425,8 @@ begin
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    {$ifdef LINUX}
 var
+  {$ifdef LINUX}
   c: PGtkClipboard;
   t: string;
   {$endif}

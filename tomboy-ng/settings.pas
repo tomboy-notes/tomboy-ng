@@ -86,6 +86,7 @@ unit settings;
     2019/04/27  Fix for Huge display font.
     2019/05/06  Support saving pos and open on startup in note.
     2019/05/14  Display strings all (?) moved to resourcestrings
+    2019/06/11  Moved some checkboxes and renamed 'Display' to 'Notes'.
 }
 
 {$mode objfpc}{$H+}
@@ -121,12 +122,12 @@ type
         CheckAnyCombination: TCheckBox;
         CheckAutostart: TCheckBox;
         CheckCaseSensitive: TCheckBox;
+        CheckManyNotebooks: TCheckBox;
         CheckShowSearchAtStart: TCheckBox;
         CheckShowSplash: TCheckBox;
-        CheckShowTomdroid: TCheckBox;
-		CheckManyNotebooks: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
 		CheckShowIntLinks: TCheckBox;
+        CheckShowTomdroid: TCheckBox;
         CheckSnapEnabled: TCheckBox;
         CheckSnapMonthly: TCheckBox;
         GroupBox1: TGroupBox;

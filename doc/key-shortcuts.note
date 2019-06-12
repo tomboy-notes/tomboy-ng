@@ -12,7 +12,8 @@
 <list><list-item dir="ltr">Control-3 : large font</list-item></list>
 <list><list-item dir="ltr">Control-4 : huge font</list-item></list><size:large>
 
-<bold>Windows / Linux</bold></size:large>
+<bold>Windows / Linux</bold></size:large><size:small>
+</size:small><list><list-item dir="ltr"><size:small>Control-Q : Quit tomboy-ng - Not yet implemented !</size:small></list-item></list><size:small></size:small>
 <list><list-item dir="ltr">Control-X : Cut the selected text and copy it to the Clipboard.</list-item></list>
 <list><list-item dir="ltr">Control-C : Copy the selected text to the Clipboard. </list-item></list>
 <list><list-item dir="ltr">Control-V : Paste the contents of the Clipboard into the current note.</list-item></list>
@@ -20,13 +21,16 @@
 <list><list-item dir="ltr">Control-F : Open a Find window.</list-item></list>
 <list><list-item dir="ltr">Control-RightArrow : move word to the right.</list-item></list>
 <list><list-item dir="ltr">Control-LeftArrow : move word to the left.</list-item></list>
+<list><list-item dir="ltr">Control-F4 : Close current note window.</list-item></list>
 
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
 <list><list-item dir="ltr">Control-I : Italics</list-item></list>
 <list><list-item dir="ltr">Control-S : Strikeout</list-item></list>
 <list><list-item dir="ltr">Control-U : Underline</list-item></list>
 <list><list-item dir="ltr">Control-H : Highlight</list-item></list>
-<list><list-item dir="ltr">Control-E : Expression calculator - see Calculator help note</list-item></list><size:large>
+<list><list-item dir="ltr">Control-E : Expression calculator - see Calculator help note</list-item></list>
+
+<list><list-item dir="ltr">Alt - F4 : Close current note window</list-item></list><size:large>
 
 <bold>Mac</bold></size:large>
 <italic>(Where Option key is also the Alt key)</italic>
@@ -46,9 +50,12 @@
 <list><list-item dir="ltr">Option-H : Highlight</list-item></list>
 
 
+
+
+
 </note-content></text>
-  <last-change-date>2019-01-29T22:13:21.8790000+11:00</last-change-date>
-  <last-metadata-change-date>2019-01-29T22:13:21.8790000+11:00</last-metadata-change-date>
+  <last-change-date>2019-06-11T22:48:56.3650000+10:00</last-change-date>
+  <last-metadata-change-date>2019-06-11T22:48:56.3650000+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

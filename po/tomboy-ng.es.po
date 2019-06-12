@@ -547,11 +547,6 @@ msgstr ""
 msgid "Underline"
 msgstr ""
 
-#: teditboxform.panel1.caption
-msgctxt "teditboxform.panel1.caption"
-msgid "Panel1"
-msgstr ""
-
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr ""
@@ -576,133 +571,36 @@ msgstr ""
 msgid "Tools - Sync, Export, Spell"
 msgstr ""
 
-#: tformrecover.button4.caption
-msgid "Restore from Safety Snapshot"
+#: tformsync.buttoncancel.caption
+msgctxt "tformsync.buttoncancel.caption"
+msgid "Cancel"
 msgstr ""
 
-#: tformrecover.buttondeletebadnotes.caption
-msgid "Delete Bad Notes"
+#: tformsync.buttonclose.caption
+msgctxt "tformsync.buttonclose.caption"
+msgid "Close"
 msgstr ""
 
-#: tformrecover.buttonmakesafetysnap.caption
-msgid "Safety Snapshot"
+#: tformsync.buttonsave.caption
+msgid "Save and Sync"
 msgstr ""
 
-#: tformrecover.buttonmakesafetysnap.hint
-msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+#: tformsync.caption
+msgid "FormSync"
 msgstr ""
 
-#: tformrecover.buttonrecoversnap.caption
-msgid "Recover"
-msgstr ""
-
-#: tformrecover.buttonsnaphelp.caption
-msgctxt "tformrecover.buttonsnaphelp.caption"
-msgid "Help"
-msgstr ""
-
-#: tformrecover.caption
-msgid "FormRecover"
-msgstr ""
-
-#: tformrecover.label1.caption
+#: tformsync.label1.caption
+msgctxt "tformsync.label1.caption"
 msgid "Label1"
 msgstr ""
 
-#: tformrecover.label10.caption
-msgid "Please close any notes you may have open."
+#: tformsync.label2.caption
+msgctxt "tformsync.label2.caption"
+msgid "Label2"
 msgstr ""
 
-#: tformrecover.label11.caption
-msgid "or you do one of -"
-msgstr ""
-
-#: tformrecover.label12.caption
-msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
-msgstr ""
-
-#: tformrecover.label14.caption
-msgid "Double click an available snapshot to see its contents."
-msgstr ""
-
-#: tformrecover.label15.caption
-msgid "Double click an available snapshot, click Recover"
-msgstr ""
-
-#: tformrecover.label16.caption
-msgid "You may chose to view, copy and paste into a new note."
-msgstr ""
-
-#: tformrecover.label2.caption
-msgid "Please be carefull, this is a dangerous place !"
-msgstr ""
-
-#: tformrecover.label3.caption
-msgid "Restore any notes in the snapshot that are not in the existing notes directory."
-msgstr ""
-
-#: tformrecover.label4.caption
-msgid "Remove all existing notes and use the ones in the Snapshot."
-msgstr ""
-
-#: tformrecover.label5.caption
-msgid "Look firstly at your existing notes"
-msgstr ""
-
-#: tformrecover.label6.caption
-msgid "This tool might help you recover lost or damaged notes."
-msgstr ""
-
-#: tformrecover.label7.caption
-msgid "Before you start, take a Safety Snapshot of your notes directory."
-msgstr ""
-
-#: tformrecover.label8.caption
-msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
-msgstr ""
-
-#: tformrecover.label9.caption
-msgid "From here you can view snapshot notes, one by one."
-msgstr ""
-
-#: tformrecover.labelexistingadvice.caption
-msgid "LabelExistingAdvice"
-msgstr ""
-
-#: tformrecover.labelexistingadvice2.caption
-msgid "LabelExistingAdvice2"
-msgstr ""
-
-#: tformrecover.labelnoteerrors.caption
-msgid "LabelNoteErrors"
-msgstr ""
-
-#: tformrecover.listboxsnapshots.hint
-msgid "These are the currently known snapshots. "
-msgstr ""
-
-#: tformrecover.panelsnapshots.caption
-msgid "Available Snapshots"
-msgstr ""
-
-#: tformrecover.tabsheetexisting.caption
-msgid "Existing Notes"
-msgstr ""
-
-#: tformrecover.tabsheetintro.caption
-msgid "Introduction"
-msgstr ""
-
-#: tformrecover.tabsheetmergesnapshot.caption
-msgid "Merge Snapshot"
-msgstr ""
-
-#: tformrecover.tabsheetrecoversnapshot.caption
-msgid "Recover Snapshot"
-msgstr ""
-
-#: tformrecover.tabsheetsnapshots.caption
-msgid "Notes in a Snapshot"
+#: tformsync.panel3.caption
+msgid "Panel3"
 msgstr ""
 
 #: tformtomdroid.buttonclose.caption
@@ -880,6 +778,49 @@ msgctxt "tmainform.labelnotesfound.caption"
 msgid "X"
 msgstr ""
 
+#: tnotebookpick.button1.caption
+msgctxt "tnotebookpick.button1.caption"
+msgid "Cancel"
+msgstr ""
+
+#: tnotebookpick.buttonok.caption
+msgid "OK"
+msgstr ""
+
+#: tnotebookpick.caption
+msgid "NoteBookPick"
+msgstr ""
+
+#: tnotebookpick.label1.caption
+msgctxt "tnotebookpick.label1.caption"
+msgid "Label1"
+msgstr ""
+
+#: tnotebookpick.label2.caption
+msgctxt "tnotebookpick.label2.caption"
+msgid "Label2"
+msgstr ""
+
+#: tnotebookpick.label3.caption
+msgid "Label3"
+msgstr ""
+
+#: tnotebookpick.label4.caption
+msgid "Name of the New Note Book"
+msgstr ""
+
+#: tnotebookpick.label5.caption
+msgid "Press OK and we will make the Note Book AND add this note to it."
+msgstr ""
+
+#: tnotebookpick.tabexisting.caption
+msgid "Existing Note Books"
+msgstr ""
+
+#: tnotebookpick.tabnewnotebook.caption
+msgid "New Note Book"
+msgstr ""
+
 #: tomdroid.rscheckingforexistingsync
 msgid "Checking for an existing sync ...."
 msgstr ""
@@ -948,6 +889,61 @@ msgstr ""
 #: tomdroid.rstalkingtodevice
 msgctxt "tomdroid.rstalkingtodevice"
 msgid "OK, talking to device. Wait for it ...."
+msgstr ""
+
+#: tsearchform.buttonclearfilters.caption
+msgid "Clear Filters"
+msgstr ""
+
+#: tsearchform.buttonnotebookoptions.caption
+msgid "Notebook Options"
+msgstr ""
+
+#: tsearchform.buttonnotebookoptions.hint
+msgid "Manage the Notebooks"
+msgstr ""
+
+#: tsearchform.buttonrefresh.caption
+msgid "Refresh"
+msgstr ""
+
+#: tsearchform.buttonrefresh.hint
+msgid "Indexes on disk notes"
+msgstr ""
+
+#: tsearchform.caption
+msgid "SearchForm"
+msgstr ""
+
+#: tsearchform.checkboxanycombo.caption
+msgid "Any Combo"
+msgstr ""
+
+#: tsearchform.checkboxcasesensitive.caption
+msgctxt "tsearchform.checkboxcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
+#: tsearchform.edit1.text
+msgctxt "tsearchform.edit1.text"
+msgid "Search"
+msgstr ""
+
+#: tsearchform.menudeletenotebook.caption
+msgid "Delete Notebook"
+msgstr ""
+
+#: tsearchform.menueditnotebooktemplate.caption
+msgid "Edit Notebook Template"
+msgstr ""
+
+#: tsearchform.menunewnotefromtemplate.caption
+msgid "Create New Note from Template"
+msgstr ""
+
+#: tsearchform.panel1.caption
+msgctxt "tsearchform.panel1.caption"
+msgid "Panel1"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
@@ -1281,7 +1277,9 @@ msgid "Basic"
 msgstr "Basico"
 
 #: tsett.tabdisplay.caption
-msgid "Display"
+#, fuzzy
+#| msgid "Display"
+msgid "Notes"
 msgstr "Visualización"
 
 #: tsett.tabsnapshot.caption
