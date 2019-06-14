@@ -28,23 +28,23 @@ Tabs do not work like real tabs should.<size:huge>
 
 Recent fixes show as strikeout.
 
-<list><list-item dir="ltr"><strikeout>A dark theme ?</strikeout>  after v0.22 Now working but ugly (but I reckon dark themes are always ugly)  feed back welcome</list-item></list>
+<list><list-item dir="ltr"><strikeout>A dark theme ?</strikeout>  after v0.22 Now working but ugly (but I reckon dark themes are always ugly)  on Linux but not windows.</list-item></list>
 <list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
 <list><list-item dir="ltr"><strikeout>A proper installer for Windows.</strikeout> <strikeout>After v0.21 a single installer that works for both Win32 and Win64, tested on only Win10 64bit and Vista 32bit</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
 <list><list-item dir="ltr"><strikeout>Startup option to show SearchWinow.</strikeout></list-item></list><strikeout></strikeout>
-<list><list-item dir="ltr">Add <strikeout>menus to search window</strikeout> ?   Is this an alternative to splash screen  for RedHat users who have not installed Top Icons ?</list-item></list>
-<list><list-item dir="ltr"><strikeout>Network Sync</strikeout></list-item></list><strikeout>
-</strikeout><list><list-item dir="ltr">Table of Contents </strikeout>(copy Tomboy plugin I use a LOT)</list-item></list><strikeout>
+<list><list-item dir="ltr">Add <strikeout>menus to search window</strikeout> ?   Is this an alternative to splash screen  for RedHat users who have not installed Top Icons  and the approriate appindicator library ?</list-item></list>
+<list><list-item dir="ltr">Network Sync</list-item></list>
+<list><list-item dir="ltr"><strikeout>Table of Contents </strikeout>(copy Tomboy plugin I use a LOT)</list-item></list>
 <list><list-item dir="ltr"><strikeout>Tools to manage (re-use or delete) deleted files that end up in Backup</strikeout>/.</list-item></list>
 <list><list-item dir="ltr"><strikeout>Allow user to prevent splash screen showing at startup. </strikeout>Can force it to show with -g.  Setting option.</list-item></list>
 <list><list-item dir="ltr"><strikeout>A mobile device solution, sync to Tomdroid.</strikeout> Linux only, connect over ssh.</list-item></list>
 <list><list-item dir="ltr"><strikeout>A viable backup solution.</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr">Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</list-item></list>
-<list><list-item dir="ltr"><strikeout>Must make Bullets work better ! proper indent.</strikeout></list-item></list><strikeout>
-</strikeout><list><list-item dir="ltr">Sort out keyboard shortcuts and maybe even document ?</strikeout>  See help notes.</list-item></list><strikeout>
+<list><list-item dir="ltr"><strikeout>Must make Bullets work better ! proper indent.</strikeout></list-item></list><strikeout></strikeout>
+<list><list-item dir="ltr">Sort out keyboard shortcuts and maybe even document ?  See help notes.</list-item></list>
 <list><list-item dir="ltr"><strikeout>Can we make instructions on how (eg) Fedora users can install something to make the SystemTray Icon work as it should ?  eg https://github.com/phocean/TopIcons-plus or https://extensions.gnome.org/extension/615/appindicator-suppor</strikeout>t/</list-item></list><size:large>
 
 
@@ -67,14 +67,14 @@ Recent fixes show as strikeout.
 
 
 </note-content></text>
-  <last-change-date>2019-04-20T17:08:22.7940000+10:00</last-change-date>
-  <last-metadata-change-date>2019-04-20T17:08:22.7940000+10:00</last-metadata-change-date>
+  <last-change-date>2019-06-14T13:54:58.0480000+10:00</last-change-date>
+  <last-metadata-change-date>2019-06-14T13:54:58.0480000+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
   <x>0</x>
-  <y>0</y>
+  <y>30</y>
   <open-on-startup>False</open-on-startup>
 </note>

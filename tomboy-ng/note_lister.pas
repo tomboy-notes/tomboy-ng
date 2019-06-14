@@ -517,8 +517,8 @@ begin
         Lst.Items[Index]^.LastChange := copy(Lst.Items[Index]^.LastChange, 1, 19);
         Lst.Items[Index]^.LastChange[11] := ' ';
 
-if Lst.Items[Index]^.OpenOnStart then
-debugln('Found OOS Note : ' + Lst.Items[Index]^.Title + ' = ' + Lst.Items[Index]^.ID);
+//if Lst.Items[Index]^.OpenOnStart then
+//debugln('Found OOS Note : ' + Lst.Items[Index]^.Title + ' = ' + Lst.Items[Index]^.ID);
 
     end;
 end;

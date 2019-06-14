@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Building tomboy-ng</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Building tomboy-ng</underline>
+
+This page is about building tomboy-ng from source and contributing to its development. <bold>Important</bold> - <bold>You do not need to do any of this</bold> to just use tomboy-ng, a key feature is its absolute minimal requirements at install time.
+
+Don't edit this wiki page, its generated from a note in tomboy-ng's doc dir.
+
+Tomboy-ng is built on Linux, Windows or Mac using (see instructions below for installing) -
+<list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.0.4 or later.</list-item></list>
+<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0 (or 1.8.4 if you really must, it will require some patches).</list-item></list>
+<list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - apply the patch in tomboy-ng's patches directory. Failure to apply will mess with copying and pasting formated text.</list-item></list>
+<list><list-item dir="ltr">At present, Linux users should apply the patch, use_AppInd_3, from patches dir to fix an upstream issue where LCL prefers to use libappindicator1 over libappindicator3 is both are available. This affect newer OSs that have been upgraded.</list-item></list><size:large>
+
+<bold>Pascal ?</bold></size:large>
+Pascal as a computer language is quite old, in the early days of the PC it went toe to toe with C and lost. But it still has quite a following and current estimates place it in the top twenty languages (source ?). Today, Object Pascal is a very functional object orientated language that drives Delphi and its cross platform open source rival, Lazarus.
+
+Pascal is still widely used as a teaching language, its strong typing promotes good programming habits and allows the compiler to pick up many common errors. Lazarus provides an easy to use <bold>cross platform IDE</bold> where a programmer can drag components onto a form and then attach code to the component's events. Its very quick and easy.<size:huge>
+
+
+<bold>Build tomboy-ng using the IDE</bold></size:huge>
+You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0 or later (users of earlier releases need to look in patched directory). Downloading packages from https://sourceforge.net/projects/Lazarus/files/ , choose your OS and then Lazarus 2.0, you will see debs, rpms, dmg files and windows kits for the compiler (FPC) and  the FPC-src, and finally the IDE, Lazarus. To learn more see Free Pascal and Lazarus websites. Both have very active forums and extensive wiki's.
+
+Start Lazarus up, see that it runs through a check list of the things it needs, start the IDE. Lazarus opens a default, minimal project. Click Package-&gt;OnLinePackageManager, select kcontrols and Install ("from repositary").
+
+Lazarus will want to rebuild itself and restart, say yes, please do!  You can now load the tomboy-ng project.  Close any existing project, click open project and browse for the tomboy-ng project file, it has an extension of .lpi
+
+Its also possible, and sometimes a good idea to build Lazarus from source. See the Lazarus wiki for more information.<size:large>
+
+<bold>Building Releases</bold></size:large>
+This intended for production releases, not DIY. The author has a Linux box that has FPC 3.0.4 setup to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That some script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as root (??) will make RPMs (using the debs as input) that are suitable for RedHat systems.
+
+Take the Windows Win_Pre{$ver} directory to a windows machine that has the Installer Maker (ISS) and double click the .iss file to make the Windows installers.
+
+The Mac kits are made on a Sierra Mac, again using a script.
+
+ 
+</note-content></text>
+  <last-change-date>2019-06-14T14:11:03.1190000+10:00</last-change-date>
+  <last-metadata-change-date>2019-06-14T14:11:03.1190000+10:00</last-metadata-change-date>
+  <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>30</y>
+  <open-on-startup>False</open-on-startup>
+</note>
