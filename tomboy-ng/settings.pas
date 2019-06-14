@@ -920,7 +920,7 @@ begin
                     , mtConfirmation, [mrYes, mrNo], 0) then
             if SelectSnapDir.Execute then
                 if not CopyFile(FullName, TrimFilename(SelectSnapDir.FileName + PathDelim) + ExtractFileNameOnly(FullName) + '.zip') then
-                    showmessage(rsErrorCopyFile);
+                    showmessage(rsErrorCopyFile + ' ' + TrimFilename(SelectSnapDir.FileName + PathDelim) + ExtractFileNameOnly(FullName) + '.zip');
     finally
         FR.Free;
     end;

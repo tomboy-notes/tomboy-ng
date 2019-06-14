@@ -183,6 +183,7 @@ unit EditBox;
     2019/05/06  Support saving pos and open on startup in note.
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/06/12  Removed panel behind speedbuttons, Cocoa did not like them !
+    2019/06/14  Ensure top of new window is never less than 10 pixels down.
 }
 
 
@@ -2302,12 +2303,12 @@ begin
     exit;
     if (Left + (Width div 3)) > Screen.Width then begin
         Left := Screen.Width - (Width div 3);
-        if Left < 0 then Left := 10;
     end;
+    if Left < 0 then Left := 10;
     if (Top + (Height div 3)) > Screen.Height then begin
         Top := Screen.Height - (Height div 3);
-        if Top < 0 then Top := 10;
     end;
+    if Top < 10 then Top := 10;
 end;
 
 procedure TEditBoxForm.ImportNote(FileName: string);

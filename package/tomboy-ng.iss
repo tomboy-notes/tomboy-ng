@@ -59,7 +59,7 @@ Source: "sync-ng.note";        DestDir: "{app}"; Flags: ignoreversion
 Source: "tomboy-ng.note";      DestDir: "{app}"; Flags: ignoreversion
 Source: "tomdroid.note";       DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.txt";          DestDir: "{app}"; Flags: ignoreversion
-Source: "tomboy-ng.es.mo";     DestDir: "{app}\locale"; Flags; ignorerevision
+Source: "tomboy-ng.es.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

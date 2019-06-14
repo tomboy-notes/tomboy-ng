@@ -29,12 +29,14 @@ function MakeDMG () {
 	if [ "$1" = "carbon" ]; then
 		CPU="i386"
 		BITS="32"
+		REL="Release"
 	else
 		CPU="x86_64"
 		BITS="64"
+		REL="CocoaRelease"
 	fi
 	cd ../tomboy-ng
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild   --pcp="$HOME/.$LAZ_DIR" -B --cpu="$CPU" --ws="$1" --build-mode=Release --os="darwin" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild   --pcp="$HOME/.$LAZ_DIR" -B --cpu="$CPU" --ws="$1" --build-mode="$REL" --os="darwin" Tomboy_NG.lpi
 	cd ../package
 
 	rm -Rf $WORK
