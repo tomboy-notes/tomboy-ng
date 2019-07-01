@@ -256,6 +256,7 @@ type
         BackGndColour : TColor;     // Next three set in main unit.
         TextColour : TColor;
         HiColor : TColor;
+        DarkTheme : boolean;
         DebugModeSpell : boolean;
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;

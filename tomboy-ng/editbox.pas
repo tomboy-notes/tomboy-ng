@@ -1280,6 +1280,9 @@ begin
         KMemo1.ExecuteCommand(ecDown);          // DRB Playing
     end;
     KMemo1.Blocks.LockUpdate;
+    {$ifdef windows}
+    Color:= Sett.textcolour;
+    {$endif}
     KMemo1.Colors.BkGnd:= Sett.BackGndColour;
     Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
     KMemo1.Blocks.UnLockUpdate;

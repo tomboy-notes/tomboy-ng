@@ -393,6 +393,7 @@ begin
 	if Edit1.Text = '' then Edit1.Text := 'Search';
 end;
 
+
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
     CanClose := False;
@@ -442,9 +443,43 @@ end;
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
     Left := Placement + random(Placement*2);
+    Top := Placement + random(Placement * 2);
     // Edit1.Text:= 'Search';
     CheckBoxCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
     CheckBoxAnyCombo.Checked := Sett.CheckAnyCombination.Checked;
+    StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
+    StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?
+    {$ifdef windows}                // linux apps know how to do this themselves
+    if Sett.DarkTheme then begin
+         color := Sett.hiColor;
+         font.color := Sett.TextColour;
+         ButtonNoteBookOptions.Color := Sett.HiColor;
+         ButtonClearFilters.Color := Sett.HiColor;
+         SpeedButton1.color := Sett.HiColor;
+         StringGrid1.Color := Sett.BackGndColour;
+         StringGrid1.Font.color := Sett.TextColour;
+         stringGrid1.GridLineColor:= clnavy; //Sett.HiColor;
+         stringgridnotebooks.GridLineColor:= clnavy;
+         StringGrid1.FixedColor := Sett.HiColor;
+         StringGridNotebooks.FixedColor := Sett.HiColor;
+         ButtonRefresh.Color := Sett.HiColor;
+         splitter1.Color:= clnavy;
+    end;
+    {$endif}
+    {
+    stringgrid has -
+    AltColor - color of alternating rows
+    Fixedcolor - color of fixed cells
+    color - color of 'control'.
+    focuscolor - hollow rectangle around selected cell
+
+    wot about selected cell color ??
+
+    }
+    //stringgrid1.FocusColor:= clblue;
+    //stringgrid1.Color := clwhite;
+    stringgridnotebooks.color := stringgrid1.color;
+    stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
 end;
 
 
@@ -525,7 +560,7 @@ begin
       	showmessage('Cannot open ' + FullFileName);
       	exit();
   	end;
-  	NoteTitle := StringGrid1.Cells[0, StringGrid1.Row];
+    NoteTitle := StringGrid1.Cells[0, StringGrid1.Row];
   	if length(NoteTitle) > 0 then
         OpenNote(NoteTitle, FullFileName);
 end;
@@ -539,6 +574,7 @@ procedure TSearchForm.ButtonClearFiltersClick(Sender: TObject);
 begin
         ButtonNotebookOptions.Enabled := False;
         ButtonClearFilters.Enabled := False;
+        // ButtonClearFilters.color := clblack;
         StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
         UseList();
         StringGridNoteBooks.Hint := '';

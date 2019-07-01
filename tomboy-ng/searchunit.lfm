@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 483
+  Left = 764
   Height = 401
-  Top = 291
+  Top = 194
   Width = 824
   Caption = 'SearchForm'
   ClientHeight = 401
@@ -90,6 +90,7 @@ object SearchForm: TSearchForm
       Top = 33
       Width = 232
       Anchors = [akTop, akLeft, akRight, akBottom]
+      Color = clDefault
       ColCount = 1
       FixedCols = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll, goRowHighlight]
@@ -161,6 +162,7 @@ object SearchForm: TSearchForm
       BorderSpacing.Left = 3
       BorderSpacing.Right = 3
       BorderSpacing.Bottom = 3
+      Color = clDefault
       ColCount = 2
       ColumnClickSorts = True
       FixedCols = 0

@@ -56,6 +56,8 @@ unit Mainunit;
 
     --debug-log=some.log
 
+    --dark-theme
+
     --gnome3    Turns on MainMenu, TrayMenu off and prevents dismmiss of this
     -g
     --debug-sync Turn on Verbose mode during sync
@@ -200,7 +202,7 @@ uses LazLogger, LazFileUtils,
     uAppIsRunning,
     Editbox,    // Used only in SingleNoteMode
     Note_Lister,
-    Tomdroid;
+    Tomdroid {$ifdef windows}, registry{$endif};
 
 var
     HelpNotes : TNoteLister;
@@ -274,7 +276,7 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     NoteID, NoteTitle : string;
     Params : TStringList;
-    LongOpts : array [1..11] of string = ('lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
+    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
     // debugln('Form color is ' + inttostr(Color));
@@ -299,6 +301,16 @@ begin
         exit();
     end;
     TestDarkThemeInUse();
+
+    {$ifdef windows}                // linux apps know how to do this themselves
+    if Sett.DarkTheme then begin
+        //color := Sett.BackGndColour;
+        color := Sett.HiColor;
+        font.color := Sett.TextColour;
+        ButtonConfig.Color := Sett.BackGndColour;
+        ButtonDismiss.Color := Sett.HiColor;
+    end;
+    {$endif}
     Params := TStringList.Create;
     try
         Application.GetNonOptions('hgo:', LongOpts, Params);
@@ -483,7 +495,7 @@ function TMainForm.CommandLineError() : boolean;
 // WARNING - the options here MUST match the options list in FormShow()
 begin
     Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:l:', 'lang: debug-log: no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
+    CmdLineErrorMsg := Application.CheckOptions('hgo:l:', 'lang: debug-log: dark-theme no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
@@ -492,6 +504,7 @@ begin
        debugln(rsMachelp1);
        debugln(rsMacHelp2);
        {$endif}
+       debugln('   --dark-theme');
        debugln('   -l CCode  --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);
        debugln('   -h --help                    ' + rsHelpHelp);
@@ -559,10 +572,37 @@ end;
 procedure TMainForm.TestDarkThemeInUse();
 var
   Col : string;
+   {$ifdef WINDOWS}  function WinDarkTheme : boolean;
+   var
+     RegValue : string='';
+     Registry : TRegistry;
+   begin
+     Registry := TRegistry.Create;
+     try
+       Registry.RootKey := HKEY_CURRENT_USER;
+       if Registry.OpenKeyReadOnly('\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize') then
+           exit(Registry.ReadInteger('AppsUseLightTheme') = 0)
+       else exit(false);
+     finally
+       Registry.Free;
+     end;
+   end; {$endif}
+
 begin
-    // if char 3, 5 and 7 are all 'A' or above, we are not in a DarkTheme
-    Col := hexstr(qword(GetRGBColorResolvingParent()), 8);
-    if (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A') then begin
+    {$ifdef windows}
+    if Application.HasOption('dark-theme') then // Manual override always wins on windows !
+        Sett.DarkTheme := True
+    else {$endif} begin
+        Sett.DarkTheme := false;
+        {$ifdef WINDOWS}
+        Sett.DarkTheme := WinDarkTheme();
+        {$else}
+        // if char 3, 5 and 7 are all 'A' or above, we are not in a DarkTheme
+        Col := hexstr(qword(GetRGBColorResolvingParent()), 8);
+        Sett.DarkTheme := (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A');
+        {$endif}
+    end;
+    if Sett.DarkTheme then begin
         debugln('Its definltly a Dark Theme');
         Sett.BackGndColour:= clBlack;
         Sett.HiColor := clDkGray;
@@ -572,6 +612,7 @@ begin
         Sett.HiColor := clYellow;
         Sett.TextColour := clBlack;
     end;
+
 end;
 
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
