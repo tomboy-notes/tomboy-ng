@@ -422,6 +422,58 @@ msgstr ""
 msgid "Unable to sync because "
 msgstr ""
 
+#: syncutils.rschangeexistingsync
+msgid "Change existing sync connection ?"
+msgstr ""
+
+#: syncutils.rsclashes
+msgid "Clashes        "
+msgstr ""
+
+#: syncutils.rsdonothing
+msgid "Do Nothing     "
+msgstr ""
+
+#: syncutils.rsdownloads
+msgid "Downloads      "
+msgstr ""
+
+#: syncutils.rsedituploads
+msgid "Edit Uploads   "
+msgstr ""
+
+#: syncutils.rslocaldeletes
+msgid "Local Deletes  "
+msgstr ""
+
+#: syncutils.rsnewuploads
+msgid "New Uploads    "
+msgstr ""
+
+#: syncutils.rsnextbitslow
+msgid "Next bit can be a bit slow, please wait"
+msgstr ""
+
+#: syncutils.rsnonotesneededsync
+msgid "No notes needed syncing. You need to write more."
+msgstr ""
+
+#: syncutils.rsnotesweredealt
+msgid " notes were dealt with."
+msgstr ""
+
+#: syncutils.rsnotrecommend
+msgid "Generally not recommended."
+msgstr ""
+
+#: syncutils.rsremotedeletes
+msgid "Remote Deletes "
+msgstr ""
+
+#: syncutils.rssyncerrors
+msgid "ERRORS (see consol log) "
+msgstr ""
+
 #: teditboxform.caption
 msgid "EditBoxForm"
 msgstr ""

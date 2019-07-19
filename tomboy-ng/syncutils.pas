@@ -9,6 +9,7 @@ unit syncutils;
     2018/10/28  Added SafeGetUTCC....
     2018/06/05  Func. to support Tomboy's sync dir names, rev 431 is in ~/4/341
     2019/06/07  Don't check for old sync dir model, for 0 its the same !
+    2019/07/19  Added ability to escape ' and " selectivly, attributes ONLY
 }
 {$mode objfpc}{$H+}
 
@@ -136,7 +137,8 @@ function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : 
 function IDLooksOK(const ID : string) : boolean;
 
         // Use whenever we are writing content that may contain <>& to XML files
-function RemoveBadXMLCharacters(const InStr : ANSIString) : ANSIString;
+        // If DoQuotes is true, we also convert ' and " (for xml attributes).
+function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
 
 
 RESOURCESTRING
@@ -160,10 +162,13 @@ implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils;
 
-function RemoveBadXMLCharacters(const InStr : ANSIString) : ANSIString;
+function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
 // Don't use UTF8 versions of Copy() and Length(), we are working bytes !
 // It appears that Tomboy only processes <, > and &
-// An exact copy of this function exists in TB_Sync
+// ToDo : further escaping .......
+// The ' should be escaped with a &apos; entity -- mandatory in attributes defined within single quotes but it is strongly advised to always escape it.
+// The " should be escaped with a &quot; entity -- mandatory in attributes defined within double quotes but it is strongly advised to always escape it.
+// http://xml.silmaril.ie/specials.html
 var
    //Res : ANSIString;
    Index : longint = 1;
@@ -193,6 +198,23 @@ begin
              Start := Index;
 			 continue;
 		end;
+        if DoQuotes then begin
+      		if InStr[Index] = '''' then begin                // Ahhhh how to escape a single quote ????
+                 Result := Result + Copy(InStr, Start, Index - Start);
+                 Result := Result + '&apos;';
+                 inc(Index);
+                 Start := Index;
+    			 continue;
+    		end;
+            if InStr[Index] = '"' then begin
+                 Result := Result + Copy(InStr, Start, Index - Start);
+                 Result := Result + '&quot;';
+                 inc(Index);
+                 Start := Index;
+                 continue;
+		    end;
+        end;
+
         inc(Index);
    end;
    Result := Result + Copy(InStr, Start, Index - Start);
@@ -341,7 +363,7 @@ var
     FullDirName : string;
 begin
     FullDirname := GetRevisionDirPath(ServerPath, Rev);
-    debugln('Right sync Dir is ' + FullDirName);
+    // debugln('Right sync Dir is ' + FullDirName);
     Result :=  DirectoryExists(FullDirName);   // we hope its in 'wrong' place ....
     // Just to be carefull ...
     {FullDirname := appendpathdelim(serverPath) + '0' + pathDelim + inttostr(rev);

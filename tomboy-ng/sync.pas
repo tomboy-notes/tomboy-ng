@@ -144,6 +144,7 @@ HISTORY
     2018/11/05  Now set Notemeatdata LCD to LCD of local note when Clash handler sets SyUpLoadEdit
     2018/11/25  Added DeleteFromLocalManifest(), called from search unit, TEST !
     2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341
+    2019/07/19  Escape ' and " when using Title as an attribute in local manifest.
 }
 
 interface
@@ -468,7 +469,7 @@ begin
  		    for Index := 0 to LocalMetaData.Count - 1 do begin
                 if LocalMetaData[Index]^.Deleted then begin
                     write(Outfile, '    <note guid="' + LocalMetaData[Index]^.ID + '" title="');
-                    write(OutFile, RemoveBadXMLCharacters(LocalMetaData[Index]^.Title));
+                    write(OutFile, RemoveBadXMLCharacters(LocalMetaData[Index]^.Title, True));      // cannot allow " or ' in an xml attribute
                     writeln(Outfile, '" />');
 				end;
 			end;

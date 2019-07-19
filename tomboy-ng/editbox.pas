@@ -184,6 +184,7 @@ unit EditBox;
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/06/12  Removed panel behind speedbuttons, Cocoa did not like them !
     2019/06/14  Ensure top of new window is never less than 10 pixels down.
+    2019/07/19  Test that a note is not being deleted before we update on exit.
 }
 
 
@@ -1336,6 +1337,7 @@ var
     InFile, OutFile: TextFile;
     {NoteDateSt, }InString, TempName : string;
 begin
+  if not fileexists(NRec.FFName) then exit(false);     // if its not there, the note has just been deleted
   TempName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
   if not DirectoryExists(TempName) then
       CreateDir(AppendPathDelim(tempname));
