@@ -51,12 +51,13 @@ unit Mainunit;
     2019/05/06  Support saving pos and open on startup in note.
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/06/11  Moved an ifdef
+    2019/07/21  Added a TitleColour for dark theme
 
     CommandLine Switches
 
     --debug-log=some.log
 
-    --dark-theme
+    --dark-theme    Windows only, over rides the registery setting.
 
     --gnome3    Turns on MainMenu, TrayMenu off and prevents dismmiss of this
     -g
@@ -504,7 +505,7 @@ begin
        debugln(rsMachelp1);
        debugln(rsMacHelp2);
        {$endif}
-       debugln('   --dark-theme');
+       {$ifdef WINDOWS}debugln('   --dark-theme'); {$endif}
        debugln('   -l CCode  --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);
        debugln('   -h --help                    ' + rsHelpHelp);
@@ -607,10 +608,12 @@ begin
         Sett.BackGndColour:= clBlack;
         Sett.HiColor := clDkGray;
         Sett.TextColour := clLtGray;
+        Sett.TitleColour:= clTeal;
     end else begin
         Sett.BackGndColour := clCream;
         Sett.HiColor := clYellow;
         Sett.TextColour := clBlack;
+        Sett.TitleColour := clBlue;
     end;
 
 end;

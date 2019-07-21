@@ -185,6 +185,8 @@ unit EditBox;
     2019/06/12  Removed panel behind speedbuttons, Cocoa did not like them !
     2019/06/14  Ensure top of new window is never less than 10 pixels down.
     2019/07/19  Test that a note is not being deleted before we update on exit.
+    2019/07/20  Cleaned up MarkTitle() and extended the range its used for.
+    2019/07/21  MarkTitle now uses Sett.* colours.
 }
 
 
@@ -1481,29 +1483,24 @@ end;
 
 procedure TEditBoxForm.MarkTitle();
 var
-	FT : TFont;
     BlockNo : integer = 0;
     AtTheEnd : Boolean = False;
+    EndBlock, blar : integer;
 begin
   	if Not Ready then exit();
     { if there is more than one block, and the first, [0], is a para, delete it.}
     if KMemo1.Blocks.Count <= 2 then exit();	// Don't try to mark title until more blocks.
-
     Ready := false;
     Kmemo1.Blocks.LockUpdate;
-
     if Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoParagraph' then
           Kmemo1.Blocks.DeleteEOL(0);
-
-    FT := TFont.Create();
-    FT.Size := Sett.FontTitle;
-    FT.Style := [fsUnderline];
-    FT.Color := clBlue;
-
 	try
         while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
-            if Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock') then     // just possible its an image, ignore ....
-           	    TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
+            if Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock') then begin    // just possible its an image, ignore ....
+                TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size := Sett.FontTitle;
+                TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Color := Sett.TitleColour;
+                TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style := [fsUnderline];
+            end;
            	inc(BlockNo);
             if BlockNo >= Kmemo1.Blocks.Count then begin
                 AtTheEnd := True;
@@ -1511,26 +1508,20 @@ begin
             end;
        	end;                                // Stopped at first TKMemoParagraph if it exists.
         BlocksInTitle := BlockNo;
-        FT.Size := Sett.FontNormal;
-        FT.Style := [];
-        FT.Color := clBlack;
-
-        if not AtTheEnd then begin
-        	inc(BlockNo);
-            	// Make sure user has not smeared Title charactistics to next line
-            //debugln('MarkTitle-' + inttostr(BlockNo) + ' and count ' + inttostr(KMemo1.Blocks.Count));
-            //debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
-            if (BlockNo < KMemo1.Blocks.Count) and (not KMemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoImageBlock')) then
-        	    while fsUnderline in TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style do begin
-        		    TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font := FT;
-            	    inc(BlockNo);
-            	    if (BlockNo >= KMemo1.Blocks.Count) or KMemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoImageBlock') then break;
-                    // debugln(KMemo1.Blocks.Items[BlockNo].ClassName);
-        	    end;
+        { Make sure user has not smeared Title charactistics to next line
+          Scan back from cursor to end of title, if Title font, reset. }
+        EndBlock := KMemo1.Blocks.IndexToBlockIndex(KMemo1.Selstart, Blar);
+        while EndBlock > BlocksInTitle do begin
+            if KMemo1.Blocks.Items[EndBlock].ClassNameIs('TKMemoTextBlock') and
+                (TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size = Sett.FontTitle) then begin
+                    TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size := Sett.FontNormal;
+                    TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Color := Sett.TextColour;
+                    TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Style := [];
+                end;
+            dec(EndBlock);
         end;
 	finally
-		KMemo1.Blocks.UnLockUpdate;			// Clean up, needs to be in try.. finally loop.
-    	FT.Free;
+		KMemo1.Blocks.UnLockUpdate;
     	Ready := True;
 	end;
 end;
@@ -1726,7 +1717,7 @@ begin
 
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
 
-    if ((BlocksInTitle + 3) > BlockNo) then begin
+    if ((BlocksInTitle + 10) > BlockNo) then begin
           // We don't check title if user is not close to it.
   	    MarkTitle();
   	    GetTitle(TempTitle);

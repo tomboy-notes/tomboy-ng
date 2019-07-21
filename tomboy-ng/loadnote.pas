@@ -45,6 +45,7 @@ unit LoadNote;
     2018/08/15  ReplaceAngles() works with bytes, not char, so don't use UTF8Copy and UTF8Length ....
     2018/10/13  Altered LoadFile() so Tabs are allowed through
     2019/04/29  Restore note's previous previous position and size.
+    2019/07/21  Use Sett.TitleColour;
 }
 
 {$mode objfpc}{$H+}
@@ -152,7 +153,7 @@ begin
   	    FT.Style := [fsUnderline];
         Title := ReplaceAngles(InStr);
         FT.Size := Sett.FontTitle;
-        FT.Color := clBlue;
+        FT.Color := Sett.TitleColour;
       end else begin
         FT.Style := [];
         FT.Size:= FontSize;
