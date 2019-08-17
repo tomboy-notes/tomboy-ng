@@ -782,6 +782,10 @@ object EditBoxForm: TEditBoxForm
       Enabled = False
       OnClick = MenuItemSyncClick
     end
+    object MenuItemSettings: TMenuItem
+      Caption = 'Settings'
+      OnClick = MenuItemSettingsClick
+    end
     object MenuItemExport: TMenuItem
       Caption = 'Export'
       object MenuItemExportRTF: TMenuItem

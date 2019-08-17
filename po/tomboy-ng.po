@@ -549,6 +549,11 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
+#: teditboxform.menuitemsettings.caption
+msgctxt "teditboxform.menuitemsettings.caption"
+msgid "Settings"
+msgstr ""
+
 #: teditboxform.menuitemspell.caption
 msgid "Spell Check"
 msgstr ""

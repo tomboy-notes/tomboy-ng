@@ -187,6 +187,7 @@ unit EditBox;
     2019/07/19  Test that a note is not being deleted before we update on exit.
     2019/07/20  Cleaned up MarkTitle() and extended the range its used for.
     2019/07/21  MarkTitle now uses Sett.* colours.
+    2019/07/25  Added menu item under tools to open Settings #93 (part)
 }
 
 
@@ -220,6 +221,7 @@ type
         MenuBullet: TMenuItem;
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
+        MenuItemSettings: TMenuItem;
         MenuItemEvaluate: TMenuItem;
         MenuItemIndex: TMenuItem;
         MenuItemExportMarkdown: TMenuItem;
@@ -285,6 +287,7 @@ type
         procedure MenuItemEvaluateClick(Sender: TObject);
         procedure MenuItemExportMarkdownClick(Sender: TObject);
         procedure MenuItemIndexClick(Sender: TObject);
+        procedure MenuItemSettingsClick(Sender: TObject);
         procedure MenuUnderlineClick(Sender: TObject);
         procedure MenuStrikeoutClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
@@ -898,6 +901,11 @@ begin
     end;
     IForm.Free;
     KMemo1.SetFocus;
+end;
+
+procedure TEditBoxForm.MenuItemSettingsClick(Sender: TObject);
+begin
+    Sett.show;
 end;
 
 procedure TEditBoxForm.MenuUnderlineClick(Sender: TObject);
