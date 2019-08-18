@@ -12,7 +12,7 @@ object Sett: TSett
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '2.0.1.0'
+  LCLVersion = '2.0.4.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -38,7 +38,7 @@ object Sett: TSett
         AnchorSideLeft.Control = TabBasic
         Left = 7
         Height = 48
-        Hint = 'If you have notes somewhere else.'
+        Hint = 'If you have notes somewhere else'
         Top = 144
         Width = 216
         BorderSpacing.Left = 7
@@ -94,7 +94,7 @@ object Sett: TSett
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Left = 10
         BorderSpacing.Right = 7
-        Caption = 'Use default Notes location'
+        Caption = 'Use Default Notes Location'
         OnClick = ButtDefaultNoteDirClick
         ParentShowHint = False
         ShowHint = True
@@ -266,8 +266,8 @@ object Sett: TSett
         Height = 23
         Hint = 'This may adversly affect tradional Tomboy, take care.'
         Top = 280
-        Width = 320
-        Caption = 'Allow a note to be in Multiple Notebooks.'
+        Width = 323
+        Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
@@ -318,7 +318,7 @@ object Sett: TSett
           AnchorSideBottom.Control = GroupBox3
           AnchorSideBottom.Side = asrBottom
           Left = 522
-          Height = 51
+          Height = 60
           Top = 2
           Width = 75
           Align = alRight
@@ -366,8 +366,8 @@ object Sett: TSett
           Left = 40
           Height = 23
           Top = 72
-          Width = 212
-          Caption = 'Always ask me what to do.'
+          Width = 215
+          Caption = 'Always Ask me what to do.'
           Checked = True
           TabOrder = 0
           TabStop = True
@@ -376,16 +376,16 @@ object Sett: TSett
           Left = 40
           Height = 23
           Top = 104
-          Width = 321
-          Caption = 'Use Local note and overwrite server note.'
+          Width = 332
+          Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 40
           Height = 23
           Top = 140
-          Width = 297
-          Caption = 'Use server note and rename local one.'
+          Width = 319
+          Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
       end
@@ -443,10 +443,10 @@ object Sett: TSett
         Left = 0
         Height = 150
         Top = 0
-        Width = 587
+        Width = 622
         Anchors = [akTop, akLeft, akRight]
         ClientHeight = 150
-        ClientWidth = 587
+        ClientWidth = 622
         TabOrder = 0
         object Label6: TLabel
           Left = 33
@@ -477,7 +477,7 @@ object Sett: TSett
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Panel1
           AnchorSideBottom.Side = asrBottom
-          Left = 464
+          Left = 499
           Height = 40
           Top = 102
           Width = 115
@@ -498,13 +498,13 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 263
+        Height = 264
         Top = 150
-        Width = 587
+        Width = 622
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 263
-        ClientWidth = 587
+        ClientHeight = 264
+        ClientWidth = 622
         TabOrder = 1
         object StringGridBackUp: TStringGrid
           AnchorSideLeft.Control = Panel2
@@ -514,9 +514,9 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 261
+          Height = 262
           Top = 1
-          Width = 585
+          Width = 620
           Anchors = [akTop, akLeft, akRight, akBottom]
           AutoEdit = False
           ColCount = 4
@@ -572,13 +572,13 @@ object Sett: TSett
         AnchorSideBottom.Side = asrBottom
         Left = 262
         Height = 44
-        Hint = 'If you have previously taken a snapshot......'
+        Hint = 'If you have previously taken a snapshot ...'
         Top = 370
         Width = 353
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Left = 7
         BorderSpacing.Right = 7
-        Caption = 'Recover lost Notes'
+        Caption = 'Recover Lost Notes'
         OnClick = ButtonSnapRecoverClick
         ParentShowHint = False
         ShowHint = True
@@ -602,16 +602,16 @@ object Sett: TSett
           Left = 24
           Height = 36
           Top = 40
-          Width = 104
+          Width = 176
           Caption = 'Days'
           OnClick = ButtonSnapDaysClick
           TabOrder = 0
         end
         object ButtonSetSnapDir: TButton
-          Left = 144
+          Left = 216
           Height = 36
           Top = 40
-          Width = 99
+          Width = 176
           Caption = 'Set Snap Dir'
           OnClick = ButtonSetSnapDirClick
           TabOrder = 1

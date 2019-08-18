@@ -4,7 +4,7 @@ object MainForm: TMainForm
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
   Top = 179
   Width = 369
-  Caption = 'MainForm'
+  Caption = 'tomboy-ng'
   ClientHeight = 363
   ClientWidth = 369
   OnClose = FormClose
@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnResize = FormResize
   OnShow = FormShow
   ShowHint = True
-  LCLVersion = '2.0.1.0'
+  LCLVersion = '2.0.4.0'
   object ImageConfigTick: TImage
     Left = 24
     Height = 18
@@ -372,8 +372,8 @@ object MainForm: TMainForm
     Height = 23
     Hint = 'You can reverse this from Settings'
     Top = 272
-    Width = 236
-    Caption = 'Dont Show for normal startup'
+    Width = 240
+    Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
     TabOrder = 2
   end

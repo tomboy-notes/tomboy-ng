@@ -480,13 +480,13 @@ RESOURCESTRING
     {$endif}
     rsHelpLang = 'Force Language, supported es';
     rsHelpDebug = 'Direct debug output to SOME.LOG.';
-    rsHelpHelp = 'Show this help and exit.';
+    rsHelpHelp = 'Show this help message and exit.';
     rsHelpVersion = 'Print version and exit';
     rsHelpRedHat = 'Run in RedHatGnome mode, no TrayIcon';
     rsHelpNoSplash = 'Dont show small status/splash window';
     rsHelpDebugSync = 'Show debug messages during Sync';
-    rsHelpDebugIndex = 'Show debug messages during index of notes';
-    rsHelpDebugSpell = 'Show debug messages during spell setup';
+    rsHelpDebugIndex = 'Show debug messages while indexing notes';
+    rsHelpDebugSpell = 'Show debug messages while spell setup';
     rsHelpConfig = 'Create or use an alternative config';
     rsHelpSingleNote = 'Open indicated note, switch is optional';
     rsHelpSaveExit = 'After import single note, save and exit.';

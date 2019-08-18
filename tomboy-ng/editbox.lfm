@@ -12,7 +12,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.0.1.0'
+  LCLVersion = '2.0.4.0'
   object KMemo1: TKMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = SpeedButtonSearch
@@ -754,7 +754,7 @@ object EditBoxForm: TEditBoxForm
       OnClick = MenuNormalClick
     end
     object MenuLarge: TMenuItem
-      Caption = 'Large  Font'
+      Caption = 'Large Font'
       ShortCut = 16435
       OnClick = MenuLargeClick
     end
@@ -789,7 +789,7 @@ object EditBoxForm: TEditBoxForm
     object MenuItemExport: TMenuItem
       Caption = 'Export'
       object MenuItemExportRTF: TMenuItem
-        Caption = 'Export as RTF'
+        Caption = 'Export RTF'
         OnClick = MenuItemExportRTFClick
       end
       object MenuItemExportPlainText: TMenuItem

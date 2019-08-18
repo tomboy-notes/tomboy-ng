@@ -123,11 +123,11 @@ msgid "Direct debug output to SOME.LOG."
 msgstr ""
 
 #: mainunit.rshelpdebugindex
-msgid "Show debug messages during index of notes"
+msgid "Show debug messages while indexing notes"
 msgstr ""
 
 #: mainunit.rshelpdebugspell
-msgid "Show debug messages during spell setup"
+msgid "Show debug messages while spell setup"
 msgstr ""
 
 #: mainunit.rshelpdebugsync
@@ -135,7 +135,7 @@ msgid "Show debug messages during Sync"
 msgstr ""
 
 #: mainunit.rshelphelp
-msgid "Show this help and exit."
+msgid "Show this help message and exit."
 msgstr ""
 
 #: mainunit.rshelplang
@@ -548,7 +548,7 @@ msgid "Export Plain Text"
 msgstr ""
 
 #: teditboxform.menuitemexportrtf.caption
-msgid "Export as RTF"
+msgid "Export RTF"
 msgstr ""
 
 #: teditboxform.menuitemfind.caption
@@ -585,7 +585,7 @@ msgid "Syncronize"
 msgstr ""
 
 #: teditboxform.menularge.caption
-msgid "Large  Font"
+msgid "Large Font"
 msgstr ""
 
 #: teditboxform.menunormal.caption
@@ -643,8 +643,10 @@ msgid "Save and Sync"
 msgstr ""
 
 #: tformsync.caption
-msgid "FormSync"
-msgstr ""
+#, fuzzy
+msgctxt "tformsync.caption"
+msgid "Sync"
+msgstr "Sincronización"
 
 #: tformsync.label1.caption
 msgctxt "tformsync.label1.caption"
@@ -709,11 +711,7 @@ msgid "Save"
 msgstr ""
 
 #: tformtomdroid.editipaddress.text
-msgid "EditIPAddress"
-msgstr ""
-
-#: tformtomdroid.editpassword.text
-msgid "EditPassword"
+msgid "0.0.0.0"
 msgstr ""
 
 #: tformtomdroid.editprofilename.hint
@@ -778,11 +776,13 @@ msgid "Dismiss this window but leave tomboy-ng running"
 msgstr ""
 
 #: tmainform.caption
-msgid "MainForm"
+msgid "tomboy-ng"
 msgstr ""
 
 #: tmainform.checkboxdontshow.caption
-msgid "Dont Show for normal startup"
+#, fuzzy
+#| msgid "Dont Show for normal startup"
+msgid "Don't Show for normal startup"
 msgstr "Dont show in spanish"
 
 #: tmainform.checkboxdontshow.hint
@@ -863,7 +863,7 @@ msgid "Label3"
 msgstr ""
 
 #: tnotebookpick.label4.caption
-msgid "Name of the New Note Book"
+msgid "Name of the New Notebook"
 msgstr ""
 
 #: tnotebookpick.label5.caption
@@ -887,11 +887,11 @@ msgid "Connection is looking Good."
 msgstr ""
 
 #: tomdroid.rsfailedtoconnect
-msgid "Failed to connect. "
+msgid "Failed to connect."
 msgstr ""
 
 #: tomdroid.rsfailedtofindconnection_1
-msgid "Failed to find an existing connection. "
+msgid "Failed to find an existing connection."
 msgstr ""
 
 #: tomdroid.rsfailedtofindconnection_2
@@ -923,7 +923,7 @@ msgid "This is not correct profile for that device"
 msgstr ""
 
 #: tomdroid.rsnotexistingrepo
-msgid "Thats not an existing Repo, maybe click \"Join\" ?"
+msgid "That's not an existing Repo, maybe click \"Join\" ?"
 msgstr ""
 
 #: tomdroid.rsnotomdroid
@@ -965,25 +965,30 @@ msgid "Refresh"
 msgstr ""
 
 #: tsearchform.buttonrefresh.hint
-msgid "Indexes on disk notes"
+msgid "Re-index notes"
+msgstr ""
+
+#: tsearchform.buttonsearchoptions.caption
+msgid "Search Options"
 msgstr ""
 
 #: tsearchform.caption
-msgid "SearchForm"
-msgstr ""
-
-#: tsearchform.checkboxanycombo.caption
-msgid "Any Combo"
-msgstr ""
-
-#: tsearchform.checkboxcasesensitive.caption
-msgctxt "tsearchform.checkboxcasesensitive.caption"
-msgid "Case Sensitive"
+msgid "Search Form"
 msgstr ""
 
 #: tsearchform.edit1.text
 msgctxt "tsearchform.edit1.text"
 msgid "Search"
+msgstr ""
+
+#: tsearchform.menuanycombo.caption
+msgctxt "tsearchform.menuanycombo.caption"
+msgid "AnyCombination"
+msgstr ""
+
+#: tsearchform.menucasesensitive.caption
+msgctxt "tsearchform.menucasesensitive.caption"
+msgid "Case Sensitive"
 msgstr ""
 
 #: tsearchform.menudeletenotebook.caption
@@ -1004,7 +1009,9 @@ msgid "Panel1"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
-msgid "Use default Notes location"
+#, fuzzy
+#| msgid "Use default Notes location"
+msgid "Use Default Notes Location"
 msgstr "Usa ubicación predeterminada"
 
 #: tsett.buttdefaultnotedir.hint
@@ -1038,7 +1045,7 @@ msgid "Set Path to Note Files"
 msgstr "Establecer ruta a las notas"
 
 #: tsett.buttonsetnotepath.hint
-msgid "If you have notes somewhere else."
+msgid "If you have notes somewhere else"
 msgstr ""
 
 #: tsett.buttonsetsnapdir.caption
@@ -1062,11 +1069,11 @@ msgid "Days"
 msgstr ""
 
 #: tsett.buttonsnaprecover.caption
-msgid "Recover lost Notes"
+msgid "Recover Lost Notes"
 msgstr ""
 
 #: tsett.buttonsnaprecover.hint
-msgid "If you have previously taken a snapshot......"
+msgid "If you have previously taken a snapshot ..."
 msgstr ""
 
 #: tsett.buttonsynchelp.caption
@@ -1092,7 +1099,9 @@ msgid "Case Sensitive"
 msgstr ""
 
 #: tsett.checkmanynotebooks.caption
-msgid "Allow a note to be in Multiple Notebooks."
+#, fuzzy
+#| msgid "Allow a note to be in Multiple Notebooks."
+msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Permitir que una nota aparece en Cuadernos Multiples"
 
 #: tsett.checkmanynotebooks.hint
@@ -1288,7 +1297,9 @@ msgid "Panel2"
 msgstr "Panel2"
 
 #: tsett.radioalwaysask.caption
-msgid "Always ask me what to do."
+#, fuzzy
+#| msgid "Always ask me what to do."
+msgid "Always Ask me what to do."
 msgstr "Siempre pregúnteme que hacer."
 
 #: tsett.radiofile.caption
@@ -1318,11 +1329,15 @@ msgid "Network Server - not available"
 msgstr "Servidor de la red no disponible"
 
 #: tsett.radiouselocal.caption
-msgid "Use Local note and overwrite server note."
+#, fuzzy
+#| msgid "Use Local note and overwrite server note."
+msgid "Use Local Note and Overwrite Server Note."
 msgstr "Usar nota local y sobreescribir nota del servidor"
 
 #: tsett.radiouseserver.caption
-msgid "Use server note and rename local one."
+#, fuzzy
+#| msgid "Use server note and rename local one."
+msgid "Use Server Note and Rename Local Note."
 msgstr "Usar nota del servidor y sobreescribir nota local"
 
 #: tsett.tabbackup.caption

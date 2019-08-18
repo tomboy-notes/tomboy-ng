@@ -3,7 +3,7 @@ object SearchForm: TSearchForm
   Height = 401
   Top = 194
   Width = 824
-  Caption = 'SearchForm'
+  Caption = 'Search Form'
   ClientHeight = 401
   ClientWidth = 824
   OnCloseQuery = FormCloseQuery
@@ -11,16 +11,16 @@ object SearchForm: TSearchForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.0.1.0'
+  LCLVersion = '2.0.4.0'
   object Edit1: TEdit
     AnchorSideLeft.Control = SpeedButton1
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = CheckBoxCaseSensitive
+    AnchorSideRight.Control = ButtonSearchOptions
     Left = 37
     Height = 29
     Top = 3
-    Width = 439
+    Width = 450
     Anchors = [akTop, akLeft, akRight]
     BorderSpacing.Left = 5
     BorderSpacing.Right = 1
@@ -35,11 +35,11 @@ object SearchForm: TSearchForm
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 721
+    Left = 672
     Height = 32
-    Hint = 'Indexes on disk notes'
+    Hint = 'Re-index notes'
     Top = 3
-    Width = 100
+    Width = 149
     Anchors = [akTop, akRight]
     BorderSpacing.Top = 3
     BorderSpacing.Right = 3
@@ -274,31 +274,19 @@ object SearchForm: TSearchForm
     }
     OnClick = SpeedButton1Click
   end
-  object CheckBoxCaseSensitive: TCheckBox
-    AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = CheckBoxAnyCombo
-    Left = 477
-    Height = 23
-    Top = 3
-    Width = 127
-    Anchors = [akTop, akRight]
-    BorderSpacing.Right = 5
-    Caption = 'Case Sensitive'
-    OnChange = CheckBoxCaseSensitiveChange
-    TabOrder = 3
-  end
-  object CheckBoxAnyCombo: TCheckBox
-    AnchorSideTop.Control = ButtonRefresh
+  object ButtonSearchOptions: TButton
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = ButtonRefresh
-    Left = 609
-    Height = 23
+    Left = 488
+    Height = 32
     Top = 3
-    Width = 107
+    Width = 184
     Anchors = [akTop, akRight]
-    BorderSpacing.Right = 5
-    Caption = 'Any Combo'
-    OnChange = CheckBoxAnyComboChange
-    TabOrder = 4
+    BorderSpacing.Top = 3
+    Caption = 'Search Options'
+    OnClick = ButtonSearchOptionsClick
+    PopupMenu = PopupSearchOptions
+    TabOrder = 3
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 472
@@ -318,6 +306,18 @@ object SearchForm: TSearchForm
     object MenuNewNoteFromTemplate: TMenuItem
       Caption = 'Create New Note from Template'
       OnClick = MenuNewNoteFromTemplateClick
+    end
+  end
+  object PopupSearchOptions: TPopupMenu
+    left = 652
+    top = 232
+    object MenuCaseSensitive: TMenuItem
+      Caption = 'Case Sensitive'
+      OnClick = MenuCaseSensitiveClick
+    end
+    object MenuAnyCombo: TMenuItem
+      Caption = 'AnyCombination'
+      OnClick = MenuAnyComboClick
     end
   end
 end

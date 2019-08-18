@@ -236,7 +236,7 @@ end;
 
 RESOURCESTRING
   rsSetUpNewSync ='Setting up a new sync ....';
-  rsFailedToConnect = 'Failed to connect. ';
+  rsFailedToConnect = 'Failed to connect.';
   rsTalking = 'OK, talking to device. Wait for it ....';
   rsNoTomdroid =  'Unable to find Tomdroid sync dir on that device.';
   rsInstallTomdroid = 'Install Tomdroid, config filesync, and run a sync';
@@ -395,9 +395,9 @@ end;
 RESOURCESTRING
   rsCheckingForExistingSync = 'Checking for an existing sync ....';
   rsTalkingToDevice = 'OK, talking to device. Wait for it ....';
-  rsNotExistingRepo = 'Thats not an existing Repo, maybe click "Join" ?';
+  rsNotExistingRepo = 'That''s not an existing Repo, maybe click "Join" ?';
   rsNotCorrectProfile = 'This is not correct profile for that device';
-  rsFailedToFindConnection_1 = 'Failed to find an existing connection. ';
+  rsFailedToFindConnection_1 = 'Failed to find an existing connection.';
   rsFailedToFindConnection_2 = 'If you are sure there should be an existing connection, check settings.';
   rsFailedToFindConnection_3 = 'Otherwise, try joining a new connection.';
   rsHaveValidSync = 'Looking Good. Last sync date ';

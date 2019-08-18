@@ -93,6 +93,7 @@ unit SearchUnit;
     2019/04/13  Don't call note_lister.GetNotes more than absolutly necessary.
     2019/04/15  One Clear Filters button to replace Clea and Show All Notes. Checkboxes Mode instead of menu
     2019/04/16  Fixed resizing atifacts on stringGrids by turning off 'Flat' property, Linux !
+    2019/08/18  Removed AnyCombo and CaseSensitive checkboxes and replaced with SearchOptionsMenu, easier translations
 }
 
 {$mode objfpc}{$H+}
@@ -108,16 +109,18 @@ type
     { TSearchForm }
 
     TSearchForm = class(TForm)
+      ButtonSearchOptions: TButton;
 			ButtonNotebookOptions: TButton;
 			ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
-        CheckBoxCaseSensitive: TCheckBox;
-        CheckBoxAnyCombo: TCheckBox;
         Edit1: TEdit;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
+                MenuCaseSensitive: TMenuItem;
+                MenuAnyCombo: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
+                PopupSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         SpeedButton1: TSpeedButton;
 		Splitter1: TSplitter;
@@ -128,17 +131,17 @@ type
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonClearFiltersClick(Sender: TObject);
-        procedure CheckBoxAnyComboChange(Sender: TObject);
-        procedure CheckBoxCaseSensitiveChange(Sender: TObject);
+        procedure ButtonSearchOptionsClick(Sender: TObject);
 		procedure Edit1EditingDone(Sender: TObject);
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
-        procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
-            );
+        procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure FormShow(Sender: TObject);
+        procedure MenuAnyComboClick(Sender: TObject);
+        procedure MenuCaseSensitiveClick(Sender: TObject);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
@@ -351,16 +354,6 @@ begin
     IndexNotes();
 end;
 
-procedure TSearchForm.CheckBoxCaseSensitiveChange(Sender: TObject);
-begin
-     Sett.CheckCaseSensitive.Checked := CheckBoxCaseSensitive.Checked;
-end;
-
-procedure TSearchForm.CheckBoxAnyComboChange(Sender: TObject);
-begin
-    Sett.CheckAnyCombination.Checked := CheckBoxAnyCombo.Checked;
-end;
-
 procedure TSearchForm.Edit1EditingDone(Sender: TObject);
 {var
    TS1, TS2, TS3, TS4 : qword;           // Temp time stamping to test speed       }
@@ -370,7 +363,7 @@ begin
     if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
         ButtonClearFilters.Enabled := True;
         // TS1:=gettickcount64();
-        NoteLister.GetNotes(Edit1.Text);
+        NoteLister.GetNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
         // TS2:=gettickcount64();
         NoteLister.LoadSearchGrid(StringGrid1);
         NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
@@ -445,8 +438,10 @@ begin
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
     // Edit1.Text:= 'Search';
-    CheckBoxCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
-    CheckBoxAnyCombo.Checked := Sett.CheckAnyCombination.Checked;
+    MenuCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
+    MenuAnyCombo.Checked:= Sett.CheckAnyCombination.Checked;
+    //CheckBoxCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
+    //CheckBoxAnyCombo.Checked := Sett.CheckAnyCombination.Checked;
     StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
     StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?
     {$ifdef windows}                // linux apps know how to do this themselves
@@ -482,6 +477,22 @@ begin
     stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
 end;
 
+procedure TSearchForm.MenuAnyComboClick(Sender: TObject);
+begin
+     MenuAnyCombo.Checked := not MenuAnyCombo.Checked;
+     Sett.CheckAnyCombination.Checked := MenuAnyCombo.Checked;
+end;
+
+procedure TSearchForm.MenuCaseSensitiveClick(Sender: TObject);
+begin
+     MenuCaseSensitive.Checked:= not MenuCaseSensitive.Checked;
+     Sett.CheckCaseSensitive.Checked := MenuCaseSensitive.Checked;
+end;
+
+procedure TSearchForm.ButtonSearchOptionsClick(Sender: TObject);
+begin
+     popupSearchOptions.popup;
+end;
 
 procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
 var
@@ -581,7 +592,6 @@ begin
         StringGrid1.AutoSizeColumns;
         Edit1.Text := 'Search';
 end;
-
 
 
 procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
