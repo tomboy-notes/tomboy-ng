@@ -4,7 +4,7 @@ object Sett: TSett
   Top = 60
   Width = 628
   BorderIcons = []
-  Caption = 'KTomboy-NG Settings'
+  Caption = 'Settings'
   ClientHeight = 511
   ClientWidth = 628
   OnClose = FormClose

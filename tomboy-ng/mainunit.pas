@@ -52,6 +52,7 @@ unit Mainunit;
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/06/11  Moved an ifdef
     2019/07/21  Added a TitleColour for dark theme
+    2019/08/20  Linux only, looks for (translated) help files in config dir first.
 
     CommandLine Switches
 
@@ -256,6 +257,12 @@ end;
 
 Procedure TMainForm.ShowHelpNote(HelpNoteName : string);
 begin
+    {$ifdef LINUX}
+    if FileExists(Sett.LocalConfig + HelpNoteName) then begin
+        SingleNoteMode(Sett.LocalConfig + HelpNoteName, False, True);
+        exit;
+    end;
+    {$endif}
     if FileExists(HelpNotesPath + HelpNoteName) then
        SingleNoteMode(HelpNotesPath + HelpNoteName, False, True)
     else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);

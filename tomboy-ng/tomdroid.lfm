@@ -3,7 +3,7 @@ object FormTomdroid: TFormTomdroid
   Height = 377
   Top = 179
   Width = 823
-  Caption = 'FormTomdroid'
+  Caption = 'Tomdroid'
   ClientHeight = 377
   ClientWidth = 823
   OnShow = FormShow

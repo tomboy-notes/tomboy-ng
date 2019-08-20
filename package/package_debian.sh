@@ -109,6 +109,8 @@ function DebianPackage () {
 		cp ../doc/"$i" BUILD/usr/share/doc/$PRODUCT/.;
 	done;
     # -------------- Translation Files
+    # we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
+
     mkdir BUILD/usr/share/locale
     for i in `ls -b ../po/*.??.po`; do
         # echo "Name is $i"

@@ -653,6 +653,137 @@ msgstr "Fuente: tamaño, negrita, cursiva, etc"
 msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
 
+#: tformrecover.button4.caption
+msgid "Restore from Safety Snapshot"
+msgstr ""
+
+#: tformrecover.buttondeletebadnotes.caption
+msgid "Delete Bad Notes"
+msgstr ""
+
+#: tformrecover.buttonmakesafetysnap.caption
+msgid "Safety Snapshot"
+msgstr ""
+
+#: tformrecover.buttonmakesafetysnap.hint
+msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+msgstr ""
+
+#: tformrecover.buttonrecoversnap.caption
+msgid "Recover"
+msgstr ""
+
+#: tformrecover.buttonsnaphelp.caption
+#, fuzzy
+msgctxt "tformrecover.buttonsnaphelp.caption"
+msgid "Help"
+msgstr "Ayuda"
+
+#: tformrecover.caption
+msgid "FormRecover"
+msgstr ""
+
+#: tformrecover.label1.caption
+msgctxt "tformrecover.label1.caption"
+msgid "Label1"
+msgstr ""
+
+#: tformrecover.label10.caption
+msgid "Please close any notes you may have open."
+msgstr ""
+
+#: tformrecover.label11.caption
+msgid "or you do one of -"
+msgstr ""
+
+#: tformrecover.label12.caption
+msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+msgstr ""
+
+#: tformrecover.label14.caption
+msgid "Double click an available snapshot to see its contents."
+msgstr ""
+
+#: tformrecover.label15.caption
+msgid "Double click an available snapshot, click Recover"
+msgstr ""
+
+#: tformrecover.label16.caption
+msgid "You may chose to view, copy and paste into a new note."
+msgstr ""
+
+#: tformrecover.label2.caption
+msgid "Please be carefull, this is a dangerous place!"
+msgstr ""
+
+#: tformrecover.label3.caption
+msgid "Restore any notes in the snapshot that are not in the existing notes directory."
+msgstr ""
+
+#: tformrecover.label4.caption
+msgid "Remove all existing notes and use the ones in the Snapshot."
+msgstr ""
+
+#: tformrecover.label5.caption
+msgid "Look firstly at your existing notes"
+msgstr ""
+
+#: tformrecover.label6.caption
+msgid "This tool might help you recover lost or damaged notes."
+msgstr ""
+
+#: tformrecover.label7.caption
+msgid "Before you start, take a Safety Snapshot of your notes directory."
+msgstr ""
+
+#: tformrecover.label8.caption
+msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
+msgstr ""
+
+#: tformrecover.label9.caption
+msgid "From here you can view snapshot notes, one by one."
+msgstr ""
+
+#: tformrecover.labelexistingadvice.caption
+msgid "LabelExistingAdvice"
+msgstr ""
+
+#: tformrecover.labelexistingadvice2.caption
+msgid "LabelExistingAdvice2"
+msgstr ""
+
+#: tformrecover.labelnoteerrors.caption
+msgid "LabelNoteErrors"
+msgstr ""
+
+#: tformrecover.listboxsnapshots.hint
+msgid "These are the currently known snapshots. "
+msgstr ""
+
+#: tformrecover.panelsnapshots.caption
+msgid "Available Snapshots"
+msgstr ""
+
+#: tformrecover.tabsheetexisting.caption
+msgid "Existing Notes"
+msgstr ""
+
+#: tformrecover.tabsheetintro.caption
+msgid "Introduction"
+msgstr ""
+
+#: tformrecover.tabsheetmergesnapshot.caption
+msgid "Merge Snapshot"
+msgstr ""
+
+#: tformrecover.tabsheetrecoversnapshot.caption
+msgid "Recover Snapshot"
+msgstr ""
+
+#: tformrecover.tabsheetsnapshots.caption
+msgid "Notes in a Snapshot"
+msgstr ""
+
 #: tformsync.buttoncancel.caption
 msgctxt "tformsync.buttoncancel.caption"
 msgid "Cancel"
@@ -717,7 +848,9 @@ msgid "Sync"
 msgstr "Sincronizar"
 
 #: tformtomdroid.caption
-msgid "FormTomdroid"
+#, fuzzy
+#| msgid "FormTomdroid"
+msgid "Tomdroid"
 msgstr "Sincronizar con Tomdroid - tomboyng"
 
 #: tformtomdroid.checkboxdebugmode.caption
@@ -1142,7 +1275,10 @@ msgid "Help"
 msgstr "Ayuda"
 
 #: tsett.caption
-msgid "KTomboy-NG Settings"
+#, fuzzy
+#| msgid "KTomboy-NG Settings"
+msgctxt "tsett.caption"
+msgid "Settings"
 msgstr "Preferencias de Tomboy-ng"
 
 #: tsett.checkanycombination.caption
