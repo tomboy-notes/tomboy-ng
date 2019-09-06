@@ -87,6 +87,7 @@ unit settings;
     2019/05/06  Support saving pos and open on startup in note.
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/06/11  Moved some checkboxes and renamed 'Display' to 'Notes'.
+    2019/09/6   Button to download Help Notes in non-English
 }
 
 {$mode objfpc}{$H+}
@@ -107,6 +108,7 @@ type
 
     TSett = class(TForm)
 			ButtDefaultNoteDir: TButton;
+            ButtonHelpNotes: TButton;
             ButtonSyncHelp: TButton;
             ButtonSetSpellLibrary: TButton;
             ButtonSetDictionary: TButton;
@@ -193,6 +195,7 @@ type
 		TabDisplay: TTabSheet;
         TimeEdit1: TTimeEdit;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
+        procedure ButtonHelpNotesClick(Sender: TObject);
         procedure ButtonHideClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
         procedure ButtonSetDictionaryClick(Sender: TObject);
@@ -330,6 +333,7 @@ uses IniFiles, LazLogger,
     recover,        // Recover lost or damaged files
     mainunit,       // so we can call ShowHelpNote()
     hunspell,       // spelling check
+    helpnotes,      // All user to download non-English help Notes
     Autostart
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
@@ -861,6 +865,11 @@ begin
         SearchForm.IndexNotes();
         //NeedRefresh := True;
     end;
+end;
+
+procedure TSett.ButtonHelpNotesClick(Sender: TObject);
+begin
+    FormHelpNotes.show;
 end;
 
 procedure TSett.ButtonHideClick(Sender: TObject);

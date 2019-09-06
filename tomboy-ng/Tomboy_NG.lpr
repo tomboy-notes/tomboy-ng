@@ -13,7 +13,7 @@ uses
     Interfaces, // this includes the LCL widgetset
     Forms, printer4lazarus, SearchUnit, settings, SyncGUI, Notebook, Spelling,
     Mainunit, BackupView, recover, tomdroid, markdown, Index, autostart,
-    hunspell, sync, syncutils, transandroid
+    hunspell, sync, syncutils, transandroid, helpnotes
     { you can add units after this };
 
 {$R *.res}
@@ -28,6 +28,7 @@ begin
     Application.CreateForm(TFormSync, FormSync);
     Application.CreateForm(TFormTomdroid, FormTomdroid);
     Application.CreateForm(TFormMarkdown, FormMarkdown);
+    Application.CreateForm(TFormHelpNotes, FormHelpNotes);
 	// Application.CreateForm(TNoteBookPick, NoteBookPick);
     // Application.CreateForm(TFormSpell, FormSpell);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);

@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 388
+  Left = 619
   Height = 511
-  Top = 60
+  Top = 343
   Width = 628
   BorderIcons = []
   Caption = 'Settings'
@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 451
     Top = 0
     Width = 628
-    ActivePage = TabSnapshot
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -270,6 +270,18 @@ object Sett: TSett
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
+      end
+      object ButtonHelpNotes: TButton
+        AnchorSideLeft.Control = GroupBox5
+        Left = 32
+        Height = 31
+        Top = 346
+        Width = 165
+        Anchors = [akLeft]
+        AutoSize = True
+        Caption = 'Help Notes Language'
+        OnClick = ButtonHelpNotesClick
+        TabOrder = 4
       end
     end
     object TabSync: TTabSheet

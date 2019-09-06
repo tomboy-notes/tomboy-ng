@@ -91,6 +91,12 @@ function BuildIt () {
 
 # -----------------------
 
+function MkLanguages () {
+	for i in es; do
+		cat "../po/tomboy-ng.$i.po" "../po/lclstrconsts.$i.po" | msgfmt -o "tomboy-ng.$i.mo" -;
+	done;
+}
+
 function DebianPackage () {
 	# We build a debian tree in BUILD and call dpkg-deb -b 
 	#  BUILD/DEBIAN control,debian-binary and any scripts
@@ -111,19 +117,22 @@ function DebianPackage () {
     # -------------- Translation Files
     # we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
 
+    echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
     mkdir BUILD/usr/share/locale
-    for i in `ls -b ../po/*.??.po`; do
+    for i in `ls -b *.??.mo`; do
+#    for i in `ls -b ../po/*.??.po`; do
         # echo "Name is $i"
-        BASENAME=`basename -s.po "$i"`
+        BASENAME=`basename -s.mo "$i"`
         # echo "BASENAME is $BASENAME"
         # msgfmt -o BUILD/usr/share/locale/"$BASENAME".mo "$i"
         CCODE=`echo "$BASENAME" | cut -d '.' -f2`
         # echo "CCode is $CCODE"
         mkdir -p BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES
         BASENAME=`basename -s."$CCODE" "$BASENAME"`
-        msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
-	echo "~~~~~~~~~~~~~ Writing a MO for $i ~~~~~~~~~~"
-	echo " Its called BUILD/usr/share/locale/$CCODE/LC_MESSAGES/$BASENAME.mo"
+#        msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
+	cp "$i" BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$i"
+        echo "~~~~~~~~~~~~~ Writing a MO for $i ~~~~~~~~~~"
+	echo " Its called BUILD/usr/share/locale/$CCODE/LC_MESSAGES/$i"
     done
     # ------------ 
 	mkdir BUILD/usr/share/applications
@@ -195,12 +204,17 @@ function MkWinPreInstaller() {
 	for i in $MANUALS; do
 		cp ../doc/$i "$WIN_DIR/."
 	done;
-    for i in `ls -b ../po/*.??.po`; do
-        #echo "Name is $i"
-        BASENAME=`basename -s.po "$i"`
-        #echo "BASENAME is $BASENAME"
-        msgfmt -o "$WIN_DIR"/"$BASENAME".mo "$i"
-    done
+     echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
+     for i in `ls -b *.??.mo`; do
+	     cp "$i" "$WIN_DIR"/"$i" "$i";
+     done;
+
+#    for i in `ls -b ../po/*.??.po`; do
+#        #echo "Name is $i"
+#        BASENAME=`basename -s.po "$i"`
+#        #echo "BASENAME is $BASENAME"
+#        msgfmt -o "$WIN_DIR"/"$BASENAME".mo "$i"
+#    done
 	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$WIN_DIR/readme.txt"
 	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
 	unix2dos "$WIN_DIR/readme.txt"
@@ -209,6 +223,10 @@ function MkWinPreInstaller() {
 }
 
 # --------------------------------------
+
+MkLanguages
+exit
+
 # It all starts here
 
 #if [ "$2" == "LeakCheck" ]; then

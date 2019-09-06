@@ -575,7 +575,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="28">
+    <Units Count="29">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -736,6 +736,13 @@
         <Filename Value="transnet.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit27>
+      <Unit28>
+        <Filename Value="helpnotes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormHelpNotes"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit28>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

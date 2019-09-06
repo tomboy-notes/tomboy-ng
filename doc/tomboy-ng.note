@@ -57,6 +57,6 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
   <width>1000</width>
   <height>626</height>
   <x>0</x>
-  <y>0</y>
+  <y>30</y>
   <open-on-startup>False</open-on-startup>
 </note>

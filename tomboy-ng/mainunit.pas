@@ -53,6 +53,7 @@ unit Mainunit;
     2019/06/11  Moved an ifdef
     2019/07/21  Added a TitleColour for dark theme
     2019/08/20  Linux only, looks for (translated) help files in config dir first.
+    2019/09/6   Button to download Help Notes in non-English
 
     CommandLine Switches
 
@@ -164,6 +165,8 @@ type
         FileMenu, RecentMenu : TMenuItem;
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
+            // Returns the full path of the place we store non english help notes.
+        function AltHelpPath() : string;
         procedure ClearRecentMenuItems();
             // builds the Menus and fills in all items except recent notes. Only
             // called once, during startup except if ItsAnUpdate is True, thats triggered
@@ -174,7 +177,8 @@ type
         procedure AddMenuItem(Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
             // This procedure responds to ALL recent note menu clicks !
         procedure RecentMenuClicked(Sender: TObject);
-            { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode }
+            { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode
+              First tries the AltHelpPath, then HelpPath}
         procedure ShowHelpNote(HelpNoteName: string);
             { Updates status data on MainForm, tick list }
         procedure UpdateNotesFound(Numb: integer);
@@ -210,8 +214,9 @@ var
     HelpNotes : TNoteLister;
 
 { =================================== V E R S I O N    H E R E =============}
-const Version_string  = {$I %TOMBOY_NG_VER};
 
+const   Version_string  = {$I %TOMBOY_NG_VER};
+        AltHelp = 'alt-help';   // dir name where we store non english help notes.
 
 
 
@@ -255,19 +260,24 @@ begin
     if CloseOnExit then Close;      // we also use singlenotemode internally in several places
 end;
 
-Procedure TMainForm.ShowHelpNote(HelpNoteName : string);
+procedure TMainForm.ShowHelpNote(HelpNoteName: string);
 begin
-    {$ifdef LINUX}
-    if FileExists(Sett.LocalConfig + HelpNoteName) then begin
-        SingleNoteMode(Sett.LocalConfig + HelpNoteName, False, True);
+    if FileExists(AltHelpPath() + HelpNoteName) then begin
+        SingleNoteMode(AltHelpPath() + HelpNoteName, False, True);
         exit;
     end;
-    {$endif}
     if FileExists(HelpNotesPath + HelpNoteName) then
        SingleNoteMode(HelpNotesPath + HelpNoteName, False, True)
     else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
 end;
 
+function TMainForm.AltHelpPath(): string;
+begin
+  Result := HelpNotesPath + ALTHELP + PathDelim;
+  {$ifdef LINUX}
+  Result := Sett.LocalConfig + ALTHELP + PathDelim;
+  {$endif}
+end;
 
 resourcestring
   rsAnotherInstanceRunning = 'Another instance of tomboy-ng appears to be running. Will exit.';
@@ -624,6 +634,8 @@ begin
     end;
 
 end;
+
+
 
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
