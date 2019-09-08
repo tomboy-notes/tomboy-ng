@@ -275,13 +275,31 @@ object Sett: TSett
         AnchorSideLeft.Control = GroupBox5
         Left = 32
         Height = 31
-        Top = 346
+        Top = 320
         Width = 165
         Anchors = [akLeft]
         AutoSize = True
         Caption = 'Help Notes Language'
         OnClick = ButtonHelpNotesClick
         TabOrder = 4
+      end
+      object ButtonFont: TButton
+        Left = 344
+        Height = 25
+        Top = 32
+        Width = 160
+        Caption = 'Usual Font'
+        OnClick = ButtonFontClick
+        TabOrder = 5
+      end
+      object ButtonFixedFont: TButton
+        Left = 347
+        Height = 25
+        Top = 76
+        Width = 157
+        Caption = 'Fixed Font'
+        OnClick = ButtonFixedFontClick
+        TabOrder = 6
       end
     end
     object TabSync: TTabSheet
@@ -879,5 +897,11 @@ object Sett: TSett
   object OpenDialogDictionary: TOpenDialog
     left = 512
     top = 392
+  end
+  object FontDialog1: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    left = 544
+    top = 86
   end
 end

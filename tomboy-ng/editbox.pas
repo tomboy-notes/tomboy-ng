@@ -188,6 +188,7 @@ unit EditBox;
     2019/07/20  Cleaned up MarkTitle() and extended the range its used for.
     2019/07/21  MarkTitle now uses Sett.* colours.
     2019/07/25  Added menu item under tools to open Settings #93 (part)
+    2019/09/07  User can now select a note font.
 }
 
 
@@ -709,13 +710,13 @@ const
  ChangeFixedWidth = 5;
  ChangeStrikeout = 6;
  ChangeUnderline = 7;
- DefaultFontName = 'default';
- {$ifdef LINUX}
-   MonospaceFont = 'monospace';
- {$else}
+ //DefaultFontName = 'default';             Font names determined in Settings
+ //{$ifdef LINUX}
+   //MonospaceFont = 'monospace';
+ //{$else}
    //MonospaceFont = 'Lucida Console';
-   MonospaceFont = 'Monaco';        // might be a better choice
- {$ifend}
+   //MonospaceFont = 'Monaco';        // might be a better choice
+ //{$ifend}
 
 { This complex function will set font size, Bold or Italic or Color depending on the
   constant passed as first parameter. NewFontSize is ignored (and can be ommitted)
@@ -806,33 +807,33 @@ begin
 					end else begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsItalic];
 					end;
-                ChangeFixedWidth :
-                                        if FirstBlock.TextStyle.Font.Name <> MonospaceFont then begin
-                                           Block.TextStyle.Font.Pitch := fpFixed;
-                                           Block.TextStyle.Font.Name := MonospaceFont;
-                                        end else begin
-                                           Block.TextStyle.Font.Pitch := fpVariable;
-	                                   Block.TextStyle.Font.Name := DefaultFontName;
-                                        end;
+        ChangeFixedWidth :
+                    if FirstBlock.TextStyle.Font.Name <> Sett.FixedFont then begin
+                       Block.TextStyle.Font.Pitch := fpFixed;
+                       Block.TextStyle.Font.Name := Sett.FixedFont;
+                    end else begin
+                       Block.TextStyle.Font.Pitch := fpVariable;
+	                    Block.TextStyle.Font.Name := Sett.UsualFont;
+                    end;
 
-                ChangeStrikeout :
+        ChangeStrikeout :
 					if fsStrikeout in FirstBlock.TextStyle.Font.style then begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsStrikeout];
 					end else begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsStrikeout];
 					end;
-                ChangeUnderline :
+        ChangeUnderline :
 					if fsUnderline in FirstBlock.TextStyle.Font.style then begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsUnderline];
 					end else begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsUnderline];
 					end;
-
-		ChangeColor :           if FirstBlock.TextStyle.Brush.Color <> Sett.HiColor then begin
-                                                Block.TextStyle.Brush.Color := Sett.HiColor;
-                                        end else begin
-                                                Block.TextStyle.Brush.Color := clDefault;
-                                        end;
+		ChangeColor :
+                    if FirstBlock.TextStyle.Brush.Color <> Sett.HiColor then begin
+                        Block.TextStyle.Brush.Color := Sett.HiColor;
+                    end else begin
+                        Block.TextStyle.Brush.Color := clDefault;
+                    end;
 	end;
 end;
 

@@ -128,8 +128,8 @@ end;
     size. The Regional InStr has what to write. }
 procedure TBLoadNote.AddText(AddPara : Boolean);
 
-const
- {$ifdef LINUX}
+//const
+(* {$ifdef LINUX}                         // Font names are determined in settings
  MonospaceFont = 'monospace';
  {$ifend}
  {$ifdef WINDOWS}
@@ -138,6 +138,7 @@ const
  {$ifdef DARWIN}
  MonospaceFont = 'Lucida Console';
  {$ifend}
+*)
 
 var
     FT : TFont;
@@ -165,9 +166,9 @@ begin
       if HighLight then TB.TextStyle.Brush.Color := Sett.HiColor;
       if Underline then FT.Style := Ft.Style + [fsUnderline];
       if Strikeout then FT.Style := Ft.Style + [fsStrikeout];
-      if FixedWidth then FT.Name := MonospaceFont;
+      if FixedWidth then FT.Name := Sett.FixedFont;
       if FixedWidth then FT.Pitch := fpFixed;
-      if not FixedWidth then FT.Name := 'default';    // Because 'FixedWidth := false;' does not specify a font to return to
+      if not FixedWidth then FT.Name := Sett.UsualFont;    // Because 'FixedWidth := false;' does not specify a font to return to
       // if Sett.DarkTheme then Ft.Color:=Sett.DarkTextColour;
       Ft.Color:=Sett.TextColour;
       TB.TextStyle.Font := Ft;

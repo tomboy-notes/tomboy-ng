@@ -1140,6 +1140,14 @@ msgstr ""
 msgid "Will work for many new users"
 msgstr ""
 
+#: tsett.buttonfixedfont.caption
+msgid "Fixed Font"
+msgstr ""
+
+#: tsett.buttonfont.caption
+msgid "Usual Font"
+msgstr ""
+
 #: tsett.buttonhelpnotes.caption
 msgctxt "tsett.buttonhelpnotes.caption"
 msgid "Help Notes Language"

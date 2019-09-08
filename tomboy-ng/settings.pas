@@ -88,6 +88,7 @@ unit settings;
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/06/11  Moved some checkboxes and renamed 'Display' to 'Notes'.
     2019/09/6   Button to download Help Notes in non-English
+    2019/09/07  User can now select a note font.
 }
 
 {$mode objfpc}{$H+}
@@ -108,6 +109,8 @@ type
 
     TSett = class(TForm)
 			ButtDefaultNoteDir: TButton;
+            ButtonFixedFont: TButton;
+            ButtonFont: TButton;
             ButtonHelpNotes: TButton;
             ButtonSyncHelp: TButton;
             ButtonSetSpellLibrary: TButton;
@@ -132,6 +135,7 @@ type
         CheckShowTomdroid: TCheckBox;
         CheckSnapEnabled: TCheckBox;
         CheckSnapMonthly: TCheckBox;
+        FontDialog1: TFontDialog;
         GroupBox1: TGroupBox;
 		GroupBox3: TGroupBox;
 		GroupBox4: TGroupBox;
@@ -195,6 +199,8 @@ type
 		TabDisplay: TTabSheet;
         TimeEdit1: TTimeEdit;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
+        procedure ButtonFixedFontClick(Sender: TObject);
+        procedure ButtonFontClick(Sender: TObject);
         procedure ButtonHelpNotesClick(Sender: TObject);
         procedure ButtonHideClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
@@ -260,6 +266,9 @@ type
         TextColour : TColor;
         HiColor : TColor;
         TitleColour : TColor;
+        UsualFont : string;
+        FixedFont : string;
+        DefaultFixedFont : string;
         DarkTheme : boolean;
         DebugModeSpell : boolean;
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
@@ -652,7 +661,12 @@ begin
     AreClosing := false;
     Top := 200;
     Left := 300;
-    PageControl1.ActivePage := TabBasic;
+    {$ifdef LINUX}
+        DefaultFixedFont := 'monospace';
+    {$else}
+        DefaultFixedFont := 'Monaco';
+    {$ifend}
+    // ToDo : what about a fixed font for Mac ?            PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;
     NeedRefresh := False;
     ExportPath := '';
@@ -741,6 +755,8 @@ begin
                 'medium' : RadioFontMedium.Checked := true;
                 'small'  : RadioFontSmall.Checked := true;
             end;
+            UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
+            FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
             case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
                 'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
                 'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
@@ -822,6 +838,8 @@ begin
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'small')
             else if RadioFontHuge.Checked then
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'huge');
+            ConfigFile.writestring('BasicSettings', 'UsualFont', UsualFont);
+            ConfigFile.writestring('BasicSettings', 'FixedFont', FixedFont);
 	        if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
@@ -864,6 +882,33 @@ begin
         SyncSettings();
         SearchForm.IndexNotes();
         //NeedRefresh := True;
+    end;
+end;
+
+procedure TSett.ButtonFixedFontClick(Sender: TObject);
+begin
+    FontDialog1.Font.Name := FixedFont;
+    FontDialog1.Font.Size := 10;
+    FontDialog1.Title := 'Select Fixed Spacing Font';
+    FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
+    // showmessage(FixedFont);
+    FontDialog1.Options := FontDialog1.Options + [fdFixedPitchOnly];
+    If FontDialog1.Execute then BEGIN
+        FixedFont := FontDialog1.Font.name;
+        SettingsChanged();
+    end;
+end;
+
+procedure TSett.ButtonFontClick(Sender: TObject);
+begin
+    FontDialog1.Font.Name := UsualFont;
+    FontDialog1.Font.Size := 10;
+    FontDialog1.Title := 'Select Usual Font';
+    FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
+    //showmessage(UsualFont);
+    If FontDialog1.Execute then BEGIN
+        UsualFont := FontDialog1.Font.name;
+        SettingsChanged();
     end;
 end;
 

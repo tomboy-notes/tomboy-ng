@@ -92,6 +92,7 @@ function BuildIt () {
 # -----------------------
 
 function MkLanguages () {
+	# abandoned
 	for i in es; do
 		cat "../po/tomboy-ng.$i.po" "../po/lclstrconsts.$i.po" | msgfmt -o "tomboy-ng.$i.mo" -;
 	done;
@@ -116,24 +117,22 @@ function DebianPackage () {
 	done;
     # -------------- Translation Files
     # we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
+    # and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
 
-    echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
-    mkdir BUILD/usr/share/locale
-    for i in `ls -b *.??.mo`; do
-#    for i in `ls -b ../po/*.??.po`; do
+    # echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
+    mkdir -p BUILD/usr/share/locale
+    for i in `ls -b ../po/*.??.po`; do		# Deal with each country code in turn
         # echo "Name is $i"
-        BASENAME=`basename -s.mo "$i"`
+        BASENAME=`basename -s.po "$i"`
         # echo "BASENAME is $BASENAME"
-        # msgfmt -o BUILD/usr/share/locale/"$BASENAME".mo "$i"
         CCODE=`echo "$BASENAME" | cut -d '.' -f2`
         # echo "CCode is $CCODE"
         mkdir -p BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES
         BASENAME=`basename -s."$CCODE" "$BASENAME"`
-#        msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
-	cp "$i" BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$i"
-        echo "~~~~~~~~~~~~~ Writing a MO for $i ~~~~~~~~~~"
-	echo " Its called BUILD/usr/share/locale/$CCODE/LC_MESSAGES/$i"
+	msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
+	msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
     done
+
     # ------------ 
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
@@ -196,36 +195,33 @@ function MkWinPreInstaller() {
 	rm -Rf "$WIN_DIR"
 	mkdir "$WIN_DIR"
 	cp ../tomboy-ng/tomboy-ng64.exe "$WIN_DIR/."
+	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
 	cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
 	cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
 	cp ../COPYING "$WIN_DIR/."
 	cp AfterInstall.txt "$WIN_DIR/."
 	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss"
 	for i in $MANUALS; do
-		cp ../doc/$i "$WIN_DIR/."
+	    cp ../doc/$i "$WIN_DIR/."
 	done;
-     echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
-     for i in `ls -b *.??.mo`; do
-	     cp "$i" "$WIN_DIR"/"$i" "$i";
-     done;
-
-#    for i in `ls -b ../po/*.??.po`; do
-#        #echo "Name is $i"
-#        BASENAME=`basename -s.po "$i"`
-#        #echo "BASENAME is $BASENAME"
-#        msgfmt -o "$WIN_DIR"/"$BASENAME".mo "$i"
-#    done
+	echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
+	for i in `ls -b ../po/*.??.po`; do
+            echo "Name is $i"
+            BASENAME=`basename -s.po "$i"`
+            CCODE=`echo "$BASENAME" | cut -d '.' -f2`
+            echo "CCode is $CCODE"
+            BASENAME=`basename -s."$CCODE" "$BASENAME"`
+	    mkdir -p "$WIN_DIR"/locale/"$CCODE"
+	    msgfmt -o "$WIN_DIR"/locale/"$CCODE"/"$BASENAME".mo "$i"
+	    msgfmt -o "$WIN_DIR"/locale/"$CCODE"/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	done
 	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$WIN_DIR/readme.txt"
-	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
 	unix2dos "$WIN_DIR/readme.txt"
 	echo "----------- Windows installer dir created -----------"
-	ls -la WinPre_"$VERSION"
+	ls -la "$WIN_DIR"
 }
 
 # --------------------------------------
-
-MkLanguages
-exit
 
 # It all starts here
 
