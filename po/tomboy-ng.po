@@ -41,6 +41,28 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr ""
 
+#: helpnotes.rs_downloaded
+msgid "Downloaded so far: "
+msgstr ""
+
+#: helpnotes.rs_downloading
+msgid "Downloading please wait..."
+msgstr ""
+
+#: helpnotes.rs_installed
+msgctxt "helpnotes.rs_installed"
+msgid "Installed"
+msgstr ""
+
+#: helpnotes.rs_restored
+msgctxt "helpnotes.rs_restored"
+msgid "Installed"
+msgstr ""
+
+#: helpnotes.rs_spanish
+msgid "Spanish"
+msgstr ""
+
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr ""

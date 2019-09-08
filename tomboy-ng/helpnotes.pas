@@ -8,6 +8,13 @@ unit helpnotes;
   back to English, we just delete the files in alt-help.
 
   Windows users will need to have some ssl lib installed, what happens if they dont ....
+
+  Much thanks to GetMem from the forum !
+  https://forum.lazarus.freepascal.org/index.php/topic,46560.0.html
+  PS: You need the openssl libraries on windows(ssleay32.dll and  libeay32.dll)
+
+  HISTORY
+  2019/09/08 Clean up of management logic.
 }
 
 {$mode objfpc}{$H+}
@@ -26,6 +33,7 @@ type
         ButtonRestore: TButton;
         Label1: TLabel;
         Label2: TLabel;
+        LabelProgress: TLabel;
         ListBox1: TListBox;
         procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonRestoreClick(Sender: TObject);
@@ -33,7 +41,10 @@ type
         procedure ListBox1Click(Sender: TObject);
         procedure ListBox1DblClick(Sender: TObject);
     private
+        procedure DataReceived(Sender: TObject; const ContentLength,
+            CurrentPos: Int64);
         function DownloadFile(URL, FullFileName: string; out ErrorMsg: string): boolean;
+        function FormatSize(Size: Int64): String;
         // This proc replaces the RTL version to enable v1.1 of ssl instead of v23
         // note we set it in DownLoadFile() after the object is created.
         procedure HttpClientGetSocketHandler(Sender: TObject;
@@ -59,6 +70,15 @@ uses
   openssl,
   sslsockets;      // for TSSLSocketHandler etc
 
+const
+    DownLoadPath = 'https://github.com/tomboy-notes/tomboy-ng/raw/master/doc/';
+
+resourcestring
+    RS_Spanish = 'Spanish';
+    RS_Installed = 'Installed';
+    RS_Restored = 'Installed';
+    RS_Downloading = 'Downloading please wait...';
+    RS_Downloaded = 'Downloaded so far: ';
 
 procedure TFormHelpNotes.HttpClientGetSocketHandler(Sender: TObject;
   const UseSSL: Boolean; out AHandler: TSocketHandler);
@@ -73,20 +93,17 @@ end;
 function TFormHelpNotes.DownloadFile(URL, FullFileName : string; out ErrorMsg : string) : boolean;
 var
     Client: TFPHttpClient;
-    FS: TStream;
 begin
     result := false;
     InitSSLInterface;
     Client := TFPHttpClient.Create(nil);
-    FS := TFileStream.Create(FullFilename,fmCreate or fmOpenWrite);
-    // Comment out next line to revert to fpc3.0.4 behaviour, generates a ESSL
-    // exception (that I dont seem to be able to catch) if we try for any https site.
     Client.OnGetSocketHandler := @HttpClientGetSocketHandler;
+    Client.OnDataReceived := @DataReceived;
+    Client.AllowRedirect := true;
     ErrorMsg := 'Created';
     try
         try
-            Client.AllowRedirect := true;
-            Client.Get(URL, FS);
+            Client.Get(URL, FullFileName);
         except
             on E: ESSL do begin ErrorMsg := E.Message; exit; end;    // does not catch it !
             on E: Exception do begin
@@ -95,7 +112,7 @@ begin
             end;
         end;
     finally
-        FS.Free;
+        //FS.Free;
         Client.Free;
     end;
     ErrorMsg := '';
@@ -109,7 +126,11 @@ end;
 
 procedure TFormHelpNotes.FormCreate(Sender: TObject);
 begin
-    ListBox1.AddItem('es Spanish', Nil);
+    ListBox1.AddItem('es ' + RS_Spanish, Nil);
+    if DirectoryExistsUTF8(MainForm.AltHelpPath) then begin
+        ButtonRestore.Enabled := True;
+        LabelProgress.Caption := RS_Installed;
+    end else ButtonRestore.Enabled := False;
 end;
 
 procedure TFormHelpNotes.ButtonCloseClick(Sender: TObject);
@@ -127,23 +148,28 @@ begin
 	    until FindNext(Info) <> 0;
 	end;
     FindClose(Info);
-    if not RemoveDirUTF8(MainForm.AltHelpPath) then
-        showmessage('Remove Dir Error in HelpNotes Unit');
+    if RemoveDirUTF8(MainForm.AltHelpPath) then begin
+        LabelProgress.Caption := RS_Restored;
+        ButtonRestore.Enabled := False;
+    end else showmessage('Remove Dir Error in HelpNotes Unit');
 end;
 
 procedure TFormHelpNotes.ListBox1DblClick(Sender: TObject);
 var
     EMsg : string;   ZipFile:
     TUnZipper;
-    FileName : string;
-    DownLoadPath : string = 'http://bannons.id.au/downloads/';
+    FileName : string = '';
+    // DownLoadPath : string = 'http://bannons.id.au/downloads/';
 begin
     if not DirectoryExistsUTF8(MainForm.AltHelpPath) then
         CreateDirUTF8(MainForm.AltHelpPath);
-
-    showmessage(ListBox1.Items[ListBox1.ItemIndex]);
-    if ListBox1.Items[ListBox1.ItemIndex] = 'es Spanish' then begin
-        FileName := 'es_notes.zip';
+    // showmessage(ListBox1.Items[ListBox1.ItemIndex]);
+    LabelProgress.Caption := RS_DownLoading;
+    Application.ProcessMessages;
+    case LeftStr(ListBox1.Items[ListBox1.ItemIndex], 2) of
+            'es' : FileName := 'es_notes.zip';
+    end;
+    if FileName <> '' then begin
         if DownLoadFile(DownLoadPath + FileName, MainForm.AltHelpPath + FileName, EMsg) then begin
             ZipFile := TUnZipper.Create;
             try
@@ -151,12 +177,40 @@ begin
                 ZipFile.OutputPath := MainForm.AltHelpPath;
                 ZipFile.Examine;
                 ZipFile.UnZipAllFiles;
+                LabelProgress.Caption := RS_Installed;
             finally
                 ZipFile.Free;
             end;
         end else
             showmessage('ERROR - ' + EMsg);
+        ButtonRestore.Enabled := True;
     end;
+end;
+
+function TFormHelpNotes.FormatSize(Size: Int64): String;
+const
+  KB = 1024;
+  MB = 1024 * KB;
+  GB = 1024 * MB;
+begin
+  if Size < KB then
+    Result := FormatFloat('#,##0 Bytes', Size)
+  else if Size < MB then
+    Result := FormatFloat('#,##0.0 KB', Size / KB)
+  else if Size < GB then
+    Result := FormatFloat('#,##0.0 MB', Size / MB)
+  else
+    Result := FormatFloat('#,##0.0 GB', Size / GB);
+end;
+
+procedure TFormHelpNotes.DataReceived(Sender: TObject; const ContentLength,
+  CurrentPos: Int64);
+begin
+  if ContentLength > 0 then
+    LabelProgress.Caption := RS_Downloaded + FormatSize(CurrentPos) + '/' + FormatSize(ContentLength)
+  else
+    LabelProgress.Caption := RS_Downloaded + FormatSize(CurrentPos);
+  Application.ProcessMessages;
 end;
 
 end.

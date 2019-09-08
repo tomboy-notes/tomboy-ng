@@ -1,12 +1,12 @@
 object FormHelpNotes: TFormHelpNotes
   Left = 592
-  Height = 236
+  Height = 310
   Top = 339
-  Width = 331
+  Width = 367
   Anchors = [akTop]
   Caption = 'Help Notes Language'
-  ClientHeight = 236
-  ClientWidth = 331
+  ClientHeight = 310
+  ClientWidth = 367
   OnCreate = FormCreate
   LCLVersion = '2.0.4.0'
   object ListBox1: TListBox
@@ -40,9 +40,9 @@ object FormHelpNotes: TFormHelpNotes
   object ButtonClose: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 280
+    Left = 316
     Height = 31
-    Top = 192
+    Top = 264
     Width = 51
     Anchors = [akTop, akRight]
     AutoSize = True
@@ -53,14 +53,21 @@ object FormHelpNotes: TFormHelpNotes
   end
   object ButtonRestore: TButton
     AnchorSideRight.Control = ButtonClose
-    Left = 157
+    Left = 193
     Height = 31
-    Top = 192
+    Top = 264
     Width = 123
     Anchors = [akTop, akRight]
     AutoSize = True
     Caption = 'Restore English'
     OnClick = ButtonRestoreClick
     TabOrder = 2
+  end
+  object LabelProgress: TLabel
+    Left = 22
+    Height = 1
+    Top = 210
+    Width = 1
+    ParentColor = False
   end
 end

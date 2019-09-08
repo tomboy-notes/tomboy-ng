@@ -55,6 +55,28 @@ msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad"
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para evaluar"
 
+#: helpnotes.rs_downloaded
+msgid "Downloaded so far: "
+msgstr ""
+
+#: helpnotes.rs_downloading
+msgid "Downloading please wait..."
+msgstr ""
+
+#: helpnotes.rs_installed
+msgctxt "helpnotes.rs_installed"
+msgid "Installed"
+msgstr ""
+
+#: helpnotes.rs_restored
+msgctxt "helpnotes.rs_restored"
+msgid "Installed"
+msgstr ""
+
+#: helpnotes.rs_spanish
+msgid "Spanish"
+msgstr ""
+
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr "Esto es tomboy-ng, la refundición de Notas Tomboy usando Lazarus"
@@ -667,7 +689,7 @@ msgstr ""
 msgid "Restore from Safety Snapshot"
 msgstr ""
 "Restuarar desde\n"
-"Instantánea de Seguridad"
+"Instantánea de Seguridad\n"
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
@@ -677,7 +699,7 @@ msgstr "Eliminar Notas Corrompidas"
 msgid "Safety Snapshot"
 msgstr ""
 "Instantánea\n"
-"de Seguridad"
+"de Seguridad\n"
 
 #: tformrecover.buttonmakesafetysnap.hint
 msgid "Take a initial snapshot of your notes and config. Overwritten each time."
@@ -1192,6 +1214,14 @@ msgstr "Usar Ubicación Predeterminada"
 msgid "Will work for many new users"
 msgstr "Funcionará para muchos usuarios nuevos"
 
+#: tsett.buttonfixedfont.caption
+msgid "Fixed Font"
+msgstr ""
+
+#: tsett.buttonfont.caption
+msgid "Usual Font"
+msgstr ""
+
 #: tsett.buttonhelpnotes.caption
 msgctxt "tsett.buttonhelpnotes.caption"
 msgid "Help Notes Language"
@@ -1542,3 +1572,4 @@ msgstr "Sincronización"
 #: tsett.timeedit1.text
 msgid "TimeEdit1"
 msgstr ""
+
