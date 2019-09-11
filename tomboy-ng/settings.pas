@@ -659,14 +659,15 @@ RESOURCESTRING
 procedure TSett.FormCreate(Sender: TObject);
 begin
     AreClosing := false;
-    Top := 200;
+    Top := 100;
     Left := 300;
     {$ifdef LINUX}
         DefaultFixedFont := 'monospace';
     {$else}
         DefaultFixedFont := 'Monaco';
     {$ifend}
-    // ToDo : what about a fixed font for Mac ?            PageControl1.ActivePage := TabBasic;
+    // ToDo : what about a fixed font for Mac ?
+    PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;
     NeedRefresh := False;
     ExportPath := '';

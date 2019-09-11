@@ -63,7 +63,7 @@ implementation
 
 { TFormHelpNotes }
 uses
-   mainunit, Settings, // HelpNotesPath, Config dir
+   mainunit, // HelpNotesPath
    LazFileUtils, zipper,
   fphttpclient,
   fpopenssl,
@@ -79,6 +79,7 @@ resourcestring
     RS_Restored = 'Installed';
     RS_Downloading = 'Downloading please wait...';
     RS_Downloaded = 'Downloaded so far: ';
+    RS_NoSSL = 'You do not appear to have the OpenSSL Library installed';
 
 procedure TFormHelpNotes.HttpClientGetSocketHandler(Sender: TObject;
   const UseSSL: Boolean; out AHandler: TSocketHandler);
@@ -105,6 +106,11 @@ begin
         try
             Client.Get(URL, FullFileName);
         except
+            on E: EInOutError do begin
+                ShowMessage(RS_NOSSL);
+                ErrorMsg := E.Message;
+                exit;
+                end;
             on E: ESSL do begin ErrorMsg := E.Message; exit; end;    // does not catch it !
             on E: Exception do begin
                 ErrorMsg := E.Message;
@@ -126,6 +132,8 @@ end;
 
 procedure TFormHelpNotes.FormCreate(Sender: TObject);
 begin
+    Top := 120;
+    Left := 280;
     ListBox1.AddItem('es ' + RS_Spanish, Nil);
     if DirectoryExistsUTF8(MainForm.AltHelpPath) then begin
         ButtonRestore.Enabled := True;
@@ -151,6 +159,7 @@ begin
     if RemoveDirUTF8(MainForm.AltHelpPath) then begin
         LabelProgress.Caption := RS_Restored;
         ButtonRestore.Enabled := False;
+        showmessage('Restored');        // remove this !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     end else showmessage('Remove Dir Error in HelpNotes Unit');
 end;
 

@@ -54,6 +54,10 @@ msgctxt "helpnotes.rs_installed"
 msgid "Installed"
 msgstr ""
 
+#: helpnotes.rs_nossl
+msgid "You do not appear to have the OpenSSL Library installed"
+msgstr ""
+
 #: helpnotes.rs_restored
 msgctxt "helpnotes.rs_restored"
 msgid "Installed"
