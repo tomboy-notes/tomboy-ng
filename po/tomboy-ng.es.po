@@ -74,7 +74,7 @@ msgstr ""
 
 #: helpnotes.rs_restored
 msgctxt "helpnotes.rs_restored"
-msgid "Installed"
+msgid "Restored"
 msgstr ""
 
 #: helpnotes.rs_spanish

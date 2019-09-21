@@ -54,6 +54,7 @@ unit Mainunit;
     2019/07/21  Added a TitleColour for dark theme
     2019/08/20  Linux only, looks for (translated) help files in config dir first.
     2019/09/6   Button to download Help Notes in non-English
+    2019/09/21  Restructured model for non-english help notes, names in menus !
 
     CommandLine Switches
 
@@ -159,18 +160,19 @@ type
 
     public
         HelpNotesPath : string;     // full path to help notes, with trailing delim.
+        AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
         UseTrayMenu : boolean;
         UseMainMenu : boolean;
         MainMenu : TMainMenu;
         FileMenu, RecentMenu : TMenuItem;
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
-            // Returns the full path of the place we store non english help notes.
-        function AltHelpPath() : string;
+            // Ret path to where help notes are, either default English or Non-English
+        function ActualHelpNotesPath() : string;
         procedure ClearRecentMenuItems();
             // builds the Menus and fills in all items except recent notes. Only
             // called once, during startup except if ItsAnUpdate is True, thats triggered
-            // by Sett changes to Sync is config or Tomdroid mode enabled.
+            // by Sett changes to Sync is config or Tomdroid mode enabled. OnlyCalled fron Sett unit.
         procedure FillInFileMenus(ItsAnUpdate: boolean=false);
             // Here we will add a new item to each menu, one by one. Menus must be created and
             // the top level entries, File and Recent, added to MainMenu
@@ -260,23 +262,36 @@ begin
     if CloseOnExit then Close;      // we also use singlenotemode internally in several places
 end;
 
+// ---------------- HELP NOTES STUFF ------------------
+
 procedure TMainForm.ShowHelpNote(HelpNoteName: string);
 begin
-    if FileExists(AltHelpPath() + HelpNoteName) then begin
-        SingleNoteMode(AltHelpPath() + HelpNoteName, False, True);
-        exit;
-    end;
-    if FileExists(HelpNotesPath + HelpNoteName) then
-       SingleNoteMode(HelpNotesPath + HelpNoteName, False, True)
+    if FileExists(ActualHelpNotesPath() + HelpNoteName) then
+       SingleNoteMode(ActualHelpNotesPath() + HelpNoteName, False, True)
     else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
 end;
 
-function TMainForm.AltHelpPath(): string;
+function TMainForm.ActualHelpNotesPath(): string;
 begin
-  Result := HelpNotesPath + ALTHELP + PathDelim;
-  {$ifdef LINUX}
-  Result := Sett.LocalConfig + ALTHELP + PathDelim;
-  {$endif}
+    Result := HelpNotesPath;
+    if DirectoryExistsUTF8(AltHelpNotesPath) then
+        Result := AltHelpNotesPath;
+end;
+
+procedure TMainForm.FindHelpFiles();
+    // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
+var
+  NoteTitle : string;
+begin
+    if HelpNotes <> nil then
+        freeandnil(HelpNotes);
+    HelpNotes := TNoteLister.Create;     // freed in OnClose event.
+    HelpNotes.DebugMode := Application.HasOption('debug-index');
+    HelpNotes.WorkingDir:= ActualHelpNotesPath;
+    HelpNotes.GetNotes('', true);
+    HelpNotes.StartSearch();
+    while HelpNotes.NextNoteTitle(NoteTitle) do
+        AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
 end;
 
 resourcestring
@@ -564,8 +579,9 @@ begin
     UseTrayMenu := false;
     {$endif}
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName));{$endif}
-    {$ifdef LINUX}HelpNotesPath := '/usr/share/doc/tomboy-ng/'; {$endif}
-    {$ifdef DARWIN}HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';{$endif}
+    {$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/';    {$endif}
+    {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';{$endif}
+    AltHelpNotesPath := HelpNotesPath + ALTHELP + PathDelim;        // Overridden in FillInFileMenu() for Linux
 end;
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -637,10 +653,6 @@ end;
 
 
 
-procedure TMainForm.ButtonConfigClick(Sender: TObject);
-begin
-    Sett.Show();
-end;
 
 {procedure TMainForm.ApplicationProperties1EndSession(Sender: TObject);
 var
@@ -654,26 +666,17 @@ end; }
 
 { ------------- M E N U   M E T H O D S ----------------}
 
-procedure TMainForm.FindHelpFiles();
-    // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
-var
-  NoteTitle : string;
-begin
-    if HelpNotes = Nil then begin
-       HelpNotes := TNoteLister.Create;     // freed in OnClose event.
-       HelpNotes.DebugMode := Application.HasOption('debug-index');
-       HelpNotes.WorkingDir:=HelpNotesPath;
-       HelpNotes.GetNotes('', true);
-    end;
-    HelpNotes.StartSearch();
-    while HelpNotes.NextNoteTitle(NoteTitle) do
-        AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
-end;
+
 
 resourcestring
   rsSetupNotesDirFirst = 'Please setup a notes directory first';
   rsSetupSyncFirst = 'Please config sync system first';
   rsCannotFindNote = 'ERROR, cannot find ';
+
+procedure TMainForm.ButtonConfigClick(Sender: TObject);
+begin
+    Sett.Show();
+end;
 
 procedure TMainForm.FileMenuClicked(Sender : TObject);
 var
@@ -722,7 +725,15 @@ ResourceString
 
 procedure TMainForm.FillInFileMenus(ItsAnUpdate : boolean = false);
 begin
-    if not ItsAnUpdate then begin
+    {$ifdef LINUX}
+    AltHelpNotesPath := Sett.LocalConfig + ALTHELP + PathDelim;       // here because must call after sett exists
+    {$endif}
+    if ItsAnUpdate then begin
+        PopupMenuSearch.Items.Clear;
+        PopupMenuTray.Items.Clear;
+        FileMenu.Clear;
+        RecentMenu.Clear;
+    end else begin
         PopupMenuSearch := TPopupMenu.Create(Self);
         PopupMenuTray := TPopupMenu.Create(Self);
         MainMenu := TMainMenu.Create(Self);
@@ -733,11 +744,6 @@ begin
         MainMenu.Items.Add(FileMenu);
         MainMenu.Items.Add(RecentMenu);
         TrayIcon.PopUpMenu := PopupMenuTray;
-    end else begin
-        PopupMenuSearch.Items.Clear;
-        PopupMenuTray.Items.Clear;
-        FileMenu.Clear;
-        RecentMenu.Clear;
     end;
     AddMenuItem(rsMenuNewNote, mtNewNote, @FileMenuClicked, mkFileMenu);
     AddMenuItem(rsMenuSearch, mtSearch,  @FileMenuClicked, mkFileMenu);

@@ -189,6 +189,7 @@ unit EditBox;
     2019/07/21  MarkTitle now uses Sett.* colours.
     2019/07/25  Added menu item under tools to open Settings #93 (part)
     2019/09/07  User can now select a note font.
+    2019/09/21  CleanUTF8 removes some bad UTF8 char when importing some RTF files.
 }
 
 
@@ -333,6 +334,7 @@ type
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
         { If Toggle is true, sets bullets to what its currently no. Otherwise sets to TurnOn}
         procedure BulletControl(const Toggle, TurnOn: boolean);
+        procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
         procedure ExprTan(var Result: TFPExpressionResult;
@@ -1143,6 +1145,65 @@ begin
     SaveTheNote();
 end;
 
+procedure TEditBoxForm.CleanUTF8();
+
+        function BitSet(Value : byte; TheBit : integer) : boolean;      // theBit 0-7
+        begin
+            Result := ((Value shr TheBit) and 1) = 1;
+        end;
+
+        function CleanedUTF8(var TheText : string) : boolean;
+        var cnt : integer = 1;
+            NumbBytes : integer = 0;
+            i : integer;
+        begin
+            Result := false;
+            while Cnt <= TheText.Length do begin
+                if BitSet(byte(TheText[cnt]), 7) then begin
+                    // OK, we have a utf8 code. It will need at least one extra byte, maybe 2 or 3
+                    NumbBytes := 1;
+                    if BitSet(byte(TheText[cnt]), 5) then inc(NumbBytes);
+                    if BitSet(byte(TheText[cnt]), 4) then inc(NumbBytes);
+                    if Cnt + NumbBytes > TheText.Length then begin      // enough bytes remaining ....
+                        delete(TheText, Cnt, 1);
+                        Result := true;
+                        continue;
+                    end;
+                    for i := 1 to NumbBytes do begin            // are they the right sort of bytes ?
+                        if not BitSet(byte(TheText[cnt + i]), 7) then begin
+                            delete(TheText, Cnt, 1);            //
+                            NumbBytes := -1;                    // so the dec below does not skip a char
+                            Result := true;
+                            break;
+                        end;
+                    end;
+                    Cnt := Cnt + NumbBytes;
+                end;
+                inc(cnt);
+            end;
+        end;
+
+var
+    i : integer = 0;
+    AStr : string;
+    TB : TKMemoTextBlock;
+begin
+   KMemo1.blocks.LockUpdate;
+    while i < Kmemo1.blocks.count do begin
+        AStr := Kmemo1.Blocks.Items[i].text;
+        if KMemo1.Blocks.Items[i].ClassNameis('TKMemoTextBlock')
+            or KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin
+                if CleanedUTF8(AStr) then begin
+                    TB := KMemo1.Blocks.AddTextBlock(AStr, i);
+                    TB.TextStyle.Font := TKMemoTextBlock(KMemo1.blocks.Items[i+1]).TextStyle.Font;
+                    TB.TextStyle.Brush := TKMemoTextBlock(KMemo1.blocks.Items[i+1]).TextStyle.Brush;
+                    KMemo1.Blocks.Delete(i+1);
+                end;
+        end;
+        inc(i);
+    end;
+    KMemo1.blocks.UnLockUpdate;
+end;
 
 function TEditBoxForm.LoadSingleNote() : boolean;
 var
@@ -1196,6 +1257,7 @@ begin
           'text', 'rtf'   : begin
                         try
                         KMemo1.LoadFromFile(NoteFileName);
+                        CleanUTF8();
                         NoteFileName := AppendPathDelim(ExtractFilePath(NoteFileName)) +
                             ExtractFileNameOnly(NoteFileName) + '.note';
 

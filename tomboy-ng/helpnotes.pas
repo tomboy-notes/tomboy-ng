@@ -76,7 +76,7 @@ const
 resourcestring
     RS_Spanish = 'Spanish';
     RS_Installed = 'Installed';
-    RS_Restored = 'Installed';
+    RS_Restored = 'Restored';
     RS_Downloading = 'Downloading please wait...';
     RS_Downloaded = 'Downloaded so far: ';
     RS_NoSSL = 'You do not appear to have the OpenSSL Library installed';
@@ -109,6 +109,7 @@ begin
             on E: EInOutError do begin
                 ShowMessage(RS_NOSSL);
                 ErrorMsg := E.Message;
+                LabelProgress.Caption:= '';
                 exit;
                 end;
             on E: ESSL do begin ErrorMsg := E.Message; exit; end;    // does not catch it !
@@ -135,7 +136,7 @@ begin
     Top := 120;
     Left := 280;
     ListBox1.AddItem('es ' + RS_Spanish, Nil);
-    if DirectoryExistsUTF8(MainForm.AltHelpPath) then begin
+    if DirectoryExistsUTF8(MainForm.AltHelpNotesPath) then begin
         ButtonRestore.Enabled := True;
         LabelProgress.Caption := RS_Installed;
     end else ButtonRestore.Enabled := False;
@@ -150,17 +151,17 @@ procedure TFormHelpNotes.ButtonRestoreClick(Sender: TObject);
 var
     Info : TSearchRec;
 begin
-    if FindFirst(MainForm.AltHelpPath + '*.*', faAnyFile, Info)=0 then begin
+    if FindFirst(MainForm.AltHelpNotesPath + '*.*', faAnyFile, Info)=0 then begin
         repeat
-            DeleteFileUTF8(MainForm.AltHelpPath() + Info.Name);                // should we test return value ?
+            DeleteFileUTF8(MainForm.AltHelpNotesPath + Info.Name);                // should we test return value ?
 	    until FindNext(Info) <> 0;
 	end;
     FindClose(Info);
-    if RemoveDirUTF8(MainForm.AltHelpPath) then begin
+    if RemoveDirUTF8(MainForm.AltHelpNotesPath) then begin
         LabelProgress.Caption := RS_Restored;
         ButtonRestore.Enabled := False;
-        showmessage('Restored');        // remove this !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     end else showmessage('Remove Dir Error in HelpNotes Unit');
+    MainForm.FillInFileMenus(True);
 end;
 
 procedure TFormHelpNotes.ListBox1DblClick(Sender: TObject);
@@ -170,8 +171,8 @@ var
     FileName : string = '';
     // DownLoadPath : string = 'http://bannons.id.au/downloads/';
 begin
-    if not DirectoryExistsUTF8(MainForm.AltHelpPath) then
-        CreateDirUTF8(MainForm.AltHelpPath);
+    if not DirectoryExistsUTF8(MainForm.AltHelpNotesPath) then
+        CreateDirUTF8(MainForm.AltHelpNotesPath);
     // showmessage(ListBox1.Items[ListBox1.ItemIndex]);
     LabelProgress.Caption := RS_DownLoading;
     Application.ProcessMessages;
@@ -179,14 +180,15 @@ begin
             'es' : FileName := 'es_notes.zip';
     end;
     if FileName <> '' then begin
-        if DownLoadFile(DownLoadPath + FileName, MainForm.AltHelpPath + FileName, EMsg) then begin
+        if DownLoadFile(DownLoadPath + FileName, MainForm.AltHelpNotesPath + FileName, EMsg) then begin
             ZipFile := TUnZipper.Create;
             try
-                ZipFile.FileName := MainForm.AltHelpPath + FileName;
-                ZipFile.OutputPath := MainForm.AltHelpPath;
+                ZipFile.FileName := MainForm.AltHelpNotesPath + FileName;
+                ZipFile.OutputPath := MainForm.AltHelpNotesPath;
                 ZipFile.Examine;
                 ZipFile.UnZipAllFiles;
                 LabelProgress.Caption := RS_Installed;
+                MainForm.FillInFileMenus(True);
             finally
                 ZipFile.Free;
             end;
