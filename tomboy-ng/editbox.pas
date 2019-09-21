@@ -190,6 +190,7 @@ unit EditBox;
     2019/07/25  Added menu item under tools to open Settings #93 (part)
     2019/09/07  User can now select a note font.
     2019/09/21  CleanUTF8 removes some bad UTF8 char when importing some RTF files.
+    2019/09/21  AdjustFormPosition() now enforces some minium position/size. Issue #103
 }
 
 
@@ -2363,10 +2364,19 @@ end;
 
 	{ --- I M P O R T I N G   and   E X P O R T I N G    F U N C T I O N S  ---  }
 
-    // ensure we don't start with more than two thirds beyond boundaries.
-    // don't seem to need this, on Linux at least, new window is always within screen. Test on Windows/Mac
+    // Make sure position and size is appropriate.
 procedure TEditBoxForm.AdjustFormPosition();
 begin
+    // First of all, deal with zero or neg settings
+    if Top < 20 then Top := 20;
+    if Left < 20 then Left := 20;
+    if Width < 50 then width := 50;
+    if Height < 50 then height := 50;
+
+    // ensure we don't start with more than two thirds _beyond_ boundaries.
+    // don't seem to need this, on Linux at least, new window is always within screen. Test on Windows/Mac
+
+    // Review and use if necessary.
     exit;
     if (Left + (Width div 3)) > Screen.Width then begin
         Left := Screen.Width - (Width div 3);
