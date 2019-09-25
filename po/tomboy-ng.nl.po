@@ -42,9 +42,7 @@ msgstr "Nieuwere versie overschrijven"
 
 #: backupview.rsrecoverok
 msgid "OK, File recovered. You may need to do a Refresh (or restart)"
-msgstr ""
-"Het bestand is hersteld. Je moet mogelijk verversen (of de app sluiten en"
-" weer openen)."
+msgstr "Het bestand is hersteld. Je moet mogelijk verversen (of de app sluiten en weer openen)."
 
 #: backupview.rsrenamefailed
 msgid "ERROR, could not rename Backup File "
@@ -72,8 +70,10 @@ msgid "You do not appear to have the OpenSSL Library installed"
 msgstr "Het lijkt erop dat OpenSSL niet is geïnstalleerd"
 
 #: helpnotes.rs_restored
+#, fuzzy
+#| msgid "Installed"
 msgctxt "helpnotes.rs_restored"
-msgid "Installed"
+msgid "Restored"
 msgstr "Geïnstalleerd"
 
 #: helpnotes.rs_spanish
@@ -82,9 +82,7 @@ msgstr "Spaans"
 
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
-msgstr ""
-"Dit is tomboy-ng, een vernieuwde versie van Tomboy Notities, geschreven in"
-" Lazarus"
+msgstr "Dit is tomboy-ng, een vernieuwde versie van Tomboy Notities, geschreven in Lazarus"
 
 #: mainunit.rsabout2
 msgid "and FPC. While its getting close to being ready for production"
@@ -112,14 +110,11 @@ msgstr "Versie"
 
 #: mainunit.rsanotherinstancerunning
 msgid "Another instance of tomboy-ng appears to be running. Will exit."
-msgstr ""
-"Er is al een actief proces van tomboy-ng. Dit venster wordt nu gesloten."
+msgstr "Er is al een actief proces van tomboy-ng. Dit venster wordt nu gesloten."
 
 #: mainunit.rsbadnotesfound1
 msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
-msgstr ""
-"Onjuiste notities aangetroffen. Ga naar Instellingen --> Momentopnamen -->"
-" Bestaande notities."
+msgstr "Onjuiste notities aangetroffen. Ga naar Instellingen --> Momentopnamen --> Bestaande notities."
 
 #: mainunit.rsbadnotesfound2
 msgid "You should do so to ensure your notes are safe."
@@ -301,13 +296,8 @@ msgid "No errors, perhaps you should proceed to Snapshots"
 msgstr "Geen fouten; ga door naar de momentopnamen"
 
 #: recover.rsnosafetysnapshot
-msgid ""
-"A Safety snapshot not found. Try setting Snapsot Dir to where you may have"
-" one."
-msgstr ""
-"Geen back-upmomentopname aangetroffen. Stel de momentopnamemap in op de"
-" locatie "
-"waar de opname staat."
+msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
+msgstr "Geen back-upmomentopname aangetroffen. Stel de momentopnamemap in op de locatie waar de opname staat."
 
 #: recover.rsnotesinsnap
 msgid "Notes in Snapshot"
@@ -342,13 +332,8 @@ msgid "No Dictionary Found"
 msgstr "Geen woordenboek aangetroffen"
 
 #: settings.rsdirhasnonotes
-msgid ""
-"That directory does not contain any notes. Thats OK, if I can make my own"
-" there."
-msgstr ""
-"Deze map bevat geen notities. Dat is niet erg, want nu kan deze worden"
-" gebruikt "
-"voor nieuwe notities."
+msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
+msgstr "Deze map bevat geen notities. Dat is niet erg, want nu kan deze worden gebruikt voor nieuwe notities."
 
 #: settings.rsdoubleclicknote
 msgid "double click a note ..."
@@ -549,8 +534,7 @@ msgstr "Cursief"
 
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
-msgstr ""
-"Alt+pijltje naar rechts = toevoegen /// Alt+pijltje naar links = verwijderen"
+msgstr "Alt+pijltje naar rechts = toevoegen /// Alt+pijltje naar links = verwijderen"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
@@ -681,8 +665,7 @@ msgstr "Dubbelklik hieronder op een taal"
 
 #: tformhelpnotes.label2.caption
 msgid "Contact author if you can help translate."
-msgstr ""
-"Neem contact op met de ontwikkelaar als je bereid bent te helpen vertalen."
+msgstr "Neem contact op met de ontwikkelaar als je bereid bent te helpen vertalen."
 
 #: tformrecover.button4.caption
 msgid "Restore from Safety Snapshot"
@@ -697,11 +680,8 @@ msgid "Safety Snapshot"
 msgstr "Back-upmomentopname"
 
 #: tformrecover.buttonmakesafetysnap.hint
-msgid ""
-"Take a initial snapshot of your notes and config. Overwritten each time."
-msgstr ""
-"Maak een momentopname van je notities en configuratie. Deze wordt telkens"
-" overschreven."
+msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+msgstr "Maak een momentopname van je notities en configuratie. Deze wordt telkens overschreven."
 
 #: tformrecover.buttonrecoversnap.caption
 msgid "Recover"
@@ -730,41 +710,32 @@ msgid "or you do one of -"
 msgstr "Of doe één van de volgende dingen:"
 
 #: tformrecover.label12.caption
-msgid ""
-"Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
 msgstr "Overweeg dit niet als je geen recente back-upmomentopname hebt."
 
 #: tformrecover.label14.caption
 msgid "Double click an available snapshot to see its contents."
-msgstr ""
-"Dubbelklik op een beschikbare momentopname om de inhoud ervan te bekijken."
+msgstr "Dubbelklik op een beschikbare momentopname om de inhoud ervan te bekijken."
 
 #: tformrecover.label15.caption
 msgid "Double click an available snapshot, click Recover"
-msgstr ""
-"Dubbelklik op een beschikbare momentopname, en klik daarna op 'Herstellen'"
+msgstr "Dubbelklik op een beschikbare momentopname, en klik daarna op 'Herstellen'"
 
 #: tformrecover.label16.caption
 msgid "You may chose to view, copy and paste into a new note."
-msgstr ""
-"Je kunt kiezen een nieuwe notitie te bekijken, of te kopiëren en plakken naar."
+msgstr "Je kunt kiezen een nieuwe notitie te bekijken, of te kopiëren en plakken naar."
 
 #: tformrecover.label2.caption
 msgid "Please be carefull, this is a dangerous place!"
 msgstr "Let op: alles hier is zeer gevaarlijk!"
 
 #: tformrecover.label3.caption
-msgid ""
-"Restore any notes in the snapshot that are not in the existing notes"
-" directory."
-msgstr ""
-"Herstel de notities uit de momentopname die ontbreken in de bestaande "
-"notitiemap."
+msgid "Restore any notes in the snapshot that are not in the existing notes directory."
+msgstr "Herstel de notities uit de momentopname die ontbreken in de bestaande notitiemap."
 
 #: tformrecover.label4.caption
 msgid "Remove all existing notes and use the ones in the Snapshot."
-msgstr ""
-"Verwijder alle bestaande notities en gebruik de notities uit de momentopname."
+msgstr "Verwijder alle bestaande notities en gebruik de notities uit de momentopname."
 
 #: tformrecover.label5.caption
 msgid "Look firstly at your existing notes"
@@ -772,16 +743,14 @@ msgstr "Kijk eerst naar je bestaande notities"
 
 #: tformrecover.label6.caption
 msgid "This tool might help you recover lost or damaged notes."
-msgstr ""
-"Dit hulpmiddel helpt je kwijtgeraakte of beschadigde notities te herstellen."
+msgstr "Dit hulpmiddel helpt je kwijtgeraakte of beschadigde notities te herstellen."
 
 #: tformrecover.label7.caption
 msgid "Before you start, take a Safety Snapshot of your notes directory."
 msgstr "Maak, voordat je begint, een back-upmomentopname van je notitiemap."
 
 #: tformrecover.label8.caption
-msgid ""
-"Don't take repeated Safety Snapshots as each overwrites the previous one."
+msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
 msgstr "Doe dit niet te vaak, want nieuwe momentopnamen overschrijven de oude."
 
 #: tformrecover.label9.caption
@@ -984,12 +953,8 @@ msgid "You can reverse this from Settings"
 msgstr "Je kunt dit aanpassen in de instellingen"
 
 #: tmainform.hint
-msgid ""
-"If the green tomboy-ng icon is visible in your System Tray, you can dismiss"
-" this window."
-msgstr ""
-"Als het groene tomboy-ng-pictogram zichtbaar is in het systeemvak, dan kun je"
-" dit venster verwerpen."
+msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+msgstr "Als het groene tomboy-ng-pictogram zichtbaar is in het systeemvak, dan kun je dit venster verwerpen."
 
 #: tmainform.label1.caption
 msgid "Have Config"
@@ -1017,11 +982,8 @@ msgid "X"
 msgstr "X"
 
 #: tmainform.labelerror.hint
-msgid ""
-"Launch from commandline to see errors or see Config->SnapShot->Recover ..."
-msgstr ""
-"Start tomboy-ng vanuit een terminalvenster om fouten te bekijken op zie"
-" Instellingen->Momentopname->Herstellen"
+msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
+msgstr "Start tomboy-ng vanuit een terminalvenster om fouten te bekijken op zie Instellingen->Momentopname->Herstellen"
 
 #: tmainform.labelnodismiss1.caption
 msgid "LabelNoDismiss1"
@@ -1069,9 +1031,7 @@ msgstr "Naam van het nieuwe notitieboek"
 
 #: tnotebookpick.label5.caption
 msgid "Press OK and we will make the Note Book AND add this note to it."
-msgstr ""
-"Klik op 'Oké' om het notitieboek te maken EN deze notitie er aan toe te"
-" voegen."
+msgstr "Klik op 'Oké' om het notitieboek te maken EN deze notitie er aan toe te voegen."
 
 #: tnotebookpick.tabexisting.caption
 msgid "Existing Note Books"
@@ -1099,9 +1059,7 @@ msgstr "Geen bestaande verbinding aangetroffen."
 
 #: tomdroid.rsfailedtofindconnection_2
 msgid "If you are sure there should be an existing connection, check settings."
-msgstr ""
-"Als je er zeker van bent dat er een verbinding moet zijn, controleer dan de"
-" instellingen."
+msgstr "Als je er zeker van bent dat er een verbinding moet zijn, controleer dan de instellingen."
 
 #: tomdroid.rsfailedtofindconnection_3
 msgid "Otherwise, try joining a new connection."
@@ -1109,8 +1067,7 @@ msgstr "Probeer anders een nieuwe verbinding op te zetten."
 
 #: tomdroid.rsfixconnection
 msgid "If you are sure its there, check settings."
-msgstr ""
-"Als je er zeker van bent dat deze er is, controleer dan de instellingen."
+msgstr "Als je er zeker van bent dat deze er is, controleer dan de instellingen."
 
 #: tomdroid.rshavevalidsync
 msgid "Looking Good. Last sync date "
@@ -1240,19 +1197,13 @@ msgctxt "tsett.buttonhide.caption"
 msgid "Close"
 msgstr "Sluiten"
 
-#: tsett.buttonhide.hint
-msgid "Unsaved setting will remain for this session only"
-msgstr "De niet-opgeslagen instelling werkt alleen in deze sessie"
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr "Handmatig een momentopname maken"
 
 #: tsett.buttonmanualsnap.hint
 msgid "Take a time stamped snapshot of notes and config"
-msgstr ""
-"Maak een momentopname, voorzien van tijdstempel, van de notities en"
-" instellingen"
+msgstr "Maak een momentopname, voorzien van tijdstempel, van de notities en instellingen"
 
 #: tsett.buttonsetdictionary.caption
 msgid "Set Dictionary"
@@ -1345,8 +1296,7 @@ msgstr "Opstartscherm tonen"
 
 #: tsett.checkshowsplash.hint
 msgid "Always shown if error loading notes."
-msgstr ""
-"Deze wordt altijd getoond als er fouten zijn opgetreden tijdens het laden."
+msgstr "Deze wordt altijd getoond als er fouten zijn opgetreden tijdens het laden."
 
 #: tsett.checkshowtomdroid.caption
 msgid "Show Tomdroid Sync (experimental)"
@@ -1387,8 +1337,7 @@ msgstr "Instellingen"
 
 #: tsett.label11.caption
 msgid "AUTO snapshots not implemented yet, use manual !"
-msgstr ""
-"Automatische momentopnamen zijn nog niet geïmplementeerd; maak ze handmatig!"
+msgstr "Automatische momentopnamen zijn nog niet geïmplementeerd; maak ze handmatig!"
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
@@ -1416,8 +1365,7 @@ msgstr "een notitie op de synchronisatieserver:"
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
-msgstr ""
-"Er worden back-ups gemaakt zodra je een notitie of synchronisatie verwijdert"
+msgstr "Er worden back-ups gemaakt zodra je een notitie of synchronisatie verwijdert"
 
 #: tsett.label7.caption
 msgid "is about to overwrite one. "

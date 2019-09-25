@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 619
+  Left = 1062
   Height = 511
-  Top = 343
+  Top = 358
   Width = 628
   BorderIcons = []
   Caption = 'Settings'
@@ -827,7 +827,6 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 511
     Height = 56
-    Hint = 'Unsaved setting will remain for this session only'
     Top = 453
     Width = 113
     Anchors = [akRight, akBottom]
@@ -836,7 +835,6 @@ object Sett: TSett
     Caption = 'Close'
     OnClick = ButtonHideClick
     ParentShowHint = False
-    ShowHint = True
     TabOrder = 1
   end
   object Label15: TLabel

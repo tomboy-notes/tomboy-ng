@@ -19,6 +19,9 @@ WORK=source_folder
 CONTENTS="$WORK/""$PRODUCT".app/Contents
 VERSION=`cat version`
 MANUALS=`cat note-files`
+MSGFMT="/usr/local/Cellar/gettext/0.19.8.1/bin/msgfmt"
+
+
 if [ -z "$LAZ_DIR" ]; then
 	echo "Usage : $0 /Full/Path/Lazarus/dir"
 	echo "eg    : $0 \$HOME/bin/lazarus/laz-200"
@@ -53,6 +56,17 @@ function MakeDMG () {
 	for i in $MANUALS; do
 		cp ../doc/"$i" "$CONTENTS/Resources/.";
 	done;
+	mkdir "$CONTENTS/MacOS/locale"
+	for i in `ls -b ../po/*.??.po`; do
+            echo "Name is $i"
+            BASENAME=`basename -s.po "$i"`
+            CCODE=`echo "$BASENAME" | cut -d '.' -f2`
+            echo "CCode is $CCODE"
+            BASENAME=`basename -s."$CCODE" "$BASENAME"`
+	    mkdir -p "$CONTENTS/MacOS/locale/$CCODE"
+	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE"/"$BASENAME".mo "$i"
+	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	done
 	mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
 	rm "$PRODUCT""$BITS"_"$VERSION".dmg
 	~/create-dmg-master/create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"

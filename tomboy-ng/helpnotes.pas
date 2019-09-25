@@ -7,7 +7,9 @@ unit helpnotes;
   The help engine will always prefer alt-help files if they exist, if user wants to revert
   back to English, we just delete the files in alt-help.
 
-  Windows users will need to have some ssl lib installed, what happens if they dont ....
+  Linux users will need to have some ssl lib installed, should not be a problem.
+  Windows uses powershell, so is not going to work with Windows 7. May not work
+
 
   Much thanks to GetMem from the forum !
   https://forum.lazarus.freepascal.org/index.php/topic,46560.0.html
@@ -15,6 +17,7 @@ unit helpnotes;
 
   HISTORY
   2019/09/08 Clean up of management logic.
+  2019/09/25 Three individual OS based DownLoader() functions.
 }
 
 {$mode objfpc}{$H+}
@@ -43,12 +46,14 @@ type
     private
         procedure DataReceived(Sender: TObject; const ContentLength,
             CurrentPos: Int64);
-        function DownloadFile(URL, FullFileName: string; out ErrorMsg: string): boolean;
+        //function DownloadFile(URL, FullFileName: string; out ErrorMsg: string): boolean;
         function FormatSize(Size: Int64): String;
         // This proc replaces the RTL version to enable v1.1 of ssl instead of v23
         // note we set it in DownLoadFile() after the object is created.
         procedure HttpClientGetSocketHandler(Sender: TObject;
             const UseSSL: Boolean; out AHandler: TSocketHandler);
+        // Download Filename from URL website and store it in Dest local directory. True if successful
+        function DownLoader(URL, FileName, Dest: string; out ErrorMsg: string): boolean;
 
     public
 
@@ -81,16 +86,8 @@ resourcestring
     RS_Downloaded = 'Downloaded so far: ';
     RS_NoSSL = 'You do not appear to have the OpenSSL Library installed';
 
-procedure TFormHelpNotes.HttpClientGetSocketHandler(Sender: TObject;
-  const UseSSL: Boolean; out AHandler: TSocketHandler);
-begin
-  If UseSSL then begin
-    AHandler := TSSLSocketHandler.Create;
-    TSSLSocketHandler(AHandler).SSLType:=stTLSv1_2;  // <--
-  end else
-      AHandler := TSocketHandler.Create;
-end;
 
+{
 function TFormHelpNotes.DownloadFile(URL, FullFileName : string; out ErrorMsg : string) : boolean;
 var
     Client: TFPHttpClient;
@@ -125,6 +122,7 @@ begin
     ErrorMsg := '';
     result := true;
 end;
+}
 
 procedure TFormHelpNotes.ListBox1Click(Sender: TObject);
 begin
@@ -178,9 +176,11 @@ begin
     Application.ProcessMessages;
     case LeftStr(ListBox1.Items[ListBox1.ItemIndex], 2) of
             'es' : FileName := 'es_notes.zip';
+            //'nl' : FileName := 'nl_notes.zip;
     end;
     if FileName <> '' then begin
-        if DownLoadFile(DownLoadPath + FileName, MainForm.AltHelpNotesPath + FileName, EMsg) then begin
+        if DownLoader(DownLoadPath, FileName, MainForm.AltHelpNotesPath, EMsg) then begin
+        // if DownLoadFile(DownLoadPath + FileName, MainForm.AltHelpNotesPath + FileName, EMsg) then begin
             ZipFile := TUnZipper.Create;
             try
                 ZipFile.FileName := MainForm.AltHelpNotesPath + FileName;
@@ -196,6 +196,18 @@ begin
             showmessage('ERROR - ' + EMsg);
         ButtonRestore.Enabled := True;
     end;
+end;
+
+// ------- R E L A T E D   to   D O W N L O A D I N G ---------------------------
+
+procedure TFormHelpNotes.HttpClientGetSocketHandler(Sender: TObject;
+  const UseSSL: Boolean; out AHandler: TSocketHandler);
+begin
+  If UseSSL then begin
+    AHandler := TSSLSocketHandler.Create;
+    TSSLSocketHandler(AHandler).SSLType:=stTLSv1_2;  // <--
+  end else
+      AHandler := TSocketHandler.Create;
 end;
 
 function TFormHelpNotes.FormatSize(Size: Int64): String;
@@ -214,6 +226,7 @@ begin
     Result := FormatFloat('#,##0.0 GB', Size / GB);
 end;
 
+
 procedure TFormHelpNotes.DataReceived(Sender: TObject; const ContentLength,
   CurrentPos: Int64);
 begin
@@ -223,6 +236,136 @@ begin
     LabelProgress.Caption := RS_Downloaded + FormatSize(CurrentPos);
   Application.ProcessMessages;
 end;
+
+{$ifdef DARWIN}
+    // if the executable is not found, an eprocess exception is raised, message says ex not found
+    // if wget itself fails, the error message is in std error, not std out.
+    // it seems to default to writing the downloaded file to somewhere without appropriate permission
+    // so we must explicitly set directory-prefix in TProcess.
+function TFormHelpNotes.DownLoader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
+var
+    AProcess: TProcess;
+    List : TStringList = nil;
+begin
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'wget';
+    AProcess.Parameters.Add('--directory-prefix='+ Dest);
+    AProcess.Parameters.Add(URL+FileName);
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        try
+            AProcess.Execute;
+            Result := (AProcess.ExitStatus = 0);
+        except on
+            E: EProcess do begin
+                    ErrorMsg := E.Message;
+                    exit(false);
+                end;
+        end;
+        if not Result then begin
+            ErrorMsg := 'File download failed ' + URL + Filename;
+            result := false;
+            Debugln(Errormsg);
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);
+            debugln(List.text);
+            List.LoadFromStream(AProcess.Stderr);
+            debugln(List.text);
+            List.Free;
+        end;
+    finally
+        AProcess.Free;
+    end;
+end;
+{$endif}
+
+{$ifdef WINDOWS}
+function TFormHelpNotes.DownLoader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
+var
+    AProcess: TProcess;
+    List : TStringList = nil;
+    CmdLine : string;
+begin
+    ErrorMsg := '';
+    // https://www.addictivetips.com/windows-tips/download-files-from-powershell-windows-10/
+    CmdLine := '"(new-object System.Net.WebClient).DownloadFile(''' +
+            URL + FileName + ''',''' +
+            Dest + FileName + ''')"';
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'powershell';
+    // Note : windowstyle does not work only on powershell 1, may crash ?? untested
+    // ... and it still flickers a little.
+    AProcess.Parameters.Add('-windowstyle');
+    AProcess.Parameters.Add('hidden');
+    AProcess.Parameters.Add('-command');
+    AProcess.Parameters.Add(CmdLine);
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        try
+            AProcess.Execute;
+            Result := (AProcess.ExitStatus = 0);
+        except on
+            E: EProcess do begin
+                    ErrorMsg := E.Message;
+                    showmessage('EProcess Error ' + E.Message);
+                    exit(false);
+                end;
+        end;
+    finally
+        if not Result then begin
+            Debugln(Errormsg);
+            ErrorMsg := 'File download failed - ' + Filename;
+            result := false;
+            Debugln(Errormsg);
+            Debugln(URL + Filename);
+            Debugln(Dest + Filename);
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);
+            debugln(List.text);
+            List.LoadFromStream(AProcess.Stderr);
+            debugln(List.text);
+            List.Free;
+        end;
+        AProcess.Free;
+    end;
+end;
+{$endif}
+
+{$ifdef LINUX}
+function TFormHelpNotes.Downloader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
+var
+    Client: TFPHttpClient;
+begin
+    InitSSLInterface;
+    Client := TFPHttpClient.Create(nil);
+    Client.OnGetSocketHandler := @HttpClientGetSocketHandler;
+    Client.OnDataReceived := @DataReceived;
+    Client.AllowRedirect := true;
+    try
+        try
+            Client.Get(URL + FileName, Dest+FileName);
+        except
+            on E: EInOutError do begin
+                ErrorMsg := RS_NOSSL + ' ' + E.Message;
+                exit(false);
+                end;
+            on E: ESSL do begin
+                ErrorMsg := E.Message;
+                exit(false);
+                end;
+            on E: Exception do begin
+                ErrorMsg := E.Message;
+                exit(false);
+                end;
+        end;
+    finally
+        Client.Free;
+    end;
+    ErrorMsg := '';
+    result := true;
+end;
+{$endif}
+
 
 end.
 

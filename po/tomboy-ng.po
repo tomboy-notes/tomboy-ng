@@ -1184,10 +1184,6 @@ msgctxt "tsett.buttonhide.caption"
 msgid "Close"
 msgstr ""
 
-#: tsett.buttonhide.hint
-msgid "Unsaved setting will remain for this session only"
-msgstr ""
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr ""
