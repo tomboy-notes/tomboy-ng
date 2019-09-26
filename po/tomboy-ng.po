@@ -683,11 +683,6 @@ msgstr ""
 msgid "FormRecover"
 msgstr ""
 
-#: tformrecover.label1.caption
-msgctxt "tformrecover.label1.caption"
-msgid "Label1"
-msgstr ""
-
 #: tformrecover.label10.caption
 msgid "Please close any notes you may have open."
 msgstr ""
@@ -744,18 +739,6 @@ msgstr ""
 msgid "From here you can view snapshot notes, one by one."
 msgstr ""
 
-#: tformrecover.labelexistingadvice.caption
-msgid "LabelExistingAdvice"
-msgstr ""
-
-#: tformrecover.labelexistingadvice2.caption
-msgid "LabelExistingAdvice2"
-msgstr ""
-
-#: tformrecover.labelnoteerrors.caption
-msgid "LabelNoteErrors"
-msgstr ""
-
 #: tformrecover.listboxsnapshots.hint
 msgid "These are the currently known snapshots. "
 msgstr ""
@@ -801,20 +784,6 @@ msgstr ""
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
-msgstr ""
-
-#: tformsync.label1.caption
-msgctxt "tformsync.label1.caption"
-msgid "Label1"
-msgstr ""
-
-#: tformsync.label2.caption
-msgctxt "tformsync.label2.caption"
-msgid "Label2"
-msgstr ""
-
-#: tformsync.panel3.caption
-msgid "Panel3"
 msgstr ""
 
 #: tformtomdroid.buttonclose.caption
@@ -864,16 +833,8 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: tformtomdroid.editipaddress.text
-msgid "0.0.0.0"
-msgstr ""
-
 #: tformtomdroid.editprofilename.hint
 msgid "eg MySamsungNote7"
-msgstr ""
-
-#: tformtomdroid.editprofilename.text
-msgid "EditProfileName"
 msgstr ""
 
 #: tformtomdroid.label1.caption
@@ -894,20 +855,6 @@ msgstr ""
 
 #: tformtomdroid.label5.caption
 msgid "SSH Password for device"
-msgstr ""
-
-#: tformtomdroid.labelserverid.caption
-msgid "LabelServerID"
-msgstr ""
-
-#: tformtomdroid.panel1.caption
-msgctxt "tformtomdroid.panel1.caption"
-msgid "Panel1"
-msgstr ""
-
-#: tformtomdroid.panel2.caption
-msgctxt "tformtomdroid.panel2.caption"
-msgid "Panel2"
 msgstr ""
 
 #: tmainform.buttonconfig.caption
@@ -972,14 +919,6 @@ msgstr ""
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr ""
 
-#: tmainform.labelnodismiss1.caption
-msgid "LabelNoDismiss1"
-msgstr ""
-
-#: tmainform.labelnodismiss2.caption
-msgid "LabelNoDismiss2"
-msgstr ""
-
 #: tmainform.labelnotesfound.caption
 msgctxt "tmainform.labelnotesfound.caption"
 msgid "X"
@@ -992,24 +931,6 @@ msgstr ""
 
 #: tnotebookpick.buttonok.caption
 msgid "OK"
-msgstr ""
-
-#: tnotebookpick.caption
-msgid "NoteBookPick"
-msgstr ""
-
-#: tnotebookpick.label1.caption
-msgctxt "tnotebookpick.label1.caption"
-msgid "Label1"
-msgstr ""
-
-#: tnotebookpick.label2.caption
-msgctxt "tnotebookpick.label2.caption"
-msgid "Label2"
-msgstr ""
-
-#: tnotebookpick.label3.caption
-msgid "Label3"
 msgstr ""
 
 #: tnotebookpick.label4.caption
@@ -1151,11 +1072,6 @@ msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
-msgstr ""
-
-#: tsearchform.panel1.caption
-msgctxt "tsearchform.panel1.caption"
-msgid "Panel1"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
@@ -1334,10 +1250,6 @@ msgstr ""
 msgid "an appropriate Hunspell Dictionary set."
 msgstr ""
 
-#: tsett.label15.caption
-msgid "Label15"
-msgstr ""
-
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr ""
@@ -1366,48 +1278,12 @@ msgstr ""
 msgid "A snaphot is a copy of your current note directory."
 msgstr ""
 
-#: tsett.labeldic.caption
-msgid "LabelDic"
-msgstr ""
-
-#: tsett.labeldicprompt.caption
-msgid "LabelDicPrompt"
-msgstr ""
-
-#: tsett.labeldicstatus.caption
-msgid "LabelDicStatus"
-msgstr ""
-
-#: tsett.labelerror.caption
-msgid "LabelError"
-msgstr ""
-
-#: tsett.labellibrary.caption
-msgid "LabelLibrary"
-msgstr ""
-
-#: tsett.labellibrarystatus.caption
-msgid "LabelLibraryStatus"
-msgstr ""
-
-#: tsett.labelnotespath.caption
-msgid "LabelNotesPath"
-msgstr ""
-
-#: tsett.labelsettingpath.caption
-msgid "LabelSettingPath"
-msgstr ""
-
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
 msgstr ""
 
 #: tsett.labelsyncrepo.caption
 msgid "x"
-msgstr ""
-
-#: tsett.labelwaitforsync.caption
-msgid "LabelWaitForSync"
 msgstr ""
 
 #: tsett.menufriday.caption
@@ -1436,11 +1312,6 @@ msgstr ""
 
 #: tsett.menuwednesday.caption
 msgid "Wednesday"
-msgstr ""
-
-#: tsett.panel2.caption
-msgctxt "tsett.panel2.caption"
-msgid "Panel2"
 msgstr ""
 
 #: tsett.radioalwaysask.caption
@@ -1503,9 +1374,5 @@ msgstr ""
 #: tsett.tabsync.caption
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
-msgstr ""
-
-#: tsett.timeedit1.text
-msgid "TimeEdit1"
 msgstr ""
 

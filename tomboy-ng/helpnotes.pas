@@ -70,7 +70,7 @@ implementation
 uses
    mainunit, // HelpNotesPath
    LazFileUtils, zipper,
-  fphttpclient,
+  fphttpclient, process, lazlogger,
   fpopenssl,
   openssl,
   sslsockets;      // for TSSLSocketHandler etc
@@ -240,15 +240,16 @@ end;
 {$ifdef DARWIN}
     // if the executable is not found, an eprocess exception is raised, message says ex not found
     // if wget itself fails, the error message is in std error, not std out.
-    // it seems to default to writing the downloaded file to somewhere without appropriate permission
-    // so we must explicitly set directory-prefix in TProcess.
 function TFormHelpNotes.DownLoader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
 var
     AProcess: TProcess;
     List : TStringList = nil;
 begin
     AProcess := TProcess.Create(nil);
-    AProcess.Executable:= 'wget';
+    if FileExists('/usr/local/bin/wget' then
+        AProcess.Executable:= '/usr/local/bin/wget';
+    else
+        AProcess.Executable:= 'wget';   // Lets hope $PATH can find it ....
     AProcess.Parameters.Add('--directory-prefix='+ Dest);
     AProcess.Parameters.Add(URL+FileName);
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];

@@ -3,7 +3,7 @@
 #
 # A script to generate Mac's tomboy-ng dmg files
 
-# Typical Usage : ./mk_dmg.bash $HOME/bin/lazarus/laz-200
+# Typical Usage : bash ./mk_dmg.bash $HOME/bin/lazarus/fixes_2
 
 # Note we assume config is named same as lazarus dir, ie .laz-200 
 #
@@ -65,7 +65,7 @@ function MakeDMG () {
             BASENAME=`basename -s."$CCODE" "$BASENAME"`
 	    mkdir -p "$CONTENTS/MacOS/locale/$CCODE"
 	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE"/"$BASENAME".mo "$i"
-	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE"/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
 	done
 	mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
 	rm "$PRODUCT""$BITS"_"$VERSION".dmg

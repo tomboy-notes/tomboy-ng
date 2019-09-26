@@ -696,11 +696,6 @@ msgstr "Hulp"
 msgid "FormRecover"
 msgstr "Herstelpagina"
 
-#: tformrecover.label1.caption
-msgctxt "tformrecover.label1.caption"
-msgid "Label1"
-msgstr "Label1"
-
 #: tformrecover.label10.caption
 msgid "Please close any notes you may have open."
 msgstr "Sluit alle geopende notities."
@@ -757,18 +752,6 @@ msgstr "Doe dit niet te vaak, want nieuwe momentopnamen overschrijven de oude."
 msgid "From here you can view snapshot notes, one by one."
 msgstr "Hier kun je één voor één momentopnamenotities bekijken."
 
-#: tformrecover.labelexistingadvice.caption
-msgid "LabelExistingAdvice"
-msgstr "Bestaand"
-
-#: tformrecover.labelexistingadvice2.caption
-msgid "LabelExistingAdvice2"
-msgstr "Bestaand2"
-
-#: tformrecover.labelnoteerrors.caption
-msgid "LabelNoteErrors"
-msgstr "Notitiefouten"
-
 #: tformrecover.listboxsnapshots.hint
 msgid "These are the currently known snapshots. "
 msgstr "Dit zijn de bekende momentopnamen."
@@ -815,20 +798,6 @@ msgstr "Opslaan en synchroniseren"
 msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchroniseren"
-
-#: tformsync.label1.caption
-msgctxt "tformsync.label1.caption"
-msgid "Label1"
-msgstr "Label1"
-
-#: tformsync.label2.caption
-msgctxt "tformsync.label2.caption"
-msgid "Label2"
-msgstr "Label2"
-
-#: tformsync.panel3.caption
-msgid "Panel3"
-msgstr "Panel3"
 
 #: tformtomdroid.buttonclose.caption
 msgctxt "tformtomdroid.buttonclose.caption"
@@ -877,17 +846,9 @@ msgstr "Proefdraaien"
 msgid "Save"
 msgstr "Opslaan"
 
-#: tformtomdroid.editipaddress.text
-msgid "0.0.0.0"
-msgstr "0.0.0.0"
-
 #: tformtomdroid.editprofilename.hint
 msgid "eg MySamsungNote7"
 msgstr "bijv. MijnSamsungNote7"
-
-#: tformtomdroid.editprofilename.text
-msgid "EditProfileName"
-msgstr "Profielnaam aanpassen"
 
 #: tformtomdroid.label1.caption
 msgid "Tomdroid Sync - be aware of limitations !"
@@ -908,20 +869,6 @@ msgstr "IP-adres of apparaat"
 #: tformtomdroid.label5.caption
 msgid "SSH Password for device"
 msgstr "SSH-wachtwoord van apparaat"
-
-#: tformtomdroid.labelserverid.caption
-msgid "LabelServerID"
-msgstr "LabelServerID"
-
-#: tformtomdroid.panel1.caption
-msgctxt "tformtomdroid.panel1.caption"
-msgid "Panel1"
-msgstr "Paneel1"
-
-#: tformtomdroid.panel2.caption
-msgctxt "tformtomdroid.panel2.caption"
-msgid "Panel2"
-msgstr "Paneel2"
 
 #: tmainform.buttonconfig.caption
 msgctxt "tmainform.buttonconfig.caption"
@@ -985,14 +932,6 @@ msgstr "X"
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr "Start tomboy-ng vanuit een terminalvenster om fouten te bekijken op zie Instellingen->Momentopname->Herstellen"
 
-#: tmainform.labelnodismiss1.caption
-msgid "LabelNoDismiss1"
-msgstr "LabelNoDismiss1"
-
-#: tmainform.labelnodismiss2.caption
-msgid "LabelNoDismiss2"
-msgstr "LabelNoDismiss2"
-
 #: tmainform.labelnotesfound.caption
 msgctxt "tmainform.labelnotesfound.caption"
 msgid "X"
@@ -1006,24 +945,6 @@ msgstr "Annuleren"
 #: tnotebookpick.buttonok.caption
 msgid "OK"
 msgstr "Oké"
-
-#: tnotebookpick.caption
-msgid "NoteBookPick"
-msgstr "Notitieboek kiezen"
-
-#: tnotebookpick.label1.caption
-msgctxt "tnotebookpick.label1.caption"
-msgid "Label1"
-msgstr "Label1"
-
-#: tnotebookpick.label2.caption
-msgctxt "tnotebookpick.label2.caption"
-msgid "Label2"
-msgstr "Label2"
-
-#: tnotebookpick.label3.caption
-msgid "Label3"
-msgstr "Label3"
 
 #: tnotebookpick.label4.caption
 msgid "Name of the New Notebook"
@@ -1165,11 +1086,6 @@ msgstr "Notitieboeksjabloon bewerken"
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
 msgstr "Nieuwe notitie maken op basis van sjabloon"
-
-#: tsearchform.panel1.caption
-msgctxt "tsearchform.panel1.caption"
-msgid "Panel1"
-msgstr "Paneel1"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
@@ -1347,10 +1263,6 @@ msgstr "Spellingcontrole vereist de Hunspell-bibliotheken en"
 msgid "an appropriate Hunspell Dictionary set."
 msgstr "het juiste Hunspell-woordenboek."
 
-#: tsett.label15.caption
-msgid "Label15"
-msgstr "Label15"
-
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr "Notities worden gezocht en opgeslagen in:"
@@ -1379,38 +1291,6 @@ msgstr "Ze worden permanent bewaard, tenzij je er iets aan doet."
 msgid "A snaphot is a copy of your current note directory."
 msgstr "Een momentopname is een kopie van je huidige notitiemap."
 
-#: tsett.labeldic.caption
-msgid "LabelDic"
-msgstr "LabelDic"
-
-#: tsett.labeldicprompt.caption
-msgid "LabelDicPrompt"
-msgstr "LabelDicPrompt"
-
-#: tsett.labeldicstatus.caption
-msgid "LabelDicStatus"
-msgstr "LabelDicStatus"
-
-#: tsett.labelerror.caption
-msgid "LabelError"
-msgstr "LabelError"
-
-#: tsett.labellibrary.caption
-msgid "LabelLibrary"
-msgstr "LabelLibrary"
-
-#: tsett.labellibrarystatus.caption
-msgid "LabelLibraryStatus"
-msgstr "LabelLibraryStatus"
-
-#: tsett.labelnotespath.caption
-msgid "LabelNotesPath"
-msgstr "LabelNotesPath"
-
-#: tsett.labelsettingpath.caption
-msgid "LabelSettingPath"
-msgstr "LabelSettingPath"
-
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
 msgstr "... en is nog niet beschikbaar!"
@@ -1418,10 +1298,6 @@ msgstr "... en is nog niet beschikbaar!"
 #: tsett.labelsyncrepo.caption
 msgid "x"
 msgstr "x"
-
-#: tsett.labelwaitforsync.caption
-msgid "LabelWaitForSync"
-msgstr "LabelWaitForSync"
 
 #: tsett.menufriday.caption
 msgid "Friday"
@@ -1450,11 +1326,6 @@ msgstr "dinsdag"
 #: tsett.menuwednesday.caption
 msgid "Wednesday"
 msgstr "woensdag"
-
-#: tsett.panel2.caption
-msgctxt "tsett.panel2.caption"
-msgid "Panel2"
-msgstr "Paneel2"
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."
@@ -1517,8 +1388,4 @@ msgstr "Spellingcontrole"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Synchronisatie"
-
-#: tsett.timeedit1.text
-msgid "TimeEdit1"
-msgstr "TimeEdit1"
 
