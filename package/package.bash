@@ -35,12 +35,23 @@ LEAKCHECK="NO"
 
 if [ -z "$LAZ_DIR" ]; then
 	echo "Usage : $0 /Full/Path/Lazarus/dir"
-	echo "eg    : $0 \$HOME/bin/lazarus/laz-200"
+	echo "eg    : $0 \$HOME/bin/lazarus/fixes_2_0"
+	echo "or"
+	echo "      : $0 clean"
 	exit
 fi
 
 if [ "$2" == "LeakCheck" ]; then
 	LEAKCHECK="YES"
+fi
+
+
+if [ $1 == "clean" ]; then
+	rm  *.deb
+	rm  *.gz
+	rm -Rf BUILD
+	rm -Rf WinPre*
+	exit
 fi
 
 # ----------------------
@@ -82,10 +93,9 @@ function BuildIt () {
 	else
 		LAZMODE="ReleaseWin32"
 	fi	
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode="$LAZMODE" --os="win32" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" "$LAZ_FULL_DIR"/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode="$LAZMODE" --os="win32" Tomboy_NG.lpi
 	echo "------------- FINISHED BUILDING -----------------"
 	ls -l tomboy-ng*
-	echo "-------------------------------------------------"
 	cd ../package
 }	
 
@@ -101,6 +111,7 @@ function MkLanguages () {
 function DebianPackage () {
 	# We build a debian tree in BUILD and call dpkg-deb -b 
 	#  BUILD/DEBIAN control,debian-binary and any scripts
+	rm -rf BUILD
 	mkdir -p BUILD/DEBIAN
 	mkdir BUILD/usr
 	mkdir BUILD/usr/bin
@@ -130,10 +141,9 @@ function DebianPackage () {
         mkdir -p BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES
         BASENAME=`basename -s."$CCODE" "$BASENAME"`
 	msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
-	msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/lclstrconsts.mo "$LAZ_FULL_DIR"/lcl/languages/lclstrconsts."$CCODE".po
     done
 
-    # ------------ 
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
 	mkdir -p BUILD/usr/share/man/man1
@@ -144,10 +154,9 @@ function DebianPackage () {
 	else
 		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
 	fi
-	# cp "$SOURCE_DIR/$MANUALS" "BUILD/usr/share/doc/$PRODUCT/"
 	cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
-	chmod 0755 "BUILD/usr/share/doc/$PRODUCT/html" 
-	chmod 0744 "BUILD/usr/share/doc/$PRODUCT/html/*"
+	chmod 0755 BUILD/usr/share/doc/"$PRODUCT"/html 
+	chmod 0744 BUILD/usr/share/doc/"$PRODUCT"/html/*
     # -------------- Make control file
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
@@ -176,7 +185,8 @@ function DebianPackage () {
     echo "Copyright: 2017-2019 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
 	chmod -R g-w BUILD
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
-	rm -rf BUILD
+
+
 }
 
 function DoGZipping {
@@ -204,21 +214,20 @@ function MkWinPreInstaller() {
 	for i in $MANUALS; do
 	    cp ../doc/$i "$WIN_DIR/."
 	done;
-	echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
+	# " -------- WRITE mo files --------"
 	for i in `ls -b ../po/*.??.po`; do
-            echo "Name is $i"
+            # echo "Name is $i"
             BASENAME=`basename -s.po "$i"`
             CCODE=`echo "$BASENAME" | cut -d '.' -f2`
-            echo "CCode is $CCODE"
+            # echo "CCode is $CCODE"
             BASENAME=`basename -s."$CCODE" "$BASENAME"`
-	    mkdir -p "$WIN_DIR"/locale/"$CCODE"
-	    msgfmt -o "$WIN_DIR"/locale/"$CCODE"/"$BASENAME".mo "$i"
-	    msgfmt -o "$WIN_DIR"/locale/"$CCODE"/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	    msgfmt -o "$WIN_DIR"/"$BASENAME"."$CCODE".mo "$i"
+	    msgfmt -o "$WIN_DIR"/lclstrconsts."$CCODE".mo "$LAZ_FULL_DIR"/lcl/languages/lclstrconsts."$CCODE".po
 	done
 	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$WIN_DIR/readme.txt"
-	unix2dos "$WIN_DIR/readme.txt"
+	unix2dos -q "$WIN_DIR/readme.txt"
 	echo "----------- Windows installer dir created -----------"
-	ls -la "$WIN_DIR"
+	# ls -la "$WIN_DIR"
 }
 
 # --------------------------------------
@@ -234,11 +243,10 @@ function MkWinPreInstaller() {
 DebianPackage "i386"
 DebianPackage "amd64"
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
-ls -l *.deb
-echo "------------------------------------------------"
+# ls -l *.deb
 DoGZipping
 MkWinPreInstaller
-
+ls -ltr
 
 
 

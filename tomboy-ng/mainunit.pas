@@ -725,9 +725,12 @@ ResourceString
 
 procedure TMainForm.FillInFileMenus(ItsAnUpdate : boolean = false);
 begin
-    {$ifdef LINUX}
-    AltHelpNotesPath := Sett.LocalConfig + ALTHELP + PathDelim;       // here because must call after sett exists
-    {$endif}
+  {$ifdef LINUX}
+  AltHelpNotesPath := Sett.LocalConfig + ALTHELP + PathDelim;       // here because must call after sett exists
+  {$endif}
+  {$ifdef WINDOWS}
+  AltHelpNotesPath := Sett.LocalConfig + ALTHELP + PathDelim;       // here because must call after sett exists
+  {$endif}
     if ItsAnUpdate then begin
         PopupMenuSearch.Items.Clear;
         PopupMenuTray.Items.Clear;

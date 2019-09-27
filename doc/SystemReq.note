@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>tomboy-ng System Requirements</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng System Requirements</underline><size:small>
+
+This is a tomboy-ng doc for the Github Wiki. Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small>
+
+tomboy-ng is tested on the following platforms at each release. If your experiences differ, please let us know ! The normal way to use  tomboy-ng  is the System Tray Icon, its how you interact with tomboy-ng running in the background. Those platforms that have problems, do so with the System Tray Icon !<size:large>
+
+<bold>Linux</bold></size:large><bold>
+Ubuntu</bold> - generally, all flavours and all releases should work fine. Tested against 16.04 Ubuntu, 16.04 Ubuntu Mate, 18.04 Ubuntu, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.04 Ubuntu and 19.04 Ubuntu Mate. Just download the appropriate DEB file and install using gdebi (not, I emphasis, the Software Centre, you should install gdebi if you don't already have it!)
+
+<bold>Mageia</bold> - Mate, XFCE work fine. Mageia with Enlightenment apparently has an issue with showing the correct icon on System Tray.  KDE - Plasma requires a right click on the System Tray Icon.
+
+<bold>Debian</bold> with XFCE is fine. V9.8 and V9.9 with Gnome requires an extra library and the Icon appears in a somewhat strange place. See "Difficult Systems" below.
+
+<bold>Fedora</bold> (28, 29) can be used with tomboy-ng but not easily. See "Difficult Systems" below.
+
+<bold>OpenSUSE</bold> (Leap, 15) can also be used with tomboy-ng but is another Difficult System, see below.<size:large>
+
+<bold>Windows.</bold></size:large>
+As of v0.22 of tomboy-ng, there is one installer that installs either the 64 or 32bit version. It has been tested on a 32bit Vista and a 64bit Windows 10 Pro and should work on anything between. Note the green tomboy-ng System Tray Icon is sometimes hidden along with some others (to avoid clutter ?). Click the ^ icon to see them all.
+
+In v0.24, to download Help Notes in another language, you need Powershell, that means Windows 8 or 10.<size:large>
+
+<bold>Mac</bold></size:large>
+tomboy-ng is only tested on a Sierra Mac and is available in both a 32bit and 64bit install. At the time of writing, the 64bit version does not print and is a little slower than the 32bit one. In a future release of the Mac OS, Apple won't support 32bit but right now, its fine. As the tomboy-ng author has not paid a fee to Apple, you need  hold down the Ctrl button and click the tomboy-ng icon in Applications the first time you start it. After that, the normal double click is fine.
+
+In v0.24, to download Help Notes in another language, you need to install (using, eg, brew) wget.<size:large>
+
+
+<bold>Other Operating Systems</bold></size:large>
+tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to work well on a number of other platforms, its  likely tomboy-ng could be made to as well. Please express your interest. Possible targets might include Rasperian, FreeBSD, Sparc .....<size:huge>
+
+<bold>Difficult Systems</bold></size:huge>
+As mentioned above, some Linux systems have issues with Tomboy user's preferred way to interact with their app. Some recent Gnome based systems in particular. There are some ways around this problem.
+
+<bold>Debian</bold> (9.8, 9.9 Gnome) - requires an extra library be installed, its not specified as a dependency in the installers because  not all systems that use .DEBs require it and most that do already have it.
+
+<monospace>apt install libappindicator3&lt;enter&gt;</monospace>
+
+The icon will now appear but only when you hover the mouse pointer down near the lower left edge of the screen. (Sorry, I know its silly, please don't blame me !)
+
+<bold>Fedora (28, 29, 30)</bold> - a somewhat harder problem. You really have three possible approaches -
+<list><list-item dir="ltr">When Fedora first started to frown on System Tray Icons, several people produced Gnome Extensions with names like "TopIcons" to solve the problem. But with Fedora 29 and later even that is not enough, you need to install  libappindicator-gtk3 to prevent the popup menu appearing in an apparently random placse on your screen. Note that library is a (good) alternative to disabling Wayland ! </list-item></list>
+<list><list-item dir="ltr">An alternative approach is abandon the System Tray altogether and just leave either the tomboy-ng mini splash screen or the search form visible, both have copies of the tomboy-ng menu. I suggest that you start tomboy-ng with the -g option to prevent accidental closing of the splash screen if you go this way. Pretty ugly !</list-item></list>
+<list><list-item dir="ltr">Thirdly, install Ubuntu :-)</list-item></list>
+<bold>Hint :</bold> When experimenting with tomboy-ng on a system like Fedora, start tomboy-ng from the command line so you can Ctrl-C it if you  find yourself unable to interact.
+
+<bold>openSUSE</bold>, tomboy-ng does work with openSUSE if you install TopIcons-plus and libappindicator3-1. However, openSUSE rejects the (RedHat) RPM provided, you must manually put the binary (and, perhaps the doc and icon files) in an appropriate place. If you want a openSUSE compatible installer (or want to help make one) please say so. <size:large>
+
+
+<bold>The TopIcon Gnome Extension.</bold></size:large>
+
+To install any Gnome Extension, first you must must add a Extension to your browser, I use Firefox, I believe this also works with Chrome and I expect other major browsers. It all appears a bit clumsy but does work. You don't need an account.<size:small>
+
+</size:small><list><list-item dir="ltr"><size:small>(Determine your version of Gnome, you will need it later. From a terminal, type <monospace>cat /usr/share/gnome/gnome-version.xml</monospace> You need the value of "platform" - ie "3" and "minor" - ie "30". In my case, its version 3.30.  Hmm, I don't think this is necessary any more)</size:small></list-item></list><size:small></size:small>
+<list><list-item dir="ltr">Browse to <monospace>https://extensions.gnome.org/</monospace> Note the purple/mauve box near the top, it tells you to "Click here to install browser extension", do so and Allow it to install. Restart your browser.</list-item></list>
+<list><list-item dir="ltr">Now browse again to https://extensions.gnome.org/ and search for TrayIcons-plus. In my case, its first on the list. Click its link and then click the On/Off switch, upper right, to On.</list-item></list>
+
+Some people report that they then need to restart but for me, restarting tomboy-ng after installing worked fine.
+
+<bold>If you don't want to install the browser extension</bold> there is an alternative, possibly easier approach -
+As root -
+<monospace>dnf install make libappindicator-gtk3 gnome-tweak-tool</monospace> &lt;enter&gt;
+// note : on openSUSE, its libappindicator3-1
+
+As yourself -
+<monospace>git clone https://github.com/phocean/TopIcons-plus.git &lt;enter&gt;</monospace>
+<monospace>cd TopIcons-plus &lt;enter&gt;</monospace>
+<monospace>make install&lt;enter&gt;</monospace>
+
+Logout and back in again.
+<monospace>gnome-tweaks &lt;enter&gt;</monospace>
+click Extensions, turn TopIcons-plus ON
+click close<size:large>
+
+
+<bold>Disable Wayland</bold></size:large><size:small><bold>
+
+Note : I don't recommend this approach any more, better to install the approriate appindicator library as mentioned above. </bold>
+
+Wayland is, effectively, a new replacement for X11. If you disable Wayland your system falls back to X11 and it all works as expected. To disable Wayland, edit (as root) the /etc/gdm/custom.conf file, remove the '#' in front of the line that says "#WaylandEnable=false", reboot. Maybe this is only necessary until either Wayland or the (various) TopIcon people sort themselves out ?
+
+Note, for a usable System Tray Icon, Fedora needs both the TopIcon Extension AND the disable Wayland hack !
+
+
+</size:small></note-content></text>
+  <last-change-date>2019-09-27T16:56:16.1000000+10:00</last-change-date>
+  <last-metadata-change-date>2019-09-27T16:56:16.1000000+10:00</last-metadata-change-date>
+  <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>671</x>
+  <y>146</y>
+  <open-on-startup>False</open-on-startup>
+</note>

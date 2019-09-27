@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>In Your Language</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>In Your Language</underline><size:small>
+
+This is a tomboy-ng doc for the Github Wiki. Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small>
+
+Tomboy-ng is written in English by someone who speaks no other language than English. Sorry !
+
+But it is built using tools that allow easy translation to many other languages. This page is about using those translations and, further down, how to contribute to the project by making a translation to another language.
+
+There are two independent aspects to a tomboy-ng translation. The first is all the text that appears during the use of the app, menus, labels and prompts. The other aspect is a small set of (tomboy style) help notes, available from the main file menu.
+
+At the time of writing, we have only Spanish (Application Translations and Help Notes) and Dutch (Application Translation only). Please consider making a translation to another language if you can.<size:large>
+
+<bold>Application Translations</bold></size:large>
+Tomboy-ng should detect the local language settings of your computer and, if it can, will replace the English content with something more appropriate. If this does not happen, or you need to override its decision, you can manually tell tomboy-ng to display  in one of its supported languages using the two letter language code. For example, to display in Spanish, you would start tomboy-ng with this command :
+<monospace>tomboy-ng --language=es &lt;enter&gt;</monospace><size:large>
+
+<bold>Help Notes Translations</bold></size:large>
+Tomboy-ng comes with a small set of notes on various help topics.  Translating these notes is quite separate from the application text so its not selected automatically, you can, if you choose, download a set in another language. To do so, go to Settings, Notes and click "Help Notes Language" - double click the required language and click "Revert" if you later decide to return to the English version.
+
+The download process is dependant on your operating system. Linux users will need a current version of OpenSSL, most likely you will be fine. Windows users need to have Powershell, that means it will not work with early versions of Windows such as 7. Mac user will have to install the wget package, typically using Brew, the command to do so is "brew install wget".  Brew will normally put a symlink to its wget in /usr/local/bin, if you install wget some other way, make sure there is a<monospace> /usr/local/bin/wget</monospace> present.<size:large>
+
+<bold>New Translations</bold></size:large>
+You are very welcome to contribute either (or both) an Application Translation or translate the set of Help Notes. Very welcome ! 
+
+To do either, download the English version from the Git site, for the Application Translation, download the file /po/tomboy-ng.po and rename it tomboy-ng.XX.po (XX being your language code).  Most people tend to use the freely available poedit program to do the Application Translation, it shows you the original English and invites you to put in your translation.
+
+You can either return the edited file via a Git pull request or, perhaps easier, email it to the author.<size:large>
+
+<bold>Updates to Translations</bold></size:large>
+Tomboy-ng is quite a young application and its still evolving quite rapidly. Sadly that means an existing translation needs updating sometimes. If you see something that needs attention, download the existing po file in your language, make your updates and send it back. <size:large>
+
+<bold>Help Notes</bold></size:large>
+Similar approaches apply to the help notes, they appear with a .note extension in the /doc directory. Be aware that not all notes in that directory and Help Notes, little point in translating ones that don't appear when you click 'Help' in main menu. If there is an existing translation, it will be XX_notes.zip where XX is your language code.
+
+Post an issue message on the git site or the tomboy mailing list if you need any help.
+
+
+
+</note-content></text>
+  <last-change-date>2019-09-27T10:58:26.1860000+10:00</last-change-date>
+  <last-metadata-change-date>2019-09-27T10:58:26.1860000+10:00</last-metadata-change-date>
+  <create-date>2019-09-27T10:58:26.1860000+10:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1279</width>
+  <height>602</height>
+  <x>96</x>
+  <y>35</y>
+  <open-on-startup>False</open-on-startup>
+</note>

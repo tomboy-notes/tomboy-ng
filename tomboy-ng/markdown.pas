@@ -30,6 +30,7 @@ HISTORY
     2018/12/05  This unit is pleased th serve.
     2018/12/06  Fixed a bug in Addtag, if Buff is only spaces.
     2019/05/14  Display strings all (?) moved to resourcestrings
+    2019/09/27  Added SmallFont, actually subscript because markdown does not do a small font.
 }
 
 interface
@@ -55,6 +56,7 @@ type
         procedure FormShow(Sender: TObject);
     private
         FSize : integer;
+        SmallFont : boolean;
 		Bold : boolean;
 		Italics : boolean;
 		HiLight : boolean;
@@ -68,6 +70,7 @@ type
         PrevUnderline : boolean;
         PrevStrikeout : boolean;
         PrevFixedWidth : boolean;
+        PrevSmallFont : boolean;
 		//InList : boolean;
         function AddCodeBlock(var BlkNo: integer): string;
         function AddHeading(BlkNo: integer): string;
@@ -120,6 +123,7 @@ end;
 
 procedure TFormMarkdown.CopyLastFontAttr();
 begin
+    PrevSmallFont := SmallFont;
   PrevFSize := FSize;
   PrevBold := Bold;
    PrevItalics := Italics;
@@ -150,6 +154,7 @@ var
    Block : TKMemoBlock;
    NextBlock : integer;
  begin
+    SmallFont := false;
     Bold := false;
     Italics := False;
     HiLight := False;
@@ -203,7 +208,8 @@ var
               an empty Font.
             }
             Buff := '';
-            if Bold then Buff := '**';
+            if SmallFont then Buff := '</sub>';
+            if Bold then Buff := Buff + '**';
             if Italics then Buff := Buff + '_';
             //if HiLight then Buff := Buff + '</highlight>';
             //if Underline then Buff := Buff + '</underline>';
@@ -319,9 +325,18 @@ begin
            Buff := Buff + '`';
            FixedWidth := False;
        end;
+       if SmallFont then begin
+           Buff := Buff + '</sub>';
+           SmallFont := False;
+       end;
    end;
 
     // Normal mode.
+    // When smallfont turns off
+    if (SmallFont and (FT.TextStyle.Font.Size <> Sett.FontSmall)) then begin
+        Buff := Buff + '</sub>';
+        SmallFont := False;
+    end;
     if (Bold and (not (fsBold in FT.TextStyle.Font.Style))) then begin
         Buff := Buff + '**';
         Bold := false;
@@ -397,6 +412,12 @@ begin
     if ((not Bold) and (fsBold in FT.TextStyle.Font.Style)) then begin
         Buff := Buff + '**';
         Bold := true;
+    end;
+
+    // SmallFont turns on
+    if ((not SmallFont) and (FT.TextStyle.Font.Size = Sett.FontSmall)) then begin
+        Buff := Buff + '<sub>';
+        SmallFont := True;
     end;
     Result := Buff;
 end;

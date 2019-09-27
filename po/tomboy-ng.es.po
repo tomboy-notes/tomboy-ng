@@ -693,7 +693,7 @@ msgstr ""
 msgid "Restore from Safety Snapshot"
 msgstr ""
 "Restuarar desde\n"
-"Instantánea de Seguridad\n"
+"Instantánea de Seguridad"
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
@@ -703,7 +703,7 @@ msgstr "Eliminar Notas Corrompidas"
 msgid "Safety Snapshot"
 msgstr ""
 "Instantánea\n"
-"de Seguridad\n"
+"de Seguridad"
 
 #: tformrecover.buttonmakesafetysnap.hint
 msgid "Take a initial snapshot of your notes and config. Overwritten each time."

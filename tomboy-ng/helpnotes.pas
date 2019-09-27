@@ -171,6 +171,10 @@ var
 begin
     if not DirectoryExistsUTF8(MainForm.AltHelpNotesPath) then
         CreateDirUTF8(MainForm.AltHelpNotesPath);
+    if not DirectoryExistsUTF8(MainForm.AltHelpNotesPath) then begin
+        showmessage('Unable to create ' + MainForm.AltHelpNotesPath);
+        exit;
+    end;
     // showmessage(ListBox1.Items[ListBox1.ItemIndex]);
     LabelProgress.Caption := RS_DownLoading;
     Application.ProcessMessages;

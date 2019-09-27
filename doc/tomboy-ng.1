@@ -8,6 +8,8 @@ tomboy-ng \- manage a collection of notes using a simple markup
 [\fB-\-gnome3\fR]
 [\fB\-\-debug\-sync\fR] 
 [\fB\-\-debug\-index\fR] 
+[\fB\-\-debug-log\fR=\fILOGFILE\fR]
+[\fB\-\-language\fR=\fICC\fR]
 [\fB\-\-config\-dir\fR=\fIPATH_to_DIR\fR]
 [\fB\-o\fR \fIPATH_to_NOTE\fR] 
 [\fB\-\-open-note\fR=\fIPATH_to_NOTE\fR]
@@ -17,7 +19,7 @@ tomboy-ng \- manage a collection of notes using a simple markup
 .B tomboy-ng
 is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is possibly file compatible with Tomdroid and GNote. Tomboy-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model but not yet Network Sync using Rainy or Graphal.
 
-Many users will want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can interact with it via that Icon. However, a small window is also opened, it can be dismissed if you see the system tray icon. Sadly, some Gnome3 distros do not show the system tray icon and you must keep that small window visible. A command line switch (-g or --gnome3) protects the small window from accidental dismissal.
+Many users will want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can interact with it via that Icon. However, a small window is also opened, it can be dismissed if you see the system tray icon. Some Gnome3 distros do not show the system tray icon, while you can keep that small window visible, see the Github wiki pages (below) for much better solutions. A command line switch (-g or --gnome3) protects the small window from accidental dismissal.
 
 Tomboy-ng requires the gtk2 libraries be available on Linux, uses native libraries on Windows and Mac.
 
@@ -37,6 +39,16 @@ Generate a lot of logging information on the console during a sync process. Inte
 .TP
 .BR \-\-debug-index
 Generate a lot of logging information on the console while indexing the notes repo. Intended for debugging.
+
+.TP
+.BR \-\-debug\-log=\fILOGFILE
+Direct debug infor to a file, necessary to see that output on Windows and Mac, useful on Linux. LOGFILE is a filename and a (writable) path to that filename. On Windows, make a desktop shortcut to tomboy-ng and then edit the Shortcut->Target parameter to something like -
+
+"c:\\Program Files\\tomboy-ng64.exe" --debug-log=%userprofile%\\debug.txt
+
+.TP
+.BR \-\-language=\fICC\fR
+Tomboy-ng normally picks up its language from the OS and does an auto switch. However, its possible to force a language at startup using the two letter language code, ie es for spanish, nl for dutch.
 
 .TP
 .BR \-c ", " \-\-config\-dir=\fIPATH_to_DIR\fR
@@ -86,15 +98,15 @@ Quit (ie close) this Note
 .SH DEBUGGING
 tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows does not, for this purpose, have a console. But it can be told to capture this log info to a file using another command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
 
-tomboy-ng  \-\-debug-log=c:\\debug.txt  \-\-debug-sync
+tomboy-ng  \-\-debug-log=%userprofile%\\debug.txt  \-\-debug-sync
 
-set tomboy-ng_debuglog=c:\\debug.txt
+set tomboy-ng_debuglog=c:\\%userprofile%\\debug.txt
 
 Mac users can do something similar : 
 
 open tomboy-ng.app \-\-args     "\-\-debug-log=$HOME/tomboy-ng.log"  "\-\-debug-sync"
 
-Linux users who need a file can also :
+Linux users who need a debug logfile can also :
 
 tomboy-ng \-\-debug-sync \-\-debug-log=$HOME/tomboy-ng.log
 
@@ -104,7 +116,7 @@ If you intend to post such a log file to (eg) the Tomboy help system, do please 
 .SH "SEE ALSO"
 .I https://github.com/tomboy-notes/tomboy-ng
 
-On some platforms, tomboy-ng is distributed with a directory, html, that contains further documentation.
+There you will find several wiki pages going into far more detail than here. 
 
 .SH BUGS
 Please send bug reports to the Tomboy mailing list
