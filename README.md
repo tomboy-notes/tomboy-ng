@@ -16,7 +16,8 @@ If you're interested in discussing tomboy-ng, please consider our mailing list.
 To subscribe, visit [here](http://lists.beatniksoftware.com/listinfo.cgi/tomboy-list-beatniksoftware.com)
 or just send your questions and suggestions to <tomboy-list@beatniksoftware.com>.
 
-Copyright (C) 2018 David Bannon <dbannon@internode.on.net>
+Copyright (C) 2018,2019 David Bannon <dbannon@internode.on.net>
+
 ---
 
 

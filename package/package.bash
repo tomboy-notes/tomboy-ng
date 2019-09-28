@@ -47,8 +47,9 @@ fi
 
 
 if [ $1 == "clean" ]; then
-	rm  *.deb
-	rm  *.gz
+	rm  -f *.deb
+	rm  -f *.gz
+	rm  -f *.rpm
 	rm -Rf BUILD
 	rm -Rf WinPre*
 	exit
@@ -99,14 +100,6 @@ function BuildIt () {
 	cd ../package
 }	
 
-# -----------------------
-
-function MkLanguages () {
-	# abandoned
-	for i in es; do
-		cat "../po/tomboy-ng.$i.po" "../po/lclstrconsts.$i.po" | msgfmt -o "tomboy-ng.$i.mo" -;
-	done;
-}
 
 function DebianPackage () {
 	# We build a debian tree in BUILD and call dpkg-deb -b 
@@ -129,8 +122,6 @@ function DebianPackage () {
     # -------------- Translation Files
     # we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
     # and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
-
-    # echo " --------WARNING UNTESTED CODE to WRITE mo files --------"
     mkdir -p BUILD/usr/share/locale
     for i in `ls -b ../po/*.??.po`; do		# Deal with each country code in turn
         # echo "Name is $i"
@@ -154,9 +145,10 @@ function DebianPackage () {
 	else
 		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
 	fi
-	cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
-	chmod 0755 BUILD/usr/share/doc/"$PRODUCT"/html 
-	chmod 0744 BUILD/usr/share/doc/"$PRODUCT"/html/*
+	# Remove the html files, too hard to maintain
+	# cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
+	# chmod 0755 BUILD/usr/share/doc/"$PRODUCT"/html 
+	# chmod 0644 BUILD/usr/share/doc/"$PRODUCT"/html/*
     # -------------- Make control file
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
@@ -191,7 +183,7 @@ function DebianPackage () {
 
 function DoGZipping {
 	# Note windows cannot handle gzip'ed files, use zip. 
-	rm *.gz
+	rm -f *.gz
 	cp ../tomboy-ng/tomboy-ng .
 	gzip -q tomboy-ng
 	mv tomboy-ng.gz tomboy-ng64_$VERSION.gz
@@ -210,11 +202,14 @@ function MkWinPreInstaller() {
 	cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
 	cp ../COPYING "$WIN_DIR/."
 	cp AfterInstall.txt "$WIN_DIR/."
-	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss"
+	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss.temp"
 	for i in $MANUALS; do
 	    cp ../doc/$i "$WIN_DIR/."
 	done;
 	# " -------- WRITE mo files --------"
+	msgfmt -o "$WIN_DIR"/"$PRODUCT".mo ../po/"$PRODUCT".po
+	# Source: "tomboy-ng.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
+	echo "Source: \""$PRODUCT".mo\";     DestDir: \"{app}\\locale\"; Flags: ignoreversion" > mo.insert
 	for i in `ls -b ../po/*.??.po`; do
             # echo "Name is $i"
             BASENAME=`basename -s.po "$i"`
@@ -223,7 +218,10 @@ function MkWinPreInstaller() {
             BASENAME=`basename -s."$CCODE" "$BASENAME"`
 	    msgfmt -o "$WIN_DIR"/"$BASENAME"."$CCODE".mo "$i"
 	    msgfmt -o "$WIN_DIR"/lclstrconsts."$CCODE".mo "$LAZ_FULL_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	    echo "Source: \""$BASENAME"."$CCODE".mo\";     DestDir: \"{app}\\locale\"; Flags: ignoreversion" >> mo.insert
+	    echo "Source: \"lclstrconsts."$CCODE".mo\";     DestDir: \"{app}\\locale\"; Flags: ignoreversion" >> mo.insert
 	done
+	sed '/PUTMOLINESHERE/r mo.insert' "$WIN_DIR"/tomboy-ng.iss.temp > "$WIN_DIR"/tomboy-ng.iss
 	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$WIN_DIR/readme.txt"
 	unix2dos -q "$WIN_DIR/readme.txt"
 	echo "----------- Windows installer dir created -----------"
@@ -237,13 +235,13 @@ function MkWinPreInstaller() {
 #if [ "$2" == "LeakCheck" ]; then
 #	BuildItLeakCheck
 #else 
-	BuildIt
+	#BuildIt
 #fi
 
 DebianPackage "i386"
 DebianPackage "amd64"
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
-# ls -l *.deb
+ls -l *.deb
 DoGZipping
 MkWinPreInstaller
 ls -ltr

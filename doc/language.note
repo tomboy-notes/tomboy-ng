@@ -15,7 +15,7 @@ At the time of writing, we have only Spanish (Application Translations and Help 
 
 <bold>Application Translations</bold></size:large>
 Tomboy-ng should detect the local language settings of your computer and, if it can, will replace the English content with something more appropriate. If this does not happen, or you need to override its decision, you can manually tell tomboy-ng to display  in one of its supported languages using the two letter language code. For example, to display in Spanish, you would start tomboy-ng with this command :
-<monospace>tomboy-ng --language=es &lt;enter&gt;</monospace><size:large>
+<monospace>tomboy-ng --lang=es &lt;enter&gt;</monospace><size:large>
 
 <bold>Help Notes Translations</bold></size:large>
 Tomboy-ng comes with a small set of notes on various help topics.  Translating these notes is quite separate from the application text so its not selected automatically, you can, if you choose, download a set in another language. To do so, go to Settings, Notes and click "Help Notes Language" - double click the required language and click "Revert" if you later decide to return to the English version.
@@ -40,8 +40,8 @@ Post an issue message on the git site or the tomboy mailing list if you need any
 
 
 </note-content></text>
-  <last-change-date>2019-09-27T10:58:26.1860000+10:00</last-change-date>
-  <last-metadata-change-date>2019-09-27T10:58:26.1860000+10:00</last-metadata-change-date>
+  <last-change-date>2019-09-28T13:15:09.9350000+10:00</last-change-date>
+  <last-metadata-change-date>2019-09-28T13:15:09.9350000+10:00</last-metadata-change-date>
   <create-date>2019-09-27T10:58:26.1860000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
@@ -49,5 +49,5 @@ Post an issue message on the git site or the tomboy mailing list if you need any
   <height>602</height>
   <x>96</x>
   <y>35</y>
-  <open-on-startup>False</open-on-startup>
+  <open-on-startup>True</open-on-startup>
 </note>

@@ -5,8 +5,8 @@
 #define MyAppVersion "REPLACEME"
 #define MyAppPublisher "David Bannon"
 #define MyAppURL "https://github.com/tomboy-notes/tomboy-ng"
-#define MyAppExeName32 "tomboy-ng32.exe"
-#define MyAppExeName64 "tomboy-ng64.exe"
+#define MyAppExeName32 "tomboy-ng.exe"
+#define MyAppExeName64 "tomboy-ng.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -48,8 +48,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; Install MyProg-x64.exe if running in 64-bit mode (x64; see above), MyProg.exe otherwise.
 Source: "libhunspell.license"; DestDir: "{app}";  Check: Is64BitInstallMode
 Source: "libhunspell.dll";     DestDir: "{app}";  Check: Is64BitInstallMode
-Source: "tomboy-ng64.exe";     DestDir: "{app}";  Check: Is64BitInstallMode
-Source: "tomboy-ng32.exe";     DestDir: "{app}";  Check: not Is64BitInstallMode
+Source: "tomboy-ng64.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Check: Is64BitInstallMode
+Source: "tomboy-ng32.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Check: not Is64BitInstallMode
 ;Source: "C:\Users\dbann\Desktop\tomboy-ng_{#MyAppVersion}\tomboy-ng64.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 Source: "calculator.note";     DestDir: "{app}"; Flags: ignoreversion
@@ -59,7 +59,8 @@ Source: "sync-ng.note";        DestDir: "{app}"; Flags: ignoreversion
 Source: "tomboy-ng.note";      DestDir: "{app}"; Flags: ignoreversion
 Source: "tomdroid.note";       DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.txt";          DestDir: "{app}"; Flags: ignoreversion
-Source: "tomboy-ng.es.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
+; PUTMOLINESHERE
+; Source: "tomboy-ng.es.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
