@@ -250,8 +250,8 @@ var
     List : TStringList = nil;
 begin
     AProcess := TProcess.Create(nil);
-    if FileExists('/usr/local/bin/wget' then
-        AProcess.Executable:= '/usr/local/bin/wget';
+    if FileExists('/usr/local/bin/wget') then
+        AProcess.Executable:= '/usr/local/bin/wget'
     else
         AProcess.Executable:= 'wget';   // Lets hope $PATH can find it ....
     AProcess.Parameters.Add('--directory-prefix='+ Dest);

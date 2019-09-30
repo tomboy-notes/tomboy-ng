@@ -49,5 +49,5 @@ Post an issue message on the git site or the tomboy mailing list if you need any
   <height>602</height>
   <x>96</x>
   <y>35</y>
-  <open-on-startup>True</open-on-startup>
+  <open-on-startup>False</open-on-startup>
 </note>

@@ -3,7 +3,7 @@
 #
 # A script to generate Mac's tomboy-ng dmg files
 
-# Typical Usage : bash ./mk_dmg.bash $HOME/bin/lazarus/fixes_2
+# Typical Usage : bash ./mk_dmg.bash $HOME/bin/lazarus/fixes_2_0
 
 # Note we assume config is named same as lazarus dir, ie .laz-200 
 #
@@ -24,7 +24,18 @@ MSGFMT="/usr/local/Cellar/gettext/0.19.8.1/bin/msgfmt"
 
 if [ -z "$LAZ_DIR" ]; then
 	echo "Usage : $0 /Full/Path/Lazarus/dir"
-	echo "eg    : $0 \$HOME/bin/lazarus/laz-200"
+	echo "eg    : $0 \$HOME/bin/lazarus/fixes_2_0"
+	exit
+fi
+
+if [ ! -f "$LAZ_FULL_DIR"/lazbuild ]; then
+	echo "Sorry, ""$LAZ_FULL_DIR"" does not look like it contains a Lazarus build"
+	exit
+fi
+
+	# We do some wildcard deletes further on, be safe !
+if [ ! -f tomboy-ng.iss ]; then
+	echo "Not running in tomboy-ng package dir, too dangerous"
 	exit
 fi
 
@@ -39,7 +50,14 @@ function MakeDMG () {
 		REL="CocoaRelease"
 	fi
 	cd ../tomboy-ng
+	rm -f "$PRODUCT"
 	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild   --pcp="$HOME/.$LAZ_DIR" -B --cpu="$CPU" --ws="$1" --build-mode="$REL" --os="darwin" Tomboy_NG.lpi
+	if [ ! -f "$PRODUCT" ]; then
+		echo "------------------------------------"
+		echo "Failed to build ""$BITS"" bit binary"
+		echo "------------------------------------"
+		exit
+	fi
 	cd ../package
 
 	rm -Rf $WORK
@@ -72,6 +90,7 @@ function MakeDMG () {
 	~/create-dmg-master/create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"
 }
 
+rm -f *.dmg
 MakeDMG "carbon"
 MakeDMG "cocoa"
 

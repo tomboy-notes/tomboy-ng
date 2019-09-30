@@ -266,6 +266,8 @@ end;
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
+    Left := 55 + random(55);
+    Top := 55 + random(55);
     FormShown := False;
     Label2.Caption := rsNextBitSlow;
     Memo1.Clear;
