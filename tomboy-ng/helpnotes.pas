@@ -18,6 +18,7 @@ unit helpnotes;
   HISTORY
   2019/09/08 Clean up of management logic.
   2019/09/25 Three individual OS based DownLoader() functions.
+  2019/10/02 If OpenSSL download fails, try wget (Linux and Mac)
 }
 
 {$mode objfpc}{$H+}
@@ -46,6 +47,7 @@ type
     private
         procedure DataReceived(Sender: TObject; const ContentLength,
             CurrentPos: Int64);
+        function DownLoaderWGet(URL, FileName, Dest: string; out ErrorMsg: string): boolean;
         //function DownloadFile(URL, FullFileName: string; out ErrorMsg: string): boolean;
         function FormatSize(Size: Int64): String;
         // This proc replaces the RTL version to enable v1.1 of ssl instead of v23
@@ -183,21 +185,23 @@ begin
             //'nl' : FileName := 'nl_notes.zip;
     end;
     if FileName <> '' then begin
-        if DownLoader(DownLoadPath, FileName, MainForm.AltHelpNotesPath, EMsg) then begin
-        // if DownLoadFile(DownLoadPath + FileName, MainForm.AltHelpNotesPath + FileName, EMsg) then begin
-            ZipFile := TUnZipper.Create;
-            try
-                ZipFile.FileName := MainForm.AltHelpNotesPath + FileName;
-                ZipFile.OutputPath := MainForm.AltHelpNotesPath;
-                ZipFile.Examine;
-                ZipFile.UnZipAllFiles;
-                LabelProgress.Caption := RS_Installed;
-                MainForm.FillInFileMenus(True);
-            finally
-                ZipFile.Free;
+        // Downloader tries OpenSSL (Unix) or PowerShell (Windows) - failing that, try wget
+        if not DownLoader(DownLoadPath, FileName, MainForm.AltHelpNotesPath, EMsg) then
+            if not  DownLoaderWGet(DownLoadPath, FileName, MainForm.AltHelpNotesPath, EMsg) then begin
+                showmessage('ERROR - ' + EMsg);
+                exit;
             end;
-        end else
-            showmessage('ERROR - ' + EMsg);
+        ZipFile := TUnZipper.Create;
+        try
+            ZipFile.FileName := MainForm.AltHelpNotesPath + FileName;
+            ZipFile.OutputPath := MainForm.AltHelpNotesPath;
+            ZipFile.Examine;
+            ZipFile.UnZipAllFiles;
+            LabelProgress.Caption := RS_Installed;
+            MainForm.FillInFileMenus(True);
+        finally
+            ZipFile.Free;
+        end;
         ButtonRestore.Enabled := True;
     end;
 end;
@@ -241,19 +245,24 @@ begin
   Application.ProcessMessages;
 end;
 
-{$ifdef DARWIN}
+
     // if the executable is not found, an eprocess exception is raised, message says ex not found
     // if wget itself fails, the error message is in std error, not std out.
-function TFormHelpNotes.DownLoader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
+function TFormHelpNotes.DownLoaderWGet(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
 var
     AProcess: TProcess;
     List : TStringList = nil;
 begin
+    if FileExists(MainForm.AltHelpNotesPath + FileName) then // Maybe a failed previous attempt
+        DeleteFile(MainForm.AltHelpNotesPath + FileName);
     AProcess := TProcess.Create(nil);
     if FileExists('/usr/local/bin/wget') then
         AProcess.Executable:= '/usr/local/bin/wget'
     else
-        AProcess.Executable:= 'wget';   // Lets hope $PATH can find it ....
+        if FileExists('/usr/bin/wget') then
+            AProcess.Executable:= '/usr/bin/wget'
+        else
+            AProcess.Executable:= 'wget';   // Lets hope $PATH can find it ....
     AProcess.Parameters.Add('--directory-prefix='+ Dest);
     AProcess.Parameters.Add(URL+FileName);
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
@@ -282,7 +291,7 @@ begin
         AProcess.Free;
     end;
 end;
-{$endif}
+
 
 {$ifdef WINDOWS}
 function TFormHelpNotes.DownLoader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
@@ -334,9 +343,7 @@ begin
         AProcess.Free;
     end;
 end;
-{$endif}
-
-{$ifdef LINUX}
+{$else}
 function TFormHelpNotes.Downloader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
 var
     Client: TFPHttpClient;
