@@ -842,7 +842,10 @@ end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
+
+  debugln('left click');
     PopupMenuTray.PopUp();
+
 end;
 
 procedure TMainForm.TrayMenuTomdroidClick(Sender: TObject);

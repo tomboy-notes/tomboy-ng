@@ -191,7 +191,7 @@ unit EditBox;
     2019/09/07  User can now select a note font.
     2019/09/21  CleanUTF8 removes some bad UTF8 char when importing some RTF files.
     2019/09/21  AdjustFormPosition() now enforces some minium position/size. Issue #103
-    2019/09/25  Trial enabling of printing under Cocoa
+    2019/10/11  Enabling of printing under Cocoa
 }
 
 
@@ -1392,9 +1392,6 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
-//    {$ifdef LCLCOCOA}
-    MenuItemPrint.Enabled := False;     // Cocoa cannot print (May 2018)
-//    {$endif}
     {$ifdef DARWIN}
     MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
     MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);

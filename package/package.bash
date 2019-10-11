@@ -64,7 +64,7 @@ fi
 function BuildIt () {
 	cd $SOURCE_DIR
 	echo "Building x86_64 Linux"
-	rm tomboy-ng
+	rm -f tomboy-ng
 	if [ "$LEAKCHECK" == "YES" ]; then
 		LAZMODE="LeakCheckLin64"
 	else
@@ -77,10 +77,10 @@ function BuildIt () {
 	else
 		LAZMODE="ReleaseLin32"
 	fi
-	rm tomboy-ng32
+	rm -f tomboy-ng32
 	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Windows"
-	rm tomboy-ng64.exe
+	rm -f tomboy-ng64.exe
 	if [ "$LEAKCHECK" == "YES" ]; then
 		LAZMODE="LeakCheckWin64"
 	else
@@ -88,7 +88,7 @@ function BuildIt () {
 	fi	
 	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode="$LAZMODE" --os="win64" Tomboy_NG.lpi
 	echo "Building i386 Windows"
-	rm tomboy-ng32.exe
+	rm -f tomboy-ng32.exe
 	if [ "$LEAKCHECK" == "YES" ]; then
 		LAZMODE="LeakCheckWin32"
 	else
@@ -235,7 +235,7 @@ function MkWinPreInstaller() {
 #if [ "$2" == "LeakCheck" ]; then
 #	BuildItLeakCheck
 #else 
-	#BuildIt
+	BuildIt
 #fi
 
 DebianPackage "i386"

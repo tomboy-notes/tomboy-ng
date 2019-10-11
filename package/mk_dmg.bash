@@ -83,10 +83,10 @@ function MakeDMG () {
             BASENAME=`basename -s."$CCODE" "$BASENAME"`
 	    mkdir -p "$CONTENTS/MacOS/locale/$CCODE"
 	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE"/"$BASENAME".mo "$i"
-	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE"/lclstrconsts.mo "$FULL_LAZ_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	    "$MSGFMT" -o "$CONTENTS/MacOS/locale/$CCODE"/lclstrconsts.mo "$LAZ_FULL_DIR"/lcl/languages/lclstrconsts."$CCODE".po
 	done
 	mv "../$PRODUCT"/"$PRODUCT" "$CONTENTS/MacOS/."
-	rm "$PRODUCT""$BITS"_"$VERSION".dmg
+	rm -f "$PRODUCT""$BITS"_"$VERSION".dmg
 	~/create-dmg-master/create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"
 }
 
