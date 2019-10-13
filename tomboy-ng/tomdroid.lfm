@@ -1,5 +1,5 @@
 object FormTomdroid: TFormTomdroid
-  Left = 482
+  Left = 481
   Height = 377
   Top = 199
   Width = 836
@@ -7,7 +7,7 @@ object FormTomdroid: TFormTomdroid
   ClientHeight = 377
   ClientWidth = 836
   OnShow = FormShow
-  LCLVersion = '2.0.4.0'
+  LCLVersion = '2.0.5.0'
   object ButtonClose: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -111,9 +111,9 @@ object FormTomdroid: TFormTomdroid
     end
     object CheckSavePassword: TCheckBox
       Left = 144
-      Height = 23
+      Height = 24
       Top = 268
-      Width = 58
+      Width = 60
       Caption = 'Save'
       TabOrder = 4
     end
@@ -200,11 +200,11 @@ object FormTomdroid: TFormTomdroid
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = CheckBoxTestRun
-      Left = 613
-      Height = 23
+      Left = 609
+      Height = 24
       Hint = 'writes debug messages to terminal'
       Top = 17
-      Width = 116
+      Width = 118
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 10
       Caption = 'Debug Mode'
@@ -218,10 +218,10 @@ object FormTomdroid: TFormTomdroid
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 739
-      Height = 23
+      Left = 737
+      Height = 24
       Top = 17
-      Width = 86
+      Width = 88
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 10
       BorderSpacing.Right = 10

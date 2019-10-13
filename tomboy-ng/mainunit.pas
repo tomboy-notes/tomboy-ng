@@ -55,6 +55,7 @@ unit Mainunit;
     2019/08/20  Linux only, looks for (translated) help files in config dir first.
     2019/09/6   Button to download Help Notes in non-English
     2019/09/21  Restructured model for non-english help notes, names in menus !
+    2019/10/13  Prevent Dismiss if desktop is Enlightenment, in OnCreateForm()
 
     CommandLine Switches
 
@@ -201,7 +202,7 @@ implementation
 { TMainForm }
 
 
-uses LazLogger, LazFileUtils,
+uses LazLogger, LazFileUtils, LazUTF8,
     settings,
     SearchUnit,
     {$ifdef LINUX}
@@ -334,7 +335,6 @@ begin
         exit();
     end;
     TestDarkThemeInUse();
-
     {$ifdef windows}                // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
         //color := Sett.BackGndColour;
@@ -413,6 +413,8 @@ end;   }
 resourcestring
   rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshots -> Existing Notes.';
   rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
+  rsFound = 'Found';
+  rsNotes = 'notes';
 
 procedure TMainForm.LabelErrorClick(Sender: TObject);
 begin
@@ -422,7 +424,7 @@ end;
 
 procedure TMainForm.UpdateNotesFound(Numb : integer);
 begin
-    LabelNotesFound.Caption := 'Found ' + inttostr(Numb) + ' notes';
+    LabelNotesFound.Caption := rsFound + ' ' + inttostr(Numb) + ' ' + rsNotes;
          ImageConfigCross.Left := ImageConfigTick.Left;
      ImageConfigTick.Visible := Sett.HaveConfig;
      ImageConfigCross.Visible := not ImageConfigTick.Visible;
@@ -570,6 +572,10 @@ begin
         UseTrayMenu := false;
         ShowHint := False;
     end;
+    {$ifdef LINUX}
+    if GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP') = 'Enlightenment' then
+        AllowDismiss := False;
+    {$endif}
     {$ifdef LCLCOCOA}
     //AllowDismiss := False;
     UseMainMenu := True;
@@ -883,7 +889,7 @@ end;
 
 RESOURCESTRING
     rsAbout1 = 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus';
-    rsAbout2 = 'and FPC. While its getting close to being ready for production';
+    rsAbout2 = 'and FPC. While its ready for production';
     rsAbout3 = 'use, you still need to be careful and have good backups.';
     rsAboutVer = 'Version';
     rsAboutBDate = 'Build date';

@@ -443,8 +443,8 @@ begin
     //CheckBoxCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
     //CheckBoxAnyCombo.Checked := Sett.CheckAnyCombination.Checked;
     StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
-    StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?
-    {$ifdef windows}                // linux apps know how to do this themselves
+    {$ifdef windows}
+    StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?                                            // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
          color := Sett.hiColor;
          font.color := Sett.TextColour;

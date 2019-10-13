@@ -1,5 +1,5 @@
 object FormSync: TFormSync
-  Left = 1226
+  Left = 1225
   Height = 366
   Top = 528
   Width = 631

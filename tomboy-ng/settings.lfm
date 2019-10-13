@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 1062
+  Left = 373
   Height = 511
-  Top = 358
+  Top = 261
   Width = 628
   BorderIcons = []
   Caption = 'Settings'
@@ -193,9 +193,9 @@ object Sett: TSett
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 46
-          Width = 47
+          Height = 24
+          Top = 45
+          Width = 49
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Big'
@@ -207,9 +207,9 @@ object Sett: TSett
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 78
-          Width = 83
+          Height = 24
+          Top = 77
+          Width = 85
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
@@ -219,9 +219,9 @@ object Sett: TSett
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 110
-          Width = 63
+          Height = 24
+          Top = 109
+          Width = 65
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
@@ -231,9 +231,9 @@ object Sett: TSett
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 14
-          Width = 62
+          Height = 24
+          Top = 13
+          Width = 64
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
@@ -243,9 +243,9 @@ object Sett: TSett
       end
       object CheckShowIntLinks: TCheckBox
         Left = 32
-        Height = 23
+        Height = 24
         Top = 200
-        Width = 162
+        Width = 164
         Caption = 'Show Internal Links'
         Enabled = False
         OnChange = CheckReadOnlyChange
@@ -253,9 +253,9 @@ object Sett: TSett
       end
       object CheckShowExtLinks: TCheckBox
         Left = 32
-        Height = 23
+        Height = 24
         Top = 240
-        Width = 170
+        Width = 172
         Caption = 'Show External  Links'
         Enabled = False
         OnChange = CheckReadOnlyChange
@@ -263,10 +263,10 @@ object Sett: TSett
       end
       object CheckManyNotebooks: TCheckBox
         Left = 32
-        Height = 23
+        Height = 24
         Hint = 'This may adversly affect tradional Tomboy, take care.'
         Top = 280
-        Width = 323
+        Width = 325
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 3

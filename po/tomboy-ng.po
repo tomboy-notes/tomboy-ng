@@ -72,7 +72,7 @@ msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr ""
 
 #: mainunit.rsabout2
-msgid "and FPC. While its getting close to being ready for production"
+msgid "and FPC. While its ready for production"
 msgstr ""
 
 #: mainunit.rsabout3
@@ -125,6 +125,10 @@ msgstr ""
 
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
+msgstr ""
+
+#: mainunit.rsfound
+msgid "Found"
 msgstr ""
 
 #: mainunit.rshelpconfig
@@ -212,6 +216,10 @@ msgstr ""
 
 #: mainunit.rsmenusync
 msgid "Synchronise"
+msgstr ""
+
+#: mainunit.rsnotes
+msgid "notes"
 msgstr ""
 
 #: mainunit.rssetupnotesdirfirst
@@ -654,6 +662,32 @@ msgstr ""
 msgid "Contact author if you can help translate."
 msgstr ""
 
+#: tformmarkdown.buttonclose.caption
+msgctxt "tformmarkdown.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformmarkdown.buttoncopyall.caption
+msgid "Copy All"
+msgstr ""
+
+#: tformmarkdown.buttonsave.caption
+msgctxt "tformmarkdown.buttonsave.caption"
+msgid "Save"
+msgstr ""
+
+#: tformmarkdown.caption
+msgid "FormMarkdown"
+msgstr ""
+
+#: tformmarkdown.label1.caption
+msgid "Press Ctrl-A, Ctrl-C to copy"
+msgstr ""
+
+#: tformmarkdown.panel1.caption
+msgid "Markdown Exporter"
+msgstr ""
+
 #: tformrecover.button4.caption
 msgid "Restore from Safety Snapshot"
 msgstr ""
@@ -767,6 +801,51 @@ msgstr ""
 msgid "Notes in a Snapshot"
 msgstr ""
 
+#: tformspell.buttonignore.caption
+msgid "Ignore"
+msgstr ""
+
+#: tformspell.buttonignore.hint
+msgid "Ignore all instances for the run"
+msgstr ""
+
+#: tformspell.buttonskip.caption
+msgid "Skip"
+msgstr ""
+
+#: tformspell.buttonskip.hint
+msgid "Skip just this instance"
+msgstr ""
+
+#: tformspell.buttonuseandnextword.caption
+msgid "Use and Next Word"
+msgstr ""
+
+#: tformspell.caption
+msgctxt "tformspell.caption"
+msgid "Spell"
+msgstr ""
+
+#: tformspell.label4.caption
+msgid "Suspect word -"
+msgstr ""
+
+#: tformspell.labelcontext.caption
+msgid "LabelContext"
+msgstr ""
+
+#: tformspell.labelprompt.caption
+msgid "Click a word to use it."
+msgstr ""
+
+#: tformspell.labelstatus.caption
+msgid "LabelStatus"
+msgstr ""
+
+#: tformspell.labelsuspect.caption
+msgid "LabelSuspect"
+msgstr ""
+
 #: tformsync.buttoncancel.caption
 msgctxt "tformsync.buttoncancel.caption"
 msgid "Cancel"
@@ -830,6 +909,7 @@ msgid "Test Run"
 msgstr ""
 
 #: tformtomdroid.checksavepassword.caption
+msgctxt "tformtomdroid.checksavepassword.caption"
 msgid "Save"
 msgstr ""
 
@@ -1368,6 +1448,7 @@ msgid "SnapShot"
 msgstr ""
 
 #: tsett.tabspell.caption
+msgctxt "tsett.tabspell.caption"
 msgid "Spell"
 msgstr ""
 

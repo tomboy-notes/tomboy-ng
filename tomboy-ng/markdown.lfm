@@ -1,5 +1,5 @@
 object FormMarkdown: TFormMarkdown
-  Left = 250
+  Left = 249
   Height = 462
   Top = 150
   Width = 821
@@ -8,7 +8,7 @@ object FormMarkdown: TFormMarkdown
   ClientWidth = 821
   OnActivate = FormActivate
   OnShow = FormShow
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.5.0'
   object Memo1: TMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Panel1
@@ -87,10 +87,10 @@ object FormMarkdown: TFormMarkdown
     AnchorSideRight.Control = ButtonSave
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 406
-    Height = 17
-    Top = 443
-    Width = 177
+    Left = 393
+    Height = 19
+    Top = 441
+    Width = 190
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 13
     BorderSpacing.Bottom = 2

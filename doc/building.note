@@ -9,9 +9,8 @@ This page is about building tomboy-ng from source and contributing to its develo
 
 Tomboy-ng is built on Linux, Windows or Mac using (see instructions below for installing) -
 <list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.0.4 or later.</list-item></list>
-<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.0  (or 1.8.4 is really not recommended, it will require some patches).</list-item></list>
-<list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - apply the patch in tomboy-ng's patches directory. Failure to apply will mess with copying and pasting formatted text.</list-item></list>
-<list><list-item dir="ltr">At present, Linux users should apply the patch, use_AppInd_3, from patches dir to fix an upstream issue where LCL prefers to use libappindicator1 over libappindicator3 is both are available. This affect newer OSs that have been upgraded. Using Lazarus Fixes_2 removes this need.</list-item></list><size:large>
+<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.6  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.6).</list-item></list>
+<list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - apply the patch in tomboy-ng's patches directory. Failure to apply will mess with copying and pasting formatted text.</list-item></list><size:large>
 
 <bold>Pascal ?</bold></size:large>
 Pascal as a computer language is quite old, in the early days of the PC it went toe to toe with C and lost. But it still has quite a following and current estimates place it in the top twenty languages (source ?). Today, Object Pascal is a very functional object orientated language that drives Delphi and its cross platform open source rival, Lazarus.
@@ -20,7 +19,7 @@ Pascal is still widely used as a teaching language, its strong typing promotes g
 
 
 <bold>Build tomboy-ng using the IDE</bold></size:huge>
-You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.4 or later (users of earlier releases need to look in patched directory). Downloading packages from https://sourceforge.net/projects/Lazarus/files/ , choose your OS and then Lazarus 2.0, you will see debs, rpms, dmg files and windows kits for the compiler (FPC) and  the FPC-src, and finally the IDE, Lazarus. To learn more see Free Pascal and Lazarus websites. Both have very active forums and extensive wiki's.
+You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.6 or later (users of earlier releases need to look in patched directory). Downloading packages from https://sourceforge.net/projects/Lazarus/files/ , choose your OS and then Lazarus 2.0.6, you will see debs, rpms, dmg files and windows kits for the compiler (FPC) and  the FPC-src, and finally the IDE, Lazarus. To learn more see Free Pascal and Lazarus websites. Both have very active forums and extensive wiki's.
 
 Start Lazarus up, see that it runs through a check list of the things it needs, start the IDE. Lazarus opens a default, minimal project. Click Package-&gt;OnLinePackageManager, select kcontrols and Install ("from repositary").
 
@@ -36,9 +35,10 @@ Take the Windows Win_Pre{$ver} directory to a windows machine that has the Insta
 The Mac kits are made on a Sierra Mac, again using a script.
 
  
+
 </note-content></text>
-  <last-change-date>2019-09-27T17:22:37.0150000+10:00</last-change-date>
-  <last-metadata-change-date>2019-09-27T17:22:37.0150000+10:00</last-metadata-change-date>
+  <last-change-date>2019-10-12T20:20:55.4790000+11:00</last-change-date>
+  <last-metadata-change-date>2019-10-12T20:20:55.4790000+11:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

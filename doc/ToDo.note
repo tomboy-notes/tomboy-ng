@@ -23,20 +23,18 @@ All Platforms</bold></size:large>
 We don't do multilevel bullets.
 Tabs do not work like real tabs should.<size:huge>
 
-<bold>Here is a todo list (updated 2019/02/19)</bold></size:huge>
+<bold>Here is a todo list (updated 2019/10/12)</bold></size:huge>
 
 Recent fixes show as strikeout.
 
-<list><list-item dir="ltr"><strikeout>Dark Theme works on Linux and, as much as is currently possible, on Windows.</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
 <list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
-<list><list-item dir="ltr">Add <strikeout>menus to search window</strikeout> ?   Is this an alternative to splash screen  for RedHat users who have not installed Top Icons  and the approriate appindicator library ?</list-item></list>
 <list><list-item dir="ltr">Network Sync</list-item></list>
 <list><list-item dir="ltr">Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</list-item></list>
-<list><list-item dir="ltr"><strikeout>Sort out keyboard shortcuts and maybe even document ?  </strikeout>See help notes.</list-item></list>
-<list><list-item dir="ltr">When user chooses to download the help notes in their own language (if available) its dependant on some OS issues. Won't work on Windows 7 and won't work on a Mac that does not have wget installed.</list-item></list><size:large>
+<list><list-item dir="ltr">When user chooses to download the help notes in their own language (if available) its dependant on some OS issues. Won't work on Windows 7 and won't work on a Mac that does not have wget installed.</list-item></list>
+<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.</list-item></list><size:large>
 
 
 <bold>Long term 'maybe' stuff</bold></size:large>
@@ -57,8 +55,8 @@ Recent fixes show as strikeout.
 
 
 </note-content></text>
-  <last-change-date>2019-09-27T17:14:44.4310000+10:00</last-change-date>
-  <last-metadata-change-date>2019-09-27T17:14:44.4310000+10:00</last-metadata-change-date>
+  <last-change-date>2019-10-12T20:09:40.1360000+11:00</last-change-date>
+  <last-metadata-change-date>2019-10-12T20:09:40.1360000+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

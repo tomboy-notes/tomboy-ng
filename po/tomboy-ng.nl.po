@@ -85,7 +85,9 @@ msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr "Dit is tomboy-ng, een vernieuwde versie van Tomboy Notities, geschreven in Lazarus"
 
 #: mainunit.rsabout2
-msgid "and FPC. While its getting close to being ready for production"
+#, fuzzy
+#| msgid "and FPC. While its getting close to being ready for production"
+msgid "and FPC. While its ready for production"
 msgstr "en FPC. Hoewel tomboy-ng bijka klaar is voor gebruik,"
 
 #: mainunit.rsabout3
@@ -139,6 +141,10 @@ msgstr "FOUT: kan het volgende niet vinden:"
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr "Kan één of meerdere notities niet indexeren."
+
+#: mainunit.rsfound
+msgid "Found"
+msgstr ""
 
 #: mainunit.rshelpconfig
 msgid "Create or use an alternative config"
@@ -226,6 +232,10 @@ msgstr "Instellingen"
 #: mainunit.rsmenusync
 msgid "Synchronise"
 msgstr "Synchroniseren"
+
+#: mainunit.rsnotes
+msgid "notes"
+msgstr ""
 
 #: mainunit.rssetupnotesdirfirst
 msgid "Please setup a notes directory first"
@@ -667,6 +677,34 @@ msgstr "Dubbelklik hieronder op een taal"
 msgid "Contact author if you can help translate."
 msgstr "Neem contact op met de ontwikkelaar als je bereid bent te helpen vertalen."
 
+#: tformmarkdown.buttonclose.caption
+#, fuzzy
+msgctxt "tformmarkdown.buttonclose.caption"
+msgid "Close"
+msgstr "Sluiten"
+
+#: tformmarkdown.buttoncopyall.caption
+msgid "Copy All"
+msgstr ""
+
+#: tformmarkdown.buttonsave.caption
+#, fuzzy
+msgctxt "tformmarkdown.buttonsave.caption"
+msgid "Save"
+msgstr "Opslaan"
+
+#: tformmarkdown.caption
+msgid "FormMarkdown"
+msgstr ""
+
+#: tformmarkdown.label1.caption
+msgid "Press Ctrl-A, Ctrl-C to copy"
+msgstr ""
+
+#: tformmarkdown.panel1.caption
+msgid "Markdown Exporter"
+msgstr ""
+
 #: tformrecover.button4.caption
 msgid "Restore from Safety Snapshot"
 msgstr "Herstellen uit back-upmomentopname"
@@ -780,6 +818,52 @@ msgstr "Momentopname herstellen"
 msgid "Notes in a Snapshot"
 msgstr "Notities in momentopname"
 
+#: tformspell.buttonignore.caption
+msgid "Ignore"
+msgstr ""
+
+#: tformspell.buttonignore.hint
+msgid "Ignore all instances for the run"
+msgstr ""
+
+#: tformspell.buttonskip.caption
+msgid "Skip"
+msgstr ""
+
+#: tformspell.buttonskip.hint
+msgid "Skip just this instance"
+msgstr ""
+
+#: tformspell.buttonuseandnextword.caption
+msgid "Use and Next Word"
+msgstr ""
+
+#: tformspell.caption
+#, fuzzy
+msgctxt "tformspell.caption"
+msgid "Spell"
+msgstr "Spellingcontrole"
+
+#: tformspell.label4.caption
+msgid "Suspect word -"
+msgstr ""
+
+#: tformspell.labelcontext.caption
+msgid "LabelContext"
+msgstr ""
+
+#: tformspell.labelprompt.caption
+msgid "Click a word to use it."
+msgstr ""
+
+#: tformspell.labelstatus.caption
+msgid "LabelStatus"
+msgstr ""
+
+#: tformspell.labelsuspect.caption
+msgid "LabelSuspect"
+msgstr ""
+
 #: tformsync.buttoncancel.caption
 msgctxt "tformsync.buttoncancel.caption"
 msgid "Cancel"
@@ -843,6 +927,7 @@ msgid "Test Run"
 msgstr "Proefdraaien"
 
 #: tformtomdroid.checksavepassword.caption
+msgctxt "tformtomdroid.checksavepassword.caption"
 msgid "Save"
 msgstr "Opslaan"
 
@@ -1381,6 +1466,7 @@ msgid "SnapShot"
 msgstr "Momentopname"
 
 #: tsett.tabspell.caption
+msgctxt "tsett.tabspell.caption"
 msgid "Spell"
 msgstr "Spellingcontrole"
 

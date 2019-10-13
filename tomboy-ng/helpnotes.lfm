@@ -1,5 +1,5 @@
 object FormHelpNotes: TFormHelpNotes
-  Left = 207
+  Left = 206
   Height = 310
   Top = 199
   Width = 367
