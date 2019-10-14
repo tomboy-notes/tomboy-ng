@@ -8,6 +8,7 @@ object FormHelpNotes: TFormHelpNotes
   ClientHeight = 310
   ClientWidth = 367
   OnCreate = FormCreate
+  OnShow = FormShow
   LCLVersion = '2.0.5.0'
   object ListBox1: TListBox
     Left = 15

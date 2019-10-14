@@ -65,6 +65,10 @@ msgctxt "helpnotes.rs_installed"
 msgid "Installed"
 msgstr "Geïnstalleerd"
 
+#: helpnotes.rs_nopowershell
+msgid "Sorry, your Windows does not have Powershell 3"
+msgstr ""
+
 #: helpnotes.rs_nossl
 msgid "You do not appear to have the OpenSSL Library installed"
 msgstr "Het lijkt erop dat OpenSSL niet is geïnstalleerd"

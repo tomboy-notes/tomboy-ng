@@ -572,10 +572,10 @@ begin
         UseTrayMenu := false;
         ShowHint := False;
     end;
-    {$ifdef LINUX}
+    (* {$ifdef LINUX}
     if GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP') = 'Enlightenment' then
         AllowDismiss := False;
-    {$endif}
+    {$endif}    *)
     {$ifdef LCLCOCOA}
     //AllowDismiss := False;
     UseMainMenu := True;

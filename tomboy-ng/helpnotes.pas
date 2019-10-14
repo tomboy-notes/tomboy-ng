@@ -42,6 +42,7 @@ type
         procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonRestoreClick(Sender: TObject);
         procedure FormCreate(Sender: TObject);
+        procedure FormShow(Sender: TObject);
         procedure ListBox1Click(Sender: TObject);
         procedure ListBox1DblClick(Sender: TObject);
     private
@@ -56,7 +57,9 @@ type
             const UseSSL: Boolean; out AHandler: TSocketHandler);
         // Download Filename from URL website and store it in Dest local directory. True if successful
         function DownLoader(URL, FileName, Dest: string; out ErrorMsg: string): boolean;
-
+        {$ifdef WINDOWS}
+        function WeHavePowershell(const Version: char): boolean;
+        {$endif}
     public
 
     end;
@@ -74,7 +77,7 @@ uses
    LazFileUtils, zipper,
   fphttpclient, process, lazlogger,
   fpopenssl,
-  openssl,
+  openssl, Registry,
   sslsockets;      // for TSSLSocketHandler etc
 
 const
@@ -87,6 +90,7 @@ resourcestring
     RS_Downloading = 'Downloading please wait...';
     RS_Downloaded = 'Downloaded so far: ';
     RS_NoSSL = 'You do not appear to have the OpenSSL Library installed';
+    RS_NoPowershell = 'Sorry, your Windows does not have Powershell 3';
 
 
 {
@@ -141,6 +145,16 @@ begin
         LabelProgress.Caption := RS_Installed;
     end else ButtonRestore.Enabled := False;
 end;
+
+procedure TFormHelpNotes.FormShow(Sender: TObject);
+begin
+    {$ifdef WINDOWS}
+    if not WeHavePowershell('3') then begin
+        showmessage(RS_NoPowershell);
+        close;
+    end;
+    {$endif}
+    end;
 
 procedure TFormHelpNotes.ButtonCloseClick(Sender: TObject);
 begin
@@ -292,8 +306,24 @@ begin
     end;
 end;
 
-
 {$ifdef WINDOWS}
+function TFormHelpNotes.WeHavePowershell(const Version : char) : boolean;
+var
+    Registry : TRegistry;
+begin
+    Registry := TRegistry.Create;
+    try
+      Registry.RootKey := HKEY_LOCAL_MACHINE;
+      if Registry.OpenKeyReadOnly('\Software\Microsoft\PowerShell\' + Version {+ '\Install'}) then
+          exit(Registry.ReadInteger('Install') = 1)
+      else
+            exit(false);
+    finally
+      Registry.Free;
+    end;
+end;
+
+
 function TFormHelpNotes.DownLoader(URL, FileName, Dest : string; out ErrorMsg : string) : boolean;
 var
     AProcess: TProcess;
