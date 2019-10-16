@@ -17,7 +17,7 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
-      <ExcludedOriginals Count="26">
+      <ExcludedOriginals Count="28">
         <Item1 Value="TimeEdit1"/>
         <Item2 Value="Label1"/>
         <Item3 Value="LabelExistingAdvice"/>
@@ -44,6 +44,8 @@
         <Item24 Value="LabelSettingPath"/>
         <Item25 Value="LabelWaitForSync"/>
         <Item26 Value="Label15"/>
+        <Item27 Value="x"/>
+        <Item28 Value="FormMarkdown"/>
       </ExcludedOriginals>
     </i18n>
     <BuildModes Count="14">

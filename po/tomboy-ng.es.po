@@ -7,12 +7,12 @@ msgstr ""
 "Project-Id-Version: tomboy-ng v23-2\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Last-Translator: Roy W. Reese <waterbearer54@gmx.com>\n"
+"Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #: backupview.rscannotdelete
 msgid "Cannot delete "
@@ -48,25 +48,24 @@ msgstr "Archivo recuperado. Puede que tenga que actualizar (o reiniciar)"
 
 #: backupview.rsrenamefailed
 msgid "ERROR, could not rename Backup File "
-msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad"
+msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad."
 
-# Revisar
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
-msgstr "No encontró ninguna expresión para evaluar"
+msgstr "No encontró ninguna expresión para calcular."
 
 #: helpnotes.rs_downloaded
 msgid "Downloaded so far: "
-msgstr ""
+msgstr "Descargado hasta ahora: "
 
 #: helpnotes.rs_downloading
 msgid "Downloading please wait..."
-msgstr ""
+msgstr "Descargandose, espere por favor."
 
 #: helpnotes.rs_installed
 msgctxt "helpnotes.rs_installed"
 msgid "Installed"
-msgstr ""
+msgstr "Instaladas"
 
 #: helpnotes.rs_nopowershell
 msgid "Sorry, your Windows does not have Powershell 3"
@@ -74,16 +73,16 @@ msgstr ""
 
 #: helpnotes.rs_nossl
 msgid "You do not appear to have the OpenSSL Library installed"
-msgstr ""
+msgstr "Parece que no tiene la biblioteca OpenSSL instalada."
 
 #: helpnotes.rs_restored
 msgctxt "helpnotes.rs_restored"
 msgid "Restored"
-msgstr ""
+msgstr "Restaraudas"
 
 #: helpnotes.rs_spanish
 msgid "Spanish"
-msgstr ""
+msgstr "Español"
 
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
@@ -130,7 +129,7 @@ msgstr "Debería hacerlo para salvaguardar sus notas."
 
 #: mainunit.rscannotdismiss1
 msgid "Sadly, on this OS or because of a Bad Note,"
-msgstr "En este SO o por una nota inutilizable,"
+msgstr "Debido al SO o una nota inutilizable,"
 
 #: mainunit.rscannotdismiss2
 msgid "I cannot let you dismiss this window"
@@ -147,7 +146,7 @@ msgstr "ERROR: nota no encontrada"
 # Revisa
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
-msgstr "No indizó una nota o más."
+msgstr "tomboy-ng no pudo indizar una nota o más."
 
 #: mainunit.rsfound
 msgid "Found"
@@ -312,7 +311,6 @@ msgstr "y reemplazarlas con la instantánea con del"
 msgid "OK, deleted"
 msgstr "OK, se eliminó"
 
-# ¿corrumpidas?
 #: recover.rsdeleteddamaged_2
 msgid "damaged notes"
 msgstr "notas corrompidas"
@@ -324,7 +322,7 @@ msgstr "Ningún error, quizá debería continuar a Instantáneas"
 # ¿Revisar?
 #: recover.rsnosafetysnapshot
 msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
-msgstr "No encontró ninguna instantánea de seguridad. Intente establecer el directorio donde podría estar una."
+msgstr "No se encontró ninguna instantánea de seguridad. Intente establecer el directorio donde quizá hay una."
 
 # ¿Número variable antes o etiqueta de pestaña?
 #: recover.rsnotesinsnap
@@ -333,7 +331,7 @@ msgstr "Notas en la instantánea"
 
 #: recover.rstryrecover_1
 msgid "Proceed to Snapshots or try to recover by double clicking below,"
-msgstr "Continúe a instantáneas o intente recuperar haciendo doble clic abajo."
+msgstr "Continúe a instantáneas o intente recuperar haciendo doble clic abajo,"
 
 #: recover.rstryrecover_2
 msgid "if and only IF, you see useful content, make a small change, exit"
@@ -359,7 +357,7 @@ msgstr "El diccionario se cargó bien."
 # ¿Revisar?
 #: settings.rsdictionarynotfound
 msgid "No Dictionary Found"
-msgstr "No encontró ningún diccionario."
+msgstr "No se encontró ningún diccionario."
 
 #: settings.rsdirhasnonotes
 msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
@@ -389,7 +387,6 @@ msgstr "Seleccione el directorio que quiere usar:"
 msgid "Select your hunspell library"
 msgstr "Seleccione su biblioteca hunspell"
 
-# ¿Revisar?
 #: settings.rssetfilesyncrepo
 msgid "Set File Sync Repo"
 msgstr "Establecer Repositorio de Sincronización"
@@ -486,17 +483,19 @@ msgstr "No hacer nada"
 msgid "Downloads      "
 msgstr "Descargas"
 
+# ¿Editar las notas, la lista, cual?
 #: syncutils.rsedituploads
 msgid "Edit Uploads   "
-msgstr "Editar cargas"
+msgstr "Editar notas a subir"
 
 #: syncutils.rslocaldeletes
 msgid "Local Deletes  "
 msgstr "Borrados locales"
 
+# Revisar
 #: syncutils.rsnewuploads
 msgid "New Uploads    "
-msgstr "New Uploads    "
+msgstr "Nuevas notas para subir"
 
 #: syncutils.rsnextbitslow
 msgid "Next bit can be a bit slow, please wait"
@@ -507,6 +506,7 @@ msgid "No notes needed syncing. You need to write more."
 msgstr "No hay notas que necesitan sincronizar. Tiene que escribir más."
 
 # ¿Contexto?
+# ¿Espacio delante?
 #: syncutils.rsnotesweredealt
 msgid " notes were dealt with."
 msgstr " notas gestionadas."
@@ -533,10 +533,9 @@ msgstr "Editar - tomboy-.ng"
 msgid "Read Only"
 msgstr "Sólo lectura"
 
-# ¿Revisar?
 #: teditboxform.label3.caption
 msgid "This note has been changed by the Sync Process"
-msgstr "Esta nota ha sido cambiado por el proceso de sincronizar"
+msgstr "Esta nota ha sido cambiado por el proceso de sincronizar."
 
 #: teditboxform.label4.caption
 msgid "Please close it (and re-open if it was a download)"
@@ -688,20 +687,20 @@ msgstr "Cerrar"
 
 #: tformhelpnotes.buttonrestore.caption
 msgid "Restore English"
-msgstr ""
+msgstr "Restaurar el inglés"
 
 #: tformhelpnotes.caption
 msgctxt "tformhelpnotes.caption"
 msgid "Help Notes Language"
-msgstr ""
+msgstr "Idioma de las notas de ayuda"
 
 #: tformhelpnotes.label1.caption
 msgid "Double click a Language below"
-msgstr ""
+msgstr "Haga doble clic en un idioma:"
 
 #: tformhelpnotes.label2.caption
 msgid "Contact author if you can help translate."
-msgstr ""
+msgstr "Pongase en contacto si puede ayudar con traducciones."
 
 #: tformmarkdown.buttonclose.caption
 #, fuzzy
@@ -718,10 +717,6 @@ msgstr ""
 msgctxt "tformmarkdown.buttonsave.caption"
 msgid "Save"
 msgstr "Guardar"
-
-#: tformmarkdown.caption
-msgid "FormMarkdown"
-msgstr ""
 
 #: tformmarkdown.label1.caption
 msgid "Press Ctrl-A, Ctrl-C to copy"
@@ -782,7 +777,7 @@ msgstr "Hacer doble clic en una instantánea para ver los contenidos."
 
 #: tformrecover.label15.caption
 msgid "Double click an available snapshot, click Recover"
-msgstr " doble clic en una instantánea, luego en Recuperar."
+msgstr "Haz doble clic en una instantánea, luego en Recuperar."
 
 #: tformrecover.label16.caption
 msgid "You may chose to view, copy and paste into a new note."
@@ -790,7 +785,7 @@ msgstr "Puede elegir ver, copiar y pegar en una nota nueva."
 
 #: tformrecover.label2.caption
 msgid "Please be carefull, this is a dangerous place!"
-msgstr "¡Cuidado!, por favor, esto es un sitio peligroso."
+msgstr "Por favor ¡tenga cuidado! Esto es un sitio peligroso."
 
 #: tformrecover.label3.caption
 msgid "Restore any notes in the snapshot that are not in the existing notes directory."
@@ -973,7 +968,7 @@ msgstr "Sincronización Tomdroid - ¡dese cuenta de las limitaciones!"
 
 #: tformtomdroid.label2.caption
 msgid "Select an existing profile (or enter data) "
-msgstr "Seleccione un perfil existente (o entre datos)"
+msgstr "Seleccione un perfil existente (o entre datos)."
 
 #: tformtomdroid.label3.caption
 msgid "Profile Name"
@@ -1007,7 +1002,7 @@ msgstr "Despachar la ventana pero dejar tomboy-ng ejecutándose"
 # ¿Cambiar a lo de David?
 #: tmainform.caption
 msgid "tomboy-ng"
-msgstr "Bienvenida - tomboy-ng"
+msgstr "Bienvenida a tomboy-ng"
 
 #: tmainform.checkboxdontshow.caption
 msgid "Don't Show for normal startup"
@@ -1040,7 +1035,7 @@ msgstr "¡Bienvenido a tomboy-ng!"
 # ¿Revisar?
 #: tmainform.label6.caption
 msgid "Lets See if we are ready to go -"
-msgstr "Vamos a ver si todo está listo -"
+msgstr "Vamos a ver si todo está listo."
 
 #: tmainform.labelerror.caption
 msgctxt "tmainform.labelerror.caption"
@@ -1050,7 +1045,7 @@ msgstr "X"
 # ¿Revisar?
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
-msgstr "Lanzar desde la linea de comandos para ver errores o ir Preferencias->Instantánea->Recuperar ..."
+msgstr "Lanzar desde la linea de comandos para ver errores o ir a Preferencias->Instantánea->Recuperar ..."
 
 #: tmainform.labelnotesfound.caption
 msgctxt "tmainform.labelnotesfound.caption"
@@ -1114,7 +1109,7 @@ msgstr "Si cree que está allí, compruebe las preferencias."
 
 #: tomdroid.rshavevalidsync
 msgid "Looking Good. Last sync date "
-msgstr "Parece bien. Fecha de la última sincronización"
+msgstr "Parece bien. Fecha de la última sincronización "
 
 # ¿Demasiada larga?
 #: tomdroid.rsinstalltomdroid
@@ -1124,7 +1119,7 @@ msgstr "Instale Tomdroid, configure la sincronización, y sincronize"
 # ¿Revisar?
 #: tomdroid.rsnoconnection
 msgid "Failed to establish a connection. "
-msgstr "No se conectó."
+msgstr "No se pudo conectar."
 
 #: tomdroid.rsnotcorrectprofile
 msgid "This is not correct profile for that device"
@@ -1137,7 +1132,7 @@ msgstr "El repositorio no existe, ¿tal vez pulse \"unirse\"?"
 # ¿Demasiada larga? ¿Hay espacio para 2 lineas?
 #: tomdroid.rsnotomdroid
 msgid "Unable to find Tomdroid sync dir on that device."
-msgstr "Directorio de sincronización de Tomdroid no encontrado en el dispositivo."
+msgstr "No se encontró directorio de sincronización de Tomdroid en el dispositivo."
 
 #: tomdroid.rsselectprofile
 msgid "Select a profile"
@@ -1213,7 +1208,7 @@ msgstr "Editar plantilla del cuaderno"
 # ¿Qué plantilla - uno, dos, ..?
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
-msgstr "Crear nota nueva de la plantilla"
+msgstr "Crear nota nueva de una plantilla"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
@@ -1225,16 +1220,17 @@ msgstr "Funcionará para muchos usuarios nuevos"
 
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
-msgstr ""
+msgstr "Fuente monoespaciada"
 
+# ¿Cambiar a "Fuente mono"?
 #: tsett.buttonfont.caption
 msgid "Usual Font"
-msgstr ""
+msgstr "Fuente habitual"
 
 #: tsett.buttonhelpnotes.caption
 msgctxt "tsett.buttonhelpnotes.caption"
 msgid "Help Notes Language"
-msgstr ""
+msgstr "Idioma de las notas de ayuda"
 
 #: tsett.buttonhide.caption
 msgctxt "tsett.buttonhide.caption"
@@ -1248,7 +1244,7 @@ msgstr "Hacer Instantánea Manual"
 # Un poco largo, pero es un "tooltip".
 #: tsett.buttonmanualsnap.hint
 msgid "Take a time stamped snapshot of notes and config"
-msgstr "Hacer una instantánea de notas y preferencias con la fecha de creación"
+msgstr "Hacer una instantánea de notas, preferencias con la fecha de creación"
 
 #: tsett.buttonsetdictionary.caption
 msgid "Set Dictionary"
@@ -1324,7 +1320,7 @@ msgstr "Permitir que una nota aparece en cuadernos múltiples."
 
 #: tsett.checkmanynotebooks.hint
 msgid "This may adversly affect tradional Tomboy, take care."
-msgstr "Puede que perjudique Tomboy tradicional. ¡Tenga cuidado!"
+msgstr "Puede que perjudique Tomboy tradicional. Tenga cuidado."
 
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
@@ -1346,7 +1342,7 @@ msgstr "Mostrar Bienvenida al iniciar"
 # ¿Gramática? ¿Demasiada larga?
 #: tsett.checkshowsplash.hint
 msgid "Always shown if error loading notes."
-msgstr "Se muestra siempre que ocurra un error al cargar las notas."
+msgstr "Se muestra siempre cuando ocurra un error al cargar las notas."
 
 # ¿Revisar?
 #: tsett.checkshowtomdroid.caption
@@ -1391,7 +1387,7 @@ msgstr "Preferencias"
 #: tsett.label11.caption
 msgctxt "tsett.label11.caption"
 msgid "AUTO snapshots not implemented yet, use manual !"
-msgstr "Instantáneas AUTOMÁTICAS no están disponible todavía, ¡use manua!"
+msgstr "Instantáneas AUTOMÁTICAS no están disponible todavía, ¡use manual!"
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
@@ -1425,19 +1421,15 @@ msgstr "está a punto de sobreescribir una. "
 msgid "They remain, for ever, unless you do something about them."
 msgstr "Estas \"notas huérfanas\" se quedan para siempre al meno que haga algo al respecto."
 
-# ¿Revisar? ¿Demasiada larga? ¿Donde aparece?
+# Cortada para limitación de espacil
 #: tsett.label9.caption
 msgid "A snaphot is a copy of your current note directory."
-msgstr "Una instantánea es un archivo comprimido de todas sus notas actuales."
+msgstr "Una instantánea es una copia de sus notas actuales."
 
 #: tsett.labelsnapdir.caption
 msgctxt "tsett.labelsnapdir.caption"
 msgid ".... and its not available just yet !"
 msgstr "... y ¡no está disponible en este momento!"
-
-#: tsett.labelsyncrepo.caption
-msgid "x"
-msgstr "x"
 
 #: tsett.menufriday.caption
 msgid "Friday"

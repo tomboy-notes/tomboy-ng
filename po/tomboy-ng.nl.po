@@ -697,10 +697,6 @@ msgctxt "tformmarkdown.buttonsave.caption"
 msgid "Save"
 msgstr "Opslaan"
 
-#: tformmarkdown.caption
-msgid "FormMarkdown"
-msgstr ""
-
 #: tformmarkdown.label1.caption
 msgid "Press Ctrl-A, Ctrl-C to copy"
 msgstr ""
@@ -1383,10 +1379,6 @@ msgstr "Een momentopname is een kopie van je huidige notitiemap."
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
 msgstr "... en is nog niet beschikbaar!"
-
-#: tsett.labelsyncrepo.caption
-msgid "x"
-msgstr "x"
 
 #: tsett.menufriday.caption
 msgid "Friday"

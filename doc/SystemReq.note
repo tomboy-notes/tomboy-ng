@@ -21,7 +21,7 @@ RPM based systems, should be installed with the rpm command, not yum or dnf. Dep
 or
 <monospace>sudo rpm -Uv tomboy-ng_0.24-2.amd64.rpm</monospace>
 
-<bold>Mageia</bold> - Mate, XFCE and KDE work fine. Mageia Gnome has problems displaying the System Tray Icon, see Linux Gnome Systems below. <highlight>Mageia with Enlightenment TBD.  </highlight>
+<bold>Mageia</bold> - Mate, XFCE and KDE work fine. Mageia Gnome has problems displaying the System Tray Icon, see Linux Gnome Systems below. Mageia with Enlightenment works but requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment still has a problem, instead of tomboy-ng's painfully cheery bright green icon, you see a white triangular warning icon. But it works.  
 
 <bold>Fedora</bold> (28, 29, 30) works fine with Plasma, XFce, LXQt but the default Gnome has the "Gnome Issue", see Linux Gnome Systems below.
 
@@ -79,14 +79,14 @@ click Extensions, turn TopIcons-plus ON
 click close
 
 </note-content></text>
-  <last-change-date>2019-10-13T10:58:13.1880000+11:00</last-change-date>
-  <last-metadata-change-date>2019-10-13T10:58:13.1880000+11:00</last-metadata-change-date>
+  <last-change-date>2019-10-15T18:25:17.0990000+11:00</last-change-date>
+  <last-metadata-change-date>2019-10-15T18:25:17.0990000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1380</width>
   <height>626</height>
-  <x>227</x>
-  <y>171</y>
+  <x>352</x>
+  <y>333</y>
   <open-on-startup>False</open-on-startup>
 </note>

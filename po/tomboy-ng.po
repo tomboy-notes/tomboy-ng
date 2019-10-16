@@ -680,10 +680,6 @@ msgctxt "tformmarkdown.buttonsave.caption"
 msgid "Save"
 msgstr ""
 
-#: tformmarkdown.caption
-msgid "FormMarkdown"
-msgstr ""
-
 #: tformmarkdown.label1.caption
 msgid "Press Ctrl-A, Ctrl-C to copy"
 msgstr ""
@@ -1364,10 +1360,6 @@ msgstr ""
 
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
-msgstr ""
-
-#: tsett.labelsyncrepo.caption
-msgid "x"
 msgstr ""
 
 #: tsett.menufriday.caption

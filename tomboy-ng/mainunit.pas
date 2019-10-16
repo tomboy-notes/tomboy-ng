@@ -612,21 +612,27 @@ end;
 procedure TMainForm.TestDarkThemeInUse();
 var
   Col : string;
-   {$ifdef WINDOWS}  function WinDarkTheme : boolean;
-   var
-     RegValue : string='';
-     Registry : TRegistry;
-   begin
-     Registry := TRegistry.Create;
-     try
-       Registry.RootKey := HKEY_CURRENT_USER;
-       if Registry.OpenKeyReadOnly('\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize') then
-           exit(Registry.ReadInteger('AppsUseLightTheme') = 0)
-       else exit(false);
-     finally
-       Registry.Free;
-     end;
-   end; {$endif}
+    {$ifdef WINDOWS}  function WinDarkTheme : boolean;
+    var
+        RegValue : integer;
+        Registry : TRegistry;
+    begin
+        Registry := TRegistry.Create;
+        try
+            Registry.RootKey := HKEY_CURRENT_USER;
+            if Registry.OpenKeyReadOnly('\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize') then begin
+                try
+                    RegValue := Registry.ReadInteger('AppsUseLightTheme');
+                except on
+                    E: ERegistryException do exit(True);  // If Key present but not AppsUseLightTheme, default to Dark
+                end;
+                exit(RegValue = 0);
+            end else
+                exit(false);
+        finally
+            Registry.Free;
+        end;
+    end; {$endif}
 
 begin
     {$ifdef windows}
