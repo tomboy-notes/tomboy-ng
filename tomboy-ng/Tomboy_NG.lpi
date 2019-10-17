@@ -746,6 +746,7 @@
         <Filename Value="tb_sdiff.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
+        <UnitName Value="TB_SDiff"/>
       </Unit24>
       <Unit25>
         <Filename Value="trans.pas"/>

@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 451
     Top = 0
     Width = 628
-    ActivePage = TabDisplay
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -324,9 +324,9 @@ object Sett: TSett
         TabOrder = 0
         object RadioFile: TRadioButton
           Left = 56
-          Height = 23
+          Height = 24
           Top = 0
-          Width = 225
+          Width = 227
           Caption = 'File Sync using shared drive.'
           Checked = True
           TabOrder = 0
@@ -334,9 +334,9 @@ object Sett: TSett
         end
         object RadioServer: TRadioButton
           Left = 56
-          Height = 23
+          Height = 24
           Top = 32
-          Width = 240
+          Width = 242
           Caption = 'Network Server - not available'
           Enabled = False
           TabOrder = 1
@@ -394,9 +394,9 @@ object Sett: TSett
         end
         object RadioAlwaysAsk: TRadioButton
           Left = 40
-          Height = 23
+          Height = 24
           Top = 72
-          Width = 215
+          Width = 217
           Caption = 'Always Ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -404,17 +404,17 @@ object Sett: TSett
         end
         object RadioUseLocal: TRadioButton
           Left = 40
-          Height = 23
+          Height = 24
           Top = 104
-          Width = 332
+          Width = 334
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 40
-          Height = 23
+          Height = 24
           Top = 140
-          Width = 319
+          Width = 321
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end

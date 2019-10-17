@@ -22,6 +22,7 @@ unit TB_SDiff;
                 file names in TClashRec and we get the last-change-dates our
                 selves. Should be compatible with old sync model ....
     2018/10/16  Options to apply choice to all notes.
+    2019/10/17  Trap exception if, for some reason, we cannot load one of the note files.
 }
 
 {$mode objfpc}{$H+}
@@ -271,12 +272,18 @@ var
     Sync : Integer;
 begin
     Pos1 := 0; Pos2 := 0; Offset2 := 0; Offset1 := 0;
-    SL1 := TStringList.create;
-    SL2 := TStringList.create;
+    SL1 := TStringList.create;                                 // This may generate a EFOpenError !!
+    SL2 := TStringList.create;                                 // This may generate a EFOpenError !!
     try
         // open the two files and find their beginnings and ends of content
-        SL1.LoadFromFile(RemoteFileName);
-        SL2.LoadFromFile(LocalFileName);
+        try
+            SL1.LoadFromFile(RemoteFileName);
+        except on E: EFOpenError do debugln('Unable to find remote file in repo ' + RemoteFileName);
+        end;
+        try
+            SL2.LoadFromFile(LocalFileName);
+        except on E: EFOpenError do debugln('Unable to find local file ' + LocalFileName);
+        end;
         AddHeader(NoteTitle);
         AddDiffText('Remote File ' + inttostr(SL1.Count-LinesXML) + ' lines ', 1);
         AddDiffText('Local File ' + inttostr(SL2.Count-LinesXML) + ' lines ', 2);

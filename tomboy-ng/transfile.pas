@@ -7,6 +7,7 @@ unit transfile;
   HISTORY
   2018/10/25  Much testing, support for Tomdroid.
   2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341
+  2019/10/17  Ensure DownloadFile returns true remote dir name, irrespective of above.
 }
 
 {$mode objfpc}{$H+}
@@ -287,7 +288,13 @@ end;
 function TFileSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
 begin
     //Result := RemoteAddress + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
+    // Due to early bug in -ng, its possible that a file on eg sync rev 393 is in
+    // either ~/0/393 or in ~/3/393 - we cannot assume here folks !
+
     Result := GetRevisionDirPath(RemoteAddress, RevNo, ID);
+    if FileExists(Result) then exit;
+    Result := RemoteAddress + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
+    if not FileExists(Result) then debugln('transfile -> Download() Unable to locate file ' + inttostr(RevNo) + ' ' + ID);
 end;
 
 end.
