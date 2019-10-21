@@ -1,0 +1,17 @@
+This patch forces all Ubuntu Gnome systems to use LibAppIndicator3
+instead of the default old System Tray.
+
+Has been tested back to U16.04 to U19.10. Has no effect on systems
+other than Ubuntu Gnome. Will prevent TrayIcon OnClick events on
+older systems that still work with the old System Tray model, sorry
+tomboy-ng does not rely on such behaviour, its menu only from
+TrayIcon.
+
+It needs to be applied to Fixes branch prior to release of 2.0.6
+and probably aftwards for a while.
+
+It will probably need to be applied to 2.0.6 as it was too late to
+make the cut.
+
+David Oct 21, 2019
+

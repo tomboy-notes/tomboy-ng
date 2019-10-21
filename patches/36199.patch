@@ -1,0 +1,61 @@
+Index: lcl/interfaces/gtk2/unitywsctrls.pas
+===================================================================
+--- lcl/interfaces/gtk2/unitywsctrls.pas	(revision 62093)
++++ lcl/interfaces/gtk2/unitywsctrls.pas	(working copy)
+@@ -260,41 +260,23 @@
+   Initialized: Boolean;
+ 
+ function UnityAppIndicatorInit: Boolean;
++var
++  Module: HModule;
++  UseAppInd : string;
++
++  function NeedAppIndicator: boolean;
+   var
+-    Module: HModule;
+-    UseAppInd : string;
++    DeskTop : String;
++  begin
++    DeskTop := GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP');
++    // See the wiki for details of what extras these desktops require !!
++    if (Desktop = 'GNOME')
++      or (DeskTop = 'Unity')
++      or (Desktop = 'Enlightenment')
++      or (Desktop = 'ubuntu:GNOME') then exit(True);
++    Result := False;
++  end;
+ 
+-    function NeedAppIndicator: boolean;
+-    var
+-      DeskTop,  VersionSt : String;
+-      ProcFile: TextFile;
+-    begin
+-      DeskTop := GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP');
+-      // See the wiki for details of what extras these desktops require !!
+-      if (DeskTop = 'Unity')
+-         or (Desktop = 'Enlightenment')
+-            then exit(True);
+-      if (DeskTop = 'GNOME') then begin
+-          {$PUSH}
+-          {$IOChecks off}
+-          AssignFile(ProcFile, '/proc/version');
+-          reset(ProcFile);
+-          if IOResult<>0 then exit(false);
+-          {$POP}
+-          readln(ProcFile, VersionSt);
+-          CloseFile(ProcFile);
+-          if ( (pos('mageia', VersionSt) > 0) or
+-            (pos('Debian', VersionSt) > 0) or
+-            (pos('Red Hat', VersionSt) > 0) or
+-            (pos('SUSE', VersionSt) > 0) )
+-            // 19.04 and earlier Ubuntu Gnome does not need LibAppIndicator3
+-            then exit(True);
+-      end;
+-      Result := False;
+-    end;
+-
+-
+-
+   function TryLoad(const ProcName: string; var Proc: Pointer): Boolean;
+   begin
+     Proc := GetProcAddress(Module, ProcName);
