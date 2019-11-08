@@ -48,9 +48,12 @@
         <Item28 Value="FormMarkdown"/>
       </ExcludedOriginals>
     </i18n>
-    <BuildModes Count="14">
+    <BuildModes Count="15">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -95,6 +98,9 @@
         </CompilerOptions>
       </Item2>
       <Item3 Name="Release">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -130,16 +136,13 @@
 -dDisableLCLJPEG
 -dDisableLCLPNM
 -dDisableLCLTIFF"/>
-            <OtherDefines Count="4">
-              <Define0 Value="DisableLCLGIF"/>
-              <Define1 Value="DisableLCLJPEG"/>
-              <Define2 Value="DisableLCLPNM"/>
-              <Define3 Value="DisableLCLTIFF"/>
-            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item3>
       <Item4 Name="ReleaseWin64">
+        <MacroValues Count="1">
+          <Macro2 Name="LCLWidgetType" Value="win32"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -368,7 +371,7 @@
       </Item9>
       <Item10 Name="QT5">
         <MacroValues Count="1">
-          <Macro1 Name="LCLWidgetType" Value="qt5"/>
+          <Macro5 Name="LCLWidgetType" Value="qt5"/>
         </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
@@ -404,12 +407,6 @@
 -dDisableLCLJPEG
 -dDisableLCLPNM
 -dDisableLCLTIFF"/>
-            <OtherDefines Count="4">
-              <Define0 Value="DisableLCLGIF"/>
-              <Define1 Value="DisableLCLJPEG"/>
-              <Define2 Value="DisableLCLPNM"/>
-              <Define3 Value="DisableLCLTIFF"/>
-            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item10>
@@ -489,10 +486,8 @@
         </CompilerOptions>
       </Item12>
       <Item13 Name="LeakCheckWin32">
-        <MacroValues Count="3">
-          <Macro5 Name="LCLWidgetType" Value="win32"/>
-          <Macro6 Name="LCLWidgetType" Value="gtk2"/>
-          <Macro7 Name="LCLWidgetType" Value="win32"/>
+        <MacroValues Count="1">
+          <Macro2 Name="LCLWidgetType" Value="win32"/>
         </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
@@ -529,7 +524,7 @@
       </Item13>
       <Item14 Name="LeakCheckLin64">
         <MacroValues Count="1">
-          <Macro4 Name="LCLWidgetType" Value="gtk2"/>
+          <Macro3 Name="LCLWidgetType" Value="gtk2"/>
         </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
@@ -567,14 +562,53 @@
           </Other>
         </CompilerOptions>
       </Item14>
-      <SharedMatrixOptions Count="7">
+      <Item15 Name="GTK3">
+        <MacroValues Count="1">
+          <Macro4 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <UseHeaptrc Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF"/>
+          </Other>
+        </CompilerOptions>
+      </Item15>
+      <SharedMatrixOptions Count="5">
         <Item1 ID="341789512381" Modes="CocoaDebug,CocoaRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
-        <Item2 ID="036726732034" Modes="ReleaseWin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
-        <Item3 ID="486207841324" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt"/>
-        <Item4 ID="418982182673" Modes="LeakCheckLin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
-        <Item5 ID="712744148929" Modes="LeakCheckWin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
-        <Item6 ID="004900494626" Modes="LeakCheckWin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
-        <Item7 ID="789046543444" Modes="LeakCheckWin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
+        <Item2 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
+        <Item3 ID="418982182673" Modes="LeakCheckLin64,Release,Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+        <Item4 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
+        <Item5 ID="950048283013" Modes="QT5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>

@@ -56,6 +56,8 @@ unit Mainunit;
     2019/09/6   Button to download Help Notes in non-English
     2019/09/21  Restructured model for non-english help notes, names in menus !
     2019/10/13  Prevent Dismiss if desktop is Enlightenment, in OnCreateForm()
+    2019/11/05  Don't treat %f as a command line file name, its an artifact
+    2019/11/08  Tidy up building GTK3 and Qt5 versions, cleaner About
 
     CommandLine Switches
 
@@ -205,8 +207,11 @@ implementation
 uses LazLogger, LazFileUtils, LazUTF8,
     settings,
     SearchUnit,
+    {$ifdef LCLGTK2}
+    gtk2, gdk2,          // required to fix a bug that clears clipboard contents at close.
+    {$endif}
     {$ifdef LINUX}
-    gtk2, gdk2, Clipbrd,
+    Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
     uAppIsRunning,
     Editbox,    // Used only in SingleNoteMode
@@ -350,8 +355,10 @@ begin
         {for I := 0 to Params.Count -1 do
             debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
         if Params.Count = 1 then begin
-            SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
-            exit();
+            if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
+                SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
+                exit();
+            end;
         end;
         if Params.Count > 1 then begin
             debugln('Unrecognised parameters on command line');
@@ -473,20 +480,20 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
-  {$ifdef LINUX}
+  {$ifdef LCLGTK2}
   c: PGtkClipboard;
   t: string;
   {$endif}
   // OutFile : TextFile;
   AForm : TForm;
 begin
-    {$ifdef LINUX}
-    {$ifndef LCLQT5}
+    {$ifdef LCLGTK2}
+    //{$ifndef LCLQT5}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     t := Clipboard.AsText;
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
-    {$endif}
+    //{$endif}
     {$endif}
     freeandnil(HelpNotes);
     // ToDo : This might be good place to hook into a closing app and flush any open notes.
@@ -902,8 +909,21 @@ RESOURCESTRING
 
 procedure TMainForm.ShowAbout();
 var
-        S1, S2, S3, S4, S5, S6 : string;
+        Stg, S1, S2, S3, S4, S5, S6 : string;
 begin
+        Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
+            + rsAboutVer + ' ' + Version_String;
+        {$ifdef LCLCOCOA} Stg := Stg + ', 64bit Cocoa'; {$endif}
+        {$ifdef LCLQT5}   Stg := Stg + ', QT5';         {$endif}
+        {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
+        {$ifdef LCLGTK2}  Stg := Stg + ', GTK2';        {$endif}
+        Stg := Stg + #10 + rsAboutBDate + ' ' + {$i %DATE%} + #10
+            + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
+            + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
+            + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
+        Showmessage(Stg);
+        exit;
+
         S1 := rsAbout1 + #10;
         S2 := rsAbout2 + #10;
         S3 := rsAbout3 + #10;

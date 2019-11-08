@@ -1,10 +1,18 @@
 [Desktop Entry]
 Name=tomboy-ng
-GenericName=Note Taker
+Name[de]=tomboy-ng
+Name[es]=tomboy-ng
+Name[fr]=tomboy-ng
 Comment=Cross Platform Notes
+Comment[de]=Notizen Plattformübergreifend
+Comment[es]=Notas Multiplatforma
+Comment[fr]=Notes Multiplateforme
+GenericName=Note Taker
+GenericName[de]=Notizanwendung
+GenericName[es]=Tomador de apuntes
+GenericName[fr]=Application de prise de notes
 Exec=tomboy-ng %f
 Icon=/usr/share/icons/hicolor/256x256/apps/tomboy-ng.png
 Terminal=false
 Type=Application
 Categories=GNOME;Utility
-
