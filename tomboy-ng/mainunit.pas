@@ -909,7 +909,7 @@ RESOURCESTRING
 
 procedure TMainForm.ShowAbout();
 var
-        Stg, S1, S2, S3, S4, S5, S6 : string;
+        Stg : string;
 begin
         Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
             + rsAboutVer + ' ' + Version_String;
@@ -922,21 +922,6 @@ begin
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
             + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
         Showmessage(Stg);
-        exit;
-
-        S1 := rsAbout1 + #10;
-        S2 := rsAbout2 + #10;
-        S3 := rsAbout3 + #10;
-        S4 := rsAboutVer + ' ' + Version_String + #10;
-        S5 := rsAboutBDate + ' ' + {$i %DATE%} + ' ' + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
-                + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%};
-        // That may return, eg "Build date 2019/02/28 TargetCPU x86_64 OS Linux Mate"
-        // or, maybe "Build date 2019/03/19 TargetCPU i386 OS Win32"
-        S6 := #10;
-        {$ifdef LCLCOCOA}S6 := S6 + ' 64bit Cocoa ' + rsAboutVer;{$endif}
-        {$ifdef LCLQT5}S6 := S6 + ' QT5' + rsAboutVer; {$endif}
-        S6 := S6 + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
-        Showmessage(S1 + S2 + S3 + S4 + S5 + S6);
 end;
 
 end.

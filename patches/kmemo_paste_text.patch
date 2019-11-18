@@ -1,0 +1,23 @@
+--- source/kmemo.pas-orig	2019-11-17 11:35:07.976660959 +1100
++++ source/kmemo.pas	2019-11-17 11:36:32.769200382 +1100
+@@ -12922,7 +12922,10 @@
+           S := Copy(AValue, St, I - St);
+           S := UnicodeStringReplace(S, cCR, '', [rfReplaceAll]); // on Unix systems
+           if (S <> '') and InsertString(AIndex, False, S) then
++          begin
+             Inc(AIndex, StringLength(S));
++            UpdateAttributes;             // drb, November 2019
++          end;
+         end;
+         if InsertParagraph(AIndex, True) then
+           Inc(AIndex);
+@@ -12934,7 +12937,8 @@
+     begin
+       S := Copy(AValue, St, I - St + 1);
+       if S <> '' then
+-        InsertString(AIndex, True, S);
++        if InsertString(AIndex, True, S) then
++            UpdateAttributes;             // drb, November 2019
+     end;
+   finally
+     UnlockUpdate;
