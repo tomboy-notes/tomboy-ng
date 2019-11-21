@@ -250,6 +250,8 @@ type
           If successfull show on screen and saves config }
         procedure CheckSpelling(const DicFullName: string='');
         procedure DicDefaults(var DicPathAlt: string);
+        // Returns a good place to save config or user requested place if on cmdline,
+        function GetDefaultConfigDir: string;
         // Returns the default place to store notes. It may not be present.
         function GetDefaultNoteDir: string;
         function MyBoolStr(const InBool: boolean) : string;
@@ -674,6 +676,8 @@ begin
     LabelWaitForSync.Caption := '';
     LabelLibrary.Caption := '';
     HaveConfig := false;
+    LocalConfig := GetDefaultConfigDir();   // sys dependant unless user has overridden
+    LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
     CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
@@ -711,19 +715,42 @@ begin
     DebugLn('Settings cannot write into [' + DirPath + ']');
 end;
 
+function TSett.GetDefaultConfigDir : string;
+begin
+    Result := '';
+    if Application.HasOption('config-dir') then
+        Result := Application.GetOptionValue('config-dir');
+    if Result = '' then begin
+        {$ifdef DARWIN}
+        // First we try the right place, if there use it, else try unix place, if
+        // its not there, go back to right place.
+        Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Config';
+        if not DirectoryExistsUTF8(Result) then begin
+            Result := GetAppConfigDirUTF8(False);
+            if not DirectoryExistsUTF8(Result) then  // must be new install, put in right place
+                Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Config';
+        end;
+        {$else}
+        Result := GetAppConfigDirUTF8(False);
+        {$endif}
+    end;
+    Result := AppendPathDelim(Result);
+end;
+
 { Read config file if it exists }
 procedure TSett.CheckConfigFile;
 var
     ConfigFile : TINIFile;
     ReqFontSize : ANSIString;
 begin
-    if Application.HasOption('config-dir') then
+{    if Application.HasOption('config-dir') then
         LocalConfig := Application.GetOptionValue('config-dir')
     else
         LocalConfig := GetAppConfigDirUTF8(False);
     if LocalConfig = '' then LocalConfig := GetAppConfigDirUTF8(False);
     LocalConfig := AppendPathDelim(LocalConfig);
-    LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
+
+    LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';     }
     // LabelLocalConfig.Caption := LocalConfig;
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
@@ -866,6 +893,15 @@ function TSett.GetDefaultNoteDir : string;
 begin
     {$IFDEF UNIX}
     Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
+    {$ENDIF}
+    {$IFDEF DARWIN}
+    // try the correct place first, if not there, lets try the old, wrong place
+    // if at neither, we go back to correct place.
+    Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Notes/';
+    if DirectoryExistsUTF8(Result) then exit;
+    Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
+    if not DirectoryExistsUTF8(Result) then
+        Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Notes/';
     {$ENDIF}
     {$IFDEF WINDOWS}
     Result := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
