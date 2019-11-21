@@ -21,9 +21,9 @@
   <key>CFBundleSignature</key>
   <string>tomb</string>
   <key>CFBundleShortVersionString</key>
-  <string>0.1</string>
+  <string>REPLACEVER</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>REPLACEVER</string>
   <key>CSResourcesFileMapped</key>
   <true/>
   <key>CFBundleDocumentTypes</key>

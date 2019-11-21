@@ -16,19 +16,32 @@ RDIR="$PROD"-"$VERS"
 
 
 function DoAlien ()  {
-	echo "------------- RDIR=$RDIR and building for $1 ---------"
+	FILENAME="$PROD"_"$VERS"-0_"$1".deb
+	ARCH="$1"
 	rm -Rf "$RDIR"
 	# Note, debs have a dash after initial version number, RPM an underscore
-	alien -r -g -v "$PROD"_"$VERS"-0_"$1".deb
+	if [ "$1" = amd64Qt ]; then
+		FILENAME="tomboy-ngQt_0.24b-0_amd64.deb"
+		ARCH=amd64
+	fi
+	echo "--- RDIR=$RDIR and building for $1 using $FILENAME ---------"
+	alien -r -g -v "$FILENAME"
 	# head "$RDIR"/"$RDIR"-2.spec
 	sed -i 's#%dir "/"##' "$RDIR"/"$RDIR"-2.spec
 	sed -i 's#%dir "/usr/bin/"##' "$RDIR"/"$RDIR"-2.spec
 	# head "$RDIR"/"$RDIR"-2.spec
 	cd "$RDIR"
-	rpmbuild --target "$1" --buildroot "$PWD" -bb "$RDIR"-2.spec
+	rpmbuild --target "$ARCH" --buildroot "$PWD" -bb "$RDIR"-2.spec
 	cd ..
+	# if its a Qt one, rename it it so it does not get overwritten subsquently
+	if [ "$1" = amd64Qt ]; then
+		mv "$RDIR"-2."$ARCH".rpm "$PROD"Qt-"$VERS"-2."$ARCH".rpm
+	fi
 }
 
+rm -f tom*.rpm
+# Must do the "non std" ones first, else have overwrite problems
+DoAlien "amd64Qt"
 DoAlien "i386"
 DoAlien "amd64"
 chown "$SUDO_USER" *.rpm

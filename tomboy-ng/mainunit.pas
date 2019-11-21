@@ -58,6 +58,7 @@ unit Mainunit;
     2019/10/13  Prevent Dismiss if desktop is Enlightenment, in OnCreateForm()
     2019/11/05  Don't treat %f as a command line file name, its an artifact
     2019/11/08  Tidy up building GTK3 and Qt5 versions, cleaner About
+    2019/11/20  Don't assign PopupMenu to TrayIcon on (KDE and Qt5)
 
     CommandLine Switches
 
@@ -148,6 +149,8 @@ type
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
+        // Don't assign if desktop is KDE and Qt5, it stuffs up in November 2019
+        AssignPopupToTray : boolean;
         CmdLineErrorMsg : string;
         // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error or -g on commandline
         AllowDismiss : boolean;
@@ -569,6 +572,10 @@ begin
     // Application.OnEndSession := @OnEndSessionApp;        // ToDo : maybe this works on Windows ?
     // SetDefaultLang('es', 'locale', true);
     //color := clyellow;
+    AssignPopupToTray := True;
+    {$ifdef LINUX}
+    AssignPopupToTray := {$ifdef LCLQT5}False{$else}True{$endif} or (GetEnvironmentVariable('XDG_CURRENT_DESKTOP') <> 'KDE');
+    {$endif}
     if CommandLineError() then exit;    // We will close in OnShow
     UseMainMenu := True;
     UseTrayMenu := true;
@@ -765,7 +772,8 @@ begin
         RecentMenu.Caption := rsMenuRecent;
         MainMenu.Items.Add(FileMenu);
         MainMenu.Items.Add(RecentMenu);
-        TrayIcon.PopUpMenu := PopupMenuTray;
+        if AssignPopupToTray then
+            TrayIcon.PopUpMenu := PopupMenuTray;
     end;
     AddMenuItem(rsMenuNewNote, mtNewNote, @FileMenuClicked, mkFileMenu);
     AddMenuItem(rsMenuSearch, mtSearch,  @FileMenuClicked, mkFileMenu);

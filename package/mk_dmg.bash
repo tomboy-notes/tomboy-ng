@@ -20,7 +20,7 @@ CONTENTS="$WORK/""$PRODUCT".app/Contents
 VERSION=`cat version`
 MANUALS=`cat note-files`
 MSGFMT="/usr/local/Cellar/gettext/0.19.8.1/bin/msgfmt"
-
+VERSION=`cat version`
 
 if [ -z "$LAZ_DIR" ]; then
 	echo "Usage : $0 /Full/Path/Lazarus/dir"
@@ -68,7 +68,8 @@ function MakeDMG () {
 	mkdir "$CONTENTS"/MacOS
 	MANWIDTH=70 man ../doc/tomboy-ng.1 > "$CONTENTS"/SharedSupport/readme.txt
 	cp -R ../doc/html "$CONTENTS"/SharedSupport/.
-	cp Info.plist "$CONTENTS/."
+	sed "s/REPLACEVER/\"$VERSION\"/" Info.plist > "$CONTENTS/Info.plist"
+	# cp Info.plist "$CONTENTS/."
 	cp PkgInfo "$CONTENTS/."
 	cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
 	for i in $MANUALS; do

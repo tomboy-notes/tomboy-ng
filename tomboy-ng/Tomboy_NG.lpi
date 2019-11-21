@@ -390,7 +390,7 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <UseHeaptrc Value="True"/>
+              <GenerateDebugInfo Value="False"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>

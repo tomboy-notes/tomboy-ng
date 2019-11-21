@@ -1,4 +1,8 @@
 #!/bin/bash
+# Ugly hack to make a Qt5 package, Linux 64bit only. Temp measure, must do better.
+# expects to find tomboy-ng-qt executable in ../tomboy-ng dir ready made.i
+# I cannot, yet build Qt5 version on my build machine [18.04 has old Qt5 lib; 19.10 Lazarus freeze bug]
+
 # A script to build tomboy and make deb packages and zip up the other binaries
 # see https://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics
 # we can also add preinst, postinst, prerm, and postrm scripts if required
@@ -142,9 +146,15 @@ function DebianPackage () {
 	mv ../doc/$PRODUCT.1.gz BUILD/usr/share/man/man1/.
 	if [ "$1" = "amd64" ]; then
 		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng
-	else
+	fi
+	if [ "$1" = "i386" ]; then
 		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
 	fi
+	if [ "$1" = "amd64Qt" ]; then
+		cp $SOURCE_DIR/tomboy-ng-qt BUILD/usr/bin/tomboy-ng
+		chmod 755 BUILD/usr/bin/tomboy-ng
+	fi
+
 	# Remove the html files, too hard to maintain
 	# cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
 	# chmod 0755 BUILD/usr/share/doc/"$PRODUCT"/html 
@@ -152,15 +162,23 @@ function DebianPackage () {
     # -------------- Make control file
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
-	echo "Architecture: $1" >> BUILD/DEBIAN/control
+	if [ "$1" = "amd64Qt" ]; then
+		echo "Architecture: amd64" >> BUILD/DEBIAN/control
+	else
+		echo "Architecture: $1" >> BUILD/DEBIAN/control
+	fi
 	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
 	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
 	# We don't use libcanberra-gtk-module but binary complains when on an OS that does not have it, sigh ...
-	echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module" >> BUILD/DEBIAN/control
+	if [ "$1" = "amd64Qt" ]; then
+		echo "Depends: libqt5pas1" >> BUILD/DEBIAN/control
+	else
+		echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module" >> BUILD/DEBIAN/control
+	fi
 	echo "Priority: optional" >> BUILD/DEBIAN/control
 	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
-	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier." >> BUILD/DEBIAN/control
+	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. Experimental Qt5 release." >> BUILD/DEBIAN/control
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 
 	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
@@ -240,6 +258,10 @@ function MkWinPreInstaller() {
 
 DebianPackage "i386"
 DebianPackage "amd64"
+if [ -f "$SOURCE_DIR/tomboy-ng-qt" ]
+  then DebianPackage "amd64Qt";
+	  echo "-------- WARNING also made Qt deb, is bin current ? -------"
+fi
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
 ls -l *.deb
 DoGZipping
