@@ -21,7 +21,7 @@ function DoAlien ()  {
 	rm -Rf "$RDIR"
 	# Note, debs have a dash after initial version number, RPM an underscore
 	if [ "$1" = amd64Qt ]; then
-		FILENAME="tomboy-ngQt_0.24b-0_amd64.deb"
+	#	FILENAME="tomboy-ngQt_0.24b-0_amd64.deb"
 		ARCH=amd64
 	fi
 	echo "--- RDIR=$RDIR and building for $1 using $FILENAME ---------"

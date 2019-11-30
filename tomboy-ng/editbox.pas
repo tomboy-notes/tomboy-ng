@@ -9,7 +9,7 @@ unit EditBox;
  * without limitation the rights to use, copy, modify, merge, publish, 
  * distribute, sublicense, and/or sell copies of the Software, and to 
  * permit persons to whom the Software is furnished to do so, subject to 
- * the following conditions: 
+ * the following conditWSpace - StartingAtions: 
  *  
  * The above copyright notice and this permission notice shall be 
  * included in all copies or substantial portions of the Software. 
@@ -192,6 +192,7 @@ unit EditBox;
     2019/09/21  CleanUTF8 removes some bad UTF8 char when importing some RTF files.
     2019/09/21  AdjustFormPosition() now enforces some minium position/size. Issue #103
     2019/10/11  Enabling of printing under Cocoa
+    2019/11/30  Now support web links.
 }
 
 
@@ -336,6 +337,10 @@ type
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
         { If Toggle is true, sets bullets to what its currently no. Otherwise sets to TurnOn}
         procedure BulletControl(const Toggle, TurnOn: boolean);
+        { Looks between StartS and EndS, marking any http link. Byte, not char indexes.
+          A weblink has leading and trailing whitespace, starts with http:// or https://
+          and has a dot and char after the dot.}
+        procedure CheckForHTTP(const PText: pchar; const StartS, EndS: longint);
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
@@ -366,16 +371,15 @@ type
         procedure InitiateCalc();
         { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
         function LoadSingleNote() : boolean;
-        { Searches for all occurances of Term in the KMemo text, makes them Links }
+        { Searches for all occurances of Term in the KMemo text, makes them Links
+          Does not bother with single char terms. }
         procedure MakeAllLinks(const PText: PChar; const Term: ANSIString;
             const StartScan: longint=1; EndScan: longint=0);
 
-
-
-		// procedure MakeAllLinks(const MText : ANSIString; const Term: ANSIString; const StartScan : longint =1; EndScan : longint = 0);
-
-
-        { Makes the passed location a link if its not already one }
+        { Makes a link at passed position as long as it does not span beyond a block.
+            And if it does span beyond one block, I let that go through to the keeper.
+            Making a Hyperlink, deleting the origional text is a very slow process so we
+            make heroic efforts to avoid having to do so. Index is char count, not byte.      }
 		procedure MakeLink(const Link: ANSIString; const Index, Len: longint);
         { Makes the top line look like a title. }
         procedure MarkTitle();
@@ -451,8 +455,9 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     Index,              // An Index of current note.
     math,
     //LazFileUtils,       // ToDo : UTF8 complient, unlike FileUtil ...
-    FileUtil, strutils;         // just for ExtractSimplePath ... ~#1620
+    FileUtil, strutils,         // just for ExtractSimplePath ... ~#1620
     // XMLRead, DOM, XMLWrite;     // For updating locations on a clean note (May 19, not needed ?)
+    LCLIntf;            // OpenUrl(
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 
@@ -1599,11 +1604,6 @@ end;
 
 { -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
 
-	{ Makes a link at passed position as long as it does not span beyond a block.
-      And if it does span beyond one block, I let that go through to the keeper.
-      Making a Hyperlink, deleting the origional text is a very slow process so we
-      make heroic efforts to avoid having to do so.
-    }
 procedure TEditBoxForm.MakeLink(const Link : ANSIString; const Index, Len : longint);
 var
 	Hyperlink: TKMemoHyperlink;
@@ -1613,9 +1613,9 @@ var
 begin
 	// Is it already a Hyperlink ?
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, Blar);
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKHyperlink') then exit();
+    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKHyperlink') then begin writeln('Hyperlink'); exit(); end;
 	// Is it all in the same block ?
-    if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
+    if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then begin writeln('Not in same block'); exit(); end;
     if length(Kmemo1.Blocks.Items[BlockNo].Text) = length(Link) then DontSplit := True;
     KMemo1.SelStart:= Index;
     KMemo1.SelLength:=Len;
@@ -1626,7 +1626,6 @@ begin
 	Hyperlink.Text := Link;
 	Hyperlink.OnClick := @OnUserClickLink;
 	KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
-//    KMemo1.Select(Index, Len);
 end;
 
 
@@ -1640,8 +1639,6 @@ begin
 end;
 
 
-{ Searches for all occurances of Term in the KMemo text. Does
-  not bother with single char terms. }
 procedure TEditBoxForm.MakeAllLinks(const PText : PChar; const Term : ANSIString; const StartScan : longint =1; EndScan : longint = 0);
 var
 	Offset, NumbCR   : longint;
@@ -1652,21 +1649,13 @@ begin
     Offset := RelativePos(Term, PText, StartScan);
     while Offset > 0 do begin
     	NumbCR := 0;
-        {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
-{        Ptr := PChar(Mtext);
-        EndP := Ptr + length(UTF8Copy(MText, 1, Offset-1));
-        while Ptr < EndP do begin
-            if Ptr^ = #13 then inc(NumbCR);
-            inc(Ptr);
-		end;               }
-
-        EndP := PText + Offset;         // This is windows only code, replace above once tested, don't need Ptr, 2 x EndP
+        {$ifdef WINDOWS}                // compensate for Windows silly two char newlines
+        EndP := PText + Offset;
         while EndP > PText do begin
             if EndP^ = #13 then inc(NumbCR);
             dec(EndP);
         end;
         {$endif}
-
         if (PText[Offset-2] in [' ', #10, #13, ',', '.']) and
                         (PText[Offset + length(Term) -1] in [' ', #10, #13, ',', '.']) then
             MakeLink(Term, UTF8Length(PText, Offset) -1 -NumbCR, UTF8length(Term));
@@ -1677,26 +1666,82 @@ begin
 end;
 
 
+procedure TEditBoxForm.CheckForHTTP(const PText : pchar; const StartS, EndS : longint);
+
+    function ValidWebLength(StartAt : integer) : integer;
+    var
+        I : integer;
+    begin
+        I := 7;                                                 // '7' being length of 'http://'
+        if not(PText[StartAt-2] in [' ', ',', #10, #13]) then exit(0);  // no leading whitespace
+        while PText[StartAt+I] <> '.' do begin
+            if (StartAt + I) > EndS then exit(0);                     // beyond our scan zone before dot
+            if PText[StartAt+I] in [' ', ',', #10, #13] then exit(0);   // hit whitespace before a dot
+            inc(I);
+        end;
+        while (not(PText[StartAt+I] in [' ', ',', #10, #13])) do begin
+            if (StartAt + I) > EndS then exit(0);                     // beyond our scan zone before whitespace
+            inc(I);
+        end;
+        Result := I+1;
+    end;
+
+var
+    http, Offset, NumbCR : integer;
+    Len : integer;
+    {$ifdef WINDOWS}EndP : PChar; {$endif}
+begin
+    OffSet := StartS;
+    http := pos('http', PText+Offset);
+    while (http <> 0) and ((http+Offset) < EndS) do begin
+        if (copy(PText, Offset+http+4, 3) = '://') or (copy(PText, Offset+http+4, 4) = 's://') then begin
+            Len := ValidWebLength(Offset+http);
+            if Len > 0 then begin
+                NumbCR := 0;
+                {$ifdef WINDOWS}
+                EndP := PText + Offset + http;
+                while EndP > PText do begin
+                    if EndP^ = #13 then inc(NumbCR);
+                    dec(EndP);
+                end;
+                {$endif}
+                MakeLink(copy(PText, Offset+http, Len), UTF8Length(PText, OffSet + http)-1 -NumbCR, Len);
+            end;
+            if len > 0 then
+        end;
+        inc(Offset, http+1);
+        http := pos('http', PText + Offset);
+    end;
+end;
+
 
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
     Searchterm : ANSIstring;
-    Len : longint;
-    //Tick, Tock : qword;
+    Len, httpLen : longint;
+//    Tick, Tock : qword;
     pText : pchar;
 begin
 	if not Ready then exit();
     if SingleNoteMode then exit();
-    Len := length(KMemo1.Blocks.text);      // saves 7mS by calling length() only once ! But still 8mS
-    if StartScan >= Len then exit;   // prevent crash when memo almost empty
+    // There is a thing called KMemo1.Blocks.SelectableLength but it returns the number of characters, not bytes, much faster though
+    // Note, we don't need Len if only doing http and its not whole note being checked (at startup). So, could save a bit ....
+    Len := length(KMemo1.Blocks.text);              // saves 7mS by calling length() only once ! But still 8mS
+    if StartScan >= Len then exit;                  // prevent crash when memo almost empty
     if EndScan > Len then EndScan := Len;
+    if EndScan = 0 then
+        httpLen := Len
+    else  httpLen := EndScan;
     Ready := False;
 	SearchForm.StartSearch();
     KMemo1.Blocks.LockUpdate;
     //Tick := gettickcount64();
     PText := PChar(lowerCase(KMemo1.Blocks.text));
+    if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
+        CheckForHTTP(PText, StartScan, httpLen);
+    if not Sett.ShowIntLinks then exit;
     while SearchForm.NextNoteTitle(SearchTerm) do
-        if SearchTerm <> NoteTitle then            // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
+        if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
             MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
     //Tock := gettickcount64();
     KMemo1.Blocks.UnLockUpdate;
@@ -1766,7 +1811,11 @@ end;
 
 procedure TEditBoxForm.OnUserClickLink(sender : TObject);
 begin
-	SearchForm.OpenNote(TKMemoHyperlink(Sender).Text);
+    if (copy(TKMemoHyperlink(Sender).Text, 1, 7) = 'http://') or
+        (copy(TKMemoHyperlink(Sender).Text, 1, 8) = 'https://') then
+            OpenUrl(TKMemoHyperlink(Sender).Text)
+    else
+	    SearchForm.OpenNote(TKMemoHyperlink(Sender).Text);
 end;
 
 
@@ -1803,7 +1852,7 @@ begin
             KMemo1.Blocks.AddParagraph();
   	        exit();
     end;
-    if Sett.ShowIntLinks then begin
+    if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
   	    ClearNearLink(CurserPos);
   	    // TS2:=DateTimeToTimeStamp(Now);
         CheckForLinks(StartScan, EndScan);
@@ -2405,7 +2454,7 @@ begin
     Createdate := Loader.CreateDate;
     Ready := true;
     Caption := Loader.Title;
-    if Sett.ShowIntLinks then
+    if Sett.ShowIntLinks or Sett.CheckShowExtLinks.checked then
     	CheckForLinks();                     		// 360mS
     Left := Loader.X;
     Top := Loader.Y;

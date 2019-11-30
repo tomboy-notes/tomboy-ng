@@ -67,6 +67,14 @@ fi
 
 function BuildIt () {
 	cd $SOURCE_DIR
+	echo "Building Qt5 x86_64 Linux"
+	rm -f tomboy-ng
+#	if [ "$LEAKCHECK" == "YES" ]; then
+#		LAZMODE="LeakCheckLin64"
+#	else
+		LAZMODE="QT5"
+#	fi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	rm -f tomboy-ng
 	if [ "$LEAKCHECK" == "YES" ]; then
@@ -153,6 +161,17 @@ function DebianPackage () {
 	if [ "$1" = "amd64Qt" ]; then
 		cp $SOURCE_DIR/tomboy-ng-qt BUILD/usr/bin/tomboy-ng
 		chmod 755 BUILD/usr/bin/tomboy-ng
+		#mkdir -p BUILD/usr/lib/x86_64-linux-gnu
+		#cp /usr/lib/x86_64-linux-gnu/libQt5Pas.so.1.2.6 BUILD/usr/lib/x86_64-linux-gnu/.
+		#chmod 0644 BUILD/usr/lib/x86_64-linux-gnu/libQt5Pas.so.1.2.6
+		#cd BUILD/usr/lib/x86_64-linux-gnu/
+		#ln -s libQt5Pas.so.1.2.6 libQt5Pas.so.1.2
+		#ln -s libQt5Pas.so.1.2.6 libQt5Pas.so.1
+		#cd ../../../../
+		#echo "--------------------------------------"
+		#pwd
+		#ls -la
+		#echo "--------------------------------------"
 	fi
 
 	# Remove the html files, too hard to maintain
@@ -169,10 +188,12 @@ function DebianPackage () {
 	fi
 	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
 	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
-	# We don't use libcanberra-gtk-module but binary complains when on an OS that does not have it, sigh ...
 	if [ "$1" = "amd64Qt" ]; then
+		# echo "Depends: libQt5Pas1 (>= 2.6~beta-4)" >> BUILD/DEBIAN/control
+		# echo "Depends: libc6 (>= 2.14), libgcc1 (>= 1:3.0), libqt5core5a (>= 5.7.0), libqt5gui5 (>= 5.6.0~beta) | libqt5gui5-gles (>= 5.6.0~beta), libqt5network5 (>= 5.6.0~beta), libqt5printsupport5 (>= 5.2.0), libqt5widgets5 (>= 5.6.0~beta), libqt5x11extras5 (>= 5.6.0), libstdc++6 (>= 5)" >> BUILD/DEBIAN/control
 		echo "Depends: libqt5pas1" >> BUILD/DEBIAN/control
 	else
+		# We don't use libcanberra-gtk-module but binary complains when on an OS that does not have it, sigh ...
 		echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module" >> BUILD/DEBIAN/control
 	fi
 	echo "Priority: optional" >> BUILD/DEBIAN/control
@@ -192,11 +213,12 @@ function DebianPackage () {
 	echo "Maintainer: $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
 	echo "Source: https://github.com/tomboy-notes/tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright	
 	echo "License: GPL-3.0-or-later" >> BUILD/usr/share/doc/$PRODUCT/copyright
-    echo "Copyright: 2017-2019 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Copyright: 2017-2019 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
 	chmod -R g-w BUILD
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
-
-
+	#if [ "$1" = "amd64Qt" ]; then
+	#	mv "$PRODUCT""_$VERSION-0_$1.deb" "$PRODUCT"_QT5_"$VERSION-0_$1.deb"
+	#fi
 }
 
 function DoGZipping {
@@ -256,12 +278,15 @@ function MkWinPreInstaller() {
 	BuildIt
 #fi
 
+DebianPackage "amd64Qt";
 DebianPackage "i386"
 DebianPackage "amd64"
-if [ -f "$SOURCE_DIR/tomboy-ng-qt" ]
-  then DebianPackage "amd64Qt";
-	  echo "-------- WARNING also made Qt deb, is bin current ? -------"
-fi
+
+#if [ -f "$SOURCE_DIR/tomboy-ng-qt" ]
+#  then DebianPackage "amd64Qt";
+#	  echo "-------- WARNING also made Qt deb, is bin current ? -------"
+#fi
+
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
 ls -l *.deb
 DoGZipping

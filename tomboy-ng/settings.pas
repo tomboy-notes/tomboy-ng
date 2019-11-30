@@ -393,7 +393,7 @@ begin
 	if NoteDirectory <> '' then begin
         LabelNotespath.Caption := NoteDirectory;
         HaveConfig := (NoteDirectory <> '');
-        CheckShowIntLinks.enabled := true;
+        // CheckShowIntLinks.enabled := true;
         ShowIntLinks := CheckShowIntLinks.Checked;
         SetFontSizes();
 	    if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
@@ -743,25 +743,19 @@ var
     ConfigFile : TINIFile;
     ReqFontSize : ANSIString;
 begin
-{    if Application.HasOption('config-dir') then
-        LocalConfig := Application.GetOptionValue('config-dir')
-    else
-        LocalConfig := GetAppConfigDirUTF8(False);
-    if LocalConfig = '' then LocalConfig := GetAppConfigDirUTF8(False);
-    LocalConfig := AppendPathDelim(LocalConfig);
-
-    LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';     }
-    // LabelLocalConfig.Caption := LocalConfig;
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
  	    try
             MaskSettingsChanged := True;    // should be true anyway ?
    		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
-            if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
+            {if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
                 CheckShowIntLinks.Checked := true
-            else CheckShowIntLinks.Checked := false;
-
+            else CheckShowIntLinks.Checked := false;}
+            CheckShowIntLinks.Checked :=
+                ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
+            CheckShowExtLinks.Checked :=
+                ('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
             CheckManyNoteBooks.checked :=
         	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
             CheckCaseSensitive.Checked :=
@@ -854,6 +848,7 @@ begin
             if CheckShowIntLinks.Checked then
                 ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
             else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
+            ConfigFile.writestring('BasicSettings', 'ShowExtLinks',      MyBoolStr(CheckShowExtLinks.Checked));
             ConfigFile.writestring('BasicSettings', 'ShowTomdroid',      MyBoolStr(CheckShowTomdroid.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
             ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
