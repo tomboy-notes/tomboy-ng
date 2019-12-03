@@ -339,7 +339,7 @@ type
         procedure BulletControl(const Toggle, TurnOn: boolean);
         { Looks between StartS and EndS, marking any http link. Byte, not char indexes.
           A weblink has leading and trailing whitespace, starts with http:// or https://
-          and has a dot and char after the dot.}
+          and has a dot and char after the dot. We expect kmemo1 is locked at this stage.}
         procedure CheckForHTTP(const PText: pchar; const StartS, EndS: longint);
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
@@ -372,7 +372,7 @@ type
         { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
         function LoadSingleNote() : boolean;
         { Searches for all occurances of Term in the KMemo text, makes them Links
-          Does not bother with single char terms. }
+          Does not bother with single char terms. Expects KMemo1 to be already locked.}
         procedure MakeAllLinks(const PText: PChar; const Term: ANSIString;
             const StartScan: longint=1; EndScan: longint=0);
 
@@ -1739,10 +1739,10 @@ begin
     PText := PChar(lowerCase(KMemo1.Blocks.text));
     if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
         CheckForHTTP(PText, StartScan, httpLen);
-    if not Sett.ShowIntLinks then exit;
-    while SearchForm.NextNoteTitle(SearchTerm) do
-        if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
-            MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
+    if Sett.ShowIntLinks then
+        while SearchForm.NextNoteTitle(SearchTerm) do
+            if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
+                MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
     //Tock := gettickcount64();
     KMemo1.Blocks.UnLockUpdate;
     //debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');

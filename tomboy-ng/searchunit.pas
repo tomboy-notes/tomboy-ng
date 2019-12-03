@@ -94,6 +94,7 @@ unit SearchUnit;
     2019/04/15  One Clear Filters button to replace Clea and Show All Notes. Checkboxes Mode instead of menu
     2019/04/16  Fixed resizing atifacts on stringGrids by turning off 'Flat' property, Linux !
     2019/08/18  Removed AnyCombo and CaseSensitive checkboxes and replaced with SearchOptionsMenu, easier translations
+    2019/02/19  When reshowing an open note, bring it to current workspace, Linux only. Test on Wayland !
 }
 
 {$mode objfpc}{$H+}
@@ -153,6 +154,7 @@ type
         // note that is currently open as read only.
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
     private
+        function MoveNoteWindowHere(WTitle: string): boolean;
         		{ Copies note data from internal list to StringGrid, sorts it and updates the
                   TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
@@ -204,8 +206,8 @@ uses MainUnit,      // Opening form, manages startup and Menus
     settings,		// Manages settings.
     LCLType,		// For the MessageBox
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff
-    sync;           // because we need it to manhandle local manifest when a file is deleted
-
+    sync,           // because we need it to manhandle local manifest when a file is deleted
+    process;        // Linux, we call wmctrl to move note to current workspace
 
 { TSearchForm }
 
@@ -512,6 +514,33 @@ begin
         NoteLister.DeleteNote(FullFileName);
 end;
 
+function TSearchForm.MoveNoteWindowHere(WTitle : string) : boolean;
+var
+    AProcess: TProcess;
+    List : TStringList = nil;
+begin
+    Result := False;
+    {$IFDEF LINUX}
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'wmctrl';
+    AProcess.Parameters.Add('-R' + WTitle);
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        AProcess.Execute;
+        Result := (AProcess.ExitStatus = 0);        // says at least one packet got back
+    except on
+        E: EProcess do debugln('Could not move ' + WTitle);
+    end;
+    if not Result then
+        debugln('wmctrl error trying to move ' + WTitle);
+    List := TStringList.Create;
+    List.LoadFromStream(AProcess.Output);       // just to clear it away.
+    // debugln(List.Text);
+    List.Free;
+    AProcess.Free;
+    {$endif}
+end;
+
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
 		TemplateIs: AnsiString);
 // Might be called with no Title (NewNote) or a Title with or without a Filename
@@ -532,6 +561,8 @@ begin
             // if user opened and then closed, we won't know we cannot re-show
             try
             	TheForm.Show;
+                MoveNoteWindowHere(TheForm.Caption);
+                TheForm.EnsureVisible(true);
                 exit();
 			except on  EAccessViolation do
             	DebugLn('Tried to re show a closed note, thats OK');
