@@ -59,6 +59,7 @@ unit Mainunit;
     2019/11/05  Don't treat %f as a command line file name, its an artifact
     2019/11/08  Tidy up building GTK3 and Qt5 versions, cleaner About
     2019/11/20  Don't assign PopupMenu to TrayIcon on (KDE and Qt5)
+    2019/12/08  New "second instance" model.
 
     CommandLine Switches
 
@@ -100,7 +101,7 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
-    StdCtrls, LCLTranslator, DefaultTranslator;
+    StdCtrls, LCLTranslator, DefaultTranslator, simpleipc;
 
 // These are choices for main and main popup menus.
 type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
@@ -149,14 +150,19 @@ type
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
+        CommsClient : TSimpleIPCClient;
+        CommsServer : TSimpleIPCServer;
         // Don't assign if desktop is KDE and Qt5, it stuffs up in November 2019
         AssignPopupToTray : boolean;
         CmdLineErrorMsg : string;
         // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error or -g on commandline
         AllowDismiss : boolean;
         procedure AddItemToAMenu(TheMenu: TMenu; Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
-
+        // Returns true if we are a second instance of tomboy-ng, if false then
+        // SimpleIPC server is started, listening for some other second instance.
+        function AreWeClient(): boolean;
         function CommandLineError() : boolean;
+        procedure CommMessageReceived(Sender: TObject);
             // responds to any main or mainPopup menu clicks except recent note ones.
         procedure FileMenuClicked(Sender: TObject);
         procedure FindHelpFiles();
@@ -303,6 +309,45 @@ begin
         AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
 end;
 
+procedure TMainForm.CommMessageReceived(Sender : TObject);
+Var
+    S : String;
+begin
+    CommsServer .ReadMessage;
+    S := CommsServer .StringMessage;
+    case S of
+        // This only works if the search window has not been closed. Must check first.
+        'SHOWSEARCH' : begin
+                    SearchForm.Show;
+                    SearchForm.MoveNoteWindowHere(SearchForm.Caption);
+                end;
+    end;
+end;
+
+// First try to be server, if we are, set up a function to be called when a message
+// is received. But if we are just a client, send a message and return true.
+function  TMainForm.AreWeClient() : boolean;
+begin
+    Result := false;
+    CommsClient  := TSimpleIPCClient.Create(Nil);
+    CommsClient.ServerID:='tomboy-ng';
+    if CommsClient.ServerRunning then begin
+        CommsClient.Active := true;
+        CommsClient.SendStringMessage('SHOWSEARCH');
+        CommsClient.Active := false;
+        freeandnil(CommsClient );
+        Result := True;
+    end else begin
+        freeandnil(CommsClient );
+        CommsServer  := TSimpleIPCServer.Create(Nil);
+        CommsServer.ServerID:='tomboy-ng';
+        CommsServer.OnMessageQueued:=@CommMessageReceived;
+        CommsServer.Global:=True;                  // anyone can connect
+        CommsServer.StartServer(True);             // start listening, threaded
+    end;
+end;
+
+
 resourcestring
   rsAnotherInstanceRunning = 'Another instance of tomboy-ng appears to be running. Will exit.';
   rsFailedToIndex = 'Failed to index one or more notes.';
@@ -371,8 +416,8 @@ begin
     finally
         FreeAndNil(Params);
     end;
-    if AlreadyRunning() then begin
-        showmessage(rsAnotherInstanceRunning);
+    if {AlreadyRunning()} AreWeClient() then begin
+        // showmessage(rsAnotherInstanceRunning);
         close();
         exit();
     end else begin
@@ -490,6 +535,7 @@ var
   // OutFile : TextFile;
   AForm : TForm;
 begin
+    freeandnil(CommsServer);
     {$ifdef LCLGTK2}
     //{$ifndef LCLQT5}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);

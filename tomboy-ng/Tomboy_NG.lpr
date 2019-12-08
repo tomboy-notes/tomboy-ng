@@ -7,6 +7,7 @@ program Tomboy_NG;
 {$mode objfpc}{$H+}
 
 uses
+    {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
     cthreads,
     {$ENDIF}{$ENDIF}

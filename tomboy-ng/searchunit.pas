@@ -154,16 +154,16 @@ type
         // note that is currently open as read only.
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
     private
-        function MoveNoteWindowHere(WTitle: string): boolean;
-        		{ Copies note data from internal list to StringGrid, sorts it and updates the
-                  TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
+        { Copies note data from internal list to StringGrid, sorts it and updates the
+          TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
     public
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
-            { If there is an open note from the passed filename, it will be marked read Only,
-              If deleted, remove entry from NoteLister, will accept a GUID, Filename or FullFileName inc path }
+        function MoveNoteWindowHere(WTitle: string): boolean;
+        { If there is an open note from the passed filename, it will be marked read Only,
+          If deleted, remove entry from NoteLister, will accept a GUID, Filename or FullFileName inc path }
         procedure MarkNoteReadOnly(const FullFileName: string; const WasDeleted : boolean);
          	{ Puts the names of recently used notes in the TrayMenu }
         procedure RecentMenu();
