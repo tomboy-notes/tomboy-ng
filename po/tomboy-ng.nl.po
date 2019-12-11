@@ -114,10 +114,6 @@ msgstr "Best.syst."
 msgid "Version"
 msgstr "Versie"
 
-#: mainunit.rsanotherinstancerunning
-msgid "Another instance of tomboy-ng appears to be running. Will exit."
-msgstr "Er is al een actief proces van tomboy-ng. Dit venster wordt nu gesloten."
-
 #: mainunit.rsbadnotesfound1
 msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
 msgstr "Onjuiste notities aangetroffen. Ga naar Instellingen --> Momentopnamen --> Bestaande notities."
@@ -137,10 +133,6 @@ msgstr "kan dit venster niet worden verworpen."
 #: mainunit.rscannotdismiss3
 msgid "Are you trying to shut me down ? Dave ?"
 msgstr "Probeer je me af te sluiten? David?"
-
-#: mainunit.rscannotfindnote
-msgid "ERROR, cannot find "
-msgstr "FOUT: kan het volgende niet vinden:"
 
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
@@ -198,56 +190,9 @@ msgstr "Aangegeven notitie openen; overschakelen optioneel"
 msgid "Print version and exit"
 msgstr "Print de versie en sluit af"
 
-#: mainunit.rsmenuabout
-msgid "About"
-msgstr "Over"
-
-#: mainunit.rsmenufile
-msgid "File"
-msgstr "Bestand"
-
-#: mainunit.rsmenuhelp
-msgctxt "mainunit.rsmenuhelp"
-msgid "Help"
-msgstr "Hulp"
-
-#: mainunit.rsmenunewnote
-msgid "New Note"
-msgstr "Nieuwe notitie"
-
-#: mainunit.rsmenuquit
-msgid "Quit"
-msgstr "Afsluiten"
-
-#: mainunit.rsmenurecent
-msgid "Recent"
-msgstr "Recent"
-
-#: mainunit.rsmenusearch
-msgctxt "mainunit.rsmenusearch"
-msgid "Search"
-msgstr "Zoeken"
-
-#: mainunit.rsmenusettings
-msgctxt "mainunit.rsmenusettings"
-msgid "Settings"
-msgstr "Instellingen"
-
-#: mainunit.rsmenusync
-msgid "Synchronise"
-msgstr "Synchroniseren"
-
 #: mainunit.rsnotes
 msgid "notes"
 msgstr ""
-
-#: mainunit.rssetupnotesdirfirst
-msgid "Please setup a notes directory first"
-msgstr "Stel eerst een notitiemap in"
-
-#: mainunit.rssetupsyncfirst
-msgid "Please config sync system first"
-msgstr "Stel eerst synchronisatie in"
 
 #: notebook.rsenternewnotebook
 msgid "Enter a new notebook name please"
@@ -332,6 +277,24 @@ msgstr "Er zijn"
 #: recover.rswehavesnapshots_2
 msgid "snapshots"
 msgstr "momentopnamen"
+
+#: searchunit.rscannotfindnote
+#, fuzzy
+msgctxt "searchunit.rscannotfindnote"
+msgid "ERROR, cannot find "
+msgstr "FOUT: kan het volgende niet vinden:"
+
+#: searchunit.rssetupnotesdirfirst
+#, fuzzy
+msgctxt "searchunit.rssetupnotesdirfirst"
+msgid "Please setup a notes directory first"
+msgstr "Stel eerst een notitiemap in"
+
+#: searchunit.rssetupsyncfirst
+#, fuzzy
+msgctxt "searchunit.rssetupsyncfirst"
+msgid "Please config sync system first"
+msgstr "Stel eerst synchronisatie in"
 
 #: settings.rsdictionaryfailed
 msgid "Library Not Loaded"
@@ -504,6 +467,11 @@ msgstr "Externe prullenbak"
 #: syncutils.rssyncerrors
 msgid "ERRORS (see consol log) "
 msgstr "FOUTEN (zie terminaluitvoer)."
+
+#: teditboxform.butttbmenu.caption
+msgctxt "teditboxform.butttbmenu.caption"
+msgid "Menu"
+msgstr ""
 
 #: teditboxform.caption
 msgid "EditBoxForm"
@@ -955,17 +923,26 @@ msgstr "IP-adres of apparaat"
 msgid "SSH Password for device"
 msgstr "SSH-wachtwoord van apparaat"
 
-#: tmainform.buttonconfig.caption
-msgctxt "tmainform.buttonconfig.caption"
-msgid "Settings"
-msgstr "Instellingen"
+#: tmainform.buttmenu.caption
+msgctxt "tmainform.buttmenu.caption"
+msgid "Menu"
+msgstr ""
 
-#: tmainform.buttonconfig.hint
-msgid "Open the Config Window"
-msgstr "Open het instelvenster"
+#: tmainform.buttonclose.caption
+#, fuzzy
+#| msgid "Close"
+msgctxt "tmainform.buttonclose.caption"
+msgid "Quit"
+msgstr "Sluiten"
+
+#: tmainform.buttonclose.hint
+msgid "Close tomboy-ng"
+msgstr ""
 
 #: tmainform.buttondismiss.caption
-msgid "Dismiss"
+#, fuzzy
+#| msgid "Dismiss"
+msgid "Hide"
 msgstr "Verwerpen"
 
 #: tmainform.buttondismiss.hint
@@ -1121,6 +1098,11 @@ msgstr "Bezig met verbinding maken met apparaat..."
 msgid "Clear Filters"
 msgstr "Filters wissen"
 
+#: tsearchform.buttonmenu.caption
+msgctxt "tsearchform.buttonmenu.caption"
+msgid "Menu"
+msgstr ""
+
 #: tsearchform.buttonnotebookoptions.caption
 msgid "Notebook Options"
 msgstr "Notitieboekinstellingen"
@@ -1250,6 +1232,11 @@ msgstr "Als je al eens een momentopname hebt gemaakt"
 msgctxt "tsett.buttonsynchelp.caption"
 msgid "Help"
 msgstr "Hulp"
+
+#: tsett.butttbmenu.caption
+msgctxt "tsett.butttbmenu.caption"
+msgid "Menu"
+msgstr ""
 
 #: tsett.caption
 msgctxt "tsett.caption"

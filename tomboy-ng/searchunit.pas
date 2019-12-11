@@ -94,7 +94,8 @@ unit SearchUnit;
     2019/04/15  One Clear Filters button to replace Clea and Show All Notes. Checkboxes Mode instead of menu
     2019/04/16  Fixed resizing atifacts on stringGrids by turning off 'Flat' property, Linux !
     2019/08/18  Removed AnyCombo and CaseSensitive checkboxes and replaced with SearchOptionsMenu, easier translations
-    2019/02/19  When reshowing an open note, bring it to current workspace, Linux only. Test on Wayland !
+    2019/11/19  When reshowing an open note, bring it to current workspace, Linux only. Test on Wayland !
+    2019/12/11  Heavily restructured Startup, Main Menu everywhere !
 }
 
 {$mode objfpc}{$H+}
@@ -105,11 +106,16 @@ uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
     Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger;
 
-type
+// These are choices for main and main popup menus.
+type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtHelp, mtQuit, mtRecent);
 
-    { TSearchForm }
+// These are the possible kinds of main menu items
+type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
+
+type        { TSearchForm }
     TSearchForm = class(TForm)
+        ButtonMenu: TBitBtn;
       ButtonSearchOptions: TButton;
 			ButtonNotebookOptions: TButton;
 			ButtonClearFilters: TButton;
@@ -123,11 +129,11 @@ type
 		Panel1: TPanel;
                 PopupSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
-        SpeedButton1: TSpeedButton;
 		Splitter1: TSplitter;
         StringGrid1: TStringGrid;
 		StringGridNotebooks: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
+        procedure ButtonMenuClick(Sender: TObject);
         procedure ButtonSearchModeClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
@@ -154,19 +160,34 @@ type
         // note that is currently open as read only.
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
     private
+        HelpNotes : TNoteLister;
+        procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
+            mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
+        procedure CreateMenus();
+        procedure FileMenuClicked(Sender: TObject);
+        procedure InitialiseHelpFiles();
+        procedure MenuFileItems(AMenu: TPopupMenu);
+        procedure MenuHelpItems(AMenu: TPopupMenu);
+        procedure MenuListBuilder(MList: TList);
+        procedure RecentMenuClicked(Sender: TObject);
+
         { Copies note data from internal list to StringGrid, sorts it and updates the
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
     public
+        SearchMainMenu : TPopupMenu;
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
-        function MoveNoteWindowHere(WTitle: string): boolean;
+        // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
+        // that Menu, else applies WhichSection to all know Main TB Menus.
+        procedure RefreshMenus(WhichSection: TMenuKind; AMenu: TPopupMenu=nil);
+        function MoveWindowHere(WTitle: string): boolean;
         { If there is an open note from the passed filename, it will be marked read Only,
           If deleted, remove entry from NoteLister, will accept a GUID, Filename or FullFileName inc path }
         procedure MarkNoteReadOnly(const FullFileName: string; const WasDeleted : boolean);
-         	{ Puts the names of recently used notes in the TrayMenu }
-        procedure RecentMenu();
+         	{ Puts the names of recently used notes in the indicated menu, removes esisting ones first. }
+        procedure MenuRecentItems(AMenu : TPopupMenu);
        	{ Call this NoteLister no longer thinks of this as a Open note }
         procedure NoteClosing(const ID: AnsiString);
         { Updates the List with passed data. Either updates existing data or inserts new }
@@ -189,6 +210,8 @@ type
         { Deletes the actual file then removes the indicated note from the internal
         data about notes, refreshes Grid }
         procedure DeleteNote(const FullFileName : ANSIString);
+
+
 const
 	MenuEmpty = '(empty)';
 
@@ -201,13 +224,18 @@ implementation
 
 {$R *.lfm}
 
+
+
 uses MainUnit,      // Opening form, manages startup and Menus
     EditBox,
     settings,		// Manages settings.
     LCLType,		// For the MessageBox
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff
     sync,           // because we need it to manhandle local manifest when a file is deleted
-    process;        // Linux, we call wmctrl to move note to current workspace
+    process,        // Linux, we call wmctrl to move note to current workspace
+    Tomdroid;
+
+
 
 { TSearchForm }
 
@@ -313,7 +341,7 @@ begin
      	NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
     end;
     // T4 := gettickcount64();                   // 1mS
-    RecentMenu();
+    // RecentMenu();              DRB DEc 2019
     // debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
@@ -338,22 +366,224 @@ begin
 end;
 
 
-procedure TSearchForm.RecentMenu();
-var
-      Count : integer = 1;
+// ---------------------------------------------------------------------------
+// -------------  M E N U    F U N C T I O N S -------------------------------
+// ---------------------------------------------------------------------------
+
+{ Menus are built and populated at end of CreateForm. }
+
+procedure TSearchForm.InitialiseHelpFiles();
+    // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
 begin
-    MainForm.ClearRecentMenuItems();
+    if HelpNotes <> nil then
+        freeandnil(HelpNotes);
+    HelpNotes := TNoteLister.Create;     // freed in OnClose event.
+    HelpNotes.DebugMode := Application.HasOption('debug-index');
+    HelpNotes.WorkingDir:= MainForm.ActualHelpNotesPath;
+    HelpNotes.GetNotes('', true);
+end;
+
+procedure TSearchForm.CreateMenus();
+begin
+    InitialiseHelpFiles();
+    SearchMainMenu := TPopupMenu.Create(self);      // LCL will dispose because of 'self'
+    ButtonMenu.PopupMenu := SearchMainMenu;
+    MainForm.MainTBMenu := TPopupMenu.Create(self);
+    MainForm.ButtMenu.PopupMenu := MainForm.MainTBMenu;
+    // Add any other 'fixed' menu here.
+    RefreshMenus(mkAllMenu);
+end;
+
+procedure TSearchForm.MenuListBuilder(MList : TList);
+var
+    AForm : TForm;
+begin
+    if assigned(NoteLister) then begin
+      AForm := NoteLister.FindFirstOpenNote();
+      while AForm <> Nil do begin
+          MList.Add(TEditBoxForm(AForm).PopupMainTBMenu);
+          AForm := SearchForm.NoteLister.FindNextOpenNote();
+      end;
+    end;
+    MList.Add(SearchMainMenu);
+    MList.Add(MainForm.MainTBMenu);
+    if (MainForm.UseTrayMenu) and (MainForm.PopupMenuTray <> Nil) then
+        MList.Add(MainForm.PopupMenuTray);
+    MList.Add(Sett.PMenuMain);
+
+    // OK, now add the menu on any open note, one for settings box ....
+end;
+
+procedure TSearchForm.RefreshMenus(WhichSection : TMenuKind; AMenu : TPopupMenu = nil);
+var
+    MList : TList;
+    I : integer;
+begin
+    if AMenu <> Nil then begin
+          MenuFileItems(AMenu);
+          MenuHelpItems(AMenu);
+          MenuRecentItems(AMenu);
+          exit();
+    end;
+    MList := TList.Create;
+    MenuListBuilder(MList);
+    case WhichSection of
+        mkAllMenu : for I := 0 to MList.Count - 1 do begin
+                            MenuFileItems(TPopupMenu(MList[i]));
+                            MenuHelpItems(TPopupMenu(MList[i]));
+                            MenuRecentItems(TPopupMenu(MList[i]));
+                    end;
+        mkFileMenu : for I := 0 to MList.Count - 1 do
+                            MenuFileItems(TPopupMenu(MList[i]));
+        mkRecentMenu : for I := 0 to MList.Count - 1 do
+                            MenuRecentItems(TPopupMenu(MList[i]));
+        mkHelpMenu : for I := 0 to MList.Count - 1 do
+                            MenuHelpItems(TPopupMenu(MList[i]));
+    end;
+    MList.Free;
+end;
+
+procedure TSearchForm.AddItemMenu(TheMenu : TPopupMenu; Item : string; mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
+var
+    MenuItem : TMenuItem;
+
+            procedure AddHelpItem();
+            var
+                X : Integer = 0;
+            begin
+                while X < TheMenu.Items.Count do begin
+                    if TheMenu.Items[X].Tag = ord(mtHelp) then begin
+                        TheMenu.Items[X].Add(MenuItem);
+                        exit;
+                    end;
+                    inc(X);
+                end;
+            end;
+begin
+    if Item = '-' then begin
+        TheMenu.Items.AddSeparator;
+        TheMenu.Items.AddSeparator;
+        exit();
+    end;
+    MenuItem := TMenuItem.Create(Self);
+    MenuItem.Tag := ord(mtTag);             // for 'File' entries, this identifies the function to perform.
+    MenuItem.Caption := Item;
+    MenuItem.OnClick := OC;
+    case MenuKind of
+        mkFileMenu   : TheMenu.Items.Insert(0, MenuItem);
+        mkRecentMenu : TheMenu.Items.Add(MenuItem);
+        mkHelpMenu   : AddHelpItem();
+    end;
+end;
+
+procedure TSearchForm.MenuFileItems(AMenu : TPopupMenu);
+var
+    i : integer = 0;
+begin
+    while i < AMenu.Items.Count do begin              // Find the seperator
+        if (AMenu.Items[i]).Caption = '-' then break;
+        inc(i);
+    end;
+    dec(i);                                         // cos we want to leave the '-'
+    while (i >= 0) do begin                         // Remove File Type entries
+        AMenu.Items.Delete(i);
+        dec(i);
+    end;
+    if AMenu.Items.Count = 0 then                   // If menu empty, put in seperator
+        AddItemMenu(AMenu, '-', mtSep, nil, mkFileMenu);
+    AddItemMenu(AMenu, 'Quit', mtQuit,  @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, 'Help', mtHelp,  nil, mkFileMenu);
+    {$ifdef LINUX}
+    if Sett.CheckShowTomdroid.Checked then
+        AddItemMenu(AMenu, 'Tomdroid', mtTomdroid,  @FileMenuClicked, mkFileMenu);
+    {$endif}
+    AddItemMenu(AMenu, 'Settings', mtSettings, @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, 'Synchronise', mtSync,  @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, 'About', mtAbout, @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, 'Search', mtSearch,  @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, 'New Note', mtNewNote, @FileMenuClicked, mkFileMenu);
+    // Note items are in reverse order because we Insert at the top.
+end;
+
+procedure TSearchForm.MenuRecentItems(AMenu : TPopupMenu);
+var
+    Count : integer = 1;
+begin
+    Count := AMenu.Items.Count;
+    while Count > 0 do begin            // Remove any existing entries first
+        dec(Count);
+        if TMenuItem(AMenu.Items[Count]).Tag = ord(mtRecent) then
+            AMenu.Items.Delete(Count);
+    end;
+    Count := 1;
     while (Count <= 10) do begin
        if Count < StringGrid1.RowCount then
-           MainForm.AddMenuItem(StringGrid1.Cells[0, Count], mtRecent, @(MainForm.RecentMenuClicked), mkRecentMenu)
+           AddItemMenu(AMenu, StringGrid1.Cells[0, Count], mtRecent,  @RecentMenuClicked, mkRecentMenu)
        else break;
        inc(Count);
     end;
 end;
 
+procedure TSearchForm.MenuHelpItems(AMenu : TPopupMenu);
+var
+  NoteTitle : string;
+begin
+
+    { remove any existing help items }
+
+    HelpNotes.StartSearch();
+    while HelpNotes.NextNoteTitle(NoteTitle) do
+        AddItemMenu(AMenu, NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
+end;
+
+
+resourcestring
+  rsSetupNotesDirFirst = 'Please setup a notes directory first';
+  rsSetupSyncFirst = 'Please config sync system first';
+  rsCannotFindNote = 'ERROR, cannot find ';
+
+procedure TSearchForm.FileMenuClicked(Sender : TObject);
+var
+    FileName : string;
+begin
+    case TMenuTarget(TMenuItem(Sender).Tag) of
+        mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
+        mtNewNote : if (Sett.NoteDirectory = '') then
+                            ShowMessage(rsSetupNotesDirFirst)
+                    else OpenNote();
+        mtSearch :  if Sett.NoteDirectory = '' then
+                            showmessage(rsSetupNotesDirFirst)
+                    else  Show;
+        mtAbout :    MainForm.ShowAbout();
+        mtSync :     if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
+                        and (Sett.LabelSyncRepo.Caption <> '') then
+                            Sett.Synchronise()
+                     else showmessage(rsSetupSyncFirst);
+        mtSettings : begin
+                        Sett.Show;
+                     end;
+        mtTomdroid : if FormTomdroid.Visible then
+                        FormTomdroid.BringToFront
+                     else FormTomdroid.ShowModal;
+        mtHelp :      begin
+                        if HelpNotes.FileNameForTitle(TMenuItem(Sender).Caption, FileName) then
+                            MainForm.ShowHelpNote(FileName)
+                        else showMessage(rsCannotFindNote + TMenuItem(Sender).Caption);
+                    end;
+        mtQuit :      MainForm.close;
+    end;
+end;
+
+procedure TSearchForm.RecentMenuClicked(Sender: TObject);
+begin
+ 	if TMenuItem(Sender).Caption <> SearchForm.MenuEmpty then
+ 		SearchForm.OpenNote(TMenuItem(Sender).Caption);
+end;
+
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
 begin
-    IndexNotes();
+    RefreshMenus(mkAllMenu);
+    // IndexNotes();                                                    // Temp hack to make testing easy....
 end;
 
 procedure TSearchForm.Edit1EditingDone(Sender: TObject);
@@ -417,7 +647,9 @@ end;
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
     NoteLister := nil;
-     //AllowClose := False;
+    IndexNotes();           // This could be a slow process, maybe a new thread ?
+    CreateMenus();
+    // AllowClose := False;
 end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
@@ -425,6 +657,8 @@ begin
   // DebugLn('Freeing Note Lister');
   NoteLister.Free;
   NoteLister := Nil;
+  HelpNotes.Free;
+  HelpNotes := Nil;
 end;
 
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -514,13 +748,14 @@ begin
         NoteLister.DeleteNote(FullFileName);
 end;
 
-function TSearchForm.MoveNoteWindowHere(WTitle : string) : boolean;
+function TSearchForm.MoveWindowHere(WTitle: string): boolean;
 var
     AProcess: TProcess;
     List : TStringList = nil;
 begin
     Result := False;
-    {$IFDEF LINUX}
+    {$IFDEF LINUX}      // ToDo : Apparently, Windows now has something like Workspaces, implement .....
+    //debugln('In MoveWindowHere with ', WTitle);
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'wmctrl';
     AProcess.Parameters.Add('-R' + WTitle);
@@ -531,11 +766,11 @@ begin
     except on
         E: EProcess do debugln('Could not move ' + WTitle);
     end;
-    if not Result then
-        debugln('wmctrl error trying to move ' + WTitle);
+    {if not Result then
+        debugln('wmctrl exit error trying to move ' + WTitle); }  // wmctrl always appears to return something !
     List := TStringList.Create;
     List.LoadFromStream(AProcess.Output);       // just to clear it away.
-    // debugln(List.Text);
+    //debugln('Process List ' + List.Text);
     List.Free;
     AProcess.Free;
     {$endif}
@@ -561,7 +796,7 @@ begin
             // if user opened and then closed, we won't know we cannot re-show
             try
             	TheForm.Show;
-                MoveNoteWindowHere(TheForm.Caption);
+                MoveWindowHere(TheForm.Caption);
                 TheForm.EnsureVisible(true);
                 exit();
 			except on  EAccessViolation do
@@ -627,16 +862,21 @@ end;
 
 procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
 begin
-        ButtonNotebookOptions.Enabled := True;
-        ButtonClearFilters.Enabled := True;
-        StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
-        UseList();
-        StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+    ButtonNotebookOptions.Enabled := True;
+    ButtonClearFilters.Enabled := True;
+    StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
+    UseList();
+    StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
 
 procedure TSearchForm.ButtonSearchModeClick(Sender: TObject);
 begin
+    PopupSearchOptions.popup;
+end;
 
+procedure TSearchForm.ButtonMenuClick(Sender: TObject);
+begin
+    SearchMainMenu.popup;
 end;
 
 procedure TSearchForm.ButtonNotebookOptionsClick(Sender: TObject);

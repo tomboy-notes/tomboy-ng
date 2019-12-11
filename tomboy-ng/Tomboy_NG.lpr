@@ -24,8 +24,8 @@ begin
     RequireDerivedFormResource:=True;
     Application.Initialize;
     Application.CreateForm(TMainForm, MainForm);
-    Application.CreateForm(TSearchForm, SearchForm);
     Application.CreateForm(TSett, Sett);
+    Application.CreateForm(TSearchForm, SearchForm);
     Application.CreateForm(TFormSync, FormSync);
     Application.CreateForm(TFormTomdroid, FormTomdroid);
     Application.CreateForm(TFormMarkdown, FormMarkdown);

@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 332
+  Left = 639
   Height = 401
-  Top = 585
+  Top = 389
   Width = 824
   Caption = 'Search Form'
   ClientHeight = 401
@@ -13,15 +13,17 @@ object SearchForm: TSearchForm
   OnShow = FormShow
   LCLVersion = '2.0.7.0'
   object Edit1: TEdit
-    AnchorSideLeft.Control = SpeedButton1
+    AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = ButtonRefresh
     AnchorSideRight.Control = ButtonSearchOptions
-    Left = 37
-    Height = 29
+    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideBottom.Side = asrBottom
+    Left = 86
+    Height = 32
     Top = 3
-    Width = 450
-    Anchors = [akTop, akLeft, akRight]
+    Width = 401
+    Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 5
     BorderSpacing.Right = 1
     OnEditingDone = Edit1EditingDone
@@ -188,14 +190,32 @@ object SearchForm: TSearchForm
       )
     end
   end
-  object SpeedButton1: TSpeedButton
+  object ButtonSearchOptions: TButton
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = ButtonRefresh
+    Left = 488
+    Height = 32
+    Top = 3
+    Width = 184
+    Anchors = [akTop, akRight]
+    BorderSpacing.Top = 3
+    Caption = 'Search Options'
+    OnClick = ButtonSearchOptionsClick
+    PopupMenu = PopupSearchOptions
+    TabOrder = 3
+  end
+  object ButtonMenu: TBitBtn
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = ButtonRefresh
-    Left = 3
-    Height = 29
+    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 32
     Top = 3
-    Width = 29
-    BorderSpacing.Left = 3
+    Width = 81
+    Anchors = [akTop, akLeft, akBottom]
+    AutoSize = True
+    Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
       2000000000000009000064000000640000000000000000000000000000000000
@@ -272,21 +292,8 @@ object SearchForm: TSearchForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    OnClick = SpeedButton1Click
-  end
-  object ButtonSearchOptions: TButton
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = ButtonRefresh
-    Left = 488
-    Height = 32
-    Top = 3
-    Width = 184
-    Anchors = [akTop, akRight]
-    BorderSpacing.Top = 3
-    Caption = 'Search Options'
-    OnClick = ButtonSearchOptionsClick
-    PopupMenu = PopupSearchOptions
-    TabOrder = 3
+    OnClick = ButtonMenuClick
+    TabOrder = 4
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 472

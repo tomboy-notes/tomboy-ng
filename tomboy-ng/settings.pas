@@ -108,6 +108,7 @@ type
     { TSett }
 
     TSett = class(TForm)
+        ButtTBMenu: TBitBtn;
 			ButtDefaultNoteDir: TButton;
             ButtonFixedFont: TButton;
             ButtonFont: TButton;
@@ -179,6 +180,7 @@ type
 		Panel2: TPanel;
         Panel3: TPanel;
         PopupDay: TPopupMenu;
+        PMenuMain: TPopupMenu;
 		RadioAlwaysAsk: TRadioButton;
         RadioFontHuge: TRadioButton;
 		RadioFile: TRadioButton;
@@ -214,6 +216,7 @@ type
         procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
+        procedure ButtTBMenuClick(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
@@ -1048,6 +1051,11 @@ begin
     MainForm.ShowHelpNote('sync-ng.note');
 end;
 
+procedure TSett.ButtTBMenuClick(Sender: TObject);
+begin
+    PMenuMain.Popup;
+end;
+
 procedure TSett.CheckAutostartChange(Sender: TObject);
 var
    Auto : TAutoStartCtrl;
@@ -1070,13 +1078,13 @@ begin
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
     FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
     FormSync.SetupSync := False;
-    if RadioFile.Checked then
-            FormSync.TransPort := SyncFile
-    else FormSync.TransPort := SyncNextRuby;
+    //if RadioFile.Checked then
+            FormSync.TransPort := SyncFile;
+    //else FormSync.TransPort := SyncNextRuby;
     if FormSync.Visible then
         FormSync.Show
-    else                                             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
-    	{NeedRefresh := (}FormSync.ShowModal{ = mrOK)};     // ToDo : test and remove this mess !
+    else                           // We rely on SearchForm.ProcessSyncUpdates() to keep list current
+    	FormSync.ShowModal;
 end;
 
 
@@ -1134,8 +1142,10 @@ begin
     SyncSettings();
     if not MaskSettingsChanged then
         if Sender.ClassNameIs('TCheckBox') then
-            if TCheckBox(Sender).Name = 'CheckShowTomdroid' then
-                MainForm.FillInFileMenus(True);
+            if TCheckBox(Sender).Name = 'CheckShowTomdroid' then begin
+                SearchForm.RefreshMenus(mkFileMenu);
+                SearchForm.RefreshMenus(mkHelpMenu);
+            end;
 end;
 
 function TSett.GetLocalTime: ANSIstring;

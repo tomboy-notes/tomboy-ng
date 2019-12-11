@@ -60,6 +60,7 @@ unit Mainunit;
     2019/11/08  Tidy up building GTK3 and Qt5 versions, cleaner About
     2019/11/20  Don't assign PopupMenu to TrayIcon on (KDE and Qt5)
     2019/12/08  New "second instance" model.
+    2019/12/11  Heavily restructured Startup, Main Menu everywhere !
 
     CommandLine Switches
 
@@ -97,17 +98,15 @@ unit Mainunit;
 
 interface
 
-
-
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
-    StdCtrls, LCLTranslator, DefaultTranslator, simpleipc;
+    StdCtrls, LCLTranslator, DefaultTranslator, Buttons, simpleipc;
 
 // These are choices for main and main popup menus.
-type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
+// type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
 
 // These are the possible kinds of main menu items
-type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu);
+// type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu);
 
 type
 
@@ -115,8 +114,9 @@ type
 
     TMainForm = class(TForm)
         ApplicationProperties1: TApplicationProperties;
+        ButtMenu: TBitBtn;
+        ButtonClose: TButton;
         ButtonDismiss: TButton;
-        ButtonConfig: TButton;
         CheckBoxDontShow: TCheckBox;
         ImageSpellCross: TImage;
         ImageSpellTick: TImage;
@@ -137,6 +137,8 @@ type
         LabelNotesFound: TLabel;
         TrayIcon: TTrayIcon;
         //procedure ApplicationProperties1EndSession(Sender: TObject);
+        procedure ButtMenuClick(Sender: TObject);
+        procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
         procedure CheckBoxDontShowChange(Sender: TObject);
@@ -157,17 +159,17 @@ type
         CmdLineErrorMsg : string;
         // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error or -g on commandline
         AllowDismiss : boolean;
-        procedure AddItemToAMenu(TheMenu: TMenu; Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
+//        procedure AddItemToAMenu(TheMenu: TMenu; Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
         // Returns true if we are a second instance of tomboy-ng, if false then
         // SimpleIPC server is started, listening for some other second instance.
         function AreWeClient(): boolean;
         function CommandLineError() : boolean;
         procedure CommMessageReceived(Sender: TObject);
             // responds to any main or mainPopup menu clicks except recent note ones.
-        procedure FileMenuClicked(Sender: TObject);
-        procedure FindHelpFiles();
+//        procedure FileMenuClicked(Sender: TObject);
+//        procedure FindHelpFiles();
         //procedure OnEndSessionApp(Sender: TObject);
-        procedure ShowAbout();
+
         procedure TestDarkThemeInUse();
 
     public
@@ -175,20 +177,22 @@ type
         AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
         UseTrayMenu : boolean;
         UseMainMenu : boolean;
-        MainMenu : TMainMenu;
-        FileMenu, RecentMenu : TMenuItem;
+        //MainMenu : TMainMenu;
+        //FileMenu, RecentMenu : TMenuItem;
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
+        MainTBMenu : TPopupMenu;
+        procedure ShowAbout();
             // Ret path to where help notes are, either default English or Non-English
         function ActualHelpNotesPath() : string;
-        procedure ClearRecentMenuItems();
+//        procedure ClearRecentMenuItems();
             // builds the Menus and fills in all items except recent notes. Only
             // called once, during startup except if ItsAnUpdate is True, thats triggered
             // by Sett changes to Sync is config or Tomdroid mode enabled. OnlyCalled fron Sett unit.
         procedure FillInFileMenus(ItsAnUpdate: boolean=false);
             // Here we will add a new item to each menu, one by one. Menus must be created and
             // the top level entries, File and Recent, added to MainMenu
-        procedure AddMenuItem(Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
+//        procedure AddMenuItem(Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
             // This procedure responds to ALL recent note menu clicks !
         procedure RecentMenuClicked(Sender: TObject);
             { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode
@@ -222,7 +226,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$ifdef LINUX}
     Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
-    uAppIsRunning,
+    {uAppIsRunning, }
     Editbox,    // Used only in SingleNoteMode
     Note_Lister,
     Tomdroid {$ifdef windows}, registry{$endif};
@@ -293,7 +297,7 @@ begin
         Result := AltHelpNotesPath;
 end;
 
-procedure TMainForm.FindHelpFiles();
+{procedure TMainForm.FindHelpFiles();
     // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
 var
   NoteTitle : string;
@@ -305,263 +309,15 @@ begin
     HelpNotes.WorkingDir:= ActualHelpNotesPath;
     HelpNotes.GetNotes('', true);
     HelpNotes.StartSearch();
-    while HelpNotes.NextNoteTitle(NoteTitle) do
-        AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
-end;
-
-procedure TMainForm.CommMessageReceived(Sender : TObject);
-Var
-    S : String;
-begin
-    CommsServer .ReadMessage;
-    S := CommsServer .StringMessage;
-    case S of
-        // This only works if the search window has not been closed. Must check first.
-        'SHOWSEARCH' : begin
-                    SearchForm.Show;
-                    SearchForm.MoveNoteWindowHere(SearchForm.Caption);
-                end;
-    end;
-end;
-
-// First try to be server, if we are, set up a function to be called when a message
-// is received. But if we are just a client, send a message and return true.
-function  TMainForm.AreWeClient() : boolean;
-begin
-    Result := false;
-    CommsClient  := TSimpleIPCClient.Create(Nil);
-    CommsClient.ServerID:='tomboy-ng';
-    if CommsClient.ServerRunning then begin
-        CommsClient.Active := true;
-        CommsClient.SendStringMessage('SHOWSEARCH');
-        CommsClient.Active := false;
-        freeandnil(CommsClient );
-        Result := True;
-    end else begin
-        freeandnil(CommsClient );
-        CommsServer  := TSimpleIPCServer.Create(Nil);
-        CommsServer.ServerID:='tomboy-ng';
-        CommsServer.OnMessageQueued:=@CommMessageReceived;
-        CommsServer.Global:=True;                  // anyone can connect
-        CommsServer.StartServer(True);             // start listening, threaded
-    end;
-end;
+(*    while HelpNotes.NextNoteTitle(NoteTitle) do
+        AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);        *)
+end;}
 
 
-resourcestring
-  rsAnotherInstanceRunning = 'Another instance of tomboy-ng appears to be running. Will exit.';
-  rsFailedToIndex = 'Failed to index one or more notes.';
-  rsCannotDismiss1 = 'Sadly, on this OS or because of a Bad Note,';
-  rsCannotDismiss2 = 'I cannot let you dismiss this window';
-  rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';
+// -----------------------------------------------------------------
+//            S T A R T   U P   T H I N G S
+// -----------------------------------------------------------------
 
-
-
-procedure TMainForm.FormShow(Sender: TObject);
-// WARNING - the options here MUST match the options list in CommandLineError()
- { ToDo : put options in a TStringList and share, less mistakes ....}
-var
-    NoteID, NoteTitle : string;
-    Params : TStringList;
-    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
-            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
-begin
-    // debugln('Form color is ' + inttostr(Color));
-    if CmdLineErrorMsg <> '' then begin
-        close;    // cannot close in OnCreate();
-        exit;       // otherwise we execute rest of this method before closing.
-    end;
-    if Application.HasOption('version') then begin
-        Enabled := False;
-         debugln('tomboy-ng version ' + Version_String);
-         close();
-         exit();
-     end;
-     if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
-         if AllowDismiss then ButtonDismissClick(Self);
-     end;
-    Left := 10;
-    Top := 40;
-    if Application.HasOption('o', 'open-note') then begin
-        //showmessage('Single note mode');
-        SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
-        exit();
-    end;
-    TestDarkThemeInUse();
-    {$ifdef windows}                // linux apps know how to do this themselves
-    if Sett.DarkTheme then begin
-        //color := Sett.BackGndColour;
-        color := Sett.HiColor;
-        font.color := Sett.TextColour;
-        ButtonConfig.Color := Sett.BackGndColour;
-        ButtonDismiss.Color := Sett.HiColor;
-    end;
-    {$endif}
-    Params := TStringList.Create;
-    try
-        Application.GetNonOptions('hgo:', LongOpts, Params);
-        {for I := 0 to Params.Count -1 do
-            debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
-        if Params.Count = 1 then begin
-            if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
-                SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
-                exit();
-            end;
-        end;
-        if Params.Count > 1 then begin
-            debugln('Unrecognised parameters on command line');
-            close;
-            exit();                     // Call exit to ensure remaining part method is not executed
-        end;
-    finally
-        FreeAndNil(Params);
-    end;
-    if {AlreadyRunning()} AreWeClient() then begin
-        // showmessage(rsAnotherInstanceRunning);
-        close();
-        exit();
-    end else begin
-        if UseMainMenu then begin
-            FileMenu.Visible := True;
-            RecentMenu.Visible := True;
-        end;
-        LabelNoDismiss1.Caption:='';
-        LabelNoDismiss2.Caption := '';
-        // CheckStatus();
-        SearchForm.IndexNotes(); // also calls Checkstatus, calls UpdateNotesFound()
-        if SearchForm.NoteLister.XMLError then begin
-            LabelError.Caption := rsFailedToIndex;
-            AllowDismiss := False;
-        end else
-            LabelError.Caption := '';
-        if not AllowDismiss then begin
-            LabelNoDismiss1.Caption := rsCannotDismiss1;
-            LabelNoDismiss2.Caption := rsCannotDismiss2;
-            LabelNoDismiss1.Hint:=rsCannotDismiss3;
-            LabelNoDismiss2.Hint := LabelNoDismiss1.Hint;
-            CheckBoxDontShow.Enabled := False;
-            Visible := True;
-        end else
-            CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
-        if Sett.CheckShowSearchAtStart.Checked then
-            SearchForm.Show;
-    end;
-    if UseTrayMenu then
-       TrayIcon.Show;
-
-    if SearchForm.NoteLister.FindFirstOOSNote(NoteTitle, NoteID) then
-        repeat
-            SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
-        until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
-end;
-
-{procedure TMainForm.OnEndSessionApp(Sender: TObject);
-var
-  OutFile : TextFile;
-begin
-    AssignFile(OutFile, '/home/dbannon/closelogMainFormSession.txt');
-    Rewrite(OutFile);
-    writeln(OutFile, 'OnEndSessionApp Called');
-    CloseFile(OutFile);
-end;   }
-
-resourcestring
-  rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshots -> Existing Notes.';
-  rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
-  rsFound = 'Found';
-  rsNotes = 'notes';
-
-procedure TMainForm.LabelErrorClick(Sender: TObject);
-begin
-    if LabelError.Caption <> '' then
-        showmessage(rsBadNotesFound1 + #10#13 + rsBadNotesFound2);
-end;
-
-procedure TMainForm.UpdateNotesFound(Numb : integer);
-begin
-    LabelNotesFound.Caption := rsFound + ' ' + inttostr(Numb) + ' ' + rsNotes;
-         ImageConfigCross.Left := ImageConfigTick.Left;
-     ImageConfigTick.Visible := Sett.HaveConfig;
-     ImageConfigCross.Visible := not ImageConfigTick.Visible;
-
-     ImageNotesDirCross.Left := ImageNotesDirTick.Left;
-     ImageNotesDirTick.Visible := Numb > 0;
-     ImageNotesDirCross.Visible := not ImageNotesDirTick.Visible;
-
-     ImageSpellCross.Left := ImageSpellTick.Left;
-     ImageSpellTick.Visible := Sett.SpellConfig;
-     ImageSpellCross.Visible := not ImageSpellTick.Visible;
-
-     ImageSyncCross.Left := ImageSyncTick.Left;
-     ImageSyncTick.Visible := (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
-                and (Sett.LabelSyncRepo.Caption <> '');
-     ImageSyncCross.Visible := not ImageSyncTick.Visible;
-
-     if (ImageConfigTick.Visible and ImageNotesDirTick.Visible) then begin
-        ButtonDismiss.Enabled := AllowDismiss;
-     end;
-end;
-
-procedure TMainForm.ButtonDismissClick(Sender: TObject);
-begin
-    {$ifdef LCLCOCOA}
-    width := 0;
-    height := 0;
-    {$else}
-    hide();
-    {$endif}
-end;
-
-procedure TMainForm.CheckBoxDontShowChange(Sender: TObject);
-var
-    OldMask : boolean;
-begin
-    if Visible then begin
-        Sett.CheckShowSplash.Checked := not Sett.CheckShowSplash.Checked;
-        OldMask :=  Sett.MaskSettingsChanged;
-        Sett.MaskSettingsChanged := False;
-        Sett.CheckReadOnlyChange(Sender);
-        Sett.MaskSettingsChanged := OldMask;
-    end;
-    // showmessage('change dont show and Visible=' + booltostr(Visible, True));
-end;
-
-procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-var
-  {$ifdef LCLGTK2}
-  c: PGtkClipboard;
-  t: string;
-  {$endif}
-  // OutFile : TextFile;
-  AForm : TForm;
-begin
-    freeandnil(CommsServer);
-    {$ifdef LCLGTK2}
-    //{$ifndef LCLQT5}
-    c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-    t := Clipboard.AsText;
-    gtk_clipboard_set_text(c, PChar(t), Length(t));
-    gtk_clipboard_store(c);
-    //{$endif}
-    {$endif}
-    freeandnil(HelpNotes);
-    // ToDo : This might be good place to hook into a closing app and flush any open notes.
-    // but maybe its OnCloseSession too ?
-    {
-    AssignFile(OutFile, '/home/dbannon/closelogMainForm.txt');
-    Rewrite(OutFile);
-    writeln(OutFile, 'FormClose just closing ');
-    CloseFile(OutFile);
-    }
-    Sett.AreClosing:=True;
-    if assigned(SearchForm.NoteLister) then begin;
-      AForm := SearchForm.NoteLister.FindFirstOpenNote();
-      while AForm <> Nil do begin
-          AForm.close;
-          AForm := SearchForm.NoteLister.FindNextOpenNote();
-      end;
-    end;
-end;
 
 RESOURCESTRING
     {$ifdef DARWIN}
@@ -648,7 +404,275 @@ begin
     {$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/';    {$endif}
     {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';{$endif}
     AltHelpNotesPath := HelpNotesPath + ALTHELP + PathDelim;        // Overridden in FillInFileMenu() for Linux
+    if UseTrayMenu then begin
+        PopupMenuTray := TPopupMenu.Create(Self);
+        TrayIcon.PopUpMenu := PopupMenutray;        // SearchForm will populate it when ready
+        TrayIcon.Show;
+    end;
+
 end;
+
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  {$ifdef LCLGTK2}
+  c: PGtkClipboard;
+  t: string;
+  {$endif}
+  // OutFile : TextFile;
+  AForm : TForm;
+begin
+    freeandnil(CommsServer);
+    {$ifdef LCLGTK2}
+    //{$ifndef LCLQT5}
+    c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+    t := Clipboard.AsText;
+    gtk_clipboard_set_text(c, PChar(t), Length(t));
+    gtk_clipboard_store(c);
+    //{$endif}
+    {$endif}
+    freeandnil(HelpNotes);
+    // ToDo : This might be good place to hook into a closing app and flush any open notes.
+    // but maybe its OnCloseSession too ?
+    {
+    AssignFile(OutFile, '/home/dbannon/closelogMainForm.txt');
+    Rewrite(OutFile);
+    writeln(OutFile, 'FormClose just closing ');
+    CloseFile(OutFile);
+    }
+    Sett.AreClosing:=True;
+    if assigned(SearchForm.NoteLister) then begin
+      AForm := SearchForm.NoteLister.FindFirstOpenNote();
+      while AForm <> Nil do begin
+          AForm.close;
+          AForm := SearchForm.NoteLister.FindNextOpenNote();
+      end;
+    end;
+end;
+
+procedure TMainForm.CommMessageReceived(Sender : TObject);
+Var
+    S : String;
+begin
+    debugln('Here in Main.CommMessageRecieved, a message was received');
+    CommsServer .ReadMessage;
+    S := CommsServer .StringMessage;
+    case S of
+        'SHOWSEARCH' : begin
+                    SearchForm.Show;
+                    SearchForm.MoveWindowHere(SearchForm.Caption);
+                end;
+    end;
+end;
+
+// First try to be server, if we are, set up a function to be called when a message
+// is received. But if we are just a client, send a message and return true.
+function  TMainForm.AreWeClient() : boolean;
+begin
+    Result := false;
+    CommsClient  := TSimpleIPCClient.Create(Nil);
+    CommsClient.ServerID:='tomboy-ng';
+    if CommsClient.ServerRunning then begin
+        CommsClient.Active := true;
+        CommsClient.SendStringMessage('SHOWSEARCH');
+        CommsClient.Active := false;
+        freeandnil(CommsClient );
+        Result := True;
+        //debugln('Here in Main.AreWeClient, and we are !');
+    end else begin
+        freeandnil(CommsClient );
+        CommsServer  := TSimpleIPCServer.Create(Nil);
+        CommsServer.ServerID:='tomboy-ng';
+        CommsServer.OnMessageQueued:=@CommMessageReceived;
+        CommsServer.Global:=True;                  // anyone can connect
+        CommsServer.StartServer(True);             // start listening, threaded
+        //debugln('Here in Main.AreWeClient, and we are a SERVER !');
+    end;
+end;
+
+
+resourcestring
+  // rsAnotherInstanceRunning = 'Another instance of tomboy-ng appears to be running. Will exit.';
+  rsFailedToIndex = 'Failed to index one or more notes.';
+  rsCannotDismiss1 = 'Sadly, on this OS or because of a Bad Note,';
+  rsCannotDismiss2 = 'I cannot let you dismiss this window';
+  rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';
+
+
+
+procedure TMainForm.FormShow(Sender: TObject);
+// WARNING - the options here MUST match the options list in CommandLineError()
+ { ToDo : put options in a TStringList and share, less mistakes ....}
+var
+    NoteID, NoteTitle : string;
+    Params : TStringList;
+    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
+            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
+begin
+    // debugln('Form color is ' + inttostr(Color));
+    if CmdLineErrorMsg <> '' then begin
+        close;    // cannot close in OnCreate();
+        exit;       // otherwise we execute rest of this method before closing.
+    end;
+    if Application.HasOption('version') then begin
+        Enabled := False;
+         debugln('tomboy-ng version ' + Version_String);
+         close();
+         exit();
+     end;
+     if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
+         if AllowDismiss then ButtonDismissClick(Self);
+     end;
+    Left := 10;
+    Top := 40;
+    if Application.HasOption('o', 'open-note') then begin
+        //showmessage('Single note mode');
+        SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
+        exit();
+    end;
+    TestDarkThemeInUse();
+    {$ifdef windows}                // linux apps know how to do this themselves
+    if Sett.DarkTheme then begin
+        //color := Sett.BackGndColour;
+        color := Sett.HiColor;
+        font.color := Sett.TextColour;
+        ButtonConfig.Color := Sett.BackGndColour;
+        ButtonDismiss.Color := Sett.HiColor;
+    end;
+    {$endif}
+    Params := TStringList.Create;
+    try
+        Application.GetNonOptions('hgo:', LongOpts, Params);
+        {for I := 0 to Params.Count -1 do
+            debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
+        if Params.Count = 1 then begin
+            if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
+                SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
+                exit();
+            end;
+        end;
+        if Params.Count > 1 then begin
+            debugln('Unrecognised parameters on command line');
+            close;
+            exit();                     // Call exit to ensure remaining part method is not executed
+        end;
+    finally
+        FreeAndNil(Params);
+    end;
+    if {AlreadyRunning()} AreWeClient() then begin
+        // showmessage(rsAnotherInstanceRunning);
+        close();
+        exit();
+    end else begin
+ (*       if UseMainMenu then begin
+            FileMenu.Visible := True;
+            RecentMenu.Visible := True;
+        end;                                      *)
+        LabelNoDismiss1.Caption:='';
+        LabelNoDismiss2.Caption := '';
+        // CheckStatus();
+        // SearchForm.IndexNotes(); // also calls Checkstatus, calls UpdateNotesFound()
+        if SearchForm.NoteLister.XMLError then begin
+            LabelError.Caption := rsFailedToIndex;
+            AllowDismiss := False;
+        end else
+            LabelError.Caption := '';
+        if not AllowDismiss then begin
+            LabelNoDismiss1.Caption := rsCannotDismiss1;
+            LabelNoDismiss2.Caption := rsCannotDismiss2;
+            LabelNoDismiss1.Hint:=rsCannotDismiss3;
+            LabelNoDismiss2.Hint := LabelNoDismiss1.Hint;
+            CheckBoxDontShow.Enabled := False;
+            Visible := True;
+        end else
+            CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
+        if Sett.CheckShowSearchAtStart.Checked then
+            SearchForm.Show;
+    end;
+ {   if UseTrayMenu then begin              // we need to create the popup menu in FormCreate, not here.
+        writeln('In main.formshow and about to create TrayMenu');
+        PopupMenuTray := TPopupMenu.Create(Self);
+        TrayIcon.PopUpMenu := PopupMenutray;        // SearchForm will populate it when ready
+        TrayIcon.Show;
+    end;     }
+
+    if SearchForm.NoteLister.FindFirstOOSNote(NoteTitle, NoteID) then
+        repeat
+            SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
+        until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
+end;
+
+{procedure TMainForm.OnEndSessionApp(Sender: TObject);
+var
+  OutFile : TextFile;
+begin
+    AssignFile(OutFile, '/home/dbannon/closelogMainFormSession.txt');
+    Rewrite(OutFile);
+    writeln(OutFile, 'OnEndSessionApp Called');
+    CloseFile(OutFile);
+end;   }
+
+resourcestring
+  rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshots -> Existing Notes.';
+  rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
+  rsFound = 'Found';
+  rsNotes = 'notes';
+
+procedure TMainForm.LabelErrorClick(Sender: TObject);
+begin
+    if LabelError.Caption <> '' then
+        showmessage(rsBadNotesFound1 + #10#13 + rsBadNotesFound2);
+end;
+
+procedure TMainForm.UpdateNotesFound(Numb : integer);
+begin
+    LabelNotesFound.Caption := rsFound + ' ' + inttostr(Numb) + ' ' + rsNotes;
+         ImageConfigCross.Left := ImageConfigTick.Left;
+     ImageConfigTick.Visible := Sett.HaveConfig;
+     ImageConfigCross.Visible := not ImageConfigTick.Visible;
+
+     ImageNotesDirCross.Left := ImageNotesDirTick.Left;
+     ImageNotesDirTick.Visible := Numb > 0;
+     ImageNotesDirCross.Visible := not ImageNotesDirTick.Visible;
+
+     ImageSpellCross.Left := ImageSpellTick.Left;
+     ImageSpellTick.Visible := Sett.SpellConfig;
+     ImageSpellCross.Visible := not ImageSpellTick.Visible;
+
+     ImageSyncCross.Left := ImageSyncTick.Left;
+     ImageSyncTick.Visible := (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
+                and (Sett.LabelSyncRepo.Caption <> '');
+     ImageSyncCross.Visible := not ImageSyncTick.Visible;
+
+     if (ImageConfigTick.Visible and ImageNotesDirTick.Visible) then begin
+        ButtonDismiss.Enabled := AllowDismiss;
+     end;
+end;
+
+procedure TMainForm.ButtonDismissClick(Sender: TObject);
+begin
+    {$ifdef LCLCOCOA}
+    width := 0;
+    height := 0;
+    {$else}
+    hide();
+    {$endif}
+end;
+
+procedure TMainForm.CheckBoxDontShowChange(Sender: TObject);
+var
+    OldMask : boolean;
+begin
+    if Visible then begin
+        Sett.CheckShowSplash.Checked := not Sett.CheckShowSplash.Checked;
+        OldMask :=  Sett.MaskSettingsChanged;
+        Sett.MaskSettingsChanged := False;
+        Sett.CheckReadOnlyChange(Sender);
+        Sett.MaskSettingsChanged := OldMask;
+    end;
+    // showmessage('change dont show and Visible=' + booltostr(Visible, True));
+end;
+
+
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
@@ -664,7 +688,7 @@ end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
-    ButtonConfig.Width := (Width div 3);
+    ButtMenu.Width := (Width div 3);
     ButtonDismiss.Width := (Width div 3);
 end;
 
@@ -740,16 +764,27 @@ end; }
 
 
 
-resourcestring
+{ resourcestring
   rsSetupNotesDirFirst = 'Please setup a notes directory first';
   rsSetupSyncFirst = 'Please config sync system first';
-  rsCannotFindNote = 'ERROR, cannot find ';
+  rsCannotFindNote = 'ERROR, cannot find ';       }
 
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
     Sett.Show();
 end;
 
+procedure TMainForm.ButtonCloseClick(Sender: TObject);
+begin
+    MainForm.Close;
+end;
+
+procedure TMainForm.ButtMenuClick(Sender: TObject);
+begin
+    self.MainTBMenu.popup;
+end;
+
+(*
 procedure TMainForm.FileMenuClicked(Sender : TObject);
 var
     FileName : string;
@@ -768,10 +803,7 @@ begin
                         and (Sett.LabelSyncRepo.Caption <> '') then
                             Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
-        mtSettings : begin
-                        Sett.Show;
-                        //SearchForm.RecentMenu();   // ToDo : wots this for ? commented out, April 2019
-                     end;
+        mtSettings : Sett.Show;
         mtTomdroid : if FormTomdroid.Visible then
                         FormTomdroid.BringToFront
                      else FormTomdroid.ShowModal;
@@ -782,9 +814,9 @@ begin
                     end;
         mtQuit :      close;
     end;
-end;
+end;                      *)
 
-ResourceString
+{ ResourceString
   rsMenuFile = 'File';
   rsMenuRecent = 'Recent';
   rsMenuNewNote = 'New Note';
@@ -793,10 +825,10 @@ ResourceString
   rsMenuSync = 'Synchronise';
   rsMenuSettings = 'Settings';
   rsMenuHelp = 'Help';
-  rsMenuQuit = 'Quit';
+  rsMenuQuit = 'Quit';        }
 
 procedure TMainForm.FillInFileMenus(ItsAnUpdate : boolean = false);
-begin
+begin  (*
   {$ifdef LINUX}
   AltHelpNotesPath := Sett.LocalConfig + ALTHELP + PathDelim;       // here because must call after sett exists
   {$endif}
@@ -835,13 +867,13 @@ begin
     AddMenuItem(rsMenuSettings, mtSettings, @FileMenuClicked, mkFileMenu);
     AddMenuItem(rsMenuHelp, mtHelp,  nil, mkFileMenu);
     AddMenuItem(rsMenuQuit, mtQuit,  @FileMenuClicked, mkFileMenu);
-    if ItsAnUpdate then
-        SearchForm.RecentMenu;
+{    if ItsAnUpdate then
+        SearchForm.RecentMenu;       DRB Dec 2019 }
     FindHelpFiles();
-    ButtonConfig.Caption:= rsMenuSettings;
+    ButtonConfig.Caption:= rsMenuSettings;               *)
 end;
 
-procedure TMainForm.AddItemToAMenu(TheMenu : TMenu; Item : string;
+(* procedure TMainForm.AddItemToAMenu(TheMenu : TMenu; Item : string;
                     mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
 var
     MenuItem : TMenuItem;
@@ -904,14 +936,14 @@ begin
                             RecentMenu.Add(MenuItem);
         mkHelpMenu   : AddHelpItem({TheMenu, MenuItem});
     end;
-end;
+end;                        *)
 
-procedure TMainForm.AddMenuItem(Item : string; mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
+(*procedure TMainForm.AddMenuItem(Item : string; mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
 begin
     AddItemToAMenu(PopupmenuTray, Item, mtTag, OC, MenuKind);
     AddItemToAMenu(MainMenu, Item,  mtTag, OC, MenuKind);
     AddItemToAMenu(PopupMenuSearch, Item, mtTag, OC, MenuKind);
-end;
+end;     *)
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
@@ -931,7 +963,7 @@ begin
 end;
 
 // will remove any recent items from all the menus.
-procedure TMainForm.ClearRecentMenuItems();
+(* procedure TMainForm.ClearRecentMenuItems();
 var
     X : integer = 0;
 
@@ -949,7 +981,7 @@ begin
     RecentMenu.Clear;
     RemoveRecentFromMenu(PopupMenuTray);
     RemoveRecentFromMenu(PopupMenuSearch);
-end;
+end;             *)
 
 RESOURCESTRING
     rsAbout1 = 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus';

@@ -99,10 +99,6 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
-#: mainunit.rsanotherinstancerunning
-msgid "Another instance of tomboy-ng appears to be running. Will exit."
-msgstr ""
-
 #: mainunit.rsbadnotesfound1
 msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
 msgstr ""
@@ -121,10 +117,6 @@ msgstr ""
 
 #: mainunit.rscannotdismiss3
 msgid "Are you trying to shut me down ? Dave ?"
-msgstr ""
-
-#: mainunit.rscannotfindnote
-msgid "ERROR, cannot find "
 msgstr ""
 
 #: mainunit.rsfailedtoindex
@@ -183,55 +175,8 @@ msgstr ""
 msgid "Print version and exit"
 msgstr ""
 
-#: mainunit.rsmenuabout
-msgid "About"
-msgstr ""
-
-#: mainunit.rsmenufile
-msgid "File"
-msgstr ""
-
-#: mainunit.rsmenuhelp
-msgctxt "mainunit.rsmenuhelp"
-msgid "Help"
-msgstr ""
-
-#: mainunit.rsmenunewnote
-msgid "New Note"
-msgstr ""
-
-#: mainunit.rsmenuquit
-msgid "Quit"
-msgstr ""
-
-#: mainunit.rsmenurecent
-msgid "Recent"
-msgstr ""
-
-#: mainunit.rsmenusearch
-msgctxt "mainunit.rsmenusearch"
-msgid "Search"
-msgstr ""
-
-#: mainunit.rsmenusettings
-msgctxt "mainunit.rsmenusettings"
-msgid "Settings"
-msgstr ""
-
-#: mainunit.rsmenusync
-msgid "Synchronise"
-msgstr ""
-
 #: mainunit.rsnotes
 msgid "notes"
-msgstr ""
-
-#: mainunit.rssetupnotesdirfirst
-msgid "Please setup a notes directory first"
-msgstr ""
-
-#: mainunit.rssetupsyncfirst
-msgid "Please config sync system first"
 msgstr ""
 
 #: notebook.rsenternewnotebook
@@ -316,6 +261,21 @@ msgstr ""
 
 #: recover.rswehavesnapshots_2
 msgid "snapshots"
+msgstr ""
+
+#: searchunit.rscannotfindnote
+msgctxt "searchunit.rscannotfindnote"
+msgid "ERROR, cannot find "
+msgstr ""
+
+#: searchunit.rssetupnotesdirfirst
+msgctxt "searchunit.rssetupnotesdirfirst"
+msgid "Please setup a notes directory first"
+msgstr ""
+
+#: searchunit.rssetupsyncfirst
+msgctxt "searchunit.rssetupsyncfirst"
+msgid "Please config sync system first"
 msgstr ""
 
 #: settings.rsdictionaryfailed
@@ -488,6 +448,11 @@ msgstr ""
 
 #: syncutils.rssyncerrors
 msgid "ERRORS (see consol log) "
+msgstr ""
+
+#: teditboxform.butttbmenu.caption
+msgctxt "teditboxform.butttbmenu.caption"
+msgid "Menu"
 msgstr ""
 
 #: teditboxform.caption
@@ -937,17 +902,22 @@ msgstr ""
 msgid "SSH Password for device"
 msgstr ""
 
-#: tmainform.buttonconfig.caption
-msgctxt "tmainform.buttonconfig.caption"
-msgid "Settings"
+#: tmainform.buttmenu.caption
+msgctxt "tmainform.buttmenu.caption"
+msgid "Menu"
 msgstr ""
 
-#: tmainform.buttonconfig.hint
-msgid "Open the Config Window"
+#: tmainform.buttonclose.caption
+msgctxt "tmainform.buttonclose.caption"
+msgid "Quit"
+msgstr ""
+
+#: tmainform.buttonclose.hint
+msgid "Close tomboy-ng"
 msgstr ""
 
 #: tmainform.buttondismiss.caption
-msgid "Dismiss"
+msgid "Hide"
 msgstr ""
 
 #: tmainform.buttondismiss.hint
@@ -1103,6 +1073,11 @@ msgstr ""
 msgid "Clear Filters"
 msgstr ""
 
+#: tsearchform.buttonmenu.caption
+msgctxt "tsearchform.buttonmenu.caption"
+msgid "Menu"
+msgstr ""
+
 #: tsearchform.buttonnotebookoptions.caption
 msgid "Notebook Options"
 msgstr ""
@@ -1231,6 +1206,11 @@ msgstr ""
 #: tsett.buttonsynchelp.caption
 msgctxt "tsett.buttonsynchelp.caption"
 msgid "Help"
+msgstr ""
+
+#: tsett.butttbmenu.caption
+msgctxt "tsett.butttbmenu.caption"
+msgid "Menu"
 msgstr ""
 
 #: tsett.caption

@@ -193,6 +193,7 @@ unit EditBox;
     2019/09/21  AdjustFormPosition() now enforces some minium position/size. Issue #103
     2019/10/11  Enabling of printing under Cocoa
     2019/11/30  Now support web links.
+    2019/12/11  Heavily restructured Startup, Main Menu everywhere !
 }
 
 
@@ -214,6 +215,7 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
+        ButtTBMenu: TBitBtn;
 		FindDialog1: TFindDialog;
         KMemo1: TKMemo;
         Label2: TLabel;
@@ -252,6 +254,7 @@ type
         MenuUnderline: TMenuItem;
         MenuStrikeout: TMenuItem;
         PanelReadOnly: TPanel;
+        PopupMainTBMenu: TPopupMenu;
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
@@ -265,7 +268,8 @@ type
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
-		procedure FindDialog1Find(Sender: TObject);
+        procedure ButtTBMenuClick(Sender: TObject);
+  procedure FindDialog1Find(Sender: TObject);
         procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -982,6 +986,11 @@ begin
     // If above returns false, no more to be found, but how to tell user ?
 end;
 
+procedure TEditBoxForm.ButtTBMenuClick(Sender: TObject);
+begin
+    PopupMainTBMenu.PopUp;
+end;
+
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 begin
     if SingleNoteMode then begin
@@ -1397,6 +1406,7 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
+    SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu);
     {$ifdef DARWIN}
     MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
     MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
@@ -1559,7 +1569,7 @@ end;
 procedure TEditBoxForm.MarkTitle();
 var
     BlockNo : integer = 0;
-    AtTheEnd : Boolean = False;
+    //AtTheEnd : Boolean = False;
     EndBlock, blar : integer;
 begin
   	if Not Ready then exit();
@@ -1578,7 +1588,7 @@ begin
             end;
            	inc(BlockNo);
             if BlockNo >= Kmemo1.Blocks.Count then begin
-                AtTheEnd := True;
+                //AtTheEnd := True;
                 break;
             end;
        	end;                                // Stopped at first TKMemoParagraph if it exists.

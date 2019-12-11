@@ -204,7 +204,8 @@ end;
 procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
     if NeedUpDate then begin
-        SearchForm.RecentMenu();
+        SearchForm.RefreshMenus(mkRecentMenu);
+        // SearchForm.RecentMenu();
         Sett.ButtonShowBackUp.click;
     end;
 end;
