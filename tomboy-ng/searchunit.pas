@@ -96,6 +96,7 @@ unit SearchUnit;
     2019/08/18  Removed AnyCombo and CaseSensitive checkboxes and replaced with SearchOptionsMenu, easier translations
     2019/11/19  When reshowing an open note, bring it to current workspace, Linux only. Test on Wayland !
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
+    2019/12/12  Commented out #868 that goRowHighlight to stringgridnotebook, ugly black !!!!!
 }
 
 {$mode objfpc}{$H+}
@@ -115,7 +116,6 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
 type        { TSearchForm }
     TSearchForm = class(TForm)
-        ButtonMenu: TBitBtn;
       ButtonSearchOptions: TButton;
 			ButtonNotebookOptions: TButton;
 			ButtonClearFilters: TButton;
@@ -129,6 +129,7 @@ type        { TSearchForm }
 		Panel1: TPanel;
                 PopupSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
+        ButtonMenu: TSpeedButton;
 		Splitter1: TSplitter;
         StringGrid1: TStringGrid;
 		StringGridNotebooks: TStringGrid;
@@ -175,7 +176,7 @@ type        { TSearchForm }
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
     public
-        SearchMainMenu : TPopupMenu;
+        PopupTBMainMenu : TPopupMenu;
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
@@ -386,8 +387,8 @@ end;
 procedure TSearchForm.CreateMenus();
 begin
     InitialiseHelpFiles();
-    SearchMainMenu := TPopupMenu.Create(self);      // LCL will dispose because of 'self'
-    ButtonMenu.PopupMenu := SearchMainMenu;
+    PopupTBMainMenu := TPopupMenu.Create(self);      // LCL will dispose because of 'self'
+    ButtonMenu.PopupMenu := PopupTBMainMenu;
     MainForm.MainTBMenu := TPopupMenu.Create(self);
     MainForm.ButtMenu.PopupMenu := MainForm.MainTBMenu;
     // Add any other 'fixed' menu here.
@@ -405,7 +406,7 @@ begin
           AForm := SearchForm.NoteLister.FindNextOpenNote();
       end;
     end;
-    MList.Add(SearchMainMenu);
+    MList.Add(PopupTBMainMenu);
     MList.Add(MainForm.MainTBMenu);
     if (MainForm.UseTrayMenu) and (MainForm.PopupMenuTray <> Nil) then
         MList.Add(MainForm.PopupMenuTray);
@@ -676,8 +677,6 @@ begin
     // Edit1.Text:= 'Search';
     MenuCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
     MenuAnyCombo.Checked:= Sett.CheckAnyCombination.Checked;
-    //CheckBoxCaseSensitive.Checked := Sett.CheckCaseSensitive.Checked;
-    //CheckBoxAnyCombo.Checked := Sett.CheckAnyCombination.Checked;
     StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
     {$ifdef windows}
     StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?                                            // linux apps know how to do this themselves
@@ -686,7 +685,7 @@ begin
          font.color := Sett.TextColour;
          ButtonNoteBookOptions.Color := Sett.HiColor;
          ButtonClearFilters.Color := Sett.HiColor;
-         SpeedButton1.color := Sett.HiColor;
+         ButtonMenu.color := Sett.HiColor;
          StringGrid1.Color := Sett.BackGndColour;
          StringGrid1.Font.color := Sett.TextColour;
          stringGrid1.GridLineColor:= clnavy; //Sett.HiColor;
@@ -709,6 +708,9 @@ begin
     }
     //stringgrid1.FocusColor:= clblue;
     //stringgrid1.Color := clwhite;
+
+    stringgridnotebooks.Font := stringgrid1.font;
+    stringgridnotebooks.FocusColor := stringgrid1.FocusColor;
     stringgridnotebooks.color := stringgrid1.color;
     stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
 end;
@@ -864,7 +866,10 @@ procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
 begin
     ButtonNotebookOptions.Enabled := True;
     ButtonClearFilters.Enabled := True;
-    StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
+    //StringGridNotebooks.SelectedColor:= clRed;        // does not work !
+    // https://forum.lazarus.freepascal.org/index.php/topic,45009.msg317102.html#msg317102
+    //StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
+    //StringGridNotebooks.repaint;
     UseList();
     StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
@@ -876,8 +881,10 @@ end;
 
 procedure TSearchForm.ButtonMenuClick(Sender: TObject);
 begin
-    SearchMainMenu.popup;
+    PopupTBMainMenu.popup;
 end;
+
+
 
 procedure TSearchForm.ButtonNotebookOptionsClick(Sender: TObject);
 begin

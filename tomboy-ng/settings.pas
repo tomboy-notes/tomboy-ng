@@ -108,7 +108,6 @@ type
     { TSett }
 
     TSett = class(TForm)
-        ButtTBMenu: TBitBtn;
 			ButtDefaultNoteDir: TButton;
             ButtonFixedFont: TButton;
             ButtonFont: TButton;
@@ -120,7 +119,6 @@ type
             ButtonSetSnapDir: TButton;
             ButtonSnapDays: TButton;
             ButtonSnapRecover: TButton;
-            ButtonHide: TButton;
 			ButtonShowBackUp: TButton;
 
 		ButtonSetNotePath: TButton;
@@ -192,6 +190,8 @@ type
 		RadioServer: TRadioButton;
 		SelectDirectoryDialog1: TSelectDirectoryDialog;
         SelectSnapDir: TSelectDirectoryDialog;
+        SpeedButHide: TSpeedButton;
+        SpeedButtTBMenu: TSpeedButton;
 		StringGridBackUp: TStringGrid;
 		TabBasic: TTabSheet;
 		TabBackUp: TTabSheet;
@@ -204,7 +204,6 @@ type
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
         procedure ButtonHelpNotesClick(Sender: TObject);
-        procedure ButtonHideClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
         procedure ButtonSetDictionaryClick(Sender: TObject);
         //procedure ButtonSaveConfigClick(Sender: TObject);
@@ -216,7 +215,6 @@ type
         procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
-        procedure ButtTBMenuClick(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
@@ -229,6 +227,7 @@ type
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
+        procedure SpeedButHideClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabSnapshotResize(Sender: TObject);
@@ -409,6 +408,11 @@ procedure TSett.PageControl1Change(Sender: TObject);
 begin
 	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     Label15.Caption := '';
+end;
+
+procedure TSett.SpeedButHideClick(Sender: TObject);
+begin
+    Hide;
 end;
 
 
@@ -952,10 +956,7 @@ begin
     FormHelpNotes.show;
 end;
 
-procedure TSett.ButtonHideClick(Sender: TObject);
-begin
-    Hide;
-end;
+
 
 RESOURCESTRING
     rsDirHasNoNotes = 'That directory does not contain any notes. Thats OK, if I can make my own there.';
@@ -1051,10 +1052,7 @@ begin
     MainForm.ShowHelpNote('sync-ng.note');
 end;
 
-procedure TSett.ButtTBMenuClick(Sender: TObject);
-begin
-    PMenuMain.Popup;
-end;
+
 
 procedure TSett.CheckAutostartChange(Sender: TObject);
 var

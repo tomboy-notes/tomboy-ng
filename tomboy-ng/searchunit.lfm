@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 639
+  Left = 825
   Height = 401
-  Top = 389
+  Top = 309
   Width = 824
   Caption = 'Search Form'
   ClientHeight = 401
@@ -19,12 +19,12 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonSearchOptions
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 86
+    Left = 106
     Height = 32
     Top = 3
-    Width = 401
+    Width = 381
     Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Left = 5
+    BorderSpacing.Left = 2
     BorderSpacing.Right = 1
     OnEditingDone = Edit1EditingDone
     OnEnter = Edit1Enter
@@ -204,17 +204,16 @@ object SearchForm: TSearchForm
     PopupMenu = PopupSearchOptions
     TabOrder = 3
   end
-  object ButtonMenu: TBitBtn
+  object ButtonMenu: TSpeedButton
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ButtonRefresh
-    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideTop.Control = Edit1
+    AnchorSideBottom.Control = Edit1
     AnchorSideBottom.Side = asrBottom
     Left = 0
     Height = 32
     Top = 3
-    Width = 81
+    Width = 104
     Anchors = [akTop, akLeft, akBottom]
-    AutoSize = True
     Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
@@ -293,7 +292,6 @@ object SearchForm: TSearchForm
       0000000000000000000000000000000000000000000000000000
     }
     OnClick = ButtonMenuClick
-    TabOrder = 4
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 472

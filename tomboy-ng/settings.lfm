@@ -1,11 +1,11 @@
 object Sett: TSett
-  Left = 1100
-  Height = 511
-  Top = 119
+  Left = 964
+  Height = 487
+  Top = 202
   Width = 628
   BorderIcons = []
   Caption = 'Settings'
-  ClientHeight = 511
+  ClientHeight = 487
   ClientWidth = 628
   OnClose = FormClose
   OnCreate = FormCreate
@@ -18,9 +18,9 @@ object Sett: TSett
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ButtonHide
+    AnchorSideBottom.Control = SpeedButHide
     Left = 0
-    Height = 451
+    Height = 445
     Top = 0
     Width = 628
     ActivePage = TabBasic
@@ -31,7 +31,7 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 414
+      ClientHeight = 408
       ClientWidth = 622
       OnResize = TabBasicResize
       object ButtonSetNotePath: TButton
@@ -116,13 +116,13 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBasic
         AnchorSideBottom.Side = asrBottom
         Left = 233
-        Height = 135
+        Height = 129
         Top = 272
         Width = 382
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 7
         Caption = 'Main Search Window is : '
-        ClientHeight = 114
+        ClientHeight = 108
         ClientWidth = 378
         TabOrder = 3
         object CheckCaseSensitive: TCheckBox
@@ -179,7 +179,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 414
+      ClientHeight = 408
       ClientWidth = 622
       object GroupBox5: TGroupBox
         Left = 32
@@ -302,7 +302,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 414
+      ClientHeight = 408
       ClientWidth = 622
       OnResize = TabSyncResize
       object GroupBox3: TGroupBox
@@ -461,7 +461,7 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 414
+      ClientHeight = 408
       ClientWidth = 622
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -560,7 +560,7 @@ object Sett: TSett
     object TabSnapshot: TTabSheet
       BorderWidth = 1
       Caption = 'SnapShot'
-      ClientHeight = 414
+      ClientHeight = 408
       ClientWidth = 622
       OnResize = TabSnapshotResize
       object Label9: TLabel
@@ -699,7 +699,7 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 414
+      ClientHeight = 408
       ClientWidth = 622
       OnResize = TabSpellResize
       object Label13: TLabel
@@ -818,46 +818,40 @@ object Sett: TSett
       end
     end
   end
-  object ButtonHide: TButton
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 511
-    Height = 56
-    Top = 453
-    Width = 113
-    Anchors = [akRight, akBottom]
-    BorderSpacing.Right = 4
-    BorderSpacing.Bottom = 2
-    Caption = 'Close'
-    OnClick = ButtonHideClick
-    ParentShowHint = False
-    TabOrder = 1
-  end
   object Label15: TLabel
-    AnchorSideBottom.Control = ButtonHide
     AnchorSideBottom.Side = asrBottom
     Left = 24
     Height = 19
-    Top = 483
+    Top = 459
     Width = 56
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
     Caption = 'Label15'
     ParentColor = False
   end
-  object ButtTBMenu: TBitBtn
-    AnchorSideTop.Control = ButtonHide
-    AnchorSideRight.Control = ButtonHide
-    AnchorSideBottom.Control = ButtonHide
+  object SpeedButHide: TSpeedButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 373
-    Height = 56
-    Top = 453
-    Width = 136
+    Left = 532
+    Height = 40
+    Top = 447
+    Width = 96
+    Anchors = [akRight, akBottom]
+    Caption = 'Close'
+    OnClick = SpeedButHideClick
+  end
+  object SpeedButtTBMenu: TSpeedButton
+    AnchorSideTop.Control = SpeedButHide
+    AnchorSideRight.Control = SpeedButHide
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 416
+    Height = 40
+    Top = 447
+    Width = 116
     Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 2
     Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
@@ -935,9 +929,7 @@ object Sett: TSett
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    OnClick = ButtTBMenuClick
     PopupMenu = PMenuMain
-    TabOrder = 2
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 384

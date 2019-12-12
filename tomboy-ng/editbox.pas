@@ -215,7 +215,6 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
-        ButtTBMenu: TBitBtn;
 		FindDialog1: TFindDialog;
         KMemo1: TKMemo;
         Label2: TLabel;
@@ -259,6 +258,7 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
+        ButtMainTBMenu: TSpeedButton;
         SpeedButtonDelete: TSpeedButton;
         SpeedButtonLink: TSpeedButton;
         SpeedButtonNotebook: TSpeedButton;
@@ -268,6 +268,7 @@ type
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
+        procedure ButtMainTBMenuClick(Sender: TObject);
         procedure ButtTBMenuClick(Sender: TObject);
   procedure FindDialog1Find(Sender: TObject);
         procedure FormActivate(Sender: TObject);
@@ -978,6 +979,15 @@ begin
     end;
 end;
 
+procedure TEditBoxForm.ButtMainTBMenuClick(Sender: TObject);
+begin
+    PopupMainTBMenu.Popup;
+end;
+
+procedure TEditBoxForm.ButtTBMenuClick(Sender: TObject);
+begin
+
+end;
 
 procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
 begin
@@ -986,10 +996,7 @@ begin
     // If above returns false, no more to be found, but how to tell user ?
 end;
 
-procedure TEditBoxForm.ButtTBMenuClick(Sender: TObject);
-begin
-    PopupMainTBMenu.PopUp;
-end;
+
 
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 begin
