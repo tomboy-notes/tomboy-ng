@@ -3,7 +3,7 @@ object SearchForm: TSearchForm
   Height = 401
   Top = 309
   Width = 824
-  Caption = 'Search Form'
+  Caption = 'tomboy-ng Search'
   ClientHeight = 401
   ClientWidth = 824
   OnCloseQuery = FormCloseQuery

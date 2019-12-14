@@ -675,7 +675,7 @@ msgstr ""
 
 #: tformrecover.buttonsnaphelp.caption
 msgctxt "tformrecover.buttonsnaphelp.caption"
-msgid "Help"
+msgid "Snapshot Help"
 msgstr ""
 
 #: tformrecover.caption
@@ -1099,7 +1099,7 @@ msgid "Search Options"
 msgstr ""
 
 #: tsearchform.caption
-msgid "Search Form"
+msgid "tomboy-ng Search"
 msgstr ""
 
 #: tsearchform.edit1.text
@@ -1205,7 +1205,7 @@ msgstr ""
 
 #: tsett.caption
 msgctxt "tsett.caption"
-msgid "Settings"
+msgid "tomboy-ng Settings"
 msgstr ""
 
 #: tsett.checkanycombination.caption

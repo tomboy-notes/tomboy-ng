@@ -692,9 +692,7 @@ msgstr ""
 
 #: tformrecover.button4.caption
 msgid "Restore from Safety Snapshot"
-msgstr ""
-"Restuarar desde\n"
-"Instantánea de Seguridad"
+msgstr "Restuarar desde Instantánea de Seguridad"
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
@@ -702,9 +700,7 @@ msgstr "Eliminar Notas Corrompidas"
 
 #: tformrecover.buttonmakesafetysnap.caption
 msgid "Safety Snapshot"
-msgstr ""
-"Instantánea\n"
-"de Seguridad"
+msgstr "Instantánea de Seguridad"
 
 #: tformrecover.buttonmakesafetysnap.hint
 msgid "Take a initial snapshot of your notes and config. Overwritten each time."
@@ -715,8 +711,10 @@ msgid "Recover"
 msgstr "Recuperar"
 
 #: tformrecover.buttonsnaphelp.caption
+#, fuzzy
+#| msgid "Help"
 msgctxt "tformrecover.buttonsnaphelp.caption"
-msgid "Help"
+msgid "Snapshot Help"
 msgstr "Ayuda"
 
 #: tformrecover.caption
@@ -1158,8 +1156,8 @@ msgstr "Opciones de Búsqueda"
 # Se puede cambiar en inglés ...
 # ¿Añadir " - tomboy-ng"?
 #: tsearchform.caption
-msgid "Search Form"
-msgstr "Buscar Notas"
+msgid "tomboy-ng Search"
+msgstr "tomboy-ng Buscar"
 
 #: tsearchform.edit1.text
 msgctxt "tsearchform.edit1.text"
@@ -1268,9 +1266,10 @@ msgid "Help"
 msgstr "Ayuda"
 
 #: tsett.caption
+#| msgid "Settings"
 msgctxt "tsett.caption"
-msgid "Settings"
-msgstr "Preferencias"
+msgid "tomboy-ng Settings"
+msgstr "tomboy-ng Preferencias"
 
 #: tsett.checkanycombination.caption
 msgid "Any Combination"

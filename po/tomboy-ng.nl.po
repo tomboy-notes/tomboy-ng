@@ -694,8 +694,10 @@ msgid "Recover"
 msgstr "Herstellen"
 
 #: tformrecover.buttonsnaphelp.caption
+#, fuzzy
+#| msgid "Help"
 msgctxt "tformrecover.buttonsnaphelp.caption"
-msgid "Help"
+msgid "Snapshot Help"
 msgstr "Hulp"
 
 #: tformrecover.caption
@@ -1124,7 +1126,9 @@ msgid "Search Options"
 msgstr "Zoekopties"
 
 #: tsearchform.caption
-msgid "Search Form"
+#, fuzzy
+#| msgid "Search Form"
+msgid "tomboy-ng Search"
 msgstr "Zoekpagina"
 
 #: tsearchform.edit1.text
@@ -1229,8 +1233,10 @@ msgid "Help"
 msgstr "Hulp"
 
 #: tsett.caption
+#, fuzzy
+#| msgid "Settings"
 msgctxt "tsett.caption"
-msgid "Settings"
+msgid "tomboy-ng Settings"
 msgstr "Instellingen"
 
 #: tsett.checkanycombination.caption

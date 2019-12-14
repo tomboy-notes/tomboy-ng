@@ -4,7 +4,7 @@ object Sett: TSett
   Top = 202
   Width = 628
   BorderIcons = []
-  Caption = 'Settings'
+  Caption = 'tomboy-ng Settings'
   ClientHeight = 487
   ClientWidth = 628
   OnClose = FormClose
@@ -23,10 +23,10 @@ object Sett: TSett
     Height = 445
     Top = 0
     Width = 628
-    ActivePage = TabBasic
+    ActivePage = TabSnapshot
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -526,12 +526,12 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 264
+        Height = 258
         Top = 150
         Width = 622
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 264
+        ClientHeight = 258
         ClientWidth = 622
         TabOrder = 1
         object StringGridBackUp: TStringGrid
@@ -542,7 +542,7 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 262
+          Height = 256
           Top = 1
           Width = 620
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -581,7 +581,7 @@ object Sett: TSett
         Left = 7
         Height = 44
         Hint = 'Take a time stamped snapshot of notes and config'
-        Top = 370
+        Top = 364
         Width = 248
         Anchors = [akLeft, akBottom]
         BorderSpacing.Left = 7
@@ -601,7 +601,7 @@ object Sett: TSett
         Left = 262
         Height = 44
         Hint = 'If you have previously taken a snapshot ...'
-        Top = 370
+        Top = 364
         Width = 353
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Left = 7
@@ -619,7 +619,7 @@ object Sett: TSett
         AnchorSideBottom.Control = ButtonManualSnap
         Left = 0
         Height = 240
-        Top = 128
+        Top = 122
         Width = 622
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 2
@@ -665,17 +665,17 @@ object Sett: TSett
         end
         object CheckSnapMonthly: TCheckBox
           Left = 24
-          Height = 23
+          Height = 24
           Top = 146
-          Width = 83
+          Width = 85
           Caption = 'Monthly'
           TabOrder = 3
         end
         object CheckSnapEnabled: TCheckBox
           Left = 24
-          Height = 23
+          Height = 24
           Top = 178
-          Width = 91
+          Width = 93
           Caption = 'Run Auto'
           TabOrder = 4
         end
