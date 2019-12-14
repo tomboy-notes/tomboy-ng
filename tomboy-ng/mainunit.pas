@@ -535,7 +535,8 @@ begin
         //color := Sett.BackGndColour;
         color := Sett.HiColor;
         font.color := Sett.TextColour;
-        ButtonConfig.Color := Sett.BackGndColour;
+        ButtMenu.Color := Sett.BackGndColour;
+        ButtonClose.Color := Sett.BackGndColour;
         ButtonDismiss.Color := Sett.HiColor;
     end;
     {$endif}

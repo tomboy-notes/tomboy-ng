@@ -483,8 +483,8 @@ msgstr "Borrados remotos"
 msgid "ERRORS (see consol log) "
 msgstr "ERRORES: ver registro en el terminal"
 
-#: teditboxform.butttbmenu.caption
-msgctxt "teditboxform.butttbmenu.caption"
+#: teditboxform.buttmaintbmenu.caption
+msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr ""
 
@@ -694,7 +694,7 @@ msgstr ""
 msgid "Restore from Safety Snapshot"
 msgstr ""
 "Restuarar desde\n"
-"Instantánea de Seguridad\n"
+"Instantánea de Seguridad"
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
@@ -704,7 +704,7 @@ msgstr "Eliminar Notas Corrompidas"
 msgid "Safety Snapshot"
 msgstr ""
 "Instantánea\n"
-"de Seguridad\n"
+"de Seguridad"
 
 #: tformrecover.buttonmakesafetysnap.hint
 msgid "Take a initial snapshot of your notes and config. Overwritten each time."
@@ -1210,11 +1210,6 @@ msgctxt "tsett.buttonhelpnotes.caption"
 msgid "Help Notes Language"
 msgstr "Idioma de las notas de ayuda"
 
-#: tsett.buttonhide.caption
-msgctxt "tsett.buttonhide.caption"
-msgid "Close"
-msgstr "Cerrar"
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr "Hacer Instantánea Manual"
@@ -1271,11 +1266,6 @@ msgstr "Si has hecho una instantánia antes ..."
 msgctxt "tsett.buttonsynchelp.caption"
 msgid "Help"
 msgstr "Ayuda"
-
-#: tsett.butttbmenu.caption
-msgctxt "tsett.butttbmenu.caption"
-msgid "Menu"
-msgstr ""
 
 #: tsett.caption
 msgctxt "tsett.caption"
@@ -1478,6 +1468,17 @@ msgstr "Usar la nota local y sobrescribir la nota del servidor."
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
 msgstr "Usar la nota del servidor y renombrar la nota local."
+
+#: tsett.speedbuthide.caption
+#, fuzzy
+msgctxt "tsett.speedbuthide.caption"
+msgid "Close"
+msgstr "Cerrar"
+
+#: tsett.speedbutttbmenu.caption
+msgctxt "tsett.speedbutttbmenu.caption"
+msgid "Menu"
+msgstr ""
 
 #: tsett.tabbackup.caption
 msgid "BackUp"

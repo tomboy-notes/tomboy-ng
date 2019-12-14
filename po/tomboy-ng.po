@@ -450,8 +450,8 @@ msgstr ""
 msgid "ERRORS (see consol log) "
 msgstr ""
 
-#: teditboxform.butttbmenu.caption
-msgctxt "teditboxform.butttbmenu.caption"
+#: teditboxform.buttmaintbmenu.caption
+msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr ""
 
@@ -1150,11 +1150,6 @@ msgctxt "tsett.buttonhelpnotes.caption"
 msgid "Help Notes Language"
 msgstr ""
 
-#: tsett.buttonhide.caption
-msgctxt "tsett.buttonhide.caption"
-msgid "Close"
-msgstr ""
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr ""
@@ -1206,11 +1201,6 @@ msgstr ""
 #: tsett.buttonsynchelp.caption
 msgctxt "tsett.buttonsynchelp.caption"
 msgid "Help"
-msgstr ""
-
-#: tsett.butttbmenu.caption
-msgctxt "tsett.butttbmenu.caption"
-msgid "Menu"
 msgstr ""
 
 #: tsett.caption
@@ -1405,6 +1395,16 @@ msgstr ""
 
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
+msgstr ""
+
+#: tsett.speedbuthide.caption
+msgctxt "tsett.speedbuthide.caption"
+msgid "Close"
+msgstr ""
+
+#: tsett.speedbutttbmenu.caption
+msgctxt "tsett.speedbutttbmenu.caption"
+msgid "Menu"
 msgstr ""
 
 #: tsett.tabbackup.caption

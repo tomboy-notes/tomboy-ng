@@ -6,6 +6,7 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <Title Value="tomboy-ng"/>
+      <Scaled Value="True"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <XPManifest>
@@ -390,7 +391,8 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <UseHeaptrc Value="True"/>
+              <GenerateDebugInfo Value="False"/>
+              <UseLineInfoUnit Value="False"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>

@@ -468,8 +468,8 @@ msgstr "Externe prullenbak"
 msgid "ERRORS (see consol log) "
 msgstr "FOUTEN (zie terminaluitvoer)."
 
-#: teditboxform.butttbmenu.caption
-msgctxt "teditboxform.butttbmenu.caption"
+#: teditboxform.buttmaintbmenu.caption
+msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr ""
 
@@ -1175,11 +1175,6 @@ msgctxt "tsett.buttonhelpnotes.caption"
 msgid "Help Notes Language"
 msgstr "Taal van hulpnotities"
 
-#: tsett.buttonhide.caption
-msgctxt "tsett.buttonhide.caption"
-msgid "Close"
-msgstr "Sluiten"
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr "Handmatig een momentopname maken"
@@ -1232,11 +1227,6 @@ msgstr "Als je al eens een momentopname hebt gemaakt"
 msgctxt "tsett.buttonsynchelp.caption"
 msgid "Help"
 msgstr "Hulp"
-
-#: tsett.butttbmenu.caption
-msgctxt "tsett.butttbmenu.caption"
-msgid "Menu"
-msgstr ""
 
 #: tsett.caption
 msgctxt "tsett.caption"
@@ -1431,6 +1421,17 @@ msgstr "Lokale notitie gebruiken en servernotitie overschrijven"
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
 msgstr "Servernotitie gebruiken en lokale notitie hernoemen"
+
+#: tsett.speedbuthide.caption
+#, fuzzy
+msgctxt "tsett.speedbuthide.caption"
+msgid "Close"
+msgstr "Sluiten"
+
+#: tsett.speedbutttbmenu.caption
+msgctxt "tsett.speedbutttbmenu.caption"
+msgid "Menu"
+msgstr ""
 
 #: tsett.tabbackup.caption
 msgid "BackUp"

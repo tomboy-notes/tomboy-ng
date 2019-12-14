@@ -342,7 +342,7 @@ begin
      	NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
     end;
     // T4 := gettickcount64();                   // 1mS
-    // RecentMenu();              DRB DEc 2019
+    RefreshMenus(mkRecentMenu);
     // debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
@@ -392,7 +392,7 @@ begin
     MainForm.MainTBMenu := TPopupMenu.Create(self);
     MainForm.ButtMenu.PopupMenu := MainForm.MainTBMenu;
     // Add any other 'fixed' menu here.
-    RefreshMenus(mkAllMenu);
+
 end;
 
 procedure TSearchForm.MenuListBuilder(MList : TList);
@@ -406,13 +406,14 @@ begin
           AForm := SearchForm.NoteLister.FindNextOpenNote();
       end;
     end;
-    MList.Add(PopupTBMainMenu);
-    MList.Add(MainForm.MainTBMenu);
-    if (MainForm.UseTrayMenu) and (MainForm.PopupMenuTray <> Nil) then
+    if assigned(PopupTBMainMenu) then
+        MList.Add(PopupTBMainMenu);
+    if assigned(MainForm.MainTBMenu) then
+        MList.Add(MainForm.MainTBMenu);
+    if (MainForm.UseTrayMenu) and assigned(MainForm.PopupMenuTray) then
         MList.Add(MainForm.PopupMenuTray);
-    MList.Add(Sett.PMenuMain);
-
-    // OK, now add the menu on any open note, one for settings box ....
+    if assigned(Sett.PMenuMain) then
+        MList.Add(Sett.PMenuMain);
 end;
 
 procedure TSearchForm.RefreshMenus(WhichSection : TMenuKind; AMenu : TPopupMenu = nil);
@@ -554,14 +555,20 @@ begin
                     else OpenNote();
         mtSearch :  if Sett.NoteDirectory = '' then
                             showmessage(rsSetupNotesDirFirst)
-                    else  Show;
+                    else begin
+                            MoveWindowHere(Caption);
+                            EnsureVisible(true);
+                            Show;
+                    end;
         mtAbout :    MainForm.ShowAbout();
         mtSync :     if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
                         and (Sett.LabelSyncRepo.Caption <> '') then
                             Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
         mtSettings : begin
-                        Sett.Show;
+                            MoveWindowHere(Sett.Caption);
+                            Sett.EnsureVisible(true);
+                            Sett.Show;
                      end;
         mtTomdroid : if FormTomdroid.Visible then
                         FormTomdroid.BringToFront
@@ -648,9 +655,9 @@ end;
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
     NoteLister := nil;
-    IndexNotes();           // This could be a slow process, maybe a new thread ?
     CreateMenus();
-    // AllowClose := False;
+    IndexNotes();           // This could be a slow process, maybe a new thread ?
+    RefreshMenus(mkAllMenu);    // sadly, IndexNotes->UseList has already called RefreshMenus(mkRecentMenu); Sigh ....
 end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
