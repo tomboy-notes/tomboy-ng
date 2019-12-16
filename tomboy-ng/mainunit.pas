@@ -79,10 +79,8 @@ unit Mainunit;
     --config-dir=<some_dir> Directory to keep config and sync manifest in.
 
     -o note_fullfilename
-    --open=<note_fullfilename> Opens, in standalone mode, a note. Does not check
-                to see if another copy of tomboy-ng is open but will prevent a
-                normal startup of tomboy-ng. Won't interfere with an existing copy
-                however.
+    --open=<note_fullfilename> Opens, in standalone mode, a note. Don't start
+                the SimpleIPC conversation.
 
     --help -h   Shows and exits (not implemented)
                 something to divert debug msg to a file ??
@@ -144,6 +142,7 @@ type
         procedure CheckBoxDontShowChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
+        procedure FormDestroy(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure FormResize(Sender: TObject);
         procedure FormShow(Sender: TObject);
@@ -165,6 +164,8 @@ type
         function AreWeClient(): boolean;
         function CommandLineError() : boolean;
         procedure CommMessageReceived(Sender: TObject);
+        function HaveCMDParam(): boolean;
+
             // responds to any main or mainPopup menu clicks except recent note ones.
 //        procedure FileMenuClicked(Sender: TObject);
 //        procedure FindHelpFiles();
@@ -173,6 +174,8 @@ type
         procedure TestDarkThemeInUse();
 
     public
+        SingleNoteFileName : string;    // empty unless our task is to open a single note.
+        closeASAP: Boolean;
         HelpNotesPath : string;     // full path to help notes, with trailing delim.
         AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
         UseTrayMenu : boolean;
@@ -182,17 +185,11 @@ type
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
         MainTBMenu : TPopupMenu;
+        // Called by the Sett unit when it knows the true config path.
+        procedure SetAltHelpPath(ConfigPath: string);
         procedure ShowAbout();
             // Ret path to where help notes are, either default English or Non-English
         function ActualHelpNotesPath() : string;
-//        procedure ClearRecentMenuItems();
-            // builds the Menus and fills in all items except recent notes. Only
-            // called once, during startup except if ItsAnUpdate is True, thats triggered
-            // by Sett changes to Sync is config or Tomdroid mode enabled. OnlyCalled fron Sett unit.
-        procedure FillInFileMenus(ItsAnUpdate: boolean=false);
-            // Here we will add a new item to each menu, one by one. Menus must be created and
-            // the top level entries, File and Recent, added to MainMenu
-//        procedure AddMenuItem(Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
             // This procedure responds to ALL recent note menu clicks !
         procedure RecentMenuClicked(Sender: TObject);
             { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode
@@ -297,21 +294,11 @@ begin
         Result := AltHelpNotesPath;
 end;
 
-{procedure TMainForm.FindHelpFiles();
-    // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
-var
-  NoteTitle : string;
+procedure TMainForm.SetAltHelpPath(ConfigPath : string);
 begin
-    if HelpNotes <> nil then
-        freeandnil(HelpNotes);
-    HelpNotes := TNoteLister.Create;     // freed in OnClose event.
-    HelpNotes.DebugMode := Application.HasOption('debug-index');
-    HelpNotes.WorkingDir:= ActualHelpNotesPath;
-    HelpNotes.GetNotes('', true);
-    HelpNotes.StartSearch();
-(*    while HelpNotes.NextNoteTitle(NoteTitle) do
-        AddMenuItem(NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);        *)
-end;}
+    AltHelpNotesPath := ConfigPath + ALTHELP + PathDelim;
+end;
+
 
 
 // -----------------------------------------------------------------
@@ -324,7 +311,7 @@ RESOURCESTRING
     rsMacHelp1 = 'eg   open tomboy-ng.app';
     rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
     {$endif}
-    rsHelpLang = 'Force Language, supported es';
+    rsHelpLang = 'Force Language, supported es, nl';
     rsHelpDebug = 'Direct debug output to SOME.LOG.';
     rsHelpHelp = 'Show this help message and exit.';
     rsHelpVersion = 'Print version and exit';
@@ -346,6 +333,7 @@ begin
     if Application.HasOption('h', 'help') then
         CmdLineErrorMsg := 'Show Help Message';
     if CmdLineErrorMsg <> '' then begin
+        CloseASAP := True;
        debugln('Usage - ');
        {$ifdef DARWIN}
        debugln(rsMachelp1);
@@ -369,11 +357,43 @@ begin
     end;
 end;
 
+function TMainForm.HaveCMDParam() : boolean;
+// WARNING - the options here MUST match the options list in CommandLineError()
+ { ToDo : put options in a TStringList or a set and share, less mistakes ....}
+var
+    Params : TStringList;
+    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
+            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
+begin
+    Result := False;
+    if Application.HasOption('o', 'open-note') then begin
+       SingleNoteFileName := Application.GetOptionValue('o', 'open-note');
+       exit(True);
+    end;
+    Params := TStringList.Create;
+    try
+        Application.GetNonOptions('hgo:', LongOpts, Params);
+        {for I := 0 to Params.Count -1 do
+            debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
+        if Params.Count = 1 then begin
+            if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
+                    SingleNoteFileName := Params[0];
+                    // SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
+                    exit(True);
+            end;
+        end;
+        if Params.Count > 1 then begin
+            debugln('Unrecognised parameters on command line');
+            closeASAP := True;
+            exit(False);                     // Call exit to ensure remaining part method is not executed
+        end;
+    finally
+        FreeAndNil(Params);
+    end;
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-    // Application.OnEndSession := @OnEndSessionApp;        // ToDo : maybe this works on Windows ?
-    // SetDefaultLang('es', 'locale', true);
-    //color := clyellow;
     AssignPopupToTray := True;
     {$ifdef LINUX}
     AssignPopupToTray := {$ifdef LCLQT5}False{$else}True{$endif} or (GetEnvironmentVariable('XDG_CURRENT_DESKTOP') <> 'KDE');
@@ -388,12 +408,22 @@ begin
         UseTrayMenu := false;
         ShowHint := False;
     end;
+    if Application.HasOption('version') then begin
+        Enabled := False;
+        debugln('tomboy-ng version ' + Version_String);
+        closeASAP := True;
+        exit();
+     end;
+     if not HaveCMDParam() then        // Will deal with it in OnShow()
+         if AreWeClient() then begin        // Only for a normal tomboy-ng session
+             closeASAP := True;
+             exit();
+         end;
     (* {$ifdef LINUX}
     if GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP') = 'Enlightenment' then
         AllowDismiss := False;
     {$endif}    *)
     {$ifdef LCLCOCOA}
-    //AllowDismiss := False;
     UseMainMenu := True;
     {$endif}
     {$ifdef LCLCARBON}
@@ -403,13 +433,18 @@ begin
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName));{$endif}
     {$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/';    {$endif}
     {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';{$endif}
-    AltHelpNotesPath := HelpNotesPath + ALTHELP + PathDelim;        // Overridden in FillInFileMenu() for Linux
+    AltHelpNotesPath := HelpNotesPath + ALTHELP + PathDelim;        // Overridden in Sett for Linux
     if UseTrayMenu then begin
         PopupMenuTray := TPopupMenu.Create(Self);
         TrayIcon.PopUpMenu := PopupMenutray;        // SearchForm will populate it when ready
         TrayIcon.Show;
     end;
+end;
 
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+    freeandnil(CommsServer);
+    freeandnil(HelpNotes);
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -421,24 +456,14 @@ var
   // OutFile : TextFile;
   AForm : TForm;
 begin
-    freeandnil(CommsServer);
     {$ifdef LCLGTK2}
-    //{$ifndef LCLQT5}
+    //{$ifndef LCLQT5}           // thats silly, if its GTK2 cannot be Qt5 .....
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     t := Clipboard.AsText;
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
     //{$endif}
     {$endif}
-    freeandnil(HelpNotes);
-    // ToDo : This might be good place to hook into a closing app and flush any open notes.
-    // but maybe its OnCloseSession too ?
-    {
-    AssignFile(OutFile, '/home/dbannon/closelogMainForm.txt');
-    Rewrite(OutFile);
-    writeln(OutFile, 'FormClose just closing ');
-    CloseFile(OutFile);
-    }
     Sett.AreClosing:=True;
     if assigned(SearchForm.NoteLister) then begin
       AForm := SearchForm.NoteLister.FindFirstOpenNote();
@@ -453,7 +478,7 @@ procedure TMainForm.CommMessageReceived(Sender : TObject);
 Var
     S : String;
 begin
-    debugln('Here in Main.CommMessageRecieved, a message was received');
+    // debugln('Here in Main.CommMessageRecieved, a message was received');
     CommsServer .ReadMessage;
     S := CommsServer .StringMessage;
     case S of
@@ -477,15 +502,14 @@ begin
         CommsClient.Active := false;
         freeandnil(CommsClient );
         Result := True;
-        //debugln('Here in Main.AreWeClient, and we are !');
     end else begin
         freeandnil(CommsClient );
         CommsServer  := TSimpleIPCServer.Create(Nil);
         CommsServer.ServerID:='tomboy-ng';
         CommsServer.OnMessageQueued:=@CommMessageReceived;
         CommsServer.Global:=True;                  // anyone can connect
-        CommsServer.StartServer(True);             // start listening, threaded
-        //debugln('Here in Main.AreWeClient, and we are a SERVER !');
+        CommsServer.StartServer({$ifdef WINDOWS}False{$else}True{$endif});  // start listening, threaded
+        // Must pass Windows false but Linux and Mac see OK threaded. Windows fixed in FPC 320 ?
     end;
 end;
 
@@ -500,35 +524,19 @@ resourcestring
 
 
 procedure TMainForm.FormShow(Sender: TObject);
-// WARNING - the options here MUST match the options list in CommandLineError()
- { ToDo : put options in a TStringList and share, less mistakes ....}
 var
     NoteID, NoteTitle : string;
-    Params : TStringList;
-    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
-            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 begin
     // debugln('Form color is ' + inttostr(Color));
-    if CmdLineErrorMsg <> '' then begin
-        close;    // cannot close in OnCreate();
-        exit;       // otherwise we execute rest of this method before closing.
+    if CloseASAP then begin
+      close;
+      exit;
     end;
-    if Application.HasOption('version') then begin
-        Enabled := False;
-         debugln('tomboy-ng version ' + Version_String);
-         close();
-         exit();
-     end;
-     if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
+    if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
          if AllowDismiss then ButtonDismissClick(Self);
      end;
     Left := 10;
     Top := 40;
-    if Application.HasOption('o', 'open-note') then begin
-        //showmessage('Single note mode');
-        SingleNoteMode(Application.GetOptionValue('o', 'open-note'));
-        exit();
-    end;
     TestDarkThemeInUse();
     {$ifdef windows}                // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
@@ -540,77 +548,33 @@ begin
         ButtonDismiss.Color := Sett.HiColor;
     end;
     {$endif}
-    Params := TStringList.Create;
-    try
-        Application.GetNonOptions('hgo:', LongOpts, Params);
-        {for I := 0 to Params.Count -1 do
-            debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
-        if Params.Count = 1 then begin
-            if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
-                SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
-                exit();
-            end;
-        end;
-        if Params.Count > 1 then begin
-            debugln('Unrecognised parameters on command line');
-            close;
-            exit();                     // Call exit to ensure remaining part method is not executed
-        end;
-    finally
-        FreeAndNil(Params);
+    if Self.SingleNoteFileName <> '' then begin
+        SingleNoteMode(SingleNoteFileName);
+        exit;
     end;
-    if {AlreadyRunning()} AreWeClient() then begin
-        // showmessage(rsAnotherInstanceRunning);
-        close();
-        exit();
-    end else begin
- (*       if UseMainMenu then begin
-            FileMenu.Visible := True;
-            RecentMenu.Visible := True;
-        end;                                      *)
-        LabelNoDismiss1.Caption:='';
-        LabelNoDismiss2.Caption := '';
-        // CheckStatus();
-        // SearchForm.IndexNotes(); // also calls Checkstatus, calls UpdateNotesFound()
-        if SearchForm.NoteLister.XMLError then begin
-            LabelError.Caption := rsFailedToIndex;
-            AllowDismiss := False;
-        end else
-            LabelError.Caption := '';
-        if not AllowDismiss then begin
-            LabelNoDismiss1.Caption := rsCannotDismiss1;
-            LabelNoDismiss2.Caption := rsCannotDismiss2;
-            LabelNoDismiss1.Hint:=rsCannotDismiss3;
-            LabelNoDismiss2.Hint := LabelNoDismiss1.Hint;
-            CheckBoxDontShow.Enabled := False;
-            Visible := True;
-        end else
-            CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
-        if Sett.CheckShowSearchAtStart.Checked then
-            SearchForm.Show;
-    end;
- {   if UseTrayMenu then begin              // we need to create the popup menu in FormCreate, not here.
-        writeln('In main.formshow and about to create TrayMenu');
-        PopupMenuTray := TPopupMenu.Create(Self);
-        TrayIcon.PopUpMenu := PopupMenutray;        // SearchForm will populate it when ready
-        TrayIcon.Show;
-    end;     }
-
+    LabelNoDismiss1.Caption:='';
+    LabelNoDismiss2.Caption := '';
+    if SearchForm.NoteLister.XMLError then begin
+        LabelError.Caption := rsFailedToIndex;
+        AllowDismiss := False;
+    end else
+        LabelError.Caption := '';
+    if not AllowDismiss then begin
+        LabelNoDismiss1.Caption := rsCannotDismiss1;
+        LabelNoDismiss2.Caption := rsCannotDismiss2;
+        LabelNoDismiss1.Hint:=rsCannotDismiss3;
+        LabelNoDismiss2.Hint := LabelNoDismiss1.Hint;
+        CheckBoxDontShow.Enabled := False;
+        Visible := True;
+    end else
+        CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
+    if Sett.CheckShowSearchAtStart.Checked then
+        SearchForm.Show;
     if SearchForm.NoteLister.FindFirstOOSNote(NoteTitle, NoteID) then
         repeat
             SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
         until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
 end;
-
-{procedure TMainForm.OnEndSessionApp(Sender: TObject);
-var
-  OutFile : TextFile;
-begin
-    AssignFile(OutFile, '/home/dbannon/closelogMainFormSession.txt');
-    Rewrite(OutFile);
-    writeln(OutFile, 'OnEndSessionApp Called');
-    CloseFile(OutFile);
-end;   }
 
 resourcestring
   rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshots -> Existing Notes.';
@@ -672,7 +636,6 @@ begin
     end;
     // showmessage('change dont show and Visible=' + booltostr(Visible, True));
 end;
-
 
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -749,26 +712,8 @@ begin
 end;
 
 
-
-
-{procedure TMainForm.ApplicationProperties1EndSession(Sender: TObject);
-var
-  OutFile : TextFile;
-begin
-    AssignFile(OutFile, '/home/dbannon/closelogMainFormProperties.txt');
-    Rewrite(OutFile);
-    writeln(OutFile, 'OnEndSessionAppProperties Called');
-    CloseFile(OutFile);
-end; }
-
 { ------------- M E N U   M E T H O D S ----------------}
 
-
-
-{ resourcestring
-  rsSetupNotesDirFirst = 'Please setup a notes directory first';
-  rsSetupSyncFirst = 'Please config sync system first';
-  rsCannotFindNote = 'ERROR, cannot find ';       }
 
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
@@ -784,167 +729,6 @@ procedure TMainForm.ButtMenuClick(Sender: TObject);
 begin
     self.MainTBMenu.popup;
 end;
-
-(*
-procedure TMainForm.FileMenuClicked(Sender : TObject);
-var
-    FileName : string;
-begin
-    case TMenuTarget(TMenuItem(Sender).Tag) of
-        mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
-        mtNewNote : if (Sett.NoteDirectory = '') then
-                            ShowMessage(rsSetupNotesDirFirst)
-                    else SearchForm.OpenNote();
-        mtSearch :  if Sett.NoteDirectory = '' then
-                            showmessage(rsSetupNotesDirFirst)
-                    else  SearchForm.Show;
-
-        mtAbout :    ShowAbout();
-        mtSync :     if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
-                        and (Sett.LabelSyncRepo.Caption <> '') then
-                            Sett.Synchronise()
-                     else showmessage(rsSetupSyncFirst);
-        mtSettings : Sett.Show;
-        mtTomdroid : if FormTomdroid.Visible then
-                        FormTomdroid.BringToFront
-                     else FormTomdroid.ShowModal;
-        mtHelp :      begin
-                        if HelpNotes.FileNameForTitle(TMenuItem(Sender).Caption, FileName) then
-                            ShowHelpNote(FileName)
-                        else showMessage(rsCannotFindNote + TMenuItem(Sender).Caption);
-                    end;
-        mtQuit :      close;
-    end;
-end;                      *)
-
-{ ResourceString
-  rsMenuFile = 'File';
-  rsMenuRecent = 'Recent';
-  rsMenuNewNote = 'New Note';
-  rsMenuSearch = 'Search';
-  rsMenuAbout = 'About';
-  rsMenuSync = 'Synchronise';
-  rsMenuSettings = 'Settings';
-  rsMenuHelp = 'Help';
-  rsMenuQuit = 'Quit';        }
-
-procedure TMainForm.FillInFileMenus(ItsAnUpdate : boolean = false);
-begin  (*
-  {$ifdef LINUX}
-  AltHelpNotesPath := Sett.LocalConfig + ALTHELP + PathDelim;       // here because must call after sett exists
-  {$endif}
-  {$ifdef WINDOWS}
-  AltHelpNotesPath := Sett.LocalConfig + ALTHELP + PathDelim;       // here because must call after sett exists
-  {$endif}
-    if ItsAnUpdate then begin
-        PopupMenuSearch.Items.Clear;
-        PopupMenuTray.Items.Clear;
-        FileMenu.Clear;
-        RecentMenu.Clear;
-    end else begin
-        PopupMenuSearch := TPopupMenu.Create(Self);
-        PopupMenuTray := TPopupMenu.Create(Self);
-        MainMenu := TMainMenu.Create(Self);
-        FileMenu := TMenuItem.Create(Self);
-        RecentMenu := TMenuItem.Create(self);
-        FileMenu.Caption := rsMenuFile;
-        RecentMenu.Caption := rsMenuRecent;
-        MainMenu.Items.Add(FileMenu);
-        MainMenu.Items.Add(RecentMenu);
-        if AssignPopupToTray then
-            TrayIcon.PopUpMenu := PopupMenuTray;
-    end;
-    AddMenuItem(rsMenuNewNote, mtNewNote, @FileMenuClicked, mkFileMenu);
-    AddMenuItem(rsMenuSearch, mtSearch,  @FileMenuClicked, mkFileMenu);
-    AddMenuItem('-', mtSep, nil, mkFileMenu);
-    AddMenuItem('-', mtSep, nil, mkFileMenu);   // Recent Notes will be inserted at last Separator
-    AddMenuItem(rsMenuAbout, mtAbout, @FileMenuClicked, mkFileMenu);
-    if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig) then
-        AddMenuItem(rsMenuSync, mtSync,  @FileMenuClicked, mkFileMenu);
-    {$ifdef LINUX}
-    if Sett.CheckShowTomdroid.Checked then
-        AddMenuItem('Tomdroid', mtTomdroid,  @FileMenuClicked, mkFileMenu);
-    {$endif}
-    AddMenuItem(rsMenuSettings, mtSettings, @FileMenuClicked, mkFileMenu);
-    AddMenuItem(rsMenuHelp, mtHelp,  nil, mkFileMenu);
-    AddMenuItem(rsMenuQuit, mtQuit,  @FileMenuClicked, mkFileMenu);
-{    if ItsAnUpdate then
-        SearchForm.RecentMenu;       DRB Dec 2019 }
-    FindHelpFiles();
-    ButtonConfig.Caption:= rsMenuSettings;               *)
-end;
-
-(* procedure TMainForm.AddItemToAMenu(TheMenu : TMenu; Item : string;
-                    mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
-var
-    MenuItem : TMenuItem;
-
-        function InsertIntoPopup() : boolean;
-        var
-            X : integer;
-        begin
-            if not TheMenu.ClassNameIs('TPopupMenu') then
-                exit(False);
-            X := TheMenu.Items.Count -1;
-            while X >= 0 do begin
-                if TheMenu.Items[X].IsLine then begin
-                    TheMenu.Items.Insert(X, MenuItem);
-                    exit(True);
-                end;
-                dec(X);
-            end;
-            Result := False;
-        end;
-
-        procedure AddHelpItem();
-        var
-            X : Integer = 0;
-        begin
-            if TheMenu.ClassNameIs('TPopupMenu') then begin
-                while X < TheMenu.Items.Count do begin
-                    if TheMenu.Items[X].Tag = ord(mtHelp) then begin
-                        TheMenu.Items[X].Add(MenuItem);
-                        exit;
-                    end;
-                    inc(X);
-                end;
-            end;
-            while X < FileMenu.Count do begin
-                if FileMenu.Items[X].Tag = ord(mtHelp) then begin
-                    FileMenu.Items[X].Add(MenuItem);
-                    exit;
-                end;
-                inc(X);
-            end;
-        end;
-
-
-begin
-    if Item = '-' then begin
-        if TheMenu.ClassNameIs('TPopupMenu') then
-            TheMenu.Items.AddSeparator;
-        exit;       // we only add separators to popup menus
-    end;
-    MenuItem := TMenuItem.Create(Self);
-    MenuItem.Tag := ord(mtTag);
-    MenuItem.Caption := Item;
-    MenuItem.OnClick := OC;
-    case MenuKind of
-        mkFileMenu   : if TheMenu.ClassNameIs('TPopupMenu') then
-                            TheMenu.Items.Add(MenuItem)
-                            else FileMenu.Add(MenuItem);
-        mkRecentMenu : if not InsertIntoPopup() then
-                            RecentMenu.Add(MenuItem);
-        mkHelpMenu   : AddHelpItem({TheMenu, MenuItem});
-    end;
-end;                        *)
-
-(*procedure TMainForm.AddMenuItem(Item : string; mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
-begin
-    AddItemToAMenu(PopupmenuTray, Item, mtTag, OC, MenuKind);
-    AddItemToAMenu(MainMenu, Item,  mtTag, OC, MenuKind);
-    AddItemToAMenu(PopupMenuSearch, Item, mtTag, OC, MenuKind);
-end;     *)
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
@@ -962,27 +746,6 @@ begin
  	if TMenuItem(Sender).Caption <> SearchForm.MenuEmpty then
  		SearchForm.OpenNote(TMenuItem(Sender).Caption);
 end;
-
-// will remove any recent items from all the menus.
-(* procedure TMainForm.ClearRecentMenuItems();
-var
-    X : integer = 0;
-
-    procedure RemoveRecentFromMenu(AMenu : TPopupMenu);
-    begin
-        X := AMenu.Items.Count;
-        while X > 0 do begin
-            dec(X);
-            if TMenuItem(AMenu.Items[X]).Tag = ord(mtRecent) then
-                AMenu.Items.Delete(X);
-        end;
-    end;
-
-begin
-    RecentMenu.Clear;
-    RemoveRecentFromMenu(PopupMenuTray);
-    RemoveRecentFromMenu(PopupMenuSearch);
-end;             *)
 
 RESOURCESTRING
     rsAbout1 = 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus';

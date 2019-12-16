@@ -755,8 +755,8 @@ begin
     FreeandNil(ErrorNotes);
     ErrorNotes := TStringList.Create;
 
-    if WorkingDir = '' then
-    	DebugLn('In GetNotes with a blank working dir, thats going to lead to tears....');
+    { if WorkingDir = '' then
+    	DebugLn('In GetNotes with a blank working dir, thats going to lead to tears....');  }
     if DebugMode then debugln('Looking for notes in [' + WorkingDir + ']');
   	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then begin
   		repeat

@@ -172,7 +172,9 @@ msgstr "Mostrar mensaje de ayuda y salir."
 
 # ¿"is" en cadena original?
 #: mainunit.rshelplang
-msgid "Force Language, supported es"
+#, fuzzy
+#| msgid "Force Language, supported es"
+msgid "Force Language, supported es, nl"
 msgstr "Forzar idioma. Idiomas suportado: es"
 
 #: mainunit.rshelpnosplash

@@ -78,6 +78,7 @@ uses
   fphttpclient, process, lazlogger,
   fpopenssl,
   openssl, Registry,
+   SearchUnit,      // we need to refresh the help menus.
   sslsockets;      // for TSSLSocketHandler etc
 
 const
@@ -175,7 +176,8 @@ begin
         LabelProgress.Caption := RS_Restored;
         ButtonRestore.Enabled := False;
     end else showmessage('Remove Dir Error in HelpNotes Unit');
-    MainForm.FillInFileMenus(True);
+    // MainForm.FillInFileMenus(True);
+    SearchForm.RefreshMenus(mkHelpMenu);
 end;
 
 procedure TFormHelpNotes.ListBox1DblClick(Sender: TObject);
@@ -212,7 +214,8 @@ begin
             ZipFile.Examine;
             ZipFile.UnZipAllFiles;
             LabelProgress.Caption := RS_Installed;
-            MainForm.FillInFileMenus(True);
+            //MainForm.FillInFileMenus(True);
+            SearchForm.RefreshMenus(mkHelpMenu);
         finally
             ZipFile.Free;
         end;

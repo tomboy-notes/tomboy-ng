@@ -228,6 +228,7 @@ type
         procedure ListBoxDicClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
+        procedure SpeedButtTBMenuClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabSnapshotResize(Sender: TObject);
@@ -415,7 +416,10 @@ begin
     Hide;
 end;
 
-
+procedure TSett.SpeedButtTBMenuClick(Sender: TObject);
+begin
+    PMenuMain.Popup;
+end;
 
 procedure TSett.StringGridBackUpDblClick(Sender: TObject);
 var
@@ -692,7 +696,7 @@ begin
     CheckSpelling();
     if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = rsSyncNotConfig) then
         ButtonSetSynServer.Caption := rsSetFileSyncRepo;
-    MainForm.FillInFileMenus();
+    //MainForm.FillInFileMenus();
 end;
 
 procedure TSett.FormDestroy(Sender: TObject);
@@ -742,6 +746,9 @@ begin
         {$endif}
     end;
     Result := AppendPathDelim(Result);
+    {$ifdef LINUX}
+    MainForm.SetAltHelpPath(Result);    // English help notes in read only space
+    {$endif}
 end;
 
 { Read config file if it exists }
@@ -1104,7 +1111,8 @@ begin
             ButtonSetSynServer.Caption:='Change File Sync';
             SettingsChanged();
             // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
-            MainForm.FillInFileMenus(True);
+            //MainForm.FillInFileMenus(True);
+            SearchForm.RefreshMenus(mkFileMenu);
         end else
         	LabelSyncRepo.Caption := rsSyncNotConfig;
 	end;

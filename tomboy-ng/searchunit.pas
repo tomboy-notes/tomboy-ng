@@ -107,8 +107,8 @@ uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
     Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger;
 
-// These are choices for main and main popup menus.
-type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtHelp, mtQuit, mtRecent);
+// These are choices for main popup menus.
+type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtMainHelp, mtHelp, mtQuit, mtRecent);
 
 // These are the possible kinds of main menu items
 type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
@@ -434,13 +434,15 @@ begin
                             MenuFileItems(TPopupMenu(MList[i]));
                             MenuHelpItems(TPopupMenu(MList[i]));
                             MenuRecentItems(TPopupMenu(MList[i]));
-                    end;
+                        end;
         mkFileMenu : for I := 0 to MList.Count - 1 do
                             MenuFileItems(TPopupMenu(MList[i]));
         mkRecentMenu : for I := 0 to MList.Count - 1 do
                             MenuRecentItems(TPopupMenu(MList[i]));
-        mkHelpMenu : for I := 0 to MList.Count - 1 do
+        mkHelpMenu : for I := 0 to MList.Count - 1 do begin
+                            InitialiseHelpFiles();
                             MenuHelpItems(TPopupMenu(MList[i]));
+                        end;
     end;
     MList.Free;
 end;
@@ -454,7 +456,7 @@ var
                 X : Integer = 0;
             begin
                 while X < TheMenu.Items.Count do begin
-                    if TheMenu.Items[X].Tag = ord(mtHelp) then begin
+                    if TheMenu.Items[X].Tag = ord(mtMainHelp) then begin
                         TheMenu.Items[X].Add(MenuItem);
                         exit;
                     end;
@@ -494,7 +496,7 @@ begin
     if AMenu.Items.Count = 0 then                   // If menu empty, put in seperator
         AddItemMenu(AMenu, '-', mtSep, nil, mkFileMenu);
     AddItemMenu(AMenu, 'Quit', mtQuit,  @FileMenuClicked, mkFileMenu);
-    AddItemMenu(AMenu, 'Help', mtHelp,  nil, mkFileMenu);
+    AddItemMenu(AMenu, 'Help', mtMainHelp,  nil, mkFileMenu);
     {$ifdef LINUX}
     if Sett.CheckShowTomdroid.Checked then
         AddItemMenu(AMenu, 'Tomdroid', mtTomdroid,  @FileMenuClicked, mkFileMenu);
@@ -529,10 +531,17 @@ end;
 procedure TSearchForm.MenuHelpItems(AMenu : TPopupMenu);
 var
   NoteTitle : string;
+  Count : integer;
+
 begin
-
-    { remove any existing help items }
-
+    Count := AMenu.Items.Count;
+    while Count > 0 do begin            // Remove any existing entries first
+        dec(Count);
+        if TMenuItem(AMenu.Items[Count]).Tag = ord(mtMainHelp) then begin
+            AMenu.Items[Count].Clear;
+            break;
+        end;
+    end;
     HelpNotes.StartSearch();
     while HelpNotes.NextNoteTitle(NoteTitle) do
         AddItemMenu(AMenu, NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
@@ -656,6 +665,7 @@ procedure TSearchForm.FormCreate(Sender: TObject);
 begin
     NoteLister := nil;
     CreateMenus();
+    if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     IndexNotes();           // This could be a slow process, maybe a new thread ?
     RefreshMenus(mkAllMenu);    // sadly, IndexNotes->UseList has already called RefreshMenus(mkRecentMenu); Sigh ....
 end;
@@ -679,6 +689,7 @@ end;
 
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
+    // if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
     // Edit1.Text:= 'Search';

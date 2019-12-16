@@ -929,6 +929,7 @@ object Sett: TSett
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
+    OnClick = SpeedButtTBMenuClick
     PopupMenu = PMenuMain
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
