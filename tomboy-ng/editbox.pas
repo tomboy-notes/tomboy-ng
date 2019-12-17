@@ -194,6 +194,7 @@ unit EditBox;
     2019/10/11  Enabling of printing under Cocoa
     2019/11/30  Now support web links.
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
+    2019/12/17  Links are no longer converted to lower case.
 }
 
 
@@ -384,8 +385,9 @@ type
         { Makes a link at passed position as long as it does not span beyond a block.
             And if it does span beyond one block, I let that go through to the keeper.
             Making a Hyperlink, deleting the origional text is a very slow process so we
-            make heroic efforts to avoid having to do so. Index is char count, not byte.      }
-		procedure MakeLink(const Link: ANSIString; const Index, Len: longint);
+            make heroic efforts to avoid having to do so. Index is char count, not byte.
+            Its a SelectionIndex.  Note we no longer need pass this p the Link, remove ? }
+		procedure MakeLink(const Index, Len: longint);
         { Makes the top line look like a title. }
         procedure MarkTitle();
         { Returns true if current cursor is 'near' a bullet item. That could be because we are
@@ -1621,26 +1623,32 @@ end;
 
 { -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
 
-procedure TEditBoxForm.MakeLink(const Link : ANSIString; const Index, Len : longint);
+procedure TEditBoxForm.MakeLink({const Link : ANSIString;} const Index, Len : longint);
 var
 	Hyperlink: TKMemoHyperlink;
-	//Cnt : integer = 0;
-	BlockNo, Blar : longint;
+    TrueLink : string;
+	BlockNo, BlockOffset, Blar : longint;
 	DontSplit : Boolean = false;
 begin
-	// Is it already a Hyperlink ?
-    BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, Blar);
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKHyperlink') then begin writeln('Hyperlink'); exit(); end;
+	// Is it already a Hyperlink ?  Cannot be, we cleared them earlier .....
+    BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
+    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKHyperlink') then begin {writeln('Hyperlink');} exit(); end;
 	// Is it all in the same block ?
-    if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then begin writeln('Not in same block'); exit(); end;
-    if length(Kmemo1.Blocks.Items[BlockNo].Text) = length(Link) then DontSplit := True;
+    if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then begin {writeln('Not in same block');} exit(); end;
+    TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
+    {    writeln('[' + Kmemo1.Blocks.Items[BlockNo].Text + ']');                    // test under windows ??
+        writeln('[' + Link + '] TrueLink = [' + TrueLink + ']');
+        writeln('Index=' + inttostr(Index) + '  and blar=' + inttostr(blar));
+        writeln('-');           }
+    if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then DontSplit := True;
     KMemo1.SelStart:= Index;
     KMemo1.SelLength:=Len;
     KMemo1.ClearSelection();
 	if not DontSplit then
 		BlockNo := KMemo1.SplitAt(Index);
 	Hyperlink := TKMemoHyperlink.Create;
-	Hyperlink.Text := Link;
+	// Hyperlink.Text := Link;
+    Hyperlink.Text := TrueLink;
 	Hyperlink.OnClick := @OnUserClickLink;
 	KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
 end;
@@ -1675,7 +1683,7 @@ begin
         {$endif}
         if (PText[Offset-2] in [' ', #10, #13, ',', '.']) and
                         (PText[Offset + length(Term) -1] in [' ', #10, #13, ',', '.']) then
-            MakeLink(Term, UTF8Length(PText, Offset) -1 -NumbCR, UTF8length(Term));
+            MakeLink({Term, }UTF8Length(PText, Offset) -1 -NumbCR, UTF8length(Term));
         Offset := RelativePos(Term, PText, Offset + 1);
         if EndScan > 0 then
         	if Offset> EndScan then break;
@@ -1722,7 +1730,7 @@ begin
                     dec(EndP);
                 end;
                 {$endif}
-                MakeLink(copy(PText, Offset+http, Len), UTF8Length(PText, OffSet + http)-1 -NumbCR, Len);
+                MakeLink({copy(PText, Offset+http, Len), } UTF8Length(PText, OffSet + http)-1 -NumbCR, Len);
             end;
             if len > 0 then
         end;
