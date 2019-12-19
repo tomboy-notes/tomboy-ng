@@ -291,14 +291,44 @@ msgctxt "searchunit.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr "ERROR: nota no encontrada "
 
+#: searchunit.rsmenuabout
+msgid "About"
+msgstr "Acerca de"
+
+#: searchunit.rsmenuhelp
+msgctxt "searchunit.rsmenuhelp"
+msgid "Help"
+msgstr "Ayuda"
+
+#: searchunit.rsmenunewnote
+msgid "New Note"
+msgstr "Nota nueva"
+
+#: searchunit.rsmenuquit
+msgctxt "searchunit.rsmenuquit"
+msgid "Quit"
+msgstr "Salir"
+
+#: searchunit.rsmenusearch
+msgctxt "searchunit.rsmenusearch"
+msgid "Search"
+msgstr "Buscar"
+
+#: searchunit.rsmenusettings
+msgctxt "searchunit.rsmenusettings"
+msgid "Settings"
+msgstr "Preferencias"
+
+#: searchunit.rsmenusync
+msgid "Synchronise"
+msgstr "Sincronizar"
+
 #: searchunit.rssetupnotesdirfirst
-#, fuzzy
 msgctxt "searchunit.rssetupnotesdirfirst"
 msgid "Please setup a notes directory first"
 msgstr "Primero establezca un directorio para notas"
 
 #: searchunit.rssetupsyncfirst
-#, fuzzy
 msgctxt "searchunit.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr "Primero configure el sistema de sincronización"
@@ -485,7 +515,7 @@ msgstr "ERRORES: ver registro en el terminal"
 #: teditboxform.buttmaintbmenu.caption
 msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
 # ¡Revisar!
 #: teditboxform.caption
@@ -826,7 +856,6 @@ msgid "Use and Next Word"
 msgstr ""
 
 #: tformspell.caption
-#, fuzzy
 msgctxt "tformspell.caption"
 msgid "Spell"
 msgstr "Ortografía"
@@ -835,20 +864,8 @@ msgstr "Ortografía"
 msgid "Suspect word -"
 msgstr ""
 
-#: tformspell.labelcontext.caption
-msgid "LabelContext"
-msgstr ""
-
 #: tformspell.labelprompt.caption
 msgid "Click a word to use it."
-msgstr ""
-
-#: tformspell.labelstatus.caption
-msgid "LabelStatus"
-msgstr ""
-
-#: tformspell.labelsuspect.caption
-msgid "LabelSuspect"
 msgstr ""
 
 #: tformsync.buttoncancel.caption
@@ -946,7 +963,7 @@ msgstr "Contraseña SSH del dispositivo"
 #: tmainform.buttmenu.caption
 msgctxt "tmainform.buttmenu.caption"
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
 #: tmainform.buttonclose.caption
 #, fuzzy
@@ -1129,7 +1146,7 @@ msgstr "Quitar filtros"
 #: tsearchform.buttonmenu.caption
 msgctxt "tsearchform.buttonmenu.caption"
 msgid "Menu"
-msgstr ""
+msgstr "menú"
 
 #: tsearchform.buttonnotebookoptions.caption
 msgid "Notebook Options"
@@ -1157,11 +1174,6 @@ msgstr "Opciones de Búsqueda"
 #: tsearchform.caption
 msgid "tomboy-ng Search"
 msgstr "tomboy-ng Buscar"
-
-#: tsearchform.edit1.text
-msgctxt "tsearchform.edit1.text"
-msgid "Search"
-msgstr "Buscar"
 
 #: tsearchform.menuanycombo.caption
 msgid "AnyCombination"
@@ -1476,7 +1488,7 @@ msgstr "Cerrar"
 #: tsett.speedbutttbmenu.caption
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
-msgstr ""
+msgstr "menú"
 
 #: tsett.tabbackup.caption
 msgid "BackUp"

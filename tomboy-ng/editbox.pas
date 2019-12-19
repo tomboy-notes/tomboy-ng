@@ -195,6 +195,7 @@ unit EditBox;
     2019/11/30  Now support web links.
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
     2019/12/17  Links are no longer converted to lower case.
+    2019/12/18  LinkScanRange moved here from Settings, now 100, was 50
 }
 
 
@@ -465,6 +466,11 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     FileUtil, strutils,         // just for ExtractSimplePath ... ~#1620
     // XMLRead, DOM, XMLWrite;     // For updating locations on a clean note (May 19, not needed ?)
     LCLIntf;            // OpenUrl(
+
+
+const
+        LinkScanRange = 100;	// when the user changes a Note, we search +/- around
+     							// this value for any links that need adjusting.
 
 {  ---- U S E R   C L I C K   F U N C T I O N S ----- }
 

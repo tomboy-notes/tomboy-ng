@@ -18,7 +18,7 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
-      <ExcludedOriginals Count="28">
+      <ExcludedOriginals Count="33">
         <Item1 Value="TimeEdit1"/>
         <Item2 Value="Label1"/>
         <Item3 Value="LabelExistingAdvice"/>
@@ -35,18 +35,23 @@
         <Item14 Value="LabelNoDismiss2"/>
         <Item15 Value="NoteBookPick"/>
         <Item16 Value="Label3"/>
-        <Item17 Value="LabelDic"/>
-        <Item18 Value="LabelDicPrompt"/>
-        <Item19 Value="LabelDicStatus"/>
-        <Item20 Value="LabelError"/>
-        <Item21 Value="LabelLibrary"/>
-        <Item22 Value="LabelLibraryStatus"/>
-        <Item23 Value="LabelNotesPath"/>
-        <Item24 Value="LabelSettingPath"/>
-        <Item25 Value="LabelWaitForSync"/>
-        <Item26 Value="Label15"/>
-        <Item27 Value="x"/>
-        <Item28 Value="FormMarkdown"/>
+        <Item17 Value="LabelContext"/>
+        <Item18 Value="LabelDic"/>
+        <Item19 Value="LabelDicPrompt"/>
+        <Item20 Value="LabelDicStatus"/>
+        <Item21 Value="LabelError"/>
+        <Item22 Value="LabelLibrary"/>
+        <Item23 Value="LabelLibraryStatus"/>
+        <Item24 Value="LabelNotesPath"/>
+        <Item25 Value="LabelSettingPath"/>
+        <Item26 Value="LabelStatus"/>
+        <Item27 Value="LabelSuspect"/>
+        <Item28 Value="LabelWaitForSync"/>
+        <Item29 Value="Label15"/>
+        <Item30 Value="tsett.label10.caption"/>
+        <Item31 Value="tsett.label11.caption"/>
+        <Item32 Value="x"/>
+        <Item33 Value="FormMarkdown"/>
       </ExcludedOriginals>
     </i18n>
     <BuildModes Count="15">

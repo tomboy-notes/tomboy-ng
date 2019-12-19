@@ -29,6 +29,7 @@ unit recover;
     2018/10/29  Set attributes of Unzipped files on the Mac, it apparently leaves then 000
     2018/11/05  Altered name of safety zip file
     2019/05/19  Display strings all (?) moved to resourcestrings
+    2019/12/18  Allow user to move stringgrid colums and pin its bottom to form.
 }
 
 

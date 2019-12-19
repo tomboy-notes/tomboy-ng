@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 989
+  Left = 531
   Height = 401
-  Top = 350
+  Top = 246
   Width = 824
   Caption = 'tomboy-ng Search'
   ClientHeight = 401
@@ -31,7 +31,6 @@ object SearchForm: TSearchForm
     OnExit = Edit1Exit
     OnKeyDown = FormKeyDown
     TabOrder = 0
-    Text = 'Search'
   end
   object ButtonRefresh: TButton
     AnchorSideTop.Control = Owner

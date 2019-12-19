@@ -286,6 +286,41 @@ msgctxt "searchunit.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr "FOUT: kan het volgende niet vinden:"
 
+#: searchunit.rsmenuabout
+msgid "About"
+msgstr ""
+
+#: searchunit.rsmenuhelp
+#, fuzzy
+msgctxt "searchunit.rsmenuhelp"
+msgid "Help"
+msgstr "Hulp"
+
+#: searchunit.rsmenunewnote
+msgid "New Note"
+msgstr ""
+
+#: searchunit.rsmenuquit
+msgctxt "searchunit.rsmenuquit"
+msgid "Quit"
+msgstr ""
+
+#: searchunit.rsmenusearch
+#, fuzzy
+msgctxt "searchunit.rsmenusearch"
+msgid "Search"
+msgstr "Zoeken"
+
+#: searchunit.rsmenusettings
+#, fuzzy
+msgctxt "searchunit.rsmenusettings"
+msgid "Settings"
+msgstr "Instellingen"
+
+#: searchunit.rsmenusync
+msgid "Synchronise"
+msgstr ""
+
 #: searchunit.rssetupnotesdirfirst
 #, fuzzy
 msgctxt "searchunit.rssetupnotesdirfirst"
@@ -820,20 +855,8 @@ msgstr "Spellingcontrole"
 msgid "Suspect word -"
 msgstr ""
 
-#: tformspell.labelcontext.caption
-msgid "LabelContext"
-msgstr ""
-
 #: tformspell.labelprompt.caption
 msgid "Click a word to use it."
-msgstr ""
-
-#: tformspell.labelstatus.caption
-msgid "LabelStatus"
-msgstr ""
-
-#: tformspell.labelsuspect.caption
-msgid "LabelSuspect"
 msgstr ""
 
 #: tformsync.buttoncancel.caption
@@ -1132,11 +1155,6 @@ msgstr "Zoekopties"
 #| msgid "Search Form"
 msgid "tomboy-ng Search"
 msgstr "Zoekpagina"
-
-#: tsearchform.edit1.text
-msgctxt "tsearchform.edit1.text"
-msgid "Search"
-msgstr "Zoeken"
 
 #: tsearchform.menuanycombo.caption
 msgctxt "tsearchform.menuanycombo.caption"

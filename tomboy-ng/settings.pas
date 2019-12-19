@@ -89,6 +89,7 @@ unit settings;
     2019/06/11  Moved some checkboxes and renamed 'Display' to 'Notes'.
     2019/09/6   Button to download Help Notes in non-English
     2019/09/07  User can now select a note font.
+    2019/12/18  Moved LinkScanRange to EditBox
 }
 
 {$mode objfpc}{$H+}
@@ -322,8 +323,7 @@ const
      // HiColor      = clYellow;
      // NormalColor  = clDefault; 		// Must somewhere set this to be sure ? no, not used any more
 
-     LinkScanRange = 50;		// when the user changes a Note, we search +/- around
-     							// this value for any links that need adjusting.
+
 
 
 

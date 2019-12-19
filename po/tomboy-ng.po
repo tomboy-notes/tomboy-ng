@@ -268,6 +268,38 @@ msgctxt "searchunit.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr ""
 
+#: searchunit.rsmenuabout
+msgid "About"
+msgstr ""
+
+#: searchunit.rsmenuhelp
+msgctxt "searchunit.rsmenuhelp"
+msgid "Help"
+msgstr ""
+
+#: searchunit.rsmenunewnote
+msgid "New Note"
+msgstr ""
+
+#: searchunit.rsmenuquit
+msgctxt "searchunit.rsmenuquit"
+msgid "Quit"
+msgstr ""
+
+#: searchunit.rsmenusearch
+msgctxt "searchunit.rsmenusearch"
+msgid "Search"
+msgstr ""
+
+#: searchunit.rsmenusettings
+msgctxt "searchunit.rsmenusettings"
+msgid "Settings"
+msgstr ""
+
+#: searchunit.rsmenusync
+msgid "Synchronise"
+msgstr ""
+
 #: searchunit.rssetupnotesdirfirst
 msgctxt "searchunit.rssetupnotesdirfirst"
 msgid "Please setup a notes directory first"
@@ -795,20 +827,8 @@ msgstr ""
 msgid "Suspect word -"
 msgstr ""
 
-#: tformspell.labelcontext.caption
-msgid "LabelContext"
-msgstr ""
-
 #: tformspell.labelprompt.caption
 msgid "Click a word to use it."
-msgstr ""
-
-#: tformspell.labelstatus.caption
-msgid "LabelStatus"
-msgstr ""
-
-#: tformspell.labelsuspect.caption
-msgid "LabelSuspect"
 msgstr ""
 
 #: tformsync.buttoncancel.caption
@@ -1100,11 +1120,6 @@ msgstr ""
 
 #: tsearchform.caption
 msgid "tomboy-ng Search"
-msgstr ""
-
-#: tsearchform.edit1.text
-msgctxt "tsearchform.edit1.text"
-msgid "Search"
 msgstr ""
 
 #: tsearchform.menuanycombo.caption

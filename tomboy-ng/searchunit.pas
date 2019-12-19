@@ -97,6 +97,7 @@ unit SearchUnit;
     2019/11/19  When reshowing an open note, bring it to current workspace, Linux only. Test on Wayland !
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
     2019/12/12  Commented out #868 that goRowHighlight to stringgridnotebook, ugly black !!!!!
+    2019/12/19  Restored the File Menu names to the translate system.
 }
 
 {$mode objfpc}{$H+}
@@ -480,6 +481,17 @@ begin
     end;
 end;
 
+ResourceString
+  //rsMenuFile = 'File';
+  //rsMenuRecent = 'Recent';
+  rsMenuNewNote = 'New Note';
+  rsMenuSearch = 'Search';
+  rsMenuAbout = 'About';
+  rsMenuSync = 'Synchronise';
+  rsMenuSettings = 'Settings';
+  rsMenuHelp = 'Help';
+  rsMenuQuit = 'Quit';
+
 procedure TSearchForm.MenuFileItems(AMenu : TPopupMenu);
 var
     i : integer = 0;
@@ -495,17 +507,17 @@ begin
     end;
     if AMenu.Items.Count = 0 then                   // If menu empty, put in seperator
         AddItemMenu(AMenu, '-', mtSep, nil, mkFileMenu);
-    AddItemMenu(AMenu, 'Quit', mtQuit,  @FileMenuClicked, mkFileMenu);
-    AddItemMenu(AMenu, 'Help', mtMainHelp,  nil, mkFileMenu);
+    AddItemMenu(AMenu, rsMenuQuit, mtQuit,  @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, rsMenuHelp, mtMainHelp,  nil, mkFileMenu);
     {$ifdef LINUX}
     if Sett.CheckShowTomdroid.Checked then
         AddItemMenu(AMenu, 'Tomdroid', mtTomdroid,  @FileMenuClicked, mkFileMenu);
     {$endif}
-    AddItemMenu(AMenu, 'Settings', mtSettings, @FileMenuClicked, mkFileMenu);
-    AddItemMenu(AMenu, 'Synchronise', mtSync,  @FileMenuClicked, mkFileMenu);
-    AddItemMenu(AMenu, 'About', mtAbout, @FileMenuClicked, mkFileMenu);
-    AddItemMenu(AMenu, 'Search', mtSearch,  @FileMenuClicked, mkFileMenu);
-    AddItemMenu(AMenu, 'New Note', mtNewNote, @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, rsMenuSettings, mtSettings, @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, rsMenuSync, mtSync,  @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, rsMenuAbout, mtAbout, @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, rsMenuSearch, mtSearch,  @FileMenuClicked, mkFileMenu);
+    AddItemMenu(AMenu, rsMenuNewNote, mtNewNote, @FileMenuClicked, mkFileMenu);
     // Note items are in reverse order because we Insert at the top.
 end;
 
