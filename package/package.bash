@@ -199,7 +199,11 @@ function DebianPackage () {
 	echo "Priority: optional" >> BUILD/DEBIAN/control
 	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
-	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. Experimental Qt5 release." >> BUILD/DEBIAN/control
+	if [ "$1" = "amd64Qt" ]; then
+		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. Experimental Qt5 release." >> BUILD/DEBIAN/control
+	else
+		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. " >> BUILD/DEBIAN/control
+	fi
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 
 	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
