@@ -456,7 +456,7 @@ uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
     LazFileUtils,		// For ExtractFileName()
     Spelling,
     NoteBook,
-    {MainUnit,     }    // Not needed now, April, 2019 after menu and search restructure
+    MainUnit,            // Not needed now for anything other than MainForm.Close()
     SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
     Markdown,
@@ -2298,6 +2298,7 @@ begin
 
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
+            VK_Q : MainForm.close();
             VK_1 : MenuSmallClick(Sender);
             VK_2 : MenuNormalClick(Sender);
             VK_3 : MenuLargeClick(Sender);

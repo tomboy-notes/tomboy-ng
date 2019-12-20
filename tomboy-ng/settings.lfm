@@ -11,6 +11,7 @@ object Sett: TSett
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnHide = FormHide
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   LCLVersion = '2.0.7.0'
   object PageControl1: TPageControl

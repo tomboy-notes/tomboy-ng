@@ -471,6 +471,12 @@ begin
         exit();
     end;
     MenuItem := TMenuItem.Create(Self);
+    if mtTag = mtQuit then
+        {$ifdef DARWIN}
+        MenuItem.ShortCut:= KeyToShortCut(VK_Q, [ssMeta]);
+        {$else}
+        MenuItem.ShortCut:= KeyToShortCut(VK_Q, [ssCtrl]);
+        {$endif}
     MenuItem.Tag := ord(mtTag);             // for 'File' entries, this identifies the function to perform.
     MenuItem.Caption := Item;
     MenuItem.OnClick := OC;
@@ -508,6 +514,7 @@ begin
     if AMenu.Items.Count = 0 then                   // If menu empty, put in seperator
         AddItemMenu(AMenu, '-', mtSep, nil, mkFileMenu);
     AddItemMenu(AMenu, rsMenuQuit, mtQuit,  @FileMenuClicked, mkFileMenu);
+
     AddItemMenu(AMenu, rsMenuHelp, mtMainHelp,  nil, mkFileMenu);
     {$ifdef LINUX}
     if Sett.CheckShowTomdroid.Checked then
@@ -694,8 +701,9 @@ end;
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
-     if ssCtrl in Shift then begin
+     if {$ifdef DARWIN}ssmMeta{$else}ssCtrl{$endif} in Shift then begin
        if key = ord('N') then begin OpenNote(); Key := 0; exit(); end;
+       if key = VK_Q then MainForm.Close();
      end;
 end;
 

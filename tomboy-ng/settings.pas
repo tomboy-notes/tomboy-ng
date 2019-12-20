@@ -225,6 +225,8 @@ type
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormHide(Sender: TObject);
+        procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+            );
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
@@ -348,6 +350,7 @@ uses IniFiles, LazLogger,
     mainunit,       // so we can call ShowHelpNote()
     hunspell,       // spelling check
     helpnotes,      // All user to download non-English help Notes
+    LCLType,        // Keycodes ....
     Autostart
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
@@ -643,6 +646,14 @@ begin
     if NeedRefresh then begin
         SearchForm.IndexNotes();
         NeedRefresh := False;
+    end;
+end;
+
+procedure TSett.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+    if {$ifdef DARWIN}ssmMeta{$else}ssCtrl{$endif} in Shift then begin
+      if key = ord('N') then begin SearchForm.OpenNote(); Key := 0; exit(); end;
+      if key = VK_Q then MainForm.Close();
     end;
 end;
 

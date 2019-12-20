@@ -43,7 +43,7 @@ function MakeDMG () {
 	if [ "$1" = "carbon" ]; then
 		CPU="i386"
 		BITS="32"
-		REL="Release"
+		REL="CarbonRelease"
 	else
 		CPU="x86_64"
 		BITS="64"

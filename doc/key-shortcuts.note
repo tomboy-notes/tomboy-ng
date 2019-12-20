@@ -12,8 +12,9 @@
 <list><list-item dir="ltr">Control-3 : large font</list-item></list>
 <list><list-item dir="ltr">Control-4 : huge font</list-item></list><size:large>
 
-<bold>Windows / Linux</bold></size:large><size:small>
-</size:small><list><list-item dir="ltr"><size:small>Control-Q : Quit tomboy-ng - Not yet implemented !</size:small></list-item></list><size:small></size:small>
+<bold>Windows / Linux</bold></size:large>
+<list><list-item dir="ltr">Control-Q : Quit tomboy-ng - Quit tomboy-ng   - On Search, Settings and any Open Note</list-item></list>
+<list><list-item dir="ltr">Control-N : New Note - On Search, Settings and any Open Note</list-item></list>
 <list><list-item dir="ltr">Control-X : Cut the selected text and copy it to the Clipboard.</list-item></list>
 <list><list-item dir="ltr">Control-C : Copy the selected text to the Clipboard. </list-item></list>
 <list><list-item dir="ltr">Control-V : Paste the contents of the Clipboard into the current note.</list-item></list>
@@ -34,6 +35,8 @@
 
 <bold>Mac</bold></size:large>
 <italic>(Where Option key is also the Alt key)</italic>
+<list><list-item dir="ltr">Command-Q : Quit tomboy-ng - Quit tomboy-ng   - On Search, Settings and any Open Note</list-item></list>
+<list><list-item dir="ltr">Command-N : New Note - On Search, Settings and any Open Note</list-item></list>
 <list><list-item dir="ltr">Command-X : Cut the selected text and copy it to the Clipboard.</list-item></list>
 <list><list-item dir="ltr">Command-C : Copy the selected text to the Clipboard. </list-item></list>
 <list><list-item dir="ltr">Command-V : Paste the contents of the Clipboard into the current note.</list-item></list>
@@ -54,14 +57,14 @@
 
 
 </note-content></text>
-  <last-change-date>2019-06-11T22:48:56.3650000+10:00</last-change-date>
-  <last-metadata-change-date>2019-06-11T22:48:56.3650000+10:00</last-metadata-change-date>
+  <last-change-date>2019-12-20T16:44:13.9430000+11:00</last-change-date>
+  <last-metadata-change-date>2019-12-20T16:44:13.9430000+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>0</x>
+  <x>20</x>
   <y>30</y>
   <open-on-startup>False</open-on-startup>
 </note>

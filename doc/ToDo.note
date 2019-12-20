@@ -23,7 +23,7 @@ All Platforms</bold></size:large>
 We don't do multilevel bullets.
 Tabs do not work like real tabs should.<size:huge>
 
-<bold>Here is a todo list (updated 2019/10/12)</bold></size:huge>
+<bold>Here is a todo list (updated 2019/12/20)</bold></size:huge>
 
 Recent fixes show as strikeout.
 
@@ -32,8 +32,11 @@ Recent fixes show as strikeout.
 <list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
 <list><list-item dir="ltr">Network Sync</list-item></list>
-<list><list-item dir="ltr">Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</list-item></list>
+<list><list-item dir="ltr"><strikeout>Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr">When user chooses to download the help notes in their own language (if available) its dependant on some OS issues. Won't work on Windows 7 and won't work on a Mac that does not have wget installed.</list-item></list>
+<list><list-item dir="ltr"><strikeout>Display http: links, open in browser</strikeout></list-item></list><strikeout>
+</strikeout><list><list-item dir="ltr">Main Menu in all main forms. Ctrl Q to quit programme</strikeout></list-item></list><strikeout><strikeout>
+</strikeout><list><list-item dir="ltr">Second Instance should poke existing instance allowing use by systems that cannot display System Tray Icon.</strikeout></list-item></list><strikeout><strikeout></strikeout>
 <list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.</list-item></list><size:large>
 
 
@@ -55,8 +58,8 @@ Recent fixes show as strikeout.
 
 
 </note-content></text>
-  <last-change-date>2019-10-12T20:09:40.1360000+11:00</last-change-date>
-  <last-metadata-change-date>2019-10-12T20:09:40.1360000+11:00</last-metadata-change-date>
+  <last-change-date>2019-12-20T16:56:17.0370000+11:00</last-change-date>
+  <last-metadata-change-date>2019-12-20T16:56:17.0370000+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
@@ -64,5 +67,5 @@ Recent fixes show as strikeout.
   <height>626</height>
   <x>20</x>
   <y>30</y>
-  <open-on-startup>False</open-on-startup>
+  <open-on-startup>True</open-on-startup>
 </note>
