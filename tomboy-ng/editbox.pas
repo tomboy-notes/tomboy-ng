@@ -1622,7 +1622,7 @@ end;
 
 procedure TEditBoxForm.MakeLink({const Link : ANSIString;} const Index, Len : longint);
 var
-	Hyperlink: TKMemoHyperlink;
+	Hyperlink, HL: TKMemoHyperlink;
     TrueLink : string;
 	BlockNo, BlockOffset, Blar, i : longint;
 	//DontSplit : Boolean = false;
@@ -1677,12 +1677,12 @@ end;            *)
 	Hyperlink := TKMemoHyperlink.Create;
 	// Hyperlink.Text := Link;
     Hyperlink.Text := TrueLink;
-    Hyperlink.TextStyle.Font.Color:= Sett.TitleColour;
+    // Hyperlink.TextStyle.Font.Color:= clRed {Sett.TitleColour};
+    Hyperlink.Textstyle.StyleChanged   :=  true;
 	Hyperlink.OnClick := @OnUserClickLink;
-
-
-	KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
-
+	HL := KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
+    HL.TextStyle.Font.Color:= Sett.TitleColour;
+    // Note the colour seems to get set to some standard that TK likes when added.
 
 (*
 i := BlockNo-2;

@@ -833,6 +833,8 @@ begin
         if CheckDirectory(NoteDirectory) then begin
             MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
+            CheckShowIntLinks.Checked:= True;
+            CheckShowExtLinks.Checked := True;
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
             UsualFont := GetFontData(Self.Font.Handle).Name;
             if not SettingsChanged() then // write a initial default file, shows user a message on error

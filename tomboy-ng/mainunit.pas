@@ -615,7 +615,7 @@ begin
                 and (Sett.LabelSyncRepo.Caption <> '');
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 
-     if (ImageConfigTick.Visible and ImageNotesDirTick.Visible) then begin
+     if (ImageConfigTick.Visible {and ImageNotesDirTick.Visible}) then begin
         ButtonDismiss.Enabled := AllowDismiss;
      end;
 end;

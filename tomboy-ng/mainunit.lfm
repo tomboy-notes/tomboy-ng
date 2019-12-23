@@ -13,7 +13,6 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  ShowHint = True
   LCLVersion = '2.0.7.0'
   object ImageConfigTick: TImage
     Left = 24
