@@ -8,85 +8,61 @@ This is a tomboy-ng doc for the Github Wiki. Its generated from a note in the to
 tomboy-ng is tested on <bold>Linux, Mac and Windows</bold>  platforms at each release. If your experiences differ, please let us know ! <size:large>
 
 <bold>Linux</bold></size:large>
- Should work on all Linux systems but some systems using Gnome as the desktop require additional steps to see the System Tray Icon. As a general rule, I suggest you download the appropriate file to a local disk, and then either double click it or tackle it at the command line. Downloading directly into a applications like "Software Installer" is risky as you don't see any error or warning messages, it may fail silently.
+ Should work on all Linux systems but Linux systems  vary.  And we now have tomboy-ng for linux built with two different widget sets, GTK2 or Qt5.  Generally, always better to download the appropriate file and install using the text based command, rpm or apt. RPM based systems, should be installed with the rpm command, not yum or dnf. Many systems want you to use their GUI installer, typically called "Software", we have had issues with these apps not resolving dependancies. 
 
-<bold>Ubuntu</bold> - generally, all  work fine. Tested against 16.04 Ubuntu Gnome, 16.04 Ubuntu Mate, 18.04 Ubuntu, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.04 Ubuntu Gnome and 19.04 Ubuntu Mate. Just download the appropriate DEB file and install using gdebi (not, I emphasis, the Software Centre, you should install gdebi if you don't already have it!)
 
-<bold>Debian</bold> with XFCE is fine. v9.8, 9.9 and v10.1 with Gnome see Linux Gnome Systems below. Note 9.8 and 9.9 show the tomboy-ng icon on a silly sliding tray lower left.
+<bold>The Gnome 3 Workaround</bold>
+As of V0.25 the Gnome 3 based systems can now work without installing any extra software but you work in a slightly different way.  Instead of the System Tray Icon (that Gnome 3 hates) you add tomboy-ng to your 'favourites' so an icon remains on the dock.  Clicking that icon will either start tomboy-ng or, if its running but hiding, will popup its Search Form. To add the icon to your dock, start tomboy-ng, then, if necessary, display the dock, right click the green tomboy-ng icon and choose "add to favourites".
+
+Use the GTK2 version of tomboy-ng because wayland (Gnome's default desktop manager) does not get along with Qt5 apps.
+
+Note - I no longer recommend you install (eg) TopIcons and LibAppIndicator3 on awkard Gnome systems, instead, V0.25 of tomboy-ng can use an icon on your dock, see below. This is a big step forward !
+
+
+<bold>Fedora</bold>
+Fedora using the default Gnome 3 desktop requires the Gnome 3 workaround mentioned above, the the GTK variety. Other flavours of Fedora all seem happy to display the System Tray Icon, I suggest using the Qt5 varity as its a smaller install. Tested against Plasma, Cinnamon, XFce.
+
+<monospace>sudo rpm -e tomboy-ng [enter]</monospace>
+<monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace>
+
+<bold>Ubuntu</bold> - generally, all  work fine. Tested against 16.04 Ubuntu Gnome, 16.04 Ubuntu Mate, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.10 Ubuntu Gnome, Plasma,  Cinnamon and XFCe.  Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK one if you use Budgie.  Otherwise, new installs on (eg) Ubuntu 19.10 save some usfull diskspace by using the Qt5 variety.
+
+Again, I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicity state the location of the file, else apt will look in its own repositories).
+
+<monospace>sudo apt install ./tomboy-ng-0.25-2.amd64Qt.rpm [enter]</monospace>
+
+<bold>Debian</bold> with XFCE is fine. The Gnome desktop,  see the Gnome 3 workaround above and use the GTK variety. Note that 9.8 and 9.9 show the tomboy-ng icon on a silly sliding tray lower left.
 
 <bold>Linux Mint </bold>19.2 Cinnamon.
 
-RPM based systems, should be installed with the rpm command, not yum or dnf. Depending on your system -
-<monospace>su -c "rpm -Uv tomboy-ng_0.24-2.amd64.rpm"</monospace>
-or
-<monospace>sudo rpm -Uv tomboy-ng_0.24-2.amd64.rpm</monospace>
-
-<bold>Mageia</bold> - Mate, XFCE and KDE work fine. Mageia Gnome has problems displaying the System Tray Icon, see Linux Gnome Systems below. Mageia with Enlightenment works but requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment still has a problem, instead of tomboy-ng's painfully cheery bright green icon, you see a white triangular warning icon. But it works.  
-
-<bold>Fedora</bold> (28, 29, 30) works fine with Plasma, XFce, LXQt but the default Gnome has the "Gnome Issue", see Linux Gnome Systems below.
-
-<bold>OpenSUSE</bold> (Leap, 15) again, great with all desktops except Gnome,  see Linux Gnome Systems below.<size:large>
+<bold>Mageia</bold> - Mate, XFCE and KDE (ie Plasma) work fine. Mageia Gnome needs Gnome 3 Workaround as mentioned above.  Mageia with Enlightenment works better with Qt5 (requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it.)  Sadly, Enlightenment  in the GTK variarity still has a problem, instead of tomboy-ng's painfully cheery bright green icon, you see a white triangular warning icon. But it works. 
+ 
+<monospace>su -c "rpm -e tomboy-ng"</monospace>
+<monospace>su -c "rpm -Uv tomboy-ng_0.25-2.amd64.rpm"</monospace><size:large>
 
 <bold>Windows.</bold></size:large>
 As of v0.22 of tomboy-ng, there is one installer that installs either the 64 or 32bit version. It has been tested on a 32bit Vista and a 64bit Windows 10 Pro and should work on anything between. Note the green tomboy-ng System Tray Icon is sometimes hidden along with some others (to avoid clutter ?). Click the ^ icon to see them all.
 
-In v0.24, to download Help Notes in another language, you need Powershell, that means Windows 8 or 10.<size:large>
+In v0.24 and later, to download Help Notes in another language, you need Powershell, that means Windows 8 or 10.<size:large>
 
 <bold>Mac</bold></size:large>
 tomboy-ng is only tested on a Sierra Mac and is available in both a 32bit and 64bit install. At the time of writing, the 64bit version is a little slower than the 32bit one. As the tomboy-ng author has not paid a fee to Apple, you need  hold down the Ctrl button and click the tomboy-ng icon in Applications the first time you start it. After that, the normal double click is fine.
 
-In v0.24, to download Help Notes in another language, you need to install (using, eg, brew) wget.<size:large>
+In v0.24 and later, to download Help Notes in another language, you need to install (using, eg, brew) wget.<size:large>
 
 
 <bold>Other Operating Systems</bold></size:large>
-tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to work well on a number of other platforms, its  likely tomboy-ng could be made to as well. Please express your interest. Possible targets might include Rasperian, FreeBSD, Sparc .....<size:huge>
-
-<bold>Linux Gnome Systems</bold></size:huge><bold>
-
-Hint :</bold> When experimenting with tomboy-ng on a system with this problem, tomboy-ng from the command line so you can Ctrl-C it if you  find yourself unable to interact.
-
-As mentioned above, some Gnome based Linux systems have issues with Tomboy user's preferred way to interact with their app.  There are some ways around this problem. Maybe you can cope without the System Tray, leave the little splash screen there and try to ignore it when you are not using it. OK ?  No, I did not think so, lets fix it !
-
-Early Debian needed just LibAppIndicator3 installed but all the rest need both LibAppIndicator3 and TopIconsPlus (or similar). Neither are hard but its tedious.
-
-<bold>LibAppIndicator3</bold> can be installed using your distros normal package manager. Sadly, distro maintainers use different names for this library, here are the ones I know about -
-<list><list-item dir="ltr">libappindicator3 - Slackware, NetBSD)</list-item></list>
-<list><list-item dir="ltr">libappindicator3-1 - openSUSE and Debian [-based]</list-item></list>
-<list><list-item dir="ltr">libappindicator-gtk3 - Arch, ALT, CentOS and Fedora, RedHat</list-item></list>
-<list><list-item dir="ltr">libappindicator3_1 - all Mandrake/Mandriva derivatives -- Mageia,  OpenMandriva, PCLinuxOS, Rosa</list-item></list>
-
-
-<bold>The TopIcon Gnome Extension. </bold>To install any Gnome Extension, first you must must add a Extension to your browser, I use Firefox, I believe this also works with Chrome and I expect other major browsers. It all appears a bit clumsy but does work. You don't need an account on the Gnome Extensions page.
-
-<list><list-item dir="ltr">Browse to <monospace>https://extensions.gnome.org/</monospace> Note the purple/mauve box near the top, it tells you to "Click here to install browser extension", do so and Allow it to install. Restart your browser.</list-item></list>
-<list><list-item dir="ltr">Now browse again to https://extensions.gnome.org/ and search for TrayIcons-plus. In my case, its first on the list. Click its link and then click the On/Off switch, upper right, to On.</list-item></list>
-
-Some people report that they then need to restart but for me, restarting tomboy-ng after installing worked fine.
-
-<bold>If you don't want to install the browser extension</bold> there is an alternative, possibly easier approach -
-As root -
-<monospace>dnf install make libappindicator-gtk3 gnome-tweak-tool</monospace> &lt;enter&gt;
-// note : on openSUSE, its libappindicator3-1
-
-As yourself -
-<monospace>git clone https://github.com/phocean/TopIcons-plus.git &lt;enter&gt;</monospace>
-<monospace>cd TopIcons-plus &lt;enter&gt;</monospace>
-<monospace>make install&lt;enter&gt;</monospace>
-
-Logout and back in again.
-<monospace>gnome-tweaks &lt;enter&gt;</monospace>
-click Extensions, turn TopIcons-plus ON
-click close
+tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to work well on a number of other platforms, its  likely tomboy-ng could be made to as well. Please express your interest. Possible targets might include Rasperian, FreeBSD, Sparc .....
 
 </note-content></text>
-  <last-change-date>2019-10-15T18:25:17.0990000+11:00</last-change-date>
-  <last-metadata-change-date>2019-10-15T18:25:17.0990000+11:00</last-metadata-change-date>
+  <last-change-date>2019-12-23T18:48:52.1430000+11:00</last-change-date>
+  <last-metadata-change-date>2019-12-23T18:48:52.1430000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1380</width>
   <height>626</height>
-  <x>352</x>
-  <y>333</y>
+  <x>55</x>
+  <y>105</y>
   <open-on-startup>False</open-on-startup>
 </note>
