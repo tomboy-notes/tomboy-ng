@@ -196,6 +196,7 @@ unit EditBox;
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
     2019/12/17  Links are no longer converted to lower case.
     2019/12/18  LinkScanRange moved here from Settings, now 100, was 50
+    2019/12/22  Extensive changes to ClearNearLink() to ensure links are not smeared.
 }
 
 
@@ -365,8 +366,11 @@ type
         // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
 
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
-        { Clears links near where user is working }
-        procedure ClearNearLink(const CurrentPos: longint);
+        { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
+          Http or local links, we need to clear the colour and underline of any text nearby
+          that have been 'smeared' from user editing at the end of a link. When this happens,
+          new text appears within the link block, bad .....  }
+        procedure ClearNearLink(const StartS, EndS: integer);
         function DoCalculate(CalcStr: string): string;
         procedure DoHousekeeping();
         { Returns a long random file name, Not checked for clashes }
@@ -1514,22 +1518,9 @@ begin
     result := true;
 end;   }
 
-{ This gets called when the main app goes down, presumably also in a controlled
-  powerdown ?   Seems a good place to save if we are dirty.... }
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
 var
     ARec : TNoteUpdateRec;
-
-{    procedure LogClose();
-    var
-        OutFile: TextFile;
-    begin
-        AssignFile(OutFile, '/home/dbannon/closelog.txt');
-        Rewrite(OutFile);
-        writeln(OutFile, 'just closing ' + self.NoteTitle);
-        CloseFile(OutFile);
-    end;   }
-
 begin
     if not Kmemo1.ReadOnly then
         if Dirty then
@@ -1633,30 +1624,78 @@ procedure TEditBoxForm.MakeLink({const Link : ANSIString;} const Index, Len : lo
 var
 	Hyperlink: TKMemoHyperlink;
     TrueLink : string;
-	BlockNo, BlockOffset, Blar : longint;
-	DontSplit : Boolean = false;
+	BlockNo, BlockOffset, Blar, i : longint;
+	//DontSplit : Boolean = false;
+    blk : TKMemoTextBlock;
 begin
-	// Is it already a Hyperlink ?  Cannot be, we cleared them earlier .....
+	// Is it already a Hyperlink ? We leave valid hyperlinks in place.
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKHyperlink') then begin {writeln('Hyperlink');} exit(); end;
+    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKHyperlink') then exit();
 	// Is it all in the same block ?
-    if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then begin {writeln('Not in same block');} exit(); end;
+    if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
     TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
-    {    writeln('[' + Kmemo1.Blocks.Items[BlockNo].Text + ']');                    // test under windows ??
-        writeln('[' + Link + '] TrueLink = [' + TrueLink + ']');
-        writeln('Index=' + inttostr(Index) + '  and blar=' + inttostr(blar));
-        writeln('-');           }
-    if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then DontSplit := True;
+
+//    REMOVE ALL OF THIS AFTER A TEST CYCLE     <<<< -----------------------
+
+//        writeln('-');
+//        writeln('[' + Kmemo1.Blocks.Items[BlockNo].Text + ']');                    // test under windows ??
+//        writeln('TrueLink = [' + TrueLink + ']');
+//        writeln('Index=' + inttostr(Index) + '  and blar=' + inttostr(blar));
+
+    {if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then DontSplit := True;
     KMemo1.SelStart:= Index;
     KMemo1.SelLength:=Len;
     KMemo1.ClearSelection();
 	if not DontSplit then
-		BlockNo := KMemo1.SplitAt(Index);
+		BlockNo := KMemo1.SplitAt(Index);   }
+
+(*
+i := BlockNo-2;
+while I < (BlockNo + 10) do begin
+    Blk := TKMemoTextBlock(KMemo1.Blocks.Items[i]);
+    write('no=' + inttostr(i));
+    if fsUnderline in Blk.TextStyle.Font.style then
+        write(' Underlined ')
+    else
+        write(' plain ');
+    writeln(' Type=' + KMemo1.Blocks.Items[i].ClassName + ' Text=' + KMemo1.Blocks.Items[i].Text);
+    inc(i);
+end;            *)
+
+    if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then begin
+         Kmemo1.Blocks.Delete(BlockNo);
+         //writeln('Block deleted');
+    end
+    else  begin
+        KMemo1.SelStart:= Index;
+        KMemo1.SelLength:=Len;
+        KMemo1.ClearSelection();
+        BlockNo := KMemo1.SplitAt(Index);
+        //writeln('Block Split');
+    end;
+
 	Hyperlink := TKMemoHyperlink.Create;
 	// Hyperlink.Text := Link;
     Hyperlink.Text := TrueLink;
+    Hyperlink.TextStyle.Font.Color:= Sett.TitleColour;
 	Hyperlink.OnClick := @OnUserClickLink;
+
+
 	KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
+
+
+(*
+i := BlockNo-2;
+while I < (BlockNo + 10) do begin
+    Blk := TKMemoTextBlock(KMemo1.Blocks.Items[i]);
+    write('no=' + inttostr(i));
+    if fsUnderline in Blk.TextStyle.Font.style then
+        write(' Underlined ')
+    else
+        write(' plain ');
+    writeln(' Type=' + KMemo1.Blocks.Items[i].ClassName + ' Text=' + KMemo1.Blocks.Items[i].Text);
+    inc(i);
+end; *)
 end;
 
 
@@ -1689,7 +1728,7 @@ begin
         {$endif}
         if (PText[Offset-2] in [' ', #10, #13, ',', '.']) and
                         (PText[Offset + length(Term) -1] in [' ', #10, #13, ',', '.']) then
-            MakeLink({Term, }UTF8Length(PText, Offset) -1 -NumbCR, UTF8length(Term));
+            MakeLink(UTF8Length(PText, Offset) -1 -NumbCR, UTF8length(Term));
         Offset := RelativePos(Term, PText, Offset + 1);
         if EndScan > 0 then
         	if Offset> EndScan then break;
@@ -1699,22 +1738,27 @@ end;
 
 procedure TEditBoxForm.CheckForHTTP(const PText : pchar; const StartS, EndS : longint);
 
-    function ValidWebLength(StartAt : integer) : integer;
+    function ValidWebLength(StartAt : integer) : integer;               // stupid !  Don't pass StartAt, use local vars, cheaper....
     var
         I : integer;
     begin
-        I := 7;                                                 // '7' being length of 'http://'
+        I := 7;                                                         // '7' being length of 'http://'
         if not(PText[StartAt-2] in [' ', ',', #10, #13]) then exit(0);  // no leading whitespace
         while PText[StartAt+I] <> '.' do begin
-            if (StartAt + I) > EndS then exit(0);                     // beyond our scan zone before dot
+            if (StartAt + I) > EndS then exit(0);                       // beyond our scan zone before dot
             if PText[StartAt+I] in [' ', ',', #10, #13] then exit(0);   // hit whitespace before a dot
             inc(I);
         end;
+        inc(i);
+        if (PText[StartAt+I] in [' ', ',', #10, #13]) then exit(0);     // the dot is at the end !
         while (not(PText[StartAt+I] in [' ', ',', #10, #13])) do begin
-            if (StartAt + I) > EndS then exit(0);                     // beyond our scan zone before whitespace
+            if (StartAt + I) > EndS then exit(0);                       // beyond our scan zone before whitespace
             inc(I);
         end;
-        Result := I+1;
+        if PText[StartAt+I-1] = '.' then
+            Result := I
+        else
+            Result := I+1;
     end;
 
 var
@@ -1737,6 +1781,7 @@ begin
                 end;
                 {$endif}
                 MakeLink({copy(PText, Offset+http, Len), } UTF8Length(PText, OffSet + http)-1 -NumbCR, Len);
+//    debugln('CheckForHTTP Index = ' + inttostr(UTF8Length(PText, OffSet + http)-1 -NumbCR) + ' and Len = ' + inttostr(Len));
             end;
             if len > 0 then
         end;
@@ -1780,12 +1825,77 @@ begin
     Ready := True;
 end;
 
-procedure TEditBoxForm.ClearNearLink(const CurrentPos : longint);
+
+
+procedure TEditBoxForm.ClearNearLink(const StartS, EndS : integer); //CurrentPos : longint);
 var
-    BlockNo,  Blar : longint;
+    BlockNo,  Blar, StartBlock, EndBlock : longint;
     LinkText  : ANSIString;
+
+    function ValidWebLink() : boolean;                  // returns true if LinkText is valid web address
+    var
+        DotSpot : integer;
+        Str : String;
+    begin
+//writeln('Scanning for web address ' + LinkText);
+        if pos(' ', LinkText) > 0 then exit(false);
+        if (copy(LinkText,1, 8) <> 'https://') and (copy(LinkText, 1, 7) <> 'http://') then exit(false);
+        Str := TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text;
+        if (KMemo1.Blocks.Items[StartBlock-1].ClassName <> 'TKMemoParagraph') and
+            not Str.EndsText(' ', Str) then exit(false);
+        if (KMemo1.Blocks.Items[StartBlock+1].ClassName <> 'TKMemoParagraph') and
+            (not TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock+1]).Text.StartsWith(' ')) then exit(false);
+        DotSpot := pos('.', LinkText);
+        if DotSpot = 0 then exit(false);
+        if (DotSpot < 8) or (DotSpot > length(LinkText)-1) then exit(false);
+        if LinkText.EndsWith('.') then exit(false);
+        result := true;
+        //writeln(' Valid http or https addess');
+    end;
+
 begin
-	{ if are in or next to a link block, remove link }
+    Ready := False;
+    StartBlock := KMemo1.Blocks.IndexToBlockIndex(StartS, Blar);
+    EndBlock := KMemo1.Blocks.IndexToBlockIndex(EndS, Blar);
+    if StartBlock < 2 then StartBlock := 2;
+    if EndBlock > Kmemo1.Blocks.Count then EndBlock := Kmemo1.Blocks.Count;
+    KMemo1.Blocks.LockUpdate;
+    try
+    while StartBlock < EndBlock do begin
+        if TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Size = Sett.FontTitle then begin
+            inc(StartBlock);
+            continue;
+        end;
+        if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
+            LinkText := Kmemo1.Blocks.Items[StartBlock].Text;
+        	if not (SearchForm.IsThisaTitle(LinkText) or ValidWebLink()) then begin
+                // Must check here if its also not a valid HTTP link.
+//writeln('Removing link ' + LinkText);
+                Kmemo1.Blocks.Delete(StartBlock);
+        		KMemo1.Blocks.AddTextBlock(Linktext, StartBlock);
+            end;
+        end else begin
+            // Must check here that its not been subject to the copying of a links colour and underline
+            // we know its not a link and we know its not title. So, check color ...
+            if TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Color = Sett.TitleColour then begin    // we set links to title colour
+                TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Style
+                    := TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Style - [fsUnderLine];
+                TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Color := Sett.TextColour;
+            end;
+        end;
+        inc(StartBlock);
+    end;
+    finally
+        KMemo1.Blocks.UnlockUpdate;
+        Ready := True;
+    end;
+
+(*          remove all this after a testing cycle.
+
+    exit;
+
+
+
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurrentPos, Blar);
     Ready := False;
     LinkText := Kmemo1.Blocks.Items[BlockNo].Text;              // debug
@@ -1809,7 +1919,7 @@ begin
         	KMemo1.Blocks.UnlockUpdate;
         end;
     end;
-    Ready := True;
+    Ready := True;           *)
 end;
 
 
@@ -1884,7 +1994,7 @@ begin
   	        exit();
     end;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
-  	    ClearNearLink(CurserPos);
+  	    ClearNearLink(StartScan, EndScan {CurserPos});
   	    // TS2:=DateTimeToTimeStamp(Now);
         CheckForLinks(StartScan, EndScan);
         // TS3:=DateTimeToTimeStamp(Now);

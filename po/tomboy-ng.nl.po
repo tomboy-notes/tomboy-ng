@@ -162,6 +162,10 @@ msgstr "Foutopsporingsberichten tonen tijdens instellen van spellingcontrole"
 msgid "Show debug messages during Sync"
 msgstr "Foutopsporingsberichten tonen tijdens synchronisatie"
 
+#: mainunit.rshelpdelay
+msgid "Delay startup by 2 Seconds to allow OS to settle"
+msgstr ""
+
 #: mainunit.rshelphelp
 msgid "Show this help message and exit."
 msgstr "Toon dit hulpbericht en sluit af."

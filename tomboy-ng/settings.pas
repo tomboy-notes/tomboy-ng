@@ -90,6 +90,7 @@ unit settings;
     2019/09/6   Button to download Help Notes in non-English
     2019/09/07  User can now select a note font.
     2019/12/18  Moved LinkScanRange to EditBox
+    2019/12/20  Ensure we have UsualFont set to something even during first start.
 }
 
 {$mode objfpc}{$H+}
@@ -803,6 +804,11 @@ begin
                 'small'  : RadioFontSmall.Checked := true;
             end;
             UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
+{            if UsualFont = '' then begin
+                UsualFont := 'Sans';
+                //writeln('Font forced');
+            end;  }
+            //writeln('Usual Font is now [' + UsualFont + ']');
             FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
             case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
                 'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
@@ -828,6 +834,7 @@ begin
             MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
+            UsualFont := GetFontData(Self.Font.Handle).Name;
             if not SettingsChanged() then // write a initial default file, shows user a message on error
                 HaveConfig := false;
             MaskSettingsChanged := True;
@@ -842,6 +849,7 @@ begin
             Debugln('We have (write) issues with your directories, suggest you do not proceed !');
         end;
     end;
+    //debugln('At the end Usual Font is now [' + UsualFont + ']');
 end;
 
 

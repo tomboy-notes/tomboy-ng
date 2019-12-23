@@ -147,6 +147,10 @@ msgstr ""
 msgid "Show debug messages during Sync"
 msgstr ""
 
+#: mainunit.rshelpdelay
+msgid "Delay startup by 2 Seconds to allow OS to settle"
+msgstr ""
+
 #: mainunit.rshelphelp
 msgid "Show this help message and exit."
 msgstr ""

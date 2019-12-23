@@ -164,6 +164,10 @@ msgstr "Mostrar mensajes de depuración durante configuración de ortografía"
 msgid "Show debug messages during Sync"
 msgstr "Mostrar mensajes de depuración durante Sincronización"
 
+#: mainunit.rshelpdelay
+msgid "Delay startup by 2 Seconds to allow OS to settle"
+msgstr ""
+
 #: mainunit.rshelphelp
 msgid "Show this help message and exit."
 msgstr "Mostrar mensaje de ayuda y salir."
@@ -1515,3 +1519,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
+
