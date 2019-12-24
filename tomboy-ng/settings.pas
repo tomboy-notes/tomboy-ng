@@ -91,6 +91,7 @@ unit settings;
     2019/09/07  User can now select a note font.
     2019/12/18  Moved LinkScanRange to EditBox
     2019/12/20  Ensure we have UsualFont set to something even during first start.
+    2019/12/24  Ensure we don't try to sync if its not yet setup.
 }
 
 {$mode objfpc}{$H+}
@@ -837,6 +838,7 @@ begin
             CheckShowExtLinks.Checked := True;
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
             UsualFont := GetFontData(Self.Font.Handle).Name;
+            LabelSyncRepo.Caption := '';        // not 'not config' because of potential for other languages.
             if not SettingsChanged() then // write a initial default file, shows user a message on error
                 HaveConfig := false;
             MaskSettingsChanged := True;

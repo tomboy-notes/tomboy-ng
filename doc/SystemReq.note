@@ -8,7 +8,7 @@ This is a tomboy-ng doc for the Github Wiki. Its generated from a note in the to
 tomboy-ng is tested on <bold>Linux, Mac and Windows</bold>  platforms at each release. If your experiences differ, please let us know ! <size:large>
 
 <bold>Linux</bold></size:large>
- Should work on all Linux systems but Linux systems  vary.  And we now have tomboy-ng for linux built with two different widget sets, GTK2 or Qt5.  Generally, always better to download the appropriate file and install using the text based command, rpm or apt. RPM based systems, should be installed with the rpm command, not yum or dnf. Many systems want you to use their GUI installer, typically called "Software", we have had issues with these apps not resolving dependancies. 
+ Should work on all Linux systems but Linux systems  vary.  And we now have tomboy-ng for Linux built with two different widget sets, GTK2 or Qt5.  Generally, always better to download the appropriate file and install using the text based command, rpm or apt. RPM based systems, should be installed with the rpm command, not yum or dnf. Many systems want you to use their GUI installer, typically called "Software", we have had issues with these apps not resolving dependencies. At the bottom of this page, there is a note for people who cannot use debs or rpm installs.
 
 
 <bold>The Gnome 3 Workaround</bold>
@@ -16,18 +16,18 @@ As of V0.25 the Gnome 3 based systems can now work without installing any extra 
 
 Use the GTK2 version of tomboy-ng because wayland (Gnome's default desktop manager) does not get along with Qt5 apps.
 
-Note - I no longer recommend you install (eg) TopIcons and LibAppIndicator3 on awkard Gnome systems, instead, V0.25 of tomboy-ng can use an icon on your dock, see below. This is a big step forward !
+Note - I no longer recommend you install (eg) TopIcons and LibAppIndicator3 on awkward Gnome systems, instead, V0.25 of tomboy-ng can use an icon on your dock, see below. This is a big step forward !
 
 
 <bold>Fedora</bold>
-Fedora using the default Gnome 3 desktop requires the Gnome 3 workaround mentioned above, the the GTK variety. Other flavours of Fedora all seem happy to display the System Tray Icon, I suggest using the Qt5 varity as its a smaller install. Tested against Plasma, Cinnamon, XFce.
+Fedora using the default Gnome 3 desktop requires the Gnome 3 workaround mentioned above, the the GTK variety. Other flavours of Fedora all seem happy to display the System Tray Icon, I suggest using the Qt5 variety as its a smaller install. Tested against Plasma, Cinnamon, XFce.
 
 <monospace>sudo rpm -e tomboy-ng [enter]</monospace>
 <monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace>
 
-<bold>Ubuntu</bold> - generally, all  work fine. Tested against 16.04 Ubuntu Gnome, 16.04 Ubuntu Mate, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.10 Ubuntu Gnome, Plasma,  Cinnamon and XFCe.  Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK one if you use Budgie.  Otherwise, new installs on (eg) Ubuntu 19.10 save some usfull diskspace by using the Qt5 variety.
+<bold>Ubuntu</bold> - generally, all  work fine. Tested against 16.04 Ubuntu Gnome, 16.04 Ubuntu Mate, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.10 Ubuntu Gnome, Plasma,  Cinnamon and XFCe.  Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK one if you use Budgie.  Otherwise, new installs on (eg) Ubuntu 19.10 save some usefull diskspace by using the Qt5 variety. If you use 18.04, then stick with the GTK2 variety, its Qt5 is too old.
 
-Again, I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicity state the location of the file, else apt will look in its own repositories).
+Again, I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories).
 
 <monospace>sudo apt install ./tomboy-ng-0.25-2.amd64Qt.rpm [enter]</monospace>
 
@@ -35,7 +35,7 @@ Again, I recommend downloading the file and using the apt command (note the './'
 
 <bold>Linux Mint </bold>19.2 Cinnamon.
 
-<bold>Mageia</bold> - Mate, XFCE and KDE (ie Plasma) work fine. Mageia Gnome needs Gnome 3 Workaround as mentioned above.  Mageia with Enlightenment works better with Qt5 (requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it.)  Sadly, Enlightenment  in the GTK variarity still has a problem, instead of tomboy-ng's painfully cheery bright green icon, you see a white triangular warning icon. But it works. 
+<bold>Mageia</bold> - Mate, XFCE and KDE (ie Plasma) work fine. Mageia Gnome needs Gnome 3 Workaround as mentioned above.  Mageia with Enlightenment works better with Qt5 (requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it.)  Sadly, Enlightenment  in the GTK variety still has a problem, instead of tomboy-ng's painfully cheery bright green icon, you see a white triangular warning icon. But it works. 
  
 <monospace>su -c "rpm -e tomboy-ng"</monospace>
 <monospace>su -c "rpm -Uv tomboy-ng_0.25-2.amd64.rpm"</monospace><size:large>
@@ -50,13 +50,23 @@ tomboy-ng is only tested on a Sierra Mac and is available in both a 32bit and 64
 
 In v0.24 and later, to download Help Notes in another language, you need to install (using, eg, brew) wget.<size:large>
 
+<bold>Spelling</bold></size:large>
+Spelling was a new feature in v0.14. A major design goal of tomboy-ng is to keep things small so the spelling capabilities are, as much as possible provided by libraries and dictionaries already likely to be on your computer. But you might need to help tomboy-ng a little in finding them. "Out of the box" spelling is not configured and won't work. You need to go the the config page, select the "spell" tab and, firstly, see if tomboy can find what it needs. If so, save and all is good. If not, you need to be come involved ! Keep reading....
+
+On all three platforms, you will require both the hunspell library and suitable dictionary files to use this feature. For Linux I have assumed you already have both, properly installed and ready to share. If not, please use you system's package manager, search for hunspell.
+
+Mac users will also probably have the library installed (if not, use Homebrew to install 'hunspell') but might need to find the dictionaries already installed for other applications. Or download new ones from a source like http://wordlist.aspell.net/ . Put downloaded libraries in ~/Library/Spelling/ or /Library/Spelling/
+
+Windows, sigh. Windows does not share well so I have provided a bundled hunspell library for the more popular 64bit downloads. Again, you probably already have dictionaries available bundled with another application, if not, they can be obtained freely online. Window's users, if you download a library and/or dictionaries, put them in the same directory as the tomboy-ng executable, tomboy-ng will look there first. <size:large>
 
 <bold>Other Operating Systems</bold></size:large>
-tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to work well on a number of other platforms, its  likely tomboy-ng could be made to as well. Please express your interest. Possible targets might include Rasperian, FreeBSD, Sparc .....
+tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to work well on a number of other platforms, its  likely tomboy-ng could be made to as well. Please express your interest. Possible targets might include Rasperian, FreeBSD, Sparc .....<size:large>
 
+<bold>Linux non package install</bold></size:large>
+Linux users who cannot use either the rpm or deb packages can use just a .gz file. They contain just the binary, you can (and must) put it somewhere suitable where you can find it to start manually. Or tuck it out of the way and set up your startup system to start it automatically, typically Control Panel - &gt; Startup Applications. If you use the .gz files, you will need to restore the executable bit before using it, eg chmod u+x tomboy-ng.   If you need help setting up icons and desktop files, please ask on github ot the tomboy-ng mailing list.
 </note-content></text>
-  <last-change-date>2019-12-23T18:48:52.1430000+11:00</last-change-date>
-  <last-metadata-change-date>2019-12-23T18:48:52.1430000+11:00</last-metadata-change-date>
+  <last-change-date>2019-12-24T10:13:59.9890000+11:00</last-change-date>
+  <last-metadata-change-date>2019-12-24T10:13:59.9890000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
