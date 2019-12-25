@@ -666,7 +666,6 @@ function TSearchForm.IndexNotes() : integer;
 	// TS1, TS2 : TTimeStamp;
 begin
     // TS1 := DateTimeToTimeStamp(Now);
-    // MainForm.CheckStatus();
     if not Sett.HaveConfig then exit(0);
     if NoteLister <> Nil then
        freeandnil(NoteLister);
@@ -691,7 +690,6 @@ end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
 begin
-  // DebugLn('Freeing Note Lister');
   NoteLister.Free;
   NoteLister := Nil;
   HelpNotes.Free;
@@ -701,7 +699,7 @@ end;
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
-     if {$ifdef DARWIN}ssmMeta{$else}ssCtrl{$endif} in Shift then begin
+     if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
        if key = ord('N') then begin OpenNote(); Key := 0; exit(); end;
        if key = VK_Q then MainForm.Close();
      end;

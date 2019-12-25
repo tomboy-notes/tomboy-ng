@@ -653,7 +653,7 @@ end;
 
 procedure TSett.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-    if {$ifdef DARWIN}ssmMeta{$else}ssCtrl{$endif} in Shift then begin
+    if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
       if key = ord('N') then begin SearchForm.OpenNote(); Key := 0; exit(); end;
       if key = VK_Q then MainForm.Close();
     end;

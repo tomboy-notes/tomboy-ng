@@ -611,6 +611,9 @@
         </CompilerOptions>
       </Item15>
       <Item16 Name="CarbonRelease">
+        <MacroValues Count="1">
+          <Macro6 Name="LCLWidgetType" Value="carbon"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -622,6 +625,9 @@
           </SearchPaths>
           <CodeGeneration>
             <TargetCPU Value="i386"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
@@ -643,12 +649,13 @@
           </Other>
         </CompilerOptions>
       </Item16>
-      <SharedMatrixOptions Count="5">
+      <SharedMatrixOptions Count="6">
         <Item1 ID="341789512381" Modes="CocoaDebug,CocoaRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item2 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item3 ID="418982182673" Modes="LeakCheckLin64,Release,Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item4 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
         <Item5 ID="950048283013" Modes="QT5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
+        <Item6 ID="231441956052" Modes="CarbonRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
