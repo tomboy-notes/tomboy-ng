@@ -8,8 +8,6 @@ Importantly, tomboy-ng has little or in most cases no dependancies and so is an 
   <img src="https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboyNG_hero.png">
 </p>
 
-<!-- <span style="text-align:center">![App Icon](https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboyNG_hero.png)</span> -->
-
 ![All Screens](https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboy-ng_screens.png)
 
 Please see the [Wiki](https://github.com/tomboy-notes/tomboy-ng/wiki) for further information.
