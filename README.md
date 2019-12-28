@@ -4,11 +4,7 @@ tomboy-ng is a note taking app that works and syncronises between Linux, Windows
 
 Importantly, tomboy-ng has little or in most cases no dependancies and so is an easy and lightweight install. Most people use the binary install kits but you are welcome to build from source.
 
-<img src="https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/Tomboy-ng_Mac.png" width="50%">
-
-<img src="https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboy-ng_linux.png" width="50%">
-
-<img src="https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboy-ng_windows.png" width="50%">
+![All Screens](https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboy-ng_screens.png)
 
 Please see the [Wiki](https://github.com/tomboy-notes/tomboy-ng/wiki) for further information.
 
