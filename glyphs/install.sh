@@ -6,9 +6,12 @@
 APPNAME=tomboy-ng
 DEST=/usr/share/icons/hicolor
 
-# for i in 16x16 22x22 24x24 32x32 48x48 256x256 ; do
-for i in 256x256 ; do
-	mkdir "$DEST"/"$i"/apps/"$APPNAME"
-	cp "$i.png" "$DEST/$i/apps/$APPNAME/$APPNAME.png"
-	echo "$DEST/$i/apps/$APPNAME/$APPNAME.png"
+for i in 16x16 22x22 24x24 32x32 48x48 256x256 ; do
+# for i in 256x256 ; do
+	# mkdir -p "$DEST"/"$i"/apps/"$APPNAME"
+	cp "$i.png" "$DEST/$i/apps/$APPNAME.png"
+	echo "$DEST/$i/apps/$APPNAME.png"
 done;
+
+gtk-update-icon-cache -v /usr/share/icons/hicolor
+

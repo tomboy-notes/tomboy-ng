@@ -32,13 +32,13 @@ This section intended for production releases, not DIY. The author has a Linux b
 
 Take the Windows Win_Pre{$ver} directory to a windows machine that has the Installer Maker (ISS) and double click the .iss file to make the Windows installers.
 
-The Mac kits are made on a Sierra Mac, again using a script.
+The Mac kits are made on a Sierra Mac, again using a script. Until I can get around the Mac's habit of discarding transparent parts of the TrayIcon, manually replace the source one 24x24Mac.png. Must be a way to decide at compile time ....
 
  
 
 </note-content></text>
-  <last-change-date>2019-10-12T20:20:55.4790000+11:00</last-change-date>
-  <last-metadata-change-date>2019-10-12T20:20:55.4790000+11:00</last-metadata-change-date>
+  <last-change-date>2019-12-26T18:44:45.6980000+11:00</last-change-date>
+  <last-metadata-change-date>2019-12-26T18:44:45.6980000+11:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
@@ -46,5 +46,5 @@ The Mac kits are made on a Sierra Mac, again using a script.
   <height>626</height>
   <x>20</x>
   <y>30</y>
-  <open-on-startup>False</open-on-startup>
+  <open-on-startup>True</open-on-startup>
 </note>

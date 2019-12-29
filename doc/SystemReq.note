@@ -8,11 +8,11 @@ This is a tomboy-ng doc for the Github Wiki. Its generated from a note in the to
 tomboy-ng is tested on <bold>Linux, Mac and Windows</bold>  platforms at each release. If your experiences differ, please let us know ! <size:large>
 
 <bold>Linux</bold></size:large>
- Should work on all Linux systems but Linux systems  vary.  And we now have tomboy-ng for Linux built with two different widget sets, GTK2 or Qt5.  Generally, always better to download the appropriate file and install using the text based command, rpm or apt. RPM based systems, should be installed with the rpm command, not yum or dnf. Many systems want you to use their GUI installer, typically called "Software", we have had issues with these apps not resolving dependencies. At the bottom of this page, there is a note for people who cannot use debs or rpm installs.
+ Should work on all Linux systems but Linux systems  vary.  And we now have tomboy-ng for Linux built with two different widget sets, GTK2 or Qt5.  Generally, always better to download the appropriate file and install using the text based command, rpm or apt. RPM based systems, should be installed with the rpm command, not yum or dnf. Deb systems should use apt (or gdebi), but not apt-get. Many systems want you to use their GUI installer, typically called "Software", we have had issues with these apps not resolving dependencies. At the bottom of this page, there is a note for people who cannot use debs or rpm installs.
 
 
 <bold>The Gnome 3 Workaround</bold>
-As of V0.25 the Gnome 3 based systems can now work without installing any extra software but you work in a slightly different way.  Instead of the System Tray Icon (that Gnome 3 hates) you add tomboy-ng to your 'favourites' so an icon remains on the dock.  Clicking that icon will either start tomboy-ng or, if its running but hiding, will popup its Search Form. To add the icon to your dock, start tomboy-ng, then, if necessary, display the dock, right click the green tomboy-ng icon and choose "add to favourites".
+Only applicable to some specific distrobutions. As of V0.25 the Gnome 3 based systems can now work without installing any extra software but you work in a slightly different way.  Instead of the System Tray Icon (that Gnome 3 hates) you add tomboy-ng to your 'favourites' so an icon remains on the dock.  Clicking that icon will either start tomboy-ng or, if its running but hiding, will popup its Search Form. To add the icon to your dock, start tomboy-ng, then, if necessary, display the dock, right click the green tomboy-ng icon and choose "add to favourites".
 
 Use the GTK2 version of tomboy-ng because wayland (Gnome's default desktop manager) does not get along with Qt5 apps.
 
@@ -20,7 +20,7 @@ Note - I no longer recommend you install (eg) TopIcons and LibAppIndicator3 on a
 
 
 <bold>Fedora</bold>
-Fedora using the default Gnome 3 desktop requires the Gnome 3 workaround mentioned above, the the GTK variety. Other flavours of Fedora all seem happy to display the System Tray Icon, I suggest using the Qt5 variety as its a smaller install. Tested against Plasma, Cinnamon, XFce.
+Fedora using the default Gnome 3 desktop requires the Gnome 3 workaround mentioned above, use the GTK variety of tomboy-ng. Other flavours of Fedora all seem happy to display the System Tray Icon, I suggest using the Qt5 variety as its a smaller install. Tested against Plasma, Cinnamon, XFce.
 
 <monospace>sudo rpm -e tomboy-ng [enter]</monospace>
 <monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace>
@@ -65,14 +65,14 @@ tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to w
 <bold>Linux non package install</bold></size:large>
 Linux users who cannot use either the rpm or deb packages can use just a .gz file. They contain just the binary, you can (and must) put it somewhere suitable where you can find it to start manually. Or tuck it out of the way and set up your startup system to start it automatically, typically Control Panel - &gt; Startup Applications. If you use the .gz files, you will need to restore the executable bit before using it, eg chmod u+x tomboy-ng.   If you need help setting up icons and desktop files, please ask on github ot the tomboy-ng mailing list.
 </note-content></text>
-  <last-change-date>2019-12-24T10:13:59.9890000+11:00</last-change-date>
-  <last-metadata-change-date>2019-12-24T10:13:59.9890000+11:00</last-metadata-change-date>
+  <last-change-date>2019-12-26T18:26:48.5730000+11:00</last-change-date>
+  <last-metadata-change-date>2019-12-26T18:26:48.5730000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1380</width>
   <height>626</height>
-  <x>55</x>
-  <y>105</y>
+  <x>417</x>
+  <y>376</y>
   <open-on-startup>False</open-on-startup>
 </note>

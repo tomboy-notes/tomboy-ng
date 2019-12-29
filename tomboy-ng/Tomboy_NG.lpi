@@ -290,7 +290,7 @@
             </Options>
           </Linking>
           <Other>
-            <CompilerPath Value="/usr/local/bin/fpc"/>
+            <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
       </Item7>
