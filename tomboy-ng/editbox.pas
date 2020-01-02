@@ -197,6 +197,7 @@ unit EditBox;
     2019/12/17  Links are no longer converted to lower case.
     2019/12/18  LinkScanRange moved here from Settings, now 100, was 50
     2019/12/22  Extensive changes to ClearNearLink() to ensure links are not smeared.
+    2020/01/02  Enabled Ctrl-Shift left or right arrow selecting or extending selecton by word.
 }
 
 
@@ -2442,6 +2443,7 @@ begin
     if KMemo1.ReadOnly then begin Key := 0; exit(); end;
     if [ssCtrl, ssShift] = Shift then begin
        if key = ord('F') then begin SpeedButtonSearchClick(self); Key := 0; exit(); end;
+       if (key = VK_RIGHT) or (Key = VK_LEFT) then exit;                            // KMemo knows how to do this, select word ...
        Key := 0;
     end;
     if Key = VK_TAB then begin
