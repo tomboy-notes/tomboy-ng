@@ -287,7 +287,9 @@ type
               also set, here we discard file name and make a new one. }
         procedure FormShow(Sender: TObject);
         procedure KMemo1Change(Sender: TObject);
-        	{ Watchs for  backspace affecting a bullet point, and ctrl x,c,v }
+        	{ Watchs for  backspace affecting a bullet point, and whole lot of ctrl, shift, alt
+              combinations. For things we let KMemo handle, just exit, for things we handle
+              must set key to 0 after doing so. }
 		procedure KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -2405,8 +2407,18 @@ begin
         Key := 0;
         exit;
     end;
+    if ([ssShift] = Shift) and ((Key = VK_LEFT) or (Key = VK_RIGHT)) then exit;        // KMemo - extend selection one char left or right
+    end;
+    if ([ssAlt, ssShift] = Shift) and ((Key = VK_RIGHT) or (Key = VK_LEFT)) then exit; // KMemo - extend selection one word left or right
     {$endif}
+    {$ifndef DARWIN}
+    // -------------- Shift -------------------
+    if [ssShift] = shift then begin
+        if (Key = VK_LEFT) or (Key = VK_RIGHT) then exit; // KMemo - extend selection one char left or right
+    end;
 
+    {$endif}
+    // -------------- Control ------------------
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
             VK_Q : MainForm.close();
@@ -2426,24 +2438,27 @@ begin
             VK_F4 : begin SaveTheNote(); close; end;
             VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
             VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_RETURN, VK_INSERT :
-                exit;    // so key is not set to 0 on the way out
+                exit;    // so key is not set to 0 on the way out, KMemo will handle
         end;
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();
     end;
+    // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin
         case key of
                 {$ifdef DARWIN}
-                VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
-             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
-             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
+            VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
+            VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
+            VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
         end;
         exit();
     end;
     if KMemo1.ReadOnly then begin Key := 0; exit(); end;
+    // ------------------ Control and Shift ----------------
     if [ssCtrl, ssShift] = Shift then begin
        if key = ord('F') then begin SpeedButtonSearchClick(self); Key := 0; exit(); end;
-       if (key = VK_RIGHT) or (Key = VK_LEFT) then exit;                            // KMemo knows how to do this, select word ...
+       {$ifndef DARWIN}
+       if (key = VK_RIGHT) or (Key = VK_LEFT) then exit;{$endif}            // KMemo knows how to do this, select word ...
        Key := 0;
     end;
     if Key = VK_TAB then begin
