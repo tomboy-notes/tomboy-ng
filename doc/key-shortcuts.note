@@ -10,7 +10,9 @@
 <list><list-item dir="ltr">Control-1 : Small Font</list-item></list>
 <list><list-item dir="ltr">Control-2 : normal font</list-item></list>
 <list><list-item dir="ltr">Control-3 : large font</list-item></list>
-<list><list-item dir="ltr">Control-4 : huge font</list-item></list><size:large>
+<list><list-item dir="ltr">Control-4 : huge font</list-item></list>
+<list><list-item dir="ltr">Shift-RightArrow - extend selection one char to right</list-item></list>
+<list><list-item dir="ltr">Shift-LeftArrow - extend selection one char to left</list-item></list><size:large>
 
 <bold>Windows / Linux</bold></size:large>
 <list><list-item dir="ltr">Control-Q : Quit tomboy-ng - Quit tomboy-ng   - On Search, Settings and any Open Note</list-item></list>
@@ -22,7 +24,10 @@
 <list><list-item dir="ltr">Control-F : Open a Find window.</list-item></list>
 <list><list-item dir="ltr">Control-RightArrow : move word to the right.</list-item></list>
 <list><list-item dir="ltr">Control-LeftArrow : move word to the left.</list-item></list>
+<list><list-item dir="ltr">Control-Shift-LeftArrow - extend selection one word to left</list-item></list>
+<list><list-item dir="ltr">Control-Shift-RightArrow - extend selection one word to right</list-item></list>
 <list><list-item dir="ltr">Control-F4 : Close current note window.</list-item></list>
+<list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
 <list><list-item dir="ltr">Control-I : Italics</list-item></list>
@@ -44,6 +49,9 @@
 <list><list-item dir="ltr">Command-F : Open a Find window.</list-item></list>
 <list><list-item dir="ltr">Command-RightArrow : go to end of line.</list-item></list>
 <list><list-item dir="ltr">Command-LeftArrow : go to start of line.</list-item></list>
+<list><list-item dir="ltr">Command-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
+<list><list-item dir="ltr">Option-Shift-LeftArrow - extend selection one word to left</list-item></list>
+<list><list-item dir="ltr">Option-Shift-RightArrow - extend selection one word to right</list-item></list>
 
 <list><list-item dir="ltr">Command-B : Bold</list-item></list>
 <list><list-item dir="ltr">Command-I : Italics</list-item></list>
@@ -56,15 +64,16 @@
 
 
 
+
 </note-content></text>
-  <last-change-date>2019-12-20T16:44:13.9430000+11:00</last-change-date>
-  <last-metadata-change-date>2019-12-20T16:44:13.9430000+11:00</last-metadata-change-date>
+  <last-change-date>2020-01-03T16:28:51.6970000+11:00</last-change-date>
+  <last-metadata-change-date>2020-01-03T16:28:51.6970000+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>20</x>
-  <y>30</y>
+  <x>878</x>
+  <y>86</y>
   <open-on-startup>False</open-on-startup>
 </note>

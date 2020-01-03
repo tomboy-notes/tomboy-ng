@@ -361,6 +361,7 @@ type
             ): boolean;
         function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string
             ): boolean;
+        procedure InsertDate();
         function ParagraphTextTrunc(): string;
         function RelativePos(const Term: ANSIString; const MText: PChar;
             StartAt: integer): integer;
@@ -728,6 +729,15 @@ begin
     end;
 end;
 
+procedure TEditBoxForm.InsertDate();
+var
+  I : integer;
+begin
+    // showmessage(FormatDateTime('YYYY-MM-DD hh:mm:ss', now()));
+    KMemo1.ExecuteCommand(ecInsertString, pchar(FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now())));
+    for I := 0 to 20 do
+        KMemo1.ExecuteCommand(ecRight);
+end;
 
 { -------------- U S E R   F O N T    C H A N G E S ----------------}
 
@@ -2433,6 +2443,7 @@ begin
             VK_H : MenuHighLightClick(Sender);
             VK_U : MenuUnderLineClick(Sender);
             VK_F : MenuItemFindClick(self);
+            VK_D : InsertDate();
             VK_N : SearchForm.OpenNote();      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
             VK_E : InitiateCalc();
             VK_F4 : begin SaveTheNote(); close; end;
