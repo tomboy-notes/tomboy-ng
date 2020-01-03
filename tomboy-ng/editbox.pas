@@ -2417,8 +2417,6 @@ begin
         Key := 0;
         exit;
     end;
-    if ([ssShift] = Shift) and ((Key = VK_LEFT) or (Key = VK_RIGHT)) then exit;        // KMemo - extend selection one char left or right
-    end;
     if ([ssAlt, ssShift] = Shift) and ((Key = VK_RIGHT) or (Key = VK_LEFT)) then exit; // KMemo - extend selection one word left or right
     {$endif}
     {$ifndef DARWIN}
