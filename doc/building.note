@@ -9,8 +9,8 @@ This page is about building tomboy-ng from source and contributing to its develo
 
 Tomboy-ng is built on Linux, Windows or Mac using (see instructions below for installing) -
 <list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.0.4 or later.</list-item></list>
-<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.6  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.6).</list-item></list>
-<list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - apply the patch in tomboy-ng's patches directory. Failure to apply will mess with copying and pasting formatted text.</list-item></list><size:large>
+<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.6  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.6). If you use Lazarus Fixes no patches are required.</list-item></list>
+<list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - apply the kmemo_paste_text patch in tomboy-ng's patches directory. Failure to apply will mess with copying and pasting formatted text.</list-item></list><size:large>
 
 <bold>Pascal ?</bold></size:large>
 Pascal as a computer language is quite old, in the early days of the PC it went toe to toe with C and lost. But it still has quite a following and current estimates place it in the top twenty languages (source ?). Today, Object Pascal is a very functional object orientated language that drives Delphi and its cross platform open source rival, Lazarus.
@@ -19,16 +19,22 @@ Pascal is still widely used as a teaching language, its strong typing promotes g
 
 
 <bold>Build tomboy-ng using the IDE</bold></size:huge>
-You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.6 or later (users of earlier releases need to look in patched directory). Downloading packages from https://sourceforge.net/projects/Lazarus/files/ , choose your OS and then Lazarus 2.0.6, you will see debs, rpms, dmg files and windows kits for the compiler (FPC) and  the FPC-src, and finally the IDE, Lazarus. To learn more see Free Pascal and Lazarus websites. Both have very active forums and extensive wiki's.
+You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus Fixes  (users of earlier releases such as 2.0.6 need to look in patched directory). Downloading packages from https://sourceforge.net/projects/Lazarus/files/ , choose your OS and then Lazarus 2.0.6, you will see debs, rpms, dmg files and windows kits for the compiler (FPC) and  the FPC-src, and finally the IDE, Lazarus. To learn more see Free Pascal and Lazarus websites. Both have very active forums and extensive wiki's.
+
+Jan 2020, my advice is to use Lazarus Fixes, that means installing FPC, FPC-Src and Subversion using your OS package manager and then looking at -
+
+https://wiki.freepascal.org/Installing_Lazarus_on_Linux#Build_Lazarus_from_Source
 
 Start Lazarus up, see that it runs through a check list of the things it needs, start the IDE. Lazarus opens a default, minimal project. Click Package-&gt;OnLinePackageManager, select kcontrols and Install ("from repositary").
+
+Close Lazarus and install the kmemo-paste-text patch.
 
 Lazarus will want to rebuild itself and restart, say yes, please do!  You can now load the tomboy-ng project.  Close any existing project, click open project and browse for the tomboy-ng project file, it has an extension of .lpi
 
 Its also possible, and sometimes a good idea to build Lazarus from source. See the Lazarus wiki for more information.<size:large>
 
 <bold>Building Releases</bold></size:large>
-This section intended for production releases, not DIY. The author has a Linux box that has FPC 3.0.4 setup to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That some script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as root (??) will make RPMs (using the debs as input) that are suitable for RedHat systems.
+This section intended for production releases, not DIY. The author has a Linux box that has FPC 3.0.4 setup to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That  script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as root (??) will make RPMs (using the debs as input) that are suitable for RedHat systems.
 
 Take the Windows Win_Pre{$ver} directory to a windows machine that has the Installer Maker (ISS) and double click the .iss file to make the Windows installers.
 
@@ -37,14 +43,14 @@ The Mac kits are made on a Sierra Mac, again using a script. Until I can get aro
  
 
 </note-content></text>
-  <last-change-date>2019-12-26T18:44:45.6980000+11:00</last-change-date>
-  <last-metadata-change-date>2019-12-26T18:44:45.6980000+11:00</last-metadata-change-date>
+  <last-change-date>2020-01-04T10:44:31.5610000+11:00</last-change-date>
+  <last-metadata-change-date>2020-01-04T10:44:31.5610000+11:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>20</x>
-  <y>30</y>
-  <open-on-startup>True</open-on-startup>
+  <x>237</x>
+  <y>77</y>
+  <open-on-startup>False</open-on-startup>
 </note>

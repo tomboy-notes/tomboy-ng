@@ -1491,7 +1491,7 @@ begin
         exit(False);
     end;
   end;
-  result := CopyFile(TempName, Nrec.FFName);
+  result := CopyFile(TempName, Nrec.FFName);    // ToDo : wrap this in a Try
   if result = false then debugln('ERROR moving [' + TempName + '] to [' + NRec.FFName + ']');
 end;
 

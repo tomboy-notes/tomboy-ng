@@ -1161,8 +1161,10 @@ msgid "tomboy-ng Search"
 msgstr "Zoekpagina"
 
 #: tsearchform.menuanycombo.caption
+#, fuzzy
+#| msgid "AnyCombination"
 msgctxt "tsearchform.menuanycombo.caption"
-msgid "AnyCombination"
+msgid "Any Combination"
 msgstr "Elke combinatie"
 
 #: tsearchform.menucasesensitive.caption

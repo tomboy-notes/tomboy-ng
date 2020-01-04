@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 531
+  Left = 710
   Height = 401
-  Top = 246
+  Top = 245
   Width = 824
   Caption = 'tomboy-ng Search'
   ClientHeight = 401
@@ -200,7 +200,9 @@ object SearchForm: TSearchForm
     BorderSpacing.Top = 3
     Caption = 'Search Options'
     OnClick = ButtonSearchOptionsClick
+    ParentShowHint = False
     PopupMenu = PopupSearchOptions
+    ShowHint = True
     TabOrder = 3
   end
   object ButtonMenu: TSpeedButton
@@ -320,7 +322,7 @@ object SearchForm: TSearchForm
       OnClick = MenuCaseSensitiveClick
     end
     object MenuAnyCombo: TMenuItem
-      Caption = 'AnyCombination'
+      Caption = 'Any Combination'
       OnClick = MenuAnyComboClick
     end
   end

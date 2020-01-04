@@ -1172,7 +1172,10 @@ msgid "tomboy-ng Search"
 msgstr "Búsqueda de tombo-ng"
 
 #: tsearchform.menuanycombo.caption
-msgid "AnyCombination"
+#, fuzzy
+#| msgid "AnyCombination"
+msgctxt "tsearchform.menuanycombo.caption"
+msgid "Any Combination"
 msgstr "Cualquier combinación"
 
 #: tsearchform.menucasesensitive.caption
@@ -1278,6 +1281,7 @@ msgid "tomboy-ng Settings"
 msgstr "Preferencias de tomboy-ng"
 
 #: tsett.checkanycombination.caption
+msgctxt "tsett.checkanycombination.caption"
 msgid "Any Combination"
 msgstr "Cualquier combinación"
 

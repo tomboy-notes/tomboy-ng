@@ -1128,7 +1128,7 @@ msgstr ""
 
 #: tsearchform.menuanycombo.caption
 msgctxt "tsearchform.menuanycombo.caption"
-msgid "AnyCombination"
+msgid "Any Combination"
 msgstr ""
 
 #: tsearchform.menucasesensitive.caption

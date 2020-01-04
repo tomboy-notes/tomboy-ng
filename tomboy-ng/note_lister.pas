@@ -52,6 +52,7 @@ unit Note_Lister;
     2018/12/29  Small improvements in time to save a file.
     2019/04/13  Tweaks to overload to read help nodes
     2019/05/06  Support saving pos and open on startup in note.
+    2020/01/03  When searching without AnyCombo ticked, string can be sub-grouped by double inverted commas "
 }
 
 {$mode objfpc}
@@ -135,13 +136,18 @@ type
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
     NoteBookList : TNoteBookList;
-    		{ Returns a simple note file name, accepts simple filename or ID }
+
+              { Takes a created list and search term string. Returns with the list
+                containing individual search terms, 1 to many }
+    procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
+             { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
     procedure CleanupList(const Lst : TNoteList);
-   	procedure GetNoteDetails(const Dir, FileName: ANSIString;
-        const SearchTerm: ANSIString; DontTestName: boolean=false);
+            // Indexes and maybe searches one note. TermList maybe nil.
+   	procedure GetNoteDetails(const Dir, FileName: ANSIString; const TermList: TStringList; DontTestName: boolean=false);
     		{ Returns True if indicated note contains term in its content }
-   	function NoteContains(const Term, FileName : ANSIString) : boolean;
+   	function NoteContains(const TermList: TStringList; FileName: ANSIString
+        ): boolean;
             { Removes any complete xml tags from passed string, only matches '<' to '>' }
     function RemoveXml(const St: AnsiString): AnsiString;
 
@@ -523,7 +529,7 @@ begin
     end;
 end;
 
-procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const SearchTerm: ANSIString; DontTestName : boolean = false);
+procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const TermList : TStringList; DontTestName : boolean = false);
 			// This is how we search for XML elements, attributes are different.
 var
     NoteP : PNote;
@@ -539,8 +545,8 @@ begin
             exit;
         end;
   	if FileExistsUTF8(Dir + FileName) then begin
-        if SearchTerm <> '' then
-        	if not NoteContains(SearchTerm, FileName) then exit();
+        if assigned(TermList) then
+        	if not NoteContains(TermList, FileName) then exit();
         new(NoteP);
         NoteP^.IsTemplate := False;
   	    try
@@ -584,9 +590,9 @@ begin
                 dispose(NoteP);
                 exit();
 			end;
-			if SearchTerm = '' then
-            		NoteList.Add(NoteP)
-            else SearchNoteList.Add(NoteP);
+			if assigned(TermList) then
+                SearchNoteList.Add(NoteP)
+            else NoteList.Add(NoteP);
   	    finally
       	    Doc.free;
   	    end;
@@ -615,7 +621,7 @@ end;
 
 procedure TNoteLister.IndexThisNote(const ID: String);
 begin
-    GetNoteDetails(WorkingDir, CleanFileName(ID), '');
+    GetNoteDetails(WorkingDir, CleanFileName(ID), TStringList(nil));
 end;
 
 function TNoteLister.IsIDPresent(ID: string): boolean;
@@ -682,32 +688,77 @@ begin
     OpenNoteIndex := -1;
 end;
 
-function TNoteLister.NoteContains(const Term, FileName: ANSIString): boolean;
+procedure TNoteLister.BuildSearchList(SL : TStringList; const Term : AnsiString);
 var
-    SL, SLNote : TStringList;
+    I : integer = 1;
+    AWord : string = '';
+    InCommas : boolean = false;
+begin
+    if not Sett.CheckAnyCombination.Checked then begin
+        // SL.LineBreak:=' ';          // Break up Term at each space
+        SL.AddText(trim(Term));     // A single entry if CheckAnyCombination not checked.
+        exit;
+    end;
+    // If AnyCombination is not checked, we do the allow sections in inverted commas to be treated as one word.
+    while I <= length(trim(Term)) do begin
+        if Term[i] = '"' then begin
+            if InCommas then begin
+                SL.add(AWord);
+                AWord := '';
+                InCommas := False;
+            end else begin
+                InCommas := true;
+            end;
+            inc(I);
+            continue;
+        end;
+        if Term[i] = ' ' then begin
+            if InCommas then
+                AWord := AWord + Term[i]
+            else begin
+                if AWord <> '' then begin
+                    SL.Add(AWord);
+                    AWord := '';
+                end;
+            end;
+            inc(I);
+            continue;
+        end;
+        AWord := AWord + Term[i];
+        inc(i);
+        continue;
+    end;
+    if AWord <> '' then
+        SL.Add(AWord);
+end;
+
+// Jan 2020, will pass this function a (possibly uncreated) TStringList rather than a string
+// The list will be ready to search on.
+// function TNoteLister.NoteContains(const Term, FileName: ANSIString): boolean;
+function TNoteLister.NoteContains(const TermList : TStringList; FileName: ANSIString): boolean;
+var
+    {SL, }SLNote : TStringList;
     //Content : ANSIString;
     I, Index : integer;
 begin
     Result := False;
-    SL := TStringList.Create;
-    if Sett.CheckAnyCombination.Checked then begin
-        SL.LineBreak:=' ';          // break up Term at each space
-    end;
-    SL.AddText(trim(Term));         // A single entry if CheckAnyCombination not checked.
+    {SL := TStringList.Create;
+    BuildSearchList(SL, Term);      }
+
     SLNote := TStringList.Create;
     SlNote.LoadFromFile(WorkingDir + FileName);
     for Index := 0 to SLNote.Count - 1 do
         SLNote.Strings[Index] := RemoveXML(SLNote.Strings[Index]);
-    for I := 0 to SL.Count -1 do begin      // Iterate over search terms
+    for I := 0 to TermList.Count -1 do begin      // Iterate over search terms
         Result := False;
         for Index := 0 to SLNote.Count - 1 do begin // Check each line of note for a match against current word.
             if  Sett.CheckCaseSensitive.Checked then begin
-                if (UTF8Pos(SL.Strings[I], SLNote.Strings[Index]) > 0) then begin
+                if (UTF8Pos(TermList.Strings[I], SLNote.Strings[Index]) > 0) then begin
                     Result := True;
                     break;
                 end;
             end else
-                if (UTF8Pos(UTF8LowerString(SL.Strings[I]), UTF8LowerString(SLNote.Strings[Index])) > 0) then begin
+                if (UTF8Pos(UTF8LowerString(TermList.Strings[I]), UTF8LowerString(SLNote.Strings[Index])) > 0) then begin
                     Result := True;
                     break;
                 end;
@@ -716,7 +767,7 @@ begin
     end;
     // when we get here, if Result is true, run finished without a fail.
     FreeandNil(SLNote);
-    FreeandNil(SL);
+    // FreeandNil(SL);
 end;
 
 
@@ -739,7 +790,18 @@ end;
 function TNoteLister.GetNotes(const Term: ANSIstring = ''; DontTestName : boolean = false): longint;
 var
     Info : TSearchRec;
+    SL : TStringList;
 begin
+    SL := Nil;
+    if Term <> '' then begin
+        SL := TStringList.Create;
+        BuildSearchList(SL, Term);
+        {
+        writeln('------------------------------');
+        for I := 0 to TermList.Count-1 do
+        writeln('[' + TermList.Strings[i] + ']');
+        writeln('------------------------------');   }
+    end;
     XMLError := False;
     if Term = '' then begin
         NoteList.Free;
@@ -761,7 +823,7 @@ begin
   	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then begin
   		repeat
             //if DebugMode then debugln('Checking note [' + Info.Name + ']');
-  			GetNoteDetails(WorkingDir, Info.Name, Term, DontTestName);
+  			GetNoteDetails(WorkingDir, Info.Name, SL, DontTestName);        // Note: SL may, or may not have been created
   		until FindNext(Info) <> 0;
   	end;
   	FindClose(Info);
@@ -774,6 +836,7 @@ begin
     	CleanUpList(SearchNoteList);
 		result := NoteList.Count;
 	end;
+    if assigned(SL) then SL.Free;       // ToDo : needs a try statement ....
 end;
 
 

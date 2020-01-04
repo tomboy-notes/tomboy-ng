@@ -1170,11 +1170,20 @@ begin
     SettingsChanged();      // Write to disk
     SyncSettings();
     if not MaskSettingsChanged then
-        if Sender.ClassNameIs('TCheckBox') then
+        if Sender.ClassNameIs('TCheckBox') then begin
             if TCheckBox(Sender).Name = 'CheckShowTomdroid' then begin
                 SearchForm.RefreshMenus(mkFileMenu);
                 SearchForm.RefreshMenus(mkHelpMenu);
             end;
+            if TCheckBox(Sender).Name = 'CheckCaseSensitive' then begin
+                SearchForm.MenuCaseSensitive.Checked := TCheckBox(Sender).Checked;
+                SearchForm.SetSearchOptionsHint();
+            end;
+            if TCheckBox(Sender).Name = 'CheckAnyCombination' then begin
+                SearchForm.MenuAnyCombo.Checked := TCheckBox(Sender).Checked;
+                SearchForm.SetSearchOptionsHint();
+            end;
+        end;
 end;
 
 function TSett.GetLocalTime: ANSIstring;

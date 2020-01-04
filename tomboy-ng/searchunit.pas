@@ -173,6 +173,7 @@ type        { TSearchForm }
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
 
+
         { Copies note data from internal list to StringGrid, sorts it and updates the
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
@@ -181,6 +182,8 @@ type        { TSearchForm }
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
+        // Puts current search options in hint, public because Settings will call it if user changes there.
+        procedure SetSearchOptionsHint();
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
         // that Menu, else applies WhichSection to all know Main TB Menus.
         procedure RefreshMenus(WhichSection: TMenuKind; AMenu: TPopupMenu=nil);
@@ -705,6 +708,17 @@ begin
      end;
 end;
 
+procedure TSearchForm.SetSearchOptionsHint();
+var
+    HintStr : string;
+begin
+    if  MenuCaseSensitive.checked then HintStr := 'Case Sensitive and '
+    else HintStr := 'Case insensitive and ';
+    if MenuAnyCombo.Checked then HintStr := HintStr + 'Any Combination '
+    else HintStr := HintStr + 'Exact Match of Words';
+    ButtonSearchOptions.Hint := HintStr;
+end;
+
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
     // if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
@@ -713,6 +727,7 @@ begin
     // Edit1.Text:= 'Search';
     MenuCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
     MenuAnyCombo.Checked:= Sett.CheckAnyCombination.Checked;
+    SetSearchOptionsHint();
     StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
     {$ifdef windows}
     StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?                                            // linux apps know how to do this themselves
@@ -766,6 +781,7 @@ end;
 procedure TSearchForm.ButtonSearchOptionsClick(Sender: TObject);
 begin
      popupSearchOptions.popup;
+     SetSearchOptionsHint();
 end;
 
 procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
