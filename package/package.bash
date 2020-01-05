@@ -226,14 +226,26 @@ function DebianPackage () {
 }
 
 function DoGZipping {
-	# Note windows cannot handle gzip'ed files, use zip. 
-	rm -f *.gz
-	cp ../tomboy-ng/tomboy-ng .
-	gzip -q tomboy-ng
-	mv tomboy-ng.gz tomboy-ng64_$VERSION.gz
-	cp ../tomboy-ng/tomboy-ng32 .
-	gzip -q tomboy-ng32
-	mv tomboy-ng32.gz tomboy-ng32_$VERSION.gz
+	# Note windows cannot handle gzip'ed files, use zip.
+        GZIP_DIR="$PRODUCT"-"$VERSION"
+
+	for TBVer in tomboy-ng tomboy-ng32; do
+		rmdir -Rf "$GZIP_DIR"	
+		mkdir "$GZIP_DIR"
+		cp "../$PRODUCT/$PRODUCT/$TBVer" "$GZIP_DIR"/"$PRODUCT"
+		for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
+			cp "$ICON_DIR/$i.png" "$GZIP_DIR/$i.png"
+		done;
+		cp "$ICON_DIR/install-local.bash" "$GZIP_DIR/install-local.png"
+		cp "$ICON_DIR/local.desktop" "$GZIP_DIR/tomboy-ng.desktop"
+		rm -f *.gz
+		gzip -q "$GZIP_DIR" 
+		if [ "$TBVer" = "tomboy-ng32" ]; then
+			mv "$GZIP_DIR".gz "$PRODUCT"_32_$VERSION.gz"
+		else
+			mv "$GZIP_DIR".gz "$PRODUCT"_64_$VERSION.gz"
+		fi
+	done;
 }
 
 function MkWinPreInstaller() {
