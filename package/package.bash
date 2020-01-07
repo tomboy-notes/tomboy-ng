@@ -228,23 +228,22 @@ function DebianPackage () {
 function DoGZipping {
 	# Note windows cannot handle gzip'ed files, use zip.
         GZIP_DIR="$PRODUCT"-"$VERSION"
-
-	for TBVer in tomboy-ng tomboy-ng32; do
-		rmdir -Rf "$GZIP_DIR"	
+	rm -f *.tgz
+	for TBVer in tomboy-ng32 tomboy-ng; do
+		rm -Rf "$GZIP_DIR"	
 		mkdir "$GZIP_DIR"
-		cp "../$PRODUCT/$PRODUCT/$TBVer" "$GZIP_DIR"/"$PRODUCT"
+		cp "../$PRODUCT/$TBVer" "$GZIP_DIR"/"$PRODUCT"
 		for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
 			cp "$ICON_DIR/$i.png" "$GZIP_DIR/$i.png"
 		done;
-		cp "$ICON_DIR/install-local.bash" "$GZIP_DIR/install-local.png"
-		cp "$ICON_DIR/local.desktop" "$GZIP_DIR/tomboy-ng.desktop"
-		rm -f *.gz
-		gzip -q "$GZIP_DIR" 
-		if [ "$TBVer" = "tomboy-ng32" ]; then
-			mv "$GZIP_DIR".gz "$PRODUCT"_32_$VERSION.gz"
-		else
-			mv "$GZIP_DIR".gz "$PRODUCT"_64_$VERSION.gz"
-		fi
+		cp "$ICON_DIR/install-local.bash" "$GZIP_DIR/install-local.bash"
+		tar czf "$TBVer"-"$VERSION".tgz "$GZIP_DIR"
+		#if [ "$TBVer" = "tomboy-ng32" ]; then
+		#	mv "$GZIP_DIR".gz "$PRODUCT"_32_$VERSION.gz"
+		#else
+		#	mv "$GZIP_DIR".gz "$PRODUCT"_64_$VERSION.gz"
+		#fi
+		echo "made one gz file -----------------------"
 	done;
 }
 

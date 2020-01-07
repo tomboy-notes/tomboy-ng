@@ -198,6 +198,7 @@ unit EditBox;
     2019/12/18  LinkScanRange moved here from Settings, now 100, was 50
     2019/12/22  Extensive changes to ClearNearLink() to ensure links are not smeared.
     2020/01/02  Enabled Ctrl-Shift left or right arrow selecting or extending selecton by word.
+    2020/01/07  Use SaveTheNote() even when existing app with a clean note, UpdateNote() not used now
 }
 
 
@@ -413,8 +414,11 @@ type
         // Pastes into KMemo whatever is returned by the PrimarySelection system.
         procedure PrimaryPaste(SelIndex: integer);
         { Saves the note in KMemo1, must have title but can make up a file name if needed
-          If filename is invalid, bad GUID, asks user if they want to change it (they do !) }
-		procedure SaveTheNote();
+          If filename is invalid, bad GUID, asks user if they want to change it (they do !)
+          We always save the note on FormDestroy or application exit, even if not dirty to
+          update the position and OOS data.  We used to call UpdateNote in the hope its quicker
+          but it forgets to record notebook membership. Revist some day ....}
+		procedure SaveTheNote(WeAreClosing: boolean=False);
         	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
         function NewNoteTitle() : ANSIString;
                  { Saves the note as text or rtf, consulting user about path and file name }
@@ -1451,6 +1455,10 @@ begin
     {$endif}
 end;
 
+
+// As UpdateNote does not record Notebook membership, abandon it for now.
+// Maybe come back later and see if it can be patched, its probably quicker.
+// Was only called on a clean note ....
 function TEditBoxForm.UpdateNote(NRec : TNoteUpdaterec) : boolean;
 var
     InFile, OutFile: TextFile;
@@ -1460,7 +1468,7 @@ begin
   TempName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
   if not DirectoryExists(TempName) then
       CreateDir(AppendPathDelim(tempname));
-  TempName := tempName + pathDelim + 'location.note';
+  TempName := tempName + pathDelim + 'location.note';             // ToDo : generate a random name
   AssignFile(InFile, NRec.FFName);
   AssignFile(OutFile, TempName);
   try
@@ -1480,6 +1488,9 @@ begin
           writeln(OutFile, '  <x>' + NRec.X + '</x>');
           writeln(OutFile, '  <y>' + NRec.Y + '</y>');
           writeln(OutFile, '  <open-on-startup>' + NRec.OOS + '</open-on-startup>');
+
+          //Must see if this note is in a notebook, if so, record here.
+
           writeln(OutFile, '</note>');
       finally
           CloseFile(OutFile);
@@ -1536,9 +1547,9 @@ var
     ARec : TNoteUpdateRec;
 begin
     if not Kmemo1.ReadOnly then
-        if Dirty then
-            SaveTheNote()
-        else begin
+//        if Dirty then
+            SaveTheNote(True);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
+{        else begin
             ARec.CPos:='1';
             ARec.X := inttostr(Left);
             ARec.Y := inttostr(top);
@@ -1549,7 +1560,7 @@ begin
             if Verbose then
                 debugln('Going to update note ' + self.NoteFileName + ' and Sett.AreClosing is ' + booltostr(Sett.AreClosing, True));
             UpDateNote(ARec);
-        end;
+        end;                                 }
 
 
 //    if Dirty and (not KMemo1.ReadOnly)then begin
@@ -1561,6 +1572,7 @@ begin
     UnsetPrimarySelection;                  // tidy up copy on selection.
     // LogClose();
 end;
+
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
 var
@@ -2640,7 +2652,7 @@ begin
     SaveTheNote();
 end;
 
-procedure TEditBoxForm.SaveTheNote();
+procedure TEditBoxForm.SaveTheNote(WeAreClosing : boolean = False);
 var
  	Saver : TBSaveNote;
     SL : TStringList;
@@ -2689,13 +2701,15 @@ begin
         Loc.Height:=inttostr(Height);
         Loc.X := inttostr(Left);
         Loc.Y := inttostr(Top);
-        Loc.OOS := 'True';
+        Loc.OOS := booltostr(WeAreClosing, True);
         Loc.CPos:='1';
         loc.FFName:='';
         Saver.WriteToDisk(NoteFileName, Loc);
         // T5 := GetTickCount64();                   // 1mS
         // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid
-        SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
+        // No point in calling this if we are closing.
+        if not WeAreClosing then
+            SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
                                         // if we have rewritten GUID, that will create new entry for it.
         // T6 := GetTickCount64();                   //  14mS
         if OldFileName <> '' then

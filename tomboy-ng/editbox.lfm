@@ -6,6 +6,8 @@ object EditBoxForm: TEditBoxForm
   Caption = 'EditBoxForm'
   ClientHeight = 497
   ClientWidth = 617
+  Constraints.MinHeight = 200
+  Constraints.MinWidth = 200
   OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery

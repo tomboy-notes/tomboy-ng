@@ -132,7 +132,7 @@ type
             CreateDate : ANSIString;
             procedure SaveNewTemplate(NotebookName: ANSIString);
          	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
-            procedure WriteToDisk(FileName: ANSIString; NoteLoc: TNoteUpdateRec {TNoteLocation});
+            function WriteToDisk(FileName: ANSIString; NoteLoc: TNoteUpdateRec): boolean;
             constructor Create;
             destructor Destroy;  override;
     end;
@@ -632,18 +632,31 @@ var
     end;       }
 end;
 
-procedure TBSaveNote.WriteToDisk(FileName: ANSIString; NoteLoc : TNoteUpdateRec {TNoteLocation});
+// gets called (from outside) after all content assembled.  Its done from outside
+// as the calling unit has control of KMemo's locking.
+function TBSaveNote.WriteToDisk(FileName: ANSIString; NoteLoc : TNoteUpdateRec) : boolean;
 var
    Buff : string = '';
+   TmpName : string;
 begin
     // we write out the footer here so we can do the searching to notebook stuff
     // after we have released to lock on KMemo.
     Buff := Footer(NoteLoc);
     OutStream.Write(Buff[1], length(Buff));
+    // OK, lets save it.
+    // ----------------------------------
+    // We must be a bit smarter here, we should save the file in tmp, when closed,
+    // move it over to the actual position. Thats will prevent, to some extent, poweroff
+    // crashe messing with files.  See EditBox.UpdateNote() May generate an EStreamError
 
-    OutStream.SaveToFile(FileName);
+    TmpName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
+    if not DirectoryExists(TmpName) then
+       if not CreateDir(AppendPathDelim(tmpname)) then exit(False);
+    TmpName := TmpName + pathDelim + extractFileName(FileName);
+    OutStream.SaveToFile(TmpName);
     OutStream.Free;
     OutStream := nil;
+    result := RenameFileUTF8(TmpName, FileName);
 end;
 
 
