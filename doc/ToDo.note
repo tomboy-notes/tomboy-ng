@@ -7,9 +7,8 @@ This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generate
 
 <bold>Bugs and Feature Requests</bold></size:huge>
 
-The correct place to discuss issues relating to tomboy-ng is the existing Tomboy mailings list. See  http://lists.beatniksoftware.com/listinfo.cgi/tomboy-list-beatniksoftware.com
-
-Formal bug reports and feature requests should be via Github https://github.com/tomboy-notes/tomboy-ng/issues<size:huge>
+Bug reports and feature requests should be via Github https://github.com/tomboy-notes/tomboy-ng/issues
+There is some advice about DIY debugging further down this document.<size:huge>
 
 <bold>Tested Platforms</bold></size:huge>
 
@@ -17,55 +16,83 @@ tomboy-ng is currently tested on a number of platforms , see https://github.com/
 
 Reports of your experiences are very welcome ! <size:huge>
 
-<bold>Known Issues</bold></size:huge><size:large><bold>
-
-All Platforms</bold></size:large>
-We don't do multilevel bullets.
-Tabs do not work like real tabs should.<size:huge>
-
-<bold>Here is a todo list (updated 2019/12/20)</bold></size:huge>
-
+<bold>Known Issues and todo list (updated 2020/01/10)</bold></size:huge>
 Recent fixes show as strikeout.
 
+<list><list-item dir="ltr">We don't do multilevel bullets.</list-item></list>
+<list><list-item dir="ltr">Tabs do not work like real tabs should.</list-item></list>
 <list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
 <list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
 <list><list-item dir="ltr">Network Sync</list-item></list>
 <list><list-item dir="ltr"><strikeout>Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</strikeout></list-item></list><strikeout></strikeout>
-<list><list-item dir="ltr">When user chooses to download the help notes in their own language (if available) its dependant on some OS issues. Won't work on Windows 7 and won't work on a Mac that does not have wget installed.</list-item></list>
+<list><list-item dir="ltr">When user chooses to download the help notes in their own language (if available) its dependant on some OS issues. Won't work on Windows 7 and won't work on a Mac that does not have wget installed. A possible fix exists in the next release of FPC.</list-item></list>
 <list><list-item dir="ltr"><strikeout>Display http: links, open in browser</strikeout></list-item></list><strikeout>
-</strikeout><list><list-item dir="ltr">Main Menu in all main forms. Ctrl Q to quit programme</strikeout></list-item></list><strikeout><strikeout>
-</strikeout><list><list-item dir="ltr">Second Instance should poke existing instance allowing use by systems that cannot display System Tray Icon.</strikeout></list-item></list><strikeout><strikeout></strikeout>
-<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.</list-item></list><size:large>
-
+</strikeout><list><list-item dir="ltr">Main Menu in all main forms. Ctrl Q to quit programme.</strikeout></list-item></list><strikeout><strikeout></strikeout>
+<list><list-item dir="ltr">A <strikeout>Second Instance should poke existing instance allowing use by systems that cannot display System Tray Icon.</strikeout></list-item></list><strikeout></strikeout>
+<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.</list-item></list>
+<list><list-item dir="ltr">We don't have any Undo - Redo capability..</list-item></list><size:large>
 
 <bold>Long term 'maybe' stuff</bold></size:large>
 <list><list-item dir="ltr">Move notes into database (ie sqlite for small users, something bigger for BIG users). </list-item></list>
 <list><list-item dir="ltr">Better export abilities - at present plain text, markdown and RTF. What about html, PDF etc ? Man Page</list-item></list>
 <list><list-item dir="ltr">Import ability. Import a directory of Tomboy notes. Import other formats.</list-item></list>
 <list><list-item dir="ltr">Revise controls, at present modeled on Tomboy, we can improve.</list-item></list>
-<list><list-item dir="ltr">Install models - Flatpack, Snap etc ?.</list-item></list>
+<list><list-item dir="ltr">Install models - Flatpack, Snap etc ?.</list-item></list><size:large>
 
 
+<bold>Debugging</bold></size:large>
+If you have problems with the application, or wish to make a feature request, please report via the github tomboy-ng issues facility. 
+If tomboy-ng crashes or does something unexpected, there are a number of command line switches that may reveal whats going on (t either yourself of, if posted to 'issues', the author).  Using these command line switches is easy in Linux but Windows or Mac users need to capture the information if a file, see below -
 
+<bold>Command Line Switches</bold>
 
+<list><list-item dir="ltr"><monospace>   -delay-startn                Delay startup by 2 Seconds to allow OS to settle</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   -l CCode  --lang=CCode       Force Language, supported es, nl</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --debug-log=SOME.LOG         Direct debug output to SOME.LOG.</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   -h --help                    Show this help message and exit.</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --version                    Print version and exit</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   -g --gnome3                  Run in RedHatGnome mode, no TrayIcon</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --no-splash                  Dont show small status/splash window</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --debug-sync                 Show debug messages during Sync</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --debug-index                Show debug messages while indexing notes</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --debug-spell                Show debug messages while spell setup</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --config-dir=PATH_to_DIR     Create or use an alternative config</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   -o --open-note=PATH_to_NOTE  Open indicated note, switch is optional</monospace></list-item></list><monospace></monospace>
+<list><list-item dir="ltr"><monospace>   --save-exit                  After import single note, save and exit.</monospace></list-item></list><monospace></monospace>
 
+<bold>Capturing to a file</bold>
+Windows and Mac do not, for this purpose, have a console. But they too  can be told to capture this log info to a file using  another  command  line  switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified. For example a linux user would  -
 
+       set tomboy-ng_debuglog=c:\%userprofile%\debug.txt
 
+<bold>Mac</bold> users can do something similar from a terminal :
 
+       open /Applications/tomboy-ng.app --args     "--debug-log=$HOME/tomboy-ng.log"  "--debug-sync"
 
+       Linux users who need a debug logfile can also :
 
+       tomboy-ng --debug-sync --debug-log=$HOME/tomboy-ng.log
+
+<bold>Windows</bold> users should do something like this -
+
+<list><list-item dir="ltr">Rightclick the startbutton and select "run".  In the field, enter this command line exactly as show (including the inverted commas) -</list-item></list>
+<list><list-item dir="ltr">"C:\Program Files\tomboy-ng\tomboy-ng.exe" --debug-index --debug-log=%userprofile%\Desktop\tomboy-log.txt</list-item></list>
+<list><list-item dir="ltr">Press enter, tomboy-ng should start up normally. Close it. </list-item></list>
+<list><list-item dir="ltr">A file called tomboy-log.txt will have been created on your desktop.</list-item></list>
+
+In all cases, you may need to zip that file up to post it on Github. If  you  do intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see. It may include things like note Titles for example.
 
 </note-content></text>
-  <last-change-date>2019-12-20T16:56:17.0370000+11:00</last-change-date>
-  <last-metadata-change-date>2019-12-20T16:56:17.0370000+11:00</last-metadata-change-date>
+  <last-change-date>2020-01-10T16:11:21.7750000+11:00</last-change-date>
+  <last-metadata-change-date>2020-01-10T16:11:21.7750000+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>1000</width>
+  <width>1211</width>
   <height>626</height>
   <x>20</x>
   <y>30</y>
-  <open-on-startup>True</open-on-startup>
+  <open-on-startup>False</open-on-startup>
 </note>

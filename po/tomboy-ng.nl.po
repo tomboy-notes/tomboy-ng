@@ -325,6 +325,10 @@ msgstr "Instellingen"
 msgid "Synchronise"
 msgstr ""
 
+#: searchunit.rssearchhint
+msgid "Exact matches for terms between \" \""
+msgstr ""
+
 #: searchunit.rssetupnotesdirfirst
 #, fuzzy
 msgctxt "searchunit.rssetupnotesdirfirst"
@@ -1150,25 +1154,15 @@ msgstr "Verversen"
 msgid "Re-index notes"
 msgstr "Notities opnieuw indexeren"
 
-#: tsearchform.buttonsearchoptions.caption
-msgid "Search Options"
-msgstr "Zoekopties"
-
 #: tsearchform.caption
 #, fuzzy
 #| msgid "Search Form"
 msgid "tomboy-ng Search"
 msgstr "Zoekpagina"
 
-#: tsearchform.menuanycombo.caption
+#: tsearchform.checkcasesensitive.caption
 #, fuzzy
-#| msgid "AnyCombination"
-msgctxt "tsearchform.menuanycombo.caption"
-msgid "Any Combination"
-msgstr "Elke combinatie"
-
-#: tsearchform.menucasesensitive.caption
-msgctxt "tsearchform.menucasesensitive.caption"
+msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr "Hoofdlettergevoelig"
 
@@ -1264,11 +1258,6 @@ msgstr "Hulp"
 msgctxt "tsett.caption"
 msgid "tomboy-ng Settings"
 msgstr "Instellingen"
-
-#: tsett.checkanycombination.caption
-msgctxt "tsett.checkanycombination.caption"
-msgid "Any Combination"
-msgstr "Elke combinatie"
 
 #: tsett.checkautostart.caption
 msgctxt "tsett.checkautostart.caption"

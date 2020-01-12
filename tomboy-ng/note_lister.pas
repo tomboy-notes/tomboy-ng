@@ -694,11 +694,11 @@ var
     AWord : string = '';
     InCommas : boolean = false;
 begin
-    if not Sett.CheckAnyCombination.Checked then begin
+    {if not Sett.CheckAnyCombination.Checked then begin
         // SL.LineBreak:=' ';          // Break up Term at each space
         SL.AddText(trim(Term));     // A single entry if CheckAnyCombination not checked.
         exit;
-    end;
+    end;       }
     // If AnyCombination is not checked, we do the allow sections in inverted commas to be treated as one word.
     while I <= length(trim(Term)) do begin
         if Term[i] = '"' then begin

@@ -126,7 +126,6 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
-        CheckAnyCombination: TCheckBox;
         CheckAutostart: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         CheckManyNotebooks: TCheckBox;
@@ -787,8 +786,6 @@ begin
         	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
             CheckCaseSensitive.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
-            CheckAnyCombination.Checked :=
-                ('true' = Configfile.readstring('BasicSettings', 'AnyCombination', 'true'));
             CheckShowTomdroid.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
             CheckShowSplash.Checked :=
@@ -879,9 +876,6 @@ begin
             if CheckCaseSensitive.checked then
                 Configfile.writestring('BasicSettings', 'CaseSensitive', 'true')
             else Configfile.writestring('BasicSettings', 'CaseSensitive', 'false');
-            if CheckAnyCombination.checked then
-                Configfile.writestring('BasicSettings', 'AnyCombination', 'true')
-            else Configfile.writestring('BasicSettings', 'AnyCombination', 'false');
             if CheckShowIntLinks.Checked then
                 ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'true')
             else ConfigFile.writestring('BasicSettings', 'ShowIntLinks', 'false');
@@ -1176,14 +1170,9 @@ begin
                 SearchForm.RefreshMenus(mkHelpMenu);
             end;
             if TCheckBox(Sender).Name = 'CheckCaseSensitive' then begin
-                SearchForm.MenuCaseSensitive.Checked := TCheckBox(Sender).Checked;
-                SearchForm.SetSearchOptionsHint();
+                SearchForm.CheckCaseSensitive.Checked := TCheckBox(Sender).Checked;
             end;
-            if TCheckBox(Sender).Name = 'CheckAnyCombination' then begin
-                SearchForm.MenuAnyCombo.Checked := TCheckBox(Sender).Checked;
-                SearchForm.SetSearchOptionsHint();
-            end;
-        end;
+         end;
 end;
 
 function TSett.GetLocalTime: ANSIstring;

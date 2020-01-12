@@ -117,18 +117,15 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
 type        { TSearchForm }
     TSearchForm = class(TForm)
-      ButtonSearchOptions: TButton;
 			ButtonNotebookOptions: TButton;
 			ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
+        CheckCaseSensitive: TCheckBox;
         Edit1: TEdit;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
-                MenuCaseSensitive: TMenuItem;
-                MenuAnyCombo: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
-                PopupSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
 		Splitter1: TSplitter;
@@ -136,11 +133,10 @@ type        { TSearchForm }
 		StringGridNotebooks: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         procedure ButtonMenuClick(Sender: TObject);
-        procedure ButtonSearchModeClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonClearFiltersClick(Sender: TObject);
-        procedure ButtonSearchOptionsClick(Sender: TObject);
+        procedure CheckCaseSensitiveChange(Sender: TObject);
 		procedure Edit1EditingDone(Sender: TObject);
 		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
@@ -149,8 +145,6 @@ type        { TSearchForm }
 		procedure FormDestroy(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure FormShow(Sender: TObject);
-        procedure MenuAnyComboClick(Sender: TObject);
-        procedure MenuCaseSensitiveClick(Sender: TObject);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
@@ -182,8 +176,6 @@ type        { TSearchForm }
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
-        // Puts current search options in hint, public because Settings will call it if user changes there.
-        procedure SetSearchOptionsHint();
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
         // that Menu, else applies WhichSection to all know Main TB Menus.
         procedure RefreshMenus(WhichSection: TMenuKind; AMenu: TPopupMenu=nil);
@@ -574,6 +566,7 @@ resourcestring
   rsSetupNotesDirFirst = 'Please setup a notes directory first';
   rsSetupSyncFirst = 'Please config sync system first';
   rsCannotFindNote = 'ERROR, cannot find ';
+  rsSearchHint = 'Exact matches for terms between " "';
 
 procedure TSearchForm.FileMenuClicked(Sender : TObject);
 var
@@ -684,6 +677,7 @@ end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
+    Edit1.Hint:=rsSearchHint;
     NoteLister := nil;
     CreateMenus();
     if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
@@ -708,26 +702,13 @@ begin
      end;
 end;
 
-procedure TSearchForm.SetSearchOptionsHint();
-var
-    HintStr : string;
-begin
-    if  MenuCaseSensitive.checked then HintStr := 'Case Sensitive and '
-    else HintStr := 'Case insensitive and ';
-    if MenuAnyCombo.Checked then HintStr := HintStr + 'Any Combination '
-    else HintStr := HintStr + 'Exact Match of Words';
-    ButtonSearchOptions.Hint := HintStr;
-end;
-
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
     // if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
     // Edit1.Text:= 'Search';
-    MenuCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
-    MenuAnyCombo.Checked:= Sett.CheckAnyCombination.Checked;
-    SetSearchOptionsHint();
+    CheckCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
     StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
     {$ifdef windows}
     StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?                                            // linux apps know how to do this themselves
@@ -766,22 +747,9 @@ begin
     stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
 end;
 
-procedure TSearchForm.MenuAnyComboClick(Sender: TObject);
+procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);
 begin
-     MenuAnyCombo.Checked := not MenuAnyCombo.Checked;
-     Sett.CheckAnyCombination.Checked := MenuAnyCombo.Checked;
-end;
-
-procedure TSearchForm.MenuCaseSensitiveClick(Sender: TObject);
-begin
-     MenuCaseSensitive.Checked:= not MenuCaseSensitive.Checked;
-     Sett.CheckCaseSensitive.Checked := MenuCaseSensitive.Checked;
-end;
-
-procedure TSearchForm.ButtonSearchOptionsClick(Sender: TObject);
-begin
-     popupSearchOptions.popup;
-     SetSearchOptionsHint();
+    Sett.CheckCaseSensitive.Checked := CheckCaseSensitive.Checked;
 end;
 
 procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
@@ -924,11 +892,6 @@ begin
     //StringGridNotebooks.repaint;
     UseList();
     StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
-end;
-
-procedure TSearchForm.ButtonSearchModeClick(Sender: TObject);
-begin
-    PopupSearchOptions.popup;
 end;
 
 procedure TSearchForm.ButtonMenuClick(Sender: TObject);

@@ -98,7 +98,7 @@ Quit (ie close) this Note
 
 
 .SH DEBUGGING
-tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows does not, for this purpose, have a console. But it can be told to capture this log info to a file using another command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
+tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows and Mac do not, for this purpose, have a console. But can be told to capture this log info to a file using another command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
 
 tomboy-ng  \-\-debug-log=%userprofile%\\debug.txt  \-\-debug-sync
 
@@ -111,6 +111,14 @@ open /Applications/tomboy-ng.app \-\-args     "\-\-debug-log=$HOME/tomboy-ng.log
 Linux users who need a debug logfile can also :
 
 tomboy-ng \-\-debug-sync \-\-debug-log=$HOME/tomboy-ng.log
+
+Windows users should do something like this -
+
+Rightclick the startbutton and select "run".  In the field, enter this command line exactly as show (including the inverted commas) - 
+
+"C:\\Program Files\\tomboy-ng\\tomboy-ng.exe" --debug-index --debug-log=%userprofile%\\Desktop\\tomboy-log.txt
+
+Press enter, tomboy-ng should start up normally. Close it. A file called tomboy-log.txt will have been created on your desktop.
 
 If you intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see.
 

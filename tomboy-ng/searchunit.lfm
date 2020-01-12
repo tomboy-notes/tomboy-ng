@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 710
+  Left = 862
   Height = 401
-  Top = 245
+  Top = 303
   Width = 824
   Caption = 'tomboy-ng Search'
   ClientHeight = 401
@@ -16,20 +16,22 @@ object SearchForm: TSearchForm
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = ButtonSearchOptions
+    AnchorSideRight.Control = CheckCaseSensitive
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
     Left = 106
     Height = 32
     Top = 3
-    Width = 381
+    Width = 423
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
-    BorderSpacing.Right = 1
+    BorderSpacing.Right = 7
     OnEditingDone = Edit1EditingDone
     OnEnter = Edit1Enter
     OnExit = Edit1Exit
     OnKeyDown = FormKeyDown
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 0
   end
   object ButtonRefresh: TButton
@@ -189,22 +191,6 @@ object SearchForm: TSearchForm
       )
     end
   end
-  object ButtonSearchOptions: TButton
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = ButtonRefresh
-    Left = 488
-    Height = 32
-    Top = 3
-    Width = 184
-    Anchors = [akTop, akRight]
-    BorderSpacing.Top = 3
-    Caption = 'Search Options'
-    OnClick = ButtonSearchOptionsClick
-    ParentShowHint = False
-    PopupMenu = PopupSearchOptions
-    ShowHint = True
-    TabOrder = 3
-  end
   object ButtonMenu: TSpeedButton
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Edit1
@@ -294,6 +280,22 @@ object SearchForm: TSearchForm
     }
     OnClick = ButtonMenuClick
   end
+  object CheckCaseSensitive: TCheckBox
+    AnchorSideTop.Control = ButtonRefresh
+    AnchorSideRight.Control = ButtonRefresh
+    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideBottom.Side = asrBottom
+    Left = 536
+    Height = 32
+    Top = 3
+    Width = 129
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Right = 7
+    Caption = 'Case Sensitive'
+    OnChange = CheckCaseSensitiveChange
+    ParentShowHint = False
+    TabOrder = 3
+  end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 472
     top = 112
@@ -312,18 +314,6 @@ object SearchForm: TSearchForm
     object MenuNewNoteFromTemplate: TMenuItem
       Caption = 'Create New Note from Template'
       OnClick = MenuNewNoteFromTemplateClick
-    end
-  end
-  object PopupSearchOptions: TPopupMenu
-    left = 652
-    top = 232
-    object MenuCaseSensitive: TMenuItem
-      Caption = 'Case Sensitive'
-      OnClick = MenuCaseSensitiveClick
-    end
-    object MenuAnyCombo: TMenuItem
-      Caption = 'Any Combination'
-      OnClick = MenuAnyComboClick
     end
   end
 end

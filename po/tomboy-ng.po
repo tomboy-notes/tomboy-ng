@@ -304,6 +304,10 @@ msgstr ""
 msgid "Synchronise"
 msgstr ""
 
+#: searchunit.rssearchhint
+msgid "Exact matches for terms between \" \""
+msgstr ""
+
 #: searchunit.rssetupnotesdirfirst
 msgctxt "searchunit.rssetupnotesdirfirst"
 msgid "Please setup a notes directory first"
@@ -1118,21 +1122,12 @@ msgstr ""
 msgid "Re-index notes"
 msgstr ""
 
-#: tsearchform.buttonsearchoptions.caption
-msgid "Search Options"
-msgstr ""
-
 #: tsearchform.caption
 msgid "tomboy-ng Search"
 msgstr ""
 
-#: tsearchform.menuanycombo.caption
-msgctxt "tsearchform.menuanycombo.caption"
-msgid "Any Combination"
-msgstr ""
-
-#: tsearchform.menucasesensitive.caption
-msgctxt "tsearchform.menucasesensitive.caption"
+#: tsearchform.checkcasesensitive.caption
+msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 
@@ -1225,11 +1220,6 @@ msgstr ""
 #: tsett.caption
 msgctxt "tsett.caption"
 msgid "tomboy-ng Settings"
-msgstr ""
-
-#: tsett.checkanycombination.caption
-msgctxt "tsett.checkanycombination.caption"
-msgid "Any Combination"
 msgstr ""
 
 #: tsett.checkautostart.caption

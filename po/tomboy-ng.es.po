@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.0.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: backupview.rscannotdelete
@@ -325,6 +325,10 @@ msgstr "Preferencias"
 #: searchunit.rsmenusync
 msgid "Synchronise"
 msgstr "Sincronizar"
+
+#: searchunit.rssearchhint
+msgid "Exact matches for terms between \" \""
+msgstr "usar comillas para búsqueda exacta"
 
 #: searchunit.rssetupnotesdirfirst
 msgctxt "searchunit.rssetupnotesdirfirst"
@@ -1163,23 +1167,13 @@ msgstr "Actualizar"
 msgid "Re-index notes"
 msgstr "Re-indizar las notas"
 
-#: tsearchform.buttonsearchoptions.caption
-msgid "Search Options"
-msgstr "Opciones de Búsqueda"
-
 #: tsearchform.caption
 msgid "tomboy-ng Search"
 msgstr "Búsqueda de tombo-ng"
 
-#: tsearchform.menuanycombo.caption
+#: tsearchform.checkcasesensitive.caption
 #, fuzzy
-#| msgid "AnyCombination"
-msgctxt "tsearchform.menuanycombo.caption"
-msgid "Any Combination"
-msgstr "Cualquier combinación"
-
-#: tsearchform.menucasesensitive.caption
-msgctxt "tsearchform.menucasesensitive.caption"
+msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr "Sensible a mayúsculas"
 
@@ -1279,11 +1273,6 @@ msgstr "Ayuda"
 msgctxt "tsett.caption"
 msgid "tomboy-ng Settings"
 msgstr "Preferencias de tomboy-ng"
-
-#: tsett.checkanycombination.caption
-msgctxt "tsett.checkanycombination.caption"
-msgid "Any Combination"
-msgstr "Cualquier combinación"
 
 # ¿Cargar?
 #: tsett.checkautostart.caption
@@ -1513,4 +1502,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
-

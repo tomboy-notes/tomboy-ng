@@ -135,15 +135,6 @@ object Sett: TSett
           OnChange = CheckReadOnlyChange
           TabOrder = 0
         end
-        object CheckAnyCombination: TCheckBox
-          Left = 32
-          Height = 24
-          Top = 56
-          Width = 149
-          Caption = 'Any Combination'
-          OnChange = CheckReadOnlyChange
-          TabOrder = 1
-        end
       end
       object CheckShowSearchAtStart: TCheckBox
         Left = 16
