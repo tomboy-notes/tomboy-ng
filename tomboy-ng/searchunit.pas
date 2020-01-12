@@ -839,8 +839,8 @@ begin
     EBox.NoteTitle:= NoteTitle;
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
-    EBox.Top := Placement + random(Placement*2);
-    EBox.Left := Placement + random(Placement*2);
+    //EBox.Top := Placement + random(Placement*2);
+    //EBox.Left := Placement + random(Placement*2);
     EBox.Show;
     EBox.Dirty := False;
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);

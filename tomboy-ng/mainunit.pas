@@ -260,8 +260,8 @@ begin
             EBox.NoteTitle:= '';
             EBox.NoteFileName := FullFileName;
             Ebox.TemplateIs := '';
-            EBox.Top := Placement + random(Placement*2);
-            EBox.Left := Placement + random(Placement*2);
+            //EBox.Top := Placement + random(Placement*2);
+            //EBox.Left := Placement + random(Placement*2);
             EBox.Dirty := False;
             if ViewerMode then
                 EBox.SetReadOnly(False);
@@ -373,6 +373,7 @@ begin
     Result := False;
     if Application.HasOption('o', 'open-note') then begin
        SingleNoteFileName := Application.GetOptionValue('o', 'open-note');
+       UseTrayMenu := False;
        exit(True);
     end;
     Params := TStringList.Create;

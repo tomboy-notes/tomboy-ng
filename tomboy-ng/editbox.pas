@@ -199,6 +199,7 @@ unit EditBox;
     2019/12/22  Extensive changes to ClearNearLink() to ensure links are not smeared.
     2020/01/02  Enabled Ctrl-Shift left or right arrow selecting or extending selecton by word.
     2020/01/07  Use SaveTheNote() even when existing app with a clean note, UpdateNote() not used now
+    2020/01/12  More agressive adjustmenst to formm position at opening a note Windows and Mac only
 }
 
 
@@ -432,6 +433,7 @@ type
         procedure UnsetPrimarySelection;
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
+        // Set by the calling process.
         SingleNoteMode : Boolean;
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
@@ -2602,17 +2604,16 @@ begin
 
     // ensure we don't start with more than two thirds _beyond_ boundaries.
     // don't seem to need this, on Linux at least, new window is always within screen. Test on Windows/Mac
-
-    // Review and use if necessary.
-    exit;
+    {$ifdef LINUX}exit;{$endif}
+    // Jan 2020, a possible problem in at least single note mode of notes beyond right hand edge of screen. bug #116
     if (Left + (Width div 3)) > Screen.Width then begin
         Left := Screen.Width - (Width div 3);
     end;
-    if Left < 0 then Left := 10;
+    //if Left < 0 then Left := 10;
     if (Top + (Height div 3)) > Screen.Height then begin
         Top := Screen.Height - (Height div 3);
     end;
-    if Top < 10 then Top := 10;
+    //if Top < 10 then Top := 10;
 end;
 
 procedure TEditBoxForm.ImportNote(FileName: string);
