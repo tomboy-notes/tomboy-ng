@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 862
+  Left = 1382
   Height = 401
-  Top = 303
+  Top = 326
   Width = 824
   Caption = 'tomboy-ng Search'
   ClientHeight = 401
@@ -11,7 +11,7 @@ object SearchForm: TSearchForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.0.4.0'
   object Edit1: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom

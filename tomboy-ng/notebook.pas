@@ -161,6 +161,7 @@ begin
                     Saver.SaveNewTemplate(EditNewNotebook.Text);
                     // OK, now add current note to the new Notebook
                     SearchForm.NoteLister.AddNoteBook(ExtractFileNameOnly(FullFileName) + '.note', EditNewNotebook.Text, False);
+                    SearchForm.RefreshNotebooks();
 				finally
                 	Saver.Destroy;
 				end;

@@ -168,6 +168,7 @@ type        { TSearchForm }
         procedure RecentMenuClicked(Sender: TObject);
 
 
+
         { Copies note data from internal list to StringGrid, sorts it and updates the
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
@@ -176,6 +177,8 @@ type        { TSearchForm }
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
+        {Just a service provided to NoteBook.pas, refresh the list of notebooks after adding or removing one}
+        procedure RefreshNotebooks();
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
         // that Menu, else applies WhichSection to all know Main TB Menus.
         procedure RefreshMenus(WhichSection: TMenuKind; AMenu: TPopupMenu=nil);
@@ -316,6 +319,11 @@ end;
 function TSearchForm.IsThisaTitle(const Term : ANSIString) : boolean;
 begin
 	Result := NoteLister.IsThisATitle(Term);
+end;
+
+procedure TSearchForm.RefreshNotebooks();
+begin
+    NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
 end;
 
 { Sorts List and updates the recently used list under trayicon }

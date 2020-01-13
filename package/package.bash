@@ -225,6 +225,19 @@ function DebianPackage () {
 	#fi
 }
 
+function WriteZipReadMe () {
+	RM="$1/readme.txt"
+	echo "This is a tar ball of $PRODUCT $VERSION for Linux. Use this if you cannot use" > "$RM"
+	echo "either the deb or rpm on your particular distribution. It contains some of the" >> "$RM"
+	echo "files you need but does not really install them nor does it resolve dependancies." >> "$RM"
+	echo "Its assumed you know what you are doing." >> "$RM"
+	echo "* Files and features not provided here include -" >> "$RM"
+	echo "* Language other than English" >> "$RM"
+	echo "* tomboy-ng help files" >> "$RM"
+	echo "* Ability to have tomboy-ng set itself to autostart" >> "$RM"
+	echo "If you need help, please post specific question to tomboy-ng github issues." >> "$RM"
+}
+
 function DoGZipping {
 	# Note windows cannot handle gzip'ed files, use zip.
         GZIP_DIR="$PRODUCT"-"$VERSION"
@@ -237,6 +250,10 @@ function DoGZipping {
 			cp "$ICON_DIR/$i.png" "$GZIP_DIR/$i.png"
 		done;
 		cp "$ICON_DIR/install-local.bash" "$GZIP_DIR/install-local.bash"
+		cp "$ICON_DIR/$PRODUCT.desktop" "$GZIP_DIR/$PRODUCT.desktop"
+		gzip -9kn ../doc/$PRODUCT.1
+		mv ../doc/$PRODUCT.1.gz "$GZIP_DIR"/.
+		WriteZipReadMe "$GZIP_DIR"
 		tar czf "$TBVer"-"$VERSION".tgz "$GZIP_DIR"
 		#if [ "$TBVer" = "tomboy-ng32" ]; then
 		#	mv "$GZIP_DIR".gz "$PRODUCT"_32_$VERSION.gz"

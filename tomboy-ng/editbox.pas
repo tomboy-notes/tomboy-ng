@@ -1550,7 +1550,10 @@ var
 begin
     if not Kmemo1.ReadOnly then
 //        if Dirty then
-            SaveTheNote(True);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
+
+
+
+            SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
 {        else begin
             ARec.CPos:='1';
             ARec.X := inttostr(Left);

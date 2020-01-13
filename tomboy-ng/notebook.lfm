@@ -8,7 +8,7 @@ object NoteBookPick: TNoteBookPick
   ClientHeight = 306
   ClientWidth = 579
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.0.4.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
