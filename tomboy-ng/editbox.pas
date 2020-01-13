@@ -342,8 +342,10 @@ type
         // FontNormal : integer; 		// as above
         { To save us checking the title if user is well beyond it }
         BlocksInTitle : integer;
-        { Alters the Font of Block as indicated }
+        // Set True by the delete button so we don't try and save it.
+        DeletingThisNote : boolean;
         procedure AdjustFormPosition();
+        { Alters the Font of Block as indicated }
         procedure AlterBlockFont(const FirstBlockNo : longint; const BlockNo: longint; const Command : integer;
             const NewFontSize: integer=0);
         { Alters the font etc of selected area as indicated }
@@ -519,6 +521,7 @@ begin
    		else if NoteFileName <> '' then
 	   		    SearchForm.DeleteNote(NoteFileName);
         Dirty := False;
+        DeletingThisNote := True;
 		Close;
    end;
 end;
@@ -1455,6 +1458,7 @@ begin
     MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
     MenuItemEvaluate.ShortCut := KeyToShortCut(VK_E, [ssMeta]);
     {$endif}
+    DeletingThisNote := False;
 end;
 
 
@@ -1552,7 +1556,7 @@ begin
 //        if Dirty then
 
 
-
+        if not DeletingThisNote then
             SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
 {        else begin
             ARec.CPos:='1';
@@ -2708,6 +2712,9 @@ begin
         Loc.OOS := booltostr(WeAreClosing, True);
         Loc.CPos:='1';
         loc.FFName:='';
+        if Dirty then Loc.LastChangeDate:=''
+        else Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
+        // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
         Saver.WriteToDisk(NoteFileName, Loc);
         // T5 := GetTickCount64();                   // 1mS
         // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid

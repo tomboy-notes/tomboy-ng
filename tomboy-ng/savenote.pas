@@ -82,6 +82,7 @@ type TNoteUpdateRec = record
      Width, Height : shortstring;
      OOS : shortstring;
      FFName : string;
+     LastChangeDate : string;   // if '', its a content save, generate a new timestamp
 end;
 
 
@@ -645,9 +646,9 @@ begin
     OutStream.Write(Buff[1], length(Buff));
     // OK, lets save it.
     // ----------------------------------
-    // We must be a bit smarter here, we should save the file in tmp, when closed,
-    // move it over to the actual position. Thats will prevent, to some extent, poweroff
-    // crashe messing with files.  See EditBox.UpdateNote() May generate an EStreamError
+    // We must be a bit smarter here, we save the file in tmp, when closed,
+    // move it over to the actual position. That will prevent, to some extent, poweroff
+    // crashes messing with files.  May generate an EStreamError
 
     TmpName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
     if not DirectoryExists(TmpName) then
@@ -699,7 +700,9 @@ var
    S1, S2, S3, S4, S5, S6 : string;
 
 begin
-  TimeStamp := Sett.GetLocalTime();   // get actual time date in format like Tomboy's
+  if Loc.LastChangeDate = '' then
+    TimeStamp := Sett.GetLocalTime()   // get actual time date in format like Tomboy's
+  else TimeStamp := Loc.LastChangeDate;
   S1 := '</note-content></text>'#10'  <last-change-date>';
   S2 := '</last-change-date>'#10'  <last-metadata-change-date>';
   S3 := '</last-metadata-change-date>'#10'  <create-date>';

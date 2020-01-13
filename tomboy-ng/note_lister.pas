@@ -160,6 +160,8 @@ type
     		{ The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
+            { Returns the LastChangeDate string for ID, empty string if not found }
+    function GetLastChangeDate(const ID: String): string;
             { Adds details of note of passed to NoteList }
     procedure IndexThisNote(const ID : String);
             { Returns T is ID in current list, takes 36 char GUID or simple file name }
@@ -622,6 +624,19 @@ end;
 procedure TNoteLister.IndexThisNote(const ID: String);
 begin
     GetNoteDetails(WorkingDir, CleanFileName(ID), TStringList(nil));
+end;
+
+
+function TNoteLister.GetLastChangeDate(const ID: String) : string;
+var
+    index : integer;
+    FileName : string;
+begin
+    Result := '';
+    FileName := CleanFileName(ID);
+    for Index := 0 to NoteList.Count -1 do
+      if NoteList.Items[Index]^.ID = FileName then
+          exit(NoteList.Items[Index]^.LastChange);
 end;
 
 function TNoteLister.IsIDPresent(ID: string): boolean;
