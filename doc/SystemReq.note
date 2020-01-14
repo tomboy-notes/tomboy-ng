@@ -8,7 +8,9 @@ This is a tomboy-ng doc for the Github Wiki. Its generated from a note in the to
 tomboy-ng is tested on <bold>Linux, Mac and Windows</bold>  platforms at each release. If your experiences differ, please let us know ! <size:large>
 
 <bold>Linux</bold></size:large>
- Should work on all Linux systems but Linux systems  vary.  And we now have tomboy-ng for Linux built with two different widget sets, GTK2 or Qt5.  Generally, always better to download the appropriate file and install using the text based command, rpm or apt. RPM based systems, should be installed with the rpm command, not yum or dnf. Deb systems should use apt (or gdebi), but not apt-get. Many systems want you to use their GUI installer, typically called "Software", we have had issues with these apps not resolving dependencies. At the bottom of this page, there is a note for people who cannot use debs or rpm installs.
+ Should work on all Linux systems but Linux systems  vary.  And we now have tomboy-ng for Linux built with two different widget sets, GTK2 or Qt5.  Generally, always better to download the appropriate file and install using the text based command, rpm or apt. RPM based systems, should be installed with the rpm command, not yum or dnf. Deb systems should use apt (or gdebi), but not apt-get. Many systems want you to use their GUI installer, typically called "Software", we have had issues with these apps not resolving dependencies.  
+
+Please read further down for notes relating to your specific Linux distribution/desktop.
 
 
 <bold>The Gnome 3 Workaround</bold>
@@ -25,7 +27,7 @@ Fedora using the default Gnome 3 desktop requires the Gnome 3 workaround mention
 <monospace>sudo rpm -e tomboy-ng [enter]</monospace>
 <monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace>
 
-<bold>Ubuntu</bold> - generally, all  work fine. Tested against 16.04 Ubuntu Gnome, 16.04 Ubuntu Mate, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.10 Ubuntu Gnome, Plasma,  Cinnamon and XFCe.  Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK one if you use Budgie.  Otherwise, new installs on (eg) Ubuntu 19.10 save some usefull diskspace by using the Qt5 variety. If you use 18.04, then stick with the GTK2 variety, its Qt5 is too old.
+<bold>Ubuntu</bold> - generally, all  work fine. Tested against 16.04 Ubuntu Gnome, 16.04 Ubuntu Mate, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.10 Ubuntu Gnome, Plasma,  Cinnamon and XFCe.  Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK one if you use Budgie.  Otherwise, new installs on (eg) Ubuntu 19.10 save some useful diskspace by using the Qt5 variety. If you use 18.04, then stick with the GTK2 variety, its Qt5 is too old.
 
 Again, I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories).
 
@@ -35,10 +37,17 @@ Again, I recommend downloading the file and using the apt command (note the './'
 
 <bold>Linux Mint </bold>19.2 Cinnamon.
 
-<bold>Mageia</bold> - Mate, XFCE and KDE (ie Plasma) work fine. Mageia Gnome needs Gnome 3 Workaround as mentioned above.  Mageia with Enlightenment works better with Qt5 (requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it.)  Sadly, Enlightenment  in the GTK variety still has a problem, instead of tomboy-ng's painfully cheery bright green icon, you see a white triangular warning icon. But it works. 
+<bold>Mageia</bold> - Mate, XFCE and KDE (ie Plasma) work fine. Mageia Gnome needs Gnome 3 Workaround as mentioned above.  Mageia with Enlightenment works better with Qt5 (requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it.)  Sadly, Enlightenment  in the GTK variety still has a problem, instead of tomboy-ng's  icon, you see a white triangular warning icon. But it works. 
  
 <monospace>su -c "rpm -e tomboy-ng"</monospace>
-<monospace>su -c "rpm -Uv tomboy-ng_0.25-2.amd64.rpm"</monospace><size:large>
+<monospace>su -c "rpm -Uv tomboy-ng_0.25-2.amd64.rpm"</monospace>
+
+<bold>openSuse</bold>
+Leap is best used with the default GTK version, its QT5 libraries apparently have issues. Tumbleweed on the other hand is probably better using the QT5 version. 
+
+<bold>Linux non package install</bold>
+MXLinux may fit into this category.
+Linux users who cannot use either the rpm or deb packages can use just a .tgz file. They contain just the binary and a few ancillary files.  You can (and must) put the binary (tomboy-ng) somewhere suitable where you can find it to start manually. There is a very early developmental and limited script that will do a basic install but it may not work for your system. It does <bold>not</bold> need root access. If you need help setting up icons and desktop files, please ask on github or the tomboy-ng mailing list.<size:large>
 
 <bold>Windows.</bold></size:large>
 As of v0.22 of tomboy-ng, there is one installer that installs either the 64 or 32bit version. It has been tested on a 32bit Vista and a 64bit Windows 10 Pro and should work on anything between. Note the green tomboy-ng System Tray Icon is sometimes hidden along with some others (to avoid clutter ?). Click the ^ icon to see them all.
@@ -60,19 +69,18 @@ Mac users will also probably have the library installed (if not, use Homebrew to
 Windows, sigh. Windows does not share well so I have provided a bundled hunspell library for the more popular 64bit downloads. Again, you probably already have dictionaries available bundled with another application, if not, they can be obtained freely online. Window's users, if you download a library and/or dictionaries, put them in the same directory as the tomboy-ng executable, tomboy-ng will look there first. <size:large>
 
 <bold>Other Operating Systems</bold></size:large>
-tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to work well on a number of other platforms, its  likely tomboy-ng could be made to as well. Please express your interest. Possible targets might include Rasperian, FreeBSD, Sparc .....<size:large>
+tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to work well on a number of other platforms, its  likely tomboy-ng could be made to as well. Please express your interest. Possible targets might include Rasperian, FreeBSD, Sparc .....
 
-<bold>Linux non package install</bold></size:large>
-Linux users who cannot use either the rpm or deb packages can use just a .gz file. They contain just the binary, you can (and must) put it somewhere suitable where you can find it to start manually. Or tuck it out of the way and set up your startup system to start it automatically, typically Control Panel - &gt; Startup Applications. If you use the .gz files, you will need to restore the executable bit before using it, eg chmod u+x tomboy-ng.   If you need help setting up icons and desktop files, please ask on github ot the tomboy-ng mailing list.
+
 </note-content></text>
-  <last-change-date>2019-12-26T18:26:48.5730000+11:00</last-change-date>
-  <last-metadata-change-date>2019-12-26T18:26:48.5730000+11:00</last-metadata-change-date>
+  <last-change-date>2020-01-14T21:13:17.2120000+11:00</last-change-date>
+  <last-metadata-change-date>2020-01-14T21:13:17.2120000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1380</width>
   <height>626</height>
-  <x>417</x>
-  <y>376</y>
+  <x>300</x>
+  <y>169</y>
   <open-on-startup>False</open-on-startup>
 </note>

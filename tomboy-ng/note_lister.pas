@@ -633,6 +633,7 @@ var
     FileName : string;
 begin
     Result := '';
+    if not assigned(NoteList) then exit('');
     FileName := CleanFileName(ID);
     for Index := 0 to NoteList.Count -1 do
       if NoteList.Items[Index]^.ID = FileName then

@@ -2712,8 +2712,10 @@ begin
         Loc.OOS := booltostr(WeAreClosing, True);
         Loc.CPos:='1';
         loc.FFName:='';
-        if Dirty then Loc.LastChangeDate:=''
-        else Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
+        if Dirty or SingleNoteMode then     // In SingeNoteMode, there is no NoteLister, so date is always updated.
+            Loc.LastChangeDate:=''
+        else
+            Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
         // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
         Saver.WriteToDisk(NoteFileName, Loc);
         // T5 := GetTickCount64();                   // 1mS

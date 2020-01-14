@@ -663,9 +663,16 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <CommandLineParams Value="/home/dbannon/Pascal/tomboy-ng/doc/SystemReq.note"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default"/>
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="/home/dbannon/Pascal/tomboy-ng/doc/SystemReq.note"/>
+          </local>
+        </Mode0>
       </Modes>
     </RunParams>
     <RequiredPackages Count="3">
