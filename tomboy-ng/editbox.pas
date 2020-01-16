@@ -2717,7 +2717,8 @@ begin
         else
             Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
         // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
-        Saver.WriteToDisk(NoteFileName, Loc);
+        if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing)
+            then Showmessage('ERROR, cannot save note, please report');         // may some write problem ??
         // T5 := GetTickCount64();                   // 1mS
         // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid
         // No point in calling this if we are closing.

@@ -640,6 +640,7 @@ var
    Buff : string = '';
    TmpName : string;
 begin
+    Result := False;
     // we write out the footer here so we can do the searching to notebook stuff
     // after we have released to lock on KMemo.
     Buff := Footer(NoteLoc);
@@ -657,7 +658,9 @@ begin
     OutStream.SaveToFile(TmpName);
     OutStream.Free;
     OutStream := nil;
-    result := RenameFileUTF8(TmpName, FileName);
+    {$ifdef WINDOWS}
+    if DeleteFileUTF8(FileName) then {$endif}           // Windows cannot 'move' over existing file.
+        result := RenameFileUTF8(TmpName, FileName);
 end;
 
 
