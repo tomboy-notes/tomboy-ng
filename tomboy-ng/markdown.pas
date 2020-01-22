@@ -27,10 +27,11 @@ unit markdown;
 { This unit converts a note to markdown format.
 
 HISTORY
-    2018/12/05  This unit is pleased th serve.
+    2018/12/05  This unit is pleased to serve.
     2018/12/06  Fixed a bug in Addtag, if Buff is only spaces.
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/09/27  Added SmallFont, actually subscript because markdown does not do a small font.
+    2020/01/22  Enabled sending md to clipboard and saving to a file.
 }
 
 interface
@@ -50,8 +51,10 @@ type
         Label1: TLabel;
         Memo1: TMemo;
         Panel1: TPanel;
+        SaveDialog1: TSaveDialog;
         procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonCopyAllClick(Sender: TObject);
+        procedure ButtonSaveClick(Sender: TObject);
         procedure FormActivate(Sender: TObject);
         procedure FormShow(Sender: TObject);
     private
@@ -90,7 +93,7 @@ var
 
 implementation
 
-uses settings;
+uses settings, Clipbrd;
 {$R *.lfm}
 
 { TFormMarkdown }
@@ -109,10 +112,21 @@ end;
 
 procedure TFormMarkdown.ButtonCopyAllClick(Sender: TObject);
 begin
-    Memo1.SetFocus;
-    Memo1.SelectAll;
-    Memo1.SetFocus;
-    Memo1.CopyToClipboard;
+    Clipboard.astext := Memo1.text;
+end;
+
+procedure TFormMarkdown.ButtonSaveClick(Sender: TObject);
+begin
+    SaveDialog1.DefaultExt := 'md';
+    {$ifdef UNIX}
+    SaveDialog1.InitialDir :=  GetEnvironmentVariable('HOME');
+    {$endif}
+    {$ifdef WINDOWS}
+    SaveDialog1.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
+    {$endif}
+    SaveDialog1.Filename := StringReplace(Caption, #32, '', [rfReplaceAll]) + '.' + 'md';
+    if SaveDialog1.Execute then
+        Memo1.Lines.SaveToFile(SaveDialog1.Filename);
 end;
 
 procedure TFormMarkdown.FormActivate(Sender: TObject);
@@ -295,7 +309,7 @@ begin
     // tags. If the note is to be readable by Tomboy, must comply. (EditBox does not care)
     // Tag order -
     // FontSize HiLite Ital Bold Bullet TEXT BulletOff BoldOff ItalOff HiLiteOff FontSize
-	// Processing Order is the reverese -
+	// Processing Order is the reverse -
     // ListOff BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold List
 
     //debugln(BlockAttributes(FT));

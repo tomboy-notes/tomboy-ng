@@ -932,6 +932,7 @@ end;
 procedure TEditBoxForm.MenuItemExportMarkdownClick(Sender: TObject);
 begin
   FormMarkDown.TheKMemo := KMemo1;
+  FormMarkDown.Caption:= CleanCaption();
   FormMarkDown.Show;
 end;
 
