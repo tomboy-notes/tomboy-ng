@@ -27,7 +27,7 @@ Fedora using the default Gnome 3 desktop requires the Gnome 3 workaround mention
 <monospace>sudo rpm -e tomboy-ng [enter]</monospace>
 <monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace>
 
-<bold>Ubuntu</bold> - generally, all  work fine. Tested against 16.04 Ubuntu Gnome, 16.04 Ubuntu Mate, 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.10 Ubuntu Gnome, Plasma,  Cinnamon and XFCe.  Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK one if you use Budgie.  Otherwise, new installs on (eg) Ubuntu 19.10 save some useful diskspace by using the Qt5 variety. If you use 18.04, then stick with the GTK2 variety, its Qt5 is too old.
+<bold>Ubuntu</bold> - generally, all  work fine. Tested against 18.04 Ubuntu Mate, 18.04 XUbuntu, 19.10 Ubuntu Gnome, Plasma,  Cinnamon and XFCe.  Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK one if you use Budgie.  Otherwise, new installs on (eg) Ubuntu 19.10 save some useful diskspace by using the Qt5 variety. If you use 18.04, then stick with the GTK2 variety, its Qt5 is too old.
 
 Again, I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories).
 
@@ -46,7 +46,8 @@ Again, I recommend downloading the file and using the apt command (note the './'
 Leap is best used with the default GTK version, its QT5 libraries apparently have issues. Tumbleweed on the other hand is probably better using the QT5 version. 
 
 <bold>Linux non package install</bold>
-MXLinux may fit into this category.
+Ubuntu 16.04 and MXLinux may fit into this category.
+
 Linux users who cannot use either the rpm or deb packages can use just a .tgz file. They contain just the binary and a few ancillary files.  You can (and must) put the binary (tomboy-ng) somewhere suitable where you can find it to start manually. There is a very early developmental and limited script that will do a basic install but it may not work for your system. It does <bold>not</bold> need root access. If you need help setting up icons and desktop files, please ask on github or the tomboy-ng mailing list.<size:large>
 
 <bold>Windows.</bold></size:large>
@@ -73,8 +74,8 @@ tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to w
 
 
 </note-content></text>
-  <last-change-date>2020-01-16T10:57:26.5150000+11:00</last-change-date>
-  <last-metadata-change-date>2020-01-16T10:57:26.5150000+11:00</last-metadata-change-date>
+  <last-change-date>2020-01-22T21:13:36.2190000+11:00</last-change-date>
+  <last-metadata-change-date>2020-01-22T21:13:36.2190000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

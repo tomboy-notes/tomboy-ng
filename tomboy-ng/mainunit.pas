@@ -385,6 +385,7 @@ begin
             if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
                     SingleNoteFileName := Params[0];
                     // SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
+                    UseTrayMenu := False;
                     exit(True);
             end;
         end;
