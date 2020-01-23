@@ -604,6 +604,8 @@ var
               could still have hanging xml tags. So either case, send it to add tag with
               an empty Font.
             }
+            if Buff <> '' then
+                OutStream.Write(Buff[1], length(Buff));
             Buff := '';
             if Bold then Buff := '</bold>';
             if Italics then Buff := Buff + '</italic>';
