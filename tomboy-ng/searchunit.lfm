@@ -1,5 +1,5 @@
 object SearchForm: TSearchForm
-  Left = 1382
+  Left = 1094
   Height = 401
   Top = 326
   Width = 824
@@ -11,7 +11,7 @@ object SearchForm: TSearchForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.0.4.0'
+  LCLVersion = '2.0.7.0'
   object Edit1: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom

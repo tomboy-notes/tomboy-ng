@@ -399,6 +399,7 @@ begin
 
 end;
 
+    // Builds a list of all the Menus we have floating around at the moment.
 procedure TSearchForm.MenuListBuilder(MList : TList);
 var
     AForm : TForm;
@@ -533,20 +534,20 @@ end;
 
 procedure TSearchForm.MenuRecentItems(AMenu : TPopupMenu);
 var
-    Count : integer = 1;
+    i : integer = 1;
 begin
-    Count := AMenu.Items.Count;
-    while Count > 0 do begin            // Remove any existing entries first
-        dec(Count);
-        if TMenuItem(AMenu.Items[Count]).Tag = ord(mtRecent) then
-            AMenu.Items.Delete(Count);
+    i := AMenu.Items.Count;
+    while i > 0 do begin            // Remove any existing entries first
+        dec(i);
+        if TMenuItem(AMenu.Items[i]).Tag = ord(mtRecent) then
+            AMenu.Items.Delete(i);
     end;
-    Count := 1;
-    while (Count <= 10) do begin
-       if Count < StringGrid1.RowCount then
-           AddItemMenu(AMenu, StringGrid1.Cells[0, Count], mtRecent,  @RecentMenuClicked, mkRecentMenu)
+    i := 1;
+    while (i <= 10) do begin
+       if i < StringGrid1.RowCount then
+           AddItemMenu(AMenu, StringGrid1.Cells[0, i], mtRecent,  @RecentMenuClicked, mkRecentMenu)
        else break;
-       inc(Count);
+       inc(i);
     end;
 end;
 
@@ -690,7 +691,9 @@ begin
     CreateMenus();
     if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     IndexNotes();           // This could be a slow process, maybe a new thread ?
-    RefreshMenus(mkAllMenu);    // sadly, IndexNotes->UseList has already called RefreshMenus(mkRecentMenu); Sigh ....
+    //RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
+    RefreshMenus(mkFileMenu);
+    RefreshMenus(mkHelpMenu);
 end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);

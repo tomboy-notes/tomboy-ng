@@ -445,7 +445,7 @@ begin
     AltHelpNotesPath := HelpNotesPath + ALTHELP + PathDelim;        // Overridden in Sett for Linux
     if UseTrayMenu then begin
         PopupMenuTray := TPopupMenu.Create(Self);
-        TrayIcon.PopUpMenu := PopupMenutray;        // SearchForm will populate it when ready
+        TrayIcon.PopUpMenu := PopupMenuTray;        // SearchForm will populate it when ready
         TrayIcon.Show;
     end;
 end;
