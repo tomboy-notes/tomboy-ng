@@ -83,6 +83,7 @@ type TNoteUpdateRec = record
      OOS : shortstring;
      FFName : string;
      LastChangeDate : string;   // if '', its a content save, generate a new timestamp
+     ErrorStr : string;         // '' if all OK, not used everywhere....
 end;
 
 
@@ -133,7 +134,8 @@ type
             CreateDate : ANSIString;
             procedure SaveNewTemplate(NotebookName: ANSIString);
          	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
-            function WriteToDisk(FileName: ANSIString; NoteLoc: TNoteUpdateRec): boolean;
+            function WriteToDisk(const FileName: ANSIString; NoteLoc: TNoteUpdateRec
+                ): boolean;
             constructor Create;
             destructor Destroy;  override;
     end;
@@ -637,7 +639,7 @@ end;
 
 // gets called (from outside) after all content assembled.  Its done from outside
 // as the calling unit has control of KMemo's locking.
-function TBSaveNote.WriteToDisk(FileName: ANSIString; NoteLoc : TNoteUpdateRec) : boolean;
+function TBSaveNote.WriteToDisk(const FileName: ANSIString; NoteLoc : TNoteUpdateRec) : boolean;
 var
    Buff : string = '';
    TmpName : string;
@@ -655,14 +657,22 @@ begin
 
     TmpName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
     if not DirectoryExists(TmpName) then
-       if not CreateDir(AppendPathDelim(tmpname)) then exit(False);
+       if not CreateDir(AppendPathDelim(tmpname)) then begin
+           NoteLoc.ErrorStr:='Failed Create Dir';
+            exit(False);
+        end;
     TmpName := TmpName + pathDelim + extractFileName(FileName);
     OutStream.SaveToFile(TmpName);
     OutStream.Free;
     OutStream := nil;
-    {$ifdef WINDOWS}
-    if DeleteFileUTF8(FileName) then {$endif}           // Windows cannot 'move' over existing file.
-        result := RenameFileUTF8(TmpName, FileName);
+    {$ifdef WINDOWS}                    // Windows cannot 'move' over existing file.
+    if not DeleteFileUTF8(FileName) then begin
+        NoteLoc.ErrorStr:='Falied Delete Old';
+        exit(False);
+    end;
+    {$endif}
+    result := RenameFileUTF8(TmpName, FileName);
+    if not Result then NoteLoc.ErrorStr:='Failed Rename';
 end;
 
 

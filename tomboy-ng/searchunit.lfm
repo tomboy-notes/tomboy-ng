@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 1094
+  Left = 1070
   Height = 401
-  Top = 326
+  Top = 284
   Width = 824
   Caption = 'tomboy-ng Search'
   ClientHeight = 401

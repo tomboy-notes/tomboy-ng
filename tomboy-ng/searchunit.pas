@@ -98,6 +98,7 @@ unit SearchUnit;
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
     2019/12/12  Commented out #868 that goRowHighlight to stringgridnotebook, ugly black !!!!!
     2019/12/19  Restored the File Menu names to the translate system.
+    2020/01/24  Fixed a Qt5 startup issue, don't fill in RecentItems in menu before File & Help are there.
 }
 
 {$mode objfpc}{$H+}
@@ -426,6 +427,8 @@ var
     MList : TList;
     I : integer;
 begin
+    if (WhichSection = mkRecentMenu) and (PopupTBMainMenu.Items.Count = 0)
+        then exit;      // This is a call during startup, File and Help are not there yet, messes with Qt5
     if AMenu <> Nil then begin
           MenuFileItems(AMenu);
           MenuHelpItems(AMenu);
@@ -691,9 +694,10 @@ begin
     CreateMenus();
     if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     IndexNotes();           // This could be a slow process, maybe a new thread ?
-    //RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
-    RefreshMenus(mkFileMenu);
-    RefreshMenus(mkHelpMenu);
+    RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
+    //RefreshMenus(mkFileMenu);
+    //RefreshMenus(mkHelpMenu);
+    //RefreshMenus(mkRecentMenu);
 end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
@@ -797,7 +801,7 @@ begin
         AProcess.Execute;
         Result := (AProcess.ExitStatus = 0);        // says at least one packet got back
     except on
-        E: EProcess do debugln('Could not move ' + WTitle);
+        E: EProcess do debugln('Is wmctrl available ? Cannot move ' + WTitle);
     end;
     {if not Result then
         debugln('wmctrl exit error trying to move ' + WTitle); }  // wmctrl always appears to return something !
