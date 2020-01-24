@@ -1550,8 +1550,8 @@ begin
 end;   }
 
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
-var
-    ARec : TNoteUpdateRec;
+{var
+    ARec : TNoteUpdateRec; }
 begin
     if not Kmemo1.ReadOnly then
 //        if Dirty then
@@ -1659,9 +1659,9 @@ procedure TEditBoxForm.MakeLink({const Link : ANSIString;} const Index, Len : lo
 var
 	Hyperlink, HL: TKMemoHyperlink;
     TrueLink : string;
-	BlockNo, BlockOffset, Blar, i : longint;
-	//DontSplit : Boolean = false;
-    blk : TKMemoTextBlock;
+	BlockNo, BlockOffset, Blar{, i} : longint;
+	// DontSplit : Boolean = false;
+    // blk : TKMemoTextBlock;
 begin
 	// Is it already a Hyperlink ? We leave valid hyperlinks in place.
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
@@ -1677,12 +1677,12 @@ begin
 //        writeln('TrueLink = [' + TrueLink + ']');
 //        writeln('Index=' + inttostr(Index) + '  and blar=' + inttostr(blar));
 
-    {if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then DontSplit := True;
+    (* if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then DontSplit := True;
     KMemo1.SelStart:= Index;
     KMemo1.SelLength:=Len;
     KMemo1.ClearSelection();
 	if not DontSplit then
-		BlockNo := KMemo1.SplitAt(Index);   }
+		BlockNo := KMemo1.SplitAt(Index);   *)
 
 (*
 i := BlockNo-2;
@@ -1864,7 +1864,7 @@ end;
 
 procedure TEditBoxForm.ClearNearLink(const StartS, EndS : integer); //CurrentPos : longint);
 var
-    BlockNo,  Blar, StartBlock, EndBlock : longint;
+    {BlockNo,}  Blar, StartBlock, EndBlock : longint;
     LinkText  : ANSIString;
 
     function ValidWebLink() : boolean;                  // returns true if LinkText is valid web address
@@ -2718,8 +2718,10 @@ begin
         else
             Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
         // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
-        if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing)
-            then Showmessage('ERROR, cannot save ' + Loc.ErrorStr + ' please report');         // may some write problem ??
+        if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing) then begin
+            Showmessage('ERROR, cannot save ' + Loc.ErrorStr + ' please report');         // may some write problem ??
+            Showmessage('Name=' + Sett.NoteDirectory + NoteFileName);
+        end;
         // T5 := GetTickCount64();                   // 1mS
         // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid
         // No point in calling this if we are closing.

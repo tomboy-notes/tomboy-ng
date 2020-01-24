@@ -667,7 +667,11 @@ begin
     OutStream := nil;
     {$ifdef WINDOWS}                    // Windows cannot 'move' over existing file.
     if not DeleteFileUTF8(FileName) then begin
-        NoteLoc.ErrorStr:='Falied Delete Old';
+        NoteLoc.ErrorStr:='Failed Delete';
+        exit(False);
+    end;
+    if FileExistsUTF8(FileName) then begin
+        NoteLoc.ErrorStr:='Still Exists';
         exit(False);
     end;
     {$endif}
