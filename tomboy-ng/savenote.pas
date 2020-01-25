@@ -134,7 +134,7 @@ type
             CreateDate : ANSIString;
             procedure SaveNewTemplate(NotebookName: ANSIString);
          	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
-            function WriteToDisk(const FileName: ANSIString; NoteLoc: TNoteUpdateRec
+            function WriteToDisk(const FileName: ANSIString; var NoteLoc: TNoteUpdateRec
                 ): boolean;
             constructor Create;
             destructor Destroy;  override;
@@ -639,7 +639,7 @@ end;
 
 // gets called (from outside) after all content assembled.  Its done from outside
 // as the calling unit has control of KMemo's locking.
-function TBSaveNote.WriteToDisk(const FileName: ANSIString; NoteLoc : TNoteUpdateRec) : boolean;
+function TBSaveNote.WriteToDisk(const FileName: ANSIString; var NoteLoc : TNoteUpdateRec) : boolean;
 var
    Buff : string = '';
    TmpName : string;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Release page - tomboy-ng notes.</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Release page - tomboy-ng notes.
+  <title>Release page</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Release page</underline>
 
-This is an experimental releases page, please take no notice of it. The tomboy-ng releases are at https://github.com/tomboy-notes/tomboy-ng/releases/latest</underline><size:small>
+<bold>tomboy-ng notes v0.26, Jan 2020</bold><size:small>
 
 Dont edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
@@ -30,6 +30,8 @@ tomboy-ng is available for Linux, Mac and Windows.<size:large>
 Tested on 32bit Windows 7 and 64bit Windows 10.  Windows users should download the Windows Installer, **the .exe file**, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes.
 
 <bold>Download this</bold>  $$EXE
+
+Note the above file is version 0.26b - the 'b' being yet another post release release. It contains code to better detect and report on a bug that prevents Windows tomboy-ng from saving.  If you see an error message, please report it.
 
 <bold>MacOSX</bold>
 Tested on a Mac Sierra Powerbook. Use the 64bit (Cocoa) file unless you are running relatively old (and slow) hardware. The 32bit Carbon based one will not work on the newest MasOS but is somewhat faster. Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. First time users will need to control click the tomboy-ng icon in Applications and select "Open". Have had a report of difficulties with that first start, even with the Control Click, please report !
@@ -105,14 +107,14 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </monospace></note-content></text>
-  <last-change-date>2020-01-22T17:53:51.5220000+11:00</last-change-date>
-  <last-metadata-change-date>2020-01-22T17:53:51.5220000+11:00</last-metadata-change-date>
+  <last-change-date>2020-01-25T17:47:47.9870000+11:00</last-change-date>
+  <last-metadata-change-date>2020-01-25T17:47:47.9870000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>365</x>
-  <y>228</y>
+  <x>971</x>
+  <y>321</y>
   <open-on-startup>False</open-on-startup>
 </note>
