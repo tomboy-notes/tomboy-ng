@@ -39,7 +39,7 @@ Tested on a Mac Sierra Powerbook. Use the 64bit (Cocoa) file unless you are runn
 <bold>Download this</bold>  [the 64bit DMG file]($$DMG64)  or this one if you have slow hardware and an older OS - [32bit Carbon DMG]($$DMG32)<size:huge>
 
 <bold>Linux</bold></size:huge>
-Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
+Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
 
 <bold>Ubuntu</bold></size:large>
 Generally, all work fine but earlier distributions should use GTK2 and recent the Qt5 based version. 
@@ -86,6 +86,7 @@ To install, please download and save the file, then use the rpm command, note th
  
 <list><list-item dir="ltr"><bold>Leap</bold> is best used with the default  [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version, its QT5 libraries apparently have issues. </list-item></list>
 <list><list-item dir="ltr"><bold>Tumbleweed</bold> on the other hand is probably better using the  [Qt5 64bit]($$RPM64QT)  version. If you need 32bit, then the [GTK2 32bit]($$RPM32) will work fine but may require a larger download at install time.</list-item></list>
+<list><list-item dir="ltr">It appears that the KDE/Plasma version of openSues has issues with tomboy-ng, both Qt5 and to a lesser extent, GTK. Under investigation.  </list-item></list>
 
 To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes of config. 
 
@@ -107,14 +108,14 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </monospace></note-content></text>
-  <last-change-date>2020-01-25T17:47:47.9870000+11:00</last-change-date>
-  <last-metadata-change-date>2020-01-25T17:47:47.9870000+11:00</last-metadata-change-date>
+  <last-change-date>2020-01-25T19:22:35.8870000+11:00</last-change-date>
+  <last-metadata-change-date>2020-01-25T19:22:35.8870000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>971</x>
-  <y>321</y>
+  <x>312</x>
+  <y>212</y>
   <open-on-startup>False</open-on-startup>
 </note>

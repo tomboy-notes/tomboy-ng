@@ -99,6 +99,7 @@ unit SearchUnit;
     2019/12/12  Commented out #868 that goRowHighlight to stringgridnotebook, ugly black !!!!!
     2019/12/19  Restored the File Menu names to the translate system.
     2020/01/24  Fixed a Qt5 startup issue, don't fill in RecentItems in menu before File & Help are there.
+    2020/01/29  A lot of tweaks around UseList(), MMenu Recent no longer from StringGrid, ctrl updates to speed up.
 }
 
 {$mode objfpc}{$H+}
@@ -167,6 +168,7 @@ type        { TSearchForm }
         procedure MenuHelpItems(AMenu: TPopupMenu);
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
+        procedure RefreshStrGrids();
 
 
 
@@ -327,28 +329,41 @@ begin
     NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
 end;
 
+    { As we no longer use the String Grid to provide a date sorted list of recent notes,
+      it only needs to be refreshed when we are looking at it. I think. }
+procedure TSearchForm.RefreshStrGrids();
+{var
+    T1, T2, T3, T4 : qword;  }
+begin
+    writeln('SearchUnit - RefreshStrGrids called');
+    //T1 := gettickcount64();
+    NoteLister.LoadStGrid(StringGrid1);
+    //T2 := gettickcount64();               // 1mS Dell
+    // The list is sorted now, we have loaded it so recent at top of grid, dont need this
+    //Stringgrid1.SortOrder := soDescending;  // Sort with most recent at top
+    //StringGrid1.SortColRow(True, 1);
+    //T3 := gettickcount64();               // 2ms Dell
+    StringGrid1.AutoSizeColumns;
+    //T4 := gettickcount64();               // 9mS Dell
+    NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS
+    // debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
+end;
+
 { Sorts List and updates the recently used list under trayicon }
 procedure TSearchForm.UseList();
-{var
-    T1, T2, T3, T4 : dword;}
 begin
     // WARNING - don't call useList() unnecessarily, its quite slow. LoadStGrid in particular !
     if ButtonNotebookOptions.Enabled then
 		{ TODO :  We are in notebook mode, refresh the relevent notebook list, not the all notes one. For now, we'll do nothing but fix this ! }
         NoteLister.LoadNotebookGrid(StringGrid1, StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
-  	else begin
-        // T1 := gettickcount64();
-    	NoteLister.LoadStGrid(StringGrid1);
-        // T2 := gettickcount64();               // 5mS
-    	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
-    	StringGrid1.SortColRow(True, 1);
-        StringGrid1.AutoSizeColumns;              // wots the time penalty there ? new, 9/2/2019
-        // T3 := gettickcount64();               // 7mS
-     	NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
-    end;
-    // T4 := gettickcount64();                   // 1mS
+  	else
+        //if Focused then
+         if Visible then
+            RefreshStrGrids()
+        else
+            writeln('SearchUnit - Not refreshing str grids now');
     RefreshMenus(mkRecentMenu);
-    // debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
+    //if self.Focused then debugln('We are focused') else debugln('We are NOT focused');
 end;
 
 
@@ -538,6 +553,7 @@ end;
 procedure TSearchForm.MenuRecentItems(AMenu : TPopupMenu);
 var
     i : integer = 1;
+    j : integer;
 begin
     i := AMenu.Items.Count;
     while i > 0 do begin            // Remove any existing entries first
@@ -545,13 +561,23 @@ begin
         if TMenuItem(AMenu.Items[i]).Tag = ord(mtRecent) then
             AMenu.Items.Delete(i);
     end;
+
+    i := NoteLister.Count;
+    j := i -10;
+    if j < 0 then j := 0;
+    while i > j do begin
+        dec(i);
+        AddItemMenu(AMenu, NoteLister.GetTitle(i), mtRecent,  @RecentMenuClicked, mkRecentMenu)
+    end;
+
+{   This model gets its sorted recent list from string grid, delete it at some stage.
     i := 1;
     while (i <= 10) do begin
        if i < StringGrid1.RowCount then
            AddItemMenu(AMenu, StringGrid1.Cells[0, i], mtRecent,  @RecentMenuClicked, mkRecentMenu)
        else break;
        inc(i);
-    end;
+    end;               }
 end;
 
 procedure TSearchForm.MenuHelpItems(AMenu : TPopupMenu);
@@ -760,6 +786,7 @@ begin
     stringgridnotebooks.FocusColor := stringgrid1.FocusColor;
     stringgridnotebooks.color := stringgrid1.color;
     stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
+    RefreshStrGrids();
 end;
 
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);

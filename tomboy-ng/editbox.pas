@@ -200,6 +200,7 @@ unit EditBox;
     2020/01/02  Enabled Ctrl-Shift left or right arrow selecting or extending selecton by word.
     2020/01/07  Use SaveTheNote() even when existing app with a clean note, UpdateNote() not used now
     2020/01/12  More agressive adjustmenst to formm position at opening a note Windows and Mac only
+    2020/01/28  Dont call SearchForm.UpdateList() when we are closing a clean note.
 }
 
 
@@ -418,6 +419,7 @@ type
         procedure PrimaryPaste(SelIndex: integer);
         { Saves the note in KMemo1, must have title but can make up a file name if needed
           If filename is invalid, bad GUID, asks user if they want to change it (they do !)
+          WeAreClosing indicates that the whole application is closing (not just this note)
           We always save the note on FormDestroy or application exit, even if not dirty to
           update the position and OOS data.  We used to call UpdateNote in the hope its quicker
           but it forgets to record notebook membership. Revist some day ....}
@@ -2720,12 +2722,12 @@ begin
         // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
         if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing) then begin
             Showmessage('ERROR, cannot save ' + Loc.ErrorStr + ' please report');         // may some write problem ??
-            Showmessage('Name=' + Sett.NoteDirectory + NoteFileName);
+            //Showmessage('Name=' + Sett.NoteDirectory + NoteFileName);
         end;
         // T5 := GetTickCount64();                   // 1mS
-        // Note that updatelist() can be quite slow, its because it calls UseList() and has to load and sort stringGrid
         // No point in calling this if we are closing.
-        if not WeAreClosing then
+        // Further, no point in calling it if we are not changing the content, just metadata. How to tell ?
+        if ((not WeAreClosing) and (Loc.LastChangeDate = '')) then
             SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
                                         // if we have rewritten GUID, that will create new entry for it.
         // T6 := GetTickCount64();                   //  14mS
