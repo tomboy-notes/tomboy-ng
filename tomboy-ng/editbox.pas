@@ -2721,12 +2721,11 @@ begin
             Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
         // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
         if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing) then begin
-            Showmessage('ERROR, cannot save ' + Loc.ErrorStr + ' please report');         // may some write problem ??
+            Showmessage('ERROR, cannot save,  please report [' + Loc.ErrorStr + ']');     // maybe some windows delete problem ??
             //Showmessage('Name=' + Sett.NoteDirectory + NoteFileName);
         end;
         // T5 := GetTickCount64();                   // 1mS
-        // No point in calling this if we are closing.
-        // Further, no point in calling it if we are not changing the content, just metadata. How to tell ?
+        // No point in calling UpDateList() if we are closing the app or just updating metadata.
         if ((not WeAreClosing) and (Loc.LastChangeDate = '')) then
             SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
                                         // if we have rewritten GUID, that will create new entry for it.

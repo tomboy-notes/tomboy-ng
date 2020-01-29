@@ -643,6 +643,7 @@ function TBSaveNote.WriteToDisk(const FileName: ANSIString; var NoteLoc : TNoteU
 var
    Buff : string = '';
    TmpName : string;
+   FileAttr : longint;
 begin
     Result := False;
     // we write out the footer here so we can do the searching to notebook stuff
@@ -667,12 +668,41 @@ begin
     OutStream := nil;
     {$ifdef WINDOWS}                    // Windows cannot 'move' over existing file.
     if not DeleteFile(FileName) then begin
-        NoteLoc.ErrorStr:='Failed Delete';
-        exit(False);
-    end;
-    if FileExistsUTF8(FileName) then begin
-        NoteLoc.ErrorStr:='Still Exists';
-        exit(False);
+    	NoteLoc.ErrorStr := SysErrorMessage(GetLastOSError);
+    	Debugln('Failed using DeleteFileUTF8 - file name is :' + Filename);
+    	Debugln('OS: ' + NoteLoc.ErrorStr);
+    	if FileExistsUTF8(FileName) then
+    		debugln('I can confirm its still there .')
+    	else debugln('But, FileExists says its gone !');
+    	if FileIsWritable(FileName) then debugln('File is writable')
+    	else Debugln('File is reported not writeable');
+    	FileAttr := FileGetAttr(FileName);
+    	if ((FileAttr and faReadOnly) > 0) then debugln('Readonly')
+    	else Debugln('not Readonly');
+    	if ((FileAttr and faHidden) > 0) then debugln('Hidden')
+    	else Debugln('not Hidden');
+    	if ((FileAttr and faSysFile) > 0) then debugln('SysFile')
+    	else Debugln('not SysFile');
+    	if ((FileAttr and faDirectory) > 0) then debugln('Directory')
+    	else Debugln('not Directory');
+    	Debugln('Trying a little sleep...');
+    	sleep(10);
+    	if not DeleteFileUTF8(FileName) then begin
+    		Debugln('Nope, that did not help. Trying a bigger sleep...');
+    		sleep(30);
+    		if not DeleteFileUTF8(FileName) then begin
+    			Debugln('Nope, that was no help, try a 100mS ....');
+    			sleep(100);
+    			if not DeleteFileUTF8(FileName) then begin
+    				Debugln('Nope, that did not help either. Giving up...');
+    				if FileExistsUTF8(FileName) then
+    					debugln('Its most certainly still there.')
+    				else debugln('But, hang on, its gone !');
+    				NoteLoc.ErrorStr := NoteLoc.ErrorStr;
+    				exit(false);
+    			end;
+    		end;
+    	end;
     end;
     {$endif}
     result := RenameFileUTF8(TmpName, FileName);
