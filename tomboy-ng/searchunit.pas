@@ -335,7 +335,7 @@ procedure TSearchForm.RefreshStrGrids();
 {var
     T1, T2, T3, T4 : qword;  }
 begin
-    writeln('SearchUnit - RefreshStrGrids called');
+    //writeln('SearchUnit - RefreshStrGrids called');
     //T1 := gettickcount64();
     NoteLister.LoadStGrid(StringGrid1);
     //T2 := gettickcount64();               // 1mS Dell
@@ -359,9 +359,9 @@ begin
   	else
         //if Focused then
          if Visible then
-            RefreshStrGrids()
+            RefreshStrGrids() {
         else
-            writeln('SearchUnit - Not refreshing str grids now');
+            writeln('SearchUnit - Not refreshing str grids now')};
     RefreshMenus(mkRecentMenu);
     //if self.Focused then debugln('We are focused') else debugln('We are NOT focused');
 end;

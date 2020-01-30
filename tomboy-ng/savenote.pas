@@ -667,42 +667,59 @@ begin
     OutStream.Free;
     OutStream := nil;
     {$ifdef WINDOWS}                    // Windows cannot 'move' over existing file.
+    // This whole block is here because of issue #132 where windows seems to have problems
+    // moving, deleting a note before a new version is copied over. Is the problem
+    // that windows deletefileUTF8() is not settings its return value correctly ??
     if not DeleteFile(FileName) then begin
     	NoteLoc.ErrorStr := SysErrorMessage(GetLastOSError);
     	Debugln('Failed using DeleteFileUTF8 - file name is :' + Filename);
     	Debugln('OS: ' + NoteLoc.ErrorStr);
-    	if FileExistsUTF8(FileName) then
-    		debugln('I can confirm its still there .')
-    	else debugln('But, FileExists says its gone !');
-    	if FileIsWritable(FileName) then debugln('File is writable')
-    	else Debugln('File is reported not writeable');
-    	FileAttr := FileGetAttr(FileName);
-    	if ((FileAttr and faReadOnly) > 0) then debugln('Readonly')
-    	else Debugln('not Readonly');
-    	if ((FileAttr and faHidden) > 0) then debugln('Hidden')
-    	else Debugln('not Hidden');
-    	if ((FileAttr and faSysFile) > 0) then debugln('SysFile')
-    	else Debugln('not SysFile');
-    	if ((FileAttr and faDirectory) > 0) then debugln('Directory')
-    	else Debugln('not Directory');
-    	Debugln('Trying a little sleep...');
-    	sleep(10);
-    	if not DeleteFileUTF8(FileName) then begin
-    		Debugln('Nope, that did not help. Trying a bigger sleep...');
-    		sleep(30);
-    		if not DeleteFileUTF8(FileName) then begin
-    			Debugln('Nope, that was no help, try a 100mS ....');
-    			sleep(100);
-    			if not DeleteFileUTF8(FileName) then begin
-    				Debugln('Nope, that did not help either. Giving up...');
-    				if FileExistsUTF8(FileName) then
-    					debugln('Its most certainly still there.')
-    				else debugln('But, hang on, its gone !');
-    				NoteLoc.ErrorStr := NoteLoc.ErrorStr;
-    				exit(false);
-    			end;
-    		end;
-    	end;
+    	if not FileExistsUTF8(FileName) then
+            debugln('But, FileExists says its gone, proceed !')
+        else begin
+    		debugln('I can confirm its still there .');
+    	    if FileIsWritable(FileName) then debugln('File is writable')
+    	    else Debugln('File is reported not writeable');
+    	    FileAttr := FileGetAttr(FileName);
+    	    if ((FileAttr and faReadOnly) > 0) then debugln('Readonly')
+    	    else Debugln('not Readonly');
+    	    if ((FileAttr and faHidden) > 0) then debugln('Hidden')
+    	    else Debugln('not Hidden');
+    	    if ((FileAttr and faSysFile) > 0) then debugln('SysFile')
+    	    else Debugln('not SysFile');
+    	    if ((FileAttr and faDirectory) > 0) then debugln('Directory')
+    	    else Debugln('not Directory');
+    	    Debugln('Trying a little sleep...');
+    	    sleep(10);
+    	    if not DeleteFileUTF8(FileName) then begin
+                if not FileExistsUTF8(FileName) then
+                    debugln('DeleteFileUTF8 says it failed but FileExists says its gone, proceed !')
+                else begin
+        		    Debugln('Nope, that did not help. Trying a bigger sleep...');
+        		    sleep(30);
+    		        if not DeleteFileUTF8(FileName) then begin
+                        if not FileExistsUTF8(FileName) then
+                            debugln('DeleteFileUTF8 says it failed but, FileExists says its gone, proceed !')
+                        else begin
+    			            Debugln('Nope, that was no help, try a 100mS ....');
+    			            sleep(100);
+    			            if not DeleteFileUTF8(FileName) then begin
+                                if not FileExistsUTF8(FileName) then
+                                    debugln('DeleteFileUTF8 says it failed but, FileExists says its gone, proceed !')
+                                else begin
+    				                Debugln('Nope, that did not help either. Giving up...');
+    				                if FileExistsUTF8(FileName) then begin
+    					                debugln('Its most certainly still there.');
+                                        exit(false);
+    				                end else
+                                        debugln('But, hang on, its gone !');
+    			                end;
+    		                end;
+    	                end;
+                    end;
+                end;
+            end;
+        end;
     end;
     {$endif}
     result := RenameFileUTF8(TmpName, FileName);
