@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 1034
+  Left = 708
   Height = 401
-  Top = 310
+  Top = 174
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng Search'
@@ -27,10 +27,9 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 7
-    OnEditingDone = Edit1EditingDone
-    OnEnter = Edit1Enter
     OnExit = Edit1Exit
     OnKeyDown = FormKeyDown
+    OnKeyUp = Edit1KeyUp
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
@@ -95,24 +94,17 @@ object SearchForm: TSearchForm
       Width = 232
       Anchors = [akTop, akLeft, akRight, akBottom]
       Color = clDefault
-      ColCount = 1
+      ColCount = 0
       FixedCols = 0
+      FixedRows = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll, goRowHighlight]
       ParentShowHint = False
-      RowCount = 3
+      RowCount = 0
       ShowHint = True
       TabOrder = 1
       OnClick = StringGridNotebooksClick
       OnKeyDown = FormKeyDown
-      ColWidths = (
-        216
-      )
-      Cells = (
-        1
-        0
-        0
-        'Notebooks'
-      )
+      OnResize = StringGridNotebooksResize
     end
     object ButtonClearFilters: TButton
       AnchorSideLeft.Control = Panel1
@@ -167,29 +159,17 @@ object SearchForm: TSearchForm
       BorderSpacing.Right = 3
       BorderSpacing.Bottom = 3
       Color = clDefault
-      ColCount = 2
+      ColCount = 0
       ColumnClickSorts = True
       FixedCols = 0
       FixedRows = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
-      RowCount = 1
+      RowCount = 0
       ScrollBars = ssAutoVertical
       TabOrder = 4
       OnDblClick = StringGrid1DblClick
       OnKeyDown = FormKeyDown
-      ColWidths = (
-        267
-        241
-      )
-      Cells = (
-        2
-        0
-        0
-        'Note'
-        1
-        0
-        'Last Changed'
-      )
+      OnResize = StringGrid1Resize
     end
   end
   object ButtonMenu: TSpeedButton

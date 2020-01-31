@@ -100,6 +100,10 @@ unit SearchUnit;
     2019/12/19  Restored the File Menu names to the translate system.
     2020/01/24  Fixed a Qt5 startup issue, don't fill in RecentItems in menu before File & Help are there.
     2020/01/29  A lot of tweaks around UseList(), MMenu Recent no longer from StringGrid, ctrl updates to speed up.
+    2020/01/31  LoadStringGrid*() now uses the Lazarus column mode.
+                Better ctrl of Search Term highlight (but still highlit when makeing form re-visible).
+                Drop Create Date and Filename from Search results string grid.
+                But I still cannot control the little green triangles in stringgrid headings indicating sort.
 }
 
 {$mode objfpc}{$H+}
@@ -139,9 +143,8 @@ type        { TSearchForm }
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonClearFiltersClick(Sender: TObject);
         procedure CheckCaseSensitiveChange(Sender: TObject);
-		procedure Edit1EditingDone(Sender: TObject);
-		procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
+        procedure Edit1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
@@ -151,17 +154,20 @@ type        { TSearchForm }
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         procedure SpeedButton1Click(Sender: TObject);
+        procedure StringGrid1Resize(Sender: TObject);
 		procedure StringGridNotebooksClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
         // Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
         // other downloded note ID. Adjusts Note_Lister according and marks any
         // note that is currently open as read only.
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
+        procedure StringGridNotebooksResize(Sender: TObject);
     private
         HelpNotes : TNoteLister;
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
             mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
         procedure CreateMenus();
+        procedure DoSearch();
         procedure FileMenuClicked(Sender: TObject);
         procedure InitialiseHelpFiles();
         procedure MenuFileItems(AMenu: TPopupMenu);
@@ -270,6 +276,11 @@ begin
     end;
 end;
 
+procedure TSearchForm.StringGridNotebooksResize(Sender: TObject);
+begin
+    StringGridNotebooks.Columns[0].Width := StringGridNotebooks.width;
+end;
+
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
     if NoteLister <> nil then         // else we are quitting the app !
@@ -333,39 +344,34 @@ end;
       it only needs to be refreshed when we are looking at it. I think. }
 procedure TSearchForm.RefreshStrGrids();
 {var
-    T1, T2, T3, T4 : qword;  }
+    T1, T2, T3 : qword;  }
 begin
-    //writeln('SearchUnit - RefreshStrGrids called');
     //T1 := gettickcount64();
-    NoteLister.LoadStGrid(StringGrid1);
-    //T2 := gettickcount64();               // 1mS Dell
-    // The list is sorted now, we have loaded it so recent at top of grid, dont need this
-    //Stringgrid1.SortOrder := soDescending;  // Sort with most recent at top
-    //StringGrid1.SortColRow(True, 1);
-    //T3 := gettickcount64();               // 2ms Dell
-    StringGrid1.AutoSizeColumns;
-    //T4 := gettickcount64();               // 9mS Dell
-    NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS
-    // debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
+    NoteLister.LoadStGrid(StringGrid1);         // 4 to 8mS on Dell
+    //T2 := gettickcount64();
+    NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS on Dell
+    //T3 := gettickcount64();
+    //debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
 end;
 
 { Sorts List and updates the recently used list under trayicon }
 procedure TSearchForm.UseList();
+var
+    NB : string;
 begin
-    // WARNING - don't call useList() unnecessarily, its quite slow. LoadStGrid in particular !
-    if ButtonNotebookOptions.Enabled then
-		{ TODO :  We are in notebook mode, refresh the relevent notebook list, not the all notes one. For now, we'll do nothing but fix this ! }
-        NoteLister.LoadNotebookGrid(StringGrid1, StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
-  	else
-        //if Focused then
-         if Visible then
+    RefreshMenus(mkRecentMenu);
+    if not Visible then exit;
+    if ButtonNotebookOptions.Enabled then begin
+        NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+        if NB <> '' then
+            NoteLister.LoadNotebookGrid(StringGrid1, NB);
+    end else
             RefreshStrGrids() {
         else
             writeln('SearchUnit - Not refreshing str grids now')};
-    RefreshMenus(mkRecentMenu);
+
     //if self.Focused then debugln('We are focused') else debugln('We are NOT focused');
 end;
-
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
 { var
@@ -656,9 +662,7 @@ begin
     // IndexNotes();                                                    // Temp hack to make testing easy....
 end;
 
-procedure TSearchForm.Edit1EditingDone(Sender: TObject);
-{var
-   TS1, TS2, TS3, TS4 : qword;           // Temp time stamping to test speed       }
+procedure TSearchForm.DoSearch();
 begin
     if (Edit1.Text = '') then
         ButtonClearFiltersClick(self);
@@ -677,17 +681,26 @@ begin
     end;
 end;
 
-procedure TSearchForm.Edit1Enter(Sender: TObject);
-begin
-	if Edit1.Text = 'Search' then Edit1.Text := '';
-end;
-{ TODO : As we start with focus on Edit1 this method clears it and user sees empty box. Should say 'Search'. }
-
 procedure TSearchForm.Edit1Exit(Sender: TObject);
 begin
-	if Edit1.Text = '' then Edit1.Text := 'Search';
+	if Edit1.Text = '' then begin
+        Edit1.Hint:=rsSearchHint;
+        Edit1.Text := rsMenuSearch;
+        Edit1.SelStart := 1;
+        Edit1.SelLength := length(Edit1.Text);
+    end;
 end;
 
+procedure TSearchForm.Edit1KeyUp(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+    // Must do this here to stop LCL from selecting the text on VK_RETURN
+    if Key = VK_RETURN then begin
+      Key := 0;
+      DoSearch();
+    end;
+
+end;
 
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
@@ -715,7 +728,25 @@ end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
+    StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
+    StringGrid1.FixedCols := 0;
+    StringGrid1.Columns.Add;
+    StringGrid1.Columns[0].Title.Caption := 'Name';
+    StringGrid1.Columns.Add;
+    StringGrid1.Columns[1].Title.Caption := 'Last Change';
+    StringGrid1.FixedRows:=1;
+    StringGrid1.Columns[1].Width := self.Canvas.GetTextWidth(' 2020-01-31 14:36:00 ');
+    StringGridNotebooks.Clear;
+    StringGridNotebooks.FixedCols := 0;
+    StringGridNotebooks.Columns.Add;
+    StringGridNotebooks.Columns[0].Title.Caption := 'Notebooks';
+    StringGridNotebooks.FixedRows:=1;
+
+
     Edit1.Hint:=rsSearchHint;
+    Edit1.Text := rsMenuSearch;
+    Edit1.SelStart := 1;
+    Edit1.SelLength := length(Edit1.Text);
     NoteLister := nil;
     CreateMenus();
     if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
@@ -892,16 +923,17 @@ procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
 var
     NoteTitle : ANSIstring;
     FullFileName : string;
-    //blar : integer;
 begin
-    //blar := StringGrid1.Row;
     { TODO : If user double clicks title bar, we dont detect that and open some other note.  }
-	FullFileName := Sett.NoteDirectory + StringGrid1.Cells[3, StringGrid1.Row];
-  	if not FileExistsUTF8(FullFileName) then begin
-      	showmessage('Cannot open ' + FullFileName);
-      	exit();
-  	end;
+    // debugln('Clicked on row ' + inttostr(StringGrid1.Row));
     NoteTitle := StringGrid1.Cells[0, StringGrid1.Row];
+    if NoteLister.FileNameForTitle(NoteTitle, FullFileName) then begin
+        FullFileName := Sett.NoteDirectory + FullFileName;
+  	    if not FileExistsUTF8(FullFileName) then begin
+      	    showmessage('Cannot open ' + FullFileName);
+      	    exit();
+  	    end;
+    end;
   	if length(NoteTitle) > 0 then
         OpenNote(NoteTitle, FullFileName);
 end;
@@ -919,8 +951,11 @@ begin
         StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
         UseList();
         StringGridNoteBooks.Hint := '';
-        StringGrid1.AutoSizeColumns;
-        Edit1.Text := 'Search';
+        //StringGrid1.AutoSizeColumns;
+        Edit1.Hint:=rsSearchHint;
+        Edit1.Text := rsMenuSearch;
+        Edit1.SelStart := 0;
+        Edit1.SelLength := length(Edit1.Text);
 end;
 
 
@@ -981,6 +1016,11 @@ procedure TSearchForm.SpeedButton1Click(Sender: TObject);
 begin
     // note - image is 24x24 tpopupmenu.png from lazarus source
     MainForm.PopupMenuSearch.PopUp;
+end;
+
+procedure TSearchForm.StringGrid1Resize(Sender: TObject);
+begin
+    StringGrid1.Columns[0].Width := StringGrid1.Width - StringGrid1.Columns[1].Width -15;
 end;
 
 end.

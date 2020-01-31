@@ -56,6 +56,7 @@ unit Note_Lister;
     2020/01/29  Fix multiple notebook tags for same notebook in note file.
                 Sort main list, added functions to populate MMenu Recent list.
                 Tweek func that populates the main stringGrid avoiding initial sort
+    2020/01/31  LoadStringGrid*() now uses the Lazarus column mode.
 }
 
 {$mode objfpc}
@@ -160,8 +161,8 @@ type
    public
     DebugMode : boolean;
 
-        // Indicates a note was found with an XML (or other) error, checked by calling process.
-    XMLError : Boolean;
+
+    XMLError : Boolean;   // Indicates a note was found with an XML (or other) error, checked by calling process.
     ErrorNotes : TStringList;
     		{ The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
@@ -170,35 +171,24 @@ type
     function GetTitle(Index: integer): string;
             { Returns the number of items in the list }
     function Count(): integer;
-            { Returns the LastChangeDate string for ID, empty string if not found }
+                                     { Returns the LastChangeDate string for ID, empty string if not found }
     function GetLastChangeDate(const ID: String): string;
-            { Adds details of note of passed to NoteList }
+                                     { Adds details of note of passed to NoteList }
     procedure IndexThisNote(const ID : String);
-            { Returns T is ID in current list, takes 36 char GUID or simple file name }
+                                     { Returns T is ID in current list, takes 36 char GUID or simple file name }
     function IsIDPresent(ID : string) : boolean;
-    		{ Removes the Notebook entry with ID=Template from Notebook datastructure }
+                                     { Removes the Notebook entry with ID=Template from Notebook datastructure }
     procedure DeleteNoteBookwithID(FileorID : AnsiString);
-    		{ Returns True if passed string is the ID or short Filename of a Template }
+                                     { Returns True if passed string is the ID or short Filename of a Template }
     function IsATemplate(FileOrID : AnsiString) : boolean;
-			{ Adds a notebook to the internal data structure, probably only used
-              when making a new Notebook and its Template }
-	procedure AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate: Boolean);
-    		{ Sets the passed Notebooks as 'parents' of the passed note. Any pre
-              existing membership will be cancelled. The list can contain zero to
-              many notebooks.  }
+	                                    { Adds a notebook to the internal data structure, probably only used when making a new Notebook and its Template }
+    procedure AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate: Boolean);
+                                        // Sets the passed Notebooks as 'parents' of the passed note. Any pre existing membership will be cancelled. The list can contain zero to  many notebooks.
     procedure SetNotebookMembership(const ID: ansistring; const MemberList: TStringList);
-    		{ If ID is empty, always returns false, puts all Notebook names in strlist.
-            If ID is not empty, list is filtered for only notebooks that have that ID
-            and returns True iff the passed ID is that of a Template.  A Notebook
-            Template will have only one Notebook name in its Tags and that will
-            be added to strlist. The StartHere template won't have a Notebook Name
-            and therefore wont get mixed up here ???? }
-   function GetNotebooks(const NBList : TStringList; const ID : ANSIString = '') : boolean;
-    		{ Loads the Notebook StringGrid up with the Notebook names we know about.
-              Add a bool to indicate we should only show Notebooks that have one or more
-              notes mentioned in SearchNoteList. Call after GetNotes(Term) }
-	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid;
-        SearchListOnly: boolean);
+                                        { If ID is empty, always returns false, puts all Notebook names in strlist. If ID is not empty, list is filtered for only notebooks that have that ID  and returns True iff the passed ID is that of a Template.  A Notebook Template will have only one Notebook name in its Tags and that will be added to strlist. The StartHere template won't have a Notebook Name and therefore wont get mixed up here ???? }
+    function GetNotebooks(const NBList : TStringList; const ID : ANSIString = '') : boolean;
+                                        { Loads the Notebook StringGrid up with the Notebook names we know about. Add a bool to indicate we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after GetNotes(Term) }
+	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid; SearchListOnly: boolean);
             { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
     		{ Read the metadata from all the notes in internal data structure,
@@ -395,6 +385,16 @@ procedure TNoteLister.LoadNotebookGrid(const Grid: TStringGrid; const NotebookNa
 var
     Index : integer;
 begin
+    while Grid.RowCount > 1 do Grid.DeleteRow(Grid.RowCount-1);
+    Index := NoteList.Count;
+    while Index > 0 do begin
+        dec(Index);
+        if NotebookList.IDinNotebook(NoteList.Items[Index]^.ID, NoteBookName) then begin
+        	Grid.InsertRowWithValues(Grid.RowCount, [NoteList.Items[Index]^.Title,
+        			NoteList.Items[Index]^.LastChange]);
+		end;
+	end;
+    {
   	Grid.Clear;
     //Grid.Clean;
     Grid.FixedRows := 0;
@@ -410,7 +410,7 @@ begin
             		NoteList.Items[Index]^.ID]);
 		end;
 	end;
-    Grid.AutoSizeColumns;
+    Grid.AutoSizeColumns;  }
 end;
 
 function TNoteLister.NotebookTemplateID(const NotebookName: ANSIString): AnsiString;
@@ -494,6 +494,15 @@ var
     end;
 
 begin
+    while NotebookGrid.RowCount > 1 do NotebookGrid.DeleteRow(NotebookGrid.RowCount-1);
+    for Index := 0 to NotebookList.Count - 1 do begin
+        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then begin
+            NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
+        end;
+	end;
+
+
+    {
     NotebookGrid.Clear;
     NotebookGrid.FixedRows:=0;
     NotebookGrid.InsertRowWithValues(0, ['Notebooks']);
@@ -503,7 +512,7 @@ begin
             NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
         end;
 	end;
-    NotebookGrid.AutoSizeColumns;
+    NotebookGrid.AutoSizeColumns; }
 end;
 
 function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
@@ -907,8 +916,17 @@ procedure TNoteLister.LoadStGrid(const Grid : TStringGrid);
 var
     Index : integer;
 begin
+    while Grid.RowCount > 1 do Grid.DeleteRow(Grid.RowCount-1);
+    Index := NoteList.Count;
+    while Index > 0 do begin
+        dec(Index);
+        Grid.InsertRowWithValues(Grid.RowCount, [NoteList.Items[Index]^.Title,
+        	NoteList.Items[Index]^.LastChange]);
+    end;
+    {
   	Grid.Clear;
     Grid.FixedRows := 0;
+    //Grid.InsertRowWithValues(0, ['Title', 'Last Change']);
     Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
     Grid.FixedRows := 1;
     Grid.SortColRow(True, 1);   // sorting while empty should be quick, get header looking right.
@@ -919,12 +937,19 @@ begin
         	NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,
             NoteList.Items[Index]^.ID]);
     end;
+    }
 end;
 
 procedure TNoteLister.LoadSearchGrid(const Grid: TStringGrid);
 var
     Index : integer;
 begin
+    while Grid.RowCount > 1 do Grid.DeleteRow(Grid.RowCount-1);
+    for Index := 0 to SearchNoteList.Count -1 do begin
+        Grid.InsertRowWithValues(Index+1, [SearchNoteList.Items[Index]^.Title,
+        	SearchNoteList.Items[Index]^.LastChange]);
+	end;
+    {
   	Grid.Clear;
     Grid.FixedRows := 0;
     Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
@@ -934,7 +959,7 @@ begin
         	SearchNoteList.Items[Index]^.LastChange, SearchNoteList.Items[Index]^.CreateDate,
             SearchNoteList.Items[Index]^.ID]);
 	end;
-    Grid.AutoSizeColumns;
+    Grid.AutoSizeColumns;   }
 end;
 
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;
