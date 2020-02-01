@@ -1,0 +1,10 @@
+--- kmemo.pas.old	2020-02-01 14:26:27.067049221 +1100
++++ kmemo.pas	2020-02-01 14:17:11.627426124 +1100
+@@ -12929,6 +12929,7 @@
+         end;
+         if InsertParagraph(AIndex, True) then
+           Inc(AIndex);
++        UpdateAttributes;
+         St := I + 1;
+       end;
+       Inc(I);

@@ -1,0 +1,17 @@
+This patch is to be applied to KControls 2053958 .
+It fixes an issue very similar to KControls Github issue 14 where
+if you paste multiline plain text at the very end 
+of a KMemo, after InsertPlainText() has inserted the first line
+it gets confused about where the end of the content is. Pasting
+1.
+2.
+3.
+
+for eg at the very end of the content will mess up.
+Solution is to add yet another call to UpdateAttributes(), this
+time after the InsertParagraph call.
+
+Associated patch run in source dir fixes
+
+David Bannon, Feb 1, 2020
+ 
