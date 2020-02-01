@@ -104,6 +104,7 @@ unit SearchUnit;
                 Better ctrl of Search Term highlight (but still highlit when makeing form re-visible).
                 Drop Create Date and Filename from Search results string grid.
                 But I still cannot control the little green triangles in stringgrid headings indicating sort.
+    2020/02/01  Dont refresh the string grids automatically, turn on the refresh button for user to do it.
 }
 
 {$mode objfpc}{$H+}
@@ -143,6 +144,7 @@ type        { TSearchForm }
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonClearFiltersClick(Sender: TObject);
         procedure CheckCaseSensitiveChange(Sender: TObject);
+        procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
         procedure Edit1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -361,16 +363,13 @@ var
 begin
     RefreshMenus(mkRecentMenu);
     if not Visible then exit;
+    ButtonRefresh.Enabled := True;
+    {
     if ButtonNotebookOptions.Enabled then begin
         NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
         if NB <> '' then
             NoteLister.LoadNotebookGrid(StringGrid1, NB);
-    end else
-            RefreshStrGrids() {
-        else
-            writeln('SearchUnit - Not refreshing str grids now')};
-
-    //if self.Focused then debugln('We are focused') else debugln('We are NOT focused');
+    end else RefreshStrGrids();  }
 end;
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
@@ -418,7 +417,6 @@ begin
     MainForm.MainTBMenu := TPopupMenu.Create(self);
     MainForm.ButtMenu.PopupMenu := MainForm.MainTBMenu;
     // Add any other 'fixed' menu here.
-
 end;
 
     // Builds a list of all the Menus we have floating around at the moment.
@@ -525,6 +523,13 @@ ResourceString
   rsMenuSettings = 'Settings';
   rsMenuHelp = 'Help';
   rsMenuQuit = 'Quit';
+
+  rsNotebooks = 'Notebooks';
+  rsName = 'Name';
+  rsLastChange = 'Last Change';
+
+
+
 
 procedure TSearchForm.MenuFileItems(AMenu : TPopupMenu);
 var
@@ -657,9 +662,15 @@ begin
 end;
 
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
+var
+    NB : string;
 begin
-    RefreshMenus(mkAllMenu);
-    // IndexNotes();                                                    // Temp hack to make testing easy....
+    if ButtonNotebookOptions.Enabled then begin
+        NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+        if NB <> '' then
+            NoteLister.LoadNotebookGrid(StringGrid1, NB);
+    end else RefreshStrGrids();
+    ButtonRefresh.Enabled := false;
 end;
 
 procedure TSearchForm.DoSearch();
@@ -731,15 +742,15 @@ begin
     StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
     StringGrid1.FixedCols := 0;
     StringGrid1.Columns.Add;
-    StringGrid1.Columns[0].Title.Caption := 'Name';
+    StringGrid1.Columns[0].Title.Caption := rsName;
     StringGrid1.Columns.Add;
-    StringGrid1.Columns[1].Title.Caption := 'Last Change';
+    StringGrid1.Columns[1].Title.Caption := rsLastChange;
     StringGrid1.FixedRows:=1;
     StringGrid1.Columns[1].Width := self.Canvas.GetTextWidth(' 2020-01-31 14:36:00 ');
     StringGridNotebooks.Clear;
     StringGridNotebooks.FixedCols := 0;
     StringGridNotebooks.Columns.Add;
-    StringGridNotebooks.Columns[0].Title.Caption := 'Notebooks';
+    StringGridNotebooks.Columns[0].Title.Caption := rsNotebooks;
     StringGridNotebooks.FixedRows:=1;
 
 
@@ -752,6 +763,7 @@ begin
     if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     IndexNotes();           // This could be a slow process, maybe a new thread ?
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
+    ButtonRefreshClick(self);
     //RefreshMenus(mkFileMenu);
     //RefreshMenus(mkHelpMenu);
     //RefreshMenus(mkRecentMenu);
@@ -823,6 +835,16 @@ end;
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);
 begin
     Sett.CheckCaseSensitive.Checked := CheckCaseSensitive.Checked;
+end;
+
+procedure TSearchForm.Edit1Enter(Sender: TObject);
+// ToDo : this should select the word, 'Search' if user clicks in field but does not ??
+begin
+    if Edit1.Text = rsMenuSearch then begin
+        //Edit1.SelStart:=0;
+        //Edit1.SelLength:= length(rsMenuSearch);
+        Edit1.SelectAll;
+    end;
 end;
 
 procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
@@ -949,11 +971,14 @@ begin
         ButtonClearFilters.Enabled := False;
         // ButtonClearFilters.color := clblack;
         StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
-        UseList();
+        // UseList();
+        ButtonRefreshClick(self);
+        //self.ButtonRefresh.enabled := False;
         StringGridNoteBooks.Hint := '';
         //StringGrid1.AutoSizeColumns;
         Edit1.Hint:=rsSearchHint;
         Edit1.Text := rsMenuSearch;
+        Edit1.SetFocus;
         Edit1.SelStart := 0;
         Edit1.SelLength := length(Edit1.Text);
 end;
@@ -967,7 +992,7 @@ begin
     // https://forum.lazarus.freepascal.org/index.php/topic,45009.msg317102.html#msg317102
     //StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
     //StringGridNotebooks.repaint;
-    UseList();
+    ButtonRefreshClick(self);
     StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
 
@@ -975,8 +1000,6 @@ procedure TSearchForm.ButtonMenuClick(Sender: TObject);
 begin
     PopupTBMainMenu.popup;
 end;
-
-
 
 procedure TSearchForm.ButtonNotebookOptionsClick(Sender: TObject);
 begin

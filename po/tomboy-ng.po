@@ -272,6 +272,10 @@ msgctxt "searchunit.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr ""
 
+#: searchunit.rslastchange
+msgid "Last Change"
+msgstr ""
+
 #: searchunit.rsmenuabout
 msgid "About"
 msgstr ""
@@ -302,6 +306,14 @@ msgstr ""
 
 #: searchunit.rsmenusync
 msgid "Synchronise"
+msgstr ""
+
+#: searchunit.rsname
+msgid "Name"
+msgstr ""
+
+#: searchunit.rsnotebooks
+msgid "Notebooks"
 msgstr ""
 
 #: searchunit.rssearchhint
@@ -1119,7 +1131,7 @@ msgid "Refresh"
 msgstr ""
 
 #: tsearchform.buttonrefresh.hint
-msgid "Re-index notes"
+msgid "Update Search Results"
 msgstr ""
 
 #: tsearchform.caption

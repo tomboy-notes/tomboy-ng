@@ -294,6 +294,10 @@ msgctxt "searchunit.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr "ERROR: no se encuentra "
 
+#: searchunit.rslastchange
+msgid "Last Change"
+msgstr ""
+
 #: searchunit.rsmenuabout
 msgid "About"
 msgstr "Acerca de"
@@ -325,6 +329,14 @@ msgstr "Preferencias"
 #: searchunit.rsmenusync
 msgid "Synchronise"
 msgstr "Sincronizar"
+
+#: searchunit.rsname
+msgid "Name"
+msgstr ""
+
+#: searchunit.rsnotebooks
+msgid "Notebooks"
+msgstr ""
 
 #: searchunit.rssearchhint
 msgid "Exact matches for terms between \" \""
@@ -1164,7 +1176,9 @@ msgstr "Actualizar"
 
 # De David: "Here I talk about the notes that are on the disk."
 #: tsearchform.buttonrefresh.hint
-msgid "Re-index notes"
+#, fuzzy
+#| msgid "Re-index notes"
+msgid "Update Search Results"
 msgstr "Re-indizar las notas"
 
 #: tsearchform.caption
@@ -1502,3 +1516,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
+

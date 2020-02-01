@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 708
+  Left = 1025
   Height = 401
-  Top = 174
+  Top = 268
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng Search'
@@ -27,6 +27,7 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 7
+    OnEnter = Edit1Enter
     OnExit = Edit1Exit
     OnKeyDown = FormKeyDown
     OnKeyUp = Edit1KeyUp
@@ -40,7 +41,7 @@ object SearchForm: TSearchForm
     AnchorSideRight.Side = asrBottom
     Left = 672
     Height = 32
-    Hint = 'Re-index notes'
+    Hint = 'Update Search Results'
     Top = 3
     Width = 149
     Anchors = [akTop, akRight]
