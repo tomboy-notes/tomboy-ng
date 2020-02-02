@@ -275,10 +275,17 @@ begin
 		if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
         if HiLight then Buff := Buff + '</highlight>';
+        if Underline then Buff := Buff + '</underline>';                      //
+        if Strikeout then Buff := Buff + '</strikeout>';                      //
                               // if strikeout, underline, fixedwidth here?
+
         Buff := Buff + SetFontXML(FSize, false);
         // better for pretty tags but generates invalid tags ! See below ....
         Buff := Buff + SetFontXML(FT.TextStyle.Font.Size, true);
+
+        if Strikeout then Buff := Buff + '<strikeout>';                         //
+        if Underline then Buff := Buff + '<underline>';                         //
+
         if HiLight then Buff := Buff + '<highlight>';
         if Italics then Buff := Buff + '<italic>';
         if Bold then Buff := Buff + '<bold>';
@@ -461,16 +468,15 @@ begin
    Result := Result + ' Italic ';
    if TKMemoTextBlock(BK).TextStyle.Brush.Color = Sett.HiColor then
    Result := Result + ' HighLight ';
-   Result := Result + inttostr(TKMemoTextBlock(BK).TextStyle.Font.Size);
+   Result := Result + ' size=' + inttostr(TKMemoTextBlock(BK).TextStyle.Font.Size);
    if fsUnderline in TKMemoTextBlock(BK).TextStyle.Font.Style then
         Result := Result + ' Underline ';
    if fsStrikeout in TKMemoTextBlock(BK).TextStyle.Font.Style then
    Result := Result + ' Strikeout ';
    if TKMemoTextBlock(BK).TextStyle.Font.Pitch = fpFixed then
    Result := Result + ' FixedWidth ';
-   if Result <> '' then Result := Result + ' ' + TKMemoTextBlock(BK).Text
-   else Result := 'Not Text';
-
+   if TKMemoTextBlock(BK).ClassNameIs('TKMemoTextBlock') then Result := Result + ' [' + TKMemoTextBlock(BK).Text + ']';
+   //else Result := 'Not Text';
 end;
 
     // I suspect this function is no longer used.
@@ -517,6 +523,7 @@ begin
        OStream.Free;
    end;
 end;
+
 procedure TBSaveNote.CopyLastFontAttr();
 begin
   PrevFSize := FSize;
@@ -562,7 +569,9 @@ var
                 CopyLastFontAttr();
                 repeat
                     Block := KM1.Blocks.Items[BlockNo];
-                    if Block.ClassNameIs('TKMemoParagraph') then break;	// two newlines
+                    // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(Block));
+
+                    if Block.ClassNameIs('TKMemoParagraph') then break;	// discard end prev para
                     if Block.ClassNameIs('TKMemoTextBlock') then begin
                          if Block.Text.Length > 0 then begin
                         	AddTag(TKMemoTextBlock(Block), Buff);
@@ -573,9 +582,11 @@ var
                         AddTag(TKMemoHyperlink(Block), Buff);
                         Buff := Buff + RemoveBadXMLCharacters(Block.Text);
                     end;
-                    // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(Block));
+                    //debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(Block));
                     inc(BlockNo);
                     if BlockNo >= KM1.Blocks.Count then break;
+
+                    // debugln('Inner Buff=[' + Buff + ']');
 
 				until KM1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
                 if BlockNo >= KM1.Blocks.Count then break;
@@ -586,6 +597,9 @@ var
                 // However does not work for font size changes !
 
                 // Note - para blocks CAN have font attributs (eg, underline etc).
+                // debugln('Outer 1 Buff=[' + Buff + ']');
+                // Now, look ahead and see if we need close things ....
+                // This makes bad decision for font size changes, we end up with empty tags but does no real harm.
                 NextBlock := BlockNo + 1;
                 while NextBlock < KM1.Blocks.Count do begin
                     if KM1.Blocks.Items[NextBlock].ClassNameIs('TKMemoTextBlock') then begin
@@ -594,6 +608,7 @@ var
                     end else inc(NextBlock);
                 end;
                 Buff := Buff + LineEnding;
+                // debugln('Outer Buff=[' + Buff + ']');
                 OutStream.Write(Buff[1], length(Buff));
                 Buff := '';
                 // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(KM1.Blocks.Items[BlockNo]));
