@@ -284,7 +284,7 @@ type
         MaskSettingsChanged : boolean;
         AllowClose : Boolean;           // review need for this
         // Indicates we should re-index notes when form hides
-        NeedRefresh : Boolean;
+        //NeedRefresh : Boolean;
         FontSmall  : Integer;
      	FontLarge  : Integer;
      	FontHuge   : Integer;
@@ -332,7 +332,7 @@ const
 
 ResourceString
     rsSyncNotConfig = 'not configured';
-    // ToDo : is this a good idea ? string gets written to config file .....
+
 
 implementation
 
@@ -527,24 +527,6 @@ procedure TSett.ListBoxDicClick(Sender: TObject);
 begin
     if ListBoxDic.ItemIndex > -1 then
         CheckDictionary(AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex]);
-
-
-
-    // ToDo : er, wots happening here ?  Should i remove code below ?
-    exit();
-
-        SpellConfig := Spell.SetDictionary(AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex]);
-    LabelError.Caption := Spell.ErrorMessage;
-    if SpellConfig then begin
-        LabelDicStatus.Caption := 'Dictionary Loaded OK';
-        LabelDic.Caption := AppendPathDelim(DicPath) + ListBoxDic.Items.Strings[ListBoxDic.ItemIndex];
-        //ButtonSaveConfig.Enabled := True;
-        SettingsChanged();
-        NeedRefresh := True;
-    end else begin
-        LabelDicStatus.Caption := 'Dictionary Failed to Load';
-        LabelDic.Caption := 'Enter a new path to Dictionaries :'
-    end;
 end;
 
 function TSett.CheckDictionary(const FullDicName : string) : boolean;
@@ -644,10 +626,10 @@ procedure TSett.FormHide(Sender: TObject);
 begin
     FreeandNil(Spell);
     MaskSettingsChanged := True;
-    if NeedRefresh then begin
+{    if NeedRefresh then begin
         SearchForm.IndexNotes();
         NeedRefresh := False;
-    end;
+    end;    }
 end;
 
 procedure TSett.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -694,7 +676,7 @@ begin
     // ToDo : what about a fixed font for Mac ?
     PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;
-    NeedRefresh := False;
+    //NeedRefresh := False;
     ExportPath := '';
     LabelWaitForSync.Caption := '';
     LabelLibrary.Caption := '';
@@ -968,7 +950,6 @@ begin
     FontDialog1.Font.Size := 10;
     FontDialog1.Title := 'Select Usual Font';
     FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
-    //showmessage(UsualFont);
     If FontDialog1.Execute then BEGIN
         UsualFont := FontDialog1.Font.name;
         SettingsChanged();
@@ -998,13 +979,10 @@ begin
                showmessage(rsDirHasNoNotes);
 		    end;
             FindClose(Info);
-            // LabelNotesPath.Caption := NoteDirectory;
-		    // ButtonSaveConfig.Enabled := True;
             CheckShowIntLinks.enabled := true;
             // CheckReadOnly.enabled := true;
             SettingsChanged();
             SyncSettings();
-            // NeedRefresh := True;     // ToDo : April 19, not needed ?
             SearchForm.IndexNotes();
         end else
             NoteDirectory := LabelNotesPath.caption;
@@ -1065,7 +1043,7 @@ begin
         // Danger Will Robertson ! We cannot assume LocalConfig has a trailing slash !
         FR.Showmodal;
         if FR.RequiresIndex then
-            NeedRefresh := True;
+            SearchForm.IndexNotes();
     finally
         FR.Free;
     end;
@@ -1145,7 +1123,7 @@ begin
     NoteLister := TNoteLister.Create;
     NoteLister.WorkingDir:= NoteDirectory + 'Backup' + PathDelim;
     NoteLister.GetNotes();
-    NoteLister.LoadStGrid(StringGridBackUp);
+    NoteLister.LoadStGrid(StringGridBackUp, 4);
     NoteLister.Free;
     StringgridBackUp.AutoSizeColumns;
     Label15.caption := rsDoubleClickNote;

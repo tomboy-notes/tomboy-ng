@@ -164,10 +164,7 @@ uses laz2_DOM, laz2_XMLRead, LazFileUtils;
 
 function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
 // Don't use UTF8 versions of Copy() and Length(), we are working bytes !
-// It appears that Tomboy only processes <, > and &
-// ToDo : further escaping .......
-// The ' should be escaped with a &apos; entity -- mandatory in attributes defined within single quotes but it is strongly advised to always escape it.
-// The " should be escaped with a &quot; entity -- mandatory in attributes defined within double quotes but it is strongly advised to always escape it.
+// It appears that Tomboy only processes <, > and & , we also process single and double quote.
 // http://xml.silmaril.ie/specials.html
 var
    //Res : ANSIString;

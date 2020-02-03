@@ -8,7 +8,7 @@ object FormBackupView: TFormBackupView
   ClientWidth = 335
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.7.0'
   object Memo1: TMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

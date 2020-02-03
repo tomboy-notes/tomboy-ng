@@ -5,21 +5,20 @@
 
 If you are reading this, odds are you are worried ! So, first bit of advice is <size:large>
 <italic><bold>don't panic</bold></italic></size:large><size:small><italic><bold> (1)</bold></italic></size:small>
-Its quite possible we can help you. That will depend on whats happened and if you have enabled auto snapshots (or took a manual one recently). Firstly, don't do a sync, it could replace good data with bad. Next,  take small steps.
+Its quite possible we can help you. That will depend on whats happened and maybe if you have taken a manual snapshot recently. Firstly, don't do a sync, it could replace good data with bad. Next,  take small steps.
 
 Lets look at the possibilities -<size:large>
 
 <bold>I (or the sync) deleted a note I need</bold></size:large>
-That just might be easy. We keep a backup copy of every note you manually delete or is overwritten during a sync. But only one copy so if its been synced and overwritten again, its gone. Check by going back to the BackUp tab, click "Show Me", browse through the old notes there and double click a likely candidate. You'll get a dialog that lets you view, delete or recover that note.<size:large>
+That just might be easy. We keep a backup copy of every note you manually delete or is overwritten during a sync. But only one copy so if its been synced and overwritten again, its gone. Check by going back to Settings, the BackUp tab, click "Show Me", browse through the old notes there and double click a likely candidate. You'll get a dialog that lets you view, delete or recover that note.<size:large>
 
 <bold>I have a corrupted note.</bold></size:large>
 When you start tomboy-ng, you see a warning about an inability to index a note. That probably means the note's XML has somehow become corrupted <size:small>(2)</size:small>. The indexing mechanism in tomboy-ng is deliberately very strict in what it will accept, it errors if one field is unobtainable. However, depending on where the XML error in the note is, you may be able to open it, decide if what you see is a good compromise and save it with rewritten XML.   
 
 <bold>To try this quick fix, you should -</bold>
-<list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost notes". </list-item></list>
+<list><list-item dir="ltr">From Settings, the SnapShot tab, click "Recover one or more lost notes". </list-item></list>
 <list><list-item dir="ltr">In this window, under "bad Notes in Notes Directory" is a list of just that. Double click a likely candidate and a new Edit window will open. If you see little or none of the content you expect, don't touch it, just close the window, there are better options <size:small>(3).</size:small></list-item></list><size:small></size:small>
-<list><list-item dir="ltr">If it looks like what you need is still there (or enough), make a trivial change to force a save and exit. </list-item></list>
-<list><list-item dir="ltr">You might want to back out now, click "Refresh" in the Search window. Good luck !</list-item></list><size:large>
+<list><list-item dir="ltr">If it looks like what you need is still there (or enough), make a trivial change to force a save and exit. </list-item></list><size:large>
 
 <bold>You're not listening, I have lost all my notes !</bold></size:large>
 OK, I get you, this is serious. But we at have two paths left, lets see -
@@ -42,9 +41,10 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 (5) If you (wisely) keep a copy elsewhere, bring it back, un-encrypt it if necessary. And, good work !
 
 
+
 </note-content></text>
-  <last-change-date>2019-01-29T22:43:57.1520000+11:00</last-change-date>
-  <last-metadata-change-date>2019-01-29T22:43:57.1520000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-03T17:45:11.6320000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-03T17:45:11.6320000+11:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

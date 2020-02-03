@@ -255,13 +255,11 @@ begin
         or (ExtractFilePath(FullFileName) = '') then begin
         try
             try
-            EBox := TEditBoxForm.Create(Application);
-            EBox.SingleNoteMode:=True;
+            EBox := TEditBoxForm.Create(Application);   // it will check SingleNoteFileName ....
+            // EBox.SingleNoteMode:=True;
             EBox.NoteTitle:= '';
             EBox.NoteFileName := FullFileName;
             Ebox.TemplateIs := '';
-            //EBox.Top := Placement + random(Placement*2);
-            //EBox.Left := Placement + random(Placement*2);
             EBox.Dirty := False;
             if ViewerMode then
                 EBox.SetReadOnly(False);
@@ -314,7 +312,7 @@ RESOURCESTRING
     rsMacHelp1 = 'eg   open tomboy-ng.app';
     rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
     {$endif}
-    rsHelpDelay = 'Delay startup by 2 Seconds to allow OS to settle';
+    rsHelpDelay = 'Delay startup 2 sec to allow OS to settle';
     rsHelpLang = 'Force Language, supported es, nl';
     rsHelpDebug = 'Direct debug output to SOME.LOG.';
     rsHelpHelp = 'Show this help message and exit.';
@@ -322,11 +320,11 @@ RESOURCESTRING
     rsHelpRedHat = 'Run in RedHatGnome mode, no TrayIcon';
     rsHelpNoSplash = 'Dont show small status/splash window';
     rsHelpDebugSync = 'Show debug messages during Sync';
-    rsHelpDebugIndex = 'Show debug messages while indexing notes';
+    rsHelpDebugIndex = 'Show debug msgs while indexing notes';
     rsHelpDebugSpell = 'Show debug messages while spell setup';
     rsHelpConfig = 'Create or use an alternative config';
     rsHelpSingleNote = 'Open indicated note, switch is optional';
-    rsHelpSaveExit = 'After import single note, save and exit.';
+    rsHelpSaveExit = 'After import single note, save & exit';
 
 
 function TMainForm.CommandLineError() : boolean;
@@ -335,10 +333,10 @@ begin
     Result := false;
     CmdLineErrorMsg := Application.CheckOptions('hgo:l:', 'delay-start lang: debug-log: dark-theme no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
     if Application.HasOption('h', 'help') then
-        CmdLineErrorMsg := 'Show Help Message';
+        CmdLineErrorMsg := 'Usage -';
     if CmdLineErrorMsg <> '' then begin
         CloseASAP := True;
-       debugln('Usage - ');
+        debugln(CmdLineErrorMsg);
        {$ifdef DARWIN}
        debugln(rsMachelp1);
        debugln(rsMacHelp2);
@@ -357,7 +355,6 @@ begin
        debugln('   --config-dir=PATH_to_DIR     ' + rsHelpConfig);
        debugln('   -o --open-note=PATH_to_NOTE  ' + rsHelpSingleNote);
        debugln('   --save-exit                  ' + rsHelpSaveExit);
-       debugln(CmdLineErrorMsg);
        result := true;
     end;
 end;

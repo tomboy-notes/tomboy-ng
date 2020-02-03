@@ -658,16 +658,14 @@ function TBSaveNote.WriteToDisk(const FileName: ANSIString; var NoteLoc : TNoteU
 var
    Buff : string = '';
    TmpName : string;
-   FileAttr : longint;
+   {$ifdef WINDOWS}FileAttr : longint;{$endif}
 begin
     Result := False;
     // we write out the footer here so we can do the searching to notebook stuff
     // after we have released to lock on KMemo.
     Buff := Footer(NoteLoc);
     OutStream.Write(Buff[1], length(Buff));
-    // OK, lets save it.
-    // ----------------------------------
-    // We must be a bit smarter here, we save the file in tmp, when closed,
+    // We save the file in tmp, when closed,
     // move it over to the actual position. That will prevent, to some extent, poweroff
     // crashes messing with files.  May generate an EStreamError
 

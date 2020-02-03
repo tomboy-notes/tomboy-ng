@@ -337,7 +337,7 @@ begin
     SnapNoteLister.Debugmode := DebugMode;
     SnapNoteLister.WorkingDir:= SnapDir + 'temp' + PathDelim;
     {Result := }SnapNoteLister.GetNotes();
-	SnapNoteLister.LoadStGrid(StringGrid1);
+	SnapNoteLister.LoadStGrid(StringGrid1, 4);
 	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
 	StringGrid1.SortColRow(True, 1);
     ButtonRecoverSnap.Enabled := True;

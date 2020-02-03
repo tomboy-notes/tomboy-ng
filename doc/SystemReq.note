@@ -14,7 +14,7 @@ Please read further down for notes relating to your specific Linux distribution/
 
 
 <bold>The Gnome 3 Workaround</bold>
-Only applicable to some specific distrobutions. As of V0.25 the Gnome 3 based systems can now work without installing any extra software but you work in a slightly different way.  Instead of the System Tray Icon (that Gnome 3 hates) you add tomboy-ng to your 'favourites' so an icon remains on the dock.  Clicking that icon will either start tomboy-ng or, if its running but hiding, will popup its Search Form. To add the icon to your dock, start tomboy-ng, then, if necessary, display the dock, right click the green tomboy-ng icon and choose "add to favourites".
+Applicable to Fedora and some similar systems.  As of V0.25 the Gnome 3 based systems can now work without installing any extra software but you work in a slightly different way.  Instead of the System Tray Icon (that Gnome 3 hates) you add tomboy-ng to your 'favourites' so an icon remains on the dock.  Clicking that icon will either start tomboy-ng or, if its running but hiding, will popup its Search Form. To add the icon to your dock, start tomboy-ng, then, if necessary, display the dock, right click the yellow tomboy-ng icon and choose "add to favourites".
 
 Use the GTK2 version of tomboy-ng because wayland (Gnome's default desktop manager) does not get along with Qt5 apps.
 
@@ -74,8 +74,8 @@ tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to w
 
 
 </note-content></text>
-  <last-change-date>2020-01-22T21:13:36.2190000+11:00</last-change-date>
-  <last-metadata-change-date>2020-01-22T21:13:36.2190000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-03T17:39:28.0000000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-03T17:39:28.0000000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

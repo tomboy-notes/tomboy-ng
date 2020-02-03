@@ -57,6 +57,8 @@ unit Note_Lister;
                 Sort main list, added functions to populate MMenu Recent list.
                 Tweek func that populates the main stringGrid avoiding initial sort
     2020/01/31  LoadStringGrid*() now uses the Lazarus column mode.
+    2020/02/03  Make contents of strgrid look like it claims to be after new data
+                Removed LoadSearchGrid, no use LoadStGrid in both modes.
 }
 
 {$mode objfpc}
@@ -189,41 +191,38 @@ type
     function GetNotebooks(const NBList : TStringList; const ID : ANSIString = '') : boolean;
                                         { Loads the Notebook StringGrid up with the Notebook names we know about. Add a bool to indicate we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after GetNotes(Term) }
 	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid; SearchListOnly: boolean);
-            { Adds a note to main list, ie when user creates a new note }
+                                { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
-    		{ Read the metadata from all the notes in internal data structure,
-              this is the main "go and do it" function.
-              If 'term' is present we'll just search for notes with that term
-              and store date in a different structure. And probably call LoadSearchGrid() }
+    		                    { Read the metadata from all the notes in internal data structure,
+                                  this is the main "go and do it" function.
+                                  If 'term' is present we'll just search for notes with that term
+                                  and store date in a different structure. And probably call LoadSearchGrid() }
    	function GetNotes(const Term: ANSIstring=''; DontTestName: boolean=false
         ): longint;
-    		{ Copy the internal Note data to the passed TStringGrid, empting it first.
-              This is the full note list.}
-   	procedure LoadStGrid(const Grid : TStringGrid);
-    		{ Returns True if its updated the internal record as indicated,
-              will accept either an ID or a filename. }
+    		                    { Copy the internal Note data to the passed TStringGrid, empting it first.
+                                  NoCols can be 2, 3 or 4 being Name, LastChange, CreateDate, ID.
+                                  Special case only main List SearchMode True will get from the search list.}
+   	procedure LoadStGrid(const Grid: TStringGrid; NoCols: integer;  SearchMode: boolean=false);
+    		                    { Returns True if its updated the internal record as indicated,
+                                  will accept either an ID or a filename. }
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
 
     function IsThisATitle(const Title : ANSIString) : boolean;
-    		{ Returns the Form this note is open on, Nil if its not open }
+                        		{ Returns the Form this note is open on, Nil if its not open }
     function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
-    		{ Tells the list that this note is open, pass NIL to indicate its now closed }
+                        		{ Tells the list that this note is open, pass NIL to indicate its now closed }
     procedure ThisNoteIsOpen(const ID : ANSIString; const TheForm : TForm);
-    		{ Returns true if it can find a FileName to Match this Title }
+                        		{ Returns true if it can find a FileName to Match this Title }
     function FileNameForTitle(const Title: ANSIString; out FileName : ANSIstring): boolean;
     procedure StartSearch();
     function NextNoteTitle(out SearchTerm : ANSIString) : boolean;
-    		{ removes note from int data, accepting either an ID or Filename }
+    		                    { removes note from int data, accepting either an ID or Filename }
     function DeleteNote(const ID : ANSIString) : boolean;
-			{ Copy the internal data to the passed TStringGrid, empting it first
-              call after a call to GetNotes(term), a non empty term triggering a disk
-              search and filling in SearchNoteList.}
-	procedure LoadSearchGrid(const Grid : TStringGrid);
-    		{ Copy the internal data about notes in passed Notebook to passed TStringGrid
-              for display. So, shown would be all the notes in the nominated notebook.}
+    		                    { Copy the internal data about notes in passed Notebook to passed TStringGrid
+                                  for display. So, shown would be all the notes in the nominated notebook.}
     procedure LoadNotebookGrid(const Grid : TStringGrid; const NotebookName : AnsiString);
-    		{ Returns the ID (inc .note) of the notebook Template, if an empty string we did
-              not find a) the Entry in NotebookList or b) the entry had a blank template. }
+    		                    { Returns the ID (inc .note) of the notebook Template, if an empty string we did
+                                  not find a) the Entry in NotebookList or b) the entry had a blank template. }
     function NotebookTemplateID(const NotebookName : ANSIString) : AnsiString;
             { Returns the Form of first open note and sets internal pointer to it, Nil if none found }
     function FindFirstOpenNote(): TForm;
@@ -906,60 +905,37 @@ begin
         //writeln('--------------');
 	end else begin
     	CleanUpList(SearchNoteList);
+        SearchNoteList.Sort(@LastChangeSorter);
 		result := NoteList.Count;
 	end;
-    if assigned(SL) then SL.Free;       // ToDo : needs a try statement ....
+    if assigned(SL) then SL.Free;       //  needs a try statement ....
 end;
 
 
-procedure TNoteLister.LoadStGrid(const Grid : TStringGrid);
+procedure TNoteLister.LoadStGrid(const Grid : TStringGrid; NoCols : integer; SearchMode : boolean = false);
 var
     Index : integer;
+    TheList : TNoteList;
 begin
+    if SearchMode then
+        TheList := SearchNoteList
+    else TheList := NoteList;
     while Grid.RowCount > 1 do Grid.DeleteRow(Grid.RowCount-1);
-    Index := NoteList.Count;
+    Index := TheList.Count;
     while Index > 0 do begin
         dec(Index);
-        Grid.InsertRowWithValues(Grid.RowCount, [NoteList.Items[Index]^.Title,
-        	NoteList.Items[Index]^.LastChange]);
+        case NoCols of
+            2 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
+        	    TheList.Items[Index]^.LastChange]);
+            3 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
+        	    TheList.Items[Index]^.LastChange, TheList.Items[Index]^.CreateDate]);
+            4 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
+                TheList.Items[Index]^.LastChange, TheList.Items[Index]^.CreateDate,
+                TheList.Items[Index]^.ID]);
+        end;
     end;
-    {
-  	Grid.Clear;
-    Grid.FixedRows := 0;
-    //Grid.InsertRowWithValues(0, ['Title', 'Last Change']);
-    Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
-    Grid.FixedRows := 1;
-    Grid.SortColRow(True, 1);   // sorting while empty should be quick, get header looking right.
-    Index := NoteList.Count;
-    while Index > 0 do begin
-        dec(Index);
-        Grid.InsertRowWithValues(Grid.RowCount, [NoteList.Items[Index]^.Title,
-        	NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,
-            NoteList.Items[Index]^.ID]);
-    end;
-    }
-end;
-
-procedure TNoteLister.LoadSearchGrid(const Grid: TStringGrid);
-var
-    Index : integer;
-begin
-    while Grid.RowCount > 1 do Grid.DeleteRow(Grid.RowCount-1);
-    for Index := 0 to SearchNoteList.Count -1 do begin
-        Grid.InsertRowWithValues(Index+1, [SearchNoteList.Items[Index]^.Title,
-        	SearchNoteList.Items[Index]^.LastChange]);
-	end;
-    {
-  	Grid.Clear;
-    Grid.FixedRows := 0;
-    Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
-    Grid.FixedRows := 1;
-    for Index := 0 to SearchNoteList.Count -1 do begin
-        Grid.InsertRowWithValues(Index+1, [SearchNoteList.Items[Index]^.Title,
-        	SearchNoteList.Items[Index]^.LastChange, SearchNoteList.Items[Index]^.CreateDate,
-            SearchNoteList.Items[Index]^.ID]);
-	end;
-    Grid.AutoSizeColumns;   }
+    if Grid.SortColumn > -1 then
+        Grid.SortColRow(True, Grid.SortColumn);
 end;
 
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;

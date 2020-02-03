@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 1025
+  Left = 641
   Height = 401
-  Top = 268
+  Top = 283
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng Search'

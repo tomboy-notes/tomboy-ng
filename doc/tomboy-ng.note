@@ -5,17 +5,40 @@
 
 Tomboy-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is  file compatible  with Tomdroid and (?) GNote. Tomboy-ng notes support <bold>Bold</bold>, <italic>Italic</italic>, <strikeout>Strikethrough</strikeout>, <highlight>Highlight</highlight> and <underline>Underline</underline> in  four sizes, <size:small>small</size:small>, normal, <size:large>large</size:large> and <size:huge><highlight>huge</highlight></size:huge>. 
 
-It will sync notes with other systems using Tomboy's File Sync model but not yet Network  Sync  using Rainy or Graphal. There is a one to one sync capability to an Android phone running Tomdroid (but only from a Linux box). 
+It will sync notes with other systems using Tomboy's File Sync model (but not yet Network  Sync  using Rainy or Graphal). There is a one to one sync capability to an Android phone running Tomdroid (but only from a Linux box). 
 
-Many  users  will  want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can  interact with it via that Icon. However, to ensure we support some difficult platforms, a small window or splash screen is also opened, it can be dismissed if you see the system tray icon. (But on some Gnome 3 distros, do make sure you can see that small green system tray icon first !)  Once sure you can use the System Tray Icon, you can make a setting to not show the splashscreen unless a bad note is detected at startup. <size:large>
+Many  users  will  want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can  interact with it via that Icon. However, to ensure we support some difficult platforms, a small window or splash screen is also opened, it can be dismissed if you see the system tray icon (or on some Gnome 3 systems, you have added it to your dock as a favourite).  You can set that small splash screen to not open unless a bad note is detected at startup. <size:large>
+
+<bold>Using tomboy-ng</bold></size:large>
+You will interact with tomboy-ng using a menu on a System Tray Icon (only some systems) or from a menu that appears on all major forms of the application.   If you don't have a System Tray Icon (thats sad!) you add tomboy-ng to your Favourites so it appears on your dock, that way, you can always either start it or wake up its Search Form easily.
+
+From the <bold>search form</bold>, you can -
+<list><list-item dir="ltr">Access the main menu (New Note, Settings, recent notes etc).</list-item></list>
+<list><list-item dir="ltr">Search for terms in all your notes.  A search term like <highlight>  "John Smith" name </highlight> will find all notes that use the word <italic>name</italic> anywhere and have the exactly that combination of <italic>John Smith</italic>.  It won't, for example find  <italic>my name is Smith, John.</italic></list-item></list><italic></italic>
+<list><list-item dir="ltr">Organise your notes into Notebooks, tomboy-ng will allow each note to be in more than one Notebook but if you sync or share your notes with the original Tomboy, don't turn that feature on.</list-item></list>
+
+Note that search results shown on the search form are not automatically updated while the form remains open. Thats to ensure that a set of results don't change while you deal with individual notes.  If a change is pending, the 'Refresh Button' becomes enabled and you can trigger an update by clicking that button.
+
+<bold>Generally tomboy-ng -</bold>
+<list><list-item dir="ltr">notes are automatically saved as you make changes.</list-item></list>
+<list><list-item dir="ltr">automatically makes backup copies when you delete a note, if you need to know a note is really gone, go to Settings-&gt;Backup.</list-item></list>
+<list><list-item dir="ltr">has facilities to make snapshots of your notes from time to time, please use it!</list-item></list>
+<list><list-item dir="ltr">can sync your notes to a common file store so they are accessible from multiple machines (Linux, Windows or Mac).</list-item></list>
+<list><list-item dir="ltr">does not share well. If you just put your notes on a shared drive (without using sync) be desperately careful that you don't have more than one tomboy-ng or Tomboy running at the same time. Bad things happen.   </list-item></list><size:large>
 
 <bold>Command Line Switches.</bold></size:large><bold>
 
 </bold><monospace><bold>-h or --help </bold></monospace>            
  Show help and exit.
 
+<bold>--delay-start</bold>
+Insert a few seconds at startup to ensure that tomboy-ng picks up your colour scheme. 
+
 <bold>-g or --gnome3</bold>
 Prevent splash screen from being closed. Only necessary if your Linux system does not show the tomboy-ng system tray icon. Some Gnome 3 systems.
+
+<bold>-l CCode  --lang=CCode </bold>      
+Force Language, supported language codes as  es and nl. Lets us know if you want tomboy-ng in another language.
 
 <bold>--version</bold>                 
 Print version and exit
@@ -41,16 +64,17 @@ Show whats happening during either sync, index or spell. Useful for debugging. T
 <bold>Mac Things</bold></size:large>
 Mac user require a slightly more complicated command line when using any of these command line switches. For example a Mac command line to generate a sync debug log would be -
 
-<monospace>open tomboy-ng.app --args "--debug-log=$HOME/tomboy-ng.log" "--debug-sync"
+<monospace>open tomboy-ng.app --args "--debug-log=$HOME/tomboy-ng.log" "--debug-sync"</monospace>
 
-And, because of the .app approach, absolute paths need be used for parameters, or, use $PWD relative to your current directory -
- </monospace>
+<monospace>And, because of the .app approach, absolute paths need be used for parameters, or, use $PWD relative to your current directory -</monospace>
+<monospace> </monospace>
 open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
+
 </note-content></text>
-  <last-change-date>2019-01-29T22:03:49.2320000+11:00</last-change-date>
-  <last-metadata-change-date>2019-01-29T22:03:49.2320000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-03T21:53:42.7460000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-03T21:53:42.7460000+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

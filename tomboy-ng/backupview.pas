@@ -188,23 +188,25 @@ begin
             CloseFile(OutFile);
             CloseFile(InFile);
         end;
+        SearchForm.NoteLister.IndexThisNote(copy(GUIDToString(GUID), 2, 36));
         If ExistsInRepo then
             if not RenameFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP',
                     Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
                 showmessage('Failed to move temp backup file');
             end;
-        NeedUpDate := false;
+        NeedUpDate := True;
     except
         on E: EInOutError do
             showmessage('File handling error occurred. Details: ' + E.Message);
     end;
-    Memo1.Append(rsRecoverOK);  // ToDo : does userneed to reindex here or not ??
+    Memo1.Append(rsRecoverOK);  // reindexing triggered from FormClose
 end;
 
 procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
     if NeedUpDate then begin
         SearchForm.RefreshMenus(mkRecentMenu);
+        SearchForm.ButtonRefresh.enabled := True;
         // SearchForm.RecentMenu();
         Sett.ButtonShowBackUp.click;
     end;

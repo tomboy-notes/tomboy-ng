@@ -349,7 +349,7 @@ procedure TSearchForm.RefreshStrGrids();
     T1, T2, T3 : qword;  }
 begin
     //T1 := gettickcount64();
-    NoteLister.LoadStGrid(StringGrid1);         // 4 to 8mS on Dell
+    NoteLister.LoadStGrid(StringGrid1, 2);         // 4 to 8mS on Dell
     //T2 := gettickcount64();
     NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS on Dell
     //T3 := gettickcount64();
@@ -358,8 +358,8 @@ end;
 
 { Sorts List and updates the recently used list under trayicon }
 procedure TSearchForm.UseList();
-var
-    NB : string;
+{var
+    NB : string; }
 begin
     RefreshMenus(mkRecentMenu);
     if not Visible then exit;
@@ -665,11 +665,14 @@ procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
 var
     NB : string;
 begin
-    if ButtonNotebookOptions.Enabled then begin
-        NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
-        if NB <> '' then
-            NoteLister.LoadNotebookGrid(StringGrid1, NB);
-    end else RefreshStrGrids();
+    if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then
+        DoSearch()
+    else
+        if ButtonNotebookOptions.Enabled then begin
+            NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+            if NB <> '' then
+                NoteLister.LoadNotebookGrid(StringGrid1, NB);
+        end else RefreshStrGrids();
     ButtonRefresh.Enabled := false;
 end;
 
@@ -677,12 +680,13 @@ procedure TSearchForm.DoSearch();
 begin
     if (Edit1.Text = '') then
         ButtonClearFiltersClick(self);
-    if (Edit1.Text <> 'Search') and (Edit1.Text <> '') then begin
+    if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then begin
         ButtonClearFilters.Enabled := True;
         // TS1:=gettickcount64();
         NoteLister.GetNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
         // TS2:=gettickcount64();
-        NoteLister.LoadSearchGrid(StringGrid1);
+        //NoteLister.LoadSearchGrid(StringGrid1);
+        NoteLister.LoadStGrid(StringGrid1, 2, True);
         NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
         // TS3:=gettickcount64();
         // showmessage('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
@@ -739,6 +743,8 @@ end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
+    NoteLister := nil;
+    if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
     StringGrid1.FixedCols := 0;
     StringGrid1.Columns.Add;
@@ -758,9 +764,9 @@ begin
     Edit1.Text := rsMenuSearch;
     Edit1.SelStart := 1;
     Edit1.SelLength := length(Edit1.Text);
-    NoteLister := nil;
+
     CreateMenus();
-    if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
+
     IndexNotes();           // This could be a slow process, maybe a new thread ?
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
     ButtonRefreshClick(self);
@@ -972,12 +978,13 @@ begin
         // ButtonClearFilters.color := clblack;
         StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
         // UseList();
-        ButtonRefreshClick(self);
+
         //self.ButtonRefresh.enabled := False;
         StringGridNoteBooks.Hint := '';
         //StringGrid1.AutoSizeColumns;
         Edit1.Hint:=rsSearchHint;
         Edit1.Text := rsMenuSearch;
+        ButtonRefreshClick(self);
         Edit1.SetFocus;
         Edit1.SelStart := 0;
         Edit1.SelLength := length(Edit1.Text);

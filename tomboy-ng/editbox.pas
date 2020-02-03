@@ -1450,7 +1450,9 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
-    SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu);
+    if mainform.SingleNoteFileName = '' then
+        SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
+    else SingleNoteMode := True;
     {$ifdef DARWIN}
     MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
     MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
@@ -2061,7 +2063,8 @@ end;
 
 { ---------------------- C A L C U L A T E    F U N C T I O N S ---------------}
 
-procedure TEditBoxForm.ExprTan(var Result: TFPExpressionResult; Const Args: TExprParameterArray);
+procedure TEditBoxForm.ExprTan(var Result: TFPExpressionResult;
+    const Args: TExprParameterArray);
 var
   x: Double;
 begin
@@ -2650,7 +2653,7 @@ begin
     Left := Loader.X;
     Top := Loader.Y;
     Height := Loader.Height;
-    Width := Loader.Width;          // ToDo : must ensure these are not outside screen.height and screen.width
+    Width := Loader.Width;          // AdjustFormPosition() will fix if necessary
     AdjustFormPosition();
     Loader.Free;
     TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
