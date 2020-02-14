@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 641
+  Left = 693
   Height = 401
-  Top = 283
+  Top = 311
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng Search'
@@ -292,6 +292,10 @@ object SearchForm: TSearchForm
     object MenuDeleteNotebook: TMenuItem
       Caption = 'Delete Notebook'
       OnClick = MenuDeleteNotebookClick
+    end
+    object MenuRenameNoteBook: TMenuItem
+      Caption = 'Rename Note Book'
+      OnClick = MenuRenameNoteBookClick
     end
     object MenuNewNoteFromTemplate: TMenuItem
       Caption = 'Create New Note from Template'

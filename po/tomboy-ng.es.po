@@ -152,7 +152,9 @@ msgid "Direct debug output to SOME.LOG."
 msgstr "Enviar resultados de depuración a SOME.LOG."
 
 #: mainunit.rshelpdebugindex
-msgid "Show debug messages while indexing notes"
+#, fuzzy
+#| msgid "Show debug messages while indexing notes"
+msgid "Show debug msgs while indexing notes"
 msgstr "Mostrar mensajes de depuración durante indización"
 
 # ¿Demasiado largo?
@@ -166,7 +168,7 @@ msgid "Show debug messages during Sync"
 msgstr "Mostrar mensajes de depuración durante Sincronización"
 
 #: mainunit.rshelpdelay
-msgid "Delay startup by 2 Seconds to allow OS to settle"
+msgid "Delay startup 2 sec to allow OS to settle"
 msgstr ""
 
 #: mainunit.rshelphelp
@@ -186,7 +188,9 @@ msgid "Run in RedHatGnome mode, no TrayIcon"
 msgstr "Usar modo de RedHatGnome, sin icono de bandeja"
 
 #: mainunit.rshelpsaveexit
-msgid "After import single note, save and exit."
+#, fuzzy
+#| msgid "After import single note, save and exit."
+msgid "After import single note, save & exit"
 msgstr "Después de importar una sola nota, guardar y salir."
 
 # Unix "switch"
@@ -201,22 +205,6 @@ msgstr "Imprimir versión y salir"
 #: mainunit.rsnotes
 msgid "notes"
 msgstr "notes"
-
-#: notebook.rsenternewnotebook
-msgid "Enter a new notebook name please"
-msgstr "Introduzca un nuevo nombre de cuaderno, por favor"
-
-#: notebook.rsmultiplenotebooks
-msgid "Settings allow multiple Notebooks"
-msgstr "Las preferencias permiten cuadernos múltiples"
-
-#: notebook.rsonenotebook
-msgid "Settings allow only one Notebook"
-msgstr "Las preferencias permiten un solo cuaderno"
-
-#: notebook.rssetthenotebooks
-msgid "Set the notebooks this note is a member of"
-msgstr "Establezca los cuadernos a cuales pertenecen esta nota"
 
 #: recover.rsallrestored
 msgid "Notes and config files Restored, restart suggested."
@@ -289,66 +277,116 @@ msgstr "Tenemos"
 msgid "snapshots"
 msgstr "instantáneas"
 
-#: searchunit.rscannotfindnote
-msgctxt "searchunit.rscannotfindnote"
+#: resourcestr.rscannotfindnote
+#, fuzzy
+msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr "ERROR: no se encuentra "
 
-#: searchunit.rslastchange
+#: resourcestr.rschangenameofnotebook
+msgid "Change the name of this Notebook"
+msgstr ""
+
+#: resourcestr.rsenternewnotebook
+#, fuzzy
+msgctxt "resourcestr.rsenternewnotebook"
+msgid "Enter a new notebook name please"
+msgstr "Introduzca un nuevo nombre de cuaderno, por favor"
+
+#: resourcestr.rslastchange
+msgctxt "resourcestr.rslastchange"
 msgid "Last Change"
 msgstr ""
 
-#: searchunit.rsmenuabout
+#: resourcestr.rsmenuabout
+#, fuzzy
+msgctxt "resourcestr.rsmenuabout"
 msgid "About"
 msgstr "Acerca de"
 
-#: searchunit.rsmenuhelp
-msgctxt "searchunit.rsmenuhelp"
+#: resourcestr.rsmenuhelp
+#, fuzzy
+msgctxt "resourcestr.rsmenuhelp"
 msgid "Help"
 msgstr "Ayuda"
 
-#: searchunit.rsmenunewnote
+#: resourcestr.rsmenunewnote
+#, fuzzy
+msgctxt "resourcestr.rsmenunewnote"
 msgid "New Note"
 msgstr "Nota nueva"
 
-#: searchunit.rsmenuquit
-msgctxt "searchunit.rsmenuquit"
+#: resourcestr.rsmenuquit
+#, fuzzy
+msgctxt "resourcestr.rsmenuquit"
 msgid "Quit"
 msgstr "Salir"
 
-#: searchunit.rsmenusearch
-msgctxt "searchunit.rsmenusearch"
+#: resourcestr.rsmenusearch
+#, fuzzy
+msgctxt "resourcestr.rsmenusearch"
 msgid "Search"
 msgstr "Buscar"
 
-#: searchunit.rsmenusettings
-msgctxt "searchunit.rsmenusettings"
+#: resourcestr.rsmenusettings
+#, fuzzy
+msgctxt "resourcestr.rsmenusettings"
 msgid "Settings"
 msgstr "Preferencias"
 
-#: searchunit.rsmenusync
+#: resourcestr.rsmenusync
+#, fuzzy
+msgctxt "resourcestr.rsmenusync"
 msgid "Synchronise"
 msgstr "Sincronizar"
 
-#: searchunit.rsname
+#: resourcestr.rsmultiplenotebooks
+#, fuzzy
+msgctxt "resourcestr.rsmultiplenotebooks"
+msgid "Settings allow multiple Notebooks"
+msgstr "Las preferencias permiten cuadernos múltiples"
+
+#: resourcestr.rsname
+msgctxt "resourcestr.rsname"
 msgid "Name"
 msgstr ""
 
-#: searchunit.rsnotebooks
+#: resourcestr.rsnotebooks
+msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
 msgstr ""
 
-#: searchunit.rssearchhint
+#: resourcestr.rsnumbnotesaffected
+msgid "This will affect %d notes"
+msgstr ""
+
+#: resourcestr.rsonenotebook
+#, fuzzy
+msgctxt "resourcestr.rsonenotebook"
+msgid "Settings allow only one Notebook"
+msgstr "Las preferencias permiten un solo cuaderno"
+
+#: resourcestr.rssearchhint
+#, fuzzy
+msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
 msgstr "usar comillas para búsqueda exacta"
 
-#: searchunit.rssetupnotesdirfirst
-msgctxt "searchunit.rssetupnotesdirfirst"
+#: resourcestr.rssetthenotebooks
+#, fuzzy
+msgctxt "resourcestr.rssetthenotebooks"
+msgid "Set the notebooks this note is a member of"
+msgstr "Establezca los cuadernos a cuales pertenecen esta nota"
+
+#: resourcestr.rssetupnotesdirfirst
+#, fuzzy
+msgctxt "resourcestr.rssetupnotesdirfirst"
 msgid "Please setup a notes directory first"
 msgstr "Primero establezca un directorio para notas"
 
-#: searchunit.rssetupsyncfirst
-msgctxt "searchunit.rssetupsyncfirst"
+#: resourcestr.rssetupsyncfirst
+#, fuzzy
+msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr "Primero configure el sistema de sincronización"
 
@@ -592,6 +630,7 @@ msgid "Cut"
 msgstr "Cortar"
 
 #: teditboxform.menuitemdelete.caption
+msgctxt "teditboxform.menuitemdelete.caption"
 msgid "Delete"
 msgstr "Eliminar"
 
@@ -692,6 +731,48 @@ msgstr "Fuente: tamaño, negrita, cursiva, etc"
 msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
 
+#: tformbackupview.buttondelete.caption
+#, fuzzy
+msgctxt "tformbackupview.buttondelete.caption"
+msgid "Delete"
+msgstr "Eliminar"
+
+#: tformbackupview.buttondelete.hint
+msgid "Really, totally delete this note."
+msgstr ""
+
+#: tformbackupview.buttonok.caption
+#, fuzzy
+msgctxt "tformbackupview.buttonok.caption"
+msgid "OK"
+msgstr "OK"
+
+#: tformbackupview.buttonok.hint
+msgid "My work here is done."
+msgstr ""
+
+#: tformbackupview.buttonopen.caption
+msgid "View"
+msgstr ""
+
+#: tformbackupview.buttonopen.hint
+msgid "Open and view the whole note"
+msgstr ""
+
+#: tformbackupview.buttonrecover.caption
+#, fuzzy
+msgctxt "tformbackupview.buttonrecover.caption"
+msgid "Recover"
+msgstr "Recuperar"
+
+#: tformbackupview.buttonrecover.hint
+msgid "Restore this note to main repo"
+msgstr ""
+
+#: tformbackupview.caption
+msgid "FormBackupView"
+msgstr ""
+
 #: tformhelpnotes.buttonclose.caption
 msgctxt "tformhelpnotes.buttonclose.caption"
 msgid "Close"
@@ -753,6 +834,7 @@ msgid "Take a initial snapshot of your notes and config. Overwritten each time."
 msgstr "Haga una instantánea de sus notas y configuración. Sobrescrita cada vez."
 
 #: tformrecover.buttonrecoversnap.caption
+msgctxt "tformrecover.buttonrecoversnap.caption"
 msgid "Recover"
 msgstr "Recuperar"
 
@@ -1059,6 +1141,7 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: tnotebookpick.buttonok.caption
+msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr "OK"
 
@@ -1069,6 +1152,26 @@ msgstr "Nombre del cuaderno nuevo"
 #: tnotebookpick.label5.caption
 msgid "Press OK and we will make the Note Book AND add this note to it."
 msgstr "Pulse OK y crearemos el cuaderno y añadiremos esta nota a ello."
+
+#: tnotebookpick.label6.caption
+msgid "Existing Name"
+msgstr ""
+
+#: tnotebookpick.label7.caption
+msgid "Label7"
+msgstr ""
+
+#: tnotebookpick.label8.caption
+msgid "New Name"
+msgstr ""
+
+#: tnotebookpick.label9.caption
+msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
+msgstr ""
+
+#: tnotebookpick.tabchangename.caption
+msgid "Change Notebook Name"
+msgstr ""
 
 #: tnotebookpick.tabexisting.caption
 msgid "Existing Note Books"
@@ -1203,6 +1306,10 @@ msgstr "Editar plantilla del cuaderno"
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
 msgstr "Crear nota nueva desde una plantilla"
+
+#: tsearchform.menurenamenotebook.caption
+msgid "Rename Note Book"
+msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"

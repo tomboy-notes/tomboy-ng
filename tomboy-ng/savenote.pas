@@ -790,7 +790,13 @@ begin
         + Loc.X + '</x>'#10'  <y>' + Loc.Y + '</y>'#10;
   S6 := '  <open-on-startup>' + Loc.OOS + '</open-on-startup>'#10'</note>';
   if CreateDate = '' then CreateDate := TimeStamp;
-  Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + NoteBookTags + S6;
+  if SearchForm.NoteLister <> Nil then
+        Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5
+            + SearchForm.NoteLister.NoteBookTags(ID) + S6
+  else
+        Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + S6;
+  // That will mean no Notebook tags in single note mode, is that an issue ?
+
 end;
 
 end.

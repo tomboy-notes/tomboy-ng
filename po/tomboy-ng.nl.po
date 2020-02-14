@@ -151,7 +151,9 @@ msgid "Direct debug output to SOME.LOG."
 msgstr "Foutopsporingsuitvoer vastleggen in SOME.LOG."
 
 #: mainunit.rshelpdebugindex
-msgid "Show debug messages while indexing notes"
+#, fuzzy
+#| msgid "Show debug messages while indexing notes"
+msgid "Show debug msgs while indexing notes"
 msgstr "Foutopsporingsberichten tonen tijdens indexeren"
 
 #: mainunit.rshelpdebugspell
@@ -163,7 +165,7 @@ msgid "Show debug messages during Sync"
 msgstr "Foutopsporingsberichten tonen tijdens synchronisatie"
 
 #: mainunit.rshelpdelay
-msgid "Delay startup by 2 Seconds to allow OS to settle"
+msgid "Delay startup 2 sec to allow OS to settle"
 msgstr ""
 
 #: mainunit.rshelphelp
@@ -185,7 +187,9 @@ msgid "Run in RedHatGnome mode, no TrayIcon"
 msgstr "Uitvoeren in RedHatGnome-modus, zonder systeemvakpictogram"
 
 #: mainunit.rshelpsaveexit
-msgid "After import single note, save and exit."
+#, fuzzy
+#| msgid "After import single note, save and exit."
+msgid "After import single note, save & exit"
 msgstr "Opslaan en afsluiten na importeren van losse notitie"
 
 #: mainunit.rshelpsinglenote
@@ -199,22 +203,6 @@ msgstr "Print de versie en sluit af"
 #: mainunit.rsnotes
 msgid "notes"
 msgstr ""
-
-#: notebook.rsenternewnotebook
-msgid "Enter a new notebook name please"
-msgstr "Voer een nieuwe naam in voor het notitieboek"
-
-#: notebook.rsmultiplenotebooks
-msgid "Settings allow multiple Notebooks"
-msgstr "Er is ondersteuning voor meerdere notitieboeken"
-
-#: notebook.rsonenotebook
-msgid "Settings allow only one Notebook"
-msgstr "Er is ondersteuning voor één notitieboek"
-
-#: notebook.rssetthenotebooks
-msgid "Set the notebooks this note is a member of"
-msgstr "Stel in in welke notitieboeken deze notitie moet worden geplaatst"
 
 #: recover.rsallrestored
 msgid "Notes and config files Restored, restart suggested."
@@ -284,74 +272,109 @@ msgstr "Er zijn"
 msgid "snapshots"
 msgstr "momentopnamen"
 
-#: searchunit.rscannotfindnote
-#, fuzzy
-msgctxt "searchunit.rscannotfindnote"
+#: resourcestr.rscannotfindnote
+msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
-msgstr "FOUT: kan het volgende niet vinden:"
+msgstr ""
 
-#: searchunit.rslastchange
+#: resourcestr.rschangenameofnotebook
+msgid "Change the name of this Notebook"
+msgstr ""
+
+#: resourcestr.rsenternewnotebook
+#, fuzzy
+msgctxt "resourcestr.rsenternewnotebook"
+msgid "Enter a new notebook name please"
+msgstr "Voer een nieuwe naam in voor het notitieboek"
+
+#: resourcestr.rslastchange
+msgctxt "resourcestr.rslastchange"
 msgid "Last Change"
 msgstr ""
 
-#: searchunit.rsmenuabout
+#: resourcestr.rsmenuabout
+msgctxt "resourcestr.rsmenuabout"
 msgid "About"
 msgstr ""
 
-#: searchunit.rsmenuhelp
+#: resourcestr.rsmenuhelp
 #, fuzzy
-msgctxt "searchunit.rsmenuhelp"
+msgctxt "resourcestr.rsmenuhelp"
 msgid "Help"
 msgstr "Hulp"
 
-#: searchunit.rsmenunewnote
+#: resourcestr.rsmenunewnote
+msgctxt "resourcestr.rsmenunewnote"
 msgid "New Note"
 msgstr ""
 
-#: searchunit.rsmenuquit
-msgctxt "searchunit.rsmenuquit"
+#: resourcestr.rsmenuquit
+msgctxt "resourcestr.rsmenuquit"
 msgid "Quit"
 msgstr ""
 
-#: searchunit.rsmenusearch
-#, fuzzy
-msgctxt "searchunit.rsmenusearch"
+#: resourcestr.rsmenusearch
+msgctxt "resourcestr.rsmenusearch"
 msgid "Search"
-msgstr "Zoeken"
+msgstr ""
 
-#: searchunit.rsmenusettings
+#: resourcestr.rsmenusettings
 #, fuzzy
-msgctxt "searchunit.rsmenusettings"
+msgctxt "resourcestr.rsmenusettings"
 msgid "Settings"
 msgstr "Instellingen"
 
-#: searchunit.rsmenusync
+#: resourcestr.rsmenusync
+msgctxt "resourcestr.rsmenusync"
 msgid "Synchronise"
 msgstr ""
 
-#: searchunit.rsname
+#: resourcestr.rsmultiplenotebooks
+#, fuzzy
+msgctxt "resourcestr.rsmultiplenotebooks"
+msgid "Settings allow multiple Notebooks"
+msgstr "Er is ondersteuning voor meerdere notitieboeken"
+
+#: resourcestr.rsname
+msgctxt "resourcestr.rsname"
 msgid "Name"
 msgstr ""
 
-#: searchunit.rsnotebooks
+#: resourcestr.rsnotebooks
+msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
 msgstr ""
 
-#: searchunit.rssearchhint
+#: resourcestr.rsnumbnotesaffected
+msgid "This will affect %d notes"
+msgstr ""
+
+#: resourcestr.rsonenotebook
+#, fuzzy
+msgctxt "resourcestr.rsonenotebook"
+msgid "Settings allow only one Notebook"
+msgstr "Er is ondersteuning voor één notitieboek"
+
+#: resourcestr.rssearchhint
+msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
 msgstr ""
 
-#: searchunit.rssetupnotesdirfirst
+#: resourcestr.rssetthenotebooks
 #, fuzzy
-msgctxt "searchunit.rssetupnotesdirfirst"
-msgid "Please setup a notes directory first"
-msgstr "Stel eerst een notitiemap in"
+msgctxt "resourcestr.rssetthenotebooks"
+msgid "Set the notebooks this note is a member of"
+msgstr "Stel in in welke notitieboeken deze notitie moet worden geplaatst"
 
-#: searchunit.rssetupsyncfirst
-#, fuzzy
-msgctxt "searchunit.rssetupsyncfirst"
+#: resourcestr.rssetupnotesdirfirst
+msgctxt "resourcestr.rssetupnotesdirfirst"
+msgid "Please setup a notes directory first"
+msgstr ""
+
+#: resourcestr.rssetupsyncfirst
+msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
-msgstr "Stel eerst synchronisatie in"
+msgstr ""
 
 #: settings.rsdictionaryfailed
 msgid "Library Not Loaded"
@@ -584,6 +607,7 @@ msgid "Cut"
 msgstr "Knippen"
 
 #: teditboxform.menuitemdelete.caption
+msgctxt "teditboxform.menuitemdelete.caption"
 msgid "Delete"
 msgstr "Verwijderen"
 
@@ -684,6 +708,48 @@ msgstr "Lettergrootte, vetgedrukt, cursief, etc."
 msgid "Tools - Sync, Export, Spell"
 msgstr "Hulpmiddelen - synchroniseren, exporteren, spellingcontrole"
 
+#: tformbackupview.buttondelete.caption
+#, fuzzy
+msgctxt "tformbackupview.buttondelete.caption"
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: tformbackupview.buttondelete.hint
+msgid "Really, totally delete this note."
+msgstr ""
+
+#: tformbackupview.buttonok.caption
+#, fuzzy
+msgctxt "tformbackupview.buttonok.caption"
+msgid "OK"
+msgstr "Oké"
+
+#: tformbackupview.buttonok.hint
+msgid "My work here is done."
+msgstr ""
+
+#: tformbackupview.buttonopen.caption
+msgid "View"
+msgstr ""
+
+#: tformbackupview.buttonopen.hint
+msgid "Open and view the whole note"
+msgstr ""
+
+#: tformbackupview.buttonrecover.caption
+#, fuzzy
+msgctxt "tformbackupview.buttonrecover.caption"
+msgid "Recover"
+msgstr "Herstellen"
+
+#: tformbackupview.buttonrecover.hint
+msgid "Restore this note to main repo"
+msgstr ""
+
+#: tformbackupview.caption
+msgid "FormBackupView"
+msgstr ""
+
 #: tformhelpnotes.buttonclose.caption
 msgctxt "tformhelpnotes.buttonclose.caption"
 msgid "Close"
@@ -747,6 +813,7 @@ msgid "Take a initial snapshot of your notes and config. Overwritten each time."
 msgstr "Maak een momentopname van je notities en configuratie. Deze wordt telkens overschreven."
 
 #: tformrecover.buttonrecoversnap.caption
+msgctxt "tformrecover.buttonrecoversnap.caption"
 msgid "Recover"
 msgstr "Herstellen"
 
@@ -1052,6 +1119,7 @@ msgid "Cancel"
 msgstr "Annuleren"
 
 #: tnotebookpick.buttonok.caption
+msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr "Oké"
 
@@ -1062,6 +1130,26 @@ msgstr "Naam van het nieuwe notitieboek"
 #: tnotebookpick.label5.caption
 msgid "Press OK and we will make the Note Book AND add this note to it."
 msgstr "Klik op 'Oké' om het notitieboek te maken EN deze notitie er aan toe te voegen."
+
+#: tnotebookpick.label6.caption
+msgid "Existing Name"
+msgstr ""
+
+#: tnotebookpick.label7.caption
+msgid "Label7"
+msgstr ""
+
+#: tnotebookpick.label8.caption
+msgid "New Name"
+msgstr ""
+
+#: tnotebookpick.label9.caption
+msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
+msgstr ""
+
+#: tnotebookpick.tabchangename.caption
+msgid "Change Notebook Name"
+msgstr ""
 
 #: tnotebookpick.tabexisting.caption
 msgid "Existing Note Books"
@@ -1191,6 +1279,10 @@ msgstr "Notitieboeksjabloon bewerken"
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
 msgstr "Nieuwe notitie maken op basis van sjabloon"
+
+#: tsearchform.menurenamenotebook.caption
+msgid "Rename Note Book"
+msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"

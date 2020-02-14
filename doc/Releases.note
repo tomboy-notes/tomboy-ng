@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>Release page</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Release page</underline>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Release page</underline><size:large>
 
-<bold>tomboy-ng notes v0.26, Jan 2020</bold><size:small>
+<highlight>========== D R A F T  ===============</highlight></size:large>
+
+<bold>tomboy-ng notes v0.27, Feb 2020</bold><size:small>
 
 Dont edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
 Downloads and information for specific platforms further down the page.<size:huge>
 
 <bold>Release Notes</bold></size:huge>
-A couple of fixes and some new keyboard shortcuts including -
-<list><list-item dir="ltr"> New and much better icons.</list-item></list>
-<list><list-item dir="ltr">Fix to notes forgetting notebook.</list-item></list>
-<list><list-item dir="ltr">Windows - force a window to open in visible screen</list-item></list>
-<list><list-item dir="ltr">Change to search model, now use "Inverted commas" to search for exact text. You can combine terms to search for particular combinations or search for just one combination.</list-item></list>
-<list><list-item dir="ltr">Time Date stamp, Ctrl-D</list-item></list>
-<list><list-item dir="ltr">Shift-Arrow to extend select char to left or right</list-item></list>
-<list><list-item dir="ltr">Ctrl-Shift-Arrow to extend select word to left or right</list-item></list>
- 
-Due to the forgetting notebook bug, users are urged to update.<size:huge>
-
+A couple of important bug fixes ..... including -
+<list><list-item dir="ltr">Redesigned Search Form and quite different search behaviour. #133 and #136. At some users request, the search results shown in the open Search Form are not updated when, for example, a note is edited or deleted. This is to keep your search results together.  When changes to the search results are pending, the Refresh button becomes enabled and you can trigger a update of the displayed results by clicking it. When updated, the existing search will be applied to new data.</list-item></list>
+<list><list-item dir="ltr">Search Terms can now contain (or consist of) text inclosed in double inverted commas, text with those double inverted commas must be matched exactly, outside of the commas, it can appear anywhere in a document to constitute a 'hit'.</list-item></list>
+<list><list-item dir="ltr">When exporting markdown, you can now save or copy to clipboard.</list-item></list>
+<list><list-item dir="ltr">Fixed bug that made bad xml when huge and underline used immedialtly after title. #138 and maybe #131</list-item></list>
+<list><list-item dir="ltr">Fixed bug messing with pasting multiline plain text at very end of content (upstream). #139</list-item></list>
+<list><list-item dir="ltr">Fix to an isolated windows bug affecting saving #132</list-item></list>
+<list><list-item dir="ltr">A sharper looking icon on System Tray. </list-item></list>
+<list><list-item dir="ltr">Avoid a strange Qt5 bug where recent file list was being duplicated.</list-item></list>
+ <size:huge>
 <bold>Installation</bold></size:huge>
-Please see the Installation Notes relating to Linux, Windows and the Mac at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Requirements
+Please also see the Installation Notes relating to Linux, Windows and the Mac at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Requirements
 
 tomboy-ng is available for Linux, Mac and Windows.<size:large>
 
@@ -30,8 +31,6 @@ tomboy-ng is available for Linux, Mac and Windows.<size:large>
 Tested on 32bit Windows 7 and 64bit Windows 10.  Windows users should download the Windows Installer, **the .exe file**, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes.
 
 <bold>Download this</bold>  $$EXE
-
-Note the above file is version 0.26b - the 'b' being yet another post release release. It contains code to better detect and report on a bug that prevents Windows tomboy-ng from saving.  If you see an error message, please report it.
 
 <bold>MacOSX</bold>
 Tested on a Mac Sierra Powerbook. Use the 64bit (Cocoa) file unless you are running relatively old (and slow) hardware. The 32bit Carbon based one will not work on the newest MasOS but is somewhat faster. Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. First time users will need to control click the tomboy-ng icon in Applications and select "Open". Have had a report of difficulties with that first start, even with the Control Click, please report !
@@ -48,7 +47,7 @@ Generally, all work fine but earlier distributions should use GTK2 and recent th
 <list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will be fine.</list-item></list>
 <list><list-item dir="ltr">19.10 Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK version if you use Budgie [32bit]($$DEB32) or [64bit]($$DEB64). </list-item></list>
 
-I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). On U16.04 however you should use gdebi rather than apt to install.
+I recommend downloading the file and using the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). On U16.04 however you should use gdebi rather than apt to install.
 
 <monospace>sudo apt install ./tomboy-ng_0.26-0_amd64.deb [enter]</monospace><size:large>
 
@@ -77,7 +76,7 @@ Fedora's default install is based on Gnome</bold> and  recent Gnome versions blo
 
 Other flavours of Fedora (eg  Plasma, Cinnamon, XFce) all seem happy to display the System Tray Icon, I suggest using the Qt5 variety as its a smaller install  [Qt5 64bit]($$RPM64QT) , if you need 32bit try the [GTK2 32bit]($$RPM32) 
 
-To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes of config.
+To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.
 
 <monospace>sudo rpm -e tomboy-ng [enter]</monospace>
 <monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace><size:large>
@@ -88,7 +87,7 @@ To install, please download and save the file, then use the rpm command, note th
 <list><list-item dir="ltr"><bold>Tumbleweed</bold> on the other hand is probably better using the  [Qt5 64bit]($$RPM64QT)  version. If you need 32bit, then the [GTK2 32bit]($$RPM32) will work fine but may require a larger download at install time.</list-item></list>
 <list><list-item dir="ltr">It appears that the KDE/Plasma version of openSues has issues with tomboy-ng, both Qt5 and to a lesser extent, GTK. Under investigation.  </list-item></list>
 
-To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes of config. 
+To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config. 
 
 <monospace>sudo rpm -e tomboy-ng [enter]</monospace>
 <monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace><size:large>
@@ -108,14 +107,14 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </monospace></note-content></text>
-  <last-change-date>2020-01-25T19:22:35.8870000+11:00</last-change-date>
-  <last-metadata-change-date>2020-01-25T19:22:35.8870000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-05T22:50:52.3100000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-05T22:50:52.3100000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>312</x>
-  <y>212</y>
+  <x>441</x>
+  <y>210</y>
   <open-on-startup>False</open-on-startup>
 </note>

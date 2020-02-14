@@ -140,6 +140,10 @@ function IDLooksOK(const ID : string) : boolean;
         // If DoQuotes is true, we also convert ' and " (for xml attributes).
 function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
 
+                        { ret true if it really has removed the indicated file. Has proved
+                          necessary to do this on two end user's windows boxes. Writes debuglns
+                          if it has initial problems, returns F and sets ErrorMsg if fails.}
+function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 
 RESOURCESTRING
   rsNewUploads = 'New Uploads    ';
@@ -161,6 +165,31 @@ RESOURCESTRING
 implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils;
+
+function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
+begin
+    // This whole block is here because of issue #132 where windows seemed to have problems
+    // moving, deleting a note before a new version is copied over. Is the problem
+    // that windows deletefileUTF8() is not settings its return value correctly ??
+    if not DeleteFile(FullFileName) then begin
+    	ErrorMsg := SysErrorMessage(GetLastOSError);
+    	Debugln('Failed using DeleteFileUTF8 - file name is :' + FullFilename);
+    	Debugln('OS Error Msg : ' + ErrorMsg);
+    	if not FileExistsUTF8(FullFileName) then
+            debugln('But, FileExists says its gone, proceed !')
+        else begin
+    		debugln('I can confirm its still there .');
+    	    Debugln('Trying a little sleep...');
+    	    sleep(10);
+    	    if not DeleteFileUTF8(FullFileName) then begin
+                if not FileExistsUTF8(FullFileName) then
+                    debugln('DeleteFileUTF8 says it failed but FileExists says its gone, proceed !')
+                else exit(false);
+            end;
+        end;
+    end;
+    Result := true;
+end;
 
 function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
 // Don't use UTF8 versions of Copy() and Length(), we are working bytes !

@@ -565,6 +565,7 @@ begin
     NotebookPick := TNotebookPick.Create(Application);
     NotebookPick.FullFileName := NoteFileName;
     NotebookPick.Title := NoteTitle;
+    NotebookPick.ChangeMode := False;
     NotebookPick.Top := Top;
     NotebookPick.Left := Left;
     if mrOK = NotebookPick.ShowModal then MarkDirty();

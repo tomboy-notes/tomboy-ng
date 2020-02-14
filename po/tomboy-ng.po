@@ -136,7 +136,7 @@ msgid "Direct debug output to SOME.LOG."
 msgstr ""
 
 #: mainunit.rshelpdebugindex
-msgid "Show debug messages while indexing notes"
+msgid "Show debug msgs while indexing notes"
 msgstr ""
 
 #: mainunit.rshelpdebugspell
@@ -148,7 +148,7 @@ msgid "Show debug messages during Sync"
 msgstr ""
 
 #: mainunit.rshelpdelay
-msgid "Delay startup by 2 Seconds to allow OS to settle"
+msgid "Delay startup 2 sec to allow OS to settle"
 msgstr ""
 
 #: mainunit.rshelphelp
@@ -168,7 +168,7 @@ msgid "Run in RedHatGnome mode, no TrayIcon"
 msgstr ""
 
 #: mainunit.rshelpsaveexit
-msgid "After import single note, save and exit."
+msgid "After import single note, save & exit"
 msgstr ""
 
 #: mainunit.rshelpsinglenote
@@ -181,22 +181,6 @@ msgstr ""
 
 #: mainunit.rsnotes
 msgid "notes"
-msgstr ""
-
-#: notebook.rsenternewnotebook
-msgid "Enter a new notebook name please"
-msgstr ""
-
-#: notebook.rsmultiplenotebooks
-msgid "Settings allow multiple Notebooks"
-msgstr ""
-
-#: notebook.rsonenotebook
-msgid "Settings allow only one Notebook"
-msgstr ""
-
-#: notebook.rssetthenotebooks
-msgid "Set the notebooks this note is a member of"
 msgstr ""
 
 #: recover.rsallrestored
@@ -267,66 +251,101 @@ msgstr ""
 msgid "snapshots"
 msgstr ""
 
-#: searchunit.rscannotfindnote
-msgctxt "searchunit.rscannotfindnote"
+#: resourcestr.rscannotfindnote
+msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr ""
 
-#: searchunit.rslastchange
+#: resourcestr.rschangenameofnotebook
+msgid "Change the name of this Notebook"
+msgstr ""
+
+#: resourcestr.rsenternewnotebook
+msgctxt "resourcestr.rsenternewnotebook"
+msgid "Enter a new notebook name please"
+msgstr ""
+
+#: resourcestr.rslastchange
+msgctxt "resourcestr.rslastchange"
 msgid "Last Change"
 msgstr ""
 
-#: searchunit.rsmenuabout
+#: resourcestr.rsmenuabout
+msgctxt "resourcestr.rsmenuabout"
 msgid "About"
 msgstr ""
 
-#: searchunit.rsmenuhelp
-msgctxt "searchunit.rsmenuhelp"
+#: resourcestr.rsmenuhelp
+msgctxt "resourcestr.rsmenuhelp"
 msgid "Help"
 msgstr ""
 
-#: searchunit.rsmenunewnote
+#: resourcestr.rsmenunewnote
+msgctxt "resourcestr.rsmenunewnote"
 msgid "New Note"
 msgstr ""
 
-#: searchunit.rsmenuquit
-msgctxt "searchunit.rsmenuquit"
+#: resourcestr.rsmenuquit
+msgctxt "resourcestr.rsmenuquit"
 msgid "Quit"
 msgstr ""
 
-#: searchunit.rsmenusearch
-msgctxt "searchunit.rsmenusearch"
+#: resourcestr.rsmenusearch
+msgctxt "resourcestr.rsmenusearch"
 msgid "Search"
 msgstr ""
 
-#: searchunit.rsmenusettings
-msgctxt "searchunit.rsmenusettings"
+#: resourcestr.rsmenusettings
+msgctxt "resourcestr.rsmenusettings"
 msgid "Settings"
 msgstr ""
 
-#: searchunit.rsmenusync
+#: resourcestr.rsmenusync
+msgctxt "resourcestr.rsmenusync"
 msgid "Synchronise"
 msgstr ""
 
-#: searchunit.rsname
+#: resourcestr.rsmultiplenotebooks
+msgctxt "resourcestr.rsmultiplenotebooks"
+msgid "Settings allow multiple Notebooks"
+msgstr ""
+
+#: resourcestr.rsname
+msgctxt "resourcestr.rsname"
 msgid "Name"
 msgstr ""
 
-#: searchunit.rsnotebooks
+#: resourcestr.rsnotebooks
+msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
 msgstr ""
 
-#: searchunit.rssearchhint
+#: resourcestr.rsnumbnotesaffected
+msgid "This will affect %d notes"
+msgstr ""
+
+#: resourcestr.rsonenotebook
+msgctxt "resourcestr.rsonenotebook"
+msgid "Settings allow only one Notebook"
+msgstr ""
+
+#: resourcestr.rssearchhint
+msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
 msgstr ""
 
-#: searchunit.rssetupnotesdirfirst
-msgctxt "searchunit.rssetupnotesdirfirst"
+#: resourcestr.rssetthenotebooks
+msgctxt "resourcestr.rssetthenotebooks"
+msgid "Set the notebooks this note is a member of"
+msgstr ""
+
+#: resourcestr.rssetupnotesdirfirst
+msgctxt "resourcestr.rssetupnotesdirfirst"
 msgid "Please setup a notes directory first"
 msgstr ""
 
-#: searchunit.rssetupsyncfirst
-msgctxt "searchunit.rssetupsyncfirst"
+#: resourcestr.rssetupsyncfirst
+msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr ""
 
@@ -561,6 +580,7 @@ msgid "Cut"
 msgstr ""
 
 #: teditboxform.menuitemdelete.caption
+msgctxt "teditboxform.menuitemdelete.caption"
 msgid "Delete"
 msgstr ""
 
@@ -661,6 +681,45 @@ msgstr ""
 msgid "Tools - Sync, Export, Spell"
 msgstr ""
 
+#: tformbackupview.buttondelete.caption
+msgctxt "tformbackupview.buttondelete.caption"
+msgid "Delete"
+msgstr ""
+
+#: tformbackupview.buttondelete.hint
+msgid "Really, totally delete this note."
+msgstr ""
+
+#: tformbackupview.buttonok.caption
+msgctxt "tformbackupview.buttonok.caption"
+msgid "OK"
+msgstr ""
+
+#: tformbackupview.buttonok.hint
+msgid "My work here is done."
+msgstr ""
+
+#: tformbackupview.buttonopen.caption
+msgid "View"
+msgstr ""
+
+#: tformbackupview.buttonopen.hint
+msgid "Open and view the whole note"
+msgstr ""
+
+#: tformbackupview.buttonrecover.caption
+msgctxt "tformbackupview.buttonrecover.caption"
+msgid "Recover"
+msgstr ""
+
+#: tformbackupview.buttonrecover.hint
+msgid "Restore this note to main repo"
+msgstr ""
+
+#: tformbackupview.caption
+msgid "FormBackupView"
+msgstr ""
+
 #: tformhelpnotes.buttonclose.caption
 msgctxt "tformhelpnotes.buttonclose.caption"
 msgid "Close"
@@ -722,6 +781,7 @@ msgid "Take a initial snapshot of your notes and config. Overwritten each time."
 msgstr ""
 
 #: tformrecover.buttonrecoversnap.caption
+msgctxt "tformrecover.buttonrecoversnap.caption"
 msgid "Recover"
 msgstr ""
 
@@ -1020,6 +1080,7 @@ msgid "Cancel"
 msgstr ""
 
 #: tnotebookpick.buttonok.caption
+msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr ""
 
@@ -1029,6 +1090,26 @@ msgstr ""
 
 #: tnotebookpick.label5.caption
 msgid "Press OK and we will make the Note Book AND add this note to it."
+msgstr ""
+
+#: tnotebookpick.label6.caption
+msgid "Existing Name"
+msgstr ""
+
+#: tnotebookpick.label7.caption
+msgid "Label7"
+msgstr ""
+
+#: tnotebookpick.label8.caption
+msgid "New Name"
+msgstr ""
+
+#: tnotebookpick.label9.caption
+msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
+msgstr ""
+
+#: tnotebookpick.tabchangename.caption
+msgid "Change Notebook Name"
 msgstr ""
 
 #: tnotebookpick.tabexisting.caption
@@ -1153,6 +1234,10 @@ msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
+msgstr ""
+
+#: tsearchform.menurenamenotebook.caption
+msgid "Rename Note Book"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption

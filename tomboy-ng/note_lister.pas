@@ -71,12 +71,9 @@ uses
 type
    PNotebook=^TNotebook;
    TNotebook = record
-       // Name of the notebook
-       Name : ANSIString;
-       // The ID of the Template for this Notebook
-       Template : ANSIString;
-       // A list of the IDs of notes that are members of this Notebook.
-       Notes : TStringList;
+       Name : ANSIString;      // Name of the notebook
+       Template : ANSIString;  // The ID of the Template for this Notebook
+       Notes : TStringList;    // A list of the IDs of notes that are members of this Notebook.
    end;
 
 type
@@ -93,6 +90,7 @@ type
         procedure Add(const ID, ANoteBook : ANSIString; IsTemplate : boolean);
         { Returns True if the passed ID is in the passed Notebook }
         function IDinNotebook(const ID, Notebook : ANSIstring) : boolean;
+                                // Returns a PNoteBook that has a name matching passed NoteBook.
         function FindNoteBook(const NoteBook : ANSIString) : PNoteBook;
         { Removes any list entries that do not have a Template }
         procedure CleanList();
@@ -142,7 +140,6 @@ type
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
     NoteBookList : TNoteBookList;
-
               { Takes a created list and search term string. Returns with the list
                 containing individual search terms, 1 to many }
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
@@ -153,6 +150,7 @@ type
 
             // Indexes and maybe searches one note. TermList maybe nil.
    	procedure GetNoteDetails(const Dir, FileName: ANSIString; const TermList: TStringList; DontTestName: boolean=false);
+
 
     		{ Returns True if indicated note contains term in its content }
    	function NoteContains(const TermList: TStringList; FileName: ANSIString
@@ -166,72 +164,87 @@ type
 
     XMLError : Boolean;   // Indicates a note was found with an XML (or other) error, checked by calling process.
     ErrorNotes : TStringList;
-    		{ The directory, with trailing seperator, that the notes are in }
+                                        { The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
-            { Retuns the title of note at (zero based) index. }
+                                        { Changes the name associated with a Notebook in the internal data structure }
+    function AlterNoteBook(const OldName, NewName: string): boolean;
+                                        { Returns a multiline string to use in writing a notes notebook membership,
+                                          knows how to do a template too.}
+    function NoteBookTags(const NoteID: string): ANSIString;
+                                        { Returns true if it has put into list one or more Note IDs that are members of NBName }
+    function GetNotesInNoteBook(var NBIDList: TStringList; const NBName: string
+        ): boolean;
+                                       { Retuns the title of note at (zero based) index. }
     function GetTitle(Index: integer): string;
-            { Returns the number of items in the list }
+                                        { Returns the number of items in the list }
     function Count(): integer;
-                                     { Returns the LastChangeDate string for ID, empty string if not found }
+                                        { Returns the LastChangeDate string for ID, empty string if not found }
     function GetLastChangeDate(const ID: String): string;
-                                     { Adds details of note of passed to NoteList }
+                                        { Adds details of note of passed to NoteList }
     procedure IndexThisNote(const ID : String);
-                                     { Returns T is ID in current list, takes 36 char GUID or simple file name }
+                                        { Returns T is ID in current list, takes 36 char GUID or simple file name }
     function IsIDPresent(ID : string) : boolean;
-                                     { Removes the Notebook entry with ID=Template from Notebook datastructure }
+                                        { Removes the Notebook entry with ID=Template from Notebook datastructure }
     procedure DeleteNoteBookwithID(FileorID : AnsiString);
-                                     { Returns True if passed string is the ID or short Filename of a Template }
+                                        { Returns True if passed string is the ID or short Filename of a Template }
     function IsATemplate(FileOrID : AnsiString) : boolean;
-	                                    { Adds a notebook to the internal data structure, probably only used when making a new Notebook and its Template }
+	                                    { Adds a notebook to the internal data structure, probably only used when making a new
+                                          Notebook and its Template }
     procedure AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate: Boolean);
-                                        // Sets the passed Notebooks as 'parents' of the passed note. Any pre existing membership will be cancelled. The list can contain zero to  many notebooks.
+                                        { Sets the passed Notebooks as 'parents' of the passed note. Any pre existing membership
+                                          will be cancelled. The list can contain zero to  many notebooks. }
     procedure SetNotebookMembership(const ID: ansistring; const MemberList: TStringList);
-                                        { If ID is empty, always returns false, puts all Notebook names in strlist. If ID is not empty, list is filtered for only notebooks that have that ID  and returns True iff the passed ID is that of a Template.  A Notebook Template will have only one Notebook name in its Tags and that will be added to strlist. The StartHere template won't have a Notebook Name and therefore wont get mixed up here ???? }
-    function GetNotebooks(const NBList : TStringList; const ID : ANSIString = '') : boolean;
-                                        { Loads the Notebook StringGrid up with the Notebook names we know about. Add a bool to indicate we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after GetNotes(Term) }
+                                        { If ID is empty, always returns false, puts all Notebook names in strlist. If ID is not
+                                          empty, list is filtered for only notebooks that have that ID  and returns True iff the
+                                          passed ID is that of a Template.  A Notebook Template will have only one Notebook name in
+                                          its Tags and that will be added to strlist. The StartHere template won't have a Notebook
+                                          Name and therefore wont get mixed up here ???? }
+    function GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
+                                        { Loads the Notebook StringGrid up with the Notebook names we know about. Add a bool to indicate
+                                          we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
+                                          GetNotes(Term) }
 	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid; SearchListOnly: boolean);
-                                { Adds a note to main list, ie when user creates a new note }
+                                        { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
-    		                    { Read the metadata from all the notes in internal data structure,
-                                  this is the main "go and do it" function.
-                                  If 'term' is present we'll just search for notes with that term
-                                  and store date in a different structure. And probably call LoadSearchGrid() }
-   	function GetNotes(const Term: ANSIstring=''; DontTestName: boolean=false
-        ): longint;
-    		                    { Copy the internal Note data to the passed TStringGrid, empting it first.
-                                  NoCols can be 2, 3 or 4 being Name, LastChange, CreateDate, ID.
-                                  Special case only main List SearchMode True will get from the search list.}
+    		                            { Read the metadata from all the notes in internal data structure,
+                                          this is the main "go and do it" function.
+                                          If 'term' is present we'll just search for notes with that term
+                                          and store date in a different structure. And probably call LoadSearchGrid() }
+   	function GetNotes(const Term: ANSIstring=''; DontTestName: boolean=false ): longint;
+    		                            { Copy the internal Note data to the passed TStringGrid, empting it first.
+                                          NoCols can be 2, 3 or 4 being Name, LastChange, CreateDate, ID.
+                                          Special case only main List SearchMode True will get from the search list.}
    	procedure LoadStGrid(const Grid: TStringGrid; NoCols: integer;  SearchMode: boolean=false);
-    		                    { Returns True if its updated the internal record as indicated,
-                                  will accept either an ID or a filename. }
+    		                            { Returns True if its updated the internal record as indicated,
+                                          will accept either an ID or a filename. }
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
 
     function IsThisATitle(const Title : ANSIString) : boolean;
-                        		{ Returns the Form this note is open on, Nil if its not open }
+                        		        { Returns the Form this note is open on, Nil if its not open }
     function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
-                        		{ Tells the list that this note is open, pass NIL to indicate its now closed }
+                        		        { Tells the list that this note is open, pass NIL to indicate its now closed }
     procedure ThisNoteIsOpen(const ID : ANSIString; const TheForm : TForm);
-                        		{ Returns true if it can find a FileName to Match this Title }
+                        		        { Returns true if it can find a FileName to Match this Title }
     function FileNameForTitle(const Title: ANSIString; out FileName : ANSIstring): boolean;
     procedure StartSearch();
     function NextNoteTitle(out SearchTerm : ANSIString) : boolean;
-    		                    { removes note from int data, accepting either an ID or Filename }
+    		                            { removes note from int data, accepting either an ID or Filename }
     function DeleteNote(const ID : ANSIString) : boolean;
-    		                    { Copy the internal data about notes in passed Notebook to passed TStringGrid
-                                  for display. So, shown would be all the notes in the nominated notebook.}
+    		                            { Copy the internal data about notes in passed Notebook to passed TStringGrid
+                                          for display. So, shown would be all the notes in the nominated notebook.}
     procedure LoadNotebookGrid(const Grid : TStringGrid; const NotebookName : AnsiString);
-    		                    { Returns the ID (inc .note) of the notebook Template, if an empty string we did
-                                  not find a) the Entry in NotebookList or b) the entry had a blank template. }
+    		                            { Returns the ID (inc .note) of the notebook Template, if an empty string we did
+                                          not find a) the Entry in NotebookList or b) the entry had a blank template. }
     function NotebookTemplateID(const NotebookName : ANSIString) : AnsiString;
-            { Returns the Form of first open note and sets internal pointer to it, Nil if none found }
+                                        { Returns the Form of first open note and sets internal pointer to it, Nil if none found }
     function FindFirstOpenNote(): TForm;
-            { Call after FindFirstOpenNote(), it will return the next one or Nil if no more found }
+                                        { Call after FindFirstOpenNote(), it will return the next one or Nil if no more found }
     function FindNextOpenNote() : TForm;
-        { Returns the ID of first note that should be opened on startup internal pointer
-          (which is same interger as FindFirstOpenNate) to it, '' if none found }
+                                        { Returns the ID of first note that should be opened on startup internal pointer
+                                          (which is same interger as FindFirstOpenNate) to it, '' if none found }
     function FindFirstOOSNote(out NTitle, NID: ANSIstring): boolean;
-        { Call after FindFirstOOSNote(), it will return the next one or '' if no more found }
+                                        { Call after FindFirstOOSNote(), it will return the next one or '' if no more found }
     function FindNextOOSNote(var NTitle, NID: ANSIstring): boolean;
 
     constructor Create;
@@ -374,6 +387,56 @@ end;
 
 { -------------  Things relating to NoteBooks ------------------ }
 
+// consider changing the this works, I don't need to pass a created SL tp GetNotebooks(...)
+
+function TNoteLister.NoteBookTags(const NoteID : string): ANSIString;
+var
+    SL : TStringList;
+    Index : Integer;
+begin
+   Result := '';
+   //if SearchForm.NoteLister = nil then exit;
+   SL := TStringList.Create;
+   try
+       if GetNotebooks(SL, NoteID) then begin  // its a template
+   		    Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
+            if SL.Count > 0 then
+        	    Result := Result + '    <tag>system:notebook:' + SL[0] + '</tag>'#10'  </tags>'#10;
+       end else
+   		    if SL.Count > 0 then begin					// its a Notebook Member
+        	    Result := '  <tags>'#10;
+        	    for Index := 0 to SL.Count -1 do		// here, we auto support multiple notebooks.
+        		    Result := Result + '    <tag>system:notebook:' + SL[Index] + '</tag>'#10;
+        	    Result := Result + '  </tags>'#10;
+		    end;
+   finally
+       SL.Free;
+   end;
+    //debugln('NoteLister : Tags for ' + NoteID + #10 + Result);
+    //debugln('---------------');
+end;
+
+function TNoteLister.GetNotesInNoteBook(var NBIDList : TStringList; const NBName : string) : boolean;
+var
+    NB : PNoteBook;
+begin
+    Result := True;
+    NB := NoteBookList.FindNoteBook(NBName);
+    if NB <> Nil then
+        NBIDList := NB^.Notes
+    else Result := False;
+end;
+
+function TNoteLister.AlterNoteBook(const OldName, NewName : string) : boolean;
+var
+    NB : PNoteBook;
+begin
+    Result := True;
+    NB := NoteBookList.FindNoteBook(OldName);
+    if NB <> nil then
+        NB^.Name:= NewName
+    else Result := False;
+end;
 
 procedure TNoteLister.AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate : Boolean);
 begin
@@ -415,8 +478,10 @@ end;
 function TNoteLister.NotebookTemplateID(const NotebookName: ANSIString): AnsiString;
 var
     Index : integer;
+    St : string;
 begin
     for Index := 0 to NotebookList.Count - 1 do begin
+        St := NotebookList.Items[Index]^.Name;
         if NotebookName = NotebookList.Items[Index]^.Name then begin
             Result := NotebookList.Items[Index]^.Template;
             exit();
@@ -534,10 +599,12 @@ begin
 			end;
             // OK, if its not a Template, its a note, what notebooks is it a member of ?
             // Each NotebookList item has a list of the notes that are members of that item.
-            // if the ID is mentioned in the items note list, add that notebook item to NBList.
+            // if the ID is mentioned in the items note list, copy name to list.
 			for I := 0 to NotebookList.Items[Index]^.Notes.Count -1 do
             	if ID = NotebookList.Items[Index]^.Notes[I] then
                 	NBList.Add(NotebookList.Items[Index]^.Name);
+            {if assigned(NBList) then debugln('ERROR, assigned SL passed to GetNotebooks')
+            else  NBList := NotebookList.Items[Index]^.Notes; }
         end;
 	end;
 end;

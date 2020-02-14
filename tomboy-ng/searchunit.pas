@@ -113,7 +113,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
-    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger;
+    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger, ResourceStr;
 
 // These are choices for main popup menus.
 type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtMainHelp, mtHelp, mtQuit, mtRecent);
@@ -131,6 +131,7 @@ type        { TSearchForm }
         Edit1: TEdit;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
+        MenuRenameNoteBook: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
 		PopupMenuNotebook: TPopupMenu;
@@ -154,6 +155,7 @@ type        { TSearchForm }
 		procedure FormShow(Sender: TObject);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
+        procedure MenuRenameNoteBookClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         procedure SpeedButton1Click(Sender: TObject);
         procedure StringGrid1Resize(Sender: TObject);
@@ -177,9 +179,6 @@ type        { TSearchForm }
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
         procedure RefreshStrGrids();
-
-
-
         { Copies note data from internal list to StringGrid, sorts it and updates the
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
@@ -244,6 +243,7 @@ uses MainUnit,      // Opening form, manages startup and Menus
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff
     sync,           // because we need it to manhandle local manifest when a file is deleted
     process,        // Linux, we call wmctrl to move note to current workspace
+    NoteBook,
     Tomdroid;
 
 
@@ -513,24 +513,6 @@ begin
     end;
 end;
 
-ResourceString
-  //rsMenuFile = 'File';
-  //rsMenuRecent = 'Recent';
-  rsMenuNewNote = 'New Note';
-  rsMenuSearch = 'Search';
-  rsMenuAbout = 'About';
-  rsMenuSync = 'Synchronise';
-  rsMenuSettings = 'Settings';
-  rsMenuHelp = 'Help';
-  rsMenuQuit = 'Quit';
-
-  rsNotebooks = 'Notebooks';
-  rsName = 'Name';
-  rsLastChange = 'Last Change';
-
-
-
-
 procedure TSearchForm.MenuFileItems(AMenu : TPopupMenu);
 var
     i : integer = 0;
@@ -609,13 +591,6 @@ begin
     while HelpNotes.NextNoteTitle(NoteTitle) do
         AddItemMenu(AMenu, NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
 end;
-
-
-resourcestring
-  rsSetupNotesDirFirst = 'Please setup a notes directory first';
-  rsSetupSyncFirst = 'Please config sync system first';
-  rsCannotFindNote = 'ERROR, cannot find ';
-  rsSearchHint = 'Exact matches for terms between " "';
 
 procedure TSearchForm.FileMenuClicked(Sender : TObject);
 var
@@ -1025,7 +1000,23 @@ begin
         		Sett.NoteDirectory + NotebookID);
 end;
 
-
+procedure TSearchForm.MenuRenameNoteBookClick(Sender: TObject);
+var
+    NotebookPick : TNotebookPick;
+begin
+        NotebookPick := TNotebookPick.Create(Application);
+        //NotebookPick.FullFileName := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+        try
+            NotebookPick.Title := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+            NotebookPick.ChangeMode := True;
+            NotebookPick.Top := Top;
+            NotebookPick.Left := Left;
+            if mrOK = NotebookPick.ShowModal then
+                ButtonClearFilters.Click;
+         finally
+            NotebookPick.Free;
+        end;
+end;
 
 procedure TSearchForm.MenuDeleteNotebookClick(Sender: TObject);
 begin

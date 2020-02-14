@@ -369,7 +369,7 @@ procedure TFormRecover.CreateSnapshot(const FullSourceDir, FullZipName: string);
 var
     Zip : TZipper;
     Info : TSearchRec;
-    // Tick, Tock : DWord;
+    // Tick, Tock : QWord;
 begin
     //debugln('--------- Config = ' + ConfigDir);
     Zip := TZipper.Create;
