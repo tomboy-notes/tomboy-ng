@@ -777,7 +777,6 @@ end;
 function TBSaveNote.Footer(Loc : TNoteUpdateRec {TNoteLocation}): ANSIstring;
 var
    S1, S2, S3, S4, S5, S6 : string;
-
 begin
   if Loc.LastChangeDate = '' then
     TimeStamp := Sett.GetLocalTime()   // get actual time date in format like Tomboy's
@@ -795,8 +794,7 @@ begin
             + SearchForm.NoteLister.NoteBookTags(ID) + S6
   else
         Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + S6;
-  // That will mean no Notebook tags in single note mode, is that an issue ?
-
+  // ToDo : That will mean no Notebook tags in single note mode, is that an issue ?
 end;
 
 end.

@@ -104,9 +104,9 @@ type
         		{ will have 36 char GUI plus '.note' }
 		ID : ANSIString;
         Title : ANSIString;
-        		{ a 19 char date time string }
+        		{ a 33 char date time string }
     	CreateDate : ANSIString;
-                { a 19 char date time string, updateable }
+                { a 33 char date time string, updateable }
     	LastChange : ANSIString;
         IsTemplate : boolean;
         OpenOnStart : boolean;
@@ -623,6 +623,13 @@ procedure TNoteLister.CleanupList(const Lst : TNoteList);
 var
     Index : integer;
 begin
+   //  ToDo : remove me
+   {
+     this function should not be needed any more, we must store full
+     33 char time date string in the data structure Feb 2020  }
+
+   exit;
+
     { Try and make sure these dates work, even if messed up }
     for Index := 0 to Lst.count -1 do begin;
         while UTF8length(Lst.Items[Index]^.CreateDate) < 20 do
@@ -633,10 +640,6 @@ begin
               Lst.Items[Index]^.LastChange := Lst.Items[Index]^.LastChange + ' ';
         Lst.Items[Index]^.LastChange := copy(Lst.Items[Index]^.LastChange, 1, 19);
         Lst.Items[Index]^.LastChange[11] := ' ';
-
-//if Lst.Items[Index]^.OpenOnStart then
-//debugln('Found OOS Note : ' + Lst.Items[Index]^.Title + ' = ' + Lst.Items[Index]^.ID);
-
     end;
 end;
 
@@ -669,6 +672,8 @@ begin
                 //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
                 Node := Doc.DocumentElement.FindNode('last-change-date');
                 NoteP^.LastChange := Node.FirstChild.NodeValue;
+                if (length(NoteP^.LastChange) <> 33) and DebugMode then
+                    debugln('Short Date Format [' + NoteP^.LastChange + '] : ' + NoteP^.Title);
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
@@ -745,8 +750,9 @@ begin
     if not assigned(NoteList) then exit('');
     FileName := CleanFileName(ID);
     for Index := 0 to NoteList.Count -1 do
-      if NoteList.Items[Index]^.ID = FileName then
+      if NoteList.Items[Index]^.ID = FileName then begin
           exit(NoteList.Items[Index]^.LastChange);
+      end;
 end;
 
 function TNoteLister.IsIDPresent(ID: string): boolean;
@@ -897,9 +903,9 @@ var
 begin
     new(NoteP);
     NoteP^.ID := CleanFilename(FileName);
-    NoteP^.LastChange := copy(LastChange, 1, 19);
+    NoteP^.LastChange := LastChange; {copy(LastChange, 1, 19); }
     NoteP^.LastChange[11] := ' ';
-    NoteP^.CreateDate := copy(LastChange, 1, 19);
+    NoteP^.CreateDate := LastChange; {copy(LastChange, 1, 19); }
     NoteP^.CreateDate[11] := ' ';
     NoteP^.Title:= Title;
     NoteP^.OpenNote := nil;
@@ -1015,9 +1021,9 @@ begin
         	if Title <> '' then
             	NoteList.Items[Index]^.Title := Title;
         	if Change <> '' then begin
-                NoteList.Items[Index]^.LastChange := copy(Change, 1, 19);
+                NoteList.Items[Index]^.LastChange := Change;  {copy(Change, 1, 19);}
             	NoteList.Items[Index]^.LastChange[11] := ' ';
-                // check if note is already at the bottom of the list, don't need to resort.
+                // check if note is already at the bottom of the list, don't need to re-sort.
                 if (Index < (NoteList.Count -1)) then
                     NoteList.Sort(@LastChangeSorter);
             end;
@@ -1179,8 +1185,6 @@ function TNoteList.Add(ANote: PNote): integer;
 begin
     result := inherited Add(ANote);
 end;
-
-
 
 function TNoteList.FindID(const ID: ANSIString): PNote;
 var
