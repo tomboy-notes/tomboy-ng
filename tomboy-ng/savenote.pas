@@ -660,7 +660,8 @@ var
    TmpName : string;
    {$ifdef WINDOWS}FileAttr : longint;{$endif}
 begin
-    Result := False;
+    //{$define STAGEDWRITE}
+    Result := True;
     // we write out the footer here so we can do the searching to notebook stuff
     // after we have released to lock on KMemo.
     Buff := Footer(NoteLoc);
@@ -668,7 +669,7 @@ begin
     // We save the file in tmp, when closed,
     // move it over to the actual position. That will prevent, to some extent, poweroff
     // crashes messing with files.  May generate an EStreamError
-
+    {$ifdef STAGEDWRITE}
     TmpName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
     if not DirectoryExists(TmpName) then
        if not CreateDir(AppendPathDelim(tmpname)) then begin
@@ -676,9 +677,17 @@ begin
             exit(False);
         end;
     TmpName := TmpName + pathDelim + extractFileName(FileName);
-    OutStream.SaveToFile(TmpName);
-    OutStream.Free;
-    OutStream := nil;
+    try
+        OutStream.SaveToFile(TmpName);
+    {$else}
+    try
+        OutStream.SavetoFile(FileName);
+    {$endif}
+    finally
+        OutStream.Free;
+        OutStream := nil;
+    end;
+    {$ifdef STAGEDWRITE}
     {$ifdef WINDOWS}                    // Windows cannot 'move' over existing file.
     // This whole block is here because of issue #132 where windows seems to have problems
     // moving, deleting a note before a new version is copied over. Is the problem
@@ -736,6 +745,7 @@ begin
     end;
     {$endif}
     result := RenameFileUTF8(TmpName, FileName);
+    {$endif}                                        // thats the ifdef StagedWrite
     if not Result then NoteLoc.ErrorStr:='Failed Rename';
 end;
 
