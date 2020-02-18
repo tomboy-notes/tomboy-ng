@@ -300,7 +300,7 @@ begin
                                         readln(InFile, InString);                   // Danger, wot if we hit EOF ?
                                         while pos('<tag>', Instring) > 0 do
                                             readln(InFile, InString);               // now we have the </tags> line.
-                                        NextSeekString := '321-blar-blar-blar-blar-123';
+                                        NextSeekString := '321-blar-blar-blar-blar-123';  // wow, if we find that ???
                                     end;
                     end;
               end else
@@ -312,7 +312,7 @@ begin
       end;
   except
     on E: EInOutError do begin
-        debugln('File handling error occurred updating clean note location. Details: ' + E.Message);
+        debugln('File handling error occurred updating template. Details: ' + E.Message);
         exit(False);
     end;
   end;
