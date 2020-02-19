@@ -105,6 +105,7 @@ object SearchForm: TSearchForm
       TabOrder = 1
       OnClick = StringGridNotebooksClick
       OnKeyDown = FormKeyDown
+      OnPrepareCanvas = StringGridNotebooksPrepareCanvas
       OnResize = StringGridNotebooksResize
     end
     object ButtonClearFilters: TButton

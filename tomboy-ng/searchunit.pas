@@ -105,6 +105,7 @@ unit SearchUnit;
                 Drop Create Date and Filename from Search results string grid.
                 But I still cannot control the little green triangles in stringgrid headings indicating sort.
     2020/02/01  Dont refresh the string grids automatically, turn on the refresh button for user to do it.
+    2020/02/19  hilight selected notebook name.
 }
 
 {$mode objfpc}{$H+}
@@ -165,6 +166,8 @@ type        { TSearchForm }
         // other downloded note ID. Adjusts Note_Lister according and marks any
         // note that is currently open as read only.
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
+        procedure StringGridNotebooksPrepareCanvas(sender: TObject; aCol,
+            aRow: Integer; aState: TGridDrawState);
         procedure StringGridNotebooksResize(Sender: TObject);
     private
         HelpNotes : TNoteLister;
@@ -184,6 +187,7 @@ type        { TSearchForm }
 		procedure UseList();
     public
         PopupTBMainMenu : TPopupMenu;
+        SelectedNotebook : integer;         // Position in Notebook grid use has clicked, 0 means none.
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
@@ -276,6 +280,13 @@ begin
         end;
         UseList();
     end;
+end;
+
+procedure TSearchForm.StringGridNotebooksPrepareCanvas(sender: TObject; aCol,
+    aRow: Integer; aState: TGridDrawState);
+begin
+    if (SelectedNoteBook > 0) and (aRow = SelectedNotebook) then
+        stringgridnotebooks.canvas.brush.color := StringGrid1.FixedColor;
 end;
 
 procedure TSearchForm.StringGridNotebooksResize(Sender: TObject);
@@ -642,12 +653,14 @@ var
 begin
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then
         DoSearch()
-    else
+    else begin
         if ButtonNotebookOptions.Enabled then begin
             NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
             if NB <> '' then
                 NoteLister.LoadNotebookGrid(StringGrid1, NB);
         end else RefreshStrGrids();
+        SelectedNotebook := 0;      // ie off
+    end;
     ButtonRefresh.Enabled := false;
 end;
 
@@ -800,7 +813,8 @@ begin
     color - color of 'control'.
     focuscolor - hollow rectangle around selected cell
 
-    wot about selected cell color ??
+    To change selected cell colour we have to use OnPrepareCanvas but use
+    SelecteNoteBook to prevent it showing before user has clicked a cell.
 
     }
     //stringgrid1.FocusColor:= clblue;
@@ -810,6 +824,8 @@ begin
     stringgridnotebooks.FocusColor := stringgrid1.FocusColor;
     stringgridnotebooks.color := stringgrid1.color;
     stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
+    stringGridNotebooks.SelectedColor:= clGray;
+    {$ifdef DARWIN}ButtonMenu.Refresh;{$endif}      // Cocoa issue
     RefreshStrGrids();
 end;
 
@@ -968,6 +984,7 @@ end;
 
 procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
 begin
+
     ButtonNotebookOptions.Enabled := True;
     ButtonClearFilters.Enabled := True;
     //StringGridNotebooks.SelectedColor:= clRed;        // does not work !
@@ -975,6 +992,7 @@ begin
     //StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
     //StringGridNotebooks.repaint;
     ButtonRefreshClick(self);
+    SelectedNoteBook := StringGridNotebooks.Row;
     StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
 

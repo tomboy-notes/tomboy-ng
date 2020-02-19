@@ -659,6 +659,7 @@ var
    Buff : string = '';
    TmpName : string;
    {$ifdef WINDOWS}FileAttr : longint;{$endif}
+   ErrorMsg : string;
 begin
 
     Result := True;
@@ -686,8 +687,8 @@ begin
             OutStream := nil;
         end;
         {$ifdef WINDOWS}
-            if FileExists(FullFileName) then    // will not be there if its a new note.
-                if not SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) then
+            if FileExists(FileName) then    // will not be there if its a new note.
+                if not SafeWindowsDelete(FileName, ErrorMsg) then
                    exit(false);
         {$endif}
         result := RenameFileUTF8(TmpName, FileName);    // Unix ok to over write, windows is not !
