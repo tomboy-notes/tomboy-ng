@@ -126,7 +126,7 @@ type
 
             // Assembles a list of tags this note is a member of, list is
             // used in all note's footer - needs ID to have been set
-            function NoteBookTags() : ANSIString;
+            // function NoteBookTags() : ANSIString;
        public
             TimeStamp : string;
             Title : ANSIString;
@@ -658,8 +658,8 @@ function TBSaveNote.WriteToDisk(const FileName: ANSIString; var NoteLoc : TNoteU
 var
    Buff : string = '';
    TmpName : string;
-   {$ifdef WINDOWS}FileAttr : longint;{$endif}
-   ErrorMsg : string;
+   {$ifdef WINDOWS}FileAttr : longint;
+   ErrorMsg : string; {$endif}
 begin
 
     Result := True;
@@ -703,7 +703,7 @@ begin
     if not Result then NoteLoc.ErrorStr:='Failed Rename';
 end;
 
-
+{                    // moved to note lister
 function TBSaveNote.NoteBookTags(): ANSIString;
 var
     SL : TStringList;
@@ -725,6 +725,7 @@ begin
 		end;
     SL.Free;
 end;
+}
 
 function TBSaveNote.Header(): ANSIstring;
 var

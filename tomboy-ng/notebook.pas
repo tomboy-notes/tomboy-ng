@@ -40,6 +40,7 @@ unit Notebook;
                 to naming of MainUnit and SearchUnit.
     2019/05/18  Corrected alignment Label1 and 3
     2019/05/19  Display strings all (?) moved to resourcestrings
+    2020/02/19  Dont escape new notebook title as sent to notelister.
 }
 
 
@@ -338,7 +339,7 @@ function TNoteBookPick.ChangeNoteBookName(NewName : string) : boolean;
                  which needs to be written twice, updated last-change-date and last-metadata-change-date,
                  finally remove its one Notebook name and replace it with new notebook name.
               VERY IMPORTANT that end user has fully sync'ed before doing this. Else we
-              might leave notes on remote machine that believe they belong to missing notebook. }
+              might leave notes on remote machine that believe they belong to a missing notebook. }
 var
     IDstr, TemplateID : string;
     OpenForm : TForm; //TEditBoxForm;
@@ -354,7 +355,7 @@ begin
     end;
     // OK, now change template ......
     // debugln('template is ' + SearchForm.notelister.NotebookTemplateID(Title));
-    RewriteTempate(TemplateID, NewName);
+    RewriteTempate(TemplateID, RemoveBadXMLCharacters(NewName));
 end;
 
 
@@ -391,7 +392,7 @@ begin
         end;
     if PageControl1.ActivePage = TabChangeName then
             if EditNewNotebookName.Text <> '' then
-                if not ChangeNoteBookName(RemoveBadXMLCharacters(EditNewNotebookName.Text)) then exit;
+                if not ChangeNoteBookName(EditNewNotebookName.Text) then exit;
 	ModalResult := mrOK;
 end;
 

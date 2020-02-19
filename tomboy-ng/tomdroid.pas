@@ -36,6 +36,7 @@ type
         EditIPAddress: TEdit;
         Label1: TLabel;
         Label2: TLabel;
+        Label6: TLabel;
         LabelServerID: TLabel;
         Label3: TLabel;
         Label4: TLabel;
@@ -247,7 +248,7 @@ RESOURCESTRING
 
 procedure TFormTomdroid.DoNewSync();
 var
-    Tick1, Tick2, Tick3, Tick4 : DWord;
+    Tick1, Tick2, Tick3, Tick4 : QWord;
 begin
     Memo1.clear;
     StringGridReport.Clear;

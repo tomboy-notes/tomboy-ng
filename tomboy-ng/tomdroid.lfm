@@ -1,13 +1,13 @@
 object FormTomdroid: TFormTomdroid
-  Left = 481
+  Left = 642
   Height = 377
-  Top = 199
+  Top = 154
   Width = 836
   Caption = 'Tomdroid'
   ClientHeight = 377
   ClientWidth = 836
   OnShow = FormShow
-  LCLVersion = '2.0.5.0'
+  LCLVersion = '2.0.7.0'
   object ButtonClose: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -188,9 +188,11 @@ object FormTomdroid: TFormTomdroid
       end
     end
     object LabelServerID: TLabel
+      AnchorSideTop.Control = Label1
+      AnchorSideTop.Side = asrBottom
       Left = 360
       Height = 19
-      Top = 48
+      Top = 38
       Width = 100
       Caption = 'LabelServerID'
       ParentColor = False
@@ -234,6 +236,16 @@ object FormTomdroid: TFormTomdroid
       Top = 64
       Width = 287
       Caption = 'Select an existing profile (or enter data) '
+      ParentColor = False
+    end
+    object Label6: TLabel
+      AnchorSideTop.Control = LabelServerID
+      AnchorSideTop.Side = asrBottom
+      Left = 360
+      Height = 19
+      Top = 57
+      Width = 354
+      Caption = 'Upload means from tomboy-ng to Android Device'
       ParentColor = False
     end
   end

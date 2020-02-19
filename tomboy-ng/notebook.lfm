@@ -75,13 +75,17 @@ object NoteBookPick: TNoteBookPick
     TabOrder = 2
   end
   object Label2: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = PageControl1
+    AnchorSideTop.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 16
-    Height = 164
-    Top = 272
+    Left = 7
+    Height = 19
+    Top = 388
     Width = 47
-    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 7
+    BorderSpacing.Top = 13
     Caption = 'Label2'
     ParentColor = False
   end
@@ -96,9 +100,9 @@ object NoteBookPick: TNoteBookPick
     Height = 303
     Top = 72
     Width = 579
-    ActivePage = TabChangeName
+    ActivePage = TabExisting
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 3
     object TabExisting: TTabSheet
       Caption = 'Existing Note Books'
@@ -112,7 +116,7 @@ object NoteBookPick: TNoteBookPick
         AnchorSideBottom.Control = TabExisting
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 136
+        Height = 266
         Top = 0
         Width = 573
         Anchors = [akTop, akLeft, akRight, akBottom]

@@ -59,6 +59,7 @@ unit Note_Lister;
     2020/01/31  LoadStringGrid*() now uses the Lazarus column mode.
     2020/02/03  Make contents of strgrid look like it claims to be after new data
                 Removed LoadSearchGrid, no use LoadStGrid in both modes.
+    2020/02/19  XML Escape the notebook list sent back.
 }
 
 {$mode objfpc}
@@ -136,6 +137,7 @@ type
    TNoteLister = class
    private
     //DebugMode : boolean;
+
     OpenNoteIndex : integer;        // Used for Find*OpenNote(), points to last found one, -1 meaning none found
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
@@ -170,7 +172,7 @@ type
                                         { Changes the name associated with a Notebook in the internal data structure }
     function AlterNoteBook(const OldName, NewName: string): boolean;
                                         { Returns a multiline string to use in writing a notes notebook membership,
-                                          knows how to do a template too.}
+                                          knows how to do a template too. String has special XML chars 'escaped' }
     function NoteBookTags(const NoteID: string): ANSIString;
                                         { Returns true if it has put into list one or more Note IDs that are members of NBName }
     function GetNotesInNoteBook(var NBIDList: TStringList; const NBName: string
@@ -401,12 +403,12 @@ begin
        if GetNotebooks(SL, NoteID) then begin  // its a template
    		    Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
             if SL.Count > 0 then
-        	    Result := Result + '    <tag>system:notebook:' + SL[0] + '</tag>'#10'  </tags>'#10;
+        	    Result := Result + '    <tag>system:notebook:' + RemoveBadXMLCharacters(SL[0], True) + '</tag>'#10'  </tags>'#10;
        end else
    		    if SL.Count > 0 then begin					// its a Notebook Member
         	    Result := '  <tags>'#10;
         	    for Index := 0 to SL.Count -1 do		// here, we auto support multiple notebooks.
-        		    Result := Result + '    <tag>system:notebook:' + SL[Index] + '</tag>'#10;
+        		    Result := Result + '    <tag>system:notebook:' + RemoveBadXMLCharacters(SL[Index], True) + '</tag>'#10;
         	    Result := Result + '  </tags>'#10;
 		    end;
    finally
@@ -668,7 +670,7 @@ begin
                 NoteP^.ID:=FileName;
   			    ReadXMLFile(Doc, Dir + FileName);
   			    Node := Doc.DocumentElement.FindNode('title');
-      		    NoteP^.Title := Node.FirstChild.NodeValue;
+      		    NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
                 //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
                 Node := Doc.DocumentElement.FindNode('last-change-date');
                 NoteP^.LastChange := Node.FirstChild.NodeValue;
@@ -685,8 +687,10 @@ begin
                       	if UTF8pos('system:template', Node.ChildNodes.Item[J].TextContent) > 0 then
                             NoteP^.IsTemplate := True;
                     for J := 0 to Node.ChildNodes.Count-1 do
-                        if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then
+                        if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then begin
                         	NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
+                            // debugln('Notelister #691 ' +  UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17,1000));
+                        end;
                             // Node.ChildNodes.Item[J].TextContent) may be something like -
                             // * system:notebook:DavosNotebook - this note belongs to DavosNotebook
                             // * system:template - this note is a template, if does not also have a
@@ -752,6 +756,7 @@ begin
     for Index := 0 to NoteList.Count -1 do
       if NoteList.Items[Index]^.ID = FileName then begin
           exit(NoteList.Items[Index]^.LastChange);
+          debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
       end;
 end;
 
@@ -904,9 +909,9 @@ begin
     new(NoteP);
     NoteP^.ID := CleanFilename(FileName);
     NoteP^.LastChange := LastChange; {copy(LastChange, 1, 19); }
-    NoteP^.LastChange[11] := ' ';
+    //NoteP^.LastChange[11] := ' ';
     NoteP^.CreateDate := LastChange; {copy(LastChange, 1, 19); }
-    NoteP^.CreateDate[11] := ' ';
+    //NoteP^.CreateDate[11] := ' ';
     NoteP^.Title:= Title;
     NoteP^.OpenNote := nil;
     NoteList.Add(NoteP);
@@ -934,7 +939,7 @@ function TNoteLister.GetNotes(const Term: ANSIstring = ''; DontTestName : boolea
 var
     Info : TSearchRec;
     SL : TStringList;
-    //P : pointer;
+    P : pointer;
     //Tick, Tock : qword;
 begin
     SL := Nil;
@@ -971,9 +976,6 @@ begin
         //Tick := gettickcount64();
         NoteList.Sort(@LastChangeSorter);       // 0mS on Dell
         //Tock := gettickcount64();
-        //writeln('--------------');
-        //for P in NoteList do                 // NOTE - TList enumerator !
-        //  writeln( PNote(P)^.LastChange);
         //writeln('Sort ' + inttostr(Tock - Tick) + 'mS');
         //writeln('--------------');
 	end else begin
@@ -982,6 +984,9 @@ begin
 		result := NoteList.Count;
 	end;
     if assigned(SL) then SL.Free;       //  needs a try statement ....
+    //writeln('--------------');
+    //for P in NoteList do                 // NOTE - TList enumerator !
+    //    debugln( PNote(P)^.Title);
 end;
 
 
@@ -989,6 +994,7 @@ procedure TNoteLister.LoadStGrid(const Grid : TStringGrid; NoCols : integer; Sea
 var
     Index : integer;
     TheList : TNoteList;
+    LCDst : string;
 begin
     if SearchMode then
         TheList := SearchNoteList
@@ -997,14 +1003,15 @@ begin
     Index := TheList.Count;
     while Index > 0 do begin
         dec(Index);
+        LCDst := TheList.Items[Index]^.LastChange;
+        LCDst[11] := ' ';   // looks prettier, dates are stored in ISO std with a 'T' between date and time
         case NoCols of
             2 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
-        	    TheList.Items[Index]^.LastChange]);
+        	    LCDst]);
             3 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
-        	    TheList.Items[Index]^.LastChange, TheList.Items[Index]^.CreateDate]);
+        	    LCDst, TheList.Items[Index]^.CreateDate]);
             4 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
-                TheList.Items[Index]^.LastChange, TheList.Items[Index]^.CreateDate,
-                TheList.Items[Index]^.ID]);
+                LCDst, TheList.Items[Index]^.CreateDate, TheList.Items[Index]^.ID]);
         end;
     end;
     if Grid.SortColumn > -1 then
@@ -1022,7 +1029,7 @@ begin
             	NoteList.Items[Index]^.Title := Title;
         	if Change <> '' then begin
                 NoteList.Items[Index]^.LastChange := Change;  {copy(Change, 1, 19);}
-            	NoteList.Items[Index]^.LastChange[11] := ' ';
+//            	NoteList.Items[Index]^.LastChange[11] := ' ';                   // keep list in ISO format, make pretty when displaying
                 // check if note is already at the bottom of the list, don't need to re-sort.
                 if (Index < (NoteList.Count -1)) then
                     NoteList.Sort(@LastChangeSorter);
