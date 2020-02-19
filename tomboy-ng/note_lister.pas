@@ -147,7 +147,6 @@ type
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
              { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
-    procedure CleanupList(const Lst : TNoteList);
     //procedure DumpNoteBookList();
 
             // Indexes and maybe searches one note. TermList maybe nil.
@@ -620,31 +619,6 @@ begin
 	result := CompareStr(PNote(Item1)^.LastChange, PNote(Item2)^.LastChange);
 end;
 
-
-procedure TNoteLister.CleanupList(const Lst : TNoteList);
-var
-    Index : integer;
-begin
-   //  ToDo : remove me
-   {
-     this function should not be needed any more, we must store full
-     33 char time date string in the data structure Feb 2020  }
-
-   exit;
-
-    { Try and make sure these dates work, even if messed up }
-    for Index := 0 to Lst.count -1 do begin;
-        while UTF8length(Lst.Items[Index]^.CreateDate) < 20 do
-        	Lst.Items[Index]^.CreateDate :=  Lst.Items[Index]^.CreateDate + ' ';
-	Lst.Items[Index]^.CreateDate := copy(Lst.Items[Index]^.CreateDate, 1, 19);
-        Lst.Items[Index]^.CreateDate[11] := ' ';
-        while UTF8length(Lst.Items[Index]^.LastChange) < 20 do
-              Lst.Items[Index]^.LastChange := Lst.Items[Index]^.LastChange + ' ';
-        Lst.Items[Index]^.LastChange := copy(Lst.Items[Index]^.LastChange, 1, 19);
-        Lst.Items[Index]^.LastChange[11] := ' ';
-    end;
-end;
-
 procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const TermList : TStringList; DontTestName : boolean = false);
 			// This is how we search for XML elements, attributes are different.
 var
@@ -970,7 +944,6 @@ begin
   	FindClose(Info);
     if DebugMode then debugLn('Finished indexing notes');
     if Term = '' then begin
-        CleanUpList(NoteList);
         NotebookList.CleanList();
         Result := NoteList.Count;
         //Tick := gettickcount64();
@@ -979,7 +952,6 @@ begin
         //writeln('Sort ' + inttostr(Tock - Tick) + 'mS');
         //writeln('--------------');
 	end else begin
-    	CleanUpList(SearchNoteList);
         SearchNoteList.Sort(@LastChangeSorter);
 		result := NoteList.Count;
 	end;

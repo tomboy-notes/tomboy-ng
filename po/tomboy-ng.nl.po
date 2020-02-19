@@ -1037,6 +1037,10 @@ msgstr "IP-adres of apparaat"
 msgid "SSH Password for device"
 msgstr "SSH-wachtwoord van apparaat"
 
+#: tformtomdroid.label6.caption
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr ""
+
 #: tmainform.buttmenu.caption
 msgctxt "tmainform.buttmenu.caption"
 msgid "Menu"

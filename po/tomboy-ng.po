@@ -1002,6 +1002,10 @@ msgstr ""
 msgid "SSH Password for device"
 msgstr ""
 
+#: tformtomdroid.label6.caption
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr ""
+
 #: tmainform.buttmenu.caption
 msgctxt "tmainform.buttmenu.caption"
 msgid "Menu"

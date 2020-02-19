@@ -286,7 +286,7 @@ procedure TSearchForm.StringGridNotebooksPrepareCanvas(sender: TObject; aCol,
     aRow: Integer; aState: TGridDrawState);
 begin
     if (SelectedNoteBook > 0) and (aRow = SelectedNotebook) then
-        stringgridnotebooks.canvas.brush.color := StringGrid1.FixedColor;
+        stringgridnotebooks.canvas.brush.color := clLtGray; {StringGrid1.FixedColor; }
 end;
 
 procedure TSearchForm.StringGridNotebooksResize(Sender: TObject);

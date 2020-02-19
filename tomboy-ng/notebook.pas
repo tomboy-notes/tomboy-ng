@@ -346,7 +346,10 @@ var
 begin
     result := true;
     TemplateID := SearchForm.notelister.NotebookTemplateID(Title);
-    // ToDo : if TemplateID is nil, bad things happen, test and exit if ......
+    if TemplateID = '' then begin
+        showmessage('Failed to ID Template [' + Title + ']');
+        exit(false);
+    end;
     SearchForm.NoteLister.AlterNotebook(Title, NewName);
     for IDstr in NBIDList do begin
         if SearchForm.NoteLister.IsThisNoteOpen(IDStr, OpenForm) then

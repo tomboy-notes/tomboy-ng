@@ -109,6 +109,9 @@ begin
        while fs.Position < fs.Size do begin
          fs.read(ch, 1);
          if Ch = #13 then fs.read(ch, 1);   // drop #13 on floor. Silly Windows double newline.
+         if Ch = #9 then Ch := ' ';         // ToDo : this is temp cludge, KMemo cannot handle tabs, they
+                                            // come in via pasted text, better fix during the paste process.
+                                            // This might mess with UTF8 ??
          if (Ch = '<') or ((Ch < ' ') and (Ch <> #09)) then begin     // 09 is Tab, let it through
              if (Ch < ' ') then             // thats a newline
                  	AddText(True)
@@ -232,6 +235,7 @@ begin
   while fs.Position < fs.Size do begin
       fs.read(Ch, 1);
       if Ch = '>' then exit;
+      //if Ch = #9 then ch := ' ';         // just how UTF8 is that I wonder ?  KMemo cannot cope with a tab .....
       Buff := Buff + Ch;
       case Buff of
             'note-content version="0.1"' : InContent := true;

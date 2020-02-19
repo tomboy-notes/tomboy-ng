@@ -1480,7 +1480,7 @@ begin
   TempName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
   if not DirectoryExists(TempName) then
       CreateDir(AppendPathDelim(tempname));
-  TempName := tempName + pathDelim + 'location.note';             // ToDo : generate a random name
+  TempName := tempName + pathDelim + 'location.note';             //  generate a random name  ??
   AssignFile(InFile, NRec.FFName);
   AssignFile(OutFile, TempName);
   try
@@ -1514,7 +1514,7 @@ begin
         exit(False);
     end;
   end;
-  result := CopyFile(TempName, Nrec.FFName);    // ToDo : wrap this in a Try
+  result := CopyFile(TempName, Nrec.FFName);    // wrap this in a Try
   if result = false then debugln('ERROR moving [' + TempName + '] to [' + NRec.FFName + ']');
 end;
 

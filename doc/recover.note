@@ -36,19 +36,19 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 <bold>Notes </bold></size:large>
 (1) By Douglas Adams, used without permission. 
 (2)  Corrupted notes should never happen, looks like it did. Power failure, program error, whatever. If its my fault, I am sincerely sorry ! Please report this experience to the Tomboy mailing list or Github. The only way I can rid of these problems is if people tell me about them.
-(3) In a classically corrupted XML file, the problem is often only one or two characters. If you open that note in a plain text editor, you will see the content and all the XML. Tomboy-ng has given you the line number where its unhappy, somewhere about there is an error, you may be able to edit it, save and either reload tomboy-ng or press the "refresh" button in the Search window. Don't try to use anything other than a plain text editor, if this is unclear seek help first.
+(3) In a classically corrupted XML file, the problem is often only one or two characters. If you open that note in a plain text editor, you will see the content and all the XML. Tomboy-ng has given you the line number where its unhappy, somewhere about there is an error, you may be able to edit it, save and either reload tomboy-ng  button in the Search window. Don't try to use anything other than a plain text editor, if this is unclear seek help first.
 (4) Tomboy-ng tells you where your notes are stored, go there with a file manager and select all the note files. They are the ones with a 36 apparently random character name and ".note" extension. Only do this if you are a sync user !
 (5) If you (wisely) keep a copy elsewhere, bring it back, un-encrypt it if necessary. And, good work !
 
 
 
 </note-content></text>
-  <last-change-date>2020-02-03T17:45:11.6320000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-03T17:45:11.6320000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-19T20:20:24.9990000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-19T20:20:24.9990000+11:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>1000</width>
+  <width>1061</width>
   <height>626</height>
   <x>20</x>
   <y>30</y>

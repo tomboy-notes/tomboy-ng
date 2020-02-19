@@ -14,8 +14,9 @@ You will interact with tomboy-ng using a menu on a System Tray Icon (only some s
 
 From the <bold>search form</bold>, you can -
 <list><list-item dir="ltr">Access the main menu (New Note, Settings, recent notes etc).</list-item></list>
-<list><list-item dir="ltr">Search for terms in all your notes.  A search term like <highlight>  "John Smith" name </highlight> will find all notes that use the word <italic>name</italic> anywhere and have the exactly that combination of <italic>John Smith</italic>.  It won't, for example find  <italic>my name is Smith, John.</italic></list-item></list><italic></italic>
+<list><list-item dir="ltr">Search for terms in all your notes.  A search term like <highlight>  "John Smith" name </highlight> will find all notes that use the word <italic>name</italic> anywhere and have  exactly that combination of <italic>John Smith</italic>.  It won't, for example find  <italic>my name is Smith, John.</italic></list-item></list><italic></italic>
 <list><list-item dir="ltr">Organise your notes into Notebooks, tomboy-ng will allow each note to be in more than one Notebook but if you sync or share your notes with the original Tomboy, don't turn that feature on.</list-item></list>
+<list><list-item dir="ltr">Rename a notebook, but if you sync your notes, do run a full sync first !</list-item></list>
 
 Note that search results shown on the search form are not automatically updated while the form remains open. Thats to ensure that a set of results don't change while you deal with individual notes.  If a change is pending, the 'Refresh Button' becomes enabled and you can trigger an update by clicking that button.
 
@@ -57,7 +58,7 @@ Works only with the single note mode, will import (.note, .rtf, plain text) the 
 
 
 <monospace><bold> --debug-sync       --debug-index       ---debug-spell </bold></monospace>
-Show whats happening during either sync, index or spell. Useful for debugging. They will write detailed progress reports relating  to their section of the application to the console. However, Windows does not, for this purpose, have a  console.  But  it  can  be  told  to capture this log info to a file using another command line switch or by setting an env  variable that specifies a file name. Please ensure you have permission to write to the location specified. For example -
+Show whats happening during either sync, index or spell. Useful for debugging. They will write detailed progress reports relating  to their section of the application to the console. However, Windows does not, for this purpose, have a  console.  But  it  can  be  told  to capture this log info to a file using another command line switch or by setting an env  variable that specifies a file name. Please ensure you have permission to write to the location specified. For example, from the start button, click run and type  -
 
 <monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace><size:large>
 
@@ -73,8 +74,8 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2020-02-03T21:53:42.7460000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-03T21:53:42.7460000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-19T21:00:25.4140000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-19T21:00:25.4140000+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
