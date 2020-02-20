@@ -115,7 +115,6 @@ type
             ButtonFixedFont: TButton;
             ButtonFont: TButton;
             ButtonHelpNotes: TButton;
-            ButtonSyncHelp: TButton;
             ButtonSetSpellLibrary: TButton;
             ButtonSetDictionary: TButton;
             ButtonManualSnap: TButton;
@@ -126,7 +125,9 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
+        ButtonSyncHelp: TButton;
         CheckAutostart: TCheckBox;
+        CheckBox2: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         CheckManyNotebooks: TCheckBox;
         CheckShowSearchAtStart: TCheckBox;
@@ -138,7 +139,6 @@ type
         CheckSnapMonthly: TCheckBox;
         FontDialog1: TFontDialog;
         GroupBox1: TGroupBox;
-		GroupBox3: TGroupBox;
 		GroupBox4: TGroupBox;
 		GroupBox5: TGroupBox;
 		Label1: TLabel;
@@ -147,6 +147,7 @@ type
         Label13: TLabel;
         Label14: TLabel;
         Label15: TLabel;
+        Label5: TLabel;
         LabelDicPrompt: TLabel;
         LabelDic: TLabel;
         LabelError: TLabel;
@@ -183,13 +184,11 @@ type
         PMenuMain: TPopupMenu;
 		RadioAlwaysAsk: TRadioButton;
         RadioFontHuge: TRadioButton;
-		RadioFile: TRadioButton;
 		RadioFontBig: TRadioButton;
 		RadioFontMedium: TRadioButton;
 		RadioFontSmall: TRadioButton;
 		RadioUseLocal: TRadioButton;
 		RadioUseServer: TRadioButton;
-		RadioServer: TRadioButton;
 		SelectDirectoryDialog1: TSelectDirectoryDialog;
         SelectSnapDir: TSelectDirectoryDialog;
         SpeedButHide: TSpeedButton;
@@ -1078,15 +1077,16 @@ begin
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
     FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
     FormSync.SetupSync := False;
-    //if RadioFile.Checked then
-            FormSync.TransPort := SyncFile;
-    //else FormSync.TransPort := SyncNextRuby;
+    FormSync.TransPort := SyncFile;
+
+    FormSync.RunSyncHidden();
+    exit();
+
     if FormSync.Visible then
         FormSync.Show
     else                           // We rely on SearchForm.ProcessSyncUpdates() to keep list current
     	FormSync.ShowModal;
 end;
-
 
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
@@ -1097,9 +1097,9 @@ begin
         FormSync.NoteDirectory := NoteDirectory;
         FormSync.LocalConfig := LocalConfig;
         FormSync.SetupSync := True;
-        if RadioFile.Checked then
-            FormSync.Transport := SyncFile
-        else FormSync.Transport := SyncNextRuby;
+        //if RadioFile.Checked then
+            FormSync.Transport := SyncFile;
+        //else FormSync.Transport := SyncNextRuby;
         FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         if mrOK = FormSync.ShowModal then begin
             LabelSyncRepo.Caption := FormSync.RemoteRepo;

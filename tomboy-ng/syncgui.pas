@@ -51,6 +51,7 @@ unit SyncGUI;
     2018/10/30  Don't show SyNothing in sync report
     2018/11/04  Added support to update in memory NoteList after a sync.
     2019/05/19  Display strings all (?) moved to resourcestrings
+    2020/02/20  Added capability to sync without showing GUI.
 }
 
 {$mode objfpc}{$H+}
@@ -80,6 +81,10 @@ type
 				Panel3: TPanel;
 				Splitter3: TSplitter;
 				StringGridReport: TStringGrid;
+                                        { Runs a sync without showing form. Ret False if error or its not setup.
+                                          Caller must ensure that Sync is config and that the Sync dir is available.
+                                          If clash, user will see dialog. }
+                function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonCloseClick(Sender: TObject);
     			procedure ButtonSaveClick(Sender: TObject);
@@ -134,7 +139,9 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff, Sync;
+uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError;
+
+
 {$R *.lfm}
 
 var
@@ -209,6 +216,7 @@ RESOURCESTRING
   rsLookingatNotes = 'Looking at notes ....';
   rsSaveAndSync = 'Press Save and Sync if this looks OK';
   rsSyncError = 'A Sync Error occured';
+
     // User is only allowed to press Cancel or Save when this is finished.
 procedure TFormSync.JoinSync;
 var
@@ -282,6 +290,14 @@ begin
     LocalTimer.Enabled := True;
 end;
 
+function TFormSync.RunSyncHidden(): boolean;
+begin
+    if SetUpSync then begin
+        StringGridReport.Clear;
+        ManualSync;
+        result := true;
+    end else Result := false;
+end;
 
 Resourcestring
   rsTestingSync = 'Testing Sync';
@@ -291,7 +307,7 @@ Resourcestring
   rsPressClose = 'Press Close';
 
         // User is only allowed to press Close when this is finished.
-procedure TFormSync.ManualSync();
+procedure TFormSync.ManualSync;
 begin
     Label1.Caption := rsTestingSync;
     Application.ProcessMessages;
@@ -306,7 +322,11 @@ begin
         ASync.RepoAction:=RepoUse;
         Async.SetTransport(TransPort);
         if Syncready <> ASync.TestConnection() then begin
-            showmessage(rsUnableToSync + ' ' + ASync.ErrorString);
+            if Visible then
+                showmessage('tomboy-ng' + #10 + rsUnableToSync + ' ' + ASync.ErrorString)     // we dont see if form is invisible !
+            else
+                FormSyncError.ShowModal;
+            // MessageBoxFunction(pchar(rsUnableToSync + ASync.ErrorString), 'tomboy-ng',  MB_OK);
             FormSync.ModalResult := mrAbort;
         end;
         if ModalResult <> mrAbort then begin    // Puzzel, setting mrAbort should have closed....
@@ -346,9 +366,7 @@ begin
    FreeandNil(DownList);
 end;
 
-
-
-procedure TFormSync.ShowReport();
+procedure TFormSync.ShowReport;
 var
         Index : integer;
         Rows : integer = 0;
@@ -359,6 +377,9 @@ begin
                         StringGridReport.InsertRowWithValues(Rows
                 	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
                             , Items[Index]^.Title, Items[Index]^.ID]);
+                        if not visible then
+                            debugln(ASync.NoteMetaData.ActionName(Items[Index]^.Action),
+                                Items[Index]^.Title, Items[Index]^.ID);
                         inc(Rows);
                 end;
     		end
@@ -368,6 +389,8 @@ begin
         if  Rows = 0 then
             Memo1.Append(rsNoNotesNeededSync)
         else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
+        if not visible then
+            debugln(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
 end;
 
 procedure TFormSync.StringGridReportGetCellHint(Sender: TObject; ACol,

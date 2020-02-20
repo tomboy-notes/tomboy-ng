@@ -930,6 +930,22 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr ""
 
+#: tformsyncerror.bitbtn1.hint
+msgid "Stop Auto Sync until next restart"
+msgstr ""
+
+#: tformsyncerror.bitbtn2.hint
+msgid "If Shared Drive is available, try again."
+msgstr ""
+
+#: tformsyncerror.caption
+msgid "FormSyncError"
+msgstr ""
+
+#: tformsyncerror.label1.caption
+msgid "tomboy-ng is unable to do Auto Sync at the moment."
+msgstr ""
+
 #: tformtomdroid.buttonclose.caption
 msgctxt "tformtomdroid.buttonclose.caption"
 msgid "Close"
@@ -1328,6 +1344,10 @@ msgctxt "tsett.checkautostart.caption"
 msgid "Autostart at Logon"
 msgstr ""
 
+#: tsett.checkbox2.caption
+msgid "Auto Sync"
+msgstr ""
+
 #: tsett.checkcasesensitive.caption
 msgctxt "tsett.checkcasesensitive.caption"
 msgid "Case Sensitive"
@@ -1377,10 +1397,6 @@ msgstr ""
 msgid "Main Search Window is : "
 msgstr ""
 
-#: tsett.groupbox3.caption
-msgid "  Type  "
-msgstr ""
-
 #: tsett.groupbox4.caption
 msgid "  Options  "
 msgstr ""
@@ -1420,6 +1436,11 @@ msgstr ""
 
 #: tsett.label4.caption
 msgid "a note on the configured synchronisation server :"
+msgstr ""
+
+#: tsett.label5.caption
+msgctxt "tsett.label5.caption"
+msgid "File Sync using shared drive."
 msgstr ""
 
 #: tsett.label6.caption
@@ -1474,10 +1495,6 @@ msgstr ""
 msgid "Always Ask me what to do."
 msgstr ""
 
-#: tsett.radiofile.caption
-msgid "File Sync using shared drive."
-msgstr ""
-
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr ""
@@ -1493,10 +1510,6 @@ msgstr ""
 
 #: tsett.radiofontsmall.caption
 msgid "Small"
-msgstr ""
-
-#: tsett.radioserver.caption
-msgid "Network Server - not available"
 msgstr ""
 
 #: tsett.radiouselocal.caption

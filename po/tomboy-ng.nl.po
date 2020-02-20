@@ -965,6 +965,22 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchroniseren"
 
+#: tformsyncerror.bitbtn1.hint
+msgid "Stop Auto Sync until next restart"
+msgstr ""
+
+#: tformsyncerror.bitbtn2.hint
+msgid "If Shared Drive is available, try again."
+msgstr ""
+
+#: tformsyncerror.caption
+msgid "FormSyncError"
+msgstr ""
+
+#: tformsyncerror.label1.caption
+msgid "tomboy-ng is unable to do Auto Sync at the moment."
+msgstr ""
+
 #: tformtomdroid.buttonclose.caption
 msgctxt "tformtomdroid.buttonclose.caption"
 msgid "Close"
@@ -1374,6 +1390,10 @@ msgctxt "tsett.checkautostart.caption"
 msgid "Autostart at Logon"
 msgstr "Automatisch opstarten"
 
+#: tsett.checkbox2.caption
+msgid "Auto Sync"
+msgstr ""
+
 #: tsett.checkcasesensitive.caption
 msgctxt "tsett.checkcasesensitive.caption"
 msgid "Case Sensitive"
@@ -1423,10 +1443,6 @@ msgstr "Maandelijks"
 msgid "Main Search Window is : "
 msgstr "Het hoofdzoekvenster is: "
 
-#: tsett.groupbox3.caption
-msgid "  Type  "
-msgstr "  Type  "
-
 #: tsett.groupbox4.caption
 msgid "  Options  "
 msgstr "  Opties  "
@@ -1467,6 +1483,12 @@ msgstr "Als er een conflict is tussen een lokale notitie en"
 #: tsett.label4.caption
 msgid "a note on the configured synchronisation server :"
 msgstr "een notitie op de synchronisatieserver:"
+
+#: tsett.label5.caption
+#, fuzzy
+msgctxt "tsett.label5.caption"
+msgid "File Sync using shared drive."
+msgstr "Bestandssynchronisatie via een gedeelde schijf."
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
@@ -1520,10 +1542,6 @@ msgstr "woensdag"
 msgid "Always Ask me what to do."
 msgstr "Altijd vragen om een actie"
 
-#: tsett.radiofile.caption
-msgid "File Sync using shared drive."
-msgstr "Bestandssynchronisatie via een gedeelde schijf."
-
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Groot"
@@ -1540,10 +1558,6 @@ msgstr "Normaal"
 #: tsett.radiofontsmall.caption
 msgid "Small"
 msgstr "Klein"
-
-#: tsett.radioserver.caption
-msgid "Network Server - not available"
-msgstr "Netwerkserver - niet beschikbaar"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."

@@ -1183,18 +1183,10 @@ begin
 end;
 
 procedure TEditBoxForm.MenuItemSyncClick(Sender: TObject);
-          // Hmmm, wonder why I don't call TSett.Synchronise(); here instead.
 begin
     if KMemo1.ReadOnly then exit();
 	if Dirty then SaveTheNote();
-
     Sett.Synchronise();
-
-    {FormSync.NoteDirectory := Sett.NoteDirectory;
-    FormSync.LocalConfig := Sett.LocalConfig;
-    FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
-    FormSync.SetupFileSync := False;
-    FormSync.ShowModal;}					// we don't care about result ...
 end;
 
 { - - - H O U S E   K E E P I N G   F U C T I O N S ----- }

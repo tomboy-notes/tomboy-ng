@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 557
+  Left = 329
   Height = 487
-  Top = 311
+  Top = 283
   Width = 628
   BorderIcons = []
   Caption = 'tomboy-ng Settings'
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 445
     Top = 0
     Width = 628
-    ActivePage = TabSnapshot
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 4
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -297,75 +297,21 @@ object Sett: TSett
       ClientHeight = 408
       ClientWidth = 622
       OnResize = TabSyncResize
-      object GroupBox3: TGroupBox
-        AnchorSideLeft.Control = TabSync
-        AnchorSideRight.Control = TabSync
-        AnchorSideRight.Side = asrBottom
-        Left = 7
-        Height = 90
-        Top = 6
-        Width = 608
-        Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.Left = 7
-        BorderSpacing.Right = 7
-        Caption = '  Type  '
-        ClientHeight = 69
-        ClientWidth = 604
-        TabOrder = 0
-        object RadioFile: TRadioButton
-          Left = 56
-          Height = 24
-          Top = 0
-          Width = 227
-          Caption = 'File Sync using shared drive.'
-          Checked = True
-          TabOrder = 0
-          TabStop = True
-        end
-        object RadioServer: TRadioButton
-          Left = 56
-          Height = 24
-          Top = 32
-          Width = 242
-          Caption = 'Network Server - not available'
-          Enabled = False
-          TabOrder = 1
-        end
-        object ButtonSyncHelp: TButton
-          AnchorSideTop.Control = GroupBox3
-          AnchorSideRight.Control = GroupBox3
-          AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = GroupBox3
-          AnchorSideBottom.Side = asrBottom
-          Left = 522
-          Height = 60
-          Top = 2
-          Width = 75
-          Align = alRight
-          BorderSpacing.Top = 2
-          BorderSpacing.Right = 7
-          BorderSpacing.Bottom = 7
-          Caption = 'Help'
-          OnClick = ButtonSyncHelpClick
-          TabOrder = 2
-        end
-      end
       object GroupBox4: TGroupBox
         AnchorSideLeft.Control = ButtonSetSynServer
         AnchorSideTop.Control = ButtonSetSynServer
         AnchorSideTop.Side = asrBottom
-        AnchorSideRight.Control = GroupBox3
         AnchorSideRight.Side = asrBottom
         Left = 7
-        Height = 200
-        Top = 191
+        Height = 269
+        Top = 123
         Width = 608
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 12
         Caption = '  Options  '
-        ClientHeight = 179
+        ClientHeight = 248
         ClientWidth = 604
-        TabOrder = 1
+        TabOrder = 0
         object Label3: TLabel
           Left = 40
           Height = 19
@@ -408,27 +354,33 @@ object Sett: TSett
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
+        object CheckBox2: TCheckBox
+          Left = 40
+          Height = 24
+          Top = 184
+          Width = 98
+          Caption = 'Auto Sync'
+          TabOrder = 3
+        end
       end
       object ButtonSetSynServer: TButton
-        AnchorSideLeft.Control = GroupBox3
         AnchorSideTop.Control = LabelSyncRepo
         AnchorSideTop.Side = asrBottom
         Left = 7
         Height = 40
-        Top = 139
+        Top = 71
         Width = 232
         BorderSpacing.Top = 12
         Caption = 'Change File Sync Repo'
         OnClick = ButtonSetSynServerClick
-        TabOrder = 2
+        TabOrder = 1
       end
       object LabelSyncRepo: TLabel
         AnchorSideLeft.Control = TabSync
-        AnchorSideTop.Control = GroupBox3
         AnchorSideTop.Side = asrBottom
         Left = 7
         Height = 19
-        Top = 108
+        Top = 40
         Width = 8
         BorderSpacing.Left = 7
         BorderSpacing.Top = 12
@@ -442,13 +394,38 @@ object Sett: TSett
         AnchorSideBottom.Side = asrBottom
         Left = 246
         Height = 19
-        Top = 153
+        Top = 85
         Width = 128
         Anchors = [akLeft, akBottom]
         BorderSpacing.Left = 7
         BorderSpacing.Bottom = 7
         Caption = 'LabelWaitForSync'
         ParentColor = False
+      end
+      object ButtonSyncHelp: TButton
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Side = asrBottom
+        Left = 512
+        Height = 48
+        Top = 64
+        Width = 75
+        Anchors = []
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 7
+        BorderSpacing.Bottom = 7
+        Caption = 'Help'
+        OnClick = ButtonSyncHelpClick
+        TabOrder = 2
+      end
+      object Label5: TLabel
+        Left = 16
+        Height = 19
+        Top = 8
+        Width = 216
+        Caption = 'File Sync using shared drive.'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
       end
     end
     object TabBackUp: TTabSheet
@@ -925,7 +902,7 @@ object Sett: TSett
     PopupMenu = PMenuMain
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 384
+    left = 408
   end
   object PopupDay: TPopupMenu
     left = 128
@@ -965,7 +942,7 @@ object Sett: TSett
   end
   object OpenDialogLibrary: TOpenDialog
     Options = [ofPathMustExist, ofFileMustExist, ofNoDereferenceLinks, ofEnableSizing, ofViewDetail]
-    left = 432
+    left = 480
   end
   object OpenDialogDictionary: TOpenDialog
     left = 512
@@ -975,7 +952,7 @@ object Sett: TSett
     MinFontSize = 0
     MaxFontSize = 0
     left = 544
-    top = 86
+    top = 168
   end
   object PMenuMain: TPopupMenu
     left = 288

@@ -987,6 +987,22 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Sincronizar"
 
+#: tformsyncerror.bitbtn1.hint
+msgid "Stop Auto Sync until next restart"
+msgstr ""
+
+#: tformsyncerror.bitbtn2.hint
+msgid "If Shared Drive is available, try again."
+msgstr ""
+
+#: tformsyncerror.caption
+msgid "FormSyncError"
+msgstr ""
+
+#: tformsyncerror.label1.caption
+msgid "tomboy-ng is unable to do Auto Sync at the moment."
+msgstr ""
+
 #: tformtomdroid.buttonclose.caption
 msgctxt "tformtomdroid.buttonclose.caption"
 msgid "Close"
@@ -1404,6 +1420,10 @@ msgstr "Preferencias de tomboy-ng"
 msgid "Autostart at Logon"
 msgstr "Ejecutar al iniciar"
 
+#: tsett.checkbox2.caption
+msgid "Auto Sync"
+msgstr ""
+
 #: tsett.checkcasesensitive.caption
 msgctxt "tsett.checkcasesensitive.caption"
 msgid "Case Sensitive"
@@ -1458,10 +1478,6 @@ msgstr "Mensualmente"
 msgid "Main Search Window is : "
 msgstr "Opciones de la ventana de búsqueda:"
 
-#: tsett.groupbox3.caption
-msgid "  Type  "
-msgstr "  Tipo  "
-
 # ¿Preferencias? - en Preferencias de sincro
 #: tsett.groupbox4.caption
 msgid "  Options  "
@@ -1504,6 +1520,12 @@ msgstr "Al detectar un conflicto entre una nota local y"
 #: tsett.label4.caption
 msgid "a note on the configured synchronisation server :"
 msgstr "una nota en el servidor de sincronización configurado:"
+
+#: tsett.label5.caption
+#, fuzzy
+msgctxt "tsett.label5.caption"
+msgid "File Sync using shared drive."
+msgstr "Sincronización utilizando un disco compartido"
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
@@ -1559,10 +1581,6 @@ msgstr "Miércoles"
 msgid "Always Ask me what to do."
 msgstr "Siempre preguntarme que hacer."
 
-#: tsett.radiofile.caption
-msgid "File Sync using shared drive."
-msgstr "Sincronización utilizando un disco compartido"
-
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Grande"
@@ -1579,10 +1597,6 @@ msgstr "Media"
 #: tsett.radiofontsmall.caption
 msgid "Small"
 msgstr "Pequeña"
-
-#: tsett.radioserver.caption
-msgid "Network Server - not available"
-msgstr "Servidor de red no disponible"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
