@@ -12,11 +12,11 @@ type
     { TFormSyncError }
 
     TFormSyncError = class(TForm)
-        BitBtn1: TBitBtn;
-        BitBtn2: TBitBtn;
+        ButtCancel: TBitBtn;
+        ButtRetry: TBitBtn;
         Label1: TLabel;
-        Label2: TLabel;
         Label3: TLabel;
+        procedure FormShow(Sender: TObject);
     private
 
     public
@@ -29,6 +29,14 @@ var
 implementation
 
 {$R *.lfm}
+
+{ TFormSyncError }
+
+procedure TFormSyncError.FormShow(Sender: TObject);
+begin
+    left := (screen.Width div 2) - (width div 2);
+    top := (screen.Height div 2) - (height div 2);
+end;
 
 end.
 

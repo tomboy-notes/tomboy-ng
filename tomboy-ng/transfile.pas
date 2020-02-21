@@ -62,10 +62,11 @@ var
     ManExists, ZeroExists : boolean; // for readability of code only
 begin
     RemoteAddress := AppendPathDelim(RemoteAddress);
-    if not DirectoryExists(RemoteAddress) then begin
-	    ErrorString := 'Remote Dir does not exist ' + RemoteAddress;
-	    exit(SyncNoRemoteDir);
-    end;
+    if not DirectoryExists(RemoteAddress) then
+        if not DirectoryExists(RemoteAddress) then begin    // try again because it might be just remounted.
+	        ErrorString := 'Remote Dir does not exist ' + #10 + RemoteAddress;
+	        exit(SyncNoRemoteDir);
+        end;
     if not DirectoryIsWritable(RemoteAddress) then begin
       ErrorString := 'Remote directory NOT writable ' + RemoteAddress;
       exit(SyncNoRemoteWrite);

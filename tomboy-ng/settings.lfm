@@ -357,9 +357,12 @@ object Sett: TSett
         object CheckBox2: TCheckBox
           Left = 40
           Height = 24
+          Hint = 'Sync, if possible once an hour.'
           Top = 184
           Width = 98
           Caption = 'Auto Sync'
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 3
         end
       end

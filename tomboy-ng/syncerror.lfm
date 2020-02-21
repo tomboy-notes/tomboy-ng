@@ -1,26 +1,37 @@
 object FormSyncError: TFormSyncError
-  Left = 660
+  Left = 721
   Height = 240
-  Top = 353
+  Top = 458
   Width = 512
-  Caption = 'FormSyncError'
+  Caption = 'tomboy-ng SyncError'
   ClientHeight = 240
   ClientWidth = 512
+  OnShow = FormShow
   LCLVersion = '2.0.7.0'
   object Label1: TLabel
     Left = 26
     Height = 19
     Top = 56
-    Width = 377
-    Caption = 'tomboy-ng is unable to do Auto Sync at the moment.'
+    Width = 9
+    Caption = 'x'
+    Font.Style = [fsBold]
     ParentColor = False
+    ParentFont = False
   end
-  object BitBtn1: TBitBtn
-    Left = 395
-    Height = 30
+  object ButtCancel: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 428
+    Height = 31
     Hint = 'Stop Auto Sync until next restart'
-    Top = 200
-    Width = 75
+    Top = 204
+    Width = 79
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
     Cancel = True
     DefaultCaption = True
     Kind = bkCancel
@@ -29,12 +40,19 @@ object FormSyncError: TFormSyncError
     ShowHint = True
     TabOrder = 0
   end
-  object BitBtn2: TBitBtn
-    Left = 286
-    Height = 30
+  object ButtRetry: TBitBtn
+    AnchorSideRight.Control = ButtCancel
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 352
+    Height = 31
     Hint = 'If Shared Drive is available, try again.'
-    Top = 198
-    Width = 75
+    Top = 204
+    Width = 71
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
     DefaultCaption = True
     Kind = bkRetry
     ModalResult = 4
@@ -42,18 +60,10 @@ object FormSyncError: TFormSyncError
     ShowHint = True
     TabOrder = 1
   end
-  object Label2: TLabel
+  object Label3: TLabel
     Left = 26
     Height = 19
-    Top = 99
-    Width = 47
-    Caption = 'Label2'
-    ParentColor = False
-  end
-  object Label3: TLabel
-    Left = 24
-    Height = 19
-    Top = 134
+    Top = 96
     Width = 47
     Caption = 'Label3'
     ParentColor = False

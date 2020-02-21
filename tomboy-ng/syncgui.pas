@@ -139,15 +139,13 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError;
-
+uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr;
 
 {$R *.lfm}
 
 var
         ASync : TSync;
 { TFormSync }
-
 
 procedure TFormSync.MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
 begin
@@ -292,55 +290,48 @@ end;
 
 function TFormSync.RunSyncHidden(): boolean;
 begin
-    if SetUpSync then begin
-        StringGridReport.Clear;
-        ManualSync;
-        result := true;
-    end else Result := false;
+    if SetUpSync then exit(False);
+    StringGridReport.Clear;
+    ManualSync;
+    result := true;
 end;
-
-Resourcestring
-  rsTestingSync = 'Testing Sync';
-  rsUnableToSync = 'Unable to sync because ';
-  rsRunningSync = 'Running Sync';
-  rsAllDone = 'All Done';
-  rsPressClose = 'Press Close';
 
         // User is only allowed to press Close when this is finished.
 procedure TFormSync.ManualSync;
+var
+    SyncState : TSyncAvailable = SyncNotYet;
 begin
     Label1.Caption := rsTestingSync;
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
         ASync.ProceedFunction:= @Proceed;
-//        ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
 	    ASync.NotesDir:= NoteDirectory;
 	    ASync.SyncAddress := RemoteRepo;        // This is 'some' URL
 	    ASync.ConfigDir := LocalConfig;
         ASync.RepoAction:=RepoUse;
         Async.SetTransport(TransPort);
-        if Syncready <> ASync.TestConnection() then begin
-            if Visible then
-                showmessage('tomboy-ng' + #10 + rsUnableToSync + ' ' + ASync.ErrorString)     // we dont see if form is invisible !
-            else
-                FormSyncError.ShowModal;
-            // MessageBoxFunction(pchar(rsUnableToSync + ASync.ErrorString), 'tomboy-ng',  MB_OK);
-            FormSync.ModalResult := mrAbort;
+        SyncState := ASync.TestConnection();
+        while SyncState <> SyncReady do begin
+            if ASync.DebugMode then debugln('Failed testConnection');
+            FormSyncError.Label1.caption := rsUnableToSync + ':';
+            FormSyncError.label3.caption := ASync.ErrorString;
+            FormSyncError.ButtRetry.Visible := not Visible;                         // Dont show Retry if interactive
+            ModalResult := FormSyncError.ShowModal;
+            if ModalResult = mrCancel then exit;        // else its Retry
+            SyncState := ASync.TestConnection();
         end;
-        if ModalResult <> mrAbort then begin    // Puzzel, setting mrAbort should have closed....
-            Label1.Caption:= rsRunningSync;
-            Application.ProcessMessages;
-            ASync.TestRun := False;
-            ASync.StartSync();
-            DisplaySync();
-            ShowReport();
-            AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Label1.Caption:=rsAllDone;
-            Label2.Caption := rsPressClose;
-            ButtonClose.Enabled := True;
-        end;
+        Label1.Caption:= rsRunningSync;
+        Application.ProcessMessages;
+        ASync.TestRun := False;
+        ASync.StartSync();
+        DisplaySync();
+        ShowReport();
+        AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Label1.Caption:=rsAllDone;
+        Label2.Caption := rsPressClose;
+        ButtonClose.Enabled := True;
     finally
         FreeandNil(ASync);
     end;

@@ -277,6 +277,12 @@ msgstr "Tenemos"
 msgid "snapshots"
 msgstr "instantáneas"
 
+#: resourcestr.rsalldone
+#, fuzzy
+msgctxt "resourcestr.rsalldone"
+msgid "All Done"
+msgstr "Todo terminado"
+
 #: resourcestr.rscannotfindnote
 #, fuzzy
 msgctxt "resourcestr.rscannotfindnote"
@@ -366,6 +372,18 @@ msgctxt "resourcestr.rsonenotebook"
 msgid "Settings allow only one Notebook"
 msgstr "Las preferencias permiten un solo cuaderno"
 
+#: resourcestr.rspressclose
+#, fuzzy
+msgctxt "resourcestr.rspressclose"
+msgid "Press Close"
+msgstr "Pulse Cerrar"
+
+#: resourcestr.rsrunningsync
+#, fuzzy
+msgctxt "resourcestr.rsrunningsync"
+msgid "Running Sync"
+msgstr "Sincronizando"
+
 #: resourcestr.rssearchhint
 #, fuzzy
 msgctxt "resourcestr.rssearchhint"
@@ -389,6 +407,18 @@ msgstr "Primero establezca un directorio para notas"
 msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr "Primero configure el sistema de sincronización"
+
+#: resourcestr.rstestingsync
+#, fuzzy
+msgctxt "resourcestr.rstestingsync"
+msgid "Testing Sync"
+msgstr "Probando sincronización"
+
+#: resourcestr.rsunabletosync
+#, fuzzy
+msgctxt "resourcestr.rsunabletosync"
+msgid "Unable to sync because "
+msgstr "No se puede sincronizar porque "
 
 # Creo que está bien.
 #: settings.rsdictionaryfailed
@@ -468,10 +498,6 @@ msgstr "Revisión ortográfica terminada"
 msgid "Spelling not configured"
 msgstr "Ortografía sin configurar"
 
-#: syncgui.rsalldone
-msgid "All Done"
-msgstr "Todo terminado"
-
 #: syncgui.rscreatenewrepo
 msgid "Create a new Repo ?"
 msgstr "¿Crear un repositorio nuevo?"
@@ -479,14 +505,6 @@ msgstr "¿Crear un repositorio nuevo?"
 #: syncgui.rslookingatnotes
 msgid "Looking at notes ...."
 msgstr "Examinando las notas ..."
-
-#: syncgui.rspressclose
-msgid "Press Close"
-msgstr "Pulse Cerrar"
-
-#: syncgui.rsrunningsync
-msgid "Running Sync"
-msgstr "Sincronizando"
 
 #: syncgui.rssaveandsync
 msgid "Press Save and Sync if this looks OK"
@@ -500,17 +518,9 @@ msgstr "Ocurrió un error de sincronización"
 msgid "Testing Repo ...."
 msgstr "Probando repositorio ..."
 
-#: syncgui.rstestingsync
-msgid "Testing Sync"
-msgstr "Probando sincronización"
-
 #: syncgui.rsunabletoproceed
 msgid "Unable to proceed because"
 msgstr "No se puede continuar porque"
-
-#: syncgui.rsunabletosync
-msgid "Unable to sync because "
-msgstr "No se puede sincronizar porque "
 
 #: syncutils.rschangeexistingsync
 msgid "Change existing sync connection ?"
@@ -987,20 +997,18 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Sincronizar"
 
-#: tformsyncerror.bitbtn1.hint
+#: tformsyncerror.buttcancel.hint
+msgctxt "tformsyncerror.buttcancel.hint"
 msgid "Stop Auto Sync until next restart"
 msgstr ""
 
-#: tformsyncerror.bitbtn2.hint
+#: tformsyncerror.buttretry.hint
+msgctxt "tformsyncerror.buttretry.hint"
 msgid "If Shared Drive is available, try again."
 msgstr ""
 
 #: tformsyncerror.caption
-msgid "FormSyncError"
-msgstr ""
-
-#: tformsyncerror.label1.caption
-msgid "tomboy-ng is unable to do Auto Sync at the moment."
+msgid "tomboy-ng SyncError"
 msgstr ""
 
 #: tformtomdroid.buttonclose.caption
@@ -1422,6 +1430,10 @@ msgstr "Ejecutar al iniciar"
 
 #: tsett.checkbox2.caption
 msgid "Auto Sync"
+msgstr ""
+
+#: tsett.checkbox2.hint
+msgid "Sync, if possible once an hour."
 msgstr ""
 
 #: tsett.checkcasesensitive.caption

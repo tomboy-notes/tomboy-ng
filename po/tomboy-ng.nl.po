@@ -272,6 +272,12 @@ msgstr "Er zijn"
 msgid "snapshots"
 msgstr "momentopnamen"
 
+#: resourcestr.rsalldone
+#, fuzzy
+msgctxt "resourcestr.rsalldone"
+msgid "All Done"
+msgstr "Voltooid"
+
 #: resourcestr.rscannotfindnote
 msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
@@ -355,6 +361,18 @@ msgctxt "resourcestr.rsonenotebook"
 msgid "Settings allow only one Notebook"
 msgstr "Er is ondersteuning voor één notitieboek"
 
+#: resourcestr.rspressclose
+#, fuzzy
+msgctxt "resourcestr.rspressclose"
+msgid "Press Close"
+msgstr "Klik op 'Sluiten'"
+
+#: resourcestr.rsrunningsync
+#, fuzzy
+msgctxt "resourcestr.rsrunningsync"
+msgid "Running Sync"
+msgstr "Bezig met synchroniseren..."
+
 #: resourcestr.rssearchhint
 msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
@@ -375,6 +393,18 @@ msgstr ""
 msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr ""
+
+#: resourcestr.rstestingsync
+#, fuzzy
+msgctxt "resourcestr.rstestingsync"
+msgid "Testing Sync"
+msgstr "Bezig met testen van synchronisatie..."
+
+#: resourcestr.rsunabletosync
+#, fuzzy
+msgctxt "resourcestr.rsunabletosync"
+msgid "Unable to sync because "
+msgstr "Kan niet synchroniseren vanwege"
 
 #: settings.rsdictionaryfailed
 msgid "Library Not Loaded"
@@ -452,10 +482,6 @@ msgstr "Spellingcontrole voltooid"
 msgid "Spelling not configured"
 msgstr "Spellingcontrole is niet ingesteld"
 
-#: syncgui.rsalldone
-msgid "All Done"
-msgstr "Voltooid"
-
 #: syncgui.rscreatenewrepo
 msgid "Create a new Repo ?"
 msgstr "Wil je een nieuwe repo maken?"
@@ -463,14 +489,6 @@ msgstr "Wil je een nieuwe repo maken?"
 #: syncgui.rslookingatnotes
 msgid "Looking at notes ...."
 msgstr "Bezig met inspecteren van notities..."
-
-#: syncgui.rspressclose
-msgid "Press Close"
-msgstr "Klik op 'Sluiten'"
-
-#: syncgui.rsrunningsync
-msgid "Running Sync"
-msgstr "Bezig met synchroniseren..."
 
 #: syncgui.rssaveandsync
 msgid "Press Save and Sync if this looks OK"
@@ -484,17 +502,9 @@ msgstr "Synchronisatiefout"
 msgid "Testing Repo ...."
 msgstr "Bezig met testen van repo..."
 
-#: syncgui.rstestingsync
-msgid "Testing Sync"
-msgstr "Bezig met testen van synchronisatie..."
-
 #: syncgui.rsunabletoproceed
 msgid "Unable to proceed because"
 msgstr "Kan niet doorgan vanwege"
-
-#: syncgui.rsunabletosync
-msgid "Unable to sync because "
-msgstr "Kan niet synchroniseren vanwege"
 
 #: syncutils.rschangeexistingsync
 msgid "Change existing sync connection ?"
@@ -965,20 +975,18 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchroniseren"
 
-#: tformsyncerror.bitbtn1.hint
+#: tformsyncerror.buttcancel.hint
+msgctxt "tformsyncerror.buttcancel.hint"
 msgid "Stop Auto Sync until next restart"
 msgstr ""
 
-#: tformsyncerror.bitbtn2.hint
+#: tformsyncerror.buttretry.hint
+msgctxt "tformsyncerror.buttretry.hint"
 msgid "If Shared Drive is available, try again."
 msgstr ""
 
 #: tformsyncerror.caption
-msgid "FormSyncError"
-msgstr ""
-
-#: tformsyncerror.label1.caption
-msgid "tomboy-ng is unable to do Auto Sync at the moment."
+msgid "tomboy-ng SyncError"
 msgstr ""
 
 #: tformtomdroid.buttonclose.caption
@@ -1392,6 +1400,10 @@ msgstr "Automatisch opstarten"
 
 #: tsett.checkbox2.caption
 msgid "Auto Sync"
+msgstr ""
+
+#: tsett.checkbox2.hint
+msgid "Sync, if possible once an hour."
 msgstr ""
 
 #: tsett.checkcasesensitive.caption

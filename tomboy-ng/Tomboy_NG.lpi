@@ -700,13 +700,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--debug-index"/>
+        <CommandLineParams Value="--debug-sync"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--debug-index"/>
+            <CommandLineParams Value="--debug-sync"/>
           </local>
         </Mode0>
       </Modes>

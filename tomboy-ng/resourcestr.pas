@@ -42,6 +42,14 @@ RESOURCESTRING
   rsSearchHint = 'Exact matches for terms between " "';
 
 
+// SyncGUI
+  rsTestingSync = 'Testing Sync';
+  rsUnableToSync = 'Unable to sync because ';
+  //rsUnableToSyncAuto = 'tomboy-ng is unable to do Auto Sync at the moment.'
+  // mention tomboy-ng 'cos user may not be activly using tb when this pops up
+  rsRunningSync = 'Running Sync';
+  rsAllDone = 'All Done';
+  rsPressClose = 'Press Close';
 
 implementation
 

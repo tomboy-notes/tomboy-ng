@@ -37,7 +37,8 @@ type TSyncAction=(SyUnset,      // initial state, should not be like this at end
                 SyAllOldest);   // Clash Decision - Use oldest note for all subsquent clashes
 
         // Indicates the readyness of a sync connection
-type TSyncAvailable=(SyncReady,         // We are ready to sync, looks good to go.
+type TSyncAvailable=(SyncNotYet,        // Initial state.
+                    SyncReady,          // We are ready to sync, looks good to go.
                     SyncNoLocal,        // We don't have a local manifest, only an error if config thinks there should be one.
                     SyncNoRemoteMan,    // No remote manifest, an uninitialized repo perhaps ?
                     SyncNoRemoteRepo,   // Filesystem is OK but does not look like a repo.
