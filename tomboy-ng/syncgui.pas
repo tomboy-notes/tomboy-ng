@@ -285,7 +285,7 @@ end;
 
 function TFormSync.RunSyncHidden(): boolean;
 begin
-    debugln('In RunSyncHidden');
+    //debugln('In RunSyncHidden');
     if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
     busy := true;
     StringGridReport.Clear;
@@ -379,8 +379,8 @@ begin
         if  Rows = 0 then
             Memo1.Append(rsNoNotesNeededSync)
         else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
-        if not visible then
-            debugln(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
+        {if not visible then
+            debugln(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt); }
 end;
 
 procedure TFormSync.StringGridReportGetCellHint(Sender: TObject; ACol,

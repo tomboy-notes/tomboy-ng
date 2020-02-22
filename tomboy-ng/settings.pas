@@ -1107,7 +1107,7 @@ end;
 procedure TSett.CheckAutoSync();
 begin
     if CheckBoxAutoSync.Checked and (LabelSyncRepo.Caption <> '') then begin
-        TimerAutoSync.Interval:= 30000;     // wait 30 seconds after indexing to allow settling down
+        TimerAutoSync.Interval:= 15000;     // wait 15 seconds after indexing to allow settling down
         TimerAutoSync.Enabled := true;
     end else
         if Application.HasOption('s', 'debug-sync') then
@@ -1124,7 +1124,7 @@ begin
         FormSync.SetupSync := False;
         FormSync.TransPort := SyncFile;
         if FormSync.RunSyncHidden() then begin
-            TimerAutoSync.Interval:= {60*}60*1000;     // do it again in one hour
+            TimerAutoSync.Interval:= 60*60*1000;     // do it again in one hour
             TimerAutoSync.Enabled := true;
         end;
     end;
