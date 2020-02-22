@@ -28,6 +28,7 @@
 <list><list-item dir="ltr">Control-Shift-RightArrow - extend selection one word to right</list-item></list>
 <list><list-item dir="ltr">Control-F4 : Close current note window.</list-item></list>
 <list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
+<list><list-item dir="ltr">Control-L : Create a link note from selected text.</list-item></list>
 
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
 <list><list-item dir="ltr">Control-I : Italics</list-item></list>
@@ -66,8 +67,8 @@
 
 
 </note-content></text>
-  <last-change-date>2020-02-03T17:39:47.4420000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-03T17:39:47.4420000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-22T15:52:41.2510000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-22T15:52:41.2510000+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

@@ -9,6 +9,8 @@ Synchronising your tomboy-ng (and/or Tomboy) notes can be a very useful thing. D
  
 At present, tomboy-ng supports only <bold>file sync</bold>. That is, it syncs to a shared file system. It works identically between the three supported platforms, Linux, Windows and Mac. Note that tomboy-ng does not, yet, use a network sync protocol (as Tomboy does).
 
+<bold>New in v0.27, Auto sync</bold>, see further down.
+
 OK, before we start, are you keeping <highlight>snapshots</highlight> ?  If not, why not ???<size:large>
 
 <bold>A shared Filesystem</bold></size:large>
@@ -27,7 +29,9 @@ If, even after seeing the differences between the two versions, you still cannot
 Note, when resolving clashes, there are also several "do all" buttons that will be applied to the remainder of this sync run. Remote, Local, newest, oldest, if you feel brave, click one.<size:large>
 
 <bold>Automatic Syncing</bold></size:large>
-Tomboy does automatic, behind the scenes syncing. As yet, tomboy-ng does not. This is in part because I am still insufficiently sure of the sync engines trustworthiness ! You tell me ....<size:large>
+New on v0.27, tomboy-ng does automatic, behind the scenes syncing. Obviously only if you have setup sync and the necessary shared file system is available. Settings-&gt;Sync and tick the box. It will sync about 15 seconds after startup and then hourly. If it encounters a note clash, the usual window will still popup showing the differences between the two notes allowing you to decide. If it cannot sync, because, perhaps, you have disconnected the shared drive, again a popup windows will advise you, you can either fix the problem and press Retry or, if you press Cancel, syncing will not be attempted again until you either restart tomboy-ng or 'bounce' the Auto Sync setting.
+
+If you are like me and need constant reassurance that things are working, you can see details of most recent sync in the Search Window's status bar.<size:large>
 
 <bold>Rejoining a Repository</bold></size:large>
 Tomboy would struggle when you had occasion to re-join a repo you have used in the past. It would spot a whole lot of notes with the same ID but not have the repository data to know how to handle them, they would all be labelled as clashes. To solve this, tomboy-ng looks at the last change date, accurate to the micro second and decides that two notes with the same ID and the same last change date should be assumed to be identical. Its a pretty good bet. Now, this process can be a bit slow so we keep additional data in the remote manifest. However, if you use Tomboy in the same repo, it will drop that extra data and re-joining a repo will be slow. Not usually a problem ...<size:large>
@@ -40,14 +44,14 @@ Secondly, please try starting tomboy-ng from the command line. While its running
 
 
 </note-content></text>
-  <last-change-date>2019-04-08T22:13:10.1010000+10:00</last-change-date>
-  <last-metadata-change-date>2019-04-08T22:13:10.1010000+10:00</last-metadata-change-date>
+  <last-change-date>2020-02-22T16:14:49.2190000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-22T16:14:49.2190000+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>0</x>
+  <x>20</x>
   <y>30</y>
   <open-on-startup>False</open-on-startup>
 </note>

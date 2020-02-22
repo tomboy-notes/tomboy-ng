@@ -12,12 +12,14 @@ Dont edit this file, its generated from Releases.note in doc dir, converted to m
 Downloads and information for specific platforms further down the page.<size:huge>
 
 <bold>Release Notes</bold></size:huge>
-A couple of important bug fixes ..... including -
+Some new features (and the inevitable bug fixes)
+<list><list-item dir="ltr">Auto sync finally enabled. Settings-&gt;Sync and tick the box. Its not enabled by default, please read the Sync Help Note.</list-item></list>
 <list><list-item dir="ltr">Redesigned Search Form and quite different search behaviour. #133 and #136. At some users request, the search results shown in the open Search Form are not updated when, for example, a note is edited or deleted. This is to keep your search results together.  When changes to the search results are pending, the Refresh button becomes enabled and you can trigger a update of the displayed results by clicking it. When updated, the existing search will be applied to new data. </list-item></list>
-<list><list-item dir="ltr">Search Terms can now contain (or consist of) text inclosed in double inverted commas, text with those double inverted commas must be matched exactly, outside of the commas, it can appear anywhere in a document to constitute a 'hit'. Now easy to see which notebook is selected.</list-item></list>
+<list><list-item dir="ltr">Search Terms can now contain (or consist of) text enclosed in double inverted commas, text with those double inverted commas must be matched exactly, outside of the commas, it can appear anywhere in a document to constitute a 'hit'. Now easy to see which notebook is selected.</list-item></list>
 <list><list-item dir="ltr">Now possible to rename a notebook, select the notebook, click Notebook Options and then Rename Note Book. But, please, if you sync your notes, do run a full sync first !</list-item></list>
 <list><list-item dir="ltr">When exporting markdown, you can now save or copy to clipboard.</list-item></list>
-<list><list-item dir="ltr">Fixed bug that made bad xml when huge and underline used immedialtly after title. #138 and maybe #131</list-item></list>
+<list><list-item dir="ltr">Control-L to make a new note linked to selected text. #142</list-item></list>
+<list><list-item dir="ltr">Fixed bug that made bad xml when huge and underline used immediately after title. #138 and maybe #131</list-item></list>
 <list><list-item dir="ltr">Fixed bug messing with pasting multiline plain text at very end of content (upstream). #139</list-item></list>
 <list><list-item dir="ltr">Fix to an isolated windows bug affecting saving #132</list-item></list>
 <list><list-item dir="ltr">A sharper looking icon on System Tray. </list-item></list>
@@ -108,8 +110,8 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </monospace></note-content></text>
-  <last-change-date>2020-02-19T21:01:48.5850000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-19T21:01:48.5850000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-22T17:33:43.0640000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-22T17:33:43.0640000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
