@@ -354,13 +354,14 @@ object Sett: TSett
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
-        object CheckBox2: TCheckBox
+        object CheckBoxAutoSync: TCheckBox
           Left = 40
           Height = 24
           Hint = 'Sync, if possible once an hour.'
           Top = 184
           Width = 98
           Caption = 'Auto Sync'
+          OnChange = CheckBoxAutoSyncChange
           ParentShowHint = False
           ShowHint = True
           TabOrder = 3
@@ -960,5 +961,11 @@ object Sett: TSett
   object PMenuMain: TPopupMenu
     left = 288
     top = 456
+  end
+  object TimerAutoSync: TTimer
+    Enabled = False
+    OnTimer = TimerAutoSyncTimer
+    left = 524
+    top = 295
   end
 end

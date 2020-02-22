@@ -50,6 +50,13 @@ RESOURCESTRING
   rsRunningSync = 'Running Sync';
   rsAllDone = 'All Done';
   rsPressClose = 'Press Close';
+  rsTestingRepo = 'Testing Repo ....';
+  rsCreateNewRepo = 'Create a new Repo ?';
+  rsUnableToProceed = 'Unable to proceed because';
+  rsLookingatNotes = 'Looking at notes ....';
+  rsSaveAndSync = 'Press Save and Sync if this looks OK';
+  rsSyncError = 'A Sync Error occured';
+  rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
 
 implementation
 

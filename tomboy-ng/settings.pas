@@ -126,8 +126,8 @@ type
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
         ButtonSyncHelp: TButton;
-        CheckAutostart: TCheckBox;
-        CheckBox2: TCheckBox;
+        CheckAutoStart : TCheckBox;
+        CheckBoxAutoSync: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         CheckManyNotebooks: TCheckBox;
         CheckShowSearchAtStart: TCheckBox;
@@ -201,6 +201,7 @@ type
 		TabSync: TTabSheet;
 		TabDisplay: TTabSheet;
         TimeEdit1: TTimeEdit;
+        TimerAutoSync: TTimer;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
@@ -217,6 +218,7 @@ type
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
+        procedure CheckBoxAutoSyncChange(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
 		procedure CheckReadOnlyChange(Sender: TObject);
@@ -237,6 +239,7 @@ type
         procedure TabSnapshotResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
         procedure TabSyncResize(Sender: TObject);
+        procedure TimerAutoSyncTimer(Sender: TObject);
 		//procedure Timer1Timer(Sender: TObject);
    	private
         fExportPath : ANSIString;
@@ -312,6 +315,8 @@ type
             { Triggers a Sync, if its not all setup aready and working, user show and error }
         procedure Synchronise();
         property ExportPath : ANSIString Read fExportPath write fExportPath;
+        // Called after notes are indexed, if settings so indicate, will start auto timer.
+        procedure CheckAutoSync();
     end;
 
 var
@@ -470,6 +475,8 @@ procedure TSett.TabSyncResize(Sender: TObject);
 begin
     ButtonSetSynServer.Width := (TabSync.Width div 2) - 7;
 end;
+
+
 
     { ----------------- S P E L L I N G ----------------------}
 
@@ -799,7 +806,9 @@ begin
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
 		    LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', rsSyncNotConfig);
             LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
-	    finally
+            CheckBoxAutoSync.checked :=
+                ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
+        finally
             ConfigFile.free;
             // MaskSettingsChanged := False;
 	    end;
@@ -814,6 +823,7 @@ begin
             RadioFontMedium.Checked := True;
             CheckShowIntLinks.Checked:= True;
             CheckShowExtLinks.Checked := True;
+            CheckBoxAutoSync.Checked := False;
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
             UsualFont := GetFontData(Self.Font.Handle).Name;
             LabelSyncRepo.Caption := '';        // not 'not config' because of potential for other languages.
@@ -875,6 +885,7 @@ begin
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'huge');
             ConfigFile.writestring('BasicSettings', 'UsualFont', UsualFont);
             ConfigFile.writestring('BasicSettings', 'FixedFont', FixedFont);
+            ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
 	        if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
@@ -1068,6 +1079,15 @@ begin
      CheckReadOnlyChange(Sender);
 end;
 
+procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
+begin
+    if LabelSyncRepo.Caption = '' then
+       CheckBoxAutoSync.Checked:= false
+    else if CheckBoxAutoSync.Checked then
+        CheckAutoSync();
+    CheckReadOnlyChange(Sender);
+end;
+
 
 { ------------------------ S Y N C -------------------------- }
 
@@ -1078,14 +1098,37 @@ begin
     FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
     FormSync.SetupSync := False;
     FormSync.TransPort := SyncFile;
-
-    FormSync.RunSyncHidden();
-    exit();
-
-    if FormSync.Visible then
+    if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
-    else                           // We rely on SearchForm.ProcessSyncUpdates() to keep list current
-    	FormSync.ShowModal;
+    else
+        FormSync.ShowModal;
+end;
+
+procedure TSett.CheckAutoSync();
+begin
+    if CheckBoxAutoSync.Checked and (LabelSyncRepo.Caption <> '') then begin
+        TimerAutoSync.Interval:= 30000;     // wait 30 seconds after indexing to allow settling down
+        TimerAutoSync.Enabled := true;
+    end else
+        if Application.HasOption('s', 'debug-sync') then
+            debugln('Cannot run auto sync right now');
+end;
+
+procedure TSett.TimerAutoSyncTimer(Sender: TObject);
+begin
+    TimerAutoSync.enabled := False;
+    if CheckBoxAutoSync.checked  and not FormSync.Busy then begin
+        FormSync.NoteDirectory := Sett.NoteDirectory;
+        FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
+        FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
+        FormSync.SetupSync := False;
+        FormSync.TransPort := SyncFile;
+        if FormSync.RunSyncHidden() then begin
+            TimerAutoSync.Interval:= {60*}60*1000;     // do it again in one hour
+            TimerAutoSync.Enabled := true;
+        end;
+    end;
+
 end;
 
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);

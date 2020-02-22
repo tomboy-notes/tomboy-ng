@@ -700,13 +700,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--debug-sync"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/ --debug-sync"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--debug-sync"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/ --debug-sync"/>
           </local>
         </Mode0>
       </Modes>
@@ -900,6 +900,7 @@
         <Filename Value="syncerror.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormSyncError"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SyncError"/>
       </Unit30>

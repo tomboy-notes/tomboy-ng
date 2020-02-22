@@ -287,6 +287,12 @@ msgstr ""
 msgid "Change the name of this Notebook"
 msgstr ""
 
+#: resourcestr.rscreatenewrepo
+#, fuzzy
+msgctxt "resourcestr.rscreatenewrepo"
+msgid "Create a new Repo ?"
+msgstr "Wil je een nieuwe repo maken?"
+
 #: resourcestr.rsenternewnotebook
 #, fuzzy
 msgctxt "resourcestr.rsenternewnotebook"
@@ -297,6 +303,16 @@ msgstr "Voer een nieuwe naam in voor het notitieboek"
 msgctxt "resourcestr.rslastchange"
 msgid "Last Change"
 msgstr ""
+
+#: resourcestr.rslastsync
+msgid "Last Sync"
+msgstr ""
+
+#: resourcestr.rslookingatnotes
+#, fuzzy
+msgctxt "resourcestr.rslookingatnotes"
+msgid "Looking at notes ...."
+msgstr "Bezig met inspecteren van notities..."
 
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
@@ -373,6 +389,12 @@ msgctxt "resourcestr.rsrunningsync"
 msgid "Running Sync"
 msgstr "Bezig met synchroniseren..."
 
+#: resourcestr.rssaveandsync
+#, fuzzy
+msgctxt "resourcestr.rssaveandsync"
+msgid "Press Save and Sync if this looks OK"
+msgstr "Als dit in orde is, klik dan op 'Opslaan en synchroniseren'"
+
 #: resourcestr.rssearchhint
 msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
@@ -394,11 +416,29 @@ msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr ""
 
+#: resourcestr.rssyncerror
+#, fuzzy
+msgctxt "resourcestr.rssyncerror"
+msgid "A Sync Error occured"
+msgstr "Synchronisatiefout"
+
+#: resourcestr.rstestingrepo
+#, fuzzy
+msgctxt "resourcestr.rstestingrepo"
+msgid "Testing Repo ...."
+msgstr "Bezig met testen van repo..."
+
 #: resourcestr.rstestingsync
 #, fuzzy
 msgctxt "resourcestr.rstestingsync"
 msgid "Testing Sync"
 msgstr "Bezig met testen van synchronisatie..."
+
+#: resourcestr.rsunabletoproceed
+#, fuzzy
+msgctxt "resourcestr.rsunabletoproceed"
+msgid "Unable to proceed because"
+msgstr "Kan niet doorgan vanwege"
 
 #: resourcestr.rsunabletosync
 #, fuzzy
@@ -483,26 +523,32 @@ msgid "Spelling not configured"
 msgstr "Spellingcontrole is niet ingesteld"
 
 #: syncgui.rscreatenewrepo
+msgctxt "syncgui.rscreatenewrepo"
 msgid "Create a new Repo ?"
 msgstr "Wil je een nieuwe repo maken?"
 
 #: syncgui.rslookingatnotes
+msgctxt "syncgui.rslookingatnotes"
 msgid "Looking at notes ...."
 msgstr "Bezig met inspecteren van notities..."
 
 #: syncgui.rssaveandsync
+msgctxt "syncgui.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
 msgstr "Als dit in orde is, klik dan op 'Opslaan en synchroniseren'"
 
 #: syncgui.rssyncerror
+msgctxt "syncgui.rssyncerror"
 msgid "A Sync Error occured"
 msgstr "Synchronisatiefout"
 
 #: syncgui.rstestingrepo
+msgctxt "syncgui.rstestingrepo"
 msgid "Testing Repo ...."
 msgstr "Bezig met testen van repo..."
 
 #: syncgui.rsunabletoproceed
+msgctxt "syncgui.rsunabletoproceed"
 msgid "Unable to proceed because"
 msgstr "Kan niet doorgan vanwege"
 
@@ -1398,11 +1444,13 @@ msgctxt "tsett.checkautostart.caption"
 msgid "Autostart at Logon"
 msgstr "Automatisch opstarten"
 
-#: tsett.checkbox2.caption
+#: tsett.checkboxautosync.caption
+msgctxt "tsett.checkboxautosync.caption"
 msgid "Auto Sync"
 msgstr ""
 
-#: tsett.checkbox2.hint
+#: tsett.checkboxautosync.hint
+msgctxt "tsett.checkboxautosync.hint"
 msgid "Sync, if possible once an hour."
 msgstr ""
 

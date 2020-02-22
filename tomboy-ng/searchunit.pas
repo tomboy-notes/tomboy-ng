@@ -138,6 +138,7 @@ type        { TSearchForm }
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
 		Splitter1: TSplitter;
+        StatusBar1: TStatusBar;
         StringGrid1: TStringGrid;
 		StringGridNotebooks: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
@@ -186,11 +187,13 @@ type        { TSearchForm }
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		procedure UseList();
     public
+
         PopupTBMainMenu : TPopupMenu;
         SelectedNotebook : integer;         // Position in Notebook grid use has clicked, 0 means none.
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
+        procedure UpdateSyncStatus(SyncSt : string);
         {Just a service provided to NoteBook.pas, refresh the list of notebooks after adding or removing one}
         procedure RefreshNotebooks();
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
@@ -381,6 +384,12 @@ begin
         if NB <> '' then
             NoteLister.LoadNotebookGrid(StringGrid1, NB);
     end else RefreshStrGrids();  }
+end;
+
+procedure TSearchForm.UpdateSyncStatus(SyncSt: string);
+begin
+    //StatusBar1.Panels[0].Text:= SyncSt;
+    StatusBar1.SimpleText:= SyncSt;
 end;
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
@@ -727,6 +736,7 @@ begin
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
     MainForm.UpdateNotesFound(Result);      // Says how many notes found and runs over checklist.
+    Sett.CheckAutoSync();
 end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);

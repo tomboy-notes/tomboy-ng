@@ -265,6 +265,11 @@ msgstr ""
 msgid "Change the name of this Notebook"
 msgstr ""
 
+#: resourcestr.rscreatenewrepo
+msgctxt "resourcestr.rscreatenewrepo"
+msgid "Create a new Repo ?"
+msgstr ""
+
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
@@ -273,6 +278,15 @@ msgstr ""
 #: resourcestr.rslastchange
 msgctxt "resourcestr.rslastchange"
 msgid "Last Change"
+msgstr ""
+
+#: resourcestr.rslastsync
+msgid "Last Sync"
+msgstr ""
+
+#: resourcestr.rslookingatnotes
+msgctxt "resourcestr.rslookingatnotes"
+msgid "Looking at notes ...."
 msgstr ""
 
 #: resourcestr.rsmenuabout
@@ -344,6 +358,11 @@ msgctxt "resourcestr.rsrunningsync"
 msgid "Running Sync"
 msgstr ""
 
+#: resourcestr.rssaveandsync
+msgctxt "resourcestr.rssaveandsync"
+msgid "Press Save and Sync if this looks OK"
+msgstr ""
+
 #: resourcestr.rssearchhint
 msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
@@ -364,9 +383,24 @@ msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr ""
 
+#: resourcestr.rssyncerror
+msgctxt "resourcestr.rssyncerror"
+msgid "A Sync Error occured"
+msgstr ""
+
+#: resourcestr.rstestingrepo
+msgctxt "resourcestr.rstestingrepo"
+msgid "Testing Repo ...."
+msgstr ""
+
 #: resourcestr.rstestingsync
 msgctxt "resourcestr.rstestingsync"
 msgid "Testing Sync"
+msgstr ""
+
+#: resourcestr.rsunabletoproceed
+msgctxt "resourcestr.rsunabletoproceed"
+msgid "Unable to proceed because"
 msgstr ""
 
 #: resourcestr.rsunabletosync
@@ -451,26 +485,32 @@ msgid "Spelling not configured"
 msgstr ""
 
 #: syncgui.rscreatenewrepo
+msgctxt "syncgui.rscreatenewrepo"
 msgid "Create a new Repo ?"
 msgstr ""
 
 #: syncgui.rslookingatnotes
+msgctxt "syncgui.rslookingatnotes"
 msgid "Looking at notes ...."
 msgstr ""
 
 #: syncgui.rssaveandsync
+msgctxt "syncgui.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
 msgstr ""
 
 #: syncgui.rssyncerror
+msgctxt "syncgui.rssyncerror"
 msgid "A Sync Error occured"
 msgstr ""
 
 #: syncgui.rstestingrepo
+msgctxt "syncgui.rstestingrepo"
 msgid "Testing Repo ...."
 msgstr ""
 
 #: syncgui.rsunabletoproceed
+msgctxt "syncgui.rsunabletoproceed"
 msgid "Unable to proceed because"
 msgstr ""
 
@@ -1347,11 +1387,13 @@ msgctxt "tsett.checkautostart.caption"
 msgid "Autostart at Logon"
 msgstr ""
 
-#: tsett.checkbox2.caption
+#: tsett.checkboxautosync.caption
+msgctxt "tsett.checkboxautosync.caption"
 msgid "Auto Sync"
 msgstr ""
 
-#: tsett.checkbox2.hint
+#: tsett.checkboxautosync.hint
+msgctxt "tsett.checkboxautosync.hint"
 msgid "Sync, if possible once an hour."
 msgstr ""
 

@@ -101,7 +101,7 @@ type
                 procedure AdjustNoteList();
                 procedure AfterShown(Sender : TObject);
                     // Display a summary of sync actions to user.
-                procedure DisplaySync();
+                function DisplaySync(): string;
                     { Called when user wants to join a (possibly uninitialised) Repo,
                       will handle some problems with user's help. }
                 procedure JoinSync;
@@ -113,7 +113,7 @@ type
         		//procedure DoSetUp();
 
 		public
-
+                Busy : boolean; // indicates that there is some sort of sync in process now.
                 Transport : TSyncTransPort;
 
                     // A string containg a URL to remote repo, just a dir for FileSync
@@ -178,7 +178,8 @@ end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-	FreeandNil(ASync);          // probably not necessary but ....
+	FreeandNil(ASync);
+    Busy := False;
 end;
 
 procedure TFormSync.FormHide(Sender: TObject);
@@ -191,7 +192,7 @@ end;
 
 // Following resourcestrings defined in syncUtils.pas
 
-procedure TFormSync.DisplaySync();
+function TFormSync.DisplaySync(): string;
 var
     UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
 begin
@@ -204,16 +205,9 @@ begin
     Memo1.Append(rsClashes + inttostr(Clash));
     Memo1.Append(rsDoNothing + inttostr(DoNothing));
     Memo1.Append(rsSyncERRORS + inttostr(Errors));
+    result := 'Uploads=' + inttostr(UpNew+UpEdit) + ' downloads=' + inttostr(Down) + ' deletes=' + inttostr(DelLoc + DelRem);
     // debugln('Display Sync called, DoNothings is ' + inttostr(DoNothing));
 end;
-
-RESOURCESTRING
-  rsTestingRepo = 'Testing Repo ....';
-  rsCreateNewRepo = 'Create a new Repo ?';
-  rsUnableToProceed = 'Unable to proceed because';
-  rsLookingatNotes = 'Looking at notes ....';
-  rsSaveAndSync = 'Press Save and Sync if this looks OK';
-  rsSyncError = 'A Sync Error occured';
 
     // User is only allowed to press Cancel or Save when this is finished.
 procedure TFormSync.JoinSync;
@@ -272,6 +266,7 @@ end;
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
+    Busy := True;
     Left := 55 + random(55);
     Top := 55 + random(55);
     FormShown := False;
@@ -290,7 +285,9 @@ end;
 
 function TFormSync.RunSyncHidden(): boolean;
 begin
-    if SetUpSync then exit(False);
+    debugln('In RunSyncHidden');
+    if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
+    busy := true;
     StringGridReport.Clear;
     ManualSync;
     result := true;
@@ -326,14 +323,16 @@ begin
         Application.ProcessMessages;
         ASync.TestRun := False;
         ASync.StartSync();
-        DisplaySync();
+        SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Label1.Caption:=rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
+
     finally
         FreeandNil(ASync);
+        Busy := False;
     end;
 end;
 procedure TFormSync.AdjustNoteList();
@@ -411,7 +410,7 @@ begin
     ButtonSave.Enabled := False;
     ASync.TestRun := False;
     if ASync.StartSync() then begin
-        DisplaySync();
+        SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();
         Label1.Caption:=rsAllDone;

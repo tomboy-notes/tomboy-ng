@@ -293,6 +293,12 @@ msgstr "ERROR: no se encuentra "
 msgid "Change the name of this Notebook"
 msgstr ""
 
+#: resourcestr.rscreatenewrepo
+#, fuzzy
+msgctxt "resourcestr.rscreatenewrepo"
+msgid "Create a new Repo ?"
+msgstr "¿Crear un repositorio nuevo?"
+
 #: resourcestr.rsenternewnotebook
 #, fuzzy
 msgctxt "resourcestr.rsenternewnotebook"
@@ -303,6 +309,16 @@ msgstr "Introduzca un nuevo nombre de cuaderno, por favor"
 msgctxt "resourcestr.rslastchange"
 msgid "Last Change"
 msgstr ""
+
+#: resourcestr.rslastsync
+msgid "Last Sync"
+msgstr ""
+
+#: resourcestr.rslookingatnotes
+#, fuzzy
+msgctxt "resourcestr.rslookingatnotes"
+msgid "Looking at notes ...."
+msgstr "Examinando las notas ..."
 
 #: resourcestr.rsmenuabout
 #, fuzzy
@@ -384,6 +400,12 @@ msgctxt "resourcestr.rsrunningsync"
 msgid "Running Sync"
 msgstr "Sincronizando"
 
+#: resourcestr.rssaveandsync
+#, fuzzy
+msgctxt "resourcestr.rssaveandsync"
+msgid "Press Save and Sync if this looks OK"
+msgstr "Pulse Guardar y Sincronizar si todo le parece bien"
+
 #: resourcestr.rssearchhint
 #, fuzzy
 msgctxt "resourcestr.rssearchhint"
@@ -408,11 +430,29 @@ msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr "Primero configure el sistema de sincronización"
 
+#: resourcestr.rssyncerror
+#, fuzzy
+msgctxt "resourcestr.rssyncerror"
+msgid "A Sync Error occured"
+msgstr "Ocurrió un error de sincronización"
+
+#: resourcestr.rstestingrepo
+#, fuzzy
+msgctxt "resourcestr.rstestingrepo"
+msgid "Testing Repo ...."
+msgstr "Probando repositorio ..."
+
 #: resourcestr.rstestingsync
 #, fuzzy
 msgctxt "resourcestr.rstestingsync"
 msgid "Testing Sync"
 msgstr "Probando sincronización"
+
+#: resourcestr.rsunabletoproceed
+#, fuzzy
+msgctxt "resourcestr.rsunabletoproceed"
+msgid "Unable to proceed because"
+msgstr "No se puede continuar porque"
 
 #: resourcestr.rsunabletosync
 #, fuzzy
@@ -499,26 +539,32 @@ msgid "Spelling not configured"
 msgstr "Ortografía sin configurar"
 
 #: syncgui.rscreatenewrepo
+msgctxt "syncgui.rscreatenewrepo"
 msgid "Create a new Repo ?"
 msgstr "¿Crear un repositorio nuevo?"
 
 #: syncgui.rslookingatnotes
+msgctxt "syncgui.rslookingatnotes"
 msgid "Looking at notes ...."
 msgstr "Examinando las notas ..."
 
 #: syncgui.rssaveandsync
+msgctxt "syncgui.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
 msgstr "Pulse Guardar y Sincronizar si todo le parece bien"
 
 #: syncgui.rssyncerror
+msgctxt "syncgui.rssyncerror"
 msgid "A Sync Error occured"
 msgstr "Ocurrió un error de sincronización"
 
 #: syncgui.rstestingrepo
+msgctxt "syncgui.rstestingrepo"
 msgid "Testing Repo ...."
 msgstr "Probando repositorio ..."
 
 #: syncgui.rsunabletoproceed
+msgctxt "syncgui.rsunabletoproceed"
 msgid "Unable to proceed because"
 msgstr "No se puede continuar porque"
 
@@ -1428,11 +1474,13 @@ msgstr "Preferencias de tomboy-ng"
 msgid "Autostart at Logon"
 msgstr "Ejecutar al iniciar"
 
-#: tsett.checkbox2.caption
+#: tsett.checkboxautosync.caption
+msgctxt "tsett.checkboxautosync.caption"
 msgid "Auto Sync"
 msgstr ""
 
-#: tsett.checkbox2.hint
+#: tsett.checkboxautosync.hint
+msgctxt "tsett.checkboxautosync.hint"
 msgid "Sync, if possible once an hour."
 msgstr ""
 
