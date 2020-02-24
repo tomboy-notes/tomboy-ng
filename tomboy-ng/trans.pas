@@ -63,7 +63,8 @@ type
                                    ) : boolean; virtual; abstract;
 
             {Request that all the notes mentioned in the simple list be downloaded and,
-            if necessary, any existing note be moved to Backup.  }
+            if necessary, any existing note be moved to Backup.  Note that the list
+            contains just IDs, there is no '.note'}
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; virtual; abstract;
 
             { --- Check if this function does actully need implementing ------

@@ -61,7 +61,10 @@ type
         function DownLoad(const ID, FullNoteName: string): boolean;
         function GetDroidMetaData(AStringList: TStringList): boolean;
         function GetNoteLastChange(const FullFileName: string): string;
+        procedure InsertNoteBookTags(const FullSourceFile, FullDestFile,
+            TagString: string);
         function RemoteFileExists(const ID: string): boolean;
+        function RunFSSync(): boolean;
             // May return SyncReady, SyncNoRemoteRepo (if unable to find a remote ServerID), SyncNetworkError
         function SetServerID(): TSyncAvailable;
         function Ping(const Count : integer): boolean;
@@ -69,6 +72,7 @@ type
             // Reads the (filesync) remote Manifest for synced note details. It gets ID, RevNo
             // and, if its there the LastChangeDate. If LCD is not in manifest and GetLCD
             // is True, gets it from the file.
+
         function UpLoad(const ID: string): boolean;
 
     public
@@ -90,7 +94,7 @@ type
 
 implementation
 
-uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
+uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger, searchUnit;
 
 const // Must become config things eventually.
   //Password = 'admin';
@@ -99,7 +103,7 @@ const // Must become config things eventually.
 { TAndSync }
 
 function TAndSync.Ping(const Count : integer) : boolean;
-    // Ping retuns 0 of one or more packets came back, 1 if none, 2 for other error
+    // Ping returns 0 or one or more packets came back, 1 if none, 2 for other error
 var
     AProcess: TProcess;
     List : TStringList = nil;
@@ -151,6 +155,46 @@ begin
         end;
         if debugmode then debugln('StampServerID [' + ID + ']  [' + List.Text + ']');
         Result := (AProcess.ExitStatus = 0);
+    finally
+        FreeandNil(List);
+        AProcess.Free;
+    end;
+end;
+
+function TAndSync.RunFSSync() : boolean;
+var
+    AProcess: TProcess;
+    List : TStringList = nil;
+begin
+    Result := True;
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'sshpass';
+    AProcess.Parameters.Add('-p');
+    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add('ssh');
+    AProcess.Parameters.Add('-p2222');
+    AProcess.Parameters.Add('-o');
+    AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
+    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('sync');
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        try
+            AProcess.Execute;
+            List := TStringList.Create;
+            List.LoadFromStream(AProcess.Output);           // Output should be empty, StdErr contains ssh prompts
+            if Length(List.Text) <> 0 then begin
+                result := False;
+                debugln('Tomdroid Sync, error when sending FSSync :');
+                debugln('[' + List.Text + ']');
+            end;
+        except on
+            E: EProcess do begin
+                ErrorString := 'EProcess Error ' + E.Message;
+                debugln('RunFSSync ' + ErrorString);
+                Result := False;
+            end
+        end;
     finally
         FreeandNil(List);
         AProcess.Free;
@@ -286,6 +330,7 @@ begin
     T1 := GetTickCount64();
     Result := CheckRemoteDir();
     if Result <> SyncReady then exit;
+    RunFSSync();
     if ANewRepo then Result := SyncNoRemoteRepo
     else Result := SetServerID();
     T2 := GetTickCount64();
@@ -389,6 +434,34 @@ begin
     Result := GetNoteLastChangeSt(FullFileName, ErrorString);   // syncutils function
 end;
 
+            // Puts back the tag string into a temp note downloaded from dev and puts it in note dir, overwrites
+procedure TAndSync.InsertNoteBookTags(const FullSourceFile, FullDestFile, TagString : string);
+var
+    InFile, OutFile: TextFile;
+    InString : string;
+begin
+    AssignFile(InFile, FullSourceFile);
+    AssignFile(OutFile, FullDestFile);
+    try
+        try
+            Reset(InFile);
+            Rewrite(OutFile);
+            while not eof(InFile) do begin
+                readln(InFile, InString);
+                if (Pos('</y>', InString) > 0) then begin
+                    writeln(OutFile, InString);
+                    writeln(outFile, TagString);
+                end else writeln(OutFile, InString);
+            end;
+        finally
+            CloseFile(OutFile);
+            CloseFile(InFile);
+        end;
+    except
+        on E: EInOutError do
+            debugln('File handling error occurred. Details: ' + E.Message);
+    end;
+end;
 
 function TAndSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
@@ -416,6 +489,43 @@ begin
         end;
     end;
     result := True;
+{var                                      // trash this, turned out completely unnecessary !
+    I : integer;
+    NoteBookTags, DownloadTo : string;
+begin
+    if not DirectoryExists(NotesDir + 'Backup') then
+        if not ForceDirectory(NotesDir + 'Backup') then begin
+            ErrorString := 'Failed to create Backup directory.';
+            exit(False);
+        end;
+    for I := 0 to DownLoads.Count-1 do begin
+        if DownLoads.Items[I]^.Action = SyDownLoad then begin
+            DownLoadTo := NotesDir + Downloads.Items[I]^.ID + '.note';
+            if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then begin
+                NoteBookTags := SearchForm.NoteLister.NotebookTags(Downloads.Items[I]^.ID + '.note');
+                if NoteBookTags <> '' then begin
+                    DownLoadTo := ConfigDir + 'downFromDroid.note';
+                    if debugmode then debugln('Note has tags, download to '+ DownloadTo);
+                end;
+                // First make a Backup copy
+                if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
+                        NotesDir + 'Backup' + PathDelim + Downloads.Items[I]^.ID + '.note') then begin
+                    ErrorString := 'Failed to copy file to Backup ' + NotesDir + Downloads.Items[I]^.ID + '.note';
+                    debugln('Failed to copy [' + NotesDir + Downloads.Items[I]^.ID + '.note]');
+                    debugln('to [' + NotesDir + 'Backup' + PathDelim + Downloads.Items[I]^.ID + '.note]');
+                    exit(False);
+                end;
+            end;
+            // OK, now pull down the file.
+            if not DownLoad(Downloads.Items[I]^.ID, DownLoadTo) then begin
+                Debugln('ERROR - in TAndSync.DownloadNotes ' + ErrorString);
+                exit(false);
+            end;
+            if NoteBookTags <> '' then
+                InsertNoteBookTags(DownLoadTo, NotesDir + Downloads.Items[I]^.ID + '.note', NoteBookTags);
+        end;
+    end;
+    result := True;     }
 end;
 
 function TAndSync.RemoteFileExists(const ID: string): boolean;
@@ -517,6 +627,7 @@ begin
             exit(False);
         end;
     end;
+    RunFSSync();
     result := True;
 end;
 
@@ -613,8 +724,11 @@ begin
     except on
         E: EProcess do ErrorString := 'EProcess Error during download';
     end;
-    if not Result then
+    if not Result then begin
         ErrorString := 'something bad happened when downloading ' + ID;
+        debugln('Failed to download [' + RemoteAddress + ':' + DevDir + ID + '.note]');
+        debugln(' to [' + FullNoteName + ']');
+    end;
     List := TStringList.Create;
     List.LoadFromStream(AProcess.Output);
     List.Free;

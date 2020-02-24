@@ -1121,7 +1121,8 @@ begin
 	    if not ReadLocalManifest() then exit(SyncXMLError);    // Error in local mainfest, OK or no manifest=true
 	    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
 	    if LocalLastSyncDate < 1.0 then begin
-		    ErrorString := 'Invalid last sync date in local manifest ' + LocalLastSyncDateSt;
+		    ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';
+            debugln('Invalid last sync date in ' + ConfigDir + ManPrefix + 'manifest.xml');
 		    exit(SyncXMLError);
         end;
     end;

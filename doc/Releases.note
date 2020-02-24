@@ -45,10 +45,10 @@ Linux users need to be a bit careful about which version they download. With qui
 
 <bold>Ubuntu</bold></size:large>
 Generally, all work fine but earlier distributions should use GTK2 and recent the Qt5 based version. 
-<list><list-item dir="ltr">16.04 Use GTK2 version but the deb install depends on something that was not thought of back then, so until we have a better solution, try and struggle through with the tgz file [32bit]($$TGZ32) or [64bit]($$TGZ64) </list-item></list>
+<list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). </list-item></list>
 <list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64) </list-item></list>
-<list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will be fine.</list-item></list>
-<list><list-item dir="ltr">19.10 Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK version if you use Budgie [32bit]($$DEB32) or [64bit]($$DEB64). </list-item></list>
+<list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will work but Ubuntu apparently forgot to include a necessary part of their GTK2 package. So, if you use the GTK2 vesion with U19.10, you must also install appmenu-gtk2-module "sudo apt install appmenu-gtk2-module [enter]".</list-item></list>
+<list><list-item dir="ltr">19.10 Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK version if you use Budgie [32bit]($$DEB32) or [64bit]($$DEB64). If tomboy-ng is slow to start, also manually install appmenu-gtk2-module.</list-item></list>
 
 I recommend downloading the file and using the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). On U16.04 however you should use gdebi rather than apt to install.
 
@@ -62,7 +62,7 @@ Much of the Ubuntu notes above apply to Linux Mint, I have only tested against 1
 Again, please download the appropriate file and install using the apt command, as above.<size:large>
 
 <bold>Debian</bold></size:large>
-For old stable and distros based on it (e.g, MX Linux 18.x), you will need to use the [tgz 32bit]($$TGZ32) or [tgz 64bit]($$TGZ64) because the deb packages depend on something that did not exist back then. 
+For old stable and distros based on it (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version.
 
 <bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a slightly different way. The first time you start tomboy-ng, click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 but its not worth the effort. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will work fine 
 
@@ -102,7 +102,7 @@ To install, please download and save the file, then use the rpm command, note th
 <list><list-item dir="ltr"><bold>Mageia with Enlightenment</bold> works better with [Qt5 64bit]($$RPM64QT) and requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment in the GTK variety still has a problem, instead of tomboy-ng's icon, you see a white triangular warning icon. But it works.</list-item></list>
 <list><list-item dir="ltr"><bold>Mageia Gnome,</bold> some recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 but its not worth the effort. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) will work fine </list-item></list>
 
-To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes of config.
+To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.
  
 <monospace>su -c "rpm -e tomboy-ng"</monospace>
 <monospace>su -c "rpm -Uv tomboy-ng_0.25-2.amd64.rpm"
@@ -110,8 +110,8 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </monospace></note-content></text>
-  <last-change-date>2020-02-22T17:33:43.0640000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-22T17:33:43.0640000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-24T16:56:10.2060000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-24T16:56:10.2060000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

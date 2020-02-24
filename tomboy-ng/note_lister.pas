@@ -139,13 +139,19 @@ type
     //DebugMode : boolean;
 
     OpenNoteIndex : integer;        // Used for Find*OpenNote(), points to last found one, -1 meaning none found
+                                { NoteList is a list of pointers. Each one points to a record that contains data
+                                  about a particular note. Only Notebook info it has is whether or not its a
+                                  template. The ID is stored as a 36 char GUI plus '.note'. Dates must be 33 char.}
    	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
+                                { NoteBookList is a list of pointers. Each one points to a record
+                                  containing Name, Template ID and a List (called Notes) of IDs of
+                                  notes that are members of this Notebook. }
     NoteBookList : TNoteBookList;
-              { Takes a created list and search term string. Returns with the list
-                containing individual search terms, 1 to many }
+                                { Takes a created list and search term string. Returns with the list
+                                  containing individual search terms, 1 to many }
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
-             { Returns a simple note file name, accepts simple filename or ID }
+                                { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
     //procedure DumpNoteBookList();
 
@@ -171,7 +177,8 @@ type
                                         { Changes the name associated with a Notebook in the internal data structure }
     function AlterNoteBook(const OldName, NewName: string): boolean;
                                         { Returns a multiline string to use in writing a notes notebook membership,
-                                          knows how to do a template too. String has special XML chars 'escaped' }
+                                          knows how to do a template too. String has special XML chars 'escaped'
+                                          This function expects to be passed an ID + '.note'. }
     function NoteBookTags(const NoteID: string): ANSIString;
                                         { Returns true if it has put into list one or more Note IDs that are members of NBName }
     function GetNotesInNoteBook(var NBIDList: TStringList; const NBName: string
@@ -601,6 +608,7 @@ begin
             // OK, if its not a Template, its a note, what notebooks is it a member of ?
             // Each NotebookList item has a list of the notes that are members of that item.
             // if the ID is mentioned in the items note list, copy name to list.
+            // Iterate over the Notes list associated with this particular Notebook entry.
 			for I := 0 to NotebookList.Items[Index]^.Notes.Count -1 do
             	if ID = NotebookList.Items[Index]^.Notes[I] then
                 	NBList.Add(NotebookList.Items[Index]^.Name);

@@ -29,7 +29,7 @@ On your Linux box, go to tomboy-ng's Settings, <italic>Display Tab</italic>, and
 
 Create a Profile. </size:large>
 
-Now, the fun begins. Click the tomboy-ng tray icon, choose Tomdroid Sync.
+Now, the fun begins. Click the tomboy-ng tray icon, choose Tomdroid Sync. Note: This is very important, android file systems are heavily cached, <bold>Tomdroid must be closed</bold>, not just pushed to the background. I find easist approach is to touch the left android button, the one that shows the list of running processes. In that list, Tomdroid is shown with a X top right, touch that X.
 
 Set Profile Name to your device, perhaps <italic>My Galaxy Note 7</italic>. You can see your device's IP address from the sshdroid screen, use just the IP component, ie 192.168.1.132  - don't put in the "root@" or the ":2222". I hope you remember the password you set in sshdroid. 
 
@@ -39,7 +39,7 @@ When it finishes (and all makes sense), click the Save button.  Now, back on you
 
 <bold>Routine Sync</bold></size:large>
 Important that this process be followed at each sync.
-<list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid.  </list-item></list>
+<list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid. Really close it !  </list-item></list>
 <list><list-item dir="ltr">Open sshdroid, noting the device's IP address.</list-item></list>
 <list><list-item dir="ltr">From within tomboy-ng, click Tomdroid Sync, choose a profile.Click the Sync button. Wait until finished. </list-item></list>
 <list><list-item dir="ltr">Back on the device, close sshdroid and open Tomdroid. Touch the Tomdroid Sync button.</list-item></list><size:large>
@@ -47,7 +47,7 @@ Important that this process be followed at each sync.
 <bold>Security</bold></size:large>
 Important issue !  This approach has some weaknesses but if used as intended, I believe they are not significant. Here they are -
 
-<list><list-item dir="ltr"><highlight><bold>sshdroid</bold> - has a well know default password. So, make sure you change it before you use it. Make sure you only start sshdroid when ready to sync and close it down when finished.</highlight></list-item></list><highlight>
+<list><list-item dir="ltr"><highlight><bold>sshdroid</bold> - has a well know default password. So, make sure you change it before you use it. Make sure you only start sshdroid when ready to sync and stop it down when finished.</highlight></list-item></list><highlight>
 </highlight><list><list-item dir="ltr"><highlight><bold>password</bold> - in tomboy-ng, you can, if you wish, tick the box to have your sshdroid password saved in the config file. Its saved in plain text and its displayed in clear text on the screen. If you are in an environment where that is a significant risk, don't tick the box and enter the password each time. If you are worried about the clear text, let the author know and he might deal with that.</highlight></list-item></list><highlight>
 </highlight><list><list-item dir="ltr"><highlight><bold>sshpass</bold> - can be risky if used on a shared machine. Linux boxes are inherently multi user but if tomboy-ng is is on a personal, one user at a time machine, its not really a problem. IMHO. </highlight></list-item></list><highlight></highlight><size:large>
 
@@ -59,9 +59,9 @@ Tomdroid options and their effects.</size:large>
 Other Matters.</size:large>
 <list><list-item dir="ltr"><bold>Joining v Syncing</bold> - These processes are similar except that we cannot use a local manifest during a Join. The local manifest contains data about deleted notes so running a Join instead of a Sync will  resurrect notes deleted at one end or the other.</list-item></list>
 <list><list-item dir="ltr"><bold>Multiple Profiles</bold> - While you can have as many profiles as you like, you can only use one per device. Remove old, unused profiles as tomboy-ng has to record any note deletions in all present profiles and a huge number may slow things down.</list-item></list>
-<list><list-item dir="ltr"><bold>Notebooks</bold> - Tomdroid does not understand notebooks.</list-item></list>
+<list><list-item dir="ltr"><bold>Notebooks</bold> - Tomdroid does not understand notebooks. But a note edited in Tomdroid and synced back to tomboy-ng remembers what notebooks it was a member of. </list-item></list>
 <list><list-item dir="ltr"><bold>Tomdroid bugs and feature requests </bold>- No one is maintaining Tomdroid right now. All the source is there, want to try your hand ?</list-item></list>
-<list><list-item dir="ltr"><bold>Debugging</bold> - if you have a problem, first thing you should do is close tomboy and restart it from command line, it may report some errors to console.</list-item></list>
+<list><list-item dir="ltr"><bold>Debugging</bold> - if you have a problem, first thing you should do is close tomboy and restart it from command line, it may report some errors to console. Tick the 'Debug' box in the Tomdroid Sync Window before syncing.</list-item></list>
 
 <italic><bold>You can probably stop reading now.</bold></italic><bold></bold><size:large><bold>
 
@@ -86,16 +86,20 @@ Next, we read the local manifest and then do pretty much as above but use the lo
 
 In both cases, once we have a full view of  what needs to happen, we do it. Firstly DownLoads, DoDeletes, Uploads, DeleteLocal, WriteLocalManifest.
 
+New in v0.27, when downloading a note from Tomdroid, we check to see if the local copy is a notebook member, if so, we download the Tomdroid note to a temp file, rewrite it, with tag infomation to the tomboy-ng repo.
+
+The Tomdroid interface is still quite fragile and not good at telling us where it hurts.
+
 
 </note-content></text>
-  <last-change-date>2019-01-29T23:01:27.5660000+11:00</last-change-date>
-  <last-metadata-change-date>2019-01-29T23:01:27.5660000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-24T16:58:05.8460000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-24T16:58:05.8460000+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>0</x>
-  <y>0</y>
+  <x>20</x>
+  <y>30</y>
   <open-on-startup>False</open-on-startup>
 </note>
