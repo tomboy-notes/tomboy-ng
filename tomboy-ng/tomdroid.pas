@@ -126,6 +126,8 @@ end;
 procedure TFormTomdroid.FormShow(Sender: TObject);
 begin
     //debugln('Tomdroid screen OnShow event');
+    left := (screen.Width div 2) - (width div 2);
+    top := (screen.Height div 2) - (height div 2);
     Memo1.Clear;
     StringGridReport.Clear;
     ClearFields();
@@ -425,7 +427,7 @@ begin
         ASync.RepoAction:= RepoUse;
         ASync.Password:= EditPassword.Text;
         Tick1 := GetTickCount64();
-        if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin
+        if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin      // this just pings remote dev
             memo1.append(rsFailedToConnect + ASync.ErrorString);
             exit(false);
         end;
@@ -434,6 +436,9 @@ begin
         Tick2 := GetTickCount64();
         case ASync.TestConnection() of
             // SyncXMLError, SyncNoRemoteWrite, SyncNoRemoteDir :
+            SyncNoLocal :
+                begin Memo1.Append(ASync.ErrorString); Memo1.Append('Sync is cancelled'); exit(False); end;
+                // That may be caused by a previous failure to complete a Join or New, look for bad notes perhaps ?
             SyncNoRemoteRepo :
                 begin Memo1.Append(rsNotExistingRepo); exit(False); end;
             SyncMisMatch :
@@ -488,6 +493,7 @@ begin
             mrClose    : Result := SyAllOldest;
      end;
     SDiff.Free;
+    Application.ProcessMessages;    // so dialog goes away while remainder are being processed.
 end;
 
 end.

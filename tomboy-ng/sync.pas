@@ -145,6 +145,7 @@ HISTORY
     2018/11/25  Added DeleteFromLocalManifest(), called from search unit, TEST !
     2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341
     2019/07/19  Escape ' and " when using Title as an attribute in local manifest.
+    2020/02/27  Better detect when we try to sync and don't have a local manifest, useful for Tomdroid, check normal !
 }
 
 interface
@@ -1119,6 +1120,11 @@ begin
     end;
     if RepoAction = RepoUse then begin
 	    if not ReadLocalManifest() then exit(SyncXMLError);    // Error in local mainfest, OK or no manifest=true
+        if LocalLastSyncDateSt = '' then begin
+            ErrorString := 'Failed to read local manifest, is this an existing sync ?';
+            debugln('ReadLocalManifest set an empty LocalLastSyncDateSt, probably local manifest does not exist.');
+            exit(SyncNoLocal);
+        end;
 	    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
 	    if LocalLastSyncDate < 1.0 then begin
 		    ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';

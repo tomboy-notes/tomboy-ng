@@ -9,7 +9,7 @@ object FormSDiff: TFormSDiff
   ClientWidth = 588
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '2.0.7.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = Owner
@@ -26,42 +26,42 @@ object FormSDiff: TFormSDiff
     TabOrder = 0
     object LabelRemote: TLabel
       Left = 140
-      Height = 17
+      Height = 19
       Top = 6
-      Width = 90
+      Width = 95
       Caption = 'LabelRemote'
       ParentColor = False
     end
     object LabelLocal: TLabel
       Left = 140
-      Height = 17
+      Height = 19
       Top = 24
-      Width = 73
+      Width = 74
       Caption = 'LabelLocal'
       ParentColor = False
     end
     object Label3: TLabel
       Left = 11
-      Height = 17
+      Height = 19
       Top = 6
-      Width = 114
+      Width = 124
       Caption = 'Remote Changed'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 11
-      Height = 17
+      Height = 19
       Top = 24
-      Width = 97
+      Width = 103
       Caption = 'Local Changed'
       ParentColor = False
     end
     object RadioLong: TRadioButton
       Left = 488
-      Height = 22
+      Height = 24
       Hint = 'Maybe necessary to show difference'
       Top = 24
-      Width = 95
+      Width = 102
       Caption = 'Long Lines'
       OnChange = RadioLongChange
       ParentShowHint = False
@@ -70,10 +70,10 @@ object FormSDiff: TFormSDiff
     end
     object RadioShort: TRadioButton
       Left = 488
-      Height = 22
+      Height = 24
       Hint = 'Easier to read'
       Top = 1
-      Width = 96
+      Width = 102
       Caption = 'ShortLines'
       Checked = True
       ParentShowHint = False
@@ -84,10 +84,10 @@ object FormSDiff: TFormSDiff
   end
   object Label1: TLabel
     AnchorSideBottom.Control = ButtAllRemote
-    Left = 17
-    Height = 17
-    Top = 438
-    Width = 282
+    Left = 7
+    Height = 19
+    Top = 436
+    Width = 302
     Anchors = [akBottom]
     Caption = 'Or make a choice for remainder of this run'
     ParentColor = False

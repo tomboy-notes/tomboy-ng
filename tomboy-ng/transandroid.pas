@@ -357,7 +357,7 @@ end;
 
 function TAndSync.SetTransport(): TSyncAvailable;
 var
-    T1, T2 : DWord;
+    T1, T2 : QWord;
 begin
     T1 := GetTickCount64();
     if not Ping(1) then

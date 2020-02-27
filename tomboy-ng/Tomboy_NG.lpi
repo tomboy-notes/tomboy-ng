@@ -869,7 +869,9 @@
       <Unit24>
         <Filename Value="tb_sdiff.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormSDiff"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="TB_SDiff"/>
       </Unit24>
       <Unit25>

@@ -54,14 +54,15 @@ Important issue !  This approach has some weaknesses but if used as intended, I 
 <bold>General Advice</bold>
 Tomdroid options and their effects.</size:large>
 <list><list-item dir="ltr"><italic><bold>Clear Notes - Clear all notes from local database.</bold></italic>  If you use this option and then touch (Tomdroid's) sync, you'll get a fresh set of notes based on whats currently in the sync dir. </list-item></list>
-<list><list-item dir="ltr"><italic><bold>Delete Remote Notes - Delete all notes from remote service.</bold></italic> <highlight>Careful with this one ! </highlight>If you do this and then run a sync from tomboy-ng, all previously synced notes will be deleted (but, backed up first) from your tomboy-ng install.  Almost certainly not what you want, so, please be careful. If you find your self in this position, run a Join rather than a Sync, a Join does not delete files so is always safe. Remember that tomboy-ng has some tools to help recover from misuse of above tools.</list-item></list><size:large>
+<list><list-item dir="ltr"><italic><bold>Delete Remote Notes - Delete all notes from remote service.</bold></italic> <highlight>Careful with this one ! </highlight>If you do this and then run a sync from tomboy-ng, all previously synced notes will be deleted (but, backed up first) from your tomboy-ng install.  Almost certainly not what you want, so, please be careful. If you find your self in this position, run a Join rather than a Sync, a Join does not delete files so is always safe. Remember that tomboy-ng has some tools to help recover from misuse of above tools.</list-item></list>
+<list><list-item dir="ltr">If you have had notes in your Tomdroid but wish to clear them all out before a sync, so your Tomdroid contains only the notes from your tomboy-ng collection, then do use both of the above, then touch Tomdroid's sync button. Then (after firmly closing Tomdroid, as usual) run a tomboy-ng Tomdroid <highlight>Join</highlight> creating a new sync connection.   </list-item></list><size:large>
 
 Other Matters.</size:large>
 <list><list-item dir="ltr"><bold>Joining v Syncing</bold> - These processes are similar except that we cannot use a local manifest during a Join. The local manifest contains data about deleted notes so running a Join instead of a Sync will  resurrect notes deleted at one end or the other.</list-item></list>
 <list><list-item dir="ltr"><bold>Multiple Profiles</bold> - While you can have as many profiles as you like, you can only use one per device. Remove old, unused profiles as tomboy-ng has to record any note deletions in all present profiles and a huge number may slow things down.</list-item></list>
 <list><list-item dir="ltr"><bold>Notebooks</bold> - Tomdroid does not understand notebooks. But a note edited in Tomdroid and synced back to tomboy-ng remembers what notebooks it was a member of. </list-item></list>
 <list><list-item dir="ltr"><bold>Tomdroid bugs and feature requests </bold>- No one is maintaining Tomdroid right now. All the source is there, want to try your hand ?</list-item></list>
-<list><list-item dir="ltr"><bold>Debugging</bold> - if you have a problem, first thing you should do is close tomboy and restart it from command line, it may report some errors to console. Tick the 'Debug' box in the Tomdroid Sync Window before syncing.</list-item></list>
+<list><list-item dir="ltr"><bold>Debugging</bold> - if you have a problem, first thing you should do is close tomboy-ng and restart it from command line, it may report some errors to console. Tick the 'Debug' box in the Tomdroid Sync Window before syncing.</list-item></list>
 
 <italic><bold>You can probably stop reading now.</bold></italic><bold></bold><size:large><bold>
 
@@ -74,7 +75,7 @@ tomboy-ng (here and elsewhere) uses the last-change-date in every note to determ
 
 As well as keeping track of revision numbers and last sync dates, the local manifest is important when a note from either end is deleted. It has two sections, the first, note-revisions, lists all notes that this client has seen in the sync repository. So, if the repository no longer has that note, we know its been deleted elsewhere and should be deleted locally.  The second section, notes-deletions, lists every note, previously synced, deleted from this client. At sync time, such notes should be deleted from remote repo (and no longer listed in local manifest).
 
-Note that (I believe) tomboy-ng behaves differently from the original Tomboy in that Tomboy relied heavily on comparing sync revision numbers whereas tomboy-ng also considers the last-change-date.  
+Note that (I believe) tomboy-ng behaves differently from the original Tomboy in that Tomboy relied on  comparing sync revision numbers whereas tomboy-ng also considers the last-change-date.  
 
 <bold>Joining (or, more correctly Creating a Tomdroid Connection)</bold>
 
@@ -86,14 +87,12 @@ Next, we read the local manifest and then do pretty much as above but use the lo
 
 In both cases, once we have a full view of  what needs to happen, we do it. Firstly DownLoads, DoDeletes, Uploads, DeleteLocal, WriteLocalManifest.
 
-New in v0.27, when downloading a note from Tomdroid, we check to see if the local copy is a notebook member, if so, we download the Tomdroid note to a temp file, rewrite it, with tag infomation to the tomboy-ng repo.
-
-The Tomdroid interface is still quite fragile and not good at telling us where it hurts.
+The Tomdroid interface is still quite fragile and not good at telling us where it hurts. V0.27 is a touch better.
 
 
 </note-content></text>
-  <last-change-date>2020-02-24T16:58:05.8460000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-24T16:58:05.8460000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-27T14:32:41.4490000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-27T14:32:41.4490000+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

@@ -381,6 +381,7 @@ function TFormHelpNotes.Downloader(URL, FileName, Dest : string; out ErrorMsg : 
 var
     Client: TFPHttpClient;
 begin
+    // Windows can be made work with this if we push out ssl dll - see DownloaderSSL local project
     InitSSLInterface;
     Client := TFPHttpClient.Create(nil);
     Client.OnGetSocketHandler := @HttpClientGetSocketHandler;

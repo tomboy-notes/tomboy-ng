@@ -172,6 +172,7 @@ begin
             Result := SyUnSet;      // Thats an ERROR !  What are you doing about it ?
     end;
     SDiff.Free;
+    Application.ProcessMessages;    // so dialog goes away while remainder are being processed.
     // Use Remote, Yellow is mrYes, File1
     // Use Local, Aqua is mrNo, File2
 end;

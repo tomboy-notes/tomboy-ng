@@ -660,6 +660,8 @@ procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
 var
     NB : string;
 begin
+    // see https://forum.lazarus.freepascal.org/index.php/topic,48568.msg350984/topicseen.html
+    // for info about hiding the sort indicators after changing note data. We don't need to but ....
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then
         DoSearch()
     else begin

@@ -923,6 +923,70 @@ msgstr ""
 msgid "Notes in a Snapshot"
 msgstr ""
 
+#: tformsdiff.bitbtnuselocal.caption
+msgid "Use Local"
+msgstr ""
+
+#: tformsdiff.bitbtnuseremote.caption
+msgid "UseRemote"
+msgstr ""
+
+#: tformsdiff.buttalllocal.caption
+msgid "Local"
+msgstr ""
+
+#: tformsdiff.buttallnewest.caption
+msgid "Newest"
+msgstr ""
+
+#: tformsdiff.buttalloldest.caption
+msgid "Oldest"
+msgstr ""
+
+#: tformsdiff.buttallremote.caption
+msgid "Remote"
+msgstr ""
+
+#: tformsdiff.caption
+msgid "A Note Sync Clash has been Detected"
+msgstr ""
+
+#: tformsdiff.label1.caption
+msgid "Or make a choice for remainder of this run"
+msgstr ""
+
+#: tformsdiff.label3.caption
+msgid "Remote Changed"
+msgstr ""
+
+#: tformsdiff.label4.caption
+msgid "Local Changed"
+msgstr ""
+
+#: tformsdiff.labellocal.caption
+msgid "LabelLocal"
+msgstr ""
+
+#: tformsdiff.labelremote.caption
+msgid "LabelRemote"
+msgstr ""
+
+#: tformsdiff.radiolong.caption
+msgid "Long Lines"
+msgstr ""
+
+#: tformsdiff.radiolong.hint
+msgid "Maybe necessary to show difference"
+msgstr ""
+
+#: tformsdiff.radioshort.caption
+msgid "ShortLines"
+msgstr ""
+
+#: tformsdiff.radioshort.hint
+msgid "Easier to read"
+msgstr ""
+
 #: tformspell.buttonignore.caption
 msgid "Ignore"
 msgstr ""

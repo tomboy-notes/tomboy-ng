@@ -1,7 +1,7 @@
 object FormTomdroid: TFormTomdroid
-  Left = 642
+  Left = 606
   Height = 377
-  Top = 154
+  Top = 258
   Width = 836
   Caption = 'Tomdroid'
   ClientHeight = 377
