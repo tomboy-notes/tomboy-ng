@@ -22,7 +22,7 @@ Some new features (and the inevitable bug fixes)
 <list><list-item dir="ltr">Fixed bug that made bad xml when huge and underline used immediately after title. #138 and maybe #131</list-item></list>
 <list><list-item dir="ltr">Fixed bug messing with pasting multiline plain text at very end of content (upstream). #139</list-item></list>
 <list><list-item dir="ltr">Fix to an isolated windows bug affecting saving #132</list-item></list>
-<list><list-item dir="ltr">A sharper looking icon on System Tray. </list-item></list>
+<list><list-item dir="ltr">A sharper looking icon on System Tray. Thanks Xypd ! </list-item></list>
 <list><list-item dir="ltr">Avoid a strange Qt5 bug where recent file list was being duplicated.</list-item></list>
  <size:huge>
 <bold>Installation</bold></size:huge>
@@ -36,23 +36,24 @@ Tested on 32bit Windows 7 and 64bit Windows 10.  Windows users should download t
 <bold>Download this</bold>  $$EXE
 
 <bold>MacOSX</bold>
-Tested on a Mac Sierra Powerbook. Use the 64bit (Cocoa) file unless you are running relatively old (and slow) hardware. The 32bit Carbon based one will not work on the newest MasOS but is somewhat faster. Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. First time users will need to control click the tomboy-ng icon in Applications and select "Open". Have had a report of difficulties with that first start, even with the Control Click, please report !
+Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64) unless you are running relatively old (and slow) hardware. The [32bit Carbon based one]($$DMG32) will not work on the newest MasOS but is somewhat faster. Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. 
 
-<bold>Download this</bold>  [the 64bit DMG file]($$DMG64)  or this one if you have slow hardware and an older OS - [32bit Carbon DMG]($$DMG32)<size:huge>
+Note : First time users will need to control click the tomboy-ng icon in Applications and select "Open". <size:huge>
 
 <bold>Linux</bold></size:huge>
 Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
 
 <bold>Ubuntu</bold></size:large>
-Generally, all work fine but earlier distributions should use GTK2 and recent the Qt5 based version. 
+Generally, all work fine but earlier distributions should use GTK2 and recent ones the Qt5 based version. 
 <list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). </list-item></list>
 <list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64) </list-item></list>
 <list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will work but Ubuntu apparently forgot to include a necessary part of their GTK2 package. So, if you use the GTK2 vesion with U19.10, you must also install appmenu-gtk2-module "sudo apt install appmenu-gtk2-module [enter]".</list-item></list>
 <list><list-item dir="ltr">19.10 Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK version if you use Budgie [32bit]($$DEB32) or [64bit]($$DEB64). If tomboy-ng is slow to start, also manually install appmenu-gtk2-module.</list-item></list>
+<list><list-item dir="ltr">20.04 tested on a beta release and noted an issue with the GTK version, while its probably going to go away with the formal release of U20.04, I suggest  the Qt5 version is a safer choice. [64bitGTK]($$DEB64QT)</list-item></list>
 
 I recommend downloading the file and using the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). On U16.04 however you should use gdebi rather than apt to install.
 
-<monospace>sudo apt install ./tomboy-ng_0.26-0_amd64.deb [enter]</monospace><size:large>
+<monospace>sudo apt install ./tomboy-ng_0.27-0_amd64.deb [enter]</monospace><size:large>
 
 
 <bold>Linux Mint</bold></size:large>
@@ -64,7 +65,7 @@ Again, please download the appropriate file and install using the apt command, a
 <bold>Debian</bold></size:large>
 For old stable and distros based on it (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version.
 
-<bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a slightly different way. The first time you start tomboy-ng, click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 but its not worth the effort. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will work fine 
+<bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a slightly different way. After starting tomboy-ng the first time, click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose "add to favourites". You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 but its not worth the effort. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will work fine 
 
 <bold>Debian XFCE</bold> - may also fail to show the System Tray Icon, at this stage, my best advice is create a desktop launcher and use it to activate tomboy-ng as mentioned above. You may use either the [Qt5 64bit]($$DEB64QT) or [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64).
 
@@ -110,14 +111,14 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </monospace></note-content></text>
-  <last-change-date>2020-02-24T16:56:10.2060000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-24T16:56:10.2060000+11:00</last-metadata-change-date>
+  <last-change-date>2020-02-29T18:40:24.9370000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-29T18:40:24.9370000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>253</x>
-  <y>297</y>
+  <x>210</x>
+  <y>70</y>
   <open-on-startup>False</open-on-startup>
 </note>

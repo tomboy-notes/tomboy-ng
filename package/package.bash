@@ -161,24 +161,9 @@ function DebianPackage () {
 	if [ "$1" = "amd64Qt" ]; then
 		cp $SOURCE_DIR/tomboy-ng-qt BUILD/usr/bin/tomboy-ng
 		chmod 755 BUILD/usr/bin/tomboy-ng
-		#mkdir -p BUILD/usr/lib/x86_64-linux-gnu
-		#cp /usr/lib/x86_64-linux-gnu/libQt5Pas.so.1.2.6 BUILD/usr/lib/x86_64-linux-gnu/.
-		#chmod 0644 BUILD/usr/lib/x86_64-linux-gnu/libQt5Pas.so.1.2.6
-		#cd BUILD/usr/lib/x86_64-linux-gnu/
-		#ln -s libQt5Pas.so.1.2.6 libQt5Pas.so.1.2
-		#ln -s libQt5Pas.so.1.2.6 libQt5Pas.so.1
-		#cd ../../../../
-		#echo "--------------------------------------"
-		#pwd
-		#ls -la
-		#echo "--------------------------------------"
 	fi
-
-	# Remove the html files, too hard to maintain
-	# cp -R "../doc/html" "BUILD/usr/share/doc/$PRODUCT/."
-	# chmod 0755 BUILD/usr/share/doc/"$PRODUCT"/html 
-	# chmod 0644 BUILD/usr/share/doc/"$PRODUCT"/html/*
     # -------------- Make control file
+
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
 	if [ "$1" = "amd64Qt" ]; then
@@ -189,20 +174,18 @@ function DebianPackage () {
 	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
 	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
 	if [ "$1" = "amd64Qt" ]; then
-		# echo "Depends: libQt5Pas1 (>= 2.6~beta-4)" >> BUILD/DEBIAN/control
-		# echo "Depends: libc6 (>= 2.14), libgcc1 (>= 1:3.0), libqt5core5a (>= 5.7.0), libqt5gui5 (>= 5.6.0~beta) | libqt5gui5-gles (>= 5.6.0~beta), libqt5network5 (>= 5.6.0~beta), libqt5printsupport5 (>= 5.2.0), libqt5widgets5 (>= 5.6.0~beta), libqt5x11extras5 (>= 5.6.0), libstdc++6 (>= 5)" >> BUILD/DEBIAN/control
-		echo "Depends: libqt5pas1" >> BUILD/DEBIAN/control
+		echo "Depends: libqt5pas1, wmctrl" >> BUILD/DEBIAN/control
 	else
-		# We don't use libcanberra-gtk-module but binary complains when on an OS that does not have it, sigh ...
-		echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, appmenu-gtk2-module" >> BUILD/DEBIAN/control
+		# echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, appmenu-gtk2-module" >> BUILD/DEBIAN/control
+		echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl" >> BUILD/DEBIAN/control
 	fi
 	echo "Priority: optional" >> BUILD/DEBIAN/control
 	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
 	if [ "$1" = "amd64Qt" ]; then
-		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. Experimental Qt5 release." >> BUILD/DEBIAN/control
+		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. Qt5 release." >> BUILD/DEBIAN/control
 	else
-		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. " >> BUILD/DEBIAN/control
+		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. GTK2 release." >> BUILD/DEBIAN/control
 	fi
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 
@@ -235,6 +218,7 @@ function WriteZipReadMe () {
 	echo "* Language other than English" >> "$RM"
 	echo "* tomboy-ng help files" >> "$RM"
 	echo "* Ability to have tomboy-ng set itself to autostart" >> "$RM"
+	echo "Dependencies include libgtk2.0-0, libcanberra-gtk-module, wmctrl." >> "$RM"
 	echo "If you need help, please post specific question to tomboy-ng github issues." >> "$RM"
 }
 
