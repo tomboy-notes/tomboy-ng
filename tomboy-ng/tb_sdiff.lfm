@@ -73,8 +73,8 @@ object FormSDiff: TFormSDiff
       Height = 24
       Hint = 'Easier to read'
       Top = 1
-      Width = 102
-      Caption = 'ShortLines'
+      Width = 106
+      Caption = 'Short Lines'
       Checked = True
       ParentShowHint = False
       ShowHint = True
@@ -172,7 +172,7 @@ object FormSDiff: TFormSDiff
     Top = 439
     Width = 110
     Anchors = [akRight, akBottom]
-    Caption = 'UseRemote'
+    Caption = 'Use Remote'
     Color = clYellow
     ModalResult = 6
     TabOrder = 6

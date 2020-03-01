@@ -1,5 +1,5 @@
 #!/bin/bash
-# copyright David Bannon, 2019, no license, use as you see fit.
+# copyright David Bannon, 2019, 2020, no license, use as you see fit.
 # -------------------------------------------------------------
 # A script to build tomboy-ng from source without using the Lazarus GUI
 # You still need to get Lazarus LCL and various other parts of its package
@@ -10,23 +10,22 @@
 #
 # mkdir Pascal
 # cd Pascal
-# svn checkout http://svn.freepascal.org/svn/lazarus/tags/lazarus_2_0_0 Laz_Test
-# wget https://bitbucket.org/tomkrysl/kcontrols/get/e826181ebbeb.zip 
-# unzip e826181ebbeb.zip
-# wget https://github.com/tomboy-notes/tomboy-ng/archive/v0.20.zip
-# unzip v0.20.zip
-# 
+# svn checkout https://svn.freepascal.org/svn/lazarus/branches/fixes_2_0     # almost 400meg !
+# wget https://github.com/kryslt/KControls/archive/master.zip ; mv master.zip kcontrols.zip ; unzip kcontrols.zip
+# wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip ; mv master.zip tomboy-ng.zip ; unzip tomboy-ng.zip
+#
 # And you are ready to go. NOTE - directory names above may NOT MATCH THE SCRIPT
-# the names in the script are for my use and suit my installs - change them !
+# the names in the script are for my use and suit my installs - change them !Search
 
 CPU="x86_64"
 OS="linux"
-PROJ="Tomboy_NG"
-SOURCE_DIR="$HOME/Pascal/tomboy-ng/tomboy-ng"
+PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
+
+SOURCE_DIR="$PWD/tomboy-ng-master/tomboy-ng"
 
 TARGET="$CPU-$OS"
-LAZ_FULL_DIR="$HOME/Pascal/Laz_Test"
-K_DIR="$HOME/Pascal/tomkrysl-kcontrols-e826181ebbeb/packages/kcontrols/"
+LAZ_FULL_DIR="$PWD/fixes_2_0"
+K_DIR="$PWD/KControls-master/packages/kcontrols"
 WIDGET="gtk2"
 COMPILER="/usr/bin/fpc"
 VERSION=`cat "$SOURCE_DIR/../package/version"`
@@ -56,6 +55,7 @@ else
     fi        
 fi
 
+# cd $SOURCE_DIRHOME/Pascal/Laz_Testproj
 cd $SOURCE_DIR
 
 # DEBUG options -O1,   (!) -CX, -g, -gl, -vewnhibq
@@ -96,7 +96,10 @@ if [ -f "$PROJ" ]; then
     rm "$PROJ"
 fi
 
-echo "----------------------- Building tomboy-ng ----------------"
+echo "------------ Building tomboy-ng in $PWD ----------------"
+
+echo "Units - $UNITS"
+
 RUNIT="$COMPILER $OPT1 $UNITS $OPT2 $DEFS $PROJ.lpr"
 TOMBOY_NG_VER="$VERSION" $RUNIT
 echo "OK, lets see how we got on "
