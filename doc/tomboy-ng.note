@@ -39,7 +39,7 @@ Insert a few seconds at startup to ensure that tomboy-ng picks up your colour sc
 Prevent splash screen from being closed. Only necessary if your Linux system does not show the tomboy-ng system tray icon. Some Gnome 3 systems.
 
 <bold>-l CCode  --lang=CCode </bold>      
-Force Language, supported language codes as  es and nl. Lets us know if you want tomboy-ng in another language.
+Force Language, supported language codes as  es and nl. Let us know if you want tomboy-ng in another language.
 
 <bold>--version</bold>                 
 Print version and exit
