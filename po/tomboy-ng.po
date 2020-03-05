@@ -928,7 +928,7 @@ msgid "Use Local"
 msgstr ""
 
 #: tformsdiff.bitbtnuseremote.caption
-msgid "UseRemote"
+msgid "Use Remote"
 msgstr ""
 
 #: tformsdiff.buttalllocal.caption
@@ -980,7 +980,7 @@ msgid "Maybe necessary to show difference"
 msgstr ""
 
 #: tformsdiff.radioshort.caption
-msgid "ShortLines"
+msgid "Short Lines"
 msgstr ""
 
 #: tformsdiff.radioshort.hint

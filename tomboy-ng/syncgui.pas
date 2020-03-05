@@ -106,7 +106,7 @@ type
                       will handle some problems with user's help. }
                 procedure JoinSync;
                     { Called to do a sync assuming its all setup. Any problem is fatal }
-                procedure ManualSync;
+                function ManualSync: boolean;
                     { Populates the string grid with details of notes to be actioned }
                 procedure ShowReport;
             	//procedure TestRepo();
@@ -290,12 +290,11 @@ begin
     if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
     busy := true;
     StringGridReport.Clear;
-    ManualSync;
-    result := true;
+    Result := ManualSync;
 end;
 
         // User is only allowed to press Close when this is finished.
-procedure TFormSync.ManualSync;
+function TFormSync.ManualSync : boolean;
 var
     SyncState : TSyncAvailable = SyncNotYet;
 begin
@@ -317,7 +316,7 @@ begin
             FormSyncError.label3.caption := ASync.ErrorString;
             FormSyncError.ButtRetry.Visible := not Visible;                         // Dont show Retry if interactive
             ModalResult := FormSyncError.ShowModal;
-            if ModalResult = mrCancel then exit;        // else its Retry
+            if ModalResult = mrCancel then exit(false);        // else its Retry
             SyncState := ASync.TestConnection();
         end;
         Label1.Caption:= rsRunningSync;
@@ -330,12 +329,13 @@ begin
         Label1.Caption:=rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
-
+        Result := True;
     finally
         FreeandNil(ASync);
         Busy := False;
     end;
 end;
+
 procedure TFormSync.AdjustNoteList();
 var
     DeletedList, DownList : TStringList;
