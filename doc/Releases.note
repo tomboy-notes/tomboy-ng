@@ -19,11 +19,10 @@ Some new features (and the inevitable bug fixes)
 <list><list-item dir="ltr">Now possible to rename a notebook, select the notebook, click Notebook Options and then Rename Note Book. But, please, if you sync your notes, do run a full sync first !</list-item></list>
 <list><list-item dir="ltr">When exporting markdown, you can now save or copy to clipboard.</list-item></list>
 <list><list-item dir="ltr">Control-L to make a new note linked to selected text. #142</list-item></list>
+<list><list-item dir="ltr">A sharper looking icon on System Tray. Thanks Xypd ! </list-item></list>
 <list><list-item dir="ltr">Fixed bug that made bad xml when huge and underline used immediately after title. #138 and maybe #131</list-item></list>
 <list><list-item dir="ltr">Fixed bug messing with pasting multiline plain text at very end of content (upstream). #139</list-item></list>
 <list><list-item dir="ltr">Fix to an isolated windows bug affecting saving #132</list-item></list>
-<list><list-item dir="ltr">A sharper looking icon on System Tray. Thanks Xypd ! </list-item></list>
-<list><list-item dir="ltr">Avoid a strange Qt5 bug where recent file list was being duplicated.</list-item></list>
  <size:huge>
 <bold>Installation</bold></size:huge>
 Please also see the Installation Notes relating to Linux, Windows and the Mac at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Requirements
@@ -111,8 +110,8 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </monospace></note-content></text>
-  <last-change-date>2020-02-29T18:40:24.9370000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-29T18:40:24.9370000+11:00</last-metadata-change-date>
+  <last-change-date>2020-03-07T20:00:33.2900000+11:00</last-change-date>
+  <last-metadata-change-date>2020-03-07T20:00:33.2900000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
