@@ -92,6 +92,7 @@ unit settings;
     2019/12/18  Moved LinkScanRange to EditBox
     2019/12/20  Ensure we have UsualFont set to something even during first start.
     2019/12/24  Ensure we don't try to sync if its not yet setup.
+    2020/03/02  Force our guess fixed font if no config file.
 }
 
 {$mode objfpc}{$H+}
@@ -263,6 +264,8 @@ type
         function GetDefaultConfigDir: string;
         // Returns the default place to store notes. It may not be present.
         function GetDefaultNoteDir: string;
+                            // Has a list of possible fixed font names, returns the first that 'works'.
+        function GetFixedFont(): string;
         function MyBoolStr(const InBool: boolean) : string;
         procedure SetFontSizes;
         // Saves all current settings to disk. Call when any change is made. If unable
@@ -674,12 +677,7 @@ begin
     AreClosing := false;
     Top := 100;
     Left := 300;
-    {$ifdef LINUX}
-        DefaultFixedFont := 'monospace';
-    {$else}
-        DefaultFixedFont := 'Monaco';
-    {$ifend}
-    // ToDo : what about a fixed font for Mac ?
+    DefaultFixedFont := GetFixedFont(); // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;
     //NeedRefresh := False;
@@ -751,6 +749,45 @@ begin
     {$endif}
 end;
 
+function TSett.GetFixedFont() : string;
+var  T : string;
+    FontNames : array[1..7] of string
+      = ('Monospace', 'Monaco', 'Nimbus Mono L', 'Liberation Mono', 'Lucida Console', 'Lucida Sans Typewriter', 'Courier New' );
+    // Add as many new names as you like but set array size.  Chooses the first in the list it finds that works
+    // Label does not seem to worry about us playing with its canvas.
+
+    function IsMono(FontName : String) : boolean;
+    begin
+      Label1.Canvas.Font.Name := FontName;
+      result := Label1.Canvas.TextWidth('i') = Label1.Canvas.TextWidth('w');
+    end;
+
+    function IsDifferentSizes() : boolean;     // in case they are old non scalable, unlikely but ....
+    var
+        ASize : integer;
+    begin
+        Label1.Canvas.Font.Size := 13;
+        ASize := Label1.Canvas.TextHeight('H');
+        Label1.Canvas.Font.Size := 14;
+        if ASize = Label1.Canvas.TextHeight('H')
+            then exit(False);
+        ASize := Label1.Canvas.TextHeight('H');
+        Label1.Canvas.Font.Size := 15;
+        If ASize = Label1.Canvas.TextHeight('H')
+            then exit(False);
+        result := True;
+    end;
+
+begin
+    Result := '';
+    for T in FontNames do begin
+        if not IsMono(T) then continue;
+        if not IsDifferentSizes() then continue;
+        Result := T;
+        exit;
+    end;
+end;
+
 { Read config file if it exists }
 procedure TSett.CheckConfigFile;
 var
@@ -790,12 +827,10 @@ begin
                 'small'  : RadioFontSmall.Checked := true;
             end;
             UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
-{            if UsualFont = '' then begin
-                UsualFont := 'Sans';
-                //writeln('Font forced');
-            end;  }
-            //writeln('Usual Font is now [' + UsualFont + ']');
+            ButtonFont.Hint := UsualFont;
             FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
+            if FixedFont = '' then FixedFont := DefaultFixedFont;
+            ButtonFixedFont.Hint := FixedFont;
             case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
                 'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
                 'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
@@ -826,6 +861,7 @@ begin
             CheckBoxAutoSync.Checked := False;
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
             UsualFont := GetFontData(Self.Font.Handle).Name;
+            FixedFont := DefaultFixedFont;
             LabelSyncRepo.Caption := '';        // not 'not config' because of potential for other languages.
             if not SettingsChanged() then // write a initial default file, shows user a message on error
                 HaveConfig := false;
@@ -952,6 +988,7 @@ begin
         FixedFont := FontDialog1.Font.name;
         SettingsChanged();
     end;
+    ButtonFixedFont.Hint := FixedFont;
 end;
 
 procedure TSett.ButtonFontClick(Sender: TObject);
@@ -964,6 +1001,7 @@ begin
         UsualFont := FontDialog1.Font.name;
         SettingsChanged();
     end;
+    ButtonFont.Hint := UsualFont;
 end;
 
 procedure TSett.ButtonHelpNotesClick(Sender: TObject);

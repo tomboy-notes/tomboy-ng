@@ -1016,7 +1016,7 @@ msgstr "Quizás hace falta mostrar la diferencia"
 
 # Corregir original
 #: tformsdiff.radioshort.caption
-msgid "ShortLines"
+msgid "Short Lines"
 msgstr "Líneas cortas"
 
 #: tformsdiff.radioshort.hint

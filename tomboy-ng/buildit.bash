@@ -1,6 +1,11 @@
 #!/bin/bash
 # copyright David Bannon, 2019, 2020, no license, use as you see fit.
+#
 # -------------------------------------------------------------
+# Do not run this script in the directory you found it in, it needs to be
+# moved to a otherwise empty directory, read the full header before using.
+# -------------------------------------------------------------
+#
 # A script to build tomboy-ng from source without using the Lazarus GUI
 # You still need to get Lazarus LCL and various other parts of its package
 # and the easy (only?) way to get that is to download lazarus source but
@@ -14,23 +19,33 @@
 # wget https://github.com/kryslt/KControls/archive/master.zip ; mv master.zip kcontrols.zip ; unzip kcontrols.zip
 # wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip ; mv master.zip tomboy-ng.zip ; unzip tomboy-ng.zip
 #
-# And you are ready to go. NOTE - directory names above may NOT MATCH THE SCRIPT
-# the names in the script are for my use and suit my installs - change them !Search
-
+# And you are ready to go. Or you may wish to point the 'LAZ_FULL_DIR' to an existing
+# Lazarus install. It must find the lazbuild binary and Lazarus' LCL.
+#
 CPU="x86_64"
 OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
-
+CURRENT_DIR=$PWD
 SOURCE_DIR="$PWD/tomboy-ng-master/tomboy-ng"
 
 TARGET="$CPU-$OS"
-LAZ_FULL_DIR="$PWD/fixes_2_0"
+LAZ_FULL_DIR="$PWD/fixes_2_0"	# point to pre-existing copy if you like but don't rebuild it !!!!!! 
+				# it should have KControls preinstalled so will know where to look.
 K_DIR="$PWD/KControls-master/packages/kcontrols"
 WIDGET="gtk2"
 COMPILER="/usr/bin/fpc"
 VERSION=`cat "$SOURCE_DIR/../package/version"`
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
+
+if [ "$1" == "help" ]; then
+        echo "usage : $0 [full]"
+	echo "           WARNING - don't use full if using your regular Lazarus install !"
+        echo "           full will also compile lazbuild, LCL and KControls if necessary"
+	echo "           otherwise, we assume they are OK and just build tomboy-ng"
+	echo "           See header for typical download instructions"
+        exit
+fi
 
 if [ "$1" == "full" ]; then
 
@@ -43,16 +58,10 @@ if [ "$1" == "full" ]; then
 
     echo "-------------- Compiling KControls -----------------"
     cd $K_DIR
-    LAZBUILD="$LAZ_FULL_DIR/lazbuild  --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
+    LAZBUILD="$LAZ_FULL_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
     echo "Laz build command is $LAZBUILD"
     $LAZBUILD
     rm -Rf "$TEMPCONFDIR"
-else
-    if [ -n "$1" ]; then
-        echo "usage : $0 [full]"
-        echo "           full will also compile lazbuild, LCL and KControls if necessary"
-        exit
-    fi        
 fi
 
 # cd $SOURCE_DIRHOME/Pascal/Laz_Testproj
@@ -77,7 +86,9 @@ UNITS="$UNITS -Fu$SOURCE_DIR/"
 UNITS="$UNITS -FU$SOURCE_DIR/lib/$TARGET/" 
 
 
-OPTS2=" -FE$SOURCE_DIR/ -o$SOURCE_DIR/project1 -dLCL -dLCL$WIDGET"
+# will -FE write binary into working dir ?
+# OPTS2=" -FE$SOURCE_DIR/ -o$SOURCE_DIR/project1 -dLCL -dLCL$WIDGET" -FE"$CURRENT_DIR"
+OPTS2=" -dLCL -dLCL$WIDGET" 
 DEFS="-dDisableLCLGIF -dDisableLCLJPEG -dDisableLCLPNM -dDisableLCLTIFF"
 # reported to reduce binary size but made no difference for me
 # http://wiki.lazarus.freepascal.org/Lazarus_2.0.0_release_notes#Compiler_defines_to_exclude_some_graphics_support
@@ -98,7 +109,7 @@ fi
 
 echo "------------ Building tomboy-ng in $PWD ----------------"
 
-echo "Units - $UNITS"
+echo "OPTS2 - $OPTS2"
 
 RUNIT="$COMPILER $OPT1 $UNITS $OPT2 $DEFS $PROJ.lpr"
 TOMBOY_NG_VER="$VERSION" $RUNIT
