@@ -1,7 +1,4 @@
 #!/bin/bash
-# Ugly hack to make a Qt5 package, Linux 64bit only. Temp measure, must do better.
-# expects to find tomboy-ng-qt executable in ../tomboy-ng dir ready made.i
-# I cannot, yet build Qt5 version on my build machine [18.04 has old Qt5 lib; 19.10 Lazarus freeze bug]
 
 # A script to build tomboy and make deb packages and zip up the other binaries
 # see https://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics
@@ -174,7 +171,7 @@ function DebianPackage () {
 	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
 	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
 	if [ "$1" = "amd64Qt" ]; then
-		echo "Depends: libqt5pas1, wmctrl" >> BUILD/DEBIAN/control
+		echo "Depends: libqt5pas1, libc6 (>= 2.14), wmctrl" >> BUILD/DEBIAN/control
 	else
 		# echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, appmenu-gtk2-module" >> BUILD/DEBIAN/control
 		echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl" >> BUILD/DEBIAN/control

@@ -106,6 +106,7 @@ unit SearchUnit;
                 But I still cannot control the little green triangles in stringgrid headings indicating sort.
     2020/02/01  Dont refresh the string grids automatically, turn on the refresh button for user to do it.
     2020/02/19  hilight selected notebook name.
+    2020/03/09  Make sure 'x' (put in by a bug) is not a valid sync repo path.
 }
 
 {$mode objfpc}{$H+}
@@ -178,6 +179,7 @@ type        { TSearchForm }
         procedure DoSearch();
         procedure FileMenuClicked(Sender: TObject);
         procedure InitialiseHelpFiles();
+                                // clears then Inserts file items in all main menus, note also removes help items ....
         procedure MenuFileItems(AMenu: TPopupMenu);
         procedure MenuHelpItems(AMenu: TPopupMenu);
         procedure MenuListBuilder(MList: TList);
@@ -543,7 +545,7 @@ begin
     end;
     dec(i);                                         // cos we want to leave the '-'
     while (i >= 0) do begin                         // Remove File Type entries
-        AMenu.Items.Delete(i);
+        AMenu.Items.Delete(i);                      // Because it removes Help, removes all the individual help items too.
         dec(i);
     end;
     if AMenu.Items.Count = 0 then                   // If menu empty, put in seperator
@@ -630,7 +632,7 @@ begin
                     end;
         mtAbout :    MainForm.ShowAbout();
         mtSync :     if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
-                        and (Sett.LabelSyncRepo.Caption <> '') then
+                        and (length(Sett.LabelSyncRepo.Caption) > 1) then
                             Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
         mtSettings : begin

@@ -65,17 +65,17 @@ There are a number of situations that can happen, in no particular order (rememb
 <italic>Note that as of August, 2018, between release of 0.17 and 0.18, it was decided to use the lastes of last-change-date and last-metadata-change-date n the decision making mentioned above. </italic>
 
 <bold>Ref -</bold>
-<monospace>https://bugzilla.gnome.org/show_bug.cgi?id=321037
-https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007
-https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming</monospace>
+<monospace>https://bugzilla.gnome.org/show_bug.cgi?id=321037</monospace>
+<monospace>https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007</monospace>
+<monospace>https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming</monospace>
 "Many weird situations can be avoided by performing an update in three distinct steps: deletes, then updates, then adds." repeated again and again. But not what happens in the code.
 
 
 
 
 </note-content></text>
-  <last-change-date>2018-08-14T18:27:46.4890000+10:00</last-change-date>
-  <last-metadata-change-date>2018-08-14T18:27:46.4890000+10:00</last-metadata-change-date>
+  <last-change-date>2020-03-07T20:34:03.7680000+11:00</last-change-date>
+  <last-metadata-change-date>2020-03-07T20:34:03.7680000+11:00</last-metadata-change-date>
   <create-date>2018-06-23T13:14:34.4600000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

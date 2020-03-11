@@ -234,41 +234,55 @@ object Sett: TSett
         end
       end
       object CheckShowIntLinks: TCheckBox
+        AnchorSideLeft.Control = GroupBox5
+        AnchorSideTop.Control = GroupBox5
+        AnchorSideTop.Side = asrBottom
         Left = 32
         Height = 24
-        Top = 200
+        Top = 199
         Width = 164
+        BorderSpacing.Top = 15
         Caption = 'Show Internal Links'
         OnChange = CheckReadOnlyChange
         TabOrder = 1
       end
       object CheckShowExtLinks: TCheckBox
+        AnchorSideLeft.Control = GroupBox5
+        AnchorSideTop.Control = CheckShowIntLinks
+        AnchorSideTop.Side = asrBottom
         Left = 32
         Height = 24
-        Top = 240
+        Top = 238
         Width = 172
+        BorderSpacing.Top = 15
         Caption = 'Show External  Links'
         OnChange = CheckReadOnlyChange
         TabOrder = 2
       end
       object CheckManyNotebooks: TCheckBox
+        AnchorSideLeft.Control = GroupBox5
+        AnchorSideTop.Control = CheckShowExtLinks
+        AnchorSideTop.Side = asrBottom
         Left = 32
         Height = 24
         Hint = 'This may adversly affect tradional Tomboy, take care.'
-        Top = 280
+        Top = 277
         Width = 325
+        BorderSpacing.Top = 15
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
       object ButtonHelpNotes: TButton
         AnchorSideLeft.Control = GroupBox5
+        AnchorSideTop.Control = CheckManyNotebooks
+        AnchorSideTop.Side = asrBottom
         Left = 32
         Height = 31
-        Top = 320
+        Top = 316
         Width = 165
-        Anchors = [akLeft]
         AutoSize = True
+        BorderSpacing.Top = 15
         Caption = 'Help Notes Language'
         OnClick = ButtonHelpNotesClick
         TabOrder = 4

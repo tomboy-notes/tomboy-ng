@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>tomboy-ng System Requirements</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng System Requirements</underline><size:small>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng System Requirements</underline><size:large>
 
-This is a tomboy-ng doc for the Github Wiki. Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small>
+<italic>This is old content, no longer used like this, instead we refer users to the wiki Release Page. Historical interest only</italic></size:large>
 
 tomboy-ng is tested on <bold>Linux, Mac and Windows</bold>  platforms at each release. If your experiences differ, please let us know ! <size:large>
 
@@ -74,8 +74,8 @@ tomboy-ng is built using FPC, Lazarus and KControls. As all three are known to w
 
 
 </note-content></text>
-  <last-change-date>2020-02-22T21:02:28.2780000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-22T21:02:28.2780000+11:00</last-metadata-change-date>
+  <last-change-date>2020-03-07T20:55:50.4950000+11:00</last-change-date>
+  <last-metadata-change-date>2020-03-07T20:55:50.4950000+11:00</last-metadata-change-date>
   <create-date>2019-04-20T15:32:32.7080000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

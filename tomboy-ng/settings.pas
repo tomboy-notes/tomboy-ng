@@ -93,6 +93,7 @@ unit settings;
     2019/12/20  Ensure we have UsualFont set to something even during first start.
     2019/12/24  Ensure we don't try to sync if its not yet setup.
     2020/03/02  Force our guess fixed font if no config file.
+    2020/03/08  Don't call search refreshMenu(mkFileMenu after an initial sync, no need
 }
 
 {$mode objfpc}{$H+}
@@ -1188,7 +1189,7 @@ begin
             SettingsChanged();
             // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
             //MainForm.FillInFileMenus(True);
-            SearchForm.RefreshMenus(mkFileMenu);
+            //SearchForm.RefreshMenus(mkFileMenu);    // hmm, why do we do this ?  if we do it, must also do mkHelpMenu
         end else
         	LabelSyncRepo.Caption := rsSyncNotConfig;
 	end;

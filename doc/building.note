@@ -33,6 +33,10 @@ Lazarus will want to rebuild itself and restart, say yes, please do!  You can no
 
 Its also possible, and sometimes a good idea to build Lazarus from source. See the Lazarus wiki for more information.<size:large>
 
+<bold>An Alternative Build</bold></size:large>
+Linux users (and, maybe Mac users) who just want a newer build and want it now may like to try the experimental buildit.bash script in the tomboy-ng source directory. It requires the Free Pascal Compiler 3.0.4 be installed (easy, most distro's repos have 3.0.4). Grab the script from github and put it into an otherwise empty directory. Look in the script's header for advice on how to download Lazarus and KControls source before running the script. <size:large>
+
+
 <bold>Building Releases</bold></size:large>
 This section intended for production releases, not DIY. The author has a Linux box that has FPC 3.0.4 setup to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That  script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as root (??) will make RPMs (using the debs as input) that are suitable for RedHat systems.
 
@@ -43,8 +47,8 @@ The Mac kits are made on a Sierra Mac, again using a script. Until I can get aro
  
 
 </note-content></text>
-  <last-change-date>2020-02-22T21:03:53.3620000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-22T21:03:53.3620000+11:00</last-metadata-change-date>
+  <last-change-date>2020-03-07T21:27:35.0970000+11:00</last-change-date>
+  <last-metadata-change-date>2020-03-07T21:27:35.0970000+11:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
