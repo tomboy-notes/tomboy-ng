@@ -44,6 +44,9 @@ var
   I : integer = 0;
 begin
     Result := 'ERROR, failed match';
+    //writeln('Processing marker [' + Marker +']');
+    if Marker = '$$GPGKEY' then
+        exit('https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/package/tomboy-ng-GPG-KEY');
     while I < Length(Packs) do begin
         if (('$$' + Packs[i][0]) = Marker) then begin
             exit(WEB + Version + '/' + Packs[i][1] + Version + Packs[i][2]);

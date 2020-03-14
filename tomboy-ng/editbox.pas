@@ -199,8 +199,9 @@ unit EditBox;
     2019/12/22  Extensive changes to ClearNearLink() to ensure links are not smeared.
     2020/01/02  Enabled Ctrl-Shift left or right arrow selecting or extending selecton by word.
     2020/01/07  Use SaveTheNote() even when existing app with a clean note, UpdateNote() not used now
-    2020/01/12  More agressive adjustmenst to formm position at opening a note Windows and Mac only
+    2020/01/12  More agressive adjustmenst to form position at opening a note Windows and Mac only
     2020/01/28  Dont call SearchForm.UpdateList() when we are closing a clean note.
+    2020/03/11  In FormDestroy, we always save, EXCEPT if in SingleNoteMode, then only if dirty.
 }
 
 
@@ -402,7 +403,11 @@ type
             make heroic efforts to avoid having to do so. Index is char count, not byte.
             Its a SelectionIndex.  Note we no longer need pass this p the Link, remove ? }
 		procedure MakeLink(const Index, Len: longint);
-        { Makes the top line look like a title. }
+
+                            { Makes sure the first (and only the first) line is marked as Title
+                            Title should be Blue, Underlined and FontTitle big.
+                            Note that when a new note is loaded from disk, this function is not called,
+                            the Load unit knows how to do it itself. Saves 200ms with a big (20K) note. }
         procedure MarkTitle();
         { Returns true if current cursor is 'near' a bullet item. That could be because we are
   		on a Para Marker thats a Bullet and/or either Leading or Trailing Para is a Bullet.
@@ -1510,76 +1515,17 @@ begin
   if result = false then debugln('ERROR moving [' + TempName + '] to [' + NRec.FFName + ']');
 end;
 
-{
-     Tomboy's loose xml definition prevents use of FPC xml unit. Sigh ....
-
-Doc: TXMLDocument;
-    ANode : TDomNode;
-
-    function UpdateXML(ElementName, ElementData : string) : boolean;
-    begin
-        ANode := nil;
-        ANode := Doc.DocumentElement.FindNode(ElementName);
-        if not assigned(ANode) then begin
-            debugln('ERROR - cannot find ' + ElementName + ' in ' + NRec.FFname);
-            exit(false);
-        end;
-        ANode.FirstChild.NodeValue:= ElementData;
-        result := true;
-    end;
-
-begin
-    Result := False;
-    if not FileExists(Nrec.FFname) then exit;
-    ReadXMLFile(Doc, NRec.FFname);
-    try
-        if not UpdateXML('cursor-position', Nrec.CPos) then exit;
-        if not UpdateXML('width', Nrec.width) then exit;
-        if not UpdateXML('height', Nrec.height) then exit;
-        if not UpdateXML('x', Nrec.x) then exit;
-        if not UpdateXML('y', Nrec.y) then exit;
-        if not UpdateXML('open-on-startup', Nrec.OOS) then exit;
-        writeXMLFile(Doc, NRec.FFName);
-    finally
-        Doc.Free;
-    end;
-    result := true;
-end;   }
-
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
 {var
     ARec : TNoteUpdateRec; }
 begin
     if not Kmemo1.ReadOnly then
-//        if Dirty then
-
-
         if not DeletingThisNote then
-            SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
-{        else begin
-            ARec.CPos:='1';
-            ARec.X := inttostr(Left);
-            ARec.Y := inttostr(top);
-            ARec.Width := inttostr(Width);
-            ARec.Height := inttostr(Height);
-            ARec.FFName := NoteFileName;
-            ARec.OOS := booltostr(Sett.AreClosing, True);
-            if Verbose then
-                debugln('Going to update note ' + self.NoteFileName + ' and Sett.AreClosing is ' + booltostr(Sett.AreClosing, True));
-            UpDateNote(ARec);
-        end;                                 }
-
-
-//    if Dirty and (not KMemo1.ReadOnly)then begin
-        // debugln('Going to save.');
-//        SaveTheNote();
-        // debugln('Saved');
-	//end;
+            if (not SingleNoteMode) or Dirty then       // We always save, except in SingleNoteMode (where we save only if dirty)
+                SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
     SearchForm.NoteClosing(NoteFileName);
-    UnsetPrimarySelection;                  // tidy up copy on selection.
-    // LogClose();
+    UnsetPrimarySelection;                              // tidy up copy on selection.
 end;
-
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
 var
@@ -1597,12 +1543,6 @@ begin
     end;                            // Stopped at first TKMemoParagraph if it exists.
     if TheTitle <> '' then Result := True;
 end;
-
-
-    { Makes sure the first (and only the first) line is marked as Title
-      Title should be Blue, Underlined and FontTitle big.
-      Note that when a new note is loaded from disk, this function is not called,
-      the Load unit knows how to do it itself. Saves 200ms with a big (20K) note. }
 
 procedure TEditBoxForm.MarkTitle();
 var

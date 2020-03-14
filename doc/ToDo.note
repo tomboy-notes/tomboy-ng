@@ -10,13 +10,8 @@ This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generate
 Bug reports and feature requests should be via Github https://github.com/tomboy-notes/tomboy-ng/issues
 There is some advice about DIY debugging further down this document.<size:huge>
 
-<bold>Tested Platforms</bold></size:huge>
 
-tomboy-ng is currently tested on a number of platforms , see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Requirements
-
-Reports of your experiences are very welcome ! <size:huge>
-
-<bold>Known Issues and todo list (updated 2020/01/10)</bold></size:huge>
+<bold>Known Issues and todo list (updated 2020/03/15)</bold></size:huge>
 Recent fixes show as strikeout.
 
 <list><list-item dir="ltr">We don't do multilevel bullets. Lines starting with an '*' should be auto converted to a Bullet.</list-item></list>
@@ -25,14 +20,11 @@ Recent fixes show as strikeout.
 <list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Multilevel Bullets.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
-<list><list-item dir="ltr">Network Sync</list-item></list>
-<list><list-item dir="ltr"><strikeout>Links to other notes should be case insensitive. At present, the search is case insensitive, but the user's text is changed to whatever the other note's text actually is.</strikeout></list-item></list><strikeout></strikeout>
+<list><list-item dir="ltr">Network Sync - most users happy with file sync.</list-item></list>
 <list><list-item dir="ltr">When user chooses to download the help notes in their own language (if available) its dependant on some OS issues. Won't work on Windows 7 and won't work on a Mac that does not have wget installed. A possible fix exists in the next release of FPC.</list-item></list>
-<list><list-item dir="ltr"><strikeout>Display http: links, open in browser</strikeout></list-item></list><strikeout></strikeout>
-<list><list-item dir="ltr">Main Menu in all main forms. Ctrl Q to quit programme.</list-item></list>
-<list><list-item dir="ltr">A <strikeout>Second Instance should poke existing instance allowing use by systems that cannot display System Tray Icon.</strikeout></list-item></list><strikeout></strikeout>
 <list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.</list-item></list>
-<list><list-item dir="ltr">We don't have any Undo - Redo capability..</list-item></list><size:large>
+<list><list-item dir="ltr">We don't have any Undo - Redo capability..</list-item></list>
+<list><list-item dir="ltr">Due to major changes in Main Menus in 0.27, Mac on Cocoa has lost its Mac Main Menu (but the system Tray still works fine). </list-item></list><size:large>
 
 <bold>Long term 'maybe' stuff</bold></size:large>
 <list><list-item dir="ltr">Move notes into database (ie sqlite for small users, something bigger for BIG users). </list-item></list>
@@ -85,8 +77,8 @@ Windows and Mac do not, for this purpose, have a console. But they too  can be t
 In all cases, you may need to zip that file up to post it on Github. If  you  do intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see. It may include things like note Titles for example.
 
 </note-content></text>
-  <last-change-date>2020-01-19T18:44:39.6400000+11:00</last-change-date>
-  <last-metadata-change-date>2020-01-19T18:44:39.6400000+11:00</last-metadata-change-date>
+  <last-change-date>2020-03-15T10:10:29.2900000+11:00</last-change-date>
+  <last-metadata-change-date>2020-03-15T10:10:29.2900000+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

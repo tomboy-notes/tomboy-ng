@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Release page</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Release page</underline><size:large>
+  <title>tomboy-ng notes v0.27, March 2020</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng notes v0.27, March 2020</underline><size:small>
 
-<highlight>========== D R A F T  ===============</highlight></size:large>
-
-<bold>tomboy-ng notes v0.27, Feb 2020</bold><size:small>
-
-Dont edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
+Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
 Downloads and information for specific platforms further down the page.<size:huge>
 
 <bold>Release Notes</bold></size:huge>
-Some new features (and the inevitable bug fixes)
+Some new features (and the inevitable bug fixes) -
 <list><list-item dir="ltr">Auto sync finally enabled. Settings-&gt;Sync and tick the box. Its not enabled by default, please read the Sync Help Note.</list-item></list>
 <list><list-item dir="ltr">Redesigned Search Form and quite different search behaviour. #133 and #136. At some users request, the search results shown in the open Search Form are not updated when, for example, a note is edited or deleted. This is to keep your search results together.  When changes to the search results are pending, the Refresh button becomes enabled and you can trigger a update of the displayed results by clicking it. When updated, the existing search will be applied to new data. </list-item></list>
 <list><list-item dir="ltr">Search Terms can now contain (or consist of) text enclosed in double inverted commas, text with those double inverted commas must be matched exactly, outside of the commas, it can appear anywhere in a document to constitute a 'hit'. Now easy to see which notebook is selected.</list-item></list>
@@ -25,46 +21,40 @@ Some new features (and the inevitable bug fixes)
 <list><list-item dir="ltr">Fix to an isolated windows bug affecting saving #132</list-item></list>
  <size:huge>
 <bold>Installation</bold></size:huge>
-Please also see the Installation Notes relating to Linux, Windows and the Mac at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Requirements
 
 tomboy-ng is available for Linux, Mac and Windows.<size:large>
 
 <bold>Windows</bold></size:large>
-Tested on 32bit Windows 7 and 64bit Windows 10.  Windows users should download the Windows Installer, **the .exe file**, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes.
-
-<bold>Download this</bold>  $$EXE
+Tested on 32bit Windows 7 and 64bit Windows 10.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes.
 
 <bold>MacOSX</bold>
 Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64) unless you are running relatively old (and slow) hardware. The [32bit Carbon based one]($$DMG32) will not work on the newest MasOS but is somewhat faster. Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. 
 
-Note : First time users will need to control click the tomboy-ng icon in Applications and select "Open". <size:huge>
+Note : First time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open". <size:huge>
 
 <bold>Linux</bold></size:huge>
 Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
 
 <bold>Ubuntu</bold></size:large>
 Generally, all work fine but earlier distributions should use GTK2 and recent ones the Qt5 based version. 
-<list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). </list-item></list>
+<list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64).</list-item></list>
 <list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64) </list-item></list>
-<list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will work but Ubuntu apparently forgot to include a necessary part of their GTK2 package. So, if you use the GTK2 vesion with U19.10, you must also install appmenu-gtk2-module "sudo apt install appmenu-gtk2-module [enter]".</list-item></list>
+<list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will work but Ubuntu apparently forgot to include a necessary part of their GTK2 package. So, if you use the GTK2 version with U19.10, you must also install appmenu-gtk2-module "sudo apt install appmenu-gtk2-module [enter]".</list-item></list>
 <list><list-item dir="ltr">19.10 Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK version if you use Budgie [32bit]($$DEB32) or [64bit]($$DEB64). If tomboy-ng is slow to start, also manually install appmenu-gtk2-module.</list-item></list>
 <list><list-item dir="ltr">20.04 tested on a beta release and noted an issue with the GTK version, while its probably going to go away with the formal release of U20.04, I suggest  the Qt5 version is a safer choice. [64bitGTK]($$DEB64QT)</list-item></list>
 
-I recommend downloading the file and using the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). On U16.04 however you should use gdebi rather than apt to install.
+Click on the appropriate link and you can allow the "Software Installer" application to run the install except on U16.04. For U16.04 (and others, your choice) download the file and use GDebi (U16.04) or  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -
 
 <monospace>sudo apt install ./tomboy-ng_0.27-0_amd64.deb [enter]</monospace><size:large>
 
-
 <bold>Linux Mint</bold></size:large>
-
-Much of the Ubuntu notes above apply to Linux Mint, I have only tested against 19.2 Cinnamon. Your feedback is welcome.
-
-Again, please download the appropriate file and install using the apt command, as above.<size:large>
+ I have only tested against 19.2 Cinnamon. This, and 19.3 Cinnamon are based on Ubuntu 18.04, so use the GTK versions only,  [32bit]($$DEB32) or [64bit]($$DEB64) .  
+Click on the appropriate link from your browser and allow the suggested installer, GDebi, to run the install for you. Linux Mint does report any install errors that happen during this process (unlike some distros!) so its a good approach. <size:large>
 
 <bold>Debian</bold></size:large>
-For old stable and distros based on it (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version.
+For old stable and distros based on it (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  Buster, Debian 10 also appears happier with the GTK versions. 
 
-<bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a slightly different way. After starting tomboy-ng the first time, click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose "add to favourites". You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 but its not worth the effort. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will work fine 
+<bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a slightly different way. After starting tomboy-ng the first time, click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose "add to favourites". You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will work fine 
 
 <bold>Debian XFCE</bold> - may also fail to show the System Tray Icon, at this stage, my best advice is create a desktop launcher and use it to activate tomboy-ng as mentioned above. You may use either the [Qt5 64bit]($$DEB64QT) or [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64).
 
@@ -74,50 +64,57 @@ I recommend downloading the file and using the apt command (note the './' in fro
 
 <monospace>sudo apt install ./tomboy-ng_0.26-0_amd64.deb [enter]    -- note Qt5 version has a slightly different name.</monospace><size:large>
 
-<bold>Fedora</bold></size:large><bold>
-Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 but its not worth the effort. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) will work fine 
+<bold>Fedora</bold></size:large>
 
-Other flavours of Fedora (eg  Plasma, Cinnamon, XFce) all seem happy to display the System Tray Icon, I suggest using the Qt5 variety as its a smaller install  [Qt5 64bit]($$RPM64QT) , if you need 32bit try the [GTK2 32bit]($$RPM32) 
+Generally,  on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link and allow the suggested application "Software Install", to handle the install. Or, if you prefer, download and save the file, then use the yum command, eg -
+
+<monospace>sudo yum localinstall ./tomboy-ng-0.27-2.x86_64.rpm [enter]   </monospace>
+
+note the Qt5 version has a slightly different file name
+
+<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. 
+
+Other flavours of Fedora (eg <bold> Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.
+
+Fedora seems to now try and run Qt5 apps under Xorg even when wayland is the default display manager (thats nice), however its still apparently a little unstable, I strongly suggest the GTK version of tomboy-ng on Fedora. 
+
+ <size:large>
+<bold>OpenSuse</bold></size:large><bold>
+</bold><list><list-item dir="ltr"><bold>Leap</bold> is best used with the default  [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version, its QT5 libraries apparently have issues. </list-item></list>
+<list><list-item dir="ltr"><bold>Tumbleweed</bold> on the other hand is probably better using the  [Qt5 64bit]($$RPM64QT)  version. If you need 32bit, then the [GTK2 32bit]($$RPM32) will work fine but may require a larger download at install time.  </list-item></list>
+
+Suse is quite pushy about signing rpm packages, more work for me and it means you need to import the <bold>PGP signature</bold> I have used. So, please download [tomboy-ng-GPG-KEY]($$GPGKEY) and run this command in the directory you downloaded to, note this is only necessary once -
+
+<monospace>sudo rpm --import tomboy-ng-GPG-KEY [enter]</monospace>
+
+Next, to install tomboy-ng, please click on appropriate link, and allow the suggested application (Software Install) to handle the install.  If you receive an error message, its almost certainly because you have not yet installed the signature file mentioned above. You may prefer to use the rpm command but remember it does not resolve dependencies, manually installing at least libgtk-2.0 and, perhaps wmctrl may help you there.<size:large>
+
+<bold>Mageia </bold></size:large>
+Mageia warns you if you try to install a package who's signature it does not recognise. You can tell it not to worry and install anyway or, to put its mind at rest, download [tomboy-ng-GPGKEY]($$GPG-KEY) and run this command in the directory you downloaded to, note this is only necessary once -
+
+<monospace>sudo rpm --import tomboy-ng-GPG-KEY [enter]</monospace>
+
+Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) and allow Software Installer to install it for you but I found it occasionally generated an error that you don't get to see ! Try it by all means but if you don't find your tomboy-ng installed or upgraded, then revert to old fashioned way, download the file, save it, and use a command a bit like this -
+
+<monospace>sudo -c "yum localinstall ./tomboy-ng-0.27-2.x86_64.rpm" [enter]</monospace>
+
+<list><list-item dir="ltr"><bold>Mate, XFCE and KDE (ie Plasma)</bold> work fine. </list-item></list>
+<list><list-item dir="ltr"><bold>Mageia with Enlightenment</bold> requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment in the GTK variety still has a problem, instead of tomboy-ng's icon, you see a white triangular warning icon. But it works.</list-item></list>
+<list><list-item dir="ltr"><bold>Mageia Gnome,</bold> some recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) will work fine </list-item></list>
 
 To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.
-
-<monospace>sudo rpm -e tomboy-ng [enter]</monospace>
-<monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace><size:large>
-
-<bold>OpenSuse</bold></size:large>
  
-<list><list-item dir="ltr"><bold>Leap</bold> is best used with the default  [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version, its QT5 libraries apparently have issues. </list-item></list>
-<list><list-item dir="ltr"><bold>Tumbleweed</bold> on the other hand is probably better using the  [Qt5 64bit]($$RPM64QT)  version. If you need 32bit, then the [GTK2 32bit]($$RPM32) will work fine but may require a larger download at install time.</list-item></list>
-<list><list-item dir="ltr">It appears that the KDE/Plasma version of openSues has issues with tomboy-ng, both Qt5 and to a lesser extent, GTK. Under investigation.  </list-item></list>
-
-To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config. 
-
-<monospace>sudo rpm -e tomboy-ng [enter]</monospace>
-<monospace>sudo rpm -i ./tomboy-ng-0.25-2.amd64.rpm [enter]       -- note Qt5 version has a slightly different file name</monospace><size:large>
 
 
-
-<bold>Mageia </bold></size:large><bold>
-</bold><list><list-item dir="ltr"><bold>Mate, XFCE and KDE (ie Plasma)</bold> work fine. I suggest using the Qt5 variety as its a smaller install.   [Qt5 64bit]($$RPM64QT) , if you need 32bit try the [GTK2 32bit]($$RPM32) </list-item></list>
-<list><list-item dir="ltr"><bold>Mageia with Enlightenment</bold> works better with [Qt5 64bit]($$RPM64QT) and requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment in the GTK variety still has a problem, instead of tomboy-ng's icon, you see a white triangular warning icon. But it works.</list-item></list>
-<list><list-item dir="ltr"><bold>Mageia Gnome,</bold> some recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 but its not worth the effort. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) will work fine </list-item></list>
-
-To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.
- 
-<monospace>su -c "rpm -e tomboy-ng"</monospace>
-<monospace>su -c "rpm -Uv tomboy-ng_0.25-2.amd64.rpm"
-
-
-
-</monospace></note-content></text>
-  <last-change-date>2020-03-07T20:00:33.2900000+11:00</last-change-date>
-  <last-metadata-change-date>2020-03-07T20:00:33.2900000+11:00</last-metadata-change-date>
+</note-content></text>
+  <last-change-date>2020-03-15T10:51:17.8760000+11:00</last-change-date>
+  <last-metadata-change-date>2020-03-15T10:51:17.8760000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>210</x>
-  <y>70</y>
+  <x>480</x>
+  <y>278</y>
   <open-on-startup>False</open-on-startup>
 </note>
