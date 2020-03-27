@@ -60,6 +60,7 @@ unit Note_Lister;
     2020/02/03  Make contents of strgrid look like it claims to be after new data
                 Removed LoadSearchGrid, no use LoadStGrid in both modes.
     2020/02/19  XML Escape the notebook list sent back.
+    2020/03/27  Better reporting on short lastchangedate string. But need an autofix.
 }
 
 {$mode objfpc}
@@ -644,61 +645,63 @@ begin
         end;
   	if FileExistsUTF8(Dir + FileName) then begin
         if assigned(TermList) then
-        	if not NoteContains(TermList, FileName) then exit();
+            if not NoteContains(TermList, FileName) then exit();
         new(NoteP);
         NoteP^.IsTemplate := False;
   	    try
 	        try
                 NoteP^.ID:=FileName;
-  			    ReadXMLFile(Doc, Dir + FileName);
-  			    Node := Doc.DocumentElement.FindNode('title');
-      		    NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
-                //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
-                Node := Doc.DocumentElement.FindNode('last-change-date');
-                NoteP^.LastChange := Node.FirstChild.NodeValue;
-                if (length(NoteP^.LastChange) <> 33) and DebugMode then
-                    debugln('Short Date Format [' + NoteP^.LastChange + '] : ' + NoteP^.Title);
-                NoteP^.OpenNote := nil;
-                Node := Doc.DocumentElement.FindNode('create-date');
-                NoteP^.CreateDate := Node.FirstChild.NodeValue;
-                Node := Doc.DocumentElement.FindNode('open-on-startup');
-                NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
-                Node := Doc.DocumentElement.FindNode('tags');
-                if Assigned(Node) then begin
-                  	for J := 0 to Node.ChildNodes.Count-1 do
-                      	if UTF8pos('system:template', Node.ChildNodes.Item[J].TextContent) > 0 then
-                            NoteP^.IsTemplate := True;
-                    for J := 0 to Node.ChildNodes.Count-1 do
-                        if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then begin
-                        	NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
-                            // debugln('Notelister #691 ' +  UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17,1000));
-                        end;
-                            // Node.ChildNodes.Item[J].TextContent) may be something like -
-                            // * system:notebook:DavosNotebook - this note belongs to DavosNotebook
-                            // * system:template - this note is a template, if does not also have a
-                            // Notebook tag its the StartHere note, otherwise its the Template for
-                            // for the mentioned Notebook.
-				end;
-            except 		on E: EXMLReadError do begin
-                            DebugLn('XML ERROR' + E.Message);
-                            XMLError := True;
-                            dispose(NoteP);
-                            ErrorNotes.Append(FileName + ', ' + E.Message);
-                            exit();
-                        end;
+  	            ReadXMLFile(Doc, Dir + FileName);
+  	            Node := Doc.DocumentElement.FindNode('title');
+      	            NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
+                    //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
+                    Node := Doc.DocumentElement.FindNode('last-change-date');
+                    NoteP^.LastChange := Node.FirstChild.NodeValue;
+                    if (length(NoteP^.LastChange) <> 33) {and DebugMode} then begin
+                        debugln('Note Has incomplete date [' + NoteP^.LastChange + '] : ' + NoteP^.Title);
+                        debugln('Please open this note, make a small change and close it.');
+                    end;
+                    NoteP^.OpenNote := nil;
+                    Node := Doc.DocumentElement.FindNode('create-date');
+                    NoteP^.CreateDate := Node.FirstChild.NodeValue;
+                    Node := Doc.DocumentElement.FindNode('open-on-startup');
+                    NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
+                    Node := Doc.DocumentElement.FindNode('tags');
+                    if Assigned(Node) then begin
+                            for J := 0 to Node.ChildNodes.Count-1 do
+                            if UTF8pos('system:template', Node.ChildNodes.Item[J].TextContent) > 0 then
+                                NoteP^.IsTemplate := True;
+                        for J := 0 to Node.ChildNodes.Count-1 do
+                            if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then begin
+                                    NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
+                                // debugln('Notelister #691 ' +  UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17,1000));
+                            end;
+                                // Node.ChildNodes.Item[J].TextContent) may be something like -
+                                // * system:notebook:DavosNotebook - this note belongs to DavosNotebook
+                                // * system:template - this note is a template, if does not also have a
+                                // Notebook tag its the StartHere note, otherwise its the Template for
+                                // for the mentioned Notebook.
+		            end;
+            except 	on E: EXMLReadError do begin
+                                DebugLn('XML ERROR' + E.Message);
+                                XMLError := True;
+                                dispose(NoteP);
+                                ErrorNotes.Append(FileName + ', ' + E.Message);
+                                exit();
+                            end;
             		    on EAccessViolation do DebugLn('Access Violation ' + FileName);
-  		    end;
-            if NoteP^.IsTemplate then begin    // Don't show templates in normal note list
-                dispose(NoteP);
-                exit();
-			end;
-			if assigned(TermList) then
-                SearchNoteList.Add(NoteP)
-            else NoteList.Add(NoteP);
+  	        end;
+                if NoteP^.IsTemplate then begin    // Don't show templates in normal note list
+                    dispose(NoteP);
+                    exit();
+			    end;
+			    if assigned(TermList) then
+                    SearchNoteList.Add(NoteP)
+                else NoteList.Add(NoteP);
   	    finally
-      	    Doc.free;
+      	        Doc.free;
   	    end;
-  end else DebugLn('Error, found a note and lost it !');
+    end else DebugLn('Error, found a note and lost it !');
 end;
 
 
@@ -736,10 +739,10 @@ begin
     if not assigned(NoteList) then exit('');
     FileName := CleanFileName(ID);
     for Index := 0 to NoteList.Count -1 do
-      if NoteList.Items[Index]^.ID = FileName then begin
-          exit(NoteList.Items[Index]^.LastChange);
-          debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
-      end;
+    if NoteList.Items[Index]^.ID = FileName then begin
+        exit(NoteList.Items[Index]^.LastChange);
+		debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
+    end;
 end;
 
 function TNoteLister.IsIDPresent(ID: string): boolean;
@@ -750,8 +753,8 @@ begin
     Result := False;
     FileName := CleanFileName(ID);
     for Index := 0 to NoteList.Count -1 do
-      if NoteList.Items[Index]^.ID = FileName then
-          exit(True);
+        if NoteList.Items[Index]^.ID = FileName then
+            exit(True);
 end;
 
 function TNoteLister.FindFirstOpenNote(): TForm;

@@ -202,6 +202,7 @@ unit EditBox;
     2020/01/12  More agressive adjustmenst to form position at opening a note Windows and Mac only
     2020/01/28  Dont call SearchForm.UpdateList() when we are closing a clean note.
     2020/03/11  In FormDestroy, we always save, EXCEPT if in SingleNoteMode, then only if dirty.
+    2020/03/27  Don't save a new, unwritten to note, also prevent 2 saves on a Ctrl-F4
 }
 
 
@@ -1519,12 +1520,14 @@ procedure TEditBoxForm.FormDestroy(Sender: TObject);
 {var
     ARec : TNoteUpdateRec; }
 begin
+    UnsetPrimarySelection;                                      // tidy up copy on selection.
+    if (length(NoteFileName) = 0) and (not Dirty) then exit;    // A new, unchanged note, no need to save.
     if not Kmemo1.ReadOnly then
         if not DeletingThisNote then
             if (not SingleNoteMode) or Dirty then       // We always save, except in SingleNoteMode (where we save only if dirty)
                 SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
     SearchForm.NoteClosing(NoteFileName);
-    UnsetPrimarySelection;                              // tidy up copy on selection.
+
 end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
@@ -2405,7 +2408,7 @@ begin
             VK_D : InsertDate();
             VK_N : SearchForm.OpenNote();      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
             VK_E : InitiateCalc();
-            VK_F4 : begin SaveTheNote(); close; end;
+            VK_F4 : close;                      // close just this note, normal saving will take place
             VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
             VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_RETURN, VK_INSERT :
                 exit;    // so key is not set to 0 on the way out, KMemo will handle
@@ -2610,6 +2613,7 @@ var
     // TestI : integer;
 begin
     // T1 := gettickcount64();
+    debugln('Saving this note' + Caption);
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
