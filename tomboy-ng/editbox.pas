@@ -203,6 +203,8 @@ unit EditBox;
     2020/01/28  Dont call SearchForm.UpdateList() when we are closing a clean note.
     2020/03/11  In FormDestroy, we always save, EXCEPT if in SingleNoteMode, then only if dirty.
     2020/03/27  Don't save a new, unwritten to note, also prevent 2 saves on a Ctrl-F4
+    2020/03/27  Set a cleared highlight to correct background colour.
+                No longer toggle when changing font sizes, set it to what user asks.
 }
 
 
@@ -349,8 +351,8 @@ type
         DeletingThisNote : boolean;
         procedure AdjustFormPosition();
         { Alters the Font of Block as indicated }
-        procedure AlterBlockFont(const FirstBlockNo : longint; const BlockNo: longint; const Command : integer;
-            const NewFontSize: integer=0);
+        procedure AlterBlockFont(const FirstBlockNo, BlockNo: longint;
+				const Command: integer; const NewFontSize: integer=0);
         { Alters the font etc of selected area as indicated }
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
         { If Toggle is true, sets bullets to what its currently no. Otherwise sets to TurnOn}
@@ -836,7 +838,7 @@ end;
 
 
 	{  Takes a Block number and applies changes to that block }
-procedure TEditBoxForm.AlterBlockFont(const FirstBlockNo : longint; const BlockNo : longint; const Command : integer; const NewFontSize : integer = 0);
+procedure TEditBoxForm.AlterBlockFont(const FirstBlockNo, BlockNo : longint; const Command : integer; const NewFontSize : integer = 0);
 var
 	Block, FirstBlock : TKMemoTextBlock;
 
@@ -848,11 +850,12 @@ begin
          exit();
     end;
     case Command of
-		ChangeSize :	if Block.TextStyle.Font.Size = NewFontSize then begin
+		{ChangeSize :	if Block.TextStyle.Font.Size = NewFontSize then begin
 						Block.TextStyle.Font.Size := Sett.FontNormal;
 					end else begin
  						Block.TextStyle.Font.Size := NewFontSize;
-					end;
+					end;  }
+        ChangeSize : Block.TextStyle.Font.Size := NewFontSize;
 		ChangeBold :   	if fsBold in FirstBlock.TextStyle.Font.style then begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style - [fsBold];
 					end else begin
@@ -889,7 +892,7 @@ begin
                     if FirstBlock.TextStyle.Brush.Color <> Sett.HiColor then begin
                         Block.TextStyle.Brush.Color := Sett.HiColor;
                     end else begin
-                        Block.TextStyle.Brush.Color := clDefault;
+                        Block.TextStyle.Brush.Color := Sett.BackGndColour; { clDefault; }
                     end;
 	end;
 end;

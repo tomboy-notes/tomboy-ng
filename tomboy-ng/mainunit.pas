@@ -703,7 +703,7 @@ begin
         {$endif}
     end;
     if Sett.DarkTheme then begin
-        debugln('Its definltly a Dark Theme');
+        //debugln('Its definltly a Dark Theme');
         Sett.BackGndColour:= clBlack;
         Sett.HiColor := clDkGray;
         Sett.TextColour := clLtGray;
