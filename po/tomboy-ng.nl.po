@@ -638,6 +638,7 @@ msgid "Fixed Width"
 msgstr "Vaste breedte"
 
 #: teditboxform.menuhighlight.caption
+msgctxt "teditboxform.menuhighlight.caption"
 msgid "Highlight"
 msgstr "Markeren"
 
@@ -804,6 +805,40 @@ msgstr ""
 
 #: tformbackupview.caption
 msgid "FormBackupView"
+msgstr ""
+
+#: tformcolours.bitbtndefault.caption
+msgid "Default"
+msgstr ""
+
+#: tformcolours.buttonback.caption
+msgid "Background"
+msgstr ""
+
+#: tformcolours.buttonhiback.caption
+#, fuzzy
+msgctxt "tformcolours.buttonhiback.caption"
+msgid "Highlight"
+msgstr "Markeren"
+
+#: tformcolours.buttontext.caption
+msgid "Text"
+msgstr ""
+
+#: tformcolours.buttontitle.caption
+msgid "Title"
+msgstr ""
+
+#: tformcolours.caption
+msgid "FormColours"
+msgstr ""
+
+#: tformcolours.label1.caption
+msgid "Sample"
+msgstr ""
+
+#: tformcolours.label2.caption
+msgid "Set Colours"
 msgstr ""
 
 #: tformhelpnotes.buttonclose.caption
@@ -1429,6 +1464,11 @@ msgstr "Standaard notitielocatie gebruiken"
 #: tsett.buttdefaultnotedir.hint
 msgid "Will work for many new users"
 msgstr "Aanbevolen voor de meeste nieuwe gebruikers"
+
+#: tsett.button1.caption
+msgctxt "tsett.button1.caption"
+msgid "Button1"
+msgstr ""
 
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"

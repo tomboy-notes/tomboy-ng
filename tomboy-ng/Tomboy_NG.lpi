@@ -723,7 +723,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="31">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -903,6 +903,12 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SyncError"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="colours.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormColours"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit30>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

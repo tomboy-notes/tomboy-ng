@@ -94,6 +94,7 @@ unit settings;
     2019/12/24  Ensure we don't try to sync if its not yet setup.
     2020/03/02  Force our guess fixed font if no config file.
     2020/03/08  Don't call search refreshMenu(mkFileMenu after an initial sync, no need
+    2020/03/30  Added code to allow user to set display colours.
 }
 
 {$mode objfpc}{$H+}
@@ -114,6 +115,7 @@ type
 
     TSett = class(TForm)
 			ButtDefaultNoteDir: TButton;
+			ButtonSetColours: TButton;
             ButtonFixedFont: TButton;
             ButtonFont: TButton;
             ButtonHelpNotes: TButton;
@@ -205,6 +207,7 @@ type
         TimeEdit1: TTimeEdit;
         TimerAutoSync: TTimer;
 		procedure ButtDefaultNoteDirClick(Sender: TObject);
+		procedure ButtonSetColoursClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
         procedure ButtonHelpNotesClick(Sender: TObject);
@@ -242,8 +245,9 @@ type
         procedure TabSpellResize(Sender: TObject);
         procedure TabSyncResize(Sender: TObject);
         procedure TimerAutoSyncTimer(Sender: TObject);
-		//procedure Timer1Timer(Sender: TObject);
+        procedure SetColours;
    	private
+        UserSetColours : boolean;
         fExportPath : ANSIString;
         // Reads an existing config file OR writes a new, default one if necessary.
  		procedure CheckConfigFile;
@@ -268,6 +272,7 @@ type
                             // Has a list of possible fixed font names, returns the first that 'works'.
         function GetFixedFont(): string;
         function MyBoolStr(const InBool: boolean) : string;
+
         procedure SetFontSizes;
         // Saves all current settings to disk. Call when any change is made. If unable
         // to write to disk, returns False;
@@ -279,7 +284,7 @@ type
         AreClosing : boolean;       // False until set true by mainUnit FormClose.
         BackGndColour : TColor;     // Next three set in main unit.
         TextColour : TColor;
-        HiColor : TColor;
+        HiColour : TColor;
         TitleColour : TColor;
         UsualFont : string;
         FixedFont : string;
@@ -360,7 +365,8 @@ uses IniFiles, LazLogger,
     hunspell,       // spelling check
     helpnotes,      // All user to download non-English help Notes
     LCLType,        // Keycodes ....
-    Autostart
+    Autostart,
+    Colours
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
 var
@@ -832,6 +838,12 @@ begin
             FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
             if FixedFont = '' then FixedFont := DefaultFixedFont;
             ButtonFixedFont.Hint := FixedFont;
+            BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
+            HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColor', '0'));
+            TextColour := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour', '0'));
+            TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
+            UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
+            // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
             case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
                 'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
                 'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
@@ -922,7 +934,19 @@ begin
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'huge');
             ConfigFile.writestring('BasicSettings', 'UsualFont', UsualFont);
             ConfigFile.writestring('BasicSettings', 'FixedFont', FixedFont);
-            ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
+            //(Sel_CText = 0) and (Sel_CBack = 0) and (Sel_CHiBack = 0) and (Sel_CTitle = 0)
+            if UserSetColours then begin
+                ConfigFile.writestring('BasicSettings', 'BackGndColour', ColorToString(BackGndColour));
+                ConfigFile.writestring('BasicSettings', 'HiColor', ColorToString(HiColour));
+                ConfigFile.writestring('BasicSettings', 'TextColour', ColorToString(TextColour));
+                ConfigFile.writestring('BasicSettings', 'TitleColour', ColorToString(TitleColour));
+			end else begin
+                    ConfigFile.writestring('BasicSettings', 'BackGndColour', '0');
+                    ConfigFile.writestring('BasicSettings', 'HiColor', '0');
+                    ConfigFile.writestring('BasicSettings', 'TextColour', '0');
+                    ConfigFile.writestring('BasicSettings', 'TitleColour', '0');
+			end;
+			ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
 	        if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
@@ -975,6 +999,47 @@ begin
         SearchForm.IndexNotes();
         //NeedRefresh := True;
     end;
+end;
+
+procedure TSett.SetColours;
+begin
+    if UserSetColours then exit;        // will have already been set by config or by colour form.
+    if DarkTheme then begin
+        //debugln('Its definltly a Dark Theme');
+        BackGndColour:= clBlack;
+        HiColour := clDkGray;
+        TextColour := clLtGray;
+        TitleColour:= clTeal;
+    end else begin
+        BackGndColour := clCream;
+        HiColour := clYellow;
+        TextColour := clBlack;
+        TitleColour := clBlue;
+    end;
+end;
+
+procedure TSett.ButtonSetColoursClick(Sender: TObject);
+begin
+    FormColours.CBack   := BackGndColour;
+    FormColours.CHiBack := HiColour;
+    FormColours.CText   := TextColour;
+    FormColours.CTitle  := TitleColour;
+    case FormColours.ShowModal of
+        mrRetry  :  begin
+                        UserSetColours := False;
+                        SetColours();
+                        SettingsChanged();
+                    end;
+        mrOK     :  begin
+	                    BackGndColour := FormColours.CBack;
+	                    HiColour := FormColours.CHiBack;
+	                    TextColour := FormColours.CText;
+	                    TitleColour := FormColours.CTitle;
+                         UserSetColours := True;
+                        SettingsChanged();
+                    end;
+//        mrCancel : showmessage('Do nothing');
+	end;
 end;
 
 procedure TSett.ButtonFixedFontClick(Sender: TObject);

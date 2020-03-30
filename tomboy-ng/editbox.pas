@@ -889,8 +889,8 @@ begin
 						Block.TextStyle.Font.Style := Block.TextStyle.Font.Style + [fsUnderline];
 					end;
 		ChangeColor :
-                    if FirstBlock.TextStyle.Brush.Color <> Sett.HiColor then begin
-                        Block.TextStyle.Brush.Color := Sett.HiColor;
+                    if FirstBlock.TextStyle.Brush.Color <> Sett.HiColour then begin
+                        Block.TextStyle.Brush.Color := Sett.HiColour;
                     end else begin
                         Block.TextStyle.Brush.Color := Sett.BackGndColour; { clDefault; }
                     end;

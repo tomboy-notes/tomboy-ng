@@ -309,6 +309,15 @@ object Sett: TSett
         ShowHint = True
         TabOrder = 6
       end
+      object ButtonSetColours: TButton
+        Left = 32
+        Height = 25
+        Top = 359
+        Width = 164
+        Caption = 'Set Colours'
+        OnClick = ButtonSetColoursClick
+        TabOrder = 7
+      end
     end
     object TabSync: TTabSheet
       Caption = 'Sync'

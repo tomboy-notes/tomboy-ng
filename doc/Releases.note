@@ -41,7 +41,7 @@ Generally, all work fine but earlier distributions should use GTK2 and recent on
 <list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64) </list-item></list>
 <list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will work but Ubuntu apparently forgot to include a necessary part of their GTK2 package. So, if you use the GTK2 version with U19.10, you must also install appmenu-gtk2-module "sudo apt install appmenu-gtk2-module [enter]".</list-item></list>
 <list><list-item dir="ltr">19.10 Budgie appears to have a problem with the Qt5 variety, no idea why so use the default GTK version if you use Budgie [32bit]($$DEB32) or [64bit]($$DEB64). If tomboy-ng is slow to start, also manually install appmenu-gtk2-module.</list-item></list>
-<list><list-item dir="ltr">20.04 tested on a beta release and noted an issue with the GTK version, while its probably going to go away with the formal release of U20.04, I suggest  the Qt5 version is a safer choice. [64bitGTK]($$DEB64QT)</list-item></list>
+<list><list-item dir="ltr">20.04 tested on a beta release and noted an issue with the GTK version, while its probably going to go away with the formal release of U20.04, I suggest  the Qt5 version is a safer choice. [64bit QT]($$DEB64QT)</list-item></list>
 
 Click on the appropriate link and you can allow the "Software Installer" application to run the install except on U16.04. For U16.04 (and others, your choice) download the file and use GDebi (U16.04) or  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -
 
@@ -83,14 +83,14 @@ Fedora seems to now try and run Qt5 apps under Xorg even when wayland is the def
 </bold><list><list-item dir="ltr"><bold>Leap</bold> is best used with the default  [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version, its QT5 libraries apparently have issues. </list-item></list>
 <list><list-item dir="ltr"><bold>Tumbleweed</bold> on the other hand is probably better using the  [Qt5 64bit]($$RPM64QT)  version. If you need 32bit, then the [GTK2 32bit]($$RPM32) will work fine but may require a larger download at install time.  </list-item></list>
 
-Suse is quite pushy about signing rpm packages, more work for me and it means you need to import the <bold>PGP signature</bold> I have used. So, please download [tomboy-ng-GPG-KEY]($$GPGKEY) and run this command in the directory you downloaded to, note this is only necessary once -
+Suse is quite pushy about signing rpm packages, more work for me and it means you need to import the <bold>PGP signature</bold> I have used. So, please download [tomboy-ng-GPG-KEY]($$GPGKEY) (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
 
 <monospace>sudo rpm --import tomboy-ng-GPG-KEY [enter]</monospace>
 
 Next, to install tomboy-ng, please click on appropriate link, and allow the suggested application (Software Install) to handle the install.  If you receive an error message, its almost certainly because you have not yet installed the signature file mentioned above. You may prefer to use the rpm command but remember it does not resolve dependencies, manually installing at least libgtk-2.0 and, perhaps wmctrl may help you there.<size:large>
 
 <bold>Mageia </bold></size:large>
-Mageia warns you if you try to install a package who's signature it does not recognise. You can tell it not to worry and install anyway or, to put its mind at rest, download [tomboy-ng-GPGKEY]($$GPG-KEY) and run this command in the directory you downloaded to, note this is only necessary once -
+Mageia warns you if you try to install a package who's signature it does not recognise. You can tell it not to worry and install anyway or, to put its mind at rest, download [tomboy-ng-GPGKEY]($$GPGKEY)  (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
 
 <monospace>sudo rpm --import tomboy-ng-GPG-KEY [enter]</monospace>
 
@@ -107,8 +107,8 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </note-content></text>
-  <last-change-date>2020-03-15T10:51:17.8760000+11:00</last-change-date>
-  <last-metadata-change-date>2020-03-15T10:51:17.8760000+11:00</last-metadata-change-date>
+  <last-change-date>2020-03-16T10:34:46.6620000+11:00</last-change-date>
+  <last-metadata-change-date>2020-03-16T10:34:46.6620000+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

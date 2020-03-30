@@ -166,7 +166,7 @@ begin
       TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));  // We have to scan InStr for &lt; and &gt;  being < and >
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
-      if HighLight then TB.TextStyle.Brush.Color := Sett.HiColor;
+      if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
       if Underline then FT.Style := Ft.Style + [fsUnderline];
       if Strikeout then FT.Style := Ft.Style + [fsStrikeout];
       if FixedWidth then FT.Name := Sett.FixedFont;

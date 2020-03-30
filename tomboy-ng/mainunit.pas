@@ -62,6 +62,7 @@ unit Mainunit;
     2019/12/08  New "second instance" model.
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
     2019/12/20  Added option --delay-start for when desktop is slow to determine its (dark) colours
+    2020/03/30  Allow user to set display colours.
 
     CommandLine Switches
 
@@ -702,21 +703,8 @@ begin
         Sett.DarkTheme := (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A');
         {$endif}
     end;
-    if Sett.DarkTheme then begin
-        //debugln('Its definltly a Dark Theme');
-        Sett.BackGndColour:= clBlack;
-        Sett.HiColor := clDkGray;
-        Sett.TextColour := clLtGray;
-        Sett.TitleColour:= clTeal;
-    end else begin
-        Sett.BackGndColour := clCream;
-        Sett.HiColor := clYellow;
-        Sett.TextColour := clBlack;
-        Sett.TitleColour := clBlue;
-    end;
-
+	Sett.SetColours;
 end;
-
 
 { ------------- M E N U   M E T H O D S ----------------}
 

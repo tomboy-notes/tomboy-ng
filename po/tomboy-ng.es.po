@@ -631,6 +631,7 @@ msgid "Fixed Width"
 msgstr "Monoespaciada"
 
 #: teditboxform.menuhighlight.caption
+msgctxt "teditboxform.menuhighlight.caption"
 msgid "Highlight"
 msgstr "Resaltar"
 
@@ -795,6 +796,40 @@ msgstr "Restaurar esta nota al repositorio principal"
 #: tformbackupview.caption
 msgid "FormBackupView"
 msgstr "VistaDeSeguridad"
+
+#: tformcolours.bitbtndefault.caption
+msgid "Default"
+msgstr ""
+
+#: tformcolours.buttonback.caption
+msgid "Background"
+msgstr ""
+
+#: tformcolours.buttonhiback.caption
+#, fuzzy
+msgctxt "tformcolours.buttonhiback.caption"
+msgid "Highlight"
+msgstr "Resaltar"
+
+#: tformcolours.buttontext.caption
+msgid "Text"
+msgstr ""
+
+#: tformcolours.buttontitle.caption
+msgid "Title"
+msgstr ""
+
+#: tformcolours.caption
+msgid "FormColours"
+msgstr ""
+
+#: tformcolours.label1.caption
+msgid "Sample"
+msgstr ""
+
+#: tformcolours.label2.caption
+msgid "Set Colours"
+msgstr ""
 
 #: tformhelpnotes.buttonclose.caption
 msgctxt "tformhelpnotes.buttonclose.caption"
@@ -1424,6 +1459,11 @@ msgstr "Usar Ubicación Predeterminada"
 msgid "Will work for many new users"
 msgstr "Funcionará para muchos usuarios nuevos"
 
+#: tsett.button1.caption
+msgctxt "tsett.button1.caption"
+msgid "Button1"
+msgstr ""
+
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
 msgstr "Fuente monoespaciada"
@@ -1730,3 +1770,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
+
