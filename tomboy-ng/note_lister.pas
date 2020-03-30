@@ -165,6 +165,7 @@ type
         ): boolean;
             { Removes any complete xml tags from passed string, only matches '<' to '>' }
     function RemoveXml(const St: AnsiString): AnsiString;
+	procedure RewriteBadChangeDate(const Dir, FileName, LCD: ANSIString);
 
    public
     DebugMode : boolean;
@@ -628,6 +629,48 @@ begin
 	result := CompareStr(PNote(Item1)^.LastChange, PNote(Item2)^.LastChange);
 end;
 
+procedure TNoteLister.RewriteBadChangeDate(const Dir, FileName, LCD : ANSIString);
+var
+    InFile, OutFile: TextFile;
+    InString : string;
+begin
+    // Bad format looks like this 2020-03-06 21:25:18
+    // But it Should be like this 2020-02-15T12:07:41.0000000+00:00
+
+    AssignFile(InFile, Dir + FileName);
+    AssignFile(OutFile, Dir + Filename + '-Dated');
+    try
+        try
+            Reset(InFile);
+            Rewrite(OutFile);
+            while not eof(InFile) do begin
+                readln(InFile, InString);
+                if (Pos('<last-change-date>', InString) > 0) then
+                    writeln(OutFile, '  <last-change-date>'
+                                // + copy(LCD, 1, 10) + 'T' + copy(LCD, 12, 8) + '.1000000+00:00'
+                                + Sett.GetLocalTime()
+                                + '</last-change-date>')
+                else writeln(OutFile, InString);
+		    end;
+        finally
+            CloseFile(OutFile);
+            CloseFile(InFile);
+        end;
+    except
+        on E: EInOutError do begin
+                debugln('File handling error occurred updating clean note location. Details: ' + E.Message);
+                exit;
+            end;
+    end;
+    {$ifdef WINDOWS}
+        if FileExists(Dir + FileName) then    // will not be there if its a new note.
+            if not SafeWindowsDelete(Dir + FileName, ErrorMsg) then         // In syncutils, maybe over kill but ......
+               exit;
+    {$endif}
+    RenameFileUTF8(Dir + Filename + '-Dated', Dir + FileName);    // Unix ok to over write, windows is not !
+end;
+
+
 procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const TermList : TStringList; DontTestName : boolean = false);
 			// This is how we search for XML elements, attributes are different.
 var
@@ -635,6 +678,7 @@ var
     Doc : TXMLDocument;
 	Node : TDOMNode;
     J : integer;
+    TryCount : integer =0;             // only try rewriting bad last-change-date once.
 begin
     // debugln('Checking note ', FileName);
     if not DontTestName then
@@ -651,37 +695,44 @@ begin
   	    try
 	        try
                 NoteP^.ID:=FileName;
-  	            ReadXMLFile(Doc, Dir + FileName);
-  	            Node := Doc.DocumentElement.FindNode('title');
-      	            NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
-                    //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
-                    Node := Doc.DocumentElement.FindNode('last-change-date');
-                    NoteP^.LastChange := Node.FirstChild.NodeValue;
-                    if (length(NoteP^.LastChange) <> 33) {and DebugMode} then begin
-                        debugln('Note Has incomplete date [' + NoteP^.LastChange + '] : ' + NoteP^.Title);
-                        debugln('Please open this note, make a small change and close it.');
-                    end;
-                    NoteP^.OpenNote := nil;
-                    Node := Doc.DocumentElement.FindNode('create-date');
-                    NoteP^.CreateDate := Node.FirstChild.NodeValue;
-                    Node := Doc.DocumentElement.FindNode('open-on-startup');
-                    NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
-                    Node := Doc.DocumentElement.FindNode('tags');
-                    if Assigned(Node) then begin
-                            for J := 0 to Node.ChildNodes.Count-1 do
-                            if UTF8pos('system:template', Node.ChildNodes.Item[J].TextContent) > 0 then
+
+                while TryCount < 2 do begin
+	                ReadXMLFile(Doc, Dir + FileName);
+	  	            Node := Doc.DocumentElement.FindNode('title');
+	      	        NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
+	                    //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
+	                Node := Doc.DocumentElement.FindNode('last-change-date');
+	                NoteP^.LastChange := Node.FirstChild.NodeValue;
+	                if (length(NoteP^.LastChange) <> 33) {and DebugMode} then begin
+                        if TryCount > 0 then
+	                        debugln('Note Has incomplete date, cannot fix ! [' + NoteP^.LastChange + '] : ' + NoteP^.Title)
+                        else
+	                        RewriteBadChangeDate(Dir, FileName, NoteP^.LastChange)
+	                end;
+                    inc(TryCount);
+				end;
+
+                NoteP^.OpenNote := nil;
+                Node := Doc.DocumentElement.FindNode('create-date');
+                NoteP^.CreateDate := Node.FirstChild.NodeValue;
+                Node := Doc.DocumentElement.FindNode('open-on-startup');
+                NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
+                Node := Doc.DocumentElement.FindNode('tags');
+                if Assigned(Node) then begin
+                    for J := 0 to Node.ChildNodes.Count-1 do
+                        if UTF8pos('system:template', Node.ChildNodes.Item[J].TextContent) > 0 then
                                 NoteP^.IsTemplate := True;
-                        for J := 0 to Node.ChildNodes.Count-1 do
-                            if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then begin
-                                    NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
-                                // debugln('Notelister #691 ' +  UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17,1000));
-                            end;
+                    for J := 0 to Node.ChildNodes.Count-1 do
+                        if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then begin
+                            NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
+                            // debugln('Notelister #691 ' +  UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17,1000));
+                        end;
                                 // Node.ChildNodes.Item[J].TextContent) may be something like -
                                 // * system:notebook:DavosNotebook - this note belongs to DavosNotebook
                                 // * system:template - this note is a template, if does not also have a
                                 // Notebook tag its the StartHere note, otherwise its the Template for
                                 // for the mentioned Notebook.
-		            end;
+		        end;
             except 	on E: EXMLReadError do begin
                                 DebugLn('XML ERROR' + E.Message);
                                 XMLError := True;
