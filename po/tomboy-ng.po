@@ -787,6 +787,10 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+#: tformcolours.buttontitle.hint
+msgid "Set Title Colour"
+msgstr ""
+
 #: tformcolours.caption
 msgid "FormColours"
 msgstr ""
@@ -796,6 +800,7 @@ msgid "Sample"
 msgstr ""
 
 #: tformcolours.label2.caption
+msgctxt "tformcolours.label2.caption"
 msgid "Set Colours"
 msgstr ""
 
@@ -1409,11 +1414,6 @@ msgstr ""
 msgid "Will work for many new users"
 msgstr ""
 
-#: tsett.button1.caption
-msgctxt "tsett.button1.caption"
-msgid "Button1"
-msgstr ""
-
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
 msgstr ""
@@ -1433,6 +1433,11 @@ msgstr ""
 
 #: tsett.buttonmanualsnap.hint
 msgid "Take a time stamped snapshot of notes and config"
+msgstr ""
+
+#: tsett.buttonsetcolours.caption
+msgctxt "tsett.buttonsetcolours.caption"
+msgid "Set Colours"
 msgstr ""
 
 #: tsett.buttonsetdictionary.caption

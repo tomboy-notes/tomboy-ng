@@ -205,7 +205,7 @@ unit EditBox;
     2020/03/27  Don't save a new, unwritten to note, also prevent 2 saves on a Ctrl-F4
     2020/03/27  Set a cleared highlight to correct background colour.
                 No longer toggle when changing font sizes, set it to what user asks.
-    2020/04/01  Removed line that exited KMemo1KeyDown in read only mode, prevented cursor keys working.
+    2020/04/01  Removed line that exited KMemo1KeyDown in readonly mode, prevented cursor keys working.
 }
 
 

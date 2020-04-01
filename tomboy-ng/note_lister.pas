@@ -61,6 +61,7 @@ unit Note_Lister;
                 Removed LoadSearchGrid, no use LoadStGrid in both modes.
     2020/02/19  XML Escape the notebook list sent back.
     2020/03/27  Better reporting on short lastchangedate string. But need an autofix.
+    2020/04/01  Bug fix for code that auto fixes short last-change-date.
 }
 
 {$mode objfpc}
@@ -679,6 +680,7 @@ var
 	Node : TDOMNode;
     J : integer;
     TryCount : integer =0;             // only try rewriting bad last-change-date once.
+    //LCD_OK : boolean = false;
 begin
     // debugln('Checking note ', FileName);
     if not DontTestName then
@@ -696,7 +698,7 @@ begin
 	        try
                 NoteP^.ID:=FileName;
 
-                while TryCount < 2 do begin
+                repeat
 	                ReadXMLFile(Doc, Dir + FileName);
 	  	            Node := Doc.DocumentElement.FindNode('title');
 	      	        NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
@@ -704,13 +706,16 @@ begin
 	                Node := Doc.DocumentElement.FindNode('last-change-date');
 	                NoteP^.LastChange := Node.FirstChild.NodeValue;
 	                if (length(NoteP^.LastChange) <> 33) {and DebugMode} then begin
-                        if TryCount > 0 then
-	                        debugln('Note Has incomplete date, cannot fix ! [' + NoteP^.LastChange + '] : ' + NoteP^.Title)
-                        else
-	                        RewriteBadChangeDate(Dir, FileName, NoteP^.LastChange)
-	                end;
-                    inc(TryCount);
-				end;
+	                    RewriteBadChangeDate(Dir, FileName, NoteP^.LastChange);
+                        inc(TryCount);
+                        if TryCount > 2 then begin
+                            debugln('Failed to fix bad last-change-date in ' +  NoteP^.Title);
+                            break;     // sad but life must go on.
+						end;
+                        Doc.free;
+					end else
+                        break;
+				until false;
 
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
