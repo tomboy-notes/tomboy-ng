@@ -211,7 +211,7 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
-            <CompilerPath Value="/usr/bin/ppcrossx64"/>
+            <CompilerPath Value="ppcrossx64"/>
           </Other>
         </CompilerOptions>
       </Item5>
@@ -251,7 +251,7 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
-            <CompilerPath Value="/usr/bin/fpc"/>
+            <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
       </Item6>
@@ -907,6 +907,7 @@
         <Filename Value="colours.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormColours"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit30>
     </Units>

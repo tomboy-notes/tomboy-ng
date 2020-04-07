@@ -484,36 +484,6 @@ msgstr ""
 msgid "Spelling not configured"
 msgstr ""
 
-#: syncgui.rscreatenewrepo
-msgctxt "syncgui.rscreatenewrepo"
-msgid "Create a new Repo ?"
-msgstr ""
-
-#: syncgui.rslookingatnotes
-msgctxt "syncgui.rslookingatnotes"
-msgid "Looking at notes ...."
-msgstr ""
-
-#: syncgui.rssaveandsync
-msgctxt "syncgui.rssaveandsync"
-msgid "Press Save and Sync if this looks OK"
-msgstr ""
-
-#: syncgui.rssyncerror
-msgctxt "syncgui.rssyncerror"
-msgid "A Sync Error occured"
-msgstr ""
-
-#: syncgui.rstestingrepo
-msgctxt "syncgui.rstestingrepo"
-msgid "Testing Repo ...."
-msgstr ""
-
-#: syncgui.rsunabletoproceed
-msgctxt "syncgui.rsunabletoproceed"
-msgid "Unable to proceed because"
-msgstr ""
-
 #: syncutils.rschangeexistingsync
 msgid "Change existing sync connection ?"
 msgstr ""

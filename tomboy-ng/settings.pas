@@ -95,6 +95,7 @@ unit settings;
     2020/03/02  Force our guess fixed font if no config file.
     2020/03/08  Don't call search refreshMenu(mkFileMenu after an initial sync, no need
     2020/03/30  Added code to allow user to set display colours.
+    2020/04/07  As well as forcing Linux AltHelpNotes into config dir, must also do Windows !
 }
 
 {$mode objfpc}{$H+}
@@ -751,7 +752,7 @@ begin
         {$endif}
     end;
     Result := AppendPathDelim(Result);
-    {$ifdef LINUX}
+    {$ifndef DARWIN}
     MainForm.SetAltHelpPath(Result);    // English help notes in read only space
     {$endif}
 end;

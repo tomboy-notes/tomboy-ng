@@ -634,6 +634,9 @@ procedure TNoteLister.RewriteBadChangeDate(const Dir, FileName, LCD : ANSIString
 var
     InFile, OutFile: TextFile;
     InString : string;
+    {$ifdef WINDOWS}
+    ErrorMsg : ANSIString;
+    {$endif}
 begin
     // Bad format looks like this 2020-03-06 21:25:18
     // But it Should be like this 2020-02-15T12:07:41.0000000+00:00

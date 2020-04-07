@@ -19,6 +19,7 @@ unit helpnotes;
   2019/09/08 Clean up of management logic.
   2019/09/25 Three individual OS based DownLoader() functions.
   2019/10/02 If OpenSSL download fails, try wget (Linux and Mac)
+  2020/04/05 Allow for FPC320
 }
 
 {$mode objfpc}{$H+}
@@ -43,18 +44,18 @@ type
         procedure ButtonRestoreClick(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
-        procedure ListBox1Click(Sender: TObject);
         procedure ListBox1DblClick(Sender: TObject);
     private
         procedure DataReceived(Sender: TObject; const ContentLength,
             CurrentPos: Int64);
         function DownLoaderWGet(URL, FileName, Dest: string; out ErrorMsg: string): boolean;
-        //function DownloadFile(URL, FullFileName: string; out ErrorMsg: string): boolean;
         function FormatSize(Size: Int64): String;
         // This proc replaces the RTL version to enable v1.1 of ssl instead of v23
         // note we set it in DownLoadFile() after the object is created.
+        {$if (FPC_FULLVERSION<30200)}
         procedure HttpClientGetSocketHandler(Sender: TObject;
             const UseSSL: Boolean; out AHandler: TSocketHandler);
+        {$endif}
         // Download Filename from URL website and store it in Dest local directory. True if successful
         function DownLoader(URL, FileName, Dest: string; out ErrorMsg: string): boolean;
         {$ifdef WINDOWS}
@@ -73,13 +74,16 @@ implementation
 
 { TFormHelpNotes }
 uses
-   mainunit, // HelpNotesPath
-   LazFileUtils, zipper,
-  fphttpclient, process, lazlogger,
-  fpopenssl,
-  openssl, Registry,
-   SearchUnit,      // we need to refresh the help menus.
-  sslsockets;      // for TSSLSocketHandler etc
+    mainunit, // HelpNotesPath
+    LazFileUtils, zipper,
+    {$if (FPC_FULLVERSION=30200)}
+    opensslsockets,                 // only available in FPC320 and later
+    {$endif}
+    fphttpclient, process, lazlogger,
+    fpopenssl,
+    {openssl,} Registry,
+    SearchUnit,      // we need to refresh the help menus.
+    sslsockets;      // for TSSLSocketHandler etc
 
 const
     DownLoadPath = 'https://github.com/tomboy-notes/tomboy-ng/raw/master/doc/';
@@ -94,47 +98,6 @@ resourcestring
     RS_NoPowershell = 'Sorry, your Windows does not have Powershell 3';
 
 
-{
-function TFormHelpNotes.DownloadFile(URL, FullFileName : string; out ErrorMsg : string) : boolean;
-var
-    Client: TFPHttpClient;
-begin
-    result := false;
-    InitSSLInterface;
-    Client := TFPHttpClient.Create(nil);
-    Client.OnGetSocketHandler := @HttpClientGetSocketHandler;
-    Client.OnDataReceived := @DataReceived;
-    Client.AllowRedirect := true;
-    ErrorMsg := 'Created';
-    try
-        try
-            Client.Get(URL, FullFileName);
-        except
-            on E: EInOutError do begin
-                ShowMessage(RS_NOSSL);
-                ErrorMsg := E.Message;
-                LabelProgress.Caption:= '';
-                exit;
-                end;
-            on E: ESSL do begin ErrorMsg := E.Message; exit; end;    // does not catch it !
-            on E: Exception do begin
-                ErrorMsg := E.Message;
-                exit;
-            end;
-        end;
-    finally
-        //FS.Free;
-        Client.Free;
-    end;
-    ErrorMsg := '';
-    result := true;
-end;
-}
-
-procedure TFormHelpNotes.ListBox1Click(Sender: TObject);
-begin
-
-end;
 
 procedure TFormHelpNotes.FormCreate(Sender: TObject);
 begin
@@ -224,7 +187,7 @@ begin
 end;
 
 // ------- R E L A T E D   to   D O W N L O A D I N G ---------------------------
-
+{$if (FPC_FULLVERSION<30200)}
 procedure TFormHelpNotes.HttpClientGetSocketHandler(Sender: TObject;
   const UseSSL: Boolean; out AHandler: TSocketHandler);
 begin
@@ -234,6 +197,7 @@ begin
   end else
       AHandler := TSocketHandler.Create;
 end;
+{$endif}
 
 function TFormHelpNotes.FormatSize(Size: Int64): String;
 const
@@ -382,9 +346,11 @@ var
     Client: TFPHttpClient;
 begin
     // Windows can be made work with this if we push out ssl dll - see DownloaderSSL local project
-    InitSSLInterface;
+    //InitSSLInterface;
     Client := TFPHttpClient.Create(nil);
+    {$if (FPC_FULLVERSION<30200)}
     Client.OnGetSocketHandler := @HttpClientGetSocketHandler;
+    {$endif}
     Client.OnDataReceived := @DataReceived;
     Client.AllowRedirect := true;
     try

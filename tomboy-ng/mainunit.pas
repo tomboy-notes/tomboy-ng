@@ -548,11 +548,11 @@ begin
     {$ifdef windows}                // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
         //color := Sett.BackGndColour;
-        color := Sett.HiColor;
+        color := Sett.HiColour;
         font.color := Sett.TextColour;
         ButtMenu.Color := Sett.BackGndColour;
         ButtonClose.Color := Sett.BackGndColour;
-        ButtonDismiss.Color := Sett.HiColor;
+        ButtonDismiss.Color := Sett.HiColour;
     end;
     {$endif}
     if Self.SingleNoteFileName <> '' then begin

@@ -85,16 +85,17 @@ var
     TB : TKMemoTextBlock;
 begin
     KMemo1.Clear(False);
+    KMemo1.Colors.BkGnd:= CBack;
     TB := KMemo1.Blocks.AddTextBlock('The Title');
     TB.TextStyle.Font.Size:= 16;
     TB.TextStyle.Font.Color:= CTitle;
-    TB.TextStyle.Brush.Color:= CBack;
+    //TB.TextStyle.Brush.Color:= CBack;
     TB.TextStyle.Font.Underline := true;
     KMemo1.blocks.AddParagraph();
     TB := KMemo1.Blocks.AddTextBlock('Normal Text');
     TB.TextStyle.Font.Size:= 11;
     TB.TextStyle.Font.Color:=CText;
-    TB.TextStyle.Brush.Color:= CBack;
+    //TB.TextStyle.Brush.Color:= CBack;
     KMemo1.blocks.AddParagraph();
     TB := KMemo1.Blocks.AddTextBlock('Some Highlight');
     TB.TextStyle.Font.Size:= 11;
@@ -104,7 +105,7 @@ begin
     TB := KMemo1.Blocks.AddTextBlock('More normal Text');
     TB.TextStyle.Font.Size:=11;
     TB.TextStyle.Font.Color:= CText;
-    TB.TextStyle.Brush.Color:= CBack;
+    //TB.TextStyle.Brush.Color:= CBack;
     KMemo1.blocks.AddParagraph();
 end;
 
@@ -121,6 +122,8 @@ end;
 procedure TFormColours.FormShow(Sender: TObject);
 begin
     PopulateMemo;
+    left := (screen.Width div 2) - (width div 2);
+    top := (screen.Height div 2) - (width div 2);
 end;
 
 end.

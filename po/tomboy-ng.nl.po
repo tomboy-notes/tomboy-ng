@@ -522,36 +522,6 @@ msgstr "Spellingcontrole voltooid"
 msgid "Spelling not configured"
 msgstr "Spellingcontrole is niet ingesteld"
 
-#: syncgui.rscreatenewrepo
-msgctxt "syncgui.rscreatenewrepo"
-msgid "Create a new Repo ?"
-msgstr "Wil je een nieuwe repo maken?"
-
-#: syncgui.rslookingatnotes
-msgctxt "syncgui.rslookingatnotes"
-msgid "Looking at notes ...."
-msgstr "Bezig met inspecteren van notities..."
-
-#: syncgui.rssaveandsync
-msgctxt "syncgui.rssaveandsync"
-msgid "Press Save and Sync if this looks OK"
-msgstr "Als dit in orde is, klik dan op 'Opslaan en synchroniseren'"
-
-#: syncgui.rssyncerror
-msgctxt "syncgui.rssyncerror"
-msgid "A Sync Error occured"
-msgstr "Synchronisatiefout"
-
-#: syncgui.rstestingrepo
-msgctxt "syncgui.rstestingrepo"
-msgid "Testing Repo ...."
-msgstr "Bezig met testen van repo..."
-
-#: syncgui.rsunabletoproceed
-msgctxt "syncgui.rsunabletoproceed"
-msgid "Unable to proceed because"
-msgstr "Kan niet doorgan vanwege"
-
 #: syncutils.rschangeexistingsync
 msgid "Change existing sync connection ?"
 msgstr "Wil je de bestaande synchronisatieverbinding aanpassen?"

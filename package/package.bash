@@ -65,13 +65,13 @@ fi
 function BuildIt () {
 	cd $SOURCE_DIR
 	echo "Building Qt5 x86_64 Linux"
-	rm -f tomboy-ng
+	rm -f tomboy-ng-qt
 #	if [ "$LEAKCHECK" == "YES" ]; then
 #		LAZMODE="LeakCheckLin64"
 #	else
 		LAZMODE="QT5"
 #	fi
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="x86_64" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Linux"
 	rm -f tomboy-ng
 	if [ "$LEAKCHECK" == "YES" ]; then
@@ -79,7 +79,7 @@ function BuildIt () {
 	else
 		LAZMODE="Release"
 	fi
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="x86_64" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
 	echo "Building i386 Linux"
 	if [ "$LEAKCHECK" == "YES" ]; then
 		LAZMODE="LeakCheckLin32"
@@ -87,7 +87,7 @@ function BuildIt () {
 		LAZMODE="ReleaseLin32"
 	fi
 	rm -f tomboy-ng32
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="i386" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
 	echo "Building x86_64 Windows"
 	rm -f tomboy-ng64.exe
 	if [ "$LEAKCHECK" == "YES" ]; then
@@ -95,7 +95,7 @@ function BuildIt () {
 	else
 		LAZMODE="ReleaseWin64"
 	fi	
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="x86_64" --build-mode="$LAZMODE" --os="win64" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="x86_64" --build-mode="$LAZMODE" --os="win64" Tomboy_NG.lpi
 	echo "Building i386 Windows"
 	rm -f tomboy-ng32.exe
 	if [ "$LEAKCHECK" == "YES" ]; then
@@ -103,7 +103,7 @@ function BuildIt () {
 	else
 		LAZMODE="ReleaseWin32"
 	fi	
-	TOMBOY_NG_VER="$VERSION" "$LAZ_FULL_DIR"/lazbuild $BUILDOPTS --pcp=~/."$LAZ_DIR" --cpu="i386" --build-mode="$LAZMODE" --os="win32" Tomboy_NG.lpi
+	TOMBOY_NG_VER="$VERSION" "$LAZ_FULL_DIR"/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="i386" --build-mode="$LAZMODE" --os="win32" Tomboy_NG.lpi
 	echo "------------- FINISHED BUILDING -----------------"
 	ls -l tomboy-ng*
 	cd ../package
@@ -251,8 +251,9 @@ function MkWinPreInstaller() {
 	mkdir "$WIN_DIR"
 	cp ../tomboy-ng/tomboy-ng64.exe "$WIN_DIR/."
 	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
-	cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
-	cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
+	cp ../../DLL/* "$WIN_DIR"/.
+	#cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
+	#cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
 	cp ../COPYING "$WIN_DIR/."
 	cp AfterInstall.txt "$WIN_DIR/."
 	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss.temp"
@@ -284,6 +285,20 @@ function MkWinPreInstaller() {
 # --------------------------------------
 
 # It all starts here
+
+if [ -d "$HOME/.Laz_$LAZ_DIR" ]; then     # try my way of naming config first
+	LAZ_CONFIG="$HOME/.Laz_$LAZ_DIR";
+else
+	echo "------ Testing for the .Laz config $HOME------"
+	if [ -d "$HOME/.$LAZ_DIR" ]; then
+		LAZ_CONFIG="$HOME/.$LAZ_DIR";
+	else 
+		echo "**** CANNOT FIND Laz Config, exiting ****";
+		exit;
+	fi
+fi
+
+echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 
 #if [ "$2" == "LeakCheck" ]; then
 #	BuildItLeakCheck

@@ -7,7 +7,6 @@ object FormSDiff: TFormSDiff
   Caption = 'A Note Sync Clash has been Detected'
   ClientHeight = 481
   ClientWidth = 588
-  OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '2.0.7.0'
   object Panel1: TPanel

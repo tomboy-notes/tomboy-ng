@@ -16,7 +16,6 @@ object FormHelpNotes: TFormHelpNotes
     Top = 64
     Width = 293
     ItemHeight = 0
-    OnClick = ListBox1Click
     OnDblClick = ListBox1DblClick
     ScrollWidth = 291
     TabOrder = 0

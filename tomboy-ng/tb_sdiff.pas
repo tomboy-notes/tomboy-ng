@@ -52,7 +52,6 @@ type
         Panel1: TPanel;
         RadioLong: TRadioButton;
         RadioShort: TRadioButton;
-        procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure RadioLongChange(Sender: TObject);
     private
@@ -88,12 +87,6 @@ implementation
 uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils{, syncutils};
 
 { TFormSDiff }
-
-procedure TFormSDiff.FormCreate(Sender: TObject);
-begin
-
-end;
-
 
 function TFormSDiff.RemoveXml(const St : AnsiString) : AnsiString;
 var

@@ -48,6 +48,12 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; Install MyProg-x64.exe if running in 64-bit mode (x64; see above), MyProg.exe otherwise.
 Source: "libhunspell.license"; DestDir: "{app}";  Check: Is64BitInstallMode
 Source: "libhunspell.dll";     DestDir: "{app}";  Check: Is64BitInstallMode
+
+Source: "ssleay32.dll-64";     DestDir: "{app}";  DestName: "ssleay32.dll"; Check: Is64BitInstallMode
+Source: "libeay32.dll-64";     DestDir: "{app}";  DestName: "libeay32.dll"; Check: Is64BitInstallMode
+Source: "ssleay32.dll-32";     DestDir: "{app}";  DestName: "ssleay32.dll"; Check: not Is64BitInstallMode
+Source: "libeay32.dll-32";     DestDir: "{app}";  DestName: "libeay32.dll"; Check: not Is64BitInstallMode
+
 Source: "tomboy-ng64.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Check: Is64BitInstallMode
 Source: "tomboy-ng32.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Check: not Is64BitInstallMode
 ;Source: "C:\Users\dbann\Desktop\tomboy-ng_{#MyAppVersion}\tomboy-ng64.exe"; DestDir: "{app}"; Flags: ignoreversion

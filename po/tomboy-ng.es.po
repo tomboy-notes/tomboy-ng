@@ -508,36 +508,6 @@ msgstr "Revisión ortográfica terminada"
 msgid "Spelling not configured"
 msgstr "Ortografía sin configurar"
 
-#: syncgui.rscreatenewrepo
-msgctxt "syncgui.rscreatenewrepo"
-msgid "Create a new Repo ?"
-msgstr "¿Crear un repositorio nuevo?"
-
-#: syncgui.rslookingatnotes
-msgctxt "syncgui.rslookingatnotes"
-msgid "Looking at notes ...."
-msgstr "Examinando las notas ..."
-
-#: syncgui.rssaveandsync
-msgctxt "syncgui.rssaveandsync"
-msgid "Press Save and Sync if this looks OK"
-msgstr "Pulse Guardar y Sincronizar si todo le parece bien"
-
-#: syncgui.rssyncerror
-msgctxt "syncgui.rssyncerror"
-msgid "A Sync Error occured"
-msgstr "Ocurrió un error de sincronización"
-
-#: syncgui.rstestingrepo
-msgctxt "syncgui.rstestingrepo"
-msgid "Testing Repo ...."
-msgstr "Probando repositorio ..."
-
-#: syncgui.rsunabletoproceed
-msgctxt "syncgui.rsunabletoproceed"
-msgid "Unable to proceed because"
-msgstr "No se puede continuar porque"
-
 #: syncutils.rschangeexistingsync
 msgid "Change existing sync connection ?"
 msgstr "¿Cambiar conexión de sincronización actual?"
