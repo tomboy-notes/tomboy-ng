@@ -14,9 +14,7 @@ uses
     Interfaces, // this includes the LCL widgetset
     Forms, printer4lazarus, SearchUnit, settings, SyncGUI, Notebook, Spelling,
 	Mainunit, BackupView, recover, tomdroid, markdown, Index, autostart, hunspell,
-	sync, syncutils, transandroid, helpnotes, ResourceStr, SyncError, colours,
-    transnext
-    { you can add units after this };
+	sync, syncutils, transandroid, helpnotes, ResourceStr, SyncError, colours;
 
 {$R *.res}
 

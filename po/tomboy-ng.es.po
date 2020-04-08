@@ -1504,11 +1504,6 @@ msgstr "Recuperar notas perdidas"
 msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
 
-#: tsett.buttonsynchelp.caption
-msgctxt "tsett.buttonsynchelp.caption"
-msgid "Help"
-msgstr "Ayuda"
-
 #: tsett.caption
 #| msgid "Settings"
 msgctxt "tsett.caption"
@@ -1591,6 +1586,10 @@ msgstr "  Opciones  "
 #: tsett.groupbox5.caption
 msgid "Font Size"
 msgstr "Tamaño de la fuente"
+
+#: tsett.groupboxsynctype.caption
+msgid "Sync Type"
+msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1685,6 +1684,10 @@ msgstr "Miércoles"
 msgid "Always Ask me what to do."
 msgstr "Siempre preguntarme que hacer."
 
+#: tsett.radiofilesync.caption
+msgid "File Sync"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Grande"
@@ -1702,6 +1705,10 @@ msgstr "Media"
 msgid "Small"
 msgstr "Pequeña"
 
+#: tsett.radionetsync.caption
+msgid "Net Sync"
+msgstr ""
+
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
 msgstr "Usar la nota local y sobrescribir la nota del servidor."
@@ -1709,6 +1716,12 @@ msgstr "Usar la nota local y sobrescribir la nota del servidor."
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
 msgstr "Usar la nota del servidor y renombrar la nota local."
+
+#: tsett.speedbuthelp.caption
+#, fuzzy
+msgctxt "tsett.speedbuthelp.caption"
+msgid "Help"
+msgstr "Ayuda"
 
 #: tsett.speedbuthide.caption
 msgctxt "tsett.speedbuthide.caption"
