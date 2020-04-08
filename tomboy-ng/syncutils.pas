@@ -19,8 +19,9 @@ uses
     Classes, SysUtils, dateutils, LazLogger;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount OK
-                 SyncNextRuby,  // Sync to NextCloud using external Ruby modules
-                 SyncAndroid);  // Simple one to one Android Device
+                SyncNextRuby,  // Sync to NextCloud using external Ruby modules
+		SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
+                SyncAndroid);  // Simple one to one Android Device
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.
@@ -54,8 +55,6 @@ type TRepoAction = (
                 RepoJoin,               // Join (and use) an existing Repo
                 RepoNew,                // Create (and use) a new repo in presumably a blank dir
                 RepoUse);               // Go ahead and use this repo to sync
-
-//type TConnection = (ConnFile, ConnNetRuby);
 
 
 type

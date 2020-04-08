@@ -363,7 +363,7 @@ implementation
 
 { TSync }
 
-uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, TransAndroid, LazLogger, LazFileUtils,
+uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, TransAndroid, TransNext, LazLogger, LazFileUtils,
     FileUtil, Settings;
 
 var
@@ -1078,6 +1078,9 @@ begin
                 SyncAddress := AppendPathDelim(SyncAddress);
                 Transport := TFileSync.Create;
 	        end;
+	SyncNextCloud : begin
+		Transport := TNextSync.Create;
+		end;
         SyncNextRuby : begin
                 Transport := TNetSync.Create;
                 // SyncAddress := AppendPathDelim(SyncAddress);       ??
