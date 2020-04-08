@@ -723,7 +723,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="32">
+    <Units Count="31">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -910,10 +910,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit30>
-      <Unit31>
-        <Filename Value="transnext.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit31>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

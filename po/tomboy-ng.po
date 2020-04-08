@@ -1450,11 +1450,6 @@ msgstr ""
 msgid "If you have previously taken a snapshot ..."
 msgstr ""
 
-#: tsett.buttonsynchelp.caption
-msgctxt "tsett.buttonsynchelp.caption"
-msgid "Help"
-msgstr ""
-
 #: tsett.caption
 msgctxt "tsett.caption"
 msgid "tomboy-ng Settings"
@@ -1530,6 +1525,10 @@ msgstr ""
 
 #: tsett.groupbox5.caption
 msgid "Font Size"
+msgstr ""
+
+#: tsett.groupboxsynctype.caption
+msgid "Sync Type"
 msgstr ""
 
 #: tsett.label1.caption
@@ -1622,6 +1621,10 @@ msgstr ""
 msgid "Always Ask me what to do."
 msgstr ""
 
+#: tsett.radiofilesync.caption
+msgid "File Sync"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr ""
@@ -1639,12 +1642,21 @@ msgstr ""
 msgid "Small"
 msgstr ""
 
+#: tsett.radionetsync.caption
+msgid "Net Sync"
+msgstr ""
+
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
 msgstr ""
 
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
+msgstr ""
+
+#: tsett.speedbuthelp.caption
+msgctxt "tsett.speedbuthelp.caption"
+msgid "Help"
 msgstr ""
 
 #: tsett.speedbuthide.caption
