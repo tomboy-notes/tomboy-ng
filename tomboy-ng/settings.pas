@@ -96,6 +96,7 @@ unit settings;
     2020/03/08  Don't call search refreshMenu(mkFileMenu after an initial sync, no need
     2020/03/30  Added code to allow user to set display colours.
     2020/04/07  As well as forcing Linux AltHelpNotes into config dir, must also do Windows !
+    2020/04/08  Added some code to support SyncNextCloud, see define SHOW_NET_SYNC top of implementation section.
 }
 
 {$mode objfpc}{$H+}
@@ -130,7 +131,6 @@ type
 
 		ButtonSetNotePath: TButton;
 		ButtonSetSynServer: TButton;
-        ButtonSyncHelp: TButton;
         CheckAutoStart : TCheckBox;
         CheckBoxAutoSync: TCheckBox;
         CheckCaseSensitive: TCheckBox;
@@ -144,6 +144,7 @@ type
         CheckSnapMonthly: TCheckBox;
         FontDialog1: TFontDialog;
         GroupBox1: TGroupBox;
+		GroupBoxSyncType: TGroupBox;
 		GroupBox4: TGroupBox;
 		GroupBox5: TGroupBox;
 		Label1: TLabel;
@@ -188,6 +189,8 @@ type
         PopupDay: TPopupMenu;
         PMenuMain: TPopupMenu;
 		RadioAlwaysAsk: TRadioButton;
+		RadioNetSync: TRadioButton;
+		RadioFileSync: TRadioButton;
         RadioFontHuge: TRadioButton;
 		RadioFontBig: TRadioButton;
 		RadioFontMedium: TRadioButton;
@@ -197,6 +200,7 @@ type
 		SelectDirectoryDialog1: TSelectDirectoryDialog;
         SelectSnapDir: TSelectDirectoryDialog;
         SpeedButHide: TSpeedButton;
+		SpeedButHelp: TSpeedButton;
         SpeedButtTBMenu: TSpeedButton;
 		StringGridBackUp: TStringGrid;
 		TabBasic: TTabSheet;
@@ -238,6 +242,7 @@ type
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
+		procedure SpeedButHelpClick(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
@@ -337,18 +342,14 @@ const
                                 // Note we set DarkTheme colors and all HiLight colours in MainUnit
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
 
-     // HiColor      = clYellow;
-     // NormalColor  = clDefault; 		// Must somewhere set this to be sure ? no, not used any more
-
-
-
-
 
 ResourceString
     rsSyncNotConfig = 'not configured';
 
 
 implementation
+
+{$define SHOW_NET_SYNC}     // disable this define by, eg, putting a dot ahead of the '$'
 
 {$R *.lfm}
 
@@ -428,6 +429,12 @@ procedure TSett.PageControl1Change(Sender: TObject);
 begin
 	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     Label15.Caption := '';
+    SpeedButHelp.Visible := (PageControl1.TabIndex = 2);    // Only show for Sync Tab
+end;
+
+procedure TSett.SpeedButHelpClick(Sender: TObject);
+begin
+        MainForm.ShowHelpNote('sync-ng.note');
 end;
 
 procedure TSett.SpeedButHideClick(Sender: TObject);
@@ -682,6 +689,13 @@ RESOURCESTRING
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+    {$ifdef SHOW_NET_SYNC}
+    RadioNetSync.Checked := True;
+    Label5.Caption := 'Using Net Sync';
+    {$else}
+    RadioFileSync.Checked:=True;
+    Self.GroupBoxSyncType.Visible := False;
+    {$endif}
     AreClosing := false;
     Top := 100;
     Left := 300;
@@ -840,7 +854,7 @@ begin
             if FixedFont = '' then FixedFont := DefaultFixedFont;
             ButtonFixedFont.Hint := FixedFont;
             BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
-            HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColor', '0'));
+            HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColour', '0'));
             TextColour := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour', '0'));
             TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
             UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
@@ -938,12 +952,12 @@ begin
             //(Sel_CText = 0) and (Sel_CBack = 0) and (Sel_CHiBack = 0) and (Sel_CTitle = 0)
             if UserSetColours then begin
                 ConfigFile.writestring('BasicSettings', 'BackGndColour', ColorToString(BackGndColour));
-                ConfigFile.writestring('BasicSettings', 'HiColor', ColorToString(HiColour));
+                ConfigFile.writestring('BasicSettings', 'HiColour', ColorToString(HiColour));
                 ConfigFile.writestring('BasicSettings', 'TextColour', ColorToString(TextColour));
                 ConfigFile.writestring('BasicSettings', 'TitleColour', ColorToString(TitleColour));
 			end else begin
                     ConfigFile.writestring('BasicSettings', 'BackGndColour', '0');
-                    ConfigFile.writestring('BasicSettings', 'HiColor', '0');
+                    ConfigFile.writestring('BasicSettings', 'HiColour', '0');
                     ConfigFile.writestring('BasicSettings', 'TextColour', '0');
                     ConfigFile.writestring('BasicSettings', 'TitleColour', '0');
 			end;
@@ -1202,7 +1216,9 @@ begin
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
     FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
     FormSync.SetupSync := False;
-    FormSync.TransPort := SyncFile;
+    if RadioNetSync.checked then
+        FormSync.Transport := SyncNextCloud
+    else FormSync.TransPort := SyncFile;
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
     else
@@ -1227,13 +1243,14 @@ begin
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
         FormSync.SetupSync := False;
-        FormSync.TransPort := SyncFile;
+        if RadioNetSync.checked then
+            FormSync.Transport := SyncNextCloud
+        else FormSync.TransPort := SyncFile;
         if FormSync.RunSyncHidden() then begin
             TimerAutoSync.Interval:= 60*60*1000;     // do it again in one hour
             TimerAutoSync.Enabled := true;
         end;
     end;
-
 end;
 
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
@@ -1241,23 +1258,28 @@ begin
     if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     if FileExists(LocalConfig + 'manifest.xml') then
         if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
-    if SelectDirectoryDialog1.Execute then begin
-        FormSync.NoteDirectory := NoteDirectory;
-        FormSync.LocalConfig := LocalConfig;
-        FormSync.SetupSync := True;
-        //if RadioFile.Checked then
-            FormSync.Transport := SyncFile;
-        //else FormSync.Transport := SyncNextRuby;
-        FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-        if mrOK = FormSync.ShowModal then begin
-            LabelSyncRepo.Caption := FormSync.RemoteRepo;
-            ButtonSetSynServer.Caption:='Change File Sync';
-            SettingsChanged();
-            // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
-            //MainForm.FillInFileMenus(True);
-            //SearchForm.RefreshMenus(mkFileMenu);    // hmm, why do we do this ?  if we do it, must also do mkHelpMenu
-        end else
-        	LabelSyncRepo.Caption := rsSyncNotConfig;
+    if RadioNetSync.Checked then begin
+    // OK, what ever we need to implemnet Netsync goes here.
+    // Get some URL in a dialog first up, set FormSync various parms, see below.
+	end else begin
+		    if SelectDirectoryDialog1.Execute then begin
+	            FormSync.NoteDirectory := NoteDirectory;
+	            FormSync.LocalConfig := LocalConfig;
+	            FormSync.SetupSync := True;
+	            //if RadioFile.Checked then
+	            FormSync.Transport := SyncFile;
+	            //else FormSync.Transport := SyncNextRuby;
+	            FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+	            if mrOK = FormSync.ShowModal then begin
+	                LabelSyncRepo.Caption := FormSync.RemoteRepo;
+	                ButtonSetSynServer.Caption:='Change File Sync';
+	                SettingsChanged();
+	                // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
+	                //MainForm.FillInFileMenus(True);
+	                //SearchForm.RefreshMenus(mkFileMenu);    // hmm, why do we do this ?  if we do it, must also do mkHelpMenu
+	            end else
+	        	    LabelSyncRepo.Caption := rsSyncNotConfig;
+		    end;
 	end;
 end;
 

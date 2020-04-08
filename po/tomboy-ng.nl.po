@@ -1506,11 +1506,6 @@ msgstr "Kwijtgeraakte notities herstellen"
 msgid "If you have previously taken a snapshot ..."
 msgstr "Als je al eens een momentopname hebt gemaakt"
 
-#: tsett.buttonsynchelp.caption
-msgctxt "tsett.buttonsynchelp.caption"
-msgid "Help"
-msgstr "Hulp"
-
 #: tsett.caption
 #, fuzzy
 #| msgid "Settings"
@@ -1589,6 +1584,10 @@ msgstr "  Opties  "
 #: tsett.groupbox5.caption
 msgid "Font Size"
 msgstr "Lettergrootte"
+
+#: tsett.groupboxsynctype.caption
+msgid "Sync Type"
+msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1681,6 +1680,10 @@ msgstr "woensdag"
 msgid "Always Ask me what to do."
 msgstr "Altijd vragen om een actie"
 
+#: tsett.radiofilesync.caption
+msgid "File Sync"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Groot"
@@ -1698,6 +1701,10 @@ msgstr "Normaal"
 msgid "Small"
 msgstr "Klein"
 
+#: tsett.radionetsync.caption
+msgid "Net Sync"
+msgstr ""
+
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
 msgstr "Lokale notitie gebruiken en servernotitie overschrijven"
@@ -1705,6 +1712,12 @@ msgstr "Lokale notitie gebruiken en servernotitie overschrijven"
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
 msgstr "Servernotitie gebruiken en lokale notitie hernoemen"
+
+#: tsett.speedbuthelp.caption
+#, fuzzy
+msgctxt "tsett.speedbuthelp.caption"
+msgid "Help"
+msgstr "Hulp"
 
 #: tsett.speedbuthide.caption
 #, fuzzy

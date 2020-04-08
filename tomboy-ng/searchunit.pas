@@ -805,18 +805,18 @@ begin
     {$ifdef windows}
     StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?                                            // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
-         color := Sett.hiColor;
+         color := Sett.HiColour;
          font.color := Sett.TextColour;
-         ButtonNoteBookOptions.Color := Sett.HiColor;
-         ButtonClearFilters.Color := Sett.HiColor;
-         ButtonMenu.color := Sett.HiColor;
+         ButtonNoteBookOptions.Color := Sett.HiColour;
+         ButtonClearFilters.Color := Sett.HiColour;
+         ButtonMenu.color := Sett.HiColour;
          StringGrid1.Color := Sett.BackGndColour;
          StringGrid1.Font.color := Sett.TextColour;
-         stringGrid1.GridLineColor:= clnavy; //Sett.HiColor;
+         stringGrid1.GridLineColor:= clnavy; //Sett.HiColour;
          stringgridnotebooks.GridLineColor:= clnavy;
-         StringGrid1.FixedColor := Sett.HiColor;
-         StringGridNotebooks.FixedColor := Sett.HiColor;
-         ButtonRefresh.Color := Sett.HiColor;
+         StringGrid1.FixedColor := Sett.HiColour;
+         StringGridNotebooks.FixedColor := Sett.HiColour;
+         ButtonRefresh.Color := Sett.HiColour;
          splitter1.Color:= clnavy;
     end;
     {$endif}
