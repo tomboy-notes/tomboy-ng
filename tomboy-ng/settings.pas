@@ -135,6 +135,7 @@ type
         CheckBoxAutoSync: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         CheckManyNotebooks: TCheckBox;
+        CheckNCSync: TCheckBox;
         CheckShowSearchAtStart: TCheckBox;
         CheckShowSplash: TCheckBox;
 		CheckShowExtLinks: TCheckBox;
@@ -144,9 +145,9 @@ type
         CheckSnapMonthly: TCheckBox;
         FontDialog1: TFontDialog;
         GroupBox1: TGroupBox;
-		GroupBoxSyncType: TGroupBox;
 		GroupBox4: TGroupBox;
 		GroupBox5: TGroupBox;
+                GroupBoxSyncType: TGroupBox;
 		Label1: TLabel;
         Label10: TLabel;
         Label11: TLabel;
@@ -182,48 +183,47 @@ type
         MenuThursday: TMenuItem;
         OpenDialogLibrary: TOpenDialog;
         OpenDialogDictionary: TOpenDialog;
-		PageControl1: TPageControl;
-		Panel1: TPanel;
-		Panel2: TPanel;
+	PageControl1: TPageControl;
+	Panel1: TPanel;
+	Panel2: TPanel;
         Panel3: TPanel;
         PopupDay: TPopupMenu;
         PMenuMain: TPopupMenu;
-		RadioAlwaysAsk: TRadioButton;
-		RadioNetSync: TRadioButton;
-		RadioFileSync: TRadioButton;
+	RadioAlwaysAsk: TRadioButton;
+	RadioNCSync: TCheckBox;
         RadioFontHuge: TRadioButton;
-		RadioFontBig: TRadioButton;
-		RadioFontMedium: TRadioButton;
-		RadioFontSmall: TRadioButton;
-		RadioUseLocal: TRadioButton;
-		RadioUseServer: TRadioButton;
-		SelectDirectoryDialog1: TSelectDirectoryDialog;
+	RadioFontBig: TRadioButton;
+	RadioFontMedium: TRadioButton;
+	RadioFontSmall: TRadioButton;
+	RadioUseLocal: TRadioButton;
+	RadioUseServer: TRadioButton;
+	SelectDirectoryDialog1: TSelectDirectoryDialog;
         SelectSnapDir: TSelectDirectoryDialog;
         SpeedButHide: TSpeedButton;
-		SpeedButHelp: TSpeedButton;
+	SpeedButHelp: TSpeedButton;
         SpeedButtTBMenu: TSpeedButton;
-		StringGridBackUp: TStringGrid;
-		TabBasic: TTabSheet;
-		TabBackUp: TTabSheet;
+	StringGridBackUp: TStringGrid;
+	TabBasic: TTabSheet;
+	TabBackUp: TTabSheet;
         TabSpell: TTabSheet;
-		TabSnapshot: TTabSheet;
-		TabSync: TTabSheet;
-		TabDisplay: TTabSheet;
+	TabSnapshot: TTabSheet;
+	TabSync: TTabSheet;
+	TabDisplay: TTabSheet;
         TimeEdit1: TTimeEdit;
         TimerAutoSync: TTimer;
-		procedure ButtDefaultNoteDirClick(Sender: TObject);
-		procedure ButtonSetColoursClick(Sender: TObject);
+	procedure ButtDefaultNoteDirClick(Sender: TObject);
+	procedure ButtonSetColoursClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
         procedure ButtonHelpNotesClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
         procedure ButtonSetDictionaryClick(Sender: TObject);
         //procedure ButtonSaveConfigClick(Sender: TObject);
-		procedure ButtonSetNotePathClick(Sender: TObject);
+	procedure ButtonSetNotePathClick(Sender: TObject);
         procedure ButtonSetSnapDirClick(Sender: TObject);
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
-		procedure ButtonSetSynServerClick(Sender: TObject);
-		procedure ButtonShowBackUpClick(Sender: TObject);
+	procedure ButtonSetSynServerClick(Sender: TObject);
+	procedure ButtonShowBackUpClick(Sender: TObject);
         procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
@@ -231,9 +231,9 @@ type
         procedure CheckBoxAutoSyncChange(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
-		procedure CheckReadOnlyChange(Sender: TObject);
-		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+	procedure CheckReadOnlyChange(Sender: TObject);
+	procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+	// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormHide(Sender: TObject);
@@ -689,13 +689,6 @@ RESOURCESTRING
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
-    {$ifdef SHOW_NET_SYNC}
-    RadioNetSync.Checked := True;
-    Label5.Caption := 'Using Net Sync';
-    {$else}
-    RadioFileSync.Checked:=True;
-    Self.GroupBoxSyncType.Visible := False;
-    {$endif}
     AreClosing := false;
     Top := 100;
     Left := 300;
@@ -871,6 +864,9 @@ begin
             LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
             CheckBoxAutoSync.checked :=
                 ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
+            CheckNCSync.checked :=
+                ('true' = ConfigFile.readstring('SyncSettings', 'NextCloud', 'false'));
+
         finally
             ConfigFile.free;
             // MaskSettingsChanged := False;
@@ -961,13 +957,15 @@ begin
                     ConfigFile.writestring('BasicSettings', 'TextColour', '0');
                     ConfigFile.writestring('BasicSettings', 'TitleColour', '0');
 			end;
-			ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
-	        if RadioAlwaysAsk.Checked then
+	    ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
+            ConfigFile.WriteString('SyncSettings', 'NextCloud', MyBoolStr(CheckNCSync.Checked));
+	    if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
+
             if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
@@ -1216,9 +1214,7 @@ begin
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
     FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
     FormSync.SetupSync := False;
-    if RadioNetSync.checked then
-        FormSync.Transport := SyncNextCloud
-    else FormSync.TransPort := SyncFile;
+    FormSync.TransPort := SyncFile;
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
     else
@@ -1243,9 +1239,7 @@ begin
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
         FormSync.SetupSync := False;
-        if RadioNetSync.checked then
-            FormSync.Transport := SyncNextCloud
-        else FormSync.TransPort := SyncFile;
+       	FormSync.TransPort := SyncFile;
         if FormSync.RunSyncHidden() then begin
             TimerAutoSync.Interval:= 60*60*1000;     // do it again in one hour
             TimerAutoSync.Enabled := true;
@@ -1257,30 +1251,21 @@ procedure TSett.ButtonSetSynServerClick(Sender: TObject);
 begin
     if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     if FileExists(LocalConfig + 'manifest.xml') then
-        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
-    if RadioNetSync.Checked then begin
-    // OK, what ever we need to implemnet Netsync goes here.
-    // Get some URL in a dialog first up, set FormSync various parms, see below.
+    if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
+    if SelectDirectoryDialog1.Execute then begin
+	FormSync.NoteDirectory := NoteDirectory;
+	FormSync.LocalConfig := LocalConfig;
+	FormSync.SetupSync := True;
+        FormSync.Transport := SyncFile;
+	FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+	if mrOK = FormSync.ShowModal then begin
+		LabelSyncRepo.Caption := FormSync.RemoteRepo;
+	        ButtonSetSynServer.Caption:='Change File Sync';
+	        SettingsChanged();
 	end else begin
-		    if SelectDirectoryDialog1.Execute then begin
-	            FormSync.NoteDirectory := NoteDirectory;
-	            FormSync.LocalConfig := LocalConfig;
-	            FormSync.SetupSync := True;
-	            //if RadioFile.Checked then
-	            FormSync.Transport := SyncFile;
-	            //else FormSync.Transport := SyncNextRuby;
-	            FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-	            if mrOK = FormSync.ShowModal then begin
-	                LabelSyncRepo.Caption := FormSync.RemoteRepo;
-	                ButtonSetSynServer.Caption:='Change File Sync';
-	                SettingsChanged();
-	                // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
-	                //MainForm.FillInFileMenus(True);
-	                //SearchForm.RefreshMenus(mkFileMenu);    // hmm, why do we do this ?  if we do it, must also do mkHelpMenu
-	            end else
-	        	    LabelSyncRepo.Caption := rsSyncNotConfig;
-		    end;
+		LabelSyncRepo.Caption := rsSyncNotConfig;
 	end;
+    end;
 end;
 
 RESOURCESTRING

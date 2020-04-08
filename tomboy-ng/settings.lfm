@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.0.6.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -32,8 +32,8 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 446
-      ClientWidth = 624
+      ClientHeight = 452
+      ClientWidth = 620
       OnResize = TabBasicResize
       object ButtonSetNotePath: TButton
         AnchorSideLeft.Control = TabBasic
@@ -123,8 +123,8 @@ object Sett: TSett
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 7
         Caption = 'Main Search Window is : '
-        ClientHeight = 146
-        ClientWidth = 380
+        ClientHeight = 149
+        ClientWidth = 382
         TabOrder = 3
         object CheckCaseSensitive: TCheckBox
           Left = 32
@@ -171,16 +171,16 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 446
-      ClientWidth = 624
+      ClientHeight = 452
+      ClientWidth = 620
       object GroupBox5: TGroupBox
         Left = 32
         Height = 160
         Top = 24
         Width = 264
         Caption = 'Font Size'
-        ClientHeight = 139
-        ClientWidth = 260
+        ClientHeight = 142
+        ClientWidth = 262
         TabOrder = 0
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
@@ -324,8 +324,8 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 446
-      ClientWidth = 624
+      ClientHeight = 452
+      ClientWidth = 620
       OnResize = TabSyncResize
       object GroupBox4: TGroupBox
         AnchorSideLeft.Control = ButtonSetSynServer
@@ -334,37 +334,37 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
-        Left = 7
-        Height = 303
-        Top = 143
-        Width = 610
+        Left = 0
+        Height = 310
+        Top = 142
+        Width = 613
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Top = 12
         Caption = '  Options  '
-        ClientHeight = 282
-        ClientWidth = 606
+        ClientHeight = 292
+        ClientWidth = 611
         TabOrder = 0
         object Label3: TLabel
           Left = 40
-          Height = 19
+          Height = 15
           Top = 40
-          Width = 376
+          Width = 291
           Caption = 'When a conflict is detected between a local note and'
           ParentColor = False
         end
         object Label4: TLabel
           Left = 40
-          Height = 19
+          Height = 15
           Top = 64
-          Width = 348
+          Width = 272
           Caption = 'a note on the configured synchronisation server :'
           ParentColor = False
         end
         object RadioAlwaysAsk: TRadioButton
           Left = 40
-          Height = 24
+          Height = 23
           Top = 96
-          Width = 217
+          Width = 173
           Caption = 'Always Ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -372,26 +372,26 @@ object Sett: TSett
         end
         object RadioUseLocal: TRadioButton
           Left = 40
-          Height = 24
+          Height = 23
           Top = 136
-          Width = 334
+          Width = 265
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 40
-          Height = 24
+          Height = 23
           Top = 176
-          Width = 321
+          Width = 256
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
         object CheckBoxAutoSync: TCheckBox
           Left = 40
-          Height = 24
+          Height = 23
           Hint = 'Sync, if possible once an hour.'
           Top = 240
-          Width = 98
+          Width = 81
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
           ParentShowHint = False
@@ -402,10 +402,10 @@ object Sett: TSett
       object ButtonSetSynServer: TButton
         AnchorSideTop.Control = LabelSyncRepo
         AnchorSideTop.Side = asrBottom
-        Left = 7
+        Left = 0
         Height = 40
-        Top = 91
-        Width = 232
+        Top = 90
+        Width = 145
         BorderSpacing.Top = 12
         Caption = 'Change File Sync Repo'
         OnClick = ButtonSetSynServerClick
@@ -415,9 +415,9 @@ object Sett: TSett
         AnchorSideLeft.Control = TabSync
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 19
-        Top = 60
-        Width = 8
+        Height = 15
+        Top = 63
+        Width = 6
         Anchors = [akLeft]
         BorderSpacing.Left = 7
         BorderSpacing.Top = 12
@@ -429,10 +429,10 @@ object Sett: TSett
         AnchorSideLeft.Side = asrBottom
         AnchorSideBottom.Control = ButtonSetSynServer
         AnchorSideBottom.Side = asrBottom
-        Left = 246
-        Height = 19
-        Top = 105
-        Width = 128
+        Left = 152
+        Height = 15
+        Top = 108
+        Width = 99
         Anchors = [akLeft, akBottom]
         BorderSpacing.Left = 7
         BorderSpacing.Bottom = 7
@@ -440,53 +440,21 @@ object Sett: TSett
         ParentColor = False
       end
       object Label5: TLabel
-        Left = 16
-        Height = 19
-        Top = 8
-        Width = 216
+        Left = 38
+        Height = 15
+        Top = 10
+        Width = 171
         Anchors = []
         Caption = 'File Sync using shared drive.'
         Font.Style = [fsBold]
         ParentColor = False
         ParentFont = False
       end
-      object GroupBoxSyncType: TGroupBox
-        AnchorSideRight.Control = GroupBox4
-        AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = GroupBox4
-        Left = 432
-        Height = 107
-        Top = 24
-        Width = 185
-        Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Bottom = 4
-        Caption = 'Sync Type'
-        ClientHeight = 86
-        ClientWidth = 181
-        TabOrder = 2
-        object RadioNetSync: TRadioButton
-          Left = 24
-          Height = 24
-          Top = 8
-          Width = 90
-          Caption = 'Net Sync'
-          Checked = True
-          TabOrder = 0
-        end
-        object RadioFileSync: TRadioButton
-          Left = 24
-          Height = 24
-          Top = 48
-          Width = 89
-          Caption = 'File Sync'
-          TabOrder = 1
-        end
-      end
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 446
-      ClientWidth = 624
+      ClientHeight = 452
+      ClientWidth = 620
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
         AnchorSideTop.Control = TabBackUp
@@ -584,8 +552,8 @@ object Sett: TSett
     object TabSnapshot: TTabSheet
       BorderWidth = 1
       Caption = 'SnapShot'
-      ClientHeight = 446
-      ClientWidth = 624
+      ClientHeight = 452
+      ClientWidth = 620
       OnResize = TabSnapshotResize
       object Label9: TLabel
         Left = 18
@@ -723,8 +691,8 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 446
-      ClientWidth = 624
+      ClientHeight = 452
+      ClientWidth = 620
       OnResize = TabSpellResize
       object Label13: TLabel
         Left = 12
@@ -845,9 +813,9 @@ object Sett: TSett
   object Label15: TLabel
     AnchorSideBottom.Side = asrBottom
     Left = 24
-    Height = 19
-    Top = 497
-    Width = 56
+    Height = 15
+    Top = 501
+    Width = 44
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
     Caption = 'Label15'
@@ -969,6 +937,29 @@ object Sett: TSett
     Caption = 'Help'
     Visible = False
     OnClick = SpeedButHelpClick
+  end
+  object GroupBoxSyncType: TGroupBox
+    AnchorSideRight.Control = GroupBox4
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = GroupBox4
+    Left = 264
+    Height = 106
+    Top = 56
+    Width = 352
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Bottom = 4
+    Caption = 'Sync Type'
+    ClientHeight = 88
+    ClientWidth = 350
+    TabOrder = 1
+    object CheckNCSync: TCheckBox
+      Left = 24
+      Height = 23
+      Top = 8
+      Width = 112
+      Caption = 'NextCloud sync'
+      TabOrder = 0
+    end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 408
