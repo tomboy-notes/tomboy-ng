@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 483
+  Left = 1230
   Height = 525
-  Top = 220
+  Top = 184
   Width = 630
   BorderIcons = []
   Caption = 'tomboy-ng Settings'
@@ -451,6 +451,8 @@ object Sett: TSett
         ParentFont = False
       end
       object GroupBoxSyncType: TGroupBox
+        AnchorSideLeft.Control = GroupBox4
+        AnchorSideLeft.Side = asrCenter
         AnchorSideRight.Control = GroupBox4
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = GroupBox4
@@ -458,7 +460,7 @@ object Sett: TSett
         Height = 107
         Top = 24
         Width = 185
-        Anchors = [akTop, akLeft, akRight, akBottom]
+        Anchors = [akTop, akRight, akBottom]
         BorderSpacing.Bottom = 4
         Caption = 'Sync Type'
         ClientHeight = 86
@@ -471,6 +473,7 @@ object Sett: TSett
           Width = 90
           Caption = 'Net Sync'
           Checked = True
+          OnChange = RadioNetSyncChange
           TabOrder = 0
         end
         object RadioFileSync: TRadioButton
@@ -479,8 +482,17 @@ object Sett: TSett
           Top = 48
           Width = 89
           Caption = 'File Sync'
+          OnChange = RadioFileSyncChange
           TabOrder = 1
         end
+      end
+      object LabelSyncURL: TLabel
+        Left = 7
+        Height = 19
+        Top = 39
+        Width = 100
+        Caption = 'LabelSyncURL'
+        ParentColor = False
       end
     end
     object TabBackUp: TTabSheet

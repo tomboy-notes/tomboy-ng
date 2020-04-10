@@ -283,9 +283,19 @@ msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr "ERROR: no se encuentra "
 
+#: resourcestr.rschangefilesync
+#, fuzzy
+msgctxt "resourcestr.rschangefilesync"
+msgid "Change File Sync Repo"
+msgstr "Cambiar repositorio de sincronización"
+
 #: resourcestr.rschangenameofnotebook
 msgid "Change the name of this Notebook"
 msgstr "Cambiar el nombre de este cuaderno"
+
+#: resourcestr.rschangenetsync
+msgid "Change Net Sync Repo"
+msgstr ""
 
 #: resourcestr.rscreatenewrepo
 msgctxt "resourcestr.rscreatenewrepo"
@@ -1484,6 +1494,7 @@ msgid "Set Spell Library"
 msgstr "Establecer Biblioteca Ortográfica"
 
 #: tsett.buttonsetsynserver.caption
+msgctxt "tsett.buttonsetsynserver.caption"
 msgid "Change File Sync Repo"
 msgstr "Cambiar repositorio de sincronización"
 
@@ -1651,6 +1662,10 @@ msgstr "Una instantánea es una copia de sus notas actuales."
 msgctxt "tsett.labelsnapdir.caption"
 msgid ".... and its not available just yet !"
 msgstr "... y ¡no está disponible en este momento!"
+
+#: tsett.labelsyncurl.caption
+msgid "LabelSyncURL"
+msgstr ""
 
 #: tsett.menufriday.caption
 msgid "Friday"

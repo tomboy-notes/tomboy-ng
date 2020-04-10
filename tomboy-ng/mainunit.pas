@@ -63,6 +63,7 @@ unit Mainunit;
     2019/12/11  Heavily restructured Startup, Main Menu everywhere !
     2019/12/20  Added option --delay-start for when desktop is slow to determine its (dark) colours
     2020/03/30  Allow user to set display colours.
+    2020/04/10  Make help files non modal
 
     CommandLine Switches
 
@@ -110,6 +111,9 @@ uses
 // These are the possible kinds of main menu items
 // type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu);
 
+
+
+
 type
 
     { TMainForm }
@@ -155,6 +159,7 @@ type
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
+        HelpList : TStringList;
         CommsClient : TSimpleIPCClient;
         CommsServer : TSimpleIPCServer;
         // Don't assign if desktop is KDE and Qt5, it stuffs up in November 2019
@@ -280,13 +285,52 @@ begin
     if CloseOnExit then Close;      // we also use singlenotemode internally in several places
 end;
 
+
 // ---------------- HELP NOTES STUFF ------------------
 
 procedure TMainForm.ShowHelpNote(HelpNoteName: string);
+var
+    EBox : TEditBoxForm;
+    TheForm : TForm;
+    Index : integer;
 begin
-    if FileExists(ActualHelpNotesPath() + HelpNoteName) then
-       SingleNoteMode(ActualHelpNotesPath() + HelpNoteName, False, True)
-    else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
+    if FileExists(ActualHelpNotesPath() + HelpNoteName) then begin
+        If HelpList = nil then
+            HelpList := TStringList.Create
+        else begin
+            if HelpList.Find(HelpNoteName, Index) then begin
+                // Bring TForm(HelpList.Objects[Index]) to front
+                TheForm := TForm(HelpList.Objects[Index]);
+                try
+                    //writeln('Attempting a reshow');
+          	        TheForm.Show;
+                    SearchForm.MoveWindowHere(TheForm.Caption);
+                    TheForm.EnsureVisible(true);
+                    exit;
+				except on E: Exception do {showmessage(E.Message)};
+                // If user had this help page open but then closed it entry is still in
+                // list so we catch the exception, ignore it and upen a new note.
+                // its pretty ugly under debugger but user does not see this.
+				end;
+			end;
+		end;
+        // If we did not find it in the list and exit, above, we will make a new one.
+        //SingleNoteMode(ActualHelpNotesPath() + HelpNoteName, False, True)
+        EBox := TEditBoxForm.Create(Application);
+        EBox.SetReadOnly(False);
+        EBox.SearchedTerm := '';
+        EBox.NoteTitle:= '';
+        EBox.NoteFileName := ActualHelpNotesPath() + HelpNoteName;
+        Ebox.TemplateIs := '';
+        EBox.Show;
+        EBox.Dirty := False;
+        writeln('Adding to list');
+        HelpList.AddObject(HelpNoteName, EBox);
+        HelpList.Sort;
+        //showmessage('List is sorted ' + booltostr(HelpList.Sorted, true));
+        HelpList.Sorted:=True;
+
+    end else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
 end;
 
 function TMainForm.ActualHelpNotesPath(): string;
@@ -399,6 +443,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    HelpList := Nil;
     if Application.HasOption('delay-start') then   // This to allow eg Enlightenment to decide its colours.
         sleep(2000);
     AssignPopupToTray := True;
@@ -452,6 +497,8 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
     freeandnil(CommsServer);
     freeandnil(HelpNotes);
+    //if HelpList <> Nil then writeln('Help List has ' + inttostr(HelpList.Count));
+    freeandnil(HelpList);
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
