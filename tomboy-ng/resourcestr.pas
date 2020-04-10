@@ -58,6 +58,13 @@ RESOURCESTRING
   rsSyncError = 'A Sync Error occured';
   rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
 
+
+// Settings but only part ...
+
+  rsChangeNetSync = 'Change Net Sync Repo';          // These are labels on the button used to set sync repo
+  rsChangeFileSync = 'Change File Sync Repo';
+
+
 implementation
 
 end.

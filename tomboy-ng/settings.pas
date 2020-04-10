@@ -97,6 +97,7 @@ unit settings;
     2020/03/30  Added code to allow user to set display colours.
     2020/04/07  As well as forcing Linux AltHelpNotes into config dir, must also do Windows !
     2020/04/08  Added some code to support SyncNextCloud, see define SHOW_NET_SYNC top of implementation section.
+    2020/04/10  Added Net and File sync mode to settings file, make labels consistent
 }
 
 {$mode objfpc}{$H+}
@@ -150,6 +151,7 @@ type
 		Label1: TLabel;
         Label10: TLabel;
         Label11: TLabel;
+		LabelSyncURL: TLabel;
         Label13: TLabel;
         Label14: TLabel;
         Label15: TLabel;
@@ -242,6 +244,8 @@ type
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
 		procedure PageControl1Change(Sender: TObject);
+		procedure RadioFileSyncChange(Sender: TObject);
+		procedure RadioNetSyncChange(Sender: TObject);
 		procedure SpeedButHelpClick(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
@@ -368,7 +372,8 @@ uses IniFiles, LazLogger,
     helpnotes,      // All user to download non-English help Notes
     LCLType,        // Keycodes ....
     Autostart,
-    Colours
+    Colours,
+    ResourceStr     // only partioally so far ....
     {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
 var
@@ -431,6 +436,8 @@ begin
     Label15.Caption := '';
     SpeedButHelp.Visible := (PageControl1.TabIndex = 2);    // Only show for Sync Tab
 end;
+
+
 
 procedure TSett.SpeedButHelpClick(Sender: TObject);
 begin
@@ -864,6 +871,18 @@ begin
                 'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
                 'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 		    end;
+            if (ConfigFile.readstring('SyncSettings', 'SyncFile', 'true') = 'true') then begin
+                self.RadioFileSync.checked := True;
+                ButtonSetSynServer.Caption:=rsChangeFileSync;
+                LabelSyncRepo.Visible := True;
+                LabelSyncURL.Visible := False;
+			end else begin
+                RadioNetSync.checked := True;
+                ButtonSetSynServer.Caption:=rsChangeNetSync;
+                LabelSyncRepo.Visible := False;
+                LabelSyncURL.Visible := True;
+			end;
+			LabelSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncURL', '');
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
@@ -968,6 +987,8 @@ begin
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
+            ConfigFile.writestring('SyncSettings', 'SyncFile', MyBoolStr(RadioFileSync.Checked));
+            ConfigFile.writestring('SyncSettings', 'SyncURL', LabelSyncURL.Caption);
             if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
@@ -1254,12 +1275,19 @@ begin
 end;
 
 procedure TSett.ButtonSetSynServerClick(Sender: TObject);
+var
+    TempURL : string;
 begin
     if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     if FileExists(LocalConfig + 'manifest.xml') then
         if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
     if RadioNetSync.Checked then begin
-    // OK, what ever we need to implemnet Netsync goes here.
+        TempURL := InputBox('Network Sync URL', 'Enter The URL', 'URL');
+        if TempURL <> 'Enter the URL' then begin
+            LabelSyncURL.Caption :=  TempURL;
+            SettingsChanged();
+		end;
+	// OK, what ever we need to implemnet Netsync goes here.
     // Get some URL in a dialog first up, set FormSync various parms, see below.
 	end else begin
 		    if SelectDirectoryDialog1.Execute then begin
@@ -1305,6 +1333,21 @@ begin
     TimeEdit1.Time := now();
 end;
 
+procedure TSett.RadioFileSyncChange(Sender: TObject);
+begin
+    ButtonSetSynServer.Caption:=rsChangeFileSync;
+    LabelSyncRepo.Visible := True;
+    LabelSyncURL.Visible := False;
+    SettingsChanged();      // Write to disk
+end;
+
+procedure TSett.RadioNetSyncChange(Sender: TObject);
+begin
+    ButtonSetSynServer.Caption:=rsChangeNetSync;
+    LabelSyncRepo.Visible := False;
+    LabelSyncURL.Visible := True;
+    SettingsChanged();      // Write to disk
+end;
 
 	{ Called when ANY of the setting check boxes change so we can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
@@ -1320,7 +1363,9 @@ begin
             if TCheckBox(Sender).Name = 'CheckCaseSensitive' then begin
                 SearchForm.CheckCaseSensitive.Checked := TCheckBox(Sender).Checked;
             end;
-         end;
+
+        if Sender. Equals(RadioNetSync) then writeln('RadioNetSync');
+    end;
 end;
 
 function TSett.GetLocalTime: ANSIstring;
