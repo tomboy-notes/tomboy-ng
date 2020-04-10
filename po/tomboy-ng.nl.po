@@ -283,8 +283,18 @@ msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr ""
 
+#: resourcestr.rschangefilesync
+#, fuzzy
+msgctxt "resourcestr.rschangefilesync"
+msgid "Change File Sync Repo"
+msgstr "Bestandssynchronisatie aanpassen"
+
 #: resourcestr.rschangenameofnotebook
 msgid "Change the name of this Notebook"
+msgstr ""
+
+#: resourcestr.rschangenetsync
+msgid "Change Net Sync Repo"
 msgstr ""
 
 #: resourcestr.rscreatenewrepo
@@ -1487,6 +1497,7 @@ msgid "Set Spell Library"
 msgstr "Spellingcontrolebiblotheek instellen"
 
 #: tsett.buttonsetsynserver.caption
+msgctxt "tsett.buttonsetsynserver.caption"
 msgid "Change File Sync Repo"
 msgstr "Bestandssynchronisatie aanpassen"
 
@@ -1647,6 +1658,10 @@ msgstr "Een momentopname is een kopie van je huidige notitiemap."
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
 msgstr "... en is nog niet beschikbaar!"
+
+#: tsett.labelsyncurl.caption
+msgid "LabelSyncURL"
+msgstr ""
 
 #: tsett.menufriday.caption
 msgid "Friday"

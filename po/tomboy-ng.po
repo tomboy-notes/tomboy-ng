@@ -261,8 +261,17 @@ msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr ""
 
+#: resourcestr.rschangefilesync
+msgctxt "resourcestr.rschangefilesync"
+msgid "Change File Sync Repo"
+msgstr ""
+
 #: resourcestr.rschangenameofnotebook
 msgid "Change the name of this Notebook"
+msgstr ""
+
+#: resourcestr.rschangenetsync
+msgid "Change Net Sync Repo"
 msgstr ""
 
 #: resourcestr.rscreatenewrepo
@@ -1431,6 +1440,7 @@ msgid "Set Spell Library"
 msgstr ""
 
 #: tsett.buttonsetsynserver.caption
+msgctxt "tsett.buttonsetsynserver.caption"
 msgid "Change File Sync Repo"
 msgstr ""
 
@@ -1587,6 +1597,10 @@ msgstr ""
 
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
+msgstr ""
+
+#: tsett.labelsyncurl.caption
+msgid "LabelSyncURL"
 msgstr ""
 
 #: tsett.menufriday.caption
