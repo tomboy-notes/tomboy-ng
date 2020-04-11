@@ -18,8 +18,8 @@ interface
 uses
     Classes, SysUtils, dateutils, LazLogger;
 
-type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount OK
-                SyncNextRuby,  // Sync to NextCloud using external Ruby modules
+type TSyncTransport=(SyncRepo,  // Sync to locally available dir, things like smb: mount OK
+                //SyncNextRuby,  // Sync to NextCloud using external Ruby modules
 		SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
                 SyncAndroid);  // Simple one to one Android Device
 
