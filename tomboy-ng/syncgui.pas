@@ -116,8 +116,6 @@ type
                 Busy : boolean; // indicates that there is some sort of sync in process now.
                 Transport : TSyncTransPort;
 
-                    // A string containg a URL to remote repo, just a dir for FileSync
-              	RemoteRepo : String;
                 LocalConfig, NoteDirectory : ANSIString;
                     { Indicates we are doing a setup User has already agreed to abandon any
                       existing Repo but we don't know if indicated spot already contains a
@@ -218,15 +216,14 @@ var
     // UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
 begin
     freeandnil(ASync);
-	ASync := TSync.Create;
+    ASync := TSync.Create;
     Label1.Caption:= rsTestingRepo;
     Application.ProcessMessages;
     ASync.ProceedFunction:= @Proceed;
 //    ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
     ASync.DebugMode := Application.HasOption('s', 'debug-sync');
-	ASync.NotesDir:= NoteDirectory;
-	ASync.SyncAddress := RemoteRepo;        // This is 'some' URL
-	ASync.ConfigDir := LocalConfig;
+    ASync.NotesDir:= NoteDirectory;
+    ASync.ConfigDir := LocalConfig;
     ASync.RepoAction:=RepoJoin;
     Async.SetTransport(TransPort);
     SyncAvail := ASync.TestConnection();
@@ -304,13 +301,13 @@ begin
     try
         ASync.ProceedFunction:= @Proceed;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
-	    ASync.NotesDir:= NoteDirectory;
-	    ASync.SyncAddress := RemoteRepo;        // This is 'some' URL
-	    ASync.ConfigDir := LocalConfig;
+	ASync.NotesDir:= NoteDirectory;
+	ASync.ConfigDir := LocalConfig;
         ASync.RepoAction:=RepoUse;
         Async.SetTransport(TransPort);
         SyncState := ASync.TestConnection();
-        while SyncState <> SyncReady do begin
+        ASync.SyncAddress := ASync.SyncAddress;
+	while SyncState <> SyncReady do begin
             if ASync.DebugMode then debugln('Failed testConnection');
             FormSyncError.Label1.caption := rsUnableToSync + ':';
             FormSyncError.label3.caption := ASync.ErrorString;
