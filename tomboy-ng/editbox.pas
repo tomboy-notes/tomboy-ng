@@ -1613,34 +1613,6 @@ begin
 	// Is it all in the same block ?
     if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
     TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
-
-//    REMOVE ALL OF THIS AFTER A TEST CYCLE     <<<< -----------------------
-
-//        writeln('-');
-//        writeln('[' + Kmemo1.Blocks.Items[BlockNo].Text + ']');                    // test under windows ??
-//        writeln('TrueLink = [' + TrueLink + ']');
-//        writeln('Index=' + inttostr(Index) + '  and blar=' + inttostr(blar));
-
-    (* if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then DontSplit := True;
-    KMemo1.SelStart:= Index;
-    KMemo1.SelLength:=Len;
-    KMemo1.ClearSelection();
-	if not DontSplit then
-		BlockNo := KMemo1.SplitAt(Index);   *)
-
-(*
-i := BlockNo-2;
-while I < (BlockNo + 10) do begin
-    Blk := TKMemoTextBlock(KMemo1.Blocks.Items[i]);
-    write('no=' + inttostr(i));
-    if fsUnderline in Blk.TextStyle.Font.style then
-        write(' Underlined ')
-    else
-        write(' plain ');
-    writeln(' Type=' + KMemo1.Blocks.Items[i].ClassName + ' Text=' + KMemo1.Blocks.Items[i].Text);
-    inc(i);
-end;            *)
-
     if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then begin
          Kmemo1.Blocks.Delete(BlockNo);
          //writeln('Block deleted');
@@ -2617,7 +2589,7 @@ var
     // TestI : integer;
 begin
     // T1 := gettickcount64();
-    debugln('Saving this note' + Caption);
+    // debugln('Saving this note' + Caption);
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then

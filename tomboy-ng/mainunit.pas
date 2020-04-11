@@ -295,9 +295,10 @@ var
     Index : integer;
 begin
     if FileExists(ActualHelpNotesPath() + HelpNoteName) then begin
-        If HelpList = nil then
-            HelpList := TStringList.Create
-        else begin
+        If HelpList = nil then begin
+            HelpList := TStringList.Create;
+            HelpList.Sorted:=True;
+		end else begin
             if HelpList.Find(HelpNoteName, Index) then begin
                 // Bring TForm(HelpList.Objects[Index]) to front
                 TheForm := TForm(HelpList.Objects[Index]);
@@ -324,11 +325,11 @@ begin
         Ebox.TemplateIs := '';
         EBox.Show;
         EBox.Dirty := False;
-        writeln('Adding to list');
+        //writeln('Adding to list');
         HelpList.AddObject(HelpNoteName, EBox);
-        HelpList.Sort;
+        // HelpList.Sort;
         //showmessage('List is sorted ' + booltostr(HelpList.Sorted, true));
-        HelpList.Sorted:=True;
+
 
     end else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
 end;

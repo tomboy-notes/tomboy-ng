@@ -1363,8 +1363,6 @@ begin
             if TCheckBox(Sender).Name = 'CheckCaseSensitive' then begin
                 SearchForm.CheckCaseSensitive.Checked := TCheckBox(Sender).Checked;
             end;
-
-        if Sender. Equals(RadioNetSync) then writeln('RadioNetSync');
     end;
 end;
 
