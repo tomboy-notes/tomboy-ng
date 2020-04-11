@@ -1,11 +1,11 @@
 object Sett: TSett
   Left = 1040
-  Height = 525
+  Height = 401
   Top = 184
   Width = 630
   BorderIcons = []
   Caption = 'tomboy-ng Settings'
-  ClientHeight = 525
+  ClientHeight = 401
   ClientWidth = 630
   OnClose = FormClose
   OnCreate = FormCreate
@@ -21,7 +21,7 @@ object Sett: TSett
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = SpeedButHide
     Left = 0
-    Height = 483
+    Height = 367
     Top = 0
     Width = 630
     ActivePage = TabSync
@@ -32,7 +32,7 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 452
+      ClientHeight = 336
       ClientWidth = 620
       OnResize = TabBasicResize
       object ButtonSetNotePath: TButton
@@ -171,7 +171,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 452
+      ClientHeight = 336
       ClientWidth = 620
       object GroupBox5: TGroupBox
         Left = 32
@@ -324,7 +324,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 452
+      ClientHeight = 336
       ClientWidth = 620
       object GroupBox4: TGroupBox
         AnchorSideTop.Side = asrBottom
@@ -332,28 +332,31 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
-        Left = 14
-        Height = 176
-        Top = 248
-        Width = 606
-        Anchors = [akLeft, akRight]
-        BorderSpacing.Top = 12
+        Left = 3
+        Height = 145
+        Top = 188
+        Width = 614
+        Anchors = [akLeft, akRight, akBottom]
+        BorderSpacing.Left = 3
+        BorderSpacing.Top = 6
+        BorderSpacing.Right = 3
+        BorderSpacing.Bottom = 3
         Caption = '  Options  '
-        ClientHeight = 158
-        ClientWidth = 604
+        ClientHeight = 127
+        ClientWidth = 612
         TabOrder = 0
         object Label3: TLabel
-          Left = 16
+          Left = 20
           Height = 15
           Top = 16
-          Width = 566
-          Caption = 'When a conflict is detected between a local note and a note on the configured synchronisation server :'
+          Width = 365
+          Caption = 'When a conflict is detected between a local note and remote one :'
           ParentColor = False
         end
         object RadioAlwaysAsk: TRadioButton
-          Left = 16
+          Left = 20
           Height = 23
-          Top = 48
+          Top = 40
           Width = 173
           Caption = 'Always Ask me what to do.'
           Checked = True
@@ -361,50 +364,42 @@ object Sett: TSett
           TabStop = True
         end
         object RadioUseLocal: TRadioButton
-          Left = 16
+          Left = 20
           Height = 23
-          Top = 80
+          Top = 64
           Width = 265
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
-          Left = 16
+          Left = 20
           Height = 23
-          Top = 112
+          Top = 88
           Width = 256
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
         object CheckBoxAutoSync: TCheckBox
-          Left = 408
+          Left = 480
           Height = 23
           Hint = 'Sync, if possible once an hour.'
-          Top = 72
+          Top = 48
           Width = 81
+          Anchors = []
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
           ParentShowHint = False
           ShowHint = True
           TabOrder = 3
         end
-      end
-      object SyncRepoLocation: TLabel
-        Left = 72
-        Height = 15
-        Top = 49
-        Width = 81
-        Caption = 'not configured'
-        ParentColor = False
-      end
-      object SettRepo: TToggleBox
-        Left = 528
-        Height = 30
-        Top = 18
-        Width = 74
-        Caption = 'Change location'
-        OnChange = SettRepoChange
-        TabOrder = 1
+        object Panel4: TPanel
+          Left = 432
+          Height = 112
+          Top = 8
+          Width = 1
+          Caption = 'Panel4'
+          TabOrder = 4
+        end
       end
       object Label12: TLabel
         Left = 14
@@ -413,63 +408,97 @@ object Sett: TSett
         Width = 1
         ParentColor = False
       end
-      object SyncNC: TRadioButton
-        Left = 14
-        Height = 23
-        Top = 88
-        Width = 204
-        Caption = 'Nextcloud/ownCloud (Grauphel)'
-        Checked = True
-        OnChange = SyncNCChange
-        TabOrder = 2
-        TabStop = True
-      end
-      object SyncNCURL: TLabel
-        Left = 72
-        Height = 15
-        Top = 120
-        Width = 81
-        Caption = 'not configured'
-        ParentColor = False
-      end
-      object SettNC: TButton
-        Left = 528
-        Height = 30
-        Top = 88
-        Width = 74
-        Caption = 'Setup'
-        OnClick = SettNCClick
-        TabOrder = 3
-      end
-      object SyncRepo: TRadioButton
-        Left = 14
-        Height = 23
-        Top = 16
-        Width = 98
-        Caption = 'Remote repo'
-        OnChange = SyncRepoChange
-        TabOrder = 4
-      end
-      object Label4: TLabel
-        Left = 20
-        Height = 15
-        Top = 49
-        Width = 37
-        Caption = 'Repo : '
-        ParentColor = False
-      end
-      object Label5: TLabel
-        Left = 20
-        Height = 15
-        Top = 120
-        Width = 22
-        Caption = 'URL'
-        ParentColor = False
+      object GroupBoxSync: TGroupBox
+        AnchorSideLeft.Control = TabSync
+        AnchorSideTop.Control = TabSync
+        AnchorSideRight.Control = TabSync
+        AnchorSideRight.Side = asrBottom
+        Left = 3
+        Height = 173
+        Top = 3
+        Width = 614
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Left = 3
+        BorderSpacing.Top = 3
+        BorderSpacing.Right = 3
+        Caption = '  Sync  '
+        ClientHeight = 155
+        ClientWidth = 612
+        TabOrder = 1
+        object RadioFileSync: TRadioButton
+          Left = 20
+          Height = 23
+          Top = 16
+          Width = 202
+          Caption = 'File Sync, google drive, smb etc.'
+          OnChange = RadioFileSyncChange
+          TabOrder = 0
+        end
+        object Label4: TLabel
+          Left = 20
+          Height = 15
+          Top = 49
+          Width = 37
+          Caption = 'Repo : '
+          ParentColor = False
+        end
+        object LabelFileSync: TLabel
+          Left = 72
+          Height = 15
+          Top = 49
+          Width = 81
+          Caption = 'not configured'
+          ParentColor = False
+        end
+        object RadioSyncNC: TRadioButton
+          Left = 20
+          Height = 23
+          Top = 88
+          Width = 204
+          Caption = 'Nextcloud/ownCloud (Grauphel)'
+          Checked = True
+          OnChange = RadioFileSyncChange
+          TabOrder = 1
+          TabStop = True
+        end
+        object Label5: TLabel
+          Left = 20
+          Height = 15
+          Top = 120
+          Width = 22
+          Caption = 'URL'
+          ParentColor = False
+        end
+        object LabelNCSyncURL: TLabel
+          Left = 72
+          Height = 15
+          Top = 120
+          Width = 81
+          Caption = 'not configured'
+          ParentColor = False
+        end
+        object SpeedSetupSync: TSpeedButton
+          Left = 440
+          Height = 26
+          Top = 24
+          Width = 143
+          Caption = 'Setup File Sync'
+          OnClick = SpeedSetupSyncClick
+        end
+        object Button1: TButton
+          Left = 440
+          Height = 31
+          Top = 95
+          Width = 143
+          Caption = 'Setup Cloud SYnc'
+          OnClick = Button1Click
+          TabOrder = 2
+        end
       end
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 452
+      ClientHeight = 336
       ClientWidth = 620
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -568,7 +597,7 @@ object Sett: TSett
     object TabSnapshot: TTabSheet
       BorderWidth = 1
       Caption = 'SnapShot'
-      ClientHeight = 452
+      ClientHeight = 336
       ClientWidth = 620
       OnResize = TabSnapshotResize
       object Label9: TLabel
@@ -707,7 +736,7 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 452
+      ClientHeight = 336
       ClientWidth = 620
       OnResize = TabSpellResize
       object Label13: TLabel
@@ -830,7 +859,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 24
     Height = 15
-    Top = 501
+    Top = 377
     Width = 44
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
@@ -843,10 +872,11 @@ object Sett: TSett
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 534
-    Height = 40
-    Top = 485
+    Height = 29
+    Top = 369
     Width = 96
     Anchors = [akRight, akBottom]
+    BorderSpacing.Bottom = 3
     Caption = 'Close'
     OnClick = SpeedButHideClick
   end
@@ -856,10 +886,11 @@ object Sett: TSett
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 418
-    Height = 40
-    Top = 485
+    Height = 29
+    Top = 369
     Width = 116
     Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Bottom = 3
     Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
@@ -946,10 +977,11 @@ object Sett: TSett
     AnchorSideBottom.Control = SpeedButHide
     AnchorSideBottom.Side = asrBottom
     Left = 322
-    Height = 40
-    Top = 485
+    Height = 26
+    Top = 369
     Width = 96
     Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Bottom = 3
     Caption = 'Help'
     Visible = False
     OnClick = SpeedButHelpClick
@@ -958,8 +990,8 @@ object Sett: TSett
     left = 408
   end
   object PopupDay: TPopupMenu
-    left = 128
-    top = 456
+    left = 376
+    top = 72
     object MenuMonday: TMenuItem
       AutoCheck = True
       Caption = 'Monday'
@@ -990,16 +1022,16 @@ object Sett: TSett
     end
   end
   object SelectSnapDir: TSelectDirectoryDialog
-    left = 176
-    top = 456
+    left = 296
+    top = 128
   end
   object OpenDialogLibrary: TOpenDialog
     Options = [ofPathMustExist, ofFileMustExist, ofNoDereferenceLinks, ofEnableSizing, ofViewDetail]
     left = 480
   end
   object OpenDialogDictionary: TOpenDialog
-    left = 512
-    top = 392
+    left = 288
+    top = 72
   end
   object FontDialog1: TFontDialog
     MinFontSize = 0
@@ -1007,13 +1039,13 @@ object Sett: TSett
     left = 552
   end
   object PMenuMain: TPopupMenu
-    left = 272
-    top = 456
+    left = 376
+    top = 144
   end
   object TimerAutoSync: TTimer
     Enabled = False
     OnTimer = TimerAutoSyncTimer
-    left = 524
-    top = 295
+    left = 528
+    top = 424
   end
 end
