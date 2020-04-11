@@ -1,0 +1,67 @@
+object FormNCSetup: TFormNCSetup
+  Left = 647
+  Height = 152
+  Top = 293
+  Width = 565
+  Caption = 'Nextcloud/OwnCloud setup'
+  ClientHeight = 152
+  ClientWidth = 565
+  LCLVersion = '2.0.6.0'
+  object Label1: TLabel
+    Left = 27
+    Height = 15
+    Top = 18
+    Width = 40
+    Caption = 'URL (*)'
+    ParentColor = False
+    OnClick = Label1Click
+  end
+  object Label2: TLabel
+    Left = 16
+    Height = 15
+    Top = 128
+    Width = 448
+    Caption = '(*) Please read https://github.com/cweiske/grauphel/blob/master/docs/howto.rst'
+    ParentColor = False
+  end
+  object URL: TEdit
+    Left = 80
+    Height = 28
+    Top = 16
+    Width = 462
+    TabOrder = 0
+  end
+  object Label3: TLabel
+    Left = 288
+    Height = 15
+    Top = 64
+    Width = 35
+    Caption = 'Status'
+    ParentColor = False
+  end
+  object NCAuth: TButton
+    Left = 80
+    Height = 27
+    Top = 56
+    Width = 96
+    Caption = 'Authenticate'
+    TabOrder = 1
+  end
+  object Reset: TToggleBox
+    Left = 456
+    Height = 27
+    Top = 56
+    Width = 86
+    Caption = 'Reset'
+    TabOrder = 2
+  end
+  object NCDone: TToggleBox
+    Left = 456
+    Height = 24
+    Top = 96
+    Width = 85
+    Caption = 'Done'
+    OnChange = NCDoneChange
+    TabOrder = 3
+  end
+end

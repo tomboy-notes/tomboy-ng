@@ -106,7 +106,8 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView;
+    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView,
+    ncsetup, LCLIntf;
 
 // Types;
 
@@ -117,115 +118,115 @@ type
     { TSett }
 
     TSett = class(TForm)
-			ButtDefaultNoteDir: TButton;
-			ButtonSetColours: TButton;
-            ButtonFixedFont: TButton;
-            ButtonFont: TButton;
-            ButtonHelpNotes: TButton;
-            ButtonSetSpellLibrary: TButton;
-            ButtonSetDictionary: TButton;
-            ButtonManualSnap: TButton;
-            ButtonSetSnapDir: TButton;
-            ButtonSnapDays: TButton;
-            ButtonSnapRecover: TButton;
-			ButtonShowBackUp: TButton;
+          ButtDefaultNoteDir: TButton;
+          SyncRepo: TRadioButton;
+          Label4: TLabel;
+          Label5: TLabel;
+          SettNC: TButton;
+	  ButtonSetColours: TButton;
+          ButtonFixedFont: TButton;
+          ButtonFont: TButton;
+          ButtonHelpNotes: TButton;
+          ButtonSetSpellLibrary: TButton;
+          ButtonSetDictionary: TButton;
+          ButtonManualSnap: TButton;
+          ButtonSetSnapDir: TButton;
+          ButtonSnapDays: TButton;
+          ButtonSnapRecover: TButton;
+	  ButtonShowBackUp: TButton;
 
-		ButtonSetNotePath: TButton;
-		ButtonSetSynServer: TButton;
-        CheckAutoStart : TCheckBox;
-        CheckBoxAutoSync: TCheckBox;
-        CheckCaseSensitive: TCheckBox;
-        CheckManyNotebooks: TCheckBox;
-        CheckShowSearchAtStart: TCheckBox;
-        CheckShowSplash: TCheckBox;
-		CheckShowExtLinks: TCheckBox;
-		CheckShowIntLinks: TCheckBox;
-        CheckShowTomdroid: TCheckBox;
-        CheckSnapEnabled: TCheckBox;
-        CheckSnapMonthly: TCheckBox;
-        FontDialog1: TFontDialog;
-        GroupBox1: TGroupBox;
-		GroupBoxSyncType: TGroupBox;
-		GroupBox4: TGroupBox;
-		GroupBox5: TGroupBox;
-		Label1: TLabel;
-        Label10: TLabel;
-        Label11: TLabel;
-		LabelSyncURL: TLabel;
-        Label13: TLabel;
-        Label14: TLabel;
-        Label15: TLabel;
-        Label5: TLabel;
-        LabelDicPrompt: TLabel;
-        LabelDic: TLabel;
-        LabelError: TLabel;
-        LabelLibrary: TLabel;
-        LabelDicStatus: TLabel;
-        LabelLibraryStatus: TLabel;
-        LabelSnapDir: TLabel;
-		LabelWaitForSync: TLabel;
-		Label2: TLabel;
-		Label3: TLabel;
-		Label4: TLabel;
-		Label6: TLabel;
-		Label7: TLabel;
-		Label8: TLabel;
-		Label9: TLabel;
-		LabelSyncRepo: TLabel;
-		LabelNotesPath: TLabel;
-		LabelSettingPath: TLabel;
-        ListBoxDic: TListBox;
-        MenuFriday: TMenuItem;
-        MenuSaturday: TMenuItem;
-        MenuSunday: TMenuItem;
-        MenuMonday: TMenuItem;
-        MenuTuesday: TMenuItem;
-        MenuWednesday: TMenuItem;
-        MenuThursday: TMenuItem;
-        OpenDialogLibrary: TOpenDialog;
-        OpenDialogDictionary: TOpenDialog;
-		PageControl1: TPageControl;
-		Panel1: TPanel;
-		Panel2: TPanel;
-        Panel3: TPanel;
-        PopupDay: TPopupMenu;
-        PMenuMain: TPopupMenu;
-		RadioAlwaysAsk: TRadioButton;
-		RadioNetSync: TRadioButton;
-		RadioFileSync: TRadioButton;
-        RadioFontHuge: TRadioButton;
-		RadioFontBig: TRadioButton;
-		RadioFontMedium: TRadioButton;
-		RadioFontSmall: TRadioButton;
-		RadioUseLocal: TRadioButton;
-		RadioUseServer: TRadioButton;
-		SelectDirectoryDialog1: TSelectDirectoryDialog;
-        SelectSnapDir: TSelectDirectoryDialog;
-        SpeedButHide: TSpeedButton;
-		SpeedButHelp: TSpeedButton;
-        SpeedButtTBMenu: TSpeedButton;
-		StringGridBackUp: TStringGrid;
-		TabBasic: TTabSheet;
-		TabBackUp: TTabSheet;
-        TabSpell: TTabSheet;
-		TabSnapshot: TTabSheet;
-		TabSync: TTabSheet;
-		TabDisplay: TTabSheet;
-        TimeEdit1: TTimeEdit;
-        TimerAutoSync: TTimer;
-		procedure ButtDefaultNoteDirClick(Sender: TObject);
-		procedure ButtonSetColoursClick(Sender: TObject);
+	  ButtonSetNotePath: TButton;
+          CheckAutoStart : TCheckBox;
+          SyncNC: TRadioButton;
+          CheckBoxAutoSync: TCheckBox;
+          CheckCaseSensitive: TCheckBox;
+          CheckManyNotebooks: TCheckBox;
+          CheckShowSearchAtStart: TCheckBox;
+          CheckShowSplash: TCheckBox;
+	  CheckShowExtLinks: TCheckBox;
+	  CheckShowIntLinks: TCheckBox;
+          CheckShowTomdroid: TCheckBox;
+          CheckSnapEnabled: TCheckBox;
+          CheckSnapMonthly: TCheckBox;
+          FontDialog1: TFontDialog;
+          GroupBox1: TGroupBox;
+	  GroupBox4: TGroupBox;
+	  GroupBox5: TGroupBox;
+	  Label1: TLabel;
+          Label10: TLabel;
+          Label11: TLabel;
+          Label12: TLabel;
+          SyncNCURL: TLabel;
+	  SyncRepoLocation: TLabel;
+          Label13: TLabel;
+          Label14: TLabel;
+          Label15: TLabel;
+          LabelDicPrompt: TLabel;
+          LabelDic: TLabel;
+          LabelError: TLabel;
+          LabelLibrary: TLabel;
+          LabelDicStatus: TLabel;
+          LabelLibraryStatus: TLabel;
+          LabelSnapDir: TLabel;
+	  Label2: TLabel;
+	  Label3: TLabel;
+	  Label6: TLabel;
+	  Label7: TLabel;
+	  Label8: TLabel;
+	  Label9: TLabel;
+	  LabelNotesPath: TLabel;
+	  LabelSettingPath: TLabel;
+          ListBoxDic: TListBox;
+          MenuFriday: TMenuItem;
+          MenuSaturday: TMenuItem;
+          MenuSunday: TMenuItem;
+          MenuMonday: TMenuItem;
+          MenuTuesday: TMenuItem;
+          MenuWednesday: TMenuItem;
+          MenuThursday: TMenuItem;
+          OpenDialogLibrary: TOpenDialog;
+          OpenDialogDictionary: TOpenDialog;
+	  PageControl1: TPageControl;
+	  Panel1: TPanel;
+	  Panel2: TPanel;
+          Panel3: TPanel;
+          PopupDay: TPopupMenu;
+          PMenuMain: TPopupMenu;
+	  RadioAlwaysAsk: TRadioButton;
+          RadioFontHuge: TRadioButton;
+	  RadioFontBig: TRadioButton;
+	  RadioFontMedium: TRadioButton;
+	  RadioFontSmall: TRadioButton;
+	  RadioUseLocal: TRadioButton;
+	  RadioUseServer: TRadioButton;
+	  SelectDirectoryDialog1: TSelectDirectoryDialog;
+          SelectSnapDir: TSelectDirectoryDialog;
+          SpeedButHide: TSpeedButton;
+	  SpeedButHelp: TSpeedButton;
+          SpeedButtTBMenu: TSpeedButton;
+	  StringGridBackUp: TStringGrid;
+	  TabBasic: TTabSheet;
+	  TabBackUp: TTabSheet;
+          TabSpell: TTabSheet;
+	  TabSnapshot: TTabSheet;
+	  TabSync: TTabSheet;
+	  TabDisplay: TTabSheet;
+          TimeEdit1: TTimeEdit;
+          TimerAutoSync: TTimer;
+          SettRepo: TToggleBox;
+
+        procedure ButtDefaultNoteDirClick(Sender: TObject);
+	procedure ButtonSetColoursClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
         procedure ButtonHelpNotesClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
         procedure ButtonSetDictionaryClick(Sender: TObject);
         //procedure ButtonSaveConfigClick(Sender: TObject);
-		procedure ButtonSetNotePathClick(Sender: TObject);
+	procedure ButtonSetNotePathClick(Sender: TObject);
         procedure ButtonSetSnapDirClick(Sender: TObject);
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
-		procedure ButtonSetSynServerClick(Sender: TObject);
-		procedure ButtonShowBackUpClick(Sender: TObject);
+	procedure ButtonShowBackUpClick(Sender: TObject);
         procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
@@ -233,9 +234,9 @@ type
         procedure CheckBoxAutoSyncChange(Sender: TObject);
         //procedure CheckManyNotebooksChange(Sender: TObject);
         { Called when ANY of the setting check boxes change so use can save. }
-		procedure CheckReadOnlyChange(Sender: TObject);
-		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-		// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
+	procedure CheckReadOnlyChange(Sender: TObject);
+	procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+	// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormHide(Sender: TObject);
@@ -243,17 +244,18 @@ type
             );
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
-		procedure PageControl1Change(Sender: TObject);
-		procedure RadioFileSyncChange(Sender: TObject);
-		procedure RadioNetSyncChange(Sender: TObject);
-		procedure SpeedButHelpClick(Sender: TObject);
+	procedure PageControl1Change(Sender: TObject);
+        procedure SettNCClick(Sender: TObject);
+        procedure SettRepoChange(Sender: TObject);
+	procedure SpeedButHelpClick(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
+        procedure SyncNCChange(Sender: TObject);
+        procedure SyncRepoChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabSnapshotResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
-        procedure TabSyncResize(Sender: TObject);
         procedure TimerAutoSyncTimer(Sender: TObject);
         procedure SetColours;
    	private
@@ -437,6 +439,40 @@ begin
     SpeedButHelp.Visible := (PageControl1.TabIndex = 2);    // Only show for Sync Tab
 end;
 
+procedure TSett.SettNCClick(Sender: TObject);
+begin
+    SyncNC.Checked := true;
+    SyncRepo.Checked := false;
+
+    if((SyncNCUrl.Caption = rsSyncNotConfig) or (length(SyncNCUrl.Caption)<5))
+                then FormNCSetup.URL.Text   :=  'https://yourcloudserver/index.php/apps/grauphel'
+                else FormNCSetup.URL.Text   :=  SyncNCUrl.Caption;
+
+    if(FormNCSetup.ShowModal = mrOK ) then begin
+            SettingsChanged();
+    end;
+end;
+
+procedure TSett.SettRepoChange(Sender: TObject);
+begin
+    SyncNC.Checked := false;
+    SyncRepo.Checked := true;
+
+    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    if FileExists(LocalConfig + 'manifest.xml') then
+        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
+    if SelectDirectoryDialog1.Execute then begin
+       FormSync.NoteDirectory := NoteDirectory;
+       FormSync.LocalConfig := LocalConfig;
+       FormSync.SetupSync := True;
+       SyncRepoLocation.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+       if mrOK = FormSync.ShowModal then begin
+          SettingsChanged();
+       end else
+           SyncRepoLocation.Caption := rsSyncNotConfig;
+    end;
+end;
+
 
 
 procedure TSett.SpeedButHelpClick(Sender: TObject);
@@ -480,6 +516,18 @@ begin
     end;
 end;
 
+procedure TSett.SyncNCChange(Sender: TObject);
+begin
+    if(SyncNC.Checked) then SyncRepo.Checked:=false else SyncRepo.Checked:=true;
+    SettingsChanged();
+end;
+
+procedure TSett.SyncRepoChange(Sender: TObject);
+begin
+    if(SyncRepo.Checked) then SyncNC.Checked:=false else SyncNC.Checked:=true;
+    SettingsChanged();
+end;
+
 procedure TSett.TabBasicResize(Sender: TObject);
 begin
     buttonSetNotePath.Width := (TabBasic.Width div 2) - 12;
@@ -494,11 +542,6 @@ procedure TSett.TabSpellResize(Sender: TObject);
 begin
     ButtonSetSpellLibrary.Width := (TabSpell.Width div 2) -7;
     ButtonSetDictionary.Width := ButtonSetSpellLibrary.Width;
-end;
-
-procedure TSett.TabSyncResize(Sender: TObject);
-begin
-    ButtonSetSynServer.Width := (TabSync.Width div 2) - 7;
 end;
 
 
@@ -696,13 +739,6 @@ RESOURCESTRING
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
-    {$ifdef SHOW_NET_SYNC}
-    RadioNetSync.Checked := True;
-    Label5.Caption := 'Using Net Sync';
-    {$else}
-    RadioFileSync.Checked:=True;
-    Self.GroupBoxSyncType.Visible := False;
-    {$endif}
     AreClosing := false;
     Top := 100;
     Left := 300;
@@ -711,7 +747,6 @@ begin
     MaskSettingsChanged := true;
     //NeedRefresh := False;
     ExportPath := '';
-    LabelWaitForSync.Caption := '';
     LabelLibrary.Caption := '';
     HaveConfig := false;
     LocalConfig := GetDefaultConfigDir();   // sys dependant unless user has overridden
@@ -721,8 +756,6 @@ begin
     CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
     CheckConfigFile();                      // write a new, default one if necessary
     CheckSpelling();
-    if (LabelSyncRepo.Caption = '') or (LabelSyncRepo.Caption = rsSyncNotConfig) then
-        ButtonSetSynServer.Caption := rsSetFileSyncRepo;
     //MainForm.FillInFileMenus();
 end;
 
@@ -871,23 +904,21 @@ begin
                 'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
                 'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 		    end;
-            if (ConfigFile.readstring('SyncSettings', 'SyncFile', 'true') = 'true') then begin
-                self.RadioFileSync.checked := True;
-                ButtonSetSynServer.Caption:=rsChangeFileSync;
-                LabelSyncRepo.Visible := True;
-                LabelSyncURL.Visible := False;
-			end else begin
-                RadioNetSync.checked := True;
-                ButtonSetSynServer.Caption:=rsChangeNetSync;
-                LabelSyncRepo.Visible := False;
-                LabelSyncURL.Visible := True;
-			end;
-			LabelSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncURL', '');
+            SyncNC.checked := (ConfigFile.readstring('SyncSettings', 'SyncNC', 'false') = 'true');
+            SyncNCUrl.Caption := ConfigFile.readstring('SyncSettings', 'SyncNCUrl', '');
+            if(length(SyncNCUrl.Caption)<1) then SyncNCUrl.Caption := rsSyncNotConfig;
+
+            SyncRepo.checked := (ConfigFile.readstring('SyncSettings', 'SyncRepo', 'false') = 'true');
+            SyncRepoLocation.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoLocation', '');
+            if(length(SyncRepoLocation.Caption)<1) then SyncRepoLocation.Caption := rsSyncNotConfig;
+
+            if(SyncNC.Checked) then SyncRepo.Checked:=false else SyncRepo.Checked:=true;
+
+
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
-		    LabelSyncRepo.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', rsSyncNotConfig);
-            LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
+	    LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
             CheckBoxAutoSync.checked :=
                 ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
         finally
@@ -909,7 +940,9 @@ begin
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
             UsualFont := GetFontData(Self.Font.Handle).Name;
             FixedFont := DefaultFixedFont;
-            LabelSyncRepo.Caption := '';        // not 'not config' because of potential for other languages.
+            SyncRepoLocation.Caption := '';        // not 'not config' because of potential for other languages.
+            SyncNCUrl.Caption := '';
+            SyncNC.checked := false;
             if not SettingsChanged() then // write a initial default file, shows user a message on error
                 HaveConfig := false;
             MaskSettingsChanged := True;
@@ -943,7 +976,6 @@ begin
     try
         try
             ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
-            ConfigFile.writestring('SyncSettings', 'SyncRepo', LabelSyncRepo.Caption);
             if CheckManyNoteBooks.checked then
                 Configfile.writestring('BasicSettings', 'ManyNotebooks', 'true')
             else Configfile.writestring('BasicSettings', 'ManyNotebooks', 'false');
@@ -980,15 +1012,17 @@ begin
                     ConfigFile.writestring('BasicSettings', 'TextColour', '0');
                     ConfigFile.writestring('BasicSettings', 'TitleColour', '0');
 			end;
-			ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
-	        if RadioAlwaysAsk.Checked then
+	    ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
+	    if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
-                ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
-            ConfigFile.writestring('SyncSettings', 'SyncFile', MyBoolStr(RadioFileSync.Checked));
-            ConfigFile.writestring('SyncSettings', 'SyncURL', LabelSyncURL.Caption);
+                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
+            ConfigFile.writestring('SyncSettings', 'SyncNC', MyBoolStr(SyncNC.Checked));
+            ConfigFile.writestring('SyncSettings', 'SyncNCURL', SyncNCUrl.Caption);
+            ConfigFile.writestring('SyncSettings', 'SyncRepo', MyBoolStr(SyncRepo.Checked));
+            ConfigFile.writestring('SyncSettings', 'SyncRepoLocation', SyncRepoLocation.Caption);
             if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
@@ -1221,7 +1255,7 @@ end;
 
 procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
-    if LabelSyncRepo.Caption = '' then
+    if SyncRepoLocation.Caption = '' then
        CheckBoxAutoSync.Checked:= false
     else if CheckBoxAutoSync.Checked then
         CheckAutoSync();
@@ -1235,11 +1269,9 @@ procedure TSett.Synchronise();
 begin
     FormSync.NoteDirectory := Sett.NoteDirectory;
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-    FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
+
     FormSync.SetupSync := False;
-    if RadioNetSync.checked then
-        FormSync.Transport := SyncNextCloud
-    else FormSync.TransPort := SyncFile;
+
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
     else
@@ -1248,7 +1280,7 @@ end;
 
 procedure TSett.CheckAutoSync();
 begin
-    if CheckBoxAutoSync.Checked and (LabelSyncRepo.Caption <> '') then begin
+    if CheckBoxAutoSync.Checked and (SyncRepoLocation.Caption <> '') then begin
         TimerAutoSync.Interval:= 15000;     // wait 15 seconds after indexing to allow settling down
         TimerAutoSync.Enabled := true;
     end else
@@ -1262,11 +1294,13 @@ begin
     if CheckBoxAutoSync.checked  and not FormSync.Busy then begin
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-        FormSync.RemoteRepo := Sett.LabelSyncRepo.Caption;
+        if(Sett.SyncRepo.Checked) then
+            FormSync.Transport:=TSyncTransport.SyncRepo
+        else if(Sett.SyncNC.Checked)
+                    then FormSync.Transport:=TSyncTransport.SyncNextCloud;
+
         FormSync.SetupSync := False;
-        if RadioNetSync.checked then
-            FormSync.Transport := SyncNextCloud
-        else FormSync.TransPort := SyncFile;
+
         if FormSync.RunSyncHidden() then begin
             TimerAutoSync.Interval:= 60*60*1000;     // do it again in one hour
             TimerAutoSync.Enabled := true;
@@ -1274,42 +1308,6 @@ begin
     end;
 end;
 
-procedure TSett.ButtonSetSynServerClick(Sender: TObject);
-var
-    TempURL : string;
-begin
-    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
-    if FileExists(LocalConfig + 'manifest.xml') then
-        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
-    if RadioNetSync.Checked then begin
-        TempURL := InputBox('Network Sync URL', 'Enter The URL', 'URL');
-        if TempURL <> 'Enter the URL' then begin
-            LabelSyncURL.Caption :=  TempURL;
-            SettingsChanged();
-		end;
-	// OK, what ever we need to implemnet Netsync goes here.
-    // Get some URL in a dialog first up, set FormSync various parms, see below.
-	end else begin
-		    if SelectDirectoryDialog1.Execute then begin
-	            FormSync.NoteDirectory := NoteDirectory;
-	            FormSync.LocalConfig := LocalConfig;
-	            FormSync.SetupSync := True;
-	            //if RadioFile.Checked then
-	            FormSync.Transport := SyncFile;
-	            //else FormSync.Transport := SyncNextRuby;
-	            FormSync.RemoteRepo := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-	            if mrOK = FormSync.ShowModal then begin
-	                LabelSyncRepo.Caption := FormSync.RemoteRepo;
-	                ButtonSetSynServer.Caption:='Change File Sync';
-	                SettingsChanged();
-	                // NeedRefresh := True;             // We rely on SearchForm.ProcessSyncUpdates() to keep list current
-	                //MainForm.FillInFileMenus(True);
-	                //SearchForm.RefreshMenus(mkFileMenu);    // hmm, why do we do this ?  if we do it, must also do mkHelpMenu
-	            end else
-	        	    LabelSyncRepo.Caption := rsSyncNotConfig;
-		    end;
-	end;
-end;
 
 RESOURCESTRING
     rsDoubleclickNote = 'double click a note ...';
@@ -1331,22 +1329,6 @@ procedure TSett.ButtonSnapDaysClick(Sender: TObject);
 begin
     PopupDay.PopUp();
     TimeEdit1.Time := now();
-end;
-
-procedure TSett.RadioFileSyncChange(Sender: TObject);
-begin
-    ButtonSetSynServer.Caption:=rsChangeFileSync;
-    LabelSyncRepo.Visible := True;
-    LabelSyncURL.Visible := False;
-    SettingsChanged();      // Write to disk
-end;
-
-procedure TSett.RadioNetSyncChange(Sender: TObject);
-begin
-    ButtonSetSynServer.Caption:=rsChangeNetSync;
-    LabelSyncRepo.Visible := False;
-    LabelSyncURL.Visible := True;
-    SettingsChanged();      // Write to disk
 end;
 
 	{ Called when ANY of the setting check boxes change so we can save. }

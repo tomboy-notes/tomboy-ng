@@ -723,7 +723,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="31">
+    <Units Count="32">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -910,6 +910,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit30>
+      <Unit31>
+        <Filename Value="ncsetup.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormNCSetup"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit31>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
