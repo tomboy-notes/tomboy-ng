@@ -475,6 +475,7 @@ object Sett: TSett
           Checked = True
           OnChange = RadioNetSyncChange
           TabOrder = 0
+          TabStop = True
         end
         object RadioFileSync: TRadioButton
           Left = 24
