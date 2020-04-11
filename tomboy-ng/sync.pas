@@ -268,6 +268,7 @@ type                       { ----------------- T S Y N C --------------------- }
 	  function WriteRemoteManifest(out NewRev: boolean): boolean;
 
    public
+
             // A passord, passed on to Trans for those Transports that need it.
             // Must be set (if needed) before SetTransport is called.
         Password : string;
@@ -1065,7 +1066,6 @@ end;
 
 { =================  S T A R T   U P   M E T H O D S ============== }
 
-
 function TSync.SetTransport(Mode: TSyncTransport) : TSyncAvailable;
 begin
     TransportMode := Mode;
@@ -1074,17 +1074,14 @@ begin
     ErrorString := '';
     FreeAndNil(Transport);
     case Mode of
-        SyncFile : begin
-                SyncAddress := AppendPathDelim(SyncAddress);
+        SyncRepo : begin
+                SyncAddress := AppendPathDelim(Sett.SyncRepoLocation.Caption);
                 Transport := TFileSync.Create;
 	        end;
 	SyncNextCloud : begin
 		Transport := TNextSync.Create;
-		end;
-        SyncNextRuby : begin
-                Transport := TNetSync.Create;
-                // SyncAddress := AppendPathDelim(SyncAddress);       ??
-            end;
+		SyncAddress := Sett.SyncNCUrl.Caption;
+                end;
         SyncAndroid : begin
                 // debugln('Oh boy ! We have called the android line !');
                 Transport := TAndSync.Create;

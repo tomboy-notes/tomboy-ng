@@ -658,8 +658,10 @@ begin
      ImageSpellCross.Visible := not ImageSpellTick.Visible;
 
      ImageSyncCross.Left := ImageSyncTick.Left;
-     ImageSyncTick.Visible := (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
-                and (Sett.LabelSyncRepo.Caption <> '');
+     ImageSyncTick.Visible := (Sett.SyncRepoLocation.Caption <> rsSyncNotConfig)
+                and (Sett.SyncRepoLocation.Caption <> '') and (Sett.SyncRepo.checked);
+     ImageSyncTick.Visible := ImageSyncTick.Visible  or ((Sett.SyncNCUrl.Caption <> rsSyncNotConfig)
+                and (Sett.SyncNCUrl.Caption <> '') and (Sett.SyncNC.checked));
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 
      if (ImageConfigTick.Visible {and ImageNotesDirTick.Visible}) then begin
