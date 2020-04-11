@@ -368,9 +368,9 @@ begin
                         StringGridReport.InsertRowWithValues(Rows
                 	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
                             , Items[Index]^.Title, Items[Index]^.ID]);
-                        if not visible then
+                        { if not visible then
                             debugln(ASync.NoteMetaData.ActionName(Items[Index]^.Action),
-                                Items[Index]^.Title, Items[Index]^.ID);
+                                Items[Index]^.Title, Items[Index]^.ID); }
                         inc(Rows);
                 end;
     		end
