@@ -20,6 +20,7 @@ unit helpnotes;
   2019/09/25 Three individual OS based DownLoader() functions.
   2019/10/02 If OpenSSL download fails, try wget (Linux and Mac)
   2020/04/05 Allow for FPC320
+  2020/04/12 Use the ssl DDL in Windows.
 }
 
 {$mode objfpc}{$H+}
@@ -58,7 +59,7 @@ type
         {$endif}
         // Download Filename from URL website and store it in Dest local directory. True if successful
         function DownLoader(URL, FileName, Dest: string; out ErrorMsg: string): boolean;
-        {$ifdef WINDOWS}
+        {$ifdef X-WINDOWS}
         function WeHavePowershell(const Version: char): boolean;
         {$endif}
     public
@@ -112,7 +113,7 @@ end;
 
 procedure TFormHelpNotes.FormShow(Sender: TObject);
 begin
-    {$ifdef WINDOWS}
+    {$ifdef X-WINDOWS}
     if not WeHavePowershell('3') then begin
         showmessage(RS_NoPowershell);
         close;
@@ -273,7 +274,7 @@ begin
     end;
 end;
 
-{$ifdef WINDOWS}
+{$ifdef X-WINDOWS}
 function TFormHelpNotes.WeHavePowershell(const Version : char) : boolean;
 var
     Registry : TRegistry;

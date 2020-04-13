@@ -2527,7 +2527,6 @@ begin
     if Left < 20 then Left := 20;
     if Width < 50 then width := 50;
     if Height < 50 then height := 50;
-
     // ensure we don't start with more than two thirds _beyond_ boundaries.
     // don't seem to need this, on Linux at least, new window is always within screen. Test on Windows/Mac
     {$ifdef LINUX}exit;{$endif}
@@ -2535,11 +2534,9 @@ begin
     if (Left + (Width div 3)) > Screen.Width then begin
         Left := Screen.Width - (Width div 3);
     end;
-    //if Left < 0 then Left := 10;
     if (Top + (Height div 3)) > Screen.Height then begin
         Top := Screen.Height - (Height div 3);
     end;
-    //if Top < 10 then Top := 10;
 end;
 
 procedure TEditBoxForm.ImportNote(FileName: string);

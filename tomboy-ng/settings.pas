@@ -353,7 +353,7 @@ ResourceString
 
 implementation
 
-{$define SHOW_NET_SYNC}     // disable this define by, eg, putting a dot ahead of the '$'
+{not $define SHOW_NET_SYNC}     // disable this define by, eg, putting a 'not' ahead of the '$'
 
 {$R *.lfm}
 
