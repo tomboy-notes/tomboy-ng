@@ -64,6 +64,7 @@ unit Mainunit;
     2019/12/20  Added option --delay-start for when desktop is slow to determine its (dark) colours
     2020/03/30  Allow user to set display colours.
     2020/04/10  Make help files non modal
+    2020/04/12  Force sensible sizes for help notes.
 
     CommandLine Switches
 
@@ -288,7 +289,7 @@ end;
 
 // ---------------- HELP NOTES STUFF ------------------
 
-procedure TMainForm.ShowHelpNote(HelpNoteName: string);
+procedure TMainForm.ShowHelpNote(HelpNoteName: string);   // ToDo : consider moving this method and associated list to SearchUnit.
 var
     EBox : TEditBoxForm;
     TheForm : TForm;
@@ -316,7 +317,6 @@ begin
 			end;
 		end;
         // If we did not find it in the list and exit, above, we will make a new one.
-        //SingleNoteMode(ActualHelpNotesPath() + HelpNoteName, False, True)
         EBox := TEditBoxForm.Create(Application);
         EBox.SetReadOnly(False);
         EBox.SearchedTerm := '';
@@ -325,12 +325,11 @@ begin
         Ebox.TemplateIs := '';
         EBox.Show;
         EBox.Dirty := False;
-        //writeln('Adding to list');
         HelpList.AddObject(HelpNoteName, EBox);
-        // HelpList.Sort;
-        //showmessage('List is sorted ' + booltostr(HelpList.Sorted, true));
-
-
+        EBox.Top := HelpList.Count * 10;
+        EBox.Left := HelpList.Count * 10;
+        EBox.Width := Screen.Width div 2;      // Set sensible sizes.
+        EBox.Height := Screen.Height div 2;
     end else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
 end;
 

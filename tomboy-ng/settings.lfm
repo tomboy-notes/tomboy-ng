@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 1230
+  Left = 1288
   Height = 525
-  Top = 184
+  Top = 336
   Width = 630
   BorderIcons = []
   Caption = 'tomboy-ng Settings'
