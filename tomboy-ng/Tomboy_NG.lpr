@@ -13,14 +13,15 @@ uses
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     Forms, printer4lazarus, SearchUnit, settings, SyncGUI, Notebook, Spelling,
-	Mainunit, BackupView, recover, tomdroid, markdown, Index, autostart, hunspell,
-	sync, syncutils, transandroid, helpnotes, ResourceStr, SyncError, colours;
+    Mainunit, BackupView, recover, tomdroid, markdown, Index, autostart,
+    hunspell, sync, syncutils, transandroid, helpnotes, ResourceStr, SyncError,
+    colours, ncsetup;
 
 {$R *.res}
 
 begin
     Application.Scaled:=True;
-		Application.Title:='tomboy-ng';
+    Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
     Application.CreateForm(TMainForm, MainForm);
@@ -31,8 +32,9 @@ begin
     Application.CreateForm(TFormMarkdown, FormMarkdown);
     Application.CreateForm(TFormHelpNotes, FormHelpNotes);
     Application.CreateForm(TFormSyncError, FormSyncError);
-		Application.CreateForm(TFormColours, FormColours);
-	// Application.CreateForm(TNoteBookPick, NoteBookPick);
+    Application.CreateForm(TFormColours, FormColours);
+    Application.CreateForm(TFormNCSetup, FormNCSetup);
+    // Application.CreateForm(TNoteBookPick, NoteBookPick);
     // Application.CreateForm(TFormSpell, FormSpell);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);
     Application.Run;

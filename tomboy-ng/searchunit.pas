@@ -617,7 +617,17 @@ end;
 procedure TSearchForm.FileMenuClicked(Sender : TObject);
 var
     FileName : string;
+    syncok : boolean;
 begin
+
+    syncok := (Sett.SyncRepoLocation.Caption <> rsSyncNotConfig) and
+           (length(Sett.SyncRepoLocation.Caption) > 1) and
+           (Sett.SyncRepo.Checked);
+    syncok := syncok or ((Sett.SyncNCUrl.Caption <> rsSyncNotConfig) and
+           (length(Sett.SyncNCUrl.Caption) > 1) and
+           Sett.SyncNC.Checked);
+
+
     case TMenuTarget(TMenuItem(Sender).Tag) of
         mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
         mtNewNote : if (Sett.NoteDirectory = '') then
@@ -631,9 +641,7 @@ begin
                             Show;
                     end;
         mtAbout :    MainForm.ShowAbout();
-        mtSync :     if (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
-                        and (length(Sett.LabelSyncRepo.Caption) > 1) then
-                            Sett.Synchronise()
+        mtSync :     if(syncok) then Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
         mtSettings : begin
                             MoveWindowHere(Sett.Caption);

@@ -1374,8 +1374,10 @@ begin
     {$endif}
     Kmemo1.Clear;
 
-    MenuItemSync.Enabled := (Sett.LabelSyncRepo.Caption <> rsSyncNotConfig)
-            and (Sett.LabelSyncRepo.Caption <> '');
+    MenuItemSync.Enabled := (Sett.SyncRepoLocation.Caption <> rsSyncNotConfig)
+            and (Sett.SyncRepoLocation.Caption <> '') and (Sett.SyncRepo.Checked);
+    MenuItemSync.Enabled := MenuItemSync.Enabled or ((Sett.SyncNCURL.Caption <> rsSyncNotConfig)
+            and (Sett.SyncNCURL.Caption <> '') and (Sett.SyncNC.Checked));
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
     else
