@@ -1374,17 +1374,6 @@ begin
     {$endif}
     Kmemo1.Clear;
 
-    {
-    // this is not the right place to enable or disable sync, it should happen in master
-    // menu control stuff way back in main/search.  All menus should be the same. DRB 14/04/20202
-
-    MenuItemSync.Enabled := (Sett.SyncRepoLocation.Caption <> rsSyncNotConfig)
-            and (Sett.SyncRepoLocation.Caption <> '') and (Sett.SyncRepo.Checked);
-    MenuItemSync.Enabled := MenuItemSync.Enabled or ((Sett.SyncNCURL.Caption <> rsSyncNotConfig)
-            and (Sett.SyncNCURL.Caption <> '') and (Sett.SyncNC.Checked));
-    }
-
-
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
     else

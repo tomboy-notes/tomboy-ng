@@ -19,7 +19,7 @@ uses
     Classes, SysUtils, dateutils, LazLogger;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
-		        SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
+		SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
                 SyncAndroid);  // Simple one to one Android Device
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.

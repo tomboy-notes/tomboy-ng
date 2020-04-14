@@ -6,13 +6,12 @@ interface
 
 uses
   Classes, SysUtils, LCLIntf, StdCtrls, Dialogs, openssl, ssockets, sslsockets,
-  fphttpclient, fpjson, jsonparser, fpopenssl, HMAC, base64, strutils;
+  fphttpclient, fpjson, jsonparser, fpopenssl, HMAC, strutils; // Synautil, ssl_openssl ;
 
 type    { TOAuth }
   TOAuth = class(TObject)
 public
-    ConsumerKey : String;
-    ConsumerSecret : String;
+    Key : String;
     Token : String;
     TokenSecret : String;
     Verifier : String;
@@ -25,9 +24,10 @@ public
     function WebPost(u : String; params : TStrings) : String;
     function URLEncode(s: String): String;
     function URLDecode(s: String): String;
-    function ParamsSort(params : TStrings) : TStrings;
+    function Callback(u: String): String;
+    procedure ParamsSort(const params : TStrings);
     procedure Sign(u : String; mode : String; params : TStrings);
-    procedure BaseParams(const p : TStrings);
+    procedure BaseParams(const p : TStrings; tok : boolean);
 private
     function Timestamp() : String;
     function Nonce() : String;
@@ -44,8 +44,7 @@ begin
   inherited;
 
   InitSSLInterface;
-  ConsumerKey := 'anyone';
-  ConsumerSecret := 'anyone';
+  Key := '';
   Token := '';
   Verifier := '';
   callbackUrl := 'http://localhost:8000/tomboy-web-sync/';
@@ -53,16 +52,15 @@ end;
 	
 function TOAuth.Timestamp() : String;
 begin
-  Result := Format('%d',[Trunc((Now - EncodeDate(1970, 1 ,1)) * 24 * 60 * 60)]   );
+  Result := Format('%d',[Trunc((Now - EncodeDate(1970, 1 ,1)) * 24 * 60 * 60)]);
 end;
 
 function TOAuth.Nonce() : String;
 begin
-//  Result := Timestamp() + Format('%d',[Random(1000000000)]);
   Result := Format('%d',[Random(9999999-123400)+123400]);
 end;
 
-procedure TOAuth.BaseParams(const p : TStrings);
+procedure TOAuth.BaseParams(const p : TStrings; tok : boolean);
 begin
   //OAuth setup
   p.Add('oauth_version');
@@ -75,16 +73,16 @@ begin
   // TIMESTAMP
   p.Add('oauth_timestamp');
   p.Add(Timestamp());
-  // ConsumerKey
+  // Key
   p.Add('oauth_consumer_key');
-  p.Add(ConsumerKey);
+  p.Add(Key);
   // Token
-  if(length(Token)>0) then begin
+  if(tok and (length(Token)>0)) then begin
 	p.Add('oauth_token');
   	p.Add(Token);
   end;
   // Verifier
-  if(length(Verifier)>0) then begin
+  if(tok and (length(Verifier)>0)) then begin
 	p.Add('oauth_verifier');
   	p.Add(Verifier);
   end;
@@ -150,7 +148,7 @@ begin
   end;
 end;
 
-function TOAuth.ParamsSort(params : TStrings) : TStrings;
+procedure TOAuth.ParamsSort(const params : TStrings) ;
 var
   p : TStrings;
   i : integer;
@@ -174,7 +172,14 @@ begin
         end;
         i := i + 2;
     end;
-  Result := p;
+
+  params.Clear();
+  i:=0;
+  while(i<p.Count) do begin
+    params.Add(p[i]);
+    i := i+1;
+  end;
+  FreeAndNil(p);
 end;
 
 function TOAuth.WebGet(u : String; params : TStrings) : String;
@@ -187,8 +192,6 @@ begin
   Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
   Client.AllowRedirect := true;
 
-  writeln('GET2= '+u);
-
   i:=0;
   while(i<params.Count) do begin
     if(i=0) then u := u + '?' else u := u + '&';
@@ -196,11 +199,8 @@ begin
     i := i +2;
   end;
 
-  writeln('GET3= '+u);
-
   try
     Result := Client.Get(u);
-    writeln('GET RES= '+Result);
   except on E:Exception do begin
     ShowMessage(E.message);
     Result :='';
@@ -228,7 +228,6 @@ begin
   p := TStringList.Create();
   i:=0;
   while(i<params.Count) do begin
-    //p.Add(Format('%s=%s',[URLEncode(params[i]),URLEncode(params[i+1])]));
     p.Add(Format('%s=%s',[params[i],params[i+1]]));
     i := i +2;
   end;
@@ -236,14 +235,15 @@ begin
   try
     Client.FormPost(u,p,res);
     Result := res.DataString;
-    writeln('POST RES= '+Result);
+    //writeln('POST RES= '+Result);
   except on E:Exception do begin
     ShowMessage(E.message);
     Result := '';
     end;
   end;
-  Client.Free;
-  res.Free;
+  FreeAndNil(Client);
+  FreeAndNil(p);
+  FreeAndNil(res);
 end;
 
 procedure TOAuth.Sign(u : String; mode : String; params : TStrings);
@@ -252,7 +252,7 @@ var
   p : String;
   i : integer;
   j : integer;
-  key : String;
+  hashkey : String;
   signature : String;
   s2 : String;
   c : String;
@@ -266,13 +266,10 @@ begin
     i := i +2;
   end;
 
-  key := ConsumerSecret + '&' + Token;
-
+  hashkey := Key + '&' + Token;
   data := mode + '&' + URLEncode(u) + '&' + URLEncode(p);
 
-  signature := HMACSHA1(key, data);
-  writeln('KEY = '+key);
-  writeln('SIGN = '+data);
+  signature := HMACSHA1(hashkey, data);
 
   b64 := 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
@@ -297,11 +294,16 @@ begin
     i := i+6;
   end;
 
-  writeln('SIGNATURE = '+signature);
-
   params.Add('oauth_signature');
   params.Add(signature);
 
+end;
+
+function TOauth.Callback(u: String): String;
+//var
+//  ListenerSocket, ConnectionSocket: TTCPBlockSocket;
+begin
+  Result :='';
 end;
 
 end.
