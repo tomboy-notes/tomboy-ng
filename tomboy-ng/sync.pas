@@ -1074,19 +1074,19 @@ begin
     ErrorString := '';
     FreeAndNil(Transport);
     case Mode of
-        SyncRepo : begin
-                SyncAddress := AppendPathDelim(Sett.SyncRepoLocation.Caption);
-                Transport := TFileSync.Create;
-	        end;
-	SyncNextCloud : begin
-		Transport := TNextSync.Create;
-		SyncAddress := Sett.SyncNCUrl.Caption;
-                end;
+        SyncFile : begin
+                        SyncAddress := AppendPathDelim(Sett.LabelFileSync.Caption);
+                        Transport := TFileSync.Create;
+	               end;
+	    SyncNextCloud : begin
+		                    Transport := TNextSync.Create;
+		                    SyncAddress := Sett.LabelNCSyncURL.caption;
+                        end;
         SyncAndroid : begin
-                // debugln('Oh boy ! We have called the android line !');
-                Transport := TAndSync.Create;
-                ManPrefix := copy(LocalServerID, 1, 8);     // But in join mode, LocalServerID is empty at this stage ...
-            end;
+                        // debugln('Oh boy ! We have called the android line !');
+                        Transport := TAndSync.Create;
+                        ManPrefix := copy(LocalServerID, 1, 8);     // But in join mode, LocalServerID is empty at this stage ...
+                    end;
     end;
     Transport.Password := Password;
     Transport.NotesDir := NotesDir;

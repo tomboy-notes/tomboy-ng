@@ -658,11 +658,19 @@ begin
      ImageSpellCross.Visible := not ImageSpellTick.Visible;
 
      ImageSyncCross.Left := ImageSyncTick.Left;
+
+     ImageSyncTick.Visible :=  Sett.SyncOK;
+     ImageSyncCross.Visible := not ImageSyncTick.Visible;
+
+     {((Sett.RadioFileSync.checked and (Sett.LabelFileSync.Caption <> rsSyncNotConfig))
+            or (Sett.RadioSyncNC.Checked and (Sett.LabelNCSyncURL.caption <> rsSyncNotConfig))); }
+
+     {
      ImageSyncTick.Visible := (Sett.SyncRepoLocation.Caption <> rsSyncNotConfig)
                 and (Sett.SyncRepoLocation.Caption <> '') and (Sett.SyncRepo.checked);
      ImageSyncTick.Visible := ImageSyncTick.Visible  or ((Sett.SyncNCUrl.Caption <> rsSyncNotConfig)
                 and (Sett.SyncNCUrl.Caption <> '') and (Sett.SyncNC.checked));
-     ImageSyncCross.Visible := not ImageSyncTick.Visible;
+                        }
 
      if (ImageConfigTick.Visible {and ImageNotesDirTick.Visible}) then begin
         ButtonDismiss.Enabled := AllowDismiss;
