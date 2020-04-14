@@ -61,9 +61,10 @@ RESOURCESTRING
 
 // Settings but only part ...
 
-  rsChangeNetSync = 'Change Net Sync Repo';          // These are labels on the button used to set sync repo
-  rsChangeFileSync = 'Change File Sync Repo';
-
+  //rsChangeNetSync = 'Change Net Sync Repo';          // These are labels on the button used to set sync repo
+  rsChangeSync = 'Change Sync Repo';
+  rsSyncNotConfig = 'not configured';               // means that the file of net sync is not configured yet.
+  rsSetUp = 'Setup';                               // means configure something, eg, one of the Sync modules.
 
 implementation
 
