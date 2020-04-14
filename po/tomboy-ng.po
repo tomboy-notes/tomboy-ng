@@ -261,17 +261,12 @@ msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
 msgstr ""
 
-#: resourcestr.rschangefilesync
-msgctxt "resourcestr.rschangefilesync"
-msgid "Change File Sync Repo"
-msgstr ""
-
 #: resourcestr.rschangenameofnotebook
 msgid "Change the name of this Notebook"
 msgstr ""
 
-#: resourcestr.rschangenetsync
-msgid "Change Net Sync Repo"
+#: resourcestr.rschangesync
+msgid "Change Sync Repo"
 msgstr ""
 
 #: resourcestr.rscreatenewrepo
@@ -382,6 +377,11 @@ msgctxt "resourcestr.rssetthenotebooks"
 msgid "Set the notebooks this note is a member of"
 msgstr ""
 
+#: resourcestr.rssetup
+msgctxt "resourcestr.rssetup"
+msgid "Setup"
+msgstr ""
+
 #: resourcestr.rssetupnotesdirfirst
 msgctxt "resourcestr.rssetupnotesdirfirst"
 msgid "Please setup a notes directory first"
@@ -395,6 +395,11 @@ msgstr ""
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
 msgid "A Sync Error occured"
+msgstr ""
+
+#: resourcestr.rssyncnotconfig
+msgctxt "resourcestr.rssyncnotconfig"
+msgid "not configured"
 msgstr ""
 
 #: resourcestr.rstestingrepo
@@ -463,10 +468,6 @@ msgstr ""
 
 #: settings.rssnapshotcreated
 msgid "created, do you want to copy it elsewhere ?"
-msgstr ""
-
-#: settings.rssyncnotconfig
-msgid "not configured"
 msgstr ""
 
 #: spelling.rscheckingfull
@@ -1439,11 +1440,6 @@ msgstr ""
 msgid "Set Spell Library"
 msgstr ""
 
-#: tsett.buttonsetsynserver.caption
-msgctxt "tsett.buttonsetsynserver.caption"
-msgid "Change File Sync Repo"
-msgstr ""
-
 #: tsett.buttonshowbackup.caption
 msgid "Show Me"
 msgstr ""
@@ -1537,8 +1533,8 @@ msgstr ""
 msgid "Font Size"
 msgstr ""
 
-#: tsett.groupboxsynctype.caption
-msgid "Sync Type"
+#: tsett.groupboxsync.caption
+msgid "  Sync  "
 msgstr ""
 
 #: tsett.label1.caption
@@ -1567,16 +1563,16 @@ msgid "Notes will be looked for and saved in :"
 msgstr ""
 
 #: tsett.label3.caption
-msgid "When a conflict is detected between a local note and"
+msgid "When a conflict is detected between a local note and remote one :"
 msgstr ""
 
 #: tsett.label4.caption
-msgid "a note on the configured synchronisation server :"
+msgid "Repo : "
 msgstr ""
 
 #: tsett.label5.caption
 msgctxt "tsett.label5.caption"
-msgid "File Sync using shared drive."
+msgid "URL"
 msgstr ""
 
 #: tsett.label6.caption
@@ -1595,12 +1591,18 @@ msgstr ""
 msgid "A snaphot is a copy of your current note directory."
 msgstr ""
 
-#: tsett.labelsnapdir.caption
-msgid ".... and its not available just yet !"
+#: tsett.labelfilesync.caption
+msgctxt "tsett.labelfilesync.caption"
+msgid "not configured"
 msgstr ""
 
-#: tsett.labelsyncurl.caption
-msgid "LabelSyncURL"
+#: tsett.labelncsyncurl.caption
+msgctxt "tsett.labelncsyncurl.caption"
+msgid "not configured"
+msgstr ""
+
+#: tsett.labelsnapdir.caption
+msgid ".... and its not available just yet !"
 msgstr ""
 
 #: tsett.menufriday.caption
@@ -1636,7 +1638,7 @@ msgid "Always Ask me what to do."
 msgstr ""
 
 #: tsett.radiofilesync.caption
-msgid "File Sync"
+msgid "File Sync, google drive, smb etc."
 msgstr ""
 
 #: tsett.radiofontbig.caption
@@ -1656,8 +1658,9 @@ msgstr ""
 msgid "Small"
 msgstr ""
 
-#: tsett.radionetsync.caption
-msgid "Net Sync"
+#: tsett.radiosyncnc.caption
+msgctxt "tsett.radiosyncnc.caption"
+msgid "Nextcloud/ownCloud (Grauphel)"
 msgstr ""
 
 #: tsett.radiouselocal.caption
@@ -1681,6 +1684,11 @@ msgstr ""
 #: tsett.speedbutttbmenu.caption
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
+msgstr ""
+
+#: tsett.speedsetupsync.caption
+msgctxt "tsett.speedsetupsync.caption"
+msgid "Setup"
 msgstr ""
 
 #: tsett.tabbackup.caption
