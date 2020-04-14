@@ -57,6 +57,7 @@ RESOURCESTRING
   rsSaveAndSync = 'Press Save and Sync if this looks OK';
   rsSyncError = 'A Sync Error occured';
   rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
+  rsSyncNCDefault = 'https://YOURSERVER/index.php/apps/grauphel';
 
 
 // Settings but only part ...

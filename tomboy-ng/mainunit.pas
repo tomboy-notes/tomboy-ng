@@ -613,6 +613,7 @@ begin
         AllowDismiss := False;
     end else
         LabelError.Caption := '';
+
     if not AllowDismiss then begin
         LabelNoDismiss1.Caption := rsCannotDismiss1;
         LabelNoDismiss2.Caption := rsCannotDismiss2;
