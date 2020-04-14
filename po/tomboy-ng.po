@@ -746,6 +746,31 @@ msgstr ""
 msgid "FormBackupView"
 msgstr ""
 
+#: tformcolours.bitbtndefault.caption
+msgid "Default"
+msgstr ""
+
+#: tformcolours.buttonback.caption
+msgid "Background"
+msgstr ""
+
+#: tformcolours.buttonhiback.caption
+msgctxt "tformcolours.buttonhiback.caption"
+msgid "Highlight"
+msgstr ""
+
+#: tformcolours.buttontext.caption
+msgid "Text"
+msgstr ""
+
+#: tformcolours.buttontitle.caption
+msgid "Title"
+msgstr ""
+
+#: tformcolours.buttontitle.hint
+msgid "Set Title Colour"
+msgstr ""
+
 #: tformcolours.caption
 msgid "FormColours"
 msgstr ""
@@ -757,41 +782,6 @@ msgstr ""
 #: tformcolours.label2.caption
 msgctxt "tformcolours.label2.caption"
 msgid "Set Colours"
-msgstr ""
-
-#: tformcolours.speedbackground.caption
-msgctxt "tformcolours.speedbackground.caption"
-msgid "Background"
-msgstr ""
-
-#: tformcolours.speedcancel.caption
-msgctxt "tformcolours.speedcancel.caption"
-msgid "Cancel"
-msgstr ""
-
-#: tformcolours.speeddefault.caption
-msgctxt "tformcolours.speeddefault.caption"
-msgid "Default"
-msgstr ""
-
-#: tformcolours.speedhighlight.caption
-msgctxt "tformcolours.speedhighlight.caption"
-msgid "Highlight"
-msgstr ""
-
-#: tformcolours.speedok.caption
-msgctxt "tformcolours.speedok.caption"
-msgid "OK"
-msgstr ""
-
-#: tformcolours.speedtext.caption
-msgctxt "tformcolours.speedtext.caption"
-msgid "Text"
-msgstr ""
-
-#: tformcolours.speedtitle.caption
-msgctxt "tformcolours.speedtitle.caption"
-msgid "Title"
 msgstr ""
 
 #: tformhelpnotes.buttonclose.caption
@@ -1578,6 +1568,11 @@ msgstr ""
 
 #: tsett.label4.caption
 msgid "Repo : "
+msgstr ""
+
+#: tsett.label5.caption
+msgctxt "tsett.label5.caption"
+msgid "URL"
 msgstr ""
 
 #: tsett.label6.caption

@@ -1083,7 +1083,6 @@ begin
 	    SyncAddress := Sett.LabelNCSyncURL.caption;
         end;
         SyncAndroid : begin
-            // debugln('Oh boy ! We have called the android line !');
             Transport := TAndSync.Create;
             ManPrefix := copy(LocalServerID, 1, 8);     // But in join mode, LocalServerID is empty at this stage ...
         end;

@@ -119,10 +119,14 @@ type
 
     TSett = class(TForm)
           ButtDefaultNoteDir: TButton;
-          SyncRepo: TRadioButton;
-          Label4: TLabel;
-          Label5: TLabel;
-          SettNC: TButton;
+		  CheckBoxAutoSync: TCheckBox;
+		  GroupBoxSync: TGroupBox;
+		  Label4: TLabel;
+		  Label5: TLabel;
+		  LabelFileSync: TLabel;
+		  LabelNCSyncURL: TLabel;
+		  RadioFileSync: TRadioButton;
+		  RadioSyncNC: TRadioButton;
 	  ButtonSetColours: TButton;
           ButtonFixedFont: TButton;
           ButtonFont: TButton;
@@ -137,8 +141,6 @@ type
 
 	  ButtonSetNotePath: TButton;
           CheckAutoStart : TCheckBox;
-          SyncNC: TRadioButton;
-          CheckBoxAutoSync: TCheckBox;
           CheckCaseSensitive: TCheckBox;
           CheckManyNotebooks: TCheckBox;
           CheckShowSearchAtStart: TCheckBox;
@@ -156,8 +158,6 @@ type
           Label10: TLabel;
           Label11: TLabel;
           Label12: TLabel;
-          SyncNCURL: TLabel;
-	  SyncRepoLocation: TLabel;
           Label13: TLabel;
           Label14: TLabel;
           Label15: TLabel;
@@ -204,6 +204,7 @@ type
           SpeedButHide: TSpeedButton;
 	  SpeedButHelp: TSpeedButton;
           SpeedButtTBMenu: TSpeedButton;
+		  SpeedSetupSync: TSpeedButton;
 	  StringGridBackUp: TStringGrid;
 	  TabBasic: TTabSheet;
 	  TabBackUp: TTabSheet;
@@ -213,7 +214,6 @@ type
 	  TabDisplay: TTabSheet;
           TimeEdit1: TTimeEdit;
           TimerAutoSync: TTimer;
-          SettRepo: TToggleBox;
 
         procedure ButtDefaultNoteDirClick(Sender: TObject);
 	procedure ButtonSetColoursClick(Sender: TObject);
@@ -245,15 +245,12 @@ type
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
 	procedure PageControl1Change(Sender: TObject);
-        procedure SettNCClick(Sender: TObject);
-        procedure SettRepoChange(Sender: TObject);
 	procedure SpeedButHelpClick(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
 		procedure SpeedSetupSyncClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
-        procedure SyncNCChange(Sender: TObject);
-        procedure SyncRepoChange(Sender: TObject);
+        procedure RadioFileSyncChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabSnapshotResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
@@ -547,15 +544,18 @@ begin
     end;
 end;
 
-procedure TSett.SyncNCChange(Sender: TObject);
+procedure TSett.RadioFileSyncChange(Sender: TObject);
 begin
-    if(SyncNC.Checked) then SyncRepo.Checked:=false else SyncRepo.Checked:=true;
-    SettingsChanged();
-end;
-
-procedure TSett.SyncRepoChange(Sender: TObject);
-begin
-    if(SyncRepo.Checked) then SyncNC.Checked:=false else SyncNC.Checked:=true;
+    //if(RadioFileSync.Checked) then RadioSyncNC.Checked:=false else RadioSyncNC.Checked:=true;
+    // don't need above if both radio buttons (or more) are in same groupbox
+    if  RadioFileSync.Checked then
+        if self.LabelFileSync.caption = rsSyncNotConfig then
+            SpeedSetUpSync.caption := rsSetUp
+        else SpeedSetUpSync.caption := rsChangeSync
+    else
+        if self.LabelNCSyncURL.caption = rsSyncNotConfig then
+            SpeedSetUpSync.caption := rsSetUp
+        else SpeedSetUpSync.caption := rsChangeSync;
     SettingsChanged();
 end;
 
@@ -773,7 +773,14 @@ begin
     AreClosing := false;
     Top := 100;
     Left := 300;
+
+    {$ifdef DISABLE_NET_SYNC}
+    RadioSyncNC.enabled := false;
+    LabelNCSyncURL.Hint := 'NextCloud / Grauphel will be in a future Release';
+    LabelNCSyncURL.ShowHint := True;
+    {$else}
     OAuth := TOAuth.Create();
+    {$endif}
 
     DefaultFixedFont := GetFixedFont(); // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
@@ -943,11 +950,28 @@ begin
             SyncNCUrl.Caption := ConfigFile.readstring('SyncSettings', 'SyncNCUrl', '');
             if(length(SyncNCUrl.Caption)<1) then SyncNCUrl.Caption := rsSyncNotConfig;
 
-            SyncRepo.checked := (ConfigFile.readstring('SyncSettings', 'SyncRepo', 'false') = 'true');
-            SyncRepoLocation.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoLocation', '');
-            if(length(SyncRepoLocation.Caption)<1) then SyncRepoLocation.Caption := rsSyncNotConfig;
+            LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
+            LabelNCSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoNCURL', '');
+            if LabelFileSync.Caption = '' then LabelFileSync.Caption := rsSyncNotConfig;
+            if LabelNCSyncURL.Caption = '' then LabelNCSyncURL.Caption := rsSyncNotConfig;
+            SyncType := ConfigFile.readstring('SyncSettings', 'SyncType', '');          // this is new way to do it, file, nextcloud, etc
+            case SyncType of
+                '' :    // SyncType not present, check for legacy model
+                        Self.RadioFileSync.checked := (ConfigFile.readstring('SyncSettings', 'UseFileSync', 'true') = 'true');
+                'file' :  RadioFileSync.checked := true;
+                'nextcloud' : self.RadioSyncNC.checked := true;
+			end;
 
-            if(SyncNC.Checked) then SyncRepo.Checked:=false else SyncRepo.Checked:=true;
+
+
+
+            {RadioSyncNC.checked := (ConfigFile.readstring('SyncSettings', 'SyncNC', 'false') = 'true');
+            LabelNCSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncNCUrl', '');
+            if(length(LabelNCSyncURL.Caption)<1) then LabelNCSyncURL.Caption := rsSyncNotConfig;
+            RadioFileSync.checked := (ConfigFile.readstring('SyncSettings', 'SyncRepo', 'false') = 'true');
+            LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoLocation', '');
+            if(length(LabelFileSync.Caption)<1) then LabelFileSync.Caption := rsSyncNotConfig;
+            if(RadioSyncNC.Checked) then RadioFileSync.Checked:=false else RadioFileSync.Checked:=true;  }
 
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
@@ -974,9 +998,9 @@ begin
             LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
             UsualFont := GetFontData(Self.Font.Handle).Name;
             FixedFont := DefaultFixedFont;
-            SyncRepoLocation.Caption := '';        // not 'not config' because of potential for other languages.
-            SyncNCUrl.Caption := '';
-            SyncNC.checked := false;
+            LabelFileSync.Caption := rsSyncNotConfig;
+            LabelNCSyncURL.Caption := rsSyncNotConfig;
+            RadioFileSync.checked := true;
             if not SettingsChanged() then // write a initial default file, shows user a message on error
                 HaveConfig := false;
             MaskSettingsChanged := True;
@@ -1067,7 +1091,8 @@ begin
             ConfigFile.writestring('SyncSettings', 'SyncNCURL', SyncNCUrl.Caption);
             ConfigFile.writestring('SyncSettings', 'SyncRepo', MyBoolStr(SyncRepo.Checked));
             ConfigFile.writestring('SyncSettings', 'SyncRepoLocation', SyncRepoLocation.Caption);
-            if SpellConfig then begin
+            
+	    if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
             end;
