@@ -107,7 +107,7 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView,
-    ncsetup, oauth, LCLIntf;
+    ncsetup, oauth, LCLIntf, md5;
 
 // Types;
 
@@ -119,14 +119,15 @@ type
 
     TSett = class(TForm)
           ButtDefaultNoteDir: TButton;
-		  CheckBoxAutoSync: TCheckBox;
-		  GroupBoxSync: TGroupBox;
-		  Label4: TLabel;
-		  Label5: TLabel;
-		  LabelFileSync: TLabel;
-		  LabelNCSyncURL: TLabel;
-		  RadioFileSync: TRadioButton;
-		  RadioSyncNC: TRadioButton;
+          ButtonNCSetup: TButton;
+	  CheckBoxAutoSync: TCheckBox;
+	  GroupBoxSync: TGroupBox;
+	  Label4: TLabel;
+	  Label5: TLabel;
+	  LabelFileSync: TLabel;
+	  LabelNCSyncURL: TLabel;
+	  RadioFileSync: TRadioButton;
+	  RadioSyncNC: TRadioButton;
 	  ButtonSetColours: TButton;
           ButtonFixedFont: TButton;
           ButtonFont: TButton;
@@ -204,7 +205,7 @@ type
           SpeedButHide: TSpeedButton;
 	  SpeedButHelp: TSpeedButton;
           SpeedButtTBMenu: TSpeedButton;
-		  SpeedSetupSync: TSpeedButton;
+          SpeedSetupSync: TSpeedButton;
 	  StringGridBackUp: TStringGrid;
 	  TabBasic: TTabSheet;
 	  TabBackUp: TTabSheet;
@@ -216,6 +217,7 @@ type
           TimerAutoSync: TTimer;
 
         procedure ButtDefaultNoteDirClick(Sender: TObject);
+        procedure ButtonNCSetupClick(Sender: TObject);
 	procedure ButtonSetColoursClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
@@ -248,7 +250,7 @@ type
 	procedure SpeedButHelpClick(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
-		procedure SpeedSetupSyncClick(Sender: TObject);
+	procedure SpeedSetupSyncClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
         procedure RadioFileSyncChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
@@ -288,9 +290,9 @@ type
         procedure SetFontSizes;
         // Saves all current settings to disk. Call when any change is made. If unable
         // to write to disk, returns False;
-        function SettingsChanged(): boolean;
-		function fSyncOK(): boolean;
-		procedure SyncSettings;
+        function SettingsChanged(source : String): boolean;
+	function fSyncOK(): boolean;
+	procedure SyncSettings;
         //function ZipDate: string;
 
     public
@@ -304,6 +306,9 @@ type
         DefaultFixedFont : string;
         DarkTheme : boolean;
         DebugModeSpell : boolean;
+
+        SyncType : string;
+
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;
         AllowClose : Boolean;           // review need for this
@@ -458,30 +463,19 @@ begin
     {  ToDo : here we check if there is an existing local manifest and assume, incorrectly, that
        it must be associated with an existing FileSync. When we understand a bit more about
        nextcloud sync process, fix ! }
-    if RadioFileSync.Checked then begin
-	        if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
-		    if FileExists(LocalConfig + 'manifest.xml') then
-	            if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
-	        if SelectDirectoryDialog1.Execute then begin
-	           FormSync.NoteDirectory := NoteDirectory;
-	           FormSync.LocalConfig := LocalConfig;
-	           FormSync.SetupSync := True;
-	           LabelFileSync.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-	           if mrOK = FormSync.ShowModal then begin
-	              SettingsChanged();
-	           end else
-	               LabelFileSync.Caption := rsSyncNotConfig;
-	        end;
-	end else begin      // Assuming if its not FileSync, must be NextCloud.....
-        // ToDo : as mentioned above, must warn user if they are changing an existing sync.
-            if((LabelNCSyncURL.Caption = rsSyncNotConfig) or (length(LabelNCSyncURL.Caption)<5))
-                        then FormNCSetup.URL.Text   :=  'https://yourcloudserver/index.php/apps/grauphel'
-                        else FormNCSetup.URL.Text   :=  LabelNCSyncURL.Caption;
-            FormNCSetup.oauth := OAuth;
-            if(FormNCSetup.ShowModal = mrOK ) then begin
-                    SettingsChanged();
-            end;
-	end;
+    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    if FileExists(LocalConfig + 'manifest.xml') then
+    if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
+    if SelectDirectoryDialog1.Execute then begin
+       FormSync.NoteDirectory := NoteDirectory;
+       FormSync.LocalConfig := LocalConfig;
+       FormSync.SetupSync := True;
+       LabelFileSync.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+       if mrOK = FormSync.ShowModal then begin
+          SettingsChanged('SpeedSetupSyncClick');
+       end else
+           LabelFileSync.Caption := rsSyncNotConfig;
+    end;
 end;
 
 procedure TSett.StringGridBackUpDblClick(Sender: TObject);
@@ -512,17 +506,16 @@ end;
 
 procedure TSett.RadioFileSyncChange(Sender: TObject);
 begin
-    //if(RadioFileSync.Checked) then RadioSyncNC.Checked:=false else RadioSyncNC.Checked:=true;
-    // don't need above if both radio buttons (or more) are in same groupbox
-    if  RadioFileSync.Checked then
-        if self.LabelFileSync.caption = rsSyncNotConfig then
-            SpeedSetUpSync.caption := rsSetUp
-        else SpeedSetUpSync.caption := rsChangeSync
-    else
-        if self.LabelNCSyncURL.caption = rsSyncNotConfig then
-            SpeedSetUpSync.caption := rsSetUp
-        else SpeedSetUpSync.caption := rsChangeSync;
-    SettingsChanged();
+    if(RadioFileSync.checked) then
+    begin
+        SyncType := 'file';
+        RadioSyncNC.checked := false;
+    end else
+    begin
+        SyncType := 'nextcloud';
+        RadioSyncNC.checked := true;
+    end;
+    SettingsChanged('RadioFileSyncChange');
 end;
 
 procedure TSett.TabBasicResize(Sender: TObject);
@@ -609,7 +602,7 @@ begin
             if SpellConfig then begin
                LabelDicStatus.Caption := rsDictionaryLoaded;
                LabelDic.Caption := FullDicName;
-               SettingsChanged();
+               SettingsChanged('CheckDictionary');
                // NeedRefresh := True;         // ToDo : April '19, don't need this ???
                Result := True;
             end else begin
@@ -672,7 +665,7 @@ begin
         if (not DirectoryExistsUTF8(LabelDic.Caption))
                     and (FileExistsUTF8(LabelDic.Caption)) then  // we have a nominated file from config
             if CheckDictionary(LabelDic.Caption) then exit;      // All good, use it !
-        if  0 = CheckForDic(DicPath) then begin                  // We'll try our defaults ....
+        if  0 = CheckForDic(DicPath) then begin                  // We ll try our defaults ....
             if 0 = CheckForDic(DicPathAlt) then begin
                 LabelDicStatus.Caption := rsDictionaryNotFound;
                 exit();
@@ -731,42 +724,43 @@ begin
 	end else CloseAction := caHide;
 end;
 
-RESOURCESTRING
-    rsSetFileSyncRepo = 'Set File Sync Repo';
-
 procedure TSett.FormCreate(Sender: TObject);
 begin
     AreClosing := false;
     Top := 100;
     Left := 300;
 
-    {$ifdef DISABLE_NET_SYNC}
-    RadioSyncNC.enabled := false;
-    LabelNCSyncURL.Hint := 'NextCloud / Grauphel will be in a future Release';
-    LabelNCSyncURL.ShowHint := True;
-    {$else}
     OAuth := TOAuth.Create();
-    {$endif}
+
+    MaskSettingsChanged := true;
+    LocalConfig := GetDefaultConfigDir();   // sys dependant unless user has overridden
+    LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
+    ExportPath := '';
+    LabelLibrary.Caption := '';
+    NoteDirectory := Sett.GetDefaultNoteDir;
+    labelNotesPath.Caption := NoteDirectory;
+    HaveConfig := false;
+    CheckConfigFile();                      // write a new, default one if necessary
 
     DefaultFixedFont := GetFixedFont(); // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
-    MaskSettingsChanged := true;
     //NeedRefresh := False;
-    ExportPath := '';
-    LabelLibrary.Caption := '';
-    HaveConfig := false;
-    LocalConfig := GetDefaultConfigDir();   // sys dependant unless user has overridden
-    LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
-    NoteDirectory := Sett.GetDefaultNoteDir;
-    labelNotesPath.Caption := NoteDirectory;
-    CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
-    CheckConfigFile();                      // write a new, default one if necessary
     CheckSpelling();
-    //MainForm.FillInFileMenus();
+    PageControl1.ActivePage := TabBasic;
+
+    {$ifdef DISABLE_NET_SYNC}
+    ButtonNCSetup.enabled := false;
+    RadioSyncNC.enabled := false;
+    LabelNCSyncURL.Hint := 'NextCloud / Grauphel will be in a future Release';
+    LabelNCSyncURL.ShowHint := True;
+    {$endif}
+
+    CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
 end;
 
 procedure TSett.FormDestroy(Sender: TObject);
 begin
+    FreeandNil(OAuth);
     FreeandNil(Spell);
 end;
 
@@ -860,134 +854,141 @@ end;
 procedure TSett.CheckConfigFile;
 var
     ConfigFile : TINIFile;
-    ReqFontSize, SyncType : ANSIString;
+    ReqFontSize : ANSIString;
 begin
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
  	    try
-            MaskSettingsChanged := True;    // should be true anyway ?
+            	MaskSettingsChanged := True;    // should be true anyway ?
    		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
             {if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
                 CheckShowIntLinks.Checked := true
             else CheckShowIntLinks.Checked := false;}
-            CheckShowIntLinks.Checked :=
-                ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
-            CheckShowExtLinks.Checked :=
-                ('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
-            CheckManyNoteBooks.checked :=
-        	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
-            CheckCaseSensitive.Checked :=
-                ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
-            CheckShowTomdroid.Checked :=
-                ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
-            CheckShowSplash.Checked :=
-                ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
-            CheckAutostart.Checked :=
-                ('true' = Configfile.ReadString('BasicSettings', 'Autostart', 'false'));
-            CheckShowSearchAtStart.Checked :=
-                ('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
-            ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
-            case ReqFontSize of
-                'huge'   : RadioFontHuge.Checked := true;
-        	    'big'    : RadioFontBig.Checked := true;
-                'medium' : RadioFontMedium.Checked := true;
-                'small'  : RadioFontSmall.Checked := true;
-            end;
-            UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
-            ButtonFont.Hint := UsualFont;
-            FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
-            if FixedFont = '' then FixedFont := DefaultFixedFont;
-            ButtonFixedFont.Hint := FixedFont;
-            BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
-            HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColour', '0'));
-            TextColour := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour', '0'));
-            TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
-            UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
-            // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
-            case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
-                'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
-                'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
-                'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
-		    end;
+            	CheckShowIntLinks.Checked :=
+                	('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
+            	CheckShowExtLinks.Checked :=
+                	('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
+            	CheckManyNoteBooks.checked :=
+        	    	('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
+            	CheckCaseSensitive.Checked :=
+                	('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
+            	CheckShowTomdroid.Checked :=
+               		('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
+            	CheckShowSplash.Checked :=
+                	('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
+            	CheckAutostart.Checked :=
+                	('true' = Configfile.ReadString('BasicSettings', 'Autostart', 'false'));
+            	CheckShowSearchAtStart.Checked :=
+                	('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
+            	ReqFontSize := ConfigFile.readstring('BasicSettings', 'FontSize', 'medium');
+            	case ReqFontSize of
+                	'huge'   : RadioFontHuge.Checked := true;
+        	    	'big'    : RadioFontBig.Checked := true;
+                	'medium' : RadioFontMedium.Checked := true;
+                	'small'  : RadioFontSmall.Checked := true;
+            	end;
+            	UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
+            	ButtonFont.Hint := UsualFont;
+            	FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
+            	if FixedFont = '' then FixedFont := DefaultFixedFont;
+            	ButtonFixedFont.Hint := FixedFont;
+            	BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
+            	HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColour', '0'));
+            	TextColour := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour', '0'));
+            	TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
+            	UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
+            	// Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
 
-            LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
-            LabelNCSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoNCURL', '');
-            if LabelFileSync.Caption = '' then LabelFileSync.Caption := rsSyncNotConfig;
-            if LabelNCSyncURL.Caption = '' then LabelNCSyncURL.Caption := rsSyncNotConfig;
-            SyncType := ConfigFile.readstring('SyncSettings', 'SyncType', '');          // this is new way to do it, file, nextcloud, etc
-            case SyncType of
-                '' :    // SyncType not present, check for legacy model
-                        Self.RadioFileSync.checked := (ConfigFile.readstring('SyncSettings', 'UseFileSync', 'true') = 'true');
-                'file' :  RadioFileSync.checked := true;
-                'nextcloud' : self.RadioSyncNC.checked := true;
-			end;
+            	case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
+                	'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
+                	'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
+                	'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
+		end;
 
+            	SyncType := ConfigFile.readstring('SyncSettings', 'SyncType', '');          // this is new way to do it, file, nextcloud, etc
+            	if(SyncType = '') then begin
+                	// Legacy
+                	if(ConfigFile.readstring('SyncSettings', 'UseFileSync', 'true') = 'true')
+                	then SyncType := 'file'
+                	else SyncType := 'nextcloud'
+            	end;
 
+            	if(SyncType = 'file') then
+           	begin
+                	RadioFileSync.checked := true;
+                	RadioSyncNC.checked := false;
+            	end else
+   		begin
+                	RadioFileSync.checked := true;
+                	RadioSyncNC.checked := false;
+                	SyncType := 'nextcloud';
+	    	end;
+            	
+		LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
+            	LabelNCSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoNCURL', '');
+            	if LabelFileSync.Caption = '' then LabelFileSync.Caption := rsSyncNotConfig;
+            	if (length(LabelNCSyncURL.Caption)<10) then LabelNCSyncURL.Caption := rsSyncNotConfig;
 
+            	{$ifdef DISABLE_NET_SYNC}
+		{$else}
+		OAuth.Key:= ConfigFile.readstring('SyncSettings', 'SyncNCKey', MD5Print(MD5String(Format('%d',[Random(9999999-123400)+123400]))));
+		{$endif}
 
-            {RadioSyncNC.checked := (ConfigFile.readstring('SyncSettings', 'SyncNC', 'false') = 'true');
-            LabelNCSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncNCUrl', '');
-            if(length(LabelNCSyncURL.Caption)<1) then LabelNCSyncURL.Caption := rsSyncNotConfig;
-            RadioFileSync.checked := (ConfigFile.readstring('SyncSettings', 'SyncRepo', 'false') = 'true');
-            LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoLocation', '');
-            if(length(LabelFileSync.Caption)<1) then LabelFileSync.Caption := rsSyncNotConfig;
-            if(RadioSyncNC.Checked) then RadioFileSync.Checked:=false else RadioFileSync.Checked:=true;  }
-
-
-            LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
-            LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
-            SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
-	    LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
-            CheckBoxAutoSync.checked :=
-                ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
-        finally
-            ConfigFile.free;
-            // MaskSettingsChanged := False;
+            	LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
+            	LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
+            	SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
+	    	LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
+            	CheckBoxAutoSync.checked :=
+                	('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
+            finally
+            	ConfigFile.free;
+            	// MaskSettingsChanged := False;
 	    end;
-        CheckDirectory(NoteDirectory);
-        CheckDirectory(LabelSnapDir.Caption);
+            CheckDirectory(NoteDirectory);
+            CheckDirectory(LabelSnapDir.Caption);
 	    SyncSettings();
-        // NeedRefresh := True;                // ToDo : Needed ??? April 19, dont think so ???
-        // ButtonSaveConfig.Enabled := False;
-    end else begin      // OK, no config eh ?  We'll set some defaults ...
-        if CheckDirectory(NoteDirectory) then begin
-            MaskSettingsChanged := False;
-            RadioFontMedium.Checked := True;
-            CheckShowIntLinks.Checked:= True;
-            CheckShowExtLinks.Checked := True;
-            CheckBoxAutoSync.Checked := False;
-            LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
-            UsualFont := GetFontData(Self.Font.Handle).Name;
-            FixedFont := DefaultFixedFont;
-            LabelFileSync.Caption := rsSyncNotConfig;
-            LabelNCSyncURL.Caption := rsSyncNotConfig;
-            RadioFileSync.checked := true;
-            if not SettingsChanged() then // write a initial default file, shows user a message on error
+        	// NeedRefresh := True;                // ToDo : Needed ??? April 19, dont think so ???
+        	// ButtonSaveConfig.Enabled := False;
+    	end else begin      // OK, no config eh ?  We ll set some defaults ...
+           if CheckDirectory(NoteDirectory) then begin
+              MaskSettingsChanged := False;
+              RadioFontMedium.Checked := True;
+              CheckShowIntLinks.Checked:= True;
+              CheckShowExtLinks.Checked := True;
+              CheckBoxAutoSync.Checked := False;
+              LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
+              UsualFont := GetFontData(Self.Font.Handle).Name;
+              FixedFont := DefaultFixedFont;
+              LabelFileSync.Caption := rsSyncNotConfig;
+              LabelNCSyncURL.Caption := rsSyncNotConfig;
+              OAuth.Key := MD5Print(MD5String(Format('%d',[Random(9999999-123400)+123400])));
+              if not SettingsChanged('CheckDirectory') then // write a initial default file, shows user a message on error
                 HaveConfig := false;
-            MaskSettingsChanged := True;
-            HaveConfig := True;
-        end else begin
-            // Only get to here becasue we have failed to setup an initial notes dir
-            // and we don't even have a settings file in place. Directories may not be present.
-            LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
-            NoteDirectory := '';
-            CheckManyNoteBooks.Checked := False;
-            HaveConfig := false;
-            Debugln('We have (write) issues with your directories, suggest you do not proceed !');
-        end;
+              RadioFileSync.checked := true;
+              MaskSettingsChanged := True;
+              HaveConfig := True;
+          end else begin
+              // Only get to here becasue we have failed to setup an initial notes dir
+              // and we don t even have a settings file in place. Directories may not be present.
+              LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
+              NoteDirectory := '';
+              CheckManyNoteBooks.Checked := False;
+              HaveConfig := false;
+              Debugln('We have (write) issues with your directories, suggest you do not proceed !');
+          end;
     end;
 end;
 
 function TSett.fSyncOK() : boolean;
 begin
     Result :=
-        (RadioFileSync.checked and
+        ((SyncType = 'file') and
         ((LabelFileSync.Caption <> rsSyncNotConfig) and  (LabelFileSync.Caption <> '')))
         or
-        (RadioSyncNC.Checked and
+        ((SyncType = 'nextcloud') and
         ((LabelNCSyncURL.caption <> rsSyncNotConfig) and (LabelFileSync.Caption <> '')));
-        // I don't think we can end up with those labels empty but just in case .....
+        // I dont think we can end up with those labels empty but just in case .....
 end;
 
 function TSett.MyBoolStr(const InBool : boolean) : string;
@@ -995,7 +996,7 @@ begin
     if InBool then result := 'true' else result := 'false';
 end;
 
-function TSett.SettingsChanged() : boolean;
+function TSett.SettingsChanged(source : String) : boolean;
 var
 	ConfigFile : TINIFile;
 begin
@@ -1035,21 +1036,22 @@ begin
                 ConfigFile.writestring('BasicSettings', 'HiColour', ColorToString(HiColour));
                 ConfigFile.writestring('BasicSettings', 'TextColour', ColorToString(TextColour));
                 ConfigFile.writestring('BasicSettings', 'TitleColour', ColorToString(TitleColour));
-			end else begin
-                    ConfigFile.writestring('BasicSettings', 'BackGndColour', '0');
-                    ConfigFile.writestring('BasicSettings', 'HiColour', '0');
-                    ConfigFile.writestring('BasicSettings', 'TextColour', '0');
-                    ConfigFile.writestring('BasicSettings', 'TitleColour', '0');
-			end;
-	    ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
-	    if RadioAlwaysAsk.Checked then
+	    end else begin
+                ConfigFile.writestring('BasicSettings', 'BackGndColour', '0');
+                ConfigFile.writestring('BasicSettings', 'HiColour', '0');
+                ConfigFile.writestring('BasicSettings', 'TextColour', '0');
+                ConfigFile.writestring('BasicSettings', 'TitleColour', '0');
+	    end;
+
+            ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
+
+            if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
                  ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
 
-            // We don't write UseFileSync anymore but remember it may still be there, should ignore
             if RadioFileSync.checked then
                 ConfigFile.writestring('SyncSettings', 'SyncType', 'file')
             else ConfigFile.writestring('SyncSettings', 'SyncType', 'nextcloud');
@@ -1060,19 +1062,17 @@ begin
                 ConfigFile.writestring('SyncSettings', 'SyncRepoNCURL', '')
             else  ConfigFile.writestring('SyncSettings', 'SyncRepoNCURL', LabelNCSyncURL.Caption);
 
-            {ConfigFile.writestring('SyncSettings', 'SyncNC', MyBoolStr(RadioSyncNC.Checked));
-            ConfigFile.writestring('SyncSettings', 'SyncNCURL', LabelNCSyncURL.Caption);
-            ConfigFile.writestring('SyncSettings', 'SyncRepo', MyBoolStr(RadioFileSync.Checked));
-            ConfigFile.writestring('SyncSettings', 'SyncRepoLocation', LabelFileSync.Caption);  }
-            if SpellConfig then begin
+            ConfigFile.writestring('SyncSettings', 'SyncNCKey', OAuth.Key);
+
+        if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
             end;
         finally
     	    ConfigFile.Free;
         end;
-    except on E: Exception do begin
-            showmessage('Unable to write config to ' + LabelSettingPath.Caption);
+    	except on E: Exception do begin
+            showmessage('Unable to write config (from '+source+') to ' + LabelSettingPath.Caption);
             Result := False;
         end;
     end;
@@ -1105,11 +1105,22 @@ begin
     if not CheckDirectory(NoteDirectory) then
         NoteDirectory := Sett.LabelNotesPath.Caption
     else begin
-        SettingsChanged();
+        SettingsChanged('ButtDefaultNoteDirClick');
         SyncSettings();
         SearchForm.IndexNotes();
         //NeedRefresh := True;
     end;
+end;
+
+procedure TSett.ButtonNCSetupClick(Sender: TObject);
+begin
+     if((LabelNCSyncURL.Caption = rsSyncNotConfig) or (length(LabelNCSyncURL.Caption)<5))
+          then FormNCSetup.URL.Text   :=  'https://yourcloudserver/index.php/apps/grauphel'
+          else FormNCSetup.URL.Text   :=  LabelNCSyncURL.Caption;
+     FormNCSetup.oauth := OAuth;
+     if(FormNCSetup.ShowModal = mrOK ) then begin
+          SettingsChanged('Button1Click');
+     end;
 end;
 
 procedure TSett.SetColours;
@@ -1139,7 +1150,7 @@ begin
         mrRetry  :  begin
                         UserSetColours := False;
                         SetColours();
-                        SettingsChanged();
+                        SettingsChanged('ButtonSetColoursClick');
                     end;
         mrOK     :  begin
 	                    BackGndColour := FormColours.CBack;
@@ -1147,7 +1158,7 @@ begin
 	                    TextColour := FormColours.CText;
 	                    TitleColour := FormColours.CTitle;
                          UserSetColours := True;
-                        SettingsChanged();
+                        SettingsChanged('ButtonSetColoursClick2');
                     end;
 //        mrCancel : showmessage('Do nothing');
 	end;
@@ -1163,7 +1174,7 @@ begin
     FontDialog1.Options := FontDialog1.Options + [fdFixedPitchOnly];
     If FontDialog1.Execute then BEGIN
         FixedFont := FontDialog1.Font.name;
-        SettingsChanged();
+        SettingsChanged('ButtonFixedFontClick');
     end;
     ButtonFixedFont.Hint := FixedFont;
 end;
@@ -1176,7 +1187,7 @@ begin
     FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
     If FontDialog1.Execute then BEGIN
         UsualFont := FontDialog1.Font.name;
-        SettingsChanged();
+        SettingsChanged('ButtonFontClick');
     end;
     ButtonFont.Hint := UsualFont;
 end;
@@ -1206,7 +1217,7 @@ begin
             FindClose(Info);
             CheckShowIntLinks.enabled := true;
             // CheckReadOnly.enabled := true;
-            SettingsChanged();
+            SettingsChanged('ButtonSetNotePathClick');
             SyncSettings();
             SearchForm.IndexNotes();
         end else
@@ -1336,10 +1347,10 @@ begin
     if CheckBoxAutoSync.checked  and not FormSync.Busy then begin
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-        if (RadioFileSync.Checked) then
+
+        if (SyncType = 'file') then
             FormSync.Transport:=TSyncTransport.SyncFile
-        else {if(Sett.SyncNC.Checked)
-                    then } FormSync.Transport:=TSyncTransport.SyncNextCloud;
+        else FormSync.Transport:=TSyncTransport.SyncNextCloud;
 
         FormSync.SetupSync := False;
 
@@ -1376,7 +1387,7 @@ end;
 	{ Called when ANY of the setting check boxes change so we can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
-    SettingsChanged();      // Write to disk
+    SettingsChanged('CheckReadOnlyChange');      // Write to disk
     SyncSettings();
     if not MaskSettingsChanged then
         if Sender.ClassNameIs('TCheckBox') then begin
