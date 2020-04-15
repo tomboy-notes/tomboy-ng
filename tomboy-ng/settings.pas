@@ -512,9 +512,10 @@ end;
 
 procedure TSett.RadioFileSyncChange(Sender: TObject);
 begin
-    //if(RadioFileSync.Checked) then RadioSyncNC.Checked:=false else RadioSyncNC.Checked:=true;
-    // don't need above if both radio buttons (or more) are in same groupbox
-    if  RadioFileSync.Checked then
+{   This is crazy, somehow fiddling with Label1's canvas is calling this.
+    Don't need it right now but ...............
+
+if  RadioFileSync.Checked then
         if self.LabelFileSync.caption = rsSyncNotConfig then
             SpeedSetUpSync.caption := rsSetUp
         else SpeedSetUpSync.caption := rsChangeSync
@@ -522,7 +523,8 @@ begin
         if self.LabelNCSyncURL.caption = rsSyncNotConfig then
             SpeedSetUpSync.caption := rsSetUp
         else SpeedSetUpSync.caption := rsChangeSync;
-    SettingsChanged();
+    writeln('Settings 525');
+    SettingsChanged();       }
 end;
 
 procedure TSett.TabBasicResize(Sender: TObject);
@@ -739,15 +741,13 @@ begin
     AreClosing := false;
     Top := 100;
     Left := 300;
-
     {$ifdef DISABLE_NET_SYNC}
     RadioSyncNC.enabled := false;
     LabelNCSyncURL.Hint := 'NextCloud / Grauphel will be in a future Release';
     LabelNCSyncURL.ShowHint := True;
     {$else}
-    OAuth := TOAuth.Create();
+    OAuth := TOAuth.Create();                  // note, not being freed
     {$endif}
-
     DefaultFixedFont := GetFixedFont(); // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;
@@ -828,6 +828,10 @@ var  T : string;
     begin
       Label1.Canvas.Font.Name := FontName;
       result := Label1.Canvas.TextWidth('i') = Label1.Canvas.TextWidth('w');
+      // I have no idea whats happening here, that line, above, somehow triggers a call
+      // to the RadioFileSync OnChange handler. In turn, that calls SettingsChanged before
+      // we have setup its config path.  For now, because its not needed yet, I have
+      // commented out the code in the OnChange
     end;
 
     function IsDifferentSizes() : boolean;     // in case they are old non scalable, unlikely but ....
@@ -868,9 +872,6 @@ begin
  	    try
             MaskSettingsChanged := True;    // should be true anyway ?
    		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
-            {if 'true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true') then
-                CheckShowIntLinks.Checked := true
-            else CheckShowIntLinks.Checked := false;}
             CheckShowIntLinks.Checked :=
                 ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
             CheckShowExtLinks.Checked :=
@@ -922,19 +923,6 @@ begin
                 'file' :  RadioFileSync.checked := true;
                 'nextcloud' : self.RadioSyncNC.checked := true;
 			end;
-
-
-
-
-            {RadioSyncNC.checked := (ConfigFile.readstring('SyncSettings', 'SyncNC', 'false') = 'true');
-            LabelNCSyncURL.Caption := ConfigFile.readstring('SyncSettings', 'SyncNCUrl', '');
-            if(length(LabelNCSyncURL.Caption)<1) then LabelNCSyncURL.Caption := rsSyncNotConfig;
-            RadioFileSync.checked := (ConfigFile.readstring('SyncSettings', 'SyncRepo', 'false') = 'true');
-            LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepoLocation', '');
-            if(length(LabelFileSync.Caption)<1) then LabelFileSync.Caption := rsSyncNotConfig;
-            if(RadioSyncNC.Checked) then RadioFileSync.Checked:=false else RadioFileSync.Checked:=true;  }
-
-
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
@@ -1059,11 +1047,6 @@ begin
             if (LabelNCSyncURL.Caption = '') or (LabelNCSyncURL.Caption = rsSyncNotConfig) then
                 ConfigFile.writestring('SyncSettings', 'SyncRepoNCURL', '')
             else  ConfigFile.writestring('SyncSettings', 'SyncRepoNCURL', LabelNCSyncURL.Caption);
-
-            {ConfigFile.writestring('SyncSettings', 'SyncNC', MyBoolStr(RadioSyncNC.Checked));
-            ConfigFile.writestring('SyncSettings', 'SyncNCURL', LabelNCSyncURL.Caption);
-            ConfigFile.writestring('SyncSettings', 'SyncRepo', MyBoolStr(RadioFileSync.Checked));
-            ConfigFile.writestring('SyncSettings', 'SyncRepoLocation', LabelFileSync.Caption);  }
             if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
