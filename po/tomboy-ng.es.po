@@ -289,7 +289,7 @@ msgstr "Cambiar el nombre de este cuaderno"
 
 #: resourcestr.rschangesync
 msgid "Change Sync Repo"
-msgstr ""
+msgstr "Cambiar repositorio de sincronización"
 
 #: resourcestr.rscreatenewrepo
 msgctxt "resourcestr.rscreatenewrepo"
@@ -402,7 +402,7 @@ msgstr "Establezca los cuadernos a cuales pertenece esta nota"
 #: resourcestr.rssetup
 msgctxt "resourcestr.rssetup"
 msgid "Setup"
-msgstr ""
+msgstr "Configurar"
 
 #: resourcestr.rssetupnotesdirfirst
 msgctxt "resourcestr.rssetupnotesdirfirst"
@@ -420,7 +420,6 @@ msgid "A Sync Error occured"
 msgstr "Ocurrió un error de sincronización"
 
 #: resourcestr.rssyncnotconfig
-#, fuzzy
 msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr "sin configurar"
@@ -555,13 +554,13 @@ msgstr "El próximo paso se puede tardar. Espere por favor."
 
 #: syncutils.rsnonotesneededsync
 msgid "No notes needed syncing. You need to write more."
-msgstr "No hay notas que necesitan sincronizar. Tiene que escribir más."
+msgstr "No hay notas que necesitan sincronizar. Tiene que escribir otras."
 
 # ¿Contexto?
 # ¿Espacio delante?
 #: syncutils.rsnotesweredealt
 msgid " notes were dealt with."
-msgstr " notas procesadas."
+msgstr " notas fueron procesadas."
 
 # ¿Y el sujeto?
 #: syncutils.rsnotrecommend
@@ -780,24 +779,23 @@ msgstr "VistaDeSeguridad"
 
 #: tformcolours.caption
 msgid "FormColours"
-msgstr ""
+msgstr "ColoresFormulario"
 
 #: tformcolours.label1.caption
 msgid "Sample"
-msgstr ""
+msgstr "Muestra"
 
 #: tformcolours.label2.caption
 msgctxt "tformcolours.label2.caption"
 msgid "Set Colours"
-msgstr ""
+msgstr "Establecer colores"
 
 #: tformcolours.speedbackground.caption
 msgctxt "tformcolours.speedbackground.caption"
 msgid "Background"
-msgstr ""
+msgstr "Fondo"
 
 #: tformcolours.speedcancel.caption
-#, fuzzy
 msgctxt "tformcolours.speedcancel.caption"
 msgid "Cancel"
 msgstr "Cancelar"
@@ -805,16 +803,14 @@ msgstr "Cancelar"
 #: tformcolours.speeddefault.caption
 msgctxt "tformcolours.speeddefault.caption"
 msgid "Default"
-msgstr ""
+msgstr "Predeterminado"
 
 #: tformcolours.speedhighlight.caption
-#, fuzzy
 msgctxt "tformcolours.speedhighlight.caption"
 msgid "Highlight"
 msgstr "Resaltar"
 
 #: tformcolours.speedok.caption
-#, fuzzy
 msgctxt "tformcolours.speedok.caption"
 msgid "OK"
 msgstr "OK"
@@ -822,12 +818,12 @@ msgstr "OK"
 #: tformcolours.speedtext.caption
 msgctxt "tformcolours.speedtext.caption"
 msgid "Text"
-msgstr ""
+msgstr "Texto"
 
 #: tformcolours.speedtitle.caption
 msgctxt "tformcolours.speedtitle.caption"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: tformhelpnotes.buttonclose.caption
 msgctxt "tformhelpnotes.buttonclose.caption"
@@ -1483,7 +1479,7 @@ msgstr "Hacer una instantánea de notas, preferencias con fecha de creación"
 #: tsett.buttonsetcolours.caption
 msgctxt "tsett.buttonsetcolours.caption"
 msgid "Set Colours"
-msgstr ""
+msgstr "Establecer colores"
 
 #: tsett.buttonsetdictionary.caption
 msgid "Set Dictionary"
@@ -1608,7 +1604,7 @@ msgstr "Tamaño de la fuente"
 
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
-msgstr ""
+msgstr " Sincronizar "
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1637,16 +1633,12 @@ msgid "Notes will be looked for and saved in :"
 msgstr "Se buscan y se guardan las notas en:"
 
 #: tsett.label3.caption
-#, fuzzy
-#| msgid "When a conflict is detected between a local note and"
 msgid "When a conflict is detected between a local note and remote one :"
-msgstr "Al detectar un conflicto entre una nota local y"
+msgstr "Al detectar un conflicto entre una nota local y una remota:"
 
 #: tsett.label4.caption
-#, fuzzy
-#| msgid "a note on the configured synchronisation server :"
 msgid "Repo : "
-msgstr "una nota en el servidor de sincronización configurado:"
+msgstr "Repositario: "
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
@@ -1666,13 +1658,11 @@ msgid "A snaphot is a copy of your current note directory."
 msgstr "Una instantánea es una copia de sus notas actuales."
 
 #: tsett.labelfilesync.caption
-#, fuzzy
 msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "sin configurar"
 
 #: tsett.labelncsyncurl.caption
-#, fuzzy
 msgctxt "tsett.labelncsyncurl.caption"
 msgid "not configured"
 msgstr "sin configurar"
@@ -1715,8 +1705,9 @@ msgid "Always Ask me what to do."
 msgstr "Siempre preguntarme que hacer."
 
 #: tsett.radiofilesync.caption
+#, fuzzy
 msgid "File Sync, google drive, smb etc."
-msgstr ""
+msgstr "Sincronizar archivos, Google Drive, smb, etc. "
 
 #: tsett.radiofontbig.caption
 msgid "Big"
@@ -1738,7 +1729,7 @@ msgstr "Pequeña"
 #: tsett.radiosyncnc.caption
 msgctxt "tsett.radiosyncnc.caption"
 msgid "Nextcloud/ownCloud (Grauphel)"
-msgstr ""
+msgstr "Nextcloud/ownCloud (Grauphel)"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
@@ -1749,7 +1740,6 @@ msgid "Use Server Note and Rename Local Note."
 msgstr "Usar la nota del servidor y renombrar la nota local."
 
 #: tsett.speedbuthelp.caption
-#, fuzzy
 msgctxt "tsett.speedbuthelp.caption"
 msgid "Help"
 msgstr "Ayuda"
@@ -1767,7 +1757,7 @@ msgstr "Menú"
 #: tsett.speedsetupsync.caption
 msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
-msgstr ""
+msgstr "Configurar"
 
 #: tsett.tabbackup.caption
 msgid "BackUp"
@@ -1794,4 +1784,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
-
