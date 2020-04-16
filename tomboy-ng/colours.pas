@@ -10,23 +10,26 @@ uses
 
 type    { TFormColours }
     TFormColours = class(TForm)
-		BitBtn1: TBitBtn;
-		BitBtn2: TBitBtn;
-		BitBtnDefault: TBitBtn;
-		ButtonHiBack: TButton;
-		ButtonTitle: TButton;
-		ButtonText: TButton;
-		ButtonBack: TButton;
 		ColorDialog1: TColorDialog;
 		KMemo1: TKMemo;
 		Label1: TLabel;
 		Label2: TLabel;
-        procedure ButtonBackClick(Sender: TObject);
-        procedure ButtonHiBackClick(Sender: TObject);
-		procedure ButtonTextClick(Sender: TObject);
-		procedure ButtonTitleClick(Sender: TObject);
+		SpeedTitle: TSpeedButton;
+		SpeedText: TSpeedButton;
+		SpeedBackground: TSpeedButton;
+		SpeedHighlight: TSpeedButton;
+		SpeedDefault: TSpeedButton;
+		SpeedCancel: TSpeedButton;
+		SpeedOK: TSpeedButton;
 		procedure FormCreate(Sender: TObject);
 		procedure FormShow(Sender: TObject);
+		procedure SpeedBackgroundClick(Sender: TObject);
+		procedure SpeedCancelClick(Sender: TObject);
+		procedure SpeedDefaultClick(Sender: TObject);
+		procedure SpeedHighlightClick(Sender: TObject);
+		procedure SpeedOKClick(Sender: TObject);
+		procedure SpeedTextClick(Sender: TObject);
+		procedure SpeedTitleClick(Sender: TObject);
     private
 		procedure PopulateMemo;
 
@@ -42,43 +45,6 @@ implementation
 {$R *.lfm}
 
 { TFormColours }
-
-procedure TFormColours.ButtonHiBackClick(Sender: TObject);
-begin
-    ColorDialog1.Color := CHiBack;
-    if ColorDialog1.Execute then begin
-        CHiBack := ColorDialog1.Color;
-        PopulateMemo;
-	end;
-end;
-
-procedure TFormColours.ButtonBackClick(Sender: TObject);
-begin
-    ColorDialog1.Color := CBack;
-    if ColorDialog1.Execute then begin
-        CBack := ColorDialog1.Color;
-        PopulateMemo;
-	end;
-end;
-
-
-procedure TFormColours.ButtonTextClick(Sender: TObject);
-begin
-    ColorDialog1.Color := CText;
-    if ColorDialog1.Execute then begin
-        CText := ColorDialog1.Color;
-        PopulateMemo;
-	end;
-end;
-
-procedure TFormColours.ButtonTitleClick(Sender: TObject);
-begin
-    ColorDialog1.Color := CTitle;
-    if ColorDialog1.Execute then begin
-        CTitle := ColorDialog1.Color;
-        PopulateMemo;
-	end;
-end;
 
 procedure TFormColours.PopulateMemo;
 var
@@ -124,6 +90,57 @@ begin
     PopulateMemo;
     left := (screen.Width div 2) - (width div 2);
     top := (screen.Height div 2) - (width div 2);
+end;
+
+procedure TFormColours.SpeedBackgroundClick(Sender: TObject);
+begin
+    ColorDialog1.Color := CBack;
+    if ColorDialog1.Execute then begin
+        CBack := ColorDialog1.Color;
+        PopulateMemo;
+	end;
+end;
+
+procedure TFormColours.SpeedCancelClick(Sender: TObject);
+begin
+        ModalResult := mrCancel;
+end;
+
+procedure TFormColours.SpeedDefaultClick(Sender: TObject);
+begin
+        ModalResult := mrRetry;
+end;
+
+procedure TFormColours.SpeedHighlightClick(Sender: TObject);
+begin
+    ColorDialog1.Color := CHiBack;
+    if ColorDialog1.Execute then begin
+        CHiBack := ColorDialog1.Color;
+        PopulateMemo;
+	end;
+end;
+
+procedure TFormColours.SpeedOKClick(Sender: TObject);
+begin
+        ModalResult:=mrOK;
+end;
+
+procedure TFormColours.SpeedTextClick(Sender: TObject);
+begin
+    ColorDialog1.Color := CText;
+    if ColorDialog1.Execute then begin
+        CText := ColorDialog1.Color;
+        PopulateMemo;
+	end;
+end;
+
+procedure TFormColours.SpeedTitleClick(Sender: TObject);
+begin
+    ColorDialog1.Color := CTitle;
+    if ColorDialog1.Execute then begin
+        CTitle := ColorDialog1.Color;
+        PopulateMemo;
+	end;
 end;
 
 end.

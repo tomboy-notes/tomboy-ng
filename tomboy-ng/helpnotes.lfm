@@ -1,7 +1,7 @@
 object FormHelpNotes: TFormHelpNotes
-  Left = 141
+  Left = 184
   Height = 310
-  Top = 199
+  Top = 695
   Width = 367
   Anchors = [akTop]
   Caption = 'Help Notes Language'

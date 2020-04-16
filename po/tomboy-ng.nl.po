@@ -788,32 +788,6 @@ msgstr ""
 msgid "FormBackupView"
 msgstr ""
 
-#: tformcolours.bitbtndefault.caption
-msgid "Default"
-msgstr ""
-
-#: tformcolours.buttonback.caption
-msgid "Background"
-msgstr ""
-
-#: tformcolours.buttonhiback.caption
-#, fuzzy
-msgctxt "tformcolours.buttonhiback.caption"
-msgid "Highlight"
-msgstr "Markeren"
-
-#: tformcolours.buttontext.caption
-msgid "Text"
-msgstr ""
-
-#: tformcolours.buttontitle.caption
-msgid "Title"
-msgstr ""
-
-#: tformcolours.buttontitle.hint
-msgid "Set Title Colour"
-msgstr ""
-
 #: tformcolours.caption
 msgid "FormColours"
 msgstr ""
@@ -825,6 +799,44 @@ msgstr ""
 #: tformcolours.label2.caption
 msgctxt "tformcolours.label2.caption"
 msgid "Set Colours"
+msgstr ""
+
+#: tformcolours.speedbackground.caption
+msgctxt "tformcolours.speedbackground.caption"
+msgid "Background"
+msgstr ""
+
+#: tformcolours.speedcancel.caption
+#, fuzzy
+msgctxt "tformcolours.speedcancel.caption"
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: tformcolours.speeddefault.caption
+msgctxt "tformcolours.speeddefault.caption"
+msgid "Default"
+msgstr ""
+
+#: tformcolours.speedhighlight.caption
+#, fuzzy
+msgctxt "tformcolours.speedhighlight.caption"
+msgid "Highlight"
+msgstr "Markeren"
+
+#: tformcolours.speedok.caption
+#, fuzzy
+msgctxt "tformcolours.speedok.caption"
+msgid "OK"
+msgstr "Oké"
+
+#: tformcolours.speedtext.caption
+msgctxt "tformcolours.speedtext.caption"
+msgid "Text"
+msgstr ""
+
+#: tformcolours.speedtitle.caption
+msgctxt "tformcolours.speedtitle.caption"
+msgid "Title"
 msgstr ""
 
 #: tformhelpnotes.buttonclose.caption
@@ -1632,13 +1644,6 @@ msgstr "Als er een conflict is tussen een lokale notitie en"
 #| msgid "a note on the configured synchronisation server :"
 msgid "Repo : "
 msgstr "een notitie op de synchronisatieserver:"
-
-#: tsett.label5.caption
-#, fuzzy
-#| msgid "File Sync using shared drive."
-msgctxt "tsett.label5.caption"
-msgid "URL"
-msgstr "Bestandssynchronisatie via een gedeelde schijf."
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"

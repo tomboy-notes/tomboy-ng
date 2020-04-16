@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 1040
+  Left = 807
   Height = 525
-  Top = 184
+  Top = 302
   Width = 630
   BorderIcons = []
   Caption = 'tomboy-ng Settings'
@@ -41,7 +41,7 @@ object Sett: TSett
         Height = 48
         Hint = 'If you have notes somewhere else'
         Top = 144
-        Width = 216
+        Width = 305
         BorderSpacing.Left = 7
         Caption = 'Set Path to Note Files'
         OnClick = ButtonSetNotePathClick
@@ -50,7 +50,7 @@ object Sett: TSett
         TabOrder = 0
       end
       object LabelSettingPath: TLabel
-        Left = 8
+        Left = 7
         Height = 19
         Top = 42
         Width = 123
@@ -87,11 +87,11 @@ object Sett: TSett
         AnchorSideTop.Control = ButtonSetNotePath
         AnchorSideRight.Control = TabBasic
         AnchorSideRight.Side = asrBottom
-        Left = 233
+        Left = 322
         Height = 48
         Hint = 'Will work for many new users'
         Top = 144
-        Width = 384
+        Width = 295
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Left = 10
         BorderSpacing.Right = 7
@@ -116,15 +116,15 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabBasic
         AnchorSideBottom.Side = asrBottom
-        Left = 233
+        Left = 322
         Height = 167
         Top = 272
-        Width = 384
+        Width = 295
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 7
         Caption = 'Main Search Window is : '
         ClientHeight = 146
-        ClientWidth = 380
+        ClientWidth = 291
         TabOrder = 3
         object CheckCaseSensitive: TCheckBox
           Left = 32
@@ -175,19 +175,19 @@ object Sett: TSett
       ClientWidth = 624
       object GroupBox5: TGroupBox
         Left = 32
-        Height = 160
+        Height = 176
         Top = 24
         Width = 264
         Caption = 'Font Size'
-        ClientHeight = 139
+        ClientHeight = 155
         ClientWidth = 260
         TabOrder = 0
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 47
-          Width = 44
+          Height = 24
+          Top = 53
+          Width = 49
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Big'
@@ -199,9 +199,9 @@ object Sett: TSett
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 80
-          Width = 72
+          Height = 24
+          Top = 89
+          Width = 85
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
@@ -211,9 +211,9 @@ object Sett: TSett
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 113
-          Width = 57
+          Height = 24
+          Top = 126
+          Width = 65
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
@@ -223,9 +223,9 @@ object Sett: TSett
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 15
-          Width = 56
+          Height = 24
+          Top = 17
+          Width = 64
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
@@ -238,9 +238,9 @@ object Sett: TSett
         AnchorSideTop.Control = GroupBox5
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
-        Top = 199
-        Width = 134
+        Height = 24
+        Top = 215
+        Width = 164
         BorderSpacing.Top = 15
         Caption = 'Show Internal Links'
         OnChange = CheckReadOnlyChange
@@ -251,9 +251,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowIntLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
-        Top = 237
-        Width = 139
+        Height = 24
+        Top = 254
+        Width = 172
         BorderSpacing.Top = 15
         Caption = 'Show External  Links'
         OnChange = CheckReadOnlyChange
@@ -264,10 +264,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowExtLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
+        Height = 24
         Hint = 'This may adversly affect tradional Tomboy, take care.'
-        Top = 275
-        Width = 254
+        Top = 293
+        Width = 325
         BorderSpacing.Top = 15
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
@@ -278,8 +278,8 @@ object Sett: TSett
         AnchorSideTop.Control = CheckManyNotebooks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 31
-        Top = 313
+        Height = 32
+        Top = 332
         Width = 240
         BorderSpacing.Top = 15
         Caption = 'Help Notes Language'
@@ -313,8 +313,8 @@ object Sett: TSett
         AnchorSideRight.Control = ButtonHelpNotes
         AnchorSideRight.Side = asrBottom
         Left = 32
-        Height = 25
-        Top = 399
+        Height = 32
+        Top = 384
         Width = 240
         Anchors = [akLeft, akRight]
         Caption = 'Set Colours'
@@ -335,8 +335,8 @@ object Sett: TSett
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
         Left = 3
-        Height = 210
-        Top = 233
+        Height = 245
+        Top = 198
         Width = 618
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 3
@@ -344,7 +344,7 @@ object Sett: TSett
         BorderSpacing.Right = 3
         BorderSpacing.Bottom = 3
         Caption = '  Options  '
-        ClientHeight = 189
+        ClientHeight = 224
         ClientWidth = 614
         TabOrder = 0
         object Label3: TLabel
@@ -358,7 +358,7 @@ object Sett: TSett
         object RadioAlwaysAsk: TRadioButton
           Left = 16
           Height = 24
-          Top = 56
+          Top = 64
           Width = 217
           Caption = 'Always Ask me what to do.'
           Checked = True
@@ -368,7 +368,7 @@ object Sett: TSett
         object RadioUseLocal: TRadioButton
           Left = 16
           Height = 24
-          Top = 96
+          Top = 112
           Width = 334
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
@@ -376,7 +376,7 @@ object Sett: TSett
         object RadioUseServer: TRadioButton
           Left = 16
           Height = 24
-          Top = 136
+          Top = 160
           Width = 321
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
@@ -395,7 +395,7 @@ object Sett: TSett
         AnchorSideRight.Control = TabSync
         AnchorSideRight.Side = asrBottom
         Left = 3
-        Height = 224
+        Height = 189
         Top = 3
         Width = 618
         Anchors = [akTop, akLeft, akRight]
@@ -403,7 +403,7 @@ object Sett: TSett
         BorderSpacing.Top = 3
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 203
+        ClientHeight = 168
         ClientWidth = 614
         TabOrder = 1
         object RadioFileSync: TRadioButton
@@ -418,7 +418,7 @@ object Sett: TSett
         object Label4: TLabel
           Left = 20
           Height = 19
-          Top = 49
+          Top = 88
           Width = 49
           Caption = 'Repo : '
           ParentColor = False
@@ -426,7 +426,7 @@ object Sett: TSett
         object LabelFileSync: TLabel
           Left = 72
           Height = 19
-          Top = 49
+          Top = 88
           Width = 105
           Caption = 'not configured'
           ParentColor = False
@@ -434,7 +434,7 @@ object Sett: TSett
         object RadioSyncNC: TRadioButton
           Left = 20
           Height = 24
-          Top = 88
+          Top = 48
           Width = 255
           Caption = 'Nextcloud/ownCloud (Grauphel)'
           Checked = True
@@ -442,18 +442,10 @@ object Sett: TSett
           TabOrder = 1
           TabStop = True
         end
-        object Label5: TLabel
-          Left = 20
-          Height = 19
-          Top = 120
-          Width = 29
-          Caption = 'URL'
-          ParentColor = False
-        end
         object LabelNCSyncURL: TLabel
           Left = 72
           Height = 19
-          Top = 120
+          Top = 80
           Width = 105
           Caption = 'not configured'
           ParentColor = False
@@ -461,16 +453,16 @@ object Sett: TSett
         object SpeedSetupSync: TSpeedButton
           Left = 20
           Height = 26
-          Top = 160
+          Top = 120
           Width = 143
           Caption = 'Setup'
           OnClick = SpeedSetupSyncClick
         end
         object CheckBoxAutoSync: TCheckBox
-          Left = 384
+          Left = 390
           Height = 24
           Hint = 'Sync, if possible once an hour.'
-          Top = 162
+          Top = 16
           Width = 98
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
@@ -492,32 +484,32 @@ object Sett: TSett
         Left = 0
         Height = 150
         Top = 0
-        Width = 620
+        Width = 624
         Anchors = [akTop, akLeft, akRight]
         ClientHeight = 150
-        ClientWidth = 620
+        ClientWidth = 624
         TabOrder = 0
         object Label6: TLabel
           Left = 33
-          Height = 15
+          Height = 19
           Top = 20
-          Width = 363
+          Width = 465
           Caption = 'Backup files are made when you delete a note or the sync system'
           ParentColor = False
         end
         object Label7: TLabel
           Left = 32
-          Height = 15
+          Height = 19
           Top = 52
-          Width = 144
+          Width = 187
           Caption = 'is about to overwrite one. '
           ParentColor = False
         end
         object Label8: TLabel
           Left = 32
-          Height = 15
+          Height = 19
           Top = 84
-          Width = 333
+          Width = 429
           Caption = 'They remain, for ever, unless you do something about them.'
           ParentColor = False
         end
@@ -526,7 +518,7 @@ object Sett: TSett
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Panel1
           AnchorSideBottom.Side = asrBottom
-          Left = 497
+          Left = 501
           Height = 40
           Top = 102
           Width = 115
@@ -547,13 +539,13 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 302
+        Height = 296
         Top = 150
-        Width = 620
+        Width = 624
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 302
-        ClientWidth = 620
+        ClientHeight = 296
+        ClientWidth = 624
         TabOrder = 1
         object StringGridBackUp: TStringGrid
           AnchorSideLeft.Control = Panel2
@@ -563,9 +555,9 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 300
+          Height = 294
           Top = 1
-          Width = 618
+          Width = 622
           Anchors = [akTop, akLeft, akRight, akBottom]
           AutoEdit = False
           ColCount = 4
@@ -964,6 +956,82 @@ object Sett: TSett
     Width = 96
     Anchors = [akTop, akRight, akBottom]
     Caption = 'Help'
+    Glyph.Data = {
+      36090000424D3609000000000000360000002800000018000000180000000100
+      2000000000000009000064000000640000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000D45500FFD45500FFD45500FF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000D45500FFD45500FFD45500FF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000D45500FFD45500FFD45500FF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000D4540088D4540088D4540088FF0000010000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000FF80
+      0002D45500FFD45500FFD45500FFDB4900070000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000D45500F2D45500FFD45500FFD65300250000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000D45500C2D45500FFD45500FFD55500AECC66000500000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000D355004BD45500FED45500FFD45500FFD35500B5D15D000B000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000D3560074D45500FED45500FFD45500FFD45500C8D55500120000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000D3560062D45500FBD45500FFD45500FFD35500C1CC66
+      0005000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000D656004AD55500F6D45500FFD45500FFD456
+      0065000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000D9590014D555003CD356005CD656003E0000
+      000000000000000000000000000000000000D4560095D45500FFD45500FFD555
+      00AE000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000D356007AD45500FFD45500FFD55500CCFF00
+      000100000000000000000000000000000000D554008BD45500FFD45500FFD455
+      00B3000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000D5550030D45500FFD45500FFD45500FFD456
+      007DFF0000010000000000000000D3570029D45500EDD45500FFD45500FFD356
+      0074000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000D45600A1D45500FFD45500FFD455
+      00FFD35500D3D455009FD45500B3D45500F8D45500FFD45500FFD45500DBD15D
+      000B000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000DB490007D35400A9D45500FFD455
+      00FFD45500FFD45500FFD45500FFD45500FFD45500FFD55500D2D15500210000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000D4560047D454
+      00A6D45500D9D55500EAD45500DCD45500B3D3550063DB490007000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000
+    }
     Visible = False
     OnClick = SpeedButHelpClick
   end

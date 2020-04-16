@@ -778,32 +778,6 @@ msgstr "Restaurar esta nota al repositorio principal"
 msgid "FormBackupView"
 msgstr "VistaDeSeguridad"
 
-#: tformcolours.bitbtndefault.caption
-msgid "Default"
-msgstr ""
-
-#: tformcolours.buttonback.caption
-msgid "Background"
-msgstr ""
-
-#: tformcolours.buttonhiback.caption
-#, fuzzy
-msgctxt "tformcolours.buttonhiback.caption"
-msgid "Highlight"
-msgstr "Resaltar"
-
-#: tformcolours.buttontext.caption
-msgid "Text"
-msgstr ""
-
-#: tformcolours.buttontitle.caption
-msgid "Title"
-msgstr ""
-
-#: tformcolours.buttontitle.hint
-msgid "Set Title Colour"
-msgstr ""
-
 #: tformcolours.caption
 msgid "FormColours"
 msgstr ""
@@ -815,6 +789,44 @@ msgstr ""
 #: tformcolours.label2.caption
 msgctxt "tformcolours.label2.caption"
 msgid "Set Colours"
+msgstr ""
+
+#: tformcolours.speedbackground.caption
+msgctxt "tformcolours.speedbackground.caption"
+msgid "Background"
+msgstr ""
+
+#: tformcolours.speedcancel.caption
+#, fuzzy
+msgctxt "tformcolours.speedcancel.caption"
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: tformcolours.speeddefault.caption
+msgctxt "tformcolours.speeddefault.caption"
+msgid "Default"
+msgstr ""
+
+#: tformcolours.speedhighlight.caption
+#, fuzzy
+msgctxt "tformcolours.speedhighlight.caption"
+msgid "Highlight"
+msgstr "Resaltar"
+
+#: tformcolours.speedok.caption
+#, fuzzy
+msgctxt "tformcolours.speedok.caption"
+msgid "OK"
+msgstr "OK"
+
+#: tformcolours.speedtext.caption
+msgctxt "tformcolours.speedtext.caption"
+msgid "Text"
+msgstr ""
+
+#: tformcolours.speedtitle.caption
+msgctxt "tformcolours.speedtitle.caption"
+msgid "Title"
 msgstr ""
 
 #: tformhelpnotes.buttonclose.caption
@@ -1635,13 +1647,6 @@ msgstr "Al detectar un conflicto entre una nota local y"
 #| msgid "a note on the configured synchronisation server :"
 msgid "Repo : "
 msgstr "una nota en el servidor de sincronización configurado:"
-
-#: tsett.label5.caption
-#, fuzzy
-#| msgid "File Sync using shared drive."
-msgctxt "tsett.label5.caption"
-msgid "URL"
-msgstr "Sincronización utilizando un disco compartido"
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"

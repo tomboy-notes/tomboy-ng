@@ -122,7 +122,6 @@ type
 		  CheckBoxAutoSync: TCheckBox;
 		  GroupBoxSync: TGroupBox;
 		  Label4: TLabel;
-		  Label5: TLabel;
 		  LabelFileSync: TLabel;
 		  LabelNCSyncURL: TLabel;
 		  RadioFileSync: TRadioButton;
@@ -513,18 +512,23 @@ end;
 procedure TSett.RadioFileSyncChange(Sender: TObject);
 begin
 {   This is crazy, somehow fiddling with Label1's canvas is calling this.
-    Don't need it right now but ...............
+    Don't need it calling Settings right now but ...............  }
 
-if  RadioFileSync.Checked then
+if  RadioFileSync.Checked then begin
         if self.LabelFileSync.caption = rsSyncNotConfig then
             SpeedSetUpSync.caption := rsSetUp
-        else SpeedSetUpSync.caption := rsChangeSync
-    else
+        else SpeedSetUpSync.caption := rsChangeSync;
+        LabelNCSyncURL.Visible := False;
+        LabelFileSync.Visible := True;
+    end else begin
         if self.LabelNCSyncURL.caption = rsSyncNotConfig then
             SpeedSetUpSync.caption := rsSetUp
         else SpeedSetUpSync.caption := rsChangeSync;
-    writeln('Settings 525');
-    SettingsChanged();       }
+        LabelNCSyncURL.Visible := True;
+        LabelFileSync.Visible := True;
+	end;
+   { SettingsChanged();       }
+
 end;
 
 procedure TSett.TabBasicResize(Sender: TObject);
@@ -743,8 +747,8 @@ begin
     Left := 300;
     {$ifdef DISABLE_NET_SYNC}
     RadioSyncNC.enabled := false;
-    LabelNCSyncURL.Hint := 'NextCloud / Grauphel will be in a future Release';
-    LabelNCSyncURL.ShowHint := True;
+    RadioFileSync.Hint := 'NextCloud / Grauphel will be in a future Release';
+    RadioFileSync.ShowHint := True;
     {$else}
     OAuth := TOAuth.Create();                  // note, not being freed
     {$endif}
