@@ -25,6 +25,7 @@ begin
     RequireDerivedFormResource:=True;
     Application.Initialize;
     Application.CreateForm(TMainForm, MainForm);
+    Application.CreateForm(TFormNCSetup, FormNCSetup);
     Application.CreateForm(TSett, Sett);
     Application.CreateForm(TSearchForm, SearchForm);
     Application.CreateForm(TFormSync, FormSync);
@@ -33,7 +34,6 @@ begin
     Application.CreateForm(TFormHelpNotes, FormHelpNotes);
     Application.CreateForm(TFormSyncError, FormSyncError);
     Application.CreateForm(TFormColours, FormColours);
-    Application.CreateForm(TFormNCSetup, FormNCSetup);
     // Application.CreateForm(TNoteBookPick, NoteBookPick);
     // Application.CreateForm(TFormSpell, FormSpell);
     // Application.CreateForm(TEditBoxForm, EditBoxForm);
