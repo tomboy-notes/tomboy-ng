@@ -219,6 +219,7 @@ type
           TimeEdit1: TTimeEdit;
           TimerAutoSync: TTimer;
 
+
         procedure ButtDefaultNoteDirClick(Sender: TObject);
         procedure ButtonNCSetupClick(Sender: TObject);
 	procedure ButtonSetColoursClick(Sender: TObject);
@@ -271,10 +272,6 @@ type
 
         SyncFirstRun : boolean;
 
-        NCurl : String;
-        NCKey : String;
-        NCToken : String;
-        NCSecret : String;
 
         fExportPath : ANSIString;
         // Reads an existing config file OR writes a new, default one if necessary.
@@ -309,6 +306,11 @@ type
         //function ZipDate: string;
 
     public
+        NCurl : String;
+        NCKey : String;
+        NCToken : String;
+        NCSecret : String;
+
         AreClosing : boolean;       // False until set true by mainUnit FormClose.
         BackGndColour : TColor;     // Next three set in main unit.
         TextColour : TColor;

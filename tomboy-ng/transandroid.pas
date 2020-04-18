@@ -111,7 +111,7 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'ping';
     AProcess.Parameters.Add('-qc' + inttostr(Count));
-    AProcess.Parameters.Add(RemoteAddress);
+    AProcess.Parameters.Add(getParam('RemoteAddress'));
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
         AProcess.Execute;
@@ -136,12 +136,12 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
     // AProcess.Parameters.Add('-o');
     // AProcess.Parameters.Add('StrictHostKeyChecking=no');
-    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress'));
     AProcess.Parameters.Add('echo "' + ID + '" > tomboy.serverid');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
@@ -170,12 +170,12 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
     AProcess.Parameters.Add('-o');
     AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
-    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress'));
     AProcess.Parameters.Add('sync');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
@@ -210,12 +210,12 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
     AProcess.Parameters.Add('-o');
     AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
-    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress'));
     AProcess.Parameters.Add('ls');
     AProcess.Parameters.Add('-d');
     AProcess.Parameters.Add(DevDir);
@@ -266,12 +266,12 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
     AProcess.Parameters.Add('-o');
     AProcess.Parameters.Add('StrictHostKeyChecking=no');
-    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress'));
     AProcess.Parameters.Add('cat tomboy.serverid');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     // CL (eg) sshpass -p admin ssh -p2222 root@192.168.1.174 cat tomboy.serverid
@@ -331,7 +331,7 @@ begin
     Result := CheckRemoteDir();
     if Result <> SyncReady then exit;
     RunFSSync();
-    if ANewRepo then Result := SyncNoRemoteRepo
+    if (getParam('ANewRepo') = '1') then Result := SyncNoRemoteRepo
     else Result := SetServerID();
     T2 := GetTickCount64();
     T3 := T2;
@@ -363,7 +363,7 @@ begin
     if not Ping(1) then
         if not Ping(2) then
             if not Ping(5) then begin
-                debugln('Failed to ping ' + RemoteAddress);
+                debugln('Failed to ping ' + getParam('RemoteAddress'));
                 exit(SyncNetworkError);
             end;
     T2 := GetTickCount64();
@@ -380,10 +380,10 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
-    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress'));
     AProcess.Parameters.Add('cd ' + DevDir + '; grep -H "<last-change-date>" *.note');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
@@ -536,12 +536,12 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
     AProcess.Parameters.Add('-o');
     AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
-    AProcess.Parameters.Add('root@' + RemoteAddress);
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress'));
     AProcess.Parameters.Add('ls');
     AProcess.Parameters.Add(DevDir + ID + '.note');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
@@ -582,12 +582,12 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('ssh');
     AProcess.Parameters.Add('-p2222');
     AProcess.Parameters.Add('-o');
     AProcess.Parameters.Add('StrictHostKeyChecking=no');    // probably first ssh call to device !
-    AProcess.Parameters.Add('root@' + self.RemoteAddress);
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress'));
     AProcess.Parameters.Add('rm');
     AProcess.Parameters.Add(DevDir + ID + '.note');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
@@ -683,12 +683,12 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('scp');
     AProcess.Parameters.Add('-P2222');
     AProcess.Parameters.Add(ChangeNoteDateUTC(ID));
     // AProcess.Parameters.Add(NotesDir + ID + '.note');
-    AProcess.Parameters.Add('root@' + RemoteAddress + ':' + DevDir + ID + '.note');
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress') + ':' + DevDir + ID + '.note');
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
         AProcess.Execute;
@@ -712,10 +712,10 @@ begin
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'sshpass';
     AProcess.Parameters.Add('-p');
-    AProcess.Parameters.Add(Password);
+    AProcess.Parameters.Add(getParam('Password'));
     AProcess.Parameters.Add('scp');
     AProcess.Parameters.Add('-P2222');
-    AProcess.Parameters.Add('root@' + RemoteAddress + ':' + DevDir + ID + '.note');
+    AProcess.Parameters.Add('root@' + getParam('RemoteAddress') + ':' + DevDir + ID + '.note');
     AProcess.Parameters.Add(FullNoteName);
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
     try
@@ -726,7 +726,7 @@ begin
     end;
     if not Result then begin
         ErrorString := 'something bad happened when downloading ' + ID;
-        debugln('Failed to download [' + RemoteAddress + ':' + DevDir + ID + '.note]');
+        debugln('Failed to download [' + getParam('RemoteAddress') + ':' + DevDir + ID + '.note]');
         debugln(' to [' + FullNoteName + ']');
     end;
     List := TStringList.Create;

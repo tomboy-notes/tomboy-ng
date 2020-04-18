@@ -24,20 +24,23 @@ type
 
   TTomboyTrans = class      // An abstract class, parent of eg FileTrans and NetTrans
     private
+          // Hold any parameters
+        names : TStringList;
+        values : TStringList;
 
     public
             // A password for those Transports that need one.
-        Password : string;
+        //Password : string;
 
         DebugMode : boolean;
             // Indicates its a new repo, don't look for remote manifest.
-        ANewRepo : Boolean;
+        //ANewRepo : Boolean;
             // Set to '' is no errors.
         ErrorString : string;
             // Local notes directory
         NotesDir, ConfigDir : string;
             // A url to network server or 'remote' file directory for FileSync
-        RemoteAddress : string;
+        //RemoteAddress : string;
 
             { The current server ID. Is set with a successful TestTransport call. }
         ServerID : string;
@@ -46,10 +49,12 @@ type
               TestTransport call. }
         RemoteServerRev : integer;
 
+        constructor create;
+        destructor Destroy;
             { Tests availability of remote part of connection. For file sync (eg) thats
             existance of remote manifest and 0 dir, write access. Sets its own ServerID.
             This would be a good place to put lock or authenticate as  necessary}
-        function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; virtual; abstract;
+        function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable;     virtual; abstract;
 
             { May (or may not) do some early transport tests, ie, in Tomdroid sync
               it pings the remote device. Should return SyncReady or an error value
@@ -91,6 +96,10 @@ type
               We need this so we can compare notes when we are resolving a clash.}
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; virtual; abstract;
 
+        procedure setParam(p : String; v : String);
+        function getParam(p : String) : String;
+
+
   end;
 
 
@@ -98,7 +107,45 @@ implementation
 
 { TTomboyTrans }
 
+constructor TTomboyTrans.Create;
+begin
+  names := TStringList.Create();
+  values := TStringList.Create();
+end;
 
+destructor TTomboyTrans.Destroy;
+begin
+  FreeAndNil(names);
+  FreeAndNil(values);
+end;
+
+
+procedure TTomboyTrans.setParam(p : String; v : String);
+var
+  i : LongInt;
+begin
+  writeln('SetParams( '+p+' , '+v+' )');
+
+  i := names.IndexOf(p);
+  if(i<0) then begin
+     names.add(p);
+     values.add(v);
+  end else values.Strings[i] :=v;
+  i := names.IndexOf(p);
+end;
+
+function TTomboyTrans.getParam(p : String) : String ;
+var
+  i : LongInt;
+begin
+  i := names.IndexOf(p);
+  if(i<0) then Result := ''
+  else Result := values.strings[i];
+end;
 
 end.
+
+
+
+
 

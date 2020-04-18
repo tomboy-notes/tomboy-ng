@@ -160,9 +160,6 @@ type                       { ----------------- T S Y N C --------------------- }
   TSync = class
 
   private
-            // Generally an empty string but in Android/Tomdroid something we prefix
-            // to local manifest file name to indicate which connection it relates to.
-        ManPrefix : string;
 
         TransportMode : TSyncTransport;
 
@@ -295,8 +292,6 @@ type                       { ----------------- T S Y N C --------------------- }
             deal with the case where a note is open but unchanged during sync.  }
        // MarkNoteReadOnlyProcedure : TMarkNotereadOnlyProcedure;
 
-                // A URL or directory with trailing delim.
-        SyncAddress : string;
                 // Revision number the client is currently on
         CurrRev : integer;
                 // A string of local last sync date. Empty if we have not synced before
@@ -365,7 +360,7 @@ implementation
 { TSync }
 
 uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, TransAndroid, TransNext, LazLogger, LazFileUtils,
-    FileUtil, Settings;
+    FileUtil, Settings, Tomdroid;
 
 var
     Transport : TTomboyTrans;
@@ -375,8 +370,6 @@ begin
     NoteMetaData := TNoteInfoList.Create;
     LocalMetaData := TNoteInfoList.Create;
     Transport := nil;
-    //MarkNoteReadonlyProcedure := nil;
-    //NewRepo := False;
 end;
 
 destructor TSync.Destroy();
@@ -972,7 +965,7 @@ begin
     if not IDLooksOK(Transport.ServerID) then exit(false);        // already checked but ....
     result := true;
     if WriteOK and NewRev then IncRev := 1 else IncRev := 0;
-    AssignFile(OutFile, ConfigDir + ManPrefix + 'manifest.xml-local');  // ManPrefix is '' for most Modes.
+    AssignFile(OutFile, ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local');  // ManPrefix is '' for most Modes.
     try
 	        try
 		        Rewrite(OutFile);
@@ -1004,9 +997,9 @@ begin
 	end;
     // if to here, copy the file over top of existing local manifest
 	if not TestRun then
-       copyfile(ConfigDir + ManPrefix + 'manifest.xml-local', ConfigDir + ManPrefix + 'manifest.xml');
+       copyfile(ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local', ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
     if debugmode then
-       debugln('Have written local manifest to ' + ConfigDir + ManPrefix + 'manifest.xml-local');
+       debugln('Have written local manifest to ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local');
 end;
 
 
@@ -1060,7 +1053,7 @@ begin
     if not TestRun then
            result := Transport.DoRemoteManifest(ConfigDir + 'manifest.xml-remote');
     if debugmode then
-       debugln('Have written remote manifest to ' + ConfigDir + ManPrefix + 'manifest.xml-remote');
+       debugln('Have written remote manifest to ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-remote');
 end;
 
 
@@ -1075,20 +1068,23 @@ begin
     FreeAndNil(Transport);
     case Mode of
         SyncFile : begin
-        	SyncAddress := AppendPathDelim(Sett.LabelFileSync.Caption);
-                Transport := TFileSync.Create;
-	        end;
+        	Transport := TFileSync.Create;
+	        Transport.setParam('RemoteAddress',AppendPathDelim(Sett.LabelFileSync.Caption));
+                end;
 	SyncNextCloud : begin
 	        Transport := TNextSync.Create;
-	        SyncAddress := Sett.LabelNCSyncURL.caption;
+	        Transport.setParam('URL', Sett.NCUrl);
+                Transport.setParam('KEY', Sett.NCKey);
+                Transport.setParam('TOKEN', Sett.NCToken);
+                Transport.setParam('SECRET', Sett.NCSecret);
                 end;
         SyncAndroid : begin
-                // debugln('Oh boy ! We have called the android line !');
-                Transport := TAndSync.Create;
-                ManPrefix := copy(LocalServerID, 1, 8);     // But in join mode, LocalServerID is empty at this stage ...
+            Transport := TAndSync.Create;
+                Transport.setParam('RemoteAddress', FormTomdroid.EditIPAddress.Text);
+                Transport.setParam('Password', FormTomdroid.EditPassword.Text);
+                Transport.setParam('ManPrefix', copy(LocalServerID, 1, 8));     // But in join mode, LocalServerID is empty at this stage ...
                 end;
     end;
-    Transport.Password := Password;
     Transport.NotesDir := NotesDir;
     Transport.DebugMode := DebugMode;
     if TransportMode = SyncAndroid then begin
@@ -1096,15 +1092,11 @@ begin
         ForceDirectory(ConfigDir);
     end;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
-    Transport.RemoteAddress:= SyncAddress;
-    // Result := Transport.TestTransportEarly(ManPrefix);          // important Tomdroid, not Filesync
+
     Result := Transport.SetTransport();
+
     ErrorString := Transport.ErrorString;
-    if DebugMode then begin
-        debugln('Remote address is ' + SyncAddress);
-        debugln('Local Config ' + ConfigDir);
-        debugln('Notes dir ' + NotesDir);
-	end;
+
 end;
 
 function TSync.TestConnection(): TSyncAvailable;
@@ -1115,7 +1107,7 @@ begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
         Transport.RemoteServerRev:=-1;
-        Transport.ANewRepo:= True;
+        Transport.setParam('ANewRepo','1');
         // means we should prepare for a new repo (but not make it yet), don't check for files.
     end;
     if RepoAction = RepoUse then begin
@@ -1128,7 +1120,7 @@ begin
 	    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
 	    if LocalLastSyncDate < 1.0 then begin
 		    ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';
-            debugln('Invalid last sync date in ' + ConfigDir + ManPrefix + 'manifest.xml');
+            debugln('Invalid last sync date in ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
 		    exit(SyncXMLError);
         end;
     end;
@@ -1136,7 +1128,7 @@ begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
         if TransportMode = SyncAndroid then
-           Transport.ANewRepo:= True;     // Ugly, but while its technically a 'new' it looks a bit like Join.....
+           Transport.setParam('ANewRepo','1'); // Ugly, but while its technically a 'new' it looks a bit like Join.....
     end;
     Result := Transport.TestTransport(not TestRun);
     if Result <> SyncReady then begin
@@ -1157,8 +1149,7 @@ begin
 		end;
     if RepoAction = RepoJoin then begin
         LocalServerID := Transport.ServerID;
-        if (TransportMode = SyncAndroid) then
-           ManPrefix := copy(LocalServerID, 1, 8);
+        Transport.setParam('ManPrefix', copy(LocalServerID, 1, 8));
     end;
     if Result = SyncReady then
         if not IDLooksOK(Transport.ServerID) then begin
@@ -1244,7 +1235,7 @@ begin
     freeandNil(LocalMetaData);
     LocalMetaData := TNoteInfoList.Create;
     if FullFileName = '' then begin         // get a FFN when using this unit to edit local man after a file delete
-        ManifestFile := ConfigDir + ManPrefix + 'manifest.xml';
+        ManifestFile := ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml';
         if not FileExists(ManifestFile) then begin
             LocalLastSyncDateSt := '';
             CurrRev := 0;

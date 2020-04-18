@@ -223,7 +223,7 @@ begin
     ASync.DebugMode := Application.HasOption('s', 'debug-sync');
     ASync.NotesDir:= NoteDirectory;
     ASync.ConfigDir := LocalConfig;
-    ASync.RepoAction:=RepoJoin;
+    ASync.RepoAction := RepoJoin;
     Async.SetTransport(Sett.getSyncType());
     SyncAvail := ASync.TestConnection();
     if SyncAvail = SyncNoRemoteRepo then
@@ -313,7 +313,7 @@ begin
         ASync.RepoAction:=RepoUse;
         Async.SetTransport(Sett.getSyncType());
         SyncState := ASync.TestConnection();
-        ASync.SyncAddress := ASync.SyncAddress;
+        //ASync.SyncAddress := ASync.SyncAddress;
 	while SyncState <> SyncReady do begin
             if ASync.DebugMode then debugln('Failed testConnection');
             FormSyncError.Label1.caption := rsUnableToSync + ':';

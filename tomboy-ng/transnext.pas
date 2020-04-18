@@ -10,7 +10,7 @@ unit transnext;
 interface
 
 uses
-    Classes, SysUtils, Trans, SyncUtils;
+    Classes, SysUtils, Trans, SyncUtils, oauth;
 
 type               { ----------- TNextSync ------------ }
 
@@ -19,9 +19,12 @@ type               { ----------- TNextSync ------------ }
 
 TNextSync = Class(TTomboyTrans)
     private
+        oauth: TOAuth;
 
     public
-        function TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable; override;
+        constructor create;
+        destructor Destroy;
+        function TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
         function SetTransport(): TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
@@ -37,9 +40,22 @@ implementation
 
 { TNextSync }
 
+constructor TNextSync.create;
+begin
+    inherited Create;
+    oauth := TOAuth.Create();
+end;
+
+destructor TNextSync.Destroy;
+begin
+    FreeAndNil(oauth);
+    inherited Destroy;
+end;
+
+
 function TNextSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
 begin
-	WriteLn('Next-TestTransport');
+     WriteLn('Next-TestTransport');
     Result := SyncReady;
 end;
 

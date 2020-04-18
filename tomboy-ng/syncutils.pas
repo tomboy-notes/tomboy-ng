@@ -27,7 +27,7 @@ type TSyncTransport=(
                 SyncNone); // Not syncing
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
-                SyNothing,      // This note, previously sync'ed has not changed.
+                SyNothing,      // This note, previously synced has not changed.
                 SyUploadNew,    // This a new local note, upload it.
                 SyUploadEdit,   // A previously synced note, edited locally, upload.
                 SyDownload,     // A new or edited note from elsewhere, download.
@@ -43,7 +43,7 @@ type TSyncAction=(SyUnset,      // initial state, should not be like this at end
         // Indicates the readyness of a sync connection
 type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncReady,          // We are ready to sync, looks good to go.
-                    SyncNoLocal,        // We don't have a local manifest, only an error if config thinks there should be one.
+                    SyncNoLocal,        // We dont have a local manifest, only an error if config thinks there should be one.
                     SyncNoRemoteMan,    // No remote manifest, an uninitialized repo perhaps ?
                     SyncNoRemoteRepo,   // Filesystem is OK but does not look like a repo.
                     SyncBadRemote,      // Has either Manifest or '0' dir but not both.

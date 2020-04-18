@@ -264,10 +264,8 @@ begin
         ASync.ProceedFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
         ASync.ConfigDir := Sett.LocalConfig;
-        ASync.SyncAddress := EditIPAddress.Text;
         // ASync.LocalServerID := LabelServerID.Caption;       // Only do this for Tomdroid Use!
         ASync.RepoAction:= RepoJoin;
-        ASync.Password:= EditPassword.Text;
         Tick1 := GetTickCount64();
         if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin
             memo1.append(rsFailedToConnect + ' ' + ASync.ErrorString);
@@ -422,10 +420,8 @@ begin
         ASync.ProceedFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
         ASync.ConfigDir := Sett.LocalConfig;
-        ASync.SyncAddress := EditIPAddress.Text;
         ASync.LocalServerID := LabelServerID.Caption;       // Only do this for Tomdroid !
         ASync.RepoAction:= RepoUse;
-        ASync.Password:= EditPassword.Text;
         Tick1 := GetTickCount64();
         if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin      // this just pings remote dev
             memo1.append(rsFailedToConnect + ASync.ErrorString);
