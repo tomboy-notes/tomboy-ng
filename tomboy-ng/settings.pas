@@ -524,7 +524,7 @@ end;
 
 procedure TSett.RadioSyncChange(Sender: TObject);
 begin
-    CheckBoxAutoSync.Enabled:= false;
+    CheckBoxAutoSync.Enabled:= not RadioSyncNone.checked;
     SettingsChanged('RadioSyncChange');
 end;
 
@@ -937,6 +937,8 @@ begin
                         RadioSyncNone.checked := true;
 	    	end;
 
+                CheckBoxAutoSync.enabled := not RadioSyncNone.checked;
+
 		LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
             	if LabelFileSync.Caption = '' then LabelFileSync.Caption := rsSyncNotConfig;
 
@@ -958,6 +960,10 @@ begin
                 CheckBoxAutoSync.checked :=
                 	('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
                 EditTimerSync.Text := Configfile.ReadString('SyncSettings', 'AutosyncElapse', '10');
+                EditTimerSync.Enabled := CheckBoxAutoSync.checked;
+                Label16.Enabled := CheckBoxAutoSync.checked;
+                Label17.Enabled := CheckBoxAutoSync.checked;
+
             finally
             	ConfigFile.free;
             	// MaskSettingsChanged := False;
@@ -1353,18 +1359,11 @@ end;
 
 procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
-    if ((CheckBoxAutoSync.Enabled = true) and (getSyncType() = TSyncTransport.SyncNone)) then begin
-       EditTimerSync.Enabled:= false;
-       CheckBoxAutoSync.Enabled := true;
-       exit;
-    end;
+    EditTimerSync.Enabled := CheckBoxAutoSync.checked;
+    Label16.Enabled := CheckBoxAutoSync.checked;
+    Label17.Enabled := CheckBoxAutoSync.checked;
 
-    CheckBoxAutoSync.Enabled:= true;
-
-    if CheckBoxAutoSync.Checked then begin
-       EditTimerSync.Enabled:= true;
-       CheckAutoSync();
-    end else EditTimerSync.Enabled:= false;
+    if CheckBoxAutoSync.Checked then CheckAutoSync();
 
     CheckReadOnlyChange(Sender);
 end;
@@ -1373,9 +1372,6 @@ end;
 
 procedure TSett.Synchronise();
 begin
-    FormSync.NoteDirectory := Sett.NoteDirectory;
-    FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
     else

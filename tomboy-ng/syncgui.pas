@@ -63,7 +63,7 @@ interface
 
 uses
 		Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-		StdCtrls, Grids, Syncutils, settings;
+		StdCtrls, Grids, Syncutils, LazFileUtils, settings;
 
 type
 
@@ -104,9 +104,9 @@ type
                 function DisplaySync(): string;
                     { Called when user wants to join a (possibly uninitialised) Repo,
                       will handle some problems with user's help. }
-                procedure JoinSync;
+                procedure JoinSync();
                     { Called to do a sync assuming its all setup. Any problem is fatal }
-                function ManualSync: boolean;
+                function ManualSync(): boolean;
                     { Populates the string grid with details of notes to be actioned }
                 procedure ShowReport;
             	//procedure TestRepo();
@@ -114,14 +114,9 @@ type
 
 		public
                 Busy : boolean; // indicates that there is some sort of sync in process now.
-                Transport : TSyncTransPort;
 
                 LocalConfig, NoteDirectory : ANSIString;
-                    { Indicates we are doing a setup User has already agreed to abandon any
-                      existing Repo but we don't know if indicated spot already contains a
-                      repo or, maybe we want to make one. }
-              	//SetupSync : boolean;
-                    { we will pass address of this function to Sync }
+
                 procedure MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
                     { we will pass address of this function to Sync }
                 function Proceed(const ClashRec : TClashRecord) : TSyncAction;
@@ -209,13 +204,17 @@ begin
 end;
 
     // User is only allowed to press Cancel or Save when this is finished.
-procedure TFormSync.JoinSync;
+procedure TFormSync.JoinSync();
 var
     SyncAvail : TSyncAvailable;
     // ASync : TSync;
     // UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
 begin
     freeandnil(ASync);
+
+    NoteDirectory := Sett.NoteDirectory;
+    LocalConfig := AppendPathDelim(Sett.LocalConfig);
+
     ASync := TSync.Create;
     Label1.Caption:= rsTestingRepo;
     Application.ProcessMessages;
@@ -225,7 +224,7 @@ begin
     ASync.NotesDir:= NoteDirectory;
     ASync.ConfigDir := LocalConfig;
     ASync.RepoAction:=RepoJoin;
-    Async.SetTransport(TransPort);
+    Async.SetTransport(Sett.getSyncType());
     SyncAvail := ASync.TestConnection();
     if SyncAvail = SyncNoRemoteRepo then
         if mrYes = QuestionDlg('Advice', rsCreateNewRepo, mtConfirmation, [mrYes, mrNo], 0) then begin
@@ -285,26 +284,34 @@ function TFormSync.RunSyncHidden(): boolean;
 begin
     //debugln('In RunSyncHidden');
     if not Sett.getSyncTested() then exit(False);      // should never call this in setup mode but to be sure ...
+
     busy := true;
     StringGridReport.Clear;
-    Result := ManualSync;
+
+    Result := ManualSync();
 end;
 
         // User is only allowed to press Close when this is finished.
-function TFormSync.ManualSync : boolean;
+function TFormSync.ManualSync() : boolean;
 var
     SyncState : TSyncAvailable = SyncNotYet;
 begin
     Label1.Caption := rsTestingSync;
     Application.ProcessMessages;
-	ASync := TSync.Create;
+
+    NoteDirectory := Sett.NoteDirectory;
+    LocalConfig := AppendPathDelim(Sett.LocalConfig);
+
+    ASync := TSync.Create;
+
+
     try
         ASync.ProceedFunction:= @Proceed;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
 	ASync.NotesDir:= NoteDirectory;
 	ASync.ConfigDir := LocalConfig;
         ASync.RepoAction:=RepoUse;
-        Async.SetTransport(TransPort);
+        Async.SetTransport(Sett.getSyncType());
         SyncState := ASync.TestConnection();
         ASync.SyncAddress := ASync.SyncAddress;
 	while SyncState <> SyncReady do begin
