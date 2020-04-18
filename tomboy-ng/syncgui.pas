@@ -63,32 +63,32 @@ interface
 
 uses
 		Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-		StdCtrls, Grids, Syncutils;
+		StdCtrls, Grids, Syncutils, settings;
 
 type
 
 		{ TFormSync }
 
   TFormSync = class(TForm)
-				ButtonSave: TButton;
-				ButtonCancel: TButton;
-				ButtonClose: TButton;
-				Label1: TLabel;
-				Label2: TLabel;
-				Memo1: TMemo;
-				Panel1: TPanel;
-				Panel2: TPanel;
-				Panel3: TPanel;
-				Splitter3: TSplitter;
-				StringGridReport: TStringGrid;
+		ButtonSave: TButton;
+		ButtonCancel: TButton;
+		ButtonClose: TButton;
+		Label1: TLabel;
+		Label2: TLabel;
+		Memo1: TMemo;
+		Panel1: TPanel;
+		Panel2: TPanel;
+		Panel3: TPanel;
+		Splitter3: TSplitter;
+		StringGridReport: TStringGrid;
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
                 function RunSyncHidden() : boolean;
-				procedure ButtonCancelClick(Sender: TObject);
-				procedure ButtonCloseClick(Sender: TObject);
-    			procedure ButtonSaveClick(Sender: TObject);
-				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+		procedure ButtonCancelClick(Sender: TObject);
+		procedure ButtonCloseClick(Sender: TObject);
+    		procedure ButtonSaveClick(Sender: TObject);
+		procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
                 procedure FormHide(Sender: TObject);
                 { At Show, depending on SetUpSync, we'll either go ahead and do it, any
                   error is fatal or, if True, walk user through process. }
@@ -120,7 +120,7 @@ type
                     { Indicates we are doing a setup User has already agreed to abandon any
                       existing Repo but we don't know if indicated spot already contains a
                       repo or, maybe we want to make one. }
-              	SetupSync : boolean;
+              	//SetupSync : boolean;
                     { we will pass address of this function to Sync }
                 procedure MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
                     { we will pass address of this function to Sync }
@@ -253,7 +253,7 @@ end;
 procedure TFormSync.AfterShown(Sender : TObject);
 begin
     LocalTimer.Enabled := False;             // Don't want to hear from you again
-    if SetUpSync then begin
+    if not Sett.getSyncTested() then begin
         JoinSync();
     end else
         ManualSync();
@@ -284,7 +284,7 @@ end;
 function TFormSync.RunSyncHidden(): boolean;
 begin
     //debugln('In RunSyncHidden');
-    if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
+    if not Sett.getSyncTested() then exit(False);      // should never call this in setup mode but to be sure ...
     busy := true;
     StringGridReport.Clear;
     Result := ManualSync;

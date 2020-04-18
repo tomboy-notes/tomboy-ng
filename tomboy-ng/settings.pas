@@ -264,8 +264,12 @@ type
         procedure SetColours;
         function getSyncType() : TSyncTransPort;
 	function getSyncConfigured() : boolean;
+	function getSyncTested() : boolean;
+        procedure setSyncTested(b : boolean);
     private
         UserSetColours : boolean;
+
+        SyncFirstRun : boolean;
 
         NCurl : String;
         NCKey : String;
@@ -476,14 +480,9 @@ begin
        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
 
        if SelectDirectoryDialog1.Execute then begin
-          FormSync.NoteDirectory := NoteDirectory;
-          FormSync.LocalConfig := LocalConfig;
-          FormSync.SetupSync := True;
-          FormSync.Transport := TSyncTransport.SyncFile;
+          SyncFirstRun:=false;
           LabelFileSync.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-
-          if mrOK = FormSync.ShowModal then SettingsChanged('ButtonFileSetupClick')
-          else LabelFileSync.Caption := rsSyncNotConfig;
+          SettingsChanged('ButtonFileSetupClick');
        end;
 end;
 
@@ -525,6 +524,7 @@ end;
 
 procedure TSett.RadioSyncChange(Sender: TObject);
 begin
+    CheckBoxAutoSync.Enabled:= false;
     SettingsChanged('RadioSyncChange');
 end;
 
@@ -948,6 +948,8 @@ begin
 		NCToken  := ConfigFile.readstring('SyncSettings', 'SyncNCToken', '');
 		NCSecret  := ConfigFile.readstring('SyncSettings', 'SyncNCSecret', '');
 
+                SyncFirstRun := (ConfigFile.readstring('SyncSettings', 'SyncTested', 'true') = 'true');
+
             	LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             	LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             	SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
@@ -977,6 +979,7 @@ begin
               UsualFont := GetFontData(Self.Font.Handle).Name;
               FixedFont := DefaultFixedFont;
               LabelFileSync.Caption := rsSyncNotConfig;
+              SyncFirstRun := false;
 
               NCUrl := rsSyncNCDefault;
               NCKey := MD5Print(MD5String(Format('%d',[Random(9999999-123400)+123400])));
@@ -985,7 +988,7 @@ begin
 
               if not SettingsChanged('CheckDirectory') then // write a initial default file, shows user a message on error
                 HaveConfig := false;
-              RadioSyncFile.checked := true;
+              RadioSyncNone.checked := true;
               MaskSettingsChanged := True;
               HaveConfig := True;
           end else begin
@@ -1003,6 +1006,17 @@ end;
 function TSett.getSyncConfigured() : boolean;
 begin
     Result := (getSyncType() <> TSyncTransport.SyncNone);
+end;
+
+function TSett.getSyncTested() : boolean;
+begin
+    Result := SyncFirstRun;
+end;
+
+procedure TSett.setSyncTested(b : boolean);
+begin
+    SyncFirstRun :=b;
+    SettingsChanged('setSyncTested');
 end;
 
 function TSett.MyBoolStr(const InBool : boolean) : string;
@@ -1066,6 +1080,10 @@ begin
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
                  ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
+
+            if getSyncTested() then
+                ConfigFile.writestring('SyncSettings', 'SyncTested', 'true')
+                else ConfigFile.writestring('SyncSettings', 'SyncTested', 'false');
 
             if RadioSyncFile.checked then
                 ConfigFile.writestring('SyncSettings', 'SyncType', 'file')
@@ -1146,6 +1164,7 @@ begin
          NCSecret := FormNCSetup.getTokenSecret();
          FormNCSetup.URL.Text   :=  NCUrl;
          RadioSyncNC.checked := true;
+         SyncFirstRun := true;
          SettingsChanged('ButtonNCSetupClick');
      end;
 end;
@@ -1334,18 +1353,20 @@ end;
 
 procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
-    if (getSyncType() = TSyncTransport.SyncNone) then begin
-       CheckBoxAutoSync.Enabled:= true;
+    if ((CheckBoxAutoSync.Enabled = true) and (getSyncType() = TSyncTransport.SyncNone)) then begin
        EditTimerSync.Enabled:= false;
-    end
-    else begin
-       CheckBoxAutoSync.Enabled:= true;
-       if CheckBoxAutoSync.Checked then begin
-          EditTimerSync.Enabled:= true;
-          CheckAutoSync();
-       end else EditTimerSync.Enabled:= false;
-       CheckReadOnlyChange(Sender);
+       CheckBoxAutoSync.Enabled := true;
+       exit;
     end;
+
+    CheckBoxAutoSync.Enabled:= true;
+
+    if CheckBoxAutoSync.Checked then begin
+       EditTimerSync.Enabled:= true;
+       CheckAutoSync();
+    end else EditTimerSync.Enabled:= false;
+
+    CheckReadOnlyChange(Sender);
 end;
 
 { ------------------------ S Y N C -------------------------- }
@@ -1354,8 +1375,6 @@ procedure TSett.Synchronise();
 begin
     FormSync.NoteDirectory := Sett.NoteDirectory;
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-
-    FormSync.SetupSync := False;
 
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
@@ -1381,28 +1400,23 @@ procedure TSett.TimerAutoSyncTimer(Sender: TObject);
 var
    elapse : LongInt;
 begin
-    TimerAutoSync.enabled := False;
     elapse := StrToInt(EditTimerSync.Text);
 
-    if not getSyncConfigured() then exit;
-
-    if CheckBoxAutoSync.checked  and (not FormSync.Busy) and (elapse>0) then begin
-        FormSync.NoteDirectory := Sett.NoteDirectory;
-        FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-
-        if (getSyncType() = TSyncTransport.SyncFile) then
-            FormSync.Transport:=TSyncTransport.SyncFile
-        else if (getSyncType() = TSyncTransport.SyncNextCloud) then
-            FormSync.Transport:= TSyncTransport.SyncNextCloud
-        else FormSync.Transport:= TSyncTransport.SyncNone;
-
-        FormSync.SetupSync := False;
-
-        if FormSync.RunSyncHidden() then begin
-            TimerAutoSync.Interval:= elapse*60*1000;     // do it again in one hour
-            TimerAutoSync.Enabled := true;
-        end;
+    if(elapse<1) then begin
+        CheckBoxAutoSync.checked := false;
+        exit;
     end;
+
+    if (not CheckBoxAutoSync.checked) then exit;
+
+    if (getSyncConfigured() and getSyncTested()) then begin
+       FormSync.NoteDirectory := Sett.NoteDirectory;
+       FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
+       FormSync.RunSyncHidden();
+    end;
+
+    TimerAutoSync.Interval:= elapse*60*1000;
+    TimerAutoSync.Enabled := true;
 end;
 
 

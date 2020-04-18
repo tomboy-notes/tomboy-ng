@@ -27,7 +27,6 @@
    server.Port := APort;
    server.OnRequest := OnRequest;
    FreeOnTerminate := true;
-   writeln('Starrting thread');
  end;
 
 destructor WebServer.Destroy;
