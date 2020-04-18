@@ -198,6 +198,8 @@ begin
     i := i +2;
   end;
 
+  writeln('URL GET= '+u);
+
   try
     Result := Client.Get(u);
   except on E:Exception do begin
@@ -266,7 +268,7 @@ begin
   end;
 
   hashkey := Key + '&' + secret;
-  //writeln('SIGNING WITH= '+hashkey);
+  writeln('SIGNING WITH= '+hashkey);
 
   data := mode + '&' + URLEncode(u) + '&' + URLEncode(p);
 

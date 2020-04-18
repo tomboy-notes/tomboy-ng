@@ -120,6 +120,7 @@ begin
         ErrorString := 'Invalid ServerID';
         exit(SyncXMLError);
     end;
+
     Result := SyncReady;
 end;
 

@@ -137,10 +137,13 @@ end;
 function TTomboyTrans.getParam(p : String) : String ;
 var
   i : LongInt;
+  v : String;
 begin
   i := names.IndexOf(p);
-  if(i<0) then Result := ''
-  else Result := values.strings[i];
+  if(i<0) then v := ''
+  else v := values.strings[i];
+  writeln('GetParams( '+p+' ) => '+v);
+  Result := v;
 end;
 
 end.

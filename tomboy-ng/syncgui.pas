@@ -251,7 +251,7 @@ end;
 
 procedure TFormSync.AfterShown(Sender : TObject);
 begin
-    LocalTimer.Enabled := False;             // Don't want to hear from you again
+    LocalTimer.Enabled := False;             // Dont want to hear from you again
     if not Sett.getSyncTested() then begin
         JoinSync();
     end else

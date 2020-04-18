@@ -265,11 +265,6 @@ type                       { ----------------- T S Y N C --------------------- }
 	  function WriteRemoteManifest(out NewRev: boolean): boolean;
 
    public
-
-            // A passord, passed on to Trans for those Transports that need it.
-            // Must be set (if needed) before SetTransport is called.
-        Password : string;
-
             // Indicates what we want this unit to do. Set it and call TestConnection() repeatly...
        RepoAction : TRepoAction;
 
@@ -1108,20 +1103,20 @@ begin
         LocalLastSyncDateSt := '';
         Transport.RemoteServerRev:=-1;
         Transport.setParam('ANewRepo','1');
-        // means we should prepare for a new repo (but not make it yet), don't check for files.
+        // means we should prepare for a new repo (but not make it yet), dont check for files.
     end;
     if RepoAction = RepoUse then begin
-	    if not ReadLocalManifest() then exit(SyncXMLError);    // Error in local mainfest, OK or no manifest=true
+	if not ReadLocalManifest() then exit(SyncXMLError);    // Error in local mainfest, OK or no manifest=true
         if LocalLastSyncDateSt = '' then begin
             ErrorString := 'Failed to read local manifest, is this an existing sync ?';
             debugln('ReadLocalManifest set an empty LocalLastSyncDateSt, probably local manifest does not exist.');
             exit(SyncNoLocal);
         end;
-	    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
-	    if LocalLastSyncDate < 1.0 then begin
-		    ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';
+	LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
+	if LocalLastSyncDate < 1.0 then begin
+	    ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';
             debugln('Invalid last sync date in ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
-		    exit(SyncXMLError);
+	    exit(SyncXMLError);
         end;
     end;
     if RepoAction = RepoJoin then begin
@@ -1135,6 +1130,9 @@ begin
       ErrorString := Transport.ErrorString;
       exit;
     end;
+
+    Sett.setSyncTested(true);
+
     if DebugMode then begin
         debugln('CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
                         + '   Local Entries=' + inttostr(LocalMetaData.Count));

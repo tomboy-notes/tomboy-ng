@@ -350,6 +350,7 @@ begin
             exit;
         end;
     end;
+
     if debugmode then
         debugln('TestTransport ID=' + ServerID + ' SetServerID took ' + inttostr(T2 - T1)
             + 'mS and StampID took ' + inttostr(T4 - T3));
