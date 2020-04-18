@@ -1,11 +1,11 @@
 object Sett: TSett
-  Left = 926
-  Height = 525
-  Top = 189
+  Left = 902
+  Height = 433
+  Top = 147
   Width = 630
   BorderIcons = []
   Caption = 'tomboy-ng Settings'
-  ClientHeight = 399
+  ClientHeight = 433
   ClientWidth = 630
   OnClose = FormClose
   OnCreate = FormCreate
@@ -21,7 +21,7 @@ object Sett: TSett
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = SpeedButHide
     Left = 0
-    Height = 365
+    Height = 399
     Top = 0
     Width = 630
     ActivePage = TabSync
@@ -32,7 +32,7 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 334
+      ClientHeight = 368
       ClientWidth = 620
       OnContextPopup = TabBasicContextPopup
       object LabelSettingPath: TLabel
@@ -73,7 +73,7 @@ object Sett: TSett
         Left = 501
         Height = 32
         Hint = 'If you have notes somewhere else'
-        Top = 72
+        Top = 81
         Width = 112
         Anchors = [akRight]
         Caption = 'Notes path'
@@ -89,7 +89,7 @@ object Sett: TSett
         Left = 501
         Height = 32
         Hint = 'Will work for many new users'
-        Top = 112
+        Top = 125
         Width = 112
         Anchors = [akRight]
         Caption = 'Default path'
@@ -101,7 +101,7 @@ object Sett: TSett
       object GroupBox1: TGroupBox
         Left = 7
         Height = 154
-        Top = 160
+        Top = 200
         Width = 606
         Caption = 'Options'
         ClientHeight = 136
@@ -161,7 +161,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 334
+      ClientHeight = 368
       ClientWidth = 620
       object GroupBox5: TGroupBox
         Left = 32
@@ -304,7 +304,7 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         Left = 32
         Height = 25
-        Top = 397
+        Top = 439
         Width = 240
         Anchors = [akLeft, akRight]
         Caption = 'Set Colours'
@@ -314,7 +314,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 334
+      ClientHeight = 368
       ClientWidth = 620
       object GroupBox4: TGroupBox
         AnchorSideTop.Side = asrBottom
@@ -324,7 +324,7 @@ object Sett: TSett
         AnchorSideBottom.Side = asrBottom
         Left = 0
         Height = 145
-        Top = 186
+        Top = 220
         Width = 617
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Left = 3
@@ -429,7 +429,7 @@ object Sett: TSett
         AnchorSideRight.Control = TabSync
         AnchorSideRight.Side = asrBottom
         Left = 3
-        Height = 173
+        Height = 213
         Top = 3
         Width = 614
         Anchors = [akTop, akLeft, akRight]
@@ -437,22 +437,22 @@ object Sett: TSett
         BorderSpacing.Top = 3
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 155
+        ClientHeight = 195
         ClientWidth = 612
         TabOrder = 1
-        object RadioFileSync: TRadioButton
+        object RadioSyncFile: TRadioButton
           Left = 20
           Height = 23
-          Top = 16
+          Top = 56
           Width = 202
           Caption = 'File Sync, google drive, smb etc.'
-          OnChange = RadioFileSyncChange
+          OnChange = RadioSyncChange
           TabOrder = 0
         end
         object Label4: TLabel
           Left = 20
           Height = 15
-          Top = 49
+          Top = 89
           Width = 37
           Caption = 'Repo : '
           ParentColor = False
@@ -460,7 +460,7 @@ object Sett: TSett
         object LabelFileSync: TLabel
           Left = 72
           Height = 15
-          Top = 49
+          Top = 89
           Width = 81
           Caption = 'not configured'
           ParentColor = False
@@ -468,18 +468,18 @@ object Sett: TSett
         object RadioSyncNC: TRadioButton
           Left = 20
           Height = 23
-          Top = 88
+          Top = 128
           Width = 204
           Caption = 'Nextcloud/ownCloud (Grauphel)'
           Checked = True
-          OnChange = RadioFileSyncChange
+          OnChange = RadioSyncChange
           TabOrder = 1
           TabStop = True
         end
         object Label5: TLabel
           Left = 20
           Height = 15
-          Top = 120
+          Top = 160
           Width = 22
           Caption = 'URL'
           ParentColor = False
@@ -487,33 +487,42 @@ object Sett: TSett
         object LabelNCSyncURL: TLabel
           Left = 72
           Height = 15
-          Top = 120
+          Top = 160
           Width = 81
           Caption = 'not configured'
           ParentColor = False
         end
         object ButtonFileSetup: TSpeedButton
-          Left = 440
+          Left = 456
           Height = 26
-          Top = 16
+          Top = 56
           Width = 143
           Caption = 'Setup File Sync'
           OnClick = ButtonFileSetupClick
         end
         object ButtonNCSetup: TButton
-          Left = 440
+          Left = 456
           Height = 29
-          Top = 95
+          Top = 135
           Width = 143
           Caption = 'Setup Cloud SYnc'
           OnClick = ButtonNCSetupClick
           TabOrder = 2
         end
+        object RadioSyncNone: TRadioButton
+          Left = 20
+          Height = 23
+          Top = 8
+          Width = 91
+          Caption = 'Not syncing'
+          OnChange = RadioSyncChange
+          TabOrder = 3
+        end
       end
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 334
+      ClientHeight = 368
       ClientWidth = 620
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
@@ -578,12 +587,12 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 184
+        Height = 218
         Top = 150
         Width = 620
         Anchors = [akTop, akLeft, akRight, akBottom]
         Caption = 'Panel2'
-        ClientHeight = 184
+        ClientHeight = 218
         ClientWidth = 620
         TabOrder = 1
         object StringGridBackUp: TStringGrid
@@ -594,7 +603,7 @@ object Sett: TSett
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
           Left = 1
-          Height = 182
+          Height = 216
           Top = 1
           Width = 618
           Anchors = [akTop, akLeft, akRight, akBottom]
@@ -612,7 +621,7 @@ object Sett: TSett
     object TabSnapshot: TTabSheet
       BorderWidth = 1
       Caption = 'SnapShot'
-      ClientHeight = 334
+      ClientHeight = 368
       ClientWidth = 620
       OnResize = TabSnapshotResize
       object Label9: TLabel
@@ -633,7 +642,7 @@ object Sett: TSett
         Left = 7
         Height = 44
         Hint = 'Take a time stamped snapshot of notes and config'
-        Top = 290
+        Top = 324
         Width = 248
         Anchors = [akLeft, akBottom]
         BorderSpacing.Left = 7
@@ -653,7 +662,7 @@ object Sett: TSett
         Left = 262
         Height = 44
         Hint = 'If you have previously taken a snapshot ...'
-        Top = 290
+        Top = 324
         Width = 351
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Left = 7
@@ -671,7 +680,7 @@ object Sett: TSett
         AnchorSideBottom.Control = ButtonManualSnap
         Left = 0
         Height = 240
-        Top = 48
+        Top = 82
         Width = 620
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 2
@@ -751,7 +760,7 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 334
+      ClientHeight = 368
       ClientWidth = 620
       OnResize = TabSpellResize
       object Label13: TLabel
@@ -874,7 +883,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 24
     Height = 15
-    Top = 350
+    Top = 384
     Width = 44
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
@@ -888,7 +897,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 534
     Height = 29
-    Top = 367
+    Top = 401
     Width = 96
     Anchors = [akRight, akBottom]
     BorderSpacing.Bottom = 3
@@ -902,7 +911,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 418
     Height = 29
-    Top = 367
+    Top = 401
     Width = 116
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Bottom = 3
@@ -993,7 +1002,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 322
     Height = 26
-    Top = 367
+    Top = 401
     Width = 96
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Bottom = 3

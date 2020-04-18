@@ -107,11 +107,9 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView,
-    ncsetup, LCLIntf, md5, Types;
+    ncsetup, LCLIntf, md5, Types, Syncutils;
 
 // Types;
-
-type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash pref in config file
 
 type
 
@@ -131,7 +129,8 @@ type
 	  LabelFileSync: TLabel;
 	  LabelNCSyncURL: TLabel;
           Panel4: TPanel;
-	  RadioFileSync: TRadioButton;
+          RadioSyncNone: TRadioButton;
+	  RadioSyncFile: TRadioButton;
 	  RadioSyncNC: TRadioButton;
 	  ButtonSetColours: TButton;
           ButtonFixedFont: TButton;
@@ -256,14 +255,15 @@ type
         procedure SpeedButtTBMenuClick(Sender: TObject);
 	procedure ButtonFileSetupClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
-        procedure RadioFileSyncChange(Sender: TObject);
+        procedure RadioSyncChange(Sender: TObject);
         procedure TabBasicContextPopup(Sender: TObject; MousePos: TPoint;
           var Handled: Boolean);
         procedure TabSnapshotResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
         procedure TimerAutoSyncTimer(Sender: TObject);
         procedure SetColours;
-
+        function getSyncType() : TSyncTransPort;
+	function getSyncConfigured() : boolean;
     private
         UserSetColours : boolean;
 
@@ -301,7 +301,6 @@ type
         // Saves all current settings to disk. Call when any change is made. If unable
         // to write to disk, returns False;
         function SettingsChanged(source : String): boolean;
-	function fSyncOK(): boolean;
 	procedure SyncSettings;
         //function ZipDate: string;
 
@@ -316,8 +315,6 @@ type
         DefaultFixedFont : string;
         DarkTheme : boolean;
         DebugModeSpell : boolean;
-
-        SyncType : string;
 
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;
@@ -351,7 +348,6 @@ type
         function GetLocalTime: ANSIstring;
             { Triggers a Sync, if its not all setup aready and working, user show and error }
         procedure Synchronise();
-        property SyncOK : boolean read fSyncOK;
         property ExportPath : ANSIString Read fExportPath write fExportPath;
         // Called after notes are indexed, if settings so indicate, will start auto timer.
         procedure CheckAutoSync();
@@ -381,7 +377,6 @@ uses IniFiles, LazLogger,
     Note_Lister,	// List notes in BackUp and Snapshot tab
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
-    syncutils,
     recover,        // Recover lost or damaged files
     mainunit,       // so we can call ShowHelpNote()
     hunspell,       // spelling check
@@ -484,6 +479,7 @@ begin
           FormSync.NoteDirectory := NoteDirectory;
           FormSync.LocalConfig := LocalConfig;
           FormSync.SetupSync := True;
+          FormSync.Transport := TSyncTransport.SyncFile;
           LabelFileSync.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
 
           if mrOK = FormSync.ShowModal then SettingsChanged('ButtonFileSetupClick')
@@ -517,18 +513,19 @@ begin
     end;
 end;
 
-procedure TSett.RadioFileSyncChange(Sender: TObject);
+function TSett.getSyncType() : TSyncTransport;
 begin
-    if(RadioFileSync.checked) then
-    begin
-        SyncType := 'file';
-        RadioSyncNC.checked := false;
-    end else
-    begin
-        SyncType := 'nextcloud';
-        RadioSyncNC.checked := true;
-    end;
-    SettingsChanged('RadioFileSyncChange');
+    if(RadioSyncFile.checked and (LabelFileSync.Caption <> '') and (LabelFileSync.Caption <> rsSyncNotConfig)) then
+       Result := TSyncTransport.SyncFile
+    else if(RadioSyncNC.checked and (NCUrl <> '') and (NCUrl <> rsSyncNotConfig) and (NCSecret<>'')) then
+       Result := TSyncTransport.SyncNextCloud
+    else // NEED TO DO TOMDROID
+       Result := TSyncTransport.SyncNone;
+end;
+
+procedure TSett.RadioSyncChange(Sender: TObject);
+begin
+    SettingsChanged('RadioSyncChange');
 end;
 
 procedure TSett.TabBasicContextPopup(Sender: TObject; MousePos: TPoint;
@@ -866,6 +863,7 @@ procedure TSett.CheckConfigFile;
 var
     ConfigFile : TINIFile;
     ReqFontSize : ANSIString;
+    tmp : String;
 begin
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
@@ -917,42 +915,44 @@ begin
                 	'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 		end;
 
-            	SyncType := ConfigFile.readstring('SyncSettings', 'SyncType', '');          // this is new way to do it, file, nextcloud, etc
-            	if(SyncType = '') then begin
+            	tmp := ConfigFile.readstring('SyncSettings', 'SyncType', '');          // this is new way to do it, file, nextcloud, etc
+            	if(tmp = '') then begin
                 	// Legacy
-                	if(ConfigFile.readstring('SyncSettings', 'UseFileSync', 'true') = 'true')
-                	then SyncType := 'file'
-                	else SyncType := 'nextcloud'
-            	end;
-
-            	if(SyncType = 'file') then
+                	tmp := ConfigFile.readstring('SyncSettings', 'UseFileSync', '');
+                        if (tmp = 'true') then tmp := 'file';
+                end;
+                if(tmp = 'file') then
            	begin
-                	RadioFileSync.checked := true;
+                	RadioSyncFile.checked := true;
                 	RadioSyncNC.checked := false;
-            	end else
+                        RadioSyncNone.checked := false;
+            	end else if(tmp = 'nextcloud') then
    		begin
-                	RadioFileSync.checked := true;
+                	RadioSyncFile.checked := false;
+                	RadioSyncNC.checked := true;
+                        RadioSyncNone.checked := false;
+                end else begin
+                        RadioSyncFile.checked := false;
                 	RadioSyncNC.checked := false;
-                	SyncType := 'nextcloud';
+                        RadioSyncNone.checked := true;
 	    	end;
-            	
+
 		LabelFileSync.Caption := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
             	if LabelFileSync.Caption = '' then LabelFileSync.Caption := rsSyncNotConfig;
 
-            	{$ifdef DISABLE_NET_SYNC}
-		{$else}
-		NCUrl    := ConfigFile.readstring('SyncSettings', 'SyncNCUrl', rsSyncNCDefault);
+            	NCUrl    := ConfigFile.readstring('SyncSettings', 'SyncNCUrl', rsSyncNCDefault);
 		LabelNCSyncURL.Caption := NCUrl;
-            	if (length(LabelNCSyncURL.Caption)<10) then LabelNCSyncURL.Caption := rsSyncNotConfig;
+
+                if (length(LabelNCSyncURL.Caption)<10) then LabelNCSyncURL.Caption := rsSyncNotConfig;
                 NCKey    := ConfigFile.readstring('SyncSettings', 'SyncNCKey', MD5Print(MD5String(Format('%d',[Random(9999999-123400)+123400]))));
 		NCToken  := ConfigFile.readstring('SyncSettings', 'SyncNCToken', '');
 		NCSecret  := ConfigFile.readstring('SyncSettings', 'SyncNCSecret', '');
-		{$endif}
 
             	LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             	LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             	SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
 	    	LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
+
                 CheckBoxAutoSync.checked :=
                 	('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
                 EditTimerSync.Text := Configfile.ReadString('SyncSettings', 'AutosyncElapse', '10');
@@ -985,7 +985,7 @@ begin
 
               if not SettingsChanged('CheckDirectory') then // write a initial default file, shows user a message on error
                 HaveConfig := false;
-              RadioFileSync.checked := true;
+              RadioSyncFile.checked := true;
               MaskSettingsChanged := True;
               HaveConfig := True;
           end else begin
@@ -1000,15 +1000,9 @@ begin
     end;
 end;
 
-function TSett.fSyncOK() : boolean;
+function TSett.getSyncConfigured() : boolean;
 begin
-    Result :=
-        ((SyncType = 'file') and
-        ((LabelFileSync.Caption <> rsSyncNotConfig) and  (LabelFileSync.Caption <> '')))
-        or
-        ((SyncType = 'nextcloud') and
-        ((LabelNCSyncURL.caption <> rsSyncNotConfig) and (LabelFileSync.Caption <> '')));
-        // I dont think we can end up with those labels empty but just in case .....
+    Result := (getSyncType() <> TSyncTransport.SyncNone);
 end;
 
 function TSett.MyBoolStr(const InBool : boolean) : string;
@@ -1073,7 +1067,7 @@ begin
             else if RadioUseServer.Checked then
                  ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
 
-            if RadioFileSync.checked then
+            if RadioSyncFile.checked then
                 ConfigFile.writestring('SyncSettings', 'SyncType', 'file')
             else ConfigFile.writestring('SyncSettings', 'SyncType', 'nextcloud');
             if (LabelFileSync.Caption = '') or (LabelFileSync.Caption = rsSyncNotConfig) then
@@ -1340,7 +1334,7 @@ end;
 
 procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
-    if (((LabelFileSync.Caption = '') and RadioFileSync.checked) or (RadioSyncNC.Enabled and (NCSecret<>''))) then begin
+    if (getSyncType() = TSyncTransport.SyncNone) then begin
        CheckBoxAutoSync.Enabled:= true;
        EditTimerSync.Enabled:= false;
     end
@@ -1371,7 +1365,7 @@ end;
 
 procedure TSett.CheckAutoSync();
 begin
-    if CheckBoxAutoSync.Checked and (LabelFileSync.Caption <> '') then begin
+    if (CheckBoxAutoSync.Checked and (getSyncType() <> TSyncTransport.SyncNone)) then begin
         EditTimerSync.Enabled:= true;
         TimerAutoSync.Interval:= 15000;     // wait 15 seconds after indexing to allow settling down
         TimerAutoSync.Enabled := true;
@@ -1389,14 +1383,18 @@ var
 begin
     TimerAutoSync.enabled := False;
     elapse := StrToInt(EditTimerSync.Text);
-    if not SyncOK then exit;
+
+    if not getSyncConfigured() then exit;
+
     if CheckBoxAutoSync.checked  and (not FormSync.Busy) and (elapse>0) then begin
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
 
-        if (SyncType = 'file') then
+        if (getSyncType() = TSyncTransport.SyncFile) then
             FormSync.Transport:=TSyncTransport.SyncFile
-        else FormSync.Transport:=TSyncTransport.SyncNextCloud;
+        else if (getSyncType() = TSyncTransport.SyncNextCloud) then
+            FormSync.Transport:= TSyncTransport.SyncNextCloud
+        else FormSync.Transport:= TSyncTransport.SyncNone;
 
         FormSync.SetupSync := False;
 

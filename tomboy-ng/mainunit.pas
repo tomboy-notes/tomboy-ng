@@ -659,7 +659,7 @@ begin
 
      ImageSyncCross.Left := ImageSyncTick.Left;
 
-     ImageSyncTick.Visible :=  Sett.SyncOK;
+     ImageSyncTick.Visible :=  Sett.getSyncConfigured();
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 
      {((Sett.RadioFileSync.checked and (Sett.LabelFileSync.Caption <> rsSyncNotConfig))

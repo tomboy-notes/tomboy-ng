@@ -18,9 +18,13 @@ interface
 uses
     Classes, SysUtils, dateutils, LazLogger;
 
-type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
-		        SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
-                SyncAndroid);  // Simple one to one Android Device
+type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash pref in config file
+
+type TSyncTransport=(
+                SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
+                SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
+                SyncAndroid,  // Simple one to one Android Device
+                SyncNone); // Not syncing
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.

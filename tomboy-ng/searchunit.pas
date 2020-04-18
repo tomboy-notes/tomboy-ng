@@ -633,7 +633,7 @@ begin
                             Show;
                     end;
         mtAbout :    MainForm.ShowAbout();
-        mtSync :     if(Sett.syncok) then Sett.Synchronise()
+        mtSync :     if(Sett.getSyncConfigured()) then Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
         mtSettings : begin
                             MoveWindowHere(Sett.Caption);
