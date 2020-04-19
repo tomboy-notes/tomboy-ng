@@ -104,9 +104,9 @@ type
                 function DisplaySync(): string;
                     { Called when user wants to join a (possibly uninitialised) Repo,
                       will handle some problems with user's help. }
-                procedure JoinSync();
+                procedure DrySync();
                     { Called to do a sync assuming its all setup. Any problem is fatal }
-                function ManualSync(): boolean;
+                function DoSync(): boolean;
                     { Populates the string grid with details of notes to be actioned }
                 procedure ShowReport;
             	//procedure TestRepo();
@@ -204,7 +204,7 @@ begin
 end;
 
     // User is only allowed to press Cancel or Save when this is finished.
-procedure TFormSync.JoinSync();
+procedure TFormSync.DrySync();
 var
     SyncAvail : TSyncAvailable;
     // ASync : TSync;
@@ -244,6 +244,7 @@ begin
         Label1.Caption:=rsLookingatNotes;
         Label2.Caption := rsSaveAndSync;
         ButtonSave.Enabled := True;
+	Sett.setSyncTested(true);
     end  else
         Showmessage(rsSyncError + ' ' + ASync.ErrorString);
     ButtonCancel.Enabled := True;
@@ -253,9 +254,9 @@ procedure TFormSync.AfterShown(Sender : TObject);
 begin
     LocalTimer.Enabled := False;             // Dont want to hear from you again
     if not Sett.getSyncTested() then begin
-        JoinSync();
+        DrySync();
     end else
-        ManualSync();
+        DoSync();
 end;
 
 //RESOURCESTRING
@@ -288,11 +289,11 @@ begin
     busy := true;
     StringGridReport.Clear;
 
-    Result := ManualSync();
+    Result := DoSync();
 end;
 
         // User is only allowed to press Close when this is finished.
-function TFormSync.ManualSync() : boolean;
+function TFormSync.DoSync() : boolean;
 var
     SyncState : TSyncAvailable = SyncNotYet;
 begin

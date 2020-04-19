@@ -1131,8 +1131,6 @@ begin
       exit;
     end;
 
-    Sett.setSyncTested(true);
-
     if DebugMode then begin
         debugln('CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
                         + '   Local Entries=' + inttostr(LocalMetaData.Count));
@@ -1164,8 +1162,8 @@ begin
     FreeAndNil(NoteMetaData);
     NoteMetaData := TNoteInfoList.Create;
     case RepoAction of
-        RepoUse : Result := Transport.GetNewNotes(NoteMetaData, False);
-        RepoJoin : Result := Transport.GetNewNotes(NoteMetaData, ForceLCD);
+        RepoUse : Result := Transport.GetNotes(NoteMetaData, False);
+        RepoJoin : Result := Transport.GetNotes(NoteMetaData, ForceLCD);
         // Note, RepoNew does not apply here, if we are making a new one, we assume its empty.
     end;
     if DebugMode then begin

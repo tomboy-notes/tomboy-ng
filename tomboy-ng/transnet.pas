@@ -23,7 +23,7 @@ TNetSync = Class(TTomboyTrans)
     public
         function TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable; override;
         function SetTransport(): TSyncAvailable; override;
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
+        function GetNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
@@ -47,7 +47,7 @@ begin
         Result := SyncNoRemoteMan;
 end;
 
-function TNetSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TNetSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 begin
     { Will call external ruby script that returns a list of notes. Probably does
       something like -

@@ -526,6 +526,8 @@ end;
 
 procedure TSett.RadioSyncChange(Sender: TObject);
 begin
+    SyncFirstRun :=false;
+
     CheckBoxAutoSync.Enabled:= not RadioSyncNone.checked;
     SettingsChanged('RadioSyncChange');
 end;

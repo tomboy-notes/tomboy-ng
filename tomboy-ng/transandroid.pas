@@ -79,7 +79,7 @@ type
         //RemoteDir : string; // where the remote filesync repo lives.
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
         function SetTransport() : TSyncAvailable; override;
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
+        function GetNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
             { ToDo : transandroid version - deletes the indicated note from remote device
               returns False if the note was not found there to be deleted.  Other error
@@ -400,7 +400,7 @@ begin
     AProcess.Free;
 end;
 
-function TAndSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TAndSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 var
         StList: TStringList = nil;
         I : integer;
@@ -408,7 +408,7 @@ var
 begin
     // by nature of how we get remote note date, always get LCD
     if NoteMeta = Nil then begin
-        ErrorString := 'Passed an uncreated list to GetNewNotes()';
+        ErrorString := 'Passed an uncreated list to GetNotes()';
         exit(False);
     end;
     StList := TStringList.Create;

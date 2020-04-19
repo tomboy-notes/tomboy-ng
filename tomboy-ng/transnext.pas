@@ -26,7 +26,7 @@ TNextSync = Class(TTomboyTrans)
         destructor Destroy;
         function TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable; override;
         function SetTransport(): TSyncAvailable; override;
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
+        function GetNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
@@ -141,7 +141,7 @@ begin
         Result := SyncReady;
 end;
 
-function TNextSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TNextSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 var
   res : String;
   json, jnote : TJSONData;
@@ -149,7 +149,7 @@ var
   p : TStrings;
   ok : boolean;
 begin
-    WriteLn('Next-GetNewNotes');
+    WriteLn('Next-GetNotes');
 
     // HTTP REQUETS
     res := getParam('URLNOTES');
@@ -162,7 +162,7 @@ begin
     res := oauth.WebGet(res,p);
     FreeAndNil(p);
 
-    if (res = '') then begin ErrorString :=  'Next-GetNewNotes: Unable to et initial data'; exit(false); end;
+    if (res = '') then begin ErrorString :=  'Next-GetNotes: Unable to et initial data'; exit(false); end;
 
     ok := true;
     ErrorString := '';
@@ -181,7 +181,7 @@ begin
        end;
     end;
 
-    if (not ok) then begin ErrorString :=  'Next-GetNewNotes: '+ErrorString; exit(false); end;
+    if (not ok) then begin ErrorString :=  'Next-GetNotes: '+ErrorString; exit(false); end;
 
 
 
