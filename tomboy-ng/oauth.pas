@@ -39,6 +39,10 @@ implementation
 
 { TOAuth }
 
+{$if (FPC_FULLVERSION=30200)}
+uses opensslsockets;                 // only available in FPC320 and later
+{$endif}
+
 constructor TOAuth.Create();
 begin
   inherited;
@@ -100,7 +104,9 @@ procedure TOAuth.HttpClientGetSocketHandler(Sender: TObject;
 begin
   If UseSSL then begin
     AHandler:=TSSLSocketHandler.Create;
+    {$if (FPC_FULLVERSION<30200)}
     TSSLSocketHandler(AHandler).SSLType:=stTLSv1_2;
+    {$endif}
   end else
       AHandler := TSocketHandler.Create;
 end;
@@ -183,7 +189,9 @@ var
   i : integer;
 begin
   Client := TFPHttpClient.Create(nil);
+  {$if (FPC_FULLVERSION<30200)}
   Client.OnGetSocketHandler := @HttpClientGetSocketHandler;
+  {$endif}
   Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
   Client.AllowRedirect := true;
 
