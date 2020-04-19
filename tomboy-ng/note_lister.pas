@@ -62,9 +62,10 @@ unit Note_Lister;
     2020/02/19  XML Escape the notebook list sent back.
     2020/03/27  Better reporting on short lastchangedate string. But need an autofix.
     2020/04/01  Bug fix for code that auto fixes short last-change-date.
+    2020/04/19  Missing {$+H} caused  255 char default string, messed with RewriteBadChangeDate()
 }
 
-{$mode objfpc}
+{$mode objfpc}  {$H+}
 
 INTERFACE
 
@@ -633,7 +634,7 @@ end;
 procedure TNoteLister.RewriteBadChangeDate(const Dir, FileName, LCD : ANSIString);
 var
     InFile, OutFile: TextFile;
-    InString : string;
+    InString : String;
     {$ifdef WINDOWS}
     ErrorMsg : ANSIString;
     {$endif}
@@ -654,7 +655,7 @@ begin
                                 // + copy(LCD, 1, 10) + 'T' + copy(LCD, 12, 8) + '.1000000+00:00'
                                 + Sett.GetLocalTime()
                                 + '</last-change-date>')
-                else writeln(OutFile, InString);
+                else  writeln(OutFile, InString);
 		    end;
         finally
             CloseFile(OutFile);
