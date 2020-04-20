@@ -62,7 +62,7 @@ unit Note_Lister;
     2020/02/19  XML Escape the notebook list sent back.
     2020/03/27  Better reporting on short lastchangedate string. But need an autofix.
     2020/04/01  Bug fix for code that auto fixes short last-change-date.
-    2020/04/19  Missing {$+H} caused  255 char default string, messed with RewriteBadChangeDate()
+    2020/04/19  Missing $H+ caused  255 char default string, messed with RewriteBadChangeDate()
 }
 
 {$mode objfpc}  {$H+}
@@ -158,15 +158,18 @@ type
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
     //procedure DumpNoteBookList();
 
-            // Indexes and maybe searches one note. TermList maybe nil.
+                                // Indexes and maybe searches one note. TermList maybe nil.
    	procedure GetNoteDetails(const Dir, FileName: ANSIString; const TermList: TStringList; DontTestName: boolean=false);
 
 
-    		{ Returns True if indicated note contains term in its content }
+    		                    { Returns True if indicated note contains term in its content }
    	function NoteContains(const TermList: TStringList; FileName: ANSIString
         ): boolean;
-            { Removes any complete xml tags from passed string, only matches '<' to '>' }
+                                { Removes any complete xml tags from passed string, only matches '<' to '>' }
     function RemoveXml(const St: AnsiString): AnsiString;
+                                { Early ver of -ng wrote a bad date stamp, here we try to fix any we find. First
+                                  just try to add missing bits, if that does not work, we replace the LCD with
+                                  current, and known good date.}
 	procedure RewriteBadChangeDate(const Dir, FileName, LCD: ANSIString);
 
    public
@@ -490,10 +493,10 @@ end;
 function TNoteLister.NotebookTemplateID(const NotebookName: ANSIString): AnsiString;
 var
     Index : integer;
-    St : string;
+    //St : string;
 begin
     for Index := 0 to NotebookList.Count - 1 do begin
-        St := NotebookList.Items[Index]^.Name;
+        //St := NotebookList.Items[Index]^.Name;
         if NotebookName = NotebookList.Items[Index]^.Name then begin
             Result := NotebookList.Items[Index]^.Template;
             exit();
@@ -634,14 +637,13 @@ end;
 procedure TNoteLister.RewriteBadChangeDate(const Dir, FileName, LCD : ANSIString);
 var
     InFile, OutFile: TextFile;
-    InString : String;
+    InString, NewLCD : String;
     {$ifdef WINDOWS}
     ErrorMsg : ANSIString;
     {$endif}
 begin
     // Bad format looks like this 2020-03-06 21:25:18
     // But it Should be like this 2020-02-15T12:07:41.0000000+00:00
-
     AssignFile(InFile, Dir + FileName);
     AssignFile(OutFile, Dir + Filename + '-Dated');
     try
@@ -651,11 +653,16 @@ begin
             while not eof(InFile) do begin
                 readln(InFile, InString);
                 if (Pos('<last-change-date>', InString) > 0) then
-                    writeln(OutFile, '  <last-change-date>'
-                                // + copy(LCD, 1, 10) + 'T' + copy(LCD, 12, 8) + '.1000000+00:00'
+                    if length(LCD) = 19 then begin
+                        NewLCD := LCD + copy(Sett.GetLocalTime(), 20, 14);
+                        NewLCD[11] := 'T';
+                        writeln(OutFile, '  <last-change-date>' + NewLCD + '</last-change-date>');
+                    end else begin
+                        writeln(OutFile, '  <last-change-date>'
                                 + Sett.GetLocalTime()
-                                + '</last-change-date>')
-                else  writeln(OutFile, InString);
+                                + '</last-change-date>');
+					end
+				else  writeln(OutFile, InString);
 		    end;
         finally
             CloseFile(OutFile);
@@ -984,7 +991,7 @@ function TNoteLister.GetNotes(const Term: ANSIstring = ''; DontTestName : boolea
 var
     Info : TSearchRec;
     SL : TStringList;
-    P : pointer;
+    //P : pointer;
     //Tick, Tock : qword;
 begin
     SL := Nil;
