@@ -58,9 +58,9 @@ type
 
             {Request a list of all notes the server knows about. Returns with Last Change
             Date (LCD) if easily available and always if GetLCD is true. We don't use all
-            fields in TInfoList, the list must have been created.}
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean
-                                   ) : boolean; virtual; abstract;
+            fields in TInfoList, must get ID and RevNo. The list must have been created.
+            This is always a new list, unlike one derived from local manifest.}
+        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; virtual; abstract;
 
             {Request that all the notes mentioned in the simple list be downloaded and,
             if necessary, any existing note be moved to Backup.  Note that the list

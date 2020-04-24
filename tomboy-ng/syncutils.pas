@@ -10,13 +10,14 @@ unit syncutils;
     2018/06/05  Func. to support Tomboy's sync dir names, rev 431 is in ~/4/341
     2019/06/07  Don't check for old sync dir model, for 0 its the same !
     2019/07/19  Added ability to escape ' and " selectivly, attributes ONLY
+    2020/04/24  Make debugln use dependent on LCL, now can be FPC only unit
 }
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-    Classes, SysUtils, dateutils, LazLogger;
+    Classes, SysUtils, dateutils, {$ifdef LCL}LazLogger{$endif};
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
 		        SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
@@ -172,17 +173,18 @@ begin
     // that windows deletefileUTF8() is not settings its return value correctly ??
     if not DeleteFile(FullFileName) then begin
     	ErrorMsg := SysErrorMessage(GetLastOSError);
-    	Debugln('Failed using DeleteFileUTF8 - file name is :' + FullFilename);
-    	Debugln('OS Error Msg : ' + ErrorMsg);
+        {$ifdef LCL}Debugln{$else}writeln{$endif}('Failed using DeleteFileUTF8 - file name is :' + FullFilename);
+    	{$ifdef LCL}Debugln{$else}writeln{$endif}('OS Error Msg : ' + ErrorMsg);
+
     	if not FileExistsUTF8(FullFileName) then
             debugln('But, FileExists says its gone, proceed !')
         else begin
-    		debugln('I can confirm its still there .');
-    	    Debugln('Trying a little sleep...');
+    		{$ifdef LCL}Debugln{$else}writeln{$endif}('I can confirm its still there .');
+    	    {$ifdef LCL}Debugln{$else}writeln{$endif}('Trying a little sleep...');
     	    sleep(10);
     	    if not DeleteFileUTF8(FullFileName) then begin
                 if not FileExistsUTF8(FullFileName) then
-                    debugln('DeleteFileUTF8 says it failed but FileExists says its gone, proceed !')
+                    {$ifdef LCL}Debugln{$else}writeln{$endif}('DeleteFileUTF8 says it failed but FileExists says its gone, proceed !')
                 else exit(false);
             end;
         end;
@@ -408,7 +410,7 @@ begin
     // A date string should look like this -  2018-01-27T17:13:03.1230000+11:00 33 characters !
     // but on Android, its always             2018-01-27T17:13:03.1230000+00:00  ie GMT absolute
     if length(DateStr) <> 33 then begin
-        debugln('ERROR ConvertDateStrAbsolute received invalid date string - [' + DateStr + ']');
+        {$ifdef LCL}Debugln{$else}writeln{$endif}('ERROR ConvertDateStrAbsolute received invalid date string - [' + DateStr + ']');
         exit('');
     end;
     Temp := GetGMTFromStr(DateStr) {- GetLocalTimeOffset()};
@@ -424,7 +426,7 @@ begin
     if DateStr = '' then exit(0);                // Empty string
     // A date string should look like this -     2018-01-27T17:13:03.1230000+11:00 33 characters !
     if length(DateStr) <> 33 then begin
-        debugln('ERROR received invalid date string - [' + DateStr + ']');
+        {$ifdef LCL}Debugln{$else}writeln{$endif}('ERROR received invalid date string - [' + DateStr + ']');
         exit(0);
     end;
     try
@@ -432,10 +434,10 @@ begin
 	    								strtoint(copy(DateStr, 32, 2)),				// Minutes
 			        					0,				// Seconds
 	                					0,				// mSeconds
-	                					TimeZone)  then DebugLn('Fail on interval encode ');
+	                					TimeZone)  then {$ifdef LCL}Debugln{$else}writeln{$endif}('Fail on interval encode ');
     except on EConvertError do begin
-        	DebugLn('FAIL on converting time interval ' + DateStr);
-            DebugLn('Hour ', copy(DateStr, 29, 2), ' minutes ', copy(DateStr, 32, 2));
+        	{$ifdef LCL}Debugln{$else}writeln{$endif}('FAIL on converting time interval ' + DateStr);
+            {$ifdef LCL}Debugln{$else}writeln{$endif}('Hour ', copy(DateStr, 29, 2), ' minutes ', copy(DateStr, 32, 2));
     	end;
     end;
     try
@@ -446,9 +448,9 @@ begin
 	                strtoint(copy(DateStr, 15, 2)),				// Minutes
 	                strtoint(copy(DateStr, 18, 2)),				// Seconds
 	                strtoint(copy(DateStr, 21, 3)),				// mSeconds
-	                Result)  then DebugLn('Fail on date time encode ');
+	                Result)  then {$ifdef LCL}Debugln{$else}writeln{$endif}('Fail on date time encode ');
     except on EConvertError do begin
-        	DebugLn('FAIL on converting date time ' + DateStr);
+        	{$ifdef LCL}Debugln{$else}writeln{$endif}('FAIL on converting date time ' + DateStr);
             exit(0.0);
     	end;
     end;
@@ -457,9 +459,9 @@ begin
             Result := Result - TimeZone
 		else if DateStr[28] = '-' then
             Result := Result + TimeZone
-	    else debugLn('******* Bugger, we are not parsing DATE String ********');
+	    else {$ifdef LCL}Debugln{$else}writeln{$endif}('******* Bugger, we are not parsing DATE String ********');
     except on EConvertError do begin
-        	DebugLn('FAIL on calculating GMT ' + DateStr);
+        	{$ifdef LCL}Debugln{$else}writeln{$endif}('FAIL on calculating GMT ' + DateStr);
             exit(0.0);
     	end;
     end;
