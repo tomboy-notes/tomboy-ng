@@ -273,30 +273,6 @@ begin
 	end;
 end;
 
-(*
-function GetLocalTime: ANSIstring;
-var
-   ThisMoment : TDateTime;
-   Res : ANSIString;
-   Off : longint;
-begin
-   // Note this function exits in tomboy-ng's settings unit, here for testing
-    {$ifdef LINUX}
-    ReReadLocalTime();    // in case we are near daylight saving time changeover
-    {$endif}
-    ThisMoment:=Now;
-    Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
-                   + FormatDateTime('hh:mm:ss.zzz"0000"',ThisMoment);
-    Off := GetLocalTimeOffset();
-    if (Off div -60) >= 0 then Res := '+'
-        else Res := '-';
-        if abs(Off div -60) < 10 then Res := Res + '0';
-        Res := Res + inttostr(abs(Off div -60)) + ':';
-        if (Off mod 60) = 0 then
-                Res := res + '00'
-        else Res := Res + inttostr(abs(Off mod 60));
-    Result := Result + res;
-end;   *)
 
 { ----------------  TNoteInfoList ---------------- }
 
