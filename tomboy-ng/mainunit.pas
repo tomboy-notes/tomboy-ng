@@ -65,6 +65,7 @@ unit Mainunit;
     2020/03/30  Allow user to set display colours.
     2020/04/10  Make help files non modal
     2020/04/12  Force sensible sizes for help notes.
+    2020/04/28  Added randomize to create, need it for getlocaltime in settings.
 
     CommandLine Switches
 
@@ -443,14 +444,15 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    Randomize;                                      // used by sett.getlocaltime()
     HelpList := Nil;
-    if Application.HasOption('delay-start') then   // This to allow eg Enlightenment to decide its colours.
+    if Application.HasOption('delay-start') then    // This to allow eg Enlightenment to decide its colours.
         sleep(2000);
     AssignPopupToTray := True;
     {$ifdef LINUX}
     AssignPopupToTray := {$ifdef LCLQT5}False{$else}True{$endif} or (GetEnvironmentVariable('XDG_CURRENT_DESKTOP') <> 'KDE');
     {$endif}
-    if CommandLineError() then exit;    // We will close in OnShow
+    if CommandLineError() then exit;                // We will close in OnShow
     UseMainMenu := True;
     UseTrayMenu := true;
     AllowDismiss := true;
