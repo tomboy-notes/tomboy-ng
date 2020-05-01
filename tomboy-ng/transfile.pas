@@ -40,6 +40,8 @@ type
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
+        function IDLooksOK() : boolean; Override;
+        function getPrefix(): string; Override;
         // function SetRemoteRepo(ManFile : string = '') : boolean; override;
   end;
 
@@ -49,6 +51,11 @@ implementation
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
 
 { TFileSync }
+
+function TFileSync.getPrefix(): string;
+begin
+  Result := 'file';
+end;
 
 function TFileSync.SetTransport(): TSyncAvailable;
 begin
@@ -75,49 +82,53 @@ begin
       ErrorString := 'Remote directory NOT writable ' + ra;
       exit(SyncNoRemoteWrite);
     end;
-    if (getParam('ANewRepo') = '1')  then begin
+
+    ManExists := FileExists(ra + 'manifest.xml');
+    ZeroExists := DirectoryExists(ra + '0');
+
+    if (ManExists) and (not ZeroExists) then
+    begin
+        ErrorString := 'Apparently damaged repo, missing 0 dir at ' + ra;
+    	exit(SyncBadRemote);
+    end;
+    if (not ManExists) and (ZeroExists) then
+    begin
+        ErrorString := 'Apparently damaged repo, missing manifest at ' + ra;
+    	exit(SyncBadRemote);
+    end;
+
+    if (not ManExists) and (not ZeroExists) then
+    begin
         CreateGUID(GUID);
         ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
         RemoteServerRev := -1;
         exit(SyncReady);
     end;
-    ManExists := FileExists(ra + 'manifest.xml');
-    ZeroExists := DirectoryExists(ra + '0');
-    if (not ManExists) and (not ZeroExists) then begin
-        ErrorString := 'Remote dir does not contain a Repo ' + ra;
-    	exit(SyncNoRemoteRepo);
-	end;
-    if (ManExists) and (not ZeroExists) then begin
-        ErrorString := 'Apparently damaged repo, missing 0 dir at ' + ra;
-    	exit(SyncBadRemote);
-    end;
-	if (not ManExists) and (ZeroExists) then begin
-        ErrorString := 'Apparently damaged repo, missing manifest at ' + ra;
-    	exit(SyncBadRemote);
-    end;
-    // If to here, looks and feels like a repo, lets see what it can tell !
-    try
-	        try
-	            ReadXMLFile(Doc, ra + 'manifest.xml');
 
-	            ServerID := Doc.DocumentElement.GetAttribute('server-id');
-                { ToDo : must check for error on next line }
-                RemoteServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
-		    finally
-	            Doc.Free;
-		    end;
-	except
-      on E: EAccessViolation do begin
-          ErrorString := E.Message;
-          exit(SyncXMLERROR);	// probably means we did not find an expected attribute
-	  end;
-	  on E: EFOpenError do begin
-            ErrorString := E.Message;
-            exit(SyncNoRemoteMan);		// File is not present.
-	  end;
-	end;
-    if 36 <> length(ServerID) then begin
-        ErrorString := 'Invalid ServerID';
+    try
+       ReadXMLFile(Doc, ra + 'manifest.xml');
+    except on E:Exception do
+       begin
+           ErrorString := E.message;
+           exit(SyncXMLERROR);
+       end;
+    end;
+
+    try
+       ServerID := Doc.DocumentElement.GetAttribute('server-id');
+       RemoteServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
+    except on E:Exception do
+       begin
+            ErrorString := E.message;
+            Doc.Free;
+            exit(SyncXMLERROR);
+       end;
+    end;
+    Doc.Free;
+
+    if not IDLooksOK()
+    then begin
+        ErrorString := 'Invalid ServerID '+ServerID;
         exit(SyncXMLError);
     end;
 
@@ -301,6 +312,13 @@ begin
     if FileExists(Result) then exit;
     Result := getParam('RemoteAddress') + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
     if not FileExists(Result) then debugln('transfile -> Download() Unable to locate file ' + inttostr(RevNo) + ' ' + ID);
+end;
+
+function TFileSync.IDLooksOK() : boolean;
+begin
+    if length(ServerID) <> 36 then exit(false);
+    if pos('-', ServerID) <> 9 then exit(false);
+    result := True;
 end;
 
 end.

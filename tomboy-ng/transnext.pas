@@ -32,6 +32,8 @@ TNextSync = Class(TTomboyTrans)
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
+        function IDLooksOK() : boolean; Override;
+        function getPrefix(): string; Override;
         //function SetRemoteRepo(ManFile : string = '') : boolean; override;
  end;
 
@@ -52,6 +54,10 @@ begin
     inherited Destroy;
 end;
 
+function TNextSync.getPrefix() : string;
+begin
+  Result := 'nc';
+end;
 
 function TNextSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
 var
@@ -132,6 +138,12 @@ begin
     RemoteServerRev := StrToInt(getParam('REVISION'));
 
     ErrorString :=  '';
+
+    if not IDLooksOK() then begin
+        ErrorString := 'Invalid ServerID '+ServerID;
+        exit(SyncMismatch);
+    end;
+
     Result := SyncReady;
 end;
 
@@ -223,6 +235,19 @@ end;
 begin
 
 end; }
+
+function TNextSync.IDLooksOK() : boolean;
+var
+  n,m : Integer;
+begin
+    n := pos('-', ServerID);
+    m := pos('.', ServerID);
+    writeln(Format('%s N=%d M=%d', [ServerID , n, m]));
+
+    if((m-n) <> 15) then exit(false);
+    if((length(ServerID)-m) <> 8) then exit(false);
+    result := True;
+end;
 
 end.
 

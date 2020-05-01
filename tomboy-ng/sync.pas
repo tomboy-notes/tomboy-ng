@@ -167,9 +167,10 @@ type                       { ----------------- T S Y N C --------------------- }
             action when the first clash happens }
         ProceedAction : TSyncAction;
 
-	         // Where we find Tomboy style notes
-	    FNotesDir : string;
-	         // Where we find config and local manifest files
+	          // Where we find Tomboy style notes
+	FNotesDir : string;
+
+                  // Where we find config and local manifest files
         FConfigDir : string;
 
             { Scans Notes dir looking for each note in NoteMetaData. Any it finds
@@ -180,12 +181,7 @@ type                       { ----------------- T S Y N C --------------------- }
             { Returns true if the passed dates are pretty close, see code for just how close }
       function DatesClose(const DS1, DS2: TDateTime): boolean;
 
-          { Only used with DeleteFromLocalManifest(), iff it finds a matching entry in
-            indicated manifest main sesction moves it to the deleted Notes section }
-      function DeleteFromThisManifest(const FullFileName, ID: string): boolean;
-          { Only used with DeleteFromLocalManifest(), writes LocalMetaData back to disk.
-            Honours TestRun. }
-      function ReWriteLocalManifest(const FullFileName : string) : boolean;
+      function ReWriteLocalManifest() : boolean;
 
             { Backs up and then removes any local local notes listed NoteMetaData as SyDeleteLocal }
       function DoDeleteLocal(): boolean;
@@ -193,7 +189,6 @@ type                       { ----------------- T S Y N C --------------------- }
             { Returns the title of given note, prefers the local version but if
               it does not exist, then "downloads" remote one }
       function GetNoteTitle(const ID : ANSIString; const Rev : integer): ANSIString;
-      // function IDLooksOK(const ID: string): boolean;
 
             { Looks at a clash and determines if its an up or down depending on
               possible higher order TSyncActions such as newer, older }
@@ -245,11 +240,13 @@ type                       { ----------------- T S Y N C --------------------- }
         // Call this when we are resolving a sync clash. Note : not possible results make sense !
       function ProceedWith(const ID, FullRemoteFileName, NTitle: ANSIString): TSyncAction;
 
+      function getManifestName() : String;
+
             { Reads through Local Manifest file, filling out LocalMetaData,
                 LastSyncDateSt and CurrRev. If local manifest does not exist, still
                 returns True but CurrRev=0 and LocalLastSyncDateSt=''
                 If FullFileName parameter is missing, uses default version.}
-      function ReadLocalManifest(const FullFileName : string = ''): boolean;
+      function ReadLocalManifest() : boolean;
 
             { Writes a local mainfest file. Assumes NoteMetaData contains valid data about
               new Rev numbers and for uploads, last-change-date. If WriteOK is false then
@@ -266,7 +263,7 @@ type                       { ----------------- T S Y N C --------------------- }
 
    public
             // Indicates what we want this unit to do. Set it and call TestConnection() repeatly...
-       RepoAction : TRepoAction;
+      // RepoAction : TRepoAction;
 
             { Records local manifests view of serverID, after succefull test, it
               should be the remote manifest's one too. In Android mode, we preload
@@ -299,7 +296,7 @@ type                       { ----------------- T S Y N C --------------------- }
         DebugMode : boolean;
 
                 // Determine what we'd do and write ref ver of manifests but don't move files around.
-        TestRun : boolean;
+        //TestRun : boolean;
                 // A reason why something failed.
         ErrorString : string;
                 // Data about notes in remote manifest that may need be copied down
@@ -336,13 +333,13 @@ type                       { ----------------- T S Y N C --------------------- }
               RepoAction=RepoUse and compares ts serverID with one found by
               Trans.testConnection. SyncReady means we can proceed to StartSync, else must
               do something first, setup new connect, consult user etc.}
-        function TestConnection() : TSyncAvailable;
+        function TestConnection(isTest : boolean) : TSyncAvailable;
 
             { Do actual sync, but if TestRun=True just report on what you'd do.
               Assumes a Transport has been selected and remote address is set.
               We must already be a member of this sync, ie, its remote ID is recorded
               in our local manifest. }
-      function StartSync() : boolean;
+      function StartSync(isTest : boolean) : boolean;
 
       constructor Create();
 
@@ -354,11 +351,12 @@ implementation
 
 { TSync }
 
-uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, TransAndroid, TransNext, LazLogger, LazFileUtils,
+uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransAndroid, TransNext, LazLogger, LazFileUtils,
     FileUtil, Settings, Tomdroid;
 
 var
     Transport : TTomboyTrans;
+    SyncOnce : boolean;
 
 constructor TSync.Create();
 begin
@@ -375,72 +373,47 @@ begin
     inherited Destroy();
 end;
 
-function TSync.DeleteFromLocalManifest(ID: ANSIString) : boolean;
-var
-    FullFileName : string;
-    Info : TSearchRec;
+function TSync.getManifestName() : String;
 begin
-    FullFileName := ConfigDir + 'manifest.xml';
-    if FileExists(FullFileName) then
-        if not DeleteFromThisManifest(FullFileName, ID) then begin
-           debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
-            // Note - not finding the (first) manifest file is not an error, just unsynced.
-            exit(False);
-        end
-    else if DebugMode then
-       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not synced yet ?');
-    if DirectoryExists(ConfigDir + 'android') then begin
-        if FindFirst(ConfigDir + 'android' + pathdelim + '*.xml', faAnyFile, Info)=0 then
-           try
-               repeat
-                   // Info.Name is just the file name, no path prepended.
-                   // debugln('DeleteFromLocalManifest-------- Found xml file ' + Info.Name);
-                   DeleteFromThisManifest(ConfigDir + 'android' + pathdelim + Info.Name, ID);
-               until FindNext(Info) <> 0;
-           finally
-               FindClose(Info);
-           end;
-    end else if DebugMode then
-       debugln('DeleteFromLocalManifest - cannot find ' + ConfigDir + 'android');
-    exit(True);
+    Result := Format('%s%s-%s-manifest.xml',[ConfigDir, Transport.getPrefix() , Transport.ServerID ]);
 end;
 
-//OK, this needs to call its code for each valid android manifest file.
 
-function TSync.DeleteFromThisManifest(const FullFileName, ID : string): boolean;
+function TSync.DeleteFromLocalManifest(ID : string): boolean;
 var
     i : integer;
     Found : boolean = false;
 begin
     // if debugmode then debugln('DeleteFromThisManifest, searching for ' + ID);
-	if not ReadLocalManifest(FullFileName) then exit(false); 	// read a local manifest
+    if not ReadLocalManifest() then exit(false); 	// read a local manifest
     if debugmode then debugln('DeleteFromThisManifest lines = ' + inttostr(LocalMetaData.count));
     if LocalMetaData.count = 0 then exit(True);
     //if debugmode then debugln('DeleteFromThisManifest searcing for ' + ID);
-    for I := 0 to LocalMetaData.count -1 do  begin
+    for I := 0 to LocalMetaData.count -1 do
+    begin
         // debugln('DeleteFrom.. Testing ' +  LocalMetaData.Items[i]^.ID);
-    	if LocalMetaData.Items[i]^.ID  = ID then begin
-        	LocalMetaData.Items[i]^.Deleted:= True;
-            LocalMetaData.Items[i]^.Title :=
-            		GetNoteTitle(ID, -1);       // -1 says don't try and download if its not local
+    	if LocalMetaData.Items[i]^.ID  = ID then
+        begin
+            LocalMetaData.Items[i]^.Deleted :=  True;
+            LocalMetaData.Items[i]^.Title   :=  GetNoteTitle(ID, -1);       // -1 says don't try and download if its not local
             Found := True;
-            if debugmode then debugln('DeleteFromThisManifest deleted ' + ID + ' from ' + FullFileName);
+            //if debugmode then debugln('DeleteFromThisManifest deleted ' + ID + ' from ' + FullFileName);
             break;
         end;
-	end;
-    if Found then ReWriteLocalManifest(FullFileName);
+    end;
+    if Found then ReWriteLocalManifest();
     Result := True;
 end;
 
-function TSync.ReWriteLocalManifest(const FullFileName : string) : boolean;
+function TSync.ReWriteLocalManifest() : boolean;
 var
     OutFile: TextFile;
     Index : integer;
 begin
-    AssignFile(OutFile, FullFileName + '-local');
+    AssignFile(OutFile, getManifestName());
     try
-	    try
-		    Rewrite(OutFile);
+       try
+	    Rewrite(OutFile);
             writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
             writeln(Outfile, '<manifest xmlns="http://beatniksoftware.com/tomboy">');
             writeln(OutFile, '  <last-sync-date>' + LocalMetaData.LastSyncDateSt + '</last-sync-date>');
@@ -448,7 +421,7 @@ begin
             writeln(OutFile, '"</last-sync-rev>');
             writeln(OutFile, '  <server-id>"' + LocalMetaData.ServerID + '"</server-id>');
             writeln(OutFile, '  <note-revisions>');
-		    for Index := 0 to LocalMetaData.Count - 1 do begin
+	    for Index := 0 to LocalMetaData.Count - 1 do begin
                 if not LocalMetaData[Index]^.Deleted then begin
                     write(Outfile, '    <note guid="' + LocalMetaData[Index]^.ID + '" latest-revision="');
                     write(OutFile, inttostr(LocalMetaData[Index]^.Rev));
@@ -476,8 +449,7 @@ begin
     // if to here, copy the file over top of existing local manifest
     { if debugmode then
        debugln('Have written local manifest to ' + FullFileName + '-local'); }
-	if not TestRun then
-       copyfile(FullFileName + '-local', FullFileName);
+    //copyfile(FullFileName + '-local', FullFileName);
     result := True;
 end;
 
@@ -606,7 +578,7 @@ begin
                    + NoteMetaData.ActionName(NoteMetaData[Index]^.Action));
             result := False;
         end;
-        if IDLooksOK(NoteMetaData[Index]^.ID) then begin
+        if NoteIDLooksOK(NoteMetaData[Index]^.ID) then begin
             if NoteMetaData[Index]^.Action in [SyNothing, SyUploadNew, SyUpLoadEdit, SyDownLoad,
                     SyDeleteLocal, SyDeleteRemote, SyClash] then
                 NoteMetaData[Index]^.Title := GetNoteTitle(NoteMetaData[Index]^.ID, NoteMetaData[Index]^.Rev)
@@ -905,17 +877,18 @@ var
 begin
     if DebugMode then
        Debugln('DoDeletes Count = ' + inttostr(NoteMetaData.Count));
-    for Index := 0 to NoteMetaData.Count - 1 do begin
+
+    for Index := 0 to NoteMetaData.Count - 1 do
+    begin
         if NoteMetaData[Index]^.Action = SyDeleteRemote then begin
             if DebugMode then
                Debugln('Delete remote note : ' + NoteMetaData.Items[Index]^.ID);
-            if not TestRun then begin
-               if not Transport.DeleteNote(NoteMetaData.Items[Index]^.ID,
+
+            if not Transport.DeleteNote(NoteMetaData.Items[Index]^.ID,
                             NoteMetaData.Items[Index]^.Rev) then Exit(False);
-            end;
         end;
-	end;
-	Result := true;
+    end;
+    Result := true;
 end;
 
 function TSync.DoUploads() : boolean;
@@ -933,15 +906,15 @@ begin
                NoteMetaData.Items[Index]^.Rev := Transport.RemoteServerRev + 1;
 			end;
 		end;
-        if not TestRun then
-           if not Transport.UploadNotes(Uploads) then begin
+        if not Transport.UploadNotes(Uploads) then
+        begin
               ErrorString := Transport.ErrorString;
               exit(False);
-		   end;
-	finally
-        Uploads.Free;
 	end;
-	Result := true;
+    finally
+        Uploads.Free;
+    end;
+    Result := true;
 end;
 
 
@@ -957,33 +930,35 @@ var
     Index : integer;
     IncRev : integer = 0;
 begin
-    if not IDLooksOK(Transport.ServerID) then exit(false);        // already checked but ....
+    if not Transport.IDLooksOK() then exit(false);        // already checked but ....
     result := true;
     if WriteOK and NewRev then IncRev := 1 else IncRev := 0;
     AssignFile(OutFile, ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local');  // ManPrefix is '' for most Modes.
     try
-	        try
-		        Rewrite(OutFile);
-                writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
-                writeln(Outfile, '<manifest xmlns="http://beatniksoftware.com/tomboy">');
-                writeln(OutFile, '  <last-sync-date>' + Sett.GetLocalTime + '</last-sync-date>');
-                write(OutFile, '  <last-sync-rev>"' + inttostr(Transport.RemoteServerRev + IncRev));
-                writeln(OutFile, '"</last-sync-rev>');
-                writeln(OutFile, '  <server-id>"' + Transport.ServerID + '"</server-id>');
-                writeln(OutFile, '  <note-revisions>');
-		        for Index := 0 to NoteMetaData.Count - 1 do begin
-                    if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
-                        if (not WriteOK) and (NoteMetaData[Index]^.Action = SyUpLoadNew) then continue;
-                        write(Outfile, '    <note guid="' + NoteMetaData[Index]^.ID + '" latest-revision="');
-                        write(OutFile, inttostr(NoteMetaData[Index]^.Rev));
-                        writeln(Outfile, '" />');
-					end;
-				end;
-                    writeln(OutFile, '  </note-revisions>'#10'  <note-deletions>');
-                    writeln(OutFile, '  </note-deletions>'#10'</manifest>');
-		    finally
-	            CloseFile(OutFile);
-		    end;
+       try
+          Rewrite(OutFile);
+          writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
+          writeln(Outfile, '<manifest xmlns="http://beatniksoftware.com/tomboy">');
+          writeln(OutFile, '  <last-sync-date>' + Sett.GetLocalTime + '</last-sync-date>');
+          write(OutFile, '  <last-sync-rev>"' + inttostr(Transport.RemoteServerRev + IncRev));
+          writeln(OutFile, '"</last-sync-rev>');
+          writeln(OutFile, '  <server-id>"' + Transport.ServerID + '"</server-id>');
+          writeln(OutFile, '  <note-revisions>');
+	  for Index := 0 to NoteMetaData.Count - 1 do
+          begin
+               if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then
+               begin
+                    if (not WriteOK) and (NoteMetaData[Index]^.Action = SyUpLoadNew) then continue;
+                    write(Outfile, '    <note guid="' + NoteMetaData[Index]^.ID + '" latest-revision="');
+                    write(OutFile, inttostr(NoteMetaData[Index]^.Rev));
+                    writeln(Outfile, '" />');
+	       end;
+	  end;
+          writeln(OutFile, '  </note-revisions>'#10'  <note-deletions>');
+          writeln(OutFile, '  </note-deletions>'#10'</manifest>');
+       finally
+              CloseFile(OutFile);
+       end;
     except
       on E: EInOutError do begin
           Debugln('File handling error occurred. Details: ' + E.Message);
@@ -991,8 +966,7 @@ begin
 	  end;
 	end;
     // if to here, copy the file over top of existing local manifest
-	if not TestRun then
-       copyfile(ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local', ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
+    copyfile(ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local', ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
     if debugmode then
        debugln('Have written local manifest to ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local');
 end;
@@ -1004,7 +978,6 @@ var
     Index : integer;
     NewRevString : string;
 begin
-    if not IDLooksOK(Transport.ServerID) then exit(false);        // already checked but ....
     result := true;
     NewRev := False;
     for Index := 0 to NoteMetaData.Count - 1 do begin
@@ -1045,8 +1018,7 @@ begin
         CloseFile(OutFile);
 	end;
         // do a safe version of this -
-    if not TestRun then
-           result := Transport.DoRemoteManifest(ConfigDir + 'manifest.xml-remote');
+    result := Transport.DoRemoteManifest(ConfigDir + 'manifest.xml-remote');
     if debugmode then
        debugln('Have written remote manifest to ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-remote');
 end;
@@ -1067,7 +1039,7 @@ begin
 	        Transport.setParam('RemoteAddress',AppendPathDelim(Sett.LabelFileSync.Caption));
                 end;
 	SyncNextCloud : begin
-	        Transport := TNextSync.Create;
+                Transport := TNextSync.Create;
 	        Transport.setParam('URL', Sett.NCUrl);
                 Transport.setParam('KEY', Sett.NCKey);
                 Transport.setParam('TOKEN', Sett.NCToken);
@@ -1094,66 +1066,43 @@ begin
 
 end;
 
-function TSync.TestConnection(): TSyncAvailable;
-{var
-    XServerID : string;}
+function TSync.TestConnection(isTest : boolean): TSyncAvailable;
+var
+    res : TSyncAvailable;
 begin
-    if RepoAction = RepoNew then begin
-        LocalLastSyncDate := 0;
-        LocalLastSyncDateSt := '';
-        Transport.RemoteServerRev:=-1;
-        Transport.setParam('ANewRepo','1');
-        // means we should prepare for a new repo (but not make it yet), dont check for files.
-    end;
-    if RepoAction = RepoUse then begin
-	if not ReadLocalManifest() then exit(SyncXMLError);    // Error in local mainfest, OK or no manifest=true
-        if LocalLastSyncDateSt = '' then begin
-            ErrorString := 'Failed to read local manifest, is this an existing sync ?';
-            debugln('ReadLocalManifest set an empty LocalLastSyncDateSt, probably local manifest does not exist.');
-            exit(SyncNoLocal);
-        end;
-	LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
-	if LocalLastSyncDate < 1.0 then begin
-	    ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';
-            debugln('Invalid last sync date in ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
-	    exit(SyncXMLError);
-        end;
-    end;
-    if RepoAction = RepoJoin then begin
-        LocalLastSyncDate := 0;
-        LocalLastSyncDateSt := '';
-        if TransportMode = SyncAndroid then
-           Transport.setParam('ANewRepo','1'); // Ugly, but while its technically a 'new' it looks a bit like Join.....
-    end;
-    Result := Transport.TestTransport(not TestRun);
-    if Result <> SyncReady then begin
-      ErrorString := Transport.ErrorString;
-      exit;
+    LocalLastSyncDate := 0;
+    LocalLastSyncDateSt := '';
+    Transport.RemoteServerRev:=-1;
+
+    res := Transport.TestTransport(not isTest);
+    if res <> SyncReady
+    then begin
+         ErrorString := Transport.ErrorString;
+         exit;
     end;
 
-    if DebugMode then begin
-        debugln('CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
-                        + '   Local Entries=' + inttostr(LocalMetaData.Count));
-        debugln('Config=' + ConfigDir + ' NotesDir=' + NotesDir);
+    SyncOnce := false;
+
+    if not ReadLocalManifest() then exit;
+
+    if LocalLastSyncDateSt = '' then
+    begin
+         ErrorString := 'Failed to read local manifest, is this an existing sync ?';
+         debugln('ReadLocalManifest set an empty LocalLastSyncDateSt, probably local manifest does not exist.');
+         exit(SyncNoLocal);
     end;
-    if RepoAction = RepoUse then
-	    if Transport.ServerID <> LocalServerID then begin
-	        ErrorString := 'ServerID Mismatch';
-            if DebugMode then
-                debugln('ERROR Server ID Mismatch Remote ' + Transport.ServerID + ' and local ' + LocalServerID);
-	        exit(SyncMismatch);
-		end;
-    if RepoAction = RepoJoin then begin
-        LocalServerID := Transport.ServerID;
-        Transport.setParam('ManPrefix', copy(LocalServerID, 1, 8));
+
+    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
+    if LocalLastSyncDate < 1.0 then
+    begin
+         ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';
+         debugln('Invalid last sync date in ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
+	 exit(SyncXMLError);
     end;
-    if Result = SyncReady then
-        if not IDLooksOK(Transport.ServerID) then begin
-            ErrorString := 'An invalid serverID detected [' + Transport.ServerID + ']';
-            debugln('ERROR - completed TestConnection but ServerID is invalid ['
-                    + Transport.ServerID + ']');
-            Result :=  SyncBadError;
-        end;
+
+    SyncOnce := true;
+
+    Result := res;
 end;
 
 function TSync.LoadRepoData(ForceLCD : boolean): boolean;
@@ -1161,11 +1110,10 @@ begin
     Result := True;
     FreeAndNil(NoteMetaData);
     NoteMetaData := TNoteInfoList.Create;
-    case RepoAction of
-        RepoUse : Result := Transport.GetNotes(NoteMetaData, False);
-        RepoJoin : Result := Transport.GetNotes(NoteMetaData, ForceLCD);
-        // Note, RepoNew does not apply here, if we are making a new one, we assume its empty.
-    end;
+
+    if(SyncOnce) then Result := Transport.GetNotes(NoteMetaData, False)
+    else Result := Transport.GetNotes(NoteMetaData, ForceLCD);
+
     if DebugMode then begin
         debugln('LoadRepoData found ' + inttostr(NoteMetaData.Count) + ' remote notes');
         // DisplayNoteInfo(NoteMetaData, 'NoteMetaData just after Loading');
@@ -1175,35 +1123,33 @@ end;
 
                         { ---------- The Lets Do it Function ------------- }
 
-function TSync.StartSync(): boolean;
+function TSync.StartSync(isTest : boolean): boolean;
 var
     NewRev : boolean;
     // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
     Result := True;
-    // TestRun := True;
-    if not LoadRepoData(False) then exit(False);     // don't get LCD until we know we need it.
-    case RepoAction of
-        RepoUse : begin
-                    if TransportMode = SyncAndroid then CheckUsingLCD(False) else CheckUsingRev();
-                    CheckRemoteDeletes();
-                    CheckLocalDeletes();
-                end;
-        RepoJoin : if not CheckUsingLCD(True) then begin    // at least 1 possible clash
-                 LoadRepoData(True);                        // start again, getting LCD this time
-                 CheckUsingLCD(False);
-            end;
-        RepoNew : begin
-                freeandNil(NoteMetaData);
-                NoteMetaData := TNoteInfoList.Create;
-            end
+
+    if not LoadRepoData(False) then exit(False);     // dont get LCD until we know we need it.
+
+    if(SyncOnce)
+    then begin
+         if TransportMode = SyncAndroid then CheckUsingLCD(False) else CheckUsingRev();
+         CheckRemoteDeletes();
+         CheckLocalDeletes();
+    end else if not CheckUsingLCD(True) then  // at least 1 possible clash
+    begin
+         LoadRepoData(True);                        // start again, getting LCD this time
+         CheckUsingLCD(False);
     end;
+
     CheckNewNotes();
     CheckMetaData();
-    if not TestRun then
-       ProcessClashes();
-    // if DebugMode then DisplayNoteInfo(NoteMetaData, 'NoteMetaData');
-    if TestRun then exit();
+
+    if isTest then exit();
+
+    ProcessClashes();
+
     if DebugMode then
         DisplayNoteInfo(NoteMetaData, 'Note Meta Data');
     // ====================== Set an exit here to do no-write tests
@@ -1217,7 +1163,7 @@ begin
     Result := True;
 end;
 
-function TSync.ReadLocalManifest(const FullFileName : string = '') : boolean;
+function TSync.ReadLocalManifest() : boolean;
 var
     Doc : TXMLDocument;
     NodeList : TDOMNodeList;
@@ -1230,41 +1176,54 @@ begin
     ErrorString := '';
     freeandNil(LocalMetaData);
     LocalMetaData := TNoteInfoList.Create;
-    if FullFileName = '' then begin         // get a FFN when using this unit to edit local man after a file delete
-        ManifestFile := ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml';
-        if not FileExists(ManifestFile) then begin
-            LocalLastSyncDateSt := '';
-            CurrRev := 0;
-            exit(True);                 // Its not an error, just never synced before
-        end;
-    end else ManifestFile := FullFileName;      // existance is checked before calling.
+
+    ManifestFile := getManifestName();
+
+    writeln('MANIFFEST='+ManifestFile);
+
+    if not FileExists(ManifestFile)
+    then begin
+         LocalLastSyncDateSt := '';
+         CurrRev := 0;
+         exit(false);                 // Its not an error, just never synced before
+    end;
+
     if DebugMode then debugln('Reading local mainfest ' + ManifestFile);
+
     try
-    	try
-    		ReadXMLFile(Doc, ManifestFile);
-            Node := Doc.DocumentElement.FindNode('last-sync-date');
-            if assigned(Node) then begin
-                LocalLastSyncDateSt := Node.FirstChild.NodeValue;
-                LocalMetaData.LastSyncDateSt := Node.FirstChild.NodeValue;
-            end else begin
-                LocalLastSyncDateSt := '';
-                LocalMetaData.LastSyncDateSt := '';
-                debugln('ERROR, cannot find LSD in ' + ManifestFile);
-            end;
-            Node := Doc.DocumentElement.FindNode('server-id');      // ToDo, check its assigned !
-            ServerID := Node.FirstChild.NodeValue;
-            if ServerID[1] = '"' then
-               ServerID := copy(ServerID, 2, 36);
-            if not IDLooksOK(ServerID) then begin
+       try
+          ReadXMLFile(Doc, ManifestFile);
+          Node := Doc.DocumentElement.FindNode('last-sync-date');
+          if assigned(Node)
+          then begin
+              LocalLastSyncDateSt := Node.FirstChild.NodeValue;
+              LocalMetaData.LastSyncDateSt := Node.FirstChild.NodeValue;
+          end else begin
+              LocalLastSyncDateSt := '';
+              LocalMetaData.LastSyncDateSt := '';
+              debugln('ERROR, cannot find LSD in ' + ManifestFile);
+          end;
+
+          Node := Doc.DocumentElement.FindNode('server-id');      // ToDo, check its assigned !
+          ServerID := Node.FirstChild.NodeValue;
+
+          if ServerID[1] = '"' then ServerID := copy(ServerID, 2, 36);
+          if not Transport.IDLooksOK() then begin
                 ErrorString := 'Local manifest contains an invalid serverID [' + ServerID +']';
                 debugln('ERROR - local manifest contains an invalid serverID [' + ServerID +']');
                 debugln('Maybe you should delete it and rejoin the Repo. ?');
                 exit(false);
-            end;
-            LocalServerID := ServerID;
-            LocalMetaData.ServerID:= ServerID;
-            Node := Doc.DocumentElement.FindNode('last-sync-rev');
-            try
+          end;
+          if ServerID <> Transport.ServerID then begin
+                ErrorString := 'Local manifest contains an invalid serverID [' + ServerID +']';
+                exit(false);
+          end;
+
+          LocalServerID := ServerID;
+          LocalMetaData.ServerID:= ServerID;
+          Node := Doc.DocumentElement.FindNode('last-sync-rev');
+
+          try
                 RevStr := Node.FirstChild.NodeValue;
                 if RevStr[1] = '"' then
                    Revstr := copy(revStr, 2, length(RevStr) - 2);

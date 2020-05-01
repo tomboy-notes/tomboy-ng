@@ -2602,7 +2602,7 @@ begin
         NoteFileName := Sett.NoteDirectory + GetAFilename();
     if Sett.NoteDirectory = CleanAndExpandDirectory(ExtractFilePath(NoteFileName)) then begin   // UTF8 OK
         //debugln('Working in Notes dir ' + Sett.NoteDirectory + ' = ' + CleanAndExpandDirectory(ExtractFilePath(NoteFileName)));
-        if not IDLooksOK(ExtractFileNameOnly(NoteFileName)) then
+        if not NoteIDLooksOK(ExtractFileNameOnly(NoteFileName)) then
             if mrYes = QuestionDlg('Invalid GUID', 'Give this note a new GUID Filename (recommended) ?', mtConfirmation, [mrYes, mrNo], 0) then begin
                 OldFileName := NoteFileName;
                 NoteFileName := Sett.NoteDirectory + GetAFilename();

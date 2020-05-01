@@ -223,28 +223,21 @@ begin
     ASync.DebugMode := Application.HasOption('s', 'debug-sync');
     ASync.NotesDir:= NoteDirectory;
     ASync.ConfigDir := LocalConfig;
-    ASync.RepoAction := RepoJoin;
     Async.SetTransport(Sett.getSyncType());
-    SyncAvail := ASync.TestConnection();
-    if SyncAvail = SyncNoRemoteRepo then
-        if mrYes = QuestionDlg('Advice', rsCreateNewRepo, mtConfirmation, [mrYes, mrNo], 0) then begin
-            ASync.RepoAction:=RepoNew;
-            SyncAvail := ASync.TestConnection();
-        end;
+    SyncAvail := ASync.TestConnection(true);
     if SyncAvail <> SyncReady then begin
         showmessage(rsUnableToProceed + ' ' + ASync.ErrorString);
         ModalResult := mrCancel;
+        exit;
     end;
     Label1.Caption:=rsLookingatNotes;
     Application.ProcessMessages;
-    ASync.TestRun := True;
-    if ASync.StartSync() then begin
+    if ASync.StartSync(true) then begin
         DisplaySync();
         ShowReport();
         Label1.Caption:=rsLookingatNotes;
         Label2.Caption := rsSaveAndSync;
         ButtonSave.Enabled := True;
-	Sett.setSyncTested(true);
     end  else
         Showmessage(rsSyncError + ' ' + ASync.ErrorString);
     ButtonCancel.Enabled := True;
@@ -311,9 +304,9 @@ begin
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
 	ASync.NotesDir:= NoteDirectory;
 	ASync.ConfigDir := LocalConfig;
-        ASync.RepoAction:=RepoUse;
+        //ASync.RepoAction:=RepoUse;
         Async.SetTransport(Sett.getSyncType());
-        SyncState := ASync.TestConnection();
+        SyncState := ASync.TestConnection(false);
         //ASync.SyncAddress := ASync.SyncAddress;
 	while SyncState <> SyncReady do begin
             if ASync.DebugMode then debugln('Failed testConnection');
@@ -322,12 +315,12 @@ begin
             FormSyncError.ButtRetry.Visible := not Visible;                         // Dont show Retry if interactive
             ModalResult := FormSyncError.ShowModal;
             if ModalResult = mrCancel then exit(false);        // else its Retry
-            SyncState := ASync.TestConnection();
+            SyncState := ASync.TestConnection(false);
         end;
         Label1.Caption:= rsRunningSync;
         Application.ProcessMessages;
-        ASync.TestRun := False;
-        ASync.StartSync();
+        //ASync.TestRun := False;
+        ASync.StartSync(false);
         SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -405,7 +398,6 @@ begin
 	ModalResult := mrOK;
 end;
 
-    // This only ever happens during a Join .....
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
     Label2.Caption:=rsNextBitSlow;
@@ -414,13 +406,14 @@ begin
     Application.ProcessMessages;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
-    ASync.TestRun := False;
-    if ASync.StartSync() then begin
+    //ASync.TestRun := False;
+    if ASync.StartSync(false) then begin
         SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();
         Label1.Caption:=rsAllDone;
         Label2.Caption := rsPressClose;
+	Sett.setSyncTested(true);
     end  else
         Showmessage(rsSyncError + ASync.ErrorString);
     ButtonClose.Enabled := True;

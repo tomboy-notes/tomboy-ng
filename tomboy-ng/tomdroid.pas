@@ -173,7 +173,7 @@ begin
         Password := EditPassword.Text;
         CheckSavePassword.Checked := ('true' = ConfigFile.readstring(Profile, 'SavePassword', ''));
         LabelServerID.Caption := ConfigFile.readstring(Profile, 'ServerID', 'ERROR - profile has no server ID');
-        ButtonSync.Enabled := IDLooksOK(LabelServerID.Caption);
+        ButtonSync.Enabled := NoteIDLooksOK(LabelServerID.Caption);
     end else showmessage('WTF ?  Cannot find profile in config ' + Profile);
     freeandnil(ConfigFile);
     ButtonSaveProfile.Enabled := False;
@@ -260,12 +260,12 @@ begin
     try
         ASync := TSync.Create();
         ASync.DebugMode:=CheckBoxDebugMode.Checked;
-        ASync.TestRun := CheckBoxTestRun.Checked;
+        //ASync.TestRun := CheckBoxTestRun.Checked;
         ASync.ProceedFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
         ASync.ConfigDir := Sett.LocalConfig;
         // ASync.LocalServerID := LabelServerID.Caption;       // Only do this for Tomdroid Use!
-        ASync.RepoAction:= RepoJoin;
+        //ASync.RepoAction:= RepoJoin;
         Tick1 := GetTickCount64();
         if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin
             memo1.append(rsFailedToConnect + ' ' + ASync.ErrorString);
@@ -274,7 +274,7 @@ begin
         Memo1.Append(rsTalking);
         Application.ProcessMessages;
         Tick2 := GetTickCount64();
-        case ASync.TestConnection() of
+        case ASync.TestConnection(CheckBoxTestRun.Checked) of
             SyncNoRemoteDir :
                 begin
                     Memo1.append(rsNoTomdroid );
@@ -296,7 +296,7 @@ begin
         Memo1.append(rsNextBitSlow);
         Application.ProcessMessages;
         Tick3 := GetTickCount64();
-        ASync.StartSync();
+        ASync.StartSync(CheckBoxTestRun.Checked);
         LabelServerID.Caption := ASync.LocalServerID;
         Tick4 := GetTickCount64();
         DisplaySync();
@@ -416,12 +416,12 @@ begin
     try
         ASync := TSync.Create();
         ASync.DebugMode:=CheckBoxDebugMode.Checked;
-        ASync.TestRun := CheckBoxTestRun.Checked;
+        //ASync.TestRun := CheckBoxTestRun.Checked;
         ASync.ProceedFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
         ASync.ConfigDir := Sett.LocalConfig;
         ASync.LocalServerID := LabelServerID.Caption;       // Only do this for Tomdroid !
-        ASync.RepoAction:= RepoUse;
+        //ASync.RepoAction:= RepoUse;
         Tick1 := GetTickCount64();
         if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin      // this just pings remote dev
             memo1.append(rsFailedToConnect + ASync.ErrorString);
@@ -430,7 +430,7 @@ begin
         Memo1.Append(rsTalkingToDevice);
         Application.ProcessMessages;
         Tick2 := GetTickCount64();
-        case ASync.TestConnection() of
+        case ASync.TestConnection(CheckBoxTestRun.Checked) of
             // SyncXMLError, SyncNoRemoteWrite, SyncNoRemoteDir :
             SyncNoLocal :
                 begin Memo1.Append(ASync.ErrorString); Memo1.Append('Sync is cancelled'); exit(False); end;
@@ -454,7 +454,7 @@ begin
         Memo1.append(rsNextBitSlow);
         Application.ProcessMessages;
         Tick3 := GetTickCount64();
-        ASync.StartSync();
+        ASync.StartSync(CheckBoxTestRun.Checked);
         Tick4 := GetTickCount64();
         DisplaySync();
         memo1.Append('Set=' + inttostr(Tick2 - Tick1) + 'mS Test=' + inttostr(Tick3 - Tick2) + 'mS Sync=' + inttostr(Tick4 - Tick3) + 'mS ');

@@ -88,6 +88,8 @@ type
         function UploadNotes(const Uploads : TStringList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
+        function IDLooksOK() : boolean; Override;
+        function getPrefix(): string; Override;
         // function SetRemoteRepo(ManFile : string = '') : boolean; override;
   end;
 
@@ -101,6 +103,11 @@ const // Must become config things eventually.
   DevDir = '/storage/emulated/0/tomdroid/';
 
 { TAndSync }
+
+function TAndSync.getPrefix() : string;
+begin
+  Result := 'android';
+end;
 
 function TAndSync.Ping(const Count : integer) : boolean;
     // Ping returns 0 or one or more packets came back, 1 if none, 2 for other error
@@ -310,7 +317,7 @@ begin
         FreeandNil(List);
         AProcess.Free;
     end;
-    if not IDLooksOK(ServerID) then begin
+    if not IDLooksOK() then begin
         Debugln('SetServerID unable to read tomboy.serverid, we got [' + List.Text + ']');
         exit(SyncNoRemoteRepo);     // No really NoRemoteRepo but a currupted ID ?
     end;
@@ -747,6 +754,14 @@ begin
         Result := ConfigDir + 'remote.note'
     else Result := '';
 end;
+
+function TAndSync.IDLooksOK() : boolean;
+begin
+    if length(ServerID) <> 36 then exit(false);
+    if pos('-', ServerID) <> 9 then exit(false);
+    result := True;
+end;
+
 
 end.
 

@@ -128,16 +128,16 @@ function ConvertDateStrAbsolute(const DateStr : string) : string;
 function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
 
                 // Ret GMT from tomboy date string, 0.0 on error or unlikely date.
-function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
+                function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 
                 // Ret a tomboy date string for now.
 //function GetLocalTime: ANSIstring;
 
         // Returns the LCD string, '' and setting Error to other than '' if something wrong
-function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
+        function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
 
         // returns false if GUID does not look OK
-function IDLooksOK(const ID : string) : boolean;
+        function NoteIDLooksOK(const ID : string) : boolean;
 
         // Use whenever we are writing content that may contain <>& to XML files
         // If DoQuotes is true, we also convert ' and " (for xml attributes).
@@ -249,12 +249,6 @@ begin
    Result := Result + Copy(InStr, Start, Index - Start);
 end;
 
-function IDLooksOK(const ID : string) : boolean;
-begin
-    if length(ID) <> 36 then exit(false);
-    if pos('-', ID) <> 9 then exit(false);
-    result := True;
-end;
 
 function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
 var
@@ -468,6 +462,13 @@ begin
     	end;
     end;
     { writeln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
+end;
+
+function NoteIDLooksOK(const ID : string) : boolean;
+begin
+    if length(ID) <> 36 then exit(false);
+    if pos('-', ID) <> 9 then exit(false);
+    result := True;
 end;
 
 end.

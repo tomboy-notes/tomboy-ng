@@ -9,7 +9,7 @@ object FormSync: TFormSync
   OnClose = FormClose
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '2.0.8.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -164,8 +164,6 @@ object FormSync: TFormSync
       RowCount = 0
       ShowHint = True
       TabOrder = 1
-      TitleFont.Height = -12
-      TitleFont.Name = 'Sans'
       OnGetCellHint = StringGridReportGetCellHint
     end
     object Splitter3: TSplitter

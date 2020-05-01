@@ -33,8 +33,6 @@ type
         //Password : string;
 
         DebugMode : boolean;
-            // Indicates its a new repo, don't look for remote manifest.
-        //ANewRepo : Boolean;
             // Set to '' is no errors.
         ErrorString : string;
             // Local notes directory
@@ -50,7 +48,8 @@ type
         RemoteServerRev : integer;
 
         constructor create;
-        destructor Destroy;
+        destructor destroy;
+
             { Tests availability of remote part of connection. For file sync (eg) thats
             existance of remote manifest and 0 dir, write access. Sets its own ServerID.
             This would be a good place to put lock or authenticate as  necessary}
@@ -95,6 +94,10 @@ type
               path and name to an overwriteable file, perhaps $CONFIG/remote.note ?
               We need this so we can compare notes when we are resolving a clash.}
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; virtual; abstract;
+
+        function getPrefix(): string; virtual; abstract;
+
+        function IDLooksOK() : boolean; virtual; abstract;
 
         procedure setParam(p : String; v : String);
         function getParam(p : String) : String;

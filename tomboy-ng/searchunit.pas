@@ -332,9 +332,10 @@ begin
       	DeleteFileUTF8(FullFileName);
         ButtonClearFiltersClick(self);
     end else begin
-		NoteLister.DeleteNote(ShortFileName);
+        NoteLister.DeleteNote(ShortFileName);
      	NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ShortFileName + '.note';
-    	if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
+
+        if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
     		if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
             	DebugLn('Failed to make Backup dir, ' + Sett.NoteDirectory + 'Backup');
     	if not RenameFileUTF8(FullFileName, NewName)

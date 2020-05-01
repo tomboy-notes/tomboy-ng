@@ -687,7 +687,7 @@ var
 begin
     // debugln('Checking note ', FileName);
     if not DontTestName then
-        if not IDLooksOK(copy(FileName, 1, 36)) then begin      // In syncutils !!!!
+        if not NoteIDLooksOK(copy(FileName, 1, 36)) then begin      // In syncutils !!!!
             ErrorNotes.Append(FileName + ', ' + 'Invalid ID in note filename');
             XMLError := True;
             exit;
