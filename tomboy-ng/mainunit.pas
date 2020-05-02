@@ -693,10 +693,7 @@ var
 begin
     if Visible then begin
         Sett.CheckShowSplash.Checked := not Sett.CheckShowSplash.Checked;
-        OldMask :=  Sett.MaskSettingsChanged;
-        Sett.MaskSettingsChanged := False;
-        Sett.CheckReadOnlyChange(Sender);
-        Sett.MaskSettingsChanged := OldMask;
+        Sett.onChange(Sender);
     end;
     // showmessage('change dont show and Visible=' + booltostr(Visible, True));
 end;

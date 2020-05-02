@@ -198,8 +198,6 @@ begin
     i := i +2;
   end;
 
-  writeln('URL GET= '+u);
-
   try
     Result := Client.Get(u);
   except on E:Exception do begin
@@ -236,7 +234,6 @@ begin
   try
     Client.FormPost(u,p,res);
     Result := res.DataString;
-    //writeln('POST RES= '+Result);
   except on E:Exception do begin
     ShowMessage(E.message);
     Result := '';
@@ -268,7 +265,6 @@ begin
   end;
 
   hashkey := Key + '&' + secret;
-  writeln('SIGNING WITH= '+hashkey);
 
   data := mode + '&' + URLEncode(u) + '&' + URLEncode(p);
 

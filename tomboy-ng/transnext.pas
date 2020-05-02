@@ -81,7 +81,7 @@ begin
     oauth.ParamsSort(p);
     oauth.Sign(resturl, 'GET', p,oauth.TokenSecret);
     res := oauth.WebGet(resturl,p);
-    writeln(res);
+    debugln(res);
     FreeAndNil(p);
 
     if (res = '') then begin ErrorString :=  'Next-TestTransport: Unable to et initial data'; exit(SyncBadError); end;
@@ -91,7 +91,7 @@ begin
 
     try
        json := GetJSON(res);
-       writeln('JSON= '+json.AsJSON);
+       debugln('JSON= '+json.AsJSON);
 
        json := json.Items[4];
        jObject := TJSONObject(json);
@@ -112,13 +112,13 @@ begin
     oauth.ParamsSort(p);
     oauth.Sign(res, 'GET', p,oauth.TokenSecret);
     res := oauth.WebGet(res,p);
-    writeln(res);
+    debugln(res);
     FreeAndNil(p);
     ok := true;
     ErrorString := '';
     try
        json := GetJSON(res);
-       writeln('JSON= '+json.AsJSON);
+       debugln('JSON= '+json.AsJSON);
 
        jObject := TJSONObject(json);
        setParam('REVISION',jObject.Get('latest-sync-revision'));
@@ -186,18 +186,18 @@ begin
     ErrorString := '';
     try
        json := GetJSON(res);
-       writeln('JSON= '+json.AsJSON);
+       debugln('JSON= '+json.AsJSON);
 
        jObject := TJSONObject(json);
        setParam('REVISION',jObject.Get('latest-sync-revision'));
        jnotes :=  jObject.Get('notes',jnotes);
-       writeln('New res = '+jnotes.AsJSON);
+       debugln('New res = '+jnotes.AsJSON);
        FreeAndNil(jObject);
        json := GetJSON(res);
-       writeln('JSON 2 = '+json.AsJSON);
+       debugln('JSON 2 = '+json.AsJSON);
     except on E:Exception do begin
        ErrorString := E.message;
-       writeln(ErrorString);
+       debugln(ErrorString);
        ok:= false;
        end;
     end;
@@ -250,7 +250,6 @@ var
 begin
     n := pos('-', ServerID);
     m := pos('.', ServerID);
-    writeln(Format('%s N=%d M=%d', [ServerID , n, m]));
 
     if((m-n) <> 15) then exit(false);
     if((length(ServerID)-m) <> 8) then exit(false);

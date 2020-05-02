@@ -172,7 +172,6 @@ end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-    writeln('FormSync close');
     FreeandNil(ASync);
     Busy := False;
 end;
@@ -211,7 +210,7 @@ var
     // ASync : TSync;
     // UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
 begin
-    writeln('DrySync');
+    debugln('DrySync');
 
     freeandnil(ASync);
 
@@ -293,7 +292,7 @@ function TFormSync.DoSync() : boolean;
 var
     SyncState : TSyncAvailable = SyncNotYet;
 begin
-    writeln('DoSync');
+    debugln('DoSync');
 
     Label1.Caption := rsTestingSync;
     Application.ProcessMessages;

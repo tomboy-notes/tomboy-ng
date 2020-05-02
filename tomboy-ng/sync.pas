@@ -367,7 +367,6 @@ end;
 
 destructor TSync.Destroy();
 begin
-    writeln('Destroy transport');
     FreeandNil(LocalMetaData);
     FreeandNil(NoteMetaData);
     FreeandNil(Transport);
@@ -396,7 +395,7 @@ begin
     	if LocalMetaData.Items[i]^.ID  = ID then
         begin
             LocalMetaData.Items[i]^.Deleted :=  True;
-            LocalMetaData.Items[i]^.Title   :=  GetNoteTitle(ID, -1);       // -1 says don't try and download if its not local
+            LocalMetaData.Items[i]^.Title   :=  GetNoteTitle(ID, -1);       // -1 says dont try and download if its not local
             Found := True;
             //if debugmode then debugln('DeleteFromThisManifest deleted ' + ID + ' from ' + FullFileName);
             break;
@@ -433,7 +432,7 @@ begin
  		    for Index := 0 to LocalMetaData.Count - 1 do begin
                 if LocalMetaData[Index]^.Deleted then begin
                     write(Outfile, '    <note guid="' + LocalMetaData[Index]^.ID + '" title="');
-                    write(OutFile, RemoveBadXMLCharacters(LocalMetaData[Index]^.Title, True));      // cannot allow " or ' in an xml attribute
+                    write(OutFile, RemoveBadXMLCharacters(LocalMetaData[Index]^.Title, True));      // cannot allow quote and double quote in an xml attribute
                     writeln(Outfile, '" />');
 				end;
 			end;
@@ -841,7 +840,7 @@ function TSync.DoDownloads() : boolean;
 {var
     I : integer; }
 begin
-    writeln('DoDownloads');
+    debugln('DoDownloads');
 
     Result := Transport.DownloadNotes(NoteMetaData);
 	if Result = false then begin
@@ -862,7 +861,7 @@ function TSync.DoDeleteLocal() : boolean;
 var
     I : integer;
 begin
-    writeln('DoDeleteLocal');
+    debugln('DoDeleteLocal');
 
     for I := 0 to NoteMetaData.Count -1 do begin
         if NoteMetaData.Items[i]^.Action = SyDeleteLocal then begin
@@ -880,7 +879,7 @@ function TSync.DoDeletes() : boolean;
 var
     Index : integer;
 begin
-    writeln('DoDeletes');
+    debugln('DoDeletes');
 
     if DebugMode then
        Debugln('DoDeletes Count = ' + inttostr(NoteMetaData.Count));
@@ -903,7 +902,7 @@ var
     Uploads : TstringList;
     Index : integer;
 begin
-    writeln('DoUploads');
+    debugln('DoUploads');
 
     if DebugMode then
         debugln('Doing uploads and Remote ServerRev is ' + inttostr(Transport.RemoteServerRev));
@@ -940,9 +939,10 @@ var
     IncRev : integer = 0;
     tempfile : String;
 begin
-    writeln('WriteLocalManifest');
-    if(WriteOk) then writeln('WriteOk = true') else writeln('WriteOk = false');
-    if(NewRev) then writeln('NewRev = true') else writeln('NewRev = false');
+    debugln('WriteLocalManifest');
+
+    if(WriteOk) then debugln('WriteOk = true') else debugln('WriteOk = false');
+    if(NewRev) then debugln('NewRev = true') else debugln('NewRev = false');
 
     if not Transport.IDLooksOK() then exit(false);        // already checked but ....
 
@@ -1157,8 +1157,8 @@ var
 begin
     Result := True;
 
-    if(isTest) then writeln('StartSync(true)') else writeln('StartSync(false)');
-    if(SyncOnce) then writeln('SyncOnce = true') else writeln('SyncOnce = false');
+    if(isTest) then debugln('StartSync(true)') else debugln('StartSync(false)');
+    if(SyncOnce) then debugln('SyncOnce = true') else debugln('SyncOnce = false');
 
     if not LoadRepoData(False) then exit(False);     // dont get LCD until we know we need it.
 
@@ -1210,7 +1210,7 @@ begin
 
     ManifestFile := getManifestName();
 
-    writeln('MANIFFEST='+ManifestFile);
+    debugln('MANIFFEST='+ManifestFile);
 
     if not FileExists(ManifestFile)
     then begin

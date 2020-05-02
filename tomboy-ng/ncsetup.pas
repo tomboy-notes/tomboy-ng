@@ -146,7 +146,6 @@ begin
         oauth.ParamsSort(p);
         oauth.Sign(oauth.requestTokenUrl, 'POST', p, '');
         res := oauth.WebPost(oauth.requestTokenUrl,p);
-        //writeln('REQUEST: '+res);
         FreeAndNil(p);
 
         //Example : oauth_token=r36747eda81d3a14c&oauth_token_secret=s05507586554bb6bf&oauth_callback_confirmed=true
@@ -165,9 +164,6 @@ begin
         oauth.Token := ExtractWord(2, s1,ts);
         oauth.TokenSecret:= ExtractWord(2,s2,ts);
 
-        //writeln('Token= '+ oauth.Token);
-        //writeln('TokenSecret= '+ oauth.TokenSecret);
-
         // AUTORIZE
         SetupStatus.Caption := 'OAuth: Asking user to autorize';
         u:= oauth.authorizeUrl + '?oauth_token=' + oauth.Token + '&client=TomboyNG&oauth_callback=' + oauth.URLEncode(oauth.callbackUrl);
@@ -177,7 +173,6 @@ begin
         web := WebServer.Create(false);
         web.Setup(8000,@DoHandleRequest);
         listening :=true;
-        //writeln('AUTORIZE: '+u);
         openUrl(u);
      end;
   except on E:Exception do
@@ -194,7 +189,6 @@ begin
   AResponse.Code := 200;
   AResponse.ContentType := 'text/html;charset=utf-8';
 
-  //writeln('RETURN BROWSER= '+ARequest.QueryString);
 
   restok := ARequest.QueryFields.Values['oauth_token'];
   resverif := ARequest.QueryFields.Values['oauth_verifier'];
@@ -236,10 +230,7 @@ begin
   oauth.ParamsSort(p);
   oauth.Sign(oauth.accessTokenUrl, 'POST', p, oauth.TokenSecret);
   res := oauth.WebPost(oauth.accessTokenUrl,p);
-  //writeln('ACCESS: '+res);
   FreeAndNil(p);
-
-  // oauth_token=r84d84347d3463b74&oauth_token_secret=sad49b33ae93c2902&oauth_callback_confirmed=true
 
   ts:=['&'];
   s1 := ExtractWord(1, res, ts);
