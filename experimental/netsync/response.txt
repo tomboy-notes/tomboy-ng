@@ -1,0 +1,14 @@
+transnet, Called getNewNotes
+---- calling HTTPGet --------
+---- creating oauth --------
+------------ HEADER -------------
+oauth_callback="http%3A%2F%2Flocalhost%2Fnextcloud%2Findex.php%2Fapps%2Fgrauphel%2Foauth%2Fauthorize"
+oauth_consumer_key="MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEApYOW7m4YnBJpwljB6n9PMXQB4GMbTf5UwOkuxNZajnYM/hP84nbcxObk1bGkhvTXrKVNC9QDhZU4fUQ37xBPmb/UZhxyGqTtZndBuAOBzTNP3WO1t968891oJ6zwM/Sokf49I3XVh/x8U+sxTmw+O4l7C+L9P8d6VQRso1MhDoUrrjs1lhItYqxxPrAIyb0a2UntQaPsXT6DyyxzL87YcjVqOSjrEuWCgnflp3nWNLwjq0/iil0oVGr80iE6Cd6jqzWGvtMcPS7q1NUlU8IA+WO8scVvFQNHheleAej542m6+lQGXGt/ztIyO2KfnTc5J+wSJz+2l1MZeusyvpc/8NHY7CsLBC3OJ0qF0JABz/AzxKMQjsTbeLJqg2fcNYbFkED3ru0Dnh7qunSu1dIssDA6N+mAZ+RNsBDyKb2EI1bS7Pmo5Ct7/2Bf32fmwij2cnXXvYFBpQTozL7Zz0mdGOMwwN6FN6v47IUuHwF5A2XgampGFK6jp5Dz0rR2IprSfygnwzNj6qG8Z0FrGIjvR/aWFRqwlviAj5tjrfQ1ziH3aAoG9q99Px3foYb7jTfAwmNR/MYcmg9bi5WY3GykuKICoeAJKotQf359bkIvpu02hy0pI4smS9w+llwO7NzGExA2F2HQLNqlmrzBCWvAtckeUxIIs0KWEKty/7JJje0CAwEAAQ=="
+oauth_nonce="52790E65-EEAB-43B7-B3B9-0A92719D3EA7"
+oauth_signature_method="HMAC-SHA1"
+oauth_timestamp="1587941867"
+oauth_version="1.0"
+oauth_signature="NzRkMmZhNWM1NmRiNzEzMjg4N2UzOTYxMTIzZmYyNjcwNGJlZjIwMA%3D%3D"
+
+Posting to http://localhost/nextcloud/index.php/apps/grauphel/oauth/request_token
+HTTPPost [oauth_problem=signature_method_rejected]
