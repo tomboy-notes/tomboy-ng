@@ -54,24 +54,34 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncBadError,       // Some other error, must NOT proceed.
                     SyncNetworkError);  // Remove server/device not responding
 
-type TRepoAction = (
-                RepoJoin,               // Join (and use) an existing Repo
-                RepoNew,                // Create (and use) a new repo in presumably a blank dir
-                RepoUse);               // Go ahead and use this repo to sync
-
 
 type
   	PNoteInfo=^TNoteInfo;
-  	TNoteInfo = record
-        ID : ANSIString;            // The 36 char ID
-        LastChangeGMT : TDateTime;  // Compare less or greater than but not Equal !
-        CreateDate : ANSIString;
-        LastChange : ANSIString;    // leave as strings, need to compare and TDateTime uses real
-        Rev : Integer;              // Not used for uploads, Trans knows how to inc its own.
-        Deleted: Boolean;           // don't think we use this .....
-        Action : TSyncAction;
-        Title : ANSIString;
-    end;
+
+        TNoteInfo = record
+                  ID : ANSIString;            // The 36 char ID
+                  CreateDate : ANSIString;
+                  CreateDateGMT : TDateTime;
+                  LastChange : ANSIString;
+                  LastChangeGMT : TDateTime;
+                  LastMetaChange : ANSIString;
+                  LastMetaChangeGMT : TDateTime;
+                  Version : String;
+                  Rev : Integer;
+                  Deleted: Boolean;
+                  Action : TSyncAction;
+                  Title : String;
+                  Content : String;
+                  OpenOnStartup : boolean;
+                  Pinned : boolean;
+                  CursorPosition : integer;
+                  SelectBoundPosition : integer;
+                  Width : integer;
+                  Height : integer;
+                  X : integer;
+                  Y : integer;
+                  Source : String;
+        end;
 
  type                                 { ---------- TNoteInfoList ---------}
 

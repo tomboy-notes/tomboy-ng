@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LCLIntf, Forms, StdCtrls, Dialogs, openssl, ssockets, sslsockets,
-  fphttpclient, fpjson, jsonparser, fpopenssl, HMAC, strutils;
+  fphttpclient, fpjson, jsonparser, fpopenssl, HMAC, strutils, LazLogger;
 
 type    { TOAuth }
   TOAuth = class(TObject)
@@ -197,6 +197,8 @@ begin
     u := u + URLEncode(params[i]) + '=' + URLEncode(params[i+1]);
     i := i +2;
   end;
+
+  //debugln('WebGet : '+u);
 
   try
     Result := Client.Get(u);

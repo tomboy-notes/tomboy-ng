@@ -10,7 +10,7 @@ unit transnext;
 interface
 
 uses
-    Classes, SysUtils, Trans, SyncUtils, Dialogs, fpjson, jsonparser, oauth;
+    Classes, LazLogger, SysUtils, Trans, SyncUtils, Dialogs, fpjson, jsonparser, oauth;
 
 type               { ----------- TNextSync ------------ }
 
@@ -118,7 +118,7 @@ begin
     ErrorString := '';
     try
        json := GetJSON(res);
-       debugln('JSON= '+json.AsJSON);
+       debugln('JSON OAUTH = ' + json.FormatJSON());
 
        jObject := TJSONObject(json);
        setParam('REVISION',jObject.Get('latest-sync-revision'));
@@ -162,18 +162,22 @@ function TNextSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolea
 var
   res : String;
   json: TJSONData;
-  jObject,j2 : TJSONObject;
+  jObject : TJSONObject;
   jnotes : TJSONArray;
   p : TStrings;
   ok : boolean;
+  nbnotes,i,j : integer;
+  NoteInfo : PNoteInfo;
+  d : double;
 begin
     WriteLn('Next-GetNotes');
 
     // HTTP REQUETS
     res := getParam('URLNOTES');
+    debugln(res);
     p := TstringList.Create();
     oauth.BaseParams(p,true);
-    p.Add('include-notes');
+    p.Add('include_notes');
     p.Add('true');
     oauth.ParamsSort(p);
     oauth.Sign(res, 'GET', p,oauth.TokenSecret);
@@ -186,15 +190,10 @@ begin
     ErrorString := '';
     try
        json := GetJSON(res);
-       debugln('JSON= '+json.AsJSON);
-
+       debugln('JSON NOTES = '+json.AsJSON);
        jObject := TJSONObject(json);
        setParam('REVISION',jObject.Get('latest-sync-revision'));
        jnotes :=  jObject.Get('notes',jnotes);
-       debugln('New res = '+jnotes.AsJSON);
-       FreeAndNil(jObject);
-       json := GetJSON(res);
-       debugln('JSON 2 = '+json.AsJSON);
     except on E:Exception do begin
        ErrorString := E.message;
        debugln(ErrorString);
@@ -202,8 +201,70 @@ begin
        end;
     end;
 
-    if (not ok) then begin ErrorString :=  'Next-GetNotes: '+ErrorString; exit(false); end;
+    if (not ok) then begin ErrorString :=  'Next-GetNotes: '+ErrorString; debugln(ErrorString); exit(false); end;
 
+    nbnotes := jnotes.Count;
+    debugln(Format('Nb notes %d',[nbnotes]));
+
+    i:=0;
+    while(i<nbnotes) do
+    begin
+       new(NoteInfo);
+       ok :=true;
+
+       try
+          json := jnotes.Items[i];
+          jObject := TJSONObject(json);
+          debugln(Format('Note %d',[i]));
+          debugln(jObject.AsJSON);
+          debugln(json.FormatJSON());
+
+          NoteInfo^.Action:=SyUnset;
+          NoteInfo^.ID := jObject.Get('guid');
+          NoteInfo^.Rev := jObject.Get('last-sync-revision');
+
+          NoteInfo^.CreateDate:=jObject.Get('create-date','');
+          if NoteInfo^.CreateDate <> '' then
+             NoteInfo^.CreateDateGMT := GetGMTFromStr(NoteInfo^.CreateDate);
+          NoteInfo^.LastChange:=jObject.Get('last-change-date','');
+          if NoteInfo^.LastChange <> '' then
+             NoteInfo^.LastChangeGMT := GetGMTFromStr(NoteInfo^.LastChange);
+          NoteInfo^.LastMetaChange:=jObject.Get('last-metadata-change-date','');
+          if NoteInfo^.LastMetaChange <> '' then
+             NoteInfo^.LastMetaChangeGMT := GetGMTFromStr(NoteInfo^.LastMetaChange);
+
+          d := StrToFloat(jObject.Get('note-content-version'));
+          j := round(d*10);
+          d := j * 0.1;
+          NoteInfo^.Version := Format('%d',[d]);
+
+          NoteInfo^.Deleted := false;
+          NoteInfo^.Title := jObject.Get('title');
+          NoteInfo^.Content := jObject.Get('note-content');
+
+          NoteInfo^.OpenOnStartup := (jObject.Get('open-on-startup') = 'true');
+          NoteInfo^.Pinned := (jObject.Get('pinned') = 'true');
+
+          NoteInfo^.CursorPosition := StrToInt(jObject.Get('cursor-position'));
+          NoteInfo^.SelectBoundPosition := StrToInt(jObject.Get('selection-bound-position'));
+          NoteInfo^.Width := StrToInt(jObject.Get('width'));
+          NoteInfo^.Height := StrToInt(jObject.Get('height'));
+          NoteInfo^.X := StrToInt(jObject.Get('x'));
+          NoteInfo^.Y := StrToInt(jObject.Get('y'));
+
+          NoteInfo^.Source := json.AsJSON;
+
+       except on E:Exception do begin ok := false; debugln(E.message); end;
+       end;
+
+       if(ok) then NoteMeta.Add(NoteInfo)
+       else FreeAndNil(NoteInfo);
+
+       i := i+1;
+    end;
+
+    debugln('done');
+    FreeAndNil(jnotes);
 
     result := False;
 end;

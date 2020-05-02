@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, LCLIntf, StdCtrls,
-  fpjson, jsonparser, oauth, strutils, ncserver,fphttpserver;
+  fpjson, jsonparser, oauth, strutils, ncserver, fphttpserver, LazLogger;
 
 type    { TFormNCSetup }
   TFormNCSetup = class(TForm)
@@ -121,6 +121,7 @@ begin
         ok := true; s1 :=''; s2:=''; s3:='';
         try
            jData := GetJSON(res);
+           debugln('JSON OAUTH = ' + jData.FormatJSON());
            jObject := TJSONObject(jData);
            s1 := jObject.Get('oauth_request_token_url');
            s2 := jObject.Get('oauth_authorize_url');
