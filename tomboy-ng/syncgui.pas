@@ -172,7 +172,8 @@ end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-	FreeandNil(ASync);
+    writeln('FormSync close');
+    FreeandNil(ASync);
     Busy := False;
 end;
 
@@ -210,6 +211,8 @@ var
     // ASync : TSync;
     // UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
 begin
+    writeln('DrySync');
+
     freeandnil(ASync);
 
     NoteDirectory := Sett.NoteDirectory;
@@ -290,6 +293,8 @@ function TFormSync.DoSync() : boolean;
 var
     SyncState : TSyncAvailable = SyncNotYet;
 begin
+    writeln('DoSync');
+
     Label1.Caption := rsTestingSync;
     Application.ProcessMessages;
 

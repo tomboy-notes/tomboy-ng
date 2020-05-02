@@ -367,6 +367,7 @@ end;
 
 destructor TSync.Destroy();
 begin
+    writeln('Destroy transport');
     FreeandNil(LocalMetaData);
     FreeandNil(NoteMetaData);
     FreeandNil(Transport);
@@ -840,6 +841,8 @@ function TSync.DoDownloads() : boolean;
 {var
     I : integer; }
 begin
+    writeln('DoDownloads');
+
     Result := Transport.DownloadNotes(NoteMetaData);
 	if Result = false then begin
        self.ErrorString:= Transport.ErrorString;
@@ -859,6 +862,8 @@ function TSync.DoDeleteLocal() : boolean;
 var
     I : integer;
 begin
+    writeln('DoDeleteLocal');
+
     for I := 0 to NoteMetaData.Count -1 do begin
         if NoteMetaData.Items[i]^.Action = SyDeleteLocal then begin
             if FileExists(NotesDir + NoteMetaData.Items[i]^.ID + '.note') then
@@ -875,6 +880,8 @@ function TSync.DoDeletes() : boolean;
 var
     Index : integer;
 begin
+    writeln('DoDeletes');
+
     if DebugMode then
        Debugln('DoDeletes Count = ' + inttostr(NoteMetaData.Count));
 
@@ -896,6 +903,8 @@ var
     Uploads : TstringList;
     Index : integer;
 begin
+    writeln('DoUploads');
+
     if DebugMode then
         debugln('Doing uploads and Remote ServerRev is ' + inttostr(Transport.RemoteServerRev));
     try
@@ -929,11 +938,20 @@ var
     OutFile: TextFile;
     Index : integer;
     IncRev : integer = 0;
+    tempfile : String;
 begin
+    writeln('WriteLocalManifest');
+    if(WriteOk) then writeln('WriteOk = true') else writeln('WriteOk = false');
+    if(NewRev) then writeln('NewRev = true') else writeln('NewRev = false');
+
     if not Transport.IDLooksOK() then exit(false);        // already checked but ....
+
     result := true;
     if WriteOK and NewRev then IncRev := 1 else IncRev := 0;
-    AssignFile(OutFile, ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local');  // ManPrefix is '' for most Modes.
+
+    tempfile := getManifestName()+'-temp';
+    AssignFile(OutFile, tempfile );
+    //ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local');  // ManPrefix is '' for most Modes.
     try
        try
           Rewrite(OutFile);
@@ -966,7 +984,8 @@ begin
 	  end;
 	end;
     // if to here, copy the file over top of existing local manifest
-    copyfile(ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local', ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
+    copyfile(tempfile, getManifestName());
+    //ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local', ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml');
     if debugmode then
        debugln('Have written local manifest to ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-local');
 end;
@@ -990,34 +1009,43 @@ begin
     NewRevString := inttostr(Transport.RemoteServerRev + 1);
     AssignFile(OutFile, ConfigDir + 'manifest.xml-remote');
     try
-	    try
-		    Rewrite(OutFile);
-	        writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
-            write(OutFile, '<sync revision="' + NewRevString);
-            writeln(OutFile, '" server-id="' + Transport.ServerID + '">');
-	        for Index := 0 to NoteMetaData.Count - 1 do begin
-                if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
-	                write(OutFile, '  <note id="' + NoteMetaData.Items[Index]^.ID + '" rev="');
-                    if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit] then
-	                    write(OutFile, NewRevString + '"')
-	                else write(OutFile, inttostr(NoteMetaData.Items[Index]^.Rev) + '"');
-                    if NoteMetaData.Items[Index]^.LastChange = '' then
+       try
+          Rewrite(OutFile);
+	  writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
+          write(OutFile, '<sync revision="' + NewRevString);
+          writeln(OutFile, '" server-id="' + Transport.ServerID + '">');
+
+          for Index := 0 to NoteMetaData.Count - 1 do
+          begin
+
+               if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then
+               begin
+	            write(OutFile, '  <note id="' + NoteMetaData.Items[Index]^.ID + '" rev="');
+                    if NoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit]
+                    then
+	                write(OutFile, NewRevString + '"')
+	            else
+                        write(OutFile, inttostr(NoteMetaData.Items[Index]^.Rev) + '"');
+
+                    if NoteMetaData.Items[Index]^.LastChange = ''
+                    then
                        writeln(OutFile, ' />')
-                    else writeln(OutFile, ' last-change-date="'
-                            + NoteMetaData.Items[Index]^.LastChange + '" />');
-				end;
-			end;
-            writeln(OutFile, '</sync>');
-        except
-          on E: EInOutError do begin
-              Debugln('File handling error occurred. Details: ' + E.Message);
-              exit(false);      // file error !
-    	  end;
-    	end;
-	finally
-        CloseFile(OutFile);
-	end;
-        // do a safe version of this -
+                    else
+                        writeln(OutFile, ' last-change-date="' + NoteMetaData.Items[Index]^.LastChange + '" />');
+	       end;
+          end;
+          writeln(OutFile, '</sync>');
+       except on E: EInOutError do
+          begin
+             Debugln('File handling error occurred. Details: ' + E.Message);
+             exit(false);      // file error !
+          end;
+       end;
+    finally
+       CloseFile(OutFile);
+    end;
+
+    // do a safe version of this -
     result := Transport.DoRemoteManifest(ConfigDir + 'manifest.xml-remote');
     if debugmode then
        debugln('Have written remote manifest to ' + ConfigDir + Transport.getParam('ManPrefix') + 'manifest.xml-remote');
@@ -1126,9 +1154,11 @@ end;
 function TSync.StartSync(isTest : boolean): boolean;
 var
     NewRev : boolean;
-    // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
     Result := True;
+
+    if(isTest) then writeln('StartSync(true)') else writeln('StartSync(false)');
+    if(SyncOnce) then writeln('SyncOnce = true') else writeln('SyncOnce = false');
 
     if not LoadRepoData(False) then exit(False);     // dont get LCD until we know we need it.
 
@@ -1146,13 +1176,14 @@ begin
     CheckNewNotes();
     CheckMetaData();
 
+    // ====================== Set an exit here to do no-write tests
     if isTest then exit();
 
     ProcessClashes();
 
     if DebugMode then
         DisplayNoteInfo(NoteMetaData, 'Note Meta Data');
-    // ====================== Set an exit here to do no-write tests
+
     if DoDownLoads() then           // DoDownloads() will tell us what troubled it.
         if WriteRemoteManifest(NewRev) then
             if DoDeletes() then

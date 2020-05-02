@@ -1039,7 +1039,12 @@ var
 	ConfigFile : TINIFile;
 begin
     Result := True;
+    writeln('SettingsChanged '+source);
+
     if MaskSettingsChanged then exit();
+
+    writeln('SettingsChanged bis '+source);
+
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
         try

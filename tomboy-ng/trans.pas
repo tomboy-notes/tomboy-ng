@@ -48,7 +48,7 @@ type
         RemoteServerRev : integer;
 
         constructor create;
-        destructor destroy;
+        destructor Destroy; override;
 
             { Tests availability of remote part of connection. For file sync (eg) thats
             existance of remote manifest and 0 dir, write access. Sets its own ServerID.
@@ -118,8 +118,11 @@ end;
 
 destructor TTomboyTrans.Destroy;
 begin
+  writeln('Destroying trans' + getPrefix());
   FreeAndNil(names);
   FreeAndNil(values);
+  inherited Destroy;
+
 end;
 
 

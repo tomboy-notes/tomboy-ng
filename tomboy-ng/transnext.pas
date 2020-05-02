@@ -91,6 +91,8 @@ begin
 
     try
        json := GetJSON(res);
+       writeln('JSON= '+json.AsJSON);
+
        json := json.Items[4];
        jObject := TJSONObject(json);
        res := jObject.Get('api-ref');
@@ -116,10 +118,13 @@ begin
     ErrorString := '';
     try
        json := GetJSON(res);
+       writeln('JSON= '+json.AsJSON);
+
        jObject := TJSONObject(json);
        setParam('REVISION',jObject.Get('latest-sync-revision'));
        setParam('SERVERID',jObject.Get('current-sync-guid'));
        FreeAndNil(jObject);
+
        json := GetJSON(res);
        json:= json.Items[3];
        jObject := TJSONObject(json);
@@ -156,8 +161,9 @@ end;
 function TNextSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 var
   res : String;
-  json, jnote : TJSONData;
-  jObject : TJSONObject;
+  json: TJSONData;
+  jObject,j2 : TJSONObject;
+  jnotes : TJSONArray;
   p : TStrings;
   ok : boolean;
 begin
@@ -180,21 +186,23 @@ begin
     ErrorString := '';
     try
        json := GetJSON(res);
+       writeln('JSON= '+json.AsJSON);
+
        jObject := TJSONObject(json);
        setParam('REVISION',jObject.Get('latest-sync-revision'));
+       jnotes :=  jObject.Get('notes',jnotes);
+       writeln('New res = '+jnotes.AsJSON);
        FreeAndNil(jObject);
        json := GetJSON(res);
-       writeln('JSON= '+json.AsString);
-       json:= json.Items[1];
-       writeln('JSON 2 = '+json.AsString);
+       writeln('JSON 2 = '+json.AsJSON);
     except on E:Exception do begin
        ErrorString := E.message;
+       writeln(ErrorString);
        ok:= false;
        end;
     end;
 
     if (not ok) then begin ErrorString :=  'Next-GetNotes: '+ErrorString; exit(false); end;
-
 
 
     result := False;
