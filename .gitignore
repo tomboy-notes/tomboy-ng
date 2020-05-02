@@ -30,6 +30,9 @@ lib/
 published/
 *.lrj
 /tomboy-ng/tomboy-ng
-
+/tomboy-ng/tomboy-ng-qt
+tomboy-ng-qt.po
+releasepage
+NoGit/
 # Application bundle for Mac OS
 *.app/
