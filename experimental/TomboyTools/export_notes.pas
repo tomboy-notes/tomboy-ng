@@ -1,6 +1,6 @@
 unit export_notes;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}    {$assertions on}
 
 interface
 

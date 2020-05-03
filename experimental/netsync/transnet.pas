@@ -1,7 +1,7 @@
 unit transnet;
 
 { A unit that does the file transfer side of a NetSync operation.
-  Depends on external (Ruby) modules, as yet unimplemented.
+
   *
   *  See attached licence file.
 }

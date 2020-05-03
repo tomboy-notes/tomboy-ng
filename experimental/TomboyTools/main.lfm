@@ -1,8 +1,9 @@
 object FormMain: TFormMain
-  Left = 699
-  Height = 240
-  Top = 439
-  Width = 320
+  Left = 315
+  Height = 373
+  Top = 303
+  Width = 513
   Caption = 'FormMain'
+  OnShow = FormShow
   LCLVersion = '2.0.7.0'
 end
