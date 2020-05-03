@@ -60,7 +60,6 @@ type
         function CheckRemoteDir: TSyncAvailable;
         function DownLoad(const ID, FullNoteName: string): boolean;
         function GetDroidMetaData(AStringList: TStringList): boolean;
-        function GetNoteLastChange(const FullFileName: string): string;
         procedure InsertNoteBookTags(const FullSourceFile, FullDestFile,
             TagString: string);
         function RemoteFileExists(const ID: string): boolean;
@@ -69,34 +68,28 @@ type
         function SetServerID(): TSyncAvailable;
         function Ping(const Count : integer): boolean;
         function StampServerID(const ID: string): boolean;
-            // Reads the (filesync) remote Manifest for synced note details. It gets ID, RevNo
-            // and, if its there the LastChangeDate. If LCD is not in manifest and GetLCD
-            // is True, gets it from the file.
-
         function UpLoad(const ID: string): boolean;
+        function DownLoadNote(const ID: string; const RevNo: Integer): string;
+        function DeleteNote(const ID : string; const ExistRev : integer) : boolean;
 
     public
-        //RemoteDir : string; // where the remote filesync repo lives.
-        function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
+        function TestTransport() : TSyncAvailable; override;
         function SetTransport() : TSyncAvailable; override;
-        function GetNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
-        function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
+        function GetNotes(const NoteMeta : TNoteInfoList) : boolean; override;
             { ToDo : transandroid version - deletes the indicated note from remote device
               returns False if the note was not found there to be deleted.  Other error
               are possible.}
-        function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
-        function UploadNotes(const Uploads : TStringList) : boolean; override;
+        function PushChanges(notes : TNoteInfoList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
-        function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         function IDLooksOK() : boolean; Override;
         function getPrefix(): string; Override;
-        // function SetRemoteRepo(ManFile : string = '') : boolean; override;
+
   end;
 
 
 implementation
 
-uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger, searchUnit;
+uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
 
 const // Must become config things eventually.
   //Password = 'admin';
@@ -160,7 +153,9 @@ begin
             E: EProcess do ErrorString := 'EProcess Error ' + E.Message;
             on E: EExternal do ErrorString := 'Some process error ' + E.Message;
         end;
-        if debugmode then debugln('StampServerID [' + ID + ']  [' + List.Text + ']');
+
+        debugln('StampServerID [' + ID + ']  [' + List.Text + ']');
+
         Result := (AProcess.ExitStatus = 0);
     finally
         FreeandNil(List);
@@ -236,7 +231,9 @@ begin
             List.LoadFromStream(AProcess.Output);
             //if debugmode then debugln('SetServerID - Loadfromstream');
             if length(List.Text) = 0 then begin
-                if debugmode then debugln('CheckRemoteDir - Length was zero');
+
+                debugln('CheckRemoteDir - Length was zero');
+
                 List.LoadFromStream(AProcess.Stderr);
                 if length(List.Text) = 0 then
                     ErrorString := 'Unable to connect, unknown error'
@@ -245,7 +242,8 @@ begin
                 else if pos('Permission denied', List.Text) > 0 then
                     ErrorString := 'Unable to connect, check password'
                 else ErrorString := List.Text;
-                if Debugmode then debugln('CheckRemoteDir returning SyncNetworkError ' + ErrorString);
+
+                debugln('CheckRemoteDir returning SyncNetworkError ' + ErrorString);
                 exit(SyncNetworkError);
             end;
         except on
@@ -289,8 +287,10 @@ begin
             List := TStringList.Create;
             List.LoadFromStream(AProcess.Output);
             //if debugmode then debugln('SetServerID - Loadfromstream');
-            if length(List.Text) = 0 then begin
-                if debugmode then debugln('SetServerID - Length was zero');
+            if length(List.Text) = 0 then
+            begin
+                debugln('SetServerID - Length was zero');
+
                 List.LoadFromStream(AProcess.Stderr);
                 if length(List.Text) = 0 then
                     ErrorString := 'Unable to connect, unknown error'
@@ -312,7 +312,8 @@ begin
         if pos('No such file or directory', List.Text) > 0 then exit(SyncNoRemoteRepo); // no ID present, uninitialized ?
         if List.Count > 0 then
             ServerID := copy(List.Strings[List.Count-1], 1, 36);                        // Thats, perhaps, a serverID
-        if debugmode then debugln('SetServerID [' + ServerID + ']' + List.Text);
+
+        debugln('SetServerID [' + ServerID + ']' + List.Text);
     finally
         FreeandNil(List);
         AProcess.Free;
@@ -324,7 +325,7 @@ begin
     Result := SyncReady;
 end;
 
-function TAndSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
+function TAndSync.TestTransport(): TSyncAvailable;
 // OK, droping TestTransportEarly and merging most back here.
 var
     GUID : TGUID;
@@ -348,19 +349,18 @@ begin
             T3 := GetTickCount64();
             CreateGUID(GUID);
             ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
-            if WriteNewServerID and StampServerID(ServerID) then Result := SyncReady
-            else Result := SyncReady;
+            if StampServerID(ServerID) then Result := SyncReady;
             T3 := GetTickCount64();
-            if DebugMode then debugln('Made a new serverID ' + ServerID );
+
+            debugln('Made a new serverID ' + ServerID );
         end else begin
             debugln(ErrorString);
             exit;
         end;
     end;
 
-    if debugmode then
-        debugln('TestTransport ID=' + ServerID + ' SetServerID took ' + inttostr(T2 - T1)
-            + 'mS and StampID took ' + inttostr(T4 - T3));
+    debugln('TestTransport ID=' + ServerID + ' SetServerID took '
+    + inttostr(T2 - T1) + 'mS and StampID took ' + inttostr(T4 - T3));
 end;
 
 function TAndSync.SetTransport(): TSyncAvailable;
@@ -375,8 +375,8 @@ begin
                 exit(SyncNetworkError);
             end;
     T2 := GetTickCount64();
-    if debugmode then
-        debugln('SetTransport Ping took ' + inttostr(T2 - T1));
+
+    debugln('SetTransport Ping took ' + inttostr(T2 - T1));
     result := SyncReady;
 end;
 
@@ -407,11 +407,12 @@ begin
     AProcess.Free;
 end;
 
-function TAndSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TAndSync.GetNotes(const NoteMeta: TNoteInfoList): boolean;
 var
-        StList: TStringList = nil;
-        I : integer;
-        NoteInfo : PNoteInfo;
+   StList: TStringList = nil;
+   i : integer;
+   NoteInfo : PNoteInfo;
+   tmpfile :String;
 begin
     // by nature of how we get remote note date, always get LCD
     if NoteMeta = Nil then begin
@@ -421,26 +422,33 @@ begin
     StList := TStringList.Create;
     GetDroidMetaData(StList);
     if StList.Count > 0 then begin
-        for I := 0 to StList.Count -1 do begin
+        tmpfile := GetTempFileName;
+        for I := 0 to StList.Count -1 do
+        begin
             // if Debugmode then debugln('RET - [' + StList.Strings[I] + ']');
             new(NoteInfo);
-            NoteInfo^.Action:=SyUnset;
-            NoteInfo^.ID := copy(StList.Strings[I], 1, 36);
+            NoteInfo^.Action:=SynUnset;
+            NoteInfo^.ID := copy(StList.Strings[i], 1, 36);
             NoteInfo^.Rev := -1;
-            NoteInfo^.LastChange := copy(StList.Strings[I], pos('>', StList.Strings[I])+1, 33);
-            NoteInfo^.LastChangeGMT := GetGMTFromStr(NoteInfo^.LastChange);
-            NoteMeta.Add(NoteInfo);
+
+            if not DownLoad(NoteInfo^.ID, tmpfile) then begin
+                Debugln('ERROR - in TAndSync.GetNotes ' + ErrorString);
+                FreeAndNil(NoteInfo);
+                continue;
+            end;
+
+            if(FileToNote(tmpfile, NoteInfo ))
+              then NoteMeta.Add(NoteInfo)
+              else FreeAndNil(NoteInfo);
+
+            DeleteFile(tmpfile);
+
         end;
     end;
     freeandNil(StList);
     result := True;
 end;
 
-
-function TAndSync.GetNoteLastChange(const FullFileName : string) : string;
-begin
-    Result := GetNoteLastChangeSt(FullFileName, ErrorString);   // syncutils function
-end;
 
             // Puts back the tag string into a temp note downloaded from dev and puts it in note dir, overwrites
 procedure TAndSync.InsertNoteBookTags(const FullSourceFile, FullDestFile, TagString : string);
@@ -469,71 +477,6 @@ begin
         on E: EInOutError do
             debugln('File handling error occurred. Details: ' + E.Message);
     end;
-end;
-
-function TAndSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
-var
-    I : integer;
-begin
-    if not DirectoryExists(NotesDir + 'Backup') then
-        if not ForceDirectory(NotesDir + 'Backup') then begin
-            ErrorString := 'Failed to create Backup directory.';
-            exit(False);
-        end;
-    for I := 0 to DownLoads.Count-1 do begin
-        if DownLoads.Items[I]^.Action = SyDownLoad then begin
-            if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
-                // First make a Backup copy
-                if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
-                        NotesDir + 'Backup' + PathDelim + Downloads.Items[I]^.ID + '.note') then begin
-                    ErrorString := 'Failed to copy file to Backup ' + NotesDir + Downloads.Items[I]^.ID + '.note';
-                    exit(False);
-                end;
-            // OK, now pull down the file.
-            if not DownLoad(Downloads.Items[I]^.ID, NotesDir + Downloads.Items[I]^.ID + '.note') then begin
-                Debugln('ERROR - in TAndSync.DownloadNotes ' + ErrorString);
-                exit(false);
-            end;
-        end;
-    end;
-    result := True;
-{var                                      // trash this, turned out completely unnecessary !
-    I : integer;
-    NoteBookTags, DownloadTo : string;
-begin
-    if not DirectoryExists(NotesDir + 'Backup') then
-        if not ForceDirectory(NotesDir + 'Backup') then begin
-            ErrorString := 'Failed to create Backup directory.';
-            exit(False);
-        end;
-    for I := 0 to DownLoads.Count-1 do begin
-        if DownLoads.Items[I]^.Action = SyDownLoad then begin
-            DownLoadTo := NotesDir + Downloads.Items[I]^.ID + '.note';
-            if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then begin
-                NoteBookTags := SearchForm.NoteLister.NotebookTags(Downloads.Items[I]^.ID + '.note');
-                if NoteBookTags <> '' then begin
-                    DownLoadTo := ConfigDir + 'downFromDroid.note';
-                    if debugmode then debugln('Note has tags, download to '+ DownloadTo);
-                end;
-                // First make a Backup copy
-                if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
-                        NotesDir + 'Backup' + PathDelim + Downloads.Items[I]^.ID + '.note') then begin
-                    ErrorString := 'Failed to copy file to Backup ' + NotesDir + Downloads.Items[I]^.ID + '.note';
-                    debugln('Failed to copy [' + NotesDir + Downloads.Items[I]^.ID + '.note]');
-                    debugln('to [' + NotesDir + 'Backup' + PathDelim + Downloads.Items[I]^.ID + '.note]');
-                    exit(False);
-                end;
-            end;
-            // OK, now pull down the file.
-            if not DownLoad(Downloads.Items[I]^.ID, DownLoadTo) then begin
-                Debugln('ERROR - in TAndSync.DownloadNotes ' + ErrorString);
-                exit(false);
-            end;
-            if NoteBookTags <> '' then
-                InsertNoteBookTags(DownLoadTo, NotesDir + Downloads.Items[I]^.ID + '.note', NoteBookTags);
-        end;
-    end;
-    result := True;     }
 end;
 
 function TAndSync.RemoteFileExists(const ID: string): boolean;
@@ -617,22 +560,37 @@ begin
                 Result := False;
             end
         end;
-        if Debugmode then debugln('Transandroid DeleteNote removed ' + ID +' from device');
+
+        debugln('Transandroid DeleteNote removed ' + ID +' from device');
     finally
         FreeandNil(List);
         AProcess.Free;
     end;
 end;
 
-function TAndSync.UploadNotes(const Uploads: TStringList): boolean;
+function TAndSync.PushChanges(notes : TNoteInfoList) : boolean;
 var
-    Index : integer;
+    i : integer;
+    note : PNoteInfo;
 begin
-    for Index := 0 to Uploads.Count -1 do begin
-        if DebugMode then debugln('Uploading ' + Uploads.Strings[Index] + '.note');
-        if not UpLoad(Uploads.Strings[Index]) then begin
-            debugln('ERROR in TAndSync.UploadNotes' + ErrorString);
-            exit(False);
+    for i := 0 to notes.Count -1 do
+    begin
+        note := notes.Items[i];
+        if(note^.Action in [SynUploadEdit, SynUploadNew]) then
+        begin
+            debugln('Uploading ' + note^.ID + '.note');
+            if not UpLoad(note^.ID) then
+            begin
+                 debugln('ERROR in TAndSync.UploadNotes' + ErrorString);
+                 exit(False);
+            end;
+        end;
+
+        if note^.Action = SynDeleteRemote then
+        begin
+            Debugln('Delete remote note : ' + note^.ID);
+
+            if not DeleteNote(note^.ID,note^.Rev) then Exit(False);
         end;
     end;
     RunFSSync();
@@ -650,7 +608,7 @@ var
     InFile, OutFile: TextFile;
     NoteDateSt, InString : string;
 begin
-    NoteDateSt := GetNoteLastChangeSt(NotesDir + ID + '.note', ErrorString);
+    NoteDateSt := GetLocalNoteLastChange(NotesDir,ID, ErrorString);
     // debugln('Upload note date was ' + NoteDateSt);
     NoteDateSt := ConvertDateStrAbsolute(NoteDateSt);
     // debugln('Upload note date is  ' + NoteDateSt);
@@ -749,7 +707,8 @@ function TAndSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
     // on remote device. If this proves too slow, we could capture all this data
     // in the same way we get LCD. Please consider.
 begin
-    if DebugMode then debugln('Download to Temp ' + ID);
+    debugln('Download to Temp ' + ID);
+
     if DownLoad(ID, self.ConfigDir + 'remote.note') then
         Result := ConfigDir + 'remote.note'
     else Result := '';

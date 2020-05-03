@@ -15,7 +15,7 @@ unit transfile;
 interface
 
 uses
-    Classes, SysUtils, trans, SyncUtils;
+    Classes, SysUtils, trans, SyncUtils, LazLogger;
 
 type
 
@@ -23,32 +23,22 @@ type
 
   TFileSync = Class(TTomboyTrans)
     private
-        function GetNoteLastChange(const FullFileName: string): string;
-            // Reads the (filesync) remote Manifest for synced note details. It gets ID, RevNo
-            // and, if its there the LastChangeDate. If LCD is not in manifest and GetLCD
-            // is True, gets it from the file.
-        function ReadRemoteManifest(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
-
-
+        function GetRemoteNotePath(Rev: integer; NoteID : string = ''): string;
+        function GetRemoteNoteLastChange(const ID : string; rev : Integer; out Error : string) : string;
     public
-        //RemoteDir : string; // where the remote filesync repo lives.
         function SetTransport(): TSyncAvailable; override;
-        function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
-        function GetNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
-        function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
-        function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
-        function UploadNotes(const Uploads : TStringList) : boolean; override;
+        function TestTransport() : TSyncAvailable; override;
+        function GetNotes(const NoteMeta : TNoteInfoList) : boolean; override;
+        function PushChanges(notes : TNoteInfoList): boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
-        function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         function IDLooksOK() : boolean; Override;
         function getPrefix(): string; Override;
-        // function SetRemoteRepo(ManFile : string = '') : boolean; override;
-  end;
+    end;
 
 
 implementation
 
-uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger;
+uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil;
 
 { TFileSync }
 
@@ -62,38 +52,39 @@ begin
     Result := SyncReady;
 end;
 
-function TFileSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
+function TFileSync.TestTransport(): TSyncAvailable;
 var
     Doc : TXMLDocument;
     GUID : TGUID;
+    repo : String;
     ManExists, ZeroExists : boolean; // for readability of code only
-    ra : String;
 begin
 
-    setParam('RemoteAddess',AppendPathDelim(getParam('RemoteAddress')));
-    ra := getParam('RemoteAddress');
+    setParam('RemoteAddess',AppendPathDelim(ChompPathDelim(getParam('RemoteAddress'))));
+    repo := getParam('RemoteAddress');
 
-    if not DirectoryExists(ra) then
-        if not DirectoryExists(ra) then begin    // try again because it might be just remounted.
-	        ErrorString := 'Remote Dir does not exist ' + #10 + ra;
-	        exit(SyncNoRemoteDir);
+    if not DirectoryExists(repo) then
+        if not DirectoryExists(repo) then begin    // try again because it might be just remounted.
+           ErrorString := 'Remote Dir does not exist : ' + repo;
+	   exit(SyncNoRemoteDir);
         end;
-    if not DirectoryIsWritable(ra) then begin
-      ErrorString := 'Remote directory NOT writable ' + ra;
+
+    if not DirectoryIsWritable(repo) then begin
+      ErrorString := 'Remote directory NOT writable ' + repo;
       exit(SyncNoRemoteWrite);
     end;
 
-    ManExists := FileExists(ra + 'manifest.xml');
-    ZeroExists := DirectoryExists(ra + '0');
+    ManExists := FileExists(repo + 'manifest.xml');
+    ZeroExists := DirectoryExists(repo + '0');
 
     if (ManExists) and (not ZeroExists) then
     begin
-        ErrorString := 'Apparently damaged repo, missing 0 dir at ' + ra;
+        ErrorString := 'Apparently damaged repo, missing 0 dir at ' + repo;
     	exit(SyncBadRemote);
     end;
     if (not ManExists) and (ZeroExists) then
     begin
-        ErrorString := 'Apparently damaged repo, missing manifest at ' + ra;
+        ErrorString := 'Apparently damaged repo, missing manifest at ' + repo;
     	exit(SyncBadRemote);
     end;
 
@@ -101,12 +92,13 @@ begin
     begin
         CreateGUID(GUID);
         ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
-        RemoteServerRev := -1;
+        ServerRev := -1;
+        ForceDirectoriesUTF8(GetRemoteNotePath(0));
         exit(SyncReady);
     end;
 
     try
-       ReadXMLFile(Doc, ra + 'manifest.xml');
+       ReadXMLFile(Doc, repo + 'manifest.xml');
     except on E:Exception do
        begin
            ErrorString := E.message;
@@ -116,7 +108,7 @@ begin
 
     try
        ServerID := Doc.DocumentElement.GetAttribute('server-id');
-       RemoteServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
+       ServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
     except on E:Exception do
        begin
             ErrorString := E.message;
@@ -135,190 +127,194 @@ begin
     Result := SyncReady;
 end;
 
-function TFileSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
-begin
-    if NoteMeta = Nil then begin
-        ErrorString := 'Passed an uncreated list to GetNotes()';
-        exit(False);
-    end;
-    if FileExists(getParam('RemoteAddress') + 'manifest.xml') then
-        ReadRemoteManifest(NoteMeta, GetLCD);           // No remote manifest is aceptable here, new repo
-    result := True;
-end;
-
-
-function TFileSync.ReadRemoteManifest(const NoteMeta: TNoteInfoList; const GetLCD : boolean) : boolean;
+function TFileSync.GetNotes(const NoteMeta: TNoteInfoList): boolean;
 var
     Doc : TXMLDocument;
     NodeList : TDOMNodeList;
     Node : TDOMNode;
     j : integer;
     NoteInfo : PNoteInfo;
+    manifest,note : String;
 begin
-    Result := true;
-    try
-    	try
-    		ReadXMLFile(Doc, getParam('RemoteAddress') + 'manifest.xml');
-    		NodeList := Doc.DocumentElement.ChildNodes;
-    		if assigned(NodeList) then begin
-        		for j := 0 to NodeList.Count-1 do begin
-                    new(NoteInfo);
-                    NoteInfo^.Action:=SyUnset;
-                    Node := NodeList.Item[j].Attributes.GetNamedItem('id');
-                    NoteInfo^.ID := Node.NodeValue;									// ID does not contain '.note';
-					Node := NodeList.Item[j].Attributes.GetNamedItem('rev');
-                    NoteInfo^.Rev := strtoint(Node.NodeValue);                      // what happens if its empty ?
-                    Node := NodeList.Item[j].Attributes.GetNamedItem('last-change-date');
-                    if assigned(node) then
-                            NoteInfo^.LastChange:=Node.NodeValue
-                    else if GetLCD then begin               // Only bother to get it if we really need it
-                        if UsingRightRevisionPath(getParam('RemoteAddress'), NoteInfo^.Rev) then
-                            NoteInfo^.LastChange :=
-                                GetNoteLastChange(GetRevisionDirPath(getParam('RemoteAddress'), NoteInfo^.Rev, NoteInfo^.ID))
-                        else
-                            NoteInfo^.LastChange := GetNoteLastChange(getParam('RemoteAddress')
-                                    + '0' + pathdelim + inttostr(NoteInfo^.Rev)           // Ugly Hack
-                                    + pathdelim + NoteInfo^.ID + '.note');
-                    end;
-                    if NoteInfo^.LastChange <> '' then
-                        NoteInfo^.LastChangeGMT := GetGMTFromStr(NoteInfo^.LastChange);
-                    NoteMeta.Add(NoteInfo);
-                end;
-		end;
-		finally
-            Doc.Free;
-		end;
-	except
-      on E: EAccessViolation do Result := false;	// probably means we did not find an expected attribute
-      on E: EFOpenError do Result := False;		// File is not present.
-	end;
-    if Result = True then begin
-    	if debugmode then Debugln('Transfile.ReadRemoteManifest - read OK');
-    end else
-        DebugLn('We failed to read the remote manifest file ', getParam('RemoteAddress') + 'manifest.xml');
-end;
-
-
-function TFileSync.GetNoteLastChange(const FullFileName : string) : string;
-begin
-    Result := GetNoteLastChangeSt(FullFileName, ErrorString);   // syncutils function
-end;
-
-
-function TFileSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
-var
-    I : integer;
-    FullFileName : string;
-begin
-    if not DirectoryExists(NotesDir + 'Backup') then
-        if not ForceDirectory(NotesDir + 'Backup') then begin
-            ErrorString := 'Failed to create Backup directory.';
-            exit(False);
-        end;
-    for I := 0 to DownLoads.Count-1 do begin
-        if DownLoads.Items[I]^.Action = SyDownLoad then begin
-            if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
-                // First make a Backup copy
-                if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
-                        NotesDir + 'Backup' + PathDelim + Downloads.Items[I]^.ID + '.note') then begin
-                    ErrorString := 'Failed to copy file to Backup ' + NotesDir + Downloads.Items[I]^.ID + '.note';
-                    exit(False);
-                end;
-            // OK, now copy the file.
-
-            if UsingRightRevisionPath(getParam('RemoteAddress'), DownLoads.Items[i]^.Rev) then
-                FullFilename := GetRevisionDirPath(getParam('RemoteAddress'), DownLoads.Items[i]^.Rev
-                        , Downloads.Items[I]^.ID)
-            else
-                FullFilename := getParam('RemoteAddress') + '0' + pathdelim + inttostr(DownLoads.Items[i]^.Rev)   // Ugly Hack
-                        + pathdelim + Downloads.Items[I]^.ID + '.note';
-            if DebugMode then debugln('Will download ' +  FullFilename);
-            if not CopyFile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note')
-            then begin
-                    ErrorString := 'Failed to copy ' + Downloads.Items[I]^.ID + '.note';
-                    exit(False);
-            end;
-        end;
+    if NoteMeta = Nil then begin
+        ErrorString := 'Passed an uncreated list to GetNotes()';
+        exit(False);
     end;
-    result := True;
+
+    manifest:= getParam('RemoteAddress') + 'manifest.xml';
+    if not FileExists(manifest) then exit(true);
+
+    try
+         ReadXMLFile(Doc, manifest);
+    except on E:Exception do begin debugln(E.message); exit(false); end;
+    end;
+
+    NodeList := Doc.DocumentElement.ChildNodes;
+
+    if not assigned(NodeList) then
+    begin
+         Doc.Free;
+         debugln('We failed to read XML children in the remote manifest file '+manifest);
+         exit(false);
+    end;
+
+    for j := 0 to NodeList.Count-1 do
+    begin
+         new(NoteInfo);
+
+         NoteInfo^.Action:=SynUnset;
+         Node := NodeList.Item[j].Attributes.GetNamedItem('guid');
+         NoteInfo^.ID := Node.NodeValue;
+         If(not NoteIdLooksOk(NoteInfo^.ID)) then begin FreeAndNil(NoteInfo); continue; end;
+
+         Node := NodeList.Item[j].Attributes.GetNamedItem('latest-revision');
+         NoteInfo^.Rev := strtoint(Node.NodeValue);
+
+         note := GetRemoteNotePath(NoteInfo^.Rev, NoteInfo^.ID);
+         if(FileToNote(note, NoteInfo ))
+              then NoteMeta.Add(NoteInfo)
+              else FreeAndNil(NoteInfo);
+    end;
+
+    Doc.Free;
+
+    Debugln('Transfile.ReadRemoteManifest - read OK');
+    Result := true;
+
 end;
 
-function TFileSync.DeleteNote(const ID: string; const ExistRev : integer ): boolean;
-begin
-    // I _THINK_ all that happens is deleted note is not listed in remote manifest
-    // and that is done. But other thansport modes might need to do something here ?
-  result := True;
-end;
 
-function TFileSync.UploadNotes(const Uploads: TStringList): boolean;
+
+function TFileSync.PushChanges(notes : TNoteInfoList): boolean;
 var
-    Index : integer;
-    FullDirName : string;
+    i : integer;
+    d,n : string;
+    f : TextFile;
+    note : PNoteInfo;
 begin
-    if UsingRightRevisionPath(getParam('RemoteAddress'), RemoteServerRev + 1) then
-        FullDirName := GetRevisionDirPath(getParam('RemoteAddress'), RemoteServerRev + 1)
-    else
-        FullDirName := getParam('RemoteAddress') + '0' + PathDelim + inttostr(RemoteServerRev + 1) + PathDelim; // Ugly Hack
+   d := GetRemoteNotePath(ServerRev + 1);
+   ForceDirectoriesUTF8(d);
 
-  for Index := 0 to Uploads.Count -1 do begin
-      if DebugMode then debugln('Uploading ' + Uploads.Strings[Index] + '.note');
-      if not copyFile(NotesDir + Uploads.Strings[Index] + '.note',
-                FullDirname + Uploads.Strings[Index] + '.note')
-      then begin
-          ErrorString := 'ERROR copying ' + NotesDir + Uploads.Strings[Index] + '.note to '
-            + FullDirName + Uploads.Strings[Index] + '.note';
-          debugln(ErrorString);
-          exit(False);
-	  end;
-  end;
-  result := True;
+
+   for i := 0 to notes.Count -1 do
+   begin
+       note := notes.Items[i];
+
+       if(not (note^.Action in [SynUploadEdit, SynUploadNew])) then continue;
+
+       debugln('Uploading ' + note^.ID );
+       n := GetRemoteNotePath(ServerRev + 1,note^.ID);
+
+       try
+            AssignFile(f,n);
+            WriteLn(f,'<?xml version="1.0" encoding="utf-8"?>');
+            WriteLn(f,'<note version="' + note^.Version + '" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">');
+            WriteLn(f,'<title>' + note^.Title + '</title>');
+            WriteLn(f,'<create-date>' + note^.CreateDate + '</create-date>');
+            WriteLn(f,'<last-change-date>' + note^.LastChange + '</last-change-date>');
+            WriteLn(f,'<last-metadata-change-date>' + note^.LastMetaChange + '</last-metadata-change-date>');
+            WriteLn(f,'<width>' + IntToStr(note^.Width) + '</width>');
+            WriteLn(f,'<height>' + IntToStr(note^.Height) + '</height>');
+            WriteLn(f,'<x>' + IntToStr(note^.X) + '</x>');
+            WriteLn(f,'<y>' + IntToStr(note^.Y) + '</y>');
+            WriteLn(f,'<selection-bound-position>' + IntToStr(note^.SelectBoundPosition) + '</selection-bound-position>');
+            WriteLn(f,'<cursor-position>' + IntToStr(note^.CursorPosition) + '</cursor-position>');
+            WriteLn(f,'<pinned>' + BoolToStr(note^.Pinned) + '</pinned>');
+            WriteLn(f,'<open-on-startup>' + BoolToStr(note^.OpenOnStartup) + '</open-on-startup>');
+            WriteLn(f,'<text xml:space="preserve"><note-content version=">' + note^.Version + '">' + note^.Content + '</note-content></text> ');
+            CloseFile(f);
+       except on E:Exception do
+           begin
+              ErrorString := E.message;
+              debugln(ErrorString);
+              exit(false);
+           end;
+       end;
+   end;
+   result := True;
 end;
 
 function TFileSync.DoRemoteManifest(const RemoteManifest: string): boolean;
+var
+    d : String;
+    f : TextFile;
 begin
-    // I think that ForceDir will make intermediate dir too ......
-    // if not ForceDirectoriesUTF8(RemoteAddress + '0' + PathDelim + inttostr(self.RemoteServerRev + 1)) then begin
-    if not ForceDirectoriesUTF8(GetRevisionDirPath(getParam('RemoteAddress'), RemoteServerRev + 1)) then
-    begin
-        ErrorString := 'Failed to create new remote revision dir '
-                + GetRevisionDirPath(getParam('RemoteAddress'), RemoteServerRev + 1);
-        debugln(ErrorString);
-        exit(False);
+    debugln('DoRemote Manifest ' + RemoteManifest);
+
+    try
+       AssignFile(f,getParam('RemoteAddress') + 'manifest.xml');
+       Rewrite(f);
+       Write(f,RemoteManifest);
+       Close(f);
+
+       d := GetRemoteNotePath(ServerRev + 1);
+       ForceDirectoriesUTF8(d);
+
+       AssignFile(f,d + 'manifest.xml');
+       Rewrite(f);
+       Write(f,RemoteManifest);
+       Close(f)
+    except on E:Exception do begin
+       ErrorString := E.message;
+       debugln(ErrorString);
+       exit(false);
+       end;
     end;
-  if debugmode then  debugln('Remote Manifest is ' + RemoteManifest);
-  if not CopyFile(RemoteManifest, getParam('RemoteAddress') + 'manifest.xml') then begin
-      ErrorString := 'Failed to move new root remote manifest file ' + RemoteManifest;
-      debugln(ErrorString);
-      exit(False);
-  end;
-  {if not CopyFile(RemoteManifest, RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1)
-        + PathDelim + 'manifest.xml') then begin }
-  if not CopyFile(RemoteManifest, GetRevisionDirPath(getParam('RemoteAddress'), RemoteServerRev + 1) + 'manifest.xml') then
-  begin
-      ErrorString := 'Failed to move new remote manifest file to revision dir';
-      debugln(ErrorString);
-      exit(False);
-  end;
-  Result := True;
+
+    Result := True;
 end;
 
-function TFileSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
-begin
-    //Result := RemoteAddress + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
-    // Due to early bug in -ng, its possible that a file on eg sync rev 393 is in
-    // either ~/0/393 or in ~/3/393 - we cannot assume here folks !
-
-    Result := GetRevisionDirPath(getParam('RemoteAddress'), RevNo, ID);
-    if FileExists(Result) then exit;
-    Result := getParam('RemoteAddress') + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
-    if not FileExists(Result) then debugln('transfile -> Download() Unable to locate file ' + inttostr(RevNo) + ' ' + ID);
-end;
 
 function TFileSync.IDLooksOK() : boolean;
 begin
     if length(ServerID) <> 36 then exit(false);
     if pos('-', ServerID) <> 9 then exit(false);
     result := True;
+end;
+
+function TFileSync.GetRemoteNotePath(Rev: integer; NoteID : string = ''): string;
+var
+   s,path : String;
+   SearchResult : TSearchRec;
+begin
+
+    path := getParam('RemoteAddress');
+
+    if ((Rev<0) or (FindFirst(path + '*.note',faAnyFile,SearchResult) = 0))
+    then s := path
+    else s := appendpathDelim(path
+        + inttostr(Rev div 100) + pathDelim + inttostr(rev));
+
+    if NoteID <> '' then
+        s := s + NoteID + '.note';
+
+    Result := s;
+end;
+
+function TFileSync.GetRemoteNoteLastChange(const ID : string; rev : Integer; out Error : string) : string;
+var
+   Doc : TXMLDocument;
+   Node : TDOMNode;
+   filename : string;
+begin
+   filename := GetRemoteNotePath(rev,ID);
+
+   if not FileExists(filename) then
+   begin
+        Error := 'ERROR - File not found, cant read note change date for remote ' +  filename;
+        exit('');
+    end;
+
+    try
+       ReadXMLFile(Doc, filename);
+       Node := Doc.DocumentElement.FindNode('last-change-date');
+       Result := Node.FirstChild.NodeValue;
+    except on E:Exception do begin
+       Error := E.message;
+       debugln(Error);
+       Result := '';
+       end;
+    end;
 end;
 
 end.

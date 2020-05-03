@@ -22,6 +22,7 @@ public
     constructor Create(); overload;
     function WebGet(u : String; params : TStrings ) : String;
     function WebPost(u : String; params : TStrings) : String;
+    function WebPut(u : String; params : TStrings; data : String) : String;
     function URLEncode(s: String): String;
     function URLDecode(s: String): String;
     procedure ParamsSort(const params : TStrings);
@@ -243,6 +244,39 @@ begin
   end;
   FreeAndNil(Client);
   FreeAndNil(p);
+  FreeAndNil(res);
+end;
+
+function TOAuth.WebPut(u : String; params : TStrings; data : String) : String;
+var
+  Client: TFPHttpClient;
+  res : TStringStream;
+  i : integer;
+begin
+
+  Client := TFPHttpClient.Create(nil);
+  Client.OnGetSocketHandler := @HttpClientGetSocketHandler;
+  Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
+  Client.AllowRedirect := true;
+
+  res := TStringStream.Create('');
+
+  i:=0;
+  while(i<params.Count) do begin
+    if(i=0) then u := u + '?' else u := u + '&';
+    u := u + URLEncode(params[i]) + '=' + URLEncode(params[i+1]);
+    i := i +2;
+  end;
+
+  try
+    Client.FormPost(u,data,res);
+    Result := res.DataString;
+  except on E:Exception do begin
+    ShowMessage(E.message);
+    Result := '';
+    end;
+  end;
+  FreeAndNil(Client);
   FreeAndNil(res);
 end;
 

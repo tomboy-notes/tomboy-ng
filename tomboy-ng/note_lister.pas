@@ -652,7 +652,7 @@ begin
                 if (Pos('<last-change-date>', InString) > 0) then
                     writeln(OutFile, '  <last-change-date>'
                                 // + copy(LCD, 1, 10) + 'T' + copy(LCD, 12, 8) + '.1000000+00:00'
-                                + Sett.GetLocalTime()
+                                + GetCurrentTimeStr()
                                 + '</last-change-date>')
                 else writeln(OutFile, InString);
 		    end;

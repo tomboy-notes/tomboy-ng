@@ -56,7 +56,6 @@ type
         procedure FormShow(Sender: TObject);
     private
         ProfileName, IPAddress, Password : string;    // Keep copies to see if user changed after selection
-        procedure AdjustNoteList();
         procedure ClearFields();
         procedure DisplaySync();
         procedure DoNewSync();
@@ -259,9 +258,9 @@ begin
     Application.ProcessMessages;
     try
         ASync := TSync.Create();
-        ASync.DebugMode:=CheckBoxDebugMode.Checked;
+        //ASync.DebugMode:=CheckBoxDebugMode.Checked;
         //ASync.TestRun := CheckBoxTestRun.Checked;
-        ASync.ProceedFunction:=@Proceed;
+        ASync.ClashFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
         ASync.ConfigDir := Sett.LocalConfig;
         // ASync.LocalServerID := LabelServerID.Caption;       // Only do this for Tomdroid Use!
@@ -274,7 +273,7 @@ begin
         Memo1.Append(rsTalking);
         Application.ProcessMessages;
         Tick2 := GetTickCount64();
-        case ASync.TestConnection(CheckBoxTestRun.Checked) of
+        case ASync.TestConnection() of
             SyncNoRemoteDir :
                 begin
                     Memo1.append(rsNoTomdroid );
@@ -297,39 +296,18 @@ begin
         Application.ProcessMessages;
         Tick3 := GetTickCount64();
         ASync.StartSync(CheckBoxTestRun.Checked);
-        LabelServerID.Caption := ASync.LocalServerID;
+        //LabelServerID.Caption := ASync.LocalServerID;
         Tick4 := GetTickCount64();
         DisplaySync();
         memo1.Append('Set=' + inttostr(Tick2 - Tick1) + 'mS Test=' + inttostr(Tick3 - Tick2) + 'mS Sync=' + inttostr(Tick4 - Tick3) + 'mS ');
         ShowReport();
-        AdjustNoteList();
+        SearchForm.ProcessSyncUpdates(Async.DeletedList, Async.DownList);
     finally
       ASync.Free;
       EnableButtons(True);
     end;
     if not CheckBoxTestRun.Checked then             // don't write a config if its only a test run.
         ButtonSaveProfile.Enabled := NeedToSave();
-end;
-
-procedure TFormTomdroid.AdjustNoteList();
-var
-    DeletedList, DownList : TStringList;
-    Index : integer;
-begin
-    DeletedList := TStringList.Create;
-    DownList := TStringList.Create;
- 	with ASync.NoteMetaData do begin
-		for Index := 0 to Count -1 do begin
-            if Items[Index]^.Action = SyDeleteLocal then
-                DeletedList.Add(Items[Index]^.ID);
-            if Items[Index]^.Action = SyDownload then
-                DownList.Add(Items[Index]^.ID);
-        end;
-    end;
-    if (DeletedList.Count > 0) or (DownList.Count > 0) then
-        SearchForm.ProcessSyncUpdates(DeletedList, DownList);
-   FreeandNil(DeletedList);
-   FreeandNil(DownList);
 end;
 
 procedure TFormTomdroid.ButtonJoinClick(Sender: TObject);
@@ -351,39 +329,41 @@ end;
 
 procedure TFormTomdroid.DisplaySync();
 var
-    UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
+    UpNew, UpEdit, Down, DelLoc, DelRem, CreateCopy, DoNothing, Undecided : integer;
 begin
-    ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors);
+    ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, CreateCopy, DoNothing, Undecided);
     Memo1.Append(rsNewUploads + inttostr(UpNew));
     Memo1.Append(rsEditUploads + inttostr(UpEdit));
     Memo1.Append(rsDownloads + inttostr(Down));
     Memo1.Append(rsLocalDeletes + inttostr(DelLoc));
     Memo1.Append(rsRemoteDeletes + inttostr(DelRem));
-    Memo1.Append(rsClashes + inttostr(Clash));
     Memo1.Append(rsDoNothing + inttostr(DoNothing));
+    Memo1.Append(rsUndecided + inttostr(Undecided));
 end;
 
 procedure TFormTomdroid.ShowReport();
 var
-        Index : integer;
-        Rows : integer = 0;
+    Rows,i : integer;
 begin
     StringGridReport.Clean;
- 	with ASync.NoteMetaData do begin
-		for Index := 0 to Count -1 do begin
-            if Items[Index]^.Action <> SyNothing then begin
-                    StringGridReport.InsertRowWithValues(Rows
-            	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
-                        , Items[Index]^.Title, Items[Index]^.ID]);
-                    inc(Rows);
-            end;
-		end
-	end;
+    i := 0;
+    Rows :=0;
+    while (i<Async.GridReportList.Count) do
+    begin
+        StringGridReport.InsertRowWithValues(
+            Rows,
+            [Async.GridReportList.Strings[i],
+            Async.GridReportList.Strings[i+1],
+            Async.GridReportList.Strings[i+2]]);
+        inc(Rows);
+        i := i+3;
+    end;
+
     StringGridReport.AutoSizeColumn(0);
     StringGridReport.AutoSizeColumn(1);
-    if  Rows = 0 then
-        Memo1.Append(rsNoNotesNeededSync);
-    Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
+    if  Rows = 0
+    then Memo1.Append(rsNoNotesNeededSync)
+    else Memo1.Append(inttostr(Rows) + rsNotesWereDealt);
 end;
 
 function TFormTomdroid.NeedToSave() : boolean;
@@ -415,12 +395,12 @@ begin
     Application.ProcessMessages;
     try
         ASync := TSync.Create();
-        ASync.DebugMode:=CheckBoxDebugMode.Checked;
+        //ASync.DebugMode:=CheckBoxDebugMode.Checked;
         //ASync.TestRun := CheckBoxTestRun.Checked;
-        ASync.ProceedFunction:=@Proceed;
+        ASync.ClashFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
         ASync.ConfigDir := Sett.LocalConfig;
-        ASync.LocalServerID := LabelServerID.Caption;       // Only do this for Tomdroid !
+        //ASync.LocalServerID := LabelServerID.Caption;       // Only do this for Tomdroid !
         //ASync.RepoAction:= RepoUse;
         Tick1 := GetTickCount64();
         if SyncNetworkError = Async.SetTransport(SyncAndroid) then begin      // this just pings remote dev
@@ -430,7 +410,7 @@ begin
         Memo1.Append(rsTalkingToDevice);
         Application.ProcessMessages;
         Tick2 := GetTickCount64();
-        case ASync.TestConnection(CheckBoxTestRun.Checked) of
+        case ASync.TestConnection() of
             // SyncXMLError, SyncNoRemoteWrite, SyncNoRemoteDir :
             SyncNoLocal :
                 begin Memo1.Append(ASync.ErrorString); Memo1.Append('Sync is cancelled'); exit(False); end;
@@ -450,7 +430,7 @@ begin
         else begin showmessage(ASync.ErrorString); exit(False); end;
         end;
         // If to here, sync should be enabled and know about remote files it might need.
-        Memo1.append(rsHaveValidSync + ASync.LocalLastSyncDateSt);
+        // Memo1.append(rsHaveValidSync + ASync.LocalLastSyncDateSt);
         Memo1.append(rsNextBitSlow);
         Application.ProcessMessages;
         Tick3 := GetTickCount64();
@@ -459,7 +439,7 @@ begin
         DisplaySync();
         memo1.Append('Set=' + inttostr(Tick2 - Tick1) + 'mS Test=' + inttostr(Tick3 - Tick2) + 'mS Sync=' + inttostr(Tick4 - Tick3) + 'mS ');
         ShowReport();
-        AdjustNoteList();
+        SearchForm.ProcessSyncUpdates(Async.DeletedList, Async.DownList);
     finally
       ASync.Free;
       EnableButtons(True);
@@ -475,18 +455,18 @@ var
     SDiff : TFormSDiff;
     Res : integer;
 begin
-    result := SyDownload;
+    result := SynDownload;
     SDiff := TFormSDiff.Create(self);
-    SDiff.RemoteFilename := ClashRec.ServerFileName;
-    SDiff.LocalFilename := ClashRec.LocalFileName;
+    //SDiff.RemoteFilename := ClashRec.ServerFileName;
+    //SDiff.LocalFilename := ClashRec.LocalFileName;
     Res := SDiff.ShowModal;
     case Res of
-            mrYes      : Result := SyDownLoad;
-            mrNo       : Result := SyUpLoadEdit;
-            mrNoToAll  : Result := SyAllLocal;
-            mrYesToAll : Result := SyAllRemote;
-            mrAll      : Result := SyAllNewest;
-            mrClose    : Result := SyAllOldest;
+            mrYes      : Result := SynDownLoad;
+            mrNo       : Result := SynUpLoadEdit;
+            mrNoToAll  : Result := SynAllLocal;
+            mrYesToAll : Result := SynAllRemote;
+            mrAll      : Result := SynAllNewest;
+            mrClose    : Result := SynAllOldest;
      end;
     SDiff.Free;
     Application.ProcessMessages;    // so dialog goes away while remainder are being processed.

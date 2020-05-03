@@ -318,15 +318,7 @@ var
     // LocalMan : TTomboyLocalManifest;
     LocalMan : TSync;
 begin
-    // debugln('DeleteNote ' + FullFileName);
     ShortFileName := ExtractFileNameOnly(FullFileName);
-    LocalMan := TSync.Create;
-    LocalMan.DebugMode:=false;
-    LocalMan.ConfigDir:= Sett.LocalConfig;
-    LocalMan.NotesDir:= Sett.NoteDirectory;
-    if not LocalMan.DeleteFromLocalManifest(copy(ShortFileName, 1, 36)) then
-        showmessage('Error marking note delete in local manifest ' + LocalMan.ErrorString);
-    LocalMan.Free;
     if NoteLister.IsATemplate(ShortFileName) then begin
         NoteLister.DeleteNoteBookwithID(ShortFileName);
       	DeleteFileUTF8(FullFileName);

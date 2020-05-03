@@ -129,6 +129,7 @@ type
 	  LabelFileSync: TLabel;
 	  LabelNCSyncURL: TLabel;
           Panel4: TPanel;
+          RadioMakeCopy: TRadioButton;
           RadioSyncNone: TRadioButton;
 	  RadioSyncFile: TRadioButton;
 	  RadioSyncNC: TRadioButton;
@@ -252,7 +253,6 @@ type
 	procedure PageControl1Change(Sender: TObject);
         procedure RadioConflictChange(Sender: TObject);
 	procedure SpeedButHelpClick(Sender: TObject);
-        procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
 	procedure ButtonFileSetupClick(Sender: TObject);
         procedure StringGridBackUpDblClick(Sender: TObject);
@@ -349,9 +349,6 @@ type
             { Indicates Spell is configured and LabelLibrary and LabelDic should
             contain valid full file names.}
         SpellConfig : boolean;
-        // service functon to other units, returns a string with current datetime
-        // in a format like the Tomboy schema.
-        function GetLocalTime: ANSIstring;
             { Triggers a Sync, if its not all setup aready and working, user show and error }
         procedure Synchronise();
         property ExportPath : ANSIString Read fExportPath write fExportPath;
@@ -391,7 +388,7 @@ uses IniFiles, LazLogger,
     Autostart,
     Colours,
     ResourceStr     // only partioally so far ....
-    {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
+    ;
 
 var
     Spell: THunspell;
@@ -444,7 +441,8 @@ procedure TSett.RadioConflictChange(Sender: TObject);
 begin
 	if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
         else if RadioUseLocal.Checked then SyncOption := UseLocal
-        else if RadioUseServer.Checked then SyncOption := UseServer;
+        else if RadioUseServer.Checked then SyncOption := UseServer
+        else if RadioMakeCopy.Checked then SyncOption := MakeCopy;
 end;
 
 
@@ -453,10 +451,6 @@ begin
         MainForm.ShowHelpNote('sync-ng.note');
 end;
 
-procedure TSett.SpeedButHideClick(Sender: TObject);
-begin
-    Hide;
-end;
 
 procedure TSett.SpeedButtTBMenuClick(Sender: TObject);
 begin
@@ -917,6 +911,7 @@ begin
               'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
               'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
               'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
+              'MakeCopy' : begin SyncOption := MakeCopy; RadioMakeCopy.Checked := True; end;
 	 end;
 
          tmp := ConfigFile.readstring('SyncSettings', 'SyncType', '');          // this is new way to do it, file, nextcloud, etc
@@ -1106,6 +1101,7 @@ begin
 		AlwaysAsk : ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk');
                 UseLocal : ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal');
                 UseServer : ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
+	        MakeCopy : ConfigFile.writestring('SyncSettings', 'SyncOption', 'MakeCopy');
 	    end;
 
             if getSyncTested() then
@@ -1484,29 +1480,6 @@ begin
     onChange(Sender);
 end;
 
-
-function TSett.GetLocalTime: ANSIstring;
-var
-   ThisMoment : TDateTime;
-   Res : ANSIString;
-   Off : longint;
-begin
-    {$ifdef LINUX}
-    ReReadLocalTime();    // in case we are near daylight saving time changeover
-    {$endif}
-    ThisMoment:=Now;
-    Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
-                   + FormatDateTime('hh:mm:ss.zzz"0000"',ThisMoment);
-    Off := GetLocalTimeOffset();
-    if (Off div -60) >= 0 then Res := '+'
-	else Res := '-';
-	if abs(Off div -60) < 10 then Res := Res + '0';
-	Res := Res + inttostr(abs(Off div -60)) + ':';
-       	if (Off mod 60) = 0 then
-		Res := res + '00'
-	else Res := Res + inttostr(abs(Off mod 60));
-    Result := Result + res;
-end;
 
 end.
 

@@ -218,8 +218,7 @@ end;
 procedure TFormNCSetup.AuthSuccess(i : Int64);
 var
   p : TStrings;
-  res, s1, s2, s3, resturl, u : String;
-  ok : boolean;
+  res, s1, s2 : String;
   ts : TSysCharSet;
 begin
   NCAuth.Enabled :=false;
@@ -236,7 +235,6 @@ begin
   ts:=['&'];
   s1 := ExtractWord(1, res, ts);
   s2 := ExtractWord(2, res, ts);
-  s3 := ExtractWord(3, res, ts);
 
   ts:=['='];
 

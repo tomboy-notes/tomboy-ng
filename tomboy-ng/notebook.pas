@@ -205,12 +205,12 @@ begin
                     case NextSeekString of
                         '<last-change-date>' : begin
                                                     writeln(outFile, '  <last-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-change-date>');
+                                                        + GetCurrentTimeStr() + '</last-change-date>');
                                                     NextSeekString := '<last-metadata-change-date>';
                                                 end;
                         '<last-metadata-change-date>' : begin
                                                     writeln(outFile, '  <last-metadata-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-metadata-change-date>');
+                                                        + GetCurrentTimeStr() + '</last-metadata-change-date>');
                                                     NextSeekString := '<y>';
                                                 end;
                         '<y>' :     begin
@@ -281,12 +281,12 @@ begin
                                     end;
                         '<last-change-date>' : begin
                                                     writeln(outFile, '  <last-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-change-date>');
+                                                        + GetCurrentTimeStr() + '</last-change-date>');
                                                     NextSeekString := '<last-metadata-change-date>';
                                                 end;
                         '<last-metadata-change-date>' : begin
                                                     writeln(outFile, '  <last-metadata-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-metadata-change-date>');
+                                                        + GetCurrentTimeStr() + '</last-metadata-change-date>');
                                                     NextSeekString := '<y>';
                                                 end;
                         '<y>' :     begin

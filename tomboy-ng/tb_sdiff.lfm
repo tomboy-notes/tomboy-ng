@@ -1,198 +1,249 @@
 object FormSDiff: TFormSDiff
-  Left = 493
-  Height = 481
-  Top = 107
-  Width = 588
+  Left = 849
+  Height = 435
+  Top = 203
+  Width = 645
   VertScrollBar.Visible = False
   Caption = 'A Note Sync Clash has been Detected'
-  ClientHeight = 481
-  ClientWidth = 588
+  ClientHeight = 435
+  ClientWidth = 645
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
-  object Panel1: TPanel
-    AnchorSideLeft.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = BitBtnUseLocal
-    Left = 2
-    Height = 50
-    Top = 389
-    Width = 586
-    Anchors = [akLeft, akRight, akBottom]
-    BorderSpacing.Left = 2
-    ClientHeight = 50
-    ClientWidth = 586
-    TabOrder = 0
-    object LabelRemote: TLabel
-      Left = 140
-      Height = 19
-      Top = 6
-      Width = 95
-      Caption = 'LabelRemote'
-      ParentColor = False
-    end
-    object LabelLocal: TLabel
-      Left = 140
-      Height = 19
-      Top = 24
-      Width = 74
-      Caption = 'LabelLocal'
-      ParentColor = False
-    end
-    object Label3: TLabel
-      Left = 11
-      Height = 19
-      Top = 6
-      Width = 124
-      Caption = 'Remote Changed'
-      ParentColor = False
-    end
-    object Label4: TLabel
-      Left = 11
-      Height = 19
-      Top = 24
-      Width = 103
-      Caption = 'Local Changed'
-      ParentColor = False
-    end
-    object RadioLong: TRadioButton
-      Left = 488
-      Height = 24
-      Hint = 'Maybe necessary to show difference'
-      Top = 24
-      Width = 102
-      Caption = 'Long Lines'
-      OnChange = RadioLongChange
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 0
-    end
-    object RadioShort: TRadioButton
-      Left = 488
-      Height = 24
-      Hint = 'Easier to read'
-      Top = 1
-      Width = 106
-      Caption = 'Short Lines'
-      Checked = True
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 1
-      TabStop = True
-    end
-  end
+  LCLVersion = '2.0.8.0'
   object Label1: TLabel
+    AnchorSideLeft.Control = Button1
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Button1
+    AnchorSideRight.Control = ButtAllRemote
     AnchorSideBottom.Control = ButtAllRemote
-    Left = 7
-    Height = 19
-    Top = 436
-    Width = 302
-    Anchors = [akBottom]
-    Caption = 'Or make a choice for remainder of this run'
+    Left = 346
+    Height = 30
+    Top = 387
+    Width = 119
+    Anchors = [akTop, akRight]
+    BorderSpacing.Left = 10
+    BorderSpacing.Right = 10
+    Caption = 'Or make a choice for '#10'remainder of this run'
     ParentColor = False
   end
   object ButtAllOldest: TButton
-    AnchorSideRight.Control = BitBtnUseRemote
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 267
+    Left = 558
     Height = 25
-    Top = 455
-    Width = 101
+    Top = 400
+    Width = 77
     Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 1
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 10
     Caption = 'Oldest'
     ModalResult = 11
-    TabOrder = 1
+    TabOrder = 0
   end
   object ButtAllNewest: TButton
     AnchorSideRight.Control = ButtAllOldest
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 167
+    Left = 473
     Height = 25
-    Top = 455
-    Width = 100
-    Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 1
-    Caption = 'Newest'
-    ModalResult = 8
-    TabOrder = 2
-  end
-  object ButtAllLocal: TButton
-    AnchorSideRight.Control = ButtAllNewest
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 92
-    Height = 25
-    Top = 455
+    Top = 400
     Width = 75
     Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 1
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 10
+    Caption = 'Newest'
+    ModalResult = 8
+    TabOrder = 1
+  end
+  object ButtAllLocal: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ButtAllOldest
+    Left = 560
+    Height = 25
+    Top = 370
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 5
     Caption = 'Local'
     ModalResult = 9
-    TabOrder = 3
+    TabOrder = 2
   end
   object ButtAllRemote: TButton
     AnchorSideRight.Control = ButtAllLocal
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 17
+    AnchorSideBottom.Control = ButtAllNewest
+    Left = 475
     Height = 25
-    Top = 455
+    Top = 370
     Width = 75
     Anchors = [akRight, akBottom]
-    BorderSpacing.Bottom = 1
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 5
     Caption = 'Remote'
     ModalResult = 10
-    TabOrder = 4
+    TabOrder = 3
   end
   object BitBtnUseLocal: TBitBtn
+    AnchorSideLeft.Control = BitBtnUseRemote
+    AnchorSideLeft.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 478
-    Height = 42
-    Top = 439
-    Width = 110
-    Anchors = [akRight, akBottom]
+    Left = 110
+    Height = 38
+    Top = 387
+    Width = 90
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 10
+    BorderSpacing.Bottom = 10
     Caption = 'Use Local'
     Color = clAqua
     ModalResult = 7
-    TabOrder = 5
+    TabOrder = 4
   end
   object BitBtnUseRemote: TBitBtn
+    AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = BitBtnUseLocal
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 368
-    Height = 42
-    Top = 439
-    Width = 110
-    Anchors = [akRight, akBottom]
+    Left = 10
+    Height = 38
+    Top = 387
+    Width = 90
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 10
+    BorderSpacing.Bottom = 10
     Caption = 'Use Remote'
     Color = clYellow
     ModalResult = 6
+    TabOrder = 5
+  end
+  object Button1: TButton
+    AnchorSideLeft.Control = BitBtnUseLocal
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 209
+    Height = 38
+    Top = 387
+    Width = 90
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 9
+    BorderSpacing.Bottom = 10
+    Caption = 'Make Copy'
+    Color = clGradientActiveCaption
+    ModalResult = 4
     TabOrder = 6
   end
-  object KMemo1: TKMemo
+  object NoteID: TLabel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
+    Left = 10
+    Height = 15
+    Top = 10
+    Width = 71
+    BorderSpacing.Left = 10
+    BorderSpacing.Top = 10
+    Caption = 'Note ID : '
+    Font.Height = -13
+    Font.Name = 'Sans'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object TitleLocal: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = NoteID
+    AnchorSideTop.Side = asrBottom
+    Left = 10
+    Height = 15
+    Top = 35
+    Width = 53
+    BorderSpacing.Left = 10
+    BorderSpacing.Top = 10
+    Caption = 'TitleLocal'
+    ParentColor = False
+  end
+  object ChangeLocal: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = TitleLocal
+    AnchorSideTop.Side = asrBottom
+    Left = 10
+    Height = 18
+    Top = 60
+    Width = 72
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 10
+    BorderSpacing.Top = 10
+    BorderSpacing.Bottom = 10
+    Caption = 'ChangeLocal'
+    ParentColor = False
+  end
+  object TitleRemote: TLabel
+    AnchorSideLeft.Control = MemoRemote
+    AnchorSideTop.Control = NoteID
+    AnchorSideTop.Side = asrBottom
+    Left = 340
+    Height = 15
+    Top = 35
+    Width = 67
+    BorderSpacing.Left = 10
+    BorderSpacing.Top = 10
+    Caption = 'TitleRemote'
+    ParentColor = False
+  end
+  object ChangeRemote: TLabel
+    AnchorSideLeft.Control = MemoRemote
+    AnchorSideTop.Control = TitleRemote
+    AnchorSideTop.Side = asrBottom
+    Left = 340
+    Height = 15
+    Top = 60
+    Width = 86
+    BorderSpacing.Left = 10
+    BorderSpacing.Top = 10
+    Caption = 'ChangeRemote'
+    ParentColor = False
+  end
+  object MemoLocal: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = ChangeLocal
+    AnchorSideTop.Side = asrBottom
+    AnchorSideBottom.Control = ButtAllRemote
+    Left = 10
+    Height = 272
+    Top = 88
+    Width = 305
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 10
+    BorderSpacing.Top = 10
+    BorderSpacing.Bottom = 10
+    Color = clInfoBk
+    Lines.Strings = (
+      'MemoLocal'
+    )
+    TabOrder = 7
+  end
+  object MemoRemote: TMemo
+    AnchorSideTop.Control = ChangeLocal
+    AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Panel1
-    Left = 0
-    Height = 389
-    Top = 0
-    Width = 588
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    ContentPadding.Left = 5
-    ContentPadding.Top = 5
-    ContentPadding.Right = 5
-    ContentPadding.Bottom = 5
-    ParentFont = False
-    TabOrder = 7
-    Visible = True
+    AnchorSideBottom.Control = ButtAllRemote
+    Left = 330
+    Height = 272
+    Top = 88
+    Width = 305
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 10
+    Lines.Strings = (
+      'MemoRemote'
+    )
+    TabOrder = 8
   end
 end

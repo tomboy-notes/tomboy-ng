@@ -23,18 +23,14 @@ TNextSync = Class(TTomboyTrans)
 
     public
         constructor create;
-        destructor Destroy;
-        function TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable; override;
+        destructor Destroy; override;
+        function TestTransport(): TSyncAvailable; override;
         function SetTransport(): TSyncAvailable; override;
-        function GetNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
-        function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
-        function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
-        function UploadNotes(const Uploads : TStringList) : boolean; override;
+        function GetNotes(const NoteMeta : TNoteInfoList) : boolean; override;
+        function PushChanges(notes : TNoteInfoList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
-        function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         function IDLooksOK() : boolean; Override;
         function getPrefix(): string; Override;
-        //function SetRemoteRepo(ManFile : string = '') : boolean; override;
  end;
 
 
@@ -59,14 +55,15 @@ begin
   Result := 'nc';
 end;
 
-function TNextSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
+function TNextSync.TestTransport(): TSyncAvailable;
 var
   resturl,res : String;
   json : TJSONData;
   jObject : TJSONObject;
   p : TStrings;
   ok : boolean;
-  ts : TSysCharSet;
+  sid : String;
+  rev : integer;
 begin
     WriteLn('Next-TestTransport');
     oauth.Token := getParam('TOKEN');
@@ -121,8 +118,8 @@ begin
        debugln('JSON OAUTH = ' + json.FormatJSON());
 
        jObject := TJSONObject(json);
-       setParam('REVISION',jObject.Get('latest-sync-revision'));
-       setParam('SERVERID',jObject.Get('current-sync-guid'));
+       sid := jObject.Get('current-sync-guid');
+       rev := StrToInt(jObject.Get('latest-sync-revision'));
        FreeAndNil(jObject);
 
        json := GetJSON(res);
@@ -139,8 +136,8 @@ begin
     if (not ok) then begin ErrorString :=  'Next-TestTransport: '+ErrorString; exit(SyncBadError); end;
     if(length(res)<10) then begin ErrorString :=  'Next-TestTransport: Server returns invalid OAuth URLs '+ErrorString; exit(SyncBadError); end;
 
-    ServerID:= getParam('SERVERID');
-    RemoteServerRev := StrToInt(getParam('REVISION'));
+    ServerID:= sid;
+    ServerRev := rev;
 
     ErrorString :=  '';
 
@@ -158,7 +155,7 @@ begin
         Result := SyncReady;
 end;
 
-function TNextSync.GetNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TNextSync.GetNotes(const NoteMeta: TNoteInfoList): boolean;
 var
   res : String;
   json: TJSONData;
@@ -172,7 +169,12 @@ var
 begin
     WriteLn('Next-GetNotes');
 
-    // HTTP REQUETS
+    if NoteMeta = Nil then begin
+        ErrorString := 'Passed an uncreated list to GetNotes()';
+        exit(False);
+    end;
+
+    // HTTP REQUEST
     res := getParam('URLNOTES');
     debugln(res);
     p := TstringList.Create();
@@ -184,13 +186,12 @@ begin
     res := oauth.WebGet(res,p);
     FreeAndNil(p);
 
-    if (res = '') then begin ErrorString :=  'Next-GetNotes: Unable to et initial data'; exit(false); end;
+    if (res = '') then begin ErrorString :=  'Next-GetNotes: Unable to get initial data'; exit(false); end;
 
     ok := true;
     ErrorString := '';
     try
        json := GetJSON(res);
-       debugln('JSON NOTES = '+json.AsJSON);
        jObject := TJSONObject(json);
        setParam('REVISION',jObject.Get('latest-sync-revision'));
        jnotes :=  jObject.Get('notes',jnotes);
@@ -219,7 +220,7 @@ begin
           debugln(jObject.AsJSON);
           debugln(json.FormatJSON());
 
-          NoteInfo^.Action:=SyUnset;
+          NoteInfo^.Action:=SynUnset;
           NoteInfo^.ID := jObject.Get('guid');
           NoteInfo^.Rev := jObject.Get('last-sync-revision');
 
@@ -242,8 +243,8 @@ begin
           NoteInfo^.Title := jObject.Get('title');
           NoteInfo^.Content := jObject.Get('note-content');
 
-          NoteInfo^.OpenOnStartup := (jObject.Get('open-on-startup') = 'true');
-          NoteInfo^.Pinned := (jObject.Get('pinned') = 'true');
+          NoteInfo^.OpenOnStartup := (jObject.Get('open-on-startup').ToLower = 'true');
+          NoteInfo^.Pinned := (jObject.Get('pinned').ToLower = 'true');
 
           NoteInfo^.CursorPosition := StrToInt(jObject.Get('cursor-position'));
           NoteInfo^.SelectBoundPosition := StrToInt(jObject.Get('selection-bound-position'));
@@ -252,7 +253,7 @@ begin
           NoteInfo^.X := StrToInt(jObject.Get('x'));
           NoteInfo^.Y := StrToInt(jObject.Get('y'));
 
-          NoteInfo^.Source := json.AsJSON;
+          //NoteInfo^.Source := json.AsJSON;
 
        except on E:Exception do begin ok := false; debugln(E.message); end;
        end;
@@ -269,41 +270,66 @@ begin
     result := False;
 end;
 
-function TNextSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
+function TNextSync.PushChanges(notes : TNoteInfoList) : boolean;
+var
+    i : integer;
+    note : PNoteInfo;
+    json, res : String;
+    p : TStrings;
 begin
-	WriteLn('Next-DownloadNotes');
-     result := True;
-end;
+    json := '( "latest-sync-revision": '+IntToStr(ServerRev+1)+', "note-changes": [';
 
-function TNextSync.DeleteNote(const ID: string; const ExistRev : integer): boolean;
-begin
-	WriteLn('Next-DeleteNote');
-     result := True;
-end;
+    for i := 0 to notes.Count -1 do
+    begin
+       note := notes.Items[i];
+       if note^.Action = SynDeleteRemote
+       then json := json + '( "guid": "' + note^.ID + '", "command": "delete" }'
+       else begin
+           json := json + '( "guid": "' + note^.ID + '",';
+           json := json + ' "title": "' + StringReplace(note^.Title,'"','\"',[rfReplaceAll]) + '",';
+           json := json + ' "note-content": "' + StringReplace(note^.Content,'"','\"',[rfReplaceAll]) + '",';
+           json := json + ' "note-content-version": "' + note^.Version + '",';
+           json := json + ' "last-change-date": "' + note^.LastChange + '",';
+           json := json + ' "last-metadata-change-date": "' + note^.LastMetaChange + '",';
+           json := json + ' "create-date": "' + note^.CreateDate + '",';
+           json := json + ' "open-on-startup": "' + BoolToStr(note^.OpenOnStartup) + '",';
+           json := json + ' "pinned": "' + BoolToStr(note^.Pinned) + '",';
+           json := json + ' "x": "' + IntToStr(note^.X) + '",';
+           json := json + ' "y": "' + IntToStr(note^.Y) + '",';
+           json := json + ' "height": "' + IntToStr(note^.Height) + '",';
+           json := json + ' "width": "' + IntToStr(note^.Width) + '",';
+           json := json + ' "width": "' + IntToStr(note^.Width) + '",';
+           json := json + ' "selection-bound-position": "' + IntToStr(note^.SelectBoundPosition) + '",';
+           json := json + ' "cursor-position": "' + IntToStr(note^.CursorPosition) + '" }';
+       end;
+       if(i<notes.Count -1 ) then json := json + ', ';
+    end;
+    json := json + ' ] } ';
 
-function TNextSync.UploadNotes(const Uploads: TStringList): boolean;
-begin
-	WriteLn('Next-UploadNotes');
+    // HTTP REQUEST
+    res := getParam('URLNOTES');
+    debugln(res);
+    p := TstringList.Create();
+    oauth.BaseParams(p,true);
+
+    oauth.ParamsSort(p);
+    oauth.Sign(res, 'PUT', p,oauth.TokenSecret);
+    res := oauth.WebPut(res,p,json);
+    FreeAndNil(p);
+
+    debugln('RES PUSH = '+res);
+
+    if (res = '') then begin ErrorString :=  'Next-GetNotes: Unable to get initial data'; exit(false); end;
+
     result := True;
 end;
+
 
 function TNextSync.DoRemoteManifest(const RemoteManifest: string): boolean;
 begin
 	WriteLn('Next-DoRemoteManifest');
     result := True;
 end;
-
-function TNextSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
-begin
-	WriteLn('Next-DownLoadNote');
-    // Download indicated note and call it ConfigDir + 'remote.note';
-    result := ConfigDir + 'remote.note';
-end;
-
-{function TNextSync.SetRemoteRepo(ManFile: string = ''): boolean;
-begin
-
-end; }
 
 function TNextSync.IDLooksOK() : boolean;
 var

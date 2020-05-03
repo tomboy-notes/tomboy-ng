@@ -43,7 +43,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    ExtCtrls;
+    ExtCtrls, SyncUtils;
 
 type
 
@@ -180,8 +180,8 @@ begin
                 if (Pos('<last-metadata-change-date>', InString) > 0) or
                         (Pos('<last-change-date>', InString) > 0)  then begin
                     if (Pos('<last-metadata-change-date>', InString) > 0) then
-                        writeln(OutFile, ' <last-metadata-change-date>' +  Sett.GetLocalTime() + '</last-metadata-change-date>')
-                    else writeln(OutFile, ' <last-change-date>' +  Sett.GetLocalTime() + '</last-change-date>');
+                        writeln(OutFile, ' <last-metadata-change-date>' +  GetCurrentTimeStr() + '</last-metadata-change-date>')
+                    else writeln(OutFile, ' <last-change-date>' +  GetCurrentTimeStr() + '</last-change-date>');
                 end else writeln(OutFile, InString);
             end;
         finally

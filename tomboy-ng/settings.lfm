@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 399
     Top = 0
     Width = 630
-    ActivePage = TabBasic
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -323,8 +323,8 @@ object Sett: TSett
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 145
-        Top = 220
+        Height = 153
+        Top = 212
         Width = 617
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Left = 3
@@ -332,13 +332,13 @@ object Sett: TSett
         BorderSpacing.Right = 3
         BorderSpacing.Bottom = 3
         Caption = '  Options  '
-        ClientHeight = 127
+        ClientHeight = 135
         ClientWidth = 615
         TabOrder = 0
         object Label3: TLabel
           Left = 20
           Height = 15
-          Top = 16
+          Top = 8
           Width = 365
           Caption = 'When a conflict is detected between a local note and remote one :'
           ParentColor = False
@@ -346,34 +346,37 @@ object Sett: TSett
         object RadioAlwaysAsk: TRadioButton
           Left = 20
           Height = 23
-          Top = 40
-          Width = 173
-          Caption = 'Always Ask me what to do.'
+          Top = 32
+          Width = 151
+          Caption = 'Always ask what to do.'
           Checked = True
+          OnChange = RadioConflictChange
           TabOrder = 0
           TabStop = True
         end
         object RadioUseLocal: TRadioButton
           Left = 20
           Height = 23
-          Top = 64
+          Top = 56
           Width = 265
           Caption = 'Use Local Note and Overwrite Server Note.'
+          OnChange = RadioConflictChange
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 20
           Height = 23
-          Top = 88
+          Top = 80
           Width = 256
           Caption = 'Use Server Note and Rename Local Note.'
+          OnChange = RadioConflictChange
           TabOrder = 2
         end
         object CheckBoxAutoSync: TCheckBox
-          Left = 444
+          Left = 448
           Height = 23
           Hint = 'Sync, if possible once an hour.'
-          Top = 16
+          Top = 8
           Width = 111
           Anchors = []
           Caption = 'Automatic sync'
@@ -415,6 +418,15 @@ object Sett: TSett
           Caption = 'every'
           ParentColor = False
         end
+        object RadioMakeCopy: TRadioButton
+          Left = 20
+          Height = 23
+          Top = 104
+          Width = 138
+          Caption = 'Always make a copy'
+          OnChange = RadioConflictChange
+          TabOrder = 6
+        end
       end
       object Label12: TLabel
         Left = 14
@@ -429,7 +441,7 @@ object Sett: TSett
         AnchorSideRight.Control = TabSync
         AnchorSideRight.Side = asrBottom
         Left = 3
-        Height = 213
+        Height = 205
         Top = 3
         Width = 614
         Anchors = [akTop, akLeft, akRight]
@@ -437,7 +449,7 @@ object Sett: TSett
         BorderSpacing.Top = 3
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 195
+        ClientHeight = 187
         ClientWidth = 612
         TabOrder = 1
         object RadioSyncFile: TRadioButton

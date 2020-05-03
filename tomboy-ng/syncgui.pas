@@ -98,7 +98,6 @@ type
 		private
                 FormShown : boolean;
                 LocalTimer : TTimer;
-                procedure AdjustNoteList();
                 procedure AfterShown(Sender : TObject);
                     // Display a summary of sync actions to user.
                 function DisplaySync(): string;
@@ -119,7 +118,7 @@ type
 
                 procedure MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
                     { we will pass address of this function to Sync }
-                function Proceed(const ClashRec : TClashRecord) : TSyncAction;
+                function DefineDefaultAction(const ClashRec : TClashRecord) : TSyncAction;
 		end;
 
 var
@@ -145,29 +144,37 @@ begin
     SearchForm.MarkNoteReadOnly(FileName, WasDeleted);
 end;
 
-function TFormSync.Proceed(const ClashRec : TClashRecord) : TSyncAction;
+function TFormSync.DefineDefaultAction(const ClashRec : TClashRecord) : TSyncAction;
 var
     SDiff : TFormSDiff;
-    //Res : integer;
 begin
+
     SDiff := TFormSDiff.Create(self);
-    SDiff.RemoteFilename := ClashRec.ServerFileName;
-    SDiff.LocalFilename := ClashRec.LocalFileName;
-    SDiff.NoteTitle := ClashRec.Title;
+
+    SDiff.NoteID.Caption := 'Note ID ; '+ ClashRec.LocalNote^.ID;
+    SDiff.TitleLocal.Caption := ClashRec.LocalNote^.Title;
+    SDiff.ChangeLocal.Caption := ClashRec.LocalNote^.LastChange;
+    SDiff.TitleRemote.Caption := ClashRec.RemoteNote^.Title;
+    SDiff.ChangeRemote.Caption := ClashRec.RemoteNote^.LastChange;
+
+    SDiff.MemoLocal.ReadOnly := true;
+    SDiff.MemoLocal.Text := SDiff.RemoveXml(ClashRec.LocalNote^.Content);
+    SDiff.MemoRemote.ReadOnly := true;
+    SDiff.MemoRemote.Text := SDiff.RemoveXml(ClashRec.RemoteNote^.Content);
+
     case SDiff.ShowModal of
-            mrYes      : Result := SyDownLoad;
-            mrNo       : Result := SyUpLoadEdit;
-            mrNoToAll  : Result := SyAllLocal;
-            mrYesToAll : Result := SyAllRemote;
-            mrAll      : Result := SyAllNewest;
-            mrClose    : Result := SyAllOldest;
+            mrYes      : Result := SynDownLoad;
+            mrNo       : Result := SynUpLoadEdit;
+            mrNoToAll  : Result := SynAllLocal;
+            mrYesToAll : Result := SynAllRemote;
+            mrAll      : Result := SynAllNewest;
+            mrRetry    : Result := SynAllCopy;
+            mrClose    : Result := SynAllOldest;
     else
-            Result := SyUnSet;      // Thats an ERROR !  What are you doing about it ?
+            Result := SynUnSet;   // Should not get there
     end;
     SDiff.Free;
-    Application.ProcessMessages;    // so dialog goes away while remainder are being processed.
-    // Use Remote, Yellow is mrYes, File1
-    // Use Local, Aqua is mrNo, File2
+    Application.ProcessMessages;
 end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -188,17 +195,17 @@ end;
 
 function TFormSync.DisplaySync(): string;
 var
-    UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
+    UpNew, UpEdit, Down, DelLoc, DelRem, CreateCopy, DoNothing, Undecided : integer;
 begin
-    ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors);
+    ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, CreateCopy, DoNothing, Undecided);
     Memo1.Append(rsNewUploads + inttostr(UpNew));
     Memo1.Append(rsEditUploads + inttostr(UpEdit));
     Memo1.Append(rsDownloads + inttostr(Down));
     Memo1.Append(rsLocalDeletes + inttostr(DelLoc));
     Memo1.Append(rsRemoteDeletes + inttostr(DelRem));
-    Memo1.Append(rsClashes + inttostr(Clash));
+    Memo1.Append(rsSynCopies + inttostr(CreateCopy));
     Memo1.Append(rsDoNothing + inttostr(DoNothing));
-    Memo1.Append(rsSyncERRORS + inttostr(Errors));
+    Memo1.Append(rsUndecided + inttostr(Undecided));
     result := 'Uploads=' + inttostr(UpNew+UpEdit) + ' downloads=' + inttostr(Down) + ' deletes=' + inttostr(DelLoc + DelRem);
     // debugln('Display Sync called, DoNothings is ' + inttostr(DoNothing));
 end;
@@ -207,8 +214,6 @@ end;
 procedure TFormSync.DrySync();
 var
     SyncAvail : TSyncAvailable;
-    // ASync : TSync;
-    // UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
 begin
     debugln('DrySync');
 
@@ -220,13 +225,11 @@ begin
     ASync := TSync.Create;
     Label1.Caption:= rsTestingRepo;
     Application.ProcessMessages;
-    ASync.ProceedFunction:= @Proceed;
-//    ASync.MarkNoteReadOnlyProcedure := @MarkNoteReadOnly;
-    ASync.DebugMode := Application.HasOption('s', 'debug-sync');
+    ASync.ClashFunction:= @DefineDefaultAction;
     ASync.NotesDir:= NoteDirectory;
     ASync.ConfigDir := LocalConfig;
     Async.SetTransport(Sett.getSyncType());
-    SyncAvail := ASync.TestConnection(true);
+    SyncAvail := ASync.TestConnection();
     if SyncAvail <> SyncReady then begin
         showmessage(rsUnableToProceed + ' ' + ASync.ErrorString);
         ModalResult := mrCancel;
@@ -304,22 +307,21 @@ begin
 
 
     try
-        ASync.ProceedFunction:= @Proceed;
-        ASync.DebugMode := Application.HasOption('s', 'debug-sync');
-	ASync.NotesDir:= NoteDirectory;
+        ASync.ClashFunction:= @DefineDefaultAction;
+        ASync.NotesDir:= NoteDirectory;
 	ASync.ConfigDir := LocalConfig;
-        //ASync.RepoAction:=RepoUse;
         Async.SetTransport(Sett.getSyncType());
-        SyncState := ASync.TestConnection(false);
-        //ASync.SyncAddress := ASync.SyncAddress;
-	while SyncState <> SyncReady do begin
-            if ASync.DebugMode then debugln('Failed testConnection');
+        SyncState := ASync.TestConnection();
+        while SyncState <> SyncReady do begin
+            debugln('Failed testConnection');
+
             FormSyncError.Label1.caption := rsUnableToSync + ':';
             FormSyncError.label3.caption := ASync.ErrorString;
-            FormSyncError.ButtRetry.Visible := not Visible;                         // Dont show Retry if interactive
+            FormSyncError.ButtRetry.Visible := not Visible;
             ModalResult := FormSyncError.ShowModal;
-            if ModalResult = mrCancel then exit(false);        // else its Retry
-            SyncState := ASync.TestConnection(false);
+            if ModalResult = mrCancel then exit(false);
+
+            SyncState := ASync.TestConnection();
         end;
         Label1.Caption:= rsRunningSync;
         Application.ProcessMessages;
@@ -327,7 +329,7 @@ begin
         ASync.StartSync(false);
         SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
-        AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        SearchForm.ProcessSyncUpdates(Async.DeletedList, Async.DownList);
         Label1.Caption:=rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
@@ -338,52 +340,31 @@ begin
     end;
 end;
 
-procedure TFormSync.AdjustNoteList();
-var
-    DeletedList, DownList : TStringList;
-    Index : integer;
-begin
-    DeletedList := TStringList.Create;
-    DownList := TStringList.Create;
- 	with ASync.NoteMetaData do begin
-		for Index := 0 to Count -1 do begin
-            if Items[Index]^.Action = SyDeleteLocal then
-                DeletedList.Add(Items[Index]^.ID);
-            if Items[Index]^.Action = SyDownload then
-                DownList.Add(Items[Index]^.ID);
-        end;
-    end;
-    if (DeletedList.Count > 0) or (DownList.Count > 0) then
-        SearchForm.ProcessSyncUpdates(DeletedList, DownList);
-   FreeandNil(DeletedList);
-   FreeandNil(DownList);
-end;
-
 procedure TFormSync.ShowReport;
+
 var
-        Index : integer;
-        Rows : integer = 0;
+    Rows,i : integer;
 begin
-     	with ASync.NoteMetaData do begin
-    		for Index := 0 to Count -1 do begin
-                if Items[Index]^.Action <> SyNothing then begin
-                        StringGridReport.InsertRowWithValues(Rows
-                	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
-                            , Items[Index]^.Title, Items[Index]^.ID]);
-                        { if not visible then
-                            debugln(ASync.NoteMetaData.ActionName(Items[Index]^.Action),
-                                Items[Index]^.Title, Items[Index]^.ID); }
-                        inc(Rows);
-                end;
-    		end
-    	end;
-        StringGridReport.AutoSizeColumn(0);
-        StringGridReport.AutoSizeColumn(1);
-        if  Rows = 0 then
-            Memo1.Append(rsNoNotesNeededSync)
-        else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
-        {if not visible then
-            debugln(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt); }
+    StringGridReport.Clean;
+    i := 0;
+    Rows :=0;
+    while (i<Async.GridReportList.Count) do
+    begin
+        StringGridReport.InsertRowWithValues(
+            Rows,
+            [Async.GridReportList.Strings[i],
+            Async.GridReportList.Strings[i+1],
+            Async.GridReportList.Strings[i+2]]);
+        inc(Rows);
+        i := i+3;
+    end;
+
+    StringGridReport.AutoSizeColumn(0);
+    StringGridReport.AutoSizeColumn(1);
+
+    if  Rows = 0
+    then Memo1.Append(rsNoNotesNeededSync)
+    else Memo1.Append(inttostr(Rows) + rsNotesWereDealt);
 end;
 
 procedure TFormSync.StringGridReportGetCellHint(Sender: TObject; ACol,
@@ -414,7 +395,7 @@ begin
     if ASync.StartSync(false) then begin
         SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
-        AdjustNoteList();
+        SearchForm.ProcessSyncUpdates(Async.DeletedList, Async.DownList);
         Label1.Caption:=rsAllDone;
         Label2.Caption := rsPressClose;
 	Sett.setSyncTested(true);
