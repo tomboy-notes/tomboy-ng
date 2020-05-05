@@ -206,6 +206,7 @@ unit EditBox;
     2020/03/27  Set a cleared highlight to correct background colour.
                 No longer toggle when changing font sizes, set it to what user asks.
     2020/04/01  Removed line that exited KMemo1KeyDown in readonly mode, prevented cursor keys working.
+    2020/04/04  Fix for when SingleNoteMode is pointed to a zero length file.
 }
 
 
@@ -1298,15 +1299,18 @@ begin
           SLNote := TStringList.Create;
           //try
               SlNote.LoadFromFile(NoteFileName);
-              if (UTF8Pos('xml', SLNote.Strings[0]) > 0)  and
-                  (UTF8Pos('tomboy', SLNote.Strings[1]) > 0) then
-                      FileType := 'tomboy'
-              else if (UTF8Pos('{\rtf1', SLNote.Strings[0]) > 0) then
-                      FileType := 'rtf'
+              if SLNote.count = 0 then               // to deal with a file created, eg with touch
+                  FileType := 'text'
               else
-                    if FileIsText(NoteFileName) then
-                        FileType := 'text';        // Wow, thats brave !
-          //except on
+	                  if (UTF8Pos('xml', SLNote.Strings[0]) > 0)  and
+	                      (UTF8Pos('tomboy', SLNote.Strings[1]) > 0) then
+	                          FileType := 'tomboy'
+	                  else if (UTF8Pos('{\rtf1', SLNote.Strings[0]) > 0) then
+	                          FileType := 'rtf'
+	                  else
+	                        if FileIsText(NoteFileName) then
+	                            FileType := 'text';        // Wow, thats brave !
+	              //except on
 
           //end;
           finally
