@@ -7,7 +7,7 @@
  
 Synchronising your tomboy-ng (and/or Tomboy) notes can be a very useful thing. Do it properly and all your notes on all your computers are the same. And you have a backup strategy for your note too !  Remember that the value of syncing is closely related to how often you do it !
  
-At present, tomboy-ng supports only <bold>file sync</bold>. That is, it syncs to a shared file system. It works identically between the three supported platforms, Linux, Windows and Mac. Note that tomboy-ng does not, yet, use a network sync protocol (as Tomboy does).
+tomboy-ng supports  <bold>file sync</bold>. That is, it syncs to a shared file system. That filesystem might be Google Drive, <italic><bold>any remote server you can ssh to</bold></italic>, a local shared drive at home or even just a USB thumb drive.  It works identically between the three supported platforms, Linux, Windows and Mac. Note that tomboy-ng does not (like Tomboy does) connect to a dedicated Tomboy sync service such as Snowy, Rainy or grauphel/NextCloud/Apache.
 
 <bold>New in v0.27, Auto sync</bold>, see further down.
 
@@ -20,6 +20,19 @@ One thing to note, if you plan to sync both Tomboy and tomboy-ng with the same r
 
 <bold>Setting Up A Repository</bold></size:large>
 Easy, might be a good idea to create a directory there such as Tomboy-Sync or whatever,  tomboy-ng (or Tomboy) just needs be told where the filesystem is and it will do the rest. In tomboy-ng, click Settings, Sync Tab, click "Change File Sync Repo". Browse to the directory you created.  tomboy-ng will have a look at the directory and you existing notes (if any) and will generate a report about what it will do. If that looks OK, click "Save and Sync". Done.<size:large>
+
+<bold>sshfs to do network sync</bold></size:large>
+tomboy-ng can sync quite happily to any remote server that you have ssh access to. The author has a cut price hosting plan with a much neglected website and a few gig of diskspace. Its useful because I can ssh into it ! So, if I can ssh to it, I can use sshfs with it. For example, on a linux machine, I would install sshfs then, initially ssh to this remote server and create a directory called eg TB_Sync, then back on my local machine-
+
+<monospace>cd; mkdir TB_Sync; sshfs myname@remoteserver.com:TB_Sync TB_Sync [enter]</monospace>
+
+Fire up tomboy-ng and set its sync repo to ~/TB_Sync and its done. Disconnect that shared directory with -
+
+<monospace>fusermount -uz TB_Sync [enter]</monospace>
+
+And reconnect later on, to sync again, with 
+
+<monospace>sshfs myname@remoteserver.com TB_SYNC [enter]</monospace><size:large>
 
 <bold>Manual Syncing and Clashes</bold></size:large>
 From time to time, you need to click the Sync menu entry. A short report will pop up telling what it has done, have a look and close. However, there will almost certainly come a time when you have changed a particular note on more than one machine since your last Sync. Sad but inevitable. Now, the Sync engine does not know what to do. It will show you a list of the differences between the two notes and you can choose to use the Local or Remote version. Remote being the 'remote' file repository.
@@ -44,8 +57,8 @@ Secondly, please try starting tomboy-ng from the command line. While its running
 
 
 </note-content></text>
-  <last-change-date>2020-02-22T16:14:49.2190000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-22T16:14:49.2190000+11:00</last-metadata-change-date>
+  <last-change-date>2020-05-04T21:04:16.0190000+10:00</last-change-date>
+  <last-metadata-change-date>2020-05-04T21:04:16.0190000+10:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

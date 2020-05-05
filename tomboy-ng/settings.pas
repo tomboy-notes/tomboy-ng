@@ -99,6 +99,7 @@ unit settings;
     2020/04/08  Added some code to support SyncNextCloud, see define SHOW_NET_SYNC top of implementation section.
     2020/04/10  Added Net and File sync mode to settings file, make labels consistent
     2020/04/28  Put four random digits in place of the '0000' in GetLocalTime()
+    2020/04/04  Don't run autosync in singlenote mode.
 }
 
 {$mode objfpc}{$H+}
@@ -1309,7 +1310,7 @@ end;
 
 procedure TSett.CheckAutoSync();
 begin
-    if CheckBoxAutoSync.Checked and (LabelFileSync.Caption <> '') then begin
+    if CheckBoxAutoSync.Checked and (LabelFileSync.Caption <> '') and (MainForm.SingleNoteFileName = '')  then begin
         TimerAutoSync.Interval:= 15000;     // wait 15 seconds after indexing to allow settling down
         TimerAutoSync.Enabled := true;
     end else
