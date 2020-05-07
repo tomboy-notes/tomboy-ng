@@ -2,6 +2,8 @@ unit export_notes;
 
 {$mode objfpc}{$H+}    {$assertions on}
 
+{ License - see tomboy-ng license information }
+
 interface
 
 uses
@@ -16,27 +18,48 @@ type
  TExportNote = class
   private
 
-    function ExportAll()             : boolean;
-    function ExportFile(ID: string): boolean;
-    function ExportMD(ID: string): boolean;
-    function ExportText(ID: string): boolean;
-	function FindInStringList(const StL: TStringList; const FindMe: string
-			): integer;
-	function MoveTagRight(var St: string): boolean;
-	function RemoveNextTag(var St: String; out Tag: string): integer;
-	procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
-	procedure MoveTagUp(const StL: TStringList; const StIndex: integer;
-			var TagSize: integer);
+    function ExportAll()               : boolean;
+    function ExportFile(ID: string)    : boolean;   // Expects just ID, ie basename
+    function ExportMD(ID: string)      : boolean;   // Expects just ID, ie basename
+    function ExportText(ID: string)    : boolean;   // Expects just ID, ie basename
+    function NoteInNoteBook(const FileName: string): boolean;   // Expects just ID, ie basename
+    function ExportNoteBook() : boolean;
+
+			                      { We must ensure that all markup tags are in the string (ie paragraph) that
+			                      they apply to.  Its common to see the xml file with, eg, a </bold> at the
+			                      start of a line, it actually closes a <bold> in previous line.  And a <bold>
+			                      can be found at the end of a line and it applies to the following line, maybe
+			                      even after several blank lines.  This will mess with md encoding.
+			                      Also need to reposition any 'off' markup tags hard up against text to the left
+			                      So, [texttext</bold> moretext] is OK, [texttext </bold>moretext] is not.     }
 	procedure NormaliseList(STL: TStringList);
 	function OffTagAtStart(St: string): integer;
+    function MoveTagRight(var St: string): boolean;
+                                // Returns the length of any 'on' tags at end of string, they will need to be moved. 0 indicates none found.
 	function OnTagAtEnd(St: string): integer;
+	function RemoveNextTag(var St: String; out Tag: string): integer;
+	procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
+	procedure MoveTagUp(const StL: TStringList; const StIndex: integer; var TagSize: integer);
+
+
+                                    { Looks for lines that with <size:large><bold> or <size:huge><bold> and
+                                      end with </bold></size:huge> or </bold></size:large>, makes them headings }
 	procedure ProcessHeadings(StL: TStringList);
+
+                                    { Here we add general markup tags excluding headers.
+                                      tomboy-ng will always present 'on' tags in this order -
+                                      size:small ~, highlight, ==, italics, * bold, **.  Tags cannot cross so 'off' is reverse
+                                      Seems Git md works with strikeout = '~~' or '~', other need '~~'
+                                      Git markdown does not do highlight  }
 	procedure ProcessMarkUp(StL: TStringList);
 	function RemoveTags(var St: string; out Tag: string): boolean;
-	function RestoreBadXMLChar(const Str: AnsiString): AnsiString;
-    function TitleFromID(ID: string; Munge: boolean; var LenTitle: integer): string;
+
+			                        { Takes an ID, reads that note returns title. Munge
+			                          will turn title into something useful as a base file name. }
+    function TitleFromID(ID: string; Munge: boolean; out LenTitle: integer): string;
     function IDfromTitle(Title : string) : string;
     function MoveTagLeft(var St: string): boolean;
+
 
   public
     NoteTitle : string;             // If not empty we are exporting just this note.
@@ -44,8 +67,10 @@ type
     NoteDir   : string;             // Dir containg the note or notes to export
     DestDir   : string;             // where to save notes to.
     NoteFileName : string;          // Note Filename without path
-    Mode      : string;             // Either 'md' or 'text', maybe add more later.
+    Notebook  : string;             // Name of a notebook who's members we'll convert.
+    OutFormat : string;             // Either 'md' or 'text', maybe add more later.
     ErrorMessage : string;          // Empty unless something bad happened.
+    NotesProcessed : integer;       // How many things have we done something to ?
     function Execute() : boolean;   // you know all you need, go do it.
     constructor Create;
     destructor Destroy; override;
@@ -55,7 +80,7 @@ implementation
 
 { UTB2md }
 
-uses LCLProc, laz2_DOM, laz2_XMLRead;
+uses LCLProc, laz2_DOM, laz2_XMLRead, ttutils;
 
 
 function TExportNote.ExportAll(): boolean;
@@ -70,8 +95,43 @@ begin
         finally
             FindClose(Info);
         end
-    else
-        Debugln('ERROR : No notes were found in ' + NoteDir);
+    else begin
+        ErrorMessage := 'ERROR : No notes were found in ' + NoteDir;
+        Debugln(ErrorMessage);
+        exit(false);
+	end;
+	result := true;
+end;
+
+function TExportNote.NoteInNoteBook(const FileName : string) : boolean;
+var
+    SLContent : tStringList;
+begin
+    SLContent := TStringList.create;
+    SLContent.LoadFromFile(NoteDir + FileName);
+    Result := -1 < FindInStringList(SLContent, '<tag>system:notebook:' + Notebook);
+    SLContent.free;
+end;
+
+function TExportNote.ExportNoteBook() : boolean;
+var
+    Info : TSearchRec;
+begin
+    if FindFirst(NoteDir + '*.note', faAnyFile, Info) = 0 then
+        try
+            repeat
+                if NoteInNoteBook(Info.Name) then begin
+	                ExportFile(copy(Info.Name, 1, length(Info.name) - 5));
+				end;
+			until FindNext(Info) <> 0;
+        finally
+            FindClose(Info);
+        end
+    else begin
+        ErrorMessage := 'ERROR : No notes were found in ' + Notebook;
+        Debugln(ErrorMessage);
+        exit(false);
+	end;
     result := true;
 end;
 
@@ -96,8 +156,8 @@ end;
 
 
 
-// Takes an ID, reads that note converting title to a base filename
-function TExportNote.TitleFromID(ID: string; Munge : boolean; var LenTitle : integer): string;
+
+function TExportNote.TitleFromID(ID: string; Munge : boolean; out LenTitle : integer): string;
 var
     Doc : TXMLDocument;
     Node : TDOMNode;
@@ -123,56 +183,21 @@ end;
 
 function TExportNote.ExportFile(ID: string): boolean;
 begin
-    if Mode = 'md' then
-        result := ExportMd(ID)
-    else result := ExportText(ID);
-end;
 
-// Note we restore only < > &,  Tomboy does not encode " or ' in Values (but must in attributes)
-function TExportNote.RestoreBadXMLChar(const Str : AnsiString) : AnsiString;
-var
-    index : longint = 1;
-    Start : longint = 1;
-begin
-  // Don't use UTF8 functions here, we are working with bytes !
-  Result := '';
-    while Index <= Length(Str) do begin
-      if '&lt;' = Copy(Str, Index, 4) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '<';
-            inc(Index);
-            Start := Index + 3;
-            Continue;
-	  end;
-      if '&gt;' = Copy(Str, Index, 4) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '>';
-            inc(Index);
-            Start := Index + 3;
-            Continue;
-	  end;
-      if '&amp;' = Copy(Str, Index, 5) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '&';
-            inc(Index);
-            Start := Index + 4;
-            Continue;
-	  end;
-      inc(Index);
+    case OutFormat of
+        'md', 'mark down', 'markdown' : result := ExportMd(ID);
+        'text', 'plain text', 'txt' : result := ExportText(ID);
+    else  begin
+        ErrorMessage := 'ERROR : unidentified outformat requested ' + OutFormat;
+        Debugln(ErrorMessage);
+        exit(False);
+	    end;
 	end;
-    Result := Result + Copy(Str, Start, Index - Start);
+    inc(NotesProcessed);
+    Result := True;
 end;
 
-function TExportNote.FindInStringList(const StL : TStringList; const FindMe : string) : integer;
-var
-    I : integer = 0;
-begin
-    while i < StL.Count -1 do begin
-        if pos(FindMe, StL.strings[i]) > 0 then
-            exit(i);
-        inc(i);
-	end;
-	result := -1;
-end;
 
-// Returns the length of any 'on' tags at end if string, they apply to next text. 0 indicates none found.
 function TExportNote.OnTagAtEnd(St : string) : integer;
 var
     I, L : integer;
@@ -181,14 +206,14 @@ begin
     L := length(st);
     if St[L] <> '>' then exit(0);
     i := 1;
-    while St[L-i] <> '<' do begin
+    while St[L-i] <> '<' do begin       // march backwards until we find start of tag
         inc(i);
         if i > L then  begin
             debugln('ERROR : Overrun looking for tag start');
             exit(-1);
 		end;
 	end;
-    if  St[L-i+1] = '/' then exit(0);
+    if  St[L-i+1] = '/' then exit(0);   // not our problems, tags at the end should be 'off' tags.
     result := i+1;
 end;
 
@@ -274,15 +299,8 @@ begin
     delete(St, Index, 1);
     insert(' ', St, St.IndexOf('>', Index)+2);          // 2 ? IndexOf rets a zero based and we want to go one past
 end;
-        { We must ensure that all markup tags are not in the string (ie paragraph) that
-          they apply to.  Its common to see the xml file with, eg, a </bold> at the
-          start of a line, it actually closes a <bold> in previous line.  And a <bold>
-          can be found at the end of a line and it applies to the following line, maybe
-          even after several blank lines.  This will mess with md encoding.
 
-          Also need to reposition any 'off' markup tags hard up against text to the left
-          So, [texttext</bold> moretext] is OK, [texttext </bold>moretext] is not.
-          }
+
 procedure TExportNote.NormaliseList(STL : TStringList);
 var
     TagSize, StIndex : integer;
@@ -314,19 +332,17 @@ begin
 
 end;
 
-            // Looks for lines that with <size:large><bold> or <size:huge><bold> and
-            // end with </bold></size:huge> or </bold></size:large>, makes them headings
 procedure TExportNote.ProcessHeadings(StL : TStringList);
 var
     i : integer = -1;
     PosI, L : integer;
-    Blar : string;
+    //Blar : string;
 begin
     repeat
         inc(i);
         if (StL.Strings[i] = '') or (StL.strings[i][1] <> '<') then continue;
         if copy(Stl.Strings[i], 1, length('<size:large><bold>')) = '<size:large><bold>' then begin
-            blar := Stl.Strings[i];
+            //blar := Stl.Strings[i];
             PosI := pos('</bold></size:large>', Stl.Strings[i]);
             if PosI = 0 then continue;
             L := length(Stl.Strings[i]);
@@ -337,7 +353,7 @@ begin
 			end;
 		end;
         if copy(Stl.Strings[i], 1, length('<size:huge><bold>')) = '<size:huge><bold>' then begin
-            blar := Stl.Strings[i];
+            //blar := Stl.Strings[i];
             PosI := pos('</bold></size:huge>', Stl.Strings[i]);
             if PosI = 0 then continue;
             L := length(Stl.Strings[i]);
@@ -364,13 +380,6 @@ begin
 	end
 	else Result := 0;
 end;
-
-        { Here we add general markup tags (except, so far, bullets) excluding headers.
-          tomboy-ng will always present 'on' tags in this order -
-          size:small ~, highlight, ==, italics, * bold, **.  Tags cannot cross so 'off' is reverse
-          Seems Git md works with strikeout = '~~' or '~', other need '~~'
-          Git does not do highlight
-          }
 
 procedure TExportNote.ProcessMarkUp(StL : TStringList);
 var
@@ -422,7 +431,6 @@ begin
 	end;
 end;
 
-
 function TExportNote.ExportMD(ID : string): boolean;
 var
     StList : TStringList;
@@ -453,7 +461,7 @@ begin
         StList.LineBreak := LineEnding + LineEnding;
         StList.SaveToFile(DestDir + TitleFromID(ID, True, LTitle) + '.md');
 	finally
-
+        StList.free;
 	end;
 end;
 
@@ -520,17 +528,17 @@ begin
             debugln('ERROR : Unable to find note with Title = ' + NoteTitle)
         else
             Result := ExportFile(ID);
-    end else begin
+    end else
         if NoteFileName <> '' then
-            result := ExportFile(copy(NoteFileName, 1, length(NoteFileName) - 5));
-    end;
-    // ToDo : add ability to export on basis of filename
+            result := ExportFile(copy(NoteFileName, 1, length(NoteFileName) - 5))
+        else if Notebook <> '' then
+            result := ExportNoteBook();
 end;
 
 
 constructor TExportNote.Create;
 begin
-
+    NotesProcessed := 0;
 end;
 
 destructor TExportNote.Destroy;

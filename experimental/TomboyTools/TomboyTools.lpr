@@ -1,5 +1,7 @@
 program TomboyTools;
 
+{ License - see tomboy-ng license information }
+
 {$mode objfpc}{$H+}
 
 uses
@@ -7,7 +9,7 @@ uses
         cthreads,
         {$ENDIF}{$ENDIF}
         Interfaces, // this includes the LCL widgetset
-        Forms, main, cmdline, export_notes
+        Forms, main, cmdline, export_notes, ttutils
         { you can add units after this };
 
 {$R *.res}
