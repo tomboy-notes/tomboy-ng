@@ -22,10 +22,9 @@ unit cmdline;
 
     --check-sync=repo   report on sync repo
     --check-notes
-
-
-
 }
+
+    { License - see tomboy-ng license information }
 
 {$mode objfpc}{$H+}
 
@@ -44,6 +43,8 @@ type TToolMode = (
 
 function Finished() : boolean;      // call this from project file, if true we don't need GUI
 
+function GetDefaultNoteDir(OldTB : boolean = false) : string;
+
 implementation
 
 uses LCLProc, Forms, LazFileUtils, export_notes;
@@ -52,6 +53,7 @@ procedure ShowHelp();
 begin
     debugln('');
     DebugLn('TomboyTools, a small set of tools for tomboy-ng and Tomboy');
+    debugln('with no command line options, will start GUI.');
     debugln('');
     debugln(' --help                         Print this, exit');
     debugln('What do we want to do ? specify export md or text, check sync or notes -');
@@ -59,16 +61,18 @@ begin
     debugln(' --tb2text                      Convert Tomboy to plain text');
     debugln(' --check-sync=repo              Report on sync repo');
     debugln(' --check-notes                  Report on notes');
-    debugln('When exporting from Tomboy, spec one of "all", Title or Filename  -');
+    debugln('When exporting from Tomboy, you must specify one these -');
     debugln(' --note-title="Note Title"      Export one note');
+    debugln(' --notebook="Notebook Name"     All notes in that notebook');
     debugln(' --note-filename=FileName       Filename without path');
     debugln(' --all-notes                    Export all notes');
+    debugln('And finally, you probably want at least one of these - ');
     debugln(' --tb-dir=dir                   Optional, default is default for system');
     debugln(' --dest-dir                     Optional, default is current dir');
     debugln('');
 end;
 
-function GetDefaultNoteDir : string;
+function GetDefaultNoteDir(OldTB : boolean = false) : string;
 begin
     {$IFDEF UNIX}
     Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
@@ -86,6 +90,8 @@ begin
     Result := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
     // %APPDATA%\Tomboy\notes\
     {$ENDIF}
+    if OldTB then
+        delete(Result, pos('-ng', Result), 3);
 end;
 
     // must have either a single note title, ID or --all-notes
@@ -102,6 +108,8 @@ begin
             Exporter.NoteFileName := Application.GetOptionValue('note-filename')
             else if Application.HasOption('all-notes') then
                 Exporter.AllNotes := True
+                else if Application.HasOption('notebook') then
+                    Exporter.Notebook := Application.GetOptionValue('notebook')
                     else begin
                         writeln('ERROR : Exactly what notes do you want to export ? ');
                         exit;
@@ -119,8 +127,8 @@ begin
 		end;
         // What format should they be executed in ?
         if Mode = ModeTB2Text then
-                Exporter.Mode := 'text'
-        else Exporter.Mode := 'md';
+                Exporter.OutFormat := 'text'
+        else Exporter.OutFormat := 'md';
         exporter.Execute;
 	finally
         Exporter.Free;
@@ -137,7 +145,7 @@ var
 begin
     if ParamCount = 0 then exit(false)         // no parameters, must be a GUI app
     else Result := True;
-    CmdLineErrorMsg := Application.CheckOptions('', 'help tb2md tb2text note-filename: check-sync: check-notes note: all-notes tb-dir: dest-dir:');
+    CmdLineErrorMsg := Application.CheckOptions('', 'help tb2md tb2text note-filename: --notebook: check-sync: check-notes note: all-notes tb-dir: dest-dir:');
     if CmdLineErrorMsg <> '' then begin
         debugln( CmdLineErrorMsg);
         showhelp();
