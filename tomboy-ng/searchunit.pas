@@ -107,6 +107,7 @@ unit SearchUnit;
     2020/02/01  Dont refresh the string grids automatically, turn on the refresh button for user to do it.
     2020/02/19  hilight selected notebook name.
     2020/03/09  Make sure 'x' (put in by a bug) is not a valid sync repo path.
+    2020/05/10  Faster search
 }
 
 {$mode objfpc}{$H+}
@@ -428,7 +429,7 @@ begin
     HelpNotes := TNoteLister.Create;     // freed in OnClose event.
     HelpNotes.DebugMode := Application.HasOption('debug-index');
     HelpNotes.WorkingDir:= MainForm.ActualHelpNotesPath;
-    HelpNotes.GetNotes('', true);
+    HelpNotes.GetNotes(true);
 end;
 
 procedure TSearchForm.CreateMenus();
@@ -676,18 +677,23 @@ begin
 end;
 
 procedure TSearchForm.DoSearch();
+var
+    TS1, TS2, TS3, TS4 : qword;
+    Found : integer;
 begin
     if (Edit1.Text = '') then
         ButtonClearFiltersClick(self);
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then begin
         ButtonClearFilters.Enabled := True;
-        // TS1:=gettickcount64();
-        NoteLister.GetNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
-        // TS2:=gettickcount64();
-        //NoteLister.LoadSearchGrid(StringGrid1);
+        TS1:=gettickcount64();
+        Found := NoteLister.GetNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
+        TS2:=gettickcount64();
         NoteLister.LoadStGrid(StringGrid1, 2, True);
+        TS3:=gettickcount64();
         NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
-        // TS3:=gettickcount64();
+        TS4:=gettickcount64();
+        StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
+            + inttostr(TS4 - TS3) + 'mS  and we found ' + dbgs(Found) + ' notes';
         // showmessage('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
         // debugln('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
         // releasemode, 50mS-70mS, 4-40mS on my linux laptop, longer on common search terms eg "and"
