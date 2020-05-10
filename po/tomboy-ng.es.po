@@ -366,6 +366,7 @@ msgid "Notebooks"
 msgstr "Cuadernos"
 
 #: resourcestr.rsnumbnotesaffected
+#, object-pascal-format
 msgid "This will affect %d notes"
 msgstr "Esto afectará %d notas."
 
@@ -1520,7 +1521,6 @@ msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
 
 #: tsett.caption
-#| msgid "Settings"
 msgctxt "tsett.caption"
 msgid "tomboy-ng Settings"
 msgstr "Preferencias de tomboy-ng"
@@ -1784,3 +1784,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
+

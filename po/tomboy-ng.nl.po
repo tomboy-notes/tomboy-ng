@@ -372,6 +372,7 @@ msgid "Notebooks"
 msgstr ""
 
 #: resourcestr.rsnumbnotesaffected
+#, object-pascal-format
 msgid "This will affect %d notes"
 msgstr ""
 

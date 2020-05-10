@@ -97,10 +97,6 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
-#: mainunit.rsanotherinstancerunning
-msgid "Another instance of tomboy-ng appears to be running. Will exit."
-msgstr ""
-
 #: mainunit.rsbadnotesfound1
 msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
 msgstr ""
@@ -121,10 +117,6 @@ msgstr ""
 msgid "Are you trying to shut me down ? Dave ?"
 msgstr ""
 
-#: mainunit.rscannotfindnote
-msgid "ERROR, cannot find "
-msgstr ""
-
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr ""
@@ -142,7 +134,7 @@ msgid "Direct debug output to SOME.LOG."
 msgstr ""
 
 #: mainunit.rshelpdebugindex
-msgid "Show debug messages while indexing notes"
+msgid "Show debug msgs while indexing notes"
 msgstr ""
 
 #: mainunit.rshelpdebugspell
@@ -153,12 +145,16 @@ msgstr ""
 msgid "Show debug messages during Sync"
 msgstr ""
 
+#: mainunit.rshelpdelay
+msgid "Delay startup 2 sec to allow OS to settle"
+msgstr ""
+
 #: mainunit.rshelphelp
 msgid "Show this help message and exit."
 msgstr ""
 
 #: mainunit.rshelplang
-msgid "Force Language, supported es"
+msgid "Force Language, supported es, nl"
 msgstr ""
 
 #: mainunit.rshelpnosplash
@@ -170,7 +166,7 @@ msgid "Run in RedHatGnome mode, no TrayIcon"
 msgstr ""
 
 #: mainunit.rshelpsaveexit
-msgid "After import single note, save and exit."
+msgid "After import single note, save & exit"
 msgstr ""
 
 #: mainunit.rshelpsinglenote
@@ -181,71 +177,8 @@ msgstr ""
 msgid "Print version and exit"
 msgstr ""
 
-#: mainunit.rsmenuabout
-msgid "About"
-msgstr ""
-
-#: mainunit.rsmenufile
-msgid "File"
-msgstr ""
-
-#: mainunit.rsmenuhelp
-msgctxt "mainunit.rsmenuhelp"
-msgid "Help"
-msgstr ""
-
-#: mainunit.rsmenunewnote
-msgid "New Note"
-msgstr ""
-
-#: mainunit.rsmenuquit
-msgid "Quit"
-msgstr ""
-
-#: mainunit.rsmenurecent
-msgid "Recent"
-msgstr ""
-
-#: mainunit.rsmenusearch
-msgctxt "mainunit.rsmenusearch"
-msgid "Search"
-msgstr ""
-
-#: mainunit.rsmenusettings
-msgctxt "mainunit.rsmenusettings"
-msgid "Settings"
-msgstr ""
-
-#: mainunit.rsmenusync
-msgid "Synchronise"
-msgstr ""
-
 #: mainunit.rsnotes
 msgid "notes"
-msgstr ""
-
-#: mainunit.rssetupnotesdirfirst
-msgid "Please setup a notes directory first"
-msgstr ""
-
-#: mainunit.rssetupsyncfirst
-msgid "Please config sync system first"
-msgstr ""
-
-#: notebook.rsenternewnotebook
-msgid "Enter a new notebook name please"
-msgstr ""
-
-#: notebook.rsmultiplenotebooks
-msgid "Settings allow multiple Notebooks"
-msgstr ""
-
-#: notebook.rsonenotebook
-msgid "Settings allow only one Notebook"
-msgstr ""
-
-#: notebook.rssetthenotebooks
-msgid "Set the notebooks this note is a member of"
 msgstr ""
 
 #: recover.rsallrestored
@@ -316,6 +249,174 @@ msgstr ""
 msgid "snapshots"
 msgstr ""
 
+#: resourcestr.rsalldone
+msgctxt "resourcestr.rsalldone"
+msgid "All Done"
+msgstr ""
+
+#: resourcestr.rscannotfindnote
+msgctxt "resourcestr.rscannotfindnote"
+msgid "ERROR, cannot find "
+msgstr ""
+
+#: resourcestr.rschangenameofnotebook
+msgid "Change the name of this Notebook"
+msgstr ""
+
+#: resourcestr.rschangesync
+msgid "Change Sync Repo"
+msgstr ""
+
+#: resourcestr.rscreatenewrepo
+msgctxt "resourcestr.rscreatenewrepo"
+msgid "Create a new Repo ?"
+msgstr ""
+
+#: resourcestr.rsenternewnotebook
+msgctxt "resourcestr.rsenternewnotebook"
+msgid "Enter a new notebook name please"
+msgstr ""
+
+#: resourcestr.rslastchange
+msgid "Last Change"
+msgstr ""
+
+#: resourcestr.rslastsync
+msgid "Last Sync"
+msgstr ""
+
+#: resourcestr.rslookingatnotes
+msgctxt "resourcestr.rslookingatnotes"
+msgid "Looking at notes ...."
+msgstr ""
+
+#: resourcestr.rsmenuabout
+msgctxt "resourcestr.rsmenuabout"
+msgid "About"
+msgstr ""
+
+#: resourcestr.rsmenuhelp
+msgctxt "resourcestr.rsmenuhelp"
+msgid "Help"
+msgstr ""
+
+#: resourcestr.rsmenunewnote
+msgctxt "resourcestr.rsmenunewnote"
+msgid "New Note"
+msgstr ""
+
+#: resourcestr.rsmenuquit
+msgctxt "resourcestr.rsmenuquit"
+msgid "Quit"
+msgstr ""
+
+#: resourcestr.rsmenusearch
+msgctxt "resourcestr.rsmenusearch"
+msgid "Search"
+msgstr ""
+
+#: resourcestr.rsmenusettings
+msgctxt "resourcestr.rsmenusettings"
+msgid "Settings"
+msgstr ""
+
+#: resourcestr.rsmenusync
+msgctxt "resourcestr.rsmenusync"
+msgid "Synchronise"
+msgstr ""
+
+#: resourcestr.rsmultiplenotebooks
+msgctxt "resourcestr.rsmultiplenotebooks"
+msgid "Settings allow multiple Notebooks"
+msgstr ""
+
+#: resourcestr.rsname
+msgid "Name"
+msgstr ""
+
+#: resourcestr.rsnotebooks
+msgid "Notebooks"
+msgstr ""
+
+#: resourcestr.rsnumbnotesaffected
+#, object-pascal-format
+msgid "This will affect %d notes"
+msgstr ""
+
+#: resourcestr.rsonenotebook
+msgctxt "resourcestr.rsonenotebook"
+msgid "Settings allow only one Notebook"
+msgstr ""
+
+#: resourcestr.rspressclose
+msgctxt "resourcestr.rspressclose"
+msgid "Press Close"
+msgstr ""
+
+#: resourcestr.rsrunningsync
+msgctxt "resourcestr.rsrunningsync"
+msgid "Running Sync"
+msgstr ""
+
+#: resourcestr.rssaveandsync
+msgctxt "resourcestr.rssaveandsync"
+msgid "Press Save and Sync if this looks OK"
+msgstr ""
+
+#: resourcestr.rssearchhint
+msgid "Exact matches for terms between \" \""
+msgstr ""
+
+#: resourcestr.rssetthenotebooks
+msgctxt "resourcestr.rssetthenotebooks"
+msgid "Set the notebooks this note is a member of"
+msgstr ""
+
+#: resourcestr.rssetup
+msgctxt "resourcestr.rssetup"
+msgid "Setup"
+msgstr ""
+
+#: resourcestr.rssetupnotesdirfirst
+msgctxt "resourcestr.rssetupnotesdirfirst"
+msgid "Please setup a notes directory first"
+msgstr ""
+
+#: resourcestr.rssetupsyncfirst
+msgctxt "resourcestr.rssetupsyncfirst"
+msgid "Please config sync system first"
+msgstr ""
+
+#: resourcestr.rssyncerror
+msgctxt "resourcestr.rssyncerror"
+msgid "A Sync Error occured"
+msgstr ""
+
+#: resourcestr.rssyncnotconfig
+msgctxt "resourcestr.rssyncnotconfig"
+msgid "not configured"
+msgstr ""
+
+#: resourcestr.rstestingrepo
+msgctxt "resourcestr.rstestingrepo"
+msgid "Testing Repo ...."
+msgstr ""
+
+#: resourcestr.rstestingsync
+msgctxt "resourcestr.rstestingsync"
+msgid "Testing Sync"
+msgstr ""
+
+#: resourcestr.rsunabletoproceed
+msgctxt "resourcestr.rsunabletoproceed"
+msgid "Unable to proceed because"
+msgstr ""
+
+#: resourcestr.rsunabletosync
+msgctxt "resourcestr.rsunabletosync"
+msgid "Unable to sync because "
+msgstr ""
+
 #: settings.rsdictionaryfailed
 msgid "Library Not Loaded"
 msgstr ""
@@ -364,10 +465,6 @@ msgstr ""
 msgid "created, do you want to copy it elsewhere ?"
 msgstr ""
 
-#: settings.rssyncnotconfig
-msgid "not configured"
-msgstr ""
-
 #: spelling.rscheckingfull
 msgid "Checking full document"
 msgstr ""
@@ -390,50 +487,6 @@ msgstr ""
 
 #: spelling.rsspellnotconfig
 msgid "Spelling not configured"
-msgstr ""
-
-#: syncgui.rsalldone
-msgid "All Done"
-msgstr ""
-
-#: syncgui.rscreatenewrepo
-msgid "Create a new Repo ?"
-msgstr ""
-
-#: syncgui.rslookingatnotes
-msgid "Looking at notes ...."
-msgstr ""
-
-#: syncgui.rspressclose
-msgid "Press Close"
-msgstr ""
-
-#: syncgui.rsrunningsync
-msgid "Running Sync"
-msgstr ""
-
-#: syncgui.rssaveandsync
-msgid "Press Save and Sync if this looks OK"
-msgstr ""
-
-#: syncgui.rssyncerror
-msgid "A Sync Error occured"
-msgstr ""
-
-#: syncgui.rstestingrepo
-msgid "Testing Repo ...."
-msgstr ""
-
-#: syncgui.rstestingsync
-msgid "Testing Sync"
-msgstr ""
-
-#: syncgui.rsunabletoproceed
-msgid "Unable to proceed because"
-msgstr ""
-
-#: syncgui.rsunabletosync
-msgid "Unable to sync because "
 msgstr ""
 
 #: syncutils.rschangeexistingsync
@@ -488,6 +541,11 @@ msgstr ""
 msgid "ERRORS (see consol log) "
 msgstr ""
 
+#: teditboxform.buttmaintbmenu.caption
+msgctxt "teditboxform.buttmaintbmenu.caption"
+msgid "Menu"
+msgstr ""
+
 #: teditboxform.caption
 msgid "EditBoxForm"
 msgstr ""
@@ -517,6 +575,7 @@ msgid "Fixed Width"
 msgstr ""
 
 #: teditboxform.menuhighlight.caption
+msgctxt "teditboxform.menuhighlight.caption"
 msgid "Highlight"
 msgstr ""
 
@@ -542,6 +601,7 @@ msgid "Cut"
 msgstr ""
 
 #: teditboxform.menuitemdelete.caption
+msgctxt "teditboxform.menuitemdelete.caption"
 msgid "Delete"
 msgstr ""
 
@@ -642,6 +702,89 @@ msgstr ""
 msgid "Tools - Sync, Export, Spell"
 msgstr ""
 
+#: tformbackupview.buttondelete.caption
+msgctxt "tformbackupview.buttondelete.caption"
+msgid "Delete"
+msgstr ""
+
+#: tformbackupview.buttondelete.hint
+msgid "Really, totally delete this note."
+msgstr ""
+
+#: tformbackupview.buttonok.caption
+msgctxt "tformbackupview.buttonok.caption"
+msgid "OK"
+msgstr ""
+
+#: tformbackupview.buttonok.hint
+msgid "My work here is done."
+msgstr ""
+
+#: tformbackupview.buttonopen.caption
+msgid "View"
+msgstr ""
+
+#: tformbackupview.buttonopen.hint
+msgid "Open and view the whole note"
+msgstr ""
+
+#: tformbackupview.buttonrecover.caption
+msgctxt "tformbackupview.buttonrecover.caption"
+msgid "Recover"
+msgstr ""
+
+#: tformbackupview.buttonrecover.hint
+msgid "Restore this note to main repo"
+msgstr ""
+
+#: tformbackupview.caption
+msgid "FormBackupView"
+msgstr ""
+
+#: tformcolours.caption
+msgid "FormColours"
+msgstr ""
+
+#: tformcolours.label1.caption
+msgid "Sample"
+msgstr ""
+
+#: tformcolours.label2.caption
+msgctxt "tformcolours.label2.caption"
+msgid "Set Colours"
+msgstr ""
+
+#: tformcolours.speedbackground.caption
+msgid "Background"
+msgstr ""
+
+#: tformcolours.speedcancel.caption
+msgctxt "tformcolours.speedcancel.caption"
+msgid "Cancel"
+msgstr ""
+
+#: tformcolours.speeddefault.caption
+msgid "Default"
+msgstr ""
+
+#: tformcolours.speedhighlight.caption
+msgctxt "tformcolours.speedhighlight.caption"
+msgid "Highlight"
+msgstr ""
+
+#: tformcolours.speedok.caption
+msgctxt "tformcolours.speedok.caption"
+msgid "OK"
+msgstr ""
+
+#: tformcolours.speedtext.caption
+msgid "Text"
+msgstr ""
+
+#: tformcolours.speedtitle.caption
+msgid "Title"
+msgstr ""
+
 #: tformhelpnotes.buttonclose.caption
 msgctxt "tformhelpnotes.buttonclose.caption"
 msgid "Close"
@@ -703,12 +846,13 @@ msgid "Take a initial snapshot of your notes and config. Overwritten each time."
 msgstr ""
 
 #: tformrecover.buttonrecoversnap.caption
+msgctxt "tformrecover.buttonrecoversnap.caption"
 msgid "Recover"
 msgstr ""
 
 #: tformrecover.buttonsnaphelp.caption
 msgctxt "tformrecover.buttonsnaphelp.caption"
-msgid "Help"
+msgid "Snapshot Help"
 msgstr ""
 
 #: tformrecover.caption
@@ -799,6 +943,70 @@ msgstr ""
 msgid "Notes in a Snapshot"
 msgstr ""
 
+#: tformsdiff.bitbtnuselocal.caption
+msgid "Use Local"
+msgstr ""
+
+#: tformsdiff.bitbtnuseremote.caption
+msgid "Use Remote"
+msgstr ""
+
+#: tformsdiff.buttalllocal.caption
+msgid "Local"
+msgstr ""
+
+#: tformsdiff.buttallnewest.caption
+msgid "Newest"
+msgstr ""
+
+#: tformsdiff.buttalloldest.caption
+msgid "Oldest"
+msgstr ""
+
+#: tformsdiff.buttallremote.caption
+msgid "Remote"
+msgstr ""
+
+#: tformsdiff.caption
+msgid "A Note Sync Clash has been Detected"
+msgstr ""
+
+#: tformsdiff.label1.caption
+msgid "Or make a choice for remainder of this run"
+msgstr ""
+
+#: tformsdiff.label3.caption
+msgid "Remote Changed"
+msgstr ""
+
+#: tformsdiff.label4.caption
+msgid "Local Changed"
+msgstr ""
+
+#: tformsdiff.labellocal.caption
+msgid "LabelLocal"
+msgstr ""
+
+#: tformsdiff.labelremote.caption
+msgid "LabelRemote"
+msgstr ""
+
+#: tformsdiff.radiolong.caption
+msgid "Long Lines"
+msgstr ""
+
+#: tformsdiff.radiolong.hint
+msgid "Maybe necessary to show difference"
+msgstr ""
+
+#: tformsdiff.radioshort.caption
+msgid "Short Lines"
+msgstr ""
+
+#: tformsdiff.radioshort.hint
+msgid "Easier to read"
+msgstr ""
+
 #: tformspell.buttonignore.caption
 msgid "Ignore"
 msgstr ""
@@ -828,20 +1036,8 @@ msgstr ""
 msgid "Suspect word -"
 msgstr ""
 
-#: tformspell.labelcontext.caption
-msgid "LabelContext"
-msgstr ""
-
 #: tformspell.labelprompt.caption
 msgid "Click a word to use it."
-msgstr ""
-
-#: tformspell.labelstatus.caption
-msgid "LabelStatus"
-msgstr ""
-
-#: tformspell.labelsuspect.caption
-msgid "LabelSuspect"
 msgstr ""
 
 #: tformsync.buttoncancel.caption
@@ -861,6 +1057,18 @@ msgstr ""
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
+msgstr ""
+
+#: tformsyncerror.buttcancel.hint
+msgid "Stop Auto Sync until next restart"
+msgstr ""
+
+#: tformsyncerror.buttretry.hint
+msgid "If Shared Drive is available, try again."
+msgstr ""
+
+#: tformsyncerror.caption
+msgid "tomboy-ng SyncError"
 msgstr ""
 
 #: tformtomdroid.buttonclose.caption
@@ -935,17 +1143,26 @@ msgstr ""
 msgid "SSH Password for device"
 msgstr ""
 
-#: tmainform.buttonconfig.caption
-msgctxt "tmainform.buttonconfig.caption"
-msgid "Settings"
+#: tformtomdroid.label6.caption
+msgid "Upload means from tomboy-ng to Android Device"
 msgstr ""
 
-#: tmainform.buttonconfig.hint
-msgid "Open the Config Window"
+#: tmainform.buttmenu.caption
+msgctxt "tmainform.buttmenu.caption"
+msgid "Menu"
+msgstr ""
+
+#: tmainform.buttonclose.caption
+msgctxt "tmainform.buttonclose.caption"
+msgid "Quit"
+msgstr ""
+
+#: tmainform.buttonclose.hint
+msgid "Close tomboy-ng"
 msgstr ""
 
 #: tmainform.buttondismiss.caption
-msgid "Dismiss"
+msgid "Hide"
 msgstr ""
 
 #: tmainform.buttondismiss.hint
@@ -1008,6 +1225,7 @@ msgid "Cancel"
 msgstr ""
 
 #: tnotebookpick.buttonok.caption
+msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr ""
 
@@ -1017,6 +1235,26 @@ msgstr ""
 
 #: tnotebookpick.label5.caption
 msgid "Press OK and we will make the Note Book AND add this note to it."
+msgstr ""
+
+#: tnotebookpick.label6.caption
+msgid "Existing Name"
+msgstr ""
+
+#: tnotebookpick.label7.caption
+msgid "Label7"
+msgstr ""
+
+#: tnotebookpick.label8.caption
+msgid "New Name"
+msgstr ""
+
+#: tnotebookpick.label9.caption
+msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
+msgstr ""
+
+#: tnotebookpick.tabchangename.caption
+msgid "Change Notebook Name"
 msgstr ""
 
 #: tnotebookpick.tabexisting.caption
@@ -1101,6 +1339,11 @@ msgstr ""
 msgid "Clear Filters"
 msgstr ""
 
+#: tsearchform.buttonmenu.caption
+msgctxt "tsearchform.buttonmenu.caption"
+msgid "Menu"
+msgstr ""
+
 #: tsearchform.buttonnotebookoptions.caption
 msgid "Notebook Options"
 msgstr ""
@@ -1114,28 +1357,15 @@ msgid "Refresh"
 msgstr ""
 
 #: tsearchform.buttonrefresh.hint
-msgid "Re-index notes"
-msgstr ""
-
-#: tsearchform.buttonsearchoptions.caption
-msgid "Search Options"
+msgid "Update Search Results"
 msgstr ""
 
 #: tsearchform.caption
-msgid "Search Form"
+msgid "tomboy-ng Search"
 msgstr ""
 
-#: tsearchform.edit1.text
-msgctxt "tsearchform.edit1.text"
-msgid "Search"
-msgstr ""
-
-#: tsearchform.menuanycombo.caption
-msgid "AnyCombination"
-msgstr ""
-
-#: tsearchform.menucasesensitive.caption
-msgctxt "tsearchform.menucasesensitive.caption"
+#: tsearchform.checkcasesensitive.caption
+msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 
@@ -1149,6 +1379,10 @@ msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
+msgstr ""
+
+#: tsearchform.menurenamenotebook.caption
+msgid "Rename Note Book"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
@@ -1172,17 +1406,17 @@ msgctxt "tsett.buttonhelpnotes.caption"
 msgid "Help Notes Language"
 msgstr ""
 
-#: tsett.buttonhide.caption
-msgctxt "tsett.buttonhide.caption"
-msgid "Close"
-msgstr ""
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr ""
 
 #: tsett.buttonmanualsnap.hint
 msgid "Take a time stamped snapshot of notes and config"
+msgstr ""
+
+#: tsett.buttonsetcolours.caption
+msgctxt "tsett.buttonsetcolours.caption"
+msgid "Set Colours"
 msgstr ""
 
 #: tsett.buttonsetdictionary.caption
@@ -1205,10 +1439,6 @@ msgstr ""
 msgid "Set Spell Library"
 msgstr ""
 
-#: tsett.buttonsetsynserver.caption
-msgid "Change File Sync Repo"
-msgstr ""
-
 #: tsett.buttonshowbackup.caption
 msgid "Show Me"
 msgstr ""
@@ -1225,22 +1455,21 @@ msgstr ""
 msgid "If you have previously taken a snapshot ..."
 msgstr ""
 
-#: tsett.buttonsynchelp.caption
-msgctxt "tsett.buttonsynchelp.caption"
-msgid "Help"
-msgstr ""
-
 #: tsett.caption
 msgctxt "tsett.caption"
-msgid "Settings"
-msgstr ""
-
-#: tsett.checkanycombination.caption
-msgid "Any Combination"
+msgid "tomboy-ng Settings"
 msgstr ""
 
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
+msgstr ""
+
+#: tsett.checkboxautosync.caption
+msgid "Auto Sync"
+msgstr ""
+
+#: tsett.checkboxautosync.hint
+msgid "Sync, if possible once an hour."
 msgstr ""
 
 #: tsett.checkcasesensitive.caption
@@ -1292,16 +1521,16 @@ msgstr ""
 msgid "Main Search Window is : "
 msgstr ""
 
-#: tsett.groupbox3.caption
-msgid "  Type  "
-msgstr ""
-
 #: tsett.groupbox4.caption
 msgid "  Options  "
 msgstr ""
 
 #: tsett.groupbox5.caption
 msgid "Font Size"
+msgstr ""
+
+#: tsett.groupboxsync.caption
+msgid "  Sync  "
 msgstr ""
 
 #: tsett.label1.caption
@@ -1330,11 +1559,11 @@ msgid "Notes will be looked for and saved in :"
 msgstr ""
 
 #: tsett.label3.caption
-msgid "When a conflict is detected between a local note and"
+msgid "When a conflict is detected between a local note and remote one :"
 msgstr ""
 
 #: tsett.label4.caption
-msgid "a note on the configured synchronisation server :"
+msgid "Repo : "
 msgstr ""
 
 #: tsett.label6.caption
@@ -1351,6 +1580,16 @@ msgstr ""
 
 #: tsett.label9.caption
 msgid "A snaphot is a copy of your current note directory."
+msgstr ""
+
+#: tsett.labelfilesync.caption
+msgctxt "tsett.labelfilesync.caption"
+msgid "not configured"
+msgstr ""
+
+#: tsett.labelncsyncurl.caption
+msgctxt "tsett.labelncsyncurl.caption"
+msgid "not configured"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
@@ -1389,8 +1628,8 @@ msgstr ""
 msgid "Always Ask me what to do."
 msgstr ""
 
-#: tsett.radiofile.caption
-msgid "File Sync using shared drive."
+#: tsett.radiofilesync.caption
+msgid "File Sync, google drive, smb etc."
 msgstr ""
 
 #: tsett.radiofontbig.caption
@@ -1410,8 +1649,8 @@ msgstr ""
 msgid "Small"
 msgstr ""
 
-#: tsett.radioserver.caption
-msgid "Network Server - not available"
+#: tsett.radiosyncnc.caption
+msgid "Nextcloud/ownCloud (Grauphel)"
 msgstr ""
 
 #: tsett.radiouselocal.caption
@@ -1420,6 +1659,26 @@ msgstr ""
 
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
+msgstr ""
+
+#: tsett.speedbuthelp.caption
+msgctxt "tsett.speedbuthelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tsett.speedbuthide.caption
+msgctxt "tsett.speedbuthide.caption"
+msgid "Close"
+msgstr ""
+
+#: tsett.speedbutttbmenu.caption
+msgctxt "tsett.speedbutttbmenu.caption"
+msgid "Menu"
+msgstr ""
+
+#: tsett.speedsetupsync.caption
+msgctxt "tsett.speedsetupsync.caption"
+msgid "Setup"
 msgstr ""
 
 #: tsett.tabbackup.caption

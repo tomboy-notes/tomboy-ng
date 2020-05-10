@@ -145,6 +145,9 @@ function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = f
                           if it has initial problems, returns F and sets ErrorMsg if fails.}
 function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 
+                        { returns a version of passed string with anything between < > }
+function RemoveXml(const St : AnsiString) : AnsiString;
+
 RESOURCESTRING
   rsNewUploads = 'New Uploads    ';
   rsEditUploads = 'Edit Uploads   ';
@@ -165,6 +168,26 @@ RESOURCESTRING
 implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils;
+
+function RemoveXml(const St : AnsiString) : AnsiString;
+var
+    X, Y : integer;
+    FoundOne : boolean = false;
+begin
+    Result := St;
+    repeat
+        FoundOne := False;
+        X := Pos('<', Result);      // don't use UTF8Pos for byte operations
+        if X > 0 then begin
+            Y := Pos('>', Result);
+            if Y > 0 then begin
+                Delete(Result, X, Y-X+1);
+                FoundOne := True;
+            end;
+        end;
+    until not FoundOne;
+    Result := trim(Result);
+end;
 
 function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 begin

@@ -298,6 +298,7 @@ begin
     if Index = 0 then exit(False);
     delete(St, Index, 1);
     insert(' ', St, St.IndexOf('>', Index)+2);          // 2 ? IndexOf rets a zero based and we want to go one past
+    Result := true;
 end;
 
 

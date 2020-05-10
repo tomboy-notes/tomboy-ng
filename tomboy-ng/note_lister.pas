@@ -63,6 +63,7 @@ unit Note_Lister;
     2020/03/27  Better reporting on short lastchangedate string. But need an autofix.
     2020/04/01  Bug fix for code that auto fixes short last-change-date.
     2020/04/19  Missing $H+ caused  255 char default string, messed with RewriteBadChangeDate()
+    2020/05/10  Multithreaded search
 }
 
 {$mode objfpc}  {$H+}
@@ -70,7 +71,7 @@ unit Note_Lister;
 INTERFACE
 
 uses
-		Classes, SysUtils, Grids, Forms;
+		Classes, SysUtils, Grids, Forms, FileUtil;
 
 type
    PNotebook=^TNotebook;
@@ -118,9 +119,6 @@ type
 	end;
 
 type                                 { ---------- TNoteInfoList ---------}
-
-   { TNoteList }
-
    TNoteList = class(TList)   // TFPList
    private
     	function Get(Index: integer): PNote;
@@ -133,11 +131,9 @@ type                                 { ---------- TNoteInfoList ---------}
 
 type
 
-   { NoteLister }
+    { TNoteLister }
 
-   { TNoteLister }
-
-   TNoteLister = class
+    TNoteLister = class
    private
     //DebugMode : boolean;
 
@@ -159,18 +155,22 @@ type
     //procedure DumpNoteBookList();
 
                                 // Indexes and maybe searches one note. TermList maybe nil.
-   	procedure GetNoteDetails(const Dir, FileName: ANSIString; const TermList: TStringList; DontTestName: boolean=false);
+   	procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
+
 
 
     		                    { Returns True if indicated note contains term in its content }
-   	function NoteContains(const TermList: TStringList; FileName: ANSIString
-        ): boolean;
+   	//function NoteContains(const TermList: TStringList; FileName: ANSIString         ): boolean;
+
                                 { Removes any complete xml tags from passed string, only matches '<' to '>' }
-    function RemoveXml(const St: AnsiString): AnsiString;
-                                { Early ver of -ng wrote a bad date stamp, here we try to fix any we find. First
+    //function RemoveXml(const St: AnsiString): AnsiString;
+
+                                { A Early ver of -ng wrote a bad date stamp, here we try to fix any we find. First
                                   just try to add missing bits, if that does not work, we replace the LCD with
                                   current, and known good date.}
 	procedure RewriteBadChangeDate(const Dir, FileName, LCD: ANSIString);
+
+
 
    public
     DebugMode : boolean;
@@ -192,6 +192,8 @@ type
         ): boolean;
                                        { Retuns the title of note at (zero based) index. }
     function GetTitle(Index: integer): string;
+                                        { Returns the title for a given ID or Filename }
+    function GetTitle(const ID: String): string;
                                         { Returns the number of items in the list }
     function Count(): integer;
                                         { Returns the LastChangeDate string for ID, empty string if not found }
@@ -222,11 +224,13 @@ type
 	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid; SearchListOnly: boolean);
                                         { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
-    		                            { Read the metadata from all the notes in internal data structure,
+    		                            { Read the metadata from all the notes into internal data structure,
                                           this is the main "go and do it" function.
-                                          If 'term' is present we'll just search for notes with that term
-                                          and store date in a different structure. And probably call LoadSearchGrid() }
-   	function GetNotes(const Term: ANSIstring=''; DontTestName: boolean=false ): longint;
+                                           }
+   	function GetNotes(DontTestName: boolean=false): longint;
+                                        { Overload of GetNotes(), we'll just search for notes with term
+                                          and store date in a different structure, then call LoadSearchGrid() }
+    function GetNotes(const Term: ANSIstring): longint;
     		                            { Copy the internal Note data to the passed TStringGrid, empting it first.
                                           NoCols can be 2, 3 or 4 being Name, LastChange, CreateDate, ID.
                                           Special case only main List SearchMode True will get from the search list.}
@@ -267,14 +271,87 @@ type
    end;
 
 
-{ ----------------------- IMPLEMENTATION --------------- }
+Type   { ======================= SEARCH THREAD ========================== }
+
+    TSearchThread = class(TThread)
+    private
+
+    protected
+        procedure Execute; override;
+    public
+        TIndex : integer;           // Zero based count of threads
+        ThreadBlockSize : integer;  // how many files each thread processes
+        ResultsList : TNoteList;    // List to contain details of what we found
+        File_List : TStringList;    // Incoming list if files
+        Term_List : TStringList;    // Incoming list of terms to search for
+        Constructor Create(CreateSuspended : boolean);
+    end;
+
+
+function NoteContains(const TermList : TStringList; FullFileName: ANSIString): boolean;
+
+
+{ ------------------------------------------------------------------- }
+{ -------------------------- IMPLEMENTATION ------------------------- }
+{ ------------------------------------------------------------------- }
+
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUtils;
+uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUtils, SearchUnit;
 { Projectinspector, double click Required Packages and add LCL }
 
-{ TNoteBookList }
+var
+    FinishedThreads : integer;     // There are here to allow the search threads to find them.
+    ThreadLock : integer;          // -1 if unlocked, has value of thread when locked
+
+
+{ ========================== SEARCH THREAD =========================== }
+
+constructor TSearchThread.Create(CreateSuspended : boolean);
+begin
+    inherited Create(CreateSuspended);
+    FreeOnTerminate := True;
+end;
+
+procedure TSearchThread.Execute;
+var
+    EndBlock, I : integer;
+    NoteP : PNote;
+begin
+    EndBlock := (TIndex+1)*ThreadBlockSize;
+    if EndBlock > File_List.Count then
+        EndBlock := File_List.Count;
+    if (File_List.Count - EndBlock) < ThreadBlockSize then
+        EndBlock := File_List.Count;
+    I := TIndex * ThreadBlockSize;
+    {if EndBlock := FileList.Count then
+        debugln('Last Thread Endblock=' + dbgs(EndBlock)); }
+    while (not Terminated) and (I < EndBlock) do begin
+        if Notecontains(Term_List, File_List.Strings[i]) then  begin
+            if not SearchForm.Notelister.IsATemplate(ExtractFileNameOnly(File_List.Strings[i])) then begin
+                new(NoteP);
+                NoteP^.ID:= ExtractFileNameOnly(File_List.Strings[i]) + '.note';
+                NoteP^.IsTemplate := False;
+                NoteP^.Title := SearchForm.Notelister.GetTitle(NoteP^.ID);
+                NoteP^.LastChange:= SearchForm.Notelister.GetLastChangeDate(NoteP^.ID);
+                NoteP^.CreateDate := '';
+                //debugln('ID = ' + NoteP^.ID);
+                while InterlockedCompareExchange(ThreadLock, TIndex, -1) <> -1 do
+                    if Terminated then begin
+                        dispose(NoteP);
+                        break;
+                    end;
+                ResultsList.Add(NoteP);
+                //assert((InterlockedExchange(ThreadLock, -1) = TIndex), 'FAILED threadlock');
+                // it appears code is unstable if I use assert and don't tick include assertion code -Sa under debugging
+                InterlockedExchange(ThreadLock, -1);
+            end;
+        end;
+        inc(I);
+    end;
+    InterLockedIncrement(FinishedThreads);
+end;
 
 
 { ========================= N O T E B O O K L I S T ======================== }
@@ -295,8 +372,7 @@ begin
 		inherited Destroy;
 end;
 
-procedure TNoteBookList.Add(const ID, ANoteBook: ANSIString; IsTemplate: boolean
-		);
+procedure TNoteBookList.Add(const ID, ANoteBook: ANSIString; IsTemplate: boolean );
 var
     NB : PNoteBook;
     NewRecord : boolean = False;
@@ -398,7 +474,8 @@ begin
     debugln('-----------------------');
 end;
 }
-{ ====================== NoteLister ============================== }
+
+{ ============================== NoteLister ================================ }
 
 { -------------  Things relating to NoteBooks ------------------ }
 
@@ -683,8 +760,9 @@ begin
 end;
 
 
-procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; const TermList : TStringList; DontTestName : boolean = false);
+procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; {const TermList : TStringList;} DontTestName : boolean = false);
 			// This is how we search for XML elements, attributes are different.
+            // Note : we used to do seaching here as well as indexing, now just indexing
 var
     NoteP : PNote;
     Doc : TXMLDocument;
@@ -701,8 +779,8 @@ begin
             exit;
         end;
   	if FileExistsUTF8(Dir + FileName) then begin
-        if assigned(TermList) then
-            if not NoteContains(TermList, FileName) then exit();
+        {if assigned(TermList) then
+            if not NoteContains(TermList, FileName) then exit(); }
         new(NoteP);
         NoteP^.IsTemplate := False;
   	    try
@@ -762,9 +840,9 @@ begin
                     dispose(NoteP);
                     exit();
 			    end;
-			    if assigned(TermList) then
+			    {if assigned(TermList) then
                     SearchNoteList.Add(NoteP)
-                else NoteList.Add(NoteP);
+                else} NoteList.Add(NoteP);
   	    finally
       	        Doc.free;
   	    end;
@@ -772,7 +850,7 @@ begin
 end;
 
 
-function TNoteLister.RemoveXml(const St : AnsiString) : AnsiString;
+{function TNoteLister.RemoveXml(const St : AnsiString) : AnsiString;
 var
     X, Y : integer;
     FoundOne : boolean = false;
@@ -789,11 +867,11 @@ begin
             end;
         end;
     until not FoundOne;
-end;
+end; }
 
 procedure TNoteLister.IndexThisNote(const ID: String);
 begin
-    GetNoteDetails(WorkingDir, CleanFileName(ID), TStringList(nil));
+    GetNoteDetails(WorkingDir, CleanFileName(ID){, TStringList(nil)});
 end;
 
 
@@ -808,8 +886,21 @@ begin
     for Index := 0 to NoteList.Count -1 do
     if NoteList.Items[Index]^.ID = FileName then begin
         exit(NoteList.Items[Index]^.LastChange);
-		debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
+	//	debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
     end;
+end;
+
+function TNoteLister.GetTitle(const ID: String) : string;
+var
+    index : integer;
+    FileName : string;
+begin
+    Result := '';
+    if not assigned(NoteList) then exit('');
+    FileName := CleanFileName(ID);
+    for Index := 0 to NoteList.Count -1 do
+        if NoteList.Items[Index]^.ID = FileName then
+            exit(NoteList.Items[Index]^.Title);
 end;
 
 function TNoteLister.IsIDPresent(ID: string): boolean;
@@ -915,21 +1006,17 @@ begin
         SL.Add(AWord);
 end;
 
-// Jan 2020, will pass this function a (possibly uncreated) TStringList rather than a string
-// The list will be ready to search on.
-// function TNoteLister.NoteContains(const Term, FileName: ANSIString): boolean;
-function TNoteLister.NoteContains(const TermList : TStringList; FileName: ANSIString): boolean;
+// Pass this function a TStringList each line of which must be matched for a 'hit'
+// Moved out of class so that the threaded search can find and use it.
+
+function NoteContains(const TermList : TStringList; FullFileName: ANSIString): boolean;
 var
-    {SL, }SLNote : TStringList;
-    //Content : ANSIString;
+    SLNote : TStringList;
     I, Index : integer;
 begin
     Result := False;
-    {SL := TStringList.Create;
-    BuildSearchList(SL, Term);      }
-
     SLNote := TStringList.Create;
-    SlNote.LoadFromFile(WorkingDir + FileName);
+    SlNote.LoadFromFile(FullFileName);
     for Index := 0 to SLNote.Count - 1 do
         SLNote.Strings[Index] := RemoveXML(SLNote.Strings[Index]);
     for I := 0 to TermList.Count -1 do begin      // Iterate over search terms
@@ -950,7 +1037,6 @@ begin
     end;
     // when we get here, if Result is true, run finished without a fail.
     FreeandNil(SLNote);
-    // FreeandNil(SL);
 end;
 
 
@@ -987,56 +1073,79 @@ begin
     Result := PNote(NoteList.get(Index))^.Title;
 end;
 
-function TNoteLister.GetNotes(const Term: ANSIstring = ''; DontTestName : boolean = false): longint;
+{ With 2000 notes, on my Dell, linux, search for 'and'.
+  Before multithreading - 250mS - 280mS
+  With Multithreading,
+  6 : 90ms to 110ms; 4 : 100mS - 134ms; 3 : 110ms - 130mS; 2 : 155ms - 180ms; 1 : 255ms - 280mS
+  However, noted on Windows Vista (!), significent slow down !  Windows10, similar to Linux
+}
+
+const ThreadCount = 3;  // The number of extra threads set searching. 3 seems reasonable...
+
+
+function TNoteLister.GetNotes(const Term: ANSIstring) : longint;
 var
-    Info : TSearchRec;
-    SL : TStringList;
-    //P : pointer;
-    //Tick, Tock : qword;
+    TermList, FileList : TStringList;
+    ThreadIndex : integer = 0;
+    SearchThread : TSearchThread;
 begin
-    SL := Nil;
-    if Term <> '' then begin
-        SL := TStringList.Create;
-        BuildSearchList(SL, Term);
-    end;
-    XMLError := False;
-    if Term = '' then begin
-        NoteList.Free;
-    	NoteList := TNoteList.Create;
-        NoteBookList.Free;
-        NoteBookList := TNoteBookList.Create;
-        if DebugMode then debugln('Empty Note and Book Lists created');
-	end else begin
+    TermList := TStringList.Create;
+    FileList := Nil;
+    try
+        BuildSearchList(TermList, Term);
         if DebugMode then debugln('Empty Search Lists created');
         SearchNoteList.Free;
-    	SearchNoteList := TNoteList.Create;
+        SearchNoteList := TNoteList.Create;
+        FinishedThreads := 0;
+        ThreadLock := -1;
+        FileList := FindAllFiles(WorkingDir, '*.note', false); // list contains full file names !
+
+        // debugln('FileList found ' + dbgs(FileList.count));
+
+        while ThreadIndex < ThreadCount do begin
+
+            SearchThread := TSearchThread.Create(True);         // Threads clean themselves up.
+            SearchThread.ThreadBlockSize := FileList.Count div ThreadCount;
+            SearchThread.Term_List := TermList;
+            SearchThread.File_List := FileList;
+            SearchThread.ResultsList := SearchNoteList;
+            SearchThread.TIndex := ThreadIndex;
+            SearchThread.start();
+            inc(ThreadIndex);
+        end;
+        while FinishedThreads < ThreadCount do sleep(1);       // ToDo : some sort of 'its taken too long ..."
+        SearchNoteList.Sort(@LastChangeSorter);
+	    result := SearchNoteList.Count;
+    finally
+        if FileList <> nil then FileList.free;
+        TermList.Free;
     end;
+end;
+
+function TNoteLister.GetNotes(DontTestName : boolean = false): longint;
+var
+    Info : TSearchRec;
+    cnt : integer =0;
+begin
+    XMLError := False;
+    NoteList.Free;
+    NoteList := TNoteList.Create;
+    NoteBookList.Free;
+    NoteBookList := TNoteBookList.Create;
+    if DebugMode then debugln('Empty Note and Book Lists created');
     FreeandNil(ErrorNotes);
     ErrorNotes := TStringList.Create;
     if DebugMode then debugln('Looking for notes in [' + WorkingDir + ']');
-  	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then begin
+  	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then     // ToDo : will FindAllFiles() be faster ?
   		repeat
-  			GetNoteDetails(WorkingDir, Info.Name, SL, DontTestName);        // Note: SL may, or may not have been created
+            inc(Cnt);
+  			GetNoteDetails(WorkingDir, Info.Name, DontTestName);
   		until FindNext(Info) <> 0;
-  	end;
   	FindClose(Info);
     if DebugMode then debugLn('Finished indexing notes');
-    if Term = '' then begin
-        NotebookList.CleanList();
-        Result := NoteList.Count;
-        //Tick := gettickcount64();
-        NoteList.Sort(@LastChangeSorter);       // 0mS on Dell
-        //Tock := gettickcount64();
-        //writeln('Sort ' + inttostr(Tock - Tick) + 'mS');
-        //writeln('--------------');
-	end else begin
-        SearchNoteList.Sort(@LastChangeSorter);
-		result := NoteList.Count;
-	end;
-    if assigned(SL) then SL.Free;       //  needs a try statement ....
-    //writeln('--------------');
-    //for P in NoteList do                 // NOTE - TList enumerator !
-    //    debugln( PNote(P)^.Title);
+    NotebookList.CleanList();
+    Result := NoteList.Count;
+    NoteList.Sort(@LastChangeSorter);       // 0mS on Dell
 end;
 
 
@@ -1054,10 +1163,10 @@ begin
     while Index > 0 do begin
         dec(Index);
         LCDst := TheList.Items[Index]^.LastChange;
-        LCDst[11] := ' ';   // looks prettier, dates are stored in ISO std with a 'T' between date and time
+        if length(LCDst) > 11 then  // looks prettier, dates are stored in ISO std
+            LCDst[11] := ' ';       // with a 'T' between date and time
         case NoCols of
-            2 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
-        	    LCDst]);
+            2 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title, LCDst]);
             3 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
         	    LCDst, TheList.Items[Index]^.CreateDate]);
             4 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
