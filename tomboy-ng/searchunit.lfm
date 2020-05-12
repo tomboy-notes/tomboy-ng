@@ -1,10 +1,10 @@
 object SearchForm: TSearchForm
-  Left = 941
+  Left = 492
   Height = 401
-  Top = 611
+  Top = 325
   Width = 824
   ActiveControl = Edit1
-  Caption = 'tomboy-ng Search'
+  Caption = 'tomboy-ng_Search'
   ClientHeight = 401
   ClientWidth = 824
   OnCloseQuery = FormCloseQuery
@@ -12,7 +12,7 @@ object SearchForm: TSearchForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.1.0.0'
   object Edit1: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
@@ -23,7 +23,7 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 423
+    Width = 425
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 7
@@ -267,10 +267,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 536
+    Left = 538
     Height = 32
     Top = 3
-    Width = 129
+    Width = 127
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 7
     Caption = 'Case Sensitive'

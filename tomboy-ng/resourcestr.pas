@@ -66,6 +66,21 @@ RESOURCESTRING
   rsSyncNotConfig = 'not configured';               // means that the file of net sync is not configured yet.
   rsSetUp = 'Setup';                               // means configure something, eg, one of the Sync modules.
 
+  // BackUpView
+
+  rsNewerVersionExits = 'A newer version exists in main repo';
+  rsNotPresent = 'Not present in main repo';
+  rsCannotDelete = 'Cannot delete ';
+
+  rsOverwriteNote = 'Overwrite newer version of that note';
+  rsNoteAlreadyInRepo = 'Note already in Repo';
+  rsNoteOpen = 'You have that note open, please close and try again';
+  rsCopyFailed = 'Copying orig to Backup directory failed';
+  rsRenameFailed = 'ERROR, could not rename Backup File ';
+  rsRecoverOK = 'OK, File recovered.';
+  rsNotesDeleted =  'Note or notes deleted';
+
+
 implementation
 
 end.

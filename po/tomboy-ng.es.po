@@ -15,39 +15,33 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: backupview.rscannotdelete
-msgid "Cannot delete "
-msgstr "No se puede borrar "
-
 #: backupview.rscopyfailed
+msgctxt "backupview.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
 msgstr "No se copió al directorio de copias de seguridad"
 
-#: backupview.rsnewerversionexits
-msgid "A newer version exists in main repo"
-msgstr "Hay una versión más nueva en el repositorio principal"
-
 #: backupview.rsnotealreadyinrepo
+msgctxt "backupview.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr "La nota ya está en el repositorio"
 
 #: backupview.rsnoteopen
+msgctxt "backupview.rsnoteopen"
 msgid "You have that note open, please close and try again"
 msgstr "La nota está abierta, por favor cerrarla y intentarlo de nuevo"
 
-#: backupview.rsnotpresent
-msgid "Not present in main repo"
-msgstr "No está en el repositorio principal"
-
 #: backupview.rsoverwritenote
+msgctxt "backupview.rsoverwritenote"
 msgid "Overwrite newer version of that note"
 msgstr "Sobrescribir la versión más nueva de la nota"
 
 #: backupview.rsrecoverok
+msgctxt "backupview.rsrecoverok"
 msgid "OK, File recovered. You may need to do a Refresh (or restart)"
 msgstr "Archivo recuperado. Puede que tenga que actualizar (o reiniciar)."
 
 #: backupview.rsrenamefailed
+msgctxt "backupview.rsrenamefailed"
 msgid "ERROR, could not rename Backup File "
 msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad "
 
@@ -278,6 +272,12 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Todo terminado"
 
+#: resourcestr.rscannotdelete
+#, fuzzy
+msgctxt "resourcestr.rscannotdelete"
+msgid "Cannot delete "
+msgstr "No se puede borrar "
+
 #: resourcestr.rscannotfindnote
 msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
@@ -290,6 +290,12 @@ msgstr "Cambiar el nombre de este cuaderno"
 #: resourcestr.rschangesync
 msgid "Change Sync Repo"
 msgstr "Cambiar repositorio de sincronización"
+
+#: resourcestr.rscopyfailed
+#, fuzzy
+msgctxt "resourcestr.rscopyfailed"
+msgid "Copying orig to Backup directory failed"
+msgstr "No se copió al directorio de copias de seguridad"
 
 #: resourcestr.rscreatenewrepo
 msgctxt "resourcestr.rscreatenewrepo"
@@ -360,10 +366,38 @@ msgctxt "resourcestr.rsname"
 msgid "Name"
 msgstr "Nombre"
 
+#: resourcestr.rsnewerversionexits
+#, fuzzy
+msgctxt "resourcestr.rsnewerversionexits"
+msgid "A newer version exists in main repo"
+msgstr "Hay una versión más nueva en el repositorio principal"
+
+#: resourcestr.rsnotealreadyinrepo
+#, fuzzy
+msgctxt "resourcestr.rsnotealreadyinrepo"
+msgid "Note already in Repo"
+msgstr "La nota ya está en el repositorio"
+
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
 msgstr "Cuadernos"
+
+#: resourcestr.rsnoteopen
+#, fuzzy
+msgctxt "resourcestr.rsnoteopen"
+msgid "You have that note open, please close and try again"
+msgstr "La nota está abierta, por favor cerrarla y intentarlo de nuevo"
+
+#: resourcestr.rsnotesdeleted
+msgid "Note or notes deleted"
+msgstr ""
+
+#: resourcestr.rsnotpresent
+#, fuzzy
+msgctxt "resourcestr.rsnotpresent"
+msgid "Not present in main repo"
+msgstr "No está en el repositorio principal"
 
 #: resourcestr.rsnumbnotesaffected
 #, object-pascal-format
@@ -375,10 +409,29 @@ msgctxt "resourcestr.rsonenotebook"
 msgid "Settings allow only one Notebook"
 msgstr "Preferencias permiten un solo cuaderno"
 
+#: resourcestr.rsoverwritenote
+#, fuzzy
+msgctxt "resourcestr.rsoverwritenote"
+msgid "Overwrite newer version of that note"
+msgstr "Sobrescribir la versión más nueva de la nota"
+
 #: resourcestr.rspressclose
 msgctxt "resourcestr.rspressclose"
 msgid "Press Close"
 msgstr "Pulse Cerrar"
+
+#: resourcestr.rsrecoverok
+#, fuzzy
+#| msgid "OK, File recovered. You may need to do a Refresh (or restart)"
+msgctxt "resourcestr.rsrecoverok"
+msgid "OK, File recovered."
+msgstr "Archivo recuperado. Puede que tenga que actualizar (o reiniciar)."
+
+#: resourcestr.rsrenamefailed
+#, fuzzy
+msgctxt "resourcestr.rsrenamefailed"
+msgid "ERROR, could not rename Backup File "
+msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad "
 
 #: resourcestr.rsrunningsync
 msgctxt "resourcestr.rsrunningsync"
@@ -462,10 +515,6 @@ msgstr "Ningún diccionario encontrado"
 #: settings.rsdirhasnonotes
 msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
 msgstr "El directorio no tiene ninguna nota. Está bien, si puedo hacer las mías aquí."
-
-#: settings.rsdoubleclicknote
-msgid "double click a note ..."
-msgstr "haga doble clic en una nota ..."
 
 #: settings.rserrorcannotwrite
 msgid "Cannot write into"
@@ -749,8 +798,10 @@ msgid "Really, totally delete this note."
 msgstr "Eliminar esta nota completamente."
 
 #: tformbackupview.buttonok.caption
+#, fuzzy
+#| msgid "OK"
 msgctxt "tformbackupview.buttonok.caption"
-msgid "OK"
+msgid "Close"
 msgstr "OK"
 
 #: tformbackupview.buttonok.hint
@@ -775,8 +826,14 @@ msgid "Restore this note to main repo"
 msgstr "Restaurar esta nota al repositorio principal"
 
 #: tformbackupview.caption
-msgid "FormBackupView"
+#, fuzzy
+#| msgid "FormBackupView"
+msgid "View, recover or delete Backup Files"
 msgstr "VistaDeSeguridad"
+
+#: tformbackupview.listbox1.hint
+msgid "Use Ctrl or Shift to select multiple entries"
+msgstr ""
 
 #: tformcolours.caption
 msgid "FormColours"
@@ -1421,7 +1478,9 @@ msgid "Update Search Results"
 msgstr "Actualizar resultados"
 
 #: tsearchform.caption
-msgid "tomboy-ng Search"
+#, fuzzy
+#| msgid "tomboy-ng Search"
+msgid "tomboy-ng_Search"
 msgstr "Búsqueda de tombo-ng"
 
 #: tsearchform.checkcasesensitive.caption
@@ -1521,8 +1580,10 @@ msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
 
 #: tsett.caption
+#, fuzzy
+#| msgid "tomboy-ng Settings"
 msgctxt "tsett.caption"
-msgid "tomboy-ng Settings"
+msgid "Form Caption"
 msgstr "Preferencias de tomboy-ng"
 
 #: tsett.checkautostart.caption

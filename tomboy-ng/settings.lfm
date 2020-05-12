@@ -4,7 +4,7 @@ object Sett: TSett
   Top = 302
   Width = 630
   BorderIcons = []
-  Caption = 'tomboy-ng Settings'
+  Caption = 'Form Caption'
   ClientHeight = 525
   ClientWidth = 630
   OnClose = FormClose
@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.1.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 630
-    ActivePage = TabBasic
+    ActivePage = TabBackUp
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -103,9 +103,9 @@ object Sett: TSett
       end
       object CheckAutostart: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Top = 272
-        Width = 160
+        Width = 158
         Caption = 'Autostart at Logon'
         OnChange = CheckAutostartChange
         TabOrder = 2
@@ -128,9 +128,9 @@ object Sett: TSett
         TabOrder = 3
         object CheckCaseSensitive: TCheckBox
           Left = 32
-          Height = 24
+          Height = 23
           Top = 24
-          Width = 129
+          Width = 127
           Caption = 'Case Sensitive'
           OnChange = CheckReadOnlyChange
           TabOrder = 0
@@ -138,19 +138,19 @@ object Sett: TSett
       end
       object CheckShowSearchAtStart: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Top = 312
-        Width = 174
+        Width = 172
         Caption = 'Show Search at Start'
         OnChange = CheckReadOnlyChange
         TabOrder = 4
       end
       object CheckShowSplash: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Hint = 'Always shown if error loading notes.'
         Top = 352
-        Width = 172
+        Width = 170
         Caption = 'Show Splash at Start'
         Checked = True
         OnChange = CheckReadOnlyChange
@@ -161,9 +161,9 @@ object Sett: TSett
       end
       object CheckShowTomdroid: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Top = 224
-        Width = 283
+        Width = 281
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
         TabOrder = 6
@@ -357,9 +357,9 @@ object Sett: TSett
         end
         object RadioAlwaysAsk: TRadioButton
           Left = 16
-          Height = 24
+          Height = 23
           Top = 64
-          Width = 217
+          Width = 215
           Caption = 'Always Ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -367,17 +367,17 @@ object Sett: TSett
         end
         object RadioUseLocal: TRadioButton
           Left = 16
-          Height = 24
+          Height = 23
           Top = 112
-          Width = 334
+          Width = 332
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 16
-          Height = 24
+          Height = 23
           Top = 160
-          Width = 321
+          Width = 319
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
@@ -408,9 +408,9 @@ object Sett: TSett
         TabOrder = 1
         object RadioFileSync: TRadioButton
           Left = 20
-          Height = 24
+          Height = 23
           Top = 16
-          Width = 254
+          Width = 252
           Caption = 'File Sync, google drive, smb etc.'
           OnChange = RadioFileSyncChange
           TabOrder = 0
@@ -433,9 +433,9 @@ object Sett: TSett
         end
         object RadioSyncNC: TRadioButton
           Left = 20
-          Height = 24
+          Height = 23
           Top = 48
-          Width = 255
+          Width = 253
           Caption = 'Nextcloud/ownCloud (Grauphel)'
           Checked = True
           OnChange = RadioFileSyncChange
@@ -460,10 +460,10 @@ object Sett: TSett
         end
         object CheckBoxAutoSync: TCheckBox
           Left = 390
-          Height = 24
+          Height = 23
           Hint = 'Sync, if possible once an hour.'
           Top = 16
-          Width = 98
+          Width = 96
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
           ParentShowHint = False
@@ -481,18 +481,20 @@ object Sett: TSett
         AnchorSideTop.Control = TabBackUp
         AnchorSideRight.Control = TabBackUp
         AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = TabBackUp
+        AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 150
+        Height = 446
         Top = 0
         Width = 624
-        Anchors = [akTop, akLeft, akRight]
-        ClientHeight = 150
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ClientHeight = 446
         ClientWidth = 624
         TabOrder = 0
         object Label6: TLabel
-          Left = 33
+          Left = 32
           Height = 19
-          Top = 20
+          Top = 128
           Width = 465
           Caption = 'Backup files are made when you delete a note or the sync system'
           ParentColor = False
@@ -500,7 +502,7 @@ object Sett: TSett
         object Label7: TLabel
           Left = 32
           Height = 19
-          Top = 52
+          Top = 160
           Width = 187
           Caption = 'is about to overwrite one. '
           ParentColor = False
@@ -508,7 +510,7 @@ object Sett: TSett
         object Label8: TLabel
           Left = 32
           Height = 19
-          Top = 84
+          Top = 232
           Width = 429
           Caption = 'They remain, for ever, unless you do something about them.'
           ParentColor = False
@@ -520,53 +522,14 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 501
           Height = 40
-          Top = 102
+          Top = 365
           Width = 115
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 7
-          BorderSpacing.Bottom = 7
+          BorderSpacing.Bottom = 40
           Caption = 'Show Me'
           OnClick = ButtonShowBackUpClick
           TabOrder = 0
-        end
-      end
-      object Panel2: TPanel
-        AnchorSideLeft.Control = TabBackUp
-        AnchorSideTop.Control = Panel1
-        AnchorSideTop.Side = asrBottom
-        AnchorSideRight.Control = TabBackUp
-        AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = TabBackUp
-        AnchorSideBottom.Side = asrBottom
-        Left = 0
-        Height = 296
-        Top = 150
-        Width = 624
-        Anchors = [akTop, akLeft, akRight, akBottom]
-        Caption = 'Panel2'
-        ClientHeight = 296
-        ClientWidth = 624
-        TabOrder = 1
-        object StringGridBackUp: TStringGrid
-          AnchorSideLeft.Control = Panel2
-          AnchorSideTop.Control = Panel2
-          AnchorSideRight.Control = Panel2
-          AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = Panel2
-          AnchorSideBottom.Side = asrBottom
-          Left = 1
-          Height = 294
-          Top = 1
-          Width = 622
-          Anchors = [akTop, akLeft, akRight, akBottom]
-          AutoEdit = False
-          ColCount = 4
-          ColumnClickSorts = True
-          ExtendedSelect = False
-          FixedCols = 0
-          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goThumbTracking, goSmoothScroll]
-          TabOrder = 0
-          OnDblClick = StringGridBackUpDblClick
         end
       end
     end
@@ -678,17 +641,17 @@ object Sett: TSett
         end
         object CheckSnapMonthly: TCheckBox
           Left = 24
-          Height = 24
+          Height = 23
           Top = 146
-          Width = 85
+          Width = 83
           Caption = 'Monthly'
           TabOrder = 3
         end
         object CheckSnapEnabled: TCheckBox
           Left = 24
-          Height = 24
+          Height = 23
           Top = 178
-          Width = 93
+          Width = 91
           Caption = 'Run Auto'
           TabOrder = 4
         end

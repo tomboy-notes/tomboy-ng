@@ -1,39 +1,33 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: backupview.rscannotdelete
-msgid "Cannot delete "
-msgstr ""
-
 #: backupview.rscopyfailed
+msgctxt "backupview.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
 msgstr ""
 
-#: backupview.rsnewerversionexits
-msgid "A newer version exists in main repo"
-msgstr ""
-
 #: backupview.rsnotealreadyinrepo
+msgctxt "backupview.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr ""
 
 #: backupview.rsnoteopen
+msgctxt "backupview.rsnoteopen"
 msgid "You have that note open, please close and try again"
 msgstr ""
 
-#: backupview.rsnotpresent
-msgid "Not present in main repo"
-msgstr ""
-
 #: backupview.rsoverwritenote
+msgctxt "backupview.rsoverwritenote"
 msgid "Overwrite newer version of that note"
 msgstr ""
 
 #: backupview.rsrecoverok
+msgctxt "backupview.rsrecoverok"
 msgid "OK, File recovered. You may need to do a Refresh (or restart)"
 msgstr ""
 
 #: backupview.rsrenamefailed
+msgctxt "backupview.rsrenamefailed"
 msgid "ERROR, could not rename Backup File "
 msgstr ""
 
@@ -256,6 +250,11 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr ""
 
+#: resourcestr.rscannotdelete
+msgctxt "resourcestr.rscannotdelete"
+msgid "Cannot delete "
+msgstr ""
+
 #: resourcestr.rscannotfindnote
 msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
@@ -267,6 +266,11 @@ msgstr ""
 
 #: resourcestr.rschangesync
 msgid "Change Sync Repo"
+msgstr ""
+
+#: resourcestr.rscopyfailed
+msgctxt "resourcestr.rscopyfailed"
+msgid "Copying orig to Backup directory failed"
 msgstr ""
 
 #: resourcestr.rscreatenewrepo
@@ -338,9 +342,29 @@ msgctxt "resourcestr.rsname"
 msgid "Name"
 msgstr ""
 
+#: resourcestr.rsnewerversionexits
+msgctxt "resourcestr.rsnewerversionexits"
+msgid "A newer version exists in main repo"
+msgstr ""
+
+#: resourcestr.rsnotealreadyinrepo
+msgctxt "resourcestr.rsnotealreadyinrepo"
+msgid "Note already in Repo"
+msgstr ""
+
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
+msgstr ""
+
+#: resourcestr.rsnoteopen
+msgctxt "resourcestr.rsnoteopen"
+msgid "You have that note open, please close and try again"
+msgstr ""
+
+#: resourcestr.rsnotpresent
+msgctxt "resourcestr.rsnotpresent"
+msgid "Not present in main repo"
 msgstr ""
 
 #: resourcestr.rsnumbnotesaffected
@@ -352,9 +376,24 @@ msgctxt "resourcestr.rsonenotebook"
 msgid "Settings allow only one Notebook"
 msgstr ""
 
+#: resourcestr.rsoverwritenote
+msgctxt "resourcestr.rsoverwritenote"
+msgid "Overwrite newer version of that note"
+msgstr ""
+
 #: resourcestr.rspressclose
 msgctxt "resourcestr.rspressclose"
 msgid "Press Close"
+msgstr ""
+
+#: resourcestr.rsrecoverok
+msgctxt "resourcestr.rsrecoverok"
+msgid "OK, File recovered. You may need to do a Refresh (or restart)"
+msgstr ""
+
+#: resourcestr.rsrenamefailed
+msgctxt "resourcestr.rsrenamefailed"
+msgid "ERROR, could not rename Backup File "
 msgstr ""
 
 #: resourcestr.rsrunningsync
@@ -718,7 +757,7 @@ msgstr ""
 
 #: tformbackupview.buttonok.caption
 msgctxt "tformbackupview.buttonok.caption"
-msgid "OK"
+msgid "Close"
 msgstr ""
 
 #: tformbackupview.buttonok.hint
@@ -743,7 +782,7 @@ msgid "Restore this note to main repo"
 msgstr ""
 
 #: tformbackupview.caption
-msgid "FormBackupView"
+msgid "View, recover or delete Backup Files"
 msgstr ""
 
 #: tformcolours.caption
@@ -1468,7 +1507,7 @@ msgstr ""
 
 #: tsett.caption
 msgctxt "tsett.caption"
-msgid "tomboy-ng Settings"
+msgid "Form Caption"
 msgstr ""
 
 #: tsett.checkautostart.caption

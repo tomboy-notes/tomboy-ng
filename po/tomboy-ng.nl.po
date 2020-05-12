@@ -12,39 +12,33 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 19.11.70\n"
 
-#: backupview.rscannotdelete
-msgid "Cannot delete "
-msgstr "Kan niet verwijderen"
-
 #: backupview.rscopyfailed
+msgctxt "backupview.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
 msgstr "Kan origineel niet kopiëren naar back-upmap"
 
-#: backupview.rsnewerversionexits
-msgid "A newer version exists in main repo"
-msgstr "Er is een nieuwere versie aanwezig in de hoofdrepo"
-
 #: backupview.rsnotealreadyinrepo
+msgctxt "backupview.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr "Deze notitie bestaat al"
 
 #: backupview.rsnoteopen
+msgctxt "backupview.rsnoteopen"
 msgid "You have that note open, please close and try again"
 msgstr "Deze notitie is geopend. Sluit hem en probeer het opnieuw."
 
-#: backupview.rsnotpresent
-msgid "Not present in main repo"
-msgstr "Niet aanwezig"
-
 #: backupview.rsoverwritenote
+msgctxt "backupview.rsoverwritenote"
 msgid "Overwrite newer version of that note"
 msgstr "Nieuwere versie overschrijven"
 
 #: backupview.rsrecoverok
+msgctxt "backupview.rsrecoverok"
 msgid "OK, File recovered. You may need to do a Refresh (or restart)"
 msgstr "Het bestand is hersteld. Je moet mogelijk verversen (of de app sluiten en weer openen)."
 
 #: backupview.rsrenamefailed
+msgctxt "backupview.rsrenamefailed"
 msgid "ERROR, could not rename Backup File "
 msgstr "FOUT: kan naam van back-upbestand niet wijzigen"
 
@@ -278,6 +272,12 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Voltooid"
 
+#: resourcestr.rscannotdelete
+#, fuzzy
+msgctxt "resourcestr.rscannotdelete"
+msgid "Cannot delete "
+msgstr "Kan niet verwijderen"
+
 #: resourcestr.rscannotfindnote
 msgctxt "resourcestr.rscannotfindnote"
 msgid "ERROR, cannot find "
@@ -290,6 +290,12 @@ msgstr ""
 #: resourcestr.rschangesync
 msgid "Change Sync Repo"
 msgstr ""
+
+#: resourcestr.rscopyfailed
+#, fuzzy
+msgctxt "resourcestr.rscopyfailed"
+msgid "Copying orig to Backup directory failed"
+msgstr "Kan origineel niet kopiëren naar back-upmap"
 
 #: resourcestr.rscreatenewrepo
 #, fuzzy
@@ -366,10 +372,38 @@ msgctxt "resourcestr.rsname"
 msgid "Name"
 msgstr ""
 
+#: resourcestr.rsnewerversionexits
+#, fuzzy
+msgctxt "resourcestr.rsnewerversionexits"
+msgid "A newer version exists in main repo"
+msgstr "Er is een nieuwere versie aanwezig in de hoofdrepo"
+
+#: resourcestr.rsnotealreadyinrepo
+#, fuzzy
+msgctxt "resourcestr.rsnotealreadyinrepo"
+msgid "Note already in Repo"
+msgstr "Deze notitie bestaat al"
+
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
 msgstr ""
+
+#: resourcestr.rsnoteopen
+#, fuzzy
+msgctxt "resourcestr.rsnoteopen"
+msgid "You have that note open, please close and try again"
+msgstr "Deze notitie is geopend. Sluit hem en probeer het opnieuw."
+
+#: resourcestr.rsnotesdeleted
+msgid "Note or notes deleted"
+msgstr ""
+
+#: resourcestr.rsnotpresent
+#, fuzzy
+msgctxt "resourcestr.rsnotpresent"
+msgid "Not present in main repo"
+msgstr "Niet aanwezig"
 
 #: resourcestr.rsnumbnotesaffected
 #, object-pascal-format
@@ -382,11 +416,30 @@ msgctxt "resourcestr.rsonenotebook"
 msgid "Settings allow only one Notebook"
 msgstr "Er is ondersteuning voor één notitieboek"
 
+#: resourcestr.rsoverwritenote
+#, fuzzy
+msgctxt "resourcestr.rsoverwritenote"
+msgid "Overwrite newer version of that note"
+msgstr "Nieuwere versie overschrijven"
+
 #: resourcestr.rspressclose
 #, fuzzy
 msgctxt "resourcestr.rspressclose"
 msgid "Press Close"
 msgstr "Klik op 'Sluiten'"
+
+#: resourcestr.rsrecoverok
+#, fuzzy
+#| msgid "OK, File recovered. You may need to do a Refresh (or restart)"
+msgctxt "resourcestr.rsrecoverok"
+msgid "OK, File recovered."
+msgstr "Het bestand is hersteld. Je moet mogelijk verversen (of de app sluiten en weer openen)."
+
+#: resourcestr.rsrenamefailed
+#, fuzzy
+msgctxt "resourcestr.rsrenamefailed"
+msgid "ERROR, could not rename Backup File "
+msgstr "FOUT: kan naam van back-upbestand niet wijzigen"
 
 #: resourcestr.rsrunningsync
 #, fuzzy
@@ -477,10 +530,6 @@ msgstr "Geen woordenboek aangetroffen"
 #: settings.rsdirhasnonotes
 msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
 msgstr "Deze map bevat geen notities. Dat is niet erg, want nu kan deze worden gebruikt voor nieuwe notities."
-
-#: settings.rsdoubleclicknote
-msgid "double click a note ..."
-msgstr "Dubbelklik op een notitie..."
 
 #: settings.rserrorcannotwrite
 msgid "Cannot write into"
@@ -759,8 +808,9 @@ msgstr ""
 
 #: tformbackupview.buttonok.caption
 #, fuzzy
+#| msgid "OK"
 msgctxt "tformbackupview.buttonok.caption"
-msgid "OK"
+msgid "Close"
 msgstr "Oké"
 
 #: tformbackupview.buttonok.hint
@@ -786,7 +836,11 @@ msgid "Restore this note to main repo"
 msgstr ""
 
 #: tformbackupview.caption
-msgid "FormBackupView"
+msgid "View, recover or delete Backup Files"
+msgstr ""
+
+#: tformbackupview.listbox1.hint
+msgid "Use Ctrl or Shift to select multiple entries"
 msgstr ""
 
 #: tformcolours.caption
@@ -1431,7 +1485,7 @@ msgstr "Notities opnieuw indexeren"
 #: tsearchform.caption
 #, fuzzy
 #| msgid "Search Form"
-msgid "tomboy-ng Search"
+msgid "tomboy-ng_Search"
 msgstr "Zoekpagina"
 
 #: tsearchform.checkcasesensitive.caption
@@ -1530,7 +1584,7 @@ msgstr "Als je al eens een momentopname hebt gemaakt"
 #, fuzzy
 #| msgid "Settings"
 msgctxt "tsett.caption"
-msgid "tomboy-ng Settings"
+msgid "Form Caption"
 msgstr "Instellingen"
 
 #: tsett.checkautostart.caption
