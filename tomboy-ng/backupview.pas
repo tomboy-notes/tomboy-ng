@@ -35,6 +35,7 @@ unit BackupView;
                 when restoring a backup file.
     2018/08/27  Now change the ID of a deleted (but not overwritten) Note to avoid Sync issues
     2019/05/19  Display strings all (?) moved to resourcestrings
+    2020/05/11  Restructure to do the backup note display and fiddling here.
 }
 
 {$mode objfpc}{$H+}
@@ -43,7 +44,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    ExtCtrls;
+    ExtCtrls, Note_Lister, ResourceStr;
 
 type
 
@@ -54,21 +55,27 @@ type
         ButtonRecover: TButton;
         ButtonDelete: TButton;
         ButtonOK: TButton;
+        ListBox1: TListBox;
         Memo1: TMemo;
         Panel1: TPanel;
         procedure ButtonDeleteClick(Sender: TObject);
         procedure ButtonOpenClick(Sender: TObject);
         procedure ButtonRecoverClick(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormCreate(Sender: TObject);
+        procedure FormDestroy(Sender: TObject);
         procedure FormShow(Sender: TObject);
-        procedure Memo1Change(Sender: TObject);
+        procedure ListBox1SelectionChange(Sender: TObject; User: boolean);
     private
-        ExistsInRepo : boolean;
-        NeedUpDate : boolean;
+  	    BUNoteLister : TNoteLister;
+        //ExistsInRepo : boolean;
+        //NeedUpDate : boolean;
+        function RefreshBackup(): integer;
+        procedure UpdateDetails(ID: string);
     public
-        FileName : string;
-        NoteTitle : string;
-        NotesChanged : boolean;
+        //FileName : string;
+        //NoteTitle : string;
+        //NotesChanged : boolean;
     end;
 
 var
@@ -82,67 +89,107 @@ implementation
 
 uses  settings, LazFileUtils, LCLType,
     MainUnit,   // For SingleNoteMode()
+
     SearchUnit; // access the notelister object
 
-procedure TFormBackupView.Memo1Change(Sender: TObject);
+procedure TFormBackupView.FormCreate(Sender: TObject);
 begin
-
+    ButtonOpen.Enabled := False;
+    ButtonRecover.Enabled := False;
+    ButtonDelete.Enabled :=  False;
+    BUNoteLister := nil;
 end;
 
-RESOURCESTRING
-  rsNewerVersionExits = 'A newer version exists in main repo';
-  rsNotPresent = 'Not present in main repo';
-  rsCannotDelete = 'Cannot delete ';
+procedure TFormBackupView.FormDestroy(Sender: TObject);
+begin
+    BUNoteLister.Free;
+end;
+
 procedure TFormBackupView.FormShow(Sender: TObject);
 begin
-    NotesChanged := false;
-    ExistsInRepo := false;
-    NeedUpDate := False;
+    if RefreshBackup() = 0 then
+        Memo1.Append('We found no backup notes');
+end;
+
+function TFormBackupView.RefreshBackup() : integer;
+begin
+    ListBox1.Clear;
+    Memo1.Clear;
+    if BUNoteLister <> nil then
+        BUNoteLister.free;
+    BUNoteLister := TNoteLister.Create;
+    BUNoteLister.WorkingDir:= sett.NoteDirectory + 'Backup' + PathDelim;
+    BUNoteLister.IndexNotes();
+    BUNoteLister.LoadStrings(ListBox1.Items);
+    result := BUNoteLister.Count();
+end;
+
+procedure TFormBackUpView.UpdateDetails(ID : string);
+begin
     Memo1.Clear;
     Memo1.Append('Title :');
-    Memo1.Append(NoteTitle);
+    Memo1.Append(BUNoteLister.GetTitle(ID));
     Memo1.Append('Filename :');
-    Memo1.Append(FileName);
-    if FileExistsUTF8(Sett.NoteDirectory + FileName) then begin
+    Memo1.Append(ID);
+    Memo1.Append('Last change ' + BUNoteLister.GetLastChangeDate(ID));
+    if FileExistsUTF8(Sett.NoteDirectory + ID) then begin
         Memo1.Append(rsNewerVersionExits);
-        ExistsInRepo := True;
+        //ExistsInRepo := True;
     end else
         Memo1.Append(rsNotPresent);
+    Memo1.Append(inttostr(ListBox1.SelCount) + ' notes selected');
+    ButtonOpen.Enabled := (ListBox1.SelCount = 1);
+    ButtonRecover.Enabled := (ListBox1.SelCount = 1);
+    ButtonDelete.Enabled :=  (ListBox1.SelCount > 0);
+end;
+
+procedure TFormBackupView.ListBox1SelectionChange(Sender: TObject; User: boolean);
+begin
+    UpdateDetails(string(ListBox1.Items.Objects[ListBox1.ItemIndex]));
 end;
 
 procedure TFormBackupView.ButtonDeleteClick(Sender: TObject);
+var
+    Index : integer = 0;
 begin
-    if DeleteFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then
-        NotesChanged := True
-    else Showmessage(rsCannotDelete + Sett.NoteDirectory + 'Backup' + PathDelim + FileName);
-    close;
+    while Index < ListBox1.Count do begin
+        if ListBox1.Selected[Index] then
+            if not DeleteFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim
+                + string(ListBox1.Items.Objects[Index])) then
+                    Showmessage(rsCannotDelete + Sett.NoteDirectory + 'Backup' + PathDelim
+                        + string(ListBox1.Items.Objects[Index]));
+        inc(Index);
+    end;
+    RefreshBackup();
+    Memo1.Append(rsNotesDeleted);
 end;
 
 procedure TFormBackupView.ButtonOpenClick(Sender: TObject);
+// Note : we only allow one at a time, multiselect will disable View
 begin
-    MainUnit.MainForm.SingleNoteMode(Sett.NoteDirectory + 'Backup' + PathDelim + FileName, False, True);
+    MainUnit.MainForm.SingleNoteMode(Sett.NoteDirectory + 'Backup' + PathDelim
+            + string(ListBox1.Items.Objects[ListBox1.ItemIndex]), False, True);
 end;
 
-RESOURCESTRING
-  rsOverwriteNote = 'Overwrite newer version of that note';
-  rsNoteAlreadyInRepo = 'Note already in Repo';
-  rsNoteOpen = 'You have that note open, please close and try again';
-  rsCopyFailed = 'Copying orig to Backup directory failed';
-  rsRenameFailed = 'ERROR, could not rename Backup File ';
-  rsRecoverOK = 'OK, File recovered. You may need to do a Refresh (or restart)';
+
 
 // OK, overwriting an existing file is not an issue (as long as its not open).
 // However, if we are looking at a note that was deleted, it might be listed in
 // the Local Manifest as a deleted file. That will confuse the next sync.
 // So, lets just give those sort of notes a new ID.
 procedure TFormBackupView.ButtonRecoverClick(Sender: TObject);
+// Note : we only allow one at a time, multiselect will disable Recover
 var
     AForm : TForm;
     InString : string;
     InFile, OutFile: TextFile;
     NewFName : string;
     GUID : TGUID;
+    FileName : string;
+    ExistsInRepo : boolean;
 begin
+    FileName := string(ListBox1.Items.Objects[ListBox1.ItemIndex]);
+    ExistsInRepo := FileExistsUTF8(Sett.NoteDirectory + FileName);
     if ExistsInRepo then
         if IDYES <> Application.MessageBox(pchar(rsOverwriteNote), pchar(rsNoteAlreadyInRepo),
         // ToDo : check above works as expected, why do I need to cast ?
@@ -153,13 +200,13 @@ begin
         exit();
     end;
     if ExistsInRepo then begin
-        if not RenameFileUTF8(Sett.NoteDirectory + FileName, Sett.NoteDirectory + 'Backup'
+        if not RenameFileUTF8(Sett.NoteDirectory + FileName, Sett.NoteDirectory + 'Backup'     // Move target note to backup with temp name
                     + PathDelim + FileName + 'TMP') then begin
             showmessage(rsCopyFailed);
             exit;
         end;
     end else begin
-        // Give the note a new name so that no issues about it being in delete section of Manifest.
+        // Give the a non existing note a new name so that no issues about it being in delete section of Manifest.
         CreateGUID(GUID);
         NewFName := copy(GUIDToString(GUID), 2, 36) + '.note';
         if RenameFile(Sett.NoteDirectory + 'Backup' + PathDelim + Filename,
@@ -169,7 +216,7 @@ begin
           Showmessage(rsRenameFailed + ' ' + FileName);
     end;
     // OK, if to here, user really wants it back, no reason why not.
-    AssignFile(InFile, Sett.NoteDirectory + 'Backup' + PathDelim + Filename);
+    AssignFile(InFile, Sett.NoteDirectory + 'Backup' + PathDelim + Filename);      // We'll copy and update dates at same time, wether exists or not
     AssignFile(OutFile, Sett.NoteDirectory + Filename);
     try
         try
@@ -188,29 +235,30 @@ begin
             CloseFile(OutFile);
             CloseFile(InFile);
         end;
-        SearchForm.NoteLister.IndexThisNote(copy(GUIDToString(GUID), 2, 36));
+        SearchForm.NoteLister.IndexThisNote(copy(GUIDToString(GUID), 2, 36));       // why GUID, not 'Filename' ?
+        // OK, lets deal with the copy of target that we put in backup.
         If ExistsInRepo then
             if not RenameFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP',
                     Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
                 showmessage('Failed to move temp backup file');
             end;
-        NeedUpDate := True;
+        //NeedUpDate := True;
     except
         on E: EInOutError do
             showmessage('File handling error occurred. Details: ' + E.Message);
     end;
-    Memo1.Append(rsRecoverOK);  // reindexing triggered from FormClose
+     // reindexing triggered from FormClose
+    RefreshBackup(); Memo1.Append(rsRecoverOK);
 end;
+
 
 procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-    if NeedUpDate then begin
         SearchForm.RefreshMenus(mkRecentMenu);
         SearchForm.ButtonRefresh.enabled := True;
-        // SearchForm.RecentMenu();
-        Sett.ButtonShowBackUp.click;
-    end;
 end;
+
+
 
 end.
 

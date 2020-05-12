@@ -100,6 +100,7 @@ unit settings;
     2020/04/10  Added Net and File sync mode to settings file, make labels consistent
     2020/04/28  Put four random digits in place of the '0000' in GetLocalTime()
     2020/04/04  Don't run autosync in singlenote mode.
+    2020/05/11  Moved all handling of the backup files to BackupView
 }
 
 {$mode objfpc}{$H+}
@@ -108,7 +109,7 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Grids, Menus, EditBtn, FileUtil, BackUpView,
+    Buttons, ComCtrls, ExtCtrls, Menus, EditBtn, FileUtil, BackUpView,
     ncsetup, oauth, LCLIntf;
 
 // Types;
@@ -189,7 +190,6 @@ type
           OpenDialogDictionary: TOpenDialog;
 	  PageControl1: TPageControl;
 	  Panel1: TPanel;
-	  Panel2: TPanel;
           Panel3: TPanel;
           PopupDay: TPopupMenu;
           PMenuMain: TPopupMenu;
@@ -206,7 +206,6 @@ type
 	  SpeedButHelp: TSpeedButton;
           SpeedButtTBMenu: TSpeedButton;
 		  SpeedSetupSync: TSpeedButton;
-	  StringGridBackUp: TStringGrid;
 	  TabBasic: TTabSheet;
 	  TabBackUp: TTabSheet;
           TabSpell: TTabSheet;
@@ -233,24 +232,21 @@ type
         procedure ButtonSyncHelpClick(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
-        //procedure CheckManyNotebooksChange(Sender: TObject);
-        { Called when ANY of the setting check boxes change so use can save. }
-	procedure CheckReadOnlyChange(Sender: TObject);
-	procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-	// procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
-        procedure FormCreate(Sender: TObject);
+                { Called when ANY of the setting check boxes change so use can save. }
+	    procedure CheckReadOnlyChange(Sender: TObject);
+	    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+	    procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormHide(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
             );
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
-	procedure PageControl1Change(Sender: TObject);
-	procedure SpeedButHelpClick(Sender: TObject);
+	    procedure PageControl1Change(Sender: TObject);
+	    procedure SpeedButHelpClick(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
 		procedure SpeedSetupSyncClick(Sender: TObject);
-        procedure StringGridBackUpDblClick(Sender: TObject);
         procedure RadioFileSyncChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabSnapshotResize(Sender: TObject);
@@ -355,7 +351,7 @@ const
 
 implementation
 
-{$define DISABLE_NET_SYNC}     // disable this define by, eg, putting a 'not' ahead of the '$'
+{$define DISABLE_NET_SYNC}     // disable this define by, eg, putting a 'not' ahead of the '$'   Todo : remove this stuff, waste of electrons
 
 {$R *.lfm}
 
@@ -364,7 +360,7 @@ implementation
 
 uses IniFiles, LazLogger,
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff;
-    Note_Lister,	// List notes in BackUp and Snapshot tab
+    //Note_Lister,	// List notes in BackUp and Snapshot tab
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
     syncutils,
@@ -423,7 +419,6 @@ begin
 	if NoteDirectory <> '' then begin
         LabelNotespath.Caption := NoteDirectory;
         HaveConfig := (NoteDirectory <> '');
-        // CheckShowIntLinks.enabled := true;
         ShowIntLinks := CheckShowIntLinks.Checked;
         SetFontSizes();
 	    if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
@@ -441,7 +436,7 @@ end;
 
 procedure TSett.SpeedButHelpClick(Sender: TObject);
 begin
-        MainForm.ShowHelpNote('sync-ng.note');
+    MainForm.ShowHelpNote('sync-ng.note');
 end;
 
 procedure TSett.SpeedButHideClick(Sender: TObject);
@@ -483,32 +478,6 @@ begin
                     SettingsChanged();
             end;
 	end;
-end;
-
-procedure TSett.StringGridBackUpDblClick(Sender: TObject);
-var
-    BV : TFormBackupView;
-    NoteTitle : ANSIstring;
-    FileName : string;
-begin
-	FileName := StringGridBackUp.Cells[3, StringGridBackUp.Row];
-    if FileName = '' then exit();
-  	if not FileExistsUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
-      	showmessage('Cannot open ' + Sett.NoteDirectory + 'Backup' + PathDelim + FileName);
-      	exit();
-  	end;
-  	NoteTitle := StringGridBackup.Cells[0, StringGridBackUp.Row];
-//  	if length(NoteTitle) > 0 then
-//        OpenNote(NoteTitle, FullFileName);
-    BV := TFormBackupView.Create(self);
-    try
-        BV.FileName := FileName;
-        BV.NoteTitle := NoteTitle;
-        BV.ShowModal;
-        if BV.NotesChanged then ButtonShowBackUpClick(self);
-    finally
-        FreeandNil(BV);
-    end;
 end;
 
 procedure TSett.RadioFileSyncChange(Sender: TObject);
@@ -618,7 +587,6 @@ begin
                LabelDicStatus.Caption := rsDictionaryLoaded;
                LabelDic.Caption := FullDicName;
                SettingsChanged();
-               // NeedRefresh := True;         // ToDo : April '19, don't need this ???
                Result := True;
             end else begin
                 LabelDicStatus.Caption := rsDictionaryNotFound;
@@ -727,7 +695,6 @@ begin
         // user user has 'closed' (ie hide) then Spell was freed.
     MaskSettingsChanged := False;
     Label15.Caption:='';
-    StringGridBackUp.Clean;
 end;
 
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
@@ -744,6 +711,7 @@ RESOURCESTRING
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
+    Caption := 'tomboy-ng Settings';
     AreClosing := false;
     Top := 100;
     Left := 300;
@@ -1340,20 +1308,16 @@ begin
 end;
 
 
-RESOURCESTRING
-    rsDoubleclickNote = 'double click a note ...';
-
 procedure TSett.ButtonShowBackUpClick(Sender: TObject);
 var
-	NoteLister : TNoteLister;
+    BV : TFormBackupView;
 begin
-    NoteLister := TNoteLister.Create;
-    NoteLister.WorkingDir:= NoteDirectory + 'Backup' + PathDelim;
-    NoteLister.GetNotes();
-    NoteLister.LoadStGrid(StringGridBackUp, 4);
-    NoteLister.Free;
-    StringgridBackUp.AutoSizeColumns;
-    Label15.caption := rsDoubleClickNote;
+    BV := TFormBackupView.Create(self);
+    try
+        BV.ShowModal;
+    finally
+        FreeandNil(BV);
+    end;
 end;
 
 procedure TSett.ButtonSnapDaysClick(Sender: TObject);

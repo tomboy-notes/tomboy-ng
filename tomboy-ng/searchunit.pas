@@ -429,7 +429,7 @@ begin
     HelpNotes := TNoteLister.Create;     // freed in OnClose event.
     HelpNotes.DebugMode := Application.HasOption('debug-index');
     HelpNotes.WorkingDir:= MainForm.ActualHelpNotesPath;
-    HelpNotes.GetNotes(true);
+    HelpNotes.IndexNotes(true);
 end;
 
 procedure TSearchForm.CreateMenus();
@@ -686,7 +686,7 @@ begin
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then begin
         ButtonClearFilters.Enabled := True;
         TS1:=gettickcount64();
-        Found := NoteLister.GetNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
+        Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
         TS2:=gettickcount64();
         NoteLister.LoadStGrid(StringGrid1, 2, True);
         TS3:=gettickcount64();
@@ -739,7 +739,7 @@ begin
     NoteLister := TNoteLister.Create;
     NoteLister.DebugMode := Application.HasOption('debug-index');
     NoteLister.WorkingDir:=Sett.NoteDirectory;
-    Result := NoteLister.GetNotes();
+    Result := NoteLister.IndexNotes();
     UseList();
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
@@ -749,6 +749,7 @@ end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
 begin
+    Caption := 'tomboy-ng Search';
     NoteLister := nil;
     if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi

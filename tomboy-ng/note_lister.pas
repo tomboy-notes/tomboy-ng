@@ -227,14 +227,16 @@ type
     		                            { Read the metadata from all the notes into internal data structure,
                                           this is the main "go and do it" function.
                                            }
-   	function GetNotes(DontTestName: boolean=false): longint;
+   	function IndexNotes(DontTestName: boolean=false): longint;
                                         { Overload of GetNotes(), we'll just search for notes with term
                                           and store date in a different structure, then call LoadSearchGrid() }
-    function GetNotes(const Term: ANSIstring): longint;
+    function SearchNotes(const Term: ANSIstring): longint;
     		                            { Copy the internal Note data to the passed TStringGrid, empting it first.
                                           NoCols can be 2, 3 or 4 being Name, LastChange, CreateDate, ID.
                                           Special case only main List SearchMode True will get from the search list.}
    	procedure LoadStGrid(const Grid: TStringGrid; NoCols: integer;  SearchMode: boolean=false);
+                                        { Copy the internal Note Data to passed TStrings }
+    procedure LoadStrings(const TheStrings : TStrings);
     		                            { Returns True if its updated the internal record as indicated,
                                           will accept either an ID or a filename. }
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
@@ -656,19 +658,6 @@ begin
             NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
         end;
 	end;
-
-
-    {
-    NotebookGrid.Clear;
-    NotebookGrid.FixedRows:=0;
-    NotebookGrid.InsertRowWithValues(0, ['Notebooks']);
-    NotebookGrid.FixedRows:=1;
-    for Index := 0 to NotebookList.Count - 1 do begin
-        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then begin
-            NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
-        end;
-	end;
-    NotebookGrid.AutoSizeColumns; }
 end;
 
 function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
@@ -760,7 +749,7 @@ begin
 end;
 
 
-procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; {const TermList : TStringList;} DontTestName : boolean = false);
+procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; DontTestName : boolean = false);
 			// This is how we search for XML elements, attributes are different.
             // Note : we used to do seaching here as well as indexing, now just indexing
 var
@@ -779,8 +768,6 @@ begin
             exit;
         end;
   	if FileExistsUTF8(Dir + FileName) then begin
-        {if assigned(TermList) then
-            if not NoteContains(TermList, FileName) then exit(); }
         new(NoteP);
         NoteP^.IsTemplate := False;
   	    try
@@ -840,34 +827,13 @@ begin
                     dispose(NoteP);
                     exit();
 			    end;
-			    {if assigned(TermList) then
-                    SearchNoteList.Add(NoteP)
-                else} NoteList.Add(NoteP);
+			    NoteList.Add(NoteP);
   	    finally
       	        Doc.free;
   	    end;
-    end else DebugLn('Error, found a note and lost it !');
+    end else DebugLn('Error, found a note and lost it ! ' + Dir + FileName);
 end;
 
-
-{function TNoteLister.RemoveXml(const St : AnsiString) : AnsiString;
-var
-    X, Y : integer;
-    FoundOne : boolean = false;
-begin
-    Result := St;
-    repeat
-        FoundOne := False;
-        X := UTF8Pos('<', Result);
-        if X > 0 then begin
-            Y := UTF8Pos('>', Result);
-            if Y > 0 then begin
-                UTF8Delete(Result, X, Y-X+1);
-                FoundOne := True;
-            end;
-        end;
-    until not FoundOne;
-end; }
 
 procedure TNoteLister.IndexThisNote(const ID: String);
 begin
@@ -973,7 +939,9 @@ var
     AWord : string = '';
     InCommas : boolean = false;
 begin
-    // If AnyCombination is not checked, we do the allow sections in inverted commas to be treated as one word.
+    // sections in inverted commas to be treated as one word, becomes on line in list
+   //  its very wastefull to use a List here, lots of overhead we are not useing but easy.
+   // look at a managed record ?
     while I <= length(trim(Term)) do begin
         if Term[i] = '"' then begin
             if InCommas then begin
@@ -1058,14 +1026,8 @@ begin
 end;
 
 function TNoteLister.Count(): integer;
-{var
-    P : pointer;     }
 begin
     Result := NoteList.Count;
-    {
-    Result := 0;
-    for P in NoteList do
-      inc(Result); }
 end;
 
 function TNoteLister.GetTitle(Index : integer) : string;
@@ -1073,9 +1035,10 @@ begin
     Result := PNote(NoteList.get(Index))^.Title;
 end;
 
+
 { With 2000 notes, on my Dell, linux, search for 'and'.
   Before multithreading - 250mS - 280mS
-  With Multithreading,
+  With Multithreading, cthreads and cmem -
   6 : 90ms to 110ms; 4 : 100mS - 134ms; 3 : 110ms - 130mS; 2 : 155ms - 180ms; 1 : 255ms - 280mS
   However, noted on Windows Vista (!), significent slow down !  Windows10, similar to Linux
 }
@@ -1083,7 +1046,7 @@ end;
 const ThreadCount = 3;  // The number of extra threads set searching. 3 seems reasonable...
 
 
-function TNoteLister.GetNotes(const Term: ANSIstring) : longint;
+function TNoteLister.SearchNotes(const Term: ANSIstring) : longint;
 var
     TermList, FileList : TStringList;
     ThreadIndex : integer = 0;
@@ -1099,11 +1062,7 @@ begin
         FinishedThreads := 0;
         ThreadLock := -1;
         FileList := FindAllFiles(WorkingDir, '*.note', false); // list contains full file names !
-
-        // debugln('FileList found ' + dbgs(FileList.count));
-
-        while ThreadIndex < ThreadCount do begin
-
+         while ThreadIndex < ThreadCount do begin
             SearchThread := TSearchThread.Create(True);         // Threads clean themselves up.
             SearchThread.ThreadBlockSize := FileList.Count div ThreadCount;
             SearchThread.Term_List := TermList;
@@ -1122,7 +1081,7 @@ begin
     end;
 end;
 
-function TNoteLister.GetNotes(DontTestName : boolean = false): longint;
+function TNoteLister.IndexNotes(DontTestName : boolean = false): longint;
 var
     Info : TSearchRec;
     cnt : integer =0;
@@ -1175,6 +1134,17 @@ begin
     end;
     if Grid.SortColumn > -1 then
         Grid.SortColRow(True, Grid.SortColumn);
+end;
+
+procedure TNoteLister.LoadStrings(const TheStrings: TStrings);
+var
+    Index : integer;
+begin
+    Index := NoteList.Count;
+    while Index > 0 do begin
+        dec(Index);
+        TheStrings.AddObject(NoteList.Items[Index]^.Title, tObject(NoteList.Items[Index]^.ID));
+    end;
 end;
 
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;
@@ -1292,12 +1262,7 @@ end;
 function TNoteLister.DeleteNote(const ID: ANSIString): boolean;
 var
     Index : integer;
-    // TestID : ANSIString;
 begin
-    {if length(ID) = 36 then
-        TestID := ID + '.note'
-    else
-    	TestID := ID;  }
 	result := False;
     for Index := 0 to NoteList.Count -1 do begin
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
@@ -1340,7 +1305,6 @@ destructor TNoteList.Destroy;
 var
   I : integer;
 begin
-    // DebugLn('NoteList - disposing of items x ' + inttostr(Count));
 	for I := 0 to Count-1 do begin
     	dispose(Items[I]);
 	end;

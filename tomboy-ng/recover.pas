@@ -336,7 +336,7 @@ begin
     SnapNoteLister := TNoteLister.Create;
     SnapNoteLister.Debugmode := DebugMode;
     SnapNoteLister.WorkingDir:= SnapDir + 'temp' + PathDelim;
-    {Result := }SnapNoteLister.GetNotes();
+    {Result := }SnapNoteLister.IndexNotes();
 	SnapNoteLister.LoadStGrid(StringGrid1, 4);
 	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
 	StringGrid1.SortColRow(True, 1);
