@@ -207,6 +207,7 @@ unit EditBox;
                 No longer toggle when changing font sizes, set it to what user asks.
     2020/04/01  Removed line that exited KMemo1KeyDown in readonly mode, prevented cursor keys working.
     2020/04/04  Fix for when SingleNoteMode is pointed to a zero length file.
+    2020/05/12  Added Shift Click to select to click pos, #129
 }
 
 
@@ -340,7 +341,8 @@ type
         procedure TimerHousekeepingTimer(Sender: TObject);
 
     private
-
+        // a record of the cursor position before last click, used by shift click to select
+        MouseDownPos : integer;
         CreateDate : string;		// Will be '' if new note
         // CtrlKeyDown : boolean;
         Ready : boolean;
@@ -670,6 +672,8 @@ end;
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
 begin
+    MouseDownPos := KMemo1.CaretPos;    // regional record in case we are doing shift click
+    //debugln('Mousedown ' + dbgs(KMemo1.CaretPos));
     //{$ifdef LCLCOCOA}
     if ssCtrl in Shift then PopupMenuRightClick.popup;
     //{$else}
@@ -705,6 +709,11 @@ begin
         else
             UnsetPrimarySelection();
     {$endif}
+    if (Button = mbLeft) and ([ssShift] = Shift) then begin
+      //debugln('Start ' + dbgs(MouseDownPos) + ' to ' + dbgs(KMemo1.CaretPos));
+      KMemo1.SelStart := MouseDownPos;
+      KMemo1.SelEnd := KMemo1.CaretPos;
+    end;
 end;
 
 procedure TEditBoxForm.SetPrimarySelection;
