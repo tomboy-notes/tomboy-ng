@@ -759,7 +759,7 @@ begin
             + SearchForm.NoteLister.NoteBookTags(ID) + S6
   else
         Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + S6;
-  // ToDo : That will mean no Notebook tags in single note mode, is that an issue ?
+  // That will mean no Notebook tags in single note mode, is that an issue ?
   // Most singe notes are out of their repo so won't have notebooks anyway but we could
   // save any tag list and restore it on save ??
 end;

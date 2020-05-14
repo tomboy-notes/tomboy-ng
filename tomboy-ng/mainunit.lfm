@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.1.0.0'
   object ImageConfigTick: TImage
     Left = 24
     Height = 18
@@ -359,10 +359,10 @@ object MainForm: TMainForm
   end
   object CheckBoxDontShow: TCheckBox
     Left = 8
-    Height = 24
+    Height = 23
     Hint = 'You can reverse this from Settings'
     Top = 296
-    Width = 242
+    Width = 240
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
     TabOrder = 1

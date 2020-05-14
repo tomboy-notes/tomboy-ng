@@ -144,7 +144,6 @@ type
         LabelNoDismiss2: TLabel;
         LabelNotesFound: TLabel;
         TrayIcon: TTrayIcon;
-        //procedure ApplicationProperties1EndSession(Sender: TObject);
         procedure ButtMenuClick(Sender: TObject);
         procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
@@ -157,42 +156,23 @@ type
         procedure FormResize(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure LabelErrorClick(Sender: TObject);
-        // procedure MMHelpTomboyClick(Sender: TObject);
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
         HelpList : TStringList;
-        CommsClient : TSimpleIPCClient;
         CommsServer : TSimpleIPCServer;
-        // Don't assign if desktop is KDE and Qt5, it stuffs up in November 2019
-        AssignPopupToTray : boolean;
-        CmdLineErrorMsg : string;
-        // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error or -g on commandline
+        // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error
         AllowDismiss : boolean;
-//        procedure AddItemToAMenu(TheMenu: TMenu; Item: string; mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
-        // Returns true if we are a second instance of tomboy-ng, if false then
-        // SimpleIPC server is started, listening for some other second instance.
-        function AreWeClient(): boolean;
-        function CommandLineError() : boolean;
+        // Start SimpleIPC server listening for some other second instance.
+        procedure StartIPCServer();
         procedure CommMessageReceived(Sender: TObject);
-        function HaveCMDParam(): boolean;
-
-            // responds to any main or mainPopup menu clicks except recent note ones.
-//        procedure FileMenuClicked(Sender: TObject);
-//        procedure FindHelpFiles();
-        //procedure OnEndSessionApp(Sender: TObject);
-
         procedure TestDarkThemeInUse();
 
     public
-        SingleNoteFileName : string;    // empty unless our task is to open a single note.
         closeASAP: Boolean;
         HelpNotesPath : string;     // full path to help notes, with trailing delim.
         AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
         UseTrayMenu : boolean;
-        UseMainMenu : boolean;
-        //MainMenu : TMainMenu;
-        //FileMenu, RecentMenu : TMenuItem;
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
         MainTBMenu : TPopupMenu;
@@ -215,6 +195,9 @@ type
         procedure SingleNoteMode(FullFileName: string);
     end;
 
+                                // This here temp, it returns the singlenotefilename from CLI Unit.
+    function SingleNoteFileName() : string;
+
 var
     MainForm: TMainForm;
 
@@ -226,7 +209,7 @@ implementation
 
 
 uses LazLogger, LazFileUtils, LazUTF8,
-    settings,
+    settings, ResourceStr,
     SearchUnit,
     {$ifdef LCLGTK2}
     gtk2, gdk2,          // required to fix a bug that clears clipboard contents at close.
@@ -234,9 +217,8 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$ifdef LINUX}
     Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
-    {uAppIsRunning, }
     Editbox,    // Used only in SingleNoteMode
-    Note_Lister,
+    Note_Lister, cli,
     Tomdroid {$ifdef windows}, registry{$endif};
 
 var
@@ -244,11 +226,14 @@ var
 
 { =================================== V E R S I O N    H E R E =============}
 
-const   Version_string  = {$I %TOMBOY_NG_VER};
+const   //Version_string  = {$I %TOMBOY_NG_VER};
         AltHelp = 'alt-help';   // dir name where we store non english help notes.
 
 
-
+function SingleNoteFileName() : string;
+begin
+    result := SingleNoteName;                   // Thats the global in CLI Unit
+end;
 
 procedure TMainForm.SingleNoteMode(FullFileName: string);
 begin
@@ -263,8 +248,8 @@ begin
         or (ExtractFilePath(FullFileName) = '') then begin
         try
             try
-            EBox := TEditBoxForm.Create(Application);   // it will check SingleNoteFileName ....
-            // EBox.SingleNoteMode:=True;
+            EBox := TEditBoxForm.Create(Application);
+            EBox.SingleNoteFileName := SingleNoteFileName();    // Thats the global from CLI Unit, via a local helper function
             EBox.NoteTitle:= '';
             EBox.NoteFileName := FullFileName;
             Ebox.TemplateIs := '';
@@ -353,135 +338,16 @@ end;
 // -----------------------------------------------------------------
 
 
-RESOURCESTRING
-    {$ifdef DARWIN}
-    rsMacHelp1 = 'eg   open tomboy-ng.app';
-    rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
-    {$endif}
-    rsHelpDelay = 'Delay startup 2 sec to allow OS to settle';
-    rsHelpLang = 'Force Language, supported es, nl';
-    rsHelpDebug = 'Direct debug output to SOME.LOG.';
-    rsHelpHelp = 'Show this help message and exit.';
-    rsHelpVersion = 'Print version and exit';
-    rsHelpRedHat = 'Run in RedHatGnome mode, no TrayIcon';
-    rsHelpNoSplash = 'Dont show small status/splash window';
-    rsHelpDebugSync = 'Show debug messages during Sync';
-    rsHelpDebugIndex = 'Show debug msgs while indexing notes';
-    rsHelpDebugSpell = 'Show debug messages while spell setup';
-    rsHelpConfig = 'Create or use an alternative config';
-    rsHelpSingleNote = 'Open indicated note, switch is optional';
-    rsHelpSaveExit = 'After import single note, save & exit';
-
-
-function TMainForm.CommandLineError() : boolean;
-// WARNING - the options here MUST match the options list in FormShow()
-begin
-    Result := false;
-    CmdLineErrorMsg := Application.CheckOptions('hgo:l:', 'delay-start lang: debug-log: dark-theme no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
-    if Application.HasOption('h', 'help') then
-        CmdLineErrorMsg := 'Usage -';
-    if CmdLineErrorMsg <> '' then begin
-        CloseASAP := True;
-        debugln(CmdLineErrorMsg);
-       {$ifdef DARWIN}
-       debugln(rsMachelp1);
-       debugln(rsMacHelp2);
-       {$endif}
-       {$ifdef WINDOWS}debugln('   --dark-theme'); {$endif}
-       debugln('   --delay-start                ' + rsHelpDelay);
-       debugln('   -l CCode  --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
-       debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);
-       debugln('   -h --help                    ' + rsHelpHelp);
-       debugln('   --version                    ' + rsHelpVersion);
-       debugln('   -g --gnome3                  ' + rsHelpRedHat);
-       debugln('   --no-splash                  ' + rsHelpNoSplash);
-       debugln('   --debug-sync                 ' + rsHelpDebugSync);
-       debugln('   --debug-index                ' + rsHelpDebugIndex);
-       debugln('   --debug-spell                ' + rsHelpDebugSpell);
-       debugln('   --config-dir=PATH_to_DIR     ' + rsHelpConfig);
-       debugln('   -o --open-note=PATH_to_NOTE  ' + rsHelpSingleNote);
-       debugln('   --save-exit                  ' + rsHelpSaveExit);
-       result := true;
-    end;
-end;
-
-function TMainForm.HaveCMDParam() : boolean;
-// WARNING - the options here MUST match the options list in CommandLineError()
- { ToDo : put options in a TStringList or a set and share, less mistakes ....}
-var
-    Params : TStringList;
-    LongOpts : array [1..13] of string = ('delay-start', 'dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
-            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
-begin
-    Result := False;
-    if Application.HasOption('o', 'open-note') then begin
-       SingleNoteFileName := Application.GetOptionValue('o', 'open-note');
-       UseTrayMenu := False;
-       exit(True);
-    end;
-    Params := TStringList.Create;
-    try
-        Application.GetNonOptions('hgo:', LongOpts, Params);
-        {for I := 0 to Params.Count -1 do
-            debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
-        if Params.Count = 1 then begin
-            if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
-                    SingleNoteFileName := Params[0];
-                    // SingleNoteMode(Params[0]);    // if we have just one extra parameter, we assume it a filename,
-                    UseTrayMenu := False;
-                    exit(True);
-            end;
-        end;
-        if Params.Count > 1 then begin
-            debugln('Unrecognised parameters on command line');
-            closeASAP := True;
-            exit(False);                     // Call exit to ensure remaining part method is not executed
-        end;
-    finally
-        FreeAndNil(Params);
-    end;
-end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
     Randomize;                                      // used by sett.getlocaltime()
     HelpList := Nil;
-    if Application.HasOption('delay-start') then    // This to allow eg Enlightenment to decide its colours.
-        sleep(2000);
-    AssignPopupToTray := True;
-    {$ifdef LINUX}
-    AssignPopupToTray := {$ifdef LCLQT5}False{$else}True{$endif} or (GetEnvironmentVariable('XDG_CURRENT_DESKTOP') <> 'KDE');
-    {$endif}
-    if CommandLineError() then exit;                // We will close in OnShow
-    UseMainMenu := True;
     UseTrayMenu := true;
     AllowDismiss := true;
-    if Application.HasOption('g', 'gnome3') then begin
-        UseMainMenu := true;
-        AllowDismiss := false;
-        UseTrayMenu := false;
-        ShowHint := False;
-    end;
-    if Application.HasOption('version') then begin
-        Enabled := False;
-        debugln('tomboy-ng version ' + Version_String);
-        closeASAP := True;
-        exit();
-     end;
-     if not HaveCMDParam() then        // Will deal with it in OnShow()
-         if AreWeClient() then begin        // Only for a normal tomboy-ng session
-             closeASAP := True;
-             exit();
-         end;
-    (* {$ifdef LINUX}
-    if GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP') = 'Enlightenment' then
-        AllowDismiss := False;
-    {$endif}    *)
-    {$ifdef LCLCOCOA}
-    UseMainMenu := True;
-    {$endif}
+    if SingleNoteFileName = '' then
+        StartIPCServer();                     // Don't bother to check is we are client, cannot be if we are here.
     {$ifdef LCLCARBON}
-    UseMainMenu := true;
     UseTrayMenu := false;
     {$endif}
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName));{$endif}
@@ -513,12 +379,10 @@ var
   AForm : TForm;
 begin
     {$ifdef LCLGTK2}
-    //{$ifndef LCLQT5}           // thats silly, if its GTK2 cannot be Qt5 .....
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     t := Clipboard.AsText;
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
-    //{$endif}
     {$endif}
     Sett.AreClosing:=True;
     if assigned(SearchForm.NoteLister) then begin
@@ -545,28 +409,13 @@ begin
     end;
 end;
 
-// First try to be server, if we are, set up a function to be called when a message
-// is received. But if we are just a client, send a message and return true.
-function  TMainForm.AreWeClient() : boolean;
+procedure TMainForm.StartIPCServer();
 begin
-    Result := false;
-    CommsClient  := TSimpleIPCClient.Create(Nil);
-    CommsClient.ServerID:='tomboy-ng';
-    if CommsClient.ServerRunning then begin
-        CommsClient.Active := true;
-        CommsClient.SendStringMessage('SHOWSEARCH');
-        CommsClient.Active := false;
-        freeandnil(CommsClient );
-        Result := True;
-    end else begin
-        freeandnil(CommsClient );
         CommsServer  := TSimpleIPCServer.Create(Nil);
         CommsServer.ServerID:='tomboy-ng';
         CommsServer.OnMessageQueued:=@CommMessageReceived;
         CommsServer.Global:=True;                  // anyone can connect
         CommsServer.StartServer({$ifdef WINDOWS}False{$else}True{$endif});  // start listening, threaded
-        // Must pass Windows false but Linux and Mac see OK threaded. Windows fixed in FPC 320 ?
-    end;
 end;
 
 
@@ -583,7 +432,6 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     NoteID, NoteTitle : string;
 begin
-    // debugln('Form color is ' + inttostr(Color));
     if CloseASAP then begin
       close;
       exit;
@@ -604,7 +452,7 @@ begin
         ButtonDismiss.Color := Sett.HiColour;
     end;
     {$endif}
-    if Self.SingleNoteFileName <> '' then begin
+    if SingleNoteFileName <> '' then begin      // Thats the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
         exit;
     end;
@@ -661,27 +509,17 @@ begin
 
      ImageSyncCross.Left := ImageSyncTick.Left;
 
-     ImageSyncTick.Visible :=  Sett.SyncOK;
+     ImageSyncTick.Visible :=  (Sett.ValidSync <> '');
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 
-     {((Sett.RadioFileSync.checked and (Sett.LabelFileSync.Caption <> rsSyncNotConfig))
-            or (Sett.RadioSyncNC.Checked and (Sett.LabelNCSyncURL.caption <> rsSyncNotConfig))); }
-
-     {
-     ImageSyncTick.Visible := (Sett.SyncRepoLocation.Caption <> rsSyncNotConfig)
-                and (Sett.SyncRepoLocation.Caption <> '') and (Sett.SyncRepo.checked);
-     ImageSyncTick.Visible := ImageSyncTick.Visible  or ((Sett.SyncNCUrl.Caption <> rsSyncNotConfig)
-                and (Sett.SyncNCUrl.Caption <> '') and (Sett.SyncNC.checked));
-                        }
-
-     if (ImageConfigTick.Visible {and ImageNotesDirTick.Visible}) then begin
+     if (ImageConfigTick.Visible) then begin
         ButtonDismiss.Enabled := AllowDismiss;
      end;
 end;
 
 procedure TMainForm.ButtonDismissClick(Sender: TObject);
 begin
-    {$ifdef LCLCOCOA}
+    {$ifdef LCLCOCOA}            // ToDo : is this still necessary ? Or can Cocoa hide like other systems ?
     width := 0;
     height := 0;
     {$else}
@@ -815,7 +653,7 @@ var
         Stg : string;
 begin
         Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
-            + rsAboutVer + ' ' + Version_String;
+            + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
         {$ifdef LCLCOCOA} Stg := Stg + ', 64bit Cocoa'; {$endif}
         {$ifdef LCLQT5}   Stg := Stg + ', QT5';         {$endif}
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}

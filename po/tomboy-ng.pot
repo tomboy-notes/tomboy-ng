@@ -119,58 +119,6 @@ msgstr ""
 msgid "Found"
 msgstr ""
 
-#: mainunit.rshelpconfig
-msgid "Create or use an alternative config"
-msgstr ""
-
-#: mainunit.rshelpdebug
-msgid "Direct debug output to SOME.LOG."
-msgstr ""
-
-#: mainunit.rshelpdebugindex
-msgid "Show debug msgs while indexing notes"
-msgstr ""
-
-#: mainunit.rshelpdebugspell
-msgid "Show debug messages while spell setup"
-msgstr ""
-
-#: mainunit.rshelpdebugsync
-msgid "Show debug messages during Sync"
-msgstr ""
-
-#: mainunit.rshelpdelay
-msgid "Delay startup 2 sec to allow OS to settle"
-msgstr ""
-
-#: mainunit.rshelphelp
-msgid "Show this help message and exit."
-msgstr ""
-
-#: mainunit.rshelplang
-msgid "Force Language, supported es, nl"
-msgstr ""
-
-#: mainunit.rshelpnosplash
-msgid "Dont show small status/splash window"
-msgstr ""
-
-#: mainunit.rshelpredhat
-msgid "Run in RedHatGnome mode, no TrayIcon"
-msgstr ""
-
-#: mainunit.rshelpsaveexit
-msgid "After import single note, save & exit"
-msgstr ""
-
-#: mainunit.rshelpsinglenote
-msgid "Open indicated note, switch is optional"
-msgstr ""
-
-#: mainunit.rshelpversion
-msgid "Print version and exit"
-msgstr ""
-
 #: mainunit.rsnotes
 msgid "notes"
 msgstr ""
@@ -279,6 +227,79 @@ msgstr ""
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
+msgstr ""
+
+#: resourcestr.rsfilesyncinfo1
+msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive"
+msgstr ""
+
+#: resourcestr.rsfilesyncinfo2
+msgid "or connect to a remote server over the internet with sshfs"
+msgstr ""
+
+#: resourcestr.rshelpconfig
+msgctxt "resourcestr.rshelpconfig"
+msgid "Create or use an alternative config"
+msgstr ""
+
+#: resourcestr.rshelpdebug
+msgctxt "resourcestr.rshelpdebug"
+msgid "Direct debug output to SOME.LOG."
+msgstr ""
+
+#: resourcestr.rshelpdebugindex
+msgctxt "resourcestr.rshelpdebugindex"
+msgid "Show debug msgs while indexing notes"
+msgstr ""
+
+#: resourcestr.rshelpdebugspell
+msgctxt "resourcestr.rshelpdebugspell"
+msgid "Show debug messages while spell setup"
+msgstr ""
+
+#: resourcestr.rshelpdebugsync
+msgctxt "resourcestr.rshelpdebugsync"
+msgid "Show debug messages during Sync"
+msgstr ""
+
+#: resourcestr.rshelpdelay
+msgctxt "resourcestr.rshelpdelay"
+msgid "Delay startup 2 sec to allow OS to settle"
+msgstr ""
+
+#: resourcestr.rshelphelp
+msgctxt "resourcestr.rshelphelp"
+msgid "Show this help message and exit."
+msgstr ""
+
+#: resourcestr.rshelplang
+msgctxt "resourcestr.rshelplang"
+msgid "Force Language, supported es, nl"
+msgstr ""
+
+#: resourcestr.rshelpnosplash
+msgctxt "resourcestr.rshelpnosplash"
+msgid "Dont show small status/splash window"
+msgstr ""
+
+#: resourcestr.rshelpredhat
+msgctxt "resourcestr.rshelpredhat"
+msgid "Deprecated"
+msgstr ""
+
+#: resourcestr.rshelpsaveexit
+msgctxt "resourcestr.rshelpsaveexit"
+msgid "After import single note, save & exit"
+msgstr ""
+
+#: resourcestr.rshelpsinglenote
+msgctxt "resourcestr.rshelpsinglenote"
+msgid "Open indicated note, switch is optional"
+msgstr ""
+
+#: resourcestr.rshelpversion
+msgctxt "resourcestr.rshelpversion"
+msgid "Print version and exit"
 msgstr ""
 
 #: resourcestr.rslastchange
@@ -1630,9 +1651,12 @@ msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr ""
 
-#: tsett.labelncsyncurl.caption
-msgctxt "tsett.labelncsyncurl.caption"
-msgid "not configured"
+#: tsett.labelfilesyncinfo1.caption
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tsett.labelfilesyncinfo2.caption
+msgid "LabelFileSyncInfo2"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
@@ -1671,10 +1695,6 @@ msgstr ""
 msgid "Always Ask me what to do."
 msgstr ""
 
-#: tsett.radiofilesync.caption
-msgid "File Sync, google drive, smb etc."
-msgstr ""
-
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr ""
@@ -1690,10 +1710,6 @@ msgstr ""
 
 #: tsett.radiofontsmall.caption
 msgid "Small"
-msgstr ""
-
-#: tsett.radiosyncnc.caption
-msgid "Nextcloud/ownCloud (Grauphel)"
 msgstr ""
 
 #: tsett.radiouselocal.caption

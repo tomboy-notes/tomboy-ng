@@ -136,64 +136,6 @@ msgstr "Kan één of meerdere notities niet indexeren."
 msgid "Found"
 msgstr ""
 
-#: mainunit.rshelpconfig
-msgid "Create or use an alternative config"
-msgstr "Alternatieve configuratie creëren of gebruiken"
-
-#: mainunit.rshelpdebug
-msgid "Direct debug output to SOME.LOG."
-msgstr "Foutopsporingsuitvoer vastleggen in SOME.LOG."
-
-#: mainunit.rshelpdebugindex
-#, fuzzy
-#| msgid "Show debug messages while indexing notes"
-msgid "Show debug msgs while indexing notes"
-msgstr "Foutopsporingsberichten tonen tijdens indexeren"
-
-#: mainunit.rshelpdebugspell
-msgid "Show debug messages while spell setup"
-msgstr "Foutopsporingsberichten tonen tijdens instellen van spellingcontrole"
-
-#: mainunit.rshelpdebugsync
-msgid "Show debug messages during Sync"
-msgstr "Foutopsporingsberichten tonen tijdens synchronisatie"
-
-#: mainunit.rshelpdelay
-msgid "Delay startup 2 sec to allow OS to settle"
-msgstr ""
-
-#: mainunit.rshelphelp
-msgid "Show this help message and exit."
-msgstr "Toon dit hulpbericht en sluit af."
-
-#: mainunit.rshelplang
-#, fuzzy
-#| msgid "Force Language, supported es"
-msgid "Force Language, supported es, nl"
-msgstr "Taal afdwingen - ondersteund: es"
-
-#: mainunit.rshelpnosplash
-msgid "Dont show small status/splash window"
-msgstr "Geen klein status-/opstartscherm tonen"
-
-#: mainunit.rshelpredhat
-msgid "Run in RedHatGnome mode, no TrayIcon"
-msgstr "Uitvoeren in RedHatGnome-modus, zonder systeemvakpictogram"
-
-#: mainunit.rshelpsaveexit
-#, fuzzy
-#| msgid "After import single note, save and exit."
-msgid "After import single note, save & exit"
-msgstr "Opslaan en afsluiten na importeren van losse notitie"
-
-#: mainunit.rshelpsinglenote
-msgid "Open indicated note, switch is optional"
-msgstr "Aangegeven notitie openen; overschakelen optioneel"
-
-#: mainunit.rshelpversion
-msgid "Print version and exit"
-msgstr "Print de versie en sluit af"
-
 #: mainunit.rsnotes
 msgid "notes"
 msgstr ""
@@ -308,6 +250,89 @@ msgstr "Wil je een nieuwe repo maken?"
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
 msgstr "Voer een nieuwe naam in voor het notitieboek"
+
+#: resourcestr.rsfilesyncinfo1
+msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive"
+msgstr ""
+
+#: resourcestr.rsfilesyncinfo2
+msgid "or connect to a remote server over the internet with sshfs"
+msgstr ""
+
+#: resourcestr.rshelpconfig
+#, fuzzy
+msgctxt "resourcestr.rshelpconfig"
+msgid "Create or use an alternative config"
+msgstr "Alternatieve configuratie creëren of gebruiken"
+
+#: resourcestr.rshelpdebug
+#, fuzzy
+msgctxt "resourcestr.rshelpdebug"
+msgid "Direct debug output to SOME.LOG."
+msgstr "Foutopsporingsuitvoer vastleggen in SOME.LOG."
+
+#: resourcestr.rshelpdebugindex
+msgctxt "resourcestr.rshelpdebugindex"
+msgid "Show debug msgs while indexing notes"
+msgstr ""
+
+#: resourcestr.rshelpdebugspell
+#, fuzzy
+msgctxt "resourcestr.rshelpdebugspell"
+msgid "Show debug messages while spell setup"
+msgstr "Foutopsporingsberichten tonen tijdens instellen van spellingcontrole"
+
+#: resourcestr.rshelpdebugsync
+#, fuzzy
+msgctxt "resourcestr.rshelpdebugsync"
+msgid "Show debug messages during Sync"
+msgstr "Foutopsporingsberichten tonen tijdens synchronisatie"
+
+#: resourcestr.rshelpdelay
+msgctxt "resourcestr.rshelpdelay"
+msgid "Delay startup 2 sec to allow OS to settle"
+msgstr ""
+
+#: resourcestr.rshelphelp
+#, fuzzy
+msgctxt "resourcestr.rshelphelp"
+msgid "Show this help message and exit."
+msgstr "Toon dit hulpbericht en sluit af."
+
+#: resourcestr.rshelplang
+msgctxt "resourcestr.rshelplang"
+msgid "Force Language, supported es, nl"
+msgstr ""
+
+#: resourcestr.rshelpnosplash
+#, fuzzy
+msgctxt "resourcestr.rshelpnosplash"
+msgid "Dont show small status/splash window"
+msgstr "Geen klein status-/opstartscherm tonen"
+
+#: resourcestr.rshelpredhat
+#, fuzzy
+#| msgid "Run in RedHatGnome mode, no TrayIcon"
+msgctxt "resourcestr.rshelpredhat"
+msgid "Deprecated"
+msgstr "Uitvoeren in RedHatGnome-modus, zonder systeemvakpictogram"
+
+#: resourcestr.rshelpsaveexit
+msgctxt "resourcestr.rshelpsaveexit"
+msgid "After import single note, save & exit"
+msgstr ""
+
+#: resourcestr.rshelpsinglenote
+#, fuzzy
+msgctxt "resourcestr.rshelpsinglenote"
+msgid "Open indicated note, switch is optional"
+msgstr "Aangegeven notitie openen; overschakelen optioneel"
+
+#: resourcestr.rshelpversion
+#, fuzzy
+msgctxt "resourcestr.rshelpversion"
+msgid "Print version and exit"
+msgstr "Print de versie en sluit af"
 
 #: resourcestr.rslastchange
 msgctxt "resourcestr.rslastchange"
@@ -1722,11 +1747,13 @@ msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "niet ingesteld"
 
-#: tsett.labelncsyncurl.caption
-#, fuzzy
-msgctxt "tsett.labelncsyncurl.caption"
-msgid "not configured"
-msgstr "niet ingesteld"
+#: tsett.labelfilesyncinfo1.caption
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tsett.labelfilesyncinfo2.caption
+msgid "LabelFileSyncInfo2"
+msgstr ""
 
 #: tsett.labelsnapdir.caption
 msgid ".... and its not available just yet !"
@@ -1764,10 +1791,6 @@ msgstr "woensdag"
 msgid "Always Ask me what to do."
 msgstr "Altijd vragen om een actie"
 
-#: tsett.radiofilesync.caption
-msgid "File Sync, google drive, smb etc."
-msgstr ""
-
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Groot"
@@ -1784,11 +1807,6 @@ msgstr "Normaal"
 #: tsett.radiofontsmall.caption
 msgid "Small"
 msgstr "Klein"
-
-#: tsett.radiosyncnc.caption
-msgctxt "tsett.radiosyncnc.caption"
-msgid "Nextcloud/ownCloud (Grauphel)"
-msgstr ""
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
