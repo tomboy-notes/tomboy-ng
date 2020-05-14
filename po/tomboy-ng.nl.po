@@ -117,7 +117,9 @@ msgid "You should do so to ensure your notes are safe."
 msgstr "Zorg ervoor dat je notities beveiligd zijn."
 
 #: mainunit.rscannotdismiss1
-msgid "Sadly, on this OS or because of a Bad Note,"
+#, fuzzy
+#| msgid "Sadly, on this OS or because of a Bad Note,"
+msgid "Sadly, because of a Bad Note,"
 msgstr "Omwille van een onjuiste notitie,"
 
 #: mainunit.rscannotdismiss2

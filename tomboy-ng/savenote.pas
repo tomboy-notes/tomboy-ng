@@ -116,7 +116,7 @@ type
 			function BlockAttributes(Bk: TKMemoBlock): AnsiString;
 			procedure BulletList(var Buff: ANSIString);
             procedure CopyLastFontAttr();
-			function FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle): ANSIString;
+			//function FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle): ANSIString;
 			//function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
           	function Header() : ANSIstring;
@@ -422,7 +422,7 @@ begin
     end;
     if PrevStrikeout then begin
         StartStartSt := StartStartSt + '</strikeout>';
-        EndEndSt := '<strikeout>' + EndEndSt;
+        StartEndSt := '<strikeout>' + StartEndSt;
     end;
     if Strikeout then begin
         EndStartSt := EndStartSt + '</strikeout>';
@@ -446,16 +446,17 @@ begin
         EndEndSt := SetFontXML(FSize, True) + EndEndSt;
 	end;
 
-    {writeLn('Buff at Start [' + Buff + ']');
-    writeln('StartStart    [' + StartStartSt + ']');
-    writeln('StartEnd      [' + StartEndSt + ']');
-    writeln('EndStart      [' + EndStartSt + ']');
-    writeln('EndEnd        [' + EndEndSt + ']');          }
+    // writeLn('Buff at Start [' + Buff + ']');
+    // writeln('StartStart    [' + StartStartSt + ']');
+    // writeln('StartEnd      [' + StartEndSt + ']');
+    // writeln('EndStart      [' + EndStartSt + ']');
+    // writeln('EndEnd        [' + EndEndSt + ']');
 
     Buff := StartStartSt + '<list><list-item dir="ltr">' + StartEndSt
     		+ Buff + EndStartSt + '</list-item></list>' + EndEndSt;
 
-    //writeLn('Buff at End [' + Buff + ']');         // **************************************
+    // writeLn('Buff at End [' + Buff + ']');         // **************************************
+    // writeln('---');
 end;
 
 // This is just a debug function.
@@ -480,7 +481,7 @@ begin
 end;
 
     // I suspect this function is no longer used.
-function TBSaveNote.FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle) : ANSIString;
+{function TBSaveNote.FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle) : ANSIString;
 begin
    Result := '';
    if fsBold in Ft.Style then
@@ -496,7 +497,7 @@ begin
    Result := Result + ' Strikeout ';
    if Ft.Pitch = fpFixed then
    Result := Result + ' FixedWidth ';
-end;
+end; }
 
 procedure TBSaveNote.SaveNewTemplate(NotebookName : ANSIString);
 var
