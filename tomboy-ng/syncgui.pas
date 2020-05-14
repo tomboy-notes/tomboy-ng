@@ -313,7 +313,10 @@ begin
             FormSyncError.label3.caption := ASync.ErrorString;
             FormSyncError.ButtRetry.Visible := not Visible;                         // Dont show Retry if interactive
             ModalResult := FormSyncError.ShowModal;
-            if ModalResult = mrCancel then exit(false);        // else its Retry
+            if ModalResult = mrCancel then begin                                    // else its Retry
+                SearchForm.UpdateSyncStatus('Auto Sync cancelled');
+                exit(false);
+            end;
             SyncState := ASync.TestConnection();
         end;
         Label1.Caption:= rsRunningSync;

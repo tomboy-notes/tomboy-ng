@@ -57,6 +57,8 @@ RESOURCESTRING
   rsSaveAndSync = 'Press Save and Sync if this looks OK';
   rsSyncError = 'A Sync Error occured';
   rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
+  rsFileSyncInfo1 = 'tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive';
+  rsFileSyncInfo2 = 'or connect to a remote server over the internet with sshfs';
 
 
 // Settings but only part ...
@@ -79,6 +81,26 @@ RESOURCESTRING
   rsRenameFailed = 'ERROR, could not rename Backup File ';
   rsRecoverOK = 'OK, File recovered.';
   rsNotesDeleted =  'Note or notes deleted';
+
+
+  // CLI
+      {$ifdef DARWIN}
+    rsMacHelp1 = 'eg   open tomboy-ng.app';
+    rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
+    {$endif}
+    rsHelpDelay = 'Delay startup 2 sec to allow OS to settle';
+    rsHelpLang = 'Force Language, supported es, nl';
+    rsHelpDebug = 'Direct debug output to SOME.LOG.';
+    rsHelpHelp = 'Show this help message and exit.';
+    rsHelpVersion = 'Print version and exit';
+    rsHelpRedHat = 'Deprecated';                                // No longer important,
+    rsHelpNoSplash = 'Dont show small status/splash window';
+    rsHelpDebugSync = 'Show debug messages during Sync';
+    rsHelpDebugIndex = 'Show debug msgs while indexing notes';
+    rsHelpDebugSpell = 'Show debug messages while spell setup';
+    rsHelpConfig = 'Create or use an alternative config';
+    rsHelpSingleNote = 'Open indicated note, switch is optional';
+    rsHelpSaveExit = 'After import single note, save & exit';
 
 
 implementation

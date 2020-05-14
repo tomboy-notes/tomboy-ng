@@ -364,7 +364,7 @@ implementation
 
 { TSync }
 
-uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransNet, TransAndroid, TransNext, LazLogger, LazFileUtils,
+uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransAndroid, LazLogger, LazFileUtils,
     FileUtil, Settings;
 
 var
@@ -615,7 +615,8 @@ begin
         if NoteMetaData[Index]^.Action = SyUnSet then begin
             Debugln('ERROR note not assigned ' + NoteMetaData[Index]^.ID + ' '
                    + NoteMetaData.ActionName(NoteMetaData[Index]^.Action) + '  '
-                   + NoteMetaData.ActionName(NoteMetaData[Index]^.Action));
+                   + NoteMetaData[Index]^.LastChange + '  '
+                   + NoteMetaData[Index]^.Title );
             result := False;
         end;
         if IDLooksOK(NoteMetaData[Index]^.ID) then begin
@@ -865,7 +866,11 @@ begin
                    NoteMetaData.Items[I]^.Action:=SyDeleteRemote;       // I have deleted that already.
             end else NoteMetaData.Items[I]^.Action:=SyDownload;         // its a new note from elsewhere
         end;
-        if NoteMetaData.Items[I]^.Action = SyUnset then debugln('---- missed one -----');
+        if NoteMetaData.Items[I]^.Action = SyUnset then begin
+            debugln('---- Note on Sync List with unassigned action ----');
+            debugln('ID=' + NoteMetaData.Items[I]^.ID);
+            debugln('sync.pas CheckUsingRev() - please report this message');
+        end;
         if NoteMetaData.Items[I]^.Action = SyUpLoadEdit then begin
             NoteMetaData.Items[I]^.LastChange := GetNoteLastChangeSt(NotesDir + ID + '.note', ErrorString);
             // debugln('=========== LCD is [' + NoteMetaData.Items[I]^.CreateDate + ']');
@@ -1075,13 +1080,13 @@ begin
     FreeAndNil(Transport);
     case Mode of
         SyncFile : begin
-                        SyncAddress := AppendPathDelim(Sett.LabelFileSync.Caption);
+                        SyncAddress := AppendPathDelim(Sett.ValidSync);             // LabelFileSync.Caption);
                         Transport := TFileSync.Create;
 	               end;
-	    SyncNextCloud : begin
+	    {SyncNextCloud : begin
 		                    Transport := TNextSync.Create;
 		                    SyncAddress := Sett.LabelNCSyncURL.caption;
-                        end;
+                        end;}
         SyncAndroid : begin
                         // debugln('Oh boy ! We have called the android line !');
                         Transport := TAndSync.Create;

@@ -137,61 +137,6 @@ msgstr "tomboy-ng no pudo indizar una nota o más."
 msgid "Found"
 msgstr "Encontrada"
 
-#: mainunit.rshelpconfig
-msgid "Create or use an alternative config"
-msgstr "Crear o usar una configuración alternativa"
-
-#: mainunit.rshelpdebug
-msgid "Direct debug output to SOME.LOG."
-msgstr "Enviar resultados de depuración a SOME.LOG."
-
-#: mainunit.rshelpdebugindex
-msgid "Show debug msgs while indexing notes"
-msgstr "Mostrar mensajes de depuración durante indización"
-
-# ¿Demasiado largo?
-#: mainunit.rshelpdebugspell
-msgid "Show debug messages while spell setup"
-msgstr "Mostrar mensajes de depuración durante configuración de ortografía"
-
-# ¿Demasiado largo?
-#: mainunit.rshelpdebugsync
-msgid "Show debug messages during Sync"
-msgstr "Mostrar mensajes de depuración durante Sincronización"
-
-#: mainunit.rshelpdelay
-msgid "Delay startup 2 sec to allow OS to settle"
-msgstr "Retrasar arranque 2 segs para dejar asentarse el SO"
-
-#: mainunit.rshelphelp
-msgid "Show this help message and exit."
-msgstr "Mostrar mensaje de ayuda y salir."
-
-#: mainunit.rshelplang
-msgid "Force Language, supported es, nl"
-msgstr "Forzar idioma. Idiomas suportado: es, nl"
-
-#: mainunit.rshelpnosplash
-msgid "Dont show small status/splash window"
-msgstr "No mostrar ventana de estado/bienvenida"
-
-#: mainunit.rshelpredhat
-msgid "Run in RedHatGnome mode, no TrayIcon"
-msgstr "Usar modo de RedHatGnome, sin icono de bandeja"
-
-#: mainunit.rshelpsaveexit
-msgid "After import single note, save & exit"
-msgstr "Después de importar una sola nota, guardar y salir."
-
-# Unix "switch"
-#: mainunit.rshelpsinglenote
-msgid "Open indicated note, switch is optional"
-msgstr "Abrir nota seleccionada, parámetro es opcional"
-
-#: mainunit.rshelpversion
-msgid "Print version and exit"
-msgstr "Imprimir versión y salir"
-
 #: mainunit.rsnotes
 msgid "notes"
 msgstr "notes"
@@ -306,6 +251,93 @@ msgstr "¿Crear un repositorio nuevo?"
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
 msgstr "Introduzca un nuevo nombre de cuaderno, por favor"
+
+#: resourcestr.rsfilesyncinfo1
+msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive"
+msgstr ""
+
+#: resourcestr.rsfilesyncinfo2
+msgid "or connect to a remote server over the internet with sshfs"
+msgstr ""
+
+#: resourcestr.rshelpconfig
+#, fuzzy
+msgctxt "resourcestr.rshelpconfig"
+msgid "Create or use an alternative config"
+msgstr "Crear o usar una configuración alternativa"
+
+#: resourcestr.rshelpdebug
+#, fuzzy
+msgctxt "resourcestr.rshelpdebug"
+msgid "Direct debug output to SOME.LOG."
+msgstr "Enviar resultados de depuración a SOME.LOG."
+
+#: resourcestr.rshelpdebugindex
+#, fuzzy
+msgctxt "resourcestr.rshelpdebugindex"
+msgid "Show debug msgs while indexing notes"
+msgstr "Mostrar mensajes de depuración durante indización"
+
+#: resourcestr.rshelpdebugspell
+#, fuzzy
+msgctxt "resourcestr.rshelpdebugspell"
+msgid "Show debug messages while spell setup"
+msgstr "Mostrar mensajes de depuración durante configuración de ortografía"
+
+#: resourcestr.rshelpdebugsync
+#, fuzzy
+msgctxt "resourcestr.rshelpdebugsync"
+msgid "Show debug messages during Sync"
+msgstr "Mostrar mensajes de depuración durante Sincronización"
+
+#: resourcestr.rshelpdelay
+#, fuzzy
+msgctxt "resourcestr.rshelpdelay"
+msgid "Delay startup 2 sec to allow OS to settle"
+msgstr "Retrasar arranque 2 segs para dejar asentarse el SO"
+
+#: resourcestr.rshelphelp
+#, fuzzy
+msgctxt "resourcestr.rshelphelp"
+msgid "Show this help message and exit."
+msgstr "Mostrar mensaje de ayuda y salir."
+
+#: resourcestr.rshelplang
+#, fuzzy
+msgctxt "resourcestr.rshelplang"
+msgid "Force Language, supported es, nl"
+msgstr "Forzar idioma. Idiomas suportado: es, nl"
+
+#: resourcestr.rshelpnosplash
+#, fuzzy
+msgctxt "resourcestr.rshelpnosplash"
+msgid "Dont show small status/splash window"
+msgstr "No mostrar ventana de estado/bienvenida"
+
+#: resourcestr.rshelpredhat
+#, fuzzy
+#| msgid "Run in RedHatGnome mode, no TrayIcon"
+msgctxt "resourcestr.rshelpredhat"
+msgid "Deprecated"
+msgstr "Usar modo de RedHatGnome, sin icono de bandeja"
+
+#: resourcestr.rshelpsaveexit
+#, fuzzy
+msgctxt "resourcestr.rshelpsaveexit"
+msgid "After import single note, save & exit"
+msgstr "Después de importar una sola nota, guardar y salir."
+
+#: resourcestr.rshelpsinglenote
+#, fuzzy
+msgctxt "resourcestr.rshelpsinglenote"
+msgid "Open indicated note, switch is optional"
+msgstr "Abrir nota seleccionada, parámetro es opcional"
+
+#: resourcestr.rshelpversion
+#, fuzzy
+msgctxt "resourcestr.rshelpversion"
+msgid "Print version and exit"
+msgstr "Imprimir versión y salir"
 
 #: resourcestr.rslastchange
 msgctxt "resourcestr.rslastchange"
@@ -1723,10 +1755,13 @@ msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "sin configurar"
 
-#: tsett.labelncsyncurl.caption
-msgctxt "tsett.labelncsyncurl.caption"
-msgid "not configured"
-msgstr "sin configurar"
+#: tsett.labelfilesyncinfo1.caption
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tsett.labelfilesyncinfo2.caption
+msgid "LabelFileSyncInfo2"
+msgstr ""
 
 #: tsett.labelsnapdir.caption
 msgctxt "tsett.labelsnapdir.caption"
@@ -1765,11 +1800,6 @@ msgstr "Miércoles"
 msgid "Always Ask me what to do."
 msgstr "Siempre preguntarme que hacer."
 
-#: tsett.radiofilesync.caption
-#, fuzzy
-msgid "File Sync, google drive, smb etc."
-msgstr "Sincronizar archivos, Google Drive, smb, etc. "
-
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Grande"
@@ -1786,11 +1816,6 @@ msgstr "Media"
 #: tsett.radiofontsmall.caption
 msgid "Small"
 msgstr "Pequeña"
-
-#: tsett.radiosyncnc.caption
-msgctxt "tsett.radiosyncnc.caption"
-msgid "Nextcloud/ownCloud (Grauphel)"
-msgstr "Nextcloud/ownCloud (Grauphel)"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."

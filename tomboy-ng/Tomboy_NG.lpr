@@ -12,10 +12,10 @@ uses
     cmem, cthreads,
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
-    Forms, printer4lazarus, SearchUnit, settings, SyncGUI, Notebook, Spelling,
-    Mainunit, BackupView, recover, tomdroid, markdown, Index, autostart,
-    hunspell, sync, syncutils, transandroid, helpnotes, ResourceStr, SyncError,
-    colours, ncsetup;
+    LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
+    Notebook, Spelling, Mainunit, BackupView, recover, tomdroid, markdown,
+    Index, autostart, hunspell, sync, syncutils, transandroid, helpnotes,
+    ResourceStr, SyncError, colours, ncsetup, cli;
 
 {$R *.res}
 
@@ -24,19 +24,22 @@ begin
     Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
-    Application.CreateForm(TMainForm, MainForm);
-    Application.CreateForm(TSett, Sett);
-    Application.CreateForm(TSearchForm, SearchForm);
-    Application.CreateForm(TFormSync, FormSync);
-    Application.CreateForm(TFormTomdroid, FormTomdroid);
-    Application.CreateForm(TFormMarkdown, FormMarkdown);
-    Application.CreateForm(TFormHelpNotes, FormHelpNotes);
-    Application.CreateForm(TFormSyncError, FormSyncError);
-    Application.CreateForm(TFormColours, FormColours);
-    Application.CreateForm(TFormNCSetup, FormNCSetup);
-    // Application.CreateForm(TNoteBookPick, NoteBookPick);
-    // Application.CreateForm(TFormSpell, FormSpell);
-    // Application.CreateForm(TEditBoxForm, EditBoxForm);
-    Application.Run;
+
+    if ContinueToGUI then begin
+        Application.CreateForm(TMainForm, MainForm);
+        Application.CreateForm(TSett, Sett);
+        Application.CreateForm(TSearchForm, SearchForm);
+        Application.CreateForm(TFormSync, FormSync);
+        Application.CreateForm(TFormTomdroid, FormTomdroid);
+        Application.CreateForm(TFormMarkdown, FormMarkdown);
+        Application.CreateForm(TFormHelpNotes, FormHelpNotes);
+        Application.CreateForm(TFormSyncError, FormSyncError);
+        Application.CreateForm(TFormColours, FormColours);
+        Application.CreateForm(TFormNCSetup, FormNCSetup);
+        // Application.CreateForm(TNoteBookPick, NoteBookPick);
+        // Application.CreateForm(TFormSpell, FormSpell);
+        // Application.CreateForm(TEditBoxForm, EditBoxForm);
+        Application.Run;
+    end;
 end.
 

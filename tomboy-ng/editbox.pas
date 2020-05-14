@@ -450,6 +450,7 @@ type
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
         // Set by the calling process.
+        SingleNoteFileName : string;          // Carefull, cli has a real global version
         SingleNoteMode : Boolean;
         NoteFileName, NoteTitle : string;
         Dirty : boolean;
@@ -1475,7 +1476,7 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
-    if mainform.SingleNoteFileName = '' then
+    if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
     else SingleNoteMode := True;
     {$ifdef DARWIN}

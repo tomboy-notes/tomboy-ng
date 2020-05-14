@@ -632,7 +632,7 @@ begin
                             Show;
                     end;
         mtAbout :    MainForm.ShowAbout();
-        mtSync :     if(Sett.syncok) then Sett.Synchronise()
+        mtSync :     if(Sett.ValidSync <> '') then Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
         mtSettings : begin
                             MoveWindowHere(Sett.Caption);
@@ -692,12 +692,11 @@ begin
         TS3:=gettickcount64();
         NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
         TS4:=gettickcount64();
-        StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
-            + inttostr(TS4 - TS3) + 'mS  and we found ' + dbgs(Found) + ' notes';
-        // showmessage('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
-        // debugln('Search Speed from SearchUnit ' + inttostr(TS2 - TS1) + 'mS ' + inttostr(TS3-TS2) + 'mS');
-        // releasemode, 50mS-70mS, 4-40mS on my linux laptop, longer on common search terms eg "and"
-        // windows box, i5 with SSD, 1800 notes, 330mS + 30mS, 'blar'
+        StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
+        {StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
+            + inttostr(TS4 - TS3) + 'mS  and we found ' + dbgs(Found) + ' notes';}
+        // ToDo : Possible that replacing stringgrids with listbox might speed up loadstgrid, apparently it can do multicolumns ?
+        // Loading the string grid is becoming a significent part of search time.
     end;
 end;
 
@@ -751,7 +750,7 @@ procedure TSearchForm.FormCreate(Sender: TObject);
 begin
     Caption := 'tomboy-ng Search';
     NoteLister := nil;
-    if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
+    if MainForm.closeASAP or (SingleNoteFileName <> '') then exit;
     StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
     StringGrid1.FixedCols := 0;
     StringGrid1.Columns.Add;
@@ -962,7 +961,7 @@ var
     NoteTitle : ANSIstring;
     FullFileName : string;
 begin
-    { TODO : If user double clicks title bar, we dont detect that and open some other note.  }
+    { TODO : If user double clicks title bar, we dont detect that and open some other note.  Can ListBox have multiple columns ? }
     // debugln('Clicked on row ' + inttostr(StringGrid1.Row));
     NoteTitle := StringGrid1.Cells[0, StringGrid1.Row];
     if NoteLister.FileNameForTitle(NoteTitle, FullFileName) then begin
