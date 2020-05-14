@@ -25,6 +25,8 @@ type
 				Label4: TLabel;
 				Label5: TLabel;
 				Label6: TLabel;
+                LabelVersion: TLabel;
+                LabelErrorMessage: TLabel;
 				LabelSourcePrompt: TLabel;
 				LabelSource: TLabel;
 				LabelDestinationPrompt: TLabel;
@@ -126,6 +128,7 @@ end;
 
 procedure TFormMain.FormShow(Sender: TObject);
 begin
+    LabelErrorMessage.Caption := '';
     LabelDestination.caption := '';
     SetUpSource(cbNG);   // will try NG first, then TB, then fall back to manual
     ReadyToGo();
@@ -140,6 +143,9 @@ procedure TFormMain.SpeedProceedClick(Sender: TObject);
 var
     Exporter : TExportNote;
 begin
+    StatusBar1.SimpleText:= 'processing notes, please wait ....';
+    LabelErrorMessage.Caption := '';
+    Application.ProcessMessages;
     Exporter := TExportNote.Create;
     Exporter.DestDir := LabelDestination.Caption;
     Exporter.NoteDir := LabelSource.caption;
@@ -150,8 +156,10 @@ begin
 			cbBook : Exporter.Notebook := CheckListBox1.Items[CheckListBox1.ItemIndex];
 		end;
         Exporter.Execute();
-        if Exporter.ErrorMessage <> '' then
+        if Exporter.ErrorMessage <> '' then begin
             showmessage(Exporter.ErrorMessage);
+            LabelErrorMessage.Caption := Exporter.ErrorMessage;
+        end;
         StatusBar1.SimpleText:= inttostr(Exporter.NotesProcessed) + ' notes processed.';
 	finally
         Exporter.Free;

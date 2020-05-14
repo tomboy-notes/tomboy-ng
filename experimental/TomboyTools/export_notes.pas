@@ -80,7 +80,7 @@ implementation
 
 { UTB2md }
 
-uses LCLProc, laz2_DOM, laz2_XMLRead, ttutils;
+uses LCLProc, laz2_DOM, laz2_XMLRead, ttutils, LazFileUtils;
 
 
 function TExportNote.ExportAll(): boolean;
@@ -154,16 +154,15 @@ begin
     result := '';
 end;
 
-
-
-
 function TExportNote.TitleFromID(ID: string; Munge : boolean; out LenTitle : integer): string;
 var
     Doc : TXMLDocument;
     Node : TDOMNode;
+    Index : integer = 1;
 begin
     if not FileExists(NoteDir + ID + '.note') then begin
         debugln('ERROR : File does not exist = '  + NoteDir + ID + '.note');
+        LenTitle := 0;
         exit('');
 	end;
 	ReadXMLFile(Doc, NoteDir + ID + '.note');
@@ -173,17 +172,22 @@ begin
     finally
         Doc.free;
     end;
-    LenTitle := length(Result);
     if Munge then begin
-        while pos(' ', Result) > 0 do
-            Result[pos(' ', Result)] := '_';
+        // remove char that don't belong in a file name
+        while Index <= length(Result) do begin
+                if Result[Index] in [ ' ', ':', '.', '/', '\', '|', '"', '''' ] then begin
+                    Result[Index] := '_';
+                end;
+
+                inc(Index);
+        end;
         Result := copy(Result, 1, 32);
 	end;
+    LenTitle := length(Result);
 end;
 
 function TExportNote.ExportFile(ID: string): boolean;
 begin
-
     case OutFormat of
         'md', 'mark down', 'markdown' : result := ExportMd(ID);
         'text', 'plain text', 'txt' : result := ExportText(ID);
@@ -460,8 +464,20 @@ begin
         ProcessHeadings(StList);
         ProcessMarkUp(StList);
         StList.LineBreak := LineEnding + LineEnding;
-        StList.SaveToFile(DestDir + TitleFromID(ID, True, LTitle) + '.md');
-	finally
+        if FileExistsUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md') then
+            DeleteFileUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md');
+        if FileExistsUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md') then begin
+            ErrorMessage := 'Failed to overwrite ' + DestDir + TitleFromID(ID, True, LTitle) + '.md';
+            exit(False);
+        end;
+        try
+            StList.SaveToFile(DestDir + TitleFromID(ID, True, LTitle) + '.md');
+        except on E: EStreamError do begin
+                ErrorMessage := 'Save error against ' + DestDir + TitleFromID(ID, True, LTitle) + '.md';
+                exit(False);
+            end;
+        end;
+    finally
         StList.free;
 	end;
 end;
