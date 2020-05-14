@@ -422,7 +422,7 @@ end;
 resourcestring
   // rsAnotherInstanceRunning = 'Another instance of tomboy-ng appears to be running. Will exit.';
   rsFailedToIndex = 'Failed to index one or more notes.';
-  rsCannotDismiss1 = 'Sadly, on this OS or because of a Bad Note,';
+  rsCannotDismiss1 = 'Sadly, because of a Bad Note,';
   rsCannotDismiss2 = 'I cannot let you dismiss this window';
   rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';
 
