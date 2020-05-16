@@ -108,14 +108,6 @@ msgstr "Best.syst."
 msgid "Version"
 msgstr "Versie"
 
-#: mainunit.rsbadnotesfound1
-msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
-msgstr "Onjuiste notities aangetroffen. Ga naar Instellingen --> Momentopnamen --> Bestaande notities."
-
-#: mainunit.rsbadnotesfound2
-msgid "You should do so to ensure your notes are safe."
-msgstr "Zorg ervoor dat je notities beveiligd zijn."
-
 #: mainunit.rscannotdismiss1
 #, fuzzy
 #| msgid "Sadly, on this OS or because of a Bad Note,"
@@ -133,14 +125,6 @@ msgstr "Probeer je me af te sluiten? David?"
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr "Kan één of meerdere notities niet indexeren."
-
-#: mainunit.rsfound
-msgid "Found"
-msgstr ""
-
-#: mainunit.rsnotes
-msgid "notes"
-msgstr ""
 
 #: recover.rsallrestored
 msgid "Notes and config files Restored, restart suggested."
@@ -216,6 +200,19 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Voltooid"
 
+#: resourcestr.rsbadnotesfound1
+#, fuzzy
+#| msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
+msgctxt "resourcestr.rsbadnotesfound1"
+msgid "Bad notes found, goto Settings -> Snapshot -> Recover ...."
+msgstr "Onjuiste notities aangetroffen. Ga naar Instellingen --> Momentopnamen --> Bestaande notities."
+
+#: resourcestr.rsbadnotesfound2
+#, fuzzy
+msgctxt "resourcestr.rsbadnotesfound2"
+msgid "You should do so to ensure your notes are safe."
+msgstr "Zorg ervoor dat je notities beveiligd zijn."
+
 #: resourcestr.rscannotdelete
 #, fuzzy
 msgctxt "resourcestr.rscannotdelete"
@@ -259,6 +256,11 @@ msgstr ""
 
 #: resourcestr.rsfilesyncinfo2
 msgid "or connect to a remote server over the internet with sshfs"
+msgstr ""
+
+#: resourcestr.rsfound
+msgctxt "resourcestr.rsfound"
+msgid "Found"
 msgstr ""
 
 #: resourcestr.rshelpconfig
@@ -421,6 +423,11 @@ msgstr ""
 msgctxt "resourcestr.rsnoteopen"
 msgid "You have that note open, please close and try again"
 msgstr "Deze notitie is geopend. Sluit hem en probeer het opnieuw."
+
+#: resourcestr.rsnotes
+msgctxt "resourcestr.rsnotes"
+msgid "notes"
+msgstr ""
 
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
@@ -1351,6 +1358,10 @@ msgstr "Welkom bij tomboy-ng!"
 #: tmainform.label6.caption
 msgid "Lets See if we are ready to go -"
 msgstr "Eens zien of de toepassing klaar is voor gebruik"
+
+#: tmainform.labelbadnoteadvice.caption
+msgid "LabelBadNoteAdvice"
+msgstr ""
 
 #: tmainform.labelerror.caption
 msgctxt "tmainform.labelerror.caption"

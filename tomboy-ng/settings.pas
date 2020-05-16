@@ -840,7 +840,7 @@ end;
 procedure TSett.CheckConfigFile;
 var
     ConfigFile : TINIFile;
-    telltail : boolean;
+    //telltail : boolean;
     //ReqFontSize, SyncType : ANSIString;
 begin
     if not CheckDirectory(LocalConfig) then exit;
@@ -893,7 +893,7 @@ begin
                 CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'))
             else
                 CheckBoxAutoSync.checked := False;
-            TellTail := CheckBoxAutoSync.checked;
+            //TellTail := CheckBoxAutoSync.checked;
             // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
