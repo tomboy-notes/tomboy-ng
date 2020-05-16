@@ -66,6 +66,7 @@ unit Mainunit;
     2020/04/10  Make help files non modal
     2020/04/12  Force sensible sizes for help notes.
     2020/04/28  Added randomize to create, need it for getlocaltime in settings.
+    2020/05/16  Don't prevent closing of splash screen.
 
     CommandLine Switches
 
@@ -75,7 +76,7 @@ unit Mainunit;
 
     --dark-theme    Windows only, over rides the registery setting.
 
-    --gnome3    Turns on MainMenu, TrayMenu off and prevents dismmiss of this
+    --gnome3    ignored
     -g
     --debug-sync Turn on Verbose mode during sync
 
@@ -135,13 +136,12 @@ type
         ImageNotesDirTick: TImage;
         ImageSyncTick: TImage;
         Label1: TLabel;
+        LabelBadNoteAdvice: TLabel;
         LabelError: TLabel;
         Label3: TLabel;
         Label4: TLabel;
         Label5: TLabel;
         Label6: TLabel;
-        LabelNoDismiss1: TLabel;
-        LabelNoDismiss2: TLabel;
         LabelNotesFound: TLabel;
         TrayIcon: TTrayIcon;
         procedure ButtMenuClick(Sender: TObject);
@@ -161,8 +161,6 @@ type
     private
         HelpList : TStringList;
         CommsServer : TSimpleIPCServer;
-        // Allow user to dismiss (ie hide) the opening window. Set false if we have a note error
-        AllowDismiss : boolean;
         // Start SimpleIPC server listening for some other second instance.
         procedure StartIPCServer();
         procedure CommMessageReceived(Sender: TObject);
@@ -344,7 +342,7 @@ begin
     Randomize;                                      // used by sett.getlocaltime()
     HelpList := Nil;
     UseTrayMenu := true;
-    AllowDismiss := true;
+
     if SingleNoteFileName = '' then
         StartIPCServer();                     // Don't bother to check is we are client, cannot be if we are here.
     {$ifdef LCLCARBON}
@@ -359,6 +357,7 @@ begin
         TrayIcon.PopUpMenu := PopupMenuTray;        // SearchForm will populate it when ready
         TrayIcon.Show;
     end;
+    LabelBadNoteAdvice.Caption := '';
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -437,7 +436,7 @@ begin
       exit;
     end;
     if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
-         if AllowDismiss then ButtonDismissClick(Self);
+         {if AllowDismiss then} ButtonDismissClick(Self);
      end;
     Left := 10;
     Top := 40;
@@ -456,22 +455,16 @@ begin
         SingleNoteMode(SingleNoteFileName);
         exit;
     end;
-    LabelNoDismiss1.Caption:='';
-    LabelNoDismiss2.Caption := '';
     if SearchForm.NoteLister.XMLError then begin
         LabelError.Caption := rsFailedToIndex;
-        AllowDismiss := False;
-    end else
+        LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
+        //AllowDismiss := False;
+    end else begin
         LabelError.Caption := '';
-    if not AllowDismiss then begin
-        LabelNoDismiss1.Caption := rsCannotDismiss1;
-        LabelNoDismiss2.Caption := rsCannotDismiss2;
-        LabelNoDismiss1.Hint:=rsCannotDismiss3;
-        LabelNoDismiss2.Hint := LabelNoDismiss1.Hint;
-        CheckBoxDontShow.Enabled := False;
-        Visible := True;
-    end else
-        CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
+        LabelBadNoteAdvice.Caption:= '';
+    end;
+
+    CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
     if Sett.CheckShowSearchAtStart.Checked then
         SearchForm.Show;
     if SearchForm.NoteLister.FindFirstOOSNote(NoteTitle, NoteID) then
@@ -480,11 +473,7 @@ begin
         until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
 end;
 
-resourcestring
-  rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshots -> Existing Notes.';
-  rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
-  rsFound = 'Found';
-  rsNotes = 'notes';
+
 
 procedure TMainForm.LabelErrorClick(Sender: TObject);
 begin
@@ -511,10 +500,6 @@ begin
 
      ImageSyncTick.Visible :=  (Sett.ValidSync <> '');
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
-
-     if (ImageConfigTick.Visible) then begin
-        ButtonDismiss.Enabled := AllowDismiss;
-     end;
 end;
 
 procedure TMainForm.ButtonDismissClick(Sender: TObject);

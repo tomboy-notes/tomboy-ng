@@ -107,15 +107,6 @@ msgstr "SO"
 msgid "Version"
 msgstr "Versión"
 
-# ¡Elemento de menu no existe!
-#: mainunit.rsbadnotesfound1
-msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
-msgstr "Notas inutilizables encontradas. Ir a Preferencias -> Instantánea -> Notas actuales."
-
-#: mainunit.rsbadnotesfound2
-msgid "You should do so to ensure your notes are safe."
-msgstr "Debería hacerlo para salvaguardar sus notas."
-
 #: mainunit.rscannotdismiss1
 #, fuzzy
 #| msgid "Sadly, on this OS or because of a Bad Note,"
@@ -134,14 +125,6 @@ msgstr "¿Intenta apagarme? ¿Dave?"
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr "tomboy-ng no pudo indizar una nota o más."
-
-#: mainunit.rsfound
-msgid "Found"
-msgstr "Encontrada"
-
-#: mainunit.rsnotes
-msgid "notes"
-msgstr "notes"
 
 #: recover.rsallrestored
 msgid "Notes and config files Restored, restart suggested."
@@ -219,6 +202,19 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Todo terminado"
 
+#: resourcestr.rsbadnotesfound1
+#, fuzzy
+#| msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
+msgctxt "resourcestr.rsbadnotesfound1"
+msgid "Bad notes found, goto Settings -> Snapshot -> Recover ...."
+msgstr "Notas inutilizables encontradas. Ir a Preferencias -> Instantánea -> Notas actuales."
+
+#: resourcestr.rsbadnotesfound2
+#, fuzzy
+msgctxt "resourcestr.rsbadnotesfound2"
+msgid "You should do so to ensure your notes are safe."
+msgstr "Debería hacerlo para salvaguardar sus notas."
+
 #: resourcestr.rscannotdelete
 #, fuzzy
 msgctxt "resourcestr.rscannotdelete"
@@ -261,6 +257,12 @@ msgstr ""
 #: resourcestr.rsfilesyncinfo2
 msgid "or connect to a remote server over the internet with sshfs"
 msgstr ""
+
+#: resourcestr.rsfound
+#, fuzzy
+msgctxt "resourcestr.rsfound"
+msgid "Found"
+msgstr "Encontrada"
 
 #: resourcestr.rshelpconfig
 #, fuzzy
@@ -422,6 +424,12 @@ msgstr "Cuadernos"
 msgctxt "resourcestr.rsnoteopen"
 msgid "You have that note open, please close and try again"
 msgstr "La nota está abierta, por favor cerrarla y intentarlo de nuevo"
+
+#: resourcestr.rsnotes
+#, fuzzy
+msgctxt "resourcestr.rsnotes"
+msgid "notes"
+msgstr "notes"
 
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
@@ -1347,6 +1355,10 @@ msgstr "¡Bienvenido a tomboy-ng!"
 #: tmainform.label6.caption
 msgid "Lets See if we are ready to go -"
 msgstr "Vamos a ver si todo está listo."
+
+#: tmainform.labelbadnoteadvice.caption
+msgid "LabelBadNoteAdvice"
+msgstr ""
 
 #: tmainform.labelerror.caption
 msgctxt "tmainform.labelerror.caption"

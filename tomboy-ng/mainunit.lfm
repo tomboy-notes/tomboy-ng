@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 369
-  Height = 376
+  Left = 147
+  Height = 335
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 321
+  Top = 334
   Width = 459
   Caption = 'tomboy-ng'
-  ClientHeight = 376
+  ClientHeight = 335
   ClientWidth = 459
   OnClose = FormClose
   OnCreate = FormCreate
@@ -154,7 +154,6 @@ object MainForm: TMainForm
     Width = 45
     BorderSpacing.Left = 2
     Caption = 'Hide'
-    Enabled = False
     OnClick = ButtonDismissClick
     ParentShowHint = False
     ShowHint = True
@@ -314,26 +313,6 @@ object MainForm: TMainForm
     Caption = 'Lets See if we are ready to go -'
     ParentColor = False
   end
-  object LabelNoDismiss1: TLabel
-    Left = 40
-    Height = 19
-    Top = 224
-    Width = 122
-    Caption = 'LabelNoDismiss1'
-    ParentColor = False
-    ParentShowHint = False
-    ShowHint = True
-  end
-  object LabelNoDismiss2: TLabel
-    Left = 40
-    Height = 19
-    Top = 256
-    Width = 122
-    Caption = 'LabelNoDismiss2'
-    ParentColor = False
-    ParentShowHint = False
-    ShowHint = True
-  end
   object LabelNotesFound: TLabel
     Left = 56
     Height = 19
@@ -346,7 +325,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 19
     Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
-    Top = 328
+    Top = 264
     Width = 11
     Caption = 'X'
     Font.Height = -16
@@ -361,7 +340,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 23
     Hint = 'You can reverse this from Settings'
-    Top = 296
+    Top = 224
     Width = 240
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
@@ -476,6 +455,14 @@ object MainForm: TMainForm
     Caption = 'Quit'
     OnClick = ButtonCloseClick
     TabOrder = 3
+  end
+  object LabelBadNoteAdvice: TLabel
+    Left = 8
+    Height = 19
+    Top = 296
+    Width = 149
+    Caption = 'LabelBadNoteAdvice'
+    ParentColor = False
   end
   object TrayIcon: TTrayIcon
     Icon.Data = {

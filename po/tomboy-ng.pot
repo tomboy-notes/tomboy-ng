@@ -91,14 +91,6 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
-#: mainunit.rsbadnotesfound1
-msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
-msgstr ""
-
-#: mainunit.rsbadnotesfound2
-msgid "You should do so to ensure your notes are safe."
-msgstr ""
-
 #: mainunit.rscannotdismiss1
 msgid "Sadly, because of a Bad Note,"
 msgstr ""
@@ -113,14 +105,6 @@ msgstr ""
 
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
-msgstr ""
-
-#: mainunit.rsfound
-msgid "Found"
-msgstr ""
-
-#: mainunit.rsnotes
-msgid "notes"
 msgstr ""
 
 #: recover.rsallrestored
@@ -196,6 +180,16 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr ""
 
+#: resourcestr.rsbadnotesfound1
+msgctxt "resourcestr.rsbadnotesfound1"
+msgid "Bad notes found, goto Settings -> Snapshot -> Recover ...."
+msgstr ""
+
+#: resourcestr.rsbadnotesfound2
+msgctxt "resourcestr.rsbadnotesfound2"
+msgid "You should do so to ensure your notes are safe."
+msgstr ""
+
 #: resourcestr.rscannotdelete
 msgctxt "resourcestr.rscannotdelete"
 msgid "Cannot delete "
@@ -235,6 +229,11 @@ msgstr ""
 
 #: resourcestr.rsfilesyncinfo2
 msgid "or connect to a remote server over the internet with sshfs"
+msgstr ""
+
+#: resourcestr.rsfound
+msgctxt "resourcestr.rsfound"
+msgid "Found"
 msgstr ""
 
 #: resourcestr.rshelpconfig
@@ -376,6 +375,11 @@ msgstr ""
 #: resourcestr.rsnoteopen
 msgctxt "resourcestr.rsnoteopen"
 msgid "You have that note open, please close and try again"
+msgstr ""
+
+#: resourcestr.rsnotes
+msgctxt "resourcestr.rsnotes"
+msgid "notes"
 msgstr ""
 
 #: resourcestr.rsnotesdeleted
@@ -1267,6 +1271,10 @@ msgstr ""
 
 #: tmainform.label6.caption
 msgid "Lets See if we are ready to go -"
+msgstr ""
+
+#: tmainform.labelbadnoteadvice.caption
+msgid "LabelBadNoteAdvice"
 msgstr ""
 
 #: tmainform.labelerror.caption

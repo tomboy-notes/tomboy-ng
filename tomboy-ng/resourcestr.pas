@@ -103,6 +103,14 @@ RESOURCESTRING
     rsHelpSaveExit = 'After import single note, save & exit';
 
 
+    // Mainunit
+
+  rsBadNotesFound1 = 'Bad notes found, goto Settings -> Snapshot -> Recover ....';
+  rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
+  rsFound = 'Found';
+  rsNotes = 'notes';
+
+
 implementation
 
 end.
