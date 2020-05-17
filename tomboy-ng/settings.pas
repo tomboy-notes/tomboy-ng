@@ -477,16 +477,6 @@ begin
 	           end else
 	               ValidSync := rsSyncNotConfig;
 	        end;
-	{end else begin      // Assuming if its not FileSync, must be .....
-        // ToDo : as mentioned above, must warn user if they are changing an existing sync.
-            if((LabelNCSyncURL.Caption = rsSyncNotConfig) or (length(LabelNCSyncURL.Caption)<5))
-                        then FormNCSetup.URL.Text   :=  'https://yourcloudserver/index.php/apps/grauphel'
-                        else FormNCSetup.URL.Text   :=  LabelNCSyncURL.Caption;
-            FormNCSetup.oauth := OAuth;
-            if(FormNCSetup.ShowModal = mrOK ) then begin
-                    SettingsChanged();
-            end;
-	end};
 end;
 
 {procedure TSett.RadioFileSyncChange(Sender: TObject);
