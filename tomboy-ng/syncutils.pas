@@ -17,7 +17,7 @@ unit syncutils;
 interface
 
 uses
-    Classes, SysUtils, dateutils, {$ifdef LCL}LazLogger{$endif};
+    Classes, SysUtils, dateutils, LazLogger;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
 		        SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes

@@ -15,7 +15,7 @@ uses
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroid, markdown,
     Index, autostart, hunspell, sync, syncutils, transandroid, helpnotes,
-    ResourceStr, SyncError, colours, ncsetup, cli;
+    ResourceStr, SyncError, colours, cli;
 
 {$R *.res}
 
@@ -35,7 +35,6 @@ begin
         Application.CreateForm(TFormHelpNotes, FormHelpNotes);
         Application.CreateForm(TFormSyncError, FormSyncError);
         Application.CreateForm(TFormColours, FormColours);
-        Application.CreateForm(TFormNCSetup, FormNCSetup);
         // Application.CreateForm(TNoteBookPick, NoteBookPick);
         // Application.CreateForm(TFormSpell, FormSpell);
         // Application.CreateForm(TEditBoxForm, EditBoxForm);
