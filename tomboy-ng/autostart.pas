@@ -1,6 +1,8 @@
 unit autostart;
 {
     2019/05/24  Display strings all (?) moved to resourcestrings
+    2020/05/18  Windows binaries no longer have 32 or 64 as part of binary name
+
 }
 {$mode objfpc}{$H+}
 
@@ -92,7 +94,7 @@ begin
 end;
 
 constructor TAutoStartCtrl.Create(AppName: string; StartIt: boolean);
-{$ifdef WINDOWS}var CPU : string;{$endif}
+{{$ifdef WINDOWS}var CPU : string;{$endif} }
 begin
     inherited create;
     ErrorMessage := '';
@@ -102,11 +104,11 @@ begin
         LinkName := '/' + AppName + '.desktop';
     {$endif}
     {$ifdef WINDOWS}
-    CPU := {$i %FPCTARGETCPU%};
+    {CPU := {$i %FPCTARGETCPU%};
     if CPU = 'i386' then
         CPU := '32'
-    else CPU := '64';
-    TargetName := WindowsDirectory(CSIDL_PROGRAM_FILES) + '\' + AppName + '\' + AppName + CPU + '.exe';
+    else CPU := '64'; }
+    TargetName := WindowsDirectory(CSIDL_PROGRAM_FILES) + '\' + AppName + '\' + AppName + '.exe';
     LinkDestination := WindowsDirectory(CSIDL_STARTUP);
     LinkName := '\' + AppName + '.lnk';
     {$endif}
