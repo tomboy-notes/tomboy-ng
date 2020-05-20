@@ -8,7 +8,7 @@ object NoteBookPick: TNoteBookPick
   ClientHeight = 436
   ClientWidth = 579
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.1.0.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -100,9 +100,9 @@ object NoteBookPick: TNoteBookPick
     Height = 303
     Top = 72
     Width = 579
-    ActivePage = TabExisting
+    ActivePage = TabChangeName
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 3
     object TabExisting: TTabSheet
       Caption = 'Existing Note Books'

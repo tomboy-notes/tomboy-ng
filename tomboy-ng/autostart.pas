@@ -94,7 +94,7 @@ begin
 end;
 
 constructor TAutoStartCtrl.Create(AppName: string; StartIt: boolean);
-{{$ifdef WINDOWS}var CPU : string;{$endif} }
+(* {$ifdef WINDOWS}var CPU : string;{$endif} *)
 begin
     inherited create;
     ErrorMessage := '';
@@ -104,10 +104,10 @@ begin
         LinkName := '/' + AppName + '.desktop';
     {$endif}
     {$ifdef WINDOWS}
-    {CPU := {$i %FPCTARGETCPU%};
+    (* CPU := {$i %FPCTARGETCPU%};
     if CPU = 'i386' then
         CPU := '32'
-    else CPU := '64'; }
+    else CPU := '64'; } *)
     TargetName := WindowsDirectory(CSIDL_PROGRAM_FILES) + '\' + AppName + '\' + AppName + '.exe';
     LinkDestination := WindowsDirectory(CSIDL_STARTUP);
     LinkName := '\' + AppName + '.lnk';

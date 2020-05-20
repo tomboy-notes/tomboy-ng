@@ -159,6 +159,7 @@ type
 
 
 
+
     		                    { Returns True if indicated note contains term in its content }
    	//function NoteContains(const TermList: TStringList; FileName: ANSIString         ): boolean;
 
@@ -218,10 +219,14 @@ type
                                           its Tags and that will be added to strlist. The StartHere template won't have a Notebook
                                           Name and therefore wont get mixed up here ???? }
     function GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
+                                        { Loads the Notebook ListBox up with the Notebook names we know about. Add a bool to indicate
+                                          we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
+                                          GetNotes(Term) }
+    procedure LoadStGridNotebooks(const NotebookItems: TStrings; SearchListOnly: boolean);
                                         { Loads the Notebook StringGrid up with the Notebook names we know about. Add a bool to indicate
                                           we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
                                           GetNotes(Term) }
-	procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid; SearchListOnly: boolean);
+    //procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid; SearchListOnly: boolean);
                                         { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
     		                            { Read the metadata from all the notes into internal data structure,
@@ -550,23 +555,6 @@ begin
         			NoteList.Items[Index]^.LastChange]);
 		end;
 	end;
-    {
-  	Grid.Clear;
-    //Grid.Clean;
-    Grid.FixedRows := 0;
-    Grid.InsertRowWithValues(0, ['Title', 'Last Change', 'Create Date', 'File Name']);
-    Grid.FixedRows := 1;
-    // Scan the main list of notes looking for ones in this Notebook.
-    Index := NoteList.Count;     // start at end of list to save sorting
-    while Index > 0 do begin
-        dec(Index);
-        if NotebookList.IDinNotebook(NoteList.Items[Index]^.ID, NoteBookName) then begin
-        	Grid.InsertRowWithValues(Grid.RowCount, [NoteList.Items[Index]^.Title,
-        			NoteList.Items[Index]^.LastChange, NoteList.Items[Index]^.CreateDate,
-            		NoteList.Items[Index]^.ID]);
-		end;
-	end;
-    Grid.AutoSizeColumns;  }
 end;
 
 function TNoteLister.NotebookTemplateID(const NotebookName: ANSIString): AnsiString;
@@ -582,6 +570,12 @@ begin
 		end;
 	end;
     debugln('ERROR - asked for the template for a non existing Notebook');
+    debugln('NotebookName = ' + Notebookname);
+    for Index := 0 to NotebookList.Count - 1 do begin
+        if NotebookName = NotebookList.Items[Index]^.Name then
+            debugln('Match [' + NotebookList.Items[Index]^.Name + ']')
+        else debugln('NO - Match [' + NotebookList.Items[Index]^.Name + ']')
+	end;
     Result := '';
 end;
 
@@ -633,7 +627,8 @@ begin
             end;
 end;
 
-procedure TNoteLister.LoadStGridNotebooks(const NotebookGrid : TStringGrid; SearchListOnly : boolean);
+
+{ procedure TNoteLister.LoadStGridNotebooks(const NotebookGrid : TStringGrid; SearchListOnly : boolean);
 var
     Index : integer;
 
@@ -658,7 +653,36 @@ begin
             NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
         end;
 	end;
+end;        }
+
+procedure TNoteLister.LoadStGridNotebooks(const NotebookItems : TStrings; SearchListOnly : boolean);
+var
+    Index : integer;
+
+    function FindInSearchList(NB : PNoteBook) : boolean;
+    var  X : integer = 0;
+    begin
+        result := true;
+        if Nil = SearchNoteList then
+            exit;
+        while X < NB^.Notes.Count do begin
+            if Nil <> SearchNoteList.FindID(NB^.Notes[X]) then
+                exit;
+            inc(X);
+        end;
+        result := false;
+    end;
+
+begin
+    NoteBookItems.Clear;
+    for Index := 0 to NotebookList.Count - 1 do begin
+        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then begin
+            NotebookItems.Add(NotebookList.Items[Index]^.Name);
+            //NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
+        end;
+	end;
 end;
+
 
 function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
 var

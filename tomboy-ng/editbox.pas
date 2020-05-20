@@ -589,7 +589,7 @@ procedure TEditBoxForm.BulletControl(const Toggle, TurnOn : boolean);
 var
       BlockNo : longint = 1;
       LastBlock,  Blar : longint;
-      BulletOn : boolean;
+      BulletOn : boolean = false;
       FirstPass : boolean = True;
 begin
     if not Toggle then begin    // We'll set it all to TurnOn
@@ -1767,7 +1767,7 @@ end;
 
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
-    Searchterm : ANSIstring;
+    Searchterm : ANSIstring = '';
     Len, httpLen : longint;
 //    Tick, Tock : qword;
     pText : pchar;
@@ -1790,6 +1790,8 @@ begin
     if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
         CheckForHTTP(PText, StartScan, httpLen);
     if Sett.ShowIntLinks then
+        // ToDo : FPC320 flags SearchTerm as potentially uninitialises after following line, FPC304 does not.
+        // easily suppressed by setting it to '' at start but why ?
         while SearchForm.NextNoteTitle(SearchTerm) do
             if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
                 MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);

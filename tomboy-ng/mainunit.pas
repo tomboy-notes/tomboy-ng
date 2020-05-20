@@ -549,7 +549,7 @@ end;
 procedure TMainForm.TestDarkThemeInUse();
 var
   Col : string;
-    {$ifdef WINDOWS}  function WinDarkTheme : boolean;
+    {$ifdef WINDOWS}  function WinDarkTheme : boolean;   // we also need to test in High Contrast mode, its not a colour theme.
     var
         RegValue : integer;
         Registry : TRegistry;

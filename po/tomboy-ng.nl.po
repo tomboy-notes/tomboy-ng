@@ -12,36 +12,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 19.11.70\n"
 
-#: backupview.rscopyfailed
-msgctxt "backupview.rscopyfailed"
-msgid "Copying orig to Backup directory failed"
-msgstr "Kan origineel niet kopiëren naar back-upmap"
-
-#: backupview.rsnotealreadyinrepo
-msgctxt "backupview.rsnotealreadyinrepo"
-msgid "Note already in Repo"
-msgstr "Deze notitie bestaat al"
-
-#: backupview.rsnoteopen
-msgctxt "backupview.rsnoteopen"
-msgid "You have that note open, please close and try again"
-msgstr "Deze notitie is geopend. Sluit hem en probeer het opnieuw."
-
-#: backupview.rsoverwritenote
-msgctxt "backupview.rsoverwritenote"
-msgid "Overwrite newer version of that note"
-msgstr "Nieuwere versie overschrijven"
-
-#: backupview.rsrecoverok
-msgctxt "backupview.rsrecoverok"
-msgid "OK, File recovered. You may need to do a Refresh (or restart)"
-msgstr "Het bestand is hersteld. Je moet mogelijk verversen (of de app sluiten en weer openen)."
-
-#: backupview.rsrenamefailed
-msgctxt "backupview.rsrenamefailed"
-msgid "ERROR, could not rename Backup File "
-msgstr "FOUT: kan naam van back-upbestand niet wijzigen"
-
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
 msgstr "Geen te evalueren expressie aangetroffen"
@@ -1546,6 +1516,11 @@ msgstr "Nieuwe notitie maken op basis van sjabloon"
 
 #: tsearchform.menurenamenotebook.caption
 msgid "Rename Note Book"
+msgstr ""
+
+#: tsearchform.panel2.caption
+msgctxt "tsearchform.panel2.caption"
+msgid "Notebooks"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption

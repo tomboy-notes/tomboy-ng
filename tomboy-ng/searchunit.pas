@@ -108,6 +108,7 @@ unit SearchUnit;
     2020/02/19  hilight selected notebook name.
     2020/03/09  Make sure 'x' (put in by a bug) is not a valid sync repo path.
     2020/05/10  Faster search
+    2020/05/19  Replaced StringGridNotebook with a ListBox
 }
 
 {$mode objfpc}{$H+}
@@ -132,17 +133,18 @@ type        { TSearchForm }
 		ButtonRefresh: TButton;
         CheckCaseSensitive: TCheckBox;
         Edit1: TEdit;
+        ListBoxNotebooks: TListBox;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
         MenuRenameNoteBook: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
+        Panel2: TPanel;
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
 		Splitter1: TSplitter;
         StatusBar1: TStatusBar;
         StringGrid1: TStringGrid;
-		StringGridNotebooks: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         procedure ButtonMenuClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
@@ -157,21 +159,21 @@ type        { TSearchForm }
 		procedure FormDestroy(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure FormShow(Sender: TObject);
+        procedure ListBoxNotebooksClick(Sender: TObject);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuRenameNoteBookClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         procedure SpeedButton1Click(Sender: TObject);
         procedure StringGrid1Resize(Sender: TObject);
-		procedure StringGridNotebooksClick(Sender: TObject);
+		//procedure StringGridNotebooksClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
         // Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
         // other downloded note ID. Adjusts Note_Lister according and marks any
         // note that is currently open as read only.
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
-        procedure StringGridNotebooksPrepareCanvas(sender: TObject; aCol,
-            aRow: Integer; aState: TGridDrawState);
-        procedure StringGridNotebooksResize(Sender: TObject);
+        //procedure StringGridNotebooksPrepareCanvas(sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
+        //procedure StringGridNotebooksResize(Sender: TObject);
     private
         HelpNotes : TNoteLister;
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
@@ -288,6 +290,7 @@ begin
     end;
 end;
 
+(*
 procedure TSearchForm.StringGridNotebooksPrepareCanvas(sender: TObject; aCol,
     aRow: Integer; aState: TGridDrawState);
 begin
@@ -299,6 +302,7 @@ procedure TSearchForm.StringGridNotebooksResize(Sender: TObject);
 begin
     StringGridNotebooks.Columns[0].Width := StringGridNotebooks.width;
 end;
+*)
 
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
@@ -356,7 +360,8 @@ end;
 
 procedure TSearchForm.RefreshNotebooks();
 begin
-    NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
+    //NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
+    NoteLister.LoadStGridNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
 end;
 
     { As we no longer use the String Grid to provide a date sorted list of recent notes,
@@ -368,7 +373,8 @@ begin
     //T1 := gettickcount64();
     NoteLister.LoadStGrid(StringGrid1, 2);         // 4 to 8mS on Dell
     //T2 := gettickcount64();
-    NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS on Dell
+    //NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS on Dell
+    NoteLister.LoadStGridNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
     //T3 := gettickcount64();
     //debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
 end;
@@ -598,7 +604,7 @@ end;
 
 procedure TSearchForm.MenuHelpItems(AMenu : TPopupMenu);
 var
-  NoteTitle : string;
+  NoteTitle : string = '';
   Count : integer;
 
 begin
@@ -667,7 +673,8 @@ begin
         DoSearch()
     else begin
         if ButtonNotebookOptions.Enabled then begin
-            NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+            //NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+            NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
             if NB <> '' then
                 NoteLister.LoadNotebookGrid(StringGrid1, NB);
         end else RefreshStrGrids();
@@ -678,7 +685,7 @@ end;
 
 procedure TSearchForm.DoSearch();
 var
-    TS1, TS2, TS3, TS4 : qword;
+    TS1, {TS2, TS3,} TS4 : qword;
     Found : integer;
 begin
     if (Edit1.Text = '') then
@@ -687,10 +694,11 @@ begin
         ButtonClearFilters.Enabled := True;
         TS1:=gettickcount64();
         Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
-        TS2:=gettickcount64();
+        // TS2:=gettickcount64();
         NoteLister.LoadStGrid(StringGrid1, 2, True);
-        TS3:=gettickcount64();
-        NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
+        // TS3:=gettickcount64();
+        //NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
+        NoteLister.LoadStGridNotebooks(ListBoxNotebooks.Items, True);
         TS4:=gettickcount64();
         StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
         {StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
@@ -759,11 +767,14 @@ begin
     StringGrid1.Columns[1].Title.Caption := rsLastChange;
     StringGrid1.FixedRows:=1;
     StringGrid1.Columns[1].Width := self.Canvas.GetTextWidth(' 2020-01-31 14:36:00 ');
-    StringGridNotebooks.Clear;
-    StringGridNotebooks.FixedCols := 0;
-    StringGridNotebooks.Columns.Add;
-    StringGridNotebooks.Columns[0].Title.Caption := rsNotebooks;
-    StringGridNotebooks.FixedRows:=1;
+
+
+
+    //StringGridNotebooks.Clear;
+    //StringGridNotebooks.FixedCols := 0;
+    //StringGridNotebooks.Columns.Add;
+    //StringGridNotebooks.Columns[0].Title.Caption := rsNotebooks;
+    //StringGridNotebooks.FixedRows:=1;
 
 
     Edit1.Hint:=rsSearchHint;
@@ -805,24 +816,31 @@ begin
     Top := Placement + random(Placement * 2);
     // Edit1.Text:= 'Search';
     CheckCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
-    StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
-    {$ifdef windows}
-    StringGrid1.Color := clWhite;   // err ? once changed from clDefault, there is no going back ?                                            // linux apps know how to do this themselves
+    //StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
+
+
+    {$ifdef windows}  // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
+        ListBoxNotebooks.Color := Sett.BackGndColour;
+        ListBoxNoteBooks.Font.Color := Sett.TextColour;
+        Edit1.Color := Sett.BackGndColour;
+        Edit1.Font.Color := Sett.TextColour;
          color := Sett.HiColour;
          font.color := Sett.TextColour;
          ButtonNoteBookOptions.Color := Sett.HiColour;
          ButtonClearFilters.Color := Sett.HiColour;
          ButtonMenu.color := Sett.HiColour;
-         StringGrid1.Color := Sett.BackGndColour;
-         StringGrid1.Font.color := Sett.TextColour;
+         //StringGrid1.Color := Sett.BackGndColour;
+         //StringGrid1.Font.color := Sett.TextColour;
          stringGrid1.GridLineColor:= clnavy; //Sett.HiColour;
-         stringgridnotebooks.GridLineColor:= clnavy;
+         //stringgridnotebooks.GridLineColor:= clnavy;
          StringGrid1.FixedColor := Sett.HiColour;
-         StringGridNotebooks.FixedColor := Sett.HiColour;
+         //StringGridNotebooks.FixedColor := Sett.HiColour;
          ButtonRefresh.Color := Sett.HiColour;
          splitter1.Color:= clnavy;
     end;
+    StringGrid1.Color := ListBoxNoteBooks.Color;
+    StringGrid1.Font.color := ListBoxNotebooks.Font.Color;
     {$endif}
     {
     stringgrid has -
@@ -838,14 +856,16 @@ begin
     //stringgrid1.FocusColor:= clblue;
     //stringgrid1.Color := clwhite;
 
-    stringgridnotebooks.Font := stringgrid1.font;
-    stringgridnotebooks.FocusColor := stringgrid1.FocusColor;
-    stringgridnotebooks.color := stringgrid1.color;
-    stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
-    stringGridNotebooks.SelectedColor:= clGray;
+    //stringgridnotebooks.Font := stringgrid1.font;
+    //stringgridnotebooks.FocusColor := stringgrid1.FocusColor;
+    //stringgridnotebooks.color := stringgrid1.color;
+    //stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
+    //stringGridNotebooks.SelectedColor:= clGray;
     {$ifdef DARWIN}ButtonMenu.Refresh;{$endif}      // Cocoa issue
     RefreshStrGrids();
 end;
+
+
 
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);
 begin
@@ -881,9 +901,10 @@ begin
 end;
 
 function TSearchForm.MoveWindowHere(WTitle: string): boolean;
+{$ifdef LINUX}
 var
     AProcess: TProcess;
-    List : TStringList = nil;
+    List : TStringList = nil;    {$endif}
 begin
     Result := False;
     {$IFDEF LINUX}      // ToDo : Apparently, Windows now has something like Workspaces, implement .....
@@ -939,7 +960,8 @@ begin
     end;
     // if to here, we need open a new window. If Filename blank, its a new note
     if (NoteFileName = '') and (NoteTitle ='') and ButtonNoteBookOptions.Enabled then  // a new note with notebook selected.
-       TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+       //TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+        TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
 	EBox := TEditBoxForm.Create(Application);
     if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> 'Search') then
         // Looks like we have a search in progress, lets take user there when note opens.
@@ -985,11 +1007,11 @@ begin
         ButtonNotebookOptions.Enabled := False;
         ButtonClearFilters.Enabled := False;
         // ButtonClearFilters.color := clblack;
-        StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
+        //StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
         // UseList();
 
         //self.ButtonRefresh.enabled := False;
-        StringGridNoteBooks.Hint := '';
+        //StringGridNoteBooks.Hint := '';
         //StringGrid1.AutoSizeColumns;
         Edit1.Hint:=rsSearchHint;
         Edit1.Text := rsMenuSearch;
@@ -999,8 +1021,17 @@ begin
         Edit1.SelLength := length(Edit1.Text);
 end;
 
+procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
+begin
+    ButtonNotebookOptions.Enabled := True;
+    ButtonClearFilters.Enabled := True;
+    ButtonRefreshClick(self);
+    SelectedNoteBook := ListBoxNotebooks.ItemIndex;
+    //ListBoxNotebooks.Hint := 'Options for ?';
+    //StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+end;
 
-procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
+{procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
 begin
 
     ButtonNotebookOptions.Enabled := True;
@@ -1012,7 +1043,7 @@ begin
     ButtonRefreshClick(self);
     SelectedNoteBook := StringGridNotebooks.Row;
     StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
-end;
+end; }
 
 procedure TSearchForm.ButtonMenuClick(Sender: TObject);
 begin
@@ -1028,12 +1059,14 @@ procedure TSearchForm.MenuEditNotebookTemplateClick(Sender: TObject);
 var
     NotebookID : ANSIString;
 begin
-    NotebookID := NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+    //NotebookID := NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+    NotebookID := NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
     if NotebookID = '' then
-    	showmessage('Error, cannot open template for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
+    	//showmessage('Error, cannot open template for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
+        showmessage('Error, cannot open template for ' + ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])
     else
-    	OpenNote(StringGridNotebooks.Cells[0, StringGridNotebooks.Row] + ' Template',
-        		Sett.NoteDirectory + NotebookID);
+    	//OpenNote(StringGridNotebooks.Cells[0, StringGridNotebooks.Row] + ' Template', Sett.NoteDirectory + NotebookID);
+        OpenNote(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex] + ' Template', Sett.NoteDirectory + NotebookID);
 end;
 
 procedure TSearchForm.MenuRenameNoteBookClick(Sender: TObject);
@@ -1043,7 +1076,7 @@ begin
         NotebookPick := TNotebookPick.Create(Application);
         //NotebookPick.FullFileName := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
         try
-            NotebookPick.Title := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+            NotebookPick.Title := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex];
             NotebookPick.ChangeMode := True;
             NotebookPick.Top := Top;
             NotebookPick.Left := Left;
@@ -1057,16 +1090,16 @@ end;
 procedure TSearchForm.MenuDeleteNotebookClick(Sender: TObject);
 begin
     if IDYES = Application.MessageBox('Delete this Notebook',
-    			PChar(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]),
+    			PChar(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]),
        			MB_ICONQUESTION + MB_YESNO) then
-		DeleteNote(Sett.NoteDirectory + NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]));
+		DeleteNote(Sett.NoteDirectory + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]));
 end;
 
 procedure TSearchForm.MenuNewNoteFromTemplateClick(Sender: TObject);
 begin
     OpenNote('', Sett.NoteDirectory
-    		+ NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]),
-            StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
+    		+ NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]),
+            ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
 end;
 
 procedure TSearchForm.SpeedButton1Click(Sender: TObject);
