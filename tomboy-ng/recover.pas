@@ -30,6 +30,7 @@ unit recover;
     2018/11/05  Altered name of safety zip file
     2019/05/19  Display strings all (?) moved to resourcestrings
     2019/12/18  Allow user to move stringgrid colums and pin its bottom to form.
+    2020/05/19  Avoid var out of for loop problem in ButtonDeleteBadNotesClick() and TabSheetExistingShow()
 }
 
 
@@ -161,13 +162,16 @@ RESOURCESTRING
   rsDeletedDamaged_2 = 'damaged notes';
 
 procedure TFormRecover.ButtonDeleteBadNotesClick(Sender: TObject);
-var I : integer;
+var
+    I : integer = 1;
+    Cnt : integer = 0;
 begin
     for I := 1 to StringGrid1.RowCount-1 do begin     // includes header
         showmessage('Delete ' + StringGrid1.Cells[0, I]);
         DeleteFile(NoteDir + StringGrid1.Cells[0, I] + '.note');
+        inc(Cnt);
     end;
-    showmessage(rsDeletedDamaged_1 + ' ' + inttostr(I) + ' ' + rsDeletedDamaged_2 );
+    showmessage(rsDeletedDamaged_1 + ' ' + inttostr(CNT) + ' ' + rsDeletedDamaged_2 );
 end;
 
 procedure TFormRecover.ButtonRecoverSnapClick(Sender: TObject);
@@ -440,7 +444,7 @@ begin
         StringGrid1.InsertRowWithValues(I + 1, [copy(Msg, 1, Comma-1), copy(Msg, Comma+1, 200)]);
     end;
     StringGrid1.AutoSizeColumns;
-    if I > 0 then ButtonDeleteBadNotes.Enabled:= True;
+    if {I} SearchForm.NoteLister.ErrorNotes.Count > 0 then ButtonDeleteBadNotes.Enabled:= True;
 end;
 
 procedure TFormRecover.TabSheetIntroContextPopup(Sender: TObject;

@@ -1,5 +1,5 @@
 #!/bin/bash
-# copyright David Bannon, 2019, 2020, no license, use as you see fit.
+# copyright David Bannon, 2019, 2020, use as you see fit, but retain this statement.
 #
 # -------------------------------------------------------------
 # Do not run this script in the directory you found it in, it needs to be
@@ -11,19 +11,13 @@
 # and the easy (only?) way to get that is to download lazarus source but
 # you only need to build selected parts of it and don't need to activate 
 # the GUI. As a prerequisite (for tomboy-ng) you need svn, fpc, lazarus source
-# and kcontrols source. You might, for example -
-#
-# mkdir Pascal
-# cd Pascal
-# svn checkout https://svn.freepascal.org/svn/lazarus/branches/fixes_2_0     # almost 400meg !
-# wget https://github.com/kryslt/KControls/archive/master.zip ; mv master.zip kcontrols.zip ; unzip kcontrols.zip
-# wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip ; mv master.zip tomboy-ng.zip ; unzip tomboy-ng.zip
+# and kcontrols source. 
 #
 # And you are ready to go. Or you may wish to point the 'LAZ_FULL_DIR' to an existing
 # Lazarus install. It must find the lazbuild binary and Lazarus' LCL.
 #
 
-LAZ_VER="trunk"		# an alternative "branches/fixes_2"
+LAZ_VER="trunk"		# an alternative is "branches/fixes_2"
 CPU="x86_64"
 OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
@@ -39,7 +33,7 @@ LAZ_FULL_DIR="$PWD/Pascal/$LAZ_VER"
 
 K_DIR="$PWD/Pascal/KControls-master/packages/kcontrols"
 WIDGET="gtk2"
-COMPILER="/usr/bin/fpc"
+COMPILER="fpc"			# set an explicite path if you prefer.
 
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
@@ -48,24 +42,26 @@ GETFPC=NO
 GETKCONTROLS=NO
 GETTOMBOYNG=NO
 REFRESHTOMBOYNG=NO
-EXITNOW=NO
 
 function ShowHelp () {
     echo " "
     echo "Assumes FPC of some sort available and working."
-    echo "Will look for LCL and KControls where left from previous run unless set below" 
+    echo "Will look for LCL, KControls and tomboy-ng source where left from previous"
+    echo "run unless set below. Use an Existing install of Lazarus if available."
+    echo "David Bannon, May 2020" 
     echo "-h   print help message"
     echo "-L   get (and compile) Lazarus, big download !"
 #    echo "-F   get FPC - not implemented"
     echo "-K   get (and compile) KControls"
     echo "-T   download fresh tomboy-ng source"
     echo "-R   refresh existing tomboy-ng source, dont use with -T"
+    echo "-E   dir of Existing Lazarus install, eg where we find lazbuild"
     echo " "
-    EXITNOW=YES 
+    exit
 }
 
 
-while getopts ":hKFLTR" opt; do
+while getopts ":hKFLTRE:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -87,8 +83,23 @@ while getopts ":hKFLTR" opt; do
       GETTOMBOYNG=YES
       ;;
     R)
+      if [ "$GETTOMBOYNG" = "YES" ]; then
+	echo "You cannot use both -T and -R"
+	ShowHelp
+      fi
+      if [ ! -e "tomboy-ng.zip" ]; then
+	echo "no existing tomboy-ng.zip to refresh from, choose -T instead"
+	ShowHelp
+      fi
       REFRESHTOMBOYNG=YES
       ;;
+    E)
+	if [ "$GETLAZARUS" = "YES" ]; then
+		echo "You cannot use both -L and -E"
+		ShowHelp
+	fi
+	LAZ_FULL_DIR="$OPTARG"
+        ;;	
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -96,13 +107,31 @@ while getopts ":hKFLTR" opt; do
   esac
 done
 
-if [ "$EXITNOW" = "YES" ]; then exit; fi;
-
-echo "done with options"
 
 if [ ! -d "Pascal" ]; then
 	mkdir -p "Pascal"
 fi
+
+# OK, do we have a good FPC available ?
+FPCVERSION=$($COMPILER -iV)
+case $FPCVERSION in
+	3.0.4)
+		EXCLUDEMESSAGE=" -vm2005,5027 "
+	;;
+	3.2.0)
+		EXCLUDEMESSAGE=" -vm6058,2005,5027 "
+	;;
+	*)
+		echo "Compiler reported [$FPCVERSION]"
+		echo "Unclear about your compiler, maybe edit script to support new one, exiting ..."
+		exit
+	;;
+esac
+
+# 6058 - note about things not being inlined
+# 5027 - var not used
+# 2005 - level 2 comment
+
 
 # We assume we have FPC at this stage.
 if [ "$GETLAZARUS" = "YES" ]; then
@@ -128,53 +157,70 @@ else
 	if [ -a "$LAZ_FULL_DIR/lazbuild" ]; then 
 		echo "We have lazbuild"
 	else
+		echo "Maybe you need to use -L to get Lazarus (~400Meg) or"
+		echo "use -E to point to an existing Lazarus install."
 		echo "Do not have a lazbuild in "$LAZ_FULL_DIR", must exit"
-		exit
+		ShowHelp
 	fi
 fi
 
 
 # We assume by here we have both FPC and Lazbuild
-if [ "$GETKCONTROLS" = "YES" ]
-then
+if [ "$GETKCONTROLS" = "YES" ]; then
 	echo "OK, we will get KControls"
 	cd Pascal
-# --------------------------------------- TESTING MODE, don't download -----------
-	//wget https://github.com/kryslt/KControls/archive/master.zip
-	//mv master.zip kcontrols.zip
-
+	mv -f kcontrols.zip kcontrols.zip-old
+	wget https://github.com/kryslt/KControls/archive/master.zip
+	mv master.zip kcontrols.zip
 	rm -Rf KControls-master
-	unzip kcontrols.zip	
-	cd KControls-master/packages/kcontrols
-	"$LAZ_FULL_DIR/lazbuild"
-    	LAZBUILD="$LAZ_FULL_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
-    	echo "Laz build command is $LAZBUILD"
-    	$LAZBUILD
-    	rm -Rf "$TEMPCONFDIR"
-	if [ ! -d "lib" ]; then
-		echo "ERROR failed to build lazbuild, exiting..."
-		K_DIR=""
-		exit
-	else
-		K_DIR="$PWD"
-	fi
+	unzip kcontrols.zip
 	cd "$CURRENT_DIR"
+else
+	if [ ! -e Pascal/KControls-master/kmemo_readme.txt ]; then
+		echo "Not finding a KControls install, maybe you need -K"
+		echo "This script requires its own KControls install, exiting ...."
+		ShowHelp
+	fi
 fi
 
 
 
 
-echo "OK, we seem to have both Lazarus LCL and KControls available : "
-echo "K_DIR = $K_DIR"
-echo "Laz   = $LAZ_FULL_DIR"
+# We always rebuild KControls, we don't know if user has changed Lazarus
 
+cd Pascal/KControls-master/packages/kcontrols
+# "$LAZ_FULL_DIR/lazbuild"
+LAZBUILD="$LAZ_FULL_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
+echo "Laz build command is $LAZBUILD"
+$LAZBUILD
+rm -Rf "$TEMPCONFDIR"
+if [ ! -d "lib" ]; then
+	echo "ERROR failed to build KControls, exiting..."
+	K_DIR=""
+	exit
+else
+	K_DIR="$PWD"
+fi
+cd "$CURRENT_DIR"
+
+# Test to see if we find some evidence that we have a working KControls. 
 if [ ! -e "$K_DIR/lib/$CPU-$OS/kmemo.o" ]; then
+	echo "----------------------------------------------------------------"
 	echo "Looked for [$K_DIR/lib/$CPU-$OS/kmemo.o]"
-	echo "Nope, not finding kmemo, must exit"
+	echo "Not finding a functional KControls, exiting ...."
+	echo " "
 	exit
 fi
 
 
+echo "------------------------------------------------------"
+echo "OK, we seem to have both Lazarus LCL and KControls available : "
+echo "K_DIR = $K_DIR"
+echo "Lazarus   = $LAZ_FULL_DIR"
+echo "Refresh tomboy-ng source = $REFRESHTOMBOYNG"
+echo "Download a new copy of tomboy-ng = $GETTOMBOYNG"
+echo "Exclude Compiler Messages = $EXCLUDEMESSAGE"
+echo "-------------------------------------------------------"
 
 if [ "$GETTOMBOYNG" = "YES" ]; then
 	rm -Rf "$SOURCE_DIR"
@@ -183,24 +229,37 @@ if [ "$GETTOMBOYNG" = "YES" ]; then
 	unzip tomboy-ng.zip	
 fi
 
-echo "Refresh tomboy-ng source = $REFRESHTOMBOYNG"
 
 if [ "$REFRESHTOMBOYNG" = "YES" ]; then
 	echo "Will Refresh existing tomboy-ng source"
 	rm -Rf "$SOURCE_DIR"	
 	unzip tomboy-ng.zip
-fi		
+fi
+
+
+# Test to see if we find the tomboy-ng source. 
+if [ ! -e "$COMPILE_DIR/editbox.pas" ]; then
+	echo "----------------------------------------------------------------"
+	echo "Looked for [$COMPILE_DIR/editbox.pas]"
+	echo "Maybe you need -T to download src, or -R to refresh from a previous run"
+	echo "Not finding tomboy-ng source, exiting ...."
+	echo " "
+	ShowHelp
+fi
+
+		
 
 VERSION=`cat "$SOURCE_DIR/package/version"`
 
 # exit
 
-
+rm tomboy-ng
 cd $COMPILE_DIR
 
 # DEBUG options -O1,   (!) -CX, -g, -gl, -vewnhibq
 
-OPT1="-MObjFPC -Scghi -CX -Cg -O3 -XX -Xs -l -vewnibq -Fi$COMPILE_DIR/lib/$TARGET"
+# OPT1="-MObjFPC -Scghi -CX -Cg -O3 -XX -Xs -l -vewnibq -vm6058,2005,5027 -Fi$COMPILE_DIR/lib/$TARGET"
+OPT1="-MObjFPC -Scghi -CX -Cg -O3 -XX -Xs -l -vewnibq $EXCLUDEMESSAGE -Fi$COMPILE_DIR/lib/$TARGET"
 
 UNITS="$UNITS -Fu$K_DIR/lib/$TARGET"
 UNITS="$UNITS -Fu$LAZ_FULL_DIR/components/tdbf/lib/$TARGET/$WIDGET"
@@ -235,12 +294,23 @@ if [ -f "$PROJ" ]; then
     rm "$PROJ"
 fi
 
-echo "------------ Building tomboy-ng in $PWD ----------------"
+echo "----- Building tomboy-ng in $PWD -------"
 
-echo "OPTS2 - $OPTS2"
+# echo "OPTS2 - $OPTS2"
 
 RUNIT="$COMPILER $OPT1 $UNITS $OPT2 $DEFS $PROJ.lpr"
+# echo "--------------- COMPILE COMMAND ------------------------"
+# echo "$RUNIT"
+# echo "--------------------------------------------------------"
+
 TOMBOY_NG_VER="$VERSION" $RUNIT
-echo "OK, lets see how we got on "
-ls -l "$PROJ"
+
+if [ ! -e "$PROJ" ]; then
+	echo "ERROR - COMPILE FAILED"
+else
+	cp "$PROJ" "$CURRENT_DIR"/tomboy-ng
+	cd "$CURRENT_DIR"
+	echo "OK, lets see how we got on "
+	ls -l
+fi 
 

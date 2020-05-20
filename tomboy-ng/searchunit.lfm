@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 492
+  Left = 942
   Height = 401
-  Top = 325
+  Top = 99
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng_Search'
@@ -82,31 +82,6 @@ object SearchForm: TSearchForm
       Align = alNone
       Anchors = [akTop, akBottom]
     end
-    object StringGridNotebooks: TStringGrid
-      AnchorSideLeft.Control = Panel1
-      AnchorSideTop.Control = ButtonClearFilters
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Splitter1
-      AnchorSideBottom.Control = ButtonNotebookOptions
-      Left = 1
-      Height = 276
-      Top = 33
-      Width = 232
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      Color = clDefault
-      ColCount = 0
-      FixedCols = 0
-      FixedRows = 0
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goSmoothScroll, goRowHighlight]
-      ParentShowHint = False
-      RowCount = 0
-      ShowHint = True
-      TabOrder = 1
-      OnClick = StringGridNotebooksClick
-      OnKeyDown = FormKeyDown
-      OnPrepareCanvas = StringGridNotebooksPrepareCanvas
-      OnResize = StringGridNotebooksResize
-    end
     object ButtonClearFilters: TButton
       AnchorSideLeft.Control = Panel1
       AnchorSideTop.Control = Panel1
@@ -120,7 +95,7 @@ object SearchForm: TSearchForm
       Enabled = False
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
-      TabOrder = 2
+      TabOrder = 1
     end
     object ButtonNotebookOptions: TButton
       AnchorSideLeft.Control = Panel1
@@ -141,7 +116,7 @@ object SearchForm: TSearchForm
       OnKeyDown = FormKeyDown
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 3
+      TabOrder = 2
     end
     object StringGrid1: TStringGrid
       AnchorSideLeft.Control = Splitter1
@@ -167,10 +142,41 @@ object SearchForm: TSearchForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
       RowCount = 0
       ScrollBars = ssAutoVertical
-      TabOrder = 4
+      TabOrder = 3
       OnDblClick = StringGrid1DblClick
       OnKeyDown = FormKeyDown
       OnResize = StringGrid1Resize
+    end
+    object ListBoxNotebooks: TListBox
+      AnchorSideLeft.Control = ButtonClearFilters
+      AnchorSideTop.Control = Panel2
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Splitter1
+      AnchorSideBottom.Control = ButtonNotebookOptions
+      Left = 1
+      Height = 245
+      Top = 64
+      Width = 232
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      ExtendedSelect = False
+      ItemHeight = 0
+      OnClick = ListBoxNotebooksClick
+      ScrollWidth = 230
+      TabOrder = 4
+      TopIndex = -1
+    end
+    object Panel2: TPanel
+      AnchorSideLeft.Control = ButtonClearFilters
+      AnchorSideTop.Control = ButtonClearFilters
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Splitter1
+      Left = 1
+      Height = 31
+      Top = 33
+      Width = 232
+      Anchors = [akTop, akLeft, akRight]
+      Caption = 'Notebooks'
+      TabOrder = 5
     end
   end
   object ButtonMenu: TSpeedButton

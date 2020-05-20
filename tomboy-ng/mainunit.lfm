@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 147
+  Left = 88
   Height = 335
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 334
+  Top = 495
   Width = 459
   Caption = 'tomboy-ng'
   ClientHeight = 335

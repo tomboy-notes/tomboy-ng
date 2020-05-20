@@ -15,36 +15,6 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: backupview.rscopyfailed
-msgctxt "backupview.rscopyfailed"
-msgid "Copying orig to Backup directory failed"
-msgstr "No se copió al directorio de copias de seguridad"
-
-#: backupview.rsnotealreadyinrepo
-msgctxt "backupview.rsnotealreadyinrepo"
-msgid "Note already in Repo"
-msgstr "La nota ya está en el repositorio"
-
-#: backupview.rsnoteopen
-msgctxt "backupview.rsnoteopen"
-msgid "You have that note open, please close and try again"
-msgstr "La nota está abierta, por favor cerrarla y intentarlo de nuevo"
-
-#: backupview.rsoverwritenote
-msgctxt "backupview.rsoverwritenote"
-msgid "Overwrite newer version of that note"
-msgstr "Sobrescribir la versión más nueva de la nota"
-
-#: backupview.rsrecoverok
-msgctxt "backupview.rsrecoverok"
-msgid "OK, File recovered. You may need to do a Refresh (or restart)"
-msgstr "Archivo recuperado. Puede que tenga que actualizar (o reiniciar)."
-
-#: backupview.rsrenamefailed
-msgctxt "backupview.rsrenamefailed"
-msgid "ERROR, could not rename Backup File "
-msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad "
-
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para calcular"
@@ -1550,6 +1520,12 @@ msgstr "Crear nota nueva desde una plantilla"
 #: tsearchform.menurenamenotebook.caption
 msgid "Rename Note Book"
 msgstr "Renombrar cuaderno"
+
+#: tsearchform.panel2.caption
+#, fuzzy
+msgctxt "tsearchform.panel2.caption"
+msgid "Notebooks"
+msgstr "Cuadernos"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"

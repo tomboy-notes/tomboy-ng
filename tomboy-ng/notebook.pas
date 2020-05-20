@@ -41,6 +41,7 @@ unit Notebook;
     2019/05/18  Corrected alignment Label1 and 3
     2019/05/19  Display strings all (?) moved to resourcestrings
     2020/02/19  Dont escape new notebook title as sent to notelister.
+    2020/05/19  Dont go through ButtonOKOnClick if ModalResult is already set to mrOK
 }
 
 
@@ -148,11 +149,8 @@ begin
     PageControl1.ActivePage := TabChangeName;
     Label3.Caption := rsChangeNameofNotebook;
     Label7.Caption := Title;
-    if SearchForm.NoteLister.GetNotesInNoteBook(NBIDList, Title) then begin
-        for NoteID in NBIDList do
-            DebugLn('Notebook.pas #158 Note - '+ NoteID);
-    end else
-        debugln('Notebook.pas #160 No member notes found');
+    if not SearchForm.NoteLister.GetNotesInNoteBook(NBIDList, Title) then
+        debugln('ERROR - Notebook.pas #152 No member notes found');
     Label1.Caption := format(rsNumbNotesAffected, [NBIDList.Count]);
     EditNewNotebookName.SetFocus;
 end;
@@ -347,7 +345,7 @@ begin
     result := true;
     TemplateID := SearchForm.notelister.NotebookTemplateID(Title);
     if TemplateID = '' then begin
-        showmessage('Failed to ID Template [' + Title + ']');
+        showmessage('Failed to ID Template [' + Title + '] (' + NewName + ')');
         exit(false);
     end;
     SearchForm.NoteLister.AlterNotebook(Title, NewName);
@@ -359,6 +357,8 @@ begin
     // OK, now change template ......
     // debugln('template is ' + SearchForm.notelister.NotebookTemplateID(Title));
     RewriteTempate(TemplateID, RemoveBadXMLCharacters(NewName));
+    ModalResult := mrOK;
+    close;
 end;
 
 
@@ -368,6 +368,8 @@ var
         Index : Integer;
         Saver : TBSaveNote;
 begin
+    if ModalResult = mrOK then
+        exit;
     if PageControl1.ActivePage = TabExisting then begin
         SL := TStringList.Create;
         try
@@ -394,9 +396,10 @@ begin
             exit;
         end;
     if PageControl1.ActivePage = TabChangeName then
-            if EditNewNotebookName.Text <> '' then
+            if EditNewNotebookName.Text <> '' then begin
                 if not ChangeNoteBookName(EditNewNotebookName.Text) then exit;
-	ModalResult := mrOK;
+            end;
+    ModalResult := mrOK;
 end;
 
 end.

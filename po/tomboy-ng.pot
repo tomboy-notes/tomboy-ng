@@ -1,36 +1,6 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: backupview.rscopyfailed
-msgctxt "backupview.rscopyfailed"
-msgid "Copying orig to Backup directory failed"
-msgstr ""
-
-#: backupview.rsnotealreadyinrepo
-msgctxt "backupview.rsnotealreadyinrepo"
-msgid "Note already in Repo"
-msgstr ""
-
-#: backupview.rsnoteopen
-msgctxt "backupview.rsnoteopen"
-msgid "You have that note open, please close and try again"
-msgstr ""
-
-#: backupview.rsoverwritenote
-msgctxt "backupview.rsoverwritenote"
-msgid "Overwrite newer version of that note"
-msgstr ""
-
-#: backupview.rsrecoverok
-msgctxt "backupview.rsrecoverok"
-msgid "OK, File recovered. You may need to do a Refresh (or restart)"
-msgstr ""
-
-#: backupview.rsrenamefailed
-msgctxt "backupview.rsrenamefailed"
-msgid "ERROR, could not rename Backup File "
-msgstr ""
-
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
 msgstr ""
@@ -369,6 +339,7 @@ msgid "Note already in Repo"
 msgstr ""
 
 #: resourcestr.rsnotebooks
+msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
 msgstr ""
 
@@ -1455,6 +1426,11 @@ msgstr ""
 
 #: tsearchform.menurenamenotebook.caption
 msgid "Rename Note Book"
+msgstr ""
+
+#: tsearchform.panel2.caption
+msgctxt "tsearchform.panel2.caption"
+msgid "Notebooks"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption

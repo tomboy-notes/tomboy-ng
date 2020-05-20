@@ -455,8 +455,8 @@ begin
 end;
 
 procedure TSett.SpeedSetupSyncClick(Sender: TObject);
-var
-     TempSyncRepo : string;
+// var
+//     TempSyncRepo : string;
 begin
     {  ToDo : here we check if there is an existing local manifest and assume, incorrectly, that
        it must be associated with an existing FileSync. When we understand a bit more about
@@ -469,7 +469,7 @@ begin
 	           FormSync.NoteDirectory := NoteDirectory;
 	           FormSync.LocalConfig := LocalConfig;
 	           FormSync.SetupSync := True;
-	           TempSyncRepo := ValidSync;
+	           // TempSyncRepo := ValidSync;
                ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
 	           if mrOK = FormSync.ShowModal then begin
 	              SettingsChanged();
