@@ -538,6 +538,7 @@ var
     ID : string;
 begin
     Result := False;
+    NotesProcessed := 0;
     if AllNotes then ExportAll()
     else if NoteTitle <> '' then begin
         ID := IDfromTitle(NoteTitle);
