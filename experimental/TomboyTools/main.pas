@@ -8,7 +8,7 @@ interface
 
 uses
         Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls,
-		ExtCtrls, Buttons, StdCtrls, CheckLst;
+		ExtCtrls, Buttons, StdCtrls, CheckLst, LCLProc;
 
 type
 
@@ -16,6 +16,9 @@ type
 
         TFormMain = class(TForm)
 				CheckListBox1: TCheckListBox;
+                CheckListImportFiles: TCheckListBox;
+                ComboExportDest: TComboBox;
+                ComboSourceFormat: TComboBox;
 				ComboExportMode: TComboBox;
 				ComboExport: TComboBox;
 				ComboSource: TComboBox;
@@ -25,36 +28,55 @@ type
 				Label4: TLabel;
 				Label5: TLabel;
 				Label6: TLabel;
-                LabelVersion: TLabel;
+                Label7: TLabel;
+                Label8: TLabel;
+                LabelImportDestination: TLabel;
                 LabelErrorMessage: TLabel;
+                LabelImportSource: TLabel;
+                LabelVersion: TLabel;
 				LabelSourcePrompt: TLabel;
 				LabelSource: TLabel;
 				LabelDestinationPrompt: TLabel;
 				LabelDestination: TLabel;
 				PageControl1: TPageControl;
+                PanelLower: TPanel;
 				PanelTop: TPanel;
 				SelectDirectoryDialog1: TSelectDirectoryDialog;
-				SpeedExit: TSpeedButton;
-				SpeedProceed: TSpeedButton;
+                SpeedExit: TSpeedButton;
+                SpeedImportSourceDir: TSpeedButton;
+                SpeedProceed: TSpeedButton;
 				SpeedSetSource: TSpeedButton;
 				SpeedSetDestination: TSpeedButton;
 				StatusBar1: TStatusBar;
 				TabExport: TTabSheet;
 				TabImport: TTabSheet;
-				procedure CheckListBox1ItemClick(Sender: TObject; Index: integer);
+                procedure CheckListBox1Click(Sender: TObject);
+                procedure CheckListImportFilesClickCheck(Sender: TObject);
+                procedure ComboExportDestChange(Sender: TObject);
                 procedure ComboExportChange(Sender: TObject);
 				procedure ComboExportModeChange(Sender: TObject);
                 procedure ComboSourceChange(Sender: TObject);
+                procedure ComboSourceFormatChange(Sender: TObject);
+                procedure FormCreate(Sender: TObject);
                 procedure FormShow(Sender: TObject);
 				procedure SpeedExitClick(Sender: TObject);
+
 				procedure SpeedProceedClick(Sender: TObject);
     			procedure SpeedSetDestinationClick(Sender: TObject);
 				procedure SpeedSetSourceClick(Sender: TObject);
+                procedure SpeedImportSourceDirClick(Sender: TObject);
+                procedure TabExportShow(Sender: TObject);
+                procedure TabImportShow(Sender: TObject);
         private
+            procedure ImportProceed();
+            procedure ImportReadyToGo();
+            function NumberChecked(CLB: TCheckListBox): integer;
+            procedure ProcessDirectory;
+            procedure ProcessNotebooks;
 				procedure SetUpSource(Mode: integer);
 				procedure SetUpNoteBook();
 				function GetNoteBooks(): integer;
-				function ReadyToGo(): boolean;
+				function ExportReadyToGo(): boolean;
 				function SetExportSource(SDir: string): boolean;
 
         public
@@ -67,7 +89,7 @@ var
 
 implementation
 
-uses cmdline, FileUtil, LazFileUtils, ttutils, export_notes;
+uses cmdline, FileUtil, LazFileUtils, ttutils, export_notes, import_notes;
 
 const
 
@@ -105,7 +127,7 @@ begin
     CheckListBox1.enabled := false;
     if ComboExportMode.ItemIndex = cbBook then
            SetUpNoteBook();
-    ReadyToGo();
+    ExportReadyToGo();
 end;
 
 procedure TFormMain.SetUpNoteBook() ;
@@ -115,11 +137,11 @@ begin
         showmessage('That dir has not notes in notebooks');
 end;
 
-function TFormMain.ReadyToGo() : boolean;
+function TFormMain.ExportReadyToGo() : boolean;
 begin
     Result :=   (LabelSource.Caption <> '') and
                 (LabelDestination.Caption <> '') and
-                ( (ComboExportMode.ItemIndex <> cbBook) or (CheckListBox1.ItemIndex <> -1) )
+                ( (ComboExportMode.ItemIndex <> cbBook) or (NumberChecked(CheckListBox1) > 0))
                 ;
 
     SpeedProceed.Enabled := Result;
@@ -128,33 +150,22 @@ end;
 
 procedure TFormMain.FormShow(Sender: TObject);
 begin
-    LabelErrorMessage.Caption := '';
-    LabelDestination.caption := '';
-    SetUpSource(cbNG);   // will try NG first, then TB, then fall back to manual
-    ReadyToGo();
+    //CheckListBox1.AllowGrayed:=true;
+
 end;
 
-procedure TFormMain.SpeedExitClick(Sender: TObject);
-begin
-        close;
-end;
 
-procedure TFormMain.SpeedProceedClick(Sender: TObject);
+
+procedure TFormMain.ProcessDirectory;
 var
     Exporter : TExportNote;
 begin
-    StatusBar1.SimpleText:= 'processing notes, please wait ....';
-    LabelErrorMessage.Caption := '';
-    Application.ProcessMessages;
     Exporter := TExportNote.Create;
-    Exporter.DestDir := LabelDestination.Caption;
-    Exporter.NoteDir := LabelSource.caption;
-    Exporter.OutFormat := ComboExport.Text;
     try
-        case comboExportMode.itemIndex of
-            cbDirectory : Exporter.AllNotes := True;
-			cbBook : Exporter.Notebook := CheckListBox1.Items[CheckListBox1.ItemIndex];
-		end;
+        Exporter.DestDir := LabelDestination.Caption;
+        Exporter.NoteDir := LabelSource.caption;
+        Exporter.OutFormat := ComboExport.Text;
+        Exporter.AllNotes := True;
         Exporter.Execute();
         if Exporter.ErrorMessage <> '' then begin
             showmessage(Exporter.ErrorMessage);
@@ -164,23 +175,80 @@ begin
 	finally
         Exporter.Free;
 	end;
+
 end;
+
+procedure TFormMain.ProcessNotebooks;
+var
+    Exporter : TExportNote;
+    Index : integer = 0;
+    UsingChecked : boolean = false;
+    NotesProcessed : integer = 0;
+begin
+    while Index < CheckListBox1.Items.Count do begin
+        if CheckListBox1.Checked[Index] then begin
+            UsingChecked := True;
+            debugln('Checked [' + CheckListBox1.Items[Index] + ']');
+            break;
+        end;
+        inc(Index);
+    end;
+    Exporter := TExportNote.Create;
+    try
+        Exporter.DestDir := LabelDestination.Caption;
+        Exporter.NoteDir := LabelSource.caption;
+        Exporter.OutFormat := ComboExport.Text;
+
+            DebugLn('checked notebooks');
+            Index := 0;
+            while Index < CheckListBox1.Items.Count do begin
+                if CheckListBox1.Checked[Index] then begin
+                    debugln('Checked [' + CheckListBox1.Items[Index] + ']');
+                    Exporter.Notebook := CheckListBox1.Items[Index];
+                    Exporter.Execute();
+                    if Exporter.ErrorMessage <> '' then begin
+                        debugln(Exporter.ErrorMessage);
+                        showmessage(Exporter.ErrorMessage);
+                        LabelErrorMessage.Caption := Exporter.ErrorMessage;
+                    end else begin
+                        StatusBar1.SimpleText:=  CheckListBox1.items[Index] + ' '
+                                + inttostr(Exporter.NotesProcessed) + ' notes processed.';
+                        NotesProcessed := NotesProcessed + Exporter.NotesProcessed;
+                    end;
+                    Application.ProcessMessages;
+                end;
+                inc(Index);
+            end;
+            StatusBar1.SimpleText:=  'Total of '
+                    + inttostr(NotesProcessed) + ' notes processed.';
+	finally
+        Exporter.Free;
+	end;
+end;
+
+
+
 
 procedure TFormMain.ComboSourceChange(Sender: TObject);
 begin
         SetUpSource(ComboSource.ItemIndex);
-        ReadyToGo();
+        ExportReadyToGo();
 end;
+
+
 
 procedure TFormMain.ComboExportChange(Sender: TObject);
 begin
-    ReadyToGo();
+    ExportReadyToGo();
 end;
 
-procedure TFormMain.CheckListBox1ItemClick(Sender: TObject; Index: integer);
+procedure TFormMain.CheckListBox1Click(Sender: TObject);
 begin
-    ReadyToGo();
+    CheckListBox1.ItemIndex := -1;
+    ExportReadyToGo();
 end;
+
+
 
 procedure TFormMain.ComboExportModeChange(Sender: TObject);
 begin
@@ -188,7 +256,7 @@ begin
         cbDirectory : SetUpSource(cbNG);
         cbBook      : SetUpNoteBook();
 	end;
-    ReadyToGo();
+    ExportReadyToGo();
 end;
 
         // Tests indicated directory, sets LabelSouce and ret T if it finds notes there.
@@ -207,7 +275,7 @@ begin
 		    end;
      end;
     if SL <> nil then SL.Free;
-    ReadyToGo();
+    ExportReadyToGo();
 end;
 
                             // Loads all the notebooks found in current source dir into the TListBox
@@ -253,7 +321,10 @@ procedure TFormMain.SpeedSetDestinationClick(Sender: TObject);
 begin
     if SelectDirectoryDialog1.Execute then
             LabelDestination.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-    ReadyToGo();
+    if DirectoryIsWritable(LabelDestination.Caption) then
+        ExportReadyToGo()
+    else
+        Showmessage('Cannot write to that dir' + #10 + LabelDestination.Caption);
 end;
 
 procedure TFormMain.SpeedSetSourceClick(Sender: TObject);
@@ -263,10 +334,170 @@ begin
         if  ComboExportMode.ItemIndex = cbBook then
             SetUpNoteBook();
 	end;
-
-    ReadyToGo();
+    ExportReadyToGo();
 end;
 
+procedure TFormMain.TabExportShow(Sender: TObject);
+begin
+    StatusBar1.SimpleText:= '';
+    LabelErrorMessage.Caption := '';
+    SetUpSource(cbNG);   // will try NG first, then TB, then fall back to manual
+    ExportReadyToGo();
+end;
+
+
+
+// -------------------------- S H A R E D -------------------------------------
+
+
+RESOURCESTRING
+rsTomboyngDefault = 'tomboy-ng default';
+rsTomboyDefault   = 'Tomboy Default';
+rsLetMeChoose     = 'Let Me Choose';
+rsDirOfNotes      = 'A Directory of Notes';
+rsNotesInNotebook = 'Notes in a Notebook';
+rsPlainText       = 'Plain Text';
+rsMarkDown        = 'Mark Down (git style)';
+
+
+
+
+procedure TFormMain.FormCreate(Sender: TObject);
+begin
+    LabelImportSource.Caption := '';
+    LabelImportDestination.Caption := '';
+    LabelErrorMessage.Caption := '';
+    LabelDestination.caption := '';
+    ComboExportMode.Items.add(rsDirOfNotes);
+    ComboExportMode.Items.add(rsNotesInNoteBook);
+    ComboExportDest.Items.add(rsTomboyngDefault);
+    ComboExportDest.Items.add(rsTomboyDefault);
+    ComboExportDest.Items.add(rsLetMeChoose);
+    ComboSourceFormat.Items.Add(rsPlainText);
+    ComboSourceFormat.Items.Add(rsMarkDown);
+end;
+
+procedure TFormMain.SpeedExitClick(Sender: TObject);
+begin
+    close;
+end;
+
+function TFormMain.NumberChecked(CLB : TCheckListBox) : integer;
+var
+    Index : integer = 0;
+begin
+    result := 0;
+    while Index < CLB.Count do begin
+        if CLB.Checked[Index] then
+            inc(Result);
+        inc(Index);
+    end;
+end;
+
+procedure TFormMain.SpeedProceedClick(Sender: TObject);
+{var
+    Exporter : TExportNote;  }
+begin
+    if PageControl1.ActivePage.TabIndex = 0 then begin      // Thats Export
+        StatusBar1.SimpleText:= 'processing notes, please wait ....';
+        LabelErrorMessage.Caption := '';
+        Application.ProcessMessages;
+        case comboExportMode.itemIndex of
+            cbDirectory : ProcessDirectory;
+		    cbBook      : ProcessNotebooks;
+	    end;
+    end else                                           // Unless we add more, that Import
+        ImportProceed();
+end;
+
+
+
+
+// -------------------------- I M P O R T ------------------------------------
+
+
+procedure TFormMain.ComboSourceFormatChange(Sender: TObject);
+begin
+    ImportReadyToGo();
+end;
+
+procedure TFormMain.CheckListImportFilesClickCheck(Sender: TObject);
+begin
+    ImportReadyToGo();
+end;
+
+procedure TFormMain.ComboExportDestChange(Sender: TObject);
+begin
+    if ComboExportDest.Items[ComboExportDest.ItemIndex] = rsTomboyngDefault then
+        LabelImportDestination.Caption := GetDefaultNoteDir()
+    else if ComboExportDest.Items[ComboExportDest.ItemIndex] = rsTomboyDefault then
+        LabelImportDestination.Caption := GetDefaultNoteDir(True)
+        else begin
+            if SelectDirectoryDialog1.Execute then
+                    LabelImportDestination.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+            if not DirectoryIsWritable(LabelImportDestination.Caption) then begin
+                Showmessage('Cannot write to that dir' + #10 + LabelImportDestination.Caption);
+                LabelImportDestination.Caption := ''
+            end;
+        end;
+    ImportReadyToGo();
+end;
+
+
+procedure TFormMain.ImportReadyToGo();
+begin
+    SpeedProceed.Enabled :=  ((NumberChecked(CheckListImportFiles) > 0)
+                                and (LabelImportSource.Caption <> '')
+                                and (LabelImportDestination.Caption <> '')
+                                and (ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsPlainText) );
+end;
+
+procedure TFormMain.ImportProceed();
+var
+    NameList : TStringList;
+    Import : TImportNotes;
+    Index : integer = 0;
+begin
+    if NumberChecked(CheckListImportFiles) > 0 then begin
+        try
+            NameList := TStringList.Create;
+            Import :=  TImportNotes.Create;
+            while Index < CheckListImportFiles.Count do begin
+                if CheckListImportFiles.Checked[Index] then
+                    NameList.Add(CheckListImportFiles.Items[Index]);
+                inc(Index);
+            end;
+            Import.ImportNames := NameList;
+            Import.DestinationDir:=LabelImportDestination.Caption;
+            StatusBar1.SimpleText:= inttostr(Import.Execute) + ' files imported';
+            LabelErrorMessage.Caption := Import.ErrorMsg;
+        finally
+            freeandnil(Import);
+            freeandnil(NameList);
+        end;
+    end else showmessage('No files selected');
+end;
+
+procedure TFormMain.SpeedImportSourceDirClick(Sender: TObject);
+var
+    SrcFiles : TstringList;
+begin
+    if SelectDirectoryDialog1.Execute then begin
+        CheckListImportFiles.Clear;
+        LabelImportSource.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+        SrcFiles := FindAllFiles(LabelImportSource.Caption, '*.txt;*.text;*.md', false);
+        CheckListImportFiles.items := SrcFiles;
+	end;
+    freeandnil(SrcFiles);
+    ImportReadyToGo();
+end;
+
+procedure TFormMain.TabImportShow(Sender: TObject);
+begin
+    StatusBar1.SimpleText:= '';
+    LabelErrorMessage.Caption := '';
+    ImportReadyToGo();
+end;
 
 
 end.

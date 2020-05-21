@@ -1,4 +1,5 @@
 unit cmdline;
+{ License - see tomboy-ng license information }
 
 {
     The function 'Finished' is called before any forms are created, if it decides
