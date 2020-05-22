@@ -17,11 +17,12 @@ type
         TFormMain = class(TForm)
 				CheckListBox1: TCheckListBox;
                 CheckListImportFiles: TCheckListBox;
-                ComboExportDest: TComboBox;
+                ComboImportDest: TComboBox;
                 ComboSourceFormat: TComboBox;
 				ComboExportMode: TComboBox;
 				ComboExport: TComboBox;
 				ComboSource: TComboBox;
+                GroupBox1: TGroupBox;
 				Label1: TLabel;
 				Label2: TLabel;
 				Label3: TLabel;
@@ -41,6 +42,8 @@ type
 				PageControl1: TPageControl;
                 PanelLower: TPanel;
 				PanelTop: TPanel;
+                RadioTitleFirstLine: TRadioButton;
+                RadioTitleFilename: TRadioButton;
 				SelectDirectoryDialog1: TSelectDirectoryDialog;
                 SpeedExit: TSpeedButton;
                 SpeedImportSourceDir: TSpeedButton;
@@ -52,7 +55,7 @@ type
 				TabImport: TTabSheet;
                 procedure CheckListBox1Click(Sender: TObject);
                 procedure CheckListImportFilesClickCheck(Sender: TObject);
-                procedure ComboExportDestChange(Sender: TObject);
+                procedure ComboImportDestChange(Sender: TObject);
                 procedure ComboExportChange(Sender: TObject);
 				procedure ComboExportModeChange(Sender: TObject);
                 procedure ComboSourceChange(Sender: TObject);
@@ -175,7 +178,6 @@ begin
 	finally
         Exporter.Free;
 	end;
-
 end;
 
 procedure TFormMain.ProcessNotebooks;
@@ -370,11 +372,13 @@ begin
     LabelDestination.caption := '';
     ComboExportMode.Items.add(rsDirOfNotes);
     ComboExportMode.Items.add(rsNotesInNoteBook);
-    ComboExportDest.Items.add(rsTomboyngDefault);
-    ComboExportDest.Items.add(rsTomboyDefault);
-    ComboExportDest.Items.add(rsLetMeChoose);
+    ComboImportDest.Items.add(rsTomboyngDefault);
+    ComboImportDest.Items.add(rsTomboyDefault);
+    ComboImportDest.Items.add(rsLetMeChoose);
+    ComboImportDest.ItemIndex := 0;
     ComboSourceFormat.Items.Add(rsPlainText);
     ComboSourceFormat.Items.Add(rsMarkDown);
+    ComboSourceFormat.ItemIndex:=1;
 end;
 
 procedure TFormMain.SpeedExitClick(Sender: TObject);
@@ -426,20 +430,20 @@ begin
     ImportReadyToGo();
 end;
 
-procedure TFormMain.ComboExportDestChange(Sender: TObject);
+procedure TFormMain.ComboImportDestChange(Sender: TObject);
 begin
-    if ComboExportDest.Items[ComboExportDest.ItemIndex] = rsTomboyngDefault then
+    if ComboImportDest.Items[ComboImportDest.ItemIndex] = rsTomboyngDefault then
         LabelImportDestination.Caption := GetDefaultNoteDir()
-    else if ComboExportDest.Items[ComboExportDest.ItemIndex] = rsTomboyDefault then
+    else if ComboImportDest.Items[ComboImportDest.ItemIndex] = rsTomboyDefault then
         LabelImportDestination.Caption := GetDefaultNoteDir(True)
         else begin
             if SelectDirectoryDialog1.Execute then
                     LabelImportDestination.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-            if not DirectoryIsWritable(LabelImportDestination.Caption) then begin
-                Showmessage('Cannot write to that dir' + #10 + LabelImportDestination.Caption);
-                LabelImportDestination.Caption := ''
-            end;
         end;
+    if not DirectoryIsWritable(LabelImportDestination.Caption) then begin
+        Showmessage('Cannot write to that dir' + #10 + LabelImportDestination.Caption);
+        LabelImportDestination.Caption := ''
+    end;
     ImportReadyToGo();
 end;
 
@@ -448,8 +452,7 @@ procedure TFormMain.ImportReadyToGo();
 begin
     SpeedProceed.Enabled :=  ((NumberChecked(CheckListImportFiles) > 0)
                                 and (LabelImportSource.Caption <> '')
-                                and (LabelImportDestination.Caption <> '')
-                                and (ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsPlainText) );
+                                and (LabelImportDestination.Caption <> ''));
 end;
 
 procedure TFormMain.ImportProceed();
@@ -468,7 +471,12 @@ begin
                 inc(Index);
             end;
             Import.ImportNames := NameList;
-            Import.DestinationDir:=LabelImportDestination.Caption;
+            Import.DestinationDir := LabelImportDestination.Caption;
+            Import.FirstLineTitle := RadioTitleFirstLine.Checked;
+            if ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsPlainText then
+                Import.Mode := 'plaintext'
+            else if ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsMarkDown then
+                Import.Mode := 'markdown';
             StatusBar1.SimpleText:= inttostr(Import.Execute) + ' files imported';
             LabelErrorMessage.Caption := Import.ErrorMsg;
         finally
