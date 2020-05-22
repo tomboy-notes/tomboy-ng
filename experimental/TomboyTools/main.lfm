@@ -1,7 +1,7 @@
 object FormMain: TFormMain
-  Left = 1273
+  Left = 705
   Height = 496
-  Top = 222
+  Top = 149
   Width = 731
   Caption = 'FormMain'
   ClientHeight = 496
@@ -126,7 +126,7 @@ object FormMain: TFormMain
       end
       object ComboExportMode: TComboBox
         Left = 32
-        Height = 29
+        Height = 33
         Top = 36
         Width = 271
         ItemHeight = 0
@@ -182,19 +182,19 @@ object FormMain: TFormMain
         Caption = 'Destination'
         ParentColor = False
       end
-      object ComboExportDest: TComboBox
+      object ComboImportDest: TComboBox
         Left = 32
-        Height = 29
+        Height = 33
         Top = 224
         Width = 310
         ItemHeight = 0
-        OnChange = ComboExportDestChange
+        OnChange = ComboImportDestChange
         Style = csDropDownList
         TabOrder = 0
       end
       object ComboSourceFormat: TComboBox
         Left = 32
-        Height = 29
+        Height = 33
         Top = 40
         Width = 310
         ItemHeight = 0
@@ -215,7 +215,7 @@ object FormMain: TFormMain
         AnchorSideRight.Control = TabImport
         AnchorSideRight.Side = asrBottom
         Left = 379
-        Height = 230
+        Height = 214
         Top = 10
         Width = 336
         Anchors = [akTop, akRight]
@@ -257,6 +257,34 @@ object FormMain: TFormMain
         Width = 168
         Caption = 'LabelImportDestination'
         ParentColor = False
+      end
+      object GroupBox1: TGroupBox
+        Left = 570
+        Height = 105
+        Top = 232
+        Width = 145
+        Caption = 'Title is : '
+        ClientHeight = 84
+        ClientWidth = 141
+        TabOrder = 3
+        object RadioTitleFirstLine: TRadioButton
+          Left = 8
+          Height = 23
+          Top = 8
+          Width = 90
+          Caption = 'First Line'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioTitleFilename: TRadioButton
+          Left = 8
+          Height = 23
+          Top = 40
+          Width = 90
+          Caption = 'Filename'
+          TabOrder = 1
+        end
       end
     end
   end
@@ -353,7 +381,7 @@ object FormMain: TFormMain
     end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 616
-    top = 360
+    left = 440
+    top = 344
   end
 end
