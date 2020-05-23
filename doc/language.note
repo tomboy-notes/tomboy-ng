@@ -20,7 +20,7 @@ Tomboy-ng should detect the local language settings of your computer and, if it 
 <bold>Help Notes Translations</bold></size:large>
 Tomboy-ng comes with a small set of notes on various help topics.  Translating these notes is quite separate from the application text so its not selected automatically, you can, if you choose, download a set in another language. To do so, go to Settings, Notes and click "Help Notes Language" - double click the required language and click "Revert" if you later decide to return to the English version.
 
-The download process is dependant on your operating system. Linux users will need a current version of OpenSSL, most likely you will be fine. Windows users need to have Powershell, that means it will not work with early versions of Windows such as 7. Mac user will have to install the wget package, typically using Brew, the command to do so is "brew install wget".  Brew will normally put a symlink to its wget in /usr/local/bin, if you install wget some other way, make sure there is a<monospace> /usr/local/bin/wget</monospace> present.<size:large>
+The download process is dependant on your operating system. Linux users will need a current version of OpenSSL, most likely you will be fine. Windows users will have openssl libraries installed along with tomboy-ng. Mac user will have to install the wget package, typically using Brew, the command to do so is "brew install wget".  Brew will normally put a symlink to its wget in /usr/local/bin, if you install wget some other way, make sure there is a<monospace> /usr/local/bin/wget</monospace> present.<size:large>
 
 <bold>New Translations</bold></size:large>
 You are very welcome to contribute either (or both) an Application Translation or translate the set of Help Notes. Very welcome ! 
@@ -33,15 +33,15 @@ You can either return the edited file via a Git pull request or, perhaps easier,
 Tomboy-ng is quite a young application and its still evolving quite rapidly. Sadly that means an existing translation needs updating sometimes. If you see something that needs attention, download the existing po file in your language, make your updates and send it back. <size:large>
 
 <bold>Help Notes</bold></size:large>
-Similar approaches apply to the help notes, they appear with a .note extension in the /doc directory. Be aware that not all notes in that directory and Help Notes, little point in translating ones that don't appear when you click 'Help' in main menu. If there is an existing translation, it will be XX_notes.zip where XX is your language code.
+Similar approaches apply to the help notes, they appear with a .note extension in the /doc directory. Be aware that not all notes in that directory are Help Notes, little point in translating ones that don't appear when you click 'Help' in main menu. If there is an existing translation, it will be XX_notes.zip where XX is your language code.
 
 Post an issue message on the git site or the tomboy mailing list if you need any help.
 
 
 
 </note-content></text>
-  <last-change-date>2020-02-03T17:40:07.3450000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-03T17:40:07.3450000+11:00</last-metadata-change-date>
+  <last-change-date>2020-05-22T23:17:06.8330000+10:00</last-change-date>
+  <last-metadata-change-date>2020-05-22T23:17:06.8330000+10:00</last-metadata-change-date>
   <create-date>2019-09-27T10:58:26.1860000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

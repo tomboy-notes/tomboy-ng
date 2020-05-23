@@ -208,6 +208,7 @@ unit EditBox;
     2020/04/01  Removed line that exited KMemo1KeyDown in readonly mode, prevented cursor keys working.
     2020/04/04  Fix for when SingleNoteMode is pointed to a zero length file.
     2020/05/12  Added Shift Click to select to click pos, #129
+    2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
 }
 
 
@@ -1381,8 +1382,10 @@ begin
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     {$ifdef LINUX}
+
     //{$DEFINE DEBUG_CLIPBOARD}
-    KMemo1.ExecuteCommand(ecPaste);         // this to deal with a "first copy" issue.
+    if self.SingleNoteFileName = '' then
+        KMemo1.ExecuteCommand(ecPaste);     // this to deal with a "first copy" issue.
                                             // note, in singlenotemode it triggers a GTK Assertion
     //{$UNDEF DEBUG_CLIPBOARD}
     {$endif}
@@ -1476,6 +1479,7 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
+    SingleNoteFileName := MainUnit.SingleNoteFileName();
     if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
     else SingleNoteMode := True;

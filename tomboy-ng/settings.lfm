@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 1216
+  Left = 703
   Height = 525
-  Top = 263
+  Top = 396
   Width = 630
   BorderIcons = []
   Caption = 'Form Caption'
