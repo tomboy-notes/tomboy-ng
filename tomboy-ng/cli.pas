@@ -129,11 +129,13 @@ begin
         exit(False);
      end;
     if HaveCMDParam() then
-        if SingleNoteName = '' then exit(False);  // thats an error, more than one parameter
+         if SingleNoteName = '' then
+            exit(False)                 // thats an error, more than one parameter
+         else exit(True);               // proceed in SNM
+    // Looks like a normal startup
     if AreWeClient() then exit(False);
     if Application.HasOption('delay-start') then    // ToDo : confirm it works, This to allow eg Enlightenment to decide its colours.
     sleep(2000);
-
     Result := true;
 end;
 

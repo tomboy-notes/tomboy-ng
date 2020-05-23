@@ -67,6 +67,7 @@ unit Mainunit;
     2020/04/12  Force sensible sizes for help notes.
     2020/04/28  Added randomize to create, need it for getlocaltime in settings.
     2020/05/16  Don't prevent closing of splash screen.
+    2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
 
     CommandLine Switches
 
@@ -247,7 +248,7 @@ begin
         try
             try
             EBox := TEditBoxForm.Create(Application);
-            EBox.SingleNoteFileName := SingleNoteFileName();    // Thats the global from CLI Unit, via a local helper function
+            //EBox.SingleNoteFileName := SingleNoteFileName();    // Thats the global from CLI Unit, via a local helper function
             EBox.NoteTitle:= '';
             EBox.NoteFileName := FullFileName;
             Ebox.TemplateIs := '';
@@ -342,9 +343,9 @@ begin
     Randomize;                                      // used by sett.getlocaltime()
     HelpList := Nil;
     UseTrayMenu := true;
-
-    if SingleNoteFileName = '' then
-        StartIPCServer();                     // Don't bother to check is we are client, cannot be if we are here.
+    if SingleNoteFileName() = '' then
+        StartIPCServer()                     // Don't bother to check if we are client, cannot be if we are here.
+    else UseTrayMenu := False;
     {$ifdef LCLCARBON}
     UseTrayMenu := false;
     {$endif}

@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng notes v0.28, April 2020</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng notes v0.28, April 2020</underline><size:small>
+  <title>tomboy-ng notes v0.29, June 2020</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng notes v0.29, June 2020</underline><size:small>
 
 Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
 Downloads and information for specific platforms further down the page.<size:huge>
 
 <bold>Release Notes</bold></size:huge>
-This release is really a bug fix one, mainly to address a problem that may affect users of the about to be released Ubuntu 20.04.  For the first time, its built using FPC320, still technically in beta but, I believe quite mature and providing a a couple of worthwhile stability improvements, particularly to Qt5 users. 
+ Nothing dramatic but the usual collection of minor improvements and bug fixes :
+Tweaks for dark mode users, particularly on Windows.
+Simplified splashscreen, more info about problems and easier to dismiss.
+Shift Click to select text - check kb shortcut doc
+Delete backup notes in bulk.
+Multithreaded search, faster for people with &gt; 1000 notes.
+Increase in entropy of lastchange date, useful in blind sync.
+Fix for problem with strikeout mixed with bullets, opening empty note in Single Note Mode.
+Fix for problems  autostart on Windows<size:huge>
 
-<list><list-item dir="ltr">Opening a Help Note no longer blocks other notes being opened. And the PageUp and PageDown keys now work with Help Notes as you would expect. </list-item></list>
-<list><list-item dir="ltr">Select your own note colour scheme. This applies only to the notes themselves, not to the other screens. </list-item></list>
-<list><list-item dir="ltr">Bug Fixes, eg better handling of bad date records, restore proper colour when clearing highlight, don't save a new, empty note. Non English help notes on Windows in 'correct' location. Winows users no longer need PowerShell to download non English help notes (tested on Vista to Win10).</list-item></list>
- <size:huge>
 <bold>Installation</bold></size:huge>
 
 tomboy-ng is available for Linux, Mac and Windows.<size:large>
@@ -102,15 +106,16 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 
+
 </note-content></text>
-  <last-change-date>2020-04-19T13:58:17.5570000+10:00</last-change-date>
-  <last-metadata-change-date>2020-04-19T13:58:17.5570000+10:00</last-metadata-change-date>
+  <last-change-date>2020-05-23T17:51:25.9360000+10:00</last-change-date>
+  <last-metadata-change-date>2020-05-23T17:51:25.9360000+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>211</x>
-  <y>194</y>
+  <x>562</x>
+  <y>353</y>
   <open-on-startup>False</open-on-startup>
 </note>
