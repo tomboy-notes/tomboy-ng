@@ -373,25 +373,38 @@ end;
 
 function TExportNote.RemoveNextTag(var St : String; out Tag : string) : integer;
 var
-    TStart, TEnd : integer;
+    TStart, TEnd, StartAt : integer;
 begin
-    Tag := '';
-    TStart := pos('<', St);
-    TEnd   := pos('>', St);
-    if (TStart > 0) and (TEnd > 0) and (TEnd > TStart) then begin
-        Tag := copy(St, TStart, TEnd - TStart +1);
-        delete(St, TStart, TEnd - TStart +1);
-        Result := TStart;
-	end
-	else Result := 0;
+    StartAt := 0;
+    repeat
+        Tag := '';
+        TStart := St.IndexOf('<', StartAt) + 1;
+        TEnd   := St.IndexOf('>', StartAt) + 1;
+        if (TStart > 0) and (TEnd > 0) and (TEnd > TStart) then begin
+            Tag := copy(St, TStart, TEnd - TStart +1);
+            if (Tag = '<sub>') or (Tag = '</sub>') then begin       // they are MD tags, may be more .....
+                StartAt := TEnd +1;
+                continue;
+            end;
+            delete(St, TStart, TEnd - TStart +1);
+            exit(TStart);
+	    end
+	    else exit(0);
+    until false;
 end;
+
+
+
+
+// ToDo : clarify highlight, can we, or can we not display highlight ??  It looks like git flavoured MD does not !
 
 procedure TExportNote.ProcessMarkUp(StL : TStringList);
 var
     BoldOn : boolean = false;
     ItalicOn : boolean = false;
+    MonoOn : boolean = false;
     //highlightOn : boolean = false;
-    //SmallOn : boolean = false;
+    SmallOn : boolean = false;
     StrikeOutOn : boolean = false;
     StIndex, ChIndex : integer;
     Tag, TempSt, NewTag : string;
@@ -405,6 +418,8 @@ begin
         if ItalicOn then TempSt := TempSt + '*';
         if BoldOn then TempSt := TempSt + '**';
         if StrikeoutOn then TempSt := TempSt + '~~';
+        if MonoOn then TempSt := TempSt + '`';
+        if SmallOn then TempSt := TempSt + '<sub>';
 
         TempSt := TempSt + StL.Strings[StIndex];
         TempSt := TempSt.Replace('<bold></bold>', '', [rfReplaceAll]);
@@ -414,14 +429,16 @@ begin
         repeat
             ChIndex := RemoveNextTag(TempSt, Tag);
             case Tag of
-                '<bold>' : begin NewTag := '**'; BoldOn := True; end;
-                '</bold>' : begin NewTag := '**'; BoldOn := False; end;
-                '<italic>' : begin NewTag := '*'; ItalicOn := True; end;
-                '</italic>' : begin NewTag := '*'; ItalicOn := False; end;
-                //'<highlight>' : begin NewTag := '=='; HighLightOn := True; end;
-				//'</highlight>' : begin NewTag := '==';  HighLightOn := False; end;
-                '<strikeout>'  : begin NewTag := '~~';  StrikeoutOn := True; end;
-                '</strikeout>'  : begin NewTag := '~~';  StrikeoutOn := False; End;
+                '<bold>' :        begin NewTag := '**';     BoldOn :=      True;  end;
+                '</bold>' :       begin NewTag := '**';     BoldOn :=      False; end;
+                '<italic>' :      begin NewTag := '*';      ItalicOn :=    True;  end;
+                '</italic>' :     begin NewTag := '*';      ItalicOn :=    False; end;
+                '<monospace>' :   begin NewTag := '`';      MonoOn :=      True;  end;
+				'</monospace>' :  begin NewTag := '`';      MonoOn :=      False; end;
+                '<size:small>' :  begin NewTag := '<sub>' ; SmallOn :=     True;  end;
+                '</size:small>' : begin NewTag := '</sub>'; SmallOn :=     False; end;
+                '<strikeout>'  :  begin NewTag := '~~';     StrikeoutOn := True;  end;               // Does strikeout belong here ??
+                '</strikeout>'  : begin NewTag := '~~';     StrikeoutOn := False; End;               // ''
 			else
                 NewTag := '';
             end;
@@ -431,6 +448,8 @@ begin
         if BoldOn then TempSt := TempSt + '**';
         if ItalicOn then TempSt := TempSt + '*';
         if StrikeoutOn then TempSt := TempSt + '~~';
+        if MonoOn then TempSt := TempSt + '`';
+        if SmallOn then TempSt := TempSt + '</sub>';
         StL.Insert(StIndex, TempSt);
         StL.Delete(StIndex + 1);
 	end;
