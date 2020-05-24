@@ -17,6 +17,9 @@ type
     private
         function ChangeBold(var St: string): boolean;
         function ChangeItalic(var St: string): boolean;
+        function ChangeSmallFont(var St: string): boolean;
+        function ChangeTag(var St: string; const ChangeFrom, ChangeToLead,
+            ChangeToTrail: string): boolean;
         function ImportFile(FullFileName: string): boolean;
         function MarkUpMarkDown(Cont: TStringList): boolean;
                             {  Returns the 1 based pos of the passed Tag, Leading says its a leading tag
@@ -72,12 +75,14 @@ end;
 {     Markdown Rules
 
 A line starting with a asterik and a space is a bullet.
-Bold text is wrapped in ** at either end.
-Italics is wrapped in * at either end
+Bold text is wrapped in ** at either end. Or __ (that is two underscores) at either end.
+Italics is wrapped in * at either end. Again, the underscore at either end will work as well.
 Highlight is wrapped in ~~ at either end,
+backticks, ` at either end will make code, use for monospace text.
 Stikeout is not supported.
-a line starting with ###  is a  bold, large line
-a line starting with ## is a bold, huge line
+a line starting with ###space  is a  bold, large line
+a line starting with ##space is a bold, huge line
+we ignore #space, have other ways of finding title.
 }
 
 
@@ -115,11 +120,22 @@ function TImportNotes.ChangeBold(var St : string)  : boolean;
 var
     PosStart, PosEnd : integer;
 begin
-    // like this **bold**
+    // like this **bold** or __bold__
     Result := False;
     PosStart := PosMDTag(St, '**', True);
     if (PosStart > 0) then begin
         PosEnd := PosMDTag(St, '**', False);
+        if (PosEnd > 0) then begin
+            delete(St, PosEnd, 2);
+            insert('</bold>', St, PosEnd);
+            delete(St, PosStart, 2);
+            insert('<bold>', St, PosStart);
+            result := True;
+        end;
+    end;
+    PosStart := PosMDTag(St, '__', True);
+    if (PosStart > 0) then begin
+        PosEnd := PosMDTag(St, '__', False);
         if (PosEnd > 0) then begin
             delete(St, PosEnd, 2);
             insert('</bold>', St, PosEnd);
@@ -134,7 +150,7 @@ function TImportNotes.ChangeItalic(var St : string)  : boolean;
 var
     PosStart, PosEnd : integer;
 begin
-    // like this *italic*
+    // like this *italic* or, confusingly, might be like _this_
     Result := False;
     PosStart := PosMDTag(St, '*', True);
     if (PosStart > 0) then begin
@@ -144,6 +160,58 @@ begin
             insert('</italic>', St, PosEnd);
             delete(St, PosStart, 1);
             insert('<italic>', St, PosStart);
+            result := True;
+        end;
+    end;
+    PosStart := PosMDTag(St, '_', True);
+    if (PosStart > 0) then begin
+        PosEnd := PosMDTag(St, '_', False);
+        if (PosEnd > 0) then begin
+            delete(St, PosEnd, 1);
+            insert('</italic>', St, PosEnd);
+            delete(St, PosStart, 1);
+            insert('<italic>', St, PosStart);
+            result := True;
+        end;
+    end;
+end;
+
+function TImportNotes.ChangeSmallFont(var St : string)  : boolean;
+var
+    PosStart, PosEnd : integer;
+begin
+    // MD looks like this <sub>small font</sub> but by time we get here, the angle brackets have been munged.
+    Result := False;
+    PosStart := PosMDTag(St, '&lt;sub&gt;', True);              // thats <sub>
+    if (PosStart > 0) then begin
+        PosEnd := PosMDTag(St, '&lt;/sub&gt;', False);          // and thats </sub>
+        if (PosEnd > 0) then begin
+            delete(St, PosEnd, 12);
+            insert('</size:small>', St, PosEnd);
+            delete(St, PosStart, 11);
+            insert('<size:small>', St, PosStart);
+            result := True;
+        end;
+    end;
+end;
+
+
+    // Changes any symertical MD tah to corresponding leading and trailing Tomboy tags
+function TImportNotes.ChangeTag(var St : string; const ChangeFrom, ChangeToLead, ChangeToTrail :  string)  : boolean;
+var
+    PosStart, PosEnd, FromLength : integer;
+begin
+
+    Result := False;
+    FromLength := length(ChangeFrom);
+    PosStart := PosMDTag(St, ChangeFrom, True);
+    if (PosStart > 0) then begin
+        PosEnd := PosMDTag(St, ChangeFrom, False);
+        if (PosEnd > 0) then begin
+            delete(St, PosEnd, FromLength);
+            insert(ChangeToTrail, St, PosEnd);
+            delete(St, PosStart, FromLength);
+            insert(ChangeToLead, St, PosStart);
             result := True;
         end;
     end;
@@ -180,13 +248,29 @@ begin
                 //<list><list-item dir="ltr">Line one</list-item></list>
                 St := '<list><list-item dir="ltr">' + St + '</list-item></list>';
             end;
-        while ChangeBold(St) do;
+{        while ChangeBold(St) do;
         while ChangeItalic(St) do;
+
+        while ChangeMono(St) do;
+        while ChangeSmallFont(St) do;     }
+
+        while ChangeTag(St, '**', '<bold>', '</bold>') do;
+        while ChangeTag(St, '__', '<bold>', '</bold>') do;
+        while ChangeTag(St, '*', '<italic>', '</italic>') do;
+        while ChangeTag(St, '_', '<italic>', '</italic>') do;
+        while ChangeTag(St, '`', '<monospace>', '</monospace>') do;
+        while ChangeTag(St, '~~', '<strikeout>', '</strikeout>') do;
+        while ChangeSmallFont(St) do;
         DebugLn('[' + St + ']');
         Cont.Strings[Index] := St;
         inc(Index);
     end;
 end;
+
+
+// ToDo : Monospaced becomes code, wrap with backtick. MD:  `Mono or code`  Tomboy:  <monospace>Mono or code</monospace>
+// ToDo : Small font, gets converted to sub script in version in tomboy-ng. So, mark down is
+//        wrap text in <sub>little text</sub>     and tomboy version is <size:small>little text</size:small>
 
 function TImportNotes.ImportFile(FullFileName: string): boolean;
 var
@@ -201,6 +285,11 @@ begin
             Content := TStringList.Create;
             Content.LoadFromFile(FullFileName);
             while Index < Content.Count do begin
+                {if Mode = 'markdown' then begin     // we need do this before angle brackets are munged.
+                    St :=  Content.Strings[Index];
+                    while ChangeSmallFont(St) do;
+                    Content.Strings[Index] := St;
+                end;}
                 Content.Strings[Index] := RemoveBadXMLCharacters(Content.Strings[Index]);
                 inc(Index);
             end;
