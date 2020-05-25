@@ -159,8 +159,20 @@ function DebianPackage () {
 		cp $SOURCE_DIR/tomboy-ng-qt BUILD/usr/bin/tomboy-ng
 		chmod 755 BUILD/usr/bin/tomboy-ng
 	fi
-    # -------------- Make control file
-
+	# -------------------- Documents -----------------
+	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
+	echo "  * Initial release" >> "$MANUALS_DIR"changelog
+	echo "-- $WHOAMI  $BUILDDATE" >> "$MANUALS_DIR"changelog
+	gzip -9n "$MANUALS_DIR"changelog
+        # See https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#file-syntax
+	echo "Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/" > BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Name: $PRODUCT" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Maintainer: $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Source: https://github.com/tomboy-notes/tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright	
+	echo "License: GPL-3.0-or-later" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	echo "Copyright: 2017-2019 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
+	chmod -R g-w BUILD
+    	# -------------------------------- Make control file -------------------------
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
 	if [ "$1" = "amd64Qt" ]; then
@@ -169,11 +181,15 @@ function DebianPackage () {
 		echo "Architecture: $1" >> BUILD/DEBIAN/control
 	fi
 	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
-	echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
+	# ------------------------------ Calculate size, thanks circular@LazForum
+	SIZE_IN_KB="$(du -s BUILD | awk '{print $1;}')"
+	echo "Installed size $SIZE_IN_KB"
+	echo "Installed-Size: ${SIZE_IN_KB}" >> "BUILD/DEBIAN/control"
+
+	# echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
 	if [ "$1" = "amd64Qt" ]; then
 		echo "Depends: libqt5pas1, libc6 (>= 2.14), wmctrl" >> BUILD/DEBIAN/control
 	else
-		# echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, appmenu-gtk2-module" >> BUILD/DEBIAN/control
 		echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl" >> BUILD/DEBIAN/control
 	fi
 	echo "Priority: optional" >> BUILD/DEBIAN/control
@@ -186,23 +202,7 @@ function DebianPackage () {
 	fi
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 
-	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
-	echo "  * Initial release" >> "$MANUALS_DIR"changelog
-	echo "-- $WHOAMI  $BUILDDATE" >> "$MANUALS_DIR"changelog
-	gzip -9n "$MANUALS_DIR"changelog
-
-    # See https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#file-syntax
-	echo "Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/" > BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Name: $PRODUCT" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Maintainer: $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Source: https://github.com/tomboy-notes/tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright	
-	echo "License: GPL-3.0-or-later" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Copyright: 2017-2019 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	chmod -R g-w BUILD
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
-	#if [ "$1" = "amd64Qt" ]; then
-	#	mv "$PRODUCT""_$VERSION-0_$1.deb" "$PRODUCT"_QT5_"$VERSION-0_$1.deb"
-	#fi
 }
 
 function WriteZipReadMe () {

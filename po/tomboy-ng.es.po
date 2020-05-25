@@ -176,7 +176,7 @@ msgstr "Todo terminado"
 #, fuzzy
 #| msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Bad notes found, goto Settings -> Snapshot -> Recover ...."
+msgid "Please go to Settings -> Snapshot -> Recover ...."
 msgstr "Notas inutilizables encontradas. Ir a Preferencias -> Instantánea -> Notas actuales."
 
 #: resourcestr.rsbadnotesfound2
@@ -1323,7 +1323,9 @@ msgstr "¡Bienvenido a tomboy-ng!"
 
 # ¿Revisar?
 #: tmainform.label6.caption
-msgid "Lets See if we are ready to go -"
+#, fuzzy
+#| msgid "Lets See if we are ready to go -"
+msgid "Lets see if we are ready to go -"
 msgstr "Vamos a ver si todo está listo."
 
 #: tmainform.labelbadnoteadvice.caption

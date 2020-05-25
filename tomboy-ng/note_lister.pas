@@ -64,6 +64,7 @@ unit Note_Lister;
     2020/04/01  Bug fix for code that auto fixes short last-change-date.
     2020/04/19  Missing $H+ caused  255 char default string, messed with RewriteBadChangeDate()
     2020/05/10  Multithreaded search
+    2020/05/25  Don't read sett.checkcasesensitive in thread.
 }
 
 {$mode objfpc}  {$H+}
@@ -286,6 +287,7 @@ Type   { ======================= SEARCH THREAD ========================== }
     protected
         procedure Execute; override;
     public
+        CaseSensitive : boolean;
         TIndex : integer;           // Zero based count of threads
         ThreadBlockSize : integer;  // how many files each thread processes
         ResultsList : TNoteList;    // List to contain details of what we found
@@ -295,7 +297,7 @@ Type   { ======================= SEARCH THREAD ========================== }
     end;
 
 
-function NoteContains(const TermList : TStringList; FullFileName: ANSIString): boolean;
+function NoteContains(const TermList : TStringList; FullFileName: ANSIString; const CaseSensitive : boolean): boolean;
 
 
 { ------------------------------------------------------------------- }
@@ -335,7 +337,7 @@ begin
     {if EndBlock := FileList.Count then
         debugln('Last Thread Endblock=' + dbgs(EndBlock)); }
     while (not Terminated) and (I < EndBlock) do begin
-        if Notecontains(Term_List, File_List.Strings[i]) then  begin
+        if Notecontains(Term_List, File_List.Strings[i], CaseSensitive) then  begin
             if not SearchForm.Notelister.IsATemplate(ExtractFileNameOnly(File_List.Strings[i])) then begin
                 new(NoteP);
                 NoteP^.ID:= ExtractFileNameOnly(File_List.Strings[i]) + '.note';
@@ -1001,7 +1003,7 @@ end;
 // Pass this function a TStringList each line of which must be matched for a 'hit'
 // Moved out of class so that the threaded search can find and use it.
 
-function NoteContains(const TermList : TStringList; FullFileName: ANSIString): boolean;
+function NoteContains(const TermList : TStringList; FullFileName: ANSIString; const CaseSensitive : boolean): boolean;
 var
     SLNote : TStringList;
     I, Index : integer;
@@ -1014,7 +1016,7 @@ begin
     for I := 0 to TermList.Count -1 do begin      // Iterate over search terms
         Result := False;
         for Index := 0 to SLNote.Count - 1 do begin // Check each line of note for a match against current word.
-            if  Sett.CheckCaseSensitive.Checked then begin
+            if  CaseSensitive then begin
                 if (UTF8Pos(TermList.Strings[I], SLNote.Strings[Index]) > 0) then begin
                     Result := True;
                     break;
@@ -1093,6 +1095,7 @@ begin
             SearchThread.File_List := FileList;
             SearchThread.ResultsList := SearchNoteList;
             SearchThread.TIndex := ThreadIndex;
+            SearchThread.CaseSensitive := Sett.CheckCaseSensitive.Checked;
             SearchThread.start();
             inc(ThreadIndex);
         end;
