@@ -152,7 +152,7 @@ msgstr ""
 
 #: resourcestr.rsbadnotesfound1
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Bad notes found, goto Settings -> Snapshot -> Recover ...."
+msgid "Please go to Settings -> Snapshot -> Recover ...."
 msgstr ""
 
 #: resourcestr.rsbadnotesfound2
@@ -1241,7 +1241,7 @@ msgid "Welcome to tomboy-ng !"
 msgstr ""
 
 #: tmainform.label6.caption
-msgid "Lets See if we are ready to go -"
+msgid "Lets see if we are ready to go -"
 msgstr ""
 
 #: tmainform.labelbadnoteadvice.caption

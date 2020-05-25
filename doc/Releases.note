@@ -14,7 +14,7 @@ Simplified splashscreen, more info about problems and easier to dismiss.
 Shift Click to select text - check kb shortcut doc
 Delete backup notes in bulk.
 Multithreaded search, faster for people with &gt; 1000 notes.
-Increase in entropy of lastchange date, useful in blind sync.
+Increase in entropy of lastchange date, useful in a blind sync.
 Fix for problem with strikeout mixed with bullets, opening empty note in Single Note Mode.
 Fix for problems  autostart on Windows<size:huge>
 
@@ -108,14 +108,14 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </note-content></text>
-  <last-change-date>2020-05-23T17:51:25.9360000+10:00</last-change-date>
-  <last-metadata-change-date>2020-05-23T17:51:25.9360000+10:00</last-metadata-change-date>
+  <last-change-date>2020-05-25T10:05:10.6280000+10:00</last-change-date>
+  <last-metadata-change-date>2020-05-25T10:05:10.6280000+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>562</x>
-  <y>353</y>
+  <x>944</x>
+  <y>299</y>
   <open-on-startup>False</open-on-startup>
 </note>

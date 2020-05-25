@@ -174,7 +174,7 @@ msgstr "Voltooid"
 #, fuzzy
 #| msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Bad notes found, goto Settings -> Snapshot -> Recover ...."
+msgid "Please go to Settings -> Snapshot -> Recover ...."
 msgstr "Onjuiste notities aangetroffen. Ga naar Instellingen --> Momentopnamen --> Bestaande notities."
 
 #: resourcestr.rsbadnotesfound2
@@ -1326,7 +1326,9 @@ msgid "Welcome to tomboy-ng !"
 msgstr "Welkom bij tomboy-ng!"
 
 #: tmainform.label6.caption
-msgid "Lets See if we are ready to go -"
+#, fuzzy
+#| msgid "Lets See if we are ready to go -"
+msgid "Lets see if we are ready to go -"
 msgstr "Eens zien of de toepassing klaar is voor gebruik"
 
 #: tmainform.labelbadnoteadvice.caption
