@@ -12,7 +12,8 @@
 <list><list-item dir="ltr">Control-3 : large font</list-item></list>
 <list><list-item dir="ltr">Control-4 : huge font</list-item></list>
 <list><list-item dir="ltr">Shift-RightArrow - extend selection one char to right</list-item></list>
-<list><list-item dir="ltr">Shift-LeftArrow - extend selection one char to left</list-item></list><size:large>
+<list><list-item dir="ltr">Shift-LeftArrow - extend selection one char to left</list-item></list>
+<list><list-item dir="ltr">Shift-Click : Select text between existing position and clicked position.</list-item></list><size:large>
 
 <bold>Windows / Linux</bold></size:large>
 <list><list-item dir="ltr">Control-Q : Quit tomboy-ng  - On Search, Settings and any Open Note</list-item></list>
@@ -67,8 +68,8 @@
 
 
 </note-content></text>
-  <last-change-date>2020-04-02T15:15:38.2560000+11:00</last-change-date>
-  <last-metadata-change-date>2020-04-02T15:15:38.2560000+11:00</last-metadata-change-date>
+  <last-change-date>2020-05-26T18:38:18.3386120+10:00</last-change-date>
+  <last-metadata-change-date>2020-05-26T18:38:18.3386120+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
