@@ -54,6 +54,7 @@ type
 				TabExport: TTabSheet;
 				TabImport: TTabSheet;
                 procedure CheckListBox1Click(Sender: TObject);
+                procedure CheckListImportFilesClick(Sender: TObject);
                 procedure CheckListImportFilesClickCheck(Sender: TObject);
                 procedure ComboImportDestChange(Sender: TObject);
                 procedure ComboExportChange(Sender: TObject);
@@ -248,6 +249,11 @@ procedure TFormMain.CheckListBox1Click(Sender: TObject);
 begin
     CheckListBox1.ItemIndex := -1;
     ExportReadyToGo();
+end;
+
+procedure TFormMain.CheckListImportFilesClick(Sender: TObject);
+begin
+    CheckListImportFiles.ItemIndex := -1;
 end;
 
 
