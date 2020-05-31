@@ -203,6 +203,8 @@ function DebianPackage () {
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
+	# ------ Clean up -----------
+	rm -Rf BUILD
 }
 
 function WriteZipReadMe () {
@@ -242,6 +244,8 @@ function DoGZipping {
 		#	mv "$GZIP_DIR".gz "$PRODUCT"_64_$VERSION.gz"
 		#fi
 		echo "made one gz file -----------------------"
+		# ---------- Clean Up --------------
+		rm -Rf "$GZIP_DIR"	
 	done;
 }
 
@@ -279,6 +283,7 @@ function MkWinPreInstaller() {
 	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$WIN_DIR/readme.txt"
 	unix2dos -q "$WIN_DIR/readme.txt"
 	echo "----------- Windows installer dir created -----------"
+	rm mo.insert
 	# ls -la "$WIN_DIR"
 }
 
