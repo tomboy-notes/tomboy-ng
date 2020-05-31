@@ -1,7 +1,7 @@
 object FormMain: TFormMain
-  Left = 705
+  Left = 905
   Height = 496
-  Top = 149
+  Top = 216
   Width = 731
   Caption = 'FormMain'
   ClientHeight = 496
@@ -20,50 +20,50 @@ object FormMain: TFormMain
     Height = 382
     Top = 50
     Width = 731
-    ActivePage = TabImport
+    ActivePage = TabExport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object TabExport: TTabSheet
       Caption = 'Export'
-      ClientHeight = 345
+      ClientHeight = 347
       ClientWidth = 725
       OnShow = TabExportShow
       object LabelSourcePrompt: TLabel
         Left = 22
-        Height = 19
+        Height = 17
         Top = 219
-        Width = 127
+        Width = 119
         Caption = 'Source Directory :'
         ParentColor = False
       end
       object LabelSource: TLabel
         Left = 23
-        Height = 19
+        Height = 17
         Top = 243
-        Width = 87
+        Width = 83
         Caption = 'LabelSource'
         ParentColor = False
       end
       object LabelDestinationPrompt: TLabel
         Left = 22
-        Height = 19
+        Height = 17
         Top = 288
-        Width = 90
+        Width = 85
         Caption = 'Destination :'
         ParentColor = False
       end
       object LabelDestination: TLabel
         Left = 22
-        Height = 19
+        Height = 17
         Top = 315
-        Width = 120
+        Width = 115
         Caption = 'LabelDestination'
         ParentColor = False
       end
       object ComboSource: TComboBox
         Left = 32
-        Height = 29
+        Height = 27
         Top = 100
         Width = 271
         ItemHeight = 0
@@ -78,15 +78,15 @@ object FormMain: TFormMain
       end
       object Label1: TLabel
         Left = 33
-        Height = 19
+        Height = 17
         Top = 80
-        Width = 57
+        Width = 53
         Caption = 'Source :'
         ParentColor = False
       end
       object ComboExport: TComboBox
         Left = 33
-        Height = 29
+        Height = 27
         Top = 164
         Width = 270
         ItemHeight = 0
@@ -102,9 +102,9 @@ object FormMain: TFormMain
       end
       object Label2: TLabel
         Left = 33
-        Height = 19
+        Height = 17
         Top = 140
-        Width = 77
+        Width = 73
         Caption = 'Export As :'
         ParentColor = False
       end
@@ -126,7 +126,7 @@ object FormMain: TFormMain
       end
       object ComboExportMode: TComboBox
         Left = 32
-        Height = 33
+        Height = 31
         Top = 36
         Width = 271
         ItemHeight = 0
@@ -136,9 +136,9 @@ object FormMain: TFormMain
       end
       object Label4: TLabel
         Left = 32
-        Height = 19
+        Height = 17
         Top = 16
-        Width = 92
+        Width = 88
         Caption = 'Export Mode'
         ParentColor = False
       end
@@ -153,38 +153,37 @@ object FormMain: TFormMain
         Anchors = [akTop, akRight]
         BorderSpacing.Top = 10
         BorderSpacing.Right = 10
-        ItemHeight = 19
+        ItemHeight = 0
         OnClick = CheckListBox1Click
         ParentFont = False
-        Style = lbOwnerDrawFixed
         TabOrder = 3
         TopIndex = -1
       end
       object LabelVersion: TLabel
         Left = 384
-        Height = 19
+        Height = 17
         Top = 352
-        Width = 89
+        Width = 82
         Caption = 'Version 0.02'
         ParentColor = False
       end
     end
     object TabImport: TTabSheet
       Caption = 'Import'
-      ClientHeight = 345
+      ClientHeight = 347
       ClientWidth = 725
       OnShow = TabImportShow
       object Label3: TLabel
         Left = 32
-        Height = 19
+        Height = 17
         Top = 200
-        Width = 82
+        Width = 78
         Caption = 'Destination'
         ParentColor = False
       end
       object ComboImportDest: TComboBox
         Left = 32
-        Height = 33
+        Height = 31
         Top = 224
         Width = 310
         ItemHeight = 0
@@ -194,7 +193,7 @@ object FormMain: TFormMain
       end
       object ComboSourceFormat: TComboBox
         Left = 32
-        Height = 33
+        Height = 31
         Top = 40
         Width = 310
         ItemHeight = 0
@@ -204,9 +203,9 @@ object FormMain: TFormMain
       end
       object Label7: TLabel
         Left = 32
-        Height = 19
+        Height = 17
         Top = 16
-        Width = 105
+        Width = 99
         Caption = 'Source Format'
         ParentColor = False
       end
@@ -222,6 +221,7 @@ object FormMain: TFormMain
         BorderSpacing.Top = 10
         BorderSpacing.Right = 10
         ItemHeight = 0
+        OnClick = CheckListImportFilesClick
         OnClickCheck = CheckListImportFilesClickCheck
         TabOrder = 2
         TopIndex = -1
@@ -236,25 +236,25 @@ object FormMain: TFormMain
       end
       object Label8: TLabel
         Left = 32
-        Height = 19
+        Height = 17
         Top = 120
-        Width = 119
+        Width = 112
         Caption = 'Source Directory'
         ParentColor = False
       end
       object LabelImportSource: TLabel
         Left = 32
-        Height = 19
+        Height = 17
         Top = 144
-        Width = 135
+        Width = 130
         Caption = 'LabelImportSource'
         ParentColor = False
       end
       object LabelImportDestination: TLabel
         Left = 32
-        Height = 19
+        Height = 17
         Top = 290
-        Width = 168
+        Width = 162
         Caption = 'LabelImportDestination'
         ParentColor = False
       end
@@ -264,14 +264,14 @@ object FormMain: TFormMain
         Top = 232
         Width = 145
         Caption = 'Title is : '
-        ClientHeight = 84
+        ClientHeight = 86
         ClientWidth = 141
         TabOrder = 3
         object RadioTitleFirstLine: TRadioButton
           Left = 8
-          Height = 23
+          Height = 24
           Top = 8
-          Width = 90
+          Width = 88
           Caption = 'First Line'
           Checked = True
           TabOrder = 0
@@ -279,9 +279,9 @@ object FormMain: TFormMain
         end
         object RadioTitleFilename: TRadioButton
           Left = 8
-          Height = 23
+          Height = 24
           Top = 40
-          Width = 90
+          Width = 87
           Caption = 'Filename'
           TabOrder = 1
         end
@@ -315,17 +315,17 @@ object FormMain: TFormMain
     end
     object Label6: TLabel
       Left = 176
-      Height = 19
+      Height = 17
       Top = 16
-      Width = 405
-      Caption = 'Tested against tomboy-ng, should work with Tomboy etc.'
+      Width = 415
+      Caption = 'Tested against tomboy-ng, should work with Tomboy etc. v0.03'
       ParentColor = False
     end
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 23
-    Top = 473
+    Height = 20
+    Top = 476
     Width = 731
     Panels = <>
   end
@@ -335,18 +335,18 @@ object FormMain: TFormMain
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 0
-    Height = 41
+    Height = 44
     Top = 432
     Width = 731
     Anchors = [akTop, akLeft, akRight, akBottom]
-    ClientHeight = 41
+    ClientHeight = 44
     ClientWidth = 731
     TabOrder = 3
     object LabelErrorMessage: TLabel
       Left = 24
-      Height = 19
+      Height = 17
       Top = 8
-      Width = 137
+      Width = 131
       Caption = 'LabelErrorMessage'
       Color = clRed
       ParentColor = False
@@ -359,7 +359,7 @@ object FormMain: TFormMain
       AnchorSideBottom.Control = PanelLower
       AnchorSideBottom.Side = asrBottom
       Left = 610
-      Height = 39
+      Height = 42
       Top = 1
       Width = 120
       Anchors = [akTop, akRight, akBottom]
@@ -372,7 +372,7 @@ object FormMain: TFormMain
       AnchorSideBottom.Control = PanelLower
       AnchorSideBottom.Side = asrBottom
       Left = 490
-      Height = 39
+      Height = 42
       Top = 1
       Width = 120
       Anchors = [akTop, akRight, akBottom]
@@ -381,7 +381,7 @@ object FormMain: TFormMain
     end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 440
-    top = 344
+    Left = 440
+    Top = 344
   end
 end
