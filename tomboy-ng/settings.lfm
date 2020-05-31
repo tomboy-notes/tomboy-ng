@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 703
+  Left = 1477
   Height = 525
-  Top = 396
+  Top = 268
   Width = 630
   BorderIcons = []
   Caption = 'Form Caption'
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 630
-    ActivePage = TabSync
+    ActivePage = TabSnapshot
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 4
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -482,7 +482,7 @@ object Sett: TSett
         object Label6: TLabel
           Left = 32
           Height = 19
-          Top = 128
+          Top = 104
           Width = 465
           Caption = 'Backup files are made when you delete a note or the sync system'
           ParentColor = False
@@ -490,7 +490,7 @@ object Sett: TSett
         object Label7: TLabel
           Left = 32
           Height = 19
-          Top = 160
+          Top = 144
           Width = 187
           Caption = 'is about to overwrite one. '
           ParentColor = False
@@ -498,7 +498,7 @@ object Sett: TSett
         object Label8: TLabel
           Left = 32
           Height = 19
-          Top = 232
+          Top = 272
           Width = 429
           Caption = 'They remain, for ever, unless you do something about them.'
           ParentColor = False
@@ -582,66 +582,22 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ButtonManualSnap
         Left = 0
-        Height = 240
-        Top = 160
+        Height = 280
+        Top = 120
         Width = 624
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 2
-        ClientHeight = 240
+        ClientHeight = 280
         ClientWidth = 624
         TabOrder = 2
-        object ButtonSnapDays: TButton
-          Left = 24
-          Height = 36
-          Top = 40
-          Width = 176
-          Caption = 'Days'
-          OnClick = ButtonSnapDaysClick
+        object CheckAutoSnapEnabled: TCheckBox
+          Left = 28
+          Height = 23
+          Top = 184
+          Width = 162
+          Caption = 'Use auto snapshots'
+          OnChange = CheckAutoSnapEnabledChange
           TabOrder = 0
-        end
-        object ButtonSetSnapDir: TButton
-          Left = 216
-          Height = 36
-          Top = 40
-          Width = 176
-          Caption = 'Set Snap Dir'
-          OnClick = ButtonSetSnapDirClick
-          TabOrder = 1
-        end
-        object TimeEdit1: TTimeEdit
-          Left = 24
-          Height = 29
-          Top = 90
-          Width = 103
-          ButtonWidth = 23
-          NumGlyphs = 1
-          MaxLength = 0
-          TabOrder = 2
-          Text = 'TimeEdit1'
-        end
-        object LabelSnapDir: TLabel
-          Left = 144
-          Height = 19
-          Top = 98
-          Width = 226
-          Caption = '.... and its not available just yet !'
-          ParentColor = False
-        end
-        object CheckSnapMonthly: TCheckBox
-          Left = 24
-          Height = 23
-          Top = 146
-          Width = 83
-          Caption = 'Monthly'
-          TabOrder = 3
-        end
-        object CheckSnapEnabled: TCheckBox
-          Left = 24
-          Height = 23
-          Top = 178
-          Width = 91
-          Caption = 'Run Auto'
-          TabOrder = 4
         end
         object Label10: TLabel
           Left = 28
@@ -651,11 +607,56 @@ object Sett: TSett
           Caption = 'Settings'
           ParentColor = False
         end
+        object LabelSnapDir: TLabel
+          Left = 29
+          Height = 19
+          Top = 48
+          Width = 58
+          Caption = 'Snap dir'
+          ParentColor = False
+        end
+        object SpinDaysPerSnapshot: TSpinEdit
+          Left = 28
+          Height = 29
+          Top = 96
+          Width = 76
+          MaxValue = 31
+          MinValue = 1
+          OnChange = SpinDaysPerSnapshotChange
+          TabOrder = 1
+          Value = 7
+        end
+        object SpinMaxSnapshots: TSpinEdit
+          Left = 28
+          Height = 29
+          Top = 136
+          Width = 76
+          MinValue = 10
+          OnChange = CheckReadOnlyChange
+          TabOrder = 2
+          Value = 20
+        end
+        object Label5: TLabel
+          Left = 128
+          Height = 19
+          Top = 106
+          Width = 130
+          Caption = 'Days per snapshot'
+          ParentColor = False
+        end
+        object Label16: TLabel
+          Left = 128
+          Height = 19
+          Top = 144
+          Width = 211
+          Caption = 'Maxium number of snapshots'
+          ParentColor = False
+        end
       end
       object Label11: TLabel
-        Left = 18
+        Left = 32
         Height = 19
-        Top = 52
+        Top = 64
         Width = 370
         Caption = 'AUTO snapshots not implemented yet, use manual !'
         ParentColor = False
@@ -989,49 +990,13 @@ object Sett: TSett
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 408
   end
-  object PopupDay: TPopupMenu
-    left = 128
-    top = 456
-    object MenuMonday: TMenuItem
-      AutoCheck = True
-      Caption = 'Monday'
-    end
-    object MenuTuesday: TMenuItem
-      AutoCheck = True
-      Caption = 'Tuesday'
-    end
-    object MenuWednesday: TMenuItem
-      AutoCheck = True
-      Caption = 'Wednesday'
-    end
-    object MenuThursday: TMenuItem
-      AutoCheck = True
-      Caption = 'Thursday'
-    end
-    object MenuFriday: TMenuItem
-      AutoCheck = True
-      Caption = 'Friday'
-    end
-    object MenuSaturday: TMenuItem
-      AutoCheck = True
-      Caption = 'Saturday'
-    end
-    object MenuSunday: TMenuItem
-      AutoCheck = True
-      Caption = 'Sunday'
-    end
-  end
-  object SelectSnapDir: TSelectDirectoryDialog
-    left = 176
-    top = 456
-  end
   object OpenDialogLibrary: TOpenDialog
     Options = [ofPathMustExist, ofFileMustExist, ofNoDereferenceLinks, ofEnableSizing, ofViewDetail]
     left = 480
   end
   object OpenDialogDictionary: TOpenDialog
-    left = 512
-    top = 392
+    left = 560
+    top = 232
   end
   object FontDialog1: TFontDialog
     MinFontSize = 0
@@ -1047,5 +1012,9 @@ object Sett: TSett
     OnTimer = TimerAutoSyncTimer
     left = 524
     top = 295
+  end
+  object SelectSnapDir: TSelectDirectoryDialog
+    left = 560
+    top = 168
   end
 end
