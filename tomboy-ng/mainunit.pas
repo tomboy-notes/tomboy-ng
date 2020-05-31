@@ -68,6 +68,7 @@ unit Mainunit;
     2020/04/28  Added randomize to create, need it for getlocaltime in settings.
     2020/05/16  Don't prevent closing of splash screen.
     2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
+    2020/05/26  Improved tabbing
 
     CommandLine Switches
 
@@ -604,7 +605,7 @@ end;
 
 procedure TMainForm.ButtMenuClick(Sender: TObject);
 begin
-    self.MainTBMenu.popup;
+    MainTBMenu.popup(Left + 40, Top + 40);
 end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
