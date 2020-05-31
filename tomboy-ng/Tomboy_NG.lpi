@@ -728,7 +728,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="32">
+    <Units Count="33">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -919,6 +919,14 @@
         <Filename Value="cli.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit31>
+      <Unit32>
+        <Filename Value="snapframe.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SnapFrame1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="SnapFrame"/>
+      </Unit32>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

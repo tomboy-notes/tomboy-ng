@@ -165,6 +165,7 @@ type        { TSearchForm }
         procedure MenuRenameNoteBookClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         procedure SpeedButton1Click(Sender: TObject);
+        procedure StringGrid1KeyPress(Sender: TObject; var Key: char);
         procedure StringGrid1Resize(Sender: TObject);
 		//procedure StringGridNotebooksClick(Sender: TObject);
         procedure StringGrid1DblClick(Sender: TObject);
@@ -751,7 +752,7 @@ begin
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
     MainForm.UpdateNotesFound(Result);      // Says how many notes found and runs over checklist.
-    Sett.CheckAutoSync();
+    Sett.StartAutoSyncAndSnap();
 end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
@@ -1106,6 +1107,11 @@ procedure TSearchForm.SpeedButton1Click(Sender: TObject);
 begin
     // note - image is 24x24 tpopupmenu.png from lazarus source
     MainForm.PopupMenuSearch.PopUp;
+end;
+
+procedure TSearchForm.StringGrid1KeyPress(Sender: TObject; var Key: char);
+begin
+    if Key = char(ord(VK_RETURN)) then StringGrid1DblClick(Sender);
 end;
 
 procedure TSearchForm.StringGrid1Resize(Sender: TObject);

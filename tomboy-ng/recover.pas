@@ -104,16 +104,16 @@ type
         function FindSnapFiles(): integer;
         procedure RestoreSnapshot(const Snapshot: string);
         procedure ShowNotes(const FullSnapName: string);
-        function ZipDate(WithDay : Boolean): string;
-
+        function ZipDate(): string;
+        procedure CreateSnapshot(const FullSourceDir, FullZipName: string);
     public
             // Note that, at present, this debugmode is not set automatically anywhere.
         DebugMode : boolean;
         RequiresIndex : boolean;
         SnapDir, NoteDir, ConfigDir : string;
-        procedure CreateSnapshot(const FullSourceDir, FullZipName: string);
         // Creates a snapshot, returning its full name.
-        function CreateSnapshot(const Manual, Monthly : boolean) : string;
+        function CreateSnapshot(const Manual: boolean): string;
+        procedure CleanUpSnapshots(const MaxSnaps : integer);
     end;
 
 var
@@ -347,24 +347,25 @@ begin
     ButtonRecoverSnap.Enabled := True;
 end;
 
-function TFormRecover.ZipDate(WithDay : Boolean) : string;
+function TFormRecover.ZipDate({WithDay : Boolean}) : string;
 var
    ThisMoment : TDateTime;
 begin
     ThisMoment:=Now;
     Result := FormatDateTime('YYYYMMDD',ThisMoment) + '_'
         + FormatDateTime('hhmm',ThisMoment);
-    if WithDay then Result := Result + '_' + FormatDateTime('ddd', ThisMoment);
+    //if WithDay then Result := Result + '_' + FormatDateTime('ddd', ThisMoment);
 end;
 
-function TFormRecover.CreateSnapshot(const Manual, Monthly : boolean) : string;
+function TFormRecover.CreateSnapshot(const Manual : boolean) : string;
 var
    ZipName : string;
 begin
-    if not (Manual or Monthly) then ZipName := ZipDate(True)
-    else ZipName := ZipDate(True) + '_';
-    if Manual then ZipName := ZipName + 'Man';
-    if Monthly then ZipName := ZipName + 'Month';       // both true is silly, assert !
+    if Manual then ZipName := ZipDate() + '_Man'
+    else ZipName := ZipDate() + '_Auto';
+    //if Manual then ZipName := ZipName + 'Man'
+    //else ZipName := ZipName + 'Auto'
+    //if Monthly then ZipName := ZipName + 'Month';       // both true is silly, assert !
     CreateSnapshot(NoteDir, SnapDir + ZipName + '.zip');
     result := SnapDir + ZipName + '.zip';
 end;
@@ -399,6 +400,32 @@ begin
         Zip.Free;
     end;
     // debugln('All notes in ' + FullSourceDir + ' to ' + FullZipName + ' took ' + inttostr(Tock - Tick) + 'ms');
+end;
+
+                                { Removes any more than MaxSnaps Auto generated from the
+                                  snaps dir. Does not play with Manually generated ones. }
+procedure TFormRecover.CleanUpSnapshots(const MaxSnaps: integer);
+var
+     Snaps : TStringList;
+     ToRemoveFromList : integer;
+     St : string;
+begin
+    Snaps := FindAllFiles(SnapDir, '*_Auto.zip', false); // list contains full file names !
+    try
+        // debugln('RECOVER - CleanUpSnapshots() we have numb snapshots = ' + dbgs(Snaps.Count));
+        Snaps.Sort;
+        ToRemoveFromList := MaxSnaps;
+        while (ToRemoveFromList > 0) and (Snaps.Count <> 0) do begin
+            Snaps.Delete(Snaps.Count-1);
+            dec(ToRemoveFromList);
+        end;
+        for St in Snaps do begin
+            // debugln('Deleting snap item ' + St);
+            DeleteFile(St);
+        end;
+    finally
+        freeandnil(Snaps);
+    end;
 end;
 
 procedure TFormRecover.ListBoxSnapshotsDblClick(Sender: TObject);

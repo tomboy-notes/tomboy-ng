@@ -53,6 +53,7 @@ object SearchForm: TSearchForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
+    TabStop = False
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
@@ -95,7 +96,7 @@ object SearchForm: TSearchForm
       Enabled = False
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
-      TabOrder = 1
+      TabOrder = 4
     end
     object ButtonNotebookOptions: TButton
       AnchorSideLeft.Control = Panel1
@@ -116,7 +117,8 @@ object SearchForm: TSearchForm
       OnKeyDown = FormKeyDown
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 2
+      TabOrder = 3
+      TabStop = False
     end
     object StringGrid1: TStringGrid
       AnchorSideLeft.Control = Splitter1
@@ -142,9 +144,10 @@ object SearchForm: TSearchForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
       RowCount = 0
       ScrollBars = ssAutoVertical
-      TabOrder = 3
+      TabOrder = 1
       OnDblClick = StringGrid1DblClick
       OnKeyDown = FormKeyDown
+      OnKeyPress = StringGrid1KeyPress
       OnResize = StringGrid1Resize
     end
     object ListBoxNotebooks: TListBox
@@ -162,7 +165,7 @@ object SearchForm: TSearchForm
       ItemHeight = 0
       OnClick = ListBoxNotebooksClick
       ScrollWidth = 230
-      TabOrder = 4
+      TabOrder = 2
       TopIndex = -1
     end
     object Panel2: TPanel
@@ -283,6 +286,7 @@ object SearchForm: TSearchForm
     OnChange = CheckCaseSensitiveChange
     ParentShowHint = False
     TabOrder = 3
+    TabStop = False
   end
   object StatusBar1: TStatusBar
     Left = 0

@@ -150,6 +150,10 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr ""
 
+#: resourcestr.rsautosnapshotrun
+msgid "Completed autosnapshot run."
+msgstr ""
+
 #: resourcestr.rsbadnotesfound1
 msgctxt "resourcestr.rsbadnotesfound1"
 msgid "Please go to Settings -> Snapshot -> Recover ...."
@@ -191,6 +195,11 @@ msgstr ""
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
+msgstr ""
+
+#: resourcestr.rserrorcopyfile
+msgctxt "resourcestr.rserrorcopyfile"
+msgid "Failed to copy file, does destination dir exist ?"
 msgstr ""
 
 #: resourcestr.rsfilesyncinfo1
@@ -426,6 +435,11 @@ msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr ""
 
+#: resourcestr.rssnapshotcreated
+msgctxt "resourcestr.rssnapshotcreated"
+msgid "created, do you want to copy it elsewhere ?"
+msgstr ""
+
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
 msgid "A Sync Error occured"
@@ -476,10 +490,6 @@ msgstr ""
 msgid "Cannot write into"
 msgstr ""
 
-#: settings.rserrorcopyfile
-msgid "Failed to copy file, does destination dir exist ?"
-msgstr ""
-
 #: settings.rserrorcreatedir
 msgid "Unable to Create Directory"
 msgstr ""
@@ -494,10 +504,6 @@ msgstr ""
 
 #: settings.rssetfilesyncrepo
 msgid "Set File Sync Repo"
-msgstr ""
-
-#: settings.rssnapshotcreated
-msgid "created, do you want to copy it elsewhere ?"
 msgstr ""
 
 #: spelling.rscheckingfull
@@ -1479,20 +1485,12 @@ msgstr ""
 msgid "If you have notes somewhere else"
 msgstr ""
 
-#: tsett.buttonsetsnapdir.caption
-msgid "Set Snap Dir"
-msgstr ""
-
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
 msgstr ""
 
 #: tsett.buttonshowbackup.caption
 msgid "Show Me"
-msgstr ""
-
-#: tsett.buttonsnapdays.caption
-msgid "Days"
 msgstr ""
 
 #: tsett.buttonsnaprecover.caption
@@ -1506,6 +1504,11 @@ msgstr ""
 #: tsett.caption
 msgctxt "tsett.caption"
 msgid "Form Caption"
+msgstr ""
+
+#: tsett.checkautosnapenabled.caption
+msgctxt "tsett.checkautosnapenabled.caption"
+msgid "Use auto snapshots"
 msgstr ""
 
 #: tsett.checkautostart.caption
@@ -1557,14 +1560,6 @@ msgstr ""
 msgid "Show Tomdroid Sync (experimental)"
 msgstr ""
 
-#: tsett.checksnapenabled.caption
-msgid "Run Auto"
-msgstr ""
-
-#: tsett.checksnapmonthly.caption
-msgid "Monthly"
-msgstr ""
-
 #: tsett.groupbox1.caption
 msgid "Main Search Window is : "
 msgstr ""
@@ -1602,6 +1597,10 @@ msgstr ""
 msgid "an appropriate Hunspell Dictionary set."
 msgstr ""
 
+#: tsett.label16.caption
+msgid "Maxium number of snapshots"
+msgstr ""
+
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr ""
@@ -1612,6 +1611,10 @@ msgstr ""
 
 #: tsett.label4.caption
 msgid "Repo : "
+msgstr ""
+
+#: tsett.label5.caption
+msgid "Days per snapshot"
 msgstr ""
 
 #: tsett.label6.caption
@@ -1644,35 +1647,7 @@ msgid "LabelFileSyncInfo2"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
-msgid ".... and its not available just yet !"
-msgstr ""
-
-#: tsett.menufriday.caption
-msgid "Friday"
-msgstr ""
-
-#: tsett.menumonday.caption
-msgid "Monday"
-msgstr ""
-
-#: tsett.menusaturday.caption
-msgid "Saturday"
-msgstr ""
-
-#: tsett.menusunday.caption
-msgid "Sunday"
-msgstr ""
-
-#: tsett.menuthursday.caption
-msgid "Thursday"
-msgstr ""
-
-#: tsett.menutuesday.caption
-msgid "Tuesday"
-msgstr ""
-
-#: tsett.menuwednesday.caption
-msgid "Wednesday"
+msgid "Snap dir"
 msgstr ""
 
 #: tsett.radioalwaysask.caption

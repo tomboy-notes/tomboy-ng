@@ -170,6 +170,10 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Voltooid"
 
+#: resourcestr.rsautosnapshotrun
+msgid "Completed autosnapshot run."
+msgstr ""
+
 #: resourcestr.rsbadnotesfound1
 #, fuzzy
 #| msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
@@ -219,6 +223,12 @@ msgstr "Wil je een nieuwe repo maken?"
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
 msgstr "Voer een nieuwe naam in voor het notitieboek"
+
+#: resourcestr.rserrorcopyfile
+#, fuzzy
+msgctxt "resourcestr.rserrorcopyfile"
+msgid "Failed to copy file, does destination dir exist ?"
+msgstr "Kan bestand niet kopiëren. Bestaat de bestemmingsmap wel?"
 
 #: resourcestr.rsfilesyncinfo1
 msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive"
@@ -483,6 +493,12 @@ msgctxt "resourcestr.rssetupsyncfirst"
 msgid "Please config sync system first"
 msgstr ""
 
+#: resourcestr.rssnapshotcreated
+#, fuzzy
+msgctxt "resourcestr.rssnapshotcreated"
+msgid "created, do you want to copy it elsewhere ?"
+msgstr "Aangemaakt. Wil je ergens een kopie opslaan?"
+
 #: resourcestr.rssyncerror
 #, fuzzy
 msgctxt "resourcestr.rssyncerror"
@@ -539,10 +555,6 @@ msgstr "Deze map bevat geen notities. Dat is niet erg, want nu kan deze worden g
 msgid "Cannot write into"
 msgstr "Kan niet wegschrijven naar"
 
-#: settings.rserrorcopyfile
-msgid "Failed to copy file, does destination dir exist ?"
-msgstr "Kan bestand niet kopiëren. Bestaat de bestemmingsmap wel?"
-
 #: settings.rserrorcreatedir
 msgid "Unable to Create Directory"
 msgstr "Kan map niet aanmaken"
@@ -558,10 +570,6 @@ msgstr "Kies een hunspell-bibliotheek"
 #: settings.rssetfilesyncrepo
 msgid "Set File Sync Repo"
 msgstr "Bestandssynchronisatie instellen"
-
-#: settings.rssnapshotcreated
-msgid "created, do you want to copy it elsewhere ?"
-msgstr "Aangemaakt. Wil je ergens een kopie opslaan?"
 
 #: spelling.rscheckingfull
 msgid "Checking full document"
@@ -1571,10 +1579,6 @@ msgstr "Pad van notitiebestanden instellen"
 msgid "If you have notes somewhere else"
 msgstr "Als je je notities elders opslaat"
 
-#: tsett.buttonsetsnapdir.caption
-msgid "Set Snap Dir"
-msgstr "Momentopnamemap instellen"
-
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
 msgstr "Spellingcontrolebiblotheek instellen"
@@ -1582,10 +1586,6 @@ msgstr "Spellingcontrolebiblotheek instellen"
 #: tsett.buttonshowbackup.caption
 msgid "Show Me"
 msgstr "Laat me zien hoe"
-
-#: tsett.buttonsnapdays.caption
-msgid "Days"
-msgstr "Dagen"
 
 #: tsett.buttonsnaprecover.caption
 msgid "Recover Lost Notes"
@@ -1601,6 +1601,11 @@ msgstr "Als je al eens een momentopname hebt gemaakt"
 msgctxt "tsett.caption"
 msgid "Form Caption"
 msgstr "Instellingen"
+
+#: tsett.checkautosnapenabled.caption
+msgctxt "tsett.checkautosnapenabled.caption"
+msgid "Use auto snapshots"
+msgstr ""
 
 #: tsett.checkautostart.caption
 msgctxt "tsett.checkautostart.caption"
@@ -1654,14 +1659,6 @@ msgstr "Deze wordt altijd getoond als er fouten zijn opgetreden tijdens het lade
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Tomdroid-synchronisatie tonen (experimenteel)"
 
-#: tsett.checksnapenabled.caption
-msgid "Run Auto"
-msgstr "Automatisch uitvoeren"
-
-#: tsett.checksnapmonthly.caption
-msgid "Monthly"
-msgstr "Maandelijks"
-
 #: tsett.groupbox1.caption
 msgid "Main Search Window is : "
 msgstr "Het hoofdzoekvenster is: "
@@ -1699,6 +1696,10 @@ msgstr "Spellingcontrole vereist de Hunspell-bibliotheken en"
 msgid "an appropriate Hunspell Dictionary set."
 msgstr "het juiste Hunspell-woordenboek."
 
+#: tsett.label16.caption
+msgid "Maxium number of snapshots"
+msgstr ""
+
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr "Notities worden gezocht en opgeslagen in:"
@@ -1714,6 +1715,10 @@ msgstr "Als er een conflict is tussen een lokale notitie en"
 #| msgid "a note on the configured synchronisation server :"
 msgid "Repo : "
 msgstr "een notitie op de synchronisatieserver:"
+
+#: tsett.label5.caption
+msgid "Days per snapshot"
+msgstr ""
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
@@ -1746,36 +1751,10 @@ msgid "LabelFileSyncInfo2"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
-msgid ".... and its not available just yet !"
+#, fuzzy
+#| msgid ".... and its not available just yet !"
+msgid "Snap dir"
 msgstr "... en is nog niet beschikbaar!"
-
-#: tsett.menufriday.caption
-msgid "Friday"
-msgstr "vrijdag"
-
-#: tsett.menumonday.caption
-msgid "Monday"
-msgstr "maandag"
-
-#: tsett.menusaturday.caption
-msgid "Saturday"
-msgstr "zaterdag"
-
-#: tsett.menusunday.caption
-msgid "Sunday"
-msgstr "zondag"
-
-#: tsett.menuthursday.caption
-msgid "Thursday"
-msgstr "donderdag"
-
-#: tsett.menutuesday.caption
-msgid "Tuesday"
-msgstr "dinsdag"
-
-#: tsett.menuwednesday.caption
-msgid "Wednesday"
-msgstr "woensdag"
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."

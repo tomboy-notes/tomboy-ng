@@ -109,8 +109,8 @@ interface
 
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
-    Buttons, ComCtrls, ExtCtrls, Menus, EditBtn, FileUtil, BackUpView,
-    LCLIntf;
+    Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
+    LCLIntf, Spin{, SnapFrame};
 
 // Types;
 
@@ -124,6 +124,8 @@ type
           ButtDefaultNoteDir: TButton;
 		  CheckBoxAutoSync: TCheckBox;
 		  GroupBoxSync: TGroupBox;
+          Label16: TLabel;
+          Label5: TLabel;
           LabelFileSyncInfo2: TLabel;
 		  Label4: TLabel;
           LabelFileSyncInfo1: TLabel;
@@ -135,8 +137,6 @@ type
           ButtonSetSpellLibrary: TButton;
           ButtonSetDictionary: TButton;
           ButtonManualSnap: TButton;
-          ButtonSetSnapDir: TButton;
-          ButtonSnapDays: TButton;
           ButtonSnapRecover: TButton;
 	  ButtonShowBackUp: TButton;
 
@@ -149,8 +149,7 @@ type
 	  CheckShowExtLinks: TCheckBox;
 	  CheckShowIntLinks: TCheckBox;
           CheckShowTomdroid: TCheckBox;
-          CheckSnapEnabled: TCheckBox;
-          CheckSnapMonthly: TCheckBox;
+          CheckAutoSnapEnabled: TCheckBox;
           FontDialog1: TFontDialog;
           GroupBox1: TGroupBox;
 	  GroupBox4: TGroupBox;
@@ -168,7 +167,6 @@ type
           LabelLibrary: TLabel;
           LabelDicStatus: TLabel;
           LabelLibraryStatus: TLabel;
-          LabelSnapDir: TLabel;
 	  Label2: TLabel;
 	  Label3: TLabel;
 	  Label6: TLabel;
@@ -177,20 +175,13 @@ type
 	  Label9: TLabel;
 	  LabelNotesPath: TLabel;
 	  LabelSettingPath: TLabel;
+      LabelSnapDir: TLabel;
           ListBoxDic: TListBox;
-          MenuFriday: TMenuItem;
-          MenuSaturday: TMenuItem;
-          MenuSunday: TMenuItem;
-          MenuMonday: TMenuItem;
-          MenuTuesday: TMenuItem;
-          MenuWednesday: TMenuItem;
-          MenuThursday: TMenuItem;
           OpenDialogLibrary: TOpenDialog;
           OpenDialogDictionary: TOpenDialog;
 	  PageControl1: TPageControl;
 	  Panel1: TPanel;
           Panel3: TPanel;
-          PopupDay: TPopupMenu;
           PMenuMain: TPopupMenu;
 	  RadioAlwaysAsk: TRadioButton;
           RadioFontHuge: TRadioButton;
@@ -200,18 +191,19 @@ type
 	  RadioUseLocal: TRadioButton;
 	  RadioUseServer: TRadioButton;
 	  SelectDirectoryDialog1: TSelectDirectoryDialog;
-          SelectSnapDir: TSelectDirectoryDialog;
+      SelectSnapDir: TSelectDirectoryDialog;
           SpeedButHide: TSpeedButton;
 	  SpeedButHelp: TSpeedButton;
           SpeedButtTBMenu: TSpeedButton;
 		  SpeedSetupSync: TSpeedButton;
+          SpinDaysPerSnapshot: TSpinEdit;
+          SpinMaxSnapshots: TSpinEdit;
 	  TabBasic: TTabSheet;
 	  TabBackUp: TTabSheet;
           TabSpell: TTabSheet;
 	  TabSnapshot: TTabSheet;
 	  TabSync: TTabSheet;
 	  TabDisplay: TTabSheet;
-          TimeEdit1: TTimeEdit;
           TimerAutoSync: TTimer;
 
         procedure ButtDefaultNoteDirClick(Sender: TObject);
@@ -226,12 +218,13 @@ type
         procedure ButtonSetSnapDirClick(Sender: TObject);
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
 	procedure ButtonShowBackUpClick(Sender: TObject);
-        procedure ButtonSnapDaysClick(Sender: TObject);
+        //procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
+        procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
-                { Called when ANY of the setting check boxes change so use can save. }
+                { Called when ANY of the setting check boxes change so we can save. }
 	    procedure CheckReadOnlyChange(Sender: TObject);
 	    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 	    procedure FormCreate(Sender: TObject);
@@ -246,6 +239,7 @@ type
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
 		procedure SpeedSetupSyncClick(Sender: TObject);
+        procedure SpinDaysPerSnapshotChange(Sender: TObject);
         //procedure RadioFileSyncChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabSnapshotResize(Sender: TObject);
@@ -256,6 +250,7 @@ type
     private
         UserSetColours : boolean;
         fExportPath : ANSIString;
+        NextAutoSnapshot : TDateTime;
         // Reads an existing config file OR writes a new, default one if necessary.
  	    procedure CheckConfigFile;
         // Ret true and displays on screen if passed Full name is a usable dictonary
@@ -272,6 +267,7 @@ type
           If successfull show on screen and saves config }
         procedure CheckSpelling(const DicFullName: string='');
         procedure DicDefaults(var DicPathAlt: string);
+        procedure DoAutoSnapshot;
         // Returns a good place to save config or user requested place if on cmdline,
         function GetDefaultConfigDir: string;
         // Returns the default place to store notes. It may not be present.
@@ -342,8 +338,9 @@ type
         //property SyncOK : boolean read fGetSyncOK;
 
         property ExportPath : ANSIString Read fExportPath write fExportPath;
-        // Called after notes are indexed, if settings so indicate, will start auto timer.
-        procedure CheckAutoSync();
+        // Called after notes are indexed (from SearchUnit), will start auto timer tha
+        // controls both AutoSync and AutoSnap. Does nothing in SingleNoteMode.
+        procedure StartAutoSyncAndSnap();
     end;
 
 var
@@ -359,6 +356,8 @@ const
 implementation
 
 {$R *.lfm}
+
+{$.DEFINE TESTAUTOSNAP}
 
 { TSett }
 
@@ -478,6 +477,8 @@ begin
 	               ValidSync := rsSyncNotConfig;
 	        end;
 end;
+
+
 
 {procedure TSett.RadioFileSyncChange(Sender: TObject);
 begin
@@ -669,7 +670,7 @@ end;
 procedure TSett.FormHide(Sender: TObject);
 begin
     FreeandNil(Spell);
-    MaskSettingsChanged := True;
+    //MaskSettingsChanged := True;           May, 2020, why was this here ?
 {    if NeedRefresh then begin
         SearchForm.IndexNotes();
         NeedRefresh := False;
@@ -714,8 +715,7 @@ begin
     Left := 300;
     DefaultFixedFont := GetFixedFont(); // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
-    MaskSettingsChanged := true;
-    //NeedRefresh := False;
+    MaskSettingsChanged := true;            // don't trigger save while doing setup
     ExportPath := '';
     LabelLibrary.Caption := '';
     HaveConfig := false;
@@ -728,7 +728,7 @@ begin
     CheckSpelling();
     LabelFileSyncInfo1.Caption := rsFileSyncInfo1;
     LabelFileSyncInfo2.Caption := rsFileSyncInfo2;
-    //MainForm.FillInFileMenus();
+    MaskSettingsChanged := False;
 end;
 
 procedure TSett.FormDestroy(Sender: TObject);
@@ -837,7 +837,7 @@ begin
     if fileexists(LabelSettingPath.Caption) then begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
  	    try
-            MaskSettingsChanged := True;    // should be true anyway ?
+            // MaskSettingsChanged := True;    // should be true anyway ?
    		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
             CheckShowIntLinks.Checked :=
                 ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
@@ -889,7 +889,11 @@ begin
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
 	        LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
-
+            // --------- S N A P S H O T    S E T T I N G S  -------------------
+            CheckAutoSnapEnabled.Checked := Configfile.ReadBool('Snapshot', 'AutoSnapEnabled', False);
+            NextAutoSnapshot             := Configfile.ReadDateTime('Snapshot', 'NextAutoSnapshot', now());
+            SpinDaysPerSnapshot.Value    := Configfile.ReadInteger('Snapshot', 'DaysPerSnapshot', 7);
+            SpinMaxSnapshots.Value       := Configfile.ReadInteger('Snapshot', 'DaysMaxSnapshots', 20);
         finally
             ConfigFile.free;
             // MaskSettingsChanged := False;
@@ -899,7 +903,7 @@ begin
 	    SyncSettings();
     end else begin      // OK, no config eh ?  We'll set some defaults ...
         if CheckDirectory(NoteDirectory) then begin
-            MaskSettingsChanged := False;
+            //MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
             CheckShowIntLinks.Checked:= True;
             CheckShowExtLinks.Checked := True;
@@ -908,11 +912,10 @@ begin
             UsualFont := GetFontData(Self.Font.Handle).Name;
             FixedFont := DefaultFixedFont;
             LabelFileSync.Caption := rsSyncNotConfig;
-            //LabelNCSyncURL.Caption := rsSyncNotConfig;
-            //RadioFileSync.checked := true;
+            CheckAutoSnapEnabled.Checked := False;
             if not SettingsChanged() then // write a initial default file, shows user a message on error
                 HaveConfig := false;
-            MaskSettingsChanged := True;
+            //MaskSettingsChanged := True;
             HaveConfig := True;
         end else begin
             // Only get to here becasue we have failed to setup an initial notes dir
@@ -1015,6 +1018,11 @@ begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
             end;
+            // --------- S N A P S H O T    S E T T I N G S  -------------------
+            configfile.WriteBool('Snapshot', 'AutoSnapEnabled', CheckAutoSnapEnabled.Checked);
+            configfile.WriteDateTime('Snapshot', 'NextAutoSnapshot', NextAutoSnapshot);
+            configfile.WriteInteger('Snapshot', 'DaysPerSnapshot', SpinDaysPerSnapshot.Value);
+            configfile.WriteInteger('Snapshot', 'DaysMaxSnapshots', SpinMaxSnapshots.Value);
         finally
     	    ConfigFile.Free;
         end;
@@ -1164,13 +1172,54 @@ end;
 
 { --------------------- S N A P S H O T S ------------------- }
 { Totally unvalidated rule of thumb -
-  About a 100 notes = ~ 1Gbytes, we get about 4:1 compression with zipper.
+  About a 200 notes = ~ 400K bytes, we get about 4:1 compression with zipper.
   120ms on lowend laptop.
 }
 
-RESOURCESTRING
-    rsSnapshotCreated = 'created, do you want to copy it elsewhere ?';
-    rsErrorCopyFile = 'Failed to copy file, does destination dir exist ?';
+procedure TSett.SpinDaysPerSnapshotChange(Sender: TObject);
+begin
+    if CheckAutoSnapEnabled.Checked then
+        DoAutoSnapShot();
+    SettingsChanged();
+end;
+
+procedure TSett.DoAutoSnapshot;
+var
+   FR : TFormRecover;
+   Tick, Tock : qword;
+   //FullName : string;
+begin
+    if MaskSettingsChanged then
+        exit;                   // don't trigger this while GUI is being setup.
+    Tick := gettickcount64();
+    FR := TFormRecover.Create(self);
+    try
+        FR.NoteDir := NoteDirectory;
+        FR.SnapDir := LabelSnapDir.Caption;
+        FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
+        FR.CreateSnapshot(False);
+        FR.CleanUpSnapshots(SpinMaxSnapshots.Value);
+    finally
+        FR.Free;
+    end;
+    // do this after snapshot run to ensure we don't queue up a list of calls.
+    tock := gettickcount64();
+    {$ifdef TESTAUTOSNAP}
+    debugln('DoAutoSnapshot - Finished snapshot, took ' + dbgs(Tock - Tick) + 'mS');
+    NextAutoSnapshot := now() + (SpinDaysPerSnapshot.value / (24*60)) ;
+    {$else}
+    NextAutoSnapshot := now() + SpinDaysPerSnapshot.value;
+    {$endif}
+    SettingsChanged();
+    SearchForm.UpdateSyncStatus(rsAutosnapshotRun);
+end;
+
+procedure TSett.CheckAutoSnapEnabledChange(Sender: TObject);
+begin
+    if CheckAutoSnapEnabled.Checked then begin
+        DoAutoSnapShot();
+    end;
+end;
 
 procedure TSett.ButtonManualSnapClick(Sender: TObject);
 var
@@ -1182,7 +1231,7 @@ begin
         FR.NoteDir := NoteDirectory;
         FR.SnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
-        FullName := FR.CreateSnapshot(True, False);
+        FullName := FR.CreateSnapshot(True);
         if mrYes = QuestionDlg('Snapshot created', FullName + ' ' + rsSnapShotCreated
                     , mtConfirmation, [mrYes, mrNo], 0) then
             if SelectSnapDir.Execute then
@@ -1192,8 +1241,6 @@ begin
         FR.Free;
     end;
 end;
-
-
 
 procedure TSett.ButtonSetSnapDirClick(Sender: TObject);
 begin
@@ -1222,6 +1269,10 @@ begin
     end;
 end;
 
+{ Note that AutoSync and AutoSnapshot share a timer.  AutoSync runs on each 'tick' of the timer,
+  that is, hourly, but autosnapshop looks at NextAutoSnapshot to decide if its time to do its thing.
+}
+
 { ------------------------ S Y N C -------------------------- }
 
 procedure TSett.ButtonSyncHelpClick(Sender: TObject);
@@ -1242,12 +1293,17 @@ begin
      CheckReadOnlyChange(Sender);
 end;
 
+
 procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
+    // debugln('WARNING - CheckBoxAutoSyncChange called');
     if ValidSync = '' then
        CheckBoxAutoSync.Checked:= false
-    else if CheckBoxAutoSync.Checked then
-        CheckAutoSync();
+    else if CheckBoxAutoSync.Checked then begin
+        TimerAutoSync.Enabled := false;
+        TimerAutoSync.Interval:= 1000;     // wait a second, then sync. AutoSnap will also be checked.
+        TimerAutoSync.Enabled := true;
+    end;
     CheckReadOnlyChange(Sender);
 end;
 
@@ -1264,30 +1320,35 @@ begin
         FormSync.ShowModal;
 end;
 
-procedure TSett.CheckAutoSync();
+procedure TSett.StartAutoSyncAndSnap();
 begin
-    if CheckBoxAutoSync.Checked and (ValidSync <> '') and (MainUnit.SingleNoteFileName = '')  then begin
+    if (MainUnit.SingleNoteFileName = '')  then begin
         TimerAutoSync.Interval:= 15000;     // wait 15 seconds after indexing to allow settling down
         TimerAutoSync.Enabled := true;
-    end else
-        if Application.HasOption('s', 'debug-sync') then
-            debugln('Cannot run auto sync right now');
+        // Note that this timer will also trigger checking of AutoSnapshot.  But AutoSnapshot only
+        // does something if NextAutoSnapshot is > now(), AutoSync always runs on timer if enabled.
+    end;
 end;
 
 procedure TSett.TimerAutoSyncTimer(Sender: TObject);
 begin
-    TimerAutoSync.enabled := False;
-    if  ValidSync = '' then exit;
-    if CheckBoxAutoSync.checked  and not FormSync.Busy then begin
+    // TimerAutoSync.enabled := False;
+    TimerAutoSync.Interval:= 60*60*1000;                                    // do it again in one hour
+    {$IFDEF TESTAUTOSNAP}
+    TimerAutoSync.Interval:= 60*1000;
+    debugln('WARNING - TESTAUTOSNAP is defined, timer called, MSC is ' + dbgs(MAskSettingsChanged));
+    {$ENDIF}
+    if  (ValidSync <> '') and CheckBoxAutoSync.checked  and (not FormSync.Busy) then begin
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.Transport:=TSyncTransport.SyncFile;
-        FormSync.SetupSync := False;       // That is, we are not, now, trying to setup sync
-        if FormSync.RunSyncHidden() then begin
-            TimerAutoSync.Interval:= 60*60*1000;     // do it again in one hour
-            TimerAutoSync.Enabled := true;
-        end;
+        FormSync.SetupSync := False;                                        // That is, we are not, now, trying to setup sync
+        FormSync.RunSyncHidden()
     end;
+    // debugln('Now its about ' + DateTimeToStr(now));
+    // debugln('Next Snap due ' + DateTimeToStr(NextAutoSnapshot));
+    if CheckAutoSnapEnabled.Checked and (NextAutoSnapshot < now()) then
+        DoAutoSnapshot;
 end;
 
 
@@ -1303,13 +1364,6 @@ begin
     end;
 end;
 
-procedure TSett.ButtonSnapDaysClick(Sender: TObject);
-begin
-    PopupDay.PopUp();
-    TimeEdit1.Time := now();
-end;
-
-	{ Called when ANY of the setting check boxes change so we can save. }
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
     SettingsChanged();      // Write to disk
