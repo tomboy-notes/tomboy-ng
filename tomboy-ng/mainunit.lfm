@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 88
+  Left = 441
   Height = 335
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 495
+  Top = 263
   Width = 459
   Caption = 'tomboy-ng'
   ClientHeight = 335
@@ -157,8 +157,7 @@ object MainForm: TMainForm
     OnClick = ButtonDismissClick
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 0
-    TabStop = False
+    TabOrder = 1
   end
   object Label3: TLabel
     Left = 56
@@ -344,7 +343,7 @@ object MainForm: TMainForm
     Width = 240
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
-    TabOrder = 1
+    TabOrder = 3
   end
   object ButtMenu: TBitBtn
     AnchorSideLeft.Control = Owner
@@ -433,7 +432,7 @@ object MainForm: TMainForm
       0000000000000000000000000000000000000000000000000000
     }
     OnClick = ButtMenuClick
-    TabOrder = 2
+    TabOrder = 0
   end
   object ButtonClose: TButton
     AnchorSideLeft.Control = ButtonDismiss
@@ -454,7 +453,7 @@ object MainForm: TMainForm
     BorderSpacing.Right = 2
     Caption = 'Quit'
     OnClick = ButtonCloseClick
-    TabOrder = 3
+    TabOrder = 2
   end
   object LabelBadNoteAdvice: TLabel
     Left = 24
