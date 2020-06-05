@@ -1,5 +1,5 @@
 object Sett: TSett
-  Left = 1477
+  Left = 1282
   Height = 525
   Top = 268
   Width = 630
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 630
-    ActivePage = TabSnapshot
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet

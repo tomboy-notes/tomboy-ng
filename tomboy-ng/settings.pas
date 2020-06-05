@@ -357,7 +357,7 @@ implementation
 
 {$R *.lfm}
 
-{$.DEFINE TESTAUTOSNAP}
+//{$DEFINE TESTAUTOSNAP}
 
 { TSett }
 
@@ -1211,7 +1211,7 @@ begin
     NextAutoSnapshot := now() + SpinDaysPerSnapshot.value;
     {$endif}
     SettingsChanged();
-    SearchForm.UpdateSyncStatus(rsAutosnapshotRun);
+    SearchForm.UpdateStatusBar(rsAutosnapshotRun);
 end;
 
 procedure TSett.CheckAutoSnapEnabledChange(Sender: TObject);

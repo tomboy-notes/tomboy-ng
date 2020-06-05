@@ -827,6 +827,7 @@ msgid "Text"
 msgstr ""
 
 #: tformcolours.speedtitle.caption
+msgctxt "tformcolours.speedtitle.caption"
 msgid "Title"
 msgstr ""
 

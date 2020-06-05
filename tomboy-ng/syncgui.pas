@@ -314,7 +314,7 @@ begin
             FormSyncError.ButtRetry.Visible := not Visible;                         // Dont show Retry if interactive
             ModalResult := FormSyncError.ShowModal;
             if ModalResult = mrCancel then begin                                    // else its Retry
-                SearchForm.UpdateSyncStatus('Auto Sync cancelled');
+                SearchForm.UpdateStatusBar('Auto Sync cancelled');
                 exit(false);
             end;
             SyncState := ASync.TestConnection();
@@ -323,7 +323,7 @@ begin
         Application.ProcessMessages;
         ASync.TestRun := False;
         ASync.StartSync();
-        SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
+        SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Label1.Caption:=rsAllDone;
@@ -411,7 +411,7 @@ begin
     ButtonSave.Enabled := False;
     ASync.TestRun := False;
     if ASync.StartSync() then begin
-        SearchForm.UpdateSyncStatus(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
+        SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();
         Label1.Caption:=rsAllDone;
