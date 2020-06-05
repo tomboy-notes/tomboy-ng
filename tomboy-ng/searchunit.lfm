@@ -1,16 +1,18 @@
 object SearchForm: TSearchForm
-  Left = 509
+  Left = 622
   Height = 401
-  Top = 263
+  Top = 158
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng_Search'
   ClientHeight = 401
   ClientWidth = 824
+  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
+  OnResize = FormResize
   OnShow = FormShow
   LCLVersion = '2.1.0.0'
   object Edit1: TEdit
@@ -96,7 +98,7 @@ object SearchForm: TSearchForm
       Enabled = False
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
-      TabOrder = 4
+      TabOrder = 3
     end
     object ButtonNotebookOptions: TButton
       AnchorSideLeft.Control = Panel1
@@ -117,38 +119,8 @@ object SearchForm: TSearchForm
       OnKeyDown = FormKeyDown
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 3
+      TabOrder = 2
       TabStop = False
-    end
-    object StringGrid1: TStringGrid
-      AnchorSideLeft.Control = Splitter1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
-      AnchorSideRight.Control = Panel1
-      AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = Panel1
-      AnchorSideBottom.Side = asrBottom
-      Left = 241
-      Height = 337
-      Top = 1
-      Width = 579
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      BorderSpacing.Left = 3
-      BorderSpacing.Right = 3
-      BorderSpacing.Bottom = 3
-      Color = clDefault
-      ColCount = 0
-      ColumnClickSorts = True
-      FixedCols = 0
-      FixedRows = 0
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goAutoAddRows, goThumbTracking, goSmoothScroll]
-      RowCount = 0
-      ScrollBars = ssAutoVertical
-      TabOrder = 1
-      OnDblClick = StringGrid1DblClick
-      OnKeyDown = FormKeyDown
-      OnKeyPress = StringGrid1KeyPress
-      OnResize = StringGrid1Resize
     end
     object ListBoxNotebooks: TListBox
       AnchorSideLeft.Control = ButtonClearFilters
@@ -165,7 +137,7 @@ object SearchForm: TSearchForm
       ItemHeight = 0
       OnClick = ListBoxNotebooksClick
       ScrollWidth = 230
-      TabOrder = 2
+      TabOrder = 1
       TopIndex = -1
     end
     object Panel2: TPanel
@@ -179,7 +151,40 @@ object SearchForm: TSearchForm
       Width = 232
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Notebooks'
+      TabOrder = 4
+    end
+    object ListViewNotes: TListView
+      AnchorSideLeft.Control = Splitter1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 241
+      Height = 340
+      Top = 1
+      Width = 582
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      AutoSortIndicator = True
+      AutoWidthLastColumn = True
+      BorderSpacing.Left = 3
+      Columns = <      
+        item
+        end      
+        item
+          Width = 530
+        end>
+      HideSelection = False
+      ReadOnly = True
+      RowSelect = True
+      ScrollBars = ssAutoVertical
+      SortColumn = 0
+      SortType = stText
       TabOrder = 5
+      ViewStyle = vsReport
+      OnDblClick = ListViewNotesDblClick
+      OnKeyPress = ListViewNotesKeyPress
     end
   end
   object ButtonMenu: TSpeedButton
@@ -296,12 +301,12 @@ object SearchForm: TSearchForm
     Panels = <>
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 472
-    top = 112
+    left = 344
+    top = 72
   end
   object PopupMenuNotebook: TPopupMenu
-    left = 472
-    top = 184
+    left = 560
+    top = 72
     object MenuEditNotebookTemplate: TMenuItem
       Caption = 'Edit Notebook Template'
       OnClick = MenuEditNotebookTemplateClick

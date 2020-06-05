@@ -72,7 +72,7 @@ unit Note_Lister;
 INTERFACE
 
 uses
-		Classes, SysUtils, Grids, Forms, FileUtil;
+		Classes, SysUtils, Grids, ComCtrls, Forms, FileUtil;
 
 type
    PNotebook=^TNotebook;
@@ -158,6 +158,9 @@ type
                                 // Indexes and maybe searches one note. TermList maybe nil.
    	procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
 
+                                // Inserts a new item into the ViewList, always Title, DateSt, FileName
+    function NewLVItem(const LView: TListView; const Title, DateSt, FileName: string): TListItem;
+
 
 
 
@@ -183,6 +186,8 @@ type
                                         { The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
+                                        { Loads a TListView with note title, LCD and ID}
+    procedure LoadListView(const LView: TListView; const SearchMode: boolean);
                                         { Changes the name associated with a Notebook in the internal data structure }
     function AlterNoteBook(const OldName, NewName: string): boolean;
                                         { Returns a multiline string to use in writing a notes notebook membership,
@@ -223,7 +228,7 @@ type
                                         { Loads the Notebook ListBox up with the Notebook names we know about. Add a bool to indicate
                                           we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
                                           GetNotes(Term) }
-    procedure LoadStGridNotebooks(const NotebookItems: TStrings; SearchListOnly: boolean);
+    procedure LoadListNotebooks(const NotebookItems: TStrings; SearchListOnly: boolean);
                                         { Loads the Notebook StringGrid up with the Notebook names we know about. Add a bool to indicate
                                           we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
                                           GetNotes(Term) }
@@ -258,7 +263,10 @@ type
     function NextNoteTitle(out SearchTerm : ANSIString) : boolean;
     		                            { removes note from int data, accepting either an ID or Filename }
     function DeleteNote(const ID : ANSIString) : boolean;
-    		                            { Copy the internal data about notes in passed Notebook to passed TStringGrid
+                                        { Copy the internal data about notes in passed Notebook to passed TListView
+                                          for display. So, shown would be all the notes in the nominated notebook.}
+    procedure LoadNotebookViewList(const VL: TListView; const NotebookName: AnsiString);
+                                        { Copy the internal data about notes in passed Notebook to passed TStringGrid
                                           for display. So, shown would be all the notes in the nominated notebook.}
     procedure LoadNotebookGrid(const Grid : TStringGrid; const NotebookName : AnsiString);
     		                            { Returns the ID (inc .note) of the notebook Template, if an empty string we did
@@ -544,6 +552,24 @@ begin
     NoteBookList.Add(ID, ANoteBook, IsTemplate);
 end;
 
+procedure TNoteLister.LoadNotebookViewList(const VL : TListView; const  NotebookName: AnsiString);
+var
+    Index : integer;
+    LCDst : string;
+begin
+    VL.Clear;
+    Index := NoteList.Count;
+    while Index > 0 do begin
+        dec(Index);
+        if NotebookList.IDinNotebook(NoteList.Items[Index]^.ID, NoteBookName) then begin
+            LCDst := NoteList.Items[Index]^.LastChange;
+            if length(LCDst) > 11 then  // looks prettier, dates are stored in ISO std
+                LCDst[11] := ' ';       // with a 'T' between date and time
+            NewLVItem(VL, NoteList.Items[Index]^.Title, LCDst, NoteList.Items[Index]^.ID);
+        end;
+	end;
+end;
+
 procedure TNoteLister.LoadNotebookGrid(const Grid: TStringGrid; const NotebookName: AnsiString);
 var
     Index : integer;
@@ -630,7 +656,7 @@ begin
 end;
 
 
-{ procedure TNoteLister.LoadStGridNotebooks(const NotebookGrid : TStringGrid; SearchListOnly : boolean);
+{ procedure TNoteLister.LoadListNotebooks(const NotebookGrid : TStringGrid; SearchListOnly : boolean);
 var
     Index : integer;
 
@@ -657,7 +683,7 @@ begin
 	end;
 end;        }
 
-procedure TNoteLister.LoadStGridNotebooks(const NotebookItems : TStrings; SearchListOnly : boolean);
+procedure TNoteLister.LoadListNotebooks(const NotebookItems : TStrings; SearchListOnly : boolean);
 var
     Index : integer;
 
@@ -1140,11 +1166,14 @@ var
     Index : integer;
     TheList : TNoteList;
     LCDst : string;
+    T1, T2, T3 : qword;
 begin
+    T1 := gettickcount64();
     if SearchMode then
         TheList := SearchNoteList
     else TheList := NoteList;
     while Grid.RowCount > 1 do Grid.DeleteRow(Grid.RowCount-1);
+    T2 := gettickcount64();
     Index := TheList.Count;
     while Index > 0 do begin
         dec(Index);
@@ -1159,9 +1188,50 @@ begin
                 LCDst, TheList.Items[Index]^.CreateDate, TheList.Items[Index]^.ID]);
         end;
     end;
+
     if Grid.SortColumn > -1 then
         Grid.SortColRow(True, Grid.SortColumn);
+    T3 := gettickcount64();
+    debugln('Note_Lister - LoadStGrid ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
 end;
+
+function TNoteLister.NewLVItem(const LView : TListView; const Title, DateSt, FileName: string): TListItem;
+var
+    TheItem : TListItem;
+begin
+   TheItem := LView.Items.Add;
+   TheItem.Caption := Title;
+   TheItem.SubItems.Add(copy(DateSt, 1, 19)+' ');
+   TheItem.SubItems.Add(FileName);
+   Result := TheItem;
+end;
+
+procedure TNoteLister.LoadListView(const LView : TListView; const SearchMode : boolean);
+var
+    Index : integer;
+    TheList : TNoteList;
+    LCDst : string;
+    T1, T2, T3 : qword;
+    // Full list mode, 2000 notes, Dell 7mS to clear, 20-40mS to load.
+begin
+    T1 := gettickcount64();
+    LView.Clear;
+    if SearchMode then
+        TheList := SearchNoteList
+    else TheList := NoteList;
+    T2 := gettickcount64();
+    Index := TheList.Count;
+    while Index > 0 do begin
+        dec(Index);
+        LCDst := TheList.Items[Index]^.LastChange;
+        if length(LCDst) > 11 then  // looks prettier, dates are stored in ISO std
+            LCDst[11] := ' ';       // with a 'T' between date and time
+        NewLVItem(LView, TheList.Items[Index]^.Title, LCDst, TheList.Items[Index]^.ID);
+    end;
+    T3 := gettickcount64();
+    debugln('LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));
+end;
+
 
 procedure TNoteLister.LoadStrings(const TheStrings: TStrings);
 var

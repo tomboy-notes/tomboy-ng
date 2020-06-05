@@ -117,7 +117,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
-    Grids, ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger, ResourceStr;
+    {Grids, }ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger, ResourceStr;
 
 // These are choices for main popup menus.
 type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtMainHelp, mtHelp, mtQuit, mtRecent);
@@ -134,6 +134,7 @@ type        { TSearchForm }
         CheckCaseSensitive: TCheckBox;
         Edit1: TEdit;
         ListBoxNotebooks: TListBox;
+        ListViewNotes: TListView;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
         MenuRenameNoteBook: TMenuItem;
@@ -144,31 +145,39 @@ type        { TSearchForm }
         ButtonMenu: TSpeedButton;
 		Splitter1: TSplitter;
         StatusBar1: TStatusBar;
-        StringGrid1: TStringGrid;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         procedure ButtonMenuClick(Sender: TObject);
 		procedure ButtonNotebookOptionsClick(Sender: TObject);
+                                    { If a search is underway, searches.  Else, if we have
+                                      an active notebook filter applied, reapply it. Failing
+                                      both of the above, refreshes the Notes and Notebooks
+                                      with data in Note_Lister. }
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonClearFiltersClick(Sender: TObject);
         procedure CheckCaseSensitiveChange(Sender: TObject);
         procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
         procedure Edit1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+                            // called after OnShow.
+        procedure FormActivate(Sender: TObject);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+        procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
         procedure ListBoxNotebooksClick(Sender: TObject);
+        procedure ListViewNotesDblClick(Sender: TObject);
+        procedure ListViewNotesKeyPress(Sender: TObject; var Key: char);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuRenameNoteBookClick(Sender: TObject);
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         procedure SpeedButton1Click(Sender: TObject);
-        procedure StringGrid1KeyPress(Sender: TObject; var Key: char);
-        procedure StringGrid1Resize(Sender: TObject);
+        // procedure StringGrid1KeyPress(Sender: TObject; var Key: char);
+        // procedure StringGrid1Resize(Sender: TObject);
 		//procedure StringGridNotebooksClick(Sender: TObject);
-        procedure StringGrid1DblClick(Sender: TObject);
+        // procedure StringGrid1DblClick(Sender: TObject);
         // Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
         // other downloded note ID. Adjusts Note_Lister according and marks any
         // note that is currently open as read only.
@@ -176,6 +185,7 @@ type        { TSearchForm }
         //procedure StringGridNotebooksPrepareCanvas(sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
         //procedure StringGridNotebooksResize(Sender: TObject);
     private
+        NeedRefresh : boolean;
         HelpNotes : TNoteLister;
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
             mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
@@ -188,10 +198,11 @@ type        { TSearchForm }
         procedure MenuHelpItems(AMenu: TPopupMenu);
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
-        procedure RefreshStrGrids();
+        //procedure RefreshNoteAndNotebooks();
+        procedure ScaleListView();
         { Copies note data from internal list to StringGrid, sorts it and updates the
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
-		procedure UseList();
+		//procedure UseList();
     public
 
         PopupTBMainMenu : TPopupMenu;
@@ -199,7 +210,7 @@ type        { TSearchForm }
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
-        procedure UpdateSyncStatus(SyncSt : string);
+        procedure UpdateStatusBar(SyncSt : string);
         {Just a service provided to NoteBook.pas, refresh the list of notebooks after adding or removing one}
         procedure RefreshNotebooks();
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
@@ -213,7 +224,7 @@ type        { TSearchForm }
         procedure MenuRecentItems(AMenu : TPopupMenu);
        	{ Call this NoteLister no longer thinks of this as a Open note }
         procedure NoteClosing(const ID: AnsiString);
-        { Updates the List with passed data. Either updates existing data or inserts new }
+        { Updates the In Memory List with passed data. Either updates existing data or inserts new }
         procedure UpdateList(const Title, LastChange, FullFileName: ANSIString; TheForm : TForm);
         { Reads header in each note in notes directory, updating Search List and
           the recently used list under the TrayIcon. Downside is time it takes
@@ -287,7 +298,10 @@ begin
             NoteLister.IndexThisNote(DownList.Strings[Index]);
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
-        UseList();
+        RefreshMenus(mkRecentMenu);
+        if Visible then ButtonRefresh.Enabled := True
+        else NeedRefresh := True;
+        // UseList();
     end;
 end;
 
@@ -346,7 +360,9 @@ begin
     	if not RenameFileUTF8(FullFileName, NewName)
     		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     end;
-    UseList();
+    RefreshMenus(mkRecentMenu);
+    if Visible then ButtonRefresh.Enabled := True
+    else NeedRefresh := True;
 end;
 
 function TSearchForm.NextNoteTitle(out SearchTerm: string): boolean;
@@ -361,27 +377,29 @@ end;
 
 procedure TSearchForm.RefreshNotebooks();
 begin
-    //NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
-    NoteLister.LoadStGridNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+    //NoteLister.LoadListNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
+    NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
 end;
 
     { As we no longer use the String Grid to provide a date sorted list of recent notes,
       it only needs to be refreshed when we are looking at it. I think. }
-procedure TSearchForm.RefreshStrGrids();
+{procedure TSearchForm.RefreshNoteAndNotebooks();
 {var
-    T1, T2, T3 : qword;  }
+    T1, T2, T3 : qword;}
 begin
     //T1 := gettickcount64();
-    NoteLister.LoadStGrid(StringGrid1, 2);         // 4 to 8mS on Dell
+    NoteLister.LoadStGrid(StringGrid1, 2);                      // ~90mS on Dell with 2000 notes
+    NoteLister.LoadListView(ListViewNotes, False);
     //T2 := gettickcount64();
     //NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS on Dell
     NoteLister.LoadStGridNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+
     //T3 := gettickcount64();
-    //debugln('SearchUnit - UseList Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
-end;
+    //debugln('SearchUnit - RefreshStrGrids Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
+end;     }
 
 { Sorts List and updates the recently used list under trayicon }
-procedure TSearchForm.UseList();
+(* procedure TSearchForm.UseList();                                    redundant !
 {var
     NB : string; }
 begin
@@ -393,10 +411,10 @@ begin
         NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
         if NB <> '' then
             NoteLister.LoadNotebookGrid(StringGrid1, NB);
-    end else RefreshStrGrids();  }
-end;
+    end else RefreshNoteAndNotebooks();  }
+end;      *)
 
-procedure TSearchForm.UpdateSyncStatus(SyncSt: string);
+procedure TSearchForm.UpdateStatusBar(SyncSt: string);
 begin
     //StatusBar1.Panels[0].Text:= SyncSt;
     StatusBar1.SimpleText:= SyncSt;
@@ -416,7 +434,10 @@ begin
     // T2 := gettickcount64();
     NoteLister.ThisNoteIsOpen(FullFileName, TheForm);
     // T3 := gettickcount64();
-    UseList();          // 13mS ?
+    RefreshMenus(mkRecentMenu);
+    if Visible then ButtonRefresh.Enabled := True
+    else NeedRefresh := True;
+    // UseList();          // 13mS ?
     // T4 := gettickcount64();
     // debugln('SearchUnit.UpdateList ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
@@ -625,6 +646,7 @@ end;
 procedure TSearchForm.FileMenuClicked(Sender : TObject);
 var
     FileName : string;
+    //Tick, Tock : qword;
 begin
     case TMenuTarget(TMenuItem(Sender).Tag) of
         mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
@@ -634,9 +656,13 @@ begin
         mtSearch :  if Sett.NoteDirectory = '' then
                             showmessage(rsSetupNotesDirFirst)
                     else begin
+
                             MoveWindowHere(Caption);
+                            //Tick := Gettickcount64();
                             EnsureVisible(true);
+                            //Tock := Gettickcount64();
                             Show;
+                            //debugln('SearchForm - FileMenuClicked ' + dbgs(Tock - Tick) + 'ms  ' + dbgs(GetTickCount64() - Tock) + 'mS');
                     end;
         mtAbout :    MainForm.ShowAbout();
         mtSync :     if(Sett.ValidSync <> '') then Sett.Synchronise()
@@ -664,6 +690,7 @@ begin
  		SearchForm.OpenNote(TMenuItem(Sender).Caption);
 end;
 
+
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
 var
     NB : string;
@@ -676,12 +703,21 @@ begin
         if ButtonNotebookOptions.Enabled then begin
             //NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
             NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
-            if NB <> '' then
-                NoteLister.LoadNotebookGrid(StringGrid1, NB);
-        end else RefreshStrGrids();
+            if NB <> '' then begin
+                // NoteLister.LoadNotebookGrid(StringGrid1, NB);
+                NoteLister.LoadNotebookViewList(ListViewNotes, NB);
+            end;
+        end else begin
+            // NoteLister.LoadStGrid(StringGrid1, 2);                      // ~90mS on Dell with 2000 notes
+            NoteLister.LoadListView(ListViewNotes, False);
+            NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+            ScaleListView();
+        end;
+        // RefreshNoteAndNotebooks();                 // deprecated method
         SelectedNotebook := 0;      // ie off
     end;
     ButtonRefresh.Enabled := false;
+    UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
 
 procedure TSearchForm.DoSearch();
@@ -696,10 +732,12 @@ begin
         TS1:=gettickcount64();
         Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
         // TS2:=gettickcount64();
-        NoteLister.LoadStGrid(StringGrid1, 2, True);
+        //NoteLister.LoadStGrid(StringGrid1, 2, True);
+        NoteLister.LoadListView(ListViewNotes, True);
+        // ToDo : do we need to call ScaleListView here ?
         // TS3:=gettickcount64();
-        //NoteLister.LoadStGridNotebooks(StringGridNotebooks, True);
-        NoteLister.LoadStGridNotebooks(ListBoxNotebooks.Items, True);
+        //NoteLister.LoadListNotebooks(StringGridNotebooks, True);
+        NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, True);
         TS4:=gettickcount64();
         StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
         {StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
@@ -730,6 +768,18 @@ begin
 
 end;
 
+procedure TSearchForm.FormActivate(Sender: TObject);
+//var tick : qword;
+begin
+    if NeedRefresh then begin
+        //Tick := gettickcount64();
+        NeedRefresh := False;
+        ButtonRefreshClick(self);
+        //debugln('SearchForm - FormActivate (first run) ' + dbgs(GetTickCount64() - Tick) + 'mS');
+    end;
+    //debugln('Search Unit Form Activate');
+end;
+
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
     CanClose := False;
@@ -748,7 +798,9 @@ begin
     NoteLister.DebugMode := Application.HasOption('debug-index');
     NoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := NoteLister.IndexNotes();
-    UseList();
+    UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
+    NeedRefresh := True;                                // eg refresh ListViewNotes on next OnActivate
+    RefreshMenus(mkRecentMenu);
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
     MainForm.UpdateNotesFound(Result);      // Says how many notes found and runs over checklist.
@@ -756,19 +808,24 @@ begin
 end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
+//var Tick : qword;
 begin
+    //NeedRefresh := True;            Index notes does this
+    //Tick := GetTickCount64();
     Caption := 'tomboy-ng Search';
     NoteLister := nil;
     if MainForm.closeASAP or (SingleNoteFileName <> '') then exit;
-    StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
+{    StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
     StringGrid1.FixedCols := 0;
     StringGrid1.Columns.Add;
     StringGrid1.Columns[0].Title.Caption := rsName;
     StringGrid1.Columns.Add;
     StringGrid1.Columns[1].Title.Caption := rsLastChange;
     StringGrid1.FixedRows:=1;
-    StringGrid1.Columns[1].Width := self.Canvas.GetTextWidth(' 2020-01-31 14:36:00 ');
+    StringGrid1.Columns[1].Width := self.Canvas.GetTextWidth(' 2020-01-31 14:36:00 ');     }
 
+    ListViewNotes.Column[0].Caption := rsName;
+    ListViewNotes.Column[1].Caption := rsLastChange;
 
 
     //StringGridNotebooks.Clear;
@@ -785,12 +842,13 @@ begin
 
     CreateMenus();
 
-    IndexNotes();           // This could be a slow process, maybe a new thread ?
+    IndexNotes();               // This could be a slow process, maybe a new thread ?
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
-    ButtonRefreshClick(self);
+    // ButtonRefreshClick(self);           // moved to OnActivate
     //RefreshMenus(mkFileMenu);
     //RefreshMenus(mkHelpMenu);
     //RefreshMenus(mkRecentMenu);
+    // debugln('SearchForm - Create ' + dbgs(GetTickCount64() - Tick) + 'mS');
 end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
@@ -810,16 +868,17 @@ begin
      end;
 end;
 
+procedure TSearchForm.FormResize(Sender: TObject);
+begin
+    ScaleListView();
+end;
+
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
     // if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
-    // Edit1.Text:= 'Search';
     CheckCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
-    //StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
-
-
     {$ifdef windows}  // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
         ListBoxNotebooks.Color := Sett.BackGndColour;
@@ -831,39 +890,21 @@ begin
          ButtonNoteBookOptions.Color := Sett.HiColour;
          ButtonClearFilters.Color := Sett.HiColour;
          ButtonMenu.color := Sett.HiColour;
-         //StringGrid1.Color := Sett.BackGndColour;
-         //StringGrid1.Font.color := Sett.TextColour;
-         stringGrid1.GridLineColor:= clnavy; //Sett.HiColour;
-         //stringgridnotebooks.GridLineColor:= clnavy;
-         StringGrid1.FixedColor := Sett.HiColour;
-         //StringGridNotebooks.FixedColor := Sett.HiColour;
+         //stringGrid1.GridLineColor:=
+         //StringGrid1.FixedColor := Sett.HiColour;
+         ListViewNotes.Color :=       clnavy;
+         ListViewNotes.Font.Color :=  Sett.HiColour;
+
          ButtonRefresh.Color := Sett.HiColour;
          splitter1.Color:= clnavy;
     end;
-    StringGrid1.Color := ListBoxNoteBooks.Color;
-    StringGrid1.Font.color := ListBoxNotebooks.Font.Color;
+    //StringGrid1.Color := ListBoxNoteBooks.Color;
+    //StringGrid1.Font.color := ListBoxNotebooks.Font.Color;
+    ListViewNotes.Color := ListBoxNoteBooks.Color;
+    ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
     {$endif}
-    {
-    stringgrid has -
-    AltColor - color of alternating rows
-    Fixedcolor - color of fixed cells
-    color - color of 'control'.
-    focuscolor - hollow rectangle around selected cell
-
-    To change selected cell colour we have to use OnPrepareCanvas but use
-    SelecteNoteBook to prevent it showing before user has clicked a cell.
-
-    }
-    //stringgrid1.FocusColor:= clblue;
-    //stringgrid1.Color := clwhite;
-
-    //stringgridnotebooks.Font := stringgrid1.font;
-    //stringgridnotebooks.FocusColor := stringgrid1.FocusColor;
-    //stringgridnotebooks.color := stringgrid1.color;
-    //stringgridnotebooks.Font.Color:= stringgrid1.Font.Color;
-    //stringGridNotebooks.SelectedColor:= clGray;
     {$ifdef DARWIN}ButtonMenu.Refresh;{$endif}      // Cocoa issue
-    RefreshStrGrids();
+    // debugln('Search Unit Form Show');
 end;
 
 
@@ -930,6 +971,13 @@ begin
     {$endif}
 end;
 
+
+// ----------------------------- ListView Things -------------------------------
+
+{ ListView Settings - AutoSort, AutoSortIndicator, AutoWidthLastColumn all true
+  Make two columns, name them, leave autwith off, ReadOnly, RowSelect true
+  ScrollBars ssAutoVertical, ViewStyle vsReport. }
+
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
 		TemplateIs: AnsiString);
 // Might be called with no Title (NewNote) or a Title with or without a Filename
@@ -979,7 +1027,7 @@ begin
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
 end;
 
-procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
+{procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
 var
     NoteTitle : ANSIstring;
     FullFileName : string;
@@ -996,8 +1044,43 @@ begin
     end;
   	if length(NoteTitle) > 0 then
         OpenNote(NoteTitle, FullFileName);
+end; }
+
+procedure TSearchForm.ListViewNotesDblClick(Sender: TObject);
+var
+    NoteTitle : ANSIstring;
+    FullFileName : string;
+begin
+    if  ListViewNotes.Selected = nil then exit;         // White space below notes ....
+    NoteTitle := ListViewNotes.Selected.Caption;
+    FullFileName :=  Sett.NoteDirectory + ListViewNotes.Selected.SubItems[1];
+  	if not FileExistsUTF8(FullFileName) then begin
+      	showmessage('Cannot open ' + FullFileName);
+      	exit();
+  	end;
+  	if length(NoteTitle) > 0 then
+        OpenNote(NoteTitle, FullFileName);
 end;
 
+procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
+begin
+    if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender);
+end;
+
+procedure TSearchForm.ScaleListView();
+var
+    Col1Width : integer;
+begin
+    // debugln('1...ScaleListView W=' + dbgs(ListViewNotes.Width) + ' Wc=' + dbgs(ListViewNotes.ClientWidth) + ' Wb= ' + dbgs(ListViewNotes.BorderWidth));
+    Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:00  ')   ;    // spaces allow for apparent error in scroll with
+    ListViewNotes.Column[1].Width := Col1width;
+    if ListViewNotes.ClientWidth > 100 then
+        ListViewNotes.Column[0].Width := ListViewNotes.ClientWidth - Col1width;
+    ListViewNotes.Column[0].SortIndicator:= siNone;
+    ListViewNotes.Column[1].SortIndicator:= siNone;
+    // debugln('2...ScaleListView W=' + dbgs(ListViewNotes.Width) + ' Wc=' + dbgs(ListViewNotes.ClientWidth) + ' Wb= ' + dbgs(ListViewNotes.BorderWidth));
+    //ListViewNotes.;
+end;
 
 { ----------------- NOTEBOOK STUFF -------------------- }
 
@@ -1020,6 +1103,7 @@ begin
         Edit1.SetFocus;
         Edit1.SelStart := 0;
         Edit1.SelLength := length(Edit1.Text);
+        UpdateStatusBar('');
 end;
 
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
@@ -1028,13 +1112,18 @@ begin
     ButtonClearFilters.Enabled := True;
     ButtonRefreshClick(self);
     SelectedNoteBook := ListBoxNotebooks.ItemIndex;
+
+    // Events here if there is a term search is progress are ignored because ButtonRefreshClick acts on
+    // search terms first.
+
     //ListBoxNotebooks.Hint := 'Options for ?';
     //StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
 
+
+
 {procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
 begin
-
     ButtonNotebookOptions.Enabled := True;
     ButtonClearFilters.Enabled := True;
     //StringGridNotebooks.SelectedColor:= clRed;        // does not work !
@@ -1109,6 +1198,7 @@ begin
     MainForm.PopupMenuSearch.PopUp;
 end;
 
+{
 procedure TSearchForm.StringGrid1KeyPress(Sender: TObject; var Key: char);
 begin
     if Key = char(ord(VK_RETURN)) then StringGrid1DblClick(Sender);
@@ -1117,7 +1207,7 @@ end;
 procedure TSearchForm.StringGrid1Resize(Sender: TObject);
 begin
     StringGrid1.Columns[0].Width := StringGrid1.Width - StringGrid1.Columns[1].Width -15;
-end;
+end;  }
 
 end.
 
