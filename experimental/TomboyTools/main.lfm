@@ -1,0 +1,387 @@
+object FormMain: TFormMain
+  Left = 905
+  Height = 496
+  Top = 216
+  Width = 731
+  Caption = 'FormMain'
+  ClientHeight = 496
+  ClientWidth = 731
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '2.1.0.0'
+  object PageControl1: TPageControl
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = PanelTop
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = PanelLower
+    Left = 0
+    Height = 382
+    Top = 50
+    Width = 731
+    ActivePage = TabImport
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 1
+    TabOrder = 0
+    object TabExport: TTabSheet
+      Caption = 'Export'
+      ClientHeight = 345
+      ClientWidth = 725
+      OnShow = TabExportShow
+      object LabelSourcePrompt: TLabel
+        Left = 22
+        Height = 19
+        Top = 219
+        Width = 127
+        Caption = 'Source Directory :'
+        ParentColor = False
+      end
+      object LabelSource: TLabel
+        Left = 23
+        Height = 19
+        Top = 243
+        Width = 87
+        Caption = 'LabelSource'
+        ParentColor = False
+      end
+      object LabelDestinationPrompt: TLabel
+        Left = 22
+        Height = 19
+        Top = 288
+        Width = 90
+        Caption = 'Destination :'
+        ParentColor = False
+      end
+      object LabelDestination: TLabel
+        Left = 22
+        Height = 19
+        Top = 315
+        Width = 120
+        Caption = 'LabelDestination'
+        ParentColor = False
+      end
+      object ComboSource: TComboBox
+        Left = 32
+        Height = 29
+        Top = 100
+        Width = 271
+        ItemHeight = 0
+        Items.Strings = (
+          'tomboy-ng'
+          'Tomboy'
+          'Manual'
+        )
+        OnChange = ComboSourceChange
+        Style = csDropDownList
+        TabOrder = 0
+      end
+      object Label1: TLabel
+        Left = 33
+        Height = 19
+        Top = 80
+        Width = 57
+        Caption = 'Source :'
+        ParentColor = False
+      end
+      object ComboExport: TComboBox
+        Left = 33
+        Height = 29
+        Top = 164
+        Width = 270
+        ItemHeight = 0
+        ItemIndex = 0
+        Items.Strings = (
+          'mark down'
+          'plain text'
+        )
+        OnChange = ComboExportChange
+        Style = csDropDownList
+        TabOrder = 1
+        Text = 'mark down'
+      end
+      object Label2: TLabel
+        Left = 33
+        Height = 19
+        Top = 140
+        Width = 77
+        Caption = 'Export As :'
+        ParentColor = False
+      end
+      object SpeedSetSource: TSpeedButton
+        Left = 184
+        Height = 22
+        Top = 216
+        Width = 151
+        Caption = 'Set Source'
+        OnClick = SpeedSetSourceClick
+      end
+      object SpeedSetDestination: TSpeedButton
+        Left = 184
+        Height = 22
+        Top = 285
+        Width = 151
+        Caption = 'Set Destination'
+        OnClick = SpeedSetDestinationClick
+      end
+      object ComboExportMode: TComboBox
+        Left = 32
+        Height = 33
+        Top = 36
+        Width = 271
+        ItemHeight = 0
+        OnChange = ComboExportModeChange
+        Style = csDropDownList
+        TabOrder = 2
+      end
+      object Label4: TLabel
+        Left = 32
+        Height = 19
+        Top = 16
+        Width = 92
+        Caption = 'Export Mode'
+        ParentColor = False
+      end
+      object CheckListBox1: TCheckListBox
+        AnchorSideTop.Control = TabExport
+        AnchorSideRight.Control = TabExport
+        AnchorSideRight.Side = asrBottom
+        Left = 379
+        Height = 230
+        Top = 10
+        Width = 336
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 10
+        BorderSpacing.Right = 10
+        ItemHeight = 0
+        OnClick = CheckListBox1Click
+        ParentFont = False
+        TabOrder = 3
+        TopIndex = -1
+      end
+      object LabelVersion: TLabel
+        Left = 384
+        Height = 19
+        Top = 352
+        Width = 89
+        Caption = 'Version 0.02'
+        ParentColor = False
+      end
+    end
+    object TabImport: TTabSheet
+      Caption = 'Import'
+      ClientHeight = 345
+      ClientWidth = 725
+      OnShow = TabImportShow
+      object Label3: TLabel
+        Left = 32
+        Height = 19
+        Top = 200
+        Width = 82
+        Caption = 'Destination'
+        ParentColor = False
+      end
+      object ComboImportDest: TComboBox
+        Left = 32
+        Height = 33
+        Top = 224
+        Width = 310
+        ItemHeight = 0
+        OnChange = ComboImportDestChange
+        Style = csDropDownList
+        TabOrder = 0
+      end
+      object ComboSourceFormat: TComboBox
+        Left = 32
+        Height = 33
+        Top = 40
+        Width = 310
+        ItemHeight = 0
+        OnChange = ComboSourceFormatChange
+        Style = csDropDownList
+        TabOrder = 1
+      end
+      object Label7: TLabel
+        Left = 32
+        Height = 19
+        Top = 16
+        Width = 105
+        Caption = 'Source Format'
+        ParentColor = False
+      end
+      object CheckListImportFiles: TCheckListBox
+        AnchorSideTop.Control = TabImport
+        AnchorSideRight.Control = TabImport
+        AnchorSideRight.Side = asrBottom
+        Left = 379
+        Height = 214
+        Top = 10
+        Width = 336
+        Anchors = [akTop, akRight]
+        BorderSpacing.Top = 10
+        BorderSpacing.Right = 10
+        ItemHeight = 0
+        OnClick = CheckListImportFilesClick
+        OnClickCheck = CheckListImportFilesClickCheck
+        TabOrder = 2
+        TopIndex = -1
+      end
+      object SpeedImportSourceDir: TSpeedButton
+        Left = 222
+        Height = 22
+        Top = 117
+        Width = 120
+        Caption = 'Select '
+        OnClick = SpeedImportSourceDirClick
+      end
+      object Label8: TLabel
+        Left = 32
+        Height = 19
+        Top = 120
+        Width = 119
+        Caption = 'Source Directory'
+        ParentColor = False
+      end
+      object LabelImportSource: TLabel
+        Left = 32
+        Height = 19
+        Top = 144
+        Width = 135
+        Caption = 'LabelImportSource'
+        ParentColor = False
+      end
+      object LabelImportDestination: TLabel
+        Left = 32
+        Height = 19
+        Top = 290
+        Width = 168
+        Caption = 'LabelImportDestination'
+        ParentColor = False
+      end
+      object GroupBox1: TGroupBox
+        Left = 570
+        Height = 105
+        Top = 232
+        Width = 145
+        Caption = 'Title is : '
+        ClientHeight = 84
+        ClientWidth = 141
+        TabOrder = 3
+        object RadioTitleFirstLine: TRadioButton
+          Left = 8
+          Height = 23
+          Top = 8
+          Width = 90
+          Caption = 'First Line'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioTitleFilename: TRadioButton
+          Left = 8
+          Height = 23
+          Top = 40
+          Width = 90
+          Caption = 'Filename'
+          TabOrder = 1
+        end
+      end
+    end
+  end
+  object PanelTop: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 0
+    Height = 50
+    Top = 0
+    Width = 731
+    Anchors = [akTop, akLeft, akRight]
+    ClientHeight = 50
+    ClientWidth = 731
+    TabOrder = 1
+    object Label5: TLabel
+      Left = 16
+      Height = 19
+      Top = 16
+      Width = 121
+      Caption = 'Tomboy Tools'
+      Font.Height = -16
+      Font.Name = 'Sans'
+      Font.Style = [fsBold]
+      ParentColor = False
+      ParentFont = False
+    end
+    object Label6: TLabel
+      Left = 176
+      Height = 19
+      Top = 16
+      Width = 448
+      Caption = 'Tested against tomboy-ng, should work with Tomboy etc. v0.03'
+      ParentColor = False
+    end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 473
+    Width = 731
+    Panels = <>
+  end
+  object PanelLower: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = StatusBar1
+    Left = 0
+    Height = 41
+    Top = 432
+    Width = 731
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ClientHeight = 41
+    ClientWidth = 731
+    TabOrder = 3
+    object LabelErrorMessage: TLabel
+      Left = 24
+      Height = 19
+      Top = 8
+      Width = 137
+      Caption = 'LabelErrorMessage'
+      Color = clRed
+      ParentColor = False
+      Transparent = False
+    end
+    object SpeedExit: TSpeedButton
+      AnchorSideTop.Control = PanelLower
+      AnchorSideRight.Control = PanelLower
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PanelLower
+      AnchorSideBottom.Side = asrBottom
+      Left = 610
+      Height = 39
+      Top = 1
+      Width = 120
+      Anchors = [akTop, akRight, akBottom]
+      Caption = 'Exit'
+      OnClick = SpeedExitClick
+    end
+    object SpeedProceed: TSpeedButton
+      AnchorSideTop.Control = PanelLower
+      AnchorSideRight.Control = SpeedExit
+      AnchorSideBottom.Control = PanelLower
+      AnchorSideBottom.Side = asrBottom
+      Left = 490
+      Height = 39
+      Top = 1
+      Width = 120
+      Anchors = [akTop, akRight, akBottom]
+      Caption = 'Proceed'
+      OnClick = SpeedProceedClick
+    end
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    left = 440
+    top = 344
+  end
+end
