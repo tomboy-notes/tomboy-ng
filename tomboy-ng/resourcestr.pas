@@ -70,6 +70,7 @@ RESOURCESTRING
   rsAutosnapshotRun='Completed autosnapshot run.';  // Message on status bar after an AutoSnapshot run.
   rsSnapshotCreated = 'created, do you want to copy it elsewhere ?';      // refers to a just taken snapshot
   rsErrorCopyFile = 'Failed to copy file, does destination dir exist ?';
+  rsAutoSyncNotPossible = 'Auto sync not possible right now';               // Auto sync is configured but cannot proceed, probably because drive is not available
 
   // BackUpView
 

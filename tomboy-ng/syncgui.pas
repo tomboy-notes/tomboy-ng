@@ -137,7 +137,7 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr;
+uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier;
 
 {$R *.lfm}
 
@@ -294,6 +294,8 @@ end;
 function TFormSync.ManualSync : boolean;
 var
     SyncState : TSyncAvailable = SyncNotYet;
+    Notifier : TNotifier;
+    SyncSummary : string;
 begin
     Label1.Caption := rsTestingSync;
     Application.ProcessMessages;
@@ -301,29 +303,43 @@ begin
     try
         ASync.ProceedFunction:= @Proceed;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
-	ASync.NotesDir:= NoteDirectory;
-	ASync.ConfigDir := LocalConfig;
+	    ASync.NotesDir:= NoteDirectory;
+	    ASync.ConfigDir := LocalConfig;
         ASync.RepoAction:=RepoUse;
         Async.SetTransport(TransPort);
         SyncState := ASync.TestConnection();
         ASync.SyncAddress := ASync.SyncAddress;
-	while SyncState <> SyncReady do begin
+	    while SyncState <> SyncReady do begin
             if ASync.DebugMode then debugln('Failed testConnection');
             FormSyncError.Label1.caption := rsUnableToSync + ':';
             FormSyncError.label3.caption := ASync.ErrorString;
-            FormSyncError.ButtRetry.Visible := not Visible;                         // Dont show Retry if interactive
-            ModalResult := FormSyncError.ShowModal;
-            if ModalResult = mrCancel then begin                                    // else its Retry
-                SearchForm.UpdateStatusBar('Auto Sync cancelled');
+            // in autosync mode, form is not visible, we just send a notify that cannot sync right now.
+            if not Visible then begin
+                SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
+                Notifier := TNotifier.Create;                                           // does not require a 'free'.
+                Notifier.ShowTheMessage('tomboy-ng', rsAutoSyncNotPossible, 12000);     // 12 seconds
+                exit;
+            end else begin
+                showmessage('Unable to sync because ' + ASync.ErrorString);
+                FormSync.ModalResult := mrAbort;
                 exit(false);
             end;
+            (*FormSyncError.ButtRetry.Visible := not Visible;                           // Dont show Retry if interactive
+            ModalResult := FormSyncError.ShowModal;
+            if ModalResult = mrCancel then begin                                        // else its Retry
+
+                exit(false);
+            end; *)
             SyncState := ASync.TestConnection();
         end;
         Label1.Caption:= rsRunningSync;
         Application.ProcessMessages;
         ASync.TestRun := False;
         ASync.StartSync();
-        SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
+        SyncSummary :=  DisplaySync();
+        SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
+        Notifier := TNotifier.Create;                                           // does not require a 'free'.
+        Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary);
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Label1.Caption:=rsAllDone;

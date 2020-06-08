@@ -140,8 +140,8 @@ end;
 
 
 procedure TNoteBookPick.SetupForChange();
-var
-    NoteID : String;
+{var
+    NoteID : String;}
 begin
     //  Note : NBIDList does not need to be created or freed. Just a pointer.
     TabExisting.TabVisible:=False;

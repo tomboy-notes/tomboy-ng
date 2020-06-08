@@ -154,6 +154,10 @@ msgstr ""
 msgid "Completed autosnapshot run."
 msgstr ""
 
+#: resourcestr.rsautosyncnotpossible
+msgid "Auto sync not possible right now"
+msgstr ""
+
 #: resourcestr.rsbadnotesfound1
 msgctxt "resourcestr.rsbadnotesfound1"
 msgid "Please go to Settings -> Snapshot -> Recover ...."

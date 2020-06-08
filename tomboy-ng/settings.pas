@@ -110,7 +110,7 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
-    LCLIntf, Spin{, SnapFrame};
+    LCLIntf, Spin, notifier;
 
 // Types;
 
@@ -1186,12 +1186,14 @@ end;
 procedure TSett.DoAutoSnapshot;
 var
    FR : TFormRecover;
-   Tick, Tock : qword;
-   //FullName : string;
+   {$ifdef TESTAUTOSNAP} Tick, Tock : qword;{$endif}
+   Notifier : TNotifier;
 begin
     if MaskSettingsChanged then
         exit;                   // don't trigger this while GUI is being setup.
+    {$ifdef TESTAUTOSNAP}
     Tick := gettickcount64();
+    {$endif}
     FR := TFormRecover.Create(self);
     try
         FR.NoteDir := NoteDirectory;
@@ -1203,8 +1205,8 @@ begin
         FR.Free;
     end;
     // do this after snapshot run to ensure we don't queue up a list of calls.
-    tock := gettickcount64();
     {$ifdef TESTAUTOSNAP}
+    tock := gettickcount64();
     debugln('DoAutoSnapshot - Finished snapshot, took ' + dbgs(Tock - Tick) + 'mS');
     NextAutoSnapshot := now() + (SpinDaysPerSnapshot.value / (24*60)) ;
     {$else}
@@ -1212,6 +1214,9 @@ begin
     {$endif}
     SettingsChanged();
     SearchForm.UpdateStatusBar(rsAutosnapshotRun);
+    Notifier := TNotifier.Create;
+    Notifier.ShowTheMessage('tomboy-ng', rsAutosnapshotRun);
+        // Note, don't free it, it frees itself.
 end;
 
 procedure TSett.CheckAutoSnapEnabledChange(Sender: TObject);
