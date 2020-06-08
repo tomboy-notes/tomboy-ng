@@ -383,7 +383,7 @@ end;
 
     { As we no longer use the String Grid to provide a date sorted list of recent notes,
       it only needs to be refreshed when we are looking at it. I think. }
-{procedure TSearchForm.RefreshNoteAndNotebooks();
+(*procedure TSearchForm.RefreshNoteAndNotebooks();
 {var
     T1, T2, T3 : qword;}
 begin
@@ -396,10 +396,10 @@ begin
 
     //T3 := gettickcount64();
     //debugln('SearchUnit - RefreshStrGrids Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
-end;     }
+end;
 
 { Sorts List and updates the recently used list under trayicon }
-(* procedure TSearchForm.UseList();                                    redundant !
+ procedure TSearchForm.UseList();                                    redundant !
 {var
     NB : string; }
 begin
@@ -1027,7 +1027,7 @@ begin
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
 end;
 
-{procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
+(* procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
 var
     NoteTitle : ANSIstring;
     FullFileName : string;
@@ -1044,7 +1044,7 @@ begin
     end;
   	if length(NoteTitle) > 0 then
         OpenNote(NoteTitle, FullFileName);
-end; }
+end; *)
 
 procedure TSearchForm.ListViewNotesDblClick(Sender: TObject);
 var

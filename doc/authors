@@ -5,7 +5,7 @@ tomboy-ng is built using -
 
    The Free Pascal Compiler and Lazarus, http://wiki.freepascal.org 
 
-   KControls - http://www.tkweb.eu/en/delphicomp/kcontrols.html
+   KControls - http://www.tkweb.eu/en/delphicomp/kcontrols.html, https://github.com/kryslt/KControls
 
 Much thanks due to the authors and developers of the above. Thanks are also due to the many people involved with the FPC/Lazarus Forum without who's help and patience this project would not have every got off the ground.
 
@@ -17,3 +17,4 @@ Significent contributions made by Benjamin Brandall - me@benj.email
 
 Translations by Roy Reese (much gramatical work and Spanish) and Heimen Stoffels (Dutch).
 
+Libnotify unit by Ido Kanner, https://github.com/ik5/libnotify-fpc

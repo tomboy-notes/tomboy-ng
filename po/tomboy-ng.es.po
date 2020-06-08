@@ -176,6 +176,10 @@ msgstr "Todo terminado"
 msgid "Completed autosnapshot run."
 msgstr ""
 
+#: resourcestr.rsautosyncnotpossible
+msgid "Auto sync not possible right now"
+msgstr ""
+
 #: resourcestr.rsbadnotesfound1
 #, fuzzy
 #| msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
