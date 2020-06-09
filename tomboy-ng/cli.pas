@@ -31,7 +31,7 @@ begin
     ErrorMsg := InCommingError;
     Result := false;
     if ErrorMsg = '' then begin
-        ErrorMsg := Application.CheckOptions('hgo:l:', 'delay-start lang: debug-log: dark-theme no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
+        ErrorMsg := Application.CheckOptions('hgo:l:', 'lang: debug-log: dark-theme no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit');
         if Application.HasOption('h', 'help') then
             ErrorMsg := 'Usage -';
     end;
@@ -42,7 +42,7 @@ begin
        debugln(rsMacHelp2);
        {$endif}
        {$ifdef WINDOWS}debugln('   --dark-theme'); {$endif}
-       debugln('   --delay-start                ' + rsHelpDelay);
+       //debugln('   --delay-start                ' + rsHelpDelay);
        debugln('   -l CCode  --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);
        debugln('   -h --help                    ' + rsHelpHelp);
@@ -69,7 +69,7 @@ function HaveCMDParam() : boolean;
     { ToDo : put options in a TStringList or a set and share, less mistakes ....}
 var
     Params : TStringList;
-    LongOpts : array [1..13] of string = ('delay-start', 'dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
+    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
             'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit');
 
 begin
@@ -134,8 +134,6 @@ begin
          else exit(True);               // proceed in SNM
     // Looks like a normal startup
     if AreWeClient() then exit(False);
-    if Application.HasOption('delay-start') then    // ToDo : confirm it works, This to allow eg Enlightenment to decide its colours.
-    sleep(2000);
     Result := true;
 end;
 

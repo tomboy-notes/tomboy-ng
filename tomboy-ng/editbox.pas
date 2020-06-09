@@ -1056,10 +1056,18 @@ begin
     // If above returns false, no more to be found, but how to tell user ?
 end;
 
-
-
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 begin
+    // debugln('OnActivate called');
+    if Ready then begin               // just possible that a new note was created, check for its link.
+        if KMemo1.Blocks.RealSelLength > 1 then begin
+            //debugln('OnActivate 1, checking for new link, [' + KMemo1.Blocks.SelText + ']');
+            CheckForLinks(KMemo1.Blocks.RealSelStart, KMemo1.Blocks.RealSelEnd);
+            //debugln('OnActivate 2, checking for new link, [' + KMemo1.Blocks.SelText + ']');
+            // ToDo : CheckForLinks clears any preexisting selection, should we restore ?
+        end;
+    end;
+    // ToDo : should we only do this the first time through ?
     if SingleNoteMode then begin
         SpeedbuttonSearch.Enabled := False;
         SpeedButtonLink.Enabled := False;
@@ -1377,7 +1385,7 @@ procedure TEditBoxForm.FormShow(Sender: TObject);
 var
     ItsANewNote : boolean = false;
 begin
-    if Ready then exit();				// its a "re-show" event. Already have a note loaded.
+    if Ready then exit;                             // its a "re-show" event. Already have a note loaded.
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
@@ -1794,8 +1802,6 @@ begin
     if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
         CheckForHTTP(PText, StartScan, httpLen);
     if Sett.ShowIntLinks then
-        // ToDo : FPC320 flags SearchTerm as potentially uninitialises after following line, FPC304 does not.
-        // easily suppressed by setting it to '' at start but why ?
         while SearchForm.NextNoteTitle(SearchTerm) do
             if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
                 MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
