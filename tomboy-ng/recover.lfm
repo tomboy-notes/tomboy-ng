@@ -1,7 +1,7 @@
 object FormRecover: TFormRecover
-  Left = 572
+  Left = 667
   Height = 445
-  Top = 252
+  Top = 244
   Width = 758
   Caption = 'FormRecover'
   ClientHeight = 445
@@ -9,7 +9,7 @@ object FormRecover: TFormRecover
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.1.0.0'
   object Label1: TLabel
     Left = 8
     Height = 19

@@ -742,8 +742,6 @@ begin
         StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
         {StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
             + inttostr(TS4 - TS3) + 'mS  and we found ' + dbgs(Found) + ' notes';}
-        // ToDo : Possible that replacing stringgrids with listbox might speed up loadstgrid, apparently it can do multicolumns ?
-        // Loading the string grid is becoming a significent part of search time.
     end;
 end;
 

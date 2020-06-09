@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 1282
+  Left = 936
   Height = 525
-  Top = 268
+  Top = 232
   Width = 630
   BorderIcons = []
   Caption = 'Form Caption'
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 630
-    ActivePage = TabBasic
+    ActivePage = TabSnapshot
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = 4
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet

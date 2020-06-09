@@ -192,7 +192,6 @@ begin
     ExistsInRepo := FileExistsUTF8(Sett.NoteDirectory + FileName);
     if ExistsInRepo then
         if IDYES <> Application.MessageBox(pchar(rsOverwriteNote), pchar(rsNoteAlreadyInRepo),
-        // ToDo : check above works as expected, why do I need to cast ?
                     MB_ICONQUESTION + MB_YESNO) then
             exit();
     if SearchForm.NoteLister.IsThisNoteOpen(FileName, AForm) then begin
