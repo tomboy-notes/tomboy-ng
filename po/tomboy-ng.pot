@@ -211,7 +211,7 @@ msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive
 msgstr ""
 
 #: resourcestr.rsfilesyncinfo2
-msgid "or connect to a remote server over the internet with sshfs"
+msgid "or use a remote server over the internet with sshfs"
 msgstr ""
 
 #: resourcestr.rsfound
@@ -855,6 +855,14 @@ msgstr ""
 
 #: tformhelpnotes.label2.caption
 msgid "Contact author if you can help translate."
+msgstr ""
+
+#: tformindex.caption
+msgid "Heading in this Note"
+msgstr ""
+
+#: tformindex.panel1.caption
+msgid "Single lines, all Huge, Large Bold or Large"
 msgstr ""
 
 #: tformmarkdown.buttonclose.caption
@@ -1588,10 +1596,6 @@ msgstr ""
 #: tsett.label10.caption
 msgctxt "tsett.label10.caption"
 msgid "Settings"
-msgstr ""
-
-#: tsett.label11.caption
-msgid "AUTO snapshots not implemented yet, use manual !"
 msgstr ""
 
 #: tsett.label13.caption

@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 936
+  Left = 475
   Height = 525
-  Top = 232
+  Top = 261
   Width = 630
   BorderIcons = []
   Caption = 'Form Caption'
@@ -528,9 +528,9 @@ object Sett: TSett
       ClientWidth = 624
       OnResize = TabSnapshotResize
       object Label9: TLabel
-        Left = 18
+        Left = 32
         Height = 22
-        Top = 20
+        Top = 48
         Width = 426
         Caption = 'A snaphot is a copy of your current note directory.'
         Font.Height = -19
@@ -582,12 +582,12 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ButtonManualSnap
         Left = 0
-        Height = 280
-        Top = 120
+        Height = 296
+        Top = 104
         Width = 624
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Bottom = 2
-        ClientHeight = 280
+        ClientHeight = 296
         ClientWidth = 624
         TabOrder = 2
         object CheckAutoSnapEnabled: TCheckBox
@@ -602,15 +602,15 @@ object Sett: TSett
         object Label10: TLabel
           Left = 28
           Height = 19
-          Top = 8
+          Top = 0
           Width = 59
           Caption = 'Settings'
           ParentColor = False
         end
         object LabelSnapDir: TLabel
-          Left = 29
+          Left = 28
           Height = 19
-          Top = 48
+          Top = 32
           Width = 58
           Caption = 'Snap dir'
           ParentColor = False
@@ -618,7 +618,7 @@ object Sett: TSett
         object SpinDaysPerSnapshot: TSpinEdit
           Left = 28
           Height = 29
-          Top = 96
+          Top = 80
           Width = 76
           MaxValue = 31
           MinValue = 1
@@ -629,7 +629,7 @@ object Sett: TSett
         object SpinMaxSnapshots: TSpinEdit
           Left = 28
           Height = 29
-          Top = 136
+          Top = 128
           Width = 76
           MinValue = 10
           OnChange = CheckReadOnlyChange
@@ -639,7 +639,7 @@ object Sett: TSett
         object Label5: TLabel
           Left = 128
           Height = 19
-          Top = 106
+          Top = 88
           Width = 130
           Caption = 'Days per snapshot'
           ParentColor = False
@@ -647,19 +647,11 @@ object Sett: TSett
         object Label16: TLabel
           Left = 128
           Height = 19
-          Top = 144
+          Top = 136
           Width = 211
           Caption = 'Maxium number of snapshots'
           ParentColor = False
         end
-      end
-      object Label11: TLabel
-        Left = 32
-        Height = 19
-        Top = 64
-        Width = 370
-        Caption = 'AUTO snapshots not implemented yet, use manual !'
-        ParentColor = False
       end
     end
     object TabSpell: TTabSheet

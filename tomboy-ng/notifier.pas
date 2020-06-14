@@ -1,7 +1,7 @@
 unit notifier;
 
 {$mode objfpc}{$H+}
-{ A trivial unit that uses libnotify on Linux and a timed out TPopupNotify on other platforms.
+(* A trivial unit that uses libnotify on Linux and a timed out TPopupNotify on other platforms.
 
   Does very little, on linux it just calls libnotify,  https://github.com/ik5/libnotify-fpc
   On Non-Linux, it calls TPopupNotifier, sets a timer and removes the Popup after the set
@@ -49,7 +49,8 @@ unit notifier;
   You should have received a copy of the GNU Library General Public License
   along with this library; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-}
+*)
+
 interface
 
 uses

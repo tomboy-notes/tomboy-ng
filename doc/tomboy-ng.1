@@ -17,11 +17,13 @@ tomboy-ng \- manage a collection of notes using a simple markup
 
 .SH DESCRIPTION
 .B tomboy-ng
-is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is possibly file compatible with Tomdroid and GNote. Tomboy-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model but not yet Network Sync using Rainy or Graphal.
+is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is possibly file compatible with Tomdroid and GNote. Tomboy-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs.
 
-Many users will want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can interact with it via that Icon. However, a small window is also opened, it can be dismissed if you see the system tray icon. Some Gnome3 distros do not show the system tray icon, while you can keep that small window visible, see the Github wiki pages (below) for much better solutions. A command line switch (-g or --gnome3) protects the small window from accidental dismissal.
+tomboy-ng has built in systems to take snapshots of your notes for safe keeping, to import and export notes in different formats, spell checking means to group your notes into "notebooks" for easy management.
 
-Tomboy-ng requires the gtk2 libraries be available on Linux, uses native libraries on Windows and Mac.
+Many users will want to have tomboy-ng start at logon time and leave it running indefinitly. When running, it will put an Icon in the System Tray and you can interact with it via that Icon. However, some Gnome 3 based Linux distros cannot display the System Tray Icon, on such limited systems, add tomboy-ng to your dock as a favourite and clicking that will either start tomboy-ng or activate an existing instance. 
+
+On Windows and Mac tomboy-ng uses native libraries, on Linux, tomboy-ng comes in both GTK2 and Qt5 version and most systems have almost all the necessary libraries pre installed.
 
 While options below are familiar to Linux users, Mac and Windows users may like to look at some examples further down to see how to use them.
 
@@ -29,10 +31,6 @@ While options below are familiar to Linux users, Mac and Windows users may like 
 .TP
 .BR \-h 
 Print some help and exit.
-
-.TP
-.BR \-g ", " \-\-gnome3\fR 
-Run gnome3 mode, needed on Linux releases based on gnome3 3.28 or later but not the Ubuntu flavoured ones as they include a usable System Tray. Prevents the application from completely hiding when not in use.
 
 .TP
 .BR \-\-debug-sync
@@ -44,9 +42,7 @@ Generate a lot of logging information on the console while indexing the notes re
 
 .TP
 .BR \-\-debug\-log=\fILOGFILE
-Direct debug infor to a file, necessary to see that output on Windows and Mac, useful on Linux. LOGFILE is a filename and a (writable) path to that filename. On Windows, make a desktop shortcut to tomboy-ng and then edit the Shortcut->Target parameter to something like -
-
-"c:\\Program Files\\tomboy-ng64.exe" --debug-log=%userprofile%\\debug.txt
+Direct debug info to a file, this is necessary to see that output on Windows and Mac and sometimes useful on Linux. LOGFILE is a filename and a (writable) path to that filename. See section below on debugging.
 
 .TP
 .BR \-\-lang=\fICC\fR
@@ -61,40 +57,11 @@ Create or use an alternative config. That config could, for example, specify an 
 Open a note in single note mode. In this mode, a seperate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a plain text file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
 
 
-.SH EDITING KEYBOARD SHORTCUTS
+.SH Further Help
+tomboy-ng comes bundled with several read only notes that provide help on topics such as keyboard short cuts, setting up a sync system, using the built in calculator and keeping your notes safe.
 
-The following keyboard shortcuts apply when editing a note.
-
-.IB Ctrl\ B 
-Bold the selected Text
-
-.IB Ctrl\ I
-Italicise the selected Text
-
-.IB Ctrl\ S
-Strikeout the selected Text
-
-.IB Ctrl\ T 
-Fixed width font ('T' for typewriter ?)
-
-.IB Ctrl\ H
-Highlight the selected Text
-
-.IB Ctrl\ U
-Underline the selected font
-
-.IB Ctrl\ F
-Find in this note
-
-.IB Ctrl\ Shift\ F
-Open the Notes Search Box
-
-.IB Ctrl\ N
-Open a New Note
-
-.IB Ctrl\ F4
-Quit (ie close) this Note
-
+The project's wiki also has extensive information available.
+.I https://github.com/tomboy-notes/tomboy-ng
 
 
 .SH DEBUGGING

@@ -31,6 +31,7 @@ unit recover;
     2019/05/19  Display strings all (?) moved to resourcestrings
     2019/12/18  Allow user to move stringgrid colums and pin its bottom to form.
     2020/05/19  Avoid var out of for loop problem in ButtonDeleteBadNotesClick() and TabSheetExistingShow()
+    2020/06/11  Ensure snapshot dir exists .....
 }
 
 
@@ -186,20 +187,8 @@ begin
 end;
 
 procedure TFormRecover.ButtonSnapHelpClick(Sender: TObject);
-{var
-    DocsDir : string;   // this probably belongs in Settings. }
 begin
     MainUnit.MainForm.ShowHelpNote('recover.note');
-    (*
-    DocsDir := AppendPathDelim(ExtractFileDir(Application.ExeName));                     // UNTESTED
-    {$ifdef LINUX}DocsDir := '/usr/share/doc/tomboy-ng/'; {$endif}
-    {$ifdef DARWIN}
-    DocsDir := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';
-    //DocsDir := '/Applications/tomboy-ng.app/Contents/SharedSupport/';
-    {$endif}  // untested
-    // showmessage('About to open ' + DocsDir + 'recover.note');
-    MainUnit.MainForm.SingleNoteMode(DocsDir + 'recover.note', False, True);
-    *)
 end;
 
 
@@ -366,6 +355,13 @@ begin
     //if Manual then ZipName := ZipName + 'Man'
     //else ZipName := ZipName + 'Auto'
     //if Monthly then ZipName := ZipName + 'Month';       // both true is silly, assert !
+    if not DirectoryExists(SnapDir) then begin
+        createDir(AppendPathDelim(NoteDir) + SnapDir);
+        if not DirectoryExists(SnapDir) then begin
+            Showmessage('Cannot create ' + SnapDir);
+            exit('');
+        end;
+    end;
     CreateSnapshot(NoteDir, SnapDir + ZipName + '.zip');
     result := SnapDir + ZipName + '.zip';
 end;
