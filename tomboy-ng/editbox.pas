@@ -966,15 +966,18 @@ var
     IForm : TFormIndex;
 begin
     IForm := TFormIndex.Create(Self);
+    IForm.ModalResult := mrNone;
     IForm.TheKMemo := KMemo1;
     IForm.Left := Left;
     IForm.Top := Top;
+    //debugln('EditBox, MenuItemIndexClick - about to show Index List');
     IForm.ShowModal;
     if IForm.SelectedBlock >= 0 then begin
         KMemo1.SelStart := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks.Items[IForm.SelectedBlock]);
         KMemo1.SelLength := 0;
     end;
     IForm.Free;
+    //debugln('EditBox, MenuItemIndexClick - freed Index List');
     KMemo1.SetFocus;
 end;
 

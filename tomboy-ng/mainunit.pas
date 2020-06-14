@@ -69,6 +69,7 @@ unit Mainunit;
     2020/05/16  Don't prevent closing of splash screen.
     2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
     2020/05/26  Improved tabbing
+    2020/06/11  remove unused closeASAP, open splash if bad note.
 
     CommandLine Switches
 
@@ -169,7 +170,7 @@ type
         procedure TestDarkThemeInUse();
 
     public
-        closeASAP: Boolean;
+        // closeASAP: Boolean;
         HelpNotesPath : string;     // full path to help notes, with trailing delim.
         AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
         UseTrayMenu : boolean;
@@ -433,13 +434,24 @@ procedure TMainForm.FormShow(Sender: TObject);
 var
     NoteID, NoteTitle : string;
 begin
-    if CloseASAP then begin
+    { if CloseASAP then begin
       close;
       exit;
+    end;  }
+    if SearchForm.NoteLister.XMLError then begin
+        LabelError.Caption := rsFailedToIndex;
+        LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
+        //AllowDismiss := False;
+    end else begin
+        LabelError.Caption := '';
+        LabelBadNoteAdvice.Caption:= '';
+        if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then
+            ButtonDismissClick(Self);
     end;
-    if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
+
+    (* if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
          {if AllowDismiss then} ButtonDismissClick(Self);
-     end;
+     end;  *)
     Left := 10;
     Top := 40;
     TestDarkThemeInUse();
@@ -456,14 +468,6 @@ begin
     if SingleNoteFileName <> '' then begin      // Thats the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
         exit;
-    end;
-    if SearchForm.NoteLister.XMLError then begin
-        LabelError.Caption := rsFailedToIndex;
-        LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
-        //AllowDismiss := False;
-    end else begin
-        LabelError.Caption := '';
-        LabelBadNoteAdvice.Caption:= '';
     end;
 
     CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;

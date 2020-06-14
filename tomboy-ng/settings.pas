@@ -32,14 +32,10 @@ unit settings;
 	2017/9/27 - Created
 
 	2017/10/10 - added ability to set fonts to small, medium and big
-
 	2017/10/15 - gave the setting form Tabs, lot less cluttered.
-
 	2017/11/25 - added a button to notes path config to use the 'default' path
-	that is, similar to what tomboy does. Code to make that path.
-
+	             that is, similar to what tomboy does. Code to make that path.
 	2017/11/28 - put a ; after a line of windows only code.
-
 	2017/12/08 - changed size of Mediun normal font, one size smaller
 	2017/12/28 - extensive changes so this form is now Main form. This is
 				because Cocoa cannot handle Hide() in main form OnShow event.
@@ -101,6 +97,7 @@ unit settings;
     2020/04/28  Put four random digits in place of the '0000' in GetLocalTime()
     2020/04/04  Don't run autosync in singlenote mode.
     2020/05/11  Moved all handling of the backup files to BackupView
+    2020/06/11  check if snapshot ok before flushing old ones.
 }
 
 {$mode objfpc}{$H+}
@@ -156,7 +153,6 @@ type
 	  GroupBox5: TGroupBox;
 	  Label1: TLabel;
           Label10: TLabel;
-          Label11: TLabel;
           Label12: TLabel;
           Label13: TLabel;
           Label14: TLabel;
@@ -1199,8 +1195,8 @@ begin
         FR.NoteDir := NoteDirectory;
         FR.SnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
-        FR.CreateSnapshot(False);
-        FR.CleanUpSnapshots(SpinMaxSnapshots.Value);
+        if ('' <> FR.CreateSnapshot(False)) then
+            FR.CleanUpSnapshots(SpinMaxSnapshots.Value);
     finally
         FR.Free;
     end;

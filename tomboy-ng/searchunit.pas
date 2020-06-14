@@ -812,7 +812,7 @@ begin
     //Tick := GetTickCount64();
     Caption := 'tomboy-ng Search';
     NoteLister := nil;
-    if MainForm.closeASAP or (SingleNoteFileName <> '') then exit;
+    if { MainForm.closeASAP or } (SingleNoteFileName <> '') then exit;
 {    StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
     StringGrid1.FixedCols := 0;
     StringGrid1.Columns.Add;

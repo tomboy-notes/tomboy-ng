@@ -30,6 +30,7 @@ unit Index;
 
 HISTORY
     2019/05/14  Display strings all (?) moved to resourcestrings
+    2020/06/14  Added lockout to deal with RH issue.
 }
 
 {$mode objfpc}{$H+}
@@ -45,11 +46,14 @@ type
     { TFormIndex }
 
     TFormIndex = class(TForm)
+        Label1: TLabel;
         ListBox1: TListBox;
         Panel1: TPanel;
+        procedure FormActivate(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure ListBox1Click(Sender: TObject);
     private
+        BlockClose : boolean;
         function IsHeading(const BlkNo: integer): integer;
 
     public
@@ -66,26 +70,40 @@ implementation
 
 { TFormIndex }
 
-uses Settings;
+uses Settings, lazlogger;
 
 procedure TFormIndex.FormShow(Sender: TObject);
 var
     Index : integer = 0;
 begin
+    BlockClose := True;
+    ModalResult := mrNone;
     SelectedBlock := -1;
-    while Index < TheKmemo.Blocks.Count do begin
-        while TheKMemo.Blocks.Items[Index].ClassNameIs('TKMemoParagraph') do begin
-            inc(Index);
-            if Index >= TheKMemo.Blocks.Count then exit;
+    ListBox1.Items.BeginUpdate;
+    try
+        while Index < TheKmemo.Blocks.Count do begin
+            while TheKMemo.Blocks.Items[Index].ClassNameIs('TKMemoParagraph') do begin
+                inc(Index);
+                if Index >= TheKMemo.Blocks.Count then exit;
+            end;
+            Index := IsHeading(Index);
         end;
-        Index := IsHeading(Index);
+    finally
+        ListBox1.Items.EndUpdate;
     end;
+end;
+
+procedure TFormIndex.FormActivate(Sender: TObject);
+begin
+    BlockClose := False;
 end;
 
 procedure TFormIndex.ListBox1Click(Sender: TObject);
 begin
-    if Listbox1.ItemIndex = -1 then
+    if (Listbox1.ItemIndex = -1) or BlockClose then begin
+        ListBox1.ItemIndex := -1;
         exit;
+    end;
     SelectedBlock := PtrInt(Listbox1.Items.Objects[Listbox1.ItemIndex]);
     //ShowMessage('Attached value: ' + IntToStr(SelectedBlock));
     Modalresult := mrOK;
@@ -128,27 +146,6 @@ begin
     ListBox1.AddItem(St, TObject(PtrInt(BlkNo)));
     inc(Result);
 end;
-
-    (*
-                and ((BlkNo +1) < TheKMemo.Blocks.Count)
-                and TheKMemo.Blocks.Items[BlkNo+1].ClassNameIs('TKMemoParagraph'))
-     end;
-    if
-    then begin
-        // OK, its a single block line. But is it a heading ?
-        if TKmemoTextBlock(TheKMemo.Blocks.Items[BlkNo]).TextStyle.Font.Size
-                    in [Sett.FontTitle, Sett.FontLarge, Sett.FontHuge] then begin
-              ListBox1.AddItem(TKmemoTextBlock(TheKMemo.Blocks.Items[BlkNo]).Text, TObject(PtrInt(BlkNo)));
-              inc(BlkNo);
-              exit(BlkNo + 1);
-        end;
-    end;
-    // if to here, the BlkNo did not point to start of a heading. Skip to next Para ...
-    while BlkNo < TheKmemo.Blocks.Count do begin
-        if
-    end;
-    need to skip ahead to next block following a parmarker.
-end;    *)
 
 end.
 

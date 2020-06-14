@@ -239,7 +239,7 @@ msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive
 msgstr ""
 
 #: resourcestr.rsfilesyncinfo2
-msgid "or connect to a remote server over the internet with sshfs"
+msgid "or use a remote server over the internet with sshfs"
 msgstr ""
 
 #: resourcestr.rsfound
@@ -928,6 +928,14 @@ msgstr "Haga doble clic en un idioma"
 #: tformhelpnotes.label2.caption
 msgid "Contact author if you can help translate."
 msgstr "Pongase en contacto si puede ayudar con traducciones."
+
+#: tformindex.caption
+msgid "Heading in this Note"
+msgstr ""
+
+#: tformindex.panel1.caption
+msgid "Single lines, all Huge, Large Bold or Large"
+msgstr ""
 
 #: tformmarkdown.buttonclose.caption
 msgctxt "tformmarkdown.buttonclose.caption"
@@ -1699,11 +1707,6 @@ msgstr "Preferencias se guardarán en:"
 msgctxt "tsett.label10.caption"
 msgid "Settings"
 msgstr "Preferencias"
-
-#: tsett.label11.caption
-msgctxt "tsett.label11.caption"
-msgid "AUTO snapshots not implemented yet, use manual !"
-msgstr "Instantáneas AUTOMÁTICAS no están disponible todavía, ¡use manual!"
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
