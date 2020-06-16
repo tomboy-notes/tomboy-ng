@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 475
+  Left = 478
   Height = 525
-  Top = 261
+  Top = 257
   Width = 630
   BorderIcons = []
   Caption = 'Form Caption'
@@ -592,9 +592,9 @@ object Sett: TSett
         TabOrder = 2
         object CheckAutoSnapEnabled: TCheckBox
           Left = 28
-          Height = 23
+          Height = 24
           Top = 184
-          Width = 162
+          Width = 164
           Caption = 'Use auto snapshots'
           OnChange = CheckAutoSnapEnabledChange
           TabOrder = 0

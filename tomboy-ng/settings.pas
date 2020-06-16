@@ -1298,11 +1298,12 @@ end;
 procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
     // debugln('WARNING - CheckBoxAutoSyncChange called');
+    if MAskSettingsChanged then exit;                       // Don't trigger timer during setup
     if ValidSync = '' then
        CheckBoxAutoSync.Checked:= false
     else if CheckBoxAutoSync.Checked then begin
         TimerAutoSync.Enabled := false;
-        TimerAutoSync.Interval:= 1000;     // wait a second, then sync. AutoSnap will also be checked.
+        TimerAutoSync.Interval:= 1000;                      // wait a second, then sync. AutoSnap will also be checked.
         TimerAutoSync.Enabled := true;
     end;
     CheckReadOnlyChange(Sender);
@@ -1327,7 +1328,7 @@ begin
         TimerAutoSync.Interval:= 15000;     // wait 15 seconds after indexing to allow settling down
         TimerAutoSync.Enabled := true;
         // Note that this timer will also trigger checking of AutoSnapshot.  But AutoSnapshot only
-        // does something if NextAutoSnapshot is > now(), AutoSync always runs on timer if enabled.
+        // does something if NextAutoSnapshot is > now(), while AutoSync always runs on timer if enabled.
     end;
 end;
 

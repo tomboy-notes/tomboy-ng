@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 1368
+  Left = 1371
   Height = 335
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 312
+  Top = 308
   Width = 459
   Caption = 'tomboy-ng'
   ClientHeight = 335
@@ -337,10 +337,10 @@ object MainForm: TMainForm
   end
   object CheckBoxDontShow: TCheckBox
     Left = 24
-    Height = 23
+    Height = 24
     Hint = 'You can reverse this from Settings'
     Top = 232
-    Width = 240
+    Width = 242
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
     TabOrder = 3

@@ -438,6 +438,21 @@ begin
       close;
       exit;
     end;  }
+    TestDarkThemeInUse();
+    {$ifdef windows}                // linux apps know how to do this themselves
+    if Sett.DarkTheme then begin
+        //color := Sett.BackGndColour;
+        color := Sett.HiColour;
+        font.color := Sett.TextColour;
+        ButtMenu.Color := Sett.BackGndColour;
+        ButtonClose.Color := Sett.BackGndColour;
+        ButtonDismiss.Color := Sett.HiColour;
+    end;
+    {$endif}
+    if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
+        SingleNoteMode(SingleNoteFileName);
+        exit;
+    end;
     if SearchForm.NoteLister.XMLError then begin
         LabelError.Caption := rsFailedToIndex;
         LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
@@ -454,21 +469,6 @@ begin
      end;  *)
     Left := 10;
     Top := 40;
-    TestDarkThemeInUse();
-    {$ifdef windows}                // linux apps know how to do this themselves
-    if Sett.DarkTheme then begin
-        //color := Sett.BackGndColour;
-        color := Sett.HiColour;
-        font.color := Sett.TextColour;
-        ButtMenu.Color := Sett.BackGndColour;
-        ButtonClose.Color := Sett.BackGndColour;
-        ButtonDismiss.Color := Sett.HiColour;
-    end;
-    {$endif}
-    if SingleNoteFileName <> '' then begin      // Thats the global in CLI Unit
-        SingleNoteMode(SingleNoteFileName);
-        exit;
-    end;
 
     CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
     if Sett.CheckShowSearchAtStart.Checked then

@@ -1,7 +1,7 @@
 object FormIndex: TFormIndex
-  Left = 385
+  Left = 388
   Height = 222
-  Top = 156
+  Top = 152
   Width = 466
   Caption = 'Heading in this Note'
   ClientHeight = 222
