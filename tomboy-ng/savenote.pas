@@ -672,8 +672,10 @@ begin
     // move it over to the actual position. That will prevent, to some extent, poweroff
     // crashes messing with files.  May generate an EStreamError
 
-    {$define STAGEDWRITE}
-    {$ifdef STAGEDWRITE}
+    //{$define STAGEDWRITE}
+    //{$ifdef STAGEDWRITE}
+    {$ifdef WINDOWS}        // temp kludge until I understand the problem RenameFileUTF has with smb shares.
+                            // this will now work OK on all linux file systems but without the write, delete.move process.
         TmpName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
         if not DirectoryExists(TmpName) then
            if not CreateDir(AppendPathDelim(tmpname)) then begin
@@ -692,7 +694,9 @@ begin
                 if not SafeWindowsDelete(FileName, ErrorMsg) then
                    exit(false);
         {$endif}
+        //showmessage('T=' + TmpName + ' and F=' + FileName);
         result := RenameFileUTF8(TmpName, FileName);    // Unix ok to over write, windows is not !
+        // ToDo : Note that the above line seems to fail on a smb shared directory.  Must get to bottom ....
     {$else}        // thats the ifdef StagedWrite, here we write directly to note file.
         try
             OutStream.SavetoFile(FileName);
@@ -701,7 +705,7 @@ begin
             OutStream := nil;
         end;
     {$endif}                                        // thats the ifdef StagedWrite
-    if not Result then NoteLoc.ErrorStr:='Failed Rename';
+    if not Result then NoteLoc.ErrorStr:='Failed Rename T=' + TmpName + ' and F=' + FileName;
 end;
 
 {                    // moved to note lister
