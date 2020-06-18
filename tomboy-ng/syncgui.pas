@@ -52,6 +52,7 @@ unit SyncGUI;
     2018/11/04  Added support to update in memory NoteList after a sync.
     2019/05/19  Display strings all (?) moved to resourcestrings
     2020/02/20  Added capability to sync without showing GUI.
+    2020/06/18  Only show good sync notification for 3 seconds
 }
 
 {$mode objfpc}{$H+}
@@ -339,7 +340,7 @@ begin
         SyncSummary :=  DisplaySync();
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
         Notifier := TNotifier.Create;                                           // does not require a 'free'.
-        Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary);
+        Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary, 3000);
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Label1.Caption:=rsAllDone;

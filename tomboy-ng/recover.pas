@@ -32,6 +32,7 @@ unit recover;
     2019/12/18  Allow user to move stringgrid colums and pin its bottom to form.
     2020/05/19  Avoid var out of for loop problem in ButtonDeleteBadNotesClick() and TabSheetExistingShow()
     2020/06/11  Ensure snapshot dir exists .....
+    2020/06/11  Really Ensure snapshot dir exists, rename SnapDir FullSnapDir
 }
 
 
@@ -111,7 +112,7 @@ type
             // Note that, at present, this debugmode is not set automatically anywhere.
         DebugMode : boolean;
         RequiresIndex : boolean;
-        SnapDir, NoteDir, ConfigDir : string;
+        FullSnapDir, NoteDir, ConfigDir : string;
         // Creates a snapshot, returning its full name.
         function CreateSnapshot(const Manual: boolean): string;
         procedure CleanUpSnapshots(const MaxSnaps : integer);
@@ -194,7 +195,7 @@ end;
 
 procedure TFormRecover.ButtonMakeSafetySnapClick(Sender: TObject);
 begin
-    CreateSnapShot(NoteDir, SnapDir + 'Safety.zip');
+    CreateSnapShot(NoteDir, FullSnapDir + 'Safety.zip');
     Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
 end;
 
@@ -208,10 +209,10 @@ procedure TFormRecover.RestoreSnapshot(const Snapshot : string);
 begin
     if mrYes <> QuestionDlg(rsDeleteAndReplace_1, rsDeleteAndReplace_2 + ' ' + NoteDir
             + ' '  + rsDeleteAndReplace_3 + ' '
-            + FormatDateTime( 'yyyy-mm-dd hh:mm', FileDateToDateTime(FileAge(SnapDir + Snapshot))) + ' ?'
-            // + Snapshot + ' ' + DateTimeToStr(FileDateToDateTime(FileAge(SnapDir + Snapshot))) + ' ?'
+            + FormatDateTime( 'yyyy-mm-dd hh:mm', FileDateToDateTime(FileAge(FullSnapDir + Snapshot))) + ' ?'
+            // + Snapshot + ' ' + DateTimeToStr(FileDateToDateTime(FileAge(FullSnapDir + Snapshot))) + ' ?'
             , mtConfirmation, [mrYes, mrNo], 0) then exit;
-    CleanAndUnzip(NoteDir, SnapDir + Snapshot);
+    CleanAndUnzip(NoteDir, FullSnapDir + Snapshot);
     if FileExists(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg') then begin
         CopyFile(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg', ConfigDir + 'tomboy-ng.cfg');
         DeleteFile(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg');
@@ -230,7 +231,7 @@ RESOURCESTRING
 
 procedure TFormRecover.Button4Click(Sender: TObject);
 begin
-    if fileexists(SnapDir + 'Safety.zip') then
+    if fileexists(FullSnapDir + 'Safety.zip') then
         RestoreSnapshot('Safety.zip')
     else showmessage(rsNoSafetySnapshot);
 end;
@@ -255,8 +256,8 @@ begin
                     except on EGridException do exit;                   // clicked outside valid area
                     end;
                     if length(NName) < 9 then exit;
-                    // showmessage('We will open ' + SnapDir + 'temp' + PathDelim + NName);
-                    MainUnit.MainForm.SingleNoteMode(SnapDir + 'temp' + PathDelim + NName, False, True);
+                    // showmessage('We will open ' + FullSnapDir + 'temp' + PathDelim + NName);
+                    MainUnit.MainForm.SingleNoteMode(FullSnapDir + 'temp' + PathDelim + NName, False, True);
                 end;
     end;
 end;
@@ -322,13 +323,13 @@ RESOURCESTRING
 procedure TFormRecover.ShowNotes(const FullSnapName : string);
 begin
     PanelNoteList.Caption:=rsNotesInSnap +' ' + ExpandZipName(FullSnapName);
-    ForceDirectory(SnapDir + 'temp');
-    CleanAndUnZip(SnapDir + 'temp' + PathDelim, FullSnapName);
+    ForceDirectory(FullSnapDir + 'temp');
+    CleanAndUnZip(FullSnapDir + 'temp' + PathDelim, FullSnapName);
     if SnapNoteLister <> Nil then
         FreeAndNil(SnapNoteLister);
     SnapNoteLister := TNoteLister.Create;
     SnapNoteLister.Debugmode := DebugMode;
-    SnapNoteLister.WorkingDir:= SnapDir + 'temp' + PathDelim;
+    SnapNoteLister.WorkingDir:= FullSnapDir + 'temp' + PathDelim;
     {Result := }SnapNoteLister.IndexNotes();
 	SnapNoteLister.LoadStGrid(StringGrid1, 4);          // ToDo : convert this to use ListView, simpler, cleaner colours etc.
 	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
@@ -352,18 +353,15 @@ var
 begin
     if Manual then ZipName := ZipDate() + '_Man'
     else ZipName := ZipDate() + '_Auto';
-    //if Manual then ZipName := ZipName + 'Man'
-    //else ZipName := ZipName + 'Auto'
-    //if Monthly then ZipName := ZipName + 'Month';       // both true is silly, assert !
-    if not DirectoryExists(SnapDir) then begin
-        createDir(AppendPathDelim(NoteDir) + SnapDir);
-        if not DirectoryExists(SnapDir) then begin
-            Showmessage('Cannot create ' + SnapDir);
+    if not DirectoryExists(FullSnapDir) then begin
+        createDir(FullSnapDir);
+        if not DirectoryExists(FullSnapDir) then begin
+            Showmessage('Cannot create ' + FullSnapDir);
             exit('');
         end;
     end;
-    CreateSnapshot(NoteDir, SnapDir + ZipName + '.zip');
-    result := SnapDir + ZipName + '.zip';
+    CreateSnapshot(NoteDir, FullSnapDir + ZipName + '.zip');
+    result := FullSnapDir + ZipName + '.zip';
 end;
 
 procedure TFormRecover.CreateSnapshot(const FullSourceDir, FullZipName: string);
@@ -406,7 +404,7 @@ var
      ToRemoveFromList : integer;
      St : string;
 begin
-    Snaps := FindAllFiles(SnapDir, '*_Auto.zip', false); // list contains full file names !
+    Snaps := FindAllFiles(FullSnapDir, '*_Auto.zip', false); // list contains full file names !
     try
         // debugln('RECOVER - CleanUpSnapshots() we have numb snapshots = ' + dbgs(Snaps.Count));
         Snaps.Sort;
@@ -427,7 +425,7 @@ end;
 procedure TFormRecover.ListBoxSnapshotsDblClick(Sender: TObject);
 begin
     if (ListBoxSnapshots.ItemIndex >= 0) and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count) then begin
-        ShowNotes(SnapDir + ListBoxSnapshots.Items[ListBoxSnapshots.ItemIndex]);
+        ShowNotes(FullSnapDir + ListBoxSnapshots.Items[ListBoxSnapshots.ItemIndex]);
     end;
 end;
 
@@ -508,7 +506,7 @@ var
 begin
     ListBoxSnapshots.Clear;
     Result := 0;
-	if FindFirst(SnapDir + '*.zip', faAnyFile and faDirectory, Info)=0 then begin
+	if FindFirst(FullSnapDir + '*.zip', faAnyFile and faDirectory, Info)=0 then begin
 		repeat
           ListBoxSnapshots.AddItem(Info.Name, nil);
           inc(Result);

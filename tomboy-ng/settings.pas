@@ -98,6 +98,7 @@ unit settings;
     2020/04/04  Don't run autosync in singlenote mode.
     2020/05/11  Moved all handling of the backup files to BackupView
     2020/06/11  check if snapshot ok before flushing old ones.
+    2020/06/18  Ensure a default config file is written asap at first start.
 }
 
 {$mode objfpc}{$H+}
@@ -274,8 +275,8 @@ type
 
         procedure SetFontSizes;
         // Saves all current settings to disk. Call when any change is made. If unable
-        // to write to disk, returns False;
-        function SettingsChanged(): boolean;
+        // to write to disk, returns False, If IgnoreMask, writes even if masked.
+        function SettingsChanged(IgnoreMask : boolean = false): boolean;
 		function fGetValidSync: string;
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
         procedure fSetValidSync(Repo: string);
@@ -829,6 +830,9 @@ var
     //telltail : boolean;
     //ReqFontSize, SyncType : ANSIString;
 begin
+
+    debugln('TSett.CheckConfigFile - in checkconfig');
+
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
@@ -898,7 +902,9 @@ begin
         CheckDirectory(LabelSnapDir.Caption);
 	    SyncSettings();
     end else begin      // OK, no config eh ?  We'll set some defaults ...
+        debugln('TSett.CheckConfigFile - no config');
         if CheckDirectory(NoteDirectory) then begin
+            debugln('TSett.CheckConfigFile - creating config');
             //MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
             CheckShowIntLinks.Checked:= True;
@@ -909,13 +915,15 @@ begin
             FixedFont := DefaultFixedFont;
             LabelFileSync.Caption := rsSyncNotConfig;
             CheckAutoSnapEnabled.Checked := False;
-            if not SettingsChanged() then // write a initial default file, shows user a message on error
+            NextAutoSnapShot := now();                      // Just so it looks pretty
+            if not SettingsChanged(True) then               // write a initial default file, shows user a message on error
                 HaveConfig := false;
+            debugln('TSett.CheckConfigFile - config ok = ' + dbgs(HaveConfig));
             //MaskSettingsChanged := True;
             HaveConfig := True;
         end else begin
-            // Only get to here becasue we have failed to setup an initial notes dir
-            // and we don't even have a settings file in place. Directories may not be present.
+            // Only get to here because we have failed to setup an initial notes dir and we
+            // don't even have a settings file in place. Directories may not be present. Its bad.
             LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
             NoteDirectory := '';
             CheckManyNoteBooks.Checked := False;
@@ -949,12 +957,12 @@ begin
     if InBool then result := 'true' else result := 'false';
 end;
 
-function TSett.SettingsChanged() : boolean;
+function TSett.SettingsChanged(IgnoreMask : boolean = false) : boolean;
 var
 	ConfigFile : TINIFile;
 begin
     Result := True;
-    if MaskSettingsChanged then exit();
+    if MaskSettingsChanged and (not IgnoreMask) then exit();
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
         try
@@ -1016,7 +1024,7 @@ begin
             end;
             // --------- S N A P S H O T    S E T T I N G S  -------------------
             configfile.WriteBool('Snapshot', 'AutoSnapEnabled', CheckAutoSnapEnabled.Checked);
-            configfile.WriteDateTime('Snapshot', 'NextAutoSnapshot', NextAutoSnapshot);
+            configfile.WriteDateTime('Snapshot', 'NextAutoSnapshot', NextAutoSnapshot);         // Format can (?) be set in SysUtils but does not matter as long as its consistent on this machine
             configfile.WriteInteger('Snapshot', 'DaysPerSnapshot', SpinDaysPerSnapshot.Value);
             configfile.WriteInteger('Snapshot', 'DaysMaxSnapshots', SpinMaxSnapshots.Value);
         finally
@@ -1193,7 +1201,7 @@ begin
     FR := TFormRecover.Create(self);
     try
         FR.NoteDir := NoteDirectory;
-        FR.SnapDir := LabelSnapDir.Caption;
+        FR.FullSnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
         if ('' <> FR.CreateSnapshot(False)) then
             FR.CleanUpSnapshots(SpinMaxSnapshots.Value);
@@ -1230,7 +1238,7 @@ begin
     FR := TFormRecover.Create(self);
     try
         FR.NoteDir := NoteDirectory;
-        FR.SnapDir := LabelSnapDir.Caption;
+        FR.FullSnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
         FullName := FR.CreateSnapshot(True);
         if mrYes = QuestionDlg('Snapshot created', FullName + ' ' + rsSnapShotCreated
@@ -1259,7 +1267,7 @@ begin
     FR := TFormRecover.Create(self);
     try
         FR.NoteDir := NoteDirectory;
-        FR.SnapDir := LabelSnapDir.Caption;
+        FR.FullSnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
         // Danger Will Robertson ! We cannot assume LocalConfig has a trailing slash !
         FR.Showmodal;

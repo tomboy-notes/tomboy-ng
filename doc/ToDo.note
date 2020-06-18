@@ -14,6 +14,7 @@ There is some advice about DIY debugging further down this document.<size:huge>
 <bold>Known Issues and todo list (updated 2020/03/15)</bold></size:huge>
 Recent fixes show as strikeout.
 
+<list><list-item dir="ltr">Do not set you notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine). </list-item></list>
 <list><list-item dir="ltr">We don't do multilevel bullets. Lines starting with an '*' should be auto converted to a Bullet.</list-item></list>
 <list><list-item dir="ltr">Tabs do not work like real tabs should.</list-item></list>
 <list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
@@ -77,8 +78,8 @@ Windows and Mac do not, for this purpose, have a console. But they too  can be t
 In all cases, you may need to zip that file up to post it on Github. If  you  do intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see. It may include things like note Titles for example.
 
 </note-content></text>
-  <last-change-date>2020-03-15T10:10:29.2900000+11:00</last-change-date>
-  <last-metadata-change-date>2020-03-15T10:10:29.2900000+11:00</last-metadata-change-date>
+  <last-change-date>2020-06-16T12:47:57.2453386+10:00</last-change-date>
+  <last-metadata-change-date>2020-06-16T12:47:57.2453386+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
