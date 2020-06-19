@@ -1361,6 +1361,7 @@ var
     Index : integer;
 begin
 	result := False;
+    //DebugLn('TNoteLister.DeleteNote - asked to delete ', ID);
     for Index := 0 to NoteList.Count -1 do begin
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
         	dispose(NoteList.Items[Index]);

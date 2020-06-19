@@ -178,9 +178,10 @@ type        { TSearchForm }
         // procedure StringGrid1Resize(Sender: TObject);
 		//procedure StringGridNotebooksClick(Sender: TObject);
         // procedure StringGrid1DblClick(Sender: TObject);
-        // Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
-        // other downloded note ID. Adjusts Note_Lister according and marks any
-        // note that is currently open as read only.
+
+        { Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
+          other downloded note ID. Adjusts Note_Lister according and marks any
+          note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
         //procedure StringGridNotebooksPrepareCanvas(sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
         //procedure StringGridNotebooksResize(Sender: TObject);
@@ -200,6 +201,9 @@ type        { TSearchForm }
         procedure RecentMenuClicked(Sender: TObject);
         //procedure RefreshNoteAndNotebooks();
         procedure ScaleListView();
+        { If there is an open note from the passed filename, it will be marked read Only,
+          will accept a GUID, Filename or FullFileName inc path }
+        procedure MarkNoteReadOnly(const FullFileName: string);
         { Copies note data from internal list to StringGrid, sorts it and updates the
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		//procedure UseList();
@@ -217,9 +221,6 @@ type        { TSearchForm }
         // that Menu, else applies WhichSection to all know Main TB Menus.
         procedure RefreshMenus(WhichSection: TMenuKind; AMenu: TPopupMenu=nil);
         function MoveWindowHere(WTitle: string): boolean;
-        { If there is an open note from the passed filename, it will be marked read Only,
-          If deleted, remove entry from NoteLister, will accept a GUID, Filename or FullFileName inc path }
-        procedure MarkNoteReadOnly(const FullFileName: string; const WasDeleted : boolean);
          	{ Puts the names of recently used notes in the indicated menu, removes esisting ones first. }
         procedure MenuRecentItems(AMenu : TPopupMenu);
        	{ Call this NoteLister no longer thinks of this as a Open note }
@@ -241,8 +242,8 @@ type        { TSearchForm }
         function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
         procedure StartSearch();
-        { Deletes the actual file then removes the indicated note from the internal
-        data about notes, refreshes Grid }
+        { Deletes the actual file then removes the indicated note from the internal data
+          about notes, updates local manifest, refreshes Grid, may get note or template }
         procedure DeleteNote(const FullFileName : ANSIString);
 
 
@@ -280,17 +281,21 @@ uses MainUnit,      // Opening form, manages startup and Menus
 
 
 procedure TSearchForm.ProcessSyncUpdates(const DeletedList, DownList : TStringList);
-// The lists arrive here with just the 36 char ID, some following functions are OK with that ????
+// The lists arrive here with just the 36 char ID, the following functions must be OK with that !
 var
     Index : integer;
 begin
     if NoteLister <> nil then begin
         for Index := 0 to DeletedList.Count -1 do begin
-            MarkNoteReadOnly(DeletedList.Strings[Index], True);
-            //debugln('We have tried to mark read only on ' + DeletedList.Strings[Index]);
+            if NoteLister.IsATemplate(DeletedList.Strings[Index]) then
+                NoteLister.DeleteNoteBookwithID(DeletedList.Strings[Index])
+            else begin
+                MarkNoteReadOnly(DeletedList.Strings[Index]);
+                NoteLister.DeleteNote(DeletedList.Strings[Index]);
+            end;
         end;
         for Index := 0 to DownList.Count -1 do begin
-            MarkNoteReadOnly(DownList.Strings[Index], False);
+            MarkNoteReadOnly(DownList.Strings[Index]);
             if NoteLister.IsIDPresent(DownList.Strings[Index]) then begin
                 NoteLister.DeleteNote(DownList.Strings[Index]);
                 //debugln('We have tried to delete ' + DownList.Strings[Index]);
@@ -700,20 +705,21 @@ begin
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then
         DoSearch()
     else begin
-        if ButtonNotebookOptions.Enabled then begin
-            //NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+        if ButtonNotebookOptions.Enabled then begin                         // if a notebook is currently selected.
             NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
             if NB <> '' then begin
                 // NoteLister.LoadNotebookGrid(StringGrid1, NB);
                 NoteLister.LoadNotebookViewList(ListViewNotes, NB);
             end;
+            // ToDo : there is an issue here. If user has a notebook selected when sync happens, and that
+            // sync removes a notebook, a 'Refresh' will not make the deleted notebook disappear. It
+            // does no go until filters are cleared.
         end else begin
             // NoteLister.LoadStGrid(StringGrid1, 2);                      // ~90mS on Dell with 2000 notes
             NoteLister.LoadListView(ListViewNotes, False);
             NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
             ScaleListView();
         end;
-        // RefreshNoteAndNotebooks();                 // deprecated method
         SelectedNotebook := 0;      // ie off
     end;
     ButtonRefresh.Enabled := false;
@@ -922,10 +928,12 @@ begin
     end;
 end;
 
-procedure TSearchForm.MarkNoteReadOnly(const FullFileName : string; const WasDeleted : boolean);
+procedure TSearchForm.MarkNoteReadOnly(const FullFileName: string);
 var
     TheForm : TForm;
 begin
+    // ToDo : MarkNoteReadOlny used to be passed around a number of other units, its now
+    //        private and I should remove all references to to it elsewhere.
     if NoteLister = nil then exit;
     if NoteLister.IsThisNoteOpen(FullFileName, TheForm) then begin
        // if user opened and then closed, we won't know we cannot access
@@ -936,8 +944,6 @@ begin
        	    DebugLn('Tried to mark a closed note as readOnly, thats OK');
    	    end;
     end;
-    if WasDeleted then
-        NoteLister.DeleteNote(FullFileName);
 end;
 
 function TSearchForm.MoveWindowHere(WTitle: string): boolean;

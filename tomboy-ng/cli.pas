@@ -2,6 +2,16 @@ unit cli;
 
 {$mode objfpc}{$H+}
 
+{  Copyright (C) 2018 David Bannon
+
+   This unit is active before the GUI section and may decide GUI is not needed.
+   Please see included License file.
+
+
+    History
+    2020/06/18  Remove unnecessary debug line.
+}
+
 interface
 
 uses
@@ -55,7 +65,6 @@ begin
        debugln('   --config-dir=PATH_to_DIR     ' + rsHelpConfig);
        debugln('   -o --open-note=PATH_to_NOTE  ' + rsHelpSingleNote);
        debugln('   --save-exit                  ' + rsHelpSaveExit);
-       debugln('   CLI mode');
        result := true;
     end;
 end;

@@ -123,7 +123,7 @@ type
                       repo or, maybe we want to make one. }
               	SetupSync : boolean;
                     { we will pass address of this function to Sync }
-                procedure MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
+                //procedure MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
                     { we will pass address of this function to Sync }
                 function Proceed(const ClashRec : TClashRecord) : TSyncAction;
 		end;
@@ -146,10 +146,10 @@ var
         ASync : TSync;
 { TFormSync }
 
-procedure TFormSync.MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
-begin
-    SearchForm.MarkNoteReadOnly(FileName, WasDeleted);
-end;
+//procedure TFormSync.MarkNoteReadOnly(const Filename : string; const WasDeleted : Boolean = False);
+//begin
+//    SearchForm.MarkNoteReadOnly(FileName, WasDeleted);
+//end;
 
 function TFormSync.Proceed(const ClashRec : TClashRecord) : TSyncAction;
 var

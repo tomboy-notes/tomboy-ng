@@ -706,13 +706,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="/run/users/1000/gvfs/smb-share:server=greybox,share=store2/blar3.note"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="/run/users/1000/gvfs/smb-share:server=greybox,share=store2/blar3.note"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
           </local>
         </Mode0>
       </Modes>

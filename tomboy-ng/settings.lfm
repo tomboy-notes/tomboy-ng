@@ -103,9 +103,9 @@ object Sett: TSett
       end
       object CheckAutostart: TCheckBox
         Left = 16
-        Height = 23
+        Height = 24
         Top = 272
-        Width = 158
+        Width = 160
         Caption = 'Autostart at Logon'
         OnChange = CheckAutostartChange
         TabOrder = 2
@@ -128,9 +128,9 @@ object Sett: TSett
         TabOrder = 3
         object CheckCaseSensitive: TCheckBox
           Left = 32
-          Height = 23
+          Height = 24
           Top = 24
-          Width = 127
+          Width = 129
           Caption = 'Case Sensitive'
           OnChange = CheckReadOnlyChange
           TabOrder = 0
@@ -138,19 +138,19 @@ object Sett: TSett
       end
       object CheckShowSearchAtStart: TCheckBox
         Left = 16
-        Height = 23
+        Height = 24
         Top = 312
-        Width = 172
+        Width = 174
         Caption = 'Show Search at Start'
         OnChange = CheckReadOnlyChange
         TabOrder = 4
       end
       object CheckShowSplash: TCheckBox
         Left = 16
-        Height = 23
+        Height = 24
         Hint = 'Always shown if error loading notes.'
         Top = 352
-        Width = 170
+        Width = 172
         Caption = 'Show Splash at Start'
         Checked = True
         OnChange = CheckReadOnlyChange
@@ -161,9 +161,9 @@ object Sett: TSett
       end
       object CheckShowTomdroid: TCheckBox
         Left = 16
-        Height = 23
+        Height = 24
         Top = 224
-        Width = 281
+        Width = 283
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
         TabOrder = 6
@@ -357,9 +357,9 @@ object Sett: TSett
         end
         object RadioAlwaysAsk: TRadioButton
           Left = 16
-          Height = 23
+          Height = 24
           Top = 64
-          Width = 215
+          Width = 217
           Caption = 'Always Ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -367,17 +367,17 @@ object Sett: TSett
         end
         object RadioUseLocal: TRadioButton
           Left = 16
-          Height = 23
+          Height = 24
           Top = 112
-          Width = 332
+          Width = 334
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 16
-          Height = 23
+          Height = 24
           Top = 160
-          Width = 319
+          Width = 321
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
@@ -432,10 +432,10 @@ object Sett: TSett
         end
         object CheckBoxAutoSync: TCheckBox
           Left = 384
-          Height = 23
+          Height = 24
           Hint = 'Sync, if possible once an hour.'
           Top = 120
-          Width = 96
+          Width = 98
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
           ParentShowHint = False
@@ -482,7 +482,7 @@ object Sett: TSett
         object Label6: TLabel
           Left = 32
           Height = 19
-          Top = 104
+          Top = 72
           Width = 465
           Caption = 'Backup files are made when you delete a note or the sync system'
           ParentColor = False
@@ -530,7 +530,7 @@ object Sett: TSett
       object Label9: TLabel
         Left = 32
         Height = 22
-        Top = 48
+        Top = 72
         Width = 426
         Caption = 'A snaphot is a copy of your current note directory.'
         Font.Height = -19
@@ -539,7 +539,6 @@ object Sett: TSett
       end
       object ButtonManualSnap: TButton
         AnchorSideLeft.Control = TabSnapshot
-        AnchorSideTop.Control = Panel3
         AnchorSideBottom.Control = TabSnapshot
         AnchorSideBottom.Side = asrBottom
         Left = 7
@@ -576,82 +575,67 @@ object Sett: TSett
         ShowHint = True
         TabOrder = 1
       end
-      object Panel3: TPanel
-        AnchorSideLeft.Control = TabSnapshot
-        AnchorSideRight.Control = TabSnapshot
-        AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = ButtonManualSnap
-        Left = 0
-        Height = 296
-        Top = 104
-        Width = 624
-        Anchors = [akLeft, akRight, akBottom]
-        BorderSpacing.Bottom = 2
-        ClientHeight = 296
-        ClientWidth = 624
+      object Label10: TLabel
+        Left = 32
+        Height = 19
+        Top = 128
+        Width = 59
+        Caption = 'Settings'
+        ParentColor = False
+      end
+      object LabelSnapDir: TLabel
+        Left = 32
+        Height = 19
+        Top = 168
+        Width = 58
+        Caption = 'Snap dir'
+        ParentColor = False
+      end
+      object SpinDaysPerSnapshot: TSpinEdit
+        Left = 32
+        Height = 29
+        Top = 216
+        Width = 76
+        MaxValue = 31
+        MinValue = 1
+        OnChange = SpinDaysPerSnapshotChange
         TabOrder = 2
-        object CheckAutoSnapEnabled: TCheckBox
-          Left = 28
-          Height = 24
-          Top = 184
-          Width = 164
-          Caption = 'Use auto snapshots'
-          OnChange = CheckAutoSnapEnabledChange
-          TabOrder = 0
-        end
-        object Label10: TLabel
-          Left = 28
-          Height = 19
-          Top = 0
-          Width = 59
-          Caption = 'Settings'
-          ParentColor = False
-        end
-        object LabelSnapDir: TLabel
-          Left = 28
-          Height = 19
-          Top = 32
-          Width = 58
-          Caption = 'Snap dir'
-          ParentColor = False
-        end
-        object SpinDaysPerSnapshot: TSpinEdit
-          Left = 28
-          Height = 29
-          Top = 80
-          Width = 76
-          MaxValue = 31
-          MinValue = 1
-          OnChange = SpinDaysPerSnapshotChange
-          TabOrder = 1
-          Value = 7
-        end
-        object SpinMaxSnapshots: TSpinEdit
-          Left = 28
-          Height = 29
-          Top = 128
-          Width = 76
-          MinValue = 10
-          OnChange = CheckReadOnlyChange
-          TabOrder = 2
-          Value = 20
-        end
-        object Label5: TLabel
-          Left = 128
-          Height = 19
-          Top = 88
-          Width = 130
-          Caption = 'Days per snapshot'
-          ParentColor = False
-        end
-        object Label16: TLabel
-          Left = 128
-          Height = 19
-          Top = 136
-          Width = 211
-          Caption = 'Maxium number of snapshots'
-          ParentColor = False
-        end
+        Value = 7
+      end
+      object Label5: TLabel
+        Left = 132
+        Height = 19
+        Top = 224
+        Width = 130
+        Caption = 'Days per snapshot'
+        ParentColor = False
+      end
+      object SpinMaxSnapshots: TSpinEdit
+        Left = 32
+        Height = 29
+        Top = 264
+        Width = 76
+        MinValue = 10
+        OnChange = CheckReadOnlyChange
+        TabOrder = 3
+        Value = 20
+      end
+      object Label16: TLabel
+        Left = 132
+        Height = 19
+        Top = 272
+        Width = 211
+        Caption = 'Maxium number of snapshots'
+        ParentColor = False
+      end
+      object CheckAutoSnapEnabled: TCheckBox
+        Left = 32
+        Height = 24
+        Top = 328
+        Width = 164
+        Caption = 'Use auto snapshots'
+        OnChange = CheckAutoSnapEnabledChange
+        TabOrder = 4
       end
     end
     object TabSpell: TTabSheet

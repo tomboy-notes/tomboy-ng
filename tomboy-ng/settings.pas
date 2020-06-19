@@ -99,6 +99,7 @@ unit settings;
     2020/05/11  Moved all handling of the backup files to BackupView
     2020/06/11  check if snapshot ok before flushing old ones.
     2020/06/18  Ensure a default config file is written asap at first start.
+    2020/06/18  Removed unnecessary panel on Snap tab
 }
 
 {$mode objfpc}{$H+}
@@ -120,8 +121,10 @@ type
 
     TSett = class(TForm)
           ButtDefaultNoteDir: TButton;
+          CheckAutoSnapEnabled: TCheckBox;
 		  CheckBoxAutoSync: TCheckBox;
 		  GroupBoxSync: TGroupBox;
+          Label10: TLabel;
           Label16: TLabel;
           Label5: TLabel;
           LabelFileSyncInfo2: TLabel;
@@ -147,13 +150,11 @@ type
 	  CheckShowExtLinks: TCheckBox;
 	  CheckShowIntLinks: TCheckBox;
           CheckShowTomdroid: TCheckBox;
-          CheckAutoSnapEnabled: TCheckBox;
           FontDialog1: TFontDialog;
           GroupBox1: TGroupBox;
 	  GroupBox4: TGroupBox;
 	  GroupBox5: TGroupBox;
 	  Label1: TLabel;
-          Label10: TLabel;
           Label12: TLabel;
           Label13: TLabel;
           Label14: TLabel;
@@ -178,7 +179,6 @@ type
           OpenDialogDictionary: TOpenDialog;
 	  PageControl1: TPageControl;
 	  Panel1: TPanel;
-          Panel3: TPanel;
           PMenuMain: TPopupMenu;
 	  RadioAlwaysAsk: TRadioButton;
           RadioFontHuge: TRadioButton;
@@ -830,9 +830,6 @@ var
     //telltail : boolean;
     //ReqFontSize, SyncType : ANSIString;
 begin
-
-    debugln('TSett.CheckConfigFile - in checkconfig');
-
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
@@ -902,9 +899,7 @@ begin
         CheckDirectory(LabelSnapDir.Caption);
 	    SyncSettings();
     end else begin      // OK, no config eh ?  We'll set some defaults ...
-        debugln('TSett.CheckConfigFile - no config');
         if CheckDirectory(NoteDirectory) then begin
-            debugln('TSett.CheckConfigFile - creating config');
             //MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
             CheckShowIntLinks.Checked:= True;
@@ -916,11 +911,10 @@ begin
             LabelFileSync.Caption := rsSyncNotConfig;
             CheckAutoSnapEnabled.Checked := False;
             NextAutoSnapShot := now();                      // Just so it looks pretty
-            if not SettingsChanged(True) then               // write a initial default file, shows user a message on error
-                HaveConfig := false;
-            debugln('TSett.CheckConfigFile - config ok = ' + dbgs(HaveConfig));
-            //MaskSettingsChanged := True;
-            HaveConfig := True;
+            HaveConfig := SettingsChanged(True);            // write a initial default file, shows user a message on error
+            {if not SettingsChanged(True) then
+                HaveConfig := false else
+            HaveConfig := True; }
         end else begin
             // Only get to here because we have failed to setup an initial notes dir and we
             // don't even have a settings file in place. Directories may not be present. Its bad.

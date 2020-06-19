@@ -890,10 +890,6 @@ begin
        self.ErrorString:= Transport.ErrorString;
        debugln('ERROR - Download Notes reported ' + ErrorString);
 	end;
-{    if not assigned( MarkNoteReadonlyProcedure) then begin // it should be set but not in the test rig !
-           debugln('ERROR - MarkNoteReadOnly does not appear to be assigned (OK in Test_Rig)');
-           exit;
-       end;         }
 {    for I := 0 to NoteMetaData.Count -1 do
         if Notemetadata.Items[i]^.Action = SyDownload then
            MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, False);     }

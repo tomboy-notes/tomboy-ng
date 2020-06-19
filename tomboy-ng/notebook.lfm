@@ -100,9 +100,9 @@ object NoteBookPick: TNoteBookPick
     Height = 303
     Top = 72
     Width = 579
-    ActivePage = TabChangeName
+    ActivePage = TabExisting
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 3
     object TabExisting: TTabSheet
       Caption = 'Existing Note Books'

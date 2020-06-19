@@ -106,7 +106,7 @@ type
 
  type    TProceedFunction = function(const ClashRec : TClashRecord): TSyncAction of object;
 
-type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
+// type    TMarkNoteReadonlyProcedure = procedure(const FileName : string; const WasDeleted : Boolean = False) of object;
 
 
     { takes a path to the server and a rev number and returns a Tomboy style sync dir.
