@@ -1702,7 +1702,7 @@ procedure TEditBoxForm.MakeAllLinks(const PText : PChar; const Term : ANSIString
 var
 	Offset, NumbCR   : longint;
     {$ifdef WINDOWS}
-    Ptr, EndP : PChar;                  // Will generate "not used" warning in Unix
+    {Ptr, }EndP : PChar;                  // Will generate "not used" warning in Unix
     {$endif}
 begin
     Offset := RelativePos(Term, PText, StartScan);

@@ -75,9 +75,9 @@ object MainForm: TMainForm
   end
   object Label1: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 114
-    Width = 87
+    Width = 78
     Caption = 'Have Config'
     ParentColor = False
   end
@@ -161,17 +161,17 @@ object MainForm: TMainForm
   end
   object Label3: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 160
-    Width = 195
+    Width = 185
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 184
-    Width = 156
+    Width = 146
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
@@ -297,7 +297,7 @@ object MainForm: TMainForm
     Left = 24
     Height = 22
     Top = 43
-    Width = 224
+    Width = 222
     Caption = 'Welcome to tomboy-ng !'
     Font.Height = -18
     Font.Name = 'Lucida Grande'
@@ -306,17 +306,17 @@ object MainForm: TMainForm
   end
   object Label6: TLabel
     Left = 24
-    Height = 19
+    Height = 17
     Top = 80
-    Width = 219
+    Width = 200
     Caption = 'Lets see if we are ready to go -'
     ParentColor = False
   end
   object LabelNotesFound: TLabel
     Left = 56
-    Height = 19
+    Height = 17
     Top = 135
-    Width = 10
+    Width = 9
     Caption = 'X'
     ParentColor = False
   end
@@ -337,10 +337,10 @@ object MainForm: TMainForm
   end
   object CheckBoxDontShow: TCheckBox
     Left = 24
-    Height = 24
+    Height = 21
     Hint = 'You can reverse this from Settings'
     Top = 232
-    Width = 242
+    Width = 226
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
     TabOrder = 3
@@ -457,9 +457,9 @@ object MainForm: TMainForm
   end
   object LabelBadNoteAdvice: TLabel
     Left = 24
-    Height = 19
+    Height = 17
     Top = 296
-    Width = 149
+    Width = 142
     Caption = 'LabelBadNoteAdvice'
     ParentColor = False
   end
@@ -545,11 +545,11 @@ object MainForm: TMainForm
       0000
     }
     OnClick = TrayIconClick
-    left = 344
-    top = 224
+    Left = 344
+    Top = 224
   end
   object ApplicationProperties1: TApplicationProperties
-    left = 344
-    top = 136
+    Left = 344
+    Top = 136
   end
 end

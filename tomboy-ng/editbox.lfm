@@ -71,17 +71,17 @@ object EditBoxForm: TEditBoxForm
     end
     object Label3: TLabel
       Left = 120
-      Height = 19
+      Height = 17
       Top = 8
-      Width = 343
+      Width = 314
       Caption = 'This note has been changed by the Sync Process'
       ParentColor = False
     end
     object Label4: TLabel
       Left = 120
-      Height = 19
+      Height = 17
       Top = 32
-      Width = 345
+      Width = 323
       Caption = 'Please close it (and re-open if it was a download)'
       ParentColor = False
     end
@@ -801,8 +801,8 @@ object EditBoxForm: TEditBoxForm
     PopupMenu = PopupMainTBMenu
   end
   object PopupMenuText: TPopupMenu
-    left = 232
-    top = 200
+    Left = 232
+    Top = 200
     object MenuBold: TMenuItem
       Caption = 'Bold'
       ShortCut = 16450
@@ -868,8 +868,8 @@ object EditBoxForm: TEditBoxForm
     end
   end
   object PopupMenuTools: TPopupMenu
-    left = 368
-    top = 200
+    Left = 368
+    Top = 200
     object MenuItemSync: TMenuItem
       Caption = 'Syncronize'
       Enabled = False
@@ -913,8 +913,8 @@ object EditBoxForm: TEditBoxForm
     end
   end
   object PopupMenuRightClick: TPopupMenu
-    left = 80
-    top = 200
+    Left = 80
+    Top = 200
     object MenuItemFind: TMenuItem
       Caption = 'Find in this Note'
       ShortCut = 16454
@@ -949,32 +949,32 @@ object EditBoxForm: TEditBoxForm
   end
   object FindDialog1: TFindDialog
     OnFind = FindDialog1Find
-    left = 232
-    top = 280
+    Left = 232
+    Top = 280
   end
   object TimerSave: TTimer
     Interval = 10000
     OnTimer = TimerSaveTimer
-    left = 368
-    top = 280
+    Left = 368
+    Top = 280
   end
   object TaskDialogDelete: TTaskDialog
     Buttons = <>
     RadioButtons = <>
-    left = 80
-    top = 280
+    Left = 80
+    Top = 280
   end
   object TimerHousekeeping: TTimer
     OnTimer = TimerHousekeepingTimer
-    left = 376
-    top = 127
+    Left = 376
+    Top = 127
   end
   object PrintDialog1: TPrintDialog
-    left = 496
-    top = 119
+    Left = 496
+    Top = 119
   end
   object PopupMainTBMenu: TPopupMenu
-    left = 486
-    top = 252
+    Left = 486
+    Top = 252
   end
 end

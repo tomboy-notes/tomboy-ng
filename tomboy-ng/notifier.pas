@@ -54,7 +54,7 @@ unit notifier;
 interface
 
 uses
-    Classes, SysUtils,  fpTimer{$ifdef Linux}, libnotify{$else}, PopupNotifier {$endif} ;
+    Classes, SysUtils,  fpTimer{$ifdef XLinux}, libnotify{$else}, PopupNotifier {$endif} ;
 
 Type
 
@@ -63,7 +63,7 @@ Type
  TNotifier = class
 
     private
-        {$ifdef LINUX}
+        {$ifdef XLINUX}
         LNotifier : PNotifyNotification;
         {$else}
         LocalTimer : TFPTimer;
@@ -82,7 +82,7 @@ implementation
 
 procedure TNotifier.ShowTheMessage(const Title, Message : string; ShowTime : integer);
 begin
-    {$ifdef LINUX}
+    {$ifdef XLINUX}
     notify_init(argv[0]);
     LNotifier := notify_notification_new (pchar(Title), pchar(Message), pchar('dialog-information'));
     notify_notification_set_timeout(LNotifier, ShowTime);                // figure is mS
@@ -94,6 +94,8 @@ begin
     {$else}
     // Non Linux must use TPopupNotifier
     PopupNotifier := TPopupNotifier.Create(nil);
+    PopupNotifier.Text  := Message;
+    PopupNotifier.Title := Title;
     PopupNotifier.show;
     LocalTimer := TFPTimer.create(nil);
     LocalTimer.Interval := ShowTime;
@@ -102,10 +104,10 @@ begin
     {$endif}
 end;
 
-{$ifndef LINUX}
+{$ifndef XLINUX}
 procedure TNotifier.TimerFinished( Sender : TObject );
 begin
-    writeln('Timer finished');
+    //  writeln('Timer finished');
     LocalTimer.Enabled := false;
     PopupNotifier.hide;
     Destroy;
@@ -114,7 +116,7 @@ end;
 
 destructor TNotifier.Destroy;
 begin
-    {$ifndef LINUX}
+    {$ifndef XLINUX}
     freeandnil(PopupNotifier);
     freeandnil(LocalTimer);
     {$endif}

@@ -1166,14 +1166,14 @@ var
     Index : integer;
     TheList : TNoteList;
     LCDst : string;
-    T1, T2, T3 : qword;
+    //T1, T2, T3 : qword;
 begin
-    T1 := gettickcount64();
+    //T1 := gettickcount64();
     if SearchMode then
         TheList := SearchNoteList
     else TheList := NoteList;
     while Grid.RowCount > 1 do Grid.DeleteRow(Grid.RowCount-1);
-    T2 := gettickcount64();
+    //T2 := gettickcount64();
     Index := TheList.Count;
     while Index > 0 do begin
         dec(Index);
@@ -1191,8 +1191,8 @@ begin
 
     if Grid.SortColumn > -1 then
         Grid.SortColRow(True, Grid.SortColumn);
-    T3 := gettickcount64();
-    debugln('Note_Lister - LoadStGrid ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
+    // T3 := gettickcount64();
+    // debugln('Note_Lister - LoadStGrid ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
 end;
 
 function TNoteLister.NewLVItem(const LView : TListView; const Title, DateSt, FileName: string): TListItem;
@@ -1211,15 +1211,15 @@ var
     Index : integer;
     TheList : TNoteList;
     LCDst : string;
-    T1, T2, T3 : qword;
+    //T1, T2, T3 : qword;
     // Full list mode, 2000 notes, Dell 7mS to clear, 20-40mS to load.
 begin
-    T1 := gettickcount64();
+    //T1 := gettickcount64();
     LView.Clear;
     if SearchMode then
         TheList := SearchNoteList
     else TheList := NoteList;
-    T2 := gettickcount64();
+    //T2 := gettickcount64();
     Index := TheList.Count;
     while Index > 0 do begin
         dec(Index);
@@ -1228,8 +1228,8 @@ begin
             LCDst[11] := ' ';       // with a 'T' between date and time
         NewLVItem(LView, TheList.Items[Index]^.Title, LCDst, TheList.Items[Index]^.ID);
     end;
-    T3 := gettickcount64();
-    debugln('LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));
+    //T3 := gettickcount64();
+    // debugln('LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));
 end;
 
 
