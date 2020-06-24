@@ -8,12 +8,12 @@ Don't edit this wiki page, its generated from a note in tomboy-ng's doc dir.</si
 This page is about building tomboy-ng from source and contributing to its development. <bold>Important</bold> - <bold>You do not need to do any of this</bold> to just use tomboy-ng, a key feature is its absolute minimal requirements at install time.
 
 Tomboy-ng is built on Linux, Windows or Mac using (see instructions below for installing) -
-<list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.0.4 or later.</list-item></list>
-<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.6  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.6). If you use Lazarus Fixes no patches are required.</list-item></list>
+<list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.2.0 or later.</list-item></list>
+<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.8  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.8). If you use Lazarus Fixes or trunk no patches are required.</list-item></list>
 <list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - apply the kmemo_paste_text patch in tomboy-ng's patches directory. Failure to apply will mess with copying and pasting formatted text.</list-item></list><size:large>
 
 <bold>Pascal ?</bold></size:large>
-Pascal as a computer language is quite old, in the early days of the PC it went toe to toe with C and lost. But it still has quite a following and current estimates place it in the top twenty languages (source ?). Today, Object Pascal is a very functional object orientated language that drives Delphi and its cross platform open source rival, Lazarus.
+Pascal as a computer language is quite old, in the early days of the PC it went toe to toe with C and lost. But it still has quite a following and current estimates place it in the top twenty languages. Today, Object Pascal is a very functional object orientated language that drives Delphi and its cross platform open source rival, Lazarus.
 
 Pascal is still widely used as a teaching language, its strong typing promotes good programming habits and allows the compiler to pick up many common errors. Lazarus provides an easy to use <bold>cross platform IDE</bold> where a programmer can drag components onto a form and then attach code to the component's events. Its very quick and easy.<size:huge>
 
@@ -21,7 +21,7 @@ Pascal is still widely used as a teaching language, its strong typing promotes g
 <bold>Build tomboy-ng using the IDE</bold></size:huge>
 You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus Fixes  (users of earlier releases such as 2.0.6 need to look in patched directory). Downloading packages from https://sourceforge.net/projects/Lazarus/files/ , choose your OS and then Lazarus 2.0.6, you will see debs, rpms, dmg files and windows kits for the compiler (FPC) and  the FPC-src, and finally the IDE, Lazarus. To learn more see Free Pascal and Lazarus websites. Both have very active forums and extensive wiki's.
 
-Jan 2020, my advice is to use Lazarus Fixes, that means installing FPC, FPC-Src and Subversion using your OS package manager and then looking at -
+Jan 2020, my advice is to use Lazarus Trunk, that means installing FPC, FPC-Src and Subversion using your OS package manager and then looking at -
 
 https://wiki.freepascal.org/Installing_Lazarus_on_Linux#Build_Lazarus_from_Source
 
@@ -34,21 +34,20 @@ Lazarus will want to rebuild itself and restart, say yes, please do!  You can no
 Its also possible, and sometimes a good idea to build Lazarus from source. See the Lazarus wiki for more information.<size:large>
 
 <bold>An Alternative Build</bold></size:large>
-Linux users (and, maybe Mac users) who just want a newer build and want it now may like to try the experimental buildit.bash script in the tomboy-ng source directory. It requires the Free Pascal Compiler 3.0.4 be installed (easy, most distro's repos have 3.0.4). Grab the script from github and put it into an otherwise empty directory. Look in the script's header for advice on how to download Lazarus and KControls source before running the script. <size:large>
+Linux users (and, maybe Mac users) who just want a newer build and want it now may like to try the experimental buildit.bash script in the tomboy-ng package directory. It requires the Free Pascal Compiler 3.0.4 be installed (easy, most distro's repos have 3.0.4) or, better 3.2.0. Grab the script from github and put it into an otherwise empty directory. Look in the script's header for advice on how to download Lazarus and KControls source before running the script. <size:large>
 
 
 <bold>Building Releases</bold></size:large>
-This section intended for production releases, not DIY. The author has a Linux box that has FPC 3.0.4 setup to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That  script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as root (??) will make RPMs (using the debs as input) that are suitable for RedHat systems.
+This section intended for production releases, not DIY. The author has a VB Linux box that has FPC 3.2.0 setup to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That  script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as root (??) will make RPMs (using the debs as input) that are suitable for RedHat systems.
 
 Take the Windows Win_Pre{$ver} directory to a windows machine that has the Installer Maker (ISS) and double click the .iss file to make the Windows installers.
 
-The Mac kits are made on a Sierra Mac, again using a script. Until I can get around the Mac's habit of discarding transparent parts of the TrayIcon, manually replace the source one 24x24Mac.png. Must be a way to decide at compile time ....
-
+The Mac kits are made on a Sierra Mac, again using a script. Requires similar setup to above.
  
 
 </note-content></text>
-  <last-change-date>2020-03-07T21:27:35.0970000+11:00</last-change-date>
-  <last-metadata-change-date>2020-03-07T21:27:35.0970000+11:00</last-metadata-change-date>
+  <last-change-date>2020-06-22T21:42:49.4511889+10:00</last-change-date>
+  <last-metadata-change-date>2020-06-22T21:42:49.4511889+10:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

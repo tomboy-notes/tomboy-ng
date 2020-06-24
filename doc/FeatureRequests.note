@@ -14,7 +14,7 @@ If you sync your notes to some site outside your control, or even just have nose
 Sadely, this is quite hard, I have, in the past had one request for it, is there a need ?<size:large>
 
 <bold>Import / Export</bold></size:large>
-Do you have a need to import into tomboy-ng or export from tomboy-ng in a particular format ?  I cannot undertake to implement every format out there and most certainly not completely but some are quite possible.  <size:large>
+Do you have a need to import into tomboy-ng or export from tomboy-ng in a particular format ?  I cannot undertake to implement every format out there and most certainly not completely but some are quite possible.  There is a experimental TomboyTools that imports and exports text and Mark Down.<size:large>
 
 <bold>Embedded Images</bold></size:large>
 Do you want to have pretty pictures in your notes, if so, what format would you want ?<size:large>
@@ -27,14 +27,14 @@ You know, badly spelt words are somehow highlighted as you type.  I know I have 
 
 
 </note-content></text>
-  <last-change-date>2020-05-05T10:48:06.1179671+10:00</last-change-date>
-  <last-metadata-change-date>2020-05-05T10:48:06.1179671+10:00</last-metadata-change-date>
+  <last-change-date>2020-06-22T21:46:04.2535013+10:00</last-change-date>
+  <last-metadata-change-date>2020-06-22T21:46:04.2535013+10:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>617</width>
-  <height>497</height>
-  <x>734</x>
-  <y>364</y>
+  <width>976</width>
+  <height>572</height>
+  <x>519</x>
+  <y>268</y>
   <open-on-startup>False</open-on-startup>
 </note>

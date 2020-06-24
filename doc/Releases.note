@@ -9,21 +9,21 @@ Downloads and information for specific platforms further down the page.<size:hug
 
 <bold>Release Notes</bold></size:huge>
  Nothing dramatic but the usual collection of minor improvements and bug fixes :
+Auto snapshots now available, it and auto sync (v0.27) uses an less obtrusive notification system.
 Tweaks for dark mode users, particularly on Windows.
 Simplified splashscreen, more info about problems and easier to dismiss.
 Shift Click to select text - check kb shortcut doc
 Delete backup notes in bulk.
 Multithreaded search, faster for people with &gt; 1000 notes.
 Increase in entropy of lastchange date, useful in a blind sync.
-Fix for problem with strikeout mixed with bullets, opening empty note in Single Note Mode.
-Fix for problems  autostart on Windows<size:huge>
+Fix for problem with strikeout mixed with bullets, opening empty note in Single Note Mode, problems  with autostart on Windows<size:huge>
 
 <bold>Installation</bold></size:huge>
 
-tomboy-ng is available for Linux, Mac and Windows.<size:large>
+tomboy-ng is available for Linux, Mac and Windows. Please see your operating system below -<size:large>
 
 <bold>Windows</bold></size:large>
-Tested on 32bit Windows Vista and 64bit Windows 10.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes.<size:large>
+Tested on 32bit Windows Vista and 64bit Windows 10.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes. Depending on your build of Win10, you may need to go through a process of clicking the More Info link and Run Anyway, possibly through several stages. <size:large>
 
 <bold>MacOSX</bold></size:large>
 Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64).Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. 
@@ -33,40 +33,32 @@ Note 1 : Because I don't pay a fee to Apple, first time users will need to contr
 Note 2 :  I can still build the 32 bit Carbon based binary but don't ship it anymore, it won't work with any recent MacOS and has issues showing the System Tray Icon.  If you need it, please let me know.<size:huge>
 
 <bold>Linux</bold></size:huge>
-Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
+Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.
+
+For distributions that use .deb packages, do yourself a favour, install Gdebi before you start. You will not regret it.<size:large>
 
 <bold>Ubuntu</bold></size:large>
-Generally, all work fine but earlier distributions should use GTK2 and recent ones the Qt5 based version. 
+Generally, all work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version. 
 <list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list>
-<list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64). Will only work with QT5 version if you replace libqt5pas1 with a 'special' one. </list-item></list>
-<list><list-item dir="ltr">19.10 Ubuntu Gnome, Plasma, Cinnamon and XFCe works best with the Qt5 version [64bit]($$DEB64QT) but as there is no 32bit version available, [GTK2 32bit]($$DEB32) will work but Ubuntu apparently forgot to include a necessary part of their GTK2 package. So, if you use the GTK2 version with U19.10, you must also install appmenu-gtk2-module "sudo apt install appmenu-gtk2-module [enter]".</list-item></list>
-<list><list-item dir="ltr">19.10 Budgie fails to show Qt5 System Tray Icon (??) so use the GTK version [32bit]($$DEB32) or [64bit]($$DEB64). As mentioned above, you will need to manually install appmenu-gtk2-module to prevent a slow start problem.</list-item></list>
-<list><list-item dir="ltr">20.04 tested on a beta release and noted an apparently harmless warning from the QT version [64bit QT]($$DEB64QT), while its probably going to go away with the formal release of U20.04, I suggest  the GTK version is a safer choice. [64bit]($$DEB64) </list-item></list>
+<list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  </list-item></list>
+<list><list-item dir="ltr">20.04 Your choice between  [64bit QT]($$DEB64QT)  which needs the Qt5 libaries or the [64bit]($$DEB64) which needs only a couple of exta things. </list-item></list>
 
-Click on the appropriate link and you can allow the "Software Installer" application to run the install except on U16.04. For U16.04 (and others, your choice) download the file and use GDebi (on U16.04 you must use gdebi) or  the following apt command (note the './' in front of the filename, you must be in the directory where the downloaded file is and explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -
+On Ubuntu, you can install the appropriate package in one of several way (and I am sorry this keeps changing) -
 
-<monospace>sudo apt install ./tomboy-ng_0.27-0_amd64.deb [enter]</monospace><size:large>
+<list><list-item dir="ltr"><bold>Recommended, install gdebi first</bold>.  Its available from your normal repos and is easy and reliable. Then download the approprate tomboy-ng package, your browser will direct it to Gdebi. Strongly recommeded for U16.04.</list-item></list>
+<list><list-item dir="ltr">Depending on your version, you may be able to download and get directed to another tool to install, perhaps Software Installer. Good luck. </list-item></list>
+<list><list-item dir="ltr">Thirdly, will work on all except U16.04, click on the appropriate link, download and save the file. Use  the following apt command (note the './' in front of the filename, you must be in the directory where the downloaded file is and explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -</list-item></list>
+
+<monospace>sudo apt install ./tomboy-ng_0.29-0_amd64.deb [enter]</monospace><size:large>
 
 <bold>Linux Mint</bold></size:large>
  I have only tested against 19.2 Cinnamon. This, and 19.3 Cinnamon are based on Ubuntu 18.04, so use the GTK versions only,  [32bit]($$DEB32) or [64bit]($$DEB64) .  
 Click on the appropriate link from your browser and allow the suggested installer, GDebi, to run the install for you. Linux Mint does report any install errors that happen during this process (unlike some distros!) so its a good approach. <size:large>
 
-<bold>Debian</bold></size:large>
-For old stable and distros based on it (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  Buster, Debian 10 also appears happier with the GTK versions. 
-
-<bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a slightly different way. After starting tomboy-ng the first time, click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose "add to favourites". You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will work fine 
-
-<bold>Debian XFCE</bold> - may also fail to show the System Tray Icon, at this stage, my best advice is create a desktop launcher and use it to activate tomboy-ng as mentioned above. You may use either the [Qt5 64bit]($$DEB64QT) or [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64).
-
-<bold>Debian Plasma</bold> - works fine. Being Qt based, the  [Qt5 64bit]($$DEB64QT) makes sense.
-
-I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). On U16.04 however you should use gdebi rather than apt to install.
-
-<monospace>sudo apt install ./tomboy-ng_0.26-0_amd64.deb [enter]    -- note Qt5 version has a slightly different name.</monospace><size:large>
 
 <bold>Fedora</bold></size:large>
 
-Generally,  on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link and allow the suggested application "Software Install", to handle the install. Or, if you prefer, download and save the file, then use the yum command, eg -
+Tested on Fedora 31 and 32. Generally,  on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
 <monospace>sudo yum localinstall ./tomboy-ng-0.27-2.x86_64.rpm [enter]   </monospace>
 
@@ -76,8 +68,23 @@ note the Qt5 version has a slightly different file name
 
 Other flavours of Fedora (eg <bold> Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.
 
-Fedora seems to now try and run Qt5 apps under Xorg even when Wayland is the default display manager (that's nice), however my tests indicate it does generate some apparently harmless warnings.So try the  [Qt5 64bit]($$RPM64QT) version if you like, it will be a smaller dependencies download on a new install.
+Fedora seems to now try and run Qt5 apps under Xorg even when Wayland is the default display manager (that's nice), however my tests indicate it does generate some apparently harmless warnings. So try the  [Qt5 64bit]($$RPM64QT) version if you like, it will be a smaller dependencies download on a new install.<size:large>
 
+<bold>Debian</bold></size:large>
+For earlier versions and distros based on them, (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  By time you get to Debian 10.4, Qt is, perhaps, a better bet if you are using 64bit. [64bit QT]($$DEB64QT)
+
+<bold>Debian XFCe</bold> - the default desktop for Debian.  Works fine with either GTK2 or Qt but the GTK2 version issues some irrelevent messages so use the  [64bit QT]($$DEB64QT) if you can. However, either version presents a problem if you sync to a SMB: network share. The XFCe directory chooser does not display smb: shares so you must use eg smbclient to connect to a real local directory. This problems seems to be unique to Debian's XFCe.
+
+<bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon, please see the Fedora Gnome section above for how to deal with this problem. The [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will wor
+
+<bold>Debian Plasma</bold> - works fine. Being Qt based, the  [Qt5 64bit]($$DEB64QT) makes sense.
+
+I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). On U16.04 however you should use gdebi rather than apt to install.
+
+<monospace>sudo apt install ./tomboy-ng_0.26-0_amd64.deb [enter]    -- note Qt5 version has a slightly different name.</monospace><size:large>
+
+<bold>Devian</bold></size:large><bold>
+Devaun XFCe</bold> - Tested against version 3.0.0.  Much like Debian above.
  <size:large>
 <bold>OpenSuse</bold></size:large>
 <list><list-item dir="ltr">It appears there is little difference between the  [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) and the [Qt5 64bit]($$RPM64QT) version, if its a new system, maybe the smaller dependencies download for QT is worthwhile.  </list-item></list>
@@ -108,14 +115,14 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </note-content></text>
-  <last-change-date>2020-05-25T10:05:10.6280000+10:00</last-change-date>
-  <last-metadata-change-date>2020-05-25T10:05:10.6280000+10:00</last-metadata-change-date>
+  <last-change-date>2020-06-24T21:03:45.7183412+10:00</last-change-date>
+  <last-metadata-change-date>2020-06-24T21:03:45.7183412+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>944</x>
+  <x>395</x>
   <y>299</y>
   <open-on-startup>False</open-on-startup>
 </note>
