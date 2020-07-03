@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng ToDo List</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng ToDo List</underline><size:small>
+  <title>tomboy-ng Bugs and Known Issues</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Bugs and Known Issues</underline><size:small>
 
-This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small><size:huge>
+This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small><size:large>
 
-<bold>Bugs and Feature Requests</bold></size:huge>
-
+<bold>Bugs</bold></size:large>
 Bug reports and feature requests should be via Github https://github.com/tomboy-notes/tomboy-ng/issues
 There is some advice about DIY debugging further down this document.<size:huge>
 
@@ -77,8 +76,8 @@ Windows and Mac do not, for this purpose, have a console. But they too  can be t
 In all cases, you may need to zip that file up to post it on Github. If  you  do intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see. It may include things like note Titles for example.
 
 </note-content></text>
-  <last-change-date>2020-06-22T22:46:16.5445992+10:00</last-change-date>
-  <last-metadata-change-date>2020-06-22T22:46:16.5445992+10:00</last-metadata-change-date>
+  <last-change-date>2020-06-25T14:55:48.8627502+10:00</last-change-date>
+  <last-metadata-change-date>2020-06-25T14:55:48.8627502+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

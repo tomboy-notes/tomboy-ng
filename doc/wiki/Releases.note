@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng notes v0.29, June 2020</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng notes v0.29, June 2020</underline><size:small>
+  <title>tomboy-ng v0.29 Release Page</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.29 Release Page</underline><size:small>
 
 Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
@@ -64,7 +64,9 @@ Tested on Fedora 31 and 32. Generally,  on Fedora the [GTK2 32bit]($$RPM32) or [
 
 note the Qt5 version has a slightly different file name
 
-<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. 
+<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose <bold>add to favourites</bold>. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  Many users hide the small splash screen at tomboy-ng start, if you set it like this, Fedora Gnome will appear to do nothing as you start it (because you cannot see the System Tray Icon) so, perhaps, its a good idea to setup tomboy-ng to show the Search Screen at startup.
+
+If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. Untested with Fedora 32, each new release seems to take steps to make this process harder ....
 
 Other flavours of Fedora (eg <bold> Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.
 
@@ -115,8 +117,8 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </note-content></text>
-  <last-change-date>2020-06-24T21:03:45.7183412+10:00</last-change-date>
-  <last-metadata-change-date>2020-06-24T21:03:45.7183412+10:00</last-metadata-change-date>
+  <last-change-date>2020-06-25T14:54:30.8911396+10:00</last-change-date>
+  <last-metadata-change-date>2020-06-25T14:54:30.8911396+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

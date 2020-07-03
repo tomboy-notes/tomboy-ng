@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>tomboy-ng Internals</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Internals
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Internals</underline>
 
-</underline>This doc has some information about how tomboy-ng works internally. In some manner it also reveals what I have discovered about generic Tomboy but should not be seen as authorative. Sadly, not a lot of Tomboy's way of thinking has been officially documented.
+This doc has some information about how tomboy-ng works internally. In some manner it also reveals what I have discovered about generic Tomboy but should not be seen as authorative. Sadly, not a lot of Tomboy's way of thinking has been officially documented.
 
-See a seperate note about the Sync Process.
 
-<size:large><bold>Building Tomboy-ng
+See a seperate note about the Sync Process.<size:large>
 
-</bold></size:large>You can build tomboy-ng on Windows (tested on 10), Mac (tested on Sierra) and Linux (tested on Ubuntu Mate 16.04).
+<bold>Building Tomboy-ng</bold></size:large>
+
+You can build tomboy-ng on Windows (tested on 10), Mac (tested on Sierra) and Linux (tested on Ubuntu Mate 16.04).
 
 There are binary install kits for Linux, Windows and Mac.  If you want to build your own (or, please, help with development) that too is easy. Requires Free Pascal, Lazarus and the KControls component to build. I have been working with Lazarus 1.8, just released late 2017. Use the bitbucket version of KControls.
 
-If you run tomboy-ng within the debugger, remember that there are several handled exceptions, the debugger insists on telling you about them so make sure you press "continue". Outside the debugger, you will not be aware of this happening.
+If you run tomboy-ng within the debugger, remember that there are several handled exceptions, the debugger insists on telling you about them so make sure you press "continue". Outside the debugger, you will not be aware of this happening.<size:large>
 
-<size:large><bold>Internals
+<bold>Internals</bold></size:large>
 
-</bold></size:large>Lazarus and Free Pascal support heaps of other platforms too and I suspect the KControls Component might as well.
+Lazarus and Free Pascal support heaps of other platforms too and I suspect the KControls Component might as well.
 
-<bold>IFDEFs
+<bold>IFDEFs</bold>
 
-</bold>There are not a lot of ifdef and generally I think its desirable to avoid if possible. GetLocalTime() in SaveNote has one because a Linux process can be fooled if its been running for a long time when we hit Daylight Saving Time. This call will make sure the process clock and system clock agree. Please see https://xkcd.com/1883/
+There are not a lot of ifdef and generally I think its desirable to avoid if possible. GetLocalTime() in SaveNote has one because a Linux process can be fooled if its been running for a long time when we hit Daylight Saving Time. This call will make sure the process clock and system clock agree. Please see https://xkcd.com/1883/
 
-We now display Cocoa based Mac a little differently that Linux/Windows, Mac users prefer a Main Menu rather than the TrayIcon one and Cocoa (but not Carbon) have difficulty displaying a try icon when the main window is hidden. A bit of extra Window code needed in EditBox because of Windows insistence on two character line endings.
+We now display Cocoa based Mac a little differently that Linux/Windows, Mac users prefer a Main Menu rather than the TrayIcon one and Cocoa (but not Carbon) have difficulty displaying a try icon when the main window is hidden. A bit of extra Window code needed in EditBox because of Windows insistence on two character line endings.<size:large>
 
-<size:large><bold>Release Test Plan
+<bold>Release Test Plan</bold></size:large>
 
-</bold></size:large>One each platform, Linux, Windows and Mac we do this set of test. In addition, obviously, test any new features and things 'around' where changes have been made. Tests are made with full debugging on including heaptrc. Not from within the IDE.
+One each platform, Linux, Windows and Mac we do this set of test. In addition, obviously, test any new features and things 'around' where changes have been made. Tests are made with full debugging on including heaptrc. Not from within the IDE.
 
 * Load up new binary, remove any rubbish short term notes, notebooks and do a sync. Exit.
 * Remove config and all notes, eg rm -Rf ~/.config/tomboy-ng; rm -Rf ~/.local/share/tomboy-ng
@@ -44,21 +45,21 @@ We now display Cocoa based Mac a little differently that Linux/Windows, Mac user
 * One off extra - inspect local manifest and ensure syncrev is not blank.
 * Quit - no memory leaks ?
 
-<bold>Notebooks
-</bold>Every note that is a member of a Notebook has an extra bit of XML down just after the &lt;y&gt;,&lt;/y&gt; tag. Tomboy mentions only one Notebook, to remain compatable, so should we but there is apparently no there reason. So, provide user with an option in Settings. Tags look like this -
-</monospace><monospace>  &lt;tags&gt;
-<monospace>    &lt;tag&gt;system:notebook:DavosNotebook&lt;/tag&gt;
-<monospace>  &lt;/tags&gt;
-<monospace>In addition, Notebook Templates exist in Tomboy. They are are identified by this
-<monospace>  &lt;tags&gt;
-<monospace>    &lt;tag&gt;system:template&lt;/tag&gt;
-<monospace>    &lt;tag&gt;system:notebook:DavosNotebook&lt;/tag&gt;
-<monospace>  &lt;/tags&gt;
+<bold>Notebooks</bold>
+Every note that is a member of a Notebook has an extra bit of XML down just after the &lt;y&gt;,&lt;/y&gt; tag. Tomboy mentions only one Notebook, to remain compatable, so should we but there is apparently no there reason. So, provide user with an option in Settings. Tags look like this -
+<monospace>  &lt;tags&gt;</monospace>
+<monospace>    &lt;tag&gt;system:notebook:DavosNotebook&lt;/tag&gt;</monospace>
+<monospace>  &lt;/tags&gt;</monospace>
+<monospace>In addition, Notebook Templates exist in Tomboy. They are are identified by this</monospace>
+<monospace>  &lt;tags&gt;</monospace>
+<monospace>    &lt;tag&gt;system:template&lt;/tag&gt;</monospace>
+<monospace>    &lt;tag&gt;system:notebook:DavosNotebook&lt;/tag&gt;</monospace>
+<monospace>  &lt;/tags&gt;</monospace>
 
-</monospace>The StartHere note has the system:template tag but not, obviously, the notebook one.
+The StartHere note has the system:template tag but not, obviously, the notebook one.
 
-<highlight>POLICY (not sure if Tomboy does this too, don't assume)
-</highlight> If I find a note that thinks it is a member of a particular notebook, but I cannot  find a template for that note, then I will ignore that claim, not display that notebook  to user and remove the claim if and when I save the note.
+<highlight>POLICY (not sure if Tomboy does this too, don't assume)</highlight>
+ If I find a note that thinks it is a member of a particular notebook, but I cannot  find a template for that note, then I will ignore that claim, not display that notebook  to user and remove the claim if and when I save the note.
  When a notebook is deleted, we delete the Notebook Template, not the notes that are  a member of the notebook. We make no change to the notes, thier tag remains until the note is rewritten.
 
 So, the plan is -
@@ -82,13 +83,13 @@ in the NotebookList object.
 * MainUnit stuff *
 - Add strgrid to form for Notebook, "Notebooks" (not clickable);
        - "Show all notes" - now a seperate button.    Done
-	   - "Templates" - will be Right Click in Notebook Name in str list - ToDo
-	   - List of know Notebooks from Note_Lister. Click and see members - Done
+    - "Templates" - will be Right Click in Notebook Name in str list - ToDo
+    - List of know Notebooks from Note_Lister. Click and see members - Done
 - Interface between EditBox and Note_lister so we can add and remove Notebook-ness - ToDo
-- The DeleteNote() function must check to see if note is listed as having notebook - Hmm, why ?
+- The DeleteNote() function must check to see if note is listed as having notebook - Hmm, why ?<size:large>
 
-<size:large>Make a New Notebook Process
-</size:large>User gets a dialog, Notebook, that can let them enter a new notebook name.
+Make a New Notebook Process</size:large>
+User gets a dialog, Notebook, that can let them enter a new notebook name.
 User presses OK button and if the dialogs New Notebook tab is active it does this -
 * check that there is some text in text box
 * creates a new saver object.
@@ -106,14 +107,14 @@ individual notebooks that may claim to be members of that notebook. If user load
 such a note, the claims will be ignored and not resaved.
 
 </note-content></text>
-  <last-change-date>2018-06-23T13:03:04.5210000+10:00</last-change-date>
-  <last-metadata-change-date>2018-06-23T13:03:04.5210000+10:00</last-metadata-change-date>
+  <last-change-date>2020-06-25T13:07:02.5319812+10:00</last-change-date>
+  <last-metadata-change-date>2020-06-25T13:07:02.5319812+10:00</last-metadata-change-date>
   <create-date>2018-06-23T13:03:04.5210000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>0</x>
-  <y>0</y>
+  <x>20</x>
+  <y>28</y>
   <open-on-startup>False</open-on-startup>
 </note>
