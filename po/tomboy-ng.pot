@@ -351,6 +351,14 @@ msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr ""
 
+#: resourcestr.rsnotebookoptioncmd
+msgid "Cmd click for Notebook Options"
+msgstr ""
+
+#: resourcestr.rsnotebookoptionright
+msgid "Right click for Notebook Options"
+msgstr ""
+
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
@@ -1404,14 +1412,6 @@ msgstr ""
 #: tsearchform.buttonmenu.caption
 msgctxt "tsearchform.buttonmenu.caption"
 msgid "Menu"
-msgstr ""
-
-#: tsearchform.buttonnotebookoptions.caption
-msgid "Notebook Options"
-msgstr ""
-
-#: tsearchform.buttonnotebookoptions.hint
-msgid "Manage the Notebooks"
 msgstr ""
 
 #: tsearchform.buttonrefresh.caption

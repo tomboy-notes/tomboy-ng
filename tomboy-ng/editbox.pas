@@ -576,6 +576,11 @@ procedure TEditBoxForm.SpeedButtonNotebookClick(Sender: TObject);
 var
     NotebookPick : TNotebookPick;
 begin
+    // if its a new note that has been created from a template, then if the user looks at notebook list
+    // here, before its saved, he does not see the notebook listed. So, we force a save to avoid confusion.
+    // SaveTheNote() will clear the templateIS field when it does its stuff.
+    if TemplateIs <> '' then
+        SaveTheNote();
     NotebookPick := TNotebookPick.Create(Application);
     NotebookPick.FullFileName := NoteFileName;
     NotebookPick.Title := NoteTitle;
@@ -2620,10 +2625,10 @@ var
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    // T1, T2, T3, T4, T5, T6, T7 : dword;
+    //T1, T2, T3, T4, T5, T6, T7 : dword;
     // TestI : integer;
 begin
-    // T1 := gettickcount64();
+    //T1 := gettickcount64();
     // debugln('Saving this note' + Caption);
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
@@ -2650,16 +2655,16 @@ begin
         Saver.CreateDate := CreateDate;
         if not GetTitle(Saver.Title) then exit();
         Caption := Saver.Title;
-        // T2 := GetTickCount64();                   // 0mS
+        //T2 := GetTickCount64();                   // 0mS
         KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
         try
            // debugln('about to save');
             Saver.ReadKMemo(NoteFileName, KMemo1);
-            // T3 := GetTickCount64();               // 6mS
+            //T3 := GetTickCount64();               // 6mS
         finally
             KMemo1.Blocks.UnLockUpdate;
         end;
-        // T4 := GetTickCount64();                   //  0mS
+        //T4 := GetTickCount64();                   //  0mS
         Loc.Width:=inttostr(Width);
         Loc.Height:=inttostr(Height);
         Loc.X := inttostr(Left);
@@ -2676,12 +2681,13 @@ begin
             Showmessage('ERROR, cannot save,  please report [' + Loc.ErrorStr + ']');     // maybe some windows delete problem ??
             //Showmessage('Name=' + Sett.NoteDirectory + NoteFileName);
         end;
-        // T5 := GetTickCount64();                   // 1mS
+        //T5 := GetTickCount64();                   // 1mS
         // No point in calling UpDateList() if we are closing the app or just updating metadata.
         if ((not WeAreClosing) and (Loc.LastChangeDate = '')) then
             SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
                                         // if we have rewritten GUID, that will create new entry for it.
-        // T6 := GetTickCount64();                   //  14mS
+            // the above call to UpdateList triggers some time wasting menu updates, I cannot find why !
+        //T6 := GetTickCount64();                   //  14mS
         if OldFileName <> '' then
             SearchForm.DeleteNote(OldFileName);
     finally
@@ -2689,9 +2695,10 @@ begin
         Dirty := false;
         Caption := CleanCaption();
     end;
-    {T7 := GetTickCount64();                       // 0mS
-    debugln('EditBox.SaveTheNote Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3) + ' ' +
-            inttostr(T5 - T4) + ' ' + inttostr(T6 - T5) + ' ' + inttostr(T7 - T6));  }
+    //T7 := GetTickCount64();                       // 0mS
+    //debugln('EditBox.SaveTheNote Timing');
+    //debugln('create=' + inttostr(T2 - T1) + ' ReadKMemo=' + inttostr(T3 - T2) + ' Unlock=' + inttostr(T4 - T3) + ' Write=' +
+    //        inttostr(T5 - T4) + ' UpdateList=' + inttostr(T6 - T5) + ' CleanUp=' + inttostr(T7 - T6));
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;

@@ -128,7 +128,6 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
 type        { TSearchForm }
     TSearchForm = class(TForm)
-			ButtonNotebookOptions: TButton;
 			ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
         CheckCaseSensitive: TCheckBox;
@@ -147,7 +146,6 @@ type        { TSearchForm }
         StatusBar1: TStatusBar;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         procedure ButtonMenuClick(Sender: TObject);
-		procedure ButtonNotebookOptionsClick(Sender: TObject);
                                     { If a search is underway, searches.  Else, if we have
                                       an active notebook filter applied, reapply it. Failing
                                       both of the above, refreshes the Notes and Notebooks
@@ -167,6 +165,8 @@ type        { TSearchForm }
         procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
         procedure ListBoxNotebooksClick(Sender: TObject);
+        procedure ListBoxNotebooksMouseUp(Sender: TObject;
+            Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure ListViewNotesDblClick(Sender: TObject);
         procedure ListViewNotesKeyPress(Sender: TObject; var Key: char);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
@@ -426,25 +426,25 @@ begin
 end;
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
-{ var
-    T1, T2, T3, T4 : dword;    }
+{var
+    T1, T2, T3, T4 : dword; }
 begin
     if NoteLister = Nil then exit;				// we are quitting the app !
   	// Can we find line with passed file name ? If so, apply new data.
-    // T1 := gettickcount64();
+    //T1 := gettickcount64();
 	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
         // DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
         NoteLister.AddNote(ExtractFileNameOnly(FullFileName)+'.note', Title, LastChange);
 	end;
-    // T2 := gettickcount64();
+    //T2 := gettickcount64();
     NoteLister.ThisNoteIsOpen(FullFileName, TheForm);
-    // T3 := gettickcount64();
+    //T3 := gettickcount64();
     RefreshMenus(mkRecentMenu);
     if Visible then ButtonRefresh.Enabled := True
     else NeedRefresh := True;
     // UseList();          // 13mS ?
-    // T4 := gettickcount64();
-    // debugln('SearchUnit.UpdateList ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
+    //T4 := gettickcount64();
+    //debugln('SearchUnit.UpdateList ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
 
@@ -500,18 +500,23 @@ end;
 procedure TSearchForm.RefreshMenus(WhichSection : TMenuKind; AMenu : TPopupMenu = nil);
 var
     MList : TList;
-    I : integer;
+    I, Blar : integer;
+    //T1, T2, T3, T4, T5, T6 : dword;
 begin
     if (WhichSection = mkRecentMenu) and (PopupTBMainMenu.Items.Count = 0)
         then exit;      // This is a call during startup, File and Help are not there yet, messes with Qt5
+
+    //debugln('In RefreshMenus');
     if AMenu <> Nil then begin
           MenuFileItems(AMenu);
           MenuHelpItems(AMenu);
           MenuRecentItems(AMenu);
           exit();
     end;
+
     MList := TList.Create;
     MenuListBuilder(MList);
+    //T1 := gettickcount64();
     case WhichSection of
         mkAllMenu : for I := 0 to MList.Count - 1 do begin
                             MenuFileItems(TPopupMenu(MList[i]));
@@ -520,14 +525,25 @@ begin
                         end;
         mkFileMenu : for I := 0 to MList.Count - 1 do
                             MenuFileItems(TPopupMenu(MList[i]));
-        mkRecentMenu : for I := 0 to MList.Count - 1 do
-                            MenuRecentItems(TPopupMenu(MList[i]));
+        mkRecentMenu : {begin T2 := gettickcount64();
+                             Blar := MList.Count;
+                             T3:= gettickcount64();  }
+                             for I := 0 to MList.Count - 1 do {begin
+                                 T5 := gettickcount64();}
+                                 MenuRecentItems(TPopupMenu(MList[i]));
+                                 {T4 := gettickcount64();
+                                 T6 := gettickcount64();
+                                 debugln('Loop timing  ' + dbgs(T6 - T5));
+                             end;
+                       end;}
+                            // ToDo : that call to  MList.Count takes some 3 to 18 mS !
         mkHelpMenu : for I := 0 to MList.Count - 1 do begin
                             InitialiseHelpFiles();
                             MenuHelpItems(TPopupMenu(MList[i]));
                         end;
     end;
     MList.Free;
+    //debugln('SearchUnit.RefreshMenus MList.count = ' + inttostr(T3 - T2) + 'ms ' + dbgs(T4 - T3));
 end;
 
 procedure TSearchForm.AddItemMenu(TheMenu : TPopupMenu; Item : string; mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
@@ -603,22 +619,27 @@ procedure TSearchForm.MenuRecentItems(AMenu : TPopupMenu);
 var
     i : integer = 1;
     j : integer;
+    //T1, T2, T3, T4 : dword;
 begin
+    //T1 := gettickcount64();
+    // debugln('In MenuRecentItems ' + AMenu.Name);
     i := AMenu.Items.Count;
     while i > 0 do begin            // Remove any existing entries first
         dec(i);
         if TMenuItem(AMenu.Items[i]).Tag = ord(mtRecent) then
             AMenu.Items.Delete(i);
     end;
-
+    //T2 := gettickcount64();
     i := NoteLister.Count;
     j := i -10;
     if j < 0 then j := 0;
+    //T3 := gettickcount64();
     while i > j do begin
         dec(i);
         AddItemMenu(AMenu, NoteLister.GetTitle(i), mtRecent,  @RecentMenuClicked, mkRecentMenu)
     end;
-
+    //T4 := gettickcount64();
+    //debugln('TSearchForm.MenuRecentItems ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 {   This model gets its sorted recent list from string grid, delete it at some stage.
     i := 1;
     while (i <= 10) do begin
@@ -705,7 +726,8 @@ begin
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then
         DoSearch()
     else begin
-        if ButtonNotebookOptions.Enabled then begin                         // if a notebook is currently selected.
+        // if ButtonNotebookOptions.Enabled then begin                         // if a notebook is currently selected.
+        if (ListBoxNotebooks.ItemIndex > -1) then begin                        // if a notebook is currently selected.
             NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
             if NB <> '' then begin
                 // NoteLister.LoadNotebookGrid(StringGrid1, NB);
@@ -907,8 +929,11 @@ begin
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
     {$endif}
-    {$ifdef DARWIN}ButtonMenu.Refresh;{$endif}      // Cocoa issue
-    // debugln('Search Unit Form Show');
+    ListBoxNotebooks.Hint := rsNotebookOptionRight;
+    {$ifdef DARWIN}
+    ButtonMenu.Refresh;
+    ListBoxNotebooks.Hint := rsNotebookOptionCmd;
+    {$endif}      // Cocoa issue
 end;
 
 
@@ -1012,7 +1037,7 @@ begin
         end;
     end;
     // if to here, we need open a new window. If Filename blank, its a new note
-    if (NoteFileName = '') and (NoteTitle ='') and ButtonNoteBookOptions.Enabled then  // a new note with notebook selected.
+    if (NoteFileName = '') and (NoteTitle ='') and (ListBoxNotebooks.ItemIndex > -1) then  // a new note with notebook selected.
        //TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
         TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
 	EBox := TEditBoxForm.Create(Application);
@@ -1092,7 +1117,7 @@ end;
     // displays all available notes.
 procedure TSearchForm.ButtonClearFiltersClick(Sender: TObject);
 begin
-        ButtonNotebookOptions.Enabled := False;
+        //ButtonNotebookOptions.Enabled := False;
         ButtonClearFilters.Enabled := False;
         // ButtonClearFilters.color := clblack;
         //StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
@@ -1101,6 +1126,7 @@ begin
         //self.ButtonRefresh.enabled := False;
         //StringGridNoteBooks.Hint := '';
         //StringGrid1.AutoSizeColumns;
+        ListBoxNotebooks.ItemIndex := -1;
         Edit1.Hint:=rsSearchHint;
         Edit1.Text := rsMenuSearch;
         ButtonRefreshClick(self);
@@ -1112,7 +1138,7 @@ end;
 
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
 begin
-    ButtonNotebookOptions.Enabled := True;
+    //ButtonNotebookOptions.Enabled := True;
     ButtonClearFilters.Enabled := True;
     ButtonRefreshClick(self);
     SelectedNoteBook := ListBoxNotebooks.ItemIndex;
@@ -1139,15 +1165,20 @@ begin
     StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end; }
 
+    // Popup a menu when rightclick a notebook
+procedure TSearchForm.ListBoxNotebooksMouseUp(Sender: TObject;
+    Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+    debugln('TSearchForm.ListBoxNotebooksMouseDown - Selected in listboxnotebook ' + dbgs(ListBoxNotebooks.ItemIndex));
+    if (Button = mbRight) and (ListBoxNotebooks.ItemIndex > -1) then
+        PopupMenuNotebook.Popup;
+end;
+
 procedure TSearchForm.ButtonMenuClick(Sender: TObject);
 begin
     PopupTBMainMenu.popup;
 end;
 
-procedure TSearchForm.ButtonNotebookOptionsClick(Sender: TObject);
-begin
-    PopupMenuNotebook.Popup;
-end;
 
 procedure TSearchForm.MenuEditNotebookTemplateClick(Sender: TObject);
 var
@@ -1191,9 +1222,13 @@ end;
 
 procedure TSearchForm.MenuNewNoteFromTemplateClick(Sender: TObject);
 begin
-    OpenNote('', Sett.NoteDirectory
+    {OpenNote('', Sett.NoteDirectory                                                                     // WTF !
     		+ NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]),
             ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
+        is this another  grosjo-ism ???   We should not be passing notebook ID as a file name
+        and should not be getting the notebook name here, OpenNote does it ??
+    }
+    OpenNote('', '', '');
 end;
 
 procedure TSearchForm.SpeedButton1Click(Sender: TObject);

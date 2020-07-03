@@ -100,7 +100,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx5024="True"/>
+              <IgnoredMessages idx6058="True" idx5024="True"/>
             </CompilerMessages>
           </Other>
         </CompilerOptions>
@@ -137,6 +137,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM

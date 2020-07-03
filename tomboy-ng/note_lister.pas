@@ -1151,7 +1151,7 @@ begin
   	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then     // ToDo : will FindAllFiles() be faster ?
   		repeat
             inc(Cnt);
-  			GetNoteDetails(WorkingDir, Info.Name, DontTestName);
+  		    GetNoteDetails(WorkingDir, Info.Name, DontTestName);
   		until FindNext(Info) <> 0;
   	FindClose(Info);
     if DebugMode then debugLn('Finished indexing notes');

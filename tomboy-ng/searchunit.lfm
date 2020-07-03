@@ -98,45 +98,27 @@ object SearchForm: TSearchForm
       Enabled = False
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
-      TabOrder = 3
-    end
-    object ButtonNotebookOptions: TButton
-      AnchorSideLeft.Control = Panel1
-      AnchorSideTop.Control = ButtonClearFilters
-      AnchorSideTop.Side = asrBottom
-      AnchorSideRight.Control = Splitter1
-      AnchorSideBottom.Control = Panel1
-      AnchorSideBottom.Side = asrBottom
-      Left = 1
-      Height = 32
-      Hint = 'Manage the Notebooks'
-      Top = 309
-      Width = 232
-      Anchors = [akLeft, akRight, akBottom]
-      Caption = 'Notebook Options'
-      Enabled = False
-      OnClick = ButtonNotebookOptionsClick
-      OnKeyDown = FormKeyDown
-      ParentShowHint = False
-      ShowHint = True
       TabOrder = 2
-      TabStop = False
     end
     object ListBoxNotebooks: TListBox
       AnchorSideLeft.Control = ButtonClearFilters
       AnchorSideTop.Control = Panel2
       AnchorSideTop.Side = asrBottom
       AnchorSideRight.Control = Splitter1
-      AnchorSideBottom.Control = ButtonNotebookOptions
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
       Left = 1
-      Height = 245
+      Height = 277
       Top = 64
       Width = 232
       Anchors = [akTop, akLeft, akRight, akBottom]
       ExtendedSelect = False
       ItemHeight = 0
       OnClick = ListBoxNotebooksClick
+      OnMouseUp = ListBoxNotebooksMouseUp
+      ParentShowHint = False
       ScrollWidth = 230
+      ShowHint = True
       TabOrder = 1
       TopIndex = -1
     end
@@ -151,7 +133,7 @@ object SearchForm: TSearchForm
       Width = 232
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Notebooks'
-      TabOrder = 4
+      TabOrder = 3
     end
     object ListViewNotes: TListView
       AnchorSideLeft.Control = Splitter1
@@ -181,7 +163,7 @@ object SearchForm: TSearchForm
       ScrollBars = ssAutoVertical
       SortColumn = 0
       SortType = stText
-      TabOrder = 5
+      TabOrder = 4
       ViewStyle = vsReport
       OnDblClick = ListViewNotesDblClick
       OnKeyPress = ListViewNotesKeyPress
@@ -301,12 +283,12 @@ object SearchForm: TSearchForm
     Panels = <>
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 344
-    top = 72
+    Left = 344
+    Top = 72
   end
   object PopupMenuNotebook: TPopupMenu
-    left = 560
-    top = 72
+    Left = 560
+    Top = 72
     object MenuEditNotebookTemplate: TMenuItem
       Caption = 'Edit Notebook Template'
       OnClick = MenuEditNotebookTemplateClick

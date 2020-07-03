@@ -373,6 +373,14 @@ msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr "La nota ya está en el repositorio"
 
+#: resourcestr.rsnotebookoptioncmd
+msgid "Cmd click for Notebook Options"
+msgstr ""
+
+#: resourcestr.rsnotebookoptionright
+msgid "Right click for Notebook Options"
+msgstr ""
+
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
 msgid "Notebooks"
@@ -1459,14 +1467,6 @@ msgctxt "tsearchform.buttonmenu.caption"
 msgid "Menu"
 msgstr "Menú"
 
-#: tsearchform.buttonnotebookoptions.caption
-msgid "Notebook Options"
-msgstr "Opciones de cuadernos"
-
-#: tsearchform.buttonnotebookoptions.hint
-msgid "Manage the Notebooks"
-msgstr "Gestionar los cuadernos"
-
 #: tsearchform.buttonrefresh.caption
 msgid "Refresh"
 msgstr "Actualizar"
@@ -1801,3 +1801,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
+
