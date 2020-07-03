@@ -23,6 +23,7 @@ type
 				ComboExport: TComboBox;
 				ComboSource: TComboBox;
                 GroupBox1: TGroupBox;
+                GroupBox2: TGroupBox;
 				Label1: TLabel;
 				Label2: TLabel;
 				Label3: TLabel;
@@ -42,6 +43,8 @@ type
 				PageControl1: TPageControl;
                 PanelLower: TPanel;
 				PanelTop: TPanel;
+                RadioFileNameTitle: TRadioButton;
+                RadioFileNameID: TRadioButton;
                 RadioTitleFirstLine: TRadioButton;
                 RadioTitleFilename: TRadioButton;
 				SelectDirectoryDialog1: TSelectDirectoryDialog;
@@ -169,6 +172,7 @@ begin
         Exporter.DestDir := LabelDestination.Caption;
         Exporter.NoteDir := LabelSource.caption;
         Exporter.OutFormat := ComboExport.Text;
+        Exporter.FileNameIsTitle := RadioFileNameTitle.checked;
         //Exporter.AllNotes := True;
         Exporter.Execute();
         if Exporter.ErrorMessage <> '' then begin
