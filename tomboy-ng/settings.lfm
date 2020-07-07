@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 630
-    ActivePage = TabSnapshot
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -964,33 +964,33 @@ object Sett: TSett
     OnClick = SpeedButHelpClick
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 408
+    Left = 408
   end
   object OpenDialogLibrary: TOpenDialog
     Options = [ofPathMustExist, ofFileMustExist, ofNoDereferenceLinks, ofEnableSizing, ofViewDetail]
-    left = 480
+    Left = 480
   end
   object OpenDialogDictionary: TOpenDialog
-    left = 560
-    top = 232
+    Left = 560
+    Top = 232
   end
   object FontDialog1: TFontDialog
     MinFontSize = 0
     MaxFontSize = 0
-    left = 552
+    Left = 552
   end
   object PMenuMain: TPopupMenu
-    left = 272
-    top = 456
+    Left = 272
+    Top = 456
   end
   object TimerAutoSync: TTimer
     Enabled = False
     OnTimer = TimerAutoSyncTimer
-    left = 524
-    top = 295
+    Left = 524
+    Top = 295
   end
   object SelectSnapDir: TSelectDirectoryDialog
-    left = 560
-    top = 168
+    Left = 560
+    Top = 168
   end
 end

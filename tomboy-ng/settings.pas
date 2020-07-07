@@ -832,6 +832,9 @@ var
 begin
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
+        if LabelSettingPath.Caption = 'LabelSettingPath' then       // ToDo : remove this before release.
+            showmessage('WARNING, TSett.CheckConfigFile - writing config before setting filename');
+
  	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
  	    try
             // MaskSettingsChanged := True;    // should be true anyway ?
@@ -957,6 +960,8 @@ var
 begin
     Result := True;
     if MaskSettingsChanged and (not IgnoreMask) then exit();
+    if LabelSettingPath.Caption = 'LabelSettingPath' then            // ToDo : remove this before release.
+        showmessage('WARNING, TSett.SettingsChanged - writing config before setting filename');
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
         try

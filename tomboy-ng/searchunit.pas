@@ -109,6 +109,7 @@ unit SearchUnit;
     2020/03/09  Make sure 'x' (put in by a bug) is not a valid sync repo path.
     2020/05/10  Faster search
     2020/05/19  Replaced StringGridNotebook with a ListBox
+    2020/06/07  ListBoxNotebooks sorted (but not reverse sortable, that would require TListBox becoming TListView)
 }
 
 {$mode objfpc}{$H+}
@@ -382,7 +383,6 @@ end;
 
 procedure TSearchForm.RefreshNotebooks();
 begin
-    //NoteLister.LoadListNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled);
     NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
 end;
 
@@ -935,8 +935,6 @@ begin
     ListBoxNotebooks.Hint := rsNotebookOptionCmd;
     {$endif}      // Cocoa issue
 end;
-
-
 
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);
 begin

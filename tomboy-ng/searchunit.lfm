@@ -119,6 +119,7 @@ object SearchForm: TSearchForm
       ParentShowHint = False
       ScrollWidth = 230
       ShowHint = True
+      Sorted = True
       TabOrder = 1
       TopIndex = -1
     end
