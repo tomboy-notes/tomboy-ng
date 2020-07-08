@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<note version="0.3" xmlns="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size">
+  <title>Calculadora tomboy-ng</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Calculadora tomboy-ng</underline>
+
+Versiones de tomboy-ng después de V0.20 incluyen una calculadora. Tiene tres modos básicos, todos activados al pulsar Ctrl-E (o Cmd-E en el Mac).
+
+
+<list><list-item dir="ltr"><bold>Modo Simple, </bold>por ejemplo, escriba "6+10=" y pulse Ctrl-E y tomboy-ng mostrará "16" después del signo igual. Funcionará con cualquier cálculo básico, (5*7)/(8.3+12)-0.724=<bold>1.000</bold>  En este modo, puede usar números, paréntesis, el "." (en vez de la coma) para delimitar décimos y los operadores + - / * y ^ (es decir, potencia).</list-item></list>
+<list><list-item dir="ltr"><bold>Modo complejo,</bold> si necesita usar, por ejemplo, funciones trigonométricas, el Modo Simple no encontrará su expresión completa. Por lo cual, escriba la expresión, selecciónela y entra Ctrl-E de nuevo. Resultado similar.  En este modo puede usar los operadores mencionados arriba, más pi, cos, sin, tan, arctan, abs, sqr, sqrt, exp, ln, log, frac, int round y trunc. ej., sin(0.5)^2 + cos(0.5)^2 =<bold>1</bold></list-item></list><bold>
+</bold><list><list-item dir="ltr"><bold>Modo Columna,</bold> sumará una columna de números en las líneas justo encima del total.  En este caso, 'una columna' significa todos los números al principio o al final de las líneas. Si hay números tanto al principio como al final, la columna más larga prima.  La primera línea encontrada que no tiene un número en el extremo apropiado (principio o final) hace parar el cálculo. Puede impedir que un número se incluya 'escondiéndolo' con un carácter alfa, quitando el carácter después de hacer el cálculo. En este modo solamente se permiten números y el delimitador de décimos, ".".</list-item></list>
+
+Casa a Axedale 5.5
+Axedale a Bendigo 19
+Bendigo a casa por O'Briens Road 23
+ida y vuelta = <bold>47.500</bold>
+
+5 [algún texto] 7
+1 [más texto] 
+3 [texto] 4
+<bold>9</bold>
+
+En el segundo ejemplo, se usa la columna izquierda porque tiene tres números elegibles. La columna derecha tiene solamente uno (el '4') dado que no hay ningún número al final de la línea "1 [más texto]".
+
+El analizador de expresiones usa números de coma flotante donde haga falta y se muestra el resultado con 3 dígitos después del decimal ".". <italic>Sería fácil añadir un modelo más flexible aquí, uno que suprime los ceros finales y cambia a la notación científica si la gente lo quiere. (Vea floattostrf()). ¿ Eso y el número de decimales podría ser opciones de configuración?  </italic>
+
+Tome nota que en los ejemplos citados arriba, he puesto los resultados en negrita para claridad. No se ocurre automáticamente.
+
+ 
+
+
+
+</note-content></text>
+  <last-change-date>2019-01-29T19:35:51.9370000+11:00</last-change-date>
+  <last-metadata-change-date>2019-01-29T19:35:51.9370000+11:00</last-metadata-change-date>
+  <create-date>2019-01-15T21:32:06.9620000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>0</x>
+  <y>0</y>
+  <open-on-startup>False</open-on-startup>
+</note>

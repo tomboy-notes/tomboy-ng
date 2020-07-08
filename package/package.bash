@@ -123,6 +123,9 @@ function DebianPackage () {
 		cp "$ICON_DIR/$i.png" "BUILD/usr/share/icons/hicolor/$i/apps/$PRODUCT.png";
 	done;
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
+	mkdir -p BUILD/usr/share/doc/$PRODUCT/EN
+	mkdir -p BUILD/usr/share/doc/$PRODUCT/ES
+	// add any further non-english help note directories here.
 	# cp ../copyright BUILD/usr/share/doc/$PRODUCT/copyright
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
 	for i in $MANUALS; do
@@ -261,6 +264,8 @@ function MkWinPreInstaller() {
 	cp ../COPYING "$WIN_DIR/."
 	cp AfterInstall.txt "$WIN_DIR/."
 	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss.temp"
+	mkdir "$WIN_DIR/EN"
+	mkdir "$WIN_DIR/ES"
 	for i in $MANUALS; do
 	    cp ../doc/$i "$WIN_DIR/."
 	done;

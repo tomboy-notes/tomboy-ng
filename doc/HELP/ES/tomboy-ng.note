@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<note version="0.3" xmlns="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size">
+  <title>Ayuda de tomboy-ng</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Ayuda de tomboy-ng</underline>
+
+Tomboy-ng es una nueva redacción del querido programa Notas Tomboy. Funciona en Linux, Windows y MacOS. Los archivos son compatibles con Tomdroid y (probablemente) GNote. Tomboy-ng notas permiten letras <bold>Negritas</bold>, <italic>Cursivas</italic>, <strikeout>Tachadas</strikeout>, <highlight>Resaltas</highlight> y <underline>Subrayadas</underline> en cuatro tamaños, <size:small>pequeña</size:small>, normal, <size:large>grande</size:large> y <size:huge><highlight>enorme</highlight></size:huge>. 
+
+Puede sincronizar las notas con otros sistemas utilizando el modelo de sincronización de Tomboy, pero todavía no puede hacer la sincronización por red usando Rainy o Grauphel. Hay una capacidad de sincronizar una-a-una a un móvil Android utilizando Tomdroid (pero solamente desde un equipo de Linux). 
+
+Muchos usuarios querrán tener tomboy-ng iniciarse con el sistema SO. La aplicación pondrá un icono en la bandeja del sistema que se puede usar para interactuar con ella. Sin embargo, para asegurar que tenemos soporte para algunas plataformas difíciles, se abre una pequeña ventana también que se puede despachar si ve el icono de la bandeja del sistema (o en algunos sistemas de Gnome 3, la ha añadido a su dock como favorito).  Puede elegir no mostrar la ventana pequeña al menos que no haya una nota corrompida al iniciar. <size:large>
+
+<bold>Usando tomboy-ng</bold></size:large>
+Puede usar tomboy-ng a través de un menú en la bandeja del sistema (en algunos sistemas) o el menú que aparece en todas las ventanas principales del programa.   Si no tienes un icono en la bandeja del sistema (¡que triste!), añada tomboy-ng a los favoritos que aparecen en su dock y, de esta manera, puedes iniciarlo o despertar la ventana de Búsqueda facilmente.
+
+Desde la <bold>ventana de Búsqueda</bold>, puede -
+<list><list-item dir="ltr">Acceder el menú principal (Nota Nueva, Preferencias, notas recientes, etc.).</list-item></list>
+<list><list-item dir="ltr">Buscar términos en todas sus notas-  La búsqueda de un término como <highlight>  "Juan García" nombre </highlight> encontrará todas las notas con la palabra <italic>nombre</italic> en cualquier sitio, y tienen la combinación exacta de <italic>Juan García</italic>.  No encontrará, por ejemplo,  <italic>mi nombre es García, Juan.</italic></list-item></list><italic/>
+<list><list-item dir="ltr">Organizar sus notas en Cuadernos. tomboy-ng permite que cada nota puede aparecer en más de un Cuaderno, pero si sincroniza o comparte las notes con el original Tomboy, no uses esa función.</list-item></list>
+<list><list-item dir="ltr">Renombrar un cuaderno, pero si sincroniza sus notas, ¡haga una sincronización completa primero!</list-item></list>
+
+Tome nota de que los resultado en la ventana de Búsqueda no se actualizan automáticamente mientras que la ventana esté abierta. Eso es para asegurar que los resultados no cambien mientras está trabajando con notas individuales-  Si hay un cambio pendiente, el botón 'Actualizar' se habilita y puede iniciar una actualización al hacer clic en el botón.
+
+<bold>En general tomboy-ng -</bold>
+<list><list-item dir="ltr">guarda notas automáticamente al hacer cambios.</list-item></list>
+<list><list-item dir="ltr">hace copias de seguridad de notas que elimina. Si necesita saber que una nota se ha eliminado, vaya a Preferencias-&gt;Copia de Seguridad.</list-item></list>
+<list><list-item dir="ltr">tiene funciones para hacer instantáneas de sus notas de vez en cuando. ¡Utilícelo, por favor!</list-item></list>
+<list><list-item dir="ltr">puede sincronizar sus notas con un almacén de archivos común para que estén disponibles de equipos múltiples (Linux, Windows o Mac).</list-item></list>
+<list><list-item dir="ltr">no comparte bien. Si guarda sus notas en un disco compartido (sin usar sincronización), tenga muchísimo cuidado de no tener más de una instancia de tomboy-ng o Tomboy ejecutándose al mismo tiempo. Ocurren cosas malas.   </list-item></list><size:large>
+
+<bold>Parámetros de la línea de Comandos.</bold></size:large><bold>
+
+</bold><monospace><bold>-h, --help </bold></monospace>            
+ Mostrar la ayuda y salir.
+
+<bold>--delay-start</bold>
+Añadir un par de segundos al inicio para asegurar que tomboy-ng capta su combinación de colores. 
+
+<bold>-g, --gnome3</bold>
+Evitar que se cierra la ventana de bienvenida. Hace falta solamente si su sistema Linux no muestra el icono de tomboy-ng en la bandeja del sistema.  Algunos sistemas de Gnome 3.
+
+<bold>-l CCode  --lang=CCode </bold>      
+Forzar Idioma, códigos de idiomas soportados como es y nl. Díganos si quiere tomboy-ng en otro idioma.
+
+<bold>--version</bold>                 
+Imprimir la versión y salir.
+
+<monospace><bold>--no-splash</bold></monospace>
+ No mostrar la pequeña ventana de bienvenida. Le ahorra el trabajo de despacharla después del inicio. No lo use al menos que haya comprobado que se pueda ver el icono en la bandeja del sistema.
+
+<monospace><bold>--config-dir=PATH_to_DIR</bold></monospace>  
+Crear o usar una configuración alternativa. Sobretodo una opción para pruebas, pero útil si, por ejemplo, quiere tener dos (o más) grupos de notas independientes (pero no concurrentes).
+
+<monospace><bold>--open-note=PATH_to_NOTE</bold></monospace>  
+Abrir una nota en el modo de nota única. En este modo, un proceso independiente se ejecuta que no tiene acceso a la ubicación normal de las notas ni al sistema normal de sincronización, pero que se puede leer, mostrar y escribir a una sola nota.  Si el nombre de la nota no existe, se crea una nueva nota. Si el nombre de la nota especifica un archivo de texto plano o rtf, los contenidos del archivo serán importados a una nota nueva y la nota tendrá el nombre dado en la línea de comandos, pero con la extensión ".note".  En este modo la nota se queda en la misma ubicación. No se mueve a la ubicación de las notas tomboy-ng, no se sincroniza, ni se busca con tomboy-ng en el modo normal. Téngase en cuenta que el parámetro (-o o --open-note) es opcional; "tomboy-ng algúna.note" se funcionará también.
+
+<monospace><bold>--save-exit </bold></monospace>
+Funciona solamente en el modo de nota única e importará el archivo (.note, .rtf, texto plano), convertirá al formato .note (y el formato estándar del nombre de archivo) y lo guardará en el directorio de notas dado en la configuración. Téngase en cuenta que tomboy-ng requiere un reinicio o 'actualización' después.
+
+
+<monospace><bold> --debug-sync       --debug-index       ---debug-spell </bold></monospace>
+Mostrar lo que pasa durante una sincronización, indización o revisión ortográfica. Útil para depuración. Estos parámetros escribirán al terminal informes de progreso detallados con relación a las funciones respectivas de la aplicación. Sin embargo, Windows no tiene un terminal con este fin.  Pero se puede dirigir esta información a un archivo de registro usando otro parámetro de la línea de comandos o estableciendo un variable ENV que especifica un nombre de archivo. Asegúrese, por favor, que tenga el permiso para escribir a la ubicación dada. Por ejemplo, desde el botón de inicio, haga clic en ejecutar y entre -
+
+<monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace><size:large>
+
+<bold>Cosas de Mac</bold></size:large>
+Usuarios de Mac necesitan una línea de comandos un poco más complicada al usar cualquier de estos parámetros. Por ejemplo, una línea de comandos para generar un registro de depuración de una sincronización sería:
+
+<monospace>open tomboy-ng.app --args "--debug-log=$HOME/tomboy-ng.log" "--debug-"</monospace>
+
+<monospace>Y, como consecuencia de la metodología app, hay que usar rutas absolutas para los parámetros, o, $PWD relativo al directorio actual:</monospace>
+<monospace> </monospace>
+open tomboy-ng/tomboy-ng.app --args "-" "$PWD/doc/tomboy-ng.note"
+
+
+
+</note-content></text>
+  <last-change-date>2020-02-19T21:00:25.4140000+11:00</last-change-date>
+  <last-metadata-change-date>2020-02-19T21:00:25.4140000+11:00</last-metadata-change-date>
+  <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>20</x>
+  <y>30</y>
+  <open-on-startup>False</open-on-startup>
+</note>
