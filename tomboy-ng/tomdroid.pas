@@ -7,6 +7,7 @@ unit tomdroid;
     2018/12/06  Added AdjustNoteList() to call ProcessSyncUpdates at end of a sync
     2018/04/28  Ensure user does not save profile after a Test run, the ID will change.
     2019/05/14  Display strings all (?) moved to resourcestrings
+    2020/07/09  New help notes location.
 }
 
 interface
@@ -147,7 +148,8 @@ end;
 
 procedure TFormTomdroid.ButtonHelpClick(Sender: TObject);
 begin
-    MainUnit.MainForm.ShowHelpNote('tomdroid.note');         // change the bloody name ! Er, why ?
+    //MainUnit.MainForm.ShowHelpNote('tomdroid.note');         // change the bloody name ! Er, why ?
+    SearchForm.ShowHelpNote('tomdroid.note');
 end;
 
 procedure TFormTomdroid.ButtonDeleteClick(Sender: TObject);

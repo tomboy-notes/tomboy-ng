@@ -75,9 +75,9 @@ object MainForm: TMainForm
   end
   object Label1: TLabel
     Left = 56
-    Height = 17
+    Height = 19
     Top = 114
-    Width = 78
+    Width = 87
     Caption = 'Have Config'
     ParentColor = False
   end
@@ -161,17 +161,17 @@ object MainForm: TMainForm
   end
   object Label3: TLabel
     Left = 56
-    Height = 17
+    Height = 19
     Top = 160
-    Width = 185
+    Width = 195
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 56
-    Height = 17
+    Height = 19
     Top = 184
-    Width = 146
+    Width = 156
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
@@ -297,7 +297,7 @@ object MainForm: TMainForm
     Left = 24
     Height = 22
     Top = 43
-    Width = 222
+    Width = 224
     Caption = 'Welcome to tomboy-ng !'
     Font.Height = -18
     Font.Name = 'Lucida Grande'
@@ -306,17 +306,17 @@ object MainForm: TMainForm
   end
   object Label6: TLabel
     Left = 24
-    Height = 17
+    Height = 19
     Top = 80
-    Width = 200
+    Width = 219
     Caption = 'Lets see if we are ready to go -'
     ParentColor = False
   end
   object LabelNotesFound: TLabel
     Left = 56
-    Height = 17
+    Height = 19
     Top = 135
-    Width = 9
+    Width = 10
     Caption = 'X'
     ParentColor = False
   end
@@ -337,10 +337,10 @@ object MainForm: TMainForm
   end
   object CheckBoxDontShow: TCheckBox
     Left = 24
-    Height = 21
+    Height = 24
     Hint = 'You can reverse this from Settings'
     Top = 232
-    Width = 226
+    Width = 242
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
     TabOrder = 3
@@ -457,9 +457,9 @@ object MainForm: TMainForm
   end
   object LabelBadNoteAdvice: TLabel
     Left = 24
-    Height = 17
+    Height = 19
     Top = 296
-    Width = 142
+    Width = 149
     Caption = 'LabelBadNoteAdvice'
     ParentColor = False
   end

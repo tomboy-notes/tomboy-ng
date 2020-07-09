@@ -189,7 +189,8 @@ end;
 
 procedure TFormRecover.ButtonSnapHelpClick(Sender: TObject);
 begin
-    MainUnit.MainForm.ShowHelpNote('recover.note');
+    // MainUnit.MainForm.ShowHelpNote('recover.note');
+    SearchForm.ShowHelpNote('recover.note');
 end;
 
 

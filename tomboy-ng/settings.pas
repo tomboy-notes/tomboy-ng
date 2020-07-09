@@ -100,6 +100,7 @@ unit settings;
     2020/06/11  check if snapshot ok before flushing old ones.
     2020/06/18  Ensure a default config file is written asap at first start.
     2020/06/18  Removed unnecessary panel on Snap tab
+    2020/07/09  New help notes location.
 }
 
 {$mode objfpc}{$H+}
@@ -120,101 +121,102 @@ type
     { TSett }
 
     TSett = class(TForm)
-          ButtDefaultNoteDir: TButton;
-          CheckAutoSnapEnabled: TCheckBox;
-		  CheckBoxAutoSync: TCheckBox;
-		  GroupBoxSync: TGroupBox;
-          Label10: TLabel;
-          Label16: TLabel;
-          Label5: TLabel;
-          LabelFileSyncInfo2: TLabel;
-		  Label4: TLabel;
-          LabelFileSyncInfo1: TLabel;
-		  LabelFileSync: TLabel;
-	  ButtonSetColours: TButton;
-          ButtonFixedFont: TButton;
-          ButtonFont: TButton;
-          ButtonHelpNotes: TButton;
-          ButtonSetSpellLibrary: TButton;
-          ButtonSetDictionary: TButton;
-          ButtonManualSnap: TButton;
-          ButtonSnapRecover: TButton;
-	  ButtonShowBackUp: TButton;
+        ButtDefaultNoteDir: TButton;
+        CheckAutoSnapEnabled: TCheckBox;
+        CheckBoxAutoSync: TCheckBox;
+        ComboHelpLanguage: TComboBox;
+        GroupBoxSync: TGroupBox;
+        Label10: TLabel;
+        Label16: TLabel;
+        Label5: TLabel;
+        LabelFileSyncInfo2: TLabel;
+        Label4: TLabel;
+        LabelFileSyncInfo1: TLabel;
+        LabelFileSync: TLabel;
+        ButtonSetColours: TButton;
+        ButtonFixedFont: TButton;
+        ButtonFont: TButton;
+        ButtonHelpNotes: TButton;
+        ButtonSetSpellLibrary: TButton;
+        ButtonSetDictionary: TButton;
+        ButtonManualSnap: TButton;
+        ButtonSnapRecover: TButton;
+        ButtonShowBackUp: TButton;
 
-	  ButtonSetNotePath: TButton;
-          CheckAutoStart : TCheckBox;
-          CheckCaseSensitive: TCheckBox;
-          CheckManyNotebooks: TCheckBox;
-          CheckShowSearchAtStart: TCheckBox;
-          CheckShowSplash: TCheckBox;
-	  CheckShowExtLinks: TCheckBox;
-	  CheckShowIntLinks: TCheckBox;
-          CheckShowTomdroid: TCheckBox;
-          FontDialog1: TFontDialog;
-          GroupBox1: TGroupBox;
-	  GroupBox4: TGroupBox;
-	  GroupBox5: TGroupBox;
-	  Label1: TLabel;
-          Label12: TLabel;
-          Label13: TLabel;
-          Label14: TLabel;
-          Label15: TLabel;
-          LabelDicPrompt: TLabel;
-          LabelDic: TLabel;
-          LabelError: TLabel;
-          LabelLibrary: TLabel;
-          LabelDicStatus: TLabel;
-          LabelLibraryStatus: TLabel;
-	  Label2: TLabel;
-	  Label3: TLabel;
-	  Label6: TLabel;
-	  Label7: TLabel;
-	  Label8: TLabel;
-	  Label9: TLabel;
-	  LabelNotesPath: TLabel;
-	  LabelSettingPath: TLabel;
-      LabelSnapDir: TLabel;
-          ListBoxDic: TListBox;
-          OpenDialogLibrary: TOpenDialog;
-          OpenDialogDictionary: TOpenDialog;
-	  PageControl1: TPageControl;
-	  Panel1: TPanel;
-          PMenuMain: TPopupMenu;
-	  RadioAlwaysAsk: TRadioButton;
-          RadioFontHuge: TRadioButton;
-	  RadioFontBig: TRadioButton;
-	  RadioFontMedium: TRadioButton;
-	  RadioFontSmall: TRadioButton;
-	  RadioUseLocal: TRadioButton;
-	  RadioUseServer: TRadioButton;
-	  SelectDirectoryDialog1: TSelectDirectoryDialog;
-      SelectSnapDir: TSelectDirectoryDialog;
-          SpeedButHide: TSpeedButton;
-	  SpeedButHelp: TSpeedButton;
-          SpeedButtTBMenu: TSpeedButton;
-		  SpeedSetupSync: TSpeedButton;
-          SpinDaysPerSnapshot: TSpinEdit;
-          SpinMaxSnapshots: TSpinEdit;
-	  TabBasic: TTabSheet;
-	  TabBackUp: TTabSheet;
-          TabSpell: TTabSheet;
-	  TabSnapshot: TTabSheet;
-	  TabSync: TTabSheet;
-	  TabDisplay: TTabSheet;
-          TimerAutoSync: TTimer;
+        ButtonSetNotePath: TButton;
+        CheckAutoStart : TCheckBox;
+        CheckCaseSensitive: TCheckBox;
+        CheckManyNotebooks: TCheckBox;
+        CheckShowSearchAtStart: TCheckBox;
+        CheckShowSplash: TCheckBox;
+        CheckShowExtLinks: TCheckBox;
+        CheckShowIntLinks: TCheckBox;
+        CheckShowTomdroid: TCheckBox;
+        FontDialog1: TFontDialog;
+        GroupBox1: TGroupBox;
+        GroupBox4: TGroupBox;
+        GroupBox5: TGroupBox;
+        Label1: TLabel;
+        Label12: TLabel;
+        Label13: TLabel;
+        Label14: TLabel;
+        Label15: TLabel;
+        LabelDicPrompt: TLabel;
+        LabelDic: TLabel;
+        LabelError: TLabel;
+        LabelLibrary: TLabel;
+        LabelDicStatus: TLabel;
+        LabelLibraryStatus: TLabel;
+        Label2: TLabel;
+        Label3: TLabel;
+        Label6: TLabel;
+        Label7: TLabel;
+        Label8: TLabel;
+        Label9: TLabel;
+        LabelNotesPath: TLabel;
+        LabelSettingPath: TLabel;
+        LabelSnapDir: TLabel;
+        ListBoxDic: TListBox;
+        OpenDialogLibrary: TOpenDialog;
+        OpenDialogDictionary: TOpenDialog;
+        PageControl1: TPageControl;
+        Panel1: TPanel;
+        PMenuMain: TPopupMenu;
+        RadioAlwaysAsk: TRadioButton;
+        RadioFontHuge: TRadioButton;
+        RadioFontBig: TRadioButton;
+        RadioFontMedium: TRadioButton;
+        RadioFontSmall: TRadioButton;
+        RadioUseLocal: TRadioButton;
+        RadioUseServer: TRadioButton;
+        SelectDirectoryDialog1: TSelectDirectoryDialog;
+        SelectSnapDir: TSelectDirectoryDialog;
+        SpeedButHide: TSpeedButton;
+        SpeedButHelp: TSpeedButton;
+        SpeedButtTBMenu: TSpeedButton;
+        SpeedSetupSync: TSpeedButton;
+        SpinDaysPerSnapshot: TSpinEdit;
+        SpinMaxSnapshots: TSpinEdit;
+        TabBasic: TTabSheet;
+        TabBackUp: TTabSheet;
+        TabSpell: TTabSheet;
+        TabSnapshot: TTabSheet;
+        TabSync: TTabSheet;
+        TabDisplay: TTabSheet;
+        TimerAutoSync: TTimer;
 
         procedure ButtDefaultNoteDirClick(Sender: TObject);
-	procedure ButtonSetColoursClick(Sender: TObject);
+        procedure ButtonSetColoursClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
         procedure ButtonHelpNotesClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
         procedure ButtonSetDictionaryClick(Sender: TObject);
         //procedure ButtonSaveConfigClick(Sender: TObject);
-	procedure ButtonSetNotePathClick(Sender: TObject);
+        procedure ButtonSetNotePathClick(Sender: TObject);
         procedure ButtonSetSnapDirClick(Sender: TObject);
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
-	procedure ButtonShowBackUpClick(Sender: TObject);
+        procedure ButtonShowBackUpClick(Sender: TObject);
         //procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure ButtonSyncHelpClick(Sender: TObject);
@@ -222,20 +224,21 @@ type
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
                 { Called when ANY of the setting check boxes change so we can save. }
-	    procedure CheckReadOnlyChange(Sender: TObject);
-	    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-	    procedure FormCreate(Sender: TObject);
+        procedure CheckReadOnlyChange(Sender: TObject);
+        procedure ComboHelpLanguageChange(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormHide(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
             );
         procedure FormShow(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
-	    procedure PageControl1Change(Sender: TObject);
-	    procedure SpeedButHelpClick(Sender: TObject);
+        procedure PageControl1Change(Sender: TObject);
+        procedure SpeedButHelpClick(Sender: TObject);
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
-		procedure SpeedSetupSyncClick(Sender: TObject);
+        procedure SpeedSetupSyncClick(Sender: TObject);
         procedure SpinDaysPerSnapshotChange(Sender: TObject);
         //procedure RadioFileSyncChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
@@ -248,6 +251,8 @@ type
         UserSetColours : boolean;
         fExportPath : ANSIString;
         NextAutoSnapshot : TDateTime;
+                        // Looks in expected place for help notes, populate combo and public vars, HelpNotesPath, HelpNotesLang.
+        procedure LoadHelpLanguages();
         // Reads an existing config file OR writes a new, default one if necessary.
  	    procedure CheckConfigFile;
         // Ret true and displays on screen if passed Full name is a usable dictonary
@@ -284,8 +289,10 @@ type
         //function ZipDate: string;
 
     public
-        AreClosing : boolean;       // False until set true by mainUnit FormClose.
-        BackGndColour : TColor;     // Next three set in main unit.
+        HelpNotesPath : string;         // expected path to help note directories for this OS
+        HelpNotesLang : string;         // either two char code or ''
+        AreClosing : boolean;           // False until set true by mainUnit FormClose.
+        BackGndColour : TColor;         // Next three set in main unit.
         TextColour : TColor;
         HiColour : TColor;
         TitleColour : TColor;
@@ -368,7 +375,7 @@ uses IniFiles, LazLogger,
     recover,        // Recover lost or damaged files
     mainunit,       // so we can call ShowHelpNote()
     hunspell,       // spelling check
-    helpnotes,      // All user to download non-English help Notes
+    //helpnotes,      // All user to download non-English help Notes
     LCLType,        // Keycodes ....
     Autostart,
     Colours,
@@ -437,7 +444,7 @@ end;
 
 procedure TSett.SpeedButHelpClick(Sender: TObject);
 begin
-    MainForm.ShowHelpNote('sync-ng.note');
+    SearchForm.ShowHelpNote('sync-ng.note');
 end;
 
 procedure TSett.SpeedButHideClick(Sender: TObject);
@@ -710,6 +717,7 @@ begin
     AreClosing := false;
     Top := 100;
     Left := 300;
+    LoadHelpLanguages();
     DefaultFixedFont := GetFixedFont(); // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;            // don't trigger save while doing setup
@@ -776,7 +784,7 @@ begin
     end;
     Result := AppendPathDelim(Result);
     {$ifndef DARWIN}
-    MainForm.SetAltHelpPath(Result);    // English help notes in read only space
+    // MainForm.SetAltHelpPath(Result);    // English help notes in read only space
     {$endif}
 end;
 
@@ -823,10 +831,11 @@ begin
     end;
 end;
 
-{ Read config file if it exists }
+{ Read config file if it exists or writes a default one. }
 procedure TSett.CheckConfigFile;
 var
     ConfigFile : TINIFile;
+    TempHelpNotesLang : string;
     //telltail : boolean;
     //ReqFontSize, SyncType : ANSIString;
 begin
@@ -872,6 +881,13 @@ begin
             TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
             UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
             // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
+            TempHelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
+            if HelpNotesLang <> TempHelpNotesLang then begin
+                if ComboHelpLanguage.Items.IndexOf(TempHelpNotesLang) > -1 then begin
+                    ComboHelpLanguage.ItemIndex := ComboHelpLanguage.Items.IndexOf(TempHelpNotesLang);
+                    HelpNotesLang := TempHelpNotesLang;
+                end;
+            end;
             // ------------------  S Y N C   S E T T I N G S --------------------------
             case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
                 'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
@@ -996,6 +1012,8 @@ begin
                 ConfigFile.writestring('BasicSettings', 'TextColour',    '0');
                 ConfigFile.writestring('BasicSettings', 'TitleColour',   '0');
 			end;
+            if HelpNotesLang <> '' then
+                ConfigFile.writestring('BasicSettings', 'HelpLanguage', HelpNotesLang);
             // --------- S Y N C    S E T T I N G S ----------------------------
             { Supported config file parameters -
               * SyncRepo    - determines ValidSync, should contain a Repo directory or URL
@@ -1087,6 +1105,41 @@ begin
     end;
 end;
 
+procedure TSett.LoadHelpLanguages();
+var
+    Info : TSearchRec;
+begin
+    {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName)) + 'HELP' + PathDelim;{$endif}
+    {$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/HELP/';    {$endif}
+    {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/HELP/';{$endif}
+    HelpNotesLang:= '';
+    ComboHelpLanguage.enabled := False;
+    ComboHelpLanguage.Items.Clear;
+	if FindFirst(HelpNotesPath + '*', faDirectory, Info)=0 then begin
+		repeat
+          if (((Info.attr and faDirectory) > 0) and (Info.name[1] <> '.')) then
+            ComboHelpLanguage.Items.Add(Info.Name);
+	    until FindNext(Info) <> 0;
+	end;
+    FindClose(Info);
+    if ComboHelpLanguage.Items.Count > 0 then begin
+        ComboHelpLanguage.enabled := True;
+        if  ComboHelpLanguage.Items.IndexOf('EN') < 0 then      // default to EN if present, else first found.
+            HelpNotesLang:= ComboHelpLanguage.Items[0]
+        else HelpNotesLang:= 'EN';
+    end;
+    // debugln('Help Notes Lang = [' + HelpNotesLang + ']');
+end;
+
+procedure TSett.ComboHelpLanguageChange(Sender: TObject);
+begin
+    if ComboHelpLanguage.ItemIndex > -1 then begin
+        HelpNotesLang:= ComboHelpLanguage.Items[ComboHelpLanguage.ItemIndex];
+        SettingsChanged();
+        SearchForm.RefreshMenus(mkHelpMenu);
+    end;
+end;
+
 procedure TSett.ButtonSetColoursClick(Sender: TObject);
 begin
     FormColours.CBack   := BackGndColour;
@@ -1141,7 +1194,7 @@ end;
 
 procedure TSett.ButtonHelpNotesClick(Sender: TObject);
 begin
-    FormHelpNotes.show;
+ //   FormHelpNotes.show;
 end;
 
 
@@ -1285,7 +1338,7 @@ end;
 
 procedure TSett.ButtonSyncHelpClick(Sender: TObject);
 begin
-    MainForm.ShowHelpNote('sync-ng.note');
+    SearchForm.ShowHelpNote('sync-ng.note');
 end;
 
 procedure TSett.CheckAutostartChange(Sender: TObject);
@@ -1388,6 +1441,7 @@ begin
             end;
     end;
 end;
+
 
 function TSett.GetLocalTime: ANSIstring;
 	    // The retuned date string includes four digits at the end representing a count

@@ -19,36 +19,6 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para calcular"
 
-#: helpnotes.rs_downloaded
-msgid "Downloaded so far: "
-msgstr "Descargado hasta ahora: "
-
-#: helpnotes.rs_downloading
-msgid "Downloading please wait..."
-msgstr "Descargándose, espere por favor..."
-
-#: helpnotes.rs_installed
-msgctxt "helpnotes.rs_installed"
-msgid "Installed"
-msgstr "Instaladas"
-
-#: helpnotes.rs_nopowershell
-msgid "Sorry, your Windows does not have Powershell 3"
-msgstr "Lo siento, pero su versión de Windows no tiene Powershell 3"
-
-#: helpnotes.rs_nossl
-msgid "You do not appear to have the OpenSSL Library installed"
-msgstr "Parece que no tiene la biblioteca OpenSSL instalada"
-
-#: helpnotes.rs_restored
-msgctxt "helpnotes.rs_restored"
-msgid "Restored"
-msgstr "Restaraudas"
-
-#: helpnotes.rs_spanish
-msgid "Spanish"
-msgstr "Español"
-
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr "Esto es tomboy-ng, la refundición de Notas Tomboy usando Lazarus"
@@ -877,28 +847,6 @@ msgstr "Texto"
 msgctxt "tformcolours.speedtitle.caption"
 msgid "Title"
 msgstr "Título"
-
-#: tformhelpnotes.buttonclose.caption
-msgctxt "tformhelpnotes.buttonclose.caption"
-msgid "Close"
-msgstr "Cerrar"
-
-#: tformhelpnotes.buttonrestore.caption
-msgid "Restore English"
-msgstr "Restaurar el inglés"
-
-#: tformhelpnotes.caption
-msgctxt "tformhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr "Idioma de las notas de ayuda"
-
-#: tformhelpnotes.label1.caption
-msgid "Double click a Language below"
-msgstr "Haga doble clic en un idioma"
-
-#: tformhelpnotes.label2.caption
-msgid "Contact author if you can help translate."
-msgstr "Pongase en contacto si puede ayudar con traducciones."
 
 #: tformindex.caption
 msgid "Heading in this Note"

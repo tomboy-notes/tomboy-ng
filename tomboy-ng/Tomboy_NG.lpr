@@ -14,7 +14,7 @@ uses
     Interfaces, // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroid, markdown,
-    Index, autostart, hunspell, sync, syncutils, transandroid, helpnotes,
+    Index, autostart, hunspell, sync, syncutils, transandroid,
     ResourceStr, SyncError, colours, cli, notifier;
 
 {$R *.res}
@@ -32,7 +32,6 @@ begin
         Application.CreateForm(TFormSync, FormSync);
         Application.CreateForm(TFormTomdroid, FormTomdroid);
         Application.CreateForm(TFormMarkdown, FormMarkdown);
-        Application.CreateForm(TFormHelpNotes, FormHelpNotes);
         Application.CreateForm(TFormSyncError, FormSyncError);
         Application.CreateForm(TFormColours, FormColours);
         // Application.CreateForm(TNoteBookPick, NoteBookPick);

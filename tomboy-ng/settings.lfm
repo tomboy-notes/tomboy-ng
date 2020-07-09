@@ -321,6 +321,16 @@ object Sett: TSett
         OnClick = ButtonSetColoursClick
         TabOrder = 7
       end
+      object ComboHelpLanguage: TComboBox
+        Left = 305
+        Height = 31
+        Top = 336
+        Width = 207
+        ItemHeight = 0
+        OnChange = ComboHelpLanguageChange
+        Style = csDropDownList
+        TabOrder = 8
+      end
     end
     object TabSync: TTabSheet
       Caption = 'Sync'

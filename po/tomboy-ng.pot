@@ -5,34 +5,6 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 msgid "Unable to find an expression to evaluate"
 msgstr ""
 
-#: helpnotes.rs_downloaded
-msgid "Downloaded so far: "
-msgstr ""
-
-#: helpnotes.rs_downloading
-msgid "Downloading please wait..."
-msgstr ""
-
-#: helpnotes.rs_installed
-msgid "Installed"
-msgstr ""
-
-#: helpnotes.rs_nopowershell
-msgid "Sorry, your Windows does not have Powershell 3"
-msgstr ""
-
-#: helpnotes.rs_nossl
-msgid "You do not appear to have the OpenSSL Library installed"
-msgstr ""
-
-#: helpnotes.rs_restored
-msgid "Restored"
-msgstr ""
-
-#: helpnotes.rs_spanish
-msgid "Spanish"
-msgstr ""
-
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr ""
@@ -841,28 +813,6 @@ msgstr ""
 #: tformcolours.speedtitle.caption
 msgctxt "tformcolours.speedtitle.caption"
 msgid "Title"
-msgstr ""
-
-#: tformhelpnotes.buttonclose.caption
-msgctxt "tformhelpnotes.buttonclose.caption"
-msgid "Close"
-msgstr ""
-
-#: tformhelpnotes.buttonrestore.caption
-msgid "Restore English"
-msgstr ""
-
-#: tformhelpnotes.caption
-msgctxt "tformhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr ""
-
-#: tformhelpnotes.label1.caption
-msgid "Double click a Language below"
-msgstr ""
-
-#: tformhelpnotes.label2.caption
-msgid "Contact author if you can help translate."
 msgstr ""
 
 #: tformindex.caption

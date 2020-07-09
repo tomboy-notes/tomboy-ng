@@ -110,6 +110,7 @@ unit SearchUnit;
     2020/05/10  Faster search
     2020/05/19  Replaced StringGridNotebook with a ListBox
     2020/06/07  ListBoxNotebooks sorted (but not reverse sortable, that would require TListBox becoming TListView)
+    2020/07/09  New help notes location.
 }
 
 {$mode objfpc}{$H+}
@@ -187,6 +188,7 @@ type        { TSearchForm }
         //procedure StringGridNotebooksPrepareCanvas(sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
         //procedure StringGridNotebooksResize(Sender: TObject);
     private
+        HelpList : TStringList;
         NeedRefresh : boolean;
         HelpNotes : TNoteLister;
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
@@ -200,11 +202,13 @@ type        { TSearchForm }
         procedure MenuHelpItems(AMenu: TPopupMenu);
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
+        function RemoveFromHelpList(const FullHelpNoteFileName: string): boolean;
         //procedure RefreshNoteAndNotebooks();
         procedure ScaleListView();
         { If there is an open note from the passed filename, it will be marked read Only,
           will accept a GUID, Filename or FullFileName inc path }
         procedure MarkNoteReadOnly(const FullFileName: string);
+
         { Copies note data from internal list to StringGrid, sorts it and updates the
           TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
 		//procedure UseList();
@@ -215,6 +219,7 @@ type        { TSearchForm }
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
+        procedure ShowHelpNote(HelpNoteName: string);
         procedure UpdateStatusBar(SyncSt : string);
         {Just a service provided to NoteBook.pas, refresh the list of notebooks after adding or removing one}
         procedure RefreshNotebooks();
@@ -328,7 +333,9 @@ end;
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
     if NoteLister <> nil then         // else we are quitting the app !
-    	NoteLister.ThisNoteIsOpen(ID, nil);
+    	if not NoteLister.ThisNoteIsOpen(ID, nil) then
+            // maybe its a help note ?
+            RemoveFromHelpList(ID);
 end;
 
 procedure TSearchForm.StartSearch(); // Call before using NextNoteTitle() to list Titles.
@@ -448,11 +455,10 @@ begin
 end;
 
 
-// ---------------------------------------------------------------------------
-// -------------  M E N U    F U N C T I O N S -------------------------------
-// ---------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ---------------  H E L P    N O T E S  -------------------------------------
 
-{ Menus are built and populated at end of CreateForm. }
+
 
 procedure TSearchForm.InitialiseHelpFiles();
     // Todo : this uses about 300K, 3% of extra memory, better to code up a simpler model ?
@@ -461,9 +467,75 @@ begin
         freeandnil(HelpNotes);
     HelpNotes := TNoteLister.Create;     // freed in OnClose event.
     HelpNotes.DebugMode := Application.HasOption('debug-index');
-    HelpNotes.WorkingDir:= MainForm.ActualHelpNotesPath;
+    // HelpNotes.WorkingDir:= MainForm.ActualHelpNotesPath;
+    HelpNotes.WorkingDir:= Sett.HelpNotesPath + Sett.HelpNotesLang + PathDelim;
     HelpNotes.IndexNotes(true);
 end;
+
+function TSearchForm.RemoveFromHelpList(const FullHelpNoteFileName : string) : boolean;
+var
+    Index : integer;
+begin
+    Result := False;
+    debugln('Looking for help note ' + extractFileName(fullHelpNoteFileName));
+    if HelpList <> Nil then
+        if HelpList.Find(extractFileName(FullHelpNoteFileName), Index) then begin
+            debugln('Found help note ' + extractFileName(fullHelpNoteFileName));
+            HelpList.Delete(Index);
+            Result := True;
+        end;
+end;
+
+procedure TSearchForm.ShowHelpNote(HelpNoteName: string);   // ToDo : consider moving this method and associated list to SearchUnit.
+var
+    EBox : TEditBoxForm;
+    TheForm : TForm;
+    Index : integer;
+begin
+    if FileExists(Sett.HelpNotesPath + Sett.HelpNotesLang + PathDelim + HelpNoteName) then begin
+        If HelpList = nil then begin
+            HelpList := TStringList.Create;
+            HelpList.Sorted:=True;
+		end else begin
+            if HelpList.Find(HelpNoteName, Index) then begin
+                // we now try to remove entries from HelpList when a help note is closed.
+                // This is far prettier when running under debugger, user does not care.
+                try
+                    TheForm := TEditBoxForm(HelpList.Objects[Index]);
+                    debugln('Attempting a reshow of ' + HelpNoteName);
+          	        TheForm.Show;
+                    SearchForm.MoveWindowHere(TheForm.Caption);
+                    TheForm.EnsureVisible(true);
+                    exit;
+				except on E: Exception do {showmessage(E.Message)};
+                // If user had this help page open but then closed it entry is still in
+                // list so we catch the exception, ignore it and open a new note.
+                // its pretty ugly under debugger but user does not see this.
+				end;
+			end;
+		end;
+        // If we did not find it in the list and exit, above, we will make a new one.
+        EBox := TEditBoxForm.Create(Application);
+        EBox.SetReadOnly(False);
+        EBox.SearchedTerm := '';
+        EBox.NoteTitle:= '';
+        EBox.NoteFileName := Sett.HelpNotesPath + Sett.HelpNotesLang + PathDelim + HelpNoteName;
+        Ebox.TemplateIs := '';
+        EBox.Show;
+        EBox.Dirty := False;
+        HelpList.AddObject(HelpNoteName, EBox);
+        EBox.Top := HelpList.Count * 10;
+        EBox.Left := HelpList.Count * 10;
+        EBox.Width := Screen.Width div 2;      // Set sensible sizes.
+        EBox.Height := Screen.Height div 2;
+    end else showmessage('Unable to find ' + Sett.HelpNotesPath + Sett.HelpNotesLang + PathDelim + HelpNoteName);
+end;
+
+// ---------------------------------------------------------------------------
+// -------------  M E N U    F U N C T I O N S -------------------------------
+// ---------------------------------------------------------------------------
+
+{ Menus are built and populated at end of CreateForm. }
 
 procedure TSearchForm.CreateMenus();
 begin
@@ -703,7 +775,7 @@ begin
                      else FormTomdroid.ShowModal;
         mtHelp :      begin
                         if HelpNotes.FileNameForTitle(TMenuItem(Sender).Caption, FileName) then
-                            MainForm.ShowHelpNote(FileName)
+                            {MainForm.}ShowHelpNote(FileName)
                         else showMessage(rsCannotFindNote + TMenuItem(Sender).Caption);
                     end;
         mtQuit :      MainForm.close;
@@ -836,6 +908,7 @@ end;
 procedure TSearchForm.FormCreate(Sender: TObject);
 //var Tick : qword;
 begin
+    HelpList := Nil;
     //NeedRefresh := True;            Index notes does this
     //Tick := GetTickCount64();
     Caption := 'tomboy-ng Search';
@@ -883,6 +956,7 @@ begin
   NoteLister := Nil;
   HelpNotes.Free;
   HelpNotes := Nil;
+  freeandnil(HelpList);
 end;
 
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;

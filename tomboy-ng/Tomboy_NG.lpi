@@ -731,7 +731,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="34">
+    <Units Count="33">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -892,44 +892,37 @@
         <IsPartOfProject Value="True"/>
       </Unit26>
       <Unit27>
-        <Filename Value="helpnotes.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormHelpNotes"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit27>
-      <Unit28>
         <Filename Value="resourcestr.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ResourceStr"/>
-      </Unit28>
-      <Unit29>
+      </Unit27>
+      <Unit28>
         <Filename Value="syncerror.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormSyncError"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SyncError"/>
-      </Unit29>
-      <Unit30>
+      </Unit28>
+      <Unit29>
         <Filename Value="colours.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormColours"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="cli.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit30>
       <Unit31>
-        <Filename Value="cli.pas"/>
+        <Filename Value="notifier.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit31>
       <Unit32>
-        <Filename Value="notifier.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit32>
-      <Unit33>
         <Filename Value="libnotify.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit33>
+      </Unit32>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

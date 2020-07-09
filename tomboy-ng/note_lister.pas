@@ -256,7 +256,7 @@ type
                         		        { Returns the Form this note is open on, Nil if its not open }
     function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
                         		        { Tells the list that this note is open, pass NIL to indicate its now closed }
-    procedure ThisNoteIsOpen(const ID : ANSIString; const TheForm : TForm);
+    function ThisNoteIsOpen(const ID: ANSIString; const TheForm: TForm): boolean;
                         		        { Returns true if it can find a FileName to Match this Title }
     function FileNameForTitle(const Title: ANSIString; out FileName : ANSIstring): boolean;
     procedure StartSearch();
@@ -1301,11 +1301,12 @@ begin
 	end;
 end;
 
-procedure TNoteLister.ThisNoteIsOpen(const ID : ANSIString; const TheForm: TForm);
+function TNoteLister.ThisNoteIsOpen(const ID : ANSIString; const TheForm: TForm) : boolean;
 var
     Index : integer;
     //cnt : integer;
 begin
+    result := false;
     if NoteList = NIl then
         exit;
     if NoteList.Count < 1 then begin
@@ -1320,7 +1321,7 @@ begin
       	//writeln('ID = ', ID, ' ListID = ', NoteList.Items[Index]^.ID);
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
             NoteList.Items[Index]^.OpenNote := TheForm;
-            break;
+            exit(true);
 		end;
 	end;
     // if Index = (NoteList.Count -1) then DebugLn('Failed to find ID in List ', ID);

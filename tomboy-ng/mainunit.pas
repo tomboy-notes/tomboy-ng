@@ -70,6 +70,7 @@ unit Mainunit;
     2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
     2020/05/26  Improved tabbing
     2020/06/11  remove unused closeASAP, open splash if bad note.
+    2020/07/09  New help notes location. A lot moved out of here.
 
     CommandLine Switches
 
@@ -162,7 +163,7 @@ type
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
-        HelpList : TStringList;
+        //HelpList : TStringList;
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
         procedure StartIPCServer();
@@ -171,22 +172,22 @@ type
 
     public
         // closeASAP: Boolean;
-        HelpNotesPath : string;     // full path to help notes, with trailing delim.
-        AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
+        //HelpNotesPath : string;     // full path to help notes, with trailing delim.
+        //AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
         UseTrayMenu : boolean;
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
         MainTBMenu : TPopupMenu;
         // Called by the Sett unit when it knows the true config path.
-        procedure SetAltHelpPath(ConfigPath: string);
+        // procedure SetAltHelpPath(ConfigPath: string);
         procedure ShowAbout();
             // Ret path to where help notes are, either default English or Non-English
-        function ActualHelpNotesPath() : string;
+        // function ActualHelpNotesPath() : string;
             // This procedure responds to ALL recent note menu clicks !
         procedure RecentMenuClicked(Sender: TObject);
             { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode
               First tries the AltHelpPath, then HelpPath}
-        procedure ShowHelpNote(HelpNoteName: string);
+        //procedure ShowHelpNote(HelpNoteName: string);
             { Updates status data on MainForm, tick list }
         procedure UpdateNotesFound(Numb: integer);
         { Opens a note in single note mode. Pass a full file name, a bool that closes whole app
@@ -275,7 +276,7 @@ end;
 
 
 // ---------------- HELP NOTES STUFF ------------------
-
+(*
 procedure TMainForm.ShowHelpNote(HelpNoteName: string);   // ToDo : consider moving this method and associated list to SearchUnit.
 var
     EBox : TEditBoxForm;
@@ -330,7 +331,7 @@ end;
 procedure TMainForm.SetAltHelpPath(ConfigPath : string);
 begin
     AltHelpNotesPath := ConfigPath + ALTHELP + PathDelim;
-end;
+end;          *)
 
 
 
@@ -343,7 +344,7 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
     Randomize;                                      // used by sett.getlocaltime()
-    HelpList := Nil;
+    //HelpList := Nil;
     UseTrayMenu := true;
     if SingleNoteFileName() = '' then
         StartIPCServer()                     // Don't bother to check if we are client, cannot be if we are here.
@@ -351,10 +352,12 @@ begin
     {$ifdef LCLCARBON}
     UseTrayMenu := false;
     {$endif}
+    (*                      // this is all done now in settings
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName));{$endif}
     {$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/';    {$endif}
     {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';{$endif}
     AltHelpNotesPath := HelpNotesPath + ALTHELP + PathDelim;        // Overridden in Sett for Linux
+    *)
     if UseTrayMenu then begin
         PopupMenuTray := TPopupMenu.Create(Self);
         TrayIcon.PopUpMenu := PopupMenuTray;        // SearchForm will populate it when ready
@@ -368,7 +371,7 @@ begin
     freeandnil(CommsServer);
     freeandnil(HelpNotes);
     //if HelpList <> Nil then writeln('Help List has ' + inttostr(HelpList.Count));
-    freeandnil(HelpList);
+    // freeandnil(HelpList);
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);

@@ -209,6 +209,7 @@ unit EditBox;
     2020/04/04  Fix for when SingleNoteMode is pointed to a zero length file.
     2020/05/12  Added Shift Click to select to click pos, #129
     2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
+    2020/06/08  Disable main menu button in readonly mode.
 }
 
 
@@ -1177,6 +1178,7 @@ procedure TEditBoxForm.SetReadOnly(ShowWarning : Boolean = True);
 begin
    if ShowWarning then PanelReadOnly.Height:= 60;
    KMemo1.ReadOnly := True;
+   ButtMainTBMenu.Enabled:= False;      // in helpnote mode, menu is not being updated.
 end;
 
 procedure TEditBoxForm.MenuItemPasteClick(Sender: TObject);
@@ -1498,7 +1500,10 @@ begin
     SingleNoteFileName := MainUnit.SingleNoteFileName();
     if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
-    else SingleNoteMode := True;
+    else begin
+        SingleNoteMode := True;
+        ButtMainTBMenu.Enabled := false;
+    end;
     {$ifdef DARWIN}
     MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
     MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
