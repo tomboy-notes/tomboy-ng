@@ -95,11 +95,11 @@ RESOURCESTRING
     rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
     {$endif}
     rsHelpDelay = 'Delay startup 2 sec to allow OS to settle';
-    rsHelpLang = 'Force Language, supported es, nl';
+    rsHelpLang = 'Force Language, supported en, es, nl';
     rsHelpDebug = 'Direct debug output to SOME.LOG.';
     rsHelpHelp = 'Show this help message and exit.';
     rsHelpVersion = 'Print version and exit';
-    rsHelpRedHat = 'Deprecated';                                // No longer important,
+    //rsHelpRedHat = 'Deprecated';                                // No longer important,
     rsHelpNoSplash = 'Dont show small status/splash window';
     rsHelpDebugSync = 'Show debug messages during Sync';
     rsHelpDebugIndex = 'Show debug msgs while indexing notes';

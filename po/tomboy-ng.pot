@@ -228,17 +228,12 @@ msgstr ""
 
 #: resourcestr.rshelplang
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported es, nl"
+msgid "Force Language, supported en, es, nl"
 msgstr ""
 
 #: resourcestr.rshelpnosplash
 msgctxt "resourcestr.rshelpnosplash"
 msgid "Dont show small status/splash window"
-msgstr ""
-
-#: resourcestr.rshelpredhat
-msgctxt "resourcestr.rshelpredhat"
-msgid "Deprecated"
 msgstr ""
 
 #: resourcestr.rshelpsaveexit
@@ -1543,9 +1538,8 @@ msgstr ""
 msgid "Settings will be saved in :"
 msgstr ""
 
-#: tsett.label10.caption
-msgctxt "tsett.label10.caption"
-msgid "Settings"
+#: tsett.label11.caption
+msgid "Backup Files"
 msgstr ""
 
 #: tsett.label13.caption

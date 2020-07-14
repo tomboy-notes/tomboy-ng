@@ -257,7 +257,7 @@ msgstr "Toon dit hulpbericht en sluit af."
 
 #: resourcestr.rshelplang
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported es, nl"
+msgid "Force Language, supported en, es, nl"
 msgstr ""
 
 #: resourcestr.rshelpnosplash
@@ -265,13 +265,6 @@ msgstr ""
 msgctxt "resourcestr.rshelpnosplash"
 msgid "Dont show small status/splash window"
 msgstr "Geen klein status-/opstartscherm tonen"
-
-#: resourcestr.rshelpredhat
-#, fuzzy
-#| msgid "Run in RedHatGnome mode, no TrayIcon"
-msgctxt "resourcestr.rshelpredhat"
-msgid "Deprecated"
-msgstr "Uitvoeren in RedHatGnome-modus, zonder systeemvakpictogram"
 
 #: resourcestr.rshelpsaveexit
 msgctxt "resourcestr.rshelpsaveexit"
@@ -1637,10 +1630,9 @@ msgstr ""
 msgid "Settings will be saved in :"
 msgstr "De instellingen worden opgeslagen in:"
 
-#: tsett.label10.caption
-msgctxt "tsett.label10.caption"
-msgid "Settings"
-msgstr "Instellingen"
+#: tsett.label11.caption
+msgid "Backup Files"
+msgstr ""
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"

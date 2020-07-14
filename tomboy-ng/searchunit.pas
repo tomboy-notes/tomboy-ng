@@ -987,7 +987,7 @@ begin
         Edit1.Font.Color := Sett.TextColour;
          color := Sett.HiColour;
          font.color := Sett.TextColour;
-         ButtonNoteBookOptions.Color := Sett.HiColour;
+         //ButtonNoteBookOptions.Color := Sett.HiColour;
          ButtonClearFilters.Color := Sett.HiColour;
          ButtonMenu.color := Sett.HiColour;
          //stringGrid1.GridLineColor:=

@@ -181,6 +181,9 @@
             <Verbosity>
               <ShowTriedFiles Value="True"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
           </Other>
         </CompilerOptions>
       </Item4>
@@ -219,6 +222,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CompilerPath Value="ppcrossx64"/>
           </Other>
         </CompilerOptions>
@@ -259,6 +265,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
@@ -299,6 +308,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CompilerPath Value="/usr/local/bin/ppcx64"/>
           </Other>
         </CompilerOptions>
@@ -458,6 +470,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM

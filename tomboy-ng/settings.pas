@@ -122,13 +122,20 @@ type
 
     TSett = class(TForm)
         ButtDefaultNoteDir: TButton;
+        ButtonManualSnap: TButton;
+        ButtonShowBackUp: TButton;
+        ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
         CheckBoxAutoSync: TCheckBox;
         ComboHelpLanguage: TComboBox;
         GroupBoxSync: TGroupBox;
-        Label10: TLabel;
+        Label11: TLabel;
         Label16: TLabel;
         Label5: TLabel;
+        Label6: TLabel;
+        Label7: TLabel;
+        Label8: TLabel;
+        Label9: TLabel;
         LabelFileSyncInfo2: TLabel;
         Label4: TLabel;
         LabelFileSyncInfo1: TLabel;
@@ -139,9 +146,6 @@ type
         ButtonHelpNotes: TButton;
         ButtonSetSpellLibrary: TButton;
         ButtonSetDictionary: TButton;
-        ButtonManualSnap: TButton;
-        ButtonSnapRecover: TButton;
-        ButtonShowBackUp: TButton;
 
         ButtonSetNotePath: TButton;
         CheckAutoStart : TCheckBox;
@@ -169,10 +173,6 @@ type
         LabelLibraryStatus: TLabel;
         Label2: TLabel;
         Label3: TLabel;
-        Label6: TLabel;
-        Label7: TLabel;
-        Label8: TLabel;
-        Label9: TLabel;
         LabelNotesPath: TLabel;
         LabelSettingPath: TLabel;
         LabelSnapDir: TLabel;
@@ -181,6 +181,8 @@ type
         OpenDialogDictionary: TOpenDialog;
         PageControl1: TPageControl;
         Panel1: TPanel;
+        Panel2: TPanel;
+        Panel3: TPanel;
         PMenuMain: TPopupMenu;
         RadioAlwaysAsk: TRadioButton;
         RadioFontHuge: TRadioButton;
