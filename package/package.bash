@@ -61,6 +61,7 @@ fi
 # Build four binaries. Note that build-mode must be one already defined
 # typically in the IDE.
 # Lazbuild expects cpu=[x86_64, i386] (good luck with the others)
+# For now, I build the arm binary on site.
 
 function BuildIt () {
 	cd $SOURCE_DIR
@@ -110,6 +111,7 @@ function BuildIt () {
 }	
 
 
+
 function DebianPackage () {
 	# We build a debian tree in BUILD and call dpkg-deb -b 
 	#  BUILD/DEBIAN control,debian-binary and any scripts
@@ -123,45 +125,52 @@ function DebianPackage () {
 		cp "$ICON_DIR/$i.png" "BUILD/usr/share/icons/hicolor/$i/apps/$PRODUCT.png";
 	done;
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
-	mkdir -p BUILD/usr/share/doc/$PRODUCT/HELP/EN
-	mkdir -p BUILD/usr/share/doc/$PRODUCT/HELP/ES
-	// add any further non-english help note directories here.
-	# cp ../copyright BUILD/usr/share/doc/$PRODUCT/copyright
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
-	for i in $MANUALS; do
-		cp ../doc/"$i" BUILD/usr/share/doc/$PRODUCT/.;
-	done;
-    # -------------- Translation Files
-    # we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
-    # and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
-    mkdir -p BUILD/usr/share/locale
-    for i in `ls -b ../po/*.??.po`; do		# Deal with each country code in turn
-        # echo "Name is $i"
-        BASENAME=`basename -s.po "$i"`
-        # echo "BASENAME is $BASENAME"
-        CCODE=`echo "$BASENAME" | cut -d '.' -f2`
-        # echo "CCode is $CCODE"
-        mkdir -p BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES
-        BASENAME=`basename -s."$CCODE" "$BASENAME"`
-	msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
-	msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/lclstrconsts.mo "$LAZ_FULL_DIR"/lcl/languages/lclstrconsts."$CCODE".po
-    done
-
+	cp -R ../doc/HELP BUILD/usr/share/doc/"$PRODUCT"/.
+	# -------------- Translation Files
+	# we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
+	# and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
+	mkdir -p BUILD/usr/share/locale
+	for i in `ls -b ../po/*.??.po`; do		# Deal with each country code in turn
+	        # echo "Name is $i"
+	        BASENAME=`basename -s.po "$i"`
+	        # echo "BASENAME is $BASENAME"
+	        CCODE=`echo "$BASENAME" | cut -d '.' -f2`
+	        # echo "CCode is $CCODE"
+	        mkdir -p BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES
+	        BASENAME=`basename -s."$CCODE" "$BASENAME"`
+		msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
+		msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/lclstrconsts.mo "$LAZ_FULL_DIR"/lcl/languages/lclstrconsts."$CCODE".po
+	done
 	mkdir BUILD/usr/share/applications
 	cp "$ICON_DIR/$PRODUCT.desktop" BUILD/usr/share/applications/.
 	mkdir -p BUILD/usr/share/man/man1
 	gzip -9kn ../doc/$PRODUCT.1
 	mv ../doc/$PRODUCT.1.gz BUILD/usr/share/man/man1/.
-	if [ "$1" = "amd64" ]; then
-		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng
-	fi
-	if [ "$1" = "i386" ]; then
+
+	CTRL_ARCH="$1"
+	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl"
+	CTRL_RELEASE="GTK2 release."
+	case "$1" in
+	"amd64")
+		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng	
+		;;
+	"i386")
 		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
-	fi
-	if [ "$1" = "amd64Qt" ]; then
+		;;
+	"amd64Qt")
 		cp $SOURCE_DIR/tomboy-ng-qt BUILD/usr/bin/tomboy-ng
-		chmod 755 BUILD/usr/bin/tomboy-ng
-	fi
+		CTRL_ARCH="amd64"
+		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl"
+		CTRL_RELEASE="Qt5 release."
+		;;
+	"armhf")
+		cp tomboy-ng-arm BUILD/usr/bin/tomboy-ng
+		#CTRL_DEPENDS=""
+		CTRL_RELEASE="Raspberry Pi release."
+		;;
+	esac
+	chmod 755 BUILD/usr/bin/tomboy-ng
 	# -------------------- Documents -----------------
 	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
 	echo "  * Initial release" >> "$MANUALS_DIR"changelog
@@ -178,35 +187,19 @@ function DebianPackage () {
     	# -------------------------------- Make control file -------------------------
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
-	if [ "$1" = "amd64Qt" ]; then
-		echo "Architecture: amd64" >> BUILD/DEBIAN/control
-	else
-		echo "Architecture: $1" >> BUILD/DEBIAN/control
-	fi
+	echo "Architecture: $CTRL_ARCH" >> BUILD/DEBIAN/control
 	echo "Maintainer: $WHOAMI" >> BUILD/DEBIAN/control
-	# ------------------------------ Calculate size, thanks circular@LazForum
+	# -------------------------------- Calculate size, thanks circular@LazForum
 	SIZE_IN_KB="$(du -s BUILD | awk '{print $1;}')"
-	echo "Installed size $SIZE_IN_KB"
 	echo "Installed-Size: ${SIZE_IN_KB}" >> "BUILD/DEBIAN/control"
-
-	# echo "Installed-Size: 4096" >> BUILD/DEBIAN/control
-	if [ "$1" = "amd64Qt" ]; then
-		echo "Depends: libqt5pas1, libc6 (>= 2.14), wmctrl" >> BUILD/DEBIAN/control
-	else
-		echo "Depends: libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl" >> BUILD/DEBIAN/control
-	fi
+	echo "Depends: $CTRL_DEPENDS" >> BUILD/DEBIAN/control
 	echo "Priority: optional" >> BUILD/DEBIAN/control
 	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
-	if [ "$1" = "amd64Qt" ]; then
-		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. Qt5 release." >> BUILD/DEBIAN/control
-	else
-		echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. GTK2 release." >> BUILD/DEBIAN/control
-	fi
+	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. $CTRL_RELEASE" >> BUILD/DEBIAN/control
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
-
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
-	# ------ Clean up -----------
+	# --------------------------------- Clean up -----------
 	rm -Rf BUILD
 }
 
@@ -258,17 +251,18 @@ function MkWinPreInstaller() {
 	mkdir "$WIN_DIR"
 	cp ../tomboy-ng/tomboy-ng64.exe "$WIN_DIR/."
 	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
-	cp ../../DLL/* "$WIN_DIR"/.
-	#cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
-	#cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
+	# cp ../../DLL/* "$WIN_DIR"/.
+	# cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
+	# cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
 	cp ../COPYING "$WIN_DIR/."
 	cp AfterInstall.txt "$WIN_DIR/."
 	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss.temp"
-	mkdir -p "$WIN_DIR/HELP/EN"
-	mkdir -p "$WIN_DIR/HELP/ES"
-	for i in $MANUALS; do
-	    cp ../doc/$i "$WIN_DIR/."
-	done;
+	# mkdir -p "$WIN_DIR/HELP/EN"
+	# mkdir -p "$WIN_DIR/HELP/ES"
+	# for i in $MANUALS; do
+	#    cp ../doc/$i "$WIN_DIR/."
+	# done;
+	cp -R ../doc/HELP "$WIN_DIR/."
 	# " -------- WRITE mo files --------"
 	msgfmt -o "$WIN_DIR"/"$PRODUCT".mo ../po/"$PRODUCT".po
 	# Source: "tomboy-ng.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
@@ -293,6 +287,8 @@ function MkWinPreInstaller() {
 }
 
 # --------------------------------------
+DebianPackage "armhf"
+exit
 
 # It all starts here
 
@@ -319,18 +315,13 @@ echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 DebianPackage "amd64Qt";
 DebianPackage "i386"
 DebianPackage "amd64"
-
-#if [ -f "$SOURCE_DIR/tomboy-ng-qt" ]
-#  then DebianPackage "amd64Qt";
-#	  echo "-------- WARNING also made Qt deb, is bin current ? -------"
-#fi
+DebianPackage "arm"
 
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
 ls -l *.deb
 DoGZipping
 MkWinPreInstaller
 ls -ltr
-
 
 
 
