@@ -72,9 +72,10 @@ function MakeDMG () {
 	# cp Info.plist "$CONTENTS/."
 	cp PkgInfo "$CONTENTS/."
 	cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
-	for i in $MANUALS; do
-		cp ../doc/"$i" "$CONTENTS/Resources/.";
-	done;
+	# for i in $MANUALS; do
+	#	cp ../doc/"$i" "$CONTENTS/Resources/.";
+	# done;
+	cp -R ../doc/HELP "$CONTENTS/Resources/."
 	mkdir "$CONTENTS/MacOS/locale"
 	for i in `ls -b ../po/*.??.po`; do
             echo "Name is $i"
@@ -92,6 +93,7 @@ function MakeDMG () {
 }
 
 rm -f *.dmg
-MakeDMG "carbon"
+# MakeDMG "carbon"
+# We don't bother building carbon any more, it should still build, must test occasionally. July 2020
 MakeDMG "cocoa"
 

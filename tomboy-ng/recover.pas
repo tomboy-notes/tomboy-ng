@@ -33,6 +33,8 @@ unit recover;
     2020/05/19  Avoid var out of for loop problem in ButtonDeleteBadNotesClick() and TabSheetExistingShow()
     2020/06/11  Ensure snapshot dir exists .....
     2020/06/11  Really Ensure snapshot dir exists, rename SnapDir FullSnapDir
+    2020/07/16  Extensive work to improve 'UI' sanity.
+    2020/07/16  cleanup unused constants
 }
 
 
@@ -42,7 +44,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    ComCtrls, ExtCtrls, Grids, zipper, Types;
+    ComCtrls, ExtCtrls, Grids, zipper{, Types};
 
 type
 
@@ -56,7 +58,6 @@ type
         ButtonMakeSafetySnap: TButton;
         Label1: TLabel;
         Label10: TLabel;
-        Label11: TLabel;
         Label12: TLabel;
         Label14: TLabel;
         Label15: TLabel;
@@ -77,12 +78,12 @@ type
         Panel1: TPanel;
         PanelSnapshots: TPanel;
         PanelNoteList: TPanel;
-        StringGrid1: TStringGrid;
+        StringGridNotes: TStringGrid;
         TabSheetMergeSnapshot: TTabSheet;
         TabSheetRecoverSnapshot: TTabSheet;
-        TabSheetSnapshots: TTabSheet;
+        TabSheetRecoverNotes: TTabSheet;
         TabSheetIntro: TTabSheet;
-        TabSheetExisting: TTabSheet;
+        TabSheetBadNotes: TTabSheet;
         procedure Button4Click(Sender: TObject);
         procedure ButtonMakeSafetySnapClick(Sender: TObject);
         procedure ButtonDeleteBadNotesClick(Sender: TObject);
@@ -91,20 +92,20 @@ type
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormShow(Sender: TObject);
+        procedure ListBoxSnapshotsClick(Sender: TObject);
         procedure ListBoxSnapshotsDblClick(Sender: TObject);
-        procedure StringGrid1DblClick(Sender: TObject);
-        procedure TabSheetExistingShow(Sender: TObject);
-        procedure TabSheetIntroContextPopup(Sender: TObject; MousePos: TPoint;
-            var Handled: Boolean);
+        procedure StringGridNotesDblClick(Sender: TObject);
+        procedure TabSheetBadNotesShow(Sender: TObject);
         procedure TabSheetIntroShow(Sender: TObject);
         procedure TabSheetMergeSnapshotShow(Sender: TObject);
         procedure TabSheetRecoverSnapshotShow(Sender: TObject);
-        procedure TabSheetSnapshotsShow(Sender: TObject);
+        procedure TabSheetRecoverNotesShow(Sender: TObject);
     private
         procedure CleanAndUnzip(const FullDestDir, FullZipName: string);
         function ExpandZipName(AFileName: string): string;
         function FindSnapFiles(): integer;
         procedure RestoreSnapshot(const Snapshot: string);
+        //procedure ScaleGridNotes();
         procedure ShowNotes(const FullSnapName: string);
         function ZipDate(): string;
         procedure CreateSnapshot(const FullSourceDir, FullZipName: string);
@@ -129,23 +130,25 @@ implementation
 
 uses LazFileUtils, Note_Lister, SearchUnit, process, LazLogger,
     {$ifdef DARWIN}baseunix,{$endif}            // for fpChmod
-    MainUnit;   // just for MainUnit.MainForm.ShowHelpNote(
+    MainUnit,                                   // just for MainUnit.MainForm.ShowHelpNote(
+    ResourceStr;
 
 var
     SnapNoteLister : TNoteLister;
 
-RESOURCESTRING
-  rsWeHaveSnapShots_1 = 'We have';
-  rsWeHaveSnapShots_2 = 'snapshots';
+
 
 procedure TFormRecover.FormShow(Sender: TObject);
 begin
     RequiresIndex := False;
-    StringGrid1.ColCount:=4;
-    StringGrid1.FixedCols:=0;
-    //stringgrid1.Options := [stringgrid1.options] + [goThumbTracking];
-    Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
+    StringGridNotes.ColCount:=4;
+    StringGridNotes.FixedCols:=0;
+    //StringGridNotes.Options := [StringGridNotes.options] + [goThumbTracking];
+    // Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
+    Label1.Caption := format(rsWeHaveSnapShots, [FindSnapFiles()]);
 end;
+
+
 
 procedure TFormRecover.FormCreate(Sender: TObject);
 begin
@@ -159,21 +162,18 @@ begin
         FreeAndNil(SnapNoteLister);
 end;
 
-RESOURCESTRING
-  rsDeletedDamaged_1 = 'OK, deleted';
-  rsDeletedDamaged_2 = 'damaged notes';
-
 procedure TFormRecover.ButtonDeleteBadNotesClick(Sender: TObject);
 var
     I : integer = 1;
     Cnt : integer = 0;
 begin
-    for I := 1 to StringGrid1.RowCount-1 do begin     // includes header
-        showmessage('Delete ' + StringGrid1.Cells[0, I]);
-        DeleteFile(NoteDir + StringGrid1.Cells[0, I] + '.note');
+    for I := 1 to StringGridNotes.RowCount-1 do begin     // includes header
+        showmessage('Delete ' + StringGridNotes.Cells[0, I]);
+        DeleteFile(NoteDir + StringGridNotes.Cells[0, I] + '.note');
         inc(Cnt);
     end;
-    showmessage(rsDeletedDamaged_1 + ' ' + inttostr(CNT) + ' ' + rsDeletedDamaged_2 );
+    //showmessage(rsDeletedDamaged_1 + ' ' + inttostr(CNT) + ' ' + rsDeletedDamaged_2 );
+    showmessage(format(rsDeletedDamaged, [CNT]));
 end;
 
 procedure TFormRecover.ButtonRecoverSnapClick(Sender: TObject);
@@ -197,22 +197,30 @@ end;
 procedure TFormRecover.ButtonMakeSafetySnapClick(Sender: TObject);
 begin
     CreateSnapShot(NoteDir, FullSnapDir + 'Safety.zip');
-    Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
+    //Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
+    Label1.Caption := format(rsWeHaveSnapShots, [FindSnapFiles()]);
 end;
 
 RESOURCESTRING
   rsDeleteAndReplace_1 = 'Notes at risk !';
-  rsDeleteAndReplace_2 = 'Delete all notes in';
-  rsDeleteAndReplace_3 = 'and replace with snapshot dated';
+  { rsDeleteAndReplace_2 = 'Delete all notes in ';
+  rsDeleteAndReplace_3 = ' and replace with snapshot dated '; }
   rsAllRestored = 'Notes and config files Restored, restart suggested.';
+
+  rsDeleteAndReplace_2 = 'Delete all notes in %s and replace with snapshot dated %s ?';
 
 procedure TFormRecover.RestoreSnapshot(const Snapshot : string);
 begin
-    if mrYes <> QuestionDlg(rsDeleteAndReplace_1, rsDeleteAndReplace_2 + ' ' + NoteDir
+    {if mrYes <> QuestionDlg(rsDeleteAndReplace_1, rsDeleteAndReplace_2 + ' ' + NoteDir
             + ' '  + rsDeleteAndReplace_3 + ' '
             + FormatDateTime( 'yyyy-mm-dd hh:mm', FileDateToDateTime(FileAge(FullSnapDir + Snapshot))) + ' ?'
             // + Snapshot + ' ' + DateTimeToStr(FileDateToDateTime(FileAge(FullSnapDir + Snapshot))) + ' ?'
-            , mtConfirmation, [mrYes, mrNo], 0) then exit;
+            , mtConfirmation, [mrYes, mrNo], 0) then exit;  }
+
+    if mrYes <> QuestionDlg(rsDeleteAndReplace_1, format(rsDeleteAndReplace_2
+            , [NoteDir, FormatDateTime( 'yyyy-mm-dd hh:mm', FileDateToDateTime(FileAge(FullSnapDir + Snapshot)))])
+            ,  mtConfirmation, [mrYes, mrNo], 0) then exit;
+
     CleanAndUnzip(NoteDir, FullSnapDir + Snapshot);
     if FileExists(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg') then begin
         CopyFile(NoteDir + 'config' + PathDelim + 'tomboy-ng.cfg', ConfigDir + 'tomboy-ng.cfg');
@@ -228,7 +236,7 @@ begin
 end;
 
 RESOURCESTRING
-  rsNoSafetySnapshot = 'A Safety snapshot not found. Try setting Snapsot Dir to where you may have one.';
+  rsNoSafetySnapshot = 'A Safety snapshot not found. Try setting Snapshot Dir to where you may have one.';
 
 procedure TFormRecover.Button4Click(Sender: TObject);
 begin
@@ -237,14 +245,14 @@ begin
     else showmessage(rsNoSafetySnapshot);
 end;
 
-procedure TFormRecover.StringGrid1DblClick(Sender: TObject);
+procedure TFormRecover.StringGridNotesDblClick(Sender: TObject);
 var
     NName : string;
 begin
     case PageControl1.ActivePageIndex of
         {0,} 1 :  begin
                     try
-                        NName := StringGrid1.Cells[0, StringGrid1.Row];
+                        NName := StringGridNotes.Cells[0, StringGridNotes.Row];
                     except on EGridException do exit;
                     end;
                     if length(NName) <  9 then exit;            // empty returns ID.note from col(0) title
@@ -253,7 +261,7 @@ begin
                 end;
         2, 3, 4 : begin
                     try
-                        NName := StringGrid1.Cells[3, StringGrid1.Row];
+                        NName := StringGridNotes.Cells[3, StringGridNotes.Row];
                     except on EGridException do exit;                   // clicked outside valid area
                     end;
                     if length(NName) < 9 then exit;
@@ -262,6 +270,8 @@ begin
                 end;
     end;
 end;
+
+
 
 procedure TFormRecover.CleanAndUnzip(const FullDestDir, FullZipName : string);
 var
@@ -308,19 +318,29 @@ var
     FName : string;
 begin
     // gets eg /somepath/20180826_2135_Sun.zip, 20180826_2135_Sun_Man.zip, 20180826_2135_Sun_Month.zip
+    // 20200714_2004_Auto.zip
     FName := ExtractFileName(AFileName);
     if FName = 'Safety.zip' then
         Result := 'from Intro Tab'
     else begin
-        Result := copy(FName, 1, 4) + '-' + copy(FName, 5, 2) + '-' + copy(FName, 7, 2);
-        Result := Result + ' ' + copy(FName, 10, 2) + ':' + copy(FName, 12, 2);
-        Result := Result + ' ' + copy(FName, 15, 3);
+        Result := copy(FName, 1, 4) + '-' + copy(FName, 5, 2) + '-' + copy(FName, 7, 2);   // year Month day
+        Result := Result + ' ' + copy(FName, 10, 2) + ':' + copy(FName, 12, 2);             // hour minutes
+        Result := Result + ' ' + copy(FName, 15, 4);                                        //
     end;
 end;
 
 RESOURCESTRING
   rsNotesInSnap = 'Notes in Snapshot';
 
+{procedure TFormRecover.ScaleGridNotes();
+var
+    Colwidth : integer;
+begin
+    ColWidth := StringGridNotes.Canvas.Font.GetTextWidth('2020-07-16 12:06  ');
+    stringGridNotes.AutoSizeColumns;
+end;    }
+
+  // Unzips indicated snapshot, indexes its files and lists them in the StringGridNotes
 procedure TFormRecover.ShowNotes(const FullSnapName : string);
 begin
     PanelNoteList.Caption:=rsNotesInSnap +' ' + ExpandZipName(FullSnapName);
@@ -332,9 +352,19 @@ begin
     SnapNoteLister.Debugmode := DebugMode;
     SnapNoteLister.WorkingDir:= FullSnapDir + 'temp' + PathDelim;
     {Result := }SnapNoteLister.IndexNotes();
-	SnapNoteLister.LoadStGrid(StringGrid1, 4);          // ToDo : convert this to use ListView, simpler, cleaner colours etc.
-	Stringgrid1.SortOrder := soDescending;    // Sort with most recent at top
-	StringGrid1.SortColRow(True, 1);
+	SnapNoteLister.LoadStGrid(StringGridNotes, 4);          // this must be a TStringGrid 'cos it can show very long lines such as xml errors
+
+    StringGridNotes.Cells[0, 0] := 'Title';
+    StringGridNotes.Cells[1, 0] := 'Date';
+    StringGridNotes.Cells[2, 0] := 'Create';
+    StringGridNotes.Cells[3, 0] := 'Filename';
+
+    //StringGridNotes.Row[0] := ['Title', 'Date', 'Create', 'File'];
+    // StringGridNotes.InsertRowWithValues(0, ['Title', 'Date', 'Create', 'File']);
+    //StringGridNotes.SortOrder := soDescending;              // Sort with most recent at top
+	//StringGridNotes.SortColRow(True, 1);
+
+    stringGridNotes.AutoSizeColumns;
     ButtonRecoverSnap.Enabled := True;
 end;
 
@@ -430,6 +460,14 @@ begin
     end;
 end;
 
+procedure TFormRecover.ListBoxSnapshotsClick(Sender: TObject);
+begin
+    if (ListBoxSnapshots.ItemIndex >= 0) and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count) then begin
+        ShowNotes(FullSnapDir + ListBoxSnapshots.Items[ListBoxSnapshots.ItemIndex]);
+    end;
+end;
+
+
 RESOURCESTRING
   rsBadNotes_1 = 'You have';
   rsBadNotes_2 = ' bad notes in Notes Directory';
@@ -438,18 +476,24 @@ RESOURCESTRING
   rsTryRecover_1 = 'Proceed to Snapshots or try to recover by double clicking below,';
   rsTryrecover_2 = 'if and only IF, you see useful content, make a small change, exit';
 
-procedure TFormRecover.TabSheetExistingShow(Sender: TObject);
+
+
+
+procedure TFormRecover.TabSheetBadNotesShow(Sender: TObject);
 var
   I, Comma : integer;
   Msg : string;
 begin
     //showmessage('Existing Show');
+    StringGridNotes.Visible := True;
+    StringGridNotes.Enabled := True;
+    with StringGridNotes do while RowCount > 1 do DeleteRow(RowCount-1);
     ButtonDeleteBadNotes.Enabled := False;
+    ListBoxSnapshots.ItemIndex:= -1;
     ListBoxSnapShots.Enabled:=False;
-    PanelNoteList.Caption:=rsClickBadNote ;
+    PanelNoteList.Caption:=rsClickBadNote;
     LabelNoteErrors.Caption := rsBadNotes_1 + ' ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count)
         + ' ' + rsBadNotes_2;
-  	StringGrid1.Clear;
     LabelExistingAdvice2.Caption := '';
     if SearchForm.NoteLister.ErrorNotes.Count = 0 then
         LabelExistingAdvice.Caption := rsNoBadNotes
@@ -457,48 +501,55 @@ begin
         LabelExistingAdvice.Caption := rsTryRecover_1;
         LabelExistingAdvice2.Caption := rsTryrecover_2;
     end;
-    StringGrid1.FixedRows := 0;
-    StringGrid1.InsertRowWithValues(0, ['ID', 'ErrorMessage']);
-    StringGrid1.FixedRows := 1;
+    StringGridNotes.Clear;
+    StringGridNotes.FixedRows := 0;
+    StringGridNotes.InsertRowWithValues(0, ['ID', 'ErrorMessage']);
+    StringGridNotes.FixedRows := 1;
     for I := 0 to SearchForm.NoteLister.ErrorNotes.Count -1 do begin
         Msg := SearchForm.NoteLister.ErrorNotes.Strings[I];
         Comma := pos(',', Msg);
-        StringGrid1.InsertRowWithValues(I + 1, [copy(Msg, 1, Comma-1), copy(Msg, Comma+1, 200)]);
+        StringGridNotes.InsertRowWithValues(I + 1, [copy(Msg, 1, Comma-1), copy(Msg, Comma+1, 200)]);
+        //   copy(Msg, 1, Comma-1) = simple file name
+        //   copy(Msg, Comma+1, 200) = error messages, may be quite long.
     end;
-    StringGrid1.AutoSizeColumns;
+    StringGridNotes.AutoSizeColumns;
     if {I} SearchForm.NoteLister.ErrorNotes.Count > 0 then ButtonDeleteBadNotes.Enabled:= True;
-end;
-
-procedure TFormRecover.TabSheetIntroContextPopup(Sender: TObject;
-    MousePos: TPoint; var Handled: Boolean);
-begin
-
 end;
 
 procedure TFormRecover.TabSheetIntroShow(Sender: TObject);
 begin
-    ListBoxSnapShots.Enabled:=False;
+    ListBoxSnapShots.Enabled := False;
+    StringGridNotes.Visible := false;
+    ListBoxSnapshots.ItemIndex:= -1;
 end;
 
 procedure TFormRecover.TabSheetMergeSnapshotShow(Sender: TObject);
 begin
     ListBoxSnapShots.Enabled:=True;
+    // this tab is not used, probably will not ever be. But it has a count so be careful removing it
 end;
 
 procedure TFormRecover.TabSheetRecoverSnapshotShow(Sender: TObject);
 begin
     ListBoxSnapShots.Enabled:=True;
+    ListBoxSnapshots.ItemIndex:= -1;
+    with StringGridNotes do while RowCount > 1 do DeleteRow(RowCount-1);
+    PanelNoteList.Caption:= rsClickSnapShot;
+    StringGridNotes.Visible := True;
+    StringGridNotes.Enabled := True;
     ButtonRecoverSnap.Enabled := (ListBoxSnapshots.ItemIndex >= 0)
                 and (ListBoxSnapshots.ItemIndex < ListBoxSnapshots.Count);
 end;
 
-RESOURCESTRING
-  rsClickSnapShot = 'Double Click an Available Snapshot';
 
-procedure TFormRecover.TabSheetSnapshotsShow(Sender: TObject);
+procedure TFormRecover.TabSheetRecoverNotesShow(Sender: TObject);
 begin
+    with StringGridNotes do while RowCount > 1 do DeleteRow(RowCount-1);
+    StringGridNotes.Visible := True;
+    StringGridNotes.Enabled := True;
     PanelNoteList.Caption:=rsClickSnapShot;
     ListBoxSnapShots.Enabled:=True;
+    ListBoxSnapshots.ItemIndex:= -1;
 end;
 
 function TFormRecover.FindSnapFiles() : integer;

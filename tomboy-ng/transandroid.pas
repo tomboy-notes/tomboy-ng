@@ -94,7 +94,7 @@ type
 
 implementation
 
-uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger, searchUnit;
+uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger{, searchUnit};
 
 const // Must become config things eventually.
   //Password = 'admin';

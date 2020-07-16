@@ -84,9 +84,7 @@ implementation
 
 
 uses Settings, IniFiles, Sync, TB_SDiff, typInfo, LazLogger, LCLType,
-    MainUnit,   // just for MainUnit.MainForm.ShowHelpNote(
-    SearchUnit; // Because we call ProcessSyncUpdates( at end of sync
-
+    SearchUnit; // we call ProcessSyncUpdates( and ShowHelpNote(
 
 var
     ASync : TSync;

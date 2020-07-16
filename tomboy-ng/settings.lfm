@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 588
-    ActivePage = TabSync
+    ActivePage = TabBackUp
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 3
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -474,6 +474,8 @@ object Sett: TSett
       Caption = 'BackUp'
       ClientHeight = 446
       ClientWidth = 582
+      Enabled = False
+      TabVisible = False
       object Panel1: TPanel
         AnchorSideLeft.Control = TabBackUp
         AnchorSideTop.Control = TabBackUp
@@ -484,34 +486,34 @@ object Sett: TSett
         Left = 0
         Height = 446
         Top = 0
-        Width = 636
+        Width = 582
         Anchors = [akTop, akLeft, akRight, akBottom]
         TabOrder = 0
       end
     end
-    object TabSnapshot: TTabSheet
+    object TabRecover: TTabSheet
       BorderWidth = 1
-      Caption = 'SnapShot'
+      Caption = 'Recover'
       ClientHeight = 446
       ClientWidth = 582
-      OnResize = TabSnapshotResize
+      OnResize = TabRecoverResize
       object Panel2: TPanel
-        AnchorSideLeft.Control = TabSnapshot
-        AnchorSideRight.Control = TabSnapshot
+        AnchorSideLeft.Control = TabRecover
+        AnchorSideRight.Control = TabRecover
         AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = TabSnapshot
+        AnchorSideBottom.Control = TabRecover
         AnchorSideBottom.Side = asrBottom
         Left = 1
         Height = 181
         Top = 264
-        Width = 634
+        Width = 580
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Left = 1
         BorderSpacing.Right = 1
         BorderSpacing.Bottom = 1
         BevelInner = bvLowered
         ClientHeight = 181
-        ClientWidth = 634
+        ClientWidth = 580
         TabOrder = 0
         object Label6: TLabel
           Left = 32
@@ -542,7 +544,7 @@ object Sett: TSett
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
-          Left = 516
+          Left = 462
           Height = 40
           Top = 132
           Width = 109
@@ -565,18 +567,18 @@ object Sett: TSett
         end
       end
       object Panel3: TPanel
-        AnchorSideLeft.Control = TabSnapshot
-        AnchorSideTop.Control = TabSnapshot
-        AnchorSideRight.Control = TabSnapshot
+        AnchorSideLeft.Control = TabRecover
+        AnchorSideTop.Control = TabRecover
+        AnchorSideRight.Control = TabRecover
         AnchorSideRight.Side = asrBottom
         Left = 0
         Height = 256
         Top = 0
-        Width = 636
+        Width = 582
         Anchors = [akTop, akLeft, akRight]
         BevelInner = bvLowered
         ClientHeight = 256
-        ClientWidth = 636
+        ClientWidth = 582
         TabOrder = 1
         object Label9: TLabel
           Left = 33
@@ -653,7 +655,7 @@ object Sett: TSett
           Height = 40
           Hint = 'If you have previously taken a snapshot ...'
           Top = 206
-          Width = 315
+          Width = 261
           Anchors = [akLeft, akRight, akBottom]
           BorderSpacing.Left = 7
           BorderSpacing.Right = 7

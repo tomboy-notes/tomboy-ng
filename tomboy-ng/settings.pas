@@ -101,6 +101,7 @@ unit settings;
     2020/06/18  Ensure a default config file is written asap at first start.
     2020/06/18  Removed unnecessary panel on Snap tab
     2020/07/09  New help notes location.
+    2020/07/16  Drop Backup tab, merge to Snapshot tab, renamed 'Recover'
 }
 
 {$mode objfpc}{$H+}
@@ -202,7 +203,7 @@ type
         TabBasic: TTabSheet;
         TabBackUp: TTabSheet;
         TabSpell: TTabSheet;
-        TabSnapshot: TTabSheet;
+        TabRecover: TTabSheet;
         TabSync: TTabSheet;
         TabDisplay: TTabSheet;
         TimerAutoSync: TTimer;
@@ -244,7 +245,7 @@ type
         procedure SpinDaysPerSnapshotChange(Sender: TObject);
         //procedure RadioFileSyncChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
-        procedure TabSnapshotResize(Sender: TObject);
+        procedure TabRecoverResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
         procedure TimerAutoSyncTimer(Sender: TObject);
         procedure SetColours;
@@ -511,9 +512,9 @@ begin
     buttonSetNotePath.Width := (TabBasic.Width div 2) - 12;
 end;
 
-procedure TSett.TabSnapshotResize(Sender: TObject);
+procedure TSett.TabRecoverResize(Sender: TObject);
 begin
-    ButtonManualSnap.Width :=  (TabSnapshot.Width div 2) -10;
+    ButtonManualSnap.Width :=  (TabRecover.Width div 2) -10;
 end;
 
 procedure TSett.TabSpellResize(Sender: TObject);
@@ -710,8 +711,8 @@ begin
 	end else CloseAction := caHide;
 end;
 
-RESOURCESTRING
-    rsSetFileSyncRepo = 'Set File Sync Repo';
+{RESOURCESTRING
+    rsSetFileSyncRepo = 'Set File Sync Repo'; }
 
 procedure TSett.FormCreate(Sender: TObject);
 begin

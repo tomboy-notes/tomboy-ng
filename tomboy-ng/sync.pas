@@ -290,11 +290,6 @@ type                       { ----------------- T S Y N C --------------------- }
             of a note have changed since last sync.}
         ProceedFunction : TProceedFunction;
 
-          { The calling process must set this to the address of a function to call
-            every time a local note is deleted or overwritten during Sync. Its to
-            deal with the case where a note is open but unchanged during sync.  }
-       // MarkNoteReadOnlyProcedure : TMarkNotereadOnlyProcedure;
-
                 // A URL or directory with trailing delim.
         SyncAddress : string;
                 // Revision number the client is currently on
@@ -375,8 +370,6 @@ begin
     NoteMetaData := TNoteInfoList.Create;
     LocalMetaData := TNoteInfoList.Create;
     Transport := nil;
-    //MarkNoteReadonlyProcedure := nil;
-    //NewRepo := False;
 end;
 
 destructor TSync.Destroy();
@@ -890,9 +883,6 @@ begin
        self.ErrorString:= Transport.ErrorString;
        debugln('ERROR - Download Notes reported ' + ErrorString);
 	end;
-{    for I := 0 to NoteMetaData.Count -1 do
-        if Notemetadata.Items[i]^.Action = SyDownload then
-           MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, False);     }
     if DebugMode then debugln('Downloaded notes.');
 end;
 
@@ -906,7 +896,6 @@ begin
                 if CopyFile(NotesDir + NoteMetaData.Items[i]^.ID + '.note', NotesDir + PathDelim
                         + 'Backup' + Pathdelim + NoteMetaData.Items[i]^.ID + '.note') then
                     DeleteFile(NotesDir + NoteMetaData.Items[i]^.ID + '.note');
-            // MarkNoteReadonlyProcedure(NoteMetaData.Items[I]^.ID, True);
         end;
     end;
     result := true;

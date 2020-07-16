@@ -913,41 +913,16 @@ begin
     //Tick := GetTickCount64();
     Caption := 'tomboy-ng Search';
     NoteLister := nil;
-    if { MainForm.closeASAP or } (SingleNoteFileName <> '') then exit;
-{    StringGrid1.Clear;          // We'll setup the grid columns in Lazarus style, not Delphi
-    StringGrid1.FixedCols := 0;
-    StringGrid1.Columns.Add;
-    StringGrid1.Columns[0].Title.Caption := rsName;
-    StringGrid1.Columns.Add;
-    StringGrid1.Columns[1].Title.Caption := rsLastChange;
-    StringGrid1.FixedRows:=1;
-    StringGrid1.Columns[1].Width := self.Canvas.GetTextWidth(' 2020-01-31 14:36:00 ');     }
-
+    if (SingleNoteFileName <> '') then exit;
     ListViewNotes.Column[0].Caption := rsName;
     ListViewNotes.Column[1].Caption := rsLastChange;
-
-
-    //StringGridNotebooks.Clear;
-    //StringGridNotebooks.FixedCols := 0;
-    //StringGridNotebooks.Columns.Add;
-    //StringGridNotebooks.Columns[0].Title.Caption := rsNotebooks;
-    //StringGridNotebooks.FixedRows:=1;
-
-
     Edit1.Hint:=rsSearchHint;
     Edit1.Text := rsMenuSearch;
     Edit1.SelStart := 1;
     Edit1.SelLength := length(Edit1.Text);
-
     CreateMenus();
-
     IndexNotes();               // This could be a slow process, maybe a new thread ?
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
-    // ButtonRefreshClick(self);           // moved to OnActivate
-    //RefreshMenus(mkFileMenu);
-    //RefreshMenus(mkHelpMenu);
-    //RefreshMenus(mkRecentMenu);
-    // debugln('SearchForm - Create ' + dbgs(GetTickCount64() - Tick) + 'mS');
 end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
@@ -1029,8 +1004,6 @@ procedure TSearchForm.MarkNoteReadOnly(const FullFileName: string);
 var
     TheForm : TForm;
 begin
-    // ToDo : MarkNoteReadOlny used to be passed around a number of other units, its now
-    //        private and I should remove all references to to it elsewhere.
     if NoteLister = nil then exit;
     if NoteLister.IsThisNoteOpen(FullFileName, TheForm) then begin
        // if user opened and then closed, we won't know we cannot access

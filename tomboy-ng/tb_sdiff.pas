@@ -84,7 +84,7 @@ implementation
 
 {$R *.lfm}
 
-uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils, syncutils;
+uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils{, syncutils};
 
 { TFormSDiff }
 

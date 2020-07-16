@@ -228,8 +228,8 @@ var
 
 { =================================== V E R S I O N    H E R E =============}
 
-const   //Version_string  = {$I %TOMBOY_NG_VER};
-        AltHelp = 'alt-help';   // dir name where we store non english help notes.
+{const}   //Version_string  = {$I %TOMBOY_NG_VER};
+        //AltHelp = 'alt-help';   // dir name where we store non english help notes.
 
 
 function SingleNoteFileName() : string;
@@ -425,11 +425,10 @@ end;
 
 
 resourcestring
-  // rsAnotherInstanceRunning = 'Another instance of tomboy-ng appears to be running. Will exit.';
   rsFailedToIndex = 'Failed to index one or more notes.';
-  rsCannotDismiss1 = 'Sadly, because of a Bad Note,';
+  {rsCannotDismiss1 = 'Sadly, because of a Bad Note,';
   rsCannotDismiss2 = 'I cannot let you dismiss this window';
-  rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';
+  rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';     }
 
 
 

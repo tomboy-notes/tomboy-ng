@@ -49,21 +49,25 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "libhunspell.license"; DestDir: "{app}";  Check: Is64BitInstallMode
 Source: "libhunspell.dll";     DestDir: "{app}";  Check: Is64BitInstallMode
 
-Source: "ssleay32.dll-64";     DestDir: "{app}";  DestName: "ssleay32.dll"; Check: Is64BitInstallMode
-Source: "libeay32.dll-64";     DestDir: "{app}";  DestName: "libeay32.dll"; Check: Is64BitInstallMode
-Source: "ssleay32.dll-32";     DestDir: "{app}";  DestName: "ssleay32.dll"; Check: not Is64BitInstallMode
-Source: "libeay32.dll-32";     DestDir: "{app}";  DestName: "libeay32.dll"; Check: not Is64BitInstallMode
+; Source: "ssleay32.dll-64";     DestDir: "{app}";  DestName: "ssleay32.dll"; Check: Is64BitInstallMode
+; Source: "libeay32.dll-64";     DestDir: "{app}";  DestName: "libeay32.dll"; Check: Is64BitInstallMode
+; Source: "ssleay32.dll-32";     DestDir: "{app}";  DestName: "ssleay32.dll"; Check: not Is64BitInstallMode
+: Source: "libeay32.dll-32";     DestDir: "{app}";  DestName: "libeay32.dll"; Check: not Is64BitInstallMode
 
 Source: "tomboy-ng64.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Check: Is64BitInstallMode
 Source: "tomboy-ng32.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Check: not Is64BitInstallMode
 ;Source: "C:\Users\dbann\Desktop\tomboy-ng_{#MyAppVersion}\tomboy-ng64.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "calculator.note";     DestDir: "{app}"; Flags: ignoreversion
-Source: "key-shortcuts.note";  DestDir: "{app}"; Flags: ignoreversion
-Source: "recover.note";        DestDir: "{app}"; Flags: ignoreversion
-Source: "sync-ng.note";        DestDir: "{app}"; Flags: ignoreversion
-Source: "tomboy-ng.note";      DestDir: "{app}"; Flags: ignoreversion
-Source: "tomdroid.note";       DestDir: "{app}"; Flags: ignoreversion
+DestDir: {app}; Source: "HELP";  Flags: recursesubdirs
+
+; eg DestDir: {app}; Source: Files\*; Excludes: "*.m,.svn,private"; Flags: recursesubdirs
+
+; Source: "calculator.note";     DestDir: "{app}"; Flags: ignoreversion
+; Source: "key-shortcuts.note";  DestDir: "{app}"; Flags: ignoreversion
+; Source: "recover.note";        DestDir: "{app}"; Flags: ignoreversion
+; Source: "sync-ng.note";        DestDir: "{app}"; Flags: ignoreversion
+; Source: "tomboy-ng.note";      DestDir: "{app}"; Flags: ignoreversion
+; Source: "tomdroid.note";       DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.txt";          DestDir: "{app}"; Flags: ignoreversion
 ; PUTMOLINESHERE
 ; Source: "tomboy-ng.es.mo";     DestDir: "{app}\locale"; Flags: ignoreversion

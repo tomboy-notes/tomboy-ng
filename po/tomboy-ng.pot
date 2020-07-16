@@ -33,18 +33,6 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
-#: mainunit.rscannotdismiss1
-msgid "Sadly, because of a Bad Note,"
-msgstr ""
-
-#: mainunit.rscannotdismiss2
-msgid "I cannot let you dismiss this window"
-msgstr ""
-
-#: mainunit.rscannotdismiss3
-msgid "Are you trying to shut me down ? Dave ?"
-msgstr ""
-
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr ""
@@ -65,28 +53,13 @@ msgstr ""
 msgid "Double click on any Bad Notes"
 msgstr ""
 
-#: recover.rsclicksnapshot
-msgid "Double Click an Available Snapshot"
-msgstr ""
-
 #: recover.rsdeleteandreplace_1
 msgid "Notes at risk !"
 msgstr ""
 
 #: recover.rsdeleteandreplace_2
-msgid "Delete all notes in"
-msgstr ""
-
-#: recover.rsdeleteandreplace_3
-msgid "and replace with snapshot dated"
-msgstr ""
-
-#: recover.rsdeleteddamaged_1
-msgid "OK, deleted"
-msgstr ""
-
-#: recover.rsdeleteddamaged_2
-msgid "damaged notes"
+#, object-pascal-format
+msgid "Delete all notes in %s and replace with snapshot dated %s ?"
 msgstr ""
 
 #: recover.rsnobadnotes
@@ -94,7 +67,7 @@ msgid "No errors, perhaps you should proceed to Snapshots"
 msgstr ""
 
 #: recover.rsnosafetysnapshot
-msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
+msgid "A Safety snapshot not found. Try setting Snapshot Dir to where you may have one."
 msgstr ""
 
 #: recover.rsnotesinsnap
@@ -107,14 +80,6 @@ msgstr ""
 
 #: recover.rstryrecover_2
 msgid "if and only IF, you see useful content, make a small change, exit"
-msgstr ""
-
-#: recover.rswehavesnapshots_1
-msgid "We have"
-msgstr ""
-
-#: recover.rswehavesnapshots_2
-msgid "snapshots"
 msgstr ""
 
 #: resourcestr.rsalldone
@@ -132,7 +97,7 @@ msgstr ""
 
 #: resourcestr.rsbadnotesfound1
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Snapshot -> Recover ...."
+msgid "Please go to Settings -> Recover -> Recover Notes"
 msgstr ""
 
 #: resourcestr.rsbadnotesfound2
@@ -158,6 +123,11 @@ msgstr ""
 msgid "Change Sync Repo"
 msgstr ""
 
+#: resourcestr.rsclicksnapshot
+msgctxt "resourcestr.rsclicksnapshot"
+msgid "Click an Available Snapshot"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
@@ -166,6 +136,11 @@ msgstr ""
 #: resourcestr.rscreatenewrepo
 msgctxt "resourcestr.rscreatenewrepo"
 msgid "Create a new Repo ?"
+msgstr ""
+
+#: resourcestr.rsdeleteddamaged
+#, object-pascal-format
+msgid "OK, deleted %d damaged notes"
 msgstr ""
 
 #: resourcestr.rsenternewnotebook
@@ -449,6 +424,11 @@ msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr ""
 
+#: resourcestr.rswehavesnapshots
+#, object-pascal-format
+msgid "We have %d snapshots"
+msgstr ""
+
 #: settings.rsdictionaryfailed
 msgid "Library Not Loaded"
 msgstr ""
@@ -479,10 +459,6 @@ msgstr ""
 
 #: settings.rsselectlibrary
 msgid "Select your hunspell library"
-msgstr ""
-
-#: settings.rssetfilesyncrepo
-msgid "Set File Sync Repo"
 msgstr ""
 
 #: spelling.rscheckingfull
@@ -874,10 +850,6 @@ msgstr ""
 msgid "Please close any notes you may have open."
 msgstr ""
 
-#: tformrecover.label11.caption
-msgid "or you do one of -"
-msgstr ""
-
 #: tformrecover.label12.caption
 msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
 msgstr ""
@@ -934,8 +906,8 @@ msgstr ""
 msgid "Available Snapshots"
 msgstr ""
 
-#: tformrecover.tabsheetexisting.caption
-msgid "Existing Notes"
+#: tformrecover.tabsheetbadnotes.caption
+msgid "Bad Notes"
 msgstr ""
 
 #: tformrecover.tabsheetintro.caption
@@ -946,12 +918,12 @@ msgstr ""
 msgid "Merge Snapshot"
 msgstr ""
 
-#: tformrecover.tabsheetrecoversnapshot.caption
-msgid "Recover Snapshot"
+#: tformrecover.tabsheetrecovernotes.caption
+msgid "Recover Notes"
 msgstr ""
 
-#: tformrecover.tabsheetsnapshots.caption
-msgid "Notes in a Snapshot"
+#: tformrecover.tabsheetrecoversnapshot.caption
+msgid "Recover Snapshot"
 msgstr ""
 
 #: tformsdiff.bitbtnuselocal.caption
@@ -1664,8 +1636,9 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: tsett.tabsnapshot.caption
-msgid "SnapShot"
+#: tsett.tabrecover.caption
+msgctxt "tsett.tabrecover.caption"
+msgid "Recover"
 msgstr ""
 
 #: tsett.tabspell.caption

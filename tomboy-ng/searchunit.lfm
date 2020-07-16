@@ -157,12 +157,13 @@ object SearchForm: TSearchForm
         end      
         item
           Width = 530
+          SortIndicator = siAscending
         end>
       HideSelection = False
       ReadOnly = True
       RowSelect = True
       ScrollBars = ssAutoVertical
-      SortColumn = 0
+      SortColumn = 1
       SortType = stText
       TabOrder = 4
       ViewStyle = vsReport

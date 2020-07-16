@@ -244,7 +244,8 @@ type
     function SearchNotes(const Term: ANSIstring): longint;
     		                            { Copy the internal Note data to the passed TStringGrid, empting it first.
                                           NoCols can be 2, 3 or 4 being Name, LastChange, CreateDate, ID.
-                                          Special case only main List SearchMode True will get from the search list.}
+                                          Special case only main List SearchMode True will get from the search list.
+                                          Only used by Recover unit now. }
    	procedure LoadStGrid(const Grid: TStringGrid; NoCols: integer;  SearchMode: boolean=false);
                                         { Copy the internal Note Data to passed TStrings }
     procedure LoadStrings(const TheStrings : TStrings);
@@ -1166,6 +1167,7 @@ var
     Index : integer;
     TheList : TNoteList;
     LCDst : string;
+    CDst  : string;
     //T1, T2, T3 : qword;
 begin
     //T1 := gettickcount64();
@@ -1180,12 +1182,21 @@ begin
         LCDst := TheList.Items[Index]^.LastChange;
         if length(LCDst) > 11 then  // looks prettier, dates are stored in ISO std
             LCDst[11] := ' ';       // with a 'T' between date and time
+        if length(LCDst) > 16 then
+            LCDst := copy(LCDst, 1, 16);    // we only want hours and minutes
+
+        CDst := TheList.Items[Index]^.CreateDate;
+        if length(CDst) > 11 then
+            CDst[11] := ' ';
+        if length(CDst) > 16 then
+            CDst := copy(CDst, 1, 16);
+
         case NoCols of
             2 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title, LCDst]);
             3 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
-        	    LCDst, TheList.Items[Index]^.CreateDate]);
+        	    LCDst, CDst]);
             4 : Grid.InsertRowWithValues(Grid.RowCount, [TheList.Items[Index]^.Title,
-                LCDst, TheList.Items[Index]^.CreateDate, TheList.Items[Index]^.ID]);
+                LCDst, CDst, TheList.Items[Index]^.ID]);
         end;
     end;
 

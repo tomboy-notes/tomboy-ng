@@ -1,10 +1,10 @@
 object FormRecover: TFormRecover
-  Left = 670
-  Height = 445
-  Top = 240
+  Left = 829
+  Height = 561
+  Top = 163
   Width = 758
   Caption = 'FormRecover'
-  ClientHeight = 445
+  ClientHeight = 561
   ClientWidth = 758
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -27,7 +27,7 @@ object FormRecover: TFormRecover
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 2
-    Height = 171
+    Height = 287
     Hint = 'These are the currently known snapshots. '
     Top = 274
     Width = 278
@@ -35,6 +35,7 @@ object FormRecover: TFormRecover
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     ItemHeight = 0
+    OnClick = ListBoxSnapshotsClick
     OnDblClick = ListBoxSnapshotsDblClick
     ParentShowHint = False
     ScrollWidth = 276
@@ -52,15 +53,14 @@ object FormRecover: TFormRecover
     Height = 204
     Top = 44
     Width = 758
-    ActivePage = TabSheetRecoverSnapshot
+    ActivePage = TabSheetBadNotes
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
       ClientHeight = 167
       ClientWidth = 752
-      OnContextPopup = TabSheetIntroContextPopup
       OnShow = TabSheetIntroShow
       object Label6: TLabel
         Left = 8
@@ -99,7 +99,7 @@ object FormRecover: TFormRecover
         AnchorSideRight.Control = ButtonSnapHelp
         AnchorSideBottom.Control = TabSheetIntro
         AnchorSideBottom.Side = asrBottom
-        Left = 518
+        Left = 505
         Height = 31
         Hint = 'Take a initial snapshot of your notes and config. Overwritten each time.'
         Top = 136
@@ -119,7 +119,7 @@ object FormRecover: TFormRecover
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetIntro
         AnchorSideBottom.Side = asrBottom
-        Left = 648
+        Left = 635
         Height = 31
         Top = 136
         Width = 115
@@ -132,11 +132,11 @@ object FormRecover: TFormRecover
         TabOrder = 1
       end
     end
-    object TabSheetExisting: TTabSheet
-      Caption = 'Existing Notes'
+    object TabSheetBadNotes: TTabSheet
+      Caption = 'Bad Notes'
       ClientHeight = 167
       ClientWidth = 752
-      OnShow = TabSheetExistingShow
+      OnShow = TabSheetBadNotesShow
       object Label5: TLabel
         Left = 8
         Height = 19
@@ -148,9 +148,9 @@ object FormRecover: TFormRecover
       object ButtonDeleteBadNotes: TButton
         AnchorSideTop.Control = Button4
         AnchorSideRight.Control = Button4
-        AnchorSideBottom.Control = TabSheetExisting
+        AnchorSideBottom.Control = TabSheetBadNotes
         AnchorSideBottom.Side = asrBottom
-        Left = 400
+        Left = 387
         Height = 31
         Top = 136
         Width = 138
@@ -161,11 +161,11 @@ object FormRecover: TFormRecover
         TabOrder = 0
       end
       object Button4: TButton
-        AnchorSideRight.Control = TabSheetExisting
+        AnchorSideRight.Control = TabSheetBadNotes
         AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = TabSheetExisting
+        AnchorSideBottom.Control = TabSheetBadNotes
         AnchorSideBottom.Side = asrBottom
-        Left = 538
+        Left = 525
         Height = 31
         Top = 136
         Width = 227
@@ -199,20 +199,12 @@ object FormRecover: TFormRecover
         Caption = 'LabelExistingAdvice2'
         ParentColor = False
       end
-      object Label11: TLabel
-        Left = 11
-        Height = 19
-        Top = 128
-        Width = 126
-        Caption = 'or you do one of -'
-        ParentColor = False
-      end
     end
-    object TabSheetSnapshots: TTabSheet
-      Caption = 'Notes in a Snapshot'
+    object TabSheetRecoverNotes: TTabSheet
+      Caption = 'Recover Notes'
       ClientHeight = 167
       ClientWidth = 752
-      OnShow = TabSheetSnapshotsShow
+      OnShow = TabSheetRecoverNotesShow
       object Label9: TLabel
         Left = 10
         Height = 19
@@ -326,7 +318,7 @@ object FormRecover: TFormRecover
       ParentFont = False
     end
   end
-  object StringGrid1: TStringGrid
+  object StringGridNotes: TStringGrid
     AnchorSideLeft.Control = ListBoxSnapshots
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = PanelNoteList
@@ -336,7 +328,7 @@ object FormRecover: TFormRecover
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 282
-    Height = 171
+    Height = 287
     Top = 274
     Width = 476
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -344,7 +336,7 @@ object FormRecover: TFormRecover
     BorderSpacing.Top = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
     TabOrder = 3
-    OnDblClick = StringGrid1DblClick
+    OnDblClick = StringGridNotesDblClick
   end
   object PanelSnapshots: TPanel
     AnchorSideLeft.Control = Owner
@@ -361,7 +353,7 @@ object FormRecover: TFormRecover
     TabOrder = 4
   end
   object PanelNoteList: TPanel
-    AnchorSideLeft.Control = StringGrid1
+    AnchorSideLeft.Control = StringGridNotes
     AnchorSideTop.Control = PageControl1
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner

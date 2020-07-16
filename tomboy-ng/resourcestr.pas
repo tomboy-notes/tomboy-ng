@@ -13,6 +13,13 @@ uses
 
 RESOURCESTRING
 
+  { to use replacable parameters, pass an array of parameters to format()
+
+    rsString := 'you have %d pimples';
+    label1.caption := format(rsString, [Count])
+  }
+
+
 // notebook.pas
 
   rsMultipleNoteBooks = 'Settings allow multiple Notebooks';
@@ -111,11 +118,16 @@ RESOURCESTRING
 
     // Mainunit
 
-  rsBadNotesFound1 = 'Please go to Settings -> Snapshot -> Recover ....';
+  rsBadNotesFound1 = 'Please go to Settings -> Recover -> Recover Notes';
   rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
   rsFound = 'Found';
   rsNotes = 'notes';
 
+    // R E C O V E R unit
+
+  rsClickSnapShot = 'Click an Available Snapshot';
+  rsWeHaveSnapShots = 'We have %d snapshots';
+  rsDeletedDamaged = 'OK, deleted %d damaged notes';
 
 implementation
 

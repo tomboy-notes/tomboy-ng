@@ -47,18 +47,6 @@ msgstr "SO"
 msgid "Version"
 msgstr "Versión"
 
-#: mainunit.rscannotdismiss1
-msgid "Sadly, because of a Bad Note,"
-msgstr "Lamento que por una nota inutilizable"
-
-#: mainunit.rscannotdismiss2
-msgid "I cannot let you dismiss this window"
-msgstr "no puedo permitirle cerrar esta ventana."
-
-#: mainunit.rscannotdismiss3
-msgid "Are you trying to shut me down ? Dave ?"
-msgstr "¿Intenta apagarme? ¿Dave?"
-
 # Revisa
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
@@ -80,30 +68,15 @@ msgstr " notas corrompidas en el directorio de notas"
 msgid "Double click on any Bad Notes"
 msgstr "Hacer doble clic en las notas corrompidas"
 
-#: recover.rsclicksnapshot
-msgid "Double Click an Available Snapshot"
-msgstr "Hacer doble clic en una instantánea"
-
 #: recover.rsdeleteandreplace_1
 msgid "Notes at risk !"
 msgstr "¡Notas en peligro!"
 
 #: recover.rsdeleteandreplace_2
-msgid "Delete all notes in"
+#, object-pascal-format, fuzzy, badformat
+#| msgid "Delete all notes in"
+msgid "Delete all notes in %s and replace with snapshot dated %s ?"
 msgstr "Eliminar todas las notas en"
-
-#: recover.rsdeleteandreplace_3
-msgid "and replace with snapshot dated"
-msgstr "y reemplazarlas con la instantánea con del"
-
-# Refiere a notas corrompidas
-#: recover.rsdeleteddamaged_1
-msgid "OK, deleted"
-msgstr "OK, se eliminaron"
-
-#: recover.rsdeleteddamaged_2
-msgid "damaged notes"
-msgstr "notas corrompidas"
 
 #: recover.rsnobadnotes
 msgid "No errors, perhaps you should proceed to Snapshots"
@@ -111,7 +84,9 @@ msgstr "Ningún error, quizá debería continuar a Instantáneas"
 
 # ¿Revisar?
 #: recover.rsnosafetysnapshot
-msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
+#, fuzzy
+#| msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
+msgid "A Safety snapshot not found. Try setting Snapshot Dir to where you may have one."
 msgstr "No se encontró ninguna instantánea de seguridad. Intente establecer el directorio donde quizá hay una."
 
 # ¿Número variable antes o etiqueta de pestaña?
@@ -127,14 +102,6 @@ msgstr "Continúe a instantáneas o intente recuperar haciendo doble clic abajo,
 msgid "if and only IF, you see useful content, make a small change, exit"
 msgstr "si y solamente SI ve contenidos útiles, haga un cambio pequeño, salir"
 
-#: recover.rswehavesnapshots_1
-msgid "We have"
-msgstr "Tenemos"
-
-#: recover.rswehavesnapshots_2
-msgid "snapshots"
-msgstr "instantáneas"
-
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"
@@ -149,8 +116,10 @@ msgid "Auto sync not possible right now"
 msgstr "Auto-sincronización imposible en este momento"
 
 #: resourcestr.rsbadnotesfound1
+#, fuzzy
+#| msgid "Please go to Settings -> Snapshot -> Recover ...."
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Snapshot -> Recover ...."
+msgid "Please go to Settings -> Recover -> Recover Notes"
 msgstr "Por favor ir a Preferencias -> Instantánea -> Recuperar ..."
 
 #: resourcestr.rsbadnotesfound2
@@ -176,6 +145,11 @@ msgstr "Cambiar el nombre de este cuaderno"
 msgid "Change Sync Repo"
 msgstr "Cambiar repositorio de sincronización"
 
+#: resourcestr.rsclicksnapshot
+msgctxt "resourcestr.rsclicksnapshot"
+msgid "Click an Available Snapshot"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
@@ -185,6 +159,11 @@ msgstr "No se copió al directorio de copias de seguridad"
 msgctxt "resourcestr.rscreatenewrepo"
 msgid "Create a new Repo ?"
 msgstr "¿Crear un repositorio nuevo?"
+
+#: resourcestr.rsdeleteddamaged
+#, object-pascal-format
+msgid "OK, deleted %d damaged notes"
+msgstr ""
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -472,6 +451,11 @@ msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr "No se puede sincronizar porque "
 
+#: resourcestr.rswehavesnapshots
+#, object-pascal-format
+msgid "We have %d snapshots"
+msgstr ""
+
 # Creo que está bien.
 #: settings.rsdictionaryfailed
 msgid "Library Not Loaded"
@@ -505,10 +489,6 @@ msgstr "Seleccione el directorio que quiere usar"
 #: settings.rsselectlibrary
 msgid "Select your hunspell library"
 msgstr "Seleccione su biblioteca Hunspell"
-
-#: settings.rssetfilesyncrepo
-msgid "Set File Sync Repo"
-msgstr "Establecer Repositorio de Sincronización"
 
 #: spelling.rscheckingfull
 msgid "Checking full document"
@@ -910,10 +890,6 @@ msgstr "ModeloRecuperar"
 msgid "Please close any notes you may have open."
 msgstr "Por favor, si hay notas abiertas, ciérrelas."
 
-#: tformrecover.label11.caption
-msgid "or you do one of -"
-msgstr "o realice una de -"
-
 #: tformrecover.label12.caption
 msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
 msgstr "No lo haga sin tener una instantánea de seguridad reciente. (Pestaña \"Introducción\")"
@@ -972,9 +948,9 @@ msgstr "Éstas son las instantáneas actuales encontradas. "
 msgid "Available Snapshots"
 msgstr "Instantáneas disponibles"
 
-#: tformrecover.tabsheetexisting.caption
-msgid "Existing Notes"
-msgstr "Notas actuales"
+#: tformrecover.tabsheetbadnotes.caption
+msgid "Bad Notes"
+msgstr ""
 
 #: tformrecover.tabsheetintro.caption
 msgid "Introduction"
@@ -984,13 +960,13 @@ msgstr "Introducción"
 msgid "Merge Snapshot"
 msgstr "Combinar Instantánea"
 
+#: tformrecover.tabsheetrecovernotes.caption
+msgid "Recover Notes"
+msgstr ""
+
 #: tformrecover.tabsheetrecoversnapshot.caption
 msgid "Recover Snapshot"
 msgstr "Recuperar Instantánea"
-
-#: tformrecover.tabsheetsnapshots.caption
-msgid "Notes in a Snapshot"
-msgstr "Notas en Instantánea"
 
 #: tformsdiff.bitbtnuselocal.caption
 msgid "Use Local"
@@ -1732,8 +1708,11 @@ msgstr "Básico"
 msgid "Notes"
 msgstr "Notas"
 
-#: tsett.tabsnapshot.caption
-msgid "SnapShot"
+#: tsett.tabrecover.caption
+#, fuzzy
+#| msgid "SnapShot"
+msgctxt "tsett.tabrecover.caption"
+msgid "Recover"
 msgstr "Instantánea"
 
 #: tsett.tabspell.caption
