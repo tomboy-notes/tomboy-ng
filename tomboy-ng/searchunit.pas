@@ -111,6 +111,7 @@ unit SearchUnit;
     2020/05/19  Replaced StringGridNotebook with a ListBox
     2020/06/07  ListBoxNotebooks sorted (but not reverse sortable, that would require TListBox becoming TListView)
     2020/07/09  New help notes location.
+    2020/07/17  OpenNote was checking edit1.test = 'search' instead of rsMenuSearch
 }
 
 {$mode objfpc}{$H+}
@@ -830,7 +831,7 @@ begin
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then begin
         ButtonClearFilters.Enabled := True;
         TS1:=gettickcount64();
-        Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkAnyCombo and sett.checkCaseSensitive
+        Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkCaseSensitive
         // TS2:=gettickcount64();
         //NoteLister.LoadStGrid(StringGrid1, 2, True);
         NoteLister.LoadListView(ListViewNotes, True);
@@ -953,7 +954,7 @@ begin
     // if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
-    CheckCaseSensitive.checked := Sett.CheckCaseSensitive.Checked;
+    CheckCaseSensitive.checked := Sett.SearchCaseSensitive;
     {$ifdef windows}  // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
         ListBoxNotebooks.Color := Sett.BackGndColour;
@@ -987,7 +988,8 @@ end;
 
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);
 begin
-    Sett.CheckCaseSensitive.Checked := CheckCaseSensitive.Checked;
+    Sett.SearchCaseSensitive:= CheckCaseSensitive.Checked;
+    // Sett.CheckCaseSensitive.Checked := CheckCaseSensitive.Checked;
 end;
 
 procedure TSearchForm.Edit1Enter(Sender: TObject);
@@ -1086,7 +1088,7 @@ begin
        //TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
         TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
 	EBox := TEditBoxForm.Create(Application);
-    if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> 'Search') then
+    if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> rsMenuSearch) then
         // Looks like we have a search in progress, lets take user there when note opens.
         EBox.SearchedTerm := Edit1.Text
     else

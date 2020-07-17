@@ -1473,11 +1473,6 @@ msgstr "Vastebreedtelettertype"
 msgid "Usual Font"
 msgstr "Normaal lettertype"
 
-#: tsett.buttonhelpnotes.caption
-msgctxt "tsett.buttonhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr "Taal van hulpnotities"
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr "Handmatig een momentopname maken"
@@ -1546,11 +1541,6 @@ msgctxt "tsett.checkboxautosync.hint"
 msgid "Sync, if possible once an hour."
 msgstr ""
 
-#: tsett.checkcasesensitive.caption
-msgctxt "tsett.checkcasesensitive.caption"
-msgid "Case Sensitive"
-msgstr "Hoofdlettergevoelig"
-
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Toestaan dat notities kunnen worden geopend in meerdere notitieboeken"
@@ -1583,10 +1573,6 @@ msgstr "Deze wordt altijd getoond als er fouten zijn opgetreden tijdens het lade
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Tomdroid-synchronisatie tonen (experimenteel)"
 
-#: tsett.groupbox1.caption
-msgid "Main Search Window is : "
-msgstr "Het hoofdzoekvenster is: "
-
 #: tsett.groupbox4.caption
 msgid "  Options  "
 msgstr "  Opties  "
@@ -1602,6 +1588,12 @@ msgstr ""
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
 msgstr "De instellingen worden opgeslagen in:"
+
+#: tsett.label10.caption
+#, fuzzy
+msgctxt "tsett.label10.caption"
+msgid "Help Notes Language"
+msgstr "Taal van hulpnotities"
 
 #: tsett.label11.caption
 msgid "Backup Files"

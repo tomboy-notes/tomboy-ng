@@ -1458,7 +1458,7 @@ begin
         FindIt(SearchedTerm, True, False)
     else begin
         KMemo1.executecommand(ecEditorTop);
-        KMemo1.ExecuteCommand(ecDown);          // DRB Playing
+        KMemo1.ExecuteCommand(ecDown);
     end;
     KMemo1.Blocks.LockUpdate;
     {$ifdef windows}

@@ -1385,11 +1385,6 @@ msgstr ""
 msgid "Usual Font"
 msgstr ""
 
-#: tsett.buttonhelpnotes.caption
-msgctxt "tsett.buttonhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr ""
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr ""
@@ -1453,11 +1448,6 @@ msgstr ""
 msgid "Sync, if possible once an hour."
 msgstr ""
 
-#: tsett.checkcasesensitive.caption
-msgctxt "tsett.checkcasesensitive.caption"
-msgid "Case Sensitive"
-msgstr ""
-
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
 msgstr ""
@@ -1490,10 +1480,6 @@ msgstr ""
 msgid "Show Tomdroid Sync (experimental)"
 msgstr ""
 
-#: tsett.groupbox1.caption
-msgid "Main Search Window is : "
-msgstr ""
-
 #: tsett.groupbox4.caption
 msgid "  Options  "
 msgstr ""
@@ -1508,6 +1494,11 @@ msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
+msgstr ""
+
+#: tsett.label10.caption
+msgctxt "tsett.label10.caption"
+msgid "Help Notes Language"
 msgstr ""
 
 #: tsett.label11.caption

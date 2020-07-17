@@ -1122,7 +1122,7 @@ begin
             SearchThread.File_List := FileList;
             SearchThread.ResultsList := SearchNoteList;
             SearchThread.TIndex := ThreadIndex;
-            SearchThread.CaseSensitive := Sett.CheckCaseSensitive.Checked;
+            SearchThread.CaseSensitive := Sett.SearchCaseSensitive;
             SearchThread.start();
             inc(ThreadIndex);
         end;

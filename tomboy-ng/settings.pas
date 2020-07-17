@@ -130,6 +130,7 @@ type
         CheckBoxAutoSync: TCheckBox;
         ComboHelpLanguage: TComboBox;
         GroupBoxSync: TGroupBox;
+        Label10: TLabel;
         Label11: TLabel;
         Label16: TLabel;
         Label5: TLabel;
@@ -144,13 +145,11 @@ type
         ButtonSetColours: TButton;
         ButtonFixedFont: TButton;
         ButtonFont: TButton;
-        ButtonHelpNotes: TButton;
         ButtonSetSpellLibrary: TButton;
         ButtonSetDictionary: TButton;
 
         ButtonSetNotePath: TButton;
         CheckAutoStart : TCheckBox;
-        CheckCaseSensitive: TCheckBox;
         CheckManyNotebooks: TCheckBox;
         CheckShowSearchAtStart: TCheckBox;
         CheckShowSplash: TCheckBox;
@@ -158,7 +157,6 @@ type
         CheckShowIntLinks: TCheckBox;
         CheckShowTomdroid: TCheckBox;
         FontDialog1: TFontDialog;
-        GroupBox1: TGroupBox;
         GroupBox4: TGroupBox;
         GroupBox5: TGroupBox;
         Label1: TLabel;
@@ -212,7 +210,6 @@ type
         procedure ButtonSetColoursClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
-        procedure ButtonHelpNotesClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
         procedure ButtonSetDictionaryClick(Sender: TObject);
         //procedure ButtonSaveConfigClick(Sender: TObject);
@@ -253,6 +250,7 @@ type
     private
         UserSetColours : boolean;
         fExportPath : ANSIString;
+        SearchIsCaseSensitive : boolean;
         NextAutoSnapshot : TDateTime;
                         // Looks in expected place for help notes, populate combo and public vars, HelpNotesPath, HelpNotesLang.
         procedure LoadHelpLanguages();
@@ -289,6 +287,8 @@ type
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
         procedure fSetValidSync(Repo: string);
 		procedure SyncSettings;
+        function fGetCaseSensitive : boolean;
+        procedure fSetCaseSensitive(IsIt : boolean);
         //function ZipDate: string;
 
     public
@@ -338,6 +338,7 @@ type
         procedure Synchronise();
 
         property ValidSync : string read fGetValidSync write fSetValidSync;
+        property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
 
         // property SyncOK : boolean read fGetSyncOK write fSetSyncOK;
 
@@ -436,6 +437,18 @@ begin
         else if RadioUseLocal.Checked then SyncOption := UseLocal
         else if RadioUseServer.Checked then SyncOption := UseServer;
 	end;
+end;
+
+function TSett.fGetCaseSensitive : boolean;
+begin
+    result := SearchIsCaseSensitive;
+end;
+
+procedure TSett.fSetCaseSensitive(IsIt : boolean);
+begin
+    SearchIsCaseSensitive := IsIt;
+    if Not MaskSettingsChanged then
+        SettingsChanged();
 end;
 
 procedure TSett.PageControl1Change(Sender: TObject);
@@ -857,7 +870,8 @@ begin
                 ('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
             CheckManyNoteBooks.checked :=
         	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
-            CheckCaseSensitive.Checked :=
+            //CheckCaseSensitive.Checked :=
+            SearchCaseSensitive :=
                 ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
             CheckShowTomdroid.Checked :=
                 ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
@@ -986,7 +1000,7 @@ begin
         try
             ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
             Configfile.writestring('BasicSettings', 'ManyNotebooks',     MyBoolStr(CheckManyNoteBooks.checked));
-            Configfile.writestring('BasicSettings', 'CaseSensitive',     MyBoolStr(CheckCaseSensitive.checked));
+            Configfile.writestring('BasicSettings', 'CaseSensitive',     MyBoolStr(SearchCaseSensitive));
             ConfigFile.writestring('BasicSettings', 'ShowIntLinks',      MyBoolStr(CheckShowIntLinks.Checked));
             ConfigFile.writestring('BasicSettings', 'ShowExtLinks',      MyBoolStr(CheckShowExtLinks.Checked));
             ConfigFile.writestring('BasicSettings', 'ShowTomdroid',      MyBoolStr(CheckShowTomdroid.Checked));
@@ -1195,10 +1209,10 @@ begin
     ButtonFont.Hint := UsualFont;
 end;
 
-procedure TSett.ButtonHelpNotesClick(Sender: TObject);
+{procedure TSett.ButtonHelpNotesClick(Sender: TObject);
 begin
  //   FormHelpNotes.show;
-end;
+end; }
 
 
 
@@ -1439,9 +1453,9 @@ begin
                 SearchForm.RefreshMenus(mkFileMenu);
                 SearchForm.RefreshMenus(mkHelpMenu);
             end;
-            if TCheckBox(Sender).Name = 'CheckCaseSensitive' then begin
+            {if TCheckBox(Sender).Name = 'CheckCaseSensitive' then begin
                 SearchForm.CheckCaseSensitive.Checked := TCheckBox(Sender).Checked;
-            end;
+            end; }
     end;
 end;
 

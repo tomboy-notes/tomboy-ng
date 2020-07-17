@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 588
-    ActivePage = TabBackUp
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -91,7 +91,7 @@ object Sett: TSett
         Height = 48
         Hint = 'Will work for many new users'
         Top = 144
-        Width = 307
+        Width = 253
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Left = 10
         BorderSpacing.Right = 7
@@ -110,32 +110,6 @@ object Sett: TSett
         OnChange = CheckAutostartChange
         TabOrder = 2
       end
-      object GroupBox1: TGroupBox
-        AnchorSideLeft.Control = ButtDefaultNoteDir
-        AnchorSideRight.Control = ButtDefaultNoteDir
-        AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = TabBasic
-        AnchorSideBottom.Side = asrBottom
-        Left = 322
-        Height = 167
-        Top = 272
-        Width = 307
-        Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Bottom = 7
-        Caption = 'Main Search Window is : '
-        ClientHeight = 146
-        ClientWidth = 303
-        TabOrder = 3
-        object CheckCaseSensitive: TCheckBox
-          Left = 32
-          Height = 24
-          Top = 24
-          Width = 129
-          Caption = 'Case Sensitive'
-          OnChange = CheckReadOnlyChange
-          TabOrder = 0
-        end
-      end
       object CheckShowSearchAtStart: TCheckBox
         Left = 16
         Height = 24
@@ -143,7 +117,7 @@ object Sett: TSett
         Width = 174
         Caption = 'Show Search at Start'
         OnChange = CheckReadOnlyChange
-        TabOrder = 4
+        TabOrder = 3
       end
       object CheckShowSplash: TCheckBox
         Left = 16
@@ -157,7 +131,7 @@ object Sett: TSett
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
-        TabOrder = 5
+        TabOrder = 4
       end
       object CheckShowTomdroid: TCheckBox
         Left = 16
@@ -166,7 +140,7 @@ object Sett: TSett
         Width = 283
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
-        TabOrder = 6
+        TabOrder = 5
       end
     end
     object TabDisplay: TTabSheet
@@ -239,9 +213,9 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 32
         Height = 24
-        Top = 215
+        Top = 220
         Width = 164
-        BorderSpacing.Top = 15
+        BorderSpacing.Top = 20
         Caption = 'Show Internal Links'
         OnChange = CheckReadOnlyChange
         TabOrder = 1
@@ -252,9 +226,9 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 32
         Height = 24
-        Top = 254
+        Top = 264
         Width = 172
-        BorderSpacing.Top = 15
+        BorderSpacing.Top = 20
         Caption = 'Show External  Links'
         OnChange = CheckReadOnlyChange
         TabOrder = 2
@@ -266,25 +240,12 @@ object Sett: TSett
         Left = 32
         Height = 24
         Hint = 'This may adversly affect tradional Tomboy, take care.'
-        Top = 293
+        Top = 308
         Width = 325
-        BorderSpacing.Top = 15
+        BorderSpacing.Top = 20
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
-      end
-      object ButtonHelpNotes: TButton
-        AnchorSideLeft.Control = GroupBox5
-        AnchorSideTop.Control = CheckManyNotebooks
-        AnchorSideTop.Side = asrBottom
-        Left = 32
-        Height = 32
-        Top = 332
-        Width = 240
-        BorderSpacing.Top = 15
-        Caption = 'Help Notes Language'
-        OnClick = ButtonHelpNotesClick
-        TabOrder = 4
       end
       object ButtonFont: TButton
         Left = 344
@@ -295,7 +256,7 @@ object Sett: TSett
         OnClick = ButtonFontClick
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 5
+        TabOrder = 4
       end
       object ButtonFixedFont: TButton
         Left = 347
@@ -306,30 +267,48 @@ object Sett: TSett
         OnClick = ButtonFixedFontClick
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 6
+        TabOrder = 5
       end
       object ButtonSetColours: TButton
-        AnchorSideLeft.Control = ButtonHelpNotes
-        AnchorSideRight.Control = ButtonHelpNotes
+        AnchorSideLeft.Control = GroupBox5
+        AnchorSideTop.Control = CheckManyNotebooks
+        AnchorSideTop.Side = asrBottom
         AnchorSideRight.Side = asrBottom
         Left = 32
         Height = 32
-        Top = 384
+        Top = 352
         Width = 240
-        Anchors = [akLeft, akRight]
+        BorderSpacing.Top = 20
         Caption = 'Set Colours'
         OnClick = ButtonSetColoursClick
-        TabOrder = 7
+        TabOrder = 6
       end
       object ComboHelpLanguage: TComboBox
-        Left = 305
-        Height = 33
-        Top = 336
+        AnchorSideLeft.Control = ButtonFont
+        AnchorSideBottom.Control = GroupBox5
+        AnchorSideBottom.Side = asrBottom
+        Left = 344
+        Height = 32
+        Top = 168
         Width = 207
+        Anchors = [akTop, akLeft, akBottom]
         ItemHeight = 0
         OnChange = ComboHelpLanguageChange
         Style = csDropDownList
-        TabOrder = 8
+        TabOrder = 7
+      end
+      object Label10: TLabel
+        AnchorSideLeft.Control = ButtonFont
+        AnchorSideTop.Control = ComboHelpLanguage
+        AnchorSideTop.Side = asrBottom
+        AnchorSideBottom.Control = ComboHelpLanguage
+        Left = 344
+        Height = 19
+        Top = 149
+        Width = 153
+        Anchors = [akLeft, akBottom]
+        Caption = 'Help Notes Language'
+        ParentColor = False
       end
     end
     object TabSync: TTabSheet

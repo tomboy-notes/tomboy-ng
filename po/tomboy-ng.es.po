@@ -1445,11 +1445,6 @@ msgstr "Fuente monoespaciada"
 msgid "Usual Font"
 msgstr "Fuente habitual"
 
-#: tsett.buttonhelpnotes.caption
-msgctxt "tsett.buttonhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr "Idioma de las notas de ayuda"
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr "Hacer una Instantánea Manual"
@@ -1517,11 +1512,6 @@ msgctxt "tsett.checkboxautosync.hint"
 msgid "Sync, if possible once an hour."
 msgstr "Sincronizar cada hora si es posible"
 
-#: tsett.checkcasesensitive.caption
-msgctxt "tsett.checkcasesensitive.caption"
-msgid "Case Sensitive"
-msgstr "Sensible a mayúsculas"
-
 # Prefiero "en más de uno"
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
@@ -1558,11 +1548,6 @@ msgstr "Se muestra siempre si hay un error al cargar las notas."
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Mostrar Sincronización Tomdroid (experimental)"
 
-# Aparece en la primera pestaña de Preferencias.
-#: tsett.groupbox1.caption
-msgid "Main Search Window is : "
-msgstr "Opciones de búsqueda:"
-
 # ¿Preferencias? - en Preferencias de sincro
 #: tsett.groupbox4.caption
 msgid "  Options  "
@@ -1579,6 +1564,12 @@ msgstr " Sincronizar "
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
 msgstr "Preferencias se guardarán en:"
+
+#: tsett.label10.caption
+#, fuzzy
+msgctxt "tsett.label10.caption"
+msgid "Help Notes Language"
+msgstr "Idioma de las notas de ayuda"
 
 #: tsett.label11.caption
 msgid "Backup Files"
