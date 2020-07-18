@@ -164,7 +164,7 @@ function DebianPackage () {
 		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl"
 		CTRL_RELEASE="Qt5 release."
 		;;
-	"armhf")
+	"arm")
 		cp tomboy-ng-arm BUILD/usr/bin/tomboy-ng
 		#CTRL_DEPENDS=""
 		CTRL_RELEASE="Raspberry Pi release."
@@ -252,8 +252,8 @@ function MkWinPreInstaller() {
 	cp ../tomboy-ng/tomboy-ng64.exe "$WIN_DIR/."
 	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
 	# cp ../../DLL/* "$WIN_DIR"/.
-	# cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
-	# cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
+	cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
+	cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
 	cp ../COPYING "$WIN_DIR/."
 	cp AfterInstall.txt "$WIN_DIR/."
 	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss.temp"
@@ -262,7 +262,8 @@ function MkWinPreInstaller() {
 	# for i in $MANUALS; do
 	#    cp ../doc/$i "$WIN_DIR/."
 	# done;
-	cp -R ../doc/HELP "$WIN_DIR/."
+	mkdir "$WIN_DIR/HELP_DIR"
+	cp -R ../doc/HELP "$WIN_DIR/HELP_DIR/."
 	# " -------- WRITE mo files --------"
 	msgfmt -o "$WIN_DIR"/"$PRODUCT".mo ../po/"$PRODUCT".po
 	# Source: "tomboy-ng.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
@@ -287,8 +288,6 @@ function MkWinPreInstaller() {
 }
 
 # --------------------------------------
-DebianPackage "armhf"
-exit
 
 # It all starts here
 
