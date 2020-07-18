@@ -53,9 +53,9 @@ object FormRecover: TFormRecover
     Height = 204
     Top = 44
     Width = 758
-    ActivePage = TabSheetBadNotes
+    ActivePage = TabSheetIntro
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
@@ -74,16 +74,8 @@ object FormRecover: TFormRecover
         Left = 8
         Height = 19
         Top = 64
-        Width = 458
-        Caption = 'Before you start, take a Safety Snapshot of your notes directory.'
-        ParentColor = False
-      end
-      object Label8: TLabel
-        Left = 8
-        Height = 19
-        Top = 92
-        Width = 534
-        Caption = 'Don''t take repeated Safety Snapshots as each overwrites the previous one.'
+        Width = 408
+        Caption = 'Before you start, take a Snapshot of your notes directory.'
         ParentColor = False
       end
       object Label10: TLabel
@@ -99,15 +91,15 @@ object FormRecover: TFormRecover
         AnchorSideRight.Control = ButtonSnapHelp
         AnchorSideBottom.Control = TabSheetIntro
         AnchorSideBottom.Side = asrBottom
-        Left = 505
+        Left = 450
         Height = 31
         Hint = 'Take a initial snapshot of your notes and config. Overwritten each time.'
         Top = 136
-        Width = 128
+        Width = 183
         Anchors = [akTop, akRight, akBottom]
         AutoSize = True
         BorderSpacing.Right = 2
-        Caption = 'Safety Snapshot'
+        Caption = 'Take a manual Snapshot'
         OnClick = ButtonMakeSafetySnapClick
         ParentShowHint = False
         ShowHint = True
@@ -141,39 +133,25 @@ object FormRecover: TFormRecover
         Left = 8
         Height = 19
         Top = 8
-        Width = 237
-        Caption = 'Look firstly at your existing notes'
+        Width = 266
+        Caption = 'Looking for notes with damaged XML'
         ParentColor = False
       end
       object ButtonDeleteBadNotes: TButton
-        AnchorSideTop.Control = Button4
-        AnchorSideRight.Control = Button4
+        AnchorSideRight.Control = TabSheetBadNotes
+        AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetBadNotes
         AnchorSideBottom.Side = asrBottom
-        Left = 387
+        Left = 612
         Height = 31
         Top = 136
         Width = 138
         Anchors = [akTop, akRight, akBottom]
         AutoSize = True
+        BorderSpacing.Right = 2
         Caption = 'Delete Bad Notes'
         OnClick = ButtonDeleteBadNotesClick
         TabOrder = 0
-      end
-      object Button4: TButton
-        AnchorSideRight.Control = TabSheetBadNotes
-        AnchorSideRight.Side = asrBottom
-        AnchorSideBottom.Control = TabSheetBadNotes
-        AnchorSideBottom.Side = asrBottom
-        Left = 525
-        Height = 31
-        Top = 136
-        Width = 227
-        Anchors = [akRight, akBottom]
-        AutoSize = True
-        Caption = 'Restore from Safety Snapshot'
-        OnClick = Button4Click
-        TabOrder = 1
       end
       object LabelNoteErrors: TLabel
         Left = 8
@@ -280,8 +258,8 @@ object FormRecover: TFormRecover
         Left = 8
         Height = 19
         Top = 36
-        Width = 546
-        Caption = 'Don''t even consider this unless you have a recent Safety Snapshot, Intro Tab.'
+        Width = 500
+        Caption = 'Don''t even consider this unless you have a backup Snapshot, Intro Tab.'
         ParentColor = False
       end
       object Label15: TLabel

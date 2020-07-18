@@ -54,7 +54,6 @@ type
         ButtonRecoverSnap: TButton;
         ButtonSnapHelp: TButton;
         ButtonDeleteBadNotes: TButton;
-        Button4: TButton;
         ButtonMakeSafetySnap: TButton;
         Label1: TLabel;
         Label10: TLabel;
@@ -71,7 +70,6 @@ type
         Label5: TLabel;
         Label6: TLabel;
         Label7: TLabel;
-        Label8: TLabel;
         Label9: TLabel;
         ListBoxSnapshots: TListBox;
         PageControl1: TPageControl;
@@ -84,7 +82,7 @@ type
         TabSheetRecoverNotes: TTabSheet;
         TabSheetIntro: TTabSheet;
         TabSheetBadNotes: TTabSheet;
-        procedure Button4Click(Sender: TObject);
+        //procedure Button4Click(Sender: TObject);
         procedure ButtonMakeSafetySnapClick(Sender: TObject);
         procedure ButtonDeleteBadNotesClick(Sender: TObject);
         procedure ButtonRecoverSnapClick(Sender: TObject);
@@ -148,8 +146,6 @@ begin
     Label1.Caption := format(rsWeHaveSnapShots, [FindSnapFiles()]);
 end;
 
-
-
 procedure TFormRecover.FormCreate(Sender: TObject);
 begin
     PageControl1.ActivePageIndex:=0;
@@ -196,18 +192,11 @@ end;
 
 procedure TFormRecover.ButtonMakeSafetySnapClick(Sender: TObject);
 begin
-    CreateSnapShot(NoteDir, FullSnapDir + 'Safety.zip');
+    CreateSnapshot(True);
+    //CreateSnapShot(NoteDir, FullSnapDir + 'Safety.zip');          // abandonded idea of safety snapshot, too complicated
     //Label1.Caption := rsWeHaveSnapShots_1 + ' ' + inttostr(FindSnapFiles()) + ' ' + rsWeHaveSnapShots_2;
     Label1.Caption := format(rsWeHaveSnapShots, [FindSnapFiles()]);
 end;
-
-RESOURCESTRING
-  rsDeleteAndReplace_1 = 'Notes at risk !';
-  { rsDeleteAndReplace_2 = 'Delete all notes in ';
-  rsDeleteAndReplace_3 = ' and replace with snapshot dated '; }
-  rsAllRestored = 'Notes and config files Restored, restart suggested.';
-
-  rsDeleteAndReplace_2 = 'Delete all notes in %s and replace with snapshot dated %s ?';
 
 procedure TFormRecover.RestoreSnapshot(const Snapshot : string);
 begin
@@ -235,15 +224,15 @@ begin
     RequiresIndex := true;
 end;
 
-RESOURCESTRING
-  rsNoSafetySnapshot = 'A Safety snapshot not found. Try setting Snapshot Dir to where you may have one.';
+//RESOURCESTRING
+//  rsNoSafetySnapshot = 'A Safety snapshot not found. Try setting Snapshot Dir to where you may have one.';
 
-procedure TFormRecover.Button4Click(Sender: TObject);
+{procedure TFormRecover.Button4Click(Sender: TObject);
 begin
     if fileexists(FullSnapDir + 'Safety.zip') then
         RestoreSnapshot('Safety.zip')
     else showmessage(rsNoSafetySnapshot);
-end;
+end;}
 
 procedure TFormRecover.StringGridNotesDblClick(Sender: TObject);
 var
@@ -328,17 +317,6 @@ begin
         Result := Result + ' ' + copy(FName, 15, 4);                                        //
     end;
 end;
-
-RESOURCESTRING
-  rsNotesInSnap = 'Notes in Snapshot';
-
-{procedure TFormRecover.ScaleGridNotes();
-var
-    Colwidth : integer;
-begin
-    ColWidth := StringGridNotes.Canvas.Font.GetTextWidth('2020-07-16 12:06  ');
-    stringGridNotes.AutoSizeColumns;
-end;    }
 
   // Unzips indicated snapshot, indexes its files and lists them in the StringGridNotes
 procedure TFormRecover.ShowNotes(const FullSnapName : string);
@@ -468,17 +446,6 @@ begin
 end;
 
 
-RESOURCESTRING
-  rsBadNotes_1 = 'You have';
-  rsBadNotes_2 = ' bad notes in Notes Directory';
-  rsClickBadNote = 'Double click on any Bad Notes';
-  rsNoBadNotes = 'No errors, perhaps you should proceed to Snapshots';
-  rsTryRecover_1 = 'Proceed to Snapshots or try to recover by double clicking below,';
-  rsTryrecover_2 = 'if and only IF, you see useful content, make a small change, exit';
-
-
-
-
 procedure TFormRecover.TabSheetBadNotesShow(Sender: TObject);
 var
   I, Comma : integer;
@@ -492,12 +459,15 @@ begin
     ListBoxSnapshots.ItemIndex:= -1;
     ListBoxSnapShots.Enabled:=False;
     PanelNoteList.Caption:=rsClickBadNote;
-    LabelNoteErrors.Caption := rsBadNotes_1 + ' ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count)
-        + ' ' + rsBadNotes_2;
+
+    // LabelNoteErrors.Caption := rsBadNotes_1 + ' ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count) + ' ' + rsBadNotes_2;
+
+    LabelNoteErrors.Caption := format(rsBadNotes, [SearchForm.NoteLister.ErrorNotes.Count]);
+
     LabelExistingAdvice2.Caption := '';
-    if SearchForm.NoteLister.ErrorNotes.Count = 0 then
-        LabelExistingAdvice.Caption := rsNoBadNotes
-    else begin
+    LabelExistingAdvice.Caption := '';
+    if SearchForm.NoteLister.ErrorNotes.Count <> 0  then
+      begin
         LabelExistingAdvice.Caption := rsTryRecover_1;
         LabelExistingAdvice2.Caption := rsTryrecover_2;
     end;

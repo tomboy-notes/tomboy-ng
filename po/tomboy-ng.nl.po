@@ -51,52 +51,26 @@ msgid "Failed to index one or more notes."
 msgstr "Kan één of meerdere notities niet indexeren."
 
 #: recover.rsallrestored
+msgctxt "recover.rsallrestored"
 msgid "Notes and config files Restored, restart suggested."
 msgstr "Notities en configuratiebestanden hersteld; herstart tomboy-ng."
 
-#: recover.rsbadnotes_1
-msgid "You have"
-msgstr "Er staan"
-
-#: recover.rsbadnotes_2
-msgid " bad notes in Notes Directory"
-msgstr " onjuiste notities in de notitiemap"
-
-#: recover.rsclickbadnote
-msgid "Double click on any Bad Notes"
-msgstr "Dubbelklik op de onjuiste notities"
-
 #: recover.rsdeleteandreplace_1
+msgctxt "recover.rsdeleteandreplace_1"
 msgid "Notes at risk !"
 msgstr "Beveiligingsprobleem!"
 
 #: recover.rsdeleteandreplace_2
 #, object-pascal-format, fuzzy, badformat
 #| msgid "Delete all notes in"
+msgctxt "recover.rsdeleteandreplace_2"
 msgid "Delete all notes in %s and replace with snapshot dated %s ?"
 msgstr "Wis alle notities in"
 
-#: recover.rsnobadnotes
-msgid "No errors, perhaps you should proceed to Snapshots"
-msgstr "Geen fouten; ga door naar de momentopnamen"
-
-#: recover.rsnosafetysnapshot
-#, fuzzy
-#| msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
-msgid "A Safety snapshot not found. Try setting Snapshot Dir to where you may have one."
-msgstr "Geen back-upmomentopname aangetroffen. Stel de momentopnamemap in op de locatie waar de opname staat."
-
 #: recover.rsnotesinsnap
+msgctxt "recover.rsnotesinsnap"
 msgid "Notes in Snapshot"
 msgstr "Notities in momentopname"
-
-#: recover.rstryrecover_1
-msgid "Proceed to Snapshots or try to recover by double clicking below,"
-msgstr "Ga door naar momentopnamen of herstel door hieronder te dubbelklikken"
-
-#: recover.rstryrecover_2
-msgid "if and only IF, you see useful content, make a small change, exit"
-msgstr "áls je bruikbare inhoud ziet. Indien ja, pas dit aan en sluit af."
 
 #: resourcestr.rsalldone
 #, fuzzy
@@ -104,12 +78,24 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Voltooid"
 
+#: resourcestr.rsallrestored
+#, fuzzy
+msgctxt "resourcestr.rsallrestored"
+msgid "Notes and config files Restored, restart suggested."
+msgstr "Notities en configuratiebestanden hersteld; herstart tomboy-ng."
+
 #: resourcestr.rsautosnapshotrun
 msgid "Completed autosnapshot run."
 msgstr ""
 
 #: resourcestr.rsautosyncnotpossible
 msgid "Auto sync not possible right now"
+msgstr ""
+
+#: resourcestr.rsbadnotes
+#, object-pascal-format
+msgctxt "resourcestr.rsbadnotes"
+msgid "You have %d bad notes in Notes Directory"
 msgstr ""
 
 #: resourcestr.rsbadnotesfound1
@@ -144,6 +130,12 @@ msgstr ""
 msgid "Change Sync Repo"
 msgstr ""
 
+#: resourcestr.rsclickbadnote
+#, fuzzy
+msgctxt "resourcestr.rsclickbadnote"
+msgid "Double click on any Bad Notes"
+msgstr "Dubbelklik op de onjuiste notities"
+
 #: resourcestr.rsclicksnapshot
 msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
@@ -160,6 +152,18 @@ msgstr "Kan origineel niet kopiëren naar back-upmap"
 msgctxt "resourcestr.rscreatenewrepo"
 msgid "Create a new Repo ?"
 msgstr "Wil je een nieuwe repo maken?"
+
+#: resourcestr.rsdeleteandreplace_1
+#, fuzzy
+msgctxt "resourcestr.rsdeleteandreplace_1"
+msgid "Notes at risk !"
+msgstr "Beveiligingsprobleem!"
+
+#: resourcestr.rsdeleteandreplace_2
+#, object-pascal-format
+msgctxt "resourcestr.rsdeleteandreplace_2"
+msgid "Delete all notes in %s and replace with snapshot dated %s ?"
+msgstr ""
 
 #: resourcestr.rsdeleteddamaged
 #, object-pascal-format
@@ -328,6 +332,12 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Er is een nieuwere versie aanwezig in de hoofdrepo"
 
+#: resourcestr.rsnobadnotes
+#, fuzzy
+msgctxt "resourcestr.rsnobadnotes"
+msgid "No errors, perhaps you should proceed to Snapshots"
+msgstr "Geen fouten; ga door naar de momentopnamen"
+
 #: resourcestr.rsnotealreadyinrepo
 #, fuzzy
 msgctxt "resourcestr.rsnotealreadyinrepo"
@@ -361,6 +371,12 @@ msgstr ""
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
 msgstr ""
+
+#: resourcestr.rsnotesinsnap
+#, fuzzy
+msgctxt "resourcestr.rsnotesinsnap"
+msgid "Notes in Snapshot"
+msgstr "Notities in momentopname"
 
 #: resourcestr.rsnotpresent
 #, fuzzy
@@ -471,6 +487,15 @@ msgstr "Bezig met testen van repo..."
 msgctxt "resourcestr.rstestingsync"
 msgid "Testing Sync"
 msgstr "Bezig met testen van synchronisatie..."
+
+#: resourcestr.rstryrecover_1
+msgid "Try to recover a bad note by double clicking below,"
+msgstr ""
+
+#: resourcestr.rstryrecover_2
+msgctxt "resourcestr.rstryrecover_2"
+msgid "if that fails, you may be able to recover it from a Snapshot."
+msgstr ""
 
 #: resourcestr.rsunabletoproceed
 #, fuzzy
@@ -888,16 +913,14 @@ msgstr ""
 msgid "Markdown Exporter"
 msgstr ""
 
-#: tformrecover.button4.caption
-msgid "Restore from Safety Snapshot"
-msgstr "Herstellen uit back-upmomentopname"
-
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr "Onjuiste notities verwijderen"
 
 #: tformrecover.buttonmakesafetysnap.caption
-msgid "Safety Snapshot"
+#, fuzzy
+#| msgid "Safety Snapshot"
+msgid "Take a manual Snapshot"
 msgstr "Back-upmomentopname"
 
 #: tformrecover.buttonmakesafetysnap.hint
@@ -925,7 +948,9 @@ msgid "Please close any notes you may have open."
 msgstr "Sluit alle geopende notities."
 
 #: tformrecover.label12.caption
-msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+#, fuzzy
+#| msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr "Overweeg dit niet als je geen recente back-upmomentopname hebt."
 
 #: tformrecover.label14.caption
@@ -953,7 +978,9 @@ msgid "Remove all existing notes and use the ones in the Snapshot."
 msgstr "Verwijder alle bestaande notities en gebruik de notities uit de momentopname."
 
 #: tformrecover.label5.caption
-msgid "Look firstly at your existing notes"
+#, fuzzy
+#| msgid "Look firstly at your existing notes"
+msgid "Looking for notes with damaged XML"
 msgstr "Kijk eerst naar je bestaande notities"
 
 #: tformrecover.label6.caption
@@ -961,12 +988,10 @@ msgid "This tool might help you recover lost or damaged notes."
 msgstr "Dit hulpmiddel helpt je kwijtgeraakte of beschadigde notities te herstellen."
 
 #: tformrecover.label7.caption
-msgid "Before you start, take a Safety Snapshot of your notes directory."
+#, fuzzy
+#| msgid "Before you start, take a Safety Snapshot of your notes directory."
+msgid "Before you start, take a Snapshot of your notes directory."
 msgstr "Maak, voordat je begint, een back-upmomentopname van je notitiemap."
-
-#: tformrecover.label8.caption
-msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
-msgstr "Doe dit niet te vaak, want nieuwe momentopnamen overschrijven de oude."
 
 #: tformrecover.label9.caption
 msgid "From here you can view snapshot notes, one by one."

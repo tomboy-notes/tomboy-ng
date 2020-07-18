@@ -62,6 +62,7 @@ unit SaveNote;
     2019/04/29  Restore note's previous previous position and size.
     2019/05/06  Support saving pos and open on startup in note.
     2019/06/07  Removed unused, historical func to clean xml
+    2020/07/17  Esc bad XML in Template name.
 }
 
 {$mode objfpc}{$H+}
@@ -516,7 +517,7 @@ begin
    try
    		Buff := Header();
         OStream.Write(Buff[1], length(Buff));
-        Buff := Title + #10#10#10;
+        Buff := RemoveBadXMLCharacters(Title) + #10#10#10;
         OStream.Write(Buff[1], length(Buff));
         Buff := Footer(Loc);
         OStream.Write(Buff[1], length(Buff));

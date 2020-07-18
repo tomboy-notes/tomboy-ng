@@ -38,53 +38,34 @@ msgid "Failed to index one or more notes."
 msgstr ""
 
 #: recover.rsallrestored
+msgctxt "recover.rsallrestored"
 msgid "Notes and config files Restored, restart suggested."
 msgstr ""
 
-#: recover.rsbadnotes_1
-msgid "You have"
-msgstr ""
-
-#: recover.rsbadnotes_2
-msgid " bad notes in Notes Directory"
-msgstr ""
-
-#: recover.rsclickbadnote
-msgid "Double click on any Bad Notes"
-msgstr ""
-
 #: recover.rsdeleteandreplace_1
+msgctxt "recover.rsdeleteandreplace_1"
 msgid "Notes at risk !"
 msgstr ""
 
 #: recover.rsdeleteandreplace_2
 #, object-pascal-format
+msgctxt "recover.rsdeleteandreplace_2"
 msgid "Delete all notes in %s and replace with snapshot dated %s ?"
 msgstr ""
 
-#: recover.rsnobadnotes
-msgid "No errors, perhaps you should proceed to Snapshots"
-msgstr ""
-
-#: recover.rsnosafetysnapshot
-msgid "A Safety snapshot not found. Try setting Snapshot Dir to where you may have one."
-msgstr ""
-
 #: recover.rsnotesinsnap
+msgctxt "recover.rsnotesinsnap"
 msgid "Notes in Snapshot"
-msgstr ""
-
-#: recover.rstryrecover_1
-msgid "Proceed to Snapshots or try to recover by double clicking below,"
-msgstr ""
-
-#: recover.rstryrecover_2
-msgid "if and only IF, you see useful content, make a small change, exit"
 msgstr ""
 
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"
+msgstr ""
+
+#: resourcestr.rsallrestored
+msgctxt "resourcestr.rsallrestored"
+msgid "Notes and config files Restored, restart suggested."
 msgstr ""
 
 #: resourcestr.rsautosnapshotrun
@@ -93,6 +74,12 @@ msgstr ""
 
 #: resourcestr.rsautosyncnotpossible
 msgid "Auto sync not possible right now"
+msgstr ""
+
+#: resourcestr.rsbadnotes
+#, object-pascal-format
+msgctxt "resourcestr.rsbadnotes"
+msgid "You have %d bad notes in Notes Directory"
 msgstr ""
 
 #: resourcestr.rsbadnotesfound1
@@ -123,6 +110,11 @@ msgstr ""
 msgid "Change Sync Repo"
 msgstr ""
 
+#: resourcestr.rsclickbadnote
+msgctxt "resourcestr.rsclickbadnote"
+msgid "Double click on any Bad Notes"
+msgstr ""
+
 #: resourcestr.rsclicksnapshot
 msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
@@ -136,6 +128,17 @@ msgstr ""
 #: resourcestr.rscreatenewrepo
 msgctxt "resourcestr.rscreatenewrepo"
 msgid "Create a new Repo ?"
+msgstr ""
+
+#: resourcestr.rsdeleteandreplace_1
+msgctxt "resourcestr.rsdeleteandreplace_1"
+msgid "Notes at risk !"
+msgstr ""
+
+#: resourcestr.rsdeleteandreplace_2
+#, object-pascal-format
+msgctxt "resourcestr.rsdeleteandreplace_2"
+msgid "Delete all notes in %s and replace with snapshot dated %s ?"
 msgstr ""
 
 #: resourcestr.rsdeleteddamaged
@@ -288,6 +291,11 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr ""
 
+#: resourcestr.rsnobadnotes
+msgctxt "resourcestr.rsnobadnotes"
+msgid "No errors, perhaps you should proceed to Snapshots"
+msgstr ""
+
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
@@ -318,6 +326,11 @@ msgstr ""
 
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
+msgstr ""
+
+#: resourcestr.rsnotesinsnap
+msgctxt "resourcestr.rsnotesinsnap"
+msgid "Notes in Snapshot"
 msgstr ""
 
 #: resourcestr.rsnotpresent
@@ -412,6 +425,15 @@ msgstr ""
 #: resourcestr.rstestingsync
 msgctxt "resourcestr.rstestingsync"
 msgid "Testing Sync"
+msgstr ""
+
+#: resourcestr.rstryrecover_1
+msgid "Try to recover a bad note by double clicking below,"
+msgstr ""
+
+#: resourcestr.rstryrecover_2
+msgctxt "resourcestr.rstryrecover_2"
+msgid "if that fails, you may be able to recover it from a Snapshot."
 msgstr ""
 
 #: resourcestr.rsunabletoproceed
@@ -816,16 +838,12 @@ msgstr ""
 msgid "Markdown Exporter"
 msgstr ""
 
-#: tformrecover.button4.caption
-msgid "Restore from Safety Snapshot"
-msgstr ""
-
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr ""
 
 #: tformrecover.buttonmakesafetysnap.caption
-msgid "Safety Snapshot"
+msgid "Take a manual Snapshot"
 msgstr ""
 
 #: tformrecover.buttonmakesafetysnap.hint
@@ -851,7 +869,7 @@ msgid "Please close any notes you may have open."
 msgstr ""
 
 #: tformrecover.label12.caption
-msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr ""
 
 #: tformrecover.label14.caption
@@ -879,7 +897,7 @@ msgid "Remove all existing notes and use the ones in the Snapshot."
 msgstr ""
 
 #: tformrecover.label5.caption
-msgid "Look firstly at your existing notes"
+msgid "Looking for notes with damaged XML"
 msgstr ""
 
 #: tformrecover.label6.caption
@@ -887,11 +905,7 @@ msgid "This tool might help you recover lost or damaged notes."
 msgstr ""
 
 #: tformrecover.label7.caption
-msgid "Before you start, take a Safety Snapshot of your notes directory."
-msgstr ""
-
-#: tformrecover.label8.caption
-msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
+msgid "Before you start, take a Snapshot of your notes directory."
 msgstr ""
 
 #: tformrecover.label9.caption
