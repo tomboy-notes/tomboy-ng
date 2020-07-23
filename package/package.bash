@@ -252,8 +252,8 @@ function MkWinPreInstaller() {
 	cp ../tomboy-ng/tomboy-ng64.exe "$WIN_DIR/."
 	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
 	# cp ../../DLL/* "$WIN_DIR"/.
-	cp ../../DLL_64bit/libhunspell.dll "$WIN_DIR/."
-	cp ../../DLL_64bit/libhunspell.license "$WIN_DIR/."
+	cp ../../DLL/libhunspell.dll "$WIN_DIR/."
+	cp ../../DLL/libhunspell.license "$WIN_DIR/."
 	cp ../COPYING "$WIN_DIR/."
 	cp AfterInstall.txt "$WIN_DIR/."
 	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss.temp"

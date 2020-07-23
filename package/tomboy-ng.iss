@@ -58,7 +58,7 @@ Source: "tomboy-ng64.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Che
 Source: "tomboy-ng32.exe";     DestDir: "{app}";  DestName: "tomboy-ng.exe"; Check: not Is64BitInstallMode
 ;Source: "C:\Users\dbann\Desktop\tomboy-ng_{#MyAppVersion}\tomboy-ng64.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-DestDir: {app}; Source: "HELP-DIR\*";  Flags: recursesubdirs
+DestDir: {app}; Source: "HELP_DIR\*";  Flags: recursesubdirs
 
 ; eg DestDir: {app}; Source: Files\*; Excludes: "*.m,.svn,private"; Flags: recursesubdirs
 
