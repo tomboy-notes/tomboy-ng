@@ -9,44 +9,48 @@
 # You still need to get Lazarus LCL and various other parts of its package
 # and the easy (only?) way to get that is to download lazarus source but
 # you only need to build selected parts of it and don't need to activate 
-# the GUI. As a prerequisite (for tomboy-ng) you need svn, fpc, lazarus source
-# and kcontrols source. 
+# the GUI. As a prerequisite (for tomboy-ng) you need fpc (binutils, 
+# buildessencials) lazarus source (gtk2) and kcontrols source. 
 #
-# And you are ready to go. Or you may wish to point the 'LAZ_FULL_DIR' to an existing
-# Lazarus install. It must find the lazbuild binary and Lazarus' LCL.
+# This is found and should be run, script will run in a dir called either 
+# tomboy-ng or tomboy-ng-master (from github) below it is a dir tomboy-ng 
+# that contains the *.pas and *.lfm files. Level with it are the po, docs, 
+# package etc directories 
 
-# This script will run in a dir called either tomboy-ng or tomboy-ng-master (from github)
-# below it is a dir tomboy-ng that contains the *.pas and *.lfm files.
-# level with it are the po, docs, package etc directories 
-#
 
 # This is where I keep tarballs and zips to avoid repeated large downloads.
-MYREPO='/home/dbannon/Documents/Kits/"
-LAZ_VER="trunk"		# an alternative is "branches/fixes_2"  CODE BELOW ASSUMES TRUNK   !!!!!
-CPU="x86_64"
+
+MYREPO="$HOME/Documents/Kits"		# set an alterantive with -r
+LAZ_VER="trunk"				# an alternative is lazarus-2.0.10-2
+LAZ_INT_NAME="blar"
+
+CPU="x86_64"				# default x86_64, can be arm
 OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
 
 CURRENT_DIR=$PWD
 
-SOURCE_DIR="$PWD/tomboy-ng"      # we will have to rename tomboy-ng-master"
+SOURCE_DIR="$PWD/tomboy-ng"      	
 
 TARGET="$CPU-$OS"
 
 LAZ_FULL_DIR="$PWD/Pascal/$LAZ_VER"
 
-K_DIR="$PWD/Pascal/kontrols/packages/kcontrols"
+K_DIR="$PWD/Pascal/kcontrols/packages/kcontrols"
 
-WIDGET="gtk2"
-COMPILER="fpc"			# set an explicite path if you prefer, this needs to be on path
+WIDGET="gtk2"				# untested with "qt5"
+# COMPILER="fpc"				# set an explicite path if you prefer, this needs to be on path
+COMPILER="/home/dbannon/bin/FPC/fpc-3.2.0/bin/fpc"    # ========  F I X  M E 
+
+FPCPATH="/home/dbannon/bin/FPC/fpc-3.2.0/bin"
+
+PATH="/home/dbannon/bin/FPC/fpc-3.2.0/bin":"$PATH"
+export PATH
 
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
-GETLAZARUS=NO
-GETFPC=NO
-GETKCONTROLS=NO
-GETTOMBOYNG=NO
-REFRESHTOMBOYNG=NO
+
+AUTODOWNLOAD=FALSE			# downloading large file, use -d to allow it
 
 function ShowHelp () {
     echo " "
@@ -55,20 +59,31 @@ function ShowHelp () {
     echo "David Bannon, July 2020" 
     echo "-h   print help message"
     echo "-c   specify CPU, default is x86_64, also supported arm"
+    echo "-d   downloading large files as needed"
+    echo "-r   repo where large files might be or can be put $MYREPO"
+    echo "-L   A lable for Lazaru version, trunk, lazarus-2.0.10-2"  
     echo " "
     exit
 }
 
 function BuildLaz () {    # builds only  lazbuild and LCL
-	echo "--- Building lazbuild and lcl ---"
+	echo "--- Building lazbuild in $LAZ_FULL_DIR ---"
 	cd "$LAZ_FULL_DIR"
-	make lazbuild 1> Lazbuild_log.txt
+	make -j1 lazbuild 1> Lazbuild_log.txt
+	#env PATH="$FPCPATH":"$PATH" make -j1 lazbuild 1> Lazbuild_log.txt
 	if [ ! -e lazbuild ]; then
+		echo "========================================================="
 		echo "ERROR failed to build lazbuild, exiting ....."
+		echo "which fpc = "
+		which fpc
+		echo "pwd ="
+		pwd
 		LAZ_FULL_DIR=""
 		exit
 	fi
-	make lcl 1> LCL_log.txt
+	echo "--- Building LCL ---"
+	#env PATH="$FPCPATH":"$PATH" make -j1 lcl 1> LCL_log.txt
+	make -j1 lcl 1> LCL_log.txt
  	LAZ_FULL_DIR=$PWD			# ToDo : must test that somehow......  
 }
 
@@ -76,10 +91,33 @@ function NeededFiles () {
 	if [ ! -d "$MYREPO/Lazarus" ]; then
 		mkdir -p "$MYREPO/Lazarus"
 	fi
-	if [ ! -f "$MYREPO/Lazarus/upstream.zip" ]; then
-		wget https://github.com/graemeg/lazarus/archive/upstream.zip 
-		mv upstream.zip "$MYREPO/Lazarus/upstream.zip"
+	if [ ! -f "$MYREPO/Lazarus/$LAZ_VER.zip" ]; then
+		if [ "$AUTODOWNLOAD" = "FALSE" ]; then
+			echo "Auto download not turned on, need $LAZ_VER"
+			echo "looked in $MYREPO/Lazarus/$LAZ_VER.zip"
+			ShowHelp
+		fi
 	fi
+	case "$LAZ_VER" in
+		"trunk")
+			if [ ! -f "$MYREPO/Lazarus/$LAZ_VER.zip" ]; then
+				wget https://github.com/graemeg/lazarus/archive/upstream.zip 
+				mv upstream.zip "$MYREPO/Lazarus/trunk.zip"
+			fi
+			LAZ_INT_NAME="lazarus-upstream"
+			;;
+		"lazarus-2.0.10-2")
+			if [ ! -f "$MYREPO/Lazarus/$LAZ_VER.zip" ]; then
+				wget "https://sourceforge.net/projects/lazarus/files/Lazarus%20Zip%20_%20GZip/Lazarus%202.0.10/$LAZ_VER.zip"
+				mv "$LAZ_VER.zip" "$MYREPO/Lazarus/$LAZ_VER.zip"
+			fi
+			LAZ_INT_NAME="lazarus"
+			;;
+		*)
+			echo "Sorry, I dont know how to get $LAZ_VER, exiting"
+			exit
+			;;
+	esac
 	if [ ! -f "$MYREPO/Lazarus/kcontrols.zip" ]; then
 		wget https://github.com/kryslt/KControls/archive/master.zip
 		mv master.zip "$MYREPO/Lazarus/kcontrols.zip"
@@ -89,9 +127,7 @@ function NeededFiles () {
 
 
 
-
-
-while getopts ":hc:" opt; do
+while getopts ":hdc:L:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -100,6 +136,15 @@ while getopts ":hc:" opt; do
 	CPU="$OPTARG"
 	TARGET="$CPU-$OS"
 	;;
+    d)
+	AUTODOWNLOAD="TRUE"
+	;;
+    r)
+	MYREPO="$OPTARG"
+	;;
+    L)
+	LAZ_VER="$OPTARG"
+	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -107,12 +152,12 @@ while getopts ":hc:" opt; do
   esac
 done
 
+echo "Starting buildit.bash" >> "$HOME"/build.log
 
 NeededFiles		# will download the needed files to a cache dir.
 
-if [ ! -d "Pascal" ]; then
-	mkdir -p "Pascal"
-fi
+rm -Rf Pascal
+mkdir -p Pascal
 
 # OK, do we have a good FPC available ?
 FPCVERSION=$($COMPILER -iV)
@@ -134,39 +179,34 @@ esac
 # 5027 - var not used
 # 2005 - level 2 comment
 
+# We can assume we have FPC at this stage, lets try for Lazarus.
 
-# We can assume we have FPC at this stage.
-
-
-	unzip "$MYREPO/Lazarus/upstream.zip";
-	mv lazarus-upstream trunk
-	LAZ_FULL_DIR="$PWD/trunk"
-	cd "$LAZ_FULL_DIR"
-	BuildLaz			# always build if its fresh
-	cd "$CURRENT_DIR"
-
-	if [ -a "$LAZ_FULL_DIR/lazbuild" ]; then 
-		echo "We have lazbuild"
-	else
-		echo "We do not have $LAZ_FULL_DIR/lazbuild - thats sad."
-		exit
-	fi
-
-
-
-# We can assume by here we have both FPC and Lazbuild
-echo "OK, we will get and build KControls"
+echo "--- Installing Lazarus ---" >> $HOME/build.log
+echo "--- Installing Lazarus ---"
 cd Pascal
-mv -f kcontrols.zip kcontrols.zip-old
-wget https://github.com/kryslt/KControls/archive/master.zip
-mv master.zip kcontrols.zip
-rm -Rf KControls-master
-unzip "$MYREPO/kcontrols.zip"
-mv kcontrols-master kcontrols
+unzip -q "$MYREPO/Lazarus/$LAZ_VER.zip"
+LAZ_FULL_DIR="$PWD/$LAZ_INT_NAME"
+cd "$LAZ_FULL_DIR"
+BuildLaz			
+cd "$CURRENT_DIR"
+if [ -a "$LAZ_FULL_DIR/lazbuild" ]; then 
+	echo "We have lazbuild"
+else
+	echo "We do not have $LAZ_FULL_DIR/lazbuild - thats sad."
+	exit
+fi
+echo "--- Installing KControls ---" >> $HOME/build.log
+# We can assume by here we have both FPC and Lazbuild
+cd "$CURRENT_DIR"
+echo "--- Installing KControls ---"
+cd Pascal
+unzip -q "$MYREPO/Lazarus/kcontrols.zip"
+mv KControls-master kcontrols
 cd "$K_DIR"
+
 LAZBUILD="$LAZ_FULL_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
 echo "Laz build command is $LAZBUILD"
-$LAZBUILD
+$LAZBUILD 2> KControls.log
 rm -Rf "$TEMPCONFDIR"
 if [ ! -e "$K_DIR/lib/$CPU-$OS/kmemo.o" ]; then
 	echo "ERROR failed to build KControls, exiting..."
@@ -186,8 +226,6 @@ echo "Exclude Compiler Messages = $EXCLUDEMESSAGE"
 echo "tomboy-ng version = $VERSION"
 echo "-------------------------------------------------------"
 
-
-
 # Test to see if we find the tomboy-ng source. 
 if [ ! -e "$SOURCE_DIR/editbox.pas" ]; then
 	echo "----------------------------------------------------------------"
@@ -197,23 +235,15 @@ if [ ! -e "$SOURCE_DIR/editbox.pas" ]; then
 	ShowHelp
 fi
 
-exit
+echo "In buildit.bash, ready to start building tomboy" >> "$HOME"/build.log
 
-
-
-
-
-
-
-
-
+# exit
 
 rm tomboy-ng
 cd $SOURCE_DIR
 
 # DEBUG options -O1,   (!) -CX, -g, -gl, -vewnhibq
 
-# OPT1="-MObjFPC -Scghi -CX -Cg -O3 -XX -Xs -l -vewnibq -vm6058,2005,5027 -Fi$SOURCE_DIR/lib/$TARGET"
 OPT1="-MObjFPC -Scghi -CX -Cg -O3 -XX -Xs -l -vewnibq $EXCLUDEMESSAGE -Fi$SOURCE_DIR/lib/$TARGET"
 
 UNITS="$UNITS -Fu$K_DIR/lib/$TARGET"
@@ -258,14 +288,13 @@ echo "--------------- COMPILE COMMAND ------------------------"
 echo "$RUNIT"
 echo "--------------------------------------------------------"
 
-
-
 TOMBOY_NG_VER="$VERSION" $RUNIT
 
 if [ ! -e "$PROJ" ]; then
 	echo "ERROR - COMPILE FAILED"
 else
-	cp "$PROJ" "$CURRENT_DIR"/tomboy-ng
+	cp "$PROJ" "tomboy-ng"
+	#cp "$PROJ" "$CURRENT_DIR/tomboy-ng$CPU"
 	cd "$CURRENT_DIR"
 	echo "OK, lets see how we got on "
 	ls -l
