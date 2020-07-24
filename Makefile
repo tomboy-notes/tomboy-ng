@@ -12,7 +12,8 @@ BIN_DIR = $(PREFIX)/bin
 PROGRAM_NAME=tomboy-ng
 MAN_DIR = $(PREFIX)/share/man/man1
 SHARE_DIR = $(PREFIX)/share
-DOC_DIR = $(SHARE_DIR)/doc/$(PROGRAM_NAME)
+DOC_DIR = $(SHARE_DIR)/$(PROGRAM_NAME)
+#DOC_DIR = $(SHARE_DIR)/doc/$(PROGRAM_NAME)
 HELP_DIR = $(DOC_DIR)/HELP
 HELP_EN_DIR = $(HELP_DIR)/EN
 HELP_ES_DIR = $(HELP_DIR)/ES
@@ -25,7 +26,7 @@ INSTALL_DATA    = $(INSTALL) -c -m 0644
 CP = cp -R
 
 tomboy-ngx86_64: 
-	bash ./buildit.bash
+	bash ./buildit.bash -d
 	@echo "====== Maybe we just compiled $(TBVER)"
 
 clean:

@@ -1,11 +1,15 @@
 #!/bin/bash
 # copyright David Bannon, 2019, 2020, use as you see fit, but retain this statement.
 #
-# -------------------------------------------------------------
-# Do not run this script, its under development.
-# -------------------------------------------------------------
-#
 # A script to build tomboy-ng from source without using the Lazarus GUI
+# It will download Lazarus (~50Meg) and KControls unless it finds them in
+# its nominated local repo (see -h).
+
+# It expects to find FPC (ideally 3.2.0) preinstalled.
+
+# While really intended to be part of a tool chain to build a Debian Source
+# package, its possibly useful as a standalone build tool.
+
 # You still need to get Lazarus LCL and various other parts of its package
 # and the easy (only?) way to get that is to download lazarus source but
 # you only need to build selected parts of it and don't need to activate 
@@ -39,13 +43,8 @@ LAZ_FULL_DIR="$PWD/Pascal/$LAZ_VER"
 K_DIR="$PWD/Pascal/kcontrols/packages/kcontrols"
 
 WIDGET="gtk2"				# untested with "qt5"
-# COMPILER="fpc"				# set an explicite path if you prefer, this needs to be on path
-COMPILER="/home/dbannon/bin/FPC/fpc-3.2.0/bin/fpc"    # ========  F I X  M E 
+COMPILER="fpc"   			# ========  F I X  M E 
 
-FPCPATH="/home/dbannon/bin/FPC/fpc-3.2.0/bin"
-
-PATH="/home/dbannon/bin/FPC/fpc-3.2.0/bin":"$PATH"
-export PATH
 
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
@@ -125,6 +124,28 @@ function NeededFiles () {
 	#  MUST ADD FPC to here ....
 }
 
+# ------------ It all starts here ---------------------
+
+COMPILER=`which xxx`
+if [ "$FPCCOMPILER" = "" ]; then
+	# If it the toolchain, and FPC is installed in user space, debuild kindly
+	# hides its path from us. The prepare.bash script may have left us a hint.
+	NEWPATH=`cat ../WHICHFPC | rev | cut -c -4 --complement | rev`
+else 
+	# Looks like we are running this script "by hand".
+	NEWPATH=`echo "$FPCCOMPILER" | rev | cut -c -4 --complement | rev`
+fi
+
+if [ "$NEWPATH" = "" ]; then
+	echo "Cannot find a free pascal compiler to use"
+	exit;
+fi
+
+echo "---- Add  $NEWPATH to existing PATH ----"
+PATH="$NEWPATH":"$PATH"
+export PATH
+NEWPATH=""
+FPCCOMPILER=""
 
 
 while getopts ":hdc:L:" opt; do

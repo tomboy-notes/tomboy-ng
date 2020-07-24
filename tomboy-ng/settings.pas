@@ -102,6 +102,7 @@ unit settings;
     2020/06/18  Removed unnecessary panel on Snap tab
     2020/07/09  New help notes location.
     2020/07/16  Drop Backup tab, merge to Snapshot tab, renamed 'Recover'
+    2020/07/24  Moved HELP notes from /usr/share/doc/tomboy-ng to /usr/share/tomboy-ng to suit debian
 }
 
 {$mode objfpc}{$H+}
@@ -1127,7 +1128,8 @@ var
     Info : TSearchRec;
 begin
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName)) + 'HELP' + PathDelim;{$endif}
-    {$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/HELP/';    {$endif}
+    //{$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/HELP/';    {$endif}
+    {$ifdef LINUX}  HelpNotesPath := '/usr/share/tomboy-ng/HELP/';    {$endif}
     {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/HELP/';{$endif}
     HelpNotesLang:= '';
     ComboHelpLanguage.enabled := False;

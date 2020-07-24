@@ -126,7 +126,7 @@ function DebianPackage () {
 	done;
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
-	cp -R ../doc/HELP BUILD/usr/share/doc/"$PRODUCT"/.
+	cp -R ../doc/HELP BUILD/usr/share/"$PRODUCT"/.
 	# -------------- Translation Files
 	# we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
 	# and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
