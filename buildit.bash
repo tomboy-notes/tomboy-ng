@@ -31,37 +31,31 @@ LAZ_INT_NAME="blar"
 CPU="x86_64"				# default x86_64, can be arm
 OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
-
 CURRENT_DIR=$PWD
-
 SOURCE_DIR="$PWD/tomboy-ng"      	
-
 TARGET="$CPU-$OS"
-
 LAZ_FULL_DIR="$PWD/Pascal/$LAZ_VER"
-
 K_DIR="$PWD/Pascal/kcontrols/packages/kcontrols"
-
 WIDGET="gtk2"				# untested with "qt5"
-COMPILER="fpc"   			# ========  F I X  M E 
-
-
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
 
 AUTODOWNLOAD=FALSE			# downloading large file, use -d to allow it
 
+# ------------------------ Some functions ------------------------
+
 function ShowHelp () {
     echo " "
-    echo "Assumes FPC of some sort available and working."
-    echo "Will look for Lazarus and KControls kits in repo," 
+    echo "Assumes FPC of some sort in path, available and working, ideally 3.2.0."
+    echo "Will look for Lazarus and KControls kits in repo, or download to it." 
     echo "David Bannon, July 2020" 
     echo "-h   print help message"
     echo "-c   specify CPU, default is x86_64, also supported arm"
     echo "-d   downloading large files as needed"
     echo "-r   repo where large files might be or can be put $MYREPO"
-    echo "-L   A lable for Lazaru version, trunk, lazarus-2.0.10-2"  
-    echo " "
+    echo "-L   A lable for Lazaru version, trunk or lazarus-2.0.10-2"  
+    echo "When used in SRC DEB toolchain, set these options in the Makefile."
+    echo ""
     exit
 }
 
@@ -144,9 +138,8 @@ fi
 echo "---- Add  $NEWPATH to existing PATH ----"
 PATH="$NEWPATH":"$PATH"
 export PATH
-NEWPATH=""
-FPCCOMPILER=""
 
+COMPILER="$NEWPATH""/fpc"
 
 while getopts ":hdc:L:" opt; do
   case $opt in
@@ -219,7 +212,7 @@ fi
 echo "--- Installing KControls ---" >> $HOME/build.log
 # We can assume by here we have both FPC and Lazbuild
 cd "$CURRENT_DIR"
-echo "--- Installing KControls ---"
+echo "----------------- Installing KControls -------------------------"
 cd Pascal
 unzip -q "$MYREPO/Lazarus/kcontrols.zip"
 mv KControls-master kcontrols
@@ -227,7 +220,7 @@ cd "$K_DIR"
 
 LAZBUILD="$LAZ_FULL_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
 echo "Laz build command is $LAZBUILD"
-$LAZBUILD 2> KControls.log
+$LAZBUILD 1> KControls.log
 rm -Rf "$TEMPCONFDIR"
 if [ ! -e "$K_DIR/lib/$CPU-$OS/kmemo.o" ]; then
 	echo "ERROR failed to build KControls, exiting..."
@@ -300,7 +293,7 @@ if [ -f "$PROJ" ]; then
     rm "$PROJ"
 fi
 
-echo "----- Building tomboy-ng in $PWD -------"
+echo "------------------- Building tomboy-ng in $PWD ----------------------"
 
 # echo "OPTS2 - $OPTS2"
 
@@ -312,12 +305,9 @@ echo "--------------------------------------------------------"
 TOMBOY_NG_VER="$VERSION" $RUNIT
 
 if [ ! -e "$PROJ" ]; then
-	echo "ERROR - COMPILE FAILED"
+	echo " =================  ERROR - COMPILE FAILED ======================"
 else
 	cp "$PROJ" "tomboy-ng"
-	#cp "$PROJ" "$CURRENT_DIR/tomboy-ng$CPU"
 	cd "$CURRENT_DIR"
-	echo "OK, lets see how we got on "
-	ls -l
 fi 
 
