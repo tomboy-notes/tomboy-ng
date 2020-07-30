@@ -149,7 +149,6 @@ object SearchForm: TSearchForm
       Top = 1
       Width = 582
       Anchors = [akTop, akLeft, akRight, akBottom]
-      AutoSortIndicator = True
       AutoWidthLastColumn = True
       BorderSpacing.Left = 3
       Columns = <      
@@ -157,9 +156,9 @@ object SearchForm: TSearchForm
         end      
         item
           Width = 530
-          SortIndicator = siAscending
         end>
       HideSelection = False
+      ParentShowHint = False
       ReadOnly = True
       RowSelect = True
       ScrollBars = ssAutoVertical

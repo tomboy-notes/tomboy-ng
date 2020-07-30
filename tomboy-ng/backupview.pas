@@ -36,6 +36,7 @@ unit BackupView;
     2018/08/27  Now change the ID of a deleted (but not overwritten) Note to avoid Sync issues
     2019/05/19  Display strings all (?) moved to resourcestrings
     2020/05/11  Restructure to do the backup note display and fiddling here.
+    2020/07/25  Tweak layout and select first note if there is one shown in the list.
 }
 
 {$mode objfpc}{$H+}
@@ -108,7 +109,9 @@ end;
 procedure TFormBackupView.FormShow(Sender: TObject);
 begin
     if RefreshBackup() = 0 then
-        Memo1.Append('We found no backup notes');
+        Memo1.Append('We found no backup notes')
+    else
+        ListBox1.ItemIndex:=0;
 end;
 
 function TFormBackupView.RefreshBackup() : integer;

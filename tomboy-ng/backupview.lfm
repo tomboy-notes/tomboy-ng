@@ -17,11 +17,14 @@ object FormBackupView: TFormBackupView
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Panel1
-    Left = 0
+    Left = 5
     Height = 168
-    Top = 275
-    Width = 587
+    Top = 270
+    Width = 575
     Anchors = [akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Right = 7
+    BorderSpacing.Bottom = 5
     Lines.Strings = (
       'Memo1'
     )
@@ -111,17 +114,21 @@ object FormBackupView: TFormBackupView
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Memo1
-    Left = 0
-    Height = 275
+    Left = 5
+    Height = 260
     Hint = 'Use Ctrl or Shift to select multiple entries'
-    Top = 0
-    Width = 587
+    Top = 5
+    Width = 577
     Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
     ItemHeight = 0
     MultiSelect = True
     OnSelectionChange = ListBox1SelectionChange
     ParentShowHint = False
-    ScrollWidth = 585
+    ScrollWidth = 575
     ShowHint = True
     TabOrder = 2
     TopIndex = -1

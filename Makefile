@@ -26,7 +26,7 @@ INSTALL_DATA    = $(INSTALL) -c -m 0644
 CP = cp -R
 
 tomboy-ngx86_64: 
-	bash ./buildit.bash -d
+	bash ./buildit.bash
 	@echo "====== Maybe we just compiled $(TBVER)"
 
 clean:

@@ -2,24 +2,37 @@
 # copyright David Bannon, 2019, 2020, use as you see fit, but retain this statement.
 #
 # A script to build tomboy-ng from source without using the Lazarus GUI
-# It will download Lazarus (~50Meg) and KControls unless it finds them in
-# its nominated local repo (see -h).
+#
+# tomboy-ng depends directly on fpc, lazbuild, lcl and kcontrols.
 
-# It expects to find FPC (ideally 3.2.0) preinstalled.
+# * Here we expect to find find FPC (ideally 3.2.0) preinstalled. Either on a path
+#   indicated by the file ../WHICHFPC or in the (roor space) PATH.  A path to a 
+#   user space fpc is not passed through the SRC Deb tool chain !
+# * Lazarus, first tries ../WHICHLAZ, next root space PATH. Thats likely to be a 
+#   problem because sensible Lazarus installs are, IMHO in user space.
+# * KControls is bundled into the deb source kit by prepare.bash, its not 
+#   present in the github zip file where tomboy-ng calls home. If building
+#   from a SRC Deb kit, kcontrols is already in the 'orig' tarball.    
 
 # While really intended to be part of a tool chain to build a Debian Source
-# package, its possibly useful as a standalone build tool.
+# package, its useful as a standalone build tool if all you want is the binary.
+# 
 
-# You still need to get Lazarus LCL and various other parts of its package
-# and the easy (only?) way to get that is to download lazarus source but
-# you only need to build selected parts of it and don't need to activate 
-# the GUI. As a prerequisite (for tomboy-ng) you need fpc (binutils, 
-# buildessencials) lazarus source (gtk2) and kcontrols source. 
-#
-# This is found and should be run, script will run in a dir called either 
-# tomboy-ng or tomboy-ng-master (from github) below it is a dir tomboy-ng 
-# that contains the *.pas and *.lfm files. Level with it are the po, docs, 
-# package etc directories 
+# This script runs in the upper tomboy-ng source tree (level with, eg Makefile).
+
+# If it finds files, WHICHFPC and WHICHLAZ in directory above, it uses them to
+# find its FPC Compiler and Lazarus things like lazbuild and the LCL directory.
+# Failing that, it tries to find above using the PATH.
+
+# Note that debuild does not pass existing path down here, it allows only a 
+# simplified root space one. So, fpc and lazarus installed in user space will
+# not work (in SRC DEB mode) unless you provide the WHICHFPC and WHICHLAZ 
+# paths to fpc and lazbuild respectivly.
+
+# The prepare.bash script will take a github zip file, unpack it, add kcontrols
+# and create the necessary ../WHICH* files if it can.  An optional script, 
+# getlaz.bash will build a minimal local lazarus and create its WHICHLAZ.
+
 
 
 # This is where I keep tarballs and zips to avoid repeated large downloads.
@@ -31,11 +44,10 @@ LAZ_INT_NAME="blar"
 CPU="x86_64"				# default x86_64, can be arm
 OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
-CURRENT_DIR=$PWD
+START_DIR=$PWD
 SOURCE_DIR="$PWD/tomboy-ng"      	
 TARGET="$CPU-$OS"
-LAZ_FULL_DIR="$PWD/Pascal/$LAZ_VER"
-K_DIR="$PWD/Pascal/kcontrols/packages/kcontrols"
+K_DIR="$PWD/kcontrols/packages/kcontrols"
 WIDGET="gtk2"				# untested with "qt5"
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
@@ -51,97 +63,57 @@ function ShowHelp () {
     echo "David Bannon, July 2020" 
     echo "-h   print help message"
     echo "-c   specify CPU, default is x86_64, also supported arm"
-    echo "-d   downloading large files as needed"
-    echo "-r   repo where large files might be or can be put $MYREPO"
-    echo "-L   A lable for Lazaru version, trunk or lazarus-2.0.10-2"  
-    echo "When used in SRC DEB toolchain, set these options in the Makefile."
+    echo "When used in SRC DEB toolchain, set -c (if necessary) options in the Makefile."
     echo ""
     exit
 }
 
-function BuildLaz () {    # builds only  lazbuild and LCL
-	echo "--- Building lazbuild in $LAZ_FULL_DIR ---"
-	cd "$LAZ_FULL_DIR"
-	make -j1 lazbuild 1> Lazbuild_log.txt
-	#env PATH="$FPCPATH":"$PATH" make -j1 lazbuild 1> Lazbuild_log.txt
-	if [ ! -e lazbuild ]; then
-		echo "========================================================="
-		echo "ERROR failed to build lazbuild, exiting ....."
-		echo "which fpc = "
-		which fpc
-		echo "pwd ="
-		pwd
-		LAZ_FULL_DIR=""
-		exit
-	fi
-	echo "--- Building LCL ---"
-	#env PATH="$FPCPATH":"$PATH" make -j1 lcl 1> LCL_log.txt
-	make -j1 lcl 1> LCL_log.txt
- 	LAZ_FULL_DIR=$PWD			# ToDo : must test that somehow......  
-}
-
-function NeededFiles () {
-	if [ ! -d "$MYREPO/Lazarus" ]; then
-		mkdir -p "$MYREPO/Lazarus"
-	fi
-	if [ ! -f "$MYREPO/Lazarus/$LAZ_VER.zip" ]; then
-		if [ "$AUTODOWNLOAD" = "FALSE" ]; then
-			echo "Auto download not turned on, need $LAZ_VER"
-			echo "looked in $MYREPO/Lazarus/$LAZ_VER.zip"
-			ShowHelp
+	# Looks to see if we have a viable fpc, exits if not
+function CheckFPC () {
+	if [ -f "../WHICHFPC" ]; then		# If existing, the msg files take precedance
+		COMP_DIR=`cat ../WHICHFPC | rev | cut -c -4 --complement | rev`
+		if [ ! -x "$COMP_DIR""/fpc" ]; then		
+			echo "Sorry, WHICHFPC is not a viable compiler"
+			echo "---------------------  EXITING ---------------------"
+			exit 1
+		fi
+		PATH="$COMP_DIR":"$PATH"
+		export PATH		
+	else
+		# OK, is it on path ?  This won't work in SRC Deb mode if its installed in user space
+		COMP_DIR=`which fpc | rev | cut -c -4 --complement | rev`
+		if [ ! -x "$COMP_DIR""/fpc" ]; then		
+			echo "Sorry, not finding a viable compiler"
+			echo "---------------------  EXITING ---------------------"
+			exit 1
 		fi
 	fi
-	case "$LAZ_VER" in
-		"trunk")
-			if [ ! -f "$MYREPO/Lazarus/$LAZ_VER.zip" ]; then
-				wget https://github.com/graemeg/lazarus/archive/upstream.zip 
-				mv upstream.zip "$MYREPO/Lazarus/trunk.zip"
-			fi
-			LAZ_INT_NAME="lazarus-upstream"
-			;;
-		"lazarus-2.0.10-2")
-			if [ ! -f "$MYREPO/Lazarus/$LAZ_VER.zip" ]; then
-				wget "https://sourceforge.net/projects/lazarus/files/Lazarus%20Zip%20_%20GZip/Lazarus%202.0.10/$LAZ_VER.zip"
-				mv "$LAZ_VER.zip" "$MYREPO/Lazarus/$LAZ_VER.zip"
-			fi
-			LAZ_INT_NAME="lazarus"
-			;;
-		*)
-			echo "Sorry, I dont know how to get $LAZ_VER, exiting"
-			exit
-			;;
-	esac
-	if [ ! -f "$MYREPO/Lazarus/kcontrols.zip" ]; then
-		wget https://github.com/kryslt/KControls/archive/master.zip
-		mv master.zip "$MYREPO/Lazarus/kcontrols.zip"
+	COMPILER="$COMP_DIR""/fpc"		# we will need that later
+}
+
+	# looks for a lazbuild, first in WHICHLAZ, then in PATH, failing exits.
+function CheckLazBuild () {
+	if [ -f "../WHICHLAZ" ]; then
+		LAZ_DIR=`cat ../WHICHLAZ | rev | cut -c -9 --complement | rev`
+		if [ ! -x "$LAZ_DIR""/lazbuild" ]; then
+			echo "Sorry, WHICHLAZ is not a viable lazarus install"
+			echo "---------------------  EXITING ---------------------"
+			exit 1		 
+		fi
+		PATH="$LAZ_DIR":"$PATH"
+		export PATH		
+	else
+		LAZ_DIR=`which lazbuild | rev | cut -c -9 --complement | rev`
 	fi
-	#  MUST ADD FPC to here ....
+	if [ ! -x "$LAZ_DIR""/lazbuild" ]; then
+		exit 1
+	fi 
 }
 
 # ------------ It all starts here ---------------------
 
-COMPILER=`which xxx`
-if [ "$FPCCOMPILER" = "" ]; then
-	# If it the toolchain, and FPC is installed in user space, debuild kindly
-	# hides its path from us. The prepare.bash script may have left us a hint.
-	NEWPATH=`cat ../WHICHFPC | rev | cut -c -4 --complement | rev`
-else 
-	# Looks like we are running this script "by hand".
-	NEWPATH=`echo "$FPCCOMPILER" | rev | cut -c -4 --complement | rev`
-fi
 
-if [ "$NEWPATH" = "" ]; then
-	echo "Cannot find a free pascal compiler to use"
-	exit;
-fi
-
-echo "---- Add  $NEWPATH to existing PATH ----"
-PATH="$NEWPATH":"$PATH"
-export PATH
-
-COMPILER="$NEWPATH""/fpc"
-
-while getopts ":hdc:L:" opt; do
+while getopts "hc:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -150,15 +122,6 @@ while getopts ":hdc:L:" opt; do
 	CPU="$OPTARG"
 	TARGET="$CPU-$OS"
 	;;
-    d)
-	AUTODOWNLOAD="TRUE"
-	;;
-    r)
-	MYREPO="$OPTARG"
-	;;
-    L)
-	LAZ_VER="$OPTARG"
-	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -166,14 +129,10 @@ while getopts ":hdc:L:" opt; do
   esac
 done
 
-echo "Starting buildit.bash" >> "$HOME"/build.log
+CheckFPC
+CheckLazBuild
 
-NeededFiles		# will download the needed files to a cache dir.
-
-rm -Rf Pascal
-mkdir -p Pascal
-
-# OK, do we have a good FPC available ?
+# OK, if to here, we have a fpc and lazbuild, but which FPC ?
 FPCVERSION=$($COMPILER -iV)
 case $FPCVERSION in
 	3.0.4)
@@ -185,7 +144,7 @@ case $FPCVERSION in
 	*)
 		echo "Compiler reported [$FPCVERSION]"
 		echo "Unclear about your compiler, maybe edit script to support new one, exiting ..."
-		exit
+		exit 1
 	;;
 esac
 
@@ -195,30 +154,9 @@ esac
 
 # We can assume we have FPC at this stage, lets try for Lazarus.
 
-echo "--- Installing Lazarus ---" >> $HOME/build.log
-echo "--- Installing Lazarus ---"
-cd Pascal
-unzip -q "$MYREPO/Lazarus/$LAZ_VER.zip"
-LAZ_FULL_DIR="$PWD/$LAZ_INT_NAME"
-cd "$LAZ_FULL_DIR"
-BuildLaz			
-cd "$CURRENT_DIR"
-if [ -a "$LAZ_FULL_DIR/lazbuild" ]; then 
-	echo "We have lazbuild"
-else
-	echo "We do not have $LAZ_FULL_DIR/lazbuild - thats sad."
-	exit
-fi
-echo "--- Installing KControls ---" >> $HOME/build.log
-# We can assume by here we have both FPC and Lazbuild
-cd "$CURRENT_DIR"
-echo "----------------- Installing KControls -------------------------"
-cd Pascal
-unzip -q "$MYREPO/Lazarus/kcontrols.zip"
-mv KControls-master kcontrols
-cd "$K_DIR"
+cd "$K_DIR"		# WARNING, kcontrols is not part of the github zip file, its added by prepare.bash
 
-LAZBUILD="$LAZ_FULL_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
+LAZBUILD="$LAZ_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_DIR kcontrolslaz.lpk"
 echo "Laz build command is $LAZBUILD"
 $LAZBUILD 1> KControls.log
 rm -Rf "$TEMPCONFDIR"
@@ -227,14 +165,18 @@ if [ ! -e "$K_DIR/lib/$CPU-$OS/kmemo.o" ]; then
 	K_DIR=""
 	exit
 fi
-cd "$CURRENT_DIR"
+cd "$START_DIR"
 
 VERSION=`cat "package/version"`
+
+COMPILER="fpc"
 
 echo "------------------------------------------------------"
 echo "OK, we seem to have both Lazarus LCL and KControls available : "
 echo "K_DIR = $K_DIR"
-echo "Lazarus   = $LAZ_FULL_DIR"
+echo "Lazarus   = $LAZ_DIR"
+echo "Compiler  = $COMPILER"
+echo "PATH      = $PATH"
 echo "CPU type = $CPU"
 echo "Exclude Compiler Messages = $EXCLUDEMESSAGE"
 echo "tomboy-ng version = $VERSION"
@@ -253,23 +195,23 @@ echo "In buildit.bash, ready to start building tomboy" >> "$HOME"/build.log
 
 # exit
 
-rm tomboy-ng
 cd $SOURCE_DIR
+rm tomboy-ng
 
 # DEBUG options -O1,   (!) -CX, -g, -gl, -vewnhibq
 
 OPT1="-MObjFPC -Scghi -CX -Cg -O3 -XX -Xs -l -vewnibq $EXCLUDEMESSAGE -Fi$SOURCE_DIR/lib/$TARGET"
 
 UNITS="$UNITS -Fu$K_DIR/lib/$TARGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/components/tdbf/lib/$TARGET/$WIDGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/components/printers/lib/$TARGET/$WIDGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/components/cairocanvas/lib/$TARGET/$WIDGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/components/lazcontrols/lib/$TARGET/$WIDGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/components/lazutils/lib/$TARGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/components/ideintf/units/$TARGET/$WIDGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/lcl/units/$TARGET/$WIDGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/lcl/units/$TARGET"
-UNITS="$UNITS -Fu$LAZ_FULL_DIR/packager/units/$TARGET"
+UNITS="$UNITS -Fu$LAZ_DIR/components/tdbf/lib/$TARGET/$WIDGET"
+UNITS="$UNITS -Fu$LAZ_DIR/components/printers/lib/$TARGET/$WIDGET"
+UNITS="$UNITS -Fu$LAZ_DIR/components/cairocanvas/lib/$TARGET/$WIDGET"
+UNITS="$UNITS -Fu$LAZ_DIR/components/lazcontrols/lib/$TARGET/$WIDGET"
+UNITS="$UNITS -Fu$LAZ_DIR/components/lazutils/lib/$TARGET"
+UNITS="$UNITS -Fu$LAZ_DIR/components/ideintf/units/$TARGET/$WIDGET"
+UNITS="$UNITS -Fu$LAZ_DIR/lcl/units/$TARGET/$WIDGET"
+UNITS="$UNITS -Fu$LAZ_DIR/lcl/units/$TARGET"
+UNITS="$UNITS -Fu$LAZ_DIR/packager/units/$TARGET"
 
 UNITS="$UNITS -Fu$SOURCE_DIR/"
 UNITS="$UNITS -FU$SOURCE_DIR/lib/$TARGET/" 
@@ -293,7 +235,7 @@ if [ -f "$PROJ" ]; then
     rm "$PROJ"
 fi
 
-echo "------------------- Building tomboy-ng in $PWD ----------------------"
+echo "----- Building tomboy-ng in $PWD -------"
 
 # echo "OPTS2 - $OPTS2"
 
@@ -305,9 +247,12 @@ echo "--------------------------------------------------------"
 TOMBOY_NG_VER="$VERSION" $RUNIT
 
 if [ ! -e "$PROJ" ]; then
-	echo " =================  ERROR - COMPILE FAILED ======================"
+	echo "ERROR - COMPILE FAILED"
 else
 	cp "$PROJ" "tomboy-ng"
-	cd "$CURRENT_DIR"
+	#cp "$PROJ" "$START_DIR/tomboy-ng$CPU"
+	cd "$START_DIR"
+	echo "OK, lets see how we got on "
+	ls -l
 fi 
 

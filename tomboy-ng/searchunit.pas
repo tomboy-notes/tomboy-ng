@@ -276,6 +276,7 @@ uses MainUnit,      // Opening form, manages startup and Menus
     sync,           // because we need it to manhandle local manifest when a file is deleted
     process,        // Linux, we call wmctrl to move note to current workspace
     NoteBook,
+    LCLVersion,     // used to enable, or not, sort indicators in lcl2.0.8 or later
     Tomdroid;
 
 
@@ -924,6 +925,12 @@ begin
     CreateMenus();
     IndexNotes();               // This could be a slow process, maybe a new thread ?
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
+
+    {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
+    ListViewNotes.AutoSortIndicator := True;
+    ListViewNotes.Column[1].SortIndicator := siAscending;
+    debugln('Using sort indicators');
+    {$endif}
 end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
@@ -1052,10 +1059,13 @@ end;
 
 { ListView Settings - AutoSort, AutoSortIndicator, AutoWidthLastColumn all true
   Make two columns, name them, leave autwith off, ReadOnly, RowSelect true
-  ScrollBars ssAutoVertical, ViewStyle vsReport. }
+  ScrollBars ssAutoVertical, ViewStyle vsReport.
+  Note that AutoSortIndicator and SortIndicator are not available in LCL2.0.6 and earlier
+  So, don't set them in the form, leave at default settings and set them in a
+  {if lcl > 2.0.6} structure.  Note, the IDE gets this wrong and greys lines out it should not.
+}
 
-procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
-		TemplateIs: AnsiString);
+procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string; TemplateIs: AnsiString);
 // Might be called with no Title (NewNote) or a Title with or without a Filename
 var
     EBox : TEditBoxForm;
@@ -1152,8 +1162,11 @@ begin
     ListViewNotes.Column[1].Width := Col1width;
     if ListViewNotes.ClientWidth > 100 then
         ListViewNotes.Column[0].Width := ListViewNotes.ClientWidth - Col1width;
+    // Note, next two lines require Lazarus 2.0.8 or greater !
+    {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
     ListViewNotes.Column[0].SortIndicator:= siNone;
     ListViewNotes.Column[1].SortIndicator:= siNone;
+    {$endif}
     // debugln('2...ScaleListView W=' + dbgs(ListViewNotes.Width) + ' Wc=' + dbgs(ListViewNotes.ClientWidth) + ' Wb= ' + dbgs(ListViewNotes.BorderWidth));
     //ListViewNotes.;
 end;

@@ -1136,9 +1136,11 @@ begin
     ComboHelpLanguage.Items.Clear;
 	if FindFirst(HelpNotesPath + '*', faDirectory, Info)=0 then begin
 		repeat
-          if (((Info.attr and faDirectory) > 0) and (Info.name[1] <> '.')) then
+          if (((Info.attr and faDirectory) > 0) and (Info.name[1] <> '.')) then begin
             ComboHelpLanguage.Items.Add(Info.Name);
-	    until FindNext(Info) <> 0;
+
+          end;
+        until FindNext(Info) <> 0;
 	end;
     FindClose(Info);
     if ComboHelpLanguage.Items.Count > 0 then begin
@@ -1147,7 +1149,7 @@ begin
             HelpNotesLang:= ComboHelpLanguage.Items[0]
         else HelpNotesLang:= 'EN';
     end;
-    // debugln('Help Notes Lang = [' + HelpNotesLang + ']');
+    ComboHelpLanguage.ItemIndex := ComboHelpLanguage.Items.IndexOf(HelpNotesLang);
 end;
 
 procedure TSett.ComboHelpLanguageChange(Sender: TObject);
