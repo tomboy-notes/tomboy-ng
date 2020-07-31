@@ -19,7 +19,7 @@
 PRODUCT="tomboy-ng"
 VERSION=`cat version`
 
-SOURCE_DIR="../tomboy-ng"
+SOURCE_DIR="../source"
 ICON_DIR="../glyphs"
 
 WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"

@@ -13,6 +13,43 @@
 APP="tomboy-ng"
 DEBEMAIL="tomboy-ng@bannons.id.au"
 VER="unknown"
+LAZ_BLD=""
+
+
+	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
+	# if in user space, because debuild will miss them, makes two files.
+function CheckFPC_LAZ () {
+	echo " ----- laz_bld is $LAZ_BLD --------"
+	FPC=`which fpc`
+	if [ -x "$FPC" ]; then
+		PREFIX="${FPC:0:4}"
+		if [ "$PREFIX" = "/usr" ]; then
+			echo "root space fpc, all good"
+		else
+			echo "Leaving a fpc file for buildit"
+			echo "$FPC" > WHICHFPC
+		fi
+	else
+		echo "----------- ERROR, no fpc found ------------"
+		exit 1
+	fi
+	if [ "$LAZ_BLD" = "" ]; then 	# we had better try to find it		
+		LAZ_BLD=`which lazbuild`
+	fi
+	if [ -x "$LAZ_BLD" ]; then
+		PREFIX="${LAZ_BLD:0:4}"
+		if [ "$PREFIX" = "/usr" ]; then
+			echo "root space Lazarus, all good"
+		else
+			echo "Leaving a lazbuild file for buildit"
+			echo "$LAZ_BLD" > WHICHLAZ
+		fi
+	else
+		echo " --- ERROR, no lazbuild found, try -l ? ---"
+		exit 1
+	fi
+}
+
 
 function KControls () {
 	wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
@@ -54,6 +91,8 @@ done
 
 
 if [ -f tomboy-ng-master.zip ]; then
+	echo " ----- laz_bld is $LAZ_BLD --------"
+	CheckFPC_LAZ
 	export DEBEMAIL
 	unzip -q tomboy-ng-master.zip
 	VER=`cat "$APP"-master/package/version`
@@ -62,17 +101,18 @@ if [ -f tomboy-ng-master.zip ]; then
 	cd "$APP"_"$VER"
 	rm -Rf experimental
 	rm -Rf patches
+	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537
 	dch --create --package=tomboy-ng --newversion="$VER" "Initial release of $VER, please see github for details."
 	dch --release "blar"
 	cd ..
 	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER"
-	which fpc > WHICHFPC
+	# which fpc > WHICHFPC
 	# echo "/usr/bin/fpc" > WHICHFPC
-	if [ "$LAZ_BLD" = "" ]; then
-		echo "No Lazarus specified, use getlaz.bash or create a valid a WHICHLAZ"
-	else
-		echo "$LAZ_BLD" > WHICHLAZ
-	fi
+	# if [ "$LAZ_BLD" = "" ]; then
+	#	echo "No Lazarus specified, use getlaz.bash or create a valid a WHICHLAZ"
+	#else
+	#	echo "$LAZ_BLD" > WHICHLAZ
+	#fi
 	echo "If no errrors, you should now cd ""$APP"_"$VER; debuild -us -uc"
 else
 	echo ""

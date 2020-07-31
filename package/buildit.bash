@@ -23,7 +23,7 @@ OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
 CURRENT_DIR=$PWD
 SOURCE_DIR="$PWD/tomboy-ng-master"
-COMPILE_DIR="$SOURCE_DIR/tomboy-ng"
+COMPILE_DIR="$SOURCE_DIR/source"
 
 TARGET="$CPU-$OS"
 #LAZ_FULL_DIR="$PWD/fixes_2_0"	# point to pre-existing copy if you like but don't rebuild it !!!!!! 

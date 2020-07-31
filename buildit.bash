@@ -3,13 +3,20 @@
 #
 # A script to build tomboy-ng from source without using the Lazarus GUI
 #
-# tomboy-ng depends directly on fpc, lazbuild, lcl and kcontrols.
+# tomboy-ng depends directly on fpc, lazbuild, lcl and kcontrols.  Because the 
+# package based install of fpc/lazarus is quite different to the popular
+# installs in user space, we need to allow for both. debuild does not pass the
+# user's PATH through so we need to allow for those user space installs.
 
-# * Here we expect to find find FPC (ideally 3.2.0) preinstalled. Either on a path
-#   indicated by the file ../WHICHFPC or in the (roor space) PATH.  A path to a 
-#   user space fpc is not passed through the SRC Deb tool chain !
-# * Lazarus, first tries ../WHICHLAZ, next root space PATH. Thats likely to be a 
-#   problem because sensible Lazarus installs are, IMHO in user space.
+# * We expect to find FPC (ideally 3.2.0, min 3.0.4) preinstalled. Either on a path
+#   indicated by the file ../WHICHFPC or PATH.  Only the ../WHICHFPC method will work
+#   if its installed in user space, fpc is not passed through the SRC Deb tool chain. 
+
+# * Lazarus, must find lazbuild, first tries ../WHICHLAZ, then PATH. 
+#   If lazbuild is in root space, then lcl is 
+#   probably pointed to by /etc/alteratives/lazarus.  If its user space, then
+#   we can assume lcl is in the same place as the lazbuild command itself.
+
 # * KControls is bundled into the deb source kit by prepare.bash, its not 
 #   present in the github zip file where tomboy-ng calls home. If building
 #   from a SRC Deb kit, kcontrols is already in the 'orig' tarball.    
@@ -20,18 +27,11 @@
 
 # This script runs in the upper tomboy-ng source tree (level with, eg Makefile).
 
-# If it finds files, WHICHFPC and WHICHLAZ in directory above, it uses them to
-# find its FPC Compiler and Lazarus things like lazbuild and the LCL directory.
-# Failing that, it tries to find above using the PATH.
-
-# Note that debuild does not pass existing path down here, it allows only a 
-# simplified root space one. So, fpc and lazarus installed in user space will
-# not work (in SRC DEB mode) unless you provide the WHICHFPC and WHICHLAZ 
-# paths to fpc and lazbuild respectivly.
-
+# The files, WHICHFPC and WHICHLAZ are in the directory above, while they can
+# created by hand, the script, prepare.bash will also do so if necessary.
 # The prepare.bash script will take a github zip file, unpack it, add kcontrols
-# and create the necessary ../WHICH* files if it can.  An optional script, 
-# getlaz.bash will build a minimal local lazarus and create its WHICHLAZ.
+# and create the necessary ../WHICH* files if it can.  (An optional script, 
+# getlaz.bash will build a minimal local lazarus and create its WHICHLAZ.)
 
 
 
@@ -45,7 +45,7 @@ CPU="x86_64"				# default x86_64, can be arm
 OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
 START_DIR=$PWD
-SOURCE_DIR="$PWD/tomboy-ng"      	
+SOURCE_DIR="$PWD/source"      	
 TARGET="$CPU-$OS"
 K_DIR="$PWD/kcontrols/packages/kcontrols"
 WIDGET="gtk2"				# untested with "qt5"
@@ -108,6 +108,14 @@ function CheckLazBuild () {
 	if [ ! -x "$LAZ_DIR""/lazbuild" ]; then
 		exit 1
 	fi 
+	# if LAZ_DIR starts with /usr then its installed in root space and we should
+	# assume that the lcl components are not 'along side' lazbuild.  In fact
+	# might be somewhere like /usr/lib/lazarus/2.0.8, should we assume its
+	# /etc/alternatives/lazarus ?
+	PREFIX="${LAZ_DIR:0:4}"
+	if [ "$PREFIX" = "/usr" ]; then
+		LAZ_DIR="/etc/alternatives/lazarus"
+	fi	
 }
 
 # ------------ It all starts here ---------------------
@@ -197,6 +205,10 @@ echo "In buildit.bash, ready to start building tomboy" >> "$HOME"/build.log
 
 cd $SOURCE_DIR
 rm tomboy-ng
+
+# Its necessary to call fpc directly here, lazbuild will not help us because kcontrols
+# is not in the location that the project file expects it to be. lazbuild does not
+# have an option to add an arbitary extra package location.
 
 # DEBUG options -O1,   (!) -CX, -g, -gl, -vewnhibq
 
