@@ -33,7 +33,7 @@ clean:
 	@echo "====== Nothing to clean, promise $(TBVER)"
 
 install: installdirs
-	$(INSTALL_PROGRAM)	tomboy-ng/tomboy-ng   	$(DESTDIR)$(BIN_DIR)/$(PROGRAM_NAME)
+	$(INSTALL_PROGRAM)	source/tomboy-ng   	$(DESTDIR)$(BIN_DIR)/$(PROGRAM_NAME)
 	$(INSTALL_DATA)		doc/tomboy-ng.1 	$(DESTDIR)$(MAN_DIR)/$(PROGRAM_NAME).1
 	$(CP)			doc/HELP		$(DESTDIR)$(DOC_DIR)/
 	$(CP)			glyphs/icons		$(DESTDIR)$(SHARE_DIR)/

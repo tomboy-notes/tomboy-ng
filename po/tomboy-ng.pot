@@ -37,27 +37,6 @@ msgstr ""
 msgid "Failed to index one or more notes."
 msgstr ""
 
-#: recover.rsallrestored
-msgctxt "recover.rsallrestored"
-msgid "Notes and config files Restored, restart suggested."
-msgstr ""
-
-#: recover.rsdeleteandreplace_1
-msgctxt "recover.rsdeleteandreplace_1"
-msgid "Notes at risk !"
-msgstr ""
-
-#: recover.rsdeleteandreplace_2
-#, object-pascal-format
-msgctxt "recover.rsdeleteandreplace_2"
-msgid "Delete all notes in %s and replace with snapshot dated %s ?"
-msgstr ""
-
-#: recover.rsnotesinsnap
-msgctxt "recover.rsnotesinsnap"
-msgid "Notes in Snapshot"
-msgstr ""
-
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"

@@ -54,7 +54,8 @@ function CheckFPC_LAZ () {
 function KControls () {
 	wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
 	unzip -q master.zip
-	mv KControls-master "$APP"_"$VER"/kcontrols
+	rm -f master.zip
+	mv KControls-master "$APP"_"$VER""-1"/kcontrols
 }
 
 function ShowHelp () {
@@ -96,16 +97,17 @@ if [ -f tomboy-ng-master.zip ]; then
 	export DEBEMAIL
 	unzip -q tomboy-ng-master.zip
 	VER=`cat "$APP"-master/package/version`
-	mv "$APP-master" "$APP"_"$VER"
+	mv "$APP-master" "$APP"_"$VER""-1"
 	KControls
-	cd "$APP"_"$VER"
+	cd "$APP"_"$VER""-1"
 	rm -Rf experimental
 	rm -Rf patches
 	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537
-	dch --create --package=tomboy-ng --newversion="$VER" "Initial release of $VER, please see github for details."
+	dch --create --package=tomboy-ng --newversion="$VER""-1" "Initial release. (Closes: #966537)"
+	dch --append "Please see github for change details"
 	dch --release "blar"
 	cd ..
-	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER"
+	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""-1"
 	# which fpc > WHICHFPC
 	# echo "/usr/bin/fpc" > WHICHFPC
 	# if [ "$LAZ_BLD" = "" ]; then
@@ -113,7 +115,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	#else
 	#	echo "$LAZ_BLD" > WHICHLAZ
 	#fi
-	echo "If no errrors, you should now cd ""$APP"_"$VER; debuild -us -uc"
+	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -us -uc"
 else
 	echo ""
 	echo "   Sorry, I cannot see a tomboy-ng-master.zip file. This"

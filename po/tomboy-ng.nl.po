@@ -50,28 +50,6 @@ msgstr "Versie"
 msgid "Failed to index one or more notes."
 msgstr "Kan één of meerdere notities niet indexeren."
 
-#: recover.rsallrestored
-msgctxt "recover.rsallrestored"
-msgid "Notes and config files Restored, restart suggested."
-msgstr "Notities en configuratiebestanden hersteld; herstart tomboy-ng."
-
-#: recover.rsdeleteandreplace_1
-msgctxt "recover.rsdeleteandreplace_1"
-msgid "Notes at risk !"
-msgstr "Beveiligingsprobleem!"
-
-#: recover.rsdeleteandreplace_2
-#, object-pascal-format, fuzzy, badformat
-#| msgid "Delete all notes in"
-msgctxt "recover.rsdeleteandreplace_2"
-msgid "Delete all notes in %s and replace with snapshot dated %s ?"
-msgstr "Wis alle notities in"
-
-#: recover.rsnotesinsnap
-msgctxt "recover.rsnotesinsnap"
-msgid "Notes in Snapshot"
-msgstr "Notities in momentopname"
-
 #: resourcestr.rsalldone
 #, fuzzy
 msgctxt "resourcestr.rsalldone"

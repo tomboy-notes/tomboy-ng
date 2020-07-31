@@ -117,16 +117,19 @@ function DebianPackage () {
 	#  BUILD/DEBIAN control,debian-binary and any scripts
 	rm -rf BUILD
 	mkdir -p BUILD/DEBIAN
-	mkdir BUILD/usr
-	mkdir BUILD/usr/bin
-	mkdir BUILD/usr/share
+	mkdir -p BUILD/usr/bin
+	mkdir -p BUILD/usr/share/"$PRODUCT"
 	for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
 		mkdir -p "BUILD/usr/share/icons/hicolor/$i/apps";
 		cp "$ICON_DIR/$i.png" "BUILD/usr/share/icons/hicolor/$i/apps/$PRODUCT.png";
 	done;
+	echo "------------- Done icons"
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
+	echo "------------- Done 1"
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
+	echo "------------- Done 2"
 	cp -R ../doc/HELP BUILD/usr/share/"$PRODUCT"/.
+	echo "------------- Done 3"
 	# -------------- Translation Files
 	# we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
 	# and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
@@ -147,7 +150,6 @@ function DebianPackage () {
 	mkdir -p BUILD/usr/share/man/man1
 	gzip -9kn ../doc/$PRODUCT.1
 	mv ../doc/$PRODUCT.1.gz BUILD/usr/share/man/man1/.
-
 	CTRL_ARCH="$1"
 	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl"
 	CTRL_RELEASE="GTK2 release."
@@ -224,7 +226,7 @@ function DoGZipping {
 	for TBVer in tomboy-ng32 tomboy-ng; do
 		rm -Rf "$GZIP_DIR"	
 		mkdir "$GZIP_DIR"
-		cp "../$PRODUCT/$TBVer" "$GZIP_DIR"/"$PRODUCT"
+		cp "$SOURCE_DIR"/"$TBVer" "$GZIP_DIR"/"$PRODUCT"
 		for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
 			cp "$ICON_DIR/$i.png" "$GZIP_DIR/$i.png"
 		done;
@@ -249,8 +251,8 @@ function MkWinPreInstaller() {
 	# Make a dir containing everything we need to make a 32/64bit Inno Setup installer for Windows
 	rm -Rf "$WIN_DIR"
 	mkdir "$WIN_DIR"
-	cp ../tomboy-ng/tomboy-ng64.exe "$WIN_DIR/."
-	cp ../tomboy-ng/tomboy-ng32.exe "$WIN_DIR"/.
+	cp "$SOURCE_DIR"/tomboy-ng64.exe "$WIN_DIR/."
+	cp "$SOURCE_DIR"/tomboy-ng32.exe "$WIN_DIR"/.
 	# cp ../../DLL/* "$WIN_DIR"/.
 	cp ../../DLL/libhunspell.dll "$WIN_DIR/."
 	cp ../../DLL/libhunspell.license "$WIN_DIR/."

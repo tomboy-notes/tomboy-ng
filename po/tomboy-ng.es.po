@@ -52,29 +52,6 @@ msgstr "Versión"
 msgid "Failed to index one or more notes."
 msgstr "tomboy-ng no pudo indizar una nota o más."
 
-#: recover.rsallrestored
-msgctxt "recover.rsallrestored"
-msgid "Notes and config files Restored, restart suggested."
-msgstr "Notas y configuración restablecidos. Se recomienda reiniciar."
-
-#: recover.rsdeleteandreplace_1
-msgctxt "recover.rsdeleteandreplace_1"
-msgid "Notes at risk !"
-msgstr "¡Notas en peligro!"
-
-#: recover.rsdeleteandreplace_2
-#, object-pascal-format, fuzzy, badformat
-#| msgid "Delete all notes in"
-msgctxt "recover.rsdeleteandreplace_2"
-msgid "Delete all notes in %s and replace with snapshot dated %s ?"
-msgstr "Eliminar todas las notas en"
-
-# ¿Número variable antes o etiqueta de pestaña?
-#: recover.rsnotesinsnap
-msgctxt "recover.rsnotesinsnap"
-msgid "Notes in Snapshot"
-msgstr "Notas en la instantánea"
-
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"
