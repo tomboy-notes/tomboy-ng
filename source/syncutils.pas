@@ -11,6 +11,7 @@ unit syncutils;
     2019/06/07  Don't check for old sync dir model, for 0 its the same !
     2019/07/19  Added ability to escape ' and " selectivly, attributes ONLY
     2020/04/24  Make debugln use dependent on LCL, now can be FPC only unit
+    2020/08/01  Can now handle 'Zulu' datestrs, ones without timezone, with 'Z'
 }
 {$mode objfpc}{$H+}
 
@@ -351,28 +352,6 @@ begin
     Result := PNoteInfo(inherited get(Index));
 end;
 
-function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
-begin
-    ErrorMsg := '';
-    if length(DateStr) <> 33 then begin
-        ErrorMsg := 'Date String wrong length';
-        DateTime := 0.0;
-        exit(False);
-    end;
-    DateTime := GetGMTFromStr(DateStr);
-    if DateTime < 1.0 then begin
-        ErrorMsg := 'Invalid Date String';
-        exit(False);
-    end;
-    if (DateTime > (now() + 36500)) or (DateTime < (Now() - 36500))  then begin
-        ErrorMsg := 'Date beyond expected range';
-        DateTime := 0.0;
-        exit(False);
-    end;
- 		// TDateTime has integer part, no. of days, fraction part is fraction of day.
-		// 100years ago or in future - Fail !
-    exit(True);
-end;
 
 function GetRevisionDirPath(ServerPath: string; Rev: integer; NoteID : string = ''): string;
 begin
@@ -415,6 +394,53 @@ begin
                    + FormatDateTime('hh:mm:ss.zzz"0000+00:00"',Temp);
 end;
 
+{ This function is used if we get a datetime str in UTC format, no time
+  zone specified, just a 'Z'. The time is already in GMT.  Gnote gives
+  us 6 decimal places after second but we can cope with nany. Must have
+  yyyy-mm-ddThh:mm:ssZ and opt .nnn.. between 'ss and 'Z' }
+function GetZuluDateTime(const  DateStr: ANSIString): TDateTime;
+var
+    Tstr : string = '';
+    MilliSeconds : TDateTime = 0.0;
+    Places : integer;
+begin
+    result := 0.0;
+    if pos('Z', DateStr) < 1 then exit(0);
+    if pos('.', DateStr) > 0 then begin                     // we make no assumption about number of decimal places in mSec
+        Places := pos('Z', DateStr) - pos('.', DateStr) -1;
+        if Places > 3 then Places := 3;
+        if Places > 0 then begin
+        Tstr := copy(DateStr, pos('.', DateStr)+1, Places);      // note, only 3 places of mSec are read
+        if TStr <> '' then
+            try
+                while Places < 3 do begin TStr := TStr + '0'; inc(Places); end;
+                debugln('TStr = ' + TStr);
+                if not TryEncodeTimeInterval(0, 0, 0, strtoint(TStr), MilliSeconds) then	// Hour, Min, Sec, mSec, outVar
+                    {$ifdef LCL}Debugln{$else}writeln{$endif}('Fail on interval encode ');
+            except on EConvertError do begin
+    	            {$ifdef LCL}Debugln{$else}writeln{$endif}('FAIL on converting time interval ' + DateStr);
+                    {$ifdef LCL}Debugln{$else}writeln{$endif}('Hour ', copy(DateStr, 29, 2), ' minutes ', copy(DateStr, 32, 2));
+	            end;
+            end;
+        end;
+    end;
+    try
+        if not TryEncodeDateTime(
+            strtoint(copy(DateStr, 1, 4)),   	        // Year
+            strtoint(copy(DateStr, 6, 2)),              // Month
+            strtoint(copy(DateStr, 9, 2)),				// Day
+            strtoint(copy(DateStr, 12, 2)),				// Hour
+            strtoint(copy(DateStr, 15, 2)),				// Minutes
+            strtoint(copy(DateStr, 18, 2)),				// Seconds
+            0,	Result)  then
+                {$ifdef LCL}Debugln{$else}writeln{$endif}('Fail on date time encode ');
+    except on EConvertError do begin
+        {$ifdef LCL}Debugln{$else}writeln{$endif}('FAIL on converting date time ' + DateStr);
+        exit(0.0);
+        end;
+    end;
+    Result := Result + milliSeconds;
+end;
 
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 var
@@ -422,6 +448,7 @@ var
 begin
     if DateStr = '' then exit(0);                // Empty string
     // A date string should look like this -     2018-01-27T17:13:03.1230000+11:00 33 characters !
+    // But from GNote looks like this            2018-01-27T17:13:03.123000Z 27 char, Zulu time, one less dec second digit, its GMT
     if length(DateStr) <> 33 then begin
         {$ifdef LCL}Debugln{$else}writeln{$endif}('ERROR received invalid date string - [' + DateStr + ']');
         exit(0);
@@ -463,6 +490,33 @@ begin
     	end;
     end;
     { writeln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
+end;
+
+function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
+begin
+    ErrorMsg := '';
+    if length(DateStr) = 33 then                // This is the Tomboy standard
+        DateTime := GetGMTFromStr(DateStr)
+    else if  pos('Z', DateStr) > 0 then
+        DateTime := GetZuluDateTime(DateStr)        // Gnote does this
+        else begin
+            ErrorMsg := 'Date String wrong length';
+            DateTime := 0.0;
+            exit(False);
+        end;
+    // if to here, we have at least tried to convert it.
+    if DateTime < 1.0 then begin
+        ErrorMsg := 'Invalid Date String';
+        exit(False);
+    end;
+    if (DateTime > (now() + 36500)) or (DateTime < (Now() - 36500))  then begin
+        ErrorMsg := 'Date beyond expected range';
+        DateTime := 0.0;
+        exit(False);
+    end;
+ 		// TDateTime has integer part, no. of days, fraction part is fraction of day.
+		// 100years ago or in future - Fail !
+    exit(True);
 end;
 
 end.

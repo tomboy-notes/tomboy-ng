@@ -65,6 +65,7 @@ unit Note_Lister;
     2020/04/19  Missing $H+ caused  255 char default string, messed with RewriteBadChangeDate()
     2020/05/10  Multithreaded search
     2020/05/25  Don't read sett.checkcasesensitive in thread.
+    2020/08/01  Disable code to rewrite short lcd.
 }
 
 {$mode objfpc}  {$H+}
@@ -827,14 +828,14 @@ begin
 	        try
                 NoteP^.ID:=FileName;
 
-                repeat
+//                repeat
 	                ReadXMLFile(Doc, Dir + FileName);
 	  	            Node := Doc.DocumentElement.FindNode('title');
 	      	        NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
 	                    //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
 	                Node := Doc.DocumentElement.FindNode('last-change-date');
 	                NoteP^.LastChange := Node.FirstChild.NodeValue;
-	                if (length(NoteP^.LastChange) <> 33) {and DebugMode} then begin
+	                {if (length(NoteP^.LastChange) <> 33) or (length(NoteP^.LastChange) <> 27) {and DebugMode} then begin
 	                    RewriteBadChangeDate(Dir, FileName, NoteP^.LastChange);
                         inc(TryCount);
                         if TryCount > 2 then begin
@@ -844,13 +845,17 @@ begin
                         Doc.free;
 					end else
                         break;
-				until false;
+				until false;          }
 
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
-                Node := Doc.DocumentElement.FindNode('open-on-startup');
-                NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
+                try                                                     // this because GNote leaves out 'open-on-startup' !
+                    Node := Doc.DocumentElement.FindNode('open-on-startup');
+                    NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
+                except on E: EObjectCheck do
+                    NoteP^.OpenOnStart:= False;
+                end;
                 Node := Doc.DocumentElement.FindNode('tags');
                 if Assigned(Node) then begin
                     for J := 0 to Node.ChildNodes.Count-1 do
