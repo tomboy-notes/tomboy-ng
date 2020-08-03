@@ -14,19 +14,20 @@ APP="tomboy-ng"
 DEBEMAIL="tomboy-ng@bannons.id.au"
 VER="unknown"
 LAZ_BLD=""
+UFILES="NO"	# debug tool, update Makefile
+CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
 
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
 	# if in user space, because debuild will miss them, makes two files.
 function CheckFPC_LAZ () {
-	echo " ----- laz_bld is $LAZ_BLD --------"
 	FPC=`which fpc`
 	if [ -x "$FPC" ]; then
 		PREFIX="${FPC:0:4}"
 		if [ "$PREFIX" = "/usr" ]; then
-			echo "root space fpc, all good"
+			echo "---------- root space fpc, all good"
 		else
-			echo "Leaving a fpc file for buildit"
+			echo "---------- Leaving a fpc file for buildit"
 			echo "$FPC" > WHICHFPC
 		fi
 	else
@@ -39,9 +40,9 @@ function CheckFPC_LAZ () {
 	if [ -x "$LAZ_BLD" ]; then
 		PREFIX="${LAZ_BLD:0:4}"
 		if [ "$PREFIX" = "/usr" ]; then
-			echo "root space Lazarus, all good"
+			echo "---------- root space Lazarus, all good"
 		else
-			echo "Leaving a lazbuild file for buildit"
+			echo "---------- Leaving a lazbuild file for buildit"
 			echo "$LAZ_BLD" > WHICHLAZ
 		fi
 	else
@@ -50,11 +51,31 @@ function CheckFPC_LAZ () {
 	fi
 }
 
+	# Here we remove file that are not needed in the Debian SRC kit.
+function CleanSource () {
+	rm -Rf experimental
+	rm -Rf patches
+	rm -Rf doc/gallery
+	rm -Rf doc/html
+	rm -Rf doc/wiki
+	rm -Rf po/*.mo
+	rm -f  doc/*.svg doc/*.png doc/*.note
+	rm -f  glyphs/*.png glyphs/*.ico glyphs/*.svg glyphs/*.icns
+	rm -fR glyphs/help
+	rm -fR glyphs/demos
+	rm -fR kcontrols/demos 
+	rm -fR kcontrols/help
+}
 
-function KControls () {
-	wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
+
+function KControls () {	
+	if [ -e "master.zip" ]; then
+		echo "Warning, reusing KControls zip"
+	else
+		wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
+	fi
 	unzip -q master.zip
-	rm -f master.zip
+	# rm -f master.zip
 	mv KControls-master "$APP"_"$VER""-1"/kcontrols
 }
 
@@ -66,21 +87,30 @@ function ShowHelp () {
     echo "-h   print help message"
 #    echo "-c   specify CPU, default is x86_64, also supported arm"
     echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
-    echo "This script is useful in the SRC Deb tool chain only for creating the."
-    echo "initial tarball and working directory. Specify a lazbuild to use or"
-    echo "next use getlaz.bash to build a minimal laz install to use."
+    echo "-C   clean out deb files from previous run, debug use only."
+    echo "-U   update Makefile and/or buildit.bash,   debug use only."
+    echo "This script is useful in the SRC Deb tool chain but only for creating the"
+    echo "initial tarball and working directory. Specify a full lazbuild location (-l)"
+    echo "if Lazarus is not installed in root space."
     echo ""
+    echo "Davo uses:  bash ./prepare.bash -l /home/dbannon/bin/Lazarus/trunk/lazbuild -UC"
     exit
 }
 
 
-while getopts ":hdc:L:l:" opt; do
+while getopts "hUCl:" opt; do
   case $opt in
     h)
       ShowHelp
       ;;
     l)
 	LAZ_BLD="$OPTARG"
+	;;
+    U)
+	UFILES="YES"
+	;;
+    C)
+	CLEAN="YES"
 	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -89,32 +119,48 @@ while getopts ":hdc:L:l:" opt; do
   esac
 done
 
+echo "---------- laz_bld is $LAZ_BLD"
+echo "---------- CLEAN is $CLEAN"
+echo "---------- UFILES is $UFILES"
 
+rm -f WHICHFPC WHICHLAZ		
 
 if [ -f tomboy-ng-master.zip ]; then
-	echo " ----- laz_bld is $LAZ_BLD --------"
 	CheckFPC_LAZ
 	export DEBEMAIL
 	unzip -q tomboy-ng-master.zip
+	if [ "$UFILES" = "YES" ]; then
+		if [ "Makefile" -nt "tomboy-ng-master/Makefile" ]; then
+			echo "---------- UPDATING Makefile"
+			cp Makefile tomboy-ng-master/Makefile
+		fi
+		if [ "buildit.bash" -nt "tomboy-ng-master/buildit.bash" ]; then
+			echo "---------- UPDATING buildit.bash"
+			cp buildit.bash tomboy-ng-master/buildit.bash
+		fi
+	fi
 	VER=`cat "$APP"-master/package/version`
+	if [ "$CLEAN" = "YES" ]; then
+		echo "---------- Removing existing DEB files"
+		rm -Rf "$APP"_"$VER""-1"
+		rm -f "tomboy-ng_""$VER"".orig.tar.gz"
+		rm -f "tomboy-ng_$VER-1_amd64.buildinfo"
+		rm -f "tomboy-ng_$VER-1_amd64.changes"
+       		rm -f "tomboy-ng_$VER-1_amd64.deb"
+ 		rm -f "tomboy-ng_$VER-1.debian.tar.xz"
+		rm -f "tomboy-ng_$VER-1.dsc"
+		rm -f "tomboy-ng_$VER.orig.tar.gz"
+	fi
 	mv "$APP-master" "$APP"_"$VER""-1"
 	KControls
 	cd "$APP"_"$VER""-1"
-	rm -Rf experimental
-	rm -Rf patches
+	CleanSource
 	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537
 	dch --create --package=tomboy-ng --newversion="$VER""-1" "Initial release. (Closes: #966537)"
 	dch --append "Please see github for change details"
 	dch --release "blar"
 	cd ..
 	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""-1"
-	# which fpc > WHICHFPC
-	# echo "/usr/bin/fpc" > WHICHFPC
-	# if [ "$LAZ_BLD" = "" ]; then
-	#	echo "No Lazarus specified, use getlaz.bash or create a valid a WHICHLAZ"
-	#else
-	#	echo "$LAZ_BLD" > WHICHLAZ
-	#fi
 	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -us -uc"
 else
 	echo ""

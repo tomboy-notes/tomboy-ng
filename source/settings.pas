@@ -103,6 +103,7 @@ unit settings;
     2020/07/09  New help notes location.
     2020/07/16  Drop Backup tab, merge to Snapshot tab, renamed 'Recover'
     2020/07/24  Moved HELP notes from /usr/share/doc/tomboy-ng to /usr/share/tomboy-ng to suit debian
+    2020/08/01  Show better labels in HelpLangCombo
 }
 
 {$mode objfpc}{$H+}
@@ -272,17 +273,19 @@ type
         procedure CheckSpelling(const DicFullName: string='');
         procedure DicDefaults(var DicPathAlt: string);
         procedure DoAutoSnapshot;
-        // Returns a good place to save config or user requested place if on cmdline,
+                            // Returns a good place to save config or user requested place if on cmdline,
         function GetDefaultConfigDir: string;
-        // Returns the default place to store notes. It may not be present.
+                            // Returns the default place to store notes. It may not be present.
         function GetDefaultNoteDir: string;
                             // Has a list of possible fixed font names, returns the first that 'works'.
         function GetFixedFont(): string;
         function MyBoolStr(const InBool: boolean) : string;
 
         procedure SetFontSizes;
-        // Saves all current settings to disk. Call when any change is made. If unable
-        // to write to disk, returns False, If IgnoreMask, writes even if masked.
+                            // Uses value of HelpNotesLang to make the Combobox agree.
+        procedure SetHelpLanguage();
+                            // Saves all current settings to disk. Call when any change is made. If unable
+                            // to write to disk, returns False, If IgnoreMask, writes even if masked.
         function SettingsChanged(IgnoreMask : boolean = false): boolean;
 		function fGetValidSync: string;
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
@@ -852,9 +855,6 @@ end;
 procedure TSett.CheckConfigFile;
 var
     ConfigFile : TINIFile;
-    TempHelpNotesLang : string;
-    //telltail : boolean;
-    //ReqFontSize, SyncType : ANSIString;
 begin
     if not CheckDirectory(LocalConfig) then exit;
     if fileexists(LabelSettingPath.Caption) then begin
@@ -899,13 +899,9 @@ begin
             TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
             UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
             // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
-            TempHelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
-            if HelpNotesLang <> TempHelpNotesLang then begin
-                if ComboHelpLanguage.Items.IndexOf(TempHelpNotesLang) > -1 then begin
-                    ComboHelpLanguage.ItemIndex := ComboHelpLanguage.Items.IndexOf(TempHelpNotesLang);
-                    HelpNotesLang := TempHelpNotesLang;
-                end;
-            end;
+            HelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
+            SetHelpLanguage();
+
             // ------------------  S Y N C   S E T T I N G S --------------------------
             case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
                 'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
@@ -1123,9 +1119,24 @@ begin
     end;
 end;
 
+
+procedure TSett.SetHelpLanguage();
+var
+    HelpIndex : integer = 0;
+begin
+    while HelpIndex < ComboHelpLanguage.Items.Count do begin
+        if HelpNotesLang = copy(ComboHelpLanguage.Items[HelpIndex], 1, 2) then begin
+            ComboHelpLanguage.ItemIndex := HelpIndex;
+            break;
+        end;
+        inc(HelpIndex);
+    end;
+end;
+
 procedure TSett.LoadHelpLanguages();
 var
     Info : TSearchRec;
+
 begin
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName)) + 'HELP' + PathDelim;{$endif}
     //{$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/HELP/';    {$endif}
@@ -1137,25 +1148,30 @@ begin
 	if FindFirst(HelpNotesPath + '*', faDirectory, Info)=0 then begin
 		repeat
           if (((Info.attr and faDirectory) > 0) and (Info.name[1] <> '.')) then begin
-            ComboHelpLanguage.Items.Add(Info.Name);
-
+              case Info.Name of
+                  'EN' : ComboHelpLanguage.Items.Add('EN - English');
+                  'ES' : ComboHelpLanguage.Items.Add('ES - Español');
+              else
+                    ComboHelpLanguage.Items.Add(Info.Name);
+              end;
           end;
         until FindNext(Info) <> 0;
 	end;
     FindClose(Info);
     if ComboHelpLanguage.Items.Count > 0 then begin
         ComboHelpLanguage.enabled := True;
-        if  ComboHelpLanguage.Items.IndexOf('EN') < 0 then      // default to EN if present, else first found.
-            HelpNotesLang:= ComboHelpLanguage.Items[0]
+        if  ComboHelpLanguage.Items.IndexOf('EN - English') < 0 then      // default to EN if present, else first found.
+            HelpNotesLang:= copy(ComboHelpLanguage.Items[0], 1, 2)
         else HelpNotesLang:= 'EN';
     end;
-    ComboHelpLanguage.ItemIndex := ComboHelpLanguage.Items.IndexOf(HelpNotesLang);
+    SetHelpLanguage();
+    //ComboHelpLanguage.ItemIndex := ComboHelpLanguage.Items.IndexOf(HelpNotesLang);
 end;
 
 procedure TSett.ComboHelpLanguageChange(Sender: TObject);
 begin
     if ComboHelpLanguage.ItemIndex > -1 then begin
-        HelpNotesLang:= ComboHelpLanguage.Items[ComboHelpLanguage.ItemIndex];
+        HelpNotesLang:= copy(ComboHelpLanguage.Items[ComboHelpLanguage.ItemIndex], 1, 2);
         SettingsChanged();
         SearchForm.RefreshMenus(mkHelpMenu);
     end;

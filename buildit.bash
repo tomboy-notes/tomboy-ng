@@ -65,7 +65,7 @@ function ShowHelp () {
     echo "-c   specify CPU, default is x86_64, also supported arm"
     echo "When used in SRC DEB toolchain, set -c (if necessary) options in the Makefile."
     echo ""
-    exit
+    exit 1
 }
 
 	# Looks to see if we have a viable fpc, exits if not
@@ -106,6 +106,7 @@ function CheckLazBuild () {
 		LAZ_DIR=`which lazbuild | rev | cut -c -9 --complement | rev`
 	fi
 	if [ ! -x "$LAZ_DIR""/lazbuild" ]; then
+		echo "---------- ERROR, cannot find lazbuild ----------"
 		exit 1
 	fi 
 	# if LAZ_DIR starts with /usr then its installed in root space and we should
@@ -116,6 +117,7 @@ function CheckLazBuild () {
 	if [ "$PREFIX" = "/usr" ]; then
 		LAZ_DIR="/etc/alternatives/lazarus"
 	fi	
+
 }
 
 # ------------ It all starts here ---------------------
@@ -171,7 +173,7 @@ rm -Rf "$TEMPCONFDIR"
 if [ ! -e "$K_DIR/lib/$CPU-$OS/kmemo.o" ]; then
 	echo "ERROR failed to build KControls, exiting..."
 	K_DIR=""
-	exit
+	exit 1
 fi
 cd "$START_DIR"
 
@@ -188,7 +190,7 @@ echo "PATH      = $PATH"
 echo "CPU type = $CPU"
 echo "Exclude Compiler Messages = $EXCLUDEMESSAGE"
 echo "tomboy-ng version = $VERSION"
-echo "-------------------------------------------------------"
+# echo "-------------------------------------------------------"
 
 # Test to see if we find the tomboy-ng source. 
 if [ ! -e "$SOURCE_DIR/editbox.pas" ]; then
@@ -201,10 +203,7 @@ fi
 
 echo "In buildit.bash, ready to start building tomboy" >> "$HOME"/build.log
 
-# exit
-
 cd $SOURCE_DIR
-rm tomboy-ng
 
 # Its necessary to call fpc directly here, lazbuild will not help us because kcontrols
 # is not in the location that the project file expects it to be. lazbuild does not
@@ -230,41 +229,32 @@ UNITS="$UNITS -FU$SOURCE_DIR/lib/$TARGET/"
 
 OPTS2=" -dLCL -dLCL$WIDGET" 
 DEFS="-dDisableLCLGIF -dDisableLCLJPEG -dDisableLCLPNM -dDisableLCLTIFF"
-# reported to reduce binary size but made no difference for me
-# http://wiki.lazarus.freepascal.org/Lazarus_2.0.0_release_notes#Compiler_defines_to_exclude_some_graphics_support
 
 
 # We must force a clean compile, no make looking after us here.
-# I have not found a way of telling the compiler to write its .o and .ppu files
-# somewhere else so not to compete with Lazarus, but both this script and Lazarus
-# is quite happy to write new ones whenever needed. So, flush it clean. 
-if [ -d "lib/$TARGET" ]; then
-    rm -Rf "lib/$TARGET"
-fi
+# I have not found a way of telling the compiler to write its .o and .ppu files 
+# somewhere else so not to compete with an existing Lazarus, but both this script 
+# and Lazarus is quite happy to write new ones whenever needed. So, flush it clean. 
+
+rm -Rf "lib/$TARGET"
+rm -f tomboy-ng
+rm -f "$PROJ"
 mkdir -p "lib/$TARGET"
 
-if [ -f "$PROJ" ]; then
-    rm "$PROJ"
-fi
-
-echo "----- Building tomboy-ng in $PWD -------"
-
+# echo "----- Building tomboy-ng in $PWD -------"
 # echo "OPTS2 - $OPTS2"
 
 RUNIT="$COMPILER $OPT1 $UNITS $OPT2 $DEFS $PROJ.lpr"
 echo "--------------- COMPILE COMMAND ------------------------"
-echo "$RUNIT"
-echo "--------------------------------------------------------"
+echo "$RUNIT" 
 
-TOMBOY_NG_VER="$VERSION" $RUNIT
+TOMBOY_NG_VER="$VERSION" $RUNIT 1>tomboy-ng.log
 
 if [ ! -e "$PROJ" ]; then
-	echo "ERROR - COMPILE FAILED"
+	echo "ERROR - COMPILE FAILED, please see source/tomboy-ng.log"
+	exit 1
 else
 	cp "$PROJ" "tomboy-ng"
-	#cp "$PROJ" "$START_DIR/tomboy-ng$CPU"
-	cd "$START_DIR"
-	echo "OK, lets see how we got on "
-	ls -l
 fi 
+exit 0
 
