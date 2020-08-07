@@ -2,16 +2,22 @@
 # copyright David Bannon, 2019, 2020, use as you see fit, but retain this statement.
 #
 
-# This script takes a master.zip file from github, tomboy-ng
-# and prepares things to build it into source deb
-# Move both a fresh master.zip and this script into a clean
-# subdirectory, run the script, change to tomboy-ng.{ver}
-# and run debuilder -us -uc
+# This script takes a tomboy-ng zip file from github, and prepares things to
+# build it a source deb or just run buildit.bash to make a tomboy-ng binary"
+# Hardwired data in this script are specific to the Deb source build.
+
+# Move both a fresh tomboy-ng-master.zip and this script into a clean
+# subdirectory, run the script, change to tomboy-ng.{ver} and run -
+#
+#      debuilder -us -uc      if thats OK, then repeat with -
+#      debuilder -S
+#      dput ppa:d-bannon/ppa-tomboy-ng tomboy-ng_0.29e-1_source.changes [enter]
+#
 
 # David Bannon, July 2020
 
 APP="tomboy-ng"
-DEBEMAIL="tomboy-ng@bannons.id.au"
+DEBEMAIL="dbannon@internode.on.net"
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
@@ -82,23 +88,25 @@ function KControls () {
 function ShowHelp () {
     echo " "
     echo "Assumes FPC of some sort in path, available and working, ideally 3.2.0."
-    echo "Will look for Lazarus kits in repo, or download (and cache) it." 
-    echo "David Bannon, July 2020" 
+    echo "Needs Lazarus, <=2.0.6 in root space or specified with -l option."
+    echo "Needs devscripts preinstalled and maybe an edit of email address above if"
+    echo "it is to be used in the DEB SRC tool chain. Its role there is just to create"
+    echo "an initial tarball and working directory (including inserting kcontrols)."
+    echo "David Bannon, August 2020" 
     echo "-h   print help message"
-#    echo "-c   specify CPU, default is x86_64, also supported arm"
     echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
     echo "-C   clean out deb files from previous run, debug use only."
     echo "-U   update Makefile and/or buildit.bash,   debug use only."
-    echo "This script is useful in the SRC Deb tool chain but only for creating the"
-    echo "initial tarball and working directory. Specify a full lazbuild location (-l)"
-    echo "if Lazarus is not installed in root space."
+    echo "-p   Pause before creating .orig. to change content, use another term."
     echo ""
-    echo "Davo uses:  bash ./prepare.bash -l /home/dbannon/bin/Lazarus/trunk/lazbuild -UC"
+    echo "Davo uses: wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip"
+    echo "           mv master.zip tomboy-ng-master.zip"   
+    echo "           bash ./prepare.bash -l /home/dbannon/bin/Lazarus/trunk/lazbuild -p"
     exit
 }
 
 
-while getopts "hUCl:" opt; do
+while getopts "hpUCl:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -111,6 +119,9 @@ while getopts "hUCl:" opt; do
 	;;
     C)
 	CLEAN="YES"
+	;;
+    p)
+	PAUSE="YES"
 	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -160,13 +171,18 @@ if [ -f tomboy-ng-master.zip ]; then
 	dch --append "Please see github for change details"
 	dch --release "blar"
 	cd ..
+	if [ "$PAUSE" = "YES" ]; then
+		read -p "Edit things in another term, press Enter."
+	fi
 	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""-1"
 	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -us -uc"
 else
 	echo ""
 	echo "   Sorry, I cannot see a tomboy-ng-master.zip file. This"
 	echo "   script must be run in a directory containing that file"
-	echo "   (obtained from github) and probably nothing else."
+	echo "   (obtained from github) and probably little else."
+	echo "   If you used wget to download tomboy-ng, it will be named master.zip,"
+	echo "   you should rename it tomboy-ng-master.zip to avoid confusion."
 	echo ""
 fi
 

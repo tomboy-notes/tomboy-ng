@@ -210,6 +210,8 @@ unit EditBox;
     2020/05/12  Added Shift Click to select to click pos, #129
     2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
     2020/06/08  Disable main menu button in readonly mode.
+    2020/08/06  Call a paste in ShowForm, even in SNM, assertion is better than no copying.
+                Display external links in single note mode.
 }
 
 
@@ -1371,7 +1373,6 @@ begin
         MarkDirty();
         NoteFileName := '';
         SaveTheNote();
-        // debugln('hmm, this should be a close.');
         close;
     end;
 end;
@@ -1399,27 +1400,15 @@ begin
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
-    {$ifdef LINUX}
-
-    //{$DEFINE DEBUG_CLIPBOARD}
-    if self.SingleNoteFileName = '' then
-        KMemo1.ExecuteCommand(ecPaste);     // this to deal with a "first copy" issue.
-                                            // note, in singlenotemode it triggers a GTK Assertion
-    //{$UNDEF DEBUG_CLIPBOARD}
+    {$ifdef LCLGTK2}
+        //  if SingleNoteFileName = '' then begin // note, in singlenotemode it triggers a GTK2 Assertion
+        KMemo1.ExecuteCommand(ecPaste);   // this to deal with a "first copy" issue on Linux.
+        // above line generates a gtk2 assertion but only in single note mode.  I suspect
+        // thats because its a modal form and in normal use, this window is not modal.
+        // If we don't make above call in SNM, we get the same assertion sooner or later, as soon
+        // as we select some text so may as well get it over with. No need to do it in Qt5, Win, Mac
     {$endif}
     Kmemo1.Clear;
-
-    {
-    // this is not the right place to enable or disable sync, it should happen in master
-    // menu control stuff way back in main/search.  All menus should be the same. DRB 14/04/20202
-
-    MenuItemSync.Enabled := (Sett.SyncRepoLocation.Caption <> rsSyncNotConfig)
-            and (Sett.SyncRepoLocation.Caption <> '') and (Sett.SyncRepo.Checked);
-    MenuItemSync.Enabled := MenuItemSync.Enabled or ((Sett.SyncNCURL.Caption <> rsSyncNotConfig)
-            and (Sett.SyncNCURL.Caption <> '') and (Sett.SyncNC.Checked));
-    }
-
-
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
     else
@@ -1467,6 +1456,8 @@ begin
     KMemo1.Colors.BkGnd:= Sett.BackGndColour;
     Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
     KMemo1.Blocks.UnLockUpdate;
+//    if SingleNoteMode then
+//        SearchForm.MoveWindowHere(NoteTitle);
 end;
 
 	{ This gets called when the TrayMenu quit entry is clicked }
@@ -1798,7 +1789,6 @@ var
     pText : pchar;
 begin
 	if not Ready then exit();
-    if SingleNoteMode then exit();
     // There is a thing called KMemo1.Blocks.SelectableLength but it returns the number of characters, not bytes, much faster though
     // Note, we don't need Len if only doing http and its not whole note being checked (at startup). So, could save a bit ....
     Len := length(KMemo1.Blocks.text);              // saves 7mS by calling length() only once ! But still 8mS
@@ -1808,18 +1798,22 @@ begin
         httpLen := Len
     else  httpLen := EndScan;
     Ready := False;
-	SearchForm.StartSearch();
     KMemo1.Blocks.LockUpdate;
     //Tick := gettickcount64();
-    PText := PChar(lowerCase(KMemo1.Blocks.text));
-    if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
-        CheckForHTTP(PText, StartScan, httpLen);
-    if Sett.ShowIntLinks then
-        while SearchForm.NextNoteTitle(SearchTerm) do
-            if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
-                MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
+    try
+        PText := PChar(lowerCase(KMemo1.Blocks.text));
+        if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
+            CheckForHTTP(PText, StartScan, httpLen);
+        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
+            SearchForm.StartSearch();
+            while SearchForm.NextNoteTitle(SearchTerm) do
+                if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
+                    MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
+        end;
+    finally
+        KMemo1.Blocks.UnLockUpdate;
+    end;
     //Tock := gettickcount64();
-    KMemo1.Blocks.UnLockUpdate;
     //debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');
     Ready := True;
 end;
@@ -1867,9 +1861,9 @@ begin
         end;
         if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
             LinkText := Kmemo1.Blocks.Items[StartBlock].Text;
-        	if not (SearchForm.IsThisaTitle(LinkText) or ValidWebLink()) then begin
-                // Must check here if its also not a valid HTTP link.
-//writeln('Removing link ' + LinkText);
+            // if its not a valid link, remove it. But don't check for Title links in SingleNoteMode
+            if not (ValidWebLink() or SingleNoteMode or SearchForm.IsThisaTitle(LinkText)) then begin
+            // if not (SearchForm.IsThisaTitle(LinkText) or ValidWebLink()) then begin
                 Kmemo1.Blocks.Delete(StartBlock);
         		KMemo1.Blocks.AddTextBlock(Linktext, StartBlock);
             end;
@@ -1888,37 +1882,6 @@ begin
         KMemo1.Blocks.UnlockUpdate;
         Ready := True;
     end;
-
-(*          remove all this after a testing cycle.
-
-    exit;
-
-
-
-    BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurrentPos, Blar);
-    Ready := False;
-    LinkText := Kmemo1.Blocks.Items[BlockNo].Text;              // debug
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then begin
-        LinkText := Kmemo1.Blocks.Items[BlockNo].Text;
-    	if Not SearchForm.IsThisaTitle(LinkText) then begin
-        	KMemo1.Blocks.LockUpdate;                         // I don't think we should lock here.
-    		Kmemo1.Blocks.Delete(BlockNo);
-    		KMemo1.Blocks.AddTextBlock(Linktext, BlockNo);
-        	KMemo1.Blocks.UnlockUpdate;
-        end;
-    end;
-    BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurrentPos-1, Blar);
-
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then begin
-        LinkText := Kmemo1.Blocks.Items[BlockNo].Text;
-        if Not SearchForm.IsThisaTitle(LinkText) then begin
-        	KMemo1.Blocks.LockUpdate;
-    		Kmemo1.Blocks.Delete(BlockNo);
-    		KMemo1.Blocks.AddTextBlock(Linktext, BlockNo);
-        	KMemo1.Blocks.UnlockUpdate;
-        end;
-    end;
-    Ready := True;           *)
 end;
 
 

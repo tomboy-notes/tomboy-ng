@@ -41,14 +41,15 @@ MYREPO="$HOME/Documents/Kits"		# set an alterantive with -r
 LAZ_VER="trunk"				# an alternative is lazarus-2.0.10-2
 LAZ_INT_NAME="blar"
 
-CPU="x86_64"				# default x86_64, can be arm
+#CPU="x86_64"				# default x86_64, can be arm
+CPU=$HOSTTYPE               # might return i686, we change to i386 
 OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
 START_DIR=$PWD
 SOURCE_DIR="$PWD/source"      	
 TARGET="$CPU-$OS"
 K_DIR="$PWD/kcontrols/packages/kcontrols"
-WIDGET="gtk2"				# untested with "qt5"
+WIDGET="gtk2"				# either gtk2 or qt5
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
 
@@ -62,7 +63,7 @@ function ShowHelp () {
     echo "Will look for Lazarus and KControls kits in repo, or download to it." 
     echo "David Bannon, July 2020" 
     echo "-h   print help message"
-    echo "-c   specify CPU, default is x86_64, also supported arm"
+    echo "-c   specify CPU, default is $HOSTTYPE - supported x86_64, i386, arm"
     echo "When used in SRC DEB toolchain, set -c (if necessary) options in the Makefile."
     echo ""
     exit 1
@@ -139,6 +140,10 @@ while getopts "hc:" opt; do
   esac
 done
 
+if [ "$CPU" = "i686" ]; then
+    CPU="i386"
+fi
+TARGET="$CPU-$OS"
 CheckFPC
 CheckLazBuild
 
@@ -183,11 +188,11 @@ COMPILER="fpc"
 
 echo "------------------------------------------------------"
 echo "OK, we seem to have both Lazarus LCL and KControls available : "
-echo "K_DIR = $K_DIR"
+echo "kcontrols = $K_DIR"
 echo "Lazarus   = $LAZ_DIR"
 echo "Compiler  = $COMPILER"
 echo "PATH      = $PATH"
-echo "CPU type = $CPU"
+echo "CPU type  = $CPU"
 echo "Exclude Compiler Messages = $EXCLUDEMESSAGE"
 echo "tomboy-ng version = $VERSION"
 # echo "-------------------------------------------------------"
