@@ -65,7 +65,7 @@ interface
 
 uses
 		Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-		StdCtrls, Grids, ComCtrls, Syncutils;
+		StdCtrls, {Grids,} ComCtrls, Syncutils;
 
 type
 
