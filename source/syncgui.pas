@@ -53,6 +53,7 @@ unit SyncGUI;
     2019/05/19  Display strings all (?) moved to resourcestrings
     2020/02/20  Added capability to sync without showing GUI.
     2020/06/18  Only show good sync notification for 3 seconds
+    2020/08/07  Changed the stringGrid to a ListView 'cos it handles dark themes better.
 }
 
 {$mode objfpc}{$H+}
@@ -64,7 +65,7 @@ interface
 
 uses
 		Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-		StdCtrls, Grids, Syncutils;
+		StdCtrls, Grids, ComCtrls, Syncutils;
 
 type
 
@@ -76,15 +77,16 @@ type
 				ButtonClose: TButton;
 				Label1: TLabel;
 				Label2: TLabel;
+                ListViewReport: TListView;
 				Memo1: TMemo;
 				Panel1: TPanel;
 				Panel2: TPanel;
 				Panel3: TPanel;
 				Splitter3: TSplitter;
-				StringGridReport: TStringGrid;
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
+                procedure FormCreate(Sender: TObject);
                 function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonCloseClick(Sender: TObject);
@@ -94,11 +96,10 @@ type
                 { At Show, depending on SetUpSync, we'll either go ahead and do it, any
                   error is fatal or, if True, walk user through process. }
 				procedure FormShow(Sender: TObject);
-                procedure StringGridReportGetCellHint(Sender: TObject; ACol, ARow: Integer;
-                                  var HintText: String);
 		private
                 FormShown : boolean;
                 LocalTimer : TTimer;
+                procedure AddLVItem(Act, Title, ID: string);
                 procedure AdjustNoteList();
                 procedure AfterShown(Sender : TObject);
                     // Display a summary of sync actions to user.
@@ -264,7 +265,7 @@ begin
     FormShown := False;
     Label2.Caption := rsNextBitSlow;
     Memo1.Clear;
-    StringGridReport.Clear;
+    ListViewReport.Clear;
     ButtonSave.Enabled := False;
     ButtonClose.Enabled := False;
     ButtonCancel.Enabled := False;
@@ -280,8 +281,13 @@ begin
     //debugln('In RunSyncHidden');
     if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
     busy := true;
-    StringGridReport.Clear;
+    ListViewReport.Clear;
     Result := ManualSync;
+end;
+
+procedure TFormSync.FormCreate(Sender: TObject);
+begin
+
 end;
 
         // User is only allowed to press Close when this is finished.
@@ -367,6 +373,16 @@ begin
    FreeandNil(DownList);
 end;
 
+procedure TFormSync.AddLVItem(Act, Title, ID : string);
+var
+    TheItem : TListItem;
+begin
+   TheItem := ListViewReport.Items.Add;
+   TheItem.Caption := Act;
+   TheItem.SubItems.Add(copy(Title, 1, 20)+' ');
+   TheItem.SubItems.Add(ID);
+end;
+
 procedure TFormSync.ShowReport;
 var
         Index : integer;
@@ -375,30 +391,22 @@ begin
      	with ASync.NoteMetaData do begin
     		for Index := 0 to Count -1 do begin
                 if Items[Index]^.Action <> SyNothing then begin
-                        StringGridReport.InsertRowWithValues(Rows
+                        {StringGridReport.InsertRowWithValues(Rows
                 	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
-                            , Items[Index]^.Title, Items[Index]^.ID]);
-                        { if not visible then
-                            debugln(ASync.NoteMetaData.ActionName(Items[Index]^.Action),
-                                Items[Index]^.Title, Items[Index]^.ID); }
+                            , Items[Index]^.Title, Items[Index]^.ID]);  }
+                        AddLVItem(
+                            ASync.NoteMetaData.ActionName(Items[Index]^.Action)
+                            , Items[Index]^.Title
+                            , Items[Index]^.ID);
                         inc(Rows);
                 end;
     		end
     	end;
-        StringGridReport.AutoSizeColumn(0);
-        StringGridReport.AutoSizeColumn(1);
         if  Rows = 0 then
             Memo1.Append(rsNoNotesNeededSync)
         else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
-        {if not visible then
-            debugln(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt); }
 end;
 
-procedure TFormSync.StringGridReportGetCellHint(Sender: TObject; ACol,
-  ARow: Integer; var HintText: String);
-begin
-// HintText := FileSync.ReportList.Items[ARow]^.Message;
-end;
 
 procedure TFormSync.ButtonCancelClick(Sender: TObject);
 begin

@@ -1,12 +1,13 @@
 object FormSync: TFormSync
-  Left = 912
-  Height = 366
-  Top = 331
-  Width = 631
+  Left = 300
+  Height = 418
+  Top = 285
+  Width = 699
   Caption = 'Sync'
-  ClientHeight = 366
-  ClientWidth = 631
+  ClientHeight = 418
+  ClientWidth = 699
   OnClose = FormClose
+  OnCreate = FormCreate
   OnHide = FormHide
   OnShow = FormShow
   LCLVersion = '2.1.0.0'
@@ -18,10 +19,10 @@ object FormSync: TFormSync
     Left = 0
     Height = 91
     Top = 0
-    Width = 631
+    Width = 699
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 91
-    ClientWidth = 631
+    ClientWidth = 699
     TabOrder = 0
     object Label1: TLabel
       Left = 35
@@ -54,10 +55,10 @@ object FormSync: TFormSync
     Left = 0
     Height = 37
     Top = 91
-    Width = 631
+    Width = 699
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 37
-    ClientWidth = 631
+    ClientWidth = 699
     TabOrder = 1
     object ButtonCancel: TButton
       AnchorSideLeft.Control = Panel2
@@ -113,13 +114,13 @@ object FormSync: TFormSync
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 238
+    Height = 290
     Top = 128
-    Width = 631
+    Width = 699
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel3'
-    ClientHeight = 238
-    ClientWidth = 631
+    ClientHeight = 290
+    ClientWidth = 699
     TabOrder = 2
     object Memo1: TMemo
       AnchorSideLeft.Control = Splitter3
@@ -129,10 +130,10 @@ object FormSync: TFormSync
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
-      Left = 311
-      Height = 236
+      Left = 394
+      Height = 288
       Top = 1
-      Width = 319
+      Width = 304
       Align = alRight
       Anchors = [akTop, akLeft, akRight, akBottom]
       Lines.Strings = (
@@ -140,45 +141,45 @@ object FormSync: TFormSync
       )
       TabOrder = 0
     end
-    object StringGridReport: TStringGrid
-      AnchorSideLeft.Control = Panel3
-      AnchorSideTop.Control = Panel3
-      AnchorSideRight.Control = Splitter3
-      AnchorSideBottom.Control = Panel3
-      AnchorSideBottom.Side = asrBottom
-      Left = 1
-      Height = 236
-      Top = 1
-      Width = 300
-      Align = alLeft
-      AlternateColor = clWhite
-      Anchors = [akTop, akLeft, akRight, akBottom]
-      ColCount = 0
-      FixedCols = 0
-      FixedRows = 0
-      Font.Height = -12
-      Font.Name = 'Sans'
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goThumbTracking, goSmoothScroll, goCellHints]
-      ParentFont = False
-      ParentShowHint = False
-      RowCount = 0
-      ShowHint = True
-      TabOrder = 1
-      OnGetCellHint = StringGridReportGetCellHint
-    end
     object Splitter3: TSplitter
-      AnchorSideLeft.Control = StringGridReport
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Panel3
       AnchorSideRight.Control = Memo1
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
-      Left = 301
+      Left = 384
       Height = 236
-      Top = 8
+      Top = 48
       Width = 10
       Align = alNone
       Anchors = []
+    end
+    object ListViewReport: TListView
+      AnchorSideLeft.Control = Panel3
+      AnchorSideTop.Control = Panel3
+      AnchorSideRight.Control = Splitter3
+      AnchorSideBottom.Control = Panel3
+      AnchorSideBottom.Side = asrBottom
+      Left = 2
+      Height = 286
+      Top = 2
+      Width = 381
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BorderSpacing.Left = 1
+      BorderSpacing.Top = 1
+      BorderSpacing.Right = 1
+      BorderSpacing.Bottom = 1
+      Columns = <      
+        item
+          AutoSize = True
+        end      
+        item
+          AutoSize = True
+        end      
+        item
+        end>
+      ScrollBars = ssAutoBoth
+      TabOrder = 2
     end
   end
 end
