@@ -929,7 +929,7 @@ begin
     {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
     ListViewNotes.AutoSortIndicator := True;
     ListViewNotes.Column[1].SortIndicator := siAscending;
-    debugln('Using sort indicators');
+    //debugln('Using sort indicators');
     {$endif}
 end;
 

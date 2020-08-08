@@ -17,7 +17,8 @@
 # David Bannon, July 2020
 
 APP="tomboy-ng"
-DEBEMAIL="dbannon@internode.on.net"
+# DEBEMAIL="dbannon@internode.on.net"
+DEBEMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile

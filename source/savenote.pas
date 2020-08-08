@@ -63,6 +63,7 @@ unit SaveNote;
     2019/05/06  Support saving pos and open on startup in note.
     2019/06/07  Removed unused, historical func to clean xml
     2020/07/17  Esc bad XML in Template name.
+    2020/08/08  Added a BOM, a Byte Order Mark, at start of a note.
 }
 
 {$mode objfpc}{$H+}
@@ -709,41 +710,16 @@ begin
     if not Result then NoteLoc.ErrorStr:='Failed Rename T=' + TmpName + ' and F=' + FileName;
 end;
 
-{                    // moved to note lister
-function TBSaveNote.NoteBookTags(): ANSIString;
-var
-    SL : TStringList;
-    Index : Integer;
-begin
-   Result := '';
-   if SearchForm.NoteLister = nil then exit;
-   SL := TStringList.Create;
-   if SearchForm.NoteLister.GetNotebooks(SL, ID) then begin  // its a template
-   		Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
-        if SL.Count > 0 then
-        	Result := Result + '    <tag>system:notebook:' + SL[0] + '</tag>'#10'  </tags>'#10;
-   end else
-   		if SL.Count > 0 then begin					// its a Notebook Member
-        	Result := '  <tags>'#10;
-        	for Index := 0 to SL.Count -1 do		// here, we auto support multiple notebooks.
-        		Result := Result + '    <tag>system:notebook:' + SL[Index] + '</tag>'#10;
-        	Result := Result + '  </tags>'#10;
-		end;
-    SL.Free;
-end;
-}
-
 function TBSaveNote.Header(): ANSIstring;
 var
    S1, S2, S3, S4 : ANSIString;
-begin
-  S1 := '<?xml version="1.0" encoding="utf-8"?>'#10'<note version="0.3" xmlns:link="';
+begin  // Add a BOM at the start, not essencial, Tomboy did it, make the note no longer a plain text file.
+  S1 := #239#187#191'<?xml version="1.0" encoding="utf-8"?>'#10'<note version="0.3" xmlns:link="';
   S2 := 'http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"';
   S3 := ' xmlns="http://beatniksoftware.com/tomboy">'#10'  <title>';
   S4 := '</title>'#10'  <text xml:space="preserve"><note-content version="0.1">';
   Result := S1 + S2 + S3 + RemoveBadXMLCharacters(Title) + S4;
 end;
-
 
 function TBSaveNote.Footer(Loc : TNoteUpdateRec {TNoteLocation}): ANSIstring;
 var

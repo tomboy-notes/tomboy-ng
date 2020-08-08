@@ -25,7 +25,7 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 423
+    Width = 425
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 7
@@ -264,10 +264,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 536
+    Left = 538
     Height = 32
     Top = 3
-    Width = 129
+    Width = 127
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 7
     Caption = 'Case Sensitive'
