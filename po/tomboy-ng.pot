@@ -270,11 +270,6 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr ""
 
-#: resourcestr.rsnobadnotes
-msgctxt "resourcestr.rsnobadnotes"
-msgid "No errors, perhaps you should proceed to Snapshots"
-msgstr ""
-
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"

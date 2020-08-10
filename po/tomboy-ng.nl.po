@@ -310,12 +310,6 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Er is een nieuwere versie aanwezig in de hoofdrepo"
 
-#: resourcestr.rsnobadnotes
-#, fuzzy
-msgctxt "resourcestr.rsnobadnotes"
-msgid "No errors, perhaps you should proceed to Snapshots"
-msgstr "Geen fouten; ga door naar de momentopnamen"
-
 #: resourcestr.rsnotealreadyinrepo
 #, fuzzy
 msgctxt "resourcestr.rsnotealreadyinrepo"

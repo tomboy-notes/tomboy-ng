@@ -130,7 +130,7 @@ RESOURCESTRING
   rsDeletedDamaged = 'OK, deleted %d damaged notes';
   rsBadNotes = 'You have %d bad notes in Notes Directory';
   rsClickBadNote = 'Double click on any Bad Notes';
-  rsNoBadNotes = 'No errors, perhaps you should proceed to Snapshots';
+//  rsNoBadNotes = 'No errors, perhaps you should proceed to Snapshots';
   rsTryRecover_1 = 'Try to recover a bad note by double clicking below,';
   rsTryrecover_2 = 'if that fails, you may be able to recover it from a Snapshot.';
   rsDeleteAndReplace_1 = 'Notes at risk !';

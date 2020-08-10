@@ -20,6 +20,9 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
+      <ExcludedIdentifiers Count="1">
+        <Item1 Value="Form Caption"/>
+      </ExcludedIdentifiers>
       <ExcludedOriginals Count="33">
         <Item1 Value="TimeEdit1"/>
         <Item2 Value="Label1"/>

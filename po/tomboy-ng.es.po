@@ -70,9 +70,16 @@ msgstr "Instantánea automática hecha."
 msgid "Auto sync not possible right now"
 msgstr "Sincronización automática imposible ahora mismo"
 
+#: resourcestr.rsbadnotes
+#, object-pascal-format
+msgid "You have %d bad notes in Notes Directory"
+msgstr ""
+
 #: resourcestr.rsbadnotesfound1
+#, fuzzy
+#| msgid "Please go to Settings -> Snapshot -> Recover ...."
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Snapshot -> Recover ...."
+msgid "Please go to Settings -> Recover -> Recover Notes"
 msgstr "Por favor, vaya a Preferencias -> Instantánea -> Recuperar ..."
 
 #: resourcestr.rsbadnotesfound2
@@ -97,7 +104,6 @@ msgstr "Cambiar el nombre de este cuaderno"
 #: resourcestr.rschangesync
 msgid "Change Sync Repo"
 msgstr "Cambiar repositorio de sincronización"
-
 
 #: resourcestr.rsclickbadnote
 #, fuzzy
@@ -315,6 +321,10 @@ msgstr "notas"
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
 msgstr "Nota(s) eliminada(s)"
+
+#: resourcestr.rsnotesinsnap
+msgid "Notes in Snapshot"
+msgstr ""
 
 #: resourcestr.rsnotpresent
 msgctxt "resourcestr.rsnotpresent"
@@ -1474,7 +1484,6 @@ msgctxt "tsett.caption"
 msgid "Form Caption"
 msgstr "Leyenda formulario"
 
-
 #: tsett.checkautosnapenabled.caption
 msgctxt "tsett.checkautosnapenabled.caption"
 msgid "Use auto snapshots"
@@ -1699,3 +1708,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
+
