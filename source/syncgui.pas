@@ -138,7 +138,8 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier;
+uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier,
+        settings;		// just for DarkTheme
 
 {$R *.lfm}
 
@@ -270,6 +271,20 @@ begin
     ButtonSave.Enabled := False;
     ButtonClose.Enabled := False;
     ButtonCancel.Enabled := False;
+    {$ifdef windows}  // linux apps know how to do this themselves
+    if Sett.DarkTheme then begin
+         // Sett.BackGndColour;  Sett.TextColour;
+         ListViewReport.Color :=       clnavy;
+         ListViewReport.Font.Color :=  Sett.HiColour;
+         splitter3.Color:= clnavy;
+         Panel1.color := Sett.BackGndColour;
+         Panel2.color := Sett.BackGndColour;
+         Panel3.color := Sett.BackGndColour;
+         ButtonCancel.Color := Sett.HiColour;
+         ButtonClose.Color := Sett.HiColour;
+         ButtonSave.Color := Sett.HiColour;
+    end;
+    {$endif}
     // We call a timer to get out of OnShow so ProcessMessages works as expected
     LocalTimer := TTimer.Create(Nil);
     LocalTimer.OnTimer:= @AfterShown;

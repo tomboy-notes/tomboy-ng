@@ -123,13 +123,13 @@ function DebianPackage () {
 		mkdir -p "BUILD/usr/share/icons/hicolor/$i/apps";
 		cp "$ICON_DIR/$i.png" "BUILD/usr/share/icons/hicolor/$i/apps/$PRODUCT.png";
 	done;
-	echo "------------- Done icons"
+	#echo "------------- Done icons"
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
-	echo "------------- Done 1"
+	#echo "------------- Done 1"
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
-	echo "------------- Done 2"
+	#echo "------------- Done 2"
 	cp -R ../doc/HELP BUILD/usr/share/"$PRODUCT"/.
-	echo "------------- Done 3"
+	#echo "------------- Done 3"
 	# -------------- Translation Files
 	# we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
 	# and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
