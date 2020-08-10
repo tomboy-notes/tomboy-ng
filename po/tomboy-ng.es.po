@@ -6,7 +6,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: tomboy-ng v30\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-08-09\n"
+"PO-Revision-Date: 2020-08-10 10:57+0200\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,6 @@ msgid "All Done"
 msgstr "Todo terminado"
 
 #: resourcestr.rsallrestored
-#, fuzzy
 msgctxt "resourcestr.rsallrestored"
 msgid "Notes and config files Restored, restart suggested."
 msgstr "Notas y configuración restablecidos. Se recomienda reiniciar."
@@ -73,14 +72,12 @@ msgstr "Sincronización automática imposible ahora mismo"
 #: resourcestr.rsbadnotes
 #, object-pascal-format
 msgid "You have %d bad notes in Notes Directory"
-msgstr ""
+msgstr "Tiene %d notas corrompidas en el directorio"
 
 #: resourcestr.rsbadnotesfound1
-#, fuzzy
-#| msgid "Please go to Settings -> Snapshot -> Recover ...."
 msgctxt "resourcestr.rsbadnotesfound1"
 msgid "Please go to Settings -> Recover -> Recover Notes"
-msgstr "Por favor, vaya a Preferencias -> Instantánea -> Recuperar ..."
+msgstr "Por favor, vaya a Preferencias -> Recuperar -> Recuperar notas"
 
 #: resourcestr.rsbadnotesfound2
 msgctxt "resourcestr.rsbadnotesfound2"
@@ -106,7 +103,6 @@ msgid "Change Sync Repo"
 msgstr "Cambiar repositorio de sincronización"
 
 #: resourcestr.rsclickbadnote
-#, fuzzy
 msgctxt "resourcestr.rsclickbadnote"
 msgid "Double click on any Bad Notes"
 msgstr "Hacer doble clic en las notas corrompidas"
@@ -114,7 +110,7 @@ msgstr "Hacer doble clic en las notas corrompidas"
 #: resourcestr.rsclicksnapshot
 msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
-msgstr ""
+msgstr "Hacer clic en una instantánea"
 
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
@@ -127,21 +123,21 @@ msgid "Create a new Repo ?"
 msgstr "¿Crear un repositorio nuevo?"
 
 #: resourcestr.rsdeleteandreplace_1
-#, fuzzy
 msgctxt "resourcestr.rsdeleteandreplace_1"
 msgid "Notes at risk !"
 msgstr "¡Notas en peligro!"
 
+# Hecho más corto
 #: resourcestr.rsdeleteandreplace_2
 #, object-pascal-format
 msgctxt "resourcestr.rsdeleteandreplace_2"
 msgid "Delete all notes in %s and replace with snapshot dated %s ?"
-msgstr ""
+msgstr "Eliminar todas en %s y reemplazarlas con la instantánea con fecha %s?"
 
 #: resourcestr.rsdeleteddamaged
 #, object-pascal-format
 msgid "OK, deleted %d damaged notes"
-msgstr ""
+msgstr "Eliminadas %d notas corrompidas"
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -297,11 +293,11 @@ msgstr "Ya está en el repositorio"
 
 #: resourcestr.rsnotebookoptioncmd
 msgid "Cmd click for Notebook Options"
-msgstr ""
+msgstr "Cmd clic para opciones de cuadernos"
 
 #: resourcestr.rsnotebookoptionright
 msgid "Right click for Notebook Options"
-msgstr ""
+msgstr "Clic derecho para opciones de cuaderno"
 
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
@@ -324,7 +320,7 @@ msgstr "Nota(s) eliminada(s)"
 
 #: resourcestr.rsnotesinsnap
 msgid "Notes in Snapshot"
-msgstr ""
+msgstr "Notas en instantánea"
 
 #: resourcestr.rsnotpresent
 msgctxt "resourcestr.rsnotpresent"
@@ -423,12 +419,12 @@ msgstr "Probando sincronización"
 
 #: resourcestr.rstryrecover_1
 msgid "Try to recover a bad note by double clicking below,"
-msgstr ""
+msgstr "Intente recuperar una nota corrompida con clic doble abajo,"
 
 #: resourcestr.rstryrecover_2
 msgctxt "resourcestr.rstryrecover_2"
 msgid "if that fails, you may be able to recover it from a Snapshot."
-msgstr ""
+msgstr "si falla, puede que se pueda recuperar desde una instantánea."
 
 #: resourcestr.rsunabletoproceed
 msgctxt "resourcestr.rsunabletoproceed"
@@ -443,7 +439,7 @@ msgstr "No se puede sincronizar porque "
 #: resourcestr.rswehavesnapshots
 #, object-pascal-format
 msgid "We have %d snapshots"
-msgstr ""
+msgstr "Hay %d instantáneas"
 
 # Creo que está bien.
 #: settings.rsdictionaryfailed
@@ -850,10 +846,8 @@ msgid "Delete Bad Notes"
 msgstr "Eliminar Notas Corrompidas"
 
 #: tformrecover.buttonmakesafetysnap.caption
-#, fuzzy
-#| msgid "Safety Snapshot"
 msgid "Take a manual Snapshot"
-msgstr "Instantánea de Seguridad"
+msgstr "Hacer una instantánea manual"
 
 #: tformrecover.buttonmakesafetysnap.hint
 msgid "Take a initial snapshot of your notes and config. Overwritten each time."
@@ -879,10 +873,8 @@ msgid "Please close any notes you may have open."
 msgstr "Por favor, si hay notas abiertas, ciérrelas."
 
 #: tformrecover.label12.caption
-#, fuzzy
-#| msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
 msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
-msgstr "No lo haga sin tener una instantánea de seguridad reciente. (Pestaña \"Introducción\")"
+msgstr "Ni pensarlo sin tener una instantánea de seguridad reciente. (Pestaña \"Introducción\")"
 
 #: tformrecover.label14.caption
 msgid "Double click an available snapshot to see its contents."
@@ -909,10 +901,8 @@ msgid "Remove all existing notes and use the ones in the Snapshot."
 msgstr "Eliminar todas las notas actuales y usar las notas de la instantánea."
 
 #: tformrecover.label5.caption
-#, fuzzy
-#| msgid "Look firstly at your existing notes"
 msgid "Looking for notes with damaged XML"
-msgstr "Primero mire a sus notas actuales"
+msgstr "Buscando notas con el XML corrompido"
 
 # Hecha más corta por falta de espacio.
 #: tformrecover.label6.caption
@@ -921,10 +911,8 @@ msgstr "Esta herramienta puede ayudarle recuperar las notas."
 
 # "directorio" omitida para hacerlo más corto
 #: tformrecover.label7.caption
-#, fuzzy
-#| msgid "Before you start, take a Safety Snapshot of your notes directory."
 msgid "Before you start, take a Snapshot of your notes directory."
-msgstr "Antes de empezar, haga un instantánea de seguridad de las notas."
+msgstr "Antes de empezar, haga un instantánea de las notas."
 
 #: tformrecover.label9.caption
 msgid "From here you can view snapshot notes, one by one."
@@ -940,7 +928,7 @@ msgstr "Instantáneas disponibles"
 
 #: tformrecover.tabsheetbadnotes.caption
 msgid "Bad Notes"
-msgstr ""
+msgstr "Notas corrumpidas"
 
 #: tformrecover.tabsheetintro.caption
 msgid "Introduction"
@@ -952,7 +940,7 @@ msgstr "Combinar Instantánea"
 
 #: tformrecover.tabsheetrecovernotes.caption
 msgid "Recover Notes"
-msgstr ""
+msgstr "Recuperar notas"
 
 #: tformrecover.tabsheetrecoversnapshot.caption
 msgid "Recover Snapshot"
@@ -1079,17 +1067,16 @@ msgstr "Sincronizar"
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
-msgstr ""
+msgstr "Acción"
 
 #: tformsync.listviewreport.columns[1].caption
-#, fuzzy
 msgctxt "tformsync.listviewreport.columns[1].caption"
 msgid "Title"
 msgstr "Título"
 
 #: tformsync.listviewreport.columns[2].caption
 msgid "Note ID"
-msgstr ""
+msgstr "ID nota"
 
 #: tformsyncerror.buttcancel.hint
 msgctxt "tformsyncerror.buttcancel.hint"
@@ -1244,7 +1231,7 @@ msgstr "Vamos a ver si todo está listo."
 
 #: tmainform.labelbadnoteadvice.caption
 msgid "LabelBadNoteAdvice"
-msgstr "EtiqNotaInutilizable"
+msgstr "EtiqNotaCorrumpida"
 
 #: tmainform.labelerror.caption
 msgctxt "tmainform.labelerror.caption"
@@ -1571,14 +1558,13 @@ msgid "Settings will be saved in :"
 msgstr "Preferencias se guardarán en:"
 
 #: tsett.label10.caption
-#, fuzzy
 msgctxt "tsett.label10.caption"
 msgid "Help Notes Language"
 msgstr "Idioma de las notas de ayuda"
 
 #: tsett.label11.caption
 msgid "Backup Files"
-msgstr ""
+msgstr "Archivos de seguridad"
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
@@ -1707,11 +1693,9 @@ msgid "Notes"
 msgstr "Notas"
 
 #: tsett.tabrecover.caption
-#, fuzzy
-#| msgid "SnapShot"
 msgctxt "tsett.tabrecover.caption"
 msgid "Recover"
-msgstr "Instantánea"
+msgstr "Recuperar"
 
 #: tsett.tabspell.caption
 msgctxt "tsett.tabspell.caption"
@@ -1722,4 +1706,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
-
