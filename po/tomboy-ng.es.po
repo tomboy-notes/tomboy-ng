@@ -4,15 +4,15 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: tomboy-ng v29\n"
+"Project-Id-Version: tomboy-ng v30\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
+"PO-Revision-Date: 2020-08-09\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: editbox.rsunabletoevaluate
@@ -47,7 +47,6 @@ msgstr "SO"
 msgid "Version"
 msgstr "Versión"
 
-# Revisa
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr "tomboy-ng no pudo indizar una nota o más."
@@ -69,20 +68,12 @@ msgstr "Instantánea automática hecha."
 
 #: resourcestr.rsautosyncnotpossible
 msgid "Auto sync not possible right now"
-msgstr "Auto-sincronización imposible en este momento"
-
-#: resourcestr.rsbadnotes
-#, object-pascal-format
-msgctxt "resourcestr.rsbadnotes"
-msgid "You have %d bad notes in Notes Directory"
-msgstr ""
+msgstr "Sincronización automática imposible ahora mismo"
 
 #: resourcestr.rsbadnotesfound1
-#, fuzzy
-#| msgid "Please go to Settings -> Snapshot -> Recover ...."
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Recover -> Recover Notes"
-msgstr "Por favor ir a Preferencias -> Instantánea -> Recuperar ..."
+msgid "Please go to Settings -> Snapshot -> Recover ...."
+msgstr "Por favor, vaya a Preferencias -> Instantánea -> Recuperar ..."
 
 #: resourcestr.rsbadnotesfound2
 msgctxt "resourcestr.rsbadnotesfound2"
@@ -92,7 +83,7 @@ msgstr "Debería hacerlo para salvaguardar sus notas."
 #: resourcestr.rscannotdelete
 msgctxt "resourcestr.rscannotdelete"
 msgid "Cannot delete "
-msgstr "No se puede borrar "
+msgstr "No se puede eliminar "
 
 #: resourcestr.rscannotfindnote
 msgctxt "resourcestr.rscannotfindnote"
@@ -106,6 +97,7 @@ msgstr "Cambiar el nombre de este cuaderno"
 #: resourcestr.rschangesync
 msgid "Change Sync Repo"
 msgstr "Cambiar repositorio de sincronización"
+
 
 #: resourcestr.rsclickbadnote
 #, fuzzy
@@ -176,7 +168,7 @@ msgstr "Crear o usar una configuración alternativa"
 #: resourcestr.rshelpdebug
 msgctxt "resourcestr.rshelpdebug"
 msgid "Direct debug output to SOME.LOG."
-msgstr "Enviar resultados de depuración a SOME.LOG."
+msgstr "Enviar salida de depuración a SOME.LOG."
 
 #: resourcestr.rshelpdebugindex
 msgctxt "resourcestr.rshelpdebugindex"
@@ -204,11 +196,9 @@ msgid "Show this help message and exit."
 msgstr "Mostrar mensaje de ayuda y salir."
 
 #: resourcestr.rshelplang
-#, fuzzy
-#| msgid "Force Language, supported es, nl"
 msgctxt "resourcestr.rshelplang"
 msgid "Force Language, supported en, es, nl"
-msgstr "Forzar idioma. Idiomas soportado: es, nl"
+msgstr "Forzar idioma. Idiomas suportados: en, es, nl"
 
 #: resourcestr.rshelpnosplash
 msgctxt "resourcestr.rshelpnosplash"
@@ -223,7 +213,7 @@ msgstr "Después de importar una sola nota, guardar y salir."
 #: resourcestr.rshelpsinglenote
 msgctxt "resourcestr.rshelpsinglenote"
 msgid "Open indicated note, switch is optional"
-msgstr "Abrir nota seleccionada, parámetro es opcional"
+msgstr "Abrir nota marcada, parámetro es opcional"
 
 #: resourcestr.rshelpversion
 msgctxt "resourcestr.rshelpversion"
@@ -294,16 +284,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Hay una versión más nueva en el repositorio principal"
 
-#: resourcestr.rsnobadnotes
-#, fuzzy
-msgctxt "resourcestr.rsnobadnotes"
-msgid "No errors, perhaps you should proceed to Snapshots"
-msgstr "Ningún error, quizá debería continuar a Instantáneas"
-
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
-msgstr "La nota ya está en el repositorio"
+msgstr "Ya está en el repositorio"
 
 #: resourcestr.rsnotebookoptioncmd
 msgid "Cmd click for Notebook Options"
@@ -331,12 +315,6 @@ msgstr "notas"
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
 msgstr "Nota(s) eliminada(s)"
-
-#: resourcestr.rsnotesinsnap
-#, fuzzy
-msgctxt "resourcestr.rsnotesinsnap"
-msgid "Notes in Snapshot"
-msgstr "Notas en la instantánea"
 
 #: resourcestr.rsnotpresent
 msgctxt "resourcestr.rsnotpresent"
@@ -366,7 +344,7 @@ msgstr "Pulse Cerrar"
 #: resourcestr.rsrecoverok
 msgctxt "resourcestr.rsrecoverok"
 msgid "OK, File recovered."
-msgstr "OK, archivo recuperado."
+msgstr "Archivo recuperado."
 
 #: resourcestr.rsrenamefailed
 msgctxt "resourcestr.rsrenamefailed"
@@ -772,11 +750,11 @@ msgstr "Restaurar esta nota al repositorio principal"
 
 #: tformbackupview.caption
 msgid "View, recover or delete Backup Files"
-msgstr "Ver, recuperar o eliminar archivos de seguridad"
+msgstr "Ver, recuperar o elimina copias de seguridad"
 
 #: tformbackupview.listbox1.hint
 msgid "Use Ctrl or Shift to select multiple entries"
-msgstr "Use Ctrl o Mayús para seleccionar más de uno"
+msgstr "Seleccione entradas múltiples con Ctrl o Mayús "
 
 #: tformcolours.caption
 msgid "FormColours"
@@ -801,10 +779,11 @@ msgctxt "tformcolours.speedcancel.caption"
 msgid "Cancel"
 msgstr "Cancelar"
 
+# Por tener poco espacio
 #: tformcolours.speeddefault.caption
 msgctxt "tformcolours.speeddefault.caption"
 msgid "Default"
-msgstr "Predeterminado"
+msgstr "Defecto"
 
 #: tformcolours.speedhighlight.caption
 msgctxt "tformcolours.speedhighlight.caption"
@@ -828,11 +807,11 @@ msgstr "Título"
 
 #: tformindex.caption
 msgid "Heading in this Note"
-msgstr "Cabecera en esta nota"
+msgstr "Cabecera de esta nota"
 
 #: tformindex.panel1.caption
 msgid "Single lines, all Huge, Large Bold or Large"
-msgstr "Líneas únicas, todas Enormes, Grandes Negritas o Grandes"
+msgstr "Líneas únicas, todas Enormes, Grandes-Negritas o Grandes"
 
 #: tformmarkdown.buttonclose.caption
 msgctxt "tformmarkdown.buttonclose.caption"
@@ -1241,7 +1220,7 @@ msgstr "Vamos a ver si todo está listo."
 
 #: tmainform.labelbadnoteadvice.caption
 msgid "LabelBadNoteAdvice"
-msgstr ""
+msgstr "EtiqNotaInutilizable"
 
 #: tmainform.labelerror.caption
 msgctxt "tmainform.labelerror.caption"
@@ -1489,15 +1468,17 @@ msgstr "Recuperar notas perdidas"
 msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
 
+# Revisar
 #: tsett.caption
 msgctxt "tsett.caption"
 msgid "Form Caption"
-msgstr "Leyenda"
+msgstr "Leyenda formulario"
+
 
 #: tsett.checkautosnapenabled.caption
 msgctxt "tsett.checkautosnapenabled.caption"
 msgid "Use auto snapshots"
-msgstr "Usar instantáneas automáticas"
+msgstr "Use instantáneas automáticas"
 
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
@@ -1598,8 +1579,9 @@ msgstr "Al detectar un conflicto entre una nota local y una remota:"
 
 #: tsett.label4.caption
 msgid "Repo : "
-msgstr "Repositario: "
+msgstr "Repositorio: "
 
+# ¿Correcto en el original?
 #: tsett.label5.caption
 msgid "Days per snapshot"
 msgstr "Días por instantánea"
@@ -1628,12 +1610,13 @@ msgstr "sin configurar"
 
 #: tsett.labelfilesyncinfo1.caption
 msgid "LabelFileSyncInfo1"
-msgstr ""
+msgstr "EtiqSyncInfoArch1"
 
 #: tsett.labelfilesyncinfo2.caption
 msgid "LabelFileSyncInfo2"
-msgstr ""
+msgstr "EtiqSyncInfoArch2"
 
+# ¿Contexto? ¿Demásiado largo?
 #: tsett.labelsnapdir.caption
 msgctxt "tsett.labelsnapdir.caption"
 msgid "Snap dir"
@@ -1716,4 +1699,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
-
