@@ -19,36 +19,6 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para calcular"
 
-#: helpnotes.rs_downloaded
-msgid "Downloaded so far: "
-msgstr "Descargado hasta ahora: "
-
-#: helpnotes.rs_downloading
-msgid "Downloading please wait..."
-msgstr "Descargándose, espere por favor..."
-
-#: helpnotes.rs_installed
-msgctxt "helpnotes.rs_installed"
-msgid "Installed"
-msgstr "Instaladas"
-
-#: helpnotes.rs_nopowershell
-msgid "Sorry, your Windows does not have Powershell 3"
-msgstr "Lo siento, pero su versión de Windows no tiene Powershell 3"
-
-#: helpnotes.rs_nossl
-msgid "You do not appear to have the OpenSSL Library installed"
-msgstr "Parece que no tiene la biblioteca OpenSSL instalada"
-
-#: helpnotes.rs_restored
-msgctxt "helpnotes.rs_restored"
-msgid "Restored"
-msgstr "Restaraudas"
-
-#: helpnotes.rs_spanish
-msgid "Spanish"
-msgstr "Español"
-
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr "Esto es tomboy-ng, la refundición de Notas Tomboy usando Lazarus"
@@ -77,98 +47,20 @@ msgstr "SO"
 msgid "Version"
 msgstr "Versión"
 
-#: mainunit.rscannotdismiss1
-msgid "Sadly, because of a Bad Note,"
-msgstr "Debido a una nota inutilizable,"
-
-#: mainunit.rscannotdismiss2
-msgid "I cannot let you dismiss this window"
-msgstr "no puedo permitirle cerrar esta ventana."
-
-#: mainunit.rscannotdismiss3
-msgid "Are you trying to shut me down ? Dave ?"
-msgstr "¿Intenta apagarme? ¿Dave?"
-
-# Revisa
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr "tomboy-ng no pudo indizar una nota o más."
-
-#: recover.rsallrestored
-msgid "Notes and config files Restored, restart suggested."
-msgstr "Notas y configuración restablecidos. Se recomienda reiniciar."
-
-#: recover.rsbadnotes_1
-msgid "You have"
-msgstr "Tiene"
-
-#: recover.rsbadnotes_2
-msgid " bad notes in Notes Directory"
-msgstr " notas corrompidas en el directorio de notas"
-
-#: recover.rsclickbadnote
-msgid "Double click on any Bad Notes"
-msgstr "Hacer doble clic en las notas corrompidas"
-
-#: recover.rsclicksnapshot
-msgid "Double Click an Available Snapshot"
-msgstr "Hacer doble clic en una instantánea"
-
-#: recover.rsdeleteandreplace_1
-msgid "Notes at risk !"
-msgstr "¡Notas en peligro!"
-
-#: recover.rsdeleteandreplace_2
-msgid "Delete all notes in"
-msgstr "Eliminar todas las notas en"
-
-#: recover.rsdeleteandreplace_3
-msgid "and replace with snapshot dated"
-msgstr "y reemplazarlas con la instantánea con del"
-
-# Refiere a notas corrompidas
-#: recover.rsdeleteddamaged_1
-msgid "OK, deleted"
-msgstr "OK, se eliminaron"
-
-#: recover.rsdeleteddamaged_2
-msgid "damaged notes"
-msgstr "notas corrompidas"
-
-#: recover.rsnobadnotes
-msgid "No errors, perhaps you should proceed to Snapshots"
-msgstr "Ningún error, quizá debería continuar a Instantáneas"
-
-# ¿Revisar?
-#: recover.rsnosafetysnapshot
-msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
-msgstr "No se encontró ninguna instantánea de seguridad. Intente establecer el directorio donde quizá hay una."
-
-# ¿Número variable antes o etiqueta de pestaña?
-#: recover.rsnotesinsnap
-msgid "Notes in Snapshot"
-msgstr "Notas en la instantánea"
-
-#: recover.rstryrecover_1
-msgid "Proceed to Snapshots or try to recover by double clicking below,"
-msgstr "Continúe a instantáneas o intente recuperar haciendo doble clic abajo,"
-
-#: recover.rstryrecover_2
-msgid "if and only IF, you see useful content, make a small change, exit"
-msgstr "si y solamente SI ve contenidos útiles, haga un cambio pequeño, salir"
-
-#: recover.rswehavesnapshots_1
-msgid "We have"
-msgstr "Tenemos"
-
-#: recover.rswehavesnapshots_2
-msgid "snapshots"
-msgstr "instantáneas"
 
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Todo terminado"
+
+#: resourcestr.rsallrestored
+#, fuzzy
+msgctxt "resourcestr.rsallrestored"
+msgid "Notes and config files Restored, restart suggested."
+msgstr "Notas y configuración restablecidos. Se recomienda reiniciar."
 
 #: resourcestr.rsautosnapshotrun
 msgid "Completed autosnapshot run."
@@ -206,7 +98,18 @@ msgstr "Cambiar el nombre de este cuaderno"
 msgid "Change Sync Repo"
 msgstr "Cambiar repositorio de sincronización"
 
-# ¿Mejorar?
+
+#: resourcestr.rsclickbadnote
+#, fuzzy
+msgctxt "resourcestr.rsclickbadnote"
+msgid "Double click on any Bad Notes"
+msgstr "Hacer doble clic en las notas corrompidas"
+
+#: resourcestr.rsclicksnapshot
+msgctxt "resourcestr.rsclicksnapshot"
+msgid "Click an Available Snapshot"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
@@ -216,6 +119,23 @@ msgstr "No se copió al directorio de copias de seguridad"
 msgctxt "resourcestr.rscreatenewrepo"
 msgid "Create a new Repo ?"
 msgstr "¿Crear un repositorio nuevo?"
+
+#: resourcestr.rsdeleteandreplace_1
+#, fuzzy
+msgctxt "resourcestr.rsdeleteandreplace_1"
+msgid "Notes at risk !"
+msgstr "¡Notas en peligro!"
+
+#: resourcestr.rsdeleteandreplace_2
+#, object-pascal-format
+msgctxt "resourcestr.rsdeleteandreplace_2"
+msgid "Delete all notes in %s and replace with snapshot dated %s ?"
+msgstr ""
+
+#: resourcestr.rsdeleteddamaged
+#, object-pascal-format
+msgid "OK, deleted %d damaged notes"
+msgstr ""
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -277,18 +197,13 @@ msgstr "Mostrar mensaje de ayuda y salir."
 
 #: resourcestr.rshelplang
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported es, nl"
-msgstr "Forzar idioma. Idiomas suportados: es, nl"
+msgid "Force Language, supported en, es, nl"
+msgstr "Forzar idioma. Idiomas suportados: en, es, nl"
 
 #: resourcestr.rshelpnosplash
 msgctxt "resourcestr.rshelpnosplash"
 msgid "Dont show small status/splash window"
 msgstr "No mostrar ventana de estado/bienvenida"
-
-#: resourcestr.rshelpredhat
-msgctxt "resourcestr.rshelpredhat"
-msgid "Deprecated"
-msgstr "Desfasado"
 
 #: resourcestr.rshelpsaveexit
 msgctxt "resourcestr.rshelpsaveexit"
@@ -373,6 +288,14 @@ msgstr "Hay una versión más nueva en el repositorio principal"
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr "Ya está en el repositorio"
+
+#: resourcestr.rsnotebookoptioncmd
+msgid "Cmd click for Notebook Options"
+msgstr ""
+
+#: resourcestr.rsnotebookoptionright
+msgid "Right click for Notebook Options"
+msgstr ""
 
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
@@ -488,6 +411,15 @@ msgctxt "resourcestr.rstestingsync"
 msgid "Testing Sync"
 msgstr "Probando sincronización"
 
+#: resourcestr.rstryrecover_1
+msgid "Try to recover a bad note by double clicking below,"
+msgstr ""
+
+#: resourcestr.rstryrecover_2
+msgctxt "resourcestr.rstryrecover_2"
+msgid "if that fails, you may be able to recover it from a Snapshot."
+msgstr ""
+
 #: resourcestr.rsunabletoproceed
 msgctxt "resourcestr.rsunabletoproceed"
 msgid "Unable to proceed because"
@@ -497,6 +429,11 @@ msgstr "No se puede continuar porque"
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr "No se puede sincronizar porque "
+
+#: resourcestr.rswehavesnapshots
+#, object-pascal-format
+msgid "We have %d snapshots"
+msgstr ""
 
 # Creo que está bien.
 #: settings.rsdictionaryfailed
@@ -531,10 +468,6 @@ msgstr "Seleccione el directorio que quiere usar"
 #: settings.rsselectlibrary
 msgid "Select your hunspell library"
 msgstr "Seleccione su biblioteca Hunspell"
-
-#: settings.rssetfilesyncrepo
-msgid "Set File Sync Repo"
-msgstr "Establecer Repositorio de Sincronización"
 
 #: spelling.rscheckingfull
 msgid "Checking full document"
@@ -872,28 +805,6 @@ msgctxt "tformcolours.speedtitle.caption"
 msgid "Title"
 msgstr "Título"
 
-#: tformhelpnotes.buttonclose.caption
-msgctxt "tformhelpnotes.buttonclose.caption"
-msgid "Close"
-msgstr "Cerrar"
-
-#: tformhelpnotes.buttonrestore.caption
-msgid "Restore English"
-msgstr "Restaurar el inglés"
-
-#: tformhelpnotes.caption
-msgctxt "tformhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr "Idioma de las notas de ayuda"
-
-#: tformhelpnotes.label1.caption
-msgid "Double click a Language below"
-msgstr "Haga doble clic en un idioma"
-
-#: tformhelpnotes.label2.caption
-msgid "Contact author if you can help translate."
-msgstr "Pongase en contacto si puede ayudar con traducciones."
-
 #: tformindex.caption
 msgid "Heading in this Note"
 msgstr "Cabecera de esta nota"
@@ -924,16 +835,14 @@ msgstr "Pulse Ctrl-A, Ctrl-C para copiar"
 msgid "Markdown Exporter"
 msgstr "Exportador de Markdown"
 
-#: tformrecover.button4.caption
-msgid "Restore from Safety Snapshot"
-msgstr "Restuarar desde Instantánea de Seguridad"
-
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr "Eliminar Notas Corrompidas"
 
 #: tformrecover.buttonmakesafetysnap.caption
-msgid "Safety Snapshot"
+#, fuzzy
+#| msgid "Safety Snapshot"
+msgid "Take a manual Snapshot"
 msgstr "Instantánea de Seguridad"
 
 #: tformrecover.buttonmakesafetysnap.hint
@@ -959,12 +868,10 @@ msgstr "ModeloRecuperar"
 msgid "Please close any notes you may have open."
 msgstr "Por favor, si hay notas abiertas, ciérrelas."
 
-#: tformrecover.label11.caption
-msgid "or you do one of -"
-msgstr "o realice una de -"
-
 #: tformrecover.label12.caption
-msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+#, fuzzy
+#| msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr "No lo haga sin tener una instantánea de seguridad reciente. (Pestaña \"Introducción\")"
 
 #: tformrecover.label14.caption
@@ -992,7 +899,9 @@ msgid "Remove all existing notes and use the ones in the Snapshot."
 msgstr "Eliminar todas las notas actuales y usar las notas de la instantánea."
 
 #: tformrecover.label5.caption
-msgid "Look firstly at your existing notes"
+#, fuzzy
+#| msgid "Look firstly at your existing notes"
+msgid "Looking for notes with damaged XML"
 msgstr "Primero mire a sus notas actuales"
 
 # Hecha más corta por falta de espacio.
@@ -1002,12 +911,10 @@ msgstr "Esta herramienta puede ayudarle recuperar las notas."
 
 # "directorio" omitida para hacerlo más corto
 #: tformrecover.label7.caption
-msgid "Before you start, take a Safety Snapshot of your notes directory."
+#, fuzzy
+#| msgid "Before you start, take a Safety Snapshot of your notes directory."
+msgid "Before you start, take a Snapshot of your notes directory."
 msgstr "Antes de empezar, haga un instantánea de seguridad de las notas."
-
-#: tformrecover.label8.caption
-msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
-msgstr "Haga sola una instantánea de seguridad, porque las nuevas la sobrescribirán."
 
 #: tformrecover.label9.caption
 msgid "From here you can view snapshot notes, one by one."
@@ -1021,9 +928,9 @@ msgstr "Éstas son las instantáneas actuales encontradas. "
 msgid "Available Snapshots"
 msgstr "Instantáneas disponibles"
 
-#: tformrecover.tabsheetexisting.caption
-msgid "Existing Notes"
-msgstr "Notas actuales"
+#: tformrecover.tabsheetbadnotes.caption
+msgid "Bad Notes"
+msgstr ""
 
 #: tformrecover.tabsheetintro.caption
 msgid "Introduction"
@@ -1033,13 +940,13 @@ msgstr "Introducción"
 msgid "Merge Snapshot"
 msgstr "Combinar Instantánea"
 
+#: tformrecover.tabsheetrecovernotes.caption
+msgid "Recover Notes"
+msgstr ""
+
 #: tformrecover.tabsheetrecoversnapshot.caption
 msgid "Recover Snapshot"
 msgstr "Recuperar Instantánea"
-
-#: tformrecover.tabsheetsnapshots.caption
-msgid "Notes in a Snapshot"
-msgstr "Notas en Instantánea"
 
 #: tformsdiff.bitbtnuselocal.caption
 msgid "Use Local"
@@ -1461,14 +1368,6 @@ msgctxt "tsearchform.buttonmenu.caption"
 msgid "Menu"
 msgstr "Menú"
 
-#: tsearchform.buttonnotebookoptions.caption
-msgid "Notebook Options"
-msgstr "Opciones de cuadernos"
-
-#: tsearchform.buttonnotebookoptions.hint
-msgid "Manage the Notebooks"
-msgstr "Gestionar los cuadernos"
-
 #: tsearchform.buttonrefresh.caption
 msgid "Refresh"
 msgstr "Actualizar"
@@ -1526,11 +1425,6 @@ msgstr "Fuente monoespaciada"
 msgid "Usual Font"
 msgstr "Fuente habitual"
 
-#: tsett.buttonhelpnotes.caption
-msgctxt "tsett.buttonhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr "Idioma de las notas de ayuda"
-
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
 msgstr "Hacer una Instantánea Manual"
@@ -1580,6 +1474,7 @@ msgctxt "tsett.caption"
 msgid "Form Caption"
 msgstr "Leyenda formulario"
 
+
 #: tsett.checkautosnapenabled.caption
 msgctxt "tsett.checkautosnapenabled.caption"
 msgid "Use auto snapshots"
@@ -1598,11 +1493,6 @@ msgstr "Sincronización automática"
 msgctxt "tsett.checkboxautosync.hint"
 msgid "Sync, if possible once an hour."
 msgstr "Sincronizar cada hora si es posible"
-
-#: tsett.checkcasesensitive.caption
-msgctxt "tsett.checkcasesensitive.caption"
-msgid "Case Sensitive"
-msgstr "Sensible a mayúsculas"
 
 # Prefiero "en más de uno"
 #: tsett.checkmanynotebooks.caption
@@ -1640,11 +1530,6 @@ msgstr "Se muestra siempre si hay un error al cargar las notas."
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Mostrar Sincronización Tomdroid (experimental)"
 
-# Aparece en la primera pestaña de Preferencias.
-#: tsett.groupbox1.caption
-msgid "Main Search Window is : "
-msgstr "Opciones de búsqueda:"
-
 # ¿Preferencias? - en Preferencias de sincro
 #: tsett.groupbox4.caption
 msgid "  Options  "
@@ -1663,9 +1548,14 @@ msgid "Settings will be saved in :"
 msgstr "Preferencias se guardarán en:"
 
 #: tsett.label10.caption
+#, fuzzy
 msgctxt "tsett.label10.caption"
-msgid "Settings"
-msgstr "Preferencias"
+msgid "Help Notes Language"
+msgstr "Idioma de las notas de ayuda"
+
+#: tsett.label11.caption
+msgid "Backup Files"
+msgstr ""
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
@@ -1793,8 +1683,11 @@ msgstr "Básico"
 msgid "Notes"
 msgstr "Notas"
 
-#: tsett.tabsnapshot.caption
-msgid "SnapShot"
+#: tsett.tabrecover.caption
+#, fuzzy
+#| msgid "SnapShot"
+msgctxt "tsett.tabrecover.caption"
+msgid "Recover"
 msgstr "Instantánea"
 
 #: tsett.tabspell.caption

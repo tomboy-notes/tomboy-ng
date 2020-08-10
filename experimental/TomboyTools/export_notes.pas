@@ -62,6 +62,7 @@ type
 
 
   public
+    FileNameIsTitle : boolean;      // Else its the existing note base file name, the ID
     NoteTitle : string;             // If not empty we are exporting just this note.
     // AllNotes  : boolean;            // if true, we do all notes in indicated directory.
     NoteDir   : string;             // Dir containg the note or notes to export
@@ -460,6 +461,7 @@ var
     StList : TStringList;
     LTitle : integer;
     Index : integer;
+    OutFileName : string;
 begin
     if not FileExists(NoteDir + ID + '.note') then exit(False);
     //debugln('export ' + NoteDir + ID + '.note to ' + DestDir + TitleFromID(ID, True, LTitle) + '.md');
@@ -483,7 +485,31 @@ begin
         ProcessHeadings(StList);
         ProcessMarkUp(StList);
         StList.LineBreak := LineEnding + LineEnding;
-        if FileExistsUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md') then
+
+        if FileNameIsTitle then
+            OutFileName := DestDir + TitleFromID(ID, True, LTitle) + '.md'
+        else OutFileName := DestDir + ID + '.md';
+
+        if FileExistsUTF8(OutFileName) then
+            DeleteFileUTF8(OutFileName);
+        if FileExistsUTF8(OutFileName) then begin
+            ErrorMessage := 'Failed to overwrite ' + OutFileName;
+            exit(False);
+        end;
+        try
+            StList.SaveToFile(OutFileName);
+        except on E: EStreamError do begin
+                ErrorMessage := 'Save error against ' + OutFileName;
+                exit(False);
+            end;
+        end;
+    finally
+        StList.free;
+	end;
+
+
+
+        (*if FileExistsUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md') then
             DeleteFileUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md');
         if FileExistsUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md') then begin
             ErrorMessage := 'Failed to overwrite ' + DestDir + TitleFromID(ID, True, LTitle) + '.md';
@@ -498,7 +524,7 @@ begin
         end;
     finally
         StList.free;
-	end;
+	end;    *)
 end;
 
 function TExportNote.RemoveTags(var St : string; out Tag : string) : boolean;

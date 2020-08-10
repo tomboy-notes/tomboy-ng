@@ -20,11 +20,12 @@ object FormMain: TFormMain
     Height = 382
     Top = 50
     Width = 731
-    ActivePage = TabImport
+    ActivePage = TabExport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object TabExport: TTabSheet
+      Hint = 'ie Preserve File Name'
       Caption = 'Export'
       ClientHeight = 345
       ClientWidth = 725
@@ -147,7 +148,7 @@ object FormMain: TFormMain
         AnchorSideRight.Control = TabExport
         AnchorSideRight.Side = asrBottom
         Left = 379
-        Height = 230
+        Height = 224
         Top = 10
         Width = 336
         Anchors = [akTop, akRight]
@@ -166,6 +167,38 @@ object FormMain: TFormMain
         Width = 89
         Caption = 'Version 0.02'
         ParentColor = False
+      end
+      object GroupBox2: TGroupBox
+        Left = 472
+        Height = 86
+        Top = 248
+        Width = 192
+        Caption = 'File Name is'
+        ClientHeight = 65
+        ClientWidth = 188
+        TabOrder = 4
+        object RadioFileNameTitle: TRadioButton
+          Left = 8
+          Height = 24
+          Hint = 'Use note title to make new file.'
+          Top = 8
+          Width = 98
+          Caption = 'Note Title'
+          Checked = True
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+        end
+        object RadioFileNameID: TRadioButton
+          Left = 8
+          Height = 24
+          Top = 32
+          Width = 139
+          Caption = 'Note File Name'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
+        end
       end
     end
     object TabImport: TTabSheet
@@ -269,9 +302,9 @@ object FormMain: TFormMain
         TabOrder = 3
         object RadioTitleFirstLine: TRadioButton
           Left = 8
-          Height = 23
+          Height = 24
           Top = 8
-          Width = 90
+          Width = 92
           Caption = 'First Line'
           Checked = True
           TabOrder = 0
@@ -279,9 +312,9 @@ object FormMain: TFormMain
         end
         object RadioTitleFilename: TRadioButton
           Left = 8
-          Height = 23
+          Height = 24
           Top = 40
-          Width = 90
+          Width = 92
           Caption = 'Filename'
           TabOrder = 1
         end
@@ -318,7 +351,7 @@ object FormMain: TFormMain
       Height = 19
       Top = 16
       Width = 448
-      Caption = 'Tested against tomboy-ng, should work with Tomboy etc. v0.03'
+      Caption = 'Tested against tomboy-ng, should work with Tomboy etc. v0.04'
       ParentColor = False
     end
   end
@@ -381,7 +414,7 @@ object FormMain: TFormMain
     end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 440
-    top = 344
+    left = 344
+    top = 392
   end
 end

@@ -23,7 +23,7 @@ OS="linux"
 PROJ=Tomboy_NG             # the formal name of the project, it's in project file.
 CURRENT_DIR=$PWD
 SOURCE_DIR="$PWD/tomboy-ng-master"
-COMPILE_DIR="$SOURCE_DIR/tomboy-ng"
+COMPILE_DIR="$SOURCE_DIR/source"
 
 TARGET="$CPU-$OS"
 #LAZ_FULL_DIR="$PWD/fixes_2_0"	# point to pre-existing copy if you like but don't rebuild it !!!!!! 
@@ -50,27 +50,48 @@ function ShowHelp () {
     echo "run unless set below. Use an Existing install of Lazarus if available."
     echo "David Bannon, May 2020" 
     echo "-h   print help message"
-    echo "-L   get (and compile) Lazarus, big download !"
+    echo "-L   get (and compile) Lazarus, big download, ~400Meg!"
 #    echo "-F   get FPC - not implemented"
     echo "-K   get (and compile) KControls"
     echo "-T   download fresh tomboy-ng source"
-    echo "-R   refresh existing tomboy-ng source, dont use with -T"
-    echo "-E   dir of Existing Lazarus install, eg where we find lazbuild"
+    echo "-R   refresh existing tomboy-ng source, dont use with or before -T"
+    echo "-e   dir of existing Lazarus install, eg where we find lazbuild"
+    echo "-E   dir of Existing Lazarus install, build the necessary files"
+    echo "-c   specify CPU, default is x86_64, also supported arm"
     echo " "
+    echo "For example, you have downloaded Lazarus src, this is its first run, you have"
+    echo "the tomboy-ng source tree in this dir but need KControls, on a Raspberry Pi :"
+    echo "bash ./buildit.bash -E /home/dbannon/bin/Lazarus/trunk -carm -K"
     exit
 }
 
+function BuildLaz () {    # builds only  lazbuild and LCL
+	echo "--- Building lazbuild and lcl ---"
+	cd "$LAZ_FULL_DIR"
+	make lazbuild 1> Lazbuild_log.txt
+	if [ ! -e lazbuild ]; then
+		echo "ERROR failed to build lazbuild, exiting ....."
+		LAZ_FULL_DIR=""
+		exit
+	fi
+	make lcl 1> LCL_log.txt
+ 	LAZ_FULL_DIR=$PWD			# ToDo : must test that somehow......  
+}
 
-while getopts ":hKFLTRE:" opt; do
+while getopts ":hKFLTRE:e:c:" opt; do
   case $opt in
     h)
       ShowHelp
       ;;
+    c)
+	CPU="$OPTARG"
+	TARGET="$CPU-$OS"
+	;;
     L)
       echo "Get Lazarus" >&2
       GETLAZARUS=YES
       ;;
-    F)
+    F)"$OPTARG"
       echo "Get FPC" >&2;
       GETFPC=YES;
       echo "Do it yourself !"
@@ -93,13 +114,22 @@ while getopts ":hKFLTRE:" opt; do
       fi
       REFRESHTOMBOYNG=YES
       ;;
+    e)
+	if [ "$GETLAZARUS" = "YES" ]; then
+		echo "You cannot use both -L and -e"
+		ShowHelp
+	fi
+	LAZ_FULL_DIR="$OPTARG"
+        ;;
     E)
 	if [ "$GETLAZARUS" = "YES" ]; then
 		echo "You cannot use both -L and -E"
 		ShowHelp
 	fi
 	LAZ_FULL_DIR="$OPTARG"
-        ;;	
+	BUILDLAZ="YES"
+        ;;
+
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -143,17 +173,14 @@ if [ "$GETLAZARUS" = "YES" ]; then
 	# zip -r trunk.zip trunk
 	unzip trunk.zip
 	cd "$LAZ_VER"
-	make lazbuild 1> Lazbuild_log.txt
-	if [ ! -e lazbuild ]; then
-		echo "ERROR failed to build lazbuild, exiting ....."
-		LAZ_FULL_DIR=""
-		exit
-	fi
-	make lcl 1> LCL_log.txt
- 	LAZ_FULL_DIR=$PWD			# ToDo : must test that somehow......
+	BuildLaz			# always build if its fresh
 	cd "$CURRENT_DIR"
 else
-	echo "Hoping to find lazbuild pre built"
+	echo "Hoping to existing Lazarus files."
+	if [ "$BUILDLAZ" = "YES" ]; then
+	    BuildLaz
+	fi
+	cd "$CURRENT_DIR"
 	if [ -a "$LAZ_FULL_DIR/lazbuild" ]; then 
 		echo "We have lazbuild"
 	else
@@ -192,6 +219,7 @@ cd Pascal/KControls-master/packages/kcontrols
 # "$LAZ_FULL_DIR/lazbuild"
 LAZBUILD="$LAZ_FULL_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_FULL_DIR kcontrolslaz.lpk"
 echo "Laz build command is $LAZBUILD"
+
 $LAZBUILD
 rm -Rf "$TEMPCONFDIR"
 if [ ! -d "lib" ]; then
@@ -219,6 +247,7 @@ echo "K_DIR = $K_DIR"
 echo "Lazarus   = $LAZ_FULL_DIR"
 echo "Refresh tomboy-ng source = $REFRESHTOMBOYNG"
 echo "Download a new copy of tomboy-ng = $GETTOMBOYNG"
+echo "CPU type = $CPU"
 echo "Exclude Compiler Messages = $EXCLUDEMESSAGE"
 echo "-------------------------------------------------------"
 
@@ -299,9 +328,11 @@ echo "----- Building tomboy-ng in $PWD -------"
 # echo "OPTS2 - $OPTS2"
 
 RUNIT="$COMPILER $OPT1 $UNITS $OPT2 $DEFS $PROJ.lpr"
-# echo "--------------- COMPILE COMMAND ------------------------"
-# echo "$RUNIT"
-# echo "--------------------------------------------------------"
+echo "--------------- COMPILE COMMAND ------------------------"
+echo "$RUNIT"
+echo "--------------------------------------------------------"
+
+
 
 TOMBOY_NG_VER="$VERSION" $RUNIT
 

@@ -16,38 +16,6 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "Geen te evalueren expressie aangetroffen"
 
-#: helpnotes.rs_downloaded
-msgid "Downloaded so far: "
-msgstr "Reeds gedownload:"
-
-#: helpnotes.rs_downloading
-msgid "Downloading please wait..."
-msgstr "Bezig met downloaden; even geduld..."
-
-#: helpnotes.rs_installed
-msgctxt "helpnotes.rs_installed"
-msgid "Installed"
-msgstr "Geïnstalleerd"
-
-#: helpnotes.rs_nopowershell
-msgid "Sorry, your Windows does not have Powershell 3"
-msgstr ""
-
-#: helpnotes.rs_nossl
-msgid "You do not appear to have the OpenSSL Library installed"
-msgstr "Het lijkt erop dat OpenSSL niet is geïnstalleerd"
-
-#: helpnotes.rs_restored
-#, fuzzy
-#| msgid "Installed"
-msgctxt "helpnotes.rs_restored"
-msgid "Restored"
-msgstr "Geïnstalleerd"
-
-#: helpnotes.rs_spanish
-msgid "Spanish"
-msgstr "Spaans"
-
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr "Dit is tomboy-ng, een vernieuwde versie van Tomboy Notities, geschreven in Lazarus"
@@ -78,97 +46,21 @@ msgstr "Best.syst."
 msgid "Version"
 msgstr "Versie"
 
-#: mainunit.rscannotdismiss1
-#, fuzzy
-#| msgid "Sadly, on this OS or because of a Bad Note,"
-msgid "Sadly, because of a Bad Note,"
-msgstr "Omwille van een onjuiste notitie,"
-
-#: mainunit.rscannotdismiss2
-msgid "I cannot let you dismiss this window"
-msgstr "kan dit venster niet worden verworpen."
-
-#: mainunit.rscannotdismiss3
-msgid "Are you trying to shut me down ? Dave ?"
-msgstr "Probeer je me af te sluiten? David?"
-
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
 msgstr "Kan één of meerdere notities niet indexeren."
-
-#: recover.rsallrestored
-msgid "Notes and config files Restored, restart suggested."
-msgstr "Notities en configuratiebestanden hersteld; herstart tomboy-ng."
-
-#: recover.rsbadnotes_1
-msgid "You have"
-msgstr "Er staan"
-
-#: recover.rsbadnotes_2
-msgid " bad notes in Notes Directory"
-msgstr " onjuiste notities in de notitiemap"
-
-#: recover.rsclickbadnote
-msgid "Double click on any Bad Notes"
-msgstr "Dubbelklik op de onjuiste notities"
-
-#: recover.rsclicksnapshot
-msgid "Double Click an Available Snapshot"
-msgstr "Dubbelklik op de beschikbare momentopname"
-
-#: recover.rsdeleteandreplace_1
-msgid "Notes at risk !"
-msgstr "Beveiligingsprobleem!"
-
-#: recover.rsdeleteandreplace_2
-msgid "Delete all notes in"
-msgstr "Wis alle notities in"
-
-#: recover.rsdeleteandreplace_3
-msgid "and replace with snapshot dated"
-msgstr "en vervang ze door de momentopname d.d."
-
-#: recover.rsdeleteddamaged_1
-msgid "OK, deleted"
-msgstr "Oké, verwijderd"
-
-#: recover.rsdeleteddamaged_2
-msgid "damaged notes"
-msgstr "beschadigde notities"
-
-#: recover.rsnobadnotes
-msgid "No errors, perhaps you should proceed to Snapshots"
-msgstr "Geen fouten; ga door naar de momentopnamen"
-
-#: recover.rsnosafetysnapshot
-msgid "A Safety snapshot not found. Try setting Snapsot Dir to where you may have one."
-msgstr "Geen back-upmomentopname aangetroffen. Stel de momentopnamemap in op de locatie waar de opname staat."
-
-#: recover.rsnotesinsnap
-msgid "Notes in Snapshot"
-msgstr "Notities in momentopname"
-
-#: recover.rstryrecover_1
-msgid "Proceed to Snapshots or try to recover by double clicking below,"
-msgstr "Ga door naar momentopnamen of herstel door hieronder te dubbelklikken"
-
-#: recover.rstryrecover_2
-msgid "if and only IF, you see useful content, make a small change, exit"
-msgstr "áls je bruikbare inhoud ziet. Indien ja, pas dit aan en sluit af."
-
-#: recover.rswehavesnapshots_1
-msgid "We have"
-msgstr "Er zijn"
-
-#: recover.rswehavesnapshots_2
-msgid "snapshots"
-msgstr "momentopnamen"
 
 #: resourcestr.rsalldone
 #, fuzzy
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Voltooid"
+
+#: resourcestr.rsallrestored
+#, fuzzy
+msgctxt "resourcestr.rsallrestored"
+msgid "Notes and config files Restored, restart suggested."
+msgstr "Notities en configuratiebestanden hersteld; herstart tomboy-ng."
 
 #: resourcestr.rsautosnapshotrun
 msgid "Completed autosnapshot run."
@@ -178,11 +70,17 @@ msgstr ""
 msgid "Auto sync not possible right now"
 msgstr ""
 
+#: resourcestr.rsbadnotes
+#, object-pascal-format
+msgctxt "resourcestr.rsbadnotes"
+msgid "You have %d bad notes in Notes Directory"
+msgstr ""
+
 #: resourcestr.rsbadnotesfound1
 #, fuzzy
 #| msgid "Bad notes found, goto Settings -> Snapshots -> Existing Notes."
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Snapshot -> Recover ...."
+msgid "Please go to Settings -> Recover -> Recover Notes"
 msgstr "Onjuiste notities aangetroffen. Ga naar Instellingen --> Momentopnamen --> Bestaande notities."
 
 #: resourcestr.rsbadnotesfound2
@@ -210,6 +108,17 @@ msgstr ""
 msgid "Change Sync Repo"
 msgstr ""
 
+#: resourcestr.rsclickbadnote
+#, fuzzy
+msgctxt "resourcestr.rsclickbadnote"
+msgid "Double click on any Bad Notes"
+msgstr "Dubbelklik op de onjuiste notities"
+
+#: resourcestr.rsclicksnapshot
+msgctxt "resourcestr.rsclicksnapshot"
+msgid "Click an Available Snapshot"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 #, fuzzy
 msgctxt "resourcestr.rscopyfailed"
@@ -221,6 +130,23 @@ msgstr "Kan origineel niet kopiëren naar back-upmap"
 msgctxt "resourcestr.rscreatenewrepo"
 msgid "Create a new Repo ?"
 msgstr "Wil je een nieuwe repo maken?"
+
+#: resourcestr.rsdeleteandreplace_1
+#, fuzzy
+msgctxt "resourcestr.rsdeleteandreplace_1"
+msgid "Notes at risk !"
+msgstr "Beveiligingsprobleem!"
+
+#: resourcestr.rsdeleteandreplace_2
+#, object-pascal-format
+msgctxt "resourcestr.rsdeleteandreplace_2"
+msgid "Delete all notes in %s and replace with snapshot dated %s ?"
+msgstr ""
+
+#: resourcestr.rsdeleteddamaged
+#, object-pascal-format
+msgid "OK, deleted %d damaged notes"
+msgstr ""
 
 #: resourcestr.rsenternewnotebook
 #, fuzzy
@@ -289,7 +215,7 @@ msgstr "Toon dit hulpbericht en sluit af."
 
 #: resourcestr.rshelplang
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported es, nl"
+msgid "Force Language, supported en, es, nl"
 msgstr ""
 
 #: resourcestr.rshelpnosplash
@@ -297,13 +223,6 @@ msgstr ""
 msgctxt "resourcestr.rshelpnosplash"
 msgid "Dont show small status/splash window"
 msgstr "Geen klein status-/opstartscherm tonen"
-
-#: resourcestr.rshelpredhat
-#, fuzzy
-#| msgid "Run in RedHatGnome mode, no TrayIcon"
-msgctxt "resourcestr.rshelpredhat"
-msgid "Deprecated"
-msgstr "Uitvoeren in RedHatGnome-modus, zonder systeemvakpictogram"
 
 #: resourcestr.rshelpsaveexit
 msgctxt "resourcestr.rshelpsaveexit"
@@ -391,11 +310,25 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Er is een nieuwere versie aanwezig in de hoofdrepo"
 
+#: resourcestr.rsnobadnotes
+#, fuzzy
+msgctxt "resourcestr.rsnobadnotes"
+msgid "No errors, perhaps you should proceed to Snapshots"
+msgstr "Geen fouten; ga door naar de momentopnamen"
+
 #: resourcestr.rsnotealreadyinrepo
 #, fuzzy
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr "Deze notitie bestaat al"
+
+#: resourcestr.rsnotebookoptioncmd
+msgid "Cmd click for Notebook Options"
+msgstr ""
+
+#: resourcestr.rsnotebookoptionright
+msgid "Right click for Notebook Options"
+msgstr ""
 
 #: resourcestr.rsnotebooks
 msgctxt "resourcestr.rsnotebooks"
@@ -416,6 +349,12 @@ msgstr ""
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
 msgstr ""
+
+#: resourcestr.rsnotesinsnap
+#, fuzzy
+msgctxt "resourcestr.rsnotesinsnap"
+msgid "Notes in Snapshot"
+msgstr "Notities in momentopname"
 
 #: resourcestr.rsnotpresent
 #, fuzzy
@@ -527,6 +466,15 @@ msgctxt "resourcestr.rstestingsync"
 msgid "Testing Sync"
 msgstr "Bezig met testen van synchronisatie..."
 
+#: resourcestr.rstryrecover_1
+msgid "Try to recover a bad note by double clicking below,"
+msgstr ""
+
+#: resourcestr.rstryrecover_2
+msgctxt "resourcestr.rstryrecover_2"
+msgid "if that fails, you may be able to recover it from a Snapshot."
+msgstr ""
+
 #: resourcestr.rsunabletoproceed
 #, fuzzy
 msgctxt "resourcestr.rsunabletoproceed"
@@ -538,6 +486,11 @@ msgstr "Kan niet doorgan vanwege"
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr "Kan niet synchroniseren vanwege"
+
+#: resourcestr.rswehavesnapshots
+#, object-pascal-format
+msgid "We have %d snapshots"
+msgstr ""
 
 #: settings.rsdictionaryfailed
 msgid "Library Not Loaded"
@@ -570,10 +523,6 @@ msgstr "Kies de te gebruiken map"
 #: settings.rsselectlibrary
 msgid "Select your hunspell library"
 msgstr "Kies een hunspell-bibliotheek"
-
-#: settings.rssetfilesyncrepo
-msgid "Set File Sync Repo"
-msgstr "Bestandssynchronisatie instellen"
 
 #: spelling.rscheckingfull
 msgid "Checking full document"
@@ -910,28 +859,6 @@ msgctxt "tformcolours.speedtitle.caption"
 msgid "Title"
 msgstr ""
 
-#: tformhelpnotes.buttonclose.caption
-msgctxt "tformhelpnotes.buttonclose.caption"
-msgid "Close"
-msgstr "Sluiten"
-
-#: tformhelpnotes.buttonrestore.caption
-msgid "Restore English"
-msgstr "Engels herstellen"
-
-#: tformhelpnotes.caption
-msgctxt "tformhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr "Taal van hulpnotities"
-
-#: tformhelpnotes.label1.caption
-msgid "Double click a Language below"
-msgstr "Dubbelklik hieronder op een taal"
-
-#: tformhelpnotes.label2.caption
-msgid "Contact author if you can help translate."
-msgstr "Neem contact op met de ontwikkelaar als je bereid bent te helpen vertalen."
-
 #: tformindex.caption
 msgid "Heading in this Note"
 msgstr ""
@@ -964,16 +891,14 @@ msgstr ""
 msgid "Markdown Exporter"
 msgstr ""
 
-#: tformrecover.button4.caption
-msgid "Restore from Safety Snapshot"
-msgstr "Herstellen uit back-upmomentopname"
-
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr "Onjuiste notities verwijderen"
 
 #: tformrecover.buttonmakesafetysnap.caption
-msgid "Safety Snapshot"
+#, fuzzy
+#| msgid "Safety Snapshot"
+msgid "Take a manual Snapshot"
 msgstr "Back-upmomentopname"
 
 #: tformrecover.buttonmakesafetysnap.hint
@@ -1000,12 +925,10 @@ msgstr "Herstelpagina"
 msgid "Please close any notes you may have open."
 msgstr "Sluit alle geopende notities."
 
-#: tformrecover.label11.caption
-msgid "or you do one of -"
-msgstr "Of doe één van de volgende dingen:"
-
 #: tformrecover.label12.caption
-msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+#, fuzzy
+#| msgid "Don't even consider this unless you have a recent Safety Snapshot, Intro Tab."
+msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr "Overweeg dit niet als je geen recente back-upmomentopname hebt."
 
 #: tformrecover.label14.caption
@@ -1033,7 +956,9 @@ msgid "Remove all existing notes and use the ones in the Snapshot."
 msgstr "Verwijder alle bestaande notities en gebruik de notities uit de momentopname."
 
 #: tformrecover.label5.caption
-msgid "Look firstly at your existing notes"
+#, fuzzy
+#| msgid "Look firstly at your existing notes"
+msgid "Looking for notes with damaged XML"
 msgstr "Kijk eerst naar je bestaande notities"
 
 #: tformrecover.label6.caption
@@ -1041,12 +966,10 @@ msgid "This tool might help you recover lost or damaged notes."
 msgstr "Dit hulpmiddel helpt je kwijtgeraakte of beschadigde notities te herstellen."
 
 #: tformrecover.label7.caption
-msgid "Before you start, take a Safety Snapshot of your notes directory."
+#, fuzzy
+#| msgid "Before you start, take a Safety Snapshot of your notes directory."
+msgid "Before you start, take a Snapshot of your notes directory."
 msgstr "Maak, voordat je begint, een back-upmomentopname van je notitiemap."
-
-#: tformrecover.label8.caption
-msgid "Don't take repeated Safety Snapshots as each overwrites the previous one."
-msgstr "Doe dit niet te vaak, want nieuwe momentopnamen overschrijven de oude."
 
 #: tformrecover.label9.caption
 msgid "From here you can view snapshot notes, one by one."
@@ -1060,9 +983,9 @@ msgstr "Dit zijn de bekende momentopnamen."
 msgid "Available Snapshots"
 msgstr "Beschikbare momentopnamen"
 
-#: tformrecover.tabsheetexisting.caption
-msgid "Existing Notes"
-msgstr "Bestaande notities"
+#: tformrecover.tabsheetbadnotes.caption
+msgid "Bad Notes"
+msgstr ""
 
 #: tformrecover.tabsheetintro.caption
 msgid "Introduction"
@@ -1072,13 +995,13 @@ msgstr "Inleiding"
 msgid "Merge Snapshot"
 msgstr "Momentopname samenvoegen"
 
+#: tformrecover.tabsheetrecovernotes.caption
+msgid "Recover Notes"
+msgstr ""
+
 #: tformrecover.tabsheetrecoversnapshot.caption
 msgid "Recover Snapshot"
 msgstr "Momentopname herstellen"
-
-#: tformrecover.tabsheetsnapshots.caption
-msgid "Notes in a Snapshot"
-msgstr "Notities in momentopname"
 
 #: tformsdiff.bitbtnuselocal.caption
 msgid "Use Local"
@@ -1494,14 +1417,6 @@ msgctxt "tsearchform.buttonmenu.caption"
 msgid "Menu"
 msgstr ""
 
-#: tsearchform.buttonnotebookoptions.caption
-msgid "Notebook Options"
-msgstr "Notitieboekinstellingen"
-
-#: tsearchform.buttonnotebookoptions.hint
-msgid "Manage the Notebooks"
-msgstr "Notitieboeken beheren"
-
 #: tsearchform.buttonrefresh.caption
 msgid "Refresh"
 msgstr "Verversen"
@@ -1560,11 +1475,6 @@ msgstr "Vastebreedtelettertype"
 #: tsett.buttonfont.caption
 msgid "Usual Font"
 msgstr "Normaal lettertype"
-
-#: tsett.buttonhelpnotes.caption
-msgctxt "tsett.buttonhelpnotes.caption"
-msgid "Help Notes Language"
-msgstr "Taal van hulpnotities"
 
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
@@ -1634,11 +1544,6 @@ msgctxt "tsett.checkboxautosync.hint"
 msgid "Sync, if possible once an hour."
 msgstr ""
 
-#: tsett.checkcasesensitive.caption
-msgctxt "tsett.checkcasesensitive.caption"
-msgid "Case Sensitive"
-msgstr "Hoofdlettergevoelig"
-
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Toestaan dat notities kunnen worden geopend in meerdere notitieboeken"
@@ -1671,10 +1576,6 @@ msgstr "Deze wordt altijd getoond als er fouten zijn opgetreden tijdens het lade
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Tomdroid-synchronisatie tonen (experimenteel)"
 
-#: tsett.groupbox1.caption
-msgid "Main Search Window is : "
-msgstr "Het hoofdzoekvenster is: "
-
 #: tsett.groupbox4.caption
 msgid "  Options  "
 msgstr "  Opties  "
@@ -1692,9 +1593,14 @@ msgid "Settings will be saved in :"
 msgstr "De instellingen worden opgeslagen in:"
 
 #: tsett.label10.caption
+#, fuzzy
 msgctxt "tsett.label10.caption"
-msgid "Settings"
-msgstr "Instellingen"
+msgid "Help Notes Language"
+msgstr "Taal van hulpnotities"
+
+#: tsett.label11.caption
+msgid "Backup Files"
+msgstr ""
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
@@ -1827,8 +1733,11 @@ msgstr "Basis"
 msgid "Notes"
 msgstr "Notities"
 
-#: tsett.tabsnapshot.caption
-msgid "SnapShot"
+#: tsett.tabrecover.caption
+#, fuzzy
+#| msgid "SnapShot"
+msgctxt "tsett.tabrecover.caption"
+msgid "Recover"
 msgstr "Momentopname"
 
 #: tsett.tabspell.caption

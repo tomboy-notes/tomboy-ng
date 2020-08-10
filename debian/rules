@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+# This script uses debhelper by Joey Hess
+# export DH_VERBOSE=1
+
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+ 
+ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+       export CC=$(DEB_HOST_GNU_TYPE)-gcc
+endif
+
+%:
+	dh $@
+
+
+override_dh_auto_install:
+	$(MAKE) install PREFIX=$(CURDIR)/debian/tomboy-ng/usr MAN_BASE_DIR=$(CURDIR)/debian/tomboy-ng/usr/share/man
+
+

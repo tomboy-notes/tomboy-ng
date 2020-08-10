@@ -1,0 +1,136 @@
+object FormBackupView: TFormBackupView
+  Left = 541
+  Height = 472
+  Top = 259
+  Width = 587
+  Caption = 'View, recover or delete Backup Files'
+  ClientHeight = 472
+  ClientWidth = 587
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '2.1.0.0'
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Panel1
+    Left = 5
+    Height = 168
+    Top = 270
+    Width = 575
+    Anchors = [akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Right = 7
+    BorderSpacing.Bottom = 5
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 0
+  end
+  object Panel1: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 29
+    Top = 443
+    Width = 587
+    Anchors = [akLeft, akRight, akBottom]
+    ClientHeight = 29
+    ClientWidth = 587
+    TabOrder = 1
+    object ButtonOpen: TButton
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 1
+      Height = 27
+      Hint = 'Open and view the whole note'
+      Top = 1
+      Width = 100
+      Anchors = [akTop, akLeft, akBottom]
+      Caption = 'View'
+      OnClick = ButtonOpenClick
+      TabOrder = 0
+    end
+    object ButtonRecover: TButton
+      AnchorSideLeft.Control = ButtonOpen
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Panel1
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 101
+      Height = 27
+      Hint = 'Restore this note to main repo'
+      Top = 1
+      Width = 100
+      Anchors = [akTop, akLeft, akBottom]
+      Caption = 'Recover'
+      OnClick = ButtonRecoverClick
+      TabOrder = 1
+    end
+    object ButtonDelete: TButton
+      AnchorSideLeft.Control = ButtonRecover
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Panel1
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 201
+      Height = 27
+      Hint = 'Really, totally delete this note.'
+      Top = 1
+      Width = 100
+      Anchors = [akTop, akLeft, akBottom]
+      Caption = 'Delete'
+      OnClick = ButtonDeleteClick
+      TabOrder = 2
+    end
+    object ButtonOK: TButton
+      AnchorSideTop.Control = Panel1
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 472
+      Height = 27
+      Hint = 'My work here is done.'
+      Top = 1
+      Width = 114
+      Anchors = [akTop, akRight, akBottom]
+      Caption = 'Close'
+      ModalResult = 1
+      TabOrder = 3
+    end
+  end
+  object ListBox1: TListBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Memo1
+    Left = 5
+    Height = 260
+    Hint = 'Use Ctrl or Shift to select multiple entries'
+    Top = 5
+    Width = 577
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
+    ItemHeight = 0
+    MultiSelect = True
+    OnSelectionChange = ListBox1SelectionChange
+    ParentShowHint = False
+    ScrollWidth = 575
+    ShowHint = True
+    TabOrder = 2
+    TopIndex = -1
+  end
+end

@@ -1,0 +1,20 @@
+Steps to build this package into a Debian Source Package.
+--------------------------------------------
+You need two files to start.  The tomboy-ng-master.zip file and a 
+script, prepare.bash that you need to extract from that "zip ball".
+
+Download the tomboy-ng zip from github, run the prepare script
+that will unzip and insert kcontrols into the resulting directory. It
+will then tar it up into a .orig. file. Then run debuild to generate
+the necessary deb src files.  This example does not sign !
+
+wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
+bash ./prepare.bash
+cd tomboy-ng_0.29d-1
+debuild -us -uc
+
+The necessary files, *.debian.tar.xz, *.dsc, *.orig.tar.gz are
+in the directory you started in.
+
+Please report any issues at https://github.com/tomboy-notes/tomboy-ng
+
