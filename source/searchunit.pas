@@ -574,7 +574,7 @@ end;
 procedure TSearchForm.RefreshMenus(WhichSection : TMenuKind; AMenu : TPopupMenu = nil);
 var
     MList : TList;
-    I, Blar : integer;
+    I : integer;
     //T1, T2, T3, T4, T5, T6 : dword;
 begin
     if (WhichSection = mkRecentMenu) and (PopupTBMainMenu.Items.Count = 0)
@@ -1061,9 +1061,9 @@ end;
   Make two columns, name them, leave autwith off, ReadOnly, RowSelect true
   ScrollBars ssAutoVertical, ViewStyle vsReport.
   Note that AutoSortIndicator and SortIndicator are not available in LCL2.0.6 and earlier
-  So, don't set them in the form, leave at default settings and set them in a
-  {if lcl > 2.0.6} structure.  Note, the IDE gets this wrong and greys lines out it should not.
-}
+  So, don't set them in the form, leave at default settings and set them in a  }
+  {if lcl > 2.0.6}
+  { structure.  Note, the IDE gets this wrong and greys lines out it should not. }
 
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string; TemplateIs: AnsiString);
 // Might be called with no Title (NewNote) or a Title with or without a Filename

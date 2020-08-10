@@ -1114,6 +1114,19 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchroniseren"
 
+#: tformsync.listviewreport.columns[0].caption
+msgid "Action"
+msgstr ""
+
+#: tformsync.listviewreport.columns[1].caption
+msgctxt "tformsync.listviewreport.columns[1].caption"
+msgid "Title"
+msgstr ""
+
+#: tformsync.listviewreport.columns[2].caption
+msgid "Note ID"
+msgstr ""
+
 #: tformsyncerror.buttcancel.hint
 msgctxt "tformsyncerror.buttcancel.hint"
 msgid "Stop Auto Sync until next restart"

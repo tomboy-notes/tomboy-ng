@@ -64,6 +64,7 @@ unit SaveNote;
     2019/06/07  Removed unused, historical func to clean xml
     2020/07/17  Esc bad XML in Template name.
     2020/08/08  Added a BOM, a Byte Order Mark, at start of a note.
+    2020/08/10  Removed BOM, no advantage I can find, undefined risk.
 }
 
 {$mode objfpc}{$H+}
@@ -713,8 +714,9 @@ end;
 function TBSaveNote.Header(): ANSIstring;
 var
    S1, S2, S3, S4 : ANSIString;
-begin  // Add a BOM at the start, not essencial, Tomboy did it, make the note no longer a plain text file.
-  S1 := #239#187#191'<?xml version="1.0" encoding="utf-8"?>'#10'<note version="0.3" xmlns:link="';
+begin  // Add a BOM at the start, not essencial, Tomboy did it, makes the note no longer a plain text file. ??
+  //S1 := #239#187#191'<?xml version="1.0" encoding="utf-8"?>'#10'<note version="0.3" xmlns:link="';
+  S1 := '<?xml version="1.0" encoding="utf-8"?>'#10'<note version="0.3" xmlns:link="';
   S2 := 'http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"';
   S3 := ' xmlns="http://beatniksoftware.com/tomboy">'#10'  <title>';
   S4 := '</title>'#10'  <text xml:space="preserve"><note-content version="0.1">';

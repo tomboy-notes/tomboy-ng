@@ -811,7 +811,7 @@ var
     Doc : TXMLDocument;
 	Node : TDOMNode;
     J : integer;
-    TryCount : integer =0;             // only try rewriting bad last-change-date once.
+    //TryCount : integer =0;             // only try rewriting bad last-change-date once.
     //LCD_OK : boolean = false;
 begin
     // debugln('Checking note ', FileName);
@@ -835,7 +835,7 @@ begin
 	                    //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
 	                Node := Doc.DocumentElement.FindNode('last-change-date');
 	                NoteP^.LastChange := Node.FirstChild.NodeValue;
-	                {if (length(NoteP^.LastChange) <> 33) or (length(NoteP^.LastChange) <> 27) {and DebugMode} then begin
+	                {if (length(NoteP^.LastChange) <> 33) or (length(NoteP^.LastChange) <> 27) then begin
 	                    RewriteBadChangeDate(Dir, FileName, NoteP^.LastChange);
                         inc(TryCount);
                         if TryCount > 2 then begin

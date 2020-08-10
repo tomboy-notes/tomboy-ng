@@ -42,6 +42,7 @@ unit Notebook;
     2019/05/19  Display strings all (?) moved to resourcestrings
     2020/02/19  Dont escape new notebook title as sent to notelister.
     2020/05/19  Dont go through ButtonOKOnClick if ModalResult is already set to mrOK
+    2020/08/10  In Windows, SetFocus was setting ModalRes to 1, so, would immediatly close ??
 }
 
 
@@ -144,6 +145,9 @@ procedure TNoteBookPick.SetupForChange();
     NoteID : String;}
 begin
     //  Note : NBIDList does not need to be created or freed. Just a pointer.
+    if Sett.CheckManyNotebooks.Checked then
+        Label2.Caption := rsMultipleNoteBooks
+    else Label2.Caption := rsOneNoteBook;
     TabExisting.TabVisible:=False;
     TabNewNoteBook.TabVisible:=False;
     PageControl1.ActivePage := TabChangeName;
@@ -160,6 +164,7 @@ begin
     if ChangeMode then
         SetUpForChange()
     else SetupForNewSelect();
+    ModalResult := 0;           // On windows, something in setfocus sets this to 1 !
 end;
 
 procedure TNoteBookPick.CheckListBox1ItemClick(Sender: TObject; Index: integer);

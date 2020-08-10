@@ -54,6 +54,7 @@ unit SyncGUI;
     2020/02/20  Added capability to sync without showing GUI.
     2020/06/18  Only show good sync notification for 3 seconds
     2020/08/07  Changed the stringGrid to a ListView 'cos it handles dark themes better.
+    2020/08/10  ListView becomes type=vsReport
 }
 
 {$mode objfpc}{$H+}
@@ -77,7 +78,7 @@ type
 				ButtonClose: TButton;
 				Label1: TLabel;
 				Label2: TLabel;
-                ListViewReport: TListView;
+                ListViewReport: TListView;      // Viewstyle=vsReport, make columns in Object Inspector
 				Memo1: TMemo;
 				Panel1: TPanel;
 				Panel2: TPanel;
@@ -379,7 +380,7 @@ var
 begin
    TheItem := ListViewReport.Items.Add;
    TheItem.Caption := Act;
-   TheItem.SubItems.Add(copy(Title, 1, 20)+' ');
+   TheItem.SubItems.Add(copy(Title, 1, 25)+' ');
    TheItem.SubItems.Add(ID);
 end;
 
