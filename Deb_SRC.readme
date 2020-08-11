@@ -1,20 +1,65 @@
-Steps to build this package into a Debian Source Package.
---------------------------------------------
-You need two files to start.  The tomboy-ng-master.zip file and a 
-script, prepare.bash that you need to extract from that "zip ball".
+Steps to build Debian Source Package for tomboy-ng.
+---------------------------------------------------
+ 
+You need two files to start.  The tomboy-ng-master.zip file and the 
+script, prepare.bash.  You should already have FPC and Lazarus installed. And
+the tomboy-ng build dependencies, gtk2-dev, libnotify-dev etc. 
+If you just want to make a binary thats all you need. If you are making a deb 
+or a deb src package, you will need the devscripts package installed and some 
+config, such as -
 
-Download the tomboy-ng zip from github, run the prepare script
-that will unzip and insert kcontrols into the resulting directory. It
-will then tar it up into a .orig. file. Then run debuild to generate
-the necessary deb src files.  This example does not sign !
+ * In ~/.devscripts.conf a line defining the GPG key you will sign with. eg
+   DEBSIGN_KEYID=your-key-fingerprint
+   Note : while it says 'keyid' its happier with the full fingerprint.
+
+ * Edit the prepare script so that DEBEMAIL and DEBFULLNAME match the key.
+   $DEBFULLNAME <$DEBEMAIL> must look exactly like the key's version. 
+
+
+Download the tomboy-ng zip file from github -
 
 wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
-bash ./prepare.bash
-cd tomboy-ng_0.29d-1
-debuild -us -uc
+mv master.zip tomboy-ng-master.zip
 
-The necessary files, *.debian.tar.xz, *.dsc, *.orig.tar.gz are
-in the directory you started in.
+Note : clicking the Github tomboy-ng page's Code -> Download Zip from github
+       will get you the file called tomboy-ng-master.zip however, wget gets a 
+       master.zip and that must be renamed.
+
+You can now extract the prepare.bash script from the zip file or, perhaps easier
+download it from the github tomboy-ng page, browse to prepare.bash, click the
+"raw" button, right click, save_as.
+
+The prepare script will unzip the zip file, download kcontrols and insert its
+source into the working directory, leave some semophores for the buildit.bash
+script about where your FPC and Lazarus is (if you have them in user space, not
+needed if installed in root space).  It then creates a .orig.tar.gz file that
+becomes the reference for the deb source package.  
+
+Note that the .orig.tar.gz file's content must be identical to the working 
+directory at this stage, the build process will fail if you change anything in
+working dir after the .orig.tar.gz file is created.  If you need to change 
+things, perhaps you are going to sign with your key (you cannot use mine!) or
+you wish to change build target or dependencies for example, give the prepare
+script a -p option, it will pause before making the .orig.tar.gz file. 
+
+cd into the working dir, its called  tomboy-ng_{$VER-1}.   And do one of -
+
+ * If you just want the binary, run bash ./buildit.bash  no signing needed and 
+   you will find the binary down in the source directory.  
+
+ * If you want a binary deb, you must have devscripts installed, and some config
+   things, you should have changed the prepare script wrt your own gpg key.
+   In the working directory, run    debbuild -us uc
+   The binary dep will appear (along with src files) in directory above.
+
+ * If you are going to build a full deb src package, to eg submit to a PPA
+   then first check its building OK with above step then run  debuild -S
+   you will be asked sign it and it will leave the necessary files in the
+   directory above.
+
+   cd up and make sure you see a tomboy-ng_{$VER-1}_source.changes file. Run -
+   dput ppa:d-bannon/ppa-tomboy-ng tomboy-ng_0.29e-1_source.changes [enter]
+   Note : pretty obviously, you won't be submitting to my PPA so change it.
 
 Please report any issues at https://github.com/tomboy-notes/tomboy-ng
 

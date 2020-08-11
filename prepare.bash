@@ -19,6 +19,7 @@
 APP="tomboy-ng"
 # DEBEMAIL="dbannon@internode.on.net"
 DEBEMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
+DEBFULLNAME="tomboy-ng"			# This matches cert I use to sign tomboy-ng stuff
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
@@ -140,6 +141,7 @@ rm -f WHICHFPC WHICHLAZ
 if [ -f tomboy-ng-master.zip ]; then
 	CheckFPC_LAZ
 	export DEBEMAIL
+	export DEBFULLNAME
 	unzip -q tomboy-ng-master.zip
 	if [ "$UFILES" = "YES" ]; then
 		if [ "Makefile" -nt "tomboy-ng-master/Makefile" ]; then
