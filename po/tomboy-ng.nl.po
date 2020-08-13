@@ -316,8 +316,8 @@ msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
 msgstr "Deze notitie bestaat al"
 
-#: resourcestr.rsnotebookoptioncmd
-msgid "Cmd click for Notebook Options"
+#: resourcestr.rsnotebookoptionctrl
+msgid "Ctrl click for Notebook Options"
 msgstr ""
 
 #: resourcestr.rsnotebookoptionright

@@ -354,8 +354,10 @@ begin
         ASync.StartSync();
         SyncSummary :=  DisplaySync();
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
-        Notifier := TNotifier.Create;                                           // does not require a 'free'.
-        Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary, 3000);
+        if not Visible then begin
+            Notifier := TNotifier.Create;                                           // does not require a 'free'.
+            Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary, 3000);
+        end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Label1.Caption:=rsAllDone;
@@ -404,23 +406,27 @@ var
         Index : integer;
         Rows : integer = 0;
 begin
-     	with ASync.NoteMetaData do begin
-    		for Index := 0 to Count -1 do begin
-                if Items[Index]^.Action <> SyNothing then begin
-                        {StringGridReport.InsertRowWithValues(Rows
-                	        , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
-                            , Items[Index]^.Title, Items[Index]^.ID]);  }
-                        AddLVItem(
-                            ASync.NoteMetaData.ActionName(Items[Index]^.Action)
-                            , Items[Index]^.Title
-                            , Items[Index]^.ID);
-                        inc(Rows);
-                end;
-    		end
-    	end;
-        if  Rows = 0 then
-            Memo1.Append(rsNoNotesNeededSync)
-        else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
+    with ASync.NoteMetaData do begin
+	    for Index := 0 to Count -1 do begin
+	    if Items[Index]^.Action <> SyNothing then begin
+	            {StringGridReport.InsertRowWithValues(Rows
+	        	    , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
+	                , Items[Index]^.Title, Items[Index]^.ID]);  }
+	            AddLVItem(
+	                ASync.NoteMetaData.ActionName(Items[Index]^.Action)
+	                , Items[Index]^.Title
+	                , Items[Index]^.ID);
+	            inc(Rows);
+	    end;
+	    end
+	end;
+	if  Rows = 0 then
+	    Memo1.Append(rsNoNotesNeededSync)
+	else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
+    {$IFDEF DARWIN}     // Apparently ListView.columns[n].autosize does not work in Mac, this is rough but better then nothing.
+    ListViewReport.Columns[0].Width := listviewReport.Canvas.Font.GetTextWidth('upload edit ');
+    ListViewReport.Columns[1].Width := ListViewReport.Columns[0].Width *2;
+    {$ENDIF}
 end;
 
 

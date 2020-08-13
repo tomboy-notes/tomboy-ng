@@ -989,7 +989,7 @@ begin
     ListBoxNotebooks.Hint := rsNotebookOptionRight;
     {$ifdef DARWIN}
     ButtonMenu.Refresh;
-    ListBoxNotebooks.Hint := rsNotebookOptionCmd;
+    ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
     {$endif}      // Cocoa issue
 end;
 
@@ -1055,15 +1055,7 @@ begin
 end;
 
 
-// ----------------------------- ListView Things -------------------------------
 
-{ ListView Settings - AutoSort, AutoSortIndicator, AutoWidthLastColumn all true
-  Make two columns, name them, leave autwith off, ReadOnly, RowSelect true
-  ScrollBars ssAutoVertical, ViewStyle vsReport.
-  Note that AutoSortIndicator and SortIndicator are not available in LCL2.0.6 and earlier
-  So, don't set them in the form, leave at default settings and set them in a  }
-  {if lcl > 2.0.6}
-  { structure.  Note, the IDE gets this wrong and greys lines out it should not. }
 
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string; TemplateIs: AnsiString);
 // Might be called with no Title (NewNote) or a Title with or without a Filename
@@ -1113,24 +1105,15 @@ begin
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
 end;
 
-(* procedure TSearchForm.StringGrid1DblClick(Sender: TObject);
-var
-    NoteTitle : ANSIstring;
-    FullFileName : string;
-begin
-    { TODO : If user double clicks title bar, we dont detect that and open some other note.  Can ListBox have multiple columns ? }
-    // debugln('Clicked on row ' + inttostr(StringGrid1.Row));
-    NoteTitle := StringGrid1.Cells[0, StringGrid1.Row];
-    if NoteLister.FileNameForTitle(NoteTitle, FullFileName) then begin
-        FullFileName := Sett.NoteDirectory + FullFileName;
-  	    if not FileExistsUTF8(FullFileName) then begin
-      	    showmessage('Cannot open ' + FullFileName);
-      	    exit();
-  	    end;
-    end;
-  	if length(NoteTitle) > 0 then
-        OpenNote(NoteTitle, FullFileName);
-end; *)
+// ----------------------------- ListView Things -------------------------------
+
+{ ListView Settings - AutoSort, AutoSortIndicator, AutoWidthLastColumn all true
+  Make two columns, name them, leave autwith off, ReadOnly, RowSelect true
+  ScrollBars ssAutoVertical, ViewStyle vsReport.
+  Note that AutoSortIndicator and SortIndicator are not available in LCL2.0.6 and earlier
+  So, don't set them in the form, leave at default settings and set them in a  }
+  {if lcl > 2.0.6}
+  { structure.  Note, the IDE gets this wrong and greys lines out it should not. }
 
 procedure TSearchForm.ListViewNotesDblClick(Sender: TObject);
 var
@@ -1210,27 +1193,13 @@ begin
     //StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
 
-
-
-{procedure TSearchForm.StringGridNotebooksClick(Sender: TObject);
-begin
-    ButtonNotebookOptions.Enabled := True;
-    ButtonClearFilters.Enabled := True;
-    //StringGridNotebooks.SelectedColor:= clRed;        // does not work !
-    // https://forum.lazarus.freepascal.org/index.php/topic,45009.msg317102.html#msg317102
-    //StringGridNotebooks.Options := StringGridNotebooks.Options + [goRowHighlight];
-    //StringGridNotebooks.repaint;
-    ButtonRefreshClick(self);
-    SelectedNoteBook := StringGridNotebooks.Row;
-    StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
-end; }
-
     // Popup a menu when rightclick a notebook
 procedure TSearchForm.ListBoxNotebooksMouseUp(Sender: TObject;
     Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-    debugln('TSearchForm.ListBoxNotebooksMouseDown - Selected in listboxnotebook ' + dbgs(ListBoxNotebooks.ItemIndex));
-    if (Button = mbRight) and (ListBoxNotebooks.ItemIndex > -1) then
+    // debugln('TSearchForm.ListBoxNotebooksMouseDown - Selected in listboxnotebook ' + dbgs(ListBoxNotebooks.ItemIndex));
+    if {$ifdef DARWIN} (ssCtrl in Shift) {$ELSE} (Button = mbRight) {$ENDIF}
+                and (ListBoxNotebooks.ItemIndex > -1) then
         PopupMenuNotebook.Popup;
 end;
 
@@ -1282,11 +1251,11 @@ end;
 
 procedure TSearchForm.MenuNewNoteFromTemplateClick(Sender: TObject);
 begin
-    {OpenNote('', Sett.NoteDirectory                                                                     // WTF !
+    {OpenNote('', Sett.NoteDirectory                                                                     // WTF ???
     		+ NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]),
             ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
         is this another  grosjo-ism ???   We should not be passing notebook ID as a file name
-        and should not be getting the notebook name here, OpenNote does it ??
+        and should not be getting the notebook name here, OpenNote does it.
     }
     OpenNote('', '', '');
 end;
@@ -1297,16 +1266,6 @@ begin
     MainForm.PopupMenuSearch.PopUp;
 end;
 
-{
-procedure TSearchForm.StringGrid1KeyPress(Sender: TObject; var Key: char);
-begin
-    if Key = char(ord(VK_RETURN)) then StringGrid1DblClick(Sender);
-end;
-
-procedure TSearchForm.StringGrid1Resize(Sender: TObject);
-begin
-    StringGrid1.Columns[0].Width := StringGrid1.Width - StringGrid1.Columns[1].Width -15;
-end;  }
 
 end.
 

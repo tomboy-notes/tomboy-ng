@@ -29,7 +29,7 @@ RESOURCESTRING
   rsNumbNotesAffected = 'This will affect %d notes';                 // %d replaced by integer, 0 to big number
   rsEnterNewNotebook = 'Enter a new notebook name please';
   rsNotebookOptionRight = 'Right click for Notebook Options';       // Windows, Linux
-  rsNotebookOptionCmd = 'Cmd click for Notebook Options';           // Mac
+  rsNotebookOptionCtrl = 'Ctrl click for Notebook Options';           // Mac
 
 
 // SearchForm
