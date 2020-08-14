@@ -1,3 +1,6 @@
+
+Febuary 2020 - This patch is no longer required when using current kcontrols.
+
 When pasting multiline plain text near the end of a kmemo, if the first line of (pasting)text is longer than remaining text in KMemo, the pasted content is split between the correct insertion point and the end of the content.
 
 Reason is that TKMemoBlocks.InsertPlainText() calls InsertString() and then InsertParagraph() for each newline terminated string in the clipboard. But KMemoBlocks.InsertParagraph() relies on FSelectableLength to ensure its not at the end of content and FSelectableText is not updated after  the InsertString() call.  As a result, KMemo thinks the Index is beyond its own content length and puts the new Paragraph (and subsequent clipboard content) at end of its own content.

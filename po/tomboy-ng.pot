@@ -847,11 +847,11 @@ msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr ""
 
 #: tformrecover.label14.caption
-msgid "Double click an available snapshot to see its contents."
+msgid "Click an available snapshot to see its contents."
 msgstr ""
 
 #: tformrecover.label15.caption
-msgid "Double click an available snapshot, click Recover"
+msgid "Click an available snapshot, click Recover"
 msgstr ""
 
 #: tformrecover.label16.caption

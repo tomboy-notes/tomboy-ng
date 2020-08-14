@@ -877,11 +877,15 @@ msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr "Ni pensarlo sin tener una instantánea de seguridad reciente. (Pestaña \"Introducción\")"
 
 #: tformrecover.label14.caption
-msgid "Double click an available snapshot to see its contents."
+#, fuzzy
+#| msgid "Double click an available snapshot to see its contents."
+msgid "Click an available snapshot to see its contents."
 msgstr "Haga doble clic en una instantánea para ver los contenidos."
 
 #: tformrecover.label15.caption
-msgid "Double click an available snapshot, click Recover"
+#, fuzzy
+#| msgid "Double click an available snapshot, click Recover"
+msgid "Click an available snapshot, click Recover"
 msgstr "Haga doble clic en una instantánea, luego haga clic en Recuperar."
 
 #: tformrecover.label16.caption

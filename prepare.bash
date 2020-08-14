@@ -24,7 +24,7 @@ VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
-
+WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
 	# if in user space, because debuild will miss them, makes two files.
@@ -99,6 +99,7 @@ function ShowHelp () {
     echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
     echo "-C   clean out deb files from previous run, debug use only."
     echo "-U   update Makefile and/or buildit.bash,   debug use only."
+    echo "-Q   Make a Qt5 version instead of default GTK2"
     echo "-p   Pause before creating .orig. to change content, use another term."
     echo ""
     echo "Davo uses: wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip"
@@ -108,7 +109,7 @@ function ShowHelp () {
 }
 
 
-while getopts "hpUCl:" opt; do
+while getopts "hpQUCl:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -124,6 +125,10 @@ while getopts "hpUCl:" opt; do
 	;;
     p)
 	PAUSE="YES"
+	;;
+    Q)
+	WIDGET="Qt5"
+	APP="$APP""-qt5"
 	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -172,6 +177,10 @@ if [ -f tomboy-ng-master.zip ]; then
 	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537
 	dch --create --package=tomboy-ng --newversion="$VER""-1" "Initial release. (Closes: #966537)"
 	dch --append "Please see github for change details"
+	if [ "$WIDGET" = "Qt5" ]; then
+		dch --append "Qt5 version"
+		cp "$APP"_"$VER""-1/debian/control.qt5" "$APP"_"$VER""-1/debian/control"
+	fi
 	dch --release "blar"
 	cd ..
 	if [ "$PAUSE" = "YES" ]; then

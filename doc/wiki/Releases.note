@@ -8,15 +8,15 @@ Don't edit this file, its generated from Releases.note in doc dir, converted to 
 Downloads and information for specific platforms further down the page.<size:huge>
 
 <bold>Release Notes</bold></size:huge>
- Nothing dramatic but the usual collection of minor improvements and bug fixes :
-Auto snapshots now available, it and auto sync (v0.27) uses an less obtrusive notification system.
-Tweaks for dark mode users, particularly on Windows.
-Simplified splashscreen, more info about problems and easier to dismiss.
-Shift Click to select text - check kb shortcut doc
-Delete backup notes in bulk.
-Multithreaded search, faster for people with &gt; 1000 notes.
-Increase in entropy of lastchange date, useful in a blind sync.
-Fix for problem with strikeout mixed with bullets, opening empty note in Single Note Mode, problems  with autostart on Windows<size:huge>
+tomboy-ng has only  a few changes this release, small bug fixes, improvements to the screen layouts and minor new features. 
+
+<list><list-item dir="ltr">Notebook List now sorted.</list-item></list>
+<list><list-item dir="ltr">The Notebook list and the Settings Recover tab restructured.</list-item></list>
+<list><list-item dir="ltr">Help notes now bundled with install kit, no downloads needed.</list-item></list>
+<list><list-item dir="ltr">Its now possible to work directly with notes created in G-Note.</list-item></list>
+<list><list-item dir="ltr">Linux now uses libnotify, better looking and under OS control.</list-item></list>
+<list><list-item dir="ltr">Now available via an Ubuntu PPA (64bit U18.04 and U20.04 only), may mean auto updates in the future if you use one of those platforms. </list-item></list>
+<list><list-item dir="ltr">And, wait for it, a Raspberry Pi version !</list-item></list><size:huge>
 
 <bold>Installation</bold></size:huge>
 
@@ -26,21 +26,27 @@ tomboy-ng is available for Linux, Mac and Windows. Please see your operating sys
 Tested on 32bit Windows Vista and 64bit Windows 10.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes. Depending on your build of Win10, you may need to go through a process of clicking the More Info link and Run Anyway, possibly through several stages. <size:large>
 
 <bold>MacOSX</bold></size:large>
-Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64).Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. 
+Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64).Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. Because I don't pay a fee to Apple, first time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open". 
 
-Note 1 : Because I don't pay a fee to Apple, first time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open". 
-
-Note 2 :  I can still build the 32 bit Carbon based binary but don't ship it anymore, it won't work with any recent MacOS and has issues showing the System Tray Icon.  If you need it, please let me know.<size:huge>
+I am only shipping the 64bit Cocoa version, if you need the 32bit please let me know.<size:huge>
 
 <bold>Linux</bold></size:huge>
-Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.
+Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
 
-For distributions that use .deb packages, do yourself a favour, install Gdebi before you start. You will not regret it.<size:large>
+<bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
+New in v0.30, Ubuntu and derivatives users (of 64bit U18.04 and U20.04) can use a PPA to install this and subsquent releases of tomboy-ng.  Please see <underline>https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng</underline> for details but the process is -
+<list><list-item dir="ltr">sudo add-apt-repository ppa:d-bannon/ppa-tomboy-ng [enter]</list-item></list>
+<list><list-item dir="ltr">sudo apt-get update  [enter]</list-item></list>
+<list><list-item dir="ltr">sudo apt install tomboy-ng  [enter]</list-item></list>
+After that, your OS will update tomboy-ng on each release without you doing anything.
+
+For distributions that use .deb packages (but cannot use the PPA), do yourself a favour, install Gdebi before you start. You will not regret it.<size:large>
 
 <bold>Ubuntu</bold></size:large>
-Generally, all work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version. 
+  
+Firstly, consider using the PPA (above). Otherwise, generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version. 
 <list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list>
-<list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  </list-item></list>
+<list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  Difficult to make work with Qt5.</list-item></list>
 <list><list-item dir="ltr">20.04 Your choice between  [64bit QT]($$DEB64QT)  which needs the Qt5 libaries or the [64bit]($$DEB64) which needs only a couple of exta things. </list-item></list>
 
 On Ubuntu, you can install the appropriate package in one of several way (and I am sorry this keeps changing) -
@@ -52,7 +58,7 @@ On Ubuntu, you can install the appropriate package in one of several way (and I 
 <monospace>sudo apt install ./tomboy-ng_0.29-0_amd64.deb [enter]</monospace><size:large>
 
 <bold>Linux Mint</bold></size:large>
- I have only tested against 19.2 Cinnamon. This, and 19.3 Cinnamon are based on Ubuntu 18.04, so use the GTK versions only,  [32bit]($$DEB32) or [64bit]($$DEB64) .  
+Firstly, consider using the PPA (above).  Otherwise note I have only tested against 19.2 Cinnamon. This, and 19.3 Cinnamon are based on Ubuntu 18.04, so use the GTK versions only,  [32bit]($$DEB32) or [64bit]($$DEB64) .  
 Click on the appropriate link from your browser and allow the suggested installer, GDebi, to run the install for you. Linux Mint does report any install errors that happen during this process (unlike some distros!) so its a good approach. <size:large>
 
 
@@ -117,14 +123,14 @@ To install, please download and save the file, then use the rpm command, note th
 
 
 </note-content></text>
-  <last-change-date>2020-06-25T14:54:30.8911396+10:00</last-change-date>
-  <last-metadata-change-date>2020-06-25T14:54:30.8911396+10:00</last-metadata-change-date>
+  <last-change-date>2020-08-14T16:04:00.4253639+10:00</last-change-date>
+  <last-metadata-change-date>2020-08-14T16:04:00.4253639+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
   <height>665</height>
-  <x>395</x>
-  <y>299</y>
+  <x>286</x>
+  <y>187</y>
   <open-on-startup>False</open-on-startup>
 </note>

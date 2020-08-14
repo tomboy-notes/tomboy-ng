@@ -926,11 +926,15 @@ msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr "Overweeg dit niet als je geen recente back-upmomentopname hebt."
 
 #: tformrecover.label14.caption
-msgid "Double click an available snapshot to see its contents."
+#, fuzzy
+#| msgid "Double click an available snapshot to see its contents."
+msgid "Click an available snapshot to see its contents."
 msgstr "Dubbelklik op een beschikbare momentopname om de inhoud ervan te bekijken."
 
 #: tformrecover.label15.caption
-msgid "Double click an available snapshot, click Recover"
+#, fuzzy
+#| msgid "Double click an available snapshot, click Recover"
+msgid "Click an available snapshot, click Recover"
 msgstr "Dubbelklik op een beschikbare momentopname, en klik daarna op 'Herstellen'"
 
 #: tformrecover.label16.caption

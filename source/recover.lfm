@@ -1,7 +1,7 @@
 object FormRecover: TFormRecover
-  Left = 829
+  Left = 616
   Height = 561
-  Top = 163
+  Top = 187
   Width = 758
   Caption = 'FormRecover'
   ClientHeight = 561
@@ -53,9 +53,9 @@ object FormRecover: TFormRecover
     Height = 204
     Top = 44
     Width = 758
-    ActivePage = TabSheetRecoverSnapshot
+    ActivePage = TabSheetRecoverNotes
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 4
+    TabIndex = 2
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
@@ -195,8 +195,8 @@ object FormRecover: TFormRecover
         Left = 10
         Height = 19
         Top = 36
-        Width = 379
-        Caption = 'Double click an available snapshot to see its contents.'
+        Width = 327
+        Caption = 'Click an available snapshot to see its contents.'
         ParentColor = False
       end
       object Label16: TLabel
@@ -266,8 +266,8 @@ object FormRecover: TFormRecover
         Left = 8
         Height = 19
         Top = 64
-        Width = 340
-        Caption = 'Double click an available snapshot, click Recover'
+        Width = 288
+        Caption = 'Click an available snapshot, click Recover'
         ParentColor = False
       end
     end

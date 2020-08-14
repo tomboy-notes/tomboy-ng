@@ -64,6 +64,7 @@ function ShowHelp () {
     echo "David Bannon, July 2020" 
     echo "-h   print help message"
     echo "-c   specify CPU, default is $HOSTTYPE - supported x86_64, i386, arm"
+    echo "-Q   build a Qt5 version (default gtk2)"
     echo "When used in SRC DEB toolchain, set -c (if necessary) options in the Makefile."
     echo ""
     exit 1
@@ -121,10 +122,18 @@ function CheckLazBuild () {
 
 }
 
+		# We default to GTK2 but if a file is left in working dir called
+		# Qt5 then we build that. Note a -q does the same thing.
+function CheckForQt5 () {
+	if [ -f "Qt5" ]; then
+		WIDGET="qt5"
+	fi
+}
+
 # ------------ It all starts here ---------------------
 
 
-while getopts "hc:" opt; do
+while getopts "hQc:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -132,6 +141,9 @@ while getopts "hc:" opt; do
     c)
 	CPU="$OPTARG"
 	TARGET="$CPU-$OS"
+	;;
+    Q)
+	WIDGET="qt5"
 	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -146,6 +158,7 @@ fi
 TARGET="$CPU-$OS"
 CheckFPC
 CheckLazBuild
+CheckForQt5
 
 # OK, if to here, we have a fpc and lazbuild, but which FPC ?
 FPCVERSION=$($COMPILER -iV)

@@ -1,3 +1,5 @@
+This patch is not required in current versions of Lazarus
+
 https://bugs.freepascal.org/view.php?id=34795
 Fixes a Linux bug where pasting an image can sometimes cause a crash.
 Required in Lazarus 1.8.4 and V2.0.0
