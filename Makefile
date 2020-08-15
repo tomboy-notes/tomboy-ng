@@ -34,7 +34,9 @@ CPLANG = msgfmt -o $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES/tomboy-ng.m
 
 tomboy-ngx86_64: 
 	bash ./buildit.bash
-	@echo "====== We just compiled $(TBVER)"
+	$(info ========== We have compiled [${PROGRAM_NAME}])
+	# $(info ========== $$BIN_DIR is [${BIN_DIR}])
+	
 
 
 clean:
@@ -48,16 +50,14 @@ clean:
 	# clean is pretty useless here, any change to tree upsets debuild and apparently
 	# kcontrols changes some src file during package build. So, refresh !
 
-
 install: installdirs
+	$(info ========== Installing ....)
 	$(INSTALL_PROGRAM)	source/tomboy-ng   	$(DESTDIR)$(BIN_DIR)/$(PROGRAM_NAME)
 	$(INSTALL_DATA)		doc/tomboy-ng.1 	$(DESTDIR)$(MAN_DIR)/$(PROGRAM_NAME).1
 	$(CP)			doc/HELP		$(DESTDIR)$(HELP_DIR)/
 	$(CP)			glyphs/icons		$(DESTDIR)$(SHARE_DIR)/
 	$(INSTALL_DATA)	glyphs/tomboy-ng.desktop	$(DESTDIR)$(SHARE_DIR)/applications/tomboy-ng.desktop
 	$(foreach LANG, $(LANGUAGES), $(CPLANG);)		
-	@echo ================ called install:
-
 
 installdirs:
 	test -d $(DESTDIR)$(BIN_DIR) || $(MKDIR) $(DESTDIR)$(BIN_DIR)
@@ -65,7 +65,6 @@ installdirs:
 	test -d $(DESTDIR)$(DOC_DIR) || $(MKDIR) $(DESTDIR)$(DOC_DIR)
 	test -d $(DESTDIR)/share/applications || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/applications
 	$(foreach LANG, $(LANGUAGES), $(MKDIRLANG);)
-	@echo =============== Called installdirs:
 
 
 

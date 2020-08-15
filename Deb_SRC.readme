@@ -61,5 +61,32 @@ cd into the working dir, its called  tomboy-ng_{$VER-1}.   And do one of -
    dput ppa:d-bannon/ppa-tomboy-ng tomboy-ng_0.29e-1_source.changes [enter]
    Note : pretty obviously, you won't be submitting to my PPA so change it.
 
+===== O P T I O N S ===== 
+
+WIDGET SET
+The default widget set is GTK2, pass -Q to prepare.bash and you will get Qt5
+
+BUILD TIME CHANGES
+Pass -p to prepare.bash and it will pause just before creating the .orig. file
+then, in another terminal you can alter the tree. Useful to add extra info in
+the changelog, the target system, dependancies etc.
+
+CLEAN or UPDATE
+There are two options that were used during development, likely of no use to
+most other people.
+
+USING LOCALLY BUILT LAZARUS
+In fact, you need only lazbuild and lcl  (make lazbuild; make lcl).  Many
+Lazarus users (sensibly) build their own from source, but that leaves them
+with Lazarus not findable using the core system path that debuild uses. 
+Similarly, fpc can be installed direct from SourceForge tarballs.
+The prepare script will find your tarball FPC (as long as it is on your
+full path) but not Lazarus. So, put a full path to lazbuild with the option
+-l and prepare.bash will leave 'semophores' for the build process to find
+fpc and Lazarus. debuild will object as it does not find Lazarus in the apt
+database, pass it -d and all will be well.
+   
 Please report any issues at https://github.com/tomboy-notes/tomboy-ng
+
+David Bannon, August 2020
 

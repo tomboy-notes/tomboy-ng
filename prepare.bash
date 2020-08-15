@@ -78,7 +78,7 @@ function CleanSource () {
 
 function KControls () {	
 	if [ -e "master.zip" ]; then
-		echo "Warning, reusing KControls zip"
+		echo "Note: reusing KControls zip"
 	else
 		wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
 	fi
@@ -158,7 +158,7 @@ if [ -f tomboy-ng-master.zip ]; then
 			cp buildit.bash tomboy-ng-master/buildit.bash
 		fi
 	fi
-	VER=`cat "$APP"-master/package/version`
+	VER=`cat tomboy-ng-master/package/version`
 	if [ "$CLEAN" = "YES" ]; then
 		echo "---------- Removing existing DEB files"
 		rm -Rf "$APP"_"$VER""-1"
@@ -170,16 +170,20 @@ if [ -f tomboy-ng-master.zip ]; then
 		rm -f "tomboy-ng_$VER-1.dsc"
 		rm -f "tomboy-ng_$VER.orig.tar.gz"
 	fi
-	mv "$APP-master" "$APP"_"$VER""-1"
+	mv "tomboy-ng-master" "$APP"_"$VER""-1"
 	KControls
 	cd "$APP"_"$VER""-1"
 	CleanSource
 	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537
-	dch --create --package=tomboy-ng --newversion="$VER""-1" "Initial release. (Closes: #966537)"
+	dch --create --package="$APP" --newversion="$VER""-1" "Initial release. (Closes: #966537)"
 	dch --append "Please see github for change details"
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"
-		cp "$APP"_"$VER""-1/debian/control.qt5" "$APP"_"$VER""-1/debian/control"
+		cp debian/control.qt5 debian/control
+		cp debian/rules.qt5 debian/rules
+		# sed  "s/#REPLACEME_QT5/DESTDIR += -qt5/" Makefile > Makefile.temp
+		# mv Makefile.temp Makefile
+		touch Qt5
 	fi
 	dch --release "blar"
 	cd ..
