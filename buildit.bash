@@ -245,7 +245,7 @@ UNITS="$UNITS -Fu$LAZ_DIR/packager/units/$TARGET"
 UNITS="$UNITS -Fu$SOURCE_DIR/"
 UNITS="$UNITS -FU$SOURCE_DIR/lib/$TARGET/" 
 
-OPTS2=" -dLCL -dLCL$WIDGET" 
+OPT2=" -dLCL -dLCL$WIDGET" 
 DEFS="-dDisableLCLGIF -dDisableLCLJPEG -dDisableLCLPNM -dDisableLCLTIFF"
 
 
@@ -258,9 +258,6 @@ rm -Rf "lib/$TARGET"
 rm -f tomboy-ng
 rm -f "$PROJ"
 mkdir -p "lib/$TARGET"
-
-# echo "----- Building tomboy-ng in $PWD -------"
-# echo "OPTS2 - $OPTS2"
 
 RUNIT="$COMPILER $OPT1 $UNITS $OPT2 $DEFS $PROJ.lpr"
 echo "--------------- COMPILE COMMAND ------------------------"

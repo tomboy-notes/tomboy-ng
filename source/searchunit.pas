@@ -488,7 +488,7 @@ begin
         end;
 end;
 
-procedure TSearchForm.ShowHelpNote(HelpNoteName: string);   // ToDo : consider moving this method and associated list to SearchUnit.
+procedure TSearchForm.ShowHelpNote(HelpNoteName: string);
 var
     EBox : TEditBoxForm;
     TheForm : TForm;

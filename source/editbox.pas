@@ -212,6 +212,7 @@ unit EditBox;
     2020/06/08  Disable main menu button in readonly mode.
     2020/08/06  Call a paste in ShowForm, even in SNM, assertion is better than no copying.
                 Display external links in single note mode.
+    2020/08/19  Fixed bug affecting end of weblink in single note mode.
 }
 
 
@@ -1862,7 +1863,9 @@ begin
         if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
             LinkText := Kmemo1.Blocks.Items[StartBlock].Text;
             // if its not a valid link, remove it. But don't check for Title links in SingleNoteMode
-            if not (ValidWebLink() or SingleNoteMode or SearchForm.IsThisaTitle(LinkText)) then begin
+            // don't remove it if its a valid web link  or  ! SingleNotemode and its a valid local link.
+            // if not (ValidWebLink() or SingleNoteMode or SearchForm.IsThisaTitle(LinkText)) then begin
+            if not (ValidWebLink() or (not SingleNoteMode and SearchForm.IsThisaTitle(LinkText))) then begin
             // if not (SearchForm.IsThisaTitle(LinkText) or ValidWebLink()) then begin
                 Kmemo1.Blocks.Delete(StartBlock);
         		KMemo1.Blocks.AddTextBlock(Linktext, StartBlock);

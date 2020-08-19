@@ -159,9 +159,9 @@ object Sett: TSett
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 24
-          Top = 53
-          Width = 49
+          Height = 23
+          Top = 54
+          Width = 47
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Big'
@@ -173,9 +173,9 @@ object Sett: TSett
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 24
-          Top = 89
-          Width = 85
+          Height = 23
+          Top = 90
+          Width = 83
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
@@ -185,9 +185,9 @@ object Sett: TSett
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 24
-          Top = 126
-          Width = 65
+          Height = 23
+          Top = 127
+          Width = 63
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
@@ -197,9 +197,9 @@ object Sett: TSett
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 24
-          Top = 17
-          Width = 64
+          Height = 23
+          Top = 18
+          Width = 62
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
@@ -212,9 +212,9 @@ object Sett: TSett
         AnchorSideTop.Control = GroupBox5
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 24
+        Height = 23
         Top = 220
-        Width = 164
+        Width = 162
         BorderSpacing.Top = 20
         Caption = 'Show Internal Links'
         OnChange = CheckReadOnlyChange
@@ -225,9 +225,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowIntLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 24
-        Top = 264
-        Width = 172
+        Height = 23
+        Top = 263
+        Width = 170
         BorderSpacing.Top = 20
         Caption = 'Show External  Links'
         OnChange = CheckReadOnlyChange
@@ -238,10 +238,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowExtLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 24
+        Height = 23
         Hint = 'This may adversly affect tradional Tomboy, take care.'
-        Top = 308
-        Width = 325
+        Top = 306
+        Width = 323
         BorderSpacing.Top = 20
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
@@ -276,7 +276,7 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         Left = 32
         Height = 32
-        Top = 352
+        Top = 349
         Width = 240
         BorderSpacing.Top = 20
         Caption = 'Set Colours'
