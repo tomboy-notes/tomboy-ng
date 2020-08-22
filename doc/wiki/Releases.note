@@ -34,7 +34,7 @@ I am only shipping the 64bit Cocoa version, if you need the 32bit please let me 
 Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
 
 <bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
-New in v0.30, Ubuntu and derivatives users (of 64bit U18.04 and U20.04) can use a PPA to install this and subsquent releases of tomboy-ng.  Please see <underline>https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng</underline> for details but the process is -
+New in v0.30, Ubuntu and derivative users (of 64bit U18.04 and U20.04) can use a PPA to install this and subsquent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng for details but the process is -
 <list><list-item dir="ltr">sudo add-apt-repository ppa:d-bannon/ppa-tomboy-ng [enter]</list-item></list>
 <list><list-item dir="ltr">sudo apt-get update  [enter]</list-item></list>
 <list><list-item dir="ltr">sudo apt install tomboy-ng  [enter]</list-item></list>
@@ -117,14 +117,15 @@ Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit]($$RPM3
 <list><list-item dir="ltr"><bold>Mageia Gnome,</bold> some recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) will work fine </list-item></list>
 
 To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.  Using the <bold>Qt version on Mageia</bold> is possible if you replace its very dated version of lib64qt6pas1 with the appropriate one from https://github.com/davidbannon/libqt5pas/releases. 
- 
-
+ <size:large>
+<bold>Raspberry PI</bold></size:large>
+This is new in v0.30. Users of the official Raspberry Pi OS (previously know as Raspbian) can now download a deb and install it using the apt commands mentioned above.  Not its 32bit, even if your Raspberry Pi is a 64bit one the OS is 32bit at present. I have not tested against things like Ubuntu's 64bit OS or the testing Raspberry Pi OS.   Download ($$DEB32ARM)
 
 
 
 </note-content></text>
-  <last-change-date>2020-08-14T16:04:00.4253639+10:00</last-change-date>
-  <last-metadata-change-date>2020-08-14T16:04:00.4253639+10:00</last-metadata-change-date>
+  <last-change-date>2020-08-22T13:29:19.2005843+10:00</last-change-date>
+  <last-metadata-change-date>2020-08-22T13:29:19.2005843+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

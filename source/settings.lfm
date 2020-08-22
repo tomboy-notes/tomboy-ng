@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 652
+  Left = 822
   Height = 525
-  Top = 155
+  Top = 171
   Width = 588
   BorderIcons = []
   Caption = 'Form Caption'
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 588
-    ActivePage = TabDisplay
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -346,9 +346,9 @@ object Sett: TSett
         end
         object RadioAlwaysAsk: TRadioButton
           Left = 16
-          Height = 24
+          Height = 23
           Top = 64
-          Width = 217
+          Width = 215
           Caption = 'Always Ask me what to do.'
           Checked = True
           TabOrder = 0
@@ -356,17 +356,17 @@ object Sett: TSett
         end
         object RadioUseLocal: TRadioButton
           Left = 16
-          Height = 24
+          Height = 23
           Top = 112
-          Width = 334
+          Width = 332
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
           Left = 16
-          Height = 24
+          Height = 23
           Top = 160
-          Width = 321
+          Width = 319
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
@@ -421,10 +421,10 @@ object Sett: TSett
         end
         object CheckBoxAutoSync: TCheckBox
           Left = 384
-          Height = 24
+          Height = 23
           Hint = 'Sync, if possible once an hour.'
           Top = 120
-          Width = 98
+          Width = 96
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
           ParentShowHint = False
@@ -991,6 +991,7 @@ object Sett: TSett
     OnClick = SpeedButHelpClick
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
+    Options = [ofShareAware, ofEnableSizing]
     Left = 408
   end
   object OpenDialogLibrary: TOpenDialog

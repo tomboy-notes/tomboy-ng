@@ -14,7 +14,9 @@ tomboy-ng supports  <bold>file sync</bold>. That is, it syncs to a shared file s
 OK, before we start, are you keeping <highlight>snapshots</highlight> ?  If not, why not ???<size:large>
 
 <bold>A shared Filesystem</bold></size:large>
-In practise, tomboy-ng will sync to any (?) file system that your file manager can browse. You could use Google Drive, Drop Box or any such system. Don't forget a copy of  your notes will live on their server so if you are unhappy at them being read there, maybe that not a great idea! You may want to setup a NFS or SMB share. Windows and NFS is not a great mix but SMB works well for all three platforms. The author's home network router has a USB slot at the back, a USB Disk Key plugged in there is distributed via SMB. Been working flawlessly for a couple of years. Or you could even just use a USB Disk Key and plug it into which ever machine you are syncing at the time. As long as tomboy-ng can read and write there, good.
+In practise, tomboy-ng will sync to any (?) file system that your file manager can browse. You could use Google Drive, Drop Box or any such system. Don't forget a copy of  your notes will live on their server so if you are unhappy at them being read there, maybe that not a great idea! You may want to setup a NFS or SMB share. Windows and NFS is not a great mix but SMB works well for all three platforms. The author's home network router has a USB slot at the back, a USB Disk Key plugged in there is distributed via SMB. Been working flawlessly for a couple of years. Some Linux File Managers can be reluctant to show you the SMB or Samba shares, it can help to make them a book mark in your main File Manager but if even that does not work, browse using the directory dialog that tomboy-ng pops up to somewhere like /run/user/1000/gvfs/smb_share .....
+
+ Or you could even just use a USB Disk Key and plug it into which ever machine you are syncing at the time. As long as tomboy-ng can read and write there, good.
 
 One thing to note, if you plan to sync both Tomboy and tomboy-ng with the same repository, Tomboy is not quite so happy with "any shared filesystem", check it before investing too much time.<size:large>
 
@@ -57,8 +59,8 @@ Secondly, please try starting tomboy-ng from the command line. While its running
 
 
 </note-content></text>
-  <last-change-date>2020-05-04T21:04:16.0190000+10:00</last-change-date>
-  <last-metadata-change-date>2020-05-04T21:04:16.0190000+10:00</last-metadata-change-date>
+  <last-change-date>2020-08-21T22:52:36.2819882+10:00</last-change-date>
+  <last-metadata-change-date>2020-08-21T22:52:36.2819882+10:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

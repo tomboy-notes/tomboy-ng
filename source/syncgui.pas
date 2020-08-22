@@ -280,6 +280,10 @@ begin
          Panel1.color := Sett.BackGndColour;
          Panel2.color := Sett.BackGndColour;
          Panel3.color := Sett.BackGndColour;
+         Label1.Font.Color:= Sett.TextColour;
+         Label2.Font.Color := Sett.TextColour;
+         Memo1.Color:= Sett.BackGndColour;
+         Memo1.Font.Color := Sett.TextColour;
          ButtonCancel.Color := Sett.HiColour;
          ButtonClose.Color := Sett.HiColour;
          ButtonSave.Color := Sett.HiColour;

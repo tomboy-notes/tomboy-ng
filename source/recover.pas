@@ -35,6 +35,7 @@ unit recover;
     2020/06/11  Really Ensure snapshot dir exists, rename SnapDir FullSnapDir
     2020/07/16  Extensive work to improve 'UI' sanity.
     2020/07/16  cleanup unused constants
+    2020/08/21  Improve windows dark theme colours.
 }
 
 
@@ -150,6 +151,8 @@ procedure TFormRecover.FormCreate(Sender: TObject);
 begin
     PageControl1.ActivePageIndex:=0;
     ButtonRecoverSnap.Enabled := False;
+    Left := (Screen.Width  - Width)  div 2;
+    Top  := (Screen.Height - height) div 2;
 end;
 
 procedure TFormRecover.FormDestroy(Sender: TObject);

@@ -88,7 +88,9 @@ begin
         try
             Reset(InFile);
             if OutFileName <> '' then
-                Rewrite(OutFile);
+                Rewrite(OutFile)
+            else
+                writeln('Writing to console');
             while not eof(InFile) do begin
                 readln(InFile, InString);
                 while Pos('$$', InString) > 0  do
@@ -152,6 +154,7 @@ begin
                TStringArray.Create('DEB64',    'tomboy-ng_',       '-0_amd64.deb'),
                TStringArray.Create('DEB32',    'tomboy-ng_',       '-0_i386.deb'),
                TStringArray.Create('DEB64QT',  'tomboy-ng_',       '-0_amd64Qt.deb'),
+               TStringArray.Create('DEB32ARM', 'tomboy-ng_',       '-0_arm.deb'),
                TStringArray.Create('RPM64',    'tomboy-ng-',       '-2.x86_64.rpm'),
                TStringArray.Create('RPM32',    'tomboy-ng-',       '-2.x86.rpm'),
                TStringArray.Create('RPM64QT',  'tomboy-ngQt-',     '-2.x86_64.rpm'),
