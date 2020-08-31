@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng v0.29 Release Page</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.29 Release Page</underline><size:small>
+  <title>tomboy-ng v0.30 Release Page</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.30 Release Page</underline><size:small>
 
 Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
@@ -119,18 +119,18 @@ Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit]($$RPM3
 To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.  Using the <bold>Qt version on Mageia</bold> is possible if you replace its very dated version of lib64qt6pas1 with the appropriate one from https://github.com/davidbannon/libqt5pas/releases. 
  <size:large>
 <bold>Raspberry PI</bold></size:large>
-This is new in v0.30. Users of the official Raspberry Pi OS (previously know as Raspbian) can now download a deb and install it using the apt commands mentioned above.  Not its 32bit, even if your Raspberry Pi is a 64bit one the OS is 32bit at present. I have not tested against things like Ubuntu's 64bit OS or the testing Raspberry Pi OS.   Download ($$DEB32ARM)
+This is new in v0.30. Users of the official Raspberry Pi OS (previously know as Raspbian) can now download a deb and install it using the apt commands mentioned above.  Not its 32bit, even if your Raspberry Pi is a 64bit one the OS is 32bit at present. I have not tested against things like Ubuntu's 64bit OS or the testing Raspberry Pi OS.   Download [GTK2 32bit]($$DEB32ARM)
 
 
 
 </note-content></text>
-  <last-change-date>2020-08-22T13:29:19.2005843+10:00</last-change-date>
-  <last-metadata-change-date>2020-08-22T13:29:19.2005843+10:00</last-metadata-change-date>
+  <last-change-date>2020-08-22T20:19:39.8956223+10:00</last-change-date>
+  <last-metadata-change-date>2020-08-22T20:19:39.8956223+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1350</width>
-  <height>665</height>
+  <height>800</height>
   <x>286</x>
   <y>187</y>
   <open-on-startup>False</open-on-startup>

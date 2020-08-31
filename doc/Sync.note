@@ -3,17 +3,56 @@
   <title>tomboy-ng Sync Process</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Sync Process</underline>
 
-Note this is how I implemented tomboy-ng's sync process. Its NOT a design document for the Tomboy's XML standard, unfortunatly such a definitive standard document does not appear to exist.<size:huge>
+This is how I implemented tomboy-ng's sync process. Its NOT a design document for the Tomboy's Sync but about as close as we can get.  Text in italics relates to how its implemented in tomboy-ng, other text is broad plan.<size:huge>
 
-How FileSync Works</size:huge>
+How Sync Works</size:huge>
 
-Starts with FileSync.DoSync(). It builds a list based on Local Manifest, remote manifest and actual local notes. And then a list that will become the new manifest if necessary.
+<bold>The Manifest documents.</bold>
+Two manifests are involved in file sync, Local and Remote, they relate to two Lists maintained during a sync that hold data and proposed actions about each note. 
+The Local has two parts, firstly a record of notes that have been previously synced (updated at each sync) and secondly, a list of notes that have been deleted and were previously synced. The second part is updated every time a previously synced note is deleted.
 
-It then compares against the local notes, then against the remote notes. These two compare functions may delete, upload or download, if any uploads take place or deletes from server, a new revision is indicted. MakeNewRevision() will, if necessary, create new working directories and (always) a new revision directory. It reads the remote manifest's idea of what revision we are up to and adds one.  Mhh, show new revision number in GUI so user can see it climbing ?
+The remote manifest is a list of all the notes in the remote repository, in Filesync, that file is stored in the repo as it will need to be looked and and potentially rewritten by many clients.
 
+<bold>The Process</bold>
+
+TestConnection() checks for a viable Remote and loads LocalMetaData.
+
+<italic>It calls trans.TestConnection that looks for suitable charactistics remotely. It gets the serverID which it stores locally. 
+LocalMetaData is populated by ReadLocalManifest() called by TestConnection(), it then contains only notes listed in local manifest, that is previosly as synced ones and ones deleted since last Sync.  Compares ServerID obtained from local manifest with the one obtained by Trans.TestConnection.</italic>
+
+Then we call FileSync.DoSync(). It builds  lists based on Local Manifest, remote manifest and actual local notes. And then a list that will become the new manifest if necessary.
+
+<italic>Specificially, calls LoadRepoData to build NoteMetaData by calling Transport.GetNewNotes() which builds a list of remote notes, perhaps from a remote manifest or by reading the notes directly. In NextCloud sync, reads remote notes and then looks to the (locally stored) remote manifest.</italic>
+
+<bold>Then if routine sync,</bold> looks for both local and remote deletes comparing the two Lists.
+
+<italic>CheckRemoteDeletes() iterates over LocalMetaData (for any except the deleted), these are previously synced but if no longer present in remote must be remotely delete, so mark as SyDeletedLocal so it gets deleted here. If it is present in remote list but has been marked as SyUploadNew it was not origionally there in Remote, so, it must be set to SyDeleteLocal.
+
+looks for it in NoteMetaData and if it finds it there, marks it as SyDeleteLocal, if its not present in NoteMetaData, it makes an entry there and mark it as SyDeleteRemote.</italic>
+
+<bold>But if its a Join,</bold> bit different.  We disregard local manifest if it exists. In FileSync, we reload remote date this time insisting on getting LastChageDate. Thats because we will compare LCDs for any note that has a matching UID.  NextCloud always provides LCD.
+
+<bold>... still in Join mode. </bold>Scan local actual notes matching UID to UID in Remote List. 
+Where a UID exists both locally and in Remote list we have to try and match LCD, on normal tomboy-ng file sync, the LCD is 7 digit after the second decimil point, pretty certain.  In NextCloud, its only one second precision so, somewhat risky. If we match, its SyNothing. (Note that original Tomboy did not examine LCD, if UID's match, then declare a clash.) If we cannot match on LCD, then its a SyClash. 
+
+<bold>Then, all modes,  </bold>
+Any local note that does not have an entry in Remote List now is SyUploadNew. 
+<italic>CheckNewNotes() reads all notes in local directory, checks for each in Remote List, if not preset, add an entry in Remote List and set it to SyUploadNew</italic>
+
+We then run CheckMetaData() to make sure content now makes sense.  process the note clashes. 
+
+<bold>Actually Run Sync</bold>
+<italic>The Remote Manifest now contains a complete plan, every entry should have a action and every necessary action should have an entry. Downloads, writeRemoteManifest (not for nextcloud), DoRemoteDeletes, DoUploads, DoDeleteLocal, WriteLocalManifest. </italic>
+
+<bold>Other Actions</bold>
+When a note is deleted (ie not during sync, at user request) TSearchForm.DeleteNote(FullFileName) is called. It updates the in memory record of notes and also updates the main sync Local Manifest if it exists. It will also need to do the same to a NextCloud local mainifest, again, if it exists.
+
+================================= 
+
+<bold>Notes </bold>
 If we are only downloading, then no new revision is required, we should copy the current revision not inc for a rewrite of the local manifest, do not write a new remote manifest.
 
-When we call WriteNewManifest() it first calls the parent version where local manifest is dealt with. It has two modes, firstly where we are just updating local manifest with filenames that have been deleted, secondly, where there is a sync in progress and a new revision is happening. In the first case, we should write back the same revision number as we started with. In the second case, we'll use NewRevision that has previously been set by MakeNewRevision()
+We currently have two functions that write out a local manifest, one that writes at the end of a sync and one that updates the local manifest whenever a local, synced note is deleted. Thats because the WriteLocalManifest() function also does some 'recover' things, I suggest thats now redundant considering we easily rejoin a broken sync connection without the old Tomboy's bad effects of doing so.
 
 We should regard an empty NewRevision in the second case as meaning that we have
 • just joined the sync repo or we are making a new repo.
@@ -30,20 +69,16 @@ d. The note in the local directory is dated before last sync date - must ask use
 So, its a clash when -
 * when note exists both locally and on server, (ie, we have to chose) and
 * the last change dates are not the same, (ie, we did not put it there)  and
-* the local note is more recent than the last sync date.
-
-<highlight>Note : when a user says No sync please, lets sync run to completion, client last sync date is updated and its now later than the clashing note's last change. So, next run, free for all.</highlight>
-
-<bold>New addition to deal with above -</bold>
-When determining last change date for a local note, we will use the latest of last-change and last-metadata-change-date. This will accomodate to features -
-* Notes restored from backup. They will retain origional last-change-date because its of interest to user but will get a current last-metadate-change-date to ensure they enter the sync system as user obviously intended them to when opting to restore them.
-* Notes that the user decided to "doNothing" with during a sync clash. It seem obvious that if a user makes that choice, then they will continue to be offered that choice every time they run a sync. So, when that happens, the local note concerned will have its last-metadata-change date set to some time after the current sync's date stamp.<size:huge>
+* the local note is more recent than the last sync date.<size:huge>
 
 <bold>Tomboy's Sync Policies</bold></size:huge>
 (I  posted to Tomboy's issues list late 2017, it is quite probably is incomplete but sadly prompted no further info. I have updated it a little in light of what I have learnt along the way.)
 
-We like to think that the Ancients had a secret knowledge that we don't have anymore. That does seem to be the case with Tomboy design. The Masters Of Old Tomboy, MOOT, worked very hard on a number of points that have made Tomboy as robust and reliable as it is. Sadly, no one thought to summarize those MOOT Points, we are left to read back over old discussions or reverse engineer the code.
-This page is about just that.<size:large>
+We like to think that the Ancients had a secret knowledge that we don't have anymore. That does seem to be the case with Tomboy design. The Masters Of Old Tomboy, , worked very hard on a number of points that have made Tomboy as robust and reliable as it is. Sadly, no one thought to summarize those points, we are left to read back over old discussions or reverse engineer the code.
+
+The following is about just that. 
+
+Note that, as mentioned above, Tomboy, during an initial sync, regards a pair of notes with the same UUID as a clash, thats why we used to end up with duplicate notes if rejoining with notes at both ends. tomboy-ng looks at the LastChangeDates and if they are identical, we assume the notes are also identical and don't need syncing. <size:large>
 
 <bold>Sync Model.</bold></size:large>
 
@@ -65,23 +100,23 @@ There are a number of situations that can happen, in no particular order (rememb
 <italic>Note that as of August, 2018, between release of 0.17 and 0.18, it was decided to use the lastes of last-change-date and last-metadata-change-date n the decision making mentioned above. </italic>
 
 <bold>Ref -</bold>
-<monospace>https://bugzilla.gnome.org/show_bug.cgi?id=321037</monospace>
-<monospace>https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007</monospace>
-<monospace>https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming</monospace>
+https://bugzilla.gnome.org/show_bug.cgi?id=321037
+https://wiki.gnome.org/Apps/Tomboy/Synchronization/IRCLog18May2007
+https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming
 "Many weird situations can be avoided by performing an update in three distinct steps: deletes, then updates, then adds." repeated again and again. But not what happens in the code.
 
 
 
 
 </note-content></text>
-  <last-change-date>2020-08-06T21:07:44.2559144+10:00</last-change-date>
-  <last-metadata-change-date>2020-08-06T21:07:44.2559144+10:00</last-metadata-change-date>
+  <last-change-date>2020-08-31T11:52:36.1330584+10:00</last-change-date>
+  <last-metadata-change-date>2020-08-31T11:52:36.1330584+10:00</last-metadata-change-date>
   <create-date>2018-06-23T13:14:34.4600000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
-  <height>626</height>
-  <x>20</x>
-  <y>30</y>
+  <height>677</height>
+  <x>669</x>
+  <y>247</y>
   <open-on-startup>False</open-on-startup>
 </note>

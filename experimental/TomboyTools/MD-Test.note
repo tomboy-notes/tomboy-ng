@@ -15,7 +15,9 @@ And this is the second para, all bold up until here,</bold> after that its not b
 This is nothing ....
 <italic><bold>this is italics and bold but</bold></italic><bold> the italics stopped early.</bold><size:small><bold>
 
-</bold><highlight><bold></bold><italic><bold>Bold, Italics and highlight and small</bold></italic></highlight></size:small>
+</bold><highlight><bold></bold><italic><bold>Bold, Italics and highlight and small</bold></italic></highlight>
+
+Just a line of small</size:small>
 
 Just to be carful, we must ensure angle brackets such as &lt; and &gt; are preserved.
 
@@ -24,14 +26,14 @@ Just to be carful, we must ensure angle brackets such as &lt; and &gt; are prese
 <list><list-item dir="ltr">list 2</list-item></list>
 <list><list-item dir="ltr">list 2</list-item></list>
 </note-content></text>
-  <last-change-date>2020-05-01T20:30:55.5080000+10:00</last-change-date>
-  <last-metadata-change-date>2020-05-01T20:30:55.5080000+10:00</last-metadata-change-date>
+  <last-change-date>2020-08-28T15:11:34.9702501+10:00</last-change-date>
+  <last-metadata-change-date>2020-08-28T15:11:34.9702501+10:00</last-metadata-change-date>
   <create-date>2020-04-30T19:34:20.7640000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>617</width>
-  <height>497</height>
-  <x>551</x>
-  <y>327</y>
+  <width>718</width>
+  <height>599</height>
+  <x>1136</x>
+  <y>276</y>
   <open-on-startup>False</open-on-startup>
 </note>

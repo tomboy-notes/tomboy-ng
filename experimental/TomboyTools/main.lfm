@@ -20,9 +20,9 @@ object FormMain: TFormMain
     Height = 382
     Top = 50
     Width = 731
-    ActivePage = TabExport
+    ActivePage = TabNextCloud
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 0
     object TabExport: TTabSheet
       Hint = 'ie Preserve File Name'
@@ -179,21 +179,22 @@ object FormMain: TFormMain
         TabOrder = 4
         object RadioFileNameTitle: TRadioButton
           Left = 8
-          Height = 24
+          Height = 23
           Hint = 'Use note title to make new file.'
           Top = 8
-          Width = 98
+          Width = 96
           Caption = 'Note Title'
           Checked = True
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
+          TabStop = True
         end
         object RadioFileNameID: TRadioButton
           Left = 8
-          Height = 24
+          Height = 23
           Top = 32
-          Width = 139
+          Width = 137
           Caption = 'Note File Name'
           ParentShowHint = False
           ShowHint = True
@@ -302,9 +303,9 @@ object FormMain: TFormMain
         TabOrder = 3
         object RadioTitleFirstLine: TRadioButton
           Left = 8
-          Height = 24
+          Height = 23
           Top = 8
-          Width = 92
+          Width = 90
           Caption = 'First Line'
           Checked = True
           TabOrder = 0
@@ -312,12 +313,125 @@ object FormMain: TFormMain
         end
         object RadioTitleFilename: TRadioButton
           Left = 8
-          Height = 24
+          Height = 23
           Top = 40
-          Width = 92
+          Width = 90
           Caption = 'Filename'
           TabOrder = 1
         end
+      end
+    end
+    object TabNextCloud: TTabSheet
+      Caption = 'Next Cloud'
+      ClientHeight = 345
+      ClientWidth = 725
+      object Label11: TLabel
+        Left = 32
+        Height = 19
+        Top = 208
+        Width = 136
+        Caption = 'NextCloud full URL'
+        ParentColor = False
+      end
+      object LabelFullURL: TLabel
+        Left = 32
+        Height = 19
+        Top = 232
+        Width = 369
+        Caption = 'http://10.85.2.2/index.php/apps/notes/api/v1/notes'
+        ParentColor = False
+      end
+      object Label9: TLabel
+        Left = 32
+        Height = 19
+        Top = 32
+        Width = 49
+        Caption = 'Source'
+        ParentColor = False
+      end
+      object ComboSourceNext: TComboBox
+        Left = 32
+        Height = 29
+        Top = 56
+        Width = 200
+        ItemHeight = 0
+        Items.Strings = (
+          'tomboy-ng'
+          'Tomboy'
+          'Manual Select'
+          'tomboy-ng-ALT'
+        )
+        OnChange = ComboSourceNextChange
+        Style = csDropDownList
+        TabOrder = 0
+      end
+      object Label10: TLabel
+        Left = 32
+        Height = 19
+        Top = 128
+        Width = 119
+        Caption = 'Source Directory'
+        ParentColor = False
+      end
+      object LabelNextSourceDir: TLabel
+        Left = 32
+        Height = 19
+        Top = 152
+        Width = 143
+        Caption = 'LabelNextSourceDir'
+        ParentColor = False
+      end
+      object ButtonPushUp: TButton
+        Left = 523
+        Height = 25
+        Top = 40
+        Width = 173
+        Caption = 'Push Up'
+        OnClick = ButtonPushUpClick
+        TabOrder = 1
+      end
+      object ButtonPullDown: TButton
+        Left = 523
+        Height = 25
+        Top = 80
+        Width = 173
+        Caption = 'Pull Down'
+        OnClick = ButtonPullDownClick
+        TabOrder = 2
+      end
+      object ButtonDeleteNext: TButton
+        Left = 523
+        Height = 25
+        Top = 122
+        Width = 173
+        Caption = 'Delete all Next'
+        Enabled = False
+        TabOrder = 3
+      end
+      object ButtonNextSync: TButton
+        Left = 523
+        Height = 25
+        Top = 168
+        Width = 173
+        Caption = 'Next Sync'
+        Enabled = False
+        TabOrder = 4
+      end
+      object CheckNoNet: TCheckBox
+        Left = 523
+        Height = 23
+        Top = 228
+        Width = 134
+        Caption = 'Dont touch Net'
+        TabOrder = 5
+      end
+      object CheckDebug: TCheckBox
+        Left = 523
+        Height = 23
+        Top = 273
+        Width = 145
+        Caption = 'Debug Messages'
+        TabOrder = 6
       end
     end
   end
@@ -414,7 +528,7 @@ object FormMain: TFormMain
     end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
-    left = 344
-    top = 392
+    Left = 248
+    Top = 424
   end
 end

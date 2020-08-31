@@ -66,7 +66,8 @@ type
         CreateDate : ANSIString;
         LastChange : ANSIString;    // leave as strings, need to compare and TDateTime uses real
         Rev : Integer;              // Not used for uploads, Trans knows how to inc its own.
-        Deleted: Boolean;           // don't think we use this .....
+        Deleted: Boolean;
+        SID : longint;              // Short ID, clumbsy alt to the GUID/UUID we should use
         Action : TSyncAction;
         Title : ANSIString;
     end;

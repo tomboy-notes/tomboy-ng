@@ -381,7 +381,7 @@ var
 begin
     DeletedList := TStringList.Create;
     DownList := TStringList.Create;
- 	with ASync.NoteMetaData do begin
+ 	with ASync.RemoteMetaData do begin
 		for Index := 0 to Count -1 do begin
             if Items[Index]^.Action = SyDeleteLocal then
                 DeletedList.Add(Items[Index]^.ID);
@@ -410,14 +410,14 @@ var
         Index : integer;
         Rows : integer = 0;
 begin
-    with ASync.NoteMetaData do begin
+    with ASync.RemoteMetaData do begin
 	    for Index := 0 to Count -1 do begin
 	    if Items[Index]^.Action <> SyNothing then begin
 	            {StringGridReport.InsertRowWithValues(Rows
-	        	    , [ASync.NoteMetaData.ActionName(Items[Index]^.Action)
+	        	    , [ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
 	                , Items[Index]^.Title, Items[Index]^.ID]);  }
 	            AddLVItem(
-	                ASync.NoteMetaData.ActionName(Items[Index]^.Action)
+	                ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
 	                , Items[Index]^.Title
 	                , Items[Index]^.ID);
 	            inc(Rows);
@@ -426,7 +426,7 @@ begin
 	end;
 	if  Rows = 0 then
 	    Memo1.Append(rsNoNotesNeededSync)
-	else Memo1.Append(inttostr(ASync.NoteMetaData.Count) + rsNotesWereDealt);
+	else Memo1.Append(inttostr(ASync.RemoteMetaData.Count) + rsNotesWereDealt);
     {$IFDEF DARWIN}     // Apparently ListView.columns[n].autosize does not work in Mac, this is rough but better then nothing.
     ListViewReport.Columns[0].Width := listviewReport.Canvas.Font.GetTextWidth('upload edit ');
     ListViewReport.Columns[1].Width := ListViewReport.Columns[0].Width *2;

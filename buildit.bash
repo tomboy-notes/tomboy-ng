@@ -182,12 +182,32 @@ esac
 
 # We can assume we have FPC at this stage, lets try for Lazarus.
 
+K_DIR="$PWD/kcontrols/source"
+
 cd "$K_DIR"		# WARNING, kcontrols is not part of the github zip file, its added by prepare.bash
 
-LAZBUILD="$LAZ_DIR/lazbuild  -qq --pcp="$TEMPCONFDIR" --cpu=$CPU --widgetset=$WIDGET --lazarusdir=$LAZ_DIR kcontrolslaz.lpk"
-echo "Laz build command is $LAZBUILD"
-$LAZBUILD 1> KControls.log
-rm -Rf "$TEMPCONFDIR"
+# Here we build just the kmemo.pas part of kcontrols.
+
+mkdir -p "lib/$TARGET"			# this is where kcontrols object files end up.
+
+FPCKOPT=" -MObjFPC -Scgi -Cg -O1 -g -gl -l -vewnibq -vh- -Fi$K_DIR"
+FPCKUNITS=" -Fu$LAZ_DIR/packager/units/$TARGET -Fu$LAZ_DIR/components/lazutils/lib/$TARGET"
+FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/buildintf/units/$TARGET -Fu$LAZ_DIR/components/freetype/lib/$TARGET"
+FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/lib/$TARGET -Fu$LAZ_DIR/lcl/units/$TARGET -Fu$LAZ_DIR/lcl/units/$TARGET/$WIDGET"
+FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/cairocanvas/lib/$TARGET/$WIDGET -Fu$LAZ_DIR/components/lazcontrols/lib/$TARGET/$WIDGET"
+FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/ideintf/units/$TARGET/$WIDGET -Fu$LAZ_DIR/components/printers/lib/$TARGET/$WIDGET"
+FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/tdbf/lib/$TARGET/$WIDGET -Fu. -FUlib/$TARGET"
+
+RUNIT="$COMPILER $EXCLUDEMESSAGE $FPCKOPT $FPCKUNITS kmemo.pas"
+
+echo "$RUNIT"
+echo "-----------------"
+
+$RUNIT
+
+# exit
+
+
 if [ ! -e "$K_DIR/lib/$CPU-$OS/kmemo.o" ]; then
 	echo "ERROR failed to build KControls, exiting..."
 	K_DIR=""

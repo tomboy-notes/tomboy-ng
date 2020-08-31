@@ -20,7 +20,9 @@ type
 
     function ExportAll()               : boolean;
     function ExportFile(ID: string)    : boolean;   // Expects just ID, ie basename
-    function ExportMD(ID: string)      : boolean;   // Expects just ID, ie basename
+                    {  Expects just ID, ie basename, if STL <> nil, does not do any file
+                       i/o stuff, just returns with the list populated with md content. }
+    function ExportMD(ID: string; STL: TStringList=nil): boolean;
     function ExportText(ID: string)    : boolean;   // Expects just ID, ie basename
     function NoteInNoteBook(const FileName: string): boolean;   // Expects just ID, ie basename
     function ExportNoteBook() : boolean;
@@ -72,6 +74,10 @@ type
     OutFormat : string;             // Either 'md' or 'text', maybe add more later.
     ErrorMessage : string;          // Empty unless something bad happened.
     NotesProcessed : integer;       // How many things have we done something to ?
+                        { Gets passed an ID and created, empty stringlist. Will load indicated
+                          file as md. Observes only NoteDir
+                          This is for the use of NextCloud Exporter and maybe only temporary. }
+    function GetMDcontent(ID : string; STL : TstringList) : boolean;
     function Execute() : boolean;   // you know all you need, go do it.
     constructor Create;
     destructor Destroy; override;
@@ -82,6 +88,10 @@ implementation
 { UTB2md }
 
 uses LCLProc, laz2_DOM, laz2_XMLRead, ttutils, LazFileUtils;
+
+
+
+
 
 
 function TExportNote.ExportAll(): boolean;
@@ -307,6 +317,8 @@ begin
 end;
 
 
+
+
 procedure TExportNote.NormaliseList(STL : TStringList);
 var
     TagSize, StIndex : integer;
@@ -338,7 +350,53 @@ begin
 
 end;
 
+// This version uses the CommonMark model of noting heading with ---- ===== on line underneath
 procedure TExportNote.ProcessHeadings(StL : TStringList);
+var
+    i : integer = 1;    // Skip first two lines because they are title and the ==== markup.
+    PosI, L : integer;
+    AddedHeading : Boolean = false;
+begin
+    // We arrive here with a clean title in first st, lets mark it up as really big.
+    StL.Insert(1, '===========');
+    repeat
+        inc(i);
+        if not AddedHeading then begin
+            StL.Insert(i, '');
+            inc(i);
+		end;
+        AddedHeading := False;
+		if (StL.Strings[i] = '') or (StL.strings[i][1] <> '<') then continue;
+		if copy(Stl.Strings[i], 1, length('<size:large>')) = '<size:large>' then begin
+            PosI := pos('</size:large>', Stl.Strings[i]);
+            if PosI = 0 then continue;
+            L := length(Stl.Strings[i]);
+            if PosI -1 + length('</size:large>') = L then begin
+                StL.insert(i, copy(Stl.Strings[i], length('<size:large>')+1,
+                        L - length('<size:large></size:large>')));
+                StL.Delete(i+1);
+                inc(i);
+                StL.Insert(i, '--------');
+                AddedHeading := True;
+			end;
+		end;
+        if copy(Stl.Strings[i], 1, length('<size:huge>')) = '<size:huge>' then begin
+            PosI := pos('</size:huge>', Stl.Strings[i]);
+            if PosI = 0 then continue;
+            L := length(Stl.Strings[i]);
+            if PosI -1 + length('</size:huge>') = L then begin
+                StL.insert(i, copy(Stl.Strings[i], length('<size:huge>')+1,
+                        L - length('<size:huge></size:huge>')));
+                StL.Delete(i+1);
+                inc(i);
+                StL.Insert(i, '========');
+                AddedHeading := True;
+			end;
+		end;
+	until I >= StL.Count-1;
+end;
+
+(* procedure TExportNote.ProcessHeadings(StL : TStringList);
 var
     i : integer = -1;
     PosI, L : integer;
@@ -370,27 +428,35 @@ begin
 			end;
 		end;
 	until I >= StL.Count-1;
-end;
+end;          *)
+
 
 function TExportNote.RemoveNextTag(var St : String; out Tag : string) : integer;
 var
     TStart, TEnd, StartAt : integer;
 begin
     StartAt := 0;
+    {writeln('==== Working on : [' + St + ']');}
     repeat
         Tag := '';
         TStart := St.IndexOf('<', StartAt) + 1;
-        TEnd   := St.IndexOf('>', StartAt) + 1;
+        TEnd   := St.IndexOf('>', TStart) +1;
         if (TStart > 0) and (TEnd > 0) and (TEnd > TStart) then begin
             Tag := copy(St, TStart, TEnd - TStart +1);
-            if (Tag = '<sub>') or (Tag = '</sub>') then begin       // they are MD tags, may be more .....
+            {writeln('Tag = [' + Tag + ']');}
+            if (Tag = '<sub>') or (Tag = '</sub>') or
+                    (Tag = '</html>') or (Tag = '<html>') then begin       // they are MD tags, may be more .....
                 StartAt := TEnd +1;
+                {writeln('RNT Tag=' + Tag + ' St=[' + St + '] and StartAt=' + inttostr(StartAt));
+                writeln('Next IndexOf < is ' + inttostr(St.IndexOf('<', StartAt) + 1));
+                writeln('Next IndexOf > is ' + inttostr(St.IndexOf('>', StartAt) + 1));}
                 continue;
             end;
+            {writeln('Removing Tag [' + Tag + ']');}
             delete(St, TStart, TEnd - TStart +1);
             exit(TStart);
 	    end
-	    else exit(0);
+	    else begin { writeln('Exit TStart=' + inttostr(TSTart) + ' TEnd=' + inttostr(TEnd));} exit(0); end;
     until false;
 end;
 
@@ -415,18 +481,21 @@ begin
     while StIndex < StL.Count -1 do begin
         inc(StIndex);
         if (length(StL.Strings[StIndex]) < 2) then continue;     // no room for a tag in there.
+        {writeln('========== Looking at ' + StL.Strings[StIndex]);}
         TempSt := '';
         if ItalicOn then TempSt := TempSt + '*';
         if BoldOn then TempSt := TempSt + '**';
         if StrikeoutOn then TempSt := TempSt + '~~';
         if MonoOn then TempSt := TempSt + '`';
-        if SmallOn then TempSt := TempSt + '<sub>';
+        if SmallOn then TempSt := TempSt + '<html><sub>';
 
         TempSt := TempSt + StL.Strings[StIndex];
         TempSt := TempSt.Replace('<bold></bold>', '', [rfReplaceAll]);
         TempSt := TempSt.Replace('</bold></italic><bold>', '</bold></italic> <bold>', [rfReplaceAll]);
         // ToDo : replace above line with something generic that puts a space between a string of 'off's and a string of 'on's
         TempSt := TempSt.Replace('<list><list-item dir="ltr">', '* ');
+        // ToDo : when we have one bullet point after another, remove one blank line between
+        {writeln('==== First Cut ' + TempSt);}
         repeat
             ChIndex := RemoveNextTag(TempSt, Tag);
             case Tag of
@@ -436,27 +505,35 @@ begin
                 '</italic>' :     begin NewTag := '*';      ItalicOn :=    False; end;
                 '<monospace>' :   begin NewTag := '`';      MonoOn :=      True;  end;
 				'</monospace>' :  begin NewTag := '`';      MonoOn :=      False; end;
-                '<size:small>' :  begin NewTag := '<sub>' ; SmallOn :=     True;  end;
-                '</size:small>' : begin NewTag := '</sub>'; SmallOn :=     False; end;
+                '<size:small>' :  begin NewTag := '<html><sub>' ;       SmallOn :=     True;  end;
+                '</size:small>' : begin NewTag := '</sub></html>';      SmallOn :=     False; end;
                 '<strikeout>'  :  begin NewTag := '~~';     StrikeoutOn := True;  end;               // Does strikeout belong here ??
                 '</strikeout>'  : begin NewTag := '~~';     StrikeoutOn := False; End;               // ''
 			else
                 NewTag := '';
             end;
-            if not NewTag.IsEmpty then
+            if not NewTag.IsEmpty then begin
                 TempSt := TempSt.Insert(ChIndex-1, NewTag);
-        until ChIndex < 1;
+                {writeln('Old Tag was ' + Tag + '  NewTag is ' + NewTag); }
+			end;
+		until ChIndex < 1;
         if BoldOn then TempSt := TempSt + '**';
         if ItalicOn then TempSt := TempSt + '*';
         if StrikeoutOn then TempSt := TempSt + '~~';
         if MonoOn then TempSt := TempSt + '`';
-        if SmallOn then TempSt := TempSt + '</sub>';
+        if SmallOn then TempSt := TempSt + '</sub></html>';
         StL.Insert(StIndex, TempSt);
         StL.Delete(StIndex + 1);
 	end;
 end;
 
-function TExportNote.ExportMD(ID : string): boolean;
+function TExportNote.GetMDcontent(ID: string; STL: TstringList): boolean;
+begin
+    self.OutFormat:= 'md';
+    Result := ExportMD(ID, STL);
+end;
+
+function TExportNote.ExportMD(ID : string; STL : TStringList = nil): boolean;
 var
     StList : TStringList;
     LTitle : integer;
@@ -466,7 +543,10 @@ begin
     if not FileExists(NoteDir + ID + '.note') then exit(False);
     //debugln('export ' + NoteDir + ID + '.note to ' + DestDir + TitleFromID(ID, True, LTitle) + '.md');
     result := true;
-    StList := TStringList.Create;
+    if STL = nil then
+        StList := TStringList.Create
+    else
+        StList := STL;
     try
         StList.LoadFromFile(NoteDir + ID + '.note');
         Index := FindInStringList(StList, '<title>');       // include < and > in search term so sure its metadate
@@ -475,20 +555,22 @@ begin
                 StList.Delete(0);
                 dec(Index);
 			end;
-        // OK, now first line contains the title but might have a style 'on' tag at the end. Normalise
+        // OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
         NormaliseList(StList);
         StList.Delete(0);
-        StList.Insert(0, '# ' + TitleFromID(ID, False, LTitle));
-        Index := FindInStringList(StList, '</note-content>');
+        StList.Insert(0, TitleFromID(ID, False, LTitle));
+        Index := FindInStringList(StList, '</note-content>');       // but G-Note does not bother with nice newlines ????
         while Index < StList.Count do StList.Delete(Index);
 
-        ProcessHeadings(StList);
+        ProcessHeadings(StList);                                    // Makes Title big too !
         ProcessMarkUp(StList);
-        StList.LineBreak := LineEnding + LineEnding;
 
         if FileNameIsTitle then
             OutFileName := DestDir + TitleFromID(ID, True, LTitle) + '.md'
         else OutFileName := DestDir + ID + '.md';
+
+        if STL <> nil then exit(True) else
+            StList.LineBreak := LineEnding + LineEnding;
 
         if FileExistsUTF8(OutFileName) then
             DeleteFileUTF8(OutFileName);
@@ -504,7 +586,8 @@ begin
             end;
         end;
     finally
-        StList.free;
+        if STL = Nil then
+            StList.free;
 	end;
 
 

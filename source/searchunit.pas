@@ -479,10 +479,10 @@ var
     Index : integer;
 begin
     Result := False;
-    debugln('Looking for help note ' + extractFileName(fullHelpNoteFileName));
+    //debugln('Looking for help note ' + extractFileName(fullHelpNoteFileName));
     if HelpList <> Nil then
         if HelpList.Find(extractFileName(FullHelpNoteFileName), Index) then begin
-            debugln('Found help note ' + extractFileName(fullHelpNoteFileName));
+            //debugln('Found help note ' + extractFileName(fullHelpNoteFileName));
             HelpList.Delete(Index);
             Result := True;
         end;

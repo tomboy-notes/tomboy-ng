@@ -15,8 +15,15 @@ type
 		{ TFormMain }
 
         TFormMain = class(TForm)
+				ButtonNextSync: TButton;
+				ButtonPushUp: TButton;
+				ButtonPullDown: TButton;
+				ButtonDeleteNext: TButton;
+				CheckNoNet: TCheckBox;
+				CheckDebug: TCheckBox;
 				CheckListBox1: TCheckListBox;
                 CheckListImportFiles: TCheckListBox;
+				ComboSourceNext: TComboBox;
                 ComboImportDest: TComboBox;
                 ComboSourceFormat: TComboBox;
 				ComboExportMode: TComboBox;
@@ -25,6 +32,11 @@ type
                 GroupBox1: TGroupBox;
                 GroupBox2: TGroupBox;
 				Label1: TLabel;
+				Label10: TLabel;
+				Label11: TLabel;
+				LabelNextSourceDir: TLabel;
+				Label9: TLabel;
+				LabelFullURL: TLabel;
 				Label2: TLabel;
 				Label3: TLabel;
 				Label4: TLabel;
@@ -56,6 +68,9 @@ type
 				StatusBar1: TStatusBar;
 				TabExport: TTabSheet;
 				TabImport: TTabSheet;
+				TabNextCloud: TTabSheet;
+				procedure ButtonPullDownClick(Sender: TObject);
+    procedure ButtonPushUpClick(Sender: TObject);
                 procedure CheckListBox1Click(Sender: TObject);
                 procedure CheckListImportFilesClick(Sender: TObject);
                 procedure CheckListImportFilesClickCheck(Sender: TObject);
@@ -64,6 +79,7 @@ type
 				procedure ComboExportModeChange(Sender: TObject);
                 procedure ComboSourceChange(Sender: TObject);
                 procedure ComboSourceFormatChange(Sender: TObject);
+				procedure ComboSourceNextChange(Sender: TObject);
                 procedure FormCreate(Sender: TObject);
                 procedure FormShow(Sender: TObject);
 				procedure SpeedExitClick(Sender: TObject);
@@ -75,6 +91,7 @@ type
                 procedure TabExportShow(Sender: TObject);
                 procedure TabImportShow(Sender: TObject);
         private
+				procedure DoNextSyncAction(Act: string);
             procedure ImportProceed();
             procedure ImportReadyToGo();
             function NumberChecked(CLB: TCheckListBox): integer;
@@ -85,7 +102,6 @@ type
 				function GetNoteBooks(): integer;
 				function ExportReadyToGo(): boolean;
 				function SetExportSource(SDir: string): boolean;
-
         public
 
         end;
@@ -96,13 +112,14 @@ var
 
 implementation
 
-uses cmdline, FileUtil, LazFileUtils, ttutils, export_notes, import_notes;
+uses cmdline, FileUtil, LazFileUtils, ttutils, export_notes, import_notes, NextCloud;
 
 const
 
     cbNG = 0;            // The selected index ComboSource, must agree with order of strings in Combo, set in ObjectInspector
     cbTB = 1;
     cbManual = 2;
+    cbNG_ALT = 3;       // Thats my tomboy-ng-alt, here only for testing, don't ship with this one in combos.
 
     cbDirectory = 0;    // Export Mode combobox, must agree with order of strings in Combo, set in ObjectInspector
     cbBook = 1;
@@ -141,7 +158,7 @@ procedure TFormMain.SetUpNoteBook() ;
 begin
     CheckListBox1.Enabled := true;
     if GetNoteBooks() = 0 then
-        showmessage('That dir has not notes in notebooks');
+        showmessage('That dir has no notes in notebooks');
 end;
 
 function TFormMain.ExportReadyToGo() : boolean;
@@ -160,6 +177,8 @@ begin
     //CheckListBox1.AllowGrayed:=true;
 
 end;
+
+
 
 
 
@@ -234,7 +253,7 @@ begin
 end;
 
 
-
+{ Combo setup -  style = csDropDownList  }
 
 procedure TFormMain.ComboSourceChange(Sender: TObject);
 begin
@@ -254,6 +273,8 @@ begin
     CheckListBox1.ItemIndex := -1;
     ExportReadyToGo();
 end;
+
+
 
 procedure TFormMain.CheckListImportFilesClick(Sender: TObject);
 begin
@@ -376,6 +397,7 @@ rsMarkDown        = 'Mark Down (git style)';
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+    PageControl1.TabIndex := 0;
     LabelImportSource.Caption := '';
     LabelImportDestination.Caption := '';
     LabelErrorMessage.Caption := '';
@@ -412,6 +434,23 @@ procedure TFormMain.SpeedProceedClick(Sender: TObject);
 {var
     Exporter : TExportNote;  }
 begin
+    case PageControl1.ActivePage.TabIndex of
+        0 : begin                                          // Thats Export
+	              StatusBar1.SimpleText:= 'processing notes, please wait ....';
+	              LabelErrorMessage.Caption := '';
+	              Application.ProcessMessages;
+	              case comboExportMode.itemIndex of
+	                  cbDirectory : ProcessDirectory;
+	  		          cbBook      : ProcessNotebooks;
+	  	          end;
+	        end;
+        1 : ImportProceed();
+        //2 : DoNextCloud();             // not being used
+	end;
+    exit;
+
+    // trash below when ready .....
+
     if PageControl1.ActivePage.TabIndex = 0 then begin      // Thats Export
         StatusBar1.SimpleText:= 'processing notes, please wait ....';
         LabelErrorMessage.Caption := '';
@@ -424,8 +463,59 @@ begin
         ImportProceed();
 end;
 
+// -------------------------- N E X T   C L O U D ----------------------------
 
+procedure TFormMain.ButtonPushUpClick(Sender: TObject);
+begin
+    DoNextSyncAction('PUSHUP');
+end;
 
+procedure TFormMain.ButtonPullDownClick(Sender: TObject);
+begin
+    DoNextSyncAction('PULLDOWN');
+end;
+
+procedure TFormMain.DoNextSyncAction(Act : string);
+var
+    NextCld : TNextCloudNotes;
+begin
+    NextCld := TNextCloudNotes.Create;
+    NextCld.TheURL := LabelFullURL.Caption;
+    NextCld.SyncAction := Act;
+    NextCld.Debug := CheckDebug.checked;
+    NextCld.NoNet := CheckNoNet.checked;
+    NextCld.Execute();
+    NextCld.Free;
+end;
+
+procedure TFormMain.ComboSourceNextChange(Sender: TObject);
+var
+    TempSrcDir : string;
+begin
+    case ComboSourceNext.ItemIndex of
+        cbNG : LabelNextSourceDir.Caption := GetDefaultNoteDir();
+        cbTB : LabelNextSourceDir.Caption := GetDefaultNoteDir(True);
+        CBManual :  LabelNextSourceDir.Caption := './';
+                    {begin
+                        showmessage('Manual not available here');
+                        ComboSourceNext.ItemIndex := -1;
+                        exit;
+                    end;}
+		cbNG_ALT : begin
+                        TempSrcDir := GetDefaultNoteDir();
+                        delete(TempSrcDir, length(TempSrcDir), 1);   // remove trailing delim
+                        LabelNextSourceDir.Caption := TempSrcDir + '-alt';
+		            end;
+	end;
+    if not DirectoryExists(LabelNextSourceDir.Caption) then begin
+        showmessage('Appropriate directory does not exist.');
+        ComboSourceNext.ItemIndex := -1;
+        LabelNextSourceDir.Caption := '';
+	end else begin
+        ButtonPushUp.Enabled := True;
+        ButtonPullDown.Enabled := True;
+	end;
+end;
 
 // -------------------------- I M P O R T ------------------------------------
 
@@ -434,6 +524,10 @@ procedure TFormMain.ComboSourceFormatChange(Sender: TObject);
 begin
     ImportReadyToGo();
 end;
+
+
+
+
 
 procedure TFormMain.CheckListImportFilesClickCheck(Sender: TObject);
 begin

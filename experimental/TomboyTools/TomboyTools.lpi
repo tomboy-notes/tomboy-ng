@@ -76,6 +76,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <UseHeaptrc Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
@@ -84,6 +85,11 @@
               </Win32>
             </Options>
           </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+          </Other>
         </CompilerOptions>
       </Item3>
       <Item4 Name="win64">
@@ -136,7 +142,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="TomboyTools.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -169,6 +175,10 @@
         <Filename Value="import_notes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="nextcloud.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

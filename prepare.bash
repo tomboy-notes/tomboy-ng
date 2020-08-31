@@ -71,8 +71,17 @@ function CleanSource () {
 	rm -f  glyphs/*.png glyphs/*.ico glyphs/*.svg glyphs/*.icns
 	rm -fR glyphs/help
 	rm -fR glyphs/demos
-	rm -fR kcontrols/demos 
-	rm -fR kcontrols/help
+	KC="kcontrols"
+	KCS="$KC/source"
+	rm -fR "$KC"/demos 
+	rm -fR "$KC"/help
+	rm -Rf "$KC"/packages kcontrols/tools 
+	rm -Rf "$KC"/resource_src/khexeditor_icons "$KC"/resource_src/kgrid_icons
+	rm "$KCS"/kbuttons.pas "$KCS"/kdbgrids.pas "$KCS"/kgrids.* "$KCS"/kicon.pas 
+	rm "$KCS"/klabels.pas "$KCS"/kmemodlg*.* "$KCS"/kxml.pas "$KCS"/kwidewinprocs.pas
+	rm "$KCS"/kmemofrm.* "$KCS"/kpagecontrol.* "$KCS"/kprogress.* "$KCS"/ksplitter.pas  
+	rm "$KC"/*.txt "$KC"/*.json "$KC"/*.bat
+	rm -Rf "$KC"/packages "$KC"/tools "$KC"/resource_src/khexeditor_icons "$KC"/resource_src/kgrid_icons
 }
 
 

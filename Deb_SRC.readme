@@ -2,7 +2,20 @@ Steps to build Debian Source Package for tomboy-ng.
 ---------------------------------------------------
  
 You need two files to start.  The tomboy-ng-master.zip file and the 
-script, prepare.bash.  You should already have FPC and Lazarus installed. And
+script, prepare.bash.  
+
+WHAT does prepare.bash do ?
+---------------------------
+Firstly, prepare is NOT required when rebuilding either binary or src packages.
+Prepare takes a zip file (github sends us a zip file), unzips it, removes some
+unnecessary files, downloads KControls source, again removes some unnecessary
+files, makes some changes according to desired widget set and then creates the
+corresponding .orig.tar.gz file.
+
+Dependancies
+---------------- 
+
+You should already have FPC and Lazarus installed. And
 the tomboy-ng build dependencies, gtk2-dev, libnotify-dev etc. 
 If you just want to make a binary thats all you need. If you are making a deb 
 or a deb src package, you will need the devscripts package installed and some 
@@ -15,6 +28,8 @@ config, such as -
  * Edit the prepare script so that DEBEMAIL and DEBFULLNAME match the key.
    $DEBFULLNAME <$DEBEMAIL> must look exactly like the key's version. 
 
+The process
+-----------------
 
 Download the tomboy-ng zip file from github -
 
@@ -61,7 +76,8 @@ cd into the working dir, its called  tomboy-ng_{$VER-1}.   And do one of -
    dput ppa:d-bannon/ppa-tomboy-ng tomboy-ng_0.29e-1_source.changes [enter]
    Note : pretty obviously, you won't be submitting to my PPA so change it.
 
-===== O P T I O N S ===== 
+Options to prepare.bash
+------------------------ 
 
 WIDGET SET
 The default widget set is GTK2, pass -Q to prepare.bash and you will get Qt5
@@ -75,7 +91,7 @@ CLEAN or UPDATE
 There are two options that were used during development, likely of no use to
 most other people.
 
-USING LOCALLY BUILT LAZARUS
+USING LOCALLY BUILT LAZARUS / FPC
 In fact, you need only lazbuild and lcl  (make lazbuild; make lcl).  Many
 Lazarus users (sensibly) build their own from source, but that leaves them
 with Lazarus not findable using the core system path that debuild uses. 
