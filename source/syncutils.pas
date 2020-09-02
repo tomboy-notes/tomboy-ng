@@ -50,7 +50,8 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncMismatch,       // Its a repo, Captain, but not as we know it.
                     SyncXMLError,       // Housten, we have an XML error in a manifest !
                     SyncBadError,       // Some other error, must NOT proceed.
-                    SyncNetworkError);  // Remove server/device not responding
+                    SyncNetworkError,   // Remove server/device not responding
+                    SyncCredentialError); // Unsuitable user:password
 
 type TRepoAction = (
                 RepoJoin,               // Join (and use) an existing Repo

@@ -1025,9 +1025,37 @@ msgstr ""
 msgid "Save and Sync"
 msgstr ""
 
+#: tformsync.buttontestnext.caption
+msgid "Test NextCloud"
+msgstr ""
+
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
+msgstr ""
+
+#: tformsync.editnexthostaddress.text
+msgid "10.85.2.2"
+msgstr ""
+
+#: tformsync.editnextuser.text
+msgid "dbannon"
+msgstr ""
+
+#: tformsync.editpass.text
+msgid "DavosOldPW"
+msgstr ""
+
+#: tformsync.label3.caption
+msgid "Host Address"
+msgstr ""
+
+#: tformsync.label4.caption
+msgid "User Name"
+msgstr ""
+
+#: tformsync.label5.caption
+msgid "Password"
 msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
@@ -1413,6 +1441,10 @@ msgstr ""
 
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
+msgstr ""
+
+#: tsett.buttonsetupnextsync.caption
+msgid "Setup NextCloud"
 msgstr ""
 
 #: tsett.buttonshowbackup.caption

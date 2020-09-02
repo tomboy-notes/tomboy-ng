@@ -1064,10 +1064,38 @@ msgstr "Cerrar"
 msgid "Save and Sync"
 msgstr "Guardar y sincronizar"
 
+#: tformsync.buttontestnext.caption
+msgid "Test NextCloud"
+msgstr ""
+
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Sincronizar"
+
+#: tformsync.editnexthostaddress.text
+msgid "10.85.2.2"
+msgstr ""
+
+#: tformsync.editnextuser.text
+msgid "dbannon"
+msgstr ""
+
+#: tformsync.editpass.text
+msgid "DavosOldPW"
+msgstr ""
+
+#: tformsync.label3.caption
+msgid "Host Address"
+msgstr ""
+
+#: tformsync.label4.caption
+msgid "User Name"
+msgstr ""
+
+#: tformsync.label5.caption
+msgid "Password"
+msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
@@ -1469,6 +1497,10 @@ msgstr "Si tienes notas en otro sitio"
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
 msgstr "Establecer Biblioteca Ortográfica"
+
+#: tsett.buttonsetupnextsync.caption
+msgid "Setup NextCloud"
+msgstr ""
 
 # Para ver una nota al punto de sobreescribir.
 #: tsett.buttonshowbackup.caption

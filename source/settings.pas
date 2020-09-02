@@ -125,6 +125,7 @@ type
 
     TSett = class(TForm)
         ButtDefaultNoteDir: TButton;
+		ButtonSetupNextSync: TButton;
         ButtonManualSnap: TButton;
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
@@ -218,6 +219,7 @@ type
         procedure ButtonSetNotePathClick(Sender: TObject);
         procedure ButtonSetSnapDirClick(Sender: TObject);
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
+		procedure ButtonSetupNextSyncClick(Sender: TObject);
         procedure ButtonShowBackUpClick(Sender: TObject);
         //procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
@@ -489,6 +491,7 @@ begin
 		    if FileExists(LocalConfig + 'manifest.xml') then
 	            if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
 	        if SelectDirectoryDialog1.Execute then begin
+               FormSync.Transport := SyncFile;
 	           FormSync.NoteDirectory := NoteDirectory;
 	           FormSync.LocalConfig := LocalConfig;
 	           FormSync.SetupSync := True;
@@ -502,6 +505,24 @@ begin
 	        end;
 end;
 
+procedure TSett.ButtonSetupNextSyncClick(Sender: TObject);
+begin
+    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    if FileExists(LocalConfig + 'nextcloud.xml') then
+        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
+
+        FormSync.Transport := SyncNextCloud;
+        FormSync.NoteDirectory := NoteDirectory;
+        FormSync.LocalConfig := LocalConfig;
+        FormSync.SetupSync := True;
+        ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+        if mrOK = FormSync.ShowModal then begin
+            SettingsChanged();
+            ValidSync := ValidSync;           // so we update button labels etc
+        end else
+            ValidSync := rsSyncNotConfig;
+
+end;
 
 
 {procedure TSett.RadioFileSyncChange(Sender: TObject);
@@ -561,6 +582,7 @@ begin
         CheckSpelling();
     end;
 end;
+
 
 procedure TSett.ButtonSetDictionaryClick(Sender: TObject);
 begin

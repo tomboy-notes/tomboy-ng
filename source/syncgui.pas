@@ -66,18 +66,25 @@ interface
 
 uses
 		Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-		StdCtrls, {Grids,} ComCtrls, Syncutils;
+		StdCtrls, {Grids,} ComCtrls,  Syncutils;
 
 type
 
 		{ TFormSync }
 
   TFormSync = class(TForm)
+				ButtonTestNext: TButton;
 				ButtonSave: TButton;
 				ButtonCancel: TButton;
 				ButtonClose: TButton;
+				EditPass: TEdit;
+				EditNextHostAddress: TEdit;
+				EditNextUser: TEdit;
 				Label1: TLabel;
 				Label2: TLabel;
+				Label3: TLabel;
+				Label4: TLabel;
+				Label5: TLabel;
                 ListViewReport: TListView;      // Viewstyle=vsReport, make columns in Object Inspector
 				Memo1: TMemo;
 				Panel1: TPanel;
@@ -87,6 +94,7 @@ type
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
+				procedure ButtonTestNextClick(Sender: TObject);
                 procedure FormCreate(Sender: TObject);
                 function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
@@ -249,11 +257,13 @@ end;
 
 procedure TFormSync.AfterShown(Sender : TObject);
 begin
-    LocalTimer.Enabled := False;             // Don't want to hear from you again
-    if SetUpSync then begin
-        JoinSync();
-    end else
-        ManualSync();
+    if self.Transport = SyncFile then begin
+	    LocalTimer.Enabled := False;             // Don't want to hear from you again
+	    if SetUpSync then begin
+	        JoinSync();
+	    end else
+	        ManualSync();
+	end;
 end;
 
 //RESOURCESTRING
@@ -265,6 +275,8 @@ begin
     Left := 55 + random(55);
     Top := 55 + random(55);
     FormShown := False;
+    if Transport = syncFile then Panel1.Height := 90;
+    if Transport = SyncNextCloud then Panel1.Height := 150;
     Label2.Caption := rsNextBitSlow;
     Memo1.Clear;
     ListViewReport.Clear;
@@ -310,6 +322,31 @@ begin
 
 end;
 
+procedure TFormSync.ButtonTestNextClick(Sender: TObject);
+begin
+    self.Memo1.append('Password = ' + EditPass.Text);
+    freeandnil(ASync);
+    ASync := TSync.Create;
+    try
+        ASync.ProceedFunction:= @Proceed;
+        ASync.DebugMode := True;
+	    ASync.NotesDir:= NoteDirectory;
+	    ASync.ConfigDir := LocalConfig;
+        ASync.RepoAction := RepoUse;
+        ASync.SyncAddress := EditNextHostAddress.text;
+        ASync.Password := EditPass.text;
+        Async.SetTransport(TransPort);          // which should be syncNextCloud
+        if ASync.TestConnection() = SyncNoRemoteMan then begin
+            debugln('Failed to find an existing remote repo, will try and make one');
+            ASync.RepoAction := RepoNew;
+            if ASync.TestConnection() = SyncNoRemoteMan then
+                debugln('Well, thats a bit sad !!!!');
+		end;
+	finally
+        freeandnil(ASync);
+	end;
+end;
+
         // User is only allowed to press Close when this is finished.
 function TFormSync.ManualSync : boolean;
 var
@@ -328,7 +365,7 @@ begin
         ASync.RepoAction:=RepoUse;
         Async.SetTransport(TransPort);
         SyncState := ASync.TestConnection();
-        ASync.SyncAddress := ASync.SyncAddress;
+        ASync.SyncAddress := ASync.SyncAddress;         // ToDo : WTF ? is this another   grosjo-ism ?
 	    while SyncState <> SyncReady do begin
             if ASync.DebugMode then debugln('Failed testConnection');
             FormSyncError.Label1.caption := rsUnableToSync + ':';

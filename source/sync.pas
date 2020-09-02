@@ -367,7 +367,7 @@ implementation
 
 { TSync }
 
-uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransAndroid, LazLogger, LazFileUtils,
+uses laz2_DOM, laz2_XMLRead, Trans, TransFile, transnextcloud, TransAndroid, LazLogger, LazFileUtils,
     FileUtil, Settings;
 
 var
@@ -1076,10 +1076,10 @@ begin
                         SyncAddress := AppendPathDelim(Sett.ValidSync);             // LabelFileSync.Caption);
                         Transport := TFileSync.Create;
 	               end;
-	    {SyncNextCloud : begin
-		                    Transport := TNextSync.Create;
-		                    SyncAddress := Sett.LabelNCSyncURL.caption;
-                        end;}
+	    SyncNextCloud : begin
+		                    Transport := TNextCloudSync.Create;
+		                    //SyncAddress := Sett.LabelNCSyncURL.caption;
+                        end;
         SyncAndroid : begin
                         // debugln('Oh boy ! We have called the android line !');
                         Transport := TAndSync.Create;
@@ -1139,6 +1139,8 @@ begin
     Result := Transport.TestTransport(not TestRun);
     if Result <> SyncReady then begin
       ErrorString := Transport.ErrorString;
+      if DebugMode then
+         Debugln('TestTransport did not report SyncReady : ' + ErrorString);
       exit;
     end;
     if DebugMode then begin

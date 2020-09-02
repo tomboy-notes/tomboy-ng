@@ -48,7 +48,8 @@ type
 
             { Tests availability of remote part of connection. For file sync (eg) thats
             existance of remote manifest and 0 dir, write access. Sets its own ServerID.
-            This would be a good place to put lock or authenticate as  necessary}
+            This would be a good place to put lock or authenticate as  necessary.
+            Note that WriteNewServerID is observed on Android only. I think ....}
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; virtual; abstract;
 
             { May (or may not) do some early transport tests, ie, in Tomdroid sync
@@ -62,7 +63,7 @@ type
             This is always a new list, unlike one derived from local manifest.}
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; virtual; abstract;
 
-            {Request that all the notes mentioned in the simple list be downloaded and,
+            {Request that all the notes marked as SyDownLoad in the list be downloaded and,
             if necessary, any existing note be moved to Backup.  Note that the list
             contains just IDs, there is no '.note'}
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; virtual; abstract;

@@ -1,7 +1,7 @@
 object FormSync: TFormSync
-  Left = 300
+  Left = 577
   Height = 418
-  Top = 285
+  Top = 258
   Width = 699
   Caption = 'Sync'
   ClientHeight = 418
@@ -17,11 +17,11 @@ object FormSync: TFormSync
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 0
-    Height = 91
+    Height = 150
     Top = 0
     Width = 699
     Anchors = [akTop, akLeft, akRight]
-    ClientHeight = 91
+    ClientHeight = 150
     ClientWidth = 699
     TabOrder = 0
     object Label1: TLabel
@@ -44,6 +44,65 @@ object FormSync: TFormSync
       Caption = 'Label2'
       ParentColor = False
     end
+    object EditNextHostAddress: TEdit
+      Left = 160
+      Height = 29
+      Top = 80
+      Width = 510
+      TabOrder = 0
+      Text = '10.85.2.2'
+    end
+    object Label3: TLabel
+      Left = 37
+      Height = 19
+      Top = 88
+      Width = 95
+      Caption = 'Host Address'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      Left = 38
+      Height = 19
+      Top = 114
+      Width = 80
+      Caption = 'User Name'
+      ParentColor = False
+    end
+    object EditNextUser: TEdit
+      Left = 160
+      Height = 29
+      Top = 112
+      Width = 112
+      TabOrder = 1
+      Text = 'dbannon'
+    end
+    object Label5: TLabel
+      Left = 307
+      Height = 19
+      Top = 119
+      Width = 68
+      Caption = 'Password'
+      ParentColor = False
+    end
+    object ButtonTestNext: TButton
+      Left = 544
+      Height = 25
+      Top = 116
+      Width = 126
+      Caption = 'Test NextCloud'
+      OnClick = ButtonTestNextClick
+      TabOrder = 2
+    end
+    object EditPass: TEdit
+      Left = 408
+      Height = 29
+      Top = 112
+      Width = 120
+      EchoMode = emPassword
+      PasswordChar = '#'
+      TabOrder = 3
+      Text = 'DavosOldPW'
+    end
   end
   object Panel2: TPanel
     AnchorSideLeft.Control = Owner
@@ -54,7 +113,7 @@ object FormSync: TFormSync
     AnchorSideBottom.Side = asrBottom
     Left = 0
     Height = 37
-    Top = 91
+    Top = 150
     Width = 699
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 37
@@ -114,12 +173,12 @@ object FormSync: TFormSync
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 290
-    Top = 128
+    Height = 231
+    Top = 187
     Width = 699
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel3'
-    ClientHeight = 290
+    ClientHeight = 231
     ClientWidth = 699
     TabOrder = 2
     object Memo1: TMemo
@@ -131,7 +190,7 @@ object FormSync: TFormSync
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
       Left = 394
-      Height = 288
+      Height = 229
       Top = 1
       Width = 304
       Align = alRight
@@ -149,7 +208,7 @@ object FormSync: TFormSync
       AnchorSideBottom.Side = asrBottom
       Left = 384
       Height = 236
-      Top = 48
+      Top = 14
       Width = 10
       Align = alNone
       Anchors = []
@@ -161,7 +220,7 @@ object FormSync: TFormSync
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
       Left = 2
-      Height = 286
+      Height = 227
       Top = 2
       Width = 381
       Anchors = [akTop, akLeft, akRight, akBottom]

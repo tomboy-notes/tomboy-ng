@@ -447,6 +447,15 @@ object Sett: TSett
           Caption = 'LabelFileSyncInfo2'
           ParentColor = False
         end
+        object ButtonSetupNextSync: TButton
+          Left = 184
+          Height = 26
+          Top = 120
+          Width = 152
+          Caption = 'Setup NextCloud'
+          OnClick = ButtonSetupNextSyncClick
+          TabOrder = 1
+        end
       end
     end
     object TabBackUp: TTabSheet
