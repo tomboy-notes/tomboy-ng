@@ -320,7 +320,7 @@ var
 begin
     DeletedList := TStringList.Create;
     DownList := TStringList.Create;
- 	with ASync.RemoteMetaData do begin
+ 	with ASync.MainMetaData do begin
 		for Index := 0 to Count -1 do begin
             if Items[Index]^.Action = SyDeleteLocal then
                 DeletedList.Add(Items[Index]^.ID);
@@ -371,11 +371,11 @@ var
         Rows : integer = 0;
 begin
     StringGridReport.Clean;
- 	with ASync.RemoteMetaData do begin
+ 	with ASync.MainMetaData do begin
 		for Index := 0 to Count -1 do begin
             if Items[Index]^.Action <> SyNothing then begin
                     StringGridReport.InsertRowWithValues(Rows
-            	        , [ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
+            	        , [ASync.MainMetaData.ActionName(Items[Index]^.Action)
                         , Items[Index]^.Title, Items[Index]^.ID]);
                     inc(Rows);
             end;
@@ -385,7 +385,7 @@ begin
     StringGridReport.AutoSizeColumn(1);
     if  Rows = 0 then
         Memo1.Append(rsNoNotesNeededSync);
-    Memo1.Append(inttostr(ASync.RemoteMetaData.Count) + rsNotesWereDealt);
+    Memo1.Append(inttostr(ASync.MainMetaData.Count) + rsNotesWereDealt);
 end;
 
 function TFormTomdroid.NeedToSave() : boolean;

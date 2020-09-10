@@ -8,6 +8,7 @@ unit trans;
   HISTORY
     2018/10/25  Much testing, support for Tomdroid.
     2018/10/28  Added password
+    2020/09/05  Sadly, had to add a overload of UploadNotes that takes a TNoteInfoList
 }
 
 {$mode objfpc}{$H+}
@@ -54,8 +55,9 @@ type
 
             { May (or may not) do some early transport tests, ie, in Tomdroid sync
               it pings the remote device. Should return SyncReady or an error value
-              if something failed.}
-        function SetTransport() : TSyncAvailable; virtual; abstract;
+              if something failed. In some models, ForceClean will remove some or all
+              files associated with the current sync. }
+        function SetTransport(ForceClean : boolean = False) : TSyncAvailable; virtual; abstract;
 
             {Request a list of all notes the server knows about. Returns with Last Change
             Date (LCD) if easily available and always if GetLCD is true. We don't use all
@@ -79,6 +81,7 @@ type
              are passed its number. If it turns out to be a new Repo, we'll make the
              necessary directories first. }
         function UploadNotes(const Uploads : TStringList) : boolean; virtual; abstract;
+        function UploadNotes(const Uploads : TNoteInfoList) : boolean; virtual; abstract;
 
             { Tells Trans to deal with with remote mainfest. This is the trigger
               for a new revision on the server, the server must now do whatever

@@ -90,6 +90,8 @@ type
 				Panel1: TPanel;
 				Panel2: TPanel;
 				Panel3: TPanel;
+				RadioJoin: TRadioButton;
+				RadioUse: TRadioButton;
 				Splitter3: TSplitter;
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
@@ -118,6 +120,13 @@ type
                 procedure JoinSync;
                     { Called to do a sync assuming its all setup. Any problem is fatal }
                 function ManualSync: boolean;
+                                    { We respond here to RepoJoin, RepoUse, RepoTest.  A RepoNew
+                                      is not appropriate becasue there maybe notes at either end.
+                                      RepoJoin will force a new connection, overwriting any existing config
+                                      so, make sure its required before calling it ! RepoUse will
+                                      return an error if creds don't match. RepoTest will just
+                                      look to see if Sync appears to exist, does not test viability.}
+				function RunNextCloudSync(Mode: TRepoAction): TSyncAvailable;
                     { Populates the string grid with details of notes to be actioned }
                 procedure ShowReport;
             	//procedure TestRepo();
@@ -257,13 +266,18 @@ end;
 
 procedure TFormSync.AfterShown(Sender : TObject);
 begin
+    LocalTimer.Enabled := False;              // Don't want to hear from you again
     if self.Transport = SyncFile then begin
-	    LocalTimer.Enabled := False;             // Don't want to hear from you again
-	    if SetUpSync then begin
-	        JoinSync();
-	    end else
-	        ManualSync();
-	end;
+        Busy := True;
+        try
+            if SetUpSync then begin
+	            JoinSync();
+	        end else
+	            ManualSync();
+		finally
+            Busy := False;
+		end;
+	end;                            // By implication, if not SyncFile then must be NextCloud, must do better than that !
 end;
 
 //RESOURCESTRING
@@ -271,7 +285,6 @@ end;
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
-    Busy := True;
     Left := 55 + random(55);
     Top := 55 + random(55);
     FormShown := False;
@@ -323,25 +336,81 @@ begin
 end;
 
 procedure TFormSync.ButtonTestNextClick(Sender: TObject);
+        { We can have three paths here -
+          - Join, there is no existing connection, make end to end, sync, maybe notes at either end.
+          - Use, an existing connection exists, lets use it.
+         Join will always overwrite existing sync config if it exists, use Test to check
+         first. Three components are required to say we have a connection, each should have
+         same ServerID -
+             * The local manifest, <config_dir>/nextcloud/manifest.xml
+             * The remote  manifest, <config_dir>/nextcloud/manifest-remote.xml
+             * The NextCloud Note, aka, the KEYNOTE, on remote system.
+            If we do not have a three way match, we cannot proceed unless user says
+            'force' it. Under those circumstances, we trash all three and do 'Join'.
+            So, there is no 'New' here or any one to one sync.
+          }
 begin
-    self.Memo1.append('Password = ' + EditPass.Text);
+    if Busy then begin
+        Memo1.Append('Currently busy, come back later');
+        exit;
+	end;
+    Busy := True;
+
+    try
+        if RadioJoin.checked then begin          // Implies no existing NextCloud sync config exists
+            if RunNextCloudSync(RepoTest) = SyncReady then
+                if IDNO = Application.MessageBox('Discard existing sync config ?'
+                            , 'MessageBoxDemo', MB_ICONQUESTION + MB_YESNO) then
+                    exit;
+            RunNextCloudSync(RepoJoin);                     // Must report on all those potential error !
+		end;
+		if RadioUse.Checked then
+            if RunNextCloudSync(RepoTest) = SyncReady then
+                RunNextCloudSync(RepoUse)                   // Must report on all those potential error !
+            else
+                showmessage('No sync setup yet');
+	finally
+        Busy := False;
+	end;
+end;
+
+function TFormSync.RunNextCloudSync(Mode : TRepoAction) : TSyncAvailable;
+var
+    HaveSync : boolean;
+begin
     freeandnil(ASync);
     ASync := TSync.Create;
     try
         ASync.ProceedFunction:= @Proceed;
-        ASync.DebugMode := True;
-	    ASync.NotesDir:= NoteDirectory;
-	    ASync.ConfigDir := LocalConfig;
-        ASync.RepoAction := RepoUse;
-        ASync.SyncAddress := EditNextHostAddress.text;
-        ASync.Password := EditPass.text;
-        Async.SetTransport(TransPort);          // which should be syncNextCloud
-        if ASync.TestConnection() = SyncNoRemoteMan then begin
-            debugln('Failed to find an existing remote repo, will try and make one');
-            ASync.RepoAction := RepoNew;
-            if ASync.TestConnection() = SyncNoRemoteMan then
-                debugln('Well, thats a bit sad !!!!');
+        ASync.DebugMode  := True;
+	    ASync.NotesDir   := NoteDirectory;
+	    ASync.ConfigDir  := LocalConfig + 'nextcloud/';
+        ASync.RepoAction := Mode;
+        ASync.SyncAddress:= EditNextHostAddress.text;
+        ASync.Password   := EditPass.text;
+        //ASync.TestRun := True;                                          // NOTE THIS LINE    TEST RUN   !!!!
+        if Mode = RepoTest then
+            exit(Async.SetTransport(TransPort))                         // Ret either SyncReady or SyncNoLocal
+        else HaveSync := (Async.SetTransport(TransPort) = SyncReady);   // which should be syncNextCloud
+        // If to here, we must be either RepoNew or RepoUse.
+        if (HaveSync and (Mode = RepoJoin)) then
+            Async.SetTransport(TransPort, True);
+        HaveSync := False;
+		case ASync.TestConnection() of
+            SyncReady : haveSync := True;
+            SyncCredentialError,
+            SyncXMLError,
+            SyncNoLocal,
+            SyncNetworkError : Memo1.append('ERROR : ' + ASync.ErrorString);
+            SyncNoRemoteRepo : Memo1.append('Failed to find a repo : ' + ASync.ErrorString);
+            SyncMismatch :     Memo1.Append('Server ID does not match, maybe you should remove the NextCloud to tomboy-ng note');
+		else
+                Memo1.append('TestConnection returned some other error : ' + ASync.ErrorString);
 		end;
+        if not HaveSync then exit;
+        Memo1.append('OK, looks like we could sync here, if you wrote some code ');
+        // if to here, we seem ready to do some sync stuff.
+        ASync.StartSync();
 	finally
         freeandnil(ASync);
 	end;
@@ -418,7 +487,7 @@ var
 begin
     DeletedList := TStringList.Create;
     DownList := TStringList.Create;
- 	with ASync.RemoteMetaData do begin
+ 	with ASync.MainMetaData do begin
 		for Index := 0 to Count -1 do begin
             if Items[Index]^.Action = SyDeleteLocal then
                 DeletedList.Add(Items[Index]^.ID);
@@ -447,14 +516,14 @@ var
         Index : integer;
         Rows : integer = 0;
 begin
-    with ASync.RemoteMetaData do begin
+    with ASync.MainMetaData do begin
 	    for Index := 0 to Count -1 do begin
 	    if Items[Index]^.Action <> SyNothing then begin
 	            {StringGridReport.InsertRowWithValues(Rows
-	        	    , [ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
+	        	    , [ASync.MainMetaData.ActionName(Items[Index]^.Action)
 	                , Items[Index]^.Title, Items[Index]^.ID]);  }
 	            AddLVItem(
-	                ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
+	                ASync.MainMetaData.ActionName(Items[Index]^.Action)
 	                , Items[Index]^.Title
 	                , Items[Index]^.ID);
 	            inc(Rows);
@@ -463,7 +532,7 @@ begin
 	end;
 	if  Rows = 0 then
 	    Memo1.Append(rsNoNotesNeededSync)
-	else Memo1.Append(inttostr(ASync.RemoteMetaData.Count) + rsNotesWereDealt);
+	else Memo1.Append(inttostr(ASync.MainMetaData.Count) + rsNotesWereDealt);
     {$IFDEF DARWIN}     // Apparently ListView.columns[n].autosize does not work in Mac, this is rough but better then nothing.
     ListViewReport.Columns[0].Width := listviewReport.Canvas.Font.GetTextWidth('upload edit ');
     ListViewReport.Columns[1].Width := ListViewReport.Columns[0].Width *2;

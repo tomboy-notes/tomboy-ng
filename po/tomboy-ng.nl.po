@@ -1159,6 +1159,16 @@ msgstr ""
 msgid "Note ID"
 msgstr ""
 
+#: tformsync.radiojoin.caption
+#, fuzzy
+msgctxt "tformsync.radiojoin.caption"
+msgid "Join"
+msgstr "Deelnemen"
+
+#: tformsync.radiouse.caption
+msgid "Use"
+msgstr ""
+
 #: tformsyncerror.buttcancel.hint
 msgctxt "tformsyncerror.buttcancel.hint"
 msgid "Stop Auto Sync until next restart"
@@ -1188,6 +1198,7 @@ msgid "Help"
 msgstr "Hulp"
 
 #: tformtomdroid.buttonjoin.caption
+msgctxt "tformtomdroid.buttonjoin.caption"
 msgid "Join"
 msgstr "Deelnemen"
 

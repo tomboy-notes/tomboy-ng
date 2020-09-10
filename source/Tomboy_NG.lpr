@@ -15,7 +15,7 @@ uses
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroid, markdown,
     Index, autostart, hunspell, sync, syncutils, transandroid,
-    ResourceStr, SyncError, colours, cli, notifier;
+    ResourceStr, SyncError, colours, cli, notifier, commonmark;
 
 {$R *.res}
 

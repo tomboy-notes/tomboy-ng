@@ -521,7 +521,6 @@ begin
             ValidSync := ValidSync;           // so we update button labels etc
         end else
             ValidSync := rsSyncNotConfig;
-
 end;
 
 

@@ -56,8 +56,9 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
 type TRepoAction = (
                 RepoJoin,               // Join (and use) an existing Repo
                 RepoNew,                // Create (and use) a new repo in presumably a blank dir
-                RepoUse);               // Go ahead and use this repo to sync
-
+                RepoUse,                // Go ahead and use this repo to sync
+                RepoForce,              // Force join or create, even if existing credentuals don't work
+                RepoTest);              // Just have a look, maybe call SetTransport ?
 
 type
   	PNoteInfo=^TNoteInfo;
@@ -79,6 +80,7 @@ type
 
    TNoteInfoList = class(TList)
     private
+
      	function Get(Index: integer): PNoteInfo;
     public
         ServerID : string;              // Partially implemented, don't rely yet ....
@@ -88,6 +90,9 @@ type
         destructor Destroy; override;
         function Add(ANote : PNoteInfo) : integer;
         function FindID(const ID : ANSIString) : PNoteInfo;
+                                        // returns the ID, a GUID, for a given short id
+        function FindID(sid : longint): string;
+        function FindSID(const SID: longint): PNoteInfo;
         function ActionName(Act : TSyncAction) : string;
         property Items[Index: integer]: PNoteInfo read Get; default;
     end;
@@ -148,6 +153,10 @@ function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) :
 
                         { returns a version of passed string with anything between < > }
 function RemoveXml(const St : AnsiString) : AnsiString;
+
+                        { returns a GUID/UUID suitable for tomboy use }
+function MakeGUID() : string;
+
 
 RESOURCESTRING
   rsNewUploads = 'New Uploads    ';
@@ -306,6 +315,19 @@ begin
 end;
 
 { This will be quite slow with a big list notes, consider an AVLTree ? }
+function TNoteInfoList.FindSID(const SID: longint): PNoteInfo;
+var
+    Index : longint;
+begin
+    Result := Nil;
+    for Index := 0 to Count-1 do begin
+        if Items[Index]^.SID = SID then begin
+            Result := Items[Index];
+            exit()
+        end;
+    end;
+end;
+
 function TNoteInfoList.FindID(const ID: ANSIString): PNoteInfo;
 var
     Index : longint;
@@ -314,6 +336,19 @@ begin
     for Index := 0 to Count-1 do begin
         if Items[Index]^.ID = ID then begin
             Result := Items[Index];
+            exit()
+        end;
+    end;
+end;
+
+function TNoteInfoList.FindID(sid : longint): string;
+var
+    Index : longint;
+begin
+    Result := '';
+    for Index := 0 to Count-1 do begin
+        if Items[Index]^.SID = sid then begin
+            Result := Items[Index]^.ID;
             exit()
         end;
     end;
@@ -519,6 +554,15 @@ begin
  		// TDateTime has integer part, no. of days, fraction part is fraction of day.
 		// 100years ago or in future - Fail !
     exit(True);
+end;
+
+
+function MakeGUID() : string;
+var
+    GUID : TGUID;
+begin
+    CreateGUID(GUID);
+    Result := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
 end;
 
 end.

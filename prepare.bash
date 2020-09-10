@@ -15,6 +15,8 @@
 #
 
 # David Bannon, July 2020
+# History -
+#	2020-09-02 Added -D distro switch
 
 APP="tomboy-ng"
 # DEBEMAIL="dbannon@internode.on.net"
@@ -110,6 +112,7 @@ function ShowHelp () {
     echo "-U   update Makefile and/or buildit.bash,   debug use only."
     echo "-Q   Make a Qt5 version instead of default GTK2"
     echo "-p   Pause before creating .orig. to change content, use another term."
+    echo "-D   distro, eg bionic, focal, bullseye"
     echo ""
     echo "Davo uses: wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip"
     echo "           mv master.zip tomboy-ng-master.zip"   
@@ -118,7 +121,7 @@ function ShowHelp () {
 }
 
 
-while getopts "hpQUCl:" opt; do
+while getopts "hpQUCl:D:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -138,6 +141,10 @@ while getopts "hpQUCl:" opt; do
     Q)
 	WIDGET="Qt5"
 	APP="$APP""-qt5"
+	;;
+    D)
+	DISTRO1="-D""$OPTARG"
+	DISTRO2="--force-distribution"
 	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -184,7 +191,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	cd "$APP"_"$VER""-1"
 	CleanSource
 	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537
-	dch --create --package="$APP" --newversion="$VER""-1" "Initial release. (Closes: #966537)"
+	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""-1" "Initial release. (Closes: #966537)"
 	dch --append "Please see github for change details"
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"

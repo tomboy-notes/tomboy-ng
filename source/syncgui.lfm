@@ -25,7 +25,7 @@ object FormSync: TFormSync
     ClientWidth = 699
     TabOrder = 0
     object Label1: TLabel
-      Left = 35
+      Left = 16
       Height = 19
       Top = 24
       Width = 59
@@ -37,7 +37,7 @@ object FormSync: TFormSync
       ParentFont = False
     end
     object Label2: TLabel
-      Left = 35
+      Left = 16
       Height = 19
       Top = 56
       Width = 47
@@ -45,15 +45,15 @@ object FormSync: TFormSync
       ParentColor = False
     end
     object EditNextHostAddress: TEdit
-      Left = 160
+      Left = 128
       Height = 29
       Top = 80
-      Width = 510
+      Width = 400
       TabOrder = 0
       Text = '10.85.2.2'
     end
     object Label3: TLabel
-      Left = 37
+      Left = 16
       Height = 19
       Top = 88
       Width = 95
@@ -61,15 +61,15 @@ object FormSync: TFormSync
       ParentColor = False
     end
     object Label4: TLabel
-      Left = 38
+      Left = 16
       Height = 19
-      Top = 114
+      Top = 118
       Width = 80
       Caption = 'User Name'
       ParentColor = False
     end
     object EditNextUser: TEdit
-      Left = 160
+      Left = 128
       Height = 29
       Top = 112
       Width = 112
@@ -77,31 +77,49 @@ object FormSync: TFormSync
       Text = 'dbannon'
     end
     object Label5: TLabel
-      Left = 307
+      Left = 264
       Height = 19
-      Top = 119
+      Top = 118
       Width = 68
       Caption = 'Password'
       ParentColor = False
     end
     object ButtonTestNext: TButton
-      Left = 544
+      Left = 536
       Height = 25
-      Top = 116
-      Width = 126
+      Top = 114
+      Width = 150
       Caption = 'Test NextCloud'
       OnClick = ButtonTestNextClick
       TabOrder = 2
     end
     object EditPass: TEdit
-      Left = 408
+      Left = 344
       Height = 29
-      Top = 112
-      Width = 120
+      Top = 114
+      Width = 182
       EchoMode = emPassword
       PasswordChar = '#'
       TabOrder = 3
       Text = 'DavosOldPW'
+    end
+    object RadioJoin: TRadioButton
+      Left = 547
+      Height = 23
+      Top = 64
+      Width = 54
+      Caption = 'Join'
+      Checked = True
+      TabOrder = 4
+      TabStop = True
+    end
+    object RadioUse: TRadioButton
+      Left = 547
+      Height = 23
+      Top = 86
+      Width = 51
+      Caption = 'Use'
+      TabOrder = 5
     end
   end
   object Panel2: TPanel

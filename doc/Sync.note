@@ -7,11 +7,17 @@ This is how I implemented tomboy-ng's sync process. Its NOT a design document fo
 
 How Sync Works</size:huge>
 
-<bold>The Manifest documents.</bold>
-Two manifests are involved in file sync, Local and Remote, they relate to two Lists maintained during a sync that hold data and proposed actions about each note. 
-The Local has two parts, firstly a record of notes that have been previously synced (updated at each sync) and secondly, a list of notes that have been deleted and were previously synced. The second part is updated every time a previously synced note is deleted.
+Data is drawn from three sources during a sync, the Local Manifest file, the local notes themselves and the remote notes on a server, another file system or, whatever. In file sync, the remote notes are sumarised by the remote manifest file that contains data about the notes it holds and sync data such as a unique ID and a last sync date.
 
-The remote manifest is a list of all the notes in the remote repository, in Filesync, that file is stored in the repo as it will need to be looked and and potentially rewritten by many clients.
+<italic>MainMetaData is a TNoteInfoList that -
+</italic><list><list-item dir="ltr"><italic>is first loaded up with details of the  Remote Notes (if they exist), by LoadRemoteRepoData(). It calls a Trans function that may read a remote manifest file or get a list of remote notes some other way.</italic></list-item></list><italic>
+</italic><list><list-item dir="ltr"><italic>CheckUsingLCD() then scans physical (on disk) notes, marking entries in MainMetaData as either clashes or do-nothing becasue they are same note.</italic></list-item></list><italic>
+</italic><list><list-item dir="ltr"><italic>CheckNewNotes then scans physical (on disk) notes, looking for ones not mentioned in RemoteMetaData, these become uploads.</italic></list-item></list><italic>
+</italic><list><list-item dir="ltr"><italic>Next, CheckMetaData() checks MainMetaData for any anomolies and fills in Titles so the report looks sensible</italic></list-item></list><italic>
+</italic><list><list-item dir="ltr"><italic>Finally, after Sync, the Local Manifest file is written using data in the MainMetaData.</italic></list-item></list><italic>
+While the sync engine if preparing to transfer files, MainMetaData is populated with a record of every note and what action needs to happen to that note.</italic>
+
+The Local Manifest has two parts, firstly a record of notes that have been previously synced (updated at each sync) and secondly, a list of notes that have been deleted and were previously synced. The second part is updated every time a previously synced note is deleted and cleared at the next sync.
 
 <bold>The Process</bold>
 
@@ -30,7 +36,7 @@ Then we call FileSync.DoSync(). It builds  lists based on Local Manifest, remote
 
 looks for it in NoteMetaData and if it finds it there, marks it as SyDeleteLocal, if its not present in NoteMetaData, it makes an entry there and mark it as SyDeleteRemote.</italic>
 
-<bold>But if its a Join,</bold> bit different.  We disregard local manifest if it exists. In FileSync, we reload remote date this time insisting on getting LastChageDate. Thats because we will compare LCDs for any note that has a matching UID.  NextCloud always provides LCD.
+<bold>But if its a Join,</bold> bit different.  We disregard local manifest if it exists. In FileSync, we reload remote data this time insisting on getting LastChangeDate. Thats because we will compare LCDs for any note that has a matching UID.  NextCloud always provides LCD.
 
 <bold>... still in Join mode. </bold>Scan local actual notes matching UID to UID in Remote List. 
 Where a UID exists both locally and in Remote list we have to try and match LCD, on normal tomboy-ng file sync, the LCD is 7 digit after the second decimil point, pretty certain.  In NextCloud, its only one second precision so, somewhat risky. If we match, its SyNothing. (Note that original Tomboy did not examine LCD, if UID's match, then declare a clash.) If we cannot match on LCD, then its a SyClash. 
@@ -108,15 +114,16 @@ https://wiki.gnome.org/Apps/Tomboy/Synchronization/Brainstorming
 
 
 
+
 </note-content></text>
-  <last-change-date>2020-08-31T11:52:36.1330584+10:00</last-change-date>
-  <last-metadata-change-date>2020-08-31T11:52:36.1330584+10:00</last-metadata-change-date>
+  <last-change-date>2020-09-09T20:43:04.0281815+10:00</last-change-date>
+  <last-metadata-change-date>2020-09-09T20:43:04.0281815+10:00</last-metadata-change-date>
   <create-date>2018-06-23T13:14:34.4600000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>677</height>
-  <x>669</x>
-  <y>247</y>
+  <x>833</x>
+  <y>309</y>
   <open-on-startup>False</open-on-startup>
 </note>

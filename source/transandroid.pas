@@ -78,14 +78,15 @@ type
     public
         //RemoteDir : string; // where the remote filesync repo lives.
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
-        function SetTransport() : TSyncAvailable; override;
+        function SetTransport(ForceClean : boolean = False) : TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
             { ToDo : transandroid version - deletes the indicated note from remote device
-              returns False if the note was not found there to be deleted.  Other error
+              returns False if the note was not found there to be deleted.  Other errors
               are possible.}
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
+        function UploadNotes(const Uploads : TNoteInfoList) : boolean; override;
         function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         // function SetRemoteRepo(ManFile : string = '') : boolean; override;
@@ -355,7 +356,7 @@ begin
             + 'mS and StampID took ' + inttostr(T4 - T3));
 end;
 
-function TAndSync.SetTransport(): TSyncAvailable;
+function TAndSync.SetTransport(ForceClean: boolean): TSyncAvailable;
 var
     T1, T2 : QWord;
 begin
@@ -629,6 +630,11 @@ begin
     end;
     RunFSSync();
     result := True;
+end;
+
+function TAndSync.UploadNotes(const Uploads: TNoteInfoList): boolean;
+begin
+        result := false;
 end;
 
 function TAndSync.DoRemoteManifest(const RemoteManifest: string): boolean;
