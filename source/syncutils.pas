@@ -81,6 +81,7 @@ type
    TNoteInfoList = class(TList)
     private
 
+
      	function Get(Index: integer): PNoteInfo;
     public
         ServerID : string;              // Partially implemented, don't rely yet ....
@@ -94,6 +95,7 @@ type
         function FindID(sid : longint): string;
         function FindSID(const SID: longint): PNoteInfo;
         function ActionName(Act : TSyncAction) : string;
+        function AddByFileName(FFilename: string; Act: TSyncAction; Rev: integer=0): boolean;
         property Items[Index: integer]: PNoteInfo read Get; default;
     end;
 
@@ -127,7 +129,7 @@ function UsingRightRevisionPath(ServerPath : string; Rev : integer) : boolean;
    // Takes a normal Tomboy DateTime string and converts it to UTC, ie zero offset
 function ConvertDateStrAbsolute(const DateStr : string) : string;
 
-                // A save, error checking method to convert Tomboy's ISO8601 33 char date string
+                // A safe, error checking method to convert Tomboy's ISO8601 33 char date string to TDateTime
 function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
 
                 // Ret GMT from tomboy date string, 0.0 on error or unlikely date.
@@ -308,6 +310,41 @@ end;
 
 
 { ----------------  TNoteInfoList ---------------- }
+
+
+function TNoteInfoList.AddByFileName(FFilename : string; Act : TSyncAction; Rev : integer = 0) : boolean;
+var
+    pNote : PNoteInfo;
+    Doc : TXMLDocument;
+    Node : TDOMNode;
+begin
+    new(pNote);
+    try
+	        try
+	            ReadXMLFile(Doc, FFileName);
+	            Node := Doc.DocumentElement.FindNode('title');
+	            pNote^.Title := Node.FirstChild.NodeValue;
+	            Node := Doc.DocumentElement.FindNode('last-change-date');
+	            if assigned(node) then
+	                pNote^.LastChange := Node.FirstChild.NodeValue
+	            else exit(False);
+	            pNote^.LastChangeGMT := GetGMTFromStr(pNote^.LastChange);
+	            Node := Doc.DocumentElement.FindNode('create-date');
+	            if assigned(node) then
+	                pNote^.CreateDate := Node.FirstChild.NodeValue
+	            else exit(False);
+	            pNote^.ID := copy(FFilename, length(FFilename) - 42, 36);
+	            pNote^.Action:= Act;
+	            pNote^.SID:=0;
+	            pNote^.Rev:=Rev;
+	            Add(pNote);
+	        except on E: Exception do
+	            debugln('Error reading note, ' + E.Message);
+	        end;
+	finally
+	        Doc.free;
+	end;
+end;
 
 function TNoteInfoList.Add(ANote : PNoteInfo) : integer;
 begin

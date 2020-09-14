@@ -388,7 +388,7 @@ begin
         ASync.RepoAction := Mode;
         ASync.SyncAddress:= EditNextHostAddress.text;
         ASync.Password   := EditPass.text;
-        //ASync.TestRun := True;                                          // NOTE THIS LINE    TEST RUN   !!!!
+        // ASync.TestRun := True;                                          // NOTE THIS LINE    TEST RUN   !!!!
         if Mode = RepoTest then
             exit(Async.SetTransport(TransPort))                         // Ret either SyncReady or SyncNoLocal
         else HaveSync := (Async.SetTransport(TransPort) = SyncReady);   // which should be syncNextCloud
@@ -411,7 +411,9 @@ begin
         Memo1.append('OK, looks like we could sync here, if you wrote some code ');
         // if to here, we seem ready to do some sync stuff.
         ASync.StartSync();
-	finally
+        ShowReport();
+        AdjustNoteList();
+    finally
         freeandnil(ASync);
 	end;
 end;

@@ -16,6 +16,11 @@ interface
 uses
     Classes, SysUtils, trans, SyncUtils, fpjson, jsonparser;
 
+type
+  TNoteRec = record
+    SID : integer;
+    modified : longint;
+  end;
 
 type
 
@@ -24,7 +29,7 @@ type
   TNextCloudSync = class(TTomboyTrans)      
     private
 	    function Downloader(URL: string; SomeStrings: TStringList): boolean;
-		function ExtractJID(data: string): longint;
+		function ExtractJID(data: string; out NRec: TNoteRec): longint;
 		                    { Adds http if necessary (must add https) and returns either SyncReady,
 				              SyncCredentialError or SyncNetworkError depending on what it found.
 				              Will also set ErrorString if not SyncReady.  }
@@ -35,8 +40,18 @@ type
 		function GetListOfNotes(const NoteMeta: TNoteInfoList; Params: string=''): boolean;
 		function GetServerID(SID: longint): boolean;
 		function JData2NoteList(const NoteMeta: TNoteInfoList; jItm: TJSONData): boolean;
-		function PostNewNote(Title, Content: String): longint;
-		function PushUpNote(SimpleID: string): longint;
+		function PostNewNote(Title, Content: String; out NRec: TNoteRec; SID: integer=0
+				): longint;
+		function PushUpNote(ID: string; out NRec: TNoteRec; SID: integer): longint;
+
+
+                            { Reads remote manifest if it exists, adding ID and Create Date to Meta
+                            If its not there, no problem, we are doing a Join. Make sure its not
+                            there IF we are doing a Join !!
+                            Then looks through the MMD for any remaining notes that were not matched
+                            by the remote manifest, these are new remote notes, will be marked so and
+                            assigned a UUID ID.   }
+		procedure ReadRemoteManifest(NoteMeta: TNoteInfoList);
 		procedure SayDebug(st: string; Always: boolean=false);
 		function TestNextCloudConnection(out MSG: string; const UsePassword: boolean): boolean;
 
@@ -59,6 +74,9 @@ type
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; override; 
   end;
 
+                            // Takes a NextCloud epoc second count and returns a Tomboy style ISO8601
+  function ModifiedToTBDate(Modified : longint) : string;
+
 
 implementation
 
@@ -77,6 +95,9 @@ const
   KEYNOTETITLE = 'NextCloud to tomboy-ng sync';
   KEYNOTETEXT  = 'Please do not alter this note, its an important part of the tomboy-ng sync\n--------\n';
   KEYNOTEUUID  = 'TOMBOY-NG UUID = ';
+
+
+
 
 function TNextCloudSync.TestTransport(const WriteNewServerID: boolean) : TSyncAvailable;
             { Here we will try to contact the server, look for a note that records the ServerID,
@@ -133,7 +154,8 @@ begin
     else Result := SyncNoLocal;
     if (ForceClean and (Result = Syncready)) then begin
         DeleteFile(ConfigDir + 'manifest.xml');
-        DeleteFile(ConfigDir + 'manifest-remote.xml');
+        DeleteFile(ConfigDir + 'manifest.xml-remote');
+        DeleteFile(ConfigDir + 'manifest.xml-local');
         Result := SyncNoLocal;
         // ToDo : consider removing the remote KEYNOTE here ?  Possible ?  No, better to make user do it, to be sure.
 	end;
@@ -144,28 +166,48 @@ function TNextCloudSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD:
               As NC always gives us its weak LCD, getLCD has no effect. RevNo is also irrelevant, set to 1}
 begin
     result := GetListOfNotes(NoteMeta, '?exclude=favorite,content');
+    if Result then ReadRemoteManifest(NoteMeta);
     Saydebug('TNextCloudSync.GetNewNotes = ' + inttostr(NoteMeta.Count));
 end;
 
 function TNextCloudSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
-    PNote : PNoteInfo;
-    Strs : TStringList;
+    PNote   : PNoteInfo;
+    Strs    : TStringList;
     Content : string = '';
-    jData : TJSONData;
-    jObj  : TJSONObject;
-    jStr :  TjsonString;
-    Imp : TImportNotes;
+    jData   : TJSONData;
+    jObj    : TJSONObject;
+    jStr    : TjsonString;
+    jNumb   : TJSONNumber;
+    Imp     : TImportNotes;
 begin
     for PNote in Downloads do begin
         if pNote^.Action <> SyDownload then continue;
         Strs := TStringList.create;
         if Downloader(RemoteAddress + URL_SUFFIX + '/' + inttostr(PNote^.SID), Strs) then begin
-            //DumpJSON(Strs.Text);
+
+debugln('NextCloud Downloadnotes - ' + pNote^.ID);
+
             jData := GetJSON(Strs.text);
             jObj := TJSONObject(jData);
             if jObj.Find('content', jStr) then
-                Content := jStr.AsString;
+                Content := jStr.AsString
+            else debugln('ERROR - The note has no content. ' + pNote^.ID);
+            if jObj.Find('modified', jNumb) then begin
+                pNote^.LastChange := ModifiedToTBDate(jNumb.AsInteger);
+                pNote^.LastChangeGMT := UnixToDateTime(jNumb.AsInteger);
+			end;
+
+
+
+
+debugln('Nextcloud Download - Meta LCD is ' + pNote^.LastChange);
+if jObj.Find('modified', jNumb) then begin
+    debugLn('Nextcloud Download LCD - ' + jNumb.AsString);
+    debugLn('Nextcloud Download LCD - ' + ModifiedToTBDate(jNumb.AsInteger))
+end else debugln('Nextcloud Download - return data does not include modified');
+debugln(' ----- ');
+
             jData.free;
             Strs.Free;
             Strs := TStringList.Create;
@@ -176,10 +218,15 @@ begin
             Imp := TImportNotes.create;
             Imp.Mode   := 'markdown';
             Imp.DestinationDir := NotesDir;
-            Imp.CrDate := pNote^.LastChange;
-            Imp.LCDate := pNote^.CreateDate;
+            Imp.LCDate := pNote^.LastChange;
+            Imp.CrDate := pNote^.CreateDate;
             Imp.MDtoNote(Strs, pNote^.Title, pNote^.ID);
             Imp.free;
+
+
+            // Looks like we are not updateing the metadate here after a successful download.  Should
+            // we set a new nextcloud LCD for a download ? Otherwise, it looks like it has not happened ??
+
 		end;
 		Strs.free;
 	end;
@@ -191,6 +238,7 @@ var
     Client: TFPHttpClient;              { yes, definitly needed here. }
     STRL  : TStringList;
 begin
+    Saydebug('Deleting note ' + ID);
     Result := False;
     Client := TFPHttpClient.Create(nil);
     STRL := TStringList.Create;
@@ -219,14 +267,29 @@ end;
 
 function TNextCloudSync.UploadNotes(const Uploads: TNoteInfoList): boolean;
 var
-    I : integer;
+    I, SID : integer;
+    NRec : TNoteRec;
 begin
     result := true;
     for I := 0 to Uploads.Count -1 do begin
-        if UpLoads[i]^.Action = SyUpLoadNew then
-            pNoteInfo(UpLoads[i])^.SID := PushUpNote(pNoteInfo(UpLoads[i])^.ID);
-        if UpLoads[i]^.SID = 0 then
-            Result := false;
+        if UpLoads[i]^.Action in [SyUpLoadNew, SyUpLoadEdit] then begin
+            if  UpLoads[i]^.Action = SyUpLoadNew then
+                SID := 0
+            else SID :=  UpLoads[i]^.SID;
+
+debugln('NextCloud Uploadnotes - Uploading  ' + UpLoads[i]^.ID + ' SID=' + inttostr(pNoteInfo(UpLoads[i])^.SID) );
+debugln('Nextcloud Uploadnotes - old LCD ' + UpLoads[i]^.LastChange);
+
+            if PushUpNote(UpLoads[i]^.ID, NRec, SID) > 0 then begin;
+                UpLoads[i]^.SID := NRec.SID;
+                UpLoads[i]^.LastChange := ModifiedToTBDate(NRec.modified);
+
+debugln('Nextcloud Uploadnotes - new LCD ' + ModifiedToTBDate(NRec.modified));
+debugln(' ----- ');
+
+			end else
+                exit(false);
+		end;
     end;
 end;
 
@@ -251,6 +314,71 @@ end;
 // -----------------------  Private Functions ---------------------
 
 
+
+
+procedure TNextCloudSync.ReadRemoteManifest(NoteMeta : TNoteInfoList);
+var
+    Doc : TXMLDocument;
+    Node : TDOMNode;
+    NodeList : TDOMNodeList;
+    SID, ID, CrDate, LCDate : string;
+    i : integer;
+    pNote : PNoteInfo;
+begin
+    if FileExists(ConfigDir + 'manifest.xml-remote') then begin
+        try
+            try
+                ReadXMLFile(Doc, ConfigDir + 'manifest.xml-remote');
+                //Node := Doc.DocumentElement.FindNode('server-id');      // ToDo, check server ID matches, very bad things could happen ....
+                //ServerID := Node.FirstChild.NodeValue;
+                NodeList := Doc.DocumentElement.ChildNodes;
+	            if assigned(NodeList) then begin
+	                for i := 0 to NodeList.Count-1 do begin
+	                    SID := ''; ID := ''; CrDate := '';
+	                    Node := NodeList.Item[i].Attributes.GetNamedItem('sid');
+	                    SID := Node.NodeValue;
+	                    Node := NodeList.Item[i].Attributes.GetNamedItem('id');
+	                    ID := Node.NodeValue;
+	                    Node := NodeList.Item[i].Attributes.GetNamedItem('create-date');
+	                    CrDate := Node.NodeValue;
+	                    Node := NodeList.Item[i].Attributes.GetNamedItem('last-change-date');
+	                    LCDate := Node.NodeValue;
+	                    if (ID <> '') and (SID <> '') and (CrDate <> '') and (LCDate <> '') then begin
+	                        pNote := NoteMeta.FindSID(strtoint(SID));
+	                        if pNote <> nil then begin
+	                            pNote^.CreateDate := CrDate;
+
+debugln('MainMeta Action Set is ' + copy(ID, 1, 8) + ' ' + NoteMeta.ActionName(pNote^.Action));
+debugln('MainMeta   LCD is      ' + copy(ID, 1, 8) + ' ' + pNote^.LastChange);
+debugln('Remote Manifest LCD is ' + copy(ID, 1, 8) + ' ' + LCDate);
+
+	                            if pNote^.LastChange = LCDate then
+	                                pNote^.Action := SyNothing
+	                            else pNote^.Action := SyDownLoad;
+
+debugln('MainMeta Action Set is '  + copy(ID, 1, 8) + NoteMeta.ActionName(pNote^.Action));
+
+	                            pNote^.LastChangeGMT := GetGMTFromStr(pNote^.LastChange);
+	                            pNote^.ID := ID;
+						    end;
+					    end else SayDebug('ERROR, bad data in remote mainfest ');
+	                end;
+	            end;
+            except on EXMLReadError do
+                ErrorString := 'Error reading the remote manifest, ' + ConfigDir + 'manifest.xml-remote';
+            end;
+        finally
+            Doc.free;
+        end;
+    end;
+    for I := 0 to NoteMeta.count -1 do begin            // Remaining notes (or all in a Join) are SyDownloads
+        if (NoteMeta[i]^.ID = '') and (NoteMeta[i]^.SID > 0) then begin
+            NoteMeta[i]^.ID := MakeGUID();
+            NoteMeta[i]^.Action := SyDownload;
+		end;
+    end;
+end;
+
 function TNextCloudSync.FormatTestURL() : TSyncAvailable;
 var
     MSG : string;
@@ -273,10 +401,11 @@ end;
 function TNextCloudSync.WriteANewServerID() : boolean;
 var
     GUID : TGUID;
+    NRec : TNoteRec;
 begin
     CreateGUID(GUID);
     ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
-    Result := PostNewNote(KEYNOTETITLE, KEYNOTETEXT + KEYNOTEUUID + ServerID) > 0;
+    Result := PostNewNote(KEYNOTETITLE, KEYNOTETEXT + KEYNOTEUUID + ServerID, NRec) > 0;
     if not Result then
         ServerID := '';
 end;
@@ -397,6 +526,7 @@ end;
 function TNextCloudSync.Downloader(URL : string; SomeStrings : TStringList) : boolean;
 var
     Client: TFPHttpClient;
+
 begin
     // Windows can be made work with this if we push out ssl dll - see DownloaderSSL local project
     //InitSSLInterface;
@@ -430,12 +560,31 @@ begin
     result := true;
 end;
 
+function ModifiedToTBDate(Modified: longint): string;
+var
+    DT : TDateTime;
+    Off : longint;
+    Res : string;
+begin
+    // modified time is in GMT or UTC. So, need to correct for time zone.
+    Off := GetLocalTimeOffset();                    // local time offset in minutes
+    DT := UnixToDateTime(Modified - Off*60);        // Conv Off minutes to seconds and add it
+    Result := FormatDateTime('YYYY-MM-DD', DT) + 'T'
+        + FormatDateTime('hh:mm:ss.0000000"', DT);
+    if (Off div -60) >= 0 then Res := '+'
+    else Res := '-';
+    if abs(Off div -60) < 10 then Res := Res + '0';
+    Res := Res + inttostr(abs(Off div -60)) + ':';
+        if (Off mod 60) = 0 then
+            Res := res + '00'
+    else Res := Res + inttostr(abs(Off mod 60));
+    Result :=  Result + Res;                        // LastChange
+end;
+
 function TNextCloudSync.JData2NoteList(const NoteMeta: TNoteInfoList; jItm : TJSONData) : boolean;
 var
     jObj : TJSONObject; jBool : TJSONBoolean; PNote : PNoteInfo; jNumb : TJSONNumber;
     jString : TJSONString;
-    DTStr : string; Off : longint;
-    Res : string;
 begin
     Result := True;
     jObj := TJSONObject(jItm);
@@ -446,19 +595,9 @@ begin
             PNote^.ID := '';                                                        // ID
             if jObj.Find('modified', jNumb) then begin
                 pNote^.LastChangeGMT := UnixToDateTime(jNumb.AsInteger);            // LastChangeGMT
-                DTStr := FormatDateTime('YYYY-MM-DD', pNote^.LastChangeGMT) + 'T'
-                    + FormatDateTime('hh:mm:ss.0000000"', pNote^.LastChangeGMT);
-                Off := GetLocalTimeOffset();            // local time offset in minutes
-                if (Off div -60) >= 0 then Res := '+'
-	            else Res := '-';
-	            if abs(Off div -60) < 10 then Res := Res + '0';
-	            Res := Res + inttostr(abs(Off div -60)) + ':';
-       	        if (Off mod 60) = 0 then
-		            Res := res + '00'
-	            else Res := Res + inttostr(abs(Off mod 60));
-                pNote^.LastChange :=  DTStr + Res;                                  // LastChange
+                pNote^.LastChange := ModifiedToTBDate(jNumb.AsInteger);             // LastChange
 			end;
-            pNote^.CreateDate := DTStr + Res;                                       // CreateDate, will update from local note if possible
+            pNote^.CreateDate := pNote^.LastChange;                                 // CreateDate, will update from local note if possible
             pNote^.Rev := 1;                                                        // Rev
             if JObj.Find('id', JNumb) then
                 PNote^.SID := JNumb.asInteger
@@ -501,7 +640,9 @@ end;
 // -------------------- U P L O A D -----------------------
 
 
-function TNextCloudSync.PushUpNote(SimpleID : string) : longint;
+{ Sends a note up to NextCloud, default is a new note and a Post.
+  if SID > 0, its to replace an existing note of that SID }
+function TNextCloudSync.PushUpNote(ID : string; out NRec : TNoteRec; SID : integer) : longint;
 var
   STL : TStringList;
   Title : string = '';
@@ -511,14 +652,14 @@ begin
     STL := TStringList.Create;
     try
     	ENotes.NotesDir := NotesDir;
-        ENotes.GetMDcontent(SimpleID, STL);
+        ENotes.GetMDcontent(ID, STL);
         if STL.Count > 1 then begin
             Title := StringToJSONString(STL[0]);
             Stl.Delete(0);
             Stl.Delete(0);
 	    end;
-        STL.SaveToFile(Title + '.md');
-        Result := PostNewNote(Title, StringToJSONString(STL.Text));
+        // STL.SaveToFile(Title + '.md');
+        Result := PostNewNote(Title, StringToJSONString(STL.Text), NRec, SID);
 	finally
         STL.Free;
         freeandnil(ENotes);
@@ -533,14 +674,14 @@ begin
     SayDebug('---------- TEXT ------------');
     SayDebug(St);
     JData := GetJSON(St);
-    SayDebug('---------- JSON ------------');
-    SayDebug(jData.FormatJSON);
-    SayDebug('----------------------------');
+    SayDebug('---------- JSON ------------', true);
+    SayDebug(jData.FormatJSON, true);
+    SayDebug('----------------------------', true);
     JData.Free;
 end;
 
                 // Ret the (NextCloud) ID if its found in the passed (json) string, 0 else.
-function TNextCloudSync.ExtractJID(data : string) : longint;
+function TNextCloudSync.ExtractJID(data : string; out NRec : TNoteRec) : longint;
 var
     JData : TJSONData;
     JObject : TJSONObject;
@@ -551,9 +692,13 @@ begin
             JData := GetJSON(Data);         // requires a free
             JObject := TJSONObject(jData);  // does not require a free ??
             // Result := JObject.Get('id');    // will raise exceptions if not present, better to use Find
+            NRec.SID := 0;
+            NRec.modified:=0;
             if JObject.Find('id', jNumb) then
-                Result := jNumb.AsInteger
-            else Result := 0;
+                NRec.SID := jNumb.AsInteger;
+            if JObject.Find('modified', jNumb) then
+                NRec.modified := jNumb.AsInteger;
+            result := NRec.SID;
 	    //except on  E: EVariantTypeCastError do Result := 0;
         except on E:Exception do Result := 0;   // Invalid JSON or ID not present
 	    end;
@@ -564,7 +709,7 @@ end;
 
 
 // Returns the NextCloud assigned NoteID on success, 0 on failure, must set a regional ErrorMessage
-function TNextCloudSync.PostNewNote(Title, Content : String) : longint;
+function TNextCloudSync.PostNewNote(Title, Content : String; out NRec : TNoteRec; SID : integer= 0) : longint;
 var
     Client: TFPHttpClient;
     Response : TStringStream;
@@ -583,12 +728,17 @@ begin
     Response := TStringStream.Create('');
     try
         try
+            if SID = 0 then begin
             saydebug('About to Post');
             client.Post(RemoteAddress + URL_SUFFIX, Response);  // don't use FormPost, it messes with the Content-Type value
-            saydebug('Posted');
+            end else  begin
+                saydebug('About to PUT');
+                client.Put(RemoteAddress + URL_SUFFIX + '/' + inttostr(SID), Response);
+            end;
+            // saydebug('Posted');
             if Client.ResponseStatusCode = 200 then begin
                 //if DebugMode then DumpJSON(Response.DataString);
-                Result := ExtractJID(Response.DataString);
+                Result := ExtractJID(Response.DataString, NRec);
                 SayDebug('Posted Note ID is ' + inttostr(Result));
 			end else begin
 			        SayDebug('Response Code is ' + inttostr(Client.ResponseStatusCode));

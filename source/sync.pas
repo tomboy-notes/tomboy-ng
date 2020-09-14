@@ -148,6 +148,7 @@ HISTORY
     2019/07/19  Escape ' and " when using Title as an attribute in local manifest.
     2020/02/27  Better detect when we try to sync and don't have a local manifest, useful for Tomdroid, check normal !
     2020/09/05  CheckUsingLCD() now uses LocalNoteExists() rather than GetNotesLaostChangeSt() because I want create date in local list.
+    2020/09/11  WriteRemoteManifest now has a NextCloud mode and LocalNoteExists now returns with create date as well as LCD
 
 }
 
@@ -183,18 +184,26 @@ type                       { ----------------- T S Y N C --------------------- }
 	         // Where we find config and local manifest files
         FConfigDir : string;
 
-            { Scans Notes dir looking for each note in MainMetaData. Any it finds
-              are either clashes or SyNothing, anything left are downloads.
-              If AssumeNoClash and we find a clash, unresolable 'cos LCD missing, ret False,
-              (and expect LoadRepoData to be called again. Used when JOINING an existing repo.}
+		                    { Scans Notes dir looking for each note in MainMetaData. Any it finds
+		                      are either clashes or SyNothing, anything left are downloads.
+		                      If AssumeNoClash and we find a clash, unresolable 'cos LCD missing, ret False,
+		                      (and expect LoadRepoData to be called again. Used when JOINING an existing repo.
+		                      Adds the CreateDate to MainMetaData too. }
       function CheckUsingLCD(AssumeNoClash : boolean) : boolean;
             { Returns true if the passed dates are pretty close, see code for just how close }
       function DatesClose(const DS1, DS2: TDateTime): boolean;
 
-          { Only used with DeleteFromLocalManifest(), iff it finds a matching entry in
-            indicated manifest main sesction moves it to the deleted Notes section }
+			                      { Only used with DeleteFromLocalManifest(), iff it finds a matching entry in
+			                        indicated manifest main sesction moves it to the deleted Notes section }
       function DeleteFromThisManifest(const FullFileName, ID: string): boolean;
 	  function DoUploads(Uploads: TNoteInfoList): boolean;
+				                { A much simpler compare method that replaces CheckUsingLCD() for NextCloud only.
+				                We can ignore duplicate notes in a Join or New action because we cannot detect
+				                them anyway. And we don't use Rev No in any way.  Scans over Notes dir, for each
+				                note we try to match the ID in MainMetaData. If we find a match, we have to work
+				                out if its a SyNothing, SyDownload, SyUpLoadEdit or SyClash. If no match, add
+				                that ID as a new entry, SyUpLoadNew.  }
+      function NextCloudCompare(): boolean;
           { Only used with DeleteFromLocalManifest(), writes LocalMetaData back to disk.
             Honours TestRun. }
       function ReWriteLocalManifest(const FullFileName : string) : boolean;
@@ -252,8 +261,8 @@ type                       { ----------------- T S Y N C --------------------- }
       procedure ProcessClashes();
 
         // Checks if local note exists, optionally returning with its last change date.
-      function LocalNoteExists(const ID: string; out CDate: string; GetDate: boolean=
-			  false): Boolean;
+      function LocalNoteExists(const ID: string; out ChDate, CRDate: string;
+			  GetDate: boolean=false): Boolean;
 
         // Call this when we are resolving a sync clash. Note : not possible results make sense !
       function ProceedWith(const ID, FullRemoteFileName, NTitle: ANSIString): TSyncAction;
@@ -279,7 +288,8 @@ type                       { ----------------- T S Y N C --------------------- }
               TestMode is false, call Transport to deal with it. Writing it locally is fast
               and we get to check for and isolate any data errors. Initially
               written to $CONFIG/manifest.xml-remote and copied (moved ?).}
-	  function WriteRemoteManifest(out NewRev: boolean): boolean;
+	  function WriteRemoteManifest(out NewRev: boolean; ForceWrite: boolean=false
+			  ): boolean;
 
    public
 
@@ -502,7 +512,7 @@ begin
     result := True;
 end;
 
-function TSync.LocalNoteExists(const ID : string; out CDate : string; GetDate : boolean = false) : Boolean;
+function TSync.LocalNoteExists(const ID : string; out ChDate, CRDate : string; GetDate : boolean = false) : Boolean;
 var
 	Doc : TXMLDocument;
 	Node : TDOMNode;
@@ -515,9 +525,18 @@ begin
 		ReadXMLFile(Doc, NotesDir + ID + '.note');
 		Node := Doc.DocumentElement.FindNode('last-change-date');
         if assigned(node) then
-            CDate := Node.FirstChild.NodeValue
+            ChDate := Node.FirstChild.NodeValue
         else begin
-            CDate := '';
+            ChDate := '';
+            CrDate := '';
+            exit(False);
+        end;
+		Node := Doc.DocumentElement.FindNode('create-date');
+        if assigned(node) then
+            CrDate := Node.FirstChild.NodeValue
+        else begin
+            ChDate := '';
+            CrDate := '';
             exit(False);
         end;
     finally
@@ -706,13 +725,43 @@ begin
     // 1 is less than 2, if it changes when we decrease 2, result is true
 end;
 
+
+
+function TSync.NextCloudCompare() : boolean;
+var
+    Info : TSearchRec;
+    PNote : PNoteInfo;
+    ID, ErrStr, RealLCD : String;
+begin
+    result := true;
+    if FindFirst(NotesDir + '*.note', faAnyFile, Info)=0 then begin
+        repeat
+            ID := copy(Info.Name, 1, 36);
+            Result := True;
+            pNote := MainMetaData.FindID(ID);
+            if pNote = nil then                                           // so, its not already in List, add it as a new upload.
+                MainMetaData.AddByFileName(NotesDir + Info.Name, SyUploadNew)
+			else begin                                                    // Now, Meta Action may be SyDownload or SyNothing at this stage.
+                RealLCD := GetNoteLastChangeSt(NotesDir + Info.Name, ErrStr);
+                if GetGMTFromStr(RealLCD) > LocalLastSyncDate then
+                    if pNote^.Action = SyDownLoad then
+                        pNote^.Action := SyClash
+                    else pNote^.Action := SyUploadEdit;
+			end;
+		until FindNext(Info) <> 0;
+    end else result := false;
+    FindClose(Info);
+    if DebugMeta then DisplayNoteInfo(MainMetaData, 'MainMetaData after NextCloud Compare');
+end;
+
+
 function TSync.CheckUsingLCD(AssumeNoClash : boolean) : boolean;
 var
     Index : integer;
     Count : integer = 0;
     Info : TSearchRec;
     PNote : PNoteInfo;
-    LocLCD : string;        // The local note's last change date
+    LocLCD, LocCrDate : string;        // The local note's last change date and create date
 begin
     { We declare a clash if both notes exist and LCDs are not identical (or nearly identical)
       However, iff we have a local last sync date (LLSD) then if the
@@ -723,10 +772,11 @@ begin
         repeat
             inc(Count);
             PNote := MainMetaData.FindID(copy(Info.Name, 1, 36));
-            LocalNoteExists(copy(Info.Name, 1, 36), LocLCD, true);        //
+            LocalNoteExists(copy(Info.Name, 1, 36), LocLCD, LocCrDate, true);        //
             // LocLCD := GetNoteLastChangeSt(NotesDir + Info.Name, ErrorString);     // use LocalNoteExits instead ?
             // hmm, not checking for errors there .....
-            if PNote <> nil then begin                      // ie, note exists on both sides
+            if PNote <> nil then begin     // ie, note exists on both sides
+                pNote^.CreateDate := LocCrDate;
                 if AssumeNoClash and (PNote^.LastChange = '')
                     then begin
                         if Debugmode then debugln('CheckUsingLCD exiting because of unresolved clash');
@@ -752,10 +802,11 @@ begin
                 PNote^.ID := copy(Info.Name, 1, 36);        // does not have one yet, never been near NextCloud
                 PNote^.SID := 0;
                 PNote^.Rev := 0;                            // will probably be reset a bit later.
-                PNote^.LastChange:=LocLCD;
-                PNote^.Action:= SyUpLoadNew;                // Note, we may overrule that in CheckRemoteDeletes()
+                PNote^.LastChange := LocLCD;
+                pNote^.CreateDate := LocCrDate;
+                PNote^.Action := SyUpLoadNew;                // Note, we may overrule that in CheckRemoteDeletes()
                 MainMetaData.Add(PNote);
-            end;
+            end;                                            // ToDo : replace above with meta.addbyfilename() ??
         until FindNext(Info) <> 0;
         finally
             FindClose(Info);
@@ -808,7 +859,7 @@ procedure TSync.CheckNewNotes();
 var
     Info : TSearchRec;
     PNote : PNoteInfo;
-    ID, CDate : string;
+    ID, CDate, CrDate : string;
     Count : integer = 0;
     CountNew : integer = 0;
 begin
@@ -819,14 +870,15 @@ begin
             //Debugln('Found [' + NotesDir+ Info.Name + ']');
             PNote := MainMetaData.FindID(ID);
             if PNote = nil then begin               // ie it is not already in MainMetaData
-                if LocalNoteExists(ID, CDate, True) then begin      // just to get its CData
+                if LocalNoteExists(ID, CDate, CrDate, True) then begin      // just to get its CData
 	                    new(PNote);
 	                    Pnote^.ID:=ID;
                         PNote^.SID := 0;            // new local note, it does not have a SID yet
                         PNote^.Rev:= 0;             // Just be tidy, will be updated later probably.
 	                    Pnote^.LastChange := CDate;
+                        pNote^.CreateDate := CrDate;
 	                    PNote^.Action:=SyUploadNew;
-                        MainMetaData.Add(PNote);
+                        MainMetaData.Add(PNote);                    // ToDo : replace above with meta.addbyfilename() ??
                         inc(CountNew);
 				end else Debugln('Failed to find lastchangedate in ' + Info.Name);
 			end;
@@ -862,14 +914,14 @@ var
     I : integer;
     ID : string;    // to make it a bit easier to read souce
     PNote : PNoteInfo;
-    LocCDate : string;
+    LocCDate, LocCrDate : string;
     LocChange, RemChange : boolean;
 begin
     Result := True;
     for I := 0 to MainMetaData.Count -1 do begin
         ID := MainMetaData.Items[I]^.ID;
-        if LocalNoteExists(ID, LocCDate) then begin
-            LocalNoteExists(ID, LocCDate, True);
+        if LocalNoteExists(ID, LocCDate, LocCrDate) then begin
+            LocalNoteExists(ID, LocCDate, LocCrDate, True);
             LocChange := GetGMTFromStr(LocCDate) > LocalLastSyncDate;       // TDateTime is a float
 
             RemChange := MainMetaData.Items[I]^.Rev > CurrRev;              // This is not valid for Tomdroid
@@ -914,6 +966,7 @@ begin
        debugln('ERROR - Download Notes reported ' + ErrorString);
 	end;
     if DebugMode then debugln('Downloaded notes.');
+    if DebugMeta then DisplayNoteInfo(MainMetaData, 'MainMetaData after DoDownloads');
 end;
 
 function TSync.DoDeleteLocal() : boolean;
@@ -954,6 +1007,8 @@ begin
 end;
 
 function TSync.DoUploads(Uploads : TNoteInfoList) : boolean;
+var
+    NewRev : boolean;                           // totally ignored here.
 begin
     if  self.TransportMode <> SyncNextCloud then
        Result := DoUpLoads()
@@ -961,7 +1016,9 @@ begin
         result := Transport.UploadNotes(Uploads);
         if not result then
             ErrorString := Transport.ErrorString;
+        WriteRemoteManifest(NewRev, True);             // while we wrote one earlier, in Nextcloud, we need some data just added.
 	end;
+    if DebugMeta then DisplayNoteInfo(MainMetaData, 'MainMetaData after DoUploads');
 end;
 
 function TSync.DoUploads() : boolean;
@@ -1043,7 +1100,7 @@ begin
 end;
 
 
-function TSync.WriteRemoteManifest(out NewRev : boolean): boolean;
+function TSync.WriteRemoteManifest(out NewRev : boolean; ForceWrite : boolean = false): boolean;
 var
     OutFile: TextFile;
     Index : integer;
@@ -1052,31 +1109,42 @@ begin
     if not IDLooksOK(Transport.ServerID) then exit(false);        // already checked but ....
     result := true;
     NewRev := False;
-    for Index := 0 to MainMetaData.Count - 1 do begin
-        if MainMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDeleteRemote] then begin
-            NewRev := True;
-            break;                  // one is enough, we need a new manifest file !
-		end;
-    end;
-    if Not NewRev then exit(true);      // exit cos no need for new Man, ret true cos no file error,
-    NewRevString := inttostr(Transport.RemoteServerRev + 1);
-    AssignFile(OutFile, ConfigDir + 'manifest.xml-remote');
+    if not ForceWrite then begin                                  // if ForceWrite, always writeout, don't worry about Action list.
+        for Index := 0 to MainMetaData.Count - 1 do begin
+            if MainMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDeleteRemote] then begin
+                NewRev := True;
+                break;                  // one is enough, we need a new manifest file !
+		    end;
+        end;
+        if Not NewRev then exit(true);      // exit cos no need for new Man, ret true cos no file error,
+        NewRevString := inttostr(Transport.RemoteServerRev + 1);
+	end;
+	AssignFile(OutFile, ConfigDir + 'manifest.xml-remote');
     try
 	    try
 		    Rewrite(OutFile);
 	        writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
             write(OutFile, '<sync revision="' + NewRevString);
             writeln(OutFile, '" server-id="' + Transport.ServerID + '">');
-	        for Index := 0 to MainMetaData.Count - 1 do begin
+
+			for Index := 0 to MainMetaData.Count - 1 do begin
                 if MainMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
-	                write(OutFile, '  <note id="' + MainMetaData.Items[Index]^.ID + '" rev="');
-                    if MainMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit] then
-	                    write(OutFile, NewRevString + '"')
-	                else write(OutFile, inttostr(MainMetaData.Items[Index]^.Rev) + '"');
-                    if MainMetaData.Items[Index]^.LastChange = '' then
-                       writeln(OutFile, ' />')
-                    else writeln(OutFile, ' last-change-date="'
-                            + MainMetaData.Items[Index]^.LastChange + '" />');
+                    if TransportMode = SyncNextCloud then begin
+                            write(OutFile, '  <note id="' + MainMetaData.Items[Index]^.ID + '"');
+                            write(OutFile, ' sid="' + inttostr(MainMetaData.Items[Index]^.SID) + '"');
+                            write(OutFile, ' last-change-date="' + MainMetaData.Items[Index]^.LastChange + '"');
+                            write(OutFile, ' create-date="' + MainMetaData.Items[Index]^.CreateDate + '"');
+                            writeln(OutFile, ' />');
+			        end else begin
+		                    write(OutFile, '  <note id="' + MainMetaData.Items[Index]^.ID + '" rev="');
+	                        if MainMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit] then
+		                        write(OutFile, NewRevString + '"')
+		                    else write(OutFile, inttostr(MainMetaData.Items[Index]^.Rev) + '"');
+	                        if MainMetaData.Items[Index]^.LastChange = '' then
+	                           writeln(OutFile, ' />')
+	                        else writeln(OutFile, ' last-change-date="'
+	                                + MainMetaData.Items[Index]^.LastChange + '" />');
+					end;
 				end;
 			end;
             writeln(OutFile, '</sync>');
@@ -1126,14 +1194,14 @@ begin
     end;
     Transport.Password := Password;
     Transport.NotesDir := NotesDir;
-    //Transport.DebugMode := DebugMode;
+    Transport.DebugMode := DebugMode;
     if TransportMode = SyncAndroid then begin
         ConfigDir := ConfigDir + 'android' + PathDelim;
         ForceDirectory(ConfigDir);
     end;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
     Transport.RemoteAddress:= SyncAddress;
-    Result := Transport.SetTransport();
+    Result := Transport.SetTransport(ForceClean);
     ErrorString := Transport.ErrorString;
     if DebugMode then begin
         debugln('Remote address is ' + SyncAddress);
@@ -1235,9 +1303,15 @@ begin
     case RepoAction of
         RepoUse : begin
                     // if TransportMode = SyncAndroid then CheckUsingLCD(False) else CheckUsingRev();
-                    if TransportMode in [SyncAndroid, SyncNextCloud ] then
+                    {if TransportMode in [SyncAndroid, SyncNextCloud ] then
                         CheckUsingLCD(False)
+                    else CheckUsingRev(); }
+                    case TransportMode of
+                        SyncAndroid : CheckUsingLCD(False);
+                        SyncNextCloud : NextCloudCompare();
                     else CheckUsingRev();
+                    end;
+
                     CheckRemoteDeletes();
                     CheckLocalDeletes();
                 end;
@@ -1256,12 +1330,12 @@ begin
     if not TestRun then
        ProcessClashes();
     if DebugMeta then DisplayNoteInfo(MainMetaData, 'Note Meta Data after doing checks');
-    if TestRun then exit();
+    // if TestRun then exit();
     // ====================== Set an exit here to do no-write tests
     if DoDownLoads() then           // DoDownloads() will tell us what troubled it.
-        if WriteRemoteManifest(NewRev) then                       // A 'remotemanifest' is only useful in filesync, but does no harm.
+        if WriteRemoteManifest(NewRev) then
             if DoDeletes() then
-                if DoUploads(MainMetaData) then
+                if DoUploads(MainMetaData) then         // May call a re write of remote manifest, eg Nextcloud
                    if DoDeleteLocal() then
 	                    if not WriteLocalManifest(true, NewRev) then
                               WriteLocalManifest(false, false);   // write a recovery local manifest. Downloads only noted.
