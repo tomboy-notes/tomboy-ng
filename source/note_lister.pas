@@ -102,6 +102,7 @@ type
         { Removes any list entries that do not have a Template }
         procedure CleanList();
         property Items[Index : integer] : PNoteBook read Get; default;
+        procedure AddMissingTemplates;
    end;
 
 
@@ -151,6 +152,7 @@ type
     NoteBookList : TNoteBookList;
                                 { Takes a created list and search term string. Returns with the list
                                   containing individual search terms, 1 to many }
+
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
@@ -187,6 +189,8 @@ type
                                         { The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
+
+    procedure AddMissingTemplates;
                                         { Loads a TListView with note title, LCD and ID}
     procedure LoadListView(const LView: TListView; const SearchMode: boolean);
                                         { Changes the name associated with a Notebook in the internal data structure }
@@ -317,7 +321,7 @@ function NoteContains(const TermList : TStringList; FullFileName: ANSIString; co
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUtils, SearchUnit;
+uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUtils, SearchUnit, SaveNote;
 { Projectinspector, double click Required Packages and add LCL }
 
 var
@@ -462,6 +466,25 @@ begin
 	end;
 end;
 
+procedure TNoteBookList.AddMissingTemplates;
+var
+	Index : integer = 0;
+    Saver  : TBSaveNote;
+begin
+	while Index < Count do begin
+        if (Items[Index]^.Template = '') and (Items[Index]^.Name <> '') then begin
+            Saver := TBSaveNote.Create();
+            try
+                Items[Index]^.Template := Saver.SaveNewTemplate(Items[Index]^.Name);
+                SearchForm.RefreshNotebooks();
+			finally
+                Saver.Destroy;
+			end;
+		end else
+        	inc(Index);
+	end;
+end;
+
 		// Don't think we use this method  ?
 procedure TNoteBookList.RemoveNoteBook(const NBName: AnsiString);
 var
@@ -499,6 +522,11 @@ end;
 { -------------  Things relating to NoteBooks ------------------ }
 
 // consider changing the this works, I don't need to pass a created SL tp GetNotebooks(...)
+
+procedure TNoteLister.AddMissingTemplates;
+begin
+    NoteBookList.AddMissingTemplates;
+end;
 
 function TNoteLister.NoteBookTags(const NoteID : string): ANSIString;
 var

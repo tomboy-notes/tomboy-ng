@@ -135,7 +135,7 @@ type
             Title : ANSIString;
             // set to orig createdate if available, if blank, we'll use now()
             CreateDate : ANSIString;
-            procedure SaveNewTemplate(NotebookName: ANSIString);
+            function SaveNewTemplate(NotebookName: ANSIString): string;
          	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
             function WriteToDisk(const FileName: ANSIString; var NoteLoc: TNoteUpdateRec
                 ): boolean;
@@ -502,7 +502,7 @@ begin
    Result := Result + ' FixedWidth ';
 end; }
 
-procedure TBSaveNote.SaveNewTemplate(NotebookName : ANSIString);
+function TBSaveNote.SaveNewTemplate(NotebookName : ANSIString) : string;
 var
    GUID : TGUID;
    OStream:TFilestream;
@@ -526,6 +526,7 @@ begin
    finally
        OStream.Free;
    end;
+   Result := ID;
 end;
 
 procedure TBSaveNote.CopyLastFontAttr();
@@ -661,7 +662,7 @@ end;
 function TBSaveNote.WriteToDisk(const FileName: ANSIString; var NoteLoc : TNoteUpdateRec) : boolean;
 var
    Buff : string = '';
-   TmpName : string;
+   TmpName : string = '';
    {$ifdef WINDOWS}FileAttr : longint;
    ErrorMsg : string; {$endif}
 begin
@@ -677,7 +678,8 @@ begin
 
     //{$define STAGEDWRITE}
     //{$ifdef STAGEDWRITE}
-    {$ifdef WINDOWS}        // temp kludge until I understand the problem RenameFileUTF has with smb shares.
+    {$ifdef WINDOWS}        // ToDo : fix this write to SMP share issue.
+                            // temp kludge until I understand the problem RenameFileUTF has with smb shares.
                             // this will now work OK on all linux file systems but without the write, delete.move process.
         TmpName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
         if not DirectoryExists(TmpName) then

@@ -261,8 +261,7 @@ type                       { ----------------- T S Y N C --------------------- }
       procedure ProcessClashes();
 
         // Checks if local note exists, optionally returning with its last change date.
-      function LocalNoteExists(const ID: string; out ChDate, CRDate: string;
-			  GetDate: boolean=false): Boolean;
+      function LocalNoteExists(const ID: string; out ChDate, CRDate: string; GetDate: boolean=false): Boolean;
 
         // Call this when we are resolving a sync clash. Note : not possible results make sense !
       function ProceedWith(const ID, FullRemoteFileName, NTitle: ANSIString): TSyncAction;
@@ -998,12 +997,15 @@ begin
             if DebugMode then
                Debugln('Delete remote note : ' + TheID);
             if not TestRun then begin
-               if not Transport.DeleteNote(TheID, MainMetaData.Items[Index]^.Rev) then
+               if not Transport.DeleteNote(TheID, MainMetaData.Items[Index]^.Rev) then begin
+                  debugln('ERROR Sync DoDeletes - transport returned false for ' + MainMetaData[Index]^.ID);
                   Exit(False);
-            end;
+			   end;
+			end;
         end;
 	end;
 	Result := true;
+    if DebugMeta then DisplayNoteInfo(MainMetaData, 'MainMetaData after DoDeletes');
 end;
 
 function TSync.DoUploads(Uploads : TNoteInfoList) : boolean;

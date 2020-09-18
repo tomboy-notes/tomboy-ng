@@ -36,7 +36,8 @@ type TSyncAction=(SyUnset,      // initial state, should not be like this at end
                 SyAllRemote,    // Clash Decision - Use remote note for all subsquent clashes
                 SyAllLocal,     // Clash Decision - Use local note for all subsquent clashes
                 SyAllNewest,    // Clash Decision - Use newest note for all subsquent clashes
-                SyAllOldest);   // Clash Decision - Use oldest note for all subsquent clashes
+                SyAllOldest,    // Clash Decision - Use oldest note for all subsquent clashes
+                SyTemplate);    // Some types of Sync don't handle Templates.
 
         // Indicates the readyness of a sync connection
 type TSyncAvailable=(SyncNotYet,        // Initial state.
@@ -333,7 +334,8 @@ begin
 	            if assigned(node) then
 	                pNote^.CreateDate := Node.FirstChild.NodeValue
 	            else exit(False);
-	            pNote^.ID := copy(FFilename, length(FFilename) - 42, 36);
+	            // pNote^.ID := copy(FFilename, length(FFilename) - 40, 36);     // ToDo : this is fragile
+                pNote^.ID := ExtractFileNameOnly(FFilename);
 	            pNote^.Action:= Act;
 	            pNote^.SID:=0;
 	            pNote^.Rev:=Rev;
@@ -408,6 +410,7 @@ begin
         SyAllRemote : Result := ' AllRemote ';
         SyAllNewest : Result := ' AllNewest ';
         SyAllOldest : Result := ' AllOldest ';
+        SyTemplate : Result := ' IsTemplate ';
     end;
     while length(result) < 15 do Result := Result + ' ';
 end;

@@ -311,6 +311,8 @@ begin
             NoteLister.IndexThisNote(DownList.Strings[Index]);
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
+        if DownList.Count > 0 then
+            NoteLister.AddMissingTemplates;
         RefreshMenus(mkRecentMenu);
         if Visible then ButtonRefresh.Enabled := True
         else NeedRefresh := True;

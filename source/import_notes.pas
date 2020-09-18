@@ -32,8 +32,7 @@ type
     TImportNotes = class
     private
         GStr : string;
-        // function ChangeBold(var St: string): boolean;
-        // function ChangeItalic(var St: string): boolean;
+
         function ChangeSmallFont(): boolean;
         function ChangeTag(const Tag, ChangeToLead, ChangeToTail: string): boolean;
 		function HandleTriple(Tag: string; StartAt: integer): integer;
@@ -51,30 +50,31 @@ type
         function MarkUpMarkDown(Cont: TStringList): boolean;
 		function NotSpecialTag(const Index: integer; out TagSize: integer): boolean;
 
-                            {  Returns the 1 based pos of the passed Tag, Leading says its a leading tag
-                               must have whitespace of newline to left and an alpha mumeric to the right.
-                               Reverse if Leading is false.  Ret 0 if a suitable tag is not found. }
+                                { Returns the 1 based pos of the passed Tag, Leading says its a leading tag
+                                must have whitespace of newline to left and an alpha mumeric to the right.
+                                Reverse if Leading is false.  Ret 0 if a suitable tag is not found. }
         // function PosMDTag(const St, Tag: string; const leading: boolean): integer;
 
-                            { Will wrap the provided content with Tomboy style headers and footers }
+                                { Will wrap the provided content with Tomboy style headers and footers }
         function ProcessPlain(Cont: TStringList; const Title: string): boolean;
 		function RemoveSelectedXMLChars(DoQuotes: boolean=false) : boolean;
 
     public
-        ErrorMsg : string;              // '' if everything OK, content means something bad happened
+        ErrorMsg       : string;        // '' if everything OK, content means something bad happened
         DestinationDir : string;        // Required, dir to save notes to
-                    { if we know the dates, poke them in here. Else they will be '' and we will
-                      fill them in down below with now() They are the string Tomboy date format
-                      eg '2020-05-19T18:58:37.9513193+10:00', ISO something or another. }
+                                { if we know the dates, poke them in here. Else they will be '' and we will
+                                fill them in down below with now() They are the string Tomboy date format
+                                eg '2020-05-19T18:58:37.9513193+10:00', ISO something or another. }
         CrDate, LCDate : string;
-        Mode : string;                  // ie plaintext, markdown ....
+        Notebook       : string;        // We only support one notebook in this mode. A Nextcloud limitation.
+        Mode           : string;        // ie plaintext, markdown ....
         ImportNames : TStringList;      // A list of full file names to import, default filename will become title
         FirstLineTitle : boolean;       // if true, first line of note becomes title
         function Execute(): integer;    // you know all you need, go do it.
 
-                        { Public function, call passing a stringlist with MD content and appropriate dates
-                          or blank dates to stamp now, note will be saved in Destination Dir.
-                          We assume content arrives here with Title in seperate var, not in content. }
+                                { Public function, call passing a stringlist with MD content and appropriate dates
+                                or blank dates to stamp now, note will be saved in Destination Dir.
+                                We assume content arrives here with Title in seperate var, not in content. }
         function MDtoNote(var STL: TStringList; const Title, ID: string): boolean;
 
 end;
@@ -139,7 +139,8 @@ begin
     MarkUpMarkDown(Stl);
     ProcessPlain(Stl, Title);
     STL.SaveToFile(AppendPathDelim(DestinationDir) + ID + '.note');
-    Result := True;
+    Result := FileExistsUTF8(DestinationDir + ID + '.note');
+    //Result := True;
 end;
 
 
@@ -174,6 +175,8 @@ begin
     Cont.Add('    	<x>20</x>');
     Cont.Add('    	<y>30</y>');
     Cont.Add('      <tags>');
+    if Notebook <> '' then
+        Cont.Add('        <tag>system:notebook:' + Notebook + '</tag>');
     Cont.Add('      </tags>');
     Cont.Add('    	<open-on-startup>False</open-on-startup>');
     Cont.Add('</note>');
