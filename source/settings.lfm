@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 822
+  Left = 578
   Height = 525
-  Top = 171
+  Top = 147
   Width = 588
   BorderIcons = []
   Caption = 'Form Caption'
@@ -324,8 +324,8 @@ object Sett: TSett
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
         Left = 3
-        Height = 245
-        Top = 198
+        Height = 205
+        Top = 238
         Width = 576
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 3
@@ -333,7 +333,7 @@ object Sett: TSett
         BorderSpacing.Right = 3
         BorderSpacing.Bottom = 3
         Caption = '  Options  '
-        ClientHeight = 224
+        ClientHeight = 184
         ClientWidth = 572
         TabOrder = 0
         object Label3: TLabel
@@ -347,7 +347,7 @@ object Sett: TSett
         object RadioAlwaysAsk: TRadioButton
           Left = 16
           Height = 23
-          Top = 64
+          Top = 56
           Width = 215
           Caption = 'Always Ask me what to do.'
           Checked = True
@@ -357,7 +357,7 @@ object Sett: TSett
         object RadioUseLocal: TRadioButton
           Left = 16
           Height = 23
-          Top = 112
+          Top = 96
           Width = 332
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
@@ -365,7 +365,7 @@ object Sett: TSett
         object RadioUseServer: TRadioButton
           Left = 16
           Height = 23
-          Top = 160
+          Top = 136
           Width = 319
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
@@ -384,7 +384,7 @@ object Sett: TSett
         AnchorSideRight.Control = TabSync
         AnchorSideRight.Side = asrBottom
         Left = 3
-        Height = 189
+        Height = 229
         Top = 3
         Width = 576
         Anchors = [akTop, akLeft, akRight]
@@ -392,38 +392,31 @@ object Sett: TSett
         BorderSpacing.Top = 3
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 168
+        ClientHeight = 208
         ClientWidth = 572
         TabOrder = 1
-        object Label4: TLabel
-          Left = 20
-          Height = 19
-          Top = 88
-          Width = 49
-          Caption = 'Repo : '
-          ParentColor = False
-        end
+        OnClick = GroupBoxSyncClick
         object LabelFileSync: TLabel
-          Left = 72
+          Left = 24
           Height = 19
-          Top = 88
+          Top = 168
           Width = 105
           Caption = 'not configured'
           ParentColor = False
         end
         object SpeedSetupSync: TSpeedButton
-          Left = 20
+          Left = 24
           Height = 26
-          Top = 120
-          Width = 143
-          Caption = 'Setup'
+          Top = 128
+          Width = 216
+          Caption = 'Setup File Sync'
           OnClick = SpeedSetupSyncClick
         end
         object CheckBoxAutoSync: TCheckBox
-          Left = 384
+          Left = 296
           Height = 23
           Hint = 'Sync, if possible once an hour.'
-          Top = 120
+          Top = 131
           Width = 96
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
@@ -431,30 +424,22 @@ object Sett: TSett
           ShowHint = True
           TabOrder = 0
         end
-        object LabelFileSyncInfo1: TLabel
+        object ButtonNextCloudSync: TButton
+          Left = 24
+          Height = 26
+          Top = 40
+          Width = 216
+          Caption = 'Setup NextCloud'
+          OnClick = ButtonNextCloudSyncClick
+          TabOrder = 1
+        end
+        object LabelNextCloudSync: TLabel
           Left = 24
           Height = 19
-          Top = 23
-          Width = 134
-          Caption = 'LabelFileSyncInfo1'
+          Top = 80
+          Width = 105
+          Caption = 'not configured'
           ParentColor = False
-        end
-        object LabelFileSyncInfo2: TLabel
-          Left = 25
-          Height = 19
-          Top = 51
-          Width = 134
-          Caption = 'LabelFileSyncInfo2'
-          ParentColor = False
-        end
-        object ButtonSetupNextSync: TButton
-          Left = 184
-          Height = 26
-          Top = 120
-          Width = 152
-          Caption = 'Setup NextCloud'
-          OnClick = ButtonSetupNextSyncClick
-          TabOrder = 1
         end
       end
     end

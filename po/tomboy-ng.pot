@@ -1025,10 +1025,6 @@ msgstr ""
 msgid "Save and Sync"
 msgstr ""
 
-#: tformsync.buttontestnext.caption
-msgid "Test NextCloud"
-msgstr ""
-
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
@@ -1036,14 +1032,6 @@ msgstr ""
 
 #: tformsync.editnexthostaddress.text
 msgid "10.85.2.2"
-msgstr ""
-
-#: tformsync.editnextuser.text
-msgid "dbannon"
-msgstr ""
-
-#: tformsync.editpass.text
-msgid "DavosOldPW"
 msgstr ""
 
 #: tformsync.label3.caption
@@ -1058,6 +1046,20 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+#: tformsync.labelfilesyncinfo1.caption
+msgctxt "tformsync.labelfilesyncinfo1.caption"
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tformsync.labelfilesyncinfo2.caption
+msgctxt "tformsync.labelfilesyncinfo2.caption"
+msgid "LabelFileSyncInfo2"
+msgstr ""
+
+#: tformsync.labelslow.caption
+msgid "LabelSlow"
+msgstr ""
+
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
 msgstr ""
@@ -1069,15 +1071,6 @@ msgstr ""
 
 #: tformsync.listviewreport.columns[2].caption
 msgid "Note ID"
-msgstr ""
-
-#: tformsync.radiojoin.caption
-msgctxt "tformsync.radiojoin.caption"
-msgid "Join"
-msgstr ""
-
-#: tformsync.radiouse.caption
-msgid "Use"
 msgstr ""
 
 #: tformsyncerror.buttcancel.hint
@@ -1432,6 +1425,11 @@ msgstr ""
 msgid "Take a time stamped snapshot of notes and config"
 msgstr ""
 
+#: tsett.buttonnextcloudsync.caption
+msgctxt "tsett.buttonnextcloudsync.caption"
+msgid "Setup NextCloud"
+msgstr ""
+
 #: tsett.buttonsetcolours.caption
 msgctxt "tsett.buttonsetcolours.caption"
 msgid "Set Colours"
@@ -1451,10 +1449,6 @@ msgstr ""
 
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
-msgstr ""
-
-#: tsett.buttonsetupnextsync.caption
-msgid "Setup NextCloud"
 msgstr ""
 
 #: tsett.buttonshowbackup.caption
@@ -1568,10 +1562,6 @@ msgstr ""
 msgid "When a conflict is detected between a local note and remote one :"
 msgstr ""
 
-#: tsett.label4.caption
-msgid "Repo : "
-msgstr ""
-
 #: tsett.label5.caption
 msgid "Days per snapshot"
 msgstr ""
@@ -1597,12 +1587,9 @@ msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr ""
 
-#: tsett.labelfilesyncinfo1.caption
-msgid "LabelFileSyncInfo1"
-msgstr ""
-
-#: tsett.labelfilesyncinfo2.caption
-msgid "LabelFileSyncInfo2"
+#: tsett.labelnextcloudsync.caption
+msgctxt "tsett.labelnextcloudsync.caption"
+msgid "not configured"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
@@ -1655,7 +1642,7 @@ msgstr ""
 
 #: tsett.speedsetupsync.caption
 msgctxt "tsett.speedsetupsync.caption"
-msgid "Setup"
+msgid "Setup File Sync"
 msgstr ""
 
 #: tsett.tabbackup.caption

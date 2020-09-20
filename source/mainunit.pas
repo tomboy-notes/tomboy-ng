@@ -506,7 +506,7 @@ begin
 
      ImageSyncCross.Left := ImageSyncTick.Left;
 
-     ImageSyncTick.Visible :=  (Sett.ValidSync <> '');
+     ImageSyncTick.Visible :=  (Sett.ValidFileSync <> '');
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 end;
 

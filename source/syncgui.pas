@@ -73,39 +73,43 @@ type
 		{ TFormSync }
 
   TFormSync = class(TForm)
-				ButtonTestNext: TButton;
 				ButtonSave: TButton;
 				ButtonCancel: TButton;
 				ButtonClose: TButton;
-				EditPass: TEdit;
 				EditNextHostAddress: TEdit;
 				EditNextUser: TEdit;
+				EditPass: TEdit;
 				Label1: TLabel;
 				Label2: TLabel;
 				Label3: TLabel;
 				Label4: TLabel;
 				Label5: TLabel;
+				LabelSlow: TLabel;
+				LabelFileSyncInfo1: TLabel;
+				LabelFileSyncInfo2: TLabel;
                 ListViewReport: TListView;      // Viewstyle=vsReport, make columns in Object Inspector
 				Memo1: TMemo;
 				Panel1: TPanel;
 				Panel2: TPanel;
 				Panel3: TPanel;
-				RadioJoin: TRadioButton;
-				RadioUse: TRadioButton;
+				PanelNextCloud: TPanel;
 				Splitter3: TSplitter;
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
-				procedure ButtonTestNextClick(Sender: TObject);
+
                 procedure FormCreate(Sender: TObject);
+                                        { Runs a File Sync with displaying the form. Likely only triggered
+                                        by the auto sync timer in Settings. Caller is responsible for checking
+                                        that we are not busy before calling. }
                 function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonCloseClick(Sender: TObject);
     			procedure ButtonSaveClick(Sender: TObject);
 				procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
                 procedure FormHide(Sender: TObject);
-                { At Show, depending on SetUpSync, we'll either go ahead and do it, any
-                  error is fatal or, if True, walk user through process. }
+			                            { At Show, depending on SetUpSync, we'll either go ahead and do it, any
+			                            error is fatal or, if Setup is True, walk user through process. }
 				procedure FormShow(Sender: TObject);
 		private
                 FormShown : boolean;
@@ -113,6 +117,7 @@ type
                 procedure AddLVItem(Act, Title, ID: string);
                 procedure AdjustNoteList();
                 procedure AfterShown(Sender : TObject);
+				procedure DisplayMode(Mode: TSyncTransport);
                     // Display a summary of sync actions to user.
                 function DisplaySync(): string;
                     { Called when user wants to join a (possibly uninitialised) Repo,
@@ -120,6 +125,7 @@ type
                 procedure JoinSync;
                     { Called to do a sync assuming its all setup. Any problem is fatal }
                 function ManualSync: boolean;
+				procedure NextCloudSync();
                                     { We respond here to RepoJoin, RepoUse, RepoTest.  A RepoNew
                                       is not appropriate becasue there maybe notes at either end.
                                       RepoJoin will force a new connection, overwriting any existing config
@@ -127,7 +133,7 @@ type
                                       return an error if creds don't match. RepoTest will just
                                       look to see if Sync appears to exist, does not test viability.}
 				function RunNextCloudSync(Mode: TRepoAction): TSyncAvailable;
-                    { Populates the string grid with details of notes to be actioned }
+                                    { Populates the string grid with details of notes to be actioned }
                 procedure ShowReport;
             	//procedure TestRepo();
         		//procedure DoSetUp();
@@ -153,6 +159,10 @@ implementation
 { In SetupFileSync mode, does a superficial, non writing, test OnShow() user
   can then click 'OK' and we'd do a real sync, exit and settings saved in calling
   process.
+  Important to note that this form can be active but not visible when its doing an
+  auto sync.  Be careful to ensure nothing is actioned while Busy = true and Busy is
+  always set when doing stuff. This unit is definitly not thread safe but the Sync
+  unit could (and perhaps should) be ....
 }
 
 uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier,
@@ -268,16 +278,31 @@ procedure TFormSync.AfterShown(Sender : TObject);
 begin
     LocalTimer.Enabled := False;              // Don't want to hear from you again
     if self.Transport = SyncFile then begin
+        Caption := 'File Sync';
         Busy := True;
         try
             if SetUpSync then begin
+                memo1.Append('---- Joining a file sync -----');
 	            JoinSync();
-	        end else
+                exit;                           // exit here because if it was a setup, user is probably finished.
+	        end;
+            if Sett.ValidFileSync <> '' then begin
+                memo1.Append('---- Using a file sync -----');
 	            ManualSync();
+			end;
+			if Sett.ValidNextCloudSync <> '' then begin
+                DisplayMode(SyncNextCloud);
+                Transport := SyncNextCloud;
+                Label1.Caption:= Label1.Caption + ' run NextCloud Sync now ?';
+			    // We cannot proceed with a NextCloud 'use' sync here, must wait until user enters a .
+                // Username and password. But we do know its a 'Use' situation, not setup.
+			end;
 		finally
             Busy := False;
 		end;
-	end;                            // By implication, if not SyncFile then must be NextCloud, must do better than that !
+	end;
+    if Transport = SyncNextCloud then
+        DisplayMode(SyncNextCloud);
 end;
 
 //RESOURCESTRING
@@ -288,14 +313,16 @@ begin
     Left := 55 + random(55);
     Top := 55 + random(55);
     FormShown := False;
-    if Transport = syncFile then Panel1.Height := 90;
-    if Transport = SyncNextCloud then Panel1.Height := 150;
-    Label2.Caption := rsNextBitSlow;
+{    if Transport = syncFile then Panel1.Height := 90;
+    if Transport = SyncNextCloud then Panel1.Height := 150;}
+
+	Label2.Caption := rsNextBitSlow;
     Memo1.Clear;
     ListViewReport.Clear;
     ButtonSave.Enabled := False;
     ButtonClose.Enabled := False;
     ButtonCancel.Enabled := False;
+    DisplayMode(Transport);
     {$ifdef windows}  // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
          // Sett.BackGndColour;  Sett.TextColour;
@@ -305,6 +332,7 @@ begin
          Panel1.color := Sett.BackGndColour;
          Panel2.color := Sett.BackGndColour;
          Panel3.color := Sett.BackGndColour;
+         PanelNextCloud.color := Sett.BackGndColour;
          Label1.Font.Color:= Sett.TextColour;
          Label2.Font.Color := Sett.TextColour;
          Memo1.Color:= Sett.BackGndColour;
@@ -335,7 +363,50 @@ begin
 
 end;
 
-procedure TFormSync.ButtonTestNextClick(Sender: TObject);
+procedure TFormSync.DisplayMode(Mode : TSyncTransport);
+begin
+    LabelSlow.Caption := '';
+    if Mode = SyncNextCloud then begin      // we setup here like we are waiting for user to enter host ?, username and password.
+        Label1.Caption := 'NextCloud Sync';
+        PanelNextCloud.Visible := true;
+        PanelNextCloud.width := Panel1.width;
+        EditNextHostAddress.Text := Sett.ValidNextCloudSync;
+        ButtonCancel.Enabled := True;
+        ButtonSave.Enabled   := True;
+        ButtonSave.Caption   := 'NextCloud Sync';
+	end else begin
+        PanelNextCloud.Visible := false;
+        ButtonSave.Caption   := 'Save and Sync';
+        LabelFileSyncInfo1.Caption := rsFileSyncInfo1;
+        LabelFileSyncInfo2.Caption := rsFileSyncInfo2;
+    end;
+end;
+
+// We might get here in a Use situation, just after a manual FileSync, or in a Join
+// where the user has clicked the NextCloud Setup button. We assume they have already agreed
+// to discard any existing config in the latter case. But still check again because its
+// serious.
+
+procedure TFormSync.NextCloudSync();
+begin
+    if SetupSync then begin
+        if RunNextCloudSync(RepoTest) = SyncReady then
+            // SyncRead is an error when Joining, check user really wants to abandon existing config files.
+            if IDNO = Application.MessageBox('Discard existing sync config ?'
+                        , 'Might generate lots of duplicates !', MB_ICONQUESTION + MB_YESNO) then
+                exit;
+        memo1.Append('---- Joining a NextCloud sync -----');
+        RunNextCloudSync(RepoJoin);
+	end else begin
+        if RunNextCloudSync(RepoTest) = SyncReady then begin
+            memo1.Append('---- Using a NextCloud sync -----');
+            RunNextCloudSync(RepoUse)
+		end
+		else
+            showmessage('No sync setup yet');
+	end;
+end;
+
         { We can have three paths here -
           - Join, there is no existing connection, make end to end, sync, maybe notes at either end.
           - Use, an existing connection exists, lets use it.
@@ -349,32 +420,16 @@ procedure TFormSync.ButtonTestNextClick(Sender: TObject);
             'force' it. Under those circumstances, we trash all three and do 'Join'.
             So, there is no 'New' here or any one to one sync.
           }
-begin
-    if Busy then begin
-        Memo1.Append('Currently busy, come back later');
-        exit;
-	end;
-    Busy := True;
 
-    try
-        if RadioJoin.checked then begin          // Implies no existing NextCloud sync config exists
-            if RunNextCloudSync(RepoTest) = SyncReady then
-                if IDNO = Application.MessageBox('Discard existing sync config ?'
-                            , 'MessageBoxDemo', MB_ICONQUESTION + MB_YESNO) then
-                    exit;
-            RunNextCloudSync(RepoJoin);                     // Must report on all those potential error !
-		end;
-		if RadioUse.Checked then
-            if RunNextCloudSync(RepoTest) = SyncReady then
-                RunNextCloudSync(RepoUse)                   // Must report on all those potential error !
-            else
-                showmessage('No sync setup yet');
-	finally
-        Busy := False;
-	end;
-end;
 
 function TFormSync.RunNextCloudSync(Mode : TRepoAction) : TSyncAvailable;
+	    { There are some structural problems here. First, we do not do a test run at initial connection
+	    time like in FileSync. Thats because we have to write a new signiture file remotely, I am sure
+	    we could work around that if we tried.
+	    Secondly, we delete the local xml files before we determine if there is an existing sig file
+	    remotely. It would be far better to test for that remote file, see if it matches the local xml
+	    and try to talk user out of proceeding if possible. Can we move dealing with that remote sig
+        file back to SetTransport ? }
 var
     HaveSync : boolean;
 begin
@@ -382,7 +437,7 @@ begin
     ASync := TSync.Create;
     try
         ASync.ProceedFunction:= @Proceed;
-        ASync.DebugMode  := True;
+        //ASync.DebugMode  := True;
 	    ASync.NotesDir   := NoteDirectory;
 	    ASync.ConfigDir  := LocalConfig + 'nextcloud/';
         ASync.RepoAction := Mode;
@@ -394,7 +449,7 @@ begin
         else HaveSync := (Async.SetTransport(TransPort) = SyncReady);   // which should be syncNextCloud
         // If to here, we must be either RepoNew or RepoUse.
         if (HaveSync and (Mode = RepoJoin)) then
-            Async.SetTransport(TransPort, True);
+            Async.SetTransport(TransPort, True);                        // That line really needs to be AFTER the TestConnection !
         HaveSync := False;
 		case ASync.TestConnection() of
             SyncReady : haveSync := True;
@@ -403,19 +458,26 @@ begin
             SyncNoLocal,
             SyncNetworkError : Memo1.append('ERROR : ' + ASync.ErrorString);
             SyncNoRemoteRepo : Memo1.append('Failed to find a repo : ' + ASync.ErrorString);
-            SyncMismatch :     Memo1.Append('Server ID does not match, maybe you should remove the NextCloud to tomboy-ng note');
+            SyncMismatch :     Memo1.Append('Server ID does not match, maybe you should remove the NextCloud to tomboy-ng note.');
 		else
                 Memo1.append('TestConnection returned some other error : ' + ASync.ErrorString);
 		end;
         if not HaveSync then exit;
-        Memo1.append('OK, looks like we could sync here, if you wrote some code ');
+        Memo1.append('OK, looks like something worked, wow ! ');
         // if to here, we seem ready to do some sync stuff.
-        ASync.StartSync();
-        ShowReport();
-        AdjustNoteList();
-    finally
+        LabelSlow.Caption := rsNextBitSlow;
+        Application.ProcessMessages;
+        if ASync.StartSync() then begin
+            if Sett.ValidNextCloudSync <> EditNextHostAddress.Text then
+                Sett.ValidNextCloudSync := EditNextHostAddress.Text;
+            ShowReport();
+            DisplaySync();
+            AdjustNoteList();
+		end else debugln('ERROR - TFormSync.RunNextCloudSync - StartSync returned False');
+	finally
         freeandnil(ASync);
 	end;
+    LabelSlow.Caption := '';
 end;
 
         // User is only allowed to press Close when this is finished.
@@ -472,7 +534,7 @@ begin
         end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Label1.Caption:=rsAllDone;
+        Label1.Caption:= 'File Sync ' + rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
         Result := True;
@@ -557,12 +619,19 @@ procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
     Label2.Caption:=rsNextBitSlow;
     Label1.Caption:='First Time Sync';
-    Memo1.Clear;
+    // Memo1.Clear;
+    Memo1.append('');
     Application.ProcessMessages;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
+    if Transport = SyncNextCloud then begin
+        Label1.Caption:='Running NextCloud Sync';
+        NextCloudSync();
+        Label1.Caption:='NextCloud Sync Completed';
+        exit;
+	end;
     ASync.TestRun := False;
-    if ASync.StartSync() then begin
+	if ASync.StartSync() then begin
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();

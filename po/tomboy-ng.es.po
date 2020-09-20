@@ -1064,10 +1064,6 @@ msgstr "Cerrar"
 msgid "Save and Sync"
 msgstr "Guardar y sincronizar"
 
-#: tformsync.buttontestnext.caption
-msgid "Test NextCloud"
-msgstr ""
-
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
@@ -1075,14 +1071,6 @@ msgstr "Sincronizar"
 
 #: tformsync.editnexthostaddress.text
 msgid "10.85.2.2"
-msgstr ""
-
-#: tformsync.editnextuser.text
-msgid "dbannon"
-msgstr ""
-
-#: tformsync.editpass.text
-msgid "DavosOldPW"
 msgstr ""
 
 #: tformsync.label3.caption
@@ -1097,6 +1085,22 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
+#: tformsync.labelfilesyncinfo1.caption
+#, fuzzy
+msgctxt "tformsync.labelfilesyncinfo1.caption"
+msgid "LabelFileSyncInfo1"
+msgstr "EtiqSyncInfoArch1"
+
+#: tformsync.labelfilesyncinfo2.caption
+#, fuzzy
+msgctxt "tformsync.labelfilesyncinfo2.caption"
+msgid "LabelFileSyncInfo2"
+msgstr "EtiqSyncInfoArch2"
+
+#: tformsync.labelslow.caption
+msgid "LabelSlow"
+msgstr ""
+
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
 msgstr "Acción"
@@ -1109,16 +1113,6 @@ msgstr "Título"
 #: tformsync.listviewreport.columns[2].caption
 msgid "Note ID"
 msgstr "ID nota"
-
-#: tformsync.radiojoin.caption
-#, fuzzy
-msgctxt "tformsync.radiojoin.caption"
-msgid "Join"
-msgstr "Unirse"
-
-#: tformsync.radiouse.caption
-msgid "Use"
-msgstr ""
 
 #: tformsyncerror.buttcancel.hint
 msgctxt "tformsyncerror.buttcancel.hint"
@@ -1488,6 +1482,11 @@ msgstr "Hacer una Instantánea Manual"
 msgid "Take a time stamped snapshot of notes and config"
 msgstr "Hacer una instantánea de notas, preferencias con fecha de creación"
 
+#: tsett.buttonnextcloudsync.caption
+msgctxt "tsett.buttonnextcloudsync.caption"
+msgid "Setup NextCloud"
+msgstr ""
+
 #: tsett.buttonsetcolours.caption
 msgctxt "tsett.buttonsetcolours.caption"
 msgid "Set Colours"
@@ -1508,10 +1507,6 @@ msgstr "Si tienes notas en otro sitio"
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
 msgstr "Establecer Biblioteca Ortográfica"
-
-#: tsett.buttonsetupnextsync.caption
-msgid "Setup NextCloud"
-msgstr ""
 
 # Para ver una nota al punto de sobreescribir.
 #: tsett.buttonshowbackup.caption
@@ -1633,10 +1628,6 @@ msgstr "Se buscan y se guardan las notas en:"
 msgid "When a conflict is detected between a local note and remote one :"
 msgstr "Al detectar un conflicto entre una nota local y una remota:"
 
-#: tsett.label4.caption
-msgid "Repo : "
-msgstr "Repositorio: "
-
 # ¿Correcto en el original?
 #: tsett.label5.caption
 msgid "Days per snapshot"
@@ -1664,13 +1655,11 @@ msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "sin configurar"
 
-#: tsett.labelfilesyncinfo1.caption
-msgid "LabelFileSyncInfo1"
-msgstr "EtiqSyncInfoArch1"
-
-#: tsett.labelfilesyncinfo2.caption
-msgid "LabelFileSyncInfo2"
-msgstr "EtiqSyncInfoArch2"
+#: tsett.labelnextcloudsync.caption
+#, fuzzy
+msgctxt "tsett.labelnextcloudsync.caption"
+msgid "not configured"
+msgstr "sin configurar"
 
 # ¿Contexto? ¿Demásiado largo?
 #: tsett.labelsnapdir.caption
@@ -1723,8 +1712,10 @@ msgid "Menu"
 msgstr "Menú"
 
 #: tsett.speedsetupsync.caption
+#, fuzzy
+#| msgid "Setup"
 msgctxt "tsett.speedsetupsync.caption"
-msgid "Setup"
+msgid "Setup File Sync"
 msgstr "Configurar"
 
 #: tsett.tabbackup.caption

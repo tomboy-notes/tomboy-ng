@@ -1,11 +1,11 @@
 object FormSync: TFormSync
-  Left = 577
-  Height = 418
-  Top = 258
-  Width = 699
+  Left = 442
+  Height = 499
+  Top = 222
+  Width = 768
   Caption = 'Sync'
-  ClientHeight = 418
-  ClientWidth = 699
+  ClientHeight = 499
+  ClientWidth = 768
   OnClose = FormClose
   OnCreate = FormCreate
   OnHide = FormHide
@@ -19,10 +19,10 @@ object FormSync: TFormSync
     Left = 0
     Height = 150
     Top = 0
-    Width = 699
+    Width = 768
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 150
-    ClientWidth = 699
+    ClientWidth = 768
     TabOrder = 0
     object Label1: TLabel
       Left = 16
@@ -44,82 +44,95 @@ object FormSync: TFormSync
       Caption = 'Label2'
       ParentColor = False
     end
-    object EditNextHostAddress: TEdit
-      Left = 128
-      Height = 29
-      Top = 80
-      Width = 400
+    object PanelNextCloud: TPanel
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Label1
+      AnchorSideTop.Side = asrBottom
+      AnchorSideRight.Control = Panel1
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Side = asrBottom
+      Left = 311
+      Height = 103
+      Top = 46
+      Width = 456
+      Anchors = [akTop, akRight, akBottom]
+      BorderSpacing.Top = 3
+      ClientHeight = 103
+      ClientWidth = 456
       TabOrder = 0
-      Text = '10.85.2.2'
+      object EditNextHostAddress: TEdit
+        Left = 128
+        Height = 29
+        Top = 0
+        Width = 312
+        TabOrder = 0
+        Text = '10.85.2.2'
+      end
+      object EditNextUser: TEdit
+        Left = 128
+        Height = 29
+        Top = 32
+        Width = 214
+        TabOrder = 1
+      end
+      object EditPass: TEdit
+        Left = 128
+        Height = 29
+        Top = 66
+        Width = 212
+        EchoMode = emPassword
+        PasswordChar = '#'
+        TabOrder = 2
+      end
+      object Label4: TLabel
+        Left = 8
+        Height = 19
+        Top = 40
+        Width = 80
+        Caption = 'User Name'
+        ParentColor = False
+      end
+      object Label5: TLabel
+        Left = 8
+        Height = 19
+        Top = 72
+        Width = 68
+        Caption = 'Password'
+        ParentColor = False
+      end
+      object Label3: TLabel
+        Left = 8
+        Height = 19
+        Top = 8
+        Width = 95
+        Caption = 'Host Address'
+        ParentColor = False
+      end
+      object LabelSlow: TLabel
+        Left = 400
+        Height = 19
+        Top = 72
+        Width = 72
+        Caption = 'LabelSlow'
+        ParentColor = False
+      end
     end
-    object Label3: TLabel
+    object LabelFileSyncInfo1: TLabel
       Left = 16
       Height = 19
       Top = 88
-      Width = 95
-      Caption = 'Host Address'
+      Width = 134
+      Caption = 'LabelFileSyncInfo1'
       ParentColor = False
     end
-    object Label4: TLabel
+    object LabelFileSyncInfo2: TLabel
       Left = 16
       Height = 19
-      Top = 118
-      Width = 80
-      Caption = 'User Name'
+      Top = 120
+      Width = 134
+      Caption = 'LabelFileSyncInfo2'
       ParentColor = False
-    end
-    object EditNextUser: TEdit
-      Left = 128
-      Height = 29
-      Top = 112
-      Width = 112
-      TabOrder = 1
-      Text = 'dbannon'
-    end
-    object Label5: TLabel
-      Left = 264
-      Height = 19
-      Top = 118
-      Width = 68
-      Caption = 'Password'
-      ParentColor = False
-    end
-    object ButtonTestNext: TButton
-      Left = 536
-      Height = 25
-      Top = 114
-      Width = 150
-      Caption = 'Test NextCloud'
-      OnClick = ButtonTestNextClick
-      TabOrder = 2
-    end
-    object EditPass: TEdit
-      Left = 344
-      Height = 29
-      Top = 114
-      Width = 182
-      EchoMode = emPassword
-      PasswordChar = '#'
-      TabOrder = 3
-      Text = 'DavosOldPW'
-    end
-    object RadioJoin: TRadioButton
-      Left = 547
-      Height = 23
-      Top = 64
-      Width = 54
-      Caption = 'Join'
-      Checked = True
-      TabOrder = 4
-      TabStop = True
-    end
-    object RadioUse: TRadioButton
-      Left = 547
-      Height = 23
-      Top = 86
-      Width = 51
-      Caption = 'Use'
-      TabOrder = 5
     end
   end
   object Panel2: TPanel
@@ -132,10 +145,10 @@ object FormSync: TFormSync
     Left = 0
     Height = 37
     Top = 150
-    Width = 699
+    Width = 768
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 37
-    ClientWidth = 699
+    ClientWidth = 768
     TabOrder = 1
     object ButtonCancel: TButton
       AnchorSideLeft.Control = Panel2
@@ -191,13 +204,13 @@ object FormSync: TFormSync
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 231
+    Height = 312
     Top = 187
-    Width = 699
+    Width = 768
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Panel3'
-    ClientHeight = 231
-    ClientWidth = 699
+    ClientHeight = 312
+    ClientWidth = 768
     TabOrder = 2
     object Memo1: TMemo
       AnchorSideLeft.Control = Splitter3
@@ -207,15 +220,16 @@ object FormSync: TFormSync
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
-      Left = 394
-      Height = 229
+      Left = 432
+      Height = 310
       Top = 1
-      Width = 304
+      Width = 335
       Align = alRight
       Anchors = [akTop, akLeft, akRight, akBottom]
       Lines.Strings = (
         'Memo1'
       )
+      ScrollBars = ssAutoVertical
       TabOrder = 0
     end
     object Splitter3: TSplitter
@@ -224,9 +238,9 @@ object FormSync: TFormSync
       AnchorSideRight.Control = Memo1
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
-      Left = 384
+      Left = 422
       Height = 236
-      Top = 14
+      Top = 60
       Width = 10
       Align = alNone
       Anchors = []
@@ -238,9 +252,9 @@ object FormSync: TFormSync
       AnchorSideBottom.Control = Panel3
       AnchorSideBottom.Side = asrBottom
       Left = 2
-      Height = 227
+      Height = 308
       Top = 2
-      Width = 381
+      Width = 419
       Anchors = [akTop, akLeft, akRight, akBottom]
       BorderSpacing.Left = 1
       BorderSpacing.Top = 1

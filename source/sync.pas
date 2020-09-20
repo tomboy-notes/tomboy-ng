@@ -1178,7 +1178,7 @@ begin
     FreeAndNil(Transport);
     case Mode of
         SyncFile : begin
-                        SyncAddress := AppendPathDelim(Sett.ValidSync);             // LabelFileSync.Caption);
+                        SyncAddress := AppendPathDelim(Sett.ValidFileSync);             // LabelFileSync.Caption);
                         Transport := TFileSync.Create;
 	               end;
 	    SyncNextCloud : begin
@@ -1300,7 +1300,7 @@ var
     // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
     Result := True;
-    DebugMeta := True;
+    //DebugMeta := True;
     if not LoadRemoteRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
         RepoUse : begin

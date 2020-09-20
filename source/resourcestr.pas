@@ -74,7 +74,7 @@ RESOURCESTRING
 
   //rsChangeNetSync = 'Change Net Sync Repo';          // These are labels on the button used to set sync repo
   rsChangeSync = 'Change Sync Repo';
-  rsSyncNotConfig = 'not configured';               // means that the file of net sync is not configured yet.
+  rsSyncNotConfig = 'not configured';               // means that the file or nextcloud sync is not configured yet.
   rsSetUp = 'Setup';                                // means configure something, eg, one of the Sync modules.
   rsAutosnapshotRun='Completed autosnapshot run.';  // Message on status bar after an AutoSnapshot run.
   rsSnapshotCreated = 'created, do you want to copy it elsewhere ?';      // refers to a just taken snapshot

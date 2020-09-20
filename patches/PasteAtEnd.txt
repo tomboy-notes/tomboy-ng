@@ -1,6 +1,7 @@
 
 
-March 2020 - this patch is no longer required if using a current KControls.
+March 2020 - this patch is no longer required if using a current KControls, it
+was applied to kControls on 2020-02-01
 
 This patch is to be applied to KControls 2053958 .
 It fixes an issue very similar to KControls Github issue 14 where

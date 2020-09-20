@@ -291,6 +291,7 @@ function TImportNotes.IsThisATag(const Leading : boolean; const Tag : string; co
 var
   TLen : integer;
 begin
+    result := false;
     //debugln('ACTING on ' + copy(GStr, PosStart, 20));
     TLen := length(Tag);
     if TStart + TLen -1 > GStr.Length then exit(False);                     // not enough room for the tag
@@ -298,7 +299,7 @@ begin
     if (TLen > 2) and (GStr[TStart] <> GStr[TStart+2]) then exit(False);    // First three char are not the same
     if Leading then begin
         if (TStart <> 1) and (GStr[TStart-1] <> ' ') and                    // Must start with the line or have a space to left
-                    (GStr[TStart-1] <> '>') then exit(false);                   // We also allow a > before a leading tag
+                    (GStr[TStart-1] <> '>') then exit(false);               // We also allow a > before a leading tag
 
         if TStart + TLen = length(GStr) then exit(false);                   // Nothing after it. Thats not a tag.
         if (GStr[TStart + TLen] = ' ') or                                   // A space after a leading tag, I don't think so.
@@ -439,7 +440,7 @@ begin
                 GStr := Cont.Strings[Index];
             end else
                 if IsHeadingUnderline(GStr, False) then begin
-                    debugln('LARGE:' + GStr);
+                    //debugln('LARGE:' + GStr);
                     GStr := '<size:large>' + Cont.Strings[Index-1] + '</size:large>';
                     Cont.Delete(Index-1);
                     Cont.Delete(Index-1);

@@ -174,7 +174,7 @@ function TNextCloudSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD:
 begin
     result := GetListOfNotes(NoteMeta, '?exclude=favorite,content');
     if Result then ReadRemoteManifest(NoteMeta);
-    Saydebug('TNextCloudSync.GetNewNotes = ' + inttostr(NoteMeta.Count));
+    //Saydebug('TNextCloudSync.GetNewNotes = ' + inttostr(NoteMeta.Count));
 end;
 
 function TNextCloudSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
@@ -189,7 +189,6 @@ begin
         Strs := TStringList.create;
         try
             if Downloader(RemoteAddress + URL_SUFFIX + '/' + inttostr(PNote^.SID), Strs) then begin
-debugln('NextCloud Downloadnotes - SID=' + inttostr(pNote^.SID) + ' ID=' + pNote^.ID);
                 if ExtractJID(Strs.Text, NRec) > 0 then begin
                     pNote^.LastChange    := ModifiedToTBDate(NRec.modified);
                     pNote^.LastChangeGMT := UnixToDateTime(NRec.modified);
@@ -212,9 +211,6 @@ debugln('NextCloud Downloadnotes - SID=' + inttostr(pNote^.SID) + ' ID=' + pNote
                         Saydebug('ERROR, Nextcloud DownloadNotes, cannot convert from empty MD SID=' + inttostr(pNote^.SID) + ' ID=' + pNote^.ID, True);
                         saydebug('[' + Strs.text + ']');
 					end;
-debugln('Nextcloud Download - Meta LCD is ' + pNote^.LastChange);
-debugLn('Nextcloud Download LCD - ' + pNote^.LastChange);
-debugln(' ----- ');
                 end;
             end;
             if not FileExistsUTF8(NotesDir + pNote^.ID + '.note') then begin
@@ -282,19 +278,13 @@ begin
 			if  UpLoads[i]^.Action = SyUpLoadNew then
                 SID := 0
             else SID :=  UpLoads[i]^.SID;
-
-debugln('NextCloud Uploadnotes - Uploading  ' + UpLoads[i]^.ID + ' SID=' + inttostr(pNoteInfo(UpLoads[i])^.SID) );
-debugln('Nextcloud Uploadnotes - old LCD ' + UpLoads[i]^.LastChange);
-
             if PushUpNote(UpLoads[i]^.ID, Notebook, NRec, SID) > 0 then begin;
                 UpLoads[i]^.SID := NRec.SID;
                 UpLoads[i]^.LastChange := ModifiedToTBDate(NRec.modified);
-
-debugln('Nextcloud Uploadnotes - new LCD ' + ModifiedToTBDate(NRec.modified));
-debugln(' ----- ');
-
-			end else
+			end else begin
+                SayDebug('ERROR - NextCloud UploadNotes, failed to push ' + UpLoads[i]^.ID);
                 exit(false);
+			end;
 		end;
     end;
 end;
@@ -352,27 +342,16 @@ begin
 	                    CrDate := Node.NodeValue;
 	                    Node := NodeList.Item[i].Attributes.GetNamedItem('last-change-date');
 	                    LCDate := Node.NodeValue;
-
-debugln('ReadRemoteMainfest Looking at ID=' + ID + ' SID=' + SID + ' LCD=' + LCDate);
-
 	                    if (ID <> '') and (SID <> '') and (CrDate <> '') and (LCDate <> '') then begin
 	                        pNote := NoteMeta.FindSID(strtoint(SID));
 	                        if pNote <> nil then begin
 	                            pNote^.CreateDate := CrDate;
-
-debugln('MainMeta Action Set is ' + copy(ID, 1, 8) + ' ' + NoteMeta.ActionName(pNote^.Action));
-debugln('MainMeta   LCD is      ' + copy(ID, 1, 8) + ' ' + pNote^.LastChange);
-debugln('Remote Manifest LCD is ' + copy(ID, 1, 8) + ' ' + LCDate);
-
                                 // If here, its present in both NoteMeta and RemoteManifest
                                 if FileExistsUTF8(NotesDir + ID + '.note') then
 		                                if pNote^.LastChange = LCDate then
 		                                    pNote^.Action := SyNothing
 		                                else pNote^.Action := SyDownLoad
                                 else pNote^.Action := SyDeleteRemote;
-
-debugln('MainMeta Action Set is '  + copy(ID, 1, 8) + NoteMeta.ActionName(pNote^.Action));
-
 	                            pNote^.LastChangeGMT := GetGMTFromStr(pNote^.LastChange);
 	                            pNote^.ID := ID;
 						    end;
@@ -755,8 +734,8 @@ begin
     try
         try
             if SID = 0 then begin
-            saydebug('About to Post');
-            client.Post(RemoteAddress + URL_SUFFIX, Response);  // don't use FormPost, it messes with the Content-Type value
+                saydebug('About to Post');
+                client.Post(RemoteAddress + URL_SUFFIX, Response);  // don't use FormPost, it messes with the Content-Type value
             end else  begin
                 saydebug('About to PUT');
                 client.Put(RemoteAddress + URL_SUFFIX + '/' + inttostr(SID), Response);
@@ -767,8 +746,9 @@ begin
                 Result := ExtractJID(Response.DataString, NRec);
                 SayDebug('Posted Note ID is ' + inttostr(Result));
 			end else begin
-			        SayDebug('Response Code is ' + inttostr(Client.ResponseStatusCode));
-                    SayDebug(Response.DataString);
+			        SayDebug('ERROR - TNextCloudSync.PostNewNote - Failed PUT/POST, Response Code is '
+                        + inttostr(Client.ResponseStatusCode), True);
+                    SayDebug(Response.DataString, True);
 			end;
 		except on E:Exception do
                 SayDebug('TransNext.PostNewNote bad things happened : ' + E.Message);

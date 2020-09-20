@@ -125,7 +125,7 @@ type
 
     TSett = class(TForm)
         ButtDefaultNoteDir: TButton;
-		ButtonSetupNextSync: TButton;
+		ButtonNextCloudSync: TButton;
         ButtonManualSnap: TButton;
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
@@ -136,14 +136,12 @@ type
         Label10: TLabel;
         Label11: TLabel;
         Label16: TLabel;
+		LabelNextCloudSync: TLabel;
         Label5: TLabel;
         Label6: TLabel;
         Label7: TLabel;
         Label8: TLabel;
         Label9: TLabel;
-        LabelFileSyncInfo2: TLabel;
-        Label4: TLabel;
-        LabelFileSyncInfo1: TLabel;
         LabelFileSync: TLabel;
         ButtonSetColours: TButton;
         ButtonFixedFont: TButton;
@@ -219,7 +217,7 @@ type
         procedure ButtonSetNotePathClick(Sender: TObject);
         procedure ButtonSetSnapDirClick(Sender: TObject);
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
-		procedure ButtonSetupNextSyncClick(Sender: TObject);
+		procedure ButtonNextCloudSyncClick(Sender: TObject);
         procedure ButtonShowBackUpClick(Sender: TObject);
         //procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
@@ -237,6 +235,7 @@ type
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
             );
         procedure FormShow(Sender: TObject);
+		procedure GroupBoxSyncClick(Sender: TObject);
         procedure ListBoxDicClick(Sender: TObject);
         procedure PageControl1Change(Sender: TObject);
         procedure SpeedButHelpClick(Sender: TObject);
@@ -252,6 +251,7 @@ type
         procedure SetColours;
 
     private
+		//	fGetNextCloudSync: string;
         UserSetColours : boolean;
         fExportPath : ANSIString;
         SearchIsCaseSensitive : boolean;
@@ -292,6 +292,9 @@ type
 		function fGetValidSync: string;
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
         procedure fSetValidSync(Repo: string);
+        function fGetValidNextCloudSync : string;
+        procedure fSetValidNextCloudSync(Repo: string);
+
 		procedure SyncSettings;
         function fGetCaseSensitive : boolean;
         procedure fSetCaseSensitive(IsIt : boolean);
@@ -328,28 +331,28 @@ type
         // RemoteRepo  : string;
 
         SyncOption : TSyncOption;
-        { Indicates we have done a config, not necessarily a valid one }
+                            { Indicates we have done a config, not necessarily a valid one }
         HaveConfig : boolean;
-        { Indicates user wants to see internal links }
+                            { Indicates user wants to see internal links }
         ShowIntLinks : boolean;
-        { Says Notes should be treated as read only, a safe choice }
+                            { Says Notes should be treated as read only, a safe choice }
         NotesReadOnly : boolean;
-            { Indicates Spell is configured and LabelLibrary and LabelDic should
-            contain valid full file names.}
+		                    { Indicates Spell is configured and LabelLibrary and LabelDic should
+		                    contain valid full file names.}
         SpellConfig : boolean;
-        // service functon to other units, returns a string with current datetime
-        // in a format like the Tomboy schema.
+		                    { service functon to other units, returns a string with current datetime
+		                    in a format like the Tomboy schema. }
         function GetLocalTime: ANSIstring;
-            { Triggers a Sync, if its not all setup aready and working, user show and error }
+		                    { Triggers a Sync, if its not all setup already and working, user is shown an error.
+		                    If a file sync is configured, it will run it immediatly, if a NextCloud sync
+		                    is configured, will then prompt user to enter username and password before proceeding. }
         procedure Synchronise();
 
-        property ValidSync : string read fGetValidSync write fSetValidSync;
+        property ValidFileSync : string read fGetValidSync write fSetValidSync;
+        property ValidNextCloudSync : string read fGetValidNextCloudSync write fSetValidNextCloudSync;
+
+
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
-
-        // property SyncOK : boolean read fGetSyncOK write fSetSyncOK;
-
-
-        //property SyncOK : boolean read fGetSyncOK;
 
         property ExportPath : ANSIString Read fExportPath write fExportPath;
         // Called after notes are indexed (from SearchUnit), will start auto timer tha
@@ -361,8 +364,8 @@ var
     Sett : TSett;
 
 
-const
-                                // Note we set DarkTheme colors and all HiLight colours in MainUnit
+const                           // Note we set DarkTheme colors and all HiLight colours in MainUnit
+
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
 
 
@@ -495,32 +498,38 @@ begin
 	           FormSync.NoteDirectory := NoteDirectory;
 	           FormSync.LocalConfig := LocalConfig;
 	           FormSync.SetupSync := True;
-	           // TempSyncRepo := ValidSync;
-               ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+	           // TempSyncRepo := ValidFileSync;
+               ValidFileSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
 	           if mrOK = FormSync.ShowModal then begin
 	              SettingsChanged();
-                  ValidSync := ValidSync;           // so we update button labels etc
+                  ValidFileSync := ValidFileSync;           // so we update button labels etc
 	           end else
-	               ValidSync := rsSyncNotConfig;
+	               ValidFileSync := rsSyncNotConfig;
 	        end;
 end;
 
-procedure TSett.ButtonSetupNextSyncClick(Sender: TObject);
+procedure TSett.ButtonNextCloudSyncClick(Sender: TObject);
 begin
-    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
-    if FileExists(LocalConfig + 'nextcloud.xml') then
+    if FormSync.Busy then begin
+        showmessage('Sync system busy right now, please try again');
+        exit;
+	end;
+	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    if ValidNextCloudSync <> '' then
         if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
+	FormSync.Transport := SyncNextCloud;
+    FormSync.NoteDirectory := NoteDirectory;
+    FormSync.LocalConfig := LocalConfig;
+    FormSync.SetupSync := True;
+        //ValidFileSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
 
-        FormSync.Transport := SyncNextCloud;
-        FormSync.NoteDirectory := NoteDirectory;
-        FormSync.LocalConfig := LocalConfig;
-        FormSync.SetupSync := True;
-        ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-        if mrOK = FormSync.ShowModal then begin
+    FormSync.ShowModal;         // The form will write to ValidNextCloudSync to update things if necessary.
+
+(*    if mrOK = FormSync.ShowModal then begin
             SettingsChanged();
-            ValidSync := ValidSync;           // so we update button labels etc
+            ValidNextCloudSync := ValidNextCloudSync;           // so we update button labels etc
         end else
-            ValidSync := rsSyncNotConfig;
+            ValidFileSync := rsSyncNotConfig;   *)
 end;
 
 
@@ -740,6 +749,11 @@ begin
     Label15.Caption:='';
 end;
 
+procedure TSett.GroupBoxSyncClick(Sender: TObject);
+begin
+
+end;
+
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
 procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
@@ -770,10 +784,9 @@ begin
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
     CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
+    ValidNextCloudSync := '';
     CheckConfigFile();                      // write a new, default one if necessary
     CheckSpelling();
-    LabelFileSyncInfo1.Caption := rsFileSyncInfo1;
-    LabelFileSyncInfo2.Caption := rsFileSyncInfo2;
     MaskSettingsChanged := False;
 end;
 
@@ -929,11 +942,12 @@ begin
                 'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
                 'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 		    end;
-            ValidSync := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
-            if ValidSync <> '' then
+            ValidFileSync := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
+            if ValidFileSync <> '' then
                 CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'))
             else
                 CheckBoxAutoSync.checked := False;
+            ValidNextCloudSync := ConfigFile.readstring('SyncSettings', 'SyncNextCloudRepo', '');
             //TellTail := CheckBoxAutoSync.checked;
             // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
@@ -996,8 +1010,27 @@ begin
         SpeedSetUpSync.Caption := rsSetUp;
     end else begin
         LabelFileSync.Caption  := Repo;
-        SpeedSetUpSync.Caption := rsChangeSync;
+        SpeedSetUpSync.Caption := 'File ' + rsChangeSync;
     end;
+end;
+
+function TSett.fGetValidNextCloudSync: string;
+begin
+    if (LabelNextCloudSync.Caption <> rsSyncNotConfig) and (LabelNextCloudSync.Caption <> '')  then
+        Result := LabelNextCloudSync.caption
+    else Result := '';
+end;
+
+procedure TSett.fSetValidNextCloudSync(Repo: string);
+begin
+    if (Repo =  rsSyncNotConfig) or (Repo = '') then begin
+        LabelNextCloudSync.Caption  := rsSyncNotConfig;
+        ButtonNextCloudSync.Caption := 'NextCloud ' + rsSetUp;
+    end else begin
+        LabelNextCloudSync.Caption  := Repo;
+        ButtonNextCloudSync.Caption := 'NextCloud ' + rsChangeSync;
+	end;
+    SettingsChanged();
 end;
 
 function TSett.MyBoolStr(const InBool : boolean) : string;
@@ -1051,7 +1084,7 @@ begin
                 ConfigFile.writestring('BasicSettings', 'HelpLanguage', HelpNotesLang);
             // --------- S Y N C    S E T T I N G S ----------------------------
             { Supported config file parameters -
-              * SyncRepo    - determines ValidSync, should contain a Repo directory or URL
+              * SyncRepo    - determines ValidFileSync, should contain a Repo directory or URL
               * SyncType    - Only supported at this stage is 'file' !
               * AutoSync    - true/false
               * SyncOption  - AlwaysAsk, UseLocal, UseServer being decisions made when clash detected.
@@ -1065,10 +1098,12 @@ begin
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
                  ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
-            if ValidSync <> '' then begin
+            if ValidFileSync <> '' then begin
                 ConfigFile.writestring('SyncSettings', 'SyncType', 'file');         // Extend sync type here.
-                ConfigFile.writestring('SyncSettings', 'SyncRepo', ValidSync);
+                ConfigFile.writestring('SyncSettings', 'SyncRepo', ValidFileSync);
             end;
+            ConfigFile.writestring('SyncSettings', 'SyncNextCloudRepo', ValidNextCloudSync);
+
             // --------- S P E L L     S E T T I N G S ----------------------------
             if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
@@ -1417,7 +1452,7 @@ procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
     // debugln('WARNING - CheckBoxAutoSyncChange called');
     if MAskSettingsChanged then exit;                       // Don't trigger timer during setup
-    if ValidSync = '' then
+    if ValidFileSync = '' then
        CheckBoxAutoSync.Checked:= false
     else if CheckBoxAutoSync.Checked then begin
         TimerAutoSync.Enabled := false;
@@ -1429,15 +1464,15 @@ end;
 
 procedure TSett.Synchronise();
 begin
-    FormSync.NoteDirectory := Sett.NoteDirectory;
-    FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-
-    FormSync.SetupSync := False;
-
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
-    else
+    else begin
+        FormSync.NoteDirectory := Sett.NoteDirectory;
+        FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
+        FormSync.Transport := SyncFile;             // We always start with file sync, then Nextcloud, matters note if either not config
+        FormSync.SetupSync := False;
         FormSync.ShowModal;
+	end;
 end;
 
 procedure TSett.StartAutoSyncAndSnap();
@@ -1458,7 +1493,7 @@ begin
     TimerAutoSync.Interval:= 60*1000;
     debugln('WARNING - TESTAUTOSNAP is defined, timer called, MSC is ' + dbgs(MAskSettingsChanged));
     {$ENDIF}
-    if  (ValidSync <> '') and CheckBoxAutoSync.checked  and (not FormSync.Busy) then begin
+    if  (ValidFileSync <> '') and CheckBoxAutoSync.checked  and (not FormSync.Busy) then begin
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.Transport:=TSyncTransport.SyncFile;
