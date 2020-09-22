@@ -118,6 +118,8 @@ type
 
  type    TProceedFunction = function(const ClashRec : TClashRecord): TSyncAction of object;
 
+ type    TProgressProcedure = procedure(const St : string) of object;
+
 
     { takes a path to the server and a rev number and returns a Tomboy style sync dir.
       or, if NoteID (without '.note') is supplied, a FullNoteName   }

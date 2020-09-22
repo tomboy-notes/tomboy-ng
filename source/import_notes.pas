@@ -1,6 +1,8 @@
 unit import_notes;
 
-{ License - see tomboy-ng license information }
+{   *  Copyright (C) 2020 David Bannon
+    *  See attached licence file.
+}
 
 {  This unit will convert Mark Down to a Tomboy Note.  It implements some of Common Mark,
    https://spec.commonmark.org but mainly focuses on the way Next Cloud handles markdown.
@@ -12,10 +14,16 @@ unit import_notes;
    on Github and the Common Mark demo pages but not on Nextcloud.  If you leave it alone
    it will be preserved in a tomboy-ng -> NextCloud -> tomboy-ng cycle.
 
-  Too use this unit, create it, poke DestinationDir in, set Mode, eg markdown, Dates if you have them.
+  To use this unit, create it, poke DestinationDir in, set Mode, eg markdown, Dates if you have them.
   Then, use in one of two modes -
   1 - Use MDtoNote providing a StringList with md content, a title and ID, it will create a note.
-  2 - Poke a stringlist full md files and it will bach process them.
+  2 - Poke a stringlist full md files and it will batch process them.
+}
+
+
+{ HISTORY
+    2020/09/23 Escape nasty char from note title before saving as TB format.
+
 }
 
 {$mode objfpc}{$H+}
@@ -128,7 +136,7 @@ begin
     end; *)
 
     while Index < STL.Count do begin
-        GStr := STL[Index];
+        GStr := STL[Index];                         // GStr is a 'regional' var
         if RemoveSelectedXMLChars() then begin
             Stl.Insert(Index, GStr);
             Stl.Delete(Index+1);
@@ -137,7 +145,7 @@ begin
 	end;
 
     MarkUpMarkDown(Stl);
-    ProcessPlain(Stl, Title);
+    ProcessPlain(Stl, RemoveBadXMLCharacters(Title));               // Hmm, what about " and '  ?
     STL.SaveToFile(AppendPathDelim(DestinationDir) + ID + '.note');
     Result := FileExistsUTF8(DestinationDir + ID + '.note');
     //Result := True;

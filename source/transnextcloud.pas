@@ -5,7 +5,8 @@ unit transnextcloud;
   *  Copyright (C) 2020 David Bannon
   *  See attached licence file.
 
-  HISTORY              
+  HISTORY
+  2020/09/23  Made dowloads a bit more failsafe, remove from MMD if not able to process this time.
 
 }
 
@@ -93,15 +94,16 @@ uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil,
     {$if (FPC_FULLVERSION=30200)}
 	    opensslsockets,                 // only available in FPC320 and later
 	{$endif}
+    settings,                           // just for sett.helpnotepath to load nextcloud.md
 	fphttpclient, httpprotocol, {$ifdef LCL}lazlogger, LazUTF8, {$endif}
 	fpopenssl, ssockets, DateUtils, commonmark, import_notes;
 
 const
   URL_SUFFIX = '/index.php/apps/notes/api/v1/notes';
-  USER = 'dbannon';         // not a long term solution, only works for people called dbannon !
+  //USER = 'dbannon';         // not a long term solution, only works for people called dbannon !
   KEYNOTETITLE = 'NextCloud to tomboy-ng sync';
-  KEYNOTETEXT  = 'Please do not alter this note, its an important part of the tomboy-ng sync\n--------\n';
-  KEYNOTEUUID  = 'TOMBOY-NG UUID = ';
+  KEYNOTETEXT  = #10#10'Please do not alter this note, its an important part of the tomboy-ng sync'#10'--------';
+  KEYNOTEUUID  = #10#10'TOMBOY-NG UUID = ';
 
 
 
@@ -110,7 +112,7 @@ function TNextCloudSync.TestTransport(const WriteNewServerID: boolean) : TSyncAv
             { Here we will try to contact the server, look for a note that records the ServerID,
               If we are doing a RepoJoin then ANewRepo will be set, if no KEYNOTE, generate a ServerID,
               send it to the remote NextCloud in a KEYNOTE. If there is already one there, SyncMisMatch
-              Might return SyncReady, SyncCredentialsError, SyncNetworkError, SyncNoRemoteRepo, SyncMisMatch }
+              Might return SyncReady, SyncCredentialError, SyncNetworkError, SyncNoRemoteRepo, SyncMisMatch }
 var
     NoteMeta : TNoteInfoList;
     PNote : PNoteInfo;
@@ -179,51 +181,62 @@ end;
 
 function TNextCloudSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
-    PNote   : PNoteInfo;
+    //PNote   : PNoteInfo;
     Strs    : TStringList;
     NRec    : TNoteRec;
     Imp     : TImportNotes;
+    I       : integer = 0;
 begin
-    for PNote in Downloads do begin
-        if pNote^.Action <> SyDownload then continue;
+    //for PNote in Downloads do begin
+    while I < Downloads.Count do begin
+        if Downloads[i]^.Action <> SyDownload then begin inc(i); continue; end;
         Strs := TStringList.create;
         try
-            if Downloader(RemoteAddress + URL_SUFFIX + '/' + inttostr(PNote^.SID), Strs) then begin
+            if Downloader(RemoteAddress + URL_SUFFIX + '/' + inttostr(Downloads[i]^.SID), Strs) then begin
                 if ExtractJID(Strs.Text, NRec) > 0 then begin
-                    pNote^.LastChange    := ModifiedToTBDate(NRec.modified);
-                    pNote^.LastChangeGMT := UnixToDateTime(NRec.modified);
+                    Downloads[i]^.LastChange    := ModifiedToTBDate(NRec.modified);
+                    Downloads[i]^.LastChangeGMT := UnixToDateTime(NRec.modified);
                     Strs.Free;
                     Strs := TStringList.Create;
                     Strs.text := StringReplace(NRec.Content,'\n',Lineending,[rfReplaceAll, rfIgnoreCase]);
                     if Strs.count > 1 then begin
-                        Strs.SaveToFile(inttostr(PNote^.SID) + '.md');
+                        Strs.SaveToFile(inttostr(Downloads[i]^.SID) + '.md');
                         Imp := TImportNotes.create;
                         Imp.Mode     := 'markdown';
-                        Imp.Notebook := NRec.category;                              // What happens if the 'category' does not exist as a Notebook ???
+                        Imp.Notebook := NRec.category;
                                                                                     // And further testing, a renamed NextCloud note does not get a new timestamp ?
-                        Imp.LCDate   := pNote^.LastChange;
-                        Imp.CrDate   := pNote^.CreateDate;
+                        Imp.LCDate   := Downloads[i]^.LastChange;
+                        Imp.CrDate   := Downloads[i]^.CreateDate;
                         Imp.DestinationDir := NotesDir;
-                        if not Imp.MDtoNote(Strs, pNote^.Title, pNote^.ID) then
-                                Saydebug('ERROR, Nextcloud DownloadNotes, failed to convert from MD to Note SID=' + inttostr(pNote^.SID) + ' ID=' + pNote^.ID, True);
+                        if not Imp.MDtoNote(Strs, Downloads[i]^.Title, Downloads[i]^.ID) then
+                            Saydebug('ERROR, Nextcloud DownloadNotes, failed to convert from MD to Note SID='
+                                        + inttostr(Downloads[i]^.SID) + ' ID=' + Downloads[i]^.ID, True);
                         Imp.free;
+                        if not FileExistsUTF8(NotesDir + Downloads[i]^.ID + '.note') then begin
+                            SayDebug('ERROR - NextCloud.DownloadNotes did not create '
+                                        + NotesDir + Downloads[i]^.ID + '.note', True);
+                            // exit(false);
+                            Downloads.Delete(i);
+                            continue;
+                        end;
+                        // if we re recieve an empty note or fail to convert to TB, we remove the entry, can try next time.
 		            end else begin
-                        Saydebug('ERROR, Nextcloud DownloadNotes, cannot convert from empty MD SID=' + inttostr(pNote^.SID) + ' ID=' + pNote^.ID, True);
-                        saydebug('[' + Strs.text + ']');
+                        Saydebug('ERROR, Nextcloud DownloadNotes, cannot convert from empty MD SID='
+                                        + inttostr(Downloads[i]^.SID) + ' ID=' + Downloads[i]^.ID, True);
+                        saydebug('[' + Strs.text + ']', True);
+                        Downloads.Delete(i);
+                        continue;
 					end;
+                    inc(i);
                 end;
             end;
-            if not FileExistsUTF8(NotesDir + pNote^.ID + '.note') then begin
-                SayDebug('ERROR - NextCloud.DownloadNotes did not create ' + NotesDir + pNote^.ID + '.note');
-                exit(false);
-			end;
 	  finally
             Strs.free;
 	  end;
 		// ToDo : if we get an error here and the note is not saved, must prevent it from appearing in RemoteManifest
         // else it will be treated as a DeleteRemote and deleted from NextCloud next time we sync !!!!!
         // maybe just remove the entry from MMD, that way, we might get it done next time ?
-	end;
+	end;                // end of while loop
     result := true;
 end;
 
@@ -236,7 +249,7 @@ begin
     Result := False;
     Client := TFPHttpClient.Create(nil);
     STRL := TStringList.Create;
-    Client.UserName := USER;
+    Client.UserName := UserName;
     Client.Password := Password;
     Client.AllowRedirect := true;
     try
@@ -391,17 +404,34 @@ begin
 end;
 
 
-
 function TNextCloudSync.WriteANewServerID() : boolean;
 var
     GUID : TGUID;
     NRec : TNoteRec;
+    StrList : TStringList;
 begin
+    StrList := TstringList.Create;
+    if fileexistsUTF8(sett.HelpNotesPath + 'nextcloud.md') then begin
+        StrList.LoadFromFile(sett.HelpNotesPath + 'nextcloud.md');
+        saydebug('strlist count=' + inttostr(strlist.Count));
+	end
+	else
+        Saydebug('WARNING - TNextCloudSync.WriteANewServerID - failed to load ' + sett.HelpNotesPath + 'nextcloud.md', true);
     CreateGUID(GUID);
     ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
-    Result := PostNewNote(KEYNOTETITLE, '', KEYNOTETEXT + KEYNOTEUUID + ServerID, NRec) > 0;
-    if not Result then
+    saydebug('-------------------');
+    saydebug(strlist.text);
+    saydebug('-------------------');
+    saydebug(StringToJSONString(KEYNOTETEXT + KEYNOTEUUID + ServerID + #10#10 + strlist.text));
+    saydebug('-------------------');
+    Result := PostNewNote(KEYNOTETITLE, ''
+            , StringToJSONString(KEYNOTETEXT + KEYNOTEUUID + ServerID + #10#10 + strlist.text), NRec) > 0;
+            //, KEYNOTETEXT + KEYNOTEUUID + ServerID{ + strlist.text}, NRec) > 0;
+    StrList.free;
+    if not Result then begin
         ServerID := '';
+        saydebug('ERROR - TNextCloudSync.WriteANewServerID, failed to post a remote server ID note', True);
+	end;
 end;
 
 
@@ -470,7 +500,7 @@ begin
     Result := false;
     Client := TFPHttpClient.Create(nil);
     if UsePassword then begin
-        Client.UserName := USER;
+        Client.UserName := UserName;
         Client.Password := Password;
     end;
     Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
@@ -525,7 +555,7 @@ begin
     // Windows can be made work with this if we push out ssl dll - see DownloaderSSL local project
     //InitSSLInterface;
     Client := TFPHttpClient.Create(nil);
-    Client.UserName := USER;
+    Client.UserName := UserName;
     Client.Password := Password;
     Client.AllowRedirect := true;
     try
@@ -543,7 +573,7 @@ begin
             on E: Exception do begin
                 SayDebug('TransNexCloud Downloader -Something bad happened ' + E.Message, True);
                 SayDebug('URL was ' + URL, True);
-                SayDebug('U=' + USER + 'P=' + Password);
+                SayDebug('U=' + UserName {+ 'P=' + Password});
                 exit(false);
                 end;
         end;
@@ -722,7 +752,7 @@ begin
     Client.AddHeader('Content-Type','application/json; charset=UTF-8');
     Client.AddHeader('Accept', 'application/json');
     Client.AllowRedirect := true;
-    Client.UserName:=USER;
+    Client.UserName:=UserName;
     Client.Password:=Password;
     if Notebook = '' then
         client.RequestBody := TRawByteStringStream.Create('{ "title": "'

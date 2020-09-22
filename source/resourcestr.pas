@@ -6,6 +6,9 @@ unit ResourceStr;
 
 {$mode objfpc}{$H+}
 
+{   *  Copyright (C) 2020 David Bannon
+    *  See attached licence file.
+}
 interface
 
 uses

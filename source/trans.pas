@@ -30,6 +30,9 @@ type
             // A password for those Transports that need one.
         Password : string;
 
+            // A username for those transports that need one.
+        UserName : string;
+
         DebugMode : boolean;
             // Indicates its a new repo, don't look for remote manifest.
         ANewRepo : Boolean;

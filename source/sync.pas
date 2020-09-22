@@ -149,7 +149,7 @@ HISTORY
     2020/02/27  Better detect when we try to sync and don't have a local manifest, useful for Tomdroid, check normal !
     2020/09/05  CheckUsingLCD() now uses LocalNoteExists() rather than GetNotesLaostChangeSt() because I want create date in local list.
     2020/09/11  WriteRemoteManifest now has a NextCloud mode and LocalNoteExists now returns with create date as well as LCD
-
+    2020/09/22  Added a progress indicator, must now set @SyncProgress() to something
 }
 
 interface
@@ -296,6 +296,10 @@ type                       { ----------------- T S Y N C --------------------- }
             // Must be set (if needed) before SetTransport is called.
         Password : string;
 
+                // A Username, passed on to Trans for those Transports that need it.
+                // Must be set (if needed) before SetTransport is called.
+        UserName : string;
+
             // Indicates what we want this unit to do. Set it and call TestConnection() repeatly...
        RepoAction : TRepoAction;
 
@@ -312,6 +316,8 @@ type                       { ----------------- T S Y N C --------------------- }
             be called if the sync process finds a sync class where both copies
             of a note have changed since last sync.}
         ProceedFunction : TProceedFunction;
+
+        ProgressProcedure : TProgressProcedure;
 
                 // A URL or directory with trailing delim.
         SyncAddress : string;
@@ -959,6 +965,7 @@ function TSync.DoDownloads() : boolean;
 {var
     I : integer; }
 begin
+    ProgressProcedure('Doing Downloads');
     Result := Transport.DownloadNotes(MainMetaData);
 	if Result = false then begin
        self.ErrorString:= Transport.ErrorString;
@@ -966,12 +973,14 @@ begin
 	end;
     if DebugMode then debugln('Downloaded notes.');
     if DebugMeta then DisplayNoteInfo(MainMetaData, 'MainMetaData after DoDownloads');
+
 end;
 
 function TSync.DoDeleteLocal() : boolean;
 var
     I : integer;
 begin
+    ProgressProcedure('Doing Local Deletes');
     for I := 0 to MainMetaData.Count -1 do begin
         if MainMetaData.Items[i]^.Action = SyDeleteLocal then begin
             if FileExists(NotesDir + MainMetaData.Items[i]^.ID + '.note') then
@@ -982,6 +991,7 @@ begin
     end;
     result := true;
     if DebugMode then Debugln('Done DoDeletesLocal');
+
 end;
 
 function TSync.DoDeletes() : boolean;
@@ -989,6 +999,7 @@ var
     Index : integer;
     TheID : string;
 begin
+    ProgressProcedure('Doing Remote Deletes');
     for Index := 0 to MainMetaData.Count - 1 do begin
         if MainMetaData[Index]^.Action = SyDeleteRemote then begin
             if  TransportMode = SyncNextCloud then
@@ -1006,12 +1017,14 @@ begin
 	end;
 	Result := true;
     if DebugMeta then DisplayNoteInfo(MainMetaData, 'MainMetaData after DoDeletes');
+
 end;
 
 function TSync.DoUploads(Uploads : TNoteInfoList) : boolean;
 var
     NewRev : boolean;                           // totally ignored here.
 begin
+    ProgressProcedure('Doing Uploads');
     if  self.TransportMode <> SyncNextCloud then
        Result := DoUpLoads()
     else begin
@@ -1021,6 +1034,7 @@ begin
         WriteRemoteManifest(NewRev, True);             // while we wrote one earlier, in Nextcloud, we need some data just added.
 	end;
     if DebugMeta then DisplayNoteInfo(MainMetaData, 'MainMetaData after DoUploads');
+
 end;
 
 function TSync.DoUploads() : boolean;
@@ -1028,6 +1042,7 @@ var
     Uploads : TstringList = nil;
     Index : integer;
 begin
+    ProgressProcedure('Doing Uploads');
     if DebugMode then
         debugln('Doing uploads and Remote ServerRev is ' + inttostr(Transport.RemoteServerRev));
     try
@@ -1047,6 +1062,7 @@ begin
         if Uploads <> nil then Uploads.Free;
 	end;
 	Result := true;
+
 end;
 
 
@@ -1171,6 +1187,7 @@ end;
 
 function TSync.SetTransport(Mode: TSyncTransport; ForceClean : boolean = False) : TSyncAvailable;
 begin
+    ProgressProcedure('Setting Transport');
     TransportMode := Mode;
     NotesDir := AppendPathDelim(NotesDir);
     ConfigDir := AppendPathDelim(ConfigDir);
@@ -1195,6 +1212,7 @@ begin
                     end;
     end;
     Transport.Password := Password;
+    Transport.UserName := UserName;
     Transport.NotesDir := NotesDir;
     Transport.DebugMode := DebugMode;
     if TransportMode = SyncAndroid then begin
@@ -1213,9 +1231,8 @@ begin
 end;
 
 function TSync.TestConnection(): TSyncAvailable;
-{var
-    XServerID : string;}
 begin
+    ProgressProcedure('Testing Connection');
     if RepoAction = RepoNew then begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
@@ -1250,6 +1267,7 @@ begin
          Debugln('TestTransport did not report SyncReady : ' + ErrorString);
       exit;
     end;
+
     if DebugMode then begin
         debugln('CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
                         + '   Local Entries=' + inttostr(LocalMetaData.Count));
@@ -1304,16 +1322,11 @@ begin
     if not LoadRemoteRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
         RepoUse : begin
-                    // if TransportMode = SyncAndroid then CheckUsingLCD(False) else CheckUsingRev();
-                    {if TransportMode in [SyncAndroid, SyncNextCloud ] then
-                        CheckUsingLCD(False)
-                    else CheckUsingRev(); }
                     case TransportMode of
                         SyncAndroid : CheckUsingLCD(False);
                         SyncNextCloud : NextCloudCompare();
                     else CheckUsingRev();
                     end;
-
                     CheckRemoteDeletes();
                     CheckLocalDeletes();
                 end;
@@ -1326,6 +1339,7 @@ begin
                     MainMetaData := TNoteInfoList.Create;
                 end
     end;
+    ProgressProcedure('Gathering Sync Details');
     if DebugMeta then DisplayNoteInfo(MainMetaData, 'Note Meta Data after initial Case Statement.');
     CheckNewNotes();
     CheckMetaData();
@@ -1334,6 +1348,7 @@ begin
     if DebugMeta then DisplayNoteInfo(MainMetaData, 'Note Meta Data after doing checks');
     // if TestRun then exit();
     // ====================== Set an exit here to do no-write tests
+    ProgressProcedure('Starting Sync');
     if DoDownLoads() then           // DoDownloads() will tell us what troubled it.
         if WriteRemoteManifest(NewRev) then
             if DoDeletes() then
@@ -1342,6 +1357,7 @@ begin
 	                    if not WriteLocalManifest(true, NewRev) then
                               WriteLocalManifest(false, false);   // write a recovery local manifest. Downloads only noted.
     Result := True;
+    ProgressProcedure('Sync Completed');
 end;
 
 function TSync.ReadLocalManifest(const FullFileName : string = '') : boolean;
