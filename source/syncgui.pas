@@ -219,6 +219,7 @@ procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 	FreeandNil(ASync);
     Busy := False;
+    writeln('close');
 end;
 
 procedure TFormSync.FormHide(Sender: TObject);
@@ -226,6 +227,7 @@ begin
     if LocalTimer = Nil then exit();
     LocalTimer.Free;
     LocalTimer := nil;
+    writeln('kill timer');
 end;
 
 
@@ -302,10 +304,10 @@ begin
 	            JoinSync();
                 exit;                           // exit here because if it was a setup, user is probably finished.
 	        end;
-            if Sett.ValidFileSync <> '' then begin
+{            if (Sett.ValidFileSync <> '') and (not Sett.CheckFileSyncDisabled.checked) then begin
                 memo1.Append('---- Using a file sync -----');
 	            ManualSync();
-			end;
+			end; }
 			if Sett.ValidNextCloudSync <> '' then begin
                 DisplayMode(SyncNextCloud);
                 Transport := SyncNextCloud;
@@ -648,6 +650,11 @@ end;
     // This only ever happens during a Join or a NextCloud Sync
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
+    //ModalResult := mrCancel;
+
+    //exit;
+
+
     Label2.Caption:=rsNextBitSlow;
     Label1.Caption:='First Time Sync';
     // Memo1.Clear;

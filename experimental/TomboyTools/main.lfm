@@ -384,7 +384,7 @@ object FormMain: TFormMain
       object ButtonPushUp: TButton
         Left = 523
         Height = 25
-        Top = 40
+        Top = 80
         Width = 173
         Caption = 'Push Up'
         OnClick = ButtonPushUpClick
@@ -393,7 +393,7 @@ object FormMain: TFormMain
       object ButtonPullDown: TButton
         Left = 523
         Height = 25
-        Top = 80
+        Top = 112
         Width = 173
         Caption = 'Pull Down'
         OnClick = ButtonPullDownClick
@@ -402,7 +402,7 @@ object FormMain: TFormMain
       object ButtonDeleteNext: TButton
         Left = 523
         Height = 25
-        Top = 122
+        Top = 144
         Width = 173
         Caption = 'Delete all Next'
         Enabled = False
@@ -411,7 +411,7 @@ object FormMain: TFormMain
       object ButtonNextSync: TButton
         Left = 523
         Height = 25
-        Top = 168
+        Top = 176
         Width = 173
         Caption = 'Next Sync'
         Enabled = False
@@ -432,6 +432,15 @@ object FormMain: TFormMain
         Width = 145
         Caption = 'Debug Messages'
         TabOrder = 6
+      end
+      object ButtonTestMD: TButton
+        Left = 523
+        Height = 25
+        Top = 48
+        Width = 171
+        Caption = 'Test MD'
+        OnClick = ButtonTestMDClick
+        TabOrder = 7
       end
     end
   end

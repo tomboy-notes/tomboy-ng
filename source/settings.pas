@@ -852,7 +852,9 @@ var  T : string;
     function IsMono(FontName : String) : boolean;
     begin
       Label1.Canvas.Font.Name := FontName;
-      result := Label1.Canvas.TextWidth('i') = Label1.Canvas.TextWidth('w');
+      result := Label1.canvas.Font.IsMonoSpace;
+
+      // result := Label1.Canvas.TextWidth('i') = Label1.Canvas.TextWidth('w');
       // I have no idea whats happening here, that line, above, somehow triggers a call
       // to the RadioFileSync OnChange handler. In turn, that calls SettingsChanged before
       // we have setup its config path.  For now, because its not needed yet, I have
@@ -862,8 +864,8 @@ var  T : string;
     function IsDifferentSizes() : boolean;     // in case they are old non scalable, unlikely but ....
     var
         ASize : integer;
-    begin
-        Label1.Canvas.Font.Size := 13;
+    begin                                      // ToDo : Oct 2020, remove some day.....
+        Label1.Canvas.Font.Size := 13;         // and compress this whole function ....
         ASize := Label1.Canvas.TextHeight('H');
         Label1.Canvas.Font.Size := 14;
         if ASize = Label1.Canvas.TextHeight('H')
@@ -879,7 +881,7 @@ begin
     Result := '';
     for T in FontNames do begin
         if not IsMono(T) then continue;
-        if not IsDifferentSizes() then continue;
+        // if not IsDifferentSizes() then continue;      // do not call, triggering some gtk warnings ....
         Result := T;
         exit;
     end;

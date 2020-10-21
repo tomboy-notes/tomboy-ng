@@ -15,6 +15,7 @@ type
 		{ TFormMain }
 
         TFormMain = class(TForm)
+				ButtonTestMD: TButton;
 				ButtonNextSync: TButton;
 				ButtonPushUp: TButton;
 				ButtonPullDown: TButton;
@@ -71,6 +72,7 @@ type
 				TabNextCloud: TTabSheet;
 				procedure ButtonPullDownClick(Sender: TObject);
     procedure ButtonPushUpClick(Sender: TObject);
+	procedure ButtonTestMDClick(Sender: TObject);
                 procedure CheckListBox1Click(Sender: TObject);
                 procedure CheckListImportFilesClick(Sender: TObject);
                 procedure CheckListImportFilesClickCheck(Sender: TObject);
@@ -175,12 +177,7 @@ end;
 procedure TFormMain.FormShow(Sender: TObject);
 begin
     //CheckListBox1.AllowGrayed:=true;
-
 end;
-
-
-
-
 
 procedure TFormMain.ProcessDirectory;
 var
@@ -468,6 +465,20 @@ end;
 procedure TFormMain.ButtonPushUpClick(Sender: TObject);
 begin
     DoNextSyncAction('PUSHUP');
+end;
+
+procedure TFormMain.ButtonTestMDClick(Sender: TObject);
+var
+    Im : TImportNotes;
+    St : TStringList;
+begin
+    Im := TImportNotes.Create;
+    St := TStringList.Create;
+    St.LoadFromFile('test.md');
+    // not seting DestinationDir, CrDate, CLDate
+    Im.MDtoNote(St, 'Some unimportant Title', 'Imported');
+    St.Free;
+    Im.free;
 end;
 
 procedure TFormMain.ButtonPullDownClick(Sender: TObject);

@@ -1318,6 +1318,10 @@ var
     // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
     Result := True;
+
+    //exit;                              // ToDo : remove this, leaks before here !
+
+
     //DebugMeta := True;
     if not LoadRemoteRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of

@@ -199,12 +199,12 @@ begin
                     Strs.Free;
                     Strs := TStringList.Create;
                     Strs.text := StringReplace(NRec.Content,'\n',Lineending,[rfReplaceAll, rfIgnoreCase]);
-                    if Strs.count > 1 then begin
-                        Strs.SaveToFile(inttostr(Downloads[i]^.SID) + '.md');
+                    if Strs.count > 1 then begin                                     // here, &, < and > are unescaped.
+                        Strs.SaveToFile(inttostr(Downloads[i]^.SID) + '.md');        // ToDo : remove this
                         Imp := TImportNotes.create;
                         Imp.Mode     := 'markdown';
-                        Imp.Notebook := NRec.category;
-                                                                                    // And further testing, a renamed NextCloud note does not get a new timestamp ?
+                        Imp.Notebook := NRec.category;      // here, &, < and > are unescaped.
+                                                            // bug logged, a renamed NextCloud note does not get a new timestamp ?
                         Imp.LCDate   := Downloads[i]^.LastChange;
                         Imp.CrDate   := Downloads[i]^.CreateDate;
                         Imp.DestinationDir := NotesDir;
@@ -215,11 +215,10 @@ begin
                         if not FileExistsUTF8(NotesDir + Downloads[i]^.ID + '.note') then begin
                             SayDebug('ERROR - NextCloud.DownloadNotes did not create '
                                         + NotesDir + Downloads[i]^.ID + '.note', True);
-                            // exit(false);
                             Downloads.Delete(i);
                             continue;
                         end;
-                        // if we re recieve an empty note or fail to convert to TB, we remove the entry, can try next time.
+                        // if we recieve an empty note or fail to convert to TB, we remove the entry, can try next time.
 		            end else begin
                         Saydebug('ERROR, Nextcloud DownloadNotes, cannot convert from empty MD SID='
                                         + inttostr(Downloads[i]^.SID) + ' ID=' + Downloads[i]^.ID, True);
@@ -326,7 +325,7 @@ end;
 
 
 procedure TNextCloudSync.ReadRemoteManifest(NoteMeta : TNoteInfoList);
-// We iterate over the remote manifest, for each item look for an entry in the MMD.
+// We iterate over the "remote" manifest, for each item look for an entry in the MMD.
 // If its present in both MMD and the RemoteManifest but not in note dir, its a
 // SyDeleteRemote. Esle, if found, decide about Action, SyNothing, SyDownload.
 var
@@ -620,6 +619,11 @@ begin
             if jObj.Find('modified', jNumb) then begin
                 pNote^.LastChangeGMT := UnixToDateTime(jNumb.AsInteger);            // LastChangeGMT
                 pNote^.LastChange := ModifiedToTBDate(jNumb.AsInteger);             // LastChange
+
+
+                saydebug('NCS JData2NoteList Last Change Date ' + pNote^.LastChange, True);            // ToDo : remove this
+
+
 			end;
             pNote^.CreateDate := pNote^.LastChange;                                 // CreateDate, will update from local note if possible
             pNote^.Rev := 1;                                                        // Rev

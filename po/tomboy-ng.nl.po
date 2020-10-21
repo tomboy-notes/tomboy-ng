@@ -1144,6 +1144,10 @@ msgctxt "tformsync.labelfilesyncinfo2.caption"
 msgid "LabelFileSyncInfo2"
 msgstr ""
 
+#: tformsync.labelprogress.caption
+msgid "LabelProgress"
+msgstr ""
+
 #: tformsync.labelslow.caption
 msgid "LabelSlow"
 msgstr ""

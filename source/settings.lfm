@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 578
+  Left = 697
   Height = 525
-  Top = 147
+  Top = 170
   Width = 588
   BorderIcons = []
   Caption = 'Form Caption'
@@ -103,28 +103,28 @@ object Sett: TSett
       end
       object CheckAutostart: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Top = 272
-        Width = 160
+        Width = 158
         Caption = 'Autostart at Logon'
         OnChange = CheckAutostartChange
         TabOrder = 2
       end
       object CheckShowSearchAtStart: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Top = 312
-        Width = 174
+        Width = 172
         Caption = 'Show Search at Start'
         OnChange = CheckReadOnlyChange
         TabOrder = 3
       end
       object CheckShowSplash: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Hint = 'Always shown if error loading notes.'
         Top = 352
-        Width = 172
+        Width = 170
         Caption = 'Show Splash at Start'
         Checked = True
         OnChange = CheckReadOnlyChange
@@ -135,9 +135,9 @@ object Sett: TSett
       end
       object CheckShowTomdroid: TCheckBox
         Left = 16
-        Height = 24
+        Height = 23
         Top = 224
-        Width = 283
+        Width = 281
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
         TabOrder = 5
@@ -413,7 +413,7 @@ object Sett: TSett
           OnClick = SpeedSetupSyncClick
         end
         object CheckBoxAutoSync: TCheckBox
-          Left = 296
+          Left = 432
           Height = 23
           Hint = 'Sync, if possible once an hour.'
           Top = 131

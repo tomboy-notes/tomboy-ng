@@ -23,6 +23,7 @@ unit import_notes;
 
 { HISTORY
     2020/09/23 Escape nasty char from note title before saving as TB format.
+    2020/10/13 As above for Category/Notebook name. Sigh ....
 
 }
 
@@ -74,7 +75,7 @@ type
                                 fill them in down below with now() They are the string Tomboy date format
                                 eg '2020-05-19T18:58:37.9513193+10:00', ISO something or another. }
         CrDate, LCDate : string;
-        Notebook       : string;        // We only support one notebook in this mode. A Nextcloud limitation.
+        Notebook       : string;        // We only support one notebook in this mode. A Nextcloud limitation. Needs escaping ....
         Mode           : string;        // ie plaintext, markdown ....
         ImportNames : TStringList;      // A list of full file names to import, default filename will become title
         FirstLineTitle : boolean;       // if true, first line of note becomes title
@@ -184,7 +185,7 @@ begin
     Cont.Add('    	<y>30</y>');
     Cont.Add('      <tags>');
     if Notebook <> '' then
-        Cont.Add('        <tag>system:notebook:' + Notebook + '</tag>');
+        Cont.Add('        <tag>system:notebook:' + RemoveBadXMLCharacters(Notebook) + '</tag>');
     Cont.Add('      </tags>');
     Cont.Add('    	<open-on-startup>False</open-on-startup>');
     Cont.Add('</note>');
