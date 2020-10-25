@@ -749,7 +749,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="34">
+    <Units Count="33">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -888,6 +888,7 @@
       <Unit22>
         <Filename Value="k_prn.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="K_Prn"/>
       </Unit22>
       <Unit23>
         <Filename Value="tb_sdiff.pas"/>
@@ -906,48 +907,44 @@
         <IsPartOfProject Value="True"/>
       </Unit25>
       <Unit26>
-        <Filename Value="transnet.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit26>
-      <Unit27>
         <Filename Value="resourcestr.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ResourceStr"/>
-      </Unit27>
-      <Unit28>
+      </Unit26>
+      <Unit27>
         <Filename Value="syncerror.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormSyncError"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SyncError"/>
-      </Unit28>
-      <Unit29>
+      </Unit27>
+      <Unit28>
         <Filename Value="colours.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormColours"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="cli.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit29>
       <Unit30>
-        <Filename Value="cli.pas"/>
+        <Filename Value="notifier.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit30>
       <Unit31>
-        <Filename Value="notifier.pas"/>
+        <Filename Value="libnotify.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit31>
       <Unit32>
-        <Filename Value="libnotify.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit32>
-      <Unit33>
         <Filename Value="rollback.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormRollBack"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RollBack"/>
-      </Unit33>
+      </Unit32>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

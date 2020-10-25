@@ -8,7 +8,7 @@ object FormColours: TFormColours
   ClientWidth = 450
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.1.0.0'
   object KMemo1: TKMemo
     Left = 8
     Height = 168
@@ -226,6 +226,6 @@ object FormColours: TFormColours
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 320
+    Left = 320
   end
 end

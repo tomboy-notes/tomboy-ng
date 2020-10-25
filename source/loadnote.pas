@@ -1,34 +1,19 @@
 unit LoadNote;
-{
- * Copyright (C) 2017 David Bannon
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-}
+{   Copyright (C) 2017-2020 David Bannon
 
-{   This unit is responsible for loading a note into the passed Richmemo. The
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+    This unit is responsible for loading a note into the passed Richmemo. The
 	note is expected to be in Tomboy's XML format.
 	Note that the class expects a few things to be passed to it, after creation
 	that it will need before you call LoadNote().
-}
 
-{	20170928 - showed it how to set the title during loading rather than afterwards.
+    History -
+	20170928 - showed it how to set the title during loading rather than afterwards.
 	saves about 200mS in a big (20K) file.
 
 	20171003 - Added a line in load file to drop any CR (#13) on the floor. Otherwise

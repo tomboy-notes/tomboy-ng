@@ -1,16 +1,23 @@
 {$MODE objfpc}{$H+}
 unit hunspell;
 
-{	Hunspell interface.
-	Based on code that seems to appear in lots of places in the Lazarus Forum
-    and elsewhere.
+{	Copyright (C) 2017-2020 David Bannon and others.
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+	Parts Based on code that seems to appear in lots of places in the Lazarus Forum
+    and elsewhere. As such, its assumed to be free to use by anyone for any purpose.
+
+
+    ------------------
+
+    Hunspell interface.
 
     With additions and corrections by dbannon to make it a little easier to use.
 
-    As such, its assumed to be free to use by anyone for any purpose.
-}
-
-{	A Unit to connect to the hunspell library and check some spelling.
+	A Unit to connect to the hunspell library and check some spelling.
 	First, create the class, it will try and find a library to load.
     Check ErrorMessage.
     Then call SetDictionary(), with a full filename of the dictionary to use.
@@ -270,12 +277,6 @@ begin
     UTF8Delete(FullAff, UTF8Length(FullAff) - 2, 3);
     FullAff := FullAff + 'aff';
     if not FileExistsutf8(FullAFF) then exit();
-    {
-    I have seen an access violaton occasionally in the next l
-    reproducable. I think it happens when a new startup and,
-    ShowLinks on and then go to Spell tab and choose a dictio
-    OK, Nov 2018, think I got it ....
-    }
     try
         if assigned(Speller) then begin
                 hunspell_destroy(Speller);

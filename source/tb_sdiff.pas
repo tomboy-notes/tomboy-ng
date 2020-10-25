@@ -1,11 +1,15 @@
 unit TB_SDiff;
-{
+{    Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
     A unit that can display differences between two similar notes.
-      *  Copyright (C) 2018 David Bannon
-      *  See attached licence file.
 
-
-    User can choose to DoNothing, use First (Remote) or Second (Local)
+    User can choose to use First (Remote) or Second (Local)
 
     // Use Remote, Yellow is mrYes, File1
     // Use Local, Aqua is mrNo, File2

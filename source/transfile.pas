@@ -1,9 +1,14 @@
 unit transfile;
 
-{ A unit that does the file transfer side of a FileSync operation
-  *  Copyright (C) 2018 David Bannon
-  *  See attached licence file.
+{   Copyright (C) 2017-2020 David Bannon
 
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+  A unit that does the file transfer side of a FileSync operation
   HISTORY
   2018/10/25  Much testing, support for Tomdroid.
   2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341

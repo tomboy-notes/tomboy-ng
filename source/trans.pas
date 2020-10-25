@@ -1,9 +1,15 @@
 unit trans;
 
-{ Contains parent, abstract class that does Transport part of tomboy-ng sync.
+{   Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+  Contains parent, abstract class that does Transport part of tomboy-ng sync.
   It moves files around, one way or another, determined by its children.
-  *  Copyright (C) 2018 David Bannon
-  *  See attached licence file.
 
   HISTORY
     2018/10/25  Much testing, support for Tomdroid.

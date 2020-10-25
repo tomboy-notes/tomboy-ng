@@ -1,8 +1,14 @@
 unit transandroid;
 
-{ A unit that does the file transfer side of a very limited one to one Tomdroid Sync
-  *  Copyright (C) 2018 David Bannon
-  *  See attached licence file.
+{   Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+  A unit that does the file transfer side of a very limited one to one Tomdroid Sync
 
   HISTORY
   2018/10/28    Improve error checking on SetServerID(), needs to be applied to

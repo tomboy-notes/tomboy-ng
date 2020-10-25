@@ -1,8 +1,12 @@
 unit sync;
-{
-    A Unit to manage tomboy-ng sync behaviour.
-    Copyright (C) 2018 David Bannon
-    See attached licence file.
+{   Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
 }
 
 {$mode objfpc}{$H+}

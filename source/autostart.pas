@@ -1,5 +1,15 @@
 unit autostart;
-{
+{   Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+    A unit to set and unset auto start of the tomboy-ng application on Windows
+    and Linux.
+
     2019/05/24  Display strings all (?) moved to resourcestrings
     2020/05/18  Windows binaries no longer have 32 or 64 as part of binary name
 
