@@ -99,6 +99,10 @@ msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
 msgstr ""
 
+#: resourcestr.rscontentdated
+msgid "Content Dated"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
@@ -270,6 +274,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr ""
 
+#: resourcestr.rsnotavailable
+msgid "Not Available"
+msgstr ""
+
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
@@ -340,6 +348,10 @@ msgstr ""
 #: resourcestr.rsrenamefailed
 msgctxt "resourcestr.rsrenamefailed"
 msgid "ERROR, could not rename Backup File "
+msgstr ""
+
+#: resourcestr.rsrollbackintro
+msgid "You can roll back to previous version of this note"
 msgstr ""
 
 #: resourcestr.rsrunningsync
@@ -542,6 +554,10 @@ msgstr ""
 msgid "EditBoxForm"
 msgstr ""
 
+#: teditboxform.kmemo1.hint
+msgid "Recover "
+msgstr ""
+
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr ""
@@ -692,6 +708,10 @@ msgstr ""
 
 #: teditboxform.speedbuttontools.hint
 msgid "Tools - Sync, Export, Spell"
+msgstr ""
+
+#: teditboxform.speedrollback.hint
+msgid "Roll Back"
 msgstr ""
 
 #: tformbackupview.buttondelete.caption
@@ -914,6 +934,39 @@ msgstr ""
 msgid "Recover Snapshot"
 msgstr ""
 
+#: tformrollback.caption
+msgid "FormRollBack"
+msgstr ""
+
+#: tformrollback.labelopn.caption
+msgid "LabelOpn"
+msgstr ""
+
+#: tformrollback.labelopntitle.caption
+msgid "LabelOpnTitle"
+msgstr ""
+
+#: tformrollback.labelttl.caption
+msgid "Labelttl"
+msgstr ""
+
+#: tformrollback.labelttltitle.caption
+msgid "LabelttlTitle"
+msgstr ""
+
+#: tformrollback.speedcancel.caption
+msgctxt "tformrollback.speedcancel.caption"
+msgid "Cancel"
+msgstr ""
+
+#: tformrollback.speedrolltoopen.caption
+msgid "Opening Backup"
+msgstr ""
+
+#: tformrollback.speedrolltotitle.caption
+msgid "Title Change Backup"
+msgstr ""
+
 #: tformsdiff.bitbtnuselocal.caption
 msgid "Use Local"
 msgstr ""
@@ -1028,6 +1081,40 @@ msgstr ""
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
+msgstr ""
+
+#: tformsync.editnexthostaddress.text
+msgid "10.85.2.2"
+msgstr ""
+
+#: tformsync.label3.caption
+msgid "Host Address"
+msgstr ""
+
+#: tformsync.label4.caption
+msgid "User Name"
+msgstr ""
+
+#: tformsync.label5.caption
+msgid "Password"
+msgstr ""
+
+#: tformsync.labelfilesyncinfo1.caption
+msgctxt "tformsync.labelfilesyncinfo1.caption"
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tformsync.labelfilesyncinfo2.caption
+msgctxt "tformsync.labelfilesyncinfo2.caption"
+msgid "LabelFileSyncInfo2"
+msgstr ""
+
+#: tformsync.labelprogress.caption
+msgid "LabelProgress"
+msgstr ""
+
+#: tformsync.labelslow.caption
+msgid "LabelSlow"
 msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
@@ -1556,10 +1643,12 @@ msgid "not configured"
 msgstr ""
 
 #: tsett.labelfilesyncinfo1.caption
+msgctxt "tsett.labelfilesyncinfo1.caption"
 msgid "LabelFileSyncInfo1"
 msgstr ""
 
 #: tsett.labelfilesyncinfo2.caption
+msgctxt "tsett.labelfilesyncinfo2.caption"
 msgid "LabelFileSyncInfo2"
 msgstr ""
 

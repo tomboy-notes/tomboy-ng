@@ -1,28 +1,13 @@
 unit Note_Lister;
-{
- * Copyright (C) 2017 David Bannon
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-}
+{    Copyright (C) 2017-2020 David Bannon
 
-{	A class that knows how to read a directory full of notes. It keeps that list
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+    A class that knows how to read a directory full of notes. It keeps that list
 	internally, unsorted (easier to sort in the display grid). Note details (
     Title, LastChange) can be updated (eg when a note is saved).
 
@@ -832,7 +817,7 @@ begin
 	                ReadXMLFile(Doc, Dir + FileName);
 	  	            Node := Doc.DocumentElement.FindNode('title');
 	      	        NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
-	                    //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + ']');
+	                if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + '] ID is ' + FileName);
 	                Node := Doc.DocumentElement.FindNode('last-change-date');
 	                NoteP^.LastChange := Node.FirstChild.NodeValue;
 	                {if (length(NoteP^.LastChange) <> 33) or (length(NoteP^.LastChange) <> 27) then begin
@@ -895,7 +880,10 @@ end;
 
 procedure TNoteLister.IndexThisNote(const ID: String);
 begin
+    DebugMode := True;
+    debugln('TNoteLister.IndexThisNote');
     GetNoteDetails(WorkingDir, CleanFileName(ID){, TStringList(nil)});
+    DebugMode := False;
 end;
 
 
@@ -1427,8 +1415,21 @@ begin
 end;
 
 function TNoteList.Add(ANote: PNote): integer;
+{var
+  ExtNote : PNote; }
 begin
-    result := inherited Add(ANote);
+{    ExtNote := FindID(ANote^.ID);
+    if ExtNote <> Nil then begin
+        ExtNote^.CreateDate := ANote^.CreateDate;
+        ExtNote^.IsTemplate:= ANote^.IsTemplate;
+        ExtNote^.LastChange := ANote^.LastChange ;
+        ExtNote^.OpenNote := ANote^.OpenNote ;
+        ExtNote^.OpenOnStart := ANote^.OpenOnStart ;
+        ExtNote^.Title := ANote^.Title ;
+        dispose(ANote);
+        Result := 0;
+    end else }
+        result := inherited Add(ANote);
 end;
 
 function TNoteList.FindID(const ID: ANSIString): PNote;

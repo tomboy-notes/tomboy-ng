@@ -1,0 +1,84 @@
+object FormRollBack: TFormRollBack
+  Left = 1050
+  Height = 274
+  Top = 251
+  Width = 586
+  Caption = 'FormRollBack'
+  ClientHeight = 274
+  ClientWidth = 586
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '2.1.0.0'
+  object SpeedCancel: TSpeedButton
+    Left = 25
+    Height = 32
+    Top = 82
+    Width = 200
+    Caption = 'Cancel'
+    OnClick = SpeedCancelClick
+  end
+  object SpeedRollToOpen: TSpeedButton
+    AnchorSideLeft.Control = SpeedCancel
+    AnchorSideTop.Control = SpeedCancel
+    AnchorSideTop.Side = asrBottom
+    Left = 25
+    Height = 32
+    Top = 144
+    Width = 200
+    BorderSpacing.Top = 30
+    Caption = 'Opening Backup'
+    OnClick = SpeedRollToOpenClick
+  end
+  object SpeedRollToTitle: TSpeedButton
+    AnchorSideLeft.Control = SpeedCancel
+    AnchorSideTop.Control = SpeedRollToOpen
+    AnchorSideTop.Side = asrBottom
+    Left = 25
+    Height = 32
+    Top = 206
+    Width = 200
+    BorderSpacing.Top = 30
+    Caption = 'Title Change Backup'
+    OnClick = SpeedRollToTitleClick
+  end
+  object LabelOpn: TLabel
+    Left = 248
+    Height = 19
+    Top = 157
+    Width = 68
+    Caption = 'LabelOpn'
+    ParentColor = False
+  end
+  object Labelttl: TLabel
+    Left = 248
+    Height = 19
+    Top = 219
+    Width = 54
+    Caption = 'Labelttl'
+    ParentColor = False
+  end
+  object LabelOpnTitle: TLabel
+    Left = 249
+    Height = 19
+    Top = 133
+    Width = 100
+    Caption = 'LabelOpnTitle'
+    ParentColor = False
+  end
+  object LabelttlTitle: TLabel
+    Left = 249
+    Height = 19
+    Top = 192
+    Width = 86
+    Caption = 'LabelttlTitle'
+    ParentColor = False
+  end
+  object Label1: TLabel
+    Left = 28
+    Height = 19
+    Top = 42
+    Width = 47
+    Caption = 'Label1'
+    ParentColor = False
+  end
+end

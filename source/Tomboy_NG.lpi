@@ -749,7 +749,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="33">
+    <Units Count="34">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -941,6 +941,13 @@
         <Filename Value="libnotify.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit32>
+      <Unit33>
+        <Filename Value="rollback.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormRollBack"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="RollBack"/>
+      </Unit33>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

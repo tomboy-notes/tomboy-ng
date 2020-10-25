@@ -119,6 +119,10 @@ msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
 msgstr ""
 
+#: resourcestr.rscontentdated
+msgid "Content Dated"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 #, fuzzy
 msgctxt "resourcestr.rscopyfailed"
@@ -310,6 +314,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Er is een nieuwere versie aanwezig in de hoofdrepo"
 
+#: resourcestr.rsnotavailable
+msgid "Not Available"
+msgstr ""
+
 #: resourcestr.rsnotealreadyinrepo
 #, fuzzy
 msgctxt "resourcestr.rsnotealreadyinrepo"
@@ -391,6 +399,10 @@ msgstr "Het bestand is hersteld. Je moet mogelijk verversen (of de app sluiten e
 msgctxt "resourcestr.rsrenamefailed"
 msgid "ERROR, could not rename Backup File "
 msgstr "FOUT: kan naam van back-upbestand niet wijzigen"
+
+#: resourcestr.rsrollbackintro
+msgid "You can roll back to previous version of this note"
+msgstr ""
 
 #: resourcestr.rsrunningsync
 #, fuzzy
@@ -603,6 +615,10 @@ msgstr ""
 msgid "EditBoxForm"
 msgstr "EditBoxForm"
 
+#: teditboxform.kmemo1.hint
+msgid "Recover "
+msgstr ""
+
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr "Alleen-lezen"
@@ -754,6 +770,10 @@ msgstr "Lettergrootte, vetgedrukt, cursief, etc."
 #: teditboxform.speedbuttontools.hint
 msgid "Tools - Sync, Export, Spell"
 msgstr "Hulpmiddelen - synchroniseren, exporteren, spellingcontrole"
+
+#: teditboxform.speedrollback.hint
+msgid "Roll Back"
+msgstr ""
 
 #: tformbackupview.buttondelete.caption
 #, fuzzy
@@ -1001,6 +1021,40 @@ msgstr ""
 msgid "Recover Snapshot"
 msgstr "Momentopname herstellen"
 
+#: tformrollback.caption
+msgid "FormRollBack"
+msgstr ""
+
+#: tformrollback.labelopn.caption
+msgid "LabelOpn"
+msgstr ""
+
+#: tformrollback.labelopntitle.caption
+msgid "LabelOpnTitle"
+msgstr ""
+
+#: tformrollback.labelttl.caption
+msgid "Labelttl"
+msgstr ""
+
+#: tformrollback.labelttltitle.caption
+msgid "LabelttlTitle"
+msgstr ""
+
+#: tformrollback.speedcancel.caption
+#, fuzzy
+msgctxt "tformrollback.speedcancel.caption"
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: tformrollback.speedrolltoopen.caption
+msgid "Opening Backup"
+msgstr ""
+
+#: tformrollback.speedrolltotitle.caption
+msgid "Title Change Backup"
+msgstr ""
+
 #: tformsdiff.bitbtnuselocal.caption
 msgid "Use Local"
 msgstr ""
@@ -1117,6 +1171,40 @@ msgstr "Opslaan en synchroniseren"
 msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchroniseren"
+
+#: tformsync.editnexthostaddress.text
+msgid "10.85.2.2"
+msgstr ""
+
+#: tformsync.label3.caption
+msgid "Host Address"
+msgstr ""
+
+#: tformsync.label4.caption
+msgid "User Name"
+msgstr ""
+
+#: tformsync.label5.caption
+msgid "Password"
+msgstr ""
+
+#: tformsync.labelfilesyncinfo1.caption
+msgctxt "tformsync.labelfilesyncinfo1.caption"
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tformsync.labelfilesyncinfo2.caption
+msgctxt "tformsync.labelfilesyncinfo2.caption"
+msgid "LabelFileSyncInfo2"
+msgstr ""
+
+#: tformsync.labelprogress.caption
+msgid "LabelProgress"
+msgstr ""
+
+#: tformsync.labelslow.caption
+msgid "LabelSlow"
+msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
@@ -1636,10 +1724,8 @@ msgid "When a conflict is detected between a local note and remote one :"
 msgstr "Als er een conflict is tussen een lokale notitie en"
 
 #: tsett.label4.caption
-#, fuzzy
-#| msgid "a note on the configured synchronisation server :"
 msgid "Repo : "
-msgstr "een notitie op de synchronisatieserver:"
+msgstr ""
 
 #: tsett.label5.caption
 msgid "Days per snapshot"
@@ -1668,10 +1754,12 @@ msgid "not configured"
 msgstr "niet ingesteld"
 
 #: tsett.labelfilesyncinfo1.caption
+msgctxt "tsett.labelfilesyncinfo1.caption"
 msgid "LabelFileSyncInfo1"
 msgstr ""
 
 #: tsett.labelfilesyncinfo2.caption
+msgctxt "tsett.labelfilesyncinfo2.caption"
 msgid "LabelFileSyncInfo2"
 msgstr ""
 

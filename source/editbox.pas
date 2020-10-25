@@ -1,26 +1,10 @@
 unit EditBox;
 
-{
- * Copyright (C) 2017 David Bannon
- *
- * Permission is hereby granted, free of charge, to any person obtaining 
- * a copy of this software and associated documentation files (the 
- * "Software"), to deal in the Software without restriction, including 
- * without limitation the rights to use, copy, modify, merge, publish, 
- * distribute, sublicense, and/or sell copies of the Software, and to 
- * permit persons to whom the Software is furnished to do so, subject to 
- * the following conditWSpace - StartingAtions: 
- *  
- * The above copyright notice and this permission notice shall be 
- * included in all copies or substantial portions of the Software. 
- *  
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+{   Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html.
 }
 
 {	This form represents one note being read or edited. It keeps its note in
@@ -213,6 +197,7 @@ unit EditBox;
     2020/08/06  Call a paste in ShowForm, even in SNM, assertion is better than no copying.
                 Display external links in single note mode.
     2020/08/19  Fixed bug affecting end of weblink in single note mode.
+    2020/10/22  Small bug where title markup can be smeared down several lines.
 }
 
 
@@ -278,6 +263,7 @@ type
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
         ButtMainTBMenu: TSpeedButton;
+		SpeedRollBack: TSpeedButton;
         SpeedButtonDelete: TSpeedButton;
         SpeedButtonLink: TSpeedButton;
         SpeedButtonNotebook: TSpeedButton;
@@ -336,6 +322,7 @@ type
         procedure MenuLargeClick(Sender: TObject);
         procedure MenuNormalClick(Sender: TObject);
         procedure MenuSmallClick(Sender: TObject);
+		procedure SpeedRollBackClick(Sender: TObject);
         procedure SpeedButtonDeleteClick(Sender: TObject);
         procedure SpeedButtonLinkClick(Sender: TObject);
         procedure SpeedButtonNotebookClick(Sender: TObject);
@@ -346,6 +333,7 @@ type
         procedure TimerHousekeepingTimer(Sender: TObject);
 
     private
+        TitleHasChanged : boolean;
         // a record of the cursor position before last click, used by shift click to select
         MouseDownPos : integer;
         CreateDate : string;		// Will be '' if new note
@@ -366,9 +354,9 @@ type
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
         { If Toggle is true, sets bullets to what its currently no. Otherwise sets to TurnOn}
         procedure BulletControl(const Toggle, TurnOn: boolean);
-        { Looks between StartS and EndS, marking any http link. Byte, not char indexes.
-          A weblink has leading and trailing whitespace, starts with http:// or https://
-          and has a dot and char after the dot. We expect kmemo1 is locked at this stage.}
+                    { Looks between StartS and EndS, marking any http link. Byte, not char indexes.
+                    A weblink has leading and trailing whitespace, starts with http:// or https://
+                    and has a dot and char after the dot. We expect kmemo1 is locked at this stage.}
         procedure CheckForHTTP(const PText: pchar; const StartS, EndS: longint);
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
@@ -388,32 +376,32 @@ type
         // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
 
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
-        { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
-          Http or local links, we need to clear the colour and underline of any text nearby
-          that have been 'smeared' from user editing at the end of a link. When this happens,
-          new text appears within the link block, bad .....  }
+                            { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
+                            Http or local links, we need to clear the colour and underline of any text nearby
+                            that have been 'smeared' from user editing at the end of a link. When this happens,
+                            new text appears within the link block, bad .....  }
         procedure ClearNearLink(const StartS, EndS: integer);
         function DoCalculate(CalcStr: string): string;
         procedure DoHousekeeping();
-        { Returns a long random file name, Not checked for clashes }
+                            { Returns a UUID suitable for a file name }
         function GetAFilename() : ANSIString;
         procedure CheckForLinks(const StartScan : longint = 1; EndScan : longint = 0);
-        { Returns with the title, that is the first line of note, returns False if title is empty }
+                            { Returns with the title, that is the first line of note, returns False if title is empty }
         function GetTitle(out TheTitle: ANSIString): boolean;
         procedure ImportNote(FileName : string);
         procedure InitiateCalc();
-        { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
+                            { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
         function LoadSingleNote() : boolean;
-        { Searches for all occurances of Term in the KMemo text, makes them Links
-          Does not bother with single char terms. Expects KMemo1 to be already locked.}
+                            { Searches for all occurances of Term in the KMemo text, makes them Links
+                            Does not bother with single char terms. Expects KMemo1 to be already locked.}
         procedure MakeAllLinks(const PText: PChar; const Term: ANSIString;
             const StartScan: longint=1; EndScan: longint=0);
 
-        { Makes a link at passed position as long as it does not span beyond a block.
-            And if it does span beyond one block, I let that go through to the keeper.
-            Making a Hyperlink, deleting the origional text is a very slow process so we
-            make heroic efforts to avoid having to do so. Index is char count, not byte.
-            Its a SelectionIndex.  Note we no longer need pass this p the Link, remove ? }
+                            { Makes a link at passed position as long as it does not span beyond a block.
+                            And if it does span beyond one block, I let that go through to the keeper.
+                            Making a Hyperlink, deleting the origional text is a very slow process so we
+                            make heroic efforts to avoid having to do so. Index is char count, not byte.
+                            Its a SelectionIndex.  Note we no longer need pass this p the Link, remove ? }
 		procedure MakeLink(const Index, Len: longint);
 
                             { Makes sure the first (and only the first) line is marked as Title
@@ -421,29 +409,28 @@ type
                             Note that when a new note is loaded from disk, this function is not called,
                             the Load unit knows how to do it itself. Saves 200ms with a big (20K) note. }
         procedure MarkTitle();
-        { Returns true if current cursor is 'near' a bullet item. That could be because we are
-  		on a Para Marker thats a Bullet and/or either Leading or Trailing Para is a Bullet.
-  		We return with IsFirstChar true if we are on the first visible char of a line (not
-  		necessarily a bullet line). If we return FALSE, passed parameters may not be set. }
+                            { Returns true if current cursor is 'near' a bullet item. That could be because we are
+  		                    on a Para Marker thats a Bullet and/or either Leading or Trailing Para is a Bullet.
+  		                    We return with IsFirstChar true if we are on the first visible char of a line (not
+  		                    necessarily a bullet line). If we return FALSE, passed parameters may not be set. }
 		function NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara: Boolean;
             	out BlockNo, TrailOffset, LeadOffset: longint): boolean;
-        { Responds when user clicks on a hyperlink }
+                            { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
-        // A method called by this or other apps to get what we might have selected
-        procedure PrimaryCopy(const RequestedFormatID: TClipboardFormat;
-            Data: TStream);
-        // Pastes into KMemo whatever is returned by the PrimarySelection system.
+                            { A method called by this or other apps to get what we might have selected }
+        procedure PrimaryCopy(const RequestedFormatID: TClipboardFormat; Data: TStream);
+                            { Pastes into KMemo whatever is returned by the PrimarySelection system. }
         procedure PrimaryPaste(SelIndex: integer);
-        { Saves the note in KMemo1, must have title but can make up a file name if needed
-          If filename is invalid, bad GUID, asks user if they want to change it (they do !)
-          WeAreClosing indicates that the whole application is closing (not just this note)
-          We always save the note on FormDestroy or application exit, even if not dirty to
-          update the position and OOS data.  We used to call UpdateNote in the hope its quicker
-          but it forgets to record notebook membership. Revist some day ....}
+                            { Saves the note in KMemo1, must have title but can make up a file name if needed
+                            If filename is invalid, bad GUID, asks user if they want to change it (they do !)
+                            WeAreClosing indicates that the whole application is closing (not just this note)
+                            We always save the note on FormDestroy or application exit, even if not dirty to
+                            update the position and OOS data.  We used to call UpdateNote in the hope its quicker
+                            but it forgets to record notebook membership. Revist some day ....}
 		procedure SaveTheNote(WeAreClosing: boolean=False);
-        	{ Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
+        	                { Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
         function NewNoteTitle() : ANSIString;
-                 { Saves the note as text or rtf, consulting user about path and file name }
+                            { Saves the note as text or rtf, consulting user about path and file name }
         procedure SaveNoteAs(TheExt: string);
         procedure MarkDirty();
         function CleanCaption() : ANSIString;
@@ -455,9 +442,10 @@ type
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
         // Set by the calling process.
-        SingleNoteFileName : string;          // Carefull, cli has a real global version
+        SingleNoteFileName : string;        // Carefull, cli has a real global version
         SingleNoteMode : Boolean;
-        NoteFileName, NoteTitle : string;
+        NoteFileName : string;              // Will contain the full note name, path, ID and .note
+        NoteTitle : string;                 // only used during initial opening stage ?
         Dirty : boolean;
         Verbose : boolean;
         SearchedTerm : string;  // If not empty, opening is associated with a search, go straight there.
@@ -480,28 +468,25 @@ implementation
 {$R *.lfm}
 
 { TEditBoxForm }
-uses //RichMemoUtils,     // Provides the InsertFontText() procedure.
+uses
     LazUTF8,
     //LCLType,			// For the MessageBox
     keditcommon,        // Holds some editing defines
     settings,			// User settings and some defines used across units.
     SearchUnit,         // Is the main starting unit and the search tool.
-
 	LoadNote,           // Will know how to load a Tomboy formatted note.
-    {SyncGUI,}
     LazFileUtils,		// For ExtractFileName()
+    RollBack,           // RollBack form
     Spelling,
     NoteBook,
-    MainUnit,            // Not needed now for anything other than MainForm.Close()
+    MainUnit,           // Not needed now for anything other than MainForm.Close()
     SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
     Markdown,
     Index,              // An Index of current note.
     math,
-    //LazFileUtils,       // ToDo : UTF8 complient, unlike FileUtil ...
-    FileUtil, strutils,         // just for ExtractSimplePath ... ~#1620
-    // XMLRead, DOM, XMLWrite;     // For updating locations on a clean note (May 19, not needed ?)
-    LCLIntf;            // OpenUrl(
+    FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
+    LCLIntf;            // OpenUrl()
 
 
 const
@@ -593,6 +578,17 @@ begin
     NotebookPick.Left := Left;
     if mrOK = NotebookPick.ShowModal then MarkDirty();
     NotebookPick.Free;
+end;
+
+procedure TEditBoxForm.SpeedRollBackClick(Sender: TObject);
+begin
+    if FormRollBack.Visible then exit;          // Must not open model twice !
+    SaveTheNote();
+    FormRollBack.Left := left;
+    FormRollBack.Top := top;
+    FormRollBack.NoteFileName := NoteFileName;
+    FormRollBack.ShownBy := self;
+    FormRollBack.ShowModal;
 end;
 
 procedure TEditBoxForm.BulletControl(const Toggle, TurnOn : boolean);
@@ -938,10 +934,6 @@ procedure TEditBoxForm.MenuSmallClick(Sender: TObject);
 begin
     AlterFont(ChangeSize, Sett.FontSmall);
 end;
-
-
-
-
 
 procedure TEditBoxForm.MenuHugeClick(Sender: TObject);
 begin
@@ -1461,17 +1453,9 @@ begin
 //        SearchForm.MoveWindowHere(NoteTitle);
 end;
 
-	{ This gets called when the TrayMenu quit entry is clicked }
-    { No it does not, only when user manually closes this form. }
+    { called when user manually closes this form. }
 procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-{var
-    OutFile: TextFile; }
 begin
-{    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1292 ^^^^^^^^^^^^^');
-    AssignFile(OutFile, '/home/dbannon/closelogEditFormClose.txt');
-    Rewrite(OutFile);
-    writeln(OutFile, 'FormClose just closing ' + self.NoteTitle);
-    CloseFile(OutFile); }
     Release;
 end;
 
@@ -1571,7 +1555,6 @@ begin
             if (not SingleNoteMode) or Dirty then       // We always save, except in SingleNoteMode (where we save only if dirty)
                 SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
     SearchForm.NoteClosing(NoteFileName);
-
 end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
@@ -1621,8 +1604,9 @@ begin
         { Make sure user has not smeared Title charactistics to next line
           Scan back from cursor to end of title, if Title font, reset. }
         EndBlock := KMemo1.Blocks.IndexToBlockIndex(KMemo1.Selstart, Blar);
+        while (EndBlock < 10) and (EndBlock <  (KMemo1.Blocks.Count -2)) do inc(EndBlock);    // in case user has smeared several lines down.
         while EndBlock > BlocksInTitle do begin
-            if KMemo1.Blocks.Items[EndBlock].ClassNameIs('TKMemoTextBlock') and
+            if {KMemo1.Blocks.Items[EndBlock].ClassNameIs('TKMemoTextBlock') and }
                 (TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size = Sett.FontTitle) then begin
                     TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size := Sett.FontNormal;
                     TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Color := Sett.TextColour;
@@ -1939,19 +1923,18 @@ begin
     EndScan := CurserPos + LinkScanRange;
     if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);   // Danger - should be KMemo1.Blocks.Text !!!
     // TS1:=DateTimeToTimeStamp(Now);
-
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
-
     if ((BlocksInTitle + 10) > BlockNo) then begin
           // We don't check title if user is not close to it.
   	    MarkTitle();
   	    GetTitle(TempTitle);
+        if not ((TempTitle = caption) or ('* ' + TempTitle = Caption)) then
+            TitleHasChanged := True;
         if Dirty then
             Caption := '* ' + TempTitle
         else
             Caption := TempTitle;
     end;
-
     // OK, if we are in the first or second (?) block, no chance of a link anyway.
     if BlockNo < 2 then begin
         if KMemo1.Blocks.Count = 0 then 		// But bad things happen if its really empty !
@@ -2396,7 +2379,7 @@ begin
             VK_F : MenuItemFindClick(self);
             VK_L : SpeedButtonLinkClick(Sender);
             VK_D : InsertDate();
-            VK_N : SearchForm.OpenNote();      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
+            VK_N : SearchForm.OpenNote('');      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
             VK_E : InitiateCalc();
             VK_F4 : close;                      // close just this note, normal saving will take place
             VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
@@ -2596,7 +2579,7 @@ var
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    //T1, T2, T3, T4, T5, T6, T7 : dword;
+    // T1, T2, T3, T4, T5, T6, T7 : dword;
     // TestI : integer;
 begin
     //T1 := gettickcount64();
@@ -2625,6 +2608,11 @@ begin
     try
         Saver.CreateDate := CreateDate;
         if not GetTitle(Saver.Title) then exit();
+        // If title has changed, we make a backup copy.
+        if TitleHasChanged then begin
+            SearchForm.BackupNote(NoteFileName, 'ttl');
+            TitleHasChanged := False;
+		end;
         Caption := Saver.Title;
         //T2 := GetTickCount64();                   // 0mS
         KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo

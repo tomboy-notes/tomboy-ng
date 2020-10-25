@@ -1,6 +1,13 @@
 program Tomboy_NG;
 
-{ History
+{    Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+    History
 	27/12/2017 - Altered order to make the settings form the main one instead of RTSearch
 }
 
@@ -15,7 +22,7 @@ uses
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroid, markdown,
     Index, autostart, hunspell, sync, syncutils, transandroid,
-    ResourceStr, SyncError, colours, cli, notifier;
+    ResourceStr, SyncError, colours, cli, notifier, RollBack;
 
 {$R *.res}
 
@@ -34,6 +41,7 @@ begin
         Application.CreateForm(TFormMarkdown, FormMarkdown);
         Application.CreateForm(TFormSyncError, FormSyncError);
         Application.CreateForm(TFormColours, FormColours);
+		Application.CreateForm(TFormRollBack, FormRollBack);
         // Application.CreateForm(TNoteBookPick, NoteBookPick);
         // Application.CreateForm(TFormSpell, FormSpell);
         // Application.CreateForm(TEditBoxForm, EditBoxForm);
