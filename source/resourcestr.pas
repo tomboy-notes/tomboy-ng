@@ -1,14 +1,19 @@
 unit ResourceStr;
 
-{ Am attempt to move all resource strings into one unit to facilate
+{   Copyright (C) 2017-2020 David Bannon
+
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+  An attempt to move all resource strings into one unit to facilate
   reuse where possible.  Note that while arranged in blocks labeled
   with the unit that uses them, no reason to limit use to that. }
 
 {$mode objfpc}{$H+}
 
-{   *  Copyright (C) 2020 David Bannon
-    *  See attached licence file.
-}
 interface
 
 uses
@@ -77,7 +82,7 @@ RESOURCESTRING
 
   //rsChangeNetSync = 'Change Net Sync Repo';          // These are labels on the button used to set sync repo
   rsChangeSync = 'Change Sync Repo';
-  rsSyncNotConfig = 'not configured';               // means that the file or nextcloud sync is not configured yet.
+  rsSyncNotConfig = 'not configured';               // means that the file of net sync is not configured yet.
   rsSetUp = 'Setup';                                // means configure something, eg, one of the Sync modules.
   rsAutosnapshotRun='Completed autosnapshot run.';  // Message on status bar after an AutoSnapshot run.
   rsSnapshotCreated = 'created, do you want to copy it elsewhere ?';      // refers to a just taken snapshot
@@ -140,6 +145,12 @@ RESOURCESTRING
   rsAllRestored = 'Notes and config files Restored, restart suggested.';
   rsDeleteAndReplace_2 = 'Delete all notes in %s and replace with snapshot dated %s ?';
   rsNotesInSnap = 'Notes in Snapshot';                                          // followed by the name of a snapshot
+
+  // RollBack
+
+  rsContentDated = 'Content Dated';
+  rsNotAvailable = 'Not Available';
+  rsRollBackIntro = 'You can roll back to previous version of this note';
 
 implementation
 

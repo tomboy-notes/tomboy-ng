@@ -1,5 +1,16 @@
 unit colours;
+{   Copyright (C) 2017-2020 David Bannon
 
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+    A dialog that allows setting of the colours used to display tomboy-ng
+    notes.
+
+}
 {$mode objfpc}{$H+}
 
 interface

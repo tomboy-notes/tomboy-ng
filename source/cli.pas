@@ -2,11 +2,16 @@ unit cli;
 
 {$mode objfpc}{$H+}
 
-{  Copyright (C) 2018 David Bannon
+{   Copyright (C) 2017-2020 David Bannon
 
-   This unit is active before the GUI section and may decide GUI is not needed.
-   Please see included License file.
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
 
+    ------------------
+
+    This unit is active before the GUI section and may decide GUI is not needed.
+    Please see included License file.
 
     History
     2020/06/18  Remove unnecessary debug line.

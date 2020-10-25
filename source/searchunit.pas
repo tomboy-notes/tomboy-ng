@@ -1,37 +1,21 @@
 unit SearchUnit;
 
-{
- * Copyright (C) 2017 David Bannon
- *
- * Permission is hereby granted, free of charge, to any person obtaining 
- * a copy of this software and associated documentation files (the 
- * "Software"), to deal in the Software without restriction, including 
- * without limitation the rights to use, copy, modify, merge, publish, 
- * distribute, sublicense, and/or sell copies of the Software, and to 
- * permit persons to whom the Software is furnished to do so, subject to 
- * the following conditions: 
- *  
- * The above copyright notice and this permission notice shall be 
- * included in all copies or substantial portions of the Software. 
- *  
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
-}
+{   Copyright (C) 2017-2020 David Bannon
 
-{	This is NO LONGER the Main unit (ie the main form) for tomboy-ng. It always exists while
-	RTomboy is running, when you cannot see it, its because its hidden. This
-	form will put its icon in the System Tray and its resposible for acting
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    ------------------
+
+    This form will put its icon in the System Tray and its resposible for acting
 	on any of the menu choices from that tray icon.
     The form, and therefore the application, does not close if the user clicks
 	the (typically top right) close box, just hides. It does not close until
 	the user clicks 'close' from the System Tray Menu.
 
-	It also displays the Search box showing all notes.
+	It also displays the Search box showing all notes and manages the note_lister,
+    the data structure holding info in memory of all notes.
 }
 
 {	HISTORY
@@ -194,6 +178,7 @@ type        { TSearchForm }
         HelpNotes : TNoteLister;
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
             mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
+
         procedure CreateMenus();
         procedure DoSearch();
         procedure FileMenuClicked(Sender: TObject);
@@ -220,6 +205,11 @@ type        { TSearchForm }
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
+                            { Makes a backup note with last three char of manin name being
+                            the PutInName that tells us where it came from, ttl - title
+                            opn - just opened. Does nothing if name not UUID length.
+                            Pass it a ID, Filename or FullFileName }
+        procedure BackupNote(const NoteName, PutIntoName: string);
         procedure ShowHelpNote(HelpNoteName: string);
         procedure UpdateStatusBar(SyncSt : string);
         {Just a service provided to NoteBook.pas, refresh the list of notebooks after adding or removing one}
@@ -240,11 +230,13 @@ type        { TSearchForm }
         function IndexNotes() : integer;
         { Returns true when passed string is the title of an existing note }
         function IsThisaTitle(const Term: ANSIString): boolean;
-        { Gets called with a title and filename (clicking grid), with just a title
-          (clicked a note link or recent menu item or Link Button) or nothing
-          (new note). If its just Title but Title does not exist, its Link
-          Button. }
-        procedure OpenNote(NoteTitle : String = ''; FullFileName : string = ''; TemplateIs : AnsiString = '');
+                            { Gets called with a title and filename (clicking grid), with just a title
+                            (clicked a note link or recent menu item or Link Button) or nothing
+                            (new note). If its just Title but Title does not exist, its Link
+                            Button. DontBackUp says do not make a backup as we opne because we are in
+                            a Roll Back Cycle.}
+        procedure OpenNote(NoteTitle: String; FullFileName: string = '';
+				            TemplateIs: AnsiString = ''; BackUp: boolean = True) ;
         { Returns True if it put next Note Title into SearchTerm }
         function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
@@ -311,8 +303,8 @@ begin
             NoteLister.IndexThisNote(DownList.Strings[Index]);
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
-        if DownList.Count > 0 then
-            NoteLister.AddMissingTemplates;
+        if DownList.Count > 0 then                  // Why ?  Manual Merge Puzzle
+			NoteLister.AddMissingTemplates;         // Why ?
         RefreshMenus(mkRecentMenu);
         if Visible then ButtonRefresh.Enabled := True
         else NeedRefresh := True;
@@ -754,7 +746,7 @@ begin
         mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
         mtNewNote : if (Sett.NoteDirectory = '') then
                             ShowMessage(rsSetupNotesDirFirst)
-                    else OpenNote();
+                    else OpenNote('');
         mtSearch :  if Sett.NoteDirectory = '' then
                             showmessage(rsSetupNotesDirFirst)
                     else begin
@@ -767,7 +759,7 @@ begin
                             //debugln('SearchForm - FileMenuClicked ' + dbgs(Tock - Tick) + 'ms  ' + dbgs(GetTickCount64() - Tock) + 'mS');
                     end;
         mtAbout :    MainForm.ShowAbout();
-        mtSync :     if(Sett.ValidFileSync <> '') or (Sett.ValidNextCloudSync <> '')  then
+        mtSync :     if (Sett.ValidFileSync <> '')  or (Sett.ValidNextCloudSync <> '') then
                         Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
         mtSettings : begin
@@ -949,7 +941,7 @@ procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
      if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
-       if key = ord('N') then begin OpenNote(); Key := 0; exit(); end;
+       if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
        if key = VK_Q then MainForm.Close();
      end;
 end;
@@ -1060,7 +1052,8 @@ end;
 
 
 
-procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string; TemplateIs: AnsiString);
+procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
+		                                TemplateIs: AnsiString; BackUp: boolean);
 // Might be called with no Title (NewNote) or a Title with or without a Filename
 var
     EBox : TEditBoxForm;
@@ -1104,6 +1097,9 @@ begin
     //EBox.Top := Placement + random(Placement*2);
     //EBox.Left := Placement + random(Placement*2);
     EBox.Show;
+    // if we have a NoteFileName at this stage, we just opened an existing note.
+    if (NoteFileName <> '') and BackUp  then
+        BackupNote(NoteFileName, 'opn');
     EBox.Dirty := False;
     NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
 end;
@@ -1130,8 +1126,27 @@ begin
       	showmessage('Cannot open ' + FullFileName);
       	exit();
   	end;
-  	if length(NoteTitle) > 0 then
-        OpenNote(NoteTitle, FullFileName);
+  	if length(NoteTitle) > 0 then OpenNote(NoteTitle, FullFileName);
+end;
+
+procedure TSearchForm.BackupNote(const NoteName, PutIntoName : string);
+var
+    NewName : string;
+    OldName : string;
+begin
+    NewName := ExtractFileNameOnly(NoteName);
+    OldName := Sett.NoteDirectory + NewName + '.note';
+    if length(NewName) <> 36 then exit;                         // We only do notes with UUID names
+    // We remove last four char from ID and replace with eg, -opn or -ttl.  This has
+    // some loss of entropy, acceptable and allows use of existing Backup recovery.
+    NewName := Sett.NoteDirectory + 'Backup' + PathDelim
+                + copy(NewName, 1, 32) + '-' + PutIntoName + '.note';
+    // We assume here that Sett unit has checked and created a Backup dir is necessary.
+    if FileExistsUTF8(NewName) then
+        if not DeleteFile(NewName) then debugln('ERROR, failed to delete ' + NewName);
+    if not CopyFile(OldName, NewName) then
+        debugln('ERROR, failed to copy : ' + #10 + OldName + #10 + NewName);
+    //debugln('SearchForm : BackupNote ' + #10 + OldName + #10 + NewName);
 end;
 
 procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
