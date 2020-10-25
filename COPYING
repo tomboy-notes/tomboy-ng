@@ -1,14 +1,21 @@
 Unless noted, all tomboy-ng code in this repository is -
 
-Copyright David Bannon 2018, 2019
+Copyright David Bannon 2018 - 2020
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Please see the file debian/copyright for license details.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+Note that the following addition license terms apply to the hunspell 
+DLL supplied with Windows (but is not shipped with the other platform's
+specific distributions) :
 
-You should have received a copy of the GNU General Public License along with this program, LICENSE.txt.  If not, see <https://www.gnu.org/licenses/>.
+ Licence file for associated libhunspell.dll
 
-(Windows only : See additional hunspell license)
+ This 64bit libhunspell.dll was compiled from the original source from 
+ https://github.com/hunspell/hunspell with Microsoft Visual Studio Community 
+ 2015.
 
-The Application is compiled using FPC, Lazarus and KControls.
- 
+ As such its covered by the hunspell licence and is free to use or distribute 
+ with your programme but this license file should remain with it.
+
+ Many thanks to rvk from the Lazarus Forum for assistance with this.
+
