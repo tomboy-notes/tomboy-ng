@@ -970,26 +970,6 @@ msgstr "Recuperar notas"
 msgid "Recover Snapshot"
 msgstr "Recuperar Instantánea"
 
-#: tformrollback.caption
-msgid "FormRollBack"
-msgstr ""
-
-#: tformrollback.labelopn.caption
-msgid "LabelOpn"
-msgstr ""
-
-#: tformrollback.labelopntitle.caption
-msgid "LabelOpnTitle"
-msgstr ""
-
-#: tformrollback.labelttl.caption
-msgid "Labelttl"
-msgstr ""
-
-#: tformrollback.labelttltitle.caption
-msgid "LabelttlTitle"
-msgstr ""
-
 #: tformrollback.speedcancel.caption
 #, fuzzy
 msgctxt "tformrollback.speedcancel.caption"
@@ -1044,14 +1024,6 @@ msgstr "Nota remota cambiada"
 #: tformsdiff.label4.caption
 msgid "Local Changed"
 msgstr "Nota local cambiada"
-
-#: tformsdiff.labellocal.caption
-msgid "LabelLocal"
-msgstr "EtiquetaLocal"
-
-#: tformsdiff.labelremote.caption
-msgid "LabelRemote"
-msgstr "EtiquetaRemota"
 
 #: tformsdiff.radiolong.caption
 msgid "Long Lines"
@@ -1122,42 +1094,6 @@ msgstr "Guardar y sincronizar"
 msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Sincronizar"
-
-#: tformsync.editnexthostaddress.text
-msgid "10.85.2.2"
-msgstr ""
-
-#: tformsync.label3.caption
-msgid "Host Address"
-msgstr ""
-
-#: tformsync.label4.caption
-msgid "User Name"
-msgstr ""
-
-#: tformsync.label5.caption
-msgid "Password"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo1.caption
-#, fuzzy
-msgctxt "tformsync.labelfilesyncinfo1.caption"
-msgid "LabelFileSyncInfo1"
-msgstr "EtiqSyncInfoArch1"
-
-#: tformsync.labelfilesyncinfo2.caption
-#, fuzzy
-msgctxt "tformsync.labelfilesyncinfo2.caption"
-msgid "LabelFileSyncInfo2"
-msgstr "EtiqSyncInfoArch2"
-
-#: tformsync.labelprogress.caption
-msgid "LabelProgress"
-msgstr ""
-
-#: tformsync.labelslow.caption
-msgid "LabelSlow"
-msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
@@ -1323,24 +1259,10 @@ msgstr "¡Bienvenido a tomboy-ng!"
 msgid "Lets see if we are ready to go -"
 msgstr "Vamos a ver si todo está listo."
 
-#: tmainform.labelbadnoteadvice.caption
-msgid "LabelBadNoteAdvice"
-msgstr "EtiqNotaCorrumpida"
-
-#: tmainform.labelerror.caption
-msgctxt "tmainform.labelerror.caption"
-msgid "X"
-msgstr "X"
-
 # ¿Revisar?
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr "Lanzar desde la linea de comandos para ver errores o ir a Preferencias->Instantánea->Recuperar ..."
-
-#: tmainform.labelnotesfound.caption
-msgctxt "tmainform.labelnotesfound.caption"
-msgid "X"
-msgstr "X"
 
 #: tnotebookpick.button1.caption
 msgctxt "tnotebookpick.button1.caption"
@@ -1363,10 +1285,6 @@ msgstr "Pulse OK y crearemos el cuaderno y añadiremos esta nota a ello."
 #: tnotebookpick.label6.caption
 msgid "Existing Name"
 msgstr "Nombre actual"
-
-#: tnotebookpick.label7.caption
-msgid "Label7"
-msgstr "Label7"
 
 #: tnotebookpick.label8.caption
 msgid "New Name"
@@ -1604,7 +1522,9 @@ msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Permitir que una nota aparece en más de un cuaderno."
 
 #: tsett.checkmanynotebooks.hint
-msgid "This may adversly affect tradional Tomboy, take care."
+#, fuzzy
+#| msgid "This may adversly affect tradional Tomboy, take care."
+msgid "This may adversly affect traditional Tomboy, take care."
 msgstr "Puede que perjudique Tomboy tradicional. Tenga cuidado."
 
 #: tsett.checkshowextlinks.caption

@@ -646,7 +646,7 @@ end;
 function TBSaveNote.WriteToDisk(const FileName: ANSIString; var NoteLoc : TNoteUpdateRec) : boolean;
 var
    Buff : string = '';
-   TmpName : string;
+   TmpName : string = '';
    {$ifdef WINDOWS}FileAttr : longint;
    ErrorMsg : string; {$endif}
 begin

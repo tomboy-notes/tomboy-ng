@@ -1021,26 +1021,6 @@ msgstr ""
 msgid "Recover Snapshot"
 msgstr "Momentopname herstellen"
 
-#: tformrollback.caption
-msgid "FormRollBack"
-msgstr ""
-
-#: tformrollback.labelopn.caption
-msgid "LabelOpn"
-msgstr ""
-
-#: tformrollback.labelopntitle.caption
-msgid "LabelOpnTitle"
-msgstr ""
-
-#: tformrollback.labelttl.caption
-msgid "Labelttl"
-msgstr ""
-
-#: tformrollback.labelttltitle.caption
-msgid "LabelttlTitle"
-msgstr ""
-
 #: tformrollback.speedcancel.caption
 #, fuzzy
 msgctxt "tformrollback.speedcancel.caption"
@@ -1093,14 +1073,6 @@ msgstr ""
 
 #: tformsdiff.label4.caption
 msgid "Local Changed"
-msgstr ""
-
-#: tformsdiff.labellocal.caption
-msgid "LabelLocal"
-msgstr ""
-
-#: tformsdiff.labelremote.caption
-msgid "LabelRemote"
 msgstr ""
 
 #: tformsdiff.radiolong.caption
@@ -1171,40 +1143,6 @@ msgstr "Opslaan en synchroniseren"
 msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchroniseren"
-
-#: tformsync.editnexthostaddress.text
-msgid "10.85.2.2"
-msgstr ""
-
-#: tformsync.label3.caption
-msgid "Host Address"
-msgstr ""
-
-#: tformsync.label4.caption
-msgid "User Name"
-msgstr ""
-
-#: tformsync.label5.caption
-msgid "Password"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo1.caption
-msgctxt "tformsync.labelfilesyncinfo1.caption"
-msgid "LabelFileSyncInfo1"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo2.caption
-msgctxt "tformsync.labelfilesyncinfo2.caption"
-msgid "LabelFileSyncInfo2"
-msgstr ""
-
-#: tformsync.labelprogress.caption
-msgid "LabelProgress"
-msgstr ""
-
-#: tformsync.labelslow.caption
-msgid "LabelSlow"
-msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
@@ -1373,23 +1311,9 @@ msgstr "Welkom bij tomboy-ng!"
 msgid "Lets see if we are ready to go -"
 msgstr "Eens zien of de toepassing klaar is voor gebruik"
 
-#: tmainform.labelbadnoteadvice.caption
-msgid "LabelBadNoteAdvice"
-msgstr ""
-
-#: tmainform.labelerror.caption
-msgctxt "tmainform.labelerror.caption"
-msgid "X"
-msgstr "X"
-
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr "Start tomboy-ng vanuit een terminalvenster om fouten te bekijken op zie Instellingen->Momentopname->Herstellen"
-
-#: tmainform.labelnotesfound.caption
-msgctxt "tmainform.labelnotesfound.caption"
-msgid "X"
-msgstr "X"
 
 #: tnotebookpick.button1.caption
 msgctxt "tnotebookpick.button1.caption"
@@ -1411,10 +1335,6 @@ msgstr "Klik op 'Oké' om het notitieboek te maken EN deze notitie er aan toe te
 
 #: tnotebookpick.label6.caption
 msgid "Existing Name"
-msgstr ""
-
-#: tnotebookpick.label7.caption
-msgid "Label7"
 msgstr ""
 
 #: tnotebookpick.label8.caption
@@ -1648,7 +1568,9 @@ msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Toestaan dat notities kunnen worden geopend in meerdere notitieboeken"
 
 #: tsett.checkmanynotebooks.hint
-msgid "This may adversly affect tradional Tomboy, take care."
+#, fuzzy
+#| msgid "This may adversly affect tradional Tomboy, take care."
+msgid "This may adversly affect traditional Tomboy, take care."
 msgstr "Dit kan de traditonele Tomboy in de war brengen. Wees dus voorzichtig!"
 
 #: tsett.checkshowextlinks.caption

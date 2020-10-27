@@ -934,26 +934,6 @@ msgstr ""
 msgid "Recover Snapshot"
 msgstr ""
 
-#: tformrollback.caption
-msgid "FormRollBack"
-msgstr ""
-
-#: tformrollback.labelopn.caption
-msgid "LabelOpn"
-msgstr ""
-
-#: tformrollback.labelopntitle.caption
-msgid "LabelOpnTitle"
-msgstr ""
-
-#: tformrollback.labelttl.caption
-msgid "Labelttl"
-msgstr ""
-
-#: tformrollback.labelttltitle.caption
-msgid "LabelttlTitle"
-msgstr ""
-
 #: tformrollback.speedcancel.caption
 msgctxt "tformrollback.speedcancel.caption"
 msgid "Cancel"
@@ -1005,14 +985,6 @@ msgstr ""
 
 #: tformsdiff.label4.caption
 msgid "Local Changed"
-msgstr ""
-
-#: tformsdiff.labellocal.caption
-msgid "LabelLocal"
-msgstr ""
-
-#: tformsdiff.labelremote.caption
-msgid "LabelRemote"
 msgstr ""
 
 #: tformsdiff.radiolong.caption
@@ -1081,40 +1053,6 @@ msgstr ""
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
-msgstr ""
-
-#: tformsync.editnexthostaddress.text
-msgid "10.85.2.2"
-msgstr ""
-
-#: tformsync.label3.caption
-msgid "Host Address"
-msgstr ""
-
-#: tformsync.label4.caption
-msgid "User Name"
-msgstr ""
-
-#: tformsync.label5.caption
-msgid "Password"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo1.caption
-msgctxt "tformsync.labelfilesyncinfo1.caption"
-msgid "LabelFileSyncInfo1"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo2.caption
-msgctxt "tformsync.labelfilesyncinfo2.caption"
-msgid "LabelFileSyncInfo2"
-msgstr ""
-
-#: tformsync.labelprogress.caption
-msgid "LabelProgress"
-msgstr ""
-
-#: tformsync.labelslow.caption
-msgid "LabelSlow"
 msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
@@ -1276,22 +1214,8 @@ msgstr ""
 msgid "Lets see if we are ready to go -"
 msgstr ""
 
-#: tmainform.labelbadnoteadvice.caption
-msgid "LabelBadNoteAdvice"
-msgstr ""
-
-#: tmainform.labelerror.caption
-msgctxt "tmainform.labelerror.caption"
-msgid "X"
-msgstr ""
-
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
-msgstr ""
-
-#: tmainform.labelnotesfound.caption
-msgctxt "tmainform.labelnotesfound.caption"
-msgid "X"
 msgstr ""
 
 #: tnotebookpick.button1.caption
@@ -1314,10 +1238,6 @@ msgstr ""
 
 #: tnotebookpick.label6.caption
 msgid "Existing Name"
-msgstr ""
-
-#: tnotebookpick.label7.caption
-msgid "Label7"
 msgstr ""
 
 #: tnotebookpick.label8.caption
@@ -1541,7 +1461,7 @@ msgid "Allow a Note to be in Multiple Notebooks."
 msgstr ""
 
 #: tsett.checkmanynotebooks.hint
-msgid "This may adversly affect tradional Tomboy, take care."
+msgid "This may adversly affect traditional Tomboy, take care."
 msgstr ""
 
 #: tsett.checkshowextlinks.caption

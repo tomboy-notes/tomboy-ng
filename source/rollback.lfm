@@ -1,7 +1,7 @@
 object FormRollBack: TFormRollBack
-  Left = 1050
+  Left = 495
   Height = 274
-  Top = 251
+  Top = 252
   Width = 586
   Caption = 'FormRollBack'
   ClientHeight = 274
