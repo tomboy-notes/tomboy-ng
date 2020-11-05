@@ -16,7 +16,7 @@ program Tomboy_NG;
 uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
-    cmem, cthreads,
+    {cmem,} cthreads,
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,

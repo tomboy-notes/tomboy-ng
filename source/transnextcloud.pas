@@ -5,9 +5,74 @@ unit transnextcloud;
   *  Copyright (C) 2020 David Bannon
   *  See attached licence file.
 
+  ---- This overview ignores error testing, logging etc ----
+
+  TFormSync.RunNextCloudSync(); calls :
+    SetTransport - creates Trans, trans.SetTransport (does little)
+    TestConnection - read local manifest to LocalMetaData, trans.TestTransport
+                    (connects to server, looks for keynote)
+    TSync.StartSync does -
+      LoadRemoteRepoData(F) clears MainMetaData, calls Trans.GetNewNotes(downloads
+                            list of existing notes to MMD and then uses the (local)
+                            RemoteManifest to map SID->ID, correct creation date
+                            for notes that come back from NC with Title, Modified.
+                            The notes that don't need syncing come back with just
+                            SID (because of pruneBefore) are marked SyNothing, that
+                            might be overridden, later, to SyRemoteDelete.
+      NextCloudCompare -    scans notes dir, comparing existing note's LCD to the
+                            LastSyncDate, will decide if they are uploads
+                            of clashes depending on existing state.
+      CheckRemoteDeletes -  adds SyDeleteLocal Entry to MainMetaData for notes
+                            previously synced (cos in LMD) but no longer at Remote.
+      CheckLocalDeletes -   looks for notes in MMD that are marked as Deleted in LMD,
+                            marks MMD entry as SyDeleteRemote.
+      CheckNewNotes -       redundent, NextCloudCompare has this covered.
+      ProcessClashes
+      DoDownLoads
+      DoDeletes
+      DoUploads
+      DoDeleteLocal
+
+      The string, LocalLastSyncDateSt is read from localmanifest, used by CheckUsingLCD()
+      and we don't use that in NextCloud.  In TSync.LoadRemoteRepoData(), in a 'Use',
+      after creating MMD, we set MMD.LastSyncDateSt to LocalLastSyncDateSt before
+      calling Trans.GetNewNotes. Other Sync Models don't use MMD.LastSyncDateSt so,
+      no external impact. Then, when we make our initial GET call to NextCloud,
+      we poke the HTTP response header Last-Modified into MainMetaData->LastSyncDateSt
+      and then in  TSync.WriteLocalManifest()  if MMD.LastSyncDateSt is <> '' we use
+      it instead of a call to  Sett.GetLocalTime.  That way, on the next sync,
+      LocalLastSyncDateSt (when doing NextCloud) will contain a date string we
+      can send to GetNotes.
+
+        POTENTIAL PROBLEM
+
+        We get a scan of NextCloud's current notes and record the datetime we did so,
+        save that DateTime for the next run. However, we then upload a any notes that
+        need uploading, this new note has a NextCloud TimeDate later than the sync time
+        saved so on next sync, it will be downloaded (or, worse, trigger a clash).
+
+        Only (and still risky) solution is to do the above and then do another
+        GetNewNotes and use its retured time instead of the one obtained a minute
+        or so earlier. If that GetNewNotes returns only the notes previously
+        uploaded, just save the new datetime as the LastSyncDate, done.  If it
+        returns more than just the previously uploaded notes, run another full
+        sync and keep repeating until its 'clean'. If the the end user, on tomboy-ng
+        has changed a note in that intervening period, but does not go on to change
+        it after the new declared LastSyncDate, then that note will not be synced at
+        the next sync.
+
+        https://github.com/nextcloud/notes/issues/627
+
+        Note that apart from issue above, the clash handler is not loading the remote
+        note and deletes from both ends has not be truly tested.
+
+
+
   HISTORY
   2020/09/23  Made dowloads a bit more failsafe, remove from MMD if not able to process this time.
-
+  2020/10/30  Changed the way GetNewNotes works, it now uses Meta.LastSyncDate for a pruneBefore call
+              and if successful, sets it to the new value.  Notes NC believe don't need be downloaded
+              are marked SyNothing (might be upgraded to SyRemoteDelete) else are S.
 }
 
 {$mode objfpc}{$H+}
@@ -31,7 +96,17 @@ type
 
   TNextCloudSync = class(TTomboyTrans)      
     private
-	    function Downloader(URL: string; SomeStrings: TStringList): boolean;
+                            { A Unix style time stamp, number of sec since epoc. Set when GetNewNotes
+                            is called, used to push up a new or changed note }
+        ThisSyncTime : longint;
+                            { General Purpose http GET, uses passed URL and returns with results
+                            in the passed SomeStrings. If GetModifiedTime is True the first line
+                            of SomeStrings is the Date record of the GET in plain text from http
+                            header, remainder is JSON, the content depending on passed URL. }
+	    function Downloader(URL: string; SomeStrings: TStringList;  GetModifiedTime: boolean=false): boolean;
+                            { Returns the Title of a note who's ID is SID, "ERROR, failed to get Title on error }
+        function GetRemoteTitle(SID : longint) : string;
+
 		function ExtractJID(data: string; out NRec: TNoteRec): longint;
 		                    { Adds http if necessary (must add https) and returns either SyncReady,
 				              SyncCredentialError or SyncNetworkError depending on what it found.
@@ -47,13 +122,12 @@ type
 				                Note : we ignore all except the first Notebook encountered. }
 		function IsTemplate(const ID: string; out Notebook: String): boolean;
 		function JData2NoteList(const NoteMeta: TNoteInfoList; jItm: TJSONData): boolean;
-		function PostNewNote(Title, Notebook, Content: String; out NRec: TNoteRec;
-				SID: integer=0): longint;
-		function PushUpNote(ID, Notebook: string; out NRec: TNoteRec; SID: integer
-				): longint;
-
-
-                            { Reads remote manifest if it exists, adding ID and Create Date to Meta
+                            { Returns the NextCloud assigned NoteID on success, 0 on failure
+                            The passed noteRec should have modified set to a non zero numb
+                            to be used as the modified value for the note. 0 is ignored. }
+		function PostNewNote(Title, Notebook, Content: String; var NRec: TNoteRec): longint;
+		function PushUpNote(ID, Notebook: string; var NRec: TNoteRec): longint;
+                             { Reads remote manifest if it exists, adding ID and Create Date to Meta
                             If its not there, no problem, we are doing a Join. Make sure its not
                             there IF we are doing a Join !!
                             Then looks through the MMD for any remaining notes that were not matched
@@ -61,6 +135,7 @@ type
                             assigned a UUID ID.   }
 		procedure ReadRemoteManifest(NoteMeta: TNoteInfoList);
 		procedure SayDebug(st: string; Always: boolean=false);
+		function SillyDateTo8601(SillyDate: string): string;
 		function TestNextCloudConnection(out MSG: string; const UsePassword: boolean): boolean;
 
                             { Tries to upload a KEYNOTE, might fail for a whole lot of reasons that we should
@@ -94,9 +169,14 @@ uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil,
     {$if (FPC_FULLVERSION=30200)}
 	    opensslsockets,                 // only available in FPC320 and later
 	{$endif}
+	fphttpclient, httpprotocol, {$ifdef LCL}
+    lazlogger,
+    {$endif}
+    LazUTF8,                            // UTF8 Pos()
+	fpopenssl, ssockets, DateUtils, import_notes,
     settings,                           // just for sett.helpnotepath to load nextcloud.md
-	fphttpclient, httpprotocol, {$ifdef LCL}lazlogger, LazUTF8, {$endif}
-	fpopenssl, ssockets, DateUtils, commonmark, import_notes;
+    //dateutils,                           // just for DateTimeToUnix()
+    commonmark;
 
 const
   URL_SUFFIX = '/index.php/apps/notes/api/v1/notes';
@@ -118,6 +198,7 @@ var
     PNote : PNoteInfo;
     i : integer;
 begin
+    ThisSyncTime := 0;                                      // Well, it got to be set somewhere !
     Result := FormatTestURL();                              // 'adjusts' url and tries to use it.
     if Result <> SyncReady then exit;                       // Failed to find a workable form of URL
     ServerID := '';
@@ -156,8 +237,7 @@ function TNextCloudSync.SetTransport(ForceClean: boolean): TSyncAvailable;
 begin
     { SyncNoLocal indicates there is no local manifest and therefore no sync setup.
       SyncReady  would indicate there is a local manifest and it may be viable
-      but we cannot, at this stage, tell ?
-    }
+      but we cannot, at this stage, tell ? }
     if Fileexists(ConfigDir + 'manifest.xml') then
         result := SyncReady
     else Result := SyncNoLocal;
@@ -171,10 +251,17 @@ begin
 end;
 
 function TNextCloudSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD: boolean): boolean;
-            { gets a list of notes from NextCloud, we get only SID and modified at this stage.
-              As NC always gives us its weak LCD, getLCD has no effect. RevNo is also irrelevant, set to 1}
+            { gets a list of notes from NextCloud, we get only SID, Title and Modified at this stage.
+              As NC always gives us its weak LCD, getLCD has no effect. RevNo is also irrelevant, set to 1.
+              For notes NC thinks we don't need to sync we set Action to SyNothing, else its SyUnSet.
+              However, NoteMeta.LastSyncDate (TDateTime) is important, it arrives here with last time
+              in there and leaves, if successfull, with the current one. }
+var
+    UnixTimeCount : string;
 begin
-    result := GetListOfNotes(NoteMeta, '?exclude=favorite,content');
+    UnixTimeCount := inttostr(DateTimeToUnix(NoteMeta.LastSyncDate));
+    // 1603970525
+    result := GetListOfNotes(NoteMeta, '?pruneBefore=' + UnixTimeCount + '&exclude=favorite,content,category');
     if Result then ReadRemoteManifest(NoteMeta);
     //Saydebug('TNextCloudSync.GetNewNotes = ' + inttostr(NoteMeta.Count));
 end;
@@ -280,6 +367,7 @@ var
     Notebook : string;
 begin
     result := true;
+    NRec.SID:=0;
     for I := 0 to Uploads.Count -1 do begin
         if UpLoads[i]^.Action in [SyUpLoadNew, SyUpLoadEdit] then begin
             if IsTemplate(UpLoads[i]^.ID, Notebook) then begin
@@ -290,7 +378,9 @@ begin
 			if  UpLoads[i]^.Action = SyUpLoadNew then
                 SID := 0
             else SID :=  UpLoads[i]^.SID;
-            if PushUpNote(UpLoads[i]^.ID, Notebook, NRec, SID) > 0 then begin;
+            NRec.modified := DateTimeToUnix(Uploads[i]^.LastChangeGMT);
+            NRec.SID:= SID;
+            if PushUpNote(UpLoads[i]^.ID, Notebook, NRec{, SID}) > 0 then begin;
                 UpLoads[i]^.SID := NRec.SID;
                 UpLoads[i]^.LastChange := ModifiedToTBDate(NRec.modified);
 			end else begin
@@ -319,15 +409,15 @@ begin
      result := '';
 end;
 
+
 // -----------------------  Private Functions ---------------------
 
 
-
-
 procedure TNextCloudSync.ReadRemoteManifest(NoteMeta : TNoteInfoList);
+// The list arrives here with notes marked SyNothing or SyDownLoad.
 // We iterate over the "remote" manifest, for each item look for an entry in the MMD.
 // If its present in both MMD and the RemoteManifest but not in note dir, its a
-// SyDeleteRemote. Esle, if found, decide about Action, SyNothing, SyDownload.
+// SyDeleteRemote. Else, if found, decide about Action, SyNothing, SyDownload.
 var
     Doc : TXMLDocument;
     Node : TDOMNode;
@@ -354,19 +444,33 @@ begin
 	                    CrDate := Node.NodeValue;
 	                    Node := NodeList.Item[i].Attributes.GetNamedItem('last-change-date');
 	                    LCDate := Node.NodeValue;
-	                    if (ID <> '') and (SID <> '') and (CrDate <> '') and (LCDate <> '') then begin
+	                    if (ID <> '') and (SID <> '') {and (CrDate <> '') and (LCDate <> '')} then begin
 	                        pNote := NoteMeta.FindSID(strtoint(SID));
 	                        if pNote <> nil then begin
+                                // If here, its present in both NoteMeta and RemoteManifest. But if we
+                                // don't have a title in Meta, we don't care. Action has already been set.
+                                // if pNote^.Action = SyNothing then continue;    // ie to for i in notelist loop
 	                            pNote^.CreateDate := CrDate;
-                                // If here, its present in both NoteMeta and RemoteManifest
-                                if FileExistsUTF8(NotesDir + ID + '.note') then
-		                                if pNote^.LastChange = LCDate then
-		                                    pNote^.Action := SyNothing
-		                                else pNote^.Action := SyDownLoad
-                                else pNote^.Action := SyDeleteRemote;
-	                            pNote^.LastChangeGMT := GetGMTFromStr(pNote^.LastChange);
-	                            pNote^.ID := ID;
-						    end;
+                                pNote^.LastChange:= LCDate;
+                                pNote^.LastChangeGMT := GetGMTFromStr(pNote^.LastChange);
+                                pNote^.ID := ID;
+                                {
+                                if pNote^.Action = SyNothing then                 // it was there, has it been locally deleted ?
+                                    if not FileExistsUTF8(NotesDir + ID + '.note') then begin
+                                        pNote^.Action := SyDeleteRemote;
+                                        pNote^.Title := GetRemoteTitle(pNote^.SID);     // We'll ask NextCloud
+									end;
+                                }               // this function is done by checklocaldeletes, it reads local mainfest.
+
+						    end {else begin               // This id is present in remote manifest but not remote server, its a SyDeleteLocal
+                                new(PNote);
+                                pNote^.SID     := 0;     // irrelevent
+                                pNote^.Action  := SyDeleteLocal;
+                                pNote^.Deleted := True;
+                                pNote^.ID      := ID;
+                                pNote^.Title   := 'A doomed note';      // ToDo : must get title to display in report
+                                NoteMeta.Add(pNote);
+							end};                                       // That code is unnecessary, the function is done by sync.checkremotedeletes
 						end else SayDebug('ERROR, bad data in remote mainfest ');
 	                end;
 	            end;
@@ -377,12 +481,20 @@ begin
             Doc.free;
         end;
     end;
-    for I := 0 to NoteMeta.count -1 do begin            // Remaining notes (or all in a Join) are SyDownloads
-        if (NoteMeta[i]^.ID = '') and (NoteMeta[i]^.SID > 0) then begin
-            NoteMeta[i]^.ID := MakeGUID();
-            NoteMeta[i]^.Action := SyDownload;
-		end;
-    end;
+    // If the above did not assign an ID but do have a SID, must be a new note or, if we also
+    // also don't have a title (SyNothing), it can only be changed to SyDeleteRemote, don't bother.
+    for pNote in NoteMeta do begin
+        if (pNote^.ID = '') and (pNote^.SID <> 0) and (pNote^.Action <> SyNothing) then begin
+            pNote^.ID := MakeGUID();
+            pNote^.Action:= SyDownLoad;
+            SayDebug('--- Changing ' + inttostr(pNote^.SID), True);
+	    end;
+        Saydebug('--- SID=' + inttostr(pNote^.SID) + ' Title=' + pNote^.Title, True);
+        Saydebug('--- ACTION=' + NoteMeta.ActionName(pNote^.Action), True);
+
+	end;
+
+
 end;
 
 function TNextCloudSync.FormatTestURL() : TSyncAvailable;
@@ -402,13 +514,14 @@ begin
     exit(SyncNetworkError);
 end;
 
-
 function TNextCloudSync.WriteANewServerID() : boolean;
 var
     GUID : TGUID;
     NRec : TNoteRec;
     StrList : TStringList;
 begin
+    NRec.modified:=0;
+    NRec.SID:=0;
     StrList := TstringList.Create;
     if fileexistsUTF8(sett.HelpNotesPath + 'nextcloud.md') then begin
         StrList.LoadFromFile(sett.HelpNotesPath + 'nextcloud.md');
@@ -433,9 +546,6 @@ begin
 	end;
 end;
 
-
-
-
 function TNextCloudSync.GetServerID(SID : longint) : boolean;
 var
     Strs : TStringList;
@@ -455,17 +565,6 @@ begin
         if Downloader(RemoteAddress + URL_SUFFIX + '/' + inttostr(SID), Strs) then begin
             //DumpJSON(Strs.Text);
             jData := GetJSON(Strs.text);
-
-            { This just to display, for test, the date from
-            TEMPMeta := TNoteInfoList.Create;
-            jData2NoteList(TEMPMeta, jData);
-            PNote := TEMPMeta[0];
-            Saydebug('LastChange = ' + PNote^.LastChange);
-            Saydebug('LCD GMT    = ' + FormatDateTime('YYYY-MM-DD', PNote^.LastChangeGMT ) + 'T'
-                        + FormatDateTime('hh:mm:ss.0000000"', pNote^.LastChangeGMT));
-            SayDebug('Create     = ' + pNote^.CreateDate);
-            TempMeta.free; }
-
             jObj := TJSONObject(jData);
             if jObj.Find('content', jStr) then begin
                 Content := jStr.asstring;
@@ -546,10 +645,9 @@ begin
 end;
 
 
-function TNextCloudSync.Downloader(URL : string; SomeStrings : TStringList) : boolean;
+function TNextCloudSync.Downloader(URL : string; SomeStrings : TStringList; GetModifiedTime : boolean = false) : boolean;
 var
     Client: TFPHttpClient;
-
 begin
     // Windows can be made work with this if we push out ssl dll - see DownloaderSSL local project
     //InitSSLInterface;
@@ -576,12 +674,22 @@ begin
                 exit(false);
                 end;
         end;
+        if GetModifiedTime then
+            with Client.ResponseHeaders do
+	                SomeStrings.Insert(0, ValueFromIndex[IndexOfName('Last-Modified')]);
+            { SayDebug('Value ' + , True);
+            SayDebug('HEADER : ' + Client.ResponseHeaders.Text, True);            // ToDo : remove
+            SayDebug('===== INDEX ===== : ' +  inttostr(Client.ResponseHeaders.IndexOfName('Last-Modified')), True);
+            end; }
+        //end;
     finally
         Client.Free;
     end;
     //ErrorMsg := '';
     result := true;
 end;
+
+
 
 function ModifiedToTBDate(Modified: longint): string;
 var
@@ -611,31 +719,60 @@ var
 begin
     Result := True;
     jObj := TJSONObject(jItm);
-    //saydebug('in jobj2pnote');
-    if JObj.Find('error', jBool) and (jBool.AsBoolean = false) then begin
-            //saydebug('writing pnote');
+    // if JObj.Find('error', jBool) and (jBool.AsBoolean = false) then begin           // pruneBefore removes the error line !
+    if not ((JObj.Find('error', jBool) and (jBool.AsBoolean = true))) then begin
             new(PNote);
             PNote^.ID := '';                                                        // ID
             if jObj.Find('modified', jNumb) then begin
                 pNote^.LastChangeGMT := UnixToDateTime(jNumb.AsInteger);            // LastChangeGMT
                 pNote^.LastChange := ModifiedToTBDate(jNumb.AsInteger);             // LastChange
-
-
-                saydebug('NCS JData2NoteList Last Change Date ' + pNote^.LastChange, True);            // ToDo : remove this
-
-
+                pNote^.CreateDate := pNote^.LastChange;                             // will update from local note if possible
+			end else begin
+                pNote^.LastChangeGMT := 0.0;
+                pNote^.LastChange := '';
+                pNote^.CreateDate := '';
 			end;
-            pNote^.CreateDate := pNote^.LastChange;                                 // CreateDate, will update from local note if possible
             pNote^.Rev := 1;                                                        // Rev
             if JObj.Find('id', JNumb) then
                 PNote^.SID := JNumb.asInteger
             else PNote^.SID := 0;                                                   // SID
-            PNote^.Action:= SyUnset;                                                // Action
+            PNote^.Action:= SyDownLoad;                                             // a default, will change if no Title provided
             if jobj.Find('title', jString) then                                     // Title
                 PNote^.Title := jString.AsString
-            else PNote^.Title:= '';
-            NoteMeta.Add(PNote);
+            else begin
+                PNote^.Title:= '';
+                // If no title, then we must be in a pruneBefore and this pruned note is unchanged.
+                // SyNothing can only be overridden by a SyDeleteRemote
+                PNote^.Action:= SyNothing;
+			end;
+			NoteMeta.Add(PNote);
 	end else result := false;
+end;
+
+// Gets a date like "Thu, 29 Oct 2020 08:48:21 GMT" and turns it into ISO 8601
+function TNextCloudSync.SillyDateTo8601(SillyDate : string) : string;
+var
+    Bits : TStringArray;
+begin
+    Bits := SillyDate.Split(' ');
+    Result := Bits[4] + '-';
+    case Bits[3] of
+        'Jan' : Result := Result + '01';
+        'Feb' : Result := Result + '02';
+        'Mar' : Result := Result + '03';
+        'Apr' : Result := Result + '04';
+        'May' : Result := Result + '05';
+        'Jun' : Result := Result + '06';
+        'Jul' : Result := Result + '07';
+        'Aug' : Result := Result + '08';
+        'Sep' : Result := Result + '09';
+        'Oct' : Result := Result + '10';
+        'Nov' : Result := Result + '11';
+        'Dec' : Result := Result + '12';
+	end;
+    if length(Bits[2]) = 1 then
+        Result := Result + '-0' + Bits[2] + 'T' + Bits[5] + 'Z'
+    else Result := Result + '-' + Bits[2] + 'T' + Bits[5] + 'Z';
 end;
 
 function TNextCloudSync.GetListOfNotes(const NoteMeta: TNoteInfoList; Params : string = '') : boolean;
@@ -644,15 +781,21 @@ var
     jData : TJSONData;
     jItem : TJSONData;
     i : integer;
+    ErrorMsg : string;
 begin
     SomeStrings := TStringList.Create;
-    if Downloader(RemoteAddress + URL_SUFFIX + Params,  SomeStrings) then begin
+    if Downloader(RemoteAddress + URL_SUFFIX + Params,  SomeStrings, True) then begin
         //SayDebug('That looks good');
+        if not SafeGetUTCfromStr(SillyDateTo8601(SomeStrings[0]), NoteMeta.LastSyncDate, ErrorMsg) then
+            SayDebug('Failed to convert header Last-Modified [' + SomeStrings[0] + ']' + #10 + ErrorMsg);
+        SomeStrings.Delete(0);              // First line hold the date, NOT JSON !!!!!!!!!!!
         //dumpJSON(SomeStrings.text);
+        //SayDebug('That time was ' + inttostr(DateTimeToUnix(NoteMeta.LastSyncDate)), True);
+        ThisSyncTime := DateTimeToUnix(NoteMeta.LastSyncDate);
         jData := GetJson(SomeStrings.text);
         for i := 0 to JData.Count -1 do begin
                 jItem := jData.Items[i];
-                JData2NoteList(NoteMeta, JItem);
+                JData2NoteList(NoteMeta, JItem);        // Will set the record to SyNothing if Title is not returned due to pruneBefore
 		end;
         jData.free;
 	end else
@@ -662,7 +805,31 @@ begin
     exit(true);
 end;
 
-
+function TNextCloudSync.GetRemoteTitle(SID: longint): string;
+var
+    SomeStrings : TStringList;
+    jData : TJSONData;
+    JObject : TJSONObject;
+    jStr : TJSONString;
+begin
+    SomeStrings := TStringList.Create;
+    if Downloader(RemoteAddress + URL_SUFFIX + '/' + inttostr(SID)
+            + '?exclude=favorite,content,category,modified',  SomeStrings) then begin
+        try
+            try
+                jData := GetJson(SomeStrings.text);
+                jObject := TJSONObject(jData);
+                if JObject.Find('title', jStr) then
+                Result := jStr.AsString
+                else Result := 'ERROR, failed to get title';
+            except on E:Exception do Result := 'ERROR - failed to get title';    // Invalid JSON or ID not present
+	    end;
+	    finally
+            JData.Free;
+	    end;
+	end;
+    SomeStrings.Free;
+end;
 
 
 // -------------------- U P L O A D -----------------------
@@ -670,7 +837,7 @@ end;
 
 { Sends a note up to NextCloud, default is a new note and a Post.
   if SID > 0, its to replace an existing note of that SID }
-function TNextCloudSync.PushUpNote(ID, Notebook : string; out NRec : TNoteRec; SID : integer) : longint;
+function TNextCloudSync.PushUpNote(ID, Notebook : string; var NRec : TNoteRec) : longint;
 var
   STL : TStringList;
   Title : string = '';
@@ -687,7 +854,7 @@ begin
             Stl.Delete(0);
 	    end;
         // STL.SaveToFile(Title + '.md');
-        Result := PostNewNote(Title, Notebook, StringToJSONString(STL.Text), NRec, SID);
+        Result := PostNewNote(Title, Notebook, StringToJSONString(STL.Text), NRec);
 	finally
         STL.Free;
         freeandnil(ENotes);
@@ -744,10 +911,11 @@ end;
 
 
 // Returns the NextCloud assigned NoteID on success, 0 on failure, must set a regional ErrorMessage
-function TNextCloudSync.PostNewNote(Title, Notebook, Content : String; out NRec : TNoteRec; SID : integer= 0) : longint;
+function TNextCloudSync.PostNewNote(Title, Notebook, Content : String; var NRec : TNoteRec) : longint;
 var
     Client: TFPHttpClient;
     Response : TStringStream;
+    BodySt : string = '';
 begin
     Result := 0;
     saydebug('In PostNewNote');
@@ -758,21 +926,31 @@ begin
     Client.AllowRedirect := true;
     Client.UserName:=UserName;
     Client.Password:=Password;
-    if Notebook = '' then
+
+(*    if Notebook = '' then
         client.RequestBody := TRawByteStringStream.Create('{ "title": "'
                             + Title + '", "content": "' + content + '"}')
     else client.RequestBody := TRawByteStringStream.Create('{ "title": "' + Title
-                    + '",  "category": "' + Notebook + '", "content": "' + content + '"}');
-    //Saydebug('NextCloud POST Request Body [' + client.RequestBody + ']');
+                    + '",  "category": "' + Notebook + '", "content": "' + content + '"}');     *)
+
+    BodySt := '{ "title": "' + Title;
+    if (NRec.modified <> 0) then
+        BodySt := BodySt  + '", "modified": "' + inttostr(NRec.Modified);
+    if (NoteBook <> '') then
+        BodySt := BodySt + '", "category": "' + Notebook;
+    client.RequestBody := TRawByteStringStream.Create(BodySt + '", "content": "' + content + '"}');
+
+    // Saydebug('************** NextCloud POST Request Body [' + BodySt + '", "content": "' + content + '"}'   + ']', True);
+
     Response := TStringStream.Create('');
     try
         try
-            if SID = 0 then begin
+            if NRec.SID = 0 then begin
                 saydebug('About to Post');
                 client.Post(RemoteAddress + URL_SUFFIX, Response);  // don't use FormPost, it messes with the Content-Type value
             end else  begin
                 saydebug('About to PUT');
-                client.Put(RemoteAddress + URL_SUFFIX + '/' + inttostr(SID), Response);
+                client.Put(RemoteAddress + URL_SUFFIX + '/' + inttostr(NRec.SID), Response);
             end;
             // saydebug('Posted');
             if Client.ResponseStatusCode = 200 then begin

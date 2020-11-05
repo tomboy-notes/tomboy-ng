@@ -112,6 +112,10 @@ msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
 msgstr "Hacer clic en una instantánea"
 
+#: resourcestr.rscontentdated
+msgid "Content Dated"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
@@ -286,6 +290,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Hay una versión más nueva en el repositorio principal"
 
+#: resourcestr.rsnotavailable
+msgid "Not Available"
+msgstr ""
+
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
@@ -356,6 +364,10 @@ msgstr "Archivo recuperado."
 msgctxt "resourcestr.rsrenamefailed"
 msgid "ERROR, could not rename Backup File "
 msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad "
+
+#: resourcestr.rsrollbackintro
+msgid "You can roll back to previous version of this note"
+msgstr ""
 
 #: resourcestr.rsrunningsync
 msgctxt "resourcestr.rsrunningsync"
@@ -566,6 +578,10 @@ msgstr "Menú"
 msgid "EditBoxForm"
 msgstr "EditarModelo"
 
+#: teditboxform.kmemo1.hint
+msgid "Recover "
+msgstr ""
+
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr "Sólo lectura"
@@ -718,6 +734,10 @@ msgstr "Fuente: tamaño, negrita, cursiva, etc"
 #: teditboxform.speedbuttontools.hint
 msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
+
+#: teditboxform.speedrollback.hint
+msgid "Roll Back"
+msgstr ""
 
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"
@@ -1068,42 +1088,6 @@ msgstr "Guardar y sincronizar"
 msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Sincronizar"
-
-#: tformsync.editnexthostaddress.text
-msgid "10.85.2.2"
-msgstr ""
-
-#: tformsync.label3.caption
-msgid "Host Address"
-msgstr ""
-
-#: tformsync.label4.caption
-msgid "User Name"
-msgstr ""
-
-#: tformsync.label5.caption
-msgid "Password"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo1.caption
-#, fuzzy
-msgctxt "tformsync.labelfilesyncinfo1.caption"
-msgid "LabelFileSyncInfo1"
-msgstr "EtiqSyncInfoArch1"
-
-#: tformsync.labelfilesyncinfo2.caption
-#, fuzzy
-msgctxt "tformsync.labelfilesyncinfo2.caption"
-msgid "LabelFileSyncInfo2"
-msgstr "EtiqSyncInfoArch2"
-
-#: tformsync.labelprogress.caption
-msgid "LabelProgress"
-msgstr ""
-
-#: tformsync.labelslow.caption
-msgid "LabelSlow"
-msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
@@ -1486,11 +1470,6 @@ msgstr "Hacer una Instantánea Manual"
 msgid "Take a time stamped snapshot of notes and config"
 msgstr "Hacer una instantánea de notas, preferencias con fecha de creación"
 
-#: tsett.buttonnextcloudsync.caption
-msgctxt "tsett.buttonnextcloudsync.caption"
-msgid "Setup NextCloud"
-msgstr ""
-
 #: tsett.buttonsetcolours.caption
 msgctxt "tsett.buttonsetcolours.caption"
 msgid "Set Colours"
@@ -1556,7 +1535,9 @@ msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Permitir que una nota aparece en más de un cuaderno."
 
 #: tsett.checkmanynotebooks.hint
-msgid "This may adversly affect tradional Tomboy, take care."
+#, fuzzy
+#| msgid "This may adversly affect tradional Tomboy, take care."
+msgid "This may adversly affect traditional Tomboy, take care."
 msgstr "Puede que perjudique Tomboy tradicional. Tenga cuidado."
 
 #: tsett.checkshowextlinks.caption
@@ -1632,6 +1613,10 @@ msgstr "Se buscan y se guardan las notas en:"
 msgid "When a conflict is detected between a local note and remote one :"
 msgstr "Al detectar un conflicto entre una nota local y una remota:"
 
+#: tsett.label4.caption
+msgid "Repo : "
+msgstr ""
+
 # ¿Correcto en el original?
 #: tsett.label5.caption
 msgid "Days per snapshot"
@@ -1659,11 +1644,15 @@ msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "sin configurar"
 
-#: tsett.labelnextcloudsync.caption
-#, fuzzy
-msgctxt "tsett.labelnextcloudsync.caption"
-msgid "not configured"
-msgstr "sin configurar"
+#: tsett.labelfilesyncinfo1.caption
+msgctxt "tsett.labelfilesyncinfo1.caption"
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tsett.labelfilesyncinfo2.caption
+msgctxt "tsett.labelfilesyncinfo2.caption"
+msgid "LabelFileSyncInfo2"
+msgstr ""
 
 # ¿Contexto? ¿Demásiado largo?
 #: tsett.labelsnapdir.caption
@@ -1719,7 +1708,7 @@ msgstr "Menú"
 #, fuzzy
 #| msgid "Setup"
 msgctxt "tsett.speedsetupsync.caption"
-msgid "Setup File Sync"
+msgid "Setup"
 msgstr "Configurar"
 
 #: tsett.tabbackup.caption

@@ -310,7 +310,8 @@ begin
         if (TStart <> 1) and (GStr[TStart-1] <> ' ') and                    // Must start with the line or have a space to left
                     (GStr[TStart-1] <> '>') then exit(false);               // We also allow a > before a leading tag
 
-        if TStart + TLen = length(GStr) then exit(false);                   // Nothing after it. Thats not a tag.
+        if TStart + TLen = length(GStr) then exit(false);                  // Nothing after it. Thats not a tag.
+        // ToDo : next line generates an exception sometimes, try
         if (GStr[TStart + TLen] = ' ') or                                   // A space after a leading tag, I don't think so.
             (GStr[TStart + TLen] = tag[1]) then exit(False);                // nor is another char thats in the tag.
         exit(True);

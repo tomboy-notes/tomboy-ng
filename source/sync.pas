@@ -199,10 +199,12 @@ type                       { ----------------- T S Y N C --------------------- }
 	  function DoUploads(Uploads: TNoteInfoList): boolean;
 				                { A much simpler compare method that replaces CheckUsingLCD() for NextCloud only.
 				                We can ignore duplicate notes in a Join or New action because we cannot detect
-				                them anyway. And we don't use Rev No in any way.  Scans over Notes dir, for each
-				                note we try to match the ID in MainMetaData. If we find a match, we have to work
-				                out if its a SyNothing, SyDownload, SyUpLoadEdit or SyClash. If no match, add
-				                that ID as a new entry, SyUpLoadNew.  }
+				                them anyway. And we don't use Rev No in any way.
+                                When this starts, we have a list containing only the notes from remote server,
+                                set to SyDownload or SyNothing. We look at the last change date of notes
+                                present in Notes Dir, if they are newer than the LastSyncDate then they are
+                                either SyClash (if its currently SyDownLoad) or SyUpload (if its currently
+                                SyNothing). }
       function NextCloudCompare(): boolean;
           { Only used with DeleteFromLocalManifest(), writes LocalMetaData back to disk.
             Honours TestRun. }
@@ -326,8 +328,9 @@ type                       { ----------------- T S Y N C --------------------- }
                 // A string of local last sync date. Empty if we have not synced before
                 // Available iff we are in RepoUse mode after TestConnection()
         LocalLastSyncDateSt : string;
-                // Last time this client synced (not this run), set and tested in call to StartSync()
-                // Available iff we are in RepoUse mode after TestConnection()
+                { Last time this client synced (not this run), set and tested in call to StartSync()
+                Available iff we are in RepoUse mode after TestConnection(), its set by reading
+                Local Manifest. Set to 0.0 if in new or join modes. }
         LocalLastSyncDate : TDateTime;
                 // Write debug messages as we do things.
         DebugMode : boolean;
@@ -438,6 +441,16 @@ begin
            end;
     end else if DebugMode then
        debugln('DeleteFromLocalManifest - cannot find ' + ConfigDir + 'android');
+    FullFileName := ConfigDir + 'nextcloud' + pathdelim + 'manifest.xml';
+    if FileExists(FullFileName) then
+        if not DeleteFromThisManifest(FullFileName, ID) then begin
+           debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
+            // Note - not finding the (first) manifest file is not an error, just unsynced.
+            exit(False);
+        end
+    else if DebugMode then
+       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not synced yet ?');
+
     exit(True);
 end;
 
@@ -706,13 +719,14 @@ var
     I : Integer;
     St : string;
 begin
-    debugln('-----------list dump for ' + ListTitle);
+    debugln(#10 + '============== list dump for ' + ListTitle);
     for I := 0 to Meta.Count -1 do begin
         St := ' Rev:' + inttostr(Meta.Items[i]^.Rev) + ' SID:' + inttostr(Meta.Items[i]^.SID);
         while length(St) < 15 do St := St + ' ';
         // St := Meta.ActionName(Meta.Items[i]^.Action);
+        debugln('---- Title: ' + Meta.Items[I]^.Title);
         debugln(copy(Meta.Items[I]^.ID, 1, 16) + St + Meta.ActionName(Meta.Items[i]^.Action)
-            + ' LCD:' + Meta.Items[i]^.LastChange + ' CRD:' + Meta.Items[i]^.CreateDate + '   ' + Meta.Items[I]^.Title);
+            + ' LCD:' + Meta.Items[i]^.LastChange + ' CRD:' + Meta.Items[i]^.CreateDate);
     end;
 end;
 
@@ -733,6 +747,9 @@ end;
 
 
 function TSync.NextCloudCompare() : boolean;
+{
+We do not deal with remotelty or locally deleted notes at this stage.
+}
 var
     Info : TSearchRec;
     PNote : PNoteInfo;
@@ -746,12 +763,14 @@ begin
             pNote := MainMetaData.FindID(ID);
             if pNote = nil then                                           // so, its not already in List, add it as a new upload.
                 MainMetaData.AddByFileName(NotesDir + Info.Name, SyUploadNew)
-			else begin                                                    // Now, Meta Action may be SyDownload or SyNothing at this stage.
-                RealLCD := GetNoteLastChangeSt(NotesDir + Info.Name, ErrStr);
-                if GetGMTFromStr(RealLCD) > LocalLastSyncDate then
-                    if pNote^.Action = SyDownLoad then
-                        pNote^.Action := SyClash
-                    else pNote^.Action := SyUploadEdit;
+			else begin                                                    // Action may be SyDownload, SyDeleteLocal or SyNothing at this stage.
+                if pNote^.Action <> SyDeleteLocal then begin              // We don't need do anything here if its DeleteLocal
+                    RealLCD := GetNoteLastChangeSt(NotesDir + Info.Name, ErrStr);
+                    if GetGMTFromStr(RealLCD) > LocalLastSyncDate then    // Has it changed since last sync ?
+                        if pNote^.Action = SyDownLoad then
+                            pNote^.Action := SyClash
+                        else pNote^.Action := SyUploadEdit;
+                end;
 			end;
 		until FindNext(Info) <> 0;
     end else result := false;
@@ -1299,6 +1318,7 @@ begin
     Result := True;
     FreeAndNil(MainMetaData);
     MainMetaData := TNoteInfoList.Create;
+    MainMetaData.LastSyncDate := self.LocalLastSyncDate;
     case RepoAction of
         RepoUse  : Result := Transport.GetNewNotes(MainMetaData, False);
         RepoJoin : Result := Transport.GetNewNotes(MainMetaData, ForceLCD);
@@ -1321,8 +1341,9 @@ begin
 
     //exit;                              // ToDo : remove this, leaks before here !
 
+    //TestRun := True;
 
-    //DebugMeta := True;
+    DebugMeta := True;
     if not LoadRemoteRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
         RepoUse : begin
@@ -1350,7 +1371,7 @@ begin
     if not TestRun then
        ProcessClashes();
     if DebugMeta then DisplayNoteInfo(MainMetaData, 'Note Meta Data after doing checks');
-    // if TestRun then exit();
+    //if TestRun then exit();
     // ====================== Set an exit here to do no-write tests
     ProgressProcedure('Starting Sync');
     if DoDownLoads() then           // DoDownloads() will tell us what troubled it.

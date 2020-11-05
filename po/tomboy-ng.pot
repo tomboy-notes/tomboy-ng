@@ -99,6 +99,10 @@ msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
 msgstr ""
 
+#: resourcestr.rscontentdated
+msgid "Content Dated"
+msgstr ""
+
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
 msgid "Copying orig to Backup directory failed"
@@ -270,6 +274,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr ""
 
+#: resourcestr.rsnotavailable
+msgid "Not Available"
+msgstr ""
+
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repo"
@@ -340,6 +348,10 @@ msgstr ""
 #: resourcestr.rsrenamefailed
 msgctxt "resourcestr.rsrenamefailed"
 msgid "ERROR, could not rename Backup File "
+msgstr ""
+
+#: resourcestr.rsrollbackintro
+msgid "You can roll back to previous version of this note"
 msgstr ""
 
 #: resourcestr.rsrunningsync
@@ -542,6 +554,10 @@ msgstr ""
 msgid "EditBoxForm"
 msgstr ""
 
+#: teditboxform.kmemo1.hint
+msgid "Recover "
+msgstr ""
+
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr ""
@@ -692,6 +708,10 @@ msgstr ""
 
 #: teditboxform.speedbuttontools.hint
 msgid "Tools - Sync, Export, Spell"
+msgstr ""
+
+#: teditboxform.speedrollback.hint
+msgid "Roll Back"
 msgstr ""
 
 #: tformbackupview.buttondelete.caption
@@ -1028,40 +1048,6 @@ msgstr ""
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
-msgstr ""
-
-#: tformsync.editnexthostaddress.text
-msgid "10.85.2.2"
-msgstr ""
-
-#: tformsync.label3.caption
-msgid "Host Address"
-msgstr ""
-
-#: tformsync.label4.caption
-msgid "User Name"
-msgstr ""
-
-#: tformsync.label5.caption
-msgid "Password"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo1.caption
-msgctxt "tformsync.labelfilesyncinfo1.caption"
-msgid "LabelFileSyncInfo1"
-msgstr ""
-
-#: tformsync.labelfilesyncinfo2.caption
-msgctxt "tformsync.labelfilesyncinfo2.caption"
-msgid "LabelFileSyncInfo2"
-msgstr ""
-
-#: tformsync.labelprogress.caption
-msgid "LabelProgress"
-msgstr ""
-
-#: tformsync.labelslow.caption
-msgid "LabelSlow"
 msgstr ""
 
 #: tformsync.listviewreport.columns[0].caption
@@ -1429,11 +1415,6 @@ msgstr ""
 msgid "Take a time stamped snapshot of notes and config"
 msgstr ""
 
-#: tsett.buttonnextcloudsync.caption
-msgctxt "tsett.buttonnextcloudsync.caption"
-msgid "Setup NextCloud"
-msgstr ""
-
 #: tsett.buttonsetcolours.caption
 msgctxt "tsett.buttonsetcolours.caption"
 msgid "Set Colours"
@@ -1494,7 +1475,7 @@ msgid "Allow a Note to be in Multiple Notebooks."
 msgstr ""
 
 #: tsett.checkmanynotebooks.hint
-msgid "This may adversly affect tradional Tomboy, take care."
+msgid "This may adversly affect traditional Tomboy, take care."
 msgstr ""
 
 #: tsett.checkshowextlinks.caption
@@ -1566,6 +1547,10 @@ msgstr ""
 msgid "When a conflict is detected between a local note and remote one :"
 msgstr ""
 
+#: tsett.label4.caption
+msgid "Repo : "
+msgstr ""
+
 #: tsett.label5.caption
 msgid "Days per snapshot"
 msgstr ""
@@ -1591,9 +1576,14 @@ msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr ""
 
-#: tsett.labelnextcloudsync.caption
-msgctxt "tsett.labelnextcloudsync.caption"
-msgid "not configured"
+#: tsett.labelfilesyncinfo1.caption
+msgctxt "tsett.labelfilesyncinfo1.caption"
+msgid "LabelFileSyncInfo1"
+msgstr ""
+
+#: tsett.labelfilesyncinfo2.caption
+msgctxt "tsett.labelfilesyncinfo2.caption"
+msgid "LabelFileSyncInfo2"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
@@ -1646,7 +1636,7 @@ msgstr ""
 
 #: tsett.speedsetupsync.caption
 msgctxt "tsett.speedsetupsync.caption"
-msgid "Setup File Sync"
+msgid "Setup"
 msgstr ""
 
 #: tsett.tabbackup.caption
