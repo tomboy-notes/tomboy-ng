@@ -63,6 +63,7 @@ unit Mainunit;
     2020/05/26  Improved tabbing
     2020/06/11  remove unused closeASAP, open splash if bad note.
     2020/07/09  New help notes location. A lot moved out of here.
+    2020/11/07  Fix multiple About Boxes (via SysTray) issue. Untested on Win/Mac
 
     CommandLine Switches
 
@@ -155,6 +156,7 @@ type
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
+        AboutFrm : TForm;
         //HelpList : TStringList;
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
@@ -335,6 +337,7 @@ end;          *)
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    AboutFrm := Nil;
     Randomize;                                      // used by sett.getlocaltime()
     //HelpList := Nil;
     UseTrayMenu := true;
@@ -471,6 +474,7 @@ begin
         repeat
             SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
         until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
+    FormResize(self);   // Qt5 apparently does not call FormResize at startup.
 end;
 
 
@@ -640,7 +644,12 @@ procedure TMainForm.ShowAbout();
 var
         Stg : string;
 begin
-        Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
+        if AboutFrm <> Nil then begin
+            AboutFrm.Show;
+            AboutFrm.EnsureVisible();
+            exit;
+		end;
+		Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
             + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
         {$ifdef LCLCOCOA} Stg := Stg + ', 64bit Cocoa'; {$endif}
         {$ifdef LCLQT5}   Stg := Stg + ', QT5';         {$endif}
@@ -650,7 +659,11 @@ begin
             + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
             + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
-        Showmessage(Stg);
+        AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
+        AboutFrm.ShowModal;
+        AboutFrm.free;
+
+        //Showmessage(Stg);
 end;
 
 end.
