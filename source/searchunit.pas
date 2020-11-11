@@ -923,30 +923,15 @@ begin
     ListViewNotes.Column[1].SortIndicator := siAscending;
     //debugln('Using sort indicators');
     {$endif}
+
+
+
+
 end;
 
-procedure TSearchForm.FormDestroy(Sender: TObject);
-begin
-  NoteLister.Free;
-  NoteLister := Nil;
-  HelpNotes.Free;
-  HelpNotes := Nil;
-  freeandnil(HelpList);
-end;
 
-procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
-    Shift: TShiftState);
-begin
-     if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
-       if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
-       if key = VK_Q then MainForm.Close();
-     end;
-end;
 
-procedure TSearchForm.FormResize(Sender: TObject);
-begin
-    ScaleListView();
-end;
+
 
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
@@ -983,6 +968,29 @@ begin
     ButtonMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
     {$endif}      // Cocoa issue
+end;
+
+procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+     if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
+       if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
+       if key = VK_Q then MainForm.Close();
+     end;
+end;
+
+procedure TSearchForm.FormResize(Sender: TObject);
+begin
+    ScaleListView();
+end;
+
+procedure TSearchForm.FormDestroy(Sender: TObject);
+begin
+  NoteLister.Free;
+  NoteLister := Nil;
+  HelpNotes.Free;
+  HelpNotes := Nil;
+  freeandnil(HelpList);
 end;
 
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);

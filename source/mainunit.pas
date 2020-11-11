@@ -662,7 +662,7 @@ begin
         AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
         AboutFrm.ShowModal;
         AboutFrm.free;
-
+        AboutFrm := Nil;
         //Showmessage(Stg);
 end;
 
