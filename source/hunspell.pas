@@ -1,21 +1,14 @@
 {$MODE objfpc}{$H+}
 unit hunspell;
 
-{	Copyright (C) 2017-2020 David Bannon and others.
+{	Copyright (C) 2017-2020 David Bannon.
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
     or https://spdx.org/licenses/BSD-3-Clause-Clear.html
 
-	Parts Based on code that seems to appear in lots of places in the Lazarus Forum
-    and elsewhere. As such, its assumed to be free to use by anyone for any purpose.
-
-
-    ------------------
-
-    Hunspell interface.
-
-    With additions and corrections by dbannon to make it a little easier to use.
+    Note this unit 'includes' hunspell.inc that has a different license, please
+    see that file for details.
 
 	A Unit to connect to the hunspell library and check some spelling.
 	First, create the class, it will try and find a library to load.
@@ -29,24 +22,19 @@ unit hunspell;
     2018/11/01  Added /usr/local/Cellar/hunspell/1.6.2/lib/ as place to look
                 for hunspell library on Mac. Need to make that more flexible.
     2018/11/29  Better debug messages
+    2020/11/13  Moved newly generated hunspell bindings out to a inc file.
 }
 
 
 interface
+
 uses Classes, dynlibs;
 
+{ The Hunspell bindings are 'included' from another file to keep license
+  issues managable and to comply with Debian requirements. }
 
-type
-  THunspell_create = function(aff_file: PChar; dict_file: PChar): Pointer; cdecl;
-  THunspell_destroy = procedure(spell: Pointer); cdecl;
-  THunspell_spell = function(spell: Pointer; word: PChar): Boolean; cdecl;
-  THunspell_suggest = function(spell: Pointer; out slst: PPChar; word: PChar): Integer; cdecl;
-  THunspell_analyze = function(spell: Pointer; var slst: PPChar; word: PChar): Integer; cdecl;
-  THunspell_stem = function(spell: Pointer; var slst: PPChar; word: PChar): Integer; cdecl;
-  THunspell_free_list = procedure(spell: Pointer; var slst: PPChar; n: integer); cdecl;
-  THunspell_get_dic_encoding = function(spell: Pointer): PChar; cdecl;
-  THunspell_add = function(spell: Pointer; word: PChar): Integer; cdecl;
-  THunspell_remove = function(spell: Pointer; word: PChar): Integer; cdecl;
+
+{$INCLUDE hunspell.inc}
 
    { THunspell }
 
@@ -100,8 +88,9 @@ var HunLibHandle: {THandle;} TLibHandle;     // 64bit requires use of TLibHandle
 
 implementation
 
-uses LazUTF8, SysUtils, {$ifdef linux}Process,{$endif} LazFileUtils, Forms, lazlogger;
-// Forms needed so we can call Application.~
+uses LazUTF8, SysUtils, {$ifdef linux}Process,{$endif} LazFileUtils, {Forms,} lazlogger;
+// LazUTF8 requires lazutils be added to dependencies
+// Forms needed so we can call Application.~   , add LCLBase to dependencies
 // lazlogger for the debug lines.
 
 { THunspell }
