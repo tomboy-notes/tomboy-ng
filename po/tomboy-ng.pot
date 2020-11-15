@@ -189,7 +189,7 @@ msgstr ""
 
 #: resourcestr.rshelplang
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported en, es, nl"
+msgid "Force Language, supported en, es, fr, nl"
 msgstr ""
 
 #: resourcestr.rshelpnosplash

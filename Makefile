@@ -26,7 +26,7 @@ INSTALL_PROGRAM = $(INSTALL) -c -m 0755
 INSTALL_DATA    = $(INSTALL) -c -m 0644
 CP = cp -R
 # ----- Language translation files, just add 2 letter code here -----
-LANGUAGES = es nl
+LANGUAGES = es fr nl
 MKDIRLANG = test -d $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES
 CPLANG = msgfmt -o $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES/tomboy-ng.mo po/tomboy-ng.$(LANG).po
 

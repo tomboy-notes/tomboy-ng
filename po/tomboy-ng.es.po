@@ -202,8 +202,10 @@ msgid "Show this help message and exit."
 msgstr "Mostrar mensaje de ayuda y salir."
 
 #: resourcestr.rshelplang
+#, fuzzy
+#| msgid "Force Language, supported en, es, nl"
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported en, es, nl"
+msgid "Force Language, supported en, es, fr, nl"
 msgstr "Forzar idioma. Idiomas suportados: en, es, nl"
 
 #: resourcestr.rshelpnosplash
