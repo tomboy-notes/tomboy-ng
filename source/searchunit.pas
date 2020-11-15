@@ -96,6 +96,7 @@ unit SearchUnit;
     2020/06/07  ListBoxNotebooks sorted (but not reverse sortable, that would require TListBox becoming TListView)
     2020/07/09  New help notes location.
     2020/07/17  OpenNote was checking edit1.test = 'search' instead of rsMenuSearch
+    2020/11/14  ListViewNotes now has alternating colours, req ugly fix for Qt5 involving increasing font size
 }
 
 {$mode objfpc}{$H+}
@@ -155,6 +156,8 @@ type        { TSearchForm }
         procedure ListBoxNotebooksMouseUp(Sender: TObject;
             Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure ListViewNotesDblClick(Sender: TObject);
+		procedure ListViewNotesDrawItem(Sender: TCustomListView;
+				AItem: TListItem; ARect: TRect; AState: TOwnerDrawState);
         procedure ListViewNotesKeyPress(Sender: TObject; var Key: char);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
@@ -901,9 +904,9 @@ end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
 //var Tick : qword;
+{$ifdef LCLQT5}    var  fd: TFontData; {$endif}
 begin
-    HelpList := Nil;
-    //NeedRefresh := True;            Index notes does this
+      HelpList := Nil;
     //Tick := GetTickCount64();
     Caption := 'tomboy-ng Search';
     NoteLister := nil;
@@ -924,14 +927,17 @@ begin
     //debugln('Using sort indicators');
     {$endif}
 
-
-
-
+    { ListView Settings }
+    ListViewNotes.AutoSort:=True;
+    ListViewNotes.AutoWidthLastColumn:= True;
+    ListViewNotes.ViewStyle:= vsReport;
+    ListViewNotes.ReadOnly := True;
+    ListViewNotes.OwnerDraw:= True;
+    {$ifdef LCLQT5}                 // This because when ownerdrawn, we loose spacing between rows in Qt5, ugly workaround.
+    fd := GetFontData( SearchForm.Font.Handle );
+    ListViewNotes.Font.Height := round((fd.Height * 72 / SearchForm.Font.PixelsPerInch)) + 4;
+    {$endif}
 end;
-
-
-
-
 
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
@@ -1111,7 +1117,7 @@ end;
 
 // ----------------------------- ListView Things -------------------------------
 
-{ ListView Settings - AutoSort, AutoSortIndicator, AutoWidthLastColumn all true
+{ ListView Settings - Are set in CreateForm. AutoSort, AutoSortIndicator, AutoWidthLastColumn all true
   Make two columns, name them, leave autwith off, ReadOnly, RowSelect true
   ScrollBars ssAutoVertical, ViewStyle vsReport.
   Note that AutoSortIndicator and SortIndicator are not available in LCL2.0.6 and earlier
@@ -1132,6 +1138,25 @@ begin
       	exit();
   	end;
   	if length(NoteTitle) > 0 then OpenNote(NoteTitle, FullFileName);
+end;
+
+procedure TSearchForm.ListViewNotesDrawItem(Sender: TCustomListView;
+		AItem: TListItem; ARect: TRect; AState: TOwnerDrawState);
+begin
+    // Note this only works for TListView if ViewStyle is vsReport
+    // (and obviously, we are in ownerdraw mode).
+    if Odd(AItem.Index) then
+        ListViewNotes.Canvas.Brush.Color := Sett.AltColour;
+    ListViewNotes.Canvas.FillRect(ARect);
+    {$ifdef LCLQT5}                                                             // Note we have increased the font height for Qt5 in OnCreate()
+    ListViewNotes.Canvas.TextRect(ARect, 2, ARect.Top, AItem.Caption);          // Title column
+    ListViewNotes.Canvas.TextRect(ARect, ListViewNotes.Column[0].Width + 2      // LCD Column
+            , ARect.Top, AItem.SubItems[0]);
+    {$else}
+    ListViewNotes.Canvas.TextRect(ARect, 2, ARect.Top+2, AItem.Caption);        // Title column
+    ListViewNotes.Canvas.TextRect(ARect, ListViewNotes.Column[0].Width + 2      // LCD Column
+            , ARect.Top+2, AItem.SubItems[0]);
+    {$endif}
 end;
 
 procedure TSearchForm.BackupNote(const NoteName, PutIntoName : string);

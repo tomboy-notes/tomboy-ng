@@ -233,6 +233,7 @@ type
         procedure TabRecoverResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
         procedure TimerAutoSyncTimer(Sender: TObject);
+                        // Sets default colours, depending on dark or light theme
         procedure SetColours;
 
     private
@@ -285,10 +286,11 @@ type
         HelpNotesPath : string;         // expected path to help note directories for this OS
         HelpNotesLang : string;         // either two char code or ''
         AreClosing : boolean;           // False until set true by mainUnit FormClose.
-        BackGndColour : TColor;         // Next three set in main unit.
+        BackGndColour : TColor;
         TextColour : TColor;
         HiColour : TColor;
         TitleColour : TColor;
+        AltColour   : TColor;           // A colour similar to  BackGndColour, alt rows in ListView
         UsualFont : string;
         FixedFont : string;
         DefaultFixedFont : string;
@@ -1090,16 +1092,20 @@ begin
 end;
 
 procedure TSett.SetColours;
+// pink = $EEEEFF, White is $FFFFFF, Black is $000000
 begin
+    AltColour := $FFFFDD;               // ToDo : must add this to user set colours, sigh .....
     if UserSetColours then exit;        // will have already been set by config or by colour form.
     if DarkTheme then begin
         //debugln('Its definltly a Dark Theme');
-        BackGndColour:= clBlack;
+        BackGndColour:= clBlack;        // eg $000000
+        AltColour := $606060;           // BackGround Colour of Alternating rows in some ListViews
         HiColour := clDkGray;
         TextColour := clLtGray;
         TitleColour:= clTeal;
     end else begin
         BackGndColour := clCream;
+        AltColour := $FFFFDD;           // pale blue
         HiColour := clYellow;
         TextColour := clBlack;
         TitleColour := clBlue;

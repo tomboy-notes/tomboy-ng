@@ -167,6 +167,7 @@ object SearchForm: TSearchForm
       TabOrder = 4
       ViewStyle = vsReport
       OnDblClick = ListViewNotesDblClick
+      OnDrawItem = ListViewNotesDrawItem
       OnKeyPress = ListViewNotesKeyPress
     end
   end
