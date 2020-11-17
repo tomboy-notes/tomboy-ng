@@ -45,6 +45,8 @@ unit notifier;
 
 interface
 
+
+// {$undef LINUX}
 uses
     Classes, SysUtils,  fpTimer{$ifdef Linux}, libnotify{$else}, PopupNotifier {$endif} ;
 
@@ -88,6 +90,7 @@ begin
     PopupNotifier := TPopupNotifier.Create(nil);
     PopupNotifier.Text  := Message;
     PopupNotifier.Title := Title;
+    PopupNotifier.Color:= $909090;
     PopupNotifier.show;
     LocalTimer := TFPTimer.create(nil);
     LocalTimer.Interval := ShowTime;

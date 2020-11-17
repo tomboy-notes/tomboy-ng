@@ -88,10 +88,11 @@ var HunLibHandle: {THandle;} TLibHandle;     // 64bit requires use of TLibHandle
 
 implementation
 
-uses LazUTF8, SysUtils, {$ifdef linux}Process,{$endif} LazFileUtils, {Forms,} lazlogger;
-// LazUTF8 requires lazutils be added to dependencies
-// Forms needed so we can call Application.~   , add LCLBase to dependencies
-// lazlogger for the debug lines.
+uses LazUTF8, SysUtils,
+    {$ifdef linux}Process,{$endif}          // Because we go looking for the library.
+    {$ifdef WINDOWS}Forms,{$endif}          // Forms needed so we can call Application.~ on Windows
+    LazFileUtils,                           // Requires we add LCLBase to dependencies
+    lazlogger;                              // lazlogger for the debug lines.
 
 { THunspell }
 

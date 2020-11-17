@@ -1369,7 +1369,7 @@ msgid "Create New Note from Template"
 msgstr ""
 
 #: tsearchform.menurenamenotebook.caption
-msgid "Rename Note Book"
+msgid "Rename NoteBook"
 msgstr ""
 
 #: tsearchform.panel2.caption

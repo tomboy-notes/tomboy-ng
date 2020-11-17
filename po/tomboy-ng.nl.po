@@ -1471,7 +1471,7 @@ msgid "Create New Note from Template"
 msgstr "Nieuwe notitie maken op basis van sjabloon"
 
 #: tsearchform.menurenamenotebook.caption
-msgid "Rename Note Book"
+msgid "Rename NoteBook"
 msgstr ""
 
 #: tsearchform.panel2.caption

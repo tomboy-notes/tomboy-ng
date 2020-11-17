@@ -1444,7 +1444,8 @@ begin
     end;
     KMemo1.Blocks.LockUpdate;
     {$ifdef windows}
-    Color:= Sett.textcolour;
+    // Color:= Sett.textcolour;
+    if Sett.DarkTheme then Color := Sett.BackGndColour;
     {$endif}
     KMemo1.Colors.BkGnd:= Sett.BackGndColour;
     Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
@@ -1658,19 +1659,6 @@ begin
 	HL := KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
     HL.TextStyle.Font.Color:= Sett.TitleColour;
     // Note the colour seems to get set to some standard that TK likes when added.
-
-(*
-i := BlockNo-2;
-while I < (BlockNo + 10) do begin
-    Blk := TKMemoTextBlock(KMemo1.Blocks.Items[i]);
-    write('no=' + inttostr(i));
-    if fsUnderline in Blk.TextStyle.Font.style then
-        write(' Underlined ')
-    else
-        write(' plain ');
-    writeln(' Type=' + KMemo1.Blocks.Items[i].ClassName + ' Text=' + KMemo1.Blocks.Items[i].Text);
-    inc(i);
-end; *)
 end;
 
 

@@ -1381,7 +1381,9 @@ msgid "Create New Note from Template"
 msgstr "Créer une note à partir du modèle"
 
 #: tsearchform.menurenamenotebook.caption
-msgid "Rename Note Book"
+#, fuzzy
+#| msgid "Rename Note Book"
+msgid "Rename NoteBook"
 msgstr "Renommer le Carnet"
 
 #: tsearchform.panel2.caption

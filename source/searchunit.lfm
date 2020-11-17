@@ -300,7 +300,7 @@ object SearchForm: TSearchForm
       OnClick = MenuDeleteNotebookClick
     end
     object MenuRenameNoteBook: TMenuItem
-      Caption = 'Rename Note Book'
+      Caption = 'Rename NoteBook'
       OnClick = MenuRenameNoteBookClick
     end
     object MenuNewNoteFromTemplate: TMenuItem
