@@ -198,6 +198,7 @@ unit EditBox;
                 Display external links in single note mode.
     2020/08/19  Fixed bug affecting end of weblink in single note mode.
     2020/10/22  Small bug where title markup can be smeared down several lines.
+    2020/11/18  Added StayOnTop to Tools Popup Menu
 }
 
 
@@ -219,6 +220,7 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
+			CheckStayOnTop: TCheckBox;
 		FindDialog1: TFindDialog;
         KMemo1: TKMemo;
         Label2: TLabel;
@@ -231,6 +233,7 @@ type
         MenuBullet: TMenuItem;
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
+		MenuStayOnTop: TMenuItem;
         MenuItemSettings: TMenuItem;
         MenuItemEvaluate: TMenuItem;
         MenuItemIndex: TMenuItem;
@@ -274,8 +277,7 @@ type
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
         procedure ButtMainTBMenuClick(Sender: TObject);
-        procedure ButtTBMenuClick(Sender: TObject);
-  procedure FindDialog1Find(Sender: TObject);
+        procedure FindDialog1Find(Sender: TObject);
         procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -305,6 +307,7 @@ type
         procedure MenuItemExportMarkdownClick(Sender: TObject);
         procedure MenuItemIndexClick(Sender: TObject);
         procedure MenuItemSettingsClick(Sender: TObject);
+		procedure MenuStayOnTopClick(Sender: TObject);
         procedure MenuUnderlineClick(Sender: TObject);
         procedure MenuStrikeoutClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
@@ -987,6 +990,17 @@ begin
     Sett.show;
 end;
 
+procedure TEditBoxForm.MenuStayOnTopClick(Sender: TObject);
+begin
+    if MenuStayOnTop.Checked then begin
+        FormStyle := fsNormal;
+        MenuStayOnTop.Checked := false;
+	end else begin
+        FormStyle := fsSystemStayOnTop;
+        MenuStayOnTop.Checked := true;
+	end;
+end;
+
 procedure TEditBoxForm.MenuUnderlineClick(Sender: TObject);
 begin
     AlterFont(ChangeUnderline);
@@ -1048,11 +1062,6 @@ begin
     PopupMainTBMenu.Popup;
 end;
 
-procedure TEditBoxForm.ButtTBMenuClick(Sender: TObject);
-begin
-
-end;
-
 procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
 begin
     FindIt(FindDialog1.FindText,
@@ -1062,7 +1071,6 @@ end;
 
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 begin
-    // debugln('OnActivate called');
     if Ready then begin               // just possible that a new note was created, check for its link.
         if KMemo1.Blocks.RealSelLength > 1 then begin
             //debugln('OnActivate 1, checking for new link, [' + KMemo1.Blocks.SelText + ']');

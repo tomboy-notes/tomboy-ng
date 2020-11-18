@@ -21,7 +21,7 @@ In practise, tomboy-ng will sync to any (?) file system that your file manager c
 One thing to note, if you plan to sync both Tomboy and tomboy-ng with the same repository, Tomboy is not quite so happy with "any shared filesystem", check it before investing too much time.<size:large>
 
 <bold>Setting Up A Repository</bold></size:large>
-Easy, might be a good idea to create a directory there such as Tomboy-Sync or whatever,  tomboy-ng (or Tomboy) just needs be told where the filesystem is and it will do the rest. In tomboy-ng, click Settings, Sync Tab, click "Change File Sync Repo". Browse to the directory you created.  tomboy-ng will have a look at the directory and you existing notes (if any) and will generate a report about what it will do. If that looks OK, click "Save and Sync". Done.<size:large>
+Easy, might be a good idea to create a directory there such as Tomboy-Sync or whatever,  tomboy-ng (or Tomboy) just needs be told where the filesystem is and it will do the rest. In tomboy-ng, click Settings, Sync Tab, click "Change File Sync Repo". Browse to the directory you created.  tomboy-ng will have a look at the directory and your existing notes (if any) and will generate a report about what it will do. If that looks OK, click "Save and Sync". Done.<size:large>
 
 <bold>sshfs to do network sync</bold></size:large>
 tomboy-ng can sync quite happily to any remote server that you have ssh access to. The author has a cut price hosting plan with a much neglected website and a few gig of diskspace. Its useful because I can ssh into it ! So, if I can ssh to it, I can use sshfs with it. For example, on a linux machine, I would install sshfs then, initially ssh to this remote server and create a directory called eg TB_Sync, then back on my local machine-
@@ -59,8 +59,8 @@ Secondly, please try starting tomboy-ng from the command line. While its running
 
 
 </note-content></text>
-  <last-change-date>2020-08-21T22:52:36.2819882+10:00</last-change-date>
-  <last-metadata-change-date>2020-08-21T22:52:36.2819882+10:00</last-metadata-change-date>
+  <last-change-date>2020-11-17T22:27:30.4965449+11:00</last-change-date>
+  <last-metadata-change-date>2020-11-17T22:27:30.4965449+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

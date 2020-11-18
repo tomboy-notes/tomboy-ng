@@ -566,6 +566,11 @@ msgstr "Menu"
 msgid "EditBoxForm"
 msgstr "EditBoxForm"
 
+#: teditboxform.checkstayontop.caption
+msgctxt "teditboxform.checkstayontop.caption"
+msgid "Stay On Top"
+msgstr ""
+
 #: teditboxform.kmemo1.hint
 msgid "Recover "
 msgstr "Restauration "
@@ -689,6 +694,11 @@ msgstr "Police normale"
 #: teditboxform.menusmall.caption
 msgid "Small Font"
 msgstr "Petite police"
+
+#: teditboxform.menustayontop.caption
+msgctxt "teditboxform.menustayontop.caption"
+msgid "Stay On Top"
+msgstr ""
 
 #: teditboxform.menustrikeout.caption
 msgid "Strikeout"

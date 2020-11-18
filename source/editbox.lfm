@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 554
+  Left = 771
   Height = 497
-  Top = 323
+  Top = 324
   Width = 617
   Caption = 'EditBoxForm'
   ClientHeight = 497
@@ -853,6 +853,14 @@ object EditBoxForm: TEditBoxForm
     ShowHint = True
     ParentShowHint = False
   end
+  object CheckStayOnTop: TCheckBox
+    Left = 384
+    Height = 23
+    Top = 8
+    Width = 110
+    Caption = 'Stay On Top'
+    TabOrder = 2
+  end
   object PopupMenuText: TPopupMenu
     Left = 232
     Top = 200
@@ -963,6 +971,10 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Evaluate'
       ShortCut = 16453
       OnClick = MenuItemEvaluateClick
+    end
+    object MenuStayOnTop: TMenuItem
+      Caption = 'Stay On Top'
+      OnClick = MenuStayOnTopClick
     end
   end
   object PopupMenuRightClick: TPopupMenu

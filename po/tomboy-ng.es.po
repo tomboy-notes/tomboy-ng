@@ -580,6 +580,11 @@ msgstr "Menú"
 msgid "EditBoxForm"
 msgstr "EditarModelo"
 
+#: teditboxform.checkstayontop.caption
+msgctxt "teditboxform.checkstayontop.caption"
+msgid "Stay On Top"
+msgstr ""
+
 #: teditboxform.kmemo1.hint
 msgid "Recover "
 msgstr ""
@@ -704,6 +709,11 @@ msgstr "Fuente normal"
 #: teditboxform.menusmall.caption
 msgid "Small Font"
 msgstr "Fuente pequeña"
+
+#: teditboxform.menustayontop.caption
+msgctxt "teditboxform.menustayontop.caption"
+msgid "Stay On Top"
+msgstr ""
 
 #: teditboxform.menustrikeout.caption
 msgid "Strikeout"
