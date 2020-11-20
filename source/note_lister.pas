@@ -106,7 +106,7 @@ type
 	end;
 
 type                                 { ---------- TNoteInfoList ---------}
-   TNoteList = class(TList)   // TFPList
+   TNoteList = class(TList)   // ToDo : TFPList is faster
    private
     	function Get(Index: integer): PNote;
     public

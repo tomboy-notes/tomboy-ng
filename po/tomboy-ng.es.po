@@ -580,11 +580,6 @@ msgstr "Menú"
 msgid "EditBoxForm"
 msgstr "EditarModelo"
 
-#: teditboxform.checkstayontop.caption
-msgctxt "teditboxform.checkstayontop.caption"
-msgid "Stay On Top"
-msgstr ""
-
 #: teditboxform.kmemo1.hint
 msgid "Recover "
 msgstr ""
@@ -1211,27 +1206,22 @@ msgstr "Contraseña SSH del dispositivo"
 msgid "Upload means from tomboy-ng to Android Device"
 msgstr "Subir significa de tomboy-ng a un dispositivo Android"
 
+#: tmainform.bitbtnhide.caption
+#, fuzzy
+msgctxt "tmainform.bitbtnhide.caption"
+msgid "Hide"
+msgstr "Ocultar"
+
+#: tmainform.bitbtnquit.caption
+#, fuzzy
+msgctxt "tmainform.bitbtnquit.caption"
+msgid "Quit"
+msgstr "Salir"
+
 #: tmainform.buttmenu.caption
 msgctxt "tmainform.buttmenu.caption"
 msgid "Menu"
 msgstr "Menú"
-
-#: tmainform.buttonclose.caption
-msgctxt "tmainform.buttonclose.caption"
-msgid "Quit"
-msgstr "Salir"
-
-#: tmainform.buttonclose.hint
-msgid "Close tomboy-ng"
-msgstr "Salir de tomboy-ng"
-
-#: tmainform.buttondismiss.caption
-msgid "Hide"
-msgstr "Ocultar"
-
-#: tmainform.buttondismiss.hint
-msgid "Dismiss this window but leave tomboy-ng running"
-msgstr "Despachar la ventana pero dejar tomboy-ng ejecutándose"
 
 # ¿Cambiar a lo de David?
 #: tmainform.caption

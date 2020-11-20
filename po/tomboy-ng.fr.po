@@ -17,15 +17,15 @@ msgstr "Impossible de trouver une expression à évaluer"
 
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
-msgstr "Tomboy-ng est une réécriture de \"Tomboy Notes\" sur Lazarus"
+msgstr "Tomboy-ng est une réécriture de \"Tomboy Notes\""
 
 #: mainunit.rsabout2
 msgid "and FPC. While its ready for production"
-msgstr "et FPC. Bien que prêt à être utilisé"
+msgstr "sur Lazarus et FPC. Bien que stable la prudence"
 
 #: mainunit.rsabout3
 msgid "use, you still need to be careful and have good backups."
-msgstr "la prudence et des sauvegardes sont recommandées."
+msgstr "suggère de faire des sauvegardes régulières."
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
@@ -97,7 +97,7 @@ msgstr "Change le nom du Carnet"
 
 #: resourcestr.rschangesync
 msgid "Change Sync Repo"
-msgstr "Change la synchro du dépôt"
+msgstr "Changer le dépôt"
 
 #: resourcestr.rsclickbadnote
 msgctxt "resourcestr.rsclickbadnote"
@@ -151,11 +151,11 @@ msgstr "Échec de la copie, répertoire inexistant ?"
 
 #: resourcestr.rsfilesyncinfo1
 msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive"
-msgstr "tomboy-ng utilise File Sync pour synchroniser avec un Dropbox, USB, etc."
+msgstr "tomboy-ng utilise File Sync pour se synchroniser avec Dropbox, Google Drive,"
 
 #: resourcestr.rsfilesyncinfo2
 msgid "or use a remote server over the internet with sshfs"
-msgstr "ou utilise un serveur distant sur internet avec sshfs"
+msgstr "un disque externe ou encore un quelconque serveur distant avec sshfs"
 
 #: resourcestr.rsfound
 msgctxt "resourcestr.rsfound"
@@ -198,10 +198,8 @@ msgid "Show this help message and exit."
 msgstr "Afficher ce message d'aide et quitter."
 
 #: resourcestr.rshelplang
-#, fuzzy
-#| msgid "Force Language, supported en, es, nl"
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported en, es, fr, nl"
+msgid "Force Language, supported en, es, nl"
 msgstr "Choix de la langue (en, es, fr, nl)"
 
 #: resourcestr.rshelpnosplash
@@ -226,7 +224,7 @@ msgstr "Imprimer la version et quitter"
 
 #: resourcestr.rslastchange
 msgid "Last Change"
-msgstr "Dernière modif"
+msgstr "Modifiée le"
 
 #: resourcestr.rslastsync
 msgid "Last Sync"
@@ -235,7 +233,7 @@ msgstr "Dernière synchro"
 #: resourcestr.rslookingatnotes
 msgctxt "resourcestr.rslookingatnotes"
 msgid "Looking at notes ...."
-msgstr "Voir les notes..."
+msgstr "Journal de la gestion des notes :"
 
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
@@ -279,7 +277,7 @@ msgstr "L'option multi carnets est active"
 
 #: resourcestr.rsname
 msgid "Name"
-msgstr "Nom"
+msgstr "Nom de la note"
 
 #: resourcestr.rsnewerversionexits
 msgctxt "resourcestr.rsnewerversionexits"
@@ -316,7 +314,7 @@ msgstr "Fermer cette note déjà ouverte et réessayer"
 #: resourcestr.rsnotes
 msgctxt "resourcestr.rsnotes"
 msgid "notes"
-msgstr "notes"
+msgstr "note(s)"
 
 #: resourcestr.rsnotesdeleted
 msgid "Note or notes deleted"
@@ -340,7 +338,7 @@ msgstr "Impacte %d notes"
 #: resourcestr.rsonenotebook
 msgctxt "resourcestr.rsonenotebook"
 msgid "Settings allow only one Notebook"
-msgstr "Les réglages n'autorisent qu'une seule note"
+msgstr "Un seul carnet autorisé (cf. Réglages)"
 
 #: resourcestr.rsoverwritenote
 msgctxt "resourcestr.rsoverwritenote"
@@ -374,7 +372,7 @@ msgstr "Synchro active"
 #: resourcestr.rssaveandsync
 msgctxt "resourcestr.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
-msgstr "Pressez \"Sauver + Synchro\" quand c'est OK"
+msgstr "Pour terminer presser \"Sauver + Synchro\""
 
 #: resourcestr.rssearchhint
 msgid "Exact matches for terms between \" \""
@@ -383,7 +381,7 @@ msgstr "Correspondance exacte si placé entre \"\""
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
 msgid "Set the notebooks this note is a member of"
-msgstr "Choisir le carnet dont cette note fait partie"
+msgstr "Choisir le(s) carnet(s) où ajouter la note courante."
 
 #: resourcestr.rssetup
 msgctxt "resourcestr.rssetup"
@@ -403,7 +401,7 @@ msgstr "Configurer d'abord la synchro"
 #: resourcestr.rssnapshotcreated
 msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
-msgstr "Créé, nouvelle copie ailleurs ?"
+msgstr "créé, faire une autre copie ailleurs ?"
 
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
@@ -455,7 +453,7 @@ msgstr "Bibliothèque non chargée"
 
 #: settings.rsdictionaryloaded
 msgid "Dictionary Loaded OK"
-msgstr "Dictionnaire chargé"
+msgstr "La correction orthographique est correctement chargée."
 
 #: settings.rsdictionarynotfound
 msgid "No Dictionary Found"
@@ -511,27 +509,27 @@ msgstr "Changer la connexion synchro existante ?"
 
 #: syncutils.rsclashes
 msgid "Clashes        "
-msgstr "Collisions "
+msgstr "Nbre de collisions = "
 
 #: syncutils.rsdonothing
 msgid "Do Nothing     "
-msgstr "Ne rien faire "
+msgstr "Nbre de notes sans action = "
 
 #: syncutils.rsdownloads
 msgid "Downloads      "
-msgstr "Download "
+msgstr "Nbre de downloads = "
 
 #: syncutils.rsedituploads
 msgid "Edit Uploads   "
-msgstr "Éditer les uploads "
+msgstr "Nbre d'uploads modifiés = "
 
 #: syncutils.rslocaldeletes
 msgid "Local Deletes  "
-msgstr "Suppressions locales "
+msgstr "Nbre de suppressions locales = "
 
 #: syncutils.rsnewuploads
 msgid "New Uploads    "
-msgstr "Nouvel upload "
+msgstr "Nbre de nouveaux uploads = "
 
 #: syncutils.rsnextbitslow
 msgid "Next bit can be a bit slow, please wait"
@@ -539,11 +537,11 @@ msgstr "Prochain bit possiblement lent, merci de patienter"
 
 #: syncutils.rsnonotesneededsync
 msgid "No notes needed syncing. You need to write more."
-msgstr "Pas de synchro requise jusqu'à plus ample saisie."
+msgstr "Pas de synchro requise pour l'instant."
 
 #: syncutils.rsnotesweredealt
 msgid " notes were dealt with."
-msgstr " notes traitées."
+msgstr " notes ont été traitées."
 
 #: syncutils.rsnotrecommend
 msgid "Generally not recommended."
@@ -551,11 +549,11 @@ msgstr "Plutôt déconseillé."
 
 #: syncutils.rsremotedeletes
 msgid "Remote Deletes "
-msgstr "Effacements distants "
+msgstr "Nbre d'effacements distants = "
 
 #: syncutils.rssyncerrors
 msgid "ERRORS (see consol log) "
-msgstr "ERRORS (cf. log console) "
+msgstr "Nbre d'erreurs (cf. log console) = "
 
 #: teditboxform.buttmaintbmenu.caption
 msgctxt "teditboxform.buttmaintbmenu.caption"
@@ -566,14 +564,9 @@ msgstr "Menu"
 msgid "EditBoxForm"
 msgstr "EditBoxForm"
 
-#: teditboxform.checkstayontop.caption
-msgctxt "teditboxform.checkstayontop.caption"
-msgid "Stay On Top"
-msgstr ""
-
 #: teditboxform.kmemo1.hint
 msgid "Recover "
-msgstr "Restauration "
+msgstr "Récupérer"
 
 #: teditboxform.label2.caption
 msgid "Read Only"
@@ -593,7 +586,7 @@ msgstr "Gras"
 
 #: teditboxform.menubullet.caption
 msgid "Bullet"
-msgstr "Puce"
+msgstr "Puce(s)"
 
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
@@ -607,7 +600,7 @@ msgstr "Surlignement"
 #: teditboxform.menuhuge.caption
 msgctxt "teditboxform.menuhuge.caption"
 msgid "Huge"
-msgstr "Énorme"
+msgstr "Police énorme"
 
 #: teditboxform.menuitalic.caption
 msgid "Italic"
@@ -615,7 +608,7 @@ msgstr "Italique"
 
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
-msgstr "Alt+Droite/Gauche pour ajouter/ôter"
+msgstr "Alt+ <-/->  ôte ou ajoute des puces"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
@@ -685,7 +678,7 @@ msgstr "Synchroniser"
 
 #: teditboxform.menularge.caption
 msgid "Large Font"
-msgstr "Grande police"
+msgstr "Police grande"
 
 #: teditboxform.menunormal.caption
 msgid "Normal Font"
@@ -693,12 +686,7 @@ msgstr "Police normale"
 
 #: teditboxform.menusmall.caption
 msgid "Small Font"
-msgstr "Petite police"
-
-#: teditboxform.menustayontop.caption
-msgctxt "teditboxform.menustayontop.caption"
-msgid "Stay On Top"
-msgstr ""
+msgstr "Police petite"
 
 #: teditboxform.menustrikeout.caption
 msgid "Strikeout"
@@ -714,7 +702,7 @@ msgstr "Supprimer la note"
 
 #: teditboxform.speedbuttonlink.hint
 msgid "Link highlighted text to a new note"
-msgstr "Lier le texte surligné à une nouvelle note"
+msgstr "Créer une note avec la sélection"
 
 #: teditboxform.speedbuttonnotebook.hint
 msgid "Manage Notebooks"
@@ -722,7 +710,7 @@ msgstr "Gestion des Carnets"
 
 #: teditboxform.speedbuttonsearch.hint
 msgid "Search All Notes Ctrl-Shift-F"
-msgstr "Recherche générale, Ctrl+Shft+F"
+msgstr "Rechercher (ctrl+shft+F)"
 
 #: teditboxform.speedbuttontext.hint
 msgid "Font size, bold, italics etc"
@@ -773,7 +761,7 @@ msgstr "Récupérer la note dans le dépôt principal"
 
 #: tformbackupview.caption
 msgid "View, recover or delete Backup Files"
-msgstr "Voir, récupérer ou effacer les fichiers sauvés"
+msgstr "Gestion des fichiers de sauvegarde"
 
 #: tformbackupview.listbox1.hint
 msgid "Use Ctrl or Shift to select multiple entries"
@@ -902,7 +890,7 @@ msgstr "Choisir de voir, copier et coller dans une note."
 
 #: tformrecover.label2.caption
 msgid "Please be carefull, this is a dangerous place!"
-msgstr "Attention, cet endroit est dangereux !"
+msgstr "Attention, cette fonctionnalité est instable !"
 
 #: tformrecover.label3.caption
 msgid "Restore any notes in the snapshot that are not in the existing notes directory."
@@ -1088,7 +1076,7 @@ msgstr "Titre"
 
 #: tformsync.listviewreport.columns[2].caption
 msgid "Note ID"
-msgstr "ID note"
+msgstr "ID de la note"
 
 #: tformsyncerror.buttcancel.hint
 msgid "Stop Auto Sync until next restart"
@@ -1198,7 +1186,7 @@ msgstr "Cacher"
 
 #: tmainform.buttondismiss.hint
 msgid "Dismiss this window but leave tomboy-ng running"
-msgstr "Fermer la fenêtre mais garder tomboy-ng actif"
+msgstr "Cacher cette fenêtre en gardant tomboy-ng actif"
 
 #: tmainform.caption
 msgid "tomboy-ng"
@@ -1206,7 +1194,7 @@ msgstr "tomboy-ng"
 
 #: tmainform.checkboxdontshow.caption
 msgid "Don't Show for normal startup"
-msgstr "Cacher lors du démarrage classique"
+msgstr "Ne plus afficher au prochain démarrage"
 
 #: tmainform.checkboxdontshow.hint
 msgid "You can reverse this from Settings"
@@ -1218,15 +1206,15 @@ msgstr "Si l'icône verte de tomboy-ng est présente dans le dock, la fenêtre p
 
 #: tmainform.label1.caption
 msgid "Have Config"
-msgstr "Avoir la config"
+msgstr "Configuration des préférences"
 
 #: tmainform.label3.caption
 msgid "Dictionary Config (optional)"
-msgstr "Config du Dico. (optionnel)"
+msgstr "Vérificateur orthographique (optionnel)"
 
 #: tmainform.label4.caption
 msgid "Sync Config (optional)"
-msgstr "Config de la Synchro (optionnel)"
+msgstr "Configuration de la synchro (optionnel)"
 
 #: tmainform.label5.caption
 msgid "Welcome to tomboy-ng !"
@@ -1256,7 +1244,7 @@ msgstr "Nom du nouveau Carnet"
 
 #: tnotebookpick.label5.caption
 msgid "Press OK and we will make the Note Book AND add this note to it."
-msgstr "Presser OK pour créer le carnet ET y ajouter la note."
+msgstr "\"OK\"  crée le carnet et y ajoute la note courante."
 
 #: tnotebookpick.label6.caption
 msgid "Existing Name"
@@ -1376,7 +1364,7 @@ msgstr "Recherche tomboy-ng"
 #: tsearchform.checkcasesensitive.caption
 msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
-msgstr "Gestion de la casse"
+msgstr "Tenir compte de la casse"
 
 #: tsearchform.menudeletenotebook.caption
 msgid "Delete Notebook"
@@ -1391,9 +1379,7 @@ msgid "Create New Note from Template"
 msgstr "Créer une note à partir du modèle"
 
 #: tsearchform.menurenamenotebook.caption
-#, fuzzy
-#| msgid "Rename Note Book"
-msgid "Rename NoteBook"
+msgid "Rename Note Book"
 msgstr "Renommer le Carnet"
 
 #: tsearchform.panel2.caption
@@ -1403,7 +1389,7 @@ msgstr "Carnets"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
-msgstr "Utiliser l'emplacement défaut pour les notes"
+msgstr "Emplacement par défaut"
 
 #: tsett.buttdefaultnotedir.hint
 msgid "Will work for many new users"
@@ -1436,7 +1422,7 @@ msgstr "Choix du dictionnaire"
 
 #: tsett.buttonsetnotepath.caption
 msgid "Set Path to Note Files"
-msgstr "Emplacement du fichier des notes"
+msgstr "Choisir l'emplacement"
 
 #: tsett.buttonsetnotepath.hint
 msgid "If you have notes somewhere else"
@@ -1444,7 +1430,7 @@ msgstr "S'il y a des notes ailleurs"
 
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
-msgstr "Définir la bibliothèque orthographe"
+msgstr "Choisir la bibliothèque"
 
 #: tsett.buttonshowbackup.caption
 msgid "Show Me"
@@ -1466,11 +1452,11 @@ msgstr "Type de légende"
 #: tsett.checkautosnapenabled.caption
 msgctxt "tsett.checkautosnapenabled.caption"
 msgid "Use auto snapshots"
-msgstr "Utiliser l'auto snapshot"
+msgstr "snapshot automatique"
 
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
-msgstr "Lancer au démarrage"
+msgstr "Ouvrir au démarrage"
 
 #: tsett.checkboxautosync.caption
 msgid "Auto Sync"
@@ -1482,7 +1468,7 @@ msgstr "Une synchro par heure si possible."
 
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
-msgstr "Une note peut figurer dans plusieurs Carnet."
+msgstr "Une note peut figurer dans plusieurs carnets."
 
 #: tsett.checkmanynotebooks.hint
 msgid "This may adversly affect traditional Tomboy, take care."
@@ -1526,7 +1512,7 @@ msgstr " Synchro "
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
-msgstr "Réglages sauvés dans :"
+msgstr "Les réglages seront sauvegardés dans :"
 
 #: tsett.label10.caption
 msgctxt "tsett.label10.caption"
@@ -1535,23 +1521,23 @@ msgstr "Langue pour les notes"
 
 #: tsett.label11.caption
 msgid "Backup Files"
-msgstr "Fichiers sauvegarde"
+msgstr "Fichiers de sauvegarde"
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
-msgstr "Le contrôle orthographique nécessite les bibliothèque Hunspell et"
+msgstr "Le contrôle de l'orthographe requiert des bibliothèques Hunspell"
 
 #: tsett.label14.caption
 msgid "an appropriate Hunspell Dictionary set."
-msgstr "Le réglage du dictionnaire est approprié."
+msgstr "et un réglage approprié du dictionnaire."
 
 #: tsett.label16.caption
 msgid "Maxium number of snapshots"
-msgstr "Nombre max de snaphots"
+msgstr "snaphots au maximum"
 
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
-msgstr "Toutes les notes seront sauvées dans :"
+msgstr "Les notes seront sauvegardées dans :"
 
 #: tsett.label3.caption
 msgid "When a conflict is detected between a local note and remote one :"
@@ -1563,23 +1549,23 @@ msgstr "Dépôt : "
 
 #: tsett.label5.caption
 msgid "Days per snapshot"
-msgstr "Nombre de jours par synchro"
+msgstr "jours entre 2 synchro"
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
-msgstr "La sauvegarde des fichiers est faite à l'effacement d'une note ou lors d'une synchro"
+msgstr "Une sauvegarde est réalisé quand une note est effacée"
 
 #: tsett.label7.caption
 msgid "is about to overwrite one. "
-msgstr "est sur le point d'en écraser un. "
+msgstr "manuellement ou par une synchronisation."
 
 #: tsett.label8.caption
 msgid "They remain, for ever, unless you do something about them."
-msgstr "Restent indéfiniment jusqu'à nouvel avis les concernant."
+msgstr "Elle reste ensuite présente jusqu'à son effacement manuel."
 
 #: tsett.label9.caption
 msgid "A snaphot is a copy of your current note directory."
-msgstr "Un snapshot est une copie de la note courante."
+msgstr "Un snapshot est une copie en l'état du répertoire des notes"
 
 #: tsett.labelfilesync.caption
 msgctxt "tsett.labelfilesync.caption"
@@ -1602,32 +1588,32 @@ msgstr "Répertoire des snap"
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."
-msgstr "Toujours demander que faire."
+msgstr "Demander quoi faire à chaque fois."
 
 #: tsett.radiofontbig.caption
 msgid "Big"
-msgstr "Grand"
+msgstr "Police grande"
 
 #: tsett.radiofonthuge.caption
 msgctxt "tsett.radiofonthuge.caption"
 msgid "Huge"
-msgstr "Énorme"
+msgstr "Police énorme"
 
 #: tsett.radiofontmedium.caption
 msgid "Medium"
-msgstr "Moyen"
+msgstr "Police moyenne"
 
 #: tsett.radiofontsmall.caption
 msgid "Small"
-msgstr "Petit"
+msgstr "Police petite"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
-msgstr "Utiliser la note locale, écraser la note serveur."
+msgstr "Préférer la note locale, écraser la note serveur."
 
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
-msgstr "Utiliser la note serveur, écraser la note locale."
+msgstr "Préférer la note serveur, écraser la note locale."
 
 #: tsett.speedbuthelp.caption
 msgctxt "tsett.speedbuthelp.caption"
@@ -1655,7 +1641,7 @@ msgstr "Sauvegarde"
 
 #: tsett.tabbasic.caption
 msgid "Basic"
-msgstr "Basique"
+msgstr "Général"
 
 #: tsett.tabdisplay.caption
 msgid "Notes"
@@ -1664,15 +1650,14 @@ msgstr "Notes"
 #: tsett.tabrecover.caption
 msgctxt "tsett.tabrecover.caption"
 msgid "Recover"
-msgstr "Récupérer"
+msgstr "Restauration"
 
 #: tsett.tabspell.caption
 msgctxt "tsett.tabspell.caption"
 msgid "Spell"
-msgstr "Épeler"
+msgstr "Orthographe"
 
 #: tsett.tabsync.caption
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Synchro"
-

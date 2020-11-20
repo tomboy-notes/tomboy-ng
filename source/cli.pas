@@ -80,7 +80,6 @@ end;
                           ret true but set SingleFileName to ''. }
 function HaveCMDParam() : boolean;
     // WARNING - the options here MUST match the options list in CommandLineError() above
-    { ToDo : put options in a TStringList or a set and share, less mistakes ....}
 var
     Params : TStringList;
     LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',

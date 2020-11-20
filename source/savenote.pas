@@ -626,9 +626,7 @@ var
             //Buff := Footer();
             //OutStream.Write(Buff[1], length(Buff));
 
-         Except     { TODO 1 : Must test this to see what happens with an empty
-         				list of blocks. Probably makes sense to not save anything
-                        that does not have at least one TKMemotextBlock  }
+         Except
             on EListError do begin
                 debugln('ERROR - EListError while writing note to stream.');
                 { we now do footer in the WriteToDisk()

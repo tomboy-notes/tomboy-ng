@@ -64,6 +64,7 @@ unit Mainunit;
     2020/06/11  remove unused closeASAP, open splash if bad note.
     2020/07/09  New help notes location. A lot moved out of here.
     2020/11/07  Fix multiple About Boxes (via SysTray) issue. Untested on Win/Mac
+    2020/11/18  Changed other two buttons to BitBtn so qt5 looks uniform.
 
     CommandLine Switches
 
@@ -120,9 +121,9 @@ type
 
     TMainForm = class(TForm)
         ApplicationProperties1: TApplicationProperties;
+		BitBtnHide: TBitBtn;
+		BitBtnQuit: TBitBtn;
         ButtMenu: TBitBtn;
-        ButtonClose: TButton;
-        ButtonDismiss: TButton;
         CheckBoxDontShow: TCheckBox;
         ImageSpellCross: TImage;
         ImageSpellTick: TImage;
@@ -141,6 +142,8 @@ type
         Label6: TLabel;
         LabelNotesFound: TLabel;
         TrayIcon: TTrayIcon;
+		procedure BitBtnHideClick(Sender: TObject);
+  procedure BitBtnQuitClick(Sender: TObject);
         procedure ButtMenuClick(Sender: TObject);
         procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
@@ -546,7 +549,7 @@ end;
 procedure TMainForm.FormResize(Sender: TObject);
 begin
     ButtMenu.Width := (Width div 3);
-    ButtonDismiss.Width := (Width div 3);
+    BitBtnHide.Width := (Width div 3);
 end;
 
     // Attempt to detect we are in a dark theme, sets relevent colours.
@@ -605,12 +608,27 @@ end;
 
 procedure TMainForm.ButtonCloseClick(Sender: TObject);
 begin
-    MainForm.Close;
+
 end;
 
 procedure TMainForm.ButtMenuClick(Sender: TObject);
 begin
     MainTBMenu.popup(Left + 40, Top + 40);
+end;
+
+procedure TMainForm.BitBtnQuitClick(Sender: TObject);
+begin
+    MainForm.Close;
+end;
+
+procedure TMainForm.BitBtnHideClick(Sender: TObject);
+begin
+    {$ifdef LCLCOCOA}     // ToDo : is this still necessary ? Or can Cocoa hide like other systems ?
+    width := 0;
+    height := 0;
+    {$else}
+    hide();
+    {$endif}
 end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);

@@ -221,9 +221,7 @@ var
 //                 Buff := Buff + SetFontXML(FSize, False);
             if length(Buff) > 0 then
                   Memo1.Append(Buff);
-         Except     { TODO 1 : Must test this to see what happens with an empty
-         				list of blocks. Probably makes sense to not save anything
-                        that does not have at least one TKMemotextBlock  }
+         Except
             on EListError do begin
             	Memo1.Append(Buff);
             end;

@@ -615,11 +615,6 @@ msgstr ""
 msgid "EditBoxForm"
 msgstr "EditBoxForm"
 
-#: teditboxform.checkstayontop.caption
-msgctxt "teditboxform.checkstayontop.caption"
-msgid "Stay On Top"
-msgstr ""
-
 #: teditboxform.kmemo1.hint
 msgid "Recover "
 msgstr ""
@@ -1257,31 +1252,20 @@ msgstr "SSH-wachtwoord van apparaat"
 msgid "Upload means from tomboy-ng to Android Device"
 msgstr ""
 
+#: tmainform.bitbtnhide.caption
+msgctxt "tmainform.bitbtnhide.caption"
+msgid "Hide"
+msgstr ""
+
+#: tmainform.bitbtnquit.caption
+msgctxt "tmainform.bitbtnquit.caption"
+msgid "Quit"
+msgstr ""
+
 #: tmainform.buttmenu.caption
 msgctxt "tmainform.buttmenu.caption"
 msgid "Menu"
 msgstr ""
-
-#: tmainform.buttonclose.caption
-#, fuzzy
-#| msgid "Close"
-msgctxt "tmainform.buttonclose.caption"
-msgid "Quit"
-msgstr "Sluiten"
-
-#: tmainform.buttonclose.hint
-msgid "Close tomboy-ng"
-msgstr ""
-
-#: tmainform.buttondismiss.caption
-#, fuzzy
-#| msgid "Dismiss"
-msgid "Hide"
-msgstr "Verwerpen"
-
-#: tmainform.buttondismiss.hint
-msgid "Dismiss this window but leave tomboy-ng running"
-msgstr "Verwerp dit venster, maar houdt tomboy-ng draaiende"
 
 #: tmainform.caption
 msgid "tomboy-ng"

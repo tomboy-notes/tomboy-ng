@@ -979,8 +979,8 @@ var
 begin
     Result := True;
     if MaskSettingsChanged and (not IgnoreMask) then exit();
-    if LabelSettingPath.Caption = 'LabelSettingPath' then            // ToDo : I very occasionally create a file called LabelSettingPath, cannot reproduce
-        showmessage('WARNING, TSett.SettingsChanged - writing config before setting filename');
+{    if LabelSettingPath.Caption = 'LabelSettingPath' then            // ToDo : I very occasionally create a file called LabelSettingPath, cannot reproduce
+        showmessage('WARNING, TSett.SettingsChanged - writing config before setting filename');     }
     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
     try
         try

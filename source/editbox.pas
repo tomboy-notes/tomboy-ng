@@ -220,7 +220,6 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
-			CheckStayOnTop: TCheckBox;
 		FindDialog1: TFindDialog;
         KMemo1: TKMemo;
         Label2: TLabel;

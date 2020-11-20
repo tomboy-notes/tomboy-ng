@@ -853,14 +853,6 @@ object EditBoxForm: TEditBoxForm
     ShowHint = True
     ParentShowHint = False
   end
-  object CheckStayOnTop: TCheckBox
-    Left = 384
-    Height = 23
-    Top = 8
-    Width = 110
-    Caption = 'Stay On Top'
-    TabOrder = 2
-  end
   object PopupMenuText: TPopupMenu
     Left = 232
     Top = 200

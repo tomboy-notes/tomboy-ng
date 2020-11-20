@@ -190,6 +190,8 @@ cd "$K_DIR"		# WARNING, kcontrols is not part of the github zip file, its added 
 
 mkdir -p "lib/$TARGET"			# this is where kcontrols object files end up.
 
+
+FPCHARD=" -Cg  -k-pie -k-znow "
 FPCKOPT=" -MObjFPC -Scgi -Cg -O1 -g -gl -l -vewnibq -vh- -Fi$K_DIR"
 FPCKUNITS=" -Fu$LAZ_DIR/packager/units/$TARGET -Fu$LAZ_DIR/components/lazutils/lib/$TARGET"
 FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/buildintf/units/$TARGET -Fu$LAZ_DIR/components/freetype/lib/$TARGET"
@@ -198,7 +200,7 @@ FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/cairocanvas/lib/$TARGET/$WIDGET -Fu
 FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/ideintf/units/$TARGET/$WIDGET -Fu$LAZ_DIR/components/printers/lib/$TARGET/$WIDGET"
 FPCKUNITS="$FPCKUNITS -Fu$LAZ_DIR/components/tdbf/lib/$TARGET/$WIDGET -Fu. -FUlib/$TARGET"
 
-RUNIT="$COMPILER $EXCLUDEMESSAGE $FPCKOPT $FPCKUNITS kmemo.pas"
+RUNIT="$COMPILER $EXCLUDEMESSAGE $FPCKOPT  $FPCHARD   $FPCKUNITS kmemo.pas"
 
 echo "$RUNIT"
 echo "-----------------"
@@ -267,6 +269,7 @@ UNITS="$UNITS -FU$SOURCE_DIR/lib/$TARGET/"
 
 OPT2=" -dLCL -dLCL$WIDGET" 
 DEFS="-dDisableLCLGIF -dDisableLCLJPEG -dDisableLCLPNM -dDisableLCLTIFF"
+FPCHARD=" -Cg  -k-pie -k-znow "
 
 
 # We must force a clean compile, no make looking after us here.
@@ -279,7 +282,7 @@ rm -f tomboy-ng
 rm -f "$PROJ"
 mkdir -p "lib/$TARGET"
 
-RUNIT="$COMPILER $OPT1 $UNITS $OPT2 $DEFS $PROJ.lpr"
+RUNIT="$COMPILER $OPT1 $FPCHARD $UNITS $OPT2 $DEFS $PROJ.lpr"
 echo "--------------- COMPILE COMMAND ------------------------"
 echo "$RUNIT" 
 

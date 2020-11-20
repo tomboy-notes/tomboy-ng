@@ -554,11 +554,6 @@ msgstr ""
 msgid "EditBoxForm"
 msgstr ""
 
-#: teditboxform.checkstayontop.caption
-msgctxt "teditboxform.checkstayontop.caption"
-msgid "Stay On Top"
-msgstr ""
-
 #: teditboxform.kmemo1.hint
 msgid "Recover "
 msgstr ""
@@ -1166,26 +1161,19 @@ msgstr ""
 msgid "Upload means from tomboy-ng to Android Device"
 msgstr ""
 
-#: tmainform.buttmenu.caption
-msgctxt "tmainform.buttmenu.caption"
-msgid "Menu"
-msgstr ""
-
-#: tmainform.buttonclose.caption
-msgctxt "tmainform.buttonclose.caption"
-msgid "Quit"
-msgstr ""
-
-#: tmainform.buttonclose.hint
-msgid "Close tomboy-ng"
-msgstr ""
-
-#: tmainform.buttondismiss.caption
+#: tmainform.bitbtnhide.caption
+msgctxt "tmainform.bitbtnhide.caption"
 msgid "Hide"
 msgstr ""
 
-#: tmainform.buttondismiss.hint
-msgid "Dismiss this window but leave tomboy-ng running"
+#: tmainform.bitbtnquit.caption
+msgctxt "tmainform.bitbtnquit.caption"
+msgid "Quit"
+msgstr ""
+
+#: tmainform.buttmenu.caption
+msgctxt "tmainform.buttmenu.caption"
+msgid "Menu"
 msgstr ""
 
 #: tmainform.caption
