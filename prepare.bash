@@ -8,10 +8,11 @@
 
 # To build a Debian Source Package, on eg a current Bullseye -
 # 	Install fpc, lazarus, libnotifier-dev, devscripts
-#	Ensure appropriate pgp certs in place ($HOME/.gnupg)
+#	Ensure appropriate pgp key in place ($HOME/.gnupg), 
+#	The key must match DEBFULLNAME and DEBEMAIL, below
 #	In an empty dir, following commands -
 #	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.bash
-# Unless you are me, you need to edit the above, DEBNAME and DEBEMAIL _OR_ have env set 
+# Unless you are me, you need to edit the above, DEBFULLNAME and DEBEMAIL _OR_ have env set 
 #	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
 #	mv master.zip tomboy-ng-master.zip
 #	bash ./prepare.bash -D bullseye
@@ -35,8 +36,8 @@
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. 
-DEBEMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
-DEBFULLNAME="tomboy-ng"			# This matches cert I use to sign tomboy-ng stuff
+DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
+DEF_FULLNAME="tomboy-ng"			# This matches cert I use to sign tomboy-ng stuff
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
@@ -135,6 +136,7 @@ function ShowHelp () {
     exit
 }
 
+	echo "Who we are [ $DEBMAIL ] and [ $DEBFULLNAME ] "
 
 while getopts "hpQUCl:D:" opt; do
   case $opt in
@@ -176,13 +178,19 @@ rm -f WHICHFPC WHICHLAZ
 
 if [ -f tomboy-ng-master.zip ]; then
 	CheckFPC_LAZ
+	echo "Who we are $DEBMAIL and $DEBFULLNAME"
 	# In practise, we should have these env set, some defaults just in case. 
-	if [ "$DEBEMAIL" == "" ]; then
+	if [ "$DEBEMAIL" = "" ]; then
+		DEBEMAIL="$DEF_EMAIL"
 		export DEBEMAIL
+		echo "------------------- exporting DEBEMAIL "
 	fi
 	if [ "$DEBFULLNAME" = "" ]; then
+		DEBFULLNAME="$DEF_FULLNAME"
 		export DEBFULLNAME
+		echo "------------------- exporting DEBFULLNAME"
 	fi
+	echo "Who we are $DEBMAIL and $DEBFULLNAME"
 	unzip -q tomboy-ng-master.zip
 	if [ "$UFILES" = "YES" ]; then
 		if [ "Makefile" -nt "tomboy-ng-master/Makefile" ]; then
