@@ -6,6 +6,21 @@
 # build it a source deb or just run buildit.bash to make a tomboy-ng binary"
 # Hardwired data in this script are specific to the Deb source build.
 
+# To build a Debian Source Package, on eg a current Bullseye -
+# 	Install fpc, lazarus, libnotifier-dev, devscripts
+#	Ensure appropriate pgp certs in place ($HOME/.gnupg)
+#	In an empty dir, following commands -
+#	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.bash
+# Unless you are me, you need to edit the above, DEBNAME and DEBEMAIL _OR_ have env set 
+#	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
+#	mv master.zip tomboy-ng-master.zip
+#	bash ./prepare.bash -D bullseye
+#	cd tomboy-ng_XXXX                       // Whatever the name is at this stage....
+#	debuild -S
+#	The files you want are in ../.
+
+
+# ---- Building the Ubuntu PPA kit --------------
 # Move both a fresh tomboy-ng-master.zip and this script into a clean
 # subdirectory, run the script, change to tomboy-ng.{ver} and run -
 #
@@ -19,7 +34,7 @@
 #	2020-09-02 Added -D distro switch
 
 APP="tomboy-ng"
-# DEBEMAIL="dbannon@internode.on.net"
+# These are mine, they are used as defaults if NOT set in env. 
 DEBEMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
 DEBFULLNAME="tomboy-ng"			# This matches cert I use to sign tomboy-ng stuff
 VER="unknown"
@@ -161,8 +176,13 @@ rm -f WHICHFPC WHICHLAZ
 
 if [ -f tomboy-ng-master.zip ]; then
 	CheckFPC_LAZ
-	export DEBEMAIL
-	export DEBFULLNAME
+	# In practise, we should have these env set, some defaults just in case. 
+	if [ "$DEBEMAIL" == "" ]; then
+		export DEBEMAIL
+	fi
+	if [ "$DEBFULLNAME" = "" ]; then
+		export DEBFULLNAME
+	fi
 	unzip -q tomboy-ng-master.zip
 	if [ "$UFILES" = "YES" ]; then
 		if [ "Makefile" -nt "tomboy-ng-master/Makefile" ]; then
