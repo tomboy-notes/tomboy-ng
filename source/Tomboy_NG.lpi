@@ -23,7 +23,7 @@
       <ExcludedIdentifiers Count="1">
         <Item1 Value="Form Caption"/>
       </ExcludedIdentifiers>
-      <ExcludedOriginals Count="43">
+      <ExcludedOriginals Count="45">
         <Item1 Value="TimeEdit1"/>
         <Item2 Value="Label1"/>
         <Item3 Value="LabelExistingAdvice"/>
@@ -67,6 +67,8 @@
         <Item41 Value="LabelRemote"/>
         <Item42 Value="LabelLocal"/>
         <Item43 Value="LabelBadNoteAdvice"/>
+        <Item44 Value="LabelFileSyncinfo1"/>
+        <Item45 Value="LabelFileSyncinfo2"/>
       </ExcludedOriginals>
     </i18n>
     <BuildModes Count="17">
@@ -737,13 +739,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
+        <CommandLineParams Value="--lang=es"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
+            <CommandLineParams Value="--lang=es"/>
           </local>
         </Mode0>
       </Modes>

@@ -58,7 +58,7 @@ begin
        {$endif}
        {$ifdef WINDOWS}debugln('   --dark-theme'); {$endif}
        //debugln('   --delay-start                ' + rsHelpDelay);
-       debugln('   -l CCode  --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
+       debugln('   --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);
        debugln('   -h --help                    ' + rsHelpHelp);
        debugln('   --version                    ' + rsHelpVersion);

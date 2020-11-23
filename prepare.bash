@@ -6,8 +6,9 @@
 # build it a source deb or just run buildit.bash to make a tomboy-ng binary"
 # Hardwired data in this script are specific to the Deb source build.
 
+# -------------------- Making a Debian SRC ----------------------
 # To build a Debian Source Package, on eg a current Bullseye -
-# 	Install fpc, lazarus, libnotifier-dev, devscripts
+# 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt6pas-dev
 #	Ensure appropriate pgp key in place ($HOME/.gnupg), 
 #	The key must match DEBFULLNAME and DEBEMAIL, below
 #	In an empty dir, following commands -
@@ -20,8 +21,15 @@
 #	debuild -S
 #	The files you want are in ../.
 
-
-# ---- Building the Ubuntu PPA kit --------------
+# -------------------- Signing Details -------------------------
+# Below are hardwired my personal full name and email address. These
+# will only be used if relevent env vars are empty. Note that they
+# must match whats avalable in a gpg key. AND if that does not match
+# the Maintainer: entry from control, we get a non maintainer upload warning.
+#
+# This does need work, I should be using a key with the tomboy-ng email address.
+# 
+# -------------------- Building the Ubuntu PPA kit --------------
 # Move both a fresh tomboy-ng-master.zip and this script into a clean
 # subdirectory, run the script, change to tomboy-ng.{ver} and run -
 #
@@ -36,8 +44,10 @@
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. 
-DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
-DEF_FULLNAME="tomboy-ng"			# This matches cert I use to sign tomboy-ng stuff
+#DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
+DEF_EMAIL="dbannon@internode.on.net"    # but this matches my published keys, sigh...
+#DEF_FULLNAME="tomboy-ng"			# This matches cert I use to sign tomboy-ng stuff
+DEF_FULLNAME="David R Bannon"		# but this matches my published keys, sigh ...
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
@@ -136,7 +146,6 @@ function ShowHelp () {
     exit
 }
 
-	echo "Who we are [ $DEBMAIL ] and [ $DEBFULLNAME ] "
 
 while getopts "hpQUCl:D:" opt; do
   case $opt in
@@ -178,19 +187,15 @@ rm -f WHICHFPC WHICHLAZ
 
 if [ -f tomboy-ng-master.zip ]; then
 	CheckFPC_LAZ
-	echo "Who we are $DEBMAIL and $DEBFULLNAME"
-	# In practise, we should have these env set, some defaults just in case. 
+	# In practise, we should have these env set, my defaults just in case. 
 	if [ "$DEBEMAIL" = "" ]; then
 		DEBEMAIL="$DEF_EMAIL"
 		export DEBEMAIL
-		echo "------------------- exporting DEBEMAIL "
 	fi
 	if [ "$DEBFULLNAME" = "" ]; then
 		DEBFULLNAME="$DEF_FULLNAME"
 		export DEBFULLNAME
-		echo "------------------- exporting DEBFULLNAME"
 	fi
-	echo "Who we are $DEBMAIL and $DEBFULLNAME"
 	unzip -q tomboy-ng-master.zip
 	if [ "$UFILES" = "YES" ]; then
 		if [ "Makefile" -nt "tomboy-ng-master/Makefile" ]; then
