@@ -1,7 +1,7 @@
 Source: tomboy-ng-qt5
 Section: x11
 Priority: optional
-Maintainer: David Bannon <dbannon@internode.on.net>
+Maintainer: David R Bannon <dbannon@internode.on.net>
 Build-Depends: debhelper (>=11~), binutils, libx11-dev, libqt5pas-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.6)
 Standards-Version: 4.1.4
 Homepage: https://github.com/tomboy-notes/tomboy-ng
