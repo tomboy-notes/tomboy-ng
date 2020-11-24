@@ -9,8 +9,7 @@
 # -------------------- Making a Debian SRC ----------------------
 # To build a Debian Source Package, on eg a current Bullseye -
 # 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt6pas-dev
-#	Ensure appropriate pgp key in place ($HOME/.gnupg), 
-#	The key must match DEBFULLNAME and DEBEMAIL, below
+#	Ensure appropriate pgp key in place ($HOME/.gnupg), see below 
 #	In an empty dir, following commands -
 #	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.bash
 # Unless you are me, you need to edit the above, DEBFULLNAME and DEBEMAIL _OR_ have env set 
@@ -22,12 +21,11 @@
 #	The files you want are in ../.
 
 # -------------------- Signing Details -------------------------
-# Below are hardwired my personal full name and email address. These
+# Below are hardwired my personal full name and tomboy-ng email address. These
 # will only be used if relevent env vars are empty. Note that they
-# must match whats avalable in a gpg key. AND if that does not match
+# must match whats available in a gpg key. AND if that does not match
 # the Maintainer: entry from control, we get a non maintainer upload warning.
 #
-# This does need work, I should be using a key with the tomboy-ng email address.
 # 
 # -------------------- Building the Ubuntu PPA kit --------------
 # Move both a fresh tomboy-ng-master.zip and this script into a clean
@@ -44,10 +42,8 @@
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. 
-#DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
-DEF_EMAIL="dbannon@internode.on.net"    # but this matches my published keys, sigh...
-#DEF_FULLNAME="tomboy-ng"			# This matches cert I use to sign tomboy-ng stuff
-DEF_FULLNAME="David R Bannon"		# but this matches my published keys, sigh ...
+DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
+DEF_FULLNAME="David Bannon"		# and this ...
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile

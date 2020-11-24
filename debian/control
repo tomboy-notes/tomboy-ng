@@ -1,7 +1,7 @@
 Source: tomboy-ng
 Section: x11
 Priority: optional
-Maintainer: David R Bannon <dbannon@internode.on.net>
+Maintainer: David Bannon <tomboy-ng@bannons.id.au>
 Build-Depends: debhelper (>=11~), binutils, libgtk2.0-dev, libx11-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.6)
 Standards-Version: 4.1.4
 Homepage: https://github.com/tomboy-notes/tomboy-ng
