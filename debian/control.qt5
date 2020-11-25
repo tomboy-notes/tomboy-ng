@@ -2,8 +2,8 @@ Source: tomboy-ng-qt5
 Section: x11
 Priority: optional
 Maintainer: David Bannon <tomboy-ng@bannons.id.au>
-Build-Depends: debhelper (>=11~), binutils, libx11-dev, libqt5pas-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.6)
-Standards-Version: 4.1.4
+Build-Depends: debhelper (>=12~), binutils, libx11-dev, libqt5pas-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.6)
+Standards-Version: 4.5.0
 Homepage: https://github.com/tomboy-notes/tomboy-ng
 
 Package: tomboy-ng-qt5
@@ -16,4 +16,3 @@ Description: Tomboy Notes rewritten to ease installation and cross platform.
  notes. Notes can contain a range of font sizes, bold, italic and highlight.
  Available for Linux, Windows amd Mac and easy sync between them.
  This is the Qt5 based version.
-

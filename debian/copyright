@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Source: https://github.com/tomboy-notes/tomboy-ng
 
-Files: * source/*
+Files: source/*
 Copyright: 2017-2020 David Bannon <tomboy-ng@bannons.id.au>
 License: The-Clear-BSD-License
 
@@ -16,6 +16,10 @@ License: The-Clear-BSD-License
 Files: source/hunspell.inc
 Copyright: 2002 Kevin Hendricks
 License: MPL1.1/GPL2.0/LGPL2.1
+
+Files: * 
+Copyright: 2017-2020 David Bannon <tomboy-ng@bannons.id.au>
+License: The-Clear-BSD-License
 
 License: The-Clear-BSD-License
  Redistribution and use in source and binary forms, with or without

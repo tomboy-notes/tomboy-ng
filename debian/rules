@@ -16,5 +16,3 @@ endif
 
 override_dh_auto_install:
 	$(MAKE) install PREFIX=$(CURDIR)/debian/tomboy-ng/usr MAN_BASE_DIR=$(CURDIR)/debian/tomboy-ng/usr/share/man
-
-

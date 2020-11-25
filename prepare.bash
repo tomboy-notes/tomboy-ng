@@ -219,8 +219,9 @@ if [ -f tomboy-ng-master.zip ]; then
 	KControls
 	cd "$APP"_"$VER""-1"
 	CleanSource
-	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537
-	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""-1" "Initial release. (Closes: #966537)"
+	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537  -- No, this was closed.
+	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=897688
+	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""-1" "Initial release. (Closes: #897688)"
 	dch --append "Please see github for change details"
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"
