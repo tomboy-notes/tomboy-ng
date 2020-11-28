@@ -924,7 +924,7 @@ object EditBoxForm: TEditBoxForm
     Left = 368
     Top = 200
     object MenuItemSync: TMenuItem
-      Caption = 'Syncronize'
+      Caption = 'Synchronize'
       Enabled = False
       OnClick = MenuItemSyncClick
     end

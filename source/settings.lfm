@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 588
-    ActivePage = TabDisplay
+    ActivePage = TabRecover
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 4
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -600,9 +600,9 @@ object Sett: TSett
         end
         object CheckAutoSnapEnabled: TCheckBox
           Left = 344
-          Height = 24
+          Height = 23
           Top = 117
-          Width = 164
+          Width = 162
           Caption = 'Use auto snapshots'
           OnChange = CheckAutoSnapEnabledChange
           TabOrder = 2
@@ -619,8 +619,8 @@ object Sett: TSett
           Left = 131
           Height = 19
           Top = 160
-          Width = 211
-          Caption = 'Maxium number of snapshots'
+          Width = 225
+          Caption = 'Maximum number of snapshots'
           ParentColor = False
         end
         object ButtonSnapRecover: TButton
