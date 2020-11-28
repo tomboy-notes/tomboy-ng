@@ -139,7 +139,6 @@ type
         Label3: TLabel;
         Label4: TLabel;
         Label5: TLabel;
-        Label6: TLabel;
         LabelNotesFound: TLabel;
         TrayIcon: TTrayIcon;
 		procedure BitBtnHideClick(Sender: TObject);

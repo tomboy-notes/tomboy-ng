@@ -1257,11 +1257,6 @@ msgid "Welcome to tomboy-ng !"
 msgstr "¡Bienvenido a tomboy-ng!"
 
 # ¿Revisar?
-#: tmainform.label6.caption
-msgid "Lets see if we are ready to go -"
-msgstr "Vamos a ver si todo está listo."
-
-# ¿Revisar?
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr "Lanzar desde la linea de comandos para ver errores o ir a Preferencias->Instantánea->Recuperar ..."

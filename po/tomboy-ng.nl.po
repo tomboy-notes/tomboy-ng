@@ -1299,12 +1299,6 @@ msgstr "Synchronisatieconfiguratie (optioneel)"
 msgid "Welcome to tomboy-ng !"
 msgstr "Welkom bij tomboy-ng!"
 
-#: tmainform.label6.caption
-#, fuzzy
-#| msgid "Lets See if we are ready to go -"
-msgid "Lets see if we are ready to go -"
-msgstr "Eens zien of de toepassing klaar is voor gebruik"
-
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr "Start tomboy-ng vanuit een terminalvenster om fouten te bekijken op zie Instellingen->Momentopname->Herstellen"

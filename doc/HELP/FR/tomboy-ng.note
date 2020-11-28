@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>aide de tomboy-ng</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>aide de tomboy-ng</underline>
+
+Tomboy-ng est une réécriture du regretté Tomboy Notes. Il tourne sur Linux, Windows et MacOS. Son format de fichier est compatible avec Tomdroid et (?) GNote. Tomboy-ng accepte le texte en <bold>Gras</bold>, <italic>Italique</italic>, <strikeout>Barré</strikeout>, <highlight>Surligné</highlight> et <underline>Souligné</underline> en quatre taille de police : <size:small>petite</size:small>, normale, <size:large>grande</size:large> et <size:huge>énorme.</size:huge>
+
+La synchro Tomboy-ng des notes est possible avec tous les systèmes qui utilisent le modèle de synchro de Tomboy (mais pas encore la synchro réseau via Rainy ou Graphal). Il est possible de synchroniser individuellement tout smartphone Android capable d'exécuter Tomdroid (version linux uniquement).
+
+Certains utilisateurs souhaiteront avoir Tomboy-ng actif à l'ouverture de la session, une icône est placée  la barre des tâches et permet d'interagir. Pour garantir le support sur certaines distribution spéciales, une petite fenêtre ou un écran d'accueil est également ouvert ; il peut être minimisé vers le bandeau des applications (ou sur certaines version de Gnome3, être ajouté comme favori dans le dock).<size:large>
+
+<bold>Utilisation de Tomboy-ng</bold></size:large>
+Tomboy-ng se manipule depuis le menu visible comme icône dans le bandeau des applications ou via la fenêtre menu sur les autres distributions. En l'absence du beandeau des application (quel dommage !), Tomboy-ng peut-être ajouté comme favori pour apparaitre dans le dock, de cette façon il est aisément possible de le lancer ou de restaurer le champ de recherche.
+
+Depuis la fenêtre de recherche, on peut :
+<list><list-item dir="ltr">Accéder au menu principal (Nouvelle note, réglages, notes récentes, etc.).</list-item></list>
+<list><list-item dir="ltr">Rechercher des termes dans toutes les notes. Une recherche du type : <highlight>nom "Jacques Martin"</highlight> retournera toutes les notes contenant le mot <italic>nom </italic>et l'exacte combinaison "Jacques Martin". <italic>Mon nom est Martin</italic> par exemple ne sera pas sélectionné.</list-item></list>
+<list><list-item dir="ltr">Organiser les notes dans des carnets, Tomboy-ng autorise qu'une note soit classée dans plus d'un carnet mais si la synchronisation ou le partage est utilisé, c'est à éviter.</list-item></list>
+<list><list-item dir="ltr">Renommer un carnet, en n'oubliant pas de faire une synchronisation complète au préalable si cette fonction est utilisée !</list-item></list>
+
+À noter que les résultats de la recherche ne sont pas automaitquement mises à jour quand la fenêtre est ouverte. C'est pour garantir qu'un résultat de recherche ne change pas durant la modification des notes. Si un changement est intervenu, le bouton "Rafraîchir" est activé et la mise à jour est alors possible.
+
+<bold>Tomboy-ng :</bold>
+<list><list-item dir="ltr">sauvegarde automatiquement les notes quand elles sont modifiées</list-item></list>
+<list><list-item dir="ltr">créé automatiquement une copie de secours qund un note est effacée, pour savoir si une note est effectivement effacée, consulter le menu Réglages-&gt;Restauration</list-item></list>
+<list><list-item dir="ltr">permet de faire simplement un snapshot des notes, n'oublier pas d'en faire !</list-item></list>
+<list><list-item dir="ltr">Linux, Windows et MacOSpeut synchroniser les notes vers une zone de stockage commune les rendant ainsi accessibles à de multiples machines (Linux, Windows et Mac).</list-item></list>
+<list><list-item dir="ltr">ne gère pas parfaitement le partage. L'accès concurrent aux notes sur un volume partagé (sans utiliser la synchronisation) génère des comportements hiératiques avec des résultats imprévisibles.</list-item></list><size:large>
+
+<bold>Commandes par terminal</bold></size:large><bold>
+
+-h ou --help</bold>
+affiche l'aide puis quitte.
+
+<bold>--delay-start</bold>
+Retarde le démarrage de quelques secondes pour permettre a Tomboy-ng d'utiliser la personnalisation des couleurs.
+
+<bold>-g ou --gnome3</bold>
+ Empêche la fermeture de l'écran d'accueil. Uniquement nécessaire pour certaines distributions linux (gnome 3) qui n'afficherait pas Tomboy-ng dans le bandeau des application.
+
+<bold>-l CodePays ou --lang=CodePays</bold>
+Sélectionne la langue de l'interface (CodePays= es, nl ou fr). <italic>Dites-nous si vous souhaitez voir de nouvelles langues ajoutées !</italic>
+
+<bold>--version</bold>
+Affiche la version et quitte.
+
+<bold>--no-splash</bold>
+N'affiche pas l'écran d'accueil au lancement. Évite de devoir fermer la fenêtre manuellement après démarrage. À n'utiliser qu'après avoir vérifié la présence de la petite icône verte dans le bandeau des applications.
+
+<bold>--config-dir=CHEMIN_RÉPERTOIRE</bold>
+Crée ou utilise un chemin alternatif. Sert surtout à faire des tests, comme avoir deux bases de carnets distinctes par exemple.
+
+<bold>--open-note=CHEMIN_NOTE</bold>
+Ne fonctionne qu'avec le mode de note unique. Une instance isolée est éxécutée, elle n'a ni accès à au répertoire courant des notes ni à la synchro mais elle peut lire, afficher et écrire la note unique. Si la note n'existe pas, elle est automatiquement créée. Si le nom de la note désigne un fichier ".rtf" ou "texte non formaté", son contenu sera importé dans la dite note qui reprendra le nom stipulé mais au format ".note". Dans ce mode, la note est stockée conformément au chemin précisé et ne sera ni déplacée vers le répertoire courant des notes, ni synchronisée, ni identifiée lors d'une recherche en mode normal. À noter que le paramètre "-o" ou "--open-note" peut être omis : "tomboy-ng ma.note" fonctionne tout aussi bien.
+
+<bold>--save-exit</bold>
+Importe le fichier (.note, .rtf, texte non formaté), le convertit au format .note (et au format de nom de note standard) puis sauve la note dans le répertoire courant des notes. Aprs avoir passé cette commande, un redémarrage de Tomboy-ng est requis.
+
+<bold>--debug-sync          --debug-index          --debug-spell</bold>
+Affiche sur la console les événements demandés de manière détaillée issus de la partie de l'application qui les concerne. La console de Windows ne bénéficie pas de cette fonctinnalité cependant il peut être demandé de diriger les messages de sortie vers un fichier journal en utilisant une autre commande ou en spécifiant une variable d'environnement contenant un nom de fichier. Attention de disposer des droits suffisants. Exemple, presser le logo "start", cliquer sur "exécuter" puis saisir la séquence ci-dessous :
+
+tomboy-ng     --debug-log=c:\debug.txt     --debug-snyc
+
+<bold>Pour MacOS</bold>
+L'utilisation de la console requiert une syntaxe plus complète dès lors que des paramètres sont ajoutés. Par exemple, journaliser les messages d'un debug de la synchro s'écrivent ainsi :
+
+open  tomboy-ng.app  --args "--debug-log=$HOME/tomboy-ng.log"  "--debug-sync"
+
+De par l'approche ".app", l'utilisation de paramètres demande que le chemin spécifié soit absolu, sauf à utiliser une variable $PWD relative au repertoire courant :
+
+open tomboy-ng/tomboy-ng.app     --args "-o" "PWD$/doc/tomboy-ng.note"
+</note-content></text>
+  <last-change-date>2020-11-25T08:25:26.5455611+01:00</last-change-date>
+  <last-metadata-change-date>2020-11-25T08:25:26.5455611+01:00</last-metadata-change-date>
+  <create-date>2020-11-23T18:33:51.0251392+01:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>933</width>
+  <height>947</height>
+  <x>920</x>
+  <y>37</y>
+  <open-on-startup>False</open-on-startup>
+</note>

@@ -1221,10 +1221,6 @@ msgstr "Configuration de la synchro (optionnel)"
 msgid "Welcome to tomboy-ng !"
 msgstr "Bienvenue dans tomboy-ng !"
 
-#: tmainform.label6.caption
-msgid "Lets see if we are ready to go -"
-msgstr "Voyons si tout est prêt"
-
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr "Lancer par le CLI pour voir les erreurs, la Config->Snapshot->Restauration, etc."

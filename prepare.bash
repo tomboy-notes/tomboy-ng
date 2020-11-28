@@ -49,6 +49,7 @@ LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
 WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
+QT5INNAME=""	# May have content we add to qt5 package name (when -Q) 
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
 	# if in user space, because debuild will miss them, makes two files.
@@ -133,17 +134,15 @@ function ShowHelp () {
     echo "-C   clean out deb files from previous run, debug use only."
     echo "-U   update Makefile and/or buildit.bash,   debug use only."
     echo "-Q   Make a Qt5 version instead of default GTK2"
+    echo "-q   Make a Qt5 version but give it the default name. Suit Debian Repo" 
     echo "-p   Pause before creating .orig. to change content, use another term."
     echo "-D   distro, eg bionic, focal, bullseye"
     echo ""
-    echo "Davo uses: wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip"
-    echo "           mv master.zip tomboy-ng-master.zip"   
-    echo "           bash ./prepare.bash -l /home/dbannon/bin/Lazarus/trunk/lazbuild -p"
     exit
 }
 
 
-while getopts "hpQUCl:D:" opt; do
+while getopts "hpqQUCl:D:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -163,6 +162,10 @@ while getopts "hpQUCl:D:" opt; do
     Q)
 	WIDGET="Qt5"
 	APP="$APP""-qt5"
+	QT5INNAME="YES"
+	;;
+    q)
+	WIDGET="Qt5"
 	;;
     D)
 	DISTRO1="-D""$OPTARG"
@@ -225,8 +228,12 @@ if [ -f tomboy-ng-master.zip ]; then
 	dch --append "Please see github for change details"
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"
-		cp debian/control.qt5 debian/control
-		cp debian/rules.qt5 debian/rules
+		if [ "$QT5INNAME" = "YES" ]; then
+			cp debian/rules.qt5 debian/rules
+			cp debian/control.qt5 debian/control
+		else
+			cp debian/control.qt5-unnamed debian/control
+		fi
 		# sed  "s/#REPLACEME_QT5/DESTDIR += -qt5/" Makefile > Makefile.temp
 		# mv Makefile.temp Makefile
 		touch Qt5

@@ -1208,10 +1208,6 @@ msgstr ""
 msgid "Welcome to tomboy-ng !"
 msgstr ""
 
-#: tmainform.label6.caption
-msgid "Lets see if we are ready to go -"
-msgstr ""
-
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
 msgstr ""

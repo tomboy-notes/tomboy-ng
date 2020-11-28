@@ -115,7 +115,7 @@ RESOURCESTRING
     rsHelpHelp = 'Show this help message and exit.';
     rsHelpVersion = 'Print version and exit';
     //rsHelpRedHat = 'Deprecated';                                // No longer important,
-    rsHelpNoSplash = 'Dont show small status/splash window';
+    rsHelpNoSplash = 'Do not show small status/splash window';
     rsHelpDebugSync = 'Show debug messages during Sync';
     rsHelpDebugIndex = 'Show debug msgs while indexing notes';
     rsHelpDebugSpell = 'Show debug messages while spell setup';

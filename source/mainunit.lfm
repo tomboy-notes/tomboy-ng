@@ -1,11 +1,11 @@
 object MainForm: TMainForm
   Left = 505
-  Height = 335
+  Height = 306
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
   Top = 220
   Width = 459
   Caption = 'tomboy-ng'
-  ClientHeight = 335
+  ClientHeight = 306
   ClientWidth = 459
   OnClose = FormClose
   OnCreate = FormCreate
@@ -15,9 +15,10 @@ object MainForm: TMainForm
   OnShow = FormShow
   LCLVersion = '2.1.0.0'
   object ImageConfigTick: TImage
+    AnchorSideTop.Control = Label1
     Left = 24
     Height = 18
-    Top = 112
+    Top = 80
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -41,9 +42,10 @@ object MainForm: TMainForm
     }
   end
   object ImageConfigCross: TImage
+    AnchorSideTop.Control = Label1
     Left = 8
     Height = 18
-    Top = 112
+    Top = 80
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -76,15 +78,17 @@ object MainForm: TMainForm
   object Label1: TLabel
     Left = 56
     Height = 19
-    Top = 114
+    Top = 80
     Width = 87
     Caption = 'Have Config'
     ParentColor = False
+    ParentFont = False
   end
   object ImageNotesDirTick: TImage
+    AnchorSideTop.Control = LabelNotesFound
     Left = 24
     Height = 18
-    Top = 136
+    Top = 102
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -108,9 +112,10 @@ object MainForm: TMainForm
     }
   end
   object ImageNotesDirCross: TImage
+    AnchorSideTop.Control = LabelNotesFound
     Left = 8
     Height = 18
-    Top = 136
+    Top = 102
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -141,25 +146,34 @@ object MainForm: TMainForm
     }
   end
   object Label3: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = LabelNotesFound
+    AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 19
-    Top = 160
+    Top = 124
     Width = 195
+    BorderSpacing.Top = 3
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
   object Label4: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label3
+    AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 19
-    Top = 184
+    Top = 146
     Width = 156
+    BorderSpacing.Top = 3
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
   object ImageSpellTick: TImage
+    AnchorSideTop.Control = Label3
     Left = 24
     Height = 18
-    Top = 160
+    Top = 124
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -183,9 +197,10 @@ object MainForm: TMainForm
     }
   end
   object ImageSpellCross: TImage
+    AnchorSideTop.Control = Label3
     Left = 8
     Height = 18
-    Top = 160
+    Top = 124
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -216,9 +231,10 @@ object MainForm: TMainForm
     }
   end
   object ImageSyncTick: TImage
+    AnchorSideTop.Control = Label4
     Left = 24
     Height = 18
-    Top = 184
+    Top = 146
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -242,9 +258,10 @@ object MainForm: TMainForm
     }
   end
   object ImageSyncCross: TImage
+    AnchorSideTop.Control = Label4
     Left = 8
     Height = 18
-    Top = 184
+    Top = 146
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -285,19 +302,15 @@ object MainForm: TMainForm
     ParentColor = False
     ParentFont = False
   end
-  object Label6: TLabel
-    Left = 24
-    Height = 19
-    Top = 80
-    Width = 219
-    Caption = 'Lets see if we are ready to go -'
-    ParentColor = False
-  end
   object LabelNotesFound: TLabel
+    AnchorSideLeft.Control = Label1
+    AnchorSideTop.Control = Label1
+    AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 19
-    Top = 135
+    Top = 102
     Width = 10
+    BorderSpacing.Top = 3
     Caption = 'X'
     ParentColor = False
   end
@@ -305,7 +318,7 @@ object MainForm: TMainForm
     Left = 24
     Height = 19
     Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
-    Top = 264
+    Top = 232
     Width = 11
     Caption = 'X'
     Font.Height = -16
@@ -320,7 +333,7 @@ object MainForm: TMainForm
     Left = 24
     Height = 23
     Hint = 'You can reverse this from Settings'
-    Top = 232
+    Top = 192
     Width = 240
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
@@ -418,7 +431,7 @@ object MainForm: TMainForm
   object LabelBadNoteAdvice: TLabel
     Left = 24
     Height = 19
-    Top = 296
+    Top = 264
     Width = 149
     Caption = 'LabelBadNoteAdvice'
     ParentColor = False
