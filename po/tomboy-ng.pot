@@ -194,7 +194,7 @@ msgstr ""
 
 #: resourcestr.rshelpnosplash
 msgctxt "resourcestr.rshelpnosplash"
-msgid "Dont show small status/splash window"
+msgid "Do not show small status/splash window"
 msgstr ""
 
 #: resourcestr.rshelpsaveexit
@@ -663,7 +663,7 @@ msgid "Spell Check"
 msgstr ""
 
 #: teditboxform.menuitemsync.caption
-msgid "Syncronize"
+msgid "Synchronize"
 msgstr ""
 
 #: teditboxform.menularge.caption
@@ -884,7 +884,7 @@ msgid "You may chose to view, copy and paste into a new note."
 msgstr ""
 
 #: tformrecover.label2.caption
-msgid "Please be carefull, this is a dangerous place!"
+msgid "Please be careful, this is a dangerous place!"
 msgstr ""
 
 #: tformrecover.label3.caption
@@ -1239,7 +1239,7 @@ msgid "New Name"
 msgstr ""
 
 #: tnotebookpick.label9.caption
-msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
+msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
 msgstr ""
 
 #: tnotebookpick.tabchangename.caption
@@ -1516,7 +1516,7 @@ msgid "an appropriate Hunspell Dictionary set."
 msgstr ""
 
 #: tsett.label16.caption
-msgid "Maxium number of snapshots"
+msgid "Maximum number of snapshots"
 msgstr ""
 
 #: tsett.label2.caption

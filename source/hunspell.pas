@@ -146,14 +146,14 @@ begin
             ErrorMessage := 'Cannot find Hunspell library';
             exit();
         end;
-    if debugmode then debugln('Creating Hunspell with library = ' + LibraryFullName);
+    //if debugmode then debugln('Creating Hunspell with library = ' + LibraryFullName);
     LoadHunspellLibrary(LibraryFullName);    // will flag any errors it finds
     Speller := nil;           // we are not GoodToGo yet, need a dictionary ....
 end;
 
 destructor THunspell.Destroy;
 begin
-    if DebugMode then debugln('About to destry Hunspell');
+    //if DebugMode then debugln('About to destroy Hunspell');
     if (HunLibHandle <> 0) and HunLibLoaded then begin
         if Speller<>nil then hunspell_destroy(Speller);
         Speller:=nil;

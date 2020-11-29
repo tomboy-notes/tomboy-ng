@@ -205,8 +205,10 @@ msgid "Force Language, supported en, es, fr, nl"
 msgstr "Choix de la langue (en, es, fr, nl)"
 
 #: resourcestr.rshelpnosplash
+#, fuzzy
+#| msgid "Dont show small status/splash window"
 msgctxt "resourcestr.rshelpnosplash"
-msgid "Dont show small status/splash window"
+msgid "Do not show small status/splash window"
 msgstr "Cacher les petites fenêtres d'avertissement"
 
 #: resourcestr.rshelpsaveexit
@@ -675,7 +677,9 @@ msgid "Spell Check"
 msgstr "Vérification orthographique"
 
 #: teditboxform.menuitemsync.caption
-msgid "Syncronize"
+#, fuzzy
+#| msgid "Syncronize"
+msgid "Synchronize"
 msgstr "Synchroniser"
 
 #: teditboxform.menularge.caption
@@ -895,7 +899,9 @@ msgid "You may chose to view, copy and paste into a new note."
 msgstr "Choisir de voir, copier et coller dans une note."
 
 #: tformrecover.label2.caption
-msgid "Please be carefull, this is a dangerous place!"
+#, fuzzy
+#| msgid "Please be carefull, this is a dangerous place!"
+msgid "Please be careful, this is a dangerous place!"
 msgstr "Attention, cette fonctionnalité est instable !"
 
 #: tformrecover.label3.caption
@@ -1252,7 +1258,9 @@ msgid "New Name"
 msgstr "Nouveau nom"
 
 #: tnotebookpick.label9.caption
-msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
+#, fuzzy
+#| msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
+msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
 msgstr "S'assurer d'être à jour avant une synchro ou annuler maintenant !"
 
 #: tnotebookpick.tabchangename.caption
@@ -1531,7 +1539,9 @@ msgid "an appropriate Hunspell Dictionary set."
 msgstr "et un réglage approprié du dictionnaire."
 
 #: tsett.label16.caption
-msgid "Maxium number of snapshots"
+#, fuzzy
+#| msgid "Maxium number of snapshots"
+msgid "Maximum number of snapshots"
 msgstr "snaphots au maximum"
 
 #: tsett.label2.caption

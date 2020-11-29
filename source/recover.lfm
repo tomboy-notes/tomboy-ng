@@ -289,8 +289,8 @@ object FormRecover: TFormRecover
       Left = 40
       Height = 22
       Top = 8
-      Width = 374
-      Caption = 'Please be carefull, this is a dangerous place!'
+      Width = 369
+      Caption = 'Please be careful, this is a dangerous place!'
       Font.Height = -19
       ParentColor = False
       ParentFont = False
