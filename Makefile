@@ -55,6 +55,7 @@ install: installdirs
 	$(INSTALL_PROGRAM)	source/tomboy-ng   	$(DESTDIR)$(BIN_DIR)/$(PROGRAM_NAME)
 	$(INSTALL_DATA)		doc/tomboy-ng.1 	$(DESTDIR)$(MAN_DIR)/$(PROGRAM_NAME).1
 	$(CP)			doc/HELP		$(DESTDIR)$(HELP_DIR)/
+	$(CP)			doc/overrides		$(DESTDIR)$(SHARE_DIR)/lintian/overrides/tomboy-ng
 	$(CP)			glyphs/icons		$(DESTDIR)$(SHARE_DIR)/
 	$(INSTALL_DATA)	glyphs/tomboy-ng.desktop	$(DESTDIR)$(SHARE_DIR)/applications/tomboy-ng.desktop
 	$(foreach LANG, $(LANGUAGES), $(CPLANG);)		
@@ -64,6 +65,7 @@ installdirs:
 	test -d $(DESTDIR)$(MAN_DIR) || $(MKDIR) $(DESTDIR)$(MAN_DIR)
 	test -d $(DESTDIR)$(DOC_DIR) || $(MKDIR) $(DESTDIR)$(DOC_DIR)
 	test -d $(DESTDIR)/share/applications || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/applications
+	test -d $(DESTDIR)/share/lintian/overrides || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/lintian/overrides
 	$(foreach LANG, $(LANGUAGES), $(MKDIRLANG);)
 
 

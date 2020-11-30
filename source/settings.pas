@@ -1230,7 +1230,7 @@ end; }
 
 
 RESOURCESTRING
-    rsDirHasNoNotes = 'That directory does not contain any notes. Thats OK, if I can make my own there.';
+    rsDirHasNoNotes = 'That directory does not contain any notes. That is OK, if I can make my own there.';
 
 	{ Allow user to point to what they want to call their notes dir. If there
       are no notes there, pops up a warning and proceeds. }
