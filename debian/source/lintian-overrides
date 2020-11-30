@@ -1,4 +1,6 @@
-
+# This file applies to the source package, for the one
+# that applies to binary, see ../../doc/overrides
+#
 # This is a non-native package but not one that knows
 # how to do Debian metadata yet.
 tomboy-ng source: upstream-metadata-file-is-missing
@@ -11,9 +13,4 @@ tomboy-ng source: no-debian-changes
 
 # At present, upstream does not support watch file.
 tomboy-ng source: debian-watch-file-is-missing
-
-# tomboy-ng is built using the fpc, not gcc. So use of CPPFLAGS
-# is not possible. PIE, Read-only relocations and Immediate bindings
-# are enabled but it appears Fortify Source functions is not.
-tomboy-ng source: hardening-no-fortify-functions
 
