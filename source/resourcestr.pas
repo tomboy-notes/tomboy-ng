@@ -72,7 +72,7 @@ RESOURCESTRING
   rsUnableToProceed = 'Unable to proceed because';
   rsLookingatNotes = 'Looking at notes ....';
   rsSaveAndSync = 'Press Save and Sync if this looks OK';
-  rsSyncError = 'A Sync Error occured';
+  rsSyncError = 'A Sync Error occurred';
   rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
   rsFileSyncInfo1 = 'tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive';
   rsFileSyncInfo2 = 'or use a remote server over the internet with sshfs';

@@ -744,7 +744,7 @@ var
     //Tick, Tock : qword;
 begin
     case TMenuTarget(TMenuItem(Sender).Tag) of
-        mtSep, mtRecent : showmessage('Oh, thats bad, should not happen');
+        mtSep, mtRecent : showmessage('Oh, that is bad, should not happen');
         mtNewNote : if (Sett.NoteDirectory = '') then
                             ShowMessage(rsSetupNotesDirFirst)
                     else OpenNote('');
@@ -1026,7 +1026,7 @@ begin
        	    TEditBoxForm(TheForm).SetReadOnly();
             exit();
         except on  EAccessViolation do
-       	    DebugLn('Tried to mark a closed note as readOnly, thats OK');
+       	    DebugLn('Tried to mark a closed note as readOnly, that is OK');
    	    end;
     end;
 end;
@@ -1087,7 +1087,7 @@ begin
                 TheForm.EnsureVisible(true);
                 exit();
 			except on  EAccessViolation do
-            	DebugLn('Tried to re show a closed note, thats OK');
+            	DebugLn('Tried to re show a closed note, that is OK');
 			end;
             // We catch the exception and proceed .... but it should never happen.
         end;

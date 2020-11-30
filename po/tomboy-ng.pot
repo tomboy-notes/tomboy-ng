@@ -395,7 +395,7 @@ msgstr ""
 
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
-msgid "A Sync Error occured"
+msgid "A Sync Error occurred"
 msgstr ""
 
 #: resourcestr.rssyncnotconfig

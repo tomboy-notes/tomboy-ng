@@ -167,7 +167,7 @@ begin
     if ConfigFile.SectionExists(Profile) then begin
         EditProfileName.Text := Profile;
         ProfileName := Profile;
-        EditIPAddress.Text := ConfigFile.readstring(Profile, 'IP', 'Oh, an Error occured');
+        EditIPAddress.Text := ConfigFile.readstring(Profile, 'IP', 'Oh, an Error occurred');
         IPAddress := EditIPAddress.Text;
         EditPassword.Text := ConfigFile.readstring(Profile, 'Password', '');
         Password := EditPassword.Text;

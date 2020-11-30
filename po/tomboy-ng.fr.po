@@ -408,8 +408,10 @@ msgid "created, do you want to copy it elsewhere ?"
 msgstr "créé, faire une autre copie ailleurs ?"
 
 #: resourcestr.rssyncerror
+#, fuzzy
+#| msgid "A Sync Error occured"
 msgctxt "resourcestr.rssyncerror"
-msgid "A Sync Error occured"
+msgid "A Sync Error occurred"
 msgstr "Erreur de synchro"
 
 #: resourcestr.rssyncnotconfig

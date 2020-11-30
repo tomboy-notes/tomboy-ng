@@ -451,8 +451,9 @@ msgstr "Aangemaakt. Wil je ergens een kopie opslaan?"
 
 #: resourcestr.rssyncerror
 #, fuzzy
+#| msgid "A Sync Error occured"
 msgctxt "resourcestr.rssyncerror"
-msgid "A Sync Error occured"
+msgid "A Sync Error occurred"
 msgstr "Synchronisatiefout"
 
 #: resourcestr.rssyncnotconfig
