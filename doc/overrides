@@ -1,8 +1,8 @@
-# This is the override file for the tomboy-ng binary.
-# its ultimatly lives in /usr/share/lintian/overrides
+# This is the Lintian override file for the tomboy-ng binary.
+# It ultimatly lives in /usr/share/lintian/overrides
 # and is called tomboy-ng there.
 #
 # tomboy-ng is built using the fpc, not gcc. So use of CPPFLAGS
 # is not possible. PIE, Read-only relocations and Immediate bindings
-# are enabled but it appears Fortify Source functions is not.
+# are enabled but Fortify Source functions is not.
 tomboy-ng binary: hardening-no-fortify-functions
