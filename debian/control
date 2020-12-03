@@ -5,6 +5,8 @@ Maintainer: David Bannon <tomboy-ng@bannons.id.au>
 Rules-Requires-Root: no
 Build-Depends: debhelper (>=12~), debhelper-compat (=13), binutils, libgtk2.0-dev, libx11-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.6)
 Standards-Version: 4.5.0
+Vcs-Browser: https://github.com/tomboy-notes/tomboy-ng
+Vcs-Git: https://github.com/tomboy-notes/tomboy-ng.git
 Homepage: https://github.com/tomboy-notes/tomboy-ng
 
 Package: tomboy-ng

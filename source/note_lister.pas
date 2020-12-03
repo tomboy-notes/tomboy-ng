@@ -817,7 +817,7 @@ begin
 	                ReadXMLFile(Doc, Dir + FileName);
 	  	            Node := Doc.DocumentElement.FindNode('title');
 	      	        NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
-	                if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + '] ID is ' + FileName);
+	                //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + '] ID is ' + FileName);
 	                Node := Doc.DocumentElement.FindNode('last-change-date');
 	                NoteP^.LastChange := Node.FirstChild.NodeValue;
 	                {if (length(NoteP^.LastChange) <> 33) or (length(NoteP^.LastChange) <> 27) then begin
@@ -880,10 +880,10 @@ end;
 
 procedure TNoteLister.IndexThisNote(const ID: String);
 begin
-    DebugMode := True;
-    debugln('TNoteLister.IndexThisNote');
+    //DebugMode := True;
+    //debugln('TNoteLister.IndexThisNote');
     GetNoteDetails(WorkingDir, CleanFileName(ID){, TStringList(nil)});
-    DebugMode := False;
+    //DebugMode := False;
 end;
 
 

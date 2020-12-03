@@ -64,13 +64,13 @@ Click on the appropriate link from your browser and allow the suggested installe
 
 <bold>Fedora</bold></size:large>
 
-Tested on Fedora 31 and 32. Generally,  on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
+Tested on Fedora 33. Generally,  on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
 <monospace>sudo yum localinstall ./tomboy-ng-0.27-2.x86_64.rpm [enter]   </monospace>
 
 note the Qt5 version has a slightly different file name
 
-<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose <bold>add to favourites</bold>. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  Many users hide the small splash screen at tomboy-ng start, if you set it like this, Fedora Gnome will appear to do nothing as you start it (because you cannot see the System Tray Icon) so, perhaps, its a good idea to setup tomboy-ng to show the Search Screen at startup.
+<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. You have two choices, either install the tint2 dock panel (my recommendation, <italic><bold>sudo yum install tint2</bold></italic> &lt;enter&gt;) or you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose <bold>add to favourites</bold>. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  Many users hide the small splash screen at tomboy-ng start, if you set it like this, Fedora Gnome will appear to do nothing as you start it (because you cannot see the System Tray Icon) so, perhaps, its a good idea to setup tomboy-ng to show the Search Screen at startup.
 
 If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. Untested with Fedora 32, each new release seems to take steps to make this process harder ....
 
@@ -124,8 +124,8 @@ This is new in v0.30. Users of the official Raspberry Pi OS (previously know as 
 
 
 </note-content></text>
-  <last-change-date>2020-08-22T20:19:39.8956223+10:00</last-change-date>
-  <last-metadata-change-date>2020-08-22T20:19:39.8956223+10:00</last-metadata-change-date>
+  <last-change-date>2020-12-03T20:03:42.5077730+11:00</last-change-date>
+  <last-metadata-change-date>2020-12-03T20:03:42.5077730+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

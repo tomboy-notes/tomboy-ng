@@ -5,12 +5,6 @@
 # how to do Debian metadata yet.
 tomboy-ng source: upstream-metadata-file-is-missing
 
-# This repository is used to build a number of different
-# package formats, not just ones for Debian themselves.
-# So, its necessary to keep Debian related files in a 
-# directory of that name.
-tomboy-ng source: no-debian-changes
-
 # At present, upstream does not support watch file.
 tomboy-ng source: debian-watch-file-is-missing
 

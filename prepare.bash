@@ -243,7 +243,11 @@ if [ -f tomboy-ng-master.zip ]; then
 	if [ "$PAUSE" = "YES" ]; then
 		read -p "Edit things in another term, press Enter."
 	fi
+	# iNext line is to avoid the dreaded lintian no-debian-changes
+	mv "$APP"_"$VER""-1"/debian ./debian
 	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""-1"
+	mv ./debian "$APP"_"$VER""-1"/debian 
+
 	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -us -uc"
 else
 	echo ""

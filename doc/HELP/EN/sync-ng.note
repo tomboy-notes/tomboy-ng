@@ -14,7 +14,7 @@ tomboy-ng supports  <bold>file sync</bold>. That is, it syncs to a shared file s
 OK, before we start, are you keeping <highlight>snapshots</highlight> ?  If not, why not ???<size:large>
 
 <bold>A shared Filesystem</bold></size:large>
-In practise, tomboy-ng will sync to any (?) file system that your file manager can browse. You could use Google Drive, Drop Box or any such system. Don't forget a copy of  your notes will live on their server so if you are unhappy at them being read there, maybe that not a great idea! You may want to setup a NFS or SMB share. Windows and NFS is not a great mix but SMB works well for all three platforms. The author's home network router has a USB slot at the back, a USB Disk Key plugged in there is distributed via SMB. Been working flawlessly for a couple of years. Some Linux File Managers can be reluctant to show you the SMB or Samba shares, it can help to make them a book mark in your main File Manager but if even that does not work, browse using the directory dialog that tomboy-ng pops up to somewhere like /run/user/1000/gvfs/smb_share .....
+In practise, tomboy-ng will sync to any (?) file system that your file manager can browse. You could use Google Drive, Drop Box or any such system. Don't forget a copy of  your notes will live on their server so if you are unhappy at them being read there, maybe that not a great idea! You may want to setup a NFS or SMB share. Windows and NFS is not a great mix but SMB works well for all three platforms. The author's home network router has a USB slot at the back, a USB Disk Key plugged in there is distributed via SMB. Been working flawlessly for a couple of years. Some Linux File Managers can be reluctant to show you the SMB or Samba shares, it can help to make them a book mark in your main File Manager but if even that does not work, ensure you have gvfs and gvfs-fuse installed and browse using the directory dialog that tomboy-ng pops up to somewhere like /run/user/1000/gvfs/smb_share .....
 
  Or you could even just use a USB Disk Key and plug it into which ever machine you are syncing at the time. As long as tomboy-ng can read and write there, good.
 
@@ -59,14 +59,14 @@ Secondly, please try starting tomboy-ng from the command line. While its running
 
 
 </note-content></text>
-  <last-change-date>2020-11-17T22:27:30.4965449+11:00</last-change-date>
-  <last-metadata-change-date>2020-11-17T22:27:30.4965449+11:00</last-metadata-change-date>
+  <last-change-date>2020-12-03T16:18:15.5085042+11:00</last-change-date>
+  <last-metadata-change-date>2020-12-03T16:18:15.5085042+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>20</x>
-  <y>30</y>
+  <x>806</x>
+  <y>221</y>
   <open-on-startup>False</open-on-startup>
 </note>
