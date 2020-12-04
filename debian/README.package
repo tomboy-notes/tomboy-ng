@@ -1,0 +1,14 @@
+
+If you are looking at a Debian Source Package, some notes of interest -
+
+1. This package contains some parts of KControls (https://github.com/kryslt/KControls)
+   A dynamicially linked library does not exist for KControls because
+   of the extensive interaction between the KMemo object and the remainder
+   of tomboy-ng. Further, the Lazarus/Pascal model is far more comfortable
+   working directly with source code that will be statically linked.
+
+2. This Debian Source package can be readily built from the github content at
+   https://github.com/tomboy-notes/tomboy-ng using the included script,
+   prepare.bash. The process is to documented in the header of the script.
+
+

@@ -243,10 +243,17 @@ if [ -f tomboy-ng-master.zip ]; then
 	if [ "$PAUSE" = "YES" ]; then
 		read -p "Edit things in another term, press Enter."
 	fi
-	# iNext line is to avoid the dreaded lintian no-debian-changes
+	# Next block is to avoid the dreaded lintian no-debian-changes
+	# The copyright file in there alone does not generate that error
 	mv "$APP"_"$VER""-1"/debian ./debian
+	mkdir "$APP"_"$VER""-1"/debian
+	cp debian/copyright "$APP"_"$VER""-1"/debian/.
 	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""-1"
-	mv ./debian "$APP"_"$VER""-1"/debian 
+	# OK, we have our .orig. file, put most of it back.
+	rm -Rf "$APP"_"$VER""-1"/debian
+	rm debian/control.qt5-unnamed debian/control.qt5
+	rm debian/rules.qt5
+	mv ./debian "$APP"_"$VER""-1"/. 
 
 	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -us -uc"
 else
