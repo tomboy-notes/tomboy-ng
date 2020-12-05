@@ -1099,7 +1099,7 @@ begin
     if DarkTheme then begin
         //debugln('Its definltly a Dark Theme');
         BackGndColour:= clBlack;        // eg $000000
-        AltColour := $606060;           // BackGround Colour of Alternating rows in some ListViews
+        AltColour := $282828;           // BackGround Colour of Alternating rows in some ListViews
         HiColour := clDkGray;
         TextColour := clLtGray;
         TitleColour:= clTeal;

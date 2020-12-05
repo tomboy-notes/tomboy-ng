@@ -952,10 +952,10 @@ begin
         Edit1.Color := Sett.BackGndColour;
         Edit1.Font.Color := Sett.TextColour;
          color := Sett.HiColour;
-         font.color := Sett.TextColour;
+         //font.color := Sett.TextColour;
          //ButtonNoteBookOptions.Color := Sett.HiColour;
-         ButtonClearFilters.Color := Sett.HiColour;
-         ButtonMenu.color := Sett.HiColour;
+         //ButtonClearFilters.Color := Sett.HiColour;
+         //ButtonMenu.color := Sett.HiColour;
          //stringGrid1.GridLineColor:=
          //StringGrid1.FixedColor := Sett.HiColour;
          ListViewNotes.Color :=       clnavy;
@@ -1145,9 +1145,11 @@ procedure TSearchForm.ListViewNotesDrawItem(Sender: TCustomListView;
 begin
     // Note this only works for TListView if ViewStyle is vsReport
     // (and obviously, we are in ownerdraw mode).
+
     if Odd(AItem.Index) then
         ListViewNotes.Canvas.Brush.Color := Sett.AltColour;
     ListViewNotes.Canvas.FillRect(ARect);
+
     {$ifdef LCLQT5}                                                             // Note we have increased the font height for Qt5 in OnCreate()
     ListViewNotes.Canvas.TextRect(ARect, 2, ARect.Top, AItem.Caption);          // Title column
     ListViewNotes.Canvas.TextRect(ARect, ListViewNotes.Column[0].Width + 2      // LCD Column
@@ -1157,26 +1159,6 @@ begin
     ListViewNotes.Canvas.TextRect(ARect, ListViewNotes.Column[0].Width + 2      // LCD Column
             , ARect.Top+2, AItem.SubItems[0]);
     {$endif}
-end;
-
-procedure TSearchForm.BackupNote(const NoteName, PutIntoName : string);
-var
-    NewName : string;
-    OldName : string;
-begin
-    NewName := ExtractFileNameOnly(NoteName);
-    OldName := Sett.NoteDirectory + NewName + '.note';
-    if length(NewName) <> 36 then exit;                         // We only do notes with UUID names
-    // We remove last four char from ID and replace with eg, -opn or -ttl.  This has
-    // some loss of entropy, acceptable and allows use of existing Backup recovery.
-    NewName := Sett.NoteDirectory + 'Backup' + PathDelim
-                + copy(NewName, 1, 32) + '-' + PutIntoName + '.note';
-    // We assume here that Sett unit has checked and created a Backup dir is necessary.
-    if FileExistsUTF8(NewName) then
-        if not DeleteFile(NewName) then debugln('ERROR, failed to delete ' + NewName);
-    if not CopyFile(OldName, NewName) then
-        debugln('ERROR, failed to copy : ' + #10 + OldName + #10 + NewName);
-    //debugln('SearchForm : BackupNote ' + #10 + OldName + #10 + NewName);
 end;
 
 procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
@@ -1200,6 +1182,26 @@ begin
     {$endif}
     // debugln('2...ScaleListView W=' + dbgs(ListViewNotes.Width) + ' Wc=' + dbgs(ListViewNotes.ClientWidth) + ' Wb= ' + dbgs(ListViewNotes.BorderWidth));
     //ListViewNotes.;
+end;
+
+procedure TSearchForm.BackupNote(const NoteName, PutIntoName : string);
+var
+    NewName : string;
+    OldName : string;
+begin
+    NewName := ExtractFileNameOnly(NoteName);
+    OldName := Sett.NoteDirectory + NewName + '.note';
+    if length(NewName) <> 36 then exit;                         // We only do notes with UUID names
+    // We remove last four char from ID and replace with eg, -opn or -ttl.  This has
+    // some loss of entropy, acceptable and allows use of existing Backup recovery.
+    NewName := Sett.NoteDirectory + 'Backup' + PathDelim
+                + copy(NewName, 1, 32) + '-' + PutIntoName + '.note';
+    // We assume here that Sett unit has checked and created a Backup dir is necessary.
+    if FileExistsUTF8(NewName) then
+        if not DeleteFile(NewName) then debugln('ERROR, failed to delete ' + NewName);
+    if not CopyFile(OldName, NewName) then
+        debugln('ERROR, failed to copy : ' + #10 + OldName + #10 + NewName);
+    //debugln('SearchForm : BackupNote ' + #10 + OldName + #10 + NewName);
 end;
 
 { ----------------- NOTEBOOK STUFF -------------------- }

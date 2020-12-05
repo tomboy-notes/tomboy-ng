@@ -444,8 +444,8 @@ begin
         color := Sett.HiColour;
         font.color := Sett.TextColour;
         ButtMenu.Color := Sett.BackGndColour;
-        ButtonClose.Color := Sett.BackGndColour;
-        ButtonDismiss.Color := Sett.HiColour;
+        BitButQuit.Color := Sett.BackGndColour;
+        BitButHide.Color := Sett.HiColour;
     end;
     {$endif}
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
