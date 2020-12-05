@@ -24,7 +24,6 @@ object EditBoxForm: TEditBoxForm
     AnchorSideBottom.Control = PanelReadOnly
     Left = 0
     Height = 399
-    Hint = 'Recover '
     Top = 38
     Width = 617
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -34,7 +33,6 @@ object EditBoxForm: TEditBoxForm
     ContentPadding.Bottom = 5
     ParentFont = False
     ParentShowHint = False
-    ShowHint = True
     TabOrder = 0
     Visible = True
     OnChange = KMemo1Change

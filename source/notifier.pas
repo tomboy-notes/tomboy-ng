@@ -60,8 +60,8 @@ Type
         {$ifdef LINUX}
         LNotifier : PNotifyNotification;
         {$else}
-        LocalTimer : TFPTimer;
-        PopupNotifier: TPopupNotifier;
+
+        APopupNotifier: TPopupNotifier;
         procedure TimerFinished( Sender : TObject );
         {$endif}
     public
@@ -70,9 +70,13 @@ Type
         constructor Create();
 end;
 
+ type TTFProc = procedure(Send : TObject) of object;
+
 implementation
 
-
+var                            // These are here so Finalization can get to them.
+   TFProc : TTFProc;
+   LocalTimer : TFPTimer;
 
 procedure TNotifier.ShowTheMessage(const Title, Message : string; ShowTime : integer);
 begin
@@ -87,11 +91,11 @@ begin
     // But that will have to wait until I find a Linux where it does not work .....
     {$else}
     // Non Linux must use TPopupNotifier
-    PopupNotifier := TPopupNotifier.Create(nil);
-    PopupNotifier.Text  := Message;
-    PopupNotifier.Title := Title;
-    PopupNotifier.Color:= $909090;
-    PopupNotifier.show;
+    APopupNotifier := TPopupNotifier.Create(nil);
+    APopupNotifier.Text  := Message;
+    APopupNotifier.Title := Title;
+    APopupNotifier.Color:= $909090;
+    APopupNotifier.show;
     LocalTimer := TFPTimer.create(nil);
     LocalTimer.Interval := ShowTime;
     LocalTimer.OnTimer:= @TimerFinished;
@@ -104,7 +108,7 @@ procedure TNotifier.TimerFinished( Sender : TObject );
 begin
     //  writeln('Timer finished');
     LocalTimer.Enabled := false;
-    PopupNotifier.hide;
+    APopupNotifier.hide;
     Destroy;
 end;
 {$endif}
@@ -112,7 +116,7 @@ end;
 destructor TNotifier.Destroy;
 begin
     {$ifndef LINUX}
-    freeandnil(PopupNotifier);
+    freeandnil(APopupNotifier);
     freeandnil(LocalTimer);
     {$endif}
     inherited Destroy;
@@ -121,7 +125,17 @@ end;
 constructor TNotifier.Create();
 begin
     inherited Create();
+    {$ifndef LINUX}
+    TFProc := @TimerFinished;  // Something to call if quit app before timer elapsed.
+    {$endif}
 end;
+
+
+finalization
+    { This is used if the app quits while a notification is active. We just
+      call same function called when timer finished. }
+    if LocalTimer <> nil then
+       TFProc(nil);
 
 end.
 

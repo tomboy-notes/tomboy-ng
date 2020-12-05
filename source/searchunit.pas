@@ -952,7 +952,7 @@ begin
         Edit1.Color := Sett.BackGndColour;
         Edit1.Font.Color := Sett.TextColour;
          color := Sett.HiColour;
-         //font.color := Sett.TextColour;
+         font.color := Sett.TextColour;
          //ButtonNoteBookOptions.Color := Sett.HiColour;
          //ButtonClearFilters.Color := Sett.HiColour;
          //ButtonMenu.color := Sett.HiColour;

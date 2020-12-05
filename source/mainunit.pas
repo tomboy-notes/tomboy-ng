@@ -440,12 +440,11 @@ begin
     TestDarkThemeInUse();
     {$ifdef windows}                // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
-        //color := Sett.BackGndColour;
         color := Sett.HiColour;
-        font.color := Sett.TextColour;
-        ButtMenu.Color := Sett.BackGndColour;
-        BitButQuit.Color := Sett.BackGndColour;
-        BitButHide.Color := Sett.HiColour;
+        //font.color := Sett.TextColour;
+        //ButtMenu.Color := Sett.BackGndColour;
+        //BitButQuit.Color := Sett.BackGndColour;
+        //BitButHide.Color := Sett.HiColour;
     end;
     {$endif}
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
