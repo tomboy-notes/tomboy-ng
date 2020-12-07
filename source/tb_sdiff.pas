@@ -35,7 +35,7 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-    ExtCtrls, ComCtrls, Buttons, kmemo;
+    ExtCtrls, ComCtrls, Buttons, kmemo, menus;
 type
 
     { TFormSDiff }
@@ -57,6 +57,7 @@ type
         RadioLong: TRadioButton;
         RadioShort: TRadioButton;
         procedure FormShow(Sender: TObject);
+		procedure KMemo1Change(Sender: TObject);
         procedure RadioLongChange(Sender: TObject);
     private
         procedure AddDiffText(DiffText : string; NoteNo : integer = 0);
@@ -177,6 +178,10 @@ var
     TestDate: TDateTime;
     LastChange : string;
 begin
+    {$ifdef LINUX}      // Linux has whole button coloured
+    BitBtnUseRemote.GlyphShowMode := gsmNever;    // these are 20x36 coloured glyphs
+    BitBtnUseRemote.GlyphShowMode := gsmNever;    // defined in menus
+    {$endif}
     // Go and get Title and last-change-date from both versions of note
     TestDate := GetNoteChangeGMT(LocalFileName, LastChange);
     if (TestDate > now()) or (TestDate < (Now() - 36500))  then
@@ -184,7 +189,7 @@ begin
         // we have here in the future or more than 100years ago - Fail !
 
         // +++++++++++++++++++++++++++++++++++++++++++++++++
-        // this is wrong, see how to do it in sync
+        // ToDo : this is wrong, see how to do it in sync
         // +++++++++++++++++++++++++++++++++++++++++++++++++
 
         Showmessage('Invalid last sync date in local version of note')
@@ -194,6 +199,11 @@ begin
         Showmessage('Invalid last sync date in remote version of note')
     else LabelRemote.Caption := LastChange;
     CheckFiles();
+end;
+
+procedure TFormSDiff.KMemo1Change(Sender: TObject);
+begin
+
 end;
 
 function TFormSDiff.GetNoteChangeGMT(const FullFileName : ANSIString; out LastChange : ANSIString) : TDateTime;

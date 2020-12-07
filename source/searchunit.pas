@@ -313,20 +313,6 @@ begin
     end;
 end;
 
-(*
-procedure TSearchForm.StringGridNotebooksPrepareCanvas(sender: TObject; aCol,
-    aRow: Integer; aState: TGridDrawState);
-begin
-    if (SelectedNoteBook > 0) and (aRow = SelectedNotebook) then
-        stringgridnotebooks.canvas.brush.color := clLtGray; {StringGrid1.FixedColor; }
-end;
-
-procedure TSearchForm.StringGridNotebooksResize(Sender: TObject);
-begin
-    StringGridNotebooks.Columns[0].Width := StringGridNotebooks.width;
-end;
-*)
-
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
     if NoteLister <> nil then         // else we are quitting the app !
@@ -389,39 +375,6 @@ procedure TSearchForm.RefreshNotebooks();
 begin
     NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
 end;
-
-    { As we no longer use the String Grid to provide a date sorted list of recent notes,
-      it only needs to be refreshed when we are looking at it. I think. }
-(*procedure TSearchForm.RefreshNoteAndNotebooks();
-{var
-    T1, T2, T3 : qword;}
-begin
-    //T1 := gettickcount64();
-    NoteLister.LoadStGrid(StringGrid1, 2);                      // ~90mS on Dell with 2000 notes
-    NoteLister.LoadListView(ListViewNotes, False);
-    //T2 := gettickcount64();
-    //NoteLister.LoadStGridNotebooks(StringGridNotebooks, ButtonClearFilters.Enabled); // 0mS on Dell
-    NoteLister.LoadStGridNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
-
-    //T3 := gettickcount64();
-    //debugln('SearchUnit - RefreshStrGrids Timing ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
-end;
-
-{ Sorts List and updates the recently used list under trayicon }
- procedure TSearchForm.UseList();                                    redundant !
-{var
-    NB : string; }
-begin
-    RefreshMenus(mkRecentMenu);
-    if not Visible then exit;
-    ButtonRefresh.Enabled := True;
-    {
-    if ButtonNotebookOptions.Enabled then begin
-        NB := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
-        if NB <> '' then
-            NoteLister.LoadNotebookGrid(StringGrid1, NB);
-    end else RefreshNoteAndNotebooks();  }
-end;      *)
 
 procedure TSearchForm.UpdateStatusBar(SyncSt: string);
 begin
@@ -709,14 +662,6 @@ begin
     end;
     //T4 := gettickcount64();
     //debugln('TSearchForm.MenuRecentItems ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
-{   This model gets its sorted recent list from string grid, delete it at some stage.
-    i := 1;
-    while (i <= 10) do begin
-       if i < StringGrid1.RowCount then
-           AddItemMenu(AMenu, StringGrid1.Cells[0, i], mtRecent,  @RecentMenuClicked, mkRecentMenu)
-       else break;
-       inc(i);
-    end;               }
 end;
 
 procedure TSearchForm.MenuHelpItems(AMenu : TPopupMenu);
@@ -795,7 +740,6 @@ begin
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then
         DoSearch()
     else begin
-        // if ButtonNotebookOptions.Enabled then begin                         // if a notebook is currently selected.
         if (ListBoxNotebooks.ItemIndex > -1) then begin                        // if a notebook is currently selected.
             NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
             if NB <> '' then begin
@@ -806,7 +750,6 @@ begin
             // sync removes a notebook, a 'Refresh' will not make the deleted notebook disappear. It
             // does no go until filters are cleared.
         end else begin
-            // NoteLister.LoadStGrid(StringGrid1, 2);                      // ~90mS on Dell with 2000 notes
             NoteLister.LoadListView(ListViewNotes, False);
             NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
             ScaleListView();
@@ -829,11 +772,9 @@ begin
         TS1:=gettickcount64();
         Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkCaseSensitive
         // TS2:=gettickcount64();
-        //NoteLister.LoadStGrid(StringGrid1, 2, True);
         NoteLister.LoadListView(ListViewNotes, True);
         // ToDo : do we need to call ScaleListView here ?
         // TS3:=gettickcount64();
-        //NoteLister.LoadListNotebooks(StringGridNotebooks, True);
         NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, True);
         TS4:=gettickcount64();
         StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
@@ -946,26 +887,17 @@ begin
     Top := Placement + random(Placement * 2);
     CheckCaseSensitive.checked := Sett.SearchCaseSensitive;
     {$ifdef windows}  // linux apps know how to do this themselves
-    if Sett.DarkTheme then begin
+    if Sett.DarkTheme then begin                                        // Note - Windows won't let us change button colour anymore.
         ListBoxNotebooks.Color := Sett.BackGndColour;
         ListBoxNoteBooks.Font.Color := Sett.TextColour;
         Edit1.Color := Sett.BackGndColour;
         Edit1.Font.Color := Sett.TextColour;
          color := Sett.HiColour;
          font.color := Sett.TextColour;
-         //ButtonNoteBookOptions.Color := Sett.HiColour;
-         //ButtonClearFilters.Color := Sett.HiColour;
-         //ButtonMenu.color := Sett.HiColour;
-         //stringGrid1.GridLineColor:=
-         //StringGrid1.FixedColor := Sett.HiColour;
          ListViewNotes.Color :=       clnavy;
          ListViewNotes.Font.Color :=  Sett.HiColour;
-
-         ButtonRefresh.Color := Sett.HiColour;
          splitter1.Color:= clnavy;
     end;
-    //StringGrid1.Color := ListBoxNoteBooks.Color;
-    //StringGrid1.Font.color := ListBoxNotebooks.Font.Color;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
     {$endif}
@@ -1050,8 +982,6 @@ begin
     except on
         E: EProcess do debugln('Is wmctrl available ? Cannot move ' + WTitle);
     end;
-    {if not Result then
-        debugln('wmctrl exit error trying to move ' + WTitle); }  // wmctrl always appears to return something !
     List := TStringList.Create;
     List.LoadFromStream(AProcess.Output);       // just to clear it away.
     //debugln('Process List ' + List.Text);
@@ -1210,15 +1140,7 @@ end;
     // displays all available notes.
 procedure TSearchForm.ButtonClearFiltersClick(Sender: TObject);
 begin
-        //ButtonNotebookOptions.Enabled := False;
         ButtonClearFilters.Enabled := False;
-        // ButtonClearFilters.color := clblack;
-        //StringGridNotebooks.Options := StringGridNotebooks.Options - [goRowHighlight];
-        // UseList();
-
-        //self.ButtonRefresh.enabled := False;
-        //StringGridNoteBooks.Hint := '';
-        //StringGrid1.AutoSizeColumns;
         ListBoxNotebooks.ItemIndex := -1;
         Edit1.Hint:=rsSearchHint;
         Edit1.Text := rsMenuSearch;
@@ -1231,7 +1153,6 @@ end;
 
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
 begin
-    //ButtonNotebookOptions.Enabled := True;
     ButtonClearFilters.Enabled := True;
     ButtonRefreshClick(self);
     SelectedNoteBook := ListBoxNotebooks.ItemIndex;
@@ -1263,13 +1184,11 @@ procedure TSearchForm.MenuEditNotebookTemplateClick(Sender: TObject);
 var
     NotebookID : ANSIString;
 begin
-    //NotebookID := NoteLister.NotebookTemplateID(StringGridNotebooks.Cells[0, StringGridNotebooks.Row]);
     NotebookID := NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
     if NotebookID = '' then
     	//showmessage('Error, cannot open template for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
         showmessage('Error, cannot open template for ' + ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])
     else
-    	//OpenNote(StringGridNotebooks.Cells[0, StringGridNotebooks.Row] + ' Template', Sett.NoteDirectory + NotebookID);
         OpenNote(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex] + ' Template', Sett.NoteDirectory + NotebookID);
 end;
 
@@ -1278,7 +1197,6 @@ var
     NotebookPick : TNotebookPick;
 begin
         NotebookPick := TNotebookPick.Create(Application);
-        //NotebookPick.FullFileName := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
         try
             NotebookPick.Title := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex];
             NotebookPick.ChangeMode := True;
@@ -1301,12 +1219,6 @@ end;
 
 procedure TSearchForm.MenuNewNoteFromTemplateClick(Sender: TObject);
 begin
-    {OpenNote('', Sett.NoteDirectory                                                                     // WTF ???
-    		+ NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]),
-            ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
-        is this another  grosjo-ism ???   We should not be passing notebook ID as a file name
-        and should not be getting the notebook name here, OpenNote does it.
-    }
     OpenNote('', '', '');
 end;
 
