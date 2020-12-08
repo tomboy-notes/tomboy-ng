@@ -348,7 +348,7 @@ var
 
 
 const
-                                // Note we set DarkTheme colors and all HiLight colours in MainUnit
+                                // Note we set DarkTheme colors and all HiLight colours in MainUnit   ?? No, we set them here !
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
 
 

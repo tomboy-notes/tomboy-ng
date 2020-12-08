@@ -438,15 +438,16 @@ begin
       exit;
     end;  }
     TestDarkThemeInUse();
-    {$ifdef windows}                // linux apps know how to do this themselves
+//    {$ifdef windows}                // linux (except bullseye, dec 2020) apps know how to do this themselves
     if Sett.DarkTheme then begin
         color := Sett.HiColour;
-        //font.color := Sett.TextColour;
-        //ButtMenu.Color := Sett.BackGndColour;
-        //BitButQuit.Color := Sett.BackGndColour;
-        //BitButHide.Color := Sett.HiColour;
+        font.color := Sett.TextColour;               // These do not work for Windows, just bullseye, just temp....
+        ButtMenu.Color := Sett.BackGndColour;
+        BitBtnQuit.Color := Sett.BackGndColour;
+        BitBtnHide.Color := Sett.HiColour;
+        BitBtnHide.Color := clBlack;
     end;
-    {$endif}
+//    {$endif}
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
         exit;
@@ -580,10 +581,9 @@ var
     {$endif}
 
 begin
-    {$ifdef windows}
-    if Application.HasOption('dark-theme') then // Manual override always wins on windows !
+    if Application.HasOption('dark-theme') then // Manual override always wins  !
         Sett.DarkTheme := True
-    else {$endif} begin
+    else  begin
         Sett.DarkTheme := false;
         {$ifdef WINDOWS}
         Sett.DarkTheme := WinDarkTheme();

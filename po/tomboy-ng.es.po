@@ -474,7 +474,9 @@ msgid "No Dictionary Found"
 msgstr "Ningún diccionario encontrado"
 
 #: settings.rsdirhasnonotes
-msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
+#, fuzzy
+#| msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
+msgid "That directory does not contain any notes. That is OK, if I can make my own there."
 msgstr "El directorio no tiene ninguna nota. Está bien, si puedo hacer las mías aquí."
 
 #: settings.rserrorcannotwrite
@@ -583,10 +585,6 @@ msgstr "Menú"
 #: teditboxform.caption
 msgid "EditBoxForm"
 msgstr "EditarModelo"
-
-#: teditboxform.kmemo1.hint
-msgid "Recover "
-msgstr ""
 
 #: teditboxform.label2.caption
 msgid "Read Only"

@@ -10,7 +10,7 @@ Bug reports and feature requests should be via Github https://github.com/tomboy-
 There is some advice about DIY debugging further down this document.<size:huge>
 
 
-<bold>Known Issues and todo list (updated 2020/06/22)</bold></size:huge>
+<bold>Known Issues and todo list (updated 2020/12/08)</bold></size:huge>
 Recent fixes show as strikeout.
 
 <list><list-item dir="ltr">Do not set you notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine). </list-item></list>
@@ -20,8 +20,9 @@ Recent fixes show as strikeout.
 <list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
 <list><list-item dir="ltr">Network Sync - most users happy with file sync. With sshfs, you can sync to any server you can ssh to.</list-item></list>
-<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.</list-item></list>
-<list><list-item dir="ltr">We don't have any Undo - Redo capability.</list-item></list><size:large>
+<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.  Windows will not let us set a dark background to buttons, must look at owner draw modes.  Also useful in TB_SDiff buttons to indicate selected text.</list-item></list>
+<list><list-item dir="ltr">NEW - Debian bullseye does not seem to tell tomboy-ng to use a dark theme, while this will probably be fixed (in either bullseye or tomboy-ng), for now, use the --dark-theme command line switch. Its a poor substitue .... </list-item></list>
+<list><list-item dir="ltr">We <strikeout>don't have any Undo - Redo capability.</strikeout></list-item></list><strikeout></strikeout><size:large>
 
 <bold>Long term 'maybe' stuff</bold></size:large>
 <list><list-item dir="ltr">Move notes into database (ie sqlite for small users, something bigger for BIG users). </list-item></list>
@@ -33,7 +34,7 @@ Recent fixes show as strikeout.
 
 <bold>Debugging</bold></size:large>
 If you have problems with the application, or wish to make a feature request, please report via the github tomboy-ng issues facility. 
-If tomboy-ng crashes or does something unexpected, there are a number of command line switches that may reveal whats going on (t either yourself of, if posted to 'issues', the author).  Using these command line switches is easy in Linux but Windows or Mac users need to capture the information if a file, see below -
+If tomboy-ng crashes or does something unexpected, there are a number of command line switches that may reveal whats going on (t either yourself of, if posted to 'issues', the author).  Using these command line switches is easy in Linux but Windows or Mac users need to capture the information in a file, see below -
 
 <bold>Command Line Switches</bold>
 
@@ -42,7 +43,6 @@ If tomboy-ng crashes or does something unexpected, there are a number of command
 <list><list-item dir="ltr"><monospace>   --debug-log=SOME.LOG         Direct debug output to SOME.LOG.</monospace></list-item></list><monospace></monospace>
 <list><list-item dir="ltr"><monospace>   -h --help                    Show this help message and exit.</monospace></list-item></list><monospace></monospace>
 <list><list-item dir="ltr"><monospace>   --version                    Print version and exit</monospace></list-item></list><monospace></monospace>
-<list><list-item dir="ltr"><monospace>   -g --gnome3                  Run in RedHatGnome mode, no TrayIcon</monospace></list-item></list><monospace></monospace>
 <list><list-item dir="ltr"><monospace>   --no-splash                  Dont show small status/splash window</monospace></list-item></list><monospace></monospace>
 <list><list-item dir="ltr"><monospace>   --debug-sync                 Show debug messages during Sync</monospace></list-item></list><monospace></monospace>
 <list><list-item dir="ltr"><monospace>   --debug-index                Show debug messages while indexing notes</monospace></list-item></list><monospace></monospace>
@@ -75,8 +75,8 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2020-08-14T14:55:33.0604990+10:00</last-change-date>
-  <last-metadata-change-date>2020-08-14T14:55:33.0604990+10:00</last-metadata-change-date>
+  <last-change-date>2020-12-08T10:18:34.5136386+11:00</last-change-date>
+  <last-metadata-change-date>2020-12-08T10:18:34.5136386+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

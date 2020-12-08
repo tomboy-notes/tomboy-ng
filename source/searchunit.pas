@@ -886,7 +886,7 @@ begin
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
     CheckCaseSensitive.checked := Sett.SearchCaseSensitive;
-    {$ifdef windows}  // linux apps know how to do this themselves
+//    {$ifdef windows}  // linux apps know how to do this themselves
     if Sett.DarkTheme then begin                                        // Note - Windows won't let us change button colour anymore.
         ListBoxNotebooks.Color := Sett.BackGndColour;
         ListBoxNoteBooks.Font.Color := Sett.TextColour;
@@ -900,7 +900,7 @@ begin
     end;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
-    {$endif}
+//    {$endif}
     ListBoxNotebooks.Hint := rsNotebookOptionRight;
     {$ifdef DARWIN}
     ButtonMenu.Refresh;

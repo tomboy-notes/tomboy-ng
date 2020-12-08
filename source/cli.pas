@@ -56,7 +56,7 @@ begin
        debugln(rsMachelp1);
        debugln(rsMacHelp2);
        {$endif}
-       {$ifdef WINDOWS}debugln('   --dark-theme'); {$endif}
+       debugln('   --dark-theme');
        //debugln('   --delay-start                ' + rsHelpDelay);
        debugln('   --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);

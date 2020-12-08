@@ -513,7 +513,9 @@ msgid "No Dictionary Found"
 msgstr "Geen woordenboek aangetroffen"
 
 #: settings.rsdirhasnonotes
-msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
+#, fuzzy
+#| msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
+msgid "That directory does not contain any notes. That is OK, if I can make my own there."
 msgstr "Deze map bevat geen notities. Dat is niet erg, want nu kan deze worden gebruikt voor nieuwe notities."
 
 #: settings.rserrorcannotwrite
@@ -616,10 +618,6 @@ msgstr ""
 #: teditboxform.caption
 msgid "EditBoxForm"
 msgstr "EditBoxForm"
-
-#: teditboxform.kmemo1.hint
-msgid "Recover "
-msgstr ""
 
 #: teditboxform.label2.caption
 msgid "Read Only"
