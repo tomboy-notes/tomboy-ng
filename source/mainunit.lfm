@@ -88,7 +88,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelNotesFound
     Left = 24
     Height = 18
-    Top = 102
+    Top = 104
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -115,7 +115,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelNotesFound
     Left = 8
     Height = 18
-    Top = 102
+    Top = 104
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -151,9 +151,9 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 19
-    Top = 124
+    Top = 128
     Width = 195
-    BorderSpacing.Top = 3
+    BorderSpacing.Top = 5
     Caption = 'Dictionary Config (optional)'
     ParentColor = False
   end
@@ -163,9 +163,9 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 19
-    Top = 146
+    Top = 152
     Width = 156
-    BorderSpacing.Top = 3
+    BorderSpacing.Top = 5
     Caption = 'Sync Config (optional)'
     ParentColor = False
   end
@@ -173,7 +173,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     Left = 24
     Height = 18
-    Top = 124
+    Top = 128
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -200,7 +200,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     Left = 8
     Height = 18
-    Top = 124
+    Top = 128
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -234,7 +234,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label4
     Left = 24
     Height = 18
-    Top = 146
+    Top = 152
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -261,7 +261,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label4
     Left = 8
     Height = 18
-    Top = 146
+    Top = 152
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -308,9 +308,9 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrBottom
     Left = 56
     Height = 19
-    Top = 102
+    Top = 104
     Width = 10
-    BorderSpacing.Top = 3
+    BorderSpacing.Top = 5
     Caption = 'X'
     ParentColor = False
   end

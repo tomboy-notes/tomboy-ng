@@ -178,10 +178,10 @@ var
     TestDate: TDateTime;
     LastChange : string;
 begin
-    {$ifdef LINUX}      // Linux has whole button coloured
+    //{$ifdef LINUX}      // Linux has whole button coloured  - not all !
     BitBtnUseRemote.GlyphShowMode := gsmNever;    // these are 20x36 coloured glyphs
     BitBtnUseRemote.GlyphShowMode := gsmNever;    // defined in menus
-    {$endif}
+    //{$endif}
     // Go and get Title and last-change-date from both versions of note
     TestDate := GetNoteChangeGMT(LocalFileName, LastChange);
     if (TestDate > now()) or (TestDate < (Now() - 36500))  then

@@ -441,7 +441,7 @@ begin
 //    {$ifdef windows}                // linux (except bullseye, dec 2020) apps know how to do this themselves
     if Sett.DarkTheme then begin
         color := Sett.HiColour;
-        font.color := Sett.TextColour;               // These do not work for Windows, just bullseye, just temp....
+        //font.color := Sett.TextColour;               // These do not work for Windows, just bullseye, just temp....
         ButtMenu.Color := Sett.BackGndColour;
         BitBtnQuit.Color := Sett.BackGndColour;
         BitBtnHide.Color := Sett.HiColour;
