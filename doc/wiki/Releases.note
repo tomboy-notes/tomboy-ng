@@ -31,7 +31,7 @@ Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64).Inst
 I am only shipping the 64bit Cocoa version, if you need the 32bit please let me know.<size:huge>
 
 <bold>Linux</bold></size:huge>
-Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision.<size:large>
+Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision. Due to some inconsistencies in Desktops, sometimes tomboy-ng does not detect if you are using a dark theme, if so affected, consider switching from GTK2 to Qt5 or visa versa.<size:large>
 
 <bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
 New in v0.30, Ubuntu and derivative users (of 64bit U18.04 and U20.04) can use a PPA to install this and subsquent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng for details but the process is -
@@ -66,7 +66,7 @@ Click on the appropriate link from your browser and allow the suggested installe
 
 Tested on Fedora 33. Generally,  on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
-<monospace>sudo yum localinstall ./tomboy-ng-0.27-2.x86_64.rpm [enter]   </monospace>
+<monospace>sudo yum localinstall ./tomboy-ng-0.31-2.x86_64.rpm [enter]   </monospace>
 
 note the Qt5 version has a slightly different file name
 
@@ -124,8 +124,8 @@ This is new in v0.30. Users of the official Raspberry Pi OS (previously know as 
 
 
 </note-content></text>
-  <last-change-date>2020-12-03T20:03:42.5077730+11:00</last-change-date>
-  <last-metadata-change-date>2020-12-03T20:03:42.5077730+11:00</last-metadata-change-date>
+  <last-change-date>2020-12-09T17:21:11.8335839+11:00</last-change-date>
+  <last-metadata-change-date>2020-12-09T17:21:11.8335839+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

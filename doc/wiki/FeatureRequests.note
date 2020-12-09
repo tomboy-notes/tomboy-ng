@@ -20,15 +20,17 @@ Do you have a need to import into tomboy-ng or export from tomboy-ng in a partic
 Do you want to have pretty pictures in your notes, if so, what format would you want ?<size:large>
 
 <bold>Net Sync</bold></size:large>
-By netsync, I mean to dedicated servers like Snowy, Rainy or, more practicable today, a grauphel/NextCloud/Apache stack.  A not inconsiderable effort to install such a stack but do you really need it ?   ( Be aware that tomboy-ng will now, very easily, sync to any remote server you can ssh to. ) <size:large>
+By netsync, I mean to dedicated servers like Snowy, Rainy or, more practicable today, a grauphel/NextCloud/Apache stack.  A not inconsiderable effort to install such a stack but do you really need it ?   ( Be aware that tomboy-ng will now, very easily, sync to any remote server you can ssh to. ) 
+
+A recent project to make tomboy-ng sync with NextCloud Notes uncovered a NextCloud API 'inconsistency' and we are waiting to see that fixed.<size:large>
 
 <bold>Spell Check while you type</bold></size:large>
 You know, badly spelt words are somehow highlighted as you type.  I know I have some very fast typists out there, I am not sure I can keep up with them. 
 
 
 </note-content></text>
-  <last-change-date>2020-06-22T21:46:04.2535013+10:00</last-change-date>
-  <last-metadata-change-date>2020-06-22T21:46:04.2535013+10:00</last-metadata-change-date>
+  <last-change-date>2020-12-09T17:14:43.7951548+11:00</last-change-date>
+  <last-metadata-change-date>2020-12-09T17:14:43.7951548+11:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
