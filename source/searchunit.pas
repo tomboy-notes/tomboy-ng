@@ -97,6 +97,7 @@ unit SearchUnit;
     2020/07/09  New help notes location.
     2020/07/17  OpenNote was checking edit1.test = 'search' instead of rsMenuSearch
     2020/11/14  ListViewNotes now has alternating colours, req ugly fix for Qt5 involving increasing font size
+    2020/12/10  Move focus to Search Field whenever Search Form is re-shown, issue #211
 }
 
 {$mode objfpc}{$H+}
@@ -814,6 +815,7 @@ begin
         //debugln('SearchForm - FormActivate (first run) ' + dbgs(GetTickCount64() - Tick) + 'mS');
     end;
     //debugln('Search Unit Form Activate');
+    Edit1.SetFocus;
 end;
 
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -906,6 +908,7 @@ begin
     ButtonMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
     {$endif}      // Cocoa issue
+    Edit1.SetFocus;
 end;
 
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;

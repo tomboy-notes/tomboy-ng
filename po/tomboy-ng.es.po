@@ -4,15 +4,15 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: tomboy-ng v30\n"
+"Project-Id-Version: tomboy-ng v31\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-08-10 10:57+0200\n"
+"PO-Revision-Date: 2020-12-09 18:49+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.4\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: editbox.rsunabletoevaluate
@@ -112,9 +112,10 @@ msgctxt "resourcestr.rsclicksnapshot"
 msgid "Click an Available Snapshot"
 msgstr "Hacer clic en una instantánea"
 
+# Puede ser contenido viejo
 #: resourcestr.rscontentdated
 msgid "Content Dated"
-msgstr ""
+msgstr "Contenido con fecha"
 
 #: resourcestr.rscopyfailed
 msgctxt "resourcestr.rscopyfailed"
@@ -202,15 +203,11 @@ msgid "Show this help message and exit."
 msgstr "Mostrar mensaje de ayuda y salir."
 
 #: resourcestr.rshelplang
-#, fuzzy
-#| msgid "Force Language, supported en, es, nl"
 msgctxt "resourcestr.rshelplang"
 msgid "Force Language, supported en, es, fr, nl"
-msgstr "Forzar idioma. Idiomas suportados: en, es, nl"
+msgstr "Forzar idioma. Idiomas suportados: en, es, fr, nl"
 
 #: resourcestr.rshelpnosplash
-#, fuzzy
-#| msgid "Dont show small status/splash window"
 msgctxt "resourcestr.rshelpnosplash"
 msgid "Do not show small status/splash window"
 msgstr "No mostrar ventana de estado/bienvenida"
@@ -296,7 +293,7 @@ msgstr "Hay una versión más nueva en el repositorio principal"
 
 #: resourcestr.rsnotavailable
 msgid "Not Available"
-msgstr ""
+msgstr "No disponible"
 
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
@@ -305,7 +302,7 @@ msgstr "Ya está en el repositorio"
 
 #: resourcestr.rsnotebookoptionctrl
 msgid "Ctrl click for Notebook Options"
-msgstr ""
+msgstr "Ctrl+Clic para Opciones de Cuaderno"
 
 #: resourcestr.rsnotebookoptionright
 msgid "Right click for Notebook Options"
@@ -371,7 +368,7 @@ msgstr "ERROR: No se pudo renombrar el Archivo de Seguridad "
 
 #: resourcestr.rsrollbackintro
 msgid "You can roll back to previous version of this note"
-msgstr ""
+msgstr "Puede volver a la versión anterior de esta nota"
 
 #: resourcestr.rsrunningsync
 msgctxt "resourcestr.rsrunningsync"
@@ -414,11 +411,9 @@ msgid "created, do you want to copy it elsewhere ?"
 msgstr "creada. ¿Quiere copiarla en otro sitio?"
 
 #: resourcestr.rssyncerror
-#, fuzzy
-#| msgid "A Sync Error occured"
 msgctxt "resourcestr.rssyncerror"
 msgid "A Sync Error occurred"
-msgstr "Ocurrió un error de sincronización"
+msgstr "Error de sincronización"
 
 #: resourcestr.rssyncnotconfig
 msgctxt "resourcestr.rssyncnotconfig"
@@ -474,8 +469,6 @@ msgid "No Dictionary Found"
 msgstr "Ningún diccionario encontrado"
 
 #: settings.rsdirhasnonotes
-#, fuzzy
-#| msgid "That directory does not contain any notes. Thats OK, if I can make my own there."
 msgid "That directory does not contain any notes. That is OK, if I can make my own there."
 msgstr "El directorio no tiene ninguna nota. Está bien, si puedo hacer las mías aquí."
 
@@ -692,8 +685,6 @@ msgid "Spell Check"
 msgstr "Revisar ortográfica"
 
 #: teditboxform.menuitemsync.caption
-#, fuzzy
-#| msgid "Syncronize"
 msgid "Synchronize"
 msgstr "Sincronizar"
 
@@ -712,7 +703,7 @@ msgstr "Fuente pequeña"
 #: teditboxform.menustayontop.caption
 msgctxt "teditboxform.menustayontop.caption"
 msgid "Stay On Top"
-msgstr ""
+msgstr "Siempre encima"
 
 #: teditboxform.menustrikeout.caption
 msgid "Strikeout"
@@ -746,9 +737,10 @@ msgstr "Fuente: tamaño, negrita, cursiva, etc"
 msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
 
+# Traducción supone que es de una nota o una instantanea
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
-msgstr ""
+msgstr "Volver a la anterior"
 
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"
@@ -908,24 +900,18 @@ msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
 msgstr "Ni pensarlo sin tener una instantánea de seguridad reciente. (Pestaña \"Introducción\")"
 
 #: tformrecover.label14.caption
-#, fuzzy
-#| msgid "Double click an available snapshot to see its contents."
 msgid "Click an available snapshot to see its contents."
-msgstr "Haga doble clic en una instantánea para ver los contenidos."
+msgstr "Haga clic en una instantánea para ver los contenidos."
 
 #: tformrecover.label15.caption
-#, fuzzy
-#| msgid "Double click an available snapshot, click Recover"
 msgid "Click an available snapshot, click Recover"
-msgstr "Haga doble clic en una instantánea, luego haga clic en Recuperar."
+msgstr "Haga clic primero en una instantánea, luego en Recuperar."
 
 #: tformrecover.label16.caption
 msgid "You may chose to view, copy and paste into a new note."
 msgstr "Puede elegir ver, copiar y pegar en una nota nueva."
 
 #: tformrecover.label2.caption
-#, fuzzy
-#| msgid "Please be carefull, this is a dangerous place!"
 msgid "Please be careful, this is a dangerous place!"
 msgstr "Por favor ¡tenga cuidado! ¡Es un sitio peligroso!"
 
@@ -984,18 +970,19 @@ msgid "Recover Snapshot"
 msgstr "Recuperar Instantánea"
 
 #: tformrollback.speedcancel.caption
-#, fuzzy
 msgctxt "tformrollback.speedcancel.caption"
 msgid "Cancel"
 msgstr "Cancelar"
 
+# Puede que sea demasiado largo
 #: tformrollback.speedrolltoopen.caption
 msgid "Opening Backup"
-msgstr ""
+msgstr "Abriendo copia de seguridad"
 
+# Supongo que es una copia de seguridad de la nota por un cambio, pero no estoy seguro.
 #: tformrollback.speedrolltotitle.caption
 msgid "Title Change Backup"
-msgstr ""
+msgstr "Copia por cambio de título"
 
 #: tformsdiff.bitbtnuselocal.caption
 msgid "Use Local"
@@ -1084,10 +1071,10 @@ msgstr "Ortografía"
 msgid "Suspect word -"
 msgstr "Palabra dudosa -"
 
-# ¿Demasiado largo todavía?
+# No muy claro, miralo en contexto
 #: tformspell.labelprompt.caption
 msgid "Click a word to use it."
-msgstr "Haga clic en la palabra elegida."
+msgstr "Haga clic en una palabra."
 
 #: tformsync.buttoncancel.caption
 msgctxt "tformsync.buttoncancel.caption"
@@ -1213,13 +1200,11 @@ msgid "Upload means from tomboy-ng to Android Device"
 msgstr "Subir significa de tomboy-ng a un dispositivo Android"
 
 #: tmainform.bitbtnhide.caption
-#, fuzzy
 msgctxt "tmainform.bitbtnhide.caption"
 msgid "Hide"
 msgstr "Ocultar"
 
 #: tmainform.bitbtnquit.caption
-#, fuzzy
 msgctxt "tmainform.bitbtnquit.caption"
 msgid "Quit"
 msgstr "Salir"
@@ -1262,10 +1247,10 @@ msgstr "Configuración de sincronización (opcional)"
 msgid "Welcome to tomboy-ng !"
 msgstr "¡Bienvenido a tomboy-ng!"
 
-# ¿Revisar?
+# Me parece major y más corto con "terminal"
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
-msgstr "Lanzar desde la linea de comandos para ver errores o ir a Preferencias->Instantánea->Recuperar ..."
+msgstr "Lanzar desde la terminal para ver errores o ir a Preferencias->Instantánea->Recuperar ..."
 
 #: tnotebookpick.button1.caption
 msgctxt "tnotebookpick.button1.caption"
@@ -1295,10 +1280,8 @@ msgstr "Nuevo nombre"
 
 # ¿Revisar?
 #: tnotebookpick.label9.caption
-#, fuzzy
-#| msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
 msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
-msgstr "Si no está cierto que todo está al día, cancele la sincronización ¡ahora!"
+msgstr "Si no está seguro que todo está al día, cancele la sincronización ¡ahora!"
 
 #: tnotebookpick.tabchangename.caption
 msgid "Change Notebook Name"
@@ -1354,7 +1337,7 @@ msgstr "Instale Tomdroid, configure la sincronización, y sincronize"
 # ¿Revisar?
 #: tomdroid.rsnoconnection
 msgid "Failed to establish a connection. "
-msgstr "No se pudo conectar."
+msgstr "No se pudo conectar. "
 
 #: tomdroid.rsnotcorrectprofile
 msgid "This is not correct profile for that device"
@@ -1365,9 +1348,10 @@ msgid "That's not an existing Repo, maybe click \"Join\" ?"
 msgstr "El repositorio no existe, ¿tal vez pulse \"unirse\"?"
 
 # ¿Demasiada larga? ¿Hay espacio para 2 lineas?
+# "de Tomdroid" eliminado para hacerlo más corto.
 #: tomdroid.rsnotomdroid
 msgid "Unable to find Tomdroid sync dir on that device."
-msgstr "No se encontró directorio de sincronización de Tomdroid en el dispositivo."
+msgstr "No se encontró directorio de sincronización en el dispositivo."
 
 #: tomdroid.rsselectprofile
 msgid "Select a profile"
@@ -1428,8 +1412,6 @@ msgid "Create New Note from Template"
 msgstr "Crear nota nueva desde una plantilla"
 
 #: tsearchform.menurenamenotebook.caption
-#, fuzzy
-#| msgid "Rename Note Book"
 msgid "Rename NoteBook"
 msgstr "Renombrar cuaderno"
 
@@ -1529,8 +1511,6 @@ msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Permitir que una nota aparece en más de un cuaderno."
 
 #: tsett.checkmanynotebooks.hint
-#, fuzzy
-#| msgid "This may adversly affect tradional Tomboy, take care."
 msgid "This may adversly affect traditional Tomboy, take care."
 msgstr "Puede que perjudique Tomboy tradicional. Tenga cuidado."
 
@@ -1596,8 +1576,6 @@ msgid "an appropriate Hunspell Dictionary set."
 msgstr "un diccionario Hunspell apropiado."
 
 #: tsett.label16.caption
-#, fuzzy
-#| msgid "Maxium number of snapshots"
 msgid "Maximum number of snapshots"
 msgstr "Número máximo de instantáneas"
 
@@ -1609,9 +1587,10 @@ msgstr "Se buscan y se guardan las notas en:"
 msgid "When a conflict is detected between a local note and remote one :"
 msgstr "Al detectar un conflicto entre una nota local y una remota:"
 
+# ¿Espacio suficiente?
 #: tsett.label4.caption
 msgid "Repo : "
-msgstr ""
+msgstr "Repositorio:"
 
 # ¿Correcto en el original?
 #: tsett.label5.caption
@@ -1643,12 +1622,12 @@ msgstr "sin configurar"
 #: tsett.labelfilesyncinfo1.caption
 msgctxt "tsett.labelfilesyncinfo1.caption"
 msgid "LabelFileSyncInfo1"
-msgstr ""
+msgstr "EtiquetaSincInfo1"
 
 #: tsett.labelfilesyncinfo2.caption
 msgctxt "tsett.labelfilesyncinfo2.caption"
 msgid "LabelFileSyncInfo2"
-msgstr ""
+msgstr "EtiquetaSincInfo2"
 
 # ¿Contexto? ¿Demásiado largo?
 #: tsett.labelsnapdir.caption
@@ -1701,8 +1680,6 @@ msgid "Menu"
 msgstr "Menú"
 
 #: tsett.speedsetupsync.caption
-#, fuzzy
-#| msgid "Setup"
 msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
 msgstr "Configurar"
@@ -1733,4 +1710,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
-
