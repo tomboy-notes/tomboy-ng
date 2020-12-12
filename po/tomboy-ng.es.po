@@ -6,7 +6,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: tomboy-ng v31\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-12-09 18:49+0100\n"
+"PO-Revision-Date: 2020-12-10 16:48+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -531,7 +531,7 @@ msgstr "Descargas"
 # ¿Editar las notas, la lista, cual?
 #: syncutils.rsedituploads
 msgid "Edit Uploads   "
-msgstr "Editar notas a subir"
+msgstr "Notas cambiadas a subir"
 
 #: syncutils.rslocaldeletes
 msgid "Local Deletes  "
@@ -1710,3 +1710,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sincronización"
+
