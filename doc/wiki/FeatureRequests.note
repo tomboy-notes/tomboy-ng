@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>Contributions-and-Feature-Requests</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Contributions-and-Feature-Requests</underline>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Contributions-and-Feature-Requests</underline><size:large>
 
+<bold>Pull Requests</bold></size:large>
+If you would like to make a direct contribution to tomboy-ng via a pull request, its likely to be well received. But please note the following -
+
+<list><list-item dir="ltr">License - As of October 2020, tomboy-ng has a very liberal license and thats to ensure easy entry in things like Debian. Debian and similar organizations have very strict rules about ensuring copyright holders wishes are observed, so its necessary to prevent the copyright becoming too fractured. By making a contribution to tomboy-ng, you agree to assign any copyright to David Bannon, unless the contribution is such that we agree otherwise. In either case, you contribution, if accepted, will be acknowledged and you may be listed as an author.</list-item></list>
+
+<list><list-item dir="ltr">When creating a pull request, make sure it targets just one specific bug or feature and makes the minimum changes necessary to achieve what you are trying to do. Try to avoid making changes to more files than absolutely necessary. Wide ranging changes require extensive testing on the multiple platforms that tomboy-ng supports.</list-item></list>
+
+<list><list-item dir="ltr">Consider discussing your proposed changes via the tomboy-ng issues page before investing a lot of blood, sweat and tears !</list-item></list><size:large>
+
+<bold>Feature Requests</bold></size:large>
 You are very welcome to submit requests for new or improved features in tomboy-ng.  If you have a github account (its free) create or add to an issue here, else, please send me an email to the address listed in the tomboy-ng install kits.
 
 Here I will mention a number of possible additions and some superficial comments, don't let my comments prevent you from 'voting' for something, listed or not !<size:large>
@@ -29,8 +39,8 @@ You know, badly spelt words are somehow highlighted as you type.  I know I have 
 
 
 </note-content></text>
-  <last-change-date>2020-12-12T16:34:52.5211794+11:00</last-change-date>
-  <last-metadata-change-date>2020-12-12T16:34:52.5211794+11:00</last-metadata-change-date>
+  <last-change-date>2020-12-12T21:26:55.5340500+11:00</last-change-date>
+  <last-metadata-change-date>2020-12-12T21:26:55.5340500+11:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
