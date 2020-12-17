@@ -894,10 +894,12 @@ begin
         ListBoxNoteBooks.Font.Color := Sett.TextColour;
         Edit1.Color := Sett.BackGndColour;
         Edit1.Font.Color := Sett.TextColour;
-         color := Sett.HiColour;
+//         color := Sett.HiColour;
+         Color := Sett.BackGndColour;
          font.color := Sett.TextColour;
          ListViewNotes.Color :=       clnavy;
-         ListViewNotes.Font.Color :=  Sett.HiColour;
+//         ListViewNotes.Font.Color :=  Sett.HiColour;
+         ListViewNotes.Font.Color :=  Sett.BackGndColour;
          splitter1.Color:= clnavy;
     end;
     ListViewNotes.Color := ListBoxNoteBooks.Color;

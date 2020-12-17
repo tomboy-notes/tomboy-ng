@@ -1,7 +1,7 @@
 object FormSDiff: TFormSDiff
-  Left = 782
+  Left = 784
   Height = 481
-  Top = 161
+  Top = 157
   Width = 645
   VertScrollBar.Visible = False
   Caption = 'A Note Sync Clash has been Detected'

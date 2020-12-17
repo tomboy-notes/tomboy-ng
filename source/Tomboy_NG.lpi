@@ -739,13 +739,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/  --lang=es"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/  --lang=es"/>
           </local>
         </Mode0>
       </Modes>

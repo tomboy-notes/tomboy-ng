@@ -290,7 +290,7 @@ type
         TextColour : TColor;
         HiColour : TColor;
         TitleColour : TColor;
-        AltColour   : TColor;           // A colour similar to  BackGndColour, alt rows in ListView
+        AltColour   : TColor;           // A colour similar to  BackGndColour, alt rows in ListView, buttons in dark mode ?
         UsualFont : string;
         FixedFont : string;
         DefaultFixedFont : string;
@@ -1094,18 +1094,19 @@ end;
 procedure TSett.SetColours;
 // pink = $EEEEFF, White is $FFFFFF, Black is $000000
 begin
-    AltColour := $FFFFDD;               // ToDo : must add this to user set colours, sigh .....
+    if DarkTheme then                   // ToDo : must add this to user set colours, sigh .....
+        AltColour := $282828            // Gray,  BackGround Colour of Alternating rows in some ListViews
+    else AltColour := $FFFFDD;          // pale blue, must be not too far away from Background.
+
     if UserSetColours then exit;        // will have already been set by config or by colour form.
-    if DarkTheme then begin
+	if DarkTheme then begin
         //debugln('Its definltly a Dark Theme');
         BackGndColour:= clBlack;        // eg $000000
-        AltColour := $282828;           // BackGround Colour of Alternating rows in some ListViews
         HiColour := clDkGray;
         TextColour := clLtGray;
         TitleColour:= clTeal;
     end else begin
         BackGndColour := clCream;
-        AltColour := $FFFFDD;           // pale blue
         HiColour := clYellow;
         TextColour := clBlack;
         TitleColour := clBlue;

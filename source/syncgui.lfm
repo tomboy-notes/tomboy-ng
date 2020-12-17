@@ -1,7 +1,7 @@
 object FormSync: TFormSync
-  Left = 300
+  Left = 297
   Height = 418
-  Top = 285
+  Top = 280
   Width = 699
   Caption = 'Sync'
   ClientHeight = 418
@@ -173,12 +173,12 @@ object FormSync: TFormSync
         item
           AutoSize = True
           Caption = 'Action'
-          Width = 56
+          Width = 54
         end      
         item
           AutoSize = True
           Caption = 'Title'
-          Width = 42
+          Width = 40
         end      
         item
           Caption = 'Note ID'

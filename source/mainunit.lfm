@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 505
+  Left = 750
   Height = 306
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 220
+  Top = 227
   Width = 459
   Caption = 'tomboy-ng'
   ClientHeight = 306
@@ -331,13 +331,13 @@ object MainForm: TMainForm
   end
   object CheckBoxDontShow: TCheckBox
     Left = 24
-    Height = 23
+    Height = 21
     Hint = 'You can reverse this from Settings'
     Top = 192
-    Width = 240
+    Width = 239
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
-    TabOrder = 1
+    TabOrder = 3
   end
   object ButtMenu: TBitBtn
     AnchorSideLeft.Control = Owner
@@ -467,7 +467,7 @@ object MainForm: TMainForm
     Anchors = [akTop, akLeft, akBottom]
     Caption = 'Hide'
     OnClick = BitBtnHideClick
-    TabOrder = 3
+    TabOrder = 1
   end
   object TrayIcon: TTrayIcon
     Icon.Data = {
