@@ -3,7 +3,7 @@ Section: x11
 Priority: optional
 Maintainer: David Bannon <tomboy-ng@bannons.id.au>
 Rules-Requires-Root: no
-Build-Depends: debhelper (>=12~), debhelper-compat (=13), binutils, libx11-dev, libqt5pas-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.6), lcl-qt5
+Build-Depends: debhelper-compat (=12), binutils, libx11-dev, libqt5pas-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.6), lcl-qt5
 Standards-Version: 4.5.0
 Vcs-Browser: https://github.com/tomboy-notes/tomboy-ng
 Vcs-Git: https://github.com/tomboy-notes/tomboy-ng.git

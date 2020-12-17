@@ -134,7 +134,7 @@ function ShowHelp () {
     echo "-C   clean out deb files from previous run, debug use only."
     echo "-U   update Makefile and/or buildit.bash,   debug use only."
     echo "-Q   Make a Qt5 version instead of default GTK2"
-    echo "-q   Make a Qt5 version but give it the default name. Suit Debian Repo" 
+    echo "-q   Make a Qt5 one for a Debian Repo" 
     echo "-p   Pause before creating .orig. to change content, use another term."
     echo "-D   distro, eg bionic, focal, bullseye"
     echo ""
@@ -251,7 +251,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""-1"
 	# OK, we have our .orig. file, put most of it back.
 	rm -Rf "$APP"_"$VER""-1"/debian
-	rm debian/control.qt5-unnamed debian/control.qt5
+	rm debian/control.qt5-DEBIAN debian/control.qt5
 	rm debian/rules.qt5
 	mv ./debian "$APP"_"$VER""-1"/. 
 
