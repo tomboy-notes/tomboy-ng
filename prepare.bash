@@ -4,7 +4,8 @@
 
 # This script takes a tomboy-ng zip file from github, and prepares things to
 # build it a source deb or just run buildit.bash to make a tomboy-ng binary"
-# Hardwired data in this script are specific to the Deb source build.
+# One of three control files may be used, control and control.qt5 make PPA 
+# packages and control-DEBIAN makes one for Debian repo (-q).
 
 # -------------------- Making a Debian SRC ----------------------
 # To build a Debian Source Package, on eg a current Bullseye -
@@ -15,7 +16,7 @@
 # Unless you are me, you need to edit the above, DEBFULLNAME and DEBEMAIL _OR_ have env set 
 #	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
 #	mv master.zip tomboy-ng-master.zip
-#	bash ./prepare.bash -D bullseye
+#	bash ./prepare.bash -D bullseye -q
 #	cd tomboy-ng_XXXX                       // Whatever the name is at this stage....
 #	debuild -S
 #	The files you want are in ../.
@@ -36,19 +37,28 @@
 #      dput ppa:d-bannon/ppa-tomboy-ng tomboy-ng_0.29e-1_source.changes [enter]
 #
 
+# If all you want is the binary, not building src packages at all, then don't
+# worry about signing etc, just run prepare, cd into the resulting dir and run
+# the buildit script.
+
 # David Bannon, July 2020
 # History -
 #	2020-09-02 Added -D distro switch
+#       2020-12-17 Restructed the multi control system to make it clearer.
 
 APP="tomboy-ng"
-# These are mine, they are used as defaults if NOT set in env. 
+# These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
 DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
 DEF_FULLNAME="David Bannon"		# and this ...
+UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name in Ubuntu PPA !
+
+# Housekeeping stuff, helpers for debugging etc. Set with command line, not here !
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
 WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
+DEBIANREPO=""   # If YES, we are making a package going into Debian Repo, else Ubuntu ?      
 QT5INNAME=""	# May have content we add to qt5 package name (when -Q) 
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
@@ -128,7 +138,7 @@ function ShowHelp () {
     echo "Needs devscripts preinstalled and maybe an edit of email address above if"
     echo "it is to be used in the DEB SRC tool chain. Its role there is just to create"
     echo "an initial tarball and working directory (including inserting kcontrols)."
-    echo "David Bannon, August 2020" 
+    echo "David Bannon, December 2020" 
     echo "-h   print help message"
     echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
     echo "-C   clean out deb files from previous run, debug use only."
@@ -162,10 +172,11 @@ while getopts "hpqQUCl:D:" opt; do
     Q)
 	WIDGET="Qt5"
 	APP="$APP""-qt5"
-	QT5INNAME="YES"
+#	QT5INNAME="YES"
 	;;
     q)
 	WIDGET="Qt5"
+	DEBIANREPO="YES"
 	;;
     D)
 	DISTRO1="-D""$OPTARG"
@@ -192,7 +203,11 @@ if [ -f tomboy-ng-master.zip ]; then
 		export DEBEMAIL
 	fi
 	if [ "$DEBFULLNAME" = "" ]; then
-		DEBFULLNAME="$DEF_FULLNAME"
+		if [ "$DEBIANREPO" = "YES" ]; then
+			DEBFULLNAME="$DEF_FULLNAME"
+		else
+			DEBFULLNAME="$UBUNTU_FULLNAME"
+		fi
 		export DEBFULLNAME
 	fi
 	unzip -q tomboy-ng-master.zip
@@ -228,11 +243,11 @@ if [ -f tomboy-ng-master.zip ]; then
 	dch --append "Please see github for change details"
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"
-		if [ "$QT5INNAME" = "YES" ]; then
+		if [ "$DEBIANREPO" = "YES" ]; then
+			cp debian/control.qt5-DEBIAN debian/control
+		else
 			cp debian/rules.qt5 debian/rules
 			cp debian/control.qt5 debian/control
-		else
-			cp debian/control.qt5-unnamed debian/control
 		fi
 		# sed  "s/#REPLACEME_QT5/DESTDIR += -qt5/" Makefile > Makefile.temp
 		# mv Makefile.temp Makefile
@@ -255,7 +270,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	rm debian/rules.qt5
 	mv ./debian "$APP"_"$VER""-1"/. 
 
-	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -us -uc"
+	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -S"
 else
 	echo ""
 	echo "   Sorry, I cannot see a tomboy-ng-master.zip file. This"
