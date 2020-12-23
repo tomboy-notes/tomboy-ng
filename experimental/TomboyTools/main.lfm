@@ -1,7 +1,7 @@
 object FormMain: TFormMain
-  Left = 905
+  Left = 1177
   Height = 496
-  Top = 216
+  Top = 156
   Width = 731
   Caption = 'FormMain'
   ClientHeight = 496
@@ -20,15 +20,15 @@ object FormMain: TFormMain
     Height = 382
     Top = 50
     Width = 731
-    ActivePage = TabNextCloud
+    ActivePage = TabExport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     object TabExport: TTabSheet
       Hint = 'ie Preserve File Name'
       Caption = 'Export'
-      ClientHeight = 345
-      ClientWidth = 725
+      ClientHeight = 353
+      ClientWidth = 727
       OnShow = TabExportShow
       object LabelSourcePrompt: TLabel
         Left = 22
@@ -64,7 +64,7 @@ object FormMain: TFormMain
       end
       object ComboSource: TComboBox
         Left = 32
-        Height = 29
+        Height = 27
         Top = 100
         Width = 271
         ItemHeight = 0
@@ -87,19 +87,18 @@ object FormMain: TFormMain
       end
       object ComboExport: TComboBox
         Left = 33
-        Height = 29
+        Height = 27
         Top = 164
         Width = 270
         ItemHeight = 0
-        ItemIndex = 0
         Items.Strings = (
           'mark down'
           'plain text'
+          'po file'
         )
         OnChange = ComboExportChange
         Style = csDropDownList
         TabOrder = 1
-        Text = 'mark down'
       end
       object Label2: TLabel
         Left = 33
@@ -127,7 +126,7 @@ object FormMain: TFormMain
       end
       object ComboExportMode: TComboBox
         Left = 32
-        Height = 33
+        Height = 31
         Top = 36
         Width = 271
         ItemHeight = 0
@@ -147,8 +146,8 @@ object FormMain: TFormMain
         AnchorSideTop.Control = TabExport
         AnchorSideRight.Control = TabExport
         AnchorSideRight.Side = asrBottom
-        Left = 379
-        Height = 224
+        Left = 381
+        Height = 206
         Top = 10
         Width = 336
         Anchors = [akTop, akRight]
@@ -169,9 +168,9 @@ object FormMain: TFormMain
         ParentColor = False
       end
       object GroupBox2: TGroupBox
-        Left = 472
+        Left = 384
         Height = 86
-        Top = 248
+        Top = 221
         Width = 192
         Caption = 'File Name is'
         ClientHeight = 65
@@ -179,10 +178,10 @@ object FormMain: TFormMain
         TabOrder = 4
         object RadioFileNameTitle: TRadioButton
           Left = 8
-          Height = 23
+          Height = 21
           Hint = 'Use note title to make new file.'
           Top = 8
-          Width = 96
+          Width = 95
           Caption = 'Note Title'
           Checked = True
           ParentShowHint = False
@@ -192,9 +191,9 @@ object FormMain: TFormMain
         end
         object RadioFileNameID: TRadioButton
           Left = 8
-          Height = 23
+          Height = 21
           Top = 32
-          Width = 137
+          Width = 136
           Caption = 'Note File Name'
           ParentShowHint = False
           ShowHint = True
@@ -204,8 +203,8 @@ object FormMain: TFormMain
     end
     object TabImport: TTabSheet
       Caption = 'Import'
-      ClientHeight = 345
-      ClientWidth = 725
+      ClientHeight = 353
+      ClientWidth = 727
       OnShow = TabImportShow
       object Label3: TLabel
         Left = 32
@@ -323,8 +322,8 @@ object FormMain: TFormMain
     end
     object TabNextCloud: TTabSheet
       Caption = 'Next Cloud'
-      ClientHeight = 345
-      ClientWidth = 725
+      ClientHeight = 353
+      ClientWidth = 727
       object Label11: TLabel
         Left = 32
         Height = 19
@@ -351,7 +350,7 @@ object FormMain: TFormMain
       end
       object ComboSourceNext: TComboBox
         Left = 32
-        Height = 29
+        Height = 27
         Top = 56
         Width = 200
         ItemHeight = 0
@@ -419,17 +418,17 @@ object FormMain: TFormMain
       end
       object CheckNoNet: TCheckBox
         Left = 523
-        Height = 23
+        Height = 21
         Top = 228
-        Width = 134
+        Width = 133
         Caption = 'Dont touch Net'
         TabOrder = 5
       end
       object CheckDebug: TCheckBox
         Left = 523
-        Height = 23
+        Height = 21
         Top = 273
-        Width = 145
+        Width = 144
         Caption = 'Debug Messages'
         TabOrder = 6
       end

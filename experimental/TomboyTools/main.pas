@@ -224,7 +224,7 @@ begin
         Exporter.DestDir := LabelDestination.Caption;
         Exporter.NoteDir := LabelSource.caption;
         Exporter.OutFormat := ComboExport.Text;
-
+        Exporter.FileNameIsTitle := RadioFileNameTitle.Checked;
             DebugLn('checked notebooks');
             Index := 0;
             while Index < CheckListBox1.Items.Count do begin

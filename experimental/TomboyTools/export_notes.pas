@@ -4,6 +4,10 @@ unit export_notes;
 
 { License - see tomboy-ng license information }
 
+{ Will export a Tomboy note in a range of different formats.
+
+}
+
 interface
 
 uses
@@ -87,7 +91,7 @@ implementation
 
 { UTB2md }
 
-uses LCLProc, laz2_DOM, laz2_XMLRead, ttutils, LazFileUtils;
+uses LCLProc, laz2_DOM, laz2_XMLRead, ttutils, LazFileUtils, commonmark;
 
 
 
@@ -200,7 +204,7 @@ end;
 function TExportNote.ExportFile(ID: string): boolean;
 begin
     case OutFormat of
-        'md', 'mark down', 'markdown' : result := ExportMd(ID);
+        'md', 'mark down', 'markdown', 'po file' : result := ExportMd(ID);
         'text', 'plain text', 'txt' : result := ExportText(ID);
     else  begin
         ErrorMessage := 'ERROR : unidentified outformat requested ' + OutFormat;
@@ -318,7 +322,7 @@ end;
 
 
 
-
+// =================== Remove This ====================
 procedure TExportNote.NormaliseList(STL : TStringList);
 var
     TagSize, StIndex : integer;
@@ -349,6 +353,8 @@ begin
 	end;
 
 end;
+
+// ======================== REMOVE THIS ================================
 
 // This version uses the CommonMark model of noting heading with ---- ===== on line underneath
 procedure TExportNote.ProcessHeadings(StL : TStringList);
@@ -396,39 +402,6 @@ begin
 	until I >= StL.Count-1;
 end;
 
-(* procedure TExportNote.ProcessHeadings(StL : TStringList);
-var
-    i : integer = -1;
-    PosI, L : integer;
-    //Blar : string;
-begin
-    repeat
-        inc(i);
-        if (StL.Strings[i] = '') or (StL.strings[i][1] <> '<') then continue;
-        if copy(Stl.Strings[i], 1, length('<size:large><bold>')) = '<size:large><bold>' then begin
-            //blar := Stl.Strings[i];
-            PosI := pos('</bold></size:large>', Stl.Strings[i]);
-            if PosI = 0 then continue;
-            L := length(Stl.Strings[i]);
-            if PosI -1 + length('</bold></size:large>') = L then begin
-                StL.insert(i, '### ' + copy(Stl.Strings[i], length('<size:large><bold>')+1,
-                        L - length('<size:large><bold></bold></size:large>')));
-                StL.Delete(i+1);
-			end;
-		end;
-        if copy(Stl.Strings[i], 1, length('<size:huge><bold>')) = '<size:huge><bold>' then begin
-            //blar := Stl.Strings[i];
-            PosI := pos('</bold></size:huge>', Stl.Strings[i]);
-            if PosI = 0 then continue;
-            L := length(Stl.Strings[i]);
-            if PosI -1 + length('</bold></size:huge>') = L then begin
-                StL.insert(i, '## ' + copy(Stl.Strings[i], length('<size:huge><bold>')+1,
-                        L - length('<size:huge><bold></bold></size:huge>')));
-                StL.Delete(i+1);
-			end;
-		end;
-	until I >= StL.Count-1;
-end;          *)
 
 
 function TExportNote.RemoveNextTag(var St : String; out Tag : string) : integer;
@@ -464,6 +437,8 @@ end;
 
 
 // ToDo : clarify highlight, can we, or can we not display highlight ??  It looks like git flavoured MD does not !
+
+// ======================== REMOVE THIS ==========================
 
 procedure TExportNote.ProcessMarkUp(StL : TStringList);
 var
@@ -533,12 +508,16 @@ begin
     Result := ExportMD(ID, STL);
 end;
 
+
+// Rewrite much of this.
+
 function TExportNote.ExportMD(ID : string; STL : TStringList = nil): boolean;
 var
     StList : TStringList;
     LTitle : integer;
-    Index : integer;
+//    Index : integer;
     OutFileName : string;
+    CM : TExportCommon;
 begin
     if not FileExists(NoteDir + ID + '.note') then exit(False);
     //debugln('export ' + NoteDir + ID + '.note to ' + DestDir + TitleFromID(ID, True, LTitle) + '.md');
@@ -547,6 +526,18 @@ begin
         StList := TStringList.Create
     else
         StList := STL;
+    CM := TExportCommon.Create();
+    try
+        CM.NotesDir:= NoteDir;
+        CM.DoPOFile := (OutFormat = 'po file');
+        CM.GetMDcontent(ID, StList);
+        // ToDo : track success or otherwise here.
+    finally
+        CM.Free;
+	end;
+
+
+(*
     try
         StList.LoadFromFile(NoteDir + ID + '.note');
         Index := FindInStringList(StList, '<title>');       // include < and > in search term so sure its metadate
@@ -563,14 +554,19 @@ begin
         while Index < StList.Count do StList.Delete(Index);
 
         ProcessHeadings(StList);                                    // Makes Title big too !
-        ProcessMarkUp(StList);
-
+// XX        ProcessMarkUp(StList);
+*)
+     try
         if FileNameIsTitle then
-            OutFileName := DestDir + TitleFromID(ID, True, LTitle) + '.md'
-        else OutFileName := DestDir + ID + '.md';
+            OutFileName := DestDir + TitleFromID(ID, True, LTitle)
+        else OutFileName := DestDir + ID;
 
-        if STL <> nil then exit(True) else
-            StList.LineBreak := LineEnding + LineEnding;
+        if (OutFormat = 'po file') then
+            OutFileName := OutFileName + '.po'
+        else
+            OutFileName := OutFileName + '.md';
+        if STL <> nil then exit(True) {else
+            StList.LineBreak := LineEnding + LineEnding};                // Hmm, do we need this ???
 
         if FileExistsUTF8(OutFileName) then
             DeleteFileUTF8(OutFileName);
@@ -590,24 +586,6 @@ begin
             StList.free;
 	end;
 
-
-
-        (*if FileExistsUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md') then
-            DeleteFileUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md');
-        if FileExistsUTF8(DestDir + TitleFromID(ID, True, LTitle) + '.md') then begin
-            ErrorMessage := 'Failed to overwrite ' + DestDir + TitleFromID(ID, True, LTitle) + '.md';
-            exit(False);
-        end;
-        try
-            StList.SaveToFile(DestDir + TitleFromID(ID, True, LTitle) + '.md');
-        except on E: EStreamError do begin
-                ErrorMessage := 'Save error against ' + DestDir + TitleFromID(ID, True, LTitle) + '.md';
-                exit(False);
-            end;
-        end;
-    finally
-        StList.free;
-	end;    *)
 end;
 
 function TExportNote.RemoveTags(var St : string; out Tag : string) : boolean;
@@ -644,7 +622,7 @@ begin
     finally
         Doc.free;
     end;
-    AssignFile(OutFile, DestDir + TitleFromID(ID, True, LTitle) + '.txt');
+    AssignFile(OutFile, DestDir + TitleFromID(ID, True, LTitle) + '.txt');      // ToDo : this does not respect not FileNameIsTitle.
     insert(LineEnding+LineEnding, Content, LTitle+1);
     try
         try
@@ -677,18 +655,6 @@ begin
             Result := ExportFile(ID);
     end else                                // we must have a Notebook
         result := ExportNoteBook();
-{   if AllNotes then
-    else if NoteTitle <> '' then begin
-        ID := IDfromTitle(NoteTitle);
-        if ID = '' then
-            debugln('ERROR : Unable to find note with Title = ' + NoteTitle)
-        else
-            Result := ExportFile(ID);
-    end else
-        if NoteFileName <> '' then
-            result := ExportFile(copy(NoteFileName, 1, length(NoteFileName) - 5))
-        else if Notebook <> '' then
-            result := ExportNoteBook();   }
 end;
 
 
