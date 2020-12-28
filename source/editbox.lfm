@@ -708,6 +708,7 @@ object EditBoxForm: TEditBoxForm
       0000
     }
     OnClick = SpeedButtonNotebookClick
+    ShowCaption = False
     ShowHint = True
     ParentShowHint = False
   end

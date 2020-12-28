@@ -168,6 +168,7 @@ object Sett: TSett
           Checked = True
           OnChange = CheckReadOnlyChange
           TabOrder = 0
+          TabStop = True
         end
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
@@ -599,9 +600,9 @@ object Sett: TSett
         end
         object CheckAutoSnapEnabled: TCheckBox
           Left = 344
-          Height = 21
+          Height = 23
           Top = 117
-          Width = 161
+          Width = 162
           Caption = 'Use auto snapshots'
           OnChange = CheckAutoSnapEnabledChange
           TabOrder = 2
