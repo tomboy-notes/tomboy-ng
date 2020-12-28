@@ -14,8 +14,6 @@ unit commonmark;
 
     History
         2020-12-22  Extracted from the NextCloud Notes Branch
-        2020-12-23  Added po file capability (set DoPOFile)
-
 }
 
 interface
@@ -32,14 +30,13 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
     private
 			function FindInStringList(const StL: TStringList; const FindMe: string): integer;
                                     // Make content suitable to write out as a PO file, no merging is going to happen !
-			//procedure MakePOContent(STL: TStringList);
-			procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
+	{		procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
 			function MoveTagLeft(var St: string): boolean;
 			function MoveTagRight(var St: string): boolean;
 			procedure MoveTagUp(const StL: TStringList; const StIndex: integer; var TagSize: integer);
 			procedure NormaliseList(STL: TStringList);
 			function OffTagAtStart(St: string): integer;
-			function OnTagAtEnd(St: string): integer;
+			function OnTagAtEnd(St: string): integer;         }
 			procedure ProcessHeadings(StL: TStringList);
 			procedure ProcessMarkUp(StL: TStringList);
 			function RemoveNextTag(var St: String; out Tag: string): integer;
@@ -49,7 +46,6 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
 
     public
         DebugMode : boolean;
-//        DoPOFile : boolean;     // Write a po file with some commonmark
         NotesDir : string;       // dir were we expect to find our TB notes
 
                         { Takes a note ID (no extension) and fills out the passed StringList
@@ -63,60 +59,16 @@ end;
 
 implementation
 
-uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead ;
+uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead, notenormal;
 
-
-(*
-procedure TExportCommon.MakePOContent(STL : TStringList);
-{ After first block, each line (ie paragraph) with content will be preceded with  msgid
-  and wrapped in "". Followed immediatly with msgstr ""  and then a blank line.
-  Maybe we put something interesting in comment ahead, #: para 1     ?
-
-        msgid ""
-        msgstr "Content-Type: text/plain; charset=UTF-8"
-
-        #: editbox.rsunabletoevaluate
-        msgid "Unable to find an expression to evaluate"
-        msgstr ""
-
-        #: mainunit.rsabout1
-        msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
-        msgstr ""
-
-        How do we treat " in the text ?
-}
-var
-    St : string = '';
-    I : integer = 3;
-begin
-    STL.Insert(0, '');
-    STl.Insert(0, 'msgstr "Content-Type: text/plain; charset=UTF-8"');
-    STL.Insert(0, 'msgid ""');
-
-    while I < Stl.Count do begin
-        if length(STL.Strings[i]) > 0 then begin        // We have a block !
-            St := 'msgid "' + STL.Strings[i] + '"';
-            Stl.Strings[i] := St;
-            inc(i);
-            if (i) < STL.Count then
-                STL.Insert(i, 'msgstr ""')
-            else STL.Append('msgstr ""');
-            inc(i);
-            if (i) < STL.Count then             // note we always add a blank line and always remove one when importing.
-                STL.Insert(i, '')
-            else STL.Append('');
-		end;
-        inc(I);
-	end;
-end; *)
 
 function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
 { This is same as function in TT but I have removed parts that do file i/o
   I am thinking I would be better using some XML methods, might avoid g-Note issues too. }
-
 var
     LTitle : integer;
     Index : integer;
+    Normaliser : TNoteNormaliser;
 begin
         StL.LoadFromFile(NotesDir + ID + '.note');
         Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
@@ -126,15 +78,16 @@ begin
                 dec(Index);
 			end;
         // OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
-        NormaliseList(StL);
+        Normaliser := TNoteNormaliser.Create;
+        Normaliser.NormaliseList(StL);
+        Normaliser.Free;
+        //NormaliseList(StL);
         StL.Delete(0);
         StL.Insert(0, TitleFromID(ID, False, LTitle));
         Index := FindInStringList(StL, '</note-content>');       // but G-Note does not bother with nice newlines ????
         while Index < StL.Count do StL.Delete(Index);
         ProcessHeadings(StL);                                    // Makes Title big too !
         ProcessMarkUp(StL);
-//        if DoPOFile then
-//            MakePOContent(STL);
         result := (Stl.Count > 2);
 end;
 
@@ -220,18 +173,14 @@ begin
 end;
 
 // This version uses the CommonMark model of noting heading with ---- ===== on line underneath
-// unless we are in DoPOFile mode in whch case we use ### Title becasue its easier to handle
-// in things like POEdit.
 procedure TExportCommon.ProcessHeadings(StL : TStringList);
 var
     i : integer = 1;    // Skip first two lines because they are title and the ==== markup.
     PosI, L : integer;
     AddedHeading : Boolean = false;
-    //HeadTag : string;   // Only used in po file mode where we do ### Heading rather than the === on next line
 begin
     // We arrive here with a clean title in first st, lets mark it up as really big.
-    //
-    {if not DoPOFile then} StL.Insert(1, '===========');
+    StL.Insert(1, '===========');
     repeat
         inc(i);
         if not AddedHeading then begin
@@ -245,15 +194,11 @@ begin
             if PosI = 0 then continue;
             L := length(Stl.Strings[i]);
             if PosI -1 + length('</size:large>') = L then begin
-                //if DoPOFile then
-                //    HeadTag := '### '
-                //else HeadTag := '';
-                StL.insert(i, '### ' + copy(Stl.Strings[i], length('<size:large>')+1,
+                StL.insert(i, copy(Stl.Strings[i], length('<size:large>')+1,
                         L - length('<size:large></size:large>')));
                 StL.Delete(i+1);
                 inc(i);
-                //if not DoPOFile then
-                    StL.Insert(i, '--------');
+                StL.Insert(i, '--------');
                 AddedHeading := True;
 			end;
 		end;
@@ -262,21 +207,18 @@ begin
             if PosI = 0 then continue;
             L := length(Stl.Strings[i]);
             if PosI -1 + length('</size:huge>') = L then begin
-                //if DoPOFile then
-                //    HeadTag := '## '
-                //else HeadTag := '';
-                StL.insert(i, '## ' + copy(Stl.Strings[i], length('<size:huge>')+1,
+                StL.insert(i, copy(Stl.Strings[i], length('<size:huge>')+1,
                         L - length('<size:huge></size:huge>')));
                 StL.Delete(i+1);
                 inc(i);
-                //if not DoPOFile then
-                    StL.Insert(i, '========');
+                StL.Insert(i, '========');
                 AddedHeading := True;
 			end;
 		end;
 	until I >= StL.Count-1;
 end;
 
+// This version does heading in the leading ### model
 (* procedure TExportNote.ProcessHeadings(StL : TStringList);
 var
     i : integer = -1;
@@ -406,6 +348,8 @@ end;
 
 
 // ----------------------  N O R M A L I S I N G ------------------------------------
+
+(*
 
 // Deals with 'off' tags that need to be moved up to the para they apply to.
 procedure TExportCommon.MoveTagUp(const StL : TStringList; const StIndex : integer; var TagSize : integer);
@@ -541,7 +485,7 @@ begin
 
 end;
 
-
+*)
 
 
 end.
