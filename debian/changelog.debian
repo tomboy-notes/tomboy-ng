@@ -1,7 +1,0 @@
-tomboy-ng (0.31a-1) unstable; urgency=medium
-
-  * Initial release. (Closes: #897688)
-  * Please see github for change details
-  * Qt5 version
-
- -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 18 Dec 2020 22:08:09 +1100
