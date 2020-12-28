@@ -529,7 +529,7 @@ begin
     CM := TExportCommon.Create();
     try
         CM.NotesDir:= NoteDir;
-        CM.DoPOFile := (OutFormat = 'po file');
+        //CM.DoPOFile := (OutFormat = 'po file');
         CM.GetMDcontent(ID, StList);
         // ToDo : track success or otherwise here.
     finally

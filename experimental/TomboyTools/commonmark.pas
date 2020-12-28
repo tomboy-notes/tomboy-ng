@@ -32,7 +32,7 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
     private
 			function FindInStringList(const StL: TStringList; const FindMe: string): integer;
                                     // Make content suitable to write out as a PO file, no merging is going to happen !
-			procedure MakePOContent(STL: TStringList);
+			//procedure MakePOContent(STL: TStringList);
 			procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
 			function MoveTagLeft(var St: string): boolean;
 			function MoveTagRight(var St: string): boolean;
@@ -49,7 +49,7 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
 
     public
         DebugMode : boolean;
-        DoPOFile : boolean;     // Write a po file with some commonmark
+//        DoPOFile : boolean;     // Write a po file with some commonmark
         NotesDir : string;       // dir were we expect to find our TB notes
 
                         { Takes a note ID (no extension) and fills out the passed StringList
@@ -66,7 +66,7 @@ implementation
 uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead ;
 
 
-
+(*
 procedure TExportCommon.MakePOContent(STL : TStringList);
 { After first block, each line (ie paragraph) with content will be preceded with  msgid
   and wrapped in "". Followed immediatly with msgstr ""  and then a blank line.
@@ -108,7 +108,7 @@ begin
 		end;
         inc(I);
 	end;
-end;
+end; *)
 
 function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
 { This is same as function in TT but I have removed parts that do file i/o
@@ -133,8 +133,8 @@ begin
         while Index < StL.Count do StL.Delete(Index);
         ProcessHeadings(StL);                                    // Makes Title big too !
         ProcessMarkUp(StL);
-        if DoPOFile then
-            MakePOContent(STL);
+//        if DoPOFile then
+//            MakePOContent(STL);
         result := (Stl.Count > 2);
 end;
 
@@ -227,11 +227,11 @@ var
     i : integer = 1;    // Skip first two lines because they are title and the ==== markup.
     PosI, L : integer;
     AddedHeading : Boolean = false;
-    HeadTag : string;   // Only used in po file mode where we do ### Heading rather than the === on next line
+    //HeadTag : string;   // Only used in po file mode where we do ### Heading rather than the === on next line
 begin
     // We arrive here with a clean title in first st, lets mark it up as really big.
     //
-    if not DoPOFile then StL.Insert(1, '===========');
+    {if not DoPOFile then} StL.Insert(1, '===========');
     repeat
         inc(i);
         if not AddedHeading then begin
@@ -245,14 +245,14 @@ begin
             if PosI = 0 then continue;
             L := length(Stl.Strings[i]);
             if PosI -1 + length('</size:large>') = L then begin
-                if DoPOFile then
-                    HeadTag := '### '
-                else HeadTag := '';
-                StL.insert(i, HeadTag + copy(Stl.Strings[i], length('<size:large>')+1,
+                //if DoPOFile then
+                //    HeadTag := '### '
+                //else HeadTag := '';
+                StL.insert(i, '### ' + copy(Stl.Strings[i], length('<size:large>')+1,
                         L - length('<size:large></size:large>')));
                 StL.Delete(i+1);
                 inc(i);
-                if not DoPOFile then
+                //if not DoPOFile then
                     StL.Insert(i, '--------');
                 AddedHeading := True;
 			end;
@@ -262,14 +262,14 @@ begin
             if PosI = 0 then continue;
             L := length(Stl.Strings[i]);
             if PosI -1 + length('</size:huge>') = L then begin
-                if DoPOFile then
-                    HeadTag := '## '
-                else HeadTag := '';
-                StL.insert(i, HeadTag + copy(Stl.Strings[i], length('<size:huge>')+1,
+                //if DoPOFile then
+                //    HeadTag := '## '
+                //else HeadTag := '';
+                StL.insert(i, '## ' + copy(Stl.Strings[i], length('<size:huge>')+1,
                         L - length('<size:huge></size:huge>')));
                 StL.Delete(i+1);
                 inc(i);
-                if not DoPOFile then
+                //if not DoPOFile then
                     StL.Insert(i, '========');
                 AddedHeading := True;
 			end;

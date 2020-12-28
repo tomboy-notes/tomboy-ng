@@ -72,7 +72,9 @@ uses
         Classes, SysUtils;
 
 type TToolMode = (
-    ActNote2md, ActNote2txt, ActMd2note, ActTxt2note, ActGUI, ActExit );
+    ActNote2md, ActNote2txt, ActMd2note, ActTxt2note, ActGUI, ActExit,
+    ActNote2POT    // convert note to a pot file for translation
+    );
 
 {   ModeNotSet,     // No mode setting command line offered, error
     ModeTB2MD,      // Tomboy to Markdown
@@ -87,7 +89,7 @@ function GetDefaultNoteDir(OldTB : boolean = false) : string;
 
 implementation
 
-uses LCLProc, Forms, LazFileUtils, export_notes;
+uses LCLProc, Forms, LazFileUtils, export_notes, note2po;
 
 procedure ShowHelp();
 begin
@@ -96,7 +98,7 @@ begin
     debugln('with no command line options, will start GUI.');
     debugln('');
     debugln(' --help                         Print this, exit');
-    debugln(' -a --action=[note2md; note2txt; md2note; txt2note] - Required');
+    debugln(' -a --action=[note2md; note2txt; md2note; txt2note, note2pot] - Required');
     debugln(' -s --source=[dir or KEY]   -d --destination= [dir or KEY]');
     debugln(' The default for the above is tomboy-ng''s default on this system and the');
     debugln(' current dir (depending on import / export direction).');
@@ -151,6 +153,7 @@ procedure ExportSomeNotes(Mode : TToolMode);
 var
     Exporter : TExportNote;
     SrcDir, DestDir : string;
+    ExPot : TExportPOT;
 begin
     // when exporting, default src is tomboy-ng's repo. Default destination is current dir.
     if Application.HasOption('s', 'source') then begin
@@ -168,6 +171,13 @@ begin
         exit();
     end;
     // Hmm, maybe check if there are notes in sourcedir ?
+    if Mode = ActNote2POT then begin
+        ExPot := TExportPOT.Create('tomboy-ng.note');
+        if ExPot.ErrorString <> '' then
+            debugln('EXport tp POT ' + ExPot.ErrorString);
+        ExPot.Free;
+        exit;
+    end;
     Exporter := TExportNote.Create;
     try
         // Firstly, what are we exporting ?
@@ -222,6 +232,7 @@ begin
         'note2txt' : Result := ActNote2txt;
         'md2note'  : Result := ActMd2note;
         'txt2note' : Result := ActTxt2note;
+        'note2pot' : result := ActNote2POT;
     else begin
             showhelp();
             exit(ActExit);
@@ -239,7 +250,7 @@ begin
     if AppMode = ActGUI then exit(False);
     if AppMode = ActExit then exit(True);
     // OK, we are here to do stuff, lets do it !
-    if AppMode in [ActNote2md, ActNote2Txt] then
+    if AppMode in [ActNote2md, ActNote2Txt, ActNote2POT] then
         ExportSomeNotes(AppMode);
 end;
 
