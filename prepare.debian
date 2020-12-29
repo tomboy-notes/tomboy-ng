@@ -3,14 +3,18 @@
 #
 
 # This script takes a tomboy-ng zip file from github, and prepares things to
-# build a source deb suitable for UPDATING an existing one in Debian Repo.
+# build a source deb suitable for Creating or UPDATING an existing one in Debian Repo.
+# If its a new release of tomboy-ng, then the create mode works, provide -n to 
+# have the script create a new .orig file.
+# If we are fixing a Debian Packaging issue, use the Update mode, no switch but
+# make sure the original .orig.tar.gz file is present.
 
 # -------------------- Making a Debian SRC ----------------------
 # To build a Debian Source Package, on eg a current Bullseye -
 # 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt6pas-dev
 #	Ensure appropriate pgp key in place ($HOME/.gnupg), see below 
 #	In an otherwise empty directory, we need -
-#	prepare.debian, tomboy-ng-master.zip and the first uploaded .orig file -
+#	prepare.debian, tomboy-ng-master.zip and possibly the first uploaded .orig file -
 #	tomboy-ng_0.31a-1.orig.tar.gz (either one squirreled away or downloaded from Debian)
 #	Following commands help -
 #	
@@ -19,7 +23,7 @@
 #	mv master.zip tomboy-ng-master.zip
 
 # 	Unless you are me, edit the script, DEBFULLNAME and DEBEMAIL _OR_ have env set 
-#	bash ./prepare.debian -D unstable 
+#	bash ./prepare.debian -D unstable -n
 #	cd tomboy-ng_XXXX                       // Whatever the name is at this stage....
 #	debuild -S
 #	The files you want are in ../.
@@ -63,7 +67,7 @@ APP="tomboy-ng"
 DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
 DEF_FULLNAME="David Bannon"		# and this ...
 UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name in Ubuntu PPA !
-DEBVER="-1"				# Package version, not source, starts at 1
+DEBVER="-3"				# Package version, not source, starts at 1
 
 # Housekeeping stuff, helpers for debugging etc. Set with command line, not here !
 VER="unknown"
@@ -134,12 +138,13 @@ function CleanSource () {
 
 
 function KControls () {	
-	if [ -e "master.zip" ]; then
-		echo "Note: reusing KControls zip"
+	if [ -e "kcontrols-master.zip" ]; then
+		echo "---------- Note: reusing KControls zip"
 	else
 		wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
+		mv master.zip kcontrols-master.zip
 	fi
-	unzip -q master.zip
+	unzip -q kcontrols-master.zip
 	# rm -f master.zip
 	mv KControls-master "$APP"_"$VER""$DEBVER"/kcontrols
 }
@@ -155,14 +160,36 @@ function ShowHelp () {
     echo "David Bannon, December 2020" 
     echo "-h   print help message"
     echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
-    echo "-C   clean out deb files from previous run, debug use only."
+    echo "-C   clean deb files from previous run, exit, debug use only, Unreliable"
     echo "-D   distro, eg unstable, bullseye"
+    echo "-n   New orig file, required for fresh release"
     echo ""
+    echo "     Typically     bash ./prepare.debian -D unstable -n
     exit
 }
 
+function MakeOrigFile () {
+    echo "---------- Creating a new .orig file"
+    # We move most of the debian dir out of harms way and tar up the dir.
+	# We have to do this to avoid the dreaded lintian no-debian-changes
+	# The copyright file in there alone does not generate that error ??
+	# But before moving it, we will create a new changelog
+	# cd "$APP"_"$VER""$DEBVER"
+	rm debian/changelog                     # Must have a new changelog if new orig file
+	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$DEBVER" "New Version Release"
+	dch --append "Please see github for change details"
+    dch --release "blar"
+	cd ..
+	mv "$APP"_"$VER""$DEBVER"/debian ./debian
+	mkdir "$APP"_"$VER""$DEBVER"/debian
+	cp debian/copyright "$APP"_"$VER""$DEBVER"/debian/.
+	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""$DEBVER"
+	# OK, we now have our .orig. file, put most of it back.
+	rm -Rf "$APP"_"$VER""$DEBVER"/debian
+	mv ./debian "$APP"_"$VER""$DEBVER"/. 
+}
 
-while getopts "hUCl:D:" opt; do
+while getopts "hUCl:D:n" opt; do
   case $opt in
     h)
       ShowHelp
@@ -177,6 +204,9 @@ while getopts "hUCl:D:" opt; do
 	DISTRO1="-D""$OPTARG"
 	DISTRO2="--force-distribution"
 	;;
+	n)
+	NEWORIG="YES"
+	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -189,6 +219,12 @@ echo "---------- CLEAN is $CLEAN"
 echo "---------- UFILES is $UFILES"
 
 rm -f WHICHFPC WHICHLAZ		
+
+if [ ! -f tomboy-ng-master.zip ]; then
+	echo "---------- Downloading a new tomboy-ng"
+	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
+	mv master.zip tomboy-ng-master.zip
+fi
 
 if [ -f tomboy-ng-master.zip ]; then
 	CheckFPC_LAZ
@@ -210,24 +246,30 @@ if [ -f tomboy-ng-master.zip ]; then
 		echo "---------- Removing existing DEB files"
 		rm -Rf "$APP"_"$VER"-?
 
-		rm -f "tomboy-ng_""$VER"".orig.tar.gz"
+		#rm -f "tomboy-ng_""$VER"".orig.tar.gz"
 		rm -f "tomboy-ng_$VER-"?_amd64.buildinfo
 		rm -f "tomboy-ng_$VER-"?_amd64.changes
-       		rm -f "tomboy-ng_$VER-"?_amd64.deb
+       	rm -f "tomboy-ng_$VER-"?_amd64.deb
  		rm -f "tomboy-ng_$VER-"?.debian.tar.xz
 		rm -f "tomboy-ng_$VER-"?.dsc
 		#rm -f "tomboy-ng_$VER.orig.tar.gz"
+		exit
 	fi
 	mv "tomboy-ng-master" "$APP"_"$VER""$DEBVER"
 	KControls
 	cd "$APP"_"$VER""$DEBVER"
 	CleanSource
-	# mv debian/changelog.DEBIAN debian/changelog	// changlog keeps its real name
+	# cd ..
+	if [ "$NEWORIG" = "YES" ]; then
+	    MakeOrigFile                    # create new .orig and a new changelog 
+	else
+		dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"    
+	fi
+	cd "$APP"_"$VER""$DEBVER"
+
 	mv debian/control.qt5-DEBIAN debian/control
 	rm -f debian/control.qt5
 	rm -f debian/rules.qt5
-	# dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Rev the Debian version"
-	dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"
 
 	touch Qt5
 	cd ..
