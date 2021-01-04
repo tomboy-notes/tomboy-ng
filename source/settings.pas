@@ -325,6 +325,7 @@ type
         SpellConfig : boolean;
         // service functon to other units, returns a string with current datetime
         // in a format like the Tomboy schema.
+        // ToDo : move (a version of) this to TB_DateTime.
         function GetLocalTime: ANSIstring;
             { Triggers a Sync, if its not all setup aready and working, user show and error }
         procedure Synchronise();

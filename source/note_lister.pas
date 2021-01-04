@@ -51,6 +51,7 @@ unit Note_Lister;
     2020/05/10  Multithreaded search
     2020/05/25  Don't read sett.checkcasesensitive in thread.
     2020/08/01  Disable code to rewrite short lcd.
+    2021/01/03  LoadListView now uses TB_datetime, more tolerant of differing DT formats.
 }
 
 {$mode objfpc}  {$H+}
@@ -302,7 +303,7 @@ function NoteContains(const TermList : TStringList; FullFileName: ANSIString; co
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUtils, SearchUnit;
+uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUtils, SearchUnit, tb_datetime;
 { Projectinspector, double click Required Packages and add LCL }
 
 var
@@ -1202,10 +1203,13 @@ end;
 function TNoteLister.NewLVItem(const LView : TListView; const Title, DateSt, FileName: string): TListItem;
 var
     TheItem : TListItem;
+    DT : TDateTime;
 begin
    TheItem := LView.Items.Add;
    TheItem.Caption := Title;
-   TheItem.SubItems.Add(copy(DateSt, 1, 19)+' ');
+   if MyTryISO8601ToDate(DateSt, DT) then
+        TheItem.SubItems.Add(MyFormatDateTime(DT, True) + ' ')
+   else TheItem.SubItems.Add('ERROR bad date string ');
    TheItem.SubItems.Add(FileName);
    Result := TheItem;
 end;
@@ -1214,7 +1218,7 @@ procedure TNoteLister.LoadListView(const LView : TListView; const SearchMode : b
 var
     Index : integer;
     TheList : TNoteList;
-    LCDst : string;
+    //LCDst : string;
     //T1, T2, T3 : qword;
     // Full list mode, 2000 notes, Dell 7mS to clear, 20-40mS to load.
 begin
@@ -1227,10 +1231,11 @@ begin
     Index := TheList.Count;
     while Index > 0 do begin
         dec(Index);
-        LCDst := TheList.Items[Index]^.LastChange;
-        if length(LCDst) > 11 then  // looks prettier, dates are stored in ISO std
-            LCDst[11] := ' ';       // with a 'T' between date and time
-        NewLVItem(LView, TheList.Items[Index]^.Title, LCDst, TheList.Items[Index]^.ID);
+//        LCDst := TheList.Items[Index]^.LastChange;
+//        if length(LCDst) > 11 then  // looks prettier, dates are stored in ISO std
+//            LCDst[11] := ' ';       // with a 'T' between date and time
+//        NewLVItem(LView, TheList.Items[Index]^.Title, LCDst, TheList.Items[Index]^.ID);
+        NewLVItem(LView, TheList.Items[Index]^.Title, TheList.Items[Index]^.LastChange, TheList.Items[Index]^.ID);
     end;
     //T3 := gettickcount64();
     // debugln('LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));

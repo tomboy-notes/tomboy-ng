@@ -273,7 +273,7 @@ uses MainUnit,      // Opening form, manages startup and Menus
     process,        // Linux, we call wmctrl to move note to current workspace
     NoteBook,
     LCLVersion,     // used to enable, or not, sort indicators in lcl2.0.8 or later
-    Tomdroid;
+    TomdroidFile;
 
 
 
@@ -713,9 +713,9 @@ begin
                             Sett.EnsureVisible(true);
                             Sett.Show;
                      end;
-        mtTomdroid : if FormTomdroid.Visible then
-                        FormTomdroid.BringToFront
-                     else FormTomdroid.ShowModal;
+        mtTomdroid : if FormTomdroidFile.Visible then
+                        FormTomdroidFile.BringToFront
+                     else FormTomdroidFile.ShowModal;
         mtHelp :      begin
                         if HelpNotes.FileNameForTitle(TMenuItem(Sender).Caption, FileName) then
                             {MainForm.}ShowHelpNote(FileName)

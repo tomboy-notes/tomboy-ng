@@ -739,13 +739,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/  --lang=es"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/  --lang=es"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
           </local>
         </Mode0>
       </Modes>
@@ -761,7 +761,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="32">
+    <Units Count="34">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -847,11 +847,12 @@
         <ResourceBaseClass Value="Form"/>
       </Unit11>
       <Unit12>
-        <Filename Value="tomdroid.pas"/>
+        <Filename Value="tomdroidfile.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormTomdroid"/>
+        <ComponentName Value="FormTomdroidFile"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="tomdroidFile"/>
       </Unit12>
       <Unit13>
         <Filename Value="markdown.pas"/>
@@ -954,6 +955,15 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RollBack"/>
       </Unit31>
+      <Unit32>
+        <Filename Value="transfileand.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="tb_datetime.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TB_datetime"/>
+      </Unit33>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

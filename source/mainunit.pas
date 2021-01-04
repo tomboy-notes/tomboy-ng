@@ -65,6 +65,7 @@ unit Mainunit;
     2020/07/09  New help notes location. A lot moved out of here.
     2020/11/07  Fix multiple About Boxes (via SysTray) issue. Untested on Win/Mac
     2020/11/18  Changed other two buttons to BitBtn so qt5 looks uniform.
+    2021/01/04  Pointed Tomdroid menu to tomdroidFile.
 
     CommandLine Switches
 
@@ -217,7 +218,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
-    Tomdroid {$ifdef windows}, registry{$endif};
+    TomdroidFile {$ifdef windows}, registry{$endif};
 
 var
     HelpNotes : TNoteLister;
@@ -646,8 +647,8 @@ end;
 
 procedure TMainForm.TrayMenuTomdroidClick(Sender: TObject);
 begin
-    if FormTomdroid.Visible then FormTomdroid.BringToFront
-    else FormTomdroid.ShowModal;
+    if FormTomdroidFile.Visible then FormTomdroidFile.BringToFront
+    else FormTomdroidFile.ShowModal;
 end;
 
 procedure TMainForm.RecentMenuClicked(Sender: TObject);
