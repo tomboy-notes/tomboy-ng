@@ -118,27 +118,7 @@ object FormTomdroidFile: TFormTomdroidFile
         TabOrder = 2
       end
     end
-    object CheckBoxDebugMode: TCheckBox
-      AnchorSideLeft.Control = Label1
-      AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Label1
-      AnchorSideRight.Control = CheckBoxTestRun
-      Left = 626
-      Height = 21
-      Hint = 'writes debug messages to terminal'
-      Top = 17
-      Width = 115
-      Anchors = [akTop, akRight]
-      BorderSpacing.Left = 10
-      Caption = 'Debug Mode'
-      Checked = True
-      ParentShowHint = False
-      ShowHint = True
-      State = cbChecked
-      TabOrder = 1
-    end
     object CheckBoxTestRun: TCheckBox
-      AnchorSideLeft.Control = CheckBoxDebugMode
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = Panel1
@@ -151,7 +131,8 @@ object FormTomdroidFile: TFormTomdroidFile
       BorderSpacing.Left = 10
       BorderSpacing.Right = 10
       Caption = 'Test Run'
-      TabOrder = 2
+      Enabled = False
+      TabOrder = 1
       TabStop = False
     end
     object PanelAdvice: TPanel
@@ -170,7 +151,7 @@ object FormTomdroidFile: TFormTomdroidFile
       BorderSpacing.Right = 2
       ClientHeight = 70
       ClientWidth = 841
-      TabOrder = 3
+      TabOrder = 2
       object LabelAdvice: TLabel
         AnchorSideLeft.Control = PanelAdvice
         AnchorSideTop.Control = PanelAdvice
@@ -275,6 +256,7 @@ object FormTomdroidFile: TFormTomdroidFile
     Width = 167
     Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Use old SSH model'
+    OnClick = ButtonOldSSHClick
     TabOrder = 0
   end
 end

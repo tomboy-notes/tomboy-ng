@@ -1108,13 +1108,12 @@ begin
     end;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
     Transport.RemoteAddress:= SyncAddress;
-    // Result := Transport.TestTransportEarly(ManPrefix);          // important Tomdroid, not Filesync
     Result := Transport.SetTransport();
     if TransportMode = SyncFileAndroid then
        LocalServerID := Transport.ServerID;                          // we need it to find profile
     ErrorString := Transport.ErrorString;
     if DebugMode then begin
-        debugln('Remote address is ' + SyncAddress);
+        debugln('Remote address is (n.a. Tomdroid) ' + SyncAddress);
         debugln('Local Config ' + ConfigDir);
         debugln('Notes dir ' + NotesDir);
 	end;

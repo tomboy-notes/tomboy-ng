@@ -1081,6 +1081,89 @@ msgstr ""
 msgid "tomboy-ng SyncError"
 msgstr ""
 
+#: tformtomdroid.buttonclose.caption
+msgctxt "tformtomdroid.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformtomdroid.buttondelete.caption
+msgid "Delete Profile"
+msgstr ""
+
+#: tformtomdroid.buttonhelp.caption
+msgctxt "tformtomdroid.buttonhelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tformtomdroid.buttonjoin.caption
+msgctxt "tformtomdroid.buttonjoin.caption"
+msgid "Join"
+msgstr ""
+
+#: tformtomdroid.buttonsaveprofile.caption
+msgid "Save Profile"
+msgstr ""
+
+#: tformtomdroid.buttonsync.caption
+msgctxt "tformtomdroid.buttonsync.caption"
+msgid "Sync"
+msgstr ""
+
+#: tformtomdroid.caption
+msgctxt "tformtomdroid.caption"
+msgid "Tomdroid"
+msgstr ""
+
+#: tformtomdroid.checkboxdebugmode.caption
+msgctxt "tformtomdroid.checkboxdebugmode.caption"
+msgid "Debug Mode"
+msgstr ""
+
+#: tformtomdroid.checkboxdebugmode.hint
+msgctxt "tformtomdroid.checkboxdebugmode.hint"
+msgid "writes debug messages to terminal"
+msgstr ""
+
+#: tformtomdroid.checkboxtestrun.caption
+msgctxt "tformtomdroid.checkboxtestrun.caption"
+msgid "Test Run"
+msgstr ""
+
+#: tformtomdroid.checksavepassword.caption
+msgctxt "tformtomdroid.checksavepassword.caption"
+msgid "Save"
+msgstr ""
+
+#: tformtomdroid.editprofilename.hint
+msgid "eg MySamsungNote7"
+msgstr ""
+
+#: tformtomdroid.label1.caption
+msgctxt "tformtomdroid.label1.caption"
+msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
+msgstr ""
+
+#: tformtomdroid.label2.caption
+msgid "Select an existing profile (or enter data) "
+msgstr ""
+
+#: tformtomdroid.label3.caption
+msgid "Profile Name"
+msgstr ""
+
+#: tformtomdroid.label4.caption
+msgid "IP address of device"
+msgstr ""
+
+#: tformtomdroid.label5.caption
+msgid "SSH Password for device"
+msgstr ""
+
+#: tformtomdroid.label6.caption
+msgctxt "tformtomdroid.label6.caption"
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr ""
+
 #: tformtomdroidfile.buttonclose.caption
 msgctxt "tformtomdroidfile.buttonclose.caption"
 msgid "Close"
@@ -1108,16 +1191,6 @@ msgstr ""
 #: tformtomdroidfile.caption
 msgctxt "tformtomdroidfile.caption"
 msgid "Tomdroid"
-msgstr ""
-
-#: tformtomdroidfile.checkboxdebugmode.caption
-msgctxt "tformtomdroidfile.checkboxdebugmode.caption"
-msgid "Debug Mode"
-msgstr ""
-
-#: tformtomdroidfile.checkboxdebugmode.hint
-msgctxt "tformtomdroidfile.checkboxdebugmode.hint"
-msgid "writes debug messages to terminal"
 msgstr ""
 
 #: tformtomdroidfile.checkboxtestrun.caption
@@ -1243,9 +1316,88 @@ msgstr ""
 msgid "New Note Book"
 msgstr ""
 
-#: tomdroidfile.rscheckingforexistingsync
-msgctxt "tomdroidfile.rscheckingforexistingsync"
+#: tomdroid.rscheckingforexistingsync
+msgctxt "tomdroid.rscheckingforexistingsync"
 msgid "Checking for an existing sync ...."
+msgstr ""
+
+#: tomdroid.rsconnectiongood
+msgctxt "tomdroid.rsconnectiongood"
+msgid "Connection is looking Good."
+msgstr ""
+
+#: tomdroid.rsfailedtoconnect
+msgctxt "tomdroid.rsfailedtoconnect"
+msgid "Failed to connect."
+msgstr ""
+
+#: tomdroid.rsfailedtofindconnection_1
+msgctxt "tomdroid.rsfailedtofindconnection_1"
+msgid "Failed to find an existing connection."
+msgstr ""
+
+#: tomdroid.rsfailedtofindconnection_2
+msgctxt "tomdroid.rsfailedtofindconnection_2"
+msgid "If you are sure there should be an existing connection, check settings."
+msgstr ""
+
+#: tomdroid.rsfailedtofindconnection_3
+msgctxt "tomdroid.rsfailedtofindconnection_3"
+msgid "Otherwise, try joining a new connection."
+msgstr ""
+
+#: tomdroid.rsfixconnection
+msgctxt "tomdroid.rsfixconnection"
+msgid "If you are sure its there, check settings."
+msgstr ""
+
+#: tomdroid.rshavevalidsync
+msgctxt "tomdroid.rshavevalidsync"
+msgid "Looking Good. Last sync date "
+msgstr ""
+
+#: tomdroid.rsinstalltomdroid
+msgctxt "tomdroid.rsinstalltomdroid"
+msgid "Install Tomdroid, config filesync, and run a sync"
+msgstr ""
+
+#: tomdroid.rsnoconnection
+msgctxt "tomdroid.rsnoconnection"
+msgid "Failed to establish a connection. "
+msgstr ""
+
+#: tomdroid.rsnotcorrectprofile
+msgctxt "tomdroid.rsnotcorrectprofile"
+msgid "This is not correct profile for that device"
+msgstr ""
+
+#: tomdroid.rsnotexistingrepo
+msgctxt "tomdroid.rsnotexistingrepo"
+msgid "That's not an existing Repo, maybe click \"Join\" ?"
+msgstr ""
+
+#: tomdroid.rsnotomdroid
+msgctxt "tomdroid.rsnotomdroid"
+msgid "Unable to find Tomdroid sync dir on that device."
+msgstr ""
+
+#: tomdroid.rsselectprofile
+msgid "Select a profile"
+msgstr ""
+
+#: tomdroid.rssetupnewsync
+msgctxt "tomdroid.rssetupnewsync"
+msgid "Setting up a new sync ...."
+msgstr ""
+
+#: tomdroid.rstalking
+msgctxt "tomdroid.rstalking"
+msgid "OK, talking to device. Wait for it ...."
+msgstr ""
+
+#: tomdroid.rstalkingtodevice
+msgctxt "tomdroid.rstalkingtodevice"
+msgid "OK, talking to device. Wait for it ...."
 msgstr ""
 
 #: tomdroidfile.rsconnectiongood
@@ -1258,19 +1410,9 @@ msgctxt "tomdroidfile.rsfailedtoconnect"
 msgid "Failed to connect."
 msgstr ""
 
-#: tomdroidfile.rsfailedtofindconnection_1
-msgctxt "tomdroidfile.rsfailedtofindconnection_1"
-msgid "Failed to find an existing connection."
-msgstr ""
-
 #: tomdroidfile.rsfailedtofindconnection_2
 msgctxt "tomdroidfile.rsfailedtofindconnection_2"
 msgid "If you are sure there should be an existing connection, check settings."
-msgstr ""
-
-#: tomdroidfile.rsfailedtofindconnection_3
-msgctxt "tomdroidfile.rsfailedtofindconnection_3"
-msgid "Otherwise, try joining a new connection."
 msgstr ""
 
 #: tomdroidfile.rsfixconnection
@@ -1319,11 +1461,6 @@ msgstr ""
 
 #: tomdroidfile.rstalking
 msgctxt "tomdroidfile.rstalking"
-msgid "OK, talking to device. Wait for it ...."
-msgstr ""
-
-#: tomdroidfile.rstalkingtodevice
-msgctxt "tomdroidfile.rstalkingtodevice"
 msgid "OK, talking to device. Wait for it ...."
 msgstr ""
 

@@ -43,7 +43,6 @@ type
         ButtonHelp: TButton;
         ButtonSync: TButton;
         CheckBoxTestRun: TCheckBox;
-        CheckBoxDebugMode: TCheckBox;
         Label1: TLabel;
 		Label6: TLabel;
 		LabelAdvice2: TLabel;
@@ -57,6 +56,7 @@ type
         StringGridReport: TStringGrid;
         procedure ButtonHelpClick(Sender: TObject);
         procedure ButtonJoinClick(Sender: TObject);
+		procedure ButtonOldSSHClick(Sender: TObject);
         procedure ButtonSyncClick(Sender: TObject);
         procedure FormShow(Sender: TObject);
     private
@@ -84,41 +84,44 @@ implementation
 
 
 uses Settings, Sync, TB_SDiff, typInfo, LazLogger, LCLType, LazFileUtils, laz2_DOM, laz2_XMLRead,
-    SearchUnit; // we call ProcessSyncUpdates( and ShowHelpNote(
+    SearchUnit, Tomdroid; // we call ProcessSyncUpdates( and ShowHelpNote(
 
 RESOURCESTRING
-  rsSetUpNewSync ='Setting up a new sync ....';
-  rsFailedToConnect = 'Failed to connect.';
+
+  // ToDo : once the ssh based tomdroid sync is removed, we could move the active rs to Resourcestr file ?
+  rsSetUpNewSync ='Setting up a new sync ....';                                                             // file
+  rsFailedToConnect = 'Failed to connect.';                                                                 // file
   rsTalking = 'OK, talking to device. Wait for it ....';
   rsNoTomdroid =  'Unable to find Tomdroid sync dir on that device.';                                       // file
   rsInstallTomdroid = 'Install Tomdroid, config filesync, and run a sync';                                  // file
-  rsNoConnection = 'Failed to establish a connection. ';
-  rsFixConnection = 'If you are sure its there, check settings.';
-  rsConnectionGood = 'Connection is looking Good.';
+  rsNoConnection = 'Failed to establish a connection. ';                                                    // file
+  rsFixConnection = 'If you are sure its there, check settings.';                                           // file
+  rsConnectionGood = 'Connection is looking Good.';                                                         // file
 
-  rsCheckingForExistingSync = 'Checking for an existing sync ....';
-  rsTalkingToDevice = 'OK, talking to device. Wait for it ....';
+//  rsCheckingForExistingSync = 'Checking for an existing sync ....';
+//  rsTalkingToDevice = 'OK, talking to device. Wait for it ....';
   rsNotExistingRepo = 'That''s not an existing Repo, maybe click "Join" ?';                                  // file
-  rsNotCorrectProfile = 'This is not correct profile for that device';                                       // file
-  rsFailedToFindConnection_1 = 'Failed to find an existing connection.';
+  rsNotCorrectProfile = 'This is not correct profile for that device';
+//  rsFailedToFindConnection_1 = 'Failed to find an existing connection.';
   rsFailedToFindConnection_2 = 'If you are sure there should be an existing connection, check settings.';    // file
-  rsFailedToFindConnection_3 = 'Otherwise, try joining a new connection.';
+//  rsFailedToFindConnection_3 = 'Otherwise, try joining a new connection.';
   rsHaveValidSync = 'Looking Good. Last sync date ';                                                         // file
 
   // New items in this unit
   rsJoinAnyway = 'Forcing a Join may "recover" some notes you thought you have deleted.';                    // file
 
   
- // Maybe some resourcestrings are defined in syncUtils.pas
+ // Maybe some resourcestrings are defined in syncUtils.pas ??
 
 var
     ASync : TSync;
 
 procedure TFormTomdroidFile.CheckStatus();
 begin
-	    ASync := TSync.Create();
+	    ASync := TSync.Create({DebugMode});
 	    ASync.NotesDir  := Sett.NoteDirectory;
 	    ASync.ConfigDir := Sett.LocalConfig;
+        ASync.DebugMode := Application.HasOption('s', 'debug-sync');
 	    ASync.RepoAction:= RepoJoin;
         ButtonHelp.SetFocus;
 	    case Async.SetTransport(SyncFileAndroid) of
@@ -214,7 +217,7 @@ begin
     Application.ProcessMessages;
     try
         ASync := TSync.Create();
-        ASync.DebugMode:=CheckBoxDebugMode.Checked;
+        ASync.DebugMode := Application.HasOption('s', 'debug-sync');
         ASync.TestRun := CheckBoxTestRun.Checked;
         ASync.ProceedFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
@@ -294,6 +297,15 @@ begin
     ButtonSync.Enabled := True;
 end;
 
+procedure TFormTomdroidFile.ButtonOldSSHClick(Sender: TObject);
+var
+    TomdroidForm : TFormTomdroid;
+begin
+    TomdroidForm := TFormTomdroid.Create(self);
+    TomdroidForm.ShowModal;
+    TomdroidForm.Free;
+end;
+
 procedure TFormTomdroidFile.DisplaySync();
 var
     UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
@@ -337,11 +349,11 @@ var
 begin
     Memo1.clear;
     StringGridReport.Clear;
-    Memo1.append(rsCheckingForExistingSync);
-    Application.ProcessMessages;
+    //Memo1.append(rsCheckingForExistingSync);            // no point ....
+    //Application.ProcessMessages;
     try
         ASync := TSync.Create();
-        ASync.DebugMode:=CheckBoxDebugMode.Checked;
+        ASync.DebugMode := Application.HasOption('s', 'debug-sync');
         ASync.TestRun := CheckBoxTestRun.Checked;
         ASync.ProceedFunction:=@Proceed;
         ASync.NotesDir:= Sett.NoteDirectory;
@@ -354,8 +366,8 @@ begin
             memo1.append(rsFailedToConnect + ASync.ErrorString);
             exit(false);
         end;
-        Memo1.Append(rsTalkingToDevice);
-        Application.ProcessMessages;
+//        Memo1.Append(rsTalkingToDevice);
+//        Application.ProcessMessages;
         Tick2 := GetTickCount64();
         case ASync.TestConnection() of
             // SyncXMLError, SyncNoRemoteWrite, SyncNoRemoteDir :
@@ -364,15 +376,15 @@ begin
                 // That may be caused by a previous failure to complete a Join or New, look for bad notes perhaps ?
             SyncNoRemoteRepo :
                 begin Memo1.Append(rsNotExistingRepo); exit(False); end;
-            SyncMisMatch :
-                begin Memo1.Append(rsNotCorrectProfile); exit(False); end;
-            SyncNetworkError :
+{            SyncMisMatch :
+                begin Memo1.Append(rsNotCorrectProfile); exit(False); end;   }
+{            SyncNetworkError :
                 begin
                     Memo1.Append(rsFailedToFindConnection_1 + ASync.ErrorString);
                     memo1.append(rsFailedToFindConnection_2);
                     memo1.append(rsFailedToFindConnection_3);
                     exit(false);
-                end;
+                end;    }
             SyncReady : ;
         else begin showmessage(ASync.ErrorString); exit(False); end;
         end;

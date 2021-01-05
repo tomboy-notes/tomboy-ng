@@ -74,7 +74,7 @@ type
 				                  input from std NotesDir and returns a FullFileName to to a temp file that
 				                  has been converted. Temp file is overwritten. }
         function ChangeNoteDateUTC(const ID: string): string;
-                            // May return SyncNetworkError, SyncNoRemoteDir, SyncReady, SyncNoServerID
+                            // May return SyncNoRemoteDir, SyncReady, SyncNoServerID
         function CheckRemoteDir: TSyncAvailable;
         function GetNoteLastChange(const FullFileName: string): string;
         procedure InsertNoteBookTags(const FullSourceFile, FullDestFile, TagString: string);
@@ -90,9 +90,12 @@ type
         function UploadFile(FullFileName: string; ID: string=''): boolean;
 
     public
-        RemoteDir : string; // where the remote filesync repo lives, changes for every connection, set by CheckRemoteDir()
-                // has something like mtp://%5Busb%3A001,031%5D/Phone/tomdroid/ - append to AndDir1 to get mount point.
-                // Use this as is when building a gio Location, append filename.
+                { Where the remote filesync repo lives, changes for every connection, set by
+                CheckRemoteDir(). Its a mountpoint but not all file functions will work there.
+                Might look like /run/user/1000/gvfs/mtp:host=%5Busb%3A001%2C053%5D/Phone/tomdroid/ }
+        RemoteDir : string;
+                { has something like mtp://%5Busb%3A001,031%5D/Phone/tomdroid/
+                  It is set by CheckRemoteDir, use as gio Location, append filename. }
         MTPDir    : string;
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
         function SetTransport() : TSyncAvailable; override;
@@ -109,22 +112,15 @@ type
 
 implementation
 
-uses laz2_DOM, laz2_XMLRead, FileUtil, LazLogger{, searchUnit};
-
-const // Must become config things eventually.
-  //Password = 'admin';
-  //DevDir = '/storage/emulated/0/tomdroid/';
-  AndDir1 = '/run/user/1000/gvfs/';             //  mtp\:host\=%5Busb%3A001%2C021%5D
-  AndDir2 = '/Phone/tomdroid/';                 // Warning, user will not always be 1000
-
+uses users,      // for getUserID()
+    laz2_DOM, laz2_XMLRead, FileUtil, LazLogger, forms;
 
 { TAndSync }
 
-
-
 constructor TAndFileSync.Create();
 begin
-    inherited.create();
+    inherited.create;
+    DebugMode :=  Application.HasOption('s', 'debug-sync');
     CheckRemoteDirResult := CheckRemoteDir();
 end;
 
@@ -179,30 +175,33 @@ begin
     AProcess.Free;
 end;
 
-
 function TAndFileSync.CheckRemoteDir : TSyncAvailable;
 var
     Info : TSearchRec;
     InFile: TextFile;
 begin
-    RemoteDir := '';
+    // Hmm, GetEnvironmentVariable('UID') fails ? No idea ....
+    RemoteDir := '/run/user/' + GetUserId(GetEnvironmentVariable('USER')).ToString() + '/gvfs/';     // thats just the start.....
     ServerID := '';
-    if DirectoryExistsUTF8(AndDir1) then begin
-    	if FindFirst(AndDir1 + 'mtp*', faDirectory, Info)=0 then begin
+    MtpDir := '';
+    if DirectoryExistsUTF8(RemoteDir) then begin
+    	if FindFirst(RemoteDir + 'mtp*', faDirectory, Info)=0 then begin
     		repeat
-              //if (((Info.attr and faDirectory) > 0) and (Info.name[1] <> '.')) then begin
-                  if DirectoryExistsUTF8(AndDir1 + Info.Name + '/Phone/tomdroid') then begin
+                  if DirectoryExistsUTF8(RemoteDir + Info.Name + '/Phone/tomdroid') then begin
                       MTPDir := Info.Name + '/Phone/tomdroid' + PathDelim;
-                      RemoteDir := AndDir1 + MTPDir;
+                      RemoteDir := RemoteDir + MTPDir;
                       MtpDir := MTPDir.Remove(0, 9);
                       MTPDir := 'mtp://' + MTPDir;
                       break;
 				  end;
-              //end;
             until FindNext(Info) <> 0;
     	end;
         FindClose(Info);
-        if debugmode then debugln('TransFileAnd:CheckRemoteDir - Remote dir is ' + RemoteDir);
+	end;
+    if MTPDir = '' then RemoteDir := '';
+    if DebugMode then begin
+        DebugLn('TAndFileSync.CheckRemoteDir RemoteDir = ' + RemoteDir);
+        Debugln('TAndFileSync.CheckRemoteDir MTPDir = '    + MtpDir);
 	end;
     if RemoteDir = '' then
         Result := SyncNoRemoteDir
@@ -222,6 +221,8 @@ begin
             Result := SyncReady;
 		end else Result := SyncNoRemoteRepo;
 	end;
+    if DebugMode then
+        DebugLn('TAndFileSync.CheckRemoteDir ServerID = ' + ServerID);
 end;
 {
    mtp://%5Busb%3A001,031%5D/      // what gio expects, comma does not matter ?
@@ -267,35 +268,6 @@ begin
     Result := SyncReady;
 end;
 
-
-{
-
-    T1 := GetTickCount64();
-    Result := CheckRemoteDir();
-    if not (Result in [SyncReady, SyncNoRemoteRepo]) then exit;           // In every case, we must find a remote dir.
-    if ANewRepo then Result := SyncNoRemoteRepo
-    else Result := SetServerID();               // Reads remote serverID, SyncNoRemoteRepo on error
-    T2 := GetTickCount64();
-    T3 := T2;
-    T4 := T2;
-    if not (Result in [SyncReady, SyncNoRemoteRepo]) then begin
-        if Result = SyncNoRemoteRepo then begin     // we failed to SetServerID above  ??
-            T3 := GetTickCount64();
-            CreateGUID(GUID);
-            ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
-            if WriteNewServerID and StampServerID(ServerID) then Result := SyncReady
-            else Result := SyncReady;
-            T3 := GetTickCount64();
-            if DebugMode then debugln('Made a new serverID ' + ServerID );
-        end else begin
-            debugln(ErrorString);
-            exit;
-        end;
-    end;
-    if debugmode then
-        debugln('TestTransport ID=' + ServerID + ' SetServerID took ' + inttostr(T2 - T1)
-            + 'mS and StampID took ' + inttostr(T4 - T3));
-end;    }
 
 function TAndFileSync.SetTransport(): TSyncAvailable;
 begin

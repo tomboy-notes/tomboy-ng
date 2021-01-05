@@ -761,7 +761,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="34">
+    <Units Count="35">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -964,6 +964,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TB_datetime"/>
       </Unit33>
+      <Unit34>
+        <Filename Value="tomdroid.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormTomdroid"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit34>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
