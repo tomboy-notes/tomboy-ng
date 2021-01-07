@@ -1,5 +1,17 @@
 unit notenormal;
 
+
+{ A unit to 'normalise' a Tomboy Note, that is ensure tags remain with the para they
+  relate to. Makes the xml a lot prettier and, more importantly, heaps easier t parse when exporting.
+  One day, may incorporate into the tomboy-ng saving engine.  Needed by the POT and
+  CommonMark exporters.
+
+  It recieves a TStringList containing a note (probably directly loaded from disk).
+
+  ToDo : it still lets empty tags through, should be removed. ie <bold></bold>
+
+}
+
 {$mode objfpc}{$H+}
 
 interface

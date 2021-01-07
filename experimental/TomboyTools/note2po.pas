@@ -1,5 +1,18 @@
 unit note2po;
 
+
+{ A unit that can export a tomboy note in a kind of .pot format.  xmp retained
+  (except for header and footer).  Sentence by sentance with para breaks marked
+  with < ps/ > on Roy's recommendation. It can be loaded into POEdit but I would
+  not like to work with something that hard to read.
+
+  Jan 6, 2021
+
+  Only available via the command line at present,  use     -a note2pot, hard wired
+  to pickup a note called tomboy-ng.note and export something called
+  tomboy-ng-help.note
+}
+
 {$mode objfpc}{$H+}
 
 interface
@@ -30,8 +43,8 @@ TExportPOT = class
         procedure MakeSentances(const StL: TStringList);
 
 		function TitleFromID(FullFileName: string; Munge: boolean): boolean;
-		function TrailTagLength(const St: string; const I: integer; out
-				TLength: integer): boolean;
+		function EndOfSentance(const St: string; var Index: integer;
+				var foundOne: boolean): boolean;
     public
         ErrorString : string;
         constructor create(FileName : string);    // looks for note in current dir, save pot file there too.
@@ -65,7 +78,20 @@ begin
     Normaliser.NormaliseList(StrLst);
     Index := FindInStringList(StrLst, '</note-content>');       // but G-Note does not bother with nice newlines ????
     while Index < StrLst.Count do StrLst.Delete(Index);
-    MakeSentances(StrLst);
+    Index := 0;
+    while Index <  StrLst.Count do begin
+        StrLst.Strings[Index] := StrLst.Strings[Index] + '< ps/ >';
+        if ((Index + 1) < StrLst.Count) and (StrLst.Strings[Index+1] = '') then begin
+            while ((Index + 1) < StrLst.Count) and (StrLst.Strings[Index+1] = '') do begin
+                StrLst.Strings[Index] := StrLst.Strings[Index] + '< ps/ >';
+                StrLst.Delete(Index+1);
+            end;
+        end else
+            inc(Index);
+	end;
+
+	MakeSentances(StrLst);
+                                    strlst.savetofile('TEMP.TXT');
     InsertPOCodes(StrLst);
     strLst.SaveToFile(NoteTitle + '.pot');
     Normaliser.Free;
@@ -80,46 +106,63 @@ begin
     STL.Insert(0, '');
     STl.Insert(0, 'msgstr "Content-Type: text/plain; charset=UTF-8"');
     STL.Insert(0, 'msgid ""');
-
+    // There should be no blank lines present now,
     while I < Stl.Count do begin
-        if length(STL.Strings[i]) > 0 then begin        // We have a block !
-            St := 'msgid "' + STL.Strings[i] + '"';
-            Stl.Strings[i] := St;
+        St := 'msgid "' + STL.Strings[i] + '"';
+        Stl.Strings[i] := St;
+        inc(i);
+        if (i) < STL.Count then begin
+            STL.Insert(i, '');
+            STL.Insert(i, 'msgstr ""');
+            inc(i, 2);
 		end else begin
-            Stl.Strings[i] := 'msgid "<break/>"';
+            STL.Append('msgstr ""');
+            STL.Append('');
+		    inc(i, 2);              // or we could break ....
 		end;
-        inc(i);
-        if (i) < STL.Count then
-            STL.Insert(i, 'msgstr ""')
-        else STL.Append('msgstr ""');
-        inc(i);
-        if (i) < STL.Count then             // note we always add a blank line and always remove one when importing.
-            STL.Insert(i, '')
-        else STL.Append('');
-        inc(I);
 	end;
 end;
 
-
-// ret True and sets TLength if I points to a trailing tag and we found end of tag.
-function TExportPOT.TrailTagLength(const St : string; const I : integer; out TLength : integer) : boolean;
+// Gets called when a period is found, Index points to char after the .
+// We have EOS if the . if followed by a space or a trailing tag, we grab all trailing tags.
+// ret True and sets Index to char after the > marking end of the tag. So, make sure its safe.
+// Wen called, if Index does not point to < then, false. Else it tries to find the end
+// of the tag, if it does, it returns true and sets Index to the next (possibly non existing)
+// char.  FoundOne indicates we did find one tag, failing to find subsquent ones does NOT reset it.
+function TExportPOT.EndOfSentance(const St : string; var Index : integer; var foundOne : boolean) : boolean;
 var
-    Offset : integer = 2;
+    Offset : integer;
+    Ch : char;
+    Snipit : string = '';
+    Len : integer;
 begin
-    if length(St) > (I + 2) then         // there is room for a tag ...
-        if (St[I+1] = '<') and (St[I+2] = '/') then         // OK, its a trailing tag.
-            while I + Offset < length(St) do begin
-                inc(Offset);
-                if St[I + Offset] = '>' then begin
-                    Tlength := I + Offset;
-                    exit(True);
-                end;
-            end;
-    // if to here, we failed to find the end of a trailing tag
-    Result := False;
+    Snipit := copy(St, Index, 1);
+    if not ( (copy(St, Index, 1) = ' ')
+        or (copy(St, Index, 2) = '</')
+        or (copy(St, Index, 7) = '< ps/ >') ) then
+            exit(false);
+    // Any one of the above makes it an EOS and guarentees that we have that much room at end
+    // So, we will set Index to point to the space or the '>' at end of the Tag.
+
+    Offset := Index;
+    if St[Index] = ' ' then exit(True);
+    while Offset <= St.Length do begin
+        Snipit := copy(St, Offset, 1000);
+        ch := St[Offset];
+        if St[Offset] = '>' then begin
+            Index := Offset;
+            FoundOne := True;
+            exit(True);
+        end;
+        inc(Offset);
+        Len := st.length;
+    end;
+    // if we got the here, its an error, an unfinished tag perhaps ?
+    debugln('ERROR, unfinished tag ' + St);
+    result := false;
 end;
 
-// Look to see if passed line needs to be broken up, if so, put bits into Line1 and Line2
+ // Look to see if passed line needs to be broken up, if so, put bits into Line1 and Line2
 function TExportPOT.BreakThis(const St : string; out Line1, Line2 : string) : boolean;
 // We assume that xml does not contain a . is that fair ?
 // We define an end of sentence as being a period and a space, '. ' OR a period and start of an xml trailing tag.
@@ -128,21 +171,28 @@ function TExportPOT.BreakThis(const St : string; out Line1, Line2 : string) : bo
 var
     Index : integer = 1;
     Offset : integer = 0;
+    FoundOne : Boolean = False;
 begin
     //We have to find a period followed by either a space or a trailing tag. First one we find, we act on.
     if St.length < 2 then exit(false);
     while true do begin
         if St[Index] = '.' then begin
+            FoundOne := False;
+            inc(Index);
+            if EndOfSentance(St, Index, FoundOne) then begin
+                inc(Index);
+                while EndOfSentance(St, Index, FoundOne) do inc(Index);        // multiple trailing tags ?
+                if Index > St.Length then
+                    exit(False)
+                else break;                                              // even one is enough !
+            end;
             if St.length < (Index +1) then exit(False);         // no room for another sentence
-            if St[Index+1] = ' ' then break;                    // that will do nicely thanks
-            if TrailTagLength(St, Index, Offset) then break;         // OK, a trailing tag will do
-		end;
+        end;
         inc(Index);
         if Index > St.Length then exit(False);
 	end;
-    Index := Index + Offset;                                    // its non zero if on a tag
-    // if to here, we have either a '. ' or a '.</' and Index points to either . or >
-
+    // if to here, we have either a '. ', a '.</' or a '.< ps/ >' and Index points to either . or >
+    dec(Index);
     result := True;
     Line1 := copy(St, 1, Index);
     inc(Index);
