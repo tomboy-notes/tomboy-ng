@@ -199,6 +199,7 @@ unit EditBox;
     2020/08/19  Fixed bug affecting end of weblink in single note mode.
     2020/10/22  Small bug where title markup can be smeared down several lines.
     2020/11/18  Added StayOnTop to Tools Popup Menu
+    2021/01/06  Pre-load find dialog with SearchBox SearchTerm, Alt-F for find next
 }
 
 
@@ -232,6 +233,7 @@ type
         MenuBullet: TMenuItem;
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
+		MenuFindNext: TMenuItem;
 		MenuStayOnTop: TMenuItem;
         MenuItemSettings: TMenuItem;
         MenuItemEvaluate: TMenuItem;
@@ -302,6 +304,7 @@ type
         procedure MenuHighLightClick(Sender: TObject);
         procedure MenuHugeClick(Sender: TObject);
         procedure MenuItalicClick(Sender: TObject);
+		procedure MenuFindNextClick(Sender: TObject);
         procedure MenuItemEvaluateClick(Sender: TObject);
         procedure MenuItemExportMarkdownClick(Sender: TObject);
         procedure MenuItemIndexClick(Sender: TObject);
@@ -952,6 +955,12 @@ begin
 	AlterFont(ChangeItalic);
 end;
 
+procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
+begin
+    if FindDialog1.FindText <> '' then
+        FindIt(FindDialog1.FindText, True, False);
+end;
+
 procedure TEditBoxForm.MenuItemEvaluateClick(Sender: TObject);
 begin
    InitiateCalc();
@@ -1443,9 +1452,10 @@ begin
     KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
     Dirty := False;
-    if SearchedTerm <> '' then
+    if SearchedTerm <> '' then begin
+        FindDialog1.FindText:= SearchedTerm;
         FindIt(SearchedTerm, True, False)
-    else begin
+	end else begin
         KMemo1.executecommand(ecEditorTop);
         KMemo1.ExecuteCommand(ecDown);
     end;
@@ -2391,6 +2401,7 @@ begin
             VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
+            VK_F     : begin MenuFindNextClick(self); Key := 0; end;
         end;
         exit();
     end;

@@ -639,6 +639,10 @@ msgstr "Vetgedrukt"
 msgid "Bullet"
 msgstr "Rondje"
 
+#: teditboxform.menufindnext.caption
+msgid "Find Next"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr "Vaste breedte"
@@ -1233,7 +1237,9 @@ msgid "eg MySamsungNote7"
 msgstr "bijv. MijnSamsungNote7"
 
 #: tformtomdroid.label1.caption
-msgid "Tomdroid Sync - be aware of limitations !"
+#, fuzzy
+#| msgid "Tomdroid Sync - be aware of limitations !"
+msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
 msgstr "Tomdroid-synchronisatie - wees je bewust van de beperkingen!"
 
 #: tformtomdroid.label2.caption

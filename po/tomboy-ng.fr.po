@@ -592,6 +592,10 @@ msgstr "Gras"
 msgid "Bullet"
 msgstr "Puce(s)"
 
+#: teditboxform.menufindnext.caption
+msgid "Find Next"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr "Chasse fixe"
@@ -1155,7 +1159,9 @@ msgid "eg MySamsungNote7"
 msgstr "ex: MySamsungNote7"
 
 #: tformtomdroid.label1.caption
-msgid "Tomdroid Sync - be aware of limitations !"
+#, fuzzy
+#| msgid "Tomdroid Sync - be aware of limitations !"
+msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
 msgstr "Attention aux limites de la synchro Tomdroid !"
 
 #: tformtomdroid.label2.caption

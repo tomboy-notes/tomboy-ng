@@ -599,6 +599,10 @@ msgstr "Negrita"
 msgid "Bullet"
 msgstr "Viñeta"
 
+#: teditboxform.menufindnext.caption
+msgid "Find Next"
+msgstr ""
+
 # Literal: "anchura fija"
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
@@ -1176,7 +1180,9 @@ msgid "eg MySamsungNote7"
 msgstr "ej., MySamsungNote7"
 
 #: tformtomdroid.label1.caption
-msgid "Tomdroid Sync - be aware of limitations !"
+#, fuzzy
+#| msgid "Tomdroid Sync - be aware of limitations !"
+msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
 msgstr "Sincronización Tomdroid - ¡dese cuenta de las limitaciones!"
 
 #: tformtomdroid.label2.caption

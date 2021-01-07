@@ -23,6 +23,7 @@
 <list><list-item dir="ltr">Control-V : Paste the contents of the Clipboard into the current note.</list-item></list>
 <list><list-item dir="ltr">Control-A : Select All items.</list-item></list>
 <list><list-item dir="ltr">Control-F : Open a Find window.</list-item></list>
+<list><list-item dir="ltr">Alt-F  : Find Next</list-item></list>
 <list><list-item dir="ltr">Control-RightArrow : move word to the right.</list-item></list>
 <list><list-item dir="ltr">Control-LeftArrow : move word to the left.</list-item></list>
 <list><list-item dir="ltr">Control-Shift-LeftArrow - extend selection one word to left</list-item></list>
@@ -68,8 +69,8 @@
 
 
 </note-content></text>
-  <last-change-date>2020-05-26T18:38:18.3386120+10:00</last-change-date>
-  <last-metadata-change-date>2020-05-26T18:38:18.3386120+10:00</last-metadata-change-date>
+  <last-change-date>2021-01-06T22:50:15.0160094+11:00</last-change-date>
+  <last-metadata-change-date>2021-01-06T22:50:15.0160094+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

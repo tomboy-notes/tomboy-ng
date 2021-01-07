@@ -574,6 +574,10 @@ msgstr ""
 msgid "Bullet"
 msgstr ""
 
+#: teditboxform.menufindnext.caption
+msgid "Find Next"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr ""
@@ -1134,7 +1138,7 @@ msgid "eg MySamsungNote7"
 msgstr ""
 
 #: tformtomdroid.label1.caption
-msgid "Tomdroid Sync - be aware of limitations !"
+msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
 msgstr ""
 
 #: tformtomdroid.label2.caption

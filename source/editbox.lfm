@@ -976,6 +976,11 @@ object EditBoxForm: TEditBoxForm
       ShortCut = 16454
       OnClick = MenuItemFindClick
     end
+    object MenuFindNext: TMenuItem
+      Caption = 'Find Next'
+      ShortCut = 32838
+      OnClick = MenuFindNextClick
+    end
     object MenuItem1: TMenuItem
       Caption = '-'
     end
