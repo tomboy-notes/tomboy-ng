@@ -1,7 +1,7 @@
 object FormTomdroidFile: TFormTomdroidFile
-  Left = 586
+  Left = 914
   Height = 440
-  Top = 375
+  Top = 457
   Width = 847
   Caption = 'Tomdroid'
   ClientHeight = 440

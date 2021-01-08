@@ -84,7 +84,8 @@ implementation
 
 
 uses Settings, Sync, TB_SDiff, typInfo, LazLogger, LCLType, LazFileUtils, laz2_DOM, laz2_XMLRead,
-    SearchUnit, Tomdroid; // we call ProcessSyncUpdates( and ShowHelpNote(
+    SearchUnit           // we call ProcessSyncUpdates( and ShowHelpNote(
+    , Tomdroid;          // For the old, legacy ssh based version of this
 
 RESOURCESTRING
 
@@ -149,6 +150,7 @@ begin
                             LabelAdvice1.Caption := rsNotExistingRepo;
                             LabelAdvice2.Caption := rsFailedToFindConnection_2;
                             ButtonJoin.SetFocus;
+                            Memo1.append(ASync.SyncAddress);
 				            end;
 	            SyncNoRemoteDir : begin   // Dir is not there, maybe no device connected ?
 	                        ButtonClose.Enabled := True;
@@ -156,6 +158,7 @@ begin
 	                        ButtonJoin.Enabled := False;
                             LabelAdvice1.Caption := rsNoTomdroid;
                             LabelAdvice2.Caption := rsInstallTomdroid;
+                            Memo1.append(ASync.SyncAddress);
 				            end;
 		end;
 	    ASync.Free;

@@ -639,6 +639,10 @@ msgstr "Vetgedrukt"
 msgid "Bullet"
 msgstr "Rondje"
 
+#: teditboxform.menufindnext.caption
+msgid "Find Next"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr "Vaste breedte"
@@ -1792,6 +1796,10 @@ msgstr "het juiste Hunspell-woordenboek."
 msgid "Maximum number of snapshots"
 msgstr ""
 
+#: tsett.label17.caption
+msgid "One to One Repo :"
+msgstr ""
+
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr "Notities worden gezocht en opgeslagen in:"
@@ -1842,6 +1850,11 @@ msgctxt "tsett.labelfilesyncinfo2.caption"
 msgid "LabelFileSyncInfo2"
 msgstr ""
 
+#: tsett.labelonetoonesync.caption
+msgctxt "tsett.labelonetoonesync.caption"
+msgid "not configured"
+msgstr ""
+
 #: tsett.labelsnapdir.caption
 #, fuzzy
 #| msgid ".... and its not available just yet !"
@@ -1869,6 +1882,14 @@ msgstr "Normaal"
 msgid "Small"
 msgstr "Klein"
 
+#: tsett.radioother.caption
+msgid "Other Dir"
+msgstr ""
+
+#: tsett.radiotomdroid.caption
+msgid "Tomdroid USB"
+msgstr ""
+
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
 msgstr "Lokale notitie gebruiken en servernotitie overschrijven"
@@ -1892,6 +1913,10 @@ msgstr "Sluiten"
 #: tsett.speedbutttbmenu.caption
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
+msgstr ""
+
+#: tsett.speedonetoone.caption
+msgid "One to One"
 msgstr ""
 
 #: tsett.speedsetupsync.caption

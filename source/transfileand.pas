@@ -69,12 +69,16 @@ type
 
   TAndFileSync = Class(TTomboyTrans)
     private
+        OneToOne : string;      // a dir, if present, use it to sync to instead of expected Tomdroid gvfs one
         CheckRemoteDirResult : TSyncAvailable;
 				                  { Converts a note from local time plus offset to UTC with zero offset. Gets its
 				                  input from std NotesDir and returns a FullFileName to to a temp file that
 				                  has been converted. Temp file is overwritten. }
         function ChangeNoteDateUTC(const ID: string): string;
                             // May return SyncNoRemoteDir, SyncReady, SyncNoServerID
+                            // Sets the RemoteDir to either the GVFS mountpoint plus phone/tomdroid
+                            // or to the TB_ONETOONE env var (if present). Tests for a the dir
+                            // and the presence of the serverID.
         function CheckRemoteDir: TSyncAvailable;
         function GetNoteLastChange(const FullFileName: string): string;
         procedure InsertNoteBookTags(const FullSourceFile, FullDestFile, TagString: string);
@@ -87,13 +91,15 @@ type
 
                             // Uploads the nominated file to MTPDIR using gio commands.
                             // we may be able to do this directly with GVFS calls one day ....
+                            // But if in OneToOne mode, just uses copyFile(
         function UploadFile(FullFileName: string; ID: string=''): boolean;
 
     public
                 { Where the remote filesync repo lives, changes for every connection, set by
                 CheckRemoteDir(). Its a mountpoint but not all file functions will work there.
                 Might look like /run/user/1000/gvfs/mtp:host=%5Busb%3A001%2C053%5D/Phone/tomdroid/ }
-        RemoteDir : string;
+//        RemoteDir : string;                                                           // Should use RemoteAddress ??
+
                 { has something like mtp://%5Busb%3A001,031%5D/Phone/tomdroid/
                   It is set by CheckRemoteDir, use as gio Location, append filename. }
         MTPDir    : string;
@@ -130,7 +136,7 @@ var
     OutFile: TextFile;
 begin
     Result := False;
-    if debugmode then debugln('TAndFileSync.StampServerID stamp at ' + RemoteDir + 'tomboy.serverid');
+    if debugmode then debugln('TAndFileSync.StampServerID stamp at ' + RemoteAddress + 'tomboy.serverid');
     AssignFile(OutFile, ConfigDir + 'tomboy.serverid');
     try
         Rewrite(OutFile);
@@ -153,6 +159,9 @@ begin
     if ID = '' then
         NewName := extractFileName(FullFileName)
     else NewName := ID + '.note';
+    if OneToOne <> '' then
+        exit(CopyFile(FullFileName, RemoteAddress + NewName));
+
     AProcess := TProcess.Create(nil);
     AProcess.Executable:= 'gio';
     AProcess.Parameters.Add('copy');
@@ -181,33 +190,41 @@ var
     InFile: TextFile;
 begin
     // Hmm, GetEnvironmentVariable('UID') fails ? No idea ....
-    RemoteDir := '/run/user/' + GetUserId(GetEnvironmentVariable('USER')).ToString() + '/gvfs/';     // thats just the start.....
+    OneToOne := GetEnvironmentVariable('TB_ONETOONE');
+    if OneToOne = '' then
+        RemoteAddress := '/run/user/' + GetUserId(GetEnvironmentVariable('USER')).ToString() + '/gvfs/'     // thats just the start.....
+    else RemoteAddress := appendPathDelim(OneToOne);
     ServerID := '';
     MtpDir := '';
-    if DirectoryExistsUTF8(RemoteDir) then begin
-    	if FindFirst(RemoteDir + 'mtp*', faDirectory, Info)=0 then begin
-    		repeat
-                  if DirectoryExistsUTF8(RemoteDir + Info.Name + '/Phone/tomdroid') then begin
-                      MTPDir := Info.Name + '/Phone/tomdroid' + PathDelim;
-                      RemoteDir := RemoteDir + MTPDir;
-                      MtpDir := MTPDir.Remove(0, 9);
-                      MTPDir := 'mtp://' + MTPDir;
-                      break;
-				  end;
-            until FindNext(Info) <> 0;
-    	end;
-        FindClose(Info);
-	end;
-    if MTPDir = '' then RemoteDir := '';
+    if DirectoryExistsUTF8(RemoteAddress) then begin
+        if OneToOne = '' then begin
+        	if FindFirst(RemoteAddress + 'mtp*', faDirectory, Info)=0 then begin
+        		repeat
+                      if DirectoryExistsUTF8(RemoteAddress + Info.Name + '/Phone/tomdroid') then begin
+                          MTPDir := Info.Name + '/Phone/tomdroid' + PathDelim;
+                          RemoteAddress := RemoteAddress + MTPDir;
+                          MtpDir := MTPDir.Remove(0, 9);
+                          MTPDir := 'mtp://' + MTPDir;
+                          break;
+		    		  end;
+                until FindNext(Info) <> 0;
+    	    end;
+            FindClose(Info);
+            // if MTPDir = '' then RemoteDir := '';
+        end;
+	end else MTPDIR := 'OneToOne FAIL';           // thats really for OneToOne mode only.
+    // MTRDir = '' if we failed to set Tomdroid USB dir.  RemoteDir will always show what we
+    // tried. If we failed to find the OneToOne dir, MTPDIR will contain 'OneToOne FAIL'
     if DebugMode then begin
-        DebugLn('TAndFileSync.CheckRemoteDir RemoteDir = ' + RemoteDir);
+        DebugLn('TAndFileSync.CheckRemoteDir RemoteDir = ' + RemoteAddress);
         Debugln('TAndFileSync.CheckRemoteDir MTPDir = '    + MtpDir);
 	end;
-    if RemoteDir = '' then
+    if (MTPDir = '') or (MTPDIR = 'OneToOne FAIL') then
         Result := SyncNoRemoteDir
     else begin
-        if FileExistsUTF8(RemoteDir + 'tomboy.serverid') then begin
-            AssignFile(InFile, RemoteDir + 'tomboy.serverid');
+        // If to here, we know we have a real dir in RemoteDir, maybe we should also test for writing ?
+        if FileExistsUTF8(RemoteAddress + 'tomboy.serverid') then begin
+            AssignFile(InFile, RemoteAddress + 'tomboy.serverid');
             try
         	    Reset(InFile);
                 readln(InFile, ServerID);
@@ -233,9 +250,9 @@ function TAndFileSync.SetServerID() : TSyncAvailable;
 var
     InFile: TextFile;                                       // ToDo : we have already read the serverid in SetTransport ...
 begin
-    if not FileExistsUTF8(RemoteDir + 'tomboy.serverid') then exit(SyncNoRemoteRepo);
+    if not FileExistsUTF8(RemoteAddress + 'tomboy.serverid') then exit(SyncNoRemoteRepo);
     ServerID := '';
-    AssignFile(InFile, RemoteDir + 'tomboy.serverid');
+    AssignFile(InFile, RemoteAddress + 'tomboy.serverid');
     try
 	    Reset(InFile);
         readln(InFile, ServerID);
@@ -258,7 +275,7 @@ begin
       So, it seems all we do here is make a new server id if necessary (ie if WriteNewServerID is true
       or ANewrepo is true).
     }
-    if RemoteDir = '' then exit(SyncNoRemoteRepo);
+    if RemoteAddress = '' then exit(SyncNoRemoteRepo);
     ErrorString := '';
     if  WriteNewServerID and ANewRepo then begin
         CreateGUID(GUID);
@@ -286,11 +303,11 @@ begin
         ErrorString := 'Passed an uncreated list to GetNewNotes()';
         exit(False);
     end;
-    if FindFirst(RemoteDir + '*.note', faAnyFile, Info)=0 then begin
+    if FindFirst(RemoteAddress + '*.note', faAnyFile, Info)=0 then begin
         repeat
-            St := GetNoteLastChangeSt(RemoteDir + Info.Name, ErrorString);
+            St := GetNoteLastChangeSt(RemoteAddress + Info.Name, ErrorString);
             if St = '' then
-                debugln('ERROR, TransFileAnd.GetDroidMetaData failed to find LCD in ' + RemoteDir + Info.Name)
+                debugln('ERROR, TransFileAnd.GetDroidMetaData failed to find LCD in ' + RemoteAddress + Info.Name)
             else begin
                 new(NoteInfo);
                 NoteInfo^.Action:=SyUnset;
@@ -327,7 +344,7 @@ begin
                 readln(InFile, InString);
                 if (Pos('</y>', InString) > 0) then begin
                     writeln(OutFile, InString);
-                    writeln(outFile, TagString);
+                    writeln(OutFile, TagString);
                 end else writeln(OutFile, InString);
             end;
         finally
@@ -359,7 +376,7 @@ begin
                     exit(False);
                 end;
             // OK, now pull down the file.
-            copyfile(RemoteDir + Downloads.Items[I]^.ID + '.note', self.NotesDir + Downloads.Items[I]^.ID + '.note', false);
+            copyfile(RemoteAddress + Downloads.Items[I]^.ID + '.note', self.NotesDir + Downloads.Items[I]^.ID + '.note', false);
         end;
     end;
     result := True;
@@ -369,14 +386,14 @@ end;
 function TAndFileSync.DeleteNote(const ID: string; const ExistRev : integer ): boolean;
 begin
     // MTP: seems to allow us to delete notes from there.
-    if FileExistsUTF8(RemoteDir + ID + '.note') then begin
-        DeleteFileUTF8(RemoteDir + ID + '.note')
+    if FileExistsUTF8(RemoteAddress + ID + '.note') then begin
+        DeleteFileUTF8(RemoteAddress + ID + '.note')
 	end	else begin
-        debugln('ERROR TransFileAnd.DeleteNote cannot find note to delete ' + RemoteDir + ID + '.note');
+        debugln('ERROR TransFileAnd.DeleteNote cannot find note to delete ' + RemoteAddress + ID + '.note');
         exit(False);
 	end;
-    if FileExistsUTF8(RemoteDir + ID + '.note') then begin
-        debugln('ERROR TransFileAnd.DeleteNote Failed to delete note ' + RemoteDir + ID + '.note');
+    if FileExistsUTF8(RemoteAddress + ID + '.note') then begin
+        debugln('ERROR TransFileAnd.DeleteNote Failed to delete note ' + RemoteAddress + ID + '.note');
         exit(False);
 	end;
     result := False;
@@ -391,8 +408,8 @@ begin
     // stuff about with its date strings. ChangeNoteDateUTC() makes a temp, edited copy and ret its full path.
     for Index := 0 to Uploads.Count -1 do begin
         if DebugMode then debugln('TransFileAnd.UploadNotes ' + Uploads.Strings[Index] + '.note');
-        if FileExistsUTF8(RemoteDir + Uploads.Strings[Index] + '.note') then
-            DeleteFileUTF8(RemoteDir + Uploads.Strings[Index] + '.note');
+        if FileExistsUTF8(RemoteAddress + Uploads.Strings[Index] + '.note') then
+            DeleteFileUTF8(RemoteAddress + Uploads.Strings[Index] + '.note');
         if FileExistsUTF8(NotesDir + Uploads.Strings[Index] + '.note') then
             UploadFile(ChangeNoteDateUTC(Uploads.Strings[Index]), Uploads.Strings[Index])
         else  debugln('ERROR TransFileAnd.UploadNotes Failed to find ' + NotesDir + Uploads.Strings[Index] + '.note');
@@ -459,7 +476,7 @@ function TAndFileSync.DownLoadNote(const ID: string; const RevNo: Integer): stri
 var
     St : string;
 begin
-    St := RemoteDir + ID + '.note';
+    St := RemoteAddress + ID + '.note';
     if FileExistsUTF8(St) then exit(St);
     debugln('TransFileAnd.DownloadNote failed to find ' + St);
     Result := '';

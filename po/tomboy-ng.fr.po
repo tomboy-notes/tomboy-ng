@@ -592,6 +592,10 @@ msgstr "Gras"
 msgid "Bullet"
 msgstr "Puce(s)"
 
+#: teditboxform.menufindnext.caption
+msgid "Find Next"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr "Chasse fixe"
@@ -1712,6 +1716,10 @@ msgstr "et un réglage approprié du dictionnaire."
 msgid "Maximum number of snapshots"
 msgstr "snaphots au maximum"
 
+#: tsett.label17.caption
+msgid "One to One Repo :"
+msgstr ""
+
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr "Les notes seront sauvegardées dans :"
@@ -1759,6 +1767,12 @@ msgctxt "tsett.labelfilesyncinfo2.caption"
 msgid "LabelFileSyncInfo2"
 msgstr "LabelFileSyncInfo2"
 
+#: tsett.labelonetoonesync.caption
+#, fuzzy
+msgctxt "tsett.labelonetoonesync.caption"
+msgid "not configured"
+msgstr "non configuré"
+
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Répertoire des snap"
@@ -1784,6 +1798,14 @@ msgstr "Police moyenne"
 msgid "Small"
 msgstr "Police petite"
 
+#: tsett.radioother.caption
+msgid "Other Dir"
+msgstr ""
+
+#: tsett.radiotomdroid.caption
+msgid "Tomdroid USB"
+msgstr ""
+
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
 msgstr "Préférer la note locale, écraser la note serveur."
@@ -1806,6 +1828,10 @@ msgstr "Fermer"
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
 msgstr "Menu"
+
+#: tsett.speedonetoone.caption
+msgid "One to One"
+msgstr ""
 
 #: tsett.speedsetupsync.caption
 msgctxt "tsett.speedsetupsync.caption"
