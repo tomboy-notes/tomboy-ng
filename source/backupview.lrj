@@ -1,0 +1,12 @@
+{"version":1,"strings":[
+{"hash":34251059,"name":"tformbackupview.caption","sourcebytes":[86,105,101,119,44,32,114,101,99,111,118,101,114,32,111,114,32,100,101,108,101,116,101,32,66,97,99,107,117,112,32,70,105,108,101,115],"value":"View, recover or delete Backup Files"},
+{"hash":10435829,"name":"tformbackupview.buttonopen.hint","sourcebytes":[79,112,101,110,32,97,110,100,32,118,105,101,119,32,116,104,101,32,119,104,111,108,101,32,110,111,116,101],"value":"Open and view the whole note"},
+{"hash":380871,"name":"tformbackupview.buttonopen.caption","sourcebytes":[86,105,101,119],"value":"View"},
+{"hash":19305231,"name":"tformbackupview.buttonrecover.hint","sourcebytes":[82,101,115,116,111,114,101,32,116,104,105,115,32,110,111,116,101,32,116,111,32,109,97,105,110,32,114,101,112,111],"value":"Restore this note to main repo"},
+{"hash":146435218,"name":"tformbackupview.buttonrecover.caption","sourcebytes":[82,101,99,111,118,101,114],"value":"Recover"},
+{"hash":120709198,"name":"tformbackupview.buttondelete.hint","sourcebytes":[82,101,97,108,108,121,44,32,116,111,116,97,108,108,121,32,100,101,108,101,116,101,32,116,104,105,115,32,110,111,116,101,46],"value":"Really, totally delete this note."},
+{"hash":78392485,"name":"tformbackupview.buttondelete.caption","sourcebytes":[68,101,108,101,116,101],"value":"Delete"},
+{"hash":205911214,"name":"tformbackupview.buttonok.hint","sourcebytes":[77,121,32,119,111,114,107,32,104,101,114,101,32,105,115,32,100,111,110,101,46],"value":"My work here is done."},
+{"hash":4863637,"name":"tformbackupview.buttonok.caption","sourcebytes":[67,108,111,115,101],"value":"Close"},
+{"hash":60010147,"name":"tformbackupview.listbox1.hint","sourcebytes":[85,115,101,32,67,116,114,108,32,111,114,32,83,104,105,102,116,32,116,111,32,115,101,108,101,99,116,32,109,117,108,116,105,112,108,101,32,101,110,116,114,105,101,115],"value":"Use Ctrl or Shift to select multiple entries"}
+]}

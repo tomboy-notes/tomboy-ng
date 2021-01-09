@@ -1,0 +1,12 @@
+{"version":1,"strings":[
+{"hash":170919299,"name":"tformcolours.caption","sourcebytes":[70,111,114,109,67,111,108,111,117,114,115],"value":"FormColours"},
+{"hash":93865765,"name":"tformcolours.label1.caption","sourcebytes":[83,97,109,112,108,101],"value":"Sample"},
+{"hash":169650899,"name":"tformcolours.label2.caption","sourcebytes":[83,101,116,32,67,111,108,111,117,114,115],"value":"Set Colours"},
+{"hash":5966629,"name":"tformcolours.speedtitle.caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":371956,"name":"tformcolours.speedtext.caption","sourcebytes":[84,101,120,116],"value":"Text"},
+{"hash":32370148,"name":"tformcolours.speedbackground.caption","sourcebytes":[66,97,99,107,103,114,111,117,110,100],"value":"Background"},
+{"hash":234009348,"name":"tformcolours.speedhighlight.caption","sourcebytes":[72,105,103,104,108,105,103,104,116],"value":"Highlight"},
+{"hash":180128884,"name":"tformcolours.speeddefault.caption","sourcebytes":[68,101,102,97,117,108,116],"value":"Default"},
+{"hash":77089212,"name":"tformcolours.speedcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
+{"hash":1339,"name":"tformcolours.speedok.caption","sourcebytes":[79,75],"value":"OK"}
+]}

@@ -1,0 +1,18 @@
+{"version":1,"strings":[
+{"hash":33421508,"name":"tformsdiff.caption","sourcebytes":[65,32,78,111,116,101,32,83,121,110,99,32,67,108,97,115,104,32,104,97,115,32,98,101,101,110,32,68,101,116,101,99,116,101,100],"value":"A Note Sync Clash has been Detected"},
+{"hash":31088229,"name":"tformsdiff.labelremote.caption","sourcebytes":[76,97,98,101,108,82,101,109,111,116,101],"value":"LabelRemote"},
+{"hash":202931964,"name":"tformsdiff.labellocal.caption","sourcebytes":[76,97,98,101,108,76,111,99,97,108],"value":"LabelLocal"},
+{"hash":94564212,"name":"tformsdiff.label3.caption","sourcebytes":[82,101,109,111,116,101,32,67,104,97,110,103,101,100],"value":"Remote Changed"},
+{"hash":180302756,"name":"tformsdiff.label4.caption","sourcebytes":[76,111,99,97,108,32,67,104,97,110,103,101,100],"value":"Local Changed"},
+{"hash":164800533,"name":"tformsdiff.radiolong.hint","sourcebytes":[77,97,121,98,101,32,110,101,99,101,115,115,97,114,121,32,116,111,32,115,104,111,119,32,100,105,102,102,101,114,101,110,99,101],"value":"Maybe necessary to show difference"},
+{"hash":156750467,"name":"tformsdiff.radiolong.caption","sourcebytes":[76,111,110,103,32,76,105,110,101,115],"value":"Long Lines"},
+{"hash":59263924,"name":"tformsdiff.radioshort.hint","sourcebytes":[69,97,115,105,101,114,32,116,111,32,114,101,97,100],"value":"Easier to read"},
+{"hash":103486035,"name":"tformsdiff.radioshort.caption","sourcebytes":[83,104,111,114,116,32,76,105,110,101,115],"value":"Short Lines"},
+{"hash":38215182,"name":"tformsdiff.label1.caption","sourcebytes":[79,114,32,109,97,107,101,32,97,32,99,104,111,105,99,101,32,102,111,114,32,114,101,109,97,105,110,100,101,114,32,111,102,32,116,104,105,115,32,114,117,110],"value":"Or make a choice for remainder of this run"},
+{"hash":90352804,"name":"tformsdiff.buttalloldest.caption","sourcebytes":[79,108,100,101,115,116],"value":"Oldest"},
+{"hash":88923300,"name":"tformsdiff.buttallnewest.caption","sourcebytes":[78,101,119,101,115,116],"value":"Newest"},
+{"hash":5462396,"name":"tformsdiff.buttalllocal.caption","sourcebytes":[76,111,99,97,108],"value":"Local"},
+{"hash":93079205,"name":"tformsdiff.buttallremote.caption","sourcebytes":[82,101,109,111,116,101],"value":"Remote"},
+{"hash":122881516,"name":"tformsdiff.bitbtnuselocal.caption","sourcebytes":[85,115,101,32,76,111,99,97,108],"value":"Use Local"},
+{"hash":93327317,"name":"tformsdiff.bitbtnuseremote.caption","sourcebytes":[85,115,101,32,82,101,109,111,116,101],"value":"Use Remote"}
+]}

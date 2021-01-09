@@ -1,0 +1,11 @@
+{"version":1,"strings":[
+{"hash":50730251,"name":"tformrollback.caption","sourcebytes":[70,111,114,109,82,111,108,108,66,97,99,107],"value":"FormRollBack"},
+{"hash":77089212,"name":"tformrollback.speedcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
+{"hash":37921584,"name":"tformrollback.speedrolltoopen.caption","sourcebytes":[79,112,101,110,105,110,103,32,66,97,99,107,117,112],"value":"Opening Backup"},
+{"hash":107677856,"name":"tformrollback.speedrolltotitle.caption","sourcebytes":[84,105,116,108,101,32,67,104,97,110,103,101,32,66,97,99,107,117,112],"value":"Title Change Backup"},
+{"hash":126620494,"name":"tformrollback.labelopn.caption","sourcebytes":[76,97,98,101,108,79,112,110],"value":"LabelOpn"},
+{"hash":126631564,"name":"tformrollback.labelttl.caption","sourcebytes":[76,97,98,101,108,116,116,108],"value":"Labelttl"},
+{"hash":88329237,"name":"tformrollback.labelopntitle.caption","sourcebytes":[76,97,98,101,108,79,112,110,84,105,116,108,101],"value":"LabelOpnTitle"},
+{"hash":157534917,"name":"tformrollback.labelttltitle.caption","sourcebytes":[76,97,98,101,108,116,116,108,84,105,116,108,101],"value":"LabelttlTitle"},
+{"hash":86477809,"name":"tformrollback.label1.caption","sourcebytes":[76,97,98,101,108,49],"value":"Label1"}
+]}

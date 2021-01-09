@@ -1,0 +1,17 @@
+{"version":1,"strings":[
+{"hash":24490510,"name":"tmainform.hint","sourcebytes":[73,102,32,116,104,101,32,103,114,101,101,110,32,116,111,109,98,111,121,45,110,103,32,105,99,111,110,32,105,115,32,118,105,115,105,98,108,101,32,105,110,32,121,111,117,114,32,83,121,115,116,101,109,32,84,114,97,121,44,32,121,111,117,32,99,97,110,32,100,105,115,109,105,115,115,32,116,104,105,115,32,119,105,110,100,111,119,46],"value":"If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."},
+{"hash":60217639,"name":"tmainform.caption","sourcebytes":[116,111,109,98,111,121,45,110,103],"value":"tomboy-ng"},
+{"hash":82624647,"name":"tmainform.label1.caption","sourcebytes":[72,97,118,101,32,67,111,110,102,105,103],"value":"Have Config"},
+{"hash":87847529,"name":"tmainform.label3.caption","sourcebytes":[68,105,99,116,105,111,110,97,114,121,32,67,111,110,102,105,103,32,40,111,112,116,105,111,110,97,108,41],"value":"Dictionary Config (optional)"},
+{"hash":3892505,"name":"tmainform.label4.caption","sourcebytes":[83,121,110,99,32,67,111,110,102,105,103,32,40,111,112,116,105,111,110,97,108,41],"value":"Sync Config (optional)"},
+{"hash":230572289,"name":"tmainform.label5.caption","sourcebytes":[87,101,108,99,111,109,101,32,116,111,32,116,111,109,98,111,121,45,110,103,32,33],"value":"Welcome to tomboy-ng !"},
+{"hash":88,"name":"tmainform.labelnotesfound.caption","sourcebytes":[88],"value":"X"},
+{"hash":108199710,"name":"tmainform.labelerror.hint","sourcebytes":[76,97,117,110,99,104,32,102,114,111,109,32,99,111,109,109,97,110,100,108,105,110,101,32,116,111,32,115,101,101,32,101,114,114,111,114,115,32,111,114,32,115,101,101,32,67,111,110,102,105,103,45,62,83,110,97,112,83,104,111,116,45,62,82,101,99,111,118,101,114,32,46,46,46],"value":"Launch from commandline to see errors or see Config->SnapShot->Recover ..."},
+{"hash":88,"name":"tmainform.labelerror.caption","sourcebytes":[88],"value":"X"},
+{"hash":205434003,"name":"tmainform.checkboxdontshow.hint","sourcebytes":[89,111,117,32,99,97,110,32,114,101,118,101,114,115,101,32,116,104,105,115,32,102,114,111,109,32,83,101,116,116,105,110,103,115],"value":"You can reverse this from Settings"},
+{"hash":215954672,"name":"tmainform.checkboxdontshow.caption","sourcebytes":[68,111,110,39,116,32,83,104,111,119,32,102,111,114,32,110,111,114,109,97,108,32,115,116,97,114,116,117,112],"value":"Don't Show for normal startup"},
+{"hash":343125,"name":"tmainform.buttmenu.caption","sourcebytes":[77,101,110,117],"value":"Menu"},
+{"hash":68883765,"name":"tmainform.labelbadnoteadvice.caption","sourcebytes":[76,97,98,101,108,66,97,100,78,111,116,101,65,100,118,105,99,101],"value":"LabelBadNoteAdvice"},
+{"hash":363524,"name":"tmainform.bitbtnquit.caption","sourcebytes":[81,117,105,116],"value":"Quit"},
+{"hash":323493,"name":"tmainform.bitbtnhide.caption","sourcebytes":[72,105,100,101],"value":"Hide"}
+]}

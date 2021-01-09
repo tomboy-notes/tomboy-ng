@@ -28,7 +28,7 @@ lib/
 
 # Added by DRB
 published/
-*.lrj
+# *.lrj    apparently needed by the translation system
 /tomboy-ng/tomboy-ng
 /tomboy-ng/tomboy-ng-qt
 tomboy-ng-qt.po

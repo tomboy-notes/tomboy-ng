@@ -1,0 +1,8 @@
+{"version":1,"strings":[
+{"hash":208094446,"name":"tformmarkdown.caption","sourcebytes":[70,111,114,109,77,97,114,107,100,111,119,110],"value":"FormMarkdown"},
+{"hash":73996050,"name":"tformmarkdown.panel1.caption","sourcebytes":[77,97,114,107,100,111,119,110,32,69,120,112,111,114,116,101,114],"value":"Markdown Exporter"},
+{"hash":4863637,"name":"tformmarkdown.buttonclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"},
+{"hash":108741772,"name":"tformmarkdown.buttoncopyall.caption","sourcebytes":[67,111,112,121,32,65,108,108],"value":"Copy All"},
+{"hash":366789,"name":"tformmarkdown.buttonsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":98288873,"name":"tformmarkdown.label1.caption","sourcebytes":[80,114,101,115,115,32,67,116,114,108,45,65,44,32,67,116,114,108,45,67,32,116,111,32,99,111,112,121],"value":"Press Ctrl-A, Ctrl-C to copy"}
+]}

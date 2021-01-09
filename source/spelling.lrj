@@ -1,0 +1,13 @@
+{"version":1,"strings":[
+{"hash":5925932,"name":"tformspell.caption","sourcebytes":[83,112,101,108,108],"value":"Spell"},
+{"hash":165180142,"name":"tformspell.labelprompt.caption","sourcebytes":[67,108,105,99,107,32,97,32,119,111,114,100,32,116,111,32,117,115,101,32,105,116,46],"value":"Click a word to use it."},
+{"hash":192952813,"name":"tformspell.label4.caption","sourcebytes":[83,117,115,112,101,99,116,32,119,111,114,100,32,45],"value":"Suspect word -"},
+{"hash":267249588,"name":"tformspell.labelsuspect.caption","sourcebytes":[76,97,98,101,108,83,117,115,112,101,99,116],"value":"LabelSuspect"},
+{"hash":125781284,"name":"tformspell.buttonuseandnextword.caption","sourcebytes":[85,115,101,32,97,110,100,32,78,101,120,116,32,87,111,114,100],"value":"Use and Next Word"},
+{"hash":33092355,"name":"tformspell.labelstatus.caption","sourcebytes":[76,97,98,101,108,83,116,97,116,117,115],"value":"LabelStatus"},
+{"hash":226631924,"name":"tformspell.labelcontext.caption","sourcebytes":[76,97,98,101,108,67,111,110,116,101,120,116],"value":"LabelContext"},
+{"hash":136098853,"name":"tformspell.buttonskip.hint","sourcebytes":[83,107,105,112,32,106,117,115,116,32,116,104,105,115,32,105,110,115,116,97,110,99,101],"value":"Skip just this instance"},
+{"hash":369152,"name":"tformspell.buttonskip.caption","sourcebytes":[83,107,105,112],"value":"Skip"},
+{"hash":258652622,"name":"tformspell.buttonignore.hint","sourcebytes":[73,103,110,111,114,101,32,97,108,108,32,105,110,115,116,97,110,99,101,115,32,102,111,114,32,116,104,101,32,114,117,110],"value":"Ignore all instances for the run"},
+{"hash":83777157,"name":"tformspell.buttonignore.caption","sourcebytes":[73,103,110,111,114,101],"value":"Ignore"}
+]}

@@ -1,0 +1,14 @@
+{"version":1,"strings":[
+{"hash":234232728,"name":"tsearchform.caption","sourcebytes":[116,111,109,98,111,121,45,110,103,95,83,101,97,114,99,104],"value":"tomboy-ng_Search"},
+{"hash":164106259,"name":"tsearchform.buttonrefresh.hint","sourcebytes":[85,112,100,97,116,101,32,83,101,97,114,99,104,32,82,101,115,117,108,116,115],"value":"Update Search Results"},
+{"hash":146640072,"name":"tsearchform.buttonrefresh.caption","sourcebytes":[82,101,102,114,101,115,104],"value":"Refresh"},
+{"hash":90721265,"name":"tsearchform.panel1.caption","sourcebytes":[80,97,110,101,108,49],"value":"Panel1"},
+{"hash":115878035,"name":"tsearchform.buttonclearfilters.caption","sourcebytes":[67,108,101,97,114,32,70,105,108,116,101,114,115],"value":"Clear Filters"},
+{"hash":179900739,"name":"tsearchform.panel2.caption","sourcebytes":[78,111,116,101,98,111,111,107,115],"value":"Notebooks"},
+{"hash":343125,"name":"tsearchform.buttonmenu.caption","sourcebytes":[77,101,110,117],"value":"Menu"},
+{"hash":219680245,"name":"tsearchform.checkcasesensitive.caption","sourcebytes":[67,97,115,101,32,83,101,110,115,105,116,105,118,101],"value":"Case Sensitive"},
+{"hash":89337013,"name":"tsearchform.menueditnotebooktemplate.caption","sourcebytes":[69,100,105,116,32,78,111,116,101,98,111,111,107,32,84,101,109,112,108,97,116,101],"value":"Edit Notebook Template"},
+{"hash":73518027,"name":"tsearchform.menudeletenotebook.caption","sourcebytes":[68,101,108,101,116,101,32,78,111,116,101,98,111,111,107],"value":"Delete Notebook"},
+{"hash":36354507,"name":"tsearchform.menurenamenotebook.caption","sourcebytes":[82,101,110,97,109,101,32,78,111,116,101,66,111,111,107],"value":"Rename NoteBook"},
+{"hash":173784437,"name":"tsearchform.menunewnotefromtemplate.caption","sourcebytes":[67,114,101,97,116,101,32,78,101,119,32,78,111,116,101,32,102,114,111,109,32,84,101,109,112,108,97,116,101],"value":"Create New Note from Template"}
+]}

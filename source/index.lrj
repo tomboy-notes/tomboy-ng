@@ -1,0 +1,5 @@
+{"version":1,"strings":[
+{"hash":231754757,"name":"tformindex.caption","sourcebytes":[72,101,97,100,105,110,103,32,105,110,32,116,104,105,115,32,78,111,116,101],"value":"Heading in this Note"},
+{"hash":59365493,"name":"tformindex.panel1.caption","sourcebytes":[83,105,110,103,108,101,32,108,105,110,101,115,44,32,97,108,108,32,72,117,103,101,44,32,76,97,114,103,101,32,66,111,108,100,32,111,114,32,76,97,114,103,101],"value":"Single lines, all Huge, Large Bold or Large"},
+{"hash":86477809,"name":"tformindex.label1.caption","sourcebytes":[76,97,98,101,108,49],"value":"Label1"}
+]}

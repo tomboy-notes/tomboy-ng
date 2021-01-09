@@ -1,0 +1,12 @@
+{"version":1,"strings":[
+{"hash":372803,"name":"tformsync.caption","sourcebytes":[83,121,110,99],"value":"Sync"},
+{"hash":86477809,"name":"tformsync.label1.caption","sourcebytes":[76,97,98,101,108,49],"value":"Label1"},
+{"hash":86477810,"name":"tformsync.label2.caption","sourcebytes":[76,97,98,101,108,50],"value":"Label2"},
+{"hash":77089212,"name":"tformsync.buttoncancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
+{"hash":4863637,"name":"tformsync.buttonclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"},
+{"hash":233429619,"name":"tformsync.buttonsave.caption","sourcebytes":[83,97,118,101,32,97,110,100,32,83,121,110,99],"value":"Save and Sync"},
+{"hash":90721267,"name":"tformsync.panel3.caption","sourcebytes":[80,97,110,101,108,51],"value":"Panel3"},
+{"hash":75149406,"name":"tformsync.listviewreport.columns[0].caption","sourcebytes":[65,99,116,105,111,110],"value":"Action"},
+{"hash":5966629,"name":"tformsync.listviewreport.columns[1].caption","sourcebytes":[84,105,116,108,101],"value":"Title"},
+{"hash":90862724,"name":"tformsync.listviewreport.columns[2].caption","sourcebytes":[78,111,116,101,32,73,68],"value":"Note ID"}
+]}
