@@ -527,6 +527,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM

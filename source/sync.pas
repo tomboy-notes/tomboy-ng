@@ -919,6 +919,7 @@ end;
 function TSync.DoDeletes() : boolean;
 var
     Index : integer;
+    //Cnt : integer = 0;
 begin
     if DebugMode then
        Debugln('DoDeletes Count = ' + inttostr(RemoteMetaData.Count));
@@ -928,8 +929,11 @@ begin
                Debugln('Delete remote note : ' + RemoteMetaData.Items[Index]^.ID);
             if not TestRun then begin
                if not Transport.DeleteNote(RemoteMetaData.Items[Index]^.ID,
-                            RemoteMetaData.Items[Index]^.Rev) then Exit(False);
-            end;
+                            RemoteMetaData.Items[Index]^.Rev) then begin
+                               debugln('ERROR, TSync.DoDeletes got back false from transport');
+                               Exit(False);
+							end;
+			end;
         end;
 	end;
 	Result := true;

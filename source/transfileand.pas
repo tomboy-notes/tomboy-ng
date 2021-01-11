@@ -71,21 +71,33 @@ type
     private
         OneToOne : string;      // a dir, if present, use it to sync to instead of expected Tomdroid gvfs one
         CheckRemoteDirResult : TSyncAvailable;
-				                  { Converts a note from local time plus offset to UTC with zero offset. Gets its
-				                  input from std NotesDir and returns a FullFileName to to a temp file that
-				                  has been converted. Temp file is overwritten. }
+				                  { Converts a note from local time plus offset to UTC with zero offset before
+                                  sending it to Tomdroid. Gets its input from std NotesDir and returns a F
+                                  ullFileName to to a temp file that has been converted. Temp file is overwritten. }
         function ChangeNoteDateUTC(const ID: string): string;
                             // May return SyncNoRemoteDir, SyncReady, SyncNoServerID
                             // Sets the RemoteDir to either the GVFS mountpoint plus phone/tomdroid
                             // or to the TB_ONETOONE env var (if present). Tests for a the dir
                             // and the presence of the serverID.
         function CheckRemoteDir: TSyncAvailable;
-        function GetNoteLastChange(const FullFileName: string): string;
+                            { Copies any file from the mtp: location to ConfigDir + remote.note.
+                            It does not, however, need to be a note. Gets overwritten all the time.}
+		function DownLoadFile(FN: string): boolean;
+                            { Used in Tomdroid but not OneToOne mode. We rely on gio to get us a list of notes
+                            present in remoote dir. I experienced erratic behaviour when doing a findfirst(). }
+		function GetNewNotesGIO(const NoteMeta: TNoteInfoList; const GetLCD: boolean) : boolean;
+//        function GetNoteLastChange(const FullFileName: string): string;
+
         procedure InsertNoteBookTags(const FullSourceFile, FullDestFile, TagString: string);
+                            { Looks for a tomboy.serverid file on remote FS, reads if found and makes sure
+                            it is a GUID (but does not check that it is the right one). We copy it down
+                            and read it locally as older Android's mtp seems unwilling to let me read it
+                            in place. In OneToOne, we just read it. Implies that OneToOne is not mtp: }
+		function ReadServerID(): boolean;
 
                             // Attempts to read remote Server ID
                             // May return SyncReady or SyncNoRemoteRepo (if unable to find a remote ServerID)
-        function SetServerID(): TSyncAvailable;
+        //function SetServerID(): TSyncAvailable;
                             // Writes a file called tomboy.serverid into remote dir, contains an ID
         function StampServerID(const ID: string): boolean;
 
@@ -106,6 +118,9 @@ type
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
         function SetTransport() : TSyncAvailable; override;
         function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
+                            { In TomdroidFile, we pull a file down locally 'remote.note' but we could
+                            speed things up a bit by making it go straight to destination. But what
+                            about putting tags back into a note before overwriting orig ?}
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
@@ -184,67 +199,93 @@ begin
     AProcess.Free;
 end;
 
+function TAndFileSync.ReadServerID() : boolean;
+var
+    FFN : string;
+    //AProcess: TProcess;
+    //List : TStringList = nil;
+    InFile: TextFile;
+begin
+    ServerID := '';
+    if OneToOne = '' then begin
+        if not DownLoadFile('tomboy.serverid') then exit(false);
+        FFN := Configdir + 'remote.note';       // I know ! Its not a note, sorry !
+    end else
+        FFN := RemoteAddress + 'tomboy.serverid';                             // As usual, if its OneToOne we assume not mtp:
+        AssignFile(InFile, FFN);
+        try
+        	    Reset(InFile);
+                readln(InFile, ServerID);                                     // This causes a disk full error on xpedia  ???
+        finally
+                close(InFile);
+        end;
+    if not IDLooksOK(ServerID) then begin
+        Debugln('TAndFileSync.ReadServerID unable to read tomboy.serverid, we got [' + ServerID + ']');
+        exit(False);
+    end;
+end;
+
 function TAndFileSync.CheckRemoteDir : TSyncAvailable;
 var
     Info : TSearchRec;
-    InFile: TextFile;
+
+    StL  : TStringList;
 begin
+    // Assume : the gvfs mount point will always start with /run/user/$UID/gvfs/mtp:
+    // Assume : the user will create a dir called 'tomdroid'
+    // Assume : we don't know the remainder of the token mtp:.....
+    // Assume : we don't know the top level name presented by the device, 'phone', Internal Storage', 'tablet' ....
+    // Assume : the above may be in spanish. So, unicode, spaces etc
+
     // Hmm, GetEnvironmentVariable('UID') fails ? No idea ....
     OneToOne := GetEnvironmentVariable('TB_ONETOONE');
-    if OneToOne = '' then
-        RemoteAddress := '/run/user/' + GetUserId(GetEnvironmentVariable('USER')).ToString() + '/gvfs/'     // thats just the start.....
-    else RemoteAddress := appendPathDelim(OneToOne);
-    ServerID := '';
-    MtpDir := '';
-    if DirectoryExistsUTF8(RemoteAddress) then begin
-        if OneToOne = '' then begin
-        	if FindFirst(RemoteAddress + 'mtp*', faDirectory, Info)=0 then begin
-        		repeat
-                      if DirectoryExistsUTF8(RemoteAddress + Info.Name + '/Phone/tomdroid') then begin
-                          MTPDir := Info.Name + '/Phone/tomdroid' + PathDelim;
-                          RemoteAddress := RemoteAddress + MTPDir;
-                          MtpDir := MTPDir.Remove(0, 9);
-                          MTPDir := 'mtp://' + MTPDir;
-                          break;
-		    		  end;
-                until FindNext(Info) <> 0;
-    	    end;
+    if OneToOne = '' then begin                                                     // some duplicate code here but keep it simple ....
+        RemoteAddress := '/run/user/' + GetUserId(GetEnvironmentVariable('USER')).ToString() + '/gvfs/';            // /run/user/1000/gvfs/
+    	if FindFirst(RemoteAddress + 'mtp*', faDirectory, Info)=0 then begin
+            // Here we assume that there will be only one mtp: mounted dir, questionable !
+            RemoteAddress := AppendPathDelim(RemoteAddress + Info.Name);
+            if Debugmode then debugln('Searching ' + RemoteAddress);            // Thats with mpt: mountpoint
             FindClose(Info);
-            // if MTPDir = '' then RemoteDir := '';
+
+            StL := FindAllDirectories(RemoteAddress, False);
+            if Stl.Count = 1 then begin                                         // OK, our work here is almost done !
+                RemoteAddress := appendpathdelim(StL[0]) + appendPathdelim('tomdroid');
+                if DirectoryExists(RemoteAddress) then
+                    MTPDir := 'mtp://' + copy(RemoteAddress, pos('mtp:', RemoteAddress) + 9, 1000)
+                    // should look a bit like mtp://%5Busb%3A001%2C068%5D/Phone/tomdroid/
+                else debugln('Have you set Tomdroid to use the "SDCard" service and use "tomdroid" ?');
+			end else debugln('TAndFileSync.CheckRemoteDir Failed to find top dir of device, eg Phone, Internal Storage etc');
+            Stl.Free;
+		end else begin
+            debugln('Do you have gvfs-fuse installed ? Device plugged in and authorised ?');
+            debugln('Failed to find mtp mount point ' + RemoteAddress);
         end;
-	end else MTPDIR := 'OneToOne FAIL';           // thats really for OneToOne mode only.
-    // MTRDir = '' if we failed to set Tomdroid USB dir.  RemoteDir will always show what we
-    // tried. If we failed to find the OneToOne dir, MTPDIR will contain 'OneToOne FAIL'
-    if DebugMode then begin
-        DebugLn('TAndFileSync.CheckRemoteDir RemoteDir = ' + RemoteAddress);
-        Debugln('TAndFileSync.CheckRemoteDir MTPDir = '    + MtpDir);
-	end;
-    if (MTPDir = '') or (MTPDIR = 'OneToOne FAIL') then
-        Result := SyncNoRemoteDir
-    else begin
-        // If to here, we know we have a real dir in RemoteDir, maybe we should also test for writing ?
-        if FileExistsUTF8(RemoteAddress + 'tomboy.serverid') then begin
-            AssignFile(InFile, RemoteAddress + 'tomboy.serverid');
-            try
-        	    Reset(InFile);
-                readln(InFile, ServerID);
-        	finally
-                close(InFile);
-        	end;
-            if not IDLooksOK(ServerID) then begin
-                Debugln('SetServerID unable to read tomboy.serverid, we got [' + ServerID + ']');
-                exit(SyncNoRemoteRepo);     // No really NoRemoteRepo but a currupted or empty ID ?
-            end;
+		FindClose(Info);
+        if DebugMode then begin
+            DebugLn('TAndFileSync.CheckRemoteDir RemoteDir = ' + RemoteAddress);
+            Debugln('TAndFileSync.CheckRemoteDir MTPDir = '    + MtpDir);
+    	end;
+        if MTPDir = '' then exit(SyncNoRemoteDir);
+    end else begin                                                              // OK, its OneToOne mode then !
+        RemoteAddress := appendPathDelim(OneToOne);
+        if not DirectoryExistsUTF8(RemoteAddress) then begin
+            debugln('Failed to fine OnetoOne Dir : ' + RemoteAddress);
+            exit(SyncNoRemoteDir);
+		end;
+    end;
+    // OK, if to here we have a dir that we can work in, we should test that we can write to it.
+    // If to here, we know we have a real dir in RemoteDir, maybe we should also test for writing ?
+    Result := SyncNoRemoteRepo;
+    if FileExistsUTF8(RemoteAddress + 'tomboy.serverid') then
+        if ReadServerID() then
             Result := SyncReady;
-		end else Result := SyncNoRemoteRepo;
-	end;
-    if DebugMode then
-        DebugLn('TAndFileSync.CheckRemoteDir ServerID = ' + ServerID);
 end;
 {
    mtp://%5Busb%3A001,031%5D/      // what gio expects, comma does not matter ?
 mtp:host=%5Busb%3A001%2C031%5D/    // the mount point
 }
+
+(*           I think this can go .....
 
 function TAndFileSync.SetServerID() : TSyncAvailable;
 var
@@ -264,7 +305,7 @@ begin
         exit(SyncNoRemoteRepo);     // No really NoRemoteRepo but a currupted or empty ID ?
     end;
     Result := SyncReady;
-end;
+end; *)
 
 function TAndFileSync.TestTransport(const WriteNewServerID : boolean = False): TSyncAvailable;
 var
@@ -285,7 +326,6 @@ begin
     Result := SyncReady;
 end;
 
-
 function TAndFileSync.SetTransport(): TSyncAvailable;
 begin
     Result := CheckRemoteDirResult;         // CheckRemoteDir is called in Create, but later we need to know result.
@@ -303,6 +343,8 @@ begin
         ErrorString := 'Passed an uncreated list to GetNewNotes()';
         exit(False);
     end;
+    if OneToOne = '' then exit( GetNewNotesGIO(NoteMeta, GetLCD));
+
     if FindFirst(RemoteAddress + '*.note', faAnyFile, Info)=0 then begin
         repeat
             St := GetNoteLastChangeSt(RemoteAddress + Info.Name, ErrorString);
@@ -322,14 +364,63 @@ begin
     result := True;
 end;
 
+function TAndFileSync.GetNewNotesGIO(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+var
+        NoteInfo : PNoteInfo;
+        //Info : TSearchRec;
+        St, LocalTempNote, DateSt : string;
+        AProcess: TProcess;
+        List : TStringList = nil;
+begin
+    // by nature of how we get remote note date, always get LCD
+    if NoteMeta = Nil then begin
+        ErrorString := 'Passed an uncreated list to GetNewNotes()';
+        exit(False);
+    end;
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'gio';
+    AProcess.Parameters.Add('list');
+    AProcess.Parameters.Add(MTPDir);
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        AProcess.Execute;
+        Result := (AProcess.ExitStatus = 0);
+    except on
+        E: EProcess do ErrorString := 'TransFileSync.GetNewNotes EProcess Error during LIST';
+    end;
+    if not Result then
+        ErrorString := 'TransFileSync.FetNewNotes something bad happened when LISTing ' + MTPDir;
+    if Debugmode and (ErrorString <> '') then debugln('ERROR - ' + ErrorString);
+    List := TStringList.Create;
+    List.LoadFromStream(AProcess.Output);
+    //debugln('========= Processing remote files ===========');
+    for St in List do
+            if (St <> '') and St.EndsWith('.note') then begin
+                LocalTempNote := DownLoadNote(extractFileNameOnly(St), -1);
+                DateSt := GetNoteLastChangeSt(LocalTempNote, ErrorString);
+                if DateSt <> '' then begin
+                    new(NoteInfo);
+                    NoteInfo^.Action:=SyUnset;
+                    NoteInfo^.ID := extractFileNameOnly(St);
+                    NoteInfo^.Rev := -1;
+                    NoteInfo^.LastChange := St;
+                    NoteInfo^.LastChangeGMT := GetGMTFromStr(DateSt);
+                    NoteMeta.Add(NoteInfo);
+                end else
+                    debugln('ERROR, TransFileAnd.GetNewNotesGIO failed to find LCD in ' + St + ' - ' + LocalTempNote);
+		    end;
+    List.Free;
+    AProcess.Free;
+end;
 
+(*                                  we don't seem to use this.
 function TAndFileSync.GetNoteLastChange(const FullFileName : string) : string;
 begin
     Result := GetNoteLastChangeSt(FullFileName, ErrorString);   // syncutils function
-end;
+end;  *)
 
             // Puts back the tag string into a temp note downloaded from dev and puts it in note dir, overwrites
-procedure TAndFileSync.InsertNoteBookTags(const FullSourceFile, FullDestFile, TagString : string);
+procedure TAndFileSync.InsertNoteBookTags(const FullSourceFile, FullDestFile, TagString : string);       // ToDo : can we make this work ?
 var
     InFile, OutFile: TextFile;
     InString : string;
@@ -360,6 +451,7 @@ end;
 function TAndFileSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
     I : integer;
+    TempName : string;
 begin
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
@@ -376,7 +468,12 @@ begin
                     exit(False);
                 end;
             // OK, now pull down the file.
-            copyfile(RemoteAddress + Downloads.Items[I]^.ID + '.note', self.NotesDir + Downloads.Items[I]^.ID + '.note', false);
+            // copyfile(RemoteAddress + Downloads.Items[I]^.ID + '.note', self.NotesDir + Downloads.Items[I]^.ID + '.note', false);
+            //copyFile(DownloadNote(Downloads.Items[I]^.ID + '.note', -1), NotesDir + Downloads.Items[I]^.ID + '.note');
+            TempName := DownloadNote(Downloads.Items[I]^.ID + '.note', -1);
+            copyfile(TempName, NotesDir + Downloads.Items[I]^.ID + '.note');
+            if not FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
+                debugln('ERROR, did not download ' + Downloads.Items[I]^.ID);
         end;
     end;
     result := True;
@@ -385,7 +482,7 @@ end;
 
 function TAndFileSync.DeleteNote(const ID: string; const ExistRev : integer ): boolean;
 begin
-    // MTP: seems to allow us to delete notes from there.
+    // MTP: seems to allow us to delete notes from there.    But should we do it via GIO ???
     if FileExistsUTF8(RemoteAddress + ID + '.note') then begin
         DeleteFileUTF8(RemoteAddress + ID + '.note')
 	end	else begin
@@ -395,8 +492,8 @@ begin
     if FileExistsUTF8(RemoteAddress + ID + '.note') then begin
         debugln('ERROR TransFileAnd.DeleteNote Failed to delete note ' + RemoteAddress + ID + '.note');
         exit(False);
-	end;
-    result := False;
+	end else if debugmode then debugln('========= Deleted ' + RemoteAddress + ID + '.note');
+    result := True;
 end;
 
 function TAndFileSync.UploadNotes(const Uploads: TStringList): boolean;
@@ -472,11 +569,57 @@ begin
     Result := ConfigDir + 'remote.note';
 end;
 
+function TAndFileSync.DownLoadFile(FN : string): boolean;
+var
+    AProcess: TProcess;
+    List : TStringList = nil;
+begin
+    if not FileExistsUTF8(RemoteAddress + FN) then exit(false);
+
+    DeleteFileUTF8(ConfigDir + 'remote.note');
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'gio';
+    AProcess.Parameters.Add('copy');
+    AProcess.Parameters.Add(MTPDir + FN);
+    AProcess.Parameters.Add(ConfigDir + 'remote.note');
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        try
+            AProcess.Execute;
+            if AProcess.ExitStatus <> 0 then begin
+                ErrorString := 'TransFileSync.DownLoadSpecificNote something bad happened when LISTing ' + MTPDir;
+                debugln('---------------------------------------------------------------');
+                debugln('TAndFileSync.DownLoadSpecificNote ERROR failed to download to temp file');
+                debugln('gio copy ' + MTPDir + FN + ' ' + ConfigDir + 'remote.note');
+                exit(False);
+			end;
+		except on
+            E: EProcess do ErrorString := 'TransFileSync.DownLoadSpecificNote EProcess Error during LIST';
+        end;
+        List := TStringList.Create;
+        List.LoadFromStream(AProcess.Output);
+	finally
+        if List <> nil then List.free;
+        AProcess.Free;
+	end;
+    Result := true;
+end;
+
 function TAndFileSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
 var
     St : string;
+    //AProcess: TProcess;
+    //List : TStringList = nil;
+    Extension : string = '';
 begin
-    St := RemoteAddress + ID + '.note';
+    //debugln('===================== Called TAndFileSync.DownLoadNote( ========');
+    if not ID.EndsWith('.note') then Extension := '.note';
+    St := RemoteAddress + ID + Extension;
+    if OneToOne = '' then begin
+        St := '';
+        if DownLoadFile(ID + Extension) then
+            St := ConfigDir + 'remote.note';
+    end;
     if FileExistsUTF8(St) then exit(St);
     debugln('TransFileAnd.DownloadNote failed to find ' + St);
     Result := '';
