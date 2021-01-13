@@ -1098,8 +1098,8 @@ begin
                     end;
         SyncFileAndroid : begin
                         // debugln('Oh boy ! We have called the android line !');
-                        Transport := TAndFileSync.Create;
-                        ManPrefix := copy(Transport.ServerID, 1, 13);     // here, servid is set in TAndFileSync.create
+                        Transport := TAndFileTrans.Create;
+                        ManPrefix := copy(Transport.ServerID, 1, 13);     // here, servid is set in TAndFileTrans.create
                         SyncAddress := Transport.RemoteAddress;
                     end;
 
