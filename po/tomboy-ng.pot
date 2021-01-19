@@ -693,3 +693,48 @@ msgctxt "tomdroidfile.rstalking"
 msgid "OK, talking to device. Wait for it ...."
 msgstr ""
 
+#: tsearchform.buttonclearfilters.caption
+msgid "Clear Filters"
+msgstr ""
+
+#: tsearchform.buttonmenu.caption
+msgid "Menu"
+msgstr ""
+
+#: tsearchform.buttonrefresh.caption
+msgid "Refresh"
+msgstr ""
+
+#: tsearchform.buttonrefresh.hint
+msgid "Update Search Results"
+msgstr ""
+
+#: tsearchform.caption
+msgid "tomboy-ng_Search"
+msgstr ""
+
+#: tsearchform.checkcasesensitive.caption
+msgid "Case Sensitive"
+msgstr ""
+
+#: tsearchform.menudeletenotebook.caption
+msgid "Delete Notebook"
+msgstr ""
+
+#: tsearchform.menueditnotebooktemplate.caption
+msgid "Edit Notebook Template"
+msgstr ""
+
+#: tsearchform.menunewnotefromtemplate.caption
+msgid "Create New Note from Template"
+msgstr ""
+
+#: tsearchform.menurenamenotebook.caption
+msgid "Rename NoteBook"
+msgstr ""
+
+#: tsearchform.panel2.caption
+msgctxt "tsearchform.panel2.caption"
+msgid "Notebooks"
+msgstr ""
+
