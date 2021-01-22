@@ -527,6 +527,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM
@@ -739,14 +742,24 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/ --debug-sync"/>
       </local>
+      <environment>
+        <UserOverrides Count="1">
+          <Variable0 Name="TB_ONETOONE_XX" Value="/home/dbannon/OneSyncTest"/>
+        </UserOverrides>
+      </environment>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/ --debug-sync"/>
           </local>
+          <environment>
+            <UserOverrides Count="1">
+              <Variable0 Name="TB_ONETOONE_XX" Value="/home/dbannon/OneSyncTest"/>
+            </UserOverrides>
+          </environment>
         </Mode0>
       </Modes>
     </RunParams>
@@ -761,7 +774,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="32">
+    <Units Count="35">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -847,11 +860,12 @@
         <ResourceBaseClass Value="Form"/>
       </Unit11>
       <Unit12>
-        <Filename Value="tomdroid.pas"/>
+        <Filename Value="tomdroidfile.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormTomdroid"/>
+        <ComponentName Value="FormTomdroidFile"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="tomdroidFile"/>
       </Unit12>
       <Unit13>
         <Filename Value="markdown.pas"/>
@@ -954,6 +968,22 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RollBack"/>
       </Unit31>
+      <Unit32>
+        <Filename Value="transfileand.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="tb_datetime.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="TB_datetime"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="tomdroid.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormTomdroid"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit34>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
