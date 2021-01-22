@@ -200,6 +200,7 @@ unit EditBox;
     2020/10/22  Small bug where title markup can be smeared down several lines.
     2020/11/18  Added StayOnTop to Tools Popup Menu
     2021/01/06  Pre-load find dialog with SearchBox SearchTerm, Alt-F for find next
+    2021/01/22  When activating a note from the search form, jump to first match is Term is not empty
 }
 
 
@@ -366,12 +367,9 @@ type
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
-        procedure ExprTan(var Result: TFPExpressionResult;
-            const Args: TExprParameterArray);
-        function FindIt(Term: string; GoForward, CaseSensitive: boolean
-            ): boolean;
-        function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string
-            ): boolean;
+        procedure ExprTan(var Result: TFPExpressionResult; const Args: TExprParameterArray);
+        function FindIt(Term: string; GoForward, CaseSensitive: boolean ): boolean;
+        function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string ): boolean;
         procedure InsertDate();
         function ParagraphTextTrunc(): string;
         function RelativePos(const Term: ANSIString; const MText: PChar;
@@ -460,6 +458,8 @@ type
               has either replaced or deleted this note OR we are using it as an internal viewer.
               Can still read and copy content. Viewer users don't need big ugly yellow warning}
         procedure SetReadOnly(ShowWarning : Boolean = True);
+                            // Call on a already open note if user has followed up a search with a double click
+        procedure NewFind(Term: string);
     end;
 
 var
@@ -1024,10 +1024,31 @@ begin
        AlterFont(ChangeFixedWidth);
 end;
 
-{ ------- S T A N D A R D    E D I T I N G    F U N C T I O N S ----- }
 
-    // Locates if it can Term and selects it. Ret False if not found.
-    // Uses regional var, LastFind to start its search from, set to 1 for new search
+
+procedure TEditBoxForm.FormActivate(Sender: TObject);
+begin
+    if Ready then begin               // just possible that a new note was created, check for its link.
+        if KMemo1.Blocks.RealSelLength > 1 then begin
+            //debugln('OnActivate 1, checking for new link, [' + KMemo1.Blocks.SelText + ']');
+            CheckForLinks(KMemo1.Blocks.RealSelStart, KMemo1.Blocks.RealSelEnd);
+            //debugln('OnActivate 2, checking for new link, [' + KMemo1.Blocks.SelText + ']');
+            // ToDo : CheckForLinks clears any preexisting selection, should we restore ?
+        end;
+    end;
+    // ToDo : should we only do this the first time through ?
+    if SingleNoteMode then begin
+        SpeedbuttonSearch.Enabled := False;
+        SpeedButtonLink.Enabled := False;
+        MenuItemSync.Enabled := False;
+        SpeedButtonNotebook.Enabled := False;
+    end;
+end;
+
+
+// -------------------------  F I N D    M E T H O D S -------------------------
+// Locates if it can Term and selects it. Ret False if not found.
+// Uses regional var, LastFind to start its search from, set to 1 for new search
 function TEditBoxForm.FindIt(Term : string; GoForward, CaseSensitive : boolean) : boolean;
 var
     NewPos : integer = 0;
@@ -1065,10 +1086,6 @@ begin
     end;
 end;
 
-procedure TEditBoxForm.ButtMainTBMenuClick(Sender: TObject);
-begin
-    PopupMainTBMenu.Popup;
-end;
 
 procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
 begin
@@ -1077,23 +1094,10 @@ begin
     // If above returns false, no more to be found, but how to tell user ?
 end;
 
-procedure TEditBoxForm.FormActivate(Sender: TObject);
+procedure TEditBoxForm.NewFind(Term : string);
 begin
-    if Ready then begin               // just possible that a new note was created, check for its link.
-        if KMemo1.Blocks.RealSelLength > 1 then begin
-            //debugln('OnActivate 1, checking for new link, [' + KMemo1.Blocks.SelText + ']');
-            CheckForLinks(KMemo1.Blocks.RealSelStart, KMemo1.Blocks.RealSelEnd);
-            //debugln('OnActivate 2, checking for new link, [' + KMemo1.Blocks.SelText + ']');
-            // ToDo : CheckForLinks clears any preexisting selection, should we restore ?
-        end;
-    end;
-    // ToDo : should we only do this the first time through ?
-    if SingleNoteMode then begin
-        SpeedbuttonSearch.Enabled := False;
-        SpeedButtonLink.Enabled := False;
-        MenuItemSync.Enabled := False;
-        SpeedButtonNotebook.Enabled := False;
-    end;
+    LastFind := 1;
+    FindIt(Term, true, false);
 end;
 
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
@@ -1102,6 +1106,15 @@ begin
     FindDialog1.Options := FindDialog1.Options + [frHideWholeWord, frEntireScope, frDown];
 	FindDialog1.Execute;
 end;
+
+
+{ ------- S T A N D A R D    E D I T I N G    F U N C T I O N S ----- }
+
+procedure TEditBoxForm.ButtMainTBMenuClick(Sender: TObject);
+begin
+    PopupMainTBMenu.Popup;
+end;
+
 
 procedure TEditBoxForm.MenuItemCopyClick(Sender: TObject);
 begin

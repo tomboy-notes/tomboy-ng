@@ -98,6 +98,7 @@ unit SearchUnit;
     2020/07/17  OpenNote was checking edit1.test = 'search' instead of rsMenuSearch
     2020/11/14  ListViewNotes now has alternating colours, req ugly fix for Qt5 involving increasing font size
     2020/12/10  Move focus to Search Field whenever Search Form is re-shown, issue #211
+    2021/01/22  When activating a note from the search form, jump to first match is Term is not empty
 }
 
 {$mode objfpc}{$H+}
@@ -1022,6 +1023,8 @@ begin
             	TheForm.Show;
                 MoveWindowHere(TheForm.Caption);
                 TheForm.EnsureVisible(true);
+                if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> rsMenuSearch) then
+                     TEditBoxForm(TheForm).NewFind(Edit1.Text);
                 exit();
 			except on  EAccessViolation do
             	DebugLn('Tried to re show a closed note, that is OK');
