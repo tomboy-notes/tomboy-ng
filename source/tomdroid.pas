@@ -8,6 +8,9 @@ unit tomdroid;
     2018/04/28  Ensure user does not save profile after a Test run, the ID will change.
     2019/05/14  Display strings all (?) moved to resourcestrings
     2020/07/09  New help notes location.
+
+    2021/01/05  This unit is on it's way out.  Its now a child of TomdroidFile and will be marked Legacy
+                Remove from v0.33 or v0.34 depending on user reactions .....
 }
 
 interface

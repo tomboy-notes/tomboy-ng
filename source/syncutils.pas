@@ -27,7 +27,8 @@ uses
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
 		        SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
-                SyncAndroid);  // Simple one to one Android Device
+                SyncAndroid,    // Simple one to one Android Device
+                SyncFileAndroid);   // Android sync using mounted file system
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.
@@ -48,7 +49,7 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncReady,          // We are ready to sync, looks good to go.
                     SyncNoLocal,        // We don't have a local manifest, only an error if config thinks there should be one.
                     SyncNoRemoteMan,    // No remote manifest, an uninitialized repo perhaps ?
-                    SyncNoRemoteRepo,   // Filesystem is OK but does not look like a repo.
+                    SyncNoRemoteRepo,   // Filesystem is OK but does not look like a repo, maybe no serverID.
                     SyncBadRemote,      // Has either Manifest or '0' dir but not both.
                     SyncNoRemoteDir,    // Perhaps sync device is not mounted, Tomdroid not installed ?
                     SyncNoRemoteWrite,  // no write permission, do not proceed!
@@ -56,6 +57,7 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncXMLError,       // Housten, we have an XML error in a manifest !
                     SyncBadError,       // Some other error, must NOT proceed.
                     SyncNetworkError);  // Remove server/device not responding
+
 
 type TRepoAction = (
                 RepoJoin,               // Join (and use) an existing Repo
@@ -404,6 +406,7 @@ end;
   zone specified, just a 'Z'. The time is already in GMT.  Gnote gives
   us 6 decimal places after second but we can cope with nany. Must have
   yyyy-mm-ddThh:mm:ssZ and opt .nnn.. between 'ss and 'Z' }
+  // ToDo : replace this with one from TB_DateTime.
 function GetZuluDateTime(const  DateStr: ANSIString): TDateTime;
 var
     Tstr : string = '';
@@ -448,6 +451,7 @@ begin
     Result := Result + milliSeconds;
 end;
 
+// ToDo : replace this with one from TB_DateTime.
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 var
     TimeZone : TDateTime;
@@ -498,6 +502,7 @@ begin
     { writeln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
 end;
 
+// ToDo : replace this with one from TB_DateTime.
 function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
 begin
     ErrorMsg := '';

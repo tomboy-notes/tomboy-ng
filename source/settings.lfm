@@ -600,9 +600,9 @@ object Sett: TSett
         end
         object CheckAutoSnapEnabled: TCheckBox
           Left = 344
-          Height = 23
+          Height = 21
           Top = 117
-          Width = 162
+          Width = 161
           Caption = 'Use auto snapshots'
           OnChange = CheckAutoSnapEnabledChange
           TabOrder = 2

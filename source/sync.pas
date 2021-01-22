@@ -151,11 +151,12 @@ HISTORY
     2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341
     2019/07/19  Escape ' and " when using Title as an attribute in local manifest.
     2020/02/27  Better detect when we try to sync and don't have a local manifest, useful for Tomdroid, check normal !
+    2021/01/04  Support TomdroidFile sync mode.
 }
 
 interface
 uses
-    Classes, SysUtils, SyncUtils;
+    Classes, SysUtils, SyncUtils, TransFileAnd;
 
 
 type                       { ----------------- T S Y N C --------------------- }
@@ -338,7 +339,9 @@ type                       { ----------------- T S Y N C --------------------- }
         { Reports on contents of a created and filled list }
 	    procedure ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors: integer);
 
-                { Selects a Trans layer, adjusts config dir, }
+                { Selects a Trans layer, adjusts config dir,
+                  TransFileAnd : checks for the expected remote dir, may return SyncNoRemoteRepo,
+                  SyncNoServerID (not an error, just not used previously) or SyncReady. }
         function SetTransport(Mode : TSyncTransport) : TSyncAvailable;
 
                 { Checks NoteMetaData for valid Actions, writes error to console.
@@ -916,6 +919,7 @@ end;
 function TSync.DoDeletes() : boolean;
 var
     Index : integer;
+    //Cnt : integer = 0;
 begin
     if DebugMode then
        Debugln('DoDeletes Count = ' + inttostr(RemoteMetaData.Count));
@@ -925,8 +929,11 @@ begin
                Debugln('Delete remote note : ' + RemoteMetaData.Items[Index]^.ID);
             if not TestRun then begin
                if not Transport.DeleteNote(RemoteMetaData.Items[Index]^.ID,
-                            RemoteMetaData.Items[Index]^.Rev) then Exit(False);
-            end;
+                            RemoteMetaData.Items[Index]^.Rev) then begin
+                               debugln('ERROR, TSync.DoDeletes got back false from transport');
+                               Exit(False);
+							end;
+			end;
         end;
 	end;
 	Result := true;
@@ -1089,21 +1096,29 @@ begin
                         Transport := TAndSync.Create;
                         ManPrefix := copy(LocalServerID, 1, 8);     // But in join mode, LocalServerID is empty at this stage ...
                     end;
+        SyncFileAndroid : begin
+                        // debugln('Oh boy ! We have called the android line !');
+                        Transport := TAndFileTrans.Create;
+                        ManPrefix := copy(Transport.ServerID, 1, 13);     // here, servid is set in TAndFileTrans.create
+                        SyncAddress := Transport.RemoteAddress;
+                    end;
+
     end;
     Transport.Password := Password;
     Transport.NotesDir := NotesDir;
     Transport.DebugMode := DebugMode;
-    if TransportMode = SyncAndroid then begin
+    if TransportMode in [SyncAndroid, SyncFileAndroid ] then begin
         ConfigDir := ConfigDir + 'android' + PathDelim;
         ForceDirectory(ConfigDir);
     end;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
     Transport.RemoteAddress:= SyncAddress;
-    // Result := Transport.TestTransportEarly(ManPrefix);          // important Tomdroid, not Filesync
     Result := Transport.SetTransport();
+    if TransportMode = SyncFileAndroid then
+       LocalServerID := Transport.ServerID;                          // we need it to find profile
     ErrorString := Transport.ErrorString;
     if DebugMode then begin
-        debugln('Remote address is ' + SyncAddress);
+        debugln('Remote address is (n.a. Tomdroid) ' + SyncAddress);
         debugln('Local Config ' + ConfigDir);
         debugln('Notes dir ' + NotesDir);
 	end;
@@ -1137,7 +1152,7 @@ begin
     if RepoAction = RepoJoin then begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
-        if TransportMode = SyncAndroid then
+        if TransportMode in [ SyncAndroid, SyncFileAndroid ] then
            Transport.ANewRepo:= True;     // Ugly, but while its technically a 'new' it looks a bit like Join.....
     end;
     Result := Transport.TestTransport(not TestRun);
@@ -1145,6 +1160,8 @@ begin
       ErrorString := Transport.ErrorString;
       exit;
     end;
+    if TransportMode = SyncFileAndroid then         // During a join in SyncFileAndroid, we just set a new serverid on remote dir.
+       ManPrefix := copy(Transport.ServerID, 1, 13);
     if DebugMode then begin
         debugln('CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
                         + '   Local Entries=' + inttostr(LocalMetaData.Count));
@@ -1176,6 +1193,10 @@ begin
     Result := True;
     FreeAndNil(RemoteMetaData);
     RemoteMetaData := TNoteInfoList.Create;
+    if not assigned(Transport) then
+       debugln('Transport is not assigned');
+    if not assigned(RemoteMetaData) then
+       debugln('RemoteMetaData is not assigned');
     case RepoAction of
         RepoUse : Result := Transport.GetNewNotes(RemoteMetaData, False);
         RepoJoin : Result := Transport.GetNewNotes(RemoteMetaData, ForceLCD);
@@ -1200,7 +1221,7 @@ begin
     if not LoadRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
         RepoUse : begin
-                    if TransportMode = SyncAndroid then CheckUsingLCD(False) else CheckUsingRev();
+                    if TransportMode in [SyncAndroid, SyncFileAndroid] then CheckUsingLCD(False) else CheckUsingRev();
                     CheckRemoteDeletes();
                     CheckLocalDeletes();
                 end;
