@@ -66,6 +66,7 @@ unit Mainunit;
     2020/11/07  Fix multiple About Boxes (via SysTray) issue. Untested on Win/Mac
     2020/11/18  Changed other two buttons to BitBtn so qt5 looks uniform.
     2021/01/04  Pointed Tomdroid menu to tomdroidFile.
+    2021/01/23  We now test for a SysTray, show warning and Help is not there.
 
     CommandLine Switches
 
@@ -105,7 +106,8 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
-    StdCtrls, LCLTranslator, DefaultTranslator, Buttons, simpleipc;
+    StdCtrls, LCLTranslator, DefaultTranslator, Buttons, simpleipc,
+    LCLType;
 
 // These are choices for main and main popup menus.
 // type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
@@ -122,6 +124,7 @@ type
 
     TMainForm = class(TForm)
         ApplicationProperties1: TApplicationProperties;
+		ButtSysTrayHelp: TBitBtn;
 		BitBtnHide: TBitBtn;
 		BitBtnQuit: TBitBtn;
         ButtMenu: TBitBtn;
@@ -148,6 +151,7 @@ type
         procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
+		procedure ButtSysTrayHelpClick(Sender: TObject);
         procedure CheckBoxDontShowChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
@@ -163,14 +167,18 @@ type
         //HelpList : TStringList;
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
+
         procedure StartIPCServer();
         procedure CommMessageReceived(Sender: TObject);
         procedure TestDarkThemeInUse();
-
+        {$ifdef LINUX}
+        function CheckForSysTray(): boolean;
+        {$endif}
     public
         // closeASAP: Boolean;
         //HelpNotesPath : string;     // full path to help notes, with trailing delim.
         //AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
+
         UseTrayMenu : boolean;
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
@@ -214,10 +222,17 @@ uses LazLogger, LazFileUtils, LazUTF8,
     gtk2, gdk2,          // required to fix a bug that clears clipboard contents at close.
     {$endif}
     {$ifdef LINUX}
+    {$ifdef LCLGTK2} gtk2extra, {$endif}         // Relate to testing for SysTray
+    {$ifdef LCLQT5} qt5, {$endif}                // Relate to testing for SysTray
+    x, xlib,                                     // Relate to testing for SysTray
     Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
+
+
+
+
     TomdroidFile {$ifdef windows}, registry{$endif};
 
 var
@@ -429,6 +444,20 @@ resourcestring
   rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';     }
 
 
+{$ifdef LINUX}
+function TMainForm.CheckForSysTray() : boolean;
+var
+    A : TAtom;
+    XDisplay: PDisplay;
+begin
+    {$ifdef LCLGTK2} XDisplay := gdk_display; {$endif}
+    {$ifdef LCLQT5}  XDisplay := QX11Info_display; {$endif}
+        // WARNING - does not support GTK3, I cannot find how to convert PGdkDisplay to Display ......
+        // our GTK3 bindings seem to return only a PGdkDisplay, not an X style Display. Need GDK3 bindings ?
+    A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
+    result := (XGetSelectionOwner(XDisplay, A) <> 0);
+end;
+{$endif}
 
 procedure TMainForm.FormShow(Sender: TObject);
 var
@@ -463,13 +492,20 @@ begin
         SingleNoteMode(SingleNoteFileName);
         exit;
     end;
+     LabelBadNoteAdvice.Caption:= '';
+    {$ifdef LINUX}
+    if not CheckForSysTray() then
+        LabelBadNoteAdvice.Caption := 'WARNING, your Desktop cannot display SysTray'
+    else ButtSysTrayHelp.Visible := False;
+    {$endif}
+
     if SearchForm.NoteLister.XMLError then begin
         LabelError.Caption := rsFailedToIndex;
         LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
         //AllowDismiss := False;
     end else begin
         LabelError.Caption := '';
-        LabelBadNoteAdvice.Caption:= '';
+        //LabelBadNoteAdvice.Caption:= '';
         if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then
             ButtonDismissClick(Self);
     end;
@@ -488,6 +524,7 @@ begin
             SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
         until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
+
 end;
 
 
@@ -527,6 +564,11 @@ begin
     {$else}
     hide();
     {$endif}
+end;
+
+procedure TMainForm.ButtSysTrayHelpClick(Sender: TObject);
+begin
+        SearchForm.ShowHelpNote('systray.note');
 end;
 
 procedure TMainForm.CheckBoxDontShowChange(Sender: TObject);

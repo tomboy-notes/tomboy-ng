@@ -13,5 +13,6 @@
 {"hash":343125,"name":"tmainform.buttmenu.caption","sourcebytes":[77,101,110,117],"value":"Menu"},
 {"hash":68883765,"name":"tmainform.labelbadnoteadvice.caption","sourcebytes":[76,97,98,101,108,66,97,100,78,111,116,101,65,100,118,105,99,101],"value":"LabelBadNoteAdvice"},
 {"hash":363524,"name":"tmainform.bitbtnquit.caption","sourcebytes":[81,117,105,116],"value":"Quit"},
-{"hash":323493,"name":"tmainform.bitbtnhide.caption","sourcebytes":[72,105,100,101],"value":"Hide"}
+{"hash":323493,"name":"tmainform.bitbtnhide.caption","sourcebytes":[72,105,100,101],"value":"Hide"},
+{"hash":218390960,"name":"tmainform.buttsystrayhelp.caption","sourcebytes":[83,121,115,84,114,97,121,32,72,101,108,112],"value":"SysTray Help"}
 ]}

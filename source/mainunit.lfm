@@ -1,11 +1,11 @@
 object MainForm: TMainForm
   Left = 750
-  Height = 306
+  Height = 314
   Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
   Top = 227
   Width = 459
   Caption = 'tomboy-ng'
-  ClientHeight = 306
+  ClientHeight = 314
   ClientWidth = 459
   OnClose = FormClose
   OnCreate = FormCreate
@@ -318,7 +318,7 @@ object MainForm: TMainForm
     Left = 24
     Height = 19
     Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
-    Top = 232
+    Top = 224
     Width = 11
     Caption = 'X'
     Font.Height = -16
@@ -431,7 +431,7 @@ object MainForm: TMainForm
   object LabelBadNoteAdvice: TLabel
     Left = 24
     Height = 19
-    Top = 264
+    Top = 256
     Width = 149
     Caption = 'LabelBadNoteAdvice'
     ParentColor = False
@@ -468,6 +468,15 @@ object MainForm: TMainForm
     Caption = 'Hide'
     OnClick = BitBtnHideClick
     TabOrder = 1
+  end
+  object ButtSysTrayHelp: TBitBtn
+    Left = 272
+    Height = 30
+    Top = 280
+    Width = 179
+    Caption = 'SysTray Help'
+    OnClick = ButtSysTrayHelpClick
+    TabOrder = 4
   end
   object TrayIcon: TTrayIcon
     Icon.Data = {
@@ -551,11 +560,11 @@ object MainForm: TMainForm
       0000
     }
     OnClick = TrayIconClick
-    Left = 344
-    Top = 224
+    Left = 368
+    Top = 128
   end
   object ApplicationProperties1: TApplicationProperties
-    Left = 344
-    Top = 136
+    Left = 368
+    Top = 64
   end
 end

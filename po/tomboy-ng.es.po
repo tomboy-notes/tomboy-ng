@@ -1200,6 +1200,10 @@ msgctxt "tmainform.buttmenu.caption"
 msgid "Menu"
 msgstr ""
 
+#: tmainform.buttsystrayhelp.caption
+msgid "SysTray Help"
+msgstr ""
+
 #: tmainform.caption
 msgid "tomboy-ng"
 msgstr ""

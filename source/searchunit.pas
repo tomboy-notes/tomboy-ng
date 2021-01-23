@@ -215,6 +215,7 @@ type        { TSearchForm }
                             opn - just opened. Does nothing if name not UUID length.
                             Pass it a ID, Filename or FullFileName }
         procedure BackupNote(const NoteName, PutIntoName: string);
+                            // Public procedure to show the help note named (without path info)
         procedure ShowHelpNote(HelpNoteName: string);
         procedure UpdateStatusBar(SyncSt : string);
         {Just a service provided to NoteBook.pas, refresh the list of notebooks after adding or removing one}
