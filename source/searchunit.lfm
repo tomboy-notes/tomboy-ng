@@ -25,10 +25,10 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 426
+    Width = 325
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
-    BorderSpacing.Right = 7
+    BorderSpacing.Right = 9
     OnEnter = Edit1Enter
     OnExit = Edit1Exit
     OnKeyDown = FormKeyDown
@@ -41,11 +41,11 @@ object SearchForm: TSearchForm
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    Left = 672
+    Left = 704
     Height = 32
     Hint = 'Update Search Results'
     Top = 3
-    Width = 149
+    Width = 117
     Anchors = [akTop, akRight]
     BorderSpacing.Top = 3
     BorderSpacing.Right = 3
@@ -262,15 +262,15 @@ object SearchForm: TSearchForm
   end
   object CheckCaseSensitive: TCheckBox
     AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = ButtonRefresh
+    AnchorSideRight.Control = CheckAutoRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 539
+    Left = 440
     Height = 32
     Top = 3
     Width = 126
     Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 7
+    BorderSpacing.Right = 10
     Caption = 'Case Sensitive'
     OnChange = CheckCaseSensitiveChange
     ParentShowHint = False
@@ -283,6 +283,21 @@ object SearchForm: TSearchForm
     Top = 378
     Width = 824
     Panels = <>
+  end
+  object CheckAutoRefresh: TCheckBox
+    AnchorSideTop.Control = ButtonRefresh
+    AnchorSideRight.Control = ButtonRefresh
+    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideBottom.Side = asrBottom
+    Left = 576
+    Height = 32
+    Top = 3
+    Width = 118
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Right = 10
+    Caption = 'Auto Refresh'
+    OnChange = CheckAutoRefreshChange
+    TabOrder = 5
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344

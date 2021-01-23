@@ -99,6 +99,7 @@ unit SearchUnit;
     2020/11/14  ListViewNotes now has alternating colours, req ugly fix for Qt5 involving increasing font size
     2020/12/10  Move focus to Search Field whenever Search Form is re-shown, issue #211
     2021/01/22  When activating a note from the search form, jump to first match is Term is not empty
+    2021/01/23  A check box to choose Auto Refresh or not.
 }
 
 {$mode objfpc}{$H+}
@@ -120,6 +121,7 @@ type        { TSearchForm }
     TSearchForm = class(TForm)
 			ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
+		CheckAutoRefresh: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         Edit1: TEdit;
         ListBoxNotebooks: TListBox;
@@ -142,6 +144,7 @@ type        { TSearchForm }
                                       with data in Note_Lister. }
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonClearFiltersClick(Sender: TObject);
+		procedure CheckAutoRefreshChange(Sender: TObject);
         procedure CheckCaseSensitiveChange(Sender: TObject);
         procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
@@ -193,6 +196,7 @@ type        { TSearchForm }
         procedure MenuHelpItems(AMenu: TPopupMenu);
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
+		procedure Refresh();
         function RemoveFromHelpList(const FullHelpNoteFileName: string): boolean;
         //procedure RefreshNoteAndNotebooks();
         procedure ScaleListView();
@@ -311,9 +315,39 @@ begin
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
         RefreshMenus(mkRecentMenu);
-        if Visible then ButtonRefresh.Enabled := True
-        else NeedRefresh := True;
-        // UseList();
+
+        // if its visible we call Refresh() if check is true
+
+        {
+        Visible        T            F          T          F
+        Checked        T            T          F          F
+
+        Refresh       Yes           n          n          n
+        NeedRefresh   n            Yes        Yes        Yes
+        EnableButt    n             n         Yes         n
+
+        if Visible and CheckAutoRefresh.checked then
+            Refresh()
+        else begin
+            if Visible then ButtRefresh.Enabled := True
+            NeedRefresh := True;
+        end;
+        }
+
+        if Visible and CheckAutoRefresh.checked then
+            Refresh()
+        else begin
+            if Visible then ButtonRefresh.Enabled := True
+            else NeedRefresh := True;
+        end;
+
+
+ {       if Visible then begin
+            if CheckAutoRefresh.Checked then
+                Refresh()
+            else ButtonRefresh.Enabled := True
+        end else NeedRefresh := True;                      }
+		// UseList();
     end;
 end;
 
@@ -361,8 +395,16 @@ begin
     		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     end;
     RefreshMenus(mkRecentMenu);
-    if Visible then ButtonRefresh.Enabled := True
-    else NeedRefresh := True;
+
+            if Visible and CheckAutoRefresh.checked then
+            Refresh()
+        else begin
+            if Visible then ButtonRefresh.Enabled := True
+            else NeedRefresh := True;
+        end;
+
+//    if Visible then ButtonRefresh.Enabled := True
+//    else NeedRefresh := True;
 end;
 
 function TSearchForm.NextNoteTitle(out SearchTerm: string): boolean;
@@ -401,8 +443,16 @@ begin
     NoteLister.ThisNoteIsOpen(FullFileName, TheForm);
     //T3 := gettickcount64();
     RefreshMenus(mkRecentMenu);
-    if Visible then ButtonRefresh.Enabled := True
-    else NeedRefresh := True;
+
+            if Visible and CheckAutoRefresh.checked then
+            Refresh()
+        else begin
+            if Visible then ButtonRefresh.Enabled := True
+            else NeedRefresh := True;
+        end;
+
+//    if Visible then ButtonRefresh.Enabled := True
+//    else NeedRefresh := True;
     // UseList();          // 13mS ?
     //T4 := gettickcount64();
     //debugln('SearchUnit.UpdateList ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
@@ -737,6 +787,11 @@ end;
 
 
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
+begin
+    Refresh();
+end;
+
+procedure TSearchForm.Refresh();
 var
     NB : string;
 begin
@@ -841,7 +896,9 @@ begin
     NoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := NoteLister.IndexNotes();
     UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
-    NeedRefresh := True;                                // eg refresh ListViewNotes on next OnActivate
+    if CheckAutoRefresh.Checked then
+       Refresh()
+    else NeedRefresh := True;                                // eg refresh ListViewNotes on next OnActivate
     RefreshMenus(mkRecentMenu);
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
@@ -906,6 +963,7 @@ begin
          ListViewNotes.Font.Color :=  Sett.BackGndColour;
          splitter1.Color:= clnavy;
     end;
+    CheckAutoRefresh.Checked := Sett.AutoRefresh;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
 //    {$endif}
@@ -1160,6 +1218,11 @@ begin
         Edit1.SelStart := 0;
         Edit1.SelLength := length(Edit1.Text);
         UpdateStatusBar('');
+end;
+
+procedure TSearchForm.CheckAutoRefreshChange(Sender: TObject);
+begin
+        Sett.AutoRefresh := CheckAutoRefresh.Checked;
 end;
 
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);

@@ -89,7 +89,8 @@ unit settings;
     2020/07/09  New help notes location.
     2020/07/16  Drop Backup tab, merge to Snapshot tab, renamed 'Recover'
     2020/07/24  Moved HELP notes from /usr/share/doc/tomboy-ng to /usr/share/tomboy-ng to suit debian
-    2020/08/01  Show better labels in HelpLangCombo
+    2020/08/01  Show better labels in HelpLangCombo.
+    2021/01/23  Save Search Auto Refresh check box status.
 }
 
 {$mode objfpc}{$H+}
@@ -237,6 +238,7 @@ type
         procedure SetColours;
 
     private
+        AutoRefreshVar : boolean;
         UserSetColours : boolean;
         fExportPath : ANSIString;
         SearchIsCaseSensitive : boolean;
@@ -277,6 +279,12 @@ type
 		function fGetValidSync: string;
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
         procedure fSetValidSync(Repo: string);
+
+                            // Sets AutoRefresh and triggers a write of config file
+        procedure fSetAutoRefresh(AR : boolean);
+                            // Just returns AutoRefresh
+        function  fGetAutoRefresh() : boolean;
+
 		procedure SyncSettings;
         function fGetCaseSensitive : boolean;
         procedure fSetCaseSensitive(IsIt : boolean);
@@ -332,6 +340,8 @@ type
 
         property ValidSync : string read fGetValidSync write fSetValidSync;
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
+
+        property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
 
         // property SyncOK : boolean read fGetSyncOK write fSetSyncOK;
 
@@ -877,6 +887,7 @@ begin
                 'medium' : RadioFontMedium.Checked := true;
                 'small'  : RadioFontSmall.Checked := true;
             end;
+            AutoRefresh := ('true' = ConfigFile.readstring('BasicSettings', 'AutoRefresh', 'true'));
             UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
             ButtonFont.Hint := UsualFont;
             FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
@@ -969,6 +980,17 @@ begin
     end;
 end;
 
+procedure TSett.fSetAutoRefresh(AR: boolean);
+begin
+    AutoRefreshVar := AR;
+    SettingsChanged();
+end;
+
+function TSett.fGetAutoRefresh() : boolean;
+begin
+    Result := AutoRefreshVar;
+end;
+
 function TSett.MyBoolStr(const InBool : boolean) : string;
 begin
     if InBool then result := 'true' else result := 'false';
@@ -994,6 +1016,7 @@ begin
             ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
             ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));
+            ConfigFile.WriteString('BasicSettings', 'AutoRefresh',       MyBoolStr(AutoRefresh));
             if RadioFontBig.Checked then
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
             else if RadioFontMedium.Checked then

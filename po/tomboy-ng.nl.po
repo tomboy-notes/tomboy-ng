@@ -1501,6 +1501,10 @@ msgstr ""
 msgid "tomboy-ng_Search"
 msgstr ""
 
+#: tsearchform.checkautorefresh.caption
+msgid "Auto Refresh"
+msgstr ""
+
 #: tsearchform.checkcasesensitive.caption
 msgid "Case Sensitive"
 msgstr ""
