@@ -450,6 +450,9 @@ var
     A : TAtom;
     XDisplay: PDisplay;
 begin
+    // This returns a false negitive on Ubuntu 20.04, the icon does display but
+    // X does not seem to think it should.
+    // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2} XDisplay := gdk_display; {$endif}
     {$ifdef LCLQT5}  XDisplay := QX11Info_display; {$endif}
         // WARNING - does not support GTK3, I cannot find how to convert PGdkDisplay to Display ......
@@ -495,7 +498,7 @@ begin
      LabelBadNoteAdvice.Caption:= '';
     {$ifdef LINUX}
     if not CheckForSysTray() then
-        LabelBadNoteAdvice.Caption := 'WARNING, your Desktop cannot display SysTray'
+        LabelBadNoteAdvice.Caption := 'WARNING, your Desktop might not display SysTray'
     else ButtSysTrayHelp.Visible := False;
     {$endif}
 
