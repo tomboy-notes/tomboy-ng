@@ -15,6 +15,7 @@ HISTORY
     2019/05/14  Display strings all (?) moved to resourcestrings
     2019/09/27  Added SmallFont, actually subscript because markdown does not do a small font.
     2020/01/22  Enabled sending md to clipboard and saving to a file.
+    2021/01/25  Remove special char from filename when exporting to file.
 }
 
 // ToDo : replace this with one from TomboyTools, it does a better standard.  Might be
@@ -104,6 +105,8 @@ begin
 end;
 
 procedure TFormMarkdown.ButtonSaveClick(Sender: TObject);
+var
+    TempFName : string;
 begin
     SaveDialog1.DefaultExt := 'md';
     {$ifdef UNIX}
@@ -112,7 +115,11 @@ begin
     {$ifdef WINDOWS}
     SaveDialog1.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
     {$endif}
-    SaveDialog1.Filename := StringReplace(Caption, #32, '', [rfReplaceAll]) + '.' + 'md';
+    TempFName := StringReplace(Caption, #32, '', [rfReplaceAll]);
+    TempFName := StringReplace(TempFName, '/', '_', [rfReplaceAll]);
+    TempFName := StringReplace(TempFName, '\', '_', [rfReplaceAll]);
+    TempFName := StringReplace(TempFName, '*', '_', [rfReplaceAll]);
+    SaveDialog1.Filename := TempFName + '.' + 'md';
     if SaveDialog1.Execute then
         Memo1.Lines.SaveToFile(SaveDialog1.Filename);
 end;
