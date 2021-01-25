@@ -204,9 +204,8 @@ type        { TSearchForm }
           will accept a GUID, Filename or FullFileName inc path }
         procedure MarkNoteReadOnly(const FullFileName: string);
 
-        { Copies note data from internal list to StringGrid, sorts it and updates the
-          TrayIconMenu recently used list.  Does not 'refresh list from disk'.  }
-		//procedure UseList();
+		//procedure ShowListIndicator(St: string);
+
     public
 
         PopupTBMainMenu : TPopupMenu;
@@ -277,9 +276,9 @@ uses MainUnit,      // Opening form, manages startup and Menus
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff
     sync,           // because we need it to manhandle local manifest when a file is deleted
     process,        // Linux, we call wmctrl to move note to current workspace
-    NoteBook,
     TomdroidFile,
-    LCLVersion;     // used to enable, or not, sort indicators in lcl2.0.8 or later
+    LCLVersion,     // used to enable, or not, sort indicators in lcl2.0.8 or later
+    NoteBook;
 
 
 
@@ -316,8 +315,6 @@ begin
         end;
         RefreshMenus(mkRecentMenu);
 
-        // if its visible we call Refresh() if check is true
-
         {
         Visible        T            F          T          F
         Checked        T            T          F          F
@@ -325,13 +322,6 @@ begin
         Refresh       Yes           n          n          n
         NeedRefresh   n            Yes        Yes        Yes
         EnableButt    n             n         Yes         n
-
-        if Visible and CheckAutoRefresh.checked then
-            Refresh()
-        else begin
-            if Visible then ButtRefresh.Enabled := True
-            NeedRefresh := True;
-        end;
         }
 
         if Visible and CheckAutoRefresh.checked then
@@ -347,7 +337,6 @@ begin
                 Refresh()
             else ButtonRefresh.Enabled := True
         end else NeedRefresh := True;                      }
-		// UseList();
     end;
 end;
 
@@ -791,12 +780,40 @@ begin
     Refresh();
 end;
 
+
+(*
+procedure TSearchForm.ShowListIndicator(St : string);
+// Just a debug method, disable or remove before production
+var
+    SortInd0, SortInd1 : TSortIndicator;
+begin
+    SortInd0 := ListViewNotes.Column[0].SortIndicator;
+    SortInd1 := ListViewNotes.Column[1].SortIndicator;
+    case SortInd0 of
+        siNone : writeln(St + '--Col 0 None');
+        siAscending : writeln(St + '--Col 0 Ascending');
+        siDescending : writeln(St + '--Col 0 Descending');
+    end;                             case SortInd1 of
+        siNone : writeln(St + '--Col 1 None');
+        siAscending : writeln(St + '--Col 1 Ascending');
+        siDescending : writeln(St + '--Col 1 Descending');
+    end;
+end; *)
+
 procedure TSearchForm.Refresh();
+// This Method has issues relating to following bug reports -
+// https://bugs.freepascal.org/view.php?id=38394  ListView right hand side obscoured by scroll bar
+// https://bugs.freepascal.org/view.php?id=38393 ListView Qt5 shows wrong sort indicator
 var
     NB : string;
+    SortInd0, SortInd1 : TSortIndicator;
 begin
     // see https://forum.lazarus.freepascal.org/index.php/topic,48568.msg350984/topicseen.html
     // for info about hiding the sort indicators after changing note data. We don't need to but ....
+    // Note setup ListViewNotes in Create() and set its colours in ShowForm()
+    //ListViewNotes.Column[1].SortIndicator := siDescending;
+    SortInd0 := ListViewNotes.Column[0].SortIndicator;
+    SortInd1 := ListViewNotes.Column[1].SortIndicator;
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then
         DoSearch()
     else begin
@@ -818,6 +835,12 @@ begin
     end;
     ButtonRefresh.Enabled := false;
     UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
+    ListViewNotes.Column[0].SortIndicator := SortInd0;
+    ListViewNotes.Column[1].SortIndicator := SortInd1;
+    if not ((SortInd0 = siNone)
+                and (SortInd1 = siDescending)) then    // default condition,  comes out of NoteLister recent first
+        ListViewNotes.Sort;
+    //ShowListIndicator('After refresh');
 end;
 
 procedure TSearchForm.DoSearch();
@@ -861,7 +884,6 @@ begin
       Key := 0;
       DoSearch();
     end;
-
 end;
 
 procedure TSearchForm.FormActivate(Sender: TObject);
@@ -927,12 +949,14 @@ begin
 
     {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
     ListViewNotes.AutoSortIndicator := True;
-    ListViewNotes.Column[1].SortIndicator := siAscending;
+    // ListViewNotes.Column[1].SortIndicator := siAscending;
+    ListViewNotes.Column[1].SortIndicator := siDescending;
     //debugln('Using sort indicators');
     {$endif}
 
     { ListView Settings }
     ListViewNotes.AutoSort:=True;
+    ListViewNotes.SortDirection:= sdDescending;     // Most recent, ie bigger date numbers, on top
     ListViewNotes.AutoWidthLastColumn:= True;
     ListViewNotes.ViewStyle:= vsReport;
     ListViewNotes.ReadOnly := True;
@@ -978,10 +1002,10 @@ end;
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
-     if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
-       if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
-       if key = VK_Q then MainForm.Close();
-     end;
+    if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
+        if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
+        if key = VK_Q then MainForm.Close();
+    end;
 end;
 
 procedure TSearchForm.FormResize(Sender: TObject);
@@ -991,11 +1015,11 @@ end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
 begin
-  NoteLister.Free;
-  NoteLister := Nil;
-  HelpNotes.Free;
-  HelpNotes := Nil;
-  freeandnil(HelpList);
+    NoteLister.Free;
+    NoteLister := Nil;
+    HelpNotes.Free;
+    HelpNotes := Nil;
+    freeandnil(HelpList);
 end;
 
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);
@@ -1175,10 +1199,14 @@ begin
     if ListViewNotes.ClientWidth > 100 then
         ListViewNotes.Column[0].Width := ListViewNotes.ClientWidth - Col1width;
     // Note, next two lines require Lazarus 2.0.8 or greater !
-    {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
+(*    {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
     ListViewNotes.Column[0].SortIndicator:= siNone;
     ListViewNotes.Column[1].SortIndicator:= siNone;
-    {$endif}
+    ShowListIndicator('In Scale ListView');
+    {$endif}   *)
+    // I don't think the above few lines are a good idea, no idea what we are tying to achieve
+
+
     // debugln('2...ScaleListView W=' + dbgs(ListViewNotes.Width) + ' Wc=' + dbgs(ListViewNotes.ClientWidth) + ' Wb= ' + dbgs(ListViewNotes.BorderWidth));
     //ListViewNotes.;
 end;
@@ -1209,20 +1237,20 @@ end;
     // displays all available notes.
 procedure TSearchForm.ButtonClearFiltersClick(Sender: TObject);
 begin
-        ButtonClearFilters.Enabled := False;
-        ListBoxNotebooks.ItemIndex := -1;
-        Edit1.Hint:=rsSearchHint;
-        Edit1.Text := rsMenuSearch;
-        ButtonRefreshClick(self);
-        Edit1.SetFocus;
-        Edit1.SelStart := 0;
-        Edit1.SelLength := length(Edit1.Text);
-        UpdateStatusBar('');
+    ButtonClearFilters.Enabled := False;
+    ListBoxNotebooks.ItemIndex := -1;
+    Edit1.Hint:=rsSearchHint;
+    Edit1.Text := rsMenuSearch;
+    ButtonRefreshClick(self);
+    Edit1.SetFocus;
+    Edit1.SelStart := 0;
+    Edit1.SelLength := length(Edit1.Text);
+    UpdateStatusBar('');
 end;
 
 procedure TSearchForm.CheckAutoRefreshChange(Sender: TObject);
 begin
-        Sett.AutoRefresh := CheckAutoRefresh.Checked;
+    Sett.AutoRefresh := CheckAutoRefresh.Checked;
 end;
 
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
@@ -1250,9 +1278,9 @@ end;
 
 procedure TSearchForm.ButtonMenuClick(Sender: TObject);
 begin
+    //ShowListIndicator('From Menu');
     PopupTBMainMenu.popup;
 end;
-
 
 procedure TSearchForm.MenuEditNotebookTemplateClick(Sender: TObject);
 var
@@ -1270,17 +1298,17 @@ procedure TSearchForm.MenuRenameNoteBookClick(Sender: TObject);
 var
     NotebookPick : TNotebookPick;
 begin
-        NotebookPick := TNotebookPick.Create(Application);
-        try
-            NotebookPick.Title := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex];
-            NotebookPick.ChangeMode := True;
-            NotebookPick.Top := Top;
-            NotebookPick.Left := Left;
-            if mrOK = NotebookPick.ShowModal then
-                ButtonClearFilters.Click;
-         finally
-            NotebookPick.Free;
-        end;
+    NotebookPick := TNotebookPick.Create(Application);
+    try
+        NotebookPick.Title := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex];
+        NotebookPick.ChangeMode := True;
+        NotebookPick.Top := Top;
+        NotebookPick.Left := Left;
+        if mrOK = NotebookPick.ShowModal then
+            ButtonClearFilters.Click;
+     finally
+        NotebookPick.Free;
+    end;
 end;
 
 procedure TSearchForm.MenuDeleteNotebookClick(Sender: TObject);

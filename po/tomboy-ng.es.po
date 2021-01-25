@@ -1638,10 +1638,6 @@ msgstr ""
 msgid "Maximum number of snapshots"
 msgstr ""
 
-#: tsett.label17.caption
-msgid "One to One Repo :"
-msgstr ""
-
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr ""
@@ -1688,12 +1684,6 @@ msgstr ""
 msgid "LabelFileSyncInfo2"
 msgstr ""
 
-#: tsett.labelonetoonesync.caption
-#, fuzzy
-msgctxt "tsett.labelonetoonesync.caption"
-msgid "not configured"
-msgstr "sin configurar"
-
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr ""
@@ -1719,14 +1709,6 @@ msgstr ""
 msgid "Small"
 msgstr ""
 
-#: tsett.radioother.caption
-msgid "Other Dir"
-msgstr ""
-
-#: tsett.radiotomdroid.caption
-msgid "Tomdroid USB"
-msgstr ""
-
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
 msgstr ""
@@ -1749,10 +1731,6 @@ msgstr ""
 #: tsett.speedbutttbmenu.caption
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
-msgstr ""
-
-#: tsett.speedonetoone.caption
-msgid "One to One"
 msgstr ""
 
 #: tsett.speedsetupsync.caption
