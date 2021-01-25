@@ -201,6 +201,7 @@ unit EditBox;
     2020/11/18  Added StayOnTop to Tools Popup Menu
     2021/01/06  Pre-load find dialog with SearchBox SearchTerm, Alt-F for find next
     2021/01/22  When activating a note from the search form, jump to first match is Term is not empty
+    2021/01/25  Replace FindDialog with statusbar like system. Need shortcut keys defined.
 }
 
 
@@ -209,9 +210,9 @@ unit EditBox;
 interface
 
 uses
-    Classes, SysUtils, { FileUtil,} Forms, Controls, Graphics, Dialogs, ExtCtrls,
-    Menus, StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs,
-    clipbrd, lcltype,      // required up here for copy on selection stuff.
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
+    StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs, clipbrd, lcltype,
+    ComCtrls,           // required up here for copy on selection stuff.
     fpexprpars,         // for calc stuff ;
     SaveNote;      		// Knows how to save a Note to disk in Tomboy's XML
 
@@ -222,8 +223,9 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
-		FindDialog1: TFindDialog;
+        EditSearch: TEdit;
         KMemo1: TKMemo;
+        LabelSearchInfo: TLabel;
         Label2: TLabel;
         Label3: TLabel;
         Label4: TLabel;
@@ -261,6 +263,7 @@ type
         MenuFixedWidth: TMenuItem;
         MenuUnderline: TMenuItem;
         MenuStrikeout: TMenuItem;
+        PanelSearch: TPanel;
         PanelReadOnly: TPanel;
         PopupMainTBMenu: TPopupMenu;
 		PopupMenuRightClick: TPopupMenu;
@@ -278,8 +281,13 @@ type
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
+        UpDown1: TUpDown;
         procedure ButtMainTBMenuClick(Sender: TObject);
-        procedure FindDialog1Find(Sender: TObject);
+        procedure EditSearchExit(Sender: TObject);
+        procedure EditSearchKeyDown(Sender: TObject; var Key: Word;
+            Shift: TShiftState);
+        procedure EditSearchKeyUp(Sender: TObject; var Key: Word;
+            Shift: TShiftState);
         procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -318,6 +326,7 @@ type
         procedure MenuItemDeleteClick(Sender: TObject);
         procedure MenuItemExportPlainTextClick(Sender: TObject);
         procedure MenuItemExportRTFClick(Sender: TObject);
+                                 // This is a landing spot for either Find menu click or Ctrl-G
 		procedure MenuItemFindClick(Sender: TObject);
 		procedure MenuItemPasteClick(Sender: TObject);
         procedure MenuItemPrintClick(Sender: TObject);
@@ -337,8 +346,11 @@ type
         procedure SpeedButtonToolsClick(Sender: TObject);
 		procedure TimerSaveTimer(Sender: TObject);
         procedure TimerHousekeepingTimer(Sender: TObject);
+                                // This is a landing spot for Menu->FindNext, Shift-Alt-F, Alt-F or Find Next/Prev buttons
+        procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
 
     private
+        LastSearchTerm : string;        // Contains last term we searched for, so we can tell if its changed
         TitleHasChanged : boolean;
         // a record of the cursor position before last click, used by shift click to select
         MouseDownPos : integer;
@@ -458,7 +470,7 @@ type
               has either replaced or deleted this note OR we are using it as an internal viewer.
               Can still read and copy content. Viewer users don't need big ugly yellow warning}
         procedure SetReadOnly(ShowWarning : Boolean = True);
-                            // Call on a already open note if user has followed up a search with a double click
+                            // Public: Call on a already open note if user has followed up a search with a double click
         procedure NewFind(Term: string);
     end;
 
@@ -491,8 +503,8 @@ uses
     Index,              // An Index of current note.
     math,
     FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
-    LCLIntf;            // OpenUrl()
-
+    LCLIntf,            // OpenUrl()
+    ResourceStr;        // We borrow some search related strings from searchform
 
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
@@ -940,6 +952,8 @@ begin
     AlterFont(ChangeSize, Sett.FontSmall);
 end;
 
+
+
 procedure TEditBoxForm.MenuHugeClick(Sender: TObject);
 begin
    AlterFont(ChangeSize, Sett.FontHuge);
@@ -953,12 +967,6 @@ end;
 procedure TEditBoxForm.MenuItalicClick(Sender: TObject);
 begin
 	AlterFont(ChangeItalic);
-end;
-
-procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
-begin
-    if FindDialog1.FindText <> '' then
-        FindIt(FindDialog1.FindText, True, False);
 end;
 
 procedure TEditBoxForm.MenuItemEvaluateClick(Sender: TObject);
@@ -1046,7 +1054,7 @@ begin
 end;
 
 
-// -------------------------  F I N D    M E T H O D S -------------------------
+// --------------------- LOCAL   F I N D    M E T H O D S -------------------------
 // Locates if it can Term and selects it. Ret False if not found.
 // Uses regional var, LastFind to start its search from, set to 1 for new search
 function TEditBoxForm.FindIt(Term : string; GoForward, CaseSensitive : boolean) : boolean;
@@ -1058,6 +1066,10 @@ var
     NumbCR : integer = 0;
 begin
     Result := False;
+    if LastSearchTerm <> Term then begin
+        LastSearchTerm := Term;
+        LastFind := 1;
+    end;
     if GoForward then begin
         if CaseSensitive then
             NewPos := PosEx(Term, KMemo1.Blocks.Text, LastFind + 1)
@@ -1086,13 +1098,21 @@ begin
     end;
 end;
 
+procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
+begin
+    //if FindDialog1.FindText <> '' then
+    //    FindIt(FindDialog1.FindText, True, False);
 
+    UpDown1Click(Self, btNext);
+end;
+
+(*
 procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
 begin
     FindIt(FindDialog1.FindText,
             frDown in FindDialog1.Options, frMatchCase in FindDialog1.Options);
     // If above returns false, no more to be found, but how to tell user ?
-end;
+end;  *)
 
 procedure TEditBoxForm.NewFind(Term : string);
 begin
@@ -1100,11 +1120,66 @@ begin
     FindIt(Term, true, false);
 end;
 
+const SearchPanelHeight = 39;
+
+
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
 begin
-    LastFind := 1;
-    FindDialog1.Options := FindDialog1.Options + [frHideWholeWord, frEntireScope, frDown];
-	FindDialog1.Execute;
+    //LastFind := 1;
+    if PanelSearch.Height = SearchPanelHeight then begin
+        PanelSearch.Height := 1;                            // Hide it
+        Kmemo1.SetFocus;
+    end  else  begin
+        PanelSearch.Height := SearchPanelHeight;
+        EditSearch.SetFocus;
+        LastFind := 1;
+    end;
+end;
+
+procedure TEditBoxForm.EditSearchExit(Sender: TObject);
+begin
+	if EditSearch.Text = '' then begin
+        EditSearch.Hint:=rsSearchHint;
+        EditSearch.Text := rsMenuSearch;
+        EditSearch.SelStart := 1;
+        EditSearch.SelLength := length(EditSearch.Text);
+    end;
+end;
+
+procedure TEditBoxForm.EditSearchKeyDown(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+    // This needs to be a keydown else we get the trailing edge of key event that opened panel
+    if (([ssCtrl] = Shift) and (Key = VK_F)) then begin
+        Key := 0;
+        MenuItemFindClick(Sender);
+    end;
+    if ([ssShift, ssAlt] = Shift) and (Key = VK_F) then
+        begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is goto previous find.
+    if ([ssAlt] = Shift) and (Key = VK_F) then
+        begin key := 0; UpDown1Click(self, btNext);  end;    // Shif-Alt-F  is goto next find.
+end;
+
+procedure TEditBoxForm.EditSearchKeyUp(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+    if Key = VK_RETURN then begin
+        Key := 0;
+        UpDown1Click(self, btNext);
+        // FindIt(EditSearch.Text, true, False);
+    end;
+end;
+
+procedure TEditBoxForm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
+var
+    Res : Boolean = false;
+begin
+    if Button = btNext then
+        Res := FindIt(EditSearch.Text, true, False)
+    else
+        Res := FindIt(EditSearch.Text, False, False);
+    if Res then LabelSearchInfo.Caption := ''
+    else LabelSearchInfo.Caption := 'Failed to find';
 end;
 
 
@@ -1114,7 +1189,6 @@ procedure TEditBoxForm.ButtMainTBMenuClick(Sender: TObject);
 begin
     PopupMainTBMenu.Popup;
 end;
-
 
 procedure TEditBoxForm.MenuItemCopyClick(Sender: TObject);
 begin
@@ -1128,7 +1202,7 @@ begin
     MarkDirty();
     //if not Dirty then TimerSave.Enabled := true;
     //Dirty := true;
-    //Label1.Caption := 'd';
+    //LabelSearchInfo.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemDeleteClick(Sender: TObject);
@@ -1139,7 +1213,7 @@ begin
     MarkDirty();
     //if not Dirty then TimerSave.Enabled := true;
     //Dirty := true;
-    //Label1.Caption := 'd';
+    //LabelSearchInfo.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemExportPlainTextClick(Sender: TObject);
@@ -1466,7 +1540,8 @@ begin
     KMemo1.SetFocus;
     Dirty := False;
     if SearchedTerm <> '' then begin
-        FindDialog1.FindText:= SearchedTerm;
+        //FindDialog1.FindText:= SearchedTerm;
+        EditSearch.Text := SearchedTerm;
         FindIt(SearchedTerm, True, False)
 	end else begin
         KMemo1.executecommand(ecEditorTop);
@@ -1511,6 +1586,11 @@ begin
         SingleNoteMode := True;
         ButtMainTBMenu.Enabled := false;
     end;
+    //PanelSearch.Visible := False;
+    PanelSearch.Height := 1;                // That is, hide it for now
+    PanelSearch.Caption := '';
+    UpDown1.Hint := rsSearchNavHint;
+    LabelSearchInfo.Caption:= rsSearchNavHint;
     {$ifdef DARWIN}
     MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
     MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
@@ -1988,6 +2068,8 @@ begin
 end;
 
 
+
+
 { ---------------------- C A L C U L A T E    F U N C T I O N S ---------------}
 
 procedure TEditBoxForm.ExprTan(var Result: TFPExpressionResult;
@@ -2394,7 +2476,7 @@ begin
             VK_T : MenuFixedWidthClick(Sender);
             VK_H : MenuHighLightClick(Sender);
             VK_U : MenuUnderLineClick(Sender);
-            VK_F : MenuItemFindClick(self);
+            VK_F : begin Key := 0; MenuItemFindClick(self); end;
             VK_L : SpeedButtonLinkClick(Sender);
             VK_D : InsertDate();
             VK_N : SearchForm.OpenNote('');      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
@@ -2407,6 +2489,10 @@ begin
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();
     end;
+
+    if ([ssShift, ssAlt] = Shift) and (Key = VK_F) then
+            begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is goto previous find.
+
     // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin
         case key of
@@ -2414,14 +2500,15 @@ begin
             VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
-            VK_F     : begin MenuFindNextClick(self); Key := 0; end;
+            VK_F     : begin MenuFindNextClick(self); Key := 0; end;                    // Local 'Next' find
         end;
         exit();
     end;
     //if KMemo1.ReadOnly then begin Key := 0; exit(); end;
     // ------------------ Control and Shift ----------------
     if [ssCtrl, ssShift] = Shift then begin
-       if key = ord('F') then begin SpeedButtonSearchClick(self); Key := 0; exit(); end;
+       if key = ord('F') then begin  Key := 0; SpeedButtonSearchClick(self); exit();    // Activate Search Window
+       end;
        {$ifndef DARWIN}
        if (key = VK_RIGHT) or (Key = VK_LEFT) then exit;{$endif}            // KMemo knows how to do this, select word ...
        Key := 0;

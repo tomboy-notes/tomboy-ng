@@ -98,7 +98,7 @@ unit SearchUnit;
     2020/07/17  OpenNote was checking edit1.test = 'search' instead of rsMenuSearch
     2020/11/14  ListViewNotes now has alternating colours, req ugly fix for Qt5 involving increasing font size
     2020/12/10  Move focus to Search Field whenever Search Form is re-shown, issue #211
-    2021/01/22  When activating a note from the search form, jump to first match is Term is not empty
+    2021/01/22  When activating a note from the search form, jump to first match if Search Term is not empty
     2021/01/23  A check box to choose Auto Refresh or not.
 }
 

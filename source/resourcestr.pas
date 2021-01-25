@@ -154,7 +154,8 @@ RESOURCESTRING
 
   // The soon to be merged NextCloud Notes Sync
 
-
+  // EditBox  - lots more to do ..
+  rsSearchNavHint = 'Search : Previous Shift-Alt-F   Next Alt-F';
 
 implementation
 

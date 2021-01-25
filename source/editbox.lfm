@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 768
+  Left = 1115
   Height = 497
-  Top = 319
+  Top = 276
   Width = 617
   Caption = 'EditBoxForm'
   ClientHeight = 497
@@ -23,7 +23,7 @@ object EditBoxForm: TEditBoxForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = PanelReadOnly
     Left = 0
-    Height = 399
+    Height = 360
     Top = 38
     Width = 617
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -46,11 +46,10 @@ object EditBoxForm: TEditBoxForm
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = Owner
-    AnchorSideBottom.Side = asrBottom
+    AnchorSideBottom.Control = PanelSearch
     Left = 0
     Height = 60
-    Top = 437
+    Top = 398
     Width = 617
     Anchors = [akLeft, akRight, akBottom]
     ClientHeight = 60
@@ -852,6 +851,68 @@ object EditBoxForm: TEditBoxForm
     ShowHint = True
     ParentShowHint = False
   end
+  object PanelSearch: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 39
+    Top = 458
+    Width = 617
+    Anchors = [akLeft, akRight, akBottom]
+    BevelInner = bvLowered
+    Caption = 'PanelSearch'
+    ClientHeight = 39
+    ClientWidth = 617
+    TabOrder = 2
+    object EditSearch: TEdit
+      Left = 8
+      Height = 29
+      Top = 5
+      Width = 136
+      OnExit = EditSearchExit
+      OnKeyDown = EditSearchKeyDown
+      OnKeyUp = EditSearchKeyUp
+      TabOrder = 0
+      Text = 'EditSearch'
+    end
+    object UpDown1: TUpDown
+      AnchorSideLeft.Control = EditSearch
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EditSearch
+      AnchorSideBottom.Control = EditSearch
+      AnchorSideBottom.Side = asrBottom
+      Left = 144
+      Height = 29
+      Top = 5
+      Width = 64
+      Anchors = [akTop, akLeft, akBottom]
+      Min = 0
+      OnClick = UpDown1Click
+      Orientation = udHorizontal
+      ParentShowHint = False
+      Position = 0
+      ShowHint = True
+      TabOrder = 1
+    end
+    object LabelSearchInfo: TLabel
+      AnchorSideLeft.Control = UpDown1
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = EditSearch
+      AnchorSideBottom.Control = EditSearch
+      AnchorSideBottom.Side = asrCenter
+      Left = 214
+      Height = 19
+      Top = 9
+      Width = 114
+      Anchors = [akLeft, akBottom]
+      BorderSpacing.Left = 6
+      Caption = 'LabelSearchInfo'
+      ParentColor = False
+    end
+  end
   object PopupMenuText: TPopupMenu
     Left = 232
     Top = 200
@@ -1007,11 +1068,6 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Select All'
       OnClick = MenuItemSelectAllClick
     end
-  end
-  object FindDialog1: TFindDialog
-    OnFind = FindDialog1Find
-    Left = 232
-    Top = 280
   end
   object TimerSave: TTimer
     Interval = 10000

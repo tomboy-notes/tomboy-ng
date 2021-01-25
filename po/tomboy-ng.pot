@@ -368,6 +368,10 @@ msgstr ""
 msgid "Exact matches for terms between \" \""
 msgstr ""
 
+#: resourcestr.rssearchnavhint
+msgid "Search : Previous Shift-Alt-F   Next Alt-F"
+msgstr ""
+
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
 msgid "Set the notebooks this note is a member of"
@@ -554,6 +558,10 @@ msgstr ""
 msgid "EditBoxForm"
 msgstr ""
 
+#: teditboxform.editsearch.text
+msgid "EditSearch"
+msgstr ""
+
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr ""
@@ -564,6 +572,10 @@ msgstr ""
 
 #: teditboxform.label4.caption
 msgid "Please close it (and re-open if it was a download)"
+msgstr ""
+
+#: teditboxform.labelsearchinfo.caption
+msgid "LabelSearchInfo"
 msgstr ""
 
 #: teditboxform.menubold.caption
@@ -688,6 +700,10 @@ msgstr ""
 
 #: teditboxform.menuunderline.caption
 msgid "Underline"
+msgstr ""
+
+#: teditboxform.panelsearch.caption
+msgid "PanelSearch"
 msgstr ""
 
 #: teditboxform.speedbuttondelete.hint
