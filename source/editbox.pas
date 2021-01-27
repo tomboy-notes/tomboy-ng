@@ -202,6 +202,7 @@ unit EditBox;
     2021/01/06  Pre-load find dialog with SearchBox SearchTerm, Alt-F for find next
     2021/01/22  When activating a note from the search form, jump to first match is Term is not empty
     2021/01/25  Replace FindDialog with statusbar like system. Need shortcut keys defined.
+    2021/01/27  Previous find is now Ctrl-Alt-F, next one is Alt-F
 }
 
 
@@ -1154,10 +1155,10 @@ begin
         Key := 0;
         MenuItemFindClick(Sender);
     end;
-    if ([ssShift, ssAlt] = Shift) and (Key = VK_F) then
-        begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is goto previous find.
+    if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) then
+        begin key := 0; UpDown1Click(self, btPrev);  end;    // Ctrl-Alt-F  is goto previous find.
     if ([ssAlt] = Shift) and (Key = VK_F) then
-        begin key := 0; UpDown1Click(self, btNext);  end;    // Shif-Alt-F  is goto next find.
+        begin key := 0; UpDown1Click(self, btNext);  end;    // Alt-F  is goto next find.
 end;
 
 procedure TEditBoxForm.EditSearchKeyUp(Sender: TObject; var Key: Word;
@@ -2490,8 +2491,11 @@ begin
         exit();
     end;
 
-    if ([ssShift, ssAlt] = Shift) and (Key = VK_F) then
-            begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is goto previous find.
+
+    // --------------- Ctrl Alt -------------------------
+
+    if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) then
+            begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is goto previous find. All systems ?
 
     // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin

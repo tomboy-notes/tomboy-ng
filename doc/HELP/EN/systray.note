@@ -3,9 +3,11 @@
   <title>System Tray</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>System Tray</underline>
 
+Note : the message about not showing the SysTray is usually a false alarm <bold>on Ubuntu</bold>. Sorry.
+
 The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray. However, not all Linux Desktop Environments are able to display System Tray Icons. 
 
-If you can see a small, yellow icon, possibly upper right of your screen, you don't have a problem, well do in choosing a user focused Desktop.  If you cannot see it, you are probably using Desktop that does not display the System Tray, you have a number of alternatives -<size:large>
+If you can see a small, yellow icon, possibly upper right of your screen, you don't have a problem, well done in choosing a user focused Desktop.  If you cannot see it, you are probably using a Desktop that does not display the System Tray, you have a number of alternatives -<size:large>
 
 <bold>tint2</bold></size:large>
 Install the very useful tint2 panel. It has no trouble displaying a System Tray on all Linux Desktops that I have tested. It seems to be widely available. Typically, you might type one of the following - 
@@ -20,13 +22,13 @@ Start tint2 before you start work, if you like that model, add it to your startu
 Gnome 3 typically has a 'dock' down the left side, maybe only visible after you click Activities'.  Some other Desktops have similar docks. After starting tomboy-ng (the first time), and before you 'hide' it, find its yellow Icon in your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock. To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'. <size:large>
 
 <bold>Other Approaches </bold></size:large>
-Similarly to the above approach, if you start tomboy-ng and hide it, you can activate it at any time from the normal Menu you may be used to using.  In this way, you are not restarting it each time, its always there, the restart attempt just prompts the running instance to pop up its Search Window.
+Similarly to the above approach, if you start tomboy-ng and hide it, you can activate it at any time from the Menu you normally use to start an application.  In this way, you are not restarting it each time, its always there, the restart attempt just prompts the running instance to pop up its Search Window.
   
-There are some Gnome Extensions that you can install to restore a functioning System Tray but especially if you are using Wayland they may be just too hard. But if you are willing to disable  wayland and using xorg instead, that might work. Search for TopIcons.
+There are some Gnome Extensions that you can install to restore a functioning System Tray but especially if you are using Wayland they may be just too hard. But if you are willing to disable  wayland and using xorg instead, that just might work. Search for TopIcons.
 
 </note-content></text>
-  <last-change-date>2021-01-23T16:34:18.2379951+11:00</last-change-date>
-  <last-metadata-change-date>2021-01-23T16:34:18.2379951+11:00</last-metadata-change-date>
+  <last-change-date>2021-01-27T10:15:25.8545156+11:00</last-change-date>
+  <last-metadata-change-date>2021-01-27T10:15:25.8545156+11:00</last-metadata-change-date>
   <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

@@ -99,7 +99,7 @@ begin
         while length(St) > 6 do delete(St, length(St), 1);
         while length(St) < 6 do St := St + '0';
 	end;
-    if TryISO8601ToDate(DateSt, OutDT, ReturnUTC) then begin
+    if TryISO8601ToDate(DateSt, OutDT, ReturnUTC) then begin               // WARNING - apparently this is a FPC320 only feature
         if I > 0 then
             OutDT := OutDT + (St.ToDouble() * ValueMicroSecond);           // ValueMicroSecond is Regional const,  eg
 	end else result := False;                                               // ValueMicroSecond := 1.0 / double(24*60*60*1000*1000);

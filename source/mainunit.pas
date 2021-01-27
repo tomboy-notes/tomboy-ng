@@ -28,7 +28,7 @@ unit Mainunit;
 
     2018/06/19  Got some stuff for singlenotemode() - almost working.
     2018/06/22  As above but maybe working now ?  DRB
-    2018/07/04  Display number of notes found and a warning if indexing error occured.
+    2018/07/04  Display number of notes found and a warning if indexing error occurred.
     2018/07/11  Added --version and --no-splash to options, this form now has a main menu
                 and does not respond to clicks anywhere with the popup menu, seems GTK
                 does not like sharing menus (eg between here and the trayIcon) in gtk3 !
@@ -496,10 +496,12 @@ begin
         exit;
     end;
      LabelBadNoteAdvice.Caption:= '';
+    ButtSysTrayHelp.Visible := False;
     {$ifdef LINUX}
-    if not CheckForSysTray() then
-        LabelBadNoteAdvice.Caption := 'WARNING, your Desktop might not display SysTray'
-    else ButtSysTrayHelp.Visible := False;
+    if not CheckForSysTray() then begin
+        LabelBadNoteAdvice.Caption := 'WARNING, your Desktop might not display SysTray';
+        ButtSysTrayHelp.Visible := True;
+    end;
     {$endif}
 
     if SearchForm.NoteLister.XMLError then begin

@@ -21,7 +21,7 @@ unit Note_Lister;
 	2017/11/29  Added FileName to "Note has no Title" error message.
 	2017/11/29  check to see if NoteList is still valid before passing
 				on updates to a Note's status. If we are quiting, it may not be.
-	2017/11/29  Fixed a memory leak that occured when Delete-ing a entry in the list
+	2017/11/29  Fixed a memory leak that occurred when Delete-ing a entry in the list
 				Turns out you must dispose() that allocation before calling Delete.
 	2017/12/28  Commented out unnecessary DebugLn
 	2017/12/29  Added a debug line to ThisNoteIsOpen() to try and see if there is

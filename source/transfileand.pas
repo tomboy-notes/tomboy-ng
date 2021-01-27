@@ -595,6 +595,7 @@ var
     Target : integer = 1;
     Buff : string = '';
 begin
+    result := false;
     repeat
         Target := Pos('&#', St, Target);
         if Target = 0 then exit(False);                 // None left, lets get out of here.

@@ -11,7 +11,7 @@
 
 # -------------------- Making a Debian SRC ----------------------
 # To build a Debian Source Package, on eg a current Bullseye -
-# 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt6pas-dev
+# 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt5pas-dev
 #	Ensure appropriate pgp key in place ($HOME/.gnupg), see below 
 #	In an otherwise empty directory, we need -
 #	prepare.debian, tomboy-ng-master.zip and possibly the first uploaded .orig file -
@@ -29,6 +29,15 @@
 #	The files you want are in ../.
 #	You probably should do a practise build and lintian run, see other notes.
 #	Upload with "dput -f mentors *.changes"
+
+#       ------------ Lintian -----------
+# Copy the .xz, .gz and .dsc files to a clean directory and run (eg)
+#   dpkg-source -x tomboy-ng_0.30f-1.dsc
+#   cd tomboy-ng_0.30f
+#   dpkg-buildpackage -us  -uc
+#   cd ../
+#   lintian -IiE --pedantic *.changes
+
 
 # -------------------- Signing Details -------------------------
 # Below are hardwired my personal full name and tomboy-ng email address. These
@@ -164,7 +173,7 @@ function ShowHelp () {
     echo "-D   distro, eg unstable, bullseye"
     echo "-n   New orig file, required for fresh release"
     echo ""
-    echo "     Typically     bash ./prepare.debian -D unstable -n
+    echo "     Typically     bash ./prepare.debian -D unstable -n"
     exit
 }
 

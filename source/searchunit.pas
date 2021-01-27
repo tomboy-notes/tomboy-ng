@@ -267,7 +267,8 @@ implementation
 
 {$R *.lfm}
 
-
+//{$define LVOWNERDRAW}     // Ownerdraw of ListViewNotes gives us alternating colours but all sorts of problems
+                            // I'll try a release without it and, maybe, try agin later. And maybe not.
 
 uses MainUnit,      // Opening form, manages startup and Menus
     EditBox,
@@ -960,10 +961,12 @@ begin
     ListViewNotes.AutoWidthLastColumn:= True;
     ListViewNotes.ViewStyle:= vsReport;
     ListViewNotes.ReadOnly := True;
+    {$ifdef LVOWNERDRAW}
     ListViewNotes.OwnerDraw:= True;
     {$ifdef LCLQT5}                 // This because when ownerdrawn, we loose spacing between rows in Qt5, ugly workaround.
     fd := GetFontData( SearchForm.Font.Handle );
     ListViewNotes.Font.Height := round((fd.Height * 72 / SearchForm.Font.PixelsPerInch)) + 4;
+    {$endif}
     {$endif}
 end;
 
@@ -1169,6 +1172,7 @@ begin
     // Note this only works for TListView if ViewStyle is vsReport
     // (and obviously, we are in ownerdraw mode).
 
+    {$ifdef LVOWNERDRAW}
     if Odd(AItem.Index) then
         ListViewNotes.Canvas.Brush.Color := Sett.AltColour;
     ListViewNotes.Canvas.FillRect(ARect);
@@ -1181,6 +1185,7 @@ begin
     ListViewNotes.Canvas.TextRect(ARect, 2, ARect.Top+2, AItem.Caption);        // Title column
     ListViewNotes.Canvas.TextRect(ARect, ListViewNotes.Column[0].Width + 2      // LCD Column
             , ARect.Top+2, AItem.SubItems[0]);
+    {$endif}
     {$endif}
 end;
 
