@@ -554,14 +554,6 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr ""
 
-#: teditboxform.caption
-msgid "EditBoxForm"
-msgstr ""
-
-#: teditboxform.editsearch.text
-msgid "EditSearch"
-msgstr ""
-
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr ""
@@ -572,10 +564,6 @@ msgstr ""
 
 #: teditboxform.label4.caption
 msgid "Please close it (and re-open if it was a download)"
-msgstr ""
-
-#: teditboxform.labelsearchinfo.caption
-msgid "LabelSearchInfo"
 msgstr ""
 
 #: teditboxform.menubold.caption
@@ -702,10 +690,6 @@ msgstr ""
 msgid "Underline"
 msgstr ""
 
-#: teditboxform.panelsearch.caption
-msgid "PanelSearch"
-msgstr ""
-
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr ""
@@ -775,10 +759,6 @@ msgstr ""
 
 #: tformbackupview.listbox1.hint
 msgid "Use Ctrl or Shift to select multiple entries"
-msgstr ""
-
-#: tformcolours.caption
-msgid "FormColours"
 msgstr ""
 
 #: tformcolours.label1.caption
@@ -871,10 +851,6 @@ msgstr ""
 
 #: tformrecover.buttonsnaphelp.caption
 msgid "Snapshot Help"
-msgstr ""
-
-#: tformrecover.caption
-msgid "FormRecover"
 msgstr ""
 
 #: tformrecover.label10.caption
@@ -1526,10 +1502,6 @@ msgstr ""
 msgid "If you have previously taken a snapshot ..."
 msgstr ""
 
-#: tsett.caption
-msgid "Form Caption"
-msgstr ""
-
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"
 msgstr ""
@@ -1649,14 +1621,6 @@ msgstr ""
 #: tsett.labelfilesync.caption
 msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
-msgstr ""
-
-#: tsett.labelfilesyncinfo1.caption
-msgid "LabelFileSyncInfo1"
-msgstr ""
-
-#: tsett.labelfilesyncinfo2.caption
-msgid "LabelFileSyncInfo2"
 msgstr ""
 
 #: tsett.labelsnapdir.caption

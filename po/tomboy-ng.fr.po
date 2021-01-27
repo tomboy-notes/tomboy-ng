@@ -570,39 +570,27 @@ msgstr "Nbre d'erreurs (cf. log console) = "
 #: teditboxform.buttmaintbmenu.caption
 msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
-msgstr ""
-
-#: teditboxform.caption
-msgid "EditBoxForm"
-msgstr ""
-
-#: teditboxform.editsearch.text
-msgid "EditSearch"
-msgstr ""
+msgstr "Menu"
 
 #: teditboxform.label2.caption
 msgid "Read Only"
-msgstr ""
+msgstr "Mode lecture"
 
 #: teditboxform.label3.caption
 msgid "This note has been changed by the Sync Process"
-msgstr ""
+msgstr "Note changée par le processus de synchro"
 
 #: teditboxform.label4.caption
 msgid "Please close it (and re-open if it was a download)"
-msgstr ""
-
-#: teditboxform.labelsearchinfo.caption
-msgid "LabelSearchInfo"
-msgstr ""
+msgstr "Fermer (puis rouvrir si c'était un téléchargement)"
 
 #: teditboxform.menubold.caption
 msgid "Bold"
-msgstr ""
+msgstr "Gras"
 
 #: teditboxform.menubullet.caption
 msgid "Bullet"
-msgstr ""
+msgstr "Puce(s)"
 
 #: teditboxform.menufindnext.caption
 msgid "Find Next"
@@ -610,594 +598,589 @@ msgstr ""
 
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
-msgstr ""
+msgstr "Chasse fixe"
 
 #: teditboxform.menuhighlight.caption
 msgctxt "teditboxform.menuhighlight.caption"
 msgid "Highlight"
-msgstr ""
+msgstr "Surlignement"
 
 #: teditboxform.menuhuge.caption
 msgctxt "teditboxform.menuhuge.caption"
 msgid "Huge"
-msgstr ""
+msgstr "Police énorme"
 
 #: teditboxform.menuitalic.caption
 msgid "Italic"
-msgstr ""
+msgstr "Italique"
 
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
-msgstr ""
+msgstr "Alt+ <-/->  ôte ou ajoute des puces"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
-msgstr ""
+msgstr "Copier"
 
 #: teditboxform.menuitemcut.caption
 msgid "Cut"
-msgstr ""
+msgstr "Couper"
 
 #: teditboxform.menuitemdelete.caption
 msgctxt "teditboxform.menuitemdelete.caption"
 msgid "Delete"
-msgstr ""
+msgstr "Effacer"
 
 #: teditboxform.menuitemevaluate.caption
 msgid "Evaluate"
-msgstr ""
+msgstr "Evaluer"
 
 #: teditboxform.menuitemexport.caption
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 #: teditboxform.menuitemexportmarkdown.caption
 msgid "Export Markdown"
-msgstr ""
+msgstr "Export réduit"
 
 #: teditboxform.menuitemexportplaintext.caption
 msgid "Export Plain Text"
-msgstr ""
+msgstr "Export en texte brut"
 
 #: teditboxform.menuitemexportrtf.caption
 msgid "Export RTF"
-msgstr ""
+msgstr "Export au format RTF"
 
 #: teditboxform.menuitemfind.caption
 msgid "Find in this Note"
-msgstr ""
+msgstr "Chercher dans la note"
 
 #: teditboxform.menuitemindex.caption
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
-msgstr ""
+msgstr "Coller"
 
 #: teditboxform.menuitemprint.caption
 msgid "Print"
-msgstr ""
+msgstr "Imprimer"
 
 #: teditboxform.menuitemselectall.caption
 msgid "Select All"
-msgstr ""
+msgstr "Tout sélectionner"
 
 #: teditboxform.menuitemsettings.caption
-#, fuzzy
 msgctxt "teditboxform.menuitemsettings.caption"
 msgid "Settings"
 msgstr "Réglages"
 
 #: teditboxform.menuitemspell.caption
 msgid "Spell Check"
-msgstr ""
+msgstr "Vérification orthographique"
 
 #: teditboxform.menuitemsync.caption
+#, fuzzy
+#| msgid "Syncronize"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: teditboxform.menularge.caption
 msgid "Large Font"
-msgstr ""
+msgstr "Police grande"
 
 #: teditboxform.menunormal.caption
 msgid "Normal Font"
-msgstr ""
+msgstr "Police normale"
 
 #: teditboxform.menusmall.caption
 msgid "Small Font"
-msgstr ""
+msgstr "Police petite"
 
 #: teditboxform.menustayontop.caption
 msgid "Stay On Top"
-msgstr ""
+msgstr "Toujours visible"
 
 #: teditboxform.menustrikeout.caption
 msgid "Strikeout"
-msgstr ""
+msgstr "Barré"
 
 #: teditboxform.menuunderline.caption
 msgid "Underline"
-msgstr ""
-
-#: teditboxform.panelsearch.caption
-msgid "PanelSearch"
-msgstr ""
+msgstr "Souligné"
 
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
-msgstr ""
+msgstr "Supprimer la note"
 
 #: teditboxform.speedbuttonlink.hint
 msgid "Link highlighted text to a new note"
-msgstr ""
+msgstr "Créer une note avec la sélection"
 
 #: teditboxform.speedbuttonnotebook.hint
 msgid "Manage Notebooks"
-msgstr ""
+msgstr "Gestion des Carnets"
 
 #: teditboxform.speedbuttonsearch.hint
 msgid "Search All Notes Ctrl-Shift-F"
-msgstr ""
+msgstr "Rechercher (ctrl+shft+F)"
 
 #: teditboxform.speedbuttontext.hint
 msgid "Font size, bold, italics etc"
-msgstr ""
+msgstr "Formatage du texte"
 
 #: teditboxform.speedbuttontools.hint
 msgid "Tools - Sync, Export, Spell"
-msgstr ""
+msgstr "Outils - Synchro, Export, Orthographe"
 
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
-msgstr ""
+msgstr "Annuler"
 
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: tformbackupview.buttondelete.hint
 msgid "Really, totally delete this note."
-msgstr ""
+msgstr "Suppression de la note."
 
 #: tformbackupview.buttonok.caption
 msgctxt "tformbackupview.buttonok.caption"
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: tformbackupview.buttonok.hint
 msgid "My work here is done."
-msgstr ""
+msgstr "Travail terminé."
 
 #: tformbackupview.buttonopen.caption
 msgid "View"
-msgstr ""
+msgstr "Voir"
 
 #: tformbackupview.buttonopen.hint
 msgid "Open and view the whole note"
-msgstr ""
+msgstr "Affichage intégrale de la note"
 
 #: tformbackupview.buttonrecover.caption
 msgctxt "tformbackupview.buttonrecover.caption"
 msgid "Recover"
-msgstr ""
+msgstr "Récupérer"
 
 #: tformbackupview.buttonrecover.hint
 msgid "Restore this note to main repo"
-msgstr ""
+msgstr "Récupérer la note dans le dépôt principal"
 
 #: tformbackupview.caption
 msgid "View, recover or delete Backup Files"
-msgstr ""
+msgstr "Gestion des fichiers de sauvegarde"
 
 #: tformbackupview.listbox1.hint
 msgid "Use Ctrl or Shift to select multiple entries"
-msgstr ""
-
-#: tformcolours.caption
-msgid "FormColours"
-msgstr ""
+msgstr "Presser Ctrl ou Shift pour la sélection multiple"
 
 #: tformcolours.label1.caption
 msgid "Sample"
-msgstr ""
+msgstr "Échantillon"
 
 #: tformcolours.label2.caption
 msgctxt "tformcolours.label2.caption"
 msgid "Set Colours"
-msgstr ""
+msgstr "Réglages des couleurs"
 
 #: tformcolours.speedbackground.caption
 msgid "Background"
-msgstr ""
+msgstr "Arrière-plan"
 
 #: tformcolours.speedcancel.caption
 msgctxt "tformcolours.speedcancel.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: tformcolours.speeddefault.caption
 msgid "Default"
-msgstr ""
+msgstr "Défaut"
 
 #: tformcolours.speedhighlight.caption
 msgctxt "tformcolours.speedhighlight.caption"
 msgid "Highlight"
-msgstr ""
+msgstr "Surlignement"
 
 #: tformcolours.speedok.caption
 msgctxt "tformcolours.speedok.caption"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: tformcolours.speedtext.caption
 msgid "Text"
-msgstr ""
+msgstr "Texte"
 
 #: tformcolours.speedtitle.caption
 msgctxt "tformcolours.speedtitle.caption"
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: tformindex.caption
 msgid "Heading in this Note"
-msgstr ""
+msgstr "Entête de la note"
 
 #: tformindex.panel1.caption
 msgid "Single lines, all Huge, Large Bold or Large"
-msgstr ""
+msgstr "Ligne normale, énorme, ou grand (+gras)"
 
 #: tformmarkdown.buttonclose.caption
 msgctxt "tformmarkdown.buttonclose.caption"
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: tformmarkdown.buttoncopyall.caption
 msgid "Copy All"
-msgstr ""
+msgstr "Tout copier"
 
 #: tformmarkdown.buttonsave.caption
 msgctxt "tformmarkdown.buttonsave.caption"
 msgid "Save"
-msgstr ""
+msgstr "Sauver"
 
 #: tformmarkdown.label1.caption
 msgid "Press Ctrl-A, Ctrl-C to copy"
-msgstr ""
+msgstr "Ctrl-A puis Ctrl-C pour copier"
 
 #: tformmarkdown.panel1.caption
 msgid "Markdown Exporter"
-msgstr ""
+msgstr "Export réduit"
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
-msgstr ""
+msgstr "Effacer les notes vérolées"
 
 #: tformrecover.buttonmakesafetysnap.caption
 msgid "Take a manual Snapshot"
-msgstr ""
+msgstr "Prendre un snapshot"
 
 #: tformrecover.buttonmakesafetysnap.hint
 msgid "Take a initial snapshot of your notes and config. Overwritten each time."
-msgstr ""
+msgstr "1er snapshot des notes & config puis remplacement à chaque màj."
 
 #: tformrecover.buttonrecoversnap.caption
 msgctxt "tformrecover.buttonrecoversnap.caption"
 msgid "Recover"
-msgstr ""
+msgstr "Récupérer"
 
 #: tformrecover.buttonsnaphelp.caption
+msgctxt "tformrecover.buttonsnaphelp.caption"
 msgid "Snapshot Help"
-msgstr ""
-
-#: tformrecover.caption
-msgid "FormRecover"
-msgstr ""
+msgstr "Aide snapshot"
 
 #: tformrecover.label10.caption
 msgid "Please close any notes you may have open."
-msgstr ""
+msgstr "Fermer les notes possiblement ouvertes."
 
 #: tformrecover.label12.caption
 msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
-msgstr ""
+msgstr "Impossibe sauf à disposer d'un snapshot déjà sauvé, cf. onglet Intro."
 
 #: tformrecover.label14.caption
 msgid "Click an available snapshot to see its contents."
-msgstr ""
+msgstr "Sélectionner le snapshot à visualiser."
 
 #: tformrecover.label15.caption
 msgid "Click an available snapshot, click Recover"
-msgstr ""
+msgstr "Sélectionner un snapshot, cliquer sur Restauration"
 
 #: tformrecover.label16.caption
 msgid "You may chose to view, copy and paste into a new note."
-msgstr ""
+msgstr "Choisir de voir, copier et coller dans une note."
 
 #: tformrecover.label2.caption
+#, fuzzy
+#| msgid "Please be carefull, this is a dangerous place!"
 msgid "Please be careful, this is a dangerous place!"
-msgstr ""
+msgstr "Attention, cette fonctionnalité est instable !"
 
 #: tformrecover.label3.caption
 msgid "Restore any notes in the snapshot that are not in the existing notes directory."
-msgstr ""
+msgstr "Récupérer les notes du snapshot n'existant pas dans le répertoire local."
 
 #: tformrecover.label4.caption
 msgid "Remove all existing notes and use the ones in the Snapshot."
-msgstr ""
+msgstr "Effacer toutes les notes pour utiliser celles du snapshot."
 
 #: tformrecover.label5.caption
 msgid "Looking for notes with damaged XML"
-msgstr ""
+msgstr "Recherche de notes avec XML vérolé"
 
 #: tformrecover.label6.caption
 msgid "This tool might help you recover lost or damaged notes."
-msgstr ""
+msgstr "Outil d'aide à la restauration des notes perdues ou vérolées."
 
 #: tformrecover.label7.caption
 msgid "Before you start, take a Snapshot of your notes directory."
-msgstr ""
+msgstr "Faire préalablement un snapshot des notes du répertoire."
 
 #: tformrecover.label9.caption
 msgid "From here you can view snapshot notes, one by one."
-msgstr ""
+msgstr "Endroit permettant la visu snapshot par snapshot."
 
 #: tformrecover.listboxsnapshots.hint
 msgid "These are the currently known snapshots. "
-msgstr ""
+msgstr "Voici les snapshots actuellement connus."
 
 #: tformrecover.panelsnapshots.caption
 msgid "Available Snapshots"
-msgstr ""
+msgstr "Snapshots disponibles"
 
 #: tformrecover.tabsheetbadnotes.caption
 msgid "Bad Notes"
-msgstr ""
+msgstr "Notes vérolées"
 
 #: tformrecover.tabsheetintro.caption
 msgid "Introduction"
-msgstr ""
+msgstr "Introduction"
 
 #: tformrecover.tabsheetmergesnapshot.caption
 msgid "Merge Snapshot"
-msgstr ""
+msgstr "Fusionner le snapshot"
 
 #: tformrecover.tabsheetrecovernotes.caption
 msgid "Recover Notes"
-msgstr ""
+msgstr "Restauration des notes"
 
 #: tformrecover.tabsheetrecoversnapshot.caption
 msgid "Recover Snapshot"
-msgstr ""
+msgstr "Récupérer un snapshot"
 
 #: tformrollback.speedcancel.caption
 msgctxt "tformrollback.speedcancel.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: tformrollback.speedrolltoopen.caption
 msgid "Opening Backup"
-msgstr ""
+msgstr "Ouvrir une sauvegarde"
 
 #: tformrollback.speedrolltotitle.caption
 msgid "Title Change Backup"
-msgstr ""
+msgstr "Renommer la sauvegarde"
 
 #: tformsdiff.bitbtnuselocal.caption
 msgid "Use Local"
-msgstr ""
+msgstr "Utilisation Local"
 
 #: tformsdiff.bitbtnuseremote.caption
 msgid "Use Remote"
-msgstr ""
+msgstr "Utilisation Distante"
 
 #: tformsdiff.buttalllocal.caption
 msgid "Local"
-msgstr ""
+msgstr "Locale"
 
 #: tformsdiff.buttallnewest.caption
 msgid "Newest"
-msgstr ""
+msgstr "Nouveau"
 
 #: tformsdiff.buttalloldest.caption
 msgid "Oldest"
-msgstr ""
+msgstr "Ancien"
 
 #: tformsdiff.buttallremote.caption
 msgid "Remote"
-msgstr ""
+msgstr "Distant"
 
 #: tformsdiff.caption
 msgid "A Note Sync Clash has been Detected"
-msgstr ""
+msgstr "Détection d'une erreur de synchro de notes"
 
 #: tformsdiff.label1.caption
 msgid "Or make a choice for remainder of this run"
-msgstr ""
+msgstr "Ou faire une autre choix pour cette exécution"
 
 #: tformsdiff.label3.caption
 msgid "Remote Changed"
-msgstr ""
+msgstr "Distant changé"
 
 #: tformsdiff.label4.caption
 msgid "Local Changed"
-msgstr ""
+msgstr "Local changé"
 
 #: tformsdiff.radiolong.caption
 msgid "Long Lines"
-msgstr ""
+msgstr "Lignes longues"
 
 #: tformsdiff.radiolong.hint
 msgid "Maybe necessary to show difference"
-msgstr ""
+msgstr "Possible nécessité de voir la différence"
 
 #: tformsdiff.radioshort.caption
 msgid "Short Lines"
-msgstr ""
+msgstr "Lignes Courtes"
 
 #: tformsdiff.radioshort.hint
 msgid "Easier to read"
-msgstr ""
+msgstr "Plus facile à lire"
 
 #: tformspell.buttonignore.caption
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorer"
 
 #: tformspell.buttonignore.hint
 msgid "Ignore all instances for the run"
-msgstr ""
+msgstr "Tout ignorer"
 
 #: tformspell.buttonskip.caption
 msgid "Skip"
-msgstr ""
+msgstr "Sauter"
 
 #: tformspell.buttonskip.hint
 msgid "Skip just this instance"
-msgstr ""
+msgstr "Sauter juste cette instance"
 
 #: tformspell.buttonuseandnextword.caption
 msgid "Use and Next Word"
-msgstr ""
+msgstr "Utiliser & passer au mot suivant"
 
 #: tformspell.caption
 msgctxt "tformspell.caption"
 msgid "Spell"
-msgstr ""
+msgstr "Vérifier"
 
 #: tformspell.label4.caption
 msgid "Suspect word -"
-msgstr ""
+msgstr "Mot suspect -"
 
 #: tformspell.labelprompt.caption
 msgid "Click a word to use it."
-msgstr ""
+msgstr "Cliquer sur un mot."
 
 #: tformsync.buttoncancel.caption
 msgctxt "tformsync.buttoncancel.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: tformsync.buttonclose.caption
 msgctxt "tformsync.buttonclose.caption"
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: tformsync.buttonsave.caption
 msgid "Save and Sync"
-msgstr ""
+msgstr "Sauver + Synchro"
 
 #: tformsync.caption
 msgctxt "tformsync.caption"
 msgid "Sync"
-msgstr ""
+msgstr "Synchro"
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 #: tformsync.listviewreport.columns[1].caption
 msgctxt "tformsync.listviewreport.columns[1].caption"
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: tformsync.listviewreport.columns[2].caption
 msgid "Note ID"
-msgstr ""
+msgstr "ID de la note"
 
 #: tformsyncerror.buttcancel.hint
 msgid "Stop Auto Sync until next restart"
-msgstr ""
+msgstr "Arrêt auto Synchro pour la session courante"
 
 #: tformsyncerror.buttretry.hint
 msgid "If Shared Drive is available, try again."
-msgstr ""
+msgstr "Si le volume partagé est indisponible, persister."
 
 #: tformsyncerror.caption
 msgid "tomboy-ng SyncError"
-msgstr ""
+msgstr "Erreur de synchro tomboy-ng"
 
 #: tformtomdroid.buttonclose.caption
 msgctxt "tformtomdroid.buttonclose.caption"
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: tformtomdroid.buttondelete.caption
 msgid "Delete Profile"
-msgstr ""
+msgstr "Effacer le profile"
 
 #: tformtomdroid.buttonhelp.caption
-#, fuzzy
 msgctxt "tformtomdroid.buttonhelp.caption"
 msgid "Help"
 msgstr "Aide"
 
 #: tformtomdroid.buttonjoin.caption
 msgid "Join"
-msgstr ""
+msgstr "Rejoindre"
 
 #: tformtomdroid.buttonsaveprofile.caption
 msgid "Save Profile"
-msgstr ""
+msgstr "Sauver le profil"
 
 #: tformtomdroid.buttonsync.caption
 msgctxt "tformtomdroid.buttonsync.caption"
 msgid "Sync"
-msgstr ""
+msgstr "Synchro"
 
 #: tformtomdroid.caption
 msgid "Tomdroid"
-msgstr ""
+msgstr "Tomdroid"
 
 #: tformtomdroid.checkboxdebugmode.caption
 msgid "Debug Mode"
-msgstr ""
+msgstr "Mode debug"
 
 #: tformtomdroid.checkboxdebugmode.hint
 msgid "writes debug messages to terminal"
-msgstr ""
+msgstr "envoeyr les debug vers le terminal"
 
 #: tformtomdroid.checkboxtestrun.caption
 msgid "Test Run"
-msgstr ""
+msgstr "Exécution test"
 
 #: tformtomdroid.checksavepassword.caption
 msgctxt "tformtomdroid.checksavepassword.caption"
 msgid "Save"
-msgstr ""
+msgstr "Sauver"
 
 #: tformtomdroid.editprofilename.hint
 msgid "eg MySamsungNote7"
-msgstr ""
+msgstr "ex: MySamsungNote7"
 
 #: tformtomdroid.label1.caption
+#, fuzzy
+#| msgid "Tomdroid Sync - be aware of limitations !"
 msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
-msgstr ""
+msgstr "Attention aux limites de la synchro Tomdroid !"
 
 #: tformtomdroid.label2.caption
 msgid "Select an existing profile (or enter data) "
-msgstr ""
+msgstr "Choisir un profil existant (ou saisir une valeur) "
 
 #: tformtomdroid.label3.caption
 msgid "Profile Name"
-msgstr ""
+msgstr "Nom du profil"
 
 #: tformtomdroid.label4.caption
 msgid "IP address of device"
-msgstr ""
+msgstr "Adresse IP du périphérique"
 
 #: tformtomdroid.label5.caption
 msgid "SSH Password for device"
-msgstr ""
+msgstr "Mot de passe SSH du périphérique"
 
 #: tformtomdroid.label6.caption
 msgid "Upload means from tomboy-ng to Android Device"
-msgstr ""
+msgstr "\"Upload\" = depuis tomboy-ng vers le périphérique Android"
 
 #: tmainform.bitbtnhide.caption
+#, fuzzy
+msgctxt "tmainform.bitbtnhide.caption"
 msgid "Hide"
-msgstr ""
+msgstr "Cacher"
 
 #: tmainform.bitbtnquit.caption
 #, fuzzy
@@ -1208,7 +1191,7 @@ msgstr "Quitter"
 #: tmainform.buttmenu.caption
 msgctxt "tmainform.buttmenu.caption"
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: tmainform.buttsystrayhelp.caption
 msgid "SysTray Help"
@@ -1216,165 +1199,164 @@ msgstr ""
 
 #: tmainform.caption
 msgid "tomboy-ng"
-msgstr ""
+msgstr "tomboy-ng"
 
 #: tmainform.checkboxdontshow.caption
 msgid "Don't Show for normal startup"
-msgstr ""
+msgstr "Ne plus afficher au prochain démarrage"
 
 #: tmainform.checkboxdontshow.hint
 msgid "You can reverse this from Settings"
-msgstr ""
+msgstr "Inversion possible dans les réglages"
 
 #: tmainform.hint
 msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
-msgstr ""
+msgstr "Si l'icône verte de tomboy-ng est présente dans le dock, la fenêtre peut être fermée."
 
 #: tmainform.label1.caption
 msgid "Have Config"
-msgstr ""
+msgstr "Configuration des préférences"
 
 #: tmainform.label3.caption
 msgid "Dictionary Config (optional)"
-msgstr ""
+msgstr "Vérificateur orthographique (optionnel)"
 
 #: tmainform.label4.caption
 msgid "Sync Config (optional)"
-msgstr ""
+msgstr "Configuration de la synchro (optionnel)"
 
 #: tmainform.label5.caption
 msgid "Welcome to tomboy-ng !"
-msgstr ""
+msgstr "Bienvenue dans tomboy-ng !"
 
 #: tmainform.labelerror.hint
 msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
-msgstr ""
+msgstr "Lancer par le CLI pour voir les erreurs, la Config->Snapshot->Restauration, etc."
 
 #: tnotebookpick.button1.caption
 msgctxt "tnotebookpick.button1.caption"
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: tnotebookpick.buttonok.caption
 msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: tnotebookpick.label4.caption
 msgid "Name of the New Notebook"
-msgstr ""
+msgstr "Nom du nouveau Carnet"
 
 #: tnotebookpick.label5.caption
 msgid "Press OK and we will make the Note Book AND add this note to it."
-msgstr ""
+msgstr "\"OK\"  crée le carnet et y ajoute la note courante."
 
 #: tnotebookpick.label6.caption
 msgid "Existing Name"
-msgstr ""
+msgstr "Nom existant"
 
 #: tnotebookpick.label8.caption
 msgid "New Name"
-msgstr ""
+msgstr "Nouveau nom"
 
 #: tnotebookpick.label9.caption
+#, fuzzy
+#| msgid "If you sync and are not absolutly sure its up to date, Cancel now !"
 msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
-msgstr ""
+msgstr "S'assurer d'être à jour avant une synchro ou annuler maintenant !"
 
 #: tnotebookpick.tabchangename.caption
 msgid "Change Notebook Name"
-msgstr ""
+msgstr "Renommer le Carnet"
 
 #: tnotebookpick.tabexisting.caption
 msgid "Existing Note Books"
-msgstr ""
+msgstr "Carnets existant"
 
 #: tnotebookpick.tabnewnotebook.caption
 msgid "New Note Book"
-msgstr ""
+msgstr "Nouveau carnet"
 
 #: tomdroid.rscheckingforexistingsync
-msgctxt "tomdroid.rscheckingforexistingsync"
 msgid "Checking for an existing sync ...."
-msgstr ""
+msgstr "Vérif. de l'existence d'une synchro..."
 
 #: tomdroid.rsconnectiongood
 msgctxt "tomdroid.rsconnectiongood"
 msgid "Connection is looking Good."
-msgstr ""
+msgstr "La connexion semble bonne."
 
 #: tomdroid.rsfailedtoconnect
 msgctxt "tomdroid.rsfailedtoconnect"
 msgid "Failed to connect."
-msgstr ""
+msgstr "Échec de la connexion."
 
 #: tomdroid.rsfailedtofindconnection_1
-msgctxt "tomdroid.rsfailedtofindconnection_1"
 msgid "Failed to find an existing connection."
-msgstr ""
+msgstr "Impossible de localiser la connexion."
 
 #: tomdroid.rsfailedtofindconnection_2
 msgctxt "tomdroid.rsfailedtofindconnection_2"
 msgid "If you are sure there should be an existing connection, check settings."
-msgstr ""
+msgstr "Pour être sûr de l'existence d'une connexion, vérifier dans les réglages."
 
 #: tomdroid.rsfailedtofindconnection_3
-msgctxt "tomdroid.rsfailedtofindconnection_3"
 msgid "Otherwise, try joining a new connection."
-msgstr ""
+msgstr "Sinon tenter d'établir une nouvelle connexion."
 
 #: tomdroid.rsfixconnection
 msgctxt "tomdroid.rsfixconnection"
 msgid "If you are sure its there, check settings."
-msgstr ""
+msgstr "Pour confirmer son existence vérifier dans les réglages."
 
 #: tomdroid.rshavevalidsync
 msgctxt "tomdroid.rshavevalidsync"
 msgid "Looking Good. Last sync date "
-msgstr ""
+msgstr "Ça semble bon. Dernière synchro le "
 
 #: tomdroid.rsinstalltomdroid
 msgctxt "tomdroid.rsinstalltomdroid"
 msgid "Install Tomdroid, config filesync, and run a sync"
-msgstr ""
+msgstr "Installer Tomdroid puis configurer/exécuter une synchro"
 
 #: tomdroid.rsnoconnection
 msgctxt "tomdroid.rsnoconnection"
 msgid "Failed to establish a connection. "
-msgstr ""
+msgstr "Échec de la connexion."
 
 #: tomdroid.rsnotcorrectprofile
 msgctxt "tomdroid.rsnotcorrectprofile"
 msgid "This is not correct profile for that device"
-msgstr ""
+msgstr "Profil incorrect pour ce périphérique"
 
 #: tomdroid.rsnotexistingrepo
 msgctxt "tomdroid.rsnotexistingrepo"
 msgid "That's not an existing Repo, maybe click \"Join\" ?"
-msgstr ""
+msgstr "Dépôt inconnu, cliquer \"Rejoindre\" ?"
 
 #: tomdroid.rsnotomdroid
 msgctxt "tomdroid.rsnotomdroid"
 msgid "Unable to find Tomdroid sync dir on that device."
-msgstr ""
+msgstr "Répertoire à synchroniser non trouvé sur ce périphérique."
 
 #: tomdroid.rsselectprofile
 msgid "Select a profile"
-msgstr ""
+msgstr "Choisir un profil"
 
 #: tomdroid.rssetupnewsync
 msgctxt "tomdroid.rssetupnewsync"
 msgid "Setting up a new sync ...."
-msgstr ""
+msgstr "Créer une nouvelle synchro..."
 
 #: tomdroid.rstalking
 msgctxt "tomdroid.rstalking"
 msgid "OK, talking to device. Wait for it ...."
-msgstr ""
+msgstr "Échange en cours avec le périphérique"
 
 #: tomdroid.rstalkingtodevice
 msgctxt "tomdroid.rstalkingtodevice"
 msgid "OK, talking to device. Wait for it ...."
-msgstr ""
+msgstr "Contact établi, attente d'une réponse..."
 
 #: tomdroidfile.rsconnectiongood
 #, fuzzy
@@ -1454,281 +1436,273 @@ msgstr "Échange en cours avec le périphérique"
 
 #: tsearchform.buttonclearfilters.caption
 msgid "Clear Filters"
-msgstr ""
+msgstr "Effacer les filtres"
 
 #: tsearchform.buttonmenu.caption
 msgctxt "tsearchform.buttonmenu.caption"
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: tsearchform.buttonrefresh.caption
 msgid "Refresh"
-msgstr ""
+msgstr "Rafraîchir"
 
 #: tsearchform.buttonrefresh.hint
 msgid "Update Search Results"
-msgstr ""
+msgstr "Mettre à jour la recherche"
 
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
-msgstr ""
+msgstr "Recherche tomboy-ng"
 
 #: tsearchform.checkautorefresh.caption
 msgid "Auto Refresh"
 msgstr ""
 
 #: tsearchform.checkcasesensitive.caption
+msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
-msgstr ""
+msgstr "Tenir compte de la casse"
 
 #: tsearchform.menudeletenotebook.caption
 msgid "Delete Notebook"
-msgstr ""
+msgstr "Effacer le carnet"
 
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
-msgstr ""
+msgstr "Éditer le modèle du carnet"
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
-msgstr ""
+msgstr "Créer une note à partir du modèle"
 
 #: tsearchform.menurenamenotebook.caption
+#, fuzzy
+#| msgid "Rename Note Book"
 msgid "Rename NoteBook"
-msgstr ""
+msgstr "Renommer le Carnet"
 
 #: tsearchform.panel2.caption
-#, fuzzy
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Carnets"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
-msgstr ""
+msgstr "Emplacement par défaut"
 
 #: tsett.buttdefaultnotedir.hint
 msgid "Will work for many new users"
-msgstr ""
+msgstr "Fonctionnera en multi-utilisateurs"
 
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
-msgstr ""
+msgstr "Police fixe"
 
 #: tsett.buttonfont.caption
 msgid "Usual Font"
-msgstr ""
+msgstr "Police courante"
 
 #: tsett.buttonmanualsnap.caption
 msgid "Take a Manual Snapshot"
-msgstr ""
+msgstr "Snapshot manuel"
 
 #: tsett.buttonmanualsnap.hint
 msgid "Take a time stamped snapshot of notes and config"
-msgstr ""
+msgstr "Prendre un snapshot horodaté des notes + config"
 
 #: tsett.buttonsetcolours.caption
 msgctxt "tsett.buttonsetcolours.caption"
 msgid "Set Colours"
-msgstr ""
+msgstr "Choix des couleurs"
 
 #: tsett.buttonsetdictionary.caption
 msgid "Set Dictionary"
-msgstr ""
+msgstr "Choix du dictionnaire"
 
 #: tsett.buttonsetnotepath.caption
 msgid "Set Path to Note Files"
-msgstr ""
+msgstr "Choisir l'emplacement"
 
 #: tsett.buttonsetnotepath.hint
 msgid "If you have notes somewhere else"
-msgstr ""
+msgstr "S'il y a des notes ailleurs"
 
 #: tsett.buttonsetspelllibrary.caption
 msgid "Set Spell Library"
-msgstr ""
+msgstr "Choisir la bibliothèque"
 
 #: tsett.buttonshowbackup.caption
 msgid "Show Me"
-msgstr ""
+msgstr "Afficher"
 
 #: tsett.buttonsnaprecover.caption
 msgid "Recover Lost Notes"
-msgstr ""
+msgstr "Récupérer les notes perdues"
 
 #: tsett.buttonsnaprecover.hint
 msgid "If you have previously taken a snapshot ..."
-msgstr ""
-
-#: tsett.caption
-msgid "Form Caption"
-msgstr ""
+msgstr "Si un précédent snapshot existe..."
 
 #: tsett.checkautosnapenabled.caption
+msgctxt "tsett.checkautosnapenabled.caption"
 msgid "Use auto snapshots"
-msgstr ""
+msgstr "snapshot automatique"
 
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
-msgstr ""
+msgstr "Ouvrir au démarrage"
 
 #: tsett.checkboxautosync.caption
 msgid "Auto Sync"
-msgstr ""
+msgstr "Synchro auto"
 
 #: tsett.checkboxautosync.hint
 msgid "Sync, if possible once an hour."
-msgstr ""
+msgstr "Une synchro par heure si possible."
 
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
-msgstr ""
+msgstr "Une note peut figurer dans plusieurs carnets."
 
 #: tsett.checkmanynotebooks.hint
 msgid "This may adversly affect traditional Tomboy, take care."
-msgstr ""
+msgstr "Attention, risque d'impact sur le Tomboy traditionnel."
 
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
-msgstr ""
+msgstr "Voir les liens externes"
 
 #: tsett.checkshowintlinks.caption
 msgid "Show Internal Links"
-msgstr ""
+msgstr "Voir les liens internes"
 
 #: tsett.checkshowsearchatstart.caption
 msgid "Show Search at Start"
-msgstr ""
+msgstr "Afficher la recherche au démarrage"
 
 #: tsett.checkshowsplash.caption
 msgid "Show Splash at Start"
-msgstr ""
+msgstr "Afficher la fenêtre de démarrage"
 
 #: tsett.checkshowsplash.hint
 msgid "Always shown if error loading notes."
-msgstr ""
+msgstr "Toujours affiché en cas d'erreur de chargement des notes."
 
 #: tsett.checkshowtomdroid.caption
 msgid "Show Tomdroid Sync (experimental)"
-msgstr ""
+msgstr "Afficher la synchro Tomdroid (expérimental)"
 
 #: tsett.groupbox4.caption
 msgid "  Options  "
-msgstr ""
+msgstr " Options "
 
 #: tsett.groupbox5.caption
 msgid "Font Size"
-msgstr ""
+msgstr "Taille de police"
 
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
-msgstr ""
+msgstr " Synchro "
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
-msgstr ""
+msgstr "Les réglages seront sauvegardés dans :"
 
 #: tsett.label10.caption
+msgctxt "tsett.label10.caption"
 msgid "Help Notes Language"
-msgstr ""
+msgstr "Langue pour les notes"
 
 #: tsett.label11.caption
 msgid "Backup Files"
-msgstr ""
+msgstr "Fichiers de sauvegarde"
 
 #: tsett.label13.caption
 msgid "Spell Check requires the Hunspell Libraries and"
-msgstr ""
+msgstr "Le contrôle de l'orthographe requiert des bibliothèques Hunspell"
 
 #: tsett.label14.caption
 msgid "an appropriate Hunspell Dictionary set."
-msgstr ""
+msgstr "et un réglage approprié du dictionnaire."
 
 #: tsett.label16.caption
+#, fuzzy
+#| msgid "Maxium number of snapshots"
 msgid "Maximum number of snapshots"
-msgstr ""
+msgstr "snaphots au maximum"
 
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
-msgstr ""
+msgstr "Les notes seront sauvegardées dans :"
 
 #: tsett.label3.caption
 msgid "When a conflict is detected between a local note and remote one :"
-msgstr ""
+msgstr "Lors d'un conflit entre les notes locales et distantes :"
 
 #: tsett.label4.caption
 msgid "Repo : "
-msgstr ""
+msgstr "Dépôt : "
 
 #: tsett.label5.caption
 msgid "Days per snapshot"
-msgstr ""
+msgstr "jours entre 2 synchro"
 
 #: tsett.label6.caption
 msgid "Backup files are made when you delete a note or the sync system"
-msgstr ""
+msgstr "Une sauvegarde est réalisé quand une note est effacée"
 
 #: tsett.label7.caption
 msgid "is about to overwrite one. "
-msgstr ""
+msgstr "manuellement ou par une synchronisation."
 
 #: tsett.label8.caption
 msgid "They remain, for ever, unless you do something about them."
-msgstr ""
+msgstr "Elle reste ensuite présente jusqu'à son effacement manuel."
 
 #: tsett.label9.caption
 msgid "A snaphot is a copy of your current note directory."
-msgstr ""
+msgstr "Un snapshot est une copie en l'état du répertoire des notes"
 
 #: tsett.labelfilesync.caption
-#, fuzzy
 msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "non configuré"
 
-#: tsett.labelfilesyncinfo1.caption
-msgid "LabelFileSyncInfo1"
-msgstr ""
-
-#: tsett.labelfilesyncinfo2.caption
-msgid "LabelFileSyncInfo2"
-msgstr ""
-
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
-msgstr ""
+msgstr "Répertoire des snap"
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."
-msgstr ""
+msgstr "Demander quoi faire à chaque fois."
 
 #: tsett.radiofontbig.caption
 msgid "Big"
-msgstr ""
+msgstr "Police grande"
 
 #: tsett.radiofonthuge.caption
 msgctxt "tsett.radiofonthuge.caption"
 msgid "Huge"
-msgstr ""
+msgstr "Police énorme"
 
 #: tsett.radiofontmedium.caption
 msgid "Medium"
-msgstr ""
+msgstr "Police moyenne"
 
 #: tsett.radiofontsmall.caption
 msgid "Small"
-msgstr ""
+msgstr "Police petite"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
-msgstr ""
+msgstr "Préférer la note locale, écraser la note serveur."
 
 #: tsett.radiouseserver.caption
 msgid "Use Server Note and Rename Local Note."
-msgstr ""
+msgstr "Préférer la note serveur, écraser la note locale."
 
 #: tsett.speedbuthelp.caption
-#, fuzzy
 msgctxt "tsett.speedbuthelp.caption"
 msgid "Help"
 msgstr "Aide"
@@ -1736,43 +1710,42 @@ msgstr "Aide"
 #: tsett.speedbuthide.caption
 msgctxt "tsett.speedbuthide.caption"
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: tsett.speedbutttbmenu.caption
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: tsett.speedsetupsync.caption
-#, fuzzy
 msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
-msgstr "Configurer"
+msgstr "Réglages"
 
 #: tsett.tabbackup.caption
 msgid "BackUp"
-msgstr ""
+msgstr "Sauvegarde"
 
 #: tsett.tabbasic.caption
 msgid "Basic"
-msgstr ""
+msgstr "Général"
 
 #: tsett.tabdisplay.caption
 msgid "Notes"
-msgstr ""
+msgstr "Notes"
 
 #: tsett.tabrecover.caption
 msgctxt "tsett.tabrecover.caption"
 msgid "Recover"
-msgstr ""
+msgstr "Restauration"
 
 #: tsett.tabspell.caption
 msgctxt "tsett.tabspell.caption"
 msgid "Spell"
-msgstr ""
+msgstr "Orthographe"
 
 #: tsett.tabsync.caption
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
-msgstr ""
+msgstr "Synchro"
 

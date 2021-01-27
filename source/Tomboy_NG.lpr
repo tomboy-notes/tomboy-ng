@@ -28,8 +28,8 @@ uses
 {$R *.res}
 
 begin
-		Application.Scaled:=True;
-		Application.Title:='tomboy-ng';
+    Application.Scaled:=True;
+    Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
 

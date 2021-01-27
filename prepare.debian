@@ -1,5 +1,5 @@
 #!/bin/bash
-# copyright David Bannon, 2019, 2020, use as you see fit, but retain this statement.
+# copyright David Bannon, 2019, 2020, 2021 use as you see fit, but retain this statement.
 #
 
 # This script takes a tomboy-ng zip file from github, and prepares things to
@@ -58,25 +58,26 @@
 # discovered after release. This problem can be one of two sorts -
 # 1. An Debian packaging issue. In this case the tomboy-ng code is unchanged
 #    and we fiddle the packaging. The -1 in the version number should be 
-#    reved to -2 (etc), edit the constant below.
+#    reved to -2 (etc), edit DEBVER the constant below.
 # 2. A tomboy-ng code issue (oh dear!). In this case, we need to change the
 #    tomboy-ng release number by adding or incrementing a letter after the number.
 #    The change, eg from 0.32 to 0.32a is made in the github repo, not here and
 #    a new zipball is downloaded. The script will spot the change and act 
 #    accordingly.
 # 
-# David Bannon, July 2020
+# David Bannon, Jan 2021
 # History -
 #	2020-09-02 Added -D distro switch
 #       2020-12-17 Restructed the multi control system to make it clearer.
 #       2020-12-29 Split script into seperate Debian one, only Qt5.
+#       2021-01-27 More detailed instructions on use.
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
 DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
 DEF_FULLNAME="David Bannon"		# and this ...
 UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name in Ubuntu PPA !
-DEBVER="-3"				# Package version, not source, starts at 1
+DEBVER="-1"				# Package version, not source, starts at 1
 
 # Housekeeping stuff, helpers for debugging etc. Set with command line, not here !
 VER="unknown"
