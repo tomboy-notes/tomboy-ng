@@ -243,7 +243,7 @@ end;
 RESOURCESTRING
   rsSetUpNewSync ='Setting up a new sync ....';
   rsFailedToConnect = 'Failed to connect.';
-  rsTalking = 'OK, talking to device. Wait for it ....';
+  rsTalkingToDevice = 'OK, talking to device. Wait for it ....';
   rsNoTomdroid =  'Unable to find Tomdroid sync dir on that device.';
   rsInstallTomdroid = 'Install Tomdroid, config filesync, and run a sync';
   rsNoConnection = 'Failed to establish a connection. ';
@@ -276,7 +276,7 @@ begin
             memo1.append(rsFailedToConnect + ' ' + ASync.ErrorString);
             exit();
         end;
-        Memo1.Append(rsTalking);
+        Memo1.Append(rsTalkingToDevice);
         Application.ProcessMessages;
         Tick2 := GetTickCount64();
         case ASync.TestConnection() of
@@ -400,7 +400,7 @@ end;
 
 RESOURCESTRING
   rsCheckingForExistingSync = 'Checking for an existing sync ....';
-  rsTalkingToDevice = 'OK, talking to device. Wait for it ....';
+  // rsTalkingToDevice = 'OK, talking to device. Wait for it ....';
   rsNotExistingRepo = 'That''s not an existing Repo, maybe click "Join" ?';
   rsNotCorrectProfile = 'This is not correct profile for that device';
   rsFailedToFindConnection_1 = 'Failed to find an existing connection.';

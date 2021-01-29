@@ -1,6 +1,6 @@
-unit TB_datetime;
+unit tb_utils;
 
-{ A very simple unit that provides some simple Date / Time functions specificially
+{ A very simple unit that provides some utilities and simple Date / Time functions specificially
   tuned for tomboy-ng.
 
   It provides a means to convert a ISO8601 string to a TDataTime and back again
@@ -22,6 +22,9 @@ unit TB_datetime;
   We could make a simpler function that just does it but I have found real problems
   with date strings and am inclined to be careful.
 
+
+  HISTORY :
+  2021/01/29  Added TB_MakeFileName
 }
 
 
@@ -32,6 +35,8 @@ interface
 uses
         Classes, SysUtils;
 
+                        // Gets sent a string that is converted into something suitable to use as base filename
+function TB_MakeFileName(const Candidate : string) : string;
 
 function MyFormatDateTime(aUTCDateTime : TDateTime; HumanReadable : boolean = false) : string;
 
@@ -44,6 +49,17 @@ implementation
 uses dateutils;
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
+
+  // Gets sent a string that is converted into something suitable to use as base filename
+function TB_MakeFileName(const Candidate : string) : string;
+begin
+Result := StringReplace(Candidate, #32, '', [rfReplaceAll]);
+Result := StringReplace(Result, '/', '_', [rfReplaceAll]);
+Result := StringReplace(Result, '\', '_', [rfReplaceAll]);
+Result := StringReplace(Result, '*', '_', [rfReplaceAll]);
+Result := StringReplace(Result, '.', '_', [rfReplaceAll]);
+end;
+
 
 function GetUTCOffset() : string;
 var

@@ -203,6 +203,7 @@ unit EditBox;
     2021/01/22  When activating a note from the search form, jump to first match is Term is not empty
     2021/01/25  Replace FindDialog with statusbar like system. Need shortcut keys defined.
     2021/01/27  Previous find is now Ctrl-Alt-F, next one is Alt-F
+    2021/01/29  Use TB_Utils/TB_MakeFileName when exporting
 }
 
 
@@ -384,6 +385,7 @@ type
         function FindIt(Term: string; GoForward, CaseSensitive: boolean ): boolean;
         function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string ): boolean;
         procedure InsertDate();
+        //function MakeFileName(const Candidate: string): string;
         function ParagraphTextTrunc(): string;
         function RelativePos(const Term: ANSIString; const MText: PChar;
             StartAt: integer): integer;
@@ -505,6 +507,7 @@ uses
     math,
     FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
     LCLIntf,            // OpenUrl()
+    TB_Utils,
     ResourceStr;        // We borrow some search related strings from searchform
 
 const
@@ -1227,6 +1230,15 @@ begin
    SaveNoteAs('rtf');
 end;
 
+ {               // Gets sent a string that is converted into something suitable to use as base filename
+function TEditBoxForm.MakeFileName(const Candidate : string) : string;
+begin
+   Result := StringReplace(Candidate, #32, '', [rfReplaceAll]);
+   Result := StringReplace(Result, '/', '_', [rfReplaceAll]);
+   Result := StringReplace(Result, '\', '_', [rfReplaceAll]);
+   Result := StringReplace(Result, '*', '_', [rfReplaceAll]);
+end; }
+
 procedure TEditBoxForm.SaveNoteAs(TheExt : string);
 var
     SaveExport : TSaveDialog;
@@ -1243,7 +1255,8 @@ begin
           SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
           {$endif}
      end;
-     SaveExport.Filename := StringReplace(CleanCaption(), #32, '', [rfReplaceAll]) + '.' + TheExt;
+     SaveExport.Filename := TB_MakeFileName(CleanCaption());
+     // SaveExport.Filename := StringReplace(CleanCaption(), #32, '', [rfReplaceAll]) + '.' + TheExt;
      if SaveExport.Execute then begin
         if 'txt' = TheExt then
            KMemo1.SaveToTXT(SaveExport.FileName)

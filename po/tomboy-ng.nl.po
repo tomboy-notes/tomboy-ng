@@ -1386,11 +1386,6 @@ msgctxt "tomdroid.rssetupnewsync"
 msgid "Setting up a new sync ...."
 msgstr ""
 
-#: tomdroid.rstalking
-msgctxt "tomdroid.rstalking"
-msgid "OK, talking to device. Wait for it ...."
-msgstr ""
-
 #: tomdroid.rstalkingtodevice
 msgctxt "tomdroid.rstalkingtodevice"
 msgid "OK, talking to device. Wait for it ...."

@@ -8,7 +8,7 @@ object FormMarkdown: TFormMarkdown
   ClientWidth = 821
   OnActivate = FormActivate
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.1.0.0'
   object Memo1: TMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Panel1
@@ -97,7 +97,7 @@ object FormMarkdown: TFormMarkdown
     ParentColor = False
   end
   object SaveDialog1: TSaveDialog
-    left = 510
-    top = 306
+    Left = 510
+    Top = 306
   end
 end
