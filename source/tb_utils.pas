@@ -53,11 +53,11 @@ const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double
   // Gets sent a string that is converted into something suitable to use as base filename
 function TB_MakeFileName(const Candidate : string) : string;
 begin
-Result := StringReplace(Candidate, #32, '', [rfReplaceAll]);
-Result := StringReplace(Result, '/', '_', [rfReplaceAll]);
-Result := StringReplace(Result, '\', '_', [rfReplaceAll]);
-Result := StringReplace(Result, '*', '_', [rfReplaceAll]);
-Result := StringReplace(Result, '.', '_', [rfReplaceAll]);
+    Result := StringReplace(Candidate, #32, '', [rfReplaceAll]);
+    Result := StringReplace(Result, '/', '_', [rfReplaceAll]);
+    Result := StringReplace(Result, '\', '_', [rfReplaceAll]);
+    Result := StringReplace(Result, '*', '_', [rfReplaceAll]);
+    Result := StringReplace(Result, '.', '_', [rfReplaceAll]);
 end;
 
 

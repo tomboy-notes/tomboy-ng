@@ -369,7 +369,7 @@ msgid "Exact matches for terms between \" \""
 msgstr ""
 
 #: resourcestr.rssearchnavhint
-msgid "Search : Previous Shift-Alt-F   Next Alt-F"
+msgid "Find Keys : Previous : Shift-Alt-F   Next : Alt-F"
 msgstr ""
 
 #: resourcestr.rssetthenotebooks
@@ -554,6 +554,10 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr ""
 
+#: teditboxform.editfind.text
+msgid "EditFind"
+msgstr ""
+
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr ""
@@ -564,6 +568,10 @@ msgstr ""
 
 #: teditboxform.label4.caption
 msgid "Please close it (and re-open if it was a download)"
+msgstr ""
+
+#: teditboxform.labelfindinfo.caption
+msgid "LabelFindInfo"
 msgstr ""
 
 #: teditboxform.menubold.caption

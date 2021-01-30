@@ -245,7 +245,7 @@ type        { TSearchForm }
                             Button. DontBackUp says do not make a backup as we opne because we are in
                             a Roll Back Cycle.}
         procedure OpenNote(NoteTitle: String; FullFileName: string = '';
-				            TemplateIs: AnsiString = ''; BackUp: boolean = True) ;
+        				            TemplateIs: AnsiString = ''; BackUp: boolean = True; InSearch : boolean = false) ;
         { Returns True if it put next Note Title into SearchTerm }
         function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
@@ -1088,7 +1088,8 @@ end;
 
 
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
-		                                TemplateIs: AnsiString; BackUp: boolean);
+    TemplateIs: AnsiString; BackUp: boolean; InSearch: boolean);
+// Everything except the first parameter is optional, take care !
 // Might be called with no Title (NewNote) or a Title with or without a Filename
 var
     EBox : TEditBoxForm;
@@ -1103,13 +1104,13 @@ begin
             else NoteFileName := '';
 		end else NoteFileName := FullFileName;
         // if we have a Title and a Filename, it might be open aleady
-        if NoteLister.IsThisNoteOpen(NoteFileName, TheForm) then begin
+        if NoteLister.IsThisNoteOpen(NoteFileName, TheForm) then begin          // Note is already open
             // if user opened and then closed, we won't know we cannot re-show
             try
             	TheForm.Show;
                 MoveWindowHere(TheForm.Caption);
                 TheForm.EnsureVisible(true);
-                if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> rsMenuSearch) then
+                if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
                      TEditBoxForm(TheForm).NewFind(Edit1.Text);
                 exit();
 			except on  EAccessViolation do
@@ -1123,18 +1124,27 @@ begin
        //TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
         TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
 	EBox := TEditBoxForm.Create(Application);
-    if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> rsMenuSearch) then
+{    if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> rsMenuSearch) then
         // Looks like we have a search in progress, lets take user there when note opens.
         EBox.SearchedTerm := Edit1.Text
-    else
+    else  }
         EBox.SearchedTerm := '';
     EBox.NoteTitle:= NoteTitle;
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
-    //EBox.Top := Placement + random(Placement*2);
-    //EBox.Left := Placement + random(Placement*2);
     EBox.Show;
     // if we have a NoteFileName at this stage, we just opened an existing note.
+
+    if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
+        EBox.NewFind(Edit1.Text);
+
+    // ToDo : above will open a note in Searched mode, even if user has gone back to main menu
+    // to open the note.  Just because a search is current in the Search Window, we should not
+    // assume user wants a Main Menu opened note to come up in that search mode ????
+    // Also affect a few lines further up, when searching and then bringing an already used note
+    // into focus.
+    // We should only allow jumping into search mode when its a double click on the ListView.
+
     if (NoteFileName <> '') and BackUp  then
         BackupNote(NoteFileName, 'opn');
     EBox.Dirty := False;
@@ -1163,7 +1173,8 @@ begin
       	showmessage('Cannot open ' + FullFileName);
       	exit();
   	end;
-  	if length(NoteTitle) > 0 then OpenNote(NoteTitle, FullFileName);
+  	if length(NoteTitle) > 0 then OpenNote(NoteTitle, FullFileName, '', True,
+                            ((Edit1.Text <> '') and (Edit1.Text <> rsMenuSearch) and Visible));
 end;
 
 procedure TSearchForm.ListViewNotesDrawItem(Sender: TCustomListView;
