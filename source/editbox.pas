@@ -204,6 +204,7 @@ unit EditBox;
     2021/01/25  Replace FindDialog with statusbar like system. Need shortcut keys defined.
     2021/01/27  Previous find is now Ctrl-Alt-F, next one is Alt-F
     2021/01/29  Use TB_Utils/TB_MakeFileName when exporting
+    2021/01/31  Fix UTF8 issue in Find, check for hits in FindIt if NumbFindHits = 0
 }
 
 
@@ -1120,7 +1121,7 @@ begin
 end;
 
 // Call to start searching at at existing position (usually cursor).
-//
+// Note that StartAt arrives here as a (utf8) char index, not a byte index.
 function TEditBoxForm.FindIt(Term : string; StartAt : integer; GoForward, CaseSensitive : boolean) : boolean;
 var
     NewPos : integer = 0;
@@ -1128,6 +1129,8 @@ var
     Ptr, EndP : PChar;
     {$endif}
     NumbCR : integer = 0;
+
+    Cnt : integer = 1;
 
         function JumpToItem() : boolean;
         begin
@@ -1145,6 +1148,8 @@ var
             result := NewPos <> 0;      // false, 0, means item not found.
         end;
 begin
+    startAt := length(utf8copy(KMemo1.Blocks.Text, 1, StartAt)); // Convert from unicode char length to byte length
+
     if not JumptoItem() then begin       // we try to find it, wrapping around once if necessary
         if GoForward then
             StartAt := 1
@@ -1166,6 +1171,8 @@ begin
         KMemo1.SelLength := UTF8length(Term);
         if Result then LastFind := NewPos;
     end;
+    if NumbFindHits = 0 then                // May it is zero, maybe user has pressed arrows instead of Enter in search field
+        GetFindHits(Term, CaseSensitive);
     GetFindHits(Term, CaseSensitive, NewPos);
 end;
 
@@ -1311,7 +1318,7 @@ begin
             fs_EditFindChanged : begin
                         KMemo1.SelLength := 0;
                         GetFindHits(EditFind.Text, False);
-                        FindIt(EditFind.Text, KMemo1.Selstart+1, true, False);
+                        FindIt(EditFind.Text, KMemo1.Selstart, true, False);
                         FindStatus := fs_EditFindFirstSearch;
                         end;
             fs_EditFindFirstSearch : if not FindIt(EditFind.Text, KMemo1.selstart+1, true, False) then
