@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<note version="0.3" xmlns="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size">
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>Sincronización con Tomdroid</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>Sincronización con Tomdroid</underline>
+
+<bold>¡Nuevo en  V0.32, conexión entre PC y dispositivo Android usando un cable!  Sin necesidad de perfiles, contraseñas ni ssh.</bold>
 
 Bienvenido a la estrategia de de  tomboy-ng de sincronizarse con Tomdroid. Por favor, dese cuenta de que es una función experimental en tomboy-ng y depende mucho de lo que hace el mismo Tomdroid. Sin embargo, el autor ha usado este modelo habitualmente durante un par de semanas en varios dispositivos Android, y hasta el momento parece que funciona. Tiene ganas de saber sus experiencias.<size:large>
 
@@ -11,63 +13,69 @@ Como app independiente, <monospace>Tomdroid</monospace> funciona bastante bien, 
 Sin embargo, tomboy-ng no sincroniza a través de una red. Tomboy-ng, sí, hace una sincronización basada en archivos donde un repositorio compartido está visible para todas las partes.  Es rápido y bastante fácil, pero Tomdroid no puede formar parte de este tipo de sistema. <size:large>
 
 <bold>La solución</bold></size:large>
-tomboy-ng, a parir de la versión 0.2 puede <italic>puede hacer una sincronización uno-a-uno</italic> entre Tomdroid y un equipo con Linux. El equipo con Linux puede formar parte del grupo de sincronización de archivos, o no. Puede establecer tantas de estas conexiones uno-a-uno como dispositivos Tomdroid que tenga.<size:large>
+tomboy-ng, a partir de versión 0.32 puede hacer <italic>una sincronización uno-a-uno</italic> entre Tomdroid y un equipo de Linux Box a través de un cable USB. El equipo con Linux puede formar parte del grupo de sincronización de archivos, o no. Puede establecer tantas de estas conexiones uno-a-uno como dispositivos Tomdroid que tenga.<size:large>
 
 
-Lo que hace falta</size:large>
-<list><list-item dir="ltr">Un PC, portátil o cualquier equipo Linux donde se ejecuta tomboy-ng. Instalar sshpass en el equipo, que casi seguro está disponible desde el repositorio de su distribución. Téngase en cuenta que sshpass presenta algunas dudas sobre seguridad. No creo que sea un problema en este caso, pero lea la parte sobre seguridad más abajo. </list-item></list>
-<list><list-item dir="ltr">Uno o más dispositivos Android (móvil, tablet, etc) con Tomdroid y sshdroid instalados, ambos disponibles desde la tienda PlayStore.</list-item></list><size:large>
+<bold>Lo que hace falta</bold></size:large>
+<list><list-item dir="ltr">Un PC, portátil o cualquier equipo Linux donde se ejecuta tomboy-ng.  </list-item></list>
+<list><list-item dir="ltr">Uno o más dispositivos Android (móvil, tablet, etc) con Tomdroid instalado, por ejemplo, desde la tienda PlayStore o F-Droid.</list-item></list>
+<list><list-item dir="ltr">Un cable USB normal para conectarlos.</list-item></list><size:large>
 
-<bold>Configuración</bold></size:large>
-Si ya tienes notas de tomboy-ng y una instalación nueva de Tomdroid, debería -
+<bold>Configuración para el primer uso</bold></size:large>
+Si ya tienes notas de tomboy-ng y una instalación nueva de Tomdroid, debería seguir los siguientes pasos.
 
-Abrir Tomdroid en el dispositivo. Toque el menú, seleccione Preferencias y busque la sección "Sincronización". Compruebe que la preferencia del servicio es "Tarjeta SD" (no hace falta tener un Tarjeta SD externa porque Android dirige los datos a un espacio interno) y que la ubicación en la Tarjeta SD indica /storage/emulated/0/Tomdroid/.  Cierra la ventana de Preferencias y toque el icono de sincronización en la barra del menú.
+Abra Tomdroid en el dispositivo. Toque el Menú (arriba a la derecha), elija "Ajustes" y localice el grupo "Sincronización". Compruebe que la preferencia del servicio es "Tarjeta SD" (no hace falta tener un Tarjeta SD externa porque Android dirige los datos a un sitio interno) y que la ubicación en la Tarjeta SD indica "/storage/emulated/0/Tomdroid/".  Cierra la ventana de Preferencias y toque el icono de sincronización en la barra del menú. Si no tiene notas Tomdroid en este momento, pasará rápido.
 
-Ahora, abra sshdroid. La primera cosa que debería hacer es ir a Preferencias y cambiar la contraseña por defecto a algo suyo. De nuevo, vea la sección abajo sobre seguridad.
+<bold>IMPORTANTE</bold> - cierra Tomdroid ahora. Android usa bastante el caché de disco y tenemos que asegurarnos que ha llegado al 'disco'.
 
-En el equipo de Linux, vaya a las Preferencias de tomboy-ng, <italic>Pestaña Ver</italic>, y marque <italic>Mostrar Sincronización Tomdroid</italic>. Obsérvese que es experimental. Ahora, debería hacer una sincronización normal (es decir, que no es de Tomdroid) o una instantánea, o mejor, ¡ambos! Instantáneas son fáciles de hacer: Preferencias&gt;Instantáneas y haga clic en <italic>Hacer Instantánea Manual</italic>. ¡Demasiado fácil!<size:large>
+Ahora conectar el dispositivo Android al PC. El dispositivo le pedirá permitir acceso desde el PC a sus archivos.
 
-Crear un perfil </size:large>
+En el equipo de Linux, vaya a las Preferencias de tomboy-ng,<italic> Pestaña Básico</italic>, y marque <italic>Mostrar Sincronización Tomdroid</italic>. Obsérvese que es experimental. Ahora, debería hacer una sincronización normal (es decir, que no es de Tomdroid) o una instantánea, o mejor, ¡ambos! Instantáneas son fáciles de hacer: Preferencias&gt;Instantáneas y haga clic en <italic>Hacer Instantánea Manual</italic>. ¡Demasiado fácil!
 
-Ahora empieza lo divertido. Haga clic en el icono de tomboy-ng en la bandeja y elija Tomdroid. Toma nota: Es muy importante - los sistemas de archivos de Android guardan muchos datos en caché. <bold>Tomdroid tiene que estar apagado</bold>, no solamente puesto en segundo plano. El método que me parece más fácil es tocar el botón de Android que muestra los procesos en ejecución. En esta pantalla, se muestra Tomdroid con una X arriba a la derecha. Toque la X.
+El Menú Principal ahora tendrá una entrada "Tomdroid". ¡Haga clic en ello!
 
-Establezca el Nombre del Perfil a su dispositivo, por ejemplo, <italic>My Galaxy Note 7</italic>. Puede ver la dirección IP del dispositivo en la pantalla de sshdroid. Utilice solamente el componente IP, es decir, 192.168.1.132 - No ponga "root" ni ":2222". Espero que recuerde la contraseña que estableció en sshdroid. 
+La próxima pantalla intentará encontrar a su dispositivo Android, concretamente el directorio que contiene los archivos de sincronización de Tomdroid. Si todo está bien, le sugerirá hacer clic en "Unirse". Hágalo. Tardará un minuto o dos en transferir al dispositivo copias de sus notas en el PC. Al terminar, cierre la conexión con el dispositivo usando en el PC el Gestor de Archivos o una utilidad dedicada a hacerlo si hay.
 
-Haga clic en el botón "Unirse" al ser la primera sincronización. Espere, ¡tal vez un buen rato si tiene muchas notas! Si ve un mensaje sobre "Executable not found 'sshpass'", entonces no ha instalado sshpass. Hágalo.
-
-Cuando termine (y todo tiene sentido), haga clic en el botón "Guardar".  Ahora, en el dispositivo Android, cierra sshdroid, abra Tomdroid otra vez y toque sincronizar. ¡Todas sus notas nos pertenecen!<size:large>
+Lance Tomdroid de nuevo, toque el símbolo de sincronización, y todas sus notas debería empezar a aparecer en Tomdroid.<size:large>
 
 <bold>Sincronización rutinaria</bold></size:large>
 Es importante que siga estos pasos en cada sincronización.
-<list><list-item dir="ltr">Desde Tomdroid, tocar el botón sincronizar y luego cerrar Tomdroid. ¡Ciérralo de verdad!  </list-item></list>
-<list><list-item dir="ltr">Abrir sshdroid tomando nota de la dirección IP del dispositivo.</list-item></list>
-<list><list-item dir="ltr">Desde tomboy-ng, hacer clic en Sincronización Tomdroid, elegir un perfil y hacer clic en el botón Sincronizar. Esperar hasta que la sincronización termine. </list-item></list>
-<list><list-item dir="ltr">Volviendo al dispositivo, cerrar sshdroid y abrir Tomdroid. Tocar el botón "Sincronización Tomdroid".</list-item></list><size:large>
+<list><list-item dir="ltr">Desde Tomdroid, tocar el icono sincronizar y luego cerrar Tomdroid. ¡Ciérralo de verdad!  </list-item></list>
+<list><list-item dir="ltr">Conectar el dispositivo Android al PC con un cable USB.</list-item></list>
+<list><list-item dir="ltr">Desde tomboy-ng, haga clic en Sincronización Tomdroid y debería identificar el dispositivo como uno de sincronización y sugerirle que haga clic en el icono de sincronización. </list-item></list>
+<list><list-item dir="ltr">Cierra la conexión, lance de nuevo Tomdroid y toque el icono de sincronización para finalizar la sincronización. </list-item></list>
 
-<bold>Seguridad</bold></size:large>
-¡Importante!  Este método tiene algunos puntos débiles, pero si se usa como previsto, creo que no son importantes. Aquí están:
+Si sincroniza tomboy-ng con otros portátiles o PCs, tiene sentido hacerlo antes de hacer una sincronización rutinaria con Tomdroid, y otra inmediatamente después.<size:large>
 
-<list><list-item dir="ltr"><highlight><bold>sshdroid</bold> - tiene una contraseña por defecto conocida por todos. Entonces, asegúrese de que lo cambie antes de usar la aplicación. Tambien, asegúrese de lanzar sshdroid cuando todo esté listo para la sincronización y de cerrarlo al terminar.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight><bold>contraseña</bold> - en tomboy-ng puede, si quiere, marcar la casilla para guardar la contraseña de sshdroid en el archivo de configuración. Se guarda en un texto plano y se muestra en texto en la pantalla. Si está en un entorno donde hay un riesgo importante, no haga clic en la casilla y entre la contraseña para cada sincronización. Si el texto plenamente legible le preocupa, dígalo al autor y puede que lo cambie.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight><bold>sshpass</bold> - puede ser peligroso si se usa en un equipo compartido. Equipos con Linux permiten usuarios múltiples, pero si tomboy-ng está en un equipo personal de un usuario a la vez, realmente no es un problema. "En mi opinión humilde". </highlight></list-item></list><highlight/><size:large>
+<bold>Sincronización uno-a-uno</bold></size:large>
+También incorporado al tomboy-ng es la capacidad de hacer una sincronización uno-a-uno, parecida al modelo de Tomdroid, sino utilizando cualquier directorio. Aquí se trata sólo de la parte de la sincronización de tomboy-ng, entonces si utiliza este método, debe gestionar para si misma las notas que aparezcan en ese directorio.
+
+Para indicar el directorio que utiliza tomboy-ng, tiene que establecer un variable de entorno, TB_ONETOONE dirigido al directorio que quiere utilizar antes de lanzar tomboy-ng. Este directorio tiene que existir y tener permiso de escritura. Si está sin usar, requerirá un "Unirse" y se inicializa según se necesite. Por ejemplo:
+
+<monospace>$  TB_ONETOONE=/home/minombre/MiUnoaUno  tomboy-ng  &lt;enter&gt;</monospace>
+  
+Empiece la sincronización a través de elemento "Tomdroid" en el menú. Tome nota que no puede usar la conexión con cable USB de Tomdroid y la conexión Uno-a-Uno en la misma sesión de tomboy-ng, pero cerrando y reiniciando tomoy-ng sin el variable de entorno restablecerá el comportamiento normal de la conexión con cable USB de Tomdroid. <size:large>
 
 <bold>Consejos generales</bold>
 Opciones de Tomdroid y sus efectos</size:large>
 <list><list-item dir="ltr"><italic><bold>Notas Claras - Eliminar todas las notas de la base de datos local.</bold></italic>  Si usa esta opción y luego toca "Sincronizar" (de Tomdroid), conseguirá un conjunto nuevo de notas de las que están en el directorio de sincronización. </list-item></list>
-<list><list-item dir="ltr"><italic><bold>Eliminar Notas Remotas - Eliminar todas las notas del servicio remoto.</bold></italic> <highlight>¡Tenga cuidado con esta opción! </highlight>Si elige esto y luego sincroniza desde tomboy-ng, todas las notas sincronizadas antes se eliminarán de tomboy-ng. (Pero hizo una copia de seguridad antes, ¿no?)  Casi sin duda no quiere esta opción, entonces tenga cuidad, por favor. Si ha marcado está opción y perdido las notas remotas, ejecute "Unirse" ("Join") en vez de "Sincronizar" dado que "unirse" no elimina archivos y, por eso, siempre es seguro. Acuérdese que tomboy-ng tiene algunas herramientas que ayudan en recuperar del mal uso de las herramientas arriba citadas.</list-item></list>
-<list><list-item dir="ltr">Si ha tenido notas en Tomdroid pero quiere eliminar todas ellas antes de sincronizar para que su Tomdroid tiene solamente las notas de su colección tomboy-ng, haga las dos cosas anteriores y luego toque el botón de sincronización de Tomdroid. Más tarde (Despues de cerrar Tomdroid definitivamente, como siempre) ejecute unir tomboy-ng a Tomdroid <highlight>Join</highlight> para crear una nueva conexión de sincronización.   </list-item></list><size:large>
+<list><list-item dir="ltr"><italic><bold>Eliminar Notas Remotas - Eliminar todas las notas del servicio remoto. </bold></italic> <highlight>¡Tenga cuidado con esta opción! </highlight>Si elige esto y luego sincroniza desde tomboy-ng, todas las notas sincronizadas antes se eliminarán de tomboy-ng. (Pero hizo una copia de seguridad antes, ¿no?)  Casi sin duda no quiere esta opción, entonces tenga cuidad, por favor. Si ha marcado está opción y perdido las notas remotas, ejecute "Unirse" ("Join") en vez de "Sincronizar" dado que "unirse" no elimina archivos y, por eso, siempre es seguro. Acuérdese que tomboy-ng tiene algunas herramientas que ayudan en recuperar del mal uso de las herramientas arriba citadas.</list-item></list>
+
+<list><list-item dir="ltr"><italic><bold>¿Funciona con Windows o Mac? </bold></italic>  Todavía, no, pero es probable que será mucho más fácil hacer lo funcionar allí que la manera antigua. Entonces, quizás.</list-item></list>
+<list><list-item dir="ltr"><italic><bold>¿Puede sincronizar mi móvil con varios equipos?</bold></italic>   No. Cada vez que sincroniza con un equipo "nuevo", tiene que hacer un "Unirse", que implica que notas que eliminó antes puede que se restaure.  Sincronice sus equipos con la sincronización de archivos normal de tomboy-ng y elija un equipo como el punto de acceso a sus dispositivos Android.</list-item></list>
+<list><list-item dir="ltr"><italic><bold>¿Se puede conectar un equipo a varios dispositivos Android? </bold></italic>  Sí, está bien mientras que lo haga uno por uno. Puede que tenga que repetir la sincronización inicial después de una segunda hasta que no haya cambios indicados en el programa. </list-item></list>
+   <size:large>
 
 Otros asuntos</size:large>
 <list><list-item dir="ltr"><bold>Unirse frente a Sincronizar</bold> - Son procesos similares, solamente que no podemos usar un manifiesto local durante el proceso de unirse. El manifiesto local contiene datos sobre notas eliminadas, entonces "unirse" en vez de "sincronizar" reavivará notas eliminadas en un lado o el otro.</list-item></list>
-<list><list-item dir="ltr"><bold>Perfiles Múltiples</bold> - A pesar de poder tener todos los perfiles que quiera, puede usar solamente uno por dispositivo. Elimine perfiles viejos sin usar dado que tomboy-ng tiene que registrar todas las notas borradas en todos los perfiles presentes y un gran número de perfiles puede ralentizar el proceso.</list-item></list>
-<list><list-item dir="ltr"><bold>Cuadernos</bold> - Tomdroid no sabe de cuadernos. dSin embargo, una nota editada en Tomdroid y sincronizada con tomboy-ng recuerda a cuales cuadernos pertenece. </list-item></list>
+<list><list-item dir="ltr"><bold>Cuadernos</bold> - Tomdroid no sabe de cuadernos. Sin embargo, una nota editada en Tomdroid y sincronizada con tomboy-ng recuerda a cuales cuadernos pertenece. </list-item></list>
 <list><list-item dir="ltr"><bold>Errores y solicitudes de funciones de Tomdroid </bold>- Ahora mismo nadie mantiene Tomdroid. Todo el código fuente está disponible. ¿Quiere intentar mantenerlo?</list-item></list>
-<list><list-item dir="ltr"><bold>Depuración</bold> - si tiene un problema, la primera cosa que debería hacer es cerrar tomboy-ng y reiniciarlo desde la línea de comandos. Puede que informe de algunos errores en el terminal. Marque la casilla 'Depurar' en la ventana de sincronización de Tomdroid antes de sincronizar.</list-item></list>
+<list><list-item dir="ltr"><bold>Depuración</bold> - si tiene un problema, la primera cosa que debería hacer es cerrar tomboy-ng y reiniciarlo desde la línea de comandos. Puede que informe de algunos errores en el terminal. Marque la casilla 'Depurar' en la ventana de sincronización de Tomdroid antes de sincronizar. Por favor, informe lo que encuentre.</list-item></list>
 
-<italic><bold>Es probable que puede dejar de leer ahora.</bold></italic><bold/><size:large><bold>
+<italic><bold>Es probable que puede dejar de leer ahora.</bold></italic><bold></bold><size:large><bold>
 
 Como funciona todo</bold></size:large>
-El método de sincronización con Tomdroid es otro ejemplo de la sincronización de archivos que utiliza tomboy-ng. 
+El método de sincronización con Tomdroid es otro ejemplo de la sincronización de archivos que utiliza tomboy-ng.  Esta es el segundo intento del programador. El primer usaba ssh y, aunque funcionaba, fue mucho más complicado de usar habitualmente. 
 
 Primero, al hacer la conexión inicial con Tomdroid, tomboy-ng da un identificador único al dispositivo y guarda una copia de su archivo de configuración. Además usa el identificador en el archivo del manifiesto. Si los identificadores no corresponden, una sincronización normal no puede continuar.
 
@@ -87,12 +95,12 @@ A continuación leemos el manifiesto local y luego hacemos más o menos lo mismo
 
 En ambos casos, en cuanto tengamos todos los datos sobre lo que hay que hacer, lo haremos. Primero Descargar notas, Eliminar notas, Cargar notas, Eliminar notas locales, Escribir el manifiesto local.
 
-La interfaz de Tomdroid es bastante frágil y no nos indica donde le duele. Versión 0.27 es un poquitín mejor.
+La interfaz de Tomdroid es bastante frágil y no nos indica donde le duele. 
 
 
 </note-content></text>
-  <last-change-date>2020-02-27T14:32:41.4490000+11:00</last-change-date>
-  <last-metadata-change-date>2020-02-27T14:32:41.4490000+11:00</last-metadata-change-date>
+  <last-change-date>2021-01-31T19:05:06.1448900+00:00</last-change-date>
+  <last-metadata-change-date>2021-01-31T19:05:06.1448900+00:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

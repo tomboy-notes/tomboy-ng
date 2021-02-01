@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<note version="0.3" xmlns="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size">
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>Atajos de teclado de tomboy-ng</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>Atajos de teclado de tomboy-ng</underline><size:large>
 
@@ -13,7 +13,9 @@
 <list><list-item dir="ltr">Ctrl-4 : Fuente enorme</list-item></list>
 <list><list-item dir="ltr">Mayús-FlechaDerecha - extender la selección un carácter hacia la derecha</list-item></list>
 <list><list-item dir="ltr">Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
-<list><list-item dir="ltr">Mayús-Clic : Seleccionar texto entre posición actual y posición del clic.</list-item></list><size:large>
+<list><list-item dir="ltr">Mayús-Clic : Seleccionar texto entre posición actual y posición del clic.</list-item></list>
+<list><list-item dir="ltr">Alt-F : Next in note Find</list-item></list>
+<list><list-item dir="ltr">Ctrl-Alt-F : Previous in note Find</list-item></list><size:large>
 
 <bold>Windows / Linux</bold></size:large>
 <list><list-item dir="ltr">Ctrl-Q : Salir de tomboy-ng - En Búsqueda, Preferencias o cualquier Nota Abierta</list-item></list>
@@ -23,6 +25,7 @@
 <list><list-item dir="ltr">Ctrl-V : Pegar el contenido del portapapeles en la nota actual.</list-item></list>
 <list><list-item dir="ltr">Ctrl-A : Seleccionar todo.</list-item></list>
 <list><list-item dir="ltr">Ctrl-F : Abrir una ventana de búsqueda.</list-item></list>
+<list><list-item dir="ltr">Alt-F  : Buscar siguiente</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaDerecha : Mover al principio de la palabra a la derecha.</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaIzquierda : Mover al principio de la palabra actual o de allí al principio de la palabra a la izquierda.</list-item></list>
 <list><list-item dir="ltr">Ctrl-Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
@@ -41,7 +44,7 @@
 <list><list-item dir="ltr">Alt-F4 : Cerrar la ventana de la nota actual (algunos escritorios de Linux).</list-item></list><size:large>
 
 <bold>Mac</bold></size:large>
-<italic>(Donde la tecla &quot;Option&quot; es la tecla &quot;Alt&quot; también)</italic>
+<italic>(Donde la tecla "Option" es la tecla "Alt" también)</italic>
 <list><list-item dir="ltr">Cmd-Q : Salir de tomboy-ng - En Búsqueda, Preferencias o cualquier Nota Abierta</list-item></list>
 <list><list-item dir="ltr">Cmd-N : Nota nueva - En Búsqueda, Preferencias y cualquier Nota abierta</list-item></list>
 <list><list-item dir="ltr">Cmd-X : Cortar el texto seleccionado y copiarlo al portapapeles.</list-item></list>
@@ -68,14 +71,14 @@
 
 
 </note-content></text>
-  <last-change-date>2020-05-26T18:38:18.3386120+10:00</last-change-date>
-  <last-metadata-change-date>2020-05-26T18:38:18.3386120+10:00</last-metadata-change-date>
+  <last-change-date>2021-02-01T19:03:47.2317798+11:00</last-change-date>
+  <last-metadata-change-date>2021-02-01T19:03:47.2317798+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>587</x>
-  <y>163</y>
+  <x>823</x>
+  <y>136</y>
   <open-on-startup>False</open-on-startup>
 </note>

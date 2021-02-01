@@ -866,6 +866,7 @@ object EditBoxForm: TEditBoxForm
     ClientHeight = 39
     ClientWidth = 617
     TabOrder = 2
+    OnEnter = PanelFindEnter
     object EditFind: TEdit
       Left = 8
       Height = 29
@@ -892,6 +893,7 @@ object EditBoxForm: TEditBoxForm
       Anchors = [akTop, akLeft, akBottom]
       Min = 0
       OnClick = UpDown1Click
+      OnEnter = UpDown1Enter
       Orientation = udHorizontal
       ParentShowHint = False
       Position = 0

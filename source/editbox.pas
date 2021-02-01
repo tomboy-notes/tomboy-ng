@@ -345,6 +345,7 @@ type
         procedure MenuLargeClick(Sender: TObject);
         procedure MenuNormalClick(Sender: TObject);
         procedure MenuSmallClick(Sender: TObject);
+        procedure PanelFindEnter(Sender: TObject);
 		procedure SpeedRollBackClick(Sender: TObject);
         procedure SpeedButtonDeleteClick(Sender: TObject);
         procedure SpeedButtonLinkClick(Sender: TObject);
@@ -356,6 +357,7 @@ type
         procedure TimerHousekeepingTimer(Sender: TObject);
                                 // This is a landing spot for Menu->FindNext, Shift-Alt-F, Alt-F or Find Next/Prev buttons
         procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
+        procedure UpDown1Enter(Sender: TObject);
 
     private
         NumbFindHits : integer;
@@ -366,9 +368,10 @@ type
         CreateDate : string;		// Will be '' if new note
         // CtrlKeyDown : boolean;
         Ready : boolean;
-        LastFind : longint;			// Used in Find functions.
+//        LastFind : longint;			// Used in Find functions.
         // FontName : string;			// Set in OnShow, const after that  ???
         // FontNormal : integer; 		// as above
+
         { To save us checking the title if user is well beyond it }
         BlocksInTitle : integer;
         // Set True by the delete button so we don't try and save it.
@@ -972,7 +975,10 @@ begin
     AlterFont(ChangeSize, Sett.FontSmall);
 end;
 
-
+procedure TEditBoxForm.PanelFindEnter(Sender: TObject);
+begin
+    EditFind.SetFocus;
+end;
 
 procedure TEditBoxForm.MenuHugeClick(Sender: TObject);
 begin
@@ -1129,9 +1135,6 @@ var
     Ptr, EndP : PChar;
     {$endif}
     NumbCR : integer = 0;
-
-    Cnt : integer = 1;
-
         function JumpToItem() : boolean;
         begin
             if GoForward then begin
@@ -1169,11 +1172,12 @@ begin
         {$endif}
         KMemo1.SelStart := UTF8Length(pchar(KMemo1.Blocks.Text), NewPos-1) - NumbCR;
         KMemo1.SelLength := UTF8length(Term);
-        if Result then LastFind := NewPos;
+        //if Result then LastFind := NewPos;
     end;
     if NumbFindHits = 0 then                // May it is zero, maybe user has pressed arrows instead of Enter in search field
         GetFindHits(Term, CaseSensitive);
     GetFindHits(Term, CaseSensitive, NewPos);
+    Result := true;                         // we are not using this anyway
 end;
 
 (*
@@ -1272,13 +1276,15 @@ const SearchPanelHeight = 39;
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
 begin
     //LastFind := 1;
-    if PanelFind.Height = SearchPanelHeight then begin
+    if PanelFind.Height > 5 then begin
+        //debugln('INFO : EditBox MenuItemFindClick Hiding FindPanel');
         PanelFind.Height := 1;                            // Hide it
         Kmemo1.SetFocus;
     end  else  begin
+        //debugln('INFO : EditBox MenuItemFindClick Exposing FindPanel');
         PanelFind.Height := SearchPanelHeight;
         EditFind.SetFocus;
-        LastFind := 1;
+//        LastFind := 1;
     end;
 end;
 
@@ -1301,11 +1307,15 @@ begin
     if (([ssCtrl] = Shift) and (Key = VK_F)) then begin
         Key := 0;
         MenuItemFindClick(Sender);
+        KMemo1.SetFocus;
+        //if PanelFind.Height > 5 then debugln('WARN : EditBox EditFindKeyDown, PanelFind is still visible');
+        exit;
     end;
     if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) then
         begin key := 0; UpDown1Click(self, btPrev);  end;    // Ctrl-Alt-F  is goto previous find.
     if ([ssAlt] = Shift) and (Key = VK_F) then
         begin key := 0; UpDown1Click(self, btNext);  end;    // Alt-F  is goto next find.
+    EditFind.SetFocus;
 end;
 
 procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word;
@@ -1348,6 +1358,12 @@ begin
         Res := FindIt(EditFind.Text, KMemo1.SelStart+1, False, False);
     if Res then LabelFindInfo.Caption := ''
     else LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
+    EditFind.SetFocus;
+end;
+
+procedure TEditBoxForm.UpDown1Enter(Sender: TObject);
+begin
+    EditFind.SetFocus;
 end;
 
 
@@ -1772,6 +1788,7 @@ begin
     PanelFind.Caption := '';
     UpDown1.Hint := rsSearchNavHint;
     LabelFindInfo.Caption:= rsSearchNavHint;
+    LabelFindCount.caption := '';
     EditFind.Text := rsMenuSearch;
     {$ifdef DARWIN}
     MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);

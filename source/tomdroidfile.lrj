@@ -1,0 +1,16 @@
+{"version":1,"strings":[
+{"hash":104566852,"name":"tformtomdroidfile.caption","sourcebytes":[84,111,109,100,114,111,105,100],"value":"Tomdroid"},
+{"hash":4863637,"name":"tformtomdroidfile.buttonclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"},
+{"hash":90721265,"name":"tformtomdroidfile.panel1.caption","sourcebytes":[80,97,110,101,108,49],"value":"Panel1"},
+{"hash":256418561,"name":"tformtomdroidfile.label1.caption","sourcebytes":[84,111,109,100,114,111,105,100,32,83,121,110,99,32,45,32,98,101,32,97,119,97,114,101,32,111,102,32,108,105,109,105,116,97,116,105,111,110,115,32,33],"value":"Tomdroid Sync - be aware of limitations !"},
+{"hash":90721266,"name":"tformtomdroidfile.panel2.caption","sourcebytes":[80,97,110,101,108,50],"value":"Panel2"},
+{"hash":212229150,"name":"tformtomdroidfile.checkboxtestrun.caption","sourcebytes":[84,101,115,116,32,82,117,110],"value":"Test Run"},
+{"hash":75222933,"name":"tformtomdroidfile.labeladvice.caption","sourcebytes":[65,100,118,105,99,101],"value":"Advice"},
+{"hash":43742593,"name":"tformtomdroidfile.labeladvice1.caption","sourcebytes":[76,97,98,101,108,65,100,118,105,99,101,49],"value":"LabelAdvice1"},
+{"hash":43742594,"name":"tformtomdroidfile.labeladvice2.caption","sourcebytes":[76,97,98,101,108,65,100,118,105,99,101,50],"value":"LabelAdvice2"},
+{"hash":194459653,"name":"tformtomdroidfile.label6.caption","sourcebytes":[85,112,108,111,97,100,32,109,101,97,110,115,32,102,114,111,109,32,116,111,109,98,111,121,45,110,103,32,116,111,32,65,110,100,114,111,105,100,32,68,101,118,105,99,101],"value":"Upload means from tomboy-ng to Android Device"},
+{"hash":372803,"name":"tformtomdroidfile.buttonsync.caption","sourcebytes":[83,121,110,99],"value":"Sync"},
+{"hash":322608,"name":"tformtomdroidfile.buttonhelp.caption","sourcebytes":[72,101,108,112],"value":"Help"},
+{"hash":333310,"name":"tformtomdroidfile.buttonjoin.caption","sourcebytes":[74,111,105,110],"value":"Join"},
+{"hash":204117436,"name":"tformtomdroidfile.buttonoldssh.caption","sourcebytes":[85,115,101,32,111,108,100,32,83,83,72,32,109,111,100,101,108],"value":"Use old SSH model"}
+]}

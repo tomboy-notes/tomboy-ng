@@ -5,7 +5,9 @@
 
 <bold>New in V0.32, Cable based connection between PC and Android Device !  No profiles, passwords or ssh needed.</bold>
 
-Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of weeks now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences.<size:large>
+Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of weeks now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences. 
+
+But note that sync with Tomdroid is slow process, and tomboy-ng does not, yet report on its progress. The first sync with a large repository can be quite unnerving. if you more than a several hundred notes, you may be better waiting to the next release of tomboy-ng, it will allow sync with only notes in a particular notebook.<size:large>
 
 <bold>Background</bold></size:large>
 As a standalone app, <monospace>Tomdroid</monospace> works well enough but when synced to your notes  on a PC or Laptop, it really shines.  Tomdroid was built back in the Tomboy family's glory days. It worked fine doing a network sync with the Ubuntu One cloud service (although that may have been before we used that term). However, that service was withdrawn and Tomdroid  network users needed to provide their own Sync facilities. That means either running a Rainy server at home or setting up a grauphel  system. Neither is a trivial exercise.
@@ -26,7 +28,7 @@ Assuming you already have notes in your tomboy-ng and a fresh install of Tomdroi
 
 Fire up Tomdroid on the device. Touch the Menu (top right), select Settings and find the Synchronization block. Check that Service is set to SD Card (note you don't need an external SDCard, Android directs that to some internal space) and that Location on SD Card is set to /storage/emulated/0/tomdroid/.  Close the Settings screen and touch the Sync symbol on the menu bar. Assuming you have no Tomdroid notes at this stage, it will be quite quick.
 
-<bold>IMPORTANT</bold> - close Tomdroid down now. Android uses a lot of disk caching and we must be sure that it has actually hit the 'disk'.
+<bold>IMPORTANT</bold> - close Tomdroid down now. Android uses a lot of disk caching and we must be sure that it has actually hit the 'disk'. It is vital that you close Tomdroid, not just background it. Sync will occasionally fail otherwise.
 
 Now, use the cable to connect the PC to a Android Device. The device will ask you to allow access from the PC to its files.
 
@@ -34,7 +36,7 @@ On your Linux box, go to tomboy-ng's Settings,<italic> Basic Tab</italic>, and t
 
 The Main Menu will now have a "Tomdroid" entry. Click it !
 
-The next screen will try and find your Android Device, in particular the directory containing the Tomdroid Sync Files. If all is well, it will suggest you click "Join", do so. It will take a minute or two to transfer copies of your PC notes to the Device. When that is finished, use the PC's File Manger to close the connection to the Device.
+The next screen will try and find your Android Device, in particular the directory containing the Tomdroid Sync Files. If all is well, it will suggest you click "Join", do so. It will take a minute or two, maybe much longer,  to transfer copies of your PC notes to the Device. When that is finished, use the PC's File Manger to close the connection to the Device. Unplug the USB cable.
 
 Restart Tomdroid, touch the Sync symbol and all your notes should start appearing in Tomdroid.<size:large>
 
@@ -43,34 +45,41 @@ Important that this process be followed at each sync.
 <list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid. Really close it !  </list-item></list>
 <list><list-item dir="ltr">Connect the Device to the PC with a USB cable.</list-item></list>
 <list><list-item dir="ltr">From within tomboy-ng, click Tomdroid Sync, it should identify your device as previously synced and suggest you hit the Sync button. </list-item></list>
-<list><list-item dir="ltr">Close the connection, restart Tomdroid and touch the Sync symbol to complete the sync. </list-item></list>
+<list><list-item dir="ltr">Close the connection, unplug the USB cable, restart Tomdroid and touch the Sync symbol to complete the sync. </list-item></list>
 
 If you also sync your tomboy-ng to other laptops or computers, it makes sense to do so before you do a Routine Tomdroid sync and then, again, immediately after.<size:large>
-
-<bold>One To One Sync</bold></size:large>
-Also currently built in, is the ability to do a one to one sync, similar to the Tomdroid model, but using any arbitrary directory. Only the tomboy-ng part of this sync is dealt with here, if you use this, you must manage the notes appearing in that directory yourself.
-
-To set the directory that tomboy-ng uses you set an environment variable, TB_ONETOONE pointing  to the directory you want to use before staring tomboy-ng. That directory must exist and be writable, if not used before, it will require a 'Join' and will be initialised as required. For example -
-
-<monospace>$  TB_ONETOONE=/home/myname/MyOneSync  tomboy-ng  &lt;enter&gt;</monospace>
-  
-Start the sync using the Tomdroid menu item. Note, you  cannot use both the Tomdroid USB connection and the One To One connection in the same tomboy-ng session but restarting tomoy-ng without the environment variable will restore normal Tomdroid USB behaviour. <size:large>
 
 <bold>General Advice</bold>
 Tomdroid options and their effects.</size:large>
 <list><list-item dir="ltr"><italic><bold>Clear Notes - Clear all notes from local database.</bold></italic>  If you use this option and then touch (Tomdroid's) sync, you'll get a fresh set of notes based on whats currently in the sync dir. </list-item></list>
 <list><list-item dir="ltr"><italic><bold>Delete Remote Notes - Delete all notes from remote service. </bold></italic> <highlight>Careful with this one ! </highlight>If you do this and then run a sync from tomboy-ng, all previously synced notes will be deleted (but, backed up first) from your tomboy-ng install.  Almost certainly not what you want, so, please be careful. If you find your self in this position, run a Join rather than a Sync, a Join does not delete files so is always safe. Remember that tomboy-ng has some tools to help recover from misuse of above tools.</list-item></list>
+<list><list-item dir="ltr">If you want to start a whole new Tomdroid Sync, a reset, then clear both the above and then mount your phone, using the USB cable, and remove the 'tomboy.serverid' file from the phone/tomdroid directory. To be tidy, and assuming you don't sync with other andrid devices, you could also remove the ~/.config/tomboy-ng/android directory.</list-item></list>
 
-<list><list-item dir="ltr"><italic><bold>Does it work with Windows or Mac ? </bold></italic>  No, not yet. But it probably will be far easier to make it work there than the old model. So, maybe.</list-item></list>
+<list><list-item dir="ltr"><italic><bold>Does it work with Windows or Mac ? </bold></italic>  No, not yet. But it probably will be far easier to make it work there than the old model. So, maybe. Feedback ?</list-item></list>
 <list><list-item dir="ltr"><italic><bold>Can I sync my Phone with several computers ?</bold></italic>   No, each time you sync with a 'new' computer, you must do a 'Join', that will mean notes you previously deleted may be restored.  Sync your computers with tomboy-ng's usual File Sync and chose one  to be your gateway to your Android Devices.</list-item></list>
-<list><list-item dir="ltr"><italic><bold>Can one computer connect to several Android Devices </bold></italic>?  Yes, this will fine as long as you do it one by one. You may need to repeat the first sync after a second one until no changes are reported. </list-item></list>
-   <size:large>
-
+<list><list-item dir="ltr"><italic><bold>Can one computer connect to several Android Devices </bold></italic>?  Yes, this will fine as long as you do it one at a time. You may need to repeat the first sync after a second one until no changes are reported. </list-item></list>
+  <size:large>
 Other Matters.</size:large>
 <list><list-item dir="ltr"><bold>Joining v Syncing</bold> - These processes are similar except that we cannot use a local manifest during a Join. The local manifest contains data about deleted notes so running a Join instead of a Sync will  resurrect notes deleted at one end or the other.</list-item></list>
 <list><list-item dir="ltr"><bold>Notebooks</bold> - Tomdroid does not understand notebooks. But a note edited in Tomdroid and synced back to tomboy-ng remembers what notebooks it was a member of. </list-item></list>
 <list><list-item dir="ltr"><bold>Tomdroid bugs and feature requests </bold>- No one is maintaining Tomdroid right now. All the source is there, want to try your hand ?</list-item></list>
-<list><list-item dir="ltr"><bold>Debugging</bold> - if you have a problem, first thing you should do is close tomboy-ng and restart it from command line, it may report some errors to console. Tick the 'Debug' box in the Tomdroid Sync Window before syncing. Please report what you find.</list-item></list>
+<list><list-item dir="ltr"><bold>Debugging</bold> - if you have a problem, first thing you should do is close tomboy-ng and restart it from command line, it may report some errors to console. Tick the 'Debug' box in the Tomdroid Sync Window before syncing. Please report what you find.</list-item></list><size:large>
+
+<bold>Things yet to be done</bold></size:large>
+<list><list-item dir="ltr">Firstly, the sync process can be quite slow due to the underlying MTP 'filesystem'.  But you don't see any sort of progress report.</list-item></list>
+<list><list-item dir="ltr">A Windows version is possible.</list-item></list>
+<list><list-item dir="ltr">I believe it would be quite useful to have the Tomdroid sync only work with a special Tomdroid notebook. That way, you could limit the number of notes that appear on your Android device.</list-item></list>
+ If I get the impression that there is some interest in the Tomdroid sync, these matters might be looked at.<size:large>
+
+<bold>One To One Sync</bold></size:large>
+Also currently built in (and seriously untested), is the ability to do a one to one sync, similar to the Tomdroid model, but using any arbitrary directory. Only the tomboy-ng part of this sync is dealt with here, if you use this, you must manage the notes appearing in that directory yourself.
+
+To set the directory that tomboy-ng uses you set an environment variable, TB_ONETOONE pointing  to the directory you want to use before staring tomboy-ng. That directory must exist and be writable, if not used before, it will require a 'Join' and will be initialised as required. For example -
+
+<monospace>$  TB_ONETOONE=/home/myname/MyOneSync  tomboy-ng  &lt;enter&gt;</monospace>
+  
+Start the sync using the Tomdroid menu item. Note, you  cannot use both the Tomdroid USB connection and the One To One connection in the same tomboy-ng session but restarting tomoy-ng without the environment variable will restore normal Tomdroid USB behaviour. 
+
 
 <italic><bold>You can probably stop reading now.</bold></italic><bold></bold><size:large><bold>
 
@@ -99,8 +108,8 @@ The Tomdroid interface is still quite fragile and not good at telling us where i
 
 
 </note-content></text>
-  <last-change-date>2021-01-08T14:19:40.9785137+11:00</last-change-date>
-  <last-metadata-change-date>2021-01-08T14:19:40.9785137+11:00</last-metadata-change-date>
+  <last-change-date>2021-01-31T22:05:59.2180841+11:00</last-change-date>
+  <last-metadata-change-date>2021-01-31T22:05:59.2180841+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

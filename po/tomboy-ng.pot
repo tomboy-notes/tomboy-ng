@@ -1098,6 +1098,7 @@ msgid "Help"
 msgstr ""
 
 #: tformtomdroid.buttonjoin.caption
+msgctxt "tformtomdroid.buttonjoin.caption"
 msgid "Join"
 msgstr ""
 
@@ -1111,6 +1112,7 @@ msgid "Sync"
 msgstr ""
 
 #: tformtomdroid.caption
+msgctxt "tformtomdroid.caption"
 msgid "Tomdroid"
 msgstr ""
 
@@ -1123,6 +1125,7 @@ msgid "writes debug messages to terminal"
 msgstr ""
 
 #: tformtomdroid.checkboxtestrun.caption
+msgctxt "tformtomdroid.checkboxtestrun.caption"
 msgid "Test Run"
 msgstr ""
 
@@ -1156,7 +1159,63 @@ msgid "SSH Password for device"
 msgstr ""
 
 #: tformtomdroid.label6.caption
+msgctxt "tformtomdroid.label6.caption"
 msgid "Upload means from tomboy-ng to Android Device"
+msgstr ""
+
+#: tformtomdroidfile.buttonclose.caption
+msgctxt "tformtomdroidfile.buttonclose.caption"
+msgid "Close"
+msgstr ""
+
+#: tformtomdroidfile.buttonhelp.caption
+msgctxt "tformtomdroidfile.buttonhelp.caption"
+msgid "Help"
+msgstr ""
+
+#: tformtomdroidfile.buttonjoin.caption
+msgctxt "tformtomdroidfile.buttonjoin.caption"
+msgid "Join"
+msgstr ""
+
+#: tformtomdroidfile.buttonoldssh.caption
+msgid "Use old SSH model"
+msgstr ""
+
+#: tformtomdroidfile.buttonsync.caption
+msgctxt "tformtomdroidfile.buttonsync.caption"
+msgid "Sync"
+msgstr ""
+
+#: tformtomdroidfile.caption
+msgctxt "tformtomdroidfile.caption"
+msgid "Tomdroid"
+msgstr ""
+
+#: tformtomdroidfile.checkboxtestrun.caption
+msgctxt "tformtomdroidfile.checkboxtestrun.caption"
+msgid "Test Run"
+msgstr ""
+
+#: tformtomdroidfile.label1.caption
+msgid "Tomdroid Sync - be aware of limitations !"
+msgstr ""
+
+#: tformtomdroidfile.label6.caption
+msgctxt "tformtomdroidfile.label6.caption"
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr ""
+
+#: tformtomdroidfile.labeladvice.caption
+msgid "Advice"
+msgstr ""
+
+#: tformtomdroidfile.labeladvice1.caption
+msgid "LabelAdvice1"
+msgstr ""
+
+#: tformtomdroidfile.labeladvice2.caption
+msgid "LabelAdvice2"
 msgstr ""
 
 #: tmainform.bitbtnhide.caption

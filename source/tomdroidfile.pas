@@ -137,6 +137,8 @@ begin
                                 LabelAdvice2.Caption := Async.LocalServerID;
                                 ButtonSync.SetFocus;
 				            end else begin
+                                debugln('ID mismatch, local manifest ' + Sett.LocalConfig + 'android'
+                                    + pathdelim + copy(Async.LocalServerID, 1, 13) + 'manifest.xml');
 	                            ButtonClose.Enabled := True;
 	                            ButtonSync.Enabled := False;
                                 ButtonJoin.Enabled := True;
@@ -204,6 +206,7 @@ end;
 
 procedure TFormTomdroidFile.ButtonSyncClick(Sender: TObject);
 begin
+    ButtonSync.Enabled := false;
     ButtonClose.Enabled := False;
     DoSync();
     ButtonClose.Enabled := True;
@@ -296,6 +299,7 @@ end;
 
 procedure TFormTomdroidFile.ButtonJoinClick(Sender: TObject);
 begin
+    ButtonJoin.Enabled := False;
     DoNewSync();
     ButtonSync.Enabled := True;
 end;

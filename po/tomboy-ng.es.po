@@ -4,15 +4,15 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: tomboy-ng v31\n"
+"Project-Id-Version: tomboy-ng v0.32\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-01-27 21:39+1100\n"
+"PO-Revision-Date: 2021-01-31 19:34+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: editbox.rsunabletoevaluate
@@ -387,7 +387,7 @@ msgstr "Búsqueda exacta para términos entre \" \""
 
 #: resourcestr.rssearchnavhint
 msgid "Find Keys : Previous : Shift-Alt-F   Next : Alt-F"
-msgstr ""
+msgstr "Buscar: Anterior: Mayús-Alt-F   Siguiente: Alt-F"
 
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
@@ -580,11 +580,11 @@ msgstr "Menú"
 
 #: teditboxform.editfind.text
 msgid "EditFind"
-msgstr ""
+msgstr "Término"
 
 #: teditboxform.label2.caption
 msgid "Read Only"
-msgstr ""
+msgstr "Sólo lectura"
 
 #: teditboxform.label3.caption
 msgid "This note has been changed by the Sync Process"
@@ -596,7 +596,7 @@ msgstr "Por favor, cierrela (y reabrirla si fue descargada)"
 
 #: teditboxform.labelfindinfo.caption
 msgid "LabelFindInfo"
-msgstr ""
+msgstr "BuscarInfo"
 
 #: teditboxform.menubold.caption
 msgid "Bold"
@@ -608,7 +608,7 @@ msgstr "Viñeta"
 
 #: teditboxform.menufindnext.caption
 msgid "Find Next"
-msgstr ""
+msgstr "Buscar siguiente"
 
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
@@ -686,7 +686,6 @@ msgid "Select All"
 msgstr "Seleccionar todo"
 
 #: teditboxform.menuitemsettings.caption
-#, fuzzy
 msgctxt "teditboxform.menuitemsettings.caption"
 msgid "Settings"
 msgstr "Preferencias"
@@ -1118,12 +1117,12 @@ msgid "Delete Profile"
 msgstr "Delete Profile"
 
 #: tformtomdroid.buttonhelp.caption
-#, fuzzy
 msgctxt "tformtomdroid.buttonhelp.caption"
 msgid "Help"
 msgstr "Ayuda"
 
 #: tformtomdroid.buttonjoin.caption
+msgctxt "tformtomdroid.buttonjoin.caption"
 msgid "Join"
 msgstr "Unirse"
 
@@ -1137,6 +1136,7 @@ msgid "Sync"
 msgstr "Sincronizar"
 
 #: tformtomdroid.caption
+msgctxt "tformtomdroid.caption"
 msgid "Tomdroid"
 msgstr "Tomdroid"
 
@@ -1149,6 +1149,7 @@ msgid "writes debug messages to terminal"
 msgstr "escribe mensajes de depuración al terminal"
 
 #: tformtomdroid.checkboxtestrun.caption
+msgctxt "tformtomdroid.checkboxtestrun.caption"
 msgid "Test Run"
 msgstr "Prueba"
 
@@ -1163,7 +1164,7 @@ msgstr "ej., MySamsungNote7"
 
 #: tformtomdroid.label1.caption
 msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
-msgstr ""
+msgstr "Sincronización Tomdroid SSH - obsoleto, se elimina pronto."
 
 #: tformtomdroid.label2.caption
 msgid "Select an existing profile (or enter data) "
@@ -1182,15 +1183,77 @@ msgid "SSH Password for device"
 msgstr "SSH Password for device"
 
 #: tformtomdroid.label6.caption
+msgctxt "tformtomdroid.label6.caption"
 msgid "Upload means from tomboy-ng to Android Device"
 msgstr "Subir significa de tomboy-ng a un dispositivo Android"
+
+#: tformtomdroidfile.buttonclose.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
+#: tformtomdroidfile.buttonhelp.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonhelp.caption"
+msgid "Help"
+msgstr "Ayuda"
+
+#: tformtomdroidfile.buttonjoin.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonjoin.caption"
+msgid "Join"
+msgstr "Unirse"
+
+#: tformtomdroidfile.buttonoldssh.caption
+msgid "Use old SSH model"
+msgstr ""
+
+#: tformtomdroidfile.buttonsync.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonsync.caption"
+msgid "Sync"
+msgstr "Sincronizar"
+
+#: tformtomdroidfile.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.caption"
+msgid "Tomdroid"
+msgstr "Tomdroid"
+
+#: tformtomdroidfile.checkboxtestrun.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.checkboxtestrun.caption"
+msgid "Test Run"
+msgstr "Prueba"
+
+#: tformtomdroidfile.label1.caption
+msgid "Tomdroid Sync - be aware of limitations !"
+msgstr ""
+
+#: tformtomdroidfile.label6.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.label6.caption"
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr "Subir significa de tomboy-ng a un dispositivo Android"
+
+#: tformtomdroidfile.labeladvice.caption
+msgid "Advice"
+msgstr ""
+
+#: tformtomdroidfile.labeladvice1.caption
+msgid "LabelAdvice1"
+msgstr ""
+
+#: tformtomdroidfile.labeladvice2.caption
+msgid "LabelAdvice2"
+msgstr ""
 
 #: tmainform.bitbtnhide.caption
 msgid "Hide"
 msgstr "Ocultar"
 
 #: tmainform.bitbtnquit.caption
-#, fuzzy
 msgctxt "tmainform.bitbtnquit.caption"
 msgid "Quit"
 msgstr "Salir"
@@ -1202,7 +1265,7 @@ msgstr "Menú"
 
 #: tmainform.buttsystrayhelp.caption
 msgid "SysTray Help"
-msgstr ""
+msgstr "Ayuda, Bandeja del Sistema"
 
 #: tmainform.caption
 msgid "tomboy-ng"
@@ -1340,7 +1403,7 @@ msgstr "No es el perfil correcto para el dispositivo"
 #: tomdroid.rsnotexistingrepo
 msgctxt "tomdroid.rsnotexistingrepo"
 msgid "That's not an existing Repo, maybe click \"Join\" ?"
-msgstr "That's not an existing Repo, maybe click \\\"Join\\\" ?"
+msgstr "No existe el Repositorio, ¿tal vez hacer clic en \"Unirse\"?"
 
 #: tomdroid.rsnotomdroid
 msgctxt "tomdroid.rsnotomdroid"
@@ -1362,77 +1425,65 @@ msgid "OK, talking to device. Wait for it ...."
 msgstr "OK, comunicando con es dispositivo. Espere ..."
 
 #: tomdroidfile.rsconnectiongood
-#, fuzzy
 msgctxt "tomdroidfile.rsconnectiongood"
 msgid "Connection is looking Good."
 msgstr "La conexión parece ser buena."
 
 #: tomdroidfile.rsfailedtoconnect
-#, fuzzy
 msgctxt "tomdroidfile.rsfailedtoconnect"
 msgid "Failed to connect."
 msgstr "No se conectó."
 
 #: tomdroidfile.rsfailedtofindconnection_2
-#, fuzzy
 msgctxt "tomdroidfile.rsfailedtofindconnection_2"
 msgid "If you are sure there should be an existing connection, check settings."
-msgstr "Si cree que debería ser una conexión existente, compruebe las preferencias."
+msgstr "Si cree que debería haber sido una conexión , compruebe las preferencias."
 
 #: tomdroidfile.rsfixconnection
-#, fuzzy
 msgctxt "tomdroidfile.rsfixconnection"
 msgid "If you are sure its there, check settings."
 msgstr "Si cree que está allí, compruebe las preferencias."
 
 #: tomdroidfile.rshavevalidsync
-#, fuzzy
 msgctxt "tomdroidfile.rshavevalidsync"
 msgid "Looking Good. Last sync date "
 msgstr "Parece bien. Fecha de la última sincronización "
 
 #: tomdroidfile.rsinstalltomdroid
-#, fuzzy
 msgctxt "tomdroidfile.rsinstalltomdroid"
 msgid "Install Tomdroid, config filesync, and run a sync"
 msgstr "Instale Tomdroid, configure la sincronización, y sincronize"
 
 #: tomdroidfile.rsjoinanyway
 msgid "Forcing a Join may \"recover\" some notes you thought you have deleted."
-msgstr ""
+msgstr "Forzar \"Unirse\" puede que \"recupere\" notas que pensó haber sido eliminadas."
 
 #: tomdroidfile.rsnoconnection
-#, fuzzy
 msgctxt "tomdroidfile.rsnoconnection"
 msgid "Failed to establish a connection. "
-msgstr "No se pudo conectar. "
+msgstr "No se conectó. "
 
 #: tomdroidfile.rsnotcorrectprofile
-#, fuzzy
 msgctxt "tomdroidfile.rsnotcorrectprofile"
 msgid "This is not correct profile for that device"
 msgstr "No es el perfil correcto para el dispositivo"
 
 #: tomdroidfile.rsnotexistingrepo
-#, fuzzy
 msgctxt "tomdroidfile.rsnotexistingrepo"
 msgid "That's not an existing Repo, maybe click \"Join\" ?"
-msgstr "El repositorio no existe, ¿tal vez pulse \"unirse\"?"
+msgstr "El repositorio no existe, ¿tal vez hacer clic en \"Unirse\"?"
 
 #: tomdroidfile.rsnotomdroid
-#, fuzzy
 msgctxt "tomdroidfile.rsnotomdroid"
 msgid "Unable to find Tomdroid sync dir on that device."
 msgstr "No se encontró directorio de sincronización en el dispositivo."
 
 #: tomdroidfile.rssetupnewsync
-#, fuzzy
 msgctxt "tomdroidfile.rssetupnewsync"
 msgid "Setting up a new sync ...."
 msgstr "Estableciendo un sincronización nueva ..."
 
 #: tomdroidfile.rstalking
-#, fuzzy
 msgctxt "tomdroidfile.rstalking"
 msgid "OK, talking to device. Wait for it ...."
 msgstr "OK, comunicando con el dispositivo. Espere ..."
@@ -1460,7 +1511,7 @@ msgstr "Búsqueda de tombo-ng"
 
 #: tsearchform.checkautorefresh.caption
 msgid "Auto Refresh"
-msgstr ""
+msgstr "Actualización automática"
 
 #: tsearchform.checkcasesensitive.caption
 msgid "Case Sensitive"
@@ -1483,7 +1534,6 @@ msgid "Rename NoteBook"
 msgstr "Renombrar cuaderno"
 
 #: tsearchform.panel2.caption
-#, fuzzy
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Cuadernos"
@@ -1513,7 +1563,6 @@ msgid "Take a time stamped snapshot of notes and config"
 msgstr "Hacer una instantánea de notas, preferencias con fecha de creación"
 
 #: tsett.buttonsetcolours.caption
-#, fuzzy
 msgctxt "tsett.buttonsetcolours.caption"
 msgid "Set Colours"
 msgstr "Establecer colores"
@@ -1663,7 +1712,6 @@ msgid "A snaphot is a copy of your current note directory."
 msgstr "Una instantánea es una copia de sus notas actuales."
 
 #: tsett.labelfilesync.caption
-#, fuzzy
 msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "sin configurar"
@@ -1702,7 +1750,6 @@ msgid "Use Server Note and Rename Local Note."
 msgstr "Usar la nota del servidor y renombrar la nota local."
 
 #: tsett.speedbuthelp.caption
-#, fuzzy
 msgctxt "tsett.speedbuthelp.caption"
 msgid "Help"
 msgstr "Ayuda"
@@ -1718,7 +1765,6 @@ msgid "Menu"
 msgstr "Menú"
 
 #: tsett.speedsetupsync.caption
-#, fuzzy
 msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
 msgstr "Configurar"

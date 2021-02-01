@@ -1121,6 +1121,7 @@ msgid "Help"
 msgstr "Aide"
 
 #: tformtomdroid.buttonjoin.caption
+msgctxt "tformtomdroid.buttonjoin.caption"
 msgid "Join"
 msgstr "Rejoindre"
 
@@ -1134,6 +1135,7 @@ msgid "Sync"
 msgstr "Synchro"
 
 #: tformtomdroid.caption
+msgctxt "tformtomdroid.caption"
 msgid "Tomdroid"
 msgstr "Tomdroid"
 
@@ -1146,6 +1148,7 @@ msgid "writes debug messages to terminal"
 msgstr "envoeyr les debug vers le terminal"
 
 #: tformtomdroid.checkboxtestrun.caption
+msgctxt "tformtomdroid.checkboxtestrun.caption"
 msgid "Test Run"
 msgstr "Exécution test"
 
@@ -1181,8 +1184,71 @@ msgid "SSH Password for device"
 msgstr "Mot de passe SSH du périphérique"
 
 #: tformtomdroid.label6.caption
+msgctxt "tformtomdroid.label6.caption"
 msgid "Upload means from tomboy-ng to Android Device"
 msgstr "\"Upload\" = depuis tomboy-ng vers le périphérique Android"
+
+#: tformtomdroidfile.buttonclose.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonclose.caption"
+msgid "Close"
+msgstr "Fermer"
+
+#: tformtomdroidfile.buttonhelp.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonhelp.caption"
+msgid "Help"
+msgstr "Aide"
+
+#: tformtomdroidfile.buttonjoin.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonjoin.caption"
+msgid "Join"
+msgstr "Rejoindre"
+
+#: tformtomdroidfile.buttonoldssh.caption
+msgid "Use old SSH model"
+msgstr ""
+
+#: tformtomdroidfile.buttonsync.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.buttonsync.caption"
+msgid "Sync"
+msgstr "Synchro"
+
+#: tformtomdroidfile.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.caption"
+msgid "Tomdroid"
+msgstr "Tomdroid"
+
+#: tformtomdroidfile.checkboxtestrun.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.checkboxtestrun.caption"
+msgid "Test Run"
+msgstr "Exécution test"
+
+#: tformtomdroidfile.label1.caption
+msgid "Tomdroid Sync - be aware of limitations !"
+msgstr ""
+
+#: tformtomdroidfile.label6.caption
+#, fuzzy
+msgctxt "tformtomdroidfile.label6.caption"
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr "\"Upload\" = depuis tomboy-ng vers le périphérique Android"
+
+#: tformtomdroidfile.labeladvice.caption
+msgid "Advice"
+msgstr ""
+
+#: tformtomdroidfile.labeladvice1.caption
+msgid "LabelAdvice1"
+msgstr ""
+
+#: tformtomdroidfile.labeladvice2.caption
+msgid "LabelAdvice2"
+msgstr ""
 
 #: tmainform.bitbtnhide.caption
 #, fuzzy
