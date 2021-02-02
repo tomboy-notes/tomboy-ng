@@ -6,13 +6,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: tomboy-ng v0.32\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-01-31 19:34+0100\n"
+"PO-Revision-Date: 2021-02-02 15:12+1100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 2.0.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: editbox.rsunabletoevaluate
@@ -217,6 +217,10 @@ msgctxt "resourcestr.rshelpsaveexit"
 msgid "After import single note, save & exit"
 msgstr "Después de importar una sola nota, guardar y salir."
 
+#: resourcestr.rshelpshiftaltf
+msgid "Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous"
+msgstr ""
+
 #: resourcestr.rshelpsinglenote
 msgctxt "resourcestr.rshelpsinglenote"
 msgid "Open indicated note, switch is optional"
@@ -386,6 +390,12 @@ msgid "Exact matches for terms between \" \""
 msgstr "Búsqueda exacta para términos entre \" \""
 
 #: resourcestr.rssearchnavhint
+msgctxt "resourcestr.rssearchnavhint"
+msgid "Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F"
+msgstr "Buscar: Anterior: Ctrl-Alt-F   Siguiente: Alt-F"
+
+#: resourcestr.rssearchnavhintother
+msgctxt "resourcestr.rssearchnavhintother"
 msgid "Find Keys : Previous : Shift-Alt-F   Next : Alt-F"
 msgstr "Buscar: Anterior: Mayús-Alt-F   Siguiente: Alt-F"
 
@@ -1229,7 +1239,7 @@ msgstr "Prueba"
 
 #: tformtomdroidfile.label1.caption
 msgid "Tomdroid Sync - be aware of limitations !"
-msgstr ""
+msgstr "Sincronización Tomdroid - ¡dese cuenta de las limitaciones!"
 
 #: tformtomdroidfile.label6.caption
 #, fuzzy
@@ -1795,4 +1805,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-

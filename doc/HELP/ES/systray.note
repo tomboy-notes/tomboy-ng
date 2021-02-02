@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Bandeja del Sistema</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Bandeja del Sistema</underline>
+  <title>Bandeja del Sistema en Linux</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Bandeja del Sistema en Linux</underline>
 
 Tome nota: el mensaje sobre no mostrar la bandeja del sistema es normalmente falso <bold>en Ubuntu.</bold>. Disculpe la molestia.
 
-La manera habitual de interactuar con tomboy-ng es por un pequeño icono amarillo que aparece en la Bandeja del Sistema (SysTray). Sin embargo, no todos los Entornos de Escritorio de Linux pueden mostrar iconos de bandeja del sistema. 
+La manera habitual de interactuar con tomboy-ng es por un pequeño icono amarillo que aparece en la Bandeja del Sistema (SysTray), a veces llamada area de notificación. Sin embargo, no todos los Entornos de Escritorio de Linux pueden mostrar iconos de bandeja del sistema, y algunos que pueden no lo hacen por defecto. 
 
-Si puede ver un pequeño icono amarillo, posiblemente en la esquina arriba a la derecha de su pantalla, no tiene problema. Enhorabuena por escoger un Entorno orientado al usuario.  Si no lo puede ver, es probable que usa un Entorno de Escritorio que no muestra una bandeja de sistema. En tal caso tiene varios alternativas:<size:large>
+Si puede ver un pequeño icono amarillo, posiblemente en la esquina arriba a la derecha de su pantalla, no tiene problema. Enhorabuena por escoger un Entorno orientado al usuario. Si no lo puede ver, es probable que usa un Entorno de Escritorio que no muestra una bandeja de sistema. Primero, averiguar si hace falta configurar el Entorno de Escritorio suyo para mostrar una bandeja del sistema. Si no tiene esta opción, tiene varias alternativas:<size:large>
 
 <bold>tint2</bold></size:large>
-Instale el muy útil panel tint2. Muestra una bandeja de sistema sin problemas en todos los Escritorios de Linux que ha probado. Parece ser disponible de forma generalizada. Lo típico es que puede instalarlo poniendo uno de estos comandos en el terminal: 
+Instale el muy útil panel tint2. Muestra una bandeja de sistema sin problemas en todos los Escritorios de Linux que ha probado. Parece ser disponible de forma generalizada. Lo típico es que puede instalarlo escribiendo uno de estos comandos en el terminal: 
 
 <monospace>sudo yum install tint2 </monospace>
 <monospace>sudo dnf install tint2</monospace>
@@ -19,22 +19,22 @@ Instale el muy útil panel tint2. Muestra una bandeja de sistema sin problemas e
 Lance tint2 antes de empezar de trabajar y, si le gusta como aparece y funciona, añádalo a su listado de aplicaciones al iniciar.<size:large>
 
 <bold>Usando su dock</bold></size:large>
-Normalmente Gnome 3 tiene un "dock" al lado izquierdo de la pantalla, quizás que sólo se puede ver después de hacer clic en 'Actividades'.  Algunos otros Entornos tienen un dock similar. Después de lanzar tomboy-ng (la primera vez), y antes de "ocultarlo", localice su icono amarillo en el dock. Haga clic derecho y eligir "Añadir a favoritos". Ahora puede 'ocultar' la pantalla de bienvenida de tomboy-ng y activar el programa en cualquier momento directamente desde el dock. Para salir de tomboy-ng completamente, haga clic en el icono de tomboy-ng en el dock y la ventana de búsqueda de tomboy-ng abre. Allí haga clic en "Menú" y luego en "Salir". <size:large>
+Normalmente Gnome 3 tiene un "dock"; al lado izquierdo de la pantalla, quizás que sólo se puede ver después de hacer clic en 'Actividades'.  Algunos otros Entornos tienen un dock similar. Después de lanzar tomboy-ng (la primera vez), y antes de "ocultarlo", localice su icono amarillo en el dock. Haga clic derecho y eligir "Añadir a favoritos". Ahora puede ocultar la pantalla de bienvenida de tomboy-ng y activar el programa en cualquier momento directamente desde el dock. Para salir completamente tomboy-ng, haga clic en el icono de tomboy-ng en el dock y la ventana de búsqueda de tomboy-ng abre. Allí haga clic en "Menú" y luego en "Salir". <size:large>
 
 <bold>Otras Opciones </bold></size:large>
 Parecido al método anterior, si oculte tomboy-ng después de lanzarlo, lo puede activar en cualquier momento desde el Menú que use habitualmente para lanzar aplicaciones.  De esta manera, no lo re-lance cada vez. Siempre está abierto. El intento de 're-lanzar' el programa simplemente hace que la ventana de búsqueda aparezca.
   
-También hay complementos para Gnome que se puede instalar para restaurar la Bandeja del Sistema pero, sobretodo si use Wayland, pueden ser demasiados difíciles de instalar. Sin embargo, si esta dispuesto a deshabilitar Wayland y usar xorg, puede que funcione. Busque TopIcons.
+También hay complementos para Gnome que se puede instalar para restaurar la Bandeja del Sistema pero, sobretodo si use Wayland, pueden ser demasiados difíciles de instalar. Sin embargo, si esta dispuesto a deshabilitar Wayland y usar xorg, puede que funcione. Busque TopIconsPlus.
 
 </note-content></text>
-  <last-change-date>2021-01-31T18:56:23.8722544+00:00</last-change-date>
-  <last-metadata-change-date>2021-01-31T18:56:23.8722544+00:00</last-metadata-change-date>
+  <last-change-date>2021-02-01T11:26:28.1553245+00:00</last-change-date>
+  <last-metadata-change-date>2021-02-01T11:26:28.1553245+00:00</last-metadata-change-date>
   <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>912</width>
   <height>497</height>
-  <x>421</x>
-  <y>94</y>
+  <x>335</x>
+  <y>63</y>
   <open-on-startup>False</open-on-startup>
 </note>

@@ -216,6 +216,10 @@ msgctxt "resourcestr.rshelpsaveexit"
 msgid "After import single note, save & exit"
 msgstr "Sauver & quitter après import de la note"
 
+#: resourcestr.rshelpshiftaltf
+msgid "Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous"
+msgstr ""
+
 #: resourcestr.rshelpsinglenote
 msgctxt "resourcestr.rshelpsinglenote"
 msgid "Open indicated note, switch is optional"
@@ -383,6 +387,12 @@ msgid "Exact matches for terms between \" \""
 msgstr "Correspondance exacte si placé entre \"\""
 
 #: resourcestr.rssearchnavhint
+msgctxt "resourcestr.rssearchnavhint"
+msgid "Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F"
+msgstr ""
+
+#: resourcestr.rssearchnavhintother
+msgctxt "resourcestr.rssearchnavhintother"
 msgid "Find Keys : Previous : Shift-Alt-F   Next : Alt-F"
 msgstr ""
 

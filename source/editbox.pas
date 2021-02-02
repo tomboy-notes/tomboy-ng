@@ -478,6 +478,7 @@ type
         procedure UnsetPrimarySelection;
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
+        UseOtherFindPrev : boolean;
         // Set by the calling process.
         SingleNoteFileName : string;        // Carefull, cli has a real global version
         SingleNoteMode : Boolean;
@@ -1284,7 +1285,6 @@ begin
         //debugln('INFO : EditBox MenuItemFindClick Exposing FindPanel');
         PanelFind.Height := SearchPanelHeight;
         EditFind.SetFocus;
-//        LastFind := 1;
     end;
 end;
 
@@ -1311,10 +1311,15 @@ begin
         //if PanelFind.Height > 5 then debugln('WARN : EditBox EditFindKeyDown, PanelFind is still visible');
         exit;
     end;
-    if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) then
-        begin key := 0; UpDown1Click(self, btPrev);  end;    // Ctrl-Alt-F  is goto previous find.
+    if UseOtherFindPrev then begin
+        if ([ssShift, ssAlt] = Shift) and (Key = VK_F) then       // Shift-Alt-F  is 'other' goto previous find.
+            begin key := 0; UpDown1Click(self, btPrev);  end;
+    end else begin
+        if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) then       // Ctrl-Alt-F  is goto previous find.
+            begin key := 0; UpDown1Click(self, btPrev);  end;
+    end;
     if ([ssAlt] = Shift) and (Key = VK_F) then
-        begin key := 0; UpDown1Click(self, btNext);  end;    // Alt-F  is goto next find.
+        begin key := 0; UpDown1Click(self, btNext);  end;       // Alt-F  is goto next find.
     EditFind.SetFocus;
 end;
 
@@ -1776,6 +1781,9 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
+    if Application.HasOption('shiftaltF-findprev') then begin
+        UseOtherFindPrev := true;
+    end;
     SingleNoteFileName := MainUnit.SingleNoteFileName();
     if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
@@ -1786,8 +1794,13 @@ begin
     //PanelFind.Visible := False;
     PanelFind.Height := 1;                // That is, hide it for now
     PanelFind.Caption := '';
-    UpDown1.Hint := rsSearchNavHint;
-    LabelFindInfo.Caption:= rsSearchNavHint;
+    if UseOtherFindPrev then begin
+        UpDown1.Hint := rsSearchNavHintOther;
+        LabelFindInfo.Caption:= rsSearchNavHintOther;
+    end else begin
+        UpDown1.Hint := rsSearchNavHint;
+        LabelFindInfo.Caption:= rsSearchNavHint;
+    end;
     LabelFindCount.caption := '';
     EditFind.Text := rsMenuSearch;
     {$ifdef DARWIN}
@@ -2689,11 +2702,15 @@ begin
         exit();
     end;
 
+    // ---------------- Shift Alt -----------------------
+
+    if ([ssShift, ssAlt] = Shift) and (Key = VK_F) and (UseOtherFindPrev) then
+            begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is 'other' goto previous Find. All systems ?
 
     // --------------- Ctrl Alt -------------------------
 
-    if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) then
-            begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is goto previous find. All systems ?
+    if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) and (not UseOtherFindPrev) then
+            begin key := 0; UpDown1Click(self, btPrev);  end;    // Ctrl-Alt-F  is normal goto previous Find. All systems ?
 
     // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin
@@ -2706,7 +2723,7 @@ begin
         end;
         exit();
     end;
-    //if KMemo1.ReadOnly then begin Key := 0; exit(); end;
+
     // ------------------ Control and Shift ----------------
     if [ssCtrl, ssShift] = Shift then begin
        if key = ord('F') then begin  Key := 0; SpeedButtonSearchClick(self); exit();    // Activate Search Window

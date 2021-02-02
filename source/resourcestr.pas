@@ -122,7 +122,7 @@ RESOURCESTRING
     rsHelpConfig = 'Create or use an alternative config';
     rsHelpSingleNote = 'Open indicated note, switch is optional';
     rsHelpSaveExit = 'After import single note, save & exit';
-
+    rsHelpShiftAltF = 'Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous';
 
     // Mainunit
 
@@ -155,7 +155,8 @@ RESOURCESTRING
   // The soon to be merged NextCloud Notes Sync
 
   // EditBox  - lots more to do ..
-  rsSearchNavHint = 'Find Keys : Previous : Shift-Alt-F   Next : Alt-F';        // Warning, may not be case on Mac
+  rsSearchNavHint = 'Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F';        // Warning, may not be case on Mac
+  rsSearchNavHintOther = 'Find Keys : Previous : Shift-Alt-F   Next : Alt-F';
   //rsNotFound = 'Not found';
 
 implementation

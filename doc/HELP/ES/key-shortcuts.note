@@ -15,7 +15,7 @@
 <list><list-item dir="ltr">Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
 <list><list-item dir="ltr">Mayús-Clic : Seleccionar texto entre posición actual y posición del clic.</list-item></list>
 <list><list-item dir="ltr">Alt-F : Next in note Find</list-item></list>
-<list><list-item dir="ltr">Ctrl-Alt-F : Previous in note Find</list-item></list><size:large>
+<list><list-item dir="ltr">Ctrl-Alt-F : Previous in note Find (optionally, Shift-Alt-F)</list-item></list><size:large>
 
 <bold>Windows / Linux</bold></size:large>
 <list><list-item dir="ltr">Ctrl-Q : Salir de tomboy-ng - En Búsqueda, Preferencias o cualquier Nota Abierta</list-item></list>
@@ -71,8 +71,8 @@
 
 
 </note-content></text>
-  <last-change-date>2021-02-01T19:03:47.2317798+11:00</last-change-date>
-  <last-metadata-change-date>2021-02-01T19:03:47.2317798+11:00</last-metadata-change-date>
+  <last-change-date>2021-02-02T10:32:06.9130993+11:00</last-change-date>
+  <last-metadata-change-date>2021-02-02T10:32:06.9130993+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
