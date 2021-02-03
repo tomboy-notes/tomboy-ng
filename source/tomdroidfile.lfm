@@ -1,7 +1,7 @@
 object FormTomdroidFile: TFormTomdroidFile
-  Left = 914
+  Left = 913
   Height = 440
-  Top = 457
+  Top = 466
   Width = 847
   Caption = 'Tomdroid'
   ClientHeight = 440
@@ -123,10 +123,10 @@ object FormTomdroidFile: TFormTomdroidFile
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 751
-      Height = 21
+      Left = 748
+      Height = 24
       Top = 17
-      Width = 85
+      Width = 88
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 10
       BorderSpacing.Right = 10

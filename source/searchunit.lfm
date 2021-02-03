@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 600
+  Left = 599
   Height = 401
-  Top = 163
+  Top = 172
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng_Search'
@@ -25,7 +25,7 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 325
+    Width = 319
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 9
@@ -266,10 +266,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = CheckAutoRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 440
+    Left = 434
     Height = 32
     Top = 3
-    Width = 126
+    Width = 129
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Case Sensitive'
@@ -290,10 +290,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 576
+    Left = 573
     Height = 32
     Top = 3
-    Width = 118
+    Width = 121
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Auto Refresh'

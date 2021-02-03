@@ -388,12 +388,7 @@ msgstr "Correspondance exacte si placé entre \"\""
 
 #: resourcestr.rssearchnavhint
 msgctxt "resourcestr.rssearchnavhint"
-msgid "Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F"
-msgstr ""
-
-#: resourcestr.rssearchnavhintother
-msgctxt "resourcestr.rssearchnavhintother"
-msgid "Find Keys : Previous : Shift-Alt-F   Next : Alt-F"
+msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
 msgstr ""
 
 #: resourcestr.rssetthenotebooks
@@ -635,6 +630,10 @@ msgstr "Italique"
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
 msgstr "Alt+ <-/->  ôte ou ajoute des puces"
+
+#: teditboxform.menuitem6.caption
+msgid "Find Prev"
+msgstr ""
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"

@@ -428,12 +428,7 @@ msgstr ""
 
 #: resourcestr.rssearchnavhint
 msgctxt "resourcestr.rssearchnavhint"
-msgid "Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F"
-msgstr ""
-
-#: resourcestr.rssearchnavhintother
-msgctxt "resourcestr.rssearchnavhintother"
-msgid "Find Keys : Previous : Shift-Alt-F   Next : Alt-F"
+msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
 msgstr ""
 
 #: resourcestr.rssetthenotebooks
@@ -681,6 +676,10 @@ msgstr ""
 
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
+msgstr ""
+
+#: teditboxform.menuitem6.caption
+msgid "Find Prev"
 msgstr ""
 
 #: teditboxform.menuitemcopy.caption

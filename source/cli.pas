@@ -70,7 +70,7 @@ begin
        debugln('   --config-dir=PATH_to_DIR     ' + rsHelpConfig);
        debugln('   -o --open-note=PATH_to_NOTE  ' + rsHelpSingleNote);
        debugln('   --save-exit                  ' + rsHelpSaveExit);
-       debugln('   --shiftaltF-findprev         ' + rsHelpShiftAltF);
+//       debugln('   --shiftaltF-findprev         ' + rsHelpShiftAltF);
        result := true;
     end;
 end;
@@ -83,8 +83,8 @@ function HaveCMDParam() : boolean;
     // WARNING - the options here MUST match the options list in CommandLineError() above
 var
     Params : TStringList;
-    LongOpts : array [1..13] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
-            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit', 'shiftaltF-findprev');
+    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
+            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit'{, 'shiftaltF-findprev'});
 
 begin
     Result := False;

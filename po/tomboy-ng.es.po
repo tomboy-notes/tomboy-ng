@@ -6,7 +6,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: tomboy-ng v0.32\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-02-02 15:12+1100\n"
+"PO-Revision-Date: 2021-02-03 13:46+1100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -390,14 +390,10 @@ msgid "Exact matches for terms between \" \""
 msgstr "Búsqueda exacta para términos entre \" \""
 
 #: resourcestr.rssearchnavhint
+#, fuzzy
 msgctxt "resourcestr.rssearchnavhint"
-msgid "Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F"
-msgstr "Buscar: Anterior: Ctrl-Alt-F   Siguiente: Alt-F"
-
-#: resourcestr.rssearchnavhintother
-msgctxt "resourcestr.rssearchnavhintother"
-msgid "Find Keys : Previous : Shift-Alt-F   Next : Alt-F"
-msgstr "Buscar: Anterior: Mayús-Alt-F   Siguiente: Alt-F"
+msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
+msgstr "Buscar: Anterior: Alt-Enter   Siguiente: Ctrl-Enter"
 
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
@@ -641,6 +637,10 @@ msgstr "Cursiva"
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
 msgstr "Añadir viñeta - Alt+--> : Quitar viñeta - Alt+<--"
+
+#: teditboxform.menuitem6.caption
+msgid "Find Prev"
+msgstr ""
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"

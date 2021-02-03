@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 450
+  Left = 449
   Height = 525
-  Top = 236
+  Top = 245
   Width = 588
   BorderIcons = []
   Caption = 'Form Caption'
@@ -32,8 +32,8 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 454
-      ClientWidth = 584
+      ClientHeight = 446
+      ClientWidth = 582
       OnResize = TabBasicResize
       object ButtonSetNotePath: TButton
         AnchorSideLeft.Control = TabBasic
@@ -145,8 +145,8 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 454
-      ClientWidth = 584
+      ClientHeight = 446
+      ClientWidth = 582
       object GroupBox5: TGroupBox
         Left = 32
         Height = 176
@@ -313,8 +313,8 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 454
-      ClientWidth = 584
+      ClientHeight = 446
+      ClientWidth = 582
       object GroupBox4: TGroupBox
         AnchorSideLeft.Control = TabSync
         AnchorSideTop.Control = GroupBoxSync
@@ -451,8 +451,8 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 454
-      ClientWidth = 584
+      ClientHeight = 446
+      ClientWidth = 582
       Enabled = False
       TabVisible = False
       object Panel1: TPanel
@@ -473,8 +473,8 @@ object Sett: TSett
     object TabRecover: TTabSheet
       BorderWidth = 1
       Caption = 'Recover'
-      ClientHeight = 454
-      ClientWidth = 584
+      ClientHeight = 446
+      ClientWidth = 582
       OnResize = TabRecoverResize
       object Panel2: TPanel
         AnchorSideLeft.Control = TabRecover
@@ -484,15 +484,15 @@ object Sett: TSett
         AnchorSideBottom.Side = asrBottom
         Left = 1
         Height = 181
-        Top = 272
-        Width = 582
+        Top = 264
+        Width = 580
         Anchors = [akLeft, akRight, akBottom]
         BorderSpacing.Left = 1
         BorderSpacing.Right = 1
         BorderSpacing.Bottom = 1
         BevelInner = bvLowered
         ClientHeight = 181
-        ClientWidth = 582
+        ClientWidth = 580
         TabOrder = 0
         object Label6: TLabel
           Left = 32
@@ -523,7 +523,7 @@ object Sett: TSett
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = Panel2
           AnchorSideBottom.Side = asrBottom
-          Left = 464
+          Left = 462
           Height = 40
           Top = 132
           Width = 109
@@ -553,11 +553,11 @@ object Sett: TSett
         Left = 0
         Height = 256
         Top = 0
-        Width = 584
+        Width = 582
         Anchors = [akTop, akLeft, akRight]
         BevelInner = bvLowered
         ClientHeight = 256
-        ClientWidth = 584
+        ClientWidth = 582
         TabOrder = 1
         object Label9: TLabel
           Left = 33
@@ -600,9 +600,9 @@ object Sett: TSett
         end
         object CheckAutoSnapEnabled: TCheckBox
           Left = 344
-          Height = 21
+          Height = 24
           Top = 117
-          Width = 161
+          Width = 164
           Caption = 'Use auto snapshots'
           OnChange = CheckAutoSnapEnabledChange
           TabOrder = 2
@@ -634,7 +634,7 @@ object Sett: TSett
           Height = 40
           Hint = 'If you have previously taken a snapshot ...'
           Top = 206
-          Width = 263
+          Width = 261
           Anchors = [akLeft, akRight, akBottom]
           BorderSpacing.Left = 7
           BorderSpacing.Right = 7
@@ -667,8 +667,8 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 454
-      ClientWidth = 584
+      ClientHeight = 446
+      ClientWidth = 582
       OnResize = TabSpellResize
       object Label13: TLabel
         Left = 12

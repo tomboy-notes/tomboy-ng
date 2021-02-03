@@ -155,8 +155,9 @@ RESOURCESTRING
   // The soon to be merged NextCloud Notes Sync
 
   // EditBox  - lots more to do ..
-  rsSearchNavHint = 'Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F';        // Warning, may not be case on Mac
-  rsSearchNavHintOther = 'Find Keys : Previous : Shift-Alt-F   Next : Alt-F';
+  // rsSearchNavHint = 'Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F';        // Warning, may not be case on Mac
+  rsSearchNavHint = 'Find : Ctrl-Enter, Backward Find : Alt-Enter';
+//  rsSearchNavHintOther = 'Ctrl-Enter, Alt-F for Next, Shift-Alt-F for Previous';
   //rsNotFound = 'Not found';
 
 implementation

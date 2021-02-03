@@ -13,9 +13,7 @@
 <list><list-item dir="ltr">Ctrl-4 : Fuente enorme</list-item></list>
 <list><list-item dir="ltr">Mayús-FlechaDerecha - extender la selección un carácter hacia la derecha</list-item></list>
 <list><list-item dir="ltr">Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
-<list><list-item dir="ltr">Mayús-Clic : Seleccionar texto entre posición actual y posición del clic.</list-item></list>
-<list><list-item dir="ltr">Alt-F : Next in note Find</list-item></list>
-<list><list-item dir="ltr">Ctrl-Alt-F : Previous in note Find (optionally, Shift-Alt-F)</list-item></list><size:large>
+<list><list-item dir="ltr">Mayús-Clic : Seleccionar texto entre posición actual y posición del clic.</list-item></list><size:large>
 
 <bold>Windows / Linux</bold></size:large>
 <list><list-item dir="ltr">Ctrl-Q : Salir de tomboy-ng - En Búsqueda, Preferencias o cualquier Nota Abierta</list-item></list>
@@ -25,7 +23,8 @@
 <list><list-item dir="ltr">Ctrl-V : Pegar el contenido del portapapeles en la nota actual.</list-item></list>
 <list><list-item dir="ltr">Ctrl-A : Seleccionar todo.</list-item></list>
 <list><list-item dir="ltr">Ctrl-F : Abrir una ventana de búsqueda.</list-item></list>
-<list><list-item dir="ltr">Alt-F  : Buscar siguiente</list-item></list>
+<list><list-item dir="ltr">Ctrl-Intro : Buscar siguiente</list-item></list>
+<list><list-item dir="ltr">Alt-Intro  : Buscar anterior</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaDerecha : Mover al principio de la palabra a la derecha.</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaIzquierda : Mover al principio de la palabra actual o de allí al principio de la palabra a la izquierda.</list-item></list>
 <list><list-item dir="ltr">Ctrl-Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
@@ -71,14 +70,14 @@
 
 
 </note-content></text>
-  <last-change-date>2021-02-02T10:32:06.9130993+11:00</last-change-date>
-  <last-metadata-change-date>2021-02-02T10:32:06.9130993+11:00</last-metadata-change-date>
+  <last-change-date>2021-02-03T01:32:52.0498868+00:00</last-change-date>
+  <last-metadata-change-date>2021-02-03T01:32:52.0498868+00:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>823</x>
-  <y>136</y>
+  <x>323</x>
+  <y>20</y>
   <open-on-startup>False</open-on-startup>
 </note>

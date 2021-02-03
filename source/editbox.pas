@@ -205,6 +205,7 @@ unit EditBox;
     2021/01/27  Previous find is now Ctrl-Alt-F, next one is Alt-F
     2021/01/29  Use TB_Utils/TB_MakeFileName when exporting
     2021/01/31  Fix UTF8 issue in Find, check for hits in FindIt if NumbFindHits = 0
+    2021/02/03  Enter Key based search model, Ctrl-Enter and Alt-Enter
 }
 
 
@@ -214,10 +215,11 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-    StdCtrls, Buttons, kmemo, LazLogger, PrintersDlgs, clipbrd, lcltype,
+    StdCtrls, Buttons, kmemo, LazLogger, clipbrd, lcltype,
     ComCtrls,           // required up here for copy on selection stuff.
     fpexprpars,         // for calc stuff ;
-    SaveNote;      		// Knows how to save a Note to disk in Tomboy's XML
+    SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
+    PrintersDlgs;
 
 type TFindStatus = ( fs_EditFindChanged,       // The user has made some change to content of EditFind, new search pending
                     fs_EditFindFirstSearch,   // The user has hit Enter, trigged a new search
@@ -243,6 +245,7 @@ type
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
 		MenuFindNext: TMenuItem;
+        MenuItem6: TMenuItem;
 		MenuStayOnTop: TMenuItem;
         MenuItemSettings: TMenuItem;
         MenuItemEvaluate: TMenuItem;
@@ -402,6 +405,7 @@ type
         function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string ): boolean;
         function GetFindHits(Term: string; CaseSensitive: boolean; HitPos: integer=0
             ): integer;
+//        function GetFindKeyHint(): string;
         procedure InsertDate();
         //function MakeFileName(const Candidate: string): string;
 
@@ -478,7 +482,7 @@ type
         procedure UnsetPrimarySelection;
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
-        UseOtherFindPrev : boolean;
+       // UseOtherFindPrev : boolean;
         // Set by the calling process.
         SingleNoteFileName : string;        // Carefull, cli has a real global version
         SingleNoteMode : Boolean;
@@ -1089,6 +1093,7 @@ end;
   press Enter, press Enter ... should cycle through all hits. But moving out of EditFind
   and back in again, will jump to beginning of list again.
 }
+// ToDo : tristate var no longer needed.
 
 // returns the number of times Term appears in this note.
 // updates the label to left of updown ctrl in find panel.
@@ -1112,13 +1117,6 @@ begin
        NewPos := PosEx(Term, AString, NewPos+1);
        if ((HitPos > 0) and (HitPos < NewPos)) then break;
    end;
-
-{   repeat
-        NewPos := PosEx(Term, AString, NewPos+1);
-        inc(Result);
-        if ((HitPos > 0) and (HitPos <= NewPos)) then break;
-   until NewPos < 1;          }
-
    if HitPos > 0 then
         LabelFindCount.Caption := Result.ToString + '/' + NumbFindHits.ToString()
    else begin
@@ -1181,71 +1179,6 @@ begin
     Result := true;                         // we are not using this anyway
 end;
 
-(*
-function TEditBoxForm.FindIt(Term : string; GoForward, CaseSensitive : boolean; NewFind : boolean=false) : boolean;
-var
-    NewPos : integer = 0;
-    {$ifdef WINDOWS}
-    Ptr, EndP : PChar;
-    {$endif}
-    NumbCR : integer = 0;
-    FoundItems : integer = 0;                                       // Move this up to Regional
-begin
-    if NewFind then begin
-        FoundItems := 0;
-        if CaseSensitive then
-            NewPos := PosEx(Term, KMemo1.Blocks.Text, 1)
-        else  NewPos := PosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), 1);
-        while NewPos > 0 do begin
-            inc(FoundItems);        // cos we found one
-            if CaseSensitive then
-                NewPos := PosEx(Term, KMemo1.Blocks.Text, NewPos+1)
-            else NewPos := PosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), NewPos+1)
-        end;
-        LabelFindCount.Caption := FoundItems.ToString;
-        if FoundItems = 0 then exit(False);                          // Don't move cursor, nowhere to go.
-        LastFind := 0;                                               // Primed to find first item.
-    end;
-    If (LastFind = 0) and (NewFind = False) then exit(False);     // No current Find in progress.
-    NewPos := 0;
-    Result := True;
-{    if LastSearchTerm <> Term then begin
-        LastSearchTerm := Term;
-        LastFind := 1;
-    end; }
-    if GoForward then begin
-        if CaseSensitive then
-            NewPos := PosEx(Term, KMemo1.Blocks.Text, LastFind + 1)
-        else
-            NewPos := PosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), LastFind + 1);
-    end else begin
-        if CaseSensitive then
-            NewPos := RPosEx(Term, KMemo1.Blocks.Text, LastFind)
-        else
-            NewPos := RPosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), LastFind);
-    end;
-
-    if NewPos = 0 then begin            // That means this Find failed, reverse ?
-        NewPos := LastFind;
-        Result := False;
-    end;
-    if NewPos > 1 then begin
-        if (LabelFindCount.Caption <> '0') then begin // do not do following if we have no hits
-            {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
-            Ptr := PChar(KMemo1.Blocks.text);
-            EndP := Ptr + NewPos-1;
-            while Ptr < EndP do begin
-                if Ptr^ = #13 then inc(NumbCR);
-                inc(Ptr);
-            end;
-            {$endif}
-            KMemo1.SelStart := UTF8Length(pchar(KMemo1.Blocks.Text), NewPos-1) - NumbCR;
-            KMemo1.SelLength := UTF8length(Term);
-            if Result then LastFind := NewPos;
-        end;
-    end;             // else : if user keeps hitting enter with zero hits ....
-end;  *)
-
 
 procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
 begin
@@ -1271,6 +1204,14 @@ begin
     FindIt(Term, 1, true, false);        // no warning about not finding, Find Panel won't be open.
 end;
 
+{
+function TEditBoxForm.GetFindKeyHint() : string;
+begin
+    if UseOtherFindPrev then
+        Result := rsSearchNavHintOther
+    else Result := rsSearchNavHint;
+end; }
+
 const SearchPanelHeight = 39;
 
 
@@ -1284,6 +1225,7 @@ begin
     end  else  begin
         //debugln('INFO : EditBox MenuItemFindClick Exposing FindPanel');
         PanelFind.Height := SearchPanelHeight;
+        LabelFindInfo.Caption := rsSearchNavHint;                     //GetFindKeyHint();
         EditFind.SetFocus;
     end;
 end;
@@ -1291,13 +1233,14 @@ end;
 procedure TEditBoxForm.EditFindExit(Sender: TObject);
 
 begin
-    FindStatus := fs_EditFindExited;
+//    FindStatus := fs_EditFindExited;          // note its only bi-state now
 	if EditFind.Text = '' then begin
         EditFind.Hint:=rsSearchHint;
         EditFind.Text := rsMenuSearch;
         EditFind.SelStart := 1;
         EditFind.SelLength := length(EditFind.Text);
     end;
+    EditFind.color := clGray;
 end;
 
 procedure TEditBoxForm.EditFindKeyDown(Sender: TObject; var Key: Word;
@@ -1311,6 +1254,9 @@ begin
         //if PanelFind.Height > 5 then debugln('WARN : EditBox EditFindKeyDown, PanelFind is still visible');
         exit;
     end;
+
+(*
+    // OK, maybe its one of our Key bindings ?
     if UseOtherFindPrev then begin
         if ([ssShift, ssAlt] = Shift) and (Key = VK_F) then       // Shift-Alt-F  is 'other' goto previous find.
             begin key := 0; UpDown1Click(self, btPrev);  end;
@@ -1320,27 +1266,42 @@ begin
     end;
     if ([ssAlt] = Shift) and (Key = VK_F) then
         begin key := 0; UpDown1Click(self, btNext);  end;       // Alt-F  is goto next find.
-    EditFind.SetFocus;
+*)
+
+//    EditFind.SetFocus;
 end;
 
-procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word;
-    Shift: TShiftState);
+procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+// Here we watch for just the Enter key.
+// We must move focus back to KMemo on every find, else highlighted text is hidden on Qt with some themes
+// If we allow user to use Enter to trigger a find, their next press of enter will erase what ever is highlighted
 begin
-    if (Key = VK_RETURN) and (EditFind.Text <> rsMenuSearch) then begin
-        Key := 0;
-        LabelFindInfo.Caption := '';
-        case FindStatus of
-            fs_EditFindChanged : begin
-                        KMemo1.SelLength := 0;
-                        GetFindHits(EditFind.Text, False);
-                        FindIt(EditFind.Text, KMemo1.Selstart, true, False);
-                        FindStatus := fs_EditFindFirstSearch;
-                        end;
-            fs_EditFindFirstSearch : if not FindIt(EditFind.Text, KMemo1.selstart+1, true, False) then
-                            LabelFindInfo.Caption := rsNotAvailable;
-            else showmessage('EditBox - invalid FindStatus on Enter');        // should never happen .....
+  if (Key = VK_RETURN) {and (EditFind.Text <> rsMenuSearch)} then begin
+        if [ssCtrl] = Shift then begin
+            if FindStatus = fs_EditFindChanged then begin
+                GetFindHits(EditFind.Text, False);
+                FindStatus := fs_EditFindFirstSearch;
+            end;
+            UpDown1Click(self, btNext);
+            exit;
         end;
-    end;
+      if [ssAlt] = Shift then begin
+          if FindStatus = fs_EditFindChanged then begin
+              GetFindHits(EditFind.Text, False);
+              FindStatus := fs_EditFindFirstSearch;
+          end;
+          UpDown1Click(self, btPrev);
+          exit;
+      end;
+      // Its just an Enter, tell user wrong key !
+                Key := 0;                             // Eat it, we do not respond to Enter !!!!
+                if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
+                    LabelFindInfo.Caption := rsSearchNavHint //GetFindKeyHint()
+                else LabelFindInfo.Caption := ' ' + rsSearchNavHint; //GetFindKeyHint() ;
+                EditFind.SetFocus;
+                exit;
+
+   end;
 end;
 
 procedure TEditBoxForm.EditFindChange(Sender: TObject);
@@ -1350,8 +1311,9 @@ end;
 
 procedure TEditBoxForm.EditFindEnter(Sender: TObject);
 begin
-   FindStatus := fs_EditFindChanged;
+    editFind.Color:= clDefault;
 end;
+
 
 procedure TEditBoxForm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
 var
@@ -1362,8 +1324,11 @@ begin
     else
         Res := FindIt(EditFind.Text, KMemo1.SelStart+1, False, False);
     if Res then LabelFindInfo.Caption := ''
-    else LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
-    EditFind.SetFocus;
+    else begin
+        LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
+        NumbFindHits := 0;
+    end;
+    KMemo1.setfocus;
 end;
 
 procedure TEditBoxForm.UpDown1Enter(Sender: TObject);
@@ -1781,9 +1746,9 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
-    if Application.HasOption('shiftaltF-findprev') then begin
+{    if Application.HasOption('shiftaltF-findprev') then begin
         UseOtherFindPrev := true;
-    end;
+    end;            }
     SingleNoteFileName := MainUnit.SingleNoteFileName();
     if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
@@ -1794,13 +1759,8 @@ begin
     //PanelFind.Visible := False;
     PanelFind.Height := 1;                // That is, hide it for now
     PanelFind.Caption := '';
-    if UseOtherFindPrev then begin
-        UpDown1.Hint := rsSearchNavHintOther;
-        LabelFindInfo.Caption:= rsSearchNavHintOther;
-    end else begin
-        UpDown1.Hint := rsSearchNavHint;
-        LabelFindInfo.Caption:= rsSearchNavHint;
-    end;
+    UpDown1.Hint := rsSearchNavHint; //GetFindKeyHint();
+    EditFind.Hint := rsSearchNavHint; //GetFindKeyHint();
     LabelFindCount.caption := '';
     EditFind.Text := rsMenuSearch;
     {$ifdef DARWIN}
@@ -2677,6 +2637,9 @@ begin
     // -------------- Control ------------------
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
+            // VK_Return : if PanelFind.Height > 5 then EditFind.SetFocus else Key := 0;
+            VK_Return :  if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btNext) else Key := 0;
+            //VK_Return : if PanelFind.Height > 5 then UpDown1Click(self, btNext) else Key := 0;
             VK_Q : MainForm.close();
             VK_1 : MenuSmallClick(Sender);
             VK_2 : MenuNormalClick(Sender);
@@ -2695,14 +2658,14 @@ begin
             VK_E : InitiateCalc();
             VK_F4 : close;                      // close just this note, normal saving will take place
             VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
-            VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_RETURN, VK_INSERT :
+            VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, {VK_RETURN,} VK_INSERT :
                 exit;    // so key is not set to 0 on the way out, KMemo will handle
         end;
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();
     end;
 
-    // ---------------- Shift Alt -----------------------
+(*    // ---------------- Shift Alt -----------------------
 
     if ([ssShift, ssAlt] = Shift) and (Key = VK_F) and (UseOtherFindPrev) then
             begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is 'other' goto previous Find. All systems ?
@@ -2711,6 +2674,7 @@ begin
 
     if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) and (not UseOtherFindPrev) then
             begin key := 0; UpDown1Click(self, btPrev);  end;    // Ctrl-Alt-F  is normal goto previous Find. All systems ?
+*)
 
     // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin
@@ -2719,7 +2683,8 @@ begin
             VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
-            VK_F     : begin MenuFindNextClick(self); Key := 0; end;                    // Local 'Next' find
+//            VK_F     : begin MenuFindNextClick(self); Key := 0; end;                    // Local 'Next' find
+            VK_Return :  if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btPrev) else Key := 0;
         end;
         exit();
     end;

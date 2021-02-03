@@ -31,9 +31,12 @@
 #	Upload with "dput -f mentors *.changes"
 
 #       ------------ Lintian -----------
-# Copy the .xz, .gz and .dsc files to a clean directory and run (eg)
-#   dpkg-source -x tomboy-ng_0.30f-1.dsc
-#   cd tomboy-ng_0.30f
+# Copy the .xz, .gz and .dsc files to a clean directory and build a package (eg)
+#   rm -Rf <some_Test_dir>
+#   cp *.xz *.gz *.dsc <some_Test_dir>
+#   cd <some_Test_dir>
+#   dpkg-source -x *.dsc
+#   cd tomboy<tab>
 #   dpkg-buildpackage -us  -uc
 #   cd ../
 #   lintian -IiE --pedantic *.changes
@@ -71,6 +74,7 @@
 #       2020-12-17 Restructed the multi control system to make it clearer.
 #       2020-12-29 Split script into seperate Debian one, only Qt5.
 #       2021-01-27 More detailed instructions on use.
+#	2021-02-03 Include enough of first changelog to keep lintian off my back
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
@@ -144,6 +148,10 @@ function CleanSource () {
 	rm "$KCS"/kmemofrm.* "$KCS"/kpagecontrol.* "$KCS"/kprogress.* "$KCS"/ksplitter.pas  
 	rm "$KC"/*.txt "$KC"/*.json "$KC"/*.bat
 	rm -Rf "$KC"/packages "$KC"/tools "$KC"/resource_src/khexeditor_icons "$KC"/resource_src/kgrid_icons
+	chmod 664 doc/HELP/EN/*
+	chmod 664 doc/HELP/ES/*
+	chmod 664 doc/HELP/FR/*
+
 }
 
 
@@ -189,6 +197,14 @@ function MakeOrigFile () {
 	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$DEBVER" "New Version Release"
 	dch --append "Please see github for change details"
     dch --release "blar"
+    
+    echo "" >> debian/changelog
+    echo "tomboy-ng (0.31a-1) unstable; urgency=medium" >> debian/changelog
+    echo "" >> debian/changelog
+    echo "  * Initial release. (Closes: #897688)" >> debian/changelog
+    echo "" >> debian/changelog
+    echo " -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 18 Dec 2020 22:08:09 +1100" >> debian/changelog
+    
 	cd ..
 	mv "$APP"_"$VER""$DEBVER"/debian ./debian
 	mkdir "$APP"_"$VER""$DEBVER"/debian

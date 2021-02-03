@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 1115
+  Left = 1114
   Height = 497
-  Top = 276
+  Top = 285
   Width = 617
   Caption = 'EditBoxForm'
   ClientHeight = 497
@@ -877,6 +877,8 @@ object EditBoxForm: TEditBoxForm
       OnExit = EditFindExit
       OnKeyDown = EditFindKeyDown
       OnKeyUp = EditFindKeyUp
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
       Text = 'EditFind'
     end
@@ -1056,8 +1058,12 @@ object EditBoxForm: TEditBoxForm
     end
     object MenuFindNext: TMenuItem
       Caption = 'Find Next'
-      ShortCut = 32838
+      ShortCut = 16397
       OnClick = MenuFindNextClick
+    end
+    object MenuItem6: TMenuItem
+      Caption = 'Find Prev'
+      ShortCut = 32781
     end
     object MenuItem1: TMenuItem
       Caption = '-'

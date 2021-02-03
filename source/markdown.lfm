@@ -1,7 +1,7 @@
 object FormMarkdown: TFormMarkdown
-  Left = 249
+  Left = 248
   Height = 462
-  Top = 150
+  Top = 159
   Width = 821
   Caption = 'FormMarkdown'
   ClientHeight = 462

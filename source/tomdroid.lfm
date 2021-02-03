@@ -1,7 +1,7 @@
 object FormTomdroid: TFormTomdroid
-  Left = 606
+  Left = 605
   Height = 377
-  Top = 258
+  Top = 267
   Width = 836
   Caption = 'Tomdroid'
   ClientHeight = 377
@@ -40,7 +40,7 @@ object FormTomdroid: TFormTomdroid
     TabOrder = 1
     object ComboBox1: TComboBox
       Left = 16
-      Height = 31
+      Height = 33
       Top = 88
       Width = 250
       ItemHeight = 0
@@ -111,9 +111,9 @@ object FormTomdroid: TFormTomdroid
     end
     object CheckSavePassword: TCheckBox
       Left = 144
-      Height = 21
+      Height = 24
       Top = 268
-      Width = 57
+      Width = 60
       Caption = 'Save'
       TabOrder = 4
     end
@@ -202,11 +202,11 @@ object FormTomdroid: TFormTomdroid
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = CheckBoxTestRun
-      Left = 615
-      Height = 21
+      Left = 609
+      Height = 24
       Hint = 'writes debug messages to terminal'
       Top = 17
-      Width = 115
+      Width = 118
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 10
       Caption = 'Debug Mode'
@@ -220,10 +220,10 @@ object FormTomdroid: TFormTomdroid
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 740
-      Height = 21
+      Left = 737
+      Height = 24
       Top = 17
-      Width = 85
+      Width = 88
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 10
       BorderSpacing.Right = 10
