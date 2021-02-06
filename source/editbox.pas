@@ -206,6 +206,7 @@ unit EditBox;
     2021/01/29  Use TB_Utils/TB_MakeFileName when exporting
     2021/01/31  Fix UTF8 issue in Find, check for hits in FindIt if NumbFindHits = 0
     2021/02/03  Enter Key based search model, Ctrl-Enter and Alt-Enter
+    2021/02/05  Complete rewrite of Find in a way that also works for Windows.
 }
 
 
@@ -364,7 +365,8 @@ type
 
     private
         NumbFindHits : integer;
-        FindStatus : TFindStatus;   // Stage we are in wrt Finding, we want Enter, Enter, Enter to step through hits.
+        //FindStatus : TFindStatus;   // Stage we are in wrt Finding, we want Enter, Enter, Enter to step through hits.
+
         TitleHasChanged : boolean;
         // a record of the cursor position before last click, used by shift click to select
         MouseDownPos : integer;
@@ -403,8 +405,8 @@ type
         function FindIt(Term: string; StartAt: integer; GoForward,
             CaseSensitive: boolean): boolean;
         function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string ): boolean;
-        function GetFindHits(Term: string; CaseSensitive: boolean; HitPos: integer=0
-            ): integer;
+        {function GetFindHits(Term: string; CaseSensitive: boolean; HitPos: integer=0;
+            TextString: pchar=nil): integer;}
 //        function GetFindKeyHint(): string;
         procedure InsertDate();
         //function MakeFileName(const Candidate: string): string;
@@ -1095,62 +1097,111 @@ end;
 }
 // ToDo : tristate var no longer needed.
 
-// returns the number of times Term appears in this note.
-// updates the label to left of updown ctrl in find panel.
-function TEditBoxForm.GetFindHits(Term : string; CaseSensitive : boolean; HitPos : integer = 0) : integer;
-var
-    NewPos : integer;
-    AString : string;
-    //Tick1, Tick2, Tick3 : QWord;
-begin
-   Result := 0;
-   NewPos := 0;
-   if not CaseSensitive then begin              // Massivly faster to convert to uppercase at start.
-       Term := Term.UpperCase(Term);
-       AString := uppercase(KMemo1.Blocks.Text);
-   end else
-       AString := KMemo1.Blocks.Text;
 
-   NewPos := PosEx(Term, AString, NewPos+1);
-   while NewPos > 0 do begin
-       inc(Result);
-       NewPos := PosEx(Term, AString, NewPos+1);
-       if ((HitPos > 0) and (HitPos < NewPos)) then break;
-   end;
-   if HitPos > 0 then
-        LabelFindCount.Caption := Result.ToString + '/' + NumbFindHits.ToString()
-   else begin
-       NumbFindHits := Result;
-       if Result = 0 then LabelFindCount.Caption := '0/0';
-   end;
-end;
-
-// Call to start searching at at existing position (usually cursor).
+// Call to start searching at an existing position (usually cursor).
 // Note that StartAt arrives here as a (utf8) char index, not a byte index.
 function TEditBoxForm.FindIt(Term : string; StartAt : integer; GoForward, CaseSensitive : boolean) : boolean;
 var
     NewPos : integer = 0;
+    // Ptr : PChar;
+    CleanSt : string = '';
     {$ifdef WINDOWS}
-    Ptr, EndP : PChar;
-    {$endif}
-    NumbCR : integer = 0;
+    len, I : integer;  TempString : string;{$endif}
+    Tick, Tock : qword;
+
+        procedure GetFindHits(HitPos : integer = 0);
+        var
+            APos : integer = 0;
+            // AString : string;
+            HitsFound : integer = 1;
+        begin
+          // Assumes both Term and the Text data will have been uppercased if necessary
+          if (HitPos = 0) and (NumbFindHits <> 0) then begin
+            debugln('TEditBoxForm.FindIt - ERROR, Expected NumbFindHits to be zero');
+            showmessage('TEditBoxForm.FindIt - ERROR, Expected NumbFindHits to be zero');
+          end;
+
+          APos := PosEx(Term, CleanSt, APos+1);
+          Tick := gettickcount64();
+          while APos > 0 do begin                                      // 1mS on Linux, Very Big test Note, first run
+               if ((HitPos > 0) and (HitPos < APos)) then break;
+               inc(HitsFound);
+               APos := PosEx(Term, CleanSt, APos+1);
+          end;
+          Tock := gettickcount64();
+          debugln('TEditBoxForm.FindIt - Total Hit Find = ' + inttostr(Tock - Tick) + 'mS');
+          if HitPos > 0 then
+                LabelFindCount.Caption := HitsFound.ToString + '/' + NumbFindHits.ToString()
+          else begin
+                dec(HitsFound);                     // allow for initial state of 1
+                NumbFindHits := HitsFound;          // regional var, set to zero in UpDownControl if new Find term
+                if HitsFound = 0 then
+                    LabelFindCount.Caption := '';   // not sure if we need that
+          end;
+        end;
+
         function JumpToItem() : boolean;
         begin
-            if GoForward then begin
-                if CaseSensitive then
-                        NewPos := PosEx(Term, KMemo1.Blocks.Text, StartAt + 1)
-                    else
-                        NewPos := PosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), StartAt + 1);
-            end else begin
-                    if CaseSensitive then
-                        NewPos := RPosEx(Term, KMemo1.Blocks.Text, StartAt)
-                    else
-                        NewPos := RPosEx(uppercase(Term), uppercase(KMemo1.Blocks.Text), StartAt);
-            end;
-            result := NewPos <> 0;      // false, 0, means item not found.
+            if GoForward then
+                 NewPos := PosEx(Term, CleanSt, StartAt + 1)
+            else
+                 NewPos := RPosEx(Term, CleanSt, StartAt);
+             result := NewPos <> 0;      // false, 0, means item not found.
         end;
 begin
-    startAt := length(utf8copy(KMemo1.Blocks.Text, 1, StartAt)); // Convert from unicode char length to byte length
+    // Sadly, we also need to account for cr/lf here with windows. KMemo uses a zero based char
+    // index, the Text is still zero based but has cr/lf (in Windows) and counts bytes. The #13, CR,
+    // is generated by KMemo when we ask for Text under Windows, occasionally I see a string with excess #13
+    // and it makes searching hard. So, I make a new 'Text' string with all #13 removed only for windows.
+    // performance testing using a note about 500K, loads in 4 seconds on Linux, 12 on Windows
+
+
+    // Here, StartAT is a zero based char count, a UTF8 char is 1 and a newline is 1
+    //if GoForward then inc(StartAt);       // so we are past previous Find before starting next one
+    {$IFDEF WINDOWS}
+         Tick := gettickcount64();
+
+
+        // We make copy of the Text and work from it, calling Text repeatadly is slow and just setting
+        // setting a pointer, unsafe !  72 mS on Linux, release mode Very Big Test Note
+        TempString := KMemo1.Blocks.text;
+        Len := length(TempString);            //
+        I := 1;
+        if CaseSensitive then begin
+            while (I <= Len) do begin
+                  if TempString[I] <> #13 then
+                      CleanSt := CleanSt + TempString[I];
+                  inc(I);
+            end;
+        end else begin
+            while (I <= Len) do begin
+                  if TempString[I] <> #13 then
+                      CleanSt := CleanSt + upcase(TempString[I]);
+                  inc(I);
+            end;
+            Term := uppercase(Term);
+        end;
+
+        Tock := gettickcount64();
+        showmessage('FindIt data structure ' + inttostr(Tock - Tick)+'mS');
+
+    {$else}
+        if CaseSensitive then
+            CleanSt := pchar(KMemo1.Blocks.text)
+        else begin
+            //Tick := gettickcount64();
+            CleanSt := uppercase(KMemo1.Blocks.text);
+            // 50-75mS, Linux, release mode, Very Large Test Note, seem much of that is KMemo
+            // assembling the string in the first place.
+            //Tock := gettickcount64();
+            //debugln('TEditBoxForm.FindIt - uppercase cleanSt = ' + inttostr(Tock - Tick) + 'mS');
+            Term := uppercase(Term);
+        end;
+    {$endif}
+
+    // OK, we can now assume we have a Unix style newline Text string
+    StartAt := length(utf8Copy(CleanSt, 1, StartAt));
+    // Thats our revised StartAt, now a byte count of where to start Finding
 
     if not JumptoItem() then begin       // we try to find it, wrapping around once if necessary
         if GoForward then
@@ -1159,23 +1210,18 @@ begin
         if not JumpToItem() then
             exit(False);                // we give up.
     end;
-    // if to here, we have a hit at NewPos, even if its the one we started at.
+    // if to here, we have a hit at NewPos, even if its the one we started at, rolled around
+    // NewPos is one based Byte count, UTF8 are 2 or more, in Windows,newline is 2 char long
+    // It starts at 1 and that does not work as a char index,
     if NewPos > 1 then begin
-        {$ifdef WINDOWS}                // does no harm in Unix but a bit slow ?
-        Ptr := PChar(KMemo1.Blocks.text);
-        EndP := Ptr + NewPos-1;
-        while Ptr < EndP do begin
-            if Ptr^ = #13 then inc(NumbCR);
-            inc(Ptr);
-        end;
-        {$endif}
-        KMemo1.SelStart := UTF8Length(pchar(KMemo1.Blocks.Text), NewPos-1) - NumbCR;
-        KMemo1.SelLength := UTF8length(Term);
-        //if Result then LastFind := NewPos;
+        dec(NewPos);                             // now zero based
+        KMemo1.SelStart := utf8Length(Copy(CleanSt, 1, NewPos)); // NewPos is byte.
+        KMemo1.SelLength := UTF8Length(Term);
     end;
-    if NumbFindHits = 0 then                // May it is zero, maybe user has pressed arrows instead of Enter in search field
-        GetFindHits(Term, CaseSensitive);
-    GetFindHits(Term, CaseSensitive, NewPos);
+    if NumbFindHits = 0 then                // Maybe it is zero, but maybe term changed, its fast to ret 0
+        //GetFindHits(Term, CaseSensitive);
+        GetFindHits();
+    GetFindHits(NewPos);                    // GetFindHints expects a byte count
     Result := true;                         // we are not using this anyway
 end;
 
@@ -1196,10 +1242,9 @@ begin
     // If above returns false, no more to be found, but how to tell user ?
 end;  *)
 
-procedure TEditBoxForm.NewFind(Term : string);
+procedure TEditBoxForm.NewFind(Term : string);      // Public, called from SearchForm
 begin
     EditFind.Text := Term;
-    GetFindHits(Term, False);
     //LastFind := 0;
     FindIt(Term, 1, true, false);        // no warning about not finding, Find Panel won't be open.
 end;
@@ -1233,7 +1278,6 @@ end;
 procedure TEditBoxForm.EditFindExit(Sender: TObject);
 
 begin
-//    FindStatus := fs_EditFindExited;          // note its only bi-state now
 	if EditFind.Text = '' then begin
         EditFind.Hint:=rsSearchHint;
         EditFind.Text := rsMenuSearch;
@@ -1251,24 +1295,8 @@ begin
         Key := 0;
         MenuItemFindClick(Sender);
         KMemo1.SetFocus;
-        //if PanelFind.Height > 5 then debugln('WARN : EditBox EditFindKeyDown, PanelFind is still visible');
         exit;
     end;
-
-(*
-    // OK, maybe its one of our Key bindings ?
-    if UseOtherFindPrev then begin
-        if ([ssShift, ssAlt] = Shift) and (Key = VK_F) then       // Shift-Alt-F  is 'other' goto previous find.
-            begin key := 0; UpDown1Click(self, btPrev);  end;
-    end else begin
-        if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) then       // Ctrl-Alt-F  is goto previous find.
-            begin key := 0; UpDown1Click(self, btPrev);  end;
-    end;
-    if ([ssAlt] = Shift) and (Key = VK_F) then
-        begin key := 0; UpDown1Click(self, btNext);  end;       // Alt-F  is goto next find.
-*)
-
-//    EditFind.SetFocus;
 end;
 
 procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1276,37 +1304,29 @@ procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShi
 // We must move focus back to KMemo on every find, else highlighted text is hidden on Qt with some themes
 // If we allow user to use Enter to trigger a find, their next press of enter will erase what ever is highlighted
 begin
-  if (Key = VK_RETURN) {and (EditFind.Text <> rsMenuSearch)} then begin
+    if (Key = VK_RETURN) {and (EditFind.Text <> rsMenuSearch)} then begin
+        Key := 0;                             // Eat it
         if [ssCtrl] = Shift then begin
-            if FindStatus = fs_EditFindChanged then begin
-                GetFindHits(EditFind.Text, False);
-                FindStatus := fs_EditFindFirstSearch;
-            end;
             UpDown1Click(self, btNext);
             exit;
         end;
-      if [ssAlt] = Shift then begin
-          if FindStatus = fs_EditFindChanged then begin
-              GetFindHits(EditFind.Text, False);
-              FindStatus := fs_EditFindFirstSearch;
-          end;
-          UpDown1Click(self, btPrev);
-          exit;
-      end;
-      // Its just an Enter, tell user wrong key !
-                Key := 0;                             // Eat it, we do not respond to Enter !!!!
-                if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
-                    LabelFindInfo.Caption := rsSearchNavHint //GetFindKeyHint()
-                else LabelFindInfo.Caption := ' ' + rsSearchNavHint; //GetFindKeyHint() ;
-                EditFind.SetFocus;
-                exit;
-
-   end;
+        if [ssAlt] = Shift then begin
+              UpDown1Click(self, btPrev);
+              exit;
+        end;
+        // Its just an Enter, tell user wrong key !
+        LabelFindCount.caption := '';
+        if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
+            LabelFindInfo.Caption := rsSearchNavHint //GetFindKeyHint()
+        else LabelFindInfo.Caption := ' ' + rsSearchNavHint; //GetFindKeyHint() ;
+        EditFind.SetFocus;
+    end;
 end;
 
 procedure TEditBoxForm.EditFindChange(Sender: TObject);
 begin
-    FindStatus := fs_EditFindChanged;
+    //FindStatus := fs_EditFindChanged;
+    NumbFindHits := 0;
 end;
 
 procedure TEditBoxForm.EditFindEnter(Sender: TObject);
@@ -1322,11 +1342,12 @@ begin
     if Button = btNext then
         Res := FindIt(EditFind.Text, KMemo1.SelStart+1, true, False)
     else
-        Res := FindIt(EditFind.Text, KMemo1.SelStart+1, False, False);
+        Res := FindIt(EditFind.Text, KMemo1.SelStart, False, False);
     if Res then LabelFindInfo.Caption := ''
     else begin
         LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
         NumbFindHits := 0;
+        LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
     end;
     KMemo1.setfocus;
 end;
