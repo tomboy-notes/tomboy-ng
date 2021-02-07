@@ -13,10 +13,7 @@
 <list><list-item dir="ltr">Control-4 : huge font</list-item></list>
 <list><list-item dir="ltr">Shift-RightArrow - extend selection one char to right</list-item></list>
 <list><list-item dir="ltr">Shift-LeftArrow - extend selection one char to left</list-item></list>
-<list><list-item dir="ltr">Shift-Click : Select text between existing position and clicked position.</list-item></list>
-<list><list-item dir="ltr">Control-F : Find someting in a Note.</list-item></list>
-<list><list-item dir="ltr">Control-Enter : Next in note Find</list-item></list>
-<list><list-item dir="ltr">Alt-Enter : Previous in note Find</list-item></list><size:large>
+<list><list-item dir="ltr">Shift-Click : Select text between existing position and clicked position.</list-item></list><size:large>
 
 <bold>Windows / Linux</bold></size:large>
 <list><list-item dir="ltr">Control-Q : Quit tomboy-ng  - On Search, Settings and any Open Note</list-item></list>
@@ -32,15 +29,19 @@
 <list><list-item dir="ltr">Control-F4 : Close current note window.</list-item></list>
 <list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Control-L : Create a link note from selected text.</list-item></list>
-
+<list><list-item dir="ltr">Alt - F4 : Close current note window</list-item></list>
+Fonts
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
 <list><list-item dir="ltr">Control-I : Italics</list-item></list>
 <list><list-item dir="ltr">Control-S : Strikeout</list-item></list>
 <list><list-item dir="ltr">Control-U : Underline</list-item></list>
 <list><list-item dir="ltr">Control-H : Highlight</list-item></list>
 <list><list-item dir="ltr">Control-E : Expression calculator - see Calculator help note</list-item></list>
+Find (in a note)
+<list><list-item dir="ltr">Control-F : Find something in a Note.</list-item></list>
+<list><list-item dir="ltr">Control-Enter : Next in note Find</list-item></list>
+<list><list-item dir="ltr">Alt-Enter : Previous in note Find</list-item></list><size:large>
 
-<list><list-item dir="ltr">Alt - F4 : Close current note window</list-item></list><size:large>
 
 <bold>Mac</bold></size:large>
 <italic>(Where Option key is also the Alt key)</italic>
@@ -56,13 +57,18 @@
 <list><list-item dir="ltr">Command-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Option-Shift-LeftArrow - extend selection one word to left</list-item></list>
 <list><list-item dir="ltr">Option-Shift-RightArrow - extend selection one word to right</list-item></list>
-
+Fonts
 <list><list-item dir="ltr">Command-B : Bold</list-item></list>
 <list><list-item dir="ltr">Command-I : Italics</list-item></list>
 <list><list-item dir="ltr">Command-S : Strikeout</list-item></list>
 <list><list-item dir="ltr">Command-U : Underline</list-item></list>
 <list><list-item dir="ltr">Command-E : Expression calculator - see Calculator help note</list-item></list>
 <list><list-item dir="ltr">Option-H : Highlight</list-item></list>
+Find (in a note)
+<list><list-item dir="ltr">Command-F : Find something in a Note.</list-item></list>
+<list><list-item dir="ltr">Command-Enter : Next in note Find</list-item></list>
+<list><list-item dir="ltr">Alt-Enter : Previous in note Find</list-item></list>
+
 
 
 
@@ -70,8 +76,8 @@
 
 
 </note-content></text>
-  <last-change-date>2021-02-03T13:49:54.9526653+11:00</last-change-date>
-  <last-metadata-change-date>2021-02-03T13:49:54.9526653+11:00</last-metadata-change-date>
+  <last-change-date>2021-02-07T20:37:15.8060972+11:00</last-change-date>
+  <last-metadata-change-date>2021-02-07T20:37:15.8060972+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

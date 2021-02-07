@@ -231,6 +231,7 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
+        ButtMainTBMenu: TSpeedButton;
         EditFind: TEdit;
         KMemo1: TKMemo;
         LabelFindCount: TLabel;
@@ -273,6 +274,7 @@ type
         MenuFixedWidth: TMenuItem;
         MenuUnderline: TMenuItem;
         MenuStrikeout: TMenuItem;
+        Panel1: TPanel;
         PanelFind: TPanel;
         PanelReadOnly: TPanel;
         PopupMainTBMenu: TPopupMenu;
@@ -280,14 +282,13 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
-        ButtMainTBMenu: TSpeedButton;
-		SpeedRollBack: TSpeedButton;
         SpeedButtonDelete: TSpeedButton;
         SpeedButtonLink: TSpeedButton;
         SpeedButtonNotebook: TSpeedButton;
         SpeedButtonSearch: TSpeedButton;
         SpeedButtonText: TSpeedButton;
         SpeedButtonTools: TSpeedButton;
+        SpeedRollBack: TSpeedButton;
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
@@ -1107,7 +1108,7 @@ var
     CleanSt : string = '';
     {$ifdef WINDOWS}
     len, I : integer;  TempString : string;{$endif}
-    Tick, Tock : qword;
+    //Tick, Tock : qword;
 
         procedure GetFindHits(HitPos : integer = 0);
         var
@@ -1122,14 +1123,14 @@ var
           end;
 
           APos := PosEx(Term, CleanSt, APos+1);
-          Tick := gettickcount64();
+          //Tick := gettickcount64();
           while APos > 0 do begin                                      // 1mS on Linux, Very Big test Note, first run
                if ((HitPos > 0) and (HitPos < APos)) then break;
                inc(HitsFound);
                APos := PosEx(Term, CleanSt, APos+1);
           end;
-          Tock := gettickcount64();
-          debugln('TEditBoxForm.FindIt - Total Hit Find = ' + inttostr(Tock - Tick) + 'mS');
+          //Tock := gettickcount64();
+          //debugln('TEditBoxForm.FindIt - Total Hit Find = ' + inttostr(Tock - Tick) + 'mS');
           if HitPos > 0 then
                 LabelFindCount.Caption := HitsFound.ToString + '/' + NumbFindHits.ToString()
           else begin
@@ -1159,9 +1160,6 @@ begin
     // Here, StartAT is a zero based char count, a UTF8 char is 1 and a newline is 1
     //if GoForward then inc(StartAt);       // so we are past previous Find before starting next one
     {$IFDEF WINDOWS}
-         Tick := gettickcount64();
-
-
         // We make copy of the Text and work from it, calling Text repeatadly is slow and just setting
         // setting a pointer, unsafe !  72 mS on Linux, release mode Very Big Test Note
         TempString := KMemo1.Blocks.text;
@@ -1181,10 +1179,6 @@ begin
             end;
             Term := uppercase(Term);
         end;
-
-        Tock := gettickcount64();
-        showmessage('FindIt data structure ' + inttostr(Tock - Tick)+'mS');
-
     {$else}
         if CaseSensitive then
             CleanSt := pchar(KMemo1.Blocks.text)
@@ -1306,11 +1300,11 @@ procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShi
 begin
     if (Key = VK_RETURN) {and (EditFind.Text <> rsMenuSearch)} then begin
         Key := 0;                             // Eat it
-        if [ssCtrl] = Shift then begin
+        if {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift then begin
             UpDown1Click(self, btNext);
             exit;
         end;
-        if [ssAlt] = Shift then begin
+        if [ssAlt] = Shift then begin                    // Alt (ie Option) Enter is OK on Mac too.
               UpDown1Click(self, btPrev);
               exit;
         end;
@@ -2658,9 +2652,10 @@ begin
     // -------------- Control ------------------
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
-            // VK_Return : if PanelFind.Height > 5 then EditFind.SetFocus else Key := 0;
-            VK_Return :  if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btNext) else Key := 0;
-            //VK_Return : if PanelFind.Height > 5 then UpDown1Click(self, btNext) else Key := 0;
+            VK_Return :  begin
+                                key := 0;
+                                if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btNext);
+                         end;
             VK_Q : MainForm.close();
             VK_1 : MenuSmallClick(Sender);
             VK_2 : MenuNormalClick(Sender);
@@ -2705,7 +2700,7 @@ begin
             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
 //            VK_F     : begin MenuFindNextClick(self); Key := 0; end;                    // Local 'Next' find
-            VK_Return :  if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btPrev) else Key := 0;
+            VK_Return :  if (EditFind.Text <> rsMenuSearch) then begin Key := 0; UpDown1Click(self, btPrev); end;
         end;
         exit();
     end;
