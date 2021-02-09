@@ -122,7 +122,7 @@ RESOURCESTRING
     rsHelpConfig = 'Create or use an alternative config';
     rsHelpSingleNote = 'Open indicated note, switch is optional';
     rsHelpSaveExit = 'After import single note, save & exit';
-    rsHelpShiftAltF = 'Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous';
+    //rsHelpShiftAltF = 'Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous';
 
     // Mainunit
 
@@ -130,6 +130,7 @@ RESOURCESTRING
   rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
   rsFound = 'Found';
   rsNotes = 'notes';
+  rsWARNNOSSYSTRAY = 'WARNING, your Desktop might not display SysTray';
 
     // R E C O V E R unit
 
@@ -155,10 +156,9 @@ RESOURCESTRING
   // The soon to be merged NextCloud Notes Sync
 
   // EditBox  - lots more to do ..
-  // rsSearchNavHint = 'Find Keys : Previous : Ctrl-Alt-F   Next : Alt-F';        // Warning, may not be case on Mac
   rsSearchNavHint = 'Find : Ctrl-Enter, Backward Find : Alt-Enter';
-//  rsSearchNavHintOther = 'Ctrl-Enter, Alt-F for Next, Shift-Alt-F for Previous';
-  //rsNotFound = 'Not found';
+  rsSearchNavHintMac = 'Find : Cmd-Enter, Backward Find : Alt-Enter';
+
 
 implementation
 

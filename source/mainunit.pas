@@ -499,7 +499,7 @@ begin
     ButtSysTrayHelp.Visible := False;
     {$ifdef LINUX}
     if not CheckForSysTray() then begin
-        LabelBadNoteAdvice.Caption := 'WARNING, your Desktop might not display SysTray';
+        LabelBadNoteAdvice.Caption := rsWARNNOSSYSTRAY;
         ButtSysTrayHelp.Visible := True;
     end;
     {$endif}

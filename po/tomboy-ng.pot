@@ -202,10 +202,6 @@ msgctxt "resourcestr.rshelpsaveexit"
 msgid "After import single note, save & exit"
 msgstr ""
 
-#: resourcestr.rshelpshiftaltf
-msgid "Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous"
-msgstr ""
-
 #: resourcestr.rshelpsinglenote
 msgctxt "resourcestr.rshelpsinglenote"
 msgid "Open indicated note, switch is optional"
@@ -377,6 +373,10 @@ msgctxt "resourcestr.rssearchnavhint"
 msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
 msgstr ""
 
+#: resourcestr.rssearchnavhintmac
+msgid "Find : Cmd-Enter, Backward Find : Alt-Enter"
+msgstr ""
+
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
 msgid "Set the notebooks this note is a member of"
@@ -439,6 +439,10 @@ msgstr ""
 #: resourcestr.rsunabletosync
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
+msgstr ""
+
+#: resourcestr.rswarnnossystray
+msgid "WARNING, your Desktop might not display SysTray"
 msgstr ""
 
 #: resourcestr.rswehavesnapshots
@@ -1213,18 +1217,6 @@ msgstr ""
 #: tformtomdroidfile.label6.caption
 msgctxt "tformtomdroidfile.label6.caption"
 msgid "Upload means from tomboy-ng to Android Device"
-msgstr ""
-
-#: tformtomdroidfile.labeladvice.caption
-msgid "Advice"
-msgstr ""
-
-#: tformtomdroidfile.labeladvice1.caption
-msgid "LabelAdvice1"
-msgstr ""
-
-#: tformtomdroidfile.labeladvice2.caption
-msgid "LabelAdvice2"
 msgstr ""
 
 #: tmainform.bitbtnhide.caption

@@ -222,9 +222,11 @@ uses
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
     PrintersDlgs;
 
+(*
 type TFindStatus = ( fs_EditFindChanged,       // The user has made some change to content of EditFind, new search pending
                     fs_EditFindFirstSearch,   // The user has hit Enter, trigged a new search
                     fs_EditFindExited);       // The user has left the EditFind box, all bets are off.
+*)
 
 type
 
@@ -1311,8 +1313,8 @@ begin
         // Its just an Enter, tell user wrong key !
         LabelFindCount.caption := '';
         if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
-            LabelFindInfo.Caption := rsSearchNavHint //GetFindKeyHint()
-        else LabelFindInfo.Caption := ' ' + rsSearchNavHint; //GetFindKeyHint() ;
+            LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif}
+        else LabelFindInfo.Caption := ' ' + {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif};
         EditFind.SetFocus;
     end;
 end;

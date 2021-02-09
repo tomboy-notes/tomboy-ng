@@ -331,10 +331,10 @@ object MainForm: TMainForm
   end
   object CheckBoxDontShow: TCheckBox
     Left = 24
-    Height = 24
+    Height = 23
     Hint = 'You can reverse this from Settings'
     Top = 192
-    Width = 242
+    Width = 240
     Caption = 'Don''t Show for normal startup'
     OnChange = CheckBoxDontShowChange
     TabOrder = 3

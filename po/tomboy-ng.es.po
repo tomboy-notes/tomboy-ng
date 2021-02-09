@@ -6,13 +6,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: tomboy-ng v0.32\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-02-03 13:46+1100\n"
+"PO-Revision-Date: 2021-02-08 14:25+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: editbox.rsunabletoevaluate
@@ -217,10 +217,6 @@ msgctxt "resourcestr.rshelpsaveexit"
 msgid "After import single note, save & exit"
 msgstr "Después de importar una sola nota, guardar y salir."
 
-#: resourcestr.rshelpshiftaltf
-msgid "Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous"
-msgstr ""
-
 #: resourcestr.rshelpsinglenote
 msgctxt "resourcestr.rshelpsinglenote"
 msgid "Open indicated note, switch is optional"
@@ -390,10 +386,13 @@ msgid "Exact matches for terms between \" \""
 msgstr "Búsqueda exacta para términos entre \" \""
 
 #: resourcestr.rssearchnavhint
-#, fuzzy
 msgctxt "resourcestr.rssearchnavhint"
 msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
-msgstr "Buscar: Anterior: Alt-Enter   Siguiente: Ctrl-Enter"
+msgstr "Buscar: Adelante: Ctrl-Enter, Atrás: Alt-Enter"
+
+#: resourcestr.rssearchnavhintmac
+msgid "Find : Cmd-Enter, Backward Find : Alt-Enter"
+msgstr "Buscar: Adelante: Cmd-Intro, Buscar atrás: Alt-Intro"
 
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
@@ -458,6 +457,10 @@ msgstr "No se puede continuar porque"
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr "No se puede sincronizar porque "
+
+#: resourcestr.rswarnnossystray
+msgid "WARNING, your Desktop might not display SysTray"
+msgstr "AVISO: Puede que su Escritorio no muestre la SysTray"
 
 #: resourcestr.rswehavesnapshots
 #, object-pascal-format
@@ -640,7 +643,7 @@ msgstr "Añadir viñeta - Alt+--> : Quitar viñeta - Alt+<--"
 
 #: teditboxform.menuitem6.caption
 msgid "Find Prev"
-msgstr ""
+msgstr "Buscar anterior"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
@@ -1198,41 +1201,35 @@ msgid "Upload means from tomboy-ng to Android Device"
 msgstr "Subir significa de tomboy-ng a un dispositivo Android"
 
 #: tformtomdroidfile.buttonclose.caption
-#, fuzzy
 msgctxt "tformtomdroidfile.buttonclose.caption"
 msgid "Close"
 msgstr "Cerrar"
 
 #: tformtomdroidfile.buttonhelp.caption
-#, fuzzy
 msgctxt "tformtomdroidfile.buttonhelp.caption"
 msgid "Help"
 msgstr "Ayuda"
 
 #: tformtomdroidfile.buttonjoin.caption
-#, fuzzy
 msgctxt "tformtomdroidfile.buttonjoin.caption"
 msgid "Join"
 msgstr "Unirse"
 
 #: tformtomdroidfile.buttonoldssh.caption
 msgid "Use old SSH model"
-msgstr ""
+msgstr "Usar método SSH"
 
 #: tformtomdroidfile.buttonsync.caption
-#, fuzzy
 msgctxt "tformtomdroidfile.buttonsync.caption"
 msgid "Sync"
 msgstr "Sincronizar"
 
 #: tformtomdroidfile.caption
-#, fuzzy
 msgctxt "tformtomdroidfile.caption"
 msgid "Tomdroid"
 msgstr "Tomdroid"
 
 #: tformtomdroidfile.checkboxtestrun.caption
-#, fuzzy
 msgctxt "tformtomdroidfile.checkboxtestrun.caption"
 msgid "Test Run"
 msgstr "Prueba"
@@ -1242,22 +1239,9 @@ msgid "Tomdroid Sync - be aware of limitations !"
 msgstr "Sincronización Tomdroid - ¡dese cuenta de las limitaciones!"
 
 #: tformtomdroidfile.label6.caption
-#, fuzzy
 msgctxt "tformtomdroidfile.label6.caption"
 msgid "Upload means from tomboy-ng to Android Device"
 msgstr "Subir significa de tomboy-ng a un dispositivo Android"
-
-#: tformtomdroidfile.labeladvice.caption
-msgid "Advice"
-msgstr ""
-
-#: tformtomdroidfile.labeladvice1.caption
-msgid "LabelAdvice1"
-msgstr ""
-
-#: tformtomdroidfile.labeladvice2.caption
-msgid "LabelAdvice2"
-msgstr ""
 
 #: tmainform.bitbtnhide.caption
 msgid "Hide"
@@ -1275,7 +1259,7 @@ msgstr "Menú"
 
 #: tmainform.buttsystrayhelp.caption
 msgid "SysTray Help"
-msgstr "Ayuda, Bandeja del Sistema"
+msgstr "Ayuda, SysTray"
 
 #: tmainform.caption
 msgid "tomboy-ng"

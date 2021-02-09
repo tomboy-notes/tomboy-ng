@@ -23,8 +23,8 @@
 <list><list-item dir="ltr">Ctrl-V : Pegar el contenido del portapapeles en la nota actual.</list-item></list>
 <list><list-item dir="ltr">Ctrl-A : Seleccionar todo.</list-item></list>
 <list><list-item dir="ltr">Ctrl-F : Abrir una ventana de búsqueda.</list-item></list>
-<list><list-item dir="ltr">Ctrl-Intro : Buscar siguiente</list-item></list>
-<list><list-item dir="ltr">Alt-Intro  : Buscar anterior</list-item></list>
+<list><list-item dir="ltr">Ctrl-Intro : Buscar hacia adelante</list-item></list>
+<list><list-item dir="ltr">Alt-Intro  : Buscar hacia atrás</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaDerecha : Mover al principio de la palabra a la derecha.</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaIzquierda : Mover al principio de la palabra actual o de allí al principio de la palabra a la izquierda.</list-item></list>
 <list><list-item dir="ltr">Ctrl-Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
@@ -51,6 +51,8 @@
 <list><list-item dir="ltr">Cmd-V : Pegar el contenido del portapapeles en la nota actual.</list-item></list>
 <list><list-item dir="ltr">Cmd-A : Seleccionar todo.</list-item></list>
 <list><list-item dir="ltr">Cmd-F : Abrir una ventana de búsqueda.</list-item></list>
+<list><list-item dir="ltr">Cmd-Intro : Buscar hacia adelante</list-item></list>
+<list><list-item dir="ltr">Alt-Intro    : Buscar hacia atrás</list-item></list>
 <list><list-item dir="ltr">Cmd-FlechaDerecha : Ir al final de la línea.</list-item></list>
 <list><list-item dir="ltr">Cmd-FlechaIzquierda : Ir al principio de la línea.</list-item></list>
 <list><list-item dir="ltr">Cmd-D : Insertar fecha, AAAA-MM-DD hh:mm:ss</list-item></list>
@@ -70,8 +72,8 @@
 
 
 </note-content></text>
-  <last-change-date>2021-02-03T01:32:52.0498868+00:00</last-change-date>
-  <last-metadata-change-date>2021-02-03T01:32:52.0498868+00:00</last-metadata-change-date>
+  <last-change-date>2021-02-08T13:52:57.7031555+00:00</last-change-date>
+  <last-metadata-change-date>2021-02-08T13:52:57.7031555+00:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
