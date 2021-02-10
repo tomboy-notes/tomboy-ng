@@ -11,45 +11,39 @@ As a standalone app, <monospace>Tomdroid</monospace> works well enough but when 
 However, tomboy-ng  does not do network sync. Tomboy-ng does do a file based sync where a shared file service is visible to all parties.  Its quick and relatively simple but Tomdroid cannot be part of such a system. <size:large>
 
 <bold>This Solution</bold></size:large>
-tomboy-ng, as of release V0.2 can do a <italic>one to one</italic> file sync between Tomdroid and a Linux Box. The Linux box may, or may not be part of a File Sync group. You can establish as many of these one to one connections as you have Tomdroid capable devices.<size:large>
+tomboy-ng, as of release V0.32 can do a <italic>one to one</italic> file sync between Tomdroid and a Linux Box using a USB Cable. The Linux box may, or may not be part of a File Sync group. You can establish as many of these one to one connections as you have Tomdroid capable devices.<size:large>
 
 
-Whats needed</size:large>
-<list><list-item dir="ltr">A Linux pc, laptop or what ever where tomboy-ng is running. Install sshpass on it, its almost certainly  available from your package repository. Note that sshpass does raise some security questions. I believe, not a problem in this case but do read the Security chapter below. </list-item></list>
-<list><list-item dir="ltr">One or more Android devices (phone, tablets etc) with Tomdroid and sshdroid installed, both from the PlayStore.</list-item></list><size:large>
+<bold>Whats needed</bold></size:large>
+<list><list-item dir="ltr">A Linux pc, laptop or what ever running tomboy-ng.  </list-item></list>
+<list><list-item dir="ltr">One or more Android devices (phone, tablets etc) with Tomdroid installed, probably from the PlayStore.</list-item></list>
+<list><list-item dir="ltr">A normal USB cable to connect them together.</list-item></list><size:large>
 
-<bold>SetUp</bold></size:large>
+<bold>First Time SetUp</bold></size:large>
 Assuming you already have notes in your tomboy-ng and a fresh install of Tomdroid, you should -
 
-Fire up Tomdroid on the device. Touch the Menu, select Settings and find the Synchronization block. Check that Service is set to SD Card (note you don't need an external SDCard, Android directs that to some internal space) and that Location on SD Card is set to /storage/emulated/0/Tomdroid/.  Close the Settings screen and touch the Sync symbol on the menu bar.
+Fire up Tomdroid on the device. Touch the Menu (top right), select Settings and find the Synchronization block. Check that Service is set to SD Card (note you don't need an external SDCard, Android directs that to some internal space) and that Location on SD Card is set to /storage/emulated/0/tomdroid/.  Close the Settings screen and touch the Sync symbol on the menu bar. Assuming you have no Tomdroid notes at this stage, it will be quite quick.
 
-Now, fire up sshdroid. First thing you should do is go into its Settings and change the default password to something you 'own'. Again, see the section below about security.
+<bold>IMPORTANT</bold> - close Tomdroid down now. Android uses a lot of disk caching and we must be sure that it has actually hit the 'disk'. It is vital that you close Tomdroid, not just background it. Sync will occasionally fail otherwise.
 
-On your Linux box, go to tomboy-ng's Settings,<italic> Basic Tab</italic>, and tick <italic>Show Tomdroid Sync</italic>. Note it is experimental. Now,  you should either run a normal (that is, not Tomdroid) sync or take a snapshot, or, better still, both ! Snapshots are easy, Settings, SnapShot Tab, click <italic>Take a Manual Snapshot</italic>. Too Easy !<size:large>
+Now, use the cable to connect the PC to a Android Device. The device will ask you to allow access from the PC to its files.
 
-Create a Profile. </size:large>
+On your Linux box, go to tomboy-ng's Settings,<italic> Basic Tab</italic>, and tick <italic>Show </italic><underline><italic>Tomdroid Sync</italic></underline>. Note it is experimental. Now,  you should either run a normal (that is, not Tomdroid) sync or take a snapshot, or, better still, both ! Snapshots are easy, Settings, SnapShot Tab, click <italic>Take a Manual Snapshot</italic>. Too Easy !
 
-Now, the fun begins. Click the tomboy-ng tray icon, choose Tomdroid Sync. Note: This is very important, android file systems are heavily cached, <bold>Tomdroid must be closed</bold>, not just pushed to the background. I find easist approach is to touch the left android button, the one that shows the list of running processes. In that list, Tomdroid is shown with a X top right, touch that X.
+The Main Menu will now have a "Tomdroid" entry. Click it !
 
-Set Profile Name to your device, perhaps <italic>My Galaxy Note 7</italic>. You can see your device's IP address from the sshdroid screen, use just the IP component, ie 192.168.1.132  - don't put in the "root@" or the ":2222". I hope you remember the password you set in sshdroid. 
+The next screen will try and find your Android Device, in particular the directory containing the <underline>Tomdroid Sync</underline> Files. If all is well, it will suggest you click "Join", do so. It will take a minute or two, maybe much longer,  to transfer copies of your PC notes to the Device. When that is finished, use the PC's File Manger to close the connection to the Device. Unplug the USB cable.
 
-Click the Join button as its the first time you have synced. Wait, maybe a long time if you have a lot of notes ! If you see a message about Executable not found "sshpass" then you have not installed sshpass. Do so.
-
-When it finishes (and all makes sense), click the Save button.  Now, back on your device, close sshdroid, startup Tomdroid again, touch sync. All your notes belong us !<size:large>
+Restart Tomdroid, touch the Sync symbol and all your notes should start appearing in Tomdroid.<size:large>
 
 <bold>Routine Sync</bold></size:large>
 Important that this process be followed at each sync.
 <list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid. Really close it !  </list-item></list>
-<list><list-item dir="ltr">Open sshdroid, noting the device's IP address.</list-item></list>
-<list><list-item dir="ltr">From within tomboy-ng, click Tomdroid Sync, choose a profile.Click the Sync button. Wait until finished. </list-item></list>
-<list><list-item dir="ltr">Back on the device, close sshdroid and open Tomdroid. Touch the Tomdroid Sync button.</list-item></list><size:large>
+<list><list-item dir="ltr">Connect the Device to the PC with a USB cable.</list-item></list>
+<list><list-item dir="ltr">From within tomboy-ng, click <underline>Tomdroid Sync</underline>, it should identify your device as previously synced and suggest you hit the Sync button. </list-item></list>
+<list><list-item dir="ltr">Close the connection, unplug the USB cable, restart Tomdroid and touch the Sync symbol to complete the sync. </list-item></list>
 
-<bold>Security</bold></size:large>
-Important issue !  This approach has some weaknesses but if used as intended, I believe they are not significant. Here they are -
-
-<list><list-item dir="ltr"><highlight><bold>sshdroid</bold> - has a well know default password. So, make sure you change it before you use it. Make sure you only start sshdroid when ready to sync and stop it down when finished.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight><bold>password</bold> - in tomboy-ng, you can, if you wish, tick the box to have your sshdroid password saved in the config file. Its saved in plain text and its displayed in clear text on the screen. If you are in an environment where that is a significant risk, don't tick the box and enter the password each time. If you are worried about the clear text, let the author know and he might deal with that.</highlight></list-item></list><highlight>
-</highlight><list><list-item dir="ltr"><highlight><bold>sshpass</bold> - can be risky if used on a shared machine. Linux boxes are inherently multi user but if tomboy-ng is is on a personal, one user at a time machine, its not really a problem. IMHO. </highlight></list-item></list><highlight></highlight><size:large>
+If you also sync your tomboy-ng to other laptops or computers, it makes sense to do so before you do a Routine Tomdroid sync and then, again, immediately after.<size:large>
 
 <bold>General Advice</bold>
 Tomdroid options and their effects.</size:large>
@@ -91,8 +85,8 @@ The Tomdroid interface is still quite fragile and not good at telling us where i
 
 
 </note-content></text>
-  <last-change-date>2020-03-02T10:04:36.1380000+11:00</last-change-date>
-  <last-metadata-change-date>2020-03-02T10:04:36.1380000+11:00</last-metadata-change-date>
+  <last-change-date>2021-02-10T12:45:55.6152612+11:00</last-change-date>
+  <last-metadata-change-date>2021-02-10T12:45:55.6152612+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

@@ -19,7 +19,7 @@ Pascal is still widely used as a teaching language, its strong typing promotes g
 
 
 <bold>Build tomboy-ng using the IDE</bold></size:huge>
-You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.10 (or Fixes, users of earlier releases such as 2.0.6 need to look in patches directory). Please see https://wiki.freepascal.org/Installing_Lazarus 
+You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.10 (or Fixes, earlier releases such as 2.0.6 not recommended). Please see https://wiki.freepascal.org/Installing_Lazarus 
 
 Start Lazarus up, it runs through a check list of the things it needs, start the IDE. Lazarus opens a default, minimal project. Click Package-&gt;OnLinePackageManager, select kcontrols and Install ("from repositary"). Lazarus will want to rebuild itself and restart, say yes, please do!  
 
@@ -40,14 +40,25 @@ See the Deb_SRC.readme file in the tomboy-ng kit for details.<size:large>
 <bold>Building Releases</bold></size:large>
 This section intended for production releases, not DIY. The author has a Linux VB that has FPC 3.2.0 cross compilers to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That  script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as root (??) will make RPMs (using the debs as input) that are suitable for RedHat systems.
 
-Take the Windows Win_Pre{$ver} directory to a windows machine that has the Installer Maker (ISS) and double click the .iss file to make the Windows installers.
+Take the <bold>Windows</bold> Win_Pre{$ver} directory to a windows machine that has the Installer Maker (ISS) and double click the .iss file to make the Windows installers.
 
-The Mac kits are made on a Sierra Mac, again using a script. Requires similar setup to above.
+The <bold>Mac </bold>kits are made on a Sierra Mac, again using a script. Requires similar setup to above.
+
+<bold>Raspberry Pi</bold>
+On my Raspberry PI, I have a binary install of FPC 3.2.0 and a source build of Lazarus Trunk.  Build only the binary on the Pi, move it to the main packaging VM and package it there.
+Use the prepare.bash script, start in a clean directory, pull down the prepare.bash script, the current tomboy-ng master zip file, rename it tomboy-ng-master.zip and then run prepare -
+
+<monospace>bash ./prepare.bash -l /home/dbannon/bin/Lazarus/trunk/lazbuild</monospace>
+<monospace>cd tomboy-ng_{$ver}</monospace>
+<monospace>bash ./buildit</monospace>
+
+The binary is in the source directory
+
  
 
 </note-content></text>
-  <last-change-date>2020-12-09T17:13:01.7339372+11:00</last-change-date>
-  <last-metadata-change-date>2020-12-09T17:13:01.7339372+11:00</last-metadata-change-date>
+  <last-change-date>2021-02-10T12:30:33.0368494+11:00</last-change-date>
+  <last-metadata-change-date>2021-02-10T12:30:33.0368494+11:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
