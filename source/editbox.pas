@@ -1266,7 +1266,7 @@ begin
     end  else  begin
         //debugln('INFO : EditBox MenuItemFindClick Exposing FindPanel');
         PanelFind.Height := SearchPanelHeight;
-        LabelFindInfo.Caption := rsSearchNavHint;                     //GetFindKeyHint();
+        LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac{$else}rsSearchNavHint{$endif};                     //GetFindKeyHint();
         EditFind.SetFocus;
     end;
 end;

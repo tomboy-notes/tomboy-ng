@@ -20,7 +20,6 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
-      <ExcludedIdentifiers Count="1"/>
       <ExcludedOriginals Count="58">
         <Item1 Value="Form Caption"/>
         <Item2 Value="LabelAdvice1"/>
