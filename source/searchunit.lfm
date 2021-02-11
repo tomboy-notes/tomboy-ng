@@ -25,7 +25,7 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 319
+    Width = 323
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 9
@@ -99,6 +99,7 @@ object SearchForm: TSearchForm
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
       TabOrder = 2
+      TabStop = False
     end
     object ListBoxNotebooks: TListBox
       AnchorSideLeft.Control = ButtonClearFilters
@@ -115,6 +116,7 @@ object SearchForm: TSearchForm
       ExtendedSelect = False
       ItemHeight = 0
       OnClick = ListBoxNotebooksClick
+      OnKeyDown = ListBoxNotebooksKeyDown
       OnMouseUp = ListBoxNotebooksMouseUp
       ParentShowHint = False
       ScrollWidth = 230
@@ -169,6 +171,7 @@ object SearchForm: TSearchForm
       ViewStyle = vsReport
       OnDblClick = ListViewNotesDblClick
       OnDrawItem = ListViewNotesDrawItem
+      OnKeyDown = ListViewNotesKeyDown
       OnKeyPress = ListViewNotesKeyPress
     end
   end
@@ -266,10 +269,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = CheckAutoRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 434
+    Left = 438
     Height = 32
     Top = 3
-    Width = 129
+    Width = 127
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Case Sensitive'
@@ -290,15 +293,16 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 573
+    Left = 575
     Height = 32
     Top = 3
-    Width = 121
+    Width = 119
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Auto Refresh'
     OnChange = CheckAutoRefreshChange
     TabOrder = 5
+    TabStop = False
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344

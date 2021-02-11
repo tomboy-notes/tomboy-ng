@@ -100,6 +100,7 @@ unit SearchUnit;
     2020/12/10  Move focus to Search Field whenever Search Form is re-shown, issue #211
     2021/01/22  When activating a note from the search form, jump to first match if Search Term is not empty
     2021/01/23  A check box to choose Auto Refresh or not.
+    2021/02/11  Some debugs around Ctrl-Q, to be removed and make two listboxes respond to Ctrl-N
 }
 
 {$mode objfpc}{$H+}
@@ -158,11 +159,15 @@ type        { TSearchForm }
         procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
         procedure ListBoxNotebooksClick(Sender: TObject);
+        procedure ListBoxNotebooksKeyDown(Sender: TObject; var Key: Word;
+            Shift: TShiftState);
         procedure ListBoxNotebooksMouseUp(Sender: TObject;
             Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure ListViewNotesDblClick(Sender: TObject);
 		procedure ListViewNotesDrawItem(Sender: TCustomListView;
 				AItem: TListItem; ARect: TRect; AState: TOwnerDrawState);
+        procedure ListViewNotesKeyDown(Sender: TObject; var Key: Word;
+            Shift: TShiftState);
         procedure ListViewNotesKeyPress(Sender: TObject; var Key: char);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
@@ -1002,12 +1007,18 @@ begin
     Edit1.SetFocus;
 end;
 
-procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;         // ToDo : remove debug lines here
     Shift: TShiftState);
 begin
-    if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then begin
+    if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then
+        if key = VK_Q then
+        debugln('TSearchForm.FormKeyDown - Detected Ctrl IN Shift - Q, ignoring');
+    if [{$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif}] = Shift then begin
         if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
-        if key = VK_Q then MainForm.Close();
+        if key = VK_Q then begin
+            debugln('TSearchForm.FormKeyDown - Quitting because of a Ctrl-Q');
+            MainForm.Close();
+        end;
     end;
 end;
 
@@ -1200,6 +1211,13 @@ begin
     {$endif}
 end;
 
+procedure TSearchForm.ListViewNotesKeyDown(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+    if [{$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif}] = Shift then
+        if key = ord('N') then begin OpenNote(''); Key := 0; end;
+end;
+
 procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
 begin
     if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender);
@@ -1280,6 +1298,13 @@ begin
 
     //ListBoxNotebooks.Hint := 'Options for ?';
     //StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
+end;
+
+procedure TSearchForm.ListBoxNotebooksKeyDown(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+    if [{$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif}] = Shift then
+        if key = ord('N') then begin OpenNote(''); Key := 0; end;
 end;
 
     // Popup a menu when rightclick a notebook

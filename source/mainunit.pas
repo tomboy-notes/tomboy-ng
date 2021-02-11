@@ -396,6 +396,7 @@ var
   // OutFile : TextFile;
   AForm : TForm;
 begin
+    debugln('TMainForm.FormClose - at user request');           // ToDo : remove this
     {$ifdef LCLGTK2}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     t := Clipboard.AsText;
