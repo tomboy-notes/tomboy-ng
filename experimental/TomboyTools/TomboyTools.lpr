@@ -9,7 +9,7 @@ uses
         cthreads,
         {$ENDIF}{$ENDIF}
         Interfaces, // this includes the LCL widgetset
-        Forms, main, cmdline, export_notes, ttutils, import_notes, nextcloud,
+        Forms, main, cmdline, export_notes, ttutils, import_notes,
 		note2po, notenormal
         { you can add units after this };
 

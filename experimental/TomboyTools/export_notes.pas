@@ -5,6 +5,8 @@ unit export_notes;
 { License - see tomboy-ng license information }
 
 { Will export a Tomboy note in a range of different formats.
+  Uses CommonMark to do its MarkDown exporting.
+
 
 }
 
@@ -94,10 +96,6 @@ implementation
 uses LCLProc, laz2_DOM, laz2_XMLRead, ttutils, LazFileUtils, commonmark;
 
 
-
-
-
-
 function TExportNote.ExportAll(): boolean;
 var
     Info : TSearchRec;
@@ -122,9 +120,12 @@ function TExportNote.NoteInNoteBook(const FileName : string) : boolean;
 var
     SLContent : tStringList;
 begin
+    Result := False;
     SLContent := TStringList.create;
     SLContent.LoadFromFile(NoteDir + FileName);
-    Result := -1 < FindInStringList(SLContent, '<tag>system:notebook:' + Notebook);
+    if (FindInStringList(SLContent, '<tag>system:notebook:' + Notebook) > -1) then
+        if FindInStringList(SLContent, '<tag>system:template</tag>') = -1 then      // Do not count Template Notes
+            Result := True;
     SLContent.free;
 end;
 

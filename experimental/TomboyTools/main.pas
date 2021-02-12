@@ -15,15 +15,8 @@ type
 		{ TFormMain }
 
         TFormMain = class(TForm)
-				ButtonNextSync: TButton;
-				ButtonPushUp: TButton;
-				ButtonPullDown: TButton;
-				ButtonDeleteNext: TButton;
-				CheckNoNet: TCheckBox;
-				CheckDebug: TCheckBox;
 				CheckListBox1: TCheckListBox;
                 CheckListImportFiles: TCheckListBox;
-				ComboSourceNext: TComboBox;
                 ComboImportDest: TComboBox;
                 ComboSourceFormat: TComboBox;
 				ComboExportMode: TComboBox;
@@ -32,11 +25,6 @@ type
                 GroupBox1: TGroupBox;
                 GroupBox2: TGroupBox;
 				Label1: TLabel;
-				Label10: TLabel;
-				Label11: TLabel;
-				LabelNextSourceDir: TLabel;
-				Label9: TLabel;
-				LabelFullURL: TLabel;
 				Label2: TLabel;
 				Label3: TLabel;
 				Label4: TLabel;
@@ -68,9 +56,6 @@ type
 				StatusBar1: TStatusBar;
 				TabExport: TTabSheet;
 				TabImport: TTabSheet;
-				TabNextCloud: TTabSheet;
-				procedure ButtonPullDownClick(Sender: TObject);
-    procedure ButtonPushUpClick(Sender: TObject);
                 procedure CheckListBox1Click(Sender: TObject);
                 procedure CheckListImportFilesClick(Sender: TObject);
                 procedure CheckListImportFilesClickCheck(Sender: TObject);
@@ -79,7 +64,7 @@ type
 				procedure ComboExportModeChange(Sender: TObject);
                 procedure ComboSourceChange(Sender: TObject);
                 procedure ComboSourceFormatChange(Sender: TObject);
-				procedure ComboSourceNextChange(Sender: TObject);
+
                 procedure FormCreate(Sender: TObject);
                 procedure FormShow(Sender: TObject);
 				procedure SpeedExitClick(Sender: TObject);
@@ -91,7 +76,8 @@ type
                 procedure TabExportShow(Sender: TObject);
                 procedure TabImportShow(Sender: TObject);
         private
-				procedure DoNextSyncAction(Act: string);
+            procedure DisplayImportPossibilities();
+
             procedure ImportProceed();
             procedure ImportReadyToGo();
             function NumberChecked(CLB: TCheckListBox): integer;
@@ -102,6 +88,7 @@ type
 				function GetNoteBooks(): integer;
 				function ExportReadyToGo(): boolean;
 				function SetExportSource(SDir: string): boolean;
+                function TestImportDestination(UserSelected: boolean): boolean;
         public
 
         end;
@@ -112,7 +99,7 @@ var
 
 implementation
 
-uses cmdline, FileUtil, LazFileUtils, ttutils, export_notes, import_notes, NextCloud;
+uses cmdline, FileUtil, LazFileUtils, ttutils, export_notes, import_notes;
 
 const
 
@@ -463,80 +450,26 @@ begin
         ImportProceed();
 end;
 
-// -------------------------- N E X T   C L O U D ----------------------------
-
-procedure TFormMain.ButtonPushUpClick(Sender: TObject);
-begin
-    DoNextSyncAction('PUSHUP');
-end;
-
-procedure TFormMain.ButtonPullDownClick(Sender: TObject);
-begin
-    DoNextSyncAction('PULLDOWN');
-end;
-
-procedure TFormMain.DoNextSyncAction(Act : string);
-var
-    NextCld : TNextCloudNotes;
-begin
-    NextCld := TNextCloudNotes.Create;
-    NextCld.TheURL := LabelFullURL.Caption;
-    NextCld.SyncAction := Act;
-    NextCld.Debug := CheckDebug.checked;
-    NextCld.NoNet := CheckNoNet.checked;
-    NextCld.Execute();
-    NextCld.Free;
-end;
-
-procedure TFormMain.ComboSourceNextChange(Sender: TObject);
-var
-    TempSrcDir : string;
-begin
-    case ComboSourceNext.ItemIndex of
-        cbNG : LabelNextSourceDir.Caption := GetDefaultNoteDir();
-        cbTB : LabelNextSourceDir.Caption := GetDefaultNoteDir(True);
-        CBManual :  LabelNextSourceDir.Caption := './';
-                    {begin
-                        showmessage('Manual not available here');
-                        ComboSourceNext.ItemIndex := -1;
-                        exit;
-                    end;}
-		cbNG_ALT : begin
-                        TempSrcDir := GetDefaultNoteDir();
-                        delete(TempSrcDir, length(TempSrcDir), 1);   // remove trailing delim
-                        LabelNextSourceDir.Caption := TempSrcDir + '-alt';
-		            end;
-	end;
-    if not DirectoryExists(LabelNextSourceDir.Caption) then begin
-        showmessage('Appropriate directory does not exist.');
-        ComboSourceNext.ItemIndex := -1;
-        LabelNextSourceDir.Caption := '';
-	end else begin
-        ButtonPushUp.Enabled := True;
-        ButtonPullDown.Enabled := True;
-	end;
-end;
 
 // -------------------------- I M P O R T ------------------------------------
 
 
 procedure TFormMain.ComboSourceFormatChange(Sender: TObject);
 begin
+    if  LabelImportSource.Caption <> '' then
+        DisplayImportPossibilities();
     ImportReadyToGo();
 end;
-
-
-
-
 
 procedure TFormMain.CheckListImportFilesClickCheck(Sender: TObject);
 begin
     ImportReadyToGo();
 end;
 
-procedure TFormMain.ComboImportDestChange(Sender: TObject);
+
+function TFormMain.TestImportDestination(UserSelected : boolean) : boolean;
 begin
-    if ComboImportDest.Items[ComboImportDest.ItemIndex] = rsTomboyngDefault then
+    if ComboImportDest.Items[ComboImportDest.ItemIndex] = rsTomboyNGDefault then
         LabelImportDestination.Caption := GetDefaultNoteDir()
     else if ComboImportDest.Items[ComboImportDest.ItemIndex] = rsTomboyDefault then
         LabelImportDestination.Caption := GetDefaultNoteDir(True)
@@ -544,11 +477,23 @@ begin
             if SelectDirectoryDialog1.Execute then
                     LabelImportDestination.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         end;
-    if not DirectoryIsWritable(LabelImportDestination.Caption) then begin
-        Showmessage('Cannot write to that dir' + #10 + LabelImportDestination.Caption);
-        LabelImportDestination.Caption := ''
+     if not DirectoryIsWritable(LabelImportDestination.Caption) then begin
+        if UserSelected then
+            Showmessage('Cannot write to that dir' + #10 + LabelImportDestination.Caption);
+        LabelImportDestination.Caption := '' ;
+        LabelImportDestination.Hint := '';
+    end;
+    if LabelImportDestination.Caption <> '' then begin          // We have a usable dir then.
+         LabelImportDestination.Hint := LabelImportDestination.Caption;
+         LabelImportDestination.ShowHint := True;
     end;
     ImportReadyToGo();
+end;
+
+procedure TFormMain.ComboImportDestChange(Sender: TObject);
+begin
+    TestImportDestination(true);
+    exit();
 end;
 
 
@@ -576,7 +521,7 @@ begin
             end;
             Import.ImportNames := NameList;
             Import.DestinationDir := LabelImportDestination.Caption;
-            Import.FirstLineTitle := RadioTitleFirstLine.Checked;
+            Import.FirstLineIsTitle := RadioTitleFirstLine.Checked;
             if ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsPlainText then
                 Import.Mode := 'plaintext'
             else if ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsMarkDown then
@@ -590,24 +535,37 @@ begin
     end else showmessage('No files selected');
 end;
 
-procedure TFormMain.SpeedImportSourceDirClick(Sender: TObject);
+procedure TFormMain.DisplayImportPossibilities();
 var
     SrcFiles : TstringList;
 begin
-    if SelectDirectoryDialog1.Execute then begin
         CheckListImportFiles.Clear;
-        LabelImportSource.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-        SrcFiles := FindAllFiles(LabelImportSource.Caption, '*.txt;*.text;*.md', false);
+        if ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsPlainText then
+             SrcFiles := FindAllFiles(LabelImportSource.Caption, '*.txt;*.text', false);
+        if ComboSourceFormat.Items[ComboSourceFormat.ItemIndex] = rsMarkDown then
+             SrcFiles := FindAllFiles(LabelImportSource.Caption, '*.md', false);
         CheckListImportFiles.items := SrcFiles;
+        freeandnil(SrcFiles);
+        ImportReadyToGo();
+end;
+
+procedure TFormMain.SpeedImportSourceDirClick(Sender: TObject);
+begin
+    if SelectDirectoryDialog1.Execute then begin
+
+        LabelImportSource.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+        LabelImportSource.Hint := LabelImportSource.Caption;
+        LabelImportSource.ShowHint := True;
+        DisplayImportPossibilities();
 	end;
-    freeandnil(SrcFiles);
-    ImportReadyToGo();
+
 end;
 
 procedure TFormMain.TabImportShow(Sender: TObject);
 begin
     StatusBar1.SimpleText:= '';
     LabelErrorMessage.Caption := '';
+    TestImportDestination(false);      // Test the default, tomboy-ng's notes dir.
     ImportReadyToGo();
 end;
 

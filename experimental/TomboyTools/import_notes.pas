@@ -2,6 +2,22 @@ unit import_notes;
 
 { License - see tomboy-ng license information }
 
+{ Will import either plain text or markdown converting content to note.
+  Set DestinationDir, Mode (plaintext, markdown) and optionally FirstLineIsTitle
+  (other wise, file name will beome title).
+  Then pass a List of full file names, that is, including a path and extension, to convert.
+
+  Things that must be done -
+
+    1.  Notebook, a string that optionally contains the name of a notebook that will be
+        assigned to each imported note. This will involve looking to see if there is
+        already a notebook of this name, if not creating necessary files.
+        Does not make sense if destination dir is not either Tomboy or tomboy-ng.
+
+    2.  On completion, send tomboy-ng a hup if its running so it knows to refresh.
+
+}
+
 {$mode objfpc}{$H+}
 
 interface
@@ -26,14 +42,17 @@ type
                                must have whitespace of newline to left and an alpha mumeric to the right.
                                Reverse if Leading is false.  Ret 0 if a suitable tag is not found. }
         function PosMDTag(const St, Tag: string; const leading: boolean): integer;
+                            // Gets passed a List with note content, puts an appropriate
+                            // header and footer on.
         function ProcessPlain(Cont: TStringList; const Title: string): boolean;
 
     public
         ErrorMsg : string;              // '' if everything OK, content means something bad happened
         DestinationDir : string;        // Required, dir to save notes to
         Mode : string;                  // ie plaintext, markdown ....
-        ImportNames : TStringList;      // A list of full file names to import, default filename will become title
-        FirstLineTitle : boolean;       // if true, first line of note becomes title
+        ImportNames : TStringList;      // A list of full file names to import, default is filename will become title
+        FirstLineIsTitle : boolean;       // if true, first line of note becomes title
+        NoteBook : string;              // Maybe empty, if not, imported notes will go into this notebook.  ToDo : make this work
         function Execute(): integer;    // you know all you need, go do it.
         constructor Create;
         destructor Destroy; override;
@@ -66,6 +85,10 @@ begin
     Cont.Add('    	<x>20</x>');
     Cont.Add('    	<y>30</y>');
     Cont.Add('      <tags>');
+
+    if NoteBook <> '' then
+        Cont.Add('        <tag>system:notebook:' + NoteBook + '</tag>');
+
     Cont.Add('      </tags>');
     Cont.Add('    	<open-on-startup>False</open-on-startup>');
     Cont.Add('</note>');
@@ -295,7 +318,7 @@ begin
             end;
             if Mode = 'markdown' then
                 MarkUpMarkDown(Content);
-            if FirstLineTitle then begin
+            if FirstLineIsTitle then begin
                 Title := Content.Strings[0];
                 Content.Delete(0);
             end else Title := ExtractFileNameOnly(FullFileName);
