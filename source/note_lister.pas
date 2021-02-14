@@ -52,6 +52,7 @@ unit Note_Lister;
     2020/05/25  Don't read sett.checkcasesensitive in thread.
     2020/08/01  Disable code to rewrite short lcd.
     2021/01/03  LoadListView now uses TB_datetime, more tolerant of differing DT formats.
+    2021/02/14  Notebook list now sorted, A->z
 }
 
 {$mode objfpc}  {$H+}
@@ -697,6 +698,7 @@ begin
             //NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
         end;
 	end;
+
 end;
 
 
@@ -738,6 +740,12 @@ function LastChangeSorter( Item1: Pointer;   Item2: Pointer) : Integer;
 begin
     // Also ANSICompareStr but we are just looking at date numbers here
 	result := CompareStr(PNote(Item1)^.LastChange, PNote(Item2)^.LastChange);
+end;
+
+
+function NotebookSorter( Item1 : pointer; Item2 : pointer) : integer;
+begin
+    result := CompareStr(PNoteBook(Item1)^.Name, PNoteBook(Item2)^.Name);
 end;
 
 procedure TNoteLister.RewriteBadChangeDate(const Dir, FileName, LCD : ANSIString);
@@ -1153,6 +1161,7 @@ begin
     NotebookList.CleanList();
     Result := NoteList.Count;
     NoteList.Sort(@LastChangeSorter);       // 0mS on Dell
+    NoteBookList.Sort(@NotebookSorter);
 end;
 
 

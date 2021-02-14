@@ -116,7 +116,7 @@ object SearchForm: TSearchForm
       ExtendedSelect = False
       ItemHeight = 0
       OnClick = ListBoxNotebooksClick
-      OnKeyDown = ListBoxNotebooksKeyDown
+      OnKeyDown = FormKeyDown
       OnMouseUp = ListBoxNotebooksMouseUp
       ParentShowHint = False
       ScrollWidth = 230
@@ -171,7 +171,7 @@ object SearchForm: TSearchForm
       ViewStyle = vsReport
       OnDblClick = ListViewNotesDblClick
       OnDrawItem = ListViewNotesDrawItem
-      OnKeyDown = ListViewNotesKeyDown
+      OnKeyDown = FormKeyDown
       OnKeyPress = ListViewNotesKeyPress
     end
   end
@@ -277,6 +277,7 @@ object SearchForm: TSearchForm
     BorderSpacing.Right = 10
     Caption = 'Case Sensitive'
     OnChange = CheckCaseSensitiveChange
+    OnKeyDown = FormKeyDown
     ParentShowHint = False
     TabOrder = 3
     TabStop = False
@@ -301,6 +302,7 @@ object SearchForm: TSearchForm
     BorderSpacing.Right = 10
     Caption = 'Auto Refresh'
     OnChange = CheckAutoRefreshChange
+    OnKeyDown = FormKeyDown
     TabOrder = 5
     TabStop = False
   end
