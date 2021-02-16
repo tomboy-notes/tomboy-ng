@@ -100,7 +100,7 @@ type
 
 implementation
 
-uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger{, searchUnit};
+uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger, tb_utils{, searchUnit};
 
 const // Must become config things eventually.
   //Password = 'admin';
@@ -426,7 +426,7 @@ begin
             NoteInfo^.ID := copy(StList.Strings[I], 1, 36);
             NoteInfo^.Rev := -1;
             NoteInfo^.LastChange := copy(StList.Strings[I], pos('>', StList.Strings[I])+1, 33);
-            NoteInfo^.LastChangeGMT := GetGMTFromStr(NoteInfo^.LastChange);
+            NoteInfo^.LastChangeGMT := TB_GetGMTFromStr(NoteInfo^.LastChange);
             NoteMeta.Add(NoteInfo);
         end;
     end;

@@ -20,7 +20,7 @@ unit transfile;
 interface
 
 uses
-    Classes, SysUtils, trans, SyncUtils;
+    Classes, SysUtils, trans, SyncUtils, tb_utils;
 
 type
 
@@ -170,7 +170,7 @@ begin
                                     + pathdelim + NoteInfo^.ID + '.note');
                     end;
                     if NoteInfo^.LastChange <> '' then
-                        NoteInfo^.LastChangeGMT := GetGMTFromStr(NoteInfo^.LastChange);
+                        NoteInfo^.LastChangeGMT := TB_GetGMTFromStr(NoteInfo^.LastChange);
                     NoteMeta.Add(NoteInfo);
                 end;
 		end;

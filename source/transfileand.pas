@@ -108,7 +108,7 @@ type
                             // Converts a note from local time plus offset to UTC with zero offset before
                             // sending it to Tomdroid. Gets its input from std NotesDir and returns a
                             // FullFileName to to a temp file that has been converted. Temp file is overwritten.
-        function ChangeNoteDateUTC(const ID: string; AlsoEncodeEntity: boolean): string;
+        function ChangeNoteDateUTC(const ID: string): string;
                             // May return SyncNoRemoteDir, SyncReady, SyncNoServerID
                             // Sets the RemoteDir to either the GVFS mountpoint plus phone/tomdroid
                             // or to the TB_ONETOONE env var (if present). Tests for a the dir
@@ -187,7 +187,7 @@ type
 implementation
 
 uses {users, }     // for getUserID()
-    laz2_DOM, laz2_XMLRead, FileUtil, LazLogger, forms, LazUTF8;
+    laz2_DOM, laz2_XMLRead, FileUtil, LazLogger, forms, LazUTF8, tb_utils;
 
 { TAndSync }
 
@@ -250,7 +250,7 @@ begin
                 NoteInfo^.ID := extractFileNameOnly(info.Name);
                 NoteInfo^.Rev := -1;
                 NoteInfo^.LastChange := St;
-                NoteInfo^.LastChangeGMT := GetGMTFromStr(St);
+                NoteInfo^.LastChangeGMT := TB_GetGMTFromStr(St);
                 NoteMeta.Add(NoteInfo);
             end;
         until FindNext(Info) <> 0;
@@ -289,7 +289,7 @@ begin
         if OS_FileExists(Uploads.Strings[Index] + '.note') then
             OS_DeleteFile(Uploads.Strings[Index] + '.note');
         if FileExistsUTF8(NotesDir + Uploads.Strings[Index] + '.note') then
-            OS_UploadFile(ChangeNoteDateUTC(Uploads.Strings[Index], True), Uploads.Strings[Index])
+            OS_UploadFile(ChangeNoteDateUTC(Uploads.Strings[Index]{, True}), Uploads.Strings[Index])
         else  debugln('ERROR TransFileAnd.UploadNotes Failed to find ' + NotesDir + Uploads.Strings[Index] + '.note');
     end;
     result := True;    // unless, of course, we failed some how. Hmm...
@@ -550,7 +550,7 @@ begin
 end;
 
 
-function TAndFileTrans.ChangeNoteDateUTC(const ID : string; AlsoEncodeEntity : boolean) : string;
+function TAndFileTrans.ChangeNoteDateUTC(const ID : string{; AlsoEncodeEntity : boolean}) : string;
 var
     InFile, OutFile: TextFile;
     NoteDateSt, InString : string;
@@ -668,7 +668,7 @@ begin
                     NoteInfo^.ID := extractFileNameOnly(St);
                     NoteInfo^.Rev := -1;
                     NoteInfo^.LastChange := St;
-                    NoteInfo^.LastChangeGMT := GetGMTFromStr(DateSt);
+                    NoteInfo^.LastChangeGMT := TB_GetGMTFromStr(DateSt);
                     NoteMeta.Add(NoteInfo);
                 end else
                     debugln('ERROR, TransFileAnd.GetNewNotesGIO failed to find LCD in ' + St + ' - ' + LocalTempNote);

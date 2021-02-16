@@ -95,7 +95,8 @@ implementation
 
 { TNoteBookPick }
 
-uses SearchUnit, LazFileUtils, LCLProc, Settings, SaveNote, EditBox, SyncUtils, resourcestr;
+uses SearchUnit, LazFileUtils, LCLProc, Settings, SaveNote, EditBox, SyncUtils, resourcestr,
+        tb_utils;
 
 procedure TNoteBookPick.SetupForNewSelect();
 var
@@ -193,12 +194,12 @@ begin
                     case NextSeekString of
                         '<last-change-date>' : begin
                                                     writeln(outFile, '  <last-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-change-date>');
+                                                        + TB_GetLocalTime() + '</last-change-date>');
                                                     NextSeekString := '<last-metadata-change-date>';
                                                 end;
                         '<last-metadata-change-date>' : begin
                                                     writeln(outFile, '  <last-metadata-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-metadata-change-date>');
+                                                        + TB_GetLocalTime() + '</last-metadata-change-date>');
                                                     NextSeekString := '<y>';
                                                 end;
                         '<y>' :     begin
@@ -269,12 +270,12 @@ begin
                                     end;
                         '<last-change-date>' : begin
                                                     writeln(outFile, '  <last-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-change-date>');
+                                                        + TB_GetLocalTime() + '</last-change-date>');
                                                     NextSeekString := '<last-metadata-change-date>';
                                                 end;
                         '<last-metadata-change-date>' : begin
                                                     writeln(outFile, '  <last-metadata-change-date>'
-                                                        + Sett.GetLocalTime() + '</last-metadata-change-date>');
+                                                        + TB_GetLocalTime() + '</last-metadata-change-date>');
                                                     NextSeekString := '<y>';
                                                 end;
                         '<y>' :     begin

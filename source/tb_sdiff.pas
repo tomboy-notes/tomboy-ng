@@ -68,9 +68,9 @@ type
         function CanResync(const SL1, SL2: TStringList; const Spot1, Spot2, End1, End2: integer
             ): integer;
         procedure CheckFiles();
-		function GetDateFromStr(const DateStr: ANSIString): TDateTime;
-		function GetNoteChangeGMT(const FullFileName: ANSIString; out
-				LastChange: ANSIString): TDateTime;
+		//function GetDateFromStr(const DateStr: ANSIString): TDateTime;
+		//function GetNoteChangeGMT(const FullFileName: ANSIString; out   LastChange: ANSIString): TDateTime;
+
         procedure GotoEnd(const NoteNo : integer; const SL: TStringList; const Spot, TheEnd: integer);
         function RemoveXml(const St: AnsiString): AnsiString;
         // Returns a new (synced) Pos, showing intermediate lines.
@@ -89,7 +89,7 @@ implementation
 
 {$R *.lfm}
 
-uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils{, syncutils};
+uses LazLogger, laz2_DOM, laz2_XMLRead, LazFileUtils, DateUtils, syncutils, tb_utils;
 
 { TFormSDiff }
 
@@ -173,13 +173,26 @@ begin
         AddDiffText(RemoveXML(SL[I]), NoteNo);
 end;
 
+
 procedure TFormSDiff.FormShow(Sender: TObject);
 var
     TestDate: TDateTime;
-    LastChange : string;
+    //LastChange : string;
+    ErrorSt : string;
 begin
+    LabelLocal.Caption := GetNoteLastChangeSt(LocalFileName, ErrorSt);
+    if ErrorSt <> '' then
+        ShowMessage(ErrorSt);
+    if not MyTryISO8601ToDate(LabelLocal.Caption, TestDate, False) then
+        Showmessage('Invalid last sync date in local version of note');
+    LabelRemote.Caption := GetNoteLastChangeSt(RemoteFileName, ErrorSt);
+    if ErrorSt <> '' then
+        ShowMessage(ErrorSt);
+    if not MyTryISO8601ToDate(LabelLocal.Caption, TestDate, False) then
+        Showmessage('Invalid last sync date in remote version of note');
+
     // Go and get Title and last-change-date from both versions of note
-    TestDate := GetNoteChangeGMT(LocalFileName, LastChange);
+(*    TestDate := GetNoteChangeGMT(LocalFileName, LastChange);
     if (TestDate > now()) or (TestDate < (Now() - 36500))  then
         // TDateTime has integer part no. of days, fraction part is fraction of day.
         // we have here in the future or more than 100years ago - Fail !
@@ -193,7 +206,8 @@ begin
     GetNoteChangeGMT(RemoteFileName, LastChange);
     if (TestDate > now()) or (TestDate < (Now() - 36500))  then
         Showmessage('Invalid last sync date in remote version of note')
-    else LabelRemote.Caption := LastChange;
+    else LabelRemote.Caption := LastChange;   *)
+
     CheckFiles();
 end;
 
@@ -202,6 +216,8 @@ begin
 
 end;
 
+
+(*
 function TFormSDiff.GetNoteChangeGMT(const FullFileName : ANSIString; out LastChange : ANSIString) : TDateTime;
 var
         Doc : TXMLDocument;
@@ -260,6 +276,7 @@ begin
      end;
      { debugln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
 end;
+*)
 
 procedure TFormSDiff.RadioLongChange(Sender: TObject);
 begin

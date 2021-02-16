@@ -768,12 +768,12 @@ begin
                 readln(InFile, InString);
                 if (Pos('<last-change-date>', InString) > 0) then
                     if length(LCD) = 19 then begin
-                        NewLCD := LCD + copy(Sett.GetLocalTime(), 20, 14);
+                        NewLCD := LCD + copy(TB_GetLocalTime(), 20, 14);
                         NewLCD[11] := 'T';
                         writeln(OutFile, '  <last-change-date>' + NewLCD + '</last-change-date>');
                     end else begin
                         writeln(OutFile, '  <last-change-date>'
-                                + Sett.GetLocalTime()
+                                + TB_GetLocalTime()
                                 + '</last-change-date>');
 					end
 				else  writeln(OutFile, InString);
@@ -1151,7 +1151,7 @@ begin
     FreeandNil(ErrorNotes);
     ErrorNotes := TStringList.Create;
     if DebugMode then debugln('Looking for notes in [' + WorkingDir + ']');
-  	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then     // ToDo : will FindAllFiles() be faster ?
+  	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then     // ToDo : will FindAllFiles() and threading be faster ?
   		repeat
             inc(Cnt);
   		    GetNoteDetails(WorkingDir, Info.Name, DontTestName);

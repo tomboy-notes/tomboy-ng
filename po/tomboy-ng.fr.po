@@ -851,28 +851,6 @@ msgstr "Entête de la note"
 msgid "Single lines, all Huge, Large Bold or Large"
 msgstr "Ligne normale, énorme, ou grand (+gras)"
 
-#: tformmarkdown.buttonclose.caption
-msgctxt "tformmarkdown.buttonclose.caption"
-msgid "Close"
-msgstr "Fermer"
-
-#: tformmarkdown.buttoncopyall.caption
-msgid "Copy All"
-msgstr "Tout copier"
-
-#: tformmarkdown.buttonsave.caption
-msgctxt "tformmarkdown.buttonsave.caption"
-msgid "Save"
-msgstr "Sauver"
-
-#: tformmarkdown.label1.caption
-msgid "Press Ctrl-A, Ctrl-C to copy"
-msgstr "Ctrl-A puis Ctrl-C pour copier"
-
-#: tformmarkdown.panel1.caption
-msgid "Markdown Exporter"
-msgstr "Export réduit"
-
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr "Effacer les notes vérolées"

@@ -136,7 +136,8 @@ uses FileUtil               // Graphics needed for font style defines
     ,Settings				// User settings and some defines across units.
     ,SearchUnit				// So we have access to NoteBookList
     ,LazFileUtils           // For ExtractFileName...
-    ,SyncUtils;             // For removebadxmlcharacters()
+    ,SyncUtils             // For removebadxmlcharacters()
+    ,tb_utils;
     // {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 
 const
@@ -711,7 +712,7 @@ var
    S1, S2, S3, S4, S5, S6 : string;
 begin
   if Loc.LastChangeDate = '' then
-    TimeStamp := Sett.GetLocalTime()   // get actual time date in format like Tomboy's
+    TimeStamp := TB_GetLocalTime()   // get actual time date in format like Tomboy's
   else TimeStamp := Loc.LastChangeDate;
   S1 := '</note-content></text>'#10'  <last-change-date>';
   S2 := '</last-change-date>'#10'  <last-metadata-change-date>';

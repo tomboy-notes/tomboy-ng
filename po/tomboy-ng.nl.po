@@ -896,28 +896,6 @@ msgstr ""
 msgid "Single lines, all Huge, Large Bold or Large"
 msgstr ""
 
-#: tformmarkdown.buttonclose.caption
-msgctxt "tformmarkdown.buttonclose.caption"
-msgid "Close"
-msgstr ""
-
-#: tformmarkdown.buttoncopyall.caption
-msgid "Copy All"
-msgstr ""
-
-#: tformmarkdown.buttonsave.caption
-msgctxt "tformmarkdown.buttonsave.caption"
-msgid "Save"
-msgstr ""
-
-#: tformmarkdown.label1.caption
-msgid "Press Ctrl-A, Ctrl-C to copy"
-msgstr ""
-
-#: tformmarkdown.panel1.caption
-msgid "Markdown Exporter"
-msgstr ""
-
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr ""

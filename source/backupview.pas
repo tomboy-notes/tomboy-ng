@@ -75,7 +75,7 @@ implementation
 
 uses  settings, LazFileUtils, LCLType,
     MainUnit,   // For SingleNoteMode()
-
+    tb_utils,
     SearchUnit; // access the notelister object
 
 procedure TFormBackupView.FormCreate(Sender: TObject);
@@ -214,8 +214,8 @@ begin
                 if (Pos('<last-metadata-change-date>', InString) > 0) or
                         (Pos('<last-change-date>', InString) > 0)  then begin
                     if (Pos('<last-metadata-change-date>', InString) > 0) then
-                        writeln(OutFile, ' <last-metadata-change-date>' +  Sett.GetLocalTime() + '</last-metadata-change-date>')
-                    else writeln(OutFile, ' <last-change-date>' +  Sett.GetLocalTime() + '</last-change-date>');
+                        writeln(OutFile, ' <last-metadata-change-date>' +  TB_GetLocalTime() + '</last-metadata-change-date>')
+                    else writeln(OutFile, ' <last-change-date>' +  TB_GetLocalTime() + '</last-change-date>');
                 end else writeln(OutFile, InString);
             end;
         finally

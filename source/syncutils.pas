@@ -129,10 +129,10 @@ function UsingRightRevisionPath(ServerPath : string; Rev : integer) : boolean;
 function ConvertDateStrAbsolute(const DateStr : string) : string;
 
                 // A save, error checking method to convert Tomboy's ISO8601 33 char date string
-function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
+//function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
 
                 // Ret GMT from tomboy date string, 0.0 on error or unlikely date.
-function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
+// function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 
                 // Ret a tomboy date string for now.
 //function GetLocalTime: ANSIstring;
@@ -174,7 +174,7 @@ RESOURCESTRING
             { -------------- implementation ---------------}
 implementation
 
-uses laz2_DOM, laz2_XMLRead, LazFileUtils;
+uses laz2_DOM, laz2_XMLRead, LazFileUtils, tb_utils;
 
 function RemoveXml(const St : AnsiString) : AnsiString;
 var
@@ -291,7 +291,7 @@ var
     // LastChange : string;
 begin
     if not FileExistsUTF8(FullFileName) then begin
-        Error := 'ERROR - File not found, cant read note change date for remote ' +  FullFileName;
+        Error := 'ERROR - File not found, cannot read note change date for ' +  FullFileName;
         exit('');
 	end;
 	try
@@ -397,7 +397,7 @@ begin
         {$ifdef LCL}Debugln{$else}writeln{$endif}('ERROR ConvertDateStrAbsolute received invalid date string - [' + DateStr + ']');
         exit('');
     end;
-    Temp := GetGMTFromStr(DateStr) {- GetLocalTimeOffset()};
+    Temp := TB_GetGMTFromStr(DateStr) {- GetLocalTimeOffset()};
     Result := FormatDateTime('YYYY-MM-DD',Temp) + 'T'
                    + FormatDateTime('hh:mm:ss.zzz"0000+00:00"',Temp);
 end;
@@ -406,7 +406,9 @@ end;
   zone specified, just a 'Z'. The time is already in GMT.  Gnote gives
   us 6 decimal places after second but we can cope with nany. Must have
   yyyy-mm-ddThh:mm:ssZ and opt .nnn.. between 'ss and 'Z' }
-  // ToDo : replace this with one from TB_DateTime.
+
+
+(*
 function GetZuluDateTime(const  DateStr: ANSIString): TDateTime;
 var
     Tstr : string = '';
@@ -450,8 +452,9 @@ begin
     end;
     Result := Result + milliSeconds;
 end;
+*)
 
-// ToDo : replace this with one from TB_DateTime.
+(*
 function GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 var
     TimeZone : TDateTime;
@@ -500,14 +503,15 @@ begin
     	end;
     end;
     { writeln('Date is ', DatetoStr(Result), ' ', TimetoStr(Result));  }
-end;
+end;  *)
 
-// ToDo : replace this with one from TB_DateTime.
+
+(*
 function SafeGetUTCfromStr(const DateStr : string; out DateTime : TDateTime; out ErrorMsg : string) : boolean;
 begin
     ErrorMsg := '';
     if length(DateStr) = 33 then                // This is the Tomboy standard
-        DateTime := GetGMTFromStr(DateStr)
+        DateTime := TB_GetGMTFromStr(DateStr)
     else if  pos('Z', DateStr) > 0 then
         DateTime := GetZuluDateTime(DateStr)        // Gnote does this
         else begin
@@ -528,7 +532,7 @@ begin
  		// TDateTime has integer part, no. of days, fraction part is fraction of day.
 		// 100years ago or in future - Fail !
     exit(True);
-end;
+end;  *)
 
 end.
 

@@ -331,10 +331,7 @@ type
             { Indicates Spell is configured and LabelLibrary and LabelDic should
             contain valid full file names.}
         SpellConfig : boolean;
-        // service functon to other units, returns a string with current datetime
-        // in a format like the Tomboy schema.
-        // ToDo : move (a version of) this to TB_DateTime.
-        function GetLocalTime: ANSIstring;
+
             { Triggers a Sync, if its not all setup aready and working, user show and error }
         procedure Synchronise();
 
@@ -386,8 +383,10 @@ uses IniFiles, LazLogger,
     LCLType,        // Keycodes ....
     Autostart,
     Colours,
-    ResourceStr     // only partioally so far ....
-    {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
+    ResourceStr;     // only partially so far ....
+    {TB_Utils}
+
+    // {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
 var
     Spell: THunspell;
@@ -1497,39 +1496,6 @@ begin
     end;
 end;
 
-
-function TSett.GetLocalTime: ANSIstring;
-	    // The retuned date string includes four digits at the end representing a count
-	    // of 100 picoSeconds units. We cannot get that sort of precision and who needs it but
-	    // I have realised as tomboy-ng uses the datestring as a key to check that notes
-	    // are identical during a blind sync.  So, instead of making those four digits 0000
-	    // I will add a random number, not significent for timing but a usefull increase
-	    // in certaintly.
-var
-   ThisMoment : TDateTime;
-   Res : ANSIString;
-   Off : longint;
-   PicoSeconds : string;
-begin
-    {$ifdef LINUX}
-    ReReadLocalTime();    // in case we are near daylight saving time changeover
-    {$endif}
-    ThisMoment:=Now;
-    PicoSeconds := inttostr(random(9999));
-    while length(PicoSeconds) < 4 do PicoSeconds := '0' + PicoSeconds;
-    Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
-                    // + FormatDateTime('hh:mm:ss.zzz"0000"',ThisMoment);
-                    + FormatDateTime('hh:mm:ss.zzz',ThisMoment) + PicoSeconds;
-    Off := GetLocalTimeOffset();
-    if (Off div -60) >= 0 then Res := '+'
-	else Res := '-';
-	if abs(Off div -60) < 10 then Res := Res + '0';
-	Res := Res + inttostr(abs(Off div -60)) + ':';
-       	if (Off mod 60) = 0 then
-		Res := res + '00'
-	else Res := Res + inttostr(abs(Off mod 60));
-    Result := Result + res;
-end;
 
 end.
 

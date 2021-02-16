@@ -375,7 +375,7 @@ implementation
 { TSync }
 
 uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransAndroid, LazLogger, LazFileUtils,
-    FileUtil, Settings;
+    FileUtil, Settings, tb_utils;
 
 var
     Transport : TTomboyTrans;
@@ -551,13 +551,13 @@ begin
     case Act of
         SyAllLocal : exit(SyUpLoadEdit);
         SyAllRemote : exit(SyDownLoad);
-        SyAllNewest : if GetGMTFromStr(GetNoteLastChangeSt(NotesDir + ID + '.note', Temp))
-                            >  GetGMTFromStr(GetNoteLastChangeSt(FullRemoteFileName, Temp)) then
+        SyAllNewest : if TB_GetGMTFromStr(GetNoteLastChangeSt(NotesDir + ID + '.note', Temp))
+                            >  TB_GetGMTFromStr(GetNoteLastChangeSt(FullRemoteFileName, Temp)) then
                         exit(SyUploadEdit)
                       else
                         exit(SyDownLoad);
-        SyAllOldest :  if GetGMTFromStr(GetNoteLastChangeSt(NotesDir + ID + '.note', Temp))
-                            <  GetGMTFromStr(GetNoteLastChangeSt(FullRemoteFileName, Temp)) then
+        SyAllOldest :  if TB_GetGMTFromStr(GetNoteLastChangeSt(NotesDir + ID + '.note', Temp))
+                            <  TB_GetGMTFromStr(GetNoteLastChangeSt(FullRemoteFileName, Temp)) then
                         exit(SyUploadEdit)
                       else
                         exit(SyDownLoad);
@@ -583,7 +583,7 @@ begin
             if Action = SyUpLoadEdit then begin
                 LastChange := GetNoteLastChangeSt(NotesDir + ID + '.note', ErrorString);
                 if  LastChange <> '' then
-                    LastChangeGMT := GetGMTFromStr(LastChange)
+                    LastChangeGMT := TB_GetGMTFromStr(LastChange)
                 else
                     debugln('ERROR, Failed to get LCD from local ' + ID + ' --- ' + ErrorString);
             end;
@@ -729,15 +729,15 @@ begin
                         exit(false);                        // might be a clash, go fill out LCD in remote data
                     end;
                     // Next line new, we now accept an idetical string or a datestring thats pretty close
-                if ((PNote^.LastChange = LocLCD) or (DatesClose(PNote^.LastChangeGMT, GetGMTFromStr(LocLCD)))) then          // its the same note
+                if ((PNote^.LastChange = LocLCD) or (DatesClose(PNote^.LastChangeGMT, TB_GetGMTFromStr(LocLCD)))) then          // its the same note
                     PNote^.Action := SyNothing
                 else  begin
                     PNote^.Action := SyClash;             // Best we can do if last sync date not available.
                     if LocalLastSyncDateSt <> '' then begin          // We can override that iff we have a LLSD
-                        if GetGMTFromStr(LocLCD) < LocalLastSyncDate then  PNote^.Action := SyDownload
+                        if TB_GetGMTFromStr(LocLCD) < LocalLastSyncDate then  PNote^.Action := SyDownload
                         else if  PNote^.LastChangeGMT < LocalLastSyncDate then PNote^.Action := SyUploadEdit;
                         if debugmode then
-                            debugln('GMTimes - loc=' + FormatDateTime( 'yyyy-mm-dd hh:mm:ss', GetGMTFromStr(LocLCD))
+                            debugln('GMTimes - loc=' + FormatDateTime( 'yyyy-mm-dd hh:mm:ss', TB_GetGMTFromStr(LocLCD))
                                      + '  rem=' + FormatDateTime( 'yyyy-mm-dd hh:mm:ss', PNote^.LastChangeGMT)
                                      + '  LLSD=' + FormatDateTime( 'yyyy-mm-dd hh:mm:ss', LocalLastSyncDate)
                                      + '  rem-st=' + PNote^.LastChange);
@@ -856,7 +856,7 @@ begin
         ID := RemoteMetaData.Items[I]^.ID;
         if LocalNoteExists(ID, LocCDate) then begin
             LocalNoteExists(ID, LocCDate, True);
-            LocChange := GetGMTFromStr(LocCDate) > LocalLastSyncDate;       // TDateTime is a float
+            LocChange := TB_GetGMTFromStr(LocCDate) > LocalLastSyncDate;       // TDateTime is a float
 
             RemChange := RemoteMetaData.Items[I]^.Rev > CurrRev;              // This is not valid for Tomdroid
 
@@ -987,7 +987,7 @@ begin
 		        Rewrite(OutFile);
                 writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
                 writeln(Outfile, '<manifest xmlns="http://beatniksoftware.com/tomboy">');
-                writeln(OutFile, '  <last-sync-date>' + Sett.GetLocalTime + '</last-sync-date>');
+                writeln(OutFile, '  <last-sync-date>' + TB_GetLocalTime + '</last-sync-date>');
                 write(OutFile, '  <last-sync-rev>"' + inttostr(Transport.RemoteServerRev + IncRev));
                 writeln(OutFile, '"</last-sync-rev>');
                 writeln(OutFile, '  <server-id>"' + Transport.ServerID + '"</server-id>');
@@ -1087,10 +1087,6 @@ begin
                         SyncAddress := AppendPathDelim(Sett.ValidSync);             // LabelFileSync.Caption);
                         Transport := TFileSync.Create;
 	               end;
-	    {SyncNextCloud : begin
-		                    Transport := TNextSync.Create;
-		                    SyncAddress := Sett.LabelNCSyncURL.caption;
-                        end;}
         SyncAndroid : begin
                         // debugln('Oh boy ! We have called the android line !');
                         Transport := TAndSync.Create;
@@ -1142,7 +1138,7 @@ begin
             debugln('ReadLocalManifest set an empty LocalLastSyncDateSt, probably local manifest does not exist.');
             exit(SyncNoLocal);
         end;
-	    LocalLastSyncDate :=  GetGMTFromStr(LocalLastSyncDateSt);
+	    LocalLastSyncDate :=  TB_GetGMTFromStr(LocalLastSyncDateSt);
 	    if LocalLastSyncDate < 1.0 then begin
 		    ErrorString := 'Invalid last sync date in local manifest [' + LocalLastSyncDateSt + ']';
             debugln('Invalid last sync date in ' + ConfigDir + ManPrefix + 'manifest.xml');

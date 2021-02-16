@@ -570,7 +570,7 @@ procedure TSearchForm.RefreshMenus(WhichSection : TMenuKind; AMenu : TPopupMenu 
 var
     MList : TList;
     I : integer;
-    //T1, T2, T3, T4, T5, T6 : dword;
+    // T1, T2, T3, T4, T5, T6 : qword;
 begin
     if (WhichSection = mkRecentMenu) and (PopupTBMainMenu.Items.Count = 0)
         then exit;      // This is a call during startup, File and Help are not there yet, messes with Qt5
@@ -594,25 +594,29 @@ begin
                         end;
         mkFileMenu : for I := 0 to MList.Count - 1 do
                             MenuFileItems(TPopupMenu(MList[i]));
-        mkRecentMenu : {begin T2 := gettickcount64();
-                             Blar := MList.Count;
-                             T3:= gettickcount64();  }
-                             for I := 0 to MList.Count - 1 do {begin
-                                 T5 := gettickcount64();}
-                                 MenuRecentItems(TPopupMenu(MList[i]));
-                                 {T4 := gettickcount64();
+        mkRecentMenu : for I := 0 to MList.Count - 1 do
+                            MenuRecentItems(TPopupMenu(MList[i]));
+
+                        (* begin T2 := gettickcount64();          // I saw this taking longer than expected but seems fast enough now ??
+                             MList.Count;
+                             T3:= gettickcount64();
+                             for I := 0 to MList.Count - 1 do begin
+                                 T5 := gettickcount64();
+                                 MenuRecentItems(TPopupMenu(MList[i]));         // 2mS - 5mS     ??
+                                 T4 := gettickcount64();
                                  T6 := gettickcount64();
                                  debugln('Loop timing  ' + dbgs(T6 - T5));
                              end;
-                       end;}
-                            // ToDo : that call to  MList.Count takes some 3 to 18 mS !
+                             debugln('SearchUnit.RefreshMenus MList.count = ' + inttostr(T3 - T2) + 'ms ' + dbgs(T4 - T3));
+                       end;  *)
+
         mkHelpMenu : for I := 0 to MList.Count - 1 do begin
                             InitialiseHelpFiles();
                             MenuHelpItems(TPopupMenu(MList[i]));
                         end;
     end;
     MList.Free;
-    //debugln('SearchUnit.RefreshMenus MList.count = ' + inttostr(T3 - T2) + 'ms ' + dbgs(T4 - T3));
+
 end;
 
 procedure TSearchForm.AddItemMenu(TheMenu : TPopupMenu; Item : string; mtTag : TMenuTarget; OC : TNotifyEvent; MenuKind : TMenuKind);
@@ -927,7 +931,7 @@ begin
     else NeedRefresh := True;                                // eg refresh ListViewNotes on next OnActivate
     RefreshMenus(mkRecentMenu);
     // TS2 := DateTimeToTimeStamp(Now);
-	// debugln('That took (mS) ' + inttostr(TS2.Time - TS1.Time));
+	// debugln('TSearchForm.IndexNotes - Indexing took (mS) ' + inttostr(TS2.Time - TS1.Time));          // Dell, 2K notes, 134mS
     MainForm.UpdateNotesFound(Result);      // Says how many notes found and runs over checklist.
     Sett.StartAutoSyncAndSnap();
 end;
@@ -1008,9 +1012,9 @@ end;
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
-{    if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then
+(*    if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then
         if key = VK_Q then
-        debugln('TSearchForm.FormKeyDown - Detected Ctrl IN Shift - Q, ignoring');      }
+        debugln('TSearchForm.FormKeyDown - Detected Ctrl IN Shift - Q, ignoring');      *)
     if [{$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif}] = Shift then begin
         if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
         if key = VK_Q then begin
@@ -1097,7 +1101,7 @@ end;
 
 
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
-    TemplateIs: AnsiString; BackUp: boolean; InSearch: boolean);
+                            TemplateIs: AnsiString; BackUp: boolean; InSearch: boolean);
 // Everything except the first parameter is optional, take care !
 // Might be called with no Title (NewNote) or a Title with or without a Filename
 var
@@ -1146,13 +1150,6 @@ begin
 
     if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
         EBox.NewFind(Edit1.Text);
-
-    // ToDo : above will open a note in Searched mode, even if user has gone back to main menu
-    // to open the note.  Just because a search is current in the Search Window, we should not
-    // assume user wants a Main Menu opened note to come up in that search mode ????
-    // Also affect a few lines further up, when searching and then bringing an already used note
-    // into focus.
-    // We should only allow jumping into search mode when its a double click on the ListView.
 
     if (NoteFileName <> '') and BackUp  then
         BackupNote(NoteFileName, 'opn');

@@ -207,6 +207,7 @@ unit EditBox;
     2021/01/31  Fix UTF8 issue in Find, check for hits in FindIt if NumbFindHits = 0
     2021/02/03  Enter Key based search model, Ctrl-Enter and Alt-Enter
     2021/02/05  Complete rewrite of Find in a way that also works for Windows.
+    2021/02/15  Use CommonMark when exporting Markdown
 }
 
 
@@ -222,14 +223,7 @@ uses
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
     PrintersDlgs;
 
-(*
-type TFindStatus = ( fs_EditFindChanged,       // The user has made some change to content of EditFind, new search pending
-                    fs_EditFindFirstSearch,   // The user has hit Enter, trigged a new search
-                    fs_EditFindExited);       // The user has left the EditFind box, all bets are off.
-*)
-
 type
-
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
@@ -531,7 +525,8 @@ uses
     MainUnit,           // Not needed now for anything other than MainForm.Close()
     SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
-    Markdown,
+    commonmark,
+    //Markdown,
     Index,              // An Index of current note.
     math,
     FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
@@ -1010,13 +1005,6 @@ begin
    InitiateCalc();
 end;
 
-procedure TEditBoxForm.MenuItemExportMarkdownClick(Sender: TObject);
-begin
-  FormMarkDown.TheKMemo := KMemo1;
-  FormMarkDown.Caption:= CleanCaption();
-  FormMarkDown.Show;
-end;
-
 procedure TEditBoxForm.MenuItemIndexClick(Sender: TObject);
 var
     IForm : TFormIndex;
@@ -1094,12 +1082,7 @@ end;
 
 { Overview of local find process (local is note is 'Find', Searching all notes is 'Seach') :
   Works when the PanelFind is visible or not, gets called at note open if a search is underway.
-  We have a tristate var that keeps track of where we are, editing Find Term, press Enter,
-  press Enter, press Enter ... should cycle through all hits. But moving out of EditFind
-  and back in again, will jump to beginning of list again.
 }
-// ToDo : tristate var no longer needed.
-
 
 // Call to start searching at an existing position (usually cursor).
 // Note that StartAt arrives here as a (utf8) char index, not a byte index.
@@ -1399,6 +1382,15 @@ begin
    SaveNoteAs('rtf');
 end;
 
+procedure TEditBoxForm.MenuItemExportMarkdownClick(Sender: TObject);
+begin
+    SaveNoteAs('md');
+//  FormMarkDown.TheKMemo := KMemo1;
+//  FormMarkDown.Caption:= CleanCaption();
+//  FormMarkDown.Show;
+end;
+
+
  {               // Gets sent a string that is converted into something suitable to use as base filename
 function TEditBoxForm.MakeFileName(const Candidate : string) : string;
 begin
@@ -1411,6 +1403,8 @@ end; }
 procedure TEditBoxForm.SaveNoteAs(TheExt : string);
 var
     SaveExport : TSaveDialog;
+    MDContent : TStringList;
+    ExpComm   : TExportCommon;
 begin
      SaveExport := TSaveDialog.Create(self);
      SaveExport.DefaultExt := TheExt;
@@ -1424,14 +1418,28 @@ begin
           SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
           {$endif}
      end;
+     debugln('TEditBoxForm.SaveNoteAs Filename 1 = ' + CleanCaption());
+     debugln('TEditBoxForm.SaveNoteAs Filename 2 = ' + TB_MakeFileName(CleanCaption()));
      SaveExport.Filename := TB_MakeFileName(CleanCaption());
-     // SaveExport.Filename := StringReplace(CleanCaption(), #32, '', [rfReplaceAll]) + '.' + TheExt;
      if SaveExport.Execute then begin
-        if 'txt' = TheExt then
-           KMemo1.SaveToTXT(SaveExport.FileName)
-        else if 'rtf' = TheExt then
-           KMemo1.SaveToRTF(SaveExport.FileName);
-        Sett.ExportPath := ExtractFilePath(SaveExport.FileName);  // Hmm, UTF8 ?
+         case TheExt of
+             'txt' : KMemo1.SaveToTXT(SaveExport.FileName);
+             'rtf' :  KMemo1.SaveToRTF(SaveExport.FileName);
+             'md'  : begin
+                        SaveTheNote();
+                        MDContent := TStringList.Create;
+                        ExpComm := TExportCommon.Create;
+                        try
+                            ExpComm.NotesDir := Sett.NoteDirectory;
+                            if ExpComm.GetMDcontent( ExtractFileNameOnly(NoteFileName), MDContent) then
+                               MDContent.SaveToFile(SaveExport.FileName)
+                            else showmessage('Failed to convert to MarkDown');
+                        finally
+                            ExpComm.Free;
+                            MDContent.Free;
+                        end;
+                end;
+         end;
      end;
      //showmessage(SaveExport.FileName);
      SaveExport.Free;
@@ -2675,7 +2683,7 @@ begin
             VK_N : SearchForm.OpenNote('');      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
             VK_E : InitiateCalc();
             VK_F4 : close;                      // close just this note, normal saving will take place
-            VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;
+//            VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;                                // ToDo : restore this
             VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, {VK_RETURN,} VK_INSERT :
                 exit;    // so key is not set to 0 on the way out, KMemo will handle
         end;

@@ -40,24 +40,33 @@ function TB_MakeFileName(const Candidate : string) : string;
 
 function MyFormatDateTime(aUTCDateTime : TDateTime; HumanReadable : boolean = false) : string;
 
+                        // Will take a range of ISO-8601 dates and convert to DateTime, either local or UTC
+                        // Uses TryISO8601ToDate for all greater than uSec, then adds uSec back in.
+                        // If ReturnUTC is false returns local time
 function MyTryISO8601ToDate(DateSt : string; out OutDT : TDateTime; ReturnUTC : boolean = true) : boolean;
 
 function GetUTCOffset() : string;
 
+                        // returns a string with current datetime in a format like the Tomboy schema
+function TB_GetLocalTime: ANSIstring;
+
+                        // A version of MyTryISO8601ToDate that does not report errors as well.
+function TB_GetGMTFromStr(const DateStr: ANSIString): TDateTime;
+
 implementation
 
-uses dateutils;
+uses dateutils {$ifdef LINUX}, Unix {$endif} ;          // We call a ReReadLocalTime();
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
   // Gets sent a string that is converted into something suitable to use as base filename
 function TB_MakeFileName(const Candidate : string) : string;
+var
+   Ch : char;
 begin
-    Result := StringReplace(Candidate, #32, '', [rfReplaceAll]);
-    Result := StringReplace(Result, '/', '_', [rfReplaceAll]);
-    Result := StringReplace(Result, '\', '_', [rfReplaceAll]);
-    Result := StringReplace(Result, '*', '_', [rfReplaceAll]);
-    Result := StringReplace(Result, '.', '_', [rfReplaceAll]);
+    Result := StringReplace(Candidate, #32, '_', [rfReplaceAll]);
+    for ch in [ '/', '\', '*', '.', '#', '%', '{', '}', '?', '&' ] do
+        Result := StringReplace(Result, Ch, '-', [rfReplaceAll]);
 end;
 
 
@@ -101,9 +110,11 @@ var
     I : integer;
     St : string = '';
 begin
+    OutDT := 0.0;
+    if DateSt = '' then exit(False);
     Result := True;
     I := pos('.', DateSt);                          // if we have decimal point, we have stuff to do.
-    if I > 0 then begin
+    if I > 0 then begin                             // TryISO8601ToDate cannot handle string with decimals of a second
         delete(DateSt, I, 1);                       // Remove decimal point
 	    while I  < length(DateSt) do begin
             if DateSt[I] in ['0'..'9'] then begin
@@ -118,9 +129,46 @@ begin
     if TryISO8601ToDate(DateSt, OutDT, ReturnUTC) then begin               // WARNING - apparently this is a FPC320 only feature
         if I > 0 then
             OutDT := OutDT + (St.ToDouble() * ValueMicroSecond);           // ValueMicroSecond is Regional const,  eg
-	end else result := False;                                               // ValueMicroSecond := 1.0 / double(24*60*60*1000*1000);
+	end else result := False;                                              // ValueMicroSecond := 1.0 / double(24*60*60*1000*1000);
 end;
 
+function TB_GetLocalTime: ANSIstring;
+	    // The retuned date string includes four digits at the end representing a count
+	    // of 100 picoSeconds units. We cannot get that sort of precision and who needs it but
+	    // I have realised as tomboy-ng uses the datestring as a key to check that notes
+	    // are identical during a blind sync.  So, instead of making those four digits 0000
+	    // I will add a random number, not significent for timing but a usefull increase
+	    // in certaintly.
+var
+   ThisMoment : TDateTime;
+   Res : ANSIString;
+   Off : longint;
+   PicoSeconds : string;
+begin
+    {$ifdef LINUX}
+    ReReadLocalTime();    // in case we are near daylight saving time changeover
+    {$endif}
+    ThisMoment:=Now;
+    PicoSeconds := inttostr(random(9999));
+    while length(PicoSeconds) < 4 do PicoSeconds := '0' + PicoSeconds;
+    Result := FormatDateTime('YYYY-MM-DD',ThisMoment) + 'T'
+                    // + FormatDateTime('hh:mm:ss.zzz"0000"',ThisMoment);
+                    + FormatDateTime('hh:mm:ss.zzz',ThisMoment) + PicoSeconds;
+    Off := GetLocalTimeOffset();
+    if (Off div -60) >= 0 then Res := '+'
+	else Res := '-';
+	if abs(Off div -60) < 10 then Res := Res + '0';
+	Res := Res + inttostr(abs(Off div -60)) + ':';
+       	if (Off mod 60) = 0 then
+		Res := res + '00'
+	else Res := Res + inttostr(abs(Off mod 60));
+    Result := Result + res;
+end;
+
+function TB_GetGMTFromStr(const DateStr: ANSIString): TDateTime;
+begin
+    MyTryISO8601ToDate(DateStr, Result, True);
+end;
 
 end.
 
