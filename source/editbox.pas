@@ -208,6 +208,7 @@ unit EditBox;
     2021/02/03  Enter Key based search model, Ctrl-Enter and Alt-Enter
     2021/02/05  Complete rewrite of Find in a way that also works for Windows.
     2021/02/15  Use CommonMark when exporting Markdown
+    2021/02/17  Fix Mac only bug, not Ctrl to ssMeta F for the EditFind
 }
 
 
@@ -1270,7 +1271,7 @@ procedure TEditBoxForm.EditFindKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
     // This needs to be a keydown else we get the trailing edge of key event that opened panel
-    if (([ssCtrl] = Shift) and (Key = VK_F)) then begin
+    if (( {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) and (Key = VK_F)) then begin
         Key := 0;
         MenuItemFindClick(Sender);
         KMemo1.SetFocus;
