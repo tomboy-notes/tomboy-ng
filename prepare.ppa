@@ -8,7 +8,7 @@
 # This script is NOT used to make the Debian release.
 # This script makes a new .orig file every time.
 
-# -------------------- Making a Deb SRC for Ubuntu PPA --------------------
+# -------------------- Making a Ubuntu PPA --------------------
 # To build a Debian Source Package, 
 # 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt6pas-dev
 #	Ensure appropriate pgp key in place ($HOME/.gnupg), see below 
@@ -17,10 +17,28 @@
 # Unless you are me, you need to edit the above, DEBFULLNAME and DEBEMAIL _OR_ have env set 
 #	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
 #	mv master.zip tomboy-ng-master.zip
-#	bash ./prepare.bash -D bionic -q
+#	bash ./prepare.bash -D bionic [-Q]      // the -Q says make a Qt5 version please.
 #	cd tomboy-ng_XXXX                       // Whatever the name is at this stage....
 #	debuild -S
-#	The files you want are in ../.
+#	cd ..
+#       dput ppa:d-bannon/ppa-tomboy-ng *.changes [enter]
+
+# -------------------- Failed UpLoad or Build----------------------
+# 1. Say rude words.
+# 2. Edit the current prepare.bash, inc PACKVER by 1.
+# 3. Save the existing (ie failed) orig file somewhere.
+# 4. Use prepare.bash to generate a new kit.
+# 4. Bring back that saved orig file, overwriting newly made one.
+# 5. Fix whatever needs fixing in the source dir.
+# 6. Generate new deb src with debuild -S; cd ..; dput .....
+# In summary, a second and subsquent upload of same -ng version must get 
+# a new build revision number, must be built against the .orig. orig file.
+
+# Remember that we don't build a Qt5 for Bionic, its libqt5pas is too old.
+# So, -Dbionic   and  -Q -Dfocal
+
+# The ubuntu PPA only has access to Bionic and Focal FPC/Lazarus.  Could be exteneded, copy.
+
 
 # -------------------- Signing Details -------------------------
 # Below are hardwired my personal full name and tomboy-ng email address. These
@@ -29,15 +47,7 @@
 # the Maintainer: entry from control, we get a non maintainer upload warning.
 #
 # 
-# -------------------- Building the Ubuntu PPA kit --------------
-# Move both a fresh tomboy-ng-master.zip and this script into a clean
-# subdirectory, run the script, change to tomboy-ng.{ver} and run -
-#
-#      debuilder -us -uc      if thats OK, then repeat with -
-#      debuilder -S
-#      dput ppa:d-bannon/ppa-tomboy-ng tomboy-ng_0.29e-1_source.changes [enter]
-#
-
+# ------------------- Just Building a Binary -----------------------
 # If all you want is the binary, not building src packages at all, then don't
 # worry about signing etc, just run prepare, cd into the resulting dir and run
 # the buildit script.
@@ -46,6 +56,8 @@
 # History -
 #	2020-09-02 Added -D distro switch
 #       2020-12-17 Restructed the multi control system to make it clearer.
+#       2021-02-23 Allow for fact that we keep changelog (for Debian).
+#                  Remove some Debian specific things
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
@@ -57,10 +69,10 @@ UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name i
 VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
-CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
+CLEAN="NO"	# debug tool, remove files from previous run.
 WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
-DEBIANREPO=""   # If YES, we are making a package going into Debian Repo, else Ubuntu ?      
 QT5INNAME=""	# May have content we add to qt5 package name (when -Q) 
+PACKVER="-1"    # -1 is normal, if you have to submit again, must inc.
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
 	# if in user space, because debuild will miss them, makes two files.
@@ -129,13 +141,13 @@ function KControls () {
 	fi
 	unzip -q master.zip
 	# rm -f master.zip
-	mv KControls-master "$APP"_"$VER""-1"/kcontrols
+	mv KControls-master "$APP"_"$VER""$PACKVER"/kcontrols
 }
 
 function ShowHelp () {
     echo " "
     echo "Use this script to make Ubuntu PPA (or plain binary), always make .orig"
-    echo "Assumes FPC of some sort in path, available and working, ideally 3.2.0."
+    echo "Assumes FPC 3.2.0 in path. Will no longer build with FPC304."
     echo "Needs Lazarus, <=2.0.6 in root space or specified with -l option."
     echo "Needs devscripts preinstalled and maybe an edit of email address above if"
     echo "it is to be used in the DEB SRC tool chain. Its role there is just to create"
@@ -150,6 +162,12 @@ function ShowHelp () {
     echo "-p   Pause before creating .orig. to change content, use another term."
     echo "-D   distro, eg bionic, focal"
     echo ""
+    echo "eg  bash ./prepare.bash -Dbionic [-Q] <enter>;  cd tomboy[tab] <enter>"
+    echo "    debuild -S <enter>     // check for errors !" 
+    echo "    cd .. <enter>; dput ppa:d-bannon/ppa-tomboy-ng *.changes [enter]"
+    echo " ----- or, just build a binary ---------"
+    echo "eg  bash ./prepare.bash -Dbionic [-Q] <enter>;  cd tomboy[tab] <enter>"
+    echo "    bash ./buildit.bash <enter>"
     exit
 }
 
@@ -218,31 +236,22 @@ if [ -f tomboy-ng-master.zip ]; then
 	VER=`cat tomboy-ng-master/package/version`
 	if [ "$CLEAN" = "YES" ]; then
 		echo "---------- Removing existing DEB files"
-		rm -Rf "$APP"_"$VER""-1"
-		rm -f "tomboy-ng_""$VER"".orig.tar.gz"
-		rm -f "tomboy-ng_$VER-1_amd64.buildinfo"
-		rm -f "tomboy-ng_$VER-1_amd64.changes"
-       		rm -f "tomboy-ng_$VER-1_amd64.deb"
- 		rm -f "tomboy-ng_$VER-1.debian.tar.xz"
-		rm -f "tomboy-ng_$VER-1.dsc"
-		rm -f "tomboy-ng_$VER.orig.tar.gz"
+		rm -Rf "$APP"_"$VER""$PACKVER"
+		rm -f *.changes *.buildinfo *.orig.tar.gz *.dsc *.tar.gz *.tar.xz *.upload
 	fi
-	mv "tomboy-ng-master" "$APP"_"$VER""-1"
+	mv "tomboy-ng-master" "$APP"_"$VER""$PACKVER"
 	KControls
-	cd "$APP"_"$VER""-1"
+	cd "$APP"_"$VER""$PACKVER"
 	CleanSource
 	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537  -- No, this was closed.
 	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=897688
-	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""-1" "Initial release. (Closes: #897688)"
+	rm debian/changelog                                         # different in Debian version
+	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$PACKVER" "Initial release. (Closes: #897688)"
 	dch --append "Please see github for change details"
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"
-		if [ "$DEBIANREPO" = "YES" ]; then
-			cp debian/control.qt5-DEBIAN debian/control
-		else
-			cp debian/rules.qt5 debian/rules
-			cp debian/control.qt5 debian/control
-		fi
+		cp debian/rules.qt5 debian/rules
+		cp debian/control.qt5 debian/control
 		# sed  "s/#REPLACEME_QT5/DESTDIR += -qt5/" Makefile > Makefile.temp
 		# mv Makefile.temp Makefile
 		touch Qt5
@@ -254,17 +263,17 @@ if [ -f tomboy-ng-master.zip ]; then
 	fi
 	# Next block is to avoid the dreaded lintian no-debian-changes
 	# The copyright file in there alone does not generate that error
-	mv "$APP"_"$VER""-1"/debian ./debian
-	mkdir "$APP"_"$VER""-1"/debian
-	cp debian/copyright "$APP"_"$VER""-1"/debian/.
-	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""-1"
+	mv "$APP"_"$VER""$PACKVER"/debian ./debian                    # tuck a copy away for later
+	mkdir "$APP"_"$VER""$PACKVER"/debian
+	cp debian/copyright "$APP"_"$VER""$PACKVER"/debian/.          # we must have copyright
+	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""$PACKVER"     # create the orig file
 	# OK, we have our .orig. file, put most of it back.
-	rm -Rf "$APP"_"$VER""-1"/debian
-	rm debian/control.qt5-DEBIAN debian/control.qt5
-	rm debian/rules.qt5
-	mv ./debian "$APP"_"$VER""-1"/. 
+	rm -Rf "$APP"_"$VER""$PACKVER"/debian                         # dump that one for simplicity
+	rm debian/control.qt5-DEBIAN debian/control.qt5         # we don't need that
+	rm debian/rules.qt5                                     # or that
+	mv ./debian "$APP"_"$VER""$PACKVER"/.                         # put remainder back where it belongs
 
-	echo "If no errrors, you should now cd ""$APP"_"$VER""-1; debuild -S"
+	echo "If no errrors, you should now cd ""$APP"_"$VER""$PACKVER; debuild -S"
 else
 	echo ""
 	echo "   Sorry, I cannot see a tomboy-ng-master.zip file. This"
