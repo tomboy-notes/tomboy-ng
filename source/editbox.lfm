@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 214
+  Left = 1040
   Height = 505
-  Top = 196
+  Top = 244
   Width = 695
   Caption = 'EditBoxForm'
   ClientHeight = 505

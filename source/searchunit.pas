@@ -962,7 +962,9 @@ begin
     //debugln('Using sort indicators');
     {$endif}
 
-    { ListView Settings }
+    { ListView Settings }       // make extra column in Object Inspector
+    ListViewNotes.AutoSortIndicator := True;
+    ListViewNotes.Column[1].SortIndicator := siDescending;
     ListViewNotes.AutoSort:=True;
     ListViewNotes.SortDirection:= sdDescending;     // Most recent, ie bigger date numbers, on top
     ListViewNotes.AutoWidthLastColumn:= True;

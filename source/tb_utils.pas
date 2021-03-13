@@ -22,6 +22,10 @@ unit tb_utils;
   We could make a simpler function that just does it but I have found real problems
   with date strings and am inclined to be careful.
 
+  -------
+  This unit is used in both TomboyTools and tomboy-ng, keep them in sync !!!!
+  -------
+
 
   HISTORY :
   2021/01/29  Added TB_MakeFileName
@@ -52,6 +56,18 @@ function TB_GetLocalTime: ANSIstring;
 
                         // A version of MyTryISO8601ToDate that does not report errors as well.
 function TB_GetGMTFromStr(const DateStr: ANSIString): TDateTime;
+
+                        // Use whenever we are writing content that may contain <>& to XML files
+                        // If DoQuotes is true, we also convert ' and " (for xml attributes).
+function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
+
+                        // Note we restore only < > &,  Tomboy does not encode " or ' in Values (but must in attributes)
+function RestoreBadXMLChar(const Str : AnsiString) : AnsiString;
+
+                        // returns a version of passed string with anything between < > removed
+function RemoveXml(const St : AnsiString) : AnsiString;
+
+function FindInStringList(const StL : TStringList; const FindMe : string) : integer;
 
 implementation
 
@@ -169,6 +185,133 @@ function TB_GetGMTFromStr(const DateStr: ANSIString): TDateTime;
 begin
     MyTryISO8601ToDate(DateStr, Result, True);
 end;
+
+function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
+// Don't use UTF8 versions of Copy() and Length(), we are working bytes !
+// It appears that Tomboy only processes <, > and & , we also process single and double quote.
+// http://xml.silmaril.ie/specials.html
+var
+   //Res : ANSIString;
+   Index : longint = 1;
+   Start : longint = 1;
+begin
+    Result := '';
+   while Index <= length(InStr) do begin
+   		if InStr[Index] = '<' then begin
+             Result := Result + Copy(InStr, Start, Index - Start);
+             Result := Result + '&lt;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+  		if InStr[Index] = '>' then begin
+             Result := Result + Copy(InStr, Start, Index - Start);
+             Result := Result + '&gt;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+  		if InStr[Index] = '&' then begin
+             // debugln('Start=' + inttostr(Start) + ' Index=' + inttostr(Index));
+             Result := Result + Copy(InStr, Start, Index - Start);
+             Result := Result + '&amp;';
+             inc(Index);
+             Start := Index;
+			 continue;
+		end;
+        if DoQuotes then begin
+      		if InStr[Index] = '''' then begin                // Ahhhh how to escape a single quote ????
+                 Result := Result + Copy(InStr, Start, Index - Start);
+                 Result := Result + '&apos;';
+                 inc(Index);
+                 Start := Index;
+    			 continue;
+    		end;
+            if InStr[Index] = '"' then begin
+                 Result := Result + Copy(InStr, Start, Index - Start);
+                 Result := Result + '&quot;';
+                 inc(Index);
+                 Start := Index;
+                 continue;
+		    end;
+        end;
+
+        inc(Index);
+   end;
+   Result := Result + Copy(InStr, Start, Index - Start);
+end;
+
+
+// Note we restore only < > &,  Tomboy does not encode " or ' in Values (but must in attributes)
+function RestoreBadXMLChar(const Str : AnsiString) : AnsiString;
+var
+    index : longint = 1;
+    Start : longint = 1;
+begin
+  // Don't use UTF8 functions here, we are working with bytes !
+  Result := '';
+    while Index <= Length(Str) do begin
+      if '&lt;' = Copy(Str, Index, 4) then begin
+      		Result := Result + Copy(Str, Start, Index - Start) + '<';
+            inc(Index);
+            Start := Index + 3;
+            Continue;
+	  end;
+      if '&gt;' = Copy(Str, Index, 4) then begin
+      		Result := Result + Copy(Str, Start, Index - Start) + '>';
+            inc(Index);
+            Start := Index + 3;
+            Continue;
+	  end;
+      if '&amp;' = Copy(Str, Index, 5) then begin
+      		Result := Result + Copy(Str, Start, Index - Start) + '&';
+            inc(Index);
+            Start := Index + 4;
+            Continue;
+	  end;
+      inc(Index);
+	end;
+    Result := Result + Copy(Str, Start, Index - Start);
+end;
+
+function RemoveXml(const St : AnsiString) : AnsiString;
+var
+    X, Y : integer;
+    FoundOne : boolean = false;
+begin
+    Result := St;
+    repeat
+        FoundOne := False;
+        X := Pos('<', Result);      // don't use UTF8Pos for byte operations
+        if X > 0 then begin
+            Y := Pos('>', Result);
+            if Y > 0 then begin
+                Delete(Result, X, Y-X+1);
+                FoundOne := True;
+            end;
+        end;
+    until not FoundOne;
+    Result := trim(Result);
+end;
+
+
+function FindInStringList(const StL : TStringList; const FindMe : string) : integer;
+var
+    I : integer = 0;
+begin
+    while i < StL.Count -1 do begin
+        if pos(FindMe, StL.strings[i]) > 0 then
+            exit(i);
+        inc(i);
+	end;
+	result := -1;
+end;
+
+
+
+
+
+
 
 end.
 

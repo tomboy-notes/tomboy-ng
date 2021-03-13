@@ -178,6 +178,7 @@ begin
   end;
 end;
 
+// ToDo : replace following function with one from syncutils, RestoreBadXMLChar()
 function TBLoadNote.ReplaceAngles(const Str : AnsiString) : AnsiString;
 var
     index : longint = 1;

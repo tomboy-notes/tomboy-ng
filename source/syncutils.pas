@@ -56,14 +56,15 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncMismatch,       // Its a repo, Captain, but not as we know it.
                     SyncXMLError,       // Housten, we have an XML error in a manifest !
                     SyncBadError,       // Some other error, must NOT proceed.
-                    SyncNetworkError);  // Remove server/device not responding
-
+                    SyncNetworkError,   // Remove server/device not responding
+		    SyncCredentialError); // Unsuitable user:password 
 
 type TRepoAction = (
                 RepoJoin,               // Join (and use) an existing Repo
                 RepoNew,                // Create (and use) a new repo in presumably a blank dir
-                RepoUse);               // Go ahead and use this repo to sync
-
+                RepoUse,                // Go ahead and use this repo to sync
+                RepoForce,              // Force join or create, even if existing credentuals don't work
+                RepoTest);              // Just have a look, maybe call SetTransport ?    
 
 type
   	PNoteInfo=^TNoteInfo;
@@ -143,17 +144,14 @@ function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : 
         // returns false if GUID does not look OK
 function IDLooksOK(const ID : string) : boolean;
 
-        // Use whenever we are writing content that may contain <>& to XML files
-        // If DoQuotes is true, we also convert ' and " (for xml attributes).
-function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
+
 
                         { ret true if it really has removed the indicated file. Has proved
                           necessary to do this on two end user's windows boxes. Writes debuglns
                           if it has initial problems, returns F and sets ErrorMsg if fails.}
 function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 
-                        { returns a version of passed string with anything between < > }
-function RemoveXml(const St : AnsiString) : AnsiString;
+
 
 RESOURCESTRING
   rsNewUploads = 'New Uploads    ';
@@ -176,25 +174,6 @@ implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, tb_utils;
 
-function RemoveXml(const St : AnsiString) : AnsiString;
-var
-    X, Y : integer;
-    FoundOne : boolean = false;
-begin
-    Result := St;
-    repeat
-        FoundOne := False;
-        X := Pos('<', Result);      // don't use UTF8Pos for byte operations
-        if X > 0 then begin
-            Y := Pos('>', Result);
-            if Y > 0 then begin
-                Delete(Result, X, Y-X+1);
-                FoundOne := True;
-            end;
-        end;
-    until not FoundOne;
-    Result := trim(Result);
-end;
 
 function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 begin
