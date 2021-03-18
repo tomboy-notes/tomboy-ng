@@ -29,8 +29,8 @@ lib/
 # Added by DRB
 published/
 # *.lrj    apparently needed by the translation system
-/tomboy-ng/tomboy-ng
-/tomboy-ng/tomboy-ng-qt
+/source/tomboy-ng
+/source/tomboy-ng-qt
 tomboy-ng-qt.po
 releasepage
 NoGit/

@@ -222,7 +222,8 @@ uses
     ComCtrls,           // required up here for copy on selection stuff.
     fpexprpars,         // for calc stuff ;
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
-    PrintersDlgs;
+    PrintersDlgs,
+    TBUndo;             // experimental ....
 
 type
     { TEditBoxForm }
@@ -314,6 +315,9 @@ type
               combinations. For things we let KMemo handle, just exit, for things we handle
               must set key to 0 after doing so. }
 		procedure KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+        procedure KMemo1KeyPress(Sender: TObject; var Key: char);
+        procedure KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState
+            );
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
             Shift: TShiftState; X, Y: Integer);
@@ -364,7 +368,8 @@ type
     private
         NumbFindHits : integer;
         //FindStatus : TFindStatus;   // Stage we are in wrt Finding, we want Enter, Enter, Enter to step through hits.
-
+        Use_Undoer : boolean;         // We may allow user to disable Undo system.
+        Undoer : TUndo_Redo;
         TitleHasChanged : boolean;
         // a record of the cursor position before last click, used by shift click to select
         MouseDownPos : integer;
@@ -535,6 +540,7 @@ uses
     TB_Utils,
     ResourceStr;        // We borrow some search related strings from searchform
 
+
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
@@ -681,45 +687,8 @@ begin
 end;
 
 procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
-{var
-      BlockNo : longint = 1;
-      LastBlock,  Blar : longint;
-      BulletOn : boolean;
-      FirstPass : boolean = True;       }
 begin
     BulletControl(True, False);
-    exit();
-
-{    if KMemo1.ReadOnly then exit();
-    MarkDirty();
-    BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
-    LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
-
-    if (BlockNo = LastBlock) and (BlockNo > 1) and
-        KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-        dec(LastBlock);
-        dec(BlockNo);
-    end;
-    // Don't change any trailing empty lines.
-    while KMemo1.Blocks.Items[LastBlock].ClassNameIs('TKMemoParagraph') do
-        if LastBlock > BlockNo then dec(LastBlock)
-        else break;
-
-    // OK, we are now in a TextBlock, possibly both start and end there. Must mark
-    // next para as numb and then all subsquent ones until we do the one after end.
-    repeat
-        inc(BlockNo);
-        if BlockNo >= Kmemo1.Blocks.count then	// no para after block (yet)
-            Kmemo1.Blocks.AddParagraph();
-        if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-            if FirstPass then begin
-                FirstPass := False;
-                BulletOn := (TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = pnuBullets);
-            end;
-            SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), not BulletOn);
-            // TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering := pnuBullets;
-        end;
-    until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');   }
 end;
 
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
@@ -803,6 +772,7 @@ procedure TEditBoxForm.PrimaryPaste(SelIndex : integer);
 var
   Buff : string;
 begin
+    // ToDo : this needs an Undoer treatment
     if PrimarySelection.HasFormat(CF_TEXT) then begin  // I don't know if this is useful at all.
         Buff := PrimarySelection().AsText;
         if Buff <> '' then begin
@@ -818,6 +788,7 @@ var
   I : integer;
 begin
     // showmessage(FormatDateTime('YYYY-MM-DD hh:mm:ss', now()));
+    // ToDo : this needs an Undoer treatment
     KMemo1.ExecuteCommand(ecInsertString, pchar(FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now())));
     for I := 0 to 20 do
         KMemo1.ExecuteCommand(ecRight);
@@ -833,13 +804,7 @@ const
  ChangeFixedWidth = 5;
  ChangeStrikeout = 6;
  ChangeUnderline = 7;
- //DefaultFontName = 'default';             Font names determined in Settings
- //{$ifdef LINUX}
-   //MonospaceFont = 'monospace';
- //{$else}
-   //MonospaceFont = 'Lucida Console';
-   //MonospaceFont = 'Monaco';        // might be a better choice
- //{$ifend}
+
 
 { This complex function will set font size, Bold or Italic or Color depending on the
   constant passed as first parameter. NewFontSize is ignored (and can be ommitted)
@@ -877,6 +842,7 @@ var
 	SplitStart : boolean = false;
 begin
     if KMemo1.ReadOnly then exit();
+    if Use_Undoer then Undoer.RecordInitial(0);
     Ready := False;
     MarkDirty();
 	LastChar := Kmemo1.RealSelEnd;			// SelEnd points to first non-selected char
@@ -897,6 +863,7 @@ begin
     AlterBlockFont(FirstBlockNo, FirstBlockNo, Command, NewFontSize);
     KMemo1.SelEnd := LastChar;	// Any splitting above seems to subtly alter SelEnd, reset.
     KMemo1.SelStart := FirstChar;
+    if Use_Undoer then Undoer.AddMarkup();
 	Ready := True;
 end;
 
@@ -1366,6 +1333,7 @@ procedure TEditBoxForm.MenuItemDeleteClick(Sender: TObject);
 begin
     if KMemo1.ReadOnly then exit();
     // KMemo1.ExecuteCommand(ecClearSelection);
+    Undoer.AddPasteOrCut(True);
     KMemo1.Blocks.ClearSelection;
     MarkDirty();
     //if not Dirty then TimerSave.Enabled := true;
@@ -1474,6 +1442,7 @@ end;
 procedure TEditBoxForm.MenuItemPasteClick(Sender: TObject);
 begin
     if KMemo1.ReadOnly then exit();
+    Undoer.AddPasteOrCut();
     Ready := False;
     KMemo1.ExecuteCommand(ecPaste);
     MarkDirty();
@@ -1775,6 +1744,11 @@ begin
 {    if Application.HasOption('shiftaltF-findprev') then begin
         UseOtherFindPrev := true;
     end;            }
+    Use_Undoer := True;
+    if Use_Undoer then
+        Undoer := TUndo_Redo.Create(KMemo1)
+    else Undoer := Nil;
+
     SingleNoteFileName := MainUnit.SingleNoteFileName();
     if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
@@ -1857,6 +1831,7 @@ procedure TEditBoxForm.FormDestroy(Sender: TObject);
 {var
     ARec : TNoteUpdateRec; }
 begin
+    if Undoer <> Nil then Undoer.free;
     UnsetPrimarySelection;                                      // tidy up copy on selection.
     if (length(NoteFileName) = 0) and (not Dirty) then exit;    // A new, unchanged note, no need to save.
     if not Kmemo1.ReadOnly then
@@ -2659,6 +2634,10 @@ begin
         if (Key = VK_LEFT) or (Key = VK_RIGHT) then exit; // KMemo - extend selection one char left or right
     end;
 
+
+    if Use_Undoer and ([ssCtrl] <> Shift) then             // ToDo : do better at trapping out unwanted keystrokes going to Undo engine.
+        Undoer.RecordInitial(Key);
+
     {$endif}
     // -------------- Control ------------------
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
@@ -2680,28 +2659,19 @@ begin
             VK_U : MenuUnderLineClick(Sender);
             VK_F : begin Key := 0; MenuItemFindClick(self); end;
             VK_L : SpeedButtonLinkClick(Sender);
+            VK_V : begin if Use_Undoer then Undoer.AddPasteOrCut(); exit; end;         // Must exit to prevent setting Key to 0
+            VK_X : begin if Use_Undoer then Undoer.AddPasteOrCut(True); exit; end;     // Must exit to prevent setting Key to 0
+            VK_Z : if Use_Undoer then Undoer.UnDo;                                     // Note : Ctrl-Z does not go through to KMemo
+            VK_Y : if Use_Undoer then Undoer.Redo;                                     // Note : Ctrl-Y does not go through to KMemo
             VK_D : InsertDate();
-            VK_N : SearchForm.OpenNote('');      // MainForm.MMNewNoteClick(self);    ok as long as notes dir set .....
+            VK_N : SearchForm.OpenNote('');
             VK_E : InitiateCalc();
             VK_F4 : close;                      // close just this note, normal saving will take place
-//            VK_M : begin FormMarkDown.TheKMemo := KMemo1; FormMarkDown.Show; end;                                // ToDo : restore this
-            VK_X, VK_C, VK_V, VK_Y, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, {VK_RETURN,} VK_INSERT :
-                exit;    // so key is not set to 0 on the way out, KMemo will handle
+            VK_C, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_INSERT : exit;
         end;
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();
     end;
-
-(*    // ---------------- Shift Alt -----------------------
-
-    if ([ssShift, ssAlt] = Shift) and (Key = VK_F) and (UseOtherFindPrev) then
-            begin key := 0; UpDown1Click(self, btPrev);  end;    // Shif-Alt-F  is 'other' goto previous Find. All systems ?
-
-    // --------------- Ctrl Alt -------------------------
-
-    if ([ssCtrl, ssAlt] = Shift) and (Key = VK_F) and (not UseOtherFindPrev) then
-            begin key := 0; UpDown1Click(self, btPrev);  end;    // Ctrl-Alt-F  is normal goto previous Find. All systems ?
-*)
 
     // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin
@@ -2788,6 +2758,16 @@ begin
     	end;
     Ready := True;
     // most of the intevention paths through this method take ~180mS on medium powered linux laptop
+end;
+
+procedure TEditBoxForm.KMemo1KeyPress(Sender: TObject; var Key: char);
+begin
+    if Use_Undoer then Undoer.AddKeyPress(Key);                    // ToDo : TBUndo should be able to find c
+end;
+
+procedure TEditBoxForm.KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+    if Use_Undoer then Undoer.AddKeyUp(Key, Shift);
 end;
 
 procedure TEditBoxForm.SetBullet(PB : TKMemoParagraph; Bullet : boolean);

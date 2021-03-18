@@ -943,6 +943,8 @@ object EditBoxForm: TEditBoxForm
     Visible = True
     OnChange = KMemo1Change
     OnKeyDown = KMemo1KeyDown
+    OnKeyPress = KMemo1KeyPress
+    OnKeyUp = KMemo1KeyUp
     OnMouseDown = KMemo1MouseDown
     OnMouseUp = KMemo1MouseUp
   end
