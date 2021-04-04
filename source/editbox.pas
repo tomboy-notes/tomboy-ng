@@ -773,9 +773,11 @@ var
   Buff : string;
 begin
     // ToDo : this needs an Undoer treatment
+    // A primary paste will always have new content, never overwrites anything.
     if PrimarySelection.HasFormat(CF_TEXT) then begin  // I don't know if this is useful at all.
         Buff := PrimarySelection().AsText;
         if Buff <> '' then begin
+            Undoer.AddTextInsert(SelIndex, Buff);
             KMemo1.Blocks.InsertPlainText(SelIndex, Buff);
             KMemo1.SelStart := SelIndex;
             Kmemo1.SelEnd := SelIndex + length(Buff);
@@ -786,10 +788,13 @@ end;
 procedure TEditBoxForm.InsertDate();
 var
   I : integer;
+  Buff : string;
 begin
     // showmessage(FormatDateTime('YYYY-MM-DD hh:mm:ss', now()));
     // ToDo : this needs an Undoer treatment
-    KMemo1.ExecuteCommand(ecInsertString, pchar(FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now())));
+    Buff := FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now());
+    Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff);
+    KMemo1.ExecuteCommand(ecInsertString, pchar(Buff));
     for I := 0 to 20 do
         KMemo1.ExecuteCommand(ecRight);
 end;

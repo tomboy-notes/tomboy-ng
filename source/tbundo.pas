@@ -140,6 +140,8 @@ TUndo_Redo = class
                                         // Returns an RTF version of current selection, '' if nothing selected.
         function GetSelectedRTF(): string;
                                         // Adds a Change to man data structure, either data may be empty/0.
+                                        // ELen, ExistDate represent existing content to be overwritten
+                                        // NLen, NewData is content being introduced by this change.
         procedure AddChange(const SelStart, ELen, NLen: integer; const ExistData,
             NewData: string{; const MarkUp: TChangeMarkup});
         procedure AddChange(CR : TChangeRec);
@@ -174,6 +176,11 @@ TUndo_Redo = class
                                         // content and the existing selected content, all as RFT.
                                         // Atomic, does not depend on Overwritten.
         procedure AddPasteOrCut(CutOnly: boolean=false);
+                                        // Public: Called when a primary paste (ie middle mouse, three
+                                        // finger tap on Linux or Windows) or some other 'insert' happens.
+                                        // We should have already checked that buffer contains some text.
+        procedure AddTextInsert(const SelIndex : integer; const Content : string);
+
         function CanUnDo() : boolean;
         function CanRedo() : boolean;
                                         // Public : Does Undo, rets True if another Undo is possible
@@ -282,6 +289,12 @@ begin
     CR.ExistLen := TheKMemo.RealSelLength;
     CR.ExistData := GetSelectedRTF();
     AddChange(CR);
+end;
+
+procedure TUndo_Redo.AddTextInsert(const SelIndex: integer; const Content: string);
+// Inconsistent, other public methods find their own data ....
+begin
+    AddChange(SelIndex, 0, Content.Length, '', Content);
 end;
 
 procedure TUndo_Redo.AddKeyPress(Key: char);
