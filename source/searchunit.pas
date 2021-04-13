@@ -938,7 +938,7 @@ end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
 //var Tick : qword;
-{$ifdef LCLQT5}    var  fd: TFontData; {$endif}
+{$ifdef LCLQT5}{$ifdef LVOWNERDRAW}    var  fd: TFontData;{$endif}   {$endif}
 begin
       HelpList := Nil;
     //Tick := GetTickCount64();

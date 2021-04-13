@@ -109,7 +109,7 @@ type TChangeRec = record
     //MarkUp    : TChangeMarkUp;
 end;
 
-const  MaxChange = 5;               // ToDo : set this to, eg, 100, when tested OK
+const  MaxChange = 10;               // ToDo : set this to, eg, 100, when tested OK
 
 type
     TChangeStructure = array[0..MaxChange-1] of TChangeRec;

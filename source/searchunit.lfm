@@ -25,7 +25,7 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 323
+    Width = 324
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 9
@@ -65,13 +65,13 @@ object SearchForm: TSearchForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 0
-    Height = 342
+    Height = 343
     Top = 36
     Width = 824
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 1
     Caption = 'Panel1'
-    ClientHeight = 342
+    ClientHeight = 343
     ClientWidth = 824
     TabOrder = 2
     object Splitter1: TSplitter
@@ -79,7 +79,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 233
-      Height = 340
+      Height = 341
       Top = 1
       Width = 5
       Align = alNone
@@ -109,7 +109,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 1
-      Height = 277
+      Height = 278
       Top = 64
       Width = 232
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -147,7 +147,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 241
-      Height = 340
+      Height = 341
       Top = 1
       Width = 582
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -269,7 +269,7 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = CheckAutoRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 438
+    Left = 439
     Height = 32
     Top = 3
     Width = 127
@@ -284,8 +284,8 @@ object SearchForm: TSearchForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 23
-    Top = 378
+    Height = 22
+    Top = 379
     Width = 824
     Panels = <>
   end
@@ -294,10 +294,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 575
+    Left = 576
     Height = 32
     Top = 3
-    Width = 119
+    Width = 118
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Auto Refresh'
