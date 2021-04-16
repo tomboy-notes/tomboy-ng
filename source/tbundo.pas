@@ -1,6 +1,6 @@
 unit tbundo;
 
-{    Copyright (C) 2021 David Bannon
+{   Copyright (C) 2021 David Bannon
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
     or https://spdx.org/licenses/BSD-3-Clause-Clear.html
@@ -8,8 +8,8 @@ unit tbundo;
 
     A FPC/Lazarus Unit to providing a Text Only undo/redo facility to KMemo.
 
-    Intended for use in Tomboy, it may well be useful in other Lazarus applications
-    that use KMemo, a component of KControls.
+    Intended for use in tomboy-ng, it may well be useful in other Lazarus
+    applications that use KMemo, a component of KControls.
 
     See also
     tomboy-ng - https://github.com/tomboy-notes/tomboy-ng
@@ -65,33 +65,32 @@ unit tbundo;
     In the Unit using KMemo :
         We must intercept every key press, cut and paste, delete, backspace key.
 
-        Because by time we get to OnKeyPress, selected text has already been removed, we
-        must record any selection in the OnKeyDown event. But the OnKeyDown event
-        does not give us the plain text char typed by that key. So, we hook into all
-        three, OnKeyDown, OnKeyPress, OnKeyUp (the latter just for delete and backspace).
+        Because by time we get to OnKeyPress, selected text has already been
+        removed, we must record any selection in the OnKeyDown event. But the
+        OnKeyDown event does not give us the plain text char typed by that key.
+        So, we hook into all three, OnKeyDown, OnKeyPress, OnKeyUp (the latter
+        just for delete and backspace).
 
-        We capture the initial state in OnKeyDown, the actual key and final state in
-        OnKeyPress (or onKeyUp for Delete and Backspace).
+        We capture the initial state in OnKeyDown, the actual key and final
+        state in OnKeyPress (or onKeyUp for Delete and Backspace).
 
-        Paste and Cut are more strait forward, we watch for a Ctrl-V or Ctrl-X and
-        record any currently selected content and in the case of Ctrl-V the clipboard
-        content. Easy.
+        Paste and Cut are more strait forward, we watch for a Ctrl-V or Ctrl-X
+        and record any currently selected content and in the case of Ctrl-V the
+        clipboard content. Easy.
 
         Capturing addition or removal of markup is similar to text change, we
         capture initial state in RecordInitial and then call AddMarkup after the
         change.
 
-
-        If the app has a menu that offers Undo/Redo, might be best to enable/disable
-        them when user activates the menu, not on each keypress.
-
+        If the app has a menu that offers Undo/Redo, might be best to
+        enable/disable them when user activates the menu, not on each keypress.
 }
 
 
 {$mode ObjFPC}{$H+}
 
 
-{X$DEFINE DEBUG_UNDO}                  // Warning, debug uses writeln, don't allow on Windows !
+{x$DEFINE DEBUG_UNDO}    // Warning, debug uses writeln, don't use on Windows !
 
 interface
 
@@ -106,21 +105,12 @@ type TChangeRec = record
     NewLen    : integer;
     ExistData : string;             // The content that was initially there and deleted.
     NewData   : string;             // The content that was initially added.
-    //MarkUp    : TChangeMarkUp;
 end;
 
 const  MaxChange = 10;               // ToDo : set this to, eg, 100, when tested OK
 
 type
     TChangeStructure = array[0..MaxChange-1] of TChangeRec;
-
-(* type
-    // We will pass the address of the 'parent' units's AlterFont procedure so
-    // this unit can use it during undo/redo.  Used only for Markup, not Text changes.
-    TAlterFontProcedure = procedure(const Command : TChangeMarkUp; const Rewind : Boolean = False) of Object;  *)
-
-
-{ Undo_Redo }
 
 { TUndo_Redo }
 
@@ -135,15 +125,14 @@ TUndo_Redo = class
         Overwritten : string;           // For split actions, eg, a keypress, stores (RTF) selected content
         OverwrittenLen : integer;       // Length of plain, displayed text matching Overwritten
         procedure CopyChange(const SelStart, ELen, NLen: integer; const ExistData,
-            NewData: string; {MarkUp: TChangeMarkUp;} var CRec: TChangeRec);
+            NewData: string; var CRec: TChangeRec);
         procedure CopyChange(const FromCRec: TChangeRec; var ToCRec : TChangeRec);
                                         // Returns an RTF version of current selection, '' if nothing selected.
         function GetSelectedRTF(): string;
                                         // Adds a Change to man data structure, either data may be empty/0.
                                         // ELen, ExistDate represent existing content to be overwritten
                                         // NLen, NewData is content being introduced by this change.
-        procedure AddChange(const SelStart, ELen, NLen: integer; const ExistData,
-            NewData: string{; const MarkUp: TChangeMarkup});
+        procedure AddChange(const SelStart, ELen, NLen: integer; const ExistData, NewData: string);
         procedure AddChange(CR : TChangeRec);
                                         // Pushes the indicated content into KMemo1, may be an Undo or Redo, accepts
                                         // both plain text or RTF.
@@ -151,9 +140,6 @@ TUndo_Redo = class
 
 
     Public
-
-        //AlterFontProcedure : TAlterFontProcedure;
-
                                         // Public : Hooked into the KMemo1KeyDown or just before a
                                         // markup change. It pre loads OverwrittenLen and
                                         // Overwritten with selected content (or content near cursor
@@ -189,9 +175,10 @@ TUndo_Redo = class
                                         // Public : Does Redo, rets True if another Redo is possible
                                         // Always safe to call, may do nothing.
         function ReDo : boolean;
-                                        // Public : For debug purposes only, don't leave for release.
-        procedure Report();
         constructor Create(KM: TKMemo);
+                                        // Public : For debug purposes only, don't leave for release.
+        {$IFDEF DEBUG_UNDO} procedure Report();{$endif}
+
 end;
 
 
@@ -222,8 +209,8 @@ begin
     end;
 end;
 
-{ Undo_Redo }
 
+{ ------------ TUndo_Redo -----------}
 
 
 procedure TUndo_Redo.RecordInitial(const Key : word);
@@ -285,22 +272,21 @@ begin
         CR.NewData := '';
         CR.NewLen := 0;
     end else
-        ClipboardContents(CR.NewData, CR.NewLen); // wot, not checking return value ?
+        ClipboardContents(CR.NewData, CR.NewLen); // wot, not checking return value ?  brave ....
     CR.ExistLen := TheKMemo.RealSelLength;
     CR.ExistData := GetSelectedRTF();
     AddChange(CR);
 end;
 
 procedure TUndo_Redo.AddTextInsert(const SelIndex: integer; const Content: string);
-// Inconsistent, other public methods find their own data ....
+// ToDo : Inconsistent, other public methods find their own data ....
 begin
     AddChange(SelIndex, 0, Content.Length, '', Content);
 end;
 
 procedure TUndo_Redo.AddKeyPress(Key: char);
 begin
-    AddChange(TheKMemo.CaretPos-1, OverwrittenLen, 1, Overwritten, Key{, cmNone});         // -1 `cos its already happened
-    // AddChange(SelStart-1, OverwrittenLen, 1, Overwritten, Key{, cmNone});         // -1 `cos its already happened
+    AddChange(TheKMemo.CaretPos-1, OverwrittenLen, 1, Overwritten, Key);         // -1 `cos its already happened
 end;
 
 
@@ -309,12 +295,12 @@ procedure TUndo_Redo.AddKeyUp(Key: Word; Shift: TShiftState);
 begin
     if Key = VK_Delete then begin               // Maybe delete char under cursor or a selected block
         if TheKmemo.text.Length > TheKmemo.Blocks.RealSelStart  then begin
-            AddChange(TheKmemo.blocks.RealSelStart, OverwrittenLen, 0, Overwritten, ''{, cmNone});
+            AddChange(TheKmemo.blocks.RealSelStart, OverwrittenLen, 0, Overwritten, '');
         end;
     end;
     if Key = VK_Back then begin
         if TheKMemo.RealSelStart >= 0 then
-            AddChange(TheKmemo.blocks.RealSelStart, OverwrittenLen, 0, Overwritten, ''{, cmNone});
+            AddChange(TheKmemo.blocks.RealSelStart, OverwrittenLen, 0, Overwritten, '');
     end;
 end;
 
@@ -322,21 +308,26 @@ end;
 function TUndo_Redo.CanUnDo(): boolean;
 begin
     Result := (AvailChanges > 0);
+    {$IFDEF DEBUG_UNDO}
+    writeln('Can Undo ' + booltostr(result, True));
+    {$endif}
 end;
 
 function TUndo_Redo.CanRedo(): boolean;
 begin
     Result :=  (AvailReDos > 0);
+    {$IFDEF DEBUG_UNDO}
+    writeln('Can Redo ' + booltostr(result, True));
+    {$endif}
 end;
 
 
 // --------------  Recording Change Methods ----------------------
 
-procedure TUndo_Redo.AddMarkup({MarkUp : TChangeMarkUp});
+procedure TUndo_Redo.AddMarkup();
 var
   CR : TChangeRec;
 begin
-    //CR.MarkUp:= Markup;
     CR.StartSelIndex := TheKmemo.blocks.RealSelStart;       // assume this has not moved ??
     CR.ExistLen := OverwrittenLen;
     CR.ExistData := Overwritten;
@@ -347,12 +338,13 @@ end;
 
 procedure TUndo_Redo.AddChange(const SelStart, ELen, NLen : integer; const ExistData, NewData: string{; const MarkUp : TChangeMarkup});
 begin
+
     {$IFDEF DEBUG_UNDO}
     writeln('AddChange at ' + inttostr(SelStart)
         + ' replace [' + ExistData
         + '] (' + inttostr(ELen) + ') with [' + NewData + '] (' + inttostr(NLen) + ')');
     {$ENDIF}
-    CopyChange(SelStart, ELen, NLen, ExistData, NewData, {MarkUp,} ChangeStructure[NextChange]);
+    CopyChange(SelStart, ELen, NLen, ExistData, NewData, ChangeStructure[NextChange]);
     inc(NextChange);
     if NextChange = MaxChange then
         NextChange := 0;
@@ -363,7 +355,7 @@ end;
 
 procedure TUndo_Redo.AddChange(CR: TChangeRec);
 begin
-    AddChange(CR.StartSelIndex, CR.ExistLen, CR.NewLen, CR.ExistData, CR.NewData{, CR.Markup});
+    AddChange(CR.StartSelIndex, CR.ExistLen, CR.NewLen, CR.ExistData, CR.NewData);
 end;
 
 
@@ -379,11 +371,16 @@ begin
             AStream.Write(St[1], St.length);
             AStream.Seek(0, soFromBeginning);
             TheKMemo.LoadFromRTFStream(AStream, Loc);
+            TheKMemo.SelStart := loc;
+            // ToDo : should restore cursor to end of any new text, but how long is that .... ?
         finally
             AStream.Free;
         end;
-    end else
+    end else begin
         TheKMemo.ActiveBlocks.InsertPlainText(Loc, St);
+        TheKMemo.SelStart := loc + length(St);
+    end;
+    TheKMemo.SelLength := 0;       // So nothing is accidently selected
 end;
 
 function TUndo_Redo.UnDo: boolean;
@@ -426,20 +423,17 @@ end;
 
 function TUndo_Redo.ReDo: boolean;    // A redo uses the data currently pointed to by NextChange
 begin
-    if CanReDo() then begin
-        CopyChange(ChangeStructure[NextChange], CurrentCR);
-        dec(AvailReDos);                    // one less ReDos available
-        inc(AvailChanges);                  // cos we can go back there if we so choose.
-        inc(NextChange);                    // Point to next one
-        if NextChange = MaxChange then
-            NextChange := 0;
-    end;
+    if not CanReDo then exit(False);
+    CopyChange(ChangeStructure[NextChange], CurrentCR);
+    dec(AvailReDos);                    // one less ReDos available
+    inc(AvailChanges);                  // cos we can go back there if we so choose.
+    inc(NextChange);                    // Point to next one
+    if NextChange = MaxChange then
+        NextChange := 0;
     result := (AvailReDos > 0);             // can we call ReDo again ?
-    //ApplyUndoRedo(True);
     with CurrentCR do begin
         {$IFDEF DEBUG_UNDO}
-        writeln('Redo at ' + inttostr(StartSelIndex) + ' replace ['
-                    + ExistData + '] with [' + NewData + '] redo=');
+        writeln('Redo at ' + inttostr(StartSelIndex) + ' replace [' + ExistData + '] with [' + NewData + ']');
         {$ENDIF}
         try
             Thekmemo.Blocks.LockUpdate;
@@ -462,27 +456,28 @@ end;
 // ------------- House Keeping ------------------
 
 procedure TUndo_Redo.CopyChange(const SelStart, ELen, NLen: integer;
-                        const ExistData, NewData: string; {MarkUp : TChangeMarkUp;} var CRec: TChangeRec);
+                        const ExistData, NewData: string; var CRec: TChangeRec);
 begin
     CRec.ExistData:= ExistData;
     CRec.NewData:= NewData;
     CRec.StartSelIndex:= SelStart;
     CRec.ExistLen := ELen;
     CRec.NewLen := NLen;
-    //CRec.MarkUp:= MarkUp;
 end;
 
 procedure TUndo_Redo.CopyChange(const FromCRec: TChangeRec; var ToCRec: TChangeRec);
 begin
     CopyChange(FromCRec.StartSelIndex, FromCRec.ExistLen, FromCRec.NewLen,
-                        FromCRec.ExistData, FromCRec.NewData, {FromCRec.MarkUp,} ToCRec);
+                        FromCRec.ExistData, FromCRec.NewData, ToCRec);
 end;
 
+{$IFDEF DEBUG_UNDO}
 procedure TUndo_Redo.Report();          // This is a Debug method, it has no place in a release !
 var
   I : integer = 0;
   //MarkUpSt : string;
 begin
+    //exit;
     writeln('---------- Undo Report ---------');
     writeln('NextChange=' + inttostr(NextChange)
         + '  AvailChanges=' + inttostr(AvailChanges)
@@ -495,9 +490,10 @@ begin
                 + ChangeStructure[i].NewData + ']'{ + 'MarkUp=' + MarkUpSt});
         end;
     writeln('Current : ' + inttostr(CurrentCR.StartSelIndex) + ' [' + CurrentCR.ExistData + '] - [' + CurrentCR.NewData + ']');
-    writeln('Content [' + TheKMemo.Text + ']');
+    //writeln('Content [' + TheKMemo.Text + ']');
     writeln('--------------------------------');
 end;
+{$endif}
 
 constructor TUndo_Redo.Create(KM : TKMemo);
 var

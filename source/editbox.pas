@@ -2633,17 +2633,21 @@ begin
     end;
     if ([ssAlt, ssShift] = Shift) and ((Key = VK_RIGHT) or (Key = VK_LEFT)) then exit; // KMemo - extend selection one word left or right
     {$endif}
+
+
+    // Record this event in the Undoer if its ssShift or empty set, rest are ctrl, meta etc ....
+
+    if Use_Undoer and (([ssShift] = Shift) or ([] = Shift)) then             // while we pass presses like this to undoer, not all are
+        Undoer.RecordInitial(Key);                                           // used, onKeyPress must follow and it gets only text type keys.
+
+
     {$ifndef DARWIN}
     // -------------- Shift -------------------
     if [ssShift] = shift then begin
         if (Key = VK_LEFT) or (Key = VK_RIGHT) then exit; // KMemo - extend selection one char left or right
     end;
-
-
-    if Use_Undoer and ([ssCtrl] <> Shift) then             // ToDo : do better at trapping out unwanted keystrokes going to Undo engine.
-        Undoer.RecordInitial(Key);
-
     {$endif}
+
     // -------------- Control ------------------
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of

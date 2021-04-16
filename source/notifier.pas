@@ -126,7 +126,7 @@ constructor TNotifier.Create();
 begin
     inherited Create();
     LocalTimer := Nil;
-    TFProc := nil
+    TFProc := nil;
     {$ifndef LINUX}
     TFProc := @TimerFinished;  // Something to call if quit app before timer elapsed.
     {$endif}

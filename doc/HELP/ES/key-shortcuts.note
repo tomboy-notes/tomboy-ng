@@ -29,6 +29,8 @@
 <list><list-item dir="ltr">Ctrl-FlechaIzquierda : Mover al principio de la palabra actual o de allí al principio de la palabra a la izquierda.</list-item></list>
 <list><list-item dir="ltr">Ctrl-Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
 <list><list-item dir="ltr">Ctrl-Mayús-FlechaDerecha - extender la selección un carácter hacia la derecha</list-item></list>
+<list><list-item dir="ltr"><highlight>Ctrl-Z : Undo</highlight></list-item></list><highlight>
+</highlight><list><list-item dir="ltr"><highlight>Ctrl-Y : Redo</highlight></list-item></list><highlight></highlight>
 <list><list-item dir="ltr">Ctrl-F4 : Cerrar la ventana de la nota actual.</list-item></list>
 <list><list-item dir="ltr">Ctrl-D : Insertar fecha, AAAA-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Ctrl-L : Crear una nota enlazada del texto seleccionado</list-item></list>
@@ -55,6 +57,8 @@
 <list><list-item dir="ltr">Alt-Intro    : Buscar hacia atrás</list-item></list>
 <list><list-item dir="ltr">Cmd-FlechaDerecha : Ir al final de la línea.</list-item></list>
 <list><list-item dir="ltr">Cmd-FlechaIzquierda : Ir al principio de la línea.</list-item></list>
+<list><list-item dir="ltr"><highlight>Cmd-Z : Undo</highlight></list-item></list><highlight>
+</highlight><list><list-item dir="ltr"><highlight>Cmd-Y : Redo</highlight></list-item></list><highlight></highlight>
 <list><list-item dir="ltr">Cmd-D : Insertar fecha, AAAA-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Opt-Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
 <list><list-item dir="ltr">Opt-Mayús-FlechaDerecha - extender la selección un carácter hacia la derecha</list-item></list>
@@ -72,14 +76,14 @@
 
 
 </note-content></text>
-  <last-change-date>2021-02-08T13:52:57.7031555+00:00</last-change-date>
-  <last-metadata-change-date>2021-02-08T13:52:57.7031555+00:00</last-metadata-change-date>
+  <last-change-date>2021-04-13T18:23:40.8026334+10:00</last-change-date>
+  <last-metadata-change-date>2021-04-13T18:23:40.8026334+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
   <x>323</x>
-  <y>20</y>
+  <y>29</y>
   <open-on-startup>False</open-on-startup>
 </note>

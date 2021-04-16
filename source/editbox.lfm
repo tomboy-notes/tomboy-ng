@@ -79,7 +79,7 @@ object EditBoxForm: TEditBoxForm
     OnEnter = PanelFindEnter
     object EditFind: TEdit
       Left = 8
-      Height = 29
+      Height = 28
       Top = 5
       Width = 136
       OnChange = EditFindChange
@@ -99,7 +99,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideBottom.Control = EditFind
       AnchorSideBottom.Side = asrBottom
       Left = 144
-      Height = 29
+      Height = 28
       Top = 5
       Width = 64
       Anchors = [akTop, akLeft, akBottom]

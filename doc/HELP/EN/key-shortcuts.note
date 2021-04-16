@@ -24,8 +24,10 @@
 <list><list-item dir="ltr">Control-A : Select All items.</list-item></list>
 <list><list-item dir="ltr">Control-RightArrow : move word to the right.</list-item></list>
 <list><list-item dir="ltr">Control-LeftArrow : move word to the left.</list-item></list>
-<list><list-item dir="ltr">Control-Shift-LeftArrow - extend selection one word to left</list-item></list>
-<list><list-item dir="ltr">Control-Shift-RightArrow - extend selection one word to right</list-item></list>
+<list><list-item dir="ltr">Control-Shift-LeftArrow : extend selection one word to left</list-item></list>
+<list><list-item dir="ltr">Control-Shift-RightArrow : extend selection one word to right</list-item></list>
+<list><list-item dir="ltr">Control-Z : Undo </list-item></list>
+<list><list-item dir="ltr">Control-Y : Redo</list-item></list>
 <list><list-item dir="ltr">Control-F4 : Close current note window.</list-item></list>
 <list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Control-L : Create a link note from selected text.</list-item></list>
@@ -54,6 +56,8 @@ Find (in a note)
 <list><list-item dir="ltr">Command-F : Open a Find window.</list-item></list>
 <list><list-item dir="ltr">Command-RightArrow : go to end of line.</list-item></list>
 <list><list-item dir="ltr">Command-LeftArrow : go to start of line.</list-item></list>
+<list><list-item dir="ltr">Command-Z : Undo</list-item></list>
+<list><list-item dir="ltr">Command-Y : Redo</list-item></list>
 <list><list-item dir="ltr">Command-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Option-Shift-LeftArrow - extend selection one word to left</list-item></list>
 <list><list-item dir="ltr">Option-Shift-RightArrow - extend selection one word to right</list-item></list>
@@ -76,8 +80,8 @@ Find (in a note)
 
 
 </note-content></text>
-  <last-change-date>2021-02-07T20:37:15.8060972+11:00</last-change-date>
-  <last-metadata-change-date>2021-02-07T20:37:15.8060972+11:00</last-metadata-change-date>
+  <last-change-date>2021-04-13T18:21:27.8016617+10:00</last-change-date>
+  <last-metadata-change-date>2021-04-13T18:21:27.8016617+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
