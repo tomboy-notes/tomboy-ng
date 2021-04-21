@@ -1168,7 +1168,7 @@ begin
               case Info.Name of
                   'EN' : ComboHelpLanguage.Items.Add('EN - English');
                   'ES' : ComboHelpLanguage.Items.Add('ES - Español');
-              else
+              otherwise
                     ComboHelpLanguage.Items.Add(Info.Name);
               end;
           end;

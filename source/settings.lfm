@@ -563,7 +563,7 @@ object Sett: TSett
           Left = 33
           Height = 19
           Top = 32
-          Width = 387
+          Width = 386
           Caption = 'A snaphot is a copy of your current note directory.'
           Font.Style = [fsBold]
           ParentColor = False
@@ -579,7 +579,7 @@ object Sett: TSett
         end
         object SpinDaysPerSnapshot: TSpinEdit
           Left = 32
-          Height = 29
+          Height = 28
           Top = 112
           Width = 76
           MaxValue = 31
@@ -590,9 +590,10 @@ object Sett: TSett
         end
         object SpinMaxSnapshots: TSpinEdit
           Left = 32
-          Height = 29
+          Height = 28
           Top = 160
           Width = 76
+          MaxValue = 10
           MinValue = 10
           OnChange = CheckReadOnlyChange
           TabOrder = 1
@@ -600,9 +601,9 @@ object Sett: TSett
         end
         object CheckAutoSnapEnabled: TCheckBox
           Left = 344
-          Height = 24
+          Height = 23
           Top = 117
-          Width = 164
+          Width = 162
           Caption = 'Use auto snapshots'
           OnChange = CheckAutoSnapEnabledChange
           TabOrder = 2

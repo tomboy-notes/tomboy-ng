@@ -151,7 +151,7 @@ begin
             mrYesToAll : Result := SyAllRemote;
             mrAll      : Result := SyAllNewest;
             mrClose    : Result := SyAllOldest;
-    else
+    otherwise
             Result := SyUnSet;      // Thats an ERROR !  What are you doing about it ?
     end;
     SDiff.Free;

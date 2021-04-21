@@ -173,12 +173,12 @@ object FormSync: TFormSync
         item
           AutoSize = True
           Caption = 'Action'
-          Width = 54
+          Width = 55
         end      
         item
           AutoSize = True
           Caption = 'Title'
-          Width = 40
+          Width = 42
         end      
         item
           Caption = 'Note ID'
