@@ -28,6 +28,8 @@
 {"hash":190850740,"name":"tsett.buttonfixedfont.caption","sourcebytes":[70,105,120,101,100,32,70,111,110,116],"value":"Fixed Font"},
 {"hash":169650899,"name":"tsett.buttonsetcolours.caption","sourcebytes":[83,101,116,32,67,111,108,111,117,114,115],"value":"Set Colours"},
 {"hash":2213269,"name":"tsett.label10.caption","sourcebytes":[72,101,108,112,32,78,111,116,101,115,32,76,97,110,103,117,97,103,101],"value":"Help Notes Language"},
+{"hash":103172990,"name":"tsett.checkuseundo.hint","sourcebytes":[67,108,111,115,101,32,97,110,100,32,114,101,111,112,101,110,32,97,32,110,111,116,101,32,116,111,32,116,97,107,101,32,101,102,102,101,99,116,46],"value":"Close and reopen a note to take effect."},
+{"hash":173353,"name":"tsett.checkuseundo.caption","sourcebytes":[85,115,101,32,85,110,100,111,32,82,101,100,111,32,40,109,97,121,32,115,108,111,119,32,101,100,105,116,105,110,103,41],"value":"Use Undo Redo (may slow editing)"},
 {"hash":372803,"name":"tsett.tabsync.caption","sourcebytes":[83,121,110,99],"value":"Sync"},
 {"hash":182977360,"name":"tsett.groupbox4.caption","sourcebytes":[32,32,79,112,116,105,111,110,115,32,32],"value":"  Options  "},
 {"hash":201511066,"name":"tsett.label3.caption","sourcebytes":[87,104,101,110,32,97,32,99,111,110,102,108,105,99,116,32,105,115,32,100,101,116,101,99,116,101,100,32,98,101,116,119,101,101,110,32,97,32,108,111,99,97,108,32,110,111,116,101,32,97,110,100,32,114,101,109,111,116,101,32,111,110,101,32,58],"value":"When a conflict is detected between a local note and remote one :"},

@@ -367,8 +367,7 @@ type
 
     private
         NumbFindHits : integer;
-        //FindStatus : TFindStatus;   // Stage we are in wrt Finding, we want Enter, Enter, Enter to step through hits.
-        Use_Undoer : boolean;         // We may allow user to disable Undo system.
+        Use_Undoer : boolean;         // We allow user to disable Undo system, ONLY set during create.
         Undoer : TUndo_Redo;
         TitleHasChanged : boolean;
         // a record of the cursor position before last click, used by shift click to select
@@ -1749,7 +1748,7 @@ begin
 {    if Application.HasOption('shiftaltF-findprev') then begin
         UseOtherFindPrev := true;
     end;            }
-    Use_Undoer := True;
+    Use_Undoer := Sett.CheckUseUndo.checked;    // Note, user must close and repen if they change this setting
     if Use_Undoer then
         Undoer := TUndo_Redo.Create(KMemo1)
     else Undoer := Nil;

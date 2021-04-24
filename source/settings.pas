@@ -91,6 +91,7 @@ unit settings;
     2020/07/24  Moved HELP notes from /usr/share/doc/tomboy-ng to /usr/share/tomboy-ng to suit debian
     2020/08/01  Show better labels in HelpLangCombo.
     2021/01/23  Save Search Auto Refresh check box status.
+    2021/04/24  Added setting to enable/disable undo/redo
 }
 
 {$mode objfpc}{$H+}
@@ -116,6 +117,7 @@ type
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
+        CheckUseUndo: TCheckBox;
         CheckBoxAutoSync: TCheckBox;
         ComboHelpLanguage: TComboBox;
         GroupBoxSync: TGroupBox;
@@ -855,6 +857,8 @@ var
     ConfigFile : TINIFile;
 begin
     if not CheckDirectory(LocalConfig) then exit;
+    // ToDo : neater if when we find no configfile, we just make an empty one. That
+    // way, all defaults could be loaded from immediatly following code.
     if fileexists(LabelSettingPath.Caption) then begin
         (* if LabelSettingPath.Caption = 'LabelSettingPath' then       // ToDo : I very occasionally create a file called LabelSettingPath, cannot reproduce !
             showmessage('WARNING, TSett.CheckConfigFile - writing config before setting filename');   *)
@@ -869,6 +873,8 @@ begin
                 ('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
             CheckManyNoteBooks.checked :=
         	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
+            CheckUseUndo.Checked :=
+                ('true' = ConfigFile.readstring('BasicSettings', 'UseUndo', 'true'));
             //CheckCaseSensitive.Checked :=
             SearchCaseSensitive :=
                 ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
@@ -914,6 +920,7 @@ begin
                 CheckBoxAutoSync.checked := False;
             //TellTail := CheckBoxAutoSync.checked;
             // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
+            // --------- S P E L L I N G ---------------------------------------
             LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
             LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
             SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
@@ -931,7 +938,7 @@ begin
         CheckDirectory(NoteDirectory + 'Backup');
         CheckDirectory(LabelSnapDir.Caption);
 	    SyncSettings();
-    end else begin      // OK, no config eh ?  We'll set some defaults ...
+    end else begin      // OK, no config eh ?  We'll set some defaults ... WRONG, should rely on above, making an empty config file if necessary
         if CheckDirectory(NoteDirectory) then begin
             //MaskSettingsChanged := False;
             RadioFontMedium.Checked := True;
@@ -1016,6 +1023,7 @@ begin
             ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));
             ConfigFile.WriteString('BasicSettings', 'AutoRefresh',       MyBoolStr(AutoRefresh));
+            ConfigFile.WriteString('BasicSettings', 'UseUndo',           MyBoolStr(CheckUseUndo.Checked));
             if RadioFontBig.Checked then
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
             else if RadioFontMedium.Checked then

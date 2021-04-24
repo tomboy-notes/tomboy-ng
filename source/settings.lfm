@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 588
-    ActivePage = TabRecover
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 4
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -159,9 +159,9 @@ object Sett: TSett
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 55
-          Width = 46
+          Height = 23
+          Top = 54
+          Width = 47
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Big'
@@ -173,9 +173,9 @@ object Sett: TSett
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 91
-          Width = 82
+          Height = 23
+          Top = 90
+          Width = 83
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
@@ -185,9 +185,9 @@ object Sett: TSett
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 128
-          Width = 62
+          Height = 23
+          Top = 127
+          Width = 63
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
@@ -197,9 +197,9 @@ object Sett: TSett
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 19
-          Width = 61
+          Height = 23
+          Top = 18
+          Width = 62
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
@@ -212,9 +212,9 @@ object Sett: TSett
         AnchorSideTop.Control = GroupBox5
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
+        Height = 23
         Top = 220
-        Width = 161
+        Width = 162
         BorderSpacing.Top = 20
         Caption = 'Show Internal Links'
         OnChange = CheckReadOnlyChange
@@ -225,10 +225,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowIntLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
+        Height = 23
         Top = 261
-        Width = 169
-        BorderSpacing.Top = 20
+        Width = 170
+        BorderSpacing.Top = 18
         Caption = 'Show External  Links'
         OnChange = CheckReadOnlyChange
         TabOrder = 1
@@ -238,11 +238,11 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowExtLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
+        Height = 23
         Hint = 'This may adversly affect traditional Tomboy, take care.'
         Top = 302
-        Width = 322
-        BorderSpacing.Top = 20
+        Width = 323
+        BorderSpacing.Top = 18
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         OnChange = CheckReadOnlyChange
         TabOrder = 2
@@ -271,14 +271,14 @@ object Sett: TSett
       end
       object ButtonSetColours: TButton
         AnchorSideLeft.Control = GroupBox5
-        AnchorSideTop.Control = CheckManyNotebooks
+        AnchorSideTop.Control = CheckUseUndo
         AnchorSideTop.Side = asrBottom
         AnchorSideRight.Side = asrBottom
         Left = 32
         Height = 32
-        Top = 343
+        Top = 384
         Width = 240
-        BorderSpacing.Top = 20
+        BorderSpacing.Top = 18
         Caption = 'Set Colours'
         OnClick = ButtonSetColoursClick
         TabOrder = 3
@@ -309,6 +309,23 @@ object Sett: TSett
         Anchors = [akLeft, akBottom]
         Caption = 'Help Notes Language'
         ParentColor = False
+      end
+      object CheckUseUndo: TCheckBox
+        AnchorSideTop.Control = CheckManyNotebooks
+        AnchorSideTop.Side = asrBottom
+        Left = 32
+        Height = 23
+        Hint = 'Close and reopen a note to take effect.'
+        Top = 343
+        Width = 268
+        BorderSpacing.Top = 18
+        Caption = 'Use Undo Redo (may slow editing)'
+        Checked = True
+        OnChange = CheckReadOnlyChange
+        ParentShowHint = False
+        ShowHint = True
+        State = cbChecked
+        TabOrder = 8
       end
     end
     object TabSync: TTabSheet
