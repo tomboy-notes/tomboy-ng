@@ -42,6 +42,7 @@ unit SyncGUI;
     2020/06/18  Only show good sync notification for 3 seconds
     2020/08/07  Changed the stringGrid to a ListView 'cos it handles dark themes better.
     2020/08/10  ListView becomes type=vsReport
+    2020/04/26  Set Save button to disabled immediatly when pressed.
 }
 
 {$mode objfpc}{$H+}
@@ -437,9 +438,9 @@ begin
     Label2.Caption:=rsNextBitSlow;
     Label1.Caption:='First Time Sync';
     Memo1.Clear;
-    Application.ProcessMessages;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
+    Application.ProcessMessages;
     ASync.TestRun := False;
     if ASync.StartSync() then begin
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
