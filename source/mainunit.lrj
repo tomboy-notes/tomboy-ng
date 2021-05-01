@@ -1,7 +1,6 @@
 {"version":1,"strings":[
 {"hash":24490510,"name":"tmainform.hint","sourcebytes":[73,102,32,116,104,101,32,103,114,101,101,110,32,116,111,109,98,111,121,45,110,103,32,105,99,111,110,32,105,115,32,118,105,115,105,98,108,101,32,105,110,32,121,111,117,114,32,83,121,115,116,101,109,32,84,114,97,121,44,32,121,111,117,32,99,97,110,32,100,105,115,109,105,115,115,32,116,104,105,115,32,119,105,110,100,111,119,46],"value":"If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."},
 {"hash":60217639,"name":"tmainform.caption","sourcebytes":[116,111,109,98,111,121,45,110,103],"value":"tomboy-ng"},
-{"hash":82624647,"name":"tmainform.label1.caption","sourcebytes":[72,97,118,101,32,67,111,110,102,105,103],"value":"Have Config"},
 {"hash":87847529,"name":"tmainform.label3.caption","sourcebytes":[68,105,99,116,105,111,110,97,114,121,32,67,111,110,102,105,103,32,40,111,112,116,105,111,110,97,108,41],"value":"Dictionary Config (optional)"},
 {"hash":3892505,"name":"tmainform.label4.caption","sourcebytes":[83,121,110,99,32,67,111,110,102,105,103,32,40,111,112,116,105,111,110,97,108,41],"value":"Sync Config (optional)"},
 {"hash":230572289,"name":"tmainform.label5.caption","sourcebytes":[87,101,108,99,111,109,101,32,116,111,32,116,111,109,98,111,121,45,110,103,32,33],"value":"Welcome to tomboy-ng !"},

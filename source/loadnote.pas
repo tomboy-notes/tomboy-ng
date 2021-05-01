@@ -31,6 +31,7 @@ unit LoadNote;
     2018/10/13  Altered LoadFile() so Tabs are allowed through
     2019/04/29  Restore note's previous previous position and size.
     2019/07/21  Use Sett.TitleColour;
+    2020/05/01  Stop using local replaceAngles(), use tb_utils.RestoreBadXMLChar()
 }
 
 {$mode objfpc}{$H+}
@@ -60,7 +61,7 @@ type
          KM : TKMemo;
          procedure AddText(AddPara : Boolean);
          Procedure ReadTag(fs : TFileStream);
-		 function ReplaceAngles(const Str: AnsiString): AnsiString;
+		 //function ReplaceAngles(const Str: AnsiString): AnsiString;
       public
          FontSize : integer;            // Must be set externally after creation
          // FontName : ANSIstring;			// Must be set externally after creation
@@ -79,6 +80,7 @@ implementation
 uses Graphics,     		// For some font style defs
     LazUTF8,
     Settings,			// User settings and some defines across units.
+    TB_Utils,
     LazLogger;
 
 procedure TBLoadNote.LoadFile(FileName : ANSIString; RM : TKMemo);
@@ -140,7 +142,8 @@ begin
     FT := TFont.Create();
       if FirstTime then begin                 // Title
   	    FT.Style := [fsUnderline];
-        Title := ReplaceAngles(InStr);
+        //Title := ReplaceAngles(InStr);
+        Title := RestoreBadXMLChar(InStr);     // SyncUtils Function
         FT.Size := Sett.FontTitle;
         FT.Color := Sett.TitleColour;
       end else begin
@@ -148,7 +151,8 @@ begin
         FT.Size:= FontSize;
 
       end;
-      TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));  // We have to scan InStr for &lt; and &gt;  being < and >
+      //TB := KM.Blocks.AddTextBlock(ReplaceAngles(InStr));  // We have to scan InStr for &lt; and &gt;  being < and >
+      TB := KM.Blocks.AddTextBlock(RestoreBadXMLChar(InStr));
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
       if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
@@ -179,7 +183,9 @@ begin
 end;
 
 // ToDo : replace following function with one from syncutils, RestoreBadXMLChar()
-function TBLoadNote.ReplaceAngles(const Str : AnsiString) : AnsiString;
+// ToDo : above done, remove this function ?
+(* function TBLoadNote.ReplaceAngles(const Str : AnsiString) : AnsiString;
+// Takes a string with eg xxx&ltyyy and converts to xxx<yyy
 var
     index : longint = 1;
     Start : longint = 1;
@@ -208,7 +214,7 @@ begin
       inc(Index);
 	end;
     Result := Result + Copy(Str, Start, Index - Start);
-end;
+end;     *)
 
 
 Procedure TBLoadNote.ReadTag(fs : TFileStream);    // we are here because '<'

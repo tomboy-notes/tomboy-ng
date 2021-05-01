@@ -201,6 +201,8 @@ begin
     Result := true;
 end;
 
+
+// ToDo : I suspect this function has been superseeded by one in TB_Utils, remove ?
 function RemoveBadXMLCharacters(const InStr : ANSIString; DoQuotes : boolean = false) : ANSIString;
 // Don't use UTF8 versions of Copy() and Length(), we are working bytes !
 // It appears that Tomboy only processes <, > and & , we also process single and double quote.

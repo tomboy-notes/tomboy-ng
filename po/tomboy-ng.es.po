@@ -1255,10 +1255,6 @@ msgstr "You can reverse this from Settings"
 msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
 msgstr "Si el icono verde de tomboy-ng se puede ver in la bandeja del sistema, puede despachar esta ventana."
 
-#: tmainform.label1.caption
-msgid "Have Config"
-msgstr "Configuración"
-
 #: tmainform.label3.caption
 msgid "Dictionary Config (optional)"
 msgstr "Configuración del diccionario (opcional)"
@@ -1614,6 +1610,14 @@ msgstr "Se muestra siempre si hay un error al cargar las notas."
 #: tsett.checkshowtomdroid.caption
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Mostrar Sincronización Tomdroid (experimental)"
+
+#: tsett.checkuseundo.caption
+msgid "Use Undo Redo (may slow editing)"
+msgstr ""
+
+#: tsett.checkuseundo.hint
+msgid "Close and reopen a note to take effect."
+msgstr ""
 
 #: tsett.groupbox4.caption
 msgid "  Options  "

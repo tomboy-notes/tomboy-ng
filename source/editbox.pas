@@ -771,7 +771,6 @@ procedure TEditBoxForm.PrimaryPaste(SelIndex : integer);
 var
   Buff : string;
 begin
-    // ToDo : this needs an Undoer treatment
     // A primary paste will always have new content, never overwrites anything.
     if PrimarySelection.HasFormat(CF_TEXT) then begin  // I don't know if this is useful at all.
         Buff := PrimarySelection().AsText;
@@ -790,7 +789,6 @@ var
   Buff : string;
 begin
     // showmessage(FormatDateTime('YYYY-MM-DD hh:mm:ss', now()));
-    // ToDo : this needs an Undoer treatment
     Buff := FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now());
     Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff);
     KMemo1.ExecuteCommand(ecInsertString, pchar(Buff));
@@ -1040,7 +1038,7 @@ begin
             // ToDo : CheckForLinks clears any preexisting selection, should we restore ?
         end;
     end;
-    // ToDo : should we only do this the first time through ?
+    // should we only do this the first time through ?
     if SingleNoteMode then begin
         SpeedbuttonSearch.Enabled := False;
         SpeedButtonLink.Enabled := False;
@@ -2770,7 +2768,7 @@ end;
 
 procedure TEditBoxForm.KMemo1KeyPress(Sender: TObject; var Key: char);
 begin
-    if Use_Undoer then Undoer.AddKeyPress(Key);                    // ToDo : TBUndo should be able to find c
+    if Use_Undoer then Undoer.AddKeyPress(Key);
 end;
 
 procedure TEditBoxForm.KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);

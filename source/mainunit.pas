@@ -67,6 +67,7 @@ unit Mainunit;
     2020/11/18  Changed other two buttons to BitBtn so qt5 looks uniform.
     2021/01/04  Pointed Tomdroid menu to tomdroidFile.
     2021/01/23  We now test for a SysTray, show warning and Help is not there.
+    2021/04/01  Removed "have config", we always have config, if we cannot save it, user knows....
 
     CommandLine Switches
 
@@ -132,12 +133,9 @@ type
         ImageSpellCross: TImage;
         ImageSpellTick: TImage;
         ImageNotesDirCross: TImage;
-        ImageConfigTick: TImage;
-        ImageConfigCross: TImage;
         ImageSyncCross: TImage;
         ImageNotesDirTick: TImage;
         ImageSyncTick: TImage;
-        Label1: TLabel;
         LabelBadNoteAdvice: TLabel;
         LabelError: TLabel;
         Label3: TLabel;
@@ -456,8 +454,9 @@ begin
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2} XDisplay := gdk_display; {$endif}
     {$ifdef LCLQT5}  XDisplay := QX11Info_display; {$endif}
-        // WARNING - does not support GTK3, I cannot find how to convert PGdkDisplay to Display ......
+        // ToDo : does not support GTK3, I cannot find how to convert PGdkDisplay to Display ......
         // our GTK3 bindings seem to return only a PGdkDisplay, not an X style Display. Need GDK3 bindings ?
+        // See https://github.com/tomboy-notes/tomboy-ng/issues/239 for possible fix by salvadorbs
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
 end;
@@ -487,7 +486,7 @@ begin
         ButtMenu.Color := Sett.AltColour;
         BitBtnQuit.Color := Sett.AltColour;
         BitBtnHide.Color := Sett.AltColour;
-        for Lab in [Label1, Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
+        for Lab in [Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
             TLabel(Lab).Font.Color:= Sett.TextColour;
         CheckBoxDontShow.Font.color := Sett.TextColour;
     end;
@@ -544,9 +543,9 @@ end;
 procedure TMainForm.UpdateNotesFound(Numb : integer);
 begin
     LabelNotesFound.Caption := rsFound + ' ' + inttostr(Numb) + ' ' + rsNotes;
-         ImageConfigCross.Left := ImageConfigTick.Left;
-     ImageConfigTick.Visible := Sett.HaveConfig;
-     ImageConfigCross.Visible := not ImageConfigTick.Visible;
+//         ImageConfigCross.Left := ImageConfigTick.Left;
+//     ImageConfigTick.Visible := Sett.HaveConfig;
+//     ImageConfigCross.Visible := not ImageConfigTick.Visible;
 
      ImageNotesDirCross.Left := ImageNotesDirTick.Left;
      ImageNotesDirTick.Visible := Numb > 0;

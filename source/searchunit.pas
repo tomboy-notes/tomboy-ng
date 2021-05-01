@@ -918,7 +918,7 @@ function TSearchForm.IndexNotes() : integer;
 	// TS1, TS2 : TTimeStamp;
 begin
     // TS1 := DateTimeToTimeStamp(Now);
-    if not Sett.HaveConfig then exit(0);
+    // if not Sett.HaveConfig then exit(0);      // we assume we always have some sort of config now
     if NoteLister <> Nil then
        freeandnil(NoteLister);
     NoteLister := TNoteLister.Create;

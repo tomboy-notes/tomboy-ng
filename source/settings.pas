@@ -92,6 +92,7 @@ unit settings;
     2020/08/01  Show better labels in HelpLangCombo.
     2021/01/23  Save Search Auto Refresh check box status.
     2021/04/24  Added setting to enable/disable undo/redo
+    2021/05/01  Remove HaveConfig and restructured config startup
 }
 
 {$mode objfpc}{$H+}
@@ -247,10 +248,12 @@ type
         NextAutoSnapshot : TDateTime;
                         // Looks in expected place for help notes, populate combo and public vars, HelpNotesPath, HelpNotesLang.
         procedure LoadHelpLanguages();
-        // Reads an existing config file OR writes a new, default one if necessary.
- 	    procedure CheckConfigFile;
-        // Ret true and displays on screen if passed Full name is a usable dictonary
-        // sets SpellConfig and triggers a config save if successful
+                        // We load settings from confile or, if not available, sensible defaults, save.
+                        // then go on to check and make if necessary, other needed directories.
+                        // We proceed even if we cannot save settings, after all, user has been warned.
+ 	    procedure CheckConfigAndDirs;
+                        // Ret true and displays on screen if passed Full name is a usable dictonary
+                        // sets SpellConfig and triggers a config save if successful
         function CheckDictionary(const FullDicName : string): boolean;
         // Checks and/or makes indicatd dir, warns user if not there and writable.
         function CheckDirectory(DirPath: string): boolean;
@@ -271,13 +274,14 @@ type
                             // Has a list of possible fixed font names, returns the first that 'works'.
         function GetFixedFont(): string;
         function MyBoolStr(const InBool: boolean) : string;
+		procedure ReadConfigFile;
 
         procedure SetFontSizes;
                             // Uses value of HelpNotesLang to make the Combobox agree.
         procedure SetHelpLanguage();
                             // Saves all current settings to disk. Call when any change is made. If unable
                             // to write to disk, returns False, If IgnoreMask, writes even if masked.
-        function SettingsChanged(IgnoreMask : boolean = false): boolean;
+        function WriteConfigFile(IgnoreMask : boolean = false): boolean;
 		function fGetValidSync: string;
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
         procedure fSetValidSync(Repo: string);
@@ -325,7 +329,7 @@ type
 
         SyncOption : TSyncOption;
         { Indicates we have done a config, not necessarily a valid one }
-        HaveConfig : boolean;
+        //HaveConfig : boolean;
         { Indicates user wants to see internal links }
         ShowIntLinks : boolean;
         { Says Notes should be treated as read only, a safe choice }
@@ -434,7 +438,7 @@ procedure TSett.SyncSettings;
 begin
 	if NoteDirectory <> '' then begin
         LabelNotespath.Caption := NoteDirectory;
-        HaveConfig := (NoteDirectory <> '');
+        //HaveConfig := (NoteDirectory <> '');
         ShowIntLinks := CheckShowIntLinks.Checked;
         SetFontSizes();
 	    if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
@@ -452,7 +456,7 @@ procedure TSett.fSetCaseSensitive(IsIt : boolean);
 begin
     SearchIsCaseSensitive := IsIt;
     if Not MaskSettingsChanged then
-        SettingsChanged();
+        WriteConfigFile();
 end;
 
 procedure TSett.PageControl1Change(Sender: TObject);
@@ -495,7 +499,7 @@ begin
 	           // TempSyncRepo := ValidSync;
                ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
 	           if mrOK = FormSync.ShowModal then begin
-	              SettingsChanged();
+	              WriteConfigFile();
                   ValidSync := ValidSync;           // so we update button labels etc
 	           end else
 	               ValidSync := rsSyncNotConfig;
@@ -608,7 +612,7 @@ begin
             if SpellConfig then begin
                LabelDicStatus.Caption := rsDictionaryLoaded;
                LabelDic.Caption := FullDicName;
-               SettingsChanged();
+               WriteConfigFile();
                Result := True;
             end else begin
                 LabelDicStatus.Caption := rsDictionaryNotFound;
@@ -743,13 +747,13 @@ begin
     MaskSettingsChanged := true;            // don't trigger save while doing setup
     ExportPath := '';
     LabelLibrary.Caption := '';
-    HaveConfig := false;
+    //HaveConfig := false;
     LocalConfig := GetDefaultConfigDir();   // sys dependant unless user has overridden
     LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
     CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
-    CheckConfigFile();                      // write a new, default one if necessary
+    CheckConfigAndDirs();                      // write a new, default one if necessary
     CheckSpelling();
     LabelFileSyncInfo1.Caption := rsFileSyncInfo1;
     LabelFileSyncInfo2.Caption := rsFileSyncInfo2;
@@ -851,120 +855,101 @@ begin
     end;
 end;
 
-{ Read config file if it exists or writes a default one. }
-procedure TSett.CheckConfigFile;
+    // Will read and apply the config file if available, else sets sensible defaults
+    // Is only called at startup and assumes the config dir has been checked and
+    // LabelSettingPath.Caption contains an appropriate file name.
+procedure TSett.ReadConfigFile;
 var
-    ConfigFile : TINIFile;
+   ConfigFile : TINIFile;
 begin
-    if not CheckDirectory(LocalConfig) then exit;
-    // ToDo : neater if when we find no configfile, we just make an empty one. That
-    // way, all defaults could be loaded from immediatly following code.
-    if fileexists(LabelSettingPath.Caption) then begin
-        (* if LabelSettingPath.Caption = 'LabelSettingPath' then       // ToDo : I very occasionally create a file called LabelSettingPath, cannot reproduce !
-            showmessage('WARNING, TSett.CheckConfigFile - writing config before setting filename');   *)
-
- 	    ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
- 	    try
-            // MaskSettingsChanged := True;    // should be true anyway ?
-   		    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
-            CheckShowIntLinks.Checked :=
-                ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
-            CheckShowExtLinks.Checked :=
-                ('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
-            CheckManyNoteBooks.checked :=
-        	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
-            CheckUseUndo.Checked :=
-                ('true' = ConfigFile.readstring('BasicSettings', 'UseUndo', 'true'));
-            //CheckCaseSensitive.Checked :=
-            SearchCaseSensitive :=
-                ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
-            CheckShowTomdroid.Checked :=
-                ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
-            CheckShowSplash.Checked :=
-                ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
-            CheckAutostart.Checked :=
-                ('true' = Configfile.ReadString('BasicSettings', 'Autostart', 'false'));
-            CheckShowSearchAtStart.Checked :=
-                ('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
-            case ConfigFile.readstring('BasicSettings', 'FontSize', 'medium')  of
-                'huge'   : RadioFontHuge.Checked := true;
-        	    'big'    : RadioFontBig.Checked := true;
-                'medium' : RadioFontMedium.Checked := true;
-                'small'  : RadioFontSmall.Checked := true;
-            end;
-            AutoRefresh := ('true' = ConfigFile.readstring('BasicSettings', 'AutoRefresh', 'true'));
-            UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
-            ButtonFont.Hint := UsualFont;
-            FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
-            if FixedFont = '' then FixedFont := DefaultFixedFont;
-            ButtonFixedFont.Hint := FixedFont;
-            BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
-            HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColour', '0'));
-            TextColour := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour', '0'));
-            TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
-            UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
-            // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
-            HelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
-            SetHelpLanguage();
-
-            // ------------------  S Y N C   S E T T I N G S --------------------------
-            case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
-                'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
-                'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
-                'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
-		    end;
-            ValidSync := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');
-            if ValidSync <> '' then
-                CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'))
-            else
-                CheckBoxAutoSync.checked := False;
-            //TellTail := CheckBoxAutoSync.checked;
-            // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
-            // --------- S P E L L I N G ---------------------------------------
-            LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
-            LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
-            SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
-	        LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
-            // --------- S N A P S H O T    S E T T I N G S  -------------------
-            CheckAutoSnapEnabled.Checked := Configfile.ReadBool('Snapshot', 'AutoSnapEnabled', False);
-            NextAutoSnapshot             := Configfile.ReadDateTime('Snapshot', 'NextAutoSnapshot', now());
-            SpinDaysPerSnapshot.Value    := Configfile.ReadInteger('Snapshot', 'DaysPerSnapshot', 7);
-            SpinMaxSnapshots.Value       := Configfile.ReadInteger('Snapshot', 'DaysMaxSnapshots', 20);
-        finally
-            ConfigFile.free;
-            // MaskSettingsChanged := False;
-	    end;
-        CheckDirectory(NoteDirectory);              // ToDo : we should test return values here, just possible .....
-        CheckDirectory(NoteDirectory + 'Backup');
-        CheckDirectory(LabelSnapDir.Caption);
-	    SyncSettings();
-    end else begin      // OK, no config eh ?  We'll set some defaults ... WRONG, should rely on above, making an empty config file if necessary
-        if CheckDirectory(NoteDirectory) then begin
-            //MaskSettingsChanged := False;
-            RadioFontMedium.Checked := True;
-            CheckShowIntLinks.Checked:= True;
-            CheckShowExtLinks.Checked := True;
-            CheckBoxAutoSync.Checked := False;
-            LabelSnapDir.Caption := NoteDirectory + 'Snapshot' + PathDelim;
-            UsualFont := GetFontData(Self.Font.Handle).Name;
-            FixedFont := DefaultFixedFont;
-            LabelFileSync.Caption := rsSyncNotConfig;
-            CheckAutoSnapEnabled.Checked := False;
-            NextAutoSnapShot := now();                      // Just so it looks pretty
-            HaveConfig := SettingsChanged(True);            // write a initial default file, shows user a message on error
-            {if not SettingsChanged(True) then
-                HaveConfig := false else
-            HaveConfig := True; }
-        end else begin
-            // Only get to here because we have failed to setup an initial notes dir and we
-            // don't even have a settings file in place. Directories may not be present. Its bad.
-            LabelNotespath.Caption := 'Please Set a Path to a Notes Directory';
-            NoteDirectory := '';
-            CheckManyNoteBooks.Checked := False;
-            HaveConfig := false;
-            Debugln('We have (write) issues with your directories, suggest you do not proceed !');
+    // TiniFile does not care it it does not find the config file, just returns default values.
+     ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
+     try
+        // MaskSettingsChanged := True;    // should be true anyway ?
+   	    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
+        CheckShowIntLinks.Checked :=
+            ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
+        CheckShowExtLinks.Checked :=
+            ('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
+        CheckManyNoteBooks.checked :=
+    	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
+        CheckUseUndo.Checked :=
+            ('true' = ConfigFile.readstring('BasicSettings', 'UseUndo', 'true'));
+        SearchCaseSensitive :=
+            ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
+        CheckShowTomdroid.Checked :=
+            ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
+        CheckShowSplash.Checked :=
+            ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
+        CheckAutostart.Checked :=
+            ('true' = Configfile.ReadString('BasicSettings', 'Autostart', 'false'));
+        CheckShowSearchAtStart.Checked :=
+            ('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
+        case ConfigFile.readstring('BasicSettings', 'FontSize', 'medium')  of
+            'huge'   : RadioFontHuge.Checked := true;
+    	    'big'    : RadioFontBig.Checked := true;
+            'medium' : RadioFontMedium.Checked := true;
+            'small'  : RadioFontSmall.Checked := true;
         end;
+        AutoRefresh := ('true' = ConfigFile.readstring('BasicSettings', 'AutoRefresh', 'true'));
+        // ------------------- F O N T S ----------------------
+        UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
+        ButtonFont.Hint := UsualFont;
+        FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
+        if FixedFont = '' then FixedFont := DefaultFixedFont;
+        ButtonFixedFont.Hint := FixedFont;
+        BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
+        HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColour', '0'));
+        TextColour := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour', '0'));
+        TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
+        UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
+        // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
+        HelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
+        SetHelpLanguage();
+        // ------------------  S Y N C   S E T T I N G S --------------------------
+        case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
+            'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
+            'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
+            'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
+	    end;
+        ValidSync := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');     // that is for file sync
+        if ValidSync <> '' then
+            CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'))
+        else
+            CheckBoxAutoSync.checked := False;
+        //TellTail := CheckBoxAutoSync.checked;
+        // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
+        // --------- S P E L L I N G ---------------------------------------
+        LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
+        LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
+        SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
+        // --------- S N A P S H O T    S E T T I N G S  -------------------
+        LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
+        CheckAutoSnapEnabled.Checked := Configfile.ReadBool('Snapshot', 'AutoSnapEnabled', False);
+        NextAutoSnapshot             := Configfile.ReadDateTime('Snapshot', 'NextAutoSnapshot', now());
+        SpinDaysPerSnapshot.Value    := Configfile.ReadInteger('Snapshot', 'DaysPerSnapshot', 7);
+        SpinMaxSnapshots.Value       := Configfile.ReadInteger('Snapshot', 'DaysMaxSnapshots', 20);
+    finally
+        ConfigFile.free;
     end;
+end;
+
+{ Read config file if it exists or writes a default one. }
+procedure TSett.CheckConfigAndDirs;
+//var
+//    ConfigFile : TINIFile;
+begin
+    CheckDirectory(LocalConfig);        // so its created if needed, shows message on error.
+    ReadConfigFile();   // will ensure sensible default config even if file is not present.
+    if LabelSettingPath.Caption = 'LabelSettingPath' then
+            showmessage('WARNING, TSett.CheckConfigFile - writing config before setting filename')
+    else if not fileexists(LabelSettingPath.Caption) then        // must be first run
+        WriteConfigFile(True);                  // write a initial default file, shows user message on error
+
+    CheckDirectory(NoteDirectory);              // user will get a message on error, their problem
+    CheckDirectory(NoteDirectory + 'Backup');
+    CheckDirectory(LabelSnapDir.Caption);
+	SyncSettings();                             // ToDo : can we discard this ?
 end;
 
 function TSett.fGetValidSync: string;
@@ -972,7 +957,9 @@ begin
     if (LabelFileSync.Caption <> rsSyncNotConfig) and (LabelFileSync.Caption <> '')  then
         Result := LabelFileSync.Caption
     else Result := '';
-    // ToDo : better if this also checked availability of sync repo, ie drive mounted etc
+    if Result <> '' then
+        if not fileexists(appendpathdelim(LabelFileSync.Caption) + 'manifest.xml') then
+            Result := '';
 end;
 
 procedure TSett.fSetValidSync(Repo: string);
@@ -989,7 +976,7 @@ end;
 procedure TSett.fSetAutoRefresh(AR: boolean);
 begin
     AutoRefreshVar := AR;
-    SettingsChanged();
+    WriteConfigFile();
 end;
 
 function TSett.fGetAutoRefresh() : boolean;
@@ -1002,7 +989,7 @@ begin
     if InBool then result := 'true' else result := 'false';
 end;
 
-function TSett.SettingsChanged(IgnoreMask : boolean = false) : boolean;
+function TSett.WriteConfigFile(IgnoreMask : boolean = false) : boolean;
 var
 	ConfigFile : TINIFile;
 begin
@@ -1115,7 +1102,7 @@ begin
     if not CheckDirectory(NoteDirectory) then
         NoteDirectory := Sett.LabelNotesPath.Caption
     else begin
-        SettingsChanged();
+        WriteConfigFile();
         SyncSettings();
         SearchForm.IndexNotes();
         //NeedRefresh := True;
@@ -1197,7 +1184,7 @@ procedure TSett.ComboHelpLanguageChange(Sender: TObject);
 begin
     if ComboHelpLanguage.ItemIndex > -1 then begin
         HelpNotesLang:= copy(ComboHelpLanguage.Items[ComboHelpLanguage.ItemIndex], 1, 2);
-        SettingsChanged();
+        WriteConfigFile();
         SearchForm.RefreshMenus(mkHelpMenu);
     end;
 end;
@@ -1212,7 +1199,7 @@ begin
         mrRetry  :  begin
                         UserSetColours := False;
                         SetColours();
-                        SettingsChanged();
+                        WriteConfigFile();
                     end;
         mrOK     :  begin
 	                    BackGndColour := FormColours.CBack;
@@ -1220,7 +1207,7 @@ begin
 	                    TextColour := FormColours.CText;
 	                    TitleColour := FormColours.CTitle;
                          UserSetColours := True;
-                        SettingsChanged();
+                        WriteConfigFile();
                     end;
 //        mrCancel : showmessage('Do nothing');
 	end;
@@ -1236,7 +1223,7 @@ begin
     FontDialog1.Options := FontDialog1.Options + [fdFixedPitchOnly];
     If FontDialog1.Execute then BEGIN
         FixedFont := FontDialog1.Font.name;
-        SettingsChanged();
+        WriteConfigFile();
     end;
     ButtonFixedFont.Hint := FixedFont;
 end;
@@ -1249,7 +1236,7 @@ begin
     FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
     If FontDialog1.Execute then BEGIN
         UsualFont := FontDialog1.Font.name;
-        SettingsChanged();
+        WriteConfigFile();
     end;
     ButtonFont.Hint := UsualFont;
 end;
@@ -1280,7 +1267,7 @@ begin
             CheckShowIntLinks.enabled := true;
             // CheckReadOnly.enabled := true;
             CheckBoxAutoSync.Checked:=False;
-            SettingsChanged();
+            WriteConfigFile();
             SyncSettings();
             SearchForm.IndexNotes();
         end else
@@ -1298,7 +1285,7 @@ procedure TSett.SpinDaysPerSnapshotChange(Sender: TObject);
 begin
     if CheckAutoSnapEnabled.Checked then
         DoAutoSnapShot();
-    SettingsChanged();
+    WriteConfigFile();
 end;
 
 procedure TSett.DoAutoSnapshot;
@@ -1330,7 +1317,7 @@ begin
     {$else}
     NextAutoSnapshot := now() + SpinDaysPerSnapshot.value;
     {$endif}
-    SettingsChanged();
+    WriteConfigFile();
     SearchForm.UpdateStatusBar(rsAutosnapshotRun);
     Notifier := TNotifier.Create;
     Notifier.ShowTheMessage('tomboy-ng', rsAutosnapshotRun);
@@ -1490,7 +1477,7 @@ end;
 
 procedure TSett.CheckReadOnlyChange(Sender: TObject);
 begin
-    SettingsChanged();      // Write to disk
+    WriteConfigFile();      // Write to disk
     SyncSettings();
     if not MaskSettingsChanged then
         if Sender.ClassNameIs('TCheckBox') then begin
