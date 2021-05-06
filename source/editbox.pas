@@ -1376,6 +1376,7 @@ var
     SaveExport : TSaveDialog;
     MDContent : TStringList;
     ExpComm   : TExportCommon;
+    FName : string;
 begin
      SaveExport := TSaveDialog.Create(self);
      SaveExport.DefaultExt := TheExt;
@@ -1402,8 +1403,11 @@ begin
                         ExpComm := TExportCommon.Create;
                         try
                             ExpComm.NotesDir := Sett.NoteDirectory;
-                            if ExpComm.GetMDcontent( ExtractFileNameOnly(NoteFileName), MDContent) then
-                               MDContent.SaveToFile(SaveExport.FileName)
+                            if SingleNoteMode then
+                                FName := NoteFileName
+                            else FName := ExtractFileNameOnly(NoteFileName);
+                            if ExpComm.GetMDcontent( FName, MDContent) then
+                                MDContent.SaveToFile(SaveExport.FileName)
                             else showmessage('Failed to convert to MarkDown');
                         finally
                             ExpComm.Free;

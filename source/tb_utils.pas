@@ -39,6 +39,8 @@ interface
 uses
         Classes, SysUtils;
 
+                        // True if looks like an ID, 36 char and dash as #9
+function IDLooksOK(const ID : string) : boolean;
                         // Gets sent a string that is converted into something suitable to use as base filename
 function TB_MakeFileName(const Candidate : string) : string;
 
@@ -74,6 +76,13 @@ implementation
 uses dateutils {$ifdef LINUX}, Unix {$endif} ;          // We call a ReReadLocalTime();
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
+
+function IDLooksOK(const ID : string) : boolean;
+  begin
+      if length(ID) <> 36 then exit(false);
+      if pos('-', ID) <> 9 then exit(false);
+      result := True;
+  end;
 
   // Gets sent a string that is converted into something suitable to use as base filename
 function TB_MakeFileName(const Candidate : string) : string;

@@ -38,7 +38,9 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
 
                         { Takes a note ID (no extension) and fills out the passed StringList
                           that must have been created) with a commonmark version of the note.
-                          returns an empty list on error. }
+                          returns an empty list on error. If ID is an ID only, assumes note is
+                          on repo, else ID must contain a FFN inc path nad extension for single
+                          note mode.}
         function GetMDcontent(ID : string; STL : TstringList) : boolean;
 
 
@@ -47,7 +49,7 @@ end;
 
 implementation
 
-uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead ;
+uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead, tb_utils ;
 
 
 
@@ -60,7 +62,10 @@ var
     LTitle : integer;
     Index : integer;
 begin
-        StL.LoadFromFile(NotesDir + ID + '.note');
+
+        if IDLooksOK(ID) then
+            StL.LoadFromFile(NotesDir + ID + '.note')
+        else StL.LoadFromFile(ID);     // Must be a single note mode note
         Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
         if Index > -1 then
             while Index > -1 do begin

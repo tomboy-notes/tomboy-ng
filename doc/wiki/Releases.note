@@ -30,7 +30,7 @@ Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64).Inst
 I am only shipping the 64bit Cocoa version now.<size:huge>
 
 <bold>Linux</bold></size:huge>
-Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. Here is some advice but you may well have a good reason to do otherwise with, for example, the GTK2 and Qt5 decision. Due to some inconsistencies in Desktops, sometimes tomboy-ng does not detect if you are using a dark theme, if so affected, consider switching from GTK2 to Qt5 or visa versa.<size:large>
+Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. <size:large>
 
 <bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
 New in v0.30, Ubuntu and derivative users (of 64bit U18.04 and U20.04) can use a PPA to install this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng for details but the process is -
@@ -48,7 +48,7 @@ Firstly, consider using the PPA (above). Otherwise, generally, all versions work
 <list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  Difficult to make work with Qt5.</list-item></list>
 <list><list-item dir="ltr">20.04 Your choice between  [64bit QT]($$DEB64QT)  which needs the Qt5 libraries or the [64bit]($$DEB64) which needs only a couple of extra things. </list-item></list>
 
-On Ubuntu, you can install the appropriate package in one of several way (and I am sorry this keeps changing) -
+On Ubuntu, you can install the appropriate package in one of several way  -
 
 <list><list-item dir="ltr"><bold>Recommended, install gdebi first</bold>.  Its available from your normal repos and is easy and reliable. Then download the appropriate tomboy-ng package, your browser will direct it to Gdebi. Strongly recommended for U16.04.</list-item></list>
 <list><list-item dir="ltr">Depending on your version, you may be able to download and get directed to another tool to install, perhaps Software Installer. Good luck. </list-item></list>
@@ -63,7 +63,7 @@ Click on the appropriate link from your browser and allow the suggested installe
 
 <bold>Fedora</bold></size:large>
 
-Tested on Fedora 33. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
+Tested on Fedora 33 and 34. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
 <monospace>sudo yum localinstall ./tomboy-ng-0.31-2.x86_64.rpm [enter]   </monospace>
 
@@ -72,27 +72,33 @@ If you prefer to use the Qt5 version, then you need to launch tomboy-ng using th
 <monospace>QT_QPA_PLATFORM=xcb  tomboy-ng &lt;enter&gt;</monospace>
 
 
-<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. You have two choices, either install the tint2 dock panel (my recommendation, <italic><bold>sudo yum install tint2</bold></italic> &lt;enter&gt;) or you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose <bold>add to favourites</bold>. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  Many users hide the small splash screen at tomboy-ng start, if you set it like this, Fedora Gnome will appear to do nothing as you start it (because you cannot see the System Tray Icon) so, perhaps, its a good idea to setup tomboy-ng to show the Search Screen at startup.
+<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. The solution is to install libappindicator-gtk3 and gnome-shell-extension-appindicator.  Probably a command like this -
+<monospace>sudo dnf install libappindicator-gtk3  gnome-shell-extension-appindicator gnome-tweaks [enter]</monospace>
+Then logout and back in again (to restart the desktop) and enable the plugin.
 
-I suggest approaches based around Gnome extensions and libappindicator3 are really just too hard. But you could consider disabling wayland and using xorg instead, that may allow you to use the Qt5 version too.
+<list><list-item dir="ltr">gnome-tweaks a nice tool available on Fedora 33. Fire it up, click 'Extensions' and then find the plugin, Fedora calls it Kstatusnotifieritem/appindicator support and enable it.</list-item></list>
+<list><list-item dir="ltr"><bold>gnome-extensions</bold> - A command line tool available on Fedora 33 and 34. The command is -</list-item></list>
+<monospace>   </monospace>$&gt; gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com [enter] 
+<list><list-item dir="ltr"><bold>In a browser</bold> - if you other Gnome Extension, you may already have setup your browser to control them, this plugin will appear there too.</list-item></list>
+
+<bold>tint2</bold>
+Another approach is to install the very useful tint2 panel. It has no trouble displaying a System Tray on all Linux Desktops that I have tested. It is available from the standard Fedora Repository. 
+
+<bold>Using your dock</bold>
+Gnome 3 typically has a 'dock' down the left side, maybe only visible after you click Activities'.  Some other Desktops have similar docks. After starting tomboy-ng (the first time), and before you 'hide' it, find its yellow Icon in your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock. To close tomboy-ng completely, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'. 
 
 Other flavours of Fedora (eg <bold> Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.<size:large>
 
 <bold>Debian</bold></size:large>
-tomboy-ng Qt5, v0.31a is available in the Debian Bullseye repository. Install as you would for other repository applications.
+tomboy-ng Qt5, v0.32 is available in the Debian Bullseye repository. Install as you would for other repository applications.
+
+Earlier versions work fine but Bullseye with Gnome has a problem because Debian has dropped libappindicator3-1, due to the lack of a maintainer.  Please see https://github.com/davidbannon/libappindicator3
 
 For earlier versions and distros based on them, (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  By time you get to Debian 10.4, Qt is, perhaps, a better bet if you are using 64bit. [64bit QT]($$DEB64QT).  If you wish to sync to a SMB: network share, you probably will need to install gvfs and gvfs-fuse. Tell tomboy-ng that the share (when open) is in something like /run/user/1000/gvfs/smb-share\:server\=greybox\,share\=store2 (where greybox is the server and store2 the share).
 
 Note that Bullseye, at least at time of writing, does not seem to set its Qt5 Dark Theme colours. So, install qt5ct and set what colours you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours like this -
 
-
 <monospace>QT_QPA_PLATFORMTHEME=qt5ct</monospace>
-
-<bold>Debian XFCe</bold> - the default desktop for Debian.  Works fine with either GTK2 or Qt but the GTK2 version issues some irrelevant messages so use the  [64bit QT]($$DEB64QT) if you can.
-
-<bold>Debian Gnome</bold> - Recent Gnome versions block the System Tray icon, please see the Fedora Gnome section above for how to deal with this problem. The [GTK2 32bit]($$DEB32) or [GTK2 64bit]($$DEB64) will work fine otherwise.
-
-<bold>Debian Plasma</bold> - works fine. Being Qt based, the  [Qt5 64bit]($$DEB64QT) makes sense.
 
 I recommend downloading the file and using the apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). 
 
@@ -132,14 +138,14 @@ This is new in v0.30. Users of the official Raspberry Pi OS (previously know as 
 
 
 </note-content></text>
-  <last-change-date>2021-02-09T21:00:52.5650182+11:00</last-change-date>
-  <last-metadata-change-date>2021-02-09T21:00:52.5650182+11:00</last-metadata-change-date>
+  <last-change-date>2021-05-06T20:33:29.6345319+10:00</last-change-date>
+  <last-metadata-change-date>2021-05-06T20:33:29.6345319+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>761</width>
+  <width>1122</width>
   <height>800</height>
-  <x>29</x>
-  <y>69</y>
+  <x>541</x>
+  <y>30</y>
   <open-on-startup>False</open-on-startup>
 </note>

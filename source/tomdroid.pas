@@ -87,8 +87,8 @@ implementation
 
 
 uses Settings, IniFiles, Sync, TB_SDiff, typInfo, LazLogger, LCLType,
-    SearchUnit; // we call ProcessSyncUpdates( and ShowHelpNote(
-
+    SearchUnit, // we call ProcessSyncUpdates( and ShowHelpNote(
+    tb_utils;
 var
     ASync : TSync;
 

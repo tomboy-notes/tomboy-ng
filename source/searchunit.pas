@@ -1217,22 +1217,14 @@ procedure TSearchForm.ScaleListView();
 var
     Col1Width : integer;
 begin
-    // debugln('1...ScaleListView W=' + dbgs(ListViewNotes.Width) + ' Wc=' + dbgs(ListViewNotes.ClientWidth) + ' Wb= ' + dbgs(ListViewNotes.BorderWidth));
-    Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:00  ')   ;    // spaces allow for apparent error in scroll with
+    {$ifdef LCLQT5}
+    Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:00000');    // 00 allow for apparent error in scroll with
+    {$else}
+     Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:000');
+    {$endif}
     ListViewNotes.Column[1].Width := Col1width;
     if ListViewNotes.ClientWidth > 100 then
         ListViewNotes.Column[0].Width := ListViewNotes.ClientWidth - Col1width;
-    // Note, next two lines require Lazarus 2.0.8 or greater !
-(*    {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
-    ListViewNotes.Column[0].SortIndicator:= siNone;
-    ListViewNotes.Column[1].SortIndicator:= siNone;
-    ShowListIndicator('In Scale ListView');
-    {$endif}   *)
-    // I don't think the above few lines are a good idea, no idea what we are tying to achieve
-
-
-    // debugln('2...ScaleListView W=' + dbgs(ListViewNotes.Width) + ' Wc=' + dbgs(ListViewNotes.ClientWidth) + ' Wb= ' + dbgs(ListViewNotes.BorderWidth));
-    //ListViewNotes.;
 end;
 
 procedure TSearchForm.BackupNote(const NoteName, PutIntoName : string);

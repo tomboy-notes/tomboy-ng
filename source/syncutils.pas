@@ -142,7 +142,7 @@ function ConvertDateStrAbsolute(const DateStr : string) : string;
 function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
 
         // returns false if GUID does not look OK
-function IDLooksOK(const ID : string) : boolean;
+//function IDLooksOK(const ID : string) : boolean;            moved to tb_utils
 
 
 
@@ -257,13 +257,13 @@ begin
    end;
    Result := Result + Copy(InStr, Start, Index - Start);
 end;
-
+(*      Moved to tb_utils
 function IDLooksOK(const ID : string) : boolean;
 begin
     if length(ID) <> 36 then exit(false);
     if pos('-', ID) <> 9 then exit(false);
     result := True;
-end;
+end;  *)
 
 function GetNoteLastChangeSt(const FullFileName : string; out Error : string) : string;
 var
