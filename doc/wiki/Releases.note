@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng v0.31 Release Page</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.31 Release Page</underline><size:small>
+  <title>tomboy-ng v0.33 Release Page</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.33 Release Page</underline><size:small>
 
 Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
 Downloads and information for specific platforms further down the page.<size:huge>
 
 <bold>Release Notes</bold></size:huge>
-<list><list-item dir="ltr">In-Note Searching : When jumping into a note from a search, the note's own Find engine is primed, you can find the next matching item (in this note) with Alt-F, Shift-Alt-F will search backwards. </list-item></list>
-<list><list-item dir="ltr">Ctrl-F no longer activates a standalone Find dialogue, instead, a small Find panel appears at the bottom of the note. Toggle that panel with Ctrl-F. After a Find, even if the Find panel is closed, you can still use Ctrl-Enter and Alt-Enter to find other instances of the last used Find term.</list-item></list>
-<list><list-item dir="ltr">You can now set Search Window to auto update if notes change.</list-item></list>
-<list><list-item dir="ltr">Don't allow special char in export file name. Some characters that are quite legal in a note title cause lots of problems in a file name, now changed to an underscore.</list-item></list>
-<list><list-item dir="ltr">Linux only, test if SysTray available at start, warn if (possibly) not. Better finding of SysTray on some systems, eg Ubuntu Gnome on Wayland.</list-item></list>
-<list><list-item dir="ltr">Linux only, new and much better Tomdroid Sync model. It now relies on a USB cable connection, no authentication required. It does, however, require a strict workflow, please read the included Tomdroid note. The old ssh based sync is still there but I expect to remove it in a near future release.</list-item></list>
-<list><list-item dir="ltr">A couple of small bugs fixed.</list-item></list><size:huge>
+<list><list-item dir="ltr">Undo (Ctr-Z) and Redo (Ctrl-Y) is now implemented. Each keypress is an event, the code to detect that a key is part of a sequence is too obtruvise. A setting allows disabling Undo if desired, I have not established clearly just what effect it has on performance.</list-item></list>
+<list><list-item dir="ltr">Better SysTray support for Linux systems using the Gnome Desktop. Don't show warning without good reason.</list-item></list>
+<list><list-item dir="ltr">RPM packages now include whats necessary to display SysTray Icon on Gnome Desktop (some manual config required however, see the help note, "System Tray on Linux").</list-item></list>
+<list><list-item dir="ltr">The help note, "System Tray on Linux" now points to a solution for System Tray issues on Debian Bulleseye using Gnome Desktop.</list-item></list>
+<list><list-item dir="ltr"><bold>Bug Fixes - </bold>Restructed initial config; MacOS find messages; Ctrl-N not working if in Search panel; Notebook list in a note's Notebook edit screen; Improvements to Markdown export; exporting MD from SingleNoteMode</list-item></list><size:huge>
 
 
 <bold>Installation</bold></size:huge>
@@ -25,24 +23,19 @@ tomboy-ng is available for Linux, Mac and Windows. For Debian Bullseye and Ubunt
 Tested on 32bit Windows Vista and 64bit Windows 10.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes. Depending on your build of Win10, you may need to go through a process of clicking the More Info link and Run Anyway, possibly through several stages. <size:large>
 
 <bold>MacOSX</bold></size:large>
-Tested on a Mac Sierra Powerbook. Use [the 64bit (Cocoa) DMG file]($$DMG64).Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. Because I don't pay a fee to Apple, first time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open". 
+Tested on a Mac Sierra Powerbook. Use ($$DMG64). Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. Because I don't pay a fee to Apple, first time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open". 
 
-I am only shipping the 64bit Cocoa version now.<size:huge>
+I am only shipping the 64bit Cocoa version now.  I believe I can easily produce an Apple silicon version but as I don't have that hardware, don't offer it now. If you would like to test an Apple Silicon version, please get in touch.<size:huge>
 
 <bold>Linux</bold></size:huge>
 Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2. <size:large>
 
 <bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
-New in v0.30, Ubuntu and derivative users (of 64bit U18.04 and U20.04) can use a PPA to install this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng for details but the process is -
-<list><list-item dir="ltr">sudo add-apt-repository ppa:d-bannon/ppa-tomboy-ng [enter]</list-item></list>
-<list><list-item dir="ltr">sudo apt-get update  [enter]</list-item></list>
-<list><list-item dir="ltr">sudo apt install tomboy-ng  [enter]</list-item></list>
-After that, your OS will update tomboy-ng on each release without you doing anything.
+New in v0.30, Ubuntu and derivative users (of 64bit U18.04 and U20.04 to U21.04) can use a PPA to install and update this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng for details.
 
 For distributions that use .deb packages (but cannot use the PPA), do yourself a favour, install Gdebi before you start. You will not regret it.<size:large>
 
-<bold>Ubuntu</bold></size:large>
-  
+<bold>Ubuntu</bold></size:large> 
 Firstly, consider using the PPA (above). Otherwise, generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version. 
 <list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list>
 <list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  Difficult to make work with Qt5.</list-item></list>
@@ -62,7 +55,6 @@ Click on the appropriate link from your browser and allow the suggested installe
 
 
 <bold>Fedora</bold></size:large>
-
 Tested on Fedora 33 and 34. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
 <monospace>sudo yum localinstall ./tomboy-ng-0.31-2.x86_64.rpm [enter]   </monospace>
@@ -71,15 +63,13 @@ If you prefer to use the Qt5 version, then you need to launch tomboy-ng using th
 
 <monospace>QT_QPA_PLATFORM=xcb  tomboy-ng &lt;enter&gt;</monospace>
 
+<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. The solution is to install libappindicator-gtk3 and gnome-shell-extension-appindicator, and tomboy-ng 0.33 and later have those packages listed as dependencies.  
+Then log out and back in again (to restart the desktop) and enable the plugin, do one off -
 
-<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. The solution is to install libappindicator-gtk3 and gnome-shell-extension-appindicator.  Probably a command like this -
-<monospace>sudo dnf install libappindicator-gtk3  gnome-shell-extension-appindicator gnome-tweaks [enter]</monospace>
-Then logout and back in again (to restart the desktop) and enable the plugin.
-
-<list><list-item dir="ltr">gnome-tweaks a nice tool available on Fedora 33. Fire it up, click 'Extensions' and then find the plugin, Fedora calls it Kstatusnotifieritem/appindicator support and enable it.</list-item></list>
+<list><list-item dir="ltr">gnome-tweaks - a nice tool available on Fedora 33. Fire it up, click 'Extensions' and then find the plugin, Fedora calls it Kstatusnotifieritem/appindicator support and enable it.</list-item></list>
 <list><list-item dir="ltr"><bold>gnome-extensions</bold> - A command line tool available on Fedora 33 and 34. The command is -</list-item></list>
 <monospace>   </monospace>$&gt; gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com [enter] 
-<list><list-item dir="ltr"><bold>In a browser</bold> - if you other Gnome Extension, you may already have setup your browser to control them, this plugin will appear there too.</list-item></list>
+<list><list-item dir="ltr"><bold>In a browser</bold> - if you use other Gnome Extensions, you may already have setup your browser to control them, this plugin will appear there too.</list-item></list>
 
 <bold>tint2</bold>
 Another approach is to install the very useful tint2 panel. It has no trouble displaying a System Tray on all Linux Desktops that I have tested. It is available from the standard Fedora Repository. 
@@ -127,25 +117,26 @@ Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit]($$RPM3
 
 <list><list-item dir="ltr"><bold>Mate, XFCE, KDE (ie Plasma)</bold> <bold>and Cinnamon</bold> work fine. </list-item></list>
 <list><list-item dir="ltr"><bold>Mageia with Enlightenment</bold> requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment in the GTK variety still has a problem, instead of tomboy-ng's icon, you see a white triangular warning icon. But it works.</list-item></list>
-<list><list-item dir="ltr"><bold>Mageia Gnome,</bold> some recent Gnome versions block the System Tray icon so you need to use tomboy-ng in a  slightly different way. After starting tomboy-ng (the first time), click "Activities", top left and look for the yellow tomboy-ng icon on your dock. Right click it and choose add to favourites. You can now 'Hide' the tomboy-ng splash screen and activate tomboy-ng at any time directly from the dock.  To really close tomboy-ng, click the tomboy-ng icon in the dock, tomboy-ng's search box opens, click 'Menu' and 'close'.  If you prefer, you can install the Gnome extension TopIcons and libappindicator3 and get a real System Tray Icon. Do not use the Qt5 version as its incompatible with Wayland but the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) will work fine </list-item></list>
+<list><list-item dir="ltr"><bold>Mageia Gnome,</bold> its likely that the comments relating to Fedora Gnome above apply but have not been tested.</list-item></list>
 
 To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.  Using the <bold>Qt version on Mageia</bold> is possible if you replace its very dated version of lib64qt6pas1 with the appropriate one from https://github.com/davidbannon/libqt5pas/releases. 
  <size:large>
 <bold>Raspberry PI</bold></size:large>
-This is new in v0.30. Users of the official Raspberry Pi OS (previously know as Raspbian) can now download a deb and install it using the apt commands mentioned above.  Not its 32bit, even if your Raspberry Pi is a 64bit one the OS is 32bit at present. I have not tested against things like Ubuntu's 64bit OS or the testing Raspberry Pi OS.   Download [GTK2 32bit]($$DEB32ARM)
+Users of the official Raspberry Pi OS (previously know as Raspbian) can now download a deb and install it using the apt commands mentioned above.  Note its 32bit, even if your Raspberry Pi is 64bit the OS is 32bit at present. I have not tested against things like Ubuntu's 64bit OS or the testing Raspberry Pi OS.   Download [GTK2 32bit]($$DEB32ARM)
+
 
 
 
 
 </note-content></text>
-  <last-change-date>2021-05-06T20:33:29.6345319+10:00</last-change-date>
-  <last-metadata-change-date>2021-05-06T20:33:29.6345319+10:00</last-metadata-change-date>
+  <last-change-date>2021-05-11T22:36:12.0720930+10:00</last-change-date>
+  <last-metadata-change-date>2021-05-11T22:36:12.0720930+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>1122</width>
+  <width>1173</width>
   <height>800</height>
-  <x>541</x>
-  <y>30</y>
+  <x>113</x>
+  <y>253</y>
   <open-on-startup>False</open-on-startup>
 </note>

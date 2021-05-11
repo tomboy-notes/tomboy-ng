@@ -29,6 +29,7 @@ unit tb_utils;
 
   HISTORY :
   2021/01/29  Added TB_MakeFileName
+  2021/05/11  FindInStringList was not checking last line of list
 }
 
 
@@ -68,12 +69,12 @@ function RestoreBadXMLChar(const Str : AnsiString) : AnsiString;
 
                         // returns a version of passed string with anything between < > removed
 function RemoveXml(const St : AnsiString) : AnsiString;
-
+                        // Returns (0-x) index of string that contains passed term, -1 if not present
 function FindInStringList(const StL : TStringList; const FindMe : string) : integer;
 
 implementation
 
-uses dateutils {$ifdef LINUX}, Unix {$endif} ;          // We call a ReReadLocalTime();
+uses dateutils, LazLogger {$ifdef LINUX}, Unix {$endif} ;          // We call a ReReadLocalTime();
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
@@ -308,7 +309,7 @@ function FindInStringList(const StL : TStringList; const FindMe : string) : inte
 var
     I : integer = 0;
 begin
-    while i < StL.Count -1 do begin
+    while i < StL.Count {-1} do begin
         if pos(FindMe, StL.strings[i]) > 0 then
             exit(i);
         inc(i);

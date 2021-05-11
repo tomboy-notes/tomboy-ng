@@ -3,9 +3,8 @@
   <title>System Tray on Linux</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>System Tray on Linux</underline>
 
-Note : the message about not showing the SysTray is usually a false alarm <bold>on Ubuntu</bold>. Sorry.
 
-The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray, sometimes called the notification area. However, not all Linux Desktop Environments are able to display System Tray Icons, and some that can do not do so by default. 
+The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray, sometimes called the notification area. However, not all Linux Desktop Environments are able to display System Tray Icons, and some that can may not do so by default. 
 
 If you can see a <bold>small, yellow icon</bold>, possibly upper right of your screen, you don't have a problem, well done in choosing a user focused Desktop. If you cannot see it, you are probably using a Desktop that may not display the System Tray, possibly a Gnome Desptop.  Firstly, see if your particular Desktop just needs to configured to display a SysTray, failing that,  read on. 
 
@@ -23,8 +22,8 @@ Please see the ReleaseNotes, https://github.com/tomboy-notes/tomboy-ng/wiki/Down
 TBD
 
 </note-content></text>
-  <last-change-date>2021-05-06T20:32:15.0948163+10:00</last-change-date>
-  <last-metadata-change-date>2021-05-06T20:32:15.0948163+10:00</last-metadata-change-date>
+  <last-change-date>2021-05-11T22:24:32.1095066+10:00</last-change-date>
+  <last-metadata-change-date>2021-05-11T22:24:32.1095066+10:00</last-metadata-change-date>
   <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

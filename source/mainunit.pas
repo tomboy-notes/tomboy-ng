@@ -68,6 +68,7 @@ unit Mainunit;
     2021/01/04  Pointed Tomdroid menu to tomdroidFile.
     2021/01/23  We now test for a SysTray, show warning and Help is not there.
     2021/04/01  Removed "have config", we always have config, if we cannot save it, user knows....
+    2021/05/11  On Gnome Linux, test for libappindicator3 and appindicator shell plugin
 
     CommandLine Switches
 
@@ -170,6 +171,7 @@ type
         procedure CommMessageReceived(Sender: TObject);
         procedure TestDarkThemeInUse();
         {$ifdef LINUX}
+        function CheckGnomeExtras(): boolean;
         function CheckForSysTray(): boolean;
         {$endif}
     public
@@ -222,15 +224,12 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$ifdef LINUX}
     {$ifdef LCLGTK2} gtk2extra, {$endif}         // Relate to testing for SysTray
     {$ifdef LCLQT5} qt5, {$endif}                // Relate to testing for SysTray
-    x, xlib,                                     // Relate to testing for SysTray
+    x, xlib, process,                                     // Relate to testing for SysTray
     Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
-
-
-
-
+    tb_utils,
     TomdroidFile {$ifdef windows}, registry{$endif};
 
 var
@@ -444,6 +443,56 @@ resourcestring
 
 
 {$ifdef LINUX}
+
+function TMainForm.CheckGnomeExtras() : boolean;
+var
+    H : TLibHandle;
+
+    function CheckPlugIn(PlugInName : string) : boolean;
+    var
+        AProcess: TProcess;
+        List : TStringList = nil;
+    begin
+        result := false;
+        AProcess := TProcess.Create(nil);
+        AProcess.Executable:= 'gnome-extensions';
+        AProcess.Parameters.Add('info');
+        AProcess.Parameters.Add(PlugInName);
+        AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+        try
+             AProcess.Execute;
+             Result := (AProcess.ExitStatus = 0);        // says at least one packet got back
+             if Result then begin
+                 result := false;
+	             List := TStringList.Create;
+	             List.LoadFromStream(AProcess.Output);
+                 //debugln(List.Text);
+                 if FindInStringList(List, 'State: ENABLED') > -1 then
+                     result := true;
+             end;
+         finally
+             //E: EProcess do begin
+			    freeandnil(List);
+			    freeandnil(AProcess);
+             //           end;
+         end;
+    end;
+
+begin
+    result := false;
+    H := LoadLibrary('libappindicator3.so.1');
+    if H = NilHandle then begin
+        debugln('Failed to Find libappindicator3, SysTray may not work.');
+        exit(False);    // nothing to see here folks.
+	end;
+	unloadLibrary(H);
+    if CheckPlugIn('ubuntu-appindicators@ubuntu.com') or            // Ubuntu, Debian
+	    CheckPlugIn('appindicatorsupport@rgcjonas.gmail.com') then   // Fedora
+            Result := True;
+    if not Result then
+            debugln('Failed to Find an enabled appindicator plugin, SysTray may not work.');
+end;
+
 function TMainForm.CheckForSysTray() : boolean;
 var
     A : TAtom;
@@ -459,7 +508,12 @@ begin
         // See https://github.com/tomboy-notes/tomboy-ng/issues/239 for possible fix by salvadorbs
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
-end;
+    // if we are false here, its probably because its a recent Gnome Desktop, no SysTray.
+    // However, if libappindicator3 is installed and the Gnome Shell Extension, appindicators is installed
+    // and enabled, it will 'probably' be OK.
+    if result = false then
+        Result := CheckGnomeExtras();   // Thats libappindicator3 and an installed and enabled gnome-shell-extension-appindicator
+    end;
 {$endif}
 
 procedure TMainForm.FormShow(Sender: TObject);
