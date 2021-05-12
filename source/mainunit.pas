@@ -109,7 +109,10 @@ interface
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
     StdCtrls, LCLTranslator, DefaultTranslator, Buttons, simpleipc,
-    LCLType;
+    LCLType,
+    x, xlib, process                                       // Relate to testing for SysTray
+    {$IFDEF LCLGTK3}, LazGdk3, LazGLib2  {$ENDIF}          // we need declare a GTK3 function that has not yet made it to bindings
+    ;
 
 // These are choices for main and main popup menus.
 // type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
@@ -172,6 +175,8 @@ type
         procedure TestDarkThemeInUse();
         {$ifdef LINUX}
         function CheckGnomeExtras(): boolean;
+                        // Test for traditional SysTray, if not successful we call look for the
+                        // the things that can be added to a Gnome Desktop to make it work.
         function CheckForSysTray(): boolean;
         {$endif}
     public
@@ -205,6 +210,12 @@ type
                                 // This here temp, it returns the singlenotefilename from CLI Unit.
     function SingleNoteFileName() : string;
 
+// See https://github.com/salvadorbs/AsuiteComps/blob/beab429e63a120d9e2e25c55b64dc092e1c271e9/library/platform/unix/Hotkeys.Manager.Platform.pas#L93
+{$IFDEF LCLGTK3}
+// function gdk_x11_window_get_xid(AX11Window: PGdkWindow): guint32; cdecl; external;
+function gdk_x11_display_get_xdisplay(AX11Display: PGdkDisplay): PDisplay; cdecl; external;
+{$ENDIF}
+
 var
     MainForm: TMainForm;
 
@@ -224,7 +235,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$ifdef LINUX}
     {$ifdef LCLGTK2} gtk2extra, {$endif}         // Relate to testing for SysTray
     {$ifdef LCLQT5} qt5, {$endif}                // Relate to testing for SysTray
-    x, xlib, process,                                     // Relate to testing for SysTray
+
     Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
@@ -282,65 +293,6 @@ begin
     end;
     if CloseOnExit then Close;      // we also use singlenotemode internally in several places
 end;
-
-
-// ---------------- HELP NOTES STUFF ------------------
-(*
-procedure TMainForm.ShowHelpNote(HelpNoteName: string);   // ToDo : consider moving this method and associated list to SearchUnit.
-var
-    EBox : TEditBoxForm;
-    TheForm : TForm;
-    Index : integer;
-begin
-    if FileExists(ActualHelpNotesPath() + HelpNoteName) then begin
-        If HelpList = nil then begin
-            HelpList := TStringList.Create;
-            HelpList.Sorted:=True;
-		end else begin
-            if HelpList.Find(HelpNoteName, Index) then begin
-                // Bring TForm(HelpList.Objects[Index]) to front
-                TheForm := TForm(HelpList.Objects[Index]);
-                try
-                    //writeln('Attempting a reshow');
-          	        TheForm.Show;
-                    SearchForm.MoveWindowHere(TheForm.Caption);
-                    TheForm.EnsureVisible(true);
-                    exit;
-				except on E: Exception do {showmessage(E.Message)};
-                // If user had this help page open but then closed it entry is still in
-                // list so we catch the exception, ignore it and upen a new note.
-                // its pretty ugly under debugger but user does not see this.
-				end;
-			end;
-		end;
-        // If we did not find it in the list and exit, above, we will make a new one.
-        EBox := TEditBoxForm.Create(Application);
-        EBox.SetReadOnly(False);
-        EBox.SearchedTerm := '';
-        EBox.NoteTitle:= '';
-        EBox.NoteFileName := ActualHelpNotesPath() + HelpNoteName;
-        Ebox.TemplateIs := '';
-        EBox.Show;
-        EBox.Dirty := False;
-        HelpList.AddObject(HelpNoteName, EBox);
-        EBox.Top := HelpList.Count * 10;
-        EBox.Left := HelpList.Count * 10;
-        EBox.Width := Screen.Width div 2;      // Set sensible sizes.
-        EBox.Height := Screen.Height div 2;
-    end else showmessage('Unable to find ' + HelpNotesPath + HelpNoteName);
-end;
-
-function TMainForm.ActualHelpNotesPath(): string;
-begin
-    Result := HelpNotesPath;
-    if DirectoryExistsUTF8(AltHelpNotesPath) then
-        Result := AltHelpNotesPath;
-end;
-
-procedure TMainForm.SetAltHelpPath(ConfigPath : string);
-begin
-    AltHelpNotesPath := ConfigPath + ALTHELP + PathDelim;
-end;          *)
 
 
 
@@ -498,14 +450,16 @@ var
     A : TAtom;
     XDisplay: PDisplay;
 begin
-    // This returns a false negitive on Ubuntu 20.04, the icon does display but
-    // X does not seem to think it should.
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2} XDisplay := gdk_display; {$endif}
     {$ifdef LCLQT5}  XDisplay := QX11Info_display; {$endif}
-        // ToDo : does not support GTK3, I cannot find how to convert PGdkDisplay to Display ......
-        // our GTK3 bindings seem to return only a PGdkDisplay, not an X style Display. Need GDK3 bindings ?
-        // See https://github.com/tomboy-notes/tomboy-ng/issues/239 for possible fix by salvadorbs
+
+    // The GTK3 part here is informed by code from https://github.com/salvadorbs/AsuiteComps/blob/main/library/platform/unix/Hotkeys.Manager.Platform.pas
+    // it requires a function declaration of gdk_x11_display_get_xdisplay( which has not made it into our bindings.
+    // ToDo : get that declaration into our bindings, much tidier !
+    {$IFDEF LCLGTK3} // See https://github.com/tomboy-notes/tomboy-ng/issues/239 for possible fix by salvadorbs
+    XDisplay := gdk_x11_display_get_xdisplay(gdk_window_get_display(gdk_get_default_root_window)); {$ENDIF}
+
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
     // if we are false here, its probably because its a recent Gnome Desktop, no SysTray.
