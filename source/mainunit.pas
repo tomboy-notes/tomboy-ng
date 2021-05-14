@@ -403,30 +403,41 @@ var
     function CheckPlugIn(PlugInName : string) : boolean;
     var
         AProcess: TProcess;
-        List : TStringList = nil;
+//        List : TStringList = nil;
     begin
         result := false;
         AProcess := TProcess.Create(nil);
         AProcess.Executable:= 'gnome-extensions';
-        AProcess.Parameters.Add('info');
+        // AProcess.Parameters.Add('info');
+        AProcess.Parameters.Add('enable');
         AProcess.Parameters.Add(PlugInName);
         AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
         try
-             AProcess.Execute;
-             Result := (AProcess.ExitStatus = 0);        // says at least one packet got back
-             if Result then begin
-                 result := false;
-	             List := TStringList.Create;
-	             List.LoadFromStream(AProcess.Output);
-                 //debugln(List.Text);
-                 if FindInStringList(List, 'State: ENABLED') > -1 then
-                     result := true;
-             end;
-         finally
-             //E: EProcess do begin
-			    freeandnil(List);
+            try
+                // Next line raise an exception if gnome-extensions is not installed, it is handled.
+                // ExitStatus is zero if gnome-extensions found the plugin and non zero if plugin
+                // is not found.  It cannot reliably tell if the extension has really been enabled
+                // (need 'info' command returning 'State: ENABLED' but thats English onlly)
+	            AProcess.Execute;
+                debugln('Tested for ' + PlugInName + ' ' + inttostr(AProcess.ExitStatus));
+                exit (AProcess.ExitStatus = 0);
+
+
+ {               //AProcess.ExitCode;
+	            Result := (AProcess.ExitStatus = 0);   // says at least one packet got back
+	            if Result then begin
+	                result := false;
+		            List := TStringList.Create;
+		            List.LoadFromStream(AProcess.Output);
+	                     //debugln(List.Text);
+	                if FindInStringList(List, 'State: ENABLED') > -1 then
+	                    result := true;
+	            end;                                       }
+            except on E: EProcess do exit(false);           // Says that gnome-extensions is not installed.
+			end;
+		 finally
+//			    freeandnil(List);
 			    freeandnil(AProcess);
-             //           end;
          end;
     end;
 
@@ -449,12 +460,13 @@ function TMainForm.CheckForSysTray() : boolean;
 var
     A : TAtom;
     XDisplay: PDisplay;
+    ForceAppInd : string;
 begin
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2} XDisplay := gdk_display; {$endif}
     {$ifdef LCLQT5}  XDisplay := QX11Info_display; {$endif}
 
-    // The GTK3 part here is informed by code from https://github.com/salvadorbs/AsuiteComps/blob/main/library/platform/unix/Hotkeys.Manager.Platform.pas
+    // The GTK3 part here is informed by https://github.com/salvadorbs/AsuiteComps/blob/main/library/platform/unix/Hotkeys.Manager.Platform.pas
     // it requires a function declaration of gdk_x11_display_get_xdisplay( which has not made it into our bindings.
     // ToDo : get that declaration into our bindings, much tidier !
     {$IFDEF LCLGTK3} // See https://github.com/tomboy-notes/tomboy-ng/issues/239 for possible fix by salvadorbs
@@ -462,6 +474,11 @@ begin
 
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
+    ForceAppInd := GetEnvironmentVariable('LAZUSEAPPIND');
+    if ForceAppInd <> '' then
+            debugln('Tradition Systray = ' + booltostr(result, True));
+    if ForceAppInd = 'YES' then
+            result := false;
     // if we are false here, its probably because its a recent Gnome Desktop, no SysTray.
     // However, if libappindicator3 is installed and the Gnome Shell Extension, appindicators is installed
     // and enabled, it will 'probably' be OK.
