@@ -121,8 +121,6 @@ uses
 // type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu);
 
 
-
-
 type
 
     { TMainForm }
@@ -389,56 +387,44 @@ end;
 
 resourcestring
   rsFailedToIndex = 'Failed to index one or more notes.';
-  {rsCannotDismiss1 = 'Sadly, because of a Bad Note,';
-  rsCannotDismiss2 = 'I cannot let you dismiss this window';
-  rsCannotDismiss3 = 'Are you trying to shut me down ? Dave ?';     }
-
 
 {$ifdef LINUX}
-
 function TMainForm.CheckGnomeExtras() : boolean;
+
 var
     H : TLibHandle;
+    MayBeNotGnome : boolean = false;
 
-    function CheckPlugIn(PlugInName : string) : boolean;
+    function CheckPlugIn(EnabledOnly : boolean) : boolean;
     var
         AProcess: TProcess;
-//        List : TStringList = nil;
+        List : TStringList = nil;
     begin
         result := false;
         AProcess := TProcess.Create(nil);
         AProcess.Executable:= 'gnome-extensions';
-        // AProcess.Parameters.Add('info');
-        AProcess.Parameters.Add('enable');
-        AProcess.Parameters.Add(PlugInName);
+        AProcess.Parameters.Add('list');
+        if EnabledOnly then
+            AProcess.Parameters.Add('--enabled');
+        //AProcess.Parameters.Add(PlugInName);
         AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
         try
             try
                 // Next line raise an exception if gnome-extensions is not installed, it is handled.
-                // ExitStatus is zero if gnome-extensions found the plugin and non zero if plugin
-                // is not found.  It cannot reliably tell if the extension has really been enabled
-                // (need 'info' command returning 'State: ENABLED' but thats English onlly)
+                // ExitStatus for List is always zero so don't bother checking
 	            AProcess.Execute;
-                debugln('Tested for ' + PlugInName + ' ' + inttostr(AProcess.ExitStatus));
-                exit (AProcess.ExitStatus = 0);
-
-
- {               //AProcess.ExitCode;
-	            Result := (AProcess.ExitStatus = 0);   // says at least one packet got back
-	            if Result then begin
-	                result := false;
-		            List := TStringList.Create;
-		            List.LoadFromStream(AProcess.Output);
-	                     //debugln(List.Text);
-	                if FindInStringList(List, 'State: ENABLED') > -1 then
-	                    result := true;
-	            end;                                       }
-            except on E: EProcess do exit(false);           // Says that gnome-extensions is not installed.
+	            List := TStringList.Create;
+	            List.LoadFromStream(AProcess.Output);
+	            //debugln(List.Text);
+	            exit( (FindInStringList(List, 'ubuntu-appindicators@ubuntu.com') > -1) or           // Ubuntu, Debian
+		                (FindInStringList(List, 'appindicatorsupport@rgcjonas.gmail.com') > -1) );  // fedora
+            except on E: EProcess do MayBeNotGnome := True;             // Says that gnome-extensions is not installed.
 			end;
 		 finally
-//			    freeandnil(List);
-			    freeandnil(AProcess);
+		    freeandnil(List);
+			freeandnil(AProcess);
          end;
+         result := False;
     end;
 
 begin
@@ -449,11 +435,15 @@ begin
         exit(False);    // nothing to see here folks.
 	end;
 	unloadLibrary(H);
-    if CheckPlugIn('ubuntu-appindicators@ubuntu.com') or            // Ubuntu, Debian
-	    CheckPlugIn('appindicatorsupport@rgcjonas.gmail.com') then   // Fedora
-            Result := True;
+    Result := CheckPlugIn(True);
     if not Result then
-            debugln('Failed to Find an enabled appindicator plugin, SysTray may not work.');
+        if MaybeNotGnome then
+            debugln('SysTray not detected, not Gnome Desktop')
+        else
+            if CheckPlugIn(False)  then       // Ah, its there but not enabled
+                debugln('SysTray Plugin for Gnome detected but not enabled')
+                // Maybe offer to enable it for user ??
+            else debugln('SysTray Plugin for Gnome not present');
 end;
 
 function TMainForm.CheckForSysTray() : boolean;
