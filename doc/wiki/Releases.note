@@ -57,19 +57,10 @@ Click on the appropriate link from your browser and allow the suggested installe
 <bold>Fedora</bold></size:large>
 Tested on Fedora 33 and 34. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
-<monospace>sudo yum localinstall ./tomboy-ng-0.31-2.x86_64.rpm [enter]   </monospace>
+<monospace>sudo yum localinstall ./tomboy-ng-0.33-2.x86_64.rpm [enter]   </monospace>
 
-If you prefer to use the Qt5 version, then you need to launch tomboy-ng using the Wayland xwayland backend. Use a command like this to start tomboy-ng -
 
-<monospace>QT_QPA_PLATFORM=xcb  tomboy-ng &lt;enter&gt;</monospace>
-
-<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. The solution is to install libappindicator-gtk3 and gnome-shell-extension-appindicator, and tomboy-ng 0.33 and later have those packages listed as dependencies.  
-Then log out and back in again (to restart the desktop) and enable the plugin, do one off -
-
-<list><list-item dir="ltr">gnome-tweaks - a nice tool available on Fedora 33. Fire it up, click 'Extensions' and then find the plugin, Fedora calls it Kstatusnotifieritem/appindicator support and enable it.</list-item></list>
-<list><list-item dir="ltr"><bold>gnome-extensions</bold> - A command line tool available on Fedora 33 and 34. The command is -</list-item></list>
-<monospace>   </monospace>$&gt; gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com [enter] 
-<list><list-item dir="ltr"><bold>In a browser</bold> - if you use other Gnome Extensions, you may already have setup your browser to control them, this plugin will appear there too.</list-item></list>
+<bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. The solution is to install  gnome-shell-extension-appindicator (which will also install libappindicator-gtk3), log out and back in again. When you next startup tomboy-ng, it will ask if you want the plugin enabled, answer yes.  Note, you can enable and disable the plugin with the gnome-extensions command. 
 
 <bold>tint2</bold>
 Another approach is to install the very useful tint2 panel. It has no trouble displaying a System Tray on all Linux Desktops that I have tested. It is available from the standard Fedora Repository. 
@@ -129,8 +120,8 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2021-05-11T22:36:12.0720930+10:00</last-change-date>
-  <last-metadata-change-date>2021-05-11T22:36:12.0720930+10:00</last-metadata-change-date>
+  <last-change-date>2021-05-15T22:13:47.3231906+10:00</last-change-date>
+  <last-metadata-change-date>2021-05-15T22:13:47.3231906+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

@@ -69,6 +69,7 @@ unit Mainunit;
     2021/01/23  We now test for a SysTray, show warning and Help is not there.
     2021/04/01  Removed "have config", we always have config, if we cannot save it, user knows....
     2021/05/11  On Gnome Linux, test for libappindicator3 and appindicator shell plugin
+    2021/05/15  On Gnome, if plugin is present but disabled, offer to enable it for user.
 
     CommandLine Switches
 
@@ -394,6 +395,8 @@ function TMainForm.CheckGnomeExtras() : boolean;
 var
     H : TLibHandle;
     MayBeNotGnome : boolean = false;
+    PlugInName : string = '';           // holds name if CheckPlugIn foound it.
+
 
     function CheckPlugIn(EnabledOnly : boolean) : boolean;
     var
@@ -416,16 +419,37 @@ var
 	            List := TStringList.Create;
 	            List.LoadFromStream(AProcess.Output);
 	            //debugln(List.Text);
-	            exit( (FindInStringList(List, 'ubuntu-appindicators@ubuntu.com') > -1) or           // Ubuntu, Debian
-		                (FindInStringList(List, 'appindicatorsupport@rgcjonas.gmail.com') > -1) );  // fedora
+                if FindInStringList(List, 'ubuntu-appindicators@ubuntu.com') > -1 then              // Ubuntu, Debian
+                    PlugInName := 'ubuntu-appindicators@ubuntu.com';
+                if FindInStringList(List, 'appindicatorsupport@rgcjonas.gmail.com') > -1 then       // fedora
+                    PlugInName := 'appindicatorsupport@rgcjonas.gmail.com';
             except on E: EProcess do MayBeNotGnome := True;             // Says that gnome-extensions is not installed.
 			end;
 		 finally
 		    freeandnil(List);
 			freeandnil(AProcess);
          end;
-         result := False;
+         result := (PlugInName <> '');
     end;
+
+    function EnablePlugIn() : boolean;
+    var
+        AProcess: TProcess;
+    begin
+        result := false;
+        AProcess := TProcess.Create(nil);
+        AProcess.Executable:= 'gnome-extensions';
+        AProcess.Parameters.Add('enable');
+        AProcess.Parameters.Add(PlugInName);
+        //AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+        try
+                // We know we have gnome-extensions command and a valid extension name
+	            AProcess.Execute;
+		finally
+            freeandnil(AProcess);
+		end;
+        result := CheckPlugIn(True);
+	end;
 
 begin
     result := false;
@@ -439,11 +463,18 @@ begin
     if not Result then
         if MaybeNotGnome then
             debugln('SysTray not detected, not Gnome Desktop')
+            // We also issue that message on a system that supports libappindicator3 without
+            // needing (or installed) gnome-shell-extension-appindicator, eg U20.04 Mate
+            // I am not sure how many systems can use just libappindicator3 by itself.
         else
-            if CheckPlugIn(False)  then       // Ah, its there but not enabled
-                debugln('SysTray Plugin for Gnome detected but not enabled')
+            if CheckPlugIn(False)  then begin      // Ah, its there but not enabled
+                debugln('SysTray Plugin for Gnome detected but not enabled');
                 // Maybe offer to enable it for user ??
-            else debugln('SysTray Plugin for Gnome not present');
+                if IDYES = Application.MessageBox('Enable gnome-shell-extension-appindictor ?',
+    			        'The SysTray extension is installed but not enabled',
+       			        MB_ICONQUESTION + MB_YESNO) then
+                    Result := EnablePlugIn();
+            end else debugln('SysTray Plugin for Gnome not present');
 end;
 
 function TMainForm.CheckForSysTray() : boolean;
