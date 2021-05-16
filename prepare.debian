@@ -5,7 +5,7 @@
 # This script takes a tomboy-ng zip file from github, and prepares things to
 # build a source deb suitable for Creating or UPDATING an existing one in Debian Repo.
 # If its a new release of tomboy-ng, then the create mode works, provide -n to 
-# have the script create a new .orig file.
+# have the script create a new .orig file (to be clear, the orig.tar.gz is NOT needed).
 # If we are fixing a Debian Packaging issue, use the Update mode, no switch but
 # make sure the original .orig.tar.gz file is present.
 
@@ -27,13 +27,13 @@
 #	cd tomboy-ng_XXXX                       // Whatever the name is at this stage....
 #	debuild -S
 #	The files you want are in ../.
-#	You probably should do a practise build and lintian run, see other notes.
+#	You probably should do a practise build and lintian run, see below.
 #	Upload with "dput -f mentors *.changes"
 
 #       ------------ Lintian -----------
 # Copy the .xz, .gz and .dsc files to a clean directory and build a package (eg)
-#   rm -Rf <some_Test_dir>
-#   cp *.xz *.gz *.dsc <some_Test_dir>
+
+#   cp *.xz *.gz *.dsc <some_Test_dir>/.
 #   cd <some_Test_dir>
 #   dpkg-source -x *.dsc
 #   cd tomboy<tab>
@@ -188,14 +188,14 @@ function ShowHelp () {
 
 function MakeOrigFile () {
     echo "---------- Creating a new .orig file"
-    # We move most of the debian dir out of harms way and tar up the dir.
+        # We move most of the debian dir out of harms way and tar up the dir.
 	# We have to do this to avoid the dreaded lintian no-debian-changes
 	# The copyright file in there alone does not generate that error ??
 	# But before moving it, we will create a new changelog
 	# cd "$APP"_"$VER""$DEBVER"
-	rm debian/changelog                     # Must have a new changelog if new orig file
-	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$DEBVER" "New Version Release"
-	dch --append "Please see github for change details"
+    rm debian/changelog                     # Must have a new changelog if new orig file
+    dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$DEBVER" "New Version Release"
+    dch --append "Please see github for change details"
     dch --release "blar"
     
     echo "" >> debian/changelog
@@ -205,14 +205,18 @@ function MakeOrigFile () {
     echo "" >> debian/changelog
     echo " -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 18 Dec 2020 22:08:09 +1100" >> debian/changelog
     
-	cd ..
-	mv "$APP"_"$VER""$DEBVER"/debian ./debian
-	mkdir "$APP"_"$VER""$DEBVER"/debian
-	cp debian/copyright "$APP"_"$VER""$DEBVER"/debian/.
-	tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""$DEBVER"
+    cd ..
+    mv "$APP"_"$VER""$DEBVER"/debian ./debian
+    mkdir "$APP"_"$VER""$DEBVER"/debian
+    cp debian/copyright "$APP"_"$VER""$DEBVER"/debian/.
+
+	# Because this is Debian, we do only a Qt5 version
+    touch "$APP"_"$VER""$DEBVER"/Qt5
+
+    tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""$DEBVER"
 	# OK, we now have our .orig. file, put most of it back.
-	rm -Rf "$APP"_"$VER""$DEBVER"/debian
-	mv ./debian "$APP"_"$VER""$DEBVER"/. 
+    rm -Rf "$APP"_"$VER""$DEBVER"/debian
+    mv ./debian "$APP"_"$VER""$DEBVER"/. 
 }
 
 while getopts "hUCl:D:n" opt; do

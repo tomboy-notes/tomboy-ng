@@ -14,6 +14,9 @@
 # command is happy with me calling the arch i386, amd64 (debian speak)
 # yum insists on them being x86, x86_64.
 # Manually add wmctrl to dependencies.
+# 2021/05/15
+# don't add gnome-shell-extension-appindicator to dependencies,
+# it pulls in half of Gnome desktop, on gnome users would hate me.
 # ====================================================
 
 PROD=tomboy-ng
@@ -47,11 +50,7 @@ function DoAlien ()  {
 	sed -i 's#%dir "/usr/bin/"##' "$RDIR"/"$RDIR"-2.spec
 	# rpmbuild detects the dependencies but it misses wmctrl due to way its used.
 	# So we add it to the spec file manually, insert as line 5.
-	# at the same time we add things Fedora Gnome need to display SysTray Icon
-	# not needed in other desktops but should not break anything, I hope.
-	# Note that the user still needs to restart desktop and then issue
-	# $>  gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
-	sed -i '5i Requires: wmctrl libappindicator-gtk3 gnome-shell-extension-appindicator' "$RDIR"/"$RDIR"-2.spec
+	sed -i '5i Requires: wmctrl ' "$RDIR"/"$RDIR"-2.spec
 	# cp -r "$RDIR" "$RDIR"-"$1"
 	cd "$RDIR"
 	rpmbuild --target "$ARCH" --buildroot "$PWD" -bb "$RDIR"-2.spec
