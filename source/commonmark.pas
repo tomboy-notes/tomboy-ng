@@ -4,6 +4,11 @@ unit commonmark;
 
 {   *  Copyright (C) 2020 David Bannon
     *  See attached licence file.
+
+
+    HISTORY
+    2021/05/16  Taught TitleFromID() to deal with SingleNote mode when ID does not exist in Repo
+                Note - this has not been synced with TT version.
 }
 interface
 
@@ -61,12 +66,13 @@ function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
 var
     LTitle : integer;
     Index : integer;
+    //Title : string = '';
 begin
 
         if IDLooksOK(ID) then
             StL.LoadFromFile(NotesDir + ID + '.note')
-        else StL.LoadFromFile(ID);     // Must be a single note mode note
-        Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
+        else StL.LoadFromFile(ID);
+		Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
         if Index > -1 then
             while Index > -1 do begin
                 StL.Delete(0);
@@ -137,13 +143,18 @@ var
     Doc : TXMLDocument;
     Node : TDOMNode;
     Index : integer = 1;
+    FFN : string;
 begin
-    if not FileExists(NotesDir + ID + '.note') then begin
-        debugln('ERROR : File does not exist = '  + NotesDir + ID + '.note');
-        LenTitle := 0;
-        exit('');
+    FFN := NotesDir + ID + '.note';
+    if not FileExists(FFN) then begin
+          FFN := ID;                        // OK, maybe is a SingleNote ?
+          if not FileExists(FFN) then begin
+                debugln('ERROR : File does not exist = '  + FFN);
+                LenTitle := 0;
+                exit('');
+	        end;
 	end;
-	ReadXMLFile(Doc, NotesDir + ID + '.note');
+	ReadXMLFile(Doc, FFN);
     try
         Node := Doc.DocumentElement.FindNode('title');
         result := Node.FirstChild.NodeValue;

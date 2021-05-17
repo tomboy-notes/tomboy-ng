@@ -957,9 +957,10 @@ begin
     if (LabelFileSync.Caption <> rsSyncNotConfig) and (LabelFileSync.Caption <> '')  then
         Result := LabelFileSync.Caption
     else Result := '';
-    if Result <> '' then
+    // ToDo : some test required but this is not it. It tells us sync not conf when its just not mounted  !
+{    if Result <> '' then
         if not fileexists(appendpathdelim(LabelFileSync.Caption) + 'manifest.xml') then
-            Result := '';
+            Result := '';   }
 end;
 
 procedure TSett.fSetValidSync(Repo: string);

@@ -9,8 +9,8 @@ Downloads and information for specific platforms further down the page.<size:hug
 
 <bold>Release Notes</bold></size:huge>
 <list><list-item dir="ltr">Undo (Ctr-Z) and Redo (Ctrl-Y) is now implemented. Each keypress is an event, the code to detect that a key is part of a sequence is too obtruvise. A setting allows disabling Undo if desired, I have not established clearly just what effect it has on performance.</list-item></list>
-<list><list-item dir="ltr">Better SysTray support for Linux systems using the Gnome Desktop. Don't show warning without good reason.</list-item></list>
-<list><list-item dir="ltr">RPM packages now include whats necessary to display SysTray Icon on Gnome Desktop (some manual config required however, see the help note, "System Tray on Linux").</list-item></list>
+<list><list-item dir="ltr">SysTray support for Linux systems using the Gnome Desktop, even Fedora !  Install gnome-shell-extension-appindicator package, restart.  </list-item></list>
+<list><list-item dir="ltr">Don't show missing SysTray warning without good reason, console messages. </list-item></list>
 <list><list-item dir="ltr">The help note, "System Tray on Linux" now points to a solution for System Tray issues on Debian Bulleseye using Gnome Desktop.</list-item></list>
 <list><list-item dir="ltr"><bold>Bug Fixes - </bold>Restructed initial config; MacOS find messages; Ctrl-N not working if in Search panel; Notebook list in a note's Notebook edit screen; Improvements to Markdown export; exporting MD from SingleNoteMode</list-item></list><size:huge>
 
@@ -120,14 +120,14 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2021-05-15T22:13:47.3231906+10:00</last-change-date>
-  <last-metadata-change-date>2021-05-15T22:13:47.3231906+10:00</last-metadata-change-date>
+  <last-change-date>2021-05-16T21:48:37.4750738+10:00</last-change-date>
+  <last-metadata-change-date>2021-05-16T21:48:37.4750738+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1173</width>
   <height>800</height>
-  <x>113</x>
+  <x>88</x>
   <y>253</y>
   <open-on-startup>False</open-on-startup>
 </note>

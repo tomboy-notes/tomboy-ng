@@ -110,9 +110,9 @@ interface
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
     StdCtrls, LCLTranslator, DefaultTranslator, Buttons, simpleipc,
-    LCLType,
-    x, xlib, process                                       // Relate to testing for SysTray
-    {$IFDEF LCLGTK3}, LazGdk3, LazGLib2  {$ENDIF}          // we need declare a GTK3 function that has not yet made it to bindings
+    LCLType
+    {$ifdef LINUX}, x, xlib, process {$endif}             // Relate to testing for SysTray
+    {$IFDEF LCLGTK3}, LazGdk3, LazGLib2 {$ENDIF}          // we need declare a GTK3 function that has not yet made it to bindings
     ;
 
 // These are choices for main and main popup menus.
@@ -313,12 +313,6 @@ begin
     {$ifdef LCLCARBON}
     UseTrayMenu := false;
     {$endif}
-    (*                      // this is all done now in settings
-    {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName));{$endif}
-    {$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/';    {$endif}
-    {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/';{$endif}
-    AltHelpNotesPath := HelpNotesPath + ALTHELP + PathDelim;        // Overridden in Sett for Linux
-    *)
     if UseTrayMenu then begin
         PopupMenuTray := TPopupMenu.Create(Self);
         TrayIcon.PopUpMenu := PopupMenuTray;        // SearchForm will populate it when ready
@@ -513,10 +507,6 @@ var
     NoteID, NoteTitle : string;
     Lab : TLabel;
 begin
-    { if CloseASAP then begin
-      close;
-      exit;
-    end;  }
     TestDarkThemeInUse();
 //    {$ifdef windows}                // linux (except bullseye, dec 2020) apps know how to do this themselves
     if Sett.DarkTheme then begin
@@ -541,7 +531,7 @@ begin
         SingleNoteMode(SingleNoteFileName);
         exit;
     end;
-     LabelBadNoteAdvice.Caption:= '';
+    LabelBadNoteAdvice.Caption:= '';
     ButtSysTrayHelp.Visible := False;
     {$ifdef LINUX}
     if not CheckForSysTray() then begin
@@ -553,10 +543,8 @@ begin
     if SearchForm.NoteLister.XMLError then begin
         LabelError.Caption := rsFailedToIndex;
         LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
-        //AllowDismiss := False;
     end else begin
         LabelError.Caption := '';
-        //LabelBadNoteAdvice.Caption:= '';
         if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then
             ButtonDismissClick(Self);
     end;

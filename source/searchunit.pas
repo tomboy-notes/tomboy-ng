@@ -1234,6 +1234,7 @@ var
 begin
     NewName := ExtractFileNameOnly(NoteName);
     OldName := Sett.NoteDirectory + NewName + '.note';
+    if not FileExistsUTF8(OldName) then exit;                   // Its a new, as yet unsave note
     if length(NewName) <> 36 then exit;                         // We only do notes with UUID names
     // We remove last four char from ID and replace with eg, -opn or -ttl.  This has
     // some loss of entropy, acceptable and allows use of existing Backup recovery.
@@ -1242,6 +1243,10 @@ begin
     // We assume here that Sett unit has checked and created a Backup dir is necessary.
     if FileExistsUTF8(NewName) then
         if not DeleteFile(NewName) then debugln('ERROR, failed to delete ' + NewName);
+
+    {debugln('File exists = ' + booltostr(, True));
+    debugln('Dir exits = ' + booltostr(DirectoryExists(Sett.NoteDirectory + 'Backup'), True));  }
+
     if not CopyFile(OldName, NewName) then
         debugln('ERROR, failed to copy : ' + #10 + OldName + #10 + NewName);
     //debugln('SearchForm : BackupNote ' + #10 + OldName + #10 + NewName);
