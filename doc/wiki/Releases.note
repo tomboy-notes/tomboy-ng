@@ -62,6 +62,10 @@ Tested on Fedora 33 and 34. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [G
 
 <bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. The solution is to install  gnome-shell-extension-appindicator (which will also install libappindicator-gtk3), log out and back in again. When you next startup tomboy-ng, it will ask if you want the plugin enabled, answer yes.  Note, you can enable and disable the plugin with the gnome-extensions command. 
 
+If you prefer to use the Qt5 version, then you need to launch tomboy-ng using the Wayland xwayland backend. Use a command like this to start tomboy-ng -
+
+<monospace>QT_QPA_PLATFORM=xcb  tomboy-ng &lt;enter&gt;</monospace>
+
 <bold>tint2</bold>
 Another approach is to install the very useful tint2 panel. It has no trouble displaying a System Tray on all Linux Desktops that I have tested. It is available from the standard Fedora Repository. 
 
@@ -73,7 +77,11 @@ Other flavours of Fedora (eg <bold> Plasma, Cinnamon, XFce</bold>) all seem happ
 <bold>Debian</bold></size:large>
 tomboy-ng Qt5, v0.32 is available in the Debian Bullseye repository. Install as you would for other repository applications.
 
-Earlier versions work fine but Bullseye with Gnome has a problem because Debian has dropped libappindicator3-1, due to the lack of a maintainer.  Please see https://github.com/davidbannon/libappindicator3
+Earlier versions work fine but Bullseye with Gnome has a problem because Debian has changed libappindicator3-1 to libayatana-appindicator3-1. So, if you use Gnome Desktop and the [32bit]($$DEB32) or [64bit]($$DEB64) version of tomboy-ng, please use a version of tomboy-ng later than 0.32f. 
+
+Further, to use any tomboy-ng on Bullseye Gnome, you must manually install gnome-shell-extension-appindicator and log out and back in again.   When you next startup tomboy-ng, it will ask if you want the plugin enabled, answer yes.  Note, you can enable and disable the plugin with the gnome-extensions command. 
+
+For a nasty, short term solution for v0.32, please see https://github.com/davidbannon/libappindicator3
 
 For earlier versions and distros based on them, (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  By time you get to Debian 10.4, Qt is, perhaps, a better bet if you are using 64bit. [64bit QT]($$DEB64QT).  If you wish to sync to a SMB: network share, you probably will need to install gvfs and gvfs-fuse. Tell tomboy-ng that the share (when open) is in something like /run/user/1000/gvfs/smb-share\:server\=greybox\,share\=store2 (where greybox is the server and store2 the share).
 
@@ -120,8 +128,8 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2021-05-16T21:48:37.4750738+10:00</last-change-date>
-  <last-metadata-change-date>2021-05-16T21:48:37.4750738+10:00</last-metadata-change-date>
+  <last-change-date>2021-05-20T20:50:09.4702846+10:00</last-change-date>
+  <last-metadata-change-date>2021-05-20T20:50:09.4702846+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

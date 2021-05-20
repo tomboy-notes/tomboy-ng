@@ -70,6 +70,7 @@ unit Mainunit;
     2021/04/01  Removed "have config", we always have config, if we cannot save it, user knows....
     2021/05/11  On Gnome Linux, test for libappindicator3 and appindicator shell plugin
     2021/05/15  On Gnome, if plugin is present but disabled, offer to enable it for user.
+    2021/05/19  If libappindicator is not present, check for libayatana-appindicator, but only if lcl is patched !
 
     CommandLine Switches
 
@@ -447,12 +448,16 @@ var
 
 begin
     result := false;
+    {$ifndef LCLQT5}                      // It appears QT5 can talk direct to gnome-shell-extension-appindicator ??
     H := LoadLibrary('libappindicator3.so.1');
+    if H = NilHandle then                           // Enable this if only if UnityWSCtrl has been patched to use ayatana
+         H := LoadLibrary('libayatana-appindicator3.so.1');    // see https://bugs.freepascal.org/view.php?id=38909
     if H = NilHandle then begin
-        debugln('Failed to Find libappindicator3, SysTray may not work.');
+        debugln('Failed to Find an AppOndicator Library, SysTray may not work.');
         exit(False);    // nothing to see here folks.
 	end;
 	unloadLibrary(H);
+    {$endif}
     Result := CheckPlugIn(True);
     if not Result then
         if MaybeNotGnome then
