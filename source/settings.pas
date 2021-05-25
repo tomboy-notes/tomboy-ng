@@ -204,14 +204,11 @@ type
         procedure ButtonFontClick(Sender: TObject);
         procedure ButtonManualSnapClick(Sender: TObject);
         procedure ButtonSetDictionaryClick(Sender: TObject);
-        //procedure ButtonSaveConfigClick(Sender: TObject);
         procedure ButtonSetNotePathClick(Sender: TObject);
         procedure ButtonSetSnapDirClick(Sender: TObject);
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
         procedure ButtonShowBackUpClick(Sender: TObject);
-        //procedure ButtonSnapDaysClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
-        procedure ButtonSyncHelpClick(Sender: TObject);
         procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
@@ -232,7 +229,6 @@ type
         procedure SpeedButtTBMenuClick(Sender: TObject);
         procedure SpeedSetupSyncClick(Sender: TObject);
         procedure SpinDaysPerSnapshotChange(Sender: TObject);
-        //procedure RadioFileSyncChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabRecoverResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
@@ -324,12 +320,7 @@ type
         NoteDirectory : string;
         { The dir expected to hold config file and, possibly local manifest }
         LocalConfig : string;
-        { relevent only when using file sync }
-        // RemoteRepo  : string;
-
         SyncOption : TSyncOption;
-        { Indicates we have done a config, not necessarily a valid one }
-        //HaveConfig : boolean;
         { Indicates user wants to see internal links }
         ShowIntLinks : boolean;
         { Says Notes should be treated as read only, a safe choice }
@@ -345,12 +336,6 @@ type
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
 
         property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
-
-        // property SyncOK : boolean read fGetSyncOK write fSetSyncOK;
-
-
-        //property SyncOK : boolean read fGetSyncOK;
-
         property ExportPath : ANSIString Read fExportPath write fExportPath;
         // Called after notes are indexed (from SearchUnit), will start auto timer tha
         // controls both AutoSync and AutoSnap. Does nothing in SingleNoteMode.
@@ -378,21 +363,16 @@ implementation
 
 uses IniFiles, LazLogger,
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff;
-    //Note_Lister,	// List notes in BackUp and Snapshot tab
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
     syncutils,
     recover,        // Recover lost or damaged files
     mainunit,       // so we can call ShowHelpNote()
     hunspell,       // spelling check
-    //helpnotes,      // All user to download non-English help Notes
     LCLType,        // Keycodes ....
     Autostart,
     Colours,
     ResourceStr;     // only partially so far ....
-    {TB_Utils}
-
-    // {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime();
 
 var
     Spell: THunspell;
@@ -438,7 +418,6 @@ procedure TSett.SyncSettings;
 begin
 	if NoteDirectory <> '' then begin
         LabelNotespath.Caption := NoteDirectory;
-        //HaveConfig := (NoteDirectory <> '');
         ShowIntLinks := CheckShowIntLinks.Checked;
         SetFontSizes();
 	    if RadioAlwaysAsk.Checked then SyncOption := AlwaysAsk
@@ -482,51 +461,26 @@ begin
 end;
 
 procedure TSett.SpeedSetupSyncClick(Sender: TObject);
-// var
-//     TempSyncRepo : string;
 begin
     {  ToDo : here we check if there is an existing local manifest and assume, incorrectly, that
        it must be associated with an existing FileSync. When we understand a bit more about
        nextcloud sync process, fix ! }
-    //if RadioFileSync.Checked then begin
-	        if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
-		    if FileExists(LocalConfig + 'manifest.xml') then
-	            if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
-	        if SelectDirectoryDialog1.Execute then begin
-	           FormSync.NoteDirectory := NoteDirectory;
-	           FormSync.LocalConfig := LocalConfig;
-	           FormSync.SetupSync := True;
-	           // TempSyncRepo := ValidSync;
-               ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-	           if mrOK = FormSync.ShowModal then begin
-	              WriteConfigFile();
-                  ValidSync := ValidSync;           // so we update button labels etc
-	           end else
-	               ValidSync := rsSyncNotConfig;
-	        end;
+
+	    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+	    if FileExists(LocalConfig + 'manifest.xml') then
+	        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
+	    if SelectDirectoryDialog1.Execute then begin
+	        FormSync.NoteDirectory := NoteDirectory;
+	        FormSync.LocalConfig := LocalConfig;
+	        FormSync.SetupSync := True;
+	        ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+	        if mrOK = FormSync.ShowModal then begin
+	            WriteConfigFile();
+	            ValidSync := ValidSync;           // so we update button labels etc
+	        end else
+	            ValidSync := rsSyncNotConfig;
+	    end;
 end;
-
-
-
-{procedure TSett.RadioFileSyncChange(Sender: TObject);
-begin
-(*   This is crazy, somehow fiddling with Label1's canvas is calling this.
-    Don't need it calling Settings right now but ...............  *)
-
-if  RadioFileSync.Checked then begin
-        if self.LabelFileSync.caption = rsSyncNotConfig then
-            SpeedSetUpSync.caption := rsSetUp
-        else SpeedSetUpSync.caption := rsChangeSync;
-        //LabelNCSyncURL.Visible := False;
-        LabelFileSync.Visible := True;
-    end else begin
-        if self.LabelNCSyncURL.caption = rsSyncNotConfig then
-            SpeedSetUpSync.caption := rsSetUp
-        else SpeedSetUpSync.caption := rsChangeSync;
-        LabelNCSyncURL.Visible := True;
-        LabelFileSync.Visible := True;
-	end;
-end;    }
 
 procedure TSett.TabBasicResize(Sender: TObject);
 begin
@@ -715,7 +669,6 @@ end;
 
 procedure TSett.FormShow(Sender: TObject);
 begin
-    //CheckSpelling;
     if not assigned(Spell) then
         Spell := THunspell.Create(Application.HasOption('debug-spell'), LabelLibrary.Caption);
         // user user has 'closed' (ie hide) then Spell was freed.
@@ -731,9 +684,6 @@ begin
         SearchForm.Close;
 	end else CloseAction := caHide;
 end;
-
-{RESOURCESTRING
-    rsSetFileSyncRepo = 'Set File Sync Repo'; }
 
 procedure TSett.FormCreate(Sender: TObject);
 begin
@@ -865,7 +815,6 @@ begin
     // TiniFile does not care it it does not find the config file, just returns default values.
      ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
      try
-        // MaskSettingsChanged := True;    // should be true anyway ?
    	    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
         CheckShowIntLinks.Checked :=
             ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
@@ -1106,7 +1055,6 @@ begin
         WriteConfigFile();
         SyncSettings();
         SearchForm.IndexNotes();
-        //NeedRefresh := True;
     end;
 end;
 
@@ -1152,7 +1100,6 @@ var
 
 begin
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName)) + 'HELP' + PathDelim;{$endif}
-    //{$ifdef LINUX}  HelpNotesPath := '/usr/share/doc/tomboy-ng/HELP/';    {$endif}
     {$ifdef LINUX}  HelpNotesPath := '/usr/share/tomboy-ng/HELP/';    {$endif}
     {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/HELP/';{$endif}
     HelpNotesLang:= '';
@@ -1178,7 +1125,6 @@ begin
         else HelpNotesLang:= 'EN';
     end;
     SetHelpLanguage();
-    //ComboHelpLanguage.ItemIndex := ComboHelpLanguage.Items.IndexOf(HelpNotesLang);
 end;
 
 procedure TSett.ComboHelpLanguageChange(Sender: TObject);
@@ -1210,7 +1156,6 @@ begin
                          UserSetColours := True;
                         WriteConfigFile();
                     end;
-//        mrCancel : showmessage('Do nothing');
 	end;
 end;
 
@@ -1241,13 +1186,6 @@ begin
     end;
     ButtonFont.Hint := UsualFont;
 end;
-
-{procedure TSett.ButtonHelpNotesClick(Sender: TObject);
-begin
- //   FormHelpNotes.show;
-end; }
-
-
 
 RESOURCESTRING
     rsDirHasNoNotes = 'That directory does not contain any notes. That is OK, if I can make my own there.';
@@ -1386,11 +1324,6 @@ end;
 
 { ------------------------ S Y N C -------------------------- }
 
-procedure TSett.ButtonSyncHelpClick(Sender: TObject);
-begin
-    SearchForm.ShowHelpNote('sync-ng.note');
-end;
-
 procedure TSett.CheckAutostartChange(Sender: TObject);
 var
    Auto : TAutoStartCtrl;
@@ -1486,9 +1419,6 @@ begin
                 SearchForm.RefreshMenus(mkFileMenu);
                 SearchForm.RefreshMenus(mkHelpMenu);
             end;
-            {if TCheckBox(Sender).Name = 'CheckCaseSensitive' then begin
-                SearchForm.CheckCaseSensitive.Checked := TCheckBox(Sender).Checked;
-            end; }
     end;
 end;
 

@@ -38,7 +38,9 @@ begin
         Application.CreateForm(TSett, Sett);
         Application.CreateForm(TSearchForm, SearchForm);
         Application.CreateForm(TFormSync, FormSync);
+        {$ifdef LINUX}
 		Application.CreateForm(TFormTomdroidFile, FormTomdroidFile);
+        {$endif}
         Application.CreateForm(TFormSyncError, FormSyncError);
         Application.CreateForm(TFormColours, FormColours);
 		Application.CreateForm(TFormRollBack, FormRollBack);

@@ -180,10 +180,6 @@ type
         function CheckForSysTray(): boolean;
         {$endif}
     public
-        // closeASAP: Boolean;
-        //HelpNotesPath : string;     // full path to help notes, with trailing delim.
-        //AltHelpNotesPath : string;  // where non-English notes might be. Existance of Dir says use it.
-
         UseTrayMenu : boolean;
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
@@ -242,15 +238,6 @@ uses LazLogger, LazFileUtils, LazUTF8,
     Note_Lister, cli,
     tb_utils,
     TomdroidFile {$ifdef windows}, registry{$endif};
-
-var
-    HelpNotes : TNoteLister;
-
-{ =================================== V E R S I O N    H E R E =============}
-
-{const}   //Version_string  = {$I %TOMBOY_NG_VER};
-        //AltHelp = 'alt-help';   // dir name where we store non english help notes.
-
 
 function SingleNoteFileName() : string;
 begin
@@ -325,7 +312,7 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
     freeandnil(CommsServer);
-    freeandnil(HelpNotes);
+ //   freeandnil(HelpNotes);
     //if HelpList <> Nil then writeln('Help List has ' + inttostr(HelpList.Count));
     // freeandnil(HelpList);
 end;
@@ -388,9 +375,9 @@ resourcestring
 function TMainForm.CheckGnomeExtras() : boolean;
 
 var
-    H : TLibHandle;
+    {$ifndef LCLQT5}H : TLibHandle;{$endif}
     MayBeNotGnome : boolean = false;
-    PlugInName : string = '';           // holds name if CheckPlugIn foound it.
+    PlugInName : string = '';           // holds name if CheckPlugIn found it.
 
 
     function CheckPlugIn(EnabledOnly : boolean) : boolean;

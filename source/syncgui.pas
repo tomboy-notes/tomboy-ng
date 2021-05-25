@@ -75,7 +75,6 @@ type
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
-                procedure FormCreate(Sender: TObject);
                 function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonCloseClick(Sender: TObject);
@@ -100,8 +99,6 @@ type
                 function ManualSync: boolean;
                     { Populates the string grid with details of notes to be actioned }
                 procedure ShowReport;
-            	//procedure TestRepo();
-        		//procedure DoSetUp();
 
 		public
                 Busy : boolean; // indicates that there is some sort of sync in process now.
@@ -139,7 +136,6 @@ var
 function TFormSync.Proceed(const ClashRec : TClashRecord) : TSyncAction;
 var
     SDiff : TFormSDiff;
-    //Res : integer;
 begin
     SDiff := TFormSDiff.Create(self);
     SDiff.RemoteFilename := ClashRec.ServerFileName;
@@ -198,8 +194,6 @@ end;
 procedure TFormSync.JoinSync;
 var
     SyncAvail : TSyncAvailable;
-    // ASync : TSync;
-    // UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing : integer;
 begin
     freeandnil(ASync);
     ASync := TSync.Create;
@@ -293,11 +287,6 @@ begin
     Result := ManualSync;
 end;
 
-procedure TFormSync.FormCreate(Sender: TObject);
-begin
-
-end;
-
         // User is only allowed to press Close when this is finished.
 function TFormSync.ManualSync : boolean;
 var
@@ -332,12 +321,6 @@ begin
                 FormSync.ModalResult := mrAbort;
                 exit(false);
             end;
-            (*FormSyncError.ButtRetry.Visible := not Visible;                           // Dont show Retry if interactive
-            ModalResult := FormSyncError.ShowModal;
-            if ModalResult = mrCancel then begin                                        // else its Retry
-
-                exit(false);
-            end; *)
             SyncState := ASync.TestConnection();
         end;
         Label1.Caption:= rsRunningSync;
@@ -401,9 +384,6 @@ begin
     with ASync.RemoteMetaData do begin
 	    for Index := 0 to Count -1 do begin
 	    if Items[Index]^.Action <> SyNothing then begin
-	            {StringGridReport.InsertRowWithValues(Rows
-	        	    , [ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
-	                , Items[Index]^.Title, Items[Index]^.ID]);  }
 	            AddLVItem(
 	                ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
 	                , Items[Index]^.Title
