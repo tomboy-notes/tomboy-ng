@@ -13,6 +13,20 @@ unit Note_Lister;
 
 	It keeps a second list if user has done a search.
 
+     -------- Multithreaded Indexing ----------
+
+  1. Only used for indexing all notes, when a single note is indexed, main thread.
+  2. The IndexNotes() method will call ThreadIndex.Start (and therfore TIndexThread.Execute)
+     four times, passing a set of the first chars [0..9, a..f, A..F] of file names to index.
+     TIndexThread.Execute will call GetNoteDetails for each note that Execute finds
+     GetNoteDetails reads note, builds a data structure and, subject to critical
+     section, adds it to the main data structure.
+  3. Datastructure is then sorted, NoteBooks cleaned up etc in the IndexNotes method.
+  4. Four theads on a multicore cpu gives some 2 - 3 times spead up. Little slower on single core.
+  5. We use RTL CriticalSection code, LCL version is similar performance.
+  6. Using FindFirst/Next is substantually faster than FindAllFiles.
+
+
 	History
 	2017/11/23 - added functions to save and retreive the Form when a note
     is open. Also added a function to turn a fullfilename, a filename or an ID
@@ -144,8 +158,12 @@ type
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
     //procedure DumpNoteBookList();
 
-                                // Indexes and maybe searches one note. TermList maybe nil.
-   	procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
+
+   	//procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
+
+                                // Indexes one note. Always multithread mode but sometimes its only one thread.
+                                // Does require CriticalSection to be setup before calling.
+    procedure GetNoteDetails(const Dir, FileName: ANSIString; DontTestName: boolean; TheLister : TNoteLister);
 
                                 // Inserts a new item into the ViewList, always Title, DateSt, FileName
     function NewLVItem(const LView: TListView; const Title, DateSt, FileName: string): TListItem;
@@ -294,6 +312,26 @@ Type   { ======================= SEARCH THREAD ========================== }
         Constructor Create(CreateSuspended : boolean);
     end;
 
+        { ======================= INDEX  THREAD ========================== }
+type
+    CharSet = set of char;
+
+Type
+
+        TIndexThread = class(TThread)
+        private
+
+        protected
+            procedure Execute; override;
+        public
+            TIndex : integer;           // Zero based count of threads
+            StartsWith : CharSet;
+            WorkingDir : string;
+            OneThread : boolean;        // indicates its not regular UUID based notes, do single thread index
+            TheLister : TNoteLister;
+            Constructor Create(CreateSuspended : boolean);
+        end;
+
 
 function NoteContains(const TermList : TStringList; FullFileName: ANSIString; const CaseSensitive : boolean): boolean;
 
@@ -311,7 +349,43 @@ uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUt
 var
     FinishedThreads : integer;     // There are here to allow the search threads to find them.
     ThreadLock : integer;          // -1 if unlocked, has value of thread when locked
+    CriticalSection: TRTLCriticalSection;   // we use RTL CriticalSection code, the LCL version is about the same
 
+{ ================ I N D E X  T H R E A D  ======================= }
+
+// ToDo : much of the work here is done in GetNoteDetails, maybe it belongs in this Type ?
+
+constructor TIndexThread.Create(CreateSuspended : boolean);
+begin
+    inherited Create(CreateSuspended);
+    FreeOnTerminate := True;
+end;
+
+procedure TIndexThread.Execute;
+var
+      Ch : char;
+
+  procedure FindNoteFile(Mask : string);
+  var
+        Info : TSearchRec;
+        Cnt : integer = 0;
+  begin
+    	if FindFirst(WorkingDir + Mask, faAnyFile, Info)=0 then
+    		repeat
+                inc(cnt);
+    		    SearchForm.NoteLister.GetNoteDetails(WorkingDir, Info.Name, OneThread, TheLister);
+    		until FindNext(Info) <> 0;
+    	FindClose(Info);
+  end;
+
+begin
+    if OneThread then
+        FindNoteFile('*.note')
+    else
+        for ch in StartsWith do
+            FindNoteFile(Ch + '*.note');
+    InterLockedIncrement(FinishedThreads);
+end;
 
 { ========================== SEARCH THREAD =========================== }
 
@@ -798,9 +872,11 @@ begin
 end;
 
 
-procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; DontTestName : boolean = false);
+procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; DontTestName : boolean; TheLister : TNoteLister);
 			// This is how we search for XML elements, attributes are different.
             // Note : we used to do seaching here as well as indexing, now just indexing
+		    // Note that this method is no Multithread aware. calling meth must setup
+		    // CriticalSection even if it is single threaded.
 var
     NoteP : PNote;
     Doc : TXMLDocument;
@@ -812,8 +888,13 @@ begin
     // debugln('Checking note ', FileName);
     if not DontTestName then
         if not IDLooksOK(copy(FileName, 1, 36)) then begin      // In syncutils !!!!
+            EnterCriticalSection(CriticalSection);
+            try
             ErrorNotes.Append(FileName + ', ' + 'Invalid ID in note filename');
             XMLError := True;
+            finally
+                LeaveCriticalSection(CriticalSection);
+            end;
             exit;
         end;
   	if FileExistsUTF8(Dir + FileName) then begin
@@ -858,7 +939,13 @@ begin
                                 NoteP^.IsTemplate := True;
                     for J := 0 to Node.ChildNodes.Count-1 do
                         if UTF8pos('system:notebook', Node.ChildNodes.Item[J].TextContent) > 0 then begin
-                            NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
+
+                            EnterCriticalSection(CriticalSection);
+                            try
+                                TheLister.NoteBookList.Add(Filename, UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17, 1000), NoteP^.IsTemplate);
+                            finally
+                                LeaveCriticalSection(CriticalSection);
+                            end;
                             // debugln('Notelister #691 ' +  UTF8Copy(Node.ChildNodes.Item[J].TextContent, 17,1000));
                         end;
                                 // Node.ChildNodes.Item[J].TextContent) may be something like -
@@ -868,20 +955,30 @@ begin
                                 // for the mentioned Notebook.
 		        end;
             except 	on E: EXMLReadError do begin
-                                DebugLn('XML ERROR' + E.Message);
-                                XMLError := True;
-                                dispose(NoteP);
-                                ErrorNotes.Append(FileName + ', ' + E.Message);
-                                exit();
-                            end;
+                                EnterCriticalSection(CriticalSection);
+                                try
+                                    DebugLn('XML ERROR' + E.Message);
+                                    XMLError := True;
+                                    dispose(NoteP);
+                                    TheLister.ErrorNotes.Append(FileName + ', ' + E.Message);
+                                    exit();
+								finally
+                                    LeaveCriticalSection(CriticalSection);
+								end;
+							end;
             		    on EAccessViolation do DebugLn('Access Violation ' + FileName);
   	        end;
                 if NoteP^.IsTemplate then begin    // Don't show templates in normal note list
                     dispose(NoteP);
                     exit();
 			    end;
-			    NoteList.Add(NoteP);
-  	    finally
+                EnterCriticalSection(CriticalSection);
+                try
+			        TheLister.NoteList.Add(NoteP);
+				finally
+                    LeaveCriticalSection(CriticalSection);
+				end;
+		finally
       	        Doc.free;
   	    end;
     end else DebugLn('Error, found a note and lost it ! ' + Dir + FileName);
@@ -889,10 +986,14 @@ end;
 
 
 procedure TNoteLister.IndexThisNote(const ID: String);
+// While not using threads, this method must init critical section because GetNoteDetails expects it.
+// This is used to index newly download synced notes and newly recovered (from backup) notes.
 begin
     //DebugMode := True;
     //debugln('TNoteLister.IndexThisNote');
-    GetNoteDetails(WorkingDir, CleanFileName(ID){, TStringList(nil)});
+    InitCriticalSection(CriticalSection);
+    GetNoteDetails(WorkingDir, CleanFileName(ID), false, self);
+    DoneCriticalSection(CriticalSection);
     //DebugMode := False;
 end;
 
@@ -1140,11 +1241,17 @@ end;
 
 function TNoteLister.IndexNotes(DontTestName : boolean = false): longint;
 var
-    Info : TSearchRec;
-    cnt : integer =0;
+    //Info : TSearchRec;
+    cnt : integer = 4;
+    IndexThread : TIndexThread;
 begin
+    //DebugMode := true;
     XMLError := False;
-    NoteList.Free;
+    if DontTestName then begin
+        cnt := 1;      // Just one thread.
+        FinishedThreads := 3;
+	end else FinishedThreads := 0;
+	NoteList.Free;
     NoteList := TNoteList.Create;
     NoteBookList.Free;
     NoteBookList := TNoteBookList.Create;
@@ -1152,12 +1259,34 @@ begin
     FreeandNil(ErrorNotes);
     ErrorNotes := TStringList.Create;
     if DebugMode then debugln('Looking for notes in [' + WorkingDir + ']');
-  	if FindFirst(WorkingDir + '*.note', faAnyFile and faDirectory, Info)=0 then     // ToDo : will FindAllFiles() and threading be faster ?
-  		repeat
-            inc(Cnt);
-  		    GetNoteDetails(WorkingDir, Info.Name, DontTestName);
-  		until FindNext(Info) <> 0;
-  	FindClose(Info);
+
+    InitCriticalSection(CriticalSection);                    // +++++++++++
+    while Cnt > 0 do begin
+        //debugln('Making thread ' + inttostr(Cnt));
+        IndexThread := TIndexThread.Create(True);         // Threads clean themselves up.
+        IndexThread.WorkingDir := WorkingDir;
+        IndexThread.OneThread := DontTestName;
+        IndexThread.TheLister := self;
+        case Cnt of                                       // This is ignored in OneThread mode
+            {$ifdef WINDOWS}
+            1 : IndexThread.StartsWith:= ['0', '1', '2', '3'];
+            2 : IndexThread.StartsWith:= ['4', '5', '6', '7'];
+            3 : IndexThread.StartsWith:= ['8', '9', 'A', 'B'];
+            4 : IndexThread.StartsWith:= ['C', 'D', 'E', 'F'];
+            {$else}
+            1 : IndexThread.StartsWith:= ['0', '1', '2', '3', '4'];
+            2 : IndexThread.StartsWith:= ['5', '6', '7', '8', '9'];
+            3 : IndexThread.StartsWith:= ['a', 'B', 'c', 'D', 'e', 'F'];
+            4 : IndexThread.StartsWith:= ['A', 'b', 'C', 'd', 'E', 'f'];
+            {$endif}
+		end;
+        IndexThread.start();
+        //debugln('Finished Making thread ' + inttostr(Cnt));
+        dec(Cnt);
+    end;
+    while FinishedThreads < 4 do sleep(1);       // ToDo : some sort of 'its taken too long ..."
+    DoneCriticalSection(CriticalSection);                     // ++++++++++++
+
     if DebugMode then debugLn('Finished indexing notes');
     NotebookList.CleanList();
     Result := NoteList.Count;
