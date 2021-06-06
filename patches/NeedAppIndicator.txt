@@ -1,0 +1,8 @@
+This patch uses X calls to determine if there is a SysTray available.
+If HASX is not defined, it assumes (pretty safe) that its Wayland or
+similar and cannot have a SysTray, so try an AppIndicator ...
+
+patch -P0 < NeedAppIndicator.patch
+
+Is not needed after r65119, see https://bugs.freepascal.org/view.php?id=38909
+

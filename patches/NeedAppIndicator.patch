@@ -1,0 +1,47 @@
+--- lcl/interfaces/gtk2/unitywsctrls.pas	2021-05-21 23:09:02.921778996 +1000
++++ lcl/interfaces/gtk2/unitywsctrls.pas-new	2021-05-21 23:08:27.012977065 +1000
+@@ -11,6 +11,7 @@
+ interface
+ 
+ {$mode delphi}
++{$I gtk2defines.inc}
+ 
+ uses
+   GLib2, Gtk2, Gdk2Pixbuf,
+@@ -76,6 +77,8 @@
+ 
+ implementation
+ 
++{$IFDEF HASX}uses gtk2extra, x, xlib, Types;{$ENDIF}        // Testing for traditional SysTray being available
++
+ const
+   libappindicator_3 = 'libappindicator3.so.1';              // Canonical's Unity Appindicator3 library
+   LibAyatanaAppIndicator = 'libayatana-appindicator3.so.1'; // Ayatana - typically called libayatana-appindicator3-1
+@@ -278,16 +281,19 @@
+   UseAppInd : string;
+ 
+   function NeedAppIndicator: boolean;
++  {$IFDEF HASX}
++  // Here we assume if no X, its pure eg wayland so no traditional SysTray either.
+   var
+-    DeskTop : String;
++    A : TAtom;
++    XDisplay: PDisplay;
++  {$endif}
+   begin
+-    DeskTop := GetEnvironmentVariableUTF8('XDG_CURRENT_DESKTOP');
+-    // See the wiki for details of what extras these desktops require !!
+-    if (Desktop = 'GNOME')
+-      or (DeskTop = 'Unity')
+-      or (Desktop = 'Enlightenment')
+-      or (Desktop = 'ubuntu:GNOME') then exit(True);
+-    Result := False;
++    Result := True;
++    {$IFDEF HASX}
++    XDisplay := gdk_display;
++    A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
++    result := (XGetSelectionOwner(XDisplay, A) = 0);
++    {$endif}
+   end;
+ 
+   function TryLoad(const ProcName: string; var Proc: Pointer): Boolean;

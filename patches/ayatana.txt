@@ -1,0 +1,18 @@
+Ayatana Patch
+
+For GTK2
+
+Adds the ayatana appindicator to the list that UnityWSCtrl tries to use
+to provide a SysTray Icon on Gnome.  Currently only required on Debian.
+
+Apply from the top of the lazarus (trunk) tree, where you see the lcl directory.
+
+$> patch -p0 < ayatana.patch
+
+All of the Gnome Desktop using Linuxes also require 
+gnome-shell-extension-appindicator (restart desktop) and then enable.
+
+
+Not needed after r65119, 21/5/2021
+
+

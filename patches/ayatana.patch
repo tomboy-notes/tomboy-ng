@@ -1,0 +1,96 @@
+--- lcl/interfaces/gtk2/unitywsctrls.pas	2021-05-21 11:48:57.310361523 +1000
++++ lcl/interfaces/gtk2/unitywsctrls.pas-new	2021-05-21 11:48:46.890074415 +1000
+@@ -11,6 +11,7 @@
+ interface
+ 
+ {$mode delphi}
++
+ uses
+   GLib2, Gtk2, Gdk2Pixbuf,
+   Classes, SysUtils, dynlibs,
+@@ -20,6 +21,10 @@
+ { Copyleft implementation of TTrayIcon originally for Unity applications indicators
+   Original version 2015 by Anthony Walter sysrpl@gmail.com
+ 
++  Updated May 2021 to try first the Canonical libappindicator3-1 (Fedora Gnome)
++  then libayatana-appindicator3-1 (Debian Bullseye). Ayatana is a fork of the
++  Canonical one, does not mention Unity or Ubuntu (very much). DRB
++
+   Changed October 2019, we now try and identify those Linux distributions that
+   need to use LibAppIndicator3 and allow the remainder to use the older and
+   more functional SystemTray. Only a few old distributions can use LibAppIndicator_1
+@@ -27,7 +32,7 @@
+ 
+   The 'look up table' in NeedAppIndicator() can be overridden.
+   Introduce an optional env var, LAZUSEAPPIND that can be unset or set to
+-  YES, NO or INFO - YES forces an attempt to use LibAppIndicator3, NO prevents
++  YES, NO or INFO - YES forces an attempt to use one of the AppIndicator3, NO prevents
+   an attempt, any non blank value (eg INFO) displays to std out what is happening.
+ 
+   Note we assume this env var will only be used in Linux were its always safe to
+@@ -65,14 +70,15 @@
+     class function GetPosition(const {%H-}ATrayIcon: TCustomTrayIcon): TPoint; override;
+   end;
+ 
+-{ UnityAppIndicatorInit returns true if libappindicator_3 library can be loaded }
++{ UnityAppIndicatorInit returns true if an AppIndicator library can be loaded }
+ 
+ function UnityAppIndicatorInit: Boolean;
+ 
+ implementation
+ 
+ const
+-  libappindicator_3 = 'libappindicator3.so.1';
++  libappindicator_3 = 'libappindicator3.so.1';              // Canonical's Unity Appindicator3 library
++  LibAyatanaAppIndicator = 'libayatana-appindicator3.so.1'; // Ayatana - typically called libayatana-appindicator3-1
+ 
+ {const
+   APP_INDICATOR_SIGNAL_NEW_ICON = 'new-icon';
+@@ -301,23 +307,33 @@
+   if UseAppInd = 'NO' then
+     begin
+     Initialized := False;
+-    writeln('APPIND Debug : Choosing to not try AppIndicator3');
++    writeln('APPIND Debug : Choosing to use Traditional SysTray');
+     Exit;
+   end;
+   if (UseAppInd <> 'YES') and (not NeedAppIndicator()) then    // ie its NO or blank or INFO
+   begin
+     Initialized := False;
+     if UseAppInd <> '' then
+-       writeln('APPIND Debug : Will not use AppIndicator3');
++       writeln('APPIND Debug : Will use Traditional SysTray');
+     Exit;
+   end;
+   if UseAppInd = 'YES' then                                    // either a YES or OS needs it
+      writeln('APPIND Debug : Will try to force AppIndicator3')
+   else
+-     if UseAppInd <> '' then writeln('APPIND Debug : OS and Desktop request AppIndicator3');
++     if UseAppInd <> '' then writeln('APPIND Debug : OS and Desktop request AppIndicator');
++
+   Module := LoadLibrary(libappindicator_3);        // might have several package names, see wiki
+-  if Module = 0 then
+-     Exit;
++  if Module = 0 then begin
++    if UseAppInd <> '' then                                    // either a YES or OS needs it
++       writeln('APPIND Debug : Failed to load Unity AppIndicator, will try Ayatana');
++    Module := LoadLibrary(LibAyatanaAppIndicator);
++    if Module = 0 then begin
++       if UseAppInd <> '' then
++         writeln('APPIND Debug : Failed to load Ayatana AppIndicator, its likely no SysTray available.');
++       exit(False);
++    end;
++  end;
++
+   Result :=
+     TryLoad('app_indicator_get_type', @app_indicator_get_type) and
+     TryLoad('app_indicator_new', @app_indicator_new) and
+@@ -340,7 +356,7 @@
+     TryLoad('app_indicator_get_label_guide', @app_indicator_get_label_guide) and
+     TryLoad('app_indicator_get_ordering_index', @app_indicator_get_ordering_index);
+   if UseAppInd <> '' then
+-     writeln('APPIND Debug : AppIndicator3 has loaded ' + booltostr(Result, True));
++     writeln('APPIND Debug : An AppIndicator has loaded ' + booltostr(Result, True));
+   Initialized := Result;
+ end;
+ 
