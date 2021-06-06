@@ -434,13 +434,15 @@ var
 	end;
 
 begin
+    // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk post 22/05/2021, r65122
+    // Does no harm to check here but if its not in Lazarus, its won't be used when needed.
     result := false;
     {$ifndef LCLQT5}                      // It appears QT5 can talk direct to gnome-shell-extension-appindicator ??
     H := LoadLibrary('libappindicator3.so.1');
     if H = NilHandle then                           // Enable this if only if UnityWSCtrl has been patched to use ayatana
          H := LoadLibrary('libayatana-appindicator3.so.1');    // see https://bugs.freepascal.org/view.php?id=38909
     if H = NilHandle then begin
-        debugln('Failed to Find an AppOndicator Library, SysTray may not work.');
+        debugln('Failed to Find an AppIndicator Library, SysTray may not work.');
         exit(False);    // nothing to see here folks.
 	end;
 	unloadLibrary(H);
@@ -451,11 +453,11 @@ begin
             debugln('SysTray not detected, not Gnome Desktop')
             // We also issue that message on a system that supports libappindicator3 without
             // needing (or installed) gnome-shell-extension-appindicator, eg U20.04 Mate
-            // I am not sure how many systems can use just libappindicator3 by itself.
+            // Plasma can use just libappindicator3 or Ayatana by itself.
         else
             if CheckPlugIn(False)  then begin      // Ah, its there but not enabled
                 debugln('SysTray Plugin for Gnome detected but not enabled');
-                // Maybe offer to enable it for user ??
+                // Offer to enable it for user ??
                 if IDYES = Application.MessageBox('Enable gnome-shell-extension-appindictor ?',
     			        'The SysTray extension is installed but not enabled',
        			        MB_ICONQUESTION + MB_YESNO) then
@@ -469,16 +471,16 @@ var
     XDisplay: PDisplay;
     ForceAppInd : string;
 begin
+    Result := False;
+
+    // Don't test for SysTray under GTK3, will never be there.  One or other AppIndicator
+    // is your only chance. And XInternAtom() function SegVs on Gnome DTs so don't try it.
+    // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk post 22/05/2021, r65122
+
+    {$IFnDEF LCLGTK3}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2} XDisplay := gdk_display; {$endif}
     {$ifdef LCLQT5}  XDisplay := QX11Info_display; {$endif}
-
-    // The GTK3 part here is informed by https://github.com/salvadorbs/AsuiteComps/blob/main/library/platform/unix/Hotkeys.Manager.Platform.pas
-    // it requires a function declaration of gdk_x11_display_get_xdisplay( which has not made it into our bindings.
-    // ToDo : get that declaration into our bindings, much tidier !
-    {$IFDEF LCLGTK3} // See https://github.com/tomboy-notes/tomboy-ng/issues/239 for possible fix by salvadorbs
-    XDisplay := gdk_x11_display_get_xdisplay(gdk_window_get_display(gdk_get_default_root_window)); {$ENDIF}
-
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
     ForceAppInd := GetEnvironmentVariable('LAZUSEAPPIND');
@@ -486,9 +488,10 @@ begin
             debugln('Tradition Systray = ' + booltostr(result, True));
     if ForceAppInd = 'YES' then
             result := false;
-    // if we are false here, its probably because its a recent Gnome Desktop, no SysTray.
-    // However, if libappindicator3 is installed and the Gnome Shell Extension, appindicators is installed
-    // and enabled, it will 'probably' be OK.
+    {$ENDIF}
+    // if we are false here, its probably because its a recent Gnome Desktop or GTK3, no SysTray.
+    // However, if libappindicator3 or Ayatana is installed and the Gnome Shell Extension,
+    // appindicators is installed and enabled, it will 'probably' be OK.
     if result = false then
         Result := CheckGnomeExtras();   // Thats libappindicator3 and an installed and enabled gnome-shell-extension-appindicator
     end;

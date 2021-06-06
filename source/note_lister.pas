@@ -7,8 +7,8 @@ unit Note_Lister;
 
     ------------------
 
-    A class that knows how to read a directory full of notes. It keeps that list
-	internally, unsorted (easier to sort in the display grid). Note details (
+    A class that knows how to read a directory full of notes. It keeps those list
+	internally, sorted by date. Note details (
     Title, LastChange) can be updated (eg when a note is saved).
 
 	It keeps a second list if user has done a search.
@@ -108,7 +108,8 @@ type
 	end;
 
 type                                 { ---------- TNoteInfoList ---------}
-   TNoteList = class(TList)   // ToDo : TFPList is faster
+   //TNoteList = class(TList)   // ToDo : TFPList is faster
+   TNoteList = class(TFPList)
    private
     	function Get(Index: integer): PNote;
     public

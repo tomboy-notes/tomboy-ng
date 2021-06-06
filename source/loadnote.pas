@@ -182,41 +182,6 @@ begin
   end;
 end;
 
-// ToDo : replace following function with one from syncutils, RestoreBadXMLChar()
-// ToDo : above done, remove this function ?
-(* function TBLoadNote.ReplaceAngles(const Str : AnsiString) : AnsiString;
-// Takes a string with eg xxx&ltyyy and converts to xxx<yyy
-var
-    index : longint = 1;
-    Start : longint = 1;
-begin
-  // Don't use UTF8 functions here, we are working with bytes !
-  Result := '';
-    while Index <= Length(Str) do begin
-      if '&lt;' = Copy(Str, Index, 4) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '<';
-            inc(Index);
-            Start := Index + 3;
-            Continue;
-	  end;
-      if '&gt;' = Copy(Str, Index, 4) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '>';
-            inc(Index);
-            Start := Index + 3;
-            Continue;
-	  end;
-      if '&amp;' = Copy(Str, Index, 5) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '&';
-            inc(Index);
-            Start := Index + 4;
-            Continue;
-	  end;
-      inc(Index);
-	end;
-    Result := Result + Copy(Str, Start, Index - Start);
-end;     *)
-
-
 Procedure TBLoadNote.ReadTag(fs : TFileStream);    // we are here because '<'
 var
     Buff : String;

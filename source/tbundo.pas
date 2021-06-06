@@ -107,7 +107,7 @@ type TChangeRec = record
     NewData   : string;             // The content that was initially added.
 end;
 
-const  MaxChange = 10;               // ToDo : set this to, eg, 100, when tested OK
+const  MaxChange = 25;               // ToDo : set this to, eg, 100, when tested OK
 
 type
     TChangeStructure = array[0..MaxChange-1] of TChangeRec;
