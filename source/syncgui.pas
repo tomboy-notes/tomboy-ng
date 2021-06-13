@@ -123,8 +123,8 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier,
-        settings;		// just for DarkTheme
+uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier
+        {, Settings} ;		// just for DarkTheme
 
 {$R *.lfm}
 

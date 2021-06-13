@@ -248,6 +248,7 @@ function TUndo_Redo.GetSelectedRTF() : string;
 var
     AStream : TMemoryStream;
 begin
+    result := '';
     if TheKMemo.Blocks.RealSelLength > 0 then begin
         AStream := TMemoryStream.Create;
         try

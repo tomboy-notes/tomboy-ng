@@ -95,7 +95,7 @@ implementation
 
 { TNoteBookPick }
 
-uses SearchUnit, LazFileUtils, LCLProc, Settings, SaveNote, EditBox, SyncUtils, resourcestr,
+uses SearchUnit, LazFileUtils, LCLProc, Settings, SaveNote, EditBox, {SyncUtils,} resourcestr,
         tb_utils;
 
 procedure TNoteBookPick.SetupForNewSelect();

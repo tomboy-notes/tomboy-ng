@@ -343,7 +343,7 @@ function NoteContains(const TermList : TStringList; FullFileName: ANSIString; co
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SyncUtils, SearchUnit, tb_utils;
+uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, {SyncUtils,} SearchUnit, tb_utils;
 { Projectinspector, double click Required Packages and add LCL }
 
 var
@@ -961,10 +961,11 @@ begin
                                     XMLError := True;
                                     dispose(NoteP);
                                     TheLister.ErrorNotes.Append(FileName + ', ' + E.Message);
-                                    exit();
+                                    //exit();     // generates a wierd unresolable symbol on windows ?? Move down a couple of lines
 								finally
                                     LeaveCriticalSection(CriticalSection);
 								end;
+                                exit();
 							end;
             		    on EAccessViolation do DebugLn('Access Violation ' + FileName);
   	        end;

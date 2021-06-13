@@ -528,7 +528,7 @@ uses
     Spelling,
     NoteBook,
     MainUnit,           // Not needed now for anything other than MainForm.Close()
-    SyncUtils,          // Just for IDLooksOK()
+//    SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
     commonmark,
     //Markdown,

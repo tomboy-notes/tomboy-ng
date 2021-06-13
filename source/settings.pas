@@ -261,7 +261,7 @@ type
           or a full name was provided in DicFullName, just tests that name.
           If successfull show on screen and saves config }
         procedure CheckSpelling(const DicFullName: string='');
-        procedure DicDefaults(var DicPathAlt: string);
+        procedure DicDefaults(out DicPathAlt: string);
         procedure DoAutoSnapshot;
                             // Returns a good place to save config or user requested place if on cmdline,
         function GetDefaultConfigDir: string;
@@ -576,7 +576,7 @@ begin
     if DebugModeSpell then debugln('CheckDictionary ' + FullDicName + ' return ' + booltostr(Result, True));
 end;
 
-procedure TSett.DicDefaults(var DicPathAlt : string);
+procedure TSett.DicDefaults(out DicPathAlt : string);
 begin
     DicPathAlt := ExtractFilePath(Application.ExeName);
     {$ifdef WINDOWS}

@@ -136,7 +136,7 @@ uses FileUtil               // Graphics needed for font style defines
     ,Settings				// User settings and some defines across units.
     ,SearchUnit				// So we have access to NoteBookList
     ,LazFileUtils           // For ExtractFileName...
-    ,SyncUtils             // For removebadxmlcharacters()
+//    ,SyncUtils             // For removebadxmlcharacters()
     ,tb_utils;
     // {$ifdef LINUX}, Unix {$endif} ;              // We call a ReReadLocalTime()
 
