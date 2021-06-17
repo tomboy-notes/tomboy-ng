@@ -386,12 +386,16 @@ msgid "Exact matches for terms between \" \""
 msgstr "Búsqueda exacta para términos entre \" \""
 
 #: resourcestr.rssearchnavhint
+#, fuzzy
+#| msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
 msgctxt "resourcestr.rssearchnavhint"
-msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
+msgid "Find : F3 or Ctrl-G, Backward Find : Shift-F3 or Shift-Ctrl-G"
 msgstr "Buscar: Adelante: Ctrl-Enter, Atrás: Alt-Enter"
 
 #: resourcestr.rssearchnavhintmac
-msgid "Find : Cmd-Enter, Backward Find : Alt-Enter"
+#, fuzzy
+#| msgid "Find : Cmd-Enter, Backward Find : Alt-Enter"
+msgid "Find : Cmd-G, Backward Find : Shift-Cmd-G"
 msgstr "Buscar: Adelante: Cmd-Intro, Buscar atrás: Alt-Intro"
 
 #: resourcestr.rssetthenotebooks

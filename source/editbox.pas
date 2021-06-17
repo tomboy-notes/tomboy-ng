@@ -1219,6 +1219,8 @@ begin
     end  else  begin
         //debugln('INFO : EditBox MenuItemFindClick Exposing FindPanel');
         PanelFind.Height := SearchPanelHeight;
+        if KMemo1.RealSelLength > 0 then
+            EditFind.Text := KMemo1.SelText;
         LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac{$else}rsSearchNavHint{$endif};                     //GetFindKeyHint();
         EditFind.SetFocus;
     end;
@@ -1249,10 +1251,87 @@ begin
 end;
 
 procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-// Here we watch for just the Enter key.
 // We must move focus back to KMemo on every find, else highlighted text is hidden on Qt with some themes
 // If we allow user to use Enter to trigger a find, their next press of enter will erase what ever is highlighted
+var Direction : integer = 0;    // 0 = no action, 1 = Next, -1 = prev
 begin
+    // We now respond to a number of keys -
+    // Ctrl-Enter, F3, Ctrl-G means Next
+    // Alt-Enter, Shift-F3, Ctrl-Shift-G means previous
+    // Enter means user has used wrong key, tell them.
+
+    if ([] = shift) and (Key = VK_F3) then Direction := 1
+    else if ({$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) and         // That is ctrl only
+                ((Key = VK_RETURN) or (Key = VK_G)) then Direction := 1
+         else if ([ssAlt] = Shift) and (Key = VK_RETURN) then Direction := -1    // Alt-Enter
+              else if ([ssShift] = Shift) and (Key = VK_F3) then Direction := -1 // Shift F3
+                   else if ([ssCtrl, ssShift] = Shift) and (Key = VK_G) then          // Ctrl-Shift-G
+                       Direction := -1;
+
+    if (Direction = 0) then begin
+        if Key = VK_Return then begin
+            LabelFindCount.caption := '';
+            if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
+                LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif}
+            else LabelFindInfo.Caption := ' ' + {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif};
+            EditFind.SetFocus;
+	    end;
+	end else begin
+        if Direction = 1 then
+                UpDown1Click(self, btNext)
+        else UpDown1Click(self, btPrev);
+        Key := 0;
+    end;
+
+(*
+    if Direction = 1 then begin
+        UpDown1Click(self, btNext);
+        Key := 0;
+        exit;
+	end;
+    if Direction = -1 then begin
+        UpDown1Click(self, btPrev);
+        Key := 0;
+        exit;
+    end;
+    // OK, not a valid search instruction, make sure user has not hit Return
+
+
+
+
+
+    if ([] = shift) and (Key = VK_F3)) then  begin
+                UpDown1Click(self, btNext);
+                exit;
+	end;
+    if ({$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) and       // That is ctrl only
+            ((Key = VK_RETURN) or (Key = VK_G)) then begin
+                UpDown1Click(self, btNext);
+                exit;
+	end;
+    if ([ssAlt] = Shift) and (Key = VK_RETURN) then begin                 // Alt-Enter
+                UpDown1Click(self, btPrev);
+                exit;
+	end;
+    if ([ssShift] = Shift) and (Key = VK_F3) then begin                 // Shift F3
+                UpDown1Click(self, btPrev);
+                exit;
+	end;
+        if ([ssCtrl, ssShift] = Shift) and (Key = VK_G) then begin      // Ctrl-Shift-G
+                UpDown1Click(self, btPrev);
+                exit;
+	end;
+
+
+
+
+    if SSShift in Shift then begin
+        if Key in [ VK_RETURN, VK_F3 ] then begin
+
+		end;
+	end;
+
+
     if (Key = VK_RETURN) {and (EditFind.Text <> rsMenuSearch)} then begin
         Key := 0;                             // Eat it
         if {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift then begin
@@ -1263,13 +1342,14 @@ begin
               UpDown1Click(self, btPrev);
               exit;
         end;
-        // Its just an Enter, tell user wrong key !
+
+    if Key = VK_RETURN then begin// Its just an Enter, tell user wrong key !
         LabelFindCount.caption := '';
         if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
             LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif}
         else LabelFindInfo.Caption := ' ' + {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif};
         EditFind.SetFocus;
-    end;
+    end;   *)
 end;
 
 procedure TEditBoxForm.EditFindChange(Sender: TObject);
@@ -2646,13 +2726,18 @@ begin
     // -------------- Shift -------------------
     if [ssShift] = shift then begin
         if (Key = VK_LEFT) or (Key = VK_RIGHT) then exit; // KMemo - extend selection one char left or right
+        if (Key = VK_F3) then
+        begin
+            key := 0;
+            if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btPrev);
+       end;
     end;
     {$endif}
 
     // -------------- Control ------------------
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
-            VK_Return :  begin
+            VK_Return, VK_G :  begin
                                 key := 0;
                                 if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btNext);
                          end;
@@ -2698,17 +2783,31 @@ begin
 
     // ------------------ Control and Shift ----------------
     if [ssCtrl, ssShift] = Shift then begin
-       if key = ord('F') then begin  Key := 0; SpeedButtonSearchClick(self); exit();    // Activate Search Window
+        case Key of
+            VK_F : SpeedButtonSearchClick(self);
+            VK_G : if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btPrev);
+            {$ifndef DARWIN}
+            VK_RIGHT, VK_LEFT : exit;   // KMemo knows how to do this, select word ...
+            {$endif}
        end;
+
+       (* if key = ord('F') then begin  Key := 0; SpeedButtonSearchClick(self); exit(); end;   // Activate Search Window
+
        {$ifndef DARWIN}
-       if (key = VK_RIGHT) or (Key = VK_LEFT) then exit;{$endif}            // KMemo knows how to do this, select word ...
+       if (key = VK_RIGHT) or (Key = VK_LEFT) then exit;{$endif}  *)          // KMemo knows how to do this, select word ...
        Key := 0;
+       exit();
     end;
-    if Key = VK_TAB then begin
+
+    { if Key = VK_TAB then begin                                            // ToDo : Tabs dont work as expected
       KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, #09);
       Key := 0;
       exit;
-    end;
+    end;  }
+    if Key = VK_F3 then begin
+                                key := 0;
+                                if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btNext);
+       end;
     if Key <> 8 then exit();    // We are watching for a BS on a Bullet Marker
     // Mac users don't have a del key, they use a backspace key thats labled 'delete'. Sigh...
     if KMemo1.Blocks.RealSelEnd > KMemo1.Blocks.RealSelStart then exit();

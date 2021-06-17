@@ -41,8 +41,8 @@ Fonts
 <list><list-item dir="ltr">Control-E : Expression calculator - see Calculator help note</list-item></list>
 Find (in a note)
 <list><list-item dir="ltr">Control-F : Find something in a Note.</list-item></list>
-<list><list-item dir="ltr">Control-Enter : Next in note Find</list-item></list>
-<list><list-item dir="ltr">Alt-Enter : Previous in note Find</list-item></list><size:large>
+<list><list-item dir="ltr">F3 or Ctrl-G : Next in note Find</list-item></list>
+<list><list-item dir="ltr">Shift-F3 or Shift-Ctrl-G : Previous in note Find</list-item></list><size:large>
 
 
 <bold>Mac</bold></size:large>
@@ -70,8 +70,8 @@ Fonts
 <list><list-item dir="ltr">Option-H : Highlight</list-item></list>
 Find (in a note)
 <list><list-item dir="ltr">Command-F : Find something in a Note.</list-item></list>
-<list><list-item dir="ltr">Command-Enter : Next in note Find</list-item></list>
-<list><list-item dir="ltr">Alt-Enter : Previous in note Find</list-item></list>
+<list><list-item dir="ltr">Command-G : Next in note Find</list-item></list>
+<list><list-item dir="ltr">Shift-Command-G : Previous in note Find</list-item></list>
 
 
 
@@ -80,8 +80,8 @@ Find (in a note)
 
 
 </note-content></text>
-  <last-change-date>2021-04-13T18:25:01.8015240+10:00</last-change-date>
-  <last-metadata-change-date>2021-04-13T18:25:01.8015240+10:00</last-metadata-change-date>
+  <last-change-date>2021-06-17T13:20:22.4828983+10:00</last-change-date>
+  <last-metadata-change-date>2021-06-17T13:20:22.4828983+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

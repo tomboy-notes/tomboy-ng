@@ -95,8 +95,9 @@ implementation
 
 { TNoteBookPick }
 
-uses SearchUnit, LazFileUtils, LCLProc, Settings, SaveNote, EditBox, {SyncUtils,} resourcestr,
-        tb_utils;
+uses SearchUnit, LazFileUtils, LCLProc, Settings, SaveNote, EditBox, resourcestr,
+        tb_utils
+        {$ifdef WINDOWS}, SyncUtils{$endif};    // SafeWindowsDelete
 
 procedure TNoteBookPick.SetupForNewSelect();
 var

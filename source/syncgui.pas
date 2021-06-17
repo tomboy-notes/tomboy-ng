@@ -124,7 +124,7 @@ implementation
 }
 
 uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier
-        {, Settings} ;		// just for DarkTheme
+        {$ifdef WINDOWS}, Settings{$endif} ;		// just for DarkTheme
 
 {$R *.lfm}
 

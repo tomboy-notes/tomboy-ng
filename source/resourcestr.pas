@@ -156,8 +156,8 @@ RESOURCESTRING
   // The soon to be merged NextCloud Notes Sync
 
   // EditBox  - lots more to do ..
-  rsSearchNavHint = 'Find : Ctrl-Enter, Backward Find : Alt-Enter';
-  rsSearchNavHintMac = 'Find : Cmd-Enter, Backward Find : Alt-Enter';
+  rsSearchNavHint = 'Find : F3 or Ctrl-G, Backward Find : Shift-F3 or Shift-Ctrl-G';
+  rsSearchNavHintMac = 'Find : Cmd-G, Backward Find : Shift-Cmd-G';
 
 
 implementation

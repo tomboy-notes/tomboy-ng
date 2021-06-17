@@ -23,8 +23,8 @@
 <list><list-item dir="ltr">Ctrl-V : Pegar el contenido del portapapeles en la nota actual.</list-item></list>
 <list><list-item dir="ltr">Ctrl-A : Seleccionar todo.</list-item></list>
 <list><list-item dir="ltr">Ctrl-F : Abrir una ventana de búsqueda.</list-item></list>
-<list><list-item dir="ltr">Ctrl-Intro : Buscar hacia adelante</list-item></list>
-<list><list-item dir="ltr">Alt-Intro  : Buscar hacia atrás</list-item></list>
+<list><list-item dir="ltr">F4 or Ctrl-G : Buscar hacia adelante</list-item></list>
+<list><list-item dir="ltr">Mayús-F4 or Mayús-Ctrl-G : Buscar hacia atrás</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaDerecha : Mover al principio de la palabra a la derecha.</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaIzquierda : Mover al principio de la palabra actual o de allí al principio de la palabra a la izquierda.</list-item></list>
 <list><list-item dir="ltr">Ctrl-Mayús-FlechaIzquierda - extender la selección un carácter hacia la izquierda</list-item></list>
@@ -53,8 +53,8 @@
 <list><list-item dir="ltr">Cmd-V : Pegar el contenido del portapapeles en la nota actual.</list-item></list>
 <list><list-item dir="ltr">Cmd-A : Seleccionar todo.</list-item></list>
 <list><list-item dir="ltr">Cmd-F : Abrir una ventana de búsqueda.</list-item></list>
-<list><list-item dir="ltr">Cmd-Intro : Buscar hacia adelante</list-item></list>
-<list><list-item dir="ltr">Alt-Intro    : Buscar hacia atrás</list-item></list>
+<list><list-item dir="ltr">Cmd-G : Buscar hacia adelante</list-item></list>
+<list><list-item dir="ltr">Mayús-Cmd-G    : Buscar hacia atrás</list-item></list>
 <list><list-item dir="ltr">Cmd-FlechaDerecha : Ir al final de la línea.</list-item></list>
 <list><list-item dir="ltr">Cmd-FlechaIzquierda : Ir al principio de la línea.</list-item></list>
 <list><list-item dir="ltr"><highlight>Cmd-Z : Undo</highlight></list-item></list><highlight>
@@ -76,14 +76,14 @@
 
 
 </note-content></text>
-  <last-change-date>2021-04-13T18:23:40.8026334+10:00</last-change-date>
-  <last-metadata-change-date>2021-04-13T18:23:40.8026334+10:00</last-metadata-change-date>
+  <last-change-date>2021-06-17T13:18:42.4826493+10:00</last-change-date>
+  <last-metadata-change-date>2021-06-17T13:18:42.4826493+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>323</x>
-  <y>29</y>
+  <x>882</x>
+  <y>222</y>
   <open-on-startup>False</open-on-startup>
 </note>

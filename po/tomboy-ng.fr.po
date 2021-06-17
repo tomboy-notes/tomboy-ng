@@ -384,11 +384,11 @@ msgstr "Correspondance exacte si placé entre \"\""
 
 #: resourcestr.rssearchnavhint
 msgctxt "resourcestr.rssearchnavhint"
-msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
+msgid "Find : F3 or Ctrl-G, Backward Find : Shift-F3 or Shift-Ctrl-G"
 msgstr ""
 
 #: resourcestr.rssearchnavhintmac
-msgid "Find : Cmd-Enter, Backward Find : Alt-Enter"
+msgid "Find : Cmd-G, Backward Find : Shift-Cmd-G"
 msgstr ""
 
 #: resourcestr.rssetthenotebooks
