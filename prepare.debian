@@ -297,7 +297,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	fi
 	cd "$APP"_"$VER""$DEBVER"
 
-	# mv debian/control.qt5-DEBIAN debian/control
+	mv debian/control.debian debian/control
 	rm -f debian/control.qt5
 	rm -f debian/rules.qt5
 

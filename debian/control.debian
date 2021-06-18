@@ -1,0 +1,22 @@
+Source: tomboy-ng
+Section: x11
+Priority: optional
+Maintainer: David Bannon <tomboy-ng@bannons.id.au>
+Rules-Requires-Root: no
+Build-Depends: debhelper-compat (=13), binutils, libgtk2.0-dev, libx11-dev, libnotify-dev, fpc (>=3.0.4), lazarus (>=2.0.10)
+Standards-Version: 4.5.1
+Vcs-Browser: https://github.com/tomboy-notes/tomboy-ng
+Vcs-Git: https://github.com/tomboy-notes/tomboy-ng.git
+Homepage: https://github.com/tomboy-notes/tomboy-ng
+
+Package: tomboy-ng
+Provides: tomboy-ng
+Architecture: any
+Multi-Arch: foreign
+Depends: libgtk2.0-0 (>= 2.6), ${shlibs:Depends}, libcanberra-gtk-module, wmctrl, ${misc:Depends}
+Suggests: libayatana-appindicator3-1
+Description: Tomboy Notes rewritten to ease installation and cross platform
+ tomboy-ng notes allows easy management of a large or small set of
+ notes. Notes can contain a range of font sizes, bold, italic and highlight.
+ Available for Linux, Windows amd Mac and easy sync between them.
+ This is the GTK2 based version.
