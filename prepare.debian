@@ -297,11 +297,11 @@ if [ -f tomboy-ng-master.zip ]; then
 	fi
 	cd "$APP"_"$VER""$DEBVER"
 
-	mv debian/control.qt5-DEBIAN debian/control
+	# mv debian/control.qt5-DEBIAN debian/control
 	rm -f debian/control.qt5
 	rm -f debian/rules.qt5
 
-	touch Qt5
+	# touch Qt5
 	cd ..
 
 	echo "If no errrors, you should now cd ""$APP"_"$VER""$DEBVER""; debuild -S"
