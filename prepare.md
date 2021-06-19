@@ -21,13 +21,13 @@ The other building model is when a build problem is noted, the tomboy-ng source 
 
 
 
-The proceess is download (or extract) tomboy-ng source, remove unnecessary content, build the SRC package, copy files to a clean directory, do a test build (that makes the .deb file) and run an pedantic lintian. If thats all satisfactory, we upload to Mentors.
+The process is download (or extract) tomboy-ng source, remove unnecessary content, build the SRC package, copy files to a clean directory, do a test build (that makes the .deb file) and run an pedantic lintian. If thats all satisfactory, we upload to Mentors.
 
 
 
 **Debian SRC Build steps**
 --------
-(all assuming you are David and using a pre configured VM, Debian-T)
+(all assuming you are David and using a pre configured VM, Debian-T, rev the release number as required)
 
 
 
@@ -43,9 +43,7 @@ The proceess is download (or extract) tomboy-ng source, remove unnecessary conte
 
 `debuild -S`
 
-`cd ..`
-
-
+`cd ..` 
 
 `mkdir ../Test"$DebVer"`
 
@@ -125,11 +123,15 @@ A PGP key is required to upload to Mentors or Launchpad. It lives in ~/.gnupg.
 
 `pgp ~/.gpg/public-keys/tomboy-ng-GPU-KEY [enter]`
 
-`pub   rsa3072 2020-03-10`         < thats the expiry date
+`pub   rsa3072 2020-03-10`   
 
-      `79445......`                < thats the fingerprint
+      `79445......`
 
 `uid   tomboy-ng <tomboy-ng@bannons.id.au>`
+
+
+
+(The 79445.... is the fingerprint)
 
 
 
