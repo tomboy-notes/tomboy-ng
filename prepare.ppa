@@ -1,56 +1,17 @@
 #!/bin/bash
 # copyright David Bannon, 2019, 2020, use as you see fit, but retain this statement.
-#
+# This stript is useful to prepare the tomboy-ng source tree to make an
+# Ubuntu PPA
 
-# This script takes a tomboy-ng zip file from github, and prepares things to
-# build it a source deb or just run buildit.bash to make a tomboy-ng binary"
-# One of two control files may be used, control and control.qt5  
-# This script is NOT used to make the Debian release.
-# This script makes a new .orig file every time.
+# For detailed instructions including ready to copy command lines see-
+# https://github.com/tomboy-notes/tomboy-ng/blob/master/prepare.md
 
-# -------------------- Making a Ubuntu PPA --------------------
-# To build a Debian Source Package, 
-# 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt6pas-dev
-#	Ensure appropriate pgp key in place ($HOME/.gnupg), see below 
-#	In an empty dir, following commands -
-#	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.bash
-# Unless you are me, you need to edit the above, DEBFULLNAME and DEBEMAIL _OR_ have env set 
-#	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
-#	mv master.zip tomboy-ng-master.zip
-#	bash ./prepare.bash -D bionic [-Q]      // the -Q says make a Qt5 version please.
-#	cd tomboy-ng_XXXX                       // Whatever the name is at this stage....
-#	debuild -S
-#	cd ..
-#       dput ppa:d-bannon/ppa-tomboy-ng *.changes [enter]
 
-# -------------------- Failed UpLoad or Build----------------------
-# 1. Say rude words.
-# 2. Edit the current prepare.bash, inc PACKVER by 1.
-# 3. Save the existing (ie failed) orig file somewhere.
-# 4. Use prepare.bash to generate a new kit.
-# 4. Bring back that saved orig file, overwriting newly made one.
-# 5. Fix whatever needs fixing in the source dir.
-# 6. Generate new deb src with debuild -S; cd ..; dput .....
-# In summary, a second and subsquent upload of same -ng version must get 
-# a new build revision number, must be built against the .orig. orig file.
+
+
 
 # Remember that we don't build a Qt5 for Bionic, its libqt5pas is too old.
 # So, -Dbionic   and  -Q -Dfocal
-
-# The ubuntu PPA only has access to Bionic and Focal FPC/Lazarus.  Could be exteneded, copy.
-
-
-# -------------------- Signing Details -------------------------
-# Below are hardwired my personal full name and tomboy-ng email address. These
-# will only be used if relevent env vars are empty. Note that they
-# must match whats available in a gpg key. AND if that does not match
-# the Maintainer: entry from control, we get a non maintainer upload warning.
-#
-# 
-# ------------------- Just Building a Binary -----------------------
-# If all you want is the binary, not building src packages at all, then don't
-# worry about signing etc, just run prepare, cd into the resulting dir and run
-# the buildit script.
 
 # David Bannon, July 2020
 # History -
@@ -58,6 +19,9 @@
 #       2020-12-17 Restructed the multi control system to make it clearer.
 #       2021-02-23 Allow for fact that we keep changelog (for Debian).
 #                  Remove some Debian specific things
+#       2021-06-19 cleanup and move how to doc to github
+
+# ---------------------------------------------------------
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
@@ -209,7 +173,13 @@ echo "---------- laz_bld is $LAZ_BLD"
 echo "---------- CLEAN is $CLEAN"
 echo "---------- UFILES is $UFILES"
 
-rm -f WHICHFPC WHICHLAZ		
+rm -f WHICHFPC WHICHLAZ	
+	
+if [ ! -f tomboy-ng-master.zip ]; then
+	echo "---------- Downloading a new tomboy-ng"
+	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
+	mv master.zip tomboy-ng-master.zip
+fi
 
 if [ -f tomboy-ng-master.zip ]; then
 	CheckFPC_LAZ
@@ -276,9 +246,9 @@ if [ -f tomboy-ng-master.zip ]; then
 	echo "If no errrors, you should now cd ""$APP"_"$VER""$PACKVER; debuild -S"
 else
 	echo ""
-	echo "   Sorry, I cannot see a tomboy-ng-master.zip file. This"
-	echo "   script must be run in a directory containing that file"
-	echo "   (obtained from github) and probably little else."
+	echo "   Sorry, I cannot see or get a tomboy-ng-master.zip file. This script can"
+	echo "   be run in a directory containing that file or will try to download it"
+	echo "   from github, seems even that failed."
 	echo "   If you used wget to download tomboy-ng, it will be named master.zip,"
 	echo "   you should rename it tomboy-ng-master.zip to avoid confusion."
 	echo ""

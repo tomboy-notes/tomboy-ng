@@ -1,72 +1,13 @@
 #!/bin/bash
 # copyright David Bannon, 2019, 2020, 2021 use as you see fit, but retain this statement.
 #
+# This stript is useful to prepare the tomboy-ng source tree to make an
+# Debian Source Package
 
-# This script takes a tomboy-ng zip file from github, and prepares things to
-# build a source deb suitable for Creating or UPDATING an existing one in Debian Repo.
-# If its a new release of tomboy-ng, then the create mode works, provide -n to 
-# have the script create a new .orig file (to be clear, the orig.tar.gz is NOT needed).
-# If we are fixing a Debian Packaging issue, use the Update mode, no switch but
-# make sure the original .orig.tar.gz file is present.
-
-# -------------------- Making a Debian SRC ----------------------
-# To build a Debian Source Package, on eg a current Bullseye -
-# 	Install fpc, lazarus, libnotifier-dev, devscripts and ? libqt5pas-dev
-#	Ensure appropriate pgp key in place ($HOME/.gnupg), see below 
-#	In an otherwise empty directory, we need -
-#	prepare.debian, tomboy-ng-master.zip and possibly the first uploaded .orig file -
-#	tomboy-ng_0.31a-1.orig.tar.gz (either one squirreled away or downloaded from Debian)
-#	Following commands help -
-#	
-#	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.debian
-#	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
-#	mv master.zip tomboy-ng-master.zip
-
-# 	Unless you are me, edit the script, DEBFULLNAME and DEBEMAIL _OR_ have env set 
-#	bash ./prepare.debian -D unstable -n
-#	cd tomboy-ng_XXXX                       // Whatever the name is at this stage....
-#	debuild -S
-#	The files you want are in ../.
-#	You probably should do a practise build and lintian run, see below.
-#	Upload with "dput -f mentors *.changes"
-
-#       ------------ Lintian -----------
-# Copy the .xz, .gz and .dsc files to a clean directory and build a package (eg)
-
-#   cp *.xz *.gz *.dsc <some_Test_dir>/.
-#   cd <some_Test_dir>
-#   dpkg-source -x *.dsc
-#   cd tomboy<tab>
-#   dpkg-buildpackage -us  -uc
-#   cd ../
-#   lintian -IiE --pedantic *.changes
+# For detailed instructions including ready to copy command lines see-
+# https://github.com/tomboy-notes/tomboy-ng/blob/master/prepare.md
 
 
-# -------------------- Signing Details -------------------------
-# Below are hardwired my personal full name and tomboy-ng email address. These
-# will only be used if relevent env vars are empty. Note that they
-# must match whats available in a gpg key. AND if that does not match
-# the Maintainer: entry from control, we get a non maintainer upload warning.
-#
-# 
-# -------------------- Overview --------------------------------
-# This script will generate the 'changes' between a current version and the .orig file
-# uploaded in December 2020. That way, only the changes need be uploaded in future.
-# The (very important) changelog will be updated, but still references the original
-# upload (unlike the Ubuntu PPA script). 
-# We are doing only Qt5 for Debian, they don't want any more GTK2 stuff.
-
-# ------------------- Fiddling -----------------------------
-# Sometimes its necessary to 'reupload' a version dut to some problem being 
-# discovered after release. This problem can be one of two sorts -
-# 1. An Debian packaging issue. In this case the tomboy-ng code is unchanged
-#    and we fiddle the packaging. The -1 in the version number should be 
-#    reved to -2 (etc), edit DEBVER the constant below.
-# 2. A tomboy-ng code issue (oh dear!). In this case, we need to change the
-#    tomboy-ng release number by adding or incrementing a letter after the number.
-#    The change, eg from 0.32 to 0.32a is made in the github repo, not here and
-#    a new zipball is downloaded. The script will spot the change and act 
-#    accordingly.
 # 
 # David Bannon, Jan 2021
 # History -
@@ -75,6 +16,8 @@
 #       2020-12-29 Split script into seperate Debian one, only Qt5.
 #       2021-01-27 More detailed instructions on use.
 #	2021-02-03 Include enough of first changelog to keep lintian off my back
+#	2021-06-19 Made swichable between GTK2 and Qt5
+#		   Moved Howto docs to github
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
@@ -88,9 +31,7 @@ VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
-#WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
-DEBIANREPO=""   # If YES, we are making a package going into Debian Repo, else Ubuntu ?      
-QT5INNAME=""	# May have content we add to qt5 package name (when -Q) 
+WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
 	# if in user space, because debuild will miss them, makes two files.
@@ -171,55 +112,54 @@ function ShowHelp () {
     echo " "
     echo "Prepares to generate changes from existing .orig file in Debian."
     echo "Assumes FPC of some sort in path, available and working, ideally 3.2.0."
-    echo "Needs Lazarus, <=2.0.6 in root space or specified with -l option."
-    echo "Needs devscripts preinstalled and maybe an edit of email address above if"
-    echo "Requires the existing .orig file, an current tomboy-ng-master.zip"
+    echo "Needs Lazarus, <=2.0.10 in root space or specified with -l option."
+    echo "Needs devscripts preinstalled and maybe an edit of email address above."
+    echo "If doing a tomboy-ng release, provide -n and a new orig file is made."
+    echo "Else, repackaging, needs the .orig file, and current tomboy-ng-master.zip"
     echo "Will download kcontrols, cleanup and prepare to run debuild -S"
-    echo "David Bannon, December 2020" 
+    echo "REMEMBER to feed changlog back to github tree"
+    echo "David Bannon, June 2021" 
     echo "-h   print help message"
     echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
     echo "-C   clean deb files from previous run, exit, debug use only, Unreliable"
     echo "-D   distro, eg unstable, bullseye"
     echo "-n   New orig file, required for fresh release"
+    echo "-q   Make a Qt5 version instead of GTK2"
     echo ""
-    echo "     Typically     bash ./prepare.debian -D unstable -n"
+    echo "  Typically, new release     bash ./prepare.debian -D unstable -n"
     exit
 }
 
 function MakeOrigFile () {
     echo "---------- Creating a new .orig file"
+    	# Note, when called we are in the unzipped and renamed tomboy-ng dir.
         # We move most of the debian dir out of harms way and tar up the dir.
 	# We have to do this to avoid the dreaded lintian no-debian-changes
 	# The copyright file in there alone does not generate that error ??
 	# But before moving it, we will create a new changelog
 	# cd "$APP"_"$VER""$DEBVER"
-    rm debian/changelog                     # Must have a new changelog if new orig file
-    dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$DEBVER" "New Version Release"
-    dch --append "Please see github for change details"
-    dch --release "blar"
+#    rm debian/changelog                     # Must have a new changelog if new orig file
+#    dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$DEBVER" "New Version Release"
+#    dch --append "Please see github for change details"
+#    dch --release "blar"
     
-    echo "" >> debian/changelog
-    echo "tomboy-ng (0.31a-1) unstable; urgency=medium" >> debian/changelog
-    echo "" >> debian/changelog
-    echo "  * Initial release. (Closes: #897688)" >> debian/changelog
-    echo "" >> debian/changelog
-    echo " -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 18 Dec 2020 22:08:09 +1100" >> debian/changelog
-    
+#    echo "" >> debian/changelog
+#    echo "tomboy-ng (0.31a-1) unstable; urgency=medium" >> debian/changelog
+#    echo "" >> debian/changelog
+#    echo "  * Initial release. (Closes: #897688)" >> debian/changelog
+#    echo "" >> debian/changelog
+#    echo " -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 18 Dec 2020 22:08:09 +1100" >> debian/changelog
     cd ..
     mv "$APP"_"$VER""$DEBVER"/debian ./debian
     mkdir "$APP"_"$VER""$DEBVER"/debian
     cp debian/copyright "$APP"_"$VER""$DEBVER"/debian/.
-
-	# Because this is Debian, we do only a Qt5 version
-    touch "$APP"_"$VER""$DEBVER"/Qt5
-
     tar czf "$APP"_"$VER".orig.tar.gz "$APP"_"$VER""$DEBVER"
 	# OK, we now have our .orig. file, put most of it back.
     rm -Rf "$APP"_"$VER""$DEBVER"/debian
     mv ./debian "$APP"_"$VER""$DEBVER"/. 
 }
 
-while getopts "hUCl:D:n" opt; do
+while getopts "hUCl:D:nq" opt; do
   case $opt in
     h)
       ShowHelp
@@ -236,6 +176,9 @@ while getopts "hUCl:D:n" opt; do
 	;;
 	n)
 	NEWORIG="YES"
+	;;
+    q)
+	WIDGET="Qt5"
 	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -273,38 +216,44 @@ if [ -f tomboy-ng-master.zip ]; then
 	unzip -q tomboy-ng-master.zip
 	VER=`cat tomboy-ng-master/package/version`
 	if [ "$CLEAN" = "YES" ]; then
+		rm -Rf "tomboy-ng-master"
 		echo "---------- Removing existing DEB files"
 		rm -Rf "$APP"_"$VER"-?
-
-		#rm -f "tomboy-ng_""$VER"".orig.tar.gz"
-		rm -f "tomboy-ng_$VER-"?_amd64.buildinfo
-		rm -f "tomboy-ng_$VER-"?_amd64.changes
-       	rm -f "tomboy-ng_$VER-"?_amd64.deb
+		rm -f "tomboy-ng_$VER-"?_source.buildinfo
+		rm -f "tomboy-ng_$VER-"?_source.changes
+       		rm -f "tomboy-ng_$VER-"?_amd64.deb
  		rm -f "tomboy-ng_$VER-"?.debian.tar.xz
 		rm -f "tomboy-ng_$VER-"?.dsc
-		#rm -f "tomboy-ng_$VER.orig.tar.gz"
+		rm -f "tomboy-ng_$VER.orig.tar.gz"
+		# echo "Like a coward, not removing .orig file, tomboy-ng_$VER.orig.tar.gz"
 		exit
 	fi
 	mv "tomboy-ng-master" "$APP"_"$VER""$DEBVER"
 	KControls
-	cd "$APP"_"$VER""$DEBVER"
-	CleanSource
-	# cd ..
-	if [ "$NEWORIG" = "YES" ]; then
-	    MakeOrigFile                    # create new .orig and a new changelog 
-	else
-		dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"    
+	cd "$APP"_"$VER""$DEBVER"	# This is orig tomboy-ng dir made from zip
+	if [ "$WIDGET" = "Qt5" ]; then
+	    touch Qt5			# leave semaphore file
 	fi
+	CleanSource
+	if [ "$NEWORIG" = "YES" ]; then
+		MakeOrigFile                    # create new .orig (and no longer a new change log)
+#	else				        # This happens below for both new and fix up mode ???
+#		dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"    
+	fi
+
 	cd "$APP"_"$VER""$DEBVER"
-
-	mv debian/control.debian debian/control
+	dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"    
+	dch --append "Please see github for change details"
+	cp debian/control.debian debian/control			# thats the GTK2 version
+	if [ "$WIDGET" = "Qt5" ]; then
+		cp debian/control.qt5-DEBIAN debian/control	# thats the Qt5 version
+	fi
 	rm -f debian/control.qt5
-	rm -f debian/rules.qt5
-
-	# touch Qt5
+	rm -f debian/rules.qt5		# never need that here, its for PPA where qt5 has different name
+	rm -f debian/control.qt5-DEBIAN
+	rm -f debian/control.debian		
 	cd ..
-
-	echo "If no errrors, you should now cd ""$APP"_"$VER""$DEBVER""; debuild -S"
+	echo "If no errrors, you should now cd ""$APP"_"$VER""$DEBVER""; debuild -S; cd .."
 else
 	echo ""
 	echo "   Sorry, I cannot see a tomboy-ng-master.zip file. This"
