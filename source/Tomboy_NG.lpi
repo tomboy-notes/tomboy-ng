@@ -752,9 +752,6 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
-      </local>
       <environment>
         <UserOverrides Count="1">
           <Variable0 Name="TB_ONETOONE_XX" Value="/home/dbannon/OneSyncTest"/>
@@ -763,9 +760,6 @@
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
-          <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
-          </local>
           <environment>
             <UserOverrides Count="1">
               <Variable0 Name="TB_ONETOONE_XX" Value="/home/dbannon/OneSyncTest"/>

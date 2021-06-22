@@ -10,6 +10,37 @@ unit commonmark;
     2021/05/16  Taught TitleFromID() to deal with SingleNote mode when ID does not exist in Repo
                 Note - this has not been synced with TT version.
 }
+
+// ToDo : Look for sequencial lines that contain all monospace text. Such lines needed
+// to be merged into one block, instead of using ` or backtick, arround the block, we
+// should indent the whole block by four extra spaces. If a line is already indented
+// by spaces, add still add four more, that will retain the indent in Markdown
+// So for example -
+// `Some code`
+//    `Indented code`
+// Becomes
+//     Some code
+//         Indented code
+{
+    New function - IsAllMono(St : String) : boolean;
+        returns true if line starts and ends with backtick, note we do not count
+        leading whitespace, so "    `Indented code`" is true.
+        Must ret false if there are more backticks than just the leading and trailing.
+        This method needs some optimisation.
+
+    New function - MakeMonoBlock(St) : string;
+        Returns a string with leading and trailing backticks removed, four spaces
+        added.
+
+    New Procedure - ConvertMonoBlocks
+        Looks at each line, one by one. If it finds a line where IsAllMone()
+        returns true convert it. Move on.
+
+This will result in (at least in remarkable) a single mono line appearing in a
+block, more space above and below, but I guess that just how MD works.
+I could convert only blocks containg two or more lines ......
+}
+
 interface
 
 uses
@@ -33,9 +64,13 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
 			procedure ProcessHeadings(StL: TStringList);
 			procedure ProcessMarkUp(StL: TStringList);
 			function RemoveNextTag(var St: String; out Tag: string): integer;
+			function RemoveRedundentTag(var St: string): boolean;
 			function ReplaceAngles(const Str: AnsiString): AnsiString;
 			procedure SayDebug(st: string; Always: boolean=false);
 			function TitleFromID(ID: string; Munge: boolean; out LenTitle: integer): string;
+            function IsAllMono(St : String) : boolean;
+            procedure MakeMonoBlock(var St: string);
+            procedure ConvertMonoBlocks(STL: TStringList);
 
     public
         DebugMode : boolean;
@@ -59,7 +94,7 @@ uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead, tb_ut
 
 
 
-function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
+function TExportCommon.GetMDcontent(ID: string; STL: TstringList): boolean;
 { This is same as function in TT but I have removed parts that do file i/o
   I am thinking I would be better using some XML methods, might avoid g-Note issues too. }
 
@@ -86,6 +121,7 @@ begin
         while Index < StL.Count do StL.Delete(Index);
         ProcessHeadings(StL);                                    // Makes Title big too !
         ProcessMarkUp(StL);
+        ConvertMonoBlocks(STL);
         result := (Stl.Count > 2);
 end;
 
@@ -173,6 +209,59 @@ begin
         Result := copy(Result, 1, 32);
 	end;
     LenTitle := length(Result);
+end;
+
+// -------------- Convert to Fixed width BLOCK text -------------
+
+// We look for a line wrapped in a pair of backticks, allow white space to left
+function TExportCommon.IsAllMono(St: String): boolean;
+var
+    I : integer = 1;
+begin
+    // for a st = 'abc' the test "if St[3] = '`'" is valid
+    if St.CountChar('`') <> 2 then exit(False);
+    while I <= St.Length do begin
+        if St[i] = '`' then begin
+            i := St.Length;
+            while (St[i] in [' ', char(10), char(13) ])
+                    and (i > 0) do dec(i);
+            exit((I > 0) and (St[i] = '`'));             // Absolutly must exit here, we have played with i
+		end;
+        if  St[i] = ' '  then exit(False);
+        inc(i);
+	end;
+    Result := False;
+end;
+
+procedure TExportCommon.MakeMonoBlock(var St : string);
+// Remove two backticks, add four leading spaces
+begin
+    St := St.Remove(St.IndexOf('`'), 1);
+    St := St.Remove(St.IndexOf('`'), 1);
+    St := '    ' + St;
+end;
+
+procedure TExportCommon.ConvertMonoBlocks(STL : TStringList);
+var
+    I : integer = 0;
+    St : string;
+    PrevMono : boolean = false;
+begin
+    while i < Stl.Count do begin
+        if PrevMono and (Stl[i] = '') then begin
+            StL.Delete(i);
+            PrevMono := False;
+            continue;
+		end;
+		if IsAllMono(StL[i]) then begin
+            St := STL[i];
+            MakeMonoBlock(St);
+            STl.Insert(i, St);
+            STL.Delete(i+1);
+            PrevMono := True;
+		end else PrevMono := False;
+		inc(i);
+	end;
 end;
 
 // This version uses the CommonMark model of noting heading with ---- ===== on line underneath
@@ -358,15 +447,15 @@ Tag : string;
 begin
 // we have to detect when our line starts with  </note-content> or </text> and
 // terminate processing of this string, they are not text markup.
-Tag := copy(StL.strings[StIndex], 1, TagSize);
-if (Tag = '</note-content>') or (Tag = '</text>') then begin
-TagSize := 0;
-exit;
-end;
-StL.Insert(StIndex, copy(StL.Strings[StIndex], TagSize+1, length(StL.Strings[StIndex])));
-StL.Delete(StIndex+1);
-StL.Insert(StIndex-1, StL.strings[StIndex-1]+Tag);
-StL.Delete(StIndex);
+    Tag := copy(StL.strings[StIndex], 1, TagSize);
+    if (Tag = '</note-content>') or (Tag = '</text>') then begin
+        TagSize := 0;
+        exit;
+    end;
+    StL.Insert(StIndex, copy(StL.Strings[StIndex], TagSize+1, length(StL.Strings[StIndex])));
+    StL.Delete(StIndex+1);
+    StL.Insert(StIndex-1, StL.strings[StIndex-1]+Tag);
+    StL.Delete(StIndex);
 end;
 
 function TExportCommon.MoveTagRight(var St: string): boolean;
@@ -446,13 +535,53 @@ procedure TExportCommon.MoveTagDown(const StL : TStringList; const StIndex, TagS
 var
 Tag : string;
 begin
-Tag := copy(StL.strings[StIndex], length(StL.strings[StIndex])-TagSize+1, TagSize);
-StL.Insert(StIndex, copy(StL.strings[StIndex], 1, length(StL.strings[StIndex])-TagSize));
-StL.Delete(StIndex+1);
-StL.Insert(StIndex+1, Tag+StL.Strings[StIndex+1]);
-StL.Delete(StIndex+2);
+    Tag := copy(StL.strings[StIndex], length(StL.strings[StIndex])-TagSize+1, TagSize);
+    StL.Insert(StIndex, copy(StL.strings[StIndex], 1, length(StL.strings[StIndex])-TagSize));
+    StL.Delete(StIndex+1);
+    StL.Insert(StIndex+1, Tag+StL.Strings[StIndex+1]);
+    StL.Delete(StIndex+2);
 end;
 
+// When there is an off tag and and complementry on tag with nothing between they
+// are redundent and we remove them right here and now. No excuses !
+// Rets True is it made a change, repeat until it finds nothing to do.
+function TExportCommon.RemoveRedundentTag(var St : string) : boolean;
+var
+    OffTag : integer = 0;            // String Helpers are zero based !
+    Tag1, Tag2 : string;      // migth get, eg monospace for a fixed spacing tag
+
+    function Removed(const OffSet : integer; TagSt : string; replace : boolean) : boolean;
+    begin
+        if OffSet < 0 then exit(False);
+        if St.Substring(OffSet, length(TagSt)) = TagSt then begin
+            St := St.Remove(OffSet, length(Tag1 + Tag2) +1);
+            if Replace then
+                St := St.Insert(OffSet, ' ');
+            exit(True);
+		end else Result := False;
+	end;
+
+begin
+    while(true) do begin
+        OffTag := st.IndexOf('</', OffTag);
+        if OffTag >= 0 then begin
+            Tag1 := St.Substring(OffTag, st.IndexOf('>', OffTag) - OffTag +1);     // ie thats full tag
+            Tag2 := Tag1.Remove(Tag1.IndexOf('/', 1), 1);
+            // we target Tag1Tag2 or reversed, with and without a space between
+            if Removed(OffTag, Tag1+Tag2, False) then exit(True);
+            if Removed(OffTag, Tag1+' '+Tag2, True) then exit(True);
+            if Removed(OffTag-length(Tag2), Tag2+Tag1, False) then exit(True);
+            if Removed(OffTag-length(Tag2), Tag2+' ' + Tag1, True) then exit(True);
+            // If still here, that offtag was not associated with an immediate on tag.
+            inc(OffTag);
+            continue;
+		end else exit(False);       // no more offtags left to consider or maybe on offtags at all
+	end
+     { Loop: Find next offtag, exit false if we cannot find one
+      try and find a matching ontag with nothing between.
+      If above fails, goto LOOP:
+    }
+end;
 
 procedure TExportCommon.NormaliseList(STL : TStringList);
 var
@@ -482,7 +611,16 @@ begin
 		until TagSize < 1;
         dec(StIndex);
 	end;
-
+    StIndex := 0;                      // Redundent, sequencial tags.
+    while StIndex < StL.Count do begin
+        TempSt := STL[StIndex];
+        if RemoveRedundentTag(TempSt) then begin
+            while RemoveRedundentTag(TempSt) do;        // in case more than one in line
+            StL.Insert(StIndex, TempSt);
+            StL.Delete(StIndex + 1);
+		end;
+		inc(StIndex);
+	end;
 end;
 
 

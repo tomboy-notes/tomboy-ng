@@ -93,6 +93,8 @@ begin
     Result := StringReplace(Candidate, #32, '_', [rfReplaceAll]);
     for ch in [ '/', '\', '*', '.', '#', '%', '{', '}', '?', '&' ] do
         Result := StringReplace(Result, Ch, '-', [rfReplaceAll]);
+    if Result.EndsWith('-') or Result.endswith('_') then
+        Result := Result.Remove(Result.Length-1);
 end;
 
 

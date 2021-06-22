@@ -1470,8 +1470,8 @@ begin
           SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
           {$endif}
      end;
-     debugln('TEditBoxForm.SaveNoteAs Filename 1 = ' + CleanCaption());
-     debugln('TEditBoxForm.SaveNoteAs Filename 2 = ' + TB_MakeFileName(CleanCaption()));
+     //debugln('TEditBoxForm.SaveNoteAs Filename 1 = ' + CleanCaption());
+     //debugln('TEditBoxForm.SaveNoteAs Filename 2 = ' + TB_MakeFileName(CleanCaption()));
      SaveExport.Filename := TB_MakeFileName(CleanCaption());
      if SaveExport.Execute then begin
          case TheExt of

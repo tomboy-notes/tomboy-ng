@@ -31,38 +31,23 @@ The process is download (or extract) tomboy-ng source, remove unnecessary conten
 
 
 
-`export DebVer="Debv33"`
+    export DebVer="Debv33"
+    mkdir "Build""$DebVer"; cd "Build""$DebVer"
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.debian
+    bash ./prepare.debian -D unstable -n
+    cd tomboy-ng [tab]
+    debuild -S
+    cd .. 
+    mkdir ../Test"$DebVer"
+    cp *.xz *.gz *.dsc ../Test"$DebVer"; cd ../Test"$DebVer"
+    dpkg-source -x *.dsc
+    cd tomboy-ng [tab]
+    dpkg-buildpackage -us  -uc; cd ..
+    lintian -IiE --pedantic *.changes
+OK, if everything is OK, go back and and upload it
 
-`mkdir "Build""$DebVer"; cd "Build""$DebVer"`
-
-`wget` `https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.debian`
-
-`bash ./prepare.debian -D unstable -n`
-
-`cd tomboy-ng [tab]`
-
-`debuild -S`
-
-`cd ..` 
-
-`mkdir ../Test"$DebVer"`
-
-`cp *.xz *.gz *.dsc ../Test"$DebVer"; cd ../Test"$DebVer"`
-
-`dpkg-source -x *.dsc`
-
-`cd tomboy-ng [tab]`
-
-`dpkg-buildpackage -us  -uc; cd ..`
-
-`lintian -IiE --pedantic *.changes`
-
-
-
-`cd ../"Build""$DebVer"`
-
-`dput -f mentors *.changes`
-
+    cd ../"Build""$DebVer"
+    dput -f mentors *.changes
 
 
 REMEMBER to feed changlog back to github tree !
@@ -77,20 +62,13 @@ Is built on a different VM, U2003mQt
 
 **PPA build Steps**
 --------
-`export PPAVer="PPAv33"`
-
-`mkdir "Build""$PPAVer"; cd "Build""$PPAVer"`
-
-`wget` `https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa`
-
-`bash ./prepare.ppa -D bionic [-Q]      // the -Q says make a Qt5 version please.`
-
-`cd tomboy-ng [tab]`
-
-`debuild -S; cd ..`
-
-`dput ppa:d-bannon/ppa-tomboy-ng *.changes`
-
+    export PPAVer="PPAv33"
+    mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
+    bash ./prepare.ppa -D bionic [-Q]      // the -Q says make a Qt5 version please.
+    cd tomboy-ng [tab]
+    debuild -S; cd ..
+    dput ppa:d-bannon/ppa-tomboy-ng *.changes
 
 
 (Note, we are not doing the extreame lintian tests, perhaps we should ? )
@@ -105,13 +83,13 @@ If all you want is the binary, not building src packages at all, not cross compi
 
 * install libqt5pas-dev if building a QT5 version
 
-* Install `wget` `https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa```
+* `wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa`
 
 * `bash ./prepare.ppa [-Q]`      // the -Q says make a Qt5 version please.
 
-* `cd tomboy-ng[tab] [enter]```
+* `cd tomboy-ng[tab] [enter]`
 
-* `bash ./buildit.bash```
+* `bash ./buildit.bash`
 
 The binary will be in the source/. directory below where you are now standing.
 
@@ -121,14 +99,11 @@ The binary will be in the source/. directory below where you are now standing.
 ========
 A PGP key is required to upload to Mentors or Launchpad. It lives in ~/.gnupg. 
 
-`pgp ~/.gpg/public-keys/tomboy-ng-GPU-KEY [enter]`
-
-`pub   rsa3072 2020-03-10`   
-
+    pgp ~/.gpg/public-keys/tomboy-ng-GPU-KEY [enter]
+    pub   rsa3072 2020-03-10   
       `79445......`
 
-`uid   tomboy-ng <tomboy-ng@bannons.id.au>`
-
+    uid   tomboy-ng <tomboy-ng@bannons.id.au>
 
 
 (The 79445.... is the fingerprint)
@@ -165,22 +140,14 @@ Lazarus >= 2.0.10, FPC >= 3.2.0
 
 Debian  need a config file, .dput.cf in $HOME that points to mentors, see mentors website. https://mentors.debian.net  The Launchpad PPA VM does not seem to have that, we put destination address in the dput command line.  The Debian file looks like -
 
-<sub><monospace>[mentors]`</sub></html>
-
-<html><sub>`fqdn = mentors.debian.net`</sub></html>
-
-<html><sub>`incoming = /upload`</sub></html>
-
-<html><sub>`method = https`</sub></html>
-
-<html><sub>`allow_unsigned_uploads = 0`</sub></html>
-
-<html><sub>`progress_indicator = 2`</sub></html>
-
-<html><sub>`# Allow uploads for UNRELEASED packages`</sub></html>
-
-<html><sub>`allowed_distributions = .*`</sub>
-
+    [mentors]
+    fqdn = mentors.debian.net
+    incoming = /upload
+    method = https
+    allow_unsigned_uploads = 0
+    progress_indicator = 2
+    # Allow uploads for UNRELEASED packages
+    allowed_distributions = .*
 
 
 
