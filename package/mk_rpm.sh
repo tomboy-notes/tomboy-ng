@@ -67,6 +67,7 @@ DoAlien "amd64Qt"
 DoAlien "i386"
 DoAlien "amd64"
 chown "$SUDO_USER" *.rpm
+echo "OK, we will now sign - david, use longer passphrase !"
+for i in `ls -b *.rpm`; do rpm --addsign "$i"; done
 ls -l *.rpm
-echo "OK, now sign with    rpm --addsign  *.rpm"
 

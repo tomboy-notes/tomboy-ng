@@ -49,7 +49,7 @@ fi
 
 if [ $1 == "clean" ]; then
 	rm  -f *.deb
-	rm  -f *.gz
+	rm  -f *.tgz
 	rm  -f *.rpm
 	rm -Rf BUILD
 	rm -Rf WinPre*
@@ -58,9 +58,20 @@ fi
 
 # ----------------------
 
+
+function LookForBinary () {
+	cd "$SOURCE_DIR"
+	if [ -a "$1" ]; then
+		echo "Binary $1 was made"
+	else	
+		echo "---------- ERROR $1 was not made"
+	fi
+	cd "../package"
+}
+
 # Build four binaries. Note that build-mode must be one already defined
 # typically in the IDE.
-# Lazbuild expects cpu=[x86_64, i386] (good luck with the others)
+# Lazbuild expects cpu=[x86_64, i386], we don't build the arm one here. 
 # For now, I build the arm binary on site.
 
 function BuildIt () {
@@ -106,7 +117,7 @@ function BuildIt () {
 	fi	
 	TOMBOY_NG_VER="$VERSION" "$LAZ_FULL_DIR"/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="i386" --build-mode="$LAZMODE" --os="win32" Tomboy_NG.lpi
 	echo "------------- FINISHED BUILDING -----------------"
-	ls -l tomboy-ng*
+	# ls -l tomboy-ng*
 	cd ../package
 }	
 
@@ -167,6 +178,10 @@ function DebianPackage () {
 		CTRL_RELEASE="Qt5 release."
 		;;
 	"arm")
+		if [ ! -a "tomboy-ng-arm" ]; then
+			echo "WARNING - arm binary not present"
+			return 1
+		fi
 		cp tomboy-ng-arm BUILD/usr/bin/tomboy-ng
 		#CTRL_DEPENDS=""
 		CTRL_RELEASE="Raspberry Pi release."
@@ -313,16 +328,19 @@ echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 	BuildIt
 #fi
 
+for BIN in tomboy-ng tomboy-ng32 tomboy-ng32.exe tomboy-ng64.exe tomboy-ng-qt ; do LookForBinary "$BIN"; done
+
 DebianPackage "amd64Qt";
 DebianPackage "i386"
 DebianPackage "amd64"
 DebianPackage "arm"
 
+
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
 ls -l *.deb
 DoGZipping
 MkWinPreInstaller
-ls -ltr
+# ls -ltr
 
 
 
