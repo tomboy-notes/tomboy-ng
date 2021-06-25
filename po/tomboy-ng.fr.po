@@ -157,6 +157,22 @@ msgstr "tomboy-ng utilise File Sync pour se synchroniser avec Dropbox, Google Dr
 msgid "or use a remote server over the internet with sshfs"
 msgstr "un disque externe ou encore un quelconque serveur distant avec sshfs"
 
+#: resourcestr.rsfindnavlefthint
+msgid "Backward Find : Shift-F3 or Shift-Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavlefthintmac
+msgid "Backward Find : Shift-Command-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthint
+msgid "Find : F3 or Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthintmac
+msgid "Find : Command-G"
+msgstr ""
+
 #: resourcestr.rsfound
 msgctxt "resourcestr.rsfound"
 msgid "Found"
@@ -382,15 +398,6 @@ msgstr "Pour terminer presser \"Sauver + Synchro\""
 msgid "Exact matches for terms between \" \""
 msgstr "Correspondance exacte si placé entre \"\""
 
-#: resourcestr.rssearchnavhint
-msgctxt "resourcestr.rssearchnavhint"
-msgid "Find : F3 or Ctrl-G, Backward Find : Shift-F3 or Shift-Ctrl-G"
-msgstr ""
-
-#: resourcestr.rssearchnavhintmac
-msgid "Find : Cmd-G, Backward Find : Shift-Cmd-G"
-msgstr ""
-
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
 msgid "Set the notebooks this note is a member of"
@@ -613,6 +620,11 @@ msgstr "Puce(s)"
 msgid "Find Next"
 msgstr ""
 
+#: teditboxform.menufindprev.caption
+msgctxt "teditboxform.menufindprev.caption"
+msgid "Find Prev"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr "Chasse fixe"
@@ -634,10 +646,6 @@ msgstr "Italique"
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
 msgstr "Alt+ <-/->  ôte ou ajoute des puces"
-
-#: teditboxform.menuitem6.caption
-msgid "Find Prev"
-msgstr ""
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"

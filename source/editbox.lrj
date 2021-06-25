@@ -39,7 +39,7 @@
 {"hash":85652432,"name":"teditboxform.menustayontop.caption","sourcebytes":[83,116,97,121,32,79,110,32,84,111,112],"value":"Stay On Top"},
 {"hash":110774325,"name":"teditboxform.menuitemfind.caption","sourcebytes":[70,105,110,100,32,105,110,32,116,104,105,115,32,78,111,116,101],"value":"Find in this Note"},
 {"hash":73728500,"name":"teditboxform.menufindnext.caption","sourcebytes":[70,105,110,100,32,78,101,120,116],"value":"Find Next"},
-{"hash":73741766,"name":"teditboxform.menuitem6.caption","sourcebytes":[70,105,110,100,32,80,114,101,118],"value":"Find Prev"},
+{"hash":73741766,"name":"teditboxform.menufindprev.caption","sourcebytes":[70,105,110,100,32,80,114,101,118],"value":"Find Prev"},
 {"hash":19140,"name":"teditboxform.menuitemcut.caption","sourcebytes":[67,117,116],"value":"Cut"},
 {"hash":304761,"name":"teditboxform.menuitemcopy.caption","sourcebytes":[67,111,112,121],"value":"Copy"},
 {"hash":5671589,"name":"teditboxform.menuitempaste.caption","sourcebytes":[80,97,115,116,101],"value":"Paste"},

@@ -172,6 +172,22 @@ msgstr ""
 msgid "or use a remote server over the internet with sshfs"
 msgstr ""
 
+#: resourcestr.rsfindnavlefthint
+msgid "Backward Find : Shift-F3 or Shift-Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavlefthintmac
+msgid "Backward Find : Shift-Command-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthint
+msgid "Find : F3 or Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthintmac
+msgid "Find : Command-G"
+msgstr ""
+
 #: resourcestr.rsfound
 msgctxt "resourcestr.rsfound"
 msgid "Found"
@@ -422,15 +438,6 @@ msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
 msgstr ""
 
-#: resourcestr.rssearchnavhint
-msgctxt "resourcestr.rssearchnavhint"
-msgid "Find : F3 or Ctrl-G, Backward Find : Shift-F3 or Shift-Ctrl-G"
-msgstr ""
-
-#: resourcestr.rssearchnavhintmac
-msgid "Find : Cmd-G, Backward Find : Shift-Cmd-G"
-msgstr ""
-
 #: resourcestr.rssetthenotebooks
 #, fuzzy
 msgctxt "resourcestr.rssetthenotebooks"
@@ -660,6 +667,11 @@ msgstr ""
 msgid "Find Next"
 msgstr ""
 
+#: teditboxform.menufindprev.caption
+msgctxt "teditboxform.menufindprev.caption"
+msgid "Find Prev"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr ""
@@ -680,10 +692,6 @@ msgstr ""
 
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
-msgstr ""
-
-#: teditboxform.menuitem6.caption
-msgid "Find Prev"
 msgstr ""
 
 #: teditboxform.menuitemcopy.caption

@@ -209,6 +209,7 @@ unit EditBox;
     2021/02/05  Complete rewrite of Find in a way that also works for Windows.
     2021/02/15  Use CommonMark when exporting Markdown
     2021/02/17  Fix Mac only bug, not Ctrl to ssMeta F for the EditFind
+    2021/06/25  Replaced TUpDown with 2 speedbuttons
 }
 
 
@@ -238,6 +239,7 @@ type
         Label3: TLabel;
         Label4: TLabel;
         MenuBold: TMenuItem;
+		MenuFindPrev: TMenuItem;
         MenuItalic: TMenuItem;
         MenuHighLight: TMenuItem;
         MenuHuge: TMenuItem;
@@ -245,7 +247,7 @@ type
         MenuItem1: TMenuItem;
         MenuItem4: TMenuItem;
 		MenuFindNext: TMenuItem;
-        MenuItem6: TMenuItem;
+        MenuItemFindPrev: TMenuItem;
 		MenuStayOnTop: TMenuItem;
         MenuItemSettings: TMenuItem;
         MenuItemEvaluate: TMenuItem;
@@ -280,6 +282,8 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
+		SpeedLeft: TSpeedButton;
+		SpeedRight: TSpeedButton;
         SpeedButtonDelete: TSpeedButton;
         SpeedButtonLink: TSpeedButton;
         SpeedButtonNotebook: TSpeedButton;
@@ -290,7 +294,6 @@ type
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
-        UpDown1: TUpDown;
         procedure ButtMainTBMenuClick(Sender: TObject);
         procedure EditFindChange(Sender: TObject);
         procedure EditFindEnter(Sender: TObject);
@@ -352,6 +355,8 @@ type
         procedure MenuNormalClick(Sender: TObject);
         procedure MenuSmallClick(Sender: TObject);
         procedure PanelFindEnter(Sender: TObject);
+		procedure SpeedLeftClick(Sender: TObject);
+		procedure SpeedRightClick(Sender: TObject);
 		procedure SpeedRollBackClick(Sender: TObject);
         procedure SpeedButtonDeleteClick(Sender: TObject);
         procedure SpeedButtonLinkClick(Sender: TObject);
@@ -361,9 +366,6 @@ type
         procedure SpeedButtonToolsClick(Sender: TObject);
 		procedure TimerSaveTimer(Sender: TObject);
         procedure TimerHousekeepingTimer(Sender: TObject);
-                                // This is a landing spot for Menu->FindNext, Shift-Alt-F, Alt-F or Find Next/Prev buttons
-        procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
-        procedure UpDown1Enter(Sender: TObject);
 
     private
         NumbFindHits : integer;
@@ -1180,7 +1182,7 @@ begin
     //if FindDialog1.FindText <> '' then
     //    FindIt(FindDialog1.FindText, True, False);
 
-    UpDown1Click(Self, btNext);
+    SpeedRightClick(Self);
 end;
 
 (*
@@ -1221,7 +1223,9 @@ begin
         PanelFind.Height := SearchPanelHeight;
         if KMemo1.RealSelLength > 0 then
             EditFind.Text := KMemo1.SelText;
-        LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac{$else}rsSearchNavHint{$endif};                     //GetFindKeyHint();
+        LabelFindInfo.Caption := {$ifdef DARWIN}
+                rsFindNavRightHintMac + ' ' + rsFindNavLeftHint
+                {$else}rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif};
         EditFind.SetFocus;
     end;
 end;
@@ -1272,14 +1276,18 @@ begin
         if Key = VK_Return then begin
             LabelFindCount.caption := '';
             if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
-                LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif}
-            else LabelFindInfo.Caption := ' ' + {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif};
+                LabelFindInfo.Caption := {$ifdef DARWIN}
+                        rsFindNavRightHintMac + ' ' + rsFindNavLeftHint {$else}
+                        rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif}
+            else LabelFindInfo.Caption := ' ' + {$ifdef DARWIN}
+                        rsFindNavRightHintMac + ' ' + rsFindNavLeftHint {$else}
+                        rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif};
             EditFind.SetFocus;
 	    end;
 	end else begin
         if Direction = 1 then
-                UpDown1Click(self, btNext)
-        else UpDown1Click(self, btPrev);
+                SpeedRightClick(self)
+        else SpeedLeftClick(self);
         Key := 0;
     end;
 
@@ -1363,7 +1371,33 @@ begin
     editFind.Color:= clDefault;
 end;
 
+procedure TEditBoxForm.SpeedLeftClick(Sender: TObject);      // think btPrev
+var   Res : Boolean = false;
+begin
+   Res := FindIt(EditFind.Text, KMemo1.SelStart, False, False);
+    if Res then LabelFindInfo.Caption := ''
+    else begin
+        LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
+        NumbFindHits := 0;
+        LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
+    end;
+    KMemo1.setfocus;
+end;
 
+procedure TEditBoxForm.SpeedRightClick(Sender: TObject);    // think btNext
+var   Res : Boolean = false;
+begin
+   Res := FindIt(EditFind.Text, KMemo1.SelStart+1, true, False);
+   if Res then LabelFindInfo.Caption := ''
+   else begin
+       LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
+       NumbFindHits := 0;
+       LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
+   end;
+   KMemo1.setfocus;
+end;
+
+(*
 procedure TEditBoxForm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
 var
     Res : Boolean = false;
@@ -1384,7 +1418,7 @@ end;
 procedure TEditBoxForm.UpDown1Enter(Sender: TObject);
 begin
     EditFind.SetFocus;
-end;
+end;                        *)
 
 
 { ------- S T A N D A R D    E D I T I N G    F U N C T I O N S ----- }
@@ -1845,8 +1879,16 @@ begin
     //PanelFind.Visible := False;
     PanelFind.Height := 1;                // That is, hide it for now
     PanelFind.Caption := '';
-    UpDown1.Hint := rsSearchNavHint; //GetFindKeyHint();
-    EditFind.Hint := rsSearchNavHint; //GetFindKeyHint();
+    {$ifdef DARWIN}
+    SpeedRight.Hint := rsFindNavRightHintMac;
+    SpeedLeft.Hint := rsFindNavLeftHintMac;
+    {$else}
+    SpeedRight.Hint := rsFindNavRightHint;
+    SpeedLeft.Hint := rsFindNavLeftHint;
+    {$endif}
+(*    EditFind.Hint := {$ifdef DARWIN}        // Maybe a bit too much ?
+                        rsFindNavRightHintMac + ' ' + rsFindNavLeftHint {$else}
+                        rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif};        *)
     LabelFindCount.caption := '';
     EditFind.Text := rsMenuSearch;
     {$ifdef DARWIN}
@@ -1858,6 +1900,8 @@ begin
     MenuUnderline.ShortCut := KeyToShortCut(VK_U, [ssMeta]);
     MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
     MenuItemEvaluate.ShortCut := KeyToShortCut(VK_E, [ssMeta]);
+    MenuItemFindNext.shortcut := KeyToShortCut(VK_G, [ssMeta]);
+    MenuItemFindPrev.shortcut := KeyToShortCut(VK_G, [ssShift, ssMeta]);
     {$endif}
     DeletingThisNote := False;
 end;
@@ -1914,8 +1958,6 @@ begin
 end;
 
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
-{var
-    ARec : TNoteUpdateRec; }
 begin
     if Undoer <> Nil then Undoer.free;
     UnsetPrimarySelection;                                      // tidy up copy on selection.
@@ -2729,7 +2771,7 @@ begin
         if (Key = VK_F3) then
         begin
             key := 0;
-            if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btPrev);
+            if (EditFind.Text <> rsMenuSearch) then SpeedLeftClick(self);
        end;
     end;
     {$endif}
@@ -2738,9 +2780,9 @@ begin
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
             VK_Return, VK_G :  begin
-                                key := 0;
-                                if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btNext);
-                         end;
+                key := 0;
+                if (EditFind.Text <> rsMenuSearch) then SpeedRightClick(self);
+            end;
             VK_Q : MainForm.close();
             VK_1 : MenuSmallClick(Sender);
             VK_2 : MenuNormalClick(Sender);
@@ -2771,43 +2813,41 @@ begin
     // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin
         case key of
-                {$ifdef DARWIN}
+            {$ifdef DARWIN}
             VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
-//            VK_F     : begin MenuFindNextClick(self); Key := 0; end;                    // Local 'Next' find
-            VK_Return :  if (EditFind.Text <> rsMenuSearch) then begin Key := 0; UpDown1Click(self, btPrev); end;
+            VK_Return :  if (EditFind.Text <> rsMenuSearch) then begin Key := 0; SpeedLeftClick(self); end;
         end;
         exit();
     end;
 
-    // ------------------ Control and Shift ----------------
-    if [ssCtrl, ssShift] = Shift then begin
+    // ------------------ Control and Shift (or, Mac, Command and Shift) ----------------
+    if {$ifdef Darwin}[ssMeta, ssShift]{$else}[ssCtrl, ssShift]{$endif} = Shift then begin
         case Key of
-            VK_F : SpeedButtonSearchClick(self);
-            VK_G : if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btPrev);
+            VK_F : SpeedButtonSearchClick(self);                            // Search all notes
+            VK_G : if (EditFind.Text <> rsMenuSearch) then SpeedLeftClick(self);
             {$ifndef DARWIN}
             VK_RIGHT, VK_LEFT : exit;   // KMemo knows how to do this, select word ...
             {$endif}
        end;
-
-       (* if key = ord('F') then begin  Key := 0; SpeedButtonSearchClick(self); exit(); end;   // Activate Search Window
-
-       {$ifndef DARWIN}
-       if (key = VK_RIGHT) or (Key = VK_LEFT) then exit;{$endif}  *)          // KMemo knows how to do this, select word ...
        Key := 0;
        exit();
     end;
 
-    { if Key = VK_TAB then begin                                            // ToDo : Tabs dont work as expected
-      KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, #09);
+    if Key = VK_TAB then begin                                            // ToDo : Tabs dont work as expected
+      KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, ' ');
+      KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, ' ');
+      KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, ' ');
+      KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, ' ');
       Key := 0;
       exit;
-    end;  }
+    end;
+
     if Key = VK_F3 then begin
-                                key := 0;
-                                if (EditFind.Text <> rsMenuSearch) then UpDown1Click(self, btNext);
-       end;
+        key := 0;
+        if (EditFind.Text <> rsMenuSearch) then SpeedRightClick(self);
+    end;
     if Key <> 8 then exit();    // We are watching for a BS on a Bullet Marker
     // Mac users don't have a del key, they use a backspace key thats labled 'delete'. Sigh...
     if KMemo1.Blocks.RealSelEnd > KMemo1.Blocks.RealSelStart then exit();

@@ -28,9 +28,9 @@ unit notifier;
     Notifier := TNotifier.Create;
     Notifier.ShowTheMessage('This is Title', 'and this is the message', 15000);   // 15 seconds
     // Note, don't free it, it frees itself.
-  end;
+  end;        }
 
-  On Linux, multitheading must be enabled, in the project (lpr) file, add
+(*  On Linux, multitheading must be enabled, in the project (lpr) file, add
   {$DEFINE UseCThreads} immediatly above the first "uses" line.
 
   On Linux, to compile you need the dev version of libnotify but at run time all
@@ -39,9 +39,9 @@ unit notifier;
   On tomboy-ng, my model is that "oh, you might like to know" type notifications take the common
   6 seconds. Things the end user might really need to know, such as sync drive not being available
   I give 12 seconds. Something, really urgent (I don't have any) might get longer. Its incorrect
-  to leave messages that really don't need user action there for very long.
+  to leave messages that really don't need user action there for very long.       *)
 
-}
+
 
 interface
 

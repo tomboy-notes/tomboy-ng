@@ -162,6 +162,22 @@ msgstr "tomboy-ng usa Sincronización de Archivos a DropBox, Google Drive, un di
 msgid "or use a remote server over the internet with sshfs"
 msgstr "o use un servidor remoto por internet con sshfs"
 
+#: resourcestr.rsfindnavlefthint
+msgid "Backward Find : Shift-F3 or Shift-Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavlefthintmac
+msgid "Backward Find : Shift-Command-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthint
+msgid "Find : F3 or Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthintmac
+msgid "Find : Command-G"
+msgstr ""
+
 #: resourcestr.rsfound
 msgctxt "resourcestr.rsfound"
 msgid "Found"
@@ -384,19 +400,6 @@ msgstr "Pulse Guardar y Sincronizar si todo le parece bien"
 msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
 msgstr "Búsqueda exacta para términos entre \" \""
-
-#: resourcestr.rssearchnavhint
-#, fuzzy
-#| msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
-msgctxt "resourcestr.rssearchnavhint"
-msgid "Find : F3 or Ctrl-G, Backward Find : Shift-F3 or Shift-Ctrl-G"
-msgstr "Buscar: Adelante: Ctrl-Enter, Atrás: Alt-Enter"
-
-#: resourcestr.rssearchnavhintmac
-#, fuzzy
-#| msgid "Find : Cmd-Enter, Backward Find : Alt-Enter"
-msgid "Find : Cmd-G, Backward Find : Shift-Cmd-G"
-msgstr "Buscar: Adelante: Cmd-Intro, Buscar atrás: Alt-Intro"
 
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
@@ -623,6 +626,11 @@ msgstr "Viñeta"
 msgid "Find Next"
 msgstr "Buscar siguiente"
 
+#: teditboxform.menufindprev.caption
+msgctxt "teditboxform.menufindprev.caption"
+msgid "Find Prev"
+msgstr ""
+
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
 msgstr "Monoespaciada"
@@ -644,10 +652,6 @@ msgstr "Cursiva"
 #: teditboxform.menuitem4.caption
 msgid "Alt+Right to add, Alt+Left to remove"
 msgstr "Añadir viñeta - Alt+--> : Quitar viñeta - Alt+<--"
-
-#: teditboxform.menuitem6.caption
-msgid "Find Prev"
-msgstr "Buscar anterior"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
