@@ -1224,7 +1224,7 @@ begin
         if KMemo1.RealSelLength > 0 then
             EditFind.Text := KMemo1.SelText;
         LabelFindInfo.Caption := {$ifdef DARWIN}
-                rsFindNavRightHintMac + ' ' + rsFindNavLeftHint
+                rsFindNavRightHintMac + ' ' + rsFindNavLeftHintMac
                 {$else}rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif};
         EditFind.SetFocus;
     end;
@@ -1900,8 +1900,8 @@ begin
     MenuUnderline.ShortCut := KeyToShortCut(VK_U, [ssMeta]);
     MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
     MenuItemEvaluate.ShortCut := KeyToShortCut(VK_E, [ssMeta]);
-    MenuItemFindNext.shortcut := KeyToShortCut(VK_G, [ssMeta]);
-    MenuItemFindPrev.shortcut := KeyToShortCut(VK_G, [ssShift, ssMeta]);
+    MenuFindNext.shortcut := KeyToShortCut(VK_G, [ssMeta]);
+    MenuFindPrev.shortcut := KeyToShortCut(VK_G, [ssShift, ssMeta]);
     {$endif}
     DeletingThisNote := False;
 end;
