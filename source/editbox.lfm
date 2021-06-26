@@ -1237,6 +1237,7 @@ object EditBoxForm: TEditBoxForm
     object MenuFindPrev: TMenuItem
       Caption = 'Find Prev'
       ShortCut = 8306
+      OnClick = MenuFindPrevClick
     end
     object MenuItem1: TMenuItem
       Caption = '-'
@@ -1256,9 +1257,6 @@ object EditBoxForm: TEditBoxForm
     object MenuItemDelete: TMenuItem
       Caption = 'Delete'
       OnClick = MenuItemDeleteClick
-    end
-    object MenuItem5: TMenuItem
-      Caption = '-'
     end
     object MenuItemSelectAll: TMenuItem
       Caption = 'Select All'

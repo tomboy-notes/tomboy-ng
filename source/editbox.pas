@@ -258,7 +258,6 @@ type
 		MenuItemExportPlainText: TMenuItem;
 		MenuItemPrint: TMenuItem;
 		MenuItemSelectAll: TMenuItem;
-		MenuItem5: TMenuItem;
 		MenuItemDelete: TMenuItem;
 		MenuItemPaste: TMenuItem;
 		MenuItemCopy: TMenuItem;
@@ -326,6 +325,7 @@ type
             Shift: TShiftState; X, Y: Integer);
         procedure MenuBoldClick(Sender: TObject);
         procedure MenuBulletClick(Sender: TObject);
+		procedure MenuFindPrevClick(Sender: TObject);
         procedure MenuFixedWidthClick(Sender: TObject);
         procedure MenuHighLightClick(Sender: TObject);
         procedure MenuHugeClick(Sender: TObject);
@@ -691,6 +691,8 @@ procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
 begin
     BulletControl(True, False);
 end;
+
+
 
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
@@ -1179,10 +1181,12 @@ end;
 
 procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
 begin
-    //if FindDialog1.FindText <> '' then
-    //    FindIt(FindDialog1.FindText, True, False);
-
     SpeedRightClick(Self);
+end;
+
+procedure TEditBoxForm.MenuFindPrevClick(Sender: TObject);
+begin
+   SpeedLeftClick(Self);
 end;
 
 (*
