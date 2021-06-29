@@ -2,43 +2,25 @@ unit commonmark;
 
 {$mode objfpc}{$H+}
 
-{   *  Copyright (C) 2020 David Bannon
-    *  See attached licence file.
+{   Copyright (C) 2017-2020 David Bannon
 
+    License:
+    This code is licensed under BSD 3-Clause Clear License, see file License.txt
+    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+
+    Exports a note in a subset of commonmark
+
+    This unit is, June 2021 the same as one in tomboy-ng.
+
+    Create the object, optionally give it a directory to look in and set DoPOFile. Call GetMDcontent()
+    with an ID (that is, a filename without extension) and a list to fill in with content.
+    Free.
 
     HISTORY
-    2021/05/16  Taught TitleFromID() to deal with SingleNote mode when ID does not exist in Repo
-                Note - this has not been synced with TT version.
-}
-
-// ToDo : Look for sequencial lines that contain all monospace text. Such lines needed
-// to be merged into one block, instead of using ` or backtick, arround the block, we
-// should indent the whole block by four extra spaces. If a line is already indented
-// by spaces, add still add four more, that will retain the indent in Markdown
-// So for example -
-// `Some code`
-//    `Indented code`
-// Becomes
-//     Some code
-//         Indented code
-{
-    New function - IsAllMono(St : String) : boolean;
-        returns true if line starts and ends with backtick, note we do not count
-        leading whitespace, so "    `Indented code`" is true.
-        Must ret false if there are more backticks than just the leading and trailing.
-        This method needs some optimisation.
-
-    New function - MakeMonoBlock(St) : string;
-        Returns a string with leading and trailing backticks removed, four spaces
-        added.
-
-    New Procedure - ConvertMonoBlocks
-        Looks at each line, one by one. If it finds a line where IsAllMone()
-        returns true convert it. Move on.
-
-This will result in (at least in remarkable) a single mono line appearing in a
-block, more space above and below, but I guess that just how MD works.
-I could convert only blocks containg two or more lines ......
+    2020-12-22  Extracted from the NextCloud Notes Branch
+    2020-??-??  Moved the Normalising code into a stand alone unit.
+    2021/06/15  Format lines that are all mono differenly so they show as a block.
+    2021/06/29  Merged this file back to tomboy-ng
 }
 
 interface
@@ -54,17 +36,11 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
 
     private
 			function FindInStringList(const StL: TStringList; const FindMe: string): integer;
-			procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
-			function MoveTagLeft(var St: string): boolean;
-			function MoveTagRight(var St: string): boolean;
-			procedure MoveTagUp(const StL: TStringList; const StIndex: integer; var TagSize: integer);
-			procedure NormaliseList(STL: TStringList);
-			function OffTagAtStart(St: string): integer;
-			function OnTagAtEnd(St: string): integer;
+                                    // Make content suitable to write out as a PO file, no merging is going to happen !
+
 			procedure ProcessHeadings(StL: TStringList);
 			procedure ProcessMarkUp(StL: TStringList);
 			function RemoveNextTag(var St: String; out Tag: string): integer;
-			function RemoveRedundentTag(var St: string): boolean;
 			function ReplaceAngles(const Str: AnsiString): AnsiString;
 			procedure SayDebug(st: string; Always: boolean=false);
 			function TitleFromID(ID: string; Munge: boolean; out LenTitle: integer): string;
@@ -76,11 +52,11 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
         DebugMode : boolean;
         NotesDir : string;       // dir were we expect to find our TB notes
 
-                        { Takes a note ID (no extension) and fills out the passed StringList
-                          that must have been created) with a commonmark version of the note.
-                          returns an empty list on error. If ID is an ID only, assumes note is
-                          on repo, else ID must contain a FFN inc path nad extension for single
-                          note mode.}
+                        // Takes a note ID (no extension) and fills out the passed StringList
+                        // that must have been created) with a commonmark version of the note.
+                        // returns an empty list on error. If ID is an ID only, assumes note is
+                        // in repo, else ID must contain a FFN inc path nad extension for single
+                        // note mode.
         function GetMDcontent(ID : string; STL : TstringList) : boolean;
 
 
@@ -89,32 +65,31 @@ end;
 
 implementation
 
-uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead, tb_utils ;
+uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead, notenormal, tb_utils;
 
 
-
-
-function TExportCommon.GetMDcontent(ID: string; STL: TstringList): boolean;
+function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
 { This is same as function in TT but I have removed parts that do file i/o
   I am thinking I would be better using some XML methods, might avoid g-Note issues too. }
-
 var
     LTitle : integer;
     Index : integer;
-    //Title : string = '';
+    Normaliser : TNoteNormaliser;
 begin
-
         if IDLooksOK(ID) then
             StL.LoadFromFile(NotesDir + ID + '.note')
         else StL.LoadFromFile(ID);
-		Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
+        Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
         if Index > -1 then
             while Index > -1 do begin
                 StL.Delete(0);
                 dec(Index);
 			end;
         // OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
-        NormaliseList(StL);
+        Normaliser := TNoteNormaliser.Create;
+        Normaliser.NormaliseList(StL);
+        Normaliser.Free;
+        //NormaliseList(StL);
         StL.Delete(0);
         StL.Insert(0, TitleFromID(ID, False, LTitle));
         Index := FindInStringList(StL, '</note-content>');       // but G-Note does not bother with nice newlines ????
@@ -190,7 +165,7 @@ begin
                 exit('');
 	        end;
 	end;
-	ReadXMLFile(Doc, FFN);
+    ReadXMLFile(Doc, FFN);
     try
         Node := Doc.DocumentElement.FindNode('title');
         result := Node.FirstChild.NodeValue;
@@ -310,6 +285,7 @@ begin
 	until I >= StL.Count-1;
 end;
 
+// This version does heading in the leading ### model
 (* procedure TExportNote.ProcessHeadings(StL : TStringList);
 var
     i : integer = -1;
@@ -436,194 +412,6 @@ begin
         StL.Delete(StIndex + 1);
 	end;
 end;
-
-
-// ----------------------  N O R M A L I S I N G ------------------------------------
-
-// Deals with 'off' tags that need to be moved up to the para they apply to.
-procedure TExportCommon.MoveTagUp(const StL : TStringList; const StIndex : integer; var TagSize : integer);
-var
-Tag : string;
-begin
-// we have to detect when our line starts with  </note-content> or </text> and
-// terminate processing of this string, they are not text markup.
-    Tag := copy(StL.strings[StIndex], 1, TagSize);
-    if (Tag = '</note-content>') or (Tag = '</text>') then begin
-        TagSize := 0;
-        exit;
-    end;
-    StL.Insert(StIndex, copy(StL.Strings[StIndex], TagSize+1, length(StL.Strings[StIndex])));
-    StL.Delete(StIndex+1);
-    StL.Insert(StIndex-1, StL.strings[StIndex-1]+Tag);
-    StL.Delete(StIndex);
-end;
-
-function TExportCommon.MoveTagRight(var St: string): boolean;
-var
-    Index, TagStart, StartAt : integer;
-begin
-    Index := Pos('> ', St);
-    if Index = 0 then exit(False);
-    StartAt := 1;
-    repeat
-        Index := St.IndexOf('> ', StartAt);
-        if Index < 0 then exit(False);
-        TagStart := Index;
-        while St[TagStart] <> '<' do dec(TagStart);
-        if St[TagStart+1] = '/' then begin          // Not interested, an 'off' tag
-            StartAt := Index+1;
-            continue;
-        end else break;
-    until false;
-    delete(St, Index+2, 1);
-    insert(' ', St, TagStart);
-    result := True;
-end;
-
-{ Will move a tag to the left if it has a space there, ret T if it moved one.}
-function TExportCommon.MoveTagLeft(var St: string): boolean;
-var
-    Index : integer;
-begin
-    Index := Pos(' </', St);
-    if Index = 0 then exit(False);
-    delete(St, Index, 1);
-    insert(' ', St, St.IndexOf('>', Index)+2);          // 2 ? IndexOf rets a zero based and we want to go one past
-    Result := true;
-end;
-
-function TExportCommon.OnTagAtEnd(St : string) : integer;
-var
-    I, L : integer;
-begin
-    if St = '' then exit(0);
-    L := length(st);
-    if St[L] <> '>' then exit(0);
-    i := 1;
-    while St[L-i] <> '<' do begin       // march backwards until we find start of tag
-        inc(i);
-        if i > L then  begin
-            debugln('ERROR : Overrun looking for tag start');
-            exit(-1);
-		end;
-	end;
-    if  St[L-i+1] = '/' then exit(0);   // not our problems, tags at the end should be 'off' tags.
-    result := i+1;
-end;
-
-// Looks for an 'off' tag at the start of a line, they belong further up the list, 0 says none found
-function TExportCommon.OffTagAtStart(St : string) : integer;
-var
-    I : integer = 2;
-    L : integer;
-begin
-    if (St = '') or (St[1] <> '<') or (St[2] <> '/') then   // Hmm, a single unescaed < on a line will crash
-        exit(0);
-    L := length(St);
-    while St[i] <> '>' do begin
-        inc(i);
-        if i > L then begin
-            debugln('ERROR : overrun looking for tag end, line =[' + st + ']');
-            exit(-1);
-		end;
-	end;
-    result := i;
-end;
-
-// Deals with 'on' tags that need to be moved down to the paras that they apply to
-procedure TExportCommon.MoveTagDown(const StL : TStringList; const StIndex, TagSize : integer);
-var
-Tag : string;
-begin
-    Tag := copy(StL.strings[StIndex], length(StL.strings[StIndex])-TagSize+1, TagSize);
-    StL.Insert(StIndex, copy(StL.strings[StIndex], 1, length(StL.strings[StIndex])-TagSize));
-    StL.Delete(StIndex+1);
-    StL.Insert(StIndex+1, Tag+StL.Strings[StIndex+1]);
-    StL.Delete(StIndex+2);
-end;
-
-// When there is an off tag and and complementry on tag with nothing between they
-// are redundent and we remove them right here and now. No excuses !
-// Rets True is it made a change, repeat until it finds nothing to do.
-function TExportCommon.RemoveRedundentTag(var St : string) : boolean;
-var
-    OffTag : integer = 0;            // String Helpers are zero based !
-    Tag1, Tag2 : string;      // migth get, eg monospace for a fixed spacing tag
-
-    function Removed(const OffSet : integer; TagSt : string; replace : boolean) : boolean;
-    begin
-        if OffSet < 0 then exit(False);
-        if St.Substring(OffSet, length(TagSt)) = TagSt then begin
-            St := St.Remove(OffSet, length(Tag1 + Tag2) +1);
-            if Replace then
-                St := St.Insert(OffSet, ' ');
-            exit(True);
-		end else Result := False;
-	end;
-
-begin
-    while(true) do begin
-        OffTag := st.IndexOf('</', OffTag);
-        if OffTag >= 0 then begin
-            Tag1 := St.Substring(OffTag, st.IndexOf('>', OffTag) - OffTag +1);     // ie thats full tag
-            Tag2 := Tag1.Remove(Tag1.IndexOf('/', 1), 1);
-            // we target Tag1Tag2 or reversed, with and without a space between
-            if Removed(OffTag, Tag1+Tag2, False) then exit(True);
-            if Removed(OffTag, Tag1+' '+Tag2, True) then exit(True);
-            if Removed(OffTag-length(Tag2), Tag2+Tag1, False) then exit(True);
-            if Removed(OffTag-length(Tag2), Tag2+' ' + Tag1, True) then exit(True);
-            // If still here, that offtag was not associated with an immediate on tag.
-            inc(OffTag);
-            continue;
-		end else exit(False);       // no more offtags left to consider or maybe on offtags at all
-	end
-     { Loop: Find next offtag, exit false if we cannot find one
-      try and find a matching ontag with nothing between.
-      If above fails, goto LOOP:
-    }
-end;
-
-procedure TExportCommon.NormaliseList(STL : TStringList);
-var
-    TagSize, StIndex : integer;
-    TempSt : string;
-begin
-    StIndex := 0;
-    while StIndex < StL.Count do begin
-        repeat
-            TagSize := OnTagAtEnd(StL.Strings[StIndex]);
-            if TagSize > 0 then MoveTagDown(StL, StIndex, TagSize);
-		until TagSize < 1;          // WARNING, that includes error code, -1
-        TempSt := StL.Strings[StIndex];
-        while MoveTagLeft(TempSt) do;
-        while MoveTagRight(TempSt) do;
-        if TempSt <> StL.Strings[StIndex] then begin
-            StL.Insert(StIndex, TempSt);
-            StL.Delete(StIndex + 1);
-        end;
-        inc(StIndex);
-	end;
-    StIndex := StL.Count -1;           // start at bottom and work up
-    while StIndex > 0 do begin      // we don't care about the first line.
-        repeat
-            TagSize := OffTagAtStart(StL.strings[StIndex]);
-            if TagSize > 0 then MoveTagUp(StL, StIndex, TagSize);
-		until TagSize < 1;
-        dec(StIndex);
-	end;
-    StIndex := 0;                      // Redundent, sequencial tags.
-    while StIndex < StL.Count do begin
-        TempSt := STL[StIndex];
-        if RemoveRedundentTag(TempSt) then begin
-            while RemoveRedundentTag(TempSt) do;        // in case more than one in line
-            StL.Insert(StIndex, TempSt);
-            StL.Delete(StIndex + 1);
-		end;
-		inc(StIndex);
-	end;
-end;
-
-
 
 
 end.

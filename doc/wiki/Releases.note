@@ -10,6 +10,7 @@ Downloads and information for specific platforms further down the page.<size:hug
 <bold>Release Notes</bold></size:huge>
 <list><list-item dir="ltr">Undo (Ctr-Z) and Redo (Ctrl-Y) is now implemented. Each keypress is an event, the code to detect that a key is part of a sequence is too obtrusive. A setting allows disabling Undo if desired, I have not established clearly just what effect it has on performance.</list-item></list>
 <list><list-item dir="ltr">SysTray support for Linux systems using the Gnome Desktop, even Fedora !  Install gnome-shell-extension-appindicator package, restart.  </list-item></list>
+<list><list-item dir="ltr">Substantially faster indexing at statup, will help users with large (&gt;10K) notes and good hardware.</list-item></list>
 <list><list-item dir="ltr">Don't show missing SysTray warning without good reason, console messages. </list-item></list>
 <list><list-item dir="ltr">The help note, "System Tray on Linux" now points to a solution for System Tray issues on Debian Bulleseye using Gnome Desktop.</list-item></list>
 <list><list-item dir="ltr">Improvements to in-note Find. It now responds to F3 or Ctrl-G for forward Finding, shift will go backwards. The Ctrl-Enter and Alt-Enter still works but I personally regret introducing it, sorry !  The new key bindings are far more widely used in other applications (Firefox, Thunderbird, MacOS ...).</list-item></list>
@@ -132,14 +133,14 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2021-06-22T21:42:03.6828618+10:00</last-change-date>
-  <last-metadata-change-date>2021-06-22T21:42:03.6828618+10:00</last-metadata-change-date>
+  <last-change-date>2021-06-29T16:58:33.5626936+10:00</last-change-date>
+  <last-metadata-change-date>2021-06-29T16:58:33.5626936+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1173</width>
   <height>800</height>
-  <x>88</x>
-  <y>253</y>
+  <x>585</x>
+  <y>162</y>
   <open-on-startup>False</open-on-startup>
 </note>
