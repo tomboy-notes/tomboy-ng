@@ -14,6 +14,7 @@
 {"hash":204462302,"name":"tsett.checkshowsplash.hint","sourcebytes":[65,108,119,97,121,115,32,115,104,111,119,110,32,105,102,32,101,114,114,111,114,32,108,111,97,100,105,110,103,32,110,111,116,101,115,46],"value":"Always shown if error loading notes."},
 {"hash":196767252,"name":"tsett.checkshowsplash.caption","sourcebytes":[83,104,111,119,32,83,112,108,97,115,104,32,97,116,32,83,116,97,114,116],"value":"Show Splash at Start"},
 {"hash":146065017,"name":"tsett.checkshowtomdroid.caption","sourcebytes":[83,104,111,119,32,84,111,109,100,114,111,105,100,32,83,121,110,99,32,40,101,120,112,101,114,105,109,101,110,116,97,108,41],"value":"Show Tomdroid Sync (experimental)"},
+{"hash":192901619,"name":"tsett.checknotifications.caption","sourcebytes":[83,104,111,119,32,78,111,116,105,102,105,99,97,116,105,111,110,115],"value":"Show Notifications"},
 {"hash":5597891,"name":"tsett.tabdisplay.caption","sourcebytes":[78,111,116,101,115],"value":"Notes"},
 {"hash":90566245,"name":"tsett.groupbox5.caption","sourcebytes":[70,111,110,116,32,83,105,122,101],"value":"Font Size"},
 {"hash":18679,"name":"tsett.radiofontbig.caption","sourcebytes":[66,105,103],"value":"Big"},

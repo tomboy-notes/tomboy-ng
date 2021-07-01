@@ -123,8 +123,8 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr, notifier
-        {$ifdef WINDOWS}, Settings{$endif} ;		// just for DarkTheme
+uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr,
+        notifier, Settings;
 
 {$R *.lfm}
 
@@ -313,8 +313,10 @@ begin
             // in autosync mode, form is not visible, we just send a notify that cannot sync right now.
             if not Visible then begin
                 SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
-                Notifier := TNotifier.Create;                                           // does not require a 'free'.
-                Notifier.ShowTheMessage('tomboy-ng', rsAutoSyncNotPossible, 12000);     // 12 seconds
+                if Sett.CheckNotifications.checked then begin
+                    Notifier := TNotifier.Create;                                           // does not require a 'free'.
+                    Notifier.ShowTheMessage('tomboy-ng', rsAutoSyncNotPossible, 12000);     // 12 seconds
+                end;
                 exit;
             end else begin
                 showmessage('Unable to sync because ' + ASync.ErrorString);
@@ -329,7 +331,7 @@ begin
         ASync.StartSync();
         SyncSummary :=  DisplaySync();
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
-        if not Visible then begin
+        if (not Visible) and Sett.CheckNotifications.Checked then begin
             Notifier := TNotifier.Create;                                           // does not require a 'free'.
             Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary, 3000);
         end;

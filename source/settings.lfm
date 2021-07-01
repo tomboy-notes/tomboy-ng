@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 449
+  Left = 816
   Height = 525
-  Top = 245
+  Top = 151
   Width = 588
   BorderIcons = []
   Caption = 'Form Caption'
@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -98,29 +98,40 @@ object Sett: TSett
         TabOrder = 1
       end
       object CheckAutostart: TCheckBox
+        AnchorSideLeft.Control = CheckShowTomdroid
+        AnchorSideTop.Control = CheckShowTomdroid
+        AnchorSideTop.Side = asrBottom
         Left = 16
         Height = 23
-        Top = 272
+        Top = 266
         Width = 157
+        BorderSpacing.Top = 21
         Caption = 'Autostart at Logon'
         OnChange = CheckAutostartChange
         TabOrder = 3
       end
       object CheckShowSearchAtStart: TCheckBox
+        AnchorSideLeft.Control = CheckShowTomdroid
+        AnchorSideTop.Control = CheckAutostart
+        AnchorSideTop.Side = asrBottom
         Left = 16
         Height = 23
-        Top = 312
+        Top = 310
         Width = 172
+        BorderSpacing.Top = 21
         Caption = 'Show Search at Start'
         OnChange = CheckReadOnlyChange
         TabOrder = 4
       end
       object CheckShowSplash: TCheckBox
+        AnchorSideTop.Control = CheckShowSearchAtStart
+        AnchorSideTop.Side = asrBottom
         Left = 16
         Height = 23
         Hint = 'Always shown if error loading notes.'
-        Top = 352
+        Top = 354
         Width = 170
+        BorderSpacing.Top = 21
         Caption = 'Show Splash at Start'
         Checked = True
         OnChange = CheckReadOnlyChange
@@ -130,13 +141,31 @@ object Sett: TSett
         TabOrder = 5
       end
       object CheckShowTomdroid: TCheckBox
+        AnchorSideTop.Control = ButtonSetNotePath
+        AnchorSideTop.Side = asrBottom
         Left = 16
         Height = 23
-        Top = 224
+        Top = 222
         Width = 281
+        BorderSpacing.Top = 30
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = CheckReadOnlyChange
         TabOrder = 2
+      end
+      object CheckNotifications: TCheckBox
+        AnchorSideLeft.Control = CheckShowTomdroid
+        AnchorSideTop.Control = CheckShowSplash
+        AnchorSideTop.Side = asrBottom
+        Left = 16
+        Height = 23
+        Top = 398
+        Width = 158
+        BorderSpacing.Top = 21
+        Caption = 'Show Notifications'
+        Checked = True
+        OnChange = CheckReadOnlyChange
+        State = cbChecked
+        TabOrder = 6
       end
     end
     object TabDisplay: TTabSheet
