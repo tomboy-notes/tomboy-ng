@@ -539,8 +539,8 @@ uses
     FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
     LCLIntf,            // OpenUrl()
     TB_Utils,
-    ResourceStr;        // We borrow some search related strings from searchform
-
+    ResourceStr,        // We borrow some search related strings from searchform
+    notenormal;         // makes the XML look a little prettier
 
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
@@ -3029,10 +3029,12 @@ var
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    // T1, T2, T3, T4, T5, T6, T7 : dword;
+    T1, T2, T3, T4, T5, T6, T7 : qword;
+    MyFile: TextFile;
     // TestI : integer;
+    Normaliser : TNoteNormaliser;
 begin
-    //T1 := gettickcount64();
+    T1 := gettickcount64();
     // debugln('Saving this note' + Caption);
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
@@ -3064,16 +3066,60 @@ begin
             TitleHasChanged := False;
 		end;
         Caption := Saver.Title;
-        //T2 := GetTickCount64();                   // 0mS
+
         KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
+        SL := TStringList.Create();               // needs a try .. finally
         try
-           // debugln('about to save');
+{            T2 := GetTickCount64();                   // 0mS
             Saver.ReadKMemo(NoteFileName, KMemo1);
-            //T3 := GetTickCount64();               // 6mS
+            T3 := GetTickCount64();               // 6mS
+            debugln('ReadMemo into MemoryStream = ' + inttostr(T3 - T2));        }
+
+
+            T2 := GetTickCount64();
+            Saver.ReadKMemo(NoteFileName, KMemo1, SL);
+            T3 := GetTickCount64();
+            debugln('ReadMemo into StringList = ' + inttostr(T3 - T2));
+
         finally
             KMemo1.Blocks.UnLockUpdate;
         end;
-        //T4 := GetTickCount64();                   //  0mS
+        // Starting here, this code will move to a new thread
+        // I cannot access NoteLister from the thread so must get
+        // footer before we move on.  Can I reda NoteLister ?
+        // There are two types of interactions with NoteLister about to happen ?
+        // 1a. READ - SearchForm.NoteLister.NoteBookTags(ID)  (in SaveNote)
+        // 1b. READ - SearchForm.NoteLister.GetLastChangeDate
+        // 2a. WRITE - SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
+        // 2b. WRITE - SearchForm.DeleteNote()
+        // the way these things happen is a bit convoluted and dependent of external factors ....
+
+        // SearchForm.DeleteNote() and OldFileName relate to fixing invalid note filenames, very rare event, can do as soon
+        // as new notename is registered with NoteLister.
+
+        // SearchForm.UpdateList() is called for every content change save. So, gets called a lot
+        // But can it be called before Footer is built ?  set the TimeStamp, if necessary, before
+        // we pass Footer the Loc record.  That way, Footer always uses the passed timestamp, we
+        // have it in EditBox.
+
+        // Maybe rename SaveNote NoteToXML ??
+
+        T2 := GetTickCount64();
+        Normaliser := TNoteNormaliser.Create;
+        Normaliser.NormaliseList(SL);
+        Normaliser.Free;
+        T3 := GetTickCount64();
+        debugln('Normalise StringList = ' + inttostr(T3 - T2));
+
+
+
+
+        { T2 := GetTickCount64();
+        SL.SaveToFile('/home/dbannon/savethread-S.note');
+        T3 := GetTickCount64();
+        debugln('Write StringList with SaveToFile = ' + inttostr(T3 - T2));    }
+
+
         Loc.Width:=inttostr(Width);
         Loc.Height:=inttostr(Height);
         Loc.X := inttostr(Left);
@@ -3082,21 +3128,34 @@ begin
         Loc.CPos:='1';
         loc.FFName:='';
         if Dirty or SingleNoteMode then     // In SingeNoteMode, there is no NoteLister, so date is always updated.
-            Loc.LastChangeDate:=''
+            Loc.LastChangeDate:= TB_GetLocalTime()
         else
             Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
+
+        SL.Add(Saver.Footer(Loc));
+        T2 := GetTickCount64();
+        AssignFile(MyFile, '/home/dbannon/savethread.note');
+        Rewrite(MyFile);
+        writeln(MyFile, SL.Text);
+        CloseFile(MyFile);
+        T3 := GetTickCount64();
+        debugln('Write StringList with Writeln = ' + inttostr(T3 - T2));
+        SL.Free;
+
         // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
-        if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing) then begin
+(*      // need to restore this but with new write model, I believe we can call this BEFORE writing ....
+        if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing) then begin                    // 0, 0, 1, 0, 0mS
             Showmessage('ERROR, cannot save,  please report [' + Loc.ErrorStr + ']');     // maybe some windows delete problem ??
             //Showmessage('Name=' + Sett.NoteDirectory + NoteFileName);
         end;
-        //T5 := GetTickCount64();                   // 1mS
+*)        T3 := GetTickCount64();
+        debugln('Write MemoryStream = ' + inttostr(T3 - T2));
+        debugln('-------');
         // No point in calling UpDateList() if we are closing the app or just updating metadata.
         if ((not WeAreClosing) and (Loc.LastChangeDate = '')) then
-            SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
+            SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);
                                         // if we have rewritten GUID, that will create new entry for it.
             // the above call to UpdateList triggers some time wasting menu updates, I cannot find why !
-        //T6 := GetTickCount64();                   //  14mS
         if OldFileName <> '' then
             SearchForm.DeleteNote(OldFileName);
     finally
@@ -3104,10 +3163,9 @@ begin
         Dirty := false;
         Caption := CleanCaption();
     end;
-    //T7 := GetTickCount64();                       // 0mS
+    T7 := GetTickCount64();                       // 0mS
     //debugln('EditBox.SaveTheNote Timing');
-    //debugln('create=' + inttostr(T2 - T1) + ' ReadKMemo=' + inttostr(T3 - T2) + ' Unlock=' + inttostr(T4 - T3) + ' Write=' +
-    //        inttostr(T5 - T4) + ' UpdateList=' + inttostr(T6 - T5) + ' CleanUp=' + inttostr(T7 - T6));
+
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;

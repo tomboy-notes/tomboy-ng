@@ -15,8 +15,6 @@ unit notenormal;
 
   It recieves a TStringList containing a note (probably directly loaded from disk).
 
-  ToDo : it still lets empty tags through, should be removed. ie <bold></bold>
-
 }
 
 {$mode objfpc}{$H+}
