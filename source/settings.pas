@@ -93,6 +93,7 @@ unit settings;
     2021/01/23  Save Search Auto Refresh check box status.
     2021/04/24  Added setting to enable/disable undo/redo
     2021/05/01  Remove HaveConfig and restructured config startup
+    2021/06/01  Add setting to disable Notifications
 }
 
 {$mode objfpc}{$H+}
@@ -118,6 +119,7 @@ type
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
+		CheckNotifications: TCheckBox;
         CheckUseUndo: TCheckBox;
         CheckBoxAutoSync: TCheckBox;
         ComboHelpLanguage: TComboBox;
@@ -834,6 +836,8 @@ begin
             ('true' = Configfile.ReadString('BasicSettings', 'Autostart', 'false'));
         CheckShowSearchAtStart.Checked :=
             ('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
+        CheckNotifications.Checked :=
+            ('true' = Configfile.ReadString('BasicSettings', 'ShowNotifications', 'true'));
         case ConfigFile.readstring('BasicSettings', 'FontSize', 'medium')  of
             'huge'   : RadioFontHuge.Checked := true;
     	    'big'    : RadioFontBig.Checked := true;
@@ -959,6 +963,7 @@ begin
             ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
             ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));
+            ConfigFile.WriteString('BasicSettings', 'ShowNotifications', MyBoolStr(CheckNotifications.Checked));
             ConfigFile.WriteString('BasicSettings', 'AutoRefresh',       MyBoolStr(AutoRefresh));
             ConfigFile.WriteString('BasicSettings', 'UseUndo',           MyBoolStr(CheckUseUndo.Checked));
             if RadioFontBig.Checked then
@@ -1258,9 +1263,11 @@ begin
     {$endif}
     WriteConfigFile();
     SearchForm.UpdateStatusBar(rsAutosnapshotRun);
-    Notifier := TNotifier.Create;
-    Notifier.ShowTheMessage('tomboy-ng', rsAutosnapshotRun);
+    if CheckNotifications.Checked then begin
+        Notifier := TNotifier.Create;
+        Notifier.ShowTheMessage('tomboy-ng', rsAutosnapshotRun);
         // Note, don't free it, it frees itself.
+    end;
 end;
 
 procedure TSett.CheckAutoSnapEnabledChange(Sender: TObject);

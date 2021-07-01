@@ -1595,6 +1595,10 @@ msgstr "Permitir que una nota aparece en más de un cuaderno."
 msgid "This may adversly affect traditional Tomboy, take care."
 msgstr "Puede que perjudique Tomboy tradicional. Tenga cuidado."
 
+#: tsett.checknotifications.caption
+msgid "Show Notifications"
+msgstr ""
+
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
 msgstr "Mostrar Enlaces Externos"

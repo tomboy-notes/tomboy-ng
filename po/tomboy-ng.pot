@@ -1571,6 +1571,10 @@ msgstr ""
 msgid "This may adversly affect traditional Tomboy, take care."
 msgstr ""
 
+#: tsett.checknotifications.caption
+msgid "Show Notifications"
+msgstr ""
+
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
 msgstr ""
