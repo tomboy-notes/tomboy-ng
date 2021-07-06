@@ -102,6 +102,7 @@ unit SearchUnit;
     2021/01/23  A check box to choose Auto Refresh or not.
     2021/02/11  Some debugs around Ctrl-Q, to be removed and make two listboxes respond to Ctrl-N
     2021/02/14  Direct all key down events via Form's OnKeyDown handler Ctrl-N and Ctrl-Q
+    2021/07/05  UpDateList now only refreshes menu if item on top has changed
 }
 
 {$mode objfpc}{$H+}
@@ -422,10 +423,12 @@ begin
 end;
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
-{var
-    T1, T2, T3, T4 : dword; }
+var
+    // T1, T2, T3, T4 : dword;
+    NeedUpdateMenu : boolean;                   // Updating the menu can be a bit slow.
 begin
     if NoteLister = Nil then exit;				// we are quitting the app !
+    NeedUpDateMenu :=  (Title <> NoteLister.GetTitle(noteLister.Count()-1));
   	// Can we find line with passed file name ? If so, apply new data.
     //T1 := gettickcount64();
 	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
@@ -435,18 +438,15 @@ begin
     //T2 := gettickcount64();
     NoteLister.ThisNoteIsOpen(FullFileName, TheForm);
     //T3 := gettickcount64();
-    RefreshMenus(mkRecentMenu);
-
-            if Visible and CheckAutoRefresh.checked then
-            Refresh()
-        else begin
-            if Visible then ButtonRefresh.Enabled := True
-            else NeedRefresh := True;
-        end;
-
-//    if Visible then ButtonRefresh.Enabled := True
-//    else NeedRefresh := True;
-    // UseList();          // 13mS ?
+    if NeedUpDateMenu then
+        RefreshMenus(mkRecentMenu);
+    // else debugln('SearchUnit.UpdateList - saved a call to RefreshMenu');
+    if Visible and CheckAutoRefresh.checked then
+        Refresh()
+    else begin
+        if Visible then ButtonRefresh.Enabled := True
+        else NeedRefresh := True;
+    end;
     //T4 := gettickcount64();
     //debugln('SearchUnit.UpdateList ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;

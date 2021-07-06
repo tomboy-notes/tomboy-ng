@@ -210,6 +210,7 @@ unit EditBox;
     2021/02/15  Use CommonMark when exporting Markdown
     2021/02/17  Fix Mac only bug, not Ctrl to ssMeta F for the EditFind
     2021/06/25  Replaced TUpDown with 2 speedbuttons
+    2021/07/06  Save now in separate thread, a few mS for medium note, 10mS for a big one
 }
 
 
@@ -350,7 +351,6 @@ type
 		procedure MenuItemSelectAllClick(Sender: TObject);
         procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
-        procedure MenuItemWriteClick(Sender: TObject);
         procedure MenuLargeClick(Sender: TObject);
         procedure MenuNormalClick(Sender: TObject);
         procedure MenuSmallClick(Sender: TObject);
@@ -371,7 +371,6 @@ type
         NumbFindHits : integer;
         Use_Undoer : boolean;         // We allow user to disable Undo system, ONLY set during create.
         Undoer : TUndo_Redo;
-        BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
         TitleHasChanged : boolean;
         // a record of the cursor position before last click, used by shift click to select
         MouseDownPos : integer;
@@ -513,15 +512,38 @@ type
         procedure NewFind(Term: string);
     end;
 
+
+Type
+
+  { TSaveThread }
+
+  TSaveThread = class(TThread)
+  private
+    //fStatusText : string;
+    //procedure ShowStatus;
+  protected
+    procedure Execute; override;
+  public
+    TheSL : TStringList;
+    TheLoc : TNoteUpdateRec;    // ToDo : defined in SaveNote but might change name .....
+    Constructor Create(CreateSuspended : boolean);
+  end;
+
+
+
+
+
 var
     EditBoxForm: TEditBoxForm;
+    BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
 
-// Note that the various font sizes are declared in Settings;
 
 
 implementation
 
 {$R *.lfm}
+
+
 
 { TEditBoxForm }
 uses
@@ -553,10 +575,52 @@ const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
 
-{  ---- U S E R   C L I C K   F U N C T I O N S ----- }
+
+
+{ =============  T   S A V E   T H R E A D   ================== }
+
+
+procedure TSaveThread.Execute;
+var
+    Normaliser : TNoteNormaliser;
+    WBufStream : TWriteBufStream;
+    FileStream : TFileStream;
+begin
+    Normaliser := TNoteNormaliser.Create;
+    Normaliser.NormaliseList(TheSL);
+    Normaliser.Free;
+    TheSL.Add(Footer(TheLoc));
+    // TWriteBufStream, TFileStream preferable to BufferedFileStream because of a lighter memory load.
+    FileStream := TFileStream.Create(TheLoc.FFName, fmCreate);
+    //FileStream := TFileStream.Create('/home/dbannon/savethread.note', fmCreate);
+    WBufStream := TWriteBufStream.Create(FileStream, 4096);             // 4K seems about right on Linux.
+    try
+        try
+            TheSL.SaveToStream(WBufStream);
+        except on E:Exception do begin
+                              Debugln('ERROR, failed to save note : ' + E.Message);
+                              WBufStream.Free;
+                              FileStream.Free;
+                              TheSL.Free;
+                          end;
+        end;
+    finally
+        WBufStream.Free;
+        FileStream.Free;
+        TheSL.Free;
+    end;
+    BusySaving := False;
+end;
+
+constructor TSaveThread.Create(CreateSuspended: boolean);
+begin
+   inherited Create(CreateSuspended);
+   FreeOnTerminate := True;
+end;
 
 
 
+{  ==========  U S E R   C L I C K   F U N C T I O N S  ========= }
 procedure TEditBoxForm.SpeedButtonTextClick(Sender: TObject);
 begin
    PopupMenuText.PopUp;
@@ -3024,20 +3088,28 @@ begin
     // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
 end;
 
-procedure TEditBoxForm.MenuItemWriteClick(Sender: TObject);
-begin
-    if KMemo1.ReadOnly then exit();
-    SaveTheNote();
-end;
+{x$define SAVETHREAD}
 
 function TEditBoxForm.SaveStringList(const SL: TStringList; Loc : TNoteUpdateRec) : boolean;
 var
+    {$ifdef SAVETHREAD}
+    TheSaveThread : TSaveThread;
+    {$else}
     Normaliser : TNoteNormaliser;
     WBufStream : TWriteBufStream;
     FileStream : TFileStream;
+    {$ENDIF}
 begin
     if BusySaving then exit(False);
     BusySaving := True;
+    Result := True;
+    {$ifdef SAVETHREAD}
+    TheSaveThread := TSaveThread.Create(true);
+    TheSaveThread.TheLoc := Loc;
+    TheSaveThread.TheSL := Sl;
+    TheSaveThread.Start;
+    // It will clean up after itself.
+    {$else}
     Normaliser := TNoteNormaliser.Create;
     Normaliser.NormaliseList(SL);
     Normaliser.Free;
@@ -3062,6 +3134,7 @@ begin
       SL.Free;
     end;
     BusySaving := False;
+    {$ENDIF}
 end;
 
 procedure TEditBoxForm.SaveTheNote(WeAreClosing : boolean = False);
@@ -3137,12 +3210,17 @@ begin
         Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
 
     T4 := GetTickCount64();
-    if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save
+    if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
     T5 := GetTickCount64();
 
 		// T6 := GetTickCount64();
-        debugln('Save Note Initial=' + inttostr(T2-T1) + ' ReadMemo=' + inttostr(T3-T2)
-                + ' MenuUpDate=' + Inttostr(T4-T3) + ' Normalise_Save=' + inttostr(T5-T4));
+    {    debugln('Save Note Initial=' + inttostr(T2-T1) + ' ReadMemo=' + inttostr(T3-T2)
+                + ' MenuUpDate=' + Inttostr(T4-T3) + ' Normalise_Save=' + inttostr(T5-T4));     }
+    {$ifdef SAVETHREAD}
+    debugln('Total time to save threaded is ' + inttostr(T5-T1));
+    {$else}
+    debugln('Total time to save UN-threaded is ' + inttostr(T5-T1));
+    {$endif}
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;

@@ -1621,6 +1621,10 @@ msgstr "Une note peut figurer dans plusieurs carnets."
 msgid "This may adversly affect traditional Tomboy, take care."
 msgstr "Attention, risque d'impact sur le Tomboy traditionnel."
 
+#: tsett.checknotifications.caption
+msgid "Show Notifications"
+msgstr ""
+
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
 msgstr "Voir les liens externes"
