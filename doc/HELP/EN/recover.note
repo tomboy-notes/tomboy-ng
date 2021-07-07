@@ -5,12 +5,12 @@
 
 If you are reading this, odds are you are worried ! So, first bit of advice is <size:large>
 <italic><bold>don't panic</bold></italic></size:large><size:small><italic><bold> (1)</bold></italic></size:small>
-Its quite possible we can help you. That will depend on whats happened and maybe if you have taken a manual snapshot recently. Firstly, don't do a sync, it could replace good data with bad. Next,  take small steps.
+Its quite possible we can help you. That will depend on what has happened and maybe if you have taken a manual snapshot recently. Firstly, don't do a sync, it could replace good data with bad. Next,  take small steps.
 
-Lets look at the possibilities -<size:large>
+Let's look at the possibilities -<size:large>
 
 <bold>I (or the sync) deleted a note I need</bold></size:large>
-That just might be easy. We keep a backup copy of every note you manually delete or is overwritten during a sync. But only one copy so if its been synced and overwritten again, its gone. Check by going back to Settings, the Recover tab, click "Show Me", browse through the old notes there and double click a likely candidate. You'll get a dialog that lets you view, delete or recover that note.<size:large>
+That just might be easy. We keep a backup copy of every note you manually delete or is overwritten during a sync. But only one copy so if its been synced and overwritten again, it is gone. Check by going back to Settings, the Recover tab, click "Show Me", browse through the old notes there and double click a likely candidate. You'll get a dialog that lets you view, delete or recover that note.<size:large>
 
 <bold>I have a corrupted note.</bold></size:large>
 When you start tomboy-ng, you see a warning about an inability to index a note. That probably means the note's XML has somehow become corrupted <size:small>(2)</size:small>. The indexing mechanism in tomboy-ng is deliberately very strict in what it will accept, it errors if one field is unobtainable. However, depending on where the XML error in the note is, you may be able to open it and save it with rewritten XML.   Do take a snapshot before you start this process.
@@ -41,14 +41,14 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 
 
 </note-content></text>
-  <last-change-date>2020-11-17T20:33:16.2310674+11:00</last-change-date>
-  <last-metadata-change-date>2020-11-17T20:33:16.2310674+11:00</last-metadata-change-date>
+  <last-change-date>2021-07-07T11:47:50.2728517+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-07T11:47:50.2728517+10:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1061</width>
   <height>626</height>
-  <x>76</x>
-  <y>243</y>
+  <x>639</x>
+  <y>371</y>
   <open-on-startup>False</open-on-startup>
 </note>

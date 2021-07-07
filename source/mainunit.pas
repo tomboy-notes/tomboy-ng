@@ -503,25 +503,10 @@ var
     Lab : TLabel;
 begin
     TestDarkThemeInUse();
-//    {$ifdef windows}                // linux (except bullseye, dec 2020) apps know how to do this themselves
-    if Sett.DarkTheme then begin
-{        color := Sett.HiColour;
-        //font.color := Sett.TextColour;               // These do not work for Windows, just bullseye, just temp....
-        ButtMenu.Color := Sett.BackGndColour;
-        BitBtnQuit.Color := Sett.BackGndColour;
-        BitBtnHide.Color := Sett.HiColour;
-        BitBtnHide.Color := clBlack;    }
-
-        color := Sett.BackGndColour;
-        font.color := Sett.TextColour;               // These do not work for Windows, so for just bullseye, just temp....
-        ButtMenu.Color := Sett.AltColour;
-        BitBtnQuit.Color := Sett.AltColour;
-        BitBtnHide.Color := Sett.AltColour;
-        for Lab in [Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
-            TLabel(Lab).Font.Color:= Sett.TextColour;
-        CheckBoxDontShow.Font.color := Sett.TextColour;
-    end;
-//    {$endif}
+    {$ifdef windows}                // linux  apps know how to do this themselves
+    if Sett.DarkTheme then
+        color := Sett.AltColour;
+    {$endif}
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
         exit;

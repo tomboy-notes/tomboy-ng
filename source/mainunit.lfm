@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object ImageNotesDirTick: TImage
     AnchorSideTop.Control = LabelNotesFound
     Left = 24
@@ -84,7 +84,6 @@ object MainForm: TMainForm
     Width = 196
     BorderSpacing.Top = 6
     Caption = 'Dictionary Config (optional)'
-    ParentColor = False
   end
   object Label4: TLabel
     AnchorSideTop.Control = Label3
@@ -95,7 +94,6 @@ object MainForm: TMainForm
     Width = 156
     BorderSpacing.Top = 6
     Caption = 'Sync Config (optional)'
-    ParentColor = False
   end
   object ImageSpellTick: TImage
     AnchorSideTop.Control = Label3
@@ -227,7 +225,6 @@ object MainForm: TMainForm
     Caption = 'Welcome to tomboy-ng !'
     Font.Height = -18
     Font.Name = 'Lucida Grande'
-    ParentColor = False
     ParentFont = False
   end
   object LabelNotesFound: TLabel
@@ -239,7 +236,6 @@ object MainForm: TMainForm
     Width = 10
     BorderSpacing.Top = 5
     Caption = 'X'
-    ParentColor = False
   end
   object LabelError: TLabel
     AnchorSideTop.Control = Label4
@@ -252,7 +248,6 @@ object MainForm: TMainForm
     Caption = 'X'
     Font.Height = -16
     Font.Style = [fsBold]
-    ParentColor = False
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
@@ -373,7 +368,6 @@ object MainForm: TMainForm
     Width = 148
     BorderSpacing.Top = 12
     Caption = 'LabelBadNoteAdvice'
-    ParentColor = False
   end
   object BitBtnQuit: TBitBtn
     AnchorSideLeft.Control = BitBtnHide
