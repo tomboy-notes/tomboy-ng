@@ -9,7 +9,7 @@ object FormSync: TFormSync
   OnClose = FormClose
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -32,7 +32,6 @@ object FormSync: TFormSync
       Font.Height = -16
       Font.Name = 'Sans'
       Font.Style = [fsBold]
-      ParentColor = False
       ParentFont = False
     end
     object Label2: TLabel
@@ -41,7 +40,6 @@ object FormSync: TFormSync
       Top = 56
       Width = 47
       Caption = 'Label2'
-      ParentColor = False
     end
   end
   object Panel2: TPanel

@@ -5,33 +5,33 @@
 
 
 <bold>All Platforms</bold></size:large>
-<list><list-item dir="ltr">Alt-RightArrow : Turn a bullet point on.</list-item></list>
-<list><list-item dir="ltr">Alt-LeftArrow : Turn a bullet point off.</list-item></list>
+<list><list-item dir="ltr">Alt-RightArrow : Turn a bullet point on</list-item></list>
+<list><list-item dir="ltr">Alt-LeftArrow : Turn a bullet point off</list-item></list>
 <list><list-item dir="ltr">Control-1 : Small Font</list-item></list>
 <list><list-item dir="ltr">Control-2 : normal font</list-item></list>
 <list><list-item dir="ltr">Control-3 : large font</list-item></list>
 <list><list-item dir="ltr">Control-4 : huge font</list-item></list>
-<list><list-item dir="ltr">Shift-RightArrow - extend selection one char to right</list-item></list>
-<list><list-item dir="ltr">Shift-LeftArrow - extend selection one char to left</list-item></list>
-<list><list-item dir="ltr">Shift-Click : Select text between existing position and clicked position.</list-item></list><size:large>
+<list><list-item dir="ltr">Shift-RightArrow : extend selection one char to right</list-item></list>
+<list><list-item dir="ltr">Shift-LeftArrow : extend selection one char to left</list-item></list>
+<list><list-item dir="ltr">Shift-Click : Select text between existing position and clicked position</list-item></list><size:large>
 
 <bold>Windows / Linux</bold></size:large>
 <list><list-item dir="ltr">Control-Q : Quit tomboy-ng  - On Search, Settings and any Open Note</list-item></list>
 <list><list-item dir="ltr">Control-N : New Note - On Search, Settings and any Open Note</list-item></list>
-<list><list-item dir="ltr">Control-X : Cut the selected text and copy it to the Clipboard.</list-item></list>
+<list><list-item dir="ltr">Control-X : Cut the selected text and copy it to the Clipboard</list-item></list>
 <list><list-item dir="ltr">Control-C : Copy the selected text to the Clipboard. </list-item></list>
-<list><list-item dir="ltr">Control-V : Paste the contents of the Clipboard into the current note.</list-item></list>
+<list><list-item dir="ltr">Control-V : Paste the contents of the Clipboard into the current note</list-item></list>
 <list><list-item dir="ltr">Control-A : Select All items.</list-item></list>
-<list><list-item dir="ltr">Control-RightArrow : move word to the right.</list-item></list>
-<list><list-item dir="ltr">Control-LeftArrow : move word to the left.</list-item></list>
+<list><list-item dir="ltr">Control-RightArrow : move word to the right</list-item></list>
+<list><list-item dir="ltr">Control-LeftArrow : move word to the left</list-item></list>
 <list><list-item dir="ltr">Control-Shift-LeftArrow : extend selection one word to left</list-item></list>
 <list><list-item dir="ltr">Control-Shift-RightArrow : extend selection one word to right</list-item></list>
 <list><list-item dir="ltr">Control-Z : Undo </list-item></list>
 <list><list-item dir="ltr">Control-Y : Redo</list-item></list>
-<list><list-item dir="ltr">Control-F4 : Close current note window.</list-item></list>
+<list><list-item dir="ltr">Control-F4 : Close current note window</list-item></list>
 <list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
-<list><list-item dir="ltr">Control-L : Create a link note from selected text.</list-item></list>
-<list><list-item dir="ltr">Alt - F4 : Close current note window</list-item></list>
+<list><list-item dir="ltr">Control-L : Create a link note from selected text</list-item></list>
+<list><list-item dir="ltr">Alt-F4 : Close current note window</list-item></list>
 Fonts
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
 <list><list-item dir="ltr">Control-I : Italics</list-item></list>
@@ -40,7 +40,7 @@ Fonts
 <list><list-item dir="ltr">Control-H : Highlight</list-item></list>
 <list><list-item dir="ltr">Control-E : Expression calculator - see Calculator help note</list-item></list>
 Find (in a note)
-<list><list-item dir="ltr">Control-F : Find something in a Note.</list-item></list>
+<list><list-item dir="ltr">Control-F : Find something in a Note</list-item></list>
 <list><list-item dir="ltr">F3 or Ctrl-G : Next in-note Find</list-item></list>
 <list><list-item dir="ltr">Shift-F3 or Shift-Ctrl-G : Previous in-note Find</list-item></list><size:large>
 
@@ -49,17 +49,17 @@ Find (in a note)
 <italic>(Where Option key is also the Alt key)</italic>
 <list><list-item dir="ltr">Command-Q : Quit tomboy-ng   - On Search, Settings and any Open Note</list-item></list>
 <list><list-item dir="ltr">Command-N : New Note - On Search, Settings and any Open Note</list-item></list>
-<list><list-item dir="ltr">Command-X : Cut the selected text and copy it to the Clipboard.</list-item></list>
-<list><list-item dir="ltr">Command-C : Copy the selected text to the Clipboard. </list-item></list>
-<list><list-item dir="ltr">Command-V : Paste the contents of the Clipboard into the current note.</list-item></list>
-<list><list-item dir="ltr">Command-A : Select All items.</list-item></list>
-<list><list-item dir="ltr">Command-RightArrow : go to end of line.</list-item></list>
-<list><list-item dir="ltr">Command-LeftArrow : go to start of line.</list-item></list>
+<list><list-item dir="ltr">Command-X : Cut the selected text and copy it to the Clipboard</list-item></list>
+<list><list-item dir="ltr">Command-C : Copy the selected text to the Clipboard </list-item></list>
+<list><list-item dir="ltr">Command-V : Paste the contents of the Clipboard into the current note</list-item></list>
+<list><list-item dir="ltr">Command-A : Select All items</list-item></list>
+<list><list-item dir="ltr">Command-RightArrow : go to end of line</list-item></list>
+<list><list-item dir="ltr">Command-LeftArrow : go to start of line</list-item></list>
 <list><list-item dir="ltr">Command-Z : Undo</list-item></list>
 <list><list-item dir="ltr">Command-Y : Redo</list-item></list>
 <list><list-item dir="ltr">Command-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
-<list><list-item dir="ltr">Option-Shift-LeftArrow - extend selection one word to left</list-item></list>
-<list><list-item dir="ltr">Option-Shift-RightArrow - extend selection one word to right</list-item></list>
+<list><list-item dir="ltr">Option-Shift-LeftArrow : extend selection one word to left</list-item></list>
+<list><list-item dir="ltr">Option-Shift-RightArrow : extend selection one word to right</list-item></list>
 Fonts
 <list><list-item dir="ltr">Command-B : Bold</list-item></list>
 <list><list-item dir="ltr">Command-I : Italics</list-item></list>
@@ -68,7 +68,7 @@ Fonts
 <list><list-item dir="ltr">Command-E : Expression calculator - see Calculator help note</list-item></list>
 <list><list-item dir="ltr">Option-H : Highlight</list-item></list>
 Find (in a note)
-<list><list-item dir="ltr">Command-F : Find something in a Note.</list-item></list>
+<list><list-item dir="ltr">Command-F : Find something in a Note</list-item></list>
 <list><list-item dir="ltr">Command-G : Next in-note Find</list-item></list>
 <list><list-item dir="ltr">Shift-Command-G : Previous in-note Find</list-item></list>
 
@@ -79,8 +79,8 @@ Find (in a note)
 
 
 </note-content></text>
-  <last-change-date>2021-06-17T13:17:28.4871830+10:00</last-change-date>
-  <last-metadata-change-date>2021-06-17T13:17:28.4871830+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-07T11:39:51.2712455+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-07T11:39:51.2712455+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

@@ -1067,7 +1067,7 @@ procedure TSett.SetColours;
 // pink = $EEEEFF, White is $FFFFFF, Black is $000000
 begin
     if DarkTheme then                   // ToDo : must add this to user set colours, sigh .....
-        AltColour := $282828            // Gray,  BackGround Colour of Alternating rows in some ListViews
+        AltColour :=  clGray       //$282828            // Gray,  BackGround Colour of Alternating rows in some ListViews
     else AltColour := $FFFFDD;          // pale blue, must be not too far away from Background.
 
     if UserSetColours then exit;        // will have already been set by config or by colour form.

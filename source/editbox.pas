@@ -1954,6 +1954,7 @@ begin
     //PanelFind.Visible := False;
     PanelFind.Height := 1;                // That is, hide it for now
     PanelFind.Caption := '';
+    {$ifdef WINDOWS}PanelFind.Color := Sett.AltColour;{$endif}    // so we see black text, windows cannot change some colours !
     {$ifdef DARWIN}
     SpeedRight.Hint := rsFindNavRightHintMac;
     SpeedLeft.Hint := rsFindNavLeftHintMac;
@@ -3088,7 +3089,7 @@ begin
     // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
 end;
 
-{x$define SAVETHREAD}
+{$define SAVETHREAD}
 
 function TEditBoxForm.SaveStringList(const SL: TStringList; Loc : TNoteUpdateRec) : boolean;
 var
