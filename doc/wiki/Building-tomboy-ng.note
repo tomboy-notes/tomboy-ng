@@ -9,7 +9,7 @@ This page is about building tomboy-ng from source and contributing to its develo
 
 Tomboy-ng is built on Linux, Windows or Mac using  -
 <list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.2.0 or later.</list-item></list>
-<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.8  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.8 or later. Lazarus Fixes or trunk don't need patches either.) </list-item></list>
+<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.10  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.10 or later. Lazarus Fixes or trunk don't need patches either.) </list-item></list>
 <list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - current version requires no patches.</list-item></list><size:large>
 
 <bold>Pascal ?</bold></size:large>
@@ -19,7 +19,7 @@ Pascal is still widely used as a teaching language, its strong typing promotes g
 
 
 <bold>Build tomboy-ng using the IDE</bold></size:huge>
-You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.10 (or later or Fixes, earlier releases such as 2.0.6 not recommended). Please see https://wiki.freepascal.org/Installing_Lazarus 
+You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.10 (or later or Fixes, earlier releases such as 2.0.8 not recommended). Please see https://wiki.freepascal.org/Installing_Lazarus 
 
 Start Lazarus up, it runs through a check list of the things it needs, start the IDE. Lazarus opens a default, minimal project. Click Package-&gt;OnLinePackageManager, select kcontrols and Install ("from repositary"). Lazarus will want to rebuild itself and restart, say yes, please do!  
 
@@ -31,9 +31,9 @@ Its also possible, and sometimes a good idea to build Lazarus from source. See t
 
 Linux Deb Packages come in two varieties, Binary only and Source.  A Source package is a bundle that can be used to build a binary package, possibly on other systems.  A Source package is required by Ubuntu in its PPA model or to submit to the Debian repositories.
 
-The tomboy-ng 'kit' includes tools to make a debian source package, and the same tools may be useful for someone who just needs to build a Linux binary.  As of v0.30, this model is used to populate the Ubuntu tomboy-ng PPA, useful for U18.04 and U20.04 systems.
+The tomboy-ng 'kit' includes tools to make a debian source package, and the same tools may be useful for someone who just needs to build a Linux binary.  As of v0.30, this model is used to populate the Ubuntu tomboy-ng PPA, useful for U18.04 and later Ubuntu systems.
 
-tomboy-ng will build using FPC3.2.0 and Lazarus 2.0.8.  Debian Buster has FPC 3.2.0 and Lazarus 2.0.10, fine. I have established a Ubuntu PPA providing FPC320 and Lazarus 2.0.10 for harder systems. It is also possible to build Lazarus 2.0.10 (or 2.0.12) on a system with FPC 3.2.0.
+tomboy-ng will build using FPC3.2.0 and Lazarus 2.0.10.  Debian Buster has FPC 3.2.0 and Lazarus 2.0.10, fine. I have established a Ubuntu PPA providing FPC320 and Lazarus 2.0.10 for harder systems. It is also possible to build Lazarus 2.0.10 (or 2.0.12) on a system with FPC 3.2.0.
 
 See the Deb_SRC.readme file in the tomboy-ng kit for details.<size:large>
 
@@ -57,8 +57,8 @@ The binary is in the source directory
  
 
 </note-content></text>
-  <last-change-date>2021-03-21T21:21:02.0333030+11:00</last-change-date>
-  <last-metadata-change-date>2021-03-21T21:21:02.0333030+11:00</last-metadata-change-date>
+  <last-change-date>2021-07-10T22:40:15.7844969+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-10T22:40:15.7844969+10:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

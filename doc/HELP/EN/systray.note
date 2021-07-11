@@ -4,28 +4,20 @@
   <text xml:space="preserve"><note-content version="0.1"><underline>System Tray on Linux</underline>
 
 
-The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray, sometimes called the notification area. However, not all Linux Desktop Environments are able to display System Tray Icons, and some that can may not do so by default. 
+The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray, sometimes called the Notification Area. However, not all Linux Desktop Environments are able to display System Tray Icons, and some that can may not do so by default. 
 
-If you can see a <bold>small, yellow icon</bold>, possibly upper right of your screen, you don't have a problem, well done in choosing a user focused Desktop. If you cannot see it, you are probably using a Desktop that may not display the System Tray, possibly a Gnome Desktop.  Firstly, see if your particular Desktop just needs to configured to display a SysTray, failing that,  read on. 
+If you can see a <bold>small, yellow icon</bold>, possibly upper right of your screen, you don't have a problem, well done in choosing a user focused Desktop. If you cannot see it, you are probably using a Desktop that has issues displaying the System Tray, possibly a Gnome Desktop.  
 
-Here I mention Fedora and Debian, same comments apply to derivative distributions. Ubuntu is not a problem.
+Detailed and hopefully current information on the lastest 'tricks' to display a System Tray on recalculant systems and even how to use tomboy-ng without a System Tray can be found at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
 
-Firstly, both Fedora Gnome and Debian Gnome <bold>can</bold> display the SysTray Icon, they just need the appropriate libappindicator library and the Gnome plugin, gnome-shell-extension-appindicator, installed and enabled. <size:large>
+Support for System Tray on Linux changes quite abruptly sometimes so its often worth considering a newer version of tomboy-ng, https://github.com/tomboy-notes/tomboy-ng
 
-<bold>Debian Gnome</bold></size:large>
-Debian Bullseye is currently in testing and will shortly become the release version. Earlier versions work fine but Bullseye with Gnome has a  problem. You need to install manually, gnome-shell-extension-appindicator, log out and back in again.   When you next startup tomboy-ng, it will ask if you want the plugin enabled, answer yes.  Note, you can enable and disable the plugin with the gnome-extensions command.
 
-Further, version of tomboy-ng earlier than 0.32g cannot find a necessary library, sadely, early 2021 Debian replaced libappindicator3-1 with libayatana-appindicator3-1. So please consider upgrading tomboy-ng. https://github.com/tomboy-notes/tomboy-ng
- <size:large>
-<bold>Fedora Gnome</bold></size:large>
-Install gnome-shell-extension-appindicator (that will also install libappindicator-gtk3), log out and back in, start tomboy-ng and answer 'yes' when asked about enabling the plugin. <size:large>
 
-<bold>OpenSuse</bold></size:large>
-TBD
 
 </note-content></text>
-  <last-change-date>2021-05-20T20:19:25.0997626+10:00</last-change-date>
-  <last-metadata-change-date>2021-05-20T20:19:25.0997626+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-08T11:14:30.3866677+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-08T11:14:30.3866677+10:00</last-metadata-change-date>
   <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

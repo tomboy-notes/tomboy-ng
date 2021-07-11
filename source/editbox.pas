@@ -210,6 +210,8 @@ unit EditBox;
     2021/02/15  Use CommonMark when exporting Markdown
     2021/02/17  Fix Mac only bug, not Ctrl to ssMeta F for the EditFind
     2021/06/25  Replaced TUpDown with 2 speedbuttons
+    2021/07/08  Calc now defaults LHS if same numb tokens LHS and RHS
+    2021/07/11  SimpleCalc can now handle appearing after a text terminating '.'
 }
 
 
@@ -408,7 +410,7 @@ type
                             there was at least one 'Find'. }
         function FindIt(Term: string; StartAt: integer; GoForward,
             CaseSensitive: boolean): boolean;
-        function FindNumbersInString(const AStr: string; out AtStart, AtEnd: string ): boolean;
+        function FindNumbersInString(AStr: string; out AtStart, AtEnd: string): boolean;
         {function GetFindHits(Term: string; CaseSensitive: boolean; HitPos: integer=0;
             TextString: pchar=nil): integer;}
 //        function GetFindKeyHint(): string;
@@ -2494,13 +2496,14 @@ begin
 end;
 
 // Looks for a number at both begining and end of string. Ret empty ones if unsuccessful
-function TEditBoxForm.FindNumbersInString(const AStr: string; out AtStart, AtEnd : string) : boolean;
+function TEditBoxForm.FindNumbersInString(AStr: string; out AtStart, AtEnd : string) : boolean;
 var
     Index : integer = 1;
 begin
     if AStr = '' then exit(false);
     AtStart := '';
     AtEnd := '';
+    while AStr[length(AStr)] = ' ' do delete(AStr, Length(AStr), 1); // remove trailing spaces
     while Index <= length(AStr) do begin
         if AStr[Index] in ['0'..'9', '.'] then AtStart := AtStart + AStr[Index]
         else break;
@@ -2519,24 +2522,26 @@ end;
 // if we find tow or more lines, use it.
 function TEditBoxForm.ColumnCalculate(out AStr : string) : boolean;
 var
-    TheLine, AtStart, AtEnd, CalcStrStart, CalcStrEnd : string;
+    TheLine,  CalcStrStart, CalcStrEnd : string;
+    AtStart, AtEnd : string;    // strings that hold a token, if found at start or end of line
     Index : integer = 1;
     StartDone : boolean = False;
     EndDone : boolean = False;
 begin
-    AStr := '';
+    AStr := '';                 // The string we will do our calc on
     CalcStrStart := '';
     CalcStrEnd := '';
-    repeat
+    repeat                      // until we have a unusable line both left and right.
         TheLine := PreviousParagraphText(Index);
         FindNumbersInString(TheLine, AtStart, AtEnd);
         //debugln('Scanned string [' + TheLine + '] and found [' + AtStart + '] and [' + atEnd + ']');
-        if AtStart = '' then
-            if EndDone then break
-            else StartDone := True;
+
         if AtEnd = '' then
             if StartDone then break
             else EndDone := True;
+        if AtStart = '' then
+            if EndDone then break
+            else StartDone := True;     // record that no more tokens at Start will be used
         if (AtStart <> '') and (not StartDone) then
             if CalcStrStart = '' then CalcStrStart := AtStart
             else CalcStrStart := CalcStrStart + ' + ' + AtStart;
@@ -2544,9 +2549,11 @@ begin
             if CalcStrEnd = '' then CalcStrEnd := AtEnd
             else CalcStrEnd := CalcStrEnd + ' + ' + AtEnd;
         inc(Index);
-    until (AtStart = '') and (AtEnd = '');
-    if not EndDone then AStr := CalcStrEnd;
-    if not StartDone then AStr := CalcStrStart;
+    until (AtStart = '') and (AtEnd = '');    // Note, we break before that situation anyway !
+    if not EndDone then
+        AStr := CalcStrEnd;
+    if not StartDone then
+        AStr := CalcStrStart;
     AStr := DoCalculate(AStr);
     Result := (AStr <> '');
 end;
@@ -2602,7 +2609,11 @@ begin
         if Index < 1 then break;
     end;
     delete(AStr, 1, Index);
-    // debugln('SimpleCalc=[' + AStr + ']');
+    debugln('SimpleCalc=[' + AStr + ']');
+    // Special case exists, if the calc string was following some text terminated with
+    // a '.', we end up a string starting with '. ' and thats bad.
+    if copy(AStr, 1, 2) = '. ' then
+        delete(AStr, 1, 2);
     AStr := DoCalculate(AStr);
     exit(AStr <> '');
 end;
