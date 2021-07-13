@@ -3,14 +3,14 @@
   <title>tomboy-ng help</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng help</underline>
 
-Tomboy-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is  file compatible  with Tomdroid and (?) GNote. Tomboy-ng notes support <bold>Bold</bold>, <italic>Italic</italic>, <strikeout>Strikethrough</strikeout>, <highlight>Highlight</highlight> and <underline>Underline</underline> in  four sizes, <size:small>small</size:small>, normal, <size:large>large</size:large> and <size:huge><highlight>huge</highlight></size:huge>. 
+Tomboy-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is  file compatible  with Tomdroid and (?) GNote. Tomboy-ng notes support <bold>Bold</bold>, <italic>Italic</italic>, Strike-through, <highlight>Highlight</highlight> and <underline>Underline</underline> in  four sizes, <size:small>small</size:small>, normal, <size:large>large</size:large> and <size:huge><highlight>huge</highlight></size:huge>. 
 
 It will sync notes with other systems using Tomboy's File Sync model (but not yet Network  Sync  using Rainy or Graphal). There is a one to one sync capability to an Android phone running Tomdroid (but only from a Linux box). 
 
 Many  users  will  want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can  interact with it via that Icon. However, to ensure we support some difficult platforms, a small window or splash screen is also opened, it can be dismissed if you see the system tray icon (or on some Gnome 3 systems, you have added it to your dock as a favourite).  You can set that small splash screen to not open unless a bad note is detected at startup. <size:large>
 
 <bold>Using tomboy-ng</bold></size:large>
-You will interact with tomboy-ng using a menu on a System Tray Icon (only some systems) or from a menu that appears on all major forms of the application.   If you don't have a System Tray Icon (thats sad!) you add tomboy-ng to your Favourites so it appears on your dock, that way, you can always either start it or wake up its Search Form easily.
+You will interact with tomboy-ng using a menu on a System Tray Icon (only some systems) or from a menu that appears on all major forms of the application.   If you don't have a System Tray Icon (that's sad!) you add tomboy-ng to your Favourites so it appears on your dock, that way, you can always either start it or wake up its Search Form easily.
 
 From the <bold>search form</bold>, you can -
 <list><list-item dir="ltr">Access the main menu (New Note, Settings, recent notes etc).</list-item></list>
@@ -18,7 +18,7 @@ From the <bold>search form</bold>, you can -
 <list><list-item dir="ltr">Organise your notes into Notebooks, tomboy-ng will allow each note to be in more than one Notebook but if you sync or share your notes with the original Tomboy, don't turn that feature on.</list-item></list>
 <list><list-item dir="ltr">Rename a notebook, but if you sync your notes, do run a full sync first !</list-item></list>
 
-Note that search results shown on the search form may not be automatically updated while the form remains open unless 'Auto Refresh' is ticked. Thats to ensure that a set of results don't change while you deal with individual notes.  If a change is pending, the 'Refresh Button' becomes enabled and you can trigger an update by clicking that button.
+Note that search results shown on the search form may not be automatically updated while the form remains open unless 'Auto Refresh' is ticked. That's to ensure that a set of results don't change while you deal with individual notes.  If a change is pending, the 'Refresh Button' becomes enabled and you can trigger an update by clicking that button.
 
 <bold>Generally tomboy-ng -</bold>
 <list><list-item dir="ltr">notes are automatically saved as you make changes.</list-item></list>
@@ -49,10 +49,10 @@ Print version and exit
  Don't show small status/splash window. Saves you from having to dismiss it at startup. Don't use unless you have checked you can see the small green system tray icon.
 
 <monospace><bold>--config-dir=PATH_to_DIR</bold></monospace>  
-Create or use an alternative config. Mainly a testing feature but useful if you want to have two (or more) sets of independant (but not concurrent) notes for example.
+Create or use an alternative config. Mainly a testing feature but useful if you want to have two (or more) sets of independent (but not concurrent) notes for example.
 
 <monospace><bold>--open-note=PATH_to_NOTE</bold></monospace>  
-Open  a  note  in  single note mode. In this mode, a seperate process runs, it does not have access to the  normal notes location, nor sync but can read, display and write back to a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the   command  line  but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
+Open  a  note  in  single note mode. In this mode, a separate process runs, it does not have access to the  normal notes location, nor sync but can read, display and write back to a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the   command  line  but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
 
 <monospace><bold>--save-exit </bold></monospace>
 Works only with the single note mode, will import (.note, .rtf, plain text) the file, convert to .note format (and note standard filename format) and save in the configured notes directory. Note that tomboy-ng will require a restart or 'refresh' after this happens.
@@ -75,8 +75,8 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2021-04-21T23:06:32.2274019+10:00</last-change-date>
-  <last-metadata-change-date>2021-04-21T23:06:32.2274019+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-11T21:02:34.7373104+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-11T21:02:34.7373104+10:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

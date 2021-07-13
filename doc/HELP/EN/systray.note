@@ -8,7 +8,7 @@ The normal way that  a user interacts with tomboy-ng is via a small yellow icon 
 
 If you can see a <bold>small, yellow icon</bold>, possibly upper right of your screen, you don't have a problem, well done in choosing a user focused Desktop. If you cannot see it, you are probably using a Desktop that has issues displaying the System Tray, possibly a Gnome Desktop.  
 
-Detailed and hopefully current information on the lastest 'tricks' to display a System Tray on recalculant systems and even how to use tomboy-ng without a System Tray can be found at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
+Detailed and hopefully current information on the latest 'tricks' to display a System Tray on recalcitrant systems and even how to use tomboy-ng without a System Tray can be found at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
 
 Support for System Tray on Linux changes quite abruptly sometimes so its often worth considering a newer version of tomboy-ng, https://github.com/tomboy-notes/tomboy-ng
 
@@ -16,8 +16,8 @@ Support for System Tray on Linux changes quite abruptly sometimes so its often w
 
 
 </note-content></text>
-  <last-change-date>2021-07-08T11:14:30.3866677+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-08T11:14:30.3866677+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-11T20:56:41.3102556+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-11T20:56:41.3102556+10:00</last-metadata-change-date>
   <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

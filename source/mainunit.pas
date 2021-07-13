@@ -71,6 +71,7 @@ unit Mainunit;
     2021/05/11  On Gnome Linux, test for libappindicator3 and appindicator shell plugin
     2021/05/15  On Gnome, if plugin is present but disabled, offer to enable it for user.
     2021/05/19  If libappindicator is not present, check for libayatana-appindicator, but only if lcl is patched !
+    2021/07/13  Don't do full SysTray check on Gnome with Qt, AccessViolation, just guess.
 
     CommandLine Switches
 
@@ -461,7 +462,9 @@ begin
                 if IDYES = Application.MessageBox('Enable gnome-shell-extension-appindictor ?',
     			        'The SysTray extension is installed but not enabled',
        			        MB_ICONQUESTION + MB_YESNO) then
-                    Result := EnablePlugIn();
+                        Result := EnablePlugIn();
+                if Result then showmessage('Enabled, please restart tomboy-ng')
+                else showmessage('Sorry, failed to enable plugin');
             end else debugln('SysTray Plugin for Gnome not present');
 end;
 
@@ -475,12 +478,18 @@ begin
 
     // Don't test for SysTray under GTK3, will never be there.  One or other AppIndicator
     // is your only chance. And XInternAtom() function SegVs on Gnome DTs so don't try it.
-    // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk post 22/05/2021, r65122
+    // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
+    // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu
 
     {$IFnDEF LCLGTK3}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
-    {$ifdef LCLGTK2} XDisplay := gdk_display; {$endif}
-    {$ifdef LCLQT5}  XDisplay := QX11Info_display; {$endif}
+    {$ifdef LCLGTK2}XDisplay := gdk_display; {$endif}
+    {$ifdef LCLQT5}
+        // If using Gnome and QT5, cannot safely test for a SysTray, we'll guess....
+        if pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then
+            exit(CheckGnomeExtras());
+        XDisplay := QX11Info_display;
+    {$endif}
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
     ForceAppInd := GetEnvironmentVariable('LAZUSEAPPIND');
@@ -507,10 +516,24 @@ begin
     if Sett.DarkTheme then
         color := Sett.AltColour;
     {$endif}
+    {$ifdef LCLQT5}         // Some Linux Qt5 don't pickup system colours. Until thats fixed ....
+     if Application.HasOption('dark-theme') then begin   // only do this when cmd line switch set
+        color := Sett.AltColour;
+        font.color := Sett.TextColour;               // These do not work for Windows, so for just bullseye, just temp....
+        ButtMenu.Color := Sett.AltColour;
+        BitBtnQuit.Color := Sett.AltColour;
+        BitBtnHide.Color := Sett.AltColour;
+        for Lab in [Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
+            TLabel(Lab).Font.Color:= Sett.TextColour;
+        CheckBoxDontShow.Font.color := Sett.TextColour;
+     end;
+    {$endif}
+
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
         exit;
     end;
+
     LabelBadNoteAdvice.Caption:= '';
     ButtSysTrayHelp.Visible := False;
     {$ifdef LINUX}

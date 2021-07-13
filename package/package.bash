@@ -211,7 +211,8 @@ function DebianPackage () {
 	echo "Installed-Size: ${SIZE_IN_KB}" >> "BUILD/DEBIAN/control"
 	echo "Depends: $CTRL_DEPENDS" >> BUILD/DEBIAN/control
 	echo "Priority: optional" >> BUILD/DEBIAN/control
-	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
+	echo "Homepage: https://github.com/tomboy-notes/tomboy-ng/wiki" >> BUILD/DEBIAN/control
+	#echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
 	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. $CTRL_RELEASE" >> BUILD/DEBIAN/control
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
@@ -341,7 +342,7 @@ ls -l *.deb
 DoGZipping
 MkWinPreInstaller
 # ls -ltr
-
+. ./mk_rpm.sh
 
 
 
