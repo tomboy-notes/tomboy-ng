@@ -1840,6 +1840,8 @@ begin
     // Color:= Sett.textcolour;
     if Sett.DarkTheme then Color := Sett.BackGndColour;
     {$endif}
+    PanelFind.Color := Sett.AltColour;
+    Panel1.Color := Sett.AltColour;
     KMemo1.Colors.BkGnd:= Sett.BackGndColour;
     Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
     KMemo1.Blocks.UnLockUpdate;
@@ -1885,7 +1887,7 @@ begin
     //PanelFind.Visible := False;
     PanelFind.Height := 1;                // That is, hide it for now
     PanelFind.Caption := '';
-    {$ifdef WINDOWS}PanelFind.Color := Sett.AltColour;{$endif}
+
     {$ifdef DARWIN}
     SpeedRight.Hint := rsFindNavRightHintMac;
     SpeedLeft.Hint := rsFindNavLeftHintMac;
