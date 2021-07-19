@@ -161,7 +161,7 @@ RESOURCESTRING
   rsRemoteDeletes = 'Remote Deletes ';
   rsClashes = 'Clashes        ';
   rsDoNothing = 'Do Nothing     ';
-  rsSyncERRORS = 'ERRORS (see consol log) ';
+  rsSyncERRORS = 'ERRORS (see console log) ';
 
   rsNoNotesNeededSync = 'No notes needed syncing. You need to write more.';
   rsNotesWereDealt = ' notes were dealt with.';

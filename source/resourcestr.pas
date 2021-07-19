@@ -75,7 +75,7 @@ RESOURCESTRING
   rsSyncError = 'A Sync Error occurred';
   rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
   rsFileSyncInfo1 = 'tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive';
-  rsFileSyncInfo2 = 'or use a remote server over the internet with sshfs';
+  rsFileSyncInfo2 = 'or uses a remote server over the internet with sshfs';
 
 
 // Settings but only part ...

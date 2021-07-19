@@ -513,12 +513,8 @@ var
 begin
     TestDarkThemeInUse();
     {$ifndef LCLGTK2}               // GTK2 seems only one we can be sure is auto colours !
-(*    {$ifdef windows}                // linux  apps know how to do this themselves
-    if Sett.DarkTheme then
-        color := Sett.AltColour;
-    {$endif}
-    {$ifdef LCLQT5}   *)      // Some Linux Qt5 don't pickup system colours. Until thats fixed ....
-//     if Application.HasOption('dark-theme') then begin   // only do this when cmd line switch set
+        // We honour --dark-theme for most and if we can guess its dark we'll
+        // act accordingly.
         color := Sett.AltColour;
         font.color := Sett.TextColour;               // These do not work for Windows, so for just bullseye, just temp....
         ButtMenu.Color := Sett.AltColour;
@@ -527,7 +523,6 @@ begin
         for Lab in [Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
             TLabel(Lab).Font.Color:= Sett.TextColour;
         CheckBoxDontShow.Font.color := Sett.TextColour;
-//     end;
     {$endif}
 
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit

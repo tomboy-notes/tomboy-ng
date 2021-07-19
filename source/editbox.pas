@@ -212,6 +212,7 @@ unit EditBox;
     2021/06/25  Replaced TUpDown with 2 speedbuttons
     2021/07/08  Calc now defaults LHS if same numb tokens LHS and RHS
     2021/07/11  SimpleCalc can now handle appearing after a text terminating '.'
+    2021/07/17  Pickup Ctrl-N from EditFind.
 }
 
 
@@ -1252,11 +1253,18 @@ procedure TEditBoxForm.EditFindKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
     // This needs to be a keydown else we get the trailing edge of key event that opened panel
-    if (( {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) and (Key = VK_F)) then begin
-        Key := 0;
-        MenuItemFindClick(Sender);
-        KMemo1.SetFocus;
-        exit;
+    if (( {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) ) then begin
+        if (Key = VK_F) then begin
+            Key := 0;
+            MenuItemFindClick(Sender);
+            KMemo1.SetFocus;
+            exit;
+        end;
+        if (Key = VK_N) then begin
+            Key := 0;
+            SearchForm.OpenNote('');
+            exit;
+        end;
     end;
 end;
 

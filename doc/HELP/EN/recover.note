@@ -36,19 +36,19 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 (1) By Douglas Adams, used without permission. 
 (2)  Corrupted notes should never happen, looks like it did. Power failure, program error, whatever. If its my fault, I am sincerely sorry ! Please report this experience to the Tomboy mailing list or Github. The only way I can rid of these problems is if people tell me about them.
 (3) Tomboy-ng tells you where your notes are stored, go there with a file manager and select all the note files. They are the ones with a 36 apparently random character name and ".note" extension. Only do this if you are a sync user !
-(4) If you (wisely) keep a copy elsewhere, bring it back, un-encrypt it if necessary. And, good work !
+(4) If you (wisely) keep a copy elsewhere, bring it back, decrypt it if necessary. And, good work !
 
 
 
 </note-content></text>
-  <last-change-date>2021-07-07T11:47:50.2728517+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-07T11:47:50.2728517+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-18T17:56:35.0012805+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-18T17:56:35.0012805+10:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1061</width>
   <height>626</height>
-  <x>639</x>
-  <y>371</y>
+  <x>299</x>
+  <y>236</y>
   <open-on-startup>False</open-on-startup>
 </note>

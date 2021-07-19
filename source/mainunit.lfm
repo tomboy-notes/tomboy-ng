@@ -1,7 +1,7 @@
 object MainForm: TMainForm
   Left = 653
   Height = 263
-  Hint = 'If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
+  Hint = 'If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
   Top = 194
   Width = 460
   Caption = 'tomboy-ng'
@@ -259,10 +259,10 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 16
-    Height = 23
+    Height = 21
     Hint = 'You can reverse this from Settings'
-    Top = 225
-    Width = 240
+    Top = 227
+    Width = 239
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14
     BorderSpacing.Bottom = 15
