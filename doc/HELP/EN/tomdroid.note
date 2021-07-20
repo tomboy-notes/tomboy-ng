@@ -5,9 +5,9 @@
 
 <bold>New in V0.32, Cable based connection between PC and Android Device !  No profiles, passwords or ssh needed.</bold>
 
-Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of weeks now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences. 
+Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of month now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences. 
 
-But note that sync with Tomdroid is slow process, and tomboy-ng does not, yet report on its progress. The first sync with a large repository can be quite unnerving. if you more than a several hundred notes, you may be better waiting to the next release of tomboy-ng, it will allow sync with only notes in a particular notebook.<size:large>
+But note that sync with Tomdroid is slow process, and tomboy-ng does not, yet report on its progress. The first sync with a large repository can be quite unnerving. If you have more than several hundred notes, you may be better waiting for a future next release of tomboy-ng, it will allow sync with only notes in a particular notebook.<size:large>
 
 <bold>Background</bold></size:large>
 As a standalone app, <monospace>Tomdroid</monospace> works well enough but when synced to your notes  on a PC or Laptop, it really shines.  Tomdroid was built back in the Tomboy family's glory days. It worked fine doing a network sync with the Ubuntu One cloud service (although that may have been before we used that term). However, that service was withdrawn and Tomdroid  network users needed to provide their own Sync facilities. That means either running a Rainy server at home or setting up a grauphel  system. Neither is a trivial exercise.
@@ -32,7 +32,7 @@ Fire up Tomdroid on the device. Touch the Menu (top right), select Settings and 
 
 Now, use the cable to connect the PC to a Android Device. The device will ask you to allow access from the PC to its files.
 
-On your Linux box, go to tomboy-ng's Settings,<italic> Basic Tab</italic>, and tick <italic>Show Tomdroid Sync</italic>. Note it is experimental. Now,  you should either run a normal (that is, not Tomdroid) sync or take a snapshot, or, better still, both ! Snapshots are easy, Settings, SnapShot Tab, click <italic>Take a Manual Snapshot</italic>. Too Easy !
+On your Linux box, go to tomboy-ng's Settings,<italic> </italic>Basic Tab, and tick Show Tomdroid Sync. Note it is experimental. Now,  you should either run a normal (that is, not Tomdroid) sync or take a snapshot, or, better still, both ! Snapshots are easy, Settings, SnapShot Tab, click Take a Manual Snapshot. Too Easy !
 
 The Main Menu will now have a "Tomdroid" entry. Click it !
 
@@ -108,8 +108,8 @@ The Tomdroid interface is still quite fragile and not good at telling us where i
 
 
 </note-content></text>
-  <last-change-date>2021-01-31T22:05:59.2180841+11:00</last-change-date>
-  <last-metadata-change-date>2021-01-31T22:05:59.2180841+11:00</last-metadata-change-date>
+  <last-change-date>2021-07-20T12:53:37.2826549+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-20T12:53:37.2826549+10:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

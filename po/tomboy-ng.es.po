@@ -159,7 +159,9 @@ msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive
 msgstr "tomboy-ng usa Sincronización de Archivos a DropBox, Google Drive, un disco USB, etc"
 
 #: resourcestr.rsfilesyncinfo2
-msgid "or use a remote server over the internet with sshfs"
+#, fuzzy
+#| msgid "or use a remote server over the internet with sshfs"
+msgid "or uses a remote server over the internet with sshfs"
 msgstr "o use un servidor remoto por internet con sshfs"
 
 #: resourcestr.rsfindnavlefthint
@@ -586,7 +588,9 @@ msgid "Remote Deletes "
 msgstr "Borrados remotos "
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see consol log) "
+#, fuzzy
+#| msgid "ERRORS (see consol log) "
+msgid "ERRORS (see console log) "
 msgstr "ERRORES: vea registro en el terminal"
 
 #: teditboxform.buttmaintbmenu.caption
@@ -1260,7 +1264,9 @@ msgid "You can reverse this from Settings"
 msgstr "You can reverse this from Settings"
 
 #: tmainform.hint
-msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+#, fuzzy
+#| msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+msgid "If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window."
 msgstr "Si el icono verde de tomboy-ng se puede ver in la bandeja del sistema, puede despachar esta ventana."
 
 #: tmainform.label3.caption
@@ -1692,7 +1698,9 @@ msgid "is about to overwrite one. "
 msgstr "está a punto de sobreescribir una. "
 
 #: tsett.label8.caption
-msgid "They remain, for ever, unless you do something about them."
+#, fuzzy
+#| msgid "They remain, for ever, unless you do something about them."
+msgid "They remain, forever, unless you do something about them."
 msgstr "Estas notas se quedan para siempre al meno que haga algo al respecto."
 
 #: tsett.label9.caption
