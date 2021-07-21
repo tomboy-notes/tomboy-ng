@@ -29,8 +29,8 @@ Ah, esto es bueno. Quizás sólo tiene que eliminar el directorio actual de las 
 
 <bold>Tengo una instantánea</bold>
 ¡Una noticia fantástica! Puede recurrir fácilmente a una instantánea concreta y olvidarse de todas las preocupaciones. ¡Demasiado fácil!
-Si tuvo la prudencia de guardar la instantánea en otro sitio, cópiela a su directorio de instantáneas (visible en la pestaña "Instantáneas" de "Preferencias").
-<list><list-item dir="ltr">De la pestaña "Instantánea", haga clic en "Recuperar Notas Perdidas". Si no lo ha hecho todavía, ahora es buen momento para hacer clic en "Instantánea de Seguridad" dado que está en una situación peligrosa en este momento.</list-item></list>
+Si tuvo la prudencia de guardar la instantánea en otro sitio, cópiela a su directorio de instantáneas (visible en la pestaña "Recuperar" de "Preferencias").
+<list><list-item dir="ltr">De la pestaña "Recuperar", haga clic en "Recuperar Notas Perdidas". Si no lo ha hecho todavía, ahora es buen momento para hacer clic en "Instantánea de Seguridad" dado que está en una situación peligrosa en este momento.</list-item></list>
 <list><list-item dir="ltr">Vaya a la pestaña "Recuperar Instantánea", elija la instantánea que quiere usar y ¡adelante! <size:small>(4)</size:small></list-item></list><size:small></size:small>
 Regrese y vaya a "Buscar" y haga clic en "Actualizar". Después de comprobar que todo está en orden, por favor, ¡acuérdese to hacer una instantánea de vez en cuando!<size:large>
 
@@ -43,14 +43,14 @@ Regrese y vaya a "Buscar" y haga clic en "Actualizar". Después de comprobar que
 
 
 </note-content></text>
-  <last-change-date>2021-07-19T12:44:44.2230930+00:00</last-change-date>
-  <last-metadata-change-date>2021-07-19T12:44:44.2230930+00:00</last-metadata-change-date>
+  <last-change-date>2021-07-20T17:51:10.2211944+00:00</last-change-date>
+  <last-metadata-change-date>2021-07-20T17:51:10.2211944+00:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1061</width>
   <height>626</height>
   <x>248</x>
-  <y>7</y>
+  <y>20</y>
   <open-on-startup>False</open-on-startup>
 </note>

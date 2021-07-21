@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Bandeja de Sistema en Linux</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Bandeja de Sistema en Linux</underline>
+  <title>System Tray on Linux</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>System Tray on Linux</underline>
 
 
-La manera habitual de interactuar con tomboy-ng es por un pequeño icono amarillo que aparece en la Bandeja de Sistema (SysTray), a veces llamada el área de notificación.  Sin embargo, no todos los Entornos de Escritorio de Linux pueden mostrar iconos en la bandeja de sistema, y algunos que pueden no lo hacen por defecto. 
+The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray, sometimes called the Notification Area.  However, not all Linux Desktop Environments are able to display System Tray Icons, and some that can may not do so by default. 
 
-Si puede ver un <bold>pequeño icono de color amarillo</bold>, probablemente en el panel principal en la pantalla, no tienes ningún problema. Si no lo puede ver, es probable que usa un Escritorio que tiene dificultades en mostrar la bandeja de sistema, quizás el escritorio de Gnome.  
+If you can see a <bold>small, yellow icon</bold>, probably on the main panel on your screen, you don't have a problem. If you cannot see it, you are probably using a Desktop that has issues displaying the System Tray, possibly a Gnome Desktop.  
 
-Información detallada y, esperamos, actual sobre los últimos 'trucos' para tener una bandeja de sistema disponible o, incluso, como usar tomboy-ng sin una se puede encontrar en https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
+Detailed and hopefully current information on the latest 'tricks' to display a System Tray on recalcitrant systems and even how to use tomboy-ng without a System Tray can be found at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
 
-Suporte para la bandeja de sistema en Linux a veces cambia de repente, entonces vale la pena considerar una versión más nueva de tomboy-ng, https://github.com/tomboy-notes/tomboy-ng
+Support for System Tray on Linux changes quite abruptly sometimes so its often worth considering a newer version of tomboy-ng, https://github.com/tomboy-notes/tomboy-ng
 
 
 
 
 </note-content></text>
-  <last-change-date>2021-07-19T11:57:41.2944340+00:00</last-change-date>
-  <last-metadata-change-date>2021-07-19T11:57:41.2944340+00:00</last-metadata-change-date>
+  <last-change-date>2021-07-20T12:45:17.2379614+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-20T12:45:17.2379614+10:00</last-metadata-change-date>
   <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1227</width>
   <height>610</height>
   <x>108</x>
-  <y>126</y>
+  <y>195</y>
   <open-on-startup>False</open-on-startup>
 </note>
