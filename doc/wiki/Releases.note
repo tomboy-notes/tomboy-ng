@@ -59,6 +59,7 @@ On Ubuntu, you can install the appropriate package in one of several way  -
 <list><list-item dir="ltr">Depending on your version, you may be able to download and get directed to another tool to install, perhaps Software Installer. Good luck. </list-item></list>
 <list><list-item dir="ltr">Thirdly, will work on all except U16.04, click on the appropriate link, download and save the file. Use  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -</list-item></list>
 
+Like this -
 <monospace>sudo apt install ./tomboy-ng_0.32-0_amd64.deb [enter]</monospace><size:large>
 
 <bold>Linux Mint</bold></size:large>
@@ -73,7 +74,7 @@ Tested on Fedora 33 and 34. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [G
 
 <bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux .  Other flavours of Fedora (eg <bold> Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.
 
- The [QT5 version]($$RPM64QT) has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme) and generates some harmless [warnings messages](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Gnome-Desktops) .<size:large>
+ The [QT5 version]($$RPM64QT) has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme) and generates some harmless warnings messages.<size:large>
 
 
 <bold>Debian</bold></size:large>
@@ -126,8 +127,8 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2021-07-17T12:08:21.3234586+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-17T12:08:21.3234586+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-21T21:25:17.4331003+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-21T21:25:17.4331003+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

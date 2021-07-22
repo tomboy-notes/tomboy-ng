@@ -471,13 +471,6 @@ type
         procedure PrimaryCopy(const RequestedFormatID: TClipboardFormat; Data: TStream);
                             { Pastes into KMemo whatever is returned by the PrimarySelection system. }
         procedure PrimaryPaste(SelIndex: integer);
-                            { Saves the note in KMemo1, must have title but can make up a file name if needed
-                            If filename is invalid, bad GUID, asks user if they want to change it (they do !)
-                            WeAreClosing indicates that the whole application is closing (not just this note)
-                            We always save the note on FormDestroy or application exit, even if not dirty to
-                            update the position and OOS data.  We used to call UpdateNote in the hope its quicker
-                            but it forgets to record notebook membership. Revist some day ....}
-		procedure SaveTheNote(WeAreClosing: boolean=False);
         	                { Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
         function NewNoteTitle() : ANSIString;
                             { Saves the note as text or rtf, consulting user about path and file name }
@@ -502,12 +495,19 @@ type
         SearchedTerm : string;  // If not empty, opening is associated with a search, go straight there.
         // If a new note is a member of Notebook, this holds notebook name until first save.
         TemplateIs : AnsiString;
-            { Will mark this note as ReadOnly and not to be saved because the Sync Process
-              has either replaced or deleted this note OR we are using it as an internal viewer.
-              Can still read and copy content. Viewer users don't need big ugly yellow warning}
+                    { Will mark this note as ReadOnly and not to be saved because the Sync Process
+                      has either replaced or deleted this note OR we are using it as an internal viewer.
+                      Can still read and copy content. Viewer users don't need big ugly yellow warning}
         procedure SetReadOnly(ShowWarning : Boolean = True);
                             // Public: Call on a already open note if user has followed up a search with a double click
         procedure NewFind(Term: string);
+                    { Saves the note in KMemo1, must have title but can make up a file name if needed
+                    If filename is invalid, bad GUID, asks user if they want to change it (they do !)
+                    WeAreClosing indicates that the whole application is closing (not just this note)
+                    We always save the note on FormDestroy or application exit, even if not dirty to
+                    update the position and OOS data.  We used to call UpdateNote in the hope its quicker
+                    but it forgets to record notebook membership. Revist some day ....}
+        procedure SaveTheNote(WeAreClosing: boolean=False);
     end;
 
 var

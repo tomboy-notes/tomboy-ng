@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Contributions-and-Feature-Requests</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Contributions-and-Feature-Requests</underline><size:large>
+  <title>Contributions and Feature Requests</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Contributions and Feature Requests</underline><size:large>
 
 <bold>Pull Requests</bold></size:large>
 If you would like to make a direct contribution to tomboy-ng via a pull request, its likely to be well received. But please note the following -
@@ -39,8 +39,8 @@ You know, badly spelt words are somehow highlighted as you type.  I know I have 
 
 
 </note-content></text>
-  <last-change-date>2020-12-12T21:26:55.5340500+11:00</last-change-date>
-  <last-metadata-change-date>2020-12-12T21:26:55.5340500+11:00</last-metadata-change-date>
+  <last-change-date>2021-07-22T15:47:26.5514042+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-22T15:47:26.5514042+10:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

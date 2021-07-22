@@ -3,9 +3,9 @@
   <title>tomboy-ng Bugs and Known Issues</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Bugs and Known Issues</underline><size:small>
 
-This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small><size:large>
+This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small><size:huge>
 
-<bold>Bugs</bold></size:large>
+<bold>Bugs</bold></size:huge>
 Bug reports and feature requests should be via Github https://github.com/tomboy-notes/tomboy-ng/issues
 There is some advice about DIY debugging further down this document.<size:huge>
 
@@ -13,11 +13,11 @@ There is some advice about DIY debugging further down this document.<size:huge>
 <bold>Known Issues</bold></size:huge>
 
 <list><list-item dir="ltr">On some  Macs, when using the in note Find tool, a 'shadow highlight' can appear superimposed over the button bar. It does no harm, disappears when you move the mouse over the button but is unsightly. Its a know upstream problem, https://forum.lazarus.freepascal.org/index.php/topic,53055.0.html .</list-item></list>
-<list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine). </list-item></list><size:large>
+<list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine). </list-item></list><size:huge>
 
-<bold>Specific Things with a Work Around</bold>
+<bold>Specific Things with a Work Around</bold></size:huge><size:large><bold>
 
-QT5 versions and Dark Theme</size:large>
+QT5 versions and Dark Theme</bold></size:large>
 On a number of Linux Distros, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but much better to install qt5ct and set what colours you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours, either by adding an environment variable when you start tomboy-ng  -
 
 <monospace>QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]</monospace>
@@ -26,18 +26,18 @@ Or you could set that generally so it makes all QT apps look the same by, eg, ad
 
 <monospace>QT_QPA_PLATFORMTHEME=qt5ct</monospace><size:large>
 
-Dark Theme</size:large>
+<bold>Dark Theme</bold></size:large>
 At present, seems only GTK2 can pick up its colours from the OS :-(
 So, its now possible to pass --dark-theme to the application on the command line and you get, sort of, a Dark Theme.  Sadly, some forms in the application are based on components that simply will not play, Settings being a good example. Sorry.<size:large>
 
-QT5 versions and Gnome Desktops</size:large>
+<bold>QT5 versions and Gnome Desktops</bold></size:large>
 Almost all Gnome Desktops now use the Wayland Display Manager instead of X (or XCB). QT5 has a plugin that will manage the connection between a QT5 app and Wayland, typically called qtwayland5, you may find it already installed or need to manually install it yourself.  If you run a QT5 app, such as the QT5 version of tomboy-ng, you may see a warning to the effect that its ignoring the request to run under Wayland, if you want it to run under Wayland, do something like -
 
 QT_QPA_PLATFORM=wayland  tomboy-ng [enter]
 
 You can do so (if you have qtwayland5 installed) but it seems to make little or no difference and does trigger a couple of warning messages from the QT libraries. So, honestly, don't worry about it.<size:large>
 
-System Tray Issues</size:large>
+<bold>System Tray Issues</bold></size:large>
 Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
 
  <size:huge>
@@ -102,8 +102,8 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2021-07-17T12:05:46.6230364+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-17T12:05:46.6230364+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-21T20:44:35.9432009+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-21T20:44:35.9432009+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

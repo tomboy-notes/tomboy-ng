@@ -21,6 +21,7 @@ unit commonmark;
     2020-??-??  Moved the Normalising code into a stand alone unit.
     2021/06/15  Format lines that are all mono differenly so they show as a block.
     2021/06/29  Merged this file back to tomboy-ng
+    2021/07/22  Make GetMDcontent more tolerent of passed ID/FFN
 }
 
 interface
@@ -52,11 +53,10 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
         DebugMode : boolean;
         NotesDir : string;       // dir were we expect to find our TB notes
 
-                        // Takes a note ID (no extension) and fills out the passed StringList
-                        // that must have been created) with a commonmark version of the note.
-                        // returns an empty list on error. If ID is an ID only, assumes note is
-                        // in repo, else ID must contain a FFN inc path nad extension for single
-                        // note mode.
+                        // Takes a note ID (no extension) or a FFN inc path and .note
+                        // and fills out the passed StringList that must have been created)
+                        // with a commonmark version of the note.
+                        // returns an empty list on error.
         function GetMDcontent(ID : string; STL : TstringList) : boolean;
 
 
@@ -76,9 +76,18 @@ var
     Index : integer;
     Normaliser : TNoteNormaliser;
 begin
-        if IDLooksOK(ID) then
+        {if IDLooksOK(ID) then
             StL.LoadFromFile(NotesDir + ID + '.note')
-        else StL.LoadFromFile(ID);
+        else
+             StL.LoadFromFile(ID); }
+        // We may get an ID or a FFN inc path, lets try both.
+        if FileExists(ID) then
+                StL.LoadFromFile(ID)
+        else
+            if FileExists(NotesDir + ID + '.note') then
+                   StL.LoadFromFile(NotesDir + ID + '.note')
+            else exit(False);
+
         Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
         if Index > -1 then
             while Index > -1 do begin

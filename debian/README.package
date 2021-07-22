@@ -9,6 +9,17 @@ If you are looking at a Debian Source Package, some notes of interest -
 
 2. This Debian Source package can be readily built from the github content at
    https://github.com/tomboy-notes/tomboy-ng using the included script,
-   prepare.bash. The process is to documented in the header of the script.
+   prepare.ppa or prepare.debian. The process is to documented in the MarkDown
+   file, prepare.md. As series of command, suitable for copy and past are
+   provided.
+
+3. The control file for each build is critical, particularly the debhelper
+   version.  U18.04 requires debhelper 11 when building (it matters nothing
+   at run time!) and U20.04 requires 12.  Debian Bullseye must have 13
+   So, we end up with four control files, 'control' that suits GTK on U18.04
+   control.qt5 that works with U20.04 (we do not make Qt5 for 18.04, its 
+   libqt5pas1 is too old) and set debhelper=12.
+   Then, for debian, we have control.DEBIAN and control.Qt5.debian that both
+   demand debhelper 13
 
 

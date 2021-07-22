@@ -178,8 +178,10 @@ function DebianPackage () {
 		CTRL_RELEASE="Qt5 release."
 		;;
 	"arm")
-		if [ ! -a "tomboy-ng-arm" ]; then
-			echo "WARNING - arm binary not present"
+		if [ ! -f "tomboy-ng-arm" ]; then
+#			echo "Notice - Arm binary present"
+#		else
+			echo "********* WARNING - arm binary not present ********"
 			return 1
 		fi
 		cp tomboy-ng-arm BUILD/usr/bin/tomboy-ng
@@ -338,11 +340,15 @@ DebianPackage "arm"
 
 
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
-ls -l *.deb
+# ls -l *.deb
 DoGZipping
 MkWinPreInstaller
 # ls -ltr
-. ./mk_rpm.sh
-
+fakeroot bash ./mk_rpm.sh
+# echo "OK, if that looks OK, run   fakeroot bash ./mk_rpm.sh"
+# Dont sign under fakeroot, its messy
+echo "OK, we will now sign the RPMs - david, use the longer passphrase !"
+for i in `ls -b *.rpm`; do rpm --addsign "$i"; echo "Signed $i"; done
+ls -l *.rpm *.deb "$WIN_DIR"/*.exe
 
 

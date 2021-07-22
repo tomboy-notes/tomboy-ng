@@ -1364,7 +1364,9 @@ procedure TSett.Synchronise();
 begin
     FormSync.NoteDirectory := Sett.NoteDirectory;
     FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
-
+    // ToDo : this will not be enough when we save our notes in a second thread.
+    // Might need to check, somehow, that no threads are still running ?  How ?
+    SearchForm.FlushOpenNotes();
     FormSync.SetupSync := False;
 
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
