@@ -177,15 +177,15 @@ function DebianPackage () {
 		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl"
 		CTRL_RELEASE="Qt5 release."
 		;;
-	"arm")
-		if [ ! -f "tomboy-ng-arm" ]; then
+	"armhf")
+		if [ ! -f "tomboy-ng-armhf" ]; then
 #			echo "Notice - Arm binary present"
 #		else
 			echo "********* WARNING - arm binary not present ********"
 			return 1
 		fi
-		cp tomboy-ng-arm BUILD/usr/bin/tomboy-ng
-		#CTRL_DEPENDS=""
+		cp tomboy-ng-armhf BUILD/usr/bin/tomboy-ng
+		#CTRL_DEPENDS=""   # just watch I dont need spec :armhf for each dep here
 		CTRL_RELEASE="Raspberry Pi release."
 		;;
 	esac
@@ -336,7 +336,7 @@ for BIN in tomboy-ng tomboy-ng32 tomboy-ng32.exe tomboy-ng64.exe tomboy-ng-qt ; 
 DebianPackage "amd64Qt";
 DebianPackage "i386"
 DebianPackage "amd64"
-DebianPackage "arm"
+DebianPackage "armhf"
 
 
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
