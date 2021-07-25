@@ -23,12 +23,12 @@ When you start tomboy-ng, you see a warning about an inability to index a note. 
 OK, I get you, this is serious. But we at have two paths left, lets see -
 
 <bold>I sync my notes from somewhere else.</bold>
-Oh, that's good. Maybe all you need do is clean out your current notes directory <size:small>(3)</size:small>  and rejoin the sync network. Note, I emphasise, not just do a sync. You <highlight>MUST</highlight> go to the sync tab and click "<highlight>Set File Sync Repo</highlight>". That way, the sync system sees you as a new friend and sends you a full set of notes. Just how good an approach this is depends on how recently you last synced, obviously any changes since last sync will be lost.
+Oh, that's good. Maybe all you need do is clean out your current notes directory <size:small>(3)</size:small>  and rejoin the sync network. Note, I emphasise, <highlight>not</highlight> just do a sync. You <highlight>MUST</highlight> go to the sync tab and click "<highlight>Set File Sync Repo</highlight>". That way, the sync system sees you as a new friend and sends you a full set of notes. Just how good an approach this is depends on how recently you last synced, obviously any changes since last sync will be lost.
 
 <bold>I have a snapshot</bold>
 Great news ! You can easily choose to roll back to a particular snapshot and blow away all your troubles. Too Easy !
-If you wisely kept the snapshot elsewhere, copy it to your snapshot directory (shown on the settings -&gt; snapshots tab).
-<list><list-item dir="ltr">From the SnapShot tab, click "Recover one or more lost Notes". If you have not already, now would be a great time to click "Safety Snapshot", you are in seriously dangerous space right now.</list-item></list>
+If you wisely kept the snapshot elsewhere, copy it to your snapshot directory (shown on the Settings -&gt; Recover tab).
+<list><list-item dir="ltr">From the Recover tab, click "Recover lost Notes". If you have not already, now would be a great time to click "Take a Manual Snapshot", you are in seriously dangerous space right now.</list-item></list>
 <list><list-item dir="ltr">Go to the "Recover Snapshot" tab, choose the snapshot you wish to use and away you go <size:small>(4).</size:small></list-item></list><size:small></size:small>
 Back out, go to the Search and click "Refresh". After you have checked all is good, please remember to take a snapshot every now and again !<size:large>
 
@@ -36,19 +36,19 @@ Back out, go to the Search and click "Refresh". After you have checked all is go
 (1) By Douglas Adams, used without permission. 
 (2)  Corrupted notes should never happen, looks like it did. Power failure, program error, whatever. If its my fault, I am sincerely sorry ! Please report this experience to the Tomboy mailing list or Github. The only way I can rid of these problems is if people tell me about them.
 (3) Tomboy-ng tells you where your notes are stored, go there with a file manager and select all the note files. They are the ones with a 36 apparently random character name and ".note" extension. Only do this if you are a sync user !
-(4) If you (wisely) keep a copy elsewhere, bring it back, un-encrypt it if necessary. And, good work !
+(4) If you (wisely) keep a copy elsewhere, bring it back, decrypt it if necessary. And, good work !
 
 
 
 </note-content></text>
-  <last-change-date>2021-07-07T11:47:50.2728517+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-07T11:47:50.2728517+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-21T10:31:32.6130010+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-21T10:31:32.6130010+10:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1061</width>
   <height>626</height>
-  <x>639</x>
-  <y>371</y>
+  <x>22</x>
+  <y>246</y>
   <open-on-startup>False</open-on-startup>
 </note>

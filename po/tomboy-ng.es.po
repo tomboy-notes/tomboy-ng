@@ -4,15 +4,15 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: tomboy-ng v0.32\n"
+"Project-Id-Version: tomboy-ng v0.33\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-02-08 14:25+0100\n"
+"PO-Revision-Date: 2021-07-20 18:57+0200\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 2.4.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: editbox.rsunabletoevaluate
@@ -159,24 +159,24 @@ msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive
 msgstr "tomboy-ng usa Sincronización de Archivos a DropBox, Google Drive, un disco USB, etc"
 
 #: resourcestr.rsfilesyncinfo2
-msgid "or use a remote server over the internet with sshfs"
+msgid "or uses a remote server over the internet with sshfs"
 msgstr "o use un servidor remoto por internet con sshfs"
 
 #: resourcestr.rsfindnavlefthint
 msgid "Backward Find : Shift-F3 or Shift-Ctrl-G"
-msgstr ""
+msgstr "Buscar atrás: Mayús-F3 o Mayús-Ctrl-G"
 
 #: resourcestr.rsfindnavlefthintmac
 msgid "Backward Find : Shift-Command-G"
-msgstr ""
+msgstr "Buscar atrás: Mayús-Cmd-G"
 
 #: resourcestr.rsfindnavrighthint
 msgid "Find : F3 or Ctrl-G"
-msgstr ""
+msgstr "Buscar: F3 o Ctrl-G"
 
 #: resourcestr.rsfindnavrighthintmac
 msgid "Find : Command-G"
-msgstr ""
+msgstr "Buscar: Cmd-G"
 
 #: resourcestr.rsfound
 msgctxt "resourcestr.rsfound"
@@ -586,7 +586,7 @@ msgid "Remote Deletes "
 msgstr "Borrados remotos "
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see consol log) "
+msgid "ERRORS (see console log) "
 msgstr "ERRORES: vea registro en el terminal"
 
 #: teditboxform.buttmaintbmenu.caption
@@ -629,7 +629,7 @@ msgstr "Buscar siguiente"
 #: teditboxform.menufindprev.caption
 msgctxt "teditboxform.menufindprev.caption"
 msgid "Find Prev"
-msgstr ""
+msgstr "Buscar anterior"
 
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
@@ -1260,8 +1260,8 @@ msgid "You can reverse this from Settings"
 msgstr "You can reverse this from Settings"
 
 #: tmainform.hint
-msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
-msgstr "Si el icono verde de tomboy-ng se puede ver in la bandeja del sistema, puede despachar esta ventana."
+msgid "If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+msgstr "Si el icono amarillo de tomboy-ng se puede ver in la bandeja del sistema, puede despachar esta ventana."
 
 #: tmainform.label3.caption
 msgid "Dictionary Config (optional)"
@@ -1597,7 +1597,7 @@ msgstr "Puede que perjudique Tomboy tradicional. Tenga cuidado."
 
 #: tsett.checknotifications.caption
 msgid "Show Notifications"
-msgstr ""
+msgstr "Mostrar Notificaciones"
 
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
@@ -1625,11 +1625,11 @@ msgstr "Mostrar Sincronización Tomdroid (experimental)"
 
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
-msgstr ""
+msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
 
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect."
-msgstr ""
+msgstr "Cierre y reabra una nota para que tenga efecto."
 
 #: tsett.groupbox4.caption
 msgid "  Options  "
@@ -1692,8 +1692,8 @@ msgid "is about to overwrite one. "
 msgstr "está a punto de sobreescribir una. "
 
 #: tsett.label8.caption
-msgid "They remain, for ever, unless you do something about them."
-msgstr "Estas notas se quedan para siempre al meno que haga algo al respecto."
+msgid "They remain, forever, unless you do something about them."
+msgstr "Estas notas se quedan para siempre, al meno que haga algo al respecto."
 
 #: tsett.label9.caption
 msgid "A snaphot is a copy of your current note directory."
@@ -1783,4 +1783,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-

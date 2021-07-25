@@ -169,7 +169,7 @@ msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive
 msgstr ""
 
 #: resourcestr.rsfilesyncinfo2
-msgid "or use a remote server over the internet with sshfs"
+msgid "or uses a remote server over the internet with sshfs"
 msgstr ""
 
 #: resourcestr.rsfindnavlefthint
@@ -627,7 +627,9 @@ msgid "Remote Deletes "
 msgstr "Externe prullenbak"
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see consol log) "
+#, fuzzy
+#| msgid "ERRORS (see consol log) "
+msgid "ERRORS (see console log) "
 msgstr "FOUTEN (zie terminaluitvoer)."
 
 #: teditboxform.buttmaintbmenu.caption
@@ -1301,7 +1303,7 @@ msgid "You can reverse this from Settings"
 msgstr ""
 
 #: tmainform.hint
-msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+msgid "If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window."
 msgstr ""
 
 #: tmainform.label3.caption
@@ -1745,7 +1747,7 @@ msgid "is about to overwrite one. "
 msgstr ""
 
 #: tsett.label8.caption
-msgid "They remain, for ever, unless you do something about them."
+msgid "They remain, forever, unless you do something about them."
 msgstr ""
 
 #: tsett.label9.caption

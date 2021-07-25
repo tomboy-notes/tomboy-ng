@@ -22,8 +22,8 @@
 <list><list-item dir="ltr">Control-C : Copy the selected text to the Clipboard. </list-item></list>
 <list><list-item dir="ltr">Control-V : Paste the contents of the Clipboard into the current note</list-item></list>
 <list><list-item dir="ltr">Control-A : Select All items.</list-item></list>
-<list><list-item dir="ltr">Control-RightArrow : move word to the right</list-item></list>
-<list><list-item dir="ltr">Control-LeftArrow : move word to the left</list-item></list>
+<list><list-item dir="ltr">Control-RightArrow : move cursor to the word to the right</list-item></list>
+<list><list-item dir="ltr">Control-LeftArrow : move cursor to word to the left</list-item></list>
 <list><list-item dir="ltr">Control-Shift-LeftArrow : extend selection one word to left</list-item></list>
 <list><list-item dir="ltr">Control-Shift-RightArrow : extend selection one word to right</list-item></list>
 <list><list-item dir="ltr">Control-Z : Undo </list-item></list>
@@ -31,7 +31,7 @@
 <list><list-item dir="ltr">Control-F4 : Close current note window</list-item></list>
 <list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Control-L : Create a link note from selected text</list-item></list>
-<list><list-item dir="ltr">Alt-F4 : Close current note window</list-item></list>
+<list><list-item dir="ltr">Alt-F4 : Close current note window (not all Linux desktops allow this)</list-item></list>
 Fonts
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
 <list><list-item dir="ltr">Control-I : Italics</list-item></list>
@@ -46,7 +46,6 @@ Find (in a note)
 
 
 <bold>Mac</bold></size:large>
-<italic>(Where Option key is also the Alt key)</italic>
 <list><list-item dir="ltr">Command-Q : Quit tomboy-ng   - On Search, Settings and any Open Note</list-item></list>
 <list><list-item dir="ltr">Command-N : New Note - On Search, Settings and any Open Note</list-item></list>
 <list><list-item dir="ltr">Command-X : Cut the selected text and copy it to the Clipboard</list-item></list>
@@ -79,8 +78,8 @@ Find (in a note)
 
 
 </note-content></text>
-  <last-change-date>2021-07-07T11:39:51.2712455+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-07T11:39:51.2712455+10:00</last-metadata-change-date>
+  <last-change-date>2021-07-18T17:54:48.9998904+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-18T17:54:48.9998904+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
