@@ -261,7 +261,7 @@ object MainForm: TMainForm
     Left = 16
     Height = 21
     Hint = 'You can reverse this from Settings'
-    Top = 227
+    Top = 225
     Width = 239
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14

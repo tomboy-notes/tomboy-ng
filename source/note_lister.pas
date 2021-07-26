@@ -11,6 +11,9 @@ unit Note_Lister;
 	internally, sorted by date. Note details (
     Title, LastChange) can be updated (eg when a note is saved).
 
+    The newest notes are at the end, highest index so, when searching for things
+    should start at the end and work backwards, lots of little changes needed to do that ...
+
 	It keeps a second list if user has done a search.
 
      -------- Multithreaded Indexing ----------
@@ -67,6 +70,7 @@ unit Note_Lister;
     2020/08/01  Disable code to rewrite short lcd.
     2021/01/03  LoadListView now uses TB_datetime, more tolerant of differing DT formats.
     2021/02/14  Notebook list now sorted, A->z
+    2021/07/05  Changed a lot of "for X to 0" to "for 0 downto X" so searches start at end of list where current data is
 }
 
 {$mode objfpc}  {$H+}
@@ -1008,11 +1012,12 @@ begin
     Result := '';
     if not assigned(NoteList) then exit('');
     FileName := CleanFileName(ID);
-    for Index := 0 to NoteList.Count -1 do
-    if NoteList.Items[Index]^.ID = FileName then begin
-        exit(NoteList.Items[Index]^.LastChange);
-	//	debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
-    end;
+    //for Index := 0 to NoteList.Count -1 do
+    for Index := NoteList.Count -1 downto 0 do
+        if NoteList.Items[Index]^.ID = FileName then begin
+            exit(NoteList.Items[Index]^.LastChange);
+	    //	debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
+        end;
 end;
 
 function TNoteLister.GetTitle(const ID: String) : string;
@@ -1023,7 +1028,8 @@ begin
     Result := '';
     if not assigned(NoteList) then exit('');
     FileName := CleanFileName(ID);
-    for Index := 0 to NoteList.Count -1 do
+    for Index := NoteList.Count -1 downto 0 do
+    //for Index := 0 to NoteList.Count -1 do
         if NoteList.Items[Index]^.ID = FileName then
             exit(NoteList.Items[Index]^.Title);
 end;
@@ -1035,7 +1041,8 @@ var
 begin
     Result := False;
     FileName := CleanFileName(ID);
-    for Index := 0 to NoteList.Count -1 do
+    for Index := NoteList.Count -1 downto 0 do
+    //for Index := 0 to NoteList.Count -1 do
         if NoteList.Items[Index]^.ID = FileName then
             exit(True);
 end;
@@ -1399,7 +1406,8 @@ var
     Index : integer;
 begin
 	result := False;
-    for Index := 0 to NoteList.Count -1 do begin
+    for Index := NoteList.Count -1 downto 0 do begin
+    //for Index := 0 to NoteList.Count -1 do begin
         if CleanFilename(ID) = NoteList.Items[Index]^.ID then begin
         	if Title <> '' then
             	NoteList.Items[Index]^.Title := Title;
@@ -1420,7 +1428,8 @@ var
     Index : integer;
 begin
   	Result := False;
-	for Index := 0 to NoteList.Count -1 do begin
+    for Index := NoteList.Count -1 downto 0 do begin
+	//for Index := 0 to NoteList.Count -1 do begin
         if Title = NoteList.Items[Index]^.Title then begin
         	Result := True;
             break;
@@ -1442,7 +1451,8 @@ var
 begin
   	Result := False;
     TheForm := Nil;
-	for Index := 0 to NoteList.Count -1 do begin
+    for Index := NoteList.Count -1 downto 0 do begin
+	//for Index := 0 to NoteList.Count -1 do begin
         if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
         	TheForm := NoteList.Items[Index]^.OpenNote;
             Result := not (NoteList.Items[Index]^.OpenNote = Nil);
@@ -1455,21 +1465,24 @@ function TNoteLister.ThisNoteIsOpen(const ID : ANSIString; const TheForm: TForm)
 var
     Index : integer;
     //cnt : integer;
+    JustID : string;
 begin
     result := false;
     if NoteList = NIl then
         exit;
+    JustID := CleanFileName(ID);
     if NoteList.Count < 1 then begin
         //DebugLn('Called ThisNoteIsOpen() with empty but not NIL list. Count is '
         //		+ inttostr(NoteList.Count) + ' ' + ID);
         // Occasionally I think we see a non reproducable error here.
         // I believe is legal to start the for loop below with an empty list but ....
-        // When we are creating the very first note in a dir, this haappens. Count should be exactly zero.
+        // When we are creating the very first note in a dir, this happens. Count should be exactly zero.
 	end;
 	//cnt := NoteList.Count;
-	for Index := 0 to NoteList.Count -1 do begin
+    for Index := NoteList.Count -1 downto 0 do begin
+	// for Index := 0 to NoteList.Count -1 do begin
       	//writeln('ID = ', ID, ' ListID = ', NoteList.Items[Index]^.ID);
-        if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
+        if JustID = NoteList.Items[Index]^.ID then begin
             NoteList.Items[Index]^.OpenNote := TheForm;
             exit(true);
 		end;
@@ -1483,7 +1496,8 @@ var
 begin
     FileName := '';
   	Result := False;
-	for Index := 0 to NoteList.Count -1 do begin
+    for Index := NoteList.Count -1 downto 0 do begin
+	//for Index := 0 to NoteList.Count -1 do begin
         if lowercase(Title) = lowercase(NoteList.Items[Index]^.Title) then begin
             FileName := NoteList.Items[Index]^.ID;
         	Result := True;
@@ -1510,11 +1524,14 @@ end;
 function TNoteLister.DeleteNote(const ID: ANSIString): boolean;
 var
     Index : integer;
+    JustID : string;
 begin
 	result := False;
+    JustID := CleanFileName(ID);
     //DebugLn('TNoteLister.DeleteNote - asked to delete ', ID);
-    for Index := 0 to NoteList.Count -1 do begin
-        if CleanFileName(ID) = NoteList.Items[Index]^.ID then begin
+    for Index := NoteList.Count -1 downto 0 do begin
+    //for Index := 0 to NoteList.Count -1 do begin
+        if JustID = NoteList.Items[Index]^.ID then begin
         	dispose(NoteList.Items[Index]);
         	NoteList.Delete(Index);
         	Result := True;
@@ -1583,7 +1600,8 @@ var
     Index : longint;
 begin
     Result := Nil;
-    for Index := 0 to Count-1 do begin
+    for Index := Count-1 downto 0 do begin
+    //for Index := 0 to Count-1 do begin
         if Items[Index]^.ID = ID then begin
             Result := Items[Index];
             exit()

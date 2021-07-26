@@ -524,7 +524,6 @@ begin
             TLabel(Lab).Font.Color:= Sett.TextColour;
         CheckBoxDontShow.Font.color := Sett.TextColour;
     {$endif}
-
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
         exit;

@@ -210,6 +210,7 @@ unit EditBox;
     2021/02/15  Use CommonMark when exporting Markdown
     2021/02/17  Fix Mac only bug, not Ctrl to ssMeta F for the EditFind
     2021/06/25  Replaced TUpDown with 2 speedbuttons
+    2021/07/06  Save now in separate thread, a few mS for medium note, 10mS for a big one
     2021/07/08  Calc now defaults LHS if same numb tokens LHS and RHS
     2021/07/11  SimpleCalc can now handle appearing after a text terminating '.'
     2021/07/17  Pickup Ctrl-N from EditFind.
@@ -353,7 +354,6 @@ type
 		procedure MenuItemSelectAllClick(Sender: TObject);
         procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
-        procedure MenuItemWriteClick(Sender: TObject);
         procedure MenuLargeClick(Sender: TObject);
         procedure MenuNormalClick(Sender: TObject);
         procedure MenuSmallClick(Sender: TObject);
@@ -422,6 +422,11 @@ type
         function RelativePos(const Term: ANSIString; const MText: PChar;
             StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
+                        // This method will, at some stage, return after creating and starting
+                        // a thread that normalises the xml in the list, adds footer and saves.
+                        // The thread keeps going after the method returns doing above and then
+                        // free-ing the List.
+        function SaveStringList(const SL: TStringList; Loc: TNoteUpdateRec): boolean;
         function SimpleCalculate(out AStr: string): boolean;
         // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
 
@@ -510,15 +515,38 @@ type
         procedure SaveTheNote(WeAreClosing: boolean=False);
     end;
 
+
+Type
+
+  { TSaveThread }
+
+  TSaveThread = class(TThread)
+  private
+    //fStatusText : string;
+    //procedure ShowStatus;
+  protected
+    procedure Execute; override;
+  public
+    TheSL : TStringList;
+    TheLoc : TNoteUpdateRec;    // ToDo : defined in SaveNote but might change name .....
+    Constructor Create(CreateSuspended : boolean);
+  end;
+
+
+
+
+
 var
     EditBoxForm: TEditBoxForm;
+    BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
 
-// Note that the various font sizes are declared in Settings;
 
 
 implementation
 
 {$R *.lfm}
+
+
 
 { TEditBoxForm }
 uses
@@ -542,17 +570,60 @@ uses
     FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
     LCLIntf,            // OpenUrl()
     TB_Utils,
-    ResourceStr;        // We borrow some search related strings from searchform
-
+    ResourceStr,        // We borrow some search related strings from searchform
+    bufstream,
+    notenormal;         // makes the XML look a little prettier
 
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
 
-{  ---- U S E R   C L I C K   F U N C T I O N S ----- }
+
+
+{ =============  T   S A V E   T H R E A D   ================== }
+
+
+procedure TSaveThread.Execute;
+var
+    Normaliser : TNoteNormaliser;
+    WBufStream : TWriteBufStream;
+    FileStream : TFileStream;
+begin
+    Normaliser := TNoteNormaliser.Create;
+    Normaliser.NormaliseList(TheSL);
+    Normaliser.Free;
+    TheSL.Add(Footer(TheLoc));
+    // TWriteBufStream, TFileStream preferable to BufferedFileStream because of a lighter memory load.
+    FileStream := TFileStream.Create(TheLoc.FFName, fmCreate);
+    //FileStream := TFileStream.Create('/home/dbannon/savethread.note', fmCreate);
+    WBufStream := TWriteBufStream.Create(FileStream, 4096);             // 4K seems about right on Linux.
+    try
+        try
+            TheSL.SaveToStream(WBufStream);
+        except on E:Exception do begin
+                              Debugln('ERROR, failed to save note : ' + E.Message);
+                              WBufStream.Free;
+                              FileStream.Free;
+                              TheSL.Free;
+                          end;
+        end;
+    finally
+        WBufStream.Free;
+        FileStream.Free;
+        TheSL.Free;
+    end;
+    BusySaving := False;
+end;
+
+constructor TSaveThread.Create(CreateSuspended: boolean);
+begin
+   inherited Create(CreateSuspended);
+   FreeOnTerminate := True;
+end;
 
 
 
+{  ==========  U S E R   C L I C K   F U N C T I O N S  ========= }
 procedure TEditBoxForm.SpeedButtonTextClick(Sender: TObject);
 begin
    PopupMenuText.PopUp;
@@ -1895,7 +1966,7 @@ begin
     //PanelFind.Visible := False;
     PanelFind.Height := 1;                // That is, hide it for now
     PanelFind.Caption := '';
-
+    {$ifdef WINDOWS}PanelFind.Color := Sett.AltColour;{$endif}    // so we see black text, windows cannot change some colours !
     {$ifdef DARWIN}
     SpeedRight.Hint := rsFindNavRightHintMac;
     SpeedLeft.Hint := rsFindNavLeftHintMac;
@@ -3039,36 +3110,85 @@ begin
     // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
 end;
 
-procedure TEditBoxForm.MenuItemWriteClick(Sender: TObject);
+{$define SAVETHREAD}
+
+function TEditBoxForm.SaveStringList(const SL: TStringList; Loc : TNoteUpdateRec) : boolean;
+var
+    {$ifdef SAVETHREAD}
+    TheSaveThread : TSaveThread;
+    {$else}
+    Normaliser : TNoteNormaliser;
+    WBufStream : TWriteBufStream;
+    FileStream : TFileStream;
+    {$ENDIF}
 begin
-    if KMemo1.ReadOnly then exit();
-    SaveTheNote();
+    if BusySaving then exit(False);
+    BusySaving := True;
+    Result := True;
+    {$ifdef SAVETHREAD}
+    TheSaveThread := TSaveThread.Create(true);
+    TheSaveThread.TheLoc := Loc;
+    TheSaveThread.TheSL := Sl;
+    TheSaveThread.Start;
+    // It will clean up after itself.
+    {$else}
+    Normaliser := TNoteNormaliser.Create;
+    Normaliser.NormaliseList(SL);
+    Normaliser.Free;
+    SL.Add(Footer(Loc));
+    // TWriteBufStream, TFileStream preferable to BufferedFileStream because of a lighter memory load.
+    FileStream := TFileStream.Create(Loc.FFName, fmCreate);
+    //FileStream := TFileStream.Create('/home/dbannon/savethread.note', fmCreate);
+    WBufStream := TWriteBufStream.Create(FileStream, 4096);             // 4K seems about right on Linux.
+    try
+      try
+          SL.SaveToStream(WBufStream);
+      except on E:Exception do begin
+                              Debugln('ERROR, failed to save note : ' + E.Message);
+                              WBufStream.Free;
+                              FileStream.Free;
+                              SL.Free;
+                          end;
+      end;
+    finally
+      WBufStream.Free;
+      FileStream.Free;
+      SL.Free;
+    end;
+    BusySaving := False;
+    {$ENDIF}
 end;
 
 procedure TEditBoxForm.SaveTheNote(WeAreClosing : boolean = False);
 var
+    Title : string;
  	Saver : TBSaveNote;
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    // T1, T2, T3, T4, T5, T6, T7 : dword;
-    // TestI : integer;
+    T1, T2, T3, T4, T5{, T6, T7} : qword;            // Timing shown is for One Large Note.
+
 begin
-    //T1 := gettickcount64();
-    // debugln('Saving this note' + Caption);
+    if BusySaving then begin
+        ShowMessage('ERROR, unable to save ' + NoteFileName);
+        exit;
+    end;
+    T1 := gettickcount64();
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
         NoteFileName := Sett.NoteDirectory + GetAFilename();
-    if Sett.NoteDirectory = CleanAndExpandDirectory(ExtractFilePath(NoteFileName)) then begin   // UTF8 OK
-        //debugln('Working in Notes dir ' + Sett.NoteDirectory + ' = ' + CleanAndExpandDirectory(ExtractFilePath(NoteFileName)));
+    if (not WeAreClosing)
+        and (Sett.NoteDirectory = CleanAndExpandDirectory(ExtractFilePath(NoteFileName))) then begin   // Check name of Repo note, not SNM. UTF8 OK
         if not IDLooksOK(ExtractFileNameOnly(NoteFileName)) then
             if mrYes = QuestionDlg('Invalid GUID', 'Give this note a new GUID Filename (recommended) ?', mtConfirmation, [mrYes, mrNo], 0) then begin
                 OldFileName := NoteFileName;
                 NoteFileName := Sett.NoteDirectory + GetAFilename();
+                Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(OldFileName));
+                SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // some timewasting menu rewrite ??
+                Debugln('We have just registered a new name for that note with invalid GUID');
+            end;
         end;
-    end; //else debugln('NOT Working in Notes dir ' + Sett.NoteDirectory + ' <> ' + CleanAndExpandDirectory(extractFilePath(NoteFileName)));
-    // We do not enforce the valid GUID file name rule if note is not in official Notes Dir
     if TemplateIs <> '' then begin
         SL := TStringList.Create();
         SL.Add(TemplateIs);
@@ -3077,59 +3197,52 @@ begin
         TemplateIs := '';
     end;
     Saver := TBSaveNote.Create();
+    Saver.CreateDate := CreateDate;
+    if not GetTitle(Title) then exit();
+    // If title has changed, we make a backup copy.
+    if TitleHasChanged then begin
+        SearchForm.BackupNote(NoteFileName, 'ttl');
+        TitleHasChanged := False;
+	end;
+    Caption := Title;
+    KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
+    T2 := GetTickCount64();
+    SL := TStringList.Create();
     try
-        Saver.CreateDate := CreateDate;
-        if not GetTitle(Saver.Title) then exit();
-        // If title has changed, we make a backup copy.
-        if TitleHasChanged then begin
-            SearchForm.BackupNote(NoteFileName, 'ttl');
-            TitleHasChanged := False;
-		end;
-        Caption := Saver.Title;
-        //T2 := GetTickCount64();                   // 0mS
-        KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
-        try
-           // debugln('about to save');
-            Saver.ReadKMemo(NoteFileName, KMemo1);
-            //T3 := GetTickCount64();               // 6mS
-        finally
-            KMemo1.Blocks.UnLockUpdate;
-        end;
-        //T4 := GetTickCount64();                   //  0mS
-        Loc.Width:=inttostr(Width);
-        Loc.Height:=inttostr(Height);
-        Loc.X := inttostr(Left);
-        Loc.Y := inttostr(Top);
-        Loc.OOS := booltostr(WeAreClosing, True);
-        Loc.CPos:='1';
-        loc.FFName:='';
-        if Dirty or SingleNoteMode then     // In SingeNoteMode, there is no NoteLister, so date is always updated.
-            Loc.LastChangeDate:=''
-        else
-            Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
-        // Use old DateSt if only metadata. Sets it to '' if not in list, Saver will sort it.
-        if (not Saver.WriteToDisk(NoteFileName, Loc)) and (not WeAreClosing) then begin
-            Showmessage('ERROR, cannot save,  please report [' + Loc.ErrorStr + ']');     // maybe some windows delete problem ??
-            //Showmessage('Name=' + Sett.NoteDirectory + NoteFileName);
-        end;
-        //T5 := GetTickCount64();                   // 1mS
-        // No point in calling UpDateList() if we are closing the app or just updating metadata.
-        if ((not WeAreClosing) and (Loc.LastChangeDate = '')) then
-            SearchForm.UpdateList(CleanCaption(), Saver.TimeStamp, NoteFileName, self);
-                                        // if we have rewritten GUID, that will create new entry for it.
-            // the above call to UpdateList triggers some time wasting menu updates, I cannot find why !
-        //T6 := GetTickCount64();                   //  14mS
-        if OldFileName <> '' then
-            SearchForm.DeleteNote(OldFileName);
+        Saver.ReadKMemo(NoteFileName, Title, KMemo1, SL);
+        T3 := GetTickCount64();
     finally
+        KMemo1.Blocks.UnLockUpdate;
         if Saver <> Nil then Saver.Destroy;
-        Dirty := false;
+
         Caption := CleanCaption();
     end;
-    //T7 := GetTickCount64();                       // 0mS
-    //debugln('EditBox.SaveTheNote Timing');
-    //debugln('create=' + inttostr(T2 - T1) + ' ReadKMemo=' + inttostr(T3 - T2) + ' Unlock=' + inttostr(T4 - T3) + ' Write=' +
-    //        inttostr(T5 - T4) + ' UpdateList=' + inttostr(T6 - T5) + ' CleanUp=' + inttostr(T7 - T6));
+    Loc.Width:=inttostr(Width);
+    Loc.Height:=inttostr(Height);
+    Loc.X := inttostr(Left);
+    Loc.Y := inttostr(Top);
+    Loc.OOS := booltostr(WeAreClosing, True);
+    Loc.CPos:='1';
+    loc.FFName := NoteFileName;
+    loc.CreateDate := CreateDate;
+    if Dirty or SingleNoteMode then begin    // In SingeNoteMode, there is no NoteLister, so date is always updated.
+        Loc.LastChangeDate:= TB_GetLocalTime();
+        SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // 6mS - 8mS timewasting menu rewrite ??
+    end else
+        Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
+
+    T4 := GetTickCount64();
+    if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
+    T5 := GetTickCount64();
+
+		// T6 := GetTickCount64();
+    {    debugln('Save Note Initial=' + inttostr(T2-T1) + ' ReadMemo=' + inttostr(T3-T2)
+                + ' MenuUpDate=' + Inttostr(T4-T3) + ' Normalise_Save=' + inttostr(T5-T4));     }
+    {$ifdef SAVETHREAD}
+    debugln('Total time to save threaded is ' + inttostr(T5-T1));
+    {$else}
+    debugln('Total time to save UN-threaded is ' + inttostr(T5-T1));
+    {$endif}
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;

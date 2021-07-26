@@ -358,7 +358,7 @@ procedure TNoteBookPick.ButtonOKClick(Sender: TObject);
 var
         SL : TStringList;
         Index : Integer;
-        Saver : TBSaveNote;
+        //Saver : TBSaveNote;
 begin
     if ModalResult = mrOK then
         exit;
@@ -374,7 +374,10 @@ begin
     end;
     if PageControl1.ActivePage = TabNewNotebook then
         if EditNewNotebook.Text <> '' then begin
-            Saver := TBSaveNote.Create();
+             SaveNewTemplate(EditNewNotebook.Text);
+             SearchForm.NoteLister.AddNoteBook(ExtractFileNameOnly(FullFileName) + '.note', EditNewNotebook.Text, False);
+             SearchForm.RefreshNotebooks();
+            { Saver := TBSaveNote.Create();
             try
                 Saver.SaveNewTemplate(EditNewNotebook.Text);
                 // OK, now add current note to the new Notebook
@@ -382,7 +385,7 @@ begin
                 SearchForm.RefreshNotebooks();
 			finally
                 Saver.Destroy;
-			end;
+			end; }
         end else begin
             showmessage(rsEnterNewNotebook);
             exit;

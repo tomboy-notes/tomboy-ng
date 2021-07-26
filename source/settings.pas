@@ -1070,7 +1070,6 @@ begin
         //AltColour := $282828            // Gray,  BackGround Colour of Alternating rows in some ListViews
         AltColour := $606060              // A colour that will show both black and white test
         else AltColour := clDefault;      // it gets used as a background and needs to be a bit near it
-
     if UserSetColours then exit;        // will have already been set by config or by colour form.
 	if DarkTheme then begin
         //debugln('Its definltly a Dark Theme');

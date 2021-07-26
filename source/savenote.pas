@@ -69,9 +69,11 @@ type TNoteUpdateRec = record
      X, Y : shortstring;
      Width, Height : shortstring;
      OOS : shortstring;
-     FFName : string;
+     FFName : string;           // path, ID and .note, not used in Single Note Mode
      LastChangeDate : string;   // if '', its a content save, generate a new timestamp
+     CreateDate : string;       // if its '', its a new note, use LastChangeDate
      ErrorStr : string;         // '' if all OK, not used everywhere....
+     // ToDo : remove the field ErrorStr
 end;
 
 
@@ -88,16 +90,16 @@ type
 			Bold : boolean;
 			Italics : boolean;
 			HiLight : boolean;
-                        Underline : boolean;
-                        Strikeout : boolean;
-                        FixedWidth : boolean;
+            Underline : boolean;
+            Strikeout : boolean;
+            FixedWidth : boolean;
             PrevFSize : integer;
 			PrevBold : boolean;
 			PrevItalics : boolean;
 			PrevHiLight : boolean;
-                        PrevUnderline : boolean;
-                        PrevStrikeout : boolean;
-                        PrevFixedWidth : boolean;
+            PrevUnderline : boolean;
+            PrevStrikeout : boolean;
+            PrevFixedWidth : boolean;
 			InList : boolean;
             KM : TKMemo;
             function AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
@@ -107,26 +109,30 @@ type
 			//function FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle): ANSIString;
 			//function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
-          	function Header() : ANSIstring;
+
          	//function Footer(Loc: TNoteLocation): ANSIstring;
-            function Footer(Loc : TNoteUpdateRec) : string;
+
             //function GetLocalTime():ANSIstring;
 
             // Assembles a list of tags this note is a member of, list is
             // used in all note's footer - needs ID to have been set
             // function NoteBookTags() : ANSIString;
        public
-            TimeStamp : string;
-            Title : ANSIString;
+            // TimeStamp : string;            // abandonded in SaveThread mode
+            // Title : ANSIString;
             // set to orig createdate if available, if blank, we'll use now()
             CreateDate : ANSIString;
-            procedure SaveNewTemplate(NotebookName: ANSIString);
-         	procedure ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
+         	procedure ReadKMemo(FileName: ANSIString; Title: string; KM1: TKMemo;
+					STL: TStringList = nil);
             function WriteToDisk(const FileName: ANSIString; var NoteLoc: TNoteUpdateRec
                 ): boolean;
             constructor Create;
             destructor Destroy;  override;
     end;
+
+    function Footer(Loc : TNoteUpdateRec) : string;
+    function Header(Title : String) : ANSIstring;
+    procedure SaveNewTemplate(NotebookName: ANSIString);
 
 
 implementation
@@ -149,6 +155,9 @@ const
   {$ifdef DARWIN}
   MonospaceFont = 'Lucida Console';
   {$ifend}
+
+
+
 
 constructor TBSaveNote.Create;
 begin
@@ -468,43 +477,24 @@ begin
    //else Result := 'Not Text';
 end;
 
-    // I suspect this function is no longer used.
-{function TBSaveNote.FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle) : ANSIString;
-begin
-   Result := '';
-   if fsBold in Ft.Style then
-   Result := Result + ' Bold ';
-   if fsItalic in Ft.Style then
-   Result := Result + ' Italic ';
-   if Ts.Brush.Color = Sett.HiColour then
-   Result := Result + ' HighLight ';
-   Result := Result + inttostr(Ft.Size);
-   if fsUnderline in Ft.Style then
-   Result := Result + ' Underline ';
-   if fsStrikeout in Ft.Style then
-   Result := Result + ' Strikeout ';
-   if Ft.Pitch = fpFixed then
-   Result := Result + ' FixedWidth ';
-end; }
-
-procedure TBSaveNote.SaveNewTemplate(NotebookName : ANSIString);
+procedure SaveNewTemplate(NotebookName : ANSIString);
 var
    GUID : TGUID;
    OStream:TFilestream;
-   Buff { TemplateID }: ANSIString;
+   Buff, ID : ANSIString;
    Loc :  TNoteUpdateRec {TNoteLocation};
 begin
    CreateGUID(GUID);
-   Title := NotebookName  + ' Template';
+   //Title := NotebookName  + ' Template';
    ID := copy(GUIDToString(GUID), 2, 36) + '.note';
    SearchForm.NoteLister.AddNoteBook(ID, NotebookName, True);
    Ostream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
    Loc.Y := '20'; Loc.X := '20'; Loc.Height := '200'; Loc.Width:='300';
    Loc.OOS := 'False'; Loc.CPos:='1';
    try
-   		Buff := Header();
+   		Buff := Header(RemoveBadXMLCharacters(NotebookName)  + ' Template');
         OStream.Write(Buff[1], length(Buff));
-        Buff := RemoveBadXMLCharacters(Title) + #10#10#10;
+        Buff := RemoveBadXMLCharacters(NotebookName)  + ' Template' + #10#10#10;
         OStream.Write(Buff[1], length(Buff));
         Buff := Footer(Loc);
         OStream.Write(Buff[1], length(Buff));
@@ -513,19 +503,22 @@ begin
    end;
 end;
 
+
 procedure TBSaveNote.CopyLastFontAttr();
 begin
-  PrevFSize := FSize;
-  PrevBold := Bold;
-   PrevItalics := Italics;
-   PrevHiLight := HiLight;
-  PrevUnderline := Underline;
-  PrevStrikeout := Strikeout;
-  PrevFixedWidth := FixedWidth;
-  PrevFSize := FSize;
+    PrevFSize := FSize;
+    PrevBold := Bold;
+    PrevItalics := Italics;
+    PrevHiLight := HiLight;
+    PrevUnderline := Underline;
+    PrevStrikeout := Strikeout;
+    PrevFixedWidth := FixedWidth;
+    PrevFSize := FSize;
 end;
 
-procedure TBSaveNote.ReadKMemo(FileName : ANSIString; KM1 : TKMemo);
+    // NEW : if passed a created StringList, we write to the list rather than to the
+    // Memory Buffer. Still need to deal with Header and Footer in a line by line mode.
+procedure TBSaveNote.ReadKMemo(FileName : ANSIString; Title : string; KM1 : TKMemo; STL : TStringList = nil);
 var
    Buff : ANSIstring = '';
    // OutStream:TFilestream;
@@ -546,14 +539,17 @@ var
     // ID needs to be set so we can get list of notebooks for the footer.
     // Must deal with an empty list !
 //    try
+    if STL = nil then
         outstream :=TMemoryStream.Create({FileName, fmCreate});
         // Write and WriteBuffer accept a buffer, not a string !  Need to start at pos 1
         // when sending string or ANSIstring otherwise it uses first byte which makes it look like a binary file.
         // http://free-pascal-general.1045716.n5.nabble.com/Creating-text-files-with-TFileStream-td2824859.html
-        Buff := Header();
-        OutStream.Write(Buff[1], length(Buff));
-        Buff := '';
-        try
+    Buff := Header(Title);
+    if STL = Nil then
+        OutStream.Write(Buff[1], length(Buff))
+    else STL.Add(Buff);
+    Buff := '';
+    try
             repeat
                 CopyLastFontAttr();
                 repeat
@@ -596,9 +592,10 @@ var
                         break;
                     end else inc(NextBlock);
                 end;
-                Buff := Buff + LineEnding;
-                // debugln('Outer Buff=[' + Buff + ']');
-                OutStream.Write(Buff[1], length(Buff));
+                if STL = Nil then begin
+                    Buff := Buff + LineEnding;
+                    OutStream.Write(Buff[1], length(Buff))
+                end else STL.Add(Buff);
                 Buff := '';
                 // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(KM1.Blocks.Items[BlockNo]));
                 inc(BlockNo);
@@ -610,9 +607,12 @@ var
               could still have hanging xml tags. So either case, send it to add tag with
               an empty Font.
             }
-            if Buff <> '' then
-                OutStream.Write(Buff[1], length(Buff));
-            Buff := '';
+            if Buff <> '' then begin
+                if STL = Nil then
+                    OutStream.Write(Buff[1], length(Buff))
+                else STL.Add(Buff);
+			end;
+			Buff := '';
             if Bold then Buff := '</bold>';
             if Italics then Buff := Buff + '</italic>';
             if HiLight then Buff := Buff + '</highlight>';
@@ -621,11 +621,11 @@ var
             if FixedWidth then Buff := Buff + '</monospace>';
             if FSize <> Sett.FontNormal then
                  Buff := Buff + SetFontXML(FSize, False);
-            if length(Buff) > 0 then
-                  OutStream.Write(Buff[1], length(Buff));
-            //Buff := Footer();
-            //OutStream.Write(Buff[1], length(Buff));
-
+            if length(Buff) > 0 then begin
+                  if STL = Nil then
+                    OutStream.Write(Buff[1], length(Buff))
+                  else STL.Add(Buff);
+            end;
          Except
             on EListError do begin
                 debugln('ERROR - EListError while writing note to stream.');
@@ -694,7 +694,7 @@ begin
     if not Result then NoteLoc.ErrorStr:='Failed Rename T=' + TmpName + ' and F=' + FileName;
 end;
 
-function TBSaveNote.Header(): ANSIstring;
+function Header(Title : string): ANSIstring;
 var
    S1, S2, S3, S4 : ANSIString;
 begin  // Add a BOM at the start, not essencial, Tomboy did it, makes the note no longer a plain text file. ??
@@ -706,13 +706,25 @@ begin  // Add a BOM at the start, not essencial, Tomboy did it, makes the note n
   Result := S1 + S2 + S3 + RemoveBadXMLCharacters(Title) + S4;
 end;
 
-function TBSaveNote.Footer(Loc : TNoteUpdateRec {TNoteLocation}): ANSIstring;
+{   Sets TimeStamp, a public SaveNote var that is later used by EditBox to set the value
+    stored in NoteLister. And NoteLister is not thread safe.
+    This method also reads NoteLister for NoteBookTags. Maybe or maybe NOT safe.
+}
+
+function Footer(Loc : TNoteUpdateRec): ANSIstring;
 var
    S1, S2, S3, S4, S5, S6 : string;
 begin
+  if Loc.LastChangeDate = '' then begin
+       debugln('------------------------------------------------------------------------');
+       debugln('ERROR, ERROR passed an blank change date to Footer, we dont do that here');
+       debugln('------------------------------------------------------------------------');
+       Loc.LastChangeDate := TB_GetLocalTime();     // no, thats just a temp fix, do something about it
+  end;
+  (*
   if Loc.LastChangeDate = '' then
     TimeStamp := TB_GetLocalTime()   // get actual time date in format like Tomboy's
-  else TimeStamp := Loc.LastChangeDate;
+  else TimeStamp := Loc.LastChangeDate;   *)
   S1 := '</note-content></text>'#10'  <last-change-date>';
   S2 := '</last-change-date>'#10'  <last-metadata-change-date>';
   S3 := '</last-metadata-change-date>'#10'  <create-date>';
@@ -720,12 +732,12 @@ begin
   S5 := '  <width>' + Loc.Width + '</width>'#10'  <height>' + Loc.Height + '</height>'#10'  <x>'
         + Loc.X + '</x>'#10'  <y>' + Loc.Y + '</y>'#10;
   S6 := '  <open-on-startup>' + Loc.OOS + '</open-on-startup>'#10'</note>';
-  if CreateDate = '' then CreateDate := TimeStamp;
+  if Loc.CreateDate = '' then Loc.CreateDate := Loc.LastChangeDate;
   if SearchForm.NoteLister <> Nil then
-        Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5
-            + SearchForm.NoteLister.NoteBookTags(ID) + S6
+        Result := S1 + Loc.LastChangeDate + S2 + Loc.LastChangeDate + S3 + Loc.CreateDate + S4 + S5
+            + SearchForm.NoteLister.NoteBookTags(ExtractFileName(Loc.FFName)) + S6
   else
-        Result := S1 + TimeStamp + S2 + TimeStamp + S3 + CreateDate + S4 + S5 + S6;
+        Result := S1 + Loc.LastChangeDate + S2 + Loc.LastChangeDate + S3 + Loc.CreateDate + S4 + S5 + S6;
   // That will mean no Notebook tags in single note mode, is that an issue ?
   // Most singe notes are out of their repo so won't have notebooks anyway but we could
   // save any tag list and restore it on save ??
