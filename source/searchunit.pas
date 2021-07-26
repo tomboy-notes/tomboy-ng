@@ -194,6 +194,7 @@ type        { TSearchForm }
         procedure CreateMenus();
         procedure DoSearch();
         procedure FileMenuClicked(Sender: TObject);
+
         procedure InitialiseHelpFiles();
                                 // clears then Inserts file items in all main menus, note also removes help items ....
         procedure MenuFileItems(AMenu: TPopupMenu);
@@ -217,6 +218,10 @@ type        { TSearchForm }
         //AllowClose : boolean;
         NoteLister : TNoteLister;
         NoteDirectory : string;
+                            { Tells all open notes to save their contents. Used,
+                            eg before we run a sync to ensure recently changed content
+                            is considered by the (File based) sync engine.}
+        procedure FlushOpenNotes();
                             { Makes a backup note with last three char of manin name being
                             the PutInName that tells us where it came from, ttl - title
                             opn - just opened. Does nothing if name not UUID length.
@@ -344,6 +349,22 @@ begin
         end else NeedRefresh := True;                      }
     end;
 end;
+
+
+procedure TSearchForm.FlushOpenNotes();
+var
+    AForm : TForm;
+begin
+    if assigned(NoteLister) then begin
+      AForm := NoteLister.FindFirstOpenNote();
+      while AForm <> Nil do begin
+          if TEditBoxForm(AForm).dirty then
+              TEditBoxForm(AForm).SaveTheNote();
+          AForm := SearchForm.NoteLister.FindNextOpenNote();
+      end;
+    end;
+end;
+
 
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin

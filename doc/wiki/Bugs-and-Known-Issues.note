@@ -3,39 +3,63 @@
   <title>tomboy-ng Bugs and Known Issues</title>
   <text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Bugs and Known Issues</underline><size:small>
 
-This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small><size:large>
+This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small><size:huge>
 
-<bold>Bugs</bold></size:large>
+<bold>Bugs</bold></size:huge>
 Bug reports and feature requests should be via Github https://github.com/tomboy-notes/tomboy-ng/issues
 There is some advice about DIY debugging further down this document.<size:huge>
 
 
-<bold>Known Issues and todo list (updated 2020/12/08)</bold></size:huge>
-Recent fixes show as strikeout.
+<bold>Known Issues</bold></size:huge>
 
-<list><list-item dir="ltr">On Linux GTK2 based versions, using the Compose Key approach to entering accented characters results in a bad character also being inserted. This is a known, upstream issue,  https://bugs.freepascal.org/view.php?id=38454 . Qt5 versions do not have this problem.</list-item></list>
 <list><list-item dir="ltr">On some  Macs, when using the in note Find tool, a 'shadow highlight' can appear superimposed over the button bar. It does no harm, disappears when you move the mouse over the button but is unsightly. Its a know upstream problem, https://forum.lazarus.freepascal.org/index.php/topic,53055.0.html .</list-item></list>
-<list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine). </list-item></list>
-<list><list-item dir="ltr">We don't do multilevel bullets. Lines starting with an '*' should be auto converted to a Bullet.</list-item></list>
-<list><list-item dir="ltr">Tabs do not work like real tabs should.</list-item></list>
-<list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
-<list><list-item dir="ltr"> Stop house keeping from moving viewport.</list-item></list>
+<list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine). </list-item></list><size:huge>
+
+<bold>Specific Things with a Work Around</bold></size:huge><size:large><bold>
+
+QT5 versions and Dark Theme</bold></size:large>
+On a number of Linux Distros, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but much better to install qt5ct and set what colours you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours, either by adding an environment variable when you start tomboy-ng  -
+
+<monospace>QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]</monospace>
+
+Or you could set that generally so it makes all QT apps look the same by, eg, adding this to your  /etc/environment file (and logging out and back in again) -
+
+<monospace>QT_QPA_PLATFORMTHEME=qt5ct</monospace><size:large>
+
+<bold>Dark Theme</bold></size:large>
+At present, seems only GTK2 can pick up its colours from the OS :-(
+So, its now possible to pass --dark-theme to the application on the command line and you get, sort of, a Dark Theme.  Sadly, some forms in the application are based on components that simply will not play, Settings being a good example. Sorry.<size:large>
+
+<bold>QT5 versions and Gnome Desktops</bold></size:large>
+Almost all Gnome Desktops now use the Wayland Display Manager instead of X (or XCB). QT5 has a plugin that will manage the connection between a QT5 app and Wayland, typically called qtwayland5, you may find it already installed or need to manually install it yourself.  If you run a QT5 app, such as the QT5 version of tomboy-ng, you may see a warning to the effect that its ignoring the request to run under Wayland, if you want it to run under Wayland, do something like -
+
+QT_QPA_PLATFORM=wayland  tomboy-ng [enter]
+
+You can do so (if you have qtwayland5 installed) but it seems to make little or no difference and does trigger a couple of warning messages from the QT libraries. So, honestly, don't worry about it.<size:large>
+
+<bold>System Tray Issues</bold></size:large>
+Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
+
+ <size:huge>
+<bold>Long term 'maybe' stuff</bold></size:huge>
+These are things I have no immediate plans to fix, but they might be addressed some time in the future if there is some demand from end users.
+<list><list-item dir="ltr">On Linux GTK2 based versions, using the Compose Key approach to entering accented characters results in a bad character also being inserted. This is a known, upstream issue,  https://bugs.freepascal.org/view.php?id=38454 . Qt5 versions do not have this problem.</list-item></list>
+<list><list-item dir="ltr">Stop house keeping from moving viewport.</list-item></list>
 <list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
 <list><list-item dir="ltr">Network Sync - most users happy with file sync. With sshfs, you can sync to any server you can ssh to.</list-item></list>
-<list><list-item dir="ltr"><strikeout>Tomdroid sync is too complicated.</strikeout></list-item></list><strikeout></strikeout>
-<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.  Windows will not let us set a dark background to buttons, must look at owner draw modes.  <strikeout>Also useful in TB_SDiff buttons to indicate selected text.</strikeout></list-item></list><strikeout></strikeout>
-<list><list-item dir="ltr">Debian bullseye does not seem to tell tomboy-ng to use a dark theme, while this will probably be fixed (in either bullseye or tomboy-ng), for now, use the --dark-theme command line switch or install the Qt5 config tool.   </list-item></list><size:large>
-
-<bold>Long term 'maybe' stuff</bold></size:large>
+<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.  Windows will not let us set a dark background to buttons, must look at owner draw modes. </list-item></list>
+<list><list-item dir="ltr">We don't do multilevel bullets. Lines starting with an '*' should be auto converted to a Bullet.</list-item></list>
+<list><list-item dir="ltr">Tabs do not work.</list-item></list>
+<list><list-item dir="ltr">Embed images in a note. Technically something we can now do, indeed, some users have noted they can paste an image in there now but it does not last over a save / reload cycle. Images will break compatibility with old Tomboy and probably Tomdroid, so it will have to be optional. Will have to invent a means to save those images and, of course, work with the recover and archive models. Hmm....</list-item></list>
 <list><list-item dir="ltr">Move notes into database (ie sqlite for small users, something bigger for BIG users). </list-item></list>
 <list><list-item dir="ltr">Better export abilities - at present plain text, markdown and RTF. What about html, PDF etc ? Man Page</list-item></list>
 <list><list-item dir="ltr">Import ability. Import a directory of Tomboy notes. Import other formats.</list-item></list>
-<list><list-item dir="ltr">Revise controls, at present modelled on Tomboy, we can improve.</list-item></list>
-<strikeout>Install models - Flatpack, Snap etc ?.</strikeout> tomboy-ng is now available in the Debian repository.  It will be available in next Ubuntu (21.04) the same way. For older Ubuntus and derivatives, the is now a PPA.<size:large>
+<list><list-item dir="ltr">Revise controls, at present modelled on Tomboy, we can improve.</list-item></list><size:huge>
 
-<bold>Debugging</bold></size:large>
+
+<bold>Debugging</bold></size:huge>
 If you have problems with the application, or wish to make a feature request, please report via the github tomboy-ng issues facility. 
-If tomboy-ng crashes or does something unexpected, there are a number of command line switches that may reveal whats going on (t either yourself of, if posted to 'issues', the author).  Using these command line switches is easy in Linux but Windows or Mac users need to capture the information in a file, see below -
+If tomboy-ng crashes or does something unexpected, there are a number of command line switches that may reveal whats going on (to either yourself of, if posted to 'issues', the author).  Using these command line switches is easy in Linux but Windows or Mac users need to capture the information in a file, see below -
 
 <bold>Command Line Switches</bold>
 
@@ -72,19 +96,20 @@ Windows and Mac do not, for this purpose, have a console. But they too  can be t
 <list><list-item dir="ltr">Press enter, tomboy-ng should start up normally. Close it. </list-item></list>
 <list><list-item dir="ltr">A file called tomboy-log.txt will have been created on your desktop.</list-item></list>
 
-In all cases, you may need to zip that file up to post it on Github. If  you  do intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see. It may include things like note Titles for example.
+In all cases, you may need to zip that file up to post it on Github. If  you  do intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see. It may include things like note Titles for example. Note that a debug file will capture very little data unless of the debug switches is also set.
+
 
 
 
 </note-content></text>
-  <last-change-date>2021-02-10T12:21:14.5161456+11:00</last-change-date>
-  <last-metadata-change-date>2021-02-10T12:21:14.5161456+11:00</last-metadata-change-date>
+  <last-change-date>2021-07-21T20:44:35.9432009+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-21T20:44:35.9432009+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1211</width>
   <height>626</height>
-  <x>20</x>
-  <y>30</y>
+  <x>510</x>
+  <y>291</y>
   <open-on-startup>False</open-on-startup>
 </note>

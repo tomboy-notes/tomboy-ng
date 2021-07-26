@@ -1,54 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Recuperando notas perdida</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Recuperando notas perdida</underline>
+  <title>Recuperar notas perdidas</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>Recuperar notas perdidas</underline>
 
-Si está leyendo esto, es probable que ¡se preocupa por algo ! Entonces, el primer consejo es <size:large>
+Si está leyendo esto, es probable que ¡está preocupado! Entonces, el primer consejo es <size:large>
+
 <italic><bold>no se deje llevar por el pánico.</bold></italic></size:large><size:small><italic><bold> (1)</bold></italic></size:small>
-Es bastante probable que le podemos ayudar. Dependerá de que ha ocurrido y si ha hecho una instantánea automática manual recientemente. En primer logar, no sincronice las notas, lo que podría sustituir datos malos por buenos. A continuación, avance por pasos pequeños.
+
+Es bastante probable que le podemos ayudar. Dependerá de que ha ocurrido y, tal vez, si ha hecho una instantánea manual recientemente. En primer lugar, no sincronice las notas, lo que podría sustituir datos malos por buenos. Luego, dé pasos pequeños.
 
 Vamos a ver las posibilidades:<size:large>
 
-<bold>Eliminé (o se eliminó con una sincronización) una nota que necesito</bold></size:large>
-Puede que sea fácil de solucionar. Mantenemos una copia de seguridad de todas las notas que elimina manualmente o que se sobrescribe durante la sincronización. Pero, solamente una copia de seguridad, entonces si se sincronizó y sobrescribió otra vez, se ha esfumado. Compruebe volviendo a la pestaña de "Recuperar" en Preferencias, haga clic en "Ver Nota(s)", eche un vistazo a las notas y haga doble clic en una nota que puede que sea la que busca. Aparecerá una caja de diálogo que le permite ver, eliminar o recuperar la nota.<size:large>
+<bold>Eliminé (o se eliminó) una nota que necesito.</bold></size:large>
+Puede que sea fácil de solucionar. Mantenemos una copia de todas las notas eliminadas manualmente o sobrescritas en una sincronización. Pero, hay solamente una copia, entonces si se ha sincronizado y sobrescrito otra vez, la nota original se ha esfumado. Compruebe volviendo a la pestaña de "Recuperar" en Preferencias, haga clic en "Ver Nota(s)", eche un vistazo a las notas y haga doble clic en una nota que puede que sea la que busca. Aparecerá una caja de diálogo que le permite ver, eliminar o recuperar la nota.<size:large>
 
 <bold>Tengo una nota corrompida.</bold></size:large>
-Al iniciar tomboy-ng, verá un aviso sobre la imposibilidad de indizar la nota. Probablemente significa que el XML de la nota se ha corrompido de alguna manera. <size:small>(2)</size:small>. El método de indizar en tomboy-ng es muy riguroso por diseño y se genera un error si hay un campo que no se puede obtener. Sin embargo, en función de donde está el error en la nota, puede que sea posible abrirla y guardarla con XML reescrito.   Por supuesto, haga una instantánea antes de iniciar el proceso.
+Al iniciar tomboy-ng, verá un aviso sobre la imposibilidad de indizar la nota. Probablemente significa que el formato XML de la nota se ha corrompido de alguna manera. <size:small>(2)</size:small> El método de indizar en tomboy-ng es muy riguroso por diseño y se genera un error si hay un campo que no se puede obtener. Sin embargo, en función de donde está el error en la nota, puede que sea posible abrirla y guardarla con el XML reescrito.   Por supuesto, haga una instantánea antes de iniciar el proceso.
 
 <bold>Para probar este remedio rápido, debería:</bold>
-<list><list-item dir="ltr">Desde la pestaña "Recuperar" en "Preferencias", haga clic primero en "Hacer una Instantánea Manua" (¡para estar seguro!) y luego en "Recuperar notas perdidas". </list-item></list>
-<list><list-item dir="ltr">En la pestaña "Notas corrompidas" encontrará una lista de notas que están corrompidas. Haga doble clic en una nota que puede ser la problemática y se abrirá una nueva ventana de Editar. Puede que haya conseguido recuperar por lo menos algo del contenido<size:small>.</size:small> </list-item></list><size:large>
+<list><list-item dir="ltr">Desde la pestaña "Recuperar" en "Preferencias", hacer clic primero en "Hacer una Instantánea Manual" (¡para estar seguro!) y luego en "Recuperar notas perdidas". </list-item></list>
+<list><list-item dir="ltr">En la pestaña "Notas corrompidas" encontrará una lista de notas que están corrompidas. Haga doble clic en una nota que puede ser la problemática y se abrirá una nueva ventana de edición. Puede que haya conseguido recuperar por lo menos algo del contenido<size:small>.</size:small> </list-item></list><size:large>
 
-<bold>No me escuche, ¡he perdido todas mis notas!</bold></size:large>
+<bold>No me esta escuchando, ¡he perdido todas mis notas!</bold></size:large>
 Vale, entendido. Esto es grave. Pero nos quedan dos posibilidades todavía. A ver . . .
 
 <bold>Sincronizo mis notas desde otro lugar.</bold>
-Ah, está muy bien. Quizás todo que tiene que hacer es eliminar el directorio actual de las notas <size:small>(3)</size:small>  y unirse de nuevo a la red de sincronización. Tome nota, hago hincapié en no solamente sincronizar las notas.  <highlight>Deba</highlight> ir a la pestaña de sincronización y haga clic en "<highlight>Establecer Repositorio de Sincronización"</highlight>. De esta manera, el sistema de sincronización le ve como un usuario nuevo y le envía todas las notas. La utilidad de este método depende del tiempo que ha transcurrido desde la última sincronización dado que, claro está, los cambios hechos después de la última sincronización se perderán.
+Ah, esto es bueno. Quizás sólo tiene que eliminar el directorio actual de las notas <size:small>(3)</size:small> y unirse de nuevo a la red de sincronización. Tome nota, hago hincapié en no solamente sincronizar las notas.  <highlight>Deba</highlight> ir a la pestaña de sincronización y haga clic en "<highlight>Establecer Repositorio de Sincronización"</highlight>. De esta manera, el sistema de sincronización le ve como un usuario nuevo y le envía todas las notas. La utilidad de este método depende del tiempo que ha transcurrido desde la última sincronización dado que, claro está, los cambios hechos después de la última sincronización se perderán.
 
 <bold>Tengo una instantánea</bold>
 ¡Una noticia fantástica! Puede recurrir fácilmente a una instantánea concreta y olvidarse de todas las preocupaciones. ¡Demasiado fácil!
-Si tuvo la prudencia de guardar la instantánea en otro sitio, cópiela a su directorio de instantáneas (visible en la pestaña "Instantáneas" de "Preferencias").
-<list><list-item dir="ltr">De la pestaña "Instantánea", haga clic en "Recuperar Notas Perdidas". Si no lo ha hecho todavía, ahora es buen momento para hacer clic en "Instantánea de Seguridad" dado que está en un sitio peligroso en este momento.</list-item></list>
-<list><list-item dir="ltr">Vaya a la pestaña "Recuperar Instantánea", elija la instantánea que quiere usar y ¡adelante! <size:small>(4).</size:small></list-item></list><size:small></size:small>
-Regrese y vaya a "Buscar" y haga clic en "Actualizar". Después de comprobar que todo está bien, por favor, ¡acuérdese to hacer una instantánea de vez en cuando!<size:large>
+Si tuvo la prudencia de guardar la instantánea en otro sitio, cópiela a su directorio de instantáneas (visible en la pestaña "Recuperar" de "Preferencias").
+<list><list-item dir="ltr">De la pestaña "Recuperar", haga clic en "Recuperar Notas Perdidas". Si no lo ha hecho todavía, ahora es buen momento para hacer clic en "Instantánea de Seguridad" dado que está en una situación peligrosa en este momento.</list-item></list>
+<list><list-item dir="ltr">Vaya a la pestaña "Recuperar Instantánea", elija la instantánea que quiere usar y ¡adelante! <size:small>(4)</size:small></list-item></list><size:small></size:small>
+Regrese y vaya a "Buscar" y haga clic en "Actualizar". Después de comprobar que todo está en orden, por favor, ¡acuérdese to hacer una instantánea de vez en cuando!<size:large>
 
 <bold>Notas </bold></size:large>
 (1) Palabras de Douglas Adams, usadas sin permiso. 
-(2) Las notas nunca debería corromperse, pero parece que ocurrió. Fallo eléctrico, error del programa, lo que sea. Si es culpa mía, ¡lo lamento sinceramente! Por favor, haga un informe sobre la experiencia en la lista de correo de Tomboy o en Github. La única manera que tengo de eliminar los problemas es a través de los informes de los usuarios.
-(3) Tomboy-ng le informa de donde se guardan sus notas. Vaya allí con un gestor de archivos y seleccione todos los archivos de notas. Son las únicas con nombres de 36 caracteres que parecen ser aleatorios y la extensión ".note". ¡Haga esto solamente si sincronice sus notas!
-(5) Si tuvo la prudencia de guardar una copia en otro sitio, recupérela y descífrela si hace falta. Y ¡ buen trabajo !
+(2) Las notas nunca debería corromperse, pero parece que ha pasado: fallo eléctrico, error del programa, lo que sea. Si es culpa mía, ¡lo lamento sinceramente! Por favor, haga un informe sobre la experiencia en la lista de correo de Tomboy o en Github. La única manera que tengo de eliminar los problemas es a través de los informes de los usuarios.
+(3) Tomboy-ng le informa de donde se guardan sus notas. Vaya allí con un gestor de archivos y seleccione todos los archivos de notas. Son los archivos con nombres de 36 caracteres que parecen ser aleatorios y la extensión ".note". ¡Haga esto solamente si sincronice sus notas!
+(5) Si guarda una copia en otro sitio, recupérela y desencríptelo la si hace falta. Y ¡ buen trabajo !
 
 
 
 </note-content></text>
-  <last-change-date>2021-01-31T18:51:22.9625858+00:00</last-change-date>
-  <last-metadata-change-date>2021-01-31T18:51:22.9625858+00:00</last-metadata-change-date>
+  <last-change-date>2021-07-20T17:51:10.2211944+00:00</last-change-date>
+  <last-metadata-change-date>2021-07-20T17:51:10.2211944+00:00</last-metadata-change-date>
   <create-date>2018-08-26T14:03:28.1020000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1061</width>
   <height>626</height>
-  <x>127</x>
-  <y>17</y>
+  <x>248</x>
+  <y>20</y>
   <open-on-startup>False</open-on-startup>
 </note>

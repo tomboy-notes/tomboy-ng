@@ -11,6 +11,9 @@ These notes are primarly for my, David's, use and assume that we are using the a
 
 
 
+**debhelper version** Debian Bullseye requires 13, building the PPA on U20.04 requires 12 but because we target  U18.04 for GTK2, must be 11. The PPA for the Qt5 version is 12 because we target Focal as a starting point (U18.04 will not run Qt5 apps easily). Thus we have four control files, sigh ....
+
+
 **Debian Source**
 ========
 Understand that there are two distinct build processes for making a Deb Src. The first, used initially or when releasing a new version of tomboy-ng, involves downloading the tomboy-ng tree from github, making some changes and generating a new .orig file. Then making a .changes and .dsc file. In this model, the resulting package always has a -1 debian suffix.
@@ -65,14 +68,28 @@ Is built on a different VM, U2003mQt
     export PPAVer="PPAv33"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
-    bash ./prepare.ppa -D bionic [-Q]      // the -Q says make a Qt5 version please.
+    bash ./prepare.ppa -D bionic
+    cd tomboy-ng [tab]
+    debuild -S; cd ...
+    
+OK, if all looks OK, go back and upload with
+
+    dput ppa:d-bannon/ppa-tomboy-ng *.changes
+    
+Now, the QT5 version **Important, target focal not bionic**
+
+    cd ..
+    export PPAVer="PPAv33QT"
+    mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
+    bash ./prepare.ppa -D focal -Q      // the -Q says make a Qt5 version [-Q] 
     cd tomboy-ng [tab]
     debuild -S; cd ..
+OK, if all looks OK, go back and upload
+
     dput ppa:d-bannon/ppa-tomboy-ng *.changes
 
-
-(Note, we are not doing the extreame lintian tests, perhaps we should ? )
-
+Did you follow that about versions ?  To target u18.04 we must specify (in control) debhelper 11, in Focal 12, in Bullseye 13.
 
 
 **Building just a tomboy-ng Binary**

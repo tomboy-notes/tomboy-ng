@@ -177,13 +177,15 @@ function DebianPackage () {
 		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl"
 		CTRL_RELEASE="Qt5 release."
 		;;
-	"arm")
-		if [ ! -a "tomboy-ng-arm" ]; then
-			echo "WARNING - arm binary not present"
+	"armhf")
+		if [ ! -f "tomboy-ng-armhf" ]; then
+#			echo "Notice - Arm binary present"
+#		else
+			echo "********* WARNING - arm binary not present ********"
 			return 1
 		fi
-		cp tomboy-ng-arm BUILD/usr/bin/tomboy-ng
-		#CTRL_DEPENDS=""
+		cp tomboy-ng-armhf BUILD/usr/bin/tomboy-ng
+		#CTRL_DEPENDS=""   # just watch I dont need spec :armhf for each dep here
 		CTRL_RELEASE="Raspberry Pi release."
 		;;
 	esac
@@ -211,7 +213,8 @@ function DebianPackage () {
 	echo "Installed-Size: ${SIZE_IN_KB}" >> "BUILD/DEBIAN/control"
 	echo "Depends: $CTRL_DEPENDS" >> BUILD/DEBIAN/control
 	echo "Priority: optional" >> BUILD/DEBIAN/control
-	echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
+	echo "Homepage: https://github.com/tomboy-notes/tomboy-ng/wiki" >> BUILD/DEBIAN/control
+	#echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
 	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. $CTRL_RELEASE" >> BUILD/DEBIAN/control
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
@@ -333,15 +336,19 @@ for BIN in tomboy-ng tomboy-ng32 tomboy-ng32.exe tomboy-ng64.exe tomboy-ng-qt ; 
 DebianPackage "amd64Qt";
 DebianPackage "i386"
 DebianPackage "amd64"
-DebianPackage "arm"
+DebianPackage "armhf"
 
 
 echo "----------------- FINISHED DEBs ver $VERSION ------------"
-ls -l *.deb
+# ls -l *.deb
 DoGZipping
 MkWinPreInstaller
 # ls -ltr
-
-
+fakeroot bash ./mk_rpm.sh
+# echo "OK, if that looks OK, run   fakeroot bash ./mk_rpm.sh"
+# Dont sign under fakeroot, its messy
+echo "OK, we will now sign the RPMs - david, use the longer passphrase !"
+for i in `ls -b *.rpm`; do rpm --addsign "$i"; echo "Signed $i"; done
+ls -l *.rpm *.deb "$WIN_DIR"/*.exe
 
 

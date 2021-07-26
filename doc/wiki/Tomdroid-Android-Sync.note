@@ -28,7 +28,7 @@ Fire up Tomdroid on the device. Touch the Menu (top right), select Settings and 
 
 Now, use the cable to connect the PC to a Android Device. The device will ask you to allow access from the PC to its files.
 
-On your Linux box, go to tomboy-ng's Settings,<italic> Basic Tab</italic>, and tick <italic>Show </italic><underline><italic>Tomdroid Sync</italic></underline>. Note it is experimental. Now,  you should either run a normal (that is, not Tomdroid) sync or take a snapshot, or, better still, both ! Snapshots are easy, Settings, SnapShot Tab, click <italic>Take a Manual Snapshot</italic>. Too Easy !
+On your Linux box, go to tomboy-ng's Settings,<italic> Basic Tab</italic>, and tick <italic>Show </italic><underline><italic>Tomdroid Sync</italic></underline>. Note it is experimental. Now,  you should either run a normal (that is, not Tomdroid) sync or take a snapshot, or, better still, both ! Snapshots are easy, Settings, Recover Tab, click <italic>Take a Manual Snapshot</italic>. Too Easy !
 
 The Main Menu will now have a "Tomdroid" entry. Click it !
 
@@ -85,8 +85,8 @@ The Tomdroid interface is still quite fragile and not good at telling us where i
 
 
 </note-content></text>
-  <last-change-date>2021-02-10T12:45:55.6152612+11:00</last-change-date>
-  <last-metadata-change-date>2021-02-10T12:45:55.6152612+11:00</last-metadata-change-date>
+  <last-change-date>2021-07-21T10:23:46.6137937+10:00</last-change-date>
+  <last-metadata-change-date>2021-07-21T10:23:46.6137937+10:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

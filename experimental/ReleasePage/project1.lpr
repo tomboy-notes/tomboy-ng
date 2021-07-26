@@ -1,5 +1,10 @@
 program project1;
 
+
+{ History
+  23/07/2021  Updated name of arm to amrhf
+}
+
 {$mode objfpc}{$H+}
 
 uses
@@ -154,7 +159,7 @@ begin
                TStringArray.Create('DEB64',    'tomboy-ng_',       '-0_amd64.deb'),
                TStringArray.Create('DEB32',    'tomboy-ng_',       '-0_i386.deb'),
                TStringArray.Create('DEB64QT',  'tomboy-ng_',       '-0_amd64Qt.deb'),
-               TStringArray.Create('DEB32ARM', 'tomboy-ng_',       '-0_arm.deb'),
+               TStringArray.Create('DEB32ARM', 'tomboy-ng_',       '-0_armhf.deb'),
                TStringArray.Create('RPM64',    'tomboy-ng-',       '-2.x86_64.rpm'),
                TStringArray.Create('RPM32',    'tomboy-ng-',       '-2.x86.rpm'),
                TStringArray.Create('RPM64QT',  'tomboy-ngQt-',     '-2.x86_64.rpm'),
