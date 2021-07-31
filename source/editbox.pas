@@ -214,6 +214,7 @@ unit EditBox;
     2021/07/08  Calc now defaults LHS if same numb tokens LHS and RHS
     2021/07/11  SimpleCalc can now handle appearing after a text terminating '.'
     2021/07/17  Pickup Ctrl-N from EditFind.
+    2021/07/31  Ensure a New Note appears middle of the screen.
 }
 
 
@@ -1889,6 +1890,8 @@ begin
     end;
     //debugln('OK, back in EditBox.OnShow');
     if ItsANewNote then begin
+        left := (screen.Width div 2) - (width div 2);
+        top := (screen.Height div 2) - (height div 2);
         CreateDate := '';
         Caption := NoteTitle;
     	KMemo1.Blocks.AddParagraph();
