@@ -338,6 +338,7 @@ type
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
 
         property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
+                            // Does not appear to be implemented
         property ExportPath : ANSIString Read fExportPath write fExportPath;
         // Called after notes are indexed (from SearchUnit), will start auto timer tha
         // controls both AutoSync and AutoSnap. Does nothing in SingleNoteMode.

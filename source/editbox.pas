@@ -215,6 +215,7 @@ unit EditBox;
     2021/07/11  SimpleCalc can now handle appearing after a text terminating '.'
     2021/07/17  Pickup Ctrl-N from EditFind.
     2021/07/31  Ensure a New Note appears middle of the screen.
+    2021/08/07  Fixed a race condition on export MD if dirty.
 }
 
 
@@ -490,9 +491,9 @@ type
         procedure UnsetPrimarySelection;
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
-       // UseOtherFindPrev : boolean;
-        // Set by the calling process.
-        SingleNoteFileName : string;        // Carefull, cli has a real global version
+                        // Set by the calling process. FFN inc path
+                        // Carefull, cli has a real global version
+        SingleNoteFileName : string;
         SingleNoteMode : Boolean;
         NoteFileName : string;              // Will contain the full note name, path, ID and .note
         NoteTitle : string;                 // only used during initial opening stage ?
@@ -1577,47 +1578,61 @@ var
     MDContent : TStringList;
     ExpComm   : TExportCommon;
     FName : string;
+    SleepCount : integer =0;
 begin
-     SaveExport := TSaveDialog.Create(self);
-     SaveExport.DefaultExt := TheExt;
-     if Sett.ExportPath <> '' then
+    if not BusySaving then          // In case a save has just started.
+        SaveTheNote();              // This should return quickly, before save thread is finished.
+    while BusySaving do begin       // So, we wait until BusySaving is clear before proceeding
+        sleep(20);      // 20mS
+        inc(SleepCount);
+        if SleepCount > 1000 then begin               // 20 seconds ? huge note, slow hardware ??
+            showmessage('Excessive delay in saving this note');
+            exit;
+        end;
+    end;
+    SaveExport := TSaveDialog.Create(self);
+    SaveExport.DefaultExt := TheExt;
+    if Sett.ExportPath <> '' then
         SaveExport.InitialDir := Sett.ExportPath
-     else begin
-          {$ifdef UNIX}
-          SaveExport.InitialDir :=  GetEnvironmentVariable('HOME');
-          {$endif}
-          {$ifdef WINDOWS}
-          SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
-          {$endif}
-     end;
-     //debugln('TEditBoxForm.SaveNoteAs Filename 1 = ' + CleanCaption());
-     //debugln('TEditBoxForm.SaveNoteAs Filename 2 = ' + TB_MakeFileName(CleanCaption()));
-     SaveExport.Filename := TB_MakeFileName(CleanCaption());
-     if SaveExport.Execute then begin
-         case TheExt of
-             'txt' : KMemo1.SaveToTXT(SaveExport.FileName);
-             'rtf' :  KMemo1.SaveToRTF(SaveExport.FileName);
-             'md'  : begin
-                        SaveTheNote();
-                        MDContent := TStringList.Create;
-                        ExpComm := TExportCommon.Create;
-                        try
-                            ExpComm.NotesDir := Sett.NoteDirectory;
-                            if SingleNoteMode then
-                                FName := NoteFileName
-                            else FName := ExtractFileNameOnly(NoteFileName);
-                            if ExpComm.GetMDcontent( FName, MDContent) then
-                                MDContent.SaveToFile(SaveExport.FileName)
-                            else showmessage('Failed to convert to MarkDown');
-                        finally
-                            ExpComm.Free;
-                            MDContent.Free;
-                        end;
-                end;
-         end;
-     end;
-     //showmessage(SaveExport.FileName);
-     SaveExport.Free;
+    else begin
+        if SingleNoteMode then
+            SaveExport.InitialDir := ExtractFilePath(SingleNoteFileName)
+        else begin
+            {$ifdef UNIX}
+            SaveExport.InitialDir :=  GetEnvironmentVariable('HOME');
+            {$endif}
+            {$ifdef WINDOWS}
+            SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
+            {$endif}
+        end;
+    end;
+    //debugln('TEditBoxForm.SaveNoteAs Filename 1 = ' + CleanCaption());
+    //debugln('TEditBoxForm.SaveNoteAs Filename 2 = ' + TB_MakeFileName(CleanCaption()));
+    SaveExport.Filename := TB_MakeFileName(CleanCaption());
+    if SaveExport.Execute then begin
+        case TheExt of
+            'txt' : KMemo1.SaveToTXT(SaveExport.FileName);
+            'rtf' :  KMemo1.SaveToRTF(SaveExport.FileName);
+            'md'  : begin
+                    MDContent := TStringList.Create;
+                    ExpComm := TExportCommon.Create;
+                    try
+                        ExpComm.NotesDir := Sett.NoteDirectory;
+                        if SingleNoteMode then
+                            FName := NoteFileName
+                        else FName := ExtractFileNameOnly(NoteFileName);
+                        if ExpComm.GetMDcontent( FName, MDContent) then
+                            MDContent.SaveToFile(SaveExport.FileName)
+                        else showmessage('Failed to convert to MarkDown');
+                    finally
+                        ExpComm.Free;
+                        MDContent.Free;
+                    end;
+            end;
+        end;
+    end;
+    //showmessage(SaveExport.FileName);
+    SaveExport.Free;
 end;
 
 procedure TEditBoxForm.MarkDirty();
@@ -3173,7 +3188,7 @@ var
 
 begin
     if BusySaving then begin
-        ShowMessage('ERROR, unable to save ' + NoteFileName);
+//        ShowMessage('ERROR, unable to save ' + NoteFileName);   // No, don't do that, it stops the process
         exit;
     end;
     T1 := gettickcount64();
