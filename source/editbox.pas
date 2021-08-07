@@ -216,6 +216,7 @@ unit EditBox;
     2021/07/17  Pickup Ctrl-N from EditFind.
     2021/07/31  Ensure a New Note appears middle of the screen.
     2021/08/07  Fixed a race condition on export MD if dirty.
+    2021/08/07  Commented out some code in FormShow thats is unreachable ?? Filename and Template
 }
 
 
@@ -768,8 +769,6 @@ begin
     BulletControl(True, False);
 end;
 
-
-
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
 begin
@@ -1265,14 +1264,6 @@ begin
    SpeedLeftClick(Self);
 end;
 
-(*
-procedure TEditBoxForm.FindDialog1Find(Sender: TObject);
-begin
-    FindIt(FindDialog1.FindText,
-            frDown in FindDialog1.Options, frMatchCase in FindDialog1.Options);
-    // If above returns false, no more to be found, but how to tell user ?
-end;  *)
-
 procedure TEditBoxForm.NewFind(Term : string);      // Public, called from SearchForm
 begin
     EditFind.Text := Term;
@@ -1280,16 +1271,7 @@ begin
     FindIt(Term, 1, true, false);        // no warning about not finding, Find Panel won't be open.
 end;
 
-{
-function TEditBoxForm.GetFindKeyHint() : string;
-begin
-    if UseOtherFindPrev then
-        Result := rsSearchNavHintOther
-    else Result := rsSearchNavHint;
-end; }
-
 const SearchPanelHeight = 39;
-
 
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
 begin
@@ -1377,74 +1359,6 @@ begin
         else SpeedLeftClick(self);
         Key := 0;
     end;
-
-(*
-    if Direction = 1 then begin
-        UpDown1Click(self, btNext);
-        Key := 0;
-        exit;
-	end;
-    if Direction = -1 then begin
-        UpDown1Click(self, btPrev);
-        Key := 0;
-        exit;
-    end;
-    // OK, not a valid search instruction, make sure user has not hit Return
-
-
-
-
-
-    if ([] = shift) and (Key = VK_F3)) then  begin
-                UpDown1Click(self, btNext);
-                exit;
-	end;
-    if ({$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) and       // That is ctrl only
-            ((Key = VK_RETURN) or (Key = VK_G)) then begin
-                UpDown1Click(self, btNext);
-                exit;
-	end;
-    if ([ssAlt] = Shift) and (Key = VK_RETURN) then begin                 // Alt-Enter
-                UpDown1Click(self, btPrev);
-                exit;
-	end;
-    if ([ssShift] = Shift) and (Key = VK_F3) then begin                 // Shift F3
-                UpDown1Click(self, btPrev);
-                exit;
-	end;
-        if ([ssCtrl, ssShift] = Shift) and (Key = VK_G) then begin      // Ctrl-Shift-G
-                UpDown1Click(self, btPrev);
-                exit;
-	end;
-
-
-
-
-    if SSShift in Shift then begin
-        if Key in [ VK_RETURN, VK_F3 ] then begin
-
-		end;
-	end;
-
-
-    if (Key = VK_RETURN) {and (EditFind.Text <> rsMenuSearch)} then begin
-        Key := 0;                             // Eat it
-        if {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift then begin
-            UpDown1Click(self, btNext);
-            exit;
-        end;
-        if [ssAlt] = Shift then begin                    // Alt (ie Option) Enter is OK on Mac too.
-              UpDown1Click(self, btPrev);
-              exit;
-        end;
-
-    if Key = VK_RETURN then begin// Its just an Enter, tell user wrong key !
-        LabelFindCount.caption := '';
-        if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
-            LabelFindInfo.Caption := {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif}
-        else LabelFindInfo.Caption := ' ' + {$ifdef DARWIN}rsSearchNavHintMac {$else} rsSearchNavHint {$endif};
-        EditFind.SetFocus;
-    end;   *)
 end;
 
 procedure TEditBoxForm.EditFindChange(Sender: TObject);
@@ -1483,30 +1397,6 @@ begin
    end;
    KMemo1.setfocus;
 end;
-
-(*
-procedure TEditBoxForm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
-var
-    Res : Boolean = false;
-begin
-    if Button = btNext then
-        Res := FindIt(EditFind.Text, KMemo1.SelStart+1, true, False)
-    else
-        Res := FindIt(EditFind.Text, KMemo1.SelStart, False, False);
-    if Res then LabelFindInfo.Caption := ''
-    else begin
-        LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
-        NumbFindHits := 0;
-        LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
-    end;
-    KMemo1.setfocus;
-end;
-
-procedure TEditBoxForm.UpDown1Enter(Sender: TObject);
-begin
-    EditFind.SetFocus;
-end;                        *)
-
 
 { ------- S T A N D A R D    E D I T I N G    F U N C T I O N S ----- }
 
@@ -1557,20 +1447,7 @@ end;
 procedure TEditBoxForm.MenuItemExportMarkdownClick(Sender: TObject);
 begin
     SaveNoteAs('md');
-//  FormMarkDown.TheKMemo := KMemo1;
-//  FormMarkDown.Caption:= CleanCaption();
-//  FormMarkDown.Show;
 end;
-
-
- {               // Gets sent a string that is converted into something suitable to use as base filename
-function TEditBoxForm.MakeFileName(const Candidate : string) : string;
-begin
-   Result := StringReplace(Candidate, #32, '', [rfReplaceAll]);
-   Result := StringReplace(Result, '/', '_', [rfReplaceAll]);
-   Result := StringReplace(Result, '\', '_', [rfReplaceAll]);
-   Result := StringReplace(Result, '*', '_', [rfReplaceAll]);
-end; }
 
 procedure TEditBoxForm.SaveNoteAs(TheExt : string);
 var
@@ -1895,14 +1772,16 @@ begin
 			    NoteTitle := NewNoteTitle();
             ItsANewNote := True;
 	    end else begin
-	        Caption := NoteFileName;
+            Caption := NoteFileName;
      	    ImportNote(NoteFileName);		// also sets Caption and Createdate
-            if TemplateIs <> '' then begin              // ToDo : No, wrong, we now make the new note from the template and index
-                NoteFilename := '';                     // it all before we call show here. So, this code maybe is redundent ?
-                NoteTitle := NewNoteTitle();            // and maybe there is an issue if a new note is created just to be a member ?
+(*            if TemplateIs <> '' then begin
+                // What is this block for ? Why would we get a notefilename AND a Template ?   Aug 2021
+                NoteFilename := '';
+                NoteTitle := NewNoteTitle();
                 ItsANewNote := True;
-		    end;
-    end;
+                writeln('********* Editbox detected TemplateIs and NoteFileName ***********');
+		    end;       *)
+        end;
     //debugln('OK, back in EditBox.OnShow');
     if ItsANewNote then begin
         left := (screen.Width div 2) - (width div 2);
@@ -3184,14 +3063,14 @@ var
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    T1, T2, T3, T4, T5{, T6, T7} : qword;            // Timing shown is for One Large Note.
+    // T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
     if BusySaving then begin
 //        ShowMessage('ERROR, unable to save ' + NoteFileName);   // No, don't do that, it stops the process
         exit;
     end;
-    T1 := gettickcount64();
+    //T1 := gettickcount64();
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
@@ -3224,11 +3103,11 @@ begin
 	end;
     Caption := Title;
     KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
-    T2 := GetTickCount64();
+    //T2 := GetTickCount64();
     SL := TStringList.Create();
     try
         Saver.ReadKMemo(NoteFileName, Title, KMemo1, SL);       // Puts all the content into the StringList, SL
-        T3 := GetTickCount64();
+        //T3 := GetTickCount64();
     finally
         KMemo1.Blocks.UnLockUpdate;
         if Saver <> Nil then Saver.Destroy;
@@ -3248,18 +3127,19 @@ begin
     end else
         Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
 
-    T4 := GetTickCount64();
+    //T4 := GetTickCount64();
     if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
-    T5 := GetTickCount64();
+    //T5 := GetTickCount64();
 
 		// T6 := GetTickCount64();
     {    debugln('Save Note Initial=' + inttostr(T2-T1) + ' ReadMemo=' + inttostr(T3-T2)
                 + ' MenuUpDate=' + Inttostr(T4-T3) + ' Normalise_Save=' + inttostr(T5-T4));     }
+    (*
     {$ifdef SAVETHREAD}
     debugln('Total time to save threaded is ' + inttostr(T5-T1));
     {$else}
     debugln('Total time to save UN-threaded is ' + inttostr(T5-T1));
-    {$endif}
+    {$endif}      *)
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;

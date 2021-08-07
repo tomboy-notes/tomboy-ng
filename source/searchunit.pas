@@ -173,19 +173,14 @@ type        { TSearchForm }
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuRenameNoteBookClick(Sender: TObject);
+                        // Rather than opening an empty note we copy the template.
+                        // save it, index it and pass the filename to OpenNote(
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
         procedure SpeedButton1Click(Sender: TObject);
-        // procedure StringGrid1KeyPress(Sender: TObject; var Key: char);
-        // procedure StringGrid1Resize(Sender: TObject);
-		//procedure StringGridNotebooksClick(Sender: TObject);
-        // procedure StringGrid1DblClick(Sender: TObject);
-
         { Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
-        //procedure StringGridNotebooksPrepareCanvas(sender: TObject; aCol, aRow: Integer; aState: TGridDrawState);
-        //procedure StringGridNotebooksResize(Sender: TObject);
     private
         HelpList : TStringList;
         NeedRefresh : boolean;
@@ -1132,13 +1127,16 @@ begin
     {$endif}
 end;
 
-
-
-
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
                             TemplateIs: AnsiString; BackUp: boolean; InSearch: boolean);
 // Everything except the first parameter is optional, take care !
 // Might be called with no Title (NewNote) or a Title with or without a Filename
+// When called from EditBox, we may pass a Notebook Name, if its a new note that
+// notebook will be associated with the new note. Otherwise, ANY request for a new
+// note while a notebook is selected in SeachForm will assign the notebook to note.
+
+// If we choose NewNoteFromTemplate TemplateIs is NOT set because we create the note
+// and pass its filename into here. It already has its templale associated.
 var
     EBox : TEditBoxForm;
     NoteFileName : string;
@@ -1168,24 +1166,20 @@ begin
         end;
     end;
     // if to here, we need open a new window. If Filename blank, its a new note
-    if (NoteFileName = '') and (NoteTitle ='') and (ListBoxNotebooks.ItemIndex > -1) then  // a new note with notebook selected.
-       //TemplateIs := StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
-        TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
+    // If we already have a template (ie notebook) then ignore the SearchForm notebook selection
+    if (TemplateIs = '')
+        and (NoteFileName = '') and (NoteTitle ='')
+        and (ListBoxNotebooks.ItemIndex > -1) then  // a new note with notebook selected.
+            TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
 	EBox := TEditBoxForm.Create(Application);
-{    if (NoteFileName <> '') and (NoteTitle <> '') and (Edit1.Text <> '') and (Edit1.Text <> rsMenuSearch) then
-        // Looks like we have a search in progress, lets take user there when note opens.
-        EBox.SearchedTerm := Edit1.Text
-    else  }
-        EBox.SearchedTerm := '';
+    EBox.SearchedTerm := '';
     EBox.NoteTitle:= NoteTitle;
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
     EBox.Show;
     // if we have a NoteFileName at this stage, we just opened an existing note.
-
     if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
         EBox.NewFind(Edit1.Text);
-
     if (NoteFileName <> '') and BackUp  then
         BackupNote(NoteFileName, 'opn');
     EBox.Dirty := False;
@@ -1381,14 +1375,7 @@ begin
             + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])),
         '', '');
 
-    // ToDo : this does not use the template !
-    // Instead, copy the template, give it a new ID, remove the line -
-    //     <tag>system:template</tag>
-    // and, somehow, alter the title.
-    {  TemplateFFN := Sett.NoteDirectory + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
 
-
-    }
 end;
 
 procedure TSearchForm.SpeedButton1Click(Sender: TObject);        // ToDo : is this still needed
@@ -1402,7 +1389,7 @@ function TSearchForm.MakeNoteFromTemplate(const Template : String) : string;
 var
     InFile, OutFile: TextFile;
     InString : String;
-    Start, Finish : integer;
+    //Start, Finish : integer;
     GUID : TGUID;
     RandBit, NewGUID : string;
 begin

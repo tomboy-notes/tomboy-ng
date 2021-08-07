@@ -509,7 +509,7 @@ begin
 procedure TMainForm.FormShow(Sender: TObject);
 var
     NoteID, NoteTitle : string;
-    Lab : TLabel;
+    {$ifndef LCLGTK2}Lab : TLabel; {$endif}
 begin
     TestDarkThemeInUse();
     {$ifndef LCLGTK2}               // GTK2 seems only one we can be sure is auto colours !
