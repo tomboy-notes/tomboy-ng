@@ -103,6 +103,8 @@ unit SearchUnit;
     2021/02/11  Some debugs around Ctrl-Q, to be removed and make two listboxes respond to Ctrl-N
     2021/02/14  Direct all key down events via Form's OnKeyDown handler Ctrl-N and Ctrl-Q
     2021/07/05  UpDateList now only refreshes menu if item on top has changed
+    2021/08/02  Use Template when creating new note from Template. Sigh ....
+                And don't update notelister (and menus) if its a Notebook thats been edited.
 }
 
 {$mode objfpc}{$H+}
@@ -196,6 +198,7 @@ type        { TSearchForm }
         procedure FileMenuClicked(Sender: TObject);
 
         procedure InitialiseHelpFiles();
+        function MakeNoteFromTemplate(const Template: String): string;
                                 // clears then Inserts file items in all main menus, note also removes help items ....
         procedure MenuFileItems(AMenu: TPopupMenu);
         procedure MenuHelpItems(AMenu: TPopupMenu);
@@ -288,7 +291,8 @@ uses MainUnit,      // Opening form, manages startup and Menus
     process,        // Linux, we call wmctrl to move note to current workspace
     TomdroidFile,
     LCLVersion,     // used to enable, or not, sort indicators in lcl2.0.8 or later
-    NoteBook;
+    NoteBook,
+    tb_utils;
 
 
 
@@ -449,11 +453,19 @@ var
     NeedUpdateMenu : boolean;                   // Updating the menu can be a bit slow.
 begin
     if NoteLister = Nil then exit;				// we are quitting the app !
+    // We don't do any of this if the its a notebook.
+    if NoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
+
     NeedUpDateMenu :=  (Title <> NoteLister.GetTitle(noteLister.Count()-1));
+
   	// Can we find line with passed file name ? If so, apply new data.
     //T1 := gettickcount64();
+
+
+    // ToDo : do not call AlterNote if its a Notebook we have here .......
+
+
 	if not NoteLister.AlterNote(ExtractFileNameOnly(FullFileName), LastChange, Title) then begin
-        // DebugLn('Assuming a new note ', FullFileName, ' [', Title, ']');
         NoteLister.AddNote(ExtractFileNameOnly(FullFileName)+'.note', Title, LastChange);
 	end;
     //T2 := gettickcount64();
@@ -1364,15 +1376,73 @@ end;
 
 procedure TSearchForm.MenuNewNoteFromTemplateClick(Sender: TObject);
 begin
-    OpenNote('', '', '');
+    OpenNote(
+        MakeNoteFromTemplate(Sett.NoteDirectory
+            + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])),
+        '', '');
+
+    // ToDo : this does not use the template !
+    // Instead, copy the template, give it a new ID, remove the line -
+    //     <tag>system:template</tag>
+    // and, somehow, alter the title.
+    {  TemplateFFN := Sett.NoteDirectory + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
+
+
+    }
 end;
 
-procedure TSearchForm.SpeedButton1Click(Sender: TObject);
+procedure TSearchForm.SpeedButton1Click(Sender: TObject);        // ToDo : is this still needed
 begin
     // note - image is 24x24 tpopupmenu.png from lazarus source
     MainForm.PopupMenuSearch.PopUp;
 end;
 
+// Copy Template to a new name removing the <tag>system:template</tag> and setting a Title
+function TSearchForm.MakeNoteFromTemplate(const Template : String) : string;
+var
+    InFile, OutFile: TextFile;
+    InString : String;
+    Start, Finish : integer;
+    GUID : TGUID;
+    RandBit, NewGUID : string;
+begin
+    Result := '';
+    CreateGUID(GUID);
+    NewGUID := copy(GUIDToString(GUID), 2, 36);
+    RandBit := copy(NewGUID, 1, 4);                 // To add to template name initially
+    AssignFile(InFile, Template);
+    AssignFile(OutFile, Sett.NoteDirectory + NewGUID + '.note');
+    try
+        try
+            Reset(InFile);
+            Rewrite(OutFile);
+            while not eof(InFile) do begin
+                readln(InFile, InString);
+                if (Pos('<tag>system:template</tag>', InString) > 0) then       // skip line
+                    continue;
+                if (Pos('<title>', InString) > 0) then
+                        InString := InString.Replace('Template', RandBit, [rfReplaceAll]);
+                // Now, this might be the same line as above. <note-content version="0.3">
+                // but it might be 0.1 or 0.2 even. Possible (in gnote) that this line
+                // also contains note content, bad if it has the word 'Template' ....
+                if (Pos('<note-content version="', InString) > 0) then
+                        InString := InString.Replace('Template', RandBit, [rfReplaceAll]);
+                writeln(OutFile, InString);
+            end;
+        finally
+            CloseFile(OutFile);
+            CloseFile(InFile);
+        end;
+        NoteLister.IndexThisNote(NewGUID);
+        result := GetTitleFromFFN(Sett.NoteDirectory + NewGUID + '.note', false);
+        ButtonRefresh.Enabled := true;
+    except
+        on E: EInOutError do begin
+                debugln('File handling error occurred making new note from template. Details: ' + E.Message);
+                exit('');
+            end;
+    end;
+end;
 
 end.
 

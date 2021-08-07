@@ -11,6 +11,8 @@ unit Note_Lister;
 	internally, sorted by date. Note details (
     Title, LastChange) can be updated (eg when a note is saved).
 
+    Templates are not added to the list.
+
     The newest notes are at the end, highest index so, when searching for things
     should start at the end and work backwards, lots of little changes needed to do that ...
 
@@ -167,6 +169,8 @@ type
 
                                 // Indexes one note. Always multithread mode but sometimes its only one thread.
                                 // Does require CriticalSection to be setup before calling.
+                                // If note turns out to be a template, don't add it to main note list
+                                // but still call Notebook.add to ensure its mentioned in notebook list.
     procedure GetNoteDetails(const Dir, FileName: ANSIString; DontTestName: boolean; TheLister : TNoteLister);
 
                                 // Inserts a new item into the ViewList, always Title, DateSt, FileName
@@ -240,10 +244,6 @@ type
                                           we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
                                           GetNotes(Term) }
     procedure LoadListNotebooks(const NotebookItems: TStrings; SearchListOnly: boolean);
-                                        { Loads the Notebook StringGrid up with the Notebook names we know about. Add a bool to indicate
-                                          we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
-                                          GetNotes(Term) }
-    //procedure LoadStGridNotebooks(const NotebookGrid: TStringGrid; SearchListOnly: boolean);
                                         { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
     		                            { Read the metadata from all the notes into internal data structure,
@@ -260,8 +260,8 @@ type
    	procedure LoadStGrid(const Grid: TStringGrid; NoCols: integer;  SearchMode: boolean=false);
                                         { Copy the internal Note Data to passed TStrings }
     procedure LoadStrings(const TheStrings : TStrings);
-    		                            { Returns True if its updated the internal record as indicated,
-                                          will accept either an ID or a filename. }
+    		                            // Returns True if its updated the internal record as indicated,
+                                        // will accept either an ID or a filename. Do NOT pass a Notebook ID !}
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
 
     function IsThisATitle(const Title : ANSIString) : boolean;

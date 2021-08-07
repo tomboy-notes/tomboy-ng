@@ -14,7 +14,7 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object Edit1: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
@@ -25,7 +25,7 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 324
+    Width = 326
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 9
@@ -269,10 +269,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = CheckAutoRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 439
+    Left = 441
     Height = 32
     Top = 3
-    Width = 127
+    Width = 126
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Case Sensitive'
@@ -294,10 +294,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 576
+    Left = 577
     Height = 32
     Top = 3
-    Width = 118
+    Width = 117
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Auto Refresh'

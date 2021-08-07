@@ -1882,9 +1882,9 @@ begin
 	    end else begin
 	        Caption := NoteFileName;
      	    ImportNote(NoteFileName);		// also sets Caption and Createdate
-            if TemplateIs <> '' then begin
-                NoteFilename := '';
-                NoteTitle := NewNoteTitle();
+            if TemplateIs <> '' then begin              // ToDo : No, wrong, we now make the new note from the template and index
+                NoteFilename := '';                     // it all before we call show here. So, this code maybe is redundent ?
+                NoteTitle := NewNoteTitle();            // and maybe there is an issue if a new note is created just to be a member ?
                 ItsANewNote := True;
 		    end;
     end;
@@ -3212,12 +3212,11 @@ begin
     T2 := GetTickCount64();
     SL := TStringList.Create();
     try
-        Saver.ReadKMemo(NoteFileName, Title, KMemo1, SL);
+        Saver.ReadKMemo(NoteFileName, Title, KMemo1, SL);       // Puts all the content into the StringList, SL
         T3 := GetTickCount64();
     finally
         KMemo1.Blocks.UnLockUpdate;
         if Saver <> Nil then Saver.Destroy;
-
         Caption := CleanCaption();
     end;
     Loc.Width:=inttostr(Width);

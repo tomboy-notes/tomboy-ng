@@ -39,6 +39,9 @@ unit tb_utils;
   HISTORY :
   2021/01/29  Added TB_MakeFileName
   2021/05/11  FindInStringList was not checking last line of list
+  2021/07/30  Added some methods from TT_Utils, need to merge back to TB-NG
+  2021/07/31  A fix to ensure that </note-content> is removed with metadata
+  2021/08/02  Merged back here from TomboyTools.
 }
 
 
@@ -81,9 +84,22 @@ function RemoveXml(const St : AnsiString) : AnsiString;
                         // Returns (0-x) index of string that contains passed term, -1 if not present
 function FindInStringList(const StL : TStringList; const FindMe : string) : integer;
 
+                        // Passed  FFN, thats <path><ID><.note> and returns the Title, munge indicates
+                        // make it suitable for use as a file name, an empty ret string indicates error
+function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer}): string;
+
+                        // Remove all content up to and including <note-content ...> and all content
+                        // including and after </note-content>.  Because we cannot guarantee that these
+                        // lines are on their own, we will need to poke into individual lines.
+                        // Maybe tolerant of gnote format.
+procedure RemoveNoteMetaData(STL : TStringList);
+
+procedure SayDebugSafe(st: string);
+
 implementation
 
-uses dateutils, LazLogger {$ifdef LINUX}, Unix {$endif} ;          // We call a ReReadLocalTime();
+uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
+        laz2_DOM, laz2_XMLRead;
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
@@ -328,7 +344,79 @@ begin
 	result := -1;
 end;
 
+procedure SayDebugSafe(st: string);
+begin
+    {$ifdef LCL}Debugln{$else}writeln{$endif}(St);
+end;
 
+function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer}): string;
+var
+    Doc : TXMLDocument;
+    Node : TDOMNode;
+//    Index : integer = 1;
+begin
+    if not FileExists(FFN) then begin
+        SayDebugSafe('ERROR : File does not exist = '  + FFN);
+        exit('');
+	end;
+	ReadXMLFile(Doc, FFN);
+    try
+        Node := Doc.DocumentElement.FindNode('title');
+        result := Node.FirstChild.NodeValue;
+    finally
+        Doc.free;
+    end;
+    if Munge then
+        Result := TB_MakeFileName(Result);
+
+{    begin
+        // remove char that don't belong in a file name
+        while Index <= length(Result) do begin
+                if Result[Index] in [ ' ', ':', '.', '/', '\', '|', '"', '''' ] then begin
+                    Result[Index] := '_';
+                end;
+
+                inc(Index);
+        end;
+        Result := copy(Result, 1, 42);      // Because 42 is the meaning of life
+	end;  }
+    if Result = '' then SayDebugSafe('Title not found' + FFN);
+    //LenTitle := length(Result);
+end;
+
+
+// Remove all content up to and including <note-content ...> and all content
+// including and after </note-content>.  Because we cannot guarantee that these
+// lines are on their own, we will need to poke into individual lines.
+procedure RemoveNoteMetaData(STL : TStringList);
+var
+    Index, CutOff : integer;
+    St : string;
+begin
+    // First, the trailing end.
+    Index := FindInStringList(StL, '</note-content>');       // this is the line its on but we may have content on the same line
+    St := Stl[Index];
+    CutOff := pos('</note-content>', St);
+    if CutOff <> 1 then begin
+        delete(St, CutOff, 1000);
+        STL.Delete(Index);
+        STL.Insert(Index, St);
+        inc(Index);
+    end;
+    // Now Get rid of the remainder.
+    while Index < StL.Count do StL.Delete(Index);
+    // OK, now the start of the list
+    Index := FindInStringList(StL, '<note-content');
+    while Index > 0 do begin
+        STL.Delete(0);
+        dec(Index);
+    end;
+    St := STL[0];
+    CutOff := St.IndexOf('>', St.IndexOf('<note-content')) +1;      // Zero based index !
+    delete(St, 1, CutOff);
+    STL.Delete(0);
+    STL.Insert(0, St);
+end;
 
 
 
