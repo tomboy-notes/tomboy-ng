@@ -34,16 +34,17 @@ begin
     Application.Initialize;
 
     if ContinueToGUI then begin
-        Application.CreateForm(TMainForm, MainForm);
-        Application.CreateForm(TSett, Sett);
-        Application.CreateForm(TSearchForm, SearchForm);
-        Application.CreateForm(TFormSync, FormSync);
+    Application.CreateForm(TMainForm, MainForm);
+    Application.CreateForm(TSett, Sett);
+    Application.CreateForm(TSearchForm, SearchForm);
+    Application.CreateForm(TFormSync, FormSync);
+    Application.CreateForm(TFormTomdroidFile, FormTomdroidFile);
+    Application.CreateForm(TFormSyncError, FormSyncError);
+    Application.CreateForm(TFormColours, FormColours);
+    Application.CreateForm(TFormRollBack, FormRollBack);
         {$ifdef LINUX}
 		Application.CreateForm(TFormTomdroidFile, FormTomdroidFile);
         {$endif}
-        Application.CreateForm(TFormSyncError, FormSyncError);
-        Application.CreateForm(TFormColours, FormColours);
-		Application.CreateForm(TFormRollBack, FormRollBack);
         // Application.CreateForm(TNoteBookPick, NoteBookPick);
         // Application.CreateForm(TFormSpell, FormSpell);
         // Application.CreateForm(TEditBoxForm, EditBoxForm);

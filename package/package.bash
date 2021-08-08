@@ -27,8 +27,9 @@ MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
 MANUALS=`cat note-files`
 
 BUILDOPTS=" -B --quiet --quiet"
-# BUILDOPTS=" -B --quiet"
+# BUILDOPTS=" -B --verbose"
 BUILDDATE=`date -R`
+LPI="Tomboy_NG.lpi"
 LAZ_FULL_DIR="$1"
 LAZ_DIR=`basename "$LAZ_FULL_DIR"`
 WIN_DIR=WinPre_"$VERSION"
@@ -69,61 +70,69 @@ function LookForBinary () {
 	cd "../package"
 }
 
-# Build four binaries. Note that build-mode must be one already defined
-# typically in the IDE.
-# Lazbuild expects cpu=[x86_64, i386], we don't build the arm one here. 
-# For now, I build the arm binary on site.
-
-function BuildIt () {
-	cd $SOURCE_DIR
-	echo "Building Qt5 x86_64 Linux"
-	rm -f tomboy-ng-qt
-#	if [ "$LEAKCHECK" == "YES" ]; then
-#		LAZMODE="LeakCheckLin64"
-#	else
-		LAZMODE="QT5"
-#	fi
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="x86_64" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
-	echo "Building x86_64 Linux"
-	rm -f tomboy-ng
-	if [ "$LEAKCHECK" == "YES" ]; then
-		LAZMODE="LeakCheckLin64"
-	else
-		LAZMODE="Release"
-	fi
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="x86_64" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
-	echo "Building i386 Linux"
-	if [ "$LEAKCHECK" == "YES" ]; then
-		LAZMODE="LeakCheckLin32"
-	else
-		LAZMODE="ReleaseLin32"
-	fi
-	rm -f tomboy-ng32
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="i386" --build-mode="$LAZMODE" --os="linux" Tomboy_NG.lpi
-	echo "Building x86_64 Windows"
-	rm -f tomboy-ng64.exe
-	if [ "$LEAKCHECK" == "YES" ]; then
-		LAZMODE="LeakCheckWin64"
-	else
-		LAZMODE="ReleaseWin64"
-	fi	
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="x86_64" --build-mode="$LAZMODE" --os="win64" Tomboy_NG.lpi
-	echo "Building i386 Windows"
-	rm -f tomboy-ng32.exe
-	if [ "$LEAKCHECK" == "YES" ]; then
-		LAZMODE="LeakCheckWin32"
-	else
-		LAZMODE="ReleaseWin32"
-	fi	
-	TOMBOY_NG_VER="$VERSION" "$LAZ_FULL_DIR"/lazbuild $BUILDOPTS --pcp="$LAZ_CONFIG" --cpu="i386" --build-mode="$LAZMODE" --os="win32" Tomboy_NG.lpi
-	echo "------------- FINISHED BUILDING -----------------"
-	# ls -l tomboy-ng*
-	cd ../package
-}	
+function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch ReleaseLin64)
+    case $1 in              # Only useful in debian packaging
+        ReleaseLin64)
+            echo "amd64"
+        ;;
+        ReleaseLin32)
+            echo "i386"
+        ;;
+        ReleaseQT5)
+            echo "amd64Qt"
+        ;;
+        ReleaseRasPi)
+            echo "$PRODUCT"-armhf
+        ;;
+    esac
+}
 
 
+function ModeParamBin () { # expects to be called like   BIN=$(ModeParam ReleaseWin64)
+    case $1 in
+        ReleaseLin64)
+            echo "$PRODUCT"-64
+        ;;
+        ReleaseLin32)
+            echo "$PRODUCT"-32
+        ;;
+        ReleaseWin32)
+            echo "$PRODUCT"-32.exe
+        ;;
+        ReleaseWin64)
+            echo "$PRODUCT"-64.exe
+        ;;
+        ReleaseQT5)
+            echo "$PRODUCT"-qt-64
+        ;;
+        ReleaseRasPi)
+            echo "$PRODUCT"-armhf
+        ;;
+    esac
+}
 
-function DebianPackage () {
+# Modes (as defined in IDE) ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5
+
+function BuildAMode () {
+    echo "------------- Building Mode $1 --------"
+    cd ../source
+    BIN=$(ModeParamBin "$1")
+    rm -f "$BIN"
+    #CMD="TOMBOY_NG_VER=$VERSION $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
+    #echo "CMD is $CMD"
+    TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" "$LPI"
+    if [ ! -f "$BIN" ]; then
+	    echo "----- $1 ERROR failed to build $BIN ---------"
+	    echo "$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
+	   exit
+    fi	 
+    cd ../package
+}
+
+
+
+
+function DebianTemplate () {        # the common to all versions things
 	# We build a debian tree in BUILD and call dpkg-deb -b 
 	#  BUILD/DEBIAN control,debian-binary and any scripts
 	rm -rf BUILD
@@ -134,13 +143,9 @@ function DebianPackage () {
 		mkdir -p "BUILD/usr/share/icons/hicolor/$i/apps";
 		cp "$ICON_DIR/$i.png" "BUILD/usr/share/icons/hicolor/$i/apps/$PRODUCT.png";
 	done;
-	#echo "------------- Done icons"
 	mkdir -p BUILD/usr/share/doc/$PRODUCT
-	#echo "------------- Done 1"
 	cp ../doc/authors BUILD/usr/share/doc/$PRODUCT/.
-	#echo "------------- Done 2"
 	cp -R ../doc/HELP BUILD/usr/share/"$PRODUCT"/.
-	#echo "------------- Done 3"
 	# -------------- Translation Files
 	# we end up with, eg, /usr/share/locale/es/LC_MESSAGES/tomboy-ng.mo
 	# and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
@@ -161,48 +166,36 @@ function DebianPackage () {
 	mkdir -p BUILD/usr/share/man/man1
 	gzip -9kn ../doc/$PRODUCT.1
 	mv ../doc/$PRODUCT.1.gz BUILD/usr/share/man/man1/.
-	CTRL_ARCH="$1"
+	cp ../debian/copyright BUILD/usr/share/doc/"$PRODUCT"/.
+}
+
+
+function DebianPackage () {
+    rm -Rf BUILD
+    DebianTemplate
+    ARCH=$(ModeParamArch "$1")
+    BIN=$(ModeParamBin "$1")
+    CTRL_ARCH=$ARCH
 	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl"
 	CTRL_RELEASE="GTK2 release."
+	cp $SOURCE_DIR/$BIN BUILD/usr/bin/$PRODUCT
+	# ----------- Some Special Cases ----------------
 	case "$1" in
-	"amd64")
-		cp $SOURCE_DIR/tomboy-ng BUILD/usr/bin/tomboy-ng	
-		;;
-	"i386")
-		cp $SOURCE_DIR/tomboy-ng32 BUILD/usr/bin/tomboy-ng
-		;;
 	"amd64Qt")
-		cp $SOURCE_DIR/tomboy-ng-qt BUILD/usr/bin/tomboy-ng
 		CTRL_ARCH="amd64"
 		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl"
 		CTRL_RELEASE="Qt5 release."
 		;;
 	"armhf")
-		if [ ! -f "tomboy-ng-armhf" ]; then
-#			echo "Notice - Arm binary present"
-#		else
-			echo "********* WARNING - arm binary not present ********"
-			return 1
-		fi
-		cp tomboy-ng-armhf BUILD/usr/bin/tomboy-ng
-		#CTRL_DEPENDS=""   # just watch I dont need spec :armhf for each dep here
 		CTRL_RELEASE="Raspberry Pi release."
 		;;
 	esac
 	chmod 755 BUILD/usr/bin/tomboy-ng
-	# -------------------- Documents -----------------
-	echo "tomboy-ng ($VERSION)  unstable;  urgency=medium" >> "$MANUALS_DIR"changelog
-	echo "  * Initial release" >> "$MANUALS_DIR"changelog
-	echo "-- $WHOAMI  $BUILDDATE" >> "$MANUALS_DIR"changelog
+	# -------------------- Changelog -----------------
+	cp ../debian/changelog "$MANUALS_DIR"changelog
+	DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog -v "$VERSION" -D unstable --force-distribution "Release of new version"    
+	DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "Please see github for change details"
 	gzip -9n "$MANUALS_DIR"changelog
-        # See https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#file-syntax
-	echo "Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/" > BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Name: $PRODUCT" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Maintainer: $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Source: https://github.com/tomboy-notes/tomboy-ng" >> BUILD/usr/share/doc/$PRODUCT/copyright	
-	echo "License: GPL-3.0-or-later" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	echo "Copyright: 2017-2019 $WHOAMI" >> BUILD/usr/share/doc/$PRODUCT/copyright
-	chmod -R g-w BUILD
     	# -------------------------------- Make control file -------------------------
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
 	echo "Version: $VERSION" >> BUILD/DEBIAN/control
@@ -218,59 +211,57 @@ function DebianPackage () {
 	echo "Section: x11" >> BUILD/DEBIAN/control
 	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. $CTRL_RELEASE" >> BUILD/DEBIAN/control
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
-  	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_$1.deb"
+	
+	chmod -R g-w BUILD
+  	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_"$ARCH".deb"
 	# --------------------------------- Clean up -----------
-	rm -Rf BUILD
+#	rm -Rf BUILD
 }
 
 function WriteZipReadMe () {
 	RM="$1/readme.txt"
 	echo "This is a tar ball of $PRODUCT $VERSION for Linux. Use this if you cannot use" > "$RM"
 	echo "either the deb or rpm on your particular distribution. It contains some of the" >> "$RM"
-	echo "files you need but does not really install them nor does it resolve dependancies." >> "$RM"
+	echo "files you need but does not install them nor does it resolve dependancies." >> "$RM"
 	echo "Its assumed you know what you are doing." >> "$RM"
 	echo "* Files and features not provided here include -" >> "$RM"
 	echo "* Language other than English" >> "$RM"
 	echo "* tomboy-ng help files" >> "$RM"
 	echo "* Ability to have tomboy-ng set itself to autostart" >> "$RM"
 	echo "Dependencies include libgtk2.0-0, libcanberra-gtk-module, wmctrl." >> "$RM"
+	echo "  or, in the Qt5 version, libqt5pas1" >> $RM
 	echo "If you need help, please post specific question to tomboy-ng github issues." >> "$RM"
 }
 
+
+
 function DoGZipping {
-	# Note windows cannot handle gzip'ed files, use zip.
+	BIN=$(ModeParamBin "$1")
+	ARCH=$(ModeParamArch "$1")
         GZIP_DIR="$PRODUCT"-"$VERSION"
-	rm -f *.tgz
-	for TBVer in tomboy-ng32 tomboy-ng; do
-		rm -Rf "$GZIP_DIR"	
-		mkdir "$GZIP_DIR"
-		cp "$SOURCE_DIR"/"$TBVer" "$GZIP_DIR"/"$PRODUCT"
-		for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
-			cp "$ICON_DIR/$i.png" "$GZIP_DIR/$i.png"
-		done;
-		cp "$ICON_DIR/install-local.bash" "$GZIP_DIR/install-local.bash"
-		cp "$ICON_DIR/$PRODUCT.desktop" "$GZIP_DIR/$PRODUCT.desktop"
-		gzip -9kn ../doc/$PRODUCT.1
-		mv ../doc/$PRODUCT.1.gz "$GZIP_DIR"/.
-		WriteZipReadMe "$GZIP_DIR"
-		tar czf "$TBVer"-"$VERSION".tgz "$GZIP_DIR"
-		#if [ "$TBVer" = "tomboy-ng32" ]; then
-		#	mv "$GZIP_DIR".gz "$PRODUCT"_32_$VERSION.gz"
-		#else
-		#	mv "$GZIP_DIR".gz "$PRODUCT"_64_$VERSION.gz"
-		#fi
-		echo "made one gz file -----------------------"
-		# ---------- Clean Up --------------
-		rm -Rf "$GZIP_DIR"	
+#	rm -f *.tgz
+#	for TBVer in tomboy-ng32 tomboy-ng; do
+	rm -Rf "$GZIP_DIR"	
+	mkdir "$GZIP_DIR"
+	cp "$SOURCE_DIR"/"$BIN" "$GZIP_DIR"/"$PRODUCT"
+	for i in 16x16 22x22 24x24 32x32 48x48 256x256; do
+		cp "$ICON_DIR/$i.png" "$GZIP_DIR/$i.png"
 	done;
+	cp "$ICON_DIR/install-local.bash" "$GZIP_DIR/install-local.bash"
+	cp "$ICON_DIR/$PRODUCT.desktop" "$GZIP_DIR/$PRODUCT.desktop"
+	gzip -9kn ../doc/$PRODUCT.1
+	mv ../doc/$PRODUCT.1.gz "$GZIP_DIR"/.
+	WriteZipReadMe "$GZIP_DIR"
+	tar czf "$PRODUCT"-"$VERSION"-"$ARCH".tgz "$GZIP_DIR"
+	rm -Rf "$GZIP_DIR"	
 }
 
 function MkWinPreInstaller() {
 	# Make a dir containing everything we need to make a 32/64bit Inno Setup installer for Windows
 	rm -Rf "$WIN_DIR"
 	mkdir "$WIN_DIR"
-	cp "$SOURCE_DIR"/tomboy-ng64.exe "$WIN_DIR/."
-	cp "$SOURCE_DIR"/tomboy-ng32.exe "$WIN_DIR"/.
+	cp "$SOURCE_DIR"/tomboy-ng-64.exe "$WIN_DIR"/tomboy-ng64.exe
+	cp "$SOURCE_DIR"/tomboy-ng-32.exe "$WIN_DIR"/tomboy-ng32.exe
 	# cp ../../DLL/* "$WIN_DIR"/.
 	cp ../../DLL/libhunspell.dll "$WIN_DIR/."
 	cp ../../DLL/libhunspell.license "$WIN_DIR/."
@@ -307,41 +298,47 @@ function MkWinPreInstaller() {
 	# ls -la "$WIN_DIR"
 }
 
-# --------------------------------------
+# ------- OK, lets find Laz Config ---------------------------------
 
 # It all starts here
-
-if [ -d "$HOME/.Laz_$LAZ_DIR" ]; then     # try my way of naming config first
-	LAZ_CONFIG="$HOME/.Laz_$LAZ_DIR";
+if [ -f "$LAZ_FULL_DIR"/lazarus.cfg ]; then
+	# Assume if we have a cfg, it specifies pcp ?? Will fail otherwise
+    LAZ_CONFIG=`grep -i pcp "$LAZ_FULL_DIR"/lazarus.cfg`
 else
-	echo "------ Testing for the .Laz config $HOME------"
-	if [ -d "$HOME/.$LAZ_DIR" ]; then
-		LAZ_CONFIG="$HOME/.$LAZ_DIR";
-	else 
-		echo "**** CANNOT FIND Laz Config, exiting ****";
-		exit;
-	fi
+    if [ -d "$HOME/.Laz_$LAZ_DIR" ]; then     # try my way of naming config first
+	    LAZ_CONFIG="$HOME/.Laz_$LAZ_DIR";
+    else
+	    echo "------ Testing for the .Laz config $HOME------"
+	    if [ -d "$HOME/.$LAZ_DIR" ]; then
+		    LAZ_CONFIG="$HOME/.$LAZ_DIR";
+	    fi
+    fi
+fi
+
+if [ -z "$LAZ_CONFIG" ]; then
+    echo "--------- ERROR, dont have a Laz Config -------"
+    exit
 fi
 
 echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 
+
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5 ; 
+	do BuildAMode $BIN; 
+done
+
 #if [ "$2" == "LeakCheck" ]; then
-#	BuildItLeakCheck
-#else 
-	BuildIt
-#fi
 
-for BIN in tomboy-ng tomboy-ng32 tomboy-ng32.exe tomboy-ng64.exe tomboy-ng-qt ; do LookForBinary "$BIN"; done
+rm tom*.deb
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ; 
+	do DebianPackage $BIN ; 
+done
 
-DebianPackage "amd64Qt";
-DebianPackage "i386"
-DebianPackage "amd64"
-DebianPackage "armhf"
+rm tom*.tgz
+for MODE in ReleaseLin64 ReleaseLin32 ;
+	do DoGZipping $MODE;
+done	
 
-
-echo "----------------- FINISHED DEBs ver $VERSION ------------"
-# ls -l *.deb
-DoGZipping
 MkWinPreInstaller
 # ls -ltr
 fakeroot bash ./mk_rpm.sh

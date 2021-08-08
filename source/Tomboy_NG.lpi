@@ -82,7 +82,7 @@
         <Item58 Value="LabelFileSyncinfo2"/>
       </ExcludedOriginals>
     </i18n>
-    <BuildModes Count="18">
+    <BuildModes Count="17">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -131,11 +131,14 @@
           </Other>
         </CompilerOptions>
       </Item2>
-      <Item3 Name="Release">
+      <Item3 Name="ReleaseLin64">
+        <MacroValues Count="1">
+          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng"/>
+            <Filename Value="tomboy-ng-64"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -174,10 +177,13 @@
         </CompilerOptions>
       </Item3>
       <Item4 Name="ReleaseLin32">
+        <MacroValues Count="1">
+          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng32"/>
+            <Filename Value="tomboy-ng-32"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -220,7 +226,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng64"/>
+            <Filename Value="tomboy-ng-64"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -262,7 +268,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng32"/>
+            <Filename Value="tomboy-ng-32"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -298,7 +304,45 @@
           </Other>
         </CompilerOptions>
       </Item6>
-      <Item7 Name="CocoaRelease">
+      <Item7 Name="ReleaseRasPi">
+        <MacroValues Count="1">
+          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-armhf"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetCPU Value="arm"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5024="True"/>
+            </CompilerMessages>
+          </Other>
+        </CompilerOptions>
+      </Item7>
+      <Item8 Name="CocoaRelease">
         <MacroValues Count="1">
           <Macro5 Name="LCLWidgetType" Value="cocoa"/>
         </MacroValues>
@@ -340,8 +384,8 @@
             <CompilerPath Value="/usr/local/bin/ppcx64"/>
           </Other>
         </CompilerOptions>
-      </Item7>
-      <Item8 Name="CocoaDebug">
+      </Item8>
+      <Item9 Name="CocoaDebug">
         <MacroValues Count="1">
           <Macro5 Name="LCLWidgetType" Value="cocoa"/>
         </MacroValues>
@@ -373,8 +417,8 @@
             <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
-      </Item8>
-      <Item9 Name="CarbonDebug">
+      </Item9>
+      <Item10 Name="CarbonDebug">
         <MacroValues Count="1">
           <Macro6 Name="LCLWidgetType" Value="carbon"/>
         </MacroValues>
@@ -421,8 +465,8 @@
             </CompilerMessages>
           </Other>
         </CompilerOptions>
-      </Item9>
-      <Item10 Name="CarbonRelease">
+      </Item10>
+      <Item11 Name="CarbonRelease">
         <MacroValues Count="1">
           <Macro6 Name="LCLWidgetType" Value="carbon"/>
         </MacroValues>
@@ -460,51 +504,6 @@
             </CompilerMessages>
           </Other>
         </CompilerOptions>
-      </Item10>
-      <Item11 Name="QT5">
-        <MacroValues Count="1">
-          <Macro4 Name="LCLWidgetType" Value="qt5"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng-qt"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <UseLineInfoUnit Value="False"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <Verbosity>
-              <ShowHints Value="False"/>
-            </Verbosity>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True"/>
-            </CompilerMessages>
-            <CustomOptions Value="-dDisableLCLGIF
--dDisableLCLJPEG
--dDisableLCLPNM
--dDisableLCLTIFF"/>
-          </Other>
-        </CompilerOptions>
       </Item11>
       <Item12 Name="QT5Debug">
         <MacroValues Count="1">
@@ -524,7 +523,6 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <UseLineInfoUnit Value="False"/>
               <UseHeaptrc Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -549,6 +547,9 @@
         </CompilerOptions>
       </Item12>
       <Item13 Name="LeakCheckWin64">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="win32"/>
+        </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -738,62 +739,11 @@
           </Other>
         </CompilerOptions>
       </Item17>
-      <Item18 Name="ReleasePi">
-        <MacroValues Count="1">
-          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng-armhf"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <Parsing>
-            <SyntaxOptions>
-              <IncludeAssertionCode Value="True"/>
-            </SyntaxOptions>
-          </Parsing>
-          <CodeGeneration>
-            <Checks>
-              <IOChecks Value="True"/>
-              <RangeChecks Value="True"/>
-              <OverflowChecks Value="True"/>
-              <StackChecks Value="True"/>
-            </Checks>
-            <VerifyObjMethodCallValidity Value="True"/>
-            <TargetCPU Value="arm"/>
-            <Optimizations>
-              <OptimizationLevel Value="0"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <DebugInfoType Value="dsDwarf2Set"/>
-              <UseHeaptrc Value="True"/>
-              <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
-            </Debugging>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True" idx5024="True"/>
-            </CompilerMessages>
-          </Other>
-        </CompilerOptions>
-      </Item18>
       <SharedMatrixOptions Count="6">
-        <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
-        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleasePi" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+        <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
+        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseRasPi,ReleaseLin64,ReleaseLin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item3 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
-        <Item4 ID="950048283013" Modes="QT5,QT5Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
+        <Item4 ID="950048283013" Modes="QT5Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
       </SharedMatrixOptions>
@@ -1076,7 +1026,6 @@
       <Debugging>
         <GenerateDebugInfo Value="False"/>
         <DebugInfoType Value="dsDwarf2Set"/>
-        <UseHeaptrc Value="True"/>
       </Debugging>
       <Options>
         <Win32>
