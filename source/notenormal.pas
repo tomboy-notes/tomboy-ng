@@ -15,6 +15,9 @@ unit notenormal;
 
   It recieves a TStringList containing a note (probably directly loaded from disk).
 
+  HISTORY :
+    2021/08/19  Bug in RemoveRedundentTags that sometimes ate character after tag pair
+
 }
 
 {$mode objfpc}{$H+}
@@ -154,17 +157,19 @@ end;
 
 // When there is an off tag and and complementry on tag (or visa versa) with nothing
 // between they are redundent and we remove them right here and now. No excuses !
-// Rets True is it made a change, repeat until it finds nothing to do.
+// Rets True if it made a change, repeat until it finds nothing to do.
 function TNoteNormaliser.RemoveRedundentTag(var St : string) : boolean;
 var
     OffTag : integer = 0;            // String Helpers are zero based !
-    Tag1, Tag2 : string;      // migth get, eg monospace for a fixed spacing tag
+    Tag1, Tag2 : string;      // might get, eg monospace for a fixed spacing tag
 
+    // Ret T if it finds TagSt starting at Offset (and it removed it)
     function Removed(const OffSet : integer; TagSt : string; replace : boolean) : boolean;
     begin
         if OffSet < 0 then exit(False);
         if St.Substring(OffSet, length(TagSt)) = TagSt then begin
-            St := St.Remove(OffSet, length(Tag1 + Tag2) +1);
+            //St := St.Remove(OffSet, length(Tag1 + Tag2) +1);
+            St := St.Remove(OffSet, length(TagSt));
             if Replace then
                 St := St.Insert(OffSet, ' ');
             exit(True);
@@ -172,6 +177,10 @@ var
 	end;
 
 begin
+
+//if pos('Column Mode', St) > 0 then
+//writeln('---- ' + St);
+
     while(true) do begin
         OffTag := st.IndexOf('</', OffTag);
         if OffTag >= 0 then begin
@@ -180,7 +189,7 @@ begin
             // we target Tag1Tag2 or reversed, with and without a space between
             if Removed(OffTag, Tag1+Tag2, False) then exit(True);
             if Removed(OffTag, Tag1+' '+Tag2, True) then exit(True);
-            if Removed(OffTag-length(Tag2), Tag2+Tag1, False) then exit(True);
+            if Removed(OffTag-length(Tag2), Tag2+Tag1, False) then exit(True);       // ERROR HERE
             if Removed(OffTag-length(Tag2), Tag2+' ' + Tag1, True) then exit(True);
             // If still here, that offtag was not associated with an immediate on tag.
             inc(OffTag);
@@ -189,7 +198,7 @@ begin
 	end
      { Loop: Find next offtag, exit false if we cannot find one
       try and find a matching ontag with nothing between.
-      If above fails, goto LOOP:
+      If above fails, goto LOOP:  I don't think so.
     }
 end;
 
@@ -229,6 +238,9 @@ begin
         dec(StIndex);
 	end;
     StIndex := 0;                      // Redundent, sequencial tags.
+
+//writeln('~~~~ Norm 3 ' + STL[10]);
+
     while StIndex < StL.Count do begin
         TempSt := STL[StIndex];
         if RemoveRedundentTag(TempSt) then begin
@@ -238,6 +250,9 @@ begin
 		end;
 		inc(StIndex);
 	end;
+
+//writeln('~~~~ Norm 4 ' + STL[10]);
+
 end;
 
 

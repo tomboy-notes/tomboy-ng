@@ -166,7 +166,7 @@ type
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
                             // In transFileAnd, just returns the already established status.
         function SetTransport() : TSyncAvailable; override;
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
+        function GetRemoteNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
                             // TomdroidFile : we pull a file down locally to 'remote.note' but we could
                             // speed things up a bit by making it go straight to destination. But what
                             // about putting tags back into a note before overwriting orig ?
@@ -226,7 +226,7 @@ begin
                                             // serverID and RemoteDir will have been set if possible
 end;
 
-function TAndFileTrans.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TAndFileTrans.GetRemoteNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 var
         NoteInfo : PNoteInfo;
         Info : TSearchRec;

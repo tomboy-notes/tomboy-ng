@@ -19,7 +19,7 @@ unit sync;
   if we belive we have an existion Repo accessible -
 
   	ASync := TSync.Create();
-    ASync.SetTransport(TransP);         // possible value defined in TSyncTransport, SyncFile, SyncNextCloud, SyncAndroid
+    ASync.SetTransport(TransP);         // possible value defined in SyncUtils, SyncFile, SyncNextCloud, SyncAndroid
 	ASync.DebugMode:=True;
 	ASync.TestRun := ? ;
 	ASync.ProceedFunction:=@Proceed;    // A higher level function that can resolve clashes
@@ -113,26 +113,32 @@ CheckNewNotes() looks in Notes dir for any notes there that are not yet listed
 
 Call the General Write Behavour Block if not a TestRun.
 
-RepoAction = RepoNew (if we determine, during a RepoJoin, that the dir we are pointing to does not contain a repo, we create one in this mode. Must always call RepoJoin first)
+RepoAction = RepoNew (if we determine, during a RepoJoin, that the dir we are
+            pointing to does not contain a repo, we create one in this mode. Must
+            always call RepoJoin first)
 -----------------------
-CheckNewNotes() looks in Notes dir for any notes there that are not yet listed in NoteMetaData (which, is, of course empty at this stage). These notes are UploadNew.
-Call the General Write Behavour Block if not a TestRun.
+CheckNewNotes() looks in Notes dir for any notes there that are not yet listed in
+            NoteMetaData (which, is, of course empty at this stage). These notes are
+            UploadNew. Call the General Write Behavour Block if not a TestRun.
 
 General Write Behavour
 ----------------------
-applies for all three cases above. Some methods are not relevent in some modes, they just
-    return true when they detect that themselves.)
+applies for all three cases above. Some methods are not relevent in some modes,
+they just return true when they detect that themselves.)
 ProcessClashes()
 DoDownLoads()
 WriteRemoteManifest()   - writes out a local copy of remote manifest to be used later.
     We always write it (except in TestRun) but only call Transport to deal with it
     if we have notes changing.
-DoDeletes() - Deletes from remote server. In current implementations, does nothing.
+DoDeletes() - Deletes from remote server. In current file implementation, does nothing.
 DoUploads()
 DoDeleteLocal()
 WriteLocalManifest()
 
-Note, we want to write a new local manifest even if there are no note changes taking place, that way, we get an updated Last-Sync-Date and possibly updated revnumber. If we have not changed any files, then RevNo is the one we found in RemoteManifest. So, we must step through the write stack.
+Note, we want to write a new local manifest even if there are no note changes taking place,
+that way, we get an updated Last-Sync-Date and possibly updated revnumber. If we have not
+changed any files, then RevNo is the one we found in RemoteManifest. So, we must step
+through the write stack.
 
 We make a half harted attempt to restore normality if we get to local manifest stage and somehow fail to write it out.
 -----------------------------------------------------------------------------------
@@ -374,8 +380,9 @@ implementation
 
 { TSync }
 
-uses laz2_DOM, laz2_XMLRead, Trans, TransFile, TransAndroid, LazLogger, LazFileUtils,
-    FileUtil, Settings, tb_utils;
+uses laz2_DOM, laz2_XMLRead,
+    Trans, TransFile, TransAndroid, TransGithub,
+    LazLogger, LazFileUtils, FileUtil, Settings, tb_utils;
 
 var
     Transport : TTomboyTrans;
@@ -1194,8 +1201,8 @@ begin
     if not assigned(RemoteMetaData) then
        debugln('RemoteMetaData is not assigned');
     case RepoAction of
-        RepoUse : Result := Transport.GetNewNotes(RemoteMetaData, False);
-        RepoJoin : Result := Transport.GetNewNotes(RemoteMetaData, ForceLCD);
+        RepoUse : Result := Transport.GetRemoteNotes(RemoteMetaData, False);
+        RepoJoin : Result := Transport.GetRemoteNotes(RemoteMetaData, ForceLCD);
         // Note, RepoNew does not apply here, if we are making a new one, we assume its empty.
     end;
     if DebugMode then begin

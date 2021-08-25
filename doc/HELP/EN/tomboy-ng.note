@@ -30,7 +30,7 @@ Note that search results shown on the search form may not be automatically updat
 
 <bold>Command Line Switches.</bold></size:large><bold>
 
-</bold><monospace><bold>-h or --help </bold></monospace>            
+</bold><bold>-h or --help </bold>            
  Show help and exit.
 
 <bold>--delay-start</bold>
@@ -39,23 +39,23 @@ Insert a few seconds at startup to ensure that tomboy-ng picks up your colour sc
 <bold>-l CCode  --lang=CCode </bold>      
 Force Language, supported language codes as  es and nl. Let us know if you want tomboy-ng in another language.
 
-<monospace><bold>--version</bold></monospace><monospace> </monospace>                
+<bold>--version</bold>                
 Print version and exit
 
-<monospace><bold>--no-splash</bold></monospace>
+<bold>--no-splash</bold>
  Don't show small status/splash window. Saves you from having to dismiss it at startup. Don't use unless you have checked you can see the small green system tray icon.
 
-<monospace><bold>--config-dir=PATH_to_DIR</bold></monospace>  
+<bold>--config-dir=PATH_to_DIR</bold>  
 Create or use an alternative config. Mainly a testing feature but useful if you want to have two (or more) sets of independent (but not concurrent) notes for example.
 
-<monospace><bold>--open-note=PATH_to_NOTE</bold></monospace>  
+<bold>--open-note=PATH_to_NOTE</bold>  
 Open  a  note in  single note mode. In this mode, a separate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
 
-<monospace><bold>--save-exit </bold></monospace>
+<bold>--save-exit </bold>
 Works only with the single note mode, will import (.note, .rtf, plain text) the file, convert to .note format (and note standard filename format) and save in the configured notes directory. Note that tomboy-ng will require a restart after this happens.
 
 
-<monospace><bold> --debug-sync       --debug-index       ---debug-spell </bold></monospace>
+<bold> --debug-sync       --debug-index       ---debug-spell </bold>
 Show what is happening during either sync, index or spell. Useful for debugging. They will write detailed progress reports relating  to their section of the application to the console. However, Windows does not, for this purpose, have a  console.  But  it  can  be  told  to capture this log info to a file using another command line switch or by setting an env  variable that specifies a file name. Please ensure you have permission to write to the location specified. For example, from the start button, click run and type  -
 
 <monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace><size:large>

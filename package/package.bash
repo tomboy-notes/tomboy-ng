@@ -222,14 +222,14 @@ function WriteZipReadMe () {
 	RM="$1/readme.txt"
 	echo "This is a tar ball of $PRODUCT $VERSION for Linux. Use this if you cannot use" > "$RM"
 	echo "either the deb or rpm on your particular distribution. It contains some of the" >> "$RM"
-	echo "files you need but does not install them nor does it resolve dependancies." >> "$RM"
+	echo "files you need and a very basic installer but does not resolve dependancies." >> "$RM"
 	echo "Its assumed you know what you are doing." >> "$RM"
 	echo "* Files and features not provided here include -" >> "$RM"
 	echo "* Language other than English" >> "$RM"
 	echo "* tomboy-ng help files" >> "$RM"
 	echo "* Ability to have tomboy-ng set itself to autostart" >> "$RM"
-	echo "Dependencies include libgtk2.0-0, libcanberra-gtk-module, wmctrl." >> "$RM"
-	echo "  or, in the Qt5 version, libqt5pas1" >> $RM
+	echo "Dependencies include libgtk2.0-0, libcanberra-gtk-module, libnotify, wmctrl." >> "$RM"
+	echo "  or, in the Qt5 version, libqt5pas1, libnotify, wmctrl" >> $RM
 	echo "If you need help, please post specific question to tomboy-ng github issues." >> "$RM"
 }
 

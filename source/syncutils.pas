@@ -26,7 +26,8 @@ uses
     Classes, SysUtils, dateutils, LazLogger;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
-		        SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
+		        //SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
+                SyncGitHub,     // sends mark down notes to/from github.
                 SyncAndroid,    // Simple one to one Android Device
                 SyncFileAndroid);   // Android sync using mounted file system
 

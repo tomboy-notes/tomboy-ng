@@ -39,7 +39,7 @@ type
         //RemoteDir : string; // where the remote filesync repo lives.
         function SetTransport(): TSyncAvailable; override;
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
+        function GetRemoteNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
@@ -124,7 +124,7 @@ begin
     Result := SyncReady;
 end;
 
-function TFileSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TFileSync.GetRemoteNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 begin
     if NoteMeta = Nil then begin
         ErrorString := 'Passed an uncreated list to GetNewNotes()';

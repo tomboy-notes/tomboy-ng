@@ -85,7 +85,7 @@ type
         //RemoteDir : string; // where the remote filesync repo lives.
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
         function SetTransport() : TSyncAvailable; override;
-        function GetNewNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
+        function GetRemoteNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean; override;
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
             { ToDo : transandroid version - deletes the indicated note from remote device
               returns False if the note was not found there to be deleted.  Other error
@@ -405,7 +405,7 @@ begin
     AProcess.Free;
 end;
 
-function TAndSync.GetNewNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
+function TAndSync.GetRemoteNotes(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
 var
         StList: TStringList = nil;
         I : integer;
