@@ -92,7 +92,7 @@ type
               are possible.}
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
-        function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
+        function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         // function SetRemoteRepo(ManFile : string = '') : boolean; override;
   end;
@@ -637,7 +637,8 @@ begin
     result := True;
 end;
 
-function TAndSync.DoRemoteManifest(const RemoteManifest: string): boolean;
+function TAndSync.DoRemoteManifest(const RemoteManifest: string;
+    MetaData: TNoteInfoList): boolean;
 begin
     // The Tomdroid sync model does not use a remote manifest.
   result := True;

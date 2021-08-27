@@ -89,7 +89,7 @@ type
               for a new revision on the server, the server must now do whatever
               it needs to accomodate the new new revision, some new or update
               notes will be sent to it a bit later. New RevNo will be RemoteServerRev plus 1 }
-        function DoRemoteManifest(const RemoteManifest : string) : boolean; virtual; abstract;
+        function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; virtual; abstract;
             { Returns a full file name (inc path) to a (copy?) of indicated server
               version of a note. File sync will return just full path and name to the
               'remote' file but net sync will need to download the file and return

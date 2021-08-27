@@ -43,7 +43,7 @@ type
         function DownloadNotes(const DownLoads : TNoteInfoList) : boolean; override;
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
-        function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
+        function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         // function SetRemoteRepo(ManFile : string = '') : boolean; override;
   end;
@@ -263,7 +263,7 @@ begin
   result := True;
 end;
 
-function TFileSync.DoRemoteManifest(const RemoteManifest: string): boolean;
+function TFileSync.DoRemoteManifest(const RemoteManifest: string; MetaData : TNoteInfoList = nil): boolean;
 begin
     // I think that ForceDir will make intermediate dir too ......
     // if not ForceDirectoriesUTF8(RemoteAddress + '0' + PathDelim + inttostr(self.RemoteServerRev + 1)) then begin

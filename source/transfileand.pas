@@ -174,7 +174,7 @@ type
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean; override;
         function UploadNotes(const Uploads : TStringList) : boolean; override;
                             // TAndFileTrans : does nothing, Tomdroid model does not use remote manifest.
-        function DoRemoteManifest(const RemoteManifest : string) : boolean; override;
+        function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; override;
                             // TransFileAnd : Pulls remote file down to 'remote.note and ret a full path to note,
                             // '' if it was not found. OneOnOne friendly.
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
@@ -295,7 +295,8 @@ begin
     result := True;    // unless, of course, we failed some how. Hmm...
 end;
 
-function TAndFileTrans.DoRemoteManifest(const RemoteManifest: string): boolean;
+function TAndFileTrans.DoRemoteManifest(const RemoteManifest: string;
+    MetaData: TNoteInfoList): boolean;
 begin
     // The Tomdroid sync model does not use a remote manifest.
   result := True;
