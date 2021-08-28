@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 1086
+  Left = 1375
   Height = 505
-  Top = 207
+  Top = 441
   Width = 695
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -1111,32 +1111,32 @@ object EditBoxForm: TEditBoxForm
     object MenuBold: TMenuItem
       Caption = 'Bold'
       ShortCut = 16450
-      OnClick = MenuBoldClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuItalic: TMenuItem
       Caption = 'Italic'
       ShortCut = 16457
-      OnClick = MenuItalicClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuStrikeout: TMenuItem
       Caption = 'Strikeout'
       ShortCut = 16467
-      OnClick = MenuStrikeoutClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuHighLight: TMenuItem
       Caption = 'Highlight'
       ShortCut = 16456
-      OnClick = MenuHighLightClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuFixedWidth: TMenuItem
       Caption = 'Fixed Width'
       ShortCut = 16468
-      OnClick = MenuFixedWidthClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuUnderline: TMenuItem
       Caption = 'Underline'
       ShortCut = 16469
-      OnClick = MenuUnderlineClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuItem2: TMenuItem
       Caption = '-'
@@ -1144,32 +1144,35 @@ object EditBoxForm: TEditBoxForm
     object MenuSmall: TMenuItem
       Caption = 'Small Font'
       ShortCut = 16433
-      OnClick = MenuSmallClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuNormal: TMenuItem
       Caption = 'Normal Font'
       ShortCut = 16434
-      OnClick = MenuNormalClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuLarge: TMenuItem
       Caption = 'Large Font'
       ShortCut = 16435
-      OnClick = MenuLargeClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuHuge: TMenuItem
       Caption = 'Huge'
       ShortCut = 16436
-      OnClick = MenuHugeClick
+      OnClick = MenuTextGeneralClick
     end
     object MenuItem3: TMenuItem
       Caption = '-'
     end
-    object MenuBullet: TMenuItem
-      Caption = 'Bullet'
-      OnClick = MenuBulletClick
+    object MenuItemBulletRight: TMenuItem
+      Caption = 'Bullet >>'
+      ShortCut = 32807
+      OnClick = MenuTextGeneralClick
     end
-    object MenuItem4: TMenuItem
-      Caption = 'Alt+Right to add, Alt+Left to remove'
+    object MenuItemBulletLeft: TMenuItem
+      Caption = 'Bullet <<'
+      ShortCut = 32805
+      OnClick = MenuTextGeneralClick
     end
   end
   object PopupMenuTools: TPopupMenu

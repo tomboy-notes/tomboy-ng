@@ -594,10 +594,6 @@ msgstr ""
 msgid "Bold"
 msgstr ""
 
-#: teditboxform.menubullet.caption
-msgid "Bullet"
-msgstr ""
-
 #: teditboxform.menufindnext.caption
 msgid "Find Next"
 msgstr ""
@@ -625,8 +621,12 @@ msgstr ""
 msgid "Italic"
 msgstr ""
 
-#: teditboxform.menuitem4.caption
-msgid "Alt+Right to add, Alt+Left to remove"
+#: teditboxform.menuitembulletleft.caption
+msgid "Bullet <<"
+msgstr ""
+
+#: teditboxform.menuitembulletright.caption
+msgid "Bullet >>"
 msgstr ""
 
 #: teditboxform.menuitemcopy.caption

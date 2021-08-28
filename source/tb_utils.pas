@@ -99,6 +99,7 @@ procedure SayDebugSafe(st: string);
 
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
 // Having them here requires that we use kmemo here.
+// Each one MUST resolve to a different value in KMemo, do not overload.
 const
   BulletOne   =  pnuArrowBullets;
   BulletTwo   = pnuBullets;

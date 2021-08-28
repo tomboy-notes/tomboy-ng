@@ -217,6 +217,8 @@ unit EditBox;
     2021/07/31  Ensure a New Note appears middle of the screen.
     2021/08/07  Fixed a race condition on export MD if dirty.
     2021/08/07  Commented out some code in FormShow thats is unreachable ?? Filename and Template
+    2021/08/27  Consolidated all Text menu events through one method
+    2021/08/27  Can now edit multilevel bullets
 }
 
 
@@ -250,10 +252,10 @@ type
         MenuItalic: TMenuItem;
         MenuHighLight: TMenuItem;
         MenuHuge: TMenuItem;
-        MenuBullet: TMenuItem;
         MenuItem1: TMenuItem;
-        MenuItem4: TMenuItem;
 		MenuFindNext: TMenuItem;
+        MenuItemBulletRight: TMenuItem;
+        MenuItemBulletLeft: TMenuItem;
         MenuItemFindPrev: TMenuItem;
 		MenuStayOnTop: TMenuItem;
         MenuItemSettings: TMenuItem;
@@ -325,26 +327,18 @@ type
               must set key to 0 after doing so. }
 		procedure KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure KMemo1KeyPress(Sender: TObject; var Key: char);
-        procedure KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState
-            );
+        procedure KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-        procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
-            Shift: TShiftState; X, Y: Integer);
-        procedure MenuBoldClick(Sender: TObject);
-        procedure MenuBulletClick(Sender: TObject);
+        procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                    // All the Text menu items go through this event
+        procedure MenuTextGeneralClick(Sender: TObject);
 		procedure MenuFindPrevClick(Sender: TObject);
-        procedure MenuFixedWidthClick(Sender: TObject);
-        procedure MenuHighLightClick(Sender: TObject);
-        procedure MenuHugeClick(Sender: TObject);
-        procedure MenuItalicClick(Sender: TObject);
 		procedure MenuFindNextClick(Sender: TObject);
         procedure MenuItemEvaluateClick(Sender: TObject);
         procedure MenuItemExportMarkdownClick(Sender: TObject);
         procedure MenuItemIndexClick(Sender: TObject);
         procedure MenuItemSettingsClick(Sender: TObject);
 		procedure MenuStayOnTopClick(Sender: TObject);
-        procedure MenuUnderlineClick(Sender: TObject);
-        procedure MenuStrikeoutClick(Sender: TObject);
 		procedure MenuItemCopyClick(Sender: TObject);
 		procedure MenuItemCutClick(Sender: TObject);
         procedure MenuItemDeleteClick(Sender: TObject);
@@ -357,9 +351,6 @@ type
 		procedure MenuItemSelectAllClick(Sender: TObject);
         procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
-        procedure MenuLargeClick(Sender: TObject);
-        procedure MenuNormalClick(Sender: TObject);
-        procedure MenuSmallClick(Sender: TObject);
         procedure PanelFindEnter(Sender: TObject);
 		procedure SpeedLeftClick(Sender: TObject);
 		procedure SpeedRightClick(Sender: TObject);
@@ -764,11 +755,6 @@ begin
     until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
 end;
 
-procedure TEditBoxForm.MenuBulletClick(Sender: TObject);
-begin
-    BulletControl(True, False);
-end;
-
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
 begin
@@ -1009,44 +995,28 @@ begin
 	end;
 end;
 
-procedure TEditBoxForm.MenuHighLightClick(Sender: TObject);
+// A method for responding to all text menu clicks. Could extend it to whole lot more ...
+procedure TEditBoxForm.MenuTextGeneralClick(Sender: TObject);
 begin
-    AlterFont(ChangeColor);
-end;
-
-procedure TEditBoxForm.MenuLargeClick(Sender: TObject);
-begin
-   AlterFont(ChangeSize, Sett.FontLarge);
-end;
-
-procedure TEditBoxForm.MenuNormalClick(Sender: TObject);
-begin
-   AlterFont(ChangeSize, Sett.FontNormal);	// Note, this won't toggle !
-end;
-
-procedure TEditBoxForm.MenuSmallClick(Sender: TObject);
-begin
-    AlterFont(ChangeSize, Sett.FontSmall);
+    case TMenuItem(sender).Name of
+        'MenuItemBulletRight' : BulletControl(false, True);
+        'MenuItemBulletLeft'  : BulletControl(false, False);
+        'MenuHighLight'       : AlterFont(ChangeColor);
+        'MenuLarge'           : AlterFont(ChangeSize, Sett.FontLarge);  // Note, fonts won't toggle !
+        'MenuNormal'          : AlterFont(ChangeSize, Sett.FontNormal);
+        'MenuSmall'           : AlterFont(ChangeSize, Sett.FontSmall);
+        'MenuHuge'            : AlterFont(ChangeSize, Sett.FontHuge);
+        'MenuBold'            : AlterFont(ChangeBold);
+        'MenuItalic'          : AlterFont(ChangeItalic);
+        'MenuUnderline'       : AlterFont(ChangeUnderline);
+        'MenuStrikeout'       : AlterFont(ChangeStrikeout);
+        'MenuFixedWidth'      : AlterFont(ChangeFixedWidth);
+    end;
 end;
 
 procedure TEditBoxForm.PanelFindEnter(Sender: TObject);
 begin
     EditFind.SetFocus;
-end;
-
-procedure TEditBoxForm.MenuHugeClick(Sender: TObject);
-begin
-   AlterFont(ChangeSize, Sett.FontHuge);
-end;
-
-procedure TEditBoxForm.MenuBoldClick(Sender: TObject);
-begin
-	AlterFont(ChangeBold);
-end;
-
-procedure TEditBoxForm.MenuItalicClick(Sender: TObject);
-begin
-	AlterFont(ChangeItalic);
 end;
 
 procedure TEditBoxForm.MenuItemEvaluateClick(Sender: TObject);
@@ -1089,23 +1059,6 @@ begin
         MenuStayOnTop.Checked := true;
 	end;
 end;
-
-procedure TEditBoxForm.MenuUnderlineClick(Sender: TObject);
-begin
-    AlterFont(ChangeUnderline);
-end;
-
-procedure TEditBoxForm.MenuStrikeoutClick(Sender: TObject);
-begin
-        AlterFont(ChangeStrikeout);
-end;
-
-procedure TEditBoxForm.MenuFixedWidthClick(Sender: TObject);
-begin
-       AlterFont(ChangeFixedWidth);
-end;
-
-
 
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 begin
@@ -1585,6 +1538,7 @@ begin
 	if Dirty then SaveTheNote();
     Sett.Synchronise();
 end;
+
 
 { - - - H O U S E   K E E P I N G   F U C T I O N S ----- }
 
@@ -2778,16 +2732,16 @@ begin
                 if (EditFind.Text <> rsMenuSearch) then SpeedRightClick(self);
             end;
             VK_Q : MainForm.close();
-            VK_1 : MenuSmallClick(Sender);
-            VK_2 : MenuNormalClick(Sender);
-            VK_3 : MenuLargeClick(Sender);
-            VK_4 : MenuHugeClick(Sender);
-            VK_B : MenuBoldClick(Sender);
-            VK_I : MenuItalicClick(Sender);
-            VK_S : MenuStrikeOutClick(Sender);
-            VK_T : MenuFixedWidthClick(Sender);
-            VK_H : MenuHighLightClick(Sender);
-            VK_U : MenuUnderLineClick(Sender);
+            VK_1 : AlterFont(ChangeSize, Sett.FontSmall);
+            VK_2 : AlterFont(ChangeSize, Sett.FontNormal);
+            VK_3 : AlterFont(ChangeSize, Sett.FontLarge);
+            VK_4 : AlterFont(ChangeSize, Sett.FontHuge);
+            VK_B : AlterFont(ChangeBold);
+            VK_I : AlterFont(ChangeItalic);
+            VK_S : AlterFont(ChangeStrikeOut);
+            VK_T : AlterFont(ChangeFixedWidth);
+            VK_H : AlterFont(ChangeColor);
+            VK_U : AlterFont(ChangeUnderLine);
             VK_F : begin Key := 0; MenuItemFindClick(self); end;
             VK_L : SpeedButtonLinkClick(Sender);
             VK_V : begin if Use_Undoer then Undoer.AddPasteOrCut(); exit; end;         // Must exit to prevent setting Key to 0
@@ -2914,41 +2868,87 @@ begin
 end;
 
 procedure TEditBoxForm.SetBullet(PB : TKMemoParagraph; Bullet : boolean);
-var
-  Index : integer;
+{var
+  Index : integer;   }
   //Tick, Tock : qword;
 begin
-    // Note - do not play with the NumberingListLevel  thingos unless a bullet is set.
-    // =========== WARNING - very ugly code that needs fixing =======================
-    // I find that when you reset the NumberListLevel for one block, it changes every
-    // block in the document !  ????
-    // So, until  make sense of that, I'll scan over the whole document and set any
-    // existing bullets to the proper indent.  On a large doc with lots of bullets,
-    // this seems to take about 2mS on lower end laptop.
-    KMemo1.Blocks.lockUpdate;
+    // KMemo declares a number of Bullets/Paragraph number thingos. We map
+    // BulletOne .. BulletEight to them in tb_utils. Change order/appearance there.
+    // You cannot have different blocks using same bullet (ie pnuBullet,
+    // pnuArrowBullet) with different indent levels. Its a KMemo thing.
+    // The numbers here must match what we use in Loadnote, should be constants too.
+    // Here I set the different bullet indents each and every time they are used.
+    // ToDo : can I initialise the different bullet indents during startup ?
+
+   KMemo1.Blocks.lockUpdate;
     try
-        if Bullet then begin
-            PB.Numbering:=pnuBullets;
-            PB.NumberingListLevel.FirstIndent:=-20;
-            PB.NumberingListLevel.LeftIndent:=30;
-        end else begin
-            if PB.Numbering <> pnuBullets then begin
-                debugln('ERROR - changing indent before Bullet set');
-                exit();
-            end;
-            PB.NumberingListLevel.FirstIndent:=0;
-            PB.NumberingListLevel.LeftIndent:=0;
-            PB.Numbering:=pnuNone;
-            //Tick := gettickcount64();
-            for Index := 0 to KMemo1.Blocks.Count-1 do
-                if KMemo1.Blocks.Items[Index].ClassNameIs('TKMemoParagraph') then
-                    if TKMemoParagraph(KMemo1.Blocks.Items[Index]).Numbering = pnuBullets then begin
-                        TKMemoParagraph(KMemo1.Blocks.Items[Index]).NumberingListLevel.FirstIndent:=-20;
-                        TKMemoParagraph(KMemo1.Blocks.Items[Index]).NumberingListLevel.LeftIndent:=30;
-                    end;
-            //Tock := gettickcount64();
-            // showmessage('Scan to reset bullet indent '+ inttostr(Tock-Tick) + 'mS');
-        end;
+            case PB.Numbering of
+                pnuNone :   if Bullet then begin
+                                PB.Numbering := BulletOne;
+                                PB.NumberingListLevel.FirstIndent:=-20;
+                                PB.NumberingListLevel.LeftIndent := 30;
+                            end;
+                BulletOne : begin
+                                PB.Numbering:=pnuNone;
+                                if Bullet then begin
+                                    PB.Numbering := BulletTwo;
+                                    PB.NumberingListLevel.FirstIndent:=-20;
+                                    PB.NumberingListLevel.LeftIndent := 50;
+                                end;
+                            end;
+                BulletTwo : begin
+                                PB.Numbering:=pnuNone;
+                                if Bullet then begin
+                                    PB.Numbering := BulletThree;
+                                    PB.NumberingListLevel.FirstIndent:=-20;
+                                    PB.NumberingListLevel.LeftIndent := 70;
+                                end else PB.Numbering := BulletOne;
+                            end;
+                BulletThree : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletFour;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 90;
+                                    end else PB.Numbering := BulletTwo;
+                              end;
+                BulletFour : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletFive;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 110;
+                                    end else PB.Numbering := BulletThree;
+                             end;
+                BulletFive : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletSix;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 130;
+                                    end else PB.Numbering := BulletFour;
+                             end;
+                BulletSix :  begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletSeven;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 150;
+                                    end else PB.Numbering := BulletFive;
+                             end;
+                BulletSeven : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletEight;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 180;
+                                    end else PB.Numbering := BulletSix;
+                              end;
+                BulletEight : if not Bullet then begin
+                                        PB.Numbering:=pnuNone;
+                                        PB.Numbering := BulletSeven;
+                              end;
+                end;                // end of case statement
     finally
         KMemo1.Blocks.UnlockUpdate;
     end;

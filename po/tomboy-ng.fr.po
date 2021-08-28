@@ -616,10 +616,6 @@ msgstr ""
 msgid "Bold"
 msgstr "Gras"
 
-#: teditboxform.menubullet.caption
-msgid "Bullet"
-msgstr "Puce(s)"
-
 #: teditboxform.menufindnext.caption
 msgid "Find Next"
 msgstr ""
@@ -647,9 +643,13 @@ msgstr "Police énorme"
 msgid "Italic"
 msgstr "Italique"
 
-#: teditboxform.menuitem4.caption
-msgid "Alt+Right to add, Alt+Left to remove"
-msgstr "Alt+ <-/->  ôte ou ajoute des puces"
+#: teditboxform.menuitembulletleft.caption
+msgid "Bullet <<"
+msgstr ""
+
+#: teditboxform.menuitembulletright.caption
+msgid "Bullet >>"
+msgstr ""
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"

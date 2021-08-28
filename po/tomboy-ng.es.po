@@ -618,10 +618,6 @@ msgstr "BuscarInfo"
 msgid "Bold"
 msgstr "Negrita"
 
-#: teditboxform.menubullet.caption
-msgid "Bullet"
-msgstr "Viñeta"
-
 #: teditboxform.menufindnext.caption
 msgid "Find Next"
 msgstr "Buscar siguiente"
@@ -649,9 +645,13 @@ msgstr "Enorme"
 msgid "Italic"
 msgstr "Cursiva"
 
-#: teditboxform.menuitem4.caption
-msgid "Alt+Right to add, Alt+Left to remove"
-msgstr "Añadir viñeta - Alt+--> : Quitar viñeta - Alt+<--"
+#: teditboxform.menuitembulletleft.caption
+msgid "Bullet <<"
+msgstr ""
+
+#: teditboxform.menuitembulletright.caption
+msgid "Bullet >>"
+msgstr ""
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
