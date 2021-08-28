@@ -15,6 +15,12 @@ unit SaveNote;
     All the work is done in the Save(..) function, it needs to be passed
 	the name of a file (that may or may not exist) and the KMemo its
 	getting its content from.
+
+    New Model - Saving is now a threaded operation and that happens in EditBox
+    The class is created in EditBox, then ReadKMemo is called, it puts an XML
+    version of the note into the passed StringList. The class can then be freed.
+    ReadKMemo decides to put xml into either the StringList or a stream (that
+    can be saved from here) on basis of if a StringList is passed or not.
 }
 
 {	HISTORY
@@ -50,6 +56,7 @@ unit SaveNote;
     2020/07/17  Esc bad XML in Template name.
     2020/08/08  Added a BOM, a Byte Order Mark, at start of a note.
     2020/08/10  Removed BOM, no advantage I can find, undefined risk.
+    2021/08/28  Can now save multilevel bullets
 }
 
 {$mode objfpc}{$H+}
@@ -104,7 +111,7 @@ type
             KM : TKMemo;
             function AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
 			function BlockAttributes(Bk: TKMemoBlock): AnsiString;
-			procedure BulletList(var Buff: ANSIString);
+			procedure BulletList(Level: TKMemoParaNumbering; var Buff: ANSIString);
             procedure CopyLastFontAttr();
 			//function FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle): ANSIString;
 			//function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
@@ -375,9 +382,10 @@ end;
     }
     // ListOff BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold List
 
-procedure TBSaveNote.BulletList(var Buff : ANSIString);
+procedure TBSaveNote.BulletList(Level : TKMemoParaNumbering; var Buff : ANSIString);
 var
    StartStartSt, StartEndSt, EndStartSt, EndEndSt : ANSIString;
+   iLevel : integer;
 begin
 	//writeln('Status Bold=', Bold=True, ' PBold=', PrevBold=True, ' High=', HiLight=True, ' PHigh=', PrevHiLight=True);
     StartStartSt := '';
@@ -449,8 +457,26 @@ begin
     // writeln('EndStart      [' + EndStartSt + ']');
     // writeln('EndEnd        [' + EndEndSt + ']');
 
-    Buff := StartStartSt + '<list><list-item dir="ltr">' + StartEndSt
-    		+ Buff + EndStartSt + '</list-item></list>' + EndEndSt;
+    Buff := StartEndSt + Buff + EndStartSt;
+    case Level of
+        BulletOne   : iLevel := 1;
+        BulletTwo   : iLevel := 2;
+        BulletThree : iLevel := 3;
+        BulletFour  : iLevel := 4;
+        BulletFive  : iLevel := 5;
+        BulletSix   : iLevel := 6;
+        BulletSeven : iLevel := 7;
+        BulletEight : iLevel := 8;
+        otherwise iLevel := 8;
+    end;
+    while iLevel > 0 do begin
+        Buff := '<list><list-item dir="ltr">' + Buff + '</list-item></list>';
+        dec(iLevel);
+    end;
+    Buff := StartStartSt + Buff + EndEndSt;
+
+    {Buff := StartStartSt + '<list><list-item dir="ltr">' + StartEndSt
+    		+ Buff + EndStartSt + '</list-item></list>' + EndEndSt;}
 
     // writeLn('Buff at End [' + Buff + ']');         // **************************************
     // writeln('---');
@@ -530,10 +556,10 @@ var
     KM := KM1;
     FSize := Sett.FontNormal;
     Bold := false;
-     Italics := False;
-     HiLight := False;
+    Italics := False;
+    HiLight := False;
     Underline := False;
-     InList := false;
+    InList := false;
     FixedWidth := False;
     ID := ExtractFileNameOnly(FileName) + '.note';
     // ID needs to be set so we can get list of notebooks for the footer.
@@ -575,8 +601,12 @@ var
 
 				until KM1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
                 if BlockNo >= KM1.Blocks.Count then break;
-                if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
-                     BulletList(Buff);
+
+                if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering <> pnuNone then
+                     BulletList(TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering, Buff);
+
+                {if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
+                     BulletList(Buff);    }
 
                 // Add tags about to terminate to end of line, pretty XML
                 // However does not work for font size changes !

@@ -50,7 +50,7 @@ unit tb_utils;
 interface
 
 uses
-        Classes, SysUtils;
+        Classes, SysUtils, KMemo;
 
                         // True if looks like an ID, 36 char and dash as #9
 function IDLooksOK(const ID : string) : boolean;
@@ -95,6 +95,21 @@ function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer})
 procedure RemoveNoteMetaData(STL : TStringList);
 
 procedure SayDebugSafe(st: string);
+
+
+// These are constants that refer to Bullet Levels, we map the KMemo names here.
+// Having them here requires that we use kmemo here.
+const
+  BulletOne   =  pnuArrowBullets;
+  BulletTwo   = pnuBullets;
+  BulletThree = pnuSquareBullets;
+  BulletFour  = pnuLetterLo;
+  BulletFive  = pnuRomanLo;
+  BulletSix   = pnuLetterHi;
+  BulletSeven = pnuRomanHi;
+  BulletEight =  pnuArabic;
+  // BulletNine  = pnuArabic;       // Messes with case statements, 8 is our limit !
+
 
 implementation
 

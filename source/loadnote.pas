@@ -187,34 +187,40 @@ begin
             case BulletLevel of
                 1 : begin
                       //debugln('AddText - BulletLevel One');
-                      PB.Numbering:=pnuArrowBullets;
+                      PB.Numbering:=BulletOne;
                       PB.NumberingListLevel.FirstIndent:=-20;      // Ahh ! some magic numbers ?
                       PB.NumberingListLevel.LeftIndent := 30;      // Note, these numbers need match SettBullet() in editbox
                     end;
                 2 :   begin
                         //debugln('AddText - BulletLevel Two');
                         PB.Numbering:=pnuNone;
-                        PB.Numbering := pnuBullets;
+                        PB.Numbering := BulletTwo;
                         PB.NumberingListLevel.FirstIndent:=-20;
                         PB.NumberingListLevel.LeftIndent := 50;
                     end;
                 3 : begin
                         PB.Numbering:=pnuNone;
-                        PB.Numbering := pnuSquareBullets;
+                        PB.Numbering := BulletThree;
                         PB.NumberingListLevel.FirstIndent:=-20;
                         PB.NumberingListLevel.LeftIndent := 70;
                     end;
                 4 : begin
                         PB.Numbering:=pnuNone;
-                        PB.Numbering := pnuLetterLo;
+                        PB.Numbering := BulletFour;
                         PB.NumberingListLevel.FirstIndent:=-20;
                         PB.NumberingListLevel.LeftIndent := 90;
                     end;
-                 5,6,7,8,9 : begin
+                 5 : begin
                         PB.Numbering:=pnuNone;
-                        PB.Numbering := pnuRomanLo;
+                        PB.Numbering := BulletFive;
                         PB.NumberingListLevel.FirstIndent:=-20;
-                        PB.NumberingListLevel.LeftIndent := 100;
+                        PB.NumberingListLevel.LeftIndent := 110;
+                    end;
+                 6,7,8,9 : begin
+                        PB.Numbering:=pnuNone;
+                        PB.Numbering := BulletSix;
+                        PB.NumberingListLevel.FirstIndent:=-20;
+                        PB.NumberingListLevel.LeftIndent := 130;
                     end;
                 otherwise
                     debugln('AddText - BulletLevel otherwise, ' + inttostr(BulletLevel));                                     // we just stop at 4
