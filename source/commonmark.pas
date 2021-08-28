@@ -13,7 +13,7 @@ unit commonmark;
     This unit is, June 2021 the same as one in tomboy-ng.
 
     Create the object, optionally give it a directory to look in and set DoPOFile. Call GetMDcontent()
-    with an ID (that is, a filename without extension) and a list to fill in with content.
+    with an ID (that is, a filename without extension) and a created list to fill in with content.
     Free.
 
     HISTORY
@@ -24,6 +24,7 @@ unit commonmark;
     2021/07/22  Make GetMDcontent more tolerent of passed ID/FFN
     2021/07/30  Now use someutuls fro tb_util instead of implementing itself. Must sync to TB-NG
     2021/07/30  Use the RemoveNoteMetaData( from TT_Utils, need merge TT_utils with TB_Utils
+    2021/08/19  Rewrite ProcessMarkup to use ST.Replace() approach
 }
 
 interface
@@ -43,10 +44,6 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
 
 			procedure ProcessHeadings(StL: TStringList);
 			procedure ProcessMarkUp(StL: TStringList);
-			function RemoveNextTag(var St: String; out Tag: string): integer;
-//			function ReplaceAngles(const Str: AnsiString): AnsiString;
-//			procedure SayDebug(st: string; Always: boolean=false);
-//			function TitleFromID(ID: string; Munge: boolean; out LenTitle: integer): string;
             function IsAllMono(St : String) : boolean;
             procedure MakeMonoBlock(var St: string);
             procedure ConvertMonoBlocks(STL: TStringList);
@@ -74,75 +71,27 @@ function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
 { This is same as function in TT but I have removed parts that do file i/o
   I am thinking I would be better using some XML methods, might avoid g-Note issues too. }
 var
-//    LTitle : integer;
-//    Index : integer;
     Normaliser : TNoteNormaliser;
 begin
-        {if IDLooksOK(ID) then
-            StL.LoadFromFile(NotesDir + ID + '.note')
-        else
-             StL.LoadFromFile(ID); }
-        // We may get an ID or a FFN inc path, lets try both.
         if FileExists(ID) then
                 StL.LoadFromFile(ID)
         else
             if FileExists(NotesDir + ID + '.note') then
                    StL.LoadFromFile(NotesDir + ID + '.note')
             else exit(False);
-
-(*        Index := FindInStringList(StL, '<title>');       // include < and > in search term so sure its metadate
-        if Index > -1 then
-            while Index > -1 do begin
-                StL.Delete(0);
-                dec(Index);
-			end;  *)
         // OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
         Normaliser := TNoteNormaliser.Create;
         Normaliser.NormaliseList(StL);
         Normaliser.Free;
-        //NormaliseList(StL);
         StL.Delete(0);
-//        StL.Insert(0, TitleFromID(ID, False, LTitle));
         STL.Insert(0, GetTitleFromFFN(NotesDir + ID + '.note', False));
         RemoveNoteMetaData(STL);
-(*        Index := FindInStringList(StL, '</note-content>');       // but G-Note does not bother with nice newlines ????
-        while Index < StL.Count do StL.Delete(Index);        *)
         ProcessHeadings(StL);                                    // Makes Title big too !
         ProcessMarkUp(StL);
         ConvertMonoBlocks(STL);
         result := (Stl.Count > 2);
 end;
-(*
-function TExportCommon.ReplaceAngles(const Str : AnsiString) : AnsiString;
-var
-    index : longint = 1;
-    Start : longint = 1;
-begin
-  // Don't use UTF8 functions here, we are working with bytes !
-  Result := '';
-    while Index <= Length(Str) do begin
-      if '&lt;' = Copy(Str, Index, 4) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '<';
-            inc(Index);
-            Start := Index + 3;
-            Continue;
-	  end;
-      if '&gt;' = Copy(Str, Index, 4) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '>';
-            inc(Index);
-            Start := Index + 3;
-            Continue;
-	  end;
-      if '&amp;' = Copy(Str, Index, 5) then begin
-      		Result := Result + Copy(Str, Start, Index - Start) + '&';
-            inc(Index);
-            Start := Index + 4;
-            Continue;
-	  end;
-      inc(Index);
-	end;
-    Result := Result + Copy(Str, Start, Index - Start);
-end;      *)
+
 
 (*
 procedure TExportCommon.SayDebug(st: string; Always : boolean = false);
@@ -164,43 +113,6 @@ begin
 	result := -1;
 end;
 
-(*
-function TExportCommon.TitleFromID(ID: string; Munge : boolean; out LenTitle : integer): string;
-var
-    Doc : TXMLDocument;
-    Node : TDOMNode;
-    Index : integer = 1;
-    FFN : string;
-begin
-    FFN := NotesDir + ID + '.note';
-    if not FileExists(FFN) then begin
-          FFN := ID;                        // OK, maybe is a SingleNote ?
-          if not FileExists(FFN) then begin
-                debugln('ERROR : File does not exist = '  + FFN);
-                LenTitle := 0;
-                exit('');
-	        end;
-	end;
-    ReadXMLFile(Doc, FFN);
-    try
-        Node := Doc.DocumentElement.FindNode('title');
-        result := Node.FirstChild.NodeValue;
-    finally
-        Doc.free;
-    end;
-    if Munge then begin
-        // remove char that don't belong in a file name
-        while Index <= length(Result) do begin
-                if Result[Index] in [ ' ', ':', '.', '/', '\', '|', '"', '''' ] then begin
-                    Result[Index] := '_';
-                end;
-
-                inc(Index);
-        end;
-        Result := copy(Result, 1, 32);
-	end;
-    LenTitle := length(Result);
-end;         *)
 
 // -------------- Convert to Fixed width BLOCK text -------------
 
@@ -232,6 +144,16 @@ begin
     St := '    ' + St;
 end;
 
+// ToDo : fix eg bold monospace
+// There is a problem here. We convert all lines that are all mono from `this` to
+// haveing four leading spaces, looks much better with blocks of code eg.
+// However, Remarkable at least does not display eg bold monospace is presented like
+//     **Bold Code**
+// It will however do what we want if it finds this -
+// **`Bold Code`**
+// Lets see what github does and consider staying with backticks for single mono lines.
+// Will have to also reverse tag order and that might be messy.
+
 procedure TExportCommon.ConvertMonoBlocks(STL : TStringList);
 var
     I : integer = 0;
@@ -239,6 +161,7 @@ var
     PrevMono : boolean = false;
 begin
     while i < Stl.Count do begin
+        // Remove the unnecessary newlines between blocks.
         if PrevMono and (Stl[i] = '') then begin
             StL.Delete(i);
             PrevMono := False;
@@ -336,94 +259,32 @@ begin
 	until I >= StL.Count-1;
 end;          *)
 
-
-function TExportCommon.RemoveNextTag(var St : String; out Tag : string) : integer;
-var
-    TStart, TEnd, StartAt : integer;
-begin
-    StartAt := 0;
-    {writeln('==== Working on : [' + St + ']');}
-    repeat
-        Tag := '';
-        TStart := St.IndexOf('<', StartAt) + 1;
-        TEnd   := St.IndexOf('>', TStart) +1;
-        if (TStart > 0) and (TEnd > 0) and (TEnd > TStart) then begin
-            Tag := copy(St, TStart, TEnd - TStart +1);
-            {writeln('Tag = [' + Tag + ']');}
-            if (Tag = '<sub>') or (Tag = '</sub>') or
-                    (Tag = '</html>') or (Tag = '<html>') then begin       // they are MD tags, may be more .....
-                StartAt := TEnd +1;
-                {writeln('RNT Tag=' + Tag + ' St=[' + St + '] and StartAt=' + inttostr(StartAt));
-                writeln('Next IndexOf < is ' + inttostr(St.IndexOf('<', StartAt) + 1));
-                writeln('Next IndexOf > is ' + inttostr(St.IndexOf('>', StartAt) + 1));}
-                continue;
-            end;
-            {writeln('Removing Tag [' + Tag + ']');}
-            delete(St, TStart, TEnd - TStart +1);
-            exit(TStart);
-	    end
-	    else begin { writeln('Exit TStart=' + inttostr(TSTart) + ' TEnd=' + inttostr(TEnd));} exit(0); end;
-    until false;
-end;
-
 procedure TExportCommon.ProcessMarkUp(StL : TStringList);
 var
-    BoldOn : boolean = false;
-    ItalicOn : boolean = false;
-    MonoOn : boolean = false;
-    //highlightOn : boolean = false;
-    SmallOn : boolean = false;
-    StrikeOutOn : boolean = false;
-    StIndex, ChIndex : integer;
-    Tag, TempSt, NewTag : string;
+    StIndex : integer;
+    TempSt: string;
 begin
     StIndex := -1;
-    ChIndex := 1;
     while StIndex < StL.Count -1 do begin
         inc(StIndex);
         if (length(StL.Strings[StIndex]) < 2) then continue;     // no room for a tag in there.
-        {writeln('========== Looking at ' + StL.Strings[StIndex]);}
-        TempSt := '';
-        if ItalicOn then TempSt := TempSt + '*';
-        if BoldOn then TempSt := TempSt + '**';
-        if StrikeoutOn then TempSt := TempSt + '~~';
-        if MonoOn then TempSt := TempSt + '`';
-        if SmallOn then TempSt := TempSt + '<html><sub>';
-
-        TempSt := TempSt + StL.Strings[StIndex];
-        TempSt := TempSt.Replace('<bold></bold>', '', [rfReplaceAll]);
-        TempSt := TempSt.Replace('</bold></italic><bold>', '</bold></italic> <bold>', [rfReplaceAll]);
-        // ToDo : replace above line with something generic that puts a space between a string of 'off's and a string of 'on's
+        TempSt := StL.Strings[StIndex];
+        TempSt := TempSt.Replace('<bold>', '**', [rfReplaceAll]);
+        TempSt := TempSt.Replace('</bold>', '**', [rfReplaceAll]);
+        TempSt := TempSt.Replace('<italic>', '*', [rfReplaceAll]);
+        TempSt := TempSt.Replace('</italic>', '*', [rfReplaceAll]);
+        TempSt := TempSt.Replace('<monospace>', '`', [rfReplaceAll]);
+        TempSt := TempSt.Replace('</monospace>', '`', [rfReplaceAll]);
+        TempSt := TempSt.Replace('<size:small>', '<sub>', [rfReplaceAll]);
+        TempSt := TempSt.Replace('</size:small>', '</sub>', [rfReplaceAll]);
+        TempSt := TempSt.Replace('<strikeout>', '~~', [rfReplaceAll]);
+        TempSt := TempSt.Replace('</strikeout>', '~~', [rfReplaceAll]);
+        TempSt := TempSt.Replace('<size:large>', '', [rfReplaceAll]);
+        TempSt := TempSt.Replace('</size:large>', '', [rfReplaceAll]);
+        TempSt := TempSt.Replace('<size:huge>', '', [rfReplaceAll]);
+        TempSt := TempSt.Replace('</size:huge>', '', [rfReplaceAll]);
         TempSt := TempSt.Replace('<list><list-item dir="ltr">', '* ');
-        // ToDo : when we have one bullet point after another, remove one blank line between
-        {writeln('==== First Cut ' + TempSt);}
-        repeat
-            ChIndex := RemoveNextTag(TempSt, Tag);
-            case Tag of
-                '<bold>' :        begin NewTag := '**';     BoldOn :=      True;  end;
-                '</bold>' :       begin NewTag := '**';     BoldOn :=      False; end;
-                '<italic>' :      begin NewTag := '*';      ItalicOn :=    True;  end;
-                '</italic>' :     begin NewTag := '*';      ItalicOn :=    False; end;
-                '<monospace>' :   begin NewTag := '`';      MonoOn :=      True;  end;
-				'</monospace>' :  begin NewTag := '`';      MonoOn :=      False; end;
-                '<size:small>' :  begin NewTag := '<sub>' ; SmallOn :=     True;  end;
-                '</size:small>' : begin NewTag := '</sub>'; SmallOn :=     False; end;
-                '<strikeout>'  :  begin NewTag := '~~';     StrikeoutOn := True;  end;               // Does strikeout belong here ??
-                '</strikeout>'  : begin NewTag := '~~';     StrikeoutOn := False; End;               // ''
-			else
-                NewTag := '';
-            end;
-            if not NewTag.IsEmpty then begin
-                TempSt := TempSt.Insert(ChIndex-1, NewTag);
-                {writeln('Old Tag was ' + Tag + '  NewTag is ' + NewTag); }
-			end;
-		until ChIndex < 1;
-        if BoldOn then TempSt := TempSt + '**';
-        if ItalicOn then TempSt := TempSt + '*';
-        if StrikeoutOn then TempSt := TempSt + '~~';
-        if MonoOn then TempSt := TempSt + '`';
-        if SmallOn then TempSt := TempSt + '</sub></html>';
-        //TempSt := ReplaceAngles(TempSt);                                  // +++++++++++++++++++++
+        TempSt := TempSt.Replace('</list-item></list>', '');
         TempSt := RestoreBadXMLChar(TempSt);
         StL.Insert(StIndex, TempSt);
         StL.Delete(StIndex + 1);

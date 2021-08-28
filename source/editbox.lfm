@@ -1,5 +1,5 @@
 object EditBoxForm: TEditBoxForm
-  Left = 1375
+  Left = 1223
   Height = 505
   Top = 441
   Width = 695

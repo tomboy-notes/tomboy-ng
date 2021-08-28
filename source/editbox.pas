@@ -873,7 +873,7 @@ const
  ChangeUnderline = 7;
 
 
-{ This complex function will set font size, Bold or Italic or Color depending on the
+{ This function will set font size, Bold or Italic or Color depending on the
   constant passed as first parameter. NewFontSize is ignored (and can be ommitted)
   if Command is ChangeBold or ChangeItalic, then toggle. If the function finds
   that the first char of selection already has that attribute it negates it,
