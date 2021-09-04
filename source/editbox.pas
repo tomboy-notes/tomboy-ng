@@ -2694,10 +2694,10 @@ begin
     {$ifdef DARWIN}
     if [ssCtrl] = Shift then begin
         case Key of
-             VK_1 : MenuSmallClick(Sender);
-             VK_2 : MenuNormalClick(Sender);
-             VK_3 : MenuLargeClick(Sender);
-             VK_4 : MenuHugeClick(Sender);
+             VK_1 : AlterFont(ChangeSize, Sett.FontSmall);
+             VK_2 : AlterFont(ChangeSize, Sett.FontNormal);
+             VK_3 : AlterFont(ChangeSize, Sett.FontLarge);
+             VK_4 : AlterFont(ChangeSize, Sett.FontHuge);
         end;
         Key := 0;
         exit;
@@ -2762,7 +2762,7 @@ begin
     if [ssAlt] = Shift then begin
         case key of
             {$ifdef DARWIN}
-            VK_H  : begin MenuHighLightClick(Sender); Key := 0; end; {$endif}
+            VK_H  : begin AlterFont(ChangeColor); ; Key := 0; end; {$endif}
             VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
             VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
             VK_Return :  if (EditFind.Text <> rsMenuSearch) then begin Key := 0; SpeedLeftClick(self); end;
@@ -2941,7 +2941,7 @@ begin
                                     if Bullet then begin
                                         PB.Numbering := BulletEight;
                                         PB.NumberingListLevel.FirstIndent:=-20;
-                                        PB.NumberingListLevel.LeftIndent := 180;
+                                        PB.NumberingListLevel.LeftIndent := 170;
                                     end else PB.Numbering := BulletSix;
                               end;
                 BulletEight : if not Bullet then begin

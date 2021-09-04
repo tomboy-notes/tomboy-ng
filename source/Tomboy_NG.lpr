@@ -23,7 +23,7 @@ uses
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile,
     Index, autostart, hunspell, sync, syncutils, transandroid,
     ResourceStr, SyncError, colours, cli, notifier, RollBack, commonmark,
-    transfileand, notenormal;
+    transfileand, notenormal, transgithub, import_notes;
 
 {$R *.res}
 

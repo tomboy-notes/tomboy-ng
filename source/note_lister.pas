@@ -73,6 +73,9 @@ unit Note_Lister;
     2021/01/03  LoadListView now uses TB_datetime, more tolerant of differing DT formats.
     2021/02/14  Notebook list now sorted, A->z
     2021/07/05  Changed a lot of "for X to 0" to "for 0 downto X" so searches start at end of list where current data is
+    2021/08/30  Removed dependencies on Sett and SearchUnit.   Added Dump methods.
+                Added function GetNotebooks(const ID: ANSIString): string; for GitHub
+    2021/08/31  Added TheNoteLister to hold a ref to the NoteLister for any unit that 'uses' this unit.
 }
 
 {$mode objfpc}  {$H+}
@@ -102,7 +105,7 @@ type
         destructor Destroy; Override;
         { Adds the ID to the Notebook, if Notebook does not already exist, creates it }
         procedure Add(const ID, ANoteBook : ANSIString; IsTemplate : boolean);
-        { Returns True if the passed ID is in the passed Notebook }
+        { Returns True if the passed note ID is in the passed Notebook }
         function IDinNotebook(const ID, Notebook : ANSIstring) : boolean;
                                 // Returns a PNoteBook that has a name matching passed NoteBook.
         function FindNoteBook(const NoteBook : ANSIString) : PNoteBook;
@@ -162,7 +165,7 @@ type
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
-    //procedure DumpNoteBookList();
+
 
 
    	//procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
@@ -201,6 +204,15 @@ type
                                         { The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
+
+    procedure DumpNoteBookList();
+    procedure DumpNoteNoteList();
+
+                                        {Returns the number of records in the Notelist }
+    function GetNoteCount() : integer;
+
+                                        { Returns a pointer to PNote record, zero based index }
+    function GetNote(Index: integer): PNote;
                                         { Loads a TListView with note title, LCD and ID}
     procedure LoadListView(const LView: TListView; const SearchMode: boolean);
                                         { Changes the name associated with a Notebook in the internal data structure }
@@ -240,6 +252,10 @@ type
                                           its Tags and that will be added to strlist. The StartHere template won't have a Notebook
                                           Name and therefore wont get mixed up here ???? }
     function GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
+                                        { Rets a (JSON array like) string of Notebook names that this note is a member of.
+                                        It returns an empty list if the note has no notebooks, its a template or cannot find note.
+                                        Expects only an ID. Result is like this "Notebook One", "Notebook2", "Notebook"  }
+    function GetNotebooks(const ID: ANSIString): string;
                                         { Loads the Notebook ListBox up with the Notebook names we know about. Add a bool to indicate
                                           we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
                                           GetNotes(Term) }
@@ -299,6 +315,8 @@ type
    end;
 
 
+
+
 Type   { ======================= SEARCH THREAD ========================== }
 
     TSearchThread = class(TThread)
@@ -308,6 +326,7 @@ Type   { ======================= SEARCH THREAD ========================== }
         procedure Execute; override;
     public
         CaseSensitive : boolean;
+        NoteLister : TNoteLister;   // Thats the note lister that called us
         TIndex : integer;           // Zero based count of threads
         ThreadBlockSize : integer;  // how many files each thread processes
         ResultsList : TNoteList;    // List to contain details of what we found
@@ -320,6 +339,8 @@ Type   { ======================= SEARCH THREAD ========================== }
 type
     CharSet = set of char;
 
+type    TGetNoteDetailsProc = procedure(const Dir, FileName: ANSIString; DontTestName: boolean; TheLister : TNoteLister) of Object;
+
 Type
 
         TIndexThread = class(TThread)
@@ -328,6 +349,7 @@ Type
         protected
             procedure Execute; override;
         public
+            GetNoteDetailsProc : TGetNoteDetailsProc;
             TIndex : integer;           // Zero based count of threads
             StartsWith : CharSet;
             WorkingDir : string;
@@ -340,6 +362,9 @@ Type
 function NoteContains(const TermList : TStringList; FullFileName: ANSIString; const CaseSensitive : boolean): boolean;
 
 
+var TheNoteLister : TNoteLister = nil;    // This is a pointer to the notelister, its really, really global !
+
+
 { ------------------------------------------------------------------- }
 { -------------------------- IMPLEMENTATION ------------------------- }
 { ------------------------------------------------------------------- }
@@ -347,9 +372,10 @@ function NoteContains(const TermList : TStringList; FullFileName: ANSIString; co
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, settings, LazLogger, SearchUnit, tb_utils
+uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger, tb_utils
+        {$ifdef TOMBOY_NG}, SearchUnit, settings{$endif}                      // project options -> Custom Options
         {$ifdef WINDOWS}, SyncUtils{$endif} ;
-{ Projectinspector, double click Required Packages and add LCL }
+{ Laz* are LCL packages, Projectinspector, double click Required Packages and add LCL }
 
 var
     FinishedThreads : integer;     // There are here to allow the search threads to find them.
@@ -378,7 +404,8 @@ var
     	if FindFirst(WorkingDir + Mask, faAnyFile, Info)=0 then
     		repeat
                 inc(cnt);
-    		    SearchForm.NoteLister.GetNoteDetails(WorkingDir, Info.Name, OneThread, TheLister);
+                GetNoteDetailsProc(WorkingDir, Info.Name, OneThread, TheLister);
+    		    //SearchForm.NoteLister.GetNoteDetails(WorkingDir, Info.Name, OneThread, TheLister);
     		until FindNext(Info) <> 0;
     	FindClose(Info);
   end;
@@ -415,12 +442,12 @@ begin
         debugln('Last Thread Endblock=' + dbgs(EndBlock)); }
     while (not Terminated) and (I < EndBlock) do begin
         if Notecontains(Term_List, File_List.Strings[i], CaseSensitive) then  begin
-            if not SearchForm.Notelister.IsATemplate(ExtractFileNameOnly(File_List.Strings[i])) then begin
+            if not Notelister.IsATemplate(ExtractFileNameOnly(File_List.Strings[i])) then begin
                 new(NoteP);
                 NoteP^.ID:= ExtractFileNameOnly(File_List.Strings[i]) + '.note';
                 NoteP^.IsTemplate := False;
-                NoteP^.Title := SearchForm.Notelister.GetTitle(NoteP^.ID);
-                NoteP^.LastChange:= SearchForm.Notelister.GetLastChangeDate(NoteP^.ID);
+                NoteP^.Title := Notelister.GetTitle(NoteP^.ID);
+                NoteP^.LastChange:= Notelister.GetLastChangeDate(NoteP^.ID);
                 NoteP^.CreateDate := '';
                 //debugln('ID = ' + NoteP^.ID);
                 while InterlockedCompareExchange(ThreadLock, TIndex, -1) <> -1 do
@@ -545,7 +572,7 @@ begin
 end;
 
 // =================== DEBUG PROC ======================================
-{
+
 procedure TNoteLister.DumpNoteBookList();
 var
     P : PNotebook;
@@ -559,7 +586,24 @@ begin
     end;
     debugln('-----------------------');
 end;
-}
+
+procedure TNoteLister.DumpNoteNoteList();
+var
+    P : PNote;
+//    I : integer;
+begin
+    debugln('-----------------------');
+    for P in NoteList do begin
+        debugln('ID=' + P^.ID + '   ' +  P^.Title);
+        debugln('CDate=' + P^.CreateDate);
+    end;
+    debugln('-----------------------');
+end;
+
+function TNoteLister.GetNoteCount(): integer;
+begin
+    result :=  NoteList.Count;
+end;
 
 { ============================== NoteLister ================================ }
 
@@ -782,6 +826,18 @@ begin
 end;
 
 
+function TNoteLister.GetNotebooks(const ID: ANSIString): string;
+var
+    //Index, I : Integer;
+    P : PNoteBook;
+begin
+	Result := '';
+    for P in Notebooklist do
+        if NotebookList.IDinNotebook(ID, P^.Name) then
+            Result := Result + '"' + P^.Name + '",';
+    if Result <> '' then delete(Result, length(Result), 1);         // remove trailing comma
+end;
+
 function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
 var
     Index, I : Integer;
@@ -880,7 +936,7 @@ end;
 procedure TNoteLister.GetNoteDetails(const Dir, FileName: ANSIString; DontTestName : boolean; TheLister : TNoteLister);
 			// This is how we search for XML elements, attributes are different.
             // Note : we used to do seaching here as well as indexing, now just indexing
-		    // Note that this method is no Multithread aware. calling meth must setup
+		    // Note that this method is not Multithread aware, calling method must setup
 		    // CriticalSection even if it is single threaded.
 var
     NoteP : PNote;
@@ -1201,6 +1257,10 @@ begin
     Result := PNote(NoteList.get(Index))^.Title;
 end;
 
+function TNoteLister.GetNote(Index : integer) : PNote;
+begin
+    Result := NoteList[Index];
+end;
 
 { With 2000 notes, on my Dell, linux, search for 'and'.
   Before multithreading - 250mS - 280mS
@@ -1229,13 +1289,16 @@ begin
         ThreadLock := -1;
         FileList := FindAllFiles(WorkingDir, '*.note', false); // list contains full file names !
          while ThreadIndex < ThreadCount do begin
-            SearchThread := TSearchThread.Create(True);         // Threads clean themselves up.
+            SearchThread := TSearchThread.Create(True);        // Threads clean themselves up.
+            SearchThread.NoteLister := self;
             SearchThread.ThreadBlockSize := FileList.Count div ThreadCount;
             SearchThread.Term_List := TermList;
             SearchThread.File_List := FileList;
             SearchThread.ResultsList := SearchNoteList;
             SearchThread.TIndex := ThreadIndex;
+            {$ifdef TOMBOY_NG}
             SearchThread.CaseSensitive := Sett.SearchCaseSensitive;
+            {$endif}
             SearchThread.start();
             inc(ThreadIndex);
         end;
@@ -1273,6 +1336,7 @@ begin
     while Cnt > 0 do begin
         //debugln('Making thread ' + inttostr(Cnt));
         IndexThread := TIndexThread.Create(True);         // Threads clean themselves up.
+        IndexThread.GetNoteDetailsProc := @GetNoteDetails; // pass the address of the proc to the Thread class.
         IndexThread.WorkingDir := WorkingDir;
         IndexThread.OneThread := DontTestName;
         IndexThread.TheLister := self;

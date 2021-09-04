@@ -403,11 +403,11 @@ begin
     while fs.Position < fs.Size do begin
         fs.read(Ch, 1);
         if (Ch = '>') or (Ch = ' ') then begin     // we will exit after case statement
-            if InContent then debugln('ReadTag - Testing ' + Buff);
+            // if InContent then debugln('ReadTag - Testing ' + Buff);
             if Buff = 'list' then
                 ReadList(fs)
             else begin
-                debugln('Sending tag to ActOnTag =' + Buff);
+                // debugln('Sending tag to ActOnTag =' + Buff);
                 ActOnTag(Buff);
             end;
             while Ch <> '>' do fs.read(Ch, 1);          // eat everything else in the tag

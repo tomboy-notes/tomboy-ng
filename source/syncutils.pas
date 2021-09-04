@@ -17,6 +17,7 @@ unit syncutils;
     2019/07/19  Added ability to escape ' and " selectivly, attributes ONLY
     2020/04/24  Make debugln use dependent on LCL, now can be FPC only unit
     2020/08/01  Can now handle 'Zulu' datestrs, ones without timezone, with 'Z'
+    2021/08/31  Added sha to TNoteInfo
 }
 {$mode objfpc}{$H+}
 
@@ -79,6 +80,7 @@ type
         SID : longint;              // Short ID, clumbsy alt to the GUID/UUID we should use
         Action : TSyncAction;
         Title : ANSIString;
+        Sha : ANSIString;           // The sha of an uploaded note. Stored in local manifest, Github mode.
     end;
 
  type                                 { ---------- TNoteInfoList ---------}

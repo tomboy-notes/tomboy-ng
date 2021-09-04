@@ -82,7 +82,7 @@
         <Item58 Value="LabelFileSyncinfo2"/>
       </ExcludedOriginals>
     </i18n>
-    <BuildModes Count="17">
+    <BuildModes Count="18">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -739,11 +739,58 @@
           </Other>
         </CompilerOptions>
       </Item17>
+      <Item18 Name="ReleaseQT5">
+        <MacroValues Count="1">
+          <Macro4 Name="LCLWidgetType" Value="qt5"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-qt-64"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF"/>
+          </Other>
+        </CompilerOptions>
+      </Item18>
       <SharedMatrixOptions Count="6">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseRasPi,ReleaseLin64,ReleaseLin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item3 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
-        <Item4 ID="950048283013" Modes="QT5Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
+        <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
       </SharedMatrixOptions>
@@ -754,7 +801,7 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small --debug-index"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/  --debug-index"/>
       </local>
       <environment>
         <UserOverrides Count="1">
@@ -765,7 +812,7 @@
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small --debug-index"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt/  --debug-index"/>
           </local>
           <environment>
             <UserOverrides Count="1">
@@ -786,7 +833,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="38">
+    <Units Count="40">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1004,6 +1051,14 @@
         <Filename Value="notenormal.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit37>
+      <Unit38>
+        <Filename Value="transgithub.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="import_notes.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit39>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

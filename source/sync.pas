@@ -158,6 +158,7 @@ HISTORY
     2019/07/19  Escape ' and " when using Title as an attribute in local manifest.
     2020/02/27  Better detect when we try to sync and don't have a local manifest, useful for Tomdroid, check normal !
     2021/01/04  Support TomdroidFile sync mode.
+    2021/08/31  Added sha to TNoteInfo
 }
 
 interface
@@ -755,6 +756,7 @@ begin
                 PNote^.ID := copy(Info.Name, 1, 36);
                 PNote^.LastChange:=LocLCD;
                 PNote^.Action:= SyUpLoadNew;                // Note, we may overrule that in CheckRemoteDeletes()
+                PNote^.Sha := '';
                 RemoteMetaData.Add(PNote);
             end;
         until FindNext(Info) <> 0;
@@ -789,6 +791,7 @@ begin
                 PNote^.ID:= LocalMetaData.Items[Index]^.ID;
                 PNote^.Title := LocalMetaData.Items[Index]^.Title;                    // I think we know title, useful debug info here....
                 PNote^.Action := SyDeleteLocal;                                       // Was deleted elsewhere, do same here.
+                PNote^.Sha := '';
                 RemoteMetaData.Add(PNote);
                 inc(Count);
             end else begin
@@ -821,6 +824,7 @@ begin
 	                    Pnote^.ID:=ID;
 	                    Pnote^.LastChange:=CDate;
 	                    PNote^.Action:=SyUploadNew;
+                        PNote^.sha := '';
                         RemoteMetaData.Add(PNote);
                         inc(CountNew);
 				end else Debugln('Failed to find lastchangedate in ' + Info.Name);
@@ -1003,12 +1007,14 @@ begin
                     if RemoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
                         if (not WriteOK) and (RemoteMetaData[Index]^.Action = SyUpLoadNew) then continue;
                         write(Outfile, '    <note guid="' + RemoteMetaData[Index]^.ID + '" latest-revision="');
-                        write(OutFile, inttostr(RemoteMetaData[Index]^.Rev));
-                        writeln(Outfile, '" />');
+                        write(OutFile, inttostr(RemoteMetaData[Index]^.Rev) + '" ');
+                        if RemoteMetaData[Index]^.Sha <> '' then
+                           write(Outfile, 'sha="' + RemoteMetaData[Index]^.Sha + '" ');
+                        writeln(Outfile, '/>');
 					end;
 				end;
-                    writeln(OutFile, '  </note-revisions>'#10'  <note-deletions>');
-                    writeln(OutFile, '  </note-deletions>'#10'</manifest>');
+                writeln(OutFile, '  </note-revisions>'#10'  <note-deletions>');
+                writeln(OutFile, '  </note-deletions>'#10'</manifest>');
 		    finally
 	            CloseFile(OutFile);
 		    end;
@@ -1260,7 +1266,7 @@ function TSync.ReadLocalManifest(const FullFileName : string = '') : boolean;
 var
     Doc : TXMLDocument;
     NodeList : TDOMNodeList;
-    Node : TDOMNode;
+    Node, NodeSha : TDOMNode;
     j : integer;
     NoteInfoP : PNoteInfo;
     RevStr, ServerID, ManifestFile : string;
@@ -1329,6 +1335,10 @@ begin
                    new(NoteInfoP);
                    NoteInfoP^.ID := NodeList.Item[j].Attributes.GetNamedItem('guid').NodeValue;
                    NoteInfoP^.Rev := strtoint(NodeList.Item[j].Attributes.GetNamedItem('latest-revision').NodeValue);
+                   NodeSha := NodeList.Item[j].Attributes.GetNamedItem('sha');
+                   if NodeSha = nil then
+                        NoteInfoP^.Sha := ''
+                   else  NoteInfoP^.Sha := NodeSha.NodeValue;
                    NoteInfoP^.Deleted := False;
                    LocalMetaData.Add(NoteInfoP);
 			   end;
@@ -1339,6 +1349,7 @@ begin
                    NoteInfoP^.ID := NodeList.Item[j].Attributes.GetNamedItem('guid').NodeValue;
                    NoteInfoP^.Title := NodeList.Item[j].Attributes.GetNamedItem('title').NodeValue;
                    NoteInfoP^.Deleted := True;
+                   NoteInfoP^.Sha := '';
                    LocalMetaData.Add(NoteInfoP);
    			   end;
 		finally

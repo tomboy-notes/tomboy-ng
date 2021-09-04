@@ -51,7 +51,7 @@ unit tb_utils;
 interface
 
 uses
-        Classes, SysUtils, KMemo;
+        Classes, SysUtils {$ifndef TESTRIG}, KMemo{$endif};
 
                         // True if looks like an ID, 36 char and dash as #9
 function IDLooksOK(const ID : string) : boolean;
@@ -95,7 +95,7 @@ function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer})
                         // Maybe tolerant of gnote format.
 procedure RemoveNoteMetaData(STL : TStringList);
 
-procedure SayDebugSafe(st: string);
+function SayDebugSafe(st: string) : boolean;
 
 
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
@@ -363,9 +363,10 @@ begin
 	result := -1;
 end;
 
-procedure SayDebugSafe(st: string);
+function SayDebugSafe(st: string) : boolean;
 begin
     {$ifdef LCL}Debugln{$else}writeln{$endif}(St);
+    result := false;
 end;
 
 function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer}): string;
