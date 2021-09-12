@@ -18,9 +18,26 @@ unit transgithub;
   DoRemoteManifest now requires that we pass the RemoteMetaData to it and it needs
   access to NoteLister so it can get a list of Notebooks, thats going to be interesting.
 
+  https://github.com/settings/tokens to generate a Person Access Token
+
+  -------------- P E R S O N A L    A C C E S S   T O K E N S ------------------
+
+  From a logged in to github page, click my pretty picture, top right. Then 'Settings'.
+  on left sidebar, click 'Developer",  "Personal Access Token".
 }
 
-{$define DEBUGMODE}
+// ToDo : if we record the sha and LCD string in remote manifest, then if that sha
+// matches the sha from the actual file, then we can use that LCD St to compare
+// notes in the event of a clash (ie a (re)join with notes at both ends). This
+// will not help for notes edited on github website but will cover note changed.
+
+// ToDo : must deal better with Templates.
+// Right now, a template, once uploaded to git, is seen as a ordinary note and downloads as such.
+// Don't think we can leave a Template out, someone may have deliberate info in there
+// eg my .1 manpage template.  So, detect a note is a template on the way up, mark
+// it as such on the way back ?
+
+{$define DEBUG}
 
 interface
 
@@ -37,9 +54,11 @@ type
       TGitNote = record
             FName : string;     // eg README.txt, Meta/serverid, Notes/<guid>.md
             Sha   : string;     // The SHA, we always have this.
+            Title : string;     // Last known note title.
             Date  : string;     // The Last Change Date of the note. Always can get that.
             CDate : string;     // The create Date, we may not know it if its a new note.
             Format : TFileFormat;       // How the file is saved at github, md only at present
+            Notebooks : string; // maybe empty, else ["notebook1", "notebook2"] etc. Only needed for SyDownLoad
       end;
 
 type
@@ -52,12 +71,15 @@ TGitNoteList = class(TFPList)
      public
          constructor Create();
          destructor Destroy; override;
+                            // Adds an item, found in the JSON, to list, does NOT check for duplicates.
+                            // Only gets Name (that is, FileName maybe with dir prepended) and sha.
          function AddJItem(jItm: TJSONData; Prefix: string): boolean;
          function Add(AGitNote : PGitNote) : integer;
-                        // Adds or updates record, FName being key.
+                            // Adds or updates record, FName being key.
          procedure Add(const FName, Sha: string);
-                        // Adds passed Data to List
-         procedure InsertData(const FName, DateSt, CDate: string; const Format: TFileFormat);
+                            // Adds data to list, uses only non-empty items. Entry must exist in list, so
+                            // FName is required and sensibly, at least one more item.
+         procedure InsertData(const FName, Title, DateSt, CDate, Notebooks: string; const Format: TFileFormat);
          function FNameExists(FName: string; out Sha: string): boolean;
          function Find(const ID: string): PGitNote;
          property Items[Index: integer]: PGitNote read Get; default;
@@ -78,10 +100,20 @@ type
  TGithubSync = class(TTomboyTrans)
  {$endif}
   private
-
+                            { Private : Initialised in TestConnection which calls ScanRemoteRepo
+                            to put an ID and sha entry in, then ReadRemoteManifest to fill in
+                            cdate, format, title and notebooks.
+                            AssignAction will add locally know notes and and actions.}
         RemoteNotes : TGitNoteList;
         HeaderOut : string;             // Very ugly global to get optional value back from Downloader
+                                        // ToDo : do better than this Davo
+
         procedure ErrorLogger(ESt : string);
+
+                            // A general purpose downloader, results in JSON, if downloading a file we need
+                            // to pass the Strings through ExtractContent() to do JSON and base64 stuff.
+                            // This method may set ErrorMessage, it might need resetting afterwards.
+                            // The two optional parameter must be used together and extract one header value.
         function Downloader(URL: string; out SomeString: String; const Header: string =''): boolean;
 
         procedure DumpJSON(const St: string; WhereFrom: string = '');
@@ -89,6 +121,9 @@ type
                             // Finds a Z datest in the Commit Response, tolerates, to some extent
                             // unexpected JSON but must not get an array, even a one element one.
         function ExtractLCD(const St: string; out DateSt: string): boolean;
+                            // Reads the (json) remote manifest, adding cdate, format and Notebooks to RemoteNotes.
+                            // Assumes RemoteNotes is created, comms tested. Ret false if cannot find remote
+                            //  manifest.  All a best effort approach, a github created note will not be listed.
         function ReadRemoteManifest(): boolean;
                             // Generic Putting / Posting Method. Put = False means Post. If an FName is provided
                             // then its a file upload, record the sha in RemoteNotes.
@@ -110,19 +145,24 @@ type
         function MakeRemoteRepo() : boolean;
 
         function SendNote(ID: string): boolean;
-                            // Scans remote repo recording ID and sha
+                            // Scans the top level of the repo and then Notes and Meta recording in me and
+                            // RemoteNotes the filename and sha for every remote file it finds.
         function ScanRemoteRepo() : boolean;
 
                             // Returns true if it has written temp file named ID.note-temp in Note format in the
-                            // NotesDir. Assumes it can write in NotesDir.
-        function DownloadANote(NoteID: string): boolean;
+                            // NotesDir. Assumes it can write in NotesDir. If FFName provided, saves there instead.
+                            // FFName, if provided, must include path and extension and must be writable.
+        function DownloadANote(const NoteID: string; FFName: string = ''): boolean;
+
+
 
 
 
   public
-        UserName : string;
-        RemoteRepoName : string;                // eg tb_test, tb_notes
+        //UserName : string;
+        //RemoteRepoName : string;                // eg tb_test, tb_notes
 
+        TokenExpires : string;                  // Will have token expire date after TestTransport()
         {$ifdef TESTRIG}                        // This is defined in Trans, remove it or hid it !
         RemoteServerRev : integer;
         ServerID : string;
@@ -147,61 +187,48 @@ type
         // --------------- Methods required to be here by Trans ----------------
 
                                 { GitHub - tries to contact Github, testing UserName, Token and tries to scan the
-                                remote files into local data structure.  If WriteNewID is true, tries to create repo.
-                                Does no fill in LCD, will need to be done, note by note later.
+                                remote files putting ID and SHA into RemoteNotes.  If WriteNewID is true, tries
+                                to create repo first. Does no fill in LCD, will need to be done, note by note later.
                                 Might return SyncNetworkError, SyncNoRemoteMan, SyncReady, SyncCredentialError  }
         function TestTransport(const WriteNewServerID: boolean = False): TSyncAvailable;   {$ifndef TESTRIG} override;{$endif}
 
-                                // Does nothing here, just ret TSyncReady.
+                                // Checks Temp dir, should empty it, ret TSyncReady or SyncBadError
         function SetTransport() : TSyncAvailable;  {$ifndef TESTRIG} override;{$endif}
 
-                                {Request a list of all notes the server knows about. Returns with Last Change
-                                 Date (LCD) if easily available and always if GetLCD is true. We don't use all
-                                 fields in TInfoList, must get ID and RevNo. The list must have been created.
-                                 This is always a new list, unlike one derived from local manifest.}
+
                                  { Github : This is just a stub here, does nothing. We populate RemoteNotes in AssignAction()}
         function GetRemoteNotes(const NoteMeta : TNoteInfoList; const GetLCD : boolean) : boolean;  {$ifndef TESTRIG} override;{$endif}
 
         function DownloadNotes(const DownLoads: TNoteInfoList): boolean;   {$ifndef TESTRIG} override;{$endif}
 
-
-
         function DeleteNote(const ID : string; const ExistRev : integer) : boolean;  {$ifndef TESTRIG} override;{$endif}
 
-
-                                { Push a list of notes up to the server. A new revision has been made and we
-                                 are passed its number. If it turns out to be a new Repo, we'll make the
-                                 necessary directories first.}
                                  {Github : we pass SendNote an ID and remote filename, it looks after updating
                                  RemoteNotes data structure,  }
         function UploadNotes(const Uploads: TStringList): boolean;  {$ifndef TESTRIG} override;{$endif}
 
-                                { Tells Trans to deal with with remote mainfest. This is the trigger
-                                for a new revision on the server, the server must now do whatever
-                                it needs to accomodate the new new revision, some new or update notes
-                                will be sent to it a bit later. New RevNo will be RemoteServerRev plus 1 }
+
                                 {GitHub : Has to make Meta/mainfest.json and README.md. ignores RevNo
-                                and the passed manifest, We must get the RemoteMetaData which tells us
+                                and the passed manifest, We must have the RemoteMetaData which tells us
                                 which notes apply, CDate, LCD etc. Notebooks comes from NoteLister. Must
                                 be called after syncing done so it can copy SHA data to RemoteMetaData.
                                 Make just a flat index but in future, some sort of notebook organisation.
                                 Generate suitable content, upload it, README.md to Github. }
         function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; {$ifndef TESTRIG} override;{$endif}
 
-                                { Returns a full file name (inc path) to a (copy?) of indicated server
-                                  version of a note. File sync will return just full path and name to the
-                                  'remote' file but net sync will need to download the file and return
-                                  path and name to an overwriteable file, perhaps $CONFIG/remote.note ?
-                                  We need this so we can compare notes when we are resolving a clash.}
-        // function DownLoadNote(const ID : string; const RevNo : Integer) : string; virtual; abstract;        // ToDo : maybe need implement this ? For clash processing.
+                                { Github - Downloads indicated note to temp dir, returns FFname is OK
+                                The downloaded file should be reusable in this session if its later needed }
+        function DownLoadNote(const ID : string; const RevNo : Integer) : string; {$ifndef TESTRIG} override;{$endif}        // ToDo : maybe need implement this ? For clash processing.
 
                                 { Public - but not defined in Trans.
-                                Gets passed both Remote and Local MetaData lists, makes changes to
-                                only Remote. Relies on RemoteNotes, LocalMeta and NoteLister to fill
-                                in all details (inc Action) of all notes that are currently on
-                                remote server. Then scans over NoteLister adding any notes it finds
-                                that are not already in RemoteMetaData and marks them as SyUploads.}
-        function AssignActions(RMData, LMData : TNoteInfoList) : boolean;
+                                Gets passed both Remote and Local MetaData lists, makes changes to only Remote.
+                                Relies on RemoteNotes, LocalMeta and NoteLister to fill in all details  (inc
+                                Action) of all notes that are currently on remote server. Then  scans  over
+                                NoteLister adding any notes it finds that are not already in RemoteMetaData and
+                                marks them as SyUploads. Also adds the new NoteLister notes to RemoteNotes if
+                                NOT a TestRun.}
+
+        function AssignActions(RMData, LMData: TNoteInfoList; TestRun: boolean): boolean;
 
 end;
 
@@ -224,9 +251,13 @@ const
 
   RNotesDir='Notes/';
   RMetaDir='Meta/';
+  RemoteRepoName='tb_test';
   {$ifdef TESTRIG}
   NotesDir='/home/dbannon/Pascal/GithubAPI/notes/';
+  UserName='davidbannon';
+  DebugMode=true;
   {$endif}
+  TempDir='Temp/';
   // see also UserName (eg davidbannon) and RemoteRepoName (eg tb_test)
 
 // ================================ TGitNoteList ===============================
@@ -242,7 +273,7 @@ var
     {Notebooks,} Format : string;
 begin
     if Wherefrom <> '' then
-        SayDebugSafe('---------- DumpList ' + Wherefrom + '---------------');
+        SayDebugSafe('-------- TransGithub RemoteNotes ' + Wherefrom + '----------');
     while i < count do begin
         case Items[i]^.Format of
             ffNone : Format := 'not set';
@@ -250,7 +281,7 @@ begin
             ffMarkDown : format := 'Markdown';
         end;
         SayDebugSafe('List - ID=[' + Items[i]^.FName + '] Sha=' + Items[i]^.Sha + ' Date=' + Items[i]^.Date);
-        SaydebugSafe('       CDate=' + Items[i]^.CDate + '  Format=' + Format {+ '  Notebooks=' + Notebooks});
+        SaydebugSafe('       CDate=' + Items[i]^.CDate + '  Format=' + Format + ' Title=' + Items[i]^.Title + ' Notebooks=' + Items[i]^.Notebooks);
         inc(i);
     end;
 end;
@@ -264,13 +295,13 @@ destructor TGitNoteList.Destroy;
 var
     i : integer;
 begin
-	for I := 0 to Count-1 do begin
+    for I := 0 to Count-1 do begin
     	dispose(Items[I]);
 	end;
     inherited Destroy;
 end;
 
-// Adds an item, found in the JSON, to list, does NOT check for duplicates.
+
 function TGitNoteList.AddJItem(jItm: TJSONData; Prefix : string): boolean;
 var
     jObj : TJSONObject;
@@ -283,6 +314,7 @@ begin
     if not ((JObj.Find('error', jBool) and (jBool.AsBoolean = true))) then begin
             new(PNote);
             PNote^.FName := '';
+            PNote^.Title := '';
             PNote^.Date := '';
             PNote^.CDate := '';
             PNote^.Format := ffNone;
@@ -324,27 +356,30 @@ begin
     new(PNote);
     PNote^.FName := FName;
     PNote^.Sha := Sha;
+    PNote^.Title := '';
     PNote^.Date := '';
     PNote^.CDate := '';
     PNote^.Format := ffNone;
     Add(PNote);
 end;
 
-// Adds data to list, uses only non-empty items. Entry must exist in list, so
-// FName is required and sensibly, at least one more item. Does notebooks one at time.
-// procedure TGitNoteList.InsertData(const FName, DateSt: string);
-procedure TGitNoteList.InsertData(const FName, DateSt, CDate{, Notebook} : string; const Format : TFileFormat);
+
+procedure TGitNoteList.InsertData(const FName, Title, DateSt, CDate, Notebooks : string; const Format : TFileFormat);
 var
   i : integer = 0;
 begin
     while i < count do begin
         if Items[i]^.FName = FName then begin
+            if Title <> '' then
+                Items[i]^.Title := Title;
             if DateSt <> '' then
                 Items[i]^.Date := DateSt;
             if CDate <> '' then
                 Items[i]^.CDate := CDate;
             if Format <> ffNone then
                 Items[i]^.Format := Format;
+            if Notebooks <> '' then
+                Items[i]^.Notebooks := Notebooks;
             exit;
         end;
         inc(i);
@@ -394,45 +429,55 @@ end;
 
 
 
-function TGithubSync.TestTransport(const WriteNewServerID: boolean
-    ): TSyncAvailable;
+function TGithubSync.TestTransport(const WriteNewServerID: boolean): TSyncAvailable;
 {  If we initially fail to find offered user account, try defunkt so we can tell if
    its a network error or username one.  }
 var
    St : string;
 begin
     ErrorString := '';
-    if WriteNewServerID then           // Will fail ? if repo already exists.
+    debugln('TGithubSync.TestTransport - called');
+    if ANewRepo and WriteNewServerID then           // Will fail ? if repo already exists.
         MakeRemoteRepo();
     if RemoteNotes <> Nil then RemoteNotes.Free;
     RemoteNotes := TGitNoteList.Create();
-        if DownLoader(BaseURL + 'users/' + self.UserName, ST,
+    if ProgressProcedure <> nil then ProgressProcedure('Testing Credentials');
+    debugln('TGithubSync.TestTransport - about to get auth-token-expire');
+    debugln('URL=' + BaseURL + 'users/' + UserName);
+    if DownLoader(BaseURL + 'users/' + UserName, ST,
                         'github-authentication-token-expiration') then begin
         // So, does nominated user account exist ?
         if ExtractJSONField(ST, 'login') = UserName then begin     // "A" valid username
-            ErrorLogger('Confirmed login OK');
-            ErrorLogger('Token OK = ' + booltostr(HeaderOut <> '', True));  // "A" valid Password
-            ErrorLogger('Token Expires on ' + HeaderOut);         // Thats a global, set in Downloader
-            // ToDo : find some way to show user the above expire date
-            if HeaderOut = '' then begin
+            TokenExpires := HeaderOut;
+            SayDebugSafe('Confirmed login OK');
+            if TokenExpires = '' then begin
                 ErrorString := 'Username exists but Token Failure';
                 exit(SyncCredentialError);              // Password failure
             end;
             // If to here, we have a valid username and a valid Password but don't know if they work together
+            if ProgressProcedure <> nil then progressProcedure('Looking at ServerID');
             ServerID := GetServerId();
-            ErrorLogger('serverID is ' + ServerID);
+            debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
             if ServerID = '' then begin
                 ErrorString := 'Failed to get a ServerID';
-                exit(SyncNoRemoteMan)
+                exit(SyncNoRemoteRepo)
             end
             else begin
+                if ProgressProcedure <> nil then progressProcedure('Scaning remote files');
                 if not ScanRemoteRepo() then exit(SyncBadRemote);
-                if (not ReadRemoteManifest()) and not WriteNewServerID then exit(SyncNoRemoteMan);
+                if (not ReadRemoteManifest()) then begin
+                        debugln('TGithubSync.TestTransport ReadRemoteManifest returned false');
+                        if (not ANewRepo) then
+                            exit(SyncNoRemoteMan);
+                end;
+
+
                 Result := SyncReady;
+                if ProgressProcedure <> nil then progressProcedure('TestTransport Happy')
             end;
         end else ErrorLogger('Spoke to Github but did not confirm login');
     end else begin
-        ErrorLogger('Download failed');
+        ErrorLogger('Download failed URL=' + BaseURL + 'users/' + UserName);
         if DownLoader(BaseURL + 'users/defunkt', ST) then begin
             ErrorString := 'Username is not valid : ' + UserName;
             exit(SyncCredentialError);
@@ -443,13 +488,22 @@ end;
 
 function TGithubSync.SetTransport(): TSyncAvailable;
 begin
-    result := SyncReady;
+    if DebugMode then saydebugSafe('TGithubSync.SetTransport - called');
+    if not directoryexists(NotesDir + TempDir) then
+        ForceDirectory(NotesDir + TempDir);
+    if directoryexists(NotesDir + TempDir)
+            and DirectoryIsWritable(NotesDir + TempDir) then
+        result := SyncReady
+    else begin
+        SayDebugSafe('Cannot use dir : ' + NotesDir + TempDir);
+        exit(SyncBadError);
+    end;                                        // ToDo : we should empty temp dir now, and reuse any downloaded notes if possible.
 end;
 
 function TGithubSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean; // overload;
 var
     I : integer;
-    //FullFileName : string;
+    FullFileName : string;
 begin
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
@@ -465,14 +519,16 @@ begin
                     ErrorString := 'GitHub.DownloadNotes Failed to copy file to Backup ' + NotesDir + Downloads.Items[I]^.ID + '.note';
                     exit(False);
                 end;
-            // OK, now download the file, it arrives here with a temp name.
-            Result := DownloadANote(Downloads.Items[I]^.ID);
-            if Result and fileexists(NotesDir + Downloads.Items[I]^.ID + '.note-temp')  then begin
+            FullFileName := NotesDir + TempDir + Downloads.Items[I]^.ID + '.note';
+            if not FileExists(FullFileName) then
+                Result := DownloadANote(Downloads.Items[I]^.ID, FullFileName)   // OK, now download the file,
+            else Result := True;                                                // we must have downloaded it to resolve clash
+            if Result and fileexists(FullFileName)  then begin                  // to be sure, to be sure
                     deletefile(NotesDir + Downloads.Items[I]^.ID + '.note');
-                    renamefile(NotesDir + Downloads.Items[I]^.ID + '.note-temp', NotesDir + Downloads.Items[I]^.ID + '.note');
+                    renamefile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note');
             end else begin
-                ErrorString := 'GitHub.DownloadNotes Failed to download ' + Downloads.Items[I]^.ID + '.note';
-                exit(false);
+                ErrorString := 'GitHub.DownloadNotes Failed to download ' + FullFileName;
+                exit(SayDebugSafe('TGithubSync.DownloadNotes - ERROR, failed to down to ' + FullFileName));
             end;
         end;
     end;
@@ -541,37 +597,45 @@ begin
     result := true;
 end;
 
-function TGithubSync.DoRemoteManifest(const RemoteManifest: string;
-    MetaData: TNoteInfoList): boolean;
+function TGithubSync.DoRemoteManifest(const RemoteManifest: string; MetaData: TNoteInfoList): boolean;
 var
-    P : PNoteInfo;
-    PGit : PGitNote;
+    P : PNoteInfo;      // an item from RemoteMetaData
+    PGit : PGitNote;    // an item from local data structure, RemoteNotes
     Readme, manifest : TStringList;
-    St : string;
+    St, Notebooks : string;
 begin
     // ToDo : ensure this does not write new manifest / README if no changes were made.
     //Note : we do not use the supplied XML RemoteManifest, we build our own json one.
+    Result := false;
     Readme := TstringList.Create;
     Manifest := TstringList.Create;
     Readme.Append('## My tomboy-ng Notes');
     // * [Note Title](https://github.com/davidbannon/tb_demo/blob/main/Notes/287CAB9C-A75F-4FAF-A3A4-058DDB1BA982.md)
     Manifest.Append('{' + #10'  "notes" : {');
     (*   "1DB87478-C301-48B5-950E-5F17A438C347" : {
+               "title" : "some note title",
                "create-date" :   "2017-10-16T11:04:54.1237020+11:00",
                "format" : "md",
-               "notebooks" : []
+               "notebooks" :      -- OR --    "notebooks" : ["notebook1", "notebook2"]   etc
           },   *)
     try
-        if MetaData = nil then exit(false);
+        if MetaData = nil then exit(SayDebugSafe('TGithubSync.DoRemoteManifest ERROR, passed a nil metadata list'));
         for P in MetaData do begin
-            if P^.Action in [ SyNothing, SyUploadNew, SyUploadEdit, SyDownload, SyClash ] then begin
+            if P^.Action in [ SyNothing, SyUploadNew, SyUploadEdit, SyDownload, SyClash ] then begin  // SyClash ? I don't think so .....
                 // These notes will be the ones that end up on GitHub after we finish.
                 PGit := RemoteNotes.Find(P^.ID);
                 if PGit = nil then
-                    exit(SayDebugSafe('TGitHubSync.DoRemoteManifest - ERROR, failed to find ID from RemoteMetaData in RemoateNotes'));
+                    exit(SayDebugSafe('TGitHubSync.DoRemoteManifest - ERROR, failed to find ID from RemoteMetaData in RemoteNotes'));
                 Readme.Append('* [' + P^.Title + '](' + ContentsURL(False) + PGit^.FName + ')');
-                Manifest.Append('    "' + P^.ID + '" : {'#10 + '      "cdate" : "' + P^.CreateDate + '",'#10
-                        + '      "format" : "md",'#10 + '      "notebooks" : ['+ TheNoteLister.GetNotebooks(P^.ID) + ']'#10 + '    },');
+                if P^.Action = SyDownload then
+                    NoteBooks := PGit^.Notebooks
+                else
+                    NoteBooks := TheNoteLister.NotebookJArray(P^.ID + '.note');
+                Manifest.Append('    "' + P^.ID + '" : {'#10
+                        + '      "title" : "' + P^.Title + '",'#10                                           // ToDo : confirm
+                        + '      "cdate" : "' + P^.CreateDate + '",'#10
+                        + '      "format" : "md",'#10
+                        + '      "notebooks" : '+ NoteBooks + #10 + '    },');   // should be empty string or eg ["one", "two"]
             end;
         end;
         // Remove that annoying trailing comma from last block
@@ -595,46 +659,74 @@ begin
         if not SendFile(RMetaDir + 'manifest.json', Manifest) then SayDebugSafe('TGitHubSync.DoRemoteManifest ERROR, failed to write remote manifest');
         if not SendFile('README.md', Readme) then SayDebugSafe('TGitHubSync.DoRemoteManifest ERROR, failed to write remote README');
 
-        Saydebugsafe('------------- README.md ---------------');
+(*        Saydebugsafe('------------- README.md ---------------');
         Saydebugsafe(Readme.text);
         Saydebugsafe('------------- Manifest.json -----------');
-        saydebugsafe(Manifest.text);
-
+        saydebugsafe(Manifest.text);      *)
+        result := true;
     finally
         Manifest.Free;
         Readme.Free;
     end;
 end;
 
+function TGithubSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
+begin
+   if DownloadANote(ID, NotesDir + TempDir + ID + '.note') then
+       Result := NotesDir + TempDir + ID + '.note'
+   else Result := '';
+end;
+
 // ToDo : work through this better, are we risking race conditions here ?
 
 const Seconds5 = 0.00005;          // Very roughly, 5 seconds
 
-function TGithubSync.AssignActions(RMData, LMData: TNoteInfoList): boolean;
+function TGithubSync.AssignActions(RMData, LMData: TNoteInfoList; TestRun : boolean): boolean;
 var
     PGit : PGitNote;
     RemRec, LocRec : PNoteInfo;
     I : integer;
     NLister : PNote;
+    pNBook: PNoteBook;
+    LCDate, CDate : string;
 begin
-    // RMData should be empty, LMData will be empty of its a Join.
+    // RMData should be empty, LMData will be empty if its a Join.
     Result := True;
+    {$ifdef DEBUG}
+    debugln('==================================================================');
+    debugln('                  A S S I G N    A C T I O N S ');
+    debugln('==================================================================');
+    RMData.DumpList('TGithubSync.AssignActions.start RemoteMD');
+    LMData.DumpList('TGithubSync.AssignActions.start LocalMD');
+    RemoteNotes.DumpList('TGithubSync.AssignActions.start RemoteNotes');
+    {$endif}
     for PGit in RemoteNotes do begin                                            // First, put an entry in RemoteMetaData for every remote note.
         if copy(PGit^.FName, 1, length(RNotesDir)) <> RNotesDir then continue;
         // Every note we see in this loop exists remotely. But may not exist locally.
         new(RemRec);
         RemRec^.ID := extractFileNameOnly(PGit^.FName);
         LocRec := LMData.FindID(RemRec^.ID);                                    // Nil is OK, just means the note is not in LocalMetaData
-        RemRec^.CreateDate := PGit^.CDate;                                      // we may not have this, unlikely but possible
+        RemRec^.CreateDate := PGit^.CDate;                                      // We may not have this, unlikely but possible
         RemRec^.LastChange := PGit^.Date;
         RemRec^.Deleted := false;
         RemRec^.Rev := 0;
         RemRec^.SID := 0;
-        RemRec^.Title := TheNoteLister.GetTitle(RemRec^.ID);
+        RemRec^.Title := TheNoteLister.GetTitle(RemRec^.ID);                    // We 'prefer' the local title, remote one may be different
+        if RemRec^.Title = '' then
+            RemRec^.Title := TheNoteLister.GetNotebookName(RemRec^.ID);         // Maybe its a template ?
         RemRec^.Action := SyUnset;
-        if RemRec^.Title = '' then                                              // Not in Notelister, must be new
-            RemRec^.Action := SyDownLoad                                        // May get changed to SyDeleteRemote
+        if RemRec^.Title = '' then begin                                        // Not in Notelister, must be new or locally deleted
+            debugln('TGithubSync.AssignActions setting ' + RemRec^.ID + ' to Download #1');
+            RemRec^.Action := SyDownLoad;                                       // May get changed to SyDeleteRemote
+            RemRec^.Title := PGit^.Title;                                       // One we prepared earlier, from remote manifest
+            {$ifdef DEBUG}
+            SayDebugSafe('TGithubSync.AssignActions RemRec^.Title = ' + RemRec^.Title);
+            SayDebugSafe('TGithubSync.AssignActions PGit^.Title = ' + PGit^.Title);
+            {$endif}
+        end
         else begin                                                              // OK, it exists at both ends, now we need to look closely.
+
+            debugln('TGithubSync.AssignActions - Possibe clash LMData.LastSyncDate UTC= ' +  FormatDateTime('YYYY MM DD : hh:mm', LMData.LastSyncDate ));
             // if LastSyncDate is '', a Join. An ID that exists at both ends is a clash.
             // ToDo : Maybe later on we can do an intelligent 'merge' but not now.
             if  LMData.LastSyncDate < 1.0 then                                  // Not valid
@@ -647,29 +739,40 @@ begin
                     dispose(RemRec);
                     exit(False);
                 end else if PGit^.Sha <> LocRec^.Sha then begin                 // Ah, its been changed remotely
-                    if RemRec^.Action = SyUnset then
+                    if RemRec^.Action = SyUnset then begin
+                        debugln('TGithubSync.AssignActions setting ' + RemRec^.ID + ' to Download #2');
+                        debugln('PGit^.Sha=' + PGit^.Sha + ' and  LocRec^.Sha=' + LocRec^.Sha);
                         RemRec^.Action := SyDownLoad                            // Good, only remotely
-                    else RemRec^.Action := SyClash;                             // There is a problem to solve elsewhere.
+                    end
+                    else begin
+                        RemRec^.Action := SyClash;                             // There is a problem to solve elsewhere.
+                        debugln('TGitHubSync.AssignActions - assigning clash');
+                        debugln('sha from remote=' + PGit^.Sha + ' and local=' + LocRec^.Sha);
+                    end;
                 end;
             end;
+             debugln('TGithubSync.AssignActions - Possibe clash becomes ' + RMData.ActionName(RemRec^.Action));
         end;
         if RemRec^.Action = SyUnset then
              RemRec^.Action := SyNothing;
         RMData.Add(RemRec);
     end;
-    for i := 0 to TheNoteLister.GetNoteCount() -1 do begin                      // OK, now whats in NoteLister but not Remote* ?
+    for i := 0 to TheNoteLister.GetNoteCount() -1 do begin                      // OK, now whats in NoteLister but not RemoteNotes ?
         NLister := TheNoteLister.GetNote(i);
         if NLister = nil then exit(SayDebugSafe('TGitHubSync.AssignActions ERROR - not finding NoteLister Content'));
         // Look for items in NoteLister that do not currently exist in RemoteMetaData. If we find one,
         // we will add it to both RemoteMetaData and RemoteNodes (because its needed to store sha on upload)
         if RMData.FindID(extractfilenameonly(NLister^.ID)) = nil then begin
-            new(PGit);
-            PGit^.FName := RNotesDir + extractfilenameonly(NLister^.ID) + '.md';                     // ToDo : Careful, assumes markdown
-            PGit^.Sha := '';
-            PGit^.CDate := NLister^.CreateDate;
-            PGit^.Date := NLister^.LastChange;
-            PGit^.Format := ffMarkDown;
-            RemoteNotes.Add(PGit);
+            if not TestRun then begin
+                new(PGit);
+                PGit^.FName := RNotesDir + extractfilenameonly(NLister^.ID) + '.md';                     // ToDo : Careful, assumes markdown
+                PGit^.Sha := '';
+                PGit^.Notebooks := '';
+                PGit^.CDate := NLister^.CreateDate;
+                PGit^.Date := NLister^.LastChange;
+                PGit^.Format := ffMarkDown;
+                RemoteNotes.Add(PGit);
+            end;
             new(RemRec);
             RemRec^.ID := extractfilenameonly(NLister^.ID);
             RemRec^.LastChange := NLister^.LastChange;
@@ -681,8 +784,45 @@ begin
             RemRec^.Rev := 0;
             RemRec^.SID := 0;
             RMData.Add(RemRec);
-        end;
+        end else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes');
     end;
+    // OK, just need to check over the Notebooks now, notebooks are NOT listed in NoteLister.Notelist !
+    for i := 0 to TheNoteLister.NotebookCount() -1 do begin
+        pNBook := TheNoteLister.GetNoteBook(i);
+        if RMData.FindID(extractfilenameonly(pNBook^.Template)) = nil then begin
+            ErrorString := '';
+            CDate := GetNoteLastChangeSt(NotesDir + pNBook^.Template, ErrorString, True);
+            LCDate := GetNoteLastChangeSt(NotesDir + pNBook^.Template, ErrorString, False);
+            if ErrorString <> '' then
+                exit(SayDebugSafe('Failed to find dates in template ' + pNBook^.Template));
+            if not TestRun then begin
+                new(PGit);
+                PGit^.FName := RNotesDir + extractfilenameonly(pNBook^.Template) + '.md';                     // ToDo : Careful, assumes markdown
+                PGit^.Sha := '';
+                PGit^.Notebooks := '';
+                PGit^.CDate := CDate;
+                PGit^.Date := LCDate;
+                PGit^.Format := ffMarkDown;
+                RemoteNotes.Add(PGit);
+            end;
+            new(RemRec);
+            RemRec^.ID := extractfilenameonly(pNBook^.Template);
+            RemRec^.LastChange := LCDate;
+            RemRec^.CreateDate := CDate;
+            RemRec^.Sha := '';
+            RemRec^.Title := pNBook^.Name;
+            RemRec^.Action := SyUploadNew;
+            RemRec^.Deleted := False;
+            RemRec^.Rev := 0;
+            RemRec^.SID := 0;
+            RMData.Add(RemRec);
+        end else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes');
+    end;
+    {$ifdef DEBUG}
+    RMData.DumpList('TGithubSync.AssignActions.End RemoteMD');
+    LMData.DumpList('TGithubSync.AssignActions.End LocalMD');
+    RemoteNotes.DumpList('TGithubSync.AssignActions.End RemoteNotes');
+    {$endif}
 end;
 
 // ====================  P R I V A T E   M E T H O D S =========================
@@ -788,8 +928,7 @@ begin
     //RemoteServerRev := -1;
 end;
 
-// Scans the top level of the repo and then Notes and Meta recording filename and
-// sha for every file it finds. For every Note it finds,
+
 function TGithubSync.ScanRemoteRepo(): boolean;
 var
     jData : TJSONData;
@@ -801,7 +940,7 @@ begin
     Result := True;
     if Downloader(ContentsURL(True), ST) then begin
         jData := GetJson(St);
-        for i := 0 to JData.Count -1 do begin     // Each count represents one remote file
+        for i := 0 to JData.Count -1 do begin                           // Each count represents one remote file
             jItem := jData.Items[i];
             if not RemoteNotes.AddJItem(JItem, '') then
                 Result := False;
@@ -810,9 +949,9 @@ begin
     end else Result := False;
     if RemoteNotes.FNameExists(RNotesDir, Sha) then begin
         St := '';
-        if Downloader(ContentsURL(True)+'/'+RNotesDir, ST) then begin    // Github appears to be happy with Notes and Notes/   ?
+        if Downloader(ContentsURL(True)+'/'+RNotesDir, ST) then begin   // Github appears to be happy with Notes and Notes/   ?
             jData := GetJson(St);
-            for i := 0 to JData.Count -1 do begin     // Each count represents one remote file
+            for i := 0 to JData.Count -1 do begin                       // Each count represents one remote file
                 jItem := jData.Items[i];
                 if not RemoteNotes.AddJItem(JItem, RNotesDir) then
                     Result := False;
@@ -824,7 +963,7 @@ begin
         St := '';
         if Downloader(ContentsURL(True)+'/'+RMetaDir, ST) then begin
             jData := GetJson(St);
-            for i := 0 to JData.Count -1 do begin     // Each count represents on remote file
+            for i := 0 to JData.Count -1 do begin                       // Each count represents on remote file
                 jItem := jData.Items[i];
                 if not RemoteNotes.AddJItem(JItem, RMetaDir) then
                     Result := False;
@@ -837,6 +976,7 @@ end;
 
 constructor TGithubSync.Create();
 begin
+    ProgressProcedure := nil;           // It gets passed After create.
     RemoteNotes := Nil;
 end;
 
@@ -849,25 +989,31 @@ end;
 
 
 
-function TGithubSync.DownloadANote(NoteID: string): boolean;
+function TGithubSync.DownloadANote(const NoteID: string; FFName : string = ''): boolean;
 var
     {STL,} NoteSTL : TStringList;
     St  : string;
     Importer : TImportNotes;
+    PGit : PGitNote;
 begin
     Importer := Nil;
     NoteSTL := Nil;
     Result := True;
     //STL := TStringList.Create;
     try
+        PGit := RemoteNotes.Find(RNotesDir + NoteID + '.md');      // ToDo : assumes markdown
+        if PGit = nil then exit(SayDebugSafe('TGithubSync.DownloadANote - ERROR, cannot find ID in RemoteNotes = ' + RNotesDir + NoteID + '.md'));
         if not Downloader(ContentsURL(True) + '/' + RNotesDir + NoteID + '.md', ST) then exit(False);
         NoteSTL := TStringList.Create;
         NoteSTL.Text := DecodeStringBase64(ExtractJSONField(ST, 'content'));
         if NoteSTL.Count > 0 then begin
                 Importer := TImportNotes.Create;
-                Importer.MDtoNote(NoteSTL, '', '');
+                Importer.NoteBook := PGit^.Notebooks;
+                Importer.MDtoNote(NoteSTL, PGit^.Date, PGit^.CDate);                             // ToDo : need to pass LCD, CDate and Notebooks ????
                 // writeln(NoteSTL.TEXT);
-                NoteSTL.SaveToFile(NotesDir + NoteID + '.note-temp');
+                if FFName = '' then
+                    NoteSTL.SaveToFile(NotesDir + NoteID + '.note-temp')
+                else NoteSTL.SaveToFile(FFname);
         end else Result := false;
     finally
         if Importer <> Nil then Importer.Free;
@@ -877,14 +1023,10 @@ begin
 end;
 
 
-
-// Reads the (json) remote manifest, adding cdate, format and Notebooks
-// to RemoteNotes. Assumes RemoteNotes is created, comms tested. Ret
-// false if cannot find remote manifest.
-// All a best effort approach, a github created note will not be listed.
 function TGithubSync.ReadRemoteManifest(): boolean;
 var
-   St{, Mainfest} : string;
+   St : string;
+   Notebooks : string = '';
    jData, jItem, JItem2 : TJSONData;
    i, j, k: Integer;
    // object_name, field_name, field_value, object_type, object_items: String;
@@ -899,30 +1041,57 @@ begin
         ErrorLogger('GitHub.ReadRemoteMainfest : Failed to read the remote manifest file');
         exit;
     end;
-    jData := GetJSON(DecodeStringBase64(self.ExtractJSONField(ST, 'content')));
+(*    debugln('---------------- TGithubSync.ReadRemoteManifest content ----------');
+    debugln(St);
+    debugln('---------------- ');
+    debugln(ExtractJSONField(ST, 'content'));
+    debugln('---------------- ');
+    debugln(DecodeStringBase64(ExtractJSONField(ST, 'content')));    *)
+
+    jData := nil;
     try
-        for i := 0 to jData.Count - 1 do begin
-            if TJSONObject(jData).Names[i] <> 'notes' then continue;
-            jItem := jData.Items[i];                               // jItem points to 'notes'
-            for j := 0 to JItem.count-1 do begin
-                FName := RNotesDir + TJSONObject(jItem).Names[j] + '.md';   // ToDo : assumes its only markdown
-                JItem2 := JItem.Items[j];                          // jItems2 points to the individual notes field
-                if TJSONObject(jItem2).Find('cdate', jStr) then
-                    RemoteNotes.InsertData(FName, '', jStr.AsString, ffNone)
-                else ErrorLogger('ReadRemoteManifest Failed to find cdate for ' + FName);
-                if TJSONObject(jItem2).Find('format', jStr) then begin
-                    if jStr.AsString = 'md' then
-                        RemoteNotes.InsertData(FName, '', '', ffMarkDown)
-                    else  RemoteNotes.InsertData(FName, '', '', ffEncrypt);     // ToDo : won't work if we add more formats ??
-                end else ErrorLogger('ReadRemoteManifest Failed to find Format for ' + FName);
-                if TJSONObject(jItem2).Find('notebooks', jArray) then
-                        for k := 0 to JArray.Count-1 do
-                            RemoteNotes.InsertData(FName, '', '', ffNone)
-                else ErrorLogger('ReadRemoteManifest Failed to find notebooks');
+        try
+            jData := GetJSON(DecodeStringBase64(ExtractJSONField(ST, 'content')));
+        except on E: Exception do
+            exit(Saydebugsafe('TGithubSync.ReadRemoteManifest ERROR reading remote mainfest : ' + E.Message));
+        end;
+
+        try
+            for i := 0 to jData.Count - 1 do begin
+                if TJSONObject(jData).Names[i] <> 'notes' then continue;
+                jItem := jData.Items[i];                                            // jItem points to 'notes'
+                for j := 0 to JItem.count-1 do begin
+                    FName := RNotesDir + TJSONObject(jItem).Names[j] + '.md';       // ToDo : assumes its only markdown
+                    JItem2 := JItem.Items[j];                                       // jItems2 points to the individual notes field
+                                                                                    // do i need to check for a nil here ?
+                    if TJSONObject(jItem2).Find('title', jStr) then
+                        RemoteNotes.InsertData(FName, jStr.AsString, '', '', '', ffNone)
+                    else ErrorLogger('ReadRemoteManifest Failed to find title for ' + FName);
+                    if TJSONObject(jItem2).Find('cdate', jStr) then
+                        RemoteNotes.InsertData(FName, '', '', jStr.AsString, '', ffNone)
+                    else ErrorLogger('ReadRemoteManifest Failed to find cdate for ' + FName);
+                    if TJSONObject(jItem2).Find('format', jStr) then begin
+                        if jStr.AsString = 'md' then
+                            RemoteNotes.InsertData(FName, '', '', '', '', ffMarkDown)
+                        else  RemoteNotes.InsertData(FName, '', '', '', '', ffEncrypt); // ToDo : won't work if we add more formats ??
+                    end else ErrorLogger('ReadRemoteManifest Failed to find Format for ' + FName);
+                    Notebooks := '';
+                    if TJSONObject(jItem2).Find('notebooks', jArray) then begin
+                        if (jArray <> nil) then begin
+                            for k := 0 to JArray.Count-1 do
+                                notebooks := notebooks + '"' + jArray.Items[k].AsString + '",';
+                            if notebooks <> '' then
+                                delete(notebooks, notebooks.length, 1);         // remove trailing comma
+                        end;
+                        notebooks := '[' + notebooks + ']';                     // no notebooks means '[]'
+                    end;
+                    RemoteNotes.InsertData(FName, '', '', '', Notebooks, ffNone)
+                end;
             end;
+        except on E: Exception do exit(Saydebugsafe('TGithubSync.ReadRemoteManifest ERROR 2 reading remote mainfest : ' + E.Message));
         end;
     finally
-        jData.Free;
+        if jData <> nil then jData.Free;
     end;
     RemoteNotes.DumpList('After ReadRemoteManifest');
 end;
@@ -934,6 +1103,9 @@ begin
     Result := '';
     if Downloader(ContentsURL(True) + '/' + RMetaDir + 'serverid', ST) then
         Result := DecodeStringBase64(self.ExtractJSONField(ST, 'content'));
+    Result := Result.Replace(#10, '');
+    Result := Result.Replace(#13, '');
+    debugln('TGithubSync.GetServerId = [' + Result + ']');
 end;
 
 procedure TGithubSync.ErrorLogger(ESt: string);
@@ -942,10 +1114,7 @@ begin
     {$ifdef DEBUGMODE}SayDebugSafe(ESt);{$endif}
 end;
 
-// A general purpose downloader, results in JSON, if downloading a file we need
-// to pass the Strings through ExtractContent() to do JSON and base64 stuff.
-// This method may set ErrorMessage, it might need resetting afterwards.
-// The two optional parameter must be used together and extract one header value.
+
 function TGithubSync.Downloader(URL: string; out SomeString: String;
     const Header: string): boolean;
 var
@@ -1165,6 +1334,24 @@ end.
 // =============================================================================
 // =============================================================================
 
+
+{ Notebook Syntax -
+  ---------------
+A note not in any notebooks -
+<tags>
+</tags>
+
+A notebook template -
+<tags>
+   <tag>system:template</tag>
+   <tag>system:notebook:MacStuff</tag>
+ </tags>
+
+A note in a notebook -
+<tags>
+  <tag>system:notebook:MacStuff</tag>
+</tags>
+}
 
 // ========== V A R I O U S   J S O N   R E S P O N S E S ======================
 

@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 351
+  Left = 323
   Height = 525
-  Top = 179
+  Top = 190
   Width = 588
   BorderIcons = []
   Caption = 'Form Caption'
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 483
     Top = 0
     Width = 588
-    ActivePage = TabRecover
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 4
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -365,8 +365,8 @@ object Sett: TSett
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
         Left = 3
-        Height = 253
-        Top = 198
+        Height = 181
+        Top = 270
         Width = 578
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 3
@@ -374,8 +374,10 @@ object Sett: TSett
         BorderSpacing.Right = 3
         BorderSpacing.Bottom = 3
         Caption = '  Options  '
-        ClientHeight = 249
+        ClientHeight = 160
         ClientWidth = 574
+        ParentBackground = False
+        ParentColor = False
         TabOrder = 0
         object Label3: TLabel
           Left = 16
@@ -385,28 +387,40 @@ object Sett: TSett
           Caption = 'When a conflict is detected between a local note and remote one :'
         end
         object RadioAlwaysAsk: TRadioButton
+          AnchorSideLeft.Control = Label3
+          AnchorSideTop.Control = Label3
+          AnchorSideTop.Side = asrBottom
           Left = 16
           Height = 21
-          Top = 64
+          Top = 50
           Width = 214
+          BorderSpacing.Top = 15
           Caption = 'Always Ask me what to do.'
           Checked = True
           TabOrder = 0
           TabStop = True
         end
         object RadioUseLocal: TRadioButton
+          AnchorSideLeft.Control = Label3
+          AnchorSideTop.Control = RadioAlwaysAsk
+          AnchorSideTop.Side = asrBottom
           Left = 16
           Height = 21
-          Top = 112
+          Top = 86
           Width = 332
+          BorderSpacing.Top = 15
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
+          AnchorSideLeft.Control = Label3
+          AnchorSideTop.Control = RadioUseLocal
+          AnchorSideTop.Side = asrBottom
           Left = 16
           Height = 21
-          Top = 160
+          Top = 122
           Width = 319
+          BorderSpacing.Top = 15
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
         end
@@ -419,69 +433,210 @@ object Sett: TSett
       end
       object GroupBoxSync: TGroupBox
         AnchorSideLeft.Control = TabSync
-        AnchorSideTop.Control = TabSync
+        AnchorSideTop.Control = LabelSyncType
+        AnchorSideTop.Side = asrBottom
         AnchorSideRight.Control = TabSync
         AnchorSideRight.Side = asrBottom
         Left = 3
-        Height = 189
-        Top = 3
+        Height = 215
+        Top = 49
         Width = 578
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Left = 3
-        BorderSpacing.Top = 3
+        BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 185
+        ClientHeight = 194
         ClientWidth = 574
+        ParentBackground = False
+        ParentColor = False
         TabOrder = 1
         object Label4: TLabel
-          Left = 20
+          AnchorSideLeft.Control = GroupBoxSync
+          AnchorSideTop.Control = LabelSyncInfo2
+          AnchorSideTop.Side = asrBottom
+          Left = 15
           Height = 19
-          Top = 88
+          Top = 78
           Width = 49
+          BorderSpacing.Left = 15
+          BorderSpacing.Top = 15
           Caption = 'Repo : '
         end
         object LabelFileSync: TLabel
+          AnchorSideTop.Control = Label4
           Left = 72
           Height = 19
-          Top = 88
+          Top = 78
           Width = 105
           Caption = 'not configured'
         end
         object SpeedSetupSync: TSpeedButton
-          Left = 20
-          Height = 26
-          Top = 120
-          Width = 143
+          AnchorSideRight.Control = GroupBoxSync
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = GroupBoxSync
+          AnchorSideBottom.Side = asrBottom
+          Left = 416
+          Height = 31
+          Top = 153
+          Width = 148
+          Anchors = [akTop, akLeft, akRight, akBottom]
+          BorderSpacing.Right = 10
+          BorderSpacing.Bottom = 10
           Caption = 'Setup'
           OnClick = SpeedSetupSyncClick
         end
         object CheckBoxAutoSync: TCheckBox
-          Left = 384
+          AnchorSideRight.Control = SpeedSetupSync
+          AnchorSideBottom.Control = SpeedSetupSync
+          AnchorSideBottom.Side = asrBottom
+          Left = 312
           Height = 21
           Hint = 'Sync, if possible once an hour.'
-          Top = 120
+          Top = 158
           Width = 94
+          Anchors = [akRight, akBottom]
+          BorderSpacing.Right = 10
+          BorderSpacing.Bottom = 5
           Caption = 'Auto Sync'
           OnChange = CheckBoxAutoSyncChange
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
         end
-        object LabelFileSyncInfo1: TLabel
-          Left = 24
+        object LabelSyncInfo1: TLabel
+          AnchorSideLeft.Control = GroupBoxSync
+          AnchorSideTop.Control = GroupBoxSync
+          Left = 15
           Height = 19
-          Top = 23
-          Width = 134
-          Caption = 'LabelFileSyncInfo1'
+          Top = 15
+          Width = 108
+          BorderSpacing.Left = 15
+          BorderSpacing.Top = 15
+          Caption = 'LabelSyncInfo1'
         end
-        object LabelFileSyncInfo2: TLabel
-          Left = 25
+        object LabelSyncInfo2: TLabel
+          AnchorSideLeft.Control = GroupBoxSync
+          AnchorSideTop.Control = LabelSyncInfo1
+          AnchorSideTop.Side = asrBottom
+          Left = 15
           Height = 19
-          Top = 51
-          Width = 134
-          Caption = 'LabelFileSyncInfo2'
+          Top = 44
+          Width = 108
+          BorderSpacing.Left = 15
+          BorderSpacing.Top = 10
+          Caption = 'LabelSyncInfo2'
         end
+        object LabelToken: TLabel
+          AnchorSideLeft.Control = Label4
+          AnchorSideTop.Control = LabelLabelExpires
+          AnchorSideTop.Side = asrBottom
+          AnchorSideBottom.Control = EditToken
+          AnchorSideBottom.Side = asrBottom
+          Left = 15
+          Height = 19
+          Top = 118
+          Width = 43
+          Anchors = [akLeft, akBottom]
+          BorderSpacing.Right = 5
+          BorderSpacing.Bottom = 5
+          Caption = 'Token'
+        end
+        object EditToken: TEdit
+          AnchorSideTop.Control = Label4
+          AnchorSideTop.Side = asrBottom
+          AnchorSideBottom.Control = LabelLabelExpires
+          Left = 80
+          Height = 28
+          Top = 114
+          Width = 240
+          Anchors = [akBottom]
+          BorderSpacing.Bottom = 18
+          TabOrder = 1
+          Text = 'EditToken'
+        end
+        object LabelLabelExpires: TLabel
+          AnchorSideLeft.Control = Label4
+          AnchorSideBottom.Control = GroupBoxSync
+          AnchorSideBottom.Side = asrBottom
+          Left = 15
+          Height = 19
+          Top = 160
+          Width = 52
+          Anchors = [akLeft, akBottom]
+          BorderSpacing.Bottom = 15
+          Caption = 'Expires'
+        end
+        object LabelExpires: TLabel
+          AnchorSideLeft.Control = EditToken
+          AnchorSideBottom.Control = LabelLabelExpires
+          AnchorSideBottom.Side = asrBottom
+          Left = 80
+          Height = 19
+          Top = 160
+          Width = 90
+          Anchors = [akLeft, akBottom]
+          Caption = 'LabelExpires'
+        end
+        object LabelUserName: TLabel
+          AnchorSideTop.Control = EditToken
+          AnchorSideRight.Control = EditUserName
+          AnchorSideBottom.Control = EditToken
+          AnchorSideBottom.Side = asrBottom
+          Left = 382
+          Height = 19
+          Top = 119
+          Width = 33
+          Anchors = [akRight, akBottom]
+          BorderSpacing.Right = 5
+          BorderSpacing.Bottom = 4
+          Caption = 'User'
+        end
+        object EditUserName: TEdit
+          AnchorSideTop.Control = EditToken
+          AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = GroupBoxSync
+          AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = EditToken
+          AnchorSideBottom.Side = asrBottom
+          Left = 420
+          Height = 28
+          Top = 114
+          Width = 144
+          Anchors = [akRight, akBottom]
+          BorderSpacing.Right = 10
+          TabOrder = 2
+          Text = 'EditUserName'
+        end
+      end
+      object ComboSyncType: TComboBox
+        AnchorSideLeft.Control = LabelSyncType
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = LabelSyncType
+        Left = 131
+        Height = 28
+        Top = 15
+        Width = 309
+        BorderSpacing.Left = 15
+        ItemHeight = 0
+        Items.Strings = (
+          'File Sync - local or shared filesystem'
+          'Github - free Github account required'
+        )
+        OnChange = ComboSyncTypeChange
+        TabOrder = 2
+        Text = 'ComboSyncType'
+      end
+      object LabelSyncType: TLabel
+        AnchorSideLeft.Control = TabSync
+        AnchorSideTop.Control = TabSync
+        Left = 10
+        Height = 19
+        Top = 15
+        Width = 106
+        BorderSpacing.Left = 10
+        BorderSpacing.Top = 15
+        Caption = 'LabelSyncType'
       end
     end
     object TabBackUp: TTabSheet
@@ -1018,8 +1173,8 @@ object Sett: TSett
     Left = 480
   end
   object OpenDialogDictionary: TOpenDialog
-    Left = 552
-    Top = 64
+    Left = 472
+    Top = 104
   end
   object FontDialog1: TFontDialog
     MinFontSize = 0

@@ -499,6 +499,7 @@ object MainForm: TMainForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000
     }
+    Hint = 'tomboy-ng'
     OnClick = TrayIconClick
     Left = 368
     Top = 128

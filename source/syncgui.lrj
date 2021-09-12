@@ -2,6 +2,7 @@
 {"hash":372803,"name":"tformsync.caption","sourcebytes":[83,121,110,99],"value":"Sync"},
 {"hash":86477809,"name":"tformsync.label1.caption","sourcebytes":[76,97,98,101,108,49],"value":"Label1"},
 {"hash":86477810,"name":"tformsync.label2.caption","sourcebytes":[76,97,98,101,108,50],"value":"Label2"},
+{"hash":187059587,"name":"tformsync.labelprogress.caption","sourcebytes":[76,97,98,101,108,80,114,111,103,114,101,115,115],"value":"LabelProgress"},
 {"hash":77089212,"name":"tformsync.buttoncancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
 {"hash":4863637,"name":"tformsync.buttonclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"},
 {"hash":233429619,"name":"tformsync.buttonsave.caption","sourcebytes":[83,97,118,101,32,97,110,100,32,83,121,110,99],"value":"Save and Sync"},

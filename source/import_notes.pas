@@ -25,6 +25,7 @@ unit import_notes;
 
 HISTORY :
     2021/08/19   Rewrite much of md import. More use of St.Replace() model.
+    2021/09/06   Support notebook lists
 
 }
 
@@ -86,7 +87,9 @@ uses LazFileUtils, LazUTF8, LCLProc, TB_utils;
 
 function TImportNotes.ProcessPlain(Cont: TStringList; const Title: string;
     LCD: string; CDate : string): boolean;
-//var
+var
+    NoteBooks : TStringList;
+    i, j : integer;
     //DateSt : string;        // eg '2020-05-19T18:58:37.9513193+10:00';
 begin
     if LCD = '' then LCD := TB_GetLocalTime();
@@ -106,9 +109,30 @@ begin
     Cont.Add('    	<x>20</x>');
     Cont.Add('    	<y>30</y>');
     Cont.Add('      <tags>');
-
-    if NoteBook <> '' then
-        Cont.Add('        <tag>system:notebook:' + NoteBook + '</tag>');
+    if (Notebook <> '') and (NoteBook[1] = '[') then begin
+        i := 0;
+        repeat
+            j := -1;
+            i := Notebook.IndexOf('"', i);
+            if i > -1 then
+                j := Notebook.IndexOf('"', i+1);
+            if J > -1 then begin
+                if NoteBook.Substring(i+1, j-i-1) = 'template' then
+                    Cont.Add('        <tag>system:template:' + '</tag>')
+                else
+                    Cont.Add('        <tag>system:notebook:' + NoteBook.Substring(i+1, j-i-1) + '</tag>');
+                debugln('TImportNotes.ProcessPlain - notebook = ' + notebook);
+                debugln('i=' + inttostr(i) + '  and j=' + inttostr(j));
+                debugln('substr=' + NoteBook.Substring(i+1, j-i));
+                debugln('=============================================');
+            end;
+            i := j + 1;
+        until (j < 0);
+    end else
+        if NoteBook <> '' then
+            Cont.Add('        <tag>system:notebook:' + NoteBook + '</tag>');
+    { Notebook may contain just one notebook name but more likely it will have a
+    json array like string, ["NB1", "NB2", "NB3"].  It should not contain []  }
 
     Cont.Add('      </tags>');
     Cont.Add('    	<open-on-startup>False</open-on-startup>');

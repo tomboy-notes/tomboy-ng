@@ -76,6 +76,8 @@ RESOURCESTRING
   rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
   rsFileSyncInfo1 = 'tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive';
   rsFileSyncInfo2 = 'or uses a remote server over the internet with sshfs';
+  rsGithubSyncInfo1 = 'tomboy-ng can use Github to both sync and display or edit notes';
+  rsGithubSyncInfo2 = 'you should read the tomboy-ng wiki page for instructions.';
 
 
 // Settings but only part ...

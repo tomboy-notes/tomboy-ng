@@ -76,6 +76,7 @@ unit Note_Lister;
     2021/08/30  Removed dependencies on Sett and SearchUnit.   Added Dump methods.
                 Added function GetNotebooks(const ID: ANSIString): string; for GitHub
     2021/08/31  Added TheNoteLister to hold a ref to the NoteLister for any unit that 'uses' this unit.
+    2021/09/06  GetNotebooks result now wrapped in square brackets, JSON style
 }
 
 {$mode objfpc}  {$H+}
@@ -182,6 +183,7 @@ type
 
 
 
+
     		                    { Returns True if indicated note contains term in its content }
    	//function NoteContains(const TermList: TStringList; FileName: ANSIString         ): boolean;
 
@@ -208,9 +210,14 @@ type
     procedure DumpNoteBookList();
     procedure DumpNoteNoteList();
 
+                                        { Returns the Notebook Name for a given filename or ID (of the template itself)}
+    function GetNotebookName(FileorID: AnsiString): string;
+                                        { returns a indexed pointer to a Notebookrecord }
+    function GetNoteBook(Index: integer): PNoteBook;
+                                        { returns the number items in the notebook list }
+    function NotebookCount(): integer;
                                         {Returns the number of records in the Notelist }
     function GetNoteCount() : integer;
-
                                         { Returns a pointer to PNote record, zero based index }
     function GetNote(Index: integer): PNote;
                                         { Loads a TListView with note title, LCD and ID}
@@ -222,8 +229,7 @@ type
                                           This function expects to be passed an ID + '.note'. }
     function NoteBookTags(const NoteID: string): ANSIString;
                                         { Returns true if it has put into list one or more Note IDs that are members of NBName }
-    function GetNotesInNoteBook(var NBIDList: TStringList; const NBName: string
-        ): boolean;
+    function GetNotesInNoteBook(var NBIDList: TStringList; const NBName: string): boolean;
                                        { Retuns the title of note at (zero based) index. }
     function GetTitle(Index: integer): string;
                                         { Returns the title for a given ID or Filename }
@@ -253,9 +259,10 @@ type
                                           Name and therefore wont get mixed up here ???? }
     function GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
                                         { Rets a (JSON array like) string of Notebook names that this note is a member of.
-                                        It returns an empty list if the note has no notebooks, its a template or cannot find note.
-                                        Expects only an ID. Result is like this "Notebook One", "Notebook2", "Notebook"  }
-    function GetNotebooks(const ID: ANSIString): string;
+                                        It returns an empty array if the note has no notebooks or cannot be found.
+                                        If ID is a template, will send a two element array ["template', "notebook-name"].
+                                        Expects an ID.note . Result is like this ["Notebook One", "Notebook2", "Notebook"]  }
+    function NotebookJArray(const ID: ANSIString): string;
                                         { Loads the Notebook ListBox up with the Notebook names we know about. Add a bool to indicate
                                           we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
                                           GetNotes(Term) }
@@ -595,7 +602,7 @@ begin
     debugln('-----------------------');
     for P in NoteList do begin
         debugln('ID=' + P^.ID + '   ' +  P^.Title);
-        debugln('CDate=' + P^.CreateDate);
+        debugln('CDate=' + P^.CreateDate + ' template=' + booltostr(P^.IsTemplate, true));
     end;
     debugln('-----------------------');
 end;
@@ -609,7 +616,17 @@ end;
 
 { -------------  Things relating to NoteBooks ------------------ }
 
-// consider changing the this works, I don't need to pass a created SL tp GetNotebooks(...)
+
+function TNoteLister.NotebookCount(): integer;
+begin
+    Result := NoteBookList.Count;
+end;
+
+
+function TNoteLister.GetNoteBook(Index : integer) : PNoteBook;
+begin
+    Result := NoteBookList[Index];
+end;
 
 function TNoteLister.NoteBookTags(const NoteID : string): ANSIString;
 var
@@ -617,7 +634,6 @@ var
     Index : Integer;
 begin
    Result := '';
-   //if SearchForm.NoteLister = nil then exit;
    SL := TStringList.Create;
    try
        if GetNotebooks(SL, NoteID) then begin  // its a template
@@ -634,9 +650,51 @@ begin
    finally
        SL.Free;
    end;
-    //debugln('NoteLister : Tags for ' + NoteID + #10 + Result);
-    //debugln('---------------');
 end;
+
+function TNoteLister.NotebookJArray(const ID: ANSIString): string;
+var
+    //Index, I : Integer;
+    P : PNoteBook;
+    STL : TStringList;
+    Index : Integer;
+begin
+    Result := '';
+    STL := TStringList.Create;
+    try
+        if GetNotebooks(STL, ID) then               // its a template
+    		    Result := '"template", "' + STL[0] + '"'
+        else begin                                  // maybe its a Notebook Member
+            for Index := 0 to STL.Count -1 do		// here, we auto support multiple notebooks.
+                Result := Result + '"' + StL[Index] + '", ';
+            if Result <> '' then                           // will be empty if note is not member of a notebook
+                delete(Result, length(Result)-1, 2);       // remove trailing comma and space
+        end;
+    finally
+        STL.Free;
+    end;
+    Result := '[' + Result + ']';                  // Always return the brackets, even if empty
+    //debugln('TNoteLister.NotebookJArray returning Notebooks jArray = ' + Result);
+end;
+
+
+
+
+(*
+
+   //===========================
+	if IsATemplate(ID) then begin
+        Result := '"template"';
+        //xxx
+    end else
+        for P in Notebooklist do
+            if NotebookList.IDinNotebook(ID, P^.Name) then
+                Result := Result + '"' + P^.Name + '",';
+
+end;     *)
+
+
+
 
 function TNoteLister.GetNotesInNoteBook(var NBIDList : TStringList; const NBName : string) : boolean;
 var
@@ -720,6 +778,17 @@ begin
     Result := '';
 end;
 
+function TNoteLister.GetNotebookName(FileorID: AnsiString) : string;
+var
+    Index : integer;
+begin
+    for Index := 0 to NotebookList.Count - 1 do
+        if CleanFileName(FileorID) = NotebookList.Items[Index]^.Template then
+            exit(NotebookList.Items[Index]^.Name);
+    //debugln('TNoteLister.GetNotebookName ALERT - asked to find a notebook name but cannot find it : ' + FileorID);
+    // thats not an error, sometimes sync systems asks, just in case .....
+    result := '';
+end;
 
 procedure TNoteLister.DeleteNoteBookwithID(FileorID: AnsiString);
 var
@@ -733,7 +802,8 @@ begin
             exit();
 		end;
 	end;
-    debugln('ERROR - asked to delete a notebook by ID but cannot find it.');
+    debugln('TNoteLister.DeleteNoteBookwithID ERROR - asked to delete a notebook by ID but cannot find it : '
+        + FileorID);
 end;
 
 
@@ -826,17 +896,6 @@ begin
 end;
 
 
-function TNoteLister.GetNotebooks(const ID: ANSIString): string;
-var
-    //Index, I : Integer;
-    P : PNoteBook;
-begin
-	Result := '';
-    for P in Notebooklist do
-        if NotebookList.IDinNotebook(ID, P^.Name) then
-            Result := Result + '"' + P^.Name + '",';
-    if Result <> '' then delete(Result, length(Result), 1);         // remove trailing comma
-end;
 
 function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
 var
@@ -989,7 +1048,8 @@ begin
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
                 try                                                     // this because GNote leaves out 'open-on-startup' !
                     Node := Doc.DocumentElement.FindNode('open-on-startup');
-                    NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
+                    if Node = nil then NoteP^.OpenOnStart:= False
+                    else NoteP^.OpenOnStart:= (Node.FirstChild.NodeValue = 'True');
                 except on E: EObjectCheck do
                     NoteP^.OpenOnStart:= False;
                 end;
@@ -1360,7 +1420,10 @@ begin
     while FinishedThreads < 4 do sleep(1);       // ToDo : some sort of 'its taken too long ..."
     DoneCriticalSection(CriticalSection);                     // ++++++++++++
 
-    if DebugMode then debugLn('Finished indexing notes');
+    if DebugMode then begin
+        debugLn('Finished indexing notes');
+        DumpNoteNoteList();
+    end;
     NotebookList.CleanList();
     Result := NoteList.Count;
     NoteList.Sort(@LastChangeSorter);       // 0mS on Dell

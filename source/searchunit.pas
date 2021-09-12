@@ -950,6 +950,7 @@ begin
     if NoteLister <> Nil then
        freeandnil(NoteLister);
     NoteLister := TNoteLister.Create;
+    TheNoteLister := NoteLister;                // This is how we make NoteLister accessible from other units.
     NoteLister.DebugMode := Application.HasOption('debug-index');
     NoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := NoteLister.IndexNotes();

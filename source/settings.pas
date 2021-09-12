@@ -122,19 +122,25 @@ type
 		CheckNotifications: TCheckBox;
         CheckUseUndo: TCheckBox;
         CheckBoxAutoSync: TCheckBox;
+        ComboSyncType: TComboBox;
         ComboHelpLanguage: TComboBox;
+        EditToken: TEdit;
+        EditUserName: TEdit;
         GroupBoxSync: TGroupBox;
         Label10: TLabel;
         Label11: TLabel;
         Label16: TLabel;
+        LabelLabelExpires: TLabel;
+        LabelExpires: TLabel;
+        LabelSyncType: TLabel;
         Label5: TLabel;
         Label6: TLabel;
         Label7: TLabel;
         Label8: TLabel;
         Label9: TLabel;
-        LabelFileSyncInfo2: TLabel;
+        LabelSyncInfo2: TLabel;
         Label4: TLabel;
-        LabelFileSyncInfo1: TLabel;
+        LabelSyncInfo1: TLabel;
         LabelFileSync: TLabel;
         ButtonSetColours: TButton;
         ButtonFixedFont: TButton;
@@ -169,6 +175,8 @@ type
         LabelNotesPath: TLabel;
         LabelSettingPath: TLabel;
         LabelSnapDir: TLabel;
+        LabelToken: TLabel;
+        LabelUserName: TLabel;
         ListBoxDic: TListBox;
         OpenDialogLibrary: TOpenDialog;
         OpenDialogDictionary: TOpenDialog;
@@ -217,6 +225,7 @@ type
                 { Called when ANY of the setting check boxes change so we can save. }
         procedure CheckReadOnlyChange(Sender: TObject);
         procedure ComboHelpLanguageChange(Sender: TObject);
+        procedure ComboSyncTypeChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
@@ -239,6 +248,10 @@ type
         procedure SetColours;
 
     private
+        SyncType : string;            // maybe 'file' or 'github'
+        SyncRepoFile : string;      // eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
+        SyncRepoGithub : string;    // eg https://github.com/davidbannon/tb_test
+
         AutoRefreshVar : boolean;
         UserSetColours : boolean;
         fExportPath : ANSIString;
@@ -463,27 +476,7 @@ begin
     PMenuMain.Popup;
 end;
 
-procedure TSett.SpeedSetupSyncClick(Sender: TObject);
-begin
-    {  ToDo : here we check if there is an existing local manifest and assume, incorrectly, that
-       it must be associated with an existing FileSync. When we understand a bit more about
-       nextcloud sync process, fix ! }
 
-	    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
-	    if FileExists(LocalConfig + 'manifest.xml') then
-	        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
-	    if SelectDirectoryDialog1.Execute then begin
-	        FormSync.NoteDirectory := NoteDirectory;
-	        FormSync.LocalConfig := LocalConfig;
-	        FormSync.SetupSync := True;
-	        ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-	        if mrOK = FormSync.ShowModal then begin
-	            WriteConfigFile();
-	            ValidSync := ValidSync;           // so we update button labels etc
-	        end else
-	            ValidSync := rsSyncNotConfig;
-	    end;
-end;
 
 procedure TSett.TabBasicResize(Sender: TObject);
 begin
@@ -500,6 +493,7 @@ begin
     ButtonSetSpellLibrary.Width := (TabSpell.Width div 2) -7;
     ButtonSetDictionary.Width := ButtonSetSpellLibrary.Width;
 end;
+
 
 
 
@@ -694,8 +688,9 @@ begin
     AreClosing := false;
     Top := 100;
     Left := 300;
+
     LoadHelpLanguages();
-    DefaultFixedFont := GetFixedFont(); // Tests a list of likely suspects.
+    DefaultFixedFont := GetFixedFont();     // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;            // don't trigger save while doing setup
     ExportPath := '';
@@ -708,8 +703,13 @@ begin
     CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
     CheckConfigAndDirs();                      // write a new, default one if necessary
     CheckSpelling();
-    LabelFileSyncInfo1.Caption := rsFileSyncInfo1;
-    LabelFileSyncInfo2.Caption := rsFileSyncInfo2;
+    case SyncType of
+        'file' : ComboSyncType.ItemIndex := 0;
+        'github' : ComboSyncType.ItemIndex := 1;
+    end;
+    ComboSyncTypeChange(self);
+    //LabelSyncInfo1.Caption := rsFileSyncInfo1;         // ToDo : is this done in ComboSyncTypeChange
+    //LabelSyncInfo2.Caption := rsFileSyncInfo2;
     MaskSettingsChanged := False;
 end;
 
@@ -866,11 +866,23 @@ begin
             'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
             'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 	    end;
-        ValidSync := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');     // that is for file sync
-        if ValidSync <> '' then
-            CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'))
-        else
-            CheckBoxAutoSync.checked := False;
+        SyncRepoFile := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');     // that is for file sync
+        SyncRepoGithub := ConfigFile.readstring('SyncSettings', 'SyncRepoGithub', '');
+
+        //if ValidSync <> '' then
+            CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
+        //else
+        //    CheckBoxAutoSync.checked := False;
+
+        //ConfigFile.writestring('SyncSettings', 'GHPassword', EditToken.text);
+        //ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
+
+        EditToken.text := Configfile.ReadString('SyncSettings', 'GHPassword', '');
+        EditUserName.text := Configfile.ReadString('SyncSettings', 'GHUserName', '');
+        SyncType := Configfile.ReadString('SyncSettings', 'SyncType', 'file');
+
+        // ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);
+
         //TellTail := CheckBoxAutoSync.checked;
         // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
         // --------- S P E L L I N G ---------------------------------------
@@ -906,27 +918,6 @@ begin
 	SyncSettings();                             // ToDo : can we discard this ?
 end;
 
-function TSett.fGetValidSync: string;
-begin
-    if (LabelFileSync.Caption <> rsSyncNotConfig) and (LabelFileSync.Caption <> '')  then
-        Result := LabelFileSync.Caption
-    else Result := '';
-    // ToDo : some test required but this is not it. It tells us sync not conf when its just not mounted  !
-{    if Result <> '' then
-        if not fileexists(appendpathdelim(LabelFileSync.Caption) + 'manifest.xml') then
-            Result := '';   }
-end;
-
-procedure TSett.fSetValidSync(Repo: string);
-begin
-    if (Repo =  rsSyncNotConfig) or (Repo = '') then begin
-        LabelFileSync.Caption  := rsSyncNotConfig;
-        SpeedSetUpSync.Caption := rsSetUp;
-    end else begin
-        LabelFileSync.Caption  := Repo;
-        SpeedSetUpSync.Caption := rsChangeSync;
-    end;
-end;
 
 procedure TSett.fSetAutoRefresh(AR: boolean);
 begin
@@ -994,7 +985,7 @@ begin
             // --------- S Y N C    S E T T I N G S ----------------------------
             { Supported config file parameters -
               * SyncRepo    - determines ValidSync, should contain a Repo directory or URL
-              * SyncType    - Only supported at this stage is 'file' !
+              * SyncType    - Only supported at this stage is 'file', 'github'
               * AutoSync    - true/false
               * SyncOption  - AlwaysAsk, UseLocal, UseServer being decisions made when clash detected.
             Other entries, such as SyncRepoURL, SyncURL, FileSyncRepo, UseFileSync are distractions introduced by a nasty
@@ -1007,10 +998,16 @@ begin
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
                  ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
-            if ValidSync <> '' then begin
-                ConfigFile.writestring('SyncSettings', 'SyncType', 'file');         // Extend sync type here.
-                ConfigFile.writestring('SyncSettings', 'SyncRepo', ValidSync);
-            end;
+            //if ValidSync <> '' then begin
+                ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);         // Extend sync type here.
+                ConfigFile.writestring('SyncSettings', 'SyncRepo', SyncRepoFile);
+                ConfigFile.writestring('SyncSettings', 'SyncRepoGithub', SyncRepoGitHub);
+            //end;
+
+            ConfigFile.writestring('SyncSettings', 'GHPassword', EditToken.text);
+            ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
+
+
             // --------- S P E L L     S E T T I N G S ----------------------------
             if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
@@ -1141,6 +1138,7 @@ begin
         SearchForm.RefreshMenus(mkHelpMenu);
     end;
 end;
+
 
 procedure TSett.ButtonSetColoursClick(Sender: TObject);
 begin
@@ -1326,11 +1324,92 @@ begin
     end;
 end;
 
+
+// =============================  S Y N C   S T U F F  =========================
+
 { Note that AutoSync and AutoSnapshot share a timer.  AutoSync runs on each 'tick' of the timer,
   that is, hourly, but autosnapshop looks at NextAutoSnapshot to decide if its time to do its thing.
 }
 
-{ ------------------------ S Y N C -------------------------- }
+procedure TSett.ComboSyncTypeChange(Sender: TObject);
+var
+    Ctrl : TControl;
+begin
+    case ComboSyncType.ItemIndex of
+        0 : begin
+            SyncType := 'file';
+            ValidSync := SyncRepoFile;
+            LabelSyncInfo1.caption := rsFileSyncInfo1;
+            LabelSyncInfo2.caption := rsFileSyncInfo2;
+            for Ctrl in [ CheckBoxAutoSync ] do Ctrl.Visible := True;
+            for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
+                do Ctrl.Visible := False;
+            end;
+        1 : begin
+            SyncType := 'github';
+            ValidSync := SyncRepoGithub;
+            LabelSyncInfo1.caption := rsGithubSyncInfo1;
+            LabelSyncInfo2.caption := rsGithubSyncInfo2;
+            for Ctrl in [ CheckBoxAutoSync ] do Ctrl.Visible := false;
+            for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
+                do Ctrl.Visible := True;
+            end;
+    end;
+end;
+
+
+procedure TSett.SpeedSetupSyncClick(Sender: TObject);
+begin
+    {  ToDo : here we check if there is an existing local manifest and assume, incorrectly, that
+       it must be associated with an existing FileSync. When we understand a bit more about
+       nextcloud sync process, fix ! }
+
+    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+    if FileExists(LocalConfig + 'manifest.xml') then
+        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
+    if SyncType = 'file' then begin
+        if SelectDirectoryDialog1.Execute then begin
+            ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+    end else exit();
+    FormSync.NoteDirectory := NoteDirectory;
+    FormSync.LocalConfig := LocalConfig;
+    FormSync.SetupSync := True;
+    case SyncType of
+        'file'   : FormSync.Transport:=TSyncTransport.SyncFile;
+        'github' : FormSync.Transport:=TSyncTransport.SyncGithub;
+    end;
+    FormSync.Password := EditToken.Text;
+    FormSync.UserName := EditUserName.text;
+    if mrOK = FormSync.ShowModal then begin
+            WriteConfigFile();
+            ValidSync := ValidSync;           // so we update button labels etc
+    end else
+            ValidSync := rsSyncNotConfig;
+    end;
+end;
+
+function TSett.fGetValidSync: string;
+begin
+    if (LabelFileSync.Caption <> rsSyncNotConfig) and (LabelFileSync.Caption <> '')  then
+        Result := LabelFileSync.Caption
+    else Result := '';
+
+    // ToDo : some test required but this is not it. It tells us sync not conf when its just not mounted  !
+{    if Result <> '' then
+        if not fileexists(appendpathdelim(LabelFileSync.Caption) + 'manifest.xml') then
+            Result := '';   }
+end;
+
+procedure TSett.fSetValidSync(Repo: string);
+begin
+    if (Repo =  rsSyncNotConfig) or (Repo = '') then begin
+        LabelFileSync.Caption  := rsSyncNotConfig;
+        SpeedSetUpSync.Caption := rsSetUp;
+    end else begin
+        LabelFileSync.Caption  := Repo;
+        SpeedSetUpSync.Caption := rsChangeSync;
+    end;
+end;
 
 procedure TSett.CheckAutostartChange(Sender: TObject);
 var
@@ -1368,7 +1447,10 @@ begin
     // Might need to check, somehow, that no threads are still running ?  How ?
     SearchForm.FlushOpenNotes();
     FormSync.SetupSync := False;
-
+    case SyncType of
+        'file'   : FormSync.Transport:=TSyncTransport.SyncFile;
+        'github' : FormSync.Transport:=TSyncTransport.SyncGithub;
+    end;
     if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
         FormSync.Show
     else

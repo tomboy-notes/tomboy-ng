@@ -180,6 +180,14 @@ msgctxt "resourcestr.rsfound"
 msgid "Found"
 msgstr "Trouvé"
 
+#: resourcestr.rsgithubsyncinfo1
+msgid "tomboy-ng can use Github to both sync and display or edit notes"
+msgstr ""
+
+#: resourcestr.rsgithubsyncinfo2
+msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr ""
+
 #: resourcestr.rshelpconfig
 msgctxt "resourcestr.rshelpconfig"
 msgid "Create or use an alternative config"
@@ -1084,6 +1092,10 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchro"
 
+#: tformsync.labelprogress.caption
+msgid "LabelProgress"
+msgstr ""
+
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
 msgstr "Action"
@@ -1663,6 +1675,18 @@ msgstr ""
 msgid "Close and reopen a note to take effect."
 msgstr ""
 
+#: tsett.combosynctype.text
+msgid "ComboSyncType"
+msgstr ""
+
+#: tsett.edittoken.text
+msgid "EditToken"
+msgstr ""
+
+#: tsett.editusername.text
+msgid "EditUserName"
+msgstr ""
+
 #: tsett.groupbox4.caption
 msgid "  Options  "
 msgstr " Options "
@@ -1736,14 +1760,44 @@ msgstr "Elle reste ensuite présente jusqu'à son effacement manuel."
 msgid "A snaphot is a copy of your current note directory."
 msgstr "Un snapshot est une copie en l'état du répertoire des notes"
 
+#: tsett.labelexpires.caption
+msgctxt "tsett.labelexpires.caption"
+msgid "LabelExpires"
+msgstr ""
+
 #: tsett.labelfilesync.caption
 msgctxt "tsett.labelfilesync.caption"
 msgid "not configured"
 msgstr "non configuré"
 
+#: tsett.labellabelexpires.caption
+msgctxt "tsett.labellabelexpires.caption"
+msgid "Expires"
+msgstr ""
+
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Répertoire des snap"
+
+#: tsett.labelsyncinfo1.caption
+msgid "LabelSyncInfo1"
+msgstr ""
+
+#: tsett.labelsyncinfo2.caption
+msgid "LabelSyncInfo2"
+msgstr ""
+
+#: tsett.labelsynctype.caption
+msgid "LabelSyncType"
+msgstr ""
+
+#: tsett.labeltoken.caption
+msgid "Token"
+msgstr ""
+
+#: tsett.labelusername.caption
+msgid "User"
+msgstr ""
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."

@@ -152,7 +152,7 @@ begin
   if not InContent then exit;
   if (InStr = '') and (not AddPara) then exit;
   // if to here, we have content to flush or a new para has been requested.
-  debugln('TBLoadNote.AddText bulletlevel=' + inttostr(bulletLevel) + ', BOLD=' + booltostr(Bold, true) + ' and InStr=[' + ']');
+  //debugln('TBLoadNote.AddText bulletlevel=' + inttostr(bulletLevel) + ', BOLD=' + booltostr(Bold, true) + ' and InStr=[' + ']');
   if InStr <> '' then begin
       FT := TFont.Create();
       if FirstTime then begin                 // Title
@@ -223,7 +223,7 @@ begin
                         PB.NumberingListLevel.LeftIndent := 130;
                     end;
                 otherwise
-                    debugln('AddText - BulletLevel otherwise, ' + inttostr(BulletLevel));                                     // we just stop at 4
+                    debugln('LoadNote.AddText - BulletLevel otherwise, ' + inttostr(BulletLevel));                                     // we just stop at 4
             end;
             BulletLevel := 0;
             {$else}
@@ -317,7 +317,7 @@ var
                 i : integer = 1;
                 ATag : string = '';
             begin
-                debugln('++++++++++ LstSt2KMemo : ' + St);
+               // debugln('++++++++++ LstSt2KMemo : ' + St);
                 InStr := '';
                 BulletLevel := ListCount;
                 while i <= St.length do begin
@@ -332,7 +332,7 @@ var
                             exit;
                         end;
                         AddText(False);
-                        debugln('call ActOnTag with ' + ATag);
+                        //debugln('call ActOnTag with ' + ATag);
                         ActOnTag(ATag);
                         ATag := '';
                         inc(i);
@@ -344,13 +344,13 @@ var
                 AddText(True);
                 BulletLevel := 0;
                 St := '';
-                debugln('++++++++++ Leaving LstSt2KMemo : ' + St);
+                //debugln('++++++++++ Leaving LstSt2KMemo : ' + St);
             end;
 
 begin
     if (InStr <> '') or (BulletLevel <> 0) then debugln('--------------- Bugger --------------');
     // Find the next tag, should always be list-item, ignore anything between
-    debugln('----------- We have just entered ReadList ---------');
+    //debugln('----------- We have just entered ReadList ---------');
     try
         if FindNextTag(False) and (Buff='list-item') then
             // Anything up to next list related tag is content.
@@ -388,7 +388,7 @@ begin
                 end else fs.Seek(-1, fsFromCurrent);  // note #10, not #13 poke it back and run away !
             end;
          end;
-         debugln('----------- We have just left ReadList ---------');
+         //debugln('----------- We have just left ReadList ---------');
     end;
 end;
 

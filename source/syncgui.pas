@@ -43,6 +43,7 @@ unit SyncGUI;
     2020/08/07  Changed the stringGrid to a ListView 'cos it handles dark themes better.
     2020/08/10  ListView becomes type=vsReport
     2020/04/26  Set Save button to disabled immediatly when pressed.
+    2021/09/08  Added progress indicator
 }
 
 {$mode objfpc}{$H+}
@@ -66,6 +67,7 @@ type
 				ButtonClose: TButton;
 				Label1: TLabel;
 				Label2: TLabel;
+                LabelProgress: TLabel;
                 ListViewReport: TListView;      // Viewstyle=vsReport, make columns in Object Inspector
 				Memo1: TMemo;
 				Panel1: TPanel;
@@ -75,6 +77,7 @@ type
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
+                procedure FormCreate(Sender: TObject);
                 function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonCloseClick(Sender: TObject);
@@ -87,6 +90,7 @@ type
 		private
                 FormShown : boolean;
                 LocalTimer : TTimer;
+
                 procedure AddLVItem(Act, Title, ID: string);
                 procedure AdjustNoteList();
                 procedure AfterShown(Sender : TObject);
@@ -100,10 +104,14 @@ type
                     { Populates the string grid with details of notes to be actioned }
                 procedure ShowReport;
 
+                                    { We will pass address of this method to lower level units so
+                                    they can report on progress. Short one to three words ?  }
+                procedure SyncProgress(const St: string);
+
 		public
                 Busy : boolean; // indicates that there is some sort of sync in process now.
                 Transport : TSyncTransPort;
-
+                UserName, Password : string;    // For those thatnsports that need such things.
                 LocalConfig, NoteDirectory : ANSIString;
                     { Indicates we are doing a setup User has already agreed to abandon any
                       existing Repo but we don't know if indicated spot already contains a
@@ -170,6 +178,11 @@ begin
     LocalTimer := nil;
 end;
 
+procedure TFormSync.SyncProgress(const St: string);
+begin
+        LabelProgress.Caption := St;
+        Application.ProcessMessages;
+end;
 
 // Following resourcestrings defined in syncUtils.pas
 
@@ -203,6 +216,9 @@ begin
     ASync.DebugMode := Application.HasOption('s', 'debug-sync');
     ASync.NotesDir:= NoteDirectory;
     ASync.ConfigDir := LocalConfig;
+    ASync.ProgressProcedure := @SyncProgress;
+    ASync.Password := Sett.EditToken.Text;              // better find a better way to do this Davo
+    Async.UserName := Sett.EditUserName.text;
     ASync.RepoAction:=RepoJoin;
     Async.SetTransport(TransPort);
     SyncAvail := ASync.TestConnection();
@@ -244,6 +260,7 @@ end;
 procedure TFormSync.FormShow(Sender: TObject);
 begin
     Busy := True;
+    LabelProgress.Caption := '';
     Left := 55 + random(55);
     Top := 55 + random(55);
     FormShown := False;
@@ -287,6 +304,12 @@ begin
     Result := ManualSync;
 end;
 
+procedure TFormSync.FormCreate(Sender: TObject);
+begin
+    UserName := '';
+    Password := '';
+end;
+
         // User is only allowed to press Close when this is finished.
 function TFormSync.ManualSync : boolean;
 var
@@ -298,18 +321,17 @@ begin
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
-        ASync.ProceedFunction:= @Proceed;
+        ASync.ProceedFunction := @Proceed;
+        ASync.ProgressProcedure := @SyncProgress;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
 	    ASync.NotesDir:= NoteDirectory;
 	    ASync.ConfigDir := LocalConfig;
-        ASync.RepoAction:=RepoUse;
+        ASync.RepoAction:= RepoUse;
+        ASync.Password := Sett.EditToken.Text;              // better find a better way to do this Davo
+        Async.UserName := Sett.EditUserName.text;
         Async.SetTransport(TransPort);
-        SyncState := ASync.TestConnection();
-        ASync.SyncAddress := ASync.SyncAddress;
-	    while SyncState <> SyncReady do begin
+        if ASync.TestConnection() <> SyncReady then begin
             if ASync.DebugMode then debugln('Failed testConnection');
-            FormSyncError.Label1.caption := rsUnableToSync + ':';
-            FormSyncError.label3.caption := ASync.ErrorString;
             // in autosync mode, form is not visible, we just send a notify that cannot sync right now.
             if not Visible then begin
                 SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
@@ -323,7 +345,7 @@ begin
                 FormSync.ModalResult := mrAbort;
                 exit(false);
             end;
-            SyncState := ASync.TestConnection();
+            exit(false);        //redundant ?
         end;
         Label1.Caption:= rsRunningSync;
         Application.ProcessMessages;
@@ -385,18 +407,19 @@ var
 begin
     with ASync.RemoteMetaData do begin
 	    for Index := 0 to Count -1 do begin
-	    if Items[Index]^.Action <> SyNothing then begin
-	            AddLVItem(
-	                ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
-	                , Items[Index]^.Title
-	                , Items[Index]^.ID);
-	            inc(Rows);
-	    end;
+	        if Items[Index]^.Action <> SyNothing then begin
+	                AddLVItem(
+	                    ASync.RemoteMetaData.ActionName(Items[Index]^.Action)
+	                    , Items[Index]^.Title
+	                    , Items[Index]^.ID);
+	                inc(Rows);
+	        end;
 	    end
 	end;
 	if  Rows = 0 then
 	    Memo1.Append(rsNoNotesNeededSync)
 	else Memo1.Append(inttostr(ASync.RemoteMetaData.Count) + rsNotesWereDealt);
+    if ASync.TransMode = SyncGitHub then Memo1.Append('Token expires : ' + ASync.TokenExpire);
     {$IFDEF DARWIN}     // Apparently ListView.columns[n].autosize does not work in Mac, this is rough but better then nothing.
     ListViewReport.Columns[0].Width := listviewReport.Canvas.Font.GetTextWidth('upload edit ');
     ListViewReport.Columns[1].Width := ListViewReport.Columns[0].Width *2;
@@ -414,7 +437,7 @@ begin
 	ModalResult := mrOK;
 end;
 
-    // This only ever happens during a Join .....
+    // This only ever happens during a Join, RepoAction will still be 'join'.
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
     Label2.Caption:=rsNextBitSlow;

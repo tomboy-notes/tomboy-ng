@@ -46,6 +46,7 @@ type
         function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         // function SetRemoteRepo(ManFile : string = '') : boolean; override;
+        constructor Create();
   end;
 
 
@@ -199,6 +200,7 @@ var
     I : integer;
     FullFileName : string;
 begin
+    //if ProgressProcedure <> nil then progressProcedure('Downloading notes');
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
             ErrorString := 'Failed to create Backup directory.';
@@ -244,6 +246,7 @@ var
     Index : integer;
     FullDirName : string;
 begin
+    //if ProgressProcedure <> nil then progressProcedure('Uploading Notes');
     if UsingRightRevisionPath(RemoteAddress, RemoteServerRev + 1) then
         FullDirName := GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1)
     else
@@ -301,6 +304,11 @@ begin
     if FileExists(Result) then exit;
     Result := RemoteAddress + '0' + PathDelim + inttostr(RevNo) + PathDelim + ID + '.note';
     if not FileExists(Result) then debugln('transfile -> Download() Unable to locate file ' + inttostr(RevNo) + ' ' + ID);
+end;
+
+constructor TFileSync.Create();
+begin
+    ProgressProcedure := nil;
 end;
 
 end.

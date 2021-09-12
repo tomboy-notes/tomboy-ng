@@ -32,25 +32,25 @@ type
     private
 
     public
-            // A password for those Transports that need one.
-        Password : string;
+                        // A password for those Transports that need one.
+        Username, Password : string;
 
         DebugMode : boolean;
-            // Indicates its a new repo, don't look for remote manifest.
+                        // Indicates its a new repo, don't look for remote manifest.
         ANewRepo : Boolean;
-            // Set to '' is no errors.
+                        // Set to '' is no errors.
         ErrorString : string;
-            // Local notes directory
+                        // Local notes directory
         NotesDir, ConfigDir : string;
-            // A url to network server or 'remote' file directory for FileSync
+                        // A url to network server or 'remote' file directory for FileSync
         RemoteAddress : string;
-
-            { The current server ID. Is set with a successful TestTransport call. }
+                        { The current server ID. Is set with a successful TestTransport call. }
         ServerID : string;
-
-            { The current Server Rev, before we upload. Is set with a successful
-              TestTransport call. }
+                        { The current Server Rev, before we upload. Is set with a successful
+                        TestTransport call. }
         RemoteServerRev : integer;
+                        { A method to call when we can advise a GUI of progress through sync }
+        ProgressProcedure : TProgressProcedure;
 
             { Tests availability of remote part of connection. For file sync (eg) thats
             existance of remote manifest and 0 dir, write access. Sets its own ServerID.

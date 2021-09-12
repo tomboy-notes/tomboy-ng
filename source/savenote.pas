@@ -507,14 +507,14 @@ procedure SaveNewTemplate(NotebookName : ANSIString);
 var
    GUID : TGUID;
    OStream:TFilestream;
-   Buff, ID : ANSIString;
+   Buff{, ID} : ANSIString;
    Loc :  TNoteUpdateRec {TNoteLocation};
 begin
    CreateGUID(GUID);
    //Title := NotebookName  + ' Template';
-   ID := copy(GUIDToString(GUID), 2, 36) + '.note';
-   SearchForm.NoteLister.AddNoteBook(ID, NotebookName, True);
-   Ostream :=TFilestream.Create(Sett.NoteDirectory + ID, fmCreate);
+   Loc.FFName := copy(GUIDToString(GUID), 2, 36) + '.note';
+   SearchForm.NoteLister.AddNoteBook(Loc.FFname, NotebookName, True);
+   Ostream :=TFilestream.Create(Sett.NoteDirectory + Loc.FFName, fmCreate);
    Loc.Y := '20'; Loc.X := '20'; Loc.Height := '200'; Loc.Width:='300';
    Loc.OOS := 'False'; Loc.CPos:='1';
    try
