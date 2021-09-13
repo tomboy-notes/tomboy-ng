@@ -800,7 +800,7 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small/  --debug-sync --debug-index"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small/"/>
       </local>
       <environment>
         <UserOverrides Count="1">
@@ -811,7 +811,7 @@
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small/  --debug-sync --debug-index"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small/"/>
           </local>
           <environment>
             <UserOverrides Count="1">
@@ -832,7 +832,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="39">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -985,79 +985,71 @@
         <UnitName Value="ResourceStr"/>
       </Unit24>
       <Unit25>
-        <Filename Value="syncerror.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormSyncError"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="SyncError"/>
-      </Unit25>
-      <Unit26>
         <Filename Value="colours.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormColours"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="cli.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit26>
       <Unit27>
-        <Filename Value="cli.pas"/>
+        <Filename Value="notifier.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit27>
       <Unit28>
-        <Filename Value="notifier.pas"/>
+        <Filename Value="libnotify.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit28>
       <Unit29>
-        <Filename Value="libnotify.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit29>
-      <Unit30>
         <Filename Value="rollback.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormRollBack"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RollBack"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="transfileand.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit30>
       <Unit31>
-        <Filename Value="transfileand.pas"/>
+        <Filename Value="tb_utils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit31>
       <Unit32>
-        <Filename Value="tb_utils.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit32>
-      <Unit33>
         <Filename Value="tomdroid.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTomdroid"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="commonmark.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit33>
       <Unit34>
-        <Filename Value="commonmark.pas"/>
+        <Filename Value="tbundo.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit34>
       <Unit35>
-        <Filename Value="tbundo.pas"/>
+        <Filename Value="hunspell.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit35>
       <Unit36>
-        <Filename Value="hunspell.inc"/>
+        <Filename Value="notenormal.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit36>
       <Unit37>
-        <Filename Value="notenormal.pas"/>
+        <Filename Value="transgithub.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit37>
       <Unit38>
-        <Filename Value="transgithub.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit38>
-      <Unit39>
         <Filename Value="import_notes.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit39>
+      </Unit38>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

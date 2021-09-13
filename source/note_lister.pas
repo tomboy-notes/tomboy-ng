@@ -208,7 +208,7 @@ type
    	SearchIndex : integer;
 
     procedure DumpNoteBookList();
-    procedure DumpNoteNoteList();
+    procedure DumpNoteNoteList(WhereFrom: string);
 
                                         { Returns the Notebook Name for a given filename or ID (of the template itself)}
     function GetNotebookName(FileorID: AnsiString): string;
@@ -236,7 +236,8 @@ type
     function GetTitle(const ID: String): string;
                                         { Returns the number of items in the list }
     function Count(): integer;
-                                        { Returns the LastChangeDate string for ID, empty string if not found }
+                                        { Returns the LastChangeDate string for ID in the Notes list, empty string
+                                        if not found (empty string is its a notebook) }
     function GetLastChangeDate(const ID: String): string;
                                         { Adds details of note of passed to NoteList }
     procedure IndexThisNote(const ID : String);
@@ -379,7 +380,7 @@ var TheNoteLister : TNoteLister = nil;    // This is a pointer to the notelister
 
 implementation
 
-uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger, tb_utils
+uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger, tb_utils, syncutils
         {$ifdef TOMBOY_NG}, SearchUnit, settings{$endif}                      // project options -> Custom Options
         {$ifdef WINDOWS}, SyncUtils{$endif} ;
 { Laz* are LCL packages, Projectinspector, double click Required Packages and add LCL }
@@ -594,12 +595,12 @@ begin
     debugln('-----------------------');
 end;
 
-procedure TNoteLister.DumpNoteNoteList();
+procedure TNoteLister.DumpNoteNoteList(WhereFrom : string);
 var
     P : PNote;
 //    I : integer;
 begin
-    debugln('-----------------------');
+    debugln('-----------' + WhereFrom + '------------');
     for P in NoteList do begin
         debugln('ID=' + P^.ID + '   ' +  P^.Title);
         debugln('CDate=' + P^.CreateDate + ' template=' + booltostr(P^.IsTemplate, true));
@@ -654,8 +655,6 @@ end;
 
 function TNoteLister.NotebookJArray(const ID: ANSIString): string;
 var
-    //Index, I : Integer;
-    P : PNoteBook;
     STL : TStringList;
     Index : Integer;
 begin
@@ -1124,6 +1123,7 @@ function TNoteLister.GetLastChangeDate(const ID: String) : string;
 var
     index : integer;
     FileName : string;
+    eStr : string = '';
 begin
     Result := '';
     if not assigned(NoteList) then exit('');
@@ -1134,6 +1134,12 @@ begin
             exit(NoteList.Items[Index]^.LastChange);
 	    //	debugln('NoteLister #759 from list '  + NoteList.Items[Index]^.LastChange);
         end;
+    // if to here, did not find that ID in Notes List. I wonder if its a Notebook ?
+    if FileExists(WorkingDir + ID + '.note') then begin
+        Result := GetNoteLastChangeSt(WorkingDir + ID + '.note', EStr);
+        if EStr <> '' then
+                  DebugLn('TGithubSync.LocalLastChangeDate - detected error in ' + ID);
+    end;
 end;
 
 function TNoteLister.GetTitle(const ID: String) : string;
@@ -1422,7 +1428,7 @@ begin
 
     if DebugMode then begin
         debugLn('Finished indexing notes');
-        DumpNoteNoteList();
+        DumpNoteNoteList('TNoteLister.IndexNotes');
     end;
     NotebookList.CleanList();
     Result := NoteList.Count;

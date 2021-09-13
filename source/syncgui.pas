@@ -131,7 +131,7 @@ implementation
   process.
 }
 
-uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, SyncError, ResourceStr,
+uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, {SyncError,} ResourceStr,
         notifier, Settings;
 
 {$R *.lfm}
@@ -313,7 +313,7 @@ end;
         // User is only allowed to press Close when this is finished.
 function TFormSync.ManualSync : boolean;
 var
-    SyncState : TSyncAvailable = SyncNotYet;
+    //SyncState : TSyncAvailable = SyncNotYet;
     Notifier : TNotifier;
     SyncSummary : string;
 begin

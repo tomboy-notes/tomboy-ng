@@ -1361,31 +1361,33 @@ end;
 procedure TSett.SpeedSetupSyncClick(Sender: TObject);
 begin
     {  ToDo : here we check if there is an existing local manifest and assume, incorrectly, that
-       it must be associated with an existing FileSync. When we understand a bit more about
+       it must be associated with a particular existing Sync. When we understand a bit more about
        nextcloud sync process, fix ! }
 
     if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     if FileExists(LocalConfig + 'manifest.xml') then
         if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
     if SyncType = 'file' then begin
-        if SelectDirectoryDialog1.Execute then begin
-            ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-    end else exit();
+        if SelectDirectoryDialog1.Execute then
+            ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim)
+        else exit();
+    end;
     FormSync.NoteDirectory := NoteDirectory;
     FormSync.LocalConfig := LocalConfig;
     FormSync.SetupSync := True;
     case SyncType of
         'file'   : FormSync.Transport:=TSyncTransport.SyncFile;
-        'github' : FormSync.Transport:=TSyncTransport.SyncGithub;
+        'github' : begin
+                    FormSync.Transport:=TSyncTransport.SyncGithub;
+                    FormSync.Password := EditToken.Text;
+                    FormSync.UserName := EditUserName.text;
+                   end;
     end;
-    FormSync.Password := EditToken.Text;
-    FormSync.UserName := EditUserName.text;
     if mrOK = FormSync.ShowModal then begin
             WriteConfigFile();
             ValidSync := ValidSync;           // so we update button labels etc
     end else
             ValidSync := rsSyncNotConfig;
-    end;
 end;
 
 function TSett.fGetValidSync: string;

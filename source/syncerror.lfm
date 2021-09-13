@@ -7,7 +7,7 @@ object FormSyncError: TFormSyncError
   ClientHeight = 240
   ClientWidth = 512
   OnShow = FormShow
-  LCLVersion = '2.0.7.0'
+  LCLVersion = '2.3.0.0'
   object Label1: TLabel
     Left = 26
     Height = 19
@@ -15,7 +15,6 @@ object FormSyncError: TFormSyncError
     Width = 9
     Caption = 'x'
     Font.Style = [fsBold]
-    ParentColor = False
     ParentFont = False
   end
   object ButtCancel: TBitBtn
@@ -23,11 +22,11 @@ object FormSyncError: TFormSyncError
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 428
-    Height = 31
+    Left = 430
+    Height = 29
     Hint = 'Stop Auto Sync until next restart'
-    Top = 204
-    Width = 79
+    Top = 206
+    Width = 77
     Anchors = [akRight, akBottom]
     AutoSize = True
     BorderSpacing.Right = 5
@@ -44,11 +43,11 @@ object FormSyncError: TFormSyncError
     AnchorSideRight.Control = ButtCancel
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 352
-    Height = 31
+    Left = 355
+    Height = 29
     Hint = 'If Shared Drive is available, try again.'
-    Top = 204
-    Width = 71
+    Top = 206
+    Width = 70
     Anchors = [akRight, akBottom]
     AutoSize = True
     BorderSpacing.Right = 5
@@ -66,6 +65,5 @@ object FormSyncError: TFormSyncError
     Top = 96
     Width = 47
     Caption = 'Label3'
-    ParentColor = False
   end
 end

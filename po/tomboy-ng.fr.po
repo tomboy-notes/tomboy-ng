@@ -1109,18 +1109,6 @@ msgstr "Titre"
 msgid "Note ID"
 msgstr "ID de la note"
 
-#: tformsyncerror.buttcancel.hint
-msgid "Stop Auto Sync until next restart"
-msgstr "Arrêt auto Synchro pour la session courante"
-
-#: tformsyncerror.buttretry.hint
-msgid "If Shared Drive is available, try again."
-msgstr "Si le volume partagé est indisponible, persister."
-
-#: tformsyncerror.caption
-msgid "tomboy-ng SyncError"
-msgstr "Erreur de synchro tomboy-ng"
-
 #: tformtomdroid.buttonclose.caption
 msgctxt "tformtomdroid.buttonclose.caption"
 msgid "Close"

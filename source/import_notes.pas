@@ -88,7 +88,7 @@ uses LazFileUtils, LazUTF8, LCLProc, TB_utils;
 function TImportNotes.ProcessPlain(Cont: TStringList; const Title: string;
     LCD: string; CDate : string): boolean;
 var
-    NoteBooks : TStringList;
+    //NoteBooks : TStringList;
     i, j : integer;
     //DateSt : string;        // eg '2020-05-19T18:58:37.9513193+10:00';
 begin
