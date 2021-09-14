@@ -104,13 +104,13 @@ function SayDebugSafe(st: string) : boolean;
 
 {$if declared(pnuArrowBullets)}
 const
-  BulletOne   = pnuArrowBullets;
+  BulletOne   = pnuTriangleBullets;
   BulletTwo   = pnuBullets;
-  BulletThree = pnuSquareBullets;
-  BulletFour  = pnuLetterLo;
-  BulletFive  = pnuRomanLo;
-  BulletSix   = pnuLetterHi;
-  BulletSeven = pnuRomanHi;
+  BulletThree = pnuCircleBullets;
+  BulletFour  = pnuArrowBullets;
+  BulletFive  = pnuBrokenArrowBullets;
+  BulletSix   = pnuLetterlo;
+  BulletSeven = pnuRomanLo;
   BulletEight = pnuArabic;
   // BulletNine  = pnuArabic;       // Messes with case statements, 8 is our limit !
 {$endif}

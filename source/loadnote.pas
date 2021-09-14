@@ -138,7 +138,7 @@ begin
     finally
         FreeAndNil(fs);
     end;
-    debugln('Height=' + inttostr(Height) + ' Width=' + inttostr(Width));
+    //debugln('TBLoadNote.LoadFile Height=' + inttostr(Height) + ' Width=' + inttostr(Width));
 end;
 
 
@@ -272,6 +272,7 @@ begin
       'x', 'y', 'title', '/title', '?xml', 'last-change-date', '/last-change-date', 'width', 'height', '/text' : ;
       'create-date', 'cursor-position', '/cursor-position', 'selection-bound-position', '/selection-bound-position' : ;
       'open-on-startup', '/open-on-startup', '/note', 'last-metadata-change-date', '/last-metadata-change-date' : ;
+      'tag', '/tag', 'tags', '/tags' : ;
       // Note we do not process AND should not get 'list', '/list', 'list-item', '/list-item' here.
   otherwise debugln('TBLoadNote.ActOnTag ERROR sent an unrecognised tag [' + Buff + ']');
   end;
