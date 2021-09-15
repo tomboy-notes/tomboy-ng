@@ -689,6 +689,7 @@ begin
     Top := 100;
     Left := 300;
 
+    LabelExpires.Caption := '';
     LoadHelpLanguages();
     DefaultFixedFont := GetFixedFont();     // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;

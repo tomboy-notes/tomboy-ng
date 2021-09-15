@@ -13,6 +13,7 @@ unit transfile;
   2018/10/25  Much testing, support for Tomdroid.
   2018/06/05  Change to doing Tomboy's sync dir names, rev 431 is in ~/4/341
   2019/10/17  Ensure DownloadFile returns true remote dir name, irrespective of above.
+  2021/09/15  Added progress indicator to uploads and downloads
 }
 
 {$mode objfpc}{$H+}
@@ -199,8 +200,9 @@ function TFileSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
     I : integer;
     FullFileName : string;
+    DownCount : integer = 0;
 begin
-    //if ProgressProcedure <> nil then progressProcedure('Downloading notes');
+    if ProgressProcedure <> nil then progressProcedure('Downloading notes');
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
             ErrorString := 'Failed to create Backup directory.';
@@ -229,6 +231,10 @@ begin
                     ErrorString := 'Failed to copy ' + Downloads.Items[I]^.ID + '.note';
                     exit(False);
             end;
+            inc(DownCount);
+            if (DownCount mod 10 = 0) then
+                if ProgressProcedure <> nil then ProgressProcedure('Downloaded ' + inttostr(DownCount) + ' notes');
+
         end;
     end;
     result := True;
@@ -244,9 +250,10 @@ end;
 function TFileSync.UploadNotes(const Uploads: TStringList): boolean;
 var
     Index : integer;
+    UpCount : integer = 0;
     FullDirName : string;
 begin
-    //if ProgressProcedure <> nil then progressProcedure('Uploading Notes');
+    if ProgressProcedure <> nil then progressProcedure('Uploading ' + inttostr(UpLoads.Count) + ' notes');
     if UsingRightRevisionPath(RemoteAddress, RemoteServerRev + 1) then
         FullDirName := GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1)
     else
@@ -262,6 +269,10 @@ begin
           debugln(ErrorString);
           exit(False);
 	  end;
+      inc(UpCount);
+      if (UpCount mod 10 = 0) then
+        if ProgressProcedure <> nil then
+        progressProcedure('Uploaded ' + inttostr(UpCount) + ' notes');
   end;
   result := True;
 end;

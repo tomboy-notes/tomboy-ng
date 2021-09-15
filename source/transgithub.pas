@@ -13,7 +13,6 @@ unit transgithub;
 
 
 
-
   -------------- P E R S O N A L    A C C E S S   T O K E N S ------------------
 
   https://github.com/settings/tokens to generate a Person Access Token
@@ -273,7 +272,7 @@ end;
 implementation
 
 uses
-    {$if (FPC_FULLVERSION=30200)}  opensslsockets, {$endif}  // only available in FPC320 and later
+    {$if (FPC_FULLVERSION>=30200)}  opensslsockets, {$endif}  // only available in FPC320 and later
     {$ifdef LCL}  lazlogger, {$endif}                        // trying to not be dependent on LCL
     fphttpclient, httpprotocol, base64,
     LazUTF8, LazFileUtils, fpopenssl, ssockets, {ssockets,} DateUtils, fileutil,
@@ -307,7 +306,7 @@ end;
 procedure TGitNoteList.DumpList(wherefrom: string);
 var
     i : integer = 0;
-    {Notebooks,} Format : string;
+    {Notebooks,} Format : string = '';
 begin
     if Wherefrom <> '' then
         SayDebugSafe('-------- TransGithub RemoteNotes ' + Wherefrom + '----------');
@@ -503,6 +502,7 @@ function TGithubSync.TestTransport(const WriteNewServerID: boolean): TSyncAvaila
 var
    St : string;
 begin
+    Result := SyncNotYet;
     ErrorString := '';
     {$ifdef DEBUG}debugln('TGithubSync.TestTransport - called');{$endif}
     if ANewRepo and WriteNewServerID then           // Will fail ? if repo already exists.
@@ -537,7 +537,7 @@ begin
                         if (not ANewRepo) then
                             exit(SyncNoRemoteMan);
                 Result := SyncReady;
-                if ProgressProcedure <> nil then ProgressProcedure('TestTransport Happy')
+                if ProgressProcedure <> nil then ProgressProcedure('TestTransport Happy');
             end;
         end else SayDebugSafe('TGithubSync.TestTransport - Spoke to Github but did not confirm login');
     end else begin
@@ -571,8 +571,11 @@ end;
 function TGithubSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
     I : integer;
+    DownCount : integer = 0;
     FullFileName : string;
 begin
+    Result := True;
+    if ProgressProcedure <> nil then ProgressProcedure('Downloading notes');
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
             ErrorString := 'Failed to create Backup directory.';
@@ -593,16 +596,14 @@ begin
             else Result := True;                                                // we must have downloaded it to resolve clash
             if Result and fileexists(FullFileName)  then begin                  // to be sure, to be sure
                     deletefile(NotesDir + Downloads.Items[I]^.ID + '.note');
-(*                    RemoteNotes.InsertData(RNotesDir + Downloads.Items[I]^.ID + 'md', 'lcdate'
-                            , GetNoteLastChangeSt(FullFileName, ErrorString));
-                        No, don't think we need this.  A note that another -ng pushed up
-                        will have its LCD in the manifest, ReadRemoteManifest  gets that.
-                        if its a github edit, then we should consider the commit date *)
                     renamefile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note');
             end else begin
                 ErrorString := 'GitHub.DownloadNotes Failed to download ' + FullFileName;
                 exit(SayDebugSafe('TGithubSync.DownloadNotes - ERROR, failed to down to ' + FullFileName));
             end;
+            inc(DownCount);
+            if (DownCount mod 10 = 0) then
+                if ProgressProcedure <> nil then ProgressProcedure('Downloaded ' + inttostr(DownCount) + ' notes');
         end;
     end;
 end;
@@ -667,6 +668,8 @@ begin
     {$ifdef DEBUG}
     RemoteNotes.DumpList('TGitHubSync.UploadNotes : About to upload ' + inttostr(UpLoads.Count) + ' notes');
     {$endif}
+    if ProgressProcedure <> nil then
+                ProgressProcedure('Uploading ' + inttostr(Uploads.Count));
     for St in Uploads do begin
         if not SendNote(St) then exit(false);
         inc(NoteCount);
@@ -992,7 +995,7 @@ end;
 
 function TGithubSync.SendFile(RemoteFName: string; STL: TstringList): boolean;      // Public only in test mode
 var
-    Sha : string;
+    Sha : string = '';      // ToDo : look at this, Build machine requires this be initialised, laptop does not ??
     BodyStr : string;
 begin
     if RemoteNotes = nil then exit(false);

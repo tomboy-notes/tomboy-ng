@@ -381,8 +381,8 @@ var TheNoteLister : TNoteLister = nil;    // This is a pointer to the notelister
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger, tb_utils, syncutils
-        {$ifdef TOMBOY_NG}, SearchUnit, settings{$endif}                      // project options -> Custom Options
-        {$ifdef WINDOWS}, SyncUtils{$endif} ;
+        {$ifdef TOMBOY_NG}, SearchUnit, settings{$endif};                      // project options -> Custom Options
+
 { Laz* are LCL packages, Projectinspector, double click Required Packages and add LCL }
 
 var

@@ -1079,7 +1079,7 @@ end;
 
 function TSync.StartSync(): boolean;
 var
-    NewRev : boolean;
+    NewRev : boolean = false;
     // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
     Result := True;

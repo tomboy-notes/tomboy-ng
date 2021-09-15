@@ -42,7 +42,6 @@ begin
     Application.CreateForm(TFormColours, FormColours);
     Application.CreateForm(TFormRollBack, FormRollBack);
         {$ifdef LINUX}
-		Application.CreateForm(TFormTomdroidFile, FormTomdroidFile);
         {$endif}
         // Application.CreateForm(TNoteBookPick, NoteBookPick);
         // Application.CreateForm(TFormSpell, FormSpell);
