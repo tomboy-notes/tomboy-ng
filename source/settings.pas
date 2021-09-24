@@ -1384,7 +1384,10 @@ begin
                     FormSync.UserName := EditUserName.text;
                    end;
     end;
+
     if mrOK = FormSync.ShowModal then begin
+
+            // ValidSync :=
             WriteConfigFile();
             ValidSync := ValidSync;           // so we update button labels etc
     end else
@@ -1411,6 +1414,10 @@ begin
     end else begin
         LabelFileSync.Caption  := Repo;
         SpeedSetUpSync.Caption := rsChangeSync;
+        case SyncType of
+            'file' : SyncRepoFile := Repo;
+            'github' : SyncRepoGithub := Repo;
+        end;
     end;
 end;
 

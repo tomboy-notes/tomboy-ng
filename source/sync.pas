@@ -164,7 +164,7 @@ HISTORY
 
 interface
 uses
-    Classes, SysUtils, SyncUtils, TransFileAnd;
+    Classes, SysUtils, SyncUtils, Trans, TransFileAnd;
 
 
 type                       { ----------------- T S Y N C --------------------- }
@@ -197,6 +197,7 @@ type                       { ----------------- T S Y N C --------------------- }
               If AssumeNoClash and we find a clash, unresolable 'cos LCD missing, ret False,
               (and expect LoadRepoData to be called again. Used when JOINING an existing repo.}
       function CheckUsingLCD(AssumeNoClash : boolean) : boolean;
+
             { Returns true if the passed dates are pretty close, see code for just how close }
       function DatesClose(const DS1, DS2: TDateTime): boolean;
 
@@ -293,6 +294,8 @@ type                       { ----------------- T S Y N C --------------------- }
             { Applies only to Github, returns the token expire data or 'Expired' }
       function FGetTokenExpire() : string;
 
+      function FGetTransRemoteAddress() : string;
+
    public
 
             // A passord, passed on to Trans for those Transports that need it.
@@ -317,7 +320,7 @@ type                       { ----------------- T S Y N C --------------------- }
         ProceedFunction : TProceedFunction;
 
             { A method to call when we can advise a GUI of progress through sync }
-         ProgressProcedure : TProgressProcedure;
+        ProgressProcedure : TProgressProcedure;
 
                 // A URL or directory with trailing delim.
         SyncAddress : string;
@@ -351,6 +354,9 @@ type                       { ----------------- T S Y N C --------------------- }
 
         procedure FSetNotesDir(Dir : string);
         Property NotesDir : string read FNotesDir write FSetNotesDir;
+
+                                { Returns the set Transport's RemoteAddress, for GithubSync }
+        property GetTransRemoteAddress : string read fGetTransRemoteAddress;
 
                 { IFF its there, delete the indicated ID from main section of local manifest
                   (and any Tomdroid local manifests) and list it in the deleted section instead.
@@ -396,7 +402,7 @@ implementation
 { TSync }
 
 uses laz2_DOM, laz2_XMLRead,
-    Trans, TransFile, TransAndroid, TransGithub,
+    TransFile, TransAndroid, TransGithub,
     LazLogger, LazFileUtils, FileUtil, Settings, tb_utils;
 
 var
@@ -920,14 +926,17 @@ begin
 	Result := true;
 end;
 
-
-
 function TSync.FGetTokenExpire(): string;
 begin
     if assigned(Transport)
         and (Transport is TGitHubSync) then
         Result := TGitHubSync(Transport).TokenExpires
     else Result := 'not applicable';                       // should never happen
+end;
+
+function TSync.FGetTransRemoteAddress(): string;
+begin
+    Result := Transport.RemoteAddress;
 end;
 
 
@@ -949,7 +958,8 @@ begin
 	               end;
         SyncGitHub : begin
                         Transport := TGithubSync.Create;
-
+                        Transport.Password := Password;
+                        Transport.Username := UserName;
                      end;
         SyncAndroid : begin
                         // debugln('Oh boy ! We have called the android line !');
@@ -973,12 +983,10 @@ begin
         ForceDirectory(ConfigDir);
     end;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
-    Transport.RemoteAddress:= SyncAddress;
-    Transport.Password := Password;
-    Transport.Username := UserName;
-    Result := Transport.SetTransport();
+    Transport.RemoteAddress:= SyncAddress;                          // happens _before_ Trans.SetTransport
+    Result := Transport.SetTransport();                             // in github, this will (re)set Transport.RemoteAddress
     if TransportMode = SyncFileAndroid then
-       LocalServerID := Transport.ServerID;                          // we need it to find profile
+       LocalServerID := Transport.ServerID;                         // we need it to find profile
     ErrorString := Transport.ErrorString;
     if DebugMode then begin
         debugln('Remote address is (n.a. Tomdroid) ' + SyncAddress);
@@ -1115,7 +1123,6 @@ begin
     CheckNewNotes();
 
     //DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData before  CheckMetaData()');
-
     CheckMetaData();
 
     if DebugMode then DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData after CheckMetaData()');
@@ -1129,7 +1136,7 @@ begin
 
     if DebugMode then
         DisplayNoteInfo(RemoteMetaData, 'NoteMetaData after ProcessClashes');
-    // ====================== Set an exit here to do no-write tests
+    // ====================== Set an exit here to do no-write tests  exit(false);
 
     if not DoDownLoads() then exit(SayDebugSafe('TSync.StartSync - failed DoDownLoads'));
     if TransPortMode <> SyncGitHub then

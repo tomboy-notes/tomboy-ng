@@ -453,6 +453,9 @@ begin
         AdjustNoteList();
         Label1.Caption:=rsAllDone;
         Label2.Caption := rsPressClose;
+        // Should get Sync.Transport.RemoteAddress here and poke it into Sett.ValidSync
+        if ASync.TransMode = SyncGithub then
+            Sett.ValidSync := ASync.GetTransRemoteAddress;
     end  else
         Showmessage(rsSyncError + ASync.ErrorString);
     ButtonClose.Enabled := True;

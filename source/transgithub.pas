@@ -56,16 +56,19 @@ Easy Peasy !
 
 The above glosses over error handling and, importantly, how data such as last change dates
 is shuffled around to ensure its in RemoteNotes when we write out remote manifests.
+
+HISTORY :
+    2021/09/20 - Changed to using JSONTools, tidier, safer, easier to read code.
 }
 
 
-{x$define DEBUG}
+{$define DEBUG}
 
 {$mode ObjFPC}{$H+}
 interface
 
 uses
-    Classes, SysUtils, fpjson, jsonparser, syncutils {$ifndef TESTRIG}, trans{$endif};
+    Classes, SysUtils, {fpjson, jsonparser, }syncutils {$ifndef TESTRIG}, trans{$endif};
 
 
 type TFileFormat = (
@@ -102,7 +105,11 @@ TGitNoteList = class(TFPList)
                             // Adds an item, found in the remote dir scan JSON, to the
                             // RemoteNotes list, does NOT check for duplicates. Only gets
                             // Name (that is, FileName maybe with dir prepended) and sha.
-         function AddJItem(jItm: TJSONData; Prefix: string): boolean;
+         //function AddJItem(jItm: TJSONData; Prefix: string): boolean;
+
+                            // Adds a new item to List, Notes and files in Meta require prefix added before being passed here
+         procedure AddNewItem(const FName, Sha: string);
+
          function Add(AGitNote : PGitNote) : integer;
                             // Adds or updates record, FName being key.
          procedure Add(const FName, Sha: string);
@@ -110,7 +117,11 @@ TGitNoteList = class(TFPList)
                             // Selectivly inserts the supplied data into GitNoteList.
                             // Always use most fields but don't use LCD if the sha dont match.
          procedure InsertData(const GitRec : TGitNote);
+                            // Returns true and sets sha if note is in List. Ignores trailing / in FName.
+                            // If the Note exists in the list but its sha is not set, ret True but sha is empty
          function FNameExists(FName: string; out Sha: string): boolean;
+                             { Tries to find the list item, first tries RNotesDir+ID+.md and then tries as
+                             if ID is FFname. Returns a pointer to a GitNote record or nil if not found. }
          function Find(const ID: string): PGitNote;
          property Items[Index: integer]: PGitNote read Get; default;
      end;
@@ -144,11 +155,11 @@ type
                             // The two optional parameter must be used together and extract one header value.
         function Downloader(URL: string; out SomeString: String; const Header: string =''): boolean;
 
-        procedure DumpJSON(const St: string; WhereFrom: string = '');
-        procedure DumpMultiJSON(const St: string);
-                            // Finds a Z datest in the Commit Response, tolerates, to some extent
-                            // unexpected JSON but must not get an array, even a one element one.
-        function ExtractLCD(const St: string; out DateSt: string): boolean;
+        //procedure DumpJSON(const St: string; WhereFrom: string = '');
+
+                            { Returns the LCDate string from the commit history. We ask for just the most recent
+                            commit and find the datestring in the json. Expects a full file name, something
+                            like 'Notes/6EC64290-4348-4716-A892-41C9DE4AEC4C.md' - should work for any format.}
         function GetNoteLCD(FFName: string): string;
 
                             // Reads the (json) remote manifest, adding cdate, format and Notebooks to RemoteNotes.
@@ -162,7 +173,10 @@ type
                             // Or like          https://github.com/davidbannon/tb_test/blob/main/        (false)
                             // Requires UserName, RemoteRepoName, API version does not have trailing /
         function ContentsURL(API: boolean): string;
-        function ExtractJSONField(const data, Key: string; ItemNo: integer = - 1 ): string;
+                            // Returns content asociated with Key at either toplevel (no third parameter) or
+                            // one level down under the ItemNo indexed toplevel Key. First top level key is zero.
+        function ExtractJSONField(const data, Field: string; Level1: string = ''; Level2: string = ''): string;
+
         function GetServerId() : string;
 
                             // Creates a file at remote using contents of List. RemoteFName may be
@@ -187,19 +201,19 @@ type
         function DownloadANote(const NoteID: string; FFName: string = ''): boolean;
 
 
-
-
-
   public
         //UserName : string;
         //RemoteRepoName : string;                // eg tb_test, tb_notes
 
         TokenExpires : string;                  // Will have token expire date after TestTransport()
-        {$ifdef TESTRIG}                        // This is defined in Trans, remove it or hid it !
+        {$ifdef TESTRIG}                        // These are all defined in trans, need to provide them is in TestRig mode
         RemoteServerRev : integer;
         ServerID : string;
         ErrorString : string;
         Password    : string;
+        ANewRepo : boolean;
+        ProgressProcedure : TProgressProcedure;
+        RemoteAddress : string;
         {$endif}
 
         (* ------------- Defined in parent class ----------------
@@ -224,7 +238,8 @@ type
                                 Might return SyncNetworkError, SyncNoRemoteMan, SyncReady, SyncCredentialError  }
         function TestTransport(const WriteNewServerID: boolean = False): TSyncAvailable;   {$ifndef TESTRIG} override;{$endif}
 
-                                // Checks Temp dir, should empty it, ret TSyncReady or SyncBadError
+                                { Github : Checks Temp dir, should empty it, ret TSyncReady or SyncBadError
+                                Sets RemoteAddress (so must have username available) }
         function SetTransport() : TSyncAvailable;  {$ifndef TESTRIG} override;{$endif}
 
 
@@ -253,7 +268,7 @@ type
 
                                 { Github - Downloads indicated note to temp dir, returns FFname is OK
                                 The downloaded file should be reusable in this session if its later needed }
-        function DownLoadNote(const ID : string; const RevNo : Integer) : string; {$ifndef TESTRIG} override;{$endif}        // ToDo : maybe need implement this ? For clash processing.
+        function DownLoadNote(const ID : string; const RevNo : Integer) : string; {$ifndef TESTRIG} override;{$endif}
 
                                 { Public - but not defined in Trans.
                                 Gets passed both Remote and Local MetaData lists, makes changes to only Remote.
@@ -263,6 +278,8 @@ type
                                 marks them as SyUploads. Also adds the new NoteLister notes to RemoteNotes if
                                 NOT a TestRun.}
         function AssignActions(RMData, LMData: TNoteInfoList; TestRun: boolean): boolean;
+
+        procedure Test();
 
 end;
 
@@ -277,7 +294,7 @@ uses
     fphttpclient, httpprotocol, base64,
     LazUTF8, LazFileUtils, fpopenssl, ssockets, {ssockets,} DateUtils, fileutil,
     CommonMark, import_notes,
-    Note_Lister, TB_Utils;
+    Note_Lister, TB_Utils, jsontools;
 
 const
   GitBaseURL='https://github.com/';
@@ -308,6 +325,7 @@ var
     i : integer = 0;
     {Notebooks,} Format : string = '';
 begin
+    SayDebugSafe('');
     if Wherefrom <> '' then
         SayDebugSafe('-------- TransGithub RemoteNotes ' + Wherefrom + '----------');
     while i < count do begin
@@ -316,7 +334,7 @@ begin
             ffEncrypt : Format := 'Encrypt';
             ffMarkDown : format := 'Markdown';
         end;
-        SayDebugSafe('List - ID=[' + Items[i]^.FName + '] Sha=' + Items[i]^.Sha + ' LCDate=' + Items[i]^.LCDate);
+        SayDebugSafe('List - FFName=[' + Items[i]^.FName + '] Sha=' + Items[i]^.Sha + ' LCDate=' + Items[i]^.LCDate);
         SaydebugSafe('       CDate=' + Items[i]^.CDate + '  Format=' + Format + ' Title=' + Items[i]^.Title + ' Notebooks=' + Items[i]^.Notebooks);
         inc(i);
     end;
@@ -337,39 +355,22 @@ begin
     inherited Destroy;
 end;
 
-
-function TGitNoteList.AddJItem(jItm: TJSONData; Prefix : string): boolean;
+procedure TGitNoteList.AddNewItem(const FName, Sha: string);
 var
-    jObj : TJSONObject;
-    jBool : TJSONBoolean;
     PNote : PGitNote;
-    jString : TJSONString;
 begin
-    Result := False;
-    jObj := TJSONObject(jItm);
-    if not ((JObj.Find('error', jBool) and (jBool.AsBoolean = true))) then begin
-            new(PNote);
-            PNote^.FName := '';
-            PNote^.Title := '';
-            PNote^.LCDate := '';
-            PNote^.CDate := '';
-            PNote^.Format := ffNone;
-            PNote^.Notebooks := '';
-            if jObj.Find('name', jString) then begin
-                    pNote^.FName := Prefix + JString.AsString;
-            end else begin
-                    dispose(PNote);
-                    exit(SayDebugSafe('GitHubList.AddJItem : Failed to find note name'));
-            end;
-            if jObj.Find('sha', jString) then
-                PNote^.sha := JString.AsString
-            else begin
-                    dispose(PNote);
-                    exit(SayDebugSafe('GitHubList.AddJItem : Failed to find note sha'));
-            end;
-            add(PNote);
-            Result := True;
-    end else Result := False;
+
+    debugln('TGitNoteList.AddNewItem - adding ' + FName);
+
+    new(PNote);
+    PNote^.FName := Fname;
+    PNote^.Title := '';
+    PNote^.LCDate := '';
+    PNote^.CDate := '';
+    PNote^.Format := ffNone;
+    PNote^.Notebooks := '';
+    PNote^.sha := Sha;
+    add(PNote);
 end;
 
 function TGitNoteList.Add(AGitNote: PGitNote): integer;
@@ -377,7 +378,6 @@ begin
     result := inherited Add(AGitNote);
 end;
 
-// Adds or updates record, FName being key.
 procedure TGitNoteList.Add(const FName, Sha: string);
 var
     PNote : PGitNote;
@@ -399,8 +399,6 @@ begin
     PNote^.Format := ffNone;
     Add(PNote);
 end;
-
-
 
 procedure TGitNoteList.InsertData(const FName, Field, Data : string);
 var
@@ -424,7 +422,6 @@ begin
     SayDebugSafe('GitHub.InsertData(s,s,s) : Failed to find ' + FName + ' to insert data');
 end;
 
-//procedure TGitNoteList.InsertData(const FName, Title, LCDate, CDate, Notebooks : string; const Format : TFileFormat);
 procedure TGitNoteList.InsertData(const GitRec : TGitNote);
 var
   i : integer = 0;
@@ -454,8 +451,6 @@ begin
     SayDebugSafe('GitHub.InsertData : Failed to find ' + GitRec.FName + ' to insert data');
 end;
 
-// Returns true and sets sha if note is in List. Ignores trailing / in FName.
-// If the Note exists in the list but its sha is not set, ret True but sha is empty
 function TGitNoteList.FNameExists(FName: string; out Sha: string): boolean;
 var
   i : integer = 0;
@@ -496,7 +491,8 @@ end;
 
 
 
-function TGithubSync.TestTransport(const WriteNewServerID: boolean): TSyncAvailable;
+function TGitHubSync.TestTransport(const WriteNewServerID: boolean
+    ): TSyncAvailable;
 {  If we initially fail to find offered user account, try defunkt so we can tell if
    its a network error or username one.  }
 var
@@ -549,7 +545,7 @@ begin
     end;
 end;
 
-function TGithubSync.SetTransport(): TSyncAvailable;
+function TGitHubSync.SetTransport(): TSyncAvailable;
 begin
     if DebugMode then saydebugSafe('TGithubSync.SetTransport - called');
     if not directoryexists(NotesDir + TempDir) then
@@ -566,9 +562,10 @@ begin
         SayDebugSafe('Cannot use dir : ' + NotesDir + TempDir);
         exit(SyncBadError);
     end;
+    RemoteAddress := GitBaseURL + UserName + '/' + RemoteRepoName;
 end;
 
-function TGithubSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
+function TGitHubSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
     I : integer;
     DownCount : integer = 0;
@@ -608,7 +605,7 @@ begin
     end;
 end;
 
-function TGithubSync.DeleteNote(const ID: string; const ExistRev: integer
+function TGitHubSync.DeleteNote(const ID: string; const ExistRev: integer
     ): boolean;
 //   https://docs.github.com/en/rest/reference/repos#delete-a-file
 var
@@ -651,19 +648,17 @@ begin
     end;
 end;
 
-
-function TGithubSync.GetRemoteNotes(const NoteMeta: TNoteInfoList;
+function TGitHubSync.GetRemoteNotes(const NoteMeta: TNoteInfoList;
     const GetLCD: boolean): boolean;
 begin
     if (RemoteNotes = Nil) or (NoteMeta = Nil) then exit(SayDebugSafe('TGitHubSync.GetRemoteNotes ERROR getRemoteNotes called with nil list'));
     result := True;
 end;
 
-function TGithubSync.UploadNotes(const Uploads: TStringList): boolean;
+function TGitHubSync.UploadNotes(const Uploads: TStringList): boolean;
 var
     St : string;
     NoteCount : integer = 0;
-
 begin
     {$ifdef DEBUG}
     RemoteNotes.DumpList('TGitHubSync.UploadNotes : About to upload ' + inttostr(UpLoads.Count) + ' notes');
@@ -682,7 +677,8 @@ begin
     result := true;
 end;
 
-function TGithubSync.DoRemoteManifest(const RemoteManifest: string; MetaData: TNoteInfoList): boolean;
+function TGitHubSync.DoRemoteManifest(const RemoteManifest: string;
+    MetaData: TNoteInfoList): boolean;
 var
     P : PNoteInfo;      // an item from RemoteMetaData
     PGit : PGitNote;    // an item from local data structure, RemoteNotes
@@ -746,7 +742,7 @@ begin
     end;
 end;
 
-function TGithubSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
+function TGitHubSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
 begin
    if DownloadANote(ID, NotesDir + TempDir + ID + '.note') then
        Result := NotesDir + TempDir + ID + '.note'
@@ -759,7 +755,8 @@ end;
 
 const Seconds5 = 0.00005;          // Very roughly, 5 seconds
 
-function TGithubSync.AssignActions(RMData, LMData: TNoteInfoList; TestRun : boolean): boolean;
+function TGitHubSync.AssignActions(RMData, LMData: TNoteInfoList;
+    TestRun: boolean): boolean;
 var
     PGit : PGitNote;
     RemRec, LocRec : PNoteInfo;
@@ -843,6 +840,11 @@ begin
              RemRec^.Action := SyNothing;
         RMData.Add(RemRec);
     end;
+
+    {$ifdef DEBUG}
+    RMData.DumpList('TGithubSync.AssignActions RemoteMD - Before scanning NoteLister');
+    {$endif}
+
     for i := 0 to TheNoteLister.GetNoteCount() -1 do begin                      // OK, now whats in NoteLister but not RemoteNotes ?
         NLister := TheNoteLister.GetNote(i);
         if NLister = nil then exit(SayDebugSafe('TGitHubSync.AssignActions ERROR - not finding NoteLister Content'));
@@ -870,7 +872,7 @@ begin
             RemRec^.Rev := 0;
             RemRec^.SID := 0;
             RMData.Add(RemRec);
-        end {else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes')};
+        end else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes');
     end;
     // OK, just need to check over the Notebooks now, notebooks are NOT listed in NoteLister.Notelist !
     for i := 0 to TheNoteLister.NotebookCount() -1 do begin
@@ -911,49 +913,19 @@ begin
     {$endif}
 end;
 
+procedure TGitHubSync.Test();
+var ST : string;
+begin
+   if Downloader(ContentsURL(True)+'/'+RNotesDir, ST) then begin   // Github appears to be happy with Notes and Notes/   ?
+        debugln('---------------------------------------------');
+        debugln(St);
+        debugln('---------------------------------------------');
+   end else debugln('Downloader Failed');
+
+end;
+
 // ====================  P R I V A T E   M E T H O D S =========================
 
-
-// ---- Seems we are not alling this ----------
-// Gets (just) a LastChangeDate for remote note at this stage. Only works for IDs of notes
-// Asks for the Note's commit history getting just the one most recent commit.
-// This is a good idea but not a great one. Notebook memberhip changes because -
-// 1. User has changed it locally - gets overridden.
-// 2. Its changed on a remote desktop and been synced - works, but see 1.
-// user has manually edited github manifest - thats their problem !
-// OK, in 1. if user has changed note membership, note will be a 'upload'
-// because LCD has changed. Similarly, a new note will be uploaded. We need
-// to get the notebook list of any note about to be uploaded and add it to
-// RemoteNotes as it goes past.
-
-(*
-function TGitHubSync.GetNoteLCD(ID : string) : boolean;
-var
-   DateSt, St : string;
-   URL : string;
-begin                                                     // ToDo : assumes notes are all .md  ??
-    // This call brings back an array, '[one-record]'
-    URL := BaseURL + 'repos/' + UserName + '/' + RemoteRepoName + '/';
-    Result := DownLoader(URL + 'commits?path=' + RNotesDir + ID + '.md&per_page=1&page=1', ST);
-    if Result then begin
-        if St[1] = '[' then begin
-            delete(St, 1, 1);
-        end else ErrorLogger('GitHub.GetNoteLCD - Error, failed to remove  from array');
-        if St[St.Length] = ']' then begin
-            delete(St, St.Length, 1);
-        end else ErrorLogger('GetNoteLCD - Error, failed to remove [ from array');
-        Result := ExtractLCD(ST, DateSt);
-        if Result then begin
-            //ErrorLogger('Github.GetNoteLCD : GetNoteDetails Date Str = ' + DateSt);
-            RemoteNotes.InsertData(RNotesDir + ID + '.md', DateSt, '', ffNone);
-            //RemoteNotes.DumpList('After GetNoteDetails');
-        end;
-     end;
-end;    *)
-
-{ Returns the LCDate string from the commit history. We ask for just the most recent
-commit and find the datestring in the json. Expects a full file name, something
-like 'Notes/6EC64290-4348-4716-A892-41C9DE4AEC4C.md' - should work for any format.}
 function TGitHubSync.GetNoteLCD(FFName : string) : string;
 var
    St : string;
@@ -969,13 +941,14 @@ begin
         if St[St.Length] = ']' then begin
             delete(St, St.Length, 1);
         end else SayDebugSafe('GetNoteLCD - Error, failed to remove [ from array');
-        if not ExtractLCD(ST, Result) then
+        Result := ExtractJSONField(St, 'date', 'Commit', 'author');
+        if Result = '' then
+//        if not ExtractLCD(ST, Result) then
             SayDebugSafe('TGitHubSync.GetNoteLCD ERROR failed to find commit date in JSON ' + St);
      end;
 end;
 
-
-function TGithubSync.SendNote(ID: string): boolean;
+function TGitHubSync.SendNote(ID: string): boolean;
 var
     STL : TStringList;
     CM  : TExportCommon;
@@ -993,7 +966,7 @@ begin
     end;
 end;
 
-function TGithubSync.SendFile(RemoteFName: string; STL: TstringList): boolean;      // Public only in test mode
+function TGitHubSync.SendFile(RemoteFName: string; STL: TstringList): boolean;      // Public only in test mode
 var
     Sha : string = '';      // ToDo : look at this, Build machine requires this be initialised, laptop does not ??
     BodyStr : string;
@@ -1013,7 +986,7 @@ begin
     Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
 end;
 
-function TGithubSync.MakeRemoteRepo(): boolean;
+function TGitHubSync.MakeRemoteRepo(): boolean;
 var
     GUID : TGUID;
     STL: TstringList;
@@ -1036,67 +1009,53 @@ begin
 end;
 
 
-function TGithubSync.ScanRemoteRepo(): boolean;
+function TGitHubSync.ScanRemoteRepo(): boolean;
 var
-    jData : TJSONData;
-    jItem : TJSONData;
-    i : integer;
-    St : string;
-    Sha : string;
+    Node, ANode : TJsonNode;
+    St, Sha : string;
+
+    function ReadDir(Dir : string) : boolean;
+    begin
+        Result := True;
+        if (Dir <> '') and (not RemoteNotes.FNameExists(Dir, Sha)) then exit;
+        if Downloader(ContentsURL(True) + Dir, ST) then begin  // St now contains a full dir listing as JSON array
+            Node := TJsonNode.Create;
+            try
+                if Node.TryParse(St) then begin
+                    for ANode in Node do
+                        if ANode.Exists('name') and ANode.Exists('sha') then
+                            RemoteNotes.AddNewItem(Dir + ANode.Find('name').asString, ANode.Find('sha').asString)
+                        else exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = ' + St));
+                end else
+                    exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = ' + St));
+            finally
+                Node.Free;
+            end;
+        end else exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - Download ERROR ' + Dir));
+    end;
+
 begin
-    Result := True;
-    if Downloader(ContentsURL(True), ST) then begin
-        jData := GetJson(St);
-        for i := 0 to JData.Count -1 do begin                           // Each count represents one remote file
-            jItem := jData.Items[i];
-            if not RemoteNotes.AddJItem(JItem, '') then                 // just gets filename and current shar
-                Result := False;
-        end;
-        jData.free;
-    end else Result := False;
-    if RemoteNotes.FNameExists(RNotesDir, Sha) then begin
-        St := '';
-        if Downloader(ContentsURL(True)+'/'+RNotesDir, ST) then begin   // Github appears to be happy with Notes and Notes/   ?
-            jData := GetJson(St);
-            for i := 0 to JData.Count -1 do begin                       // Each count represents one remote file
-                jItem := jData.Items[i];
-                if not RemoteNotes.AddJItem(JItem, RNotesDir) then
-                    Result := False;
-            end;
-            jData.free;
-        end else Result := False;
-    end;
-    if RemoteNotes.FNameExists(RMetaDir, Sha) then begin
-        St := '';
-        if Downloader(ContentsURL(True)+'/'+RMetaDir, ST) then begin
-            jData := GetJson(St);
-            for i := 0 to JData.Count -1 do begin                       // Each count represents on remote file
-                jItem := jData.Items[i];
-                if not RemoteNotes.AddJItem(JItem, RMetaDir) then
-                    Result := False;
-            end;
-            jData.free;
-        end else Result := False;
-        //RemoteNotes.DumpList('Scan Remote Repo');
-    end;
+    Result := ReadDir('') and ReadDir(RNotesDir) and ReadDir(RMetaDir);
+
+    {$ifdef DEBUG}
+    RemoteNotes.DumpList('TGitHubSync.ScanRemoteRepo RemoteNotes after Scan.');
+    {$endif}
+
 end;
 
-constructor TGithubSync.Create();
+constructor TGitHubSync.Create();
 begin
-    ProgressProcedure := nil;           // It gets passed After create.
+    ProgressProcedure := nil;           // It gets passed after create.
     RemoteNotes := Nil;
 end;
 
-destructor TGithubSync.Destroy;
+destructor TGitHubSync.Destroy;
 begin
     if RemoteNotes <> Nil then RemoteNotes.Free;
     inherited Destroy;
 end;
 
-
-
-
-function TGithubSync.DownloadANote(const NoteID: string; FFName : string = ''): boolean;
+function TGitHubSync.DownloadANote(const NoteID: string; FFName: string): boolean;
 var
     NoteSTL : TStringList;
     St  : string;
@@ -1137,83 +1096,53 @@ begin
 end;
 
 
-function TGithubSync.ReadRemoteManifest(): boolean;
+function TGitHubSync.ReadRemoteManifest(): boolean;
 var
    St : string;
-   Notebooks : string = '';
-   jData, jItem, JItem2 : TJSONData;
-   i, j, k: Integer;
-   // object_name, field_name, field_value, object_type, object_items: String;
-   jStr : TJSONString;
-   jArray : TJSONArray;
-//   FName : string;
-   GitRec : TGitNote;
+   Node, ANode, NotesNode : TJsonNode;
+   PGit : PGitNote;
 begin
     if RemoteNotes.Find(RMetaDir + 'manifest.json') = nil then
         exit(SayDebugSafe('Remote manifest not present, maybe a new repo ?'));
     if not Downloader(ContentsURL(True) + '/' + RMetaDir + 'manifest.json', ST) then
         exit(SayDebugSafe('GitHub.ReadRemoteMainfest : Failed to read the remote manifest file'));
-(*    debugln('---------------- TGithubSync.ReadRemoteManifest content ----------');
-    debugln(St);
-    debugln('---------------- ');
-    debugln(ExtractJSONField(ST, 'content'));
-    debugln('---------------- ');
-    debugln(DecodeStringBase64(ExtractJSONField(ST, 'content')));    *)
-
-    jData := nil;
+    {$ifdef DEBUG}
+    RemoteNotes.DumpList('TGithubSync.ReadRemoteManifest - Before ReadRemoteManifest');
+    {$endif}
+    Node := TJsonNode.Create;
     try
-        try
-            jData := GetJSON(DecodeStringBase64(ExtractJSONField(ST, 'content')));
-        except on E: Exception do
-            exit(Saydebugsafe('TGithubSync.ReadRemoteManifest ERROR reading remote mainfest : ' + E.Message));
-        end;
-
-        try
-            for i := 0 to jData.Count - 1 do begin
-                if TJSONObject(jData).Names[i] <> 'notes' then continue;
-                jItem := jData.Items[i];                                            // jItem points to 'notes'
-                for j := 0 to JItem.count-1 do begin
-                    GitRec.FName := RNotesDir + TJSONObject(jItem).Names[j] + '.md';       // ToDo : assumes its only markdown
-                    JItem2 := JItem.Items[j];                                       // jItems2 points to the individual notes field
-                                                                                    // do i need to check for a nil here ?
-                    if TJSONObject(jItem2).Find('title', jStr) then
-                        GitRec.Title := jStr.AsString
-                    else GitRec.Title := '';
-                    if TJSONObject(jItem2).Find('lcdate', jStr) then
-                        GitRec.LCDate := jStr.AsString
-                    else GitRec.LCDate := '';
-                    if TJSONObject(jItem2).Find('cdate', jStr) then
-                        GitRec.cdate := jStr.AsString
-                    else GitRec.cdate := '';
-                    if TJSONObject(jItem2).Find('format', jStr) then
-                        if jStr.AsString = 'md' then GitRec.format := ffMarkDown
-                        else GitRec.format := ffEncrypt;                        // ToDo : won't work if we add more formats ??
-                    if TJSONObject(jItem2).Find('sha', jStr) then
-                        GitRec.sha := jStr.AsString
-                    else GitRec.sha := '';
-                    Notebooks := '';
-                    if TJSONObject(jItem2).Find('notebooks', jArray) then begin
-                        if (jArray <> nil) then begin
-                            for k := 0 to JArray.Count-1 do
-                                notebooks := notebooks + '"' + jArray.Items[k].AsString + '",';
-                            if notebooks <> '' then
-                                delete(notebooks, notebooks.length, 1);         // remove trailing comma
-                        end;
-                        notebooks := '[' + notebooks + ']';                     // no notebooks means '[]'
-                        GitRec.Notebooks := notebooks;
-                    end else GitRec.Notebooks := '[]';
-                    RemoteNotes.InsertData(GitRec);
-                end;
-            end;
-        except on E: Exception do exit(Saydebugsafe('TGithubSync.ReadRemoteManifest ERROR 2 reading remote mainfest : ' + E.Message));
+        // content is in the "content" field, Base64 encoded.
+        if not Node.TryParse(DecodeStringBase64(ExtractJSONField(ST, 'content'))) then
+            exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON : ' + ST));
+        NotesNode := Node.Find('notes');
+        if NotesNode = nil then
+            exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON, notes not present : ' + ST));
+        for ANode in NotesNode do begin
+            if ANode.Exists('title') and ANode.exists('lcdate') and ANode.Exists('cdate')
+                    and ANode.Exists('format') and ANode.Exists('sha') and ANode.Exists('notebooks') then begin
+                PGit := RemoteNotes.Find(ANode.Name);                           // note, we pass an ID withoout path, Find adds Path internally
+                if PGit = nil then
+                    exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON, FName not present in RemoteNotes : ' + ANode.AsString));
+                //PGit^.FName := ANode.Name;
+                PGit^.Title := ANode.Find('title').AsString;
+                PGit^.CDate := ANode.Find('lcdate').AsString;
+                if ANode.Find('format').AsString = 'md' then
+                    PGit^.Format := ffMarkDown
+                else PGit^.Format := ffEncrypt;
+                if PGit^.Sha = ANode.Find('sha').AsString then
+                    PGit^.LCDate := ANode.Find('lcdate').AsString;
+                PGit^.Notebooks := ANode.Find('notebooks').AsArray.AsJson;
+             end;
         end;
     finally
-        if jData <> nil then jData.Free;
+        Node.free;
     end;
-    {$ifdef DEBUG}RemoteNotes.DumpList('TGithubSync.ReadRemoteManifest - After ReadRemoteManifest'); {$endif}
+    {$ifdef DEBUG}
+    RemoteNotes.DumpList('TGithubSync.ReadRemoteManifest - After ReadRemoteManifest');
+    {$endif}
 end;
 
-function TGithubSync.GetServerId(): string;
+function TGitHubSync.GetServerId(): string;
 var
    St : string;
 begin
@@ -1225,7 +1154,8 @@ begin
     //debugln('TGithubSync.GetServerId = [' + Result + ']');
 end;
 
-function TGithubSync.Downloader(URL: string; out SomeString: String; const Header: string): boolean;
+function TGitHubSync.Downloader(URL: string; out SomeString: String;
+    const Header: string): boolean;
 var
     Client: TFPHttpClient;
 begin
@@ -1277,7 +1207,7 @@ begin
     result := true;
 end;
 
-function TGithubSync.SendData(const URL, BodyJSt: String; Put: boolean;
+function TGitHubSync.SendData(const URL, BodyJSt: String; Put: boolean;
     FName: string): boolean;
 var
     Client: TFPHttpClient;
@@ -1300,7 +1230,8 @@ begin
                 client.Put(URL, Response);
                 //DumpJSON(Response.DataString, 'SendData just after PUT');
                 if FName <> '' then            // if FName is provided, is uploading a file
-                    RemoteNotes.Add(FName, ExtractJSONField(Response.DataString, 'sha', 0));
+                //    RemoteNotes.Add(FName, ExtractJSONField(Response.DataString, 'sha', 0));
+                    RemoteNotes.Add(FName, ExtractJSONField(Response.DataString, 'sha', 'content'));
             end else
                 client.Post(URL, Response);  // don't use FormPost, it messes with the Content-Type value
             if (Client.ResponseStatusCode = 200) or (Client.ResponseStatusCode = 201) then
@@ -1321,7 +1252,7 @@ begin
 end;
 
 
-function TGithubSync.ContentsURL(API: boolean): string;
+function TGitHubSync.ContentsURL(API: boolean): string;
 begin
     if API then
         Result := BaseURL + 'repos/' + UserName + '/' + RemoteRepoName + '/contents'
@@ -1331,40 +1262,38 @@ end;
 
 // -------------------- J S O N   T O O L S ------------------------------------
 
-// Returns content asociated with Key at either toplevel (no third parameter) or
-// one level down under the ItemNo indexed toplevel Key. First top level key is zero.
-function TGithubSync.ExtractJSONField(const data, Key: string; ItemNo: integer
-    ): string;
+
+// Returns content asociated with Field at either toplevel or if there are up to
+// two level names, that field down up to two fields down. Level1 is upper ....
+function TGitHubSync.ExtractJSONField(const data, Field : string; Level1 : string = ''; Level2 : string = '') : string;
 var
-    JData, JNext : TJSONData;
-    JObject : TJSONObject;
-    jStr : TJSONString;
+    Node, ANode : TJsonNode;
 begin
     result := '';
+    Node := TJsonNode.Create;
+    ANode := Node;                  // Don't change Node, free will not be able to find it.
     try
-        try
-            JData := GetJSON(Data);                         // requires a free
-            if JData.JSONType <> jtObject then
-                exit('');                                   // if this is not valid JSON !
-            if ItemNo > -1 then begin                       // Go the next level down
-                JNext := JData.Items[ItemNo];
-                if JData.JSONType <> jtObject then
-                    exit('');
-            end else JNext := JData;
-            if jNext.Count = 0 then exit('');               // asked for a level that does not have children
-            JObject := TJSONObject(jNext);                  // does not require a free
-            if jObject.Find(Key, Jstr) then                 // would seg V on invalid JSON if not for above exit
-                Result := jStr.AsString;
-        except
-            on E:Exception do Result := '';                 // not sure if this is useful ??
-        end;
+        if not Node.TryParse(data) then exit('Failed to parse data');
+        if Level1 <> '' then
+            ANode := ANode.Find(Level1);
+            if ANode = nil then
+                exit('ERROR - field not found : ' + Level1);
+        if Level2 <> '' then
+            ANode := ANode.Find(Level2);
+            if ANode = nil then
+                exit('ERROR - field not found : ' + Level2);
+        ANode := ANode.Find(Field);
+        if ANode = nil then
+            result := 'ERROR - field not found : ' + Field
+        else result := ANode.AsString;
     finally
-        JData.Free;
+        Node.Free;
     end;
-    if  Result='' then self.DumpJSON(Data, 'TGitHubSync.ExtractJSONField ERROR looking for ' + Key);
 end;
 
-procedure TGithubSync.DumpJSON(const St: string; WhereFrom: string);
+
+(*    WARNING this uses FPjson, needs to be rewritten before use.
+procedure TGitHubSync.DumpJSON(const St: string; WhereFrom: string);
 var
     jData : TJSONData;
 begin
@@ -1375,67 +1304,7 @@ begin
     SayDebugSafe(jData.FormatJSON);
     SayDebugSafe('----------------------------');
     JData.Free;
-end;
-
-// Finds a Z datest in the Commit Response, tolerates, to some extent unexpected
-// JSON but must not get an array, even a one element one. This finds its date string
-// two levels down, cannot use other, generic method that only does 1 level down.
-function TGithubSync.ExtractLCD(const St: string; out DateSt: string): boolean;
-var
-    jData : TJSONData;   JObject : TJSONObject; jStr : TJSONString;
-    jItem : TJSONData;
-begin
-    Result := false;
-    //DumpJSON(St, 'In Extract LCD');
-    JData := GetJSON(St);
-    try
-        JItem := TJSONObject(JData.Items[2]);       //  Points to middle
-        If JItem.JSONType<>jtObject then exit;
-        JItem := TJSONObject(JItem.Items[0]);       // Points to bottom
-        If JItem.JSONType<>jtObject then exit;
-        jObject := TJSONObject(JItem);   // OK, its a JObject, lets see if we can find what we want
-        if jObject.Find('date', Jstr) then begin
-            DateSt := JStr.AsString;
-            result := True;
-        end;
-    finally
-        JData.free;
-    end;
-    (*   {  "sha" : "blar",
-            "node_id" : "blar",
-            "commit" : {
-                "author" : {
-                    "name" : "blar",
-                    "email" : "blar",
-                    "date" : "2021-08-11T04:09:43Z"         *)
-end;
-
-procedure TGithubSync.DumpMultiJSON(const St: string);
-var
-    jData : TJSONData;   JObject : TJSONObject; jStr : TJSONString;
-    jItem : TJSONData;
-    i : integer;
-begin
-    JData := GetJSON(St);
-    SayDebugSafe('----------ALL JSON ------------');
-    SayDebugSafe(jData.FormatJSON);
-    SayDebugSafe('----------------------------');
-    if JData.Count > 0 then begin
-        jItem := jData.Items[0];         // The first item, "content"
-        JObject := TJSONObject(JItem);
-        if jObject.Find('sha', Jstr) then
-            SayDebugSafe('sha = [' + jStr.AsString + ']');
-    end;
-    exit;
-
-    for i := 0 to JData.Count -1 do begin
-        jItem := jData.Items[i];
-        SayDebugSafe(jItem.FormatJSON);
-        SayDebugSafe('----------------------------');
-    end;
-
-    JData.Free;
-end;
+end;                     *)
 
 
 end.
@@ -1464,255 +1333,70 @@ A note in a notebook -
 </tags>
 }
 
-// ========== V A R I O U S   J S O N   R E S P O N S E S ======================
+// =========================  J S O N   R E S P O N S E S ======================
 
-(* Commit response
+(*  ----------- Commit response  -----------------
 
-   {  "sha" : "blar",
-        "node_id" : "blar",
-        "commit" : {
+   {    "sha"     : "fb1dfecbc50329c7bedfc9ae00ba522bc3bd8536",
+        "node_id" : "MDY6Q29tbWl0Mzk0NTAzNTYxOmZiMWRmZWNiYzUwMzI5YzdiZWRmYzlhZTAwYmE1MjJiYzNiZDg1MzY=",
+        "commit"  : {
                 "author" : {
-                        "name" : "blar",
+                        "name"  : "blar",
                         "email" : "blar",
-                        "date" : "2021-08-11T04:09:43Z"
-    'date', 1, 3   iff we are to add another level to ExtractJSONField()
+                        "date"  : "2021-08-11T04:09:43Z"
+    ....
+    quite a lot more follows ...
+    .....
 *)
-
-
-
-
-
-
-
-
-
 
 (*
-
-{ "top_1" : "one",
-  "top_2" : "two",
-  "top_3" : {
-            "middle_1" : "three_A",
-            "middle_2" : "three_B",
-            "middle_3" : {
-                        "bottom_1" : "important",
-                        "botton_2" : "extra_important"
-                        }
-            }
-  }
-
-
-
-
-// Saves the content of a download to a file.  Only Partially implemented !
-{ function TGitHub.ExtractContent(data : string; FFN : string) : boolean;
-var
-    JData : TJSONData;
-    JObject : TJSONObject;
-    // JNumb : TJSONNumber;
-    jStr : TJSONString;
-begin
-    Result := False;
-    try
-        try
-            JData := GetJSON(Data);                         // requires a free
-            JObject := TJSONObject(jData);                  // does not require a free
-            if jObject.Find('name', Jstr) then
-                SayDebug('name = ' + jStr.AsString);
-            if jObject.Find('sha', Jstr) then begin
-                SayDebug('sha = [' + jStr.AsString + ']');
-            end;
-
-            // Result := JObject.Get('id');                 // will raise exceptions if not present, better to use Find
-            if jObject.Find('content', Jstr) then begin
-                SayDebug('Content = ' + DecodeStringBase64(jStr.AsString));
-                Result := True;
-            end else SayDebug('No Content found');                        // same with content
-        except
-            on E:Exception do Result := False;               // Invalid JSON or ID not present
-        end;
-    finally
-        JData.Free;
-    end;
-end; }
-
-// Returns 'content' if its found in the one level JSON string passed. Decodes base64
-// Returns an empty string on failure and sets ErrorMessage
-{function TGitHub.ExtractContent(data : string) : string;
-var
-    JData : TJSONData;
-    JObject : TJSONObject;
-    jStr : TJSONString;
-begin
-    result := '';
-    try
-        try
-            JData := GetJSON(Data);                         // requires a free
-            JObject := TJSONObject(jData);                  // does not require a free
-            if jObject.Find('content', Jstr) then
-                Result := DecodeStringBase64(jStr.AsString)
-            else ErrorMessage := 'Response has no "content" field';
-        except
-            on E:Exception do begin
-                        Result := '';               // Invalid JSON or content not present
-                        ErrorMessage := 'Exception while decoding JSON looking for "content"';
-            end;
-        end;
-    finally
-        JData.Free;
-    end;
-end;  }
-
-// Returns the first level JSON pair value with the Field key. Safely.
-// Returns an empty string if it cannot find pair or of data is invalid JSON.
-{function TGitHub.ExtractJSONField(const data, Field : string) : string;
-var
-    JData : TJSONData;
-    JObject : TJSONObject;
-    jStr : TJSONString;
-begin
-    result := '';
-    try
-        try
-            JData := GetJSON(Data);                         // requires a free
-            if JData.JSONType <> jtObject then
-                exit('');                                   // This is not valid JSON !
-            JObject := TJSONObject(jData);                  // does not require a free
-            if jObject.Find(Field, Jstr) then               // would seg V on invalid JSON if not for above exit
-                Result := jStr.AsString;
-        except
-            on E:Exception do Result := '';                 // not sure if this is useful ??
-        end;
-    finally
-        JData.Free;
-    end;
-    if  Result='' then self.DumpJSON(Data, 'ExtractJSONField');
-end;     }
-
-
- {
-function TGitHub.ExtractUploadSha(const St : string) : string;
-var
-    jData : TJSONData;   JObject : TJSONObject; jStr : TJSONString;
-    //jItem : TJSONData;
-    //i : integer;
-begin
-    Result := '';
-    JData := GetJSON(St);
-    if JData.Count > 0 then begin
-        //jItem := jData.Items[0];         // The first item, "content"
-        //JObject := TJSONObject(JItem);
-        jObject := TJSONObject(JData.Items[0]);
-        if jObject.Find('sha', Jstr) then          // ToDo : this will trigger a AV if data is not as expected - how to protect ?
-            Result := jStr.AsString;
-    end;
-    JData.free;
-end;             }
-
-{
-function TGitHub.ExtractSha(data : string) : string;
-var
-    JData : TJSONData;
-    JObject : TJSONObject;
-    jStr : TJSONString;
-begin
-    result := '';
-    try
-        try
-            JData := GetJSON(Data);                         // requires a free
-            JObject := TJSONObject(jData);                  // does not require a free
-            if jObject.Find('sha', Jstr) then
-                Result := jStr.AsString;
-        except
-            on E:Exception do Result := '';               // Invalid JSON or ID not present
-        end;
-    finally
-        JData.Free;
-    end;
-end;        }
-
-{
-   "sha" : "fb1dfecbc50329c7bedfc9ae00ba522bc3bd8536",
-   "node_id" : "MDY6Q29tbWl0Mzk0NTAzNTYxOmZiMWRmZWNiYzUwMzI5YzdiZWRmYzlhZTAwYmE1MjJiYzNiZDg1MzY=",
-   "commit" : {
-        "author" : {
-                "name" : "davidbannon",
-                "email" : "davidbannon@users.noreply.github.com",
-                "date" : "2021-08-11T04:09:43Z"
-        },
-        "committer" : {
-           "name" : "davidbannon",
-           "email" : "davidbannon@users.noreply.github.com",
-           "date" : "2021-08-11T04:09:43Z"
-        },
-        "message" : "initial upload",
-        "tree" : {
-           "sha" : "bc1518905982935199c8709ad0df564dd8499f50",
-           "url" : "https://api.github.com/repos/davidbannon/tb_test/git/trees/bc1518905982935199c8709ad0df564dd8499f50"
-        },
-        "url" : "https://api.github.com/repos/davidbannon/tb_test/git/commits/fb1dfecbc50329c7bedfc9ae00ba522bc3bd8536",
-        "comment_count" : 0,
-        "verification" : {
-           "verified" : false,
-           "reason" : "unsigned",
-           "signature" : null,
-           "payload" : null
-                    }
-   },
-   "url" : "https://api.github.com/repos/davidbannon/tb_test/commits/fb1dfecbc50329c7bedfc9ae00ba522bc3bd8536",
-   "html_url" : "https://github.com/davidbannon/tb_test/commit/fb1dfecbc50329c7bedfc9ae00ba522bc3bd8536",
-   "comments_url" : "https://api.github.com/repos/davidbannon/tb_test/commits/fb1dfecbc50329c7bedfc9ae00ba522bc3bd8536/comments",
-   "author" : {
-     "login" : "davidbannon",
-     "id" : 6291248,
-     "node_id" : "MDQ6VXNlcjYyOTEyNDg=",
-     "avatar_url" : "https://avatars.githubusercontent.com/u/6291248?v=4",
-     "gravatar_id" : "",
-     "url" : "https://api.github.com/users/davidbannon",
-     "html_url" : "https://github.com/davidbannon",
-     "followers_url" : "https://api.github.com/users/davidbannon/followers",
-     "following_url" : "https://api.github.com/users/davidbannon/following{/other_user}",
-     "gists_url" : "https://api.github.com/users/davidbannon/gists{/gist_id}",
-     "starred_url" : "https://api.github.com/users/davidbannon/starred{/owner}{/repo}",
-     "subscriptions_url" : "https://api.github.com/users/davidbannon/subscriptions",
-     "organizations_url" : "https://api.github.com/users/davidbannon/orgs",
-     "repos_url" : "https://api.github.com/users/davidbannon/repos",
-     "events_url" : "https://api.github.com/users/davidbannon/events{/privacy}",
-     "received_events_url" : "https://api.github.com/users/davidbannon/received_events",
-     "type" : "User",
-     "site_admin" : false
-   },
-   "committer" : {
-     "login" : "davidbannon",
-     "id" : 6291248,
-     "node_id" : "MDQ6VXNlcjYyOTEyNDg=",
-     "avatar_url" : "https://avatars.githubusercontent.com/u/6291248?v=4",
-     "gravatar_id" : "",
-     "url" : "https://api.github.com/users/davidbannon",
-     "html_url" : "https://github.com/davidbannon",
-     "followers_url" : "https://api.github.com/users/davidbannon/followers",
-     "following_url" : "https://api.github.com/users/davidbannon/following{/other_user}",
-     "gists_url" : "https://api.github.com/users/davidbannon/gists{/gist_id}",
-     "starred_url" : "https://api.github.com/users/davidbannon/starred{/owner}{/repo}",
-     "subscriptions_url" : "https://api.github.com/users/davidbannon/subscriptions",
-     "organizations_url" : "https://api.github.com/users/davidbannon/orgs",
-     "repos_url" : "https://api.github.com/users/davidbannon/repos",
-     "events_url" : "https://api.github.com/users/davidbannon/events{/privacy}",
-     "received_events_url" : "https://api.github.com/users/davidbannon/received_events",
-     "type" : "User",
-     "site_admin" : false
-   },
-   "parents" : [
-     {
-       "sha" : "64c44175e2258b44bfa0a573ab1d33478d0ec610",
-       "url" : "https://api.github.com/repos/davidbannon/tb_test/commits/64c44175e2258b44bfa0a573ab1d33478d0ec610",
-       "html_url" : "https://github.com/davidbannon/tb_test/commit/64c44175e2258b44bfa0a573ab1d33478d0ec610"
-     }
-   ]
- }
-
+    ---------- This is the directory listing, in this case, of Notes.  Note its  ----------
+               an array, wrapped in [], one array element per file or dir found.
+               We need only Name and sha.
+[{
+    "name"    :"06c8c753-77df-4b0f-a855-3d1416ef0260.md",
+    "path"    :"Notes/06c8c753-77df-4b0f-a855-3d1416ef0260.md",
+    "sha"     :"f11b48e4204e442759d1250a39c6d4a683f634f3",
+    "size"    :6323,
+    "url"     :"https://api.github.com/repos/davidbannon/tb_test/contents/Notes/06c8c753-77df-4b0f-a855-3d1416ef0260.md?ref=main",
+    "html_url":"https://github.com/davidbannon/tb_test/blob/main/Notes/06c8c753-77df-4b0f-a855-3d1416ef0260.md",
+    "git_url" :"https://api.github.com/repos/davidbannon/tb_test/git/blobs/f11b48e4204e442759d1250a39c6d4a683f634f3",
+    "download_url":"https://raw.githubusercontent.com/davidbannon/tb_test/main/Notes/06c8c753-77df-4b0f-a855-3d1416ef0260.md?token=ABP76MGKOA3EL4QAG5VQSVLBIRS3Q",
+    "type":"file",
+    "_links" : {
+        "self":"https://api.github.com/repos/davidbannon/tb_test/contents/Notes/06c8c753-77df-4b0f-a855-3d1416ef0260.md?ref=main",
+        "git" :"https://api.github.com/repos/davidbannon/tb_test/git/blobs/f11b48e4204e442759d1250a39c6d4a683f634f3",
+        "html":"https://github.com/davidbannon/tb_test/blob/main/Notes/06c8c753-77df-4b0f-a855-3d1416ef0260.md"
+    }
+},
+....
+....
+]
 *)
 
+(* ----------------- Remote Manifest ------------------
+
+{
+  "notes" : {
+       "903C31B1-229E-44E6-8FA3-EAAD53ED3E77" : {
+           "title" : "Man Pages",
+           "cdate" : "2021-08-01T19:13:24.7238449+10:00",
+           "lcdate" : "2021-08-04T20:13:10.1153643+10:00",
+           "sha" : "1c3b3dd579f8e46481fd5b5c93044d1c50448f4c",
+           "format" : "md",
+           "notebooks" : ["template", "Man Pages"]
+    },
+       "B4B75FFE-996B-4D9A-B978-71D55427C7F1" : {
+           "title" : "Installing LazarusCross Compiler",
+           "cdate" : "2018-01-29T11:21:07.8490000+11:00",
+           "lcdate" : "2021-09-15T11:42:00.4447428+10:00",
+           "sha" : "96d4a70f065a92e099e4129f8bc9d3f3e568e4bc",
+           "format" : "md",
+           "notebooks" : []
+    },
+.....
+.....
+}                       *)
 
 
 
