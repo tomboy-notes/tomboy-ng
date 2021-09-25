@@ -105,6 +105,7 @@ unit SearchUnit;
     2021/07/05  UpDateList now only refreshes menu if item on top has changed
     2021/08/02  Use Template when creating new note from Template. Sigh ....
                 And don't update notelister (and menus) if its a Notebook thats been edited.
+    2021/09/25  Fix bug that prevented saving first note in a dir, introduced in July. Nasty.
 }
 
 {$mode objfpc}{$H+}
@@ -445,13 +446,14 @@ end;
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
 var
     // T1, T2, T3, T4 : dword;
-    NeedUpdateMenu : boolean;                   // Updating the menu can be a bit slow.
+    NeedUpdateMenu : boolean = False;           // Updating the menu can be a bit slow.
 begin
     if NoteLister = Nil then exit;				// we are quitting the app !
     // We don't do any of this if the its a notebook.
     if NoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
-
-    NeedUpDateMenu :=  (Title <> NoteLister.GetTitle(noteLister.Count()-1));
+    // if this note is already last in list, we don't need to update menus
+    if noteLister.Count() > 0 then
+        NeedUpDateMenu :=  (Title <> NoteLister.GetTitle(noteLister.Count()-1));
 
   	// Can we find line with passed file name ? If so, apply new data.
     //T1 := gettickcount64();

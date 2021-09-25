@@ -6,7 +6,7 @@ unit transfile;
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
     or https://spdx.org/licenses/BSD-3-Clause-Clear.html
 
-    ------------------
+  ------------------
 
   A unit that does the file transfer side of a FileSync operation
   HISTORY
