@@ -19,6 +19,7 @@ unit syncutils;
     2020/08/01  Can now handle 'Zulu' datestrs, ones without timezone, with 'Z'
     2021/08/31  Added sha to TNoteInfo
     2021/09/12  Taught GetNoteLastChangeSt() to also get create date.
+    2021/09/27  Added function to return text name for TSyncTransport Type
 }
 {$mode objfpc}{$H+}
 
@@ -28,10 +29,10 @@ uses
     Classes, SysUtils, dateutils, LazLogger;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
-		        //SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
-                SyncGitHub,     // sends mark down notes to/from github.
+                SyncGitHub,     // sends markdown notes to/from github.
                 SyncAndroid,    // Simple one to one Android Device
                 SyncFileAndroid);   // Android sync using mounted file system
+                //SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.
@@ -144,7 +145,7 @@ function GetNoteLastChangeSt(const FullFileName : string; out Error : string; CD
                           if it has initial problems, returns F and sets ErrorMsg if fails.}
 function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 
-
+function SyncTransportName(TheType : TSyncTransport) : string;
 
 RESOURCESTRING
   rsNewUploads = 'New Uploads    ';
@@ -167,6 +168,16 @@ implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, tb_utils;
 
+function SyncTransportName(TheType : TSyncTransport) : string;
+begin
+    Result := '';
+    case TheType of
+        SyncFile :        result := 'SyncFile';
+        SyncGitHub  :     result := 'SyncGithub';
+        SyncAndroid :     result := 'SyncAndroid';
+        SyncFileAndroid : result := 'SyncFileAndroid';
+    end;
+end;
 
 function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 begin

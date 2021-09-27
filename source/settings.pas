@@ -94,6 +94,7 @@ unit settings;
     2021/04/24  Added setting to enable/disable undo/redo
     2021/05/01  Remove HaveConfig and restructured config startup
     2021/06/01  Add setting to disable Notifications
+    2021/09/27  Allow both File and Github sync, maybe its a good idea ??  SelectiveSync.
 }
 
 {$mode objfpc}{$H+}
@@ -119,6 +120,7 @@ type
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
+        CheckSyncEnabled: TCheckBox;
 		CheckNotifications: TCheckBox;
         CheckUseUndo: TCheckBox;
         CheckBoxAutoSync: TCheckBox;
@@ -141,7 +143,7 @@ type
         LabelSyncInfo2: TLabel;
         Label4: TLabel;
         LabelSyncInfo1: TLabel;
-        LabelFileSync: TLabel;
+        LabelSyncRepo: TLabel;
         ButtonSetColours: TButton;
         ButtonFixedFont: TButton;
         ButtonFont: TButton;
@@ -223,7 +225,8 @@ type
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
                 { Called when ANY of the setting check boxes change so we can save. }
-        procedure CheckReadOnlyChange(Sender: TObject);
+        procedure SaveSettings(Sender: TObject);
+        procedure CheckSyncEnabledChange(Sender: TObject);
         procedure ComboHelpLanguageChange(Sender: TObject);
         procedure ComboSyncTypeChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -248,10 +251,14 @@ type
         procedure SetColours;
 
     private
-        SyncType : string;            // maybe 'file' or 'github'
-        SyncRepoFile : string;      // eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
-        SyncRepoGithub : string;    // eg https://github.com/davidbannon/tb_test
-
+        //SyncType : string;            // maybe 'file' or 'github'    // ToDo : maybe drop this
+        SyncFileEnabled, SyncGithubEnabled: boolean;
+        SyncFileAuto, SyncGithubAuto: boolean;
+                        { eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
+                        Being non empty indicates it worked sometime, ie is Valid }
+        SyncFileRepo : string;
+                        { eg https://github.com/davidbannon/tb_test, being not empty means it was, at one stage, valid}
+        SyncGithubRepo : string;
         AutoRefreshVar : boolean;
         UserSetColours : boolean;
         fExportPath : ANSIString;
@@ -293,9 +300,9 @@ type
                             // Saves all current settings to disk. Call when any change is made. If unable
                             // to write to disk, returns False, If IgnoreMask, writes even if masked.
         function WriteConfigFile(IgnoreMask : boolean = false): boolean;
-		function fGetValidSync: string;
+		function fGetValidSync: boolean;
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
-        procedure fSetValidSync(Repo: string);
+        //procedure fSetValidSync(Repo: string);
 
                             // Sets AutoRefresh and triggers a write of config file
         procedure fSetAutoRefresh(AR : boolean);
@@ -347,7 +354,7 @@ type
             { Triggers a Sync, if its not all setup aready and working, user show and error }
         procedure Synchronise();
 
-        property ValidSync : string read fGetValidSync write fSetValidSync;
+        property ValidSync : boolean read fGetValidSync;
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
 
         property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
@@ -704,10 +711,9 @@ begin
     CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
     CheckConfigAndDirs();                      // write a new, default one if necessary
     CheckSpelling();
-    case SyncType of
-        'file' : ComboSyncType.ItemIndex := 0;
-        'github' : ComboSyncType.ItemIndex := 1;
-    end;
+    ComboSyncType.ItemIndex := 0;               // Defaults to File
+    if SyncGithubRepo <> '' then
+        ComboSyncType.ItemIndex := 1;           // But if we have Github, show that, more going on
     ComboSyncTypeChange(self);
     //LabelSyncInfo1.Caption := rsFileSyncInfo1;         // ToDo : is this done in ComboSyncTypeChange
     //LabelSyncInfo2.Caption := rsFileSyncInfo2;
@@ -719,7 +725,7 @@ begin
     FreeandNil(Spell);
 end;
 
-{ --------------------- F I L E    I / O --------------------------- }
+{ ------------------------- F I L E    I / O --------------------------- }
 
 RESOURCESTRING
     rsErrorCreateDir = 'Unable to Create Directory';
@@ -847,6 +853,7 @@ begin
             'small'  : RadioFontSmall.Checked := true;
         end;
         AutoRefresh := ('true' = ConfigFile.readstring('BasicSettings', 'AutoRefresh', 'true'));
+
         // ------------------- F O N T S ----------------------
         UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
         ButtonFont.Hint := UsualFont;
@@ -861,17 +868,21 @@ begin
         // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
         HelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
         SetHelpLanguage();
+
         // ------------------  S Y N C   S E T T I N G S --------------------------
         case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
             'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
             'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
             'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 	    end;
-        SyncRepoFile := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');     // that is for file sync
-        SyncRepoGithub := ConfigFile.readstring('SyncSettings', 'SyncRepoGithub', '');
+        SyncFileRepo := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');     // that is for file sync
+        SyncGithubRepo := ConfigFile.readstring('SyncSettings', 'SyncRepoGithub', '');
+        SyncFileAuto :=    ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
+        SyncGithubAuto  := ('true' = Configfile.ReadString('SyncSettings', 'AutosyncGit', 'false'));
+        SyncFileEnabled := ('true' = Configfile.ReadString('SyncSettings', 'FileSyncEnabled', 'false'));
+        SyncGithubEnabled :=   ('true' = Configfile.ReadString('SyncSettings', 'GitSyncEnabled', 'false'));
 
-        //if ValidSync <> '' then
-            CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
+        //    CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
         //else
         //    CheckBoxAutoSync.checked := False;
 
@@ -880,7 +891,8 @@ begin
 
         EditToken.text := Configfile.ReadString('SyncSettings', 'GHPassword', '');
         EditUserName.text := Configfile.ReadString('SyncSettings', 'GHUserName', '');
-        SyncType := Configfile.ReadString('SyncSettings', 'SyncType', 'file');
+        //SyncType := Configfile.ReadString('SyncSettings', 'SyncType', 'file');
+        ComboSyncTypeChange(self);
 
         // ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);
 
@@ -983,37 +995,33 @@ begin
 			end;
             if HelpNotesLang <> '' then
                 ConfigFile.writestring('BasicSettings', 'HelpLanguage', HelpNotesLang);
+
             // --------- S Y N C    S E T T I N G S ----------------------------
-            { Supported config file parameters -
-              * SyncRepo    - determines ValidSync, should contain a Repo directory or URL
-              * SyncType    - Only supported at this stage is 'file', 'github'
-              * AutoSync    - true/false
-              * SyncOption  - AlwaysAsk, UseLocal, UseServer being decisions made when clash detected.
-            Other entries, such as SyncRepoURL, SyncURL, FileSyncRepo, UseFileSync are distractions introduced by a nasty
-            pull request I stupidly let through, ignore them, they will not go away unless manually deleted !
-            }
-	        ConfigFile.WriteString('SyncSettings', 'Autosync', MyBoolStr(CheckBoxAutosync.Checked));
+            { Other entries, such as SyncRepoURL, SyncURL, FileSyncRepo, UseFileSync are distractions introduced by a nasty
+            pull request I stupidly let through, ignore them, they will not go away unless manually deleted ! }
+
+	        ConfigFile.WriteString('SyncSettings', 'Autosync',    MyBoolStr(SyncFileAuto));
+            ConfigFile.WriteString('SyncSettings', 'AutosyncGit', MyBoolStr(SyncGithubAuto));
+            ConfigFile.WriteString('SyncSettings', 'FileSyncEnabled', MyBoolStr(SyncFileEnabled));
+            ConfigFile.WriteString('SyncSettings', 'GitSyncEnabled', MyBoolStr(SyncGithubEnabled));
 	        if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseLocal')
             else if RadioUseServer.Checked then
                  ConfigFile.writestring('SyncSettings', 'SyncOption', 'UseServer');
-            //if ValidSync <> '' then begin
-                ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);         // Extend sync type here.
-                ConfigFile.writestring('SyncSettings', 'SyncRepo', SyncRepoFile);
-                ConfigFile.writestring('SyncSettings', 'SyncRepoGithub', SyncRepoGitHub);
-            //end;
-
+            //ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);         // Extend sync type here.
+            ConfigFile.writestring('SyncSettings', 'SyncRepo', SyncFileRepo);
+            ConfigFile.writestring('SyncSettings', 'SyncRepoGithub', SyncGithubRepo);
             ConfigFile.writestring('SyncSettings', 'GHPassword', EditToken.text);
             ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
-
 
             // --------- S P E L L     S E T T I N G S ----------------------------
             if SpellConfig then begin
                 ConfigFile.writestring('Spelling', 'Library', LabelLibrary.Caption);
                 ConfigFile.writestring('Spelling', 'Dictionary', LabelDic.Caption);
             end;
+
             // --------- S N A P S H O T    S E T T I N G S  -------------------
             configfile.WriteBool('Snapshot', 'AutoSnapEnabled', CheckAutoSnapEnabled.Checked);
             configfile.WriteDateTime('Snapshot', 'NextAutoSnapshot', NextAutoSnapshot);         // Format can (?) be set in SysUtils but does not matter as long as its consistent on this machine
@@ -1210,7 +1218,9 @@ begin
             FindClose(Info);
             CheckShowIntLinks.enabled := true;
             // CheckReadOnly.enabled := true;
-            CheckBoxAutoSync.Checked:=False;
+            SyncFileAuto :=False;
+            SyncGithubAuto :=False;
+            ComboSyncTypeChange(self);
             WriteConfigFile();
             SyncSettings();
             SearchForm.IndexNotes();
@@ -1331,46 +1341,100 @@ end;
 { Note that AutoSync and AutoSnapshot share a timer.  AutoSync runs on each 'tick' of the timer,
   that is, hourly, but autosnapshop looks at NextAutoSnapshot to decide if its time to do its thing.
 }
-
+{ This method manages display of all the controls associated with setting
+up Sync connections. }
 procedure TSett.ComboSyncTypeChange(Sender: TObject);
 var
     Ctrl : TControl;
+    RememberMask : boolean;
 begin
+    RememberMask := MaskSettingsChanged;
+    MaskSettingsChanged := true;
     case ComboSyncType.ItemIndex of
         0 : begin
-            SyncType := 'file';
-            ValidSync := SyncRepoFile;
-            LabelSyncInfo1.caption := rsFileSyncInfo1;
-            LabelSyncInfo2.caption := rsFileSyncInfo2;
-            for Ctrl in [ CheckBoxAutoSync ] do Ctrl.Visible := True;
-            for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
-                do Ctrl.Visible := False;
+                //SyncType := 'file';                   // ToDo : discard
+                LabelSyncInfo1.caption := rsFileSyncInfo1;
+                LabelSyncInfo2.caption := rsFileSyncInfo2;
+                CheckBoxAutoSync.Checked := SyncFileAuto;
+                CheckSyncEnabled.Checked := SyncFileEnabled;
+                for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
+                    do Ctrl.Visible := False;
+                if SyncFileRepo = '' then
+                    LabelSyncRepo.Caption  := rsSyncNotConfig
+                else  LabelSyncRepo.Caption := SyncFileRepo;
             end;
         1 : begin
-            SyncType := 'github';
-            ValidSync := SyncRepoGithub;
-            LabelSyncInfo1.caption := rsGithubSyncInfo1;
-            LabelSyncInfo2.caption := rsGithubSyncInfo2;
-            for Ctrl in [ CheckBoxAutoSync ] do Ctrl.Visible := false;
-            for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
-                do Ctrl.Visible := True;
-            end;
+                //SyncType := 'github';
+                LabelSyncInfo1.caption := rsGithubSyncInfo1;
+                LabelSyncInfo2.caption := rsGithubSyncInfo2;
+                CheckBoxAutoSync.Checked := SyncGithubAuto;
+                CheckSyncEnabled.Checked := SyncGithubEnabled;
+                for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
+                    do Ctrl.Visible := True;
+                if SyncGithubRepo = '' then
+                    LabelSyncRepo.Caption  := rsSyncNotConfig
+                else  LabelSyncRepo.Caption  := SyncGithubRepo;
+               end;
     end;
+    if (LabelSyncRepo.Caption = rsSyncNotConfig)
+    or (LabelSyncRepo.Caption = '') then begin
+        SpeedSetUpSync.Caption := rsSetUp;
+        CheckBoxAutoSync.enabled := false;
+        CheckSyncEnabled.enabled := false;
+    end else begin
+        SpeedSetUpSync.Caption := rsChangeSync;
+        CheckBoxAutoSync.enabled := true;
+        CheckSyncEnabled.enabled := true;
+    end;
+   MaskSettingsChanged := RememberMask;
 end;
 
 
 procedure TSett.SpeedSetupSyncClick(Sender: TObject);
+var
+   SyncType : integer;
 begin
-    {  ToDo : here we check if there is an existing local manifest and assume, incorrectly, that
-       it must be associated with a particular existing Sync. When we understand a bit more about
-       nextcloud sync process, fix ! }
-
+    {  Used by both File and Github sync }
     if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+
+    FormSync.NoteDirectory := NoteDirectory;
+    FormSync.LocalConfig := LocalConfig;
+    FormSync.SetupSync := True;
+    SyncType := ComboSyncType.ItemIndex;
+    case SyncType of
+      0 : begin
+            if FileExists(LocalConfig + 'manifest.xml')
+            and (mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0)) then exit;
+            if SelectDirectoryDialog1.Execute then
+                LabelSyncRepo.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim)
+            else exit();
+            FormSync.Transport:=TSyncTransport.SyncFile;
+            // The Sync unit will get the remote dir from Sett.LabelSyncRepo.Caption
+          end;
+      1 : begin
+            if FileExists(LocalConfig + SyncTransportName(SyncGithub) + PathDelim + 'manifest.xml')
+            and (mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0)) then exit;
+            FormSync.Transport:=TSyncTransport.SyncGithub;
+            FormSync.Password := EditToken.Text;
+            FormSync.UserName := EditUserName.text;
+            // SyncGUI will update LabelSyncRepo.Caption if successful.
+          end;
+    end;
+    if mrOK = FormSync.ShowModal then begin
+        case SyncType of
+            0 : SyncFileRepo := LabelSyncRepo.Caption;
+            1 : SyncGithubRepo := LabelSyncRepo.Caption;
+        end;
+        WriteConfigFile();
+        ComboSyncTypeChange(self);          // update button label
+    end;
+
+    (*
     if FileExists(LocalConfig + 'manifest.xml') then
         if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
     if SyncType = 'file' then begin
         if SelectDirectoryDialog1.Execute then
-            ValidSync := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim)
+            LabelSyncRepo.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim)
         else exit();
     end;
     FormSync.NoteDirectory := NoteDirectory;
@@ -1384,42 +1448,44 @@ begin
                     FormSync.UserName := EditUserName.text;
                    end;
     end;
-
     if mrOK = FormSync.ShowModal then begin
-
-            // ValidSync :=
             WriteConfigFile();
             ValidSync := ValidSync;           // so we update button labels etc
     end else
             ValidSync := rsSyncNotConfig;
+    *)
 end;
 
-function TSett.fGetValidSync: string;
+
+function TSett.fGetValidSync: boolean;
 begin
-    if (LabelFileSync.Caption <> rsSyncNotConfig) and (LabelFileSync.Caption <> '')  then
-        Result := LabelFileSync.Caption
+    result := (SyncFileRepo <> '') or (SyncGithubRepo <> '');
+(*    if (LabelSyncRepo.Caption <> rsSyncNotConfig) and (LabelSyncRepo.Caption <> '')  then
+        Result := LabelSyncRepo.Caption
     else Result := '';
+    if Application.HasOption('debug-sync') then
+        debugln('ValidSync=' + Result);                  *)
 
     // ToDo : some test required but this is not it. It tells us sync not conf when its just not mounted  !
 {    if Result <> '' then
-        if not fileexists(appendpathdelim(LabelFileSync.Caption) + 'manifest.xml') then
+        if not fileexists(appendpathdelim(LabelSyncRepo.Caption) + 'manifest.xml') then
             Result := '';   }
 end;
-
+(*
 procedure TSett.fSetValidSync(Repo: string);
 begin
     if (Repo =  rsSyncNotConfig) or (Repo = '') then begin
-        LabelFileSync.Caption  := rsSyncNotConfig;
+        LabelSyncRepo.Caption  := rsSyncNotConfig;
         SpeedSetUpSync.Caption := rsSetUp;
     end else begin
-        LabelFileSync.Caption  := Repo;
+        LabelSyncRepo.Caption  := Repo;
         SpeedSetUpSync.Caption := rsChangeSync;
         case SyncType of
-            'file' : SyncRepoFile := Repo;
-            'github' : SyncRepoGithub := Repo;
+            'file' : SyncFileRepo := Repo;
+            'github' : SyncGithubRepo := Repo;
         end;
     end;
-end;
+end;            *)
 
 procedure TSett.CheckAutostartChange(Sender: TObject);
 var
@@ -1431,22 +1497,40 @@ begin
      if Auto.ErrorMessage <> '' then
         ShowMessage('Error setting autostart' + Auto.ErrorMessage);
      FreeAndNil(Auto);
-     CheckReadOnlyChange(Sender);
+     SaveSettings(Sender);
 end;
 
+
+procedure TSett.CheckSyncEnabledChange(Sender: TObject);
+begin
+    if MAskSettingsChanged then exit;
+    case ComboSyncType.ItemIndex of
+        0 : SyncFileEnabled := CheckSyncEnabled.Checked;
+        1 : SyncGithubEnabled  := CheckSyncEnabled.Checked;
+    end;
+    SaveSettings(self);
+end;
 
 procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
 begin
     // debugln('WARNING - CheckBoxAutoSyncChange called');
     if MAskSettingsChanged then exit;                       // Don't trigger timer during setup
-    if ValidSync = '' then
-       CheckBoxAutoSync.Checked:= false
-    else if CheckBoxAutoSync.Checked then begin
+    if CheckBoxAutoSync.Checked then begin
+        case ComboSyncType.ItemIndex of
+            0 : SyncFileAuto := True;
+            1 : SyncGithubAuto  := True;
+            otherwise exit;
+        end;
         TimerAutoSync.Enabled := false;
         TimerAutoSync.Interval:= 1000;                      // wait a second, then sync. AutoSnap will also be checked.
         TimerAutoSync.Enabled := true;
-    end;
-    CheckReadOnlyChange(Sender);
+    end else
+        case ComboSyncType.ItemIndex of
+            0 : SyncFileAuto := False;
+            1 : SyncGithubAuto  := True;
+            otherwise exit;
+        end;
+    SaveSettings(Self);
 end;
 
 procedure TSett.Synchronise();
@@ -1457,14 +1541,20 @@ begin
     // Might need to check, somehow, that no threads are still running ?  How ?
     SearchForm.FlushOpenNotes();
     FormSync.SetupSync := False;
-    case SyncType of
-        'file'   : FormSync.Transport:=TSyncTransport.SyncFile;
-        'github' : FormSync.Transport:=TSyncTransport.SyncGithub;
+    if SyncFileEnabled then begin
+        FormSync.Transport:=TSyncTransport.SyncFile;
+        if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
+            FormSync.Show
+        else
+            FormSync.ShowModal;
     end;
-    if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
-        FormSync.Show
-    else
-        FormSync.ShowModal;
+    if SyncGithubEnabled then begin
+        FormSync.Transport:=TSyncTransport.SyncGithub;
+        if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
+            FormSync.Show
+        else
+            FormSync.ShowModal;
+    end;
 end;
 
 procedure TSett.StartAutoSyncAndSnap();
@@ -1485,13 +1575,22 @@ begin
     TimerAutoSync.Interval:= 60*1000;
     debugln('WARNING - TESTAUTOSNAP is defined, timer called, MSC is ' + dbgs(MAskSettingsChanged));
     {$ENDIF}
-    if  (ValidSync <> '') and CheckBoxAutoSync.checked  and (not FormSync.Busy) then begin
+    //if  (ValidSync <> '') and CheckBoxAutoSync.checked  and (not FormSync.Busy) then begin
+    if  SyncFileAuto and (SyncFileRepo <> '') and SyncFileEnabled and (not FormSync.Busy) then begin
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.Transport:=TSyncTransport.SyncFile;
         FormSync.SetupSync := False;                                        // That is, we are not, now, trying to setup sync
         FormSync.RunSyncHidden()
     end;
+    if  SyncGithubAuto and (SyncGithubRepo <> '') and SyncGithubEnabled and (not FormSync.Busy) then begin
+        FormSync.NoteDirectory := Sett.NoteDirectory;
+        FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
+        FormSync.Transport:=TSyncTransport.SyncGithub;
+        FormSync.SetupSync := False;
+        FormSync.RunSyncHidden()
+    end;
+
     // debugln('Now its about ' + DateTimeToStr(now));
     // debugln('Next Snap due ' + DateTimeToStr(NextAutoSnapshot));
     if CheckAutoSnapEnabled.Checked and (NextAutoSnapshot < now()) then
@@ -1511,7 +1610,7 @@ begin
     end;
 end;
 
-procedure TSett.CheckReadOnlyChange(Sender: TObject);
+procedure TSett.SaveSettings(Sender: TObject);
 begin
     WriteConfigFile();      // Write to disk
     SyncSettings();
@@ -1523,6 +1622,7 @@ begin
             end;
     end;
 end;
+
 
 
 end.

@@ -786,7 +786,7 @@ begin
                             //debugln('SearchForm - FileMenuClicked ' + dbgs(Tock - Tick) + 'ms  ' + dbgs(GetTickCount64() - Tock) + 'mS');
                     end;
         mtAbout :    MainForm.ShowAbout();
-        mtSync :     if(Sett.ValidSync <> '') then Sett.Synchronise()
+        mtSync :     if Sett.ValidSync then Sett.Synchronise()
                      else showmessage(rsSetupSyncFirst);
         mtSettings : begin
                             MoveWindowHere(Sett.Caption);

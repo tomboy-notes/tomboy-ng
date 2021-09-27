@@ -1623,12 +1623,18 @@ msgstr "Se muestra siempre si hay un error al cargar las notas."
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Mostrar Sincronización Tomdroid (experimental)"
 
+#: tsett.checksyncenabled.caption
+msgid "Sync Enabled"
+msgstr ""
+
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
 
 #: tsett.checkuseundo.hint
-msgid "Close and reopen a note to take effect."
+#, fuzzy
+#| msgid "Close and reopen a note to take effect."
+msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Cierre y reabra una nota para que tenga efecto."
 
 #: tsett.combosynctype.text
@@ -1716,11 +1722,6 @@ msgctxt "tsett.labelexpires.caption"
 msgid "LabelExpires"
 msgstr ""
 
-#: tsett.labelfilesync.caption
-msgctxt "tsett.labelfilesync.caption"
-msgid "not configured"
-msgstr "sin configurar"
-
 #: tsett.labellabelexpires.caption
 msgctxt "tsett.labellabelexpires.caption"
 msgid "Expires"
@@ -1738,8 +1739,14 @@ msgstr ""
 msgid "LabelSyncInfo2"
 msgstr ""
 
+#: tsett.labelsyncrepo.caption
+#, fuzzy
+msgctxt "tsett.labelsyncrepo.caption"
+msgid "not configured"
+msgstr "sin configurar"
+
 #: tsett.labelsynctype.caption
-msgid "LabelSyncType"
+msgid "Sync Type"
 msgstr ""
 
 #: tsett.labeltoken.caption

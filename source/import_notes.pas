@@ -26,6 +26,8 @@ unit import_notes;
 HISTORY :
     2021/08/19   Rewrite much of md import. More use of St.Replace() model.
     2021/09/06   Support notebook lists
+    2021/09/25   Allow [] meaning an empty list of notebooks.
+    2021/09/25   Fixed an "beyond the end of a line" issue in PosMDTag(), only show up on build machine ???
 
 }
 
@@ -67,7 +69,7 @@ type
         ImportNames : TStringList;      // A list of full file names to import, default is filename will become title
         FirstLineIsTitle : boolean;     // if true, first line of note becomes title
         KeepFileName : boolean;         // The note will have same base name as import.
-        NoteBook : string;              // Maybe empty, if not, imported notes will go into this notebook.  ToDo : make this work
+        NoteBook : string;              // Empty is OK, plain text notebook name or JSON array (including [])
         function Execute(): integer;    // you know all you need, go do it.
         // Alt action for this Unit, converts a StringList that contains
         // markdown to a Note, no file i/o happens, note is returned in
@@ -109,31 +111,32 @@ begin
     Cont.Add('    	<x>20</x>');
     Cont.Add('    	<y>30</y>');
     Cont.Add('      <tags>');
-    if (Notebook <> '') and (NoteBook[1] = '[') then begin
-        i := 0;
-        repeat
-            j := -1;
-            i := Notebook.IndexOf('"', i);
-            if i > -1 then
-                j := Notebook.IndexOf('"', i+1);
-            if J > -1 then begin
-                if NoteBook.Substring(i+1, j-i-1) = 'template' then
-                    Cont.Add('        <tag>system:template:' + '</tag>')
-                else
-                    Cont.Add('        <tag>system:notebook:' + NoteBook.Substring(i+1, j-i-1) + '</tag>');
-                debugln('TImportNotes.ProcessPlain - notebook = ' + notebook);
-                debugln('i=' + inttostr(i) + '  and j=' + inttostr(j));
-                debugln('substr=' + NoteBook.Substring(i+1, j-i));
-                debugln('=============================================');
-            end;
-            i := j + 1;
-        until (j < 0);
-    end else
-        if NoteBook <> '' then
-            Cont.Add('        <tag>system:notebook:' + NoteBook + '</tag>');
-    { Notebook may contain just one notebook name but more likely it will have a
-    json array like string, ["NB1", "NB2", "NB3"].  It should not contain []  }
-
+    // notebook may contain just the name of a notebook, My NoteBook  or  a json array, eg
+    // [] or ["template","Man Pages"] or ["Man Pages"]  or ["Man Pages", "Other Notebook"]
+    if (Notebook <> '') and (Notebook <> '[]') then begin
+        if (NoteBook[1] = '[') then begin                       // its a JSON array
+            i := 0;
+            repeat
+                j := -1;
+                i := Notebook.IndexOf('"', i);
+                if i > -1 then
+                    j := Notebook.IndexOf('"', i+1);
+                if J > -1 then begin
+                    if NoteBook.Substring(i+1, j-i-1) = 'template' then
+                        Cont.Add('        <tag>system:template:' + '</tag>')
+                    else
+                        Cont.Add('        <tag>system:notebook:' + NoteBook.Substring(i+1, j-i-1) + '</tag>');
+                    debugln('TImportNotes.ProcessPlain - notebook = ' + notebook);
+                    debugln('i=' + inttostr(i) + '  and j=' + inttostr(j));
+                    debugln('substr=' + NoteBook.Substring(i+1, j-i));
+                    debugln('=============================================');
+                end;
+                i := j + 1;
+            until (j < 0);
+        end else                                              // if not an array, just use it as it is, one notebook
+            if NoteBook <> '' then
+                Cont.Add('        <tag>system:notebook:' + NoteBook + '</tag>');
+    end;
     Cont.Add('      </tags>');
     Cont.Add('    	<open-on-startup>False</open-on-startup>');
     Cont.Add('</note>');
@@ -231,7 +234,8 @@ begin
             if Result = -1 then exit;                                         // no more candidates
             if (Result = 0)                                                   // Start of line
                     or (St[Result] in [' '..'/', '>']) then                   // has whitespace before tag
-                if St[Result+length(Tag)+1] <> ' ' then begin                 // is not followed by whitespace
+                if (length(st) < (Result + length(tag) +1))                   // don't mess beyond end of line
+                or (St[Result+length(Tag)+1] <> ' ')       then begin         // is not followed by whitespace
                     //writeln('LEAD tag=' + tag + ' res=' + inttostr(Result) + ' [' + St + ']');
                     exit(Result+1);
                 end;

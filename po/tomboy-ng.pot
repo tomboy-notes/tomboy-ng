@@ -1599,12 +1599,16 @@ msgstr ""
 msgid "Show Tomdroid Sync (experimental)"
 msgstr ""
 
+#: tsett.checksyncenabled.caption
+msgid "Sync Enabled"
+msgstr ""
+
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr ""
 
 #: tsett.checkuseundo.hint
-msgid "Close and reopen a note to take effect."
+msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr ""
 
 #: tsett.combosynctype.text
@@ -1692,11 +1696,6 @@ msgctxt "tsett.labelexpires.caption"
 msgid "LabelExpires"
 msgstr ""
 
-#: tsett.labelfilesync.caption
-msgctxt "tsett.labelfilesync.caption"
-msgid "not configured"
-msgstr ""
-
 #: tsett.labellabelexpires.caption
 msgctxt "tsett.labellabelexpires.caption"
 msgid "Expires"
@@ -1714,8 +1713,13 @@ msgstr ""
 msgid "LabelSyncInfo2"
 msgstr ""
 
+#: tsett.labelsyncrepo.caption
+msgctxt "tsett.labelsyncrepo.caption"
+msgid "not configured"
+msgstr ""
+
 #: tsett.labelsynctype.caption
-msgid "LabelSyncType"
+msgid "Sync Type"
 msgstr ""
 
 #: tsett.labeltoken.caption

@@ -59,6 +59,8 @@ is shuffled around to ensure its in RemoteNotes when we write out remote manifes
 
 HISTORY :
     2021/09/20 - Changed to using JSONTools, tidier, safer, easier to read code.
+    2021/09/25 - fixed how notebook lists are stored in RemoteNotes, as JSON array, not JSON data
+    2021/09/27 - Implement selective sync.
 }
 
 
@@ -85,7 +87,7 @@ type
             LCDate: string;     // The Last Change Date of the note. Always can get that.
             CDate : string;     // The create Date, we may not know it if its a new note.
             Format : TFileFormat;       // How the file is saved at github, md only at present
-            Notebooks : string; // maybe empty, else ["notebook1", "notebook2"] etc. Only needed for SyDownLoad
+            Notebooks : string; // empty OK, else [] or ["notebook1", "notebook2"] etc. Only needed for SyDownLoad
       end;
 
 type
@@ -146,6 +148,15 @@ type
                             cdate, format, title and notebooks.
                             AssignAction will add locally know notes and and actions.}
         RemoteNotes : TGitNoteList;
+
+                             { Hold name of SelectiveSync Notebook, eg SyncGithub, set during a Join (depending on
+                             remote repo, a New (depending on if we have a Notebook by that name) or in a Use its
+                             loaded from RemoteManifest and cannot be changed. The actual name to trigger all
+                             this is a constant in implementation section of transgithub. }
+        SelectiveSync : string;
+
+        SelectiveNotebookIDs : TstringList;  // May contain FNames of notes that are members of SelectiveSync notebook. Dont create or free.
+
         HeaderOut : string;             // Very ugly global to get optional value back from Downloader
                                         // ToDo : do better than this Davo
 
@@ -161,6 +172,13 @@ type
                             commit and find the datestring in the json. Expects a full file name, something
                             like 'Notes/6EC64290-4348-4716-A892-41C9DE4AEC4C.md' - should work for any format.}
         function GetNoteLCD(FFName: string): string;
+
+                            { Used only by AssignActions, scans over NoteLister's notes adding any it finds
+                            present in NoteLister but not yet in RMData. We might exclude notes not members
+                            of the SyncGithub notebook if SelectiveSync contains that name. The list of
+                            local notes who are members of SyncGithub might be nil is no local SyncGithub.
+                            Note : we don't copy records from RMetaData to RemoteNotes is TestRun.  }
+        function MergeNotesFromNoteLister(RMData: TNoteInfoList; TestRun: boolean ): boolean;
 
                             // Reads the (json) remote manifest, adding cdate, format and Notebooks to RemoteNotes.
                             // Assumes RemoteNotes is created, comms tested. Ret false if cannot find remote
@@ -299,7 +317,6 @@ uses
 const
   GitBaseURL='https://github.com/';
   BaseURL='https://api.github.com/';
-
   RNotesDir='Notes/';
   RMetaDir='Meta/';
   RemoteRepoName='tb_test';
@@ -491,8 +508,7 @@ end;
 
 
 
-function TGitHubSync.TestTransport(const WriteNewServerID: boolean
-    ): TSyncAvailable;
+function TGitHubSync.TestTransport(const WriteNewServerID: boolean): TSyncAvailable;
 {  If we initially fail to find offered user account, try defunkt so we can tell if
    its a network error or username one.  }
 var
@@ -500,7 +516,9 @@ var
 begin
     Result := SyncNotYet;
     ErrorString := '';
-    {$ifdef DEBUG}debugln('TGithubSync.TestTransport - called');{$endif}
+    {$ifdef DEBUG}
+    debugln('TGithubSync.TestTransport - WriteNewServerID is ', booltostr(WriteNewServerID, true));
+    {$endif}
     if ANewRepo and WriteNewServerID then           // Will fail ? if repo already exists.
         MakeRemoteRepo();
     if RemoteNotes <> Nil then RemoteNotes.Free;
@@ -529,11 +547,53 @@ begin
             else begin
                 if ProgressProcedure <> nil then progressProcedure('Scaning remote files');
                 if not ScanRemoteRepo() then exit(SyncBadRemote);               // puts only remote filenames and sha in RemoteNotes
-                if (not ReadRemoteManifest()) then
-                        if (not ANewRepo) then
-                            exit(SyncNoRemoteMan);
+                if (not ReadRemoteManifest()) then begin
+                        if (not ANewRepo) and (not WriteNewServerID) then       // dont expect a remote manifest in ANewRepo mode.
+                            // But if we have had an aborted New process, might mave serverid but no manifest
+                            exit(SyncNoRemoteMan)
+                        else ANewRepo := True;
+                end;
+                // we MUST detect here where a user is trying to add SelectiveSync to an existing non-selective repo = ERROR.
+                // If remote is already selective, thats OK, it stays that way. If the remote is not selective but readable,
+                // and local system is selective, ERROR.  But if we appear to be building a new repo, we will go with
+                // whatever the local system does.
+
+                {  I have two vars, SelectiveSync will hold name of selective NB RemoteManifest has one set. Even if
+                   local system does not have that NB (and therefore has no notes suitable). Else its empty.
+                   Secondly, we have SelectiveNotebookIDs, a pointer to the local selective NB's list of notes.
+                   If there is no local selective NB, then SelectiveNotebookIDs is nil. And we should skip
+                   all local files.
+                   If the remote repo is not selective but local one is, thats an ERROR.  The exception being if
+                   the remote repo is being constructed, has serverID perhaps but no remotemanifest, ANewRepo is true,
+                   then we follow local policy.
+                   REMEMBER -  SelectiveNotebookIDs might be nil !
+               }
+
+               if TheNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub))
+               and (SelectiveSync = '') and (not ANewRepo) then begin
+                   ErrorString := 'Local is Selective, remote is NOT';
+                   SayDebugSafe(ErrorString + ' probably need build a new remote repo, please read documentation');
+                    exit(SyncMismatch)
+               end;
+               if (SelectiveSync = '') and  assigned(SelectiveNotebookIDs) then      // Use local 'cos its a new repo.
+                   SelectiveSync := SyncTransportName(SyncGithub);
+
+               {$ifdef DEBUG}
+                debugln('TGitHubSync.TestTransport SelectiveSync=' + SelectiveSync);
+                if not assigned(SelectiveNotebookIDs) then
+                    debugln('TGitHubSync.TestTransport SelectiveNotebookIDs not assigned.');
+                {$endif}
+
+         (*      if SelectiveSync = '' then begin        // that is, ReadRemoteManifest has not set it, maybe RManifest does not exist ?
+                    debugln('TGitHubSync.TestTransport populating SelectiveNotebookIDs');
+                    if TheNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub)) then
+                        if (not ANewRepo) then exit(SyncMismatch)               // if we have a Notebook by that name, but not remote, ERROR
+                        else SelectiveSync := SyncTransportName(SyncGithub);    // Set if NewRepo and the Notebook exists.
+                end else TheNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub));        *)
+
+
                 Result := SyncReady;
-                if ProgressProcedure <> nil then ProgressProcedure('TestTransport Happy');
+                if ProgressProcedure <> nil then ProgressProcedure('TestTransport Happy, SelectiveSync=' + SelectiveSync);
             end;
         end else SayDebugSafe('TGithubSync.TestTransport - Spoke to Github but did not confirm login');
     end else begin
@@ -572,6 +632,8 @@ var
     FullFileName : string;
 begin
     Result := True;
+    if not DirectoryExists(NotesDir + TempDir) then
+        exit(SayDebugSafe('TGithubSync.DownloadNotes - ERROR, no temp dir  ' + NotesDir + TempDir));
     if ProgressProcedure <> nil then ProgressProcedure('Downloading notes');
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
@@ -677,22 +739,20 @@ begin
     result := true;
 end;
 
-function TGitHubSync.DoRemoteManifest(const RemoteManifest: string;
-    MetaData: TNoteInfoList): boolean;
+function TGitHubSync.DoRemoteManifest(const RemoteManifest: string; MetaData: TNoteInfoList): boolean;
 var
     P : PNoteInfo;      // an item from RemoteMetaData
     PGit : PGitNote;    // an item from local data structure, RemoteNotes
     Readme, manifest : TStringList;
     St, Notebooks : string;
 begin
-    // ToDo : ensure this does not write new manifest / README if no changes were made.
     // Note : we do not use the supplied XML RemoteManifest, we build our own json one.
     Result := false;
     Readme := TstringList.Create;
     Manifest := TstringList.Create;
     Readme.Append('## My tomboy-ng Notes');
     // * [Note Title](https://github.com/davidbannon/tb_demo/blob/main/Notes/287CAB9C-A75F-4FAF-A3A4-058DDB1BA982.md)
-    Manifest.Append('{' + #10'  "notes" : {');
+    Manifest.Append('{' + #10'  "selectivesync" : "' + SelectiveSync + '",'#10' "notes" : {');
     try
         if MetaData = nil then exit(SayDebugSafe('TGithubSync.DoRemoteManifest ERROR, passed a nil metadata list'));
         for P in MetaData do begin
@@ -707,7 +767,7 @@ begin
                 else
                     NoteBooks := TheNoteLister.NotebookJArray(P^.ID + '.note');
                 Manifest.Append('    "' + P^.ID + '" : {'#10
-                        + '      "title" : "'  + P^.Title + '",'#10                                           // ToDo : confirm
+                        + '      "title" : "'  + P^.Title + '",'#10
                         + '      "cdate" : "'  + P^.CreateDate + '",'#10
                         + '      "lcdate" : "' + PGit^.LCDate + '",'#10
                         + '      "sha" : "'    + PGit^.Sha + '", '#10
@@ -755,13 +815,63 @@ end;
 
 const Seconds5 = 0.00005;          // Very roughly, 5 seconds
 
-function TGitHubSync.AssignActions(RMData, LMData: TNoteInfoList;
-    TestRun: boolean): boolean;
+
+function TGitHubSync.MergeNotesFromNoteLister(RMData : TNoteInfoList; TestRun: boolean) : boolean;
+var
+    PGit : PGitNote;
+    RemRec: PNoteInfo;
+    NLister : PNote;
+    i : integer;
+begin
+   if (SelectiveSync <> '') and (not Assigned(SelectiveNotebookIDs)) then     // Something in SelectiveSync but no local NB, no uploads possible
+       exit(false);
+   for i := 0 to TheNoteLister.GetNoteCount() -1 do begin                     // OK, now whats in NoteLister but not RemoteNotes ?
+       NLister := TheNoteLister.GetNote(i);
+       debugln('TGitHubSync.MergeNotesFromNoteLister  considering Title=' + NLister^.Title);
+       if NLister = nil then exit(SayDebugSafe('TGitHubSync.AssignActions ERROR - not finding NoteLister Content'));
+
+       // ToDo : I am using FindInStringList() below, TStringList.Find might be a lot faster
+       // if I can be sure it really does sort the (NoteLister's) list with SelectiveNotebookIDs.sorted := true.
+       // Calling SelectiveNotebookIDs.Sort does not seem to work ??
+        // we know we can safely poke at SelectiveNotebookIDs if SelectiveSync is not empty.
+       if (SelectiveSync <> '') and (FindInStringList(SelectiveNotebookIDs, NLister^.ID) < 0)
+           then continue;
+       // Look for items in NoteLister that do not currently exist in RemoteMetaData. If we find one,
+       // we will add it to both RemoteMetaData and RemoteNodes (because its needed to store sha on upload)
+
+       debugln('TGitHubSync.MergeNotesFromNoteLister  Adding Title=' + NLister^.Title);
+       if RMData.FindID(extractfilenameonly(NLister^.ID)) = nil then begin
+           if not TestRun then begin
+               new(PGit);
+               PGit^.FName := RNotesDir + extractfilenameonly(NLister^.ID) + '.md';                     // ToDo : Careful, assumes markdown
+               PGit^.Sha := '';
+               PGit^.Notebooks := '';
+               PGit^.CDate := NLister^.CreateDate;
+               PGit^.LCDate := NLister^.LastChange;
+               PGit^.Format := ffMarkDown;
+               RemoteNotes.Add(PGit);
+           end;
+           new(RemRec);
+           RemRec^.ID := extractfilenameonly(NLister^.ID);
+           RemRec^.LastChange := NLister^.LastChange;
+           RemRec^.CreateDate := NLister^.CreateDate;
+           RemRec^.Sha := '';
+           RemRec^.Title := NLister^.Title;
+           RemRec^.Action := SyUploadNew;
+           RemRec^.Deleted := False;
+           RemRec^.Rev := 0;
+           RemRec^.SID := 0;
+           RMData.Add(RemRec);
+       end else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes');
+   end;
+end;
+
+function TGitHubSync.AssignActions(RMData, LMData: TNoteInfoList; TestRun: boolean): boolean;
 var
     PGit : PGitNote;
     RemRec, LocRec : PNoteInfo;
     I : integer;
-    NLister : PNote;
+    //NLister : PNote;
     pNBook: PNoteBook;
     LCDate, CDate : string;
 begin
@@ -845,38 +955,13 @@ begin
     RMData.DumpList('TGithubSync.AssignActions RemoteMD - Before scanning NoteLister');
     {$endif}
 
-    for i := 0 to TheNoteLister.GetNoteCount() -1 do begin                      // OK, now whats in NoteLister but not RemoteNotes ?
-        NLister := TheNoteLister.GetNote(i);
-        if NLister = nil then exit(SayDebugSafe('TGitHubSync.AssignActions ERROR - not finding NoteLister Content'));
-        // Look for items in NoteLister that do not currently exist in RemoteMetaData. If we find one,
-        // we will add it to both RemoteMetaData and RemoteNodes (because its needed to store sha on upload)
-        if RMData.FindID(extractfilenameonly(NLister^.ID)) = nil then begin
-            if not TestRun then begin
-                new(PGit);
-                PGit^.FName := RNotesDir + extractfilenameonly(NLister^.ID) + '.md';                     // ToDo : Careful, assumes markdown
-                PGit^.Sha := '';
-                PGit^.Notebooks := '';
-                PGit^.CDate := NLister^.CreateDate;
-                PGit^.LCDate := NLister^.LastChange;
-                PGit^.Format := ffMarkDown;
-                RemoteNotes.Add(PGit);
-            end;
-            new(RemRec);
-            RemRec^.ID := extractfilenameonly(NLister^.ID);
-            RemRec^.LastChange := NLister^.LastChange;
-            RemRec^.CreateDate := NLister^.CreateDate;
-            RemRec^.Sha := '';
-            RemRec^.Title := NLister^.Title;
-            RemRec^.Action := SyUploadNew;
-            RemRec^.Deleted := False;
-            RemRec^.Rev := 0;
-            RemRec^.SID := 0;
-            RMData.Add(RemRec);
-        end else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes');
-    end;
+    MergeNotesFromNoteLister(RMData, TestRun);
+
     // OK, just need to check over the Notebooks now, notebooks are NOT listed in NoteLister.Notelist !
     for i := 0 to TheNoteLister.NotebookCount() -1 do begin
         pNBook := TheNoteLister.GetNoteBook(i);
+        if (SelectiveSync <> '') and (SelectiveSync <> pNBook^.Name) then      // only interested in SyncGithub template here....
+            continue;
         if RMData.FindID(extractfilenameonly(pNBook^.Template)) = nil then begin
             ErrorString := '';
             CDate := GetNoteLastChangeSt(NotesDir + pNBook^.Template, ErrorString, True);
@@ -885,7 +970,7 @@ begin
                 exit(SayDebugSafe('Failed to find dates in template ' + pNBook^.Template));
             if not TestRun then begin
                 new(PGit);
-                PGit^.FName := RNotesDir + extractfilenameonly(pNBook^.Template) + '.md';                     // ToDo : Careful, assumes markdown
+                PGit^.FName := RNotesDir + extractfilenameonly(pNBook^.Template) + '.md';               // ToDo : Careful, assumes markdown
                 PGit^.Sha := '';
                 PGit^.Notebooks := '';
                 PGit^.CDate := CDate;
@@ -972,17 +1057,20 @@ var
     BodyStr : string;
 begin
     if RemoteNotes = nil then exit(false);
-    //RemoteNotes.DumpList('SendFile Before');
     if RemoteNotes.FNameExists(RemoteFName, Sha) and (Sha <> '') then begin         // Existing file mode
         BodyStr :=  '{ "message": "update upload", "sha" : "' + Sha
                     + '", "content": "' + EncodeStringBase64(STL.Text) + '" }';
-        //SayDebugSafe('SendFile - using sha =' + sha);
         if Sha = '' then exit(False);
     end else begin                                      // New file mode
         BodyStr :=  '{ "message": "initial upload", "content": "'
                     + EncodeStringBase64(STL.Text) + '" }';
-        //SayDebugSafe('SendFile - NOT using sha');
     end;
+
+    debugln(' ----------- TGitHubSync.SendFile --------------');
+    debugln('URL=' + ContentsURL(True) + '/' + RemoteFName);
+    debugln('Bdy=' + BodyStr);
+    debugln(' ------------------------------------------------');
+
     Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
 end;
 
@@ -992,19 +1080,32 @@ var
     STL: TstringList;
 begin
     // https://docs.github.com/en/rest/reference/repos#create-a-repository-for-the-authenticated-user
+    {$ifdef DEBUG}
+    SayDebugSafe('TGitHubSync.MakeRemoteRepo called');
+    {$endif}
     Result := SendData(BaseURL + 'user/repos',
         '{ "name": "' + RemoteRepoName + '", "auto_init": true, "private": true" }',
         False);
     if (not Result) and (GetServerId() <> '') then exit(false);
+
+    {$ifdef DEBUG}
+    SayDebugSafe('TGitHubSync.MakeRemoteRepo creating new ServerID');
+    {$endif}
+
     CreateGUID(GUID);
     STL := TstringList.Create;
     try
         ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
         STL.Add(ServerID);
         Result := SendFile(RMetaDir + 'serverid', STL);         // Now, RemoteNotes does not exist at this stage !!
+        // URL=https://api.github.com/repos/davidbannon/tb_test/contents/Meta/serverid
     finally
         STL.Free;
     end;
+    {$ifdef DEBUG}
+    SayDebugSafe('TGitHubSync.MakeRemoteRepo returning ' + booltostr(Result, True));
+    {$endif}
+
     //RemoteServerRev := -1;
 end;
 
@@ -1047,6 +1148,7 @@ constructor TGitHubSync.Create();
 begin
     ProgressProcedure := nil;           // It gets passed after create.
     RemoteNotes := Nil;
+    SelectiveNotebookIDs := nil;
 end;
 
 destructor TGitHubSync.Destroy;
@@ -1077,24 +1179,29 @@ begin
 
         if not Downloader(ContentsURL(True) + '/' + RNotesDir + NoteID + '.md', ST) then
             exit(SayDebugSafe('TGithubSync.DownloadANote ERROR, failed to download note : ' + NoteID));
+        {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote downloaded OK ' + NoteID);{$endif}
         NoteSTL := TStringList.Create;
         NoteSTL.Text := DecodeStringBase64(ExtractJSONField(ST, 'content'));
+        {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote decoded');{$endif}
         if NoteSTL.Count > 0 then begin
                 Importer := TImportNotes.Create;
                 Importer.NoteBook := PGit^.Notebooks;
+                {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote about to import');{$endif}
                 Importer.MDtoNote(NoteSTL, PGit^.LCDate, PGit^.CDate);
+                {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote imported');{$endif}
                 // writeln(NoteSTL.TEXT);
                 if FFName = '' then
                     NoteSTL.SaveToFile(NotesDir + NoteID + '.note-temp')
                 else NoteSTL.SaveToFile(FFname);
+                {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote file saved');{$endif}
         end else Result := false;
     finally
         if Importer <> Nil then Importer.Free;
         if NoteSTL <> Nil then NoteSTL.Free;
         //STL.Free;
     end;
+    {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote finished');{$endif}
 end;
-
 
 function TGitHubSync.ReadRemoteManifest(): boolean;
 var
@@ -1114,6 +1221,8 @@ begin
         // content is in the "content" field, Base64 encoded.
         if not Node.TryParse(DecodeStringBase64(ExtractJSONField(ST, 'content'))) then
             exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON : ' + ST));
+        if Node.Exists('selectivesync') then
+            SelectiveSync := Node.Find('selectivesync').AsString;
         NotesNode := Node.Find('notes');
         if NotesNode = nil then
             exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON, notes not present : ' + ST));
@@ -1131,7 +1240,8 @@ begin
                 else PGit^.Format := ffEncrypt;
                 if PGit^.Sha = ANode.Find('sha').AsString then
                     PGit^.LCDate := ANode.Find('lcdate').AsString;
-                PGit^.Notebooks := ANode.Find('notebooks').AsArray.AsJson;
+                PGit^.Notebooks := ANode.Find('notebooks').AsJSON.Remove(0,12);  // "notebooks" : ["Notebook1","Notebook2", "Notebook3"]
+                // PGit^.Notebooks := ANode.Find('notebooks').AsArray.AsJson;
              end;
         end;
     finally
@@ -1214,7 +1324,7 @@ var
     Response : TStringStream;
 begin
     Result := false;
-    //SayDebugSafe('Posting to ' + URL);
+    SayDebugSafe('TGitHubSync.SendData - Posting to ' + URL);
     Client := TFPHttpClient.Create(nil);
     Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
     Client.AddHeader('Content-Type','application/json; charset=UTF-8');
@@ -1238,6 +1348,7 @@ begin
                 Result := True
             else begin
                 SayDebugSafe('GitHub.SendData : Post ret ' + inttostr(Client.ResponseStatusCode));
+                SayDebugSafe(Client.ResponseStatusText);
             end;
         except on E:Exception do begin
                 ErrorString := 'GitHub.SendData - bad things happened : ' + E.Message;

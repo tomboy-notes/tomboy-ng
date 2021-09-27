@@ -259,6 +259,8 @@ end;
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
+    if Application.HasOption('debug-sync') then
+        debugln('TFormSync.FormShow ');
     Busy := True;
     LabelProgress.Caption := '';
     Left := 55 + random(55);
@@ -402,8 +404,8 @@ end;
 
 procedure TFormSync.ShowReport;
 var
-        Index : integer;
-        Rows : integer = 0;
+    Index : integer;
+    Rows : integer = 0;
 begin
     with ASync.RemoteMetaData do begin
 	    for Index := 0 to Count -1 do begin
@@ -419,7 +421,10 @@ begin
 	if  Rows = 0 then
 	    Memo1.Append(rsNoNotesNeededSync)
 	else Memo1.Append(inttostr(ASync.RemoteMetaData.Count) + rsNotesWereDealt);
-    if ASync.TransMode = SyncGitHub then Memo1.Append('Token expires : ' + ASync.TokenExpire);
+    if ASync.TransMode = SyncGitHub then begin
+        Memo1.Append('Token expires : ' + ASync.TokenExpire);
+        Sett.LabelExpires.Caption := ASync.TokenExpire;
+    end;
     {$IFDEF DARWIN}     // Apparently ListView.columns[n].autosize does not work in Mac, this is rough but better then nothing.
     ListViewReport.Columns[0].Width := listviewReport.Canvas.Font.GetTextWidth('upload edit ');
     ListViewReport.Columns[1].Width := ListViewReport.Columns[0].Width *2;
@@ -453,9 +458,10 @@ begin
         AdjustNoteList();
         Label1.Caption:=rsAllDone;
         Label2.Caption := rsPressClose;
-        // Should get Sync.Transport.RemoteAddress here and poke it into Sett.ValidSync
-        if ASync.TransMode = SyncGithub then
-            Sett.ValidSync := ASync.GetTransRemoteAddress;
+        if ASync.TransMode = SyncGithub then begin
+            Sett.LabelSyncRepo.Caption := ASync.GetTransRemoteAddress;   // this relies on Sett being in Github mode, during a Join, should be ....
+            Sett.LabelExpires.Caption := ASync.TokenExpire;
+        end;
     end  else
         Showmessage(rsSyncError + ASync.ErrorString);
     ButtonClose.Enabled := True;

@@ -160,6 +160,7 @@ HISTORY
     2021/01/04  Support TomdroidFile sync mode.
     2021/08/31  Added sha to TNoteInfo
     2021/09/08  Added progress indicator
+    2021/09/27  Selective Sync, possible to have both configured and in use.
 }
 
 interface
@@ -358,17 +359,18 @@ type                       { ----------------- T S Y N C --------------------- }
                                 { Returns the set Transport's RemoteAddress, for GithubSync }
         property GetTransRemoteAddress : string read fGetTransRemoteAddress;
 
-                { IFF its there, delete the indicated ID from main section of local manifest
-                  (and any Tomdroid local manifests) and list it in the deleted section instead.
-                  Its really stand alone, create a sync object, set config and notes dir, call
-                  this method and free. }
+                            { IFF its there, delete the indicated ID from main section of local manifest (and
+                            any Tomdroid  and SyncGithub manifests) and list it in the deleted section instead.
+                            Its really stand alone, create a sync object, set config and notes dir, call
+                            this method and free. }
         function DeleteFromLocalManifest(ID: ANSIString) : boolean;
-        { Reports on contents of a created and filled list }
+
+                            { Reports on contents of a created and filled list }
 	    procedure ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors: integer);
 
-                { Selects a Trans layer, adjusts config dir,
-                  TransFileAnd : checks for the expected remote dir, may return SyncNoRemoteRepo,
-                  SyncNoServerID (not an error, just not used previously) or SyncReady. }
+                            { Selects a Trans layer, adjusts config dir,
+                            TransFileAnd : checks for the expected remote dir, may return SyncNoRemoteRepo,
+                            SyncNoServerID (not an error, just not used previously) or SyncReady. }
         function SetTransport(Mode : TSyncTransport) : TSyncAvailable;
 
                 { Checks NoteMetaData for valid Actions, writes error to console.
@@ -433,11 +435,21 @@ begin
     if FileExists(FullFileName) then
         if not DeleteFromThisManifest(FullFileName, ID) then begin
            debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
-            // Note - not finding the (first) manifest file is not an error, just unsynced.
+            // Note - not finding the manifest file is not an error, just unsynced.
             exit(False);
         end
     else if DebugMode then
-       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not synced yet ?');
+       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not in use ?');
+
+    FullFileName := ConfigDir + SyncTransportName(SyncGithub) + PathDelim + 'manifest.xml';
+    if FileExists(FullFileName) then
+        if not DeleteFromThisManifest(FullFileName, ID) then begin
+           debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
+           exit(False);
+        end
+    else if DebugMode then
+       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not in use ?');
+
     if DirectoryExists(ConfigDir + 'android') then begin
         if FindFirst(ConfigDir + 'android' + pathdelim + '*.xml', faAnyFile, Info)=0 then
            try
@@ -952,27 +964,28 @@ begin
     ErrorString := '';
     FreeAndNil(Transport);
     case Mode of
-        SyncFile : begin
-                        SyncAddress := AppendPathDelim(Sett.ValidSync);             // LabelFileSync.Caption);
+        SyncFile :    begin
+                        SyncAddress := AppendPathDelim(Sett.LabelSyncRepo.Caption);             // LabelFileSync.Caption);
                         Transport := TFileSync.Create;
-	               end;
-        SyncGitHub : begin
+	                  end;
+        SyncGitHub :  begin
                         Transport := TGithubSync.Create;
                         Transport.Password := Password;
                         Transport.Username := UserName;
-                     end;
+                        ConfigDir := ConfigDir + SyncTransportName(SyncGithub) + PathDelim;
+                        ForceDirectory(ConfigDir);
+                      end;
         SyncAndroid : begin
                         // debugln('Oh boy ! We have called the android line !');
                         Transport := TAndSync.Create;
                         ManPrefix := copy(LocalServerID, 1, 8);     // But in join mode, LocalServerID is empty at this stage ...
-                    end;
+                      end;
         SyncFileAndroid : begin
                         // debugln('Oh boy ! We have called the android line !');
                         Transport := TAndFileTrans.Create;
                         ManPrefix := copy(Transport.ServerID, 1, 13);     // here, servid is set in TAndFileTrans.create
                         SyncAddress := Transport.RemoteAddress;
-                    end;
-
+                      end;
     end;
     Transport.ProgressProcedure := ProgressProcedure;
     Transport.Password := Password;
@@ -1120,7 +1133,8 @@ begin
     end;
 
     //DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData before CheckNewNotes()');
-    CheckNewNotes();
+    if TransportMode <> SyncGithub
+        then CheckNewNotes();
 
     //DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData before  CheckMetaData()');
     CheckMetaData();

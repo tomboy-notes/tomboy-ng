@@ -90,8 +90,8 @@ type
    PNotebook=^TNotebook;
    TNotebook = record
        Name : ANSIString;      // Name of the notebook
-       Template : ANSIString;  // The ID of the Template for this Notebook
-       Notes : TStringList;    // A list of the IDs of notes that are members of this Notebook.
+       Template : ANSIString;  // The FName of the Template for this Notebook, inc .note
+       Notes : TStringList;    // A list of the Fnames of notes that are members of this Notebook, inc .note.
    end;
 
 type
@@ -228,7 +228,8 @@ type
                                           knows how to do a template too. String has special XML chars 'escaped'
                                           This function expects to be passed an ID + '.note'. }
     function NoteBookTags(const NoteID: string): ANSIString;
-                                        { Returns true if it has put into list one or more Note IDs that are members of NBName }
+                                        { Returns true if it has put into list one or more Note Fnames that are members
+                                        of NBName, FNames mean ID.note ! }
     function GetNotesInNoteBook(var NBIDList: TStringList; const NBName: string): boolean;
                                        { Retuns the title of note at (zero based) index. }
     function GetTitle(Index: integer): string;
@@ -598,14 +599,18 @@ end;
 procedure TNoteLister.DumpNoteNoteList(WhereFrom : string);
 var
     P : PNote;
+    Pnb : PNotebook
 //    I : integer;
-begin
+;begin
     debugln('-----------' + WhereFrom + '------------');
     for P in NoteList do begin
         debugln('ID=' + P^.ID + '   ' +  P^.Title);
         debugln('CDate=' + P^.CreateDate + ' template=' + booltostr(P^.IsTemplate, true));
     end;
-    debugln('-----------------------');
+    debugln('-----------------------------------------------');
+    for Pnb in NoteBookList do
+        debugln('Template ID=' + Pnb^.Template + '  NB Name='+Pnb^.Name + ' and Notes are ' + Pnb^.Notes.Text);
+    debugln('-----------------------------------------------');
 end;
 
 function TNoteLister.GetNoteCount(): integer;

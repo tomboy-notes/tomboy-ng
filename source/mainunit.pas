@@ -589,7 +589,7 @@ begin
 
      ImageSyncCross.Left := ImageSyncTick.Left;
 
-     ImageSyncTick.Visible :=  (Sett.ValidSync <> '');
+     ImageSyncTick.Visible :=  Sett.ValidSync;
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 end;
 
@@ -616,7 +616,7 @@ begin
         Sett.CheckShowSplash.Checked := not Sett.CheckShowSplash.Checked;
         OldMask :=  Sett.MaskSettingsChanged;
         Sett.MaskSettingsChanged := False;
-        Sett.CheckReadOnlyChange(Sender);
+        Sett.SaveSettings(Sender);
         Sett.MaskSettingsChanged := OldMask;
     end;
     // showmessage('change dont show and Visible=' + booltostr(Visible, True));
