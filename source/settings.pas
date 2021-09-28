@@ -251,7 +251,7 @@ type
         procedure SetColours;
 
     private
-        //SyncType : string;            // maybe 'file' or 'github'    // ToDo : maybe drop this
+
         SyncFileEnabled, SyncGithubEnabled: boolean;
         SyncFileAuto, SyncGithubAuto: boolean;
                         { eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
@@ -275,13 +275,13 @@ type
         function CheckDictionary(const FullDicName : string): boolean;
         // Checks and/or makes indicatd dir, warns user if not there and writable.
         function CheckDirectory(DirPath: string): boolean;
-        // Returns the number of files that could be dictionaries in indicated directory
+                        // Returns the number of files that could be dictionaries in indicated directory
         function CheckForDic(const DictPath: ANSIString): integer;
-        { If LabelLib has a valid full name (of hunspell library), tests it, otherwise asks hunspell
-          to guess some names. In either case, exits if fail, if successful then tries for
-          a dictionary, either using default directories and populating listbox or if it finds one
-          or a full name was provided in DicFullName, just tests that name.
-          If successfull show on screen and saves config }
+                        { If LabelLib has a valid full name (of hunspell library), tests it, otherwise asks hunspell
+                        to guess some names. In either case, exits if fail, if successful then tries for
+                        a dictionary, either using default directories and populating listbox or if it finds one
+                        or a full name was provided in DicFullName, just tests that name.
+                        If successfull show on screen and saves config }
         procedure CheckSpelling(const DicFullName: string='');
         procedure DicDefaults(out DicPathAlt: string);
         procedure DoAutoSnapshot;
@@ -360,9 +360,12 @@ type
         property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
                             // Does not appear to be implemented
         property ExportPath : ANSIString Read fExportPath write fExportPath;
-        // Called after notes are indexed (from SearchUnit), will start auto timer tha
-        // controls both AutoSync and AutoSnap. Does nothing in SingleNoteMode.
+                            // Called after notes are indexed (from SearchUnit), will start auto timer tha
+                            // controls both AutoSync and AutoSnap. Does nothing in SingleNoteMode.
         procedure StartAutoSyncAndSnap();
+                            // Returns the SyncFileRepo unless its empty, in which case
+                            // its returns unusable rubbish to ensure sync aborts.
+        function GetSyncFileRepo() : string;
     end;
 
 var
@@ -1409,7 +1412,7 @@ begin
                 LabelSyncRepo.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim)
             else exit();
             FormSync.Transport:=TSyncTransport.SyncFile;
-            // The Sync unit will get the remote dir from Sett.LabelSyncRepo.Caption
+            // The Sync unit will get the remote dir from SyncFileRepo
           end;
       1 : begin
             if FileExists(LocalConfig + SyncTransportName(SyncGithub) + PathDelim + 'manifest.xml')
@@ -1425,67 +1428,16 @@ begin
             0 : SyncFileRepo := LabelSyncRepo.Caption;
             1 : SyncGithubRepo := LabelSyncRepo.Caption;
         end;
+        CheckSyncEnabled.Checked := True;
         WriteConfigFile();
         ComboSyncTypeChange(self);          // update button label
     end;
-
-    (*
-    if FileExists(LocalConfig + 'manifest.xml') then
-        if mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0) then exit;
-    if SyncType = 'file' then begin
-        if SelectDirectoryDialog1.Execute then
-            LabelSyncRepo.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim)
-        else exit();
-    end;
-    FormSync.NoteDirectory := NoteDirectory;
-    FormSync.LocalConfig := LocalConfig;
-    FormSync.SetupSync := True;
-    case SyncType of
-        'file'   : FormSync.Transport:=TSyncTransport.SyncFile;
-        'github' : begin
-                    FormSync.Transport:=TSyncTransport.SyncGithub;
-                    FormSync.Password := EditToken.Text;
-                    FormSync.UserName := EditUserName.text;
-                   end;
-    end;
-    if mrOK = FormSync.ShowModal then begin
-            WriteConfigFile();
-            ValidSync := ValidSync;           // so we update button labels etc
-    end else
-            ValidSync := rsSyncNotConfig;
-    *)
 end;
-
 
 function TSett.fGetValidSync: boolean;
 begin
     result := (SyncFileRepo <> '') or (SyncGithubRepo <> '');
-(*    if (LabelSyncRepo.Caption <> rsSyncNotConfig) and (LabelSyncRepo.Caption <> '')  then
-        Result := LabelSyncRepo.Caption
-    else Result := '';
-    if Application.HasOption('debug-sync') then
-        debugln('ValidSync=' + Result);                  *)
-
-    // ToDo : some test required but this is not it. It tells us sync not conf when its just not mounted  !
-{    if Result <> '' then
-        if not fileexists(appendpathdelim(LabelSyncRepo.Caption) + 'manifest.xml') then
-            Result := '';   }
 end;
-(*
-procedure TSett.fSetValidSync(Repo: string);
-begin
-    if (Repo =  rsSyncNotConfig) or (Repo = '') then begin
-        LabelSyncRepo.Caption  := rsSyncNotConfig;
-        SpeedSetUpSync.Caption := rsSetUp;
-    end else begin
-        LabelSyncRepo.Caption  := Repo;
-        SpeedSetUpSync.Caption := rsChangeSync;
-        case SyncType of
-            'file' : SyncFileRepo := Repo;
-            'github' : SyncGithubRepo := Repo;
-        end;
-    end;
-end;            *)
 
 procedure TSett.CheckAutostartChange(Sender: TObject);
 var
@@ -1499,7 +1451,6 @@ begin
      FreeAndNil(Auto);
      SaveSettings(Sender);
 end;
-
 
 procedure TSett.CheckSyncEnabledChange(Sender: TObject);
 begin
@@ -1565,6 +1516,13 @@ begin
         // Note that this timer will also trigger checking of AutoSnapshot.  But AutoSnapshot only
         // does something if NextAutoSnapshot is > now(), while AutoSync always runs on timer if enabled.
     end;
+end;
+
+function TSett.GetSyncFileRepo(): string;
+begin
+    if SyncFileRepo <> '' then
+        Result := SyncFileRepo
+    else Result := 'A deliberate invalid address';
 end;
 
 procedure TSett.TimerAutoSyncTimer(Sender: TObject);

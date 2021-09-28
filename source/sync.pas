@@ -965,7 +965,7 @@ begin
     FreeAndNil(Transport);
     case Mode of
         SyncFile :    begin
-                        SyncAddress := AppendPathDelim(Sett.LabelSyncRepo.Caption);             // LabelFileSync.Caption);
+                        SyncAddress := AppendPathDelim(Sett.GetSyncFileRepo());
                         Transport := TFileSync.Create;
 	                  end;
         SyncGitHub :  begin

@@ -28,6 +28,7 @@ HISTORY :
     2021/09/06   Support notebook lists
     2021/09/25   Allow [] meaning an empty list of notebooks.
     2021/09/25   Fixed an "beyond the end of a line" issue in PosMDTag(), only show up on build machine ???
+    2021/09/28   Enable multilevel bullets
 
 }
 
@@ -47,16 +48,15 @@ type
 //        function ChangeBold(var St: string): boolean;
 //        function ChangeItalic(var St: string): boolean;
         function ChangeSmallFont(var St: string): boolean;
-        function ChangeTag(var St: string; const ChangeFrom, ChangeToLead,
-            ChangeToTrail: string): boolean;
+        function ChangeTag(var St: string; const ChangeFrom, ChangeToLead, ChangeToTrail: string): boolean;
+        procedure ConvertList(var St: string);
         procedure DoLineHeadings(const STL: TStringList);
-        function ImportFile(FullFileName: string): boolean;
-        function MarkUpMarkDown(Cont: TStringList): boolean;
+        function ImportFile(FullFileName: string) : boolean;
+        function MarkUpMarkDown(Cont: TStringList) : boolean;
                             {  Returns the 1 based pos of the passed Tag, Leading says its a leading tag
                                must have whitespace of newline to left and an alpha mumeric to the right.
                                Reverse if Leading is false.  Ret 0 if a suitable tag is not found. }
-        function PosMDTag(const St, Tag: string; StartAt: integer;
-            const leading: boolean): integer;
+        function PosMDTag(const St, Tag: string; StartAt: integer; const leading: boolean): integer;
                             // Gets passed a List with note content, puts an appropriate
                             // header and footer on.
         function ProcessPlain(Cont: TStringList; const Title: string; LCD : string = '';
@@ -126,10 +126,6 @@ begin
                         Cont.Add('        <tag>system:template:' + '</tag>')
                     else
                         Cont.Add('        <tag>system:notebook:' + NoteBook.Substring(i+1, j-i-1) + '</tag>');
-                    debugln('TImportNotes.ProcessPlain - notebook = ' + notebook);
-                    debugln('i=' + inttostr(i) + '  and j=' + inttostr(j));
-                    debugln('substr=' + NoteBook.Substring(i+1, j-i));
-                    debugln('=============================================');
                 end;
                 i := j + 1;
             until (j < 0);
@@ -258,6 +254,7 @@ begin
     Result := -1;
 end;
 
+// Looks like we don't use this anymore.
 function TImportNotes.ChangeSmallFont(var St : string)  : boolean;
 begin
     // MD looks like this <sub>small font</sub> but by time we get here, the angle brackets have been munged.
@@ -288,6 +285,38 @@ begin
     end;
 end;
 
+{ For our purpose, here, a level one list line starts with an * followed by a
+space. For every three spaces before the * its one level deeper. While MD lets
+you use other characters, its only a * here folks.  }
+procedure TImportNotes.ConvertList(var St : string);
+var
+    Spaces : integer = 1;       // How many leading spaces.
+    I : integer;
+    xmltags : string = '';
+begin
+    while Spaces <= st.length do begin
+        if St[Spaces] <> ' ' then break;
+        inc(Spaces);
+    end;
+    // here, number of spaces is Spaces-1;  We are here because either not (Spaces <= St.Length)  or  St[Spaces] <> ' '.
+    if (Spaces > st.length) or (St[Spaces] <> '*') then exit;     // either not a * or no room for one.
+    // If to here, we know its a (0-n spaces)*, if its a space next, definitly list item.
+    inc(Spaces);
+    if (Spaces > st.length) or (St[Spaces] <> ' ') then exit;
+    dec(Spaces, 2);
+    //debugln('TImportNotes.ConvertList Spaces=' + inttostr(Spaces) + ' and St=' + St);
+    // So, remove Spaces spaces, the * and one more space.
+    delete(St, 1, Spaces+2);
+    Spaces := Spaces div 3;      // 0 div 3 = 0
+    for i := 0 to Spaces do
+        xmltags := xmltags + '<list><list-item dir="ltr">';
+    St := xmltags + St;
+    xmltags := '';
+    for i := 0 to Spaces do                  // When Spaces = 0, we must add one set of tags.
+        xmltags := xmltags + '</list-item></list>';
+    St := St + xmltags;
+    //debugln('TImportNotes.ConvertList St=' + St);
+end;
 
 //  <size:huge><bold>huge heading</bold></size:huge><size:small>
 
@@ -315,11 +344,12 @@ begin
             if copy(St, 1, 3) = '## ' then begin
                 delete(St, 1, 3);
                 St := '<size:huge><bold>' + St + '</bold></size:huge>'
-            end else if copy(St, 1, 2) = '* ' then begin
+            end else ConvertList(St);
+(*            end else if copy(St, 1, 2) = '* ' then begin
                 delete(St, 1, 2);
                 //<list><list-item dir="ltr">Line one</list-item></list>
                 St := '<list><list-item dir="ltr">' + St + '</list-item></list>';
-            end;
+            end;   *)
         St := St.Replace('&lt;sub&gt;', '<size:small>', [rfReplaceAll]);
         St := St.Replace('&lt;/sub&gt;', '</size:small>', [rfReplaceAll]);
         St := St.Replace('&lt;underline&gt;', '', [rfReplaceAll]);

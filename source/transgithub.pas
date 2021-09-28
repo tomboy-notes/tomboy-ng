@@ -64,7 +64,7 @@ HISTORY :
 }
 
 
-{$define DEBUG}
+{x$define DEBUG}
 
 {$mode ObjFPC}{$H+}
 interface
@@ -376,9 +376,6 @@ procedure TGitNoteList.AddNewItem(const FName, Sha: string);
 var
     PNote : PGitNote;
 begin
-
-    debugln('TGitNoteList.AddNewItem - adding ' + FName);
-
     new(PNote);
     PNote^.FName := Fname;
     PNote^.Title := '';
@@ -531,7 +528,7 @@ begin
         // So, does nominated user account exist ?
         if ExtractJSONField(ST, 'login') = UserName then begin     // "A" valid username
             TokenExpires := HeaderOut;
-            SayDebugSafe('Confirmed login OK');
+            //SayDebugSafe('Confirmed login OK');
             if TokenExpires = '' then begin
                 ErrorString := 'Username exists but Token Failure';
                 exit(SyncCredentialError);              // Password failure
@@ -539,13 +536,13 @@ begin
             // If to here, we have a valid username and a valid Password but don't know if they work together
             if ProgressProcedure <> nil then progressProcedure('Looking at ServerID');
             ServerID := GetServerId();
-            debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
+            //debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
             if ServerID = '' then begin
                 ErrorString := 'Failed to get a ServerID';
                 exit(SyncNoRemoteRepo)
             end
             else begin
-                if ProgressProcedure <> nil then progressProcedure('Scaning remote files');
+                if ProgressProcedure <> nil then progressProcedure('Scanning remote files');
                 if not ScanRemoteRepo() then exit(SyncBadRemote);               // puts only remote filenames and sha in RemoteNotes
                 if (not ReadRemoteManifest()) then begin
                         if (not ANewRepo) and (not WriteNewServerID) then       // dont expect a remote manifest in ANewRepo mode.
@@ -827,7 +824,7 @@ begin
        exit(false);
    for i := 0 to TheNoteLister.GetNoteCount() -1 do begin                     // OK, now whats in NoteLister but not RemoteNotes ?
        NLister := TheNoteLister.GetNote(i);
-       debugln('TGitHubSync.MergeNotesFromNoteLister  considering Title=' + NLister^.Title);
+       // debugln('TGitHubSync.MergeNotesFromNoteLister  considering Title=' + NLister^.Title);
        if NLister = nil then exit(SayDebugSafe('TGitHubSync.AssignActions ERROR - not finding NoteLister Content'));
 
        // ToDo : I am using FindInStringList() below, TStringList.Find might be a lot faster
@@ -839,7 +836,7 @@ begin
        // Look for items in NoteLister that do not currently exist in RemoteMetaData. If we find one,
        // we will add it to both RemoteMetaData and RemoteNodes (because its needed to store sha on upload)
 
-       debugln('TGitHubSync.MergeNotesFromNoteLister  Adding Title=' + NLister^.Title);
+       // debugln('TGitHubSync.MergeNotesFromNoteLister  Adding Title=' + NLister^.Title);
        if RMData.FindID(extractfilenameonly(NLister^.ID)) = nil then begin
            if not TestRun then begin
                new(PGit);
@@ -862,7 +859,7 @@ begin
            RemRec^.Rev := 0;
            RemRec^.SID := 0;
            RMData.Add(RemRec);
-       end else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes');
+       end { else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes')};
    end;
 end;
 
@@ -1065,12 +1062,6 @@ begin
         BodyStr :=  '{ "message": "initial upload", "content": "'
                     + EncodeStringBase64(STL.Text) + '" }';
     end;
-
-    debugln(' ----------- TGitHubSync.SendFile --------------');
-    debugln('URL=' + ContentsURL(True) + '/' + RemoteFName);
-    debugln('Bdy=' + BodyStr);
-    debugln(' ------------------------------------------------');
-
     Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
 end;
 
@@ -1324,7 +1315,7 @@ var
     Response : TStringStream;
 begin
     Result := false;
-    SayDebugSafe('TGitHubSync.SendData - Posting to ' + URL);
+    //SayDebugSafe('TGitHubSync.SendData - Posting to ' + URL);
     Client := TFPHttpClient.Create(nil);
     Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
     Client.AddHeader('Content-Type','application/json; charset=UTF-8');

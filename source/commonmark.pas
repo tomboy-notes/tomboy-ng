@@ -25,6 +25,7 @@ unit commonmark;
     2021/07/30  Now use someutuls fro tb_util instead of implementing itself. Must sync to TB-NG
     2021/07/30  Use the RemoveNoteMetaData( from TT_Utils, need merge TT_utils with TB_Utils
     2021/08/19  Rewrite ProcessMarkup to use ST.Replace() approach
+    2021/09/28  Enabled multilevel bullets
 }
 
 interface
@@ -39,6 +40,7 @@ type
 TExportCommon = class        // based on TT export_notes, just takes a note ID and returns markdown
 
     private
+        function ConvertBullets(Str: string): string;
 			function FindInStringList(const StL: TStringList; const FindMe: string): integer;
                                     // Make content suitable to write out as a PO file, no merging is going to happen !
 
@@ -259,6 +261,33 @@ begin
 	until I >= StL.Count-1;
 end;          *)
 
+{ must convert upto level 6 bullets to md. We use 3 spaces, ahead of marker to
+indicate each level. In the xml, each level is indicated by an additional
+wrap of <list><list-item dir="ltr">CONTENT</list-item></list>. Must start with
+the deepest bullet and work back up. }
+function TExportCommon.ConvertBullets(Str : string) : string;
+var
+    Pre, Post, Spaces : string;
+    i : integer = 5;
+    j : integer;
+begin
+    Result := Str;
+    while i >= 0 do begin
+        Pre := '';
+        Post := '';
+        Spaces := '';
+        for j := 0 to i do begin
+            Pre := Pre + '<list><list-item dir="ltr">';
+            Post := Post + '</list-item></list>';
+        end;
+        for j := 1 to (i*3) do
+            Spaces := Spaces + ' ';
+        Result := Result.Replace(Pre, Spaces + '* ');
+        Result := Result.Replace(Post, '');
+        dec(i);
+    end
+end;
+
 procedure TExportCommon.ProcessMarkUp(StL : TStringList);
 var
     StIndex : integer;
@@ -283,8 +312,9 @@ begin
         TempSt := TempSt.Replace('</size:large>', '', [rfReplaceAll]);
         TempSt := TempSt.Replace('<size:huge>', '', [rfReplaceAll]);
         TempSt := TempSt.Replace('</size:huge>', '', [rfReplaceAll]);
-        TempSt := TempSt.Replace('<list><list-item dir="ltr">', '* ');
-        TempSt := TempSt.Replace('</list-item></list>', '');
+        TempSt := ConvertBullets(TempSt);
+//        TempSt := TempSt.Replace('<list><list-item dir="ltr">', '* ');
+//        TempSt := TempSt.Replace('</list-item></list>', '');
         TempSt := RestoreBadXMLChar(TempSt);
         StL.Insert(StIndex, TempSt);
         StL.Delete(StIndex + 1);
