@@ -102,13 +102,13 @@ function SayDebugSafe(st: string) : boolean;
 // Using them requires that we 'use' kmemo here. If not use'd, will still compile.
 // Each one MUST resolve to a different value in KMemo, do not overload.
 
-{$if declared(pnuArrowBullets)}
+{$if declared(pnuCircleBullets)}      // Defined in KMemo in later versions (mid to late 2021)
 const
   BulletOne   = pnuTriangleBullets;
   BulletTwo   = pnuBullets;
   BulletThree = pnuCircleBullets;
-  BulletFour  = pnuArrowBullets;
-  BulletFive  = pnuBrokenArrowBullets;
+  BulletFour  = pnuArrowOneBullets;
+  BulletFive  = pnuArrowTwoBullets;
   BulletSix   = pnuLetterlo;
   BulletSeven = pnuRomanLo;
   BulletEight = pnuArabic;

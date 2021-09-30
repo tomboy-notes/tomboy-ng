@@ -104,7 +104,7 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
-    LCLIntf, Spin, notifier;
+    LCLIntf, Spin, notifier, base64;
 
 // Types;
 
@@ -892,7 +892,7 @@ begin
         //ConfigFile.writestring('SyncSettings', 'GHPassword', EditToken.text);
         //ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
 
-        EditToken.text := Configfile.ReadString('SyncSettings', 'GHPassword', '');
+        EditToken.text := DecodeStringBase64(Configfile.ReadString('SyncSettings', 'GHPassword', ''));
         EditUserName.text := Configfile.ReadString('SyncSettings', 'GHUserName', '');
         //SyncType := Configfile.ReadString('SyncSettings', 'SyncType', 'file');
         ComboSyncTypeChange(self);
@@ -1016,7 +1016,7 @@ begin
             //ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);         // Extend sync type here.
             ConfigFile.writestring('SyncSettings', 'SyncRepo', SyncFileRepo);
             ConfigFile.writestring('SyncSettings', 'SyncRepoGithub', SyncGithubRepo);
-            ConfigFile.writestring('SyncSettings', 'GHPassword', EditToken.text);
+            ConfigFile.writestring('SyncSettings', 'GHPassword', EncodeStringBase64(EditToken.text));
             ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
 
             // --------- S P E L L     S E T T I N G S ----------------------------
@@ -1584,4 +1584,73 @@ end;
 
 
 end.
+
+
+(* This is getmem's blowfish model, might use it to encrypt both notes and token
+   https://forum.lazarus.freepascal.org/index.php/topic,56489.msg419952.html#msg419952
+
+unit uCrypto;
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils, BlowFish, Base64;
+
+  function Encrypt(const AKey, AText: String): String;
+  function Decrypt(const AKey, AText: String): String;
+
+implementation
+
+function Encrypt(const AKey, AText: String): String;
+var
+  SS: TStringStream;
+  BES: TBlowFishEncryptStream;
+begin
+  Result := '';
+  if Trim(AText) = '' then
+    Exit;
+  SS := TStringStream.Create('');
+  try
+    BES := TBlowFishEncryptStream.Create(AKey, SS);
+    try
+      BES.Write(Pointer(AText)^, Length(AText));
+    finally
+      BES.Free;
+    end;
+    Result := EncodeStringBase64(SS.DataString);
+  finally
+    SS.Free;
+  end;
+end;
+
+function Decrypt(const AKey, AText: String): String;
+var
+  SS: TStringStream;
+  BDS: TBlowFishDeCryptStream;
+  Str, Txt: String;
+begin
+  Result := '';
+  if Trim(AText) = '' then
+    Exit;
+  Str := '';
+  Txt := DecodeStringBase64(AText);
+  SS := TStringStream.Create(Txt);
+  try
+    BDS := TBlowFishDeCryptStream.Create(AKey, SS);
+    try
+      SetLength(Str, SS.Size);
+      BDS.Read(Pointer(Str)^, SS.Size);
+      Result := Str;
+    finally
+      BDS.Free;
+    end;
+  finally
+    SS.Free;
+  end;
+end;
+
+end.               *)
+
 

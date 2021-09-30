@@ -183,7 +183,7 @@ begin
   if AddPara then begin
   	    PB := KM.Blocks.AddParagraph;
         if BulletLevel > 0 then begin
-            {$if declared(pnuArrowBullets)}         // Note IDE assumes true, versions of KControls earlier than Late August 2021 are FALSE
+            {$if declared(pnuCircleBullets)}         // Note IDE assumes true, versions of KControls earlier than Late August 2021 are FALSE
             case BulletLevel of
                 1 : begin
                       //debugln('AddText - BulletLevel One');
