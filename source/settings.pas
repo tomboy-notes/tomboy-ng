@@ -363,8 +363,10 @@ type
                             // Called after notes are indexed (from SearchUnit), will start auto timer tha
                             // controls both AutoSync and AutoSnap. Does nothing in SingleNoteMode.
         procedure StartAutoSyncAndSnap();
-                            // Returns the SyncFileRepo unless its empty, in which case
-                            // its returns unusable rubbish to ensure sync aborts.
+                            // Public : Returns the SyncFileRepo unless its empty, in which case its
+                            // returns unusable rubbish to ensure sync aborts.  However, a special case
+                            // applies when setting up, SyncFileRepo will be empty but ComboSyncType set
+                            // to ItemsIndex=0 (being file sync) and a valid URL will be in LabelSyncRepo.
         function GetSyncFileRepo() : string;
     end;
 
@@ -834,7 +836,7 @@ begin
         CheckShowExtLinks.Checked :=
             ('true' = ConfigFile.readstring('BasicSettings', 'ShowExtLinks', 'true'));
         CheckManyNoteBooks.checked :=
-    	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'false'));
+    	    ('true' = Configfile.readstring('BasicSettings', 'ManyNotebooks', 'true'));
         CheckUseUndo.Checked :=
             ('true' = ConfigFile.readstring('BasicSettings', 'UseUndo', 'true'));
         SearchCaseSensitive :=
@@ -1405,12 +1407,13 @@ begin
     FormSync.SetupSync := True;
     SyncType := ComboSyncType.ItemIndex;
     case SyncType of
-      0 : begin
+      0 : begin                                     // File Sync
             if FileExists(LocalConfig + 'manifest.xml')
             and (mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0)) then exit;
             if SelectDirectoryDialog1.Execute then
                 LabelSyncRepo.Caption := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim)
             else exit();
+            SyncFileRepo := '';                     // So Sync unit does not use the old one.
             FormSync.Transport:=TSyncTransport.SyncFile;
             // The Sync unit will get the remote dir from SyncFileRepo
           end;
@@ -1518,11 +1521,18 @@ begin
     end;
 end;
 
+
 function TSett.GetSyncFileRepo(): string;
 begin
     if SyncFileRepo <> '' then
         Result := SyncFileRepo
-    else Result := 'A deliberate invalid address';
+    else
+        if (ComboSyncType.ItemIndex = 0)
+                    and (LabelSyncRepo.Caption <> rsSyncNotConfig)
+                    and (LabelSyncRepo.Caption <> '') then
+            result := LabelSyncRepo.Caption
+        else
+            Result := 'File Sync is not configured';
 end;
 
 procedure TSett.TimerAutoSyncTimer(Sender: TObject);

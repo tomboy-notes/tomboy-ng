@@ -97,6 +97,8 @@ procedure RemoveNoteMetaData(STL : TStringList);
 
 function SayDebugSafe(st: string) : boolean;
 
+// Escapes any double inverted commas and backslashs it finds in passed string.
+function EscapeJSON(St : string) : string;
 
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
 // Using them requires that we 'use' kmemo here. If not use'd, will still compile.
@@ -121,6 +123,14 @@ uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}   
         laz2_DOM, laz2_XMLRead;
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
+
+
+// Escapes any double inverted commas and backslashs it finds in passed string.
+function EscapeJSON(St : string) : string;
+begin
+      Result := St.Replace('\', '\\', [rfReplaceAll] );
+      Result := Result.Replace('"', '\"', [rfReplaceAll] );
+end;
 
 function IDLooksOK(const ID : string) : boolean;
   begin

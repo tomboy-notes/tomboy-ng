@@ -44,8 +44,10 @@ ASync.StartSync
     Calls LoadRemoteRepo which calls GitHubSync.GetRemoteNotes which does nothing.
     Calls GitHubSync.AssignActions which
         Iterates over RemoteNotes adding every entry into RemoteMetaData making some initial Action guesses.
-        Iterates over NoteLister (both Note List and Notebook List) adding all entries not already in RemoteMetaData, firming up Actions as it goes.
-Calls CheckRemoteDeletes and CheckLocalDeletes that further refines Actions in RemoteMetaData based on information from LocalManifest.
+        Iterates over NoteLister (both Note List and Notebook List) adding all entries
+        not already in RemoteMetaData, firming up Actions as it goes.
+Calls CheckRemoteDeletes and CheckLocalDeletes that further refines Actions in RemoteMetaData
+based on information from LocalManifest.
 Asks the user to resolve any clashes
 Calls DoDownloads, DoDeletes and DoUpLoads which call Transport to do actual file work.
 Calls DoDeletesLocal.
@@ -319,7 +321,7 @@ const
   BaseURL='https://api.github.com/';
   RNotesDir='Notes/';
   RMetaDir='Meta/';
-  RemoteRepoName='tb_test';
+  RemoteRepoName='tb_notes';
   {$ifdef TESTRIG}
   NotesDir='/home/dbannon/Pascal/GithubAPI/notes/';
   UserName='davidbannon';
@@ -658,7 +660,7 @@ begin
                 exit(SayDebugSafe('TGithubSync.DownloadNotes - ERROR, failed to down to ' + FullFileName));
             end;
             inc(DownCount);
-            if (DownCount mod 10 = 0) then
+            if (DownCount mod 5 = 0) then
                 if ProgressProcedure <> nil then ProgressProcedure('Downloaded ' + inttostr(DownCount) + ' notes');
         end;
     end;
@@ -727,7 +729,7 @@ begin
     for St in Uploads do begin
         if not SendNote(St) then exit(false);
         inc(NoteCount);
-        if NoteCount mod 10 = 0 then
+        if NoteCount mod 5 = 0 then
             if ProgressProcedure <> nil then
                 ProgressProcedure('Uploaded ' + inttostr(NoteCount) + ' notes');
         RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', TheNoteLister.GetLastChangeDate(St));
@@ -749,7 +751,7 @@ begin
     Manifest := TstringList.Create;
     Readme.Append('## My tomboy-ng Notes');
     // * [Note Title](https://github.com/davidbannon/tb_demo/blob/main/Notes/287CAB9C-A75F-4FAF-A3A4-058DDB1BA982.md)
-    Manifest.Append('{' + #10'  "selectivesync" : "' + SelectiveSync + '",'#10' "notes" : {');
+    Manifest.Append('{' + #10'  "selectivesync" : "' + EscapeJSON(SelectiveSync) + '",'#10' "notes" : {');
     try
         if MetaData = nil then exit(SayDebugSafe('TGithubSync.DoRemoteManifest ERROR, passed a nil metadata list'));
         for P in MetaData do begin
@@ -764,7 +766,7 @@ begin
                 else
                     NoteBooks := TheNoteLister.NotebookJArray(P^.ID + '.note');
                 Manifest.Append('    "' + P^.ID + '" : {'#10
-                        + '      "title" : "'  + P^.Title + '",'#10
+                        + '      "title" : "'  + EscapeJSON(P^.Title) + '",'#10
                         + '      "cdate" : "'  + P^.CreateDate + '",'#10
                         + '      "lcdate" : "' + PGit^.LCDate + '",'#10
                         + '      "sha" : "'    + PGit^.Sha + '", '#10
@@ -1023,10 +1025,10 @@ begin
         if St[St.Length] = ']' then begin
             delete(St, St.Length, 1);
         end else SayDebugSafe('GetNoteLCD - Error, failed to remove [ from array');
-        Result := ExtractJSONField(St, 'date', 'Commit', 'author');
-        if Result = '' then
-//        if not ExtractLCD(ST, Result) then
-            SayDebugSafe('TGitHubSync.GetNoteLCD ERROR failed to find commit date in JSON ' + St);
+        Result := ExtractJSONField(St, 'date', 'commit', 'author');
+        if (Result = '') or (Result[1] = 'E') then                  // E for ERROR
+            SayDebugSafe('TGitHubSync.GetNoteLCD ERROR failed to find commit date in JSON ' + St
+                + ' for file ' + FFName);
      end;
 end;
 
@@ -1176,6 +1178,10 @@ begin
         {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote decoded');{$endif}
         if NoteSTL.Count > 0 then begin
                 Importer := TImportNotes.Create;
+
+                if length(PGit^.Notebooks) > 5 then
+                    Saydebugsafe('TGithubSync.DownloadANote Using Notebook = ' + PGit^.Notebooks);
+
                 Importer.NoteBook := PGit^.Notebooks;
                 {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote about to import');{$endif}
                 Importer.MDtoNote(NoteSTL, PGit^.LCDate, PGit^.CDate);
@@ -1233,6 +1239,11 @@ begin
                     PGit^.LCDate := ANode.Find('lcdate').AsString;
                 PGit^.Notebooks := ANode.Find('notebooks').AsJSON.Remove(0,12);  // "notebooks" : ["Notebook1","Notebook2", "Notebook3"]
                 // PGit^.Notebooks := ANode.Find('notebooks').AsArray.AsJson;
+
+
+                if length(PGit^.Notebooks) > 5 then
+                    SayDebugSafe('TGitHubSync.ReadRemoteManifest - Read notebook from JSON = ' + PGit^.Notebooks);
+
              end;
         end;
     finally
@@ -1379,14 +1390,14 @@ begin
         if Level1 <> '' then
             ANode := ANode.Find(Level1);
             if ANode = nil then
-                exit('ERROR - field not found : ' + Level1);
+                exit('ERROR - field not found 1 : ' + Level1);
         if Level2 <> '' then
             ANode := ANode.Find(Level2);
             if ANode = nil then
-                exit('ERROR - field not found : ' + Level2);
+                exit('ERROR - field not found 2 : ' + Level2);
         ANode := ANode.Find(Field);
         if ANode = nil then
-            result := 'ERROR - field not found : ' + Field
+            result := 'ERROR - field not found 3 : ' + Field
         else result := ANode.AsString;
     finally
         Node.Free;

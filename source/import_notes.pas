@@ -29,6 +29,7 @@ HISTORY :
     2021/09/25   Allow [] meaning an empty list of notebooks.
     2021/09/25   Fixed an "beyond the end of a line" issue in PosMDTag(), only show up on build machine ???
     2021/09/28   Enable multilevel bullets
+    2021/10/01   Allow for the fact that a JSON Notebook string may have " or \ escaped.
 
 }
 
@@ -90,9 +91,43 @@ uses LazFileUtils, LazUTF8, LCLProc, TB_utils;
 function TImportNotes.ProcessPlain(Cont: TStringList; const Title: string;
     LCD: string; CDate : string): boolean;
 var
-    //NoteBooks : TStringList;
-    i, j : integer;
+    Start : integer = 1;
+    NBName : string = '';
     //DateSt : string;        // eg '2020-05-19T18:58:37.9513193+10:00';
+
+    // Finds Notebook names on the JSON Notebook string. Even allows for Escaped " and \
+    // returns string value or empty string if no more available
+    function NextNBName() : string;
+    var
+        InValue : boolean = False;
+        InEsc   : boolean = False;
+        //i, Index : integer;
+    begin
+        Result := '';
+        inc(Start);
+        while Start < length(Notebook)-1 do begin
+            //for i := Start+1 to length(Notebook)-1 do begin
+            case Notebook[Start] of
+            '"' :   if InValue and not InEsc then               // Ah, thats the end of a value.
+                        exit
+                    else if not InEsc then begin
+                        InValue := True;
+                        inc(Start);
+                        continue;
+                    end;                                        // if we are inEsc, let it go through to keeper.
+            '\' :   if not InEsc then begin
+                        InEsc := True;                          // Must be first.
+                        inc(Start);
+                        continue;
+                    end;
+            end;                                                // In every case, if we are InEsc, we allow the use of the char
+            InEsc := False;
+            if InValue then
+                Result := Result + NoteBook[Start];
+            inc(Start);
+        end;
+    end;
+
 begin
     if LCD = '' then LCD := TB_GetLocalTime();
     if CDate = '' then CDate := TB_GetLocalTime();
@@ -111,24 +146,20 @@ begin
     Cont.Add('    	<x>20</x>');
     Cont.Add('    	<y>30</y>');
     Cont.Add('      <tags>');
+
     // notebook may contain just the name of a notebook, My NoteBook  or  a json array, eg
     // [] or ["template","Man Pages"] or ["Man Pages"]  or ["Man Pages", "Other Notebook"]
+    // But Notebook names may have backslash or double inverted commas, escaped with backslash
     if (Notebook <> '') and (Notebook <> '[]') then begin
         if (NoteBook[1] = '[') then begin                       // its a JSON array
-            i := 0;
-            repeat
-                j := -1;
-                i := Notebook.IndexOf('"', i);
-                if i > -1 then
-                    j := Notebook.IndexOf('"', i+1);
-                if J > -1 then begin
-                    if NoteBook.Substring(i+1, j-i-1) = 'template' then
-                        Cont.Add('        <tag>system:template:' + '</tag>')
-                    else
-                        Cont.Add('        <tag>system:notebook:' + NoteBook.Substring(i+1, j-i-1) + '</tag>');
-                end;
-                i := j + 1;
-            until (j < 0);
+            NBName := NextNBName;                    // Uses the regional, 'Start' to keep track
+            while NBName <> '' do begin
+                if NBName = 'template' then
+                    Cont.Add('        <tag>system:template:' + '</tag>')
+                else
+                    Cont.Add('        <tag>system:notebook:' + NBName + '</tag>');
+                NBName := NextNBName;
+            end;
         end else                                              // if not an array, just use it as it is, one notebook
             if NoteBook <> '' then
                 Cont.Add('        <tag>system:notebook:' + NoteBook + '</tag>');

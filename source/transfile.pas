@@ -199,6 +199,7 @@ end;
 function TFileSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
     I : integer;
+    DLCount : integer = 0;
     FullFileName : string;
     DownCount : integer = 0;
 begin
@@ -210,6 +211,9 @@ begin
         end;
     for I := 0 to DownLoads.Count-1 do begin
         if DownLoads.Items[I]^.Action = SyDownLoad then begin
+            inc(DLCount);
+            if (DLCount mod 5 = 0) and (ProgressProcedure <> nil) then
+                ProgressProcedure('Downloaded ' + inttostr(DLCount) + ' notes');
             if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
                 // First make a Backup copy
                 if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
@@ -270,8 +274,7 @@ begin
           exit(False);
 	  end;
       inc(UpCount);
-      if (UpCount mod 10 = 0) then
-        if ProgressProcedure <> nil then
+      if (UpCount mod 5 = 0) and (ProgressProcedure <> nil) then
         progressProcedure('Uploaded ' + inttostr(UpCount) + ' notes');
   end;
   result := True;
@@ -279,8 +282,6 @@ end;
 
 function TFileSync.DoRemoteManifest(const RemoteManifest: string; MetaData : TNoteInfoList = nil): boolean;
 begin
-    // I think that ForceDir will make intermediate dir too ......
-    // if not ForceDirectoriesUTF8(RemoteAddress + '0' + PathDelim + inttostr(self.RemoteServerRev + 1)) then begin
     if not ForceDirectoriesUTF8(GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1)) then
     begin
         ErrorString := 'Failed to create new remote revision dir '
@@ -294,8 +295,6 @@ begin
       debugln(ErrorString);
       exit(False);
   end;
-  {if not CopyFile(RemoteManifest, RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1)
-        + PathDelim + 'manifest.xml') then begin }
   if not CopyFile(RemoteManifest, GetRevisionDirPath(RemoteAddress, RemoteServerRev + 1) + 'manifest.xml') then
   begin
       ErrorString := 'Failed to move new remote manifest file to revision dir';

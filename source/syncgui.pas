@@ -210,7 +210,7 @@ var
 begin
     freeandnil(ASync);
     ASync := TSync.Create;
-    Label1.Caption:= rsTestingRepo;
+    Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsTestingRepo;
     Application.ProcessMessages;
     ASync.ProceedFunction:= @Proceed;
     ASync.DebugMode := Application.HasOption('s', 'debug-sync');
@@ -231,13 +231,13 @@ begin
         showmessage(rsUnableToProceed + ' ' + ASync.ErrorString);
         ModalResult := mrCancel;
     end;
-    Label1.Caption:=rsLookingatNotes;
+    Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
     Application.ProcessMessages;
     ASync.TestRun := True;
     if ASync.StartSync() then begin
         DisplaySync();
         ShowReport();
-        Label1.Caption:=rsLookingatNotes;
+        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
         Label2.Caption := rsSaveAndSync;
         ButtonSave.Enabled := True;
     end  else
@@ -319,7 +319,7 @@ var
     Notifier : TNotifier;
     SyncSummary : string;
 begin
-    Label1.Caption := rsTestingSync;
+    Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsTestingSync;
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
@@ -349,7 +349,7 @@ begin
             end;
             exit(false);        //redundant ?
         end;
-        Label1.Caption:= rsRunningSync;
+        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsRunningSync;
         Application.ProcessMessages;
         ASync.TestRun := False;
         ASync.StartSync();
@@ -361,7 +361,7 @@ begin
         end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Label1.Caption:=rsAllDone;
+        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
         Result := True;
@@ -446,7 +446,7 @@ end;
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
     Label2.Caption:=rsNextBitSlow;
-    Label1.Caption:='First Time Sync';
+    Label1.Caption :=  SyncTransportName(Transport) + ' ' + 'First Time Sync';
     Memo1.Clear;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
@@ -456,7 +456,7 @@ begin
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();
-        Label1.Caption:=rsAllDone;
+        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;
         Label2.Caption := rsPressClose;
         if ASync.TransMode = SyncGithub then begin
             Sett.LabelSyncRepo.Caption := ASync.GetTransRemoteAddress;   // this relies on Sett being in Github mode, during a Join, should be ....

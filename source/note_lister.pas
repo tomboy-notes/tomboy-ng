@@ -260,7 +260,7 @@ type
                                           its Tags and that will be added to strlist. The StartHere template won't have a Notebook
                                           Name and therefore wont get mixed up here ???? }
     function GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
-                                        { Rets a (JSON array like) string of Notebook names that this note is a member of.
+                                        { Rets a (JSON array like, escaped) string of Notebook names that this note is a member of.
                                         It returns an empty array if the note has no notebooks or cannot be found.
                                         If ID is a template, will send a two element array ["template', "notebook-name"].
                                         Expects an ID.note . Result is like this ["Notebook One", "Notebook2", "Notebook"]  }
@@ -667,10 +667,10 @@ begin
     STL := TStringList.Create;
     try
         if GetNotebooks(STL, ID) then               // its a template
-    		    Result := '"template", "' + STL[0] + '"'
+    		    Result := '"template", "' + EscapeJSON(STL[0]) + '"'
         else begin                                  // maybe its a Notebook Member
             for Index := 0 to STL.Count -1 do		// here, we auto support multiple notebooks.
-                Result := Result + '"' + StL[Index] + '", ';
+                Result := Result + '"' + EscapeJSON(StL[Index]) + '", ';
             if Result <> '' then                           // will be empty if note is not member of a notebook
                 delete(Result, length(Result)-1, 2);       // remove trailing comma and space
         end;
