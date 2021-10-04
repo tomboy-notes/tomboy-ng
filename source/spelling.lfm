@@ -1,14 +1,14 @@
 object FormSpell: TFormSpell
-  Left = 732
+  Left = 800
   Height = 227
-  Top = 318
+  Top = 243
   Width = 421
   Caption = 'Spell'
   ClientHeight = 227
   ClientWidth = 421
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '2.0.5.0'
+  LCLVersion = '2.3.0.0'
   object ListBox1: TListBox
     Left = 248
     Height = 136
@@ -16,6 +16,7 @@ object FormSpell: TFormSpell
     Width = 152
     ItemHeight = 0
     OnClick = ListBox1Click
+    OnDblClick = ListBox1DblClick
     ScrollWidth = 150
     TabOrder = 0
     TopIndex = -1
@@ -24,9 +25,8 @@ object FormSpell: TFormSpell
     Left = 256
     Height = 19
     Top = 20
-    Width = 151
+    Width = 152
     Caption = 'Click a word to use it.'
-    ParentColor = False
   end
   object Label4: TLabel
     Left = 19
@@ -34,7 +34,6 @@ object FormSpell: TFormSpell
     Top = 16
     Width = 105
     Caption = 'Suspect word -'
-    ParentColor = False
   end
   object LabelSuspect: TLabel
     Left = 19
@@ -43,7 +42,6 @@ object FormSpell: TFormSpell
     Width = 102
     Caption = 'LabelSuspect'
     Font.Style = [fsBold]
-    ParentColor = False
     ParentFont = False
   end
   object ButtonUseAndNextWord: TButton
@@ -61,7 +59,6 @@ object FormSpell: TFormSpell
     Top = 199
     Width = 83
     Caption = 'LabelStatus'
-    ParentColor = False
   end
   object LabelContext: TLabel
     Left = 19
@@ -69,7 +66,6 @@ object FormSpell: TFormSpell
     Top = 80
     Width = 95
     Caption = 'LabelContext'
-    ParentColor = False
   end
   object ButtonSkip: TButton
     Left = 16

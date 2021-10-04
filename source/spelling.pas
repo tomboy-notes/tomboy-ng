@@ -22,6 +22,8 @@ unit Spelling;
     2018/06/21  Hide an unnecessary debug line
     2018/11/29  Fixed bug when spell checking a selection of text
     2019/05/19  Display strings all (?) moved to resourcestrings
+    2020/10/04  Bugfix, selected single word chopped off last character
+    2020/10/04  Now respond to double click in suggested word list box.
 }
 
 {$mode objfpc}{$H+}
@@ -54,6 +56,7 @@ type
         procedure FormHide(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure ListBox1Click(Sender: TObject);
+        procedure ListBox1DblClick(Sender: TObject);
     private
         function CleanContext(): AnsiString;
         	{ Returns the number of #13 before the indicated location - bloody windows ! }
@@ -82,6 +85,7 @@ uses hunspell, settings, LazUTF8, LazLogger;
 const
   SetofDelims = [#10, #13, ' '..'@', '['..'`', '{'..'~'];   // all askii visible char ??
   // SetofDelims = [' ',#10,#13,'(', ')', ',', '[', ']', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', ';', '/', '-'];
+
   ContextSize = 20; // Thats plus and minus
 
 var
@@ -156,6 +160,12 @@ procedure TFormSpell.ListBox1Click(Sender: TObject);
 begin
     LabelStatus.Caption := rsREPLACE_with_1 + ' ' + TheWord + ' ' + rsReplace_WITH_2 + ' ' + ListBox1.Items[ListBox1.ItemIndex];
     ButtonUseAndNextWord.Enabled := True;
+end;
+
+procedure TFormSpell.ListBox1DblClick(Sender: TObject);
+begin
+    LabelStatus.Caption := rsREPLACE_with_1 + ' ' + TheWord + ' ' + rsReplace_WITH_2 + ' ' + ListBox1.Items[ListBox1.ItemIndex];
+    ButtonUseAndNextWord.Click;
 end;
 
 procedure TFormSpell.ReplaceWord(const NewWord : AnsiString);
@@ -254,7 +264,7 @@ var
     UTFCode : AnsiString;
 begin
     LabelPrompt.Visible:= False;
-    Dec(TheIndex);
+    // Dec(TheIndex);                               // why ?   something to do with detecting spell check complete
     TheWord := '';
     ButtonUseAndNextWord.Enabled := False;
     //Str_Text := TheKMemo.Blocks.Text;     // much faster ! but tough on memory ?
@@ -268,10 +278,11 @@ begin
             TheWord := UTFCode + TheWord;
         dec(TheIndex);
     end;
-    // if to here, TheIndex is 0
-    if UTF8Length(TheWord) > 1 then
-        if not WordToCheck() then
+    // if to here, TheIndex is 0 or equal to FinishIndex
+    if (UTF8Length(TheWord) > 1) then begin
+        if (not WordToCheck()) then
             WeAreDone();
+    end else dec(TheIndex);         // iff we didn't enter above loop, must still dec !
     if TheIndex < FinishIndex then
         WeAreDone();
 end;
