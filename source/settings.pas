@@ -95,6 +95,7 @@ unit settings;
     2021/05/01  Remove HaveConfig and restructured config startup
     2021/06/01  Add setting to disable Notifications
     2021/09/27  Allow both File and Github sync, maybe its a good idea ??  SelectiveSync.
+    2021/10/06  Restructured the way we enter GH Token, all copy and paste now.
 }
 
 {$mode objfpc}{$H+}
@@ -126,14 +127,12 @@ type
         CheckBoxAutoSync: TCheckBox;
         ComboSyncType: TComboBox;
         ComboHelpLanguage: TComboBox;
-        EditToken: TEdit;
         EditUserName: TEdit;
         GroupBoxSync: TGroupBox;
         Label10: TLabel;
         Label11: TLabel;
         Label16: TLabel;
-        LabelLabelExpires: TLabel;
-        LabelExpires: TLabel;
+        LabelToken: TLabel;
         LabelSyncType: TLabel;
         Label5: TLabel;
         Label6: TLabel;
@@ -177,7 +176,7 @@ type
         LabelNotesPath: TLabel;
         LabelSettingPath: TLabel;
         LabelSnapDir: TLabel;
-        LabelToken: TLabel;
+        LabelLabelToken: TLabel;
         LabelUserName: TLabel;
         ListBoxDic: TListBox;
         OpenDialogLibrary: TOpenDialog;
@@ -198,6 +197,8 @@ type
         SelectSnapDir: TSelectDirectoryDialog;
         SpeedButHide: TSpeedButton;
         SpeedButHelp: TSpeedButton;
+        SpeedTokenCopy: TSpeedButton;
+        SpeedTokenPaste: TSpeedButton;
         SpeedButtTBMenu: TSpeedButton;
         SpeedSetupSync: TSpeedButton;
         SpinDaysPerSnapshot: TSpinEdit;
@@ -242,6 +243,8 @@ type
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
         procedure SpeedSetupSyncClick(Sender: TObject);
+        procedure SpeedTokenCopyClick(Sender: TObject);
+        procedure SpeedTokenPasteClick(Sender: TObject);
         procedure SpinDaysPerSnapshotChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabRecoverResize(Sender: TObject);
@@ -400,6 +403,7 @@ uses IniFiles, LazLogger,
     LCLType,        // Keycodes ....
     Autostart,
     Colours,
+    Clipbrd,
     ResourceStr;     // only partially so far ....
 
 var
@@ -700,8 +704,6 @@ begin
     AreClosing := false;
     Top := 100;
     Left := 300;
-
-    LabelExpires.Caption := '';
     LoadHelpLanguages();
     DefaultFixedFont := GetFixedFont();     // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
@@ -886,23 +888,11 @@ begin
         SyncGithubAuto  := ('true' = Configfile.ReadString('SyncSettings', 'AutosyncGit', 'false'));
         SyncFileEnabled := ('true' = Configfile.ReadString('SyncSettings', 'FileSyncEnabled', 'false'));
         SyncGithubEnabled :=   ('true' = Configfile.ReadString('SyncSettings', 'GitSyncEnabled', 'false'));
-
-        //    CheckBoxAutoSync.checked := ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
-        //else
-        //    CheckBoxAutoSync.checked := False;
-
-        //ConfigFile.writestring('SyncSettings', 'GHPassword', EditToken.text);
-        //ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
-
-        EditToken.text := DecodeStringBase64(Configfile.ReadString('SyncSettings', 'GHPassword', ''));
+        LabelToken.caption := DecodeStringBase64(Configfile.ReadString('SyncSettings', 'GHPassword', ''));
         EditUserName.text := Configfile.ReadString('SyncSettings', 'GHUserName', '');
-        //SyncType := Configfile.ReadString('SyncSettings', 'SyncType', 'file');
         ComboSyncTypeChange(self);
-
-        // ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);
-
-        //TellTail := CheckBoxAutoSync.checked;
         // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
+
         // --------- S P E L L I N G ---------------------------------------
         LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
         LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
@@ -1018,7 +1008,7 @@ begin
             //ConfigFile.writestring('SyncSettings', 'SyncType', SyncType);         // Extend sync type here.
             ConfigFile.writestring('SyncSettings', 'SyncRepo', SyncFileRepo);
             ConfigFile.writestring('SyncSettings', 'SyncRepoGithub', SyncGithubRepo);
-            ConfigFile.writestring('SyncSettings', 'GHPassword', EncodeStringBase64(EditToken.text));
+            ConfigFile.writestring('SyncSettings', 'GHPassword', EncodeStringBase64(LabelToken.Caption));
             ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
 
             // --------- S P E L L     S E T T I N G S ----------------------------
@@ -1357,24 +1347,22 @@ begin
     MaskSettingsChanged := true;
     case ComboSyncType.ItemIndex of
         0 : begin
-                //SyncType := 'file';                   // ToDo : discard
                 LabelSyncInfo1.caption := rsFileSyncInfo1;
                 LabelSyncInfo2.caption := rsFileSyncInfo2;
                 CheckBoxAutoSync.Checked := SyncFileAuto;
                 CheckSyncEnabled.Checked := SyncFileEnabled;
-                for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
+                for Ctrl in [LabelLabelToken, SpeedTokenCopy, SpeedTokenPaste, LabelToken, LabelUserName, EditUserName]
                     do Ctrl.Visible := False;
                 if SyncFileRepo = '' then
                     LabelSyncRepo.Caption  := rsSyncNotConfig
                 else  LabelSyncRepo.Caption := SyncFileRepo;
             end;
         1 : begin
-                //SyncType := 'github';
                 LabelSyncInfo1.caption := rsGithubSyncInfo1;
                 LabelSyncInfo2.caption := rsGithubSyncInfo2;
                 CheckBoxAutoSync.Checked := SyncGithubAuto;
                 CheckSyncEnabled.Checked := SyncGithubEnabled;
-                for Ctrl in [LabelToken, LabelLabelExpires, LabelExpires, EditToken, LabelUserName, EditUserName]
+                for Ctrl in [LabelLabelToken, SpeedTokenCopy, SpeedTokenPaste, LabelToken, LabelUserName, EditUserName]
                     do Ctrl.Visible := True;
                 if SyncGithubRepo = '' then
                     LabelSyncRepo.Caption  := rsSyncNotConfig
@@ -1421,7 +1409,7 @@ begin
             if FileExists(LocalConfig + SyncTransportName(SyncGithub) + PathDelim + 'manifest.xml')
             and (mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0)) then exit;
             FormSync.Transport:=TSyncTransport.SyncGithub;
-            FormSync.Password := EditToken.Text;
+            FormSync.Password := LabelToken.Caption;
             FormSync.UserName := EditUserName.text;
             // SyncGUI will update LabelSyncRepo.Caption if successful.
           end;
@@ -1435,6 +1423,18 @@ begin
         WriteConfigFile();
         ComboSyncTypeChange(self);          // update button label
     end;
+end;
+
+procedure TSett.SpeedTokenCopyClick(Sender: TObject);
+begin
+    Clipboard.AsText := LabelToken.Caption;
+end;
+
+procedure TSett.SpeedTokenPasteClick(Sender: TObject);
+begin
+    LabelToken.Caption := Clipboard.AsText;
+    SaveSettings(self);
+    LabelToken.Hint := '';
 end;
 
 function TSett.fGetValidSync: boolean;

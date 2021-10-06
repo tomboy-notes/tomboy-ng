@@ -1671,10 +1671,6 @@ msgstr ""
 msgid "ComboSyncType"
 msgstr ""
 
-#: tsett.edittoken.text
-msgid "EditToken"
-msgstr ""
-
 #: tsett.editusername.text
 msgid "EditUserName"
 msgstr ""
@@ -1752,14 +1748,9 @@ msgstr "Elle reste ensuite présente jusqu'à son effacement manuel."
 msgid "A snaphot is a copy of your current note directory."
 msgstr "Un snapshot est une copie en l'état du répertoire des notes"
 
-#: tsett.labelexpires.caption
-msgctxt "tsett.labelexpires.caption"
-msgid "LabelExpires"
-msgstr ""
-
-#: tsett.labellabelexpires.caption
-msgctxt "tsett.labellabelexpires.caption"
-msgid "Expires"
+#: tsett.labellabeltoken.caption
+msgctxt "tsett.labellabeltoken.caption"
+msgid "Token"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
@@ -1785,7 +1776,7 @@ msgid "Sync Type"
 msgstr ""
 
 #: tsett.labeltoken.caption
-msgid "Token"
+msgid "LabelToken"
 msgstr ""
 
 #: tsett.labelusername.caption
@@ -1840,6 +1831,14 @@ msgstr "Menu"
 msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
 msgstr "Réglages"
+
+#: tsett.speedtokencopy.hint
+msgid "Copy Token"
+msgstr ""
+
+#: tsett.speedtokenpaste.hint
+msgid "Paste Token"
+msgstr ""
 
 #: tsett.tabbackup.caption
 msgid "BackUp"

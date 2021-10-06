@@ -17,6 +17,7 @@ unit notenormal;
 
   HISTORY :
     2021/08/19  Bug in RemoveRedundentTags that sometimes ate character after tag pair
+    2021/10/21  Added code to convert blocks of monospace to to now have each para wrapped.
 
 }
 
@@ -41,6 +42,10 @@ TNoteNormaliser = class
 		function OffTagAtStart(St: string): integer;
 		function OnTagAtEnd(St: string): integer;
 		function RemoveRedundentTag(var St: string): boolean;
+                            { Re-align monospaced lines.  Acts on blocks only, does not alter in line mono.
+                             Looks for blocks wrapped in a single set of monospace tags, converts to a
+                             pair of tags per line (or more correctly, paragraph).}
+        function TidyMonospace(StL: TStringList): boolean;
     public
         procedure NormaliseList(STL: TStringList);
 end;
@@ -202,6 +207,52 @@ begin
     }
 end;
 
+
+function TNoteNormaliser.TidyMonospace(StL : TStringList) : boolean;
+var
+    Start, i, OffSet : integer;
+    St : string;
+
+    function ConvertMono : boolean;
+    begin
+        St := StL[Start];
+        StL.Delete(Start);
+        StL.Insert(Start, St + '</monospace>');            // First one
+        inc(Start);
+        while Start <= i do begin
+            St := StL[Start];
+            StL.Delete(Start);
+            if Start = i then
+                StL.Insert(Start, '<monospace>' + St)      // Last one
+            else  StL.Insert(Start, '<monospace>' + St + '</monospace>');
+            inc(Start);
+        end;
+        Result := True;
+    end;
+
+begin
+    i := 0;
+    Result := False;
+    while i < STL.Count do begin
+        if (copy(STL[i], 1, 11) = '<monospace>')
+        and (pos('</monospace>', Stl[i]) < 1) then begin
+            Start := i;
+            inc(i);
+            continue;
+        end;
+        Offset := pos('</monospace>', Stl[i]);
+        // OK, looking for an end tag.
+        if (OffSet > 0) and (pos('<monospace>', Stl[i]) < 1) then begin   // Possible but is it at end of line ?
+            St := Stl[i];
+            while St[St.Length] in [#10, #13, ' '] do delete(St, St.Length, 1);
+            if St.Length = Offset + 11 then
+                exit(ConvertMono);               // returns true
+        end;
+        inc(i);
+    end;
+end;
+
+
 procedure TNoteNormaliser.NormaliseList(STL : TStringList);
 var
     TagSize, StIndex : integer;
@@ -238,9 +289,6 @@ begin
         dec(StIndex);
 	end;
     StIndex := 0;                      // Redundent, sequencial tags.
-
-//writeln('~~~~ Norm 3 ' + STL[10]);
-
     while StIndex < StL.Count do begin
         TempSt := STL[StIndex];
         if RemoveRedundentTag(TempSt) then begin
@@ -250,9 +298,7 @@ begin
 		end;
 		inc(StIndex);
 	end;
-
-//writeln('~~~~ Norm 4 ' + STL[10]);
-
+    TidyMonospace(StL);
 end;
 
 

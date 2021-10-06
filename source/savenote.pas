@@ -57,6 +57,9 @@ unit SaveNote;
     2020/08/08  Added a BOM, a Byte Order Mark, at start of a note.
     2020/08/10  Removed BOM, no advantage I can find, undefined risk.
     2021/08/28  Can now save multilevel bullets
+    2021/10/05  Bug where a line in a monospace block was getting a </monospace> even if the
+                next line was monospace, Linux. Because that individual line wraping is
+                useful, I now do it in notenormal.
 }
 
 {$mode objfpc}{$H+}
@@ -154,7 +157,7 @@ uses FileUtil               // Graphics needed for font style defines
 
 const
   {$ifdef LINUX}
-  MonospaceFont = 'monospace';
+  MonospaceFont = 'Monospace';    // until Oct 2021, this was monospace, caused each line in a mono block to be individually wrapped on Linux
   {$ifend}
   {$ifdef WINDOWS}
   MonospaceFont = 'Lucida Console';
@@ -257,9 +260,17 @@ begin
 
     // When FixedWidth turns OFF
     //if (FixedWidth <> (FT.TextStyle.Font.Pitch = fpFixed) or (FT.TextStyle.Font.Name = MonospaceFont)) then begin
+    // if we are currently in fixedwidth AND the next block is not. Not because either Pitch is not pfFixed OR Name is not Monospace
     if (FixedWidth and ((FT.TextStyle.Font.Pitch <> fpFixed) or (FT.TextStyle.Font.Name <> MonospaceFont))) then begin
+    //if FixedWidth then begin                // We can always terminate MonoSpace even if it continues on to next para, make for easier parsing ??
                   //TestVar := (FT.TextStyle.Font.Pitch <> fpFixed);
                   //TestVar := (FT.TextStyle.Font.Name <> MonospaceFont);
+
+                  if CloseOnly then
+                       writeln(Buff + ' Pitch=' + booltostr(FT.TextStyle.Font.Pitch <> fpFixed, true)
+                       + ' Name=' + booltostr(FT.TextStyle.Font.Name <> MonospaceFont, true)
+                       + ' Name=' + FT.TextStyle.Font.Name);
+
                   if Bold then Buff := Buff + '</bold>';
                   if Italics then Buff := Buff + '</italic>';
                   if HiLight then Buff := Buff + '</highlight>';

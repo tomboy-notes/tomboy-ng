@@ -217,7 +217,7 @@ begin
     ASync.NotesDir:= NoteDirectory;
     ASync.ConfigDir := LocalConfig;
     ASync.ProgressProcedure := @SyncProgress;
-    ASync.Password := Sett.EditToken.Text;              // better find a better way to do this Davo
+    ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
     Async.UserName := Sett.EditUserName.text;
     ASync.RepoAction:=RepoJoin;
     Async.SetTransport(TransPort);
@@ -329,7 +329,7 @@ begin
 	    ASync.NotesDir:= NoteDirectory;
 	    ASync.ConfigDir := LocalConfig;
         ASync.RepoAction:= RepoUse;
-        ASync.Password := Sett.EditToken.Text;              // better find a better way to do this Davo
+        ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
         Async.UserName := Sett.EditUserName.text;
         Async.SetTransport(TransPort);
         if ASync.TestConnection() <> SyncReady then begin
@@ -423,7 +423,7 @@ begin
 	else Memo1.Append(inttostr(ASync.RemoteMetaData.Count) + rsNotesWereDealt);
     if ASync.TransMode = SyncGitHub then begin
         Memo1.Append('Token expires : ' + ASync.TokenExpire);
-        Sett.LabelExpires.Caption := ASync.TokenExpire;
+        Sett.LabelToken.Hint := 'Expires ' + ASync.TokenExpire;
     end;
     {$IFDEF DARWIN}     // Apparently ListView.columns[n].autosize does not work in Mac, this is rough but better then nothing.
     ListViewReport.Columns[0].Width := listviewReport.Canvas.Font.GetTextWidth('upload edit ');
@@ -460,7 +460,7 @@ begin
         Label2.Caption := rsPressClose;
         if ASync.TransMode = SyncGithub then begin
             Sett.LabelSyncRepo.Caption := ASync.GetTransRemoteAddress;   // this relies on Sett being in Github mode, during a Join, should be ....
-            Sett.LabelExpires.Caption := ASync.TokenExpire;
+            Sett.LabelToken.Hint := 'Expires ' + ASync.TokenExpire;
         end;
     end  else
         Showmessage(rsSyncError + ASync.ErrorString);

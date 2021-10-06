@@ -533,14 +533,14 @@ begin
             //SayDebugSafe('Confirmed login OK');
             if TokenExpires = '' then begin
                 ErrorString := 'Username exists but Token Failure';
-                exit(SyncCredentialError);              // Password failure
+                exit(SyncCredentialError);              // Token failure
             end;
             // If to here, we have a valid username and a valid Password but don't know if they work together
             if ProgressProcedure <> nil then progressProcedure('Looking at ServerID');
             ServerID := GetServerId();
             //debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
             if ServerID = '' then begin
-                ErrorString := 'Failed to get a ServerID';
+                ErrorString := 'Failed to get a ServerID, does Token have Repo Scope ?';
                 exit(SyncNoRemoteRepo)
             end
             else begin
@@ -600,7 +600,12 @@ begin
             ErrorString := ErrorString + ' Username is not valid : ' + UserName;
             exit(SyncCredentialError);
         end
-        else exit(SyncNetworkError);
+        else begin
+            // here probably because of a bad token, lets rewrite the error message
+            if pos('401', ErrorString) > 0 then
+                ErrorString := '  Github Token may have expired';
+            exit(SyncNetworkError);
+        end;
     end;
 end;
 
@@ -1239,11 +1244,6 @@ begin
                     PGit^.LCDate := ANode.Find('lcdate').AsString;
                 PGit^.Notebooks := ANode.Find('notebooks').AsJSON.Remove(0,12);  // "notebooks" : ["Notebook1","Notebook2", "Notebook3"]
                 // PGit^.Notebooks := ANode.Find('notebooks').AsArray.AsJson;
-
-
-                if length(PGit^.Notebooks) > 5 then
-                    SayDebugSafe('TGitHubSync.ReadRemoteManifest - Read notebook from JSON = ' + PGit^.Notebooks);
-
              end;
         end;
     finally
@@ -1271,7 +1271,7 @@ function TGitHubSync.Downloader(URL: string; out SomeString: String;
 var
     Client: TFPHttpClient;
 begin
-    // Windows can be made work with this if we push out ssl dll - see DownloaderSSL local project
+
     //InitSSLInterface;
     // curl -i -u $GH_USER https://api.github.com/repos/davidbannon/libappindicator3/contents/README.note
     Client := TFPHttpClient.Create(nil);
