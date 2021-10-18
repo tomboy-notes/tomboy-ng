@@ -17,7 +17,7 @@ unit notenormal;
 
   HISTORY :
     2021/08/19  Bug in RemoveRedundentTags that sometimes ate character after tag pair
-    2021/10/21  Added code to convert blocks of monospace to to now have each para wrapped.
+    2021/09/21  Added code to convert blocks of monospace to to now have each para wrapped.
 
 }
 

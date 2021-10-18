@@ -22,10 +22,11 @@ uses
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile,
     Index, autostart, hunspell, sync, syncutils, transandroid,
-    ResourceStr, colours, cli, notifier, RollBack, commonmark,
-    transfileand, notenormal, transgithub, import_notes;
+    ResourceStr, colours, cli, RollBack, commonmark,
+    transfileand, notenormal, transgithub, import_notes, JsonTools;
 
 {$R *.res}
+
 
 begin
     Application.Scaled := True;

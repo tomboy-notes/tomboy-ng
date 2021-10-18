@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 714
-    ActivePage = TabDisplay
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -382,7 +382,7 @@ object Sett: TSett
         BorderSpacing.Right = 3
         BorderSpacing.Bottom = 3
         Caption = '  Options  '
-        ClientHeight = 165
+        ClientHeight = 182
         ClientWidth = 700
         ParentBackground = False
         ParentColor = False
@@ -454,7 +454,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 194
+        ClientHeight = 211
         ClientWidth = 700
         ParentBackground = False
         ParentColor = False
@@ -487,7 +487,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 536
           Height = 32
-          Top = 152
+          Top = 169
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -505,7 +505,7 @@ object Sett: TSett
           Left = 226
           Height = 21
           Hint = 'Sync, if possible once an hour.'
-          Top = 163
+          Top = 180
           Width = 94
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 30
@@ -597,7 +597,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 79
           Height = 21
-          Top = 163
+          Top = 180
           Width = 117
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Enabled'

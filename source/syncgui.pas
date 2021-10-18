@@ -132,7 +132,7 @@ implementation
 }
 
 uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, {SyncError,} ResourceStr,
-        notifier, Settings;
+        {notifier,} Settings{$ifndef Linux}, MainUnit{$else}, tb_utils{$endif};
 
 {$R *.lfm}
 
@@ -316,7 +316,7 @@ end;
 function TFormSync.ManualSync : boolean;
 var
     //SyncState : TSyncAvailable = SyncNotYet;
-    Notifier : TNotifier;
+    //Notifier : TNotifier;
     SyncSummary : string;
 begin
     Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsTestingSync;
@@ -338,9 +338,15 @@ begin
             if not Visible then begin
                 SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
-                    Notifier := TNotifier.Create;                                           // does not require a 'free'.
-                    Notifier.ShowTheMessage('tomboy-ng', rsAutoSyncNotPossible, 12000);     // 12 seconds
-                end;
+                    {$ifdef linux}
+                    ShowNotification('tomboy-ng', rsAutoSyncNotPossible, 6000);
+                    (*Notifier := TNotifier.Create;                                           // does not require a 'free'.
+                    Notifier.ShowTheMessage('tomboy-ng', rsAutoSyncNotPossible, 6000); *)    // 12 seconds
+                    {$else}
+                    MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
+                    Mainform.TrayIcon.BalloonHint := rsAutoSyncNotPossible;
+                    Mainform.TrayIcon.ShowBalloonHint;
+                    {$endif}                end;
                 exit;
             end else begin
                 showmessage('Unable to sync because ' + ASync.ErrorString);
@@ -356,9 +362,16 @@ begin
         SyncSummary :=  DisplaySync();
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
         if (not Visible) and Sett.CheckNotifications.Checked then begin
-            Notifier := TNotifier.Create;                                           // does not require a 'free'.
-            Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary, 3000);
-        end;
+            {$ifdef LINUX}
+            ShowNotification('tomboy-ng', rsLastSync  + ' ' + SyncSummary);
+
+            (* Notifier := TNotifier.Create;                                           // does not require a 'free'.
+            Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary, 3000);   *)
+            {$else}
+            MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
+            Mainform.TrayIcon.BalloonHint := rsLastSync  + ' ' + SyncSummary;
+            Mainform.TrayIcon.ShowBalloonHint;
+            {$endif}        end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;

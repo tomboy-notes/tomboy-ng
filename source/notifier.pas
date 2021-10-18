@@ -74,6 +74,8 @@ end;
 
 implementation
 
+//uses MainUnit;      // just while testing Balloon Notifier Windows and Mac
+
 var                            // These are here so Finalization can get to them.
    TFProc : TTFProc;
    LocalTimer : TFPTimer;
@@ -90,8 +92,12 @@ begin
     // Should also check for errors and use TPopupNotifier if Notify won't work
     // But that will have to wait until I find a Linux where it does not work .....
     {$else}
+        MainForm.TrayIcon.BalloonTitle := Title;
+        MainForm.TrayIcon.BalloonHint := Message;
+        MainForm.TrayIcon.ShowBalloonHint;
+
     // Non Linux must use TPopupNotifier
-    APopupNotifier := TPopupNotifier.Create(nil);
+(*    APopupNotifier := TPopupNotifier.Create(nil);
     APopupNotifier.Text  := Message;
     APopupNotifier.Title := Title;
     APopupNotifier.Color:= $909090;
@@ -99,7 +105,7 @@ begin
     LocalTimer := TFPTimer.create(nil);
     LocalTimer.Interval := ShowTime;
     LocalTimer.OnTimer:= @TimerFinished;
-    LocalTimer.Enabled := True;
+    LocalTimer.Enabled := True;                 *)
     {$endif}
 end;
 
@@ -116,8 +122,8 @@ end;
 destructor TNotifier.Destroy;
 begin
     {$ifndef LINUX}
-    freeandnil(APopupNotifier);
-    freeandnil(LocalTimer);
+(*    freeandnil(APopupNotifier);
+    freeandnil(LocalTimer);       *)
     {$endif}
     inherited Destroy;
 end;

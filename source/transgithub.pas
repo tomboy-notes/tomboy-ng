@@ -59,6 +59,12 @@ Easy Peasy !
 The above glosses over error handling and, importantly, how data such as last change dates
 is shuffled around to ensure its in RemoteNotes when we write out remote manifests.
 
+Downloading a Note.
+RemoteNotes will already know CData and Notebooks from reading remote manifest.
+DownLoadANote will write a temp file in Note format. It first calls Downloader() which
+returns with a string containg note content as JSON Base64 encoded. We decode and
+drop into s stringlist. We pass that to Importer thats converts to xml.
+
 HISTORY :
     2021/09/20 - Changed to using JSONTools, tidier, safer, easier to read code.
     2021/09/25 - fixed how notebook lists are stored in RemoteNotes, as JSON array, not JSON data
@@ -868,6 +874,7 @@ begin
            RMData.Add(RemRec);
        end { else debugln('TGithubSync.AssignActions - skiping because its already in RemoteNotes')};
    end;
+   Result := true;
 end;
 
 function TGitHubSync.AssignActions(RMData, LMData: TNoteInfoList; TestRun: boolean): boolean;
@@ -1184,8 +1191,8 @@ begin
         if NoteSTL.Count > 0 then begin
                 Importer := TImportNotes.Create;
 
-                if length(PGit^.Notebooks) > 5 then
-                    Saydebugsafe('TGithubSync.DownloadANote Using Notebook = ' + PGit^.Notebooks);
+                { if length(PGit^.Notebooks) > 5 then
+                    Saydebugsafe('TGithubSync.DownloadANote Using Notebook = ' + PGit^.Notebooks); }
 
                 Importer.NoteBook := PGit^.Notebooks;
                 {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote about to import');{$endif}

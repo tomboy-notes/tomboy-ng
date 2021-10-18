@@ -51,7 +51,7 @@ unit tb_utils;
 interface
 
 uses
-        Classes, SysUtils {$ifndef TESTRIG}, KMemo{$endif};
+        Classes, SysUtils {$ifndef TESTRIG}, KMemo {$ifdef Linux}, libnotify{$endif}{$endif};
 
                         // True if looks like an ID, 36 char and dash as #9
 function IDLooksOK(const ID : string) : boolean;
@@ -100,6 +100,11 @@ function SayDebugSafe(st: string) : boolean;
 // Escapes any double inverted commas and backslashs it finds in passed string.
 function EscapeJSON(St : string) : string;
 
+{$ifdef Linux}
+// Linux only uses libnotify, Win and MacOS work through TrayIcon
+procedure ShowNotification(const Title, Message : string; ShowTime : integer = 6000);
+{$endif}
+
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
 // Using them requires that we 'use' kmemo here. If not use'd, will still compile.
 // Each one MUST resolve to a different value in KMemo, do not overload.
@@ -124,6 +129,24 @@ uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}   
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
+{$ifdef Linux}
+// Linux only uses libnotify, Win and MacOS work through TrayIcon
+procedure ShowNotification(const Title, Message : string; ShowTime : integer = 6000);
+{$ifndef TESTRIG}
+var
+    LNotifier : PNotifyNotification;
+begin
+    notify_init(argv[0]);
+    LNotifier := notify_notification_new (pchar(Title), pchar(Message), pchar('dialog-information'));
+    notify_notification_set_timeout(LNotifier, ShowTime);                // figure is mS
+    notify_notification_show (LNotifier, nil);
+    notify_uninit;
+{$else}
+begin
+{$endif}
+end;
+
+{$endif}
 
 // Escapes any double inverted commas and backslashs it finds in passed string.
 function EscapeJSON(St : string) : string;

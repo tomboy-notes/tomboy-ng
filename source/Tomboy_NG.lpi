@@ -152,6 +152,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -996,59 +997,60 @@
         <IsPartOfProject Value="True"/>
       </Unit26>
       <Unit27>
-        <Filename Value="notifier.pas"/>
+        <Filename Value="libnotify.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit27>
       <Unit28>
-        <Filename Value="libnotify.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit28>
-      <Unit29>
         <Filename Value="rollback.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormRollBack"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RollBack"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="transfileand.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit29>
       <Unit30>
-        <Filename Value="transfileand.pas"/>
+        <Filename Value="tb_utils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit30>
       <Unit31>
-        <Filename Value="tb_utils.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit31>
-      <Unit32>
         <Filename Value="tomdroid.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTomdroid"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="commonmark.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit32>
       <Unit33>
-        <Filename Value="commonmark.pas"/>
+        <Filename Value="tbundo.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit33>
       <Unit34>
-        <Filename Value="tbundo.pas"/>
+        <Filename Value="hunspell.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit34>
       <Unit35>
-        <Filename Value="hunspell.inc"/>
+        <Filename Value="notenormal.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit35>
       <Unit36>
-        <Filename Value="notenormal.pas"/>
+        <Filename Value="transgithub.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit36>
       <Unit37>
-        <Filename Value="transgithub.pas"/>
+        <Filename Value="import_notes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit37>
       <Unit38>
-        <Filename Value="import_notes.pas"/>
+        <Filename Value="jsontools.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="JsonTools"/>
       </Unit38>
     </Units>
   </ProjectOptions>

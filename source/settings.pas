@@ -105,7 +105,7 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
-    LCLIntf, Spin, notifier, base64;
+    LCLIntf, Spin{, notifier}, base64;
 
 // Types;
 
@@ -397,6 +397,7 @@ uses IniFiles, LazLogger,
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
     syncutils,
+    tb_utils,
     recover,        // Recover lost or damaged files
     mainunit,       // so we can call ShowHelpNote()
     hunspell,       // spelling check
@@ -1241,7 +1242,7 @@ procedure TSett.DoAutoSnapshot;
 var
    FR : TFormRecover;
    {$ifdef TESTAUTOSNAP} Tick, Tock : qword;{$endif}
-   Notifier : TNotifier;
+   //Notifier : TNotifier;
 begin
     if MaskSettingsChanged then
         exit;                   // don't trigger this while GUI is being setup.
@@ -1269,8 +1270,16 @@ begin
     WriteConfigFile();
     SearchForm.UpdateStatusBar(rsAutosnapshotRun);
     if CheckNotifications.Checked then begin
+        {$ifdef LINUX}
+        ShowNotification('tomboy-ng', rsAutosnapshotRun);
+        (*
         Notifier := TNotifier.Create;
-        Notifier.ShowTheMessage('tomboy-ng', rsAutosnapshotRun);
+        Notifier.ShowTheMessage('tomboy-ng', rsAutosnapshotRun);  *)
+        {$else}
+        MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
+        Mainform.TrayIcon.BalloonHint := 'rsAutosnapshotRun';
+        Mainform.TrayIcon.ShowBalloonHint;
+        {$endif}
         // Note, don't free it, it frees itself.
     end;
 end;

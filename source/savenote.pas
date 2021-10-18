@@ -21,6 +21,11 @@ unit SaveNote;
     version of the note into the passed StringList. The class can then be freed.
     ReadKMemo decides to put xml into either the StringList or a stream (that
     can be saved from here) on basis of if a StringList is passed or not.
+
+    ----- Tag order -----
+    List, Bold, Italics HiLite Underline Strikeout Monospace Fontsize
+    Processing Order is the reverese, so, and and of line might contain (in extreame case) -
+    ListOff BoldOff ItalicsOff HiLiteOff UnderOff StrikeOff MonoOff _FontSize_ MonoSpace Strikeout Underline HiLite Ital Bold List
 }
 
 {	HISTORY
@@ -60,6 +65,9 @@ unit SaveNote;
     2021/10/05  Bug where a line in a monospace block was getting a </monospace> even if the
                 next line was monospace, Linux. Because that individual line wraping is
                 useful, I now do it in notenormal.
+    2021/10/15  Serious change, now terminate font size changes at end of line where necessary
+                vastly better xml.
+
 }
 
 {$mode objfpc}{$H+}
@@ -96,7 +104,7 @@ type
        private
             OutStream:TMemoryStream;
             ID : ANSIString;
-            FSize : integer;
+            FSize : integer;             // Current Font Size, compare to Sett.Font*
 			Bold : boolean;
 			Italics : boolean;
 			HiLight : boolean;
@@ -112,21 +120,17 @@ type
             PrevFixedWidth : boolean;
 			InList : boolean;
             KM : TKMemo;
+                    { This function key to whole parser. It uses a set of regional vars that remember
+                    the current style attributes and compare it to a newly arriving block, writing
+                    tags accordingly. Special case when CloseOnly is true, we terminate all active styles
+                    and reactivate them (NoteNormal will move the reactivated tags to next line later).
+                    Absolutly vital that tag order be observed, crossed ove r tgas are a very bad thing.}
             function AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
 			function BlockAttributes(Bk: TKMemoBlock): AnsiString;
 			procedure BulletList(Level: TKMemoParaNumbering; var Buff: ANSIString);
             procedure CopyLastFontAttr();
-			//function FontAttributes(const Ft : TFont; Ts : TKMemoTextStyle): ANSIString;
-			//function RemoveBadCharacters(const InStr: ANSIString): ANSIString;
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
 
-         	//function Footer(Loc: TNoteLocation): ANSIstring;
-
-            //function GetLocalTime():ANSIstring;
-
-            // Assembles a list of tags this note is a member of, list is
-            // used in all note's footer - needs ID to have been set
-            // function NoteBookTags() : ANSIString;
        public
             // TimeStamp : string;            // abandonded in SaveThread mode
             // Title : ANSIString;
@@ -202,9 +206,9 @@ begin
     // Important that we keep the tag order consistent. Good xml requires no cross over
     // tags. If the note is to be readable by Tomboy, must comply. (EditBox does not care)
     // Tag order -
-    // FontSize HiLite Ital Bold Bullet TEXT BulletOff BoldOff ItalOff HiLiteOff FontSize
-	// Processing Order is the reverese -
-    // ListOff BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold List
+    // List, Bold, Italics HiLite Underline Strikeout Monospace Fontsize
+    // Processing Order is the reverese -
+    // ListOff BoldOff ItalicsOff HiLiteOff UnderOff StrikeOff MonoOff FontSize MonoSpace Strikeout Underline HiLite Ital Bold List
 
     //debugln(BlockAttributes(FT));
 
@@ -234,80 +238,78 @@ begin
 
     // When Underline turns OFF
     if (Underline and (not (fsUnderline in FT.TextStyle.Font.Style))) then begin
-                  if Bold then Buff := Buff + '</bold>';
-                  if Italics then Buff := Buff + '</italic>';
-                  if HiLight then Buff := Buff + '</highlight>';
-                  Buff := Buff + '</underline>';
-                  if HiLight then Buff := Buff + '<highlight>';
-                  if Italics then Buff := Buff + '<italic>';
-                  if Bold then Buff := Buff + '<bold>';
-                  Underline := false;
+          if Bold then Buff := Buff + '</bold>';
+          if Italics then Buff := Buff + '</italic>';
+          if HiLight then Buff := Buff + '</highlight>';
+          Buff := Buff + '</underline>';
+          if HiLight then Buff := Buff + '<highlight>';
+          if Italics then Buff := Buff + '<italic>';
+          if Bold then Buff := Buff + '<bold>';
+          Underline := false;
     end;
 
     // When Strikeout turns OFF
     if (Strikeout and (not (fsStrikeout in FT.TextStyle.Font.Style))) then begin
-                  if Bold then Buff := Buff + '</bold>';
-                  if Italics then Buff := Buff + '</italic>';
-                  if HiLight then Buff := Buff + '</highlight>';
-                  if Underline then Buff := Buff + '</underline>';
-                  Buff := Buff + '</strikeout>';
-                  if Underline then Buff := Buff + '<underline>';
-                  if HiLight then Buff := Buff + '<highlight>';
-                  if Italics then Buff := Buff + '<italic>';
-                  if Bold then Buff := Buff + '<bold>';
-                  Strikeout := false;
+          if Bold then Buff := Buff + '</bold>';
+          if Italics then Buff := Buff + '</italic>';
+          if HiLight then Buff := Buff + '</highlight>';
+          if Underline then Buff := Buff + '</underline>';
+          Buff := Buff + '</strikeout>';
+          if Underline then Buff := Buff + '<underline>';
+          if HiLight then Buff := Buff + '<highlight>';
+          if Italics then Buff := Buff + '<italic>';
+          if Bold then Buff := Buff + '<bold>';
+          Strikeout := false;
     end;
 
     // When FixedWidth turns OFF
     //if (FixedWidth <> (FT.TextStyle.Font.Pitch = fpFixed) or (FT.TextStyle.Font.Name = MonospaceFont)) then begin
     // if we are currently in fixedwidth AND the next block is not. Not because either Pitch is not pfFixed OR Name is not Monospace
     if (FixedWidth and ((FT.TextStyle.Font.Pitch <> fpFixed) or (FT.TextStyle.Font.Name <> MonospaceFont))) then begin
-    //if FixedWidth then begin                // We can always terminate MonoSpace even if it continues on to next para, make for easier parsing ??
-                  //TestVar := (FT.TextStyle.Font.Pitch <> fpFixed);
-                  //TestVar := (FT.TextStyle.Font.Name <> MonospaceFont);
+          if Bold then Buff := Buff + '</bold>';
+          if Italics then Buff := Buff + '</italic>';
+          if HiLight then Buff := Buff + '</highlight>';
+          if Underline then Buff := Buff + '</underline>';
+          if Strikeout then Buff := Buff + '</strikeout>';
+          Buff := Buff + '</monospace>';
+          if Strikeout then Buff := Buff + '<strikeout>';
+          if Underline then Buff := Buff + '<underline>';
+          if HiLight then Buff := Buff + '<highlight>';
+          if Italics then Buff := Buff + '<italic>';
+          if Bold then Buff := Buff + '<bold>';
+          FixedWidth := false;
+end;
 
-                  if CloseOnly then
-                       writeln(Buff + ' Pitch=' + booltostr(FT.TextStyle.Font.Pitch <> fpFixed, true)
-                       + ' Name=' + booltostr(FT.TextStyle.Font.Name <> MonospaceFont, true)
-                       + ' Name=' + FT.TextStyle.Font.Name);
-
-                  if Bold then Buff := Buff + '</bold>';
-                  if Italics then Buff := Buff + '</italic>';
-                  if HiLight then Buff := Buff + '</highlight>';
-                  if Underline then Buff := Buff + '</underline>';
-                  if Strikeout then Buff := Buff + '</strikeout>';
-                  Buff := Buff + '</monospace>';
-                  if Strikeout then Buff := Buff + '<strikeout>';
-                  if Underline then Buff := Buff + '<underline>';
-                  if HiLight then Buff := Buff + '<highlight>';
-                  if Italics then Buff := Buff + '<italic>';
-                  if Bold then Buff := Buff + '<bold>';
-                  FixedWidth := false;
-    end;
-
-    // When Font size changes
-    if (FSize <> FT.TextStyle.Font.Size) and (FT.TextStyle.Font.Size <> Sett.FontTitle) then begin
-		if Bold then Buff := Buff + '</bold>';
+    // When Font size changes     OR end of line where we cloe off any pending, we rely on
+    // notenormal to later move the re-turn ons down to next line.
+    if CloseOnly OR ((FSize <> FT.TextStyle.Font.Size) and (FT.TextStyle.Font.Size <> Sett.FontTitle)) then begin
+        if Bold then Buff := Buff + '</bold>';
         if Italics then Buff := Buff + '</italic>';
         if HiLight then Buff := Buff + '</highlight>';
-        if Underline then Buff := Buff + '</underline>';                      //
-        if Strikeout then Buff := Buff + '</strikeout>';                      //
-                              // if strikeout, underline, fixedwidth here?
+        if Underline then Buff := Buff + '</underline>';
+        if Strikeout then Buff := Buff + '</strikeout>';
+        if FixedWidth then Buff := Buff + '</monospace>';
 
-        Buff := Buff + SetFontXML(FSize, false);
-        // better for pretty tags but generates invalid tags ! See below ....
-        Buff := Buff + SetFontXML(FT.TextStyle.Font.Size, true);
+        // we need to do this if FSize is Small, Large or Huge OR Font has changed
+        if (FSize in [Sett.FontSmall, Sett.FontLarge, Sett.FontHuge])                    // ToDo : Oct2021 Seriously untested code !!!!
+        or ((FSize <> FT.TextStyle.Font.Size) and (FT.TextStyle.Font.Size <> Sett.FontTitle)) then begin
+                Buff := Buff + SetFontXML(FSize, false);
+                // better for pretty tags but generates invalid tags ! See below ....
+                Buff := Buff + SetFontXML(FT.TextStyle.Font.Size, true);
+        end;
 
-        if Strikeout then Buff := Buff + '<strikeout>';                         //
-        if Underline then Buff := Buff + '<underline>';                         //
-
+        if FixedWidth then Buff := Buff + '<monospace>';
+        if Strikeout then Buff := Buff + '<strikeout>';
+        if Underline then Buff := Buff + '<underline>';
         if HiLight then Buff := Buff + '<highlight>';
         if Italics then Buff := Buff + '<italic>';
         if Bold then Buff := Buff + '<bold>';
         FSize := FT.TextStyle.Font.Size;
     end;
 
-    if CloseOnly then exit(Buff);
+    if CloseOnly then exit(Buff);        // if CloseOnly, ie end of line, nothing is turning on.
+
+    // This comment no longer applies, leave hear until well tested !!!!!!!
     // this is not ideal, it should happen after we have closed all fonts, before
     // we write new sizes but that difficult as we have only one flag, "FSize"
     // difficulity is that font size change is two step, other things are On/Off

@@ -10,11 +10,23 @@ unit commonmark;
 
     Exports a note in a subset of commonmark
 
-    This unit is, June 2021 the same as one in tomboy-ng.
 
-    Create the object, optionally give it a directory to look in and set DoPOFile. Call GetMDcontent()
+    Create the object, optionally give it a directory to look in (and set DoPOFile ?). Call GetMDcontent()
     with an ID (that is, a filename without extension) and a created list to fill in with content.
-    Free.
+
+    Has some limitations that relate, to some extent, to the MarkDown/CommonMark.
+    1) Monospace may be presented as either "leading spaces" or wrapped in BackTicks.
+       The Leading Space model is used where the whole line (ie para) is mono, we add
+       four spaces and strip out any other markup in the line. Looks better for blocks.
+       Backticks are used where the mono is in line. It can have extra markup but
+       has to have backticks closest to text, does not work here ...
+       So, summary, blocks of Mono cannot show any other markup.
+    2) Large or Huge font (in tomboy) is only honoured if on a line by itself, become
+       heading lines. Any in line Large or Huge is discarded. Small is preserved
+       but cannot be displayed in github flavour of MD.
+    3) Only bullet cha allowed in MD list here is * (officially others allowed but not here)
+    4) When bullets (lists) mix, lists get priority, the mono drops back to inline mono.
+    5) Cannot do highlight (but I try to preserve it during a Tb->GH->TB cycle).
 
     HISTORY
     2020-12-22  Extracted from the NextCloud Notes Branch
@@ -26,6 +38,7 @@ unit commonmark;
     2021/07/30  Use the RemoveNoteMetaData( from TT_Utils, need merge TT_utils with TB_Utils
     2021/08/19  Rewrite ProcessMarkup to use ST.Replace() approach
     2021/09/28  Enabled multilevel bullets
+    2021/10/17  Rewrite most of monospace code.
 }
 
 interface
@@ -37,18 +50,19 @@ type
 
 { TExportCommon }
 
-TExportCommon = class        // based on TT export_notes, just takes a note ID and returns markdown
+TExportCommon = class
 
     private
+                        {returns -1 if there is not a tag starting at index (1 based), else ret length
+                        of tag if there is a tag but its not the one we want. Ret 0 if right tag found.}
+        function CheckForTag(index: integer; const Tag, St: string): integer;
         function ConvertBullets(Str: string): string;
-			function FindInStringList(const StL: TStringList; const FindMe: string): integer;
+        function ConvertMono(var InSt: string): boolean;
+		function FindInStringList(const StL: TStringList; const FindMe: string): integer;
                                     // Make content suitable to write out as a PO file, no merging is going to happen !
 
-			procedure ProcessHeadings(StL: TStringList);
-			procedure ProcessMarkUp(StL: TStringList);
-            function IsAllMono(St : String) : boolean;
-            procedure MakeMonoBlock(var St: string);
-            procedure ConvertMonoBlocks(STL: TStringList);
+		procedure ProcessHeadings(StL: TStringList);
+		procedure ProcessMarkUp(StL: TStringList);
 
     public
         DebugMode : boolean;
@@ -59,8 +73,6 @@ TExportCommon = class        // based on TT export_notes, just takes a note ID a
                         // with a commonmark version of the note.
                         // returns an empty list on error.
         function GetMDcontent(ID : string; STL : TstringList) : boolean;
-
-
 end;
 
 
@@ -70,8 +82,6 @@ uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead, noten
 
 
 function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
-{ This is same as function in TT but I have removed parts that do file i/o
-  I am thinking I would be better using some XML methods, might avoid g-Note issues too. }
 var
     Normaliser : TNoteNormaliser;
 begin
@@ -88,20 +98,14 @@ begin
         StL.Delete(0);
         STL.Insert(0, GetTitleFromFFN(NotesDir + ID + '.note', False));
         RemoveNoteMetaData(STL);
+
         ProcessHeadings(StL);                                    // Makes Title big too !
+
         ProcessMarkUp(StL);
-        ConvertMonoBlocks(STL);
+
+//        ConvertMonoBlocks(STL);
         result := (Stl.Count > 2);
 end;
-
-
-(*
-procedure TExportCommon.SayDebug(st: string; Always : boolean = false);
-begin
-    if not (DebugMode or Always) then exit;
-    {$ifdef LCL}Debugln{$else}writeln{$endif}(St);
-end;
-*)
 
 function TExportCommon.FindInStringList(const StL : TStringList; const FindMe : string) : integer;
 var
@@ -116,68 +120,93 @@ begin
 end;
 
 
-// -------------- Convert to Fixed width BLOCK text -------------
+{We have to deal with two sorts of mono, full line where we apply 4 spaces to left
+and in-line where we use back ticks.
 
-// We look for a line wrapped in a pair of backticks, allow white space to left
-function TExportCommon.IsAllMono(St: String): boolean;
-var
-    I : integer = 1;
+A four leading space line can have additional spaces and they are preserved. The
+'four' is my choice, when converting back, I'll assume, if there are at least four
+its mono, tag it up and remove first four spaces.  No other codes are allowed on that
+line including backticks. A full line mono is a line that has text, has the mono html
+tags at beginning and end of line. But other tags and whitespace are allowed between the start
+and mono tag and between the </monospace> and end of line.
+
+github will only display other font styles with mono if we use back tick and then
+only if the other tags appear, initiall, before the backtick, thus **`bold mono`**
+As the backtick looks very ugly in a block, I will use it only in-line and therefore
+leading space mono will need to be stripped of any other enhancements.
+}
+
+
+function TExportCommon.CheckForTag(index : integer; const Tag, St : string) : integer;
 begin
-    // for a st = 'abc' the test "if St[3] = '`'" is valid
-    if St.CountChar('`') <> 2 then exit(False);
-    while I <= St.Length do begin
-        if St[i] = '`' then begin
-            i := St.Length;
-            while (St[i] in [' ', char(10), char(13) ])
-                    and (i > 0) do dec(i);
-            exit((I > 0) and (St[i] = '`'));             // Absolutly must exit here, we have played with i
-		end;
-        if  St[i] = ' '  then exit(False);
-        inc(i);
-	end;
-    Result := False;
+    if (St.Length < Index) or (St[Index] <> '<') then exit(-1);
+    if copy(St, Index, Tag.Length) = Tag then exit(0);
+    // OK, so it should be a tag but not the one we want.
+    Result := 1;
+    while (St.Length >= (Index + Result)) do begin
+        if St[Index+Result] = '>' then exit(Result+1);
+        inc(Result);
+    end;
+    result := -1;
 end;
 
-procedure TExportCommon.MakeMonoBlock(var St : string);
-// Remove two backticks, add four leading spaces
-begin
-    St := St.Remove(St.IndexOf('`'), 1);
-    St := St.Remove(St.IndexOf('`'), 1);
-    St := '    ' + St;
-end;
-
-// ToDo : fix eg bold monospace
-// There is a problem here. We convert all lines that are all mono from `this` to
-// haveing four leading spaces, looks much better with blocks of code eg.
-// However, Remarkable at least does not display eg bold monospace is presented like
-//     **Bold Code**
-// It will however do what we want if it finds this -
-// **`Bold Code`**
-// Lets see what github does and consider staying with backticks for single mono lines.
-// Will have to also reverse tag order and that might be messy.
-
-procedure TExportCommon.ConvertMonoBlocks(STL : TStringList);
+function TExportCommon.ConvertMono(var InSt : string) : boolean;
 var
-    I : integer = 0;
     St : string;
-    PrevMono : boolean = false;
+    RetValue, i : integer;
 begin
-    while i < Stl.Count do begin
-        // Remove the unnecessary newlines between blocks.
-        if PrevMono and (Stl[i] = '') then begin
-            StL.Delete(i);
-            PrevMono := False;
-            continue;
-		end;
-		if IsAllMono(StL[i]) then begin
-            St := STL[i];
-            MakeMonoBlock(St);
-            STl.Insert(i, St);
-            STL.Delete(i+1);
-            PrevMono := True;
-		end else PrevMono := False;
-		inc(i);
-	end;
+    result := false;
+    if pos('<list>', InSt) > 0 then begin          // Lists have priority over Mono
+        InSt := InSt.Replace('<monospace>', '`', [rfReplaceAll]);
+        InSt := inSt.Replace('</monospace>', '`', [rfReplaceAll]);
+    end;
+    if (pos('<monospace>', InSt) = 0) or (pos('</monospace>', inSt) = 0) then
+        exit;
+    St := InSt;
+    i := 1;
+    while St.Length >= i do
+        if St[i] = ' ' then inc(i)
+        else break;                                 // whitespace allowed and retained
+    RetValue := CheckForTag(i, '<monospace>', St);  // start with first non-space we find
+    while RetValue > 0 do begin
+        St := St.Remove(i, RetValue);               // Remove any tags that appear before <m>
+        RetValue := CheckForTag(i, '<monospace>', St);
+    end;
+    if RetValue <> 0 then begin
+        InSt := InSt.Replace('<monospace>', '`', [rfReplaceAll]);
+        InSt := inSt.Replace('</monospace>', '`', [rfReplaceAll]);
+        exit;
+    end;
+    // OK, we now have a leading mono tag, i points to its start, add 11 for next char after tag
+    i := St.IndexOf('<', i+11-1) +1;               // we know there is at least one there.
+    RetValue :=  CheckForTag(i, '</monospace>', St);         // one based
+    while RetValue > 0 do begin                     // a non-target tag, remove
+        St := St.Remove(i-1, RetValue);             // zero based
+        RetValue := St.IndexOf('<', i) +1;          // 0 based. Can we find another ?
+        if RetValue > 0 then begin                  // i remains one based.
+            i := RetValue;
+            RetValue := CheckForTag(i, '</monospace>', St);
+        end;
+    end;
+    // OK, here i should be pointing to </m>, add tag length and clear away any trailing tags
+
+    // i := pos('</monospace>', St) + 12;              // must still be there.
+    i := i + 12;                                    // length </m> tag
+    RetValue := CheckForTag(i, '<xxxx>', St);       // only interested in pos or neg numbers
+    while RetValue > 0 do begin
+        St := St.Remove(i-1, RetValue);             // remove is zero based.
+        RetValue :=  CheckForTag(i-1, '<xxxx>', St);       // Kek ?  why -1 ?????
+    end;
+    if St.Length < i then begin
+        St := St.Replace('<monospace>', '', [rfReplaceAll]);
+        St := St.Replace('</monospace>', '', [rfReplaceAll]);
+        InSt := '    ' + St;                        // yes, we passed all the tests, change to leading space mono
+        Result := true;                             // ToDo - should i remove any tags between <m> and </m> ?
+    end else begin
+        InSt := InSt.Replace('<monospace>', '`', [rfReplaceAll]);
+        InSt := inSt.Replace('</monospace>', '`', [rfReplaceAll]);
+    end;
+    //writeln(InSt);
 end;
 
 // This version uses the CommonMark model of noting heading with ---- ===== on line underneath
@@ -191,7 +220,7 @@ begin
     StL.Insert(1, '===========');
     repeat
         inc(i);
-        if not AddedHeading then begin
+        if not AddedHeading then begin    // this adds a blank line between paras, MD style
             StL.Insert(i, '');
             inc(i);
 		end;
@@ -292,18 +321,26 @@ procedure TExportCommon.ProcessMarkUp(StL : TStringList);
 var
     StIndex : integer;
     TempSt: string;
+    DeleteNext : boolean = false;       // no blank lines following Monospace
 begin
     StIndex := -1;
     while StIndex < StL.Count -1 do begin
         inc(StIndex);
+        if DeleteNext and (Stl[StIndex] = '') then begin
+            Stl.Delete(StIndex);
+            DeleteNext := False;
+            dec(StIndex);
+            continue;
+        end;
         if (length(StL.Strings[StIndex]) < 2) then continue;     // no room for a tag in there.
         TempSt := StL.Strings[StIndex];
+        DeleteNext := ConvertMono(TempSt);
         TempSt := TempSt.Replace('<bold>', '**', [rfReplaceAll]);
         TempSt := TempSt.Replace('</bold>', '**', [rfReplaceAll]);
         TempSt := TempSt.Replace('<italic>', '*', [rfReplaceAll]);
         TempSt := TempSt.Replace('</italic>', '*', [rfReplaceAll]);
-        TempSt := TempSt.Replace('<monospace>', '`', [rfReplaceAll]);
-        TempSt := TempSt.Replace('</monospace>', '`', [rfReplaceAll]);
+//        TempSt := TempSt.Replace('<monospace>', '`', [rfReplaceAll]);
+//        TempSt := TempSt.Replace('</monospace>', '`', [rfReplaceAll]);
         TempSt := TempSt.Replace('<size:small>', '<sub>', [rfReplaceAll]);
         TempSt := TempSt.Replace('</size:small>', '</sub>', [rfReplaceAll]);
         TempSt := TempSt.Replace('<strikeout>', '~~', [rfReplaceAll]);

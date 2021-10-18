@@ -163,6 +163,7 @@ RESOURCESTRING
   rsNotRecommend = 'Generally not recommended.';
   rsNextBitSlow = 'Next bit can be a bit slow, please wait';
 
+
             { -------------- implementation ---------------}
 implementation
 

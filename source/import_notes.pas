@@ -30,7 +30,9 @@ HISTORY :
     2021/09/25   Fixed an "beyond the end of a line" issue in PosMDTag(), only show up on build machine ???
     2021/09/28   Enable multilevel bullets
     2021/10/01   Allow for the fact that a JSON Notebook string may have " or \ escaped.
-
+    2021/10/17   Remove four spaces from left of mono line.
+    2021/10/18   Inline MD Tags now support Flanking rules, https://spec.commonmark.org/0.30/#left-flanking-delimiter-run
+    2021/10/18   For some reason I was removing embedded underline xml, now I restore it ??
 }
 
 {$mode objfpc}{$H+}
@@ -46,18 +48,16 @@ type
 
     TImportNotes = class
     private
-//        function ChangeBold(var St: string): boolean;
-//        function ChangeItalic(var St: string): boolean;
-        function ChangeSmallFont(var St: string): boolean;
         function ChangeTag(var St: string; const ChangeFrom, ChangeToLead, ChangeToTrail: string): boolean;
         procedure ConvertList(var St: string);
         procedure DoLineHeadings(const STL: TStringList);
+                            { Ret True if it finds a matching pair of tags that obay the Flanking rules. If
+                            so, sets the out vars to start of each tag. Else rets false. Call until it does
+                            ret false. https://spec.commonmark.org/0.30/#left-flanking-delimiter-run }
+        function FindMDTags(const St, Tag: string; out LeftFlank, RightFlank: integer
+            ): boolean;
         function ImportFile(FullFileName: string) : boolean;
         function MarkUpMarkDown(Cont: TStringList) : boolean;
-                            {  Returns the 1 based pos of the passed Tag, Leading says its a leading tag
-                               must have whitespace of newline to left and an alpha mumeric to the right.
-                               Reverse if Leading is false.  Ret 0 if a suitable tag is not found. }
-        function PosMDTag(const St, Tag: string; StartAt: integer; const leading: boolean): integer;
                             // Gets passed a List with note content, puts an appropriate
                             // header and footer on.
         function ProcessPlain(Cont: TStringList; const Title: string; LCD : string = '';
@@ -157,12 +157,12 @@ begin
                 if NBName = 'template' then
                     Cont.Add('        <tag>system:template:' + '</tag>')
                 else
-                    Cont.Add('        <tag>system:notebook:' + NBName + '</tag>');
+                    Cont.Add('        <tag>system:notebook:' + RemoveBadXMLCharacters(NBName) + '</tag>');
                 NBName := NextNBName;
             end;
         end else                                              // if not an array, just use it as it is, one notebook
             if NoteBook <> '' then
-                Cont.Add('        <tag>system:notebook:' + NoteBook + '</tag>');
+                Cont.Add('        <tag>system:notebook:' + RemoveBadXMLCharacters(NoteBook) + '</tag>');
     end;
     Cont.Add('      </tags>');
     Cont.Add('    	<open-on-startup>False</open-on-startup>');
@@ -172,16 +172,20 @@ end;
 
 {     Markdown Rules
 
-A line starting with a asterik and a space is a bullet.
+A line starting with a asterik and a space is a bullet. Or some whitespace first
+might be a multilevel bullet.
 Bold text is wrapped in ** at either end. Or __ (that is two underscores) at either end.
 Italics is wrapped in * at either end. Again, the underscore at either end will work as well.
 Highlight is wrapped in ~~ at either end,
-backticks, ` at either end will make code, use for monospace text.
-Stikeout is not supported.
+Stikeout is supported with ~~ at either end.
 a line starting with ###space  is a  bold, large line
 a line starting with ##space is a bold, huge line
 A line that is followed by some ===== or ------ are headings, huge and Large
 we ignore #space, have other ways of finding title.
+A line starting with four or more spaces is all monospace, remove exactly four spaces
+and add tags. In line text that is wrapped in backticks is in line mono, remove
+ticks and add tags.
+All the inline tags follow Flanking rules, eg LeftFlank must have something immediatly to the right.
 
 }
 
@@ -242,77 +246,76 @@ begin
 end;
 
 
-{ A MD start tag must be at start of line or have whitespace in front and something at the end
-that is not whitespace.
+// ToDo : the flanking rules are grossly incomplete. We must ignore intermediate tags and test for real content.
+// ToDo : when we decide its a pair of MD Tags, we should ensure there are no unmatched xml tags between.
 
-And end tag cannot be at start of line, must have a md start tag (and content?) before it
-and must have whitespace or newline at the end. Interestingly, here we allow anything between
-#32 and '/' to end a tag, I wonder why ?
-
-We count the appropriate angle bracket as whitespace here as it must be a valid XML tag. }
-
-function  TImportNotes.PosMDTag(const St, Tag : string; StartAt : integer; const leading : boolean) : integer;
-var
-    Stage : integer = 0;
+function TImportNotes.FindMDTags(const St, Tag : string; out LeftFlank, RightFlank : integer) : boolean;
 begin
-    if Leading then begin
-        while Stage < length(St) do begin
-            Result :=  St.IndexOf(Tag, Stage);                                // zero based !
-            if Result = -1 then exit;                                         // no more candidates
-            if (Result = 0)                                                   // Start of line
-                    or (St[Result] in [' '..'/', '>']) then                   // has whitespace before tag
-                if (length(st) < (Result + length(tag) +1))                   // don't mess beyond end of line
-                or (St[Result+length(Tag)+1] <> ' ')       then begin         // is not followed by whitespace
-                    //writeln('LEAD tag=' + tag + ' res=' + inttostr(Result) + ' [' + St + ']');
-                    exit(Result+1);
-                end;
-            Stage := Result+1;
+    LeftFlank := pos(Tag, St, 1);
+    if LeftFlank = 0 then exit(False);
+    while true do begin
+        // OK, is it really a LeftFlank ?  These tests must be improved significently !
+        if (St.Length < (LeftFlank + 1 + (2*Tag.Length)))             // no room for content and trailing tag
+        or (St[LeftFlank+Tag.Length] = ' ') then begin                // not left flanking, need check better than this !!
+            LeftFlank := pos(Tag, St, LeftFlank+1);
+            if LeftFlank = 0 then exit(False);
+            continue;
         end;
-    end else begin
-        Stage := StartAt;                                                     // skip past any end tag we found.
-        while Stage < length(St) do begin
-            Result :=  St.IndexOf(Tag, Stage);                                // zero based !
-            if Result = -1 then exit;
-            if  (((Result+length(tag)) >= Length(St))                         // last thing in the line
-                    or (St[Result+length(Tag)+1] in [' '..'/', '<'])) then    // has a whitespace or newline afterwards
-                if St[Result] <> ' ' then begin                               // must have something that is not whitespace                   // thats before tag
-                    //writeln('TRAL tag=' + tag + ' res=' + inttostr(Result) + ' [' + St + ']');
-                    exit(Result+1);
-                end;
-            Stage := Result+1;
-        end;
+        break;
     end;
-    Result := -1;
+    // OK, we do have a LeftFlank, should look at any xml tags we step over here but for now, lets find a RightFlank
+    RightFlank := pos(Tag, St, LeftFlank + Tag.Length);
+    if (RightFlank = 0) then exit(False);
+    while true do begin
+        if (St[RightFlank -1] = ' ') then begin
+            RightFlank := pos(Tag, St, RightFlank + Tag.Length);
+            if (RightFlank = 0) then exit(False);
+            continue;
+        end;
+        exit(True);
+    end;
+    result := False;
 end;
 
-// Looks like we don't use this anymore.
-function TImportNotes.ChangeSmallFont(var St : string)  : boolean;
+(*
+function TImportNotes.FindMDTags(const St, Tag : string; out LeftFlank, RightFlank : integer) : boolean;
 begin
-    // MD looks like this <sub>small font</sub> but by time we get here, the angle brackets have been munged.
-    St := St.Replace('&lt;sub&gt;', '<size:small>', [rfReplaceAll]);
-    St := St.Replace('&lt;/sub&gt;', '</size:small>', [rfReplaceAll]);
-    exit(false);
+    LeftFlank := pos(Tag, St, 1);
+    if LeftFlank = 0 then exit(False);
+    while LeftFlank > 0 do begin
+        // OK, is it really a LeftFlank ?  These tests must be improved significently !
+        if (St.Length < (LeftFlank + 1 + (2*Tag.Length)))             // no room for content and trailing tag
+        or (St[LeftFlank+Tag.Length] = ' ') then begin                // not left flanking, need check better than this !!
+            LeftFlank := pos(Tag, St, LeftFlank+1);
+            continue;
+        end;
+        // OK, we do have a LeftFlank, should test for matched tags here but for now, lets find a RightFlank
+        RightFlank := pos(Tag, St, LeftFlank + Tag.Length);
+        if (RightFlank = 0) then exit(False);                         // no point in looking further.
+        if (St[RightFlank -1] = ' ') then begin
+            RightFlank := pos(Tag, St, RightFlank + Tag.Length);
+            continue;
+        end;
+        exit(True);
+    end;
+    result := False;
 end;
+*)
 
 
-    // Changes any symetrical MD tag to corresponding leading and trailing Tomboy tags
+
+
 function TImportNotes.ChangeTag(var St : string; const ChangeFrom, ChangeToLead, ChangeToTrail :  string)  : boolean;
 var
-    PosStart, PosEnd, FromLength : integer;
+    LFlank, RFlank : integer;
 begin
     Result := False;
-    FromLength := length(ChangeFrom);
-    PosStart := PosMDTag(St, ChangeFrom, 0, True);
-    if (PosStart > 0) then begin
-        PosEnd := PosMDTag(St, ChangeFrom, PosStart+1, False);
-        if (PosEnd > 0) then begin
-            //writeln('Changing, PosStart=' + inttostr(PosStart) + ' PosEnd =' + inttostr(PosEnd) + ' [' + St + ']');
-            delete(St, PosEnd, FromLength);
-            insert(ChangeToTrail, St, PosEnd);
-            delete(St, PosStart, FromLength);
-            insert(ChangeToLead, St, PosStart);
-            result := True;
-        end;
+    if FindMDTags(St, ChangeFrom, LFlank, RFlank) then begin
+        delete(St, RFlank, ChangeFrom.Length);
+        insert(ChangeToTrail, St, RFlank);
+        delete(St, LFlank, ChangeFrom.Length);
+        insert(ChangeToLead, St, LFlank);
+        result := True;
     end;
 end;
 
@@ -383,8 +386,8 @@ begin
             end;   *)
         St := St.Replace('&lt;sub&gt;', '<size:small>', [rfReplaceAll]);
         St := St.Replace('&lt;/sub&gt;', '</size:small>', [rfReplaceAll]);
-        St := St.Replace('&lt;underline&gt;', '', [rfReplaceAll]);
-        St := St.Replace('&lt;/underline&gt;', '', [rfReplaceAll]);
+        St := St.Replace('&lt;underline&gt;', '<underline>', [rfReplaceAll]);               // ToDo : why ? whynot <underline>
+        St := St.Replace('&lt;/underline&gt;', '</underline>', [rfReplaceAll]);
         St := St.Replace('&lt;highlight&gt;', '<highlight>', [rfReplaceAll]);
         St := St.Replace('&lt;/highlight&gt;', '</highlight>', [rfReplaceAll]);
 //        DebugLn('Middle [' + St + ']');
@@ -395,10 +398,8 @@ begin
         while ChangeTag(St, '_', '<italic>', '</italic>') do;
         while ChangeTag(St, '`', '<monospace>', '</monospace>') do;
         while ChangeTag(St, '~~', '<strikeout>', '</strikeout>') do;
-        if copy(St, 1, 2) = '  ' then begin                          // Ah, thats leading space mono
-            while length(St) > 0 do
-                if St[1] = '' then delete(St, 1, 1)                  // remove those leading spaces
-                else break;
+        if copy(St, 1, 4) = '    ' then begin                          // Ah, thats leading space mono
+            St := St.Remove(0, 4);
             if length(St) > 0 then
                 St := '<monospace>' + St + '</monospace>';
         end;
@@ -408,14 +409,6 @@ begin
     end;
     DoLineHeadings(Cont);
 end;
-
-
-// ToDo : Monospaced becomes code, wrap with backtick. MD:  `Mono or code`  Tomboy:  <monospace>Mono or code</monospace>
-//      : Monospace may also be a line that starts with a space. So renders require several spaces
-//      : Small font, gets converted to sub script in version in tomboy-ng. So, mark down is
-//        wrap text in <sub>little text</sub>     and tomboy version is <size:small>little text</size:small>
-//      : Headings, a line, perhaps two or more of just == or ------ says previous line was heading.
-//        https://spec.commonmark.org/
 
 function TImportNotes.ImportFile(FullFileName: string): boolean;
 var
@@ -485,6 +478,8 @@ begin
     end;
     MarkUpMarkDown(Content);
     Title := Content.Strings[0];
+    Title := Title.Replace('<underline>', '');
+    Title := Title.Replace('</underline>', '');
     Content.Delete(0);
     Title.Replace('#', '', [rfReplaceAll]);
     ProcessPlain(Content, Title, LCD, CDate);
