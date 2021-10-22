@@ -13,6 +13,8 @@ program Tomboy_NG;
 
 {$mode objfpc}{$H+}
 
+{$define TOMBOY_NG}
+
 uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}

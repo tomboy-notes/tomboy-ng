@@ -100,7 +100,7 @@ function KControls () {
 	if [ -e "kcontrols-master.zip" ]; then
 		echo "---------- Note: reusing KControls zip"
 	else
-		wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
+		wget https://github.com/davidbannon/KControls/archive/master.zip   # watch this name does not change.
 		mv master.zip kcontrols-master.zip
 	fi
 	unzip -q kcontrols-master.zip

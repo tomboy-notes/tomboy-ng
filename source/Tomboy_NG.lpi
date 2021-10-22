@@ -173,6 +173,12 @@
 -dDisableLCLJPEG
 -dDisableLCLPNM
 -dDisableLCLTIFF"/>
+            <OtherDefines Count="4">
+              <Define0 Value="DisableLCLGIF"/>
+              <Define1 Value="DisableLCLJPEG"/>
+              <Define2 Value="DisableLCLPNM"/>
+              <Define3 Value="DisableLCLTIFF"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item3>
@@ -804,8 +810,9 @@
         <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
       </local>
       <environment>
-        <UserOverrides Count="1">
+        <UserOverrides Count="2">
           <Variable0 Name="TB_ONETOONE_XX" Value="/home/dbannon/OneSyncTest"/>
+          <Variable1 Name="LAZUSEAPPIND" Value="YES"/>
         </UserOverrides>
       </environment>
       <FormatVersion Value="2"/>
@@ -815,8 +822,9 @@
             <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
           </local>
           <environment>
-            <UserOverrides Count="1">
+            <UserOverrides Count="2">
               <Variable0 Name="TB_ONETOONE_XX" Value="/home/dbannon/OneSyncTest"/>
+              <Variable1 Name="LAZUSEAPPIND" Value="YES"/>
             </UserOverrides>
           </environment>
         </Mode0>

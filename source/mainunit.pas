@@ -494,9 +494,9 @@ begin
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
     ForceAppInd := GetEnvironmentVariable('LAZUSEAPPIND');
     if ForceAppInd <> '' then
-            debugln('Tradition Systray = ' + booltostr(result, True));
-    if ForceAppInd = 'YES' then
-            result := false;
+            debugln('Tradition Systray Available = ' + booltostr(result, True));
+//    if ForceAppInd = 'YES' then
+//            result := false;
     {$ENDIF}
     // if we are false here, its probably because its a recent Gnome Desktop or GTK3, no SysTray.
     // However, if libappindicator3 or Ayatana is installed and the Gnome Shell Extension,
