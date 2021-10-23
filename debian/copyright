@@ -21,7 +21,7 @@ License: MPL1.1/GPL2.0/LGPL2.1
 
 Files: source/jsontools.pas
 Copyright: 2019 Anthony Walter
-License: LGPLv3
+License: LGPL-3
 
 
 License: The-Clear-BSD-License
@@ -102,7 +102,7 @@ License: MPL1.1/GPL2.0/LGPL2.1
  the provisions above, a recipient may use your version of this file under
  the terms of any one of the MPL, the GPL or the LGPL.
 
-LGPLv3
+License: LGPL-3
  On Debian systems, the complete text of the GNU Lesser General Public License
  can be found in /usr/share/common-licenses/LGPL-3.
  
