@@ -184,7 +184,7 @@ unit EditBox;
     2020/01/02  Enabled Ctrl-Shift left or right arrow selecting or extending selecton by word.
     2020/01/07  Use SaveTheNote() even when existing app with a clean note, UpdateNote() not used now
     2020/01/12  More agressive adjustmenst to form position at opening a note Windows and Mac only
-    2020/01/28  Dont call SearchForm.UpdateList() when we are closing a clean note.
+    2020/01/28  Do not call SearchForm.UpdateList() when we are closing a clean note.
     2020/03/11  In FormDestroy, we always save, EXCEPT if in SingleNoteMode, then only if dirty.
     2020/03/27  Don't save a new, unwritten to note, also prevent 2 saves on a Ctrl-F4
     2020/03/27  Set a cleared highlight to correct background colour.
@@ -192,7 +192,7 @@ unit EditBox;
     2020/04/01  Removed line that exited KMemo1KeyDown in readonly mode, prevented cursor keys working.
     2020/04/04  Fix for when SingleNoteMode is pointed to a zero length file.
     2020/05/12  Added Shift Click to select to click pos, #129
-    2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
+    2020/05/23  Do not poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
     2020/06/08  Disable main menu button in readonly mode.
     2020/08/06  Call a paste in ShowForm, even in SNM, assertion is better than no copying.
                 Display external links in single note mode.
@@ -2783,7 +2783,7 @@ begin
        exit();
     end;
 
-    if Key = VK_TAB then begin                                            // ToDo : Tabs dont work as expected
+    if Key = VK_TAB then begin                                            // ToDo : Tabs do not work as expected
       KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, ' ');
       KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, ' ');
       KMemo1.InsertChar(KMemo1.Blocks.RealSelStart, ' ');
@@ -2809,7 +2809,7 @@ begin
     TimerHouseKeeping.Enabled := False;
     TimerHouseKeeping.Enabled := True;
 
-    // KMemo1.Blocks.LockUpdate;  Dont lock because we move the cursor down here.
+    // KMemo1.Blocks.LockUpdate;  Do not lock because we move the cursor down here.
     	if UnderBullet and (not FirstChar) then begin   // case a
             KMemo1.ExecuteCommand(ecDeleteLastChar);
             if Verbose then debugln('Case a');

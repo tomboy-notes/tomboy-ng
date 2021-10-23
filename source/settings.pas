@@ -339,7 +339,7 @@ type
         FontSmall  : Integer;
      	FontLarge  : Integer;
      	FontHuge   : Integer;
-     	FontTitle  : Integer;			// Dont set this to one of the other sizes !
+     	FontTitle  : Integer;			// Do not set this to one of the other sizes !
      	FontNormal : Integer;
         { The directory expected to hold existing or new notes }
         NoteDirectory : string;
@@ -419,28 +419,28 @@ begin
         FontSmall  := 11;
         FontLarge  := 20;
         FontHuge   := 23;
-        FontTitle  := 21;			// Dont set this to one of the other sizes !
+        FontTitle  := 21;			// Do not set this to one of the other sizes !
         FontNormal := 16;
     end;
 	if RadioFontBig.checked then begin
     	FontSmall  := 9;
      	FontLarge  := 17;
      	FontHuge   := 20;
-     	FontTitle  := 18;			// Dont set this to one of the other sizes !
+     	FontTitle  := 18;			// Do not set this to one of the other sizes !
      	FontNormal := 14;
 	end;
     if RadioFontMedium.checked then begin
     	FontSmall  := 8;
  		FontLarge  := 14;
  		FontHuge   := 18;
- 		FontTitle  := 16;			// Dont set this to one of the other sizes !
+ 		FontTitle  := 16;			// Do not set this to one of the other sizes !
  		FontNormal := 11;
 	end;
     if RadioFontSmall.Checked then begin
     	FontSmall  := 7;
  		FontLarge  := 13;
  		FontHuge   := 16;
- 		FontTitle  := 14;			// Dont set this to one of the other sizes !
+ 		FontTitle  := 14;			// Do not set this to one of the other sizes !
  		FontNormal := 10;
     end;
 

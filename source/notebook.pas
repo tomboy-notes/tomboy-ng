@@ -25,8 +25,8 @@ unit Notebook;
                 to naming of MainUnit and SearchUnit.
     2019/05/18  Corrected alignment Label1 and 3
     2019/05/19  Display strings all (?) moved to resourcestrings
-    2020/02/19  Dont escape new notebook title as sent to notelister.
-    2020/05/19  Dont go through ButtonOKOnClick if ModalResult is already set to mrOK
+    2020/02/19  Do not escape new notebook title as sent to notelister.
+    2020/05/19  Do not go through ButtonOKOnClick if ModalResult is already set to mrOK
     2020/08/10  In Windows, SetFocus was setting ModalRes to 1, so, would immediatly close ??
 }
 

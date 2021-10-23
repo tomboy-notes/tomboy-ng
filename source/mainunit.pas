@@ -59,7 +59,7 @@ unit Mainunit;
     2020/04/12  Force sensible sizes for help notes.
     2020/04/28  Added randomize to create, need it for getlocaltime in settings.
     2020/05/16  Don't prevent closing of splash screen.
-    2020/05/23  Dont poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
+    2020/05/23  Don't poke SingleNoteFileName in during create, get it from Mainunit in OnCreate()
     2020/05/26  Improved tabbing
     2020/06/11  remove unused closeASAP, open splash if bad note.
     2020/07/09  New help notes location. A lot moved out of here.
@@ -99,7 +99,7 @@ unit Mainunit;
                 something to divert debug msg to a file ??
                 something to do more debugging ?
 
-    --no-splash Dont show the small opening status/splash window on startup
+    --no-splash Do not show the small opening status/splash window on startup
 
     --save-exit (Single note only) after import, save and exit.
 
@@ -619,7 +619,6 @@ begin
         Sett.SaveSettings(Sender);
         Sett.MaskSettingsChanged := OldMask;
     end;
-    // showmessage('change dont show and Visible=' + booltostr(Visible, True));
 end;
 
 

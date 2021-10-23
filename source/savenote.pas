@@ -760,7 +760,7 @@ var
 begin
   if Loc.LastChangeDate = '' then begin
        debugln('------------------------------------------------------------------------');
-       debugln('ERROR, ERROR passed an blank change date to Footer, we dont do that here');
+       debugln('ERROR, ERROR passed an blank change date to Footer, not nice.');
        debugln('------------------------------------------------------------------------');
        Loc.LastChangeDate := TB_GetLocalTime();     // no, thats just a temp fix, do something about it
   end;

@@ -103,4 +103,6 @@ License: MPL1.1/GPL2.0/LGPL2.1
  the terms of any one of the MPL, the GPL or the LGPL.
 
 LGPLv3
- See https://github.com/sysrpl/JsonTools/blob/master/LGPLv3
+ On Debian systems, the complete text of the GNU Lesser General Public License
+ can be found in /usr/share/common-licenses/LGPL-3.
+ 

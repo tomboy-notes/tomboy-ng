@@ -88,7 +88,7 @@ unit SearchUnit;
                 Better ctrl of Search Term highlight (but still highlit when makeing form re-visible).
                 Drop Create Date and Filename from Search results string grid.
                 But I still cannot control the little green triangles in stringgrid headings indicating sort.
-    2020/02/01  Dont refresh the string grids automatically, turn on the refresh button for user to do it.
+    2020/02/01  Do not refresh the string grids automatically, turn on the refresh button for user to do it.
     2020/02/19  hilight selected notebook name.
     2020/03/09  Make sure 'x' (put in by a bug) is not a valid sync repo path.
     2020/05/10  Faster search

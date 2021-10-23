@@ -125,7 +125,7 @@ TGitNoteList = class(TFPList)
          procedure Add(const FName, Sha: string);
 
                             // Selectivly inserts the supplied data into GitNoteList.
-                            // Always use most fields but don't use LCD if the sha dont match.
+                            // Always use most fields but don't use LCD if the sha do not match.
          procedure InsertData(const GitRec : TGitNote);
                             // Returns true and sets sha if note is in List. Ignores trailing / in FName.
                             // If the Note exists in the list but its sha is not set, ret True but sha is empty
@@ -163,7 +163,7 @@ type
                              this is a constant in implementation section of transgithub. }
         SelectiveSync : string;
 
-        SelectiveNotebookIDs : TstringList;  // May contain FNames of notes that are members of SelectiveSync notebook. Dont create or free.
+        SelectiveNotebookIDs : TstringList;  // May contain FNames of notes that are members of SelectiveSync notebook. Do not create or free.
 
         HeaderOut : string;             // Very ugly global to get optional value back from Downloader
                                         // ToDo : do better than this Davo
@@ -553,7 +553,7 @@ begin
                 if ProgressProcedure <> nil then progressProcedure('Scanning remote files');
                 if not ScanRemoteRepo() then exit(SyncBadRemote);               // puts only remote filenames and sha in RemoteNotes
                 if (not ReadRemoteManifest()) then begin
-                        if (not ANewRepo) and (not WriteNewServerID) then       // dont expect a remote manifest in ANewRepo mode.
+                        if (not ANewRepo) and (not WriteNewServerID) then       // do not expect a remote manifest in ANewRepo mode.
                             // But if we have had an aborted New process, might mave serverid but no manifest
                             exit(SyncNoRemoteMan)
                         else ANewRepo := True;
