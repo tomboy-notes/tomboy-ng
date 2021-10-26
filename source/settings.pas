@@ -96,6 +96,7 @@ unit settings;
     2021/06/01  Add setting to disable Notifications
     2021/09/27  Allow both File and Github sync, maybe its a good idea ??  SelectiveSync.
     2021/10/06  Restructured the way we enter GH Token, all copy and paste now.
+    2021/10/26  User selectable date stamp format
 }
 
 {$mode objfpc}{$H+}
@@ -121,10 +122,13 @@ type
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
+        CheckStampItalics: TCheckBox;
+        CheckStampSmall: TCheckBox;
         CheckSyncEnabled: TCheckBox;
 		CheckNotifications: TCheckBox;
         CheckUseUndo: TCheckBox;
         CheckBoxAutoSync: TCheckBox;
+        ComboDateFormat: TComboBox;
         ComboSyncType: TComboBox;
         ComboHelpLanguage: TComboBox;
         EditUserName: TEdit;
@@ -132,6 +136,7 @@ type
         Label10: TLabel;
         Label11: TLabel;
         Label16: TLabel;
+        Label17: TLabel;
         LabelToken: TLabel;
         LabelSyncType: TLabel;
         Label5: TLabel;
@@ -700,12 +705,19 @@ begin
 end;
 
 procedure TSett.FormCreate(Sender: TObject);
+var
+    i : integer;
 begin
     Caption := 'tomboy-ng Settings';
     AreClosing := false;
     Top := 100;
     Left := 300;
     LoadHelpLanguages();
+    ComboDateFormat.Items.Clear;
+    for i := 0 to MaxDateStampIndex do
+        ComboDateFormat.Items.add(TB_DateStamp(i));
+    ComboDateFormat.ItemIndex := 0;
+
     DefaultFixedFont := GetFixedFont();     // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
     MaskSettingsChanged := true;            // don't trigger save while doing setup
@@ -894,16 +906,20 @@ begin
         ComboSyncTypeChange(self);
         // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
 
-        // --------- S P E L L I N G ---------------------------------------
+        // ------------- S P E L L I N G ---------------------------------------
         LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
         LabelDic.Caption := ConfigFile.readstring('Spelling', 'Dictionary', '');
         SpellConfig := (LabelLibrary.Caption <> '') and (LabelDic.Caption <> '');     // indicates it worked once...
-        // --------- S N A P S H O T    S E T T I N G S  -------------------
+        // ------------- S N A P S H O T    S E T T I N G S  -------------------
         LabelSnapDir.Caption := ConfigFile.readstring('SnapSettings', 'SnapDir', NoteDirectory + 'Snapshot' + PathDelim);
         CheckAutoSnapEnabled.Checked := Configfile.ReadBool('Snapshot', 'AutoSnapEnabled', False);
         NextAutoSnapshot             := Configfile.ReadDateTime('Snapshot', 'NextAutoSnapshot', now());
         SpinDaysPerSnapshot.Value    := Configfile.ReadInteger('Snapshot', 'DaysPerSnapshot', 7);
         SpinMaxSnapshots.Value       := Configfile.ReadInteger('Snapshot', 'DaysMaxSnapshots', 20);
+        // ------------- D A T E    S T A M P    S E T T I N G -----------------
+        CheckStampItalics.Checked := Configfile.ReadBool('DateStampSettings', 'Italics', False);
+        CheckStampSmall.Checked   := Configfile.ReadBool('DateStampSettings', 'Small', False);
+        ComboDateFormat.ItemIndex := Configfile.ReadInteger('DateStampSettings', 'Format', 0);
     finally
         ConfigFile.free;
     end;
@@ -1023,6 +1039,12 @@ begin
             configfile.WriteDateTime('Snapshot', 'NextAutoSnapshot', NextAutoSnapshot);         // Format can (?) be set in SysUtils but does not matter as long as its consistent on this machine
             configfile.WriteInteger('Snapshot', 'DaysPerSnapshot', SpinDaysPerSnapshot.Value);
             configfile.WriteInteger('Snapshot', 'DaysMaxSnapshots', SpinMaxSnapshots.Value);
+
+            // --------- D A T E    S T A M P    S E T T I N G -----------------
+            configfile.Writebool('DateStampSettings', 'Italics',   CheckStampItalics.Checked);
+            configfile.Writebool('DateStampSettings', 'Small',     CheckStampSmall.Checked);
+            configfile.WriteInteger('DateStampSettings', 'Format', ComboDateFormat.ItemIndex);
+
         finally
     	    ConfigFile.Free;
         end;

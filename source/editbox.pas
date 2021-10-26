@@ -219,6 +219,7 @@ unit EditBox;
     2021/08/07  Commented out some code in FormShow thats is unreachable ?? Filename and Template
     2021/08/27  Consolidated all Text menu events through one method
     2021/08/27  Can now edit multilevel bullets
+    2021/10/26  User selectable date stamp format
 }
 
 
@@ -848,17 +849,35 @@ begin
     end;
 end;
 
+{ we insert datestring at selstart and optionall mark it small / italics
+}
 procedure TEditBoxForm.InsertDate();
 var
   I : integer;
   Buff : string;
 begin
     // showmessage(FormatDateTime('YYYY-MM-DD hh:mm:ss', now()));
-    Buff := FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now());
+(*    Buff := FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now());
     Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff);
     KMemo1.ExecuteCommand(ecInsertString, pchar(Buff));
     for I := 0 to 20 do
-        KMemo1.ExecuteCommand(ecRight);
+        KMemo1.ExecuteCommand(ecRight);                        *)
+
+    Buff := TB_DateStamp(Sett.ComboDateFormat.ItemIndex);
+    Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff);
+    KMemo1.ExecuteCommand(ecInsertString, pchar(Buff));
+    if Sett.CheckStampItalics.checked or sett.CheckStampSmall.Checked then begin
+        KMemo1.SelStart := Kmemo1.SelStart + 1;
+        KMemo1.Sellength := Buff.Length-2;      // we do not want to get the spaces.
+        if Sett.CheckStampItalics.checked then
+            AlterFont(3);
+        if Sett.CheckStampSmall.checked then
+            AlterFont(1, Sett.FontSmall);
+        KMemo1.SelStart := Kmemo1.SelStart -1 + Buff.Length;
+        KMemo1.Sellength := 0;
+    end else
+        for I := 0 to Buff.Length-1 do
+            KMemo1.ExecuteCommand(ecRight);        // move cursor
 end;
 
 { -------------- U S E R   F O N T    C H A N G E S ----------------}

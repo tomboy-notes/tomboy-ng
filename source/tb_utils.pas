@@ -43,6 +43,7 @@ unit tb_utils;
   2021/07/31  A fix to ensure that </note-content> is removed with metadata
   2021/08/02  Merged back here from TomboyTools.
   2021/08/27  Added the constants for multilevel bullets.
+  2021/10/26  User selectable date stamp format
 }
 
 
@@ -52,6 +53,10 @@ interface
 
 uses
         Classes, SysUtils {$ifndef TESTRIG}, KMemo {$ifdef Linux}, libnotify{$endif}{$endif};
+
+                       // pass 0 to MaxDateStampIndex, various datetime formats
+function TB_DateStamp(Index : integer) : string;
+
 
                         // True if looks like an ID, 36 char and dash as #9
 function IDLooksOK(const ID : string) : boolean;
@@ -122,6 +127,8 @@ const
   // BulletNine  = pnuArabic;       // Messes with case statements, 8 is our limit !
 {$endif}
 
+const
+  MaxDateStampIndex = 4;            // Zero based index to date/Time Formats
 implementation
 
 uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
@@ -147,6 +154,19 @@ begin
 end;
 
 {$endif}
+                                                    
+function TB_DateStamp(Index : Integer) : string;
+// make sure that you adjust MaxDateStampIndex (above) if adding formats
+begin
+    result := ' date error ';
+    case Index of
+        0 : result := FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now());             // ISO 8601, 2020-09-14 08:37
+        1 : result := FormatDateTime(' dddd dd mmmm YYYY hh:mm am/pm ', now());   // Monday 29 December 2021 8:37 am    much of the world
+        2 : result := FormatDateTime(' dddd, mmmm dd, YYYY hh:mm am/pm ', now()); // Monday, December 29, 2021 8:37 am  US style
+        3 : result := FormatDateTime(' mmmm dd, YYYY hh:mm am/pm ', now());       // January 21, 2016 8:37 am           US without DOW
+        4 : result := FormatDateTime(' YYYY-MM-DD dddd hh:mm:ss ', now());        // Monday 2020-09-14 08:37            ISO with added DOW
+    end;
+end;
 
 // Escapes any double inverted commas and backslashs it finds in passed string.
 function EscapeJSON(St : string) : string;
