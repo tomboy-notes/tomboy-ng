@@ -856,13 +856,6 @@ var
   I : integer;
   Buff : string;
 begin
-    // showmessage(FormatDateTime('YYYY-MM-DD hh:mm:ss', now()));
-(*    Buff := FormatDateTime(' YYYY-MM-DD hh:mm:ss ', now());
-    Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff);
-    KMemo1.ExecuteCommand(ecInsertString, pchar(Buff));
-    for I := 0 to 20 do
-        KMemo1.ExecuteCommand(ecRight);                        *)
-
     Buff := TB_DateStamp(Sett.ComboDateFormat.ItemIndex);
     Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff);
     KMemo1.ExecuteCommand(ecInsertString, pchar(Buff));
@@ -871,6 +864,8 @@ begin
         KMemo1.Sellength := Buff.Length-2;      // we do not want to get the spaces.
         if Sett.CheckStampItalics.checked then
             AlterFont(3);
+        if Sett.CheckStampBold.checked then
+            AlterFont(2);
         if Sett.CheckStampSmall.checked then
             AlterFont(1, Sett.FontSmall);
         KMemo1.SelStart := Kmemo1.SelStart -1 + Buff.Length;

@@ -122,6 +122,7 @@ type
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
+        CheckStampBold: TCheckBox;
         CheckStampItalics: TCheckBox;
         CheckStampSmall: TCheckBox;
         CheckSyncEnabled: TCheckBox;
@@ -919,6 +920,7 @@ begin
         // ------------- D A T E    S T A M P    S E T T I N G -----------------
         CheckStampItalics.Checked := Configfile.ReadBool('DateStampSettings', 'Italics', False);
         CheckStampSmall.Checked   := Configfile.ReadBool('DateStampSettings', 'Small', False);
+        CheckStampBold.Checked    := Configfile.ReadBool('DateStampSettings', 'Bold', False);
         ComboDateFormat.ItemIndex := Configfile.ReadInteger('DateStampSettings', 'Format', 0);
     finally
         ConfigFile.free;
@@ -1037,13 +1039,15 @@ begin
             // --------- S N A P S H O T    S E T T I N G S  -------------------
             configfile.WriteBool('Snapshot', 'AutoSnapEnabled', CheckAutoSnapEnabled.Checked);
             configfile.WriteDateTime('Snapshot', 'NextAutoSnapshot', NextAutoSnapshot);         // Format can (?) be set in SysUtils but does not matter as long as its consistent on this machine
-            configfile.WriteInteger('Snapshot', 'DaysPerSnapshot', SpinDaysPerSnapshot.Value);
-            configfile.WriteInteger('Snapshot', 'DaysMaxSnapshots', SpinMaxSnapshots.Value);
+            configfile.WriteInteger('Snapshot',  'DaysPerSnapshot',  SpinDaysPerSnapshot.Value);
+            configfile.WriteInteger('Snapshot',  'DaysMaxSnapshots', SpinMaxSnapshots.Value);
 
             // --------- D A T E    S T A M P    S E T T I N G -----------------
             configfile.Writebool('DateStampSettings', 'Italics',   CheckStampItalics.Checked);
             configfile.Writebool('DateStampSettings', 'Small',     CheckStampSmall.Checked);
+            configfile.Writebool('DateStampSettings', 'Bold',      CheckStampBold.Checked);
             configfile.WriteInteger('DateStampSettings', 'Format', ComboDateFormat.ItemIndex);
+
 
         finally
     	    ConfigFile.Free;
