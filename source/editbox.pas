@@ -219,7 +219,7 @@ unit EditBox;
     2021/08/07  Commented out some code in FormShow thats is unreachable ?? Filename and Template
     2021/08/27  Consolidated all Text menu events through one method
     2021/08/27  Can now edit multilevel bullets
-    2021/10/26  User selectable date stamp format
+    2021/10/26  User selectable date stamp format, inc Bold
 }
 
 
