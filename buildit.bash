@@ -221,7 +221,7 @@ echo "--------------- kcontrols COMPILE COMMAND -------------"
 echo "$RUNIT"
 echo "-----------------"
 
-$RUNIT 1>>tomboy-ng.log
+$RUNIT 1>tomboy-ng.log
 
 # exit
 

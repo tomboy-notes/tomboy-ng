@@ -458,7 +458,6 @@ object Sett: TSett
         Caption = '  Options  '
         ClientHeight = 165
         ClientWidth = 712
-        ParentBackground = False
         ParentColor = False
         TabOrder = 0
         object Label3: TLabel
@@ -530,7 +529,6 @@ object Sett: TSett
         Caption = '  Sync  '
         ClientHeight = 194
         ClientWidth = 712
-        ParentBackground = False
         ParentColor = False
         TabOrder = 1
         object Label4: TLabel
