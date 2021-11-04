@@ -1,5 +1,5 @@
 unit tb_utils;
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2021 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -102,8 +102,13 @@ procedure RemoveNoteMetaData(STL : TStringList);
 
 function SayDebugSafe(st: string) : boolean;
 
-// Escapes any double inverted commas and backslashs it finds in passed string.
+function TB_ReplaceFile(const SourceFile, DestFile : string) : boolean;
+
+                        // Escapes any double inverted commas and backslashs it finds in passed string.
 function EscapeJSON(St : string) : string;
+
+                        // Removes a NoteBook tag from a note
+function RemoveNoteBookTag(const FullFileName, NB : string) : boolean;
 
 {$ifdef Linux}
 // Linux only uses libnotify, Win and MacOS work through TrayIcon
@@ -132,7 +137,7 @@ const
 implementation
 
 uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
-        laz2_DOM, laz2_XMLRead;
+        laz2_DOM, laz2_XMLRead, FileUtil;
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
@@ -154,7 +159,41 @@ begin
 end;
 
 {$endif}
-                                                    
+
+function RemoveNoteBookTag(const FullFileName, NB : string) : boolean;
+var
+    InFile, OutFile: TextFile;
+    InString : string;
+begin
+    AssignFile(InFile, FullFileName);
+    AssignFile(OutFile, FullFileName + '-temp');
+    Reset(InFile);
+    Rewrite(OutFile);
+    while not eof(InFile) do begin
+        readln(InFile, InString);
+        // Note, this leaves an empty set of <tags></tags>, does that matter ?
+        if Pos('<tag>system:notebook:' + NB + '</tag>', InString) = 0 then
+            writeln(OutFile, InString);
+    end;
+    CloseFile(OutFile);
+    CloseFile(InFile);
+    Result := TB_ReplaceFile(FullFileName + '-temp', FullFileName);
+    if not Result then
+        debugln('ERROR, RemoveNoteBookTag failed to mv '
+                + FullFileName+ '-temp to ' + FullFileName);
+end;
+
+
+function TB_ReplaceFile(const SourceFile, DestFile : string) : boolean;
+begin
+    if not FileExists(SourceFile) then exit(SayDebugSafe('TB_ReplaceFile Failed to find ' + SourceFile));
+    {$ifdef WINDOWS}
+    if not DeleteFile(DestFile) then exit(SayDebugSafe('TB_ReplaceFile Failed to delete ' + DestFile));
+    {$endif}
+    result := RenameFile(SourceFile, DestFile);
+    if not Result then SayDebugSafe('TB_ReplaceFile Failed to rename ' + SourceFile + ' to ' + DestFile);
+end;
+
 function TB_DateStamp(Index : Integer) : string;
 // make sure that you adjust MaxDateStampIndex (above) if adding formats
 begin
@@ -408,6 +447,7 @@ function FindInStringList(const StL : TStringList; const FindMe : string) : inte
 var
     I : integer = 0;
 begin
+    if Stl = nil then exit(-1);
     while i < StL.Count {-1} do begin
         if pos(FindMe, StL.strings[i]) > 0 then
             exit(i);

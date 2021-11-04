@@ -13,5 +13,6 @@
 {"hash":140898037,"name":"tnotebookpick.label6.caption","sourcebytes":[69,120,105,115,116,105,110,103,32,78,97,109,101],"value":"Existing Name"},
 {"hash":86477815,"name":"tnotebookpick.label7.caption","sourcebytes":[76,97,98,101,108,55],"value":"Label7"},
 {"hash":211108725,"name":"tnotebookpick.label8.caption","sourcebytes":[78,101,119,32,78,97,109,101],"value":"New Name"},
-{"hash":120289105,"name":"tnotebookpick.label9.caption","sourcebytes":[73,102,32,121,111,117,32,115,121,110,99,32,97,110,100,32,97,114,101,32,110,111,116,32,97,98,115,111,108,117,116,101,108,121,32,115,117,114,101,32,105,116,115,32,117,112,32,116,111,32,100,97,116,101,44,32,67,97,110,99,101,108,32,110,111,119,32,33],"value":"If you sync and are not absolutely sure its up to date, Cancel now !"}
+{"hash":120289105,"name":"tnotebookpick.label9.caption","sourcebytes":[73,102,32,121,111,117,32,115,121,110,99,32,97,110,100,32,97,114,101,32,110,111,116,32,97,98,115,111,108,117,116,101,108,121,32,115,117,114,101,32,105,116,115,32,117,112,32,116,111,32,100,97,116,101,44,32,67,97,110,99,101,108,32,110,111,119,32,33],"value":"If you sync and are not absolutely sure its up to date, Cancel now !"},
+{"hash":106246915,"name":"tnotebookpick.tabsetnotes.caption","sourcebytes":[83,101,116,32,78,111,116,101,115],"value":"Set Notes"}
 ]}

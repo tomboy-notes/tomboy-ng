@@ -66,6 +66,10 @@ msgstr "Versie"
 msgid "Failed to index one or more notes."
 msgstr "Kan één of meerdere notities niet indexeren."
 
+#: resourcestr.rsaddnotestonotebook
+msgid "Add notes to this Notebook"
+msgstr ""
+
 #: resourcestr.rsalldone
 #, fuzzy
 msgctxt "resourcestr.rsalldone"
@@ -682,6 +686,7 @@ msgid "LabelFindInfo"
 msgstr ""
 
 #: teditboxform.menubold.caption
+msgctxt "teditboxform.menubold.caption"
 msgid "Bold"
 msgstr ""
 
@@ -1380,6 +1385,10 @@ msgstr ""
 msgid "New Note Book"
 msgstr ""
 
+#: tnotebookpick.tabsetnotes.caption
+msgid "Set Notes"
+msgstr ""
+
 #: tomdroid.rscheckingforexistingsync
 msgctxt "tomdroid.rscheckingforexistingsync"
 msgid "Checking for an existing sync ...."
@@ -1564,12 +1573,24 @@ msgstr ""
 msgid "Case Sensitive"
 msgstr ""
 
+#: tsearchform.listboxnotebooks.hint
+msgid "Right Click to manage Notebooks"
+msgstr ""
+
+#: tsearchform.menucreatenotebook.caption
+msgid "Create new Note Book"
+msgstr ""
+
 #: tsearchform.menudeletenotebook.caption
 msgid "Delete Notebook"
 msgstr ""
 
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
+msgstr ""
+
+#: tsearchform.menuitemmanagenbook.caption
+msgid "Manage Notes in Note Book"
 msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
@@ -1694,6 +1715,20 @@ msgstr ""
 msgid "Show Tomdroid Sync (experimental)"
 msgstr ""
 
+#: tsett.checkstampbold.caption
+msgctxt "tsett.checkstampbold.caption"
+msgid "Bold"
+msgstr ""
+
+#: tsett.checkstampitalics.caption
+msgid "Italics"
+msgstr ""
+
+#: tsett.checkstampsmall.caption
+msgctxt "tsett.checkstampsmall.caption"
+msgid "Small"
+msgstr ""
+
 #: tsett.checksyncenabled.caption
 msgid "Sync Enabled"
 msgstr ""
@@ -1748,6 +1783,10 @@ msgstr ""
 
 #: tsett.label16.caption
 msgid "Maximum number of snapshots"
+msgstr ""
+
+#: tsett.label17.caption
+msgid "Date Stamp Format"
 msgstr ""
 
 #: tsett.label2.caption
@@ -1834,6 +1873,7 @@ msgid "Medium"
 msgstr ""
 
 #: tsett.radiofontsmall.caption
+msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
 msgstr ""
 

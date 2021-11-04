@@ -63,6 +63,10 @@ msgstr "Version"
 msgid "Failed to index one or more notes."
 msgstr "Échec de l'indexation des notes."
 
+#: resourcestr.rsaddnotestonotebook
+msgid "Add notes to this Notebook"
+msgstr ""
+
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"
@@ -637,6 +641,7 @@ msgid "LabelFindInfo"
 msgstr ""
 
 #: teditboxform.menubold.caption
+msgctxt "teditboxform.menubold.caption"
 msgid "Bold"
 msgstr "Gras"
 
@@ -1356,6 +1361,10 @@ msgstr "Carnets existant"
 msgid "New Note Book"
 msgstr "Nouveau carnet"
 
+#: tnotebookpick.tabsetnotes.caption
+msgid "Set Notes"
+msgstr ""
+
 #: tomdroid.rscheckingforexistingsync
 msgid "Checking for an existing sync ...."
 msgstr "Vérif. de l'existence d'une synchro..."
@@ -1538,6 +1547,14 @@ msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr "Tenir compte de la casse"
 
+#: tsearchform.listboxnotebooks.hint
+msgid "Right Click to manage Notebooks"
+msgstr ""
+
+#: tsearchform.menucreatenotebook.caption
+msgid "Create new Note Book"
+msgstr ""
+
 #: tsearchform.menudeletenotebook.caption
 msgid "Delete Notebook"
 msgstr "Effacer le carnet"
@@ -1545,6 +1562,10 @@ msgstr "Effacer le carnet"
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
 msgstr "Éditer le modèle du carnet"
+
+#: tsearchform.menuitemmanagenbook.caption
+msgid "Manage Notes in Note Book"
+msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
@@ -1671,6 +1692,22 @@ msgstr "Toujours affiché en cas d'erreur de chargement des notes."
 msgid "Show Tomdroid Sync (experimental)"
 msgstr "Afficher la synchro Tomdroid (expérimental)"
 
+#: tsett.checkstampbold.caption
+#, fuzzy
+msgctxt "tsett.checkstampbold.caption"
+msgid "Bold"
+msgstr "Gras"
+
+#: tsett.checkstampitalics.caption
+msgid "Italics"
+msgstr ""
+
+#: tsett.checkstampsmall.caption
+#, fuzzy
+msgctxt "tsett.checkstampsmall.caption"
+msgid "Small"
+msgstr "Police petite"
+
 #: tsett.checksyncenabled.caption
 msgid "Sync Enabled"
 msgstr ""
@@ -1729,6 +1766,10 @@ msgstr "et un réglage approprié du dictionnaire."
 #| msgid "Maxium number of snapshots"
 msgid "Maximum number of snapshots"
 msgstr "snaphots au maximum"
+
+#: tsett.label17.caption
+msgid "Date Stamp Format"
+msgstr ""
 
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
@@ -1817,6 +1858,7 @@ msgid "Medium"
 msgstr "Police moyenne"
 
 #: tsett.radiofontsmall.caption
+msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
 msgstr "Police petite"
 

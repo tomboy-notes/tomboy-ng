@@ -38,7 +38,7 @@ RESOURCESTRING
   rsEnterNewNotebook = 'Enter a new notebook name please';
   rsNotebookOptionRight = 'Right click for Notebook Options';       // Windows, Linux
   rsNotebookOptionCtrl = 'Ctrl click for Notebook Options';           // Mac
-
+  rsAddNotesToNotebook = 'Add notes to this Notebook';
 
 // SearchForm
   // these are main menu items and string grid headings -

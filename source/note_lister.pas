@@ -1,5 +1,5 @@
 unit Note_Lister;
-{    Copyright (C) 2017-2020 David Bannon
+{    Copyright (C) 2017-2021 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -104,13 +104,14 @@ type
 		procedure RemoveNoteBook(const NBName: AnsiString);
    public
         destructor Destroy; Override;
-        { Adds the ID to the Notebook, if Notebook does not already exist, creates it }
+                                { ID of Note to be added; Name of NoteBook it should be added to. Notebook rec
+                                is created if necessary. But if IsTemplate ID is ID of a newly created Template  }
         procedure Add(const ID, ANoteBook : ANSIString; IsTemplate : boolean);
-        { Returns True if the passed note ID is in the passed Notebook }
+                                { Returns True if the passed note ID is in the passed Notebook }
         function IDinNotebook(const ID, Notebook : ANSIstring) : boolean;
                                 // Returns a PNoteBook that has a name matching passed NoteBook.
         function FindNoteBook(const NoteBook : ANSIString) : PNoteBook;
-        { Removes any list entries that do not have a Template }
+                                { Removes any list entries that do not have a Template }
         procedure CleanList();
         property Items[Index : integer] : PNoteBook read Get; default;
    end;
@@ -166,6 +167,7 @@ type
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
+    procedure DumpNoteNoteList(WhereFrom: string);
 
 
 
@@ -207,9 +209,10 @@ type
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
 
-    procedure DumpNoteBookList();
-    procedure DumpNoteNoteList(WhereFrom: string);
+    procedure DumpNoteBookList(WhereFrom: String);
 
+                                        { Returns true if there is a notebook of the passed title }
+    function IsANotebookTitle(NBTitle : string) : boolean;
                                         { Returns the Notebook Name for a given filename or ID (of the template itself)}
     function GetNotebookName(FileorID: AnsiString): string;
                                         { returns a indexed pointer to a Notebookrecord }
@@ -228,9 +231,10 @@ type
                                           knows how to do a template too. String has special XML chars 'escaped'
                                           This function expects to be passed an ID + '.note'. }
     function NoteBookTags(const NoteID: string): ANSIString;
-                                        { Returns true if it has put into list one or more Note Fnames that are members
-                                        of NBName, FNames mean ID.note ! }
-    function GetNotesInNoteBook(var NBIDList: TStringList; const NBName: string): boolean;
+                                        { Returns true if it has returned with a pointer to a list with one or more Note Fnames
+                                        that are members of NBName, it returns a pointer to the internal StList, do not create
+                                        or free. FNames mean ID.note ! }
+    function GetNotesInNoteBook(out NBIDList: TStringList; const NBName: string ): boolean;
                                        { Retuns the title of note at (zero based) index. }
     function GetTitle(Index: integer): string;
                                         { Returns the title for a given ID or Filename }
@@ -248,8 +252,8 @@ type
     procedure DeleteNoteBookwithID(FileorID : AnsiString);
                                         { Returns True if passed string is the ID or short Filename of a Template }
     function IsATemplate(FileOrID : AnsiString) : boolean;
-	                                    { Adds a notebook to the internal data structure, probably only used when making a new
-                                          Notebook and its Template }
+                                        { ID of Note to be added; Name of NoteBook it should be added to. Notebook rec
+                                        is created if necessary. But if IsTemplate ID is ID of a newly created Template  }
     procedure AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate: Boolean);
                                         { Sets the passed Notebooks as 'parents' of the passed note. Any pre existing membership
                                           will be cancelled. The list can contain zero to  many notebooks. }
@@ -290,7 +294,7 @@ type
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
 
     function IsThisATitle(const Title : ANSIString) : boolean;
-                        		        { Returns the Form this note is open on, Nil if its not open }
+                        		        { Returns the Form this note is open on, Nil if its not open. Take ID or FileName }
     function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
                         		        { Tells the list that this note is open, pass NIL to indicate its now closed }
     function ThisNoteIsOpen(const ID: ANSIString; const TheForm: TForm): boolean;
@@ -494,6 +498,7 @@ begin
 		inherited Destroy;
 end;
 
+
 procedure TNoteBookList.Add(const ID, ANoteBook: ANSIString; IsTemplate: boolean );
 var
     NB : PNoteBook;
@@ -509,7 +514,7 @@ begin
         NB^.Notes := TStringList.Create;
 	end;
     if IsTemplate then begin
-        NB^.Template:= ID
+        NB^.Template:= ID         // should only happen if its a new template.
     end else begin
         // Check its not there already ....
         I := NB^.Notes.Count;
@@ -551,6 +556,14 @@ begin
     	end;
 end;
 
+function TNoteLister.IsANotebookTitle(NBTitle: string): boolean;
+var
+    P : PNoteBook;
+begin
+    P := NoteBookList.FindNoteBook(NBTitle);
+    result := P <> nil;
+end;
+
 procedure TNoteBookList.CleanList;
 var
 	Index : integer = 0;
@@ -582,12 +595,12 @@ end;
 
 // =================== DEBUG PROC ======================================
 
-procedure TNoteLister.DumpNoteBookList();
+procedure TNoteLister.DumpNoteBookList(WhereFrom : String);
 var
     P : PNotebook;
     I : integer;
 begin
-    debugln('-----------------------');
+    debugln('------------ ' + WhereFrom + ' -----------');
     for P in NoteBookList do begin
         debugln('Name=' + P^.Name);
         for I := 0 to P^.Notes.Count -1 do
@@ -612,6 +625,8 @@ var
         debugln('Template ID=' + Pnb^.Template + '  NB Name='+Pnb^.Name + ' and Notes are ' + Pnb^.Notes.Text);
     debugln('-----------------------------------------------');
 end;
+
+
 
 function TNoteLister.GetNoteCount(): integer;
 begin
@@ -700,7 +715,7 @@ end;     *)
 
 
 
-function TNoteLister.GetNotesInNoteBook(var NBIDList : TStringList; const NBName : string) : boolean;
+function TNoteLister.GetNotesInNoteBook(out NBIDList : TStringList; const NBName : string) : boolean;
 var
     NB : PNoteBook;
 begin
@@ -725,6 +740,7 @@ end;
 procedure TNoteLister.AddNoteBook(const ID, ANoteBook: ANSIString; IsTemplate : Boolean);
 begin
     NoteBookList.Add(ID, ANoteBook, IsTemplate);
+    //DumpNoteBookList('After TNoteLister.AddNoteBook');
 end;
 
 procedure TNoteLister.LoadNotebookViewList(const VL : TListView; const  NotebookName: AnsiString);

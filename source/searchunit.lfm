@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 560
+  Left = 892
   Height = 401
-  Top = 311
+  Top = 292
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng_Search'
@@ -110,6 +110,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Side = asrBottom
       Left = 1
       Height = 278
+      Hint = 'Right Click to manage Notebooks'
       Top = 64
       Width = 232
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -328,6 +329,17 @@ object SearchForm: TSearchForm
     object MenuNewNoteFromTemplate: TMenuItem
       Caption = 'Create New Note from Template'
       OnClick = MenuNewNoteFromTemplateClick
+    end
+    object MenuItemManageNBook: TMenuItem
+      Caption = 'Manage Notes in Note Book'
+      OnClick = MenuItemManageNBookClick
+    end
+    object MenuItem3: TMenuItem
+      Caption = '-'
+    end
+    object MenuCreateNoteBook: TMenuItem
+      Caption = 'Create new Note Book'
+      OnClick = MenuCreateNoteBookClick
     end
   end
 end

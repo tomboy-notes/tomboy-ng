@@ -386,7 +386,7 @@ begin
             end;   *)
         St := St.Replace('&lt;sub&gt;', '<size:small>', [rfReplaceAll]);
         St := St.Replace('&lt;/sub&gt;', '</size:small>', [rfReplaceAll]);
-        St := St.Replace('&lt;underline&gt;', '<underline>', [rfReplaceAll]);               // ToDo : why ? whynot <underline>
+        St := St.Replace('&lt;underline&gt;', '<underline>', [rfReplaceAll]);
         St := St.Replace('&lt;/underline&gt;', '</underline>', [rfReplaceAll]);
         St := St.Replace('&lt;highlight&gt;', '<highlight>', [rfReplaceAll]);
         St := St.Replace('&lt;/highlight&gt;', '</highlight>', [rfReplaceAll]);

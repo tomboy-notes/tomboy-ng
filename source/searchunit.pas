@@ -1,6 +1,6 @@
 unit SearchUnit;
 
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2021 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -106,6 +106,8 @@ unit SearchUnit;
     2021/08/02  Use Template when creating new note from Template. Sigh ....
                 And don't update notelister (and menus) if its a Notebook thats been edited.
     2021/09/25  Fix bug that prevented saving first note in a dir, introduced in July. Nasty.
+    2021/11/03  When deleteing a notebook, remove references to it from the notes.
+    2021/11/04  Changes to support new Notebook management model
 }
 
 {$mode objfpc}{$H+}
@@ -134,6 +136,9 @@ type        { TSearchForm }
         ListViewNotes: TListView;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
+        MenuCreateNoteBook: TMenuItem;
+        MenuItemManageNBook: TMenuItem;
+        MenuItem3: TMenuItem;
         MenuRenameNoteBook: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
@@ -173,11 +178,12 @@ type        { TSearchForm }
         procedure ListViewNotesKeyPress(Sender: TObject; var Key: char);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
+        procedure MenuCreateNoteBookClick(Sender: TObject);
+        procedure MenuItemManageNBookClick(Sender: TObject);
         procedure MenuRenameNoteBookClick(Sender: TObject);
                         // Rather than opening an empty note we copy the template.
                         // save it, index it and pass the filename to OpenNote(
 		procedure MenuNewNoteFromTemplateClick(Sender: TObject);
-        procedure SpeedButton1Click(Sender: TObject);
         { Recieves 2 lists from Sync subsystem, one listing deleted notes ID, the
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
@@ -202,6 +208,7 @@ type        { TSearchForm }
         procedure RecentMenuClicked(Sender: TObject);
 		procedure Refresh();
         function RemoveFromHelpList(const FullHelpNoteFileName: string): boolean;
+        procedure RemoveNBTag(NB: string);
         //procedure RefreshNoteAndNotebooks();
         procedure ScaleListView();
         { If there is an open note from the passed filename, it will be marked read Only,
@@ -381,6 +388,22 @@ begin
 end;
 
 
+{ Removes the indicated NoteBook tag from any note that has it }
+procedure TSearchForm.RemoveNBTag(NB : string);
+var
+    STL : TStringList;    // note: NoteLister.GetNotesInNoteBook does not need STL created or freed !
+    i : integer = 0;
+    Dummy : TForm;
+begin
+    if NB = '' then exit;
+    if NoteLister.GetNotesInNoteBook(StL, NB) then
+        while i < StL.Count do begin
+            if NoteLister.IsThisNoteOpen(STL[i], Dummy) then continue;   // don't bother to do open notes. // ToDo : test this
+            RemoveNoteBookTag(Sett.NoteDirectory + STL[i], NB);
+            inc(i)
+        end;
+end;
+
 procedure TSearchForm.DeleteNote(const FullFileName: ANSIString);
 var
     NewName, ShortFileName : ANSIString;
@@ -388,7 +411,7 @@ var
     LocalMan : TSync;
 begin
     // debugln('DeleteNote ' + FullFileName);
-    ShortFileName := ExtractFileNameOnly(FullFileName);
+    ShortFileName := ExtractFileNameOnly(FullFileName);      // an ID
     LocalMan := TSync.Create;
     LocalMan.DebugMode:=false;
     LocalMan.ConfigDir:= Sett.LocalConfig;
@@ -397,6 +420,9 @@ begin
         showmessage('Error marking note delete in local manifest ' + LocalMan.ErrorString);
     LocalMan.Free;
     if NoteLister.IsATemplate(ShortFileName) then begin
+        // this does not remove notebook tag from any notes that were members of this note.
+        // if the note is Open, thats OK, it will be saved correctly on exit.
+        RemoveNBTag(NoteLister.GetNotebookName(ShortFileName));        // remove ref to the notebook from all notes
         NoteLister.DeleteNoteBookwithID(ShortFileName);
       	DeleteFileUTF8(FullFileName);
         ButtonClearFiltersClick(self);
@@ -1319,13 +1345,20 @@ end;
 
 
     // Popup a menu when rightclick a notebook
-procedure TSearchForm.ListBoxNotebooksMouseUp(Sender: TObject;
-    Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TSearchForm.ListBoxNotebooksMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+    HaveItem : boolean;
 begin
     // debugln('TSearchForm.ListBoxNotebooksMouseDown - Selected in listboxnotebook ' + dbgs(ListBoxNotebooks.ItemIndex));
-    if {$ifdef DARWIN} (ssCtrl in Shift) {$ELSE} (Button = mbRight) {$ENDIF}
-                and (ListBoxNotebooks.ItemIndex > -1) then
+    if {$ifdef DARWIN} (ssCtrl in Shift) {$ELSE} (Button = mbRight) {$ENDIF}  then begin
+        HaveItem := (ListBoxNotebooks.ItemIndex > -1);
+        PopupMenuNotebook.Items[0].Enabled := HaveItem;
+        PopupMenuNotebook.Items[1].Enabled := HaveItem;
+        PopupMenuNotebook.Items[2].Enabled := HaveItem;
+        PopupMenuNotebook.Items[3].Enabled := HaveItem;
+        PopupMenuNotebook.Items[4].Enabled := HaveItem;
         PopupMenuNotebook.Popup;
+    end;
 end;
 
 procedure TSearchForm.ButtonMenuClick(Sender: TObject);
@@ -1346,11 +1379,62 @@ begin
         OpenNote(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex] + ' Template', Sett.NoteDirectory + NotebookID);
 end;
 
+procedure TSearchForm.MenuCreateNoteBookClick(Sender: TObject);
+var
+    NotebookPick : TNotebookPick;
+    NewNoteBookName : string = '';
+    i : integer = 0;
+begin
+    NotebookPick := TNotebookPick.Create(Application);
+    NotebookPick.TheMode := nbMakeNewNoteBook;
+    NotebookPick.FullFileName := '';
+    NotebookPick.Title := '';
+    NotebookPick.ChangeMode := False;
+    NotebookPick.Top := Top;
+    NotebookPick.Left := Left;
+    if mrOK = NotebookPick.ShowModal then
+        NewNotebookName := NotebookPick.NBName;
+    NotebookPick.Free;
+    ButtonClearFilters.Click;
+    if  NewNoteBookName <> '' then begin
+        while i < ListBoxNoteBooks.Count do begin
+            if ListBoxNoteBooks.Items[i] = NewNoteBookName then
+                break
+            else inc(i);
+        end;
+        if i < ListBoxNoteBooks.Count then begin
+            ListBoxNoteBooks.ItemIndex := i;
+            ListBoxNoteBooks.click;
+        end else
+            debugln('TSearchForm.MenuCreateNoteBookClick - failed to find the new NotebookName');
+    end;
+end;
+
+procedure TSearchForm.MenuItemManageNBookClick(Sender: TObject);
+var
+    NotebookPick : TNotebookPick;
+begin
+    NotebookPick := TNotebookPick.Create(Application);
+    NotebookPick.TheMode := nbSetNotesInNoteBook;
+    NotebookPick.FullFileName := '';
+    NotebookPick.Title := '';
+    NotebookPick.NBName := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex];
+    NotebookPick.ChangeMode := False;
+    NotebookPick.Top := Top;
+    NotebookPick.Left := Left;
+    // if mrOK = NotebookPick.ShowModal then MarkDirty();
+    NotebookPick.ShowModal;
+    NotebookPick.Free;
+    ListBoxNotebooksClick(Sender);
+    // ButtonClearFilters.Click;       // ToDo : this should select the new Notebook if one made
+end;
+
 procedure TSearchForm.MenuRenameNoteBookClick(Sender: TObject);
 var
     NotebookPick : TNotebookPick;
 begin
     NotebookPick := TNotebookPick.Create(Application);
+    NotebookPick.TheMode := nbChangeName;
     try
         NotebookPick.Title := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex];
         NotebookPick.ChangeMode := True;
@@ -1377,14 +1461,6 @@ begin
         MakeNoteFromTemplate(Sett.NoteDirectory
             + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])),
         '', '');
-
-
-end;
-
-procedure TSearchForm.SpeedButton1Click(Sender: TObject);        // ToDo : is this still needed
-begin
-    // note - image is 24x24 tpopupmenu.png from lazarus source
-    MainForm.PopupMenuSearch.PopUp;
 end;
 
 // Copy Template to a new name removing the <tag>system:template</tag> and setting a Title

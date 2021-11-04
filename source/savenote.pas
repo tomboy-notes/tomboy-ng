@@ -67,7 +67,7 @@ unit SaveNote;
                 useful, I now do it in notenormal.
     2021/10/15  Serious change, now terminate font size changes at end of line where necessary
                 vastly better xml.
-
+    2021/11/04  SaveNewTemplate now gets a current date stamp.
 }
 
 {$mode objfpc}{$H+}
@@ -530,6 +530,7 @@ begin
    Ostream :=TFilestream.Create(Sett.NoteDirectory + Loc.FFName, fmCreate);
    Loc.Y := '20'; Loc.X := '20'; Loc.Height := '200'; Loc.Width:='300';
    Loc.OOS := 'False'; Loc.CPos:='1';
+   Loc.LastChangeDate := TB_GetLocalTime();
    try
    		Buff := Header(RemoveBadXMLCharacters(NotebookName)  + ' Template');
         OStream.Write(Buff[1], length(Buff));
@@ -538,7 +539,7 @@ begin
         Buff := Footer(Loc);
         OStream.Write(Buff[1], length(Buff));
    finally
-       OStream.Free;
+        OStream.Free;
    end;
 end;
 

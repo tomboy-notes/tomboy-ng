@@ -840,7 +840,6 @@ begin
        // debugln('TGitHubSync.MergeNotesFromNoteLister  considering Title=' + NLister^.Title);
        if NLister = nil then exit(SayDebugSafe('TGitHubSync.AssignActions ERROR - not finding NoteLister Content'));
 
-       // ToDo : I am using FindInStringList() below, TStringList.Find might be a lot faster
        // if I can be sure it really does sort the (NoteLister's) list with SelectiveNotebookIDs.sorted := true.
        // Calling SelectiveNotebookIDs.Sort does not seem to work ??
         // we know we can safely poke at SelectiveNotebookIDs if SelectiveSync is not empty.
@@ -1064,7 +1063,7 @@ end;
 
 function TGitHubSync.SendFile(RemoteFName: string; STL: TstringList): boolean;      // Public only in test mode
 var
-    Sha : string = '';      // ToDo : look at this, Build machine requires this be initialised, laptop does not ??
+    Sha : string = '';
     BodyStr : string;
 begin
     if RemoteNotes = nil then exit(false);
