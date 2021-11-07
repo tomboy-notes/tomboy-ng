@@ -56,6 +56,11 @@ WIDGET="gtk2"				# either gtk2 or qt5
 TEMPCONFDIR=`mktemp -d`
 # lazbuild writes, or worse might read a default .lazarus config file. We'll distract it later.
 
+EXCLUDEMESSAGE=" -vm6058,2005,5027 "	# cut down on compiler noise
+# 6058 - note about things not being inlined
+# 5027 - var not used
+# 2005 - level 2 comment
+
 AUTODOWNLOAD=FALSE			# downloading large file, use -d to allow it
 
 # ------------------------ Some functions ------------------------
@@ -166,26 +171,30 @@ CheckForQt5
 
 # OK, if to here, we have a fpc and lazbuild, but which FPC ?
 FPCVERSION=$($COMPILER -iV)
-case $FPCVERSION in
-	3.0.4)
-		echo "Compiler reported [$FPCVERSION]"
-		echo "FPC 3.0.4 is no longer suppoted by tomboy-ng ..."
-		exit 1
-		# EXCLUDEMESSAGE=" -vm2005,5027 "         
-	;;
-	3.2.0 | 3.2.2 | 3.2.3 | 3.2.4 | 3.2.5 | 3.2.6 )    # untested with > 3.2.3
-		EXCLUDEMESSAGE=" -vm6058,2005,5027 "
-	;;
-	*)
-		echo "Compiler reported [$FPCVERSION]"
-		echo "Unclear about your compiler, maybe edit script to support new one, exiting ..."
-		exit 1
-	;;
-esac
+if [ $FPCVERSION" = "3.0.4" ]; then
+	echo "Sorry, need a later version of FPC than $FPCVERSION"
+	exit 1
+fi
 
-# 6058 - note about things not being inlined
-# 5027 - var not used
-# 2005 - level 2 comment
+
+#case $FPCVERSION in
+#	3.0.4)
+#		echo "Compiler reported [$FPCVERSION]"
+#		echo "FPC 3.0.4 is no longer suppoted by tomboy-ng ..."
+#		exit 1
+#		# EXCLUDEMESSAGE=" -vm2005,5027 "         
+#	;;
+#	3.2.0 | 3.2.2 | 3.2.3 | 3.2.4 | 3.2.5 | 3.2.6 )    # untested with > 3.2.3
+#		EXCLUDEMESSAGE=" -vm6058,2005,5027 "
+#	;;
+#	*)
+#		echo "Compiler reported [$FPCVERSION]"
+#		echo "Unclear about your compiler, maybe edit script to support new one, exiting ..."
+#		exit 1
+#	;;
+# esac
+
+
 
 # OK, lets see if we can build KControls at this stage.
 
