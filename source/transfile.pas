@@ -21,7 +21,7 @@ unit transfile;
 interface
 
 uses
-    Classes, SysUtils, trans, SyncUtils, tb_utils;
+    Classes, SysUtils, trans, SyncUtils, tb_utils, ResourceStr;    // we share resources with GithubSync
 
 type
 
@@ -34,7 +34,6 @@ type
             // and, if its there the LastChangeDate. If LCD is not in manifest and GetLCD
             // is True, gets it from the file.
         function ReadRemoteManifest(const NoteMeta: TNoteInfoList; const GetLCD : boolean): boolean;
-
 
     public
         //RemoteDir : string; // where the remote filesync repo lives.
@@ -137,7 +136,6 @@ begin
     result := True;
 end;
 
-
 function TFileSync.ReadRemoteManifest(const NoteMeta: TNoteInfoList; const GetLCD : boolean) : boolean;
 var
     Doc : TXMLDocument;
@@ -189,12 +187,10 @@ begin
         DebugLn('We failed to read the remote manifest file ', RemoteAddress + 'manifest.xml');
 end;
 
-
 function TFileSync.GetNoteLastChange(const FullFileName : string) : string;
 begin
     Result := GetNoteLastChangeSt(FullFileName, ErrorString);   // syncutils function
 end;
-
 
 function TFileSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var
@@ -203,7 +199,7 @@ var
     FullFileName : string;
     DownCount : integer = 0;
 begin
-    if ProgressProcedure <> nil then progressProcedure('Downloading notes');
+    if ProgressProcedure <> nil then progressProcedure(rsDownloadNotes);
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
             ErrorString := 'Failed to create Backup directory.';
@@ -213,7 +209,7 @@ begin
         if DownLoads.Items[I]^.Action = SyDownLoad then begin
             inc(DLCount);
             if (DLCount mod 5 = 0) and (ProgressProcedure <> nil) then
-                ProgressProcedure('Downloaded ' + inttostr(DLCount) + ' notes');
+                ProgressProcedure(rsDownLoaded + ' ' + inttostr(DLCount) + ' notes');
             if FileExists(NotesDir + Downloads.Items[I]^.ID + '.note') then
                 // First make a Backup copy
                 if not CopyFile(NotesDir + Downloads.Items[I]^.ID + '.note',
@@ -237,7 +233,7 @@ begin
             end;
             inc(DownCount);
             if (DownCount mod 10 = 0) then
-                if ProgressProcedure <> nil then ProgressProcedure('Downloaded ' + inttostr(DownCount) + ' notes');
+                if ProgressProcedure <> nil then ProgressProcedure(rsDownLoaded + ' ' + inttostr(DownCount) + ' notes');
 
         end;
     end;
@@ -264,7 +260,7 @@ begin
         FullDirName := RemoteAddress + '0' + PathDelim + inttostr(RemoteServerRev + 1) + PathDelim; // Ugly Hack
 
   for Index := 0 to Uploads.Count -1 do begin
-      if DebugMode then debugln('Uploading ' + Uploads.Strings[Index] + '.note');
+      if DebugMode then debugln(rsUpLoading + ' ' + Uploads.Strings[Index] + '.note');
       if not copyFile(NotesDir + Uploads.Strings[Index] + '.note',
                 FullDirname + Uploads.Strings[Index] + '.note')
       then begin
@@ -275,7 +271,7 @@ begin
 	  end;
       inc(UpCount);
       if (UpCount mod 5 = 0) and (ProgressProcedure <> nil) then
-        progressProcedure('Uploaded ' + inttostr(UpCount) + ' notes');
+        progressProcedure(rsUpLoaded + ' ' + inttostr(UpCount) + ' notes');
   end;
   result := True;
 end;

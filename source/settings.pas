@@ -1048,7 +1048,6 @@ begin
             configfile.Writebool('DateStampSettings', 'Bold',      CheckStampBold.Checked);
             configfile.WriteInteger('DateStampSettings', 'Format', ComboDateFormat.ItemIndex);
 
-
         finally
     	    ConfigFile.Free;
         end;
@@ -1114,7 +1113,6 @@ begin
     end;
 end;
 
-
 procedure TSett.SetHelpLanguage();
 var
     HelpIndex : integer = 0;
@@ -1131,7 +1129,6 @@ end;
 procedure TSett.LoadHelpLanguages();
 var
     Info : TSearchRec;
-
 begin
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName)) + 'HELP' + PathDelim;{$endif}
     {$ifdef LINUX}  HelpNotesPath := '/usr/share/tomboy-ng/HELP/';    {$endif}
@@ -1169,7 +1166,6 @@ begin
         SearchForm.RefreshMenus(mkHelpMenu);
     end;
 end;
-
 
 procedure TSett.ButtonSetColoursClick(Sender: TObject);
 begin
@@ -1556,7 +1552,6 @@ begin
     end;
 end;
 
-
 function TSett.GetSyncFileRepo(): string;
 begin
     if SyncFileRepo <> '' then
@@ -1599,7 +1594,6 @@ begin
     if CheckAutoSnapEnabled.Checked and (NextAutoSnapshot < now()) then
         DoAutoSnapshot;
 end;
-
 
 procedure TSett.ButtonShowBackUpClick(Sender: TObject);
 var

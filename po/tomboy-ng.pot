@@ -149,6 +149,14 @@ msgstr ""
 msgid "OK, deleted %d damaged notes"
 msgstr ""
 
+#: resourcestr.rsdownloaded
+msgid "Downloaded"
+msgstr ""
+
+#: resourcestr.rsdownloadnotes
+msgid "Downloading notes"
+msgstr ""
+
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
@@ -194,6 +202,10 @@ msgstr ""
 
 #: resourcestr.rsgithubsyncinfo2
 msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr ""
+
+#: resourcestr.rsgithubtokenexpired
+msgid "Github Token may have expired"
 msgstr ""
 
 #: resourcestr.rshelpconfig
@@ -269,6 +281,10 @@ msgctxt "resourcestr.rslookingatnotes"
 msgid "Looking at notes ...."
 msgstr ""
 
+#: resourcestr.rslookingserverid
+msgid "Looking for ServerID"
+msgstr ""
+
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
 msgid "About"
@@ -302,6 +318,10 @@ msgstr ""
 #: resourcestr.rsmenusync
 msgctxt "resourcestr.rsmenusync"
 msgid "Synchronise"
+msgstr ""
+
+#: resourcestr.rsmetadirwarning
+msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr ""
 
 #: resourcestr.rsmultiplenotebooks
@@ -408,6 +428,10 @@ msgctxt "resourcestr.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
 msgstr ""
 
+#: resourcestr.rsscanremote
+msgid "Scanning remote files"
+msgstr ""
+
 #: resourcestr.rssearchhint
 msgid "Exact matches for terms between \" \""
 msgstr ""
@@ -447,6 +471,10 @@ msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr ""
 
+#: resourcestr.rstestingcredentials
+msgid "Testing Credentials"
+msgstr ""
+
 #: resourcestr.rstestingrepo
 msgctxt "resourcestr.rstestingrepo"
 msgid "Testing Repo ...."
@@ -474,6 +502,14 @@ msgstr ""
 #: resourcestr.rsunabletosync
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
+msgstr ""
+
+#: resourcestr.rsuploaded
+msgid "Uploaded"
+msgstr ""
+
+#: resourcestr.rsuploading
+msgid "Uploading"
 msgstr ""
 
 #: resourcestr.rswarnnossystray

@@ -163,6 +163,18 @@ RESOURCESTRING
   rsFindNavRightHintMac = 'Find : Command-G';
   rsFindNavLeftHintMac = 'Backward Find : Shift-Command-G';
 
+  // github sync - I would like to use some of these in other syncs too.
+
+  rsGithubTokenExpired = 'Github Token may have expired';
+  rsTestingCredentials = 'Testing Credentials';
+  rsLookingServerID = 'Looking for ServerID';
+  rsScanRemote  = 'Scanning remote files';
+  rsDownloadNotes = 'Downloading notes';
+  rsDownLoaded = 'Downloaded';          // followed by a number
+  rsUpLoading = 'Uploading';            // followed by a number
+  rsUpLoaded = 'Uploaded';              // followed by a number
+  rsMetaDirWarning = 'Please remember that to ensure a reliable sync, you must not change files in the Meta directory.';
+
 implementation
 
 end.

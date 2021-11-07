@@ -159,6 +159,14 @@ msgstr "Écraser toutes les notes de %s par le snapshot du %s ?"
 msgid "OK, deleted %d damaged notes"
 msgstr "OK, %d carnets vérolés supprimés"
 
+#: resourcestr.rsdownloaded
+msgid "Downloaded"
+msgstr ""
+
+#: resourcestr.rsdownloadnotes
+msgid "Downloading notes"
+msgstr ""
+
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
@@ -206,6 +214,10 @@ msgstr ""
 
 #: resourcestr.rsgithubsyncinfo2
 msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr ""
+
+#: resourcestr.rsgithubtokenexpired
+msgid "Github Token may have expired"
 msgstr ""
 
 #: resourcestr.rshelpconfig
@@ -285,6 +297,10 @@ msgctxt "resourcestr.rslookingatnotes"
 msgid "Looking at notes ...."
 msgstr "Journal de la gestion des notes :"
 
+#: resourcestr.rslookingserverid
+msgid "Looking for ServerID"
+msgstr ""
+
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
 msgid "About"
@@ -319,6 +335,10 @@ msgstr "Réglages"
 msgctxt "resourcestr.rsmenusync"
 msgid "Synchronise"
 msgstr "Synchronisation"
+
+#: resourcestr.rsmetadirwarning
+msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
+msgstr ""
 
 #: resourcestr.rsmultiplenotebooks
 msgctxt "resourcestr.rsmultiplenotebooks"
@@ -424,6 +444,10 @@ msgctxt "resourcestr.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
 msgstr "Pour terminer presser \"Sauver + Synchro\""
 
+#: resourcestr.rsscanremote
+msgid "Scanning remote files"
+msgstr ""
+
 #: resourcestr.rssearchhint
 msgid "Exact matches for terms between \" \""
 msgstr "Correspondance exacte si placé entre \"\""
@@ -465,6 +489,10 @@ msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr "non configuré"
 
+#: resourcestr.rstestingcredentials
+msgid "Testing Credentials"
+msgstr ""
+
 #: resourcestr.rstestingrepo
 msgctxt "resourcestr.rstestingrepo"
 msgid "Testing Repo ...."
@@ -493,6 +521,14 @@ msgstr "Impossible d'exécuter car"
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr "Synchro impossible car "
+
+#: resourcestr.rsuploaded
+msgid "Uploaded"
+msgstr ""
+
+#: resourcestr.rsuploading
+msgid "Uploading"
+msgstr ""
 
 #: resourcestr.rswarnnossystray
 msgid "WARNING, your Desktop might not display SysTray"

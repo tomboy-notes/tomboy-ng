@@ -320,7 +320,7 @@ uses
     fphttpclient, httpprotocol, base64,
     LazUTF8, LazFileUtils, fpopenssl, ssockets, {ssockets,} DateUtils, fileutil,
     CommonMark, import_notes,
-    Note_Lister, TB_Utils, jsontools;
+    Note_Lister, TB_Utils, jsontools, ResourceStr;
 
 const
   GitBaseURL='https://github.com/';
@@ -528,7 +528,7 @@ begin
         MakeRemoteRepo();
     if RemoteNotes <> Nil then RemoteNotes.Free;
     RemoteNotes := TGitNoteList.Create();
-    if ProgressProcedure <> nil then ProgressProcedure('Testing Credentials');
+    if ProgressProcedure <> nil then ProgressProcedure(rsTestingCredentials);
     //debugln('TGithubSync.TestTransport - about to get auth-token-expire');
     //debugln('URL=' + BaseURL + 'users/' + UserName);
     if DownLoader(BaseURL + 'users/' + UserName, ST,
@@ -542,7 +542,7 @@ begin
                 exit(SyncCredentialError);              // Token failure
             end;
             // If to here, we have a valid username and a valid Password but don't know if they work together
-            if ProgressProcedure <> nil then progressProcedure('Looking at ServerID');
+            if ProgressProcedure <> nil then progressProcedure(rsLookingServerID);
             ServerID := GetServerId();
             //debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
             if ServerID = '' then begin
@@ -550,7 +550,7 @@ begin
                 exit(SyncNoRemoteRepo)
             end
             else begin
-                if ProgressProcedure <> nil then progressProcedure('Scanning remote files');
+                if ProgressProcedure <> nil then progressProcedure(rsScanRemote);
                 if not ScanRemoteRepo() then exit(SyncBadRemote);               // puts only remote filenames and sha in RemoteNotes
                 if (not ReadRemoteManifest()) then begin
                         if (not ANewRepo) and (not WriteNewServerID) then       // do not expect a remote manifest in ANewRepo mode.
@@ -588,15 +588,6 @@ begin
                 if not assigned(SelectiveNotebookIDs) then
                     debugln('TGitHubSync.TestTransport SelectiveNotebookIDs not assigned.');
                 {$endif}
-
-         (*      if SelectiveSync = '' then begin        // that is, ReadRemoteManifest has not set it, maybe RManifest does not exist ?
-                    debugln('TGitHubSync.TestTransport populating SelectiveNotebookIDs');
-                    if TheNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub)) then
-                        if (not ANewRepo) then exit(SyncMismatch)               // if we have a Notebook by that name, but not remote, ERROR
-                        else SelectiveSync := SyncTransportName(SyncGithub);    // Set if NewRepo and the Notebook exists.
-                end else TheNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub));        *)
-
-
                 Result := SyncReady;
                 if ProgressProcedure <> nil then ProgressProcedure('TestTransport Happy, SelectiveSync=' + SelectiveSync);
             end;
@@ -609,7 +600,7 @@ begin
         else begin
             // here probably because of a bad token, lets rewrite the error message
             if pos('401', ErrorString) > 0 then
-                ErrorString := '  Github Token may have expired';
+                ErrorString := '  ' + rsGithubTokenExpired;
             exit(SyncNetworkError);
         end;
     end;
@@ -644,7 +635,7 @@ begin
     Result := True;
     if not DirectoryExists(NotesDir + TempDir) then
         exit(SayDebugSafe('TGithubSync.DownloadNotes - ERROR, no temp dir  ' + NotesDir + TempDir));
-    if ProgressProcedure <> nil then ProgressProcedure('Downloading notes');
+    if ProgressProcedure <> nil then ProgressProcedure(rsDownloadNotes);
     if not DirectoryExists(NotesDir + 'Backup') then
         if not ForceDirectory(NotesDir + 'Backup') then begin
             ErrorString := 'Failed to create Backup directory.';
@@ -672,7 +663,7 @@ begin
             end;
             inc(DownCount);
             if (DownCount mod 5 = 0) then
-                if ProgressProcedure <> nil then ProgressProcedure('Downloaded ' + inttostr(DownCount) + ' notes');
+                if ProgressProcedure <> nil then ProgressProcedure(rsDownLoaded + ' ' + inttostr(DownCount) + ' notes');
         end;
     end;
 end;
@@ -736,13 +727,13 @@ begin
     RemoteNotes.DumpList('TGitHubSync.UploadNotes : About to upload ' + inttostr(UpLoads.Count) + ' notes');
     {$endif}
     if ProgressProcedure <> nil then
-                ProgressProcedure('Uploading ' + inttostr(Uploads.Count));
+                ProgressProcedure(rsUpLoading + ' ' + inttostr(Uploads.Count));
     for St in Uploads do begin
         if not SendNote(St) then exit(false);
         inc(NoteCount);
         if NoteCount mod 5 = 0 then
             if ProgressProcedure <> nil then
-                ProgressProcedure('Uploaded ' + inttostr(NoteCount) + ' notes');
+                ProgressProcedure(rsUpLoaded + ' ' + inttostr(NoteCount) + ' notes');
         RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', TheNoteLister.GetLastChangeDate(St));
         // ToDo : that has hardwired assumpltion about markdown
     end;
@@ -795,7 +786,7 @@ begin
             end;
         end;
         Readme.append('');
-        Readme.append('***Please remember that to ensure a reliable sync, you must not change files in the Meta directory.***');
+        Readme.append('*** ' + rsMetaDirWarning + ' ***');
         Manifest.Append('  }'#10 + '}'#10);
         for PGit in RemoteNotes do                      // Put all the SHAs we know about into RemoteMetaData (for local manifest);
             if PGit^.Sha <> '' then begin

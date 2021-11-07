@@ -172,6 +172,14 @@ msgstr ""
 msgid "OK, deleted %d damaged notes"
 msgstr ""
 
+#: resourcestr.rsdownloaded
+msgid "Downloaded"
+msgstr ""
+
+#: resourcestr.rsdownloadnotes
+msgid "Downloading notes"
+msgstr ""
+
 #: resourcestr.rsenternewnotebook
 #, fuzzy
 msgctxt "resourcestr.rsenternewnotebook"
@@ -219,6 +227,10 @@ msgstr ""
 
 #: resourcestr.rsgithubsyncinfo2
 msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr ""
+
+#: resourcestr.rsgithubtokenexpired
+msgid "Github Token may have expired"
 msgstr ""
 
 #: resourcestr.rshelpconfig
@@ -305,6 +317,10 @@ msgctxt "resourcestr.rslookingatnotes"
 msgid "Looking at notes ...."
 msgstr "Bezig met inspecteren van notities..."
 
+#: resourcestr.rslookingserverid
+msgid "Looking for ServerID"
+msgstr ""
+
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
 msgid "About"
@@ -340,6 +356,10 @@ msgstr "Instellingen"
 #: resourcestr.rsmenusync
 msgctxt "resourcestr.rsmenusync"
 msgid "Synchronise"
+msgstr ""
+
+#: resourcestr.rsmetadirwarning
+msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr ""
 
 #: resourcestr.rsmultiplenotebooks
@@ -461,6 +481,10 @@ msgctxt "resourcestr.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
 msgstr "Als dit in orde is, klik dan op 'Opslaan en synchroniseren'"
 
+#: resourcestr.rsscanremote
+msgid "Scanning remote files"
+msgstr ""
+
 #: resourcestr.rssearchhint
 msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
@@ -506,6 +530,10 @@ msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr "niet ingesteld"
 
+#: resourcestr.rstestingcredentials
+msgid "Testing Credentials"
+msgstr ""
+
 #: resourcestr.rstestingrepo
 #, fuzzy
 msgctxt "resourcestr.rstestingrepo"
@@ -538,6 +566,14 @@ msgstr "Kan niet doorgan vanwege"
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr "Kan niet synchroniseren vanwege"
+
+#: resourcestr.rsuploaded
+msgid "Uploaded"
+msgstr ""
+
+#: resourcestr.rsuploading
+msgid "Uploading"
+msgstr ""
 
 #: resourcestr.rswarnnossystray
 msgid "WARNING, your Desktop might not display SysTray"
