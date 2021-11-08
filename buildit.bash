@@ -171,8 +171,8 @@ CheckForQt5
 
 # OK, if to here, we have a fpc and lazbuild, but which FPC ?
 FPCVERSION=$($COMPILER -iV)
-if [ $FPCVERSION" = "3.0.4" ]; then
-	echo "Sorry, need a later version of FPC than $FPCVERSION"
+if [ "$FPCVERSION" = "3.0.4" ]; then
+	echo "Sorry, need a later version of FPC later than $FPCVERSION"
 	exit 1
 fi
 
