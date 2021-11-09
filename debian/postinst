@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 # The switch over to libayatana from libappindicator3 'forgot' to
 # provide backward compatibility. This sysmlink does so.
 if [ ! -f /usr/lib/x86_64-linux-gnu/libappindicator3.so.1 ]; then
@@ -6,4 +8,7 @@ if [ ! -f /usr/lib/x86_64-linux-gnu/libappindicator3.so.1 ]; then
         ln -s /usr/lib/x86_64-linux-gnu/libayatana-appindicator3.so.1.0.0 /usr/lib/x86_64-linux-gnu/libappindicator3.so.1
     fi
 fi
+
+exit 0
+#DEBHELPER#
 
