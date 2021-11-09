@@ -809,12 +809,22 @@
       <local>
         <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
       </local>
+      <environment>
+        <UserOverrides Count="1">
+          <Variable0 Name="LAZUSEAPPIND" Value="info"/>
+        </UserOverrides>
+      </environment>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
             <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
           </local>
+          <environment>
+            <UserOverrides Count="1">
+              <Variable0 Name="LAZUSEAPPIND" Value="info"/>
+            </UserOverrides>
+          </environment>
         </Mode0>
       </Modes>
     </RunParams>

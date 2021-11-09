@@ -72,6 +72,7 @@ unit Mainunit;
     2021/05/15  On Gnome, if plugin is present but disabled, offer to enable it for user.
     2021/05/19  If libappindicator is not present, check for libayatana-appindicator, but only if lcl is patched !
     2021/07/13  Don't do full SysTray check on Gnome with Qt, AccessViolation, just guess.
+    2021/11/09  Dont consider libayatana unless compiled with > 2.0.12
 
     CommandLine Switches
 
@@ -237,7 +238,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
-    tb_utils,
+    tb_utils, {$ifdef LINUX}LCLVersion, {$endif}
     TomdroidFile {$ifdef windows}, registry{$endif};
 
 function SingleNoteFileName() : string;
@@ -440,8 +441,13 @@ begin
     result := false;
     {$ifndef LCLQT5}                      // It appears QT5 can talk direct to gnome-shell-extension-appindicator ??
     H := LoadLibrary('libappindicator3.so.1');
+    {$if (lcl_fullversion>2001200)}       // 2.0.12 - Release Versions of Lazarus before 2.2.0 did not know about libayatana
+    if '' <> getEnvironmentVariable('LAZUSEAPPIND') then
+          debugln('Can use libayatana-appindicator3.so.1');
     if H = NilHandle then                           // Enable this if only if UnityWSCtrl has been patched to use ayatana
-         H := LoadLibrary('libayatana-appindicator3.so.1');    // see https://bugs.freepascal.org/view.php?id=38909
+           H := LoadLibrary('libayatana-appindicator3.so.1');    // see https://bugs.freepascal.org/view.php?id=38909
+
+    {$endif}
     if H = NilHandle then begin
         debugln('Failed to Find an AppIndicator Library, SysTray may not work.');
         exit(False);    // nothing to see here folks.
@@ -479,7 +485,7 @@ begin
     // Don't test for SysTray under GTK3, will never be there.  One or other AppIndicator
     // is your only chance. And XInternAtom() function SegVs on Gnome DTs so don't try it.
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
-    // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu
+    // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu < 21.10
 
     {$IFnDEF LCLGTK3}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !

@@ -5,6 +5,22 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 msgid "Unable to find an expression to evaluate"
 msgstr ""
 
+#: jsontools.sindexoutofbounds
+msgid "Index out of bounds"
+msgstr ""
+
+#: jsontools.snodenotcollection
+msgid "Node is not a container"
+msgstr ""
+
+#: jsontools.sparsingerror
+msgid "Error while parsing text"
+msgstr ""
+
+#: jsontools.srootnodekind
+msgid "Root node must be an array or object"
+msgstr ""
+
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr ""
@@ -35,6 +51,10 @@ msgstr ""
 
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
+msgstr ""
+
+#: resourcestr.rsaddnotestonotebook
+msgid "Add notes to this Notebook"
 msgstr ""
 
 #: resourcestr.rsalldone
@@ -122,6 +142,14 @@ msgstr ""
 msgid "OK, deleted %d damaged notes"
 msgstr ""
 
+#: resourcestr.rsdownloaded
+msgid "Downloaded"
+msgstr ""
+
+#: resourcestr.rsdownloadnotes
+msgid "Downloading notes"
+msgstr ""
+
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
@@ -137,12 +165,40 @@ msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive
 msgstr ""
 
 #: resourcestr.rsfilesyncinfo2
-msgid "or use a remote server over the internet with sshfs"
+msgid "or uses a remote server over the internet with sshfs"
+msgstr ""
+
+#: resourcestr.rsfindnavlefthint
+msgid "Backward Find : Shift-F3 or Shift-Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavlefthintmac
+msgid "Backward Find : Shift-Command-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthint
+msgid "Find : F3 or Ctrl-G"
+msgstr ""
+
+#: resourcestr.rsfindnavrighthintmac
+msgid "Find : Command-G"
 msgstr ""
 
 #: resourcestr.rsfound
 msgctxt "resourcestr.rsfound"
 msgid "Found"
+msgstr ""
+
+#: resourcestr.rsgithubsyncinfo1
+msgid "tomboy-ng can use Github to both sync and display or edit notes"
+msgstr ""
+
+#: resourcestr.rsgithubsyncinfo2
+msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr ""
+
+#: resourcestr.rsgithubtokenexpired
+msgid "Github Token may have expired"
 msgstr ""
 
 #: resourcestr.rshelpconfig
@@ -217,6 +273,10 @@ msgctxt "resourcestr.rslookingatnotes"
 msgid "Looking at notes ...."
 msgstr ""
 
+#: resourcestr.rslookingserverid
+msgid "Looking for ServerID"
+msgstr ""
+
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
 msgid "About"
@@ -250,6 +310,10 @@ msgstr ""
 #: resourcestr.rsmenusync
 msgctxt "resourcestr.rsmenusync"
 msgid "Synchronise"
+msgstr ""
+
+#: resourcestr.rsmetadirwarning
+msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr ""
 
 #: resourcestr.rsmultiplenotebooks
@@ -356,17 +420,13 @@ msgctxt "resourcestr.rssaveandsync"
 msgid "Press Save and Sync if this looks OK"
 msgstr ""
 
+#: resourcestr.rsscanremote
+msgid "Scanning remote files"
+msgstr ""
+
 #: resourcestr.rssearchhint
 msgctxt "resourcestr.rssearchhint"
 msgid "Exact matches for terms between \" \""
-msgstr ""
-
-#: resourcestr.rssearchnavhint
-msgid "Find : Ctrl-Enter, Backward Find : Alt-Enter"
-msgstr ""
-
-#: resourcestr.rssearchnavhintmac
-msgid "Find : Cmd-Enter, Backward Find : Alt-Enter"
 msgstr ""
 
 #: resourcestr.rssetthenotebooks
@@ -404,6 +464,10 @@ msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr ""
 
+#: resourcestr.rstestingcredentials
+msgid "Testing Credentials"
+msgstr ""
+
 #: resourcestr.rstestingrepo
 msgctxt "resourcestr.rstestingrepo"
 msgid "Testing Repo ...."
@@ -430,6 +494,14 @@ msgstr ""
 #: resourcestr.rsunabletosync
 msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
+msgstr ""
+
+#: resourcestr.rsuploaded
+msgid "Uploaded"
+msgstr ""
+
+#: resourcestr.rsuploading
+msgid "Uploading"
 msgstr ""
 
 #: resourcestr.rswarnnossystray
@@ -545,7 +617,7 @@ msgid "Remote Deletes "
 msgstr ""
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see consol log) "
+msgid "ERRORS (see console log) "
 msgstr ""
 
 #: teditboxform.buttmaintbmenu.caption
@@ -574,15 +646,17 @@ msgid "LabelFindInfo"
 msgstr ""
 
 #: teditboxform.menubold.caption
+msgctxt "teditboxform.menubold.caption"
 msgid "Bold"
-msgstr ""
-
-#: teditboxform.menubullet.caption
-msgid "Bullet"
 msgstr ""
 
 #: teditboxform.menufindnext.caption
 msgid "Find Next"
+msgstr ""
+
+#: teditboxform.menufindprev.caption
+msgctxt "teditboxform.menufindprev.caption"
+msgid "Find Prev"
 msgstr ""
 
 #: teditboxform.menufixedwidth.caption
@@ -603,12 +677,12 @@ msgstr ""
 msgid "Italic"
 msgstr ""
 
-#: teditboxform.menuitem4.caption
-msgid "Alt+Right to add, Alt+Left to remove"
+#: teditboxform.menuitembulletleft.caption
+msgid "Bullet <<"
 msgstr ""
 
-#: teditboxform.menuitem6.caption
-msgid "Find Prev"
+#: teditboxform.menuitembulletright.caption
+msgid "Bullet >>"
 msgstr ""
 
 #: teditboxform.menuitemcopy.caption
@@ -1043,6 +1117,10 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr ""
 
+#: tformsync.labelprogress.caption
+msgid "LabelProgress"
+msgstr ""
+
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
 msgstr ""
@@ -1054,20 +1132,6 @@ msgstr ""
 
 #: tformsync.listviewreport.columns[2].caption
 msgid "Note ID"
-msgstr ""
-
-#: tformsyncerror.buttcancel.hint
-msgctxt "tformsyncerror.buttcancel.hint"
-msgid "Stop Auto Sync until next restart"
-msgstr ""
-
-#: tformsyncerror.buttretry.hint
-msgctxt "tformsyncerror.buttretry.hint"
-msgid "If Shared Drive is available, try again."
-msgstr ""
-
-#: tformsyncerror.caption
-msgid "tomboy-ng SyncError"
 msgstr ""
 
 #: tformtomdroid.buttonclose.caption
@@ -1227,7 +1291,7 @@ msgid "You can reverse this from Settings"
 msgstr ""
 
 #: tmainform.hint
-msgid "If the green tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+msgid "If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window."
 msgstr ""
 
 #: tmainform.label3.caption
@@ -1286,6 +1350,10 @@ msgstr ""
 
 #: tnotebookpick.tabnewnotebook.caption
 msgid "New Note Book"
+msgstr ""
+
+#: tnotebookpick.tabsetnotes.caption
+msgid "Set Notes"
 msgstr ""
 
 #: tomdroid.rscheckingforexistingsync
@@ -1458,12 +1526,24 @@ msgctxt "tsearchform.checkcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 
+#: tsearchform.listboxnotebooks.hint
+msgid "Right Click to manage Notebooks"
+msgstr ""
+
+#: tsearchform.menucreatenotebook.caption
+msgid "Create new Note Book"
+msgstr ""
+
 #: tsearchform.menudeletenotebook.caption
 msgid "Delete Notebook"
 msgstr ""
 
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
+msgstr ""
+
+#: tsearchform.menuitemmanagenbook.caption
+msgid "Manage Notes in Note Book"
 msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
@@ -1563,6 +1643,10 @@ msgstr ""
 msgid "This may adversly affect traditional Tomboy, take care."
 msgstr ""
 
+#: tsett.checknotifications.caption
+msgid "Show Notifications"
+msgstr ""
+
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
 msgstr ""
@@ -1587,12 +1671,38 @@ msgstr ""
 msgid "Show Tomdroid Sync (experimental)"
 msgstr ""
 
+#: tsett.checkstampbold.caption
+msgctxt "tsett.checkstampbold.caption"
+msgid "Bold"
+msgstr ""
+
+#: tsett.checkstampitalics.caption
+msgid "Italics"
+msgstr ""
+
+#: tsett.checkstampsmall.caption
+msgctxt "tsett.checkstampsmall.caption"
+msgid "Small"
+msgstr ""
+
+#: tsett.checksyncenabled.caption
+msgid "Sync Enabled"
+msgstr ""
+
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr ""
 
 #: tsett.checkuseundo.hint
-msgid "Close and reopen a note to take effect."
+msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
+msgstr ""
+
+#: tsett.combosynctype.text
+msgid "ComboSyncType"
+msgstr ""
+
+#: tsett.editusername.text
+msgid "EditUserName"
 msgstr ""
 
 #: tsett.groupbox4.caption
@@ -1632,6 +1742,10 @@ msgstr ""
 msgid "Maximum number of snapshots"
 msgstr ""
 
+#: tsett.label17.caption
+msgid "Date Stamp Format"
+msgstr ""
+
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
 msgstr ""
@@ -1657,20 +1771,44 @@ msgid "is about to overwrite one. "
 msgstr ""
 
 #: tsett.label8.caption
-msgid "They remain, for ever, unless you do something about them."
+msgid "They remain, forever, unless you do something about them."
 msgstr ""
 
 #: tsett.label9.caption
 msgid "A snaphot is a copy of your current note directory."
 msgstr ""
 
-#: tsett.labelfilesync.caption
-msgctxt "tsett.labelfilesync.caption"
-msgid "not configured"
+#: tsett.labellabeltoken.caption
+msgid "Token"
 msgstr ""
 
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
+msgstr ""
+
+#: tsett.labelsyncinfo1.caption
+msgid "LabelSyncInfo1"
+msgstr ""
+
+#: tsett.labelsyncinfo2.caption
+msgid "LabelSyncInfo2"
+msgstr ""
+
+#: tsett.labelsyncrepo.caption
+msgctxt "tsett.labelsyncrepo.caption"
+msgid "not configured"
+msgstr ""
+
+#: tsett.labelsynctype.caption
+msgid "Sync Type"
+msgstr ""
+
+#: tsett.labeltoken.caption
+msgid "LabelToken"
+msgstr ""
+
+#: tsett.labelusername.caption
+msgid "User"
 msgstr ""
 
 #: tsett.radioalwaysask.caption
@@ -1691,6 +1829,7 @@ msgid "Medium"
 msgstr ""
 
 #: tsett.radiofontsmall.caption
+msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
 msgstr ""
 
@@ -1720,6 +1859,14 @@ msgstr ""
 #: tsett.speedsetupsync.caption
 msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
+msgstr ""
+
+#: tsett.speedtokencopy.hint
+msgid "Copy Token"
+msgstr ""
+
+#: tsett.speedtokenpaste.hint
+msgid "Paste Token"
 msgstr ""
 
 #: tsett.tabbackup.caption
