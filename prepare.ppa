@@ -217,8 +217,15 @@ if [ -f tomboy-ng-master.zip ]; then
 	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537  -- No, this was closed.
 	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=897688
 	rm debian/changelog                                         # different in Debian version
-	dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$PACKVER" "Initial release. (Closes: #897688)"
-	dch --append "Please see github for change details"
+	# dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$PACKVER" "Initial release. (Closes: #897688)"
+    dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"
+    if [ -f whatsnew ]; then
+        echo "---------- Including whatsnew in changelog"
+        while IFS= read -r Line; do
+        dch --append "$Line"
+        done < whatsnew
+    fi
+	dch --append "Please see github for details"
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"
 		cp debian/rules.qt5 debian/rules

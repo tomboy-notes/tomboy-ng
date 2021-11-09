@@ -242,8 +242,16 @@ if [ -f tomboy-ng-master.zip ]; then
 	fi
 
 	cd "$APP"_"$VER""$DEBVER"
+
 	dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"    
-	dch --append "Please see github for change details"
+	if [ -f whatsnew ]; then
+	    echo "---------- Including whatsnew in changelog"
+	    while IFS= read -r Line; do
+		dch --append "$Line"
+	    done < whatsnew
+	fi
+	dch --append "Please see github for further change details"
+
 	cp debian/control.debian debian/control			# thats the GTK2 version
 	if [ "$WIDGET" = "Qt5" ]; then
 		cp debian/control.qt5-DEBIAN debian/control	# thats the Qt5 version

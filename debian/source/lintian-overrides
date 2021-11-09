@@ -8,3 +8,7 @@ tomboy-ng source: upstream-metadata-file-is-missing
 # At present, upstream does not support watch file.
 tomboy-ng source: debian-watch-file-is-missing
 
+# tomboy-ng provides user help notes in tomboy-ng's own
+# format, xml .note  As freeform text, some lines are long
+tomboy-ng source: very-long-line-length-in-source-file
+
