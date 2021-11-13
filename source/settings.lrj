@@ -55,7 +55,7 @@
 {"hash":267900916,"name":"tsett.checksyncenabled.caption","sourcebytes":[83,121,110,99,32,69,110,97,98,108,101,100],"value":"Sync Enabled"},
 {"hash":118352670,"name":"tsett.speedtokenpaste.hint","sourcebytes":[80,97,115,116,101,32,84,111,107,101,110],"value":"Paste Token"},
 {"hash":190842830,"name":"tsett.speedtokencopy.hint","sourcebytes":[67,111,112,121,32,84,111,107,101,110],"value":"Copy Token"},
-{"hash":203458110,"name":"tsett.labeltoken.caption","sourcebytes":[76,97,98,101,108,84,111,107,101,110],"value":"LabelToken"},
+{"hash":146933861,"name":"tsett.labeltoken.caption","sourcebytes":[76,97,98,101,108,84,111,107,101],"value":"LabelToke"},
 {"hash":103494789,"name":"tsett.combosynctype.text","sourcebytes":[67,111,109,98,111,83,121,110,99,84,121,112,101],"value":"ComboSyncType"},
 {"hash":72743781,"name":"tsett.labelsynctype.caption","sourcebytes":[83,121,110,99,32,84,121,112,101],"value":"Sync Type"},
 {"hash":75997376,"name":"tsett.tabbackup.caption","sourcebytes":[66,97,99,107,85,112],"value":"BackUp"},

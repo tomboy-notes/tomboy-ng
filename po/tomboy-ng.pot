@@ -5,22 +5,6 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 msgid "Unable to find an expression to evaluate"
 msgstr ""
 
-#: jsontools.sindexoutofbounds
-msgid "Index out of bounds"
-msgstr ""
-
-#: jsontools.snodenotcollection
-msgid "Node is not a container"
-msgstr ""
-
-#: jsontools.sparsingerror
-msgid "Error while parsing text"
-msgstr ""
-
-#: jsontools.srootnodekind
-msgid "Root node must be an array or object"
-msgstr ""
-
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr ""
@@ -1805,7 +1789,7 @@ msgid "Sync Type"
 msgstr ""
 
 #: tsett.labeltoken.caption
-msgid "LabelToken"
+msgid "LabelToke"
 msgstr ""
 
 #: tsett.labelusername.caption

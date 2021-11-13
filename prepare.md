@@ -3,7 +3,7 @@ Building Debian or PPA source packages.
 
 
 
-This document is about building the source packages that are uploaded to either Debian Mentors or Launchpad PPA. With tomboy-ng, we use two scripts to do the initial setup prior to building and then instructions here to complete the processes. In all cases, we upload a source package, it must build on their remote system.
+This document is about building the source packages that are uploaded to either Debian Mentors or Launchpad PPA. With tomboy-ng, we use scripts (in the scripts dir) to do the initial setup prior to building and then instructions here to complete the processes. In all cases, we upload a source package, it must build on their remote system.
 
 
 
@@ -27,6 +27,7 @@ The other building model is when a build problem is noted, the tomboy-ng source 
 The process is download (or extract) tomboy-ng source, remove unnecessary content, build the SRC package, copy files to a clean directory, do a test build (that makes the .deb file) and run an pedantic lintian. If thats all satisfactory, we upload to Mentors.
 
 
+The script, test-deb.bash automates the build test process if you don't want or need to see each step. Just download that scripts/test-deb.bash, run it from your home dir assuming you have a root installed FPC and Lazarus.
 
 **Debian SRC Build steps**
 --------
@@ -59,11 +60,11 @@ REMEMBER to feed changlog back to github tree !
 
 **Launchpad PPA**
 ========
-Is built on a different VM, U2003mQt
+Is built on a different VM, U2004mQt. A little more complicated because we also build the Qt5 version, changelog needs to be 'adjusted'. There is a script that automates the whole build SRC packages, unpack and build binaries called test-ppa-bash in the scripts directory. Again, only suited to building the release (ie, not a rebuild in the case of packaging errors). If you need build by hand, look through the script.
 
 
 
-**PPA build Steps**
+**PPA build Steps (dated, better to use test-ppa.bash)**
 --------
     export PPAVer="PPAv33"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"

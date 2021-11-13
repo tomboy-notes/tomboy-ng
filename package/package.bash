@@ -82,7 +82,7 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
             echo "amd64Qt"
         ;;
         ReleaseRasPi)
-            echo "$PRODUCT"-armhf
+            echo "armhf"
         ;;
     esac
 }
@@ -181,12 +181,13 @@ function DebianPackage () {
 	cp $SOURCE_DIR/$BIN BUILD/usr/bin/$PRODUCT
 	# ----------- Some Special Cases ----------------
 	case "$1" in
-	"amd64Qt")
+	"ReleaseQT5")
+		echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
 		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl"
 		CTRL_RELEASE="Qt5 release."
 		;;
-	"armhf")
+	"ReleaseRasPi")
 		CTRL_RELEASE="Raspberry Pi release."
 		;;
 	esac
@@ -209,7 +210,8 @@ function DebianPackage () {
 	echo "Homepage: https://github.com/tomboy-notes/tomboy-ng/wiki" >> BUILD/DEBIAN/control
 	#echo "Homepage: https://wiki.gnome.org/Apps/Tomboy" >> BUILD/DEBIAN/control
 	echo "Section: x11" >> BUILD/DEBIAN/control
-	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier. $CTRL_RELEASE" >> BUILD/DEBIAN/control
+	echo "Description: Tomboy Notes rewritten to make installation and cross platform easier." >> BUILD/DEBIAN/control
+	echo " $CTRL_RELEASE" >> BUILD/DEBIAN/control
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 	
 	chmod -R g-w BUILD

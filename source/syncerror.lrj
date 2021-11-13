@@ -1,7 +1,0 @@
-{"version":1,"strings":[
-{"hash":223761746,"name":"tformsyncerror.caption","sourcebytes":[116,111,109,98,111,121,45,110,103,32,83,121,110,99,69,114,114,111,114],"value":"tomboy-ng SyncError"},
-{"hash":120,"name":"tformsyncerror.label1.caption","sourcebytes":[120],"value":"x"},
-{"hash":257803124,"name":"tformsyncerror.buttcancel.hint","sourcebytes":[83,116,111,112,32,65,117,116,111,32,83,121,110,99,32,117,110,116,105,108,32,110,101,120,116,32,114,101,115,116,97,114,116],"value":"Stop Auto Sync until next restart"},
-{"hash":170440478,"name":"tformsyncerror.buttretry.hint","sourcebytes":[73,102,32,83,104,97,114,101,100,32,68,114,105,118,101,32,105,115,32,97,118,97,105,108,97,98,108,101,44,32,116,114,121,32,97,103,97,105,110,46],"value":"If Shared Drive is available, try again."},
-{"hash":86477811,"name":"tformsyncerror.label3.caption","sourcebytes":[76,97,98,101,108,51],"value":"Label3"}
-]}
