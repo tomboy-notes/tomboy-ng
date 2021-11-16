@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 # copyright David Bannon, 2019, 2020, use as you see fit, but retain this statement.
 # This stript is useful to prepare the tomboy-ng source tree to make an
 # Ubuntu PPA
@@ -20,6 +22,7 @@
 #       2021-02-23 Allow for fact that we keep changelog (for Debian).
 #                  Remove some Debian specific things
 #       2021-06-19 cleanup and move how to doc to github
+#	2021-11-12 Now update changelog with whatsnew contents
 
 # ---------------------------------------------------------
 
@@ -113,13 +116,13 @@ function ShowHelp () {
     echo " "
     echo "Use this script to make Ubuntu PPA (or plain binary), always make .orig"
     echo "Assumes FPC 3.2.0 in path. Will no longer build with FPC304."
-    echo "Needs Lazarus, <=2.0.6 in root space or specified with -l option."
+    echo "Needs Lazarus, <=2.0.10 in root space or specified with -l option."
     echo "Needs devscripts preinstalled and maybe an edit of email address above if"
     echo "it is to be used in the DEB SRC tool chain. Its role there is just to create"
     echo "an initial tarball and working directory (including inserting kcontrols)."
     echo "David Bannon, December 2020" 
     echo "-h   print help message"
-    echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
+    echo "-l   a full path to a viable lazbuild executable, eg also lcl dir is."
     echo "-C   clean out deb files from previous run, debug use only."
     echo "-U   update Makefile and/or buildit.bash,   debug use only."
     echo "-Q   Make a Qt5 version instead of default GTK2"
@@ -211,14 +214,18 @@ if [ -f tomboy-ng-master.zip ]; then
 		rm -f *.changes *.buildinfo *.orig.tar.gz *.dsc *.tar.gz *.tar.xz *.upload
 	fi
 	mv "tomboy-ng-master" "$APP"_"$VER""$PACKVER"
+
 	KControls
 	cd "$APP"_"$VER""$PACKVER"
 	CleanSource
-	# 966537: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=966537  -- No, this was closed.
+
 	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=897688
-	rm debian/changelog                                         # different in Debian version
 	# dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$PACKVER" "Initial release. (Closes: #897688)"
-    dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"
+    # because we use the same changelog, we need to tweak the qt5 one
+    if [ "$WIDGET" = "Qt5" ]; then
+        sed -i 's/tomboy-ng\ /tomboy-ng-qt5\ /g' debian/changelog
+    fi
+    dch -v "$VER""$PACKVER" "$DISTRO1" "$DISTRO2" "Release of new version"
     if [ -f whatsnew ]; then
         echo "---------- Including whatsnew in changelog"
         while IFS= read -r Line; do

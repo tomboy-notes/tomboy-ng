@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -544,11 +544,14 @@ object Sett: TSett
           Caption = 'Repo : '
         end
         object LabelSyncRepo: TLabel
+          AnchorSideLeft.Control = Label4
+          AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Label4
-          Left = 79
+          Left = 65
           Height = 19
           Top = 81
           Width = 105
+          BorderSpacing.Left = 1
           Caption = 'not configured'
         end
         object SpeedSetupSync: TSpeedButton
@@ -574,7 +577,7 @@ object Sett: TSett
           AnchorSideRight.Control = SpeedSetupSync
           AnchorSideBottom.Control = SpeedSetupSync
           AnchorSideBottom.Side = asrBottom
-          Left = 226
+          Left = 205
           Height = 21
           Hint = 'Sync, if possible once an hour.'
           Top = 163
@@ -618,7 +621,7 @@ object Sett: TSett
           AnchorSideTop.Side = asrBottom
           AnchorSideBottom.Control = LabelUserName
           AnchorSideBottom.Side = asrCenter
-          Left = 253
+          Left = 232
           Height = 19
           Top = 114
           Width = 43
@@ -646,28 +649,30 @@ object Sett: TSett
           Caption = 'User'
         end
         object EditUserName: TEdit
-          AnchorSideLeft.Control = LabelSyncRepo
+          AnchorSideLeft.Control = LabelUserName
+          AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = GroupBoxSync
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = LabelUserName
           AnchorSideBottom.Side = asrCenter
-          Left = 79
+          Left = 58
           Height = 28
           Top = 110
           Width = 154
           Anchors = [akLeft, akBottom]
+          BorderSpacing.Left = 10
           BorderSpacing.Right = 10
           TabOrder = 1
           Text = 'EditUserName'
         end
         object CheckSyncEnabled: TCheckBox
-          AnchorSideLeft.Control = LabelSyncRepo
+          AnchorSideLeft.Control = EditUserName
           AnchorSideTop.Control = SpeedSetupSync
           AnchorSideTop.Side = asrCenter
           AnchorSideBottom.Control = SpeedSetupSync
           AnchorSideBottom.Side = asrBottom
-          Left = 79
+          Left = 58
           Height = 21
           Top = 163
           Width = 117
@@ -683,7 +688,7 @@ object Sett: TSett
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = LabelUserName
           AnchorSideBottom.Side = asrCenter
-          Left = 321
+          Left = 300
           Height = 27
           Hint = 'Paste Token'
           Top = 110
@@ -736,7 +741,7 @@ object Sett: TSett
           AnchorSideRight.Control = SpeedTokenPaste
           AnchorSideBottom.Control = LabelUserName
           AnchorSideBottom.Side = asrCenter
-          Left = 301
+          Left = 280
           Height = 23
           Hint = 'Copy Token'
           Top = 112
@@ -787,7 +792,7 @@ object Sett: TSett
           AnchorSideLeft.Side = asrBottom
           AnchorSideBottom.Control = LabelUserName
           AnchorSideBottom.Side = asrCenter
-          Left = 367
+          Left = 346
           Height = 19
           Top = 114
           Width = 72

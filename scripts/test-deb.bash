@@ -22,7 +22,7 @@ fi
 cd
 rm -Rf "Build""$DebVer" "Test""$DebVer" 
 mkdir "Build""$DebVer"; cd "Build""$DebVer"
-wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.debian
+wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.debian
 bash ./prepare.debian -D unstable -n
 cd "tomboy-ng_0.""$VER""-1" 
 debuild -S

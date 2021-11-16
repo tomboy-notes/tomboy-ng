@@ -24,7 +24,7 @@ fi
 cd
 rm -Rf "Build""$DebVer" "Test""$DebVer" 
 mkdir "Build""$DebVer"; cd "Build""$DebVer"
-wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
+wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
 #cp ../prepare.ppa .
 bash ./prepare.ppa -D bionic       # Bionic for GTK2
 cd "tomboy-ng_0.""$VER""-1" 
