@@ -60,7 +60,7 @@ EXCLUDEMESSAGE=" -vm6058,2005,5027 "	# cut down on compiler noise
 # 6058 - note about things not being inlined
 # 5027 - var not used
 # 2005 - level 2 comment
-
+FPCHARD=" -Cg  -k-pie -k-znow "
 AUTODOWNLOAD=FALSE			# downloading large file, use -d to allow it
 
 # ------------------------ Some functions ------------------------
@@ -164,6 +164,11 @@ done
 if [ "$CPU" = "i686" ]; then
     CPU="i386"
 fi
+
+if [ "$CPU" = "powerpc64le" ]; then	# power does not like intel switches !
+	FPCHARD=" "	
+fi
+
 TARGET="$CPU-$OS"
 CheckFPC
 CheckLazBuild
@@ -198,7 +203,7 @@ fi
 
 # OK, lets see if we can build KControls at this stage.
 
-FPCHARD=" -Cg  -k-pie -k-znow "
+
 
 # These are paths to Laz unit's source, needed if units need to be rebuilt, eg new compiler
 LAZUNITSRC=" -Fu$LAZ_DIR/lcl -Fi$LAZ_DIR/lcl/include -Fu$LAZ_DIR/components/lazutils -Fu$LAZ_DIR/lcl/widgetset "
@@ -249,11 +254,11 @@ echo "OK, we seem to have both Lazarus LCL and KControls available : "
 echo "kcontrols = $K_DIR"
 echo "Lazarus   = $LAZ_DIR"
 echo "Compiler  = $COMPILER"
-echo "PATH      = $PATH"
 echo "CPU type  = $CPU"
-echo "Exclude Compiler Messages = $EXCLUDEMESSAGE"
-echo "tomboy-ng version = $VERSION"
-echo "FPCHARD   = $FPCHARD"
+echo "tb-ng Ver = $VERSION"
+echo "Hardening = $FPCHARD"
+echo "Exclude   = $EXCLUDEMESSAGE"
+echo "PATH      = $PATH"
 echo "-------------------------------------------------------"
 
 # Test to see if we find the tomboy-ng source. 

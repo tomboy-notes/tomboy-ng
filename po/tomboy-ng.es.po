@@ -1,12 +1,12 @@
 # Spanish translation for Tomboy-ng.
 # This file is put in the public domain.
-# Roy W. Reese <waterbearer54@gmx.com>, 2018-2020.
+# Roy W. Reese <waterbearer54@gmx.com>, 2018-2021.
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: tomboy-ng v0.33\n"
+"Project-Id-Version: tomboy-ng v0.34\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-07-20 18:57+0200\n"
+"PO-Revision-Date: 2021-11-14 15:00+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,6 +18,22 @@ msgstr ""
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para calcular"
+
+#: jsontools.sindexoutofbounds
+msgid "Index out of bounds"
+msgstr "Indice fuera de los limites"
+
+#: jsontools.snodenotcollection
+msgid "Node is not a container"
+msgstr "El nódulo no es contenedor"
+
+#: jsontools.sparsingerror
+msgid "Error while parsing text"
+msgstr "Error en analizar el texto"
+
+#: jsontools.srootnodekind
+msgid "Root node must be an array or object"
+msgstr "Nódulo raíz tiene que ser matriz o objeto"
 
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
@@ -53,7 +69,7 @@ msgstr "tomboy-ng no pudo indizar una nota o más."
 
 #: resourcestr.rsaddnotestonotebook
 msgid "Add notes to this Notebook"
-msgstr ""
+msgstr "Añadir notas al cuaderno"
 
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
@@ -148,13 +164,14 @@ msgstr "Eliminar todas en %s y reemplazarlas con la instantánea con fecha %s?"
 msgid "OK, deleted %d damaged notes"
 msgstr "Eliminadas %d notas corrompidas"
 
+# Supongo refiere a descargar unas notas
 #: resourcestr.rsdownloaded
 msgid "Downloaded"
-msgstr ""
+msgstr "Descargadas"
 
 #: resourcestr.rsdownloadnotes
 msgid "Downloading notes"
-msgstr ""
+msgstr "Descargando notas"
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -197,15 +214,15 @@ msgstr "Encontrada"
 
 #: resourcestr.rsgithubsyncinfo1
 msgid "tomboy-ng can use Github to both sync and display or edit notes"
-msgstr ""
+msgstr "tomboy-ng puede usar Github para sincronizar o editar notas"
 
 #: resourcestr.rsgithubsyncinfo2
 msgid "you should read the tomboy-ng wiki page for instructions."
-msgstr ""
+msgstr "debería leer las instrucciones en la wiki de tomboy-ng."
 
 #: resourcestr.rsgithubtokenexpired
 msgid "Github Token may have expired"
-msgstr ""
+msgstr "Puede que el autentificador haya caducado"
 
 #: resourcestr.rshelpconfig
 msgctxt "resourcestr.rshelpconfig"
@@ -283,7 +300,7 @@ msgstr "Examinando las notas ..."
 
 #: resourcestr.rslookingserverid
 msgid "Looking for ServerID"
-msgstr ""
+msgstr "Buscando ServerID"
 
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
@@ -322,7 +339,7 @@ msgstr "Sincronizar"
 
 #: resourcestr.rsmetadirwarning
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
-msgstr ""
+msgstr "Recuerde que para tener una sincronización fiable, no deba cambiar archivos en el directorio Meta."
 
 #: resourcestr.rsmultiplenotebooks
 msgctxt "resourcestr.rsmultiplenotebooks"
@@ -430,7 +447,7 @@ msgstr "Pulse Guardar y Sincronizar si todo le parece bien"
 
 #: resourcestr.rsscanremote
 msgid "Scanning remote files"
-msgstr ""
+msgstr "Escaneando archivos remotos"
 
 #: resourcestr.rssearchhint
 msgctxt "resourcestr.rssearchhint"
@@ -474,7 +491,7 @@ msgstr "sin configurar"
 
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
-msgstr ""
+msgstr "Probando credenciales"
 
 #: resourcestr.rstestingrepo
 msgctxt "resourcestr.rstestingrepo"
@@ -505,13 +522,14 @@ msgctxt "resourcestr.rsunabletosync"
 msgid "Unable to sync because "
 msgstr "No se puede sincronizar porque "
 
+# Supongo notas
 #: resourcestr.rsuploaded
 msgid "Uploaded"
-msgstr ""
+msgstr "Subidas"
 
 #: resourcestr.rsuploading
 msgid "Uploading"
-msgstr ""
+msgstr "Subiendo"
 
 #: resourcestr.rswarnnossystray
 msgid "WARNING, your Desktop might not display SysTray"
@@ -696,11 +714,11 @@ msgstr "Cursiva"
 
 #: teditboxform.menuitembulletleft.caption
 msgid "Bullet <<"
-msgstr ""
+msgstr "Viñeta <<"
 
 #: teditboxform.menuitembulletright.caption
 msgid "Bullet >>"
-msgstr ""
+msgstr "Viñeta >>"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
@@ -1132,7 +1150,7 @@ msgstr "Sincronizar"
 
 #: tformsync.labelprogress.caption
 msgid "LabelProgress"
-msgstr ""
+msgstr "EtiquetaProgre"
 
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
@@ -1364,7 +1382,7 @@ msgstr "Cuaderno nuevo"
 
 #: tnotebookpick.tabsetnotes.caption
 msgid "Set Notes"
-msgstr ""
+msgstr "Establecer notas"
 
 #: tomdroid.rscheckingforexistingsync
 msgctxt "tomdroid.rscheckingforexistingsync"
@@ -1540,11 +1558,11 @@ msgstr "Sensible a mayúsculas"
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
-msgstr ""
+msgstr "Clic derecho para gestionar cuadernos"
 
 #: tsearchform.menucreatenotebook.caption
 msgid "Create new Note Book"
-msgstr ""
+msgstr "Crear cuaderno nuevo"
 
 #: tsearchform.menudeletenotebook.caption
 msgid "Delete Notebook"
@@ -1556,7 +1574,7 @@ msgstr "Editar plantilla del cuaderno"
 
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
-msgstr ""
+msgstr "Gestionar las notas en el cuaderno"
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
@@ -1681,42 +1699,38 @@ msgid "Show Tomdroid Sync (experimental)"
 msgstr "Mostrar Sincronización Tomdroid (experimental)"
 
 #: tsett.checkstampbold.caption
-#, fuzzy
 msgctxt "tsett.checkstampbold.caption"
 msgid "Bold"
 msgstr "Negrita"
 
 #: tsett.checkstampitalics.caption
 msgid "Italics"
-msgstr ""
+msgstr "Cursiva"
 
 #: tsett.checkstampsmall.caption
-#, fuzzy
 msgctxt "tsett.checkstampsmall.caption"
 msgid "Small"
 msgstr "Pequeña"
 
 #: tsett.checksyncenabled.caption
 msgid "Sync Enabled"
-msgstr ""
+msgstr "Sincronización habilitada"
 
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
 
 #: tsett.checkuseundo.hint
-#, fuzzy
-#| msgid "Close and reopen a note to take effect."
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
-msgstr "Cierre y reabra una nota para que tenga efecto."
+msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 
 #: tsett.combosynctype.text
 msgid "ComboSyncType"
-msgstr ""
+msgstr "TipoSincCombi"
 
 #: tsett.editusername.text
 msgid "EditUserName"
-msgstr ""
+msgstr "CambiarNombre"
 
 #: tsett.groupbox4.caption
 msgid "  Options  "
@@ -1756,7 +1770,7 @@ msgstr "Número máximo de instantáneas"
 
 #: tsett.label17.caption
 msgid "Date Stamp Format"
-msgstr ""
+msgstr "Formato del sello con la fecha"
 
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
@@ -1793,7 +1807,7 @@ msgstr "Una instantánea es una copia de sus notas actuales."
 #: tsett.labellabeltoken.caption
 msgctxt "tsett.labellabeltoken.caption"
 msgid "Token"
-msgstr ""
+msgstr "Autentificador"
 
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
@@ -1801,29 +1815,29 @@ msgstr "Directorio, instantáneas"
 
 #: tsett.labelsyncinfo1.caption
 msgid "LabelSyncInfo1"
-msgstr ""
+msgstr "EtiquetaSincInfo1"
 
 #: tsett.labelsyncinfo2.caption
 msgid "LabelSyncInfo2"
-msgstr ""
+msgstr "EtiquetaSincInfo2"
 
 #: tsett.labelsyncrepo.caption
-#, fuzzy
 msgctxt "tsett.labelsyncrepo.caption"
 msgid "not configured"
 msgstr "sin configurar"
 
+# ¿Se puede ser más corto? ¿como solamente tipo?
 #: tsett.labelsynctype.caption
 msgid "Sync Type"
-msgstr ""
+msgstr "Tipo sincronización"
 
 #: tsett.labeltoken.caption
-msgid "LabelToke"
-msgstr ""
+msgid "LabelToken"
+msgstr "EtiquetaAuten"
 
 #: tsett.labelusername.caption
 msgid "User"
-msgstr ""
+msgstr "Usuario"
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."
@@ -1877,11 +1891,11 @@ msgstr "Configurar"
 
 #: tsett.speedtokencopy.hint
 msgid "Copy Token"
-msgstr ""
+msgstr "Copiar autentificador"
 
 #: tsett.speedtokenpaste.hint
 msgid "Paste Token"
-msgstr ""
+msgstr "Pegar autentificador"
 
 #: tsett.tabbackup.caption
 msgid "BackUp"
@@ -1909,4 +1923,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-
