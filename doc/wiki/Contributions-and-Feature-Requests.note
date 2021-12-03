@@ -1,52 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>Contributions and Feature Requests</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Contributions and Feature Requests</underline><size:large>
+  
+<text xml:space="preserve"><note-content version="0.1"><underline>Contributions and Feature Requests</underline>
 
-<bold>Pull Requests</bold></size:large>
+<size:large><bold>Pull Requests</bold></size:large>
 If you would like to make a direct contribution to tomboy-ng via a pull request, its likely to be well received. But please note the following -
 
 <list><list-item dir="ltr">License - As of October 2020, tomboy-ng has a very liberal license and thats to ensure easy entry in things like Debian. Debian and similar organizations have very strict rules about ensuring copyright holders wishes are observed, so its necessary to prevent the copyright becoming too fractured. By making a contribution to tomboy-ng, you agree to assign any copyright to David Bannon, unless the contribution is such that we agree otherwise. In either case, you contribution, if accepted, will be acknowledged and you may be listed as an author.</list-item></list>
 
 <list><list-item dir="ltr">When creating a pull request, make sure it targets just one specific bug or feature and makes the minimum changes necessary to achieve what you are trying to do. Try to avoid making changes to more files than absolutely necessary. Wide ranging changes require extensive testing on the multiple platforms that tomboy-ng supports.</list-item></list>
 
-<list><list-item dir="ltr">Consider discussing your proposed changes via the tomboy-ng issues page before investing a lot of blood, sweat and tears !</list-item></list><size:large>
+<list><list-item dir="ltr">Consider discussing your proposed changes via the tomboy-ng issues page before investing a lot of blood, sweat and tears !</list-item></list>
 
-<bold>Feature Requests</bold></size:large>
+
+<size:large><bold>Feature Requests</bold></size:large>
 You are very welcome to submit requests for new or improved features in tomboy-ng.  If you have a github account (its free) create or add to an issue here, else, please send me an email to the address listed in the tomboy-ng install kits.
 
-Here I will mention a number of possible additions and some superficial comments, don't let my comments prevent you from 'voting' for something, listed or not !<size:large>
+Here I will mention a number of possible additions and some superficial comments, don't let my comments prevent you from 'voting' for something, listed or not !
 
-<bold>Encryption</bold></size:large>
-If you sync your notes to some site outside your control, or even just have nosey family members, maybe you need encryped notes ?  The downside might be making searching harder/slower.  Would you want the whole note encrypted or just key words, sentences ?<size:large>
+<size:large><bold>Encryption</bold></size:large>
+If you sync your notes to some site outside your control, or even just have nosey family members, maybe you need encryped notes ?  The downside might be making searching harder/slower.  Would you want the whole note encrypted or just key words, sentences ?
 
-<bold>Multi Level Bullets</bold></size:large>
-Sadely, this is quite hard, I have, in the past had one request for it, is there a need ?<size:large>
+<size:large><bold>Multi Level Bullets</bold></size:large>
+Done in version 0.34 of tomboy-ng.
 
-<bold>Import / Export</bold></size:large>
-Do you have a need to import into tomboy-ng or export from tomboy-ng in a particular format ?  I cannot undertake to implement every format out there and most certainly not completely but some are quite possible.  There is a experimental TomboyTools that imports and exports text and Mark Down.<size:large>
+<size:large><bold>Import / Export</bold></size:large>
+Do you have a need to import into tomboy-ng or export from tomboy-ng in a particular format ?  I cannot undertake to implement every format out there and most certainly not completely but some are quite possible.  There is a experimental TomboyTools that imports and exports text and Mark Down.
 
-<bold>Embedded Images</bold></size:large>
-Do you want to have pretty pictures in your notes, if so, what format would you want ?<size:large>
+<size:large><bold>Embedded Images</bold></size:large>
+Do you want to have pretty pictures in your notes, if so, what format would you want ?
 
-<bold>Net Sync</bold></size:large>
-By netsync, I mean to dedicated servers like Snowy, Rainy or, more practicable today, a grauphel/NextCloud/Apache stack.  A not inconsiderable effort to install such a stack but do you really need it ?   ( Be aware that tomboy-ng will now, very easily, sync to any remote server you can ssh to. ) 
+<size:large><bold>Net Sync</bold></size:large>
+By netsync, I mean to dedicated servers like Snowy, Rainy or, more practicable today, a grauphel/NextCloud/Apache stack.  A not inconsiderable effort to install such a stack but do you really need it ?   ( Be aware that tomboy-ng will now, very easily, sync to any remote server you can ssh to. )
 
-A recent project to make tomboy-ng sync with NextCloud Notes uncovered a NextCloud API 'inconsistency' and we are waiting to see that fixed.<size:large>
+And perhaps v0.34's ability to display (and edit) your notes online on any device with a browser solves this problem ?
 
-<bold>Spell Check while you type</bold></size:large>
-You know, badly spelt words are somehow highlighted as you type.  I know I have some very fast typists out there, I am not sure I can keep up with them. 
+<size:large><bold>Spell Check while you type</bold></size:large>
+You know, badly spelt words are somehow highlighted as you type.  I know I have some very fast typists out there, I am not sure I can keep up with them.
 
 
 </note-content></text>
-  <last-change-date>2021-07-22T15:47:26.5514042+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-22T15:47:26.5514042+10:00</last-metadata-change-date>
+  <last-change-date>2021-11-16T22:37:45.0252293+11:00</last-change-date>
+  <last-metadata-change-date>2021-11-16T22:37:45.0252293+11:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>976</width>
   <height>572</height>
-  <x>719</x>
-  <y>403</y>
+  <x>621</x>
+  <y>216</y>
   <open-on-startup>False</open-on-startup>
 </note>

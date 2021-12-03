@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>Building tomboy-ng</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>Building tomboy-ng</underline><size:small>
+  
+<text xml:space="preserve"><note-content version="0.1"><underline>Building tomboy-ng</underline>
 
-Don't edit this wiki page, its generated from a note in tomboy-ng's doc dir.</size:small>
+<size:small>Don't edit this wiki page, its generated from a note in tomboy-ng's doc dir.</size:small>
 
 This page is about building tomboy-ng from source and contributing to its development. <bold>Important</bold> - <bold>You do not need to do any of this</bold> to just use tomboy-ng, a key feature is its absolute minimal requirements at install time.
 
 Tomboy-ng is built on Linux, Windows or Mac using  -
 <list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.2.0 or later.</list-item></list>
-<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.10  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.10 or later. Lazarus Fixes or trunk don't need patches either.) </list-item></list>
-<list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - current version requires no patches.</list-item></list><size:large>
+<list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.0.10  (earlier versions may have some specific bugs, can be patched but easier to use 2.0.10 or later. Lazarus Fixes or trunk don't need patches either.)</list-item></list>
+<list><list-item dir="ltr">Note that Lazarus 2.2.0 and later can better handle the problems that the Gnome Desktop has with the System Tray Icon.</list-item></list>
+<list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - current version requires no patches.</list-item></list>
 
-<bold>Pascal ?</bold></size:large>
+
+<size:large><bold>Pascal ?</bold></size:large>
 Pascal as a computer language is quite old, in the early days of the PC it went toe to toe with C and lost. But it still has quite a following and current estimates place it in the top twenty languages. Today, Object Pascal is a very functional object orientated language that drives Delphi and its cross platform open source rival, Lazarus.
 
-Pascal is still widely used as a teaching language, its strong typing promotes good programming habits and allows the compiler to pick up many common errors. Lazarus provides the easy to use <bold>cross platform IDE</bold> where a programmer can drag components onto a form and then attach code to the component's events. Its very quick and easy.<size:huge>
+Pascal is still widely used as a teaching language, its strong typing promotes good programming habits and allows the compiler to pick up many common errors. Lazarus provides the easy to use <bold>cross platform IDE</bold> where a programmer can drag components onto a form and then attach code to the component's events. Its very quick and easy.
 
 
-<bold>Build tomboy-ng using the IDE</bold></size:huge>
-You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.10 (or later or Fixes, earlier releases such as 2.0.8 not recommended). Please see https://wiki.freepascal.org/Installing_Lazarus 
+<size:huge><bold>Build tomboy-ng using the IDE</bold></size:huge>
+You are strongly encouraged to try building tomboy-ng for yourself. While Linux users may be able to get appropriate packages through their distribution, all users are advised to use Lazarus 2.0.10 (or later or Fixes, earlier releases such as 2.0.8 not recommended). Please see https://wiki.freepascal.org/Installing_Lazarus
 
-Start Lazarus up, it runs through a check list of the things it needs, start the IDE. Lazarus opens a default, minimal project. Click Package-&gt;OnLinePackageManager, select kcontrols and Install ("from repositary"). Lazarus will want to rebuild itself and restart, say yes, please do!  
+Start Lazarus up, it runs through a check list of the things it needs, start the IDE. Lazarus opens a default, minimal project. Click Package-&gt;OnLinePackageManager, select kcontrols and Install ("from repositary"). Lazarus will want to rebuild itself and restart, say yes, please do!
 
 You can now load the tomboy-ng project.  Close any existing project, click open project and browse for the tomboy-ng project file, it has an extension of .lpi
 
-Its also possible, and sometimes a good idea to build Lazarus from source. See the Lazarus wiki for more information.<size:large>
+Its also possible, and sometimes a good idea to build Lazarus from source. See the Lazarus wiki for more information.
 
-<bold>Building Deb SRC Packages </bold></size:large>
+<size:large><bold>Building Deb SRC Packages</bold></size:large>
 
 Linux Deb Packages come in two varieties, Binary only and Source.  A Source package is a bundle that can be used to build a binary package, possibly on other systems.  A Source package is required by Ubuntu in its PPA model or to submit to the Debian repositories.
 
@@ -35,14 +38,14 @@ The tomboy-ng 'kit' includes tools to make a debian source package, and the same
 
 tomboy-ng will build using FPC3.2.0 and Lazarus 2.0.10.  Debian Buster has FPC 3.2.0 and Lazarus 2.0.10, fine. I have established a Ubuntu PPA providing FPC320 and Lazarus 2.0.10 for harder systems. It is also possible to build Lazarus 2.0.10 (or 2.0.12) on a system with FPC 3.2.0.
 
-See the Deb_SRC.readme file in the tomboy-ng kit for details.<size:large>
+See the Deb_SRC.readme file in the tomboy-ng kit for details.
 
-<bold>Building Releases</bold></size:large>
+<size:large><bold>Building Releases</bold></size:large>
 This section intended for production releases, not DIY. The author has a Linux VB that has FPC 3.2.0 cross compilers to build 32 and 64bit Linux and Windows binaries. In the 'package' directory, there is a script that does so. That  script makes a 32bit and 64bit deb files and a directory containing windows binaries along with necessary files to make a Windows installer. Another script, that must be run as fakeroot will make RPMs (using the debs as input) that are suitable for RedHat systems.
 
 Take the <bold>Windows</bold> Win_Pre{$ver} directory to a windows machine that has the Installer Maker (ISS) and double click the .iss file to make the Windows installers.
 
-The <bold>Mac </bold>kits are made on a Sierra Mac, again using a script. Requires similar setup to above.
+The <bold>Mac</bold> kits are made on a Sierra Mac, again using a script. Requires similar setup to above.
 
 <bold>Raspberry Pi</bold>
 On my Raspberry PI, I have a binary install of FPC 3.2.0 and a source build of Lazarus Trunk.  Build only the binary on the Pi, move it to the main packaging VM and package it there.
@@ -54,11 +57,11 @@ Use the prepare.bash script, start in a clean directory, pull down the prepare.b
 
 The binary is in the source directory
 
- 
+
 
 </note-content></text>
-  <last-change-date>2021-07-22T15:47:09.3934016+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-22T15:47:09.3934016+10:00</last-metadata-change-date>
+  <last-change-date>2021-11-16T22:34:28.4377162+11:00</last-change-date>
+  <last-metadata-change-date>2021-11-16T22:34:28.4377162+11:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

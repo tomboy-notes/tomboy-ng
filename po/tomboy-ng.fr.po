@@ -1558,8 +1558,8 @@ msgstr "Mettre à jour la recherche"
 msgid "tomboy-ng_Search"
 msgstr "Recherche tomboy-ng"
 
-#: tsearchform.checkautorefresh.caption
-msgid "Auto Refresh"
+#: tsearchform.checkautosearchupdate.caption
+msgid "Update as you type"
 msgstr ""
 
 #: tsearchform.checkcasesensitive.caption
@@ -1569,6 +1569,10 @@ msgstr "Tenir compte de la casse"
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
+msgstr ""
+
+#: tsearchform.listviewnotes.hint
+msgid "Enable in settings"
 msgstr ""
 
 #: tsearchform.menucreatenotebook.caption
@@ -1582,6 +1586,10 @@ msgstr "Effacer le carnet"
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
 msgstr "Éditer le modèle du carnet"
+
+#: tsearchform.menuitemautorefresh.caption
+msgid "MenuItemAutoRefresh"
+msgstr ""
 
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
@@ -1658,6 +1666,10 @@ msgstr "Récupérer les notes perdues"
 #: tsett.buttonsnaprecover.hint
 msgid "If you have previously taken a snapshot ..."
 msgstr "Si un précédent snapshot existe..."
+
+#: tsett.checkautorefresh.caption
+msgid "Auto Refresh Search Screen"
+msgstr ""
 
 #: tsett.checkautosnapenabled.caption
 msgctxt "tsett.checkautosnapenabled.caption"

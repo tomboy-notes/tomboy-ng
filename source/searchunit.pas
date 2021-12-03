@@ -108,6 +108,8 @@ unit SearchUnit;
     2021/09/25  Fix bug that prevented saving first note in a dir, introduced in July. Nasty.
     2021/11/03  When deleteing a notebook, remove references to it from the notes.
     2021/11/04  Changes to support new Notebook management model
+    2021/12/03  Moved checkAutoRefresh to Settings, replaced with SpeedAutoRefresh and menu
+                Added all code necessary for Searching for note while u type, NoteIndex
 }
 
 {$mode objfpc}{$H+}
@@ -116,7 +118,9 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
-    {Grids, }ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger, ResourceStr;
+    {Grids, }ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger,
+    ResourceStr,
+    NoteIndex;          // ProgressiveSearch
 
 // These are choices for main popup menus.
 type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtMainHelp, mtHelp, mtQuit, mtRecent);
@@ -127,9 +131,9 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
 type        { TSearchForm }
     TSearchForm = class(TForm)
-			ButtonClearFilters: TButton;
+	    ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
-		CheckAutoRefresh: TCheckBox;
+		CheckAutoSearchUpdate: TCheckBox;
         CheckCaseSensitive: TCheckBox;
         Edit1: TEdit;
         ListBoxNotebooks: TListBox;
@@ -137,14 +141,17 @@ type        { TSearchForm }
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
         MenuCreateNoteBook: TMenuItem;
+        MenuItemAutoRefresh: TMenuItem;
         MenuItemManageNBook: TMenuItem;
         MenuItem3: TMenuItem;
         MenuRenameNoteBook: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
 		Panel1: TPanel;
         Panel2: TPanel;
+        PopupMenuRefresh: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
+        SpeedAutoRefresh: TSpeedButton;
 		Splitter1: TSplitter;
         StatusBar1: TStatusBar;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
@@ -155,8 +162,9 @@ type        { TSearchForm }
                                       with data in Note_Lister. }
   		procedure ButtonRefreshClick(Sender: TObject);
 		procedure ButtonClearFiltersClick(Sender: TObject);
-		procedure CheckAutoRefreshChange(Sender: TObject);
-        procedure CheckCaseSensitiveChange(Sender: TObject);
+        procedure CheckAutoSearchUpdateChange(Sender: TObject);
+		procedure CheckCaseSensitiveChange(Sender: TObject);
+        procedure Edit1Change(Sender: TObject);
         procedure Edit1Enter(Sender: TObject);
 		procedure Edit1Exit(Sender: TObject);
         procedure Edit1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -164,7 +172,9 @@ type        { TSearchForm }
         procedure FormActivate(Sender: TObject);
 		procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
+        procedure FormDeactivate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
+        procedure FormHide(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
@@ -179,6 +189,7 @@ type        { TSearchForm }
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuCreateNoteBookClick(Sender: TObject);
+        procedure MenuItemAutoRefreshClick(Sender: TObject);
         procedure MenuItemManageNBookClick(Sender: TObject);
         procedure MenuRenameNoteBookClick(Sender: TObject);
                         // Rather than opening an empty note we copy the template.
@@ -188,7 +199,10 @@ type        { TSearchForm }
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
+        procedure SpeedAutoRefreshClick(Sender: TObject);
     private
+        Edit1TextLength : integer;
+        NIndex : TNoteIndex;
         HelpList : TStringList;
         NeedRefresh : boolean;
         HelpNotes : TNoteLister;
@@ -341,21 +355,16 @@ begin
         EnableButt    n             n         Yes         n
         }
 
-        if Visible and CheckAutoRefresh.checked then
+        if Visible and Sett.AutoRefresh then        // CheckAutoRefresh.checked then
             Refresh()
         else begin
             if Visible then ButtonRefresh.Enabled := True
             else NeedRefresh := True;
         end;
-
-
- {       if Visible then begin
-            if CheckAutoRefresh.Checked then
-                Refresh()
-            else ButtonRefresh.Enabled := True
-        end else NeedRefresh := True;                      }
     end;
 end;
+
+
 
 
 procedure TSearchForm.FlushOpenNotes();
@@ -436,16 +445,12 @@ begin
     		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     end;
     RefreshMenus(mkRecentMenu);
-
-            if Visible and CheckAutoRefresh.checked then
-            Refresh()
-        else begin
-            if Visible then ButtonRefresh.Enabled := True
+    if Visible and Sett.AutoRefresh then
+        Refresh()
+    else begin
+        if Visible then ButtonRefresh.Enabled := True
             else NeedRefresh := True;
-        end;
-
-//    if Visible then ButtonRefresh.Enabled := True
-//    else NeedRefresh := True;
+    end;
 end;
 
 function TSearchForm.NextNoteTitle(out SearchTerm: string): boolean;
@@ -497,7 +502,7 @@ begin
     if NeedUpDateMenu then
         RefreshMenus(mkRecentMenu);
     // else debugln('SearchUnit.UpdateList - saved a call to RefreshMenu');
-    if Visible and CheckAutoRefresh.checked then
+    if Visible and Sett.AutoRefresh then
         Refresh()
     else begin
         if Visible then ButtonRefresh.Enabled := True
@@ -652,20 +657,6 @@ begin
                             MenuFileItems(TPopupMenu(MList[i]));
         mkRecentMenu : for I := 0 to MList.Count - 1 do
                             MenuRecentItems(TPopupMenu(MList[i]));
-
-                        (* begin T2 := gettickcount64();          // I saw this taking longer than expected but seems fast enough now ??
-                             MList.Count;
-                             T3:= gettickcount64();
-                             for I := 0 to MList.Count - 1 do begin
-                                 T5 := gettickcount64();
-                                 MenuRecentItems(TPopupMenu(MList[i]));         // 2mS - 5mS     ??
-                                 T4 := gettickcount64();
-                                 T6 := gettickcount64();
-                                 debugln('Loop timing  ' + dbgs(T6 - T5));
-                             end;
-                             debugln('SearchUnit.RefreshMenus MList.count = ' + inttostr(T3 - T2) + 'ms ' + dbgs(T4 - T3));
-                       end;  *)
-
         mkHelpMenu : for I := 0 to MList.Count - 1 do begin
                             InitialiseHelpFiles();
                             MenuHelpItems(TPopupMenu(MList[i]));
@@ -844,6 +835,10 @@ begin
     Refresh();
 end;
 
+procedure TSearchForm.CheckAutoSearchUpdateChange(Sender: TObject);
+begin
+    Sett.AutoSearchUpdate := CheckAutoSearchUpdate.Checked;
+end;
 
 (*
 procedure TSearchForm.ShowListIndicator(St : string);
@@ -907,6 +902,9 @@ begin
     //ShowListIndicator('After refresh');
 end;
 
+
+// --------------- S E A R C H I N G -------------------------------------------
+
 procedure TSearchForm.DoSearch();
 var
     TS1, {TS2, TS3,} TS4 : qword;
@@ -932,6 +930,11 @@ end;
 
 procedure TSearchForm.Edit1Exit(Sender: TObject);
 begin
+    if (NIndex <> nil) and (not NIndex.Busy) then begin
+        NIndex.free;
+        NIndex := nil;
+        //writeln('TSearchForm.Edit1Exit - Edit1 exit, killing Index');
+    end;
 	if Edit1.Text = '' then begin
         Edit1.Hint:=rsSearchHint;
         Edit1.Text := rsMenuSearch;
@@ -949,6 +952,67 @@ begin
       DoSearch();
     end;
 end;
+
+// Only used in Progressive Search mode.
+procedure TSearchForm.Edit1Change(Sender: TObject);
+var
+    St : string;
+    STL : TStringList;
+    Found : integer;
+begin
+    if not CheckAutoSearchUpdate.Checked then exit;
+    if NIndex = nil then
+        NIndex := TNoteIndex.Create(Sett.NoteDirectory, CheckCaseSensitive.checked);
+    if (Edit1.text = '') or (Edit1TextLength > length(Edit1.text)) then begin
+        NIndex.ResetActive();
+        Refresh();                             // ????  Seems right thing to do
+        writeln('TSearchForm.Edit1Change - triggered Active reset');
+    end;
+    if length(Edit1.Text) > 1 then begin
+        STL := TStringList.Create;
+        STL.AddDelimitedtext(Edit1.Text, ' ', false);
+        for St in STL do begin
+            if St = '' then continue;
+            if CheckCaseSensitive.checked then
+                Found := NIndex.SearchList(St)
+            else Found := NIndex.SearchList(lowercase(St));
+            NIndex.UpDateLview(ListViewNotes);
+            writeln('TSearchForm.Edit1Change - We found ' + Found.ToString + ' notes');
+        end;
+        STL.Free;
+        Edit1TextLength := length(Edit1.text);
+    end; // ToDo : else clear search and show all notes
+end;
+
+procedure TSearchForm.Edit1Enter(Sender: TObject);
+// ToDo : this should select the word, 'Search' if user clicks in field but does not ??
+begin
+    if Edit1.Text = rsMenuSearch then begin
+        //Edit1.SelStart:=0;
+        //Edit1.SelLength:= length(rsMenuSearch);
+        Edit1.SelectAll;
+    end;
+end;
+
+procedure TSearchForm.FormDeactivate(Sender: TObject);
+begin
+    if (NIndex <> nil) and (not NIndex.Busy) then begin
+        NIndex.free;
+        NIndex := nil;
+        //writeln('TSearchForm.Edit1Exit - Edit1 exit, killing Index');
+    end;
+end;
+
+procedure TSearchForm.FormHide(Sender: TObject);
+begin
+    if (NIndex <> nil) and (not NIndex.Busy) then begin
+        NIndex.free;
+        NIndex := nil;
+        //writeln('TSearchForm.Edit1Exit - Edit1 exit, killing Index');
+    end;
+end;
+
+// --------------------- F O R M    C O N T R O L S ----------------------------
 
 procedure TSearchForm.FormActivate(Sender: TObject);
 //var tick : qword;
@@ -969,6 +1033,7 @@ begin
     hide();
 end;
 
+
 function TSearchForm.IndexNotes() : integer;
 // var
 	// TS1, TS2 : TTimeStamp;
@@ -983,7 +1048,7 @@ begin
     NoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := NoteLister.IndexNotes();
     UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
-    if CheckAutoRefresh.Checked then
+    if Sett.AutoRefresh then
        Refresh()
     else NeedRefresh := True;                                // eg refresh ListViewNotes on next OnActivate
     RefreshMenus(mkRecentMenu);
@@ -1036,6 +1101,8 @@ begin
     {$endif}
 end;
 
+
+
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
     // if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
@@ -1056,7 +1123,10 @@ begin
          ListViewNotes.Font.Color :=  Sett.BackGndColour;
          splitter1.Color:= clnavy;
     end;
-    CheckAutoRefresh.Checked := Sett.AutoRefresh;
+    CheckAutoSearchUpdate.checked := Sett.AutoSearchUpdate;
+    MenuItemAutoRefresh.Checked := Sett.Autorefresh;
+    if  Sett.AutoRefresh then SpeedAutoRefresh.hint := 'Auto Refresh'           // warning, these hints are duplicated in the onclick event
+    else SpeedAutoRefresh.hint := 'Manual Refresh';
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
 //    {$endif}
@@ -1071,9 +1141,6 @@ end;
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
-(*    if {$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif} in Shift then
-        if key = VK_Q then
-        debugln('TSearchForm.FormKeyDown - Detected Ctrl IN Shift - Q, ignoring');      *)
     if [{$ifdef DARWIN}ssMeta{$else}ssCtrl{$endif}] = Shift then begin
         if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
         if key = VK_Q then begin
@@ -1097,21 +1164,15 @@ begin
     freeandnil(HelpList);
 end;
 
+
+
 procedure TSearchForm.CheckCaseSensitiveChange(Sender: TObject);
 begin
     Sett.SearchCaseSensitive:= CheckCaseSensitive.Checked;
     // Sett.CheckCaseSensitive.Checked := CheckCaseSensitive.Checked;
 end;
 
-procedure TSearchForm.Edit1Enter(Sender: TObject);
-// ToDo : this should select the word, 'Search' if user clicks in field but does not ??
-begin
-    if Edit1.Text = rsMenuSearch then begin
-        //Edit1.SelStart:=0;
-        //Edit1.SelLength:= length(rsMenuSearch);
-        Edit1.SelectAll;
-    end;
-end;
+
 
 procedure TSearchForm.MarkNoteReadOnly(const FullFileName: string);
 var
@@ -1325,11 +1386,6 @@ begin
     UpdateStatusBar('');
 end;
 
-procedure TSearchForm.CheckAutoRefreshChange(Sender: TObject);
-begin
-    Sett.AutoRefresh := CheckAutoRefresh.Checked;
-end;
-
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
 begin
     ButtonClearFilters.Enabled := True;
@@ -1408,6 +1464,19 @@ begin
         end else
             debugln('TSearchForm.MenuCreateNoteBookClick - failed to find the new NotebookName');
     end;
+end;
+
+procedure TSearchForm.MenuItemAutoRefreshClick(Sender: TObject);
+begin
+    MenuItemAutoRefresh.Checked := not MenuItemAutoRefresh.Checked;
+    Sett.AutoRefresh := MenuItemAutoRefresh.Checked;
+    if  Sett.AutoRefresh then SpeedAutoRefresh.hint := 'Auto Refresh'     // Warning, these hits are duplicated in OnShow event.
+    else SpeedAutoRefresh.hint := 'Manual Refresh';
+end;
+
+procedure TSearchForm.SpeedAutoRefreshClick(Sender: TObject);
+begin
+    PopupMenuRefresh.PopUp;
 end;
 
 procedure TSearchForm.MenuItemManageNBookClick(Sender: TObject);

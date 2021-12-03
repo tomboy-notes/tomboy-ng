@@ -97,6 +97,7 @@ unit settings;
     2021/09/27  Allow both File and Github sync, maybe its a good idea ??  SelectiveSync.
     2021/10/06  Restructured the way we enter GH Token, all copy and paste now.
     2021/10/26  User selectable date stamp format
+    2021/12/03  Rearranged checkboxes to accomodate Searching While u Wait.
 }
 
 {$mode objfpc}{$H+}
@@ -121,6 +122,7 @@ type
         ButtonManualSnap: TButton;
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
+        CheckAutoRefresh: TCheckBox;
         CheckAutoSnapEnabled: TCheckBox;
         CheckStampBold: TCheckBox;
         CheckStampItalics: TCheckBox;
@@ -228,6 +230,7 @@ type
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
         procedure ButtonShowBackUpClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
+        procedure CheckAutoRefreshChange(Sender: TObject);
         procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
@@ -260,7 +263,6 @@ type
         procedure SetColours;
 
     private
-
         SyncFileEnabled, SyncGithubEnabled: boolean;
         SyncFileAuto, SyncGithubAuto: boolean;
                         { eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
@@ -269,6 +271,7 @@ type
                         { eg https://github.com/davidbannon/tb_test, being not empty means it was, at one stage, valid}
         SyncGithubRepo : string;
         AutoRefreshVar : boolean;
+        AutoSearchUpdateVar : boolean;
         UserSetColours : boolean;
         fExportPath : ANSIString;
         SearchIsCaseSensitive : boolean;
@@ -318,6 +321,9 @@ type
                             // Just returns AutoRefresh
         function  fGetAutoRefresh() : boolean;
 
+        procedure fSetAutoSearchUpdate(ASU : boolean);  // sets and then triggers config write
+        function  fGetAutoSearchUpdate(): boolean;      // just set AutoSearchUpdateVar
+
 		procedure SyncSettings;
         function fGetCaseSensitive : boolean;
         procedure fSetCaseSensitive(IsIt : boolean);
@@ -366,7 +372,11 @@ type
         property ValidSync : boolean read fGetValidSync;
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
 
+                            // Property that triggers write of config when set, reads, sets
         property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
+                            // Property that triggers write of config when set, reads, sets
+        property AutoSearchUpdate : boolean read fgetAutoSearchUpdate write fSetAutoSearchUpdate;
+
                             // Does not appear to be implemented
         property ExportPath : ANSIString Read fExportPath write fExportPath;
                             // Called after notes are indexed (from SearchUnit), will start auto timer tha
@@ -874,6 +884,8 @@ begin
             'small'  : RadioFontSmall.Checked := true;
         end;
         AutoRefresh := ('true' = ConfigFile.readstring('BasicSettings', 'AutoRefresh', 'true'));
+        CheckAutoRefresh.Checked := AutoRefresh;
+        AutoSearchUpdate := ('true' = ConfigFile.readstring('BasicSettings', 'AutoSearchUpdate', 'true'));
 
         // ------------------- F O N T S ----------------------
         UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
@@ -957,6 +969,17 @@ begin
     Result := AutoRefreshVar;
 end;
 
+procedure TSett.fSetAutoSearchUpdate(ASU: boolean);
+begin
+    AutoSearchUpdateVar := ASU;
+    WriteConfigFile();
+end;
+
+function TSett.fGetAutoSearchUpdate: boolean;
+begin
+    Result := AutoSearchUpdateVar;
+end;
+
 function TSett.MyBoolStr(const InBool : boolean) : string;
 begin
     if InBool then result := 'true' else result := 'false';
@@ -985,6 +1008,7 @@ begin
             ConfigFile.WriteString('BasicSettings', 'ShowNotifications', MyBoolStr(CheckNotifications.Checked));
             ConfigFile.WriteString('BasicSettings', 'AutoRefresh',       MyBoolStr(AutoRefresh));
             ConfigFile.WriteString('BasicSettings', 'UseUndo',           MyBoolStr(CheckUseUndo.Checked));
+            ConfigFile.WriteString('BasicSettings', 'AutoSearchUpdate',           MyBoolStr(AutoSearchUpdate));
             if RadioFontBig.Checked then
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
             else if RadioFontMedium.Checked then
@@ -1359,6 +1383,11 @@ begin
     finally
         FR.Free;
     end;
+end;
+
+procedure TSett.CheckAutoRefreshChange(Sender: TObject);
+begin
+     AutoRefresh := CheckAutoRefresh.Checked;
 end;
 
 

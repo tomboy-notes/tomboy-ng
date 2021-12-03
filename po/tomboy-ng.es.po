@@ -19,22 +19,6 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para calcular"
 
-#: jsontools.sindexoutofbounds
-msgid "Index out of bounds"
-msgstr "Indice fuera de los limites"
-
-#: jsontools.snodenotcollection
-msgid "Node is not a container"
-msgstr "El nódulo no es contenedor"
-
-#: jsontools.sparsingerror
-msgid "Error while parsing text"
-msgstr "Error en analizar el texto"
-
-#: jsontools.srootnodekind
-msgid "Root node must be an array or object"
-msgstr "Nódulo raíz tiene que ser matriz o objeto"
-
 #: mainunit.rsabout1
 msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
 msgstr "Esto es tomboy-ng, la refundición de Notas Tomboy usando Lazarus"
@@ -1548,9 +1532,9 @@ msgstr "Actualizar resultados"
 msgid "tomboy-ng_Search"
 msgstr "Búsqueda de tombo-ng"
 
-#: tsearchform.checkautorefresh.caption
-msgid "Auto Refresh"
-msgstr "Actualización automática"
+#: tsearchform.checkautosearchupdate.caption
+msgid "Update as you type"
+msgstr ""
 
 #: tsearchform.checkcasesensitive.caption
 msgid "Case Sensitive"
@@ -1559,6 +1543,10 @@ msgstr "Sensible a mayúsculas"
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
 msgstr "Clic derecho para gestionar cuadernos"
+
+#: tsearchform.listviewnotes.hint
+msgid "Enable in settings"
+msgstr ""
 
 #: tsearchform.menucreatenotebook.caption
 msgid "Create new Note Book"
@@ -1571,6 +1559,10 @@ msgstr "Eliminar cuaderno"
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
 msgstr "Editar plantilla del cuaderno"
+
+#: tsearchform.menuitemautorefresh.caption
+msgid "MenuItemAutoRefresh"
+msgstr ""
 
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
@@ -1645,6 +1637,10 @@ msgstr "Recuperar notas perdidas"
 #: tsett.buttonsnaprecover.hint
 msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
+
+#: tsett.checkautorefresh.caption
+msgid "Auto Refresh Search Screen"
+msgstr ""
 
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"
@@ -1832,7 +1828,9 @@ msgid "Sync Type"
 msgstr "Tipo sincronización"
 
 #: tsett.labeltoken.caption
-msgid "LabelToken"
+#, fuzzy
+#| msgid "LabelToken"
+msgid "LabelToke"
 msgstr "EtiquetaAuten"
 
 #: tsett.labelusername.caption
@@ -1923,3 +1921,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

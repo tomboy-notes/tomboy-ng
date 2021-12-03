@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.2.0.2'
+  LCLVersion = '2.3.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabSync
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -98,74 +98,90 @@ object Sett: TSett
         TabOrder = 1
       end
       object CheckAutostart: TCheckBox
-        AnchorSideLeft.Control = CheckShowTomdroid
-        AnchorSideTop.Control = CheckShowTomdroid
+        AnchorSideLeft.Control = CheckShowSplash
+        AnchorSideTop.Control = CheckNotifications
         AnchorSideTop.Side = asrBottom
         Left = 16
         Height = 21
-        Top = 264
+        Top = 334
         Width = 156
-        BorderSpacing.Top = 21
+        Anchors = [akTop]
+        BorderSpacing.Top = 30
         Caption = 'Autostart at Logon'
         OnChange = SaveSettings
         TabOrder = 3
       end
       object CheckShowSearchAtStart: TCheckBox
-        AnchorSideLeft.Control = CheckShowTomdroid
-        AnchorSideTop.Control = CheckAutostart
-        AnchorSideTop.Side = asrBottom
-        Left = 16
+        AnchorSideLeft.Control = ButtDefaultNoteDir
+        AnchorSideTop.Control = CheckShowSplash
+        Left = 380
         Height = 21
-        Top = 306
+        Top = 232
         Width = 171
-        BorderSpacing.Top = 21
+        BorderSpacing.Left = 10
         Caption = 'Show Search at Start'
         OnChange = SaveSettings
         TabOrder = 4
       end
       object CheckShowSplash: TCheckBox
-        AnchorSideTop.Control = CheckShowSearchAtStart
+        AnchorSideLeft.Control = ButtonSetNotePath
+        AnchorSideTop.Control = ButtonSetNotePath
         AnchorSideTop.Side = asrBottom
-        Left = 16
+        Left = 17
         Height = 21
         Hint = 'Always shown if error loading notes.'
-        Top = 348
+        Top = 232
         Width = 169
-        BorderSpacing.Top = 21
+        BorderSpacing.Left = 10
+        BorderSpacing.Top = 40
         Caption = 'Show Splash at Start'
         Checked = True
         OnChange = SaveSettings
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
-        TabOrder = 5
+        TabOrder = 6
       end
       object CheckShowTomdroid: TCheckBox
-        AnchorSideTop.Control = ButtonSetNotePath
-        AnchorSideTop.Side = asrBottom
-        Left = 16
+        AnchorSideLeft.Control = CheckShowSearchAtStart
+        AnchorSideTop.Control = CheckAutostart
+        Left = 380
         Height = 21
-        Top = 222
+        Top = 334
         Width = 280
-        BorderSpacing.Top = 30
         Caption = 'Show Tomdroid Sync (experimental)'
         OnChange = SaveSettings
         TabOrder = 2
       end
       object CheckNotifications: TCheckBox
-        AnchorSideLeft.Control = CheckShowTomdroid
+        AnchorSideLeft.Control = CheckShowSplash
         AnchorSideTop.Control = CheckShowSplash
         AnchorSideTop.Side = asrBottom
-        Left = 16
+        Left = 17
         Height = 21
-        Top = 390
+        Top = 283
         Width = 157
-        BorderSpacing.Top = 21
+        BorderSpacing.Top = 30
         Caption = 'Show Notifications'
         Checked = True
         OnChange = SaveSettings
         State = cbChecked
-        TabOrder = 6
+        TabOrder = 7
+      end
+      object CheckAutoRefresh: TCheckBox
+        AnchorSideLeft.Control = CheckShowSearchAtStart
+        AnchorSideTop.Control = CheckNotifications
+        AnchorSideBottom.Side = asrBottom
+        Left = 380
+        Height = 21
+        Top = 283
+        Width = 222
+        BorderSpacing.Right = 10
+        Caption = 'Auto Refresh Search Screen'
+        OnChange = CheckAutoRefreshChange
+        OnKeyDown = FormKeyDown
+        TabOrder = 5
+        TabStop = False
       end
     end
     object TabDisplay: TTabSheet

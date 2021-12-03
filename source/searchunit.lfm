@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 892
+  Left = 664
   Height = 401
-  Top = 292
+  Top = 194
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng_Search'
@@ -10,7 +10,9 @@ object SearchForm: TSearchForm
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDeactivate = FormDeactivate
   OnDestroy = FormDestroy
+  OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
@@ -19,16 +21,17 @@ object SearchForm: TSearchForm
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = CheckCaseSensitive
+    AnchorSideRight.Control = CheckAutoSearchUpdate
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
     Left = 106
     Height = 32
     Top = 3
-    Width = 326
+    Width = 246
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 9
+    OnChange = Edit1Change
     OnEnter = Edit1Enter
     OnExit = Edit1Exit
     OnKeyDown = FormKeyDown
@@ -149,6 +152,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Side = asrBottom
       Left = 241
       Height = 341
+      Hint = 'Enable in settings'
       Top = 1
       Width = 582
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -166,6 +170,7 @@ object SearchForm: TSearchForm
       ReadOnly = True
       RowSelect = True
       ScrollBars = ssAutoVertical
+      ShowHint = True
       SortColumn = 1
       SortType = stText
       TabOrder = 4
@@ -267,15 +272,15 @@ object SearchForm: TSearchForm
   end
   object CheckCaseSensitive: TCheckBox
     AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = CheckAutoRefresh
+    AnchorSideRight.Control = SpeedAutoRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 441
+    Left = 532
     Height = 32
     Top = 3
     Width = 126
     Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 10
+    BorderSpacing.Right = 30
     Caption = 'Case Sensitive'
     OnChange = CheckCaseSensitiveChange
     OnKeyDown = FormKeyDown
@@ -290,22 +295,40 @@ object SearchForm: TSearchForm
     Width = 824
     Panels = <>
   end
-  object CheckAutoRefresh: TCheckBox
+  object CheckAutoSearchUpdate: TCheckBox
+    AnchorSideTop.Control = ButtonRefresh
+    AnchorSideTop.Side = asrCenter
+    AnchorSideRight.Control = CheckCaseSensitive
+    Left = 361
+    Height = 21
+    Top = 9
+    Width = 160
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 11
+    Caption = 'Update as you type'
+    OnChange = CheckAutoSearchUpdateChange
+    TabOrder = 5
+  end
+  object SpeedAutoRefresh: TSpeedButton
     AnchorSideTop.Control = ButtonRefresh
     AnchorSideRight.Control = ButtonRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 577
+    Left = 688
     Height = 32
     Top = 3
-    Width = 117
+    Width = 16
     Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 10
-    Caption = 'Auto Refresh'
-    OnChange = CheckAutoRefreshChange
-    OnKeyDown = FormKeyDown
-    TabOrder = 5
-    TabStop = False
+    Glyph.Data = {
+      72000000424D7200000000000000360000002800000005000000030000000100
+      2000000000003C00000064000000640000000000000000000000000000000000
+      0000000000FF000000000000000000000000000000FF000000FF000000FF0000
+      0000000000FF000000FF000000FF000000FF000000FF
+    }
+    OnClick = SpeedAutoRefreshClick
+    ShowHint = True
+    ParentShowHint = False
+    PopupMenu = PopupMenuRefresh
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344
@@ -340,6 +363,15 @@ object SearchForm: TSearchForm
     object MenuCreateNoteBook: TMenuItem
       Caption = 'Create new Note Book'
       OnClick = MenuCreateNoteBookClick
+    end
+  end
+  object PopupMenuRefresh: TPopupMenu
+    Left = 450
+    Top = 206
+    object MenuItemAutoRefresh: TMenuItem
+      Caption = 'MenuItemAutoRefresh'
+      Checked = True
+      OnClick = MenuItemAutoRefreshClick
     end
   end
 end

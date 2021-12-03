@@ -824,9 +824,6 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
-      </local>
       <environment>
         <UserOverrides Count="1">
           <Variable0 Name="LAZUSEAPPIND" Value="info"/>
@@ -835,9 +832,6 @@
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
-          <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
-          </local>
           <environment>
             <UserOverrides Count="1">
               <Variable0 Name="LAZUSEAPPIND" Value="info"/>
@@ -857,7 +851,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="39">
+    <Units Count="40">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1076,6 +1070,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="JsonTools"/>
       </Unit38>
+      <Unit39>
+        <Filename Value="noteindex.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="NoteIndex"/>
+      </Unit39>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

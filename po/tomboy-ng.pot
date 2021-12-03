@@ -1506,8 +1506,8 @@ msgstr ""
 msgid "tomboy-ng_Search"
 msgstr ""
 
-#: tsearchform.checkautorefresh.caption
-msgid "Auto Refresh"
+#: tsearchform.checkautosearchupdate.caption
+msgid "Update as you type"
 msgstr ""
 
 #: tsearchform.checkcasesensitive.caption
@@ -1516,6 +1516,10 @@ msgstr ""
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
+msgstr ""
+
+#: tsearchform.listviewnotes.hint
+msgid "Enable in settings"
 msgstr ""
 
 #: tsearchform.menucreatenotebook.caption
@@ -1528,6 +1532,10 @@ msgstr ""
 
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
+msgstr ""
+
+#: tsearchform.menuitemautorefresh.caption
+msgid "MenuItemAutoRefresh"
 msgstr ""
 
 #: tsearchform.menuitemmanagenbook.caption
@@ -1602,6 +1610,10 @@ msgstr ""
 
 #: tsett.buttonsnaprecover.hint
 msgid "If you have previously taken a snapshot ..."
+msgstr ""
+
+#: tsett.checkautorefresh.caption
+msgid "Auto Refresh Search Screen"
 msgstr ""
 
 #: tsett.checkautosnapenabled.caption
