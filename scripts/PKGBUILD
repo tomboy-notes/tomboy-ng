@@ -1,0 +1,44 @@
+# This file is used to build a pacman usable gtk2 package for tomboy-ng
+
+# Requirments : sudo pacman -S base-devel fpc lazarus-gtk2 unzip
+
+# Usage : VER=0.34 makepkg --skipinteg 
+
+# Maintainer tomboy-ng@bannons.id.au
+
+# Note : buildit.bash in 0.34 and earlier will not work on non-Debian systems
+# so necessary to replace with later buildit.bash.
+
+pkgname=tomboy-ng
+pkgver="$VER"			# Remember to set VER when calling makepkg
+pkgrel=1			# inc this if releasing a re-package of same ver
+pkgdesc="Manage a large or small set of notes with a range of fonts and markup."
+arch=('x86_64')
+url="https://github.com/tomboy-notes/tomboy-ng"
+license=('BSD' 'GPL2' 'LGPL3')
+depends=('gtk2' 'wmctrl')
+makedepends=('fpc' 'lazarus-gtk2')
+provides=('tomboy-ng')
+
+#	we want to get the taged release version, could also target master
+#        https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v0.34.tar.gz
+source=("https://github.com/tomboy-notes/$pkgname/archive/refs/tags/v$pkgver.tar.gz"
+	"https://github.com/davidbannon/KControls/archive/master.zip")
+noextract=('master.zip')	# leave kcontrols alone, I'll deal with it.
+
+prepare() {
+	cd "$pkgname-$pkgver"
+	unzip ../master.zip
+	mv KControls-master kcontrols
+}
+
+build() {
+	cd "$pkgname-$pkgver"
+	# ./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+	make DESTDIR="$pkgdir/" install
+}

@@ -441,23 +441,26 @@ begin
     result := false;
     {$ifndef LCLQT5}                      // It appears QT5 can talk direct to gnome-shell-extension-appindicator ??
     H := LoadLibrary('libappindicator3.so.1');
+    if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) and (H = NilHandle) then
+        debugln('===== libappindicator3 is not present');
     {$if (lcl_fullversion>2001200)}       // 2.0.12 - Release Versions of Lazarus before 2.2.0 did not know about libayatana
-    if '' <> getEnvironmentVariable('LAZUSEAPPIND') then
-          debugln('Can use libayatana-appindicator3.so.1');
-    if H = NilHandle then                           // Enable this if only if UnityWSCtrl has been patched to use ayatana
-           H := LoadLibrary('libayatana-appindicator3.so.1');    // see https://bugs.freepascal.org/view.php?id=38909
-
+    if H = NilHandle then begin           // OK, lets try for libayatana
+        H := LoadLibrary('libayatana-appindicator3.so.1');    // see https://bugs.freepascal.org/view.php?id=38909
+        if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) and (H = NilHandle) then
+            debugln('===== libayatana-appindicator3 is not present');
+    end;
     {$endif}
     if H = NilHandle then begin
         debugln('Failed to Find an AppIndicator Library, SysTray may not work.');
         exit(False);    // nothing to see here folks.
-	end;
+	end else if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) then
+         debugln('===== We have an AppIndicator Library');
 	unloadLibrary(H);
-    {$endif}
+    {$endif}                            // end of if not QT5
     Result := CheckPlugIn(True);
     if not Result then
         if MaybeNotGnome then
-            debugln('SysTray not detected, not Gnome Desktop')
+            debugln('===== SysTray not detected, not Gnome Desktop')
             // We also issue that message on a system that supports libappindicator3 without
             // needing (or installed) gnome-shell-extension-appindicator, eg U20.04 Mate
             // Plasma can use just libappindicator3 or Ayatana by itself.

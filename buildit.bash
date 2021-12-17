@@ -37,6 +37,7 @@
 # have an option to add an arbitary extra package location.
 
 # 2021-10-30  Added paths to lazarus unit src in case obj need rebuilding
+# 2021-12-15  Make a guess where Lazarus units are on non-Debian (ie without /etc/alternatives)
 
 # This is where I keep tarballs and zips to avoid repeated large downloads.
 
@@ -127,6 +128,15 @@ function CheckLazBuild () {
 	PREFIX="${LAZ_DIR:0:4}"
 	if [ "$PREFIX" = "/usr" ]; then
 		LAZ_DIR="/etc/alternatives/lazarus"
+		# but thats wrong on non debian things, ones without the silly /etc/alternative
+		if [ ! -d "$LAZ_DIR" ]; then
+		       LAZ_DIR="/usr/lib/lazarus"
+		       FPCHARD=""		# probably an OS that does not want hardening
+		       if [ ! -d "$LAZ_DIR""/lcl" ]; then
+			      echo "==================== SORRY, cannot find lazarus/lcl dir"
+			      exit 1
+			fi 
+		fi	       
 	fi	
 
 }
@@ -315,8 +325,10 @@ echo "$RUNIT"
 TOMBOY_NG_VER="$VERSION" $RUNIT 1>>tomboy-ng.log
 
 if [ ! -e "$PROJ" ]; then
-	echo "ERROR - COMPILE FAILED, please see source/tomboy-ng.log"
-	exit 1
+    echo "======================== ERROR, COMPILE FAILED source/tomboy-ng.log ====="
+    cat tomboy-ng.log
+    echo "=========================================================== END of LOG =="
+    exit 1
 else
 	cp "$PROJ" "tomboy-ng"
 fi 

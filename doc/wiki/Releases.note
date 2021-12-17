@@ -64,14 +64,14 @@ Like this -
 <monospace>sudo apt install ./tomboy-ng_0.34-0_amd64.deb [enter]</monospace>
 
 <size:large><bold>Linux Mint</bold></size:large>
-Firstly, consider using the PPA (above).  Otherwise note I have only tested against 19.2 Cinnamon. This, and 19.3 Cinnamon are based on Ubuntu 18.04, so use the GTK versions only,  [32bit]($$DEB32) or [64bit]($$DEB64) .
+Firstly, consider using the PPA (above).  Otherwise note I have only tested against 20.1 and 20.2 Cinnamon with GTK2. And it,  [32bit]($$DEB32) or [64bit]($$DEB64) work perfectly.
 Click on the appropriate link from your browser and allow the suggested installer, GDebi, to run the install for you. Linux Mint does report any install errors that happen during this process (unlike some distros!) so its a good approach.
-
+The LMDE, at time of writing was still Debian 11 and should all work fine.
 
 <size:large><bold>Fedora</bold></size:large>
-Tested on Fedora 33 and 34. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
+Tested on Fedora 34 and 35. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
-<monospace>sudo yum localinstall ./tomboy-ng-0.33-2.x86_64.rpm [enter]</monospace>
+<monospace>sudo yum localinstall ./tomboy-ng-0.34-2.x86_64.rpm [enter]</monospace>
 
 <bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux .  Other flavours of Fedora (eg  <bold>Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.
 
@@ -81,7 +81,7 @@ Tested on Fedora 33 and 34. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [G
 <size:large><bold>Debian</bold></size:large>
 An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository. However, due to changes to Bullseye after it was added to Debian, that version will have problems if you use a Gnome Desktop. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux . For other Desktops, you can install as you would for other repository applications but the version here is "bigger and better" than 0.32.
 
-This release version will be available in Testing (bookworm) shortly after release.
+This release version, 0.34 is also available in Testing (bookworm).
 
 For earlier versions of Debian and distros based on them, (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  By time you get to Debian 10.4, Qt is, perhaps, a better bet if you are using 64bit. [64bit QT]($$DEB64QT).
 
@@ -96,6 +96,13 @@ I recommend downloading the file and using the apt command (note the full path t
 <size:large><bold>Devian</bold></size:large>
 <bold>Devaun XFCe</bold> - Tested against version 3.0.0.  Much like Debian above.
 
+
+<size:large><bold>Arch and Manjaro</bold></size:large>
+And other Linux Distributions that use the Arch, Pacman package system. This is new and therefore relatively untested but does look OK. I have made only a [GTK 64bit]($$PAC64) version at this stage, could make other combinations if needed. Click the link, choose download and install with this command from ~/Downloads -
+
+sudo pacman -U ./tomboy-ng-0.34-1-x86_64.pkg.tar.zst
+
+
 <size:large><bold>OpenSuse</bold></size:large>
 If you are using the Gnome Desktop, then use the  [Qt5 64bit]($$RPM64QT) version and look at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux . Other Desktops should be OK with [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64). Almost all the necessary libraries seem to be pre installed in either case.
 
@@ -105,7 +112,7 @@ Suse is quite pushy about signing rpm packages, more work for me and it means yo
 
 Next, to install tomboy-ng, please click on appropriate link, and allow the suggested application (Software Install) to handle the install.  If you receive an error message, its almost certainly because you have not yet installed the signature file mentioned above. You may prefer to download and use the zypper command -
 
-<monospace>sudo zypper install ~/Downdloads/tomboy-ngQt_0.33-0_amd64.deb [enter]</monospace>
+<monospace>sudo zypper install ~/Downdloads/tomboy-ngQt_0.34-0_amd64.deb [enter]</monospace>
 
 <size:large><bold>Mageia</bold></size:large>
 Mageia warns you if you try to install a package who's signature it does not recognise. You can tell it not to worry and install anyway or, to put its mind at rest, download [tomboy-ng-GPGKEY]($$GPGKEY)  (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
@@ -114,7 +121,7 @@ Mageia warns you if you try to install a package who's signature it does not rec
 
 Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) and allow Software Installer to install it for you but I found it occasionally generated an error that you don't get to see ! Try it by all means but if you don't find your tomboy-ng installed or upgraded, then revert to old fashioned way, download the file, save it, and use a command a bit like this -
 
-<monospace>sudo -c "yum localinstall ./tomboy-ng-0.33-2.x86_64.rpm" [enter]</monospace>
+<monospace>sudo -c "yum localinstall ./tomboy-ng-0.34-2.x86_64.rpm" [enter]</monospace>
 
 <list><list-item dir="ltr"><bold>Mate, XFCE, KDE (ie Plasma) and Cinnamon</bold> work fine.</list-item></list>
 <list><list-item dir="ltr"><bold>Mageia with Enlightenment</bold> requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment in the GTK variety still has a problem, instead of tomboy-ng's icon, you see a white triangular warning icon. But it works.</list-item></list>
@@ -130,8 +137,8 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2021-11-17T12:45:35.4259370+11:00</last-change-date>
-  <last-metadata-change-date>2021-11-17T12:45:35.4259370+11:00</last-metadata-change-date>
+  <last-change-date>2021-12-17T13:40:09.8516799+11:00</last-change-date>
+  <last-metadata-change-date>2021-12-17T13:40:09.8516799+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
