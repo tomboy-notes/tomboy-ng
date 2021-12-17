@@ -3,11 +3,20 @@
 # Requirments : sudo pacman -S base-devel fpc lazarus-gtk2 unzip
 
 # Usage : VER=0.34 makepkg --skipinteg 
+#         VER=master makepkg --skipinteg 
 
 # Maintainer tomboy-ng@bannons.id.au
 
 # Note : buildit.bash in 0.34 and earlier will not work on non-Debian systems
 # so necessary to replace with later buildit.bash.
+
+# I cannot put the download sha in this script because, obviously, editing
+# this file alters the sha.  So, its set to check (my) KControls but skip
+# tomboy-ng's.
+
+# Once a tagged release happens we can download the tar ball and run -
+# shasum -a 256 v0.35.tar.gz (or whatever) and hardwire that sha AND the ver
+# into a local version of this file, one dedicated to just that release version.
 
 pkgname=tomboy-ng
 pkgver="$VER"			# Remember to set VER when calling makepkg
@@ -22,13 +31,36 @@ provides=('tomboy-ng')
 
 #	we want to get the taged release version, could also target master
 #        https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v0.34.tar.gz
-source=("https://github.com/tomboy-notes/$pkgname/archive/refs/tags/v$pkgver.tar.gz"
-	"https://github.com/davidbannon/KControls/archive/master.zip")
+
+if [ "$pkgver" == "master" ]; then
+	echo "doing if"
+	source=("tb-master.zip::https://github.com/tomboy-notes/$pkgname/archive/refs/heads/master.zip"
+		"kc-master.zip::https://github.com/davidbannon/KControls/archive/master.zip")
+	# the first sha is skipped because it changes with every commit I make.
+	sha256sums=(SKIP 97d974a11c645be3025b80ef0383c160d9869d2b8449482b8ece6fc4ffd27dc1 )
+else
+	echo "doing else"
+	source=("https://github.com/tomboy-notes/$pkgname/archive/refs/tags/v$pkgver.tar.gz"
+		"kc-master.zip::https://github.com/davidbannon/KControls/archive/master.zip")
+	# Once we have a working tagged release, use shasum to get the shar.....
+	# NO, this is crap, I cannot change the release on the command line without also
+	# changing the sha here ?? - the whole thing is pointless.
+	# sha256sums=(
+	#	f9deb76984ac445711c4524f2324b4f7a692e8d2a43ddf70ae63d17fb39880b4
+	#	97d974a11c645be3025b80ef0383c160d9869d2b8449482b8ece6fc4ffd27dc1 )
+	sha256sums=(SKIP 97d974a11c645be3025b80ef0383c160d9869d2b8449482b8ece6fc4ffd27dc1 )
+	
+fi
+
+echo "========= source ========"
+echo "$source"
+echo "========================="
+
 noextract=('master.zip')	# leave kcontrols alone, I'll deal with it.
 
 prepare() {
 	cd "$pkgname-$pkgver"
-	unzip ../master.zip
+	unzip ../kc-master.zip
 	mv KControls-master kcontrols
 }
 
