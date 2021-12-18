@@ -14,6 +14,8 @@ unit tbundo;
     See also
     tomboy-ng - https://github.com/tomboy-notes/tomboy-ng
     KControls - https://github.com/kryslt/KControls
+
+    History : 2021-12-18  AddTextInsert is sometimes required to save any selected text.
 }
 
 { A unit to provide storage for undo / redo of the text in the tb-ng kmemo.
@@ -90,7 +92,7 @@ unit tbundo;
 {$mode ObjFPC}{$H+}
 
 
-{x$DEFINE DEBUG_UNDO}    // Warning, debug uses writeln, don't use on Windows !
+{$DEFINE DEBUG_UNDO}    // Warning, debug uses writeln, don't use on Windows !
 
 interface
 
@@ -165,7 +167,9 @@ TUndo_Redo = class
                                         // Public: Called when a primary paste (ie middle mouse, three
                                         // finger tap on Linux or Windows) or some other 'insert' happens.
                                         // We should have already checked that buffer contains some text.
-        procedure AddTextInsert(const SelIndex : integer; const Content : string);
+                                        // If GrabExisting then we capture any currently selected text to
+                                        // be restored later if necessary.
+        procedure AddTextInsert(const SelIndex: integer; const Content: string; GrabExisting: boolean = false);
 
         function CanUnDo() : boolean;
         function CanRedo() : boolean;
@@ -279,10 +283,16 @@ begin
     AddChange(CR);
 end;
 
-procedure TUndo_Redo.AddTextInsert(const SelIndex: integer; const Content: string);
+procedure TUndo_Redo.AddTextInsert(const SelIndex: integer; const Content: string; GrabExisting : boolean = false);
 // ToDo : Inconsistent, other public methods find their own data ....
+var
+  Buff : string;
 begin
-    AddChange(SelIndex, 0, Content.Length, '', Content);
+    if GrabExisting then begin
+        Buff := GetSelectedRTF();
+        AddChange(SelIndex, Buff.Length, Content.Length, Buff, Content);
+    end else
+        AddChange(SelIndex, 0, Content.Length, '', Content);
 end;
 
 procedure TUndo_Redo.AddKeyPress(Key: char);

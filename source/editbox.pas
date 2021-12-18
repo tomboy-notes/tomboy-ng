@@ -220,6 +220,7 @@ unit EditBox;
     2021/08/27  Consolidated all Text menu events through one method
     2021/08/27  Can now edit multilevel bullets
     2021/10/26  User selectable date stamp format, inc Bold
+    2021-12-18  Ctrl-D was not saving any selected text to Undoer
 }
 
 
@@ -858,7 +859,8 @@ var
   Buff : string;
 begin
     Buff := TB_DateStamp(Sett.ComboDateFormat.ItemIndex);
-    Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff);
+    //Undoer.RecordInitial(0);
+    Undoer.AddTextInsert(KMemo1.Blocks.SelStart, Buff, True);
     KMemo1.ExecuteCommand(ecInsertString, pchar(Buff));
     if Sett.CheckStampItalics.checked or sett.CheckStampSmall.Checked then begin
         KMemo1.SelStart := Kmemo1.SelStart + 1;
