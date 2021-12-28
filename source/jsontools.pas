@@ -498,7 +498,7 @@ const
 procedure TJsonNode.ParseObject(Node: TJsonNode; var C: PChar);
 var
   T: TJsonToken;
-  N: string;
+  N: string = '';
 begin
   Inc(FStack);
   if FStack > MaxStack then
@@ -870,6 +870,7 @@ function TJsonNode.Add(Kind: TJsonNodeKind; const Name, Value: string): TJsonNod
 var
   S: string;
 begin
+  Result := Nil;          // DRB
   if not (FKind in [nkArray, nkObject]) then
     if Name = '' then
       AsArray
@@ -908,6 +909,7 @@ end;
 
 function TJsonNode.Add(const Name: string; K: TJsonNodeKind = nkObject): TJsonNode; overload;
 begin
+  Result := nil;        // DRB
   case K of
     nkObject, nkArray: Result := Add(K, Name, '');
     nkNull: Result := Add(K, Name, 'null');
@@ -981,6 +983,7 @@ end;
 
 function TJsonNode.Child(Index: Integer): TJsonNode;
 begin
+  result := Nil;        // DRB
   if FKind in [nkArray, nkObject] then
   begin
     if FList = nil then

@@ -1410,8 +1410,10 @@ begin
                 LocalMetaData.LastSyncDate := 0.0;
                 debugln('ERROR, cannot find LSD in ' + ManifestFile);
             end;
-            Node := Doc.DocumentElement.FindNode('server-id');      // ToDo, check its assigned !
-            ServerID := Node.FirstChild.NodeValue;
+            Node := Doc.DocumentElement.FindNode('server-id');
+            if Assigned(Node) then
+                ServerID := Node.FirstChild.NodeValue
+            else  ServerID := '';                                   // Thats untested but should never happen
             if ServerID[1] = '"' then
                ServerID := copy(ServerID, 2, 36);
             if not IDLooksOK(ServerID) then begin

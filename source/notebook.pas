@@ -29,6 +29,7 @@ unit Notebook;
     2020/05/19  Do not go through ButtonOKOnClick if ModalResult is already set to mrOK
     2020/08/10  In Windows, SetFocus was setting ModalRes to 1, so, would immediatly close ??
     2021/11/04  Extensive changes to support new Notebook management model from SearchForm
+    2021/12/26  MakeNewNoteBook may have returned random bool.
 }
 
 
@@ -535,6 +536,8 @@ end;
 // Makes a new NoteBook from TabNewNoteBook
 function TNoteBookPick.MakeNewNoteBook : boolean;
 begin
+    Result := True;
+    writeln('TNoteBookPick.MakeNewNoteBook - called');
     if TheNoteLister.IsANotebookTitle(EditNewNotebook.Text) then begin
         showmessage('That notebook already exists.');
         exit(false);

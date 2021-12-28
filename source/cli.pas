@@ -15,6 +15,7 @@ unit cli;
 
     History
     2020/06/18  Remove unnecessary debug line.
+    2021/12/28  Tidy LongOpts model.
 }
 
 interface
@@ -35,18 +36,24 @@ implementation
 
 uses Forms, LCLProc, LazFileUtils, ResourceStr, simpleipc;
 
+var
+    LongOpts : array [0..12] of string = (
+            'dark-theme', 'lang:', 'debug-log:',
+            'help', 'version', 'no-splash',
+            'debug-sync', 'debug-index', 'debug-spell',
+            'config-dir:', 'open-note:', 'save-exit',    // -o for open also legal
+            'gnome3');                                   // -g and gnome3 is legal but legacy, ignored.
 
 
                 { If something on commandline means don't proceed, ret True }
 function CommandLineError(inCommingError : string = '') : boolean;
-// WARNING - the options here MUST match the options list in HaveCMDParam() below
 var
     ErrorMsg : string;
 begin
     ErrorMsg := InCommingError;
     Result := false;
     if ErrorMsg = '' then begin
-        ErrorMsg := Application.CheckOptions('hgo:l:', 'lang: debug-log: dark-theme no-splash version help gnome3 open-note: debug-spell debug-sync debug-index config-dir: save-exit shiftaltF-findprev');
+        ErrorMsg := Application.CheckOptions('hgo:l:v', LongOpts);   // Allowed single letter switches, help, gnome3, open, language, version
         if Application.HasOption('h', 'help') then
             ErrorMsg := 'Usage -';
     end;
@@ -57,20 +64,17 @@ begin
        debugln(rsMacHelp2);
        {$endif}
        debugln('   --dark-theme');
-       //debugln('   --delay-start                ' + rsHelpDelay);
        debugln('   --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
-       debugln('   --debug-log=SOME.LOG         ' + rsHelpDebug);
-       debugln('   -h --help                    ' + rsHelpHelp);
-       debugln('   --version                    ' + rsHelpVersion);
-       // debugln('   -g --gnome3                  ' + rsHelpRedHat);   // must permit its use but does nothing, not needed.
-       debugln('   --no-splash                  ' + rsHelpNoSplash);
-       debugln('   --debug-sync                 ' + rsHelpDebugSync);
-       debugln('   --debug-index                ' + rsHelpDebugIndex);
-       debugln('   --debug-spell                ' + rsHelpDebugSpell);
-       debugln('   --config-dir=PATH_to_DIR     ' + rsHelpConfig);
-       debugln('   -o --open-note=PATH_to_NOTE  ' + rsHelpSingleNote);
-       debugln('   --save-exit                  ' + rsHelpSaveExit);
-//       debugln('   --shiftaltF-findprev         ' + rsHelpShiftAltF);
+       debugln('   -h --help                  ' + rsHelpHelp);
+       debugln('   --version                  ' + rsHelpVersion);
+       debugln('   --no-splash                ' + rsHelpNoSplash);
+       debugln('   --debug-sync               ' + rsHelpDebugSync);
+       debugln('   --debug-index              ' + rsHelpDebugIndex);
+       debugln('   --debug-spell              ' + rsHelpDebugSpell);
+       debugln('   --config-dir=PATH_to_DIR   ' + rsHelpConfig);
+       debugln('   --open-note=PATH_to_NOTE   ' + rsHelpSingleNote);
+       debugln('   --debug-log=SOME.LOG       ' + rsHelpDebug);
+       debugln('   --save-exit                ' + rsHelpSaveExit);
        result := true;
     end;
 end;
@@ -80,17 +84,12 @@ end;
                           we also honour -o --open-note.  More than one such parameter is an error, report to console,
                           ret true but set SingleFileName to ''. }
 function HaveCMDParam() : boolean;
-    // WARNING - the options here MUST match the options list in CommandLineError() above
 var
     Params : TStringList;
-    LongOpts : array [1..12] of string = ('dark-theme', 'lang:', 'debug-log:', 'no-splash', 'version', 'gnome3', 'debug-spell',
-            'debug-sync', 'debug-index', 'config-dir:','open-note:', 'save-exit'{, 'shiftaltF-findprev'});
-
 begin
     Result := False;
     if Application.HasOption('o', 'open-note') then begin
        SingleNoteName := Application.GetOptionValue('o', 'open-note');
-       //UseTrayMenu := False;
        exit(True);
     end;
     Params := TStringList.Create;
@@ -105,9 +104,8 @@ begin
             end;
         end;
         if Params.Count > 1 then begin
-
             CommandLineError('Unrecognised parameters on command line');
-             SingleNoteName := '';
+            SingleNoteName := '';
             exit(True);
         end;
     finally
@@ -138,7 +136,7 @@ end;
 function ContinueToGUI() : boolean ;
 begin
     if CommandLineError() then exit(False);
-    if Application.HasOption('version') then begin
+    if Application.HasOption('v', 'version') then begin
         debugln('tomboy-ng version ' + Version_String);
         exit(False);
      end;

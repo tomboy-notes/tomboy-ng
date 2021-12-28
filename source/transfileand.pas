@@ -216,7 +216,7 @@ begin
         ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
         StampServerID(ServerID);
 	end;
-    // ToDo : should call readServerID() here to be sure .....
+    // Note we could call readServerID() here to be sure .....
     Result := SyncReady;
 end;
 

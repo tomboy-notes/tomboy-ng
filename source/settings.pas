@@ -624,8 +624,8 @@ end;
 
 procedure TSett.CheckSpelling(const DicFullName : string = '');
 var
-    DicPathAlt, DicToCheck : AnsiString;
-
+    DicPathAlt : string = '';
+    DicToCheck : string;
 begin
     { The hunspell unit tries to find a library using some educated guesses.
       Once found, its saved in config and we pass that to hunspell as a suggested

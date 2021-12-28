@@ -98,12 +98,36 @@ begin
     	exit(SyncBadRemote);
     end;
     // If to here, looks and feels like a repo, lets see what it can tell !
+
     try
+        try
+            ReadXMLFile(Doc, RemoteAddress + 'manifest.xml');
+            ServerID := Doc.DocumentElement.GetAttribute('server-id');
+            RemoteServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
+        except
+            on E: EConvertError do begin
+                ErrorString := E.Message;
+                exit(SyncXMLERROR);	// probably means we did not find an expected attribute
+            end;
+            on E: EAccessViolation do begin
+                ErrorString := E.Message;
+                exit(SyncXMLERROR);	// probably means we did not find an expected attribute
+            end;
+            on E: EFOpenError do begin
+                  ErrorString := E.Message;
+                  exit(SyncNoRemoteMan);		// File is not present.
+            end;
+        end;
+    finally
+        Doc.free;
+    end;
+
+(*    try
 	        try
 	            ReadXMLFile(Doc, RemoteAddress + 'manifest.xml');
 
 	            ServerID := Doc.DocumentElement.GetAttribute('server-id');
-                { ToDo : must check for error on next line }
+                { ToDo : must check for error on next line, it might raise EConvertError }
                 RemoteServerRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
 		    finally
 	            Doc.Free;
@@ -117,7 +141,8 @@ begin
             ErrorString := E.Message;
             exit(SyncNoRemoteMan);		// File is not present.
 	  end;
-	end;
+	end;      *)
+
     if 36 <> length(ServerID) then begin
         ErrorString := 'Invalid ServerID';
         exit(SyncXMLError);

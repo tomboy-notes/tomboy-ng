@@ -92,7 +92,7 @@ unit tbundo;
 {$mode ObjFPC}{$H+}
 
 
-{$DEFINE DEBUG_UNDO}    // Warning, debug uses writeln, don't use on Windows !
+// {$DEFINE DEBUG_UNDO}    // Warning, debug uses writeln, don't use on Windows !
 
 interface
 
@@ -493,7 +493,7 @@ begin
     writeln('NextChange=' + inttostr(NextChange)
         + '  AvailChanges=' + inttostr(AvailChanges)
         + '  AvailReDos=' + inttostr(AvailReDos));
-    for I := 0 to MaxChange -1 do                          // ToDo : this is unnecessary, remove after testing
+    for I := 0 to MaxChange -1 do                          // this is unnecessary, remove after testing
         if ChangeStructure[i].StartSelIndex >= 0 then  begin
             writeln('Slot:' + inttostr(I) + ' Index:'
                 + inttostr(ChangeStructure[i].StartSelIndex)
