@@ -1,13 +1,13 @@
 object FormTomdroid: TFormTomdroid
-  Left = 605
+  Left = 665
   Height = 377
-  Top = 267
+  Top = 446
   Width = 836
   Caption = 'Tomdroid'
   ClientHeight = 377
   ClientWidth = 836
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.2.0.4'
   object ButtonClose: TButton
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -40,7 +40,7 @@ object FormTomdroid: TFormTomdroid
     TabOrder = 1
     object ComboBox1: TComboBox
       Left = 16
-      Height = 33
+      Height = 32
       Top = 88
       Width = 250
       ItemHeight = 0
@@ -61,20 +61,21 @@ object FormTomdroid: TFormTomdroid
     object Label1: TLabel
       Left = 28
       Height = 21
+      Hint = 'Use GitHub Sync instead. Post issue if you need Tomdroid Sync.'
       Top = 17
-      Width = 452
-      Caption = 'Tomdroid SSH Sync - deprecated, will be dropped soon.'
+      Width = 429
+      Caption = 'Tomdroid SSH Sync - deprecated, will not be in v0.36.'
       Font.Height = 18
-      ParentColor = False
       ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
     end
     object Label3: TLabel
       Left = 16
-      Height = 19
+      Height = 21
       Top = 128
-      Width = 95
+      Width = 105
       Caption = 'Profile Name'
-      ParentColor = False
     end
     object EditPassword: TEdit
       Left = 16
@@ -95,25 +96,23 @@ object FormTomdroid: TFormTomdroid
     end
     object Label4: TLabel
       Left = 16
-      Height = 19
+      Height = 21
       Top = 188
-      Width = 142
+      Width = 158
       Caption = 'IP address of device'
-      ParentColor = False
     end
     object Label5: TLabel
       Left = 16
-      Height = 19
+      Height = 21
       Top = 248
-      Width = 176
+      Width = 192
       Caption = 'SSH Password for device'
-      ParentColor = False
     end
     object CheckSavePassword: TCheckBox
       Left = 144
-      Height = 24
+      Height = 23
       Top = 268
-      Width = 60
+      Width = 59
       Caption = 'Save'
       TabOrder = 4
     end
@@ -191,22 +190,21 @@ object FormTomdroid: TFormTomdroid
       AnchorSideTop.Control = Label1
       AnchorSideTop.Side = asrBottom
       Left = 360
-      Height = 19
+      Height = 21
       Top = 38
-      Width = 100
+      Width = 111
       Caption = 'LabelServerID'
-      ParentColor = False
     end
     object CheckBoxDebugMode: TCheckBox
       AnchorSideLeft.Control = Label1
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = CheckBoxTestRun
-      Left = 609
-      Height = 24
+      Left = 599
+      Height = 23
       Hint = 'writes debug messages to terminal'
       Top = 17
-      Width = 118
+      Width = 124
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 10
       Caption = 'Debug Mode'
@@ -220,10 +218,10 @@ object FormTomdroid: TFormTomdroid
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 737
-      Height = 24
+      Left = 733
+      Height = 23
       Top = 17
-      Width = 88
+      Width = 92
       Anchors = [akTop, akRight]
       BorderSpacing.Left = 10
       BorderSpacing.Right = 10
@@ -232,21 +230,19 @@ object FormTomdroid: TFormTomdroid
     end
     object Label2: TLabel
       Left = 18
-      Height = 19
+      Height = 21
       Top = 64
-      Width = 287
+      Width = 319
       Caption = 'Select an existing profile (or enter data) '
-      ParentColor = False
     end
     object Label6: TLabel
       AnchorSideTop.Control = LabelServerID
       AnchorSideTop.Side = asrBottom
       Left = 360
-      Height = 19
-      Top = 57
-      Width = 354
+      Height = 21
+      Top = 59
+      Width = 390
       Caption = 'Upload means from tomboy-ng to Android Device'
-      ParentColor = False
     end
   end
   object ButtonSync: TButton
