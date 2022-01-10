@@ -20,14 +20,14 @@ object Sett: TSett
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = SpeedButHide
-    Left = 0
+    Left = clBlack
     Height = 488
-    Top = 0
+    Top = clBlack
     Width = 726
     ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = clBlack
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -227,7 +227,7 @@ object Sett: TSett
           AnchorSideLeft.Control = GroupBox5
           Left = 19
           Height = 21
-          Top = 128
+          Top = clMaroon
           Width = 62
           Anchors = [akLeft]
           BorderSpacing.Left = 19
@@ -346,7 +346,7 @@ object Sett: TSett
         Anchors = [akTop, akRight, akBottom]
         AutoSize = False
         BorderSpacing.Right = 30
-        ItemHeight = 0
+        ItemHeight = clBlack
         OnChange = ComboHelpLanguageChange
         Style = csDropDownList
         TabOrder = 6
@@ -393,7 +393,7 @@ object Sett: TSett
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
         BorderSpacing.Top = 5
-        ItemHeight = 0
+        ItemHeight = clBlack
         OnChange = SaveSettings
         Style = csDropDownList
         TabOrder = 9
@@ -828,7 +828,7 @@ object Sett: TSett
         Top = 15
         Width = 359
         BorderSpacing.Left = 15
-        ItemHeight = 0
+        ItemHeight = clBlack
         Items.Strings = (
           'File Sync - local or shared filesystem'
           'Github - free Github account required'
@@ -862,9 +862,9 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
-        Left = 0
+        Left = clBlack
         Height = 459
-        Top = 0
+        Top = clBlack
         Width = 722
         Anchors = [akTop, akLeft, akRight, akBottom]
         TabOrder = 0
@@ -949,9 +949,9 @@ object Sett: TSett
         AnchorSideTop.Control = TabRecover
         AnchorSideRight.Control = TabRecover
         AnchorSideRight.Side = asrBottom
-        Left = 0
+        Left = clBlack
         Height = 256
-        Top = 0
+        Top = clBlack
         Width = 722
         Anchors = [akTop, akLeft, akRight]
         BevelInner = bvLowered
@@ -1130,7 +1130,7 @@ object Sett: TSett
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 12
         BorderSpacing.Right = 7
-        ItemHeight = 0
+        ItemHeight = clBlack
         OnClick = ListBoxDicClick
         ScrollWidth = 456
         TabOrder = 0
@@ -1390,8 +1390,8 @@ object Sett: TSett
     Top = 104
   end
   object FontDialog1: TFontDialog
-    MinFontSize = 0
-    MaxFontSize = 0
+    MinFontSize = clBlack
+    MaxFontSize = clBlack
     Left = 552
   end
   object PMenuMain: TPopupMenu

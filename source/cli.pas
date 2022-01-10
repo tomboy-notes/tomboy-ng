@@ -34,15 +34,21 @@ const Version_string  = {$I %TOMBOY_NG_VER};
 implementation
 
 
-uses Forms, LCLProc, LazFileUtils, ResourceStr, simpleipc;
+
+uses Forms, LCLProc, LazFileUtils, FileUtil, ResourceStr, simpleipc, IniFiles,
+    import_notes, tb_utils;
+
+type
+  ENoNotesRepoException = class(Exception);
 
 var
-    LongOpts : array [0..12] of string = (
+    LongOpts : array [0..16] of string = (
             'dark-theme', 'lang:', 'debug-log:',
             'help', 'version', 'no-splash',
             'debug-sync', 'debug-index', 'debug-spell',
-            'config-dir:', 'open-note:', 'save-exit',    // -o for open also legal
-            'gnome3');                                   // -g and gnome3 is legal but legacy, ignored.
+            'config-dir:', 'open-note:', 'save-exit',      // -o for open also legal. save-exit is legecy
+            'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
+            'title-fname', 'gnome3');                      // -g and gnome3 is legal but legacy, ignored.
 
 
                 { If something on commandline means don't proceed, ret True }
@@ -53,7 +59,7 @@ begin
     ErrorMsg := InCommingError;
     Result := false;
     if ErrorMsg = '' then begin
-        ErrorMsg := Application.CheckOptions('hgo:l:v', LongOpts);   // Allowed single letter switches, help, gnome3, open, language, version
+        ErrorMsg := Application.CheckOptions('hgo:l:vt:m:n:', LongOpts);   // Allowed single letter switches, help, gnome3, open, language, version
         if Application.HasOption('h', 'help') then
             ErrorMsg := 'Usage -';
     end;
@@ -64,17 +70,21 @@ begin
        debugln(rsMacHelp2);
        {$endif}
        debugln('   --dark-theme');
-       debugln('   --lang=CCode       ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
-       debugln('   -h --help                  ' + rsHelpHelp);
-       debugln('   --version                  ' + rsHelpVersion);
-       debugln('   --no-splash                ' + rsHelpNoSplash);
-       debugln('   --debug-sync               ' + rsHelpDebugSync);
-       debugln('   --debug-index              ' + rsHelpDebugIndex);
-       debugln('   --debug-spell              ' + rsHelpDebugSpell);
-       debugln('   --config-dir=PATH_to_DIR   ' + rsHelpConfig);
-       debugln('   --open-note=PATH_to_NOTE   ' + rsHelpSingleNote);
-       debugln('   --debug-log=SOME.LOG       ' + rsHelpDebug);
-       debugln('   --save-exit                ' + rsHelpSaveExit);
+       debugln('   -l --lang=CCode               ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
+       debugln('   -h --help                     ' + rsHelpHelp);
+       debugln('   --version                     ' + rsHelpVersion);
+       debugln('   --no-splash                   ' + rsHelpNoSplash);
+       debugln('   --debug-sync                  ' + rsHelpDebugSync);
+       debugln('   --debug-index                 ' + rsHelpDebugIndex);
+       debugln('   --debug-spell                 ' + rsHelpDebugSpell);
+       debugln('   --config-dir=PATH_to_DIR      ' + rsHelpConfig);
+       debugln('   --open-note=PATH_to_NOTE      ' + rsHelpSingleNote);
+       debugln('   --debug-log=SOME.LOG          ' + rsHelpDebug);
+       // debugln('   --save-exit                ' + rsHelpSaveExit);    // legacy but still allowed.
+       debugln('   -t --import-txt=PATH_to_FILE  ' + rsHelpImportFile);
+       debugln('   -m --import-md=PATH_to_FILE   ' + rsHelpImportFile);
+       debugln('   -n --import-note=PATH_to_NOTE ' + rsHelpImportFile);
+       debugln('   --title-fname                 ' + rsHelpTitleISFName);
        result := true;
     end;
 end;
@@ -94,7 +104,7 @@ begin
     end;
     Params := TStringList.Create;
     try
-        Application.GetNonOptions('hgo:', LongOpts, Params);
+        Application.GetNonOptions('hlvgo:t:m:n:', LongOpts, Params);
         {for I := 0 to Params.Count -1 do
             debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
         if Params.Count = 1 then begin
@@ -113,7 +123,8 @@ begin
     end;
 end;
 
-function AreWeClient() : boolean;
+// Looks for server, if present, sends indicated message and returns true, else false.
+function CanSendMessage(Msg : string) : boolean;
 var
     CommsClient : TSimpleIPCClient;
 begin
@@ -123,7 +134,7 @@ begin
         CommsClient.ServerID:='tomboy-ng';
         if CommsClient.ServerRunning then begin
             CommsClient.Active := true;
-            CommsClient.SendStringMessage('SHOWSEARCH');
+            CommsClient.SendStringMessage(Msg);
             CommsClient.Active := false;
             Result := True;
         end;
@@ -132,6 +143,90 @@ begin
     end;
 end;
 
+                        { Returns the absolute notes dir, raises ENoNotesRepoException if it cannot find it }
+function GetNotesDir() : string;
+    var
+       ConfigFile : TIniFile;
+begin
+     // TiniFile does not care it it does not find the config file, just returns default values.
+     ConfigFile :=  TINIFile.Create(TB_GetDefaultConfigDir + 'tomboy-ng.cfg');
+     try
+        result := ConfigFile.readstring('BasicSettings', 'NotesPath', '');      // MUST be mentioned in config file
+     finally
+         ConfigFile.Free;
+     end;
+     if Result = '' then
+         Raise ENoNotesRepoException.create('tomboy-ng does not appear to be configured');
+end;
+
+                        { Will take offered file name, report any errror else checks its a  .note,
+                        saves it to normal repo and requests a running instance (if there is one) to
+                        reindex as necessary. }
+procedure Import_Note;
+var
+    FFileName, Fname : string;
+    GUID : TGUID;
+begin
+     FFileName := Application.GetOptionValue('n', 'import-note');
+     if not FileExists(FFileName) then begin
+         debugln('Error, request to import nonexisting file : ' + FFileName);
+         exit;
+     end;
+     if GetTitleFromFFN(FFileName, false) = '' then begin
+         debugln('Error, request to import invalid Note file : ' + FFileName);
+         exit;
+     end;
+     if IDLooksOK(ExtractFileNameOnly(FFileName)) then
+        FName := ExtractFileName(FFileName)
+     else begin
+        CreateGUID(GUID);
+        FName := copy(GUIDToString(GUID), 2, 36) + '.note';
+     end;
+     debugln('About to copy ' + FFileName + ' to ' + FName);
+     if CopyFile(FFileName, GetNotesDir() + FName) then
+        CanSendMessage('REINDEX')
+     else debugln('ERROR - failed to copy ' + FFileName + ' to ' + GetNotesDir() + FName);
+end;
+
+
+                        { Will take offered file name, report errror else converts that file to .note,
+                        saves it to normal repo and requests a running instance (if there is one) to
+                        reindex as necessary. }
+procedure Import_Text_MD_File(MD : boolean);
+var
+    FFileName : string;
+    Importer : TImportNotes;
+begin
+    if MD then
+        FFileName := Application.GetOptionValue('t', 'import-md')
+    else FFileName := Application.GetOptionValue('t', 'import-txt');
+    if not FileExists(FFileName) then begin
+        debugln('Error, request to import nonexisting file : ' + FFileName);
+        exit;
+    end;
+    Importer := TImportNotes.Create;
+    try
+        try
+            Importer.DestinationDir := GetNotesDir();       // might raise ENoNotesRepoException
+            Importer.Mode := 'plaintext';
+            if MD then Importer.Mode := 'markdown';
+            Importer.FirstLineIsTitle := true;
+            if Application.HasOption('f', 'title-fname') then
+                Importer.FirstLineIsTitle := false;
+            Importer.ImportName := FFileName;
+            Importer.Execute();
+        except on
+            //E: ENoNotesRepoException do begin
+            E: Exception do begin
+                            debugln(E.Message);
+                            exit;
+                        end;
+        end;
+    finally
+        Importer.Free;
+    end;
+    CanSendMessage('REINDEX')
+end;
 
 function ContinueToGUI() : boolean ;
 begin
@@ -140,12 +235,25 @@ begin
         debugln('tomboy-ng version ' + Version_String);
         exit(False);
      end;
+    if Application.HasOption('t', 'import-txt') then begin
+        Import_Text_MD_File(false);
+        exit(False);
+    end;
+    if Application.HasOption('m', 'import-md') then begin
+        Import_Text_MD_File(true);
+        exit(False);
+    end;
+    if Application.HasOption('n', 'import-note') then begin
+        Import_Note();
+        exit(False);
+    end;
+
     if HaveCMDParam() then
          if SingleNoteName = '' then
             exit(False)                 // thats an error, more than one parameter
          else exit(True);               // proceed in SNM
     // Looks like a normal startup
-    if AreWeClient() then exit(False);
+    if CanSendMessage('SHOWSEARCH') then exit(False);
     Result := true;
 end;
 

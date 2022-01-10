@@ -1,103 +1,127 @@
-.TH TOMBOY-NG 1
-.SH NAME 
-tomboy-ng \- manage a collection of notes using a simple markup
-.SH SYNOPSIS 
-.B tomboy-ng
-[\fB\-h\fR]
-[\fB\-g\fR]
-[\fB-\-gnome3\fR]
-[\fB\-\-debug\-sync\fR] 
-[\fB\-\-debug\-index\fR] 
-[\fB\-\-debug-log\fR=\fILOGFILE\fR]
-[\fB\-\-lang\fR=\fICC\fR]
-[\fB\-\-config\-dir\fR=\fIPATH_to_DIR\fR]
-[\fB\-o\fR \fIPATH_to_NOTE\fR] 
-[\fB\-\-open-note\fR=\fIPATH_to_NOTE\fR]
-[\fIPATH_to_NOTE\fR]
+.TH tomboy-ng
+
+
+
+
+
+
+
+
+.SH NAME
+tomboy\-ng \- manage a collection of notes using a simple GUI markup
+
+.SH SYNOPSIS
+tomboy\-ng  [\-h \-\-help] [\-\-debug\-sync]  [\-\-debug\-index] [\-\-debug\-log=LOGFILE] [\-l \-\-lang=CC] [\-\-config\-dir=PATH_to_DIR] [\-o PATH_to_NOTE] [\-\-open\-note=PATH_to_NOTE] [PATH_to_NOTE] [\-t \-\-import\-txt=PATH_to_FILE] [\-m \-\-import\-md=PATH_to_FILE] [\-n \-\-import\-note=PATH_to_NOTE] [\-\-title\-fname]
 
 .SH DESCRIPTION
-.B tomboy-ng
-is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. It is file compatible with Tomdroid and GNote (>=v0.30). Tomboy-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs.
+tomboy\-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS.  It  is  file  compatible  with  Tomdroid  and  GNote (>=v0.30).  Tomboy\-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs.
 
-tomboy-ng has built in systems to take snapshots of your notes for safe keeping, to import and export notes in different formats, spell checking means to group your notes into "notebooks" for easy management.
+tomboy\-ng has built in systems to take snapshots of your notes for safe keeping, to import and export notes in different formats, spell  checking means to group your notes into "notebooks" for easy management.
 
-Many users will want to have tomboy-ng start at logon time and leave it running indefinitly. When running, it will put an Icon in the System Tray and you can interact with it via that Icon. However, some Gnome 3 based Linux distros cannot display the System Tray Icon, on such limited systems, add tomboy-ng to your dock as a favourite and clicking that will either start tomboy-ng or activate an existing instance. 
+Many users will want to have tomboy\-ng start at logon time and leave it running indefinitly. When running, it will put an Icon in the System Tray and you can interact with it via that Icon. However, some Gnome 3 based Linux distros have problems with the System Tray Icon, on such  limited  systems, see the project wiki page mentioned below.
 
-On Windows and Mac tomboy-ng uses native libraries, on Linux, tomboy-ng comes in both GTK2 and Qt5 version and most systems have almost all the necessary libraries pre installed.
+On  Windows and Mac tomboy\-ng uses native libraries, on Linux, tomboy\-ng comes in both GTK2 and Qt5 version and most systems have almost all the necessary libraries pre installed.
 
 While options below are familiar to Linux users, Mac and Windows users may like to look at some examples further down to see how to use them.
 
+
 .SH OPTIONS
 .TP
-.BR \-h 
+\-h \-\-help
 Print some help and exit.
 
 .TP
-.BR \-\-debug-sync
-Generate a lot of logging information on the console during a sync process. Intended for debugging.
+\-v \-\-version
+Print the tomboy\-ng version and exit.
 
 .TP
-.BR \-\-debug-index
-Generate a lot of logging information on the console while indexing the notes repo. Intended for debugging.
+\-\-no\-splash
+Do not show the small tomboy\-ng splash screen at startup. However, if an error is detected the splash screen is always shown.
 
 .TP
-.BR \-\-debug\-log=\fILOGFILE
-Direct debug info to a file, this is necessary to see that output on Windows and Mac and sometimes useful on Linux. LOGFILE is a filename and a (writable) path to that filename. See section below on debugging.
+ \-\-lang=CC
+Tomboy\-ng  normally  picks up its language from the OS and does an auto switch. However, its possible to force a language at startup using the two letter language code, ie es for spanish, nl for dutch, fr for French. If you would like to help translate tomboy\-ng, please, please get in touch.
 
 .TP
-.BR \-\-lang=\fICC\fR
-Tomboy-ng normally picks up its language from the OS and does an auto switch. However, its possible to force a language at startup using the two letter language code, ie es for spanish, nl for dutch.
+\-c, \-\-config\-dir=PATH_to_DIR
+Create or use an alternative config. That config could, for example, specify an alternative location to store notes  and  sync  against  a different file sync repository.
 
 .TP
-.BR \-c ", " \-\-config\-dir=\fIPATH_to_DIR\fR
-Create or use an alternative config. That config could, for example, specify an alternative location to store notes and sync against a different file sync repository.
+\-o, \-\-open\-note=PATH_to_NOTE
+Open a note in single note mode. In this mode, a separate process runs, it does not have access to the normal notes location, nor sync but  can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a  plain  text  file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing  location,  it  is  not  moved  to  the tomboy\-ng  notes location, it is not synced, nor searched by tomboy\-ng in its normal mode. Note that the switch (\-o or \-\-open\-note) is optional, "tomboy\-ng some.note" will works as well.
 
 .TP
-.BR \-o ", " \-\-open-note=\fIPATH_to_NOTE\fR
-Open a note in single note mode. In this mode, a separate process runs, it does not have access to the normal notes location, nor sync but can read, display and write back to a stand alone note. If the note name does not exist, a new note is created. If the note name specifies a plain text file or a rtf file, the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
+\-t \-\-import\-txt=PATH_to_FILE
+Import the indicated plain text file into the Note Repository, converting it to note format. The first line of the file will be used as the title unless \-\-title\-fname is also specified in which case the file name will become the title. If another instance of tomboy\-ng is running, its notified of the import and the note will appear as the newest.
+
+.TP
+\-m \-\-import\-md=PATH_to_FILE
+Import the indicated markdown file into the Note Repository, converting it to note format. The first line of the file will be used as the title unless \-\-title\-fname is also specified in which case the file name will become the title.  The conversion assumes a CommonMark version of markdown and not all aspects of even that are supported.  If another instance of tomboy\-ng is running, its notified of the import and the note will appear as the newest.
+
+.TP
+\-n \-\-import\-note=PATH_to_NOTE
+Import the indicated Tomboy Note format file into the Note Repository, the note itself is not changed, its just copied in and, if necessary, a GUID style file name is assigned. The last change date of the note is retained.  If another instance of tomboy\-ng is running, its notified of the import.
+
+.TP
+\-title\-fname
+Applies only when importing a text or markdown file, determines that the filename will be used as the note title instead of the default first line of the file.
+
+.TP
+ \-\-debug\-sync   \-\-debug\-index   \-\-debug\-spell
+Generate a lot of logging information on the console during a sync process, each one relating to a particular field. You can combine or even use all three. Intended for debugging. The debug information is written to the console in Linux and can be captured to a file on all platforms, see below.
+
+.TP
+ \-\-debug\-log=LOGFILE
+Direct debug info to a file, this is necessary to see that output on Windows and Mac and sometimes useful on Linux. LOGFILE is a  filename and a (writable) path to that filename. See section below on debugging.
 
 
-.SH Further Help
-tomboy-ng comes bundled with several read only notes that provide help on topics such as keyboard short cuts, setting up a sync system, using the built in calculator and keeping your notes safe.
 
-The project's wiki also has extensive information available.
-.I https://github.com/tomboy-notes/tomboy-ng
+.SH FURTHER HELP
+tomboy\-ng comes bundled with several read only notes that provide help on topics such as keyboard short cuts, setting up a sync system, using the built in calculator and keeping your notes safe.
 
+The project's wiki also has extensive information available.  https://github.com/tomboy\-notes/tomboy\-ng/wiki
 
 .SH DEBUGGING
-tomboy-ng accepts a couple of debug switches as noted above. They will write detailed progress reports relating to their section of the application to the console. However, Windows and Mac do not, for this purpose, have a console. But can be told to capture this log info to a file using another command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
+tomboy\-ng generally does not write debug output unless something has gone wrong but it does accepts a couple of debug switches as noted above. They will cause detailed progress reports relating to their section of the application to be written to the console. However, Windows and Mac do not, for this purpose, have a console. But can be told to capture this log info to a file using another  command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
 
-tomboy-ng  \-\-debug-log=%userprofile%\\debug.txt  \-\-debug-sync
+tomboy\-ng  \-\-debug\-log=%userprofile%\\debug.txt  \-\-debug\-sync
 
-set tomboy-ng_debuglog=c:\\%userprofile%\\debug.txt
+set tomboy\-ng_debuglog=c:\\%userprofile%\\debug.txt
 
-Mac users can do something similar : 
+Mac users can do something similar :
 
-open /Applications/tomboy-ng.app \-\-args     "\-\-debug-log=$HOME/tomboy-ng.log"  "\-\-debug-sync"
+open /Applications/tomboy\-ng.app \-\-args     "\-\-debug\-log=$HOME/tomboy\-ng.log"  "\-\-debug\-sync"
 
 Linux users who need a debug logfile can also :
 
-tomboy-ng \-\-debug-sync \-\-debug-log=$HOME/tomboy-ng.log
+tomboy\-ng \-\-debug\-sync \-\-debug\-log=$HOME/tomboy\-ng.log
 
-Windows users should do something like this -
+Windows users should do something like this \-
 
-Rightclick the startbutton and select "run".  In the field, enter this command line exactly as show (including the inverted commas) - 
+Rightclick the startbutton and select "run".  In the field, enter this command line exactly as show (including the inverted commas) \-
 
-"C:\\Program Files\\tomboy-ng\\tomboy-ng.exe" --debug-index --debug-log=%userprofile%\\Desktop\\tomboy-log.txt
+"C:\\Program Files\\tomboy\-ng\\tomboy\-ng.exe" \-\-debug\-index \-\-debug\-log=%userprofile%\\Desktop\\tomboy\-log.txt
 
-Press enter, tomboy-ng should start up normally. Close it. A file called tomboy-log.txt will have been created on your desktop.
+Press enter, tomboy\-ng should start up normally. Close it. A file called tomboy\-log.txt will have been created on your desktop.
 
 If you intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see.
 
+.SH FILES
+On Linux, notes are stored (by default) in $HOME/.local/share/tomboy\-ng
+On Linux, config is stored (by default) in $HOME/.config/tomboy\-ng
 
-.SH "SEE ALSO"
-.I https://github.com/tomboy-notes/tomboy-ng
+.SH SEE ALSO
+https://github.com/tomboy\-notes/tomboy\-ng
 
-There you will find several wiki pages going into far more detail than here. 
+There you will find several wiki pages going into far more detail than here.
+
+You may also be interested in TomboyTools, an addition application that allows inport and export in a range of formats. This man pages was built using TomboyTools. https://github.com/davidbannon/TomboyTools
 
 .SH BUGS
-Please send bug reports to the Tomboy mailing list
-(tomboy-list@beatniksoftware.com) or via Github see above.
+Please send bug reports to the tomboy\-ng Github Issues system, see above.
+
+
+
 
 
 

@@ -227,9 +227,13 @@ msgctxt "resourcestr.rshelphelp"
 msgid "Show this help message and exit."
 msgstr ""
 
+#: resourcestr.rshelpimportfile
+msgid "Import file into Note Repo"
+msgstr ""
+
 #: resourcestr.rshelplang
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, supported en, es, fr, nl"
+msgid "Force Language, en, es, fr, nl"
 msgstr ""
 
 #: resourcestr.rshelpnosplash
@@ -245,6 +249,10 @@ msgstr ""
 #: resourcestr.rshelpsinglenote
 msgctxt "resourcestr.rshelpsinglenote"
 msgid "Open indicated note, switch is optional"
+msgstr ""
+
+#: resourcestr.rshelptitleisfname
+msgid "Use Filename as title for import txt & md"
 msgstr ""
 
 #: resourcestr.rshelpversion

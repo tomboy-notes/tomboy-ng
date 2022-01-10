@@ -824,6 +824,9 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <CommandLineParams Value="--import-note=../doc/Sync.note"/>
+      </local>
       <environment>
         <UserOverrides Count="1">
           <Variable0 Name="LAZUSEAPPIND" Value="info"/>
@@ -832,6 +835,9 @@
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="--import-note=../doc/Sync.note"/>
+          </local>
           <environment>
             <UserOverrides Count="1">
               <Variable0 Name="LAZUSEAPPIND" Value="info"/>

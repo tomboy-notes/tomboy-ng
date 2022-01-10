@@ -357,6 +357,8 @@ begin
                     SearchForm.Show;
                     SearchForm.MoveWindowHere(SearchForm.Caption);
                 end;
+        'REINDEX' : SearchForm.IndexNotes();    // if we had the GUID we could call notelister.IndexThisNote .....
+                                                // or make a function that reindexes all notes with a recent CTime, faster ?
     end;
 end;
 

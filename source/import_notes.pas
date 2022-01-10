@@ -33,6 +33,7 @@ HISTORY :
     2021/10/17   Remove four spaces from left of mono line.
     2021/10/18   Inline MD Tags now support Flanking rules, https://spec.commonmark.org/0.30/#left-flanking-delimiter-run
     2021/10/18   For some reason I was removing embedded underline xml, now I restore it ??
+    2021/12/29   Added a single file name for when importing one file at a time.
 }
 
 {$mode objfpc}{$H+}
@@ -67,8 +68,9 @@ type
         ErrorMsg : string;              // '' if everything OK, content means something bad happened
         DestinationDir : string;        // Required, dir to save notes to
         Mode : string;                  // ie plaintext, markdown ....
-        ImportNames : TStringList;      // A list of full file names to import, default is filename will become title
-        FirstLineIsTitle : boolean;     // if true, first line of note becomes title
+        ImportNames : TStringList;      // A list of full file names to import
+        ImportName : string;            // Alt to passing a stringlist to ImportNames, single string;
+        FirstLineIsTitle : boolean;     // if true, first line of note becomes title, default is filename will become title
         KeepFileName : boolean;         // The note will have same base name as import.
         NoteBook : string;              // Empty is OK, plain text notebook name or JSON array (including [])
         function Execute(): integer;    // you know all you need, go do it.
@@ -457,7 +459,12 @@ var
   St : string;
 begin
     Result := 0;
-    if ImportNames = nil then
+    if ImportName <> '' then begin         // ImportName - a single string, one file.
+        if ImportFile(ImportName) then
+            exit(1)
+        else exit(0);
+    end;
+    if ImportNames = nil then              // ImportNames - a string list.
         exit;
     for St in ImportNames do begin
         if not ImportFile(St) then

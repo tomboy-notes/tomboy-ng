@@ -106,13 +106,13 @@ RESOURCESTRING
   rsNotesDeleted =  'Note or notes deleted';
 
 
-  // CLI
-      {$ifdef DARWIN}
+  // CLI -- these are command line help lines that appear when user adds --help
+  {$ifdef DARWIN}
     rsMacHelp1 = 'eg   open tomboy-ng.app';
     rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
     {$endif}
     rsHelpDelay = 'Delay startup 2 sec to allow OS to settle';
-    rsHelpLang = 'Force Language, supported en, es, fr, nl';
+    rsHelpLang = 'Force Language, en, es, fr, nl';
     rsHelpDebug = 'Direct debug output to SOME.LOG.';
     rsHelpHelp = 'Show this help message and exit.';
     rsHelpVersion = 'Print version and exit';
@@ -123,8 +123,9 @@ RESOURCESTRING
     rsHelpDebugSpell = 'Show debug messages while spell setup';
     rsHelpConfig = 'Create or use an alternative config';
     rsHelpSingleNote = 'Open indicated note, switch is optional';
+    rsHelpImportFile = 'Import file into Note Repo';
     rsHelpSaveExit = 'After import single note, save & exit';
-    //rsHelpShiftAltF = 'Use Shift-Alt-F instead of Ctrl-Alt-F for Find Previous';
+    rsHelpTitleIsFName = 'Use Filename as title for import txt & md';
 
     // Mainunit
 

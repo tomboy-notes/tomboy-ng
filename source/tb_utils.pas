@@ -115,6 +115,9 @@ function RemoveNoteBookTag(const FullFileName, NB : string) : boolean;
 procedure ShowNotification(const Title, Message : string; ShowTime : integer = 6000);
 {$endif}
 
+{ Returns the name of the config directory (with trailing seperator)  }
+function TB_GetDefaultConfigDir : string;
+
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
 // Using them requires that we 'use' kmemo here. If not use'd, will still compile.
 // Each one MUST resolve to a different value in KMemo, do not overload.
@@ -137,7 +140,7 @@ const
 implementation
 
 uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
-        laz2_DOM, laz2_XMLRead, FileUtil;
+        laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, Forms;
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
@@ -159,6 +162,34 @@ begin
 end;
 
 {$endif}
+
+{ Returns the name of the config directory (with trailing seperator)  }
+function TB_GetDefaultConfigDir : string;
+begin
+    Result := '';
+    if Application.HasOption('config-dir') then
+        Result := Application.GetOptionValue('config-dir');
+    if Result = '' then begin
+        {$ifdef DARWIN}
+        // First we try the right place, if there use it, else try unix place, if
+        // its not there, go back to right place.
+        Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Config';
+        if not DirectoryExistsUTF8(Result) then begin
+            Result := GetAppConfigDirUTF8(False);
+            if not DirectoryExistsUTF8(Result) then  // must be new install, put in right place
+                Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Config';
+        end;
+        {$else}
+        Result := GetAppConfigDirUTF8(False);
+        {$endif}
+    end;
+    Result := AppendPathDelim(Result);
+    {$ifndef DARWIN}
+    // MainForm.SetAltHelpPath(Result);    // English help notes in read only space
+    {$endif}
+end;
+
+
 
 function RemoveNoteBookTag(const FullFileName, NB : string) : boolean;
 var

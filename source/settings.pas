@@ -298,7 +298,8 @@ type
         procedure DicDefaults(out DicPathAlt: string);
         procedure DoAutoSnapshot;
                             // Returns a good place to save config or user requested place if on cmdline,
-        function GetDefaultConfigDir: string;
+        //function GetDefaultConfigDir: string;
+
                             // Returns the default place to store notes. It may not be present.
         function GetDefaultNoteDir: string;
                             // Has a list of possible fixed font names, returns the first that 'works'.
@@ -735,7 +736,7 @@ begin
     ExportPath := '';
     LabelLibrary.Caption := '';
     //HaveConfig := false;
-    LocalConfig := GetDefaultConfigDir();   // sys dependant unless user has overridden
+    LocalConfig := TB_GetDefaultConfigDir();   // sys dependant unless user has overridden
     LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
@@ -778,6 +779,7 @@ begin
     DebugLn('Settings cannot write into [' + DirPath + ']');
 end;
 
+(*            // This has been moved to TB_Utils
 function TSett.GetDefaultConfigDir : string;
 begin
     Result := '';
@@ -801,7 +803,7 @@ begin
     {$ifndef DARWIN}
     // MainForm.SetAltHelpPath(Result);    // English help notes in read only space
     {$endif}
-end;
+end; *)
 
 function TSett.GetFixedFont() : string;
 var  T : string;
