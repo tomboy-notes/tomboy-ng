@@ -77,6 +77,7 @@ unit Note_Lister;
                 Added function GetNotebooks(const ID: ANSIString): string; for GitHub
     2021/08/31  Added TheNoteLister to hold a ref to the NoteLister for any unit that 'uses' this unit.
     2021/09/06  GetNotebooks result now wrapped in square brackets, JSON style
+    2022/01/12  Trapped out some errors that occur if XML element (field) is present but blank
 }
 
 {$mode objfpc}  {$H+}
@@ -1022,10 +1023,11 @@ var
     Doc : TXMLDocument;
 	Node : TDOMNode;
     J : integer;
+    PossibleError : string = '';
     //TryCount : integer =0;             // only try rewriting bad last-change-date once.
     //LCD_OK : boolean = false;
 begin
-    // debugln('Checking note ', FileName);
+    //debugln('TNoteLister.GetNoteDetails - indexing ' + Dir + FileName);
     if not DontTestName then
         if not IDLooksOK(copy(FileName, 1, 36)) then begin      // In syncutils !!!!
             EnterCriticalSection(CriticalSection);
@@ -1043,13 +1045,16 @@ begin
   	    try
 	        try
                 NoteP^.ID:=FileName;
-
-//                repeat
 	                ReadXMLFile(Doc, Dir + FileName);
 	  	            Node := Doc.DocumentElement.FindNode('title');
+                    if not assigned(Node.FirstChild) then
+                       PossibleError := 'XML ERROR, blank Title';               // Catch it as an EObjectException further down
+                    // If title is blank, next line will trigger a EObjectCheck Exception.
 	      	        NoteP^.Title := Node.FirstChild.NodeValue;          // This restores & etc.
 	                //if DebugMode then Debugln('Title is [' + Node.FirstChild.NodeValue + '] ID is ' + FileName);
 	                Node := Doc.DocumentElement.FindNode('last-change-date');
+                    if not assigned(Node.FirstChild) then
+                       PossibleError := 'XML ERROR, blank last-change-date';   // Catch it as an EObjectException further down
 	                NoteP^.LastChange := Node.FirstChild.NodeValue;
 	                {if (length(NoteP^.LastChange) <> 33) or (length(NoteP^.LastChange) <> 27) then begin
 	                    RewriteBadChangeDate(Dir, FileName, NoteP^.LastChange);
@@ -1065,6 +1070,8 @@ begin
 
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
+                if not assigned(Node.FirstChild) then
+                    PossibleError := 'XML ERROR, blank create-date';   // Catch it as an EObjectException further down
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
                 try                                                     // this because GNote leaves out 'open-on-startup' !
                     Node := Doc.DocumentElement.FindNode('open-on-startup');
@@ -1095,21 +1102,46 @@ begin
                                 // Notebook tag its the StartHere note, otherwise its the Template for
                                 // for the mentioned Notebook.
 		        end;
-            except 	on E: EXMLReadError do begin
+            except 	on E: EXMLReadError do begin                                // Invalid XML
                                 EnterCriticalSection(CriticalSection);
                                 try
-                                    DebugLn('XML ERROR' + E.Message);
+                                    DebugLn('XML ERROR ' + E.Message);
+                                    Debugln('Offending File ' + Dir + FileName);
                                     XMLError := True;
                                     dispose(NoteP);
                                     TheLister.ErrorNotes.Append(FileName + ', ' + E.Message);
-                                    //exit();     // generates a wierd unresolable symbol on windows ?? Move down a couple of lines
 								finally
                                     LeaveCriticalSection(CriticalSection);
 								end;
                                 exit();
 							end;
-            		    on EAccessViolation do DebugLn('Access Violation ' + FileName);
-  	        end;
+                        on E: EObjectCheck do begin                             // Triggered by, valid xml but empty field accessed
+                                EnterCriticalSection(CriticalSection);
+                                try
+                                    DebugLn('XML ERROR ' + E.Message + ' - ' + PossibleError);
+                                    Debugln('Offending File ' + Dir + FileName);
+                                    XMLError := True;
+                                    dispose(NoteP);
+                                    TheLister.ErrorNotes.Append(FileName + ', ' + E.Message + ' - ' + PossibleError);
+                        		finally
+                                    LeaveCriticalSection(CriticalSection);
+                        		end;
+                                exit();
+                        	end;
+            		    on E: EAccessViolation do begin                         // I don't think we see this happen, but just in case
+                            EnterCriticalSection(CriticalSection);
+                            try
+                                DebugLn('Access Violation ' + E.Message);
+                                Debugln('Offending File ' + Dir + FileName);
+                                XMLError := True;
+                                dispose(NoteP);
+                                TheLister.ErrorNotes.Append(FileName + ', ' + E.Message);
+                    		finally
+                                LeaveCriticalSection(CriticalSection);
+                    		end;
+                            exit();
+                        end;
+            end;
                 if NoteP^.IsTemplate then begin    // Don't show templates in normal note list
                     dispose(NoteP);
                     exit();

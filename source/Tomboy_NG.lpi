@@ -825,7 +825,7 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--import-note=../doc/Sync.note"/>
+        <CommandLineParams Value="--import-note=~/Pascal/tomboy-ng/doc/Sync.note --config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
       </local>
       <environment>
         <UserOverrides Count="1">
@@ -836,7 +836,7 @@
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--import-note=../doc/Sync.note"/>
+            <CommandLineParams Value="--import-note=~/Pascal/tomboy-ng/doc/Sync.note --config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
           </local>
           <environment>
             <UserOverrides Count="1">

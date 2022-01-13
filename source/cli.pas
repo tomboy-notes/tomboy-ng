@@ -16,6 +16,8 @@ unit cli;
     History
     2020/06/18  Remove unnecessary debug line.
     2021/12/28  Tidy LongOpts model.
+    2022/01/13  When importing file, don't check for its existance, importer will do that
+    2022/01/13  When importing note, check if FFileName starts with '~'
 }
 
 interface
@@ -81,9 +83,9 @@ begin
        debugln('   --open-note=PATH_to_NOTE      ' + rsHelpSingleNote);
        debugln('   --debug-log=SOME.LOG          ' + rsHelpDebug);
        // debugln('   --save-exit                ' + rsHelpSaveExit);    // legacy but still allowed.
-       debugln('   -t --import-txt=PATH_to_FILE  ' + rsHelpImportFile);
-       debugln('   -m --import-md=PATH_to_FILE   ' + rsHelpImportFile);
-       debugln('   -n --import-note=PATH_to_NOTE ' + rsHelpImportFile);
+       debugln('   --import-txt=PATH_to_FILE     ' + rsHelpImportFile + '  also -t');
+       debugln('   --import-md=PATH_to_FILE      ' + rsHelpImportFile + '  also -m');
+       debugln('   --import-note=PATH_to_NOTE    ' + rsHelpImportFile + '  also -n');
        debugln('   --title-fname                 ' + rsHelpTitleISFName);
        result := true;
     end;
@@ -168,6 +170,10 @@ var
     GUID : TGUID;
 begin
      FFileName := Application.GetOptionValue('n', 'import-note');
+     {$ifdef UNIX}
+    if FFileName[1] = '~' then
+        FFileName := GetEnvironmentVariable('HOME') + FFileName.Remove(0,1);
+    {$endif}
      if not FileExists(FFileName) then begin
          debugln('Error, request to import nonexisting file : ' + FFileName);
          exit;
@@ -182,7 +188,7 @@ begin
         CreateGUID(GUID);
         FName := copy(GUIDToString(GUID), 2, 36) + '.note';
      end;
-     debugln('About to copy ' + FFileName + ' to ' + FName);
+     // debugln('About to copy ' + FFileName + ' to ' + FName);
      if CopyFile(FFileName, GetNotesDir() + FName) then
         CanSendMessage('REINDEX')
      else debugln('ERROR - failed to copy ' + FFileName + ' to ' + GetNotesDir() + FName);
@@ -200,10 +206,6 @@ begin
     if MD then
         FFileName := Application.GetOptionValue('t', 'import-md')
     else FFileName := Application.GetOptionValue('t', 'import-txt');
-    if not FileExists(FFileName) then begin
-        debugln('Error, request to import nonexisting file : ' + FFileName);
-        exit;
-    end;
     Importer := TImportNotes.Create;
     try
         try
@@ -214,7 +216,8 @@ begin
             if Application.HasOption('f', 'title-fname') then
                 Importer.FirstLineIsTitle := false;
             Importer.ImportName := FFileName;
-            Importer.Execute();
+            if Importer.Execute() = 0 then
+                debugln(Importer.ErrorMsg);
         except on
             //E: ENoNotesRepoException do begin
             E: Exception do begin

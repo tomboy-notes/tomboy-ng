@@ -1216,8 +1216,12 @@ msgstr "ex: MySamsungNote7"
 #: tformtomdroid.label1.caption
 #, fuzzy
 #| msgid "Tomdroid Sync - be aware of limitations !"
-msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
+msgid "Tomdroid SSH Sync - deprecated, will not be in v0.36."
 msgstr "Attention aux limites de la synchro Tomdroid !"
+
+#: tformtomdroid.label1.hint
+msgid "Use GitHub Sync instead. Post issue if you need Tomdroid Sync."
+msgstr ""
 
 #: tformtomdroid.label2.caption
 msgid "Select an existing profile (or enter data) "
@@ -1281,7 +1285,11 @@ msgid "Test Run"
 msgstr "Exécution test"
 
 #: tformtomdroidfile.label1.caption
-msgid "Tomdroid Sync - be aware of limitations !"
+msgid "Tomdroid Sync - deprecated, will not be in v0.36."
+msgstr ""
+
+#: tformtomdroidfile.label1.hint
+msgid "Use GitHub Sync instead. Post issue if you need Tomdroid"
 msgstr ""
 
 #: tformtomdroidfile.label6.caption
