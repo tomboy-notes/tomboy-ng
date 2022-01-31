@@ -1704,6 +1704,10 @@ msgstr "Synchro auto"
 msgid "Sync, if possible once an hour."
 msgstr "Une synchro par heure si possible."
 
+#: tsett.checkfindtoggles.caption
+msgid "Find Command Toggles"
+msgstr ""
+
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
 msgstr "Une note peut figurer dans plusieurs carnets."
@@ -1957,6 +1961,10 @@ msgstr "Général"
 #: tsett.tabdisplay.caption
 msgid "Notes"
 msgstr "Notes"
+
+#: tsett.tabdisplay.hint
+msgid "eg Ctrl-F opens and closes Find Window"
+msgstr ""
 
 #: tsett.tabrecover.caption
 msgctxt "tsett.tabrecover.caption"

@@ -98,6 +98,8 @@ unit settings;
     2021/10/06  Restructured the way we enter GH Token, all copy and paste now.
     2021/10/26  User selectable date stamp format
     2021/12/03  Rearranged checkboxes to accomodate Searching While u Wait.
+    2022/01/21  GTK3 determines what is a monospace font differently.
+    2022/01/31  Added a CheckFindToggles to determine if every press of Ctrl-f invokes Find or toggles it on or off.
 }
 
 {$mode objfpc}{$H+}
@@ -124,6 +126,7 @@ type
         ButtonSnapRecover: TButton;
         CheckAutoRefresh: TCheckBox;
         CheckAutoSnapEnabled: TCheckBox;
+        CheckFindToggles: TCheckBox;
         CheckStampBold: TCheckBox;
         CheckStampItalics: TCheckBox;
         CheckStampSmall: TCheckBox;
@@ -815,7 +818,15 @@ var  T : string;
     function IsMono(FontName : String) : boolean;
     begin
       Label1.Canvas.Font.Name := FontName;
+      {$ifdef LCLGTK3}
+      // Might work on Linux generally ?
+      // https://forum.lazarus.freepascal.org/index.php/topic,20193.msg194575.html
+      Result := Label1.Canvas.Font.IsMonoSpace;
+      {$else}
       result := Label1.Canvas.TextWidth('i') = Label1.Canvas.TextWidth('w');
+      {$endif}
+      // That line above triggers a whole load of GTK3 error messages.
+
       // I have no idea whats happening here, that line, above, somehow triggers a call
       // to the RadioFileSync OnChange handler. In turn, that calls SettingsChanged before
       // we have setup its config path.  For now, because its not needed yet, I have
@@ -888,6 +899,8 @@ begin
         AutoRefresh := ('true' = ConfigFile.readstring('BasicSettings', 'AutoRefresh', 'true'));
         CheckAutoRefresh.Checked := AutoRefresh;
         AutoSearchUpdate := ('true' = ConfigFile.readstring('BasicSettings', 'AutoSearchUpdate', 'true'));
+        CheckFindToggles.Checked :=
+            ('true' = Configfile.ReadString('BasicSettings', 'FindToggles', 'true'));
 
         // ------------------- F O N T S ----------------------
         UsualFont := ConfigFile.readstring('BasicSettings', 'UsualFont', GetFontData(Self.Font.Handle).Name);
@@ -1010,7 +1023,8 @@ begin
             ConfigFile.WriteString('BasicSettings', 'ShowNotifications', MyBoolStr(CheckNotifications.Checked));
             ConfigFile.WriteString('BasicSettings', 'AutoRefresh',       MyBoolStr(AutoRefresh));
             ConfigFile.WriteString('BasicSettings', 'UseUndo',           MyBoolStr(CheckUseUndo.Checked));
-            ConfigFile.WriteString('BasicSettings', 'AutoSearchUpdate',           MyBoolStr(AutoSearchUpdate));
+            ConfigFile.WriteString('BasicSettings', 'AutoSearchUpdate',  MyBoolStr(AutoSearchUpdate));
+            ConfigFile.WriteString('BasicSettings', 'FindToggles',       MyBoolStr(CheckFindToggles.checked));
             if RadioFontBig.Checked then
                 ConfigFile.writestring('BasicSettings', 'FontSize', 'big')
             else if RadioFontMedium.Checked then
@@ -1346,6 +1360,7 @@ var
 begin
     FR := TFormRecover.Create(self);
     try
+        Screen.Cursor := crHourGlass;
         FR.NoteDir := NoteDirectory;
         FR.FullSnapDir := LabelSnapDir.Caption;
         FR.ConfigDir:= AppendPathDelim(Sett.LocalConfig);
@@ -1357,6 +1372,7 @@ begin
                     showmessage(rsErrorCopyFile + ' ' + TrimFilename(SelectSnapDir.FileName + PathDelim) + ExtractFileNameOnly(FullName) + '.zip');
     finally
         FR.Free;
+        Screen.Cursor := crDefault;
     end;
 end;
 

@@ -547,6 +547,7 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -824,26 +825,9 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <CommandLineParams Value="--import-note=~/Pascal/tomboy-ng/doc/Sync.note --config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
-      </local>
-      <environment>
-        <UserOverrides Count="1">
-          <Variable0 Name="LAZUSEAPPIND" Value="info"/>
-        </UserOverrides>
-      </environment>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default">
-          <local>
-            <CommandLineParams Value="--import-note=~/Pascal/tomboy-ng/doc/Sync.note --config-dir=/home/dbannon/.config/tomboy-ng-alt/"/>
-          </local>
-          <environment>
-            <UserOverrides Count="1">
-              <Variable0 Name="LAZUSEAPPIND" Value="info"/>
-            </UserOverrides>
-          </environment>
-        </Mode0>
+        <Mode0 Name="default"/>
       </Modes>
     </RunParams>
     <RequiredPackages Count="3">

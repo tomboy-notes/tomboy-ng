@@ -1648,6 +1648,10 @@ msgstr ""
 msgid "Sync, if possible once an hour."
 msgstr ""
 
+#: tsett.checkfindtoggles.caption
+msgid "Find Command Toggles"
+msgstr ""
+
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
 msgstr ""
@@ -1892,6 +1896,10 @@ msgstr ""
 
 #: tsett.tabdisplay.caption
 msgid "Notes"
+msgstr ""
+
+#: tsett.tabdisplay.hint
+msgid "eg Ctrl-F opens and closes Find Window"
 msgstr ""
 
 #: tsett.tabrecover.caption

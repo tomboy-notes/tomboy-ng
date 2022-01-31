@@ -323,6 +323,7 @@ begin
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
+        // Screen.Cursor := crHourGlass;
         ASync.ProceedFunction := @Proceed;
         ASync.ProgressProcedure := @SyncProgress;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
@@ -349,7 +350,9 @@ begin
                     {$endif}                end;
                 exit;
             end else begin
+                //Screen.Cursor := crDefault;
                 showmessage('Unable to sync because ' + ASync.ErrorString);
+                //Screen.Cursor := crHourGlass;
                 FormSync.ModalResult := mrAbort;
                 exit(false);
             end;
@@ -364,9 +367,6 @@ begin
         if (not Visible) and Sett.CheckNotifications.Checked then begin
             {$ifdef LINUX}
             ShowNotification('tomboy-ng', rsLastSync  + ' ' + SyncSummary);
-
-            (* Notifier := TNotifier.Create;                                           // does not require a 'free'.
-            Notifier.ShowTheMessage('tomboy-ng', rsLastSync  + ' ' + SyncSummary, 3000);   *)
             {$else}
             MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
             Mainform.TrayIcon.BalloonHint := rsLastSync  + ' ' + SyncSummary;
@@ -381,6 +381,7 @@ begin
     finally
         FreeandNil(ASync);
         Busy := False;
+        // Screen.Cursor := crDefault;
     end;
 end;
 

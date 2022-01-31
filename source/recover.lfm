@@ -9,14 +9,13 @@ object FormRecover: TFormRecover
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.2.0.4'
   object Label1: TLabel
     Left = 8
-    Height = 19
+    Height = 21
     Top = 360
-    Width = 47
+    Width = 53
     Caption = 'Label1'
-    ParentColor = False
   end
   object ListBoxSnapshots: TListBox
     AnchorSideLeft.Control = Owner
@@ -53,49 +52,46 @@ object FormRecover: TFormRecover
     Height = 204
     Top = 44
     Width = 758
-    ActivePage = TabSheetRecoverNotes
+    ActivePage = TabSheetBadNotes
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
-      ClientHeight = 167
-      ClientWidth = 752
+      ClientHeight = 173
+      ClientWidth = 754
       OnShow = TabSheetIntroShow
       object Label6: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 8
-        Width = 397
+        Width = 439
         Caption = 'This tool might help you recover lost or damaged notes.'
-        ParentColor = False
       end
       object Label7: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 64
-        Width = 408
+        Width = 453
         Caption = 'Before you start, take a Snapshot of your notes directory.'
-        ParentColor = False
       end
       object Label10: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 36
-        Width = 306
+        Width = 338
         Caption = 'Please close any notes you may have open.'
-        ParentColor = False
       end
       object ButtonMakeSafetySnap: TButton
         AnchorSideTop.Control = ButtonSnapHelp
         AnchorSideRight.Control = ButtonSnapHelp
         AnchorSideBottom.Control = TabSheetIntro
         AnchorSideBottom.Side = asrBottom
-        Left = 450
+        Left = 427
         Height = 31
         Hint = 'Take a initial snapshot of your notes and config. Overwritten each time.'
-        Top = 136
-        Width = 183
+        Top = 142
+        Width = 199
         Anchors = [akTop, akRight, akBottom]
         AutoSize = True
         BorderSpacing.Right = 2
@@ -111,10 +107,10 @@ object FormRecover: TFormRecover
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetIntro
         AnchorSideBottom.Side = asrBottom
-        Left = 635
+        Left = 628
         Height = 31
-        Top = 136
-        Width = 115
+        Top = 142
+        Width = 124
         Anchors = [akRight, akBottom]
         AutoSize = True
         BorderSpacing.Top = 2
@@ -126,26 +122,25 @@ object FormRecover: TFormRecover
     end
     object TabSheetBadNotes: TTabSheet
       Caption = 'Bad Notes'
-      ClientHeight = 167
-      ClientWidth = 752
+      ClientHeight = 173
+      ClientWidth = 754
       OnShow = TabSheetBadNotesShow
       object Label5: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 8
-        Width = 266
+        Width = 293
         Caption = 'Looking for notes with damaged XML'
-        ParentColor = False
       end
       object ButtonDeleteBadNotes: TButton
         AnchorSideRight.Control = TabSheetBadNotes
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetBadNotes
         AnchorSideBottom.Side = asrBottom
-        Left = 612
-        Height = 31
+        Left = 602
+        Height = 37
         Top = 136
-        Width = 138
+        Width = 150
         Anchors = [akTop, akRight, akBottom]
         AutoSize = True
         BorderSpacing.Right = 2
@@ -155,87 +150,79 @@ object FormRecover: TFormRecover
       end
       object LabelNoteErrors: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 36
-        Width = 117
+        Width = 132
         Caption = 'LabelNoteErrors'
-        ParentColor = False
       end
       object LabelExistingAdvice: TLabel
         Left = 10
-        Height = 19
+        Height = 21
         Top = 64
-        Width = 142
+        Width = 157
         Caption = 'LabelExistingAdvice'
-        ParentColor = False
       end
       object LabelExistingAdvice2: TLabel
         Left = 11
-        Height = 19
+        Height = 21
         Top = 92
-        Width = 151
+        Width = 167
         Caption = 'LabelExistingAdvice2'
-        ParentColor = False
       end
     end
     object TabSheetRecoverNotes: TTabSheet
       Caption = 'Recover Notes'
-      ClientHeight = 167
-      ClientWidth = 752
+      ClientHeight = 173
+      ClientWidth = 754
       OnShow = TabSheetRecoverNotesShow
       object Label9: TLabel
         Left = 10
-        Height = 19
+        Height = 21
         Top = 8
-        Width = 373
+        Width = 410
         Caption = 'From here you can view snapshot notes, one by one.'
-        ParentColor = False
       end
       object Label14: TLabel
         Left = 10
-        Height = 19
+        Height = 21
         Top = 36
-        Width = 327
+        Width = 364
         Caption = 'Click an available snapshot to see its contents.'
-        ParentColor = False
       end
       object Label16: TLabel
         Left = 11
-        Height = 19
+        Height = 21
         Top = 64
-        Width = 394
+        Width = 434
         Caption = 'You may chose to view, copy and paste into a new note.'
-        ParentColor = False
       end
     end
     object TabSheetMergeSnapshot: TTabSheet
       Caption = 'Merge Snapshot'
-      ClientHeight = 167
-      ClientWidth = 752
+      ClientHeight = 173
+      ClientWidth = 754
       Enabled = False
       OnShow = TabSheetMergeSnapshotShow
       TabVisible = False
       object Label3: TLabel
         Left = 9
-        Height = 19
+        Height = 21
         Top = 8
-        Width = 551
+        Width = 611
         Caption = 'Restore any notes in the snapshot that are not in the existing notes directory.'
-        ParentColor = False
       end
     end
     object TabSheetRecoverSnapshot: TTabSheet
       Caption = 'Recover Snapshot'
-      ClientHeight = 167
-      ClientWidth = 752
+      ClientHeight = 173
+      ClientWidth = 754
       OnShow = TabSheetRecoverSnapshotShow
       object Label4: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 8
-        Width = 427
+        Width = 470
         Caption = 'Remove all existing notes and use the ones in the Snapshot.'
-        ParentColor = False
       end
       object ButtonRecoverSnap: TButton
         AnchorSideTop.Control = TabSheetRecoverSnapshot
@@ -243,9 +230,9 @@ object FormRecover: TFormRecover
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetRecoverSnapshot
         AnchorSideBottom.Side = asrBottom
-        Left = 603
+        Left = 605
         Height = 33
-        Top = 134
+        Top = 140
         Width = 147
         Anchors = [akRight, akBottom]
         BorderSpacing.Top = 2
@@ -256,19 +243,17 @@ object FormRecover: TFormRecover
       end
       object Label12: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 36
-        Width = 500
+        Width = 550
         Caption = 'Don''t even consider this unless you have a backup Snapshot, Intro Tab.'
-        ParentColor = False
       end
       object Label15: TLabel
         Left = 8
-        Height = 19
+        Height = 21
         Top = 64
-        Width = 288
+        Width = 320
         Caption = 'Click an available snapshot, click Recover'
-        ParentColor = False
       end
     end
   end
@@ -292,7 +277,6 @@ object FormRecover: TFormRecover
       Width = 369
       Caption = 'Please be careful, this is a dangerous place!'
       Font.Height = -19
-      ParentColor = False
       ParentFont = False
     end
   end

@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 515
+  Left = 549
   Height = 505
-  Top = 238
+  Top = 240
   Width = 695
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -14,7 +14,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.4'
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = KMemo1
@@ -45,16 +45,16 @@ object EditBoxForm: TEditBoxForm
     end
     object Label3: TLabel
       Left = 120
-      Height = 19
+      Height = 21
       Top = 8
-      Width = 343
+      Width = 379
       Caption = 'This note has been changed by the Sync Process'
     end
     object Label4: TLabel
       Left = 120
-      Height = 19
+      Height = 21
       Top = 32
-      Width = 345
+      Width = 382
       Caption = 'Please close it (and re-open if it was a download)'
     end
   end
@@ -76,7 +76,7 @@ object EditBoxForm: TEditBoxForm
     OnEnter = PanelFindEnter
     object EditFind: TEdit
       Left = 8
-      Height = 28
+      Height = 29
       Top = 5
       Width = 136
       OnChange = EditFindChange
@@ -95,10 +95,10 @@ object EditBoxForm: TEditBoxForm
       AnchorSideTop.Control = EditFind
       AnchorSideBottom.Control = EditFind
       AnchorSideBottom.Side = asrCenter
-      Left = 221
-      Height = 19
-      Top = 9
-      Width = 97
+      Left = 222
+      Height = 21
+      Top = 8
+      Width = 108
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 5
       Caption = 'LabelFindInfo'
@@ -111,7 +111,7 @@ object EditBoxForm: TEditBoxForm
       Left = 206
       Height = 28
       Top = 9
-      Width = 10
+      Width = 11
       Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Left = 6
       Caption = 'X'
@@ -123,7 +123,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideBottom.Control = EditFind
       AnchorSideBottom.Side = asrBottom
       Left = 144
-      Height = 28
+      Height = 29
       Top = 5
       Width = 28
       Anchors = [akTop, akLeft, akBottom]
@@ -214,7 +214,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideBottom.Control = EditFind
       AnchorSideBottom.Side = asrBottom
       Left = 172
-      Height = 28
+      Height = 29
       Top = 5
       Width = 28
       Anchors = [akTop, akLeft, akBottom]
@@ -297,6 +297,54 @@ object EditBoxForm: TEditBoxForm
       OnClick = SpeedRightClick
       ShowHint = True
       ParentShowHint = False
+    end
+    object BitBtnCloseFind: TBitBtn
+      AnchorSideTop.Control = PanelFind
+      AnchorSideRight.Control = PanelFind
+      AnchorSideRight.Side = asrBottom
+      Left = 671
+      Height = 22
+      Top = 2
+      Width = 22
+      Anchors = [akTop, akRight]
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000500B6690500B669000000000000000000000000000000000000
+        0000000000000500B6690500B669000000000000000000000000000000000000
+        00000200B5680C00CFE90D00D0EB0500B66D0000000000000000000000000000
+        00000200B56B0C00CFE90D00D0EB0500B86B0000000000000000000000000000
+        00000200B5680C00CFE91400E6FF0D00D0EB0500B66D00000000000000000200
+        B56B0C00CFE91400E6FF0D00D0EB0500B86B0000000000000000000000000000
+        0000000000000300B7660C00CFE91400E6FF0D00D1EB0500B66D0300B6650C00
+        CFE91400E6FF0D00D1EB0500B66D000000000000000000000000000000000000
+        000000000000000000000500B66C0C00CFEA1400E6FF0C00D0EA0C00D0EA1400
+        E6FF0C00CFEA0500B66C00000000000000000000000000000000000000000000
+        00000000000000000000000000000200B56B0C00D0E81400E6FF1400E6FF0D00
+        D0EB0500B66D0000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000200B56B0C00D0E81400E6FF1400E6FF0D00
+        D0EB0500B66D0000000000000000000000000000000000000000000000000000
+        000000000000000000000500B66C0C00CFEA1400E6FF0C00D0EA0C00D0EA1400
+        E6FF0C00CFEA0500B66C00000000000000000000000000000000000000000000
+        0000000000000300B6650C00CFE91400E6FF0D00D1EB0500B66D0300B7660C00
+        CFE91400E6FF0D00D1EB0500B66D000000000000000000000000000000000000
+        00000200B5680C00CFE91400E6FF0D00D0EB0500B66D00000000000000000200
+        B56B0C00CFE91400E6FF0D00D0EB0500B86B0000000000000000000000000000
+        00000200B5680C00CFE90D00D0EB0500B66D0000000000000000000000000000
+        00000200B56B0C00CFE90D00D0EB0500B86B0000000000000000000000000000
+        0000000000000500B66C0500B66C000000000000000000000000000000000000
+        0000000000000500B6690500B669000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000
+      }
+      OnClick = BitBtnCloseFindClick
+      TabOrder = 1
     end
   end
   object Panel1: TPanel

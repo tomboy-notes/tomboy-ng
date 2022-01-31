@@ -156,8 +156,6 @@ RESOURCESTRING
   rsNotAvailable = 'Not Available';
   rsRollBackIntro = 'You can roll back to previous version of this note';
 
-  // The soon to be merged NextCloud Notes Sync
-
   // EditBox  - lots more to do ..
   rsFindNavRightHint = 'Find : F3 or Ctrl-G';
   rsFindNavLeftHint = 'Backward Find : Shift-F3 or Shift-Ctrl-G';

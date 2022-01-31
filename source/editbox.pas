@@ -241,6 +241,7 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
+        BitBtnCloseFind: TBitBtn;
         ButtMainTBMenu: TSpeedButton;
         EditFind: TEdit;
         KMemo1: TKMemo;
@@ -304,6 +305,7 @@ type
 		TaskDialogDelete: TTaskDialog;
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
+        procedure BitBtnCloseFindClick(Sender: TObject);
         procedure ButtMainTBMenuClick(Sender: TObject);
         procedure EditFindChange(Sender: TObject);
         procedure EditFindEnter(Sender: TObject);
@@ -1050,14 +1052,12 @@ begin
     IForm.TheKMemo := KMemo1;
     IForm.Left := Left;
     IForm.Top := Top;
-    //debugln('EditBox, MenuItemIndexClick - about to show Index List');
     IForm.ShowModal;
     if IForm.SelectedBlock >= 0 then begin
         KMemo1.SelStart := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks.Items[IForm.SelectedBlock]);
         KMemo1.SelLength := 0;
     end;
     IForm.Free;
-    //debugln('EditBox, MenuItemIndexClick - freed Index List');
     KMemo1.SetFocus;
 end;
 
@@ -1237,29 +1237,37 @@ end;
 procedure TEditBoxForm.NewFind(Term : string);      // Public, called from SearchForm
 begin
     EditFind.Text := Term;
-    //LastFind := 0;
     FindIt(Term, 1, true, false);        // no warning about not finding, Find Panel won't be open.
 end;
 
 const SearchPanelHeight = 39;
 
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
+// works in two modes, Toggle or Always _activate_ Find
 begin
-    //LastFind := 1;
     if PanelFind.Height > 5 then begin
-        //debugln('INFO : EditBox MenuItemFindClick Hiding FindPanel');
-        PanelFind.Height := 1;                            // Hide it
-        Kmemo1.SetFocus;
+        if Sett.CheckFindToggles.Checked then begin
+            PanelFind.Height := 1;                            // Hide it
+            Kmemo1.SetFocus;
+        end else begin
+            EditFind.SetFocus;
+            exit;
+        end;
     end  else  begin
-        //debugln('INFO : EditBox MenuItemFindClick Exposing FindPanel');
         PanelFind.Height := SearchPanelHeight;
         if KMemo1.RealSelLength > 0 then
             EditFind.Text := KMemo1.SelText;
         LabelFindInfo.Caption := {$ifdef DARWIN}
-                rsFindNavRightHintMac + ' ' + rsFindNavLeftHintMac
-                {$else}rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif};
+                rsFindNavRightHintMac + ', ' + rsFindNavLeftHintMac
+                {$else}rsFindNavRightHint + ', ' + rsFindNavLeftHint{$endif};
         EditFind.SetFocus;
     end;
+end;
+
+procedure TEditBoxForm.BitBtnCloseFindClick(Sender: TObject);
+begin
+   PanelFind.Height := 1;
+   Kmemo1.SetFocus;
 end;
 
 procedure TEditBoxForm.EditFindExit(Sender: TObject);
@@ -1281,8 +1289,10 @@ begin
     if (( {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) ) then begin
         if (Key = VK_F) then begin
             Key := 0;
-            MenuItemFindClick(Sender);
-            KMemo1.SetFocus;
+            if Sett.CheckFindToggles.checked then begin
+                MenuItemFindClick(Sender);
+                KMemo1.SetFocus;
+            end;
             exit;
         end;
         if (Key = VK_N) then begin
@@ -1316,11 +1326,11 @@ begin
             LabelFindCount.caption := '';
             if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
                 LabelFindInfo.Caption := {$ifdef DARWIN}
+                        rsFindNavRightHintMac + ', ' + rsFindNavLeftHint {$else}
+                        rsFindNavRightHint + ', ' + rsFindNavLeftHint{$endif}
+            else LabelFindInfo.Caption := ', ' + {$ifdef DARWIN}
                         rsFindNavRightHintMac + ' ' + rsFindNavLeftHint {$else}
-                        rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif}
-            else LabelFindInfo.Caption := ' ' + {$ifdef DARWIN}
-                        rsFindNavRightHintMac + ' ' + rsFindNavLeftHint {$else}
-                        rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif};
+                        rsFindNavRightHint + ', ' + rsFindNavLeftHint{$endif};
             EditFind.SetFocus;
 	    end;
 	end else begin
@@ -1374,7 +1384,6 @@ procedure TEditBoxForm.ButtMainTBMenuClick(Sender: TObject);
 begin
     PopupMainTBMenu.Popup;
 end;
-
 
 
 procedure TEditBoxForm.MenuItemCopyClick(Sender: TObject);
@@ -1803,22 +1812,12 @@ begin
 end;
 
 procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-{var
-    OutFile: TextFile;      }
 begin
-{    debugln('^^^^^^^^^^ DANGER writing debug file Unix only editBox.pas#1304 ^^^^^^^^^^^^^');
-    AssignFile(OutFile, '/home/dbannon/closelogEditForm.txt');
-    Rewrite(OutFile);
-    writeln(OutFile, 'FormCloseQuery just closing ' + self.NoteTitle);
-    CloseFile(OutFile);   }
     CanClose := True;
 end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
-{    if Application.HasOption('shiftaltF-findprev') then begin
-        UseOtherFindPrev := true;
-    end;            }
     Use_Undoer := Sett.CheckUseUndo.checked;    // Note, user must close and repen if they change this setting
     if Use_Undoer then
         Undoer := TUndo_Redo.Create(KMemo1)
