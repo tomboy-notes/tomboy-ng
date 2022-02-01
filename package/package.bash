@@ -280,7 +280,8 @@ function MkWinPreInstaller() {
 	# " -------- WRITE mo files --------"
 	msgfmt -o "$WIN_DIR"/"$PRODUCT".mo ../po/"$PRODUCT".po
 	# Source: "tomboy-ng.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
-	echo "Source: \""$PRODUCT".mo\";     DestDir: \"{app}\\locale\"; Flags: ignoreversion" > mo.insert
+	# echo "Source: \""$PRODUCT".mo\";     DestDir: \"{app}\\locale\"; Flags: ignoreversion" > mo.insert
+	# above line commented Feb 2022, don't need tomboy-ng.mo in any package 
 	for i in `ls -b ../po/*.??.po`; do
             # echo "Name is $i"
             BASENAME=`basename -s.po "$i"`

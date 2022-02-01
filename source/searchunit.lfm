@@ -16,7 +16,7 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.4'
   object Edit1: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
@@ -27,7 +27,7 @@ object SearchForm: TSearchForm
     Left = 106
     Height = 32
     Top = 3
-    Width = 246
+    Width = 222
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 9
@@ -68,13 +68,13 @@ object SearchForm: TSearchForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 0
-    Height = 343
+    Height = 342
     Top = 36
     Width = 824
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 1
     Caption = 'Panel1'
-    ClientHeight = 343
+    ClientHeight = 342
     ClientWidth = 824
     TabOrder = 2
     object Splitter1: TSplitter
@@ -82,7 +82,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 233
-      Height = 341
+      Height = 340
       Top = 1
       Width = 5
       Align = alNone
@@ -112,7 +112,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 1
-      Height = 278
+      Height = 277
       Hint = 'Right Click to manage Notebooks'
       Top = 64
       Width = 232
@@ -151,7 +151,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 241
-      Height = 341
+      Height = 340
       Hint = 'Enable in settings'
       Top = 1
       Width = 582
@@ -275,10 +275,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = SpeedAutoRefresh
     AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 532
+    Left = 523
     Height = 32
     Top = 3
-    Width = 126
+    Width = 135
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 30
     Caption = 'Case Sensitive'
@@ -290,8 +290,8 @@ object SearchForm: TSearchForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 22
-    Top = 379
+    Height = 23
+    Top = 378
     Width = 824
     Panels = <>
   end
@@ -299,10 +299,10 @@ object SearchForm: TSearchForm
     AnchorSideTop.Control = ButtonRefresh
     AnchorSideTop.Side = asrCenter
     AnchorSideRight.Control = CheckCaseSensitive
-    Left = 361
-    Height = 21
-    Top = 9
-    Width = 160
+    Left = 337
+    Height = 23
+    Top = 8
+    Width = 175
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 11
     Caption = 'Update as you type'

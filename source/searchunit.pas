@@ -840,25 +840,6 @@ begin
     Sett.AutoSearchUpdate := CheckAutoSearchUpdate.Checked;
 end;
 
-(*
-procedure TSearchForm.ShowListIndicator(St : string);
-// Just a debug method, disable or remove before production
-var
-    SortInd0, SortInd1 : TSortIndicator;
-begin
-    SortInd0 := ListViewNotes.Column[0].SortIndicator;
-    SortInd1 := ListViewNotes.Column[1].SortIndicator;
-    case SortInd0 of
-        siNone : writeln(St + '--Col 0 None');
-        siAscending : writeln(St + '--Col 0 Ascending');
-        siDescending : writeln(St + '--Col 0 Descending');
-    end;                             case SortInd1 of
-        siNone : writeln(St + '--Col 1 None');
-        siAscending : writeln(St + '--Col 1 Ascending');
-        siDescending : writeln(St + '--Col 1 Descending');
-    end;
-end; *)
-
 procedure TSearchForm.Refresh();
 // This Method has issues relating to following bug reports -
 // https://bugs.freepascal.org/view.php?id=38394  ListView right hand side obscoured by scroll bar
@@ -907,22 +888,22 @@ end;
 
 procedure TSearchForm.DoSearch();
 var
-    TS1, {TS2, TS3,} TS4 : qword;
+    //TS1, TS2, TS3, TS4 : qword;
     Found : integer;
 begin
     if (Edit1.Text = '') then
         ButtonClearFiltersClick(self);
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then begin
         ButtonClearFilters.Enabled := True;
-        TS1:=gettickcount64();
+        //TS1:=gettickcount64();
         Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkCaseSensitive
         // TS2:=gettickcount64();
         NoteLister.LoadListView(ListViewNotes, True);
         // ToDo : do we need to call ScaleListView here ?
         // TS3:=gettickcount64();
         NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, True);
-        TS4:=gettickcount64();
-        StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
+        //TS4:=gettickcount64();
+        //StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
         {StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
             + inttostr(TS4 - TS3) + 'mS  and we found ' + dbgs(Found) + ' notes';}
     end;
@@ -966,7 +947,7 @@ begin
     if (Edit1.text = '') or (Edit1TextLength > length(Edit1.text)) then begin
         NIndex.ResetActive();
         Refresh();                             // ????  Seems right thing to do
-        writeln('TSearchForm.Edit1Change - triggered Active reset');
+        //writeln('TSearchForm.Edit1Change - triggered Active reset');
     end;
     if length(Edit1.Text) > 1 then begin
         STL := TStringList.Create;
@@ -977,11 +958,11 @@ begin
                 Found := NIndex.SearchList(St)
             else Found := NIndex.SearchList(lowercase(St));
             NIndex.UpDateLview(ListViewNotes);
-            writeln('TSearchForm.Edit1Change - We found ' + Found.ToString + ' notes');
+            //writeln('TSearchForm.Edit1Change - We found ' + Found.ToString + ' notes');
         end;
         STL.Free;
         Edit1TextLength := length(Edit1.text);
-    end; // ToDo : else clear search and show all notes
+    end;
 end;
 
 procedure TSearchForm.Edit1Enter(Sender: TObject);

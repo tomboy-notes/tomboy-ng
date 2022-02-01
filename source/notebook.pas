@@ -537,7 +537,6 @@ end;
 function TNoteBookPick.MakeNewNoteBook : boolean;
 begin
     Result := True;
-    writeln('TNoteBookPick.MakeNewNoteBook - called');
     if TheNoteLister.IsANotebookTitle(EditNewNotebook.Text) then begin
         showmessage('That notebook already exists.');
         exit(false);

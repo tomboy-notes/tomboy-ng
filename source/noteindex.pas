@@ -212,7 +212,7 @@ begin
         setlength(St, Sz);
         FileStream.Read(St[1], Sz);           // interesting, BufReadStream is slightly worse here ....
         except on E: Exception do begin
-                writeln('Bugger, ' + E.Message);
+                //writeln('Bugger, ' + E.Message);
                 St := '';
                 end;
         end;

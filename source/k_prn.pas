@@ -129,8 +129,10 @@ end;
 procedure TWordList.Dump();
 var I : integer;
 begin
+    {$ifdef UNIX}
     for I := 0 to Count-1 do
-        writeln('NL=' + booltostr(Items[I]^.NewLine, True) + ' [' + Items[I]^.AWord + ']');
+        writeln('NL=' + booltostr(Items[I]^.NewLine, True) + ' [' + Items[I]^.AWord + ']');  // defined unix only
+    {$endif}
 end;
 
 { ====================== T KPrn ======================= }

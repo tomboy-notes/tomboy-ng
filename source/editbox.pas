@@ -1754,13 +1754,6 @@ begin
 	    end else begin
             Caption := NoteFileName;
      	    ImportNote(NoteFileName);		// also sets Caption and Createdate
-(*            if TemplateIs <> '' then begin
-                // What is this block for ? Why would we get a notefilename AND a Template ?   Aug 2021
-                NoteFilename := '';
-                NoteTitle := NewNoteTitle();
-                ItsANewNote := True;
-                writeln('********* Editbox detected TemplateIs and NoteFileName ***********');
-		    end;       *)
         end;
     //debugln('OK, back in EditBox.OnShow');
     if ItsANewNote then begin

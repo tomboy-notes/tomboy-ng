@@ -320,7 +320,7 @@ function TUndo_Redo.CanUnDo(): boolean;
 begin
     Result := (AvailChanges > 0);
     {$IFDEF DEBUG_UNDO}
-    writeln('Can Undo ' + booltostr(result, True));
+    writeln('Can Undo ' + booltostr(result, True));   // only ifdef DEBUG_UNDO
     {$endif}
 end;
 
@@ -328,7 +328,7 @@ function TUndo_Redo.CanRedo(): boolean;
 begin
     Result :=  (AvailReDos > 0);
     {$IFDEF DEBUG_UNDO}
-    writeln('Can Redo ' + booltostr(result, True));
+    writeln('Can Redo ' + booltostr(result, True));   // only ifdef DEBUG_UNDO
     {$endif}
 end;
 
@@ -351,7 +351,7 @@ procedure TUndo_Redo.AddChange(const SelStart, ELen, NLen : integer; const Exist
 begin
 
     {$IFDEF DEBUG_UNDO}
-    writeln('AddChange at ' + inttostr(SelStart)
+    writeln('AddChange at ' + inttostr(SelStart)             // only ifdef DEBUG_UNDO
         + ' replace [' + ExistData
         + '] (' + inttostr(ELen) + ') with [' + NewData + '] (' + inttostr(NLen) + ')');
     {$ENDIF}
@@ -410,7 +410,7 @@ begin
     result := (AvailChanges > 0);                    // can we call UnDo again ?
     with CurrentCR do begin
         {$IFDEF DEBUG_UNDO}
-        writeln('Undo at ' + inttostr(StartSelIndex) + ' replace ['
+        writeln('Undo at ' + inttostr(StartSelIndex) + ' replace ['    // only ifdef DEBUG_UNDO
                     + NewData + '] with [' + ExistData + ']');
         {$ENDIF}
         Thekmemo.Blocks.LockUpdate;
@@ -444,7 +444,7 @@ begin
     result := (AvailReDos > 0);             // can we call ReDo again ?
     with CurrentCR do begin
         {$IFDEF DEBUG_UNDO}
-        writeln('Redo at ' + inttostr(StartSelIndex) + ' replace [' + ExistData + '] with [' + NewData + ']');
+        writeln('Redo at ' + inttostr(StartSelIndex) + ' replace [' + ExistData + '] with [' + NewData + ']');   // only ifdef DEBUG_UNDO
         {$ENDIF}
         try
             Thekmemo.Blocks.LockUpdate;
@@ -490,7 +490,7 @@ var
 begin
     //exit;
     writeln('---------- Undo Report ---------');
-    writeln('NextChange=' + inttostr(NextChange)
+    writeln('NextChange=' + inttostr(NextChange)              // only ifdef DEBUG_UNDO
         + '  AvailChanges=' + inttostr(AvailChanges)
         + '  AvailReDos=' + inttostr(AvailReDos));
     for I := 0 to MaxChange -1 do                          // this is unnecessary, remove after testing
@@ -500,9 +500,9 @@ begin
                 + ' [' + ChangeStructure[i].ExistData + '] - ['
                 + ChangeStructure[i].NewData + ']'{ + 'MarkUp=' + MarkUpSt});
         end;
-    writeln('Current : ' + inttostr(CurrentCR.StartSelIndex) + ' [' + CurrentCR.ExistData + '] - [' + CurrentCR.NewData + ']');
-    //writeln('Content [' + TheKMemo.Text + ']');
-    writeln('--------------------------------');
+    writeln('Current : ' + inttostr(CurrentCR.StartSelIndex) + ' [' + CurrentCR.ExistData   // only ifdef DEBUG_UNDO
+            + '] - [' + CurrentCR.NewData + ']');
+    writeln('--------------------------------');                // only ifdef DEBUG_UNDO
 end;
 {$endif}
 
