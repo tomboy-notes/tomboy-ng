@@ -22,10 +22,10 @@ uses
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
-    Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile,
-    Index, autostart, hunspell, sync, syncutils, transandroid,
-    ResourceStr, colours, cli, RollBack, commonmark,
-    transfileand, notenormal, transgithub, import_notes, JsonTools, NoteIndex;
+    Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile, Index,
+    autostart, hunspell, sync, syncutils, transandroid, ResourceStr, colours,
+    cli, RollBack, commonmark, transfileand, notenormal, transgithub,
+    import_notes, JsonTools, NoteIndex, notifier;
 
 {$R *.res}
 

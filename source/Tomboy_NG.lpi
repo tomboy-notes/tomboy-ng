@@ -841,7 +841,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="41">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1065,6 +1065,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="NoteIndex"/>
       </Unit39>
+      <Unit40>
+        <Filename Value="notifier.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit40>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

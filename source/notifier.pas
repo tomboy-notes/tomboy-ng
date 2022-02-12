@@ -10,11 +10,11 @@ unit notifier;
 
     ------------------
 
-  A trivial unit that uses libnotify on Linux and a timed out TPopupNotify on other platforms.
+  A trivial unit that uses libnotify on Linux and a timed out Balloon Hint from the
+  System Tray on other platforms.
 
   Does very little, on linux it just calls libnotify,  https://github.com/ik5/libnotify-fpc
-  On Non-Linux, it calls TPopupNotifier, sets a timer and removes the Popup after the set
-  time (in mS).  In both cases, it then destroys itself !
+  In both cases, it then destroys itself !
 
   Yes, you call create but YOU DO NOT FREE it !
 
