@@ -25,7 +25,7 @@ uses
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile, Index,
     autostart, hunspell, sync, syncutils, transandroid, ResourceStr, colours,
     cli, RollBack, commonmark, transfileand, notenormal, transgithub,
-    import_notes, JsonTools, NoteIndex, notifier;
+    import_notes, JsonTools, NoteIndex;
 
 {$R *.res}
 

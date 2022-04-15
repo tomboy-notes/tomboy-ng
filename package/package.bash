@@ -37,7 +37,7 @@ LEAKCHECK="NO"
 
 if [ -z "$LAZ_DIR" ]; then
 	echo "Usage : $0 /Full/Path/Lazarus/dir"
-	echo "eg    : $0 \$HOME/bin/Lazarus/trunk"
+	echo "eg    : $0 /home/dbannon/bin/Lazarus/laz_2_2_rc2"
 	echo "or"
 	echo "      : $0 clean"
 	exit
