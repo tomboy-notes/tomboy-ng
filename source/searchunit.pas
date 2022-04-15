@@ -887,16 +887,16 @@ end;
 // --------------- S E A R C H I N G -------------------------------------------
 
 procedure TSearchForm.DoSearch();
-var
+//var
     //TS1, TS2, TS3, TS4 : qword;
-    Found : integer;
+    // Found : integer;
 begin
     if (Edit1.Text = '') then
         ButtonClearFiltersClick(self);
     if (Edit1.Text <> rsMenuSearch) and (Edit1.Text <> '') then begin
         ButtonClearFilters.Enabled := True;
         //TS1:=gettickcount64();
-        Found := NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkCaseSensitive
+        { Found := } NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkCaseSensitive
         // TS2:=gettickcount64();
         NoteLister.LoadListView(ListViewNotes, True);
         // ToDo : do we need to call ScaleListView here ?
@@ -904,8 +904,6 @@ begin
         NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, True);
         //TS4:=gettickcount64();
         //StatusBar1.SimpleText := 'Search=' + inttostr(TS4 - TS1) + 'mS and we found ' + dbgs(Found) + ' notes';
-        {StatusBar1.SimpleText := 'Search=' + inttostr(TS2 - TS1) + 'mS LoadSt=' + inttostr(TS3-TS2) + 'mS LoadNB='
-            + inttostr(TS4 - TS3) + 'mS  and we found ' + dbgs(Found) + ' notes';}
     end;
 end;
 

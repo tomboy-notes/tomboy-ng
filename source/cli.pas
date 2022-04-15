@@ -18,6 +18,7 @@ unit cli;
     2021/12/28  Tidy LongOpts model.
     2022/01/13  When importing file, don't check for its existance, importer will do that
     2022/01/13  When importing note, check if FFileName starts with '~'
+    2022/04/07  Tidy up options.
 }
 
 interface
@@ -44,14 +45,10 @@ type
   ENoNotesRepoException = class(Exception);
 
 var
-    LongOpts : array [0..16] of string = (
-            'dark-theme', 'lang:', 'debug-log:',
-            'help', 'version', 'no-splash',
-            'debug-sync', 'debug-index', 'debug-spell',
-            'config-dir:', 'open-note:', 'save-exit',      // -o for open also legal. save-exit is legecy
-            'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
-            'title-fname', 'gnome3');                      // -g and gnome3 is legal but legacy, ignored.
+    LongOpts : TStringArray;          // See initialization section
 
+const
+    ShortOpts = 'hgo:l:vt:m:n:';  // help gnome3 open lang ver import-[txt md note]
 
                 { If something on commandline means don't proceed, ret True }
 function CommandLineError(inCommingError : string = '') : boolean;
@@ -61,7 +58,7 @@ begin
     ErrorMsg := InCommingError;
     Result := false;
     if ErrorMsg = '' then begin
-        ErrorMsg := Application.CheckOptions('hgo:l:vt:m:n:', LongOpts);   // Allowed single letter switches, help, gnome3, open, language, version
+        ErrorMsg := Application.CheckOptions(ShortOpts, LongOpts);
         if Application.HasOption('h', 'help') then
             ErrorMsg := 'Usage -';
     end;
@@ -97,6 +94,30 @@ end;
                           ret true but set SingleFileName to ''. }
 function HaveCMDParam() : boolean;
 var
+    Params : TStringArray;
+begin
+    Result := False;
+    if Application.HasOption('o', 'open-note') then begin
+       SingleNoteName := Application.GetOptionValue('o', 'open-note');
+       exit(True);
+    end;
+    Params := Application.GetNonOptions(ShortOpts, LongOpts);
+    if length(Params) = 1 then begin
+        if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
+                SingleNoteName := Params[0];
+                exit(True);
+        end;
+    end;
+    if length(Params) > 1 then begin
+        CommandLineError('Unrecognised parameters on command line');
+        SingleNoteName := '';
+        exit(True);
+    end;
+end;
+
+// ToDo : remove below, new code does not use TStringList
+(* function HaveCMDParam() : boolean;
+var
     Params : TStringList;
 begin
     Result := False;
@@ -106,9 +127,7 @@ begin
     end;
     Params := TStringList.Create;
     try
-        Application.GetNonOptions('hlvgo:t:m:n:', LongOpts, Params);
-        {for I := 0 to Params.Count -1 do
-            debugln('Extra Param ' + inttostr(I) + ' is ' + Params[I]);  }
+        Application.GetNonOptions(ShortOpts, LongOpts, Params);
         if Params.Count = 1 then begin
             if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
                     SingleNoteName := Params[0];
@@ -123,7 +142,7 @@ begin
     finally
         FreeAndNil(Params);
     end;
-end;
+end;    *)
 
 // Looks for server, if present, sends indicated message and returns true, else false.
 function CanSendMessage(Msg : string) : boolean;
@@ -259,6 +278,15 @@ begin
     if CanSendMessage('SHOWSEARCH') then exit(False);
     Result := true;
 end;
+
+initialization
+    LongOpts := TStringArray.create(                   // a type, not an object, don't free.
+        'dark-theme', 'lang:', 'debug-log:',
+        'help', 'version', 'no-splash',
+        'debug-sync', 'debug-index', 'debug-spell',
+        'config-dir:', 'open-note:', 'save-exit',      // -o for open also legal. save-exit is legecy
+        'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
+        'title-fname', 'gnome3');                      // -g and gnome3 is legal but legacy, ignored.
 
 end.
 

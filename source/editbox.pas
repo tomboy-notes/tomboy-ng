@@ -221,6 +221,8 @@ unit EditBox;
     2021/08/27  Can now edit multilevel bullets
     2021/10/26  User selectable date stamp format, inc Bold
     2021-12-18  Ctrl-D was not saving any selected text to Undoer
+    2022/04/12  Stopped SpeedButtonLinkClick from asking about Notebooks, no idea why it was doing that.
+    2022/04/14  bug #260, TKMemoHyperlink not TKHyperlink
 }
 
 
@@ -245,6 +247,7 @@ type
         ButtMainTBMenu: TSpeedButton;
         EditFind: TEdit;
         KMemo1: TKMemo;
+        Label1: TLabel;
         LabelFindCount: TLabel;
         LabelFindInfo: TLabel;
         Label2: TLabel;
@@ -360,6 +363,8 @@ type
 		procedure SpeedRightClick(Sender: TObject);
 		procedure SpeedRollBackClick(Sender: TObject);
         procedure SpeedButtonDeleteClick(Sender: TObject);
+                                // If user has some text selected, clean it up to make a Title, check if that Title
+                                // already exits (open that note) and if not, open a new note with that Title.
         procedure SpeedButtonLinkClick(Sender: TObject);
         procedure SpeedButtonNotebookClick(Sender: TObject);
         procedure SpeedButtonSearchClick(Sender: TObject);
@@ -401,6 +406,7 @@ type
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
+        procedure DumpKMemo(WhereFrom: string);
         procedure ExprTan(var Result: TFPExpressionResult; const Args: TExprParameterArray);
                             { Locates if it can Term and selects it. Ret False if not found.
                             Uses regional var, LastFind to start its search from, set to 0 for new search
@@ -660,6 +666,34 @@ procedure TEditBoxForm.SpeedButtonLinkClick(Sender: TObject);
 var
     ThisTitle : ANSIString;
     Index : integer;
+    //NBArray : TStringArray;
+begin
+    if KMemo1.ReadOnly then exit();
+    if KMemo1.Blocks.RealSelLength > 1 then begin
+        ThisTitle := KMemo1.SelText;
+         // Titles must not start or end with space or contain low characters
+        while ThisTitle[1] = ' ' do UTF8Delete(ThisTitle, 1, 1);
+        while ThisTitle[UTF8Length(ThisTitle)] = ' ' do UTF8Delete(ThisTitle, UTF8Length(ThisTitle), 1);
+        Index := Length(ThisTitle);
+        while Index > 0 do begin
+            if ThisTitle[Index] < ' ' then delete(ThisTitle, Index, 1);
+            dec(Index);
+		end;
+		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
+        // Note : There was code here that called SearchForm.NoteLister.GetNotebooks - no idea why ?? April 2022
+        if UTF8Length(ThisTitle) > 1 then begin
+            SearchForm.OpenNote(ThisTitle);
+            KMemo1Change(self);
+		end;
+	end;
+end;
+
+// ToDo : remove code below. But why are we looking at Notebooks here ? Nothing to do with whats happening ....
+(*
+procedure TEditBoxForm.SpeedButtonLinkClick(Sender: TObject);
+var
+    ThisTitle : ANSIString;
+    Index : integer;
     SL : TStringList;
 begin
    if KMemo1.ReadOnly then exit();
@@ -676,7 +710,7 @@ begin
 		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
         if UTF8Length(ThisTitle) > 1 then begin
             SL := TStringList.Create;
-            SearchForm.NoteLister.GetNotebooks(SL, ExtractFileNameOnly(NoteFileName));      // that should be just ID
+// commented            SearchForm.NoteLister.GetNotebooks(SL, ExtractFileNameOnly(NoteFileName));      // that should be just ID
             if SL.Count > 0 then
                 SearchForm.OpenNote(ThisTitle, '', SL.Strings[0])
         	else SearchForm.OpenNote(ThisTitle);
@@ -684,7 +718,7 @@ begin
             SL.Free;
 		end;
 	end;
-end;
+end;      *)
 
 procedure TEditBoxForm.SpeedButtonNotebookClick(Sender: TObject);
 var
@@ -1980,39 +2014,42 @@ begin
 	end;
 end;
 
-
+// This is a debug method, take care, it uses writeln and will kill Windows !
+procedure TEditBoxForm.DumpKMemo(WhereFrom : string);
+var
+    i : integer;
+begin
+    Writeln('TEditBoxForm.DumpKMemo from ' + WhereFrom);
+    for i := 0 to Kmemo1.Blocks.Count-1 do
+        writeln(Inttostr(i) + ' ' + KMemo1.Blocks.Items[i].ClassName + ' = ' + KMemo1.Blocks.Items[i].Text);
+end;
 { -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
 
 procedure TEditBoxForm.MakeLink({const Link : ANSIString;} const Index, Len : longint);
 var
 	Hyperlink, HL: TKMemoHyperlink;
     TrueLink : string;
-	BlockNo, BlockOffset, Blar{, i} : longint;
-	// DontSplit : Boolean = false;
-    // blk : TKMemoTextBlock;
+	BlockNo, BlockOffset, Blar : longint;
 begin
+    //DumpKMemo('MakeLink');
 	// Is it already a Hyperlink ? We leave valid hyperlinks in place.
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKHyperlink') then exit();
+    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then exit();
 	// Is it all in the same block ?
     if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
     TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
-    if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len {length(TrueLink)} then begin
+    if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len then begin
          Kmemo1.Blocks.Delete(BlockNo);
-         //writeln('Block deleted');
     end
     else  begin
         KMemo1.SelStart:= Index;
         KMemo1.SelLength:=Len;
         KMemo1.ClearSelection();
         BlockNo := KMemo1.SplitAt(Index);
-        //writeln('Block Split');
     end;
 
 	Hyperlink := TKMemoHyperlink.Create;
-	// Hyperlink.Text := Link;
     Hyperlink.Text := TrueLink;
-    // Hyperlink.TextStyle.Font.Color:= clRed {Sett.TitleColour};
     Hyperlink.Textstyle.StyleChanged   :=  true;
 	Hyperlink.OnClick := @OnUserClickLink;
 	HL := KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
@@ -2154,7 +2191,7 @@ end;
 
 procedure TEditBoxForm.ClearNearLink(const StartS, EndS : integer); //CurrentPos : longint);
 var
-    {BlockNo,}  Blar, StartBlock, EndBlock : longint;
+    Blar, StartBlock, EndBlock : longint;
     LinkText  : ANSIString;
 
     function ValidWebLink() : boolean;                  // returns true if LinkText is valid web address
@@ -2162,7 +2199,7 @@ var
         DotSpot : integer;
         Str : String;
     begin
-//writeln('Scanning for web address ' + LinkText);
+        //writeln('Scanning for web address ' + LinkText);
         if pos(' ', LinkText) > 0 then exit(false);
         if (copy(LinkText,1, 8) <> 'https://') and (copy(LinkText, 1, 7) <> 'http://') then exit(false);
         Str := TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text;
@@ -2176,6 +2213,29 @@ var
         if LinkText.EndsWith('.') then exit(false);
         result := true;
         //writeln(' Valid http or https addess');
+    end;
+
+    // Restores block at StartLink to Text, attempts to merge linktext back into either
+    // the previous or next block if it can. It should, perhaps, merge all three ??
+    // There is a problem here. If a link is edited making it invalid but the remainer
+    // happens to also be a valid link, we don't get back to original if edit is reversed.
+    procedure UnlinkBlock();
+    var
+        Existing : string;
+    begin
+        Kmemo1.Blocks.Delete(StartBlock);
+        if KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoTextBlock') then begin
+            Existing := KMemo1.Blocks.Items[StartBlock-1].Text;
+            Kmemo1.Blocks.Delete(StartBlock-1);
+            KMemo1.Blocks.AddTextBlock(Existing + Linktext, StartBlock-1);
+        end else
+            if (StartBlock < KMemo1.Blocks.Count)
+                    and KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoTextBlock') then begin
+                Existing := KMemo1.Blocks.Items[StartBlock].Text;
+                Kmemo1.Blocks.Delete(StartBlock);
+                KMemo1.Blocks.AddTextBlock(LinkText + Existing, StartBlock);
+            end else
+                KMemo1.Blocks.AddTextBlock(Linktext, StartBlock);
     end;
 
 begin
@@ -2195,11 +2255,8 @@ begin
             LinkText := Kmemo1.Blocks.Items[StartBlock].Text;
             // if its not a valid link, remove it. But don't check for Title links in SingleNoteMode
             // don't remove it if its a valid web link  or  ! SingleNotemode and its a valid local link.
-            // if not (ValidWebLink() or SingleNoteMode or SearchForm.IsThisaTitle(LinkText)) then begin
             if not (ValidWebLink() or (not SingleNoteMode and SearchForm.IsThisaTitle(LinkText))) then begin
-            // if not (SearchForm.IsThisaTitle(LinkText) or ValidWebLink()) then begin
-                Kmemo1.Blocks.Delete(StartBlock);
-        		KMemo1.Blocks.AddTextBlock(Linktext, StartBlock);
+                UnLinkBlock();
             end;
         end else begin
             // Must check here that its not been subject to the copying of a links colour and underline
@@ -2234,7 +2291,7 @@ begin
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(StartScan, Blar); // DANGER, we must adjust StartScan to block boundary
     EndBlock := KMemo1.Blocks.IndexToBlockIndex(EndScan, Blar);	 // DANGER, we must adjust EndScan to block boundary
     KMemo1.Blocks.LockUpdate;
-    while BlockNo <= EndBlock do begin							// DANGER, must check these block numbers work
+    while BlockNo <= EndBlock do begin							 // DANGER, must check these block numbers work
         if Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoHyperlink' then begin
             LinkText := Kmemo1.Blocks.Items[BlockNo].Text;
             Kmemo1.Blocks.Delete(BlockNo);

@@ -100,6 +100,7 @@ unit settings;
     2021/12/03  Rearranged checkboxes to accomodate Searching While u Wait.
     2022/01/21  GTK3 determines what is a monospace font differently.
     2022/01/31  Added a CheckFindToggles to determine if every press of Ctrl-f invokes Find or toggles it on or off.
+    2022/03/31  Tidyed up the Github Token controls, now can invoke browser.
 }
 
 {$mode objfpc}{$H+}
@@ -138,12 +139,13 @@ type
         ComboSyncType: TComboBox;
         ComboHelpLanguage: TComboBox;
         EditUserName: TEdit;
+        GroupBoxUser: TGroupBox;
+        GroupBoxToken: TGroupBox;
         GroupBoxSync: TGroupBox;
         Label10: TLabel;
         Label11: TLabel;
         Label16: TLabel;
         Label17: TLabel;
-        LabelToken: TLabel;
         LabelSyncType: TLabel;
         Label5: TLabel;
         Label6: TLabel;
@@ -183,13 +185,14 @@ type
         LabelDicStatus: TLabel;
         LabelLibraryStatus: TLabel;
         Label2: TLabel;
-        Label3: TLabel;
         LabelNotesPath: TLabel;
         LabelSettingPath: TLabel;
         LabelSnapDir: TLabel;
-        LabelLabelToken: TLabel;
-        LabelUserName: TLabel;
+        LabelToken: TLabel;
         ListBoxDic: TListBox;
+        MenuItemGetToken: TMenuItem;
+        MenuItemPasteToken: TMenuItem;
+        MenuItemCopyToken: TMenuItem;
         OpenDialogLibrary: TOpenDialog;
         OpenDialogDictionary: TOpenDialog;
         PageControl1: TPageControl;
@@ -197,6 +200,7 @@ type
         Panel2: TPanel;
         Panel3: TPanel;
         PMenuMain: TPopupMenu;
+        PopupMenuTokenActions: TPopupMenu;
         RadioAlwaysAsk: TRadioButton;
         RadioFontHuge: TRadioButton;
         RadioFontBig: TRadioButton;
@@ -208,8 +212,7 @@ type
         SelectSnapDir: TSelectDirectoryDialog;
         SpeedButHide: TSpeedButton;
         SpeedButHelp: TSpeedButton;
-        SpeedTokenCopy: TSpeedButton;
-        SpeedTokenPaste: TSpeedButton;
+        SpeedTokenActions: TSpeedButton;
         SpeedButtTBMenu: TSpeedButton;
         SpeedSetupSync: TSpeedButton;
         SpinDaysPerSnapshot: TSpinEdit;
@@ -237,6 +240,9 @@ type
         procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
+        procedure MenuItemCopyTokenClick(Sender: TObject);
+        procedure MenuItemGetTokenClick(Sender: TObject);
+        procedure MenuItemPasteTokenClick(Sender: TObject);
                 { Called when ANY of the setting check boxes change so we can save. }
         procedure SaveSettings(Sender: TObject);
         procedure CheckSyncEnabledChange(Sender: TObject);
@@ -255,8 +261,7 @@ type
         procedure SpeedButHideClick(Sender: TObject);
         procedure SpeedButtTBMenuClick(Sender: TObject);
         procedure SpeedSetupSyncClick(Sender: TObject);
-        procedure SpeedTokenCopyClick(Sender: TObject);
-        procedure SpeedTokenPasteClick(Sender: TObject);
+        procedure SpeedTokenActionsClick(Sender: TObject);
         procedure SpinDaysPerSnapshotChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabRecoverResize(Sender: TObject);
@@ -512,6 +517,8 @@ procedure TSett.SpeedButtTBMenuClick(Sender: TObject);
 begin
     PMenuMain.Popup;
 end;
+
+
 
 
 
@@ -1429,7 +1436,7 @@ begin
                 LabelSyncInfo2.caption := rsFileSyncInfo2;
                 CheckBoxAutoSync.Checked := SyncFileAuto;
                 CheckSyncEnabled.Checked := SyncFileEnabled;
-                for Ctrl in [LabelLabelToken, SpeedTokenCopy, SpeedTokenPaste, LabelToken, LabelUserName, EditUserName]
+                for Ctrl in [GroupBoxToken, GroupBoxUser, LabelToken, EditUserName]
                     do Ctrl.Visible := False;
                 if SyncFileRepo = '' then
                     LabelSyncRepo.Caption  := rsSyncNotConfig
@@ -1440,7 +1447,7 @@ begin
                 LabelSyncInfo2.caption := rsGithubSyncInfo2;
                 CheckBoxAutoSync.Checked := SyncGithubAuto;
                 CheckSyncEnabled.Checked := SyncGithubEnabled;
-                for Ctrl in [LabelLabelToken, SpeedTokenCopy, SpeedTokenPaste, LabelToken, LabelUserName, EditUserName]
+                for Ctrl in [GroupBoxToken, GroupBoxUser, LabelToken, EditUserName]
                     do Ctrl.Visible := True;
                 if SyncGithubRepo = '' then
                     LabelSyncRepo.Caption  := rsSyncNotConfig
@@ -1503,16 +1510,27 @@ begin
     end;
 end;
 
-procedure TSett.SpeedTokenCopyClick(Sender: TObject);
+procedure TSett.SpeedTokenActionsClick(Sender: TObject);
 begin
-    Clipboard.AsText := LabelToken.Caption;
+    PopupMenuTokenActions.PopUp;
 end;
 
-procedure TSett.SpeedTokenPasteClick(Sender: TObject);
+procedure TSett.MenuItemGetTokenClick(Sender: TObject);
+begin
+    // ToDo : is it possible to tell if user is logged in at this stage ?
+    OpenURL('https://github.com/settings/tokens');
+end;
+
+procedure TSett.MenuItemPasteTokenClick(Sender: TObject);
 begin
     LabelToken.Caption := Clipboard.AsText;
     SaveSettings(self);
     LabelToken.Hint := '';
+end;
+
+procedure TSett.MenuItemCopyTokenClick(Sender: TObject);
+begin
+    Clipboard.AsText := LabelToken.Caption;
 end;
 
 function TSett.fGetValidSync: boolean;
@@ -1565,6 +1583,7 @@ begin
     SaveSettings(Self);
 end;
 
+
 procedure TSett.Synchronise();
 begin
     FormSync.NoteDirectory := Sett.NoteDirectory;
@@ -1574,6 +1593,7 @@ begin
     SearchForm.FlushOpenNotes();
     FormSync.SetupSync := False;
     if SyncFileEnabled then begin
+        FormSync.AnotherSync := SyncGithubEnabled;
         FormSync.Transport:=TSyncTransport.SyncFile;
         if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
             FormSync.Show
@@ -1581,6 +1601,7 @@ begin
             FormSync.ShowModal;
     end;
     if SyncGithubEnabled then begin
+        FormSync.AnotherSync := False;
         FormSync.Transport:=TSyncTransport.SyncGithub;
         if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
             FormSync.Show

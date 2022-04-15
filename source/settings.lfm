@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 564
+  Left = 531
   Height = 530
-  Top = 273
+  Top = 359
   Width = 726
   BorderIcons = []
   Caption = 'Form Caption'
@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.3.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabRecover
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 4
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -55,6 +55,7 @@ object Sett: TSett
         Top = 42
         Width = 136
         Caption = 'LabelSettingPath'
+        ParentColor = False
       end
       object LabelNotesPath: TLabel
         Left = 8
@@ -62,6 +63,7 @@ object Sett: TSett
         Top = 120
         Width = 127
         Caption = 'LabelNotesPath'
+        ParentColor = False
       end
       object Label1: TLabel
         Left = 8
@@ -69,6 +71,7 @@ object Sett: TSett
         Top = 16
         Width = 195
         Caption = 'Settings will be saved in :'
+        ParentColor = False
       end
       object Label2: TLabel
         Left = 11
@@ -76,6 +79,7 @@ object Sett: TSett
         Top = 94
         Width = 297
         Caption = 'Notes will be looked for and saved in :'
+        ParentColor = False
       end
       object ButtDefaultNoteDir: TButton
         AnchorSideLeft.Control = ButtonSetNotePath
@@ -365,6 +369,7 @@ object Sett: TSett
         Width = 170
         Anchors = [akLeft, akBottom]
         Caption = 'Help Notes Language'
+        ParentColor = False
       end
       object CheckUseUndo: TCheckBox
         AnchorSideTop.Control = CheckManyNotebooks
@@ -411,6 +416,7 @@ object Sett: TSett
         Width = 153
         BorderSpacing.Top = 32
         Caption = 'Date Stamp Format'
+        ParentColor = False
       end
       object CheckStampItalics: TCheckBox
         AnchorSideLeft.Control = ComboDateFormat
@@ -481,33 +487,24 @@ object Sett: TSett
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
         Left = 3
-        Height = 182
-        Top = 272
+        Height = 150
+        Top = 304
         Width = 716
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 3
         BorderSpacing.Top = 6
         BorderSpacing.Right = 3
         BorderSpacing.Bottom = 3
-        Caption = '  Options  '
-        ClientHeight = 178
+        Caption = 'When a conflict is detected between a local note and remote one :'
+        ClientHeight = 127
         ClientWidth = 712
         ParentColor = False
         TabOrder = 0
-        object Label3: TLabel
-          Left = 16
-          Height = 21
-          Top = 16
-          Width = 521
-          Caption = 'When a conflict is detected between a local note and remote one :'
-        end
         object RadioAlwaysAsk: TRadioButton
-          AnchorSideLeft.Control = Label3
-          AnchorSideTop.Control = Label3
-          AnchorSideTop.Side = asrBottom
+          AnchorSideTop.Control = GroupBox4
           Left = 16
           Height = 23
-          Top = 52
+          Top = 15
           Width = 233
           BorderSpacing.Top = 15
           Caption = 'Always Ask me what to do.'
@@ -516,24 +513,22 @@ object Sett: TSett
           TabStop = True
         end
         object RadioUseLocal: TRadioButton
-          AnchorSideLeft.Control = Label3
           AnchorSideTop.Control = RadioAlwaysAsk
           AnchorSideTop.Side = asrBottom
           Left = 16
           Height = 23
-          Top = 90
+          Top = 53
           Width = 362
           BorderSpacing.Top = 15
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
         end
         object RadioUseServer: TRadioButton
-          AnchorSideLeft.Control = Label3
           AnchorSideTop.Control = RadioUseLocal
           AnchorSideTop.Side = asrBottom
           Left = 16
           Height = 23
-          Top = 128
+          Top = 91
           Width = 347
           BorderSpacing.Top = 15
           Caption = 'Use Server Note and Rename Local Note.'
@@ -545,6 +540,7 @@ object Sett: TSett
         Height = 1
         Top = 49
         Width = 1
+        ParentColor = False
       end
       object GroupBoxSync: TGroupBox
         AnchorSideLeft.Control = TabSync
@@ -553,7 +549,7 @@ object Sett: TSett
         AnchorSideRight.Control = TabSync
         AnchorSideRight.Side = asrBottom
         Left = 3
-        Height = 215
+        Height = 247
         Top = 51
         Width = 716
         Anchors = [akTop, akLeft, akRight]
@@ -561,7 +557,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 211
+        ClientHeight = 224
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
@@ -576,6 +572,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 18
           Caption = 'Repo : '
+          ParentColor = False
         end
         object LabelSyncRepo: TLabel
           AnchorSideLeft.Control = Label4
@@ -587,16 +584,16 @@ object Sett: TSett
           Width = 117
           BorderSpacing.Left = 1
           Caption = 'not configured'
+          ParentColor = False
         end
         object SpeedSetupSync: TSpeedButton
-          AnchorSideLeft.Control = EditUserName
           AnchorSideRight.Control = GroupBoxSync
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = GroupBoxSync
           AnchorSideBottom.Side = asrBottom
           Left = 548
           Height = 32
-          Top = 169
+          Top = 182
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -611,10 +608,10 @@ object Sett: TSett
           AnchorSideRight.Control = SpeedSetupSync
           AnchorSideBottom.Control = SpeedSetupSync
           AnchorSideBottom.Side = asrBottom
-          Left = 219
+          Left = 172
           Height = 23
           Hint = 'Sync, if possible once an hour.'
-          Top = 178
+          Top = 191
           Width = 101
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 30
@@ -635,6 +632,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 15
           Caption = 'LabelSyncInfo1'
+          ParentColor = False
         end
         object LabelSyncInfo2: TLabel
           AnchorSideLeft.Control = GroupBoxSync
@@ -647,194 +645,99 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 10
           Caption = 'LabelSyncInfo2'
-        end
-        object LabelLabelToken: TLabel
-          AnchorSideLeft.Control = EditUserName
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = Label4
-          AnchorSideTop.Side = asrBottom
-          AnchorSideBottom.Control = LabelUserName
-          AnchorSideBottom.Side = asrCenter
-          Left = 236
-          Height = 21
-          Top = 120
-          Width = 48
-          Anchors = [akLeft, akBottom]
-          BorderSpacing.Left = 20
-          BorderSpacing.Top = 12
-          BorderSpacing.Right = 5
-          BorderSpacing.Bottom = 5
-          Caption = 'Token'
-        end
-        object LabelUserName: TLabel
-          AnchorSideLeft.Control = GroupBoxSync
-          AnchorSideTop.Control = Label4
-          AnchorSideTop.Side = asrBottom
-          AnchorSideRight.Control = EditUserName
-          AnchorSideBottom.Side = asrBottom
-          Left = 15
-          Height = 21
-          Top = 121
-          Width = 37
-          BorderSpacing.Left = 15
-          BorderSpacing.Top = 15
-          BorderSpacing.Right = 5
-          BorderSpacing.Bottom = 4
-          Caption = 'User'
-        end
-        object EditUserName: TEdit
-          AnchorSideLeft.Control = LabelUserName
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = GroupBoxSync
-          AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = LabelUserName
-          AnchorSideBottom.Side = asrCenter
-          Left = 62
-          Height = 29
-          Top = 116
-          Width = 154
-          Anchors = [akLeft, akBottom]
-          BorderSpacing.Left = 10
-          BorderSpacing.Right = 10
-          TabOrder = 1
-          Text = 'EditUserName'
+          ParentColor = False
         end
         object CheckSyncEnabled: TCheckBox
-          AnchorSideLeft.Control = EditUserName
+          AnchorSideLeft.Control = Label4
           AnchorSideTop.Control = SpeedSetupSync
           AnchorSideTop.Side = asrCenter
           AnchorSideBottom.Control = SpeedSetupSync
           AnchorSideBottom.Side = asrBottom
-          Left = 62
+          Left = 15
           Height = 23
-          Top = 178
+          Top = 191
           Width = 127
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Enabled'
           OnChange = CheckSyncEnabledChange
-          TabOrder = 2
+          TabOrder = 1
         end
-        object SpeedTokenPaste: TSpeedButton
-          AnchorSideLeft.Control = SpeedTokenCopy
+        object GroupBoxToken: TGroupBox
+          AnchorSideLeft.Control = GroupBoxUser
           AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Label4
           AnchorSideTop.Side = asrBottom
+          AnchorSideRight.Control = SpeedSetupSync
           AnchorSideRight.Side = asrBottom
-          AnchorSideBottom.Control = LabelUserName
-          AnchorSideBottom.Side = asrCenter
-          Left = 309
-          Height = 27
-          Hint = 'Paste Token'
-          Top = 117
-          Width = 36
-          Anchors = [akLeft, akBottom]
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000064000000640000000000000000000000000000000000
-            00000000000000000000000000000000000000000000B77A3AFFB77A3AFFB77A
-            3AFFB77A3AFFB77A3AFFB77A3AFFB77A3AFFB77A3AFFB77A3AFF2193AFC21E8E
-            AAFF1E8EAAFF1E8EAAFF1E8EAAFF1E8EAAFF1E8EAAFFBA7F41FFF4EBE0FFF4EB
-            E0FFF4EBE0FFF4EBE0FFF4EBE0FFF4EBE0FFF4EBE0FFBA7F41FF1E90ADFF54D3
-            E8FF51D2E6FF4FD1E5FF4CCFE4FF49CEE3FF49CEE3FFBD8447FFF6EEE4FFF6EE
-            E4FFF6EEE4FFF6EEE4FFF6EEE4FFF6EEE4FFF6EEE4FFBD8447FF1F92AFFF5AD6
-            EAFF57D5E9FF55D4E8FF52D2E7FF4FD1E6FF4DD0E5FFC0884EFFF7F1E9FFFBD4
-            A7FFFBD4A7FFFBD4A7FFFBD4A7FFFBD4A7FFF7F1E9FFC0884EFF1F94B2FF60D9
-            EDFF5DD8ECFF5BD7EAFF58D5E9FF55D4E8FF53D3E7FFC38D54FFF9F4EDFFF9F4
-            EDFFF9F4EDFFF9F4EDFFF9F4EDFFF9F4EDFFF9F4EDFFC38D54FF2097B4FF66DC
-            EFFF63DBEEFF61DAEDFF5ED8ECFF5BD7EBFF59D6EAFFC7925BFFFAF6F2FFFBCB
-            95FFFBCB95FFFBCB95FFFBCB95FFFBCB95FFFAF6F2FFC7925BFF2099B7FF6CDF
-            F2FF69DEF1FF67DDF0FF64DBEEFF61DAEDFF5FD9ECFFCA9761FFFCF9F6FFFCF9
-            F6FFFCF9F6FFFCF9F6FFFCF9F6FFFCF9F6FFFCF9F6FFCA9761FF219BBAFF72E2
-            F4FF6FE1F3FF6CDFF2FF6ADEF1FF67DDF0FF65DCEFFFCD9B68FFFDFCFBFFFBC1
-            80FFFBC180FFFBC180FFFBC180FFFDFCFBFFF1E4D6FFCE9D6BF9219DBCFF78E5
-            F7FF75E4F6FF72E2F5FF70E1F3FF6DE0F2FF6BDFF1FFD0A06EFFFFFFFFFFFFFF
-            FFFFFFFFFFFFFFFFFFFFFFFFFFFFF4E9DDFFD2A476F5D19E6C42229FBFFF7EE8
-            F9FF7BE7F8FF78E5F7FF76E4F6FF73E3F5FF71E1F4FFD3A575FFD3A575FFD3A5
-            75FFD3A575FFD3A575FFD3A575FFD4A777F9D3A374400000000022A1C2FF84EB
-            FCFF81EAFBFF7EE8FAFF7CE7F9FF79E6F7FF77E4F6FF74E3F5FF71E2F4FF6FE1
-            F3FF6CDFF2FF22A1C2FF0000000000000000000000000000000023A4C4FF84EB
-            FCFF84EBFCFF84EBFCFF82EAFBFF7FE9FAFF7DE7F9FF7AE6F8FF77E5F7FF75E4
-            F6FF72E2F4FF23A4C4FF0000000000000000000000000000000023A6C7FF84EB
-            FCFF84EBFCFF2E9ED9FF24ABE2FF24ABE2FF24AAE2FF23AAE2FF2D9DD8FF7BE6
-            F8FF78E5F7FF23A6C7FF0000000000000000000000000000000024A8C9FF84EB
-            FCFF84EBFCFF38A4D5FF3DD8FFFF3DD8FFFF3DD8FFFF3DD8FFFF38A4D5FF81E9
-            FBFF7EE8FAFF24A8C9FF000000000000000000000000000000002BAFD0C224AA
-            CCFF24AACCFF4C9CC3FF98EAFFFF98EAFFFF98EAFFFF98EAFFFF4C9CC3FF24AA
-            CCFF24AACCFF2BAFD0C200000000000000000000000000000000000000000000
-            000000000000417196D86290AEDF6290AEDF6290AEDF6290AEDF417196D80000
-            0000000000000000000000000000000000000000000000000000
-          }
-          OnClick = SpeedTokenPasteClick
-          ShowHint = True
-          ParentShowHint = False
+          Left = 215
+          Height = 58
+          Top = 111
+          Width = 487
+          Anchors = [akTop, akLeft, akRight]
+          BorderSpacing.Left = 15
+          BorderSpacing.Top = 5
+          Caption = 'Token'
+          ClientHeight = 35
+          ClientWidth = 483
+          TabOrder = 2
+          object LabelToken: TLabel
+            AnchorSideLeft.Control = SpeedTokenActions
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = SpeedTokenActions
+            AnchorSideTop.Side = asrCenter
+            AnchorSideBottom.Side = asrCenter
+            Left = 106
+            Height = 21
+            Top = 7
+            Width = 91
+            BorderSpacing.Left = 5
+            Caption = 'LabelToken'
+            ParentColor = False
+            ParentShowHint = False
+            ShowHint = True
+          end
+          object SpeedTokenActions: TSpeedButton
+            AnchorSideLeft.Control = GroupBoxToken
+            AnchorSideTop.Control = GroupBoxToken
+            Left = 5
+            Height = 28
+            Top = 3
+            Width = 96
+            BorderSpacing.Left = 5
+            BorderSpacing.Top = 3
+            Caption = 'Actions'
+            OnClick = SpeedTokenActionsClick
+          end
         end
-        object SpeedTokenCopy: TSpeedButton
-          AnchorSideLeft.Control = LabelLabelToken
-          AnchorSideLeft.Side = asrBottom
+        object GroupBoxUser: TGroupBox
+          AnchorSideLeft.Control = Label4
+          AnchorSideTop.Control = Label4
           AnchorSideTop.Side = asrBottom
-          AnchorSideRight.Control = SpeedTokenPaste
-          AnchorSideBottom.Control = LabelUserName
-          AnchorSideBottom.Side = asrCenter
-          Left = 289
-          Height = 23
-          Hint = 'Copy Token'
-          Top = 119
-          Width = 20
-          Anchors = [akLeft, akBottom]
-          Glyph.Data = {
-            36040000424D3604000000000000360000002800000010000000100000000100
-            2000000000000004000064000000640000000000000000000000000000000000
-            000000000000000000000000000000000000D3A575FFD3A575FFD3A575FFD3A5
-            75FFD3A575FFD3A575FFD3A575FFD3A575FFD3A575FFD3A575FF000000000000
-            000000000000000000000000000000000000D3A575FFF8F2EBFFF7F1E9FFF7EF
-            E7FFF6EEE5FFF6EDE4FFF5ECE2FFF4EBE0FFF4EADFFFD3A575FF000000000000
-            000000000000000000000000000000000000D3A575FFF9F3EDFFF8F2EBFFF7F1
-            E9FFF7F0E7FFF6EEE6FFF6EDE4FFF5ECE2FFF4EBE0FFD3A575FF000000000000
-            000000000000000000000000000000000000D3A575FFF9F4EFFFFBEAD7FFFBEA
-            D7FFFBEAD7FFFBEAD7FFFBEAD7FFF6EDE4FFF5ECE2FFD3A575FFD3A575FFD3A5
-            75FFD3A575FFD3A575FFD3A575FFD3A575FFD3A575FFFAF6F1FFF9F4EFFFF9F3
-            EDFFF8F2EBFFF8F1EAFFF7F0E8FFF6EFE6FFF6EEE4FFD3A575FFD3A575FFF8F2
-            EBFFF7F1E9FFF7EFE7FFF6EEE5FFF6EDE4FFD3A575FFFBF7F3FFFBD4A7FFFBD4
-            A7FFFBD4A7FFFBD4A7FFFBD4A7FFF7F0E8FFF7EFE6FFD3A575FFD3A575FFF9F3
-            EDFFF8F2EBFFF7F1E9FFF7F0E7FFF6EEE6FFD3A575FFFBF8F5FFFBF7F3FFFAF6
-            F1FFFAF5EFFFF9F4EEFFF8F2ECFFF8F1EAFFF7F0E8FFD3A575FFD3A575FFF9F4
-            EFFFFBEAD7FFFBEAD7FFFBEAD7FFFBEAD7FFD3A575FFFCFAF7FFFBC180FFFBC1
-            80FFFBC180FFFBC180FFFBC180FFF9F3ECFFF8F2EAFFD3A575FFD3A575FFFAF6
-            F1FFF9F4EFFFF9F3EDFFF8F2EBFFF8F1EAFFD3A575FFFDFBF9FFFCFAF7FFFCF9
-            F5FFFBF7F3FFFAF6F2FFFAF5F0FFF9F4EEFFF9F3ECFFD3A575FFD3A575FFFBF7
-            F3FFFBD4A7FFFBD4A7FFFBD4A7FFFBD4A7FFD3A575FFFEFCFBFFFBC180FFFBC1
-            80FFFBC180FFFBC180FFFBC180FFFAF5F0FFF0E0CFFFD4A776F9D3A575FFFBF8
-            F5FFFBF7F3FFFAF6F1FFFAF5EFFFF9F4EEFFD3A575FFFEFDFDFFFEFCFBFFFDFB
-            F9FFFCFAF7FFFCF9F6FFFBF8F4FFF2E4D5FFD4A97BF5D5A67442D3A575FFFCFA
-            F7FFFBC180FFFBC180FFFBC180FFFBC180FFD3A575FFD3A575FFD3A575FFD3A5
-            75FFD3A575FFD3A575FFD3A575FFD4A676F9D3A3744000000000D3A575FFFDFB
-            F9FFFCFAF7FFFCF9F5FFFBF7F3FFFAF6F2FFFAF5F0FFF9F4EEFFF9F3ECFFD3A5
-            75FF000000000000000000000000000000000000000000000000D3A575FFFEFC
-            FBFFFBC180FFFBC180FFFBC180FFFBC180FFFBC180FFFAF5F0FFF0E0CFFFD4A7
-            76F9000000000000000000000000000000000000000000000000D3A575FFFEFD
-            FDFFFEFCFBFFFDFBF9FFFCFAF7FFFCF9F6FFFBF8F4FFF2E4D5FFD4A97BF5D5A6
-            7442000000000000000000000000000000000000000000000000D3A575FFD3A5
-            75FFD3A575FFD3A575FFD3A575FFD3A575FFD3A575FFD4A676F9D3A374400000
-            0000000000000000000000000000000000000000000000000000
-          }
-          OnClick = SpeedTokenCopyClick
-          ShowHint = True
-          ParentShowHint = False
-        end
-        object LabelToken: TLabel
-          AnchorSideLeft.Control = SpeedTokenPaste
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideBottom.Control = LabelUserName
-          AnchorSideBottom.Side = asrCenter
-          Left = 355
-          Height = 21
-          Top = 120
-          Width = 81
-          Anchors = [akLeft, akBottom]
-          BorderSpacing.Left = 10
-          Caption = 'LabelToke'
-          ParentShowHint = False
-          ShowHint = True
+          Left = 15
+          Height = 58
+          Top = 111
+          Width = 185
+          BorderSpacing.Top = 5
+          Caption = 'User'
+          ClientHeight = 35
+          ClientWidth = 181
+          TabOrder = 3
+          object EditUserName: TEdit
+            AnchorSideLeft.Control = GroupBoxUser
+            AnchorSideTop.Control = GroupBoxUser
+            AnchorSideTop.Side = asrCenter
+            AnchorSideRight.Control = GroupBoxSync
+            AnchorSideRight.Side = asrBottom
+            AnchorSideBottom.Side = asrCenter
+            Left = 5
+            Height = 29
+            Top = 3
+            Width = 154
+            BorderSpacing.Left = 5
+            BorderSpacing.Right = 10
+            TabOrder = 0
+            Text = 'EditUserName'
+          end
         end
       end
       object ComboSyncType: TComboBox
@@ -865,6 +768,7 @@ object Sett: TSett
         BorderSpacing.Left = 10
         BorderSpacing.Top = 15
         Caption = 'Sync Type'
+        ParentColor = False
       end
     end
     object TabBackUp: TTabSheet
@@ -921,6 +825,7 @@ object Sett: TSett
           Top = 48
           Width = 515
           Caption = 'Backup files are made when you delete a note or the sync system'
+          ParentColor = False
         end
         object Label7: TLabel
           Left = 32
@@ -928,6 +833,7 @@ object Sett: TSett
           Top = 80
           Width = 205
           Caption = 'is about to overwrite one. '
+          ParentColor = False
         end
         object Label8: TLabel
           Left = 32
@@ -935,6 +841,7 @@ object Sett: TSett
           Top = 112
           Width = 468
           Caption = 'They remain, forever, unless you do something about them.'
+          ParentColor = False
         end
         object ButtonShowBackUp: TButton
           AnchorSideRight.Control = Panel2
@@ -959,6 +866,7 @@ object Sett: TSett
           Width = 103
           Caption = 'Backup Files'
           Font.Style = [fsBold]
+          ParentColor = False
           ParentFont = False
         end
       end
@@ -983,6 +891,7 @@ object Sett: TSett
           Width = 411
           Caption = 'A snaphot is a copy of your current note directory.'
           Font.Style = [fsBold]
+          ParentColor = False
           ParentFont = False
         end
         object LabelSnapDir: TLabel
@@ -991,6 +900,7 @@ object Sett: TSett
           Top = 72
           Width = 63
           Caption = 'Snap dir'
+          ParentColor = False
         end
         object SpinDaysPerSnapshot: TSpinEdit
           Left = 32
@@ -1029,6 +939,7 @@ object Sett: TSett
           Top = 122
           Width = 145
           Caption = 'Days per snapshot'
+          ParentColor = False
         end
         object Label16: TLabel
           Left = 131
@@ -1036,6 +947,7 @@ object Sett: TSett
           Top = 160
           Width = 248
           Caption = 'Maximum number of snapshots'
+          ParentColor = False
         end
         object ButtonSnapRecover: TButton
           AnchorSideLeft.Control = ButtonManualSnap
@@ -1090,6 +1002,7 @@ object Sett: TSett
         Top = 20
         Width = 371
         Caption = 'Spell Check requires the Hunspell Libraries and'
+        ParentColor = False
       end
       object Label14: TLabel
         Left = 12
@@ -1097,6 +1010,7 @@ object Sett: TSett
         Top = 52
         Width = 307
         Caption = 'an appropriate Hunspell Dictionary set.'
+        ParentColor = False
       end
       object LabelError: TLabel
         Left = 16
@@ -1104,6 +1018,7 @@ object Sett: TSett
         Top = 368
         Width = 84
         Caption = 'LabelError'
+        ParentColor = False
       end
       object LabelLibraryStatus: TLabel
         Left = 16
@@ -1111,6 +1026,7 @@ object Sett: TSett
         Top = 100
         Width = 148
         Caption = 'LabelLibraryStatus'
+        ParentColor = False
       end
       object LabelDicStatus: TLabel
         Left = 16
@@ -1118,6 +1034,7 @@ object Sett: TSett
         Top = 240
         Width = 117
         Caption = 'LabelDicStatus'
+        ParentColor = False
       end
       object LabelLibrary: TLabel
         Left = 16
@@ -1125,6 +1042,7 @@ object Sett: TSett
         Top = 132
         Width = 98
         Caption = 'LabelLibrary'
+        ParentColor = False
       end
       object LabelDic: TLabel
         Left = 16
@@ -1132,6 +1050,7 @@ object Sett: TSett
         Top = 272
         Width = 67
         Caption = 'LabelDic'
+        ParentColor = False
       end
       object ListBoxDic: TListBox
         AnchorSideLeft.Control = ButtonSetSpellLibrary
@@ -1165,6 +1084,7 @@ object Sett: TSett
         Anchors = [akRight, akBottom]
         BorderSpacing.Bottom = 7
         Caption = 'LabelDicPrompt'
+        ParentColor = False
       end
       object ButtonSetSpellLibrary: TButton
         AnchorSideTop.Control = LabelLibrary
@@ -1201,6 +1121,7 @@ object Sett: TSett
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
     Caption = 'Label15'
+    ParentColor = False
   end
   object SpeedButHide: TSpeedButton
     AnchorSideRight.Control = Owner
@@ -1424,5 +1345,21 @@ object Sett: TSett
   end
   object SelectSnapDir: TSelectDirectoryDialog
     Left = 640
+  end
+  object PopupMenuTokenActions: TPopupMenu
+    Left = 456
+    Top = 120
+    object MenuItemGetToken: TMenuItem
+      Caption = 'Get a Token in your Browser'
+      OnClick = MenuItemGetTokenClick
+    end
+    object MenuItemPasteToken: TMenuItem
+      Caption = 'Paste a New Token'
+      OnClick = MenuItemPasteTokenClick
+    end
+    object MenuItemCopyToken: TMenuItem
+      Caption = 'Copy Existing Token'
+      OnClick = MenuItemCopyTokenClick
+    end
   end
 end

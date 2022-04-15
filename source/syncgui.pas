@@ -44,6 +44,7 @@ unit SyncGUI;
     2020/08/10  ListView becomes type=vsReport
     2020/04/26  Set Save button to disabled immediatly when pressed.
     2021/09/08  Added progress indicator
+    2022/04/15  Improve man sync close button communication with user.
 }
 
 {$mode objfpc}{$H+}
@@ -110,6 +111,7 @@ type
 
 		public
                 Busy : boolean; // indicates that there is some sort of sync in process now.
+                AnotherSync : boolean;  // After this (manual) sync, we have another one (ie github)
                 Transport : TSyncTransPort;
                 UserName, Password : string;    // For those thatnsports that need such things.
                 LocalConfig, NoteDirectory : ANSIString;
@@ -198,7 +200,8 @@ begin
     Memo1.Append(rsRemoteDeletes + inttostr(DelRem));
     Memo1.Append(rsClashes + inttostr(Clash));
     Memo1.Append(rsDoNothing + inttostr(DoNothing));
-    Memo1.Append(rsSyncERRORS + inttostr(Errors));
+    if Errors > 0 then
+        Memo1.Append(rsSyncERRORS + inttostr(Errors));
     result := 'Uploads=' + inttostr(UpNew+UpEdit) + ' downloads=' + inttostr(Down) + ' deletes=' + inttostr(DelLoc + DelRem);
     // debugln('Display Sync called, DoNothings is ' + inttostr(DoNothing));
 end;
@@ -323,7 +326,8 @@ begin
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
-        // Screen.Cursor := crHourGlass;
+        //Screen.Cursor := crHourGlass;
+        //sleep(1000);
         ASync.ProceedFunction := @Proceed;
         ASync.ProgressProcedure := @SyncProgress;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
@@ -347,7 +351,8 @@ begin
                     MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
                     Mainform.TrayIcon.BalloonHint := rsAutoSyncNotPossible;
                     Mainform.TrayIcon.ShowBalloonHint;
-                    {$endif}                end;
+                    {$endif}
+                end;
                 exit;
             end else begin
                 //Screen.Cursor := crDefault;
@@ -371,17 +376,23 @@ begin
             MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
             Mainform.TrayIcon.BalloonHint := rsLastSync  + ' ' + SyncSummary;
             Mainform.TrayIcon.ShowBalloonHint;
-            {$endif}        end;
+            {$endif}
+        end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
+        if AnotherSync then begin
+            ButtonClose.Hint := 'proceed to next sync';
+            ButtonClose.ShowHint := True;
+        end else
+            ButtonClose.ShowHint := False;
         Result := True;
     finally
         FreeandNil(ASync);
         Busy := False;
-        // Screen.Cursor := crDefault;
+        //Screen.Cursor := crDefault;
     end;
 end;
 

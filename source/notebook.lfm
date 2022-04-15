@@ -25,24 +25,26 @@ object NoteBookPick: TNoteBookPick
     object Label1: TLabel
       AnchorSideLeft.Control = Panel1
       Left = 9
-      Height = 19
-      Top = 52
-      Width = 51
+      Height = 21
+      Top = 51
+      Width = 55
       Anchors = [akLeft]
       BorderSpacing.Left = 8
       Caption = 'Label1'
       Font.Style = [fsBold]
+      ParentColor = False
       ParentFont = False
     end
     object Label3: TLabel
       AnchorSideLeft.Control = Panel1
       Left = 9
-      Height = 19
-      Top = 20
-      Width = 47
+      Height = 21
+      Top = 19
+      Width = 53
       Anchors = [akLeft]
       BorderSpacing.Left = 8
       Caption = 'Label3'
+      ParentColor = False
     end
   end
   object ButtonOK: TButton
@@ -79,12 +81,13 @@ object NoteBookPick: TNoteBookPick
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 7
-    Height = 19
+    Height = 21
     Top = 388
-    Width = 47
+    Width = 53
     BorderSpacing.Left = 7
     BorderSpacing.Top = 13
     Caption = 'Label2'
+    ParentColor = False
   end
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
@@ -97,13 +100,13 @@ object NoteBookPick: TNoteBookPick
     Height = 303
     Top = 72
     Width = 579
-    ActivePage = TabNewNoteBook
+    ActivePage = TabExisting
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 3
     object TabExisting: TTabSheet
       Caption = 'Existing Note Books'
-      ClientHeight = 274
+      ClientHeight = 272
       ClientWidth = 575
       object CheckListBox1: TCheckListBox
         AnchorSideLeft.Control = TabExisting
@@ -113,7 +116,7 @@ object NoteBookPick: TNoteBookPick
         AnchorSideBottom.Control = TabExisting
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 274
+        Height = 272
         Top = 0
         Width = 575
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -125,12 +128,12 @@ object NoteBookPick: TNoteBookPick
     end
     object TabNewNoteBook: TTabSheet
       Caption = 'New Note Book'
-      ClientHeight = 274
+      ClientHeight = 272
       ClientWidth = 575
       OnShow = TabNewNoteBookShow
       object EditNewNotebook: TEdit
         Left = 24
-        Height = 28
+        Height = 29
         Top = 56
         Width = 248
         OnKeyDown = EditNewNotebookKeyDown
@@ -138,47 +141,52 @@ object NoteBookPick: TNoteBookPick
       end
       object Label4: TLabel
         Left = 26
-        Height = 19
+        Height = 21
         Top = 32
-        Width = 202
+        Width = 222
         Caption = 'Name of the New Notebook'
+        ParentColor = False
       end
       object Label5: TLabel
         Left = 29
-        Height = 19
+        Height = 21
         Top = 104
-        Width = 472
+        Width = 518
         Caption = 'Press OK and we will make the Note Book AND add this note to it.'
+        ParentColor = False
       end
     end
     object TabChangeName: TTabSheet
       Caption = 'Change Notebook Name'
-      ClientHeight = 274
+      ClientHeight = 272
       ClientWidth = 575
       object Label6: TLabel
         Left = 15
-        Height = 19
+        Height = 21
         Top = 17
-        Width = 103
+        Width = 113
         Caption = 'Existing Name'
+        ParentColor = False
       end
       object Label7: TLabel
         Left = 17
-        Height = 19
+        Height = 21
         Top = 41
-        Width = 47
+        Width = 53
         Caption = 'Label7'
+        ParentColor = False
       end
       object Label8: TLabel
         Left = 16
-        Height = 19
+        Height = 21
         Top = 77
-        Width = 80
+        Width = 87
         Caption = 'New Name'
+        ParentColor = False
       end
       object EditNewNotebookName: TEdit
         Left = 17
-        Height = 28
+        Height = 29
         Top = 96
         Width = 271
         OnEditingDone = EditNewNotebookNameEditingDone
@@ -186,17 +194,18 @@ object NoteBookPick: TNoteBookPick
       end
       object Label9: TLabel
         Left = 18
-        Height = 19
+        Height = 21
         Top = 153
-        Width = 506
+        Width = 533
         Caption = 'If you sync and are not absolutely sure its up to date, Cancel now !'
         Font.Style = [fsBold]
+        ParentColor = False
         ParentFont = False
       end
     end
     object TabSetNotes: TTabSheet
       Caption = 'Set Notes'
-      ClientHeight = 274
+      ClientHeight = 272
       ClientWidth = 575
       object CheckListAddNotes: TCheckListBox
         AnchorSideLeft.Control = TabSetNotes
@@ -206,7 +215,7 @@ object NoteBookPick: TNoteBookPick
         AnchorSideBottom.Control = TabSetNotes
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 274
+        Height = 272
         Top = 0
         Width = 575
         Anchors = [akTop, akLeft, akRight, akBottom]

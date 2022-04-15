@@ -125,7 +125,8 @@ uses SearchUnit, LazFileUtils, LCLProc, LCLType, Settings, SaveNote, EditBox,
     resourcestr, tb_utils, note_lister
         {$ifdef WINDOWS}, SyncUtils{$endif};    // SafeWindowsDelete
 
-procedure TNoteBookPick.SetupForNewSelect();
+// ToDo : remove this code that uses the TStringList version of TheNoteLister.GetNotebooks(
+(*procedure TNoteBookPick.SetupForNewSelect();
 var
         SL : TStringList;
         Index, I : Integer;
@@ -139,11 +140,11 @@ begin
     Label1.Caption := Title;
     Label3.Caption := rsSetTheNotebooks;
     SL := TStringList.Create;
-    TheNoteLister.GetNotebooks(SL, '');
+//    TheNoteLister.GetNotebooks(SL, '');
     CheckListBox1.Items.Assign(SL);
     SL.Free;
     SL := TStringList.Create;
-    TheNoteLister.GetNotebooks(SL, ExtractFileNameOnly(FullFileName) + '.note');
+//    TheNoteLister.GetNotebooks(SL, ExtractFileNameOnly(FullFileName) + '.note');
     for I := 0 to CheckListBox1.Count-1 do
         CheckListBox1.Checked[I] := False;
     for Index := 0 to SL.Count -1 do
@@ -151,9 +152,33 @@ begin
 			if SL[Index] = CheckListBox1.Items[I] then
             	CheckListBox1.Checked[I] := True;
     SL.Free;
+end;     *)
 
+
+procedure TNoteBookPick.SetupForNewSelect();
+var
+    //SL : TStringList;
+    NBArray : TStringArray;
+    Index, I : Integer;
+begin
+    PageControl1.ActivePage := TabExisting;
+    TabExisting.TabVisible := True;
+    TabNewNotebook.TabVisible := True;
+    TabSetNotes.TabVisible := False;
+    TabChangeName.TabVisible := False;
+    Label1.Caption := Title;
+    Label3.Caption := rsSetTheNotebooks;
+    TheNoteLister.GetNotebooks(NBArray, '');
+    for i := 0 to High(NBArray) do
+        CheckListBox1.Items.Add(NBArray[i]);
+    TheNoteLister.GetNotebooks(NBArray, ExtractFileNameOnly(FullFileName) + '.note');
+    for I := 0 to CheckListBox1.Count-1 do
+        CheckListBox1.Checked[I] := False;
+    for Index := 0 to High(NBArray) do
+    	for I := 0 to CheckListBox1.Count-1 do
+			if NBArray[Index] = CheckListBox1.Items[I] then
+            	CheckListBox1.Checked[I] := True;
 end;
-
 
 procedure TNoteBookPick.SetupForChange();
 {var

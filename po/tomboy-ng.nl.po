@@ -1802,7 +1802,8 @@ msgid "EditUserName"
 msgstr ""
 
 #: tsett.groupbox4.caption
-msgid "  Options  "
+msgctxt "tsett.groupbox4.caption"
+msgid "When a conflict is detected between a local note and remote one :"
 msgstr ""
 
 #: tsett.groupbox5.caption
@@ -1811,6 +1812,16 @@ msgstr ""
 
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
+msgstr ""
+
+#: tsett.groupboxtoken.caption
+msgctxt "tsett.groupboxtoken.caption"
+msgid "Token"
+msgstr ""
+
+#: tsett.groupboxuser.caption
+msgctxt "tsett.groupboxuser.caption"
+msgid "User"
 msgstr ""
 
 #: tsett.label1.caption
@@ -1845,10 +1856,6 @@ msgstr ""
 msgid "Notes will be looked for and saved in :"
 msgstr ""
 
-#: tsett.label3.caption
-msgid "When a conflict is detected between a local note and remote one :"
-msgstr ""
-
 #: tsett.label4.caption
 msgid "Repo : "
 msgstr ""
@@ -1873,11 +1880,6 @@ msgstr ""
 msgid "A snaphot is a copy of your current note directory."
 msgstr ""
 
-#: tsett.labellabeltoken.caption
-msgctxt "tsett.labellabeltoken.caption"
-msgid "Token"
-msgstr ""
-
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr ""
@@ -1899,12 +1901,16 @@ msgstr ""
 msgid "Sync Type"
 msgstr ""
 
-#: tsett.labeltoken.caption
-msgid "LabelToke"
+#: tsett.menuitemcopytoken.caption
+msgid "Copy Existing Token"
 msgstr ""
 
-#: tsett.labelusername.caption
-msgid "User"
+#: tsett.menuitemgettoken.caption
+msgid "Get a Token in your Browser"
+msgstr ""
+
+#: tsett.menuitempastetoken.caption
+msgid "Paste a New Token"
 msgstr ""
 
 #: tsett.radioalwaysask.caption
@@ -1957,12 +1963,8 @@ msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
 msgstr ""
 
-#: tsett.speedtokencopy.hint
-msgid "Copy Token"
-msgstr ""
-
-#: tsett.speedtokenpaste.hint
-msgid "Paste Token"
+#: tsett.speedtokenactions.caption
+msgid "Actions"
 msgstr ""
 
 #: tsett.tabbackup.caption

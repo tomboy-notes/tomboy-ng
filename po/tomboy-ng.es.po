@@ -1755,7 +1755,10 @@ msgid "EditUserName"
 msgstr "CambiarNombre"
 
 #: tsett.groupbox4.caption
-msgid "  Options  "
+#, fuzzy
+#| msgid "  Options  "
+msgctxt "tsett.groupbox4.caption"
+msgid "When a conflict is detected between a local note and remote one :"
 msgstr "  Opciones  "
 
 #: tsett.groupbox5.caption
@@ -1765,6 +1768,18 @@ msgstr "Tamaño de la fuente"
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
 msgstr " Sincronizar "
+
+#: tsett.groupboxtoken.caption
+#, fuzzy
+msgctxt "tsett.groupboxtoken.caption"
+msgid "Token"
+msgstr "Autentificador"
+
+#: tsett.groupboxuser.caption
+#, fuzzy
+msgctxt "tsett.groupboxuser.caption"
+msgid "User"
+msgstr "Usuario"
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1798,10 +1813,6 @@ msgstr "Formato del sello con la fecha"
 msgid "Notes will be looked for and saved in :"
 msgstr "Notes will be looked for and saved in :"
 
-#: tsett.label3.caption
-msgid "When a conflict is detected between a local note and remote one :"
-msgstr "Al detectar un conflicto entre una nota local y una remota:"
-
 #: tsett.label4.caption
 msgid "Repo : "
 msgstr "Repositorio:"
@@ -1826,11 +1837,6 @@ msgstr "Estas notas se quedan para siempre, al meno que haga algo al respecto."
 msgid "A snaphot is a copy of your current note directory."
 msgstr "Una instantánea es una copia de sus notas actuales."
 
-#: tsett.labellabeltoken.caption
-msgctxt "tsett.labellabeltoken.caption"
-msgid "Token"
-msgstr "Autentificador"
-
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Directorio, instantáneas"
@@ -1853,15 +1859,17 @@ msgstr "sin configurar"
 msgid "Sync Type"
 msgstr "Tipo sincronización"
 
-#: tsett.labeltoken.caption
-#, fuzzy
-#| msgid "LabelToken"
-msgid "LabelToke"
-msgstr "EtiquetaAuten"
+#: tsett.menuitemcopytoken.caption
+msgid "Copy Existing Token"
+msgstr ""
 
-#: tsett.labelusername.caption
-msgid "User"
-msgstr "Usuario"
+#: tsett.menuitemgettoken.caption
+msgid "Get a Token in your Browser"
+msgstr ""
+
+#: tsett.menuitempastetoken.caption
+msgid "Paste a New Token"
+msgstr ""
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."
@@ -1913,13 +1921,9 @@ msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
 msgstr "Configurar"
 
-#: tsett.speedtokencopy.hint
-msgid "Copy Token"
-msgstr "Copiar autentificador"
-
-#: tsett.speedtokenpaste.hint
-msgid "Paste Token"
-msgstr "Pegar autentificador"
+#: tsett.speedtokenactions.caption
+msgid "Actions"
+msgstr ""
 
 #: tsett.tabbackup.caption
 msgid "BackUp"

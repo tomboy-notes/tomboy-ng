@@ -78,6 +78,7 @@ unit Note_Lister;
     2021/08/31  Added TheNoteLister to hold a ref to the NoteLister for any unit that 'uses' this unit.
     2021/09/06  GetNotebooks result now wrapped in square brackets, JSON style
     2022/01/12  Trapped out some errors that occur if XML element (field) is present but blank
+    2022/04/14  GetNotebooks() now takes a StringArray instead of List
 }
 
 {$mode objfpc}  {$H+}
@@ -169,8 +170,6 @@ type
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
     procedure DumpNoteNoteList(WhereFrom: string);
-
-
 
    	//procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
 
@@ -264,7 +263,9 @@ type
                                           passed ID is that of a Template.  A Notebook Template will have only one Notebook name in
                                           its Tags and that will be added to strlist. The StartHere template won't have a Notebook
                                           Name and therefore wont get mixed up here ???? }
-    function GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
+    function GetNotebooks(out NBArray: TStringArray; const ID: ANSIString): boolean;
+    //function GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
+
                                         { Rets a (JSON array like, escaped) string of Notebook names that this note is a member of.
                                         It returns an empty array if the note has no notebooks or cannot be found.
                                         If ID is a template, will send a two element array ["template', "notebook-name"].
@@ -652,13 +653,33 @@ end;
 
 function TNoteLister.NoteBookTags(const NoteID : string): ANSIString;
 var
+    NBArray : TStringArray;
+    Index : Integer;
+begin
+    Result := '';
+    if GetNotebooks(NBArray, NoteID) then begin         // its a template
+   		Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
+        if length(NBArray) > 0 then
+        	Result := Result + '    <tag>system:notebook:' + RemoveBadXMLCharacters(NBArray[0], True) + '</tag>'#10'  </tags>'#10;
+    end else
+   		if length(NBArray) > 0 then begin				// its a Notebook Member
+        	Result := '  <tags>'#10;
+        	for Index := 0 to High(NBArray) do		    // here, we auto support multiple notebooks.
+        		Result := Result + '    <tag>system:notebook:' + RemoveBadXMLCharacters(NBArray[Index], True) + '</tag>'#10;
+        	Result := Result + '  </tags>'#10;
+		end;
+end;
+
+// ToDo : Remove this version that uses the TStringList version of GetNotebooks()
+(* function TNoteLister.NoteBookTags(const NoteID : string): ANSIString;
+var
     SL : TStringList;
     Index : Integer;
 begin
    Result := '';
    SL := TStringList.Create;
    try
-       if GetNotebooks(SL, NoteID) then begin  // its a template
+       if GetNotebooks(SL, NoteID) then begin  // its a template -- COMMENTED OUT
    		    Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
             if SL.Count > 0 then
         	    Result := Result + '    <tag>system:notebook:' + RemoveBadXMLCharacters(SL[0], True) + '</tag>'#10'  </tags>'#10;
@@ -672,9 +693,28 @@ begin
    finally
        SL.Free;
    end;
-end;
+end;        *)
 
 function TNoteLister.NotebookJArray(const ID: ANSIString): string;
+var
+    NBArray : TStringArray;
+    Index : Integer;
+begin
+    Result := '';
+    if GetNotebooks(NBArray, ID) then               // its a template
+    		Result := '"template", "' + EscapeJSON(NBArray[0]) + '"'
+    else begin                                      // maybe its a Notebook Member
+        for Index := 0 to high(NBArray) do		    // here, we auto support multiple notebooks.
+            Result := Result + '"' + EscapeJSON(NBArray[Index]) + '", ';
+        if Result <> '' then                        // will be empty if note is not member of a notebook
+            delete(Result, length(Result)-1, 2);    // remove trailing comma and space
+    end;
+    Result := '[' + Result + ']';                   // Always return the brackets, even if empty
+    //debugln('TNoteLister.NotebookJArray returning Notebooks jArray = ' + Result);
+end;
+
+// ToDo : remove code below that uses TStringList - GetNotebooks()
+(* function TNoteLister.NotebookJArray(const ID: ANSIString): string;
 var
     STL : TStringList;
     Index : Integer;
@@ -682,7 +722,7 @@ begin
     Result := '';
     STL := TStringList.Create;
     try
-        if GetNotebooks(STL, ID) then               // its a template
+        if GetNotebooks(STL, ID) then               // its a template  -- COMMENTED OUT
     		    Result := '"template", "' + EscapeJSON(STL[0]) + '"'
         else begin                                  // maybe its a Notebook Member
             for Index := 0 to STL.Count -1 do		// here, we auto support multiple notebooks.
@@ -695,9 +735,7 @@ begin
     end;
     Result := '[' + Result + ']';                  // Always return the brackets, even if empty
     //debugln('TNoteLister.NotebookJArray returning Notebooks jArray = ' + Result);
-end;
-
-
+end;  *)
 
 
 (*
@@ -830,11 +868,9 @@ end;
 
 function TNoteLister.IsATemplate(FileOrID: AnsiString): boolean;
 var
-    SL : TStringList;
+    NBArray : TStringArray;
 begin
-	SL := TStringList.Create;
-    Result := GetNotebooks(SL, CleanFileName(FileOrID));
-    SL.Free;
+    Result := GetNotebooks(NBArray, CleanFileName(FileOrID));
 end;
 
 procedure TNoteLister.SetNotebookMembership(const ID : ansistring; const MemberList : TStringList);
@@ -916,9 +952,53 @@ begin
 
 end;
 
+function TNoteLister.GetNotebooks(out NBArray: TStringArray; const ID: ANSIString): boolean;
+var
+    Index, I : Integer;
+    Cnt : Integer = 0;
+begin
+	Result := false;
+    Setlength(NBArray, 0);
+    Setlength(NBArray, NoteBookList.Count);               // Cannot be more than that
+ 	for Index := 0 to NoteBookList.Count -1 do begin      // look at each NoteBook, one by one
+      	if ID = '' then
+            NBArray[Index] := NotebookList.Items[Index]^.Name
+        else begin
+            if ID = NotebookList.Items[Index]^.Template then begin
+                // The passed ID is the ID of a Template itself, not a note.
+                // debugln('Looks like we asking about a template ' + ID);
+                //if length(NBArray) > 0 then
+                //    debugln('Error, seem to have more than one Notebook Name for template ' + ID);
+                Setlength(NBArray, 1);                   // truncate after first entry
+                NBArray[0] := NotebookList.Items[Index]^.Name;
+                exit(True);
+			end;
+            // OK, if its not a Template, its a note, what notebooks is it a member of ?
+            // Each NotebookList item has a list of the notes that are members of that item.
+            // if the ID is mentioned in the items note list, copy name to Array.
+            // Iterate over the Notes list associated with this particular Notebook entry.
+			for I := 0 to NotebookList.Items[Index]^.Notes.Count -1 do
+            	if ID = NotebookList.Items[Index]^.Notes[I] then begin
+                    NBArray[Cnt] := NotebookList.Items[Index]^.Name;
+                    inc(Cnt);
+                    // debugln('TNoteLister.GetNotebooks Insert ' + NotebookList.Items[Index]^.Name);
+                end;
+        end;
+	end;
+    // if we are still here, its either ID='' or ID is that of a note, not a notebook
+    if ID <> '' then
+        setlength(NBArray, Cnt);    // almost certainly less than we set above.
+(*
+    debugln('TNoteLister.GetNotebooks ID = ' +  ID);
+    debugln('TNoteLister.GetNotebooks LENGTH ' +  inttostr(length(NBArray)));
+    debugln('TNoteLister.GetNotebooks HIGH ' +  inttostr(high(NBArray)));
+    for i := 0 to high(NBArray) do
+        debugln('TNoteLister.GetNotebooks Array ' + NBArray[i]);       *)
+end;
 
+// ToDo : replace all use of this method with one above using TStringArray, remove method below
 
-function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
+(* function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
 var
     Index, I : Integer;
 begin
@@ -947,7 +1027,7 @@ begin
             else  NBList := NotebookList.Items[Index]^.Notes; }
         end;
 	end;
-end;
+end;       *)
 
 { -------------- Things relating to Notes -------------------- }
 

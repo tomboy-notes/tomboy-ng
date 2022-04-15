@@ -1781,7 +1781,10 @@ msgid "EditUserName"
 msgstr ""
 
 #: tsett.groupbox4.caption
-msgid "  Options  "
+#, fuzzy
+#| msgid "  Options  "
+msgctxt "tsett.groupbox4.caption"
+msgid "When a conflict is detected between a local note and remote one :"
 msgstr " Options "
 
 #: tsett.groupbox5.caption
@@ -1791,6 +1794,16 @@ msgstr "Taille de police"
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
 msgstr " Synchro "
+
+#: tsett.groupboxtoken.caption
+msgctxt "tsett.groupboxtoken.caption"
+msgid "Token"
+msgstr ""
+
+#: tsett.groupboxuser.caption
+msgctxt "tsett.groupboxuser.caption"
+msgid "User"
+msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1827,10 +1840,6 @@ msgstr ""
 msgid "Notes will be looked for and saved in :"
 msgstr "Les notes seront sauvegardées dans :"
 
-#: tsett.label3.caption
-msgid "When a conflict is detected between a local note and remote one :"
-msgstr "Lors d'un conflit entre les notes locales et distantes :"
-
 #: tsett.label4.caption
 msgid "Repo : "
 msgstr "Dépôt : "
@@ -1857,11 +1866,6 @@ msgstr "Elle reste ensuite présente jusqu'à son effacement manuel."
 msgid "A snaphot is a copy of your current note directory."
 msgstr "Un snapshot est une copie en l'état du répertoire des notes"
 
-#: tsett.labellabeltoken.caption
-msgctxt "tsett.labellabeltoken.caption"
-msgid "Token"
-msgstr ""
-
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Répertoire des snap"
@@ -1884,12 +1888,16 @@ msgstr "non configuré"
 msgid "Sync Type"
 msgstr ""
 
-#: tsett.labeltoken.caption
-msgid "LabelToke"
+#: tsett.menuitemcopytoken.caption
+msgid "Copy Existing Token"
 msgstr ""
 
-#: tsett.labelusername.caption
-msgid "User"
+#: tsett.menuitemgettoken.caption
+msgid "Get a Token in your Browser"
+msgstr ""
+
+#: tsett.menuitempastetoken.caption
+msgid "Paste a New Token"
 msgstr ""
 
 #: tsett.radioalwaysask.caption
@@ -1942,12 +1950,8 @@ msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
 msgstr "Réglages"
 
-#: tsett.speedtokencopy.hint
-msgid "Copy Token"
-msgstr ""
-
-#: tsett.speedtokenpaste.hint
-msgid "Paste Token"
+#: tsett.speedtokenactions.caption
+msgid "Actions"
 msgstr ""
 
 #: tsett.tabbackup.caption

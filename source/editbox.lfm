@@ -14,7 +14,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.3.0.0'
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = KMemo1
@@ -41,6 +41,7 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Read Only'
       Font.Height = -20
       Font.Style = [fsBold]
+      ParentColor = False
       ParentFont = False
     end
     object Label3: TLabel
@@ -49,6 +50,7 @@ object EditBoxForm: TEditBoxForm
       Top = 8
       Width = 379
       Caption = 'This note has been changed by the Sync Process'
+      ParentColor = False
     end
     object Label4: TLabel
       Left = 120
@@ -56,6 +58,7 @@ object EditBoxForm: TEditBoxForm
       Top = 32
       Width = 382
       Caption = 'Please close it (and re-open if it was a download)'
+      ParentColor = False
     end
   end
   object PanelFind: TPanel
@@ -102,6 +105,7 @@ object EditBoxForm: TEditBoxForm
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 5
       Caption = 'LabelFindInfo'
+      ParentColor = False
     end
     object LabelFindCount: TLabel
       AnchorSideLeft.Control = SpeedRight
@@ -115,6 +119,7 @@ object EditBoxForm: TEditBoxForm
       Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Left = 6
       Caption = 'X'
+      ParentColor = False
     end
     object SpeedLeft: TSpeedButton
       AnchorSideLeft.Control = EditFind
@@ -1152,6 +1157,14 @@ object EditBoxForm: TEditBoxForm
     OnKeyUp = KMemo1KeyUp
     OnMouseDown = KMemo1MouseDown
     OnMouseUp = KMemo1MouseUp
+  end
+  object Label1: TLabel
+    Left = 210
+    Height = 21
+    Top = 121
+    Width = 53
+    Caption = 'Label1'
+    ParentColor = False
   end
   object PopupMenuText: TPopupMenu
     Left = 232
