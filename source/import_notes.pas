@@ -418,7 +418,7 @@ var
   Content : TStringList;
   GUID : TGUID;
   NewFileName : string;
-  Title : string;
+  Title : string = '';
   Index : integer = 0;
 begin
     Result := True;

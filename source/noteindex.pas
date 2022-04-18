@@ -162,7 +162,7 @@ begin
     Cnt := LV.items.count -1;
     while Cnt > -1 do begin
         //writeln('TNoteIndex.UpDateLview - checking ' + LV.Items[Cnt].SubItems[1]);
-        if not find(lv.Items[Cnt].SubItems[1]) then begin
+        if not find(lv.Items[Cnt].SubItems[1]) then begin    // subitem[1] being note name
             LV.Items[Cnt].Delete;
             //writeln('TNoteIndex.UpDateLview - deleted line ' + cnt.tostring);
         end;

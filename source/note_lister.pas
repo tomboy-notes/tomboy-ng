@@ -1645,14 +1645,10 @@ begin
     Index := TheList.Count;
     while Index > 0 do begin
         dec(Index);
-//        LCDst := TheList.Items[Index]^.LastChange;
-//        if length(LCDst) > 11 then  // looks prettier, dates are stored in ISO std
-//            LCDst[11] := ' ';       // with a 'T' between date and time
-//        NewLVItem(LView, TheList.Items[Index]^.Title, LCDst, TheList.Items[Index]^.ID);
         NewLVItem(LView, TheList.Items[Index]^.Title, TheList.Items[Index]^.LastChange, TheList.Items[Index]^.ID);
     end;
     //T3 := gettickcount64();
-    // debugln('LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));
+    //debugln('TNoteLister.LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));
 end;
 
 

@@ -110,6 +110,7 @@ unit SearchUnit;
     2021/11/04  Changes to support new Notebook management model
     2021/12/03  Moved checkAutoRefresh to Settings, replaced with SpeedAutoRefresh and menu
                 Added all code necessary for Searching for note while u type, NoteIndex
+    2022/04/18  Bug where searching notes in progressive mode and backspacing over search term failed
 }
 
 {$mode objfpc}{$H+}
@@ -860,7 +861,6 @@ begin
         if (ListBoxNotebooks.ItemIndex > -1) then begin                        // if a notebook is currently selected.
             NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
             if NB <> '' then begin
-                // NoteLister.LoadNotebookGrid(StringGrid1, NB);
                 NoteLister.LoadNotebookViewList(ListViewNotes, NB);
             end;
             // ToDo : there is an issue here. If user has a notebook selected when sync happens, and that
@@ -932,21 +932,38 @@ begin
     end;
 end;
 
+// ToDo : convert listviewnotes to ownerdata - maybe other list views too ?
+// Switch ListViewNotes to OwnerData mode, we will no longer use NoteLister.LoadListView() -
+// Add the OnData event, it will need to tell what display mode we are in, full view, searched, progress search
+// it will respond using NoteLister.GetNote(i).  It know which mode because a variable of
+// a defined type is set as as we move into each mode. TheOnData will check that
+// regional var in a case statement.
+// CheckAutoSearchUpdate.Checked
+
+// -- Reset --
+// Set LVN.count to how ever many notes we have, call NIndex.ResetActive()
+
 // Only used in Progressive Search mode.
 procedure TSearchForm.Edit1Change(Sender: TObject);
 var
     St : string;
     STL : TStringList;
     Found : integer;
+    //T1, T2, T3 : qword;
 begin
     if not CheckAutoSearchUpdate.Checked then exit;
     if NIndex = nil then
         NIndex := TNoteIndex.Create(Sett.NoteDirectory, CheckCaseSensitive.checked);
+
+//    ListViewNotes.Visible := false;
+    //T1 := gettickcount64();
+    ListViewNotes.BeginUpdate;
     if (Edit1.text = '') or (Edit1TextLength > length(Edit1.text)) then begin
         NIndex.ResetActive();
-        Refresh();                             // ????  Seems right thing to do
-        //writeln('TSearchForm.Edit1Change - triggered Active reset');
+        NoteLister.LoadListView(ListViewNotes, False);
+        //Refresh();                             // no, is not right thing to do .....
     end;
+    //T2 := gettickcount64();
     if length(Edit1.Text) > 1 then begin
         STL := TStringList.Create;
         STL.AddDelimitedtext(Edit1.Text, ' ', false);
@@ -961,6 +978,11 @@ begin
         STL.Free;
         Edit1TextLength := length(Edit1.text);
     end;
+    UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
+    ListViewNotes.EndUpdate;
+    //T3 := gettickcount64();
+//    ListViewNotes.Visible := true;
+    //debugln('TSearchForm.Edit1Change Refresh=' + dbgs(T2 - T1) + ' Adjust=' + dbgs(T3 - T2));
 end;
 
 procedure TSearchForm.Edit1Enter(Sender: TObject);
