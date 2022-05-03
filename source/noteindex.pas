@@ -12,7 +12,7 @@ unit NoteIndex;
     search term.  Each subsquent seach term is only searched for in notes that
     are still 'active' so, gets faster as search progresses.
 
-    But uses quite a bit of memory so make sure you release it as son as possible.
+    But uses quite a bit of memory so make sure you release it as soon as possible.
 
     Some users, with very large note collections, very large notes or slow hardware
     may find using this model tiresome.
@@ -105,7 +105,7 @@ end;
 
 
 // iterates over list looking for St in the Content of all Required notes. Any that
-// don't have St are set to Required False. Returns the number of remaing trues.
+// don't have St are set to Required False. Returns the number of remaining trues.
 function TNoteIndex.SearchList(St : string) : integer;
 var
     NoteP : PNote;

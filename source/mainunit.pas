@@ -73,6 +73,7 @@ unit Mainunit;
     2021/05/19  If libappindicator is not present, check for libayatana-appindicator, but only if lcl is patched !
     2021/07/13  Don't do full SysTray check on Gnome with Qt, AccessViolation, just guess.
     2021/11/09  Dont consider libayatana unless compiled with > 2.0.12
+    2022/05/03  Add unix username to IPC pipe.
 
     CommandLine Switches
 
@@ -365,7 +366,7 @@ end;
 procedure TMainForm.StartIPCServer();
 begin
         CommsServer  := TSimpleIPCServer.Create(Nil);
-        CommsServer.ServerID:='tomboy-ng';
+        CommsServer.ServerID:='tomboy-ng' {$ifdef UNIX} + '-' + GetEnvironmentVariable('USER'){$endif}; // on multiuser system, unique
         CommsServer.OnMessageQueued:=@CommMessageReceived;
         CommsServer.Global:=True;                  // anyone can connect
         CommsServer.StartServer({$ifdef WINDOWS}False{$else}True{$endif});  // start listening, threaded

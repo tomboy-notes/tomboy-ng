@@ -970,8 +970,8 @@ begin
         for St in STL do begin
             if St = '' then continue;
             if CheckCaseSensitive.checked then
-                Found := NIndex.SearchList(St)
-            else Found := NIndex.SearchList(lowercase(St));
+                Found := NIndex.SearchList(St)                // Marks notes with out St as inactive in NoteIndex
+            else Found := NIndex.SearchList(lowercase(St));   // as above
             NIndex.UpDateLview(ListViewNotes);
             //writeln('TSearchForm.Edit1Change - We found ' + Found.ToString + ' notes');
         end;

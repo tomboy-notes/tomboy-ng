@@ -373,7 +373,7 @@ Type
             Constructor Create(CreateSuspended : boolean);
         end;
 
-
+                                        // Not in Class so that Threads can find it.
 function NoteContains(const TermList : TStringList; FullFileName: ANSIString; const CaseSensitive : boolean): boolean;
 
 
@@ -1354,6 +1354,7 @@ begin
     OpenNoteIndex := -1;
 end;
 
+
 procedure TNoteLister.BuildSearchList(SL : TStringList; const Term : AnsiString);
 var
     I : integer = 1;
@@ -1471,6 +1472,9 @@ end;
 const ThreadCount = 3;  // The number of extra threads set searching. 3 seems reasonable...
 
 
+
+// ToDo : this is called only when a Press Enter search is run, its ignoring CaseSensitive switch, see below
+
 function TNoteLister.SearchNotes(const Term: ANSIstring) : longint;
 var
     TermList, FileList : TStringList;
@@ -1485,7 +1489,7 @@ begin
         SearchNoteList.Free;
         SearchNoteList := TNoteList.Create;
         FinishedThreads := 0;
-        ThreadLock := -1;
+        ThreadLock := -1;                                      // ToDo : FindFirst is faster than FindAllFiles
         FileList := FindAllFiles(WorkingDir, '*.note', false); // list contains full file names !
          while ThreadIndex < ThreadCount do begin
             SearchThread := TSearchThread.Create(True);        // Threads clean themselves up.

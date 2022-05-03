@@ -19,6 +19,7 @@ unit cli;
     2022/01/13  When importing file, don't check for its existance, importer will do that
     2022/01/13  When importing note, check if FFileName starts with '~'
     2022/04/07  Tidy up options.
+    2022/05/03  Add unix username to IPC pipe.
 }
 
 interface
@@ -152,7 +153,7 @@ begin
     Result := False;
     try
         CommsClient  := TSimpleIPCClient.Create(Nil);
-        CommsClient.ServerID:='tomboy-ng';
+        CommsClient.ServerID:='tomboy-ng' {$ifdef UNIX} + '-' + GetEnvironmentVariable('USER'){$endif}; // on multiuser system, unique
         if CommsClient.ServerRunning then begin
             CommsClient.Active := true;
             CommsClient.SendStringMessage(Msg);
