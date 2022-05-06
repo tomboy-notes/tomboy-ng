@@ -223,6 +223,9 @@ unit EditBox;
     2021-12-18  Ctrl-D was not saving any selected text to Undoer
     2022/04/12  Stopped SpeedButtonLinkClick from asking about Notebooks, no idea why it was doing that.
     2022/04/14  bug #260, TKMemoHyperlink not TKHyperlink
+    2022/05/05  bug #260, now clear all local links around cursor and create as necessary, may be slower !
+                could, perhaps, no longer sort name list and check for length in MakeLink() ? Longer wins ?
+
 }
 
 
@@ -487,14 +490,19 @@ type
         procedure MarkDirty();
         function CleanCaption() : ANSIString;
         procedure SetBullet(PB: TKMemoParagraph; Bullet: boolean);
-        // Advises other apps we can do middle button paste
+                            // Advises other apps we can do middle button paste
         procedure SetPrimarySelection;
-        // Cancels any indication we can do middle button paste 'cos nothing is selected
+                            // Restores block at StartLink to Text, attempts to merge linktext back into both
+                            // the previous or next block if it can.
+                            // There is a problem here. If a link is edited making it invalid but the remainer
+                            // happens to also be a valid link, we don't get back to original if edit is reversed.
+        function UnlinkBlock(StartBlock: integer): integer;
+                            // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
-                        // Set by the calling process. FFN inc path
-                        // Carefull, cli has a real global version
+                            // Set by the calling process. FFN inc path
+                            // Carefull, cli has a real global version
         SingleNoteFileName : string;
         SingleNoteMode : Boolean;
         NoteFileName : string;              // Will contain the full note name, path, ID and .note
@@ -2025,29 +2033,73 @@ begin
 end;
 { -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
 
-procedure TEditBoxForm.MakeLink({const Link : ANSIString;} const Index, Len : longint);
+{ We pass an char index that might land us in the middle of a block of plain text that
+  extends beyond Len. Thats easy, just mark it up.
+  But that index might point into an existing hyperlink, if its the start of said link
+  and the lengths are the same, all good, leave it alone.
+
+  If the existing link text is longer than the one we are processing, leave it alone.
+
+  Else, we need to 'fix it up'. Remove the existing link, merge both before and after.
+  The merge process will change block numbers but not char index to update BlockNo.
+
+  Test -
+  1. Is it an existing hyperlink ? If so, does beginning and length match, exit.
+  2. Else, does any part of the proposed link overlap with an existing link ?
+        2.1 If so check length, if existing length is longer than proposed, exit.
+        2.2 Else we need to clear the existing link and merge both left and right
+            if possible, that is, if either or both are Text blocks.
+            Maybe check that doing so will get us a enough clear text to make
+            the new link ?
+  3. If we are still here, get a new BlockNumber and Offset and make the link.
+
+  CHANGE
+  If we no longer try to leave valid local links in place, this method can be easier.
+  Any link it finds has been put in by this run, because it was earlier, its bigger
+  and has priority.
+
+}
+
+procedure TEditBoxForm.MakeLink(const Index, Len : longint);
 var
 	Hyperlink, HL: TKMemoHyperlink;
     TrueLink : string;
-	BlockNo, BlockOffset, Blar : longint;
+	BlockNo, BlockNo2, BlockOffset : longint;
 begin
-    //DumpKMemo('MakeLink');
-	// Is it already a Hyperlink ? We leave valid hyperlinks in place.
+    // Because the name list we are iteration over is sorted, longest names at the top, we 'prefer' longer matches, see issue #260
+    // DumpKMemo('MakeLink');
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then exit();
-	// Is it all in the same block ?
-    if BlockNo <> Kmemo1.Blocks.IndexToBlockIndex(Index + Len -1, Blar) then exit();
-    TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
-    if length(Kmemo1.Blocks.Items[BlockNo].Text) = Len then begin
-         Kmemo1.Blocks.Delete(BlockNo);
-    end
-    else  begin
-        KMemo1.SelStart:= Index;
-        KMemo1.SelLength:=Len;
-        KMemo1.ClearSelection();
-        BlockNo := KMemo1.SplitAt(Index);
-    end;
+(*  This block is about checking an existing link in case it was one left here
+    because it is valid.  But we don't leave any here any more so don't need it.
 
+    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then begin   // We leave valid hyperlinks in place.
+        if (BlockOffset = 0) and (Len = KMemo1.Blocks.Items[BlockNo].Text.Length)
+            then exit;                                                          // must be same link.
+        if KMemo1.Blocks.Items[BlockNo].Text.Length > Len then exit;            // we prefer longer links
+        UnlinkBlock(BlockNo);                                                   // OK, trash that link
+    end else begin
+        if not KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock') then
+            exit;                                                               // err, must be a para block, how come ?
+        if ((KMemo1.Blocks.Items[BlockNo].Text.Length-BlockOffset) < Len) then  // Messy, maybe we have a trailing link we need replace ?
+        begin
+            BlockNo2 := KMemo1.Blocks.IndexToBlockIndex(Index+Len, BlockOffset);// block at the end
+            if BlockNo + 1 <> BlockNo2 then exit;                               // We cannot handle blocks too far away.
+            if not KMemo1.Blocks.Items[BlockNo2].ClassNameIs('TKMemoHyperlink') // any other sort of block is an error
+                then exit;
+            if KMemo1.Blocks.Items[BlockNo2].Text.Length >  Len then exit;      // stick with the longer link
+            UnlinkBlock(BlockNo2);                                              // we need remove link at BlockNo2
+        end;
+    end;   *)
+    BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);             // We may have moved things around
+    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then exit;   // don't mess with ones already there.
+    if ((KMemo1.Blocks.Items[BlockNo].Text.Length-BlockOffset) < Len) then
+        exit;                                                                   // We still don't have room for a link
+    TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
+    //writeln('TEditBoxForm.MakeLink now, TL='+TrueLink);
+    KMemo1.SelStart:= Index;
+    KMemo1.SelLength:=Len;
+    KMemo1.ClearSelection();
+    BlockNo := KMemo1.SplitAt(Index);
 	Hyperlink := TKMemoHyperlink.Create;
     Hyperlink.Text := TrueLink;
     Hyperlink.Textstyle.StyleChanged   :=  true;
@@ -2056,8 +2108,6 @@ begin
     HL.TextStyle.Font.Color:= Sett.TitleColour;
     // Note the colour seems to get set to some standard that TK likes when added.
 end;
-
-
 
 // Starts searching a string at StartAt for Term, returns 1 based offset from start of str if found, 0 if not. Like UTF8Pos(
 function TEditBoxForm.RelativePos(const Term : ANSIString; const MText : PChar; StartAt : integer) : integer;
@@ -2149,17 +2199,34 @@ begin
     end;
 end;
 
+// A function used just by the method below to sort list, longest names first.
+function NameLenSort(List: TStringList; Index1: Integer; Index2: Integer) : integer;
+begin
+  if length(List[Index1]) = length(List[Index2]) then result := 0
+  else
+      if length(List[Index1]) < length(List[Index2]) then result := 1
+      else result := -1;
+end;
 
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
     Searchterm : ANSIstring = '';
+    //SearchTerm : shortstring;
     Len, httpLen : longint;
-//    Tick, Tock : qword;
+    Tick, Tock : qword;
     pText : pchar;
+    NoteNameList : TstringList;
 begin
 	if not Ready then exit();
+
     // There is a thing called KMemo1.Blocks.SelectableLength but it returns the number of characters, not bytes, much faster though
     // Note, we don't need Len if only doing http and its not whole note being checked (at startup). So, could save a bit ....
+    Tick := gettickcount64();
+    NoteNameList := TStringList.Create;
+    SearchForm.StartSearch();
+    while SearchForm.NextNoteTitle(SearchTerm) do
+        NoteNameList.Add(SearchTerm);
+    NoteNameList.CustomSort(@NameLenSort);
     Len := length(KMemo1.Blocks.text);              // saves 7mS by calling length() only once ! But still 8mS
     if StartScan >= Len then exit;                  // prevent crash when memo almost empty
     if EndScan > Len then EndScan := Len;
@@ -2167,28 +2234,63 @@ begin
         httpLen := Len
     else  httpLen := EndScan;
     Ready := False;
+
     KMemo1.Blocks.LockUpdate;
     //Tick := gettickcount64();
     try
+
         PText := PChar(lowerCase(KMemo1.Blocks.text));
         if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
             CheckForHTTP(PText, StartScan, httpLen);
+
         if Sett.ShowIntLinks and (not SingleNoteMode) then begin
-            SearchForm.StartSearch();
-            while SearchForm.NextNoteTitle(SearchTerm) do
-                if SearchTerm <> NoteTitle then             // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
+            for SearchTerm in NoteNameList do
+                if SearchTerm <> NoteTitle then begin            // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
+                    //writeln('TEditBoxForm.CheckForLinks ' + SearchTerm);
                     MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
+                end;
         end;
     finally
+        NoteNameList.Free;
         KMemo1.Blocks.UnLockUpdate;
     end;
     //Tock := gettickcount64();
-    //debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');
+    //debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');   // 9-14mS, occasional flyer 35ms with 2K test note set
     Ready := True;
 end;
 
 
+function TEditBoxForm.UnlinkBlock(StartBlock : integer) : integer;
+var
+   Existing : string;
+   ChangedOne : boolean = false;
+begin
+   Result := StartBlock;
+   if KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoTextBlock') then begin
+        Existing := KMemo1.Blocks.Items[StartBlock-1].Text + KMemo1.Blocks.Items[StartBlock].Text;
+        dec(StartBlock);
+        Kmemo1.Blocks.Delete(StartBlock);
+        Kmemo1.Blocks.Delete(StartBlock);
+        KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+        ChangedOne := True;
+        dec(Result);                                                            // only necessary for previous
+   end;
+   if ((StartBlock+1) < KMemo1.Blocks.Count)                                    // still have one there
+                and KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoTextBlock') then begin
+        Existing := KMemo1.Blocks.Items[StartBlock].Text + KMemo1.Blocks.Items[StartBlock+1].Text;
+        Kmemo1.Blocks.Delete(StartBlock);
+        Kmemo1.Blocks.Delete(StartBlock);
+        KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+        ChangedOne := True;
+   end;
+   if not changedOne then begin
+        Existing := KMemo1.Blocks.Items[StartBlock].Text;
+        Kmemo1.Blocks.Delete(StartBlock);
+        KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+   end;
+end;
 
+// May 2022 - no longer try and leave valid local links in place.
 procedure TEditBoxForm.ClearNearLink(const StartS, EndS : integer); //CurrentPos : longint);
 var
     Blar, StartBlock, EndBlock : longint;
@@ -2215,28 +2317,7 @@ var
         //writeln(' Valid http or https addess');
     end;
 
-    // Restores block at StartLink to Text, attempts to merge linktext back into either
-    // the previous or next block if it can. It should, perhaps, merge all three ??
-    // There is a problem here. If a link is edited making it invalid but the remainer
-    // happens to also be a valid link, we don't get back to original if edit is reversed.
-    procedure UnlinkBlock();
-    var
-        Existing : string;
-    begin
-        Kmemo1.Blocks.Delete(StartBlock);
-        if KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoTextBlock') then begin
-            Existing := KMemo1.Blocks.Items[StartBlock-1].Text;
-            Kmemo1.Blocks.Delete(StartBlock-1);
-            KMemo1.Blocks.AddTextBlock(Existing + Linktext, StartBlock-1);
-        end else
-            if (StartBlock < KMemo1.Blocks.Count)
-                    and KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoTextBlock') then begin
-                Existing := KMemo1.Blocks.Items[StartBlock].Text;
-                Kmemo1.Blocks.Delete(StartBlock);
-                KMemo1.Blocks.AddTextBlock(LinkText + Existing, StartBlock);
-            end else
-                KMemo1.Blocks.AddTextBlock(Linktext, StartBlock);
-    end;
+
 
 begin
     Ready := False;
@@ -2255,8 +2336,11 @@ begin
             LinkText := Kmemo1.Blocks.Items[StartBlock].Text;
             // if its not a valid link, remove it. But don't check for Title links in SingleNoteMode
             // don't remove it if its a valid web link  or  ! SingleNotemode and its a valid local link.
-            if not (ValidWebLink() or (not SingleNoteMode and SearchForm.IsThisaTitle(LinkText))) then begin
-                UnLinkBlock();
+            // No, we now remove all local links in range, too hard to tell where they came from otherwise.
+            if not (ValidWebLink()) then begin
+            //if not (ValidWebLink() or (not SingleNoteMode and SearchForm.IsThisaTitle(LinkText))) then begin
+                StartBlock := UnLinkBlock(StartBlock);
+                if EndBlock > Kmemo1.Blocks.Count then EndBlock := Kmemo1.Blocks.Count;
             end;
         end else begin
             // Must check here that its not been subject to the copying of a links colour and underline
@@ -2353,6 +2437,7 @@ begin
     end;
     KMemo1.SelStart := CurserPos;
     KMemo1.SelLength := SelLen;
+
     //Debugln('Housekeeper called');
 
   // Memo1.append('Clear ' + inttostr(TS2.Time-TS1.Time) + 'ms  Check ' + inttostr(TS3.Time-TS2.Time));
