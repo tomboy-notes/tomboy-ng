@@ -418,6 +418,18 @@ object MainForm: TMainForm
     OnClick = ButtSysTrayHelpClick
     TabOrder = 4
   end
+  object ListView1: TListView
+    Left = 251
+    Height = 80
+    Top = 138
+    Width = 250
+    Columns = <    
+      item
+        Width = 235
+      end>
+    TabOrder = 5
+    OnData = ListView1Data
+  end
   object TrayIcon: TTrayIcon
     Icon.Data = {
       9E09000000000100010018180000010020008809000016000000280000001800

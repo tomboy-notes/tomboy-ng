@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 664
+  Left = 396
   Height = 401
-  Top = 194
+  Top = 171
   Width = 824
   ActiveControl = Edit1
   Caption = 'tomboy-ng_Search'
@@ -154,8 +154,8 @@ object SearchForm: TSearchForm
       Height = 340
       Hint = 'Enable in settings'
       Top = 1
-      Width = 582
-      Anchors = [akTop, akLeft, akRight, akBottom]
+      Width = 263
+      Anchors = [akTop, akLeft, akBottom]
       AutoSortIndicator = True
       AutoWidthLastColumn = True
       BorderSpacing.Left = 3
@@ -163,7 +163,7 @@ object SearchForm: TSearchForm
         item
         end      
         item
-          Width = 530
+          Width = 211
         end>
       HideSelection = False
       ParentShowHint = False
@@ -175,6 +175,8 @@ object SearchForm: TSearchForm
       SortType = stText
       TabOrder = 4
       ViewStyle = vsReport
+      OnColumnClick = ListViewNotesColumnClick
+      OnData = ListViewNotesData
       OnDblClick = ListViewNotesDblClick
       OnDrawItem = ListViewNotesDrawItem
       OnKeyDown = FormKeyDown
@@ -329,6 +331,15 @@ object SearchForm: TSearchForm
     ShowHint = True
     ParentShowHint = False
     PopupMenu = PopupMenuRefresh
+  end
+  object Button1: TButton
+    Left = 672
+    Height = 25
+    Top = 6
+    Width = 15
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 6
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344

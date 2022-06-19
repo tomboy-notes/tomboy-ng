@@ -1501,6 +1501,10 @@ msgctxt "tomdroidfile.rstalking"
 msgid "OK, talking to device. Wait for it ...."
 msgstr ""
 
+#: tsearchform.button1.caption
+msgid "Button1"
+msgstr ""
+
 #: tsearchform.buttonclearfilters.caption
 msgid "Clear Filters"
 msgstr ""

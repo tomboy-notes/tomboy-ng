@@ -103,7 +103,7 @@ unit settings;
     2022/03/31  Tidyed up the Github Token controls, now can invoke browser.
 }
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}                    //
 
 interface
 
@@ -114,7 +114,7 @@ uses
 
 // Types;
 
-type TSyncOption = (AlwaysAsk, UseServer, UseLocal);	// Relating to sync clash pref in config file
+type TSyncOption = (AlwaysAsk, UseServer, UseLocal); 	// Relating to sync clash pref in config file
 
 type
 

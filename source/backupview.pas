@@ -109,7 +109,7 @@ begin
     BUNoteLister.WorkingDir:= sett.NoteDirectory + 'Backup' + PathDelim;
     BUNoteLister.IndexNotes();
     BUNoteLister.LoadStrings(ListBox1.Items);
-    result := BUNoteLister.Count();
+    result := BUNoteLister.GetNoteCount();
 end;
 
 procedure TFormBackUpView.UpdateDetails(ID : string);

@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -55,7 +55,6 @@ object Sett: TSett
         Top = 42
         Width = 136
         Caption = 'LabelSettingPath'
-        ParentColor = False
       end
       object LabelNotesPath: TLabel
         Left = 8
@@ -63,7 +62,6 @@ object Sett: TSett
         Top = 120
         Width = 127
         Caption = 'LabelNotesPath'
-        ParentColor = False
       end
       object Label1: TLabel
         Left = 8
@@ -71,7 +69,6 @@ object Sett: TSett
         Top = 16
         Width = 195
         Caption = 'Settings will be saved in :'
-        ParentColor = False
       end
       object Label2: TLabel
         Left = 11
@@ -79,7 +76,6 @@ object Sett: TSett
         Top = 94
         Width = 297
         Caption = 'Notes will be looked for and saved in :'
-        ParentColor = False
       end
       object ButtDefaultNoteDir: TButton
         AnchorSideLeft.Control = ButtonSetNotePath
@@ -369,7 +365,6 @@ object Sett: TSett
         Width = 170
         Anchors = [akLeft, akBottom]
         Caption = 'Help Notes Language'
-        ParentColor = False
       end
       object CheckUseUndo: TCheckBox
         AnchorSideTop.Control = CheckManyNotebooks
@@ -416,7 +411,6 @@ object Sett: TSett
         Width = 153
         BorderSpacing.Top = 32
         Caption = 'Date Stamp Format'
-        ParentColor = False
       end
       object CheckStampItalics: TCheckBox
         AnchorSideLeft.Control = ComboDateFormat
@@ -540,7 +534,6 @@ object Sett: TSett
         Height = 1
         Top = 49
         Width = 1
-        ParentColor = False
       end
       object GroupBoxSync: TGroupBox
         AnchorSideLeft.Control = TabSync
@@ -572,7 +565,6 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 18
           Caption = 'Repo : '
-          ParentColor = False
         end
         object LabelSyncRepo: TLabel
           AnchorSideLeft.Control = Label4
@@ -584,7 +576,6 @@ object Sett: TSett
           Width = 117
           BorderSpacing.Left = 1
           Caption = 'not configured'
-          ParentColor = False
         end
         object SpeedSetupSync: TSpeedButton
           AnchorSideRight.Control = GroupBoxSync
@@ -632,7 +623,6 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 15
           Caption = 'LabelSyncInfo1'
-          ParentColor = False
         end
         object LabelSyncInfo2: TLabel
           AnchorSideLeft.Control = GroupBoxSync
@@ -645,7 +635,6 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 10
           Caption = 'LabelSyncInfo2'
-          ParentColor = False
         end
         object CheckSyncEnabled: TCheckBox
           AnchorSideLeft.Control = Label4
@@ -692,7 +681,6 @@ object Sett: TSett
             Width = 91
             BorderSpacing.Left = 5
             Caption = 'LabelToken'
-            ParentColor = False
             ParentShowHint = False
             ShowHint = True
           end
@@ -768,7 +756,6 @@ object Sett: TSett
         BorderSpacing.Left = 10
         BorderSpacing.Top = 15
         Caption = 'Sync Type'
-        ParentColor = False
       end
     end
     object TabBackUp: TTabSheet
@@ -825,7 +812,6 @@ object Sett: TSett
           Top = 48
           Width = 515
           Caption = 'Backup files are made when you delete a note or the sync system'
-          ParentColor = False
         end
         object Label7: TLabel
           Left = 32
@@ -833,7 +819,6 @@ object Sett: TSett
           Top = 80
           Width = 205
           Caption = 'is about to overwrite one. '
-          ParentColor = False
         end
         object Label8: TLabel
           Left = 32
@@ -841,7 +826,6 @@ object Sett: TSett
           Top = 112
           Width = 468
           Caption = 'They remain, forever, unless you do something about them.'
-          ParentColor = False
         end
         object ButtonShowBackUp: TButton
           AnchorSideRight.Control = Panel2
@@ -866,7 +850,6 @@ object Sett: TSett
           Width = 103
           Caption = 'Backup Files'
           Font.Style = [fsBold]
-          ParentColor = False
           ParentFont = False
         end
       end
@@ -891,7 +874,6 @@ object Sett: TSett
           Width = 411
           Caption = 'A snaphot is a copy of your current note directory.'
           Font.Style = [fsBold]
-          ParentColor = False
           ParentFont = False
         end
         object LabelSnapDir: TLabel
@@ -900,7 +882,6 @@ object Sett: TSett
           Top = 72
           Width = 63
           Caption = 'Snap dir'
-          ParentColor = False
         end
         object SpinDaysPerSnapshot: TSpinEdit
           Left = 32
@@ -939,7 +920,6 @@ object Sett: TSett
           Top = 122
           Width = 145
           Caption = 'Days per snapshot'
-          ParentColor = False
         end
         object Label16: TLabel
           Left = 131
@@ -947,7 +927,6 @@ object Sett: TSett
           Top = 160
           Width = 248
           Caption = 'Maximum number of snapshots'
-          ParentColor = False
         end
         object ButtonSnapRecover: TButton
           AnchorSideLeft.Control = ButtonManualSnap
@@ -1002,7 +981,6 @@ object Sett: TSett
         Top = 20
         Width = 371
         Caption = 'Spell Check requires the Hunspell Libraries and'
-        ParentColor = False
       end
       object Label14: TLabel
         Left = 12
@@ -1010,7 +988,6 @@ object Sett: TSett
         Top = 52
         Width = 307
         Caption = 'an appropriate Hunspell Dictionary set.'
-        ParentColor = False
       end
       object LabelError: TLabel
         Left = 16
@@ -1018,7 +995,6 @@ object Sett: TSett
         Top = 368
         Width = 84
         Caption = 'LabelError'
-        ParentColor = False
       end
       object LabelLibraryStatus: TLabel
         Left = 16
@@ -1026,7 +1002,6 @@ object Sett: TSett
         Top = 100
         Width = 148
         Caption = 'LabelLibraryStatus'
-        ParentColor = False
       end
       object LabelDicStatus: TLabel
         Left = 16
@@ -1034,7 +1009,6 @@ object Sett: TSett
         Top = 240
         Width = 117
         Caption = 'LabelDicStatus'
-        ParentColor = False
       end
       object LabelLibrary: TLabel
         Left = 16
@@ -1042,7 +1016,6 @@ object Sett: TSett
         Top = 132
         Width = 98
         Caption = 'LabelLibrary'
-        ParentColor = False
       end
       object LabelDic: TLabel
         Left = 16
@@ -1050,7 +1023,6 @@ object Sett: TSett
         Top = 272
         Width = 67
         Caption = 'LabelDic'
-        ParentColor = False
       end
       object ListBoxDic: TListBox
         AnchorSideLeft.Control = ButtonSetSpellLibrary
@@ -1084,7 +1056,6 @@ object Sett: TSett
         Anchors = [akRight, akBottom]
         BorderSpacing.Bottom = 7
         Caption = 'LabelDicPrompt'
-        ParentColor = False
       end
       object ButtonSetSpellLibrary: TButton
         AnchorSideTop.Control = LabelLibrary
@@ -1121,7 +1092,6 @@ object Sett: TSett
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
     Caption = 'Label15'
-    ParentColor = False
   end
   object SpeedButHide: TSpeedButton
     AnchorSideRight.Control = Owner

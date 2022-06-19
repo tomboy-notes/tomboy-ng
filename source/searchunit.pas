@@ -132,6 +132,7 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
 type        { TSearchForm }
     TSearchForm = class(TForm)
+        Button1: TButton;
 	    ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
 		CheckAutoSearchUpdate: TCheckBox;
@@ -156,6 +157,7 @@ type        { TSearchForm }
 		Splitter1: TSplitter;
         StatusBar1: TStatusBar;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
+        procedure Button1Click(Sender: TObject);
         procedure ButtonMenuClick(Sender: TObject);
                                     { If a search is underway, searches.  Else, if we have
                                       an active notebook filter applied, reapply it. Failing
@@ -182,6 +184,9 @@ type        { TSearchForm }
         procedure ListBoxNotebooksClick(Sender: TObject);
         procedure ListBoxNotebooksMouseUp(Sender: TObject;
             Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+        procedure ListViewNotesColumnClick(Sender: TObject; Column: TListColumn
+            );
+        procedure ListViewNotesData(Sender: TObject; Item: TListItem);
         procedure ListViewNotesDblClick(Sender: TObject);
 		procedure ListViewNotesDrawItem(Sender: TCustomListView;
 				AItem: TListItem; ARect: TRect; AState: TOwnerDrawState);
@@ -484,8 +489,8 @@ begin
     // We don't do any of this if the its a notebook.
     if NoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
     // if this note is already last in list, we don't need to update menus
-    if noteLister.Count() > 0 then
-        NeedUpDateMenu :=  (Title <> NoteLister.GetTitle(noteLister.Count()-1));
+    if noteLister.GetNoteCount() > 0 then
+        NeedUpDateMenu :=  (Title <> NoteLister.GetTitle(noteLister.GetNoteCount()-1));
 
   	// Can we find line with passed file name ? If so, apply new data.
     //T1 := gettickcount64();
@@ -751,7 +756,7 @@ begin
             AMenu.Items.Delete(i);
     end;
     //T2 := gettickcount64();
-    i := NoteLister.Count;
+    i := NoteLister.GetNoteCount;
     j := i -10;
     if j < 0 then j := 0;
     //T3 := gettickcount64();
@@ -867,7 +872,7 @@ begin
             // sync removes a notebook, a 'Refresh' will not make the deleted notebook disappear. It
             // does no go until filters are cleared.
         end else begin
-            NoteLister.LoadListView(ListViewNotes, False);
+//            NoteLister.LoadListView(ListViewNotes, False);
             NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
             ScaleListView();
         end;
@@ -898,7 +903,7 @@ begin
         //TS1:=gettickcount64();
         { Found := } NoteLister.SearchNotes(Edit1.Text);   // observes sett.checkCaseSensitive
         // TS2:=gettickcount64();
-        NoteLister.LoadListView(ListViewNotes, True);
+//        NoteLister.LoadListView(ListViewNotes, True);
         // ToDo : do we need to call ScaleListView here ?
         // TS3:=gettickcount64();
         NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, True);
@@ -960,7 +965,7 @@ begin
     ListViewNotes.BeginUpdate;
     if (Edit1.text = '') or (Edit1TextLength > length(Edit1.text)) then begin
         NIndex.ResetActive();
-        NoteLister.LoadListView(ListViewNotes, False);
+//        NoteLister.LoadListView(ListViewNotes, False);
         //Refresh();                             // no, is not right thing to do .....
     end;
     //T2 := gettickcount64();
@@ -984,6 +989,8 @@ begin
 //    ListViewNotes.Visible := true;
     //debugln('TSearchForm.Edit1Change Refresh=' + dbgs(T2 - T1) + ' Adjust=' + dbgs(T3 - T2));
 end;
+
+
 
 procedure TSearchForm.Edit1Enter(Sender: TObject);
 // ToDo : this should select the word, 'Search' if user clicks in field but does not ??
@@ -1068,31 +1075,38 @@ begin
     Caption := 'tomboy-ng Search';
     NoteLister := nil;
     if (SingleNoteFileName <> '') then exit;
-    ListViewNotes.Column[0].Caption := rsName;
-    ListViewNotes.Column[1].Caption := rsLastChange;
-    Edit1.Hint:=rsSearchHint;
-    Edit1.Text := rsMenuSearch;
-    Edit1.SelStart := 1;
-    Edit1.SelLength := length(Edit1.Text);
-    CreateMenus();
-    IndexNotes();               // This could be a slow process, maybe a new thread ?
-    RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
-
-    {$if (lcl_fullversion>2000600)}   //  trunk=2010000 : 2.1.0 or 2.01.00.00   2.0.6 : 2000600, note IDE greys incorrectly.
-    ListViewNotes.AutoSortIndicator := True;
-    // ListViewNotes.Column[1].SortIndicator := siAscending;
-    ListViewNotes.Column[1].SortIndicator := siDescending;
-    //debugln('Using sort indicators');
-    {$endif}
 
     { ListView Settings }       // make extra column in Object Inspector
+    ListViewNotes.ViewStyle:= vsReport;
+//    ListViewNotes.OwnerData := True;         // ToDo : remove comment
+
+
+
+
+(*    ListViewNotes.Column[0].Caption := rsName;
+    ListViewNotes.Column[1].Caption := rsLastChange;
     ListViewNotes.AutoSortIndicator := True;
     ListViewNotes.Column[1].SortIndicator := siDescending;
     ListViewNotes.AutoSort:=True;
     ListViewNotes.SortDirection:= sdDescending;     // Most recent, ie bigger date numbers, on top
     ListViewNotes.AutoWidthLastColumn:= True;
-    ListViewNotes.ViewStyle:= vsReport;
-    ListViewNotes.ReadOnly := True;
+    ListViewNotes.ReadOnly := True;            *)
+    CreateMenus();
+    IndexNotes();
+    ListViewNotes.BeginUpdate;
+    ListViewNotes.Items.Count := NoteLister.ClearSearch();
+    ListViewNotes.EndUpdate;
+
+
+
+    Edit1.Hint:=rsSearchHint;
+    Edit1.Text := rsMenuSearch;
+    Edit1.SelStart := 1;
+    Edit1.SelLength := length(Edit1.Text);
+
+    RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
+
+
     {$ifdef LVOWNERDRAW}
     ListViewNotes.OwnerDraw:= True;
     {$ifdef LCLQT5}                 // This because when ownerdrawn, we loose spacing between rows in Qt5, ugly workaround.
@@ -1287,6 +1301,36 @@ end;
   {if lcl > 2.0.6}
   { structure.  Note, the IDE gets this wrong and greys lines out it should not. }
 
+procedure TSearchForm.ListViewNotesColumnClick(Sender: TObject; Column: TListColumn);
+begin
+    // called before change so shows what it was, not what it will be
+    debugln(' TSearchForm.ListViewNotesColumnClick called');
+    case ListViewNotes.Column[0].SortIndicator of
+        siNone : debugln('Col 0 none');
+        siAscending : debugln('Col 0 Ascending');
+        siDescending : debugln('Col 0 Decending');
+    end;
+end;
+
+procedure TSearchForm.ListViewNotesData(Sender: TObject; Item: TListItem);
+var
+    P : Note_Lister.PNote;
+begin
+{    debugln('TSearchForm.ListViewNotesData SortCol=' + inttostr(ListViewNotes.SortColumn));
+    if ListViewNotes.SortDirection = sdAscending then
+        debugln('TSearchForm.ListViewNotesData Ascending');
+    if ListViewNotes.SortDirection = sdDescending then
+        debugln('TSearchForm.ListViewNotesData Descending');      }
+
+//    debugln('TSearchForm.ListViewNotesData calling item ' + inttostr(Item.Index));
+
+    P := TheNoteLister.GetNote(Item.Index);
+    Item.Caption := P^.Title;
+    Item.SubItems.Add(P^.LastChange);
+    Item.SubItems.Add(P^.ID);
+// debugln('TSearchForm.ListViewNotesData ' + inttostr(Item.Index) + ' ' + P^.Title);
+end;
+
 procedure TSearchForm.ListViewNotesDblClick(Sender: TObject);
 var
     NoteTitle : ANSIstring;
@@ -1393,6 +1437,8 @@ begin
     ButtonRefreshClick(self);
     SelectedNoteBook := ListBoxNotebooks.ItemIndex;
 
+    ListViewNotes.Items.Count := NoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
+
     // Events here if there is a term search is progress are ignored because ButtonRefreshClick acts on
     // search terms first.
 
@@ -1418,10 +1464,19 @@ begin
     end;
 end;
 
+
 procedure TSearchForm.ButtonMenuClick(Sender: TObject);
 begin
     //ShowListIndicator('From Menu');
     PopupTBMainMenu.popup;
+end;
+
+procedure TSearchForm.Button1Click(Sender: TObject);        // ToDo : remove this
+begin
+writeln('Clear = ' + NoteLister.ClearSearch().ToString);
+writeln('Search = ' + NoteLister.NewSearch('password', '').ToString);
+writeln('Clear = ' + NoteLister.ClearSearch().ToString);
+writeln('Search = ' + NoteLister.NewSearch('', 'General Test Notes').ToString);
 end;
 
 procedure TSearchForm.MenuEditNotebookTemplateClick(Sender: TObject);

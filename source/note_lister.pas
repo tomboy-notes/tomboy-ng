@@ -88,6 +88,17 @@ INTERFACE
 uses
 		Classes, SysUtils, Grids, ComCtrls, Forms, FileUtil;
 
+
+type
+        PLLIndex=^TLLIndex;
+        TLLIndex = record       // A linked list record, used to make a Title sorted index
+            NoteIndex : integer;
+            NoteTitle : string;
+            Next : PLLIndex;
+        end;
+
+type TLVSortMode = (smDateUp, smDateDown, smTitleUp, smTitleDown);
+
 type
    PNotebook=^TNotebook;
    TNotebook = record
@@ -131,7 +142,9 @@ type
     	LastChange : ANSIString;
         IsTemplate : boolean;
         OpenOnStart : boolean;
-        OpenNote : TForm;
+        OpenNote : TForm;           // If note is open, its in this TForm.
+        Content : string;           // May contain note content, '' else.
+        InSearch : boolean;         // indicates note 'passed' last filter, use again
 	end;
 
 type                                 { ---------- TNoteInfoList ---------}
@@ -154,6 +167,9 @@ type
    private
     //DebugMode : boolean;
 
+    TitleIndexArray : array of integer;     // An array of int that points to
+    SearchCount : integer;      // How many notes are active in search, or all notes if search not active
+
     OpenNoteIndex : integer;        // Used for Find*OpenNote(), points to last found one, -1 meaning none found
                                 { NoteList is a list of pointers. Each one points to a record that contains data
                                   about a particular note. Only Notebook info it has is whether or not its a
@@ -166,6 +182,7 @@ type
     NoteBookList : TNoteBookList;
                                 { Takes a created list and search term string. Returns with the list
                                   containing individual search terms, 1 to many }
+    procedure BuildIndexLL();
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
@@ -181,16 +198,6 @@ type
 
                                 // Inserts a new item into the ViewList, always Title, DateSt, FileName
     function NewLVItem(const LView: TListView; const Title, DateSt, FileName: string): TListItem;
-
-
-
-
-
-    		                    { Returns True if indicated note contains term in its content }
-   	//function NoteContains(const TermList: TStringList; FileName: ANSIString         ): boolean;
-
-                                { Removes any complete xml tags from passed string, only matches '<' to '>' }
-    //function RemoveXml(const St: AnsiString): AnsiString;
 
                                 { A Early ver of -ng wrote a bad date stamp, here we try to fix any we find. First
                                   just try to add missing bits, if that does not work, we replace the LCD with
@@ -219,7 +226,7 @@ type
     function GetNoteBook(Index: integer): PNoteBook;
                                         { returns the number items in the notebook list }
     function NotebookCount(): integer;
-                                        {Returns the number of records in the Notelist }
+                                        {Returns the number of records in the Notelist }    // ToDo : why have this AND count() ?
     function GetNoteCount() : integer;
                                         { Returns a pointer to PNote record, zero based index }
     function GetNote(Index: integer): PNote;
@@ -240,7 +247,8 @@ type
                                         { Returns the title for a given ID or Filename }
     function GetTitle(const ID: String): string;
                                         { Returns the number of items in the list }
-    function Count(): integer;
+//    function Count(): integer;
+
                                         { Returns the LastChangeDate string for ID in the Notes list, empty string
                                         if not found (empty string is its a notebook) }
     function GetLastChangeDate(const ID: String): string;
@@ -324,6 +332,15 @@ type
     function FindFirstOOSNote(out NTitle, NID: ANSIstring): boolean;
                                         { Call after FindFirstOOSNote(), it will return the next one or '' if no more found }
     function FindNextOOSNote(var NTitle, NID: ANSIstring): boolean;
+
+    // New Search methods
+                                        // Continues an existing search with an extra char in STerm, rets number of found items.
+    function RefineSearch(STerm : string) : integer;
+                                        // Clears any search, returns number of items in list.
+    function ClearSearch() : integer;
+                                        // Triggers a new search, may have STerm or Notebook or both, rets number of found items.
+    function NewSearch(STerm, NoteBook : string) : integer;
+
 
     constructor Create;
     destructor Destroy; override;
@@ -1104,8 +1121,6 @@ var
 	Node : TDOMNode;
     J : integer;
     PossibleError : string = '';
-    //TryCount : integer =0;             // only try rewriting bad last-change-date once.
-    //LCD_OK : boolean = false;
 begin
     //debugln('TNoteLister.GetNoteDetails - indexing ' + Dir + FileName);
     if not DontTestName then
@@ -1148,7 +1163,14 @@ begin
                         break;
 				until false;          }
 
+                Node := Doc.DocumentElement.FindNode('text');     // ToDo : If not in SWYT mode ?
+                if assigned(Node) then
+                    NoteP^.Content := Node.TextContent
+                else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
+
                 NoteP^.OpenNote := nil;
+                //NoteP^.Content := '';
+                NoteP^.InSearch := True;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 if not assigned(Node.FirstChild) then
                     PossibleError := 'XML ERROR, blank create-date';   // Catch it as an EObjectException further down
@@ -1355,6 +1377,56 @@ begin
 end;
 
 
+// ----------------- Search Related Methods -----------------------------------
+
+function TNoteLister.RefineSearch(STerm: string): integer;
+var
+    NoteP : PNote;
+begin
+    for NoteP in NoteList do begin
+        if NoteP^.InSearch then
+            if pos(STerm, NoteP^.Content) = 0 then begin
+                 NoteP^.InSearch := false;
+                 dec(SearchCount);
+            end;
+    end;
+    Result := SearchCount;
+end;
+
+function TNoteLister.ClearSearch(): integer;
+var
+    NoteP : PNote;
+begin
+    SearchCount := 0;
+    for NoteP in NoteList do
+        if not NoteP^.IsTemplate then begin;
+            NoteP^.InSearch := True;
+            inc(SearchCount);
+        end;
+    result :=  SearchCount;         // Now contains the numb of Notes excluding Templates
+end;
+
+function TNoteLister.NewSearch(STerm, NoteBook: string): integer;
+var
+    NoteP : PNote;
+    NBStrL : TStringList = nil;
+begin
+    // if NoteBook <> '' then filter by NoteBook name
+    if NoteBook <> '' then begin                          // This section is also valid for non SWYT
+        GetNotesInNoteBook(NBStrL, NoteBook);
+        if NBStrL <> Nil then
+            for NoteP in NoteList do
+                if FindInStringList(NBStrL, NoteP^.ID) < 0 then begin    // ToDo : the ID is full string so this Find is unnecessary complicated
+                    dec(SearchCount);
+                    NoteP^.InSearch := False;
+                end;
+    end;
+    if STerm <> '' then
+        RefineSearch(STerm);
+    result := SearchCount;
+end;
+
+
 procedure TNoteLister.BuildSearchList(SL : TStringList; const Term : AnsiString);
 var
     I : integer = 1;
@@ -1447,10 +1519,10 @@ begin
     // list is sorted, newest towards the end. All good.
 end;
 
-function TNoteLister.Count(): integer;
+{function TNoteLister.Count(): integer;     // we already have GetNoteCount()
 begin
     Result := NoteList.Count;
-end;
+end;}
 
 function TNoteLister.GetTitle(Index : integer) : string;
 begin
@@ -1458,9 +1530,24 @@ begin
 end;
 
 function TNoteLister.GetNote(Index : integer) : PNote;
+var
+    Cnt : integer = -1;           // Zero is a valid cnt
+    i : integer;
 begin
-    Result := NoteList[Index];
+    //debugln('TNoteLister.GetNote ' + inttostr(Index) + ' of ' + inttostr(SearchCount) + ' and ' + inttostr(GetNoteCount));
+    i := GetNoteCount;            // we start at the end of list.
+    if SearchCount = GetNotecount then Result := NoteList[i - Index -1]
+    else begin
+        while i > 0 do begin
+            dec(i);
+            if NoteList[i]^.insearch then inc(Cnt);
+            if Index = Cnt then exit(NoteList[i]);
+        end;
+    //debugln('ERROR TNoteLister.GetNote underrun');
+    end;
 end;
+
+
 
 { With 2000 notes, on my Dell, linux, search for 'and'.
   Before multithreading - 250mS - 280mS
@@ -1519,8 +1606,10 @@ var
     //Info : TSearchRec;
     cnt : integer = 4;
     IndexThread : TIndexThread;
+    // T1, T2, T3, T4, T5 : qword;
 begin
     //DebugMode := true;
+    // T1 := gettickcount64();
     XMLError := False;
     if DontTestName then begin
         cnt := 1;      // Just one thread.
@@ -1557,7 +1646,6 @@ begin
             {$endif}
 		end;
         IndexThread.start();
-        //debugln('Finished Making thread ' + inttostr(Cnt));
         dec(Cnt);
     end;
     while FinishedThreads < 4 do sleep(1);       // ToDo : some sort of 'its taken too long ..."
@@ -1571,8 +1659,84 @@ begin
     Result := NoteList.Count;
     NoteList.Sort(@LastChangeSorter);       // 0mS on Dell
     NoteBookList.Sort(@NotebookSorter);
+    debugln('TNoteLister.IndexNotes ===============================');
+    BuildIndexLL();
 end;
 
+
+procedure TNoteLister.BuildIndexLL();
+var
+    Head : PLLIndex = nil;      // Head of linked list
+    ANode : PLLIndex = nil;     // Ptr to a node within Linked list
+    Index : integer;            // Index into NoteList;
+    T1, T2, T3, T4 : qword;
+    St : string;
+    SNode, NewNode : PLLIndex;
+
+begin
+    T1 := gettickcount64();
+    if NoteList.Count = 0 then exit;
+    new(Head);                                        // deal with first item, has to start at 0
+    Head^.Next := nil;
+    Head^.NoteIndex := 0;
+    Head^.NoteTitle := lowercase(NoteList[0]^.Title);;
+    for Index := 1 to NoteList.Count -1 do begin      // start at 1, we did 0 above
+        ANode := Head;
+        St := lowercase(NoteList[Index]^.Title);      // This is what we want to find a home for
+        new(NewNode);
+        NewNode^.NoteIndex := Index;
+        NewNode^.NoteTitle := lowercase(NoteList[Index]^.Title);
+
+        while ANode^.Next <> nil do begin                                       // if this breaks, we must insert AFTER ANode, into nil Next.
+            if  St < ANode^.NoteTitle then break                                // if this breaks, we must insert BEFORE ANode
+            else begin
+                SNode := ANode;                                                 // we might need it later on
+                ANode := ANode^.Next;
+            end;
+        end;
+        // if to here, we have come to end of LL or we have found the spot to insert
+        if ANode^.Next = nil then begin                                         // we insert after ANode, easy
+            NewNode^.Next := Nil;
+            ANode^.Next := NewNode;
+        end else begin                                                          // we must insert above ANode.
+            { We could be at the top of the list, that is, the data we are considering is
+            to become the first record in the list. For that to happen, we have to change
+            the value of Head. Else, its the value of the previous Next.}
+            if ANode = Head then begin
+                Head := NewNode;
+                NewNode^.Next := ANode;
+            end else begin                           // here, SNode points to ANode, we need to insert between two
+                SNode^.Next := NewNode;
+                NewNode^.Next := ANode;
+            end;
+        end;
+    end;
+
+    setlength(TitleIndexArray, 0);                  // OK, copy our indexes to the array
+    setlength(TitleIndexArray, NoteList.Count);
+    ANode := Head;
+    Index := 0;
+    while ANode <> nil do begin
+        TitleIndexArray[Index] := ANode^.NoteIndex;
+        inc(Index);
+        ANode := ANode^.Next;
+    end;
+    T2 := gettickcount64();
+
+    {$ifdef DebugMode}Index := 0;
+    for Index := 0 to NoteList.Count-1 do
+        debugln('Note Name = ' + NoteList[TitleIndexArray[Index]]^.Title);{$endif}
+
+    T3 := gettickcount64();
+    while Head^.Next <> nil do begin
+        ANode := Head^.Next;
+        dispose(Head);
+        Head := ANode;
+    end;
+    if Head <> Nil then dispose(Head);
+    T4 := gettickcount64();
+    debugln('TNoteLister.IndexNotesLL Build=' + inttostr(T2 -T1) + 'mS and dispose=' + inttostr(T4-T3) + 'mS');
+end;
 
 procedure TNoteLister.LoadStGrid(const Grid : TStringGrid; NoCols : integer; SearchMode : boolean = false);
 var

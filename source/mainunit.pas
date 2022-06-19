@@ -114,7 +114,7 @@ interface
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
     StdCtrls, LCLTranslator, DefaultTranslator, Buttons, simpleipc,
-    LCLType
+    LCLType, ComCtrls
     {$ifdef LINUX}, x, xlib, process {$endif}             // Relate to testing for SysTray
     {$IFDEF LCLGTK3}, LazGdk3, LazGLib2 {$ENDIF}          // we need declare a GTK3 function that has not yet made it to bindings
     ;
@@ -149,6 +149,7 @@ type
         Label4: TLabel;
         Label5: TLabel;
         LabelNotesFound: TLabel;
+        ListView1: TListView;
         TrayIcon: TTrayIcon;
 		procedure BitBtnHideClick(Sender: TObject);
   procedure BitBtnQuitClick(Sender: TObject);
@@ -165,6 +166,7 @@ type
         procedure FormResize(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure LabelErrorClick(Sender: TObject);
+        procedure ListView1Data(Sender: TObject; Item: TListItem);
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
@@ -294,6 +296,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+
     AboutFrm := Nil;
     Randomize;                                      // used by sett.getlocaltime()
     //HelpList := Nil;
@@ -310,6 +313,16 @@ begin
         TrayIcon.Show;
     end;
     LabelBadNoteAdvice.Caption := '';
+
+    ListView1.ViewStyle:= vsReport;
+    ListView1.OwnerData := True;
+    ListView1.Items.Count := 50;
+end;
+
+procedure TMainForm.ListView1Data(Sender: TObject; Item: TListItem);
+begin
+    Item.Caption := inttostr(Item.Index);
+    debugln('TMainForm.ListView1Data - ' + inttostr(Item.Index));
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -574,15 +587,16 @@ begin
         until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
 
+
 end;
-
-
 
 procedure TMainForm.LabelErrorClick(Sender: TObject);
 begin
     if LabelError.Caption <> '' then
         showmessage(rsBadNotesFound1 + #10#13 + rsBadNotesFound2);
 end;
+
+
 
 procedure TMainForm.UpdateNotesFound(Numb : integer);
 begin
