@@ -226,7 +226,7 @@ function WriteZipReadMe () {
 	echo "either the deb or rpm on your particular distribution. It contains some of the" >> "$RM"
 	echo "files you need and a very basic installer but does not resolve dependancies." >> "$RM"
 	echo "Its assumed you know what you are doing." >> "$RM"
-	echo "* Files and features not provided here include -" >> "$RM"
+	echo "Files and features not provided here include -" >> "$RM"
 	echo "* Language other than English" >> "$RM"
 	echo "* tomboy-ng help files" >> "$RM"
 	echo "* Ability to have tomboy-ng set itself to autostart" >> "$RM"
