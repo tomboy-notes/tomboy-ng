@@ -788,6 +788,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -1105,6 +1106,12 @@
       <CompilerMessages>
         <IgnoredMessages idx6058="True"/>
       </CompilerMessages>
+      <OtherDefines Count="4">
+        <Define0 Value="DisableLCLGIF"/>
+        <Define1 Value="DisableLCLJPEG"/>
+        <Define2 Value="DisableLCLPNM"/>
+        <Define3 Value="DisableLCLTIFF"/>
+      </OtherDefines>
     </Other>
   </CompilerOptions>
 </CONFIG>

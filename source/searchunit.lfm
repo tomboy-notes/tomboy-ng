@@ -3,7 +3,7 @@ object SearchForm: TSearchForm
   Height = 401
   Top = 171
   Width = 824
-  ActiveControl = Edit1
+  ActiveControl = EditSearch
   Caption = 'tomboy-ng_Search'
   ClientHeight = 401
   ClientWidth = 824
@@ -17,7 +17,7 @@ object SearchForm: TSearchForm
   OnResize = FormResize
   OnShow = FormShow
   LCLVersion = '2.2.0.2'
-  object Edit1: TEdit
+  object EditSearch: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = ButtonRefresh
@@ -31,11 +31,11 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
     BorderSpacing.Right = 9
-    OnChange = Edit1Change
-    OnEnter = Edit1Enter
-    OnExit = Edit1Exit
+    OnChange = EditSearchChange
+    OnEnter = EditSearchEnter
+    OnExit = EditSearchExit
     OnKeyDown = FormKeyDown
-    OnKeyUp = Edit1KeyUp
+    OnKeyUp = EditSearchKeyUp
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
@@ -154,8 +154,8 @@ object SearchForm: TSearchForm
       Height = 340
       Hint = 'Enable in settings'
       Top = 1
-      Width = 263
-      Anchors = [akTop, akLeft, akBottom]
+      Width = 582
+      Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSortIndicator = True
       AutoWidthLastColumn = True
       BorderSpacing.Left = 3
@@ -163,13 +163,16 @@ object SearchForm: TSearchForm
         item
         end      
         item
-          Width = 211
+          Width = 530
+        end      
+        item
+          Width = 1
         end>
       HideSelection = False
       ParentShowHint = False
       ReadOnly = True
       RowSelect = True
-      ScrollBars = ssAutoVertical
+      ScrollBars = ssVertical
       ShowHint = True
       SortColumn = 1
       SortType = stText
@@ -185,8 +188,8 @@ object SearchForm: TSearchForm
   end
   object ButtonMenu: TSpeedButton
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Edit1
-    AnchorSideBottom.Control = Edit1
+    AnchorSideTop.Control = EditSearch
+    AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
     Left = 0
     Height = 32

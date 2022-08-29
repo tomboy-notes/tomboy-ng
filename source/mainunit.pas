@@ -149,7 +149,6 @@ type
         Label4: TLabel;
         Label5: TLabel;
         LabelNotesFound: TLabel;
-        ListView1: TListView;
         TrayIcon: TTrayIcon;
 		procedure BitBtnHideClick(Sender: TObject);
   procedure BitBtnQuitClick(Sender: TObject);
@@ -166,7 +165,6 @@ type
         procedure FormResize(Sender: TObject);
         procedure FormShow(Sender: TObject);
         procedure LabelErrorClick(Sender: TObject);
-        procedure ListView1Data(Sender: TObject; Item: TListItem);
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
     private
@@ -313,16 +311,6 @@ begin
         TrayIcon.Show;
     end;
     LabelBadNoteAdvice.Caption := '';
-
-    ListView1.ViewStyle:= vsReport;
-    ListView1.OwnerData := True;
-    ListView1.Items.Count := 50;
-end;
-
-procedure TMainForm.ListView1Data(Sender: TObject; Item: TListItem);
-begin
-    Item.Caption := inttostr(Item.Index);
-    debugln('TMainForm.ListView1Data - ' + inttostr(Item.Index));
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
