@@ -104,7 +104,7 @@ INTERFACE
 uses
 		Classes, SysUtils, Grids, ComCtrls, Forms, FileUtil;
 
-type TLVSortMode = (smRecentUp, smRecentDown, smAATitleUp, smAATitleDown);
+type TLVSortMode = (smRecentUp, smRecentDown, smAATitleUp, smAATitleDown, smAllRecentUp);
 
 type
    PNotebook=^TNotebook;
@@ -194,8 +194,14 @@ type
    private
     //DebugMode : boolean;
 
-    TitleSortList : TSortList;  // A list of Indexes into NoteList, filtered by search, sorted by Title
-    DateSortList  : TSortList;  // A list of Indexes into NoteList, filtered by search, sorted by Date
+    TitleSearchIndex : TSortList;  // A list of Indexes into NoteList, filtered by search, sorted by Title
+    DateSearchIndex  : TSortList;  // A list of Indexes into NoteList, filtered by search, sorted by Date
+    DateAllIndex     : TSortList;  // An sorted on date index of all notes in NoteList (except templates)
+    EnterDateSearchIndex  : TSortList;  // A list of Indexes into NoteList, filtered by Press Enter search, sorted by Date
+    EnterTitleSearchIndex : TSortList;  // A list of Indexes into NoteList, filtered by Press Enter search, sorted by Title
+
+
+
     SearchCount : integer;      // How many notes are active in search, or all notes if search not active
 
     OpenNoteIndex : integer;        // Used for Find*OpenNote(), points to last found one, -1 meaning none found
@@ -204,6 +210,8 @@ type
                                   containing Name, Template ID and a List (called Notes) of IDs of
                                   notes that are members of this Notebook. }
     NoteBookList : TNoteBookList;
+                                { Builds a new date sorted index refrencing all notes in NoteList for Menu builder }
+    function BuildDateAllIndex(): integer;
                                 { Takes a created list and search term string. Returns with the list
                                   containing individual search terms, 1 to many }
     procedure BuildSearchList(SL: TStringList; const Term: AnsiString);
@@ -229,6 +237,7 @@ type
                                   just try to add missing bits, if that does not work, we replace the LCD with
                                   current, and known good date.}
 	procedure RewriteBadChangeDate(const Dir, FileName, LCD: ANSIString);
+
 
 
 
@@ -319,10 +328,9 @@ type
                                         this is the main "go and do it" function. Note, it uses threads and FindFirst.
                                         Does NOT generate the note Indexes because its not always needed.}
    	function IndexNotes(DontTestName: boolean=false): longint;
-                                        { This is only called when using the "Press Enter to search" mode - maybe we
-                                          might discard it at some stage, iff use ONLY search while you type
-                                          Note it used FindAllFiles so could be faster with FindFirst() }
-    function SearchNotes(const Term: ANSIstring): longint;
+                                        { This is only called when using the "Press Enter to search" mode -  triggers
+                                        threads who's Execute add all the Note's content to NoteList. }
+    function LoadContentForPressEnter(): longint;
     		                            { Copy the internal Note data to the passed TStringGrid, empting it first.
                                           NoCols can be 2, 3 or 4 being Name, LastChange, CreateDate, ID.
                                           Special case only main List SearchMode True will get from the search list.
@@ -363,6 +371,14 @@ type
     function FindFirstOOSNote(out NTitle, NID: ANSIstring): boolean;
                                         { Call after FindFirstOOSNote(), it will return the next one or '' if no more found }
     function FindNextOOSNote(var NTitle, NID: ANSIstring): boolean;
+                                        { Called, typically, when a note is saved. May be a new note or a note
+                                        that is being updated. Will always have a new LCD, might have a new Title.
+                                        The note may or may not be displayed in SearchUnit. Depending on all that,
+                                        we may update Indexes, return false if nothing needs to be done, if True
+                                        we will refresh displayed list or, if ReRunSearch is true, we'll re-run the
+                                        current search, thus updating Search Indexes. We always update DateAllIndex.}
+    function AlterOrAddNote(out ReRunSearch: boolean; const FFName, LCD, Title: string): boolean;
+
 
     // New Search methods
 
@@ -403,8 +419,8 @@ Type   { ======================= SEARCH THREAD ========================== }
         NoteLister : TNoteLister;   // Thats the note lister that called us
         TIndex : integer;           // Zero based count of threads
         ThreadBlockSize : integer;  // how many files each thread processes
-        ResultsList : TNoteList;    // List to contain details of what we found
-        File_List : TStringList;    // Incoming list if files
+        ResultsList1, ResultsList2 : TSortList;    // List to contain details of what we found, 1=date, 2=title
+        WorkDir : String;           // Dir where notes files are
         Term_List : TStringList;    // Incoming list of terms to search for
         Constructor Create(CreateSuspended : boolean);
     end;
@@ -447,7 +463,7 @@ var TheNoteLister : TNoteLister = nil;    // This is a pointer to the notelister
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger, tb_utils, syncutils
-        {$ifdef TOMBOY_NG}, SearchUnit, settings{$endif};                      // project options -> Custom Options
+        {, SearchUnit} {$ifdef TOMBOY_NG}, settings {$endif};         // project options -> Custom Options
 
 { Laz* are LCL packages, Projectinspector, double click Required Packages and add LCL }
 
@@ -478,29 +494,21 @@ end;
 
 // A sort function for TitleSortList
 function SortOnTitle(Item1: Pointer; Item2: Pointer):Integer;
-var
-    St1, St2 : string;
 begin
-    //St1 := lowercase(NoteList[integer(item1)]^.Title);
-    //St2 :=  lowercase(NoteList[integer(item2)]^.Title);
-    St1 := TheNoteLister.NoteList[integer(item1)]^.TitleLow;                  // ToDo : why make local copy ?
-    St2 :=  TheNoteLister.NoteList[integer(item2)]^.TitleLow;
-    if St1 = St2 then
+    if TheNoteLister.NoteList[integer(item1)]^.TitleLow = TheNoteLister.NoteList[integer(item2)]^.TitleLow then
         Result := 0
-    else if St1 > St2 then         // This gives alphabetical, AA at the top
+    else if TheNoteLister.NoteList[integer(item1)]^.TitleLow > TheNoteLister.NoteList[integer(item2)]^.TitleLow then         // This gives alphabetical, AA at the top
         Result := 1
     else Result := -1;
 end;
 
-function SortOnDate(Item1: Pointer; Item2: Pointer):Integer;
-var
-    St1, St2 : string;
+function SortOnDate(Item1, Item2 : Pointer):Integer; inline;
 begin
-    St1 := TheNoteLister.NoteList[integer(item1)]^.LastChange;              // ToDo : why make local copy ?
-    St2 :=  TheNoteLister.NoteList[integer(item2)]^.LastChange;
-    if St1 = St2 then
+    if TheNoteLister.NoteList[integer(item1)]^.LastChange
+                    = TheNoteLister.NoteList[integer(item2)]^.LastChange then
         Result := 0
-    else if St1 > St2 then         // This gives most recent at the top
+    else if TheNoteLister.NoteList[integer(item1)]^.LastChange
+                    > TheNoteLister.NoteList[integer(item2)]^.LastChange then         // ?? This gives most recent at the top
         Result := 1
     else Result := -1;
 end;
@@ -553,35 +561,41 @@ end;
 procedure TSearchThread.Execute;
 var
     EndBlock, I : integer;
-    NoteP : PNote;
+//    NoteP : PNote;
+    Doc : TXMLDocument;
+	Node : TDOMNode;
 begin
     EndBlock := (TIndex+1)*ThreadBlockSize;
-    if EndBlock > File_List.Count then
-        EndBlock := File_List.Count;
-    if (File_List.Count - EndBlock) < ThreadBlockSize then
-        EndBlock := File_List.Count;
+    if EndBlock > TheNoteLister.NoteList.Count then
+        EndBlock := TheNoteLister.NoteList.Count;
+    if (TheNoteLister.NoteList.Count - EndBlock) < ThreadBlockSize then
+        EndBlock := TheNoteLister.NoteList.Count;
     I := TIndex * ThreadBlockSize;
     {if EndBlock := FileList.Count then
         debugln('Last Thread Endblock=' + dbgs(EndBlock)); }
     while (not Terminated) and (I < EndBlock) do begin
-        if Notecontains(Term_List, File_List.Strings[i], CaseSensitive) then  begin
-            if not Notelister.IsATemplate(ExtractFileNameOnly(File_List.Strings[i])) then begin
-                new(NoteP);
-                NoteP^.ID:= ExtractFileNameOnly(File_List.Strings[i]) + '.note';
-                NoteP^.IsTemplate := False;
-                NoteP^.Title := Notelister.GetTitle(NoteP^.ID);
-                NoteP^.LastChange:= Notelister.GetLastChangeDate(NoteP^.ID);
-                NoteP^.CreateDate := '';
-                //debugln('ID = ' + NoteP^.ID);
+        if not TheNoteLister.NoteList[i]^.IsTemplate then begin
+          	if not FileExistsUTF8(WorkDir + TheNoteLister.NoteList[i]^.ID) then begin
+                debugln('TNoteLister.TSearchThread.Execute ======== ERROR cannot find ' + WorkDir + TheNoteLister.NoteList[i]^.ID);
+                exit;
+            end;
+            ReadXMLFile(Doc, WorkDir + TheNoteLister.NoteList[i]^.ID);           // requires free
+            try
+                Node := Doc.DocumentElement.FindNode('text');
+
                 while InterlockedCompareExchange(ThreadLock, TIndex, -1) <> -1 do
-                    if Terminated then begin
-                        dispose(NoteP);
-                        break;
-                    end;
-                ResultsList.Add(NoteP);
-                //assert((InterlockedExchange(ThreadLock, -1) = TIndex), 'FAILED threadlock');
-                // it appears code is unstable if I use assert and don't tick include assertion code -Sa under debugging
+                    if Terminated then break;          // cycle until its our turn
+                if assigned(Node) then begin
+                    {$ifdef TOMBOY_NG}
+                    if Sett.SearchCaseSensitive then
+                        TheNoteLister.NoteList[i]^.Content := Node.TextContent
+                    else {$endif} TheNoteLister.NoteList[i]^.Content := lowercase(Node.TextContent);
+                end
+                else debugln('TNoteLister.TSearchThread.Execute ======== ERROR unable to find text in '
+                                + WorkDir + TheNoteLister.NoteList[i]^.ID);
+            finally
                 InterlockedExchange(ThreadLock, -1);
+                doc.free;
             end;
         end;
         inc(I);
@@ -1042,8 +1056,8 @@ end;
 { -------------- Things relating to Notes -------------------- }
 
 // Address of this function is passed to note list sort. Newest notes at end of list.
-function LastChangeSorter( Item1: Pointer;   Item2: Pointer) : Integer;
-begin
+function LastChangeSorter( Item1: Pointer;   Item2: Pointer) : Integer;                     // ToDo : Maybe remove this ?
+begin                                                                                       // But test its way of comparing first !
     // Also ANSICompareStr but we are just looking at date numbers here
 	result := CompareStr(PNote(Item1)^.LastChange, PNote(Item2)^.LastChange);
 end;
@@ -1157,11 +1171,15 @@ begin
                         break;
 				    until false;          }
 
-                if DontTestName then NoteP^.Content := ''             // silly to record content for, eg, help notes.
+                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
                 else begin
-                    Node := Doc.DocumentElement.FindNode('text');     // ToDo : If not in SWYT mode, search as you type
-                    if assigned(Node) then
-                        NoteP^.Content := Node.TextContent
+                    Node := Doc.DocumentElement.FindNode('text');
+                    if assigned(Node) then begin
+                        {$ifdef TOMBOY_NG}
+                        if Sett.SearchCaseSensitive then                        // Should we have a wrapper ifdef TOMBOY_NG ??
+                            NoteP^.Content := Node.TextContent
+                        else {$endif} NoteP^.Content := lowercase(Node.TextContent);
+                    end
                     else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
                 end;
 
@@ -1383,55 +1401,67 @@ begin
     //T1 := GetTickCount64();
     result := 0;
     // Iterate over the Index, for each entry, the value stored is the index into NoteList
-    while result < TitleSortList.Count do begin
-        if not CheckSearchTerms(STermList, TitleSortList[result]) then
-            TitleSortList.Delete(result)
+    while result < TitleSearchIndex.Count do begin
+        if not CheckSearchTerms(STermList, TitleSearchIndex[result]) then
+            TitleSearchIndex.Delete(result)
         else inc(result);
     end;
     result := 0;
     //T2 := GetTickCount64();
-    while result < DateSortList.count do begin
-        if not CheckSearchTerms(STermList, DateSortList[result]) then
-            DateSortList.Delete(result)
+    while result < DateSearchIndex.count do begin
+        if not CheckSearchTerms(STermList, DateSearchIndex[result]) then        // ToDo : value to be had in seperate threads ?
+            DateSearchIndex.Delete(result)
         else inc(result);
     end;
     //T3 := GetTickCount64();
     //debugln('TNoteLister.RefineSearch() ' + inttostr(T2-T1) + 'mS ' + inttostr(T3-T2) + 'mS');
 end;
 
-function TNoteLister.ClearSearch(): integer;
+function TNoteLister.BuildDateAllIndex() : integer;
 var
     i : integer;
-    //T1, T2, T3, T4, T5 : qword;
 begin
-    //T1 := GetTickCount64();
-    SearchCount := 0;                // ToDo : is this needed ?
-    result := 0;
-    if TitleSortList = nil then TitleSortList := TSortList.Create
-    else TitleSortList.Clear;
-    if DateSortList = nil then DateSortList := TSortList.Create
-    else DateSortList.Clear;
+    Result := 0;
+    if DateAllIndex = nil then DateAllIndex := TSortList.Create
+    else DateAllIndex.Clear;
     for i := 0 to NoteList.Count-1 do begin
         if not NoteList[i]^.IsTemplate then begin
-            TitleSortList.add(i);
-            DateSortList.Add(i);
+            DateAllIndex.Add(i);
             inc(Result);
         end;
     end;
-    TitleSortList.sort(@SortOnTitle);         // 3mS to sort 2K notes
-    DateSortList.sort(@SortOnDate);
-    //T2 := GetTickCount64();
-    //debugln('TNoteLister.ClearSearch() ' + inttostr(T2-T1));
+    DateAllIndex.sort(@SortOnDate);
 end;
 
-{ NewSearch can be called in three modes -
-  * Just a Notebook, we find all notes that are in this notebook, scan NoteList for those IDs
-  * Just a STerm, we first clearSearch to get just notes and then filter for STerm.
-    Instead, do both in same loop. Look for Term first, then check its not a Notebook
-  * Both in same loop, filter for Notebook then STerm.
-}
-
-
+function TNoteLister.ClearSearch(): integer;
+var
+    i : integer;
+//    T1, T2, T3, T4, T5, T6 : qword;
+begin
+//    T1 := GetTickCount64();
+    SearchCount := 0;                // ToDo : is this needed ?
+    result := 0;
+    if TitleSearchIndex = nil then TitleSearchIndex := TSortList.Create
+    else TitleSearchIndex.Clear;
+    if DateSearchIndex = nil then DateSearchIndex := TSortList.Create
+    else DateSearchIndex.Clear;
+    for i := 0 to NoteList.Count-1 do begin
+        if not NoteList[i]^.IsTemplate then begin
+            TitleSearchIndex.add(i);
+            DateSearchIndex.Add(i);
+            inc(Result);
+        end;
+    end;
+//    T2 := GetTickCount64();
+    TitleSearchIndex.sort(@SortOnTitle);
+//    T3 := GetTickCount64();
+    DateSearchIndex.sort(@SortOnDate);           // Ends up with the most recent at the bottom of list
+{    T4 := GetTickCount64();
+    debugln('TNoteLister.ClearSearch() build=' + inttostr(T2-T1)
+                + 'mS Tsort=' + inttostr(T3-T2) + 'mS DSort=' + inttostr(T4-T3) );
+    debugln('Top ' + ' ' + NoteList[TitleSearchIndex[0]]^.LastChange);
+    debugln('Bot ' + ' ' + NoteList[TitleSearchIndex[TitleSearchIndex.Count-1]]^.LastChange);  }
+end;
 
 function TNoteLister.CheckSearchTerms(const STermList : TStringList; const Index : integer) : boolean; inline;
 var
@@ -1444,11 +1474,14 @@ begin
     result := true;
 end;
 
+{ NewSearch can be called in three modes -
+  Just STermList, Just a Notebook, or Both. Not neither.     }
 
 function TNoteLister.NewSearch(STermList : TstringList; NoteBook: string): integer;
 var
     NBStrL : TStringList = nil;        // gets set to a pre-existing list, dont create or free !
     T1, T2, T3, T4, T5 : qword;
+    St : string;
 
     function SearchNoteBook() : integer;
     var
@@ -1460,16 +1493,14 @@ var
             while j < NBStrL.Count do begin
                 if NoteList.FindID(i, NBStrL[j]) then begin        // this the time consuming part. 4mS 2000 notes
                     if CheckSearchTerms(STermList, i) then begin
-                        TitleSortList.add(i);
-                        DateSortList.Add(i);
+                        TitleSearchIndex.add(i);
+                        DateSearchIndex.Add(i);
                         inc(Result);
                     end;
                     inc(j);
                 end;
             end;
         end;
-        TitleSortList.sort(@SortOnTitle);                          // Will be quick, probably only contains a subset of notes
-        DateSortList.sort(@SortOnDate);
     end;
 
     function OnlySTerm() : integer;
@@ -1480,8 +1511,8 @@ var
         for ii := 0 to NoteList.Count-1 do begin
             if not CheckSearchTerms(STermList, ii) then continue;
             if not NoteList[ii]^.IsTemplate then begin
-                TitleSortList.add(ii);
-                DateSortList.Add(ii);
+                TitleSearchIndex.add(ii);
+                DateSearchIndex.Add(ii);
                 inc(Result);
             end;
         end;
@@ -1491,31 +1522,46 @@ var
 begin
     // debugln('TNoteLister.NewSearch() STerm=' + STermList.Text + ' >> ' + NoteBook);
     T1 := GetTickCount64();
-    TitleSortList.Clear;
-    DateSortList.Clear;
+    TitleSearchIndex.Clear;
+    DateSearchIndex.Clear;
     T2 := GetTickCount64();
     if (NoteBook <> '')  then
         Result := SearchNoteBook()
     else Result := OnlySTerm();
     T3 := GetTickCount64();
-    // debugln('TNoteLister.NewSearch() ' + inttostr(T2-T1) + 'mS ' + inttostr(T3-T2) + 'mS ' + inttostr(TitleSortList.Count));
+    TitleSearchIndex.sort(@SortOnTitle);                          // Will be quick, probably only contains a subset of notes
+    T4 := GetTickCount64();
+    DateSearchIndex.sort(@SortOnDate);
+    T5 := GetTickCount64();
+    debugln('TNoteLister.NewSearch() clear=' + inttostr(T2-T1) + 'mS Search='
+            + inttostr(T3-T2) + 'mS ' + ' TSort=' + inttostr(T4-T3)
+            + ' mS DSort=' + inttostr(T5-T4) + ' ' + inttostr(TitleSearchIndex.Count));
+
+    debugln('as above -- ' + STermList.text + ' -- ' + Notebook);
+    for St in STermList do
+        debugln('TNoteLister.NewSearch() STermList Item [' + St + ']');
+    debugln('as above -- content >> ' + copy(NoteList[0]^.Content, 50, 1));
+
+{    debugln(' TNoteLister.NewSearch()  Top Index=' + NoteList[DateSearchIndex[0]]^.LastChange);
+    debugln(' TNoteLister.NewSearch Botton Index=' + NoteList[DateSearchIndex[DateSearchIndex.Count - 1]]^.LastChange);
+    }
 end;
 
 function TNoteLister.NoteIndexCount(): integer;
 begin
-    if TitleSortList = nil then
+    if TitleSearchIndex = nil then
         result := 0
-    else result := TitleSortList.Count;
+    else result := TitleSearchIndex.Count;
 end;
 
 
-procedure TNoteLister.BuildSearchList(SL : TStringList; const Term : AnsiString);
+procedure TNoteLister.BuildSearchList(SL : TStringList; const Term : AnsiString);   // ToDo : remove ?
 var
     I : integer = 1;
     AWord : string = '';
     InCommas : boolean = false;
 begin
-    // sections in inverted commas to be treated as one word, becomes on line in list
+    // sections in inverted commas to be treated as one word, becomes one line in list
    //  its very wastefull to use a List here, lots of overhead we are not using but easy.
    // look at a managed record ?
     while I <= length(trim(Term)) do begin
@@ -1626,11 +1672,16 @@ end;
 
 function TNoteLister.GetNote(Index: integer; mode: TLVSortMode): PNote;
 begin
+    Result := Nil;
+
+    if DateAllIndex.Count < 5 then debugln('TNoteLister.GetNote() Count < 5');
+
     case Mode of
-        smRecentDown  : result := NoteList[DateSortList[Index]];
-        smRecentUp    : result := NoteList[DateSortList[DateSortList.Count - Index -1]];
-        smAATitleUp   : result := NoteList[TitleSortList[Index]];
-        smAATitleDown : result := NoteList[TitleSortList[TitleSortList.Count - Index -1]];
+        smRecentDown  : result := NoteList[DateSearchIndex[Index]];
+        smRecentUp    : result := NoteList[DateSearchIndex[DateSearchIndex.Count - Index -1]];
+        smAATitleUp   : result := NoteList[TitleSearchIndex[Index]];
+        smAATitleDown : result := NoteList[TitleSearchIndex[TitleSearchIndex.Count - Index -1]];
+        smAllRecentUp : result := NoteList[DateAllIndex[DateAllIndex.Count - Index -1]];
     end;
 end;
 
@@ -1647,10 +1698,51 @@ const ThreadCount = 3;  // The number of extra threads set searching. 3 seems re
 
 
 
-// ToDo : this is called only when a Press Enter search is run, its ignoring
-// CaseSensitive switch, see below.
 
-function TNoteLister.SearchNotes(const Term: ANSIstring) : longint;
+
+
+// ToDo : this is called only when a Press Enter search is run,
+function TNoteLister.LoadContentForPressEnter() : longint;
+var
+    P : PNote;
+    ThreadIndex : integer = 0;
+    SearchThread : TSearchThread;
+begin
+    if EnterDateSearchIndex = Nil then
+        EnterDateSearchIndex := TSortList.Create
+    else EnterDateSearchIndex.Clear;
+    if EnterTitleSearchIndex = Nil then
+        EnterTitleSearchIndex := TSortList.Create
+    else EnterTitleSearchIndex.clear;
+//    for P in NoteList do begin
+        FinishedThreads := 0;
+        ThreadLock := -1;
+        while ThreadIndex < ThreadCount do begin
+            SearchThread := TSearchThread.Create(True);        // Threads clean themselves up.
+            SearchThread.NoteLister := self;
+            SearchThread.ThreadBlockSize := NoteList.Count div ThreadCount;
+            // SearchThread.Term_List := Terms;
+            SearchThread.WorkDir := WorkingDir;
+            //SearchThread.ResultsList1 := EnterDateSearchIndex;
+            //SearchThread.ResultsList2 := EnterTitleSearchIndex;
+            SearchThread.TIndex := ThreadIndex;
+            {$ifdef TOMBOY_NG}
+            //SearchThread.CaseSensitive := Sett.SearchCaseSensitive;
+            {$endif}
+            SearchThread.start();
+            inc(ThreadIndex);
+        end;
+        while FinishedThreads < ThreadCount do sleep(1);       // ToDo : some sort of 'its taken too long ..."
+        // SearchNoteList.Sort(@LastChangeSorter);
+
+//    end;
+    EnterDateSearchIndex.sort(@SortOnDate);
+    EnterTitleSearchIndex.sort(@SortOnTitle);
+	result := EnterDateSearchIndex.Count;
+end;
+
+(*
+function TNoteLister.SearchNotes(const Term: ANSIstring) : longint;                  // ToDo : remove
 var
     TermList, FileList : TStringList;
     ThreadIndex : integer = 0;
@@ -1659,7 +1751,7 @@ begin
     TermList := TStringList.Create;
     FileList := Nil;
     try
-        BuildSearchList(TermList, Term);
+        BuildSearchList(TermList, Term);                 // ToDo : check out other way to do this
         if DebugMode then debugln('Empty Search Lists created');
         SearchNoteList.Free;
         SearchNoteList := TNoteList.Create;
@@ -1688,7 +1780,7 @@ begin
         if FileList <> nil then FileList.free;
         TermList.Free;
     end;
-end;
+end;                     *)
 
 function TNoteLister.IndexNotes(DontTestName : boolean = false): longint;
 var
@@ -1696,7 +1788,7 @@ var
     cnt : integer = 4;
     IndexThread : TIndexThread;
     T1, T2, T3, T4, T5 : qword;
-    i : integer;
+    //i : integer;
 begin
     // DebugMode := true;                           // ToDo : remove
     T1 := gettickcount64();
@@ -1750,7 +1842,10 @@ begin
     T2 := gettickcount64();
     NoteBookList.Sort(@NotebookSorter);
     T3 := gettickcount64();
-    debugln('TNoteLister.IndexNotes read=' + inttostr(T2-T1) + 'mS, sort= ' + inttostr(T3-T2));
+    //debugln('TNoteLister.IndexNotes() called for ' + WorkingDir + ' count=' + inttostr(NoteList.Count));
+    if TheNoteLister <> nil then BuildDateAllIndex();                           // Initialized below, set in Searchform
+    T4 := gettickcount64();
+    debugln('TNoteLister.IndexNotes read=' + inttostr(T2-T1) + 'mS, NoteBook Sort= ' + inttostr(T3-T2) + ' DateAllIndex=' + inttostr(T4-T3));
 end;
 
 procedure TNoteLister.LoadStGrid(const Grid : TStringGrid; NoCols : integer; SearchMode : boolean = false);
@@ -1844,6 +1939,77 @@ begin
         dec(Index);
         TheStrings.AddObject(NoteList.Items[Index]^.Title, tObject(NoteList.Items[Index]^.ID));
     end;
+end;
+
+{ New model, Aug 2022, now need to manage the Index Files.
+  We will deal with what ever is needed here, alter existing, create new.
+  We need to ret a value that tells SearchUnit it needs to -
+  1. Do nothing
+  2. update display.
+  3. rerun last search (and, update display)
+  Ret value is either do nothing (false) or do something, True.
+  We pass an Out Var, that will be false if the something is just update display
+  and True if its a full rerun of search.  ReRunSearch : boolean.
+
+  This function first looks for the note ID in NoteList, if its there, update LCD
+  and then look to see if its in Title has changed. If it has, rebuild DateAllIndex
+  and return True. SearchUnit will trigger a repeat search.
+
+  If its just a LCD job, we look to see if its mentioned in DateSearchIndex, if
+  not, ret false. Its its there, ret true and set ReRunSearch to False.
+
+  If its a new note, add to NoteList, update DateAllIndex, return True and set
+  ReRunSearch=True.
+
+                Present  Ret  ReRun  Actions
+  Just LCD      No       f    f      Update NoteList, update DateAllIndex
+  Just LCD      Yes      T    f      Update NoteList, update DateAllIndex and DateSearchIndex
+  LCD + Title   No       f    f      Update NoteList, update all 3 indexes
+  LCD + Title   Yes      T    T      Update NoteList
+  New Note               T    T      Add to NoteList (still might not be displayed but too hard to tell)
+
+}
+
+function TNoteLister.AlterOrAddNote(out ReRunSearch : boolean; const FFName, LCD, Title : string) : boolean;
+var
+    ID : string;
+    i : integer = 0;                   // Is an index into NoteList
+//    PresentInIndex : boolean = false;
+
+    function UpdateIndex(TheIndex : TSortList) : boolean; // Assumes i is an index to NoteList, delete and insert at end of Index
+    var  j : integer = 0;                                 // Deletes the 'i' entry and then adds it at the end.
+    begin
+        j := 0; Result := False;
+        while j < TheIndex.Count do begin
+            if TheIndex[j] = i then begin
+                TheIndex.Delete(j);
+                TheIndex.add(i);
+                exit(True);
+            end;
+            inc(j);
+        end;
+    end;
+
+begin
+    Result := False;
+    ReRunSearch := True;
+    ID := CleanFilename(FFName);
+    while ID <> NoteList.Items[i]^.ID do begin
+        if i = NoteList.count then begin
+            // deal with new note then exit(T) with ReRunSearch set
+            AddNote(ID, Title, LCD);
+            DateAllIndex.Add(NoteList.Count -1);        // In both lists, added at the end.
+            exit(true);
+        end;
+        inc(i);
+    end;                                                // if drop through, i is index to this note in NoteList
+    NoteList.Items[i]^.LastChange := LCD;
+    if Title = NoteList.Items[i]^.Title then begin      // Its just a LCD update
+        ReRunSearch := False;
+        result := UpdateIndex(DateSearchIndex);         // False if we did not find an entry in DateSearchIndex
+    end else
+        NoteList.Items[i]^.Title := Title;
+    UpdateIndex(DateAllIndex);                          // Always update DateAllIndex, its not done by Search methods
 end;
 
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;
@@ -1993,8 +2159,12 @@ begin
     NoteList := nil;
     NoteBookList := Nil;
     ErrorNotes := Nil;
-    DateSortList := Nil;
-    TitleSortList := Nil;
+    DateSearchIndex := Nil;
+    TitleSearchIndex := Nil;
+    DateAllIndex := nil;
+    EnterDateSearchIndex  := Nil;
+    EnterTitleSearchIndex := Nil;
+
 end;
 
 
@@ -2006,8 +2176,11 @@ begin
     FreeAndNil(NoteBookList);
     FreeAndNil(NoteList);
     FreeAndNil(ErrorNotes);
-    FreeAndNil(DateSortList);
-    FreeAndNil(TitleSortList);
+    FreeAndNil(DateAllIndex);
+    FreeAndNil(DateSearchIndex);
+    FreeAndNil(TitleSearchIndex);
+    FreeAndNil(EnterDateSearchIndex);
+    FreeAndNil(EnterTitleSearchIndex);
 	inherited Destroy;
 end;
 
@@ -2018,9 +2191,10 @@ destructor TNoteList.Destroy;
 var
   I : integer;
 begin
-	for I := 0 to Count-1 do
+	for I := 0 to Count-1 do begin
     	dispose(Items[I]);
-	inherited Destroy;
+    end;
+    inherited Destroy;
 end;
 
 function TNoteList.Add(ANote: PNote): integer;
@@ -2061,6 +2235,8 @@ begin
     Result := PNote(inherited get(Index));
 end;
 
+initialization
+    TheNoteLister := Nil;            // A global that points to the main note list.
 
 end.
 

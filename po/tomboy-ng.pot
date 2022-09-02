@@ -1506,7 +1506,8 @@ msgid "Button1"
 msgstr ""
 
 #: tsearchform.buttonclearfilters.caption
-msgid "Clear Filters"
+msgctxt "tsearchform.buttonclearfilters.caption"
+msgid "Clear"
 msgstr ""
 
 #: tsearchform.buttonmenu.caption
@@ -1524,14 +1525,6 @@ msgstr ""
 
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
-msgstr ""
-
-#: tsearchform.checkautosearchupdate.caption
-msgid "Update as you type"
-msgstr ""
-
-#: tsearchform.checkcasesensitive.caption
-msgid "Case Sensitive"
 msgstr ""
 
 #: tsearchform.listboxnotebooks.hint
@@ -1558,8 +1551,17 @@ msgstr ""
 msgid "MenuItemAutoRefresh"
 msgstr ""
 
+#: tsearchform.menuitemcasesensitive.caption
+msgctxt "tsearchform.menuitemcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
+msgstr ""
+
+#: tsearchform.menuitemswyt.caption
+msgid "Search While You Type"
 msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
@@ -1573,6 +1575,19 @@ msgstr ""
 #: tsearchform.panel2.caption
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
+msgstr ""
+
+#: tsearchform.speedbuttonclearsearch.caption
+msgctxt "tsearchform.speedbuttonclearsearch.caption"
+msgid "Clear"
+msgstr ""
+
+#: tsearchform.speedsearchotions.caption
+msgid "Options"
+msgstr ""
+
+#: tsearchform.speedsearchotions.hint
+msgid "Search Options"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
@@ -1630,10 +1645,6 @@ msgstr ""
 
 #: tsett.buttonsnaprecover.hint
 msgid "If you have previously taken a snapshot ..."
-msgstr ""
-
-#: tsett.checkautorefresh.caption
-msgid "Auto Refresh Search Screen"
 msgstr ""
 
 #: tsett.checkautosnapenabled.caption

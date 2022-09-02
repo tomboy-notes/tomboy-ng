@@ -1538,7 +1538,10 @@ msgid "Button1"
 msgstr ""
 
 #: tsearchform.buttonclearfilters.caption
-msgid "Clear Filters"
+#, fuzzy
+#| msgid "Clear Filters"
+msgctxt "tsearchform.buttonclearfilters.caption"
+msgid "Clear"
 msgstr "Quitar filtros"
 
 #: tsearchform.buttonmenu.caption
@@ -1557,14 +1560,6 @@ msgstr "Actualizar resultados"
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
 msgstr "Búsqueda de tombo-ng"
-
-#: tsearchform.checkautosearchupdate.caption
-msgid "Update as you type"
-msgstr ""
-
-#: tsearchform.checkcasesensitive.caption
-msgid "Case Sensitive"
-msgstr "Sensible a mayúsculas"
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
@@ -1590,9 +1585,18 @@ msgstr "Editar plantilla del cuaderno"
 msgid "MenuItemAutoRefresh"
 msgstr ""
 
+#: tsearchform.menuitemcasesensitive.caption
+msgctxt "tsearchform.menuitemcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
 msgstr "Gestionar las notas en el cuaderno"
+
+#: tsearchform.menuitemswyt.caption
+msgid "Search While You Type"
+msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
@@ -1606,6 +1610,19 @@ msgstr "Renombrar cuaderno"
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Cuadernos"
+
+#: tsearchform.speedbuttonclearsearch.caption
+msgctxt "tsearchform.speedbuttonclearsearch.caption"
+msgid "Clear"
+msgstr ""
+
+#: tsearchform.speedsearchotions.caption
+msgid "Options"
+msgstr ""
+
+#: tsearchform.speedsearchotions.hint
+msgid "Search Options"
+msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
@@ -1663,10 +1680,6 @@ msgstr "Recuperar notas perdidas"
 #: tsett.buttonsnaprecover.hint
 msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
-
-#: tsett.checkautorefresh.caption
-msgid "Auto Refresh Search Screen"
-msgstr ""
 
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"

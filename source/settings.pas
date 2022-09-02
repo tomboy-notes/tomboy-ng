@@ -101,6 +101,7 @@ unit settings;
     2022/01/21  GTK3 determines what is a monospace font differently.
     2022/01/31  Added a CheckFindToggles to determine if every press of Ctrl-f invokes Find or toggles it on or off.
     2022/03/31  Tidyed up the Github Token controls, now can invoke browser.
+    2022/09/02  Removed AutoRefreshSearch checkbox, its the SearchUnit's problem.
 }
 
 {$mode objfpc}{$H+}                    //
@@ -125,7 +126,6 @@ type
         ButtonManualSnap: TButton;
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
-        CheckAutoRefresh: TCheckBox;
         CheckAutoSnapEnabled: TCheckBox;
         CheckFindToggles: TCheckBox;
         CheckStampBold: TCheckBox;
@@ -236,7 +236,6 @@ type
         procedure ButtonSetSpellLibraryClick(Sender: TObject);
         procedure ButtonShowBackUpClick(Sender: TObject);
         procedure ButtonSnapRecoverClick(Sender: TObject);
-        procedure CheckAutoRefreshChange(Sender: TObject);
         procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         procedure CheckBoxAutoSyncChange(Sender: TObject);
@@ -279,7 +278,7 @@ type
                         { eg https://github.com/davidbannon/tb_test, being not empty means it was, at one stage, valid}
         SyncGithubRepo : string;
         AutoRefreshVar : boolean;
-        AutoSearchUpdateVar : boolean;
+        AutoSearchUpdateVar : boolean;          // SWYT - search while you type
         UserSetColours : boolean;
         fExportPath : ANSIString;
         SearchIsCaseSensitive : boolean;
@@ -383,7 +382,7 @@ type
 
                             // Property that triggers write of config when set, reads, sets
         property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
-                            // Property that triggers write of config when set, reads, sets
+                            // Property SWYT - search while you type
         property AutoSearchUpdate : boolean read fgetAutoSearchUpdate write fSetAutoSearchUpdate;
 
                             // Does not appear to be implemented
@@ -484,6 +483,7 @@ begin
 	end;
 end;
 
+// -------------------------------- Search Settings ----------------------------
 function TSett.fGetCaseSensitive : boolean;
 begin
     result := SearchIsCaseSensitive;
@@ -904,7 +904,6 @@ begin
             'small'  : RadioFontSmall.Checked := true;
         end;
         AutoRefresh := ('true' = ConfigFile.readstring('BasicSettings', 'AutoRefresh', 'true'));
-        CheckAutoRefresh.Checked := AutoRefresh;
         AutoSearchUpdate := ('true' = ConfigFile.readstring('BasicSettings', 'AutoSearchUpdate', 'true'));
         CheckFindToggles.Checked :=
             ('true' = Configfile.ReadString('BasicSettings', 'FindToggles', 'true'));
@@ -1410,12 +1409,7 @@ begin
     end;
 end;
 
-procedure TSett.CheckAutoRefreshChange(Sender: TObject);
-begin
-     AutoRefresh := CheckAutoRefresh.Checked;
-end;
-
-
+//                       108/60
 // =============================  S Y N C   S T U F F  =========================
 
 { Note that AutoSync and AutoSnapshot share a timer.  AutoSync runs on each 'tick' of the timer,

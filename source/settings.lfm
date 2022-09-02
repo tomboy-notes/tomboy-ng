@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabSync
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -140,7 +140,7 @@ object Sett: TSett
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
-        TabOrder = 6
+        TabOrder = 5
       end
       object CheckShowTomdroid: TCheckBox
         AnchorSideLeft.Control = CheckShowSearchAtStart
@@ -166,22 +166,7 @@ object Sett: TSett
         Checked = True
         OnChange = SaveSettings
         State = cbChecked
-        TabOrder = 7
-      end
-      object CheckAutoRefresh: TCheckBox
-        AnchorSideLeft.Control = CheckShowSearchAtStart
-        AnchorSideTop.Control = CheckNotifications
-        AnchorSideBottom.Side = asrBottom
-        Left = 380
-        Height = 23
-        Top = 285
-        Width = 243
-        BorderSpacing.Right = 10
-        Caption = 'Auto Refresh Search Screen'
-        OnChange = CheckAutoRefreshChange
-        OnKeyDown = FormKeyDown
-        TabOrder = 5
-        TabStop = False
+        TabOrder = 6
       end
     end
     object TabDisplay: TTabSheet

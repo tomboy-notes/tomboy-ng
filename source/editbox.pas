@@ -2067,7 +2067,7 @@ procedure TEditBoxForm.MakeLink(const Index, Len : longint);
 var
 	Hyperlink, HL: TKMemoHyperlink;
     TrueLink : string;
-	BlockNo, BlockNo2, BlockOffset : longint;
+	BlockNo, {BlockNo2,} BlockOffset : longint;
 begin
     // Because the name list we are iteration over is sorted, longest names at the top, we 'prefer' longer matches, see issue #260
     // DumpKMemo('MakeLink');
@@ -2213,12 +2213,12 @@ end;
 
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
-    Searchterm : ANSIstring = '';
+    // Searchterm : ANSIstring = '';
     //SearchTerm : shortstring;
     Len, httpLen : longint;
-    Tick, Tock : qword;
+    // Tick, Tock : qword;
     pText : pchar;
-    NoteNameList : TstringList;
+    // NoteNameList : TstringList;
     i : integer;
 begin
 	if not Ready then exit();
@@ -2232,7 +2232,7 @@ begin
     So, instead, use TheNoteLister.NoteList[i] directly in a for loop.
     }
 
-    Tick := gettickcount64();
+    // Tick := gettickcount64();
 //    NoteNameList := TStringList.Create;
 //    SearchForm.StartSearch();
 //    while SearchForm.NextNoteTitle(SearchTerm) do
@@ -2273,7 +2273,7 @@ begin
 //        NoteNameList.Free;
         KMemo1.Blocks.UnLockUpdate;
     end;
-    Tock := gettickcount64();
+    //Tock := gettickcount64();
 //    debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');   // 9-14mS, occasional flyer 35ms with 2K test note set
     Ready := True;
 end;

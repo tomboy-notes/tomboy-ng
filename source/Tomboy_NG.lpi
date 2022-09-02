@@ -137,8 +137,9 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx6058="True" idx5024="True"/>
+              <IgnoredMessages idx6058="True" idx5024="True" idx4056="True" idx4055="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
             <OtherDefines Count="4">
               <Define0 Value="DisableLCLGIF"/>
               <Define1 Value="DisableLCLJPEG"/>
@@ -190,7 +191,8 @@
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM
--dDisableLCLTIFF"/>
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
             <OtherDefines Count="4">
               <Define0 Value="DisableLCLGIF"/>
               <Define1 Value="DisableLCLJPEG"/>
@@ -240,6 +242,7 @@
             <CompilerMessages>
               <IgnoredMessages idx6058="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item4>
@@ -281,6 +284,7 @@
             <CompilerMessages>
               <IgnoredMessages idx6058="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
             <CompilerPath Value="ppcrossx64"/>
           </Other>
         </CompilerOptions>
@@ -324,6 +328,7 @@
             <CompilerMessages>
               <IgnoredMessages idx6058="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
             <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
@@ -363,6 +368,7 @@
             <CompilerMessages>
               <IgnoredMessages idx6058="True" idx5024="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item7>
@@ -405,6 +411,7 @@
             <CompilerMessages>
               <IgnoredMessages idx6058="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
             <CompilerPath Value="/usr/local/bin/ppcx64"/>
           </Other>
         </CompilerOptions>
@@ -438,6 +445,7 @@
             </Options>
           </Linking>
           <Other>
+            <CustomOptions Value="-dTOMBOY_NG"/>
             <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
@@ -487,6 +495,7 @@
             <CompilerMessages>
               <IgnoredMessages idx5024="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item10>
@@ -526,6 +535,7 @@
             <CompilerMessages>
               <IgnoredMessages idx5024="True"/>
             </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item11>
@@ -567,7 +577,8 @@
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM
--dDisableLCLTIFF"/>
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item12>
@@ -607,6 +618,7 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CustomOptions Value="-dTOMBOY_NG"/>
             <CompilerPath Value="/usr/bin/ppcrossx64"/>
           </Other>
         </CompilerOptions>
@@ -644,6 +656,7 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CustomOptions Value="-dTOMBOY_NG"/>
             <CompilerPath Value="/usr/bin/fpc"/>
           </Other>
         </CompilerOptions>
@@ -683,6 +696,7 @@
             <Verbosity>
               <ShowTriedFiles Value="True"/>
             </Verbosity>
+            <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item15>
@@ -723,6 +737,7 @@
             <Verbosity>
               <ShowTriedFiles Value="True"/>
             </Verbosity>
+            <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item16>
@@ -760,7 +775,8 @@
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM
--dDisableLCLTIFF"/>
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item17>
@@ -808,7 +824,8 @@
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM
--dDisableLCLTIFF"/>
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item18>
@@ -1106,12 +1123,7 @@
       <CompilerMessages>
         <IgnoredMessages idx6058="True"/>
       </CompilerMessages>
-      <OtherDefines Count="4">
-        <Define0 Value="DisableLCLGIF"/>
-        <Define1 Value="DisableLCLJPEG"/>
-        <Define2 Value="DisableLCLPNM"/>
-        <Define3 Value="DisableLCLTIFF"/>
-      </OtherDefines>
+      <CustomOptions Value="-dTOMBOY_NG"/>
     </Other>
   </CompilerOptions>
 </CONFIG>
