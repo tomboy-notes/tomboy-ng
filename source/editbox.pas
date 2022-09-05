@@ -225,6 +225,8 @@ unit EditBox;
     2022/04/14  bug #260, TKMemoHyperlink not TKHyperlink
     2022/05/05  bug #260, now clear all local links around cursor and create as necessary, may be slower !
                 could, perhaps, no longer sort name list and check for length in MakeLink() ? Longer wins ?
+    2022/08/28  CheckForLinks() no longer calls SearchForm.StartSearch(); eg 2000 notes faster to
+                work directly off TheNoteLister.NoteList[i]^.TitleLow, 11-20mS compared to 19-41mS
 
 }
 
@@ -582,6 +584,7 @@ uses
     FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
     LCLIntf,            // OpenUrl()
     TB_Utils,
+    Note_Lister,        // so we can get directly to note data.
     ResourceStr,        // We borrow some search related strings from searchform
     bufstream,
     notenormal;         // makes the XML look a little prettier
@@ -2064,7 +2067,7 @@ procedure TEditBoxForm.MakeLink(const Index, Len : longint);
 var
 	Hyperlink, HL: TKMemoHyperlink;
     TrueLink : string;
-	BlockNo, BlockNo2, BlockOffset : longint;
+	BlockNo, {BlockNo2,} BlockOffset : longint;
 begin
     // Because the name list we are iteration over is sorted, longest names at the top, we 'prefer' longer matches, see issue #260
     // DumpKMemo('MakeLink');
@@ -2210,23 +2213,31 @@ end;
 
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
-    Searchterm : ANSIstring = '';
+    // Searchterm : ANSIstring = '';
     //SearchTerm : shortstring;
     Len, httpLen : longint;
-    Tick, Tock : qword;
+    // Tick, Tock : qword;
     pText : pchar;
-    NoteNameList : TstringList;
+    // NoteNameList : TstringList;
+    i : integer;
 begin
 	if not Ready then exit();
 
     // There is a thing called KMemo1.Blocks.SelectableLength but it returns the number of characters, not bytes, much faster though
     // Note, we don't need Len if only doing http and its not whole note being checked (at startup). So, could save a bit ....
-    Tick := gettickcount64();
-    NoteNameList := TStringList.Create;
-    SearchForm.StartSearch();
-    while SearchForm.NextNoteTitle(SearchTerm) do
-        NoteNameList.Add(SearchTerm);
-    NoteNameList.CustomSort(@NameLenSort);
+
+    { We make a stringlist, populate it with all the Titles, then, assuming ShowInternalLink
+    we send a lowercase of each entry to MakeAllLinks (excluding this note title).  21mS-41mS with 2000 notes
+
+    So, instead, use TheNoteLister.NoteList[i] directly in a for loop.
+    }
+
+    // Tick := gettickcount64();
+//    NoteNameList := TStringList.Create;
+//    SearchForm.StartSearch();
+//    while SearchForm.NextNoteTitle(SearchTerm) do
+//        NoteNameList.Add(SearchTerm);
+//    NoteNameList.CustomSort(@NameLenSort);
     Len := length(KMemo1.Blocks.text);              // saves 7mS by calling length() only once ! But still 8mS
     if StartScan >= Len then exit;                  // prevent crash when memo almost empty
     if EndScan > Len then EndScan := Len;
@@ -2243,19 +2254,31 @@ begin
         if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
             CheckForHTTP(PText, StartScan, httpLen);
 
-        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
+(*        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
             for SearchTerm in NoteNameList do
                 if SearchTerm <> NoteTitle then begin            // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
                     //writeln('TEditBoxForm.CheckForLinks ' + SearchTerm);
                     MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
                 end;
+        end;    *)
+
+        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
+            for i := 0 to TheNoteLister.NoteList.Count-1 do
+
+
+//                if TheNoteLister.NoteList[i]^.TitleLow <> NoteTitle then
+                if TheNoteLister.NoteList[i]^.Title <> NoteTitle then
+
+//                    MakeAllLinks(PText, TheNoteLister.NoteList[i]^.TitleLow, StartScan, EndScan);
+                    MakeAllLinks(PText, TheNoteLister.NoteList[i]^.Title, StartScan, EndScan);
         end;
+
     finally
-        NoteNameList.Free;
+//        NoteNameList.Free;
         KMemo1.Blocks.UnLockUpdate;
     end;
     //Tock := gettickcount64();
-    //debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');   // 9-14mS, occasional flyer 35ms with 2K test note set
+//    debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');   // 9-14mS, occasional flyer 35ms with 2K test note set
     Ready := True;
 end;
 

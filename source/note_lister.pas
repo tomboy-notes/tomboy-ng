@@ -1,4 +1,7 @@
 unit Note_Lister;
+
+{$define TOMBOY_NG}
+
 {    Copyright (C) 2017-2021 David Bannon
 
     License:
@@ -125,13 +128,15 @@ type
         		{ will have 36 char GUI plus '.note' }
 		ID : ANSIString;
         Title : ANSIString;
+        TitleLow : string;
         		{ a 33 char date time string }
     	CreateDate : ANSIString;
                 { a 33 char date time string, updateable }
     	LastChange : ANSIString;
         IsTemplate : boolean;
         OpenOnStart : boolean;
-        OpenNote : TForm;
+        OpenNote : TForm;           // If note is open, its in this TForm.
+        Content : string;           // May contain note content, '' else.
 	end;
 
 type                                 { ---------- TNoteInfoList ---------}
@@ -155,10 +160,6 @@ type
     //DebugMode : boolean;
 
     OpenNoteIndex : integer;        // Used for Find*OpenNote(), points to last found one, -1 meaning none found
-                                { NoteList is a list of pointers. Each one points to a record that contains data
-                                  about a particular note. Only Notebook info it has is whether or not its a
-                                  template. The ID is stored as a 36 char GUI plus '.note'. Dates must be 33 char.}
-   	NoteList : TNoteList;
    	SearchNoteList : TNoteList;
                                 { NoteBookList is a list of pointers. Each one points to a record
                                   containing Name, Template ID and a List (called Notes) of IDs of
@@ -201,6 +202,10 @@ type
 
    public
     DebugMode : boolean;
+        { NoteList is a list of pointers. Each one points to a record that contains data
+          about a particular note. Only Notebook info it has is whether or not its a
+          template. The ID is stored as a 36 char GUI plus '.note'. Dates must be 33 char.}
+    NoteList : TNoteList;
 
 
     XMLError : Boolean;   // Indicates a note was found with an XML (or other) error, checked by calling process.
@@ -388,7 +393,7 @@ var TheNoteLister : TNoteLister = nil;    // This is a pointer to the notelister
 implementation
 
 uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger, tb_utils, syncutils
-        {$ifdef TOMBOY_NG}, SearchUnit, settings{$endif};                      // project options -> Custom Options
+        {$ifdef TOMBOY_NG}, settings{$endif};                      // project options -> Custom Options
 
 { Laz* are LCL packages, Projectinspector, double click Required Packages and add LCL }
 
@@ -670,31 +675,6 @@ begin
 		end;
 end;
 
-// ToDo : Remove this version that uses the TStringList version of GetNotebooks()
-(* function TNoteLister.NoteBookTags(const NoteID : string): ANSIString;
-var
-    SL : TStringList;
-    Index : Integer;
-begin
-   Result := '';
-   SL := TStringList.Create;
-   try
-       if GetNotebooks(SL, NoteID) then begin  // its a template -- COMMENTED OUT
-   		    Result := '  <tags>'#10'    <tag>system:template</tag>'#10;
-            if SL.Count > 0 then
-        	    Result := Result + '    <tag>system:notebook:' + RemoveBadXMLCharacters(SL[0], True) + '</tag>'#10'  </tags>'#10;
-       end else
-   		    if SL.Count > 0 then begin					// its a Notebook Member
-        	    Result := '  <tags>'#10;
-        	    for Index := 0 to SL.Count -1 do		// here, we auto support multiple notebooks.
-        		    Result := Result + '    <tag>system:notebook:' + RemoveBadXMLCharacters(SL[Index], True) + '</tag>'#10;
-        	    Result := Result + '  </tags>'#10;
-		    end;
-   finally
-       SL.Free;
-   end;
-end;        *)
-
 function TNoteLister.NotebookJArray(const ID: ANSIString): string;
 var
     NBArray : TStringArray;
@@ -712,47 +692,6 @@ begin
     Result := '[' + Result + ']';                   // Always return the brackets, even if empty
     //debugln('TNoteLister.NotebookJArray returning Notebooks jArray = ' + Result);
 end;
-
-// ToDo : remove code below that uses TStringList - GetNotebooks()
-(* function TNoteLister.NotebookJArray(const ID: ANSIString): string;
-var
-    STL : TStringList;
-    Index : Integer;
-begin
-    Result := '';
-    STL := TStringList.Create;
-    try
-        if GetNotebooks(STL, ID) then               // its a template  -- COMMENTED OUT
-    		    Result := '"template", "' + EscapeJSON(STL[0]) + '"'
-        else begin                                  // maybe its a Notebook Member
-            for Index := 0 to STL.Count -1 do		// here, we auto support multiple notebooks.
-                Result := Result + '"' + EscapeJSON(StL[Index]) + '", ';
-            if Result <> '' then                           // will be empty if note is not member of a notebook
-                delete(Result, length(Result)-1, 2);       // remove trailing comma and space
-        end;
-    finally
-        STL.Free;
-    end;
-    Result := '[' + Result + ']';                  // Always return the brackets, even if empty
-    //debugln('TNoteLister.NotebookJArray returning Notebooks jArray = ' + Result);
-end;  *)
-
-
-(*
-
-   //===========================
-	if IsATemplate(ID) then begin
-        Result := '"template"';
-        //xxx
-    end else
-        for P in Notebooklist do
-            if NotebookList.IDinNotebook(ID, P^.Name) then
-                Result := Result + '"' + P^.Name + '",';
-
-end;     *)
-
-
-
 
 function TNoteLister.GetNotesInNoteBook(out NBIDList : TStringList; const NBName : string) : boolean;
 var
@@ -895,34 +834,6 @@ begin
             end;
 end;
 
-
-{ procedure TNoteLister.LoadListNotebooks(const NotebookGrid : TStringGrid; SearchListOnly : boolean);
-var
-    Index : integer;
-
-    function FindInSearchList(NB : PNoteBook) : boolean;
-    var  X : integer = 0;
-    begin
-        result := true;
-        if Nil = SearchNoteList then
-            exit;
-        while X < NB^.Notes.Count do begin
-            if Nil <> SearchNoteList.FindID(NB^.Notes[X]) then
-                exit;
-            inc(X);
-        end;
-        result := false;
-    end;
-
-begin
-    while NotebookGrid.RowCount > 1 do NotebookGrid.DeleteRow(NotebookGrid.RowCount-1);
-    for Index := 0 to NotebookList.Count - 1 do begin
-        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then begin
-            NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
-        end;
-	end;
-end;        }
-
 procedure TNoteLister.LoadListNotebooks(const NotebookItems : TStrings; SearchListOnly : boolean);
 var
     Index : integer;
@@ -996,38 +907,6 @@ begin
         debugln('TNoteLister.GetNotebooks Array ' + NBArray[i]);       *)
 end;
 
-// ToDo : replace all use of this method with one above using TStringArray, remove method below
-
-(* function TNoteLister.GetNotebooks(const NBList: TStringList; const ID: ANSIString): boolean;
-var
-    Index, I : Integer;
-begin
-	Result := false;
- 	for Index := 0 to NoteBookList.Count -1 do begin
-      	if ID = '' then
-            NBList.Add(NotebookList.Items[Index]^.Name)
-        else begin
-            if ID = NotebookList.Items[Index]^.Template then begin
-                // The passed ID is the ID of a Template itself, not a note.
-                // debugln('Looks like we asking about a template ' + ID);
-                NBList.Add(NotebookList.Items[Index]^.Name);
-                if NBList.Count > 1 then
-                    debugln('Error, seem to have more than one Notebook Name for template ' + ID);
-                Result := True;
-                exit();
-			end;
-            // OK, if its not a Template, its a note, what notebooks is it a member of ?
-            // Each NotebookList item has a list of the notes that are members of that item.
-            // if the ID is mentioned in the items note list, copy name to list.
-            // Iterate over the Notes list associated with this particular Notebook entry.
-			for I := 0 to NotebookList.Items[Index]^.Notes.Count -1 do
-            	if ID = NotebookList.Items[Index]^.Notes[I] then
-                	NBList.Add(NotebookList.Items[Index]^.Name);
-            {if assigned(NBList) then debugln('ERROR, assigned SL passed to GetNotebooks')
-            else  NBList := NotebookList.Items[Index]^.Notes; }
-        end;
-	end;
-end;       *)
 
 { -------------- Things relating to Notes -------------------- }
 
@@ -1147,6 +1026,18 @@ begin
 					end else
                         break;
 				until false;          }
+
+                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
+                else begin
+                    Node := Doc.DocumentElement.FindNode('text');
+                    if assigned(Node) then begin
+                        {$ifdef TOMBOY_NG}
+                        if Sett.SearchCaseSensitive then                        // Should we have a wrapper ifdef TOMBOY_NG ??
+                            NoteP^.Content := Node.TextContent
+                        else {$endif} NoteP^.Content := lowercase(Node.TextContent);
+                    end
+                    else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
+                end;
 
                 NoteP^.OpenNote := nil;
                 Node := Doc.DocumentElement.FindNode('create-date');
@@ -1847,17 +1738,6 @@ function TNoteList.Add(ANote: PNote): integer;
 {var
   ExtNote : PNote; }
 begin
-{    ExtNote := FindID(ANote^.ID);
-    if ExtNote <> Nil then begin
-        ExtNote^.CreateDate := ANote^.CreateDate;
-        ExtNote^.IsTemplate:= ANote^.IsTemplate;
-        ExtNote^.LastChange := ANote^.LastChange ;
-        ExtNote^.OpenNote := ANote^.OpenNote ;
-        ExtNote^.OpenOnStart := ANote^.OpenOnStart ;
-        ExtNote^.Title := ANote^.Title ;
-        dispose(ANote);
-        Result := 0;
-    end else }
         result := inherited Add(ANote);
 end;
 
