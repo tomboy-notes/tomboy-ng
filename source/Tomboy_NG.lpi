@@ -192,13 +192,9 @@
 -dDisableLCLJPEG
 -dDisableLCLPNM
 -dDisableLCLTIFF
--dTOMBOY_NG"/>
-            <OtherDefines Count="4">
-              <Define0 Value="DisableLCLGIF"/>
-              <Define1 Value="DisableLCLJPEG"/>
-              <Define2 Value="DisableLCLPNM"/>
-              <Define3 Value="DisableLCLTIFF"/>
-            </OtherDefines>
+-dTOMBOY_NG
+
+-vwhilq"/>
           </Other>
         </CompilerOptions>
       </Item3>
@@ -866,7 +862,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="39">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1085,11 +1081,6 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="JsonTools"/>
       </Unit38>
-      <Unit39>
-        <Filename Value="noteindex.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="NoteIndex"/>
-      </Unit39>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

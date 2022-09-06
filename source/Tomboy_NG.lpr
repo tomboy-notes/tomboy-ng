@@ -18,14 +18,14 @@ program Tomboy_NG;
 uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
-    {cmem,} cthreads,
+    cmem, cthreads,
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile, Index,
     autostart, hunspell, sync, syncutils, transandroid, ResourceStr, colours,
     cli, RollBack, commonmark, transfileand, notenormal, transgithub,
-    import_notes, JsonTools, NoteIndex;
+    import_notes, JsonTools;
 
 {$R *.res}
 

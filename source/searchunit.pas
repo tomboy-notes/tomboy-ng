@@ -112,6 +112,7 @@ unit SearchUnit;
                 Added all code necessary for Searching for note while u type, NoteIndex
     2022/04/18  Bug where searching notes in progressive mode and backspacing over search term failed
     2022/08/27  Alterations to ListViewNotesColumnClick() and ListViewNotesData() to work in OwnerData mode.
+    2022/09/06  PressEnter Seach mode now OK as well, cleans up when Search form closes or hides.
 }
 
 {$mode objfpc}{$H+}
@@ -120,9 +121,9 @@ interface
 
 uses
     Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ActnList,
-    {Grids, }ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger,
-    ResourceStr,
-    NoteIndex;          // ToDo : Remove ProgressiveSearch, all one in NoteLister now
+    ComCtrls, StdCtrls, ExtCtrls, Menus, Buttons, Note_Lister, lazLogger,
+    ResourceStr;
+
 
 // These are choices for main popup menus.
 type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtMainHelp, mtHelp, mtQuit, mtRecent);
@@ -213,7 +214,7 @@ type        { TSearchForm }
         SearchTextLength : integer;     // Previous length of EditSearch text, tells us if term is growing or shrinking
         SearchActive : boolean;         // We have searched for something after most recent SearchClear
 
-        NIndex : TNoteIndex;
+//        NIndex : TNoteIndex;
         HelpList : TStringList;
         NeedRefresh : boolean;
         HelpNotes : TNoteLister;
@@ -339,15 +340,15 @@ var
     Index : integer;
 begin
     if NoteLister <> nil then begin
-        for Index := 0 to DeletedList.Count -1 do begin
+        for Index := 0 to DeletedList.Count -1 do begin                         // Deleted notes
             if NoteLister.IsATemplate(DeletedList.Strings[Index]) then
                 NoteLister.DeleteNoteBookwithID(DeletedList.Strings[Index])
             else begin
                 MarkNoteReadOnly(DeletedList.Strings[Index]);
-                NoteLister.DeleteNote(DeletedList.Strings[Index]);
+                NoteLister.DeleteNote(DeletedList.Strings[Index]);           // dont call this, wont do Indexes
             end;
         end;
-        for Index := 0 to DownList.Count -1 do begin
+        for Index := 0 to DownList.Count -1 do begin                            // Downloaded notes
             MarkNoteReadOnly(DownList.Strings[Index]);
             if NoteLister.IsIDPresent(DownList.Strings[Index]) then begin
                 NoteLister.DeleteNote(DownList.Strings[Index]);
@@ -356,6 +357,13 @@ begin
             NoteLister.IndexThisNote(DownList.Strings[Index]);
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
+        if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
+            if ListBoxNoteBooks.ItemIndex > -1 then
+                ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
+            else
+                ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
+        end;
+        TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
         RefreshMenus(mkRecentMenu);
 
         {
@@ -375,8 +383,6 @@ begin
         end;
     end;
 end;
-
-
 
 
 procedure TSearchForm.FlushOpenNotes();
@@ -456,6 +462,13 @@ begin
     	if not RenameFileUTF8(FullFileName, NewName)
     		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     end;
+    if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
+        if ListBoxNoteBooks.ItemIndex > -1 then
+            ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
+        else
+            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
+    end;
+    TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
     RefreshMenus(mkRecentMenu);
     if Visible and Sett.AutoRefresh then
         Refresh()
@@ -513,12 +526,12 @@ begin
         end;
     end;
     T2 := gettickcount64();
-    if TheNoteLister.AlterOrAddNote(ReRunSearch, FullFileName, LastChange, Title) then
+    if TheMainNoteLister.AlterOrAddNote(ReRunSearch, FullFileName, LastChange, Title) then
         if ReRunSearch then begin
             // If neither a search term nor Notebook is set, just call ClearSearch.
             if ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch))
                             and (ListBoxNoteBooks.ItemIndex < 0) then
-                ListViewNotes.Items.Count := TheNoteLister.ClearSearch()
+                ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
             else begin
                 if ListBoxNoteBooks.ItemIndex > -1 then
                     NoteBook := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]
@@ -526,13 +539,13 @@ begin
                 STL := TStringList.Create;
                 if not ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch)) then
                     STL.AddDelimitedtext(EditSearch.Text, ' ', false);                  // OK to pass an empty list.
-                ListViewNotes.Items.Count := TheNoteLister.NewSearch(STL, NoteBook);
+                ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook);
                 STL.Free;
             end;
-        end else ListViewNotes.Items.Count := TheNoteLister.NoteIndexCount();
+        end else ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();
     T3 := gettickcount64();
     if NeedUpDateMenu then RefreshMenus(mkRecentMenu);
-    TheNoteLister.ThisNoteIsOpen(FullFileName, TheForm);
+    TheMainNoteLister.ThisNoteIsOpen(FullFileName, TheForm);
     T4 := gettickcount64();
     debugln('SearchUnit.UpdateList TestMenu=' + inttostr(T2 - T1)
                     + 'mS AlterAdd=' + inttostr(T3 - T2) + 'mS Menu=' + inttostr(T4 - T3)
@@ -805,8 +818,8 @@ begin
     // recent notes.
 
     for i := 0 to 9 do begin
-//        P := TheNoteLister.GetNote(i, smAllRecentUp);
-        P := TheNoteLister.GetNote(i, smRecentUp);
+//        P := TheMainNoteLister.GetNote(i, smAllRecentUp);
+        P := TheMainNoteLister.GetNote(i, smRecentUp);
         if P <> nil then
             AddItemMenu(AMenu, P^.Title, mtRecent,  @RecentMenuClicked, mkRecentMenu)
         else break;
@@ -953,11 +966,11 @@ end;
 
 procedure TSearchForm.EditSearchExit(Sender: TObject);
 begin
-    if (NIndex <> nil) and (not NIndex.Busy) then begin
+{    if (NIndex <> nil) and (not NIndex.Busy) then begin
         NIndex.free;
         NIndex := nil;
         //writeln('TSearchForm.Edit1Exit - Edit1 exit, killing Index');
-    end;
+    end;       }
 	if EditSearch.Text = '' then begin
         EditSearch.Hint:=rsSearchHint;
         EditSearch.Text := rsMenuSearch;
@@ -1008,7 +1021,8 @@ var
     Found : integer;
     //T1, T2, T3 : qword;
 begin
-    if not Sett.AutoSearchUpdate then exit;
+    if (not Sett.AutoSearchUpdate) or (not visible) or (length(EditSearch.Text)=1) then exit;
+    debugln('TSearchForm.EditSearchChange() EditSearch.Text=' + EditSearch.Text);
     STL := TStringList.Create;
     try
         if length(EditSearch.text) = 1 then exit;    // Nothing to see here folks
@@ -1024,19 +1038,20 @@ begin
             EditSearch.SetFocus;
             EditSearch.SelectAll;
             if ListBoxNoteBooks.ItemIndex > -1 then
-                Found := TheNoteLister.NewSearch(STL, NoteBook)
+                Found := TheMainNoteLister.NewSearch(STL, NoteBook)
             else
-                Found := TheNoteLister.ClearSearch();
+                Found := TheMainNoteLister.ClearSearch();
             exit;
         end;
         if (SearchTextLength > length(EditSearch.text)) then begin              // ie backspacing, decreasing
-            Found := TheNoteLister.NewSearch(STL, NoteBook);
+            Found := TheMainNoteLister.NewSearch(STL, NoteBook);
             SearchActive := True;
-        end else begin                                                              // must have added a char.
+        end else begin                                                          // must have added a char.
             if SearchActive then
-                Found := TheNoteLister.RefineSearch(STL)
+                Found := TheMainNoteLister.RefineSearch(STL)
             else begin
-                Found := TheNoteLister.NewSearch(STL, NoteBook);
+                // debugln('TSearchForm.EditSearchChange  NEWSEARCH CALLED');
+                Found := TheMainNoteLister.NewSearch(STL, NoteBook);
                 SearchActive := True;
             end;
         end;
@@ -1058,14 +1073,15 @@ begin
 end;
 
 procedure TSearchForm.DoSearchEnterPressed();
-//var
-    //TS1, TS2, TS3, TS4 : qword;
+var
+    T1, T2, TS3, TS4 : qword;
     // Found : integer;
 var
     NoteBook : string;
     STL : TStringList;
-//    Found : integer;
+//  At startup, 2K notes, RSS=41.8 Meg, do a search and jumps to 50.5meg
 begin
+    T1 := gettickcount64();
     if Sett.AutoSearchUpdate then exit;         // we don't do that here.
     STL := TStringList.Create;
     try
@@ -1078,13 +1094,15 @@ begin
                 STL.AddDelimitedtext(EditSearch.Text, ' ', false)
             else STL.AddDelimitedtext(lowercase(EditSearch.Text), ' ', false);
 //        if (STL.Count > 0) or (Notebook <> '') then begin
-            TheNoteLister.LoadContentForPressEnter();                             // Loading 2K notes, 8.6Meg, RSS 43Meg to 51Meg
-            ListViewNotes.Items.Count := TheNoteLister.NewSearch(STL, NoteBook);  // In SWYT, 52Meg  BUT  v.34c = 42meg
+            TheMainNoteLister.LoadContentForPressEnter();                             // Loading 2K notes, 8.6Meg, RSS 43Meg to 51Meg
+            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook);  // In SWYT, 52Meg  BUT  v.34c = 42meg
             UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 //        end;
     finally
         STL.free;
     end;
+    T2 := gettickcount64();
+    debugln('TSearchForm.DoSearchEnterPressed ' + inttostr(T2-T1) + 'mS');
 
 (*    exit;
 
@@ -1127,20 +1145,14 @@ end;
 
 procedure TSearchForm.FormDeactivate(Sender: TObject);
 begin
-    if (NIndex <> nil) and (not NIndex.Busy) then begin
-        NIndex.free;
-        NIndex := nil;
-        //writeln('TSearchForm.Edit1Exit - Edit1 exit, killing Index');
-    end;
+    if not Sett.AutoSearchUpdate then
+        TheMainNoteLister.UnLoadContent();      // We assume its necessary, probably and fast anyway
 end;
 
 procedure TSearchForm.FormHide(Sender: TObject);
 begin
-    if (NIndex <> nil) and (not NIndex.Busy) then begin
-        NIndex.free;
-        NIndex := nil;
-        //writeln('TSearchForm.Edit1Exit - Edit1 exit, killing Index');
-    end;
+    if not Sett.AutoSearchUpdate then
+        TheMainNoteLister.UnLoadContent();       // We assume its necessary, probably and fast anyway
 end;
 
 // --------------------- F O R M    C O N T R O L S ----------------------------
@@ -1174,7 +1186,7 @@ begin                                            // Gets called from other units
     if NoteLister <> Nil then
        freeandnil(NoteLister);
     NoteLister := TNoteLister.Create;
-    TheNoteLister := NoteLister;                // This is how we make the main Note List accessible.
+    TheMainNoteLister := NoteLister;                // This is how we make the main Note List accessible.
     NoteLister.DebugMode := Application.HasOption('debug-index');
     NoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := NoteLister.IndexNotes();
@@ -1444,7 +1456,7 @@ begin
             siDescending : LVSortMode := smRecentUp;                   // Ascending pointing down, Recent at top
             siNone, siAscending : LVSortMode := smRecentDown;          // Decending pointing up, Oldest at top
         end;
-    ListViewNotes.Items.Count := TheNoteLister.NoteIndexCount();
+    ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();
 
 (*    case  LVSortMode of
         smRecentUp    : debugln('ListViewNotesColumnClick() smRecentUp Ascending pointing down, Date Recent at top');
@@ -1464,7 +1476,7 @@ begin
     //T1 := GetTickCount64();
     // Will get all the entries from note list that are mentioned in the appropriate
     // index (determined by the regional LVSortMode, set by click of column headers)
-    P := TheNoteLister.GetNote(Item.Index, LVSortMode);
+    P := TheMainNoteLister.GetNote(Item.Index, LVSortMode);
     //debugln('TSearchForm.ListViewNotesData calling item ' + inttostr(Item.Index) + ' ' + P^.LastChange);
 
     if P <> nil then begin                                // note that QT5 requires both extra columns be created.
@@ -1583,7 +1595,7 @@ begin
     // EditSearch.SelStart := 0;
     // EditSearch.SelLength := length(EditSearch.Text);
 
-    ListViewNotes.Items.Count := TheNoteLister.ClearSearch();
+    ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();
     UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
 
@@ -1599,7 +1611,7 @@ begin
         if not ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch)) then
             STL.AddDelimitedtext(EditSearch.Text, ' ', false);                  // else we pass an empty list.
         ListViewNotes.Items.Count :=
-            TheNoteLister.NewSearch(STL, ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
+            TheMainNoteLister.NewSearch(STL, ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
         STL.Free;
         UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
     end;
@@ -1729,7 +1741,7 @@ procedure TSearchForm.MenuItemSWYTClick(Sender: TObject);
 begin
     MenuItemSWYT.Checked := not MenuItemSWYT.Checked;
     Sett.AutoSearchUpdate := MenuItemSWYT.Checked;
-    TheNoteLister.IndexNotes();
+    TheMainNoteLister.IndexNotes();
 end;
 
 procedure TSearchForm.SpeedButtonClearSearchClick(Sender: TObject);
@@ -1737,8 +1749,15 @@ begin
     EditSearch.text := rsMenuSearch;
     EditSearch.SetFocus;
     EditSearch.SelectAll;
-    DoSearchEnterPressed();         // Press Enter Mode, ignored if we are SWYT
-    EditSearchChange(self);         // Search While You Type, ignored if in Enter Mode
+    if Sett.AutoSearchUpdate then begin         // Search While You Type
+        if ListBoxNoteBooks.ItemIndex > -1 then
+            ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
+        else
+            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
+    end else
+        DoSearchEnterPressed();
+    SearchActive := False;
+    UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
 
 

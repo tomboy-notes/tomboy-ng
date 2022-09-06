@@ -308,7 +308,7 @@ begin
     end;
 end;
 
-  // Unzips indicated snapshot, indexes its files and lists them in the StringGridNotes
+// Unzips indicated snapshot, indexes its files and lists them in the StringGridNotes
 procedure TFormRecover.ShowNotes(const FullSnapName : string);
 begin
     PanelNoteList.Caption:=rsNotesInSnap +' ' + ExpandZipName(FullSnapName);

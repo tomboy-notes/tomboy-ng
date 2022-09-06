@@ -463,7 +463,7 @@ begin
                 Items[i]^.LCDate := GitRec.LCDate
             else Items[i]^.LCDate := '';           // note has been edited in Github web interface
             if Items[i]^.CDate = '' then
-                Items[i]^.CDate := TheNoteLister.GetLastChangeDate(extractFileName(GitRec.FName));
+                Items[i]^.CDate := TheMainNoteLister.GetLastChangeDate(extractFileName(GitRec.FName));
             // Leave LCDate as it is, we may fix it with a download later. For now, its not useful.
             // We could get the commit date (a zulu date) but not sure its worthwhile at this stage.
             exit;
@@ -574,7 +574,7 @@ begin
                    REMEMBER -  SelectiveNotebookIDs might be nil !
                }
 
-               if TheNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub))
+               if TheMainNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub))
                and (SelectiveSync = '') and (not ANewRepo) then begin
                    ErrorString := 'Local is Selective, remote is NOT';
                    SayDebugSafe(ErrorString + ' probably need build a new remote repo, please read documentation');
@@ -734,7 +734,7 @@ begin
         if NoteCount mod 5 = 0 then
             if ProgressProcedure <> nil then
                 ProgressProcedure(rsUpLoaded + ' ' + inttostr(NoteCount) + ' notes');
-        RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', TheNoteLister.GetLastChangeDate(St));
+        RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', TheMainNoteLister.GetLastChangeDate(St));
         // ToDo : that has hardwired assumpltion about markdown
     end;
     result := true;
@@ -766,7 +766,7 @@ begin
                 if P^.Action = SyDownload then
                     NoteBooks := PGit^.Notebooks
                 else
-                    NoteBooks := TheNoteLister.NotebookJArray(P^.ID + '.note');
+                    NoteBooks := TheMainNoteLister.NotebookJArray(P^.ID + '.note');
                 Manifest.Append('    "' + P^.ID + '" : {'#10
                         + '      "title" : "'  + EscapeJSON(P^.Title) + '",'#10
                         + '      "cdate" : "'  + P^.CreateDate + '",'#10
@@ -826,8 +826,8 @@ var
 begin
    if (SelectiveSync <> '') and (not Assigned(SelectiveNotebookIDs)) then     // Something in SelectiveSync but no local NB, no uploads possible
        exit(false);
-   for i := 0 to TheNoteLister.GetNoteCount() -1 do begin                     // OK, now whats in NoteLister but not RemoteNotes ?
-       NLister := TheNoteLister.GetNote(i);
+   for i := 0 to TheMainNoteLister.GetNoteCount() -1 do begin                     // OK, now whats in NoteLister but not RemoteNotes ?
+       NLister := TheMainNoteLister.GetNote(i);
        // debugln('TGitHubSync.MergeNotesFromNoteLister  considering Title=' + NLister^.Title);
        if NLister = nil then exit(SayDebugSafe('TGitHubSync.AssignActions ERROR - not finding NoteLister Content'));
 
@@ -897,9 +897,9 @@ begin
         RemRec^.Deleted := false;
         RemRec^.Rev := 0;
         RemRec^.SID := 0;
-        RemRec^.Title := TheNoteLister.GetTitle(RemRec^.ID);                    // We 'prefer' the local title, remote one may be different
+        RemRec^.Title := TheMainNoteLister.GetTitle(RemRec^.ID);                    // We 'prefer' the local title, remote one may be different
         if RemRec^.Title = '' then
-            RemRec^.Title := TheNoteLister.GetNotebookName(RemRec^.ID);         // Maybe its a template ?
+            RemRec^.Title := TheMainNoteLister.GetNotebookName(RemRec^.ID);         // Maybe its a template ?
         RemRec^.Action := SyUnset;
         if RemRec^.Title = '' then begin                                        // Not in Notelister, must be new or locally deleted
             //debugln('TGithubSync.AssignActions setting ' + RemRec^.ID + ' to Download #1');
@@ -918,7 +918,7 @@ begin
                 // if LastSyncDate is 0.0, a Join. An ID that exists at both ends is a clash. No local manifest to help here.
                 // But we have one more trick.  If the remote note has a valid LCDate in RemoteNotes, it came from a -ng
                 // (ie, not a Github edit). We can compare the date string to the local one and if they match, all good.
-                if (PGit^.LCDate <> '') and (TheNoteLister.GetLastChangeDate(RemRec^.ID)
+                if (PGit^.LCDate <> '') and (TheMainNoteLister.GetLastChangeDate(RemRec^.ID)
                             = PGit^.LCDate) then
                     RemRec^.Action := SyNothing
                     else RemRec^.Action := SyClash;                             // OK, we tried but this one goes through to keeper.
@@ -926,7 +926,7 @@ begin
                 //debugln('PGit^.LCDate = ' + PGit^.LCDate + ' and  TheNoteLister.GetLastChangeDate = ' + LocalLastChangeDate(RemRec^.ID + '.note'));
             end
             else begin                                                          // Normal sync, we have a local manifest.
-                if  (TB_GetGMTFromStr(TheNoteLister.GetLastChangeDate(RemRec^.ID)) - Seconds5)
+                if  (TB_GetGMTFromStr(TheMainNoteLister.GetLastChangeDate(RemRec^.ID)) - Seconds5)
                         > LMData.LastSyncDate then RemRec^.Action := SyUploadEdit;  // changed since last sync ? Upload it !
                 if  LocRec = Nil then begin                                     // ?? If it exists at both ends we must have uploaded it ??
                     dispose(RemRec);
@@ -959,8 +959,8 @@ begin
     MergeNotesFromNoteLister(RMData, TestRun);
 
     // OK, just need to check over the Notebooks now, notebooks are NOT listed in NoteLister.Notelist !
-    for i := 0 to TheNoteLister.NotebookCount() -1 do begin
-        pNBook := TheNoteLister.GetNoteBook(i);
+    for i := 0 to TheMainNoteLister.NotebookCount() -1 do begin
+        pNBook := TheMainNoteLister.GetNoteBook(i);
         if (SelectiveSync <> '') and (SelectiveSync <> pNBook^.Name) then      // only interested in SyncGithub template here....
             continue;
         if RMData.FindID(extractfilenameonly(pNBook^.Template)) = nil then begin

@@ -2229,7 +2229,7 @@ begin
     { We make a stringlist, populate it with all the Titles, then, assuming ShowInternalLink
     we send a lowercase of each entry to MakeAllLinks (excluding this note title).  21mS-41mS with 2000 notes
 
-    So, instead, use TheNoteLister.NoteList[i] directly in a for loop.
+    So, instead, use TheMainNoteLister.NoteList[i] directly in a for loop.
     }
 
     // Tick := gettickcount64();
@@ -2263,9 +2263,9 @@ begin
         end;    *)
 
         if Sett.ShowIntLinks and (not SingleNoteMode) then begin
-            for i := 0 to TheNoteLister.NoteList.Count-1 do
-                if TheNoteLister.NoteList[i]^.TitleLow <> NoteTitle then
-                    MakeAllLinks(PText, TheNoteLister.NoteList[i]^.TitleLow, StartScan, EndScan);
+            for i := 0 to TheMainNoteLister.NoteList.Count-1 do
+                if TheMainNoteLister.NoteList[i]^.TitleLow <> NoteTitle then
+                    MakeAllLinks(PText, TheMainNoteLister.NoteList[i]^.TitleLow, StartScan, EndScan);
 
         end;
 
