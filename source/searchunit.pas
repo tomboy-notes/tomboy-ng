@@ -134,7 +134,6 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
 type        { TSearchForm }
     TSearchForm = class(TForm)
-        Button1: TButton;
 	    ButtonClearFilters: TButton;
 		ButtonRefresh: TButton;
         EditSearch: TEdit;
@@ -160,7 +159,6 @@ type        { TSearchForm }
 		Splitter1: TSplitter;
         StatusBar1: TStatusBar;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
-        procedure Button1Click(Sender: TObject);
         procedure ButtonMenuClick(Sender: TObject);
                                     { If a search is underway, searches.  Else, if we have
                                       an active notebook filter applied, reapply it. Failing
@@ -358,7 +356,7 @@ begin
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
         if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
-            if ListBoxNoteBooks.ItemIndex > -1 then
+            if ListBoxNoteBooks.ItemIndex < 0 then
                 ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
             else
                 ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
@@ -463,7 +461,7 @@ begin
     		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     end;
     if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
-        if ListBoxNoteBooks.ItemIndex > -1 then
+        if ListBoxNoteBooks.ItemIndex < 0 then
             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
         else
             ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
@@ -501,7 +499,7 @@ end;
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
 var
-    T1, T2, T3, T4 : qword;
+    // T1, T2, T3, T4 : qword;
     NeedUpdateMenu    : boolean = False;         // Updating the menu can be a bit slow.
     //NeedUpdateDisplay : boolean = false;         // Only set if Title has changed.
     i : integer;
@@ -513,7 +511,7 @@ begin
     note may be a new one. We always send date to NoteList, maybe update menu,
     maybe rerun the existing search, maybe just update display. In fact, we
     update the display unless note is not shown in ListView.    }
-    T1 := gettickcount64();
+    // T1 := gettickcount64();
     if NoteLister = Nil then exit;				// we are quitting the app !
     // We don't do any of this if the its a notebook.
     if NoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
@@ -522,10 +520,10 @@ begin
         if PopupTBMainMenu.Items[i].Tag = ord(mtRecent) then begin // Find first Recent Menu item
            if PopupTBMainMenu.Items[i].Caption <> Title then
                NeedUpdateMenu := True;
-           break;
+           break;                                                  // jump out after testing first recent
         end;
     end;
-    T2 := gettickcount64();
+    // T2 := gettickcount64();
     if TheMainNoteLister.AlterOrAddNote(ReRunSearch, FullFileName, LastChange, Title) then
         if ReRunSearch then begin
             // If neither a search term nor Notebook is set, just call ClearSearch.
@@ -543,13 +541,13 @@ begin
                 STL.Free;
             end;
         end else ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();
-    T3 := gettickcount64();
+    // T3 := gettickcount64();
     if NeedUpDateMenu then RefreshMenus(mkRecentMenu);
     TheMainNoteLister.ThisNoteIsOpen(FullFileName, TheForm);
-    T4 := gettickcount64();
+{    T4 := gettickcount64();
     debugln('SearchUnit.UpdateList TestMenu=' + inttostr(T2 - T1)
                     + 'mS AlterAdd=' + inttostr(T3 - T2) + 'mS Menu=' + inttostr(T4 - T3)
-                    + 'mS Menu=' + booltostr(NeedUpdateMenu, True));
+                    + 'mS Menu=' + booltostr(NeedUpdateMenu, True));  }
 
 { Timing, 2K notes, Dell, release mode.  August 2022
 
@@ -819,7 +817,7 @@ begin
 
     for i := 0 to 9 do begin
 //        P := TheMainNoteLister.GetNote(i, smAllRecentUp);
-        P := TheMainNoteLister.GetNote(i, smRecentUp);
+        P := TheMainNoteLister.GetNote(i, smAllRecentUp);
         if P <> nil then
             AddItemMenu(AMenu, P^.Title, mtRecent,  @RecentMenuClicked, mkRecentMenu)
         else break;
@@ -1022,7 +1020,7 @@ var
     //T1, T2, T3 : qword;
 begin
     if (not Sett.AutoSearchUpdate) or (not visible) or (length(EditSearch.Text)=1) then exit;
-    debugln('TSearchForm.EditSearchChange() EditSearch.Text=' + EditSearch.Text);
+    //debugln('TSearchForm.EditSearchChange() EditSearch.Text=' + EditSearch.Text);
     STL := TStringList.Create;
     try
         if length(EditSearch.text) = 1 then exit;    // Nothing to see here folks
@@ -1063,7 +1061,10 @@ begin
             SearchTextLength := 1
         else begin
             //T1 := GetTickCount64();
+
+            ListViewNotes.BeginUpdate;
             ListViewNotes.Items.Count := Found;
+            ListViewNotes.EndUpdate;
             //T2 := GetTickCount64();
             UpdateStatusBar(inttostr(Found) + ' ' + rsNotes);
         end;
@@ -1074,14 +1075,12 @@ end;
 
 procedure TSearchForm.DoSearchEnterPressed();
 var
-    T1, T2, TS3, TS4 : qword;
-    // Found : integer;
-var
+    // T1, T2, TS3, TS4 : qword;
     NoteBook : string;
     STL : TStringList;
 //  At startup, 2K notes, RSS=41.8 Meg, do a search and jumps to 50.5meg
 begin
-    T1 := gettickcount64();
+    // T1 := gettickcount64();
     if Sett.AutoSearchUpdate then exit;         // we don't do that here.
     STL := TStringList.Create;
     try
@@ -1101,8 +1100,8 @@ begin
     finally
         STL.free;
     end;
-    T2 := gettickcount64();
-    debugln('TSearchForm.DoSearchEnterPressed ' + inttostr(T2-T1) + 'mS');
+    //T2 := gettickcount64();
+    //debugln('TSearchForm.DoSearchEnterPressed ' + inttostr(T2-T1) + 'mS');
 
 (*    exit;
 
@@ -1588,14 +1587,22 @@ begin
     ButtonClearFilters.Enabled := False;
     ListBoxNotebooks.ItemIndex := -1;
     EditSearch.Hint:=rsSearchHint;
-    EditSearch.Text := rsMenuSearch;
+
+    if Sett.AutoSearchUpdate then begin                 // Search While You Type
+        if (EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch) then      // ie, no search term
+            ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
+        else
+            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(EditSearch.Text, '');
+    end else
+        DoSearchEnterPressed();
+    //EditSearch.Text := rsMenuSearch;
 //    ButtonRefreshClick(self);
-    EditSearch.SetFocus;
-    EditSearch.SelectAll;
+    //EditSearch.SetFocus;
+    //EditSearch.SelectAll;
     // EditSearch.SelStart := 0;
     // EditSearch.SelLength := length(EditSearch.Text);
 
-    ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();
+    // ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();
     UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
 
@@ -1650,26 +1657,6 @@ procedure TSearchForm.ButtonMenuClick(Sender: TObject);
 begin
     //ShowListIndicator('From Menu');
     PopupTBMainMenu.popup;
-end;
-
-procedure TSearchForm.Button1Click(Sender: TObject);        // ToDo : remove this
-var
-    Cnt : integer = 0;
-begin
-
-    debugln('Button1Click - VisibleRowCount=' + inttostr(ListViewNotes.VisibleRowCount));
-    debugln('Button1Click - TopItem ' + inttostr(ListViewNotes.TopItem.Index));
-
-    // The above will allow me to determine which OnData calls I can ignore with GTK2 !
-
-
-     exit;
-//    Cnt := NoteLister.NewSearch('', 'General Test Notes');
-    //Cnt := NoteLister.NewSearch('password', '');
-    //Cnt := NoteLister.NewSearch('Alpha', 'General Test Notes');
-    writeln('TSearchForm.Button1Click - item count now ' + inttostr(cnt));
-    ListViewNotes.Items.Count := Cnt;
-
 end;
 
 procedure TSearchForm.MenuEditNotebookTemplateClick(Sender: TObject);
@@ -1749,8 +1736,8 @@ begin
     EditSearch.text := rsMenuSearch;
     EditSearch.SetFocus;
     EditSearch.SelectAll;
-    if Sett.AutoSearchUpdate then begin         // Search While You Type
-        if ListBoxNoteBooks.ItemIndex > -1 then
+    if Sett.AutoSearchUpdate then begin                 // Search While You Type
+        if ListBoxNoteBooks.ItemIndex < 0 then          // ie, no Notebook selected
             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
         else
             ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);

@@ -1577,8 +1577,8 @@ end;
 function TNoteLister.NewSearch(STermList : TstringList; NoteBook: string): integer;
 var
     NBStrL : TStringList = nil;        // gets set to a pre-existing list, dont create or free !
-    T1, T2, T3, T4, T5 : qword;
-    St : string;
+    //T1, T2, T3, T4, T5 : qword;
+    // St : string;
 
     function SearchNoteBook() : integer;
     var
@@ -1618,12 +1618,12 @@ var
 
 begin
     // debugln('TNoteLister.NewSearch() STerm=' + STermList.Text + ' >> ' + NoteBook);
-    T1 := GetTickCount64();
+    //T1 := GetTickCount64();
     TitleSearchIndex.Clear;
     DateSearchIndex.Clear;
     TitleSearchIndex.Capacity := NoteList.Count;
     DateSearchIndex.Capacity :=  NoteList.Count;
-    T2 := GetTickCount64();
+    //T2 := GetTickCount64();
     if (NoteBook <> '')  then
         Result := SearchNoteBook()
     else Result := OnlySTerm();
@@ -1631,15 +1631,15 @@ begin
 //    TitleSearchIndex.pack();                                    // Causes an unidentified crash after GTK loop resumes....
 //    DateSearchIndex.pack();
 
-    T3 := GetTickCount64();
+    //T3 := GetTickCount64();
     TitleSearchIndex.sort(@SortOnTitle);                          // ToDo : running each sort in its own thread ?
-    T4 := GetTickCount64();
+    //T4 := GetTickCount64();
     DateSearchIndex.sort(@SortOnDate);
 
-    T5 := GetTickCount64();
-    debugln('TNoteLister.NewSearch() clear=' + inttostr(T2-T1) + 'mS Search='
+    //T5 := GetTickCount64();
+    {debugln('TNoteLister.NewSearch() clear=' + inttostr(T2-T1) + 'mS Search='
             + inttostr(T3-T2) + 'mS ' + ' TSort=' + inttostr(T4-T3)
-            + ' mS DSort=' + inttostr(T5-T4) + ' ' + inttostr(TitleSearchIndex.Count));
+            + ' mS DSort=' + inttostr(T5-T4) + ' ' + inttostr(TitleSearchIndex.Count));   }
 
 (*    debugln('as above -- ' + STermList.text + ' -- ' + Notebook);
     for St in STermList do
@@ -2018,22 +2018,34 @@ begin
     Result := False;
     ReRunSearch := True;
     ID := CleanFilename(FFName);
-    while ID <> NoteList.Items[i]^.ID do begin
-        if i = NoteList.count then begin
-            // deal with new note then exit(T) with ReRunSearch set
-            AddNote(ID, Title, LCD);
-            DateAllIndex.Add(NoteList.Count -1);        // In both lists, added at the end.
-            exit(true);
-        end;
+
+    while i < NoteList.Count do begin
+        if ID = NoteList.Items[i]^.ID then break;       // Found it
         inc(i);
-    end;                                                // if drop through, i is index to this note in NoteList
-    NoteList.Items[i]^.LastChange := LCD;
-    if Title = NoteList.Items[i]^.Title then begin      // Its just a LCD update
-        ReRunSearch := False;
-        result := UpdateIndex(DateSearchIndex);         // False if we did not find an entry in DateSearchIndex
-    end else
-        NoteList.Items[i]^.Title := Title;
-    UpdateIndex(DateAllIndex);                          // Always update DateAllIndex, its not done by Search methods
+    end;
+
+ (*   while ID <> NoteList.Items[i]^.ID do begin        // ToDo : can this cannot handle empty list?
+        inc(i);
+    end;         *)
+
+    if i = NoteList.count then begin                    // Drop through, must be a new note.
+        AddNote(ID, Title, LCD);
+        DateAllIndex.Add(NoteList.Count -1);            // Added at the end, most recent.
+        result := true;                                 // ReRunSearch is set to True too.
+
+        debugln('TNoteLister.AlterOrAddNote just added [' + Title + '] aka ['
+            + NoteList[DateAllIndex.Count-1]^.Title + ']');
+
+
+    end else begin
+        NoteList.Items[i]^.LastChange := LCD;
+        if Title = NoteList.Items[i]^.Title then begin  // Its just a LCD update
+            ReRunSearch := False;
+            result := UpdateIndex(DateSearchIndex);     // False if we did not find an entry in DateSearchIndex
+        end else                                        // Ah, a new title
+            NoteList.Items[i]^.Title := Title;
+        UpdateIndex(DateAllIndex);                       // Always update DateAllIndex, its not done by Search methods
+    end;
 end;
 
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;

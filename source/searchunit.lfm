@@ -297,15 +297,6 @@ object SearchForm: TSearchForm
     ParentShowHint = False
     PopupMenu = PopupMenuSearchOptions
   end
-  object Button1: TButton
-    Left = 560
-    Height = 25
-    Top = 8
-    Width = 15
-    Caption = 'Button1'
-    OnClick = Button1Click
-    TabOrder = 4
-  end
   object SpeedButtonClearSearch: TSpeedButton
     AnchorSideLeft.Control = EditSearch
     AnchorSideLeft.Side = asrBottom
