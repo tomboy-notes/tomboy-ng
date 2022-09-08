@@ -730,6 +730,7 @@ procedure TSett.FormCreate(Sender: TObject);
 var
     i : integer;
 begin
+    CheckShowTomdroid.Hint := 'Will be removed in 0.36 unless you tell me otherwise';
     Caption := 'tomboy-ng Settings';
     AreClosing := false;
     Top := 100;

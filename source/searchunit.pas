@@ -113,6 +113,7 @@ unit SearchUnit;
     2022/04/18  Bug where searching notes in progressive mode and backspacing over search term failed
     2022/08/27  Alterations to ListViewNotesColumnClick() and ListViewNotesData() to work in OwnerData mode.
     2022/09/06  PressEnter Seach mode now OK as well, cleans up when Search form closes or hides.
+    2022/09/08  Two bugs that appear when no notes present
 }
 
 {$mode objfpc}{$H+}
@@ -229,6 +230,7 @@ type        { TSearchForm }
                                 // clears then Inserts file items in all main menus, note also removes help items ....
         procedure MenuFileItems(AMenu: TPopupMenu);
         procedure MenuHelpItems(AMenu: TPopupMenu);
+                                // Builds a list of all the main Menus we have floating around at the moment.
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
 		procedure Refresh();
@@ -516,13 +518,26 @@ begin
     // We don't do any of this if the its a notebook.
     if NoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
     // if this note is already last in list, we don't need to update menus
-    for i := 0 to PopupTBMainMenu.Items.Count-1 do begin
+
+    i := 0;
+    while i < PopupTBMainMenu.Items.Count do begin
+        if PopupTBMainMenu.Items[i].Tag = ord(mtRecent) then begin      // Find first Recent Menu item
+           if PopupTBMainMenu.Items[i].Caption <> Title then
+               NeedUpdateMenu := True;
+           break;                                                       // jump out after testing first recent
+        end;
+        inc(i);
+    end;
+    if i = PopupTBMainMenu.Items.Count then NeedUpdateMenu := True;     // dropped right through without a mtRecent
+
+(*    for i := 0 to PopupTBMainMenu.Items.Count-1 do begin              // This fails if there is no Recent present.
         if PopupTBMainMenu.Items[i].Tag = ord(mtRecent) then begin // Find first Recent Menu item
            if PopupTBMainMenu.Items[i].Caption <> Title then
                NeedUpdateMenu := True;
            break;                                                  // jump out after testing first recent
         end;
-    end;
+    end;       *)
+
     // T2 := gettickcount64();
     if TheMainNoteLister.AlterOrAddNote(ReRunSearch, FullFileName, LastChange, Title) then
         if ReRunSearch then begin
@@ -542,8 +557,8 @@ begin
             end;
         end else ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();
     // T3 := gettickcount64();
-    if NeedUpDateMenu then RefreshMenus(mkRecentMenu);
     TheMainNoteLister.ThisNoteIsOpen(FullFileName, TheForm);
+    if NeedUpDateMenu then RefreshMenus(mkRecentMenu);
 {    T4 := gettickcount64();
     debugln('SearchUnit.UpdateList TestMenu=' + inttostr(T2 - T1)
                     + 'mS AlterAdd=' + inttostr(T3 - T2) + 'mS Menu=' + inttostr(T4 - T3)
@@ -664,7 +679,7 @@ begin
     // Add any other 'fixed' menu here.
 end;
 
-    // Builds a list of all the Menus we have floating around at the moment.
+
 procedure TSearchForm.MenuListBuilder(MList : TList);
 var
     AForm : TForm;
@@ -672,6 +687,9 @@ begin
     if assigned(NoteLister) then begin
       AForm := NoteLister.FindFirstOpenNote();
       while AForm <> Nil do begin
+
+          debugln('Added a form menu ' + AForm.Caption);
+
           MList.Add(TEditBoxForm(AForm).PopupMainTBMenu);
           AForm := SearchForm.NoteLister.FindNextOpenNote();
       end;
@@ -1138,8 +1156,9 @@ begin
         //EditSearch.SelStart:=0;
         //EditSearch.SelLength:= length(rsMenuSearch);
         EditSearch.SelectAll;
+        debugln('TSearchForm.EditSearchEnter()');
     end;
-    // debugln('TSearchForm.EditSearchEnter()');
+    //
 end;
 
 procedure TSearchForm.FormDeactivate(Sender: TObject);

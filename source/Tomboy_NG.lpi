@@ -840,13 +840,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-lots"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-lots"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
           </local>
         </Mode0>
       </Modes>

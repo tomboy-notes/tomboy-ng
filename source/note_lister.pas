@@ -1796,6 +1796,7 @@ end;
 function TNoteLister.GetNote(Index: integer; mode: TLVSortMode): PNote;
 begin
     Result := Nil;
+    if NoteList.Count <= Index then exit;
     case Mode of
         smRecentDown  : result := NoteList[DateSearchIndex[Index]];
         smRecentUp    : result := NoteList[DateSearchIndex[DateSearchIndex.Count - Index -1]];
@@ -2033,8 +2034,8 @@ begin
         DateAllIndex.Add(NoteList.Count -1);            // Added at the end, most recent.
         result := true;                                 // ReRunSearch is set to True too.
 
-        debugln('TNoteLister.AlterOrAddNote just added [' + Title + '] aka ['
-            + NoteList[DateAllIndex.Count-1]^.Title + ']');
+        //debugln('TNoteLister.AlterOrAddNote just added [' + Title + '] aka ['
+        //    + NoteList[DateAllIndex.Count-1]^.Title + ']');
 
 
     end else begin
