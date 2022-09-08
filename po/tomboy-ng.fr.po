@@ -1716,6 +1716,10 @@ msgstr "Synchro auto"
 msgid "Sync, if possible once an hour."
 msgstr "Une synchro par heure si possible."
 
+#: tsett.checkescclosesnote.caption
+msgid "Esc Closes Note"
+msgstr ""
+
 #: tsett.checkfindtoggles.caption
 msgid "Find Command Toggles"
 msgstr ""

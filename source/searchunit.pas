@@ -114,6 +114,7 @@ unit SearchUnit;
     2022/08/27  Alterations to ListViewNotesColumnClick() and ListViewNotesData() to work in OwnerData mode.
     2022/09/06  PressEnter Seach mode now OK as well, cleans up when Search form closes or hides.
     2022/09/08  Two bugs that appear when no notes present
+    2022/09/08  Update Notes Found number on small splash screen  #267
 }
 
 {$mode objfpc}{$H+}
@@ -365,6 +366,7 @@ begin
         end;
         TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
         RefreshMenus(mkRecentMenu);
+        MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
 
         {
         Visible        T            F          T          F
@@ -470,6 +472,7 @@ begin
     end;
     TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
     RefreshMenus(mkRecentMenu);
+    MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
     if Visible and Sett.AutoRefresh then
         Refresh()
     else begin
@@ -559,6 +562,7 @@ begin
     // T3 := gettickcount64();
     TheMainNoteLister.ThisNoteIsOpen(FullFileName, TheForm);
     if NeedUpDateMenu then RefreshMenus(mkRecentMenu);
+    MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
 {    T4 := gettickcount64();
     debugln('SearchUnit.UpdateList TestMenu=' + inttostr(T2 - T1)
                     + 'mS AlterAdd=' + inttostr(T3 - T2) + 'mS Menu=' + inttostr(T4 - T3)

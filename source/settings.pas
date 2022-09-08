@@ -127,6 +127,7 @@ type
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
+        CheckEscClosesNote: TCheckBox;
         CheckFindToggles: TCheckBox;
         CheckStampBold: TCheckBox;
         CheckStampItalics: TCheckBox;
@@ -898,6 +899,8 @@ begin
             ('true' = Configfile.ReadString('BasicSettings', 'ShowSearchAtStart', 'false'));
         CheckNotifications.Checked :=
             ('true' = Configfile.ReadString('BasicSettings', 'ShowNotifications', 'true'));
+        CheckEscClosesNote.Checked :=
+            ('true' = Configfile.ReadString('BasicSettings', 'EscClosesNote', 'false'));
         case ConfigFile.readstring('BasicSettings', 'FontSize', 'medium')  of
             'huge'   : RadioFontHuge.Checked := true;
     	    'big'    : RadioFontBig.Checked := true;
@@ -1028,6 +1031,7 @@ begin
             ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowNotifications', MyBoolStr(CheckNotifications.Checked));
+            ConfigFile.WriteString('BasicSettings', 'EscClosesNote',     MyBoolStr(CheckEscClosesNote.Checked));
             ConfigFile.WriteString('BasicSettings', 'AutoRefresh',       MyBoolStr(AutoRefresh));
             ConfigFile.WriteString('BasicSettings', 'UseUndo',           MyBoolStr(CheckUseUndo.Checked));
             ConfigFile.WriteString('BasicSettings', 'AutoSearchUpdate',  MyBoolStr(AutoSearchUpdate));

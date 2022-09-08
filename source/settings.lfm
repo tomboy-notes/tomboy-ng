@@ -101,11 +101,10 @@ object Sett: TSett
         AnchorSideLeft.Control = CheckShowSplash
         AnchorSideTop.Control = CheckNotifications
         AnchorSideTop.Side = asrBottom
-        Left = 8
+        Left = 17
         Height = 23
         Top = 338
         Width = 172
-        Anchors = [akTop]
         BorderSpacing.Top = 30
         Caption = 'Autostart at Logon'
         OnChange = SaveSettings
@@ -169,6 +168,17 @@ object Sett: TSett
         OnChange = SaveSettings
         State = cbChecked
         TabOrder = 6
+      end
+      object CheckEscClosesNote: TCheckBox
+        AnchorSideLeft.Control = CheckShowSearchAtStart
+        AnchorSideTop.Control = CheckNotifications
+        Left = 380
+        Height = 23
+        Top = 285
+        Width = 149
+        Caption = 'Esc Closes Note'
+        OnChange = SaveSettings
+        TabOrder = 7
       end
     end
     object TabDisplay: TTabSheet

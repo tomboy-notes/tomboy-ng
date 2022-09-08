@@ -227,6 +227,7 @@ unit EditBox;
                 could, perhaps, no longer sort name list and check for length in MakeLink() ? Longer wins ?
     2022/08/28  CheckForLinks() no longer calls SearchForm.StartSearch(); eg 2000 notes faster to
                 work directly off TheNoteLister.NoteList[i]^.TitleLow, 11-20mS compared to 19-41mS
+    2022/09/08  Esc can (if set) close current note. #271
 
 }
 
@@ -2875,6 +2876,7 @@ begin
     if ([ssAlt, ssShift] = Shift) and ((Key = VK_RIGHT) or (Key = VK_LEFT)) then exit; // KMemo - extend selection one word left or right
     {$endif}
 
+    if (Key = VK_ESCAPE) and Sett.CheckEscClosesNote.Checked then close;        // Will do normal save stuff first.
 
     // Record this event in the Undoer if its ssShift or empty set, rest are ctrl, meta etc ....
 
