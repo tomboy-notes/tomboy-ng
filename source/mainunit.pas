@@ -74,6 +74,7 @@ unit Mainunit;
     2021/07/13  Don't do full SysTray check on Gnome with Qt, AccessViolation, just guess.
     2021/11/09  Dont consider libayatana unless compiled with > 2.0.12
     2022/05/03  Add unix username to IPC pipe.
+    2022/08/10  Added an about Lazarus to splash screen and simplified the About screen.
 
     CommandLine Switches
 
@@ -137,6 +138,7 @@ type
 		BitBtnQuit: TBitBtn;
         ButtMenu: TBitBtn;
         CheckBoxDontShow: TCheckBox;
+        ImageAboutLaz: TImage;
         ImageSpellCross: TImage;
         ImageSpellTick: TImage;
         ImageNotesDirCross: TImage;
@@ -164,6 +166,7 @@ type
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure FormResize(Sender: TObject);
         procedure FormShow(Sender: TObject);
+        procedure ImageAboutLazClick(Sender: TObject);
         procedure LabelErrorClick(Sender: TObject);
         procedure TrayIconClick(Sender: TObject);
         procedure TrayMenuTomdroidClick(Sender: TObject);
@@ -239,7 +242,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
-    tb_utils, {$ifdef LINUX}LCLVersion, {$endif}
+    tb_utils, {$ifdef LINUX}LCLVersion, LCLIntf, {$endif}
     TomdroidFile {$ifdef windows}, registry{$endif};
 
 function SingleNoteFileName() : string;
@@ -548,12 +551,14 @@ begin
     if not CheckForSysTray() then begin
         LabelBadNoteAdvice.Caption := rsWARNNOSSYSTRAY;
         ButtSysTrayHelp.Visible := True;
+        ImageAboutLaz.Visible := False;
     end;
     {$endif}
 
     if SearchForm.NoteLister.XMLError then begin
         LabelError.Caption := rsFailedToIndex;
         LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
+        ImageAboutLaz.Visible := False;
     end else begin
         LabelError.Caption := '';
         if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then
@@ -576,6 +581,11 @@ begin
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
 
 
+end;
+
+procedure TMainForm.ImageAboutLazClick(Sender: TObject);
+begin
+    OpenURL('https://www.lazarus-ide.org/');
 end;
 
 procedure TMainForm.LabelErrorClick(Sender: TObject);
@@ -750,9 +760,10 @@ begin
 end;
 
 RESOURCESTRING
-    rsAbout1 = 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus';
-    rsAbout2 = 'and FPC. While its ready for production';
-    rsAbout3 = 'use, you still need to be careful and have good backups.';
+    rsAbout = 'tomboy-ng notes - cross platform, sync and manage notes.';
+    // rsAbout1 = 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus';
+    // rsAbout2 = 'and FPC. While its ready for production';
+    // rsAbout3 = 'use, you still need to be careful and have good backups.';
     rsAboutVer = 'Version';
     rsAboutBDate = 'Build date';
     rsAboutCPU = 'TargetCPU';
@@ -768,8 +779,9 @@ begin
             AboutFrm.EnsureVisible();
             exit;
 		end;
-		Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
-            + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
+
+//		Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
+        Stg := rsAbout + #10 + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
         {$ifdef LCLCOCOA} Stg := Stg + ', 64bit Cocoa'; {$endif}
         {$ifdef LCLQT5}   Stg := Stg + ', QT5';         {$endif}
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
