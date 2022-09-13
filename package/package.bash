@@ -176,7 +176,7 @@ function DebianPackage () {
     ARCH=$(ModeParamArch "$1")
     BIN=$(ModeParamBin "$1")
     CTRL_ARCH=$ARCH
-	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl"
+	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl, libnotify-bin"
 	CTRL_RELEASE="GTK2 release."
 	cp $SOURCE_DIR/$BIN BUILD/usr/bin/$PRODUCT
 	# ----------- Some Special Cases ----------------
@@ -184,7 +184,7 @@ function DebianPackage () {
 	"ReleaseQT5")
 		echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl"
+		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin"
 		CTRL_RELEASE="Qt5 release."
 		;;
 	"ReleaseRasPi")

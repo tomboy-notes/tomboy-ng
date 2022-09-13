@@ -97,11 +97,11 @@ Did you follow that about versions ?  To target u18.04 we must specify (in contr
 ========
 If all you want is the binary, not building src packages at all, not cross compiling, then don't worry about signing etc, just -
 
-* install FPC (>=3.2.0),  Lazarus (>=2.0.10), libnotifier-dev
+* install FPC (>=3.2.0),  Lazarus (>=2.2.0), libnotify-dev
 
 * install libqt5pas-dev if building a QT5 version
 
-* `wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa`
+* `wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa`
 
 * `bash ./prepare.ppa [-Q]`      // the -Q says make a Qt5 version please.
 
