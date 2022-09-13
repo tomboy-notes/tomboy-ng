@@ -1,66 +1,75 @@
 object FormSDiff: TFormSDiff
-  Left = 784
-  Height = 481
-  Top = 157
-  Width = 645
+  Left = 596
+  Height = 478
+  Top = 166
+  Width = 683
   VertScrollBar.Visible = False
   Caption = 'A Note Sync Clash has been Detected'
-  ClientHeight = 481
-  ClientWidth = 645
+  ClientHeight = 478
+  ClientWidth = 683
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.2.0.2'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtnUseLocal
     Left = 2
-    Height = 50
-    Top = 389
-    Width = 643
+    Height = 58
+    Top = 378
+    Width = 681
     Anchors = [akLeft, akRight, akBottom]
     BorderSpacing.Left = 2
-    ClientHeight = 50
-    ClientWidth = 643
+    ClientHeight = 58
+    ClientWidth = 681
     TabOrder = 0
     object LabelRemote: TLabel
-      Left = 140
-      Height = 19
+      AnchorSideLeft.Control = Label3
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = Label3
+      Left = 146
+      Height = 21
       Top = 6
-      Width = 95
+      Width = 106
+      BorderSpacing.Left = 3
       Caption = 'LabelRemote'
-      ParentColor = False
     end
     object LabelLocal: TLabel
-      Left = 140
-      Height = 19
-      Top = 24
-      Width = 74
+      AnchorSideLeft.Control = LabelRemote
+      AnchorSideTop.Control = Label4
+      Left = 146
+      Height = 21
+      Top = 27
+      Width = 84
       Caption = 'LabelLocal'
-      ParentColor = False
     end
     object Label3: TLabel
-      Left = 11
-      Height = 19
+      AnchorSideLeft.Control = Panel1
+      AnchorSideTop.Control = Panel1
+      Left = 6
+      Height = 21
       Top = 6
-      Width = 124
+      Width = 137
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
       Caption = 'Remote Changed'
-      ParentColor = False
     end
     object Label4: TLabel
-      Left = 11
-      Height = 19
-      Top = 24
-      Width = 103
+      AnchorSideLeft.Control = Label3
+      AnchorSideTop.Control = Label3
+      AnchorSideTop.Side = asrBottom
+      Left = 6
+      Height = 21
+      Top = 27
+      Width = 115
       Caption = 'Local Changed'
-      ParentColor = False
     end
     object RadioLong: TRadioButton
       Left = 488
       Height = 23
       Hint = 'Maybe necessary to show difference'
       Top = 24
-      Width = 100
+      Width = 107
       Caption = 'Long Lines'
       OnChange = RadioLongChange
       ParentShowHint = False
@@ -72,7 +81,7 @@ object FormSDiff: TFormSDiff
       Height = 23
       Hint = 'Easier to read'
       Top = 1
-      Width = 104
+      Width = 111
       Caption = 'Short Lines'
       Checked = True
       ParentShowHint = False
@@ -83,21 +92,20 @@ object FormSDiff: TFormSDiff
   end
   object Label1: TLabel
     AnchorSideBottom.Control = ButtAllRemote
-    Left = 22
-    Height = 19
-    Top = 436
-    Width = 302
+    Left = 16
+    Height = 21
+    Top = 431
+    Width = 334
     Anchors = [akBottom]
     Caption = 'Or make a choice for remainder of this run'
-    ParentColor = False
   end
   object ButtAllOldest: TButton
     AnchorSideRight.Control = BitBtnUseRemote
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 284
+    Left = 322
     Height = 25
-    Top = 455
+    Top = 452
     Width = 101
     Anchors = [akRight, akBottom]
     BorderSpacing.Bottom = 1
@@ -109,9 +117,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Control = ButtAllOldest
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 184
+    Left = 222
     Height = 25
-    Top = 455
+    Top = 452
     Width = 100
     Anchors = [akRight, akBottom]
     BorderSpacing.Bottom = 1
@@ -123,9 +131,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Control = ButtAllNewest
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 109
+    Left = 147
     Height = 25
-    Top = 455
+    Top = 452
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Bottom = 1
@@ -137,9 +145,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Control = ButtAllLocal
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 34
+    Left = 72
     Height = 25
-    Top = 455
+    Top = 452
     Width = 75
     Anchors = [akRight, akBottom]
     BorderSpacing.Bottom = 1
@@ -152,9 +160,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 515
+    Left = 553
     Height = 42
-    Top = 439
+    Top = 436
     Width = 130
     Anchors = [akRight, akBottom]
     Caption = 'Use Local'
@@ -260,9 +268,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Control = BitBtnUseLocal
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 385
+    Left = 423
     Height = 42
-    Top = 439
+    Top = 436
     Width = 130
     Anchors = [akRight, akBottom]
     Caption = 'Use Remote'
@@ -371,9 +379,9 @@ object FormSDiff: TFormSDiff
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Panel1
     Left = 0
-    Height = 389
+    Height = 378
     Top = 0
-    Width = 645
+    Width = 683
     Anchors = [akTop, akLeft, akRight, akBottom]
     ContentPadding.Left = 5
     ContentPadding.Top = 5

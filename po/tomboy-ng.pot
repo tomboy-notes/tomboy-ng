@@ -5,16 +5,8 @@ msgstr "Content-Type: text/plain; charset=UTF-8"
 msgid "Unable to find an expression to evaluate"
 msgstr ""
 
-#: mainunit.rsabout1
-msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
-msgstr ""
-
-#: mainunit.rsabout2
-msgid "and FPC. While its ready for production"
-msgstr ""
-
-#: mainunit.rsabout3
-msgid "use, you still need to be careful and have good backups."
+#: mainunit.rsabout
+msgid "tomboy-ng notes - cross platform, sync and manage notes."
 msgstr ""
 
 #: mainunit.rsaboutbdate
@@ -1525,10 +1517,6 @@ msgstr ""
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
-msgstr ""
-
-#: tsearchform.listviewnotes.hint
-msgid "Enable in settings"
 msgstr ""
 
 #: tsearchform.menucreatenotebook.caption

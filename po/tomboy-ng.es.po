@@ -19,17 +19,9 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para calcular"
 
-#: mainunit.rsabout1
-msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
-msgstr "Esto es tomboy-ng, la refundición de Notas Tomboy usando Lazarus"
-
-#: mainunit.rsabout2
-msgid "and FPC. While its ready for production"
-msgstr "y FPC. A pesar de estar listo para emplear en producción,"
-
-#: mainunit.rsabout3
-msgid "use, you still need to be careful and have good backups."
-msgstr "hay que tener cuidado y hacer buenas copias de seguridad."
+#: mainunit.rsabout
+msgid "tomboy-ng notes - cross platform, sync and manage notes."
+msgstr ""
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
@@ -1560,10 +1552,6 @@ msgstr "Búsqueda de tombo-ng"
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
 msgstr "Clic derecho para gestionar cuadernos"
-
-#: tsearchform.listviewnotes.hint
-msgid "Enable in settings"
-msgstr ""
 
 #: tsearchform.menucreatenotebook.caption
 msgid "Create new Note Book"

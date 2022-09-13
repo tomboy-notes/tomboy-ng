@@ -150,7 +150,6 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Side = asrBottom
       Left = 241
       Height = 340
-      Hint = 'Enable in settings'
       Top = 1
       Width = 582
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -171,7 +170,6 @@ object SearchForm: TSearchForm
       ReadOnly = True
       RowSelect = True
       ScrollBars = ssVertical
-      ShowHint = True
       SortColumn = 1
       SortType = stText
       TabOrder = 4

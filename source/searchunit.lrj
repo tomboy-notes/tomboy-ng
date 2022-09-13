@@ -6,7 +6,6 @@
 {"hash":4860802,"name":"tsearchform.buttonclearfilters.caption","sourcebytes":[67,108,101,97,114],"value":"Clear"},
 {"hash":78352483,"name":"tsearchform.listboxnotebooks.hint","sourcebytes":[82,105,103,104,116,32,67,108,105,99,107,32,116,111,32,109,97,110,97,103,101,32,78,111,116,101,98,111,111,107,115],"value":"Right Click to manage Notebooks"},
 {"hash":179900739,"name":"tsearchform.panel2.caption","sourcebytes":[78,111,116,101,98,111,111,107,115],"value":"Notebooks"},
-{"hash":253139539,"name":"tsearchform.listviewnotes.hint","sourcebytes":[69,110,97,98,108,101,32,105,110,32,115,101,116,116,105,110,103,115],"value":"Enable in settings"},
 {"hash":343125,"name":"tsearchform.buttonmenu.caption","sourcebytes":[77,101,110,117],"value":"Menu"},
 {"hash":233995187,"name":"tsearchform.speedsearchotions.hint","sourcebytes":[83,101,97,114,99,104,32,79,112,116,105,111,110,115],"value":"Search Options"},
 {"hash":108725763,"name":"tsearchform.speedsearchotions.caption","sourcebytes":[79,112,116,105,111,110,115],"value":"Options"},

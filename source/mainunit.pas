@@ -242,7 +242,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
-    tb_utils, {$ifdef LINUX}LCLVersion, LCLIntf, {$endif}
+    tb_utils, {$ifdef LINUX}LCLVersion,{$endif} LCLIntf,
     TomdroidFile {$ifdef windows}, registry{$endif};
 
 function SingleNoteFileName() : string;

@@ -115,6 +115,7 @@ unit SearchUnit;
     2022/09/06  PressEnter Seach mode now OK as well, cleans up when Search form closes or hides.
     2022/09/08  Two bugs that appear when no notes present
     2022/09/08  Update Notes Found number on small splash screen  #267
+    2022/09/13  Tweaks to manage the ListViewNotes sort indicators, must 'Bounce'.
 }
 
 {$mode objfpc}{$H+}
@@ -221,6 +222,9 @@ type        { TSearchForm }
         LVSortMode : TLVSortMode;       // Sort direction for the ListViewNotes, OnData needs to know.
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
             mtTag: TMenuTarget; OC: TNotifyEvent; MenuKind: TMenuKind);
+                                        // ListView, in OwnerData mode seems to need to get its SortIndicator bounced
+                                        // after refreshing content.
+        procedure BounceSortIndicator(Col: integer);
 
         procedure CreateMenus();
         procedure DoSearchEnterPressed();
@@ -1160,9 +1164,8 @@ begin
         //EditSearch.SelStart:=0;
         //EditSearch.SelLength:= length(rsMenuSearch);
         EditSearch.SelectAll;
-        debugln('TSearchForm.EditSearchEnter()');
+        //debugln('TSearchForm.EditSearchEnter()');
     end;
-    //
 end;
 
 procedure TSearchForm.FormDeactivate(Sender: TObject);
@@ -1238,12 +1241,19 @@ begin
 
     { ListView Settings }       // make extra column in Object Inspector
     ListViewNotes.ViewStyle:= vsReport;
+    ListViewNotes.AutoSort := False;
     ListViewNotes.OwnerData := True;
 
     ListViewNotes.Column[0].Caption := rsName;
     ListViewNotes.Column[1].Caption := rsLastChange;
-    ListViewNotes.AutoSortIndicator := True;
-    ListViewNotes.Column[1].SortIndicator := siDescending;
+    ListViewNotes.AutoSortIndicator := False;
+
+//    ListViewNotes.AutoSortIndicator := false;
+    ListViewNotes.Column[1].SortIndicator := siAscending;
+
+//    ListViewNotes.sort;
+
+
 //    ListViewNotes.AutoSort:=True;
 //    ListViewNotes.SortDirection:= sdDescending;     // Most recent, ie bigger date numbers, on top
     ListViewNotes.AutoWidthLastColumn:= True;         // ToDo : but Qt5 in OwnerData mode demands columns of extra data, eg Filename
@@ -1254,6 +1264,9 @@ begin
 
     //ListViewNotes.BeginUpdate;
     ListViewNotes.Items.Count := NoteLister.ClearSearch();        // Builds NoteLister's Index files.
+
+
+
     //ListViewNotes.EndUpdate;
     NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
 
@@ -1281,10 +1294,8 @@ end;
 
 procedure TSearchForm.FormShow(Sender: TObject);
 begin
-    // if MainForm.closeASAP or (MainForm.SingleNoteFileName <> '') then exit;
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
-//    CheckCaseSensitive.checked := Sett.SearchCaseSensitive;
 //    {$ifdef windows}  // linux apps know how to do this themselves
     if Sett.DarkTheme then begin                                        // Note - Windows won't let us change button colour anymore.
         ListBoxNotebooks.Color := Sett.BackGndColour;
@@ -1299,12 +1310,15 @@ begin
          ListViewNotes.Font.Color :=  Sett.BackGndColour;
          splitter1.Color:= clnavy;
     end;
-//    CheckAutoSearchUpdate.checked := Sett.AutoSearchUpdate;
     MenuItemAutoRefresh.Checked := Sett.Autorefresh;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
 //    {$endif}
     ListBoxNotebooks.Hint := rsNotebookOptionRight;
+    if (ListViewNotes.Column[0].SortIndicator = siNone) then begin
+        BounceSortIndicator(1);
+    end;
+
     {$ifdef DARWIN}
     ButtonMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
@@ -1450,43 +1464,48 @@ end;
 
 procedure TSearchForm.ListViewNotesColumnClick(Sender: TObject; Column: TListColumn);
 begin
-    // called before change so shows what it was, not what it will be
-
-(*    case ListViewNotes.Column[0].SortIndicator of
-        siNone : debugln('Col 0 none');
-        siAscending : debugln('Col 0 Ascending');
-        siDescending : debugln('Col 0 Decending');
-    end;   *)
-
-    if  Column.SortIndicator = siNone then      // siNone makes no sense here, force Decending
-        Column.SortIndicator := siDescending;
-
-
-(*    case Column.SortIndicator of
-        siNone :       debugln('             Column is siNone');
-        siDescending : debugln('             Column is siDescending');
-        siAscending :  debugln('             Column is siAscending');
-    end;    *)
+    (* case Column.SortIndicator of
+        siNone :       debugln('             Column is siNone - ' + Column.Caption);
+        siDescending : debugln('             Column is siDescending - ' + Column.Caption);
+        siAscending :  debugln('             Column is siAscending - ' + Column.Caption);
+    end;  *)
 
     if Column.Caption = rsName then
         case Column.SortIndicator of
-            siNone, siDescending : LVSortMode := smAATitleUp;          // Ascending pointing down, AA at top
-            siAscending : LVSortMode := smAATitleDown;                 // Descending pointing up, ZZ at top
+            siNone, siDescending : begin
+                                LVSortMode :=  smAATitleUp;              // Ascending pointing down, AA at top
+                                Column.SortIndicator := siAscending;
+                           end;
+            siAscending :  begin
+                                LVSortMode := smAATitleDown;            // Descending pointing up, ZZ at top
+                                Column.SortIndicator := siDescending;
+                           end;
         end
     else
         case Column.SortIndicator of
-            siDescending : LVSortMode := smRecentUp;                   // Ascending pointing down, Recent at top
-            siNone, siAscending : LVSortMode := smRecentDown;          // Decending pointing up, Oldest at top
+            siDescending : begin                                        // The None case is dealt with in create and show
+                                LVSortMode := smRecentUp;               // Ascending pointing down, Recent at top
+                                Column.SortIndicator := siAscending;
+                            end;
+            siAscending   : begin
+                                LVSortMode := smRecentDown;             // Decending pointing up, Oldest at top
+                                Column.SortIndicator := siDescending;
+                            end;
         end;
+    ListViewNotes.Items.Count := 0;
     ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();
+    BounceSortIndicator(column.Index);                                  // To refresh the sortIndicator
+end;
 
-(*    case  LVSortMode of
-        smRecentUp    : debugln('ListViewNotesColumnClick() smRecentUp Ascending pointing down, Date Recent at top');
-        smRecentDown  : debugln('ListViewNotesColumnClick() smRecentDown Decending pointing up, Date Oldest at top');
-        smAATitleUp   : debugln('ListViewNotesColumnClick() smAATitleUp Ascending pointing down, Title AA at top');
-        smAATitleDown : debugln('ListViewNotesColumnClick() smAATitleDown Descending pointing up, Title ZZ at top');
-    end;       *)
-
+procedure TSearchForm.BounceSortIndicator(Col : integer);
+begin
+    if ListViewNotes.Column[Col].SortIndicator = siDescending then begin
+        ListViewNotes.Column[col].SortIndicator := siAscending;
+        ListViewNotes.Column[col].SortIndicator := siDescending;
+    end else begin
+        ListViewNotes.Column[col].SortIndicator := siDescending;
+        ListViewNotes.Column[col].SortIndicator := siAscending;
+    end;
 end;
 
 procedure TSearchForm.ListViewNotesData(Sender: TObject; Item: TListItem);
