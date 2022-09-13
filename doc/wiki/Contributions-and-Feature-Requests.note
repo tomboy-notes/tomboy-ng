@@ -4,6 +4,7 @@
   
 <text xml:space="preserve"><note-content version="0.1"><underline>Contributions and Feature Requests</underline>
 
+
 <size:large><bold>Pull Requests</bold></size:large>
 If you would like to make a direct contribution to tomboy-ng via a pull request, its likely to be well received. But please note the following -
 
@@ -26,7 +27,7 @@ If you sync your notes to some site outside your control, or even just have nose
 Done in version 0.34 of tomboy-ng.
 
 <size:large><bold>Import / Export</bold></size:large>
-Do you have a need to import into tomboy-ng or export from tomboy-ng in a particular format ?  I cannot undertake to implement every format out there and most certainly not completely but some are quite possible.  There is a experimental TomboyTools that imports and exports text and Mark Down.
+Do you have a need to import into tomboy-ng or export from tomboy-ng in a particular format ?  I cannot undertake to implement every format out there and most certainly not completely but some are quite possible.  There is a experimental TomboyTools that imports and exports text and Mark Down. And will make man pages as long as you start your note with the appropriate template, easy !
 
 <size:large><bold>Embedded Images</bold></size:large>
 Do you want to have pretty pictures in your notes, if so, what format would you want ?
@@ -34,15 +35,18 @@ Do you want to have pretty pictures in your notes, if so, what format would you 
 <size:large><bold>Net Sync</bold></size:large>
 By netsync, I mean to dedicated servers like Snowy, Rainy or, more practicable today, a grauphel/NextCloud/Apache stack.  A not inconsiderable effort to install such a stack but do you really need it ?   ( Be aware that tomboy-ng will now, very easily, sync to any remote server you can ssh to. )
 
-And perhaps v0.34's ability to display (and edit) your notes online on any device with a browser solves this problem ?
+And perhaps v0.34's ability to sync and then display (and edit) your notes online, via Github, on any device with a browser solves this problem ?
+
+<size:large><bold>Database</bold></size:large>
+Move notes into database (ie sqlite for small users, something bigger for BIG users). tomboy-ng now does multithreaded indexing of notes, my tests indicate that there is little to be gained.
 
 <size:large><bold>Spell Check while you type</bold></size:large>
 You know, badly spelt words are somehow highlighted as you type.  I know I have some very fast typists out there, I am not sure I can keep up with them.
 
 
 </note-content></text>
-  <last-change-date>2021-11-16T22:37:45.0252293+11:00</last-change-date>
-  <last-metadata-change-date>2021-11-16T22:37:45.0252293+11:00</last-metadata-change-date>
+  <last-change-date>2022-09-10T17:27:09.6606180+10:00</last-change-date>
+  <last-metadata-change-date>2022-09-10T17:27:09.6606180+10:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
