@@ -25,14 +25,14 @@ uses
     Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile, Index,
     autostart, hunspell, sync, syncutils, transandroid, ResourceStr, colours,
     cli, RollBack, commonmark, transfileand, notenormal, transgithub,
-    import_notes, JsonTools, NoteIndex;
+    import_notes, JsonTools;
 
 {$R *.res}
 
 
 begin
-  Application.Scaled:=True;
-  Application.Title:='tomboy-ng';
+    Application.Scaled := True;
+    Application.Title := 'tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
 

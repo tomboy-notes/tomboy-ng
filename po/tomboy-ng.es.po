@@ -19,17 +19,9 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "No encontró ninguna expresión para calcular"
 
-#: mainunit.rsabout1
-msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
-msgstr "Esto es tomboy-ng, la refundición de Notas Tomboy usando Lazarus"
-
-#: mainunit.rsabout2
-msgid "and FPC. While its ready for production"
-msgstr "y FPC. A pesar de estar listo para emplear en producción,"
-
-#: mainunit.rsabout3
-msgid "use, you still need to be careful and have good backups."
-msgstr "hay que tener cuidado y hacer buenas copias de seguridad."
+#: mainunit.rsabout
+msgid "tomboy-ng notes - cross platform, sync and manage notes."
+msgstr ""
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
@@ -1534,7 +1526,10 @@ msgid "OK, talking to device. Wait for it ...."
 msgstr "OK, comunicando con el dispositivo. Espere ..."
 
 #: tsearchform.buttonclearfilters.caption
-msgid "Clear Filters"
+#, fuzzy
+#| msgid "Clear Filters"
+msgctxt "tsearchform.buttonclearfilters.caption"
+msgid "Clear"
 msgstr "Quitar filtros"
 
 #: tsearchform.buttonmenu.caption
@@ -1546,29 +1541,13 @@ msgstr "Menú"
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: tsearchform.buttonrefresh.hint
-msgid "Update Search Results"
-msgstr "Actualizar resultados"
-
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
 msgstr "Búsqueda de tombo-ng"
 
-#: tsearchform.checkautosearchupdate.caption
-msgid "Update as you type"
-msgstr ""
-
-#: tsearchform.checkcasesensitive.caption
-msgid "Case Sensitive"
-msgstr "Sensible a mayúsculas"
-
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
 msgstr "Clic derecho para gestionar cuadernos"
-
-#: tsearchform.listviewnotes.hint
-msgid "Enable in settings"
-msgstr ""
 
 #: tsearchform.menucreatenotebook.caption
 msgid "Create new Note Book"
@@ -1586,9 +1565,18 @@ msgstr "Editar plantilla del cuaderno"
 msgid "MenuItemAutoRefresh"
 msgstr ""
 
+#: tsearchform.menuitemcasesensitive.caption
+msgctxt "tsearchform.menuitemcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
 msgstr "Gestionar las notas en el cuaderno"
+
+#: tsearchform.menuitemswyt.caption
+msgid "Search While You Type"
+msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
@@ -1602,6 +1590,19 @@ msgstr "Renombrar cuaderno"
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Cuadernos"
+
+#: tsearchform.speedbuttonclearsearch.caption
+msgctxt "tsearchform.speedbuttonclearsearch.caption"
+msgid "Clear"
+msgstr ""
+
+#: tsearchform.speedsearchotions.caption
+msgid "Options"
+msgstr ""
+
+#: tsearchform.speedsearchotions.hint
+msgid "Search Options"
+msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
@@ -1660,10 +1661,6 @@ msgstr "Recuperar notas perdidas"
 msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
 
-#: tsett.checkautorefresh.caption
-msgid "Auto Refresh Search Screen"
-msgstr ""
-
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"
 msgstr "Use instantáneas automáticas"
@@ -1679,6 +1676,10 @@ msgstr "Sincronización automática"
 #: tsett.checkboxautosync.hint
 msgid "Sync, if possible once an hour."
 msgstr "Sincronizar cada hora si es posible"
+
+#: tsett.checkescclosesnote.caption
+msgid "Esc Closes Note"
+msgstr ""
 
 #: tsett.checkfindtoggles.caption
 msgid "Find Command Toggles"

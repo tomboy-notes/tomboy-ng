@@ -9,7 +9,7 @@ object FormRecover: TFormRecover
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.0.2'
   object Label1: TLabel
     Left = 8
     Height = 21
@@ -52,9 +52,9 @@ object FormRecover: TFormRecover
     Height = 204
     Top = 44
     Width = 758
-    ActivePage = TabSheetBadNotes
+    ActivePage = TabSheetRecoverSnapshot
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 1
+    TabIndex = 4
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'

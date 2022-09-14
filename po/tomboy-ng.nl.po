@@ -16,19 +16,9 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "Geen te evalueren expressie aangetroffen"
 
-#: mainunit.rsabout1
-msgid "This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus"
-msgstr "Dit is tomboy-ng, een vernieuwde versie van Tomboy Notities, geschreven in Lazarus"
-
-#: mainunit.rsabout2
-#, fuzzy
-#| msgid "and FPC. While its getting close to being ready for production"
-msgid "and FPC. While its ready for production"
-msgstr "en FPC. Hoewel tomboy-ng bijka klaar is voor gebruik,"
-
-#: mainunit.rsabout3
-msgid "use, you still need to be careful and have good backups."
-msgstr "moet je nog steeds voorzichtig zijn en beschikken over back-ups."
+#: mainunit.rsabout
+msgid "tomboy-ng notes - cross platform, sync and manage notes."
+msgstr ""
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
@@ -1581,7 +1571,8 @@ msgid "OK, talking to device. Wait for it ...."
 msgstr "Bezig met verbinding maken met apparaat..."
 
 #: tsearchform.buttonclearfilters.caption
-msgid "Clear Filters"
+msgctxt "tsearchform.buttonclearfilters.caption"
+msgid "Clear"
 msgstr ""
 
 #: tsearchform.buttonmenu.caption
@@ -1593,28 +1584,12 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: tsearchform.buttonrefresh.hint
-msgid "Update Search Results"
-msgstr ""
-
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
 msgstr ""
 
-#: tsearchform.checkautosearchupdate.caption
-msgid "Update as you type"
-msgstr ""
-
-#: tsearchform.checkcasesensitive.caption
-msgid "Case Sensitive"
-msgstr ""
-
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
-msgstr ""
-
-#: tsearchform.listviewnotes.hint
-msgid "Enable in settings"
 msgstr ""
 
 #: tsearchform.menucreatenotebook.caption
@@ -1633,8 +1608,17 @@ msgstr ""
 msgid "MenuItemAutoRefresh"
 msgstr ""
 
+#: tsearchform.menuitemcasesensitive.caption
+msgctxt "tsearchform.menuitemcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr ""
+
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
+msgstr ""
+
+#: tsearchform.menuitemswyt.caption
+msgid "Search While You Type"
 msgstr ""
 
 #: tsearchform.menunewnotefromtemplate.caption
@@ -1648,6 +1632,19 @@ msgstr ""
 #: tsearchform.panel2.caption
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
+msgstr ""
+
+#: tsearchform.speedbuttonclearsearch.caption
+msgctxt "tsearchform.speedbuttonclearsearch.caption"
+msgid "Clear"
+msgstr ""
+
+#: tsearchform.speedsearchotions.caption
+msgid "Options"
+msgstr ""
+
+#: tsearchform.speedsearchotions.hint
+msgid "Search Options"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption
@@ -1707,10 +1704,6 @@ msgstr ""
 msgid "If you have previously taken a snapshot ..."
 msgstr ""
 
-#: tsett.checkautorefresh.caption
-msgid "Auto Refresh Search Screen"
-msgstr ""
-
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"
 msgstr ""
@@ -1725,6 +1718,10 @@ msgstr ""
 
 #: tsett.checkboxautosync.hint
 msgid "Sync, if possible once an hour."
+msgstr ""
+
+#: tsett.checkescclosesnote.caption
+msgid "Esc Closes Note"
 msgstr ""
 
 #: tsett.checkfindtoggles.caption

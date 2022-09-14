@@ -168,10 +168,10 @@ begin
     TabChangeName.TabVisible := False;
     Label1.Caption := Title;
     Label3.Caption := rsSetTheNotebooks;
-    TheNoteLister.GetNotebooks(NBArray, '');
+    TheMainNoteLister.GetNotebooks(NBArray, '');
     for i := 0 to High(NBArray) do
         CheckListBox1.Items.Add(NBArray[i]);
-    TheNoteLister.GetNotebooks(NBArray, ExtractFileNameOnly(FullFileName) + '.note');
+    TheMainNoteLister.GetNotebooks(NBArray, ExtractFileNameOnly(FullFileName) + '.note');
     for I := 0 to CheckListBox1.Count-1 do
         CheckListBox1.Checked[I] := False;
     for Index := 0 to High(NBArray) do
@@ -192,7 +192,7 @@ begin
     TabExisting.TabVisible := False;
     Label3.Caption := rsChangeNameofNotebook;
     Label7.Caption := Title;
-    if not TheNoteLister.GetNotesInNoteBook(NBIDList, Title) then
+    if not TheMainNoteLister.GetNotesInNoteBook(NBIDList, Title) then
         debugln('ERROR - Notebook.pas #152 No member notes found');
     Label1.Caption := format(rsNumbNotesAffected, [NBIDList.Count]);
     EditNewNotebookName.SetFocus;
@@ -210,13 +210,13 @@ begin
     TabChangeName.TabVisible := False;
     Label1.Caption := NBName;
     Label3.Caption := rsAddNotesToNotebook;
-    TheNoteLister.LoadStrings(CheckListAddNotes.Items);
+    TheMainNoteLister.LoadStrings(CheckListAddNotes.Items);
 
-    TheNoteLister.GetNotesInNoteBook(STL, NBName);               // Might set STL to nil
+    TheMainNoteLister.GetNotesInNoteBook(STL, NBName);               // Might set STL to nil
     if (STL <> Nil) and (STL.Count > 0) then begin
         for Index := 0 to CheckListAddNotes.Count -1 do begin
             for i := 0 to STL.Count-1 do begin
-                if CheckListAddNotes.Items[Index] = TheNoteLister.GetTitle(STL[i]) then begin
+                if CheckListAddNotes.Items[Index] = TheMainNoteLister.GetTitle(STL[i]) then begin
                     CheckListAddNotes.Checked[Index] := True;
                     continue;
                 end;
@@ -324,7 +324,7 @@ begin
                                                 end;
                         '<y>' :     begin
                                         writeln(OutFile, InString);
-                                        write(OutFile, TheNoteLister.NoteBookTags(Filename));
+                                        write(OutFile, TheMainNoteLister.NoteBookTags(Filename));
                                         NextSeekString := '<tags>';
                                     end;
                         '<tags>' :  begin
@@ -454,14 +454,14 @@ var
     OpenForm : TForm; //TEditBoxForm;
 begin
     result := true;
-    TemplateID := Thenotelister.NotebookTemplateID(Title);
+    TemplateID := TheMainNoteLister.NotebookTemplateID(Title);
     if TemplateID = '' then begin
         showmessage('Failed to ID Template [' + Title + '] (' + NewName + ')');
         exit(false);
     end;
-    TheNoteLister.AlterNotebook(Title, NewName);
+    TheMainNoteLister.AlterNotebook(Title, NewName);
     for IDstr in NBIDList do begin
-        if TheNoteLister.IsThisNoteOpen(IDStr, OpenForm) then
+        if TheMainNoteLister.IsThisNoteOpen(IDStr, OpenForm) then
             TEditBoxForm(OpenForm).Dirty:= true
         else RewriteWithNewNotebookName(IDstr);
     end;
@@ -528,14 +528,14 @@ var
     FName : string;
     Dummy : TForm;
 begin
-    TheNoteLister.GetNotesInNoteBook(STL, NBName);               // Might set STL to nil
+    TheMainNoteLister.GetNotesInNoteBook(STL, NBName);               // Might set STL to nil
     for Index := 0 to CheckListAddNotes.Count -1 do begin        // A list of note Titles
         // So, of the IDs in STL, does one of them have a title to match the one in CheckListAddNotes[Index] ?
         InNoteList := False;
         i := 0;
         while i <  STL.count do begin
         //for i := 0 to STL.count - 1 do
-            if TheNoteLister.GetTitle(STL[i]) = CheckListAddNotes.Items[Index] then begin
+            if TheMainNoteLister.GetTitle(STL[i]) = CheckListAddNotes.Items[Index] then begin
                 InNoteList := True;
                 break;
             end;
@@ -551,8 +551,8 @@ begin
             RemoveNoteBookTag(Sett.NoteDirectory+FName, NBName);
         end;
         if (not InNoteList) and InCheckList then begin                          // add tag to note and notelister
-            TheNoteLister.AddNoteBook(FName, NBName, false);                    // Update internal data view
-            if not TheNoteLister.IsThisNoteOpen(FName, Dummy) then              // update on disk files
+            TheMainNoteLister.AddNoteBook(FName, NBName, false);                    // Update internal data view
+            if not TheMainNoteLister.IsThisNoteOpen(FName, Dummy) then              // update on disk files
                 InsertNoteBookTag(Sett.NoteDirectory+FName, NBName);
         end;
     end;
@@ -562,7 +562,7 @@ end;
 function TNoteBookPick.MakeNewNoteBook : boolean;
 begin
     Result := True;
-    if TheNoteLister.IsANotebookTitle(EditNewNotebook.Text) then begin
+    if TheMainNoteLister.IsANotebookTitle(EditNewNotebook.Text) then begin
         showmessage('That notebook already exists.');
         exit(false);
     end;
@@ -575,7 +575,7 @@ begin
     if TheMode = nbMakeNewNoteBook then
         SetupForAddNotes()
     else begin
-        TheNoteLister.AddNoteBook(ExtractFileNameOnly(FullFileName) + '.note', EditNewNotebook.Text, False);
+        TheMainNoteLister.AddNoteBook(ExtractFileNameOnly(FullFileName) + '.note', EditNewNotebook.Text, False);
         // that adds the current note to the newly created notebook.
         SearchForm.RefreshNotebooks();
     end;
@@ -591,7 +591,7 @@ begin
     try
         for Index := 0 to CheckListBox1.Count -1 do
         if CheckListBox1.Checked[Index] then SL.Add(CheckListBox1.Items[Index]);
-        TheNoteLister.SetNotebookMembership(ExtractFileNameOnly(FullFileName) + '.note', SL);
+        TheMainNoteLister.SetNotebookMembership(ExtractFileNameOnly(FullFileName) + '.note', SL);
     finally
         Sl.Free;
     end;

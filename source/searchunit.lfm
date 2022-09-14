@@ -1,9 +1,9 @@
 object SearchForm: TSearchForm
-  Left = 664
+  Left = 555
   Height = 401
-  Top = 194
+  Top = 493
   Width = 824
-  ActiveControl = Edit1
+  ActiveControl = EditSearch
   Caption = 'tomboy-ng_Search'
   ClientHeight = 401
   ClientWidth = 824
@@ -17,52 +17,27 @@ object SearchForm: TSearchForm
   OnResize = FormResize
   OnShow = FormShow
   LCLVersion = '2.2.0.2'
-  object Edit1: TEdit
+  object EditSearch: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = CheckAutoSearchUpdate
-    AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 106
+    Left = 126
     Height = 32
     Top = 3
     Width = 222
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
-    BorderSpacing.Right = 9
-    OnChange = Edit1Change
-    OnEnter = Edit1Enter
-    OnExit = Edit1Exit
+    OnChange = EditSearchChange
+    OnEnter = EditSearchEnter
+    OnExit = EditSearchExit
     OnKeyDown = FormKeyDown
-    OnKeyUp = Edit1KeyUp
+    OnKeyUp = EditSearchKeyUp
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
   end
-  object ButtonRefresh: TButton
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 704
-    Height = 32
-    Hint = 'Update Search Results'
-    Top = 3
-    Width = 117
-    Anchors = [akTop, akRight]
-    BorderSpacing.Top = 3
-    BorderSpacing.Right = 3
-    Caption = 'Refresh'
-    OnClick = ButtonRefreshClick
-    OnKeyDown = FormKeyDown
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 1
-    TabStop = False
-  end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ButtonRefresh
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -76,7 +51,7 @@ object SearchForm: TSearchForm
     Caption = 'Panel1'
     ClientHeight = 342
     ClientWidth = 824
-    TabOrder = 2
+    TabOrder = 1
     object Splitter1: TSplitter
       AnchorSideTop.Control = Panel1
       AnchorSideBottom.Control = Panel1
@@ -97,7 +72,7 @@ object SearchForm: TSearchForm
       Top = 1
       Width = 232
       Anchors = [akTop, akLeft, akRight]
-      Caption = 'Clear Filters'
+      Caption = 'Clear'
       Enabled = False
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
@@ -152,7 +127,6 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Side = asrBottom
       Left = 241
       Height = 340
-      Hint = 'Enable in settings'
       Top = 1
       Width = 582
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -164,17 +138,21 @@ object SearchForm: TSearchForm
         end      
         item
           Width = 530
+        end      
+        item
+          Width = 1
         end>
       HideSelection = False
       ParentShowHint = False
       ReadOnly = True
       RowSelect = True
-      ScrollBars = ssAutoVertical
-      ShowHint = True
+      ScrollBars = ssVertical
       SortColumn = 1
       SortType = stText
       TabOrder = 4
       ViewStyle = vsReport
+      OnColumnClick = ListViewNotesColumnClick
+      OnData = ListViewNotesData
       OnDblClick = ListViewNotesDblClick
       OnDrawItem = ListViewNotesDrawItem
       OnKeyDown = FormKeyDown
@@ -183,14 +161,16 @@ object SearchForm: TSearchForm
   end
   object ButtonMenu: TSpeedButton
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Edit1
-    AnchorSideBottom.Control = Edit1
+    AnchorSideTop.Control = EditSearch
+    AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
-    Left = 0
+    Left = 3
     Height = 32
     Top = 3
-    Width = 104
+    Width = 120
     Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 3
+    BorderSpacing.Right = 3
     Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
@@ -270,24 +250,6 @@ object SearchForm: TSearchForm
     }
     OnClick = ButtonMenuClick
   end
-  object CheckCaseSensitive: TCheckBox
-    AnchorSideTop.Control = ButtonRefresh
-    AnchorSideRight.Control = SpeedAutoRefresh
-    AnchorSideBottom.Control = ButtonRefresh
-    AnchorSideBottom.Side = asrBottom
-    Left = 523
-    Height = 32
-    Top = 3
-    Width = 135
-    Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 30
-    Caption = 'Case Sensitive'
-    OnChange = CheckCaseSensitiveChange
-    OnKeyDown = FormKeyDown
-    ParentShowHint = False
-    TabOrder = 3
-    TabStop = False
-  end
   object StatusBar1: TStatusBar
     Left = 0
     Height = 23
@@ -295,40 +257,51 @@ object SearchForm: TSearchForm
     Width = 824
     Panels = <>
   end
-  object CheckAutoSearchUpdate: TCheckBox
-    AnchorSideTop.Control = ButtonRefresh
-    AnchorSideTop.Side = asrCenter
-    AnchorSideRight.Control = CheckCaseSensitive
-    Left = 337
-    Height = 23
-    Top = 8
-    Width = 175
-    Anchors = [akTop, akRight]
-    BorderSpacing.Right = 11
-    Caption = 'Update as you type'
-    OnChange = CheckAutoSearchUpdateChange
-    TabOrder = 5
-  end
-  object SpeedAutoRefresh: TSpeedButton
-    AnchorSideTop.Control = ButtonRefresh
+  object SpeedSearchOtions: TSpeedButton
+    AnchorSideTop.Control = EditSearch
     AnchorSideRight.Control = ButtonRefresh
-    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
-    Left = 688
+    Left = 581
     Height = 32
+    Hint = 'Search Options'
     Top = 3
-    Width = 16
+    Width = 120
     Anchors = [akTop, akRight, akBottom]
-    Glyph.Data = {
-      72000000424D7200000000000000360000002800000005000000030000000100
-      2000000000003C00000064000000640000000000000000000000000000000000
-      0000000000FF000000000000000000000000000000FF000000FF000000FF0000
-      0000000000FF000000FF000000FF000000FF000000FF
-    }
-    OnClick = SpeedAutoRefreshClick
+    Caption = 'Options'
+    OnClick = SpeedSearchOtionsClick
     ShowHint = True
     ParentShowHint = False
-    PopupMenu = PopupMenuRefresh
+    PopupMenu = PopupMenuSearchOptions
+  end
+  object SpeedButtonClearSearch: TSpeedButton
+    AnchorSideLeft.Control = EditSearch
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = EditSearch
+    AnchorSideBottom.Control = EditSearch
+    AnchorSideBottom.Side = asrBottom
+    Left = 348
+    Height = 32
+    Top = 3
+    Width = 120
+    Anchors = [akTop, akLeft, akBottom]
+    Caption = 'Clear'
+    OnClick = SpeedButtonClearSearchClick
+  end
+  object ButtonRefresh: TSpeedButton
+    AnchorSideTop.Control = EditSearch
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = EditSearch
+    AnchorSideBottom.Side = asrBottom
+    Left = 701
+    Height = 32
+    Top = 3
+    Width = 120
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Right = 3
+    Caption = 'Refresh'
+    OnClick = ButtonRefreshClick
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344
@@ -365,13 +338,21 @@ object SearchForm: TSearchForm
       OnClick = MenuCreateNoteBookClick
     end
   end
-  object PopupMenuRefresh: TPopupMenu
+  object PopupMenuSearchOptions: TPopupMenu
     Left = 450
     Top = 206
     object MenuItemAutoRefresh: TMenuItem
       Caption = 'MenuItemAutoRefresh'
       Checked = True
       OnClick = MenuItemAutoRefreshClick
+    end
+    object MenuItemCaseSensitive: TMenuItem
+      Caption = 'Case Sensitive'
+      OnClick = MenuItemCaseSensitiveClick
+    end
+    object MenuItemSWYT: TMenuItem
+      Caption = 'Search While You Type'
+      OnClick = MenuItemSWYTClick
     end
   end
 end
