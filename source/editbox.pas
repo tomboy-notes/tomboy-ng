@@ -228,7 +228,6 @@ unit EditBox;
     2022/08/28  CheckForLinks() no longer calls SearchForm.StartSearch(); eg 2000 notes faster to
                 work directly off TheNoteLister.NoteList[i]^.TitleLow, 11-20mS compared to 19-41mS
     2022/09/08  Esc can (if set) close current note. #271
-
 }
 
 
@@ -2229,7 +2228,6 @@ begin
 
     { We make a stringlist, populate it with all the Titles, then, assuming ShowInternalLink
     we send a lowercase of each entry to MakeAllLinks (excluding this note title).  21mS-41mS with 2000 notes
-
     So, instead, use TheMainNoteLister.NoteList[i] directly in a for loop.
     }
 
@@ -2267,7 +2265,6 @@ begin
             for i := 0 to TheMainNoteLister.NoteList.Count-1 do
                 if TheMainNoteLister.NoteList[i]^.TitleLow <> NoteTitle then
                     MakeAllLinks(PText, TheMainNoteLister.NoteList[i]^.TitleLow, StartScan, EndScan);
-
         end;
 
     finally

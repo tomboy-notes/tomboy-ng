@@ -1,4 +1,7 @@
 unit Note_Lister;
+
+{$define TOMBOY_NG}
+
 {    Copyright (C) 2017-2021 David Bannon
 
     License:
@@ -152,7 +155,7 @@ type
         		{ will have 36 char GUI plus '.note' }
 		ID : ANSIString;
         Title : ANSIString;
-        TitleLow : String;
+        TitleLow : string;
         		{ a 33 char date time string }
     	CreateDate : ANSIString;
                 { a 33 char date time string, updateable }
@@ -485,6 +488,7 @@ implementation
 
 uses  laz2_DOM, laz2_XMLRead, LazFileUtils, LazUTF8, LazLogger, tb_utils, syncutils
         {, SearchUnit} {$ifdef TOMBOY_NG}, settings {$endif};         // project options -> Custom Options
+
 
 { Laz* are LCL packages, Projectinspector, double click Required Packages and add LCL }
 
@@ -1034,34 +1038,6 @@ begin
             end;
 end;
 
-
-{ procedure TNoteLister.LoadListNotebooks(const NotebookGrid : TStringGrid; SearchListOnly : boolean);
-var
-    Index : integer;
-
-    function FindInSearchList(NB : PNoteBook) : boolean;
-    var  X : integer = 0;
-    begin
-        result := true;
-        if Nil = SearchNoteList then
-            exit;
-        while X < NB^.Notes.Count do begin
-            if Nil <> SearchNoteList.FindID(NB^.Notes[X]) then
-                exit;
-            inc(X);
-        end;
-        result := false;
-    end;
-
-begin
-    while NotebookGrid.RowCount > 1 do NotebookGrid.DeleteRow(NotebookGrid.RowCount-1);
-    for Index := 0 to NotebookList.Count - 1 do begin
-        if (not SearchListOnly) or FindInSearchList(NotebookList.Items[Index]) then begin
-            NotebookGrid.InsertRowWithValues(NotebookGrid.RowCount, [NotebookList.Items[Index]^.Name]);
-        end;
-	end;
-end;        }
-
 procedure TNoteLister.LoadListNotebooks(const NotebookItems : TStrings; SearchListOnly : boolean);
 var
     Index : integer;
@@ -1253,6 +1229,18 @@ begin
 					end else
                         break;
 				    until false;          }
+
+                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
+                else begin
+                    Node := Doc.DocumentElement.FindNode('text');
+                    if assigned(Node) then begin
+                        {$ifdef TOMBOY_NG}
+                        if Sett.SearchCaseSensitive then                        // Should we have a wrapper ifdef TOMBOY_NG ??
+                            NoteP^.Content := Node.TextContent
+                        else {$endif} NoteP^.Content := lowercase(Node.TextContent);
+                    end
+                    else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
+                end;
 
                 if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
                 else begin
