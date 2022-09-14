@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 147
+  Left = 555
   Height = 401
-  Top = 371
+  Top = 493
   Width = 824
   ActiveControl = EditSearch
   Caption = 'tomboy-ng_Search'
@@ -20,10 +20,8 @@ object SearchForm: TSearchForm
   object EditSearch: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ButtonRefresh
-    AnchorSideBottom.Control = ButtonRefresh
     AnchorSideBottom.Side = asrBottom
-    Left = 106
+    Left = 126
     Height = 32
     Top = 3
     Width = 222
@@ -38,29 +36,8 @@ object SearchForm: TSearchForm
     ShowHint = True
     TabOrder = 0
   end
-  object ButtonRefresh: TButton
-    AnchorSideTop.Control = Owner
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    Left = 701
-    Height = 32
-    Hint = 'Update Search Results'
-    Top = 3
-    Width = 120
-    Anchors = [akTop, akRight]
-    BorderSpacing.Top = 3
-    BorderSpacing.Right = 3
-    Caption = 'Refresh'
-    OnClick = ButtonRefreshClick
-    OnKeyDown = FormKeyDown
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 1
-    TabStop = False
-  end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ButtonRefresh
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -74,7 +51,7 @@ object SearchForm: TSearchForm
     Caption = 'Panel1'
     ClientHeight = 342
     ClientWidth = 824
-    TabOrder = 2
+    TabOrder = 1
     object Splitter1: TSplitter
       AnchorSideTop.Control = Panel1
       AnchorSideBottom.Control = Panel1
@@ -187,11 +164,13 @@ object SearchForm: TSearchForm
     AnchorSideTop.Control = EditSearch
     AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
-    Left = 0
+    Left = 3
     Height = 32
     Top = 3
-    Width = 104
+    Width = 120
     Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 3
+    BorderSpacing.Right = 3
     Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
@@ -279,9 +258,9 @@ object SearchForm: TSearchForm
     Panels = <>
   end
   object SpeedSearchOtions: TSpeedButton
-    AnchorSideTop.Control = ButtonRefresh
+    AnchorSideTop.Control = EditSearch
     AnchorSideRight.Control = ButtonRefresh
-    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
     Left = 581
     Height = 32
@@ -298,17 +277,31 @@ object SearchForm: TSearchForm
   object SpeedButtonClearSearch: TSpeedButton
     AnchorSideLeft.Control = EditSearch
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = ButtonRefresh
-    AnchorSideBottom.Control = ButtonRefresh
+    AnchorSideTop.Control = EditSearch
+    AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
-    Left = 328
+    Left = 348
     Height = 32
     Top = 3
-    Width = 46
+    Width = 120
     Anchors = [akTop, akLeft, akBottom]
-    AutoSize = True
     Caption = 'Clear'
     OnClick = SpeedButtonClearSearchClick
+  end
+  object ButtonRefresh: TSpeedButton
+    AnchorSideTop.Control = EditSearch
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = EditSearch
+    AnchorSideBottom.Side = asrBottom
+    Left = 701
+    Height = 32
+    Top = 3
+    Width = 120
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Right = 3
+    Caption = 'Refresh'
+    OnClick = ButtonRefreshClick
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344

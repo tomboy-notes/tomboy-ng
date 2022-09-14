@@ -1561,10 +1561,6 @@ msgstr "Menu"
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: tsearchform.buttonrefresh.hint
-msgid "Update Search Results"
-msgstr "Mettre à jour la recherche"
-
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
 msgstr "Recherche tomboy-ng"

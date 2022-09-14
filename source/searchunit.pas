@@ -138,7 +138,6 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 type        { TSearchForm }
     TSearchForm = class(TForm)
 	    ButtonClearFilters: TButton;
-		ButtonRefresh: TButton;
         EditSearch: TEdit;
         ListBoxNotebooks: TListBox;
         ListViewNotes: TListView;
@@ -157,6 +156,7 @@ type        { TSearchForm }
         PopupMenuSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
+        ButtonRefresh: TSpeedButton;
         SpeedButtonClearSearch: TSpeedButton;
         SpeedSearchOtions: TSpeedButton;
 		Splitter1: TSplitter;
@@ -167,7 +167,8 @@ type        { TSearchForm }
                                       an active notebook filter applied, reapply it. Failing
                                       both of the above, refreshes the Notes and Notebooks
                                       with data in Note_Lister. }
-  		procedure ButtonRefreshClick(Sender: TObject);
+  		//procedure ButtonRefreshClick(Sender: TObject);
+
 		procedure ButtonClearFiltersClick(Sender: TObject);
         procedure EditSearchChange(Sender: TObject);
         procedure EditSearchEnter(Sender: TObject);
@@ -209,6 +210,7 @@ type        { TSearchForm }
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
+        procedure ButtonRefreshClick(Sender: TObject);
         procedure SpeedButtonClearSearchClick(Sender: TObject);
         procedure SpeedSearchOtionsClick(Sender: TObject);
     private
@@ -390,6 +392,16 @@ begin
     end;
 end;
 
+procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
+begin
+   Refresh();
+end;
+
+(*
+procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
+begin
+   Refresh();
+end; *)
 
 procedure TSearchForm.FlushOpenNotes();
 var
@@ -932,10 +944,7 @@ begin
 end;
 
 
-procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
-begin
-    Refresh();
-end;
+
 
 procedure TSearchForm.Refresh();
 // This Method has issues relating to following bug reports -

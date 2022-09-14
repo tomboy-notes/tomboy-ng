@@ -1507,10 +1507,6 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
-#: tsearchform.buttonrefresh.hint
-msgid "Update Search Results"
-msgstr ""
-
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
 msgstr ""
