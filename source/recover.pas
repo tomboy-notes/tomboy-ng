@@ -452,11 +452,11 @@ begin
 
     // LabelNoteErrors.Caption := rsBadNotes_1 + ' ' + inttostr(SearchForm.NoteLister.ErrorNotes.Count) + ' ' + rsBadNotes_2;
 
-    LabelNoteErrors.Caption := format(rsBadNotes, [SearchForm.NoteLister.ErrorNotes.Count]);
+    LabelNoteErrors.Caption := format(rsBadNotes, [TheMainNoteLister.ErrorNotes.Count]);
 
     LabelExistingAdvice2.Caption := '';
     LabelExistingAdvice.Caption := '';
-    if SearchForm.NoteLister.ErrorNotes.Count <> 0  then
+    if TheMainNoteLister.ErrorNotes.Count <> 0  then
       begin
         LabelExistingAdvice.Caption := rsTryRecover_1;
         LabelExistingAdvice2.Caption := rsTryrecover_2;
@@ -465,15 +465,15 @@ begin
     StringGridNotes.FixedRows := 0;
     StringGridNotes.InsertRowWithValues(0, ['ID', 'ErrorMessage']);
     StringGridNotes.FixedRows := 1;
-    for I := 0 to SearchForm.NoteLister.ErrorNotes.Count -1 do begin
-        Msg := SearchForm.NoteLister.ErrorNotes.Strings[I];
+    for I := 0 to TheMainNoteLister.ErrorNotes.Count -1 do begin
+        Msg := TheMainNoteLister.ErrorNotes.Strings[I];
         Comma := pos(',', Msg);
         StringGridNotes.InsertRowWithValues(I + 1, [copy(Msg, 1, Comma-1), copy(Msg, Comma+1, 200)]);
         //   copy(Msg, 1, Comma-1) = simple file name
         //   copy(Msg, Comma+1, 200) = error messages, may be quite long.
     end;
     StringGridNotes.AutoSizeColumns;
-    if {I} SearchForm.NoteLister.ErrorNotes.Count > 0 then ButtonDeleteBadNotes.Enabled:= True;
+    if {I} TheMainNoteLister.ErrorNotes.Count > 0 then ButtonDeleteBadNotes.Enabled:= True;
 end;
 
 procedure TFormRecover.TabSheetIntroShow(Sender: TObject);

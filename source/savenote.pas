@@ -157,6 +157,7 @@ uses FileUtil               // Graphics needed for font style defines
     ,SearchUnit				// So we have access to NoteBookList
     ,LazFileUtils           // For ExtractFileName...
     ,tb_utils
+    , Note_Lister
     {$ifdef WINDOWS},SyncUtils{$endif} ;          // For SafeWindowsDelete
 
 const
@@ -526,7 +527,7 @@ begin
    CreateGUID(GUID);
    //Title := NotebookName  + ' Template';
    Loc.FFName := copy(GUIDToString(GUID), 2, 36) + '.note';
-   SearchForm.NoteLister.AddNoteBook(Loc.FFname, NotebookName, True);
+   TheMainNoteLister.AddNoteBook(Loc.FFname, NotebookName, True);
    Ostream :=TFilestream.Create(Sett.NoteDirectory + Loc.FFName, fmCreate);
    Loc.Y := '20'; Loc.X := '20'; Loc.Height := '200'; Loc.Width:='300';
    Loc.OOS := 'False'; Loc.CPos:='1';
@@ -777,9 +778,9 @@ begin
         + Loc.X + '</x>'#10'  <y>' + Loc.Y + '</y>'#10;
   S6 := '  <open-on-startup>' + Loc.OOS + '</open-on-startup>'#10'</note>';
   if Loc.CreateDate = '' then Loc.CreateDate := Loc.LastChangeDate;
-  if SearchForm.NoteLister <> Nil then
+  if TheMainNoteLister <> Nil then
         Result := S1 + Loc.LastChangeDate + S2 + Loc.LastChangeDate + S3 + Loc.CreateDate + S4 + S5
-            + SearchForm.NoteLister.NoteBookTags(ExtractFileName(Loc.FFName)) + S6
+            + TheMainNoteLister.NoteBookTags(ExtractFileName(Loc.FFName)) + S6
   else
         Result := S1 + Loc.LastChangeDate + S2 + Loc.LastChangeDate + S3 + Loc.CreateDate + S4 + S5 + S6;
   // That will mean no Notebook tags in single note mode, is that an issue ?

@@ -341,11 +341,11 @@ begin
     gtk_clipboard_store(c);
     {$endif}
     Sett.AreClosing:=True;
-    if assigned(SearchForm.NoteLister) then begin
-      AForm := SearchForm.NoteLister.FindFirstOpenNote();
+    if assigned(TheMainNoteLister) then begin
+      AForm := TheMainNoteLister.FindFirstOpenNote();
       while AForm <> Nil do begin
           AForm.close;
-          AForm := SearchForm.NoteLister.FindNextOpenNote();
+          AForm := TheMainNoteLister.FindNextOpenNote();
       end;
     end;
 end;
@@ -555,7 +555,7 @@ begin
     end;
     {$endif}
 
-    if SearchForm.NoteLister.XMLError then begin
+    if TheMainNoteLister.XMLError then begin
         LabelError.Caption := rsFailedToIndex;
         LabelBadNoteAdvice.Caption:= rsBadNotesFound1;
         ImageAboutLaz.Visible := False;
@@ -574,10 +574,10 @@ begin
     CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
     if Sett.CheckShowSearchAtStart.Checked then
         SearchForm.Show;
-    if SearchForm.NoteLister.FindFirstOOSNote(NoteTitle, NoteID) then
+    if TheMainNoteLister.FindFirstOOSNote(NoteTitle, NoteID) then
         repeat
             SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
-        until SearchForm.NoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
+        until TheMainNoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
 
 

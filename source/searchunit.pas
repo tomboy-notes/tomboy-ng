@@ -256,7 +256,7 @@ type        { TSearchForm }
         PopupTBMainMenu : TPopupMenu;
         SelectedNotebook : integer;         // Position in Notebook grid use has clicked, 0 means none.
         //AllowClose : boolean;
-        NoteLister : TNoteLister;
+//        NoteLister : TNoteLister;
         NoteDirectory : string;
                             { Tells all open notes to save their contents. Used,
                             eg before we run a sync to ensure recently changed content
@@ -298,7 +298,8 @@ type        { TSearchForm }
         { Returns True if it put next Note Title into SearchTerm }
         function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
-        procedure StartSearch();
+//        procedure StartSearch();
+
         { Deletes the actual file then removes the indicated note from the internal data
           about notes, updates local manifest, refreshes Grid, may get note or template }
         procedure DeleteNote(const FullFileName : ANSIString);
@@ -346,22 +347,22 @@ procedure TSearchForm.ProcessSyncUpdates(const DeletedList, DownList : TStringLi
 var
     Index : integer;
 begin
-    if NoteLister <> nil then begin
+    if TheMainNoteLister <> nil then begin
         for Index := 0 to DeletedList.Count -1 do begin                         // Deleted notes
-            if NoteLister.IsATemplate(DeletedList.Strings[Index]) then
-                NoteLister.DeleteNoteBookwithID(DeletedList.Strings[Index])
+            if TheMainNoteLister.IsATemplate(DeletedList.Strings[Index]) then
+                TheMainNoteLister.DeleteNoteBookwithID(DeletedList.Strings[Index])
             else begin
                 MarkNoteReadOnly(DeletedList.Strings[Index]);
-                NoteLister.DeleteNote(DeletedList.Strings[Index]);           // dont call this, wont do Indexes
+                TheMainNoteLister.DeleteNote(DeletedList.Strings[Index]);           // dont call this, wont do Indexes
             end;
         end;
         for Index := 0 to DownList.Count -1 do begin                            // Downloaded notes
             MarkNoteReadOnly(DownList.Strings[Index]);
-            if NoteLister.IsIDPresent(DownList.Strings[Index]) then begin
-                NoteLister.DeleteNote(DownList.Strings[Index]);
+            if TheMainNoteLister.IsIDPresent(DownList.Strings[Index]) then begin
+                TheMainNoteLister.DeleteNote(DownList.Strings[Index]);
                 //debugln('We have tried to delete ' + DownList.Strings[Index]);
             end;
-            NoteLister.IndexThisNote(DownList.Strings[Index]);
+            TheMainNoteLister.IndexThisNote(DownList.Strings[Index]);
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
         if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
@@ -407,12 +408,12 @@ procedure TSearchForm.FlushOpenNotes();
 var
     AForm : TForm;
 begin
-    if assigned(NoteLister) then begin
-      AForm := NoteLister.FindFirstOpenNote();
+    if assigned(TheMainNoteLister) then begin
+      AForm := TheMainNoteLister.FindFirstOpenNote();
       while AForm <> Nil do begin
           if TEditBoxForm(AForm).dirty then
               TEditBoxForm(AForm).SaveTheNote();
-          AForm := SearchForm.NoteLister.FindNextOpenNote();
+          AForm := TheMainNoteLister.FindNextOpenNote();
       end;
     end;
 end;
@@ -420,18 +421,19 @@ end;
 
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
-    if NoteLister <> nil then         // else we are quitting the app !
-    	if not NoteLister.ThisNoteIsOpen(ID, nil) then
+    if TheMainNoteLister <> nil then         // else we are quitting the app !
+    	if not TheMainNoteLister.ThisNoteIsOpen(ID, nil) then
             // maybe its a help note ?
             RemoveFromHelpList(ID);
 end;
 
+(*
 procedure TSearchForm.StartSearch(); // Call before using NextNoteTitle() to list Titles.
 begin                                // ToDo : not needed, Editbox now goes direct
-	NoteLister.StartSearch();
+	TheMainNoteLister.StartSearch();
   // TitleIndex := 1;
 end;
-
+*)
 
 { Removes the indicated NoteBook tag from any note that has it }
 procedure TSearchForm.RemoveNBTag(NB : string);
@@ -441,9 +443,9 @@ var
     Dummy : TForm;
 begin
     if NB = '' then exit;
-    if NoteLister.GetNotesInNoteBook(StL, NB) then
+    if TheMainNoteLister.GetNotesInNoteBook(StL, NB) then
         while i < StL.Count do begin
-            if NoteLister.IsThisNoteOpen(STL[i], Dummy) then continue;   // don't bother to do open notes. // ToDo : test this
+            if TheMainNoteLister.IsThisNoteOpen(STL[i], Dummy) then continue;   // don't bother to do open notes. // ToDo : test this
             RemoveNoteBookTag(Sett.NoteDirectory + STL[i], NB);
             inc(i)
         end;
@@ -464,15 +466,15 @@ begin
     if not LocalMan.DeleteFromLocalManifest(copy(ShortFileName, 1, 36)) then
         showmessage('Error marking note delete in local manifest ' + LocalMan.ErrorString);
     LocalMan.Free;
-    if NoteLister.IsATemplate(ShortFileName) then begin
+    if TheMainNoteLister.IsATemplate(ShortFileName) then begin
         // this does not remove notebook tag from any notes that were members of this note.
         // if the note is Open, thats OK, it will be saved correctly on exit.
-        RemoveNBTag(NoteLister.GetNotebookName(ShortFileName));        // remove ref to the notebook from all notes
-        NoteLister.DeleteNoteBookwithID(ShortFileName);
+        RemoveNBTag(TheMainNoteLister.GetNotebookName(ShortFileName));        // remove ref to the notebook from all notes
+        TheMainNoteLister.DeleteNoteBookwithID(ShortFileName);
       	DeleteFileUTF8(FullFileName);
         ButtonClearFiltersClick(self);
     end else begin
-		NoteLister.DeleteNote(ShortFileName);
+		TheMainNoteLister.DeleteNote(ShortFileName);
      	NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ShortFileName + '.note';
     	if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
     		if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
@@ -499,17 +501,17 @@ end;
 
 function TSearchForm.NextNoteTitle(out SearchTerm: string): boolean;    // ToDo : not needed, Editbox now goes direct
 begin
-	Result := NoteLister.NextNoteTitle(SearchTerm);
+	Result := TheMainNoteLister.NextNoteTitle(SearchTerm);
 end;
 
 function TSearchForm.IsThisaTitle(const Term : ANSIString) : boolean;
 begin
-	Result := NoteLister.IsThisATitle(Term);
+	Result := TheMainNoteLister.IsThisATitle(Term);
 end;
 
 procedure TSearchForm.RefreshNotebooks();
 begin
-    NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+    TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
 end;
 
 procedure TSearchForm.UpdateStatusBar(SyncSt: string);
@@ -533,9 +535,9 @@ begin
     maybe rerun the existing search, maybe just update display. In fact, we
     update the display unless note is not shown in ListView.    }
     // T1 := gettickcount64();
-    if NoteLister = Nil then exit;				// we are quitting the app !
+    if TheMainNoteLister = Nil then exit;				// we are quitting the app !
     // We don't do any of this if the its a notebook.
-    if NoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
+    if TheMainNoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
     // if this note is already last in list, we don't need to update menus
 
     i := 0;
@@ -704,14 +706,14 @@ procedure TSearchForm.MenuListBuilder(MList : TList);
 var
     AForm : TForm;
 begin
-    if assigned(NoteLister) then begin
-      AForm := NoteLister.FindFirstOpenNote();
+    if assigned(TheMainNoteLister) then begin
+      AForm := TheMainNoteLister.FindFirstOpenNote();
       while AForm <> Nil do begin
 
           debugln('Added a form menu ' + AForm.Caption);
 
           MList.Add(TEditBoxForm(AForm).PopupMainTBMenu);
-          AForm := SearchForm.NoteLister.FindNextOpenNote();
+          AForm := TheMainNoteLister.FindNextOpenNote();
       end;
     end;
     if assigned(PopupTBMainMenu) then
@@ -863,13 +865,13 @@ begin
 
     exit;
 
-    i := NoteLister.GetNoteCount;
+    i := TheMainNoteLister.GetNoteCount;
     j := i -10;
     if j < 0 then j := 0;
     //T3 := gettickcount64();
     while i > j do begin
         dec(i);
-        AddItemMenu(AMenu, NoteLister.GetTitle(i), mtRecent,  @RecentMenuClicked, mkRecentMenu)
+        AddItemMenu(AMenu, TheMainNoteLister.GetTitle(i), mtRecent,  @RecentMenuClicked, mkRecentMenu)
     end;
     //T4 := gettickcount64();
     //debugln('TSearchForm.MenuRecentItems ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
@@ -954,7 +956,7 @@ var
     NB : string;
     SortInd0, SortInd1 : TSortIndicator;
 begin
-    NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+    TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
     exit;
 
     // ToDo : do not use code below here.
@@ -971,14 +973,14 @@ begin
         if (ListBoxNotebooks.ItemIndex > -1) then begin                        // if a notebook is currently selected.
             NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
             if NB <> '' then begin
-                NoteLister.LoadNotebookViewList(ListViewNotes, NB);
+                TheMainNoteLister.LoadNotebookViewList(ListViewNotes, NB);
             end;
             // ToDo : there is an issue here. If user has a notebook selected when sync happens, and that
             // sync removes a notebook, a 'Refresh' will not make the deleted notebook disappear. It
             // does no go until filters are cleared.
         end else begin
 //            NoteLister.LoadListView(ListViewNotes, False);
-            NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+            TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
             ScaleListView();
         end;
         SelectedNotebook := 0;      // ie off
@@ -1217,13 +1219,13 @@ function TSearchForm.IndexNotes() : integer;
 begin                                            // Gets called from other units ....
     // TS1 := DateTimeToTimeStamp(Now);
     // if not Sett.HaveConfig then exit(0);      // we assume we always have some sort of config now
-    if NoteLister <> Nil then
-       freeandnil(NoteLister);
-    NoteLister := TNoteLister.Create;
-    TheMainNoteLister := NoteLister;                // This is how we make the main Note List accessible.
-    NoteLister.DebugMode := Application.HasOption('debug-index');
-    NoteLister.WorkingDir:=Sett.NoteDirectory;
-    Result := NoteLister.IndexNotes();
+    if TheMainNoteLister <> Nil then
+       freeandnil(TheMainNoteLister);
+    TheMainNoteLister := TNoteLister.Create;
+    //TheMainNoteLister := NoteLister;                // This is how we make the main Note List accessible.
+    TheMainNoteLister.DebugMode := Application.HasOption('debug-index');
+    TheMainNoteLister.WorkingDir:=Sett.NoteDirectory;
+    Result := TheMainNoteLister.IndexNotes();
 //    NoteLister.ClearSearch();                   // This builds the note sorted Indexes in Note_Lister
     UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
     if Sett.AutoRefresh then
@@ -1245,7 +1247,7 @@ begin
       HelpList := Nil;
     //Tick := GetTickCount64();
     Caption := 'tomboy-ng Search';
-    NoteLister := nil;
+    TheMainNoteLister := nil;           // Thats the one in the Note_Lister unit !
     if (SingleNoteFileName <> '') then exit;
 
     { ListView Settings }       // make extra column in Object Inspector
@@ -1272,12 +1274,12 @@ begin
     IndexNotes();                                   // Messy but IndexNotes calls Refresh Menu and thats necessary
 
     //ListViewNotes.BeginUpdate;
-    ListViewNotes.Items.Count := NoteLister.ClearSearch();        // Builds NoteLister's Index files.
+    ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();        // Builds NoteLister's Index files.
 
 
 
     //ListViewNotes.EndUpdate;
-    NoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+    TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
 
 
     EditSearch.Hint:=rsSearchHint;
@@ -1354,7 +1356,7 @@ end;
 
 procedure TSearchForm.FormDestroy(Sender: TObject);
 begin
-    FreeAndNil(NoteLister);
+    FreeAndNil(TheMainNoteLister);
     FreeAndNil(HelpNotes);
     FreeAndNil(HelpList);
 end;
@@ -1363,8 +1365,8 @@ procedure TSearchForm.MarkNoteReadOnly(const FullFileName: string);
 var
     TheForm : TForm;
 begin
-    if NoteLister = nil then exit;
-    if NoteLister.IsThisNoteOpen(FullFileName, TheForm) then begin
+    if TheMainNoteLister = nil then exit;
+    if TheMainNoteLister.IsThisNoteOpen(FullFileName, TheForm) then begin
        // if user opened and then closed, we won't know we cannot access
         try
        	    TEditBoxForm(TheForm).SetReadOnly();
@@ -1420,12 +1422,12 @@ begin
     NoteFileName := FullFileName;
     if (NoteTitle <> '') then begin
         if FullFileName = '' then Begin
-        	if NoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
+        	if TheMainNoteLister.FileNameForTitle(NoteTitle, NoteFileName) then
             	NoteFileName := Sett.NoteDirectory + NoteFileName
             else NoteFileName := '';
 		end else NoteFileName := FullFileName;
         // if we have a Title and a Filename, it might be open aleady
-        if NoteLister.IsThisNoteOpen(NoteFileName, TheForm) then begin          // Note is already open
+        if TheMainNoteLister.IsThisNoteOpen(NoteFileName, TheForm) then begin          // Note is already open
             // if user opened and then closed, we won't know we cannot re-show
             try
             	TheForm.Show;
@@ -1458,7 +1460,7 @@ begin
     if (NoteFileName <> '') and BackUp  then
         BackupNote(NoteFileName, 'opn');
     EBox.Dirty := False;
-    NoteLister.ThisNoteIsOpen(NoteFileName, EBox);
+    TheMainNoteLister.ThisNoteIsOpen(NoteFileName, EBox);
 end;
 
 // ----------------------------- ListView Things -------------------------------
@@ -1714,7 +1716,7 @@ procedure TSearchForm.MenuEditNotebookTemplateClick(Sender: TObject);
 var
     NotebookID : ANSIString;
 begin
-    NotebookID := NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
+    NotebookID := TheMainNoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
     if NotebookID = '' then
     	//showmessage('Error, cannot open template for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row])
         showmessage('Error, cannot open template for ' + ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])
@@ -1844,14 +1846,14 @@ begin
     if IDYES = Application.MessageBox('Delete this Notebook',
     			PChar(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]),
        			MB_ICONQUESTION + MB_YESNO) then
-		DeleteNote(Sett.NoteDirectory + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]));
+		DeleteNote(Sett.NoteDirectory + TheMainNoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]));
 end;
 
 procedure TSearchForm.MenuNewNoteFromTemplateClick(Sender: TObject);
 begin
     OpenNote(
         MakeNoteFromTemplate(Sett.NoteDirectory
-            + NoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])),
+            + TheMainNoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex])),
         '', '');
 end;
 
@@ -1891,7 +1893,7 @@ begin
             CloseFile(OutFile);
             CloseFile(InFile);
         end;
-        NoteLister.IndexThisNote(NewGUID);
+        TheMainNoteLister.IndexThisNote(NewGUID);
         result := GetTitleFromFFN(Sett.NoteDirectory + NewGUID + '.note', false);
         ButtonRefresh.Enabled := true;
     except

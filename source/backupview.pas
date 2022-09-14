@@ -182,7 +182,7 @@ begin
         if IDYES <> Application.MessageBox(pchar(rsOverwriteNote), pchar(rsNoteAlreadyInRepo),
                     MB_ICONQUESTION + MB_YESNO) then
             exit();
-    if SearchForm.NoteLister.IsThisNoteOpen(FileName, AForm) then begin
+    if TheMainNoteLister.IsThisNoteOpen(FileName, AForm) then begin
         showmessage(rsNoteOpen);
         exit();
     end;
@@ -222,7 +222,7 @@ begin
             CloseFile(OutFile);
             CloseFile(InFile);
         end;
-        SearchForm.NoteLister.IndexThisNote(copy(GUIDToString(GUID), 2, 36));       // why GUID, not 'Filename' ?
+        TheMainNoteLister.IndexThisNote(copy(GUIDToString(GUID), 2, 36));       // why GUID, not 'Filename' ?
         // OK, lets deal with the copy of target that we put in backup.
         If ExistsInRepo then
             if not RenameFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP',

@@ -2260,8 +2260,8 @@ begin
     Result := PNote(inherited get(Index));
 end;
 
-initialization
-    TheMainNoteLister := Nil;            // A global that points to the main note list.
+//initialization                           // done in SearchUnit
+//    TheMainNoteLister := Nil;            // A global that points to the main note list.
 
 end.
 

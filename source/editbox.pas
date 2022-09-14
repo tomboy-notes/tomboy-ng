@@ -3250,7 +3250,7 @@ begin
             if mrYes = QuestionDlg('Invalid GUID', 'Give this note a new GUID Filename (recommended) ?', mtConfirmation, [mrYes, mrNo], 0) then begin
                 OldFileName := NoteFileName;
                 NoteFileName := Sett.NoteDirectory + GetAFilename();
-                Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(OldFileName));
+                Loc.LastChangeDate:= TheMainNoteLister.GetLastChangeDate(ExtractFileNameOnly(OldFileName));
                 SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // some timewasting menu rewrite ??
                 Debugln('We have just registered a new name for that note with invalid GUID');
             end;
@@ -3258,7 +3258,7 @@ begin
     if TemplateIs <> '' then begin
         SL := TStringList.Create();
         SL.Add(TemplateIs);
-        SearchForm.NoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
+        TheMainNoteLister.SetNotebookMembership(ExtractFileNameOnly(NoteFileName) + '.note', SL);
         SL.Free;
         TemplateIs := '';
     end;
@@ -3294,7 +3294,7 @@ begin
         Loc.LastChangeDate:= TB_GetLocalTime();
         SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // 6mS - 8mS timewasting menu rewrite ??
     end else
-        Loc.LastChangeDate:= SearchForm.NoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
+        Loc.LastChangeDate := TheMainNoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
 
     //T4 := GetTickCount64();
     if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
