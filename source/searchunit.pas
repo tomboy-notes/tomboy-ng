@@ -146,7 +146,6 @@ type        { TSearchForm }
         MenuCreateNoteBook: TMenuItem;
         MenuItemCaseSensitive: TMenuItem;
         MenuItemSWYT: TMenuItem;
-        MenuItemAutoRefresh: TMenuItem;
         MenuItemManageNBook: TMenuItem;
         MenuItem3: TMenuItem;
         MenuRenameNoteBook: TMenuItem;
@@ -156,7 +155,6 @@ type        { TSearchForm }
         PopupMenuSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
-        ButtonRefresh: TSpeedButton;
         SpeedButtonClearSearch: TSpeedButton;
         SpeedSearchOtions: TSpeedButton;
 		Splitter1: TSplitter;
@@ -198,7 +196,7 @@ type        { TSearchForm }
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuCreateNoteBookClick(Sender: TObject);
-        procedure MenuItemAutoRefreshClick(Sender: TObject);
+//        procedure MenuItemAutoRefreshClick(Sender: TObject);
         procedure MenuItemCaseSensitiveClick(Sender: TObject);
         procedure MenuItemManageNBookClick(Sender: TObject);
         procedure MenuItemSWYTClick(Sender: TObject);
@@ -210,16 +208,18 @@ type        { TSearchForm }
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
-        procedure ButtonRefreshClick(Sender: TObject);
+ //       procedure ButtonRefreshClick(Sender: TObject);
         procedure SpeedButtonClearSearchClick(Sender: TObject);
         procedure SpeedSearchOtionsClick(Sender: TObject);
     private
         SearchTextLength : integer;     // Previous length of EditSearch text, tells us if term is growing or shrinking
         SearchActive : boolean;         // We have searched for something after most recent SearchClear
 
+
 //        NIndex : TNoteIndex;
         HelpList : TStringList;
-        NeedRefresh : boolean;
+        //NumbToRefresh : integer;        // The number of notes to display if a delayed Refresh() is appropriate
+        // NeedRefresh : boolean;          // Indicates a delayed Refresh() could happen
         HelpNotes : TNoteLister;
         LVSortMode : TLVSortMode;       // Sort direction for the ListViewNotes, OnData needs to know.
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
@@ -240,7 +240,10 @@ type        { TSearchForm }
                                 // Builds a list of all the main Menus we have floating around at the moment.
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
-		procedure Refresh();
+                                // Gets called to refresh the ListViewNotes in cases were we may not do it immediatly
+                                // If ImmediateRefresh, we use the previously recorded NumbToRefresh and clear Button
+                                // Else re do a new search or clear depending on existing search parameters.
+		procedure IndexAndRefresh(DisplayOnly: boolean = false);
         function RemoveFromHelpList(const FullHelpNoteFileName: string): boolean;
         procedure RemoveNBTag(NB: string);
         //procedure RefreshNoteAndNotebooks();
@@ -296,7 +299,7 @@ type        { TSearchForm }
         procedure OpenNote(NoteTitle: String; FullFileName: string = '';
         				            TemplateIs: AnsiString = ''; BackUp: boolean = True; InSearch : boolean = false) ;
         { Returns True if it put next Note Title into SearchTerm }
-        function NextNoteTitle(out SearchTerm : string) : boolean;
+        //function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
 //        procedure StartSearch();
 
@@ -344,16 +347,18 @@ uses MainUnit,      // Opening form, manages startup and Menus
 
 procedure TSearchForm.ProcessSyncUpdates(const DeletedList, DownList : TStringList);
 // The lists arrive here with just the 36 char ID, the following functions must be OK with that !
+// Does not get called with both lists empty
 var
     Index : integer;
 begin
     if TheMainNoteLister <> nil then begin
         for Index := 0 to DeletedList.Count -1 do begin                         // Deleted notes
-            if TheMainNoteLister.IsATemplate(DeletedList.Strings[Index]) then
-                TheMainNoteLister.DeleteNoteBookwithID(DeletedList.Strings[Index])
-            else begin
+            if TheMainNoteLister.IsATemplate(DeletedList.Strings[Index]) then begin
+                TheMainNoteLister.DeleteNoteBookwithID(DeletedList.Strings[Index]);
+                RefreshNotebooks();
+            end else begin
                 MarkNoteReadOnly(DeletedList.Strings[Index]);
-                TheMainNoteLister.DeleteNote(DeletedList.Strings[Index]);           // dont call this, wont do Indexes
+                TheMainNoteLister.DeleteNote(DeletedList.Strings[Index]);       // dont call this, wont do Indexes
             end;
         end;
         for Index := 0 to DownList.Count -1 do begin                            // Downloaded notes
@@ -362,18 +367,28 @@ begin
                 TheMainNoteLister.DeleteNote(DownList.Strings[Index]);
                 //debugln('We have tried to delete ' + DownList.Strings[Index]);
             end;
+            RefreshNotebooks();
             TheMainNoteLister.IndexThisNote(DownList.Strings[Index]);
             //debugln('We have tried to reindex ' + DownList.Strings[Index]);
         end;
-        if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
+
+        IndexAndRefresh();                                                      // Reruns the current search with new data in NoteList
+
+
+(*        if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
             if ListBoxNoteBooks.ItemIndex < 0 then
                 ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
             else
                 ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
-        end;
+        end;       *)
         TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
         RefreshMenus(mkRecentMenu);
         MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
+
+
+
+
+
 
         {
         Visible        T            F          T          F
@@ -384,25 +399,20 @@ begin
         EnableButt    n             n         Yes         n
         }
 
-        if Visible and Sett.AutoRefresh then        // CheckAutoRefresh.checked then
-            Refresh()
-        else begin
-            if Visible then ButtonRefresh.Enabled := True
-            else NeedRefresh := True;
-        end;
+//        if Visible and Sett.AutoRefresh then        // CheckAutoRefresh.checked then
+//            Refresh()
+//        else begin
+//            if Visible then ButtonRefresh.Enabled := True
+//            else NeedRefresh := True;
+//        end;
     end;
-end;
-
-procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
-begin
-   Refresh();
 end;
 
 (*
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
 begin
-   Refresh();
-end; *)
+   DelayedRefresh(True);
+end;   *)
 
 procedure TSearchForm.FlushOpenNotes();
 var
@@ -472,9 +482,10 @@ begin
         RemoveNBTag(TheMainNoteLister.GetNotebookName(ShortFileName));        // remove ref to the notebook from all notes
         TheMainNoteLister.DeleteNoteBookwithID(ShortFileName);
       	DeleteFileUTF8(FullFileName);
-        ButtonClearFiltersClick(self);
+        // ButtonClearFiltersClick(self);
+        RefreshNoteBooks();
     end else begin
-		TheMainNoteLister.DeleteNote(ShortFileName);
+		TheMainNoteLister.DeleteNote(ShortFileName);                          // Remove from NoteList
      	NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ShortFileName + '.note';
     	if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
     		if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
@@ -482,27 +493,24 @@ begin
     	if not RenameFileUTF8(FullFileName, NewName)
     		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
     end;
-    if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
+
+    IndexAndRefresh(False);                                          // ToDo : if Delete updated Index, could be DisplayOnly
+
+{    if Sett.AutoSearchUpdate then begin                            // Update Search While You Type, SWYT cannot observe Refresh
         if ListBoxNoteBooks.ItemIndex < 0 then
             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
         else
             ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
-    end;
+    end;   }
     TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
     RefreshMenus(mkRecentMenu);
     MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
-    if Visible and Sett.AutoRefresh then
-        Refresh()
-    else begin
-        if Visible then ButtonRefresh.Enabled := True
-            else NeedRefresh := True;
-    end;
 end;
 
-function TSearchForm.NextNoteTitle(out SearchTerm: string): boolean;    // ToDo : not needed, Editbox now goes direct
+(*function TSearchForm.NextNoteTitle(out SearchTerm: string): boolean;
 begin
 	Result := TheMainNoteLister.NextNoteTitle(SearchTerm);
-end;
+end;  *)
 
 function TSearchForm.IsThisaTitle(const Term : ANSIString) : boolean;
 begin
@@ -510,8 +518,15 @@ begin
 end;
 
 procedure TSearchForm.RefreshNotebooks();
+var
+    Index : integer;
 begin
+    Index := ListBoxNotebooks.ItemIndex;
     TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
+    if Index > -1 then begin
+         ListBoxNotebooks.ItemIndex := Index;
+         ListBoxNotebooksClick(self);
+    end;
 end;
 
 procedure TSearchForm.UpdateStatusBar(SyncSt: string);
@@ -527,8 +542,8 @@ var
     //NeedUpdateDisplay : boolean = false;         // Only set if Title has changed.
     i : integer;
     ReRunSearch : boolean = false;
-    STL : TStringList;
-    NoteBook : string;
+    //STL : TStringList;
+    //NoteBook : string;
 begin
     { Called when a note is saved, date is always new, Title may have changed,
     note may be a new one. We always send date to NoteList, maybe update menu,
@@ -538,8 +553,8 @@ begin
     if TheMainNoteLister = Nil then exit;				// we are quitting the app !
     // We don't do any of this if the its a notebook.
     if TheMainNoteLister.IsATemplate(ExtractFileNameOnly(FullFileName)) then exit;
-    // if this note is already last in list, we don't need to update menus
 
+    // do we need to update menus ? Its time consuming, if this is already top entry, leave alone
     i := 0;
     while i < PopupTBMainMenu.Items.Count do begin
         if PopupTBMainMenu.Items[i].Tag = ord(mtRecent) then begin      // Find first Recent Menu item
@@ -550,37 +565,39 @@ begin
         inc(i);
     end;
     if i = PopupTBMainMenu.Items.Count then NeedUpdateMenu := True;     // dropped right through without a mtRecent
-
-(*    for i := 0 to PopupTBMainMenu.Items.Count-1 do begin              // This fails if there is no Recent present.
-        if PopupTBMainMenu.Items[i].Tag = ord(mtRecent) then begin // Find first Recent Menu item
-           if PopupTBMainMenu.Items[i].Caption <> Title then
-               NeedUpdateMenu := True;
-           break;                                                  // jump out after testing first recent
-        end;
-    end;       *)
-
     // T2 := gettickcount64();
-    if TheMainNoteLister.AlterOrAddNote(ReRunSearch, FullFileName, LastChange, Title) then
+    if TheMainNoteLister.AlterOrAddNote(ReRunSearch, FullFileName, LastChange, Title) then begin
         if ReRunSearch then begin
-            // If neither a search term nor Notebook is set, just call ClearSearch.
+            // If neither a search term nor Notebook is set, just call ClearSearch, its fast
             if ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch))
                             and (ListBoxNoteBooks.ItemIndex < 0) then
                 ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
             else begin
-                if ListBoxNoteBooks.ItemIndex > -1 then
+                IndexAndRefresh(False);
+              (*  if ListBoxNoteBooks.ItemIndex > -1 then
                     NoteBook := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]
                 else NoteBook := '';
+
                 STL := TStringList.Create;
                 if not ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch)) then
                     STL.AddDelimitedtext(EditSearch.Text, ' ', false);                  // OK to pass an empty list.
                 ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook);
-                STL.Free;
+                STL.Free;  *)
             end;
-        end else ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();
+        end else                                                 // Just need to display, Indexes have been adjusted
+            IndexAndRefresh(True);
+        (*    if Sett.AutoRefresh then
+                ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount()
+            else begin
+                NumbToRefresh := TheMainNoteLister.NoteIndexCount();
+                ButtonRefresh.Enabled := True;
+            end;     *)
+    end;
     // T3 := gettickcount64();
     TheMainNoteLister.ThisNoteIsOpen(FullFileName, TheForm);
     if NeedUpDateMenu then RefreshMenus(mkRecentMenu);
     MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
+
 {    T4 := gettickcount64();
     debugln('SearchUnit.UpdateList TestMenu=' + inttostr(T2 - T1)
                     + 'mS AlterAdd=' + inttostr(T3 - T2) + 'mS Menu=' + inttostr(T4 - T3)
@@ -597,15 +614,8 @@ begin
 
   Still, updating Menu is a problem }
 
+    // Must do some refresh() stuff here.
 
-{    if Visible and Sett.AutoRefresh then
-        Refresh()
-    else begin
-        if Visible then ButtonRefresh.Enabled := True
-        else NeedRefresh := True;
-    end;    }
-    //T4 := gettickcount64();
-    //debugln('SearchUnit.UpdateList ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
 
@@ -893,7 +903,7 @@ begin
     end;
     if HelpNotes = nil then exit;
     HelpNotes.StartSearch();
-    while HelpNotes.NextNoteTitle(NoteTitle) do
+    while HelpNotes.NextNoteTitle(NoteTitle) do        // ToDo : go direct to HelpNotes.NoteList[i], faster ?
         AddItemMenu(AMenu, NoteTitle, mtHelp,  @FileMenuClicked, mkHelpMenu);
 end;
 
@@ -945,54 +955,29 @@ begin
  		SearchForm.OpenNote(TMenuItem(Sender).Caption);
 end;
 
-
-
-
-procedure TSearchForm.Refresh();
-// This Method has issues relating to following bug reports -
-// https://bugs.freepascal.org/view.php?id=38394  ListView right hand side obscoured by scroll bar
-// https://bugs.freepascal.org/view.php?id=38393 ListView Qt5 shows wrong sort indicator
+{ Will re-run the current search on the assumption that NoteList data has changed.
+  Normally thats a ClearSearch() or NewSearch(). However, if DisplayOnly, the
+  Date Index has been updated and thats all needed. So, its then a display
+  update.
+}
+procedure TSearchForm.IndexAndRefresh(DisplayOnly : boolean = false);
 var
-    NB : string;
-    SortInd0, SortInd1 : TSortIndicator;
+    NB, STerm : string;
 begin
-    TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
-    exit;
-
-    // ToDo : do not use code below here.
-
-    // see https://forum.lazarus.freepascal.org/index.php/topic,48568.msg350984/topicseen.html
-    // for info about hiding the sort indicators after changing note data. We don't need to but ....
-    // Note setup ListViewNotes in Create() and set its colours in ShowForm()
-    //ListViewNotes.Column[1].SortIndicator := siDescending;
-    SortInd0 := ListViewNotes.Column[0].SortIndicator;
-    SortInd1 := ListViewNotes.Column[1].SortIndicator;
-    if (EditSearch.Text <> rsMenuSearch) and (EditSearch.Text <> '') then
-        DoSearchEnterPressed()
+     If DisplayOnly then
+         ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount()
     else begin
-        if (ListBoxNotebooks.ItemIndex > -1) then begin                        // if a notebook is currently selected.
-            NB := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
-            if NB <> '' then begin
-                TheMainNoteLister.LoadNotebookViewList(ListViewNotes, NB);
-            end;
-            // ToDo : there is an issue here. If user has a notebook selected when sync happens, and that
-            // sync removes a notebook, a 'Refresh' will not make the deleted notebook disappear. It
-            // does no go until filters are cleared.
-        end else begin
-//            NoteLister.LoadListView(ListViewNotes, False);
-            TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
-            ScaleListView();
-        end;
-        SelectedNotebook := 0;      // ie off
+        if EditSearch.text = rsMenuSearch then
+             STerm := ''
+        else STerm := EditSearch.text;
+        if ListBoxNoteBooks.ItemIndex < 0 then
+             NB := ''
+        else NB := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex];
+        ListViewNotes.Items.Count := 0;
+        if STerm.IsEmpty and NB.IsEmpty then
+             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
+        else ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STerm, NB);
     end;
-    ButtonRefresh.Enabled := false;
-    UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
-    ListViewNotes.Column[0].SortIndicator := SortInd0;
-    ListViewNotes.Column[1].SortIndicator := SortInd1;
-    if not ((SortInd0 = siNone)
-                and (SortInd1 = siDescending)) then    // default condition,  comes out of NoteLister recent first
-        ListViewNotes.Sort;
-    //ShowListIndicator('After refresh');
 end;
 
 
@@ -1100,6 +1085,7 @@ begin
             //T1 := GetTickCount64();
 
             ListViewNotes.BeginUpdate;
+            ListViewNotes.Items.Count := 0;       // Fixes a GTK warning ....
             ListViewNotes.Items.Count := Found;
             ListViewNotes.EndUpdate;
             //T2 := GetTickCount64();
@@ -1196,13 +1182,13 @@ end;
 procedure TSearchForm.FormActivate(Sender: TObject);
 //var tick : qword;
 begin
-    if NeedRefresh then begin
+(*    if NeedRefresh then begin
         //Tick := gettickcount64();
         NeedRefresh := False;
         ButtonRefreshClick(self);
         //debugln('SearchForm - FormActivate (first run) ' + dbgs(GetTickCount64() - Tick) + 'mS');
     end;
-    //debugln('Search Unit Form Activate');
+    //debugln('Search Unit Form Activate');   *)
     EditSearch.SetFocus;
 end;
 
@@ -1228,9 +1214,9 @@ begin                                            // Gets called from other units
     Result := TheMainNoteLister.IndexNotes();
 //    NoteLister.ClearSearch();                   // This builds the note sorted Indexes in Note_Lister
     UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
-    if Sett.AutoRefresh then
+(*    if Sett.AutoRefresh then
        Refresh()
-    else NeedRefresh := True;                                // eg refresh ListViewNotes on next OnActivate
+    else NeedRefresh := True; *)                  // eg refresh ListViewNotes on next OnActivate
     RefreshMenus(mkRecentMenu);
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('TSearchForm.IndexNotes - Indexing took (mS) ' + inttostr(TS2.Time - TS1.Time));          // Dell, 2K notes, 134mS
@@ -1321,7 +1307,7 @@ begin
          ListViewNotes.Font.Color :=  Sett.BackGndColour;
          splitter1.Color:= clnavy;
     end;
-    MenuItemAutoRefresh.Checked := Sett.Autorefresh;
+//    MenuItemAutoRefresh.Checked := Sett.Autorefresh;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
 //    {$endif}
@@ -1504,7 +1490,7 @@ begin
                             end;
         end;
     ListViewNotes.Items.Count := 0;
-    ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();
+    ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount();    // Does not rebuild Indexes, just display them again
     BounceSortIndicator(column.Index);                                  // To refresh the sortIndicator
 end;
 
@@ -1756,7 +1742,7 @@ begin
 end;
 
 // ---------------------- S E A R C H   O P T I O N S --------------------------
-
+(*
 procedure TSearchForm.MenuItemAutoRefreshClick(Sender: TObject);
 begin
     MenuItemAutoRefresh.Checked := not MenuItemAutoRefresh.Checked;
@@ -1764,7 +1750,7 @@ begin
 
 {    if  Sett.AutoRefresh then SpeedSearchOtions.hint := 'Auto Refresh'     // Warning, these hits are duplicated in OnShow event.
     else SpeedSearchOtions.hint := 'Manual Refresh';     }
-end;
+end;     *)
 
 procedure TSearchForm.MenuItemCaseSensitiveClick(Sender: TObject);
 begin
@@ -1895,7 +1881,6 @@ begin
         end;
         TheMainNoteLister.IndexThisNote(NewGUID);
         result := GetTitleFromFFN(Sett.NoteDirectory + NewGUID + '.note', false);
-        ButtonRefresh.Enabled := true;
     except
         on E: EInOutError do begin
                 debugln('File handling error occurred making new note from template. Details: ' + E.Message);

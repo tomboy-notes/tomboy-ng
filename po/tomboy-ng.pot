@@ -1503,10 +1503,6 @@ msgctxt "tsearchform.buttonmenu.caption"
 msgid "Menu"
 msgstr ""
 
-#: tsearchform.buttonrefresh.caption
-msgid "Refresh"
-msgstr ""
-
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
 msgstr ""
@@ -1525,10 +1521,6 @@ msgstr ""
 
 #: tsearchform.menueditnotebooktemplate.caption
 msgid "Edit Notebook Template"
-msgstr ""
-
-#: tsearchform.menuitemautorefresh.caption
-msgid "MenuItemAutoRefresh"
 msgstr ""
 
 #: tsearchform.menuitemcasesensitive.caption

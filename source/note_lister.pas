@@ -155,6 +155,7 @@ type
         		{ will have 36 char GUI plus '.note' }
 		ID : ANSIString;
         Title : ANSIString;
+                { An all lower case version of Title for searching }
         TitleLow : string;
         		{ a 33 char date time string }
     	CreateDate : ANSIString;
@@ -168,7 +169,7 @@ type
 	end;
 
 type                                 { ---------- TNoteList ---------}
-   //TNoteList = class(TList)   // ToDo : TFPList is faster
+   //TNoteList = class(TList)
    TNoteList = class(TFPList)
    private
 
@@ -215,7 +216,7 @@ type
 
 
 
-    SearchCount : integer;      // How many notes are active in search, or all notes if search not active
+//    SearchCount : integer;      // How many notes are active in search, or all notes if search not active
 
     OpenNoteIndex : integer;        // Used for Find*OpenNote(), points to last found one, -1 meaning none found
    	SearchNoteList : TNoteList;
@@ -239,7 +240,7 @@ type
     procedure GetNoteDetails(const Dir, FileName: ANSIString; DontTestName: boolean; TheLister : TNoteLister);
 
                                 // Inserts a new item into the ViewList, always Title, DateSt, FileName
-    function NewLVItem(const LView: TListView; const Title, DateSt, FileName: string): TListItem;
+//    function NewLVItem(const LView: TListView; const Title, DateSt, FileName: string): TListItem;
 
                                 { A Early ver of -ng wrote a bad date stamp, here we try to fix any we find. First
                                   just try to add missing bits, if that does not work, we replace the LCD with
@@ -278,12 +279,12 @@ type
     function NotebookCount(): integer;
                                         {Returns the number of records in the Notelist, NOT the index lists. }
     function GetNoteCount() : integer;
-                                        { Returns a pointer to PNote record, zero based index }
+                                        { Returns a pointer to PNote record, zero based, non sorted index }
     function GetNote(Index: integer): PNote;
                                         { Returns a pointer to PNote record, zero based index is adjusted for current search }
     function GetNote(Index: integer; mode : TLVSortMode): PNote;
                                         { Loads a TListView with note title, LCD and ID}
-    procedure LoadListView(const LView: TListView; const SearchMode: boolean);
+    //procedure LoadListView(const LView: TListView; const SearchMode: boolean);
                                         { Changes the name associated with a Notebook in the internal data structure }
     function AlterNoteBook(const OldName, NewName: string): boolean;
                                         { Returns a multiline string to use in writing a notes notebook membership,
@@ -364,7 +365,7 @@ type
     function DeleteNote(const ID : ANSIString) : boolean;
                                         { Copy the internal data about notes in passed Notebook to passed TListView
                                           for display. So, shown would be all the notes in the nominated notebook.}
-    procedure LoadNotebookViewList(const VL: TListView; const NotebookName: AnsiString);
+    //procedure LoadNotebookViewList(const VL: TListView; const NotebookName: AnsiString);
                                         { Copy the internal data about notes in passed Notebook to passed TStringGrid
                                           for display. So, shown would be all the notes in the nominated notebook.}
     procedure LoadNotebookGrid(const Grid : TStringGrid; const NotebookName : AnsiString);
@@ -380,7 +381,8 @@ type
     function FindFirstOOSNote(out NTitle, NID: ANSIstring): boolean;
                                         { Call after FindFirstOOSNote(), it will return the next one or '' if no more found }
     function FindNextOOSNote(var NTitle, NID: ANSIstring): boolean;
-                                        { Called, typically, when a note is saved. May be a new note or a note
+                                        { Ret True if we need to either rerun search search or redisplay it.
+                                        Called, typically, when a note is saved. May be a new note or a note
                                         that is being updated. Will always have a new LCD, might have a new Title.
                                         The note may or may not be displayed in SearchUnit. Depending on all that,
                                         we may update Indexes, return false if nothing needs to be done, if True
@@ -475,9 +477,10 @@ function NoteContains(const TermList : TStringList; FullFileName: ANSIString; co
 
 
 var
-    TheMainNoteLister : TNoteLister = nil;  // This is a pointer to the MAIN notelister, its really, really global !
-                                        // Its set after lister is created in Search unit and must not be used
-                                        // by any of the other units that make other NoteListers for their own use.
+                        // This is a pointer to the MAIN notelister, its really, really global !
+                        // Its set after lister is created in Search unit and must not be used by
+                        // any of the other units thinking its the NoteListers made for their own use.
+    TheMainNoteLister : TNoteLister = nil;
 
 { ------------------------------------------------------------------- }
 { -------------------------- IMPLEMENTATION ------------------------- }
@@ -511,36 +514,10 @@ begin
     {$pop}
 end;
 
-destructor TSortList.Destroy;                                       // ToDo : CLEAN THIS UP
-(* var
-    p : pointer;
-    i : integer = 27; *)
+destructor TSortList.Destroy;
 begin
     // we have not allocated any memory for data, no need to dispose
     inherited Destroy;
-(*
-//    p  := pointer(i);             // WARNING
-//    p  := pointer(PtrUint(i));    // HINT
-
-    p := pointer(PtrUInt(i));
-    //p := UIntPtr(i);
-    i := PtruInt(p);
-
-
-
-//    i := integer(p);             // WARNING
-    i := IntPtr(p);                // HINT
-
-    debugln('TSortList.Test - ' + inttostr(i));
-
-    i := 54;
-    x := i;
-    p := pointer(x);
-    //x := p;
-    i := x;
-
-    debugln('TSortList.Test (absolute) - ' + inttostr(i));     *)
-
 end;
 
 function TSortList.Add(ANumber: integer): integer;
@@ -924,7 +901,7 @@ begin
     NoteBookList.Add(ID, ANoteBook, IsTemplate);
     //DumpNoteBookList('After TNoteLister.AddNoteBook');
 end;
-
+(*
 procedure TNoteLister.LoadNotebookViewList(const VL : TListView; const  NotebookName: AnsiString);
 var
     Index : integer;
@@ -941,7 +918,7 @@ begin
             NewLVItem(VL, NoteList.Items[Index]^.Title, LCDst, NoteList.Items[Index]^.ID);
         end;
 	end;
-end;
+end;     *)
 
 procedure TNoteLister.LoadNotebookGrid(const Grid: TStringGrid; const NotebookName: AnsiString);
 var
@@ -1115,11 +1092,11 @@ end;
 { -------------- Things relating to Notes -------------------- }
 
 // Address of this function is passed to note list sort. Newest notes at end of list.
-function LastChangeSorter( Item1: Pointer;   Item2: Pointer) : Integer;                     // ToDo : Maybe remove this ?
-begin                                                                                       // But test its way of comparing first !
+(*function LastChangeSorter( Item1: Pointer;   Item2: Pointer) : Integer;
+begin                                                                            //  test its way of comparing before trashing !
     // Also ANSICompareStr but we are just looking at date numbers here
 	result := CompareStr(PNote(Item1)^.LastChange, PNote(Item2)^.LastChange);
-end;
+end;                 *)
 
 
 function NotebookSorter( Item1 : pointer; Item2 : pointer) : integer;
@@ -1510,7 +1487,7 @@ var
     //T1, T2, T3, T4, T5, T6 : qword;
 begin
     //T1 := GetTickCount64();
-    SearchCount := 0;                // ToDo : is this needed ?
+//    SearchCount := 0;                // ToDo : is this needed ?
     result := 0;
     if TitleSearchIndex = nil then TitleSearchIndex := TSortList.Create
     else TitleSearchIndex.Clear;
@@ -1737,9 +1714,6 @@ begin
 	result := EnterDateSearchIndex.Count;
 end;
 
-
-
-
 procedure TNoteLister.AddNote(const FileName, Title, LastChange : ANSIString);
 var
     NoteP : PNote;
@@ -1762,12 +1736,16 @@ begin
     Result := PNote(NoteList.get(Index))^.Title;
 end;
 
-function TNoteLister.GetNote(Index : integer) : PNote;
-var
+function TNoteLister.GetNote(Index : integer) : PNote;          // ToDo : Used by sync, might be faster to just give it access to NoteList
+(*var
     Cnt : integer = -1;           // Zero is a valid cnt
-    i : integer;
+    i : integer;       *)
 begin
     Result := nil;
+    if (Index > -1) and (Index < NoteList.Count) then
+        Result := NoteList[Index];
+
+    (*
     //debugln('TNoteLister.GetNote ' + inttostr(Index) + ' of ' + inttostr(SearchCount) + ' and ' + inttostr(GetNoteCount));
     i := GetNoteCount;            // we start at the end of list.
     if SearchCount = GetNotecount then Result := NoteList[i - Index -1]
@@ -1778,7 +1756,7 @@ begin
             if Index = Cnt then exit(NoteList[i]);
         end;
     //debugln('ERROR TNoteLister.GetNote underrun');
-    end;
+    end;                                                 *)
 end;
 
 function TNoteLister.GetNote(Index: integer; mode: TLVSortMode): PNote;
@@ -1904,12 +1882,12 @@ begin
     // T3 := gettickcount64();
     // debugln('Note_Lister - LoadStGrid ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
 end;
-
+(*
 function TNoteLister.NewLVItem(const LView : TListView; const Title, DateSt, FileName: string): TListItem;
 var
     TheItem : TListItem;
     DT : TDateTime;
-begin                                                          // ToDo : do we need this ? NO !
+begin
    TheItem := LView.Items.Add;
    TheItem.Caption := Title;
    if MyTryISO8601ToDate(DateSt, DT) then
@@ -1926,7 +1904,7 @@ var
     //LCDst : string;
     //T1, T2, T3 : qword;
     // Full list mode, 2000 notes, Dell 7mS to clear, 20-40mS to load.
-begin                                                         // ToDo : do we need this ? NO !
+begin
     //T1 := gettickcount64();
     LView.Clear;
     if SearchMode then
@@ -1941,7 +1919,7 @@ begin                                                         // ToDo : do we ne
     //T3 := gettickcount64();
     //debugln('TNoteLister.LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));
 end;
-
+*)
 
 procedure TNoteLister.LoadStrings(const TheStrings: TStrings);
 var
@@ -1989,26 +1967,40 @@ var
     i : integer = 0;                   // Is an index into NoteList
 //    PresentInIndex : boolean = false;
 
-    function UpdateIndex(TheIndex : TSortList) : boolean; // Assumes i is an index to NoteList, delete and insert at end of Index
-    var  j : integer = 0;                                 // Deletes the 'i' entry and then adds it at the end.
+    // If it finds the i entry in Index, moves it to last entry, that being most recent.
+    function UpdateIndex(TheIndex : TSortList) : boolean;    // i is an index to NoteList
+    var  j : integer;
     begin
-        j := 0; Result := False;
-        while j < TheIndex.Count do begin
+        (* j := 0; Result := False;                          // False, if returned, means i does not exist in Index, reindex is needed
+         while j < TheIndex.Count do begin
             if TheIndex[j] = i then begin
                 TheIndex.Delete(j);
                 TheIndex.add(i);
-                exit(True);
+                exit(True);                                 // We found and entry in the index and updated it.
             end;
             inc(j);
+        end;    *)
+        j := TheIndex.Count; Result := False;               // False, if returned, means i does not exist in Index, reindex is needed
+        while j > 0 do begin
+            dec(j);
+            if TheIndex[j] = i then begin
+                TheIndex.Delete(j);
+                TheIndex.add(i);
+                exit(True);                                 // We found an entry in the index and updated it.
+            end;
         end;
     end;
+
+    { This gets called every time we update the datestamp on a note, so, as a user edits
+    a note, they constently trigger a save. But the note is at the end of the Index after
+    the first call, assume its called several time and start searching at end of list }
 
 begin
     Result := False;
     ReRunSearch := True;
     ID := CleanFilename(FFName);
 
-    while i < NoteList.Count do begin
+    while i < NoteList.Count do begin                   // try to find ID in NoteList
         if ID = NoteList.Items[i]^.ID then break;       // Found it
         inc(i);
     end;
@@ -2018,22 +2010,17 @@ begin
     end;         *)
 
     if i = NoteList.count then begin                    // Drop through, must be a new note.
-        AddNote(ID, Title, LCD);
-        DateAllIndex.Add(NoteList.Count -1);            // Added at the end, most recent.
-        result := true;                                 // ReRunSearch is set to True too.
-
-        //debugln('TNoteLister.AlterOrAddNote just added [' + Title + '] aka ['
-        //    + NoteList[DateAllIndex.Count-1]^.Title + ']');
-
-
-    end else begin
+        AddNote(ID, Title, LCD);                        // Add to NoteList
+        DateAllIndex.Add(NoteList.Count -1);            // Added at the end of DateAllIndex, most recent.
+        result := true;                                 // ReRunSearch is set to True so calling process must re run an existing search
+    end else begin                                      // Else its already in NoteList, maybe just a LCD but possible also Title change
         NoteList.Items[i]^.LastChange := LCD;
-        if Title = NoteList.Items[i]^.Title then begin  // Its just a LCD update
+        if Title = NoteList.Items[i]^.Title then begin  // Its just a LCD update, update DateSearchIndex and advise a re-Display
             ReRunSearch := False;
-            result := UpdateIndex(DateSearchIndex);     // False if we did not find an entry in DateSearchIndex
-        end else                                        // Ah, a new title
+            result := UpdateIndex(DateSearchIndex);     // False if not currently DateSearchIndex, its not being displayed anyway
+        end else                                        // Ah, a new title, must rerun search.
             NoteList.Items[i]^.Title := Title;
-        UpdateIndex(DateAllIndex);                       // Always update DateAllIndex, its not done by Search methods
+        UpdateIndex(DateAllIndex);                      // Always update DateAllIndex, its not done by Search methods
     end;
 end;
 
@@ -2049,10 +2036,9 @@ begin
             	NoteList.Items[Index]^.Title := Title;
         	if Change <> '' then begin
                 NoteList.Items[Index]^.LastChange := Change;  {copy(Change, 1, 19);}
-//            	NoteList.Items[Index]^.LastChange[11] := ' ';                   // keep list in ISO format, make pretty when displaying
                 // check if note is already at the bottom of the list, don't need to re-sort.
-                if (Index < (NoteList.Count -1)) then
-                    NoteList.Sort(@LastChangeSorter);
+(*                if (Index < (NoteList.Count -1)) then
+                    NoteList.Sort(@LastChangeSorter);     *)                    // we don't do this any more .....
             end;
             exit(True);
 		end;

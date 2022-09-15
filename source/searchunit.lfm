@@ -259,15 +259,17 @@ object SearchForm: TSearchForm
   end
   object SpeedSearchOtions: TSpeedButton
     AnchorSideTop.Control = EditSearch
-    AnchorSideRight.Control = ButtonRefresh
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
-    Left = 581
+    Left = 699
     Height = 32
     Hint = 'Search Options'
     Top = 3
     Width = 120
     Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Right = 5
     Caption = 'Options'
     OnClick = SpeedSearchOtionsClick
     ShowHint = True
@@ -287,21 +289,6 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akBottom]
     Caption = 'Clear'
     OnClick = SpeedButtonClearSearchClick
-  end
-  object ButtonRefresh: TSpeedButton
-    AnchorSideTop.Control = EditSearch
-    AnchorSideRight.Control = Owner
-    AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = EditSearch
-    AnchorSideBottom.Side = asrBottom
-    Left = 701
-    Height = 32
-    Top = 3
-    Width = 120
-    Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 3
-    Caption = 'Refresh'
-    OnClick = ButtonRefreshClick
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344
@@ -341,11 +328,6 @@ object SearchForm: TSearchForm
   object PopupMenuSearchOptions: TPopupMenu
     Left = 450
     Top = 206
-    object MenuItemAutoRefresh: TMenuItem
-      Caption = 'MenuItemAutoRefresh'
-      Checked = True
-      OnClick = MenuItemAutoRefreshClick
-    end
     object MenuItemCaseSensitive: TMenuItem
       Caption = 'Case Sensitive'
       OnClick = MenuItemCaseSensitiveClick

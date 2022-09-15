@@ -116,35 +116,6 @@ begin
     end;
 end;
 
-// ToDo : remove below, new code does not use TStringList
-(* function HaveCMDParam() : boolean;
-var
-    Params : TStringList;
-begin
-    Result := False;
-    if Application.HasOption('o', 'open-note') then begin
-       SingleNoteName := Application.GetOptionValue('o', 'open-note');
-       exit(True);
-    end;
-    Params := TStringList.Create;
-    try
-        Application.GetNonOptions(ShortOpts, LongOpts, Params);
-        if Params.Count = 1 then begin
-            if Params[0] <> '%f' then begin   // MX Linux passes the %f from desktop file during autostart
-                    SingleNoteName := Params[0];
-                    exit(True);
-            end;
-        end;
-        if Params.Count > 1 then begin
-            CommandLineError('Unrecognised parameters on command line');
-            SingleNoteName := '';
-            exit(True);
-        end;
-    finally
-        FreeAndNil(Params);
-    end;
-end;    *)
-
 // Looks for server, if present, sends indicated message and returns true, else false.
 function CanSendMessage(Msg : string) : boolean;
 var

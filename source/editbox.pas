@@ -699,38 +699,6 @@ begin
 	end;
 end;
 
-// ToDo : remove code below. But why are we looking at Notebooks here ? Nothing to do with whats happening ....
-(*
-procedure TEditBoxForm.SpeedButtonLinkClick(Sender: TObject);
-var
-    ThisTitle : ANSIString;
-    Index : integer;
-    SL : TStringList;
-begin
-   if KMemo1.ReadOnly then exit();
-	if KMemo1.Blocks.RealSelLength > 1 then begin
-         ThisTitle := KMemo1.SelText;
-        // Titles must not start or end with space or contain low characters
-        while ThisTitle[1] = ' ' do UTF8Delete(ThisTitle, 1, 1);
-        while ThisTitle[UTF8Length(ThisTitle)] = ' ' do UTF8Delete(ThisTitle, UTF8Length(ThisTitle), 1);
-        Index := Length(ThisTitle);
-        While Index > 0 do begin
-            if ThisTitle[Index] < ' ' then delete(ThisTitle, Index, 1);
-            dec(Index);
-		end;
-		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
-        if UTF8Length(ThisTitle) > 1 then begin
-            SL := TStringList.Create;
-// commented            SearchForm.NoteLister.GetNotebooks(SL, ExtractFileNameOnly(NoteFileName));      // that should be just ID
-            if SL.Count > 0 then
-                SearchForm.OpenNote(ThisTitle, '', SL.Strings[0])
-        	else SearchForm.OpenNote(ThisTitle);
-            KMemo1Change(self);
-            SL.Free;
-		end;
-	end;
-end;      *)
-
 procedure TEditBoxForm.SpeedButtonNotebookClick(Sender: TObject);
 var
     NotebookPick : TNotebookPick;

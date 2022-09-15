@@ -242,7 +242,6 @@ end;
 procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
         SearchForm.RefreshMenus(mkRecentMenu);
-        SearchForm.ButtonRefresh.enabled := True;
 end;
 
 

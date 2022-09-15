@@ -979,7 +979,7 @@ begin
     CheckDirectory(NoteDirectory);              // user will get a message on error, their problem
     CheckDirectory(NoteDirectory + 'Backup');
     CheckDirectory(LabelSnapDir.Caption);
-	SyncSettings();                             // ToDo : can we discard this ?
+	SyncSettings();                             // ToDo : can we discard this yet ?
 end;
 
 
