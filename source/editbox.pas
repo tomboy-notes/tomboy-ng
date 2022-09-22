@@ -3089,32 +3089,33 @@ end;
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
- 	//T1 : qword;          // Temp time stamping to test speed
+ 	//T1, T2, T3, T4, T5 : qword;          // Temp time stamping to test speed
 begin
-    // Timing numbers below using MyRecipes on my Acer linux laptop. For local comparison only !
+    // Timing numbers below using MyRecipes on my Dell linux laptop. For local comparison only !
+    // Note QT5 times quite a lost faster, Loading is slow and so is resizing !  Sept 2022
     //T1 := gettickcount64();
     Loader := TBLoadNote.Create();
-    Loader.FontNormal:= Sett.FontNormal;
-    // Loader.FontName := FontName;
+    Loader.FontNormal:= Sett.FontNormal;                    // 0mS
     Loader.FontSize:= Sett.FontNormal;
     KMemo1.Blocks.LockUpdate;
     KMemo1.Clear;
-    Loader.LoadFile(FileName, KMemo1);                        // 340mS
-    KMemo1.Blocks.UnlockUpdate;                             // 370mS
-    // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
+    Loader.LoadFile(FileName, KMemo1);                      // 140mS  (197mS GTK2)
+    KMemo1.Blocks.UnlockUpdate;
     Createdate := Loader.CreateDate;
     Ready := true;
     Caption := Loader.Title;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.checked then
-    	CheckForLinks();                     		// 360mS
+    	CheckForLinks();                     		         // 12mS (14ms GTK2)
     Left := Loader.X;
     Top := Loader.Y;
-    Height := Loader.Height;
-    Width := Loader.Width;          // AdjustFormPosition() will fix if necessary
+    Height := Loader.Height;                                 // 84mS (133mS GTK2) Height and Widt                                      h
+    Width := Loader.Width;                                   // AdjustFormPosition() will fix if necessary
     AdjustFormPosition();
-    Loader.Free;
+    Loader.Free;                                             // 0mS
     TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
-    // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
+    //debugln('Load Note=' + inttostr(T2 - T1) + 'mS ' + inttostr(T3 - T2) + 'mS ' + inttostr(T4 - T3) + 'mS ' + inttostr(T5 - T4) + 'mS ');
+    //debugln('Total=' + inttostr(T5 - T1) + 'mS ');
+
 end;
 
 {$define SAVETHREAD}
