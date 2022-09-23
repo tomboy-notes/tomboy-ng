@@ -34,7 +34,7 @@ From the <bold>search form</bold>, you can -
  Show help and exit.
 
 <bold>-l CCode  --lang=CCode</bold>
-Force Language, supported language codes as  es and nl. Let us know if you want tomboy-ng in another language.
+Force Language, supported language codes as  es, uk, fr and nl. Let us know if you want tomboy-ng in another language.
 
 <bold>--version</bold>
 Print version and exit
@@ -75,8 +75,8 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2022-09-23T19:56:36.3167794+10:00</last-change-date>
-  <last-metadata-change-date>2022-09-23T19:56:36.3167794+10:00</last-metadata-change-date>
+  <last-change-date>2022-09-23T21:50:34.9978267+10:00</last-change-date>
+  <last-metadata-change-date>2022-09-23T21:50:34.9978267+10:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

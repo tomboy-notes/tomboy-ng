@@ -1,12 +1,12 @@
 object MainForm: TMainForm
   Left = 563
-  Height = 260
+  Height = 294
   Hint = 'If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
   Top = 240
-  Width = 509
+  Width = 580
   Caption = 'tomboy-ng'
-  ClientHeight = 260
-  ClientWidth = 509
+  ClientHeight = 294
+  ClientWidth = 580
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -261,7 +261,7 @@ object MainForm: TMainForm
     Left = 16
     Height = 23
     Hint = 'You can reverse this from Settings'
-    Top = 222
+    Top = 256
     Width = 261
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14
@@ -380,7 +380,7 @@ object MainForm: TMainForm
     Left = 197
     Height = 30
     Top = 2
-    Width = 310
+    Width = 381
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Right = 2
     Caption = 'Quit'
@@ -406,9 +406,9 @@ object MainForm: TMainForm
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = ImageAboutLaz
-    Left = 331
+    Left = 402
     Height = 30
-    Top = 83
+    Top = 117
     Width = 163
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 15
@@ -422,9 +422,9 @@ object MainForm: TMainForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 304
+    Left = 375
     Height = 128
-    Top = 127
+    Top = 161
     Width = 200
     Anchors = [akRight, akBottom]
     AutoSize = True

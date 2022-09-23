@@ -112,7 +112,7 @@ RESOURCESTRING
     rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
     {$endif}
     rsHelpDelay = 'Delay startup 2 sec to allow OS to settle';
-    rsHelpLang = 'Force Language, en, es, fr, nl';
+    rsHelpLang = 'Force Language, en, es, uk, fr, nl';
     rsHelpDebug = 'Direct debug output to SOME.LOG.';
     rsHelpHelp = 'Show this help message and exit.';
     rsHelpVersion = 'Print version and exit';
