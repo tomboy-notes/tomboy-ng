@@ -327,22 +327,22 @@ type
         procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
-        	{ gets called under a number of conditions, easy one is just a re-show,
-              or for a new note or a new note with a title from Link button
-              or for an existing note where we get note file name
-              or a new note from template where we have a note filename but IsTemplate
-              also set, here we discard file name and make a new one. }
+        	                    { gets called under a number of conditions, easy one is just a re-show,
+                                or for a new note or a new note with a title from Link button
+                                or for an existing note where we get note file name
+                                or a new note from template where we have a note filename but IsTemplate
+                                also set, here we discard file name and make a new one. }
         procedure FormShow(Sender: TObject);
         procedure KMemo1Change(Sender: TObject);
-        	{ Watchs for  backspace affecting a bullet point, and whole lot of ctrl, shift, alt
-              combinations. For things we let KMemo handle, just exit, for things we handle
-              must set key to 0 after doing so. }
+        	                    { Watchs for  backspace affecting a bullet point, and whole lot of ctrl, shift, alt
+                                combinations. For things we let KMemo handle, just exit, for things we handle
+                                must set key to 0 after doing so. }
 		procedure KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure KMemo1KeyPress(Sender: TObject; var Key: char);
         procedure KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-                                    // All the Text menu items go through this event
+                                // All the Text menu items go through this event
         procedure MenuTextGeneralClick(Sender: TObject);
 		procedure MenuFindPrevClick(Sender: TObject);
 		procedure MenuFindNextClick(Sender: TObject);
@@ -356,7 +356,7 @@ type
         procedure MenuItemDeleteClick(Sender: TObject);
         procedure MenuItemExportPlainTextClick(Sender: TObject);
         procedure MenuItemExportRTFClick(Sender: TObject);
-                                 // This is a landing spot for either Find menu click or Ctrl-G
+                                // This is a landing spot for either Find menu click or Ctrl-G
 		procedure MenuItemFindClick(Sender: TObject);
 		procedure MenuItemPasteClick(Sender: TObject);
         procedure MenuItemPrintClick(Sender: TObject);
@@ -379,132 +379,124 @@ type
         procedure TimerHousekeepingTimer(Sender: TObject);
 
     private
-        NumbFindHits : integer;
-        Use_Undoer : boolean;         // We allow user to disable Undo system, ONLY set during create.
+        Use_Undoer : boolean;   // We allow user to disable Undo system, ONLY set during create.
         Undoer : TUndo_Redo;
         TitleHasChanged : boolean;
-        // a record of the cursor position before last click, used by shift click to select
+                                // a record of the cursor position before last click, used by shift click to select
         MouseDownPos : integer;
-        CreateDate : string;		// Will be '' if new note
-        // CtrlKeyDown : boolean;
+        CreateDate : string;	// Will be '' if new note
         Ready : boolean;
-//        LastFind : longint;			// Used in Find functions.
-        // FontName : string;			// Set in OnShow, const after that  ???
-        // FontNormal : integer; 		// as above
-
-        { To save us checking the title if user is well beyond it }
+                                { To save us checking the title if user is well beyond it }
         BlocksInTitle : integer;
-        // Set True by the delete button so we don't try and save it.
+                                // Set True by the delete button so we don't try and save it.
         DeletingThisNote : boolean;
         procedure AdjustFormPosition();
-        { Alters the Font of Block as indicated }
+                                { Alters the Font of Block as indicated }
         procedure AlterBlockFont(const FirstBlockNo, BlockNo: longint;
 				const Command: integer; const NewFontSize: integer=0);
-        { Alters the font etc of selected area as indicated }
+                                { Alters the font etc of selected area as indicated }
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
-        { If Toggle is true, sets bullets to what its currently no. Otherwise sets to TurnOn}
+                                { If Toggle is true, sets bullets to what its currently not. Otherwise sets to TurnOn}
         procedure BulletControl(const Toggle, TurnOn: boolean);
-                    { Looks between StartS and EndS, marking any http link. Byte, not char indexes.
-                    A weblink has leading and trailing whitespace, starts with http:// or https://
-                    and has a dot and char after the dot. We expect kmemo1 is locked at this stage.}
+                                { Looks between StartS and EndS, marking any http link. Byte, not char indexes.
+                                A weblink has leading and trailing whitespace, starts with http:// or https://
+                                and has a dot and char after the dot. We expect kmemo1 is locked at this stage.}
         procedure CheckForHTTP(const PText: pchar; const StartS, EndS: longint);
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
         procedure DumpKMemo(WhereFrom: string);
+        function ExitError(MSG: string): boolean;
         procedure ExprTan(var Result: TFPExpressionResult; const Args: TExprParameterArray);
-                            { Locates if it can Term and selects it. Ret False if not found.
-                            Uses regional var, LastFind to start its search from, set to 0 for new search
-                            If not found, returns to last found one if it exists.  So, if going forward,
-                            we'd go back one. If going back, we'd go one forward, assuming in both cases
-                            there was at least one 'Find'. }
-        function FindIt(Term: string; StartAt: integer; GoForward,
-            CaseSensitive: boolean): boolean;
+                                { KMemo find function, starts searching one char after
+                                SelIndex, rets True if it found at least one hit, selects it.
+                                Each atomic operation takes about 2mS. Always case insensitive.}
+        function FindInNote(Term: string; IncStartPos: integer): boolean;
+                                { KMemo find function, starts searching back one char before
+                                SelIndex, rets True if it found at least one hit, selects it.
+                                Each atomic operation takes about 2mS. Always case insensitive. }
+        function FindInNoteBack(Term: string): boolean;
+                                { Triggers a new find, if IncStartPos is True starts search a one past cursor
+                                and works for the speed button, shift-F3, Enter etc. Only false if call is
+                                because user is typing and existing match might still be viable }
+        procedure FindNew(IncStartPos: boolean);
         function FindNumbersInString(AStr: string; out AtStart, AtEnd: string): boolean;
-        {function GetFindHits(Term: string; CaseSensitive: boolean; HitPos: integer=0;
-            TextString: pchar=nil): integer;}
-//        function GetFindKeyHint(): string;
         procedure InsertDate();
-        //function MakeFileName(const Candidate: string): string;
-
         function ParagraphTextTrunc(): string;
         function RelativePos(const Term: ANSIString; const MText: PChar;
             StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
-                        // This method will, at some stage, return after creating and starting
-                        // a thread that normalises the xml in the list, adds footer and saves.
-                        // The thread keeps going after the method returns doing above and then
-                        // free-ing the List.
+                                // This method will, at some stage, return after creating and starting
+                                // a thread that normalises the xml in the list, adds footer and saves.
+                                // The thread keeps going after the method returns doing above and then
+                                // free-ing the List.
         function SaveStringList(const SL: TStringList; Loc: TNoteUpdateRec): boolean;
         function SimpleCalculate(out AStr: string): boolean;
         // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
 
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
-                            { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
-                            Http or local links, we need to clear the colour and underline of any text nearby
-                            that have been 'smeared' from user editing at the end of a link. When this happens,
-                            new text appears within the link block, bad .....  }
+                                { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
+                                Http or local links, we need to clear the colour and underline of any text nearby
+                                that have been 'smeared' from user editing at the end of a link. When this happens,
+                                new text appears within the link block, bad .....  }
         procedure ClearNearLink(const StartS, EndS: integer);
         function DoCalculate(CalcStr: string): string;
         procedure DoHousekeeping();
-                            { Returns a UUID suitable for a file name }
+                                { Returns a UUID suitable for a file name }
         function GetAFilename() : ANSIString;
         procedure CheckForLinks(const StartScan : longint = 1; EndScan : longint = 0);
-                            { Returns with the title, that is the first line of note, returns False if title is empty }
+                                { Returns with the title, that is the first line of note, returns False if title is empty }
         function GetTitle(out TheTitle: ANSIString): boolean;
         procedure ImportNote(FileName : string);
         procedure InitiateCalc();
-                            { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
+                                { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
         function LoadSingleNote() : boolean;
-                            { Searches for all occurances of Term in the KMemo text, makes them Links
-                            Does not bother with single char terms. Expects KMemo1 to be already locked.}
-        procedure MakeAllLinks(const PText: PChar; const Term: ANSIString;
-            const StartScan: longint=1; EndScan: longint=0);
-
-                            { Makes a link at passed position as long as it does not span beyond a block.
-                            And if it does span beyond one block, I let that go through to the keeper.
-                            Making a Hyperlink, deleting the origional text is a very slow process so we
-                            make heroic efforts to avoid having to do so. Index is char count, not byte.
-                            Its a SelectionIndex.  Note we no longer need pass this p the Link, remove ? }
+                                { Searches for all occurances of Term in the KMemo text, makes them Links
+                                Does not bother with single char terms. Expects KMemo1 to be already locked.}
+        procedure MakeAllLinks(const PText: PChar; const Term: ANSIString; const StartScan: longint=1; EndScan: longint=0);
+                                { Makes a link at passed position as long as it does not span beyond a block.
+                                And if it does span beyond one block, I let that go through to the keeper.
+                                Making a Hyperlink, deleting the origional text is a very slow process so we
+                                make heroic efforts to avoid having to do so. Index is char count, not byte.
+                                Its a SelectionIndex.  Note we no longer need pass this p the Link, remove ? }
 		procedure MakeLink(const Index, Len: longint);
-
-                            { Makes sure the first (and only the first) line is marked as Title
-                            Title should be Blue, Underlined and FontTitle big.
-                            Note that when a new note is loaded from disk, this function is not called,
-                            the Load unit knows how to do it itself. Saves 200ms with a big (20K) note. }
+                                { Makes sure the first (and only the first) line is marked as Title
+                                Title should be Blue, Underlined and FontTitle big.
+                                Note that when a new note is loaded from disk, this function is not called,
+                                the Load unit knows how to do it itself. Saves 200ms with a big (20K) note. }
         procedure MarkTitle();
-                            { Returns true if current cursor is 'near' a bullet item. That could be because we are
-  		                    on a Para Marker thats a Bullet and/or either Leading or Trailing Para is a Bullet.
-  		                    We return with IsFirstChar true if we are on the first visible char of a line (not
-  		                    necessarily a bullet line). If we return FALSE, passed parameters may not be set. }
+                                { Returns true if current cursor is 'near' a bullet item. That could be because we are
+  		                        on a Para Marker thats a Bullet and/or either Leading or Trailing Para is a Bullet.
+  		                        We return with IsFirstChar true if we are on the first visible char of a line (not
+  		                        necessarily a bullet line). If we return FALSE, passed parameters may not be set. }
 		function NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara: Boolean;
             	out BlockNo, TrailOffset, LeadOffset: longint): boolean;
-                            { Responds when user clicks on a hyperlink }
+                                { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
-                            { A method called by this or other apps to get what we might have selected }
+                                { A method called by this or other apps to get what we might have selected }
         procedure PrimaryCopy(const RequestedFormatID: TClipboardFormat; Data: TStream);
-                            { Pastes into KMemo whatever is returned by the PrimarySelection system. }
+                                { Pastes into KMemo whatever is returned by the PrimarySelection system. }
         procedure PrimaryPaste(SelIndex: integer);
-        	                { Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
+        	                    { Return a string with a title for new note "New Note 2018-01-24 14:46.11" }
         function NewNoteTitle() : ANSIString;
-                            { Saves the note as text or rtf, consulting user about path and file name }
+                                { Saves the note as text or rtf, consulting user about path and file name }
         procedure SaveNoteAs(TheExt: string);
         procedure MarkDirty();
         function CleanCaption() : ANSIString;
         procedure SetBullet(PB: TKMemoParagraph; Bullet: boolean);
-                            // Advises other apps we can do middle button paste
+                                // Advises other apps we can do middle button paste
         procedure SetPrimarySelection;
-                            // Restores block at StartLink to Text, attempts to merge linktext back into both
-                            // the previous or next block if it can.
-                            // There is a problem here. If a link is edited making it invalid but the remainer
-                            // happens to also be a valid link, we don't get back to original if edit is reversed.
+                                // Restores block at StartLink to Text, attempts to merge linktext back into both
+                                // the previous or next block if it can.
+                                // There is a problem here. If a link is edited making it invalid but the remainer
+                                // happens to also be a valid link, we don't get back to original if edit is reversed.
         function UnlinkBlock(StartBlock: integer): integer;
-                            // Cancels any indication we can do middle button paste 'cos nothing is selected
+                                // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
     public
-                            // Set by the calling process. FFN inc path
-                            // Carefull, cli has a real global version
+                                // Set by the calling process. FFN inc path
+                                // Carefull, cli has a real global version
         SingleNoteFileName : string;
         SingleNoteMode : Boolean;
         NoteFileName : string;              // Will contain the full note name, path, ID and .note
@@ -514,18 +506,18 @@ type
         SearchedTerm : string;  // If not empty, opening is associated with a search, go straight there.
         // If a new note is a member of Notebook, this holds notebook name until first save.
         TemplateIs : AnsiString;
-                    { Will mark this note as ReadOnly and not to be saved because the Sync Process
-                      has either replaced or deleted this note OR we are using it as an internal viewer.
-                      Can still read and copy content. Viewer users don't need big ugly yellow warning}
+                                { Will mark this note as ReadOnly and not to be saved because the Sync Process
+                                  has either replaced or deleted this note OR we are using it as an internal viewer.
+                                  Can still read and copy content. Viewer users don't need big ugly yellow warning}
         procedure SetReadOnly(ShowWarning : Boolean = True);
-                            // Public: Call on a already open note if user has followed up a search with a double click
+                                // Public: Call on a already open note if user has followed up a search with a double click
         procedure NewFind(Term: string);
-                    { Saves the note in KMemo1, must have title but can make up a file name if needed
-                    If filename is invalid, bad GUID, asks user if they want to change it (they do !)
-                    WeAreClosing indicates that the whole application is closing (not just this note)
-                    We always save the note on FormDestroy or application exit, even if not dirty to
-                    update the position and OOS data.  We used to call UpdateNote in the hope its quicker
-                    but it forgets to record notebook membership. Revist some day ....}
+                                { Saves the note in KMemo1, must have title but can make up a file name if needed
+                                If filename is invalid, bad GUID, asks user if they want to change it (they do !)
+                                WeAreClosing indicates that the whole application is closing (not just this note)
+                                We always save the note on FormDestroy or application exit, even if not dirty to
+                                update the position and OOS data.  We used to call UpdateNote in the hope its quicker
+                                but it forgets to record notebook membership. Revist some day ....}
         procedure SaveTheNote(WeAreClosing: boolean=False);
     end;
 
@@ -864,6 +856,15 @@ begin
             Kmemo1.SelEnd := SelIndex + length(Buff);
         end;
     end;
+    //DumpKMemo('After Primary Paste');
+    { There is an issue when pasting multiline text, it possiblt relates to direction
+    of selection, fixed by commenting out, at #13005 kmemo.pas, TKMemoBlocks.InsertString() -
+                        if not (Block is TKMemoContainer) then
+                            NormalToEOL(LocalIndex);
+    I am sure that commenting out is not appropriate, leaving my working copy
+    like that until I can workout what effect it has.
+    Seem to note some surprising values for LocalIndex, related somehow.
+    }
 end;
 
 { we insert datestring at selstart and optionall mark it small / italics
@@ -1114,128 +1115,28 @@ end;
 
 { Overview of local find process (local is note is 'Find', Searching all notes is 'Seach') :
   Works when the PanelFind is visible or not, gets called at note open if a search is underway.
+
+  New Model, September 2022. SWYT, or maybe FWYT (Find While You Type)
+
+  We select the found text but return focus back to the searchbox (so text is not
+  overwritten). Tab, Ctrl-F (conditional) and closing Search Window moves focus to
+  kmemo AND (??) deselects text leaving cursor at start of found item.
+
+  Enter in the find box finds !
+
+  Ctrl-N must still make a new note.
+
+  New system is much more Atomic, each event is self contained. User may be typing
+  in EditSearch, each keypress will trigger a forward Find. Two small speed buttons
+  back and forward just pass contents of edit to appropriate find method. No state
+  and no total no. hits for current search term.
+
+  When a user is typing, we should first try and match the word the cursor is on,
+  only moving ahead if user presses Enter, the Right Button, shift-F3, ctrl-shift-G
+
 }
 
-// Call to start searching at an existing position (usually cursor).
-// Note that StartAt arrives here as a (utf8) char index, not a byte index.
-function TEditBoxForm.FindIt(Term : string; StartAt : integer; GoForward, CaseSensitive : boolean) : boolean;
-var
-    NewPos : integer = 0;
-    // Ptr : PChar;
-    CleanSt : string = '';
-    {$ifdef WINDOWS}
-    len, I : integer;  TempString : string;{$endif}
-    //Tick, Tock : qword;
-
-        procedure GetFindHits(HitPos : integer = 0);
-        var
-            APos : integer = 0;
-            // AString : string;
-            HitsFound : integer = 1;
-        begin
-          // Assumes both Term and the Text data will have been uppercased if necessary
-          if (HitPos = 0) and (NumbFindHits <> 0) then begin
-            debugln('TEditBoxForm.FindIt - ERROR, Expected NumbFindHits to be zero');
-            showmessage('TEditBoxForm.FindIt - ERROR, Expected NumbFindHits to be zero');
-          end;
-
-          APos := PosEx(Term, CleanSt, APos+1);
-          //Tick := gettickcount64();
-          while APos > 0 do begin                                      // 1mS on Linux, Very Big test Note, first run
-               if ((HitPos > 0) and (HitPos < APos)) then break;
-               inc(HitsFound);
-               APos := PosEx(Term, CleanSt, APos+1);
-          end;
-          //Tock := gettickcount64();
-          //debugln('TEditBoxForm.FindIt - Total Hit Find = ' + inttostr(Tock - Tick) + 'mS');
-          if HitPos > 0 then
-                LabelFindCount.Caption := HitsFound.ToString + '/' + NumbFindHits.ToString()
-          else begin
-                dec(HitsFound);                     // allow for initial state of 1
-                NumbFindHits := HitsFound;          // regional var, set to zero in UpDownControl if new Find term
-                if HitsFound = 0 then
-                    LabelFindCount.Caption := '';   // not sure if we need that
-          end;
-        end;
-
-        function JumpToItem() : boolean;
-        begin
-            if GoForward then
-                 NewPos := PosEx(Term, CleanSt, StartAt + 1)
-            else
-                 NewPos := RPosEx(Term, CleanSt, StartAt);
-             result := NewPos <> 0;      // false, 0, means item not found.
-        end;
-begin
-    // Sadly, we also need to account for cr/lf here with windows. KMemo uses a zero based char
-    // index, the Text is still zero based but has cr/lf (in Windows) and counts bytes. The #13, CR,
-    // is generated by KMemo when we ask for Text under Windows, occasionally I see a string with excess #13
-    // and it makes searching hard. So, I make a new 'Text' string with all #13 removed only for windows.
-    // performance testing using a note about 500K, loads in 4 seconds on Linux, 12 on Windows
-
-
-    // Here, StartAT is a zero based char count, a UTF8 char is 1 and a newline is 1
-    //if GoForward then inc(StartAt);       // so we are past previous Find before starting next one
-    {$IFDEF WINDOWS}
-        // We make copy of the Text and work from it, calling Text repeatadly is slow and just setting
-        // setting a pointer, unsafe !  72 mS on Linux, release mode Very Big Test Note
-        TempString := KMemo1.Blocks.text;
-        Len := length(TempString);            //
-        I := 1;
-        if CaseSensitive then begin
-            while (I <= Len) do begin
-                  if TempString[I] <> #13 then
-                      CleanSt := CleanSt + TempString[I];
-                  inc(I);
-            end;
-        end else begin
-            while (I <= Len) do begin
-                  if TempString[I] <> #13 then
-                      CleanSt := CleanSt + upcase(TempString[I]);
-                  inc(I);
-            end;
-            Term := uppercase(Term);
-        end;
-    {$else}
-        if CaseSensitive then
-            CleanSt := pchar(KMemo1.Blocks.text)
-        else begin
-            //Tick := gettickcount64();
-            CleanSt := uppercase(KMemo1.Blocks.text);
-            // 50-75mS, Linux, release mode, Very Large Test Note, seem much of that is KMemo
-            // assembling the string in the first place.
-            //Tock := gettickcount64();
-            //debugln('TEditBoxForm.FindIt - uppercase cleanSt = ' + inttostr(Tock - Tick) + 'mS');
-            Term := uppercase(Term);
-        end;
-    {$endif}
-
-    // OK, we can now assume we have a Unix style newline Text string
-    StartAt := length(utf8Copy(CleanSt, 1, StartAt));
-    // Thats our revised StartAt, now a byte count of where to start Finding
-
-    if not JumptoItem() then begin       // we try to find it, wrapping around once if necessary
-        if GoForward then
-            StartAt := 1
-        else StartAt := length(KMemo1.Blocks.Text);
-        if not JumpToItem() then
-            exit(False);                // we give up.
-    end;
-    // if to here, we have a hit at NewPos, even if its the one we started at, rolled around
-    // NewPos is one based Byte count, UTF8 are 2 or more, in Windows,newline is 2 char long
-    // It starts at 1 and that does not work as a char index,
-    if NewPos > 1 then begin
-        dec(NewPos);                             // now zero based
-        KMemo1.SelStart := utf8Length(Copy(CleanSt, 1, NewPos)); // NewPos is byte.
-        KMemo1.SelLength := UTF8Length(Term);
-    end;
-    if NumbFindHits = 0 then                // Maybe it is zero, but maybe term changed, its fast to ret 0
-        //GetFindHits(Term, CaseSensitive);
-        GetFindHits();
-    GetFindHits(NewPos);                    // GetFindHints expects a byte count
-    Result := true;                         // we are not using this anyway
-end;
-
+const SearchPanelHeight = 39;
 
 procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
 begin
@@ -1250,10 +1151,8 @@ end;
 procedure TEditBoxForm.NewFind(Term : string);      // Public, called from SearchForm
 begin
     EditFind.Text := Term;
-    FindIt(Term, 1, true, false);        // no warning about not finding, Find Panel won't be open.
+    FindInNote(Term, 0);                            // If we don't find it, no warning !
 end;
-
-const SearchPanelHeight = 39;
 
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
 // works in two modes, Toggle or Always _activate_ Find
@@ -1295,69 +1194,9 @@ begin
     EditFind.color := clGray;
 end;
 
-procedure TEditBoxForm.EditFindKeyDown(Sender: TObject; var Key: Word;
-    Shift: TShiftState);
-begin
-    // This needs to be a keydown else we get the trailing edge of key event that opened panel
-    if (( {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) ) then begin
-        if (Key = VK_F) then begin
-            Key := 0;
-            if Sett.CheckFindToggles.checked then begin
-                MenuItemFindClick(Sender);
-                KMemo1.SetFocus;
-            end;
-            exit;
-        end;
-        if (Key = VK_N) then begin
-            Key := 0;
-            SearchForm.OpenNote('');
-            exit;
-        end;
-    end;
-end;
-
-procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-// We must move focus back to KMemo on every find, else highlighted text is hidden on Qt with some themes
-// If we allow user to use Enter to trigger a find, their next press of enter will erase what ever is highlighted
-var Direction : integer = 0;    // 0 = no action, 1 = Next, -1 = prev
-begin
-    // We now respond to a number of keys -
-    // Ctrl-Enter, F3, Ctrl-G means Next
-    // Alt-Enter, Shift-F3, Ctrl-Shift-G means previous
-    // Enter means user has used wrong key, tell them.
-
-    if ([] = shift) and (Key = VK_F3) then Direction := 1
-    else if ({$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) and         // That is ctrl only
-                ((Key = VK_RETURN) or (Key = VK_G)) then Direction := 1
-         else if ([ssAlt] = Shift) and (Key = VK_RETURN) then Direction := -1    // Alt-Enter
-              else if ([ssShift] = Shift) and (Key = VK_F3) then Direction := -1 // Shift F3
-                   else if ([ssCtrl, ssShift] = Shift) and (Key = VK_G) then          // Ctrl-Shift-G
-                       Direction := -1;
-
-    if (Direction = 0) then begin
-        if Key = VK_Return then begin
-            LabelFindCount.caption := '';
-            if  (length(LabelFindInfo.Caption) > 1) and (LabelFindInfo.Caption[1] = ' ') then
-                LabelFindInfo.Caption := {$ifdef DARWIN}
-                        rsFindNavRightHintMac + ', ' + rsFindNavLeftHint {$else}
-                        rsFindNavRightHint + ', ' + rsFindNavLeftHint{$endif}
-            else LabelFindInfo.Caption := ', ' + {$ifdef DARWIN}
-                        rsFindNavRightHintMac + ' ' + rsFindNavLeftHint {$else}
-                        rsFindNavRightHint + ', ' + rsFindNavLeftHint{$endif};
-            EditFind.SetFocus;
-	    end;
-	end else begin
-        if Direction = 1 then
-                SpeedRightClick(self)
-        else SpeedLeftClick(self);
-        Key := 0;
-    end;
-end;
-
 procedure TEditBoxForm.EditFindChange(Sender: TObject);
 begin
-    //FindStatus := fs_EditFindChanged;
-    NumbFindHits := 0;
+    FindNew(False);               // User keystrokes do not jump forward until necessary
 end;
 
 procedure TEditBoxForm.EditFindEnter(Sender: TObject);
@@ -1365,31 +1204,195 @@ begin
     editFind.Color:= clDefault;
 end;
 
-procedure TEditBoxForm.SpeedLeftClick(Sender: TObject);      // think btPrev
-var   Res : Boolean = false;
+procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+// We must move focus back to KMemo on every find, else highlighted text is hidden on Qt with some themes
+// If we allow user to use Enter to trigger a find, their next press of enter will erase what ever is highlighted
 begin
-   Res := FindIt(EditFind.Text, KMemo1.SelStart, False, False);
+        // ToDo : remove this
+end;
+
+
+procedure TEditBoxForm.EditFindKeyDown(Sender: TObject; var Key: Word;
+    Shift: TShiftState);
+begin
+    // This needs to be a keydown else we get the trailing edge of key event that opened panel
+    // Note that user typing normal characters are caught in TEditBoxForm.EditFindChange();
+    if (Key = VK_RETURN) then begin                                 // Enter
+        Key := 0;
+        SpeedRightClick(self);
+        exit;
+    end;
+    if Key = VK_F3 then begin                                       // F3  inc Shift
+        Key := 0;
+        if [ssShift] = Shift then SpeedLeftClick(self)
+        else SpeedRightClick(self);
+        exit;
+    end;
+    // ---- Control keys and ...
+    if (( {$ifdef DARWIN}[ssMeta]{$else}[ssCtrl]{$endif} = Shift) ) then begin
+        case Key of
+          VK_F: begin
+                    Key := 0;
+                    if Sett.CheckFindToggles.checked then begin
+                        MenuItemFindClick(Sender);
+                        KMemo1.SetFocus;                       // ToDo : check this logic
+                    end;
+                    exit;
+                end;
+          VK_N: begin
+                    Key := 0;
+                    SearchForm.OpenNote('');
+                    exit;
+                end;
+          VK_G: begin
+                    Key := 0;
+                    if [ssCtrl, ssShift] = Shift then
+                        SpeedLeftClick(self)
+                    else  SpeedRightClick(self);
+                end;
+        end;
+    end;
+end;
+
+
+function  TEditBoxForm.ExitError(MSG : string) : boolean;
+begin
+   result := false;
+   debugln('ERROR from tomboy-ng EditBox Unit : ' + MSG);
+end;
+
+procedure TEditBoxForm.SpeedLeftClick(Sender: TObject);      // think btPrev
+// var   Res : Boolean = false;
+begin
+   if (EditFind.Caption = '') or (EditFind.Caption = rsMenuSearch) then exit;
+   LabelFindInfo.Caption := '';
+   if not FindInNoteBack(lowercase(EditFind.Text)) then
+      LabelFindInfo.Caption := rsNotAvailable;
+    if PanelFind.Height = SearchPanelHeight then
+        EditFind.SetFocus;
+
+(*   Res := FindIt(EditFind.Text, KMemo1.SelStart, False, False);
     if Res then LabelFindInfo.Caption := ''
     else begin
         LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
         NumbFindHits := 0;
         LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
     end;
-    KMemo1.setfocus;
+    KMemo1.setfocus;   *)
+end;
+
+
+procedure TEditBoxForm.FindNew(IncStartPos : boolean);
+var Found : boolean;
+begin
+    if (EditFind.Caption = '') or (EditFind.Caption = rsMenuSearch) then exit;
+    LabelFindInfo.Caption := '';
+    if IncStartPos then
+        Found := FindInNote(lowercase(EditFind.Text), 1)
+    else Found := FindInNote(lowercase(EditFind.Text), 0);
+    if not Found then
+       LabelFindInfo.Caption := rsNotAvailable;
+    if PanelFind.Height = SearchPanelHeight then
+        EditFind.SetFocus;
 end;
 
 procedure TEditBoxForm.SpeedRightClick(Sender: TObject);    // think btNext
-var   Res : Boolean = false;
+// var   Res : Boolean = false;
 begin
-   Res := FindIt(EditFind.Text, KMemo1.SelStart+1, true, False);
+    FindNew(True);
+
+(*   Res := FindIt(EditFind.Text, KMemo1.SelStart+1, true, False);
    if Res then LabelFindInfo.Caption := ''
    else begin
        LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
        NumbFindHits := 0;
        LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
    end;
-   KMemo1.setfocus;
+   KMemo1.setfocus;  *)
 end;
+
+function TEditBoxForm.FindInNoteBack(Term : string) : boolean;
+var
+    StartingCursor, StartBlock, IndexBlock, IntIndex, Found : integer;
+    SearchString : string = '';
+begin
+    StartingCursor := Kmemo1.Blocks.RealSelStart;
+    StartBlock := Kmemo1.Blocks.IndexToBlockIndex(StartingCursor, IntIndex);
+    if not KMemo1.Blocks[StartBlock].ClassNameIs('TKMemoParagraph') then begin
+        SearchString := lowercase(Kmemo1.Blocks[StartBlock].Text);
+        UTF8delete(SearchString, IntIndex+1, 99999);       // Remove already searched content
+    end;
+    IndexBlock := StartBlock -1;                           // and if we start at block zero ?
+    if IndexBlock < 0 then
+        IndexBlock := KMemo1.Blocks.Count-1;
+    while true do begin
+        if IndexBlock < 0 then exit(ExitError('IndexBlock < 0'));
+        if IndexBlock >= Kmemo1.Blocks.Count then exit(ExitError('IndexBlock too high'));
+        if KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') or (IndexBlock = 0) then begin
+            Found := UTF8RPos(Term, SearchString);         // 1 based
+            if Found > 0 then begin
+                Kmemo1.SelStart := Kmemo1.Blocks.BlockToIndex(KMemo1.Blocks[IndexBlock]) + Found;
+                Kmemo1.SelLength := UTF8Length(Term);
+                exit(True);                                // we found one, might be only one in a loop
+            end;
+            SearchString := '';
+        end;
+        if IndexBlock = StartBlock then exit(false);       // looped around to where we started.
+        if IndexBlock = 0 then
+            IndexBlock := KMemo1.Blocks.Count-1;           // Possibly slow ......
+        if not KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') then
+            SearchString := lowercase(Kmemo1.Blocks[IndexBlock].Text) + SearchString;
+        dec(IndexBlock);
+    end;
+end;
+
+function TEditBoxForm.FindInNote(Term : string; IncStartPos : integer) : boolean;
+var
+    StartingCursor, StartBlock, IndexBlock, IntIndex, Found : integer;
+    OffSets : integer = 0;   // Allow for size of any paragraphs we skip over with no hit
+    SearchString : string = '';
+begin
+   // We always start one char after the current cursor position. Find the next
+   // match and highlight it. If we get back to cursor position, its a NOFIND.
+   StartingCursor := Kmemo1.Blocks.RealSelStart;
+   StartBlock := Kmemo1.Blocks.IndexToBlockIndex(StartingCursor, IntIndex);
+   if not KMemo1.Blocks[StartBlock].ClassNameIs('TKMemoParagraph') then begin
+        SearchString := lowercase(Kmemo1.Blocks[StartBlock].Text);
+        UTF8delete(SearchString, 1, IntIndex+IncStartPos);  // Remove already searched content, plus 1 if user not typing
+        inc(Offsets, IncStartPos);
+   end else inc(Offsets);
+   // inc(Offsets);                                            // account for either the Para or the skipped char in text
+   IndexBlock := StartBlock+1;                              // Next block, if not there, drop through
+   while IndexBlock < KMemo1.Blocks.Count do begin
+        if KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') and (SearchString <> '') then begin                        // ****
+            Found := UTF8Pos(Term, SearchString);           // 1 based
+            if Found > 0 then begin
+                Kmemo1.SelStart := StartingCursor + Offsets + Found -1;
+                Kmemo1.SelLength := UTF8Length(Term);
+                //exit(Kmemo1.SelStart <> StartingCursor);    // False if its the same one we started on !
+                exit(True);
+            end;
+            OffSets += utf8Length(SearchString) + 1;        // +1 for the paragraph block                                    // ****
+            SearchString := '';
+        end else begin
+            if not KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') then
+                SearchString += lowercase(Kmemo1.Blocks[IndexBlock].Text)
+            else inc(OffSets);                              // Must allow for Para marked                              // ****
+        end;
+        if IndexBlock = StartBlock then begin               // Hmm, thats were we started and its still not there ?
+            Exit(False);
+        end;
+        inc(IndexBlock);                                                                                                       // ****
+        if IndexBlock = KMemo1.Blocks.Count then begin                                                                         // ****
+            IndexBlock := 0;                                // Loop around.
+            Offsets := 0;
+            StartingCursor := 0;
+        end;
+   end;
+   Result := False;            // Here because user has initiated a new Find for something that does not exist.
+   KMemo1.SelStart := StartingCursor;
+end;
+
 
 { ------- S T A N D A R D    E D I T I N G    F U N C T I O N S ----- }
 
@@ -3116,32 +3119,33 @@ end;
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
- 	//T1 : qword;          // Temp time stamping to test speed
+ 	//T1, T2, T3, T4, T5 : qword;          // Temp time stamping to test speed
 begin
-    // Timing numbers below using MyRecipes on my Acer linux laptop. For local comparison only !
+    // Timing numbers below using MyRecipes on my Dell linux laptop. For local comparison only !
+    // Note QT5 times quite a lost faster, Loading is slow and so is resizing !  Sept 2022
     //T1 := gettickcount64();
     Loader := TBLoadNote.Create();
-    Loader.FontNormal:= Sett.FontNormal;
-    // Loader.FontName := FontName;
+    Loader.FontNormal:= Sett.FontNormal;                    // 0mS
     Loader.FontSize:= Sett.FontNormal;
     KMemo1.Blocks.LockUpdate;
     KMemo1.Clear;
-    Loader.LoadFile(FileName, KMemo1);                        // 340mS
-    KMemo1.Blocks.UnlockUpdate;                             // 370mS
-    // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
+    Loader.LoadFile(FileName, KMemo1);                      // 140mS  (197mS GTK2)
+    KMemo1.Blocks.UnlockUpdate;
     Createdate := Loader.CreateDate;
     Ready := true;
     Caption := Loader.Title;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.checked then
-    	CheckForLinks();                     		// 360mS
+    	CheckForLinks();                     		         // 12mS (14ms GTK2)
     Left := Loader.X;
     Top := Loader.Y;
-    Height := Loader.Height;
-    Width := Loader.Width;          // AdjustFormPosition() will fix if necessary
+    Height := Loader.Height;                                 // 84mS (133mS GTK2) Height and Widt                                      h
+    Width := Loader.Width;                                   // AdjustFormPosition() will fix if necessary
     AdjustFormPosition();
-    Loader.Free;
+    Loader.Free;                                             // 0mS
     TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
-    // debugln('Load Note=' + inttostr(gettickcount64() - T1) + 'mS');
+    //debugln('Load Note=' + inttostr(T2 - T1) + 'mS ' + inttostr(T3 - T2) + 'mS ' + inttostr(T4 - T3) + 'mS ' + inttostr(T5 - T4) + 'mS ');
+    //debugln('Total=' + inttostr(T5 - T1) + 'mS ');
+
 end;
 
 {$define SAVETHREAD}

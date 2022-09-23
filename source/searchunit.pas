@@ -719,9 +719,6 @@ begin
     if assigned(TheMainNoteLister) then begin
       AForm := TheMainNoteLister.FindFirstOpenNote();
       while AForm <> Nil do begin
-
-          debugln('Added a form menu ' + AForm.Caption);
-
           MList.Add(TEditBoxForm(AForm).PopupMainTBMenu);
           AForm := TheMainNoteLister.FindNextOpenNote();
       end;
