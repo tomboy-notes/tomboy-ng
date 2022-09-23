@@ -411,11 +411,15 @@ type
                                 { KMemo find function, starts searching one char after
                                 SelIndex, rets True if it found at least one hit, selects it.
                                 Each atomic operation takes about 2mS. Always case insensitive.}
-        function FindInNote(Term: string): boolean;
+        function FindInNote(Term: string; IncStartPos: integer): boolean;
                                 { KMemo find function, starts searching back one char before
                                 SelIndex, rets True if it found at least one hit, selects it.
                                 Each atomic operation takes about 2mS. Always case insensitive. }
         function FindInNoteBack(Term: string): boolean;
+                                { Triggers a new find, if IncStartPos is True starts search a one past cursor
+                                and works for the speed button, shift-F3, Enter etc. Only false if call is
+                                because user is typing and existing match might still be viable }
+        procedure FindNew(IncStartPos: boolean);
         function FindNumbersInString(AStr: string; out AtStart, AtEnd: string): boolean;
         procedure InsertDate();
         function ParagraphTextTrunc(): string;
@@ -852,6 +856,15 @@ begin
             Kmemo1.SelEnd := SelIndex + length(Buff);
         end;
     end;
+    //DumpKMemo('After Primary Paste');
+    { There is an issue when pasting multiline text, it possiblt relates to direction
+    of selection, fixed by commenting out, at #13005 kmemo.pas, TKMemoBlocks.InsertString() -
+                        if not (Block is TKMemoContainer) then
+                            NormalToEOL(LocalIndex);
+    I am sure that commenting out is not appropriate, leaving my working copy
+    like that until I can workout what effect it has.
+    Seem to note some surprising values for LocalIndex, related somehow.
+    }
 end;
 
 { we insert datestring at selstart and optionall mark it small / italics
@@ -1117,6 +1130,10 @@ end;
   in EditSearch, each keypress will trigger a forward Find. Two small speed buttons
   back and forward just pass contents of edit to appropriate find method. No state
   and no total no. hits for current search term.
+
+  When a user is typing, we should first try and match the word the cursor is on,
+  only moving ahead if user presses Enter, the Right Button, shift-F3, ctrl-shift-G
+
 }
 
 const SearchPanelHeight = 39;
@@ -1134,7 +1151,7 @@ end;
 procedure TEditBoxForm.NewFind(Term : string);      // Public, called from SearchForm
 begin
     EditFind.Text := Term;
-    FindInNote(Term);                               // If we don't find it, no warning !
+    FindInNote(Term, 0);                            // If we don't find it, no warning !
 end;
 
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
@@ -1179,7 +1196,7 @@ end;
 
 procedure TEditBoxForm.EditFindChange(Sender: TObject);
 begin
-    SpeedRightClick(self);
+    FindNew(False);               // User keystrokes do not jump forward until necessary
 end;
 
 procedure TEditBoxForm.EditFindEnter(Sender: TObject);
@@ -1199,6 +1216,7 @@ procedure TEditBoxForm.EditFindKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
 begin
     // This needs to be a keydown else we get the trailing edge of key event that opened panel
+    // Note that user typing normal characters are caught in TEditBoxForm.EditFindChange();
     if (Key = VK_RETURN) then begin                                 // Enter
         Key := 0;
         SpeedRightClick(self);
@@ -1263,15 +1281,25 @@ begin
     KMemo1.setfocus;   *)
 end;
 
-procedure TEditBoxForm.SpeedRightClick(Sender: TObject);    // think btNext
-// var   Res : Boolean = false;
+
+procedure TEditBoxForm.FindNew(IncStartPos : boolean);
+var Found : boolean;
 begin
     if (EditFind.Caption = '') or (EditFind.Caption = rsMenuSearch) then exit;
     LabelFindInfo.Caption := '';
-    if not FindInNote(lowercase(EditFind.Text)) then
+    if IncStartPos then
+        Found := FindInNote(lowercase(EditFind.Text), 1)
+    else Found := FindInNote(lowercase(EditFind.Text), 0);
+    if not Found then
        LabelFindInfo.Caption := rsNotAvailable;
     if PanelFind.Height = SearchPanelHeight then
         EditFind.SetFocus;
+end;
+
+procedure TEditBoxForm.SpeedRightClick(Sender: TObject);    // think btNext
+// var   Res : Boolean = false;
+begin
+    FindNew(True);
 
 (*   Res := FindIt(EditFind.Text, KMemo1.SelStart+1, true, False);
    if Res then LabelFindInfo.Caption := ''
@@ -1318,7 +1346,7 @@ begin
     end;
 end;
 
-function TEditBoxForm.FindInNote(Term : string) : boolean;
+function TEditBoxForm.FindInNote(Term : string; IncStartPos : integer) : boolean;
 var
     StartingCursor, StartBlock, IndexBlock, IntIndex, Found : integer;
     OffSets : integer = 0;   // Allow for size of any paragraphs we skip over with no hit
@@ -1330,9 +1358,10 @@ begin
    StartBlock := Kmemo1.Blocks.IndexToBlockIndex(StartingCursor, IntIndex);
    if not KMemo1.Blocks[StartBlock].ClassNameIs('TKMemoParagraph') then begin
         SearchString := lowercase(Kmemo1.Blocks[StartBlock].Text);
-        UTF8delete(SearchString, 1, IntIndex+1);            // Remove already searched content, plus 1                  // ****
-   end;
-   inc(Offsets);                                            // account for either the Para or the skipped char in text
+        UTF8delete(SearchString, 1, IntIndex+IncStartPos);  // Remove already searched content, plus 1 if user not typing
+        inc(Offsets, IncStartPos);
+   end else inc(Offsets);
+   // inc(Offsets);                                            // account for either the Para or the skipped char in text
    IndexBlock := StartBlock+1;                              // Next block, if not there, drop through
    while IndexBlock < KMemo1.Blocks.Count do begin
         if KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') and (SearchString <> '') then begin                        // ****
@@ -1340,7 +1369,8 @@ begin
             if Found > 0 then begin
                 Kmemo1.SelStart := StartingCursor + Offsets + Found -1;
                 Kmemo1.SelLength := UTF8Length(Term);
-                exit(Kmemo1.SelStart <> StartingCursor);    // False if its the same one we started on !
+                //exit(Kmemo1.SelStart <> StartingCursor);    // False if its the same one we started on !
+                exit(True);
             end;
             OffSets += utf8Length(SearchString) + 1;        // +1 for the paragraph block                                    // ****
             SearchString := '';
