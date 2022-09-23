@@ -1,0 +1,1924 @@
+# Ukrainian translation for tomboy-ng
+# Copyright (C) 2022 Free Software Foundation, Inc.
+# Andrij Mizyk <andm1zyk@proton.me>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tomboy-ng v0.34\n"
+"PO-Revision-Date: 2022-09-22 16:18+0300\n"
+"Last-Translator: Andrij Mizyk <andm1zyk@proton.me>\n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: editbox.rsunabletoevaluate
+msgid "Unable to find an expression to evaluate"
+msgstr "Неможливо знайти вираз для виконання"
+
+#: mainunit.rsabout
+msgid "tomboy-ng notes - cross platform, sync and manage notes."
+msgstr "нотатки tomboy-ng - міжплатформовість, синхронізація і керування нотатками."
+
+#: mainunit.rsaboutbdate
+msgid "Build date"
+msgstr "Дата збирання"
+
+#: mainunit.rsaboutcpu
+msgid "TargetCPU"
+msgstr "ЦільовийЦП"
+
+#: mainunit.rsaboutoperatingsystem
+msgid "OS"
+msgstr "ОС"
+
+#: mainunit.rsaboutver
+msgid "Version"
+msgstr "Версія"
+
+#: mainunit.rsfailedtoindex
+msgid "Failed to index one or more notes."
+msgstr "Не вдалося проіндексувати одну або більше нотаток."
+
+#: resourcestr.rsaddnotestonotebook
+msgid "Add notes to this Notebook"
+msgstr "Додати нотатки до цього записника"
+
+#: resourcestr.rsalldone
+msgctxt "resourcestr.rsalldone"
+msgid "All Done"
+msgstr "Усе готово"
+
+#: resourcestr.rsallrestored
+msgctxt "resourcestr.rsallrestored"
+msgid "Notes and config files Restored, restart suggested."
+msgstr "Нотатки і файл конфігурації відновлено, пропонується перезапустити."
+
+#: resourcestr.rsautosnapshotrun
+msgid "Completed autosnapshot run."
+msgstr "Завершено роботу автозрізів."
+
+#: resourcestr.rsautosyncnotpossible
+msgid "Auto sync not possible right now"
+msgstr "Автосинхронізація не можлива прямо зараз"
+
+#: resourcestr.rsbadnotes
+#, object-pascal-format
+msgctxt "resourcestr.rsbadnotes"
+msgid "You have %d bad notes in Notes Directory"
+msgstr "Ви маєте %d поганих нотаток у каталозі з нотатками"
+
+#: resourcestr.rsbadnotesfound1
+msgctxt "resourcestr.rsbadnotesfound1"
+msgid "Please go to Settings -> Recover -> Recover Notes"
+msgstr "Будь ласка, перейдіть у Налаштувати -> Відновлення -> Відновлення нотаток"
+
+#: resourcestr.rsbadnotesfound2
+msgctxt "resourcestr.rsbadnotesfound2"
+msgid "You should do so to ensure your notes are safe."
+msgstr "Ви повинні зробити це, щоб забезпечити безпеку ваших нотаток."
+
+#: resourcestr.rscannotdelete
+msgctxt "resourcestr.rscannotdelete"
+msgid "Cannot delete "
+msgstr "Неможливо видалити"
+
+#: resourcestr.rscannotfindnote
+msgctxt "resourcestr.rscannotfindnote"
+msgid "ERROR, cannot find "
+msgstr "ПОМИЛКА, неможливо знайти"
+
+#: resourcestr.rschangenameofnotebook
+msgid "Change the name of this Notebook"
+msgstr "Змінити назву цього записника"
+
+#: resourcestr.rschangesync
+msgid "Change Sync Repo"
+msgstr "Змінити синхронізацію репозиторію"
+
+#: resourcestr.rsclickbadnote
+msgctxt "resourcestr.rsclickbadnote"
+msgid "Double click on any Bad Notes"
+msgstr "Подвійне клацання на будь-якій поганій нотатці"
+
+#: resourcestr.rsclicksnapshot
+msgctxt "resourcestr.rsclicksnapshot"
+msgid "Click an Available Snapshot"
+msgstr "Клацніть на доступному зрізі"
+
+#: resourcestr.rscontentdated
+msgid "Content Dated"
+msgstr "Вміст датовано"
+
+#: resourcestr.rscopyfailed
+msgctxt "resourcestr.rscopyfailed"
+msgid "Copying orig to Backup directory failed"
+msgstr "Не вдалося скопіювати оригінал до каталогу резервних копій"
+
+#: resourcestr.rscreatenewrepo
+msgctxt "resourcestr.rscreatenewrepo"
+msgid "Create a new Repo ?"
+msgstr "Створити новий репозиторій?"
+
+#: resourcestr.rsdeleteandreplace_1
+msgctxt "resourcestr.rsdeleteandreplace_1"
+msgid "Notes at risk !"
+msgstr "Нотатки під ризиком !"
+
+#: resourcestr.rsdeleteandreplace_2
+#, object-pascal-format
+msgctxt "resourcestr.rsdeleteandreplace_2"
+msgid "Delete all notes in %s and replace with snapshot dated %s ?"
+msgstr "Видалити всі нотатки в %s і замінити на зріз датований %s ?"
+
+#: resourcestr.rsdeleteddamaged
+#, object-pascal-format
+msgid "OK, deleted %d damaged notes"
+msgstr "ДОБРЕ, видалено %d пошкоджених нотаток"
+
+#: resourcestr.rsdownloaded
+msgid "Downloaded"
+msgstr "Завантажено"
+
+#: resourcestr.rsdownloadnotes
+msgid "Downloading notes"
+msgstr "Завантаження нотаток"
+
+#: resourcestr.rsenternewnotebook
+msgctxt "resourcestr.rsenternewnotebook"
+msgid "Enter a new notebook name please"
+msgstr "Уведіть назву нового записника, будь ласка"
+
+#: resourcestr.rserrorcopyfile
+msgctxt "resourcestr.rserrorcopyfile"
+msgid "Failed to copy file, does destination dir exist ?"
+msgstr "Не вдалося скопіювати файл, цільовий каталог існує ?"
+
+#: resourcestr.rsfilesyncinfo1
+msgid "tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive"
+msgstr "tomboy-ng використовує синхронізацію файлів, щоб синхронізувати на DropBox, Google Drive, пристрій USB і т.п."
+
+#: resourcestr.rsfilesyncinfo2
+msgid "or uses a remote server over the internet with sshfs"
+msgstr "або використовує віддалений сервер поверх інтернету з sshfs"
+
+#: resourcestr.rsfindnavlefthint
+msgid "Backward Find : Shift-F3 or Shift-Ctrl-G"
+msgstr "Зворотній пошук : Shift-F3 або Shift-Ctrl-G"
+
+#: resourcestr.rsfindnavlefthintmac
+msgid "Backward Find : Shift-Command-G"
+msgstr "Зворотній пошук : Shift-Command-G"
+
+#: resourcestr.rsfindnavrighthint
+msgid "Find : F3 or Ctrl-G"
+msgstr "Шукати : F3 або Ctrl-G"
+
+#: resourcestr.rsfindnavrighthintmac
+msgid "Find : Command-G"
+msgstr "Шукати : Command-G"
+
+#: resourcestr.rsfound
+msgctxt "resourcestr.rsfound"
+msgid "Found"
+msgstr "Знайдено"
+
+#: resourcestr.rsgithubsyncinfo1
+msgid "tomboy-ng can use Github to both sync and display or edit notes"
+msgstr "tomboy-ng може використовувати Github для показу і синхронізації, та для редагування нотаток"
+
+#: resourcestr.rsgithubsyncinfo2
+msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr "прочитайте сторінки вікі tomboy-ng для інструкцій."
+
+#: resourcestr.rsgithubtokenexpired
+msgid "Github Token may have expired"
+msgstr "Токен Github напевно застарів"
+
+#: resourcestr.rshelpconfig
+msgctxt "resourcestr.rshelpconfig"
+msgid "Create or use an alternative config"
+msgstr "Створити або використовувати конфіґ"
+
+#: resourcestr.rshelpdebug
+msgctxt "resourcestr.rshelpdebug"
+msgid "Direct debug output to SOME.LOG."
+msgstr "Пряме виведення зневадження у SOME.LOG."
+
+#: resourcestr.rshelpdebugindex
+msgctxt "resourcestr.rshelpdebugindex"
+msgid "Show debug msgs while indexing notes"
+msgstr "Показувати повідомлення зневадження під час індексування нотаток"
+
+#: resourcestr.rshelpdebugspell
+msgctxt "resourcestr.rshelpdebugspell"
+msgid "Show debug messages while spell setup"
+msgstr "Показувати повідомлення зневадження під час налаштування правопису"
+
+#: resourcestr.rshelpdebugsync
+msgctxt "resourcestr.rshelpdebugsync"
+msgid "Show debug messages during Sync"
+msgstr "Показувати повідомлення зневадження під час синхронізації"
+
+#: resourcestr.rshelpdelay
+msgctxt "resourcestr.rshelpdelay"
+msgid "Delay startup 2 sec to allow OS to settle"
+msgstr "Затримати запуск на 2 сек., щоб дозволити ОС запуститися"
+
+#: resourcestr.rshelphelp
+msgctxt "resourcestr.rshelphelp"
+msgid "Show this help message and exit."
+msgstr "Показати це повідомлення довідки і вийти."
+
+#: resourcestr.rshelpimportfile
+msgid "Import file into Note Repo"
+msgstr "Імпортувати файл у репозиторій нотаток"
+
+#: resourcestr.rshelplang
+msgctxt "resourcestr.rshelplang"
+msgid "Force Language, en, es, fr, nl"
+msgstr "Примусово вказати мову, en, es, fr, nl"
+
+#: resourcestr.rshelpnosplash
+msgctxt "resourcestr.rshelpnosplash"
+msgid "Do not show small status/splash window"
+msgstr "Не показувати мале вспливне вікно стану"
+
+#: resourcestr.rshelpsaveexit
+msgctxt "resourcestr.rshelpsaveexit"
+msgid "After import single note, save & exit"
+msgstr "Після імпортування одної нотатки, зберегти і вийти"
+
+#: resourcestr.rshelpsinglenote
+msgctxt "resourcestr.rshelpsinglenote"
+msgid "Open indicated note, switch is optional"
+msgstr "Відкрити визначену нотатку, перемикання не обовʼязкове"
+
+#: resourcestr.rshelptitleisfname
+msgid "Use Filename as title for import txt & md"
+msgstr "Використовувати назву файлу як заголовок для імпортування txt та md"
+
+#: resourcestr.rshelpversion
+msgctxt "resourcestr.rshelpversion"
+msgid "Print version and exit"
+msgstr "Показати версію і вийти"
+
+#: resourcestr.rslastchange
+msgid "Last Change"
+msgstr "Востаннє змінено"
+
+#: resourcestr.rslastsync
+msgid "Last Sync"
+msgstr "Остання синхронізація"
+
+#: resourcestr.rslookingatnotes
+msgctxt "resourcestr.rslookingatnotes"
+msgid "Looking at notes ...."
+msgstr "Перегляд нотаток ...."
+
+#: resourcestr.rslookingserverid
+msgid "Looking for ServerID"
+msgstr "Перегляд ServerID"
+
+#: resourcestr.rsmenuabout
+msgctxt "resourcestr.rsmenuabout"
+msgid "About"
+msgstr "Про програму"
+
+#: resourcestr.rsmenuhelp
+msgctxt "resourcestr.rsmenuhelp"
+msgid "Help"
+msgstr "Довідка"
+
+#: resourcestr.rsmenunewnote
+msgctxt "resourcestr.rsmenunewnote"
+msgid "New Note"
+msgstr "Нова нотатка"
+
+#: resourcestr.rsmenuquit
+msgctxt "resourcestr.rsmenuquit"
+msgid "Quit"
+msgstr "Вийти"
+
+#: resourcestr.rsmenusearch
+msgctxt "resourcestr.rsmenusearch"
+msgid "Search"
+msgstr "Пошук"
+
+#: resourcestr.rsmenusettings
+msgctxt "resourcestr.rsmenusettings"
+msgid "Settings"
+msgstr "Налаштувати"
+
+#: resourcestr.rsmenusync
+msgctxt "resourcestr.rsmenusync"
+msgid "Synchronise"
+msgstr "Синхронізувати"
+
+#: resourcestr.rsmetadirwarning
+msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
+msgstr "Памʼятайте, що для забезпечення надійної синхронізації не можна змінювати файли в каталозі Meta."
+
+#: resourcestr.rsmultiplenotebooks
+msgctxt "resourcestr.rsmultiplenotebooks"
+msgid "Settings allow multiple Notebooks"
+msgstr "Налаштування дозволяють багато записників"
+
+#: resourcestr.rsname
+msgid "Name"
+msgstr "Назва"
+
+#: resourcestr.rsnewerversionexits
+msgctxt "resourcestr.rsnewerversionexits"
+msgid "A newer version exists in main repo"
+msgstr "Новіша версія існує в основному репозиторії"
+
+#: resourcestr.rsnotavailable
+msgid "Not Available"
+msgstr "Не доступно"
+
+#: resourcestr.rsnotealreadyinrepo
+msgctxt "resourcestr.rsnotealreadyinrepo"
+msgid "Note already in Repo"
+msgstr "Нотатка вже в репозиторії"
+
+#: resourcestr.rsnotebookoptionctrl
+msgid "Ctrl click for Notebook Options"
+msgstr "Клацання Ctrl для параметрів записника"
+
+#: resourcestr.rsnotebookoptionright
+msgid "Right click for Notebook Options"
+msgstr "Праве клацання для параметрів записника"
+
+#: resourcestr.rsnotebooks
+msgctxt "resourcestr.rsnotebooks"
+msgid "Notebooks"
+msgstr "Записники"
+
+#: resourcestr.rsnoteopen
+msgctxt "resourcestr.rsnoteopen"
+msgid "You have that note open, please close and try again"
+msgstr "Ви маєте цю нотатку відкритою, будь ласка, закрийте і спробуйте ще раз"
+
+#: resourcestr.rsnotes
+msgctxt "resourcestr.rsnotes"
+msgid "notes"
+msgstr "нотаток"
+
+#: resourcestr.rsnotesdeleted
+msgid "Note or notes deleted"
+msgstr "Нотатку або нотатки видалено"
+
+#: resourcestr.rsnotesinsnap
+msgctxt "resourcestr.rsnotesinsnap"
+msgid "Notes in Snapshot"
+msgstr "Нотаток у зрізі"
+
+#: resourcestr.rsnotpresent
+msgctxt "resourcestr.rsnotpresent"
+msgid "Not present in main repo"
+msgstr "Немає в основному репозиторії"
+
+#: resourcestr.rsnumbnotesaffected
+#, object-pascal-format
+msgid "This will affect %d notes"
+msgstr "Це вплине на %d нотаток"
+
+#: resourcestr.rsonenotebook
+msgctxt "resourcestr.rsonenotebook"
+msgid "Settings allow only one Notebook"
+msgstr "Налаштування дозволяють лише один записник"
+
+#: resourcestr.rsoverwritenote
+msgctxt "resourcestr.rsoverwritenote"
+msgid "Overwrite newer version of that note"
+msgstr "Перезаписати новішу версію цієї нотатки"
+
+#: resourcestr.rspressclose
+msgctxt "resourcestr.rspressclose"
+msgid "Press Close"
+msgstr "Натисніть Закрити"
+
+#: resourcestr.rsrecoverok
+msgctxt "resourcestr.rsrecoverok"
+msgid "OK, File recovered."
+msgstr "Добре, файл відновлено."
+
+#: resourcestr.rsrenamefailed
+msgctxt "resourcestr.rsrenamefailed"
+msgid "ERROR, could not rename Backup File "
+msgstr "ПОМИЛКА, неможливо перейменувати файл резервної копії "
+
+#: resourcestr.rsrollbackintro
+msgid "You can roll back to previous version of this note"
+msgstr "Ви можете відкотитися до попередньої версії цієї нотатки"
+
+#: resourcestr.rsrunningsync
+msgctxt "resourcestr.rsrunningsync"
+msgid "Running Sync"
+msgstr "Працює синхронізація"
+
+#: resourcestr.rssaveandsync
+msgctxt "resourcestr.rssaveandsync"
+msgid "Press Save and Sync if this looks OK"
+msgstr "Натисніть зберегти і синхронізувати, якщо все виглядає добре"
+
+#: resourcestr.rsscanremote
+msgid "Scanning remote files"
+msgstr "Сканування віддалених файлів"
+
+#: resourcestr.rssearchhint
+msgid "Exact matches for terms between \" \""
+msgstr "Точні збіги термінів між \" \""
+
+#: resourcestr.rssetthenotebooks
+msgctxt "resourcestr.rssetthenotebooks"
+msgid "Set the notebooks this note is a member of"
+msgstr "Вкажіть записник, частиною якого є ця нотатка"
+
+#: resourcestr.rssetup
+msgctxt "resourcestr.rssetup"
+msgid "Setup"
+msgstr "Встановлення"
+
+#: resourcestr.rssetupnotesdirfirst
+msgctxt "resourcestr.rssetupnotesdirfirst"
+msgid "Please setup a notes directory first"
+msgstr "Налаштуйте спочатку каталог для нотаток"
+
+#: resourcestr.rssetupsyncfirst
+msgctxt "resourcestr.rssetupsyncfirst"
+msgid "Please config sync system first"
+msgstr "Налаштуйте спочатку систему синхронізації"
+
+#: resourcestr.rssnapshotcreated
+msgctxt "resourcestr.rssnapshotcreated"
+msgid "created, do you want to copy it elsewhere ?"
+msgstr "створено, бажаєте скопіювати деінде ?"
+
+#: resourcestr.rssyncerror
+msgctxt "resourcestr.rssyncerror"
+msgid "A Sync Error occurred"
+msgstr "Відбулася помилка синхронізації"
+
+#: resourcestr.rssyncnotconfig
+msgctxt "resourcestr.rssyncnotconfig"
+msgid "not configured"
+msgstr "не налаштовано"
+
+#: resourcestr.rstestingcredentials
+msgid "Testing Credentials"
+msgstr "Тестування облікових даних"
+
+#: resourcestr.rstestingrepo
+msgctxt "resourcestr.rstestingrepo"
+msgid "Testing Repo ...."
+msgstr "Тестування репозиторію ...."
+
+#: resourcestr.rstestingsync
+msgctxt "resourcestr.rstestingsync"
+msgid "Testing Sync"
+msgstr "Тестування синхронізації"
+
+#: resourcestr.rstryrecover_1
+msgid "Try to recover a bad note by double clicking below,"
+msgstr "Спробуйте відновити погану нотатку подвійним клацанням нижче,"
+
+#: resourcestr.rstryrecover_2
+msgctxt "resourcestr.rstryrecover_2"
+msgid "if that fails, you may be able to recover it from a Snapshot."
+msgstr "якщо це не вдалося, можете відновити її зі зрізу."
+
+#: resourcestr.rsunabletoproceed
+msgctxt "resourcestr.rsunabletoproceed"
+msgid "Unable to proceed because"
+msgstr "Неможливо обробити, тому що"
+
+#: resourcestr.rsunabletosync
+msgctxt "resourcestr.rsunabletosync"
+msgid "Unable to sync because "
+msgstr "Неможливо синхронізувати, тому що"
+
+#: resourcestr.rsuploaded
+msgid "Uploaded"
+msgstr "Вивантажено"
+
+#: resourcestr.rsuploading
+msgid "Uploading"
+msgstr "Вивантаження"
+
+#: resourcestr.rswarnnossystray
+msgid "WARNING, your Desktop might not display SysTray"
+msgstr "ПОПЕРЕДЖЕННЯ, Ваша стільниця може не відображати системний лоток"
+
+#: resourcestr.rswehavesnapshots
+#, object-pascal-format
+msgid "We have %d snapshots"
+msgstr "У нас %d зрізів"
+
+#: settings.rsdictionaryfailed
+msgid "Library Not Loaded"
+msgstr "Бібліотеку не завантажено"
+
+#: settings.rsdictionaryloaded
+msgid "Dictionary Loaded OK"
+msgstr "Словник завантажений ДОБРЕ"
+
+#: settings.rsdictionarynotfound
+msgid "No Dictionary Found"
+msgstr "Не знайдено словника"
+
+#: settings.rsdirhasnonotes
+msgid "That directory does not contain any notes. That is OK, if I can make my own there."
+msgstr "У цьому каталозі нема жодних нотаток. Добре, якщо я зможу створити там свої власні."
+
+#: settings.rserrorcannotwrite
+msgid "Cannot write into"
+msgstr "Неможливо писати в"
+
+#: settings.rserrorcreatedir
+msgid "Unable to Create Directory"
+msgstr "Неможливо створити каталог"
+
+#: settings.rsselectdictionary
+msgid "Select the dictionary you want to use"
+msgstr "Виберіть словник, який бажаєте використовувати"
+
+#: settings.rsselectlibrary
+msgid "Select your hunspell library"
+msgstr "Виберіть свою бібліотеку hunspell"
+
+#: spelling.rscheckingfull
+msgid "Checking full document"
+msgstr "Перевірка повного документа"
+
+#: spelling.rscheckingselection
+msgid "Checking selection"
+msgstr "Перевірка вибраного"
+
+#: spelling.rsreplace_with_1
+msgid "replace"
+msgstr "замінити"
+
+#: spelling.rsreplace_with_2
+msgid "with"
+msgstr "на"
+
+#: spelling.rsspellcomplete
+msgid "Spell check complete"
+msgstr "Перевірку правопису завершено"
+
+#: spelling.rsspellnotconfig
+msgid "Spelling not configured"
+msgstr "Правопис не налаштовано"
+
+#: syncutils.rschangeexistingsync
+msgid "Change existing sync connection ?"
+msgstr "Змінити наявне зʼєднання синхронізації ?"
+
+#: syncutils.rsclashes
+msgid "Clashes        "
+msgstr "Зіткнення      "
+
+#: syncutils.rsdonothing
+msgid "Do Nothing     "
+msgstr "Нічого не робити"
+
+#: syncutils.rsdownloads
+msgid "Downloads      "
+msgstr "Завантаження   "
+
+#: syncutils.rsedituploads
+msgid "Edit Uploads   "
+msgstr "Змінити вивантаження"
+
+#: syncutils.rslocaldeletes
+msgid "Local Deletes  "
+msgstr "Локальні видалення"
+
+#: syncutils.rsnewuploads
+msgid "New Uploads    "
+msgstr "Нові вивантаження"
+
+#: syncutils.rsnextbitslow
+msgid "Next bit can be a bit slow, please wait"
+msgstr "Наступний біт може бути трохи повільним, будь ласка, зачекайте"
+
+#: syncutils.rsnonotesneededsync
+msgid "No notes needed syncing. You need to write more."
+msgstr "Нема нотаток для синхронізації. Пишіть більше."
+
+#: syncutils.rsnotesweredealt
+msgid " notes were dealt with."
+msgstr " нотаток опрацьовано."
+
+#: syncutils.rsnotrecommend
+msgid "Generally not recommended."
+msgstr "Загалом не рекомендується."
+
+#: syncutils.rsremotedeletes
+msgid "Remote Deletes "
+msgstr "Віддалені видалення "
+
+#: syncutils.rssyncerrors
+msgid "ERRORS (see console log) "
+msgstr "ПОМИЛКИ (дивіться журнал консолі)"
+
+#: teditboxform.buttmaintbmenu.caption
+msgctxt "teditboxform.buttmaintbmenu.caption"
+msgid "Menu"
+msgstr "Меню"
+
+#: teditboxform.editfind.text
+msgid "EditFind"
+msgstr "ЗмінаПошуку"
+
+#: teditboxform.label2.caption
+msgid "Read Only"
+msgstr "Лише для читання"
+
+#: teditboxform.label3.caption
+msgid "This note has been changed by the Sync Process"
+msgstr "Цю нотатку змінено процесом синхронізації"
+
+#: teditboxform.label4.caption
+msgid "Please close it (and re-open if it was a download)"
+msgstr "Закрийте це (і відкрийте ще раз, коли воно завантажеться)"
+
+#: teditboxform.labelfindinfo.caption
+msgid "LabelFindInfo"
+msgstr "ПозначкаПошукІнформації"
+
+#: teditboxform.menubold.caption
+msgctxt "teditboxform.menubold.caption"
+msgid "Bold"
+msgstr "Грубий"
+
+#: teditboxform.menufindnext.caption
+msgid "Find Next"
+msgstr "Шукати наступне"
+
+#: teditboxform.menufindprev.caption
+msgctxt "teditboxform.menufindprev.caption"
+msgid "Find Prev"
+msgstr "Шукати попереднє"
+
+#: teditboxform.menufixedwidth.caption
+msgid "Fixed Width"
+msgstr "Фіксованої ширини"
+
+#: teditboxform.menuhighlight.caption
+msgctxt "teditboxform.menuhighlight.caption"
+msgid "Highlight"
+msgstr "Підсвічений"
+
+#: teditboxform.menuhuge.caption
+msgctxt "teditboxform.menuhuge.caption"
+msgid "Huge"
+msgstr "Величезний"
+
+#: teditboxform.menuitalic.caption
+msgid "Italic"
+msgstr "Похилий"
+
+#: teditboxform.menuitembulletleft.caption
+msgid "Bullet <<"
+msgstr "Список <<"
+
+#: teditboxform.menuitembulletright.caption
+msgid "Bullet >>"
+msgstr "Список >>"
+
+#: teditboxform.menuitemcopy.caption
+msgid "Copy"
+msgstr "Копіювати"
+
+#: teditboxform.menuitemcut.caption
+msgid "Cut"
+msgstr "Вирізати"
+
+#: teditboxform.menuitemdelete.caption
+msgctxt "teditboxform.menuitemdelete.caption"
+msgid "Delete"
+msgstr "Видалити"
+
+#: teditboxform.menuitemevaluate.caption
+msgid "Evaluate"
+msgstr "Обрахувати"
+
+#: teditboxform.menuitemexport.caption
+msgid "Export"
+msgstr "Експортувати"
+
+#: teditboxform.menuitemexportmarkdown.caption
+msgid "Export Markdown"
+msgstr "Експортувати в Markdown"
+
+#: teditboxform.menuitemexportplaintext.caption
+msgid "Export Plain Text"
+msgstr "Експортувати в звичайний текст"
+
+#: teditboxform.menuitemexportrtf.caption
+msgid "Export RTF"
+msgstr "Експортувати в RTF"
+
+#: teditboxform.menuitemfind.caption
+msgid "Find in this Note"
+msgstr "Шукати в цій нотатці"
+
+#: teditboxform.menuitemindex.caption
+msgid "Index"
+msgstr "Індекс"
+
+#: teditboxform.menuitempaste.caption
+msgid "Paste"
+msgstr "Вставити"
+
+#: teditboxform.menuitemprint.caption
+msgid "Print"
+msgstr "Друкувати"
+
+#: teditboxform.menuitemselectall.caption
+msgid "Select All"
+msgstr "Вибрати все"
+
+#: teditboxform.menuitemsettings.caption
+msgctxt "teditboxform.menuitemsettings.caption"
+msgid "Settings"
+msgstr "Налаштувати"
+
+#: teditboxform.menuitemspell.caption
+msgid "Spell Check"
+msgstr "Перевірка правопису"
+
+#: teditboxform.menuitemsync.caption
+msgid "Synchronize"
+msgstr "Синхронізувати"
+
+#: teditboxform.menularge.caption
+msgid "Large Font"
+msgstr "Великий шрифт"
+
+#: teditboxform.menunormal.caption
+msgid "Normal Font"
+msgstr "Звичайний шрифт"
+
+#: teditboxform.menusmall.caption
+msgid "Small Font"
+msgstr "Малий шрифт"
+
+#: teditboxform.menustayontop.caption
+msgid "Stay On Top"
+msgstr "Тримати зверху"
+
+#: teditboxform.menustrikeout.caption
+msgid "Strikeout"
+msgstr "Закреслений"
+
+#: teditboxform.menuunderline.caption
+msgid "Underline"
+msgstr "Підкреслений"
+
+#: teditboxform.speedbuttondelete.hint
+msgid "Delete this note"
+msgstr "Видалити цю нотатку"
+
+#: teditboxform.speedbuttonlink.hint
+msgid "Link highlighted text to a new note"
+msgstr "Виділений текст посилання на нову нотатку"
+
+#: teditboxform.speedbuttonnotebook.hint
+msgid "Manage Notebooks"
+msgstr "Керування записниками"
+
+#: teditboxform.speedbuttonsearch.hint
+msgid "Search All Notes Ctrl-Shift-F"
+msgstr "Пошук усіх нотаток Ctrl-Shift-F"
+
+#: teditboxform.speedbuttontext.hint
+msgid "Font size, bold, italics etc"
+msgstr "Розмір шрифту, грубий, похилий і т.п."
+
+#: teditboxform.speedbuttontools.hint
+msgid "Tools - Sync, Export, Spell"
+msgstr "Засоби — Синхронізація, Експортування, Правопис"
+
+#: teditboxform.speedrollback.hint
+msgid "Roll Back"
+msgstr "Відкотити"
+
+#: tformbackupview.buttondelete.caption
+msgctxt "tformbackupview.buttondelete.caption"
+msgid "Delete"
+msgstr "Видалити"
+
+#: tformbackupview.buttondelete.hint
+msgid "Really, totally delete this note."
+msgstr "Дійсно, повіністю видалити цю нотатку."
+
+#: tformbackupview.buttonok.caption
+msgctxt "tformbackupview.buttonok.caption"
+msgid "Close"
+msgstr "Закрити"
+
+#: tformbackupview.buttonok.hint
+msgid "My work here is done."
+msgstr "Моя робота тут завершена."
+
+#: tformbackupview.buttonopen.caption
+msgid "View"
+msgstr "Переглянути"
+
+#: tformbackupview.buttonopen.hint
+msgid "Open and view the whole note"
+msgstr "Відкрити і переглянути нотатку повністю"
+
+#: tformbackupview.buttonrecover.caption
+msgctxt "tformbackupview.buttonrecover.caption"
+msgid "Recover"
+msgstr "Відновити"
+
+#: tformbackupview.buttonrecover.hint
+msgid "Restore this note to main repo"
+msgstr "Відновити цю нотатку до основного репозиторію"
+
+#: tformbackupview.caption
+msgid "View, recover or delete Backup Files"
+msgstr "Перегляд, відновлення або видалення файлів резервної копії"
+
+#: tformbackupview.listbox1.hint
+msgid "Use Ctrl or Shift to select multiple entries"
+msgstr "Використовуйте Ctrl або Shift, щоб вибрати кілька записів"
+
+#: tformcolours.label1.caption
+msgid "Sample"
+msgstr "Зразок"
+
+#: tformcolours.label2.caption
+msgctxt "tformcolours.label2.caption"
+msgid "Set Colours"
+msgstr "Вказати кольори"
+
+#: tformcolours.speedbackground.caption
+msgid "Background"
+msgstr "Фон"
+
+#: tformcolours.speedcancel.caption
+msgctxt "tformcolours.speedcancel.caption"
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: tformcolours.speeddefault.caption
+msgid "Default"
+msgstr "Типово"
+
+#: tformcolours.speedhighlight.caption
+msgctxt "tformcolours.speedhighlight.caption"
+msgid "Highlight"
+msgstr "Підсвічування"
+
+#: tformcolours.speedok.caption
+msgctxt "tformcolours.speedok.caption"
+msgid "OK"
+msgstr "Гаразд"
+
+#: tformcolours.speedtext.caption
+msgid "Text"
+msgstr "Текст"
+
+#: tformcolours.speedtitle.caption
+msgctxt "tformcolours.speedtitle.caption"
+msgid "Title"
+msgstr "Заголовок"
+
+#: tformindex.caption
+msgid "Heading in this Note"
+msgstr "Заголовки в цій нотатці"
+
+#: tformindex.panel1.caption
+msgid "Single lines, all Huge, Large Bold or Large"
+msgstr "Одинарні рядки, всі великі, довгі грубі або довгі"
+
+#: tformrecover.buttondeletebadnotes.caption
+msgid "Delete Bad Notes"
+msgstr "Видалити погані нотатки"
+
+#: tformrecover.buttonmakesafetysnap.caption
+msgid "Take a manual Snapshot"
+msgstr "Зробити зріз вручну"
+
+#: tformrecover.buttonmakesafetysnap.hint
+msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+msgstr "Зробити початковий зріз ваших нотаток і налаштувань. Щоразу перезаписується."
+
+#: tformrecover.buttonrecoversnap.caption
+msgctxt "tformrecover.buttonrecoversnap.caption"
+msgid "Recover"
+msgstr "Відновити"
+
+#: tformrecover.buttonsnaphelp.caption
+msgid "Snapshot Help"
+msgstr "Довідка про зрізи"
+
+#: tformrecover.label10.caption
+msgid "Please close any notes you may have open."
+msgstr "Будь ласка, закрийте будь-які нотатки, які Ви відкрили."
+
+#: tformrecover.label12.caption
+msgid "Don't even consider this unless you have a backup Snapshot, Intro Tab."
+msgstr "Навіть не розглядайте це, якщо у вас нема резервної копії зразу, вкладка Intro."
+
+#: tformrecover.label14.caption
+msgid "Click an available snapshot to see its contents."
+msgstr "Клацніть по доступному зрізі, щоб побачити його вміст."
+
+#: tformrecover.label15.caption
+msgid "Click an available snapshot, click Recover"
+msgstr "Клацніть по доступному зрізі, клацніть Відновити"
+
+#: tformrecover.label16.caption
+msgid "You may chose to view, copy and paste into a new note."
+msgstr "Ви можете обрати перегляд, копіювання або вставити в нову нотатку."
+
+#: tformrecover.label2.caption
+msgid "Please be careful, this is a dangerous place!"
+msgstr "Будьте обережні, це небезпечне місце!"
+
+#: tformrecover.label3.caption
+msgid "Restore any notes in the snapshot that are not in the existing notes directory."
+msgstr "Відновити будь-які нотатки в зрізі, яких нема в наявному каталозі нотаток."
+
+#: tformrecover.label4.caption
+msgid "Remove all existing notes and use the ones in the Snapshot."
+msgstr "Вилучити всі наявні нотатки і використовувати нотатки зі зрізу."
+
+#: tformrecover.label5.caption
+msgid "Looking for notes with damaged XML"
+msgstr "Перегляд нотаток із пошкодженим XML"
+
+#: tformrecover.label6.caption
+msgid "This tool might help you recover lost or damaged notes."
+msgstr "Цей засіб може допомогти Вам відновити втрачені або пошкоджені нотатки."
+
+#: tformrecover.label7.caption
+msgid "Before you start, take a Snapshot of your notes directory."
+msgstr "Перед початком, зробіть зріз каталогу з Вашими нотатками."
+
+#: tformrecover.label9.caption
+msgid "From here you can view snapshot notes, one by one."
+msgstr "Звідси ви можете переглядати нотатки зрізів одна за одною."
+
+#: tformrecover.listboxsnapshots.hint
+msgid "These are the currently known snapshots. "
+msgstr "Це відомі зараз зрізи. "
+
+#: tformrecover.panelsnapshots.caption
+msgid "Available Snapshots"
+msgstr "Доступні зрізи"
+
+#: tformrecover.tabsheetbadnotes.caption
+msgid "Bad Notes"
+msgstr "Погані нотатки"
+
+#: tformrecover.tabsheetintro.caption
+msgid "Introduction"
+msgstr "Ознайомлення"
+
+#: tformrecover.tabsheetmergesnapshot.caption
+msgid "Merge Snapshot"
+msgstr "Обʼєднати зріз"
+
+#: tformrecover.tabsheetrecovernotes.caption
+msgid "Recover Notes"
+msgstr "Відновити нотатки"
+
+#: tformrecover.tabsheetrecoversnapshot.caption
+msgid "Recover Snapshot"
+msgstr "Відновити зріз"
+
+#: tformrollback.speedcancel.caption
+msgctxt "tformrollback.speedcancel.caption"
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: tformrollback.speedrolltoopen.caption
+msgid "Opening Backup"
+msgstr "Відкривання резервної копії"
+
+#: tformrollback.speedrolltotitle.caption
+msgid "Title Change Backup"
+msgstr "Змінити заголовок резервної копії"
+
+#: tformsdiff.bitbtnuselocal.caption
+msgid "Use Local"
+msgstr "Викор. локальний"
+
+#: tformsdiff.bitbtnuseremote.caption
+msgid "Use Remote"
+msgstr "Викор. віддалений"
+
+#: tformsdiff.buttalllocal.caption
+msgid "Local"
+msgstr "Локальний"
+
+#: tformsdiff.buttallnewest.caption
+msgid "Newest"
+msgstr "Новий"
+
+#: tformsdiff.buttalloldest.caption
+msgid "Oldest"
+msgstr "Старий"
+
+#: tformsdiff.buttallremote.caption
+msgid "Remote"
+msgstr "Віддалений"
+
+#: tformsdiff.caption
+msgid "A Note Sync Clash has been Detected"
+msgstr "Виявлено стик синхронізації нотаток"
+
+#: tformsdiff.label1.caption
+msgid "Or make a choice for remainder of this run"
+msgstr "Або зробіть вибір про нагадування про цей запуск"
+
+#: tformsdiff.label3.caption
+msgid "Remote Changed"
+msgstr "Віддалений змінено"
+
+#: tformsdiff.label4.caption
+msgid "Local Changed"
+msgstr "Локальний змінено"
+
+#: tformsdiff.radiolong.caption
+msgid "Long Lines"
+msgstr "Довгі рядки"
+
+#: tformsdiff.radiolong.hint
+msgid "Maybe necessary to show difference"
+msgstr "Можливо, потрібно показати відмінності"
+
+#: tformsdiff.radioshort.caption
+msgid "Short Lines"
+msgstr "Короткі рядки"
+
+#: tformsdiff.radioshort.hint
+msgid "Easier to read"
+msgstr "Легше для читання"
+
+#: tformspell.buttonignore.caption
+msgid "Ignore"
+msgstr "Ігнорувати"
+
+#: tformspell.buttonignore.hint
+msgid "Ignore all instances for the run"
+msgstr "Іґнорувати всі екземпляри запуску"
+
+#: tformspell.buttonskip.caption
+msgid "Skip"
+msgstr "Пропустити"
+
+#: tformspell.buttonskip.hint
+msgid "Skip just this instance"
+msgstr "Пропустити лише для цього екземпляра"
+
+#: tformspell.buttonuseandnextword.caption
+msgid "Use and Next Word"
+msgstr "Використати і наступне слово"
+
+#: tformspell.caption
+msgctxt "tformspell.caption"
+msgid "Spell"
+msgstr "Правопис"
+
+#: tformspell.label4.caption
+msgid "Suspect word -"
+msgstr "Сумнівне слово -"
+
+#: tformspell.labelprompt.caption
+msgid "Click a word to use it."
+msgstr "Клацніть по слові для використання"
+
+#: tformsync.buttoncancel.caption
+msgctxt "tformsync.buttoncancel.caption"
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: tformsync.buttonclose.caption
+msgctxt "tformsync.buttonclose.caption"
+msgid "Close"
+msgstr "Закрити"
+
+#: tformsync.buttonsave.caption
+msgid "Save and Sync"
+msgstr "Зберегти і синхронізувати"
+
+#: tformsync.caption
+msgctxt "tformsync.caption"
+msgid "Sync"
+msgstr "Синхронізація"
+
+#: tformsync.labelprogress.caption
+msgid "LabelProgress"
+msgstr "ПозначкаПоступ"
+
+#: tformsync.listviewreport.columns[0].caption
+msgid "Action"
+msgstr "Дія"
+
+#: tformsync.listviewreport.columns[1].caption
+msgctxt "tformsync.listviewreport.columns[1].caption"
+msgid "Title"
+msgstr "Заголовок"
+
+#: tformsync.listviewreport.columns[2].caption
+msgid "Note ID"
+msgstr "ІД нотатки"
+
+#: tformtomdroid.buttonclose.caption
+msgctxt "tformtomdroid.buttonclose.caption"
+msgid "Close"
+msgstr "Закрити"
+
+#: tformtomdroid.buttondelete.caption
+msgid "Delete Profile"
+msgstr "Видалити профіль"
+
+#: tformtomdroid.buttonhelp.caption
+msgctxt "tformtomdroid.buttonhelp.caption"
+msgid "Help"
+msgstr "Довідка"
+
+#: tformtomdroid.buttonjoin.caption
+msgctxt "tformtomdroid.buttonjoin.caption"
+msgid "Join"
+msgstr "Приєднати"
+
+#: tformtomdroid.buttonsaveprofile.caption
+msgid "Save Profile"
+msgstr "Зберегти профіль"
+
+#: tformtomdroid.buttonsync.caption
+msgctxt "tformtomdroid.buttonsync.caption"
+msgid "Sync"
+msgstr "Синхронізація"
+
+#: tformtomdroid.caption
+msgctxt "tformtomdroid.caption"
+msgid "Tomdroid"
+msgstr "Tomdroid"
+
+#: tformtomdroid.checkboxdebugmode.caption
+msgid "Debug Mode"
+msgstr "Режим зневадження"
+
+#: tformtomdroid.checkboxdebugmode.hint
+msgid "writes debug messages to terminal"
+msgstr "пише повідомлення зневадження у термінал"
+
+#: tformtomdroid.checkboxtestrun.caption
+msgctxt "tformtomdroid.checkboxtestrun.caption"
+msgid "Test Run"
+msgstr "Проба запуску"
+
+#: tformtomdroid.checksavepassword.caption
+msgctxt "tformtomdroid.checksavepassword.caption"
+msgid "Save"
+msgstr "Зберегти"
+
+#: tformtomdroid.editprofilename.hint
+msgid "eg MySamsungNote7"
+msgstr "напр., MySamsungNote7"
+
+#: tformtomdroid.label1.caption
+msgid "Tomdroid SSH Sync - deprecated, will not be in v0.36."
+msgstr "Tomdroid SSH Sync - виходить із вжитку, не буде у v0.36."
+
+#: tformtomdroid.label1.hint
+msgid "Use GitHub Sync instead. Post issue if you need Tomdroid Sync."
+msgstr "Викор. GitHub Sync натомість. Опублікуйте проблуему, якщо Вам потрібен Tomdroid Sync."
+
+#: tformtomdroid.label2.caption
+msgid "Select an existing profile (or enter data) "
+msgstr "Виберіть наявний профіль (або введіть дані) "
+
+#: tformtomdroid.label3.caption
+msgid "Profile Name"
+msgstr "Назва профілю"
+
+#: tformtomdroid.label4.caption
+msgid "IP address of device"
+msgstr "IP-адреса пристрою"
+
+#: tformtomdroid.label5.caption
+msgid "SSH Password for device"
+msgstr "SSH-пароль пристрою"
+
+#: tformtomdroid.label6.caption
+msgctxt "tformtomdroid.label6.caption"
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr "Вивантаження означає з tomboy-ng до пристрою Android"
+
+#: tformtomdroidfile.buttonclose.caption
+msgctxt "tformtomdroidfile.buttonclose.caption"
+msgid "Close"
+msgstr "Закрити"
+
+#: tformtomdroidfile.buttonhelp.caption
+msgctxt "tformtomdroidfile.buttonhelp.caption"
+msgid "Help"
+msgstr "Довідка"
+
+#: tformtomdroidfile.buttonjoin.caption
+msgctxt "tformtomdroidfile.buttonjoin.caption"
+msgid "Join"
+msgstr "Приєднати"
+
+#: tformtomdroidfile.buttonoldssh.caption
+msgid "Use old SSH model"
+msgstr "Викор. стару SSH-модель"
+
+#: tformtomdroidfile.buttonsync.caption
+msgctxt "tformtomdroidfile.buttonsync.caption"
+msgid "Sync"
+msgstr "Синхр."
+
+#: tformtomdroidfile.caption
+msgctxt "tformtomdroidfile.caption"
+msgid "Tomdroid"
+msgstr "Tomdroid"
+
+#: tformtomdroidfile.checkboxtestrun.caption
+msgctxt "tformtomdroidfile.checkboxtestrun.caption"
+msgid "Test Run"
+msgstr "Проба запуску"
+
+#: tformtomdroidfile.label1.caption
+msgid "Tomdroid Sync - deprecated, will not be in v0.36."
+msgstr "Tomdroid Sync - виходить із вжитку, не буде у v0.36."
+
+#: tformtomdroidfile.label1.hint
+msgid "Use GitHub Sync instead. Post issue if you need Tomdroid"
+msgstr "Використовуйте синхронізацію GitHub натомість. Опублікуйте проблему, якщо Вам потрібно використовувати Tomdroid"
+
+#: tformtomdroidfile.label6.caption
+msgctxt "tformtomdroidfile.label6.caption"
+msgid "Upload means from tomboy-ng to Android Device"
+msgstr "Вивантаження означає з tomboy-ng на пристрій Android"
+
+#: tmainform.bitbtnhide.caption
+msgid "Hide"
+msgstr "Сховати"
+
+#: tmainform.bitbtnquit.caption
+msgctxt "tmainform.bitbtnquit.caption"
+msgid "Quit"
+msgstr "Вийти"
+
+#: tmainform.buttmenu.caption
+msgctxt "tmainform.buttmenu.caption"
+msgid "Menu"
+msgstr "Меню"
+
+#: tmainform.buttsystrayhelp.caption
+msgid "SysTray Help"
+msgstr "Довідка про системний лоток"
+
+#: tmainform.caption
+msgid "tomboy-ng"
+msgstr "tomboy-ng"
+
+#: tmainform.checkboxdontshow.caption
+msgid "Don't Show for normal startup"
+msgstr "Не показувати це під час запуску"
+
+#: tmainform.checkboxdontshow.hint
+msgid "You can reverse this from Settings"
+msgstr "Ви можете обернути це в Налаштуваннях"
+
+#: tmainform.hint
+msgid "If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window."
+msgstr "Якщо видно жовтий значок tomboy-ng у системному лотку, то можна закрити це вікно."
+
+#: tmainform.label3.caption
+msgid "Dictionary Config (optional)"
+msgstr "Налаштування словника (необовʼязкове)"
+
+#: tmainform.label4.caption
+msgid "Sync Config (optional)"
+msgstr "Налаштування синхронізації (необовʼязкове)"
+
+#: tmainform.label5.caption
+msgid "Welcome to tomboy-ng !"
+msgstr "Вітаємо в tomboy-ng !"
+
+#: tmainform.labelerror.hint
+msgid "Launch from commandline to see errors or see Config->SnapShot->Recover ..."
+msgstr "Запустіть з командного рядка, щоб побачити помилки або перегляньте Налаштувати->Зріз->Відновити ..."
+
+#: tnotebookpick.button1.caption
+msgctxt "tnotebookpick.button1.caption"
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: tnotebookpick.buttonok.caption
+msgctxt "tnotebookpick.buttonok.caption"
+msgid "OK"
+msgstr "Гаразд"
+
+#: tnotebookpick.label4.caption
+msgid "Name of the New Notebook"
+msgstr "Назва нового записника"
+
+#: tnotebookpick.label5.caption
+msgid "Press OK and we will make the Note Book AND add this note to it."
+msgstr "Натисніть Гаразд і ми створимо записник і додамо в нього цю нотатку."
+
+#: tnotebookpick.label6.caption
+msgid "Existing Name"
+msgstr "Наявна назва"
+
+#: tnotebookpick.label8.caption
+msgid "New Name"
+msgstr "Нова назва"
+
+#: tnotebookpick.label9.caption
+msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+msgstr "Якщо ви синхронізуєте і не впевнені, що він оновлений, Скасуйте негайно !"
+
+#: tnotebookpick.tabchangename.caption
+msgid "Change Notebook Name"
+msgstr "Змінити назву записника"
+
+#: tnotebookpick.tabexisting.caption
+msgid "Existing Note Books"
+msgstr "Наявний записник"
+
+#: tnotebookpick.tabnewnotebook.caption
+msgid "New Note Book"
+msgstr "Новий записник"
+
+#: tnotebookpick.tabsetnotes.caption
+msgid "Set Notes"
+msgstr "Вказати нотатки"
+
+#: tomdroid.rscheckingforexistingsync
+msgctxt "tomdroid.rscheckingforexistingsync"
+msgid "Checking for an existing sync ...."
+msgstr "Перевірка наявності синхронізації ...."
+
+#: tomdroid.rsconnectiongood
+msgctxt "tomdroid.rsconnectiongood"
+msgid "Connection is looking Good."
+msgstr "Зʼєднання виглядає Добре."
+
+#: tomdroid.rsfailedtoconnect
+msgctxt "tomdroid.rsfailedtoconnect"
+msgid "Failed to connect."
+msgstr "Не вдалося зʼєднатися."
+
+#: tomdroid.rsfailedtofindconnection_1
+msgctxt "tomdroid.rsfailedtofindconnection_1"
+msgid "Failed to find an existing connection."
+msgstr "Не вдалося знайти наявне зʼєднання."
+
+#: tomdroid.rsfailedtofindconnection_2
+msgctxt "tomdroid.rsfailedtofindconnection_2"
+msgid "If you are sure there should be an existing connection, check settings."
+msgstr "Якщо ви впевнені, що зʼєднання повинно бути, перевірне налаштування."
+
+#: tomdroid.rsfailedtofindconnection_3
+msgctxt "tomdroid.rsfailedtofindconnection_3"
+msgid "Otherwise, try joining a new connection."
+msgstr "В іншому випадку, спробуйте приʼєднати нове зʼєднання."
+
+#: tomdroid.rsfixconnection
+msgctxt "tomdroid.rsfixconnection"
+msgid "If you are sure its there, check settings."
+msgstr "Якщо ви впевнені, що воно є, перевірте налаштування."
+
+#: tomdroid.rshavevalidsync
+msgctxt "tomdroid.rshavevalidsync"
+msgid "Looking Good. Last sync date "
+msgstr "Виглядає добре. Дата останньої синхронізації "
+
+#: tomdroid.rsinstalltomdroid
+msgctxt "tomdroid.rsinstalltomdroid"
+msgid "Install Tomdroid, config filesync, and run a sync"
+msgstr "Встановіть Tomdroid, налаштуйте синхронізацію і запустіть синхронізацію"
+
+#: tomdroid.rsnoconnection
+msgctxt "tomdroid.rsnoconnection"
+msgid "Failed to establish a connection. "
+msgstr "Не вдалося встановити звʼязок."
+
+#: tomdroid.rsnotcorrectprofile
+msgctxt "tomdroid.rsnotcorrectprofile"
+msgid "This is not correct profile for that device"
+msgstr "Це не коректний профіль для цього пристрою"
+
+#: tomdroid.rsnotexistingrepo
+msgctxt "tomdroid.rsnotexistingrepo"
+msgid "That's not an existing Repo, maybe click \"Join\" ?"
+msgstr "Цей репозиторій не існує, можливо клацніть \"Приєднати\" ?"
+
+#: tomdroid.rsnotomdroid
+msgctxt "tomdroid.rsnotomdroid"
+msgid "Unable to find Tomdroid sync dir on that device."
+msgstr "Неможливо знайти каталог синхронізації Tomdroid на цьому пристрої."
+
+#: tomdroid.rsselectprofile
+msgid "Select a profile"
+msgstr "Виберіть профіль"
+
+#: tomdroid.rssetupnewsync
+msgctxt "tomdroid.rssetupnewsync"
+msgid "Setting up a new sync ...."
+msgstr "Налаштування нової синхронізації ...."
+
+#: tomdroid.rstalkingtodevice
+msgctxt "tomdroid.rstalkingtodevice"
+msgid "OK, talking to device. Wait for it ...."
+msgstr "ДОБРЕ, говоримо з пристроєм. Зачекайте ...."
+
+#: tomdroidfile.rsconnectiongood
+msgctxt "tomdroidfile.rsconnectiongood"
+msgid "Connection is looking Good."
+msgstr "Зʼєднання виглядає Добре."
+
+#: tomdroidfile.rsfailedtoconnect
+msgctxt "tomdroidfile.rsfailedtoconnect"
+msgid "Failed to connect."
+msgstr "Не вдалося зʼєднатися."
+
+#: tomdroidfile.rsfailedtofindconnection_2
+msgctxt "tomdroidfile.rsfailedtofindconnection_2"
+msgid "If you are sure there should be an existing connection, check settings."
+msgstr "Якщо ви впевнені, що має бути зʼєднання, перевірте налаштування."
+
+#: tomdroidfile.rsfixconnection
+msgctxt "tomdroidfile.rsfixconnection"
+msgid "If you are sure its there, check settings."
+msgstr "Якщо ви впевнені, що воно є, перевірте налаштування."
+
+#: tomdroidfile.rshavevalidsync
+msgctxt "tomdroidfile.rshavevalidsync"
+msgid "Looking Good. Last sync date "
+msgstr "Виглядає добре. Дата остнньої синхронізації "
+
+#: tomdroidfile.rsinstalltomdroid
+msgctxt "tomdroidfile.rsinstalltomdroid"
+msgid "Install Tomdroid, config filesync, and run a sync"
+msgstr "Встановіть Tomdroid, налаштуйте синхронізацію і запустіть синхронізацію"
+
+#: tomdroidfile.rsjoinanyway
+msgid "Forcing a Join may \"recover\" some notes you thought you have deleted."
+msgstr "Примусове Приєднання може «відновити» деякі нотатки, які були видалені."
+
+#: tomdroidfile.rsnoconnection
+msgctxt "tomdroidfile.rsnoconnection"
+msgid "Failed to establish a connection. "
+msgstr "Не вдалося налагодити зʼєднання. "
+
+#: tomdroidfile.rsnotcorrectprofile
+msgctxt "tomdroidfile.rsnotcorrectprofile"
+msgid "This is not correct profile for that device"
+msgstr "Це не коректний профіль для цього пристрою"
+
+#: tomdroidfile.rsnotexistingrepo
+msgctxt "tomdroidfile.rsnotexistingrepo"
+msgid "That's not an existing Repo, maybe click \"Join\" ?"
+msgstr "Цей репозиторій не існує, можливо клацніть \"Приєднати\" ?"
+
+#: tomdroidfile.rsnotomdroid
+msgctxt "tomdroidfile.rsnotomdroid"
+msgid "Unable to find Tomdroid sync dir on that device."
+msgstr "Неможливо знайти каталог синхронізаціх Tomdroid на цьому пристрої."
+
+#: tomdroidfile.rssetupnewsync
+msgctxt "tomdroidfile.rssetupnewsync"
+msgid "Setting up a new sync ...."
+msgstr "Встановлення нової синхронізації ...."
+
+#: tomdroidfile.rstalking
+msgctxt "tomdroidfile.rstalking"
+msgid "OK, talking to device. Wait for it ...."
+msgstr "ДОБРЕ, говоримо з пристроєм. Зачекайте ...."
+
+#: tsearchform.buttonclearfilters.caption
+msgctxt "tsearchform.buttonclearfilters.caption"
+msgid "Clear"
+msgstr "Очистити"
+
+#: tsearchform.buttonmenu.caption
+msgctxt "tsearchform.buttonmenu.caption"
+msgid "Menu"
+msgstr "Меню"
+
+#: tsearchform.caption
+msgid "tomboy-ng_Search"
+msgstr "tomboy-ng_Пошук"
+
+#: tsearchform.listboxnotebooks.hint
+msgid "Right Click to manage Notebooks"
+msgstr "Праве клацання для керування записниками"
+
+#: tsearchform.menucreatenotebook.caption
+msgid "Create new Note Book"
+msgstr "Створити новий записник"
+
+#: tsearchform.menudeletenotebook.caption
+msgid "Delete Notebook"
+msgstr "Видалити записник"
+
+#: tsearchform.menueditnotebooktemplate.caption
+msgid "Edit Notebook Template"
+msgstr "Змінити шаблон записника"
+
+#: tsearchform.menuitemcasesensitive.caption
+msgctxt "tsearchform.menuitemcasesensitive.caption"
+msgid "Case Sensitive"
+msgstr "Чутливість до регістру"
+
+#: tsearchform.menuitemmanagenbook.caption
+msgid "Manage Notes in Note Book"
+msgstr "Керувати нотатками в записнику"
+
+#: tsearchform.menuitemswyt.caption
+msgid "Search While You Type"
+msgstr "Шукати під час введення"
+
+#: tsearchform.menunewnotefromtemplate.caption
+msgid "Create New Note from Template"
+msgstr "Створити нову нотатку зі шаблону"
+
+#: tsearchform.menurenamenotebook.caption
+msgid "Rename NoteBook"
+msgstr "Перейменувати записник"
+
+#: tsearchform.panel2.caption
+msgctxt "tsearchform.panel2.caption"
+msgid "Notebooks"
+msgstr "Записники"
+
+#: tsearchform.speedbuttonclearsearch.caption
+msgctxt "tsearchform.speedbuttonclearsearch.caption"
+msgid "Clear"
+msgstr "Очистити"
+
+#: tsearchform.speedsearchotions.caption
+msgid "Options"
+msgstr "Параметри"
+
+#: tsearchform.speedsearchotions.hint
+msgid "Search Options"
+msgstr "Параметри пошуку"
+
+#: tsett.buttdefaultnotedir.caption
+msgid "Use Default Notes Location"
+msgstr "Викор. типове розташування нотаток"
+
+#: tsett.buttdefaultnotedir.hint
+msgid "Will work for many new users"
+msgstr "Працює для більшості нових користувачів"
+
+#: tsett.buttonfixedfont.caption
+msgid "Fixed Font"
+msgstr "Фіксований шрифт"
+
+#: tsett.buttonfont.caption
+msgid "Usual Font"
+msgstr "Звичайний шрифт"
+
+#: tsett.buttonmanualsnap.caption
+msgid "Take a Manual Snapshot"
+msgstr "Зробити зріз вручну"
+
+#: tsett.buttonmanualsnap.hint
+msgid "Take a time stamped snapshot of notes and config"
+msgstr "Зробити зріз із штампом часу нотаток і налаштувань"
+
+#: tsett.buttonsetcolours.caption
+msgctxt "tsett.buttonsetcolours.caption"
+msgid "Set Colours"
+msgstr "Вказати кольори"
+
+#: tsett.buttonsetdictionary.caption
+msgid "Set Dictionary"
+msgstr "Вказати словник"
+
+#: tsett.buttonsetnotepath.caption
+msgid "Set Path to Note Files"
+msgstr "Вказати шлях до файлів з нотатками"
+
+#: tsett.buttonsetnotepath.hint
+msgid "If you have notes somewhere else"
+msgstr "Якщо ваші нотатки деінде"
+
+#: tsett.buttonsetspelllibrary.caption
+msgid "Set Spell Library"
+msgstr "Вказати бібліотеку правопису"
+
+#: tsett.buttonshowbackup.caption
+msgid "Show Me"
+msgstr "Показати мені"
+
+#: tsett.buttonsnaprecover.caption
+msgid "Recover Lost Notes"
+msgstr "Відновити втрачені нотатки"
+
+#: tsett.buttonsnaprecover.hint
+msgid "If you have previously taken a snapshot ..."
+msgstr "Якщо у вас є попередньо зроблений зріз ..."
+
+#: tsett.checkautosnapenabled.caption
+msgid "Use auto snapshots"
+msgstr "Використовувати автозрізи"
+
+#: tsett.checkautostart.caption
+msgid "Autostart at Logon"
+msgstr "Автозапуск під час входу в систему"
+
+#: tsett.checkboxautosync.caption
+msgid "Auto Sync"
+msgstr "Автосинхронізація"
+
+#: tsett.checkboxautosync.hint
+msgid "Sync, if possible once an hour."
+msgstr "Синхронізувати, по можливості, раз на годину."
+
+#: tsett.checkescclosesnote.caption
+msgid "Esc Closes Note"
+msgstr "Esc закриває нотатку"
+
+#: tsett.checkfindtoggles.caption
+msgid "Find Command Toggles"
+msgstr "Перемикання команди пошуку"
+
+#: tsett.checkmanynotebooks.caption
+msgid "Allow a Note to be in Multiple Notebooks."
+msgstr "Дозволити нотатці бути в декількох записниках."
+
+#: tsett.checkmanynotebooks.hint
+msgid "This may adversly affect traditional Tomboy, take care."
+msgstr "Це може негативно вплинути на традиційний Tomboy, будьте обережні."
+
+#: tsett.checknotifications.caption
+msgid "Show Notifications"
+msgstr "Показувати сповіщення"
+
+#: tsett.checkshowextlinks.caption
+msgid "Show External  Links"
+msgstr "Показувати зовнішні посилання"
+
+#: tsett.checkshowintlinks.caption
+msgid "Show Internal Links"
+msgstr "Показувати внутрішні посилання"
+
+#: tsett.checkshowsearchatstart.caption
+msgid "Show Search at Start"
+msgstr "Показувати Пошук під час запуску"
+
+#: tsett.checkshowsplash.caption
+msgid "Show Splash at Start"
+msgstr "Показувати вспливне вікно під час запуску"
+
+#: tsett.checkshowsplash.hint
+msgid "Always shown if error loading notes."
+msgstr "Завжди показується, якщо помилка завантаження нотаток."
+
+#: tsett.checkshowtomdroid.caption
+msgid "Show Tomdroid Sync (experimental)"
+msgstr "Показувати синхронізацію з Tomdroid (експериментальне)"
+
+#: tsett.checkstampbold.caption
+msgctxt "tsett.checkstampbold.caption"
+msgid "Bold"
+msgstr "Грубий"
+
+#: tsett.checkstampitalics.caption
+msgid "Italics"
+msgstr "Похилий"
+
+#: tsett.checkstampsmall.caption
+msgctxt "tsett.checkstampsmall.caption"
+msgid "Small"
+msgstr "Малий"
+
+#: tsett.checksyncenabled.caption
+msgid "Sync Enabled"
+msgstr "Синхронізацію дозволено"
+
+#: tsett.checkuseundo.caption
+msgid "Use Undo Redo (may slow editing)"
+msgstr "Викор. Скасувати Повторити (може сповільнити редагування)"
+
+#: tsett.checkuseundo.hint
+msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
+msgstr "Закрийте і перевідкрийте нотатку, щоб зміни ввійшли в дію. Викор. Ctrl-Z Ctrl-Y"
+
+#: tsett.combosynctype.text
+msgid "ComboSyncType"
+msgstr "ТипКомбоСинхронізації"
+
+#: tsett.editusername.text
+msgid "EditUserName"
+msgstr "ЗмінитиІмяКористувача"
+
+#: tsett.groupbox4.caption
+msgctxt "tsett.groupbox4.caption"
+msgid "When a conflict is detected between a local note and remote one :"
+msgstr "Коли виник конфлікт між локальною нотаткою і віддаленою :"
+
+#: tsett.groupbox5.caption
+msgid "Font Size"
+msgstr "Розмір шрифту"
+
+#: tsett.groupboxsync.caption
+msgid "  Sync  "
+msgstr "  Синхр.  "
+
+#: tsett.groupboxtoken.caption
+msgctxt "tsett.groupboxtoken.caption"
+msgid "Token"
+msgstr "Токен"
+
+#: tsett.groupboxuser.caption
+msgctxt "tsett.groupboxuser.caption"
+msgid "User"
+msgstr "Користувач"
+
+#: tsett.label1.caption
+msgid "Settings will be saved in :"
+msgstr "Налаштування зберігаютсья в :"
+
+#: tsett.label10.caption
+msgid "Help Notes Language"
+msgstr "Мова нотаток довідки"
+
+#: tsett.label11.caption
+msgid "Backup Files"
+msgstr "Файли резервних копій"
+
+#: tsett.label13.caption
+msgid "Spell Check requires the Hunspell Libraries and"
+msgstr "Перевірка правопису вимагає бібліотек Hunspell та"
+
+#: tsett.label14.caption
+msgid "an appropriate Hunspell Dictionary set."
+msgstr "вказаного відповідного словника Hunspell."
+
+#: tsett.label16.caption
+msgid "Maximum number of snapshots"
+msgstr "Найбільша кількість зрізів"
+
+#: tsett.label17.caption
+msgid "Date Stamp Format"
+msgstr "Формат штампу дати"
+
+#: tsett.label2.caption
+msgid "Notes will be looked for and saved in :"
+msgstr "Нотатки зберігаються в :"
+
+#: tsett.label4.caption
+msgid "Repo : "
+msgstr "Репозиторій : "
+
+#: tsett.label5.caption
+msgid "Days per snapshot"
+msgstr "Днів на зріз"
+
+#: tsett.label6.caption
+msgid "Backup files are made when you delete a note or the sync system"
+msgstr "Файли резервних копій створюються коли Ви видаляєте нотатку або синхронізуєте систему"
+
+#: tsett.label7.caption
+msgid "is about to overwrite one. "
+msgstr "це перезапише одну."
+
+#: tsett.label8.caption
+msgid "They remain, forever, unless you do something about them."
+msgstr "Вони залишаються назавжди, якщо з ними нічого не робити."
+
+#: tsett.label9.caption
+msgid "A snaphot is a copy of your current note directory."
+msgstr "Зріз — це копія вашого поточного каталогу з нотатками."
+
+#: tsett.labelsnapdir.caption
+msgid "Snap dir"
+msgstr "Каталог шматків"
+
+#: tsett.labelsyncinfo1.caption
+msgid "LabelSyncInfo1"
+msgstr "ПозначкаСинхрІнфо1"
+
+#: tsett.labelsyncinfo2.caption
+msgid "LabelSyncInfo2"
+msgstr "ПозначкаСинхрІнфо2"
+
+#: tsett.labelsyncrepo.caption
+msgctxt "tsett.labelsyncrepo.caption"
+msgid "not configured"
+msgstr "не налаштовано"
+
+#: tsett.labelsynctype.caption
+msgid "Sync Type"
+msgstr "Тип синхронізації"
+
+#: tsett.menuitemcopytoken.caption
+msgid "Copy Existing Token"
+msgstr "Копіювати наявний токен"
+
+#: tsett.menuitemgettoken.caption
+msgid "Get a Token in your Browser"
+msgstr "Отримати токен у вашому оглядачі"
+
+#: tsett.menuitempastetoken.caption
+msgid "Paste a New Token"
+msgstr "Вставити новий токен"
+
+#: tsett.radioalwaysask.caption
+msgid "Always Ask me what to do."
+msgstr "Завжди запитувати мене, що робити."
+
+#: tsett.radiofontbig.caption
+msgid "Big"
+msgstr "Великий"
+
+#: tsett.radiofonthuge.caption
+msgctxt "tsett.radiofonthuge.caption"
+msgid "Huge"
+msgstr "Величезний"
+
+#: tsett.radiofontmedium.caption
+msgid "Medium"
+msgstr "Середній"
+
+#: tsett.radiofontsmall.caption
+msgctxt "tsett.radiofontsmall.caption"
+msgid "Small"
+msgstr "Малий"
+
+#: tsett.radiouselocal.caption
+msgid "Use Local Note and Overwrite Server Note."
+msgstr "Використовувати локальну нотатку і перезаписати нотатку на сервері."
+
+#: tsett.radiouseserver.caption
+msgid "Use Server Note and Rename Local Note."
+msgstr "Використовувати нотатку на сервері і перейменувати локальну нотатку."
+
+#: tsett.speedbuthelp.caption
+msgctxt "tsett.speedbuthelp.caption"
+msgid "Help"
+msgstr "Довідка"
+
+#: tsett.speedbuthide.caption
+msgctxt "tsett.speedbuthide.caption"
+msgid "Close"
+msgstr "Закрити"
+
+#: tsett.speedbutttbmenu.caption
+msgctxt "tsett.speedbutttbmenu.caption"
+msgid "Menu"
+msgstr "Меню"
+
+#: tsett.speedsetupsync.caption
+msgctxt "tsett.speedsetupsync.caption"
+msgid "Setup"
+msgstr "Встановлення"
+
+#: tsett.speedtokenactions.caption
+msgid "Actions"
+msgstr "Дії"
+
+#: tsett.tabbackup.caption
+msgid "BackUp"
+msgstr "Резервна копія"
+
+#: tsett.tabbasic.caption
+msgid "Basic"
+msgstr "Основне"
+
+#: tsett.tabdisplay.caption
+msgid "Notes"
+msgstr "Нотатки"
+
+#: tsett.tabdisplay.hint
+msgid "eg Ctrl-F opens and closes Find Window"
+msgstr "напр., Ctrl-F відкриває і закриває вікно пошуку"
+
+#: tsett.tabrecover.caption
+msgctxt "tsett.tabrecover.caption"
+msgid "Recover"
+msgstr "Відновлення"
+
+#: tsett.tabspell.caption
+msgctxt "tsett.tabspell.caption"
+msgid "Spell"
+msgstr "Правопис"
+
+#: tsett.tabsync.caption
+msgctxt "tsett.tabsync.caption"
+msgid "Sync"
+msgstr "Синхронізація"
+
