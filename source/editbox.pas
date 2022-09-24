@@ -1314,14 +1314,16 @@ end;
 function TEditBoxForm.FindInNoteBack(Term : string) : boolean;
 var
     StartingCursor, StartBlock, IndexBlock, IntIndex, Found : integer;
+    LoopCount : integer = 0;
     SearchString : string = '';
 begin
+    Result := False;
     StartingCursor := Kmemo1.Blocks.RealSelStart;
     StartBlock := Kmemo1.Blocks.IndexToBlockIndex(StartingCursor, IntIndex);
     if not KMemo1.Blocks[StartBlock].ClassNameIs('TKMemoParagraph') then begin
         SearchString := lowercase(Kmemo1.Blocks[StartBlock].Text);
         UTF8delete(SearchString, IntIndex+1, 99999);       // Remove already searched content
-    end;
+    end {else if StartBlock = Kmemo1.Blocks.Count then dec(StartBlock)};
     IndexBlock := StartBlock -1;                           // and if we start at block zero ?
     if IndexBlock < 0 then
         IndexBlock := KMemo1.Blocks.Count-1;
@@ -1331,15 +1333,20 @@ begin
         if KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') or (IndexBlock = 0) then begin
             Found := UTF8RPos(Term, SearchString);         // 1 based
             if Found > 0 then begin
+                Result := True;
                 Kmemo1.SelStart := Kmemo1.Blocks.BlockToIndex(KMemo1.Blocks[IndexBlock]) + Found;
                 Kmemo1.SelLength := UTF8Length(Term);
-                exit(True);                                // we found one, might be only one in a loop
+                Break;                                // we found one, might be only one in a loop
             end;
             SearchString := '';
         end;
-        if IndexBlock = StartBlock then exit(false);       // looped around to where we started.
-        if IndexBlock = 0 then
+        if IndexBlock = StartBlock then
+            exit(Term = lowercase(Kmemo1.Blocks.SelText));                                          // looped around to where we started.
+        if IndexBlock = 0 then begin
             IndexBlock := KMemo1.Blocks.Count-1;           // Possibly slow ......
+            inc(LoopCount);
+            if LoopCount > 1 then exit(False);              // Special case, empty note !
+        end;
         if not KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') then
             SearchString := lowercase(Kmemo1.Blocks[IndexBlock].Text) + SearchString;
         dec(IndexBlock);
@@ -1363,6 +1370,11 @@ begin
    end else inc(Offsets);
    // inc(Offsets);                                            // account for either the Para or the skipped char in text
    IndexBlock := StartBlock+1;                              // Next block, if not there, drop through
+   if IndexBlock >= KMemo1.Blocks.Count then begin          // On very last line and block
+       IndexBlock := 0;                                     // Loop around.
+       Offsets := 0;
+       StartingCursor := 0;
+   end;
    while IndexBlock < KMemo1.Blocks.Count do begin
         if KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') and (SearchString <> '') then begin                        // ****
             Found := UTF8Pos(Term, SearchString);           // 1 based
@@ -1380,7 +1392,7 @@ begin
             else inc(OffSets);                              // Must allow for Para marked                              // ****
         end;
         if IndexBlock = StartBlock then begin               // Hmm, thats were we started and its still not there ?
-            Exit(False);
+            Exit(Term = lowercase(Kmemo1.Blocks.SelText));
         end;
         inc(IndexBlock);                                                                                                       // ****
         if IndexBlock = KMemo1.Blocks.Count then begin                                                                         // ****
