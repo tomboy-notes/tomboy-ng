@@ -243,7 +243,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Force Language, supported en, es, fr, nl"
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, en, es, fr, nl"
+msgid "Force Language, en, es, uk, fr, nl"
 msgstr "Forzar idioma. Idiomas suportados: en, es, fr, nl"
 
 #: resourcestr.rshelpnosplash
@@ -1134,10 +1134,6 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Sincronizar"
 
-#: tformsync.labelprogress.caption
-msgid "LabelProgress"
-msgstr "EtiquetaProgre"
-
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
 msgstr "Acción"
@@ -1739,14 +1735,6 @@ msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 
-#: tsett.combosynctype.text
-msgid "ComboSyncType"
-msgstr "TipoSincCombi"
-
-#: tsett.editusername.text
-msgid "EditUserName"
-msgstr "CambiarNombre"
-
 #: tsett.groupbox4.caption
 #, fuzzy
 #| msgid "  Options  "
@@ -1833,14 +1821,6 @@ msgstr "Una instantánea es una copia de sus notas actuales."
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Directorio, instantáneas"
-
-#: tsett.labelsyncinfo1.caption
-msgid "LabelSyncInfo1"
-msgstr "EtiquetaSincInfo1"
-
-#: tsett.labelsyncinfo2.caption
-msgid "LabelSyncInfo2"
-msgstr "EtiquetaSincInfo2"
 
 #: tsett.labelsyncrepo.caption
 msgctxt "tsett.labelsyncrepo.caption"

@@ -239,7 +239,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Force Language, supported en, es, nl"
 msgctxt "resourcestr.rshelplang"
-msgid "Force Language, en, es, fr, nl"
+msgid "Force Language, en, es, uk, fr, nl"
 msgstr "Choix de la langue (en, es, fr, nl)"
 
 #: resourcestr.rshelpnosplash
@@ -1133,10 +1133,6 @@ msgctxt "tformsync.caption"
 msgid "Sync"
 msgstr "Synchro"
 
-#: tformsync.labelprogress.caption
-msgid "LabelProgress"
-msgstr ""
-
 #: tformsync.listviewreport.columns[0].caption
 msgid "Action"
 msgstr "Action"
@@ -1764,14 +1760,6 @@ msgstr ""
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr ""
 
-#: tsett.combosynctype.text
-msgid "ComboSyncType"
-msgstr ""
-
-#: tsett.editusername.text
-msgid "EditUserName"
-msgstr ""
-
 #: tsett.groupbox4.caption
 #, fuzzy
 #| msgid "  Options  "
@@ -1861,14 +1849,6 @@ msgstr "Un snapshot est une copie en l'état du répertoire des notes"
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Répertoire des snap"
-
-#: tsett.labelsyncinfo1.caption
-msgid "LabelSyncInfo1"
-msgstr ""
-
-#: tsett.labelsyncinfo2.caption
-msgid "LabelSyncInfo2"
-msgstr ""
 
 #: tsett.labelsyncrepo.caption
 #, fuzzy

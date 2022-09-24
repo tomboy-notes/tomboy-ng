@@ -28,7 +28,7 @@
         <Item4 Value="Error while parsing text"/>
         <Item5 Value="Root node must be an array or object"/>
       </ExcludedIdentifiers>
-      <ExcludedOriginals Count="63">
+      <ExcludedOriginals Count="68">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>
@@ -92,6 +92,11 @@
         <Item61 Value="LabelBadNoteAdvice"/>
         <Item62 Value="LabelFileSyncinfo1"/>
         <Item63 Value="LabelFileSyncinfo2"/>
+        <Item64 Value="LabelSyncInfo2"/>
+        <Item65 Value="LabelSyncInfo1"/>
+        <Item66 Value="EditUserName"/>
+        <Item67 Value="ComboSyncType"/>
+        <Item68 Value="LabelProgress"/>
       </ExcludedOriginals>
     </i18n>
     <BuildModes Count="18">
