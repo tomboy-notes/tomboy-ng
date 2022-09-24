@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>tomboy-ng Комбінації клавіш</title>
+  
+<text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Комбінації клавіш</underline>
+
+
+<size:large><bold>Усі платформи</bold></size:large>
+<list><list-item dir="ltr">Alt-СтрілкаВправо : увімкнути маркер списку.</list-item></list>
+<list><list-item dir="ltr">Alt-СтрілкаВліво : вимкнути маркер списку.</list-item></list>
+<list><list-item dir="ltr">Control-1 : малий шрифт</list-item></list>
+<list><list-item dir="ltr">Control-2 : звичайний шрифт</list-item></list>
+<list><list-item dir="ltr">Control-3 : великий шрифт</list-item></list>
+<list><list-item dir="ltr">Control-4 : величезний шрифт</list-item></list>
+<list><list-item dir="ltr">Shift-СтрілкаВправо - виділити одни знак вправо</list-item></list>
+<list><list-item dir="ltr">Shift-СтрілкаВліво - виділити один знак вліво</list-item></list>
+<list><list-item dir="ltr">Shift-Клацання : виділити текст між поточною позицією і позицією клацання.</list-item></list>
+
+
+
+<size:large><bold>Windows / Linux</bold></size:large>
+<list><list-item dir="ltr">Control-Q : Вийти з tomboy-ng  - з пошуку, налаштувань чи будь-якої нотатки</list-item></list>
+<list><list-item dir="ltr">Control-N : Нова нотатка - з пошуку, налаштувань чи будь-якої нотатки</list-item></list>
+<list><list-item dir="ltr">Control-X : Вирізати виділений текст і копіювати його в буфер обміну.</list-item></list>
+<list><list-item dir="ltr">Control-C : Копіювати виділений текст у буфер обміну.</list-item></list>
+<list><list-item dir="ltr">Control-V : Вставити вміст із буфра обміну в поточну нотатку.</list-item></list>
+<list><list-item dir="ltr">Control-A : Виділити всі елементи.</list-item></list>
+<list><list-item dir="ltr">Control-СтрілкаВправо : переміститися на слово вправо.</list-item></list>
+<list><list-item dir="ltr">Control-СтрілкаВліво : переміститися на слово вліво.</list-item></list>
+<list><list-item dir="ltr">Control-Shift-СтрілкаВліво - виділити на одне слово вліво</list-item></list>
+<list><list-item dir="ltr">Control-Shift-СтрілкаВправо - виділити на одне слово вправо</list-item></list>
+<list><list-item dir="ltr">Control-F4 : Закрити вікно поточної нотатки.</list-item></list>
+<list><list-item dir="ltr">Control-Z : Скасувати дію</list-item></list>
+<list><list-item dir="ltr">Control-Y : Повторити дію</list-item></list>
+<list><list-item dir="ltr">Control-D : Вставити дату і час, РРРР-ММ-ДД гг:хх:сс</list-item></list>
+<list><list-item dir="ltr">Control-L : Створити посилання на нотатку з виділеного тексту.</list-item></list>
+<list><list-item dir="ltr">Alt - F4 : Закрити поточне вікно нотатки</list-item></list>
+Шрифти
+<list><list-item dir="ltr">Control-B : Грубий</list-item></list>
+<list><list-item dir="ltr">Control-I : Похилий</list-item></list>
+<list><list-item dir="ltr">Control-S : Закреслений</list-item></list>
+<list><list-item dir="ltr">Control-U : Підкреслений</list-item></list>
+<list><list-item dir="ltr">Control-H : Підсвічений</list-item></list>
+<list><list-item dir="ltr">Control-E : Калькулятор виразів - див. нотаку довідки про Калькулятор</list-item></list>
+Пошук (у нотатці)
+<list><list-item dir="ltr">Control-F : Шукати щось у нотатці.</list-item></list>
+<list><list-item dir="ltr">F3 або Ctrl-G : Шукати далі в нотатці</list-item></list>
+<list><list-item dir="ltr">Shift-F3 або Shift-Ctrl-G : Шукати назад у нотатці</list-item></list>
+
+
+
+<size:large><bold>Mac</bold></size:large>
+<italic>(Де клавіша Option це клавіша Alt)</italic>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-Q : Вийти з tomboy-ng   - з пошуку, налаштувань чи будь-якої відкритої нотатки</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-N : Нова нотатка - з пошуку, налаштувань чи будь-якої відкритої нотатки</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-X : Вирізати виділений текст і скопіювати в буфер обміну.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-C : Копіювати виділений текст у буфер обміну.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-V : Вставити вміст із буфера обміну в поточну нотатку.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-A : Виділити всі елементи.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-F : Відкрити вікно пошуку.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-СтрілкаВправо : перейти в кінець рядка.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-СтрілкаВліво : перейти на початок рядка.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-Z : Скасувати</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-Y : Повторити</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-D : Вставити дату і час, РРРР-ММ-ДД гг:хх:сс</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Option-Shift-СтрілкаВліво - виділити на слово вліво</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Option-Shift-СтрілкаВправо - виділити на слово вправо</list-item></list></list-item></list>
+Шрифти
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-B : Bold</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-I : Italics</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-S : Strikeout</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-U : Underline</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-E : Expression calculator - see Calculator help note</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Option-H : Highlight</list-item></list></list-item></list>
+Пошук (у нотатці)
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-F : Шукати щось у нотатці.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Command-G : Шукати далі в нотаці</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Shift-Command-G : Шукати назад в нотаці</list-item></list></list-item></list>
+
+
+</note-content></text>
+  <last-change-date>2022-09-23T11:35:16.7638823+03:00</last-change-date>
+  <last-metadata-change-date>2022-09-23T11:35:16.7638823+03:00</last-metadata-change-date>
+  <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>356</x>
+  <y>78</y>
+  <open-on-startup>False</open-on-startup>
+</note>
