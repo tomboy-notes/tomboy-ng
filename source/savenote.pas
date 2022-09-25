@@ -91,7 +91,7 @@ type TNoteUpdateRec = record
      LastChangeDate : string;   // if '', its a content save, generate a new timestamp
      CreateDate : string;       // if its '', its a new note, use LastChangeDate
      ErrorStr : string;         // '' if all OK, not used everywhere....
-     // ToDo : remove the field ErrorStr
+     //  remove the field ErrorStr - why ???
 end;
 
 
@@ -292,7 +292,7 @@ end;
         if FixedWidth then Buff := Buff + '</monospace>';
 
         // we need to do this if FSize is Small, Large or Huge OR Font has changed
-        if (FSize in [Sett.FontSmall, Sett.FontLarge, Sett.FontHuge])                    // ToDo : Oct2021 Seriously untested code !!!!
+        if (FSize in [Sett.FontSmall, Sett.FontLarge, Sett.FontHuge])
         or ((FSize <> FT.TextStyle.Font.Size) and (FT.TextStyle.Font.Size <> Sett.FontTitle)) then begin
                 Buff := Buff + SetFontXML(FSize, false);
                 // better for pretty tags but generates invalid tags ! See below ....

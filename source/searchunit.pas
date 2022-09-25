@@ -373,22 +373,9 @@ begin
         end;
 
         IndexAndRefresh();                                                      // Reruns the current search with new data in NoteList
-
-
-(*        if Sett.AutoSearchUpdate then begin                                // Update Search While You Type, SWYT cannot observe Refresh
-            if ListBoxNoteBooks.ItemIndex < 0 then
-                ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
-            else
-                ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
-        end;       *)
         TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
         RefreshMenus(mkRecentMenu);
         MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
-
-
-
-
-
 
         {
         Visible        T            F          T          F
@@ -495,13 +482,6 @@ begin
     end;
 
     IndexAndRefresh(False);                                          // ToDo : if Delete updated Index, could be DisplayOnly
-
-{    if Sett.AutoSearchUpdate then begin                            // Update Search While You Type, SWYT cannot observe Refresh
-        if ListBoxNoteBooks.ItemIndex < 0 then
-            ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
-        else
-            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
-    end;   }
     TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
     RefreshMenus(mkRecentMenu);
     MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
@@ -569,29 +549,15 @@ begin
     if TheMainNoteLister.AlterOrAddNote(ReRunSearch, FullFileName, LastChange, Title) then begin
         if ReRunSearch then begin
             // If neither a search term nor Notebook is set, just call ClearSearch, its fast
-            if ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch))
-                            and (ListBoxNoteBooks.ItemIndex < 0) then
+            if (((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch))
+                            and (ListBoxNoteBooks.ItemIndex < 0)) then begin
+                ListViewNotes.Items.clear;                              // stops an annoying GTK2 message
                 ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
-            else begin
+            end else begin
                 IndexAndRefresh(False);
-              (*  if ListBoxNoteBooks.ItemIndex > -1 then
-                    NoteBook := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]
-                else NoteBook := '';
-
-                STL := TStringList.Create;
-                if not ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch)) then
-                    STL.AddDelimitedtext(EditSearch.Text, ' ', false);                  // OK to pass an empty list.
-                ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook);
-                STL.Free;  *)
-            end;
+             end;
         end else                                                 // Just need to display, Indexes have been adjusted
             IndexAndRefresh(True);
-        (*    if Sett.AutoRefresh then
-                ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount()
-            else begin
-                NumbToRefresh := TheMainNoteLister.NoteIndexCount();
-                ButtonRefresh.Enabled := True;
-            end;     *)
     end;
     // T3 := gettickcount64();
     TheMainNoteLister.ThisNoteIsOpen(FullFileName, TheForm);
@@ -961,8 +927,10 @@ procedure TSearchForm.IndexAndRefresh(DisplayOnly : boolean = false);
 var
     NB, STerm : string;
 begin
-     If DisplayOnly then
+     If DisplayOnly then begin
+         ListViewNotes.Clear;
          ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount()
+     end
     else begin
         if EditSearch.text = rsMenuSearch then
              STerm := ''
@@ -1006,17 +974,6 @@ begin
     end;
 end;
 
-// ToDo : convert listviewnotes to ownerdata - maybe other list views too ?
-// Switch ListViewNotes to OwnerData mode, we will no longer use NoteLister.LoadListView() -
-// Add the OnData event, it will need to tell what display mode we are in, full view, searched, progress search
-// it will respond using NoteLister.GetNote(i).  It know which mode because a variable of
-// a defined type is set as as we move into each mode. TheOnData will check that
-// regional var in a case statement.
-// CheckAutoSearchUpdate.Checked
-
-// -- Reset --
-// Set LVN.count to how ever many notes we have, call NIndex.ResetActive()
-
 {  Situations where this is called -
    * No NoteBook and blank edit - ClearSearch
    * No NoteBook and 1 char in edit - do nothing
@@ -1038,6 +995,8 @@ var
     Found : integer;
     //T1, T2, T3 : qword;
 begin
+    if (EditSearch.Caption <> '') and (EditSearch.Caption <> rsMenuSearch) then
+        SpeedButtonClearSearch.Enabled := True;
     if (not Sett.AutoSearchUpdate) or (not visible) or (length(EditSearch.Text)=1) then exit;
     //debugln('TSearchForm.EditSearchChange() EditSearch.Text=' + EditSearch.Text);
     STL := TStringList.Create;
@@ -1113,7 +1072,8 @@ begin
                 STL.AddDelimitedtext(EditSearch.Text, ' ', false)
             else STL.AddDelimitedtext(lowercase(EditSearch.Text), ' ', false);
 //        if (STL.Count > 0) or (Notebook <> '') then begin
-            TheMainNoteLister.LoadContentForPressEnter();                             // Loading 2K notes, 8.6Meg, RSS 43Meg to 51Meg
+            TheMainNoteLister.LoadContentForPressEnter();                       // Loading 2K notes, 8.6Meg, RSS 43Meg to 51Meg
+            ListViewNotes.Clear;
             ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook);  // In SWYT, 52Meg  BUT  v.34c = 42meg
             UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 //        end;
@@ -1155,10 +1115,7 @@ procedure TSearchForm.EditSearchEnter(Sender: TObject);
 // ToDo : this should select the word, 'Search' if user clicks in field but does not ??
 begin
     if EditSearch.Text = rsMenuSearch then begin
-        //EditSearch.SelStart:=0;
-        //EditSearch.SelLength:= length(rsMenuSearch);
         EditSearch.SelectAll;
-        //debugln('TSearchForm.EditSearchEnter()');
     end;
 end;
 
@@ -1179,13 +1136,6 @@ end;
 procedure TSearchForm.FormActivate(Sender: TObject);
 //var tick : qword;
 begin
-(*    if NeedRefresh then begin
-        //Tick := gettickcount64();
-        NeedRefresh := False;
-        ButtonRefreshClick(self);
-        //debugln('SearchForm - FormActivate (first run) ' + dbgs(GetTickCount64() - Tick) + 'mS');
-    end;
-    //debugln('Search Unit Form Activate');   *)
     EditSearch.SetFocus;
 end;
 
@@ -1211,9 +1161,6 @@ begin                                            // Gets called from other units
     Result := TheMainNoteLister.IndexNotes();
 //    NoteLister.ClearSearch();                   // This builds the note sorted Indexes in Note_Lister
     UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
-(*    if Sett.AutoRefresh then
-       Refresh()
-    else NeedRefresh := True; *)                  // eg refresh ListViewNotes on next OnActivate
     RefreshMenus(mkRecentMenu);
     // TS2 := DateTimeToTimeStamp(Now);
 	// debugln('TSearchForm.IndexNotes - Indexing took (mS) ' + inttostr(TS2.Time - TS1.Time));          // Dell, 2K notes, 134mS
@@ -1244,37 +1191,21 @@ begin
 
 //    ListViewNotes.AutoSortIndicator := false;
     ListViewNotes.Column[1].SortIndicator := siAscending;
-
-//    ListViewNotes.sort;
-
-
-//    ListViewNotes.AutoSort:=True;
-//    ListViewNotes.SortDirection:= sdDescending;     // Most recent, ie bigger date numbers, on top
     ListViewNotes.AutoWidthLastColumn:= True;         // ToDo : but Qt5 in OwnerData mode demands columns of extra data, eg Filename
     ListViewNotes.ReadOnly := True;
-
     CreateMenus();                                  // We must build an initial menu BEFORE indexing notes...
     IndexNotes();                                   // Messy but IndexNotes calls Refresh Menu and thats necessary
-
-    //ListViewNotes.BeginUpdate;
+    ListViewNotes.Items.clear;
     ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();        // Builds NoteLister's Index files.
-
-
-
-    //ListViewNotes.EndUpdate;
     TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
-
-
     EditSearch.Hint:=rsSearchHint;
     EditSearch.Text := rsMenuSearch;
+    SpeedButtonClearSearch.Enabled := False;
     EditSearch.SelStart := 1;
     EditSearch.SelLength := length(EditSearch.Text);
-
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
-
     MenuItemCaseSensitive.checked := Sett.SearchCaseSensitive;
     MenuItemSWYT.checked := Sett.AutoSearchUpdate;
-
     {$ifdef LVOWNERDRAW}
     ListViewNotes.OwnerDraw:= True;
     {$ifdef LCLQT5}                 // This because when ownerdrawn, we loose spacing between rows in Qt5, ugly workaround.
@@ -1625,20 +1556,13 @@ begin
     EditSearch.Hint:=rsSearchHint;
 
     if Sett.AutoSearchUpdate then begin                 // Search While You Type
+        ListViewNotes.clear;
         if (EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch) then      // ie, no search term
             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
         else
             ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(EditSearch.Text, '');
     end else
         DoSearchEnterPressed();
-    //EditSearch.Text := rsMenuSearch;
-//    ButtonRefreshClick(self);
-    //EditSearch.SetFocus;
-    //EditSearch.SelectAll;
-    // EditSearch.SelStart := 0;
-    // EditSearch.SelLength := length(EditSearch.Text);
-
-    // ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();
     UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
 
@@ -1653,21 +1577,12 @@ begin
         STL := TStringList.Create;
         if not ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch)) then
             STL.AddDelimitedtext(EditSearch.Text, ' ', false);                  // else we pass an empty list.
+        ListViewNotes.Clear;
         ListViewNotes.Items.Count :=
             TheMainNoteLister.NewSearch(STL, ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
         STL.Free;
         UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
     end;
-
-//    SelectedNoteBook := ListBoxNotebooks.ItemIndex;         // ToDo : do we need this ?
-
-//    ListViewNotes.Items.Count := NoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
-
-    // Events here if there is a term search is progress are ignored because ButtonRefreshClick acts on
-    // search terms first.
-
-    //ListBoxNotebooks.Hint := 'Options for ?';
-    //StringGridNotebooks.Hint := 'Options for ' + StringGridNotebooks.Cells[0, StringGridNotebooks.Row];
 end;
 
 
@@ -1773,6 +1688,7 @@ begin
     EditSearch.SetFocus;
     EditSearch.SelectAll;
     if Sett.AutoSearchUpdate then begin                 // Search While You Type
+         ListViewNotes.Clear;
         if ListBoxNoteBooks.ItemIndex < 0 then          // ie, no Notebook selected
             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
         else
@@ -1781,6 +1697,7 @@ begin
         DoSearchEnterPressed();
     SearchActive := False;
     UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
+    SpeedButtonClearSearch.Enabled := false;
 end;
 
 

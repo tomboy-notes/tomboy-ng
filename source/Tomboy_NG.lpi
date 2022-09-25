@@ -145,12 +145,6 @@
               <IgnoredMessages idx6058="True" idx5024="True" idx4056="True" idx4055="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dTOMBOY_NG"/>
-            <OtherDefines Count="4">
-              <Define0 Value="DisableLCLGIF"/>
-              <Define1 Value="DisableLCLJPEG"/>
-              <Define2 Value="DisableLCLPNM"/>
-              <Define3 Value="DisableLCLTIFF"/>
-            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -845,13 +839,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-lots"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-lots"/>
           </local>
         </Mode0>
       </Modes>

@@ -1481,13 +1481,18 @@ begin
     DateAllIndex.sort(@SortOnDate);
 end;
 
+{ This should ret the number of items, not the zero based index of the last item.
+So, if we do '0', one pass, it should ret 1
+If the list is empty, ret 0;
+
+}
 function TNoteLister.ClearSearch(): integer;
 var
     i : integer;
     //T1, T2, T3, T4, T5, T6 : qword;
 begin
     //T1 := GetTickCount64();
-//    SearchCount := 0;                // ToDo : is this needed ?
+    //DumpNoteNoteList('Called from ClearSearch');
     result := 0;
     if TitleSearchIndex = nil then TitleSearchIndex := TSortList.Create
     else TitleSearchIndex.Clear;
@@ -1509,6 +1514,7 @@ begin
                 + 'mS Tsort=' + inttostr(T3-T2) + 'mS DSort=' + inttostr(T4-T3) );
     debugln('Top ' + ' ' + NoteList[TitleSearchIndex[0]]^.LastChange);
     debugln('Bot ' + ' ' + NoteList[TitleSearchIndex[TitleSearchIndex.Count-1]]^.LastChange);  }
+    // debugln('TNoteLister.ClearSearch() returning ' + inttostr(REsult) + ' and ' + inttostr(NoteList.Count));
 end;
 
 function TNoteLister.CheckSearchTerms(const STermList : TStringList; const Index : integer) : boolean; inline;
@@ -1719,6 +1725,7 @@ var
     NoteP : PNote;
 begin
     new(NoteP);
+    NoteP^.IsTemplate := False;
     NoteP^.ID := CleanFilename(FileName);
     NoteP^.LastChange := LastChange; {copy(LastChange, 1, 19); }
     //NoteP^.LastChange[11] := ' ';
@@ -1737,26 +1744,10 @@ begin
 end;
 
 function TNoteLister.GetNote(Index : integer) : PNote;          // ToDo : Used by sync, might be faster to just give it access to NoteList
-(*var
-    Cnt : integer = -1;           // Zero is a valid cnt
-    i : integer;       *)
 begin
     Result := nil;
     if (Index > -1) and (Index < NoteList.Count) then
         Result := NoteList[Index];
-
-    (*
-    //debugln('TNoteLister.GetNote ' + inttostr(Index) + ' of ' + inttostr(SearchCount) + ' and ' + inttostr(GetNoteCount));
-    i := GetNoteCount;            // we start at the end of list.
-    if SearchCount = GetNotecount then Result := NoteList[i - Index -1]
-    else begin
-        while i > 0 do begin
-            dec(i);
-            if NoteList[i]^.insearch then inc(Cnt);
-            if Index = Cnt then exit(NoteList[i]);
-        end;
-    //debugln('ERROR TNoteLister.GetNote underrun');
-    end;                                                 *)
 end;
 
 function TNoteLister.GetNote(Index: integer; mode: TLVSortMode): PNote;
@@ -1841,7 +1832,7 @@ end;
 
 procedure TNoteLister.LoadStGrid(const Grid : TStringGrid; NoCols : integer; SearchMode : boolean = false);
 var
-    Index : integer;                                       // ToDo : do we need this ?  YES, used by Snapshot manager. Sigh ....
+    Index : integer;                                       // used by Snapshot manager. Sigh ....
     TheList : TNoteList;
     LCDst : string;
     CDst  : string;

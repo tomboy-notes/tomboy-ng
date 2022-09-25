@@ -83,7 +83,6 @@ object EditBoxForm: TEditBoxForm
       OnEnter = EditFindEnter
       OnExit = EditFindExit
       OnKeyDown = EditFindKeyDown
-      OnKeyUp = EditFindKeyUp
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0

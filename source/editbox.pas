@@ -320,8 +320,6 @@ type
         procedure EditFindExit(Sender: TObject);
         procedure EditFindKeyDown(Sender: TObject; var Key: Word;
             Shift: TShiftState);
-        procedure EditFindKeyUp(Sender: TObject; var Key: Word;
-            Shift: TShiftState);
         procedure FormActivate(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1203,14 +1201,6 @@ procedure TEditBoxForm.EditFindEnter(Sender: TObject);
 begin
     editFind.Color:= clDefault;
 end;
-
-procedure TEditBoxForm.EditFindKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-// We must move focus back to KMemo on every find, else highlighted text is hidden on Qt with some themes
-// If we allow user to use Enter to trigger a find, their next press of enter will erase what ever is highlighted
-begin
-        // ToDo : remove this
-end;
-
 
 procedure TEditBoxForm.EditFindKeyDown(Sender: TObject; var Key: Word;
     Shift: TShiftState);
