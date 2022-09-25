@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Tomdroid Sync</title>
+  
+<text xml:space="preserve"><note-content version="0.1"><underline>Tomdroid Sync</underline>
+
+<highlight><bold>WARNING - Its almost certain that the next release of tomboy-ng will not have this feature. Its clunky and I believe no one else is using it. Github sync is a much better option. If you think otherwise, better let the author know !</bold></highlight>
+
+<bold>New in V0.32, Cable based connection between PC and Android Device !  No profiles, passwords or ssh needed.</bold>
+
+Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of month now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences.
+
+But note that sync with Tomdroid is slow process, and tomboy-ng does not, yet report on its progress. The first sync with a large repository can be quite unnerving. If you have more than several hundred notes, you may be better waiting for a future next release of tomboy-ng, it will allow sync with only notes in a particular notebook.
+
+<size:large><bold>Background</bold></size:large>
+As a standalone app, <monospace>Tomdroid</monospace> works well enough but when synced to your notes  on a PC or Laptop, it really shines.  Tomdroid was built back in the Tomboy family's glory days. It worked fine doing a network sync with the Ubuntu One cloud service (although that may have been before we used that term). However, that service was withdrawn and Tomdroid  network users needed to provide their own Sync facilities. That means either running a Rainy server at home or setting up a grauphel  system. Neither is a trivial exercise.
+
+However, tomboy-ng  does not do network sync. Tomboy-ng does do a file based sync where a shared file service is visible to all parties.  Its quick and relatively simple but Tomdroid cannot be a direct part of such a system.
+
+<size:large><bold>This Solution</bold></size:large>
+tomboy-ng, as of release V0.32 can do a <italic>one to one</italic> file sync between Tomdroid and a Linux Box using a USB Cable. The Linux box may, or may not be part of a File Sync group. You can establish as many of these one to one connections as you have Tomdroid capable devices.
+
+
+<size:large><bold>Whats needed</bold></size:large>
+<list><list-item dir="ltr">A Linux pc, laptop or what ever running tomboy-ng.</list-item></list>
+<list><list-item dir="ltr">One or more Android devices (phone, tablets etc) with Tomdroid installed, probably from the PlayStore.</list-item></list>
+<list><list-item dir="ltr">A normal USB cable to connect them together.</list-item></list>
+
+
+<size:large><bold>First Time SetUp</bold></size:large>
+Assuming you already have notes in your tomboy-ng and a fresh install of Tomdroid, you should -
+
+Fire up Tomdroid on the device. Touch the Menu (top right), select Settings and find the Synchronization block. Check that Service is set to SD Card (note you don't need an external SDCard, Android directs that to some internal space) and that Location on SD Card is set to /storage/emulated/0/tomdroid/.  Close the Settings screen and touch the Sync symbol on the menu bar. Assuming you have no Tomdroid notes at this stage, it will be quite quick.
+
+<bold>IMPORTANT</bold> - close Tomdroid down now. Android uses a lot of disk caching and we must be sure that it has actually hit the 'disk'. It is vital that you close Tomdroid, not just background it. Sync will occasionally fail otherwise.
+
+Now, use the cable to connect the PC to a Android Device. The device will ask you to allow access from the PC to its files.
+
+On your Linux box, go to tomboy-ng's Settings, Basic Tab, and tick Show Tomdroid Sync. Note it is experimental. Now,  you should either run a normal (that is, not Tomdroid) sync or take a snapshot, or, better still, both ! Snapshots are easy, Settings, Recover Tab, click Take a Manual Snapshot. Too Easy !
+
+The Main Menu will now have a "Tomdroid" entry. Click it !
+
+The next screen will try and find your Android Device, in particular the directory containing the Tomdroid Sync Files. If all is well, it will suggest you click "Join", do so. It will take a minute or two, maybe much longer,  to transfer copies of your PC notes to the Device. When that is finished, use the PC's File Manger to close the connection to the Device. Unplug the USB cable.
+
+Restart Tomdroid, touch the Sync symbol and all your notes should start appearing in Tomdroid.
+
+<size:large><bold>Routine Sync</bold></size:large>
+Important that this process be followed at each sync.
+<list><list-item dir="ltr">From within Tomdroid, touch the sync button, then close Tomdroid. Really close it !</list-item></list>
+<list><list-item dir="ltr">Connect the Device to the PC with a USB cable.</list-item></list>
+<list><list-item dir="ltr">From within tomboy-ng, click Tomdroid Sync, it should identify your device as previously synced and suggest you hit the Sync button.</list-item></list>
+<list><list-item dir="ltr">Close the connection, unplug the USB cable, restart Tomdroid and touch the Sync symbol to complete the sync.</list-item></list>
+
+If you also sync your tomboy-ng to other laptops or computers, it makes sense to do so before you do a Routine Tomdroid sync and then, again, immediately after.
+
+<size:large><bold>General Advice</bold></size:large>
+<size:large>Tomdroid options and their effects.</size:large>
+<list><list-item dir="ltr"><italic><bold>Clear Notes - Clear all notes from local database.</bold></italic>  If you use this option and then touch (Tomdroid's) sync, you'll get a fresh set of notes based on whats currently in the sync dir.</list-item></list>
+<list><list-item dir="ltr"><italic><bold>Delete Remote Notes - Delete all notes from remote service.</bold></italic>  <highlight>Careful with this one !</highlight> If you do this and then run a sync from tomboy-ng, all previously synced notes will be deleted (but, backed up first) from your tomboy-ng install.  Almost certainly not what you want, so, please be careful. If you find your self in this position, run a Join rather than a Sync, a Join does not delete files so is always safe. Remember that tomboy-ng has some tools to help recover from misuse of above tools.</list-item></list>
+<list><list-item dir="ltr">If you want to start a whole new Tomdroid Sync, a reset, then clear both the above and then mount your phone, using the USB cable, and remove the 'tomboy.serverid' file from the phone/tomdroid directory. To be tidy, and assuming you don't sync with other andrid devices, you could also remove the ~/.config/tomboy-ng/android directory.</list-item></list>
+
+<list><list-item dir="ltr"><italic><bold>Does it work with Windows or Mac ?</bold></italic>   No, not yet. But it probably will be far easier to make it work there than the old model. So, maybe. Feedback ?</list-item></list>
+<list><list-item dir="ltr"><italic><bold>Can I sync my Phone with several computers ?</bold></italic>   No, each time you sync with a 'new' computer, you must do a 'Join', that will mean notes you previously deleted may be restored.  Sync your computers with tomboy-ng's usual File Sync and chose one  to be your gateway to your Android Devices.</list-item></list>
+<list><list-item dir="ltr"><italic><bold>Can one computer connect to several Android Devices</bold></italic> ?  Yes, this will fine as long as you do it one at a time. You may need to repeat the first sync after a second one until no changes are reported.</list-item></list>
+
+<size:large>Other Matters.</size:large>
+<list><list-item dir="ltr"><bold>Joining v Syncing</bold> - These processes are similar except that we cannot use a local manifest during a Join. The local manifest contains data about deleted notes so running a Join instead of a Sync will  resurrect notes deleted at one end or the other.</list-item></list>
+<list><list-item dir="ltr"><bold>Notebooks</bold> - Tomdroid does not understand notebooks. But a note edited in Tomdroid and synced back to tomboy-ng remembers what notebooks it was a member of.</list-item></list>
+<list><list-item dir="ltr"><bold>Tomdroid bugs and feature requests</bold> - No one is maintaining Tomdroid right now. All the source is there, want to try your hand ?</list-item></list>
+<list><list-item dir="ltr"><bold>Debugging</bold> - if you have a problem, first thing you should do is close tomboy-ng and restart it from command line, it may report some errors to console. Tick the 'Debug' box in the Tomdroid Sync Window before syncing. Please report what you find.</list-item></list>
+
+
+<size:large><bold>Things yet to be done</bold></size:large>
+<list><list-item dir="ltr">Firstly, the sync process can be quite slow due to the underlying MTP 'filesystem'.  But you don't see any sort of progress report.</list-item></list>
+<list><list-item dir="ltr">A Windows version is possible.</list-item></list>
+<list><list-item dir="ltr">I believe it would be quite useful to have the Tomdroid sync only work with a special Tomdroid notebook. That way, you could limit the number of notes that appear on your Android device.</list-item></list>
+ If I get the impression that there is some interest in the Tomdroid sync, these matters might be looked at.
+
+<size:large><bold>One To One Sync</bold></size:large>
+Also currently built in (and seriously untested), is the ability to do a one to one sync, similar to the Tomdroid model, but using any arbitrary directory. Only the tomboy-ng part of this sync is dealt with here, if you use this, you must manage the notes appearing in that directory yourself.
+
+To set the directory that tomboy-ng uses you set an environment variable, TB_ONETOONE pointing  to the directory you want to use before staring tomboy-ng. That directory must exist and be writable, if not used before, it will require a 'Join' and will be initialised as required. For example -
+
+<monospace>$  TB_ONETOONE=/home/myname/MyOneSync  tomboy-ng  &lt;enter&gt;</monospace>
+
+Start the sync using the Tomdroid menu item. Note, you  cannot use both the Tomdroid USB connection and the One To One connection in the same tomboy-ng session but restarting tomoy-ng without the environment variable will restore normal Tomdroid USB behaviour.
+
+
+<italic><bold>You can probably stop reading now.</bold></italic>
+
+<size:large><bold>How it all works.</bold></size:large>
+The sync model here is another manifestation of the file sync used by tomboy-ng.  This is the author's second attempt, the first one used ssh as a transport and while it works was far to complicated to use routinely.
+
+Firstly, when making an initial connection to Tomdroid, tomboy-ng stamps a unique ID on the device and keeps a copy in its config file. It also uses that ID as part of a local manifest file. If the IDs don't match, a normal sync cannot proceed.
+
+tomboy-ng (here and elsewhere) uses the last-change-date in every note to determine if two notes are in fact identical and don't need any syncing. I don't believe Tomboy does this and that explains why when re-joining a sync we sometimes ended up with a number of (invalid) clashes and   duplicate notes. tomboy-ng should never exhibit this behaviour.
+
+As well as keeping track of revision numbers and last sync dates, the local manifest is important when a note from either end is deleted. It has two sections, the first, note-revisions, lists all notes that this client has seen in the sync repository. So, if the repository no longer has that note, we know its been deleted elsewhere and should be deleted locally.  The second section, notes-deletions, lists every note, previously synced, deleted from this client. At sync time, such notes should be deleted from remote repo (and no longer listed in local manifest).
+
+Note that (I believe) tomboy-ng behaves differently from the original Tomboy in that Tomboy relied on  comparing sync revision numbers whereas tomboy-ng also considers the last-change-date.
+
+<bold>Joining (or, more correctly Creating a Tomdroid Connection)</bold>
+
+First, we stamp a unique ID in sshdroid's home directory. Next, we record any notes in the remote directory (that is in the device) and then compare that list with the local notes. By definition, there is no local manifest in play so deletes don't happen. For each note we firstly check if there is a corresponding  one at the other end. If their last-change-dates match, they are the same notes, do nothing.  If they have different last-change-dates, then its a clash, we'll ask user to decide later. if a notes exists at one end or the other but not both, its either an upload or a download.
+
+<bold>Routine Sync</bold>
+First, we check the unique ID, if they don't match, do not proceed, suggest user either find correct profile or Join again.
+Next, we read the local manifest and then do pretty much as above but use the local manifest data to determine what needs to be deleted.
+
+In both cases, once we have a full view of  what needs to happen, we do it. Firstly DownLoads, DoDeletes, Uploads, DeleteLocal, WriteLocalManifest.
+
+The Tomdroid interface is still quite fragile and not good at telling us where it hurts.
+
+
+</note-content></text>
+  <last-change-date>2022-09-23T20:42:36.5104258+10:00</last-change-date>
+  <last-metadata-change-date>2022-09-23T20:42:36.5104258+10:00</last-metadata-change-date>
+  <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1000</width>
+  <height>626</height>
+  <x>20</x>
+  <y>30</y>
+  <open-on-startup>False</open-on-startup>
+</note>
