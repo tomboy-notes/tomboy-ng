@@ -571,7 +571,7 @@ uses
     //Markdown,
     Index,              // An Index of current note.
     math,
-    FileUtil, strutils, // just for ExtractSimplePath ... ~#1620
+    FileUtil, {strutils,} // just for ExtractSimplePath ... ~#1620
     LCLIntf,            // OpenUrl()
     TB_Utils,
     Note_Lister,        // so we can get directly to note data.

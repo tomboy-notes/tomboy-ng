@@ -1193,6 +1193,7 @@ begin
               case Info.Name of
                   'EN' : ComboHelpLanguage.Items.Add('EN - English');
                   'ES' : ComboHelpLanguage.Items.Add('ES - Español');
+                  'UK' : ComboHelpLanguage.Items.Add('UK - Українська');
               otherwise
                     ComboHelpLanguage.Items.Add(Info.Name);
               end;

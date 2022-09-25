@@ -154,7 +154,7 @@ implementation
 uses FileUtil               // Graphics needed for font style defines
     ,LazUTF8
     ,Settings				// User settings and some defines across units.
-    ,SearchUnit				// So we have access to NoteBookList
+//    ,SearchUnit				// So we have access to NoteBookList
     ,LazFileUtils           // For ExtractFileName...
     ,tb_utils
     , Note_Lister
