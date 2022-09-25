@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Системний лоток у Linux</title>
+  
+<text xml:space="preserve"><note-content version="0.1"><underline>Системний лоток у Linux</underline>
+
+Зазвичай користувач взаємодіє з tomboy-ng за допомогою маленької жовтої піктограми, що зʼявляється в системному лотку, який іноді називають областю сповіщень.  Однак, не всі середовища робочого столу Linux можуть відображати піктограми системного лотка, а деякі з них можуть не робити цього за замовчуванням.
+
+Якщо ви можете бачити <bold>маленький, жовтий значок</bold>, імовірно на основній панелі вашого екрану, тоді у вас проблем немає. Якщо ви його не бачите, то напевно ви використовуєте стільницю, що має проблеми з відображенням системного лотка, як-от стільниця Gnome.
+
+Детальну і, сподіваємося, актуальну інформацію про останні "трюки" для відображення системного лотка на непокірних системах і навіть про те, як використовувати tomboy-ng без системного лотка, можна знайти за адресою https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
+
+Підтримка системного лотка в Linux іноді змінюється досить різко, тому часто варто розглянути новішу версію tomboy-ng, https://github.com/tomboy-notes/tomboy-ng
+
+</note-content></text>
+  <last-change-date>2022-09-23T12:02:19.8867685+03:00</last-change-date>
+  <last-metadata-change-date>2022-09-23T12:02:19.8867685+03:00</last-metadata-change-date>
+  <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>1227</width>
+  <height>610</height>
+  <x>108</x>
+  <y>124</y>
+  <open-on-startup>False</open-on-startup>
+</note>
