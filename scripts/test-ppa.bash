@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 # -------------------------------------------------------------------
+#   bash ./test-ppa.bash 0.34d
+#
 # A script to build tomboy-ng PPA packages, gtk2 and Qt5. Download
 # this script, run it from your home dir. It depends on a suitable
 # FPC and Lazarus installed in root space. 
@@ -11,6 +13,9 @@ set -e
 # -1 after the tomboy-ng version number, its manual.
 # copyright David Bannon 2021, License unlimited.
 # ------------------------------------------------------
+# HISTORTY
+# 2022-10-03 Build for focal
+# 
 
 # VER="33e"
 VER="$1"
@@ -26,7 +31,7 @@ rm -Rf "Build""$DebVer" "Test""$DebVer"
 mkdir "Build""$DebVer"; cd "Build""$DebVer"
 wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
 #cp ../prepare.ppa .
-bash ./prepare.ppa -D bionic       # Bionic for GTK2
+bash ./prepare.ppa -D focal       # was Bionic for GTK2
 cd "tomboy-ng_0.""$VER""-1" 
 debuild -S
 cd ..
@@ -69,4 +74,3 @@ lintian -IiE --pedantic *.changes
 
 echo "--------- OK, if it looks OK, go back to each build directoy and run -"
 echo "          dput ppa:d-bannon/ppa-tomboy-ng *.changes"
-

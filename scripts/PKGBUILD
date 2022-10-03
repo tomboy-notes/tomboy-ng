@@ -1,22 +1,32 @@
 # This file is used to build a pacman usable gtk2 package for tomboy-ng
 
 # Requirments : sudo pacman -S base-devel fpc lazarus-gtk2 unzip
-
+#
+#		Run a pacman equiped VM (such as my Manjaro21.2-X)
+#		that has Lazarus installed. It will download a copy
+#		of src and kcontrols and built it all. Note that if
+#		you build master (ie as a snapshot) pacman thinks of its
+#		version as "master" but tomboy-ng still reports the 
+# 		version according to the version file.
+#
 # Usage : VER=0.34 makepkg --skipinteg 
 #         VER=master makepkg --skipinteg 
+# 
+# Install
+# 	sudo pacman -U ./tomboy-ng-master-1-x86_64.pkg.tar.zst
 
 # Maintainer tomboy-ng@bannons.id.au
 
 # Note : buildit.bash in 0.34 and earlier will not work on non-Debian systems
 # so necessary to replace with later buildit.bash.
 
-# I cannot put the download sha in this script because, obviously, editing
-# this file alters the sha.  So, its set to check (my) KControls but skip
-# tomboy-ng's.
-
-# Once a tagged release happens we can download the tar ball and run -
-# shasum -a 256 v0.35.tar.gz (or whatever) and hardwire that sha AND the ver
-# into a local version of this file, one dedicated to just that release version.
+# The only way I can find to get the sha256 for the downloaded tar/zip
+# balls is to download them, run e.g.  shasum -a 256 kc-master.zip on each
+# and manually add that sha to this file. I really don't see the point.
+# maybe for tagged releases, certainly not for master.
+# So, passing the version number on the command line will not work unless
+# we skip the checksum check. And it really is pretty useless anyway.
+# Deal with this when and if its every important.
 
 pkgname=tomboy-ng
 pkgver="$VER"			# Remember to set VER when calling makepkg

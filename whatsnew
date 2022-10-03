@@ -1,5 +1,7 @@
-Multilevel bullets
-Github Sync
-Better Notebook tools
-configurable date stamp
+A better Search all notes and Find in Note capability.
+A Ukrainian Translation.
+UI tweaks including Ctrl-F toggling, Esc to close note.
+A revised CLI, import, plain text, RTF and Markdown.
+Ctrl-Z (ie Undo) will now revert an errant Date Stamp
+A handful of minor bug fixes.
 (Closes: #997942)

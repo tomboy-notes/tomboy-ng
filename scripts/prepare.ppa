@@ -22,15 +22,16 @@ set -e
 #       2021-02-23 Allow for fact that we keep changelog (for Debian).
 #                  Remove some Debian specific things
 #       2021-06-19 cleanup and move how to doc to github
-#	2021-11-12 Now update changelog with whatsnew contents
+#       2021-11-12 Now update changelog with whatsnew contents
+#       2022-10-03 Now build for Focal only, 'copy' gtk2 to bionic
 
 # ---------------------------------------------------------
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
 DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
-# DEF_FULLNAME="David Bannon"		# not in this script !
-UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name in Ubuntu PPA !
+DEF_FULLNAME="David Bannon"		# 
+# UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name in Ubuntu PPA !
 
 # Housekeeping stuff, helpers for debugging etc. Set with command line, not here !
 VER="unknown"

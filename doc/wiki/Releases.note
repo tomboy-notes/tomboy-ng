@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng v0.34 Release Page</title>
+  <title>tomboy-ng v0.35 Release Page</title>
   
-<text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.34 Release Page</underline>
+<text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.35 Release Page</underline>
 
 <size:small>Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
-<bold>WARNING:</bold> if you use already File Sync, in v0.34, you must go into Settings-&gt;Sync&gt;FileSync and tick the Enable box. Its a new setting and I cannot tell if you have it unticked because its new or because you want it unticked !
+<bold>WARNING:</bold> if you used File Sync, previous to v0.34, you must go into Settings-&gt;Sync&gt;FileSync and tick the Enable box. Its a new setting and I cannot tell if you have it unticked because its new or because you want it unticked !
 
 Downloads and information for specific platforms further down the page.
 
@@ -17,19 +17,19 @@ Downloads and information for specific platforms further down the page.
 * [Linux Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Linux)
 
 <size:huge><bold>Release Notes</bold></size:huge>
-<list><list-item dir="ltr">Multilevel bullets</list-item></list>
-<list><list-item dir="ltr">Github Sync - its now possible to sync your notes with the online Github. This provides two related capabilities -</list-item></list>
-<list><list-item dir="ltr">Firstly, Github Sync is another general purpose sync target. One thats available whenever you have network access. While it works much like file sync, its a touch more complicated, requiring a github account and access token. But not hard !</list-item></list>
-<list><list-item dir="ltr">Secondly, Github Sync offers you a means to access your notes online from any device with a browser. Read and even write if you like using Github's markdown editor.</list-item></list>
-<list><list-item dir="ltr">Github Sync does require some setup and has some security and privacy implications, be sure to read  [Github Sync Docs](https://github.com/tomboy-notes/tomboy-ng/wiki/Github-Sync)</list-item></list>
-<list><list-item dir="ltr">Better Notebook tools - a right click on the Notebook listbox, left hand side of the Search Window, has a menu that allows management of Notebooks, create a new one, manage the notes in each notebook, delete a notebook.</list-item></list>
-<list><list-item dir="ltr">Configurable date stamp - you can now select the format that a date stamp uses, Settings, Notes tab.</list-item></list>
-<list><list-item dir="ltr"><bold>Bug Fixes</bold> - Better System Tray Icon for some Gnome based linux distributions, minor spelling bug, more robust markdown export, centre a new note.</list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">A better Search all notes capability. Search While You Type, its faster, more convenient and kinder on memory. It does however need a certain amount of CPU to respond between keystrokes, especially if you are a fast typist. You can disable SWYT from the Options button.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">A better Find with in the open note capability. Again, faster, more convenient and uses less memory.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">A Ukrainian Translation.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">You can now stop Ctrl-F (ie Find) from toggling or closing the Find windows if you prefer.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">You can, optionally, allow the ESC key to close a note.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">A revised command line with better import capabilities, plain text, RTF and Markdown.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Ctrl-Z (ie Undo) will now revert an errant Date Stamp</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">A handful of minor bug fixes.</list-item></list></list-item></list>
 
 
 <size:huge><bold>Installation</bold></size:huge>
 
-tomboy-ng is available for Linux, Mac and Windows. For Debian Bullseye and Ubuntu 21.04 (Hirsute)  and derivatives, tomboy-ng is available from the normal repositories. However, sometimes newer releases are available here.  Others, please see your operating system below -
+tomboy-ng is available for Linux, Mac and Windows. For newer Debian derivatives, tomboy-ng is available from the normal repositories. However, sometimes newer releases are available here.  Others, please see your operating system below -
 
 <size:large><bold>Windows</bold></size:large>
 Tested on 32bit Windows Vista and 64bit Windows 10.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes. Depending on your build of Win10, you may need to go through a process of clicking the More Info link and Run Anyway, possibly through several stages.
@@ -43,35 +43,37 @@ I am only shipping the 64bit Cocoa version now.  I believe I can easily produce 
 Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 to cater for, its not easy ! The Qt5 version requires Qt5.12 or later and 64bit. The GTK version, GTK2.
 
 <size:large><bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
-New in v0.30, Ubuntu and derivative users (of 64bit U18.04 and U20.04 to U21.04) can use a PPA to install and update this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng for details.
+New in v0.30, Ubuntu and derivative users (of 64bit U18.04 and U20.04 to U22.04) can use a PPA to install and update this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/ubuntu/ppa-tomboy-ng for details.
 
 For distributions that use .deb packages (but cannot use the PPA), do yourself a favour, install Gdebi before you start. You will not regret it.
 
 <size:large><bold>Ubuntu</bold></size:large>
+Ubuntu 22.4 has tomboy-ng v0.34 available in its repository but v0.35 is new and shiny.
 Firstly, consider using the PPA (above). Otherwise, generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
-<list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list>
-<list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  Difficult to make work with Qt5.</list-item></list>
-<list><list-item dir="ltr">20.04 Your choice between  [64bit QT]($$DEB64QT)  which needs the Qt5 libraries or the [64bit]($$DEB64) which needs only a couple of extra things.</list-item></list>
-<list><list-item dir="ltr">21.04 As above but the QT5 version has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme)</list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  Difficult to make work with Qt5.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">20.04 Your choice between  [64bit QT]($$DEB64QT)  which needs the Qt5 libraries or the [64bit]($$DEB64) which needs only a couple of extra things.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">22.04 As above but the QT5 version has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme)</list-item></list></list-item></list>
 
 On Ubuntu, you can install the appropriate package in one of several way  -
 
-<list><list-item dir="ltr"><bold>Recommended, install gdebi first</bold>.  Its available from your normal repos and is easy and reliable. Then download the appropriate tomboy-ng package, your browser will direct it to Gdebi. Strongly recommended for U16.04.</list-item></list>
-<list><list-item dir="ltr">Depending on your version, you may be able to download and get directed to another tool to install, perhaps Software Installer. Good luck.</list-item></list>
-<list><list-item dir="ltr">Thirdly, will work on all except U16.04, click on the appropriate link, download and save the file. Use  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -</list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr"><bold>Recommended, install gdebi first</bold>.  Its available from your normal repos and is easy and reliable. Then download the appropriate tomboy-ng package, your browser will direct it to Gdebi. Strongly recommended for U16.04.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Depending on your version, you may be able to download and get directed to another tool to install, perhaps Software Installer. Good luck.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Thirdly, will work on all except U16.04, click on the appropriate link, download and save the file. Use  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -</list-item></list></list-item></list>
 
 Like this -
 <monospace>sudo apt install ./tomboy-ng_0.34-0_amd64.deb [enter]</monospace>
 
 <size:large><bold>Linux Mint</bold></size:large>
-Firstly, consider using the PPA (above).  Otherwise note I have only tested against 20.1 and 20.2 Cinnamon with GTK2. And it,  [32bit]($$DEB32) or [64bit]($$DEB64) work perfectly.
-Click on the appropriate link from your browser and allow the suggested installer, GDebi, to run the install for you. Linux Mint does report any install errors that happen during this process (unlike some distros!) so its a good approach.
-The LMDE, at time of writing was still Debian 11 and should all work fine.
+LinuxMint 21 has tomboy-ng v0.34 available in its repository but v0.35 is new and shiny.
+Firstly, consider using the PPA (Update Manager -&gt; Edit -&gt; Software Sources -&gt; PPAs -&gt; Add =&gt; ppa:d-bannon/ppa-tomboy-ng ).  Otherwise note I have only tested against 20.1 and 21 Cinnamon with GTK2. And it,  [64bit]($$DEB64) worked perfectly.
+Click on the appropriate link from your browser and allow the suggested installer, GDebi, to run the install for you. Linux Mint does report any install errors that happen during this process (unlike some distros!) so its a good approach. Noted that tomboy-ng did not seem to pickup a desktop dark theme but other apps did not either, maybe a VM issue ?
+The LMDE, at time of writing is Debian 11 and should all work fine.
 
 <size:large><bold>Fedora</bold></size:large>
-Tested on Fedora 34 and 35. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
+Tested on Fedora 36. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. To install, please click on appropriate link, download and save, then use the yum command, eg -
 
-<monospace>sudo yum localinstall ./tomboy-ng-0.34-2.x86_64.rpm [enter]</monospace>
+<monospace>sudo yum localinstall ./tomboy-ng-0.35-2.x86_64.rpm [enter]</monospace>
 
 <bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux .  Other flavours of Fedora (eg  <bold>Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.
 
@@ -81,9 +83,7 @@ Tested on Fedora 34 and 35. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [G
 <size:large><bold>Debian</bold></size:large>
 An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository. However, due to changes to Bullseye after it was added to Debian, that version will have problems if you use a Gnome Desktop. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux . For other Desktops, you can install as you would for other repository applications but the version here is "bigger and better" than 0.32.
 
-This release version, 0.34 is also available in Testing (bookworm).
-
-For earlier versions of Debian and distros based on them, (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  By time you get to Debian 10.4, Qt is, perhaps, a better bet if you are using 64bit. [64bit QT]($$DEB64QT).
+For earlier versions of Debian and distros based on them, (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  By time you get to Debian 10.4, Qt is, perhaps, a better bet if you are using 64bit. [64bit QT]($$DEB64QT). Note that dark themes work better with the GTK version but  Qt5 catches up, somewhat, if you add the --dark-theme switch.
 
 If you wish to sync to a SMB: network share, you probably will need to install gvfs and gvfs-fuse. Tell tomboy-ng that the share (when open) is in something like /run/user/1000/gvfs/smb-share\:server\=greybox\,share\=store2 (where greybox is the server and store2 the share). Easy to find in the GUI file browser.
 
@@ -91,16 +91,12 @@ QT5 version has a known problem with [Dark Theme](https://github.com/tomboy-note
 
 I recommend downloading the file and using the apt command (note the full path to the filename, you must explicitly state the location of the file, else apt will look in its own repositories).
 
-<monospace>sudo apt install ~/Downdloads/tomboy-ng_0.33-0_amd64.deb [enter]    -- note Qt5 version has a slightly different name.</monospace>
-
-<size:large><bold>Devian</bold></size:large>
-<bold>Devaun XFCe</bold> - Tested against version 3.0.0.  Much like Debian above.
-
+<monospace>sudo apt install ~/Downdloads/tomboy-ng_0.35-0_amd64.deb [enter]    -- note Qt5 version has a slightly different name.</monospace>
 
 <size:large><bold>Arch and Manjaro</bold></size:large>
 And other Linux Distributions that use the Arch, Pacman package system. This is new and therefore relatively untested but does look OK. I have made only a [GTK 64bit]($$PAC64) version at this stage, could make other combinations if needed. Click the link, choose download and install with this command from ~/Downloads -
 
-sudo pacman -U ./tomboy-ng-0.34-1-x86_64.pkg.tar.zst
+sudo pacman -U ./tomboy-ng-0.35-1-x86_64.pkg.tar.zst
 
 
 <size:large><bold>OpenSuse</bold></size:large>
@@ -123,9 +119,9 @@ Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit]($$RPM3
 
 <monospace>sudo -c "yum localinstall ./tomboy-ng-0.34-2.x86_64.rpm" [enter]</monospace>
 
-<list><list-item dir="ltr"><bold>Mate, XFCE, KDE (ie Plasma) and Cinnamon</bold> work fine.</list-item></list>
-<list><list-item dir="ltr"><bold>Mageia with Enlightenment</bold> requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment in the GTK variety still has a problem, instead of tomboy-ng's icon, you see a white triangular warning icon. But it works.</list-item></list>
-<list><list-item dir="ltr"><bold>Mageia Gnome,</bold> its likely that the comments relating to Fedora Gnome above apply but have not been tested.</list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr"><bold>Mate, XFCE, KDE (ie Plasma) and Cinnamon</bold> work fine.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr"><bold>Mageia with Enlightenment</bold> requires you to activate the System Tray, Settings-&gt;Modules and then scroll down until you find "System Tray" and enable it. Now, you need to assign the System Tray to a Shelf, open the appropriate Shelf, click Add, find the System Tray and choose it. Sadly, Enlightenment in the GTK variety still has a problem, instead of tomboy-ng's icon, you see a white triangular warning icon. But it works.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr"><bold>Mageia Gnome,</bold> its likely that the comments relating to Fedora Gnome above apply but have not been tested.</list-item></list></list-item></list>
 
 To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.  Using the <bold>Qt version on Mageia</bold> is possible if you replace its very dated version of lib64qt6pas1 with the appropriate one from https://github.com/davidbannon/libqt5pas/releases.
 
@@ -137,14 +133,14 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2021-12-17T13:40:09.8516799+11:00</last-change-date>
-  <last-metadata-change-date>2021-12-17T13:40:09.8516799+11:00</last-metadata-change-date>
+  <last-change-date>2022-09-27T15:01:54.5014547+10:00</last-change-date>
+  <last-metadata-change-date>2022-09-27T15:01:54.5014547+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1173</width>
   <height>800</height>
-  <x>262</x>
-  <y>105</y>
+  <x>299</x>
+  <y>73</y>
   <open-on-startup>False</open-on-startup>
 </note>

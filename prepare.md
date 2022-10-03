@@ -37,7 +37,7 @@ The script, test-deb.bash automates the build test process if you don't want or 
 
     export DebVer="Debv33"
     mkdir "Build""$DebVer"; cd "Build""$DebVer"
-    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.debian
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.debian
     bash ./prepare.debian -D unstable -n
     cd tomboy-ng [tab]
     debuild -S
@@ -64,11 +64,19 @@ Is built on a different VM, U2004mQt. A little more complicated because we also 
 
 
 
-**PPA build Steps (dated, better to use test-ppa.bash)**
+**PPA build Steps (manually, better to use test-ppa.bash)**
 --------
+
+**Option 1 - use test-ppa.bash, auto build and test.**
+
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/test-ppa.ppa
+    bash ./test-ppa 0.34d
+    
+**Option 2 - do it manually, have a problem perhaps ?**
+
     export PPAVer="PPAv33"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
-    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
     bash ./prepare.ppa -D bionic
     cd tomboy-ng [tab]
     debuild -S; cd ...
