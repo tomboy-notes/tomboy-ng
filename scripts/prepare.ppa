@@ -164,7 +164,8 @@ while getopts "hpQUCl:D:" opt; do
 #	QT5INNAME="YES"
 	;;
     D)
-	DISTRO1="-D""$OPTARG"
+    	DISTRO1="$OPTARG"
+	# DISTRO1="-D""$OPTARG"
 	DISTRO2="--force-distribution"
 	;;
     \?)
@@ -226,7 +227,7 @@ if [ -f tomboy-ng-master.zip ]; then
     if [ "$WIDGET" = "Qt5" ]; then
         sed -i 's/tomboy-ng\ /tomboy-ng-qt5\ /g' debian/changelog
     fi
-    dch -v "$VER""$PACKVER" "$DISTRO1" "$DISTRO2" "Release of new version"
+    dch -v "$VER""$PACKVER" -D"$DISTRO1" "$DISTRO2" "Release of new version"
     if [ -f whatsnew ]; then
         echo "---------- Including whatsnew in changelog"
         while IFS= read -r Line; do
