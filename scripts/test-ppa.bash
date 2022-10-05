@@ -21,14 +21,17 @@ set -e
 VER="$1"
 DebVer="PPA""$VER"
 
+STARTDIR="$PWD"/
+
 if [ "$1" == "" ]; then
 	echo " ERROR, must provide a ver numb, eg 33e or 34"
 	exit 1
 fi
 
-cd
-rm -Rf "Build""$DebVer" "Test""$DebVer" 
-mkdir "Build""$DebVer"; cd "Build""$DebVer"
+# cd ..
+
+rm -Rf "$STARTDIR""Build""$DebVer" "Test""$DebVer" 
+mkdir "$STARTDIR""Build""$DebVer"; cd "$STARTDIR""Build""$DebVer"
 wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
 wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/mkcontrol.bash
 chmod u+x mkcontrol.bash
@@ -42,10 +45,10 @@ if [ ! -f "tomboy-ng_0.""$VER""-1.dsc" ]; then
 	exit 1
 fi
 
-cd 
+cd "$STARTDIR"
 #DebVer="$DebVer""QT"
-rm -Rf "Build""$DebVer"QT "Test""$DebVer"QT 
-mkdir "Build""$DebVer"QT; cd "Build""$DebVer"QT
+rm -Rf "$STARTDIR""Build""$DebVer"QT "$STARTDIR""Test""$DebVer"QT 
+mkdir "$STARTDIR""Build""$DebVer"QT; cd "$STARTDIR""Build""$DebVer"QT
 wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
 #cp ../prepare.ppa .
 bash ./prepare.ppa -D focal -Q
@@ -59,11 +62,11 @@ fi
 
 # exit 1
 
-cd 
-cd "Build""$DebVer"
+cd ..
+cd "$STARTDIR""Build""$DebVer"
 mkdir ../Test"$DebVer"
-cp *.xz *.gz *.dsc ../Test"$DebVer" 
-cd ../Test"$DebVer"
+cp *.xz *.gz *.dsc "$STARTDIR"Test"$DebVer" 
+cd "$STARTDIR"Test"$DebVer"
 dpkg-source -x *.dsc
 cd "tomboy-ng-0.""$VER"               # note '-' at start of ver number, not underscore
 dpkg-buildpackage -us  -uc 

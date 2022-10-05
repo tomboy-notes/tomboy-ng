@@ -240,10 +240,10 @@ if [ -f tomboy-ng-master.zip ]; then
 		# cp debian/control.qt5 debian/control
 		# sed  "s/#REPLACEME_QT5/DESTDIR += -qt5/" Makefile > Makefile.temp
 		# mv Makefile.temp Makefile
-		./mkcontrol debian/ "$DISTRO1" qt5
+		../mkcontrol.bash debian/ "$DISTRO1" qt5
 		touch Qt5
 	else
-		../mkcontrol debian/ "$DISTRO1"
+		../mkcontrol.bash debian/ "$DISTRO1"
 	fi
 	rm debian/control.template
 	dch --release "blar"
