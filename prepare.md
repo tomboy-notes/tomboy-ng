@@ -64,15 +64,17 @@ Is built on a different VM, U2004mQt. A little more complicated because we also 
 
 
 
-**PPA build Steps (manually, better to use test-ppa.bash)**
+**PPA build Steps**
 --------
 
 **Option 1 - use test-ppa.bash, auto build and test.**
 
-    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/test-ppa.ppa
-    bash ./test-ppa 0.34d
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/test-ppa.bash
+    bash ./test-ppa 34d
     
-**Option 2 - do it manually, have a problem perhaps ?**
+ Note its eg 34d NOT 0.34d
+    
+**Option 2 - do it manually, a problem perhaps ?**
 
     export PPAVer="PPAv33"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"

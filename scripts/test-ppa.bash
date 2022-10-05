@@ -30,6 +30,8 @@ cd
 rm -Rf "Build""$DebVer" "Test""$DebVer" 
 mkdir "Build""$DebVer"; cd "Build""$DebVer"
 wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
+wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/mkcontrol.bash
+chmod u+x mkcontrol.bash
 #cp ../prepare.ppa .
 bash ./prepare.ppa -D focal       # was Bionic for GTK2
 cd "tomboy-ng_0.""$VER""-1" 
@@ -44,7 +46,7 @@ cd
 #DebVer="$DebVer""QT"
 rm -Rf "Build""$DebVer"QT "Test""$DebVer"QT 
 mkdir "Build""$DebVer"QT; cd "Build""$DebVer"QT
-wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
+wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
 #cp ../prepare.ppa .
 bash ./prepare.ppa -D focal -Q
 cd "tomboy-ng-qt5_0.""$VER""-1" 
