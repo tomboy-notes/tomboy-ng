@@ -14,68 +14,100 @@ set -e
 # copyright David Bannon 2021, License unlimited.
 # ------------------------------------------------------
 # HISTORTY
-# 2022-10-03 Build for focal
+# 2022-10-05 Now gets version from github and takes eg unstable, focal on CLI
 # 
 
+# Debug tool
+# USELOCALSCRIPTS="yes"
+
 # VER="33e"
-VER="$1"
-DebVer="PPA""$VER"
+VER="unknown"
 
 STARTDIR="$PWD"/
 
-if [ "$1" == "" ]; then
-	echo " ERROR, must provide a ver numb, eg 33e or 34"
+if [ "$1" == "" ]; then			# sadly, no further checks ....
+	echo " ERROR, must provide a distro release name, eg unstable, bionic, focal ..."
 	exit 1
 fi
+RELEASENAME="$1"
 
 # cd ..
+# OK, what version are we dealing with then ? Can override git with a local file
+# but it will cause all sorts of problems if it does not match when prepare does 
+# samething - maybe extend this local file idea and pass something to prepare
+# that overrides what it will find in repository ?
 
+if [ "$USELOCALSCRIPTS" == "" ]; then
+	rm -f version
+	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/package/version
+fi
+VER=`cat version`	# play with this at your peril !
+DebVer="PPA""$VER"
 rm -Rf "$STARTDIR""Build""$DebVer" "Test""$DebVer" 
 mkdir "$STARTDIR""Build""$DebVer"; cd "$STARTDIR""Build""$DebVer"
-wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
-wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/mkcontrol.bash
+
+if [ "$USELOCALSCRIPTS" == "yes" ]; then
+	cp ../prepare.ppa .			# same place as version but we have cd....
+	cp ../mkcontrol.bash .
+else
+	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
+	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/mkcontrol.bash
+fi
 chmod u+x mkcontrol.bash
-#cp ../prepare.ppa .
-bash ./prepare.ppa -D focal       # was Bionic for GTK2
-cd "tomboy-ng_0.""$VER""-1" 
+bash ./prepare.ppa -D "$RELEASENAME"       # was Bionic for GTK2
+cd "tomboy-ng_""$VER""-1" 
 debuild -S
 cd ..
-if [ ! -f "tomboy-ng_0.""$VER""-1.dsc" ]; then
-	echo "======== Failed to make tomboy-ng_0.""$VER""-1.dsc  exiting ======"
+if [ ! -f "tomboy-ng_""$VER""-1.dsc" ]; then
+	echo "======== Failed to make tomboy-ng_""$VER""-1.dsc  exiting ======"
 	exit 1
 fi
 
-cd "$STARTDIR"
-#DebVer="$DebVer""QT"
-rm -Rf "$STARTDIR""Build""$DebVer"QT "$STARTDIR""Test""$DebVer"QT 
-mkdir "$STARTDIR""Build""$DebVer"QT; cd "$STARTDIR""Build""$DebVer"QT
-wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
-#cp ../prepare.ppa .
-bash ./prepare.ppa -D focal -Q
-cd "tomboy-ng-qt5_0.""$VER""-1" 
-debuild -S
-cd ..
-if [ ! -f "tomboy-ng-qt5_0.""$VER""-1.dsc" ]; then
-	echo "======== Failed to make dsc file, exiting ======"
-	exit 1
+# -------------- OK, now a QT5 version perhaps ? -----------------
+
+if [ "$RELEASENAME" != "bionic" ]; then
+	cd "$STARTDIR"
+	#DebVer="$DebVer""QT"
+	rm -Rf "$STARTDIR""Build""$DebVer"QT "$STARTDIR""Test""$DebVer"QT 
+	mkdir "$STARTDIR""Build""$DebVer"QT; cd "$STARTDIR""Build""$DebVer"QT
+	if [ "$USELOCALSCRIPTS" == "yes" ]; then
+		cp ../prepare.ppa .
+		cp ../mkcontrol.bash .
+	else
+		wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
+		wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/mkcontrol.bash
+	fi
+	chmod u+x mkcontrol.bash
+	bash ./prepare.ppa -D "$RELEASENAME" -Q
+	cd "tomboy-ng-qt5_""$VER""-1" 
+	debuild -S
+	cd ..
+	if [ ! -f "tomboy-ng-qt5_""$VER""-1.dsc" ]; then
+		echo "======== Failed to make dsc file, exiting ======"
+		exit 1
+	fi
 fi
 
-# exit 1
-
+# --------------- OK, lets see what it looks like ---------------
 cd ..
 cd "$STARTDIR""Build""$DebVer"
 mkdir ../Test"$DebVer"
 cp *.xz *.gz *.dsc "$STARTDIR"Test"$DebVer" 
 cd "$STARTDIR"Test"$DebVer"
 dpkg-source -x *.dsc
-cd "tomboy-ng-0.""$VER"               # note '-' at start of ver number, not underscore
+cd "tomboy-ng-""$VER"               # note '-' at start of ver number, not underscore
 dpkg-buildpackage -us  -uc 
 cd ..
-if [ ! -f "tomboy-ng_0.""$VER""-1_amd64.deb" ]; then
+if [ ! -f "tomboy-ng_""$VER""-1_amd64.deb" ]; then
 	echo "======== Failed to make Deb file, exiting ========"
 	exit 1
 fi
 lintian -IiE --pedantic *.changes
+
+if [ "$RELEASENAME" == "bionic" ]; then
+	echo "        WARNING - No QT5 for bionic, if there is something there now, it "
+	echo "        was there before we started and not valid for this run !!!!"
+fi
 
 echo "--------- OK, if it looks OK, go back to each build directoy and run -"
 echo "          dput ppa:d-bannon/ppa-tomboy-ng *.changes"

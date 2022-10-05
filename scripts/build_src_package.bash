@@ -16,7 +16,7 @@ set -e
 # ------------------------------------------------------
 # HISTORTY
 # 2022-10-05 Now gets version from github and takes eg unstable, focal on CLI
-			 Merged Debain and PPA version
+#			 Merged Debain and PPA version
 # 
 
 # Debug tool, put a copy of prepare, mkcontrol and version in working dir.
@@ -31,14 +31,18 @@ function AdjustSettings () {
 	case $RELEASENAME in
 		"bionic")
 			MAKEQT5="no"
+			;;
 		"unstable")
 			MAKEPPA="no"
+			MAKEQT5="no"
 			;;
 		"bullseye")
 			MAKEPPA="no"
+			MAKEQT5="no"
 			;;
 		"bookworm")
 			MAKEPPA="no"
+			MAKEQT5="no"
 			;;
 	esac			
 }
@@ -61,7 +65,7 @@ if [ "$USELOCALSCRIPTS" == "" ]; then
 	wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/package/version
 fi
 VER=`cat version`	# play with this at your peril !
-DebVer="PPA""$VER"
+DebVer="$RELEASENAME""$VER"
 rm -Rf "$STARTDIR""Build""$DebVer" "Test""$DebVer" 
 mkdir "$STARTDIR""Build""$DebVer"; cd "$STARTDIR""Build""$DebVer"
 
@@ -109,7 +113,7 @@ if [ "$MAKEQT5" == "yes" ]; then
 			wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/mkcontrol.bash
 		fi
 		chmod u+x mkcontrol.bash
-		bash ./prepare.ppa -D "$RELEASENAME" -Q		# Hmm, we don't do QT for debian, might need -n if we do
+		bash ./prepare -D "$RELEASENAME" -Q -n		# Hmm, we don't do QT for debian, might need -n if we do
 		cd "tomboy-ng-qt5_""$VER""-1" 
 		debuild -S
 		cd ..

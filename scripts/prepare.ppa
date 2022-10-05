@@ -141,7 +141,7 @@ function ShowHelp () {
 }
 
 
-while getopts "hpQUCl:D:" opt; do
+while getopts "nhpQUCl:D:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -167,6 +167,8 @@ while getopts "hpQUCl:D:" opt; do
     	DISTRO1="$OPTARG"
 	# DISTRO1="-D""$OPTARG"
 	DISTRO2="--force-distribution"
+	;;
+    n)
 	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
