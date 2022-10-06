@@ -10,5 +10,6 @@ tomboy-ng source: debian-watch-file-is-missing
 
 # tomboy-ng provides user help notes in tomboy-ng's own
 # format, xml .note  As freeform text, some lines are long
-# tomboy-ng source: very-long-line-length-in-source-file
+# re-enabled as an override for v0.35, why ? Sigh ....
+tomboy-ng source: very-long-line-length-in-source-file
 

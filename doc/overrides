@@ -6,3 +6,9 @@
 # is not possible. PIE, Read-only relocations and Immediate bindings
 # are enabled but Fortify Source functions is not.
 tomboy-ng binary: hardening-no-fortify-functions
+
+
+# This problem exists also in FPC binaries but not in source
+# Perhaps its a UTF8 issue ?
+tomboy-ng: spelling-error-in-binary curren current
+
