@@ -124,6 +124,8 @@ if [ "$MAKEQT5" == "yes" ]; then
 fi
 
 # --------------- OK, lets see what it looks like ---------------
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Starting TEST "
 cd ..
 cd "$STARTDIR""Build""$DebVer"
 mkdir ../Test"$DebVer"
@@ -140,7 +142,7 @@ fi
 lintian -IiE --pedantic *.changes
 
 if [ "$RELEASENAME" == "bionic" ]; then
-	echo "        WARNING - No QT5 for bionic, if there is something there now, it "
+	echo "------- WARNING - No QT5 for bionic, if there is something there now, it "
 	echo "        was there before we started and not valid for this run !!!!"
 fi
 

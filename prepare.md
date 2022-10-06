@@ -11,7 +11,7 @@ These notes are primarly for my, David's, use and assume that we are using the a
 
 
 
-**debhelper version** Debian Bullseye requires 13, building the PPA on U20.04 requires 12 but because we target  U18.04 for GTK2, must be 11. The PPA for the Qt5 version is 12 because we target Focal as a starting point (U18.04 will not run Qt5 apps easily). Thus we have four control files, sigh ....
+**debhelper version** Debian Bullseye requires 13, building the PPA on U20.04 requires 12 but because we target  U18.04 for GTK2, must be 11 there. The PPA for the Qt5 version is 12 because we target Focal as a starting point (U18.04 will not run Qt5 apps easily). This, and other variations are all covered in the mkcontrol.bash script.
 
 
 **Debian Source**
@@ -26,12 +26,19 @@ The other building model is when a build problem is noted, the tomboy-ng source 
 
 The process is download (or extract) tomboy-ng source, remove unnecessary content, build the SRC package, copy files to a clean directory, do a test build (that makes the .deb file) and run an pedantic lintian. If thats all satisfactory, we upload to Mentors.
 
+**Debian SRC Build**
 
-The script, test-deb.bash automates the build test process if you don't want or need to see each step. Just download that scripts/test-deb.bash, run it from your home dir assuming you have a root installed FPC and Lazarus.
+The script, build_src_package.bash automates the build test process if you don't want or need to see each step. Just download that script it from your home dir assuming you have a root installed FPC and Lazarus.
 
-**Debian SRC Build steps**
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/build_src_package.bash
+    
+    bash ./build_src_package.bash unstable
+
+or, step by step if you have issues -
+
+**Debian SRC Build step by step**
 --------
-(all assuming you are David and using a pre configured VM, Debian-T, rev the release number as required)
+(all assuming you are David and using a pre configured VM (see below), DebTestMate0922, rev the release number as required)
 
 
 
@@ -60,7 +67,7 @@ REMEMBER to feed changlog back to github tree !
 
 **Launchpad PPA**
 ========
-Is built on a different VM, U2004mQt. A little more complicated because we also build the Qt5 version, changelog needs to be 'adjusted'. There is a script that automates the whole build SRC packages, unpack and build binaries called test-ppa-bash in the scripts directory. Again, only suited to building the release (ie, not a rebuild in the case of packaging errors). If you need build by hand, look through the script.
+Is built on a different VM, U2004mQt. A little more complicated because we also build the Qt5 version, changelog needs to be 'adjusted'. There is a script that automates the whole build SRC packages, unpack and build binaries. Again, only suited to building the release (ie, not a rebuild in the case of packaging errors). If you need build by hand, look through the script.
 
 
 
@@ -69,10 +76,10 @@ Is built on a different VM, U2004mQt. A little more complicated because we also 
 
 **Option 1 - use test-ppa.bash, auto build and test.**
 
-    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/test-ppa.bash
-    bash ./test-ppa 34d
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/build_src_package.bash
+    bash  ./build_src_package.bash  focal
     
- Note its eg 34d NOT 0.34d
+ The version number is obtained from the source.
     
 **Option 2 - do it manually, a problem perhaps ?**
 
@@ -127,20 +134,17 @@ The binary will be in the source/. directory below where you are now standing.
 ========
 A PGP key is required to upload to Mentors or Launchpad. It lives in ~/.gnupg. 
 
-    pgp ~/.gpg/public-keys/tomboy-ng-GPU-KEY [enter]
-    pub   rsa3072 2020-03-10   
-      `79445......`
 
-    uid   tomboy-ng <tomboy-ng@bannons.id.au>
+    David Bannon <tomboy-ng@bannons.id.au>
 
 
-(The 79445.... is the fingerprint)
+(The 17741.... is the fingerprint)
 
 
 
 On the Launchpad PPA machine, In users home dir, a file called .devscripts.conf that contains 
 
-DEBSIGN_KEYID=7944 5......   ie, the full key fingerprint.
+DEBSIGN_KEYID=nnnn......   ie, the full key fingerprint.
 
 
 
@@ -148,9 +152,7 @@ I am unsure how, on the Debian VM, the script knows which PGP Key to use.
 
 
 
-Both prepare scripts have hardwired my personal full name and tomboy-ng email address. These will only be used if relevent env vars are empty. Note that they must match whats available in a gpg key. AND if that does not match
-
-the Maintainer: entry from control, we get a non maintainer upload warning.
+Both prepare scripts have hardwired my personal full name and tomboy-ng email address. These will only be used if relevent env vars are empty. Note that they must match whats available in a gpg key. AND if that does not match the Maintainer: entry from control, we get a non maintainer upload warning.
 
 
 

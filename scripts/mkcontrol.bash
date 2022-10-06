@@ -26,7 +26,6 @@ function AdjustValues () {
     fi
     case $1 in
         "bionic")
-            echo "---------- BIONIC"
             FPCVER=">=3.2.0"
             LAZVER=">=2.0.10c"
             DEBHVER="=11"
@@ -56,8 +55,6 @@ if [ -f "$1""control.template" ]; then
                 WDIR="$1"
                 cp "$WDIR""control.template" "$WDIR"control
                 AdjustValues $2 $3
-                #echo "FPC=$FPCVER LAZ=$LAZVER DEBHVER=$DEBHVER STD=$STDVER"
-                #echo "DESC=$DESC"
                 ReplaceToken "%PACKAGE%" "$PACKAGE"
                 ReplaceToken "%FPCVER%"  "$FPCVER"
                 ReplaceToken "%LAZVER%"  "$LAZVER"

@@ -191,8 +191,9 @@ done
 echo "---------- laz_bld is $LAZ_BLD"
 echo "---------- CLEAN is $CLEAN"
 echo "---------- UFILES is $UFILES"
+echo "---------- Target is $DISTRO1"
 
-rm -f WHICHFPC WHICHLAZ		
+rm -f WHICHFPC WHICHLAZ		# remove any existing semaphore files
 
 if [ ! -f tomboy-ng-master.zip ]; then
 	echo "---------- Downloading a new tomboy-ng"
@@ -238,6 +239,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	else
 		../mkcontrol.bash debian/ "$DISTRO1"
 	fi
+
 	CleanSource
 	if [ "$NEWORIG" = "YES" ]; then
 		MakeOrigFile                    # create new .orig (and no longer a new change log)
@@ -256,10 +258,10 @@ if [ -f tomboy-ng-master.zip ]; then
 	fi
 	dch --append "Please see github for further change details"
 
-	cp debian/control.debian debian/control			# thats the GTK2 version
-	if [ "$WIDGET" = "Qt5" ]; then
-		cp debian/control.qt5-DEBIAN debian/control	# thats the Qt5 version
-	fi
+	#cp debian/control.debian debian/control			# thats the GTK2 version
+	#if [ "$WIDGET" = "Qt5" ]; then
+	#	cp debian/control.qt5-DEBIAN debian/control	# thats the Qt5 version
+	#fi
 	rm -f debian/control.qt5
 	rm -f debian/rules.qt5		# never need that here, its for PPA where qt5 has different name
 	rm -f debian/control.qt5-DEBIAN
