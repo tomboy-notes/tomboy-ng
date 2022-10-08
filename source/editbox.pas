@@ -2015,6 +2015,37 @@ begin
 
 end;
 { -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
+{
+  Housekeeping may call  and  CheckForLinks(StartScan, EndScan);
+  ClearNearLink(StartScan, EndScan);
+    Locks, unlinks all TKMemoHyperlinks that are not valid Weblinks Unlocks
+    Calls UNLinkBlock()
+        UnLinkBlock deletes the TKMemoHyperLink and puts back a block containing the
+        origional text. But may also try to merge the text into proceeding or
+        following blocks if attributes match.
+
+  CheckForLinks(StartScan, EndScan);
+        Locks, calls CheckForHTTP(PText, StartScan, httpLen) then loops over all Titles
+        in NoteLister calling MakeAllLinks() for each one. unlocks
+        Calls CheckForHTTP()
+            Scans over range looking for something that starts with http ....
+            Makes a link if it finds something valid using MakeLink()
+        Calls MakeAllLinks()
+            is called for each Title in NoteLister, it searches for the Title in range
+            and then checks its surrounded by deliminators. If so, calls MakeLink() in it.
+        Both call MakeLink()
+            exits if there is already a hyperlink starting there, else makes one.
+            Might copy the existing text attributes to the TKMemoHyperlink.
+
+
+    MyRecipes, release mode, 2000 notes, 2 local links,
+    Clear 72-90ms  Check 147mS - fancyMode, Clear 91ms  Check 147mS non-fancy
+
+    With no existing links Fancy Mode -
+    CheckForLinks Len=12mS Low=10mS https=0mS Local=91mS Unlock=0mS
+    With one existing local link within LinkScanRange (100)
+    CheckForLinks Len=2mS Low=3mS https=0mS Local=79mS Unlock=61mS
+}
 
 { We pass an char index that might land us in the middle of a block of plain text that
   extends beyond Len. Thats easy, just mark it up.
@@ -2210,7 +2241,7 @@ begin
   else
       if length(List[Index1]) < length(List[Index2]) then result := 1
       else result := -1;
-end;
+end;                                                 // ToDo : don't think we need this
 
 // ToDo : see the KMemo test that demonstrates getting all the text in a paragraph, faster !
 
@@ -2219,7 +2250,7 @@ var
     // Searchterm : ANSIstring = '';
     //SearchTerm : shortstring;
     Len, httpLen : longint;
-    // Tick, Tock : qword;
+    T0, T1, T2, T3, T4, T5 : qword;
     pText : pchar;
     // NoteNameList : TstringList;
     i : integer;
@@ -2240,6 +2271,8 @@ begin
 //    while SearchForm.NextNoteTitle(SearchTerm) do
 //        NoteNameList.Add(SearchTerm);
 //    NoteNameList.CustomSort(@NameLenSort);
+
+    T0 := gettickcount64();
     Len := length(KMemo1.Blocks.text);              // saves 7mS by calling length() only once ! But still 8mS
     if StartScan >= Len then exit;                  // prevent crash when memo almost empty
     if EndScan > Len then EndScan := Len;
@@ -2251,10 +2284,11 @@ begin
 
 
     KMemo1.Blocks.LockUpdate;
-    //Tick := gettickcount64();
+    T1 := gettickcount64();
     try
 
         PText := PChar(lowerCase(KMemo1.Blocks.text));
+        T2 := gettickcount64();
         if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
             CheckForHTTP(PText, StartScan, httpLen);
 
@@ -2265,7 +2299,7 @@ begin
                     MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
                 end;
         end;    *)
-
+        T3 := gettickcount64();
 
 // DumpKMemo('CheckForLinks');       OK
 
@@ -2274,13 +2308,17 @@ begin
                 if TheMainNoteLister.NoteList[i]^.TitleLow <> NoteTitle then
                     MakeAllLinks(PText, TheMainNoteLister.NoteList[i]^.TitleLow, StartScan, EndScan);
         end;
+        T4 := gettickcount64();
 //         DumpKMemo('CheckForLinks');    WRONG
     finally
 //        NoteNameList.Free;
         KMemo1.Blocks.UnLockUpdate;
     end;
-    //Tock := gettickcount64();
-//    debugln('MakeAllLinks ' + inttostr(Tock - Tick) + 'mS');   // 9-14mS, occasional flyer 35ms with 2K test note set
+    T5 := gettickcount64();
+    debugln('CheckForLinks Len='+ inttostr(T1 - T0) + 'mS Low=' + inttostr(T2 - T1)
+                                + 'mS https=' + inttostr(T3 - T2)
+                                + 'mS Local=' + inttostr(T4 - T3)
+                                + 'mS Unlock='+ inttostr(T5 - T4) + 'mS' );   // 9-14mS, occasional flyer 35ms with 2K test note set
     Ready := True;
 end;
 
@@ -2479,7 +2517,6 @@ begin
     if StartScan < length(Caption) then StartScan := length(Caption);
     EndScan := CurserPos + LinkScanRange;
     if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);   // Danger - should be KMemo1.Blocks.Text !!!
-    // TS1:=DateTimeToTimeStamp(Now);
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
     if ((BlocksInTitle + 10) > BlockNo) then begin
           // We don't check title if user is not close to it.
@@ -2500,17 +2537,19 @@ begin
     end;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
         TS1 := gettickcount64();
+        //KMemo1.blocks.LockUpdate; // Locking here helps, saves 70mS out of 240mS
   	    ClearNearLink(StartScan, EndScan {CurserPos});
         TS2 := gettickcount64();
         CheckForLinks(StartScan, EndScan);
+        //KMemo1.blocks.UnLockUpdate;
+        //TimerHouseKeeping.Enabled := False;        // ???
         TS3 := gettickcount64();
+        debugln('DoHousekeeping Clear ' + inttostr(TS2-TS1) + 'ms  Check ' + inttostr(TS3-TS2) + 'mS');
     end;
     KMemo1.SelStart := CurserPos;
     KMemo1.SelLength := SelLen;
-
     //Debugln('Housekeeper called');
 
-  debugln('DoHousekeeping Clear ' + inttostr(TS2-TS1) + 'ms  Check ' + inttostr(TS3-TS2) + 'mS');
 
   { Some notes about timing, 'medium' powered Linux laptop, 20k note.
     Checks and changes to Title - less than mS
