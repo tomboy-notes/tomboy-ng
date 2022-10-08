@@ -146,5 +146,9 @@ if [ "$RELEASENAME" == "bionic" ]; then
 	echo "        was there before we started and not valid for this run !!!!"
 fi
 
-echo "--------- OK, if it looks OK, go back to each build directoy and run -"
-echo "          dput ppa:d-bannon/ppa-tomboy-ng *.changes"
+echo "--------- OK, if it looks OK, go back to (each) build directoy and run -"
+if [ "$MAKEPPA" == "yes" ]; then
+	echo "          dput ppa:d-bannon/ppa-tomboy-ng *.changes"
+else
+	echo "      or  dput -f mentors *.changes"
+fi
