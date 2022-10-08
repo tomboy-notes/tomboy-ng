@@ -550,6 +550,8 @@ implementation
 
 {$R *.lfm}
 
+{$define FANCYMAKELINK}         // Simple version faster and perhaps more user friendly ?
+
 
 
 { TEditBoxForm }
@@ -2004,8 +2006,13 @@ var
     i : integer;
 begin
     Writeln('TEditBoxForm.DumpKMemo from ' + WhereFrom);
-    for i := 0 to Kmemo1.Blocks.Count-1 do
+    for i := 0 to Kmemo1.Blocks.Count-1 do begin
         writeln(Inttostr(i) + ' ' + KMemo1.Blocks.Items[i].ClassName + ' = ' + KMemo1.Blocks.Items[i].Text);
+        if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoTextBlock')
+                or KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then
+            writeln('       Bold=' + booltostr(fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[i]).TextStyle.Font.Style, True));
+    end;
+
 end;
 { -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
 
@@ -2041,9 +2048,12 @@ var
 	Hyperlink, HL: TKMemoHyperlink;
     TrueLink : string;
 	BlockNo, {BlockNo2,} BlockOffset : longint;
+    {$ifdef FANCYMAKELINK}
+    ItsBold, ItsItalic : boolean;
+    FontSize : integer;
+    {$endif}
 begin
     // Because the name list we are iteration over is sorted, longest names at the top, we 'prefer' longer matches, see issue #260
-    // DumpKMemo('MakeLink');
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
 (*  This block is about checking an existing link in case it was one left here
     because it is valid.  But we don't leave any here any more so don't need it.
@@ -2066,12 +2076,19 @@ begin
             UnlinkBlock(BlockNo2);                                              // we need remove link at BlockNo2
         end;
     end;   *)
+
+// writeln('MakeLink A      Bold=' + booltostr(fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[3]).TextStyle.Font.Style, True));
+
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);             // We may have moved things around
     if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then exit;   // don't mess with ones already there.
     if ((KMemo1.Blocks.Items[BlockNo].Text.Length-BlockOffset) < Len) then
         exit;                                                                   // We still don't have room for a link
     TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
-    //writeln('TEditBoxForm.MakeLink now, TL='+TrueLink);
+    {$ifdef FANCYMAKELINK}
+    ItsBold := fsBold in TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style;
+    ItsItalic := fsItalic in TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style;
+    FontSize := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size;
+    {$endif}
     KMemo1.SelStart:= Index;
     KMemo1.SelLength:=Len;
     KMemo1.ClearSelection();
@@ -2081,8 +2098,19 @@ begin
     Hyperlink.Textstyle.StyleChanged   :=  true;
 	Hyperlink.OnClick := @OnUserClickLink;
 	HL := KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
-    HL.TextStyle.Font.Color:= Sett.TitleColour;
+    // Maybe setting Bold, italic, size is a waste of time - see discussion in UnLink()
+    {$ifdef FANCYMAKELINK}
+    if ItsBold then
+         HL.TextStyle.Font.Style := HL.TextStyle.Font.Style + [fsBold]
+    else HL.TextStyle.Font.Style := HL.TextStyle.Font.Style - [fsBold];
+    if ItsItalic then
+        HL.TextStyle.Font.Style := HL.TextStyle.Font.Style + [fsItalic]
+    else HL.TextStyle.Font.Style := HL.TextStyle.Font.Style - [fsItalic];
+    HL.TextStyle.Font.Size := FontSize;
+    HL.TextStyle.Font.Color := Sett.TitleColour;
+    {$endif}
     // Note the colour seems to get set to some standard that TK likes when added.
+//  writeln('MakeLink B      Bold=' + booltostr(fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[3]).TextStyle.Font.Style, True));
 end;
 
 // Starts searching a string at StartAt for Term, returns 1 based offset from start of str if found, 0 if not. Like UTF8Pos(
@@ -2184,6 +2212,8 @@ begin
       else result := -1;
 end;
 
+// ToDo : see the KMemo test that demonstrates getting all the text in a paragraph, faster !
+
 procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
 var
     // Searchterm : ANSIstring = '';
@@ -2218,6 +2248,8 @@ begin
     else  httpLen := EndScan;
     Ready := False;
 
+
+
     KMemo1.Blocks.LockUpdate;
     //Tick := gettickcount64();
     try
@@ -2234,12 +2266,15 @@ begin
                 end;
         end;    *)
 
+
+// DumpKMemo('CheckForLinks');       OK
+
         if Sett.ShowIntLinks and (not SingleNoteMode) then begin
             for i := 0 to TheMainNoteLister.NoteList.Count-1 do
                 if TheMainNoteLister.NoteList[i]^.TitleLow <> NoteTitle then
                     MakeAllLinks(PText, TheMainNoteLister.NoteList[i]^.TitleLow, StartScan, EndScan);
         end;
-
+//         DumpKMemo('CheckForLinks');    WRONG
     finally
 //        NoteNameList.Free;
         KMemo1.Blocks.UnLockUpdate;
@@ -2252,11 +2287,48 @@ end;
 
 function TEditBoxForm.UnlinkBlock(StartBlock : integer) : integer;
 var
-   Existing : string;
-   ChangedOne : boolean = false;
+    Existing : string;
+    ChangedOne : boolean = false;
+    Blk : TKMemoTextBlock;
+
+    {$ifdef FANCYMAKELINK}
+    function CanMergeBlocks(LinkBlock, TextBlock : integer) : boolean;  // Merges two blocks IFF they are same sort, font, size etc
+    begin
+        result :=
+                ((LinkBlock) < KMemo1.Blocks.count) and
+                ((TextBlock) < KMemo1.Blocks.count) and
+                KMemo1.Blocks.Items[TextBlock].ClassNameIs('TKMemoTextBlock') and
+                KMemo1.Blocks.Items[LinkBlock].ClassNameIs('TKMemoTextBlock') and
+                (TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Size =
+                    TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Size) and
+                ((fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Style) =
+                    (fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Style))
+    // Must match fontsize, bold, italic
+    end; {$endif}
+
 begin
+
    Result := StartBlock;
-   if KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoTextBlock') then begin
+   {$ifndef FANCYMAKELINK}
+   Existing := KMemo1.Blocks.Items[StartBlock].Text;
+   Kmemo1.Blocks.Delete(StartBlock);
+   KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+   exit;
+   {$endif}
+   // ToDo : decide just what to do here.
+   {As done here, most code in this method is redundent. A link takes on the attributes
+   of the text to the left or default if start of a line. The other code here would, if
+   allowed, try and merge a link's text when the link becomes invalid and set that text
+   to default. I think taking attributes from left make more sense. It also fractures
+   text in lots of blocks but a reload fixes that. If we opt for this simple model,
+   might also remove some of the code from MakeLink thats tries to override TK's default.
+   David October 2022
+   }
+
+
+   {$ifdef FANCYMAKELINK}
+   //if KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoTextBlock') then begin
+   if CanMergeBlocks(StartBlock, StartBlock-1) then begin
         Existing := KMemo1.Blocks.Items[StartBlock-1].Text + KMemo1.Blocks.Items[StartBlock].Text;
         dec(StartBlock);
         Kmemo1.Blocks.Delete(StartBlock);
@@ -2264,20 +2336,27 @@ begin
         KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
         ChangedOne := True;
         dec(Result);                                                            // only necessary for previous
+writeln('TEditBoxForm.UnlinkBlock A cleared block with text = ' + Existing + ' at ' + inttostr(StartBlock));
    end;
-   if ((StartBlock+1) < KMemo1.Blocks.Count)                                    // still have one there
-                and KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoTextBlock') then begin
+   //if ((StartBlock+1) < KMemo1.Blocks.Count)                                    // still have one there
+   //             and KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoTextBlock') then begin
+   if CanMergeBlocks(StartBlock, StartBlock+1) then begin
         Existing := KMemo1.Blocks.Items[StartBlock].Text + KMemo1.Blocks.Items[StartBlock+1].Text;
         Kmemo1.Blocks.Delete(StartBlock);
         Kmemo1.Blocks.Delete(StartBlock);
         KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+writeln('TEditBoxForm.UnlinkBlock B cleared block with text = ' + Existing + ' at ' + inttostr(StartBlock));
         ChangedOne := True;
    end;
+
    if not changedOne then begin
         Existing := KMemo1.Blocks.Items[StartBlock].Text;
         Kmemo1.Blocks.Delete(StartBlock);
-        KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
-   end;
+        Blk := KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+        Blk.TextStyle.Font.Style := Blk.TextStyle.Font.Style - [fsBold, fsItalic];
+        Blk.TextStyle.Font.Size := Sett.FontNormal;
+writeln('TEditBoxForm.UnlinkBlock C cleared block with text = ' + Existing + ' at ' + inttostr(StartBlock));
+   end;    {$endif}
 end;
 
 // May 2022 - no longer try and leave valid local links in place.
@@ -2391,7 +2470,7 @@ procedure TEditBoxForm.DoHousekeeping();
 var
     CurserPos, SelLen, StartScan, EndScan, BlockNo, Blar : longint;
     TempTitle : ANSIString;
-    // TS1, TS2, TS3, TS4 : TTimeStamp;           // Temp time stamping to test speed
+    TS1, TS2, TS3, TS4 : qword;           // Temp time stamping to test speed
 begin
     if KMemo1.ReadOnly then exit();
     CurserPos := KMemo1.RealSelStart;
@@ -2420,17 +2499,18 @@ begin
   	        exit();
     end;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
+        TS1 := gettickcount64();
   	    ClearNearLink(StartScan, EndScan {CurserPos});
-  	    // TS2:=DateTimeToTimeStamp(Now);
+        TS2 := gettickcount64();
         CheckForLinks(StartScan, EndScan);
-        // TS3:=DateTimeToTimeStamp(Now);
+        TS3 := gettickcount64();
     end;
     KMemo1.SelStart := CurserPos;
     KMemo1.SelLength := SelLen;
 
     //Debugln('Housekeeper called');
 
-  // Memo1.append('Clear ' + inttostr(TS2.Time-TS1.Time) + 'ms  Check ' + inttostr(TS3.Time-TS2.Time));
+  debugln('DoHousekeeping Clear ' + inttostr(TS2-TS1) + 'ms  Check ' + inttostr(TS3-TS2) + 'mS');
 
   { Some notes about timing, 'medium' powered Linux laptop, 20k note.
     Checks and changes to Title - less than mS
