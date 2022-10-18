@@ -14,7 +14,6 @@
 {"hash":156305157,"name":"teditboxform.speedbuttonlink.hint","sourcebytes":[76,105,110,107,32,104,105,103,104,108,105,103,104,116,101,100,32,116,101,120,116,32,116,111,32,97,32,110,101,119,32,110,111,116,101],"value":"Link highlighted text to a new note"},
 {"hash":59715590,"name":"teditboxform.speedbuttonsearch.hint","sourcebytes":[83,101,97,114,99,104,32,65,108,108,32,78,111,116,101,115,32,67,116,114,108,45,83,104,105,102,116,45,70],"value":"Search All Notes Ctrl-Shift-F"},
 {"hash":343125,"name":"teditboxform.buttmaintbmenu.caption","sourcebytes":[77,101,110,117],"value":"Menu"},
-{"hash":86477809,"name":"teditboxform.label1.caption","sourcebytes":[76,97,98,101,108,49],"value":"Label1"},
 {"hash":300580,"name":"teditboxform.menubold.caption","sourcebytes":[66,111,108,100],"value":"Bold"},
 {"hash":84574963,"name":"teditboxform.menuitalic.caption","sourcebytes":[73,116,97,108,105,99],"value":"Italic"},
 {"hash":151125108,"name":"teditboxform.menustrikeout.caption","sourcebytes":[83,116,114,105,107,101,111,117,116],"value":"Strikeout"},

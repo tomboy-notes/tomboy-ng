@@ -290,7 +290,8 @@ type        { TSearchForm }
                               to index. use UpdateList() if you just have updates. }
         function IndexNotes() : integer;
                             { Returns true when passed string is the title of an existing note }
-        function IsThisaTitle(const Term: ANSIString): boolean;
+        //function IsThisaTitle(const Term: ANSIString): boolean;
+
                             { Gets called with a title and filename (clicking grid), with just a title
                             (clicked a note link or recent menu item or Link Button) or nothing
                             (new note). If its just Title but Title does not exist, its Link
@@ -492,10 +493,10 @@ begin
 	Result := TheMainNoteLister.NextNoteTitle(SearchTerm);
 end;  *)
 
-function TSearchForm.IsThisaTitle(const Term : ANSIString) : boolean;
+{function TSearchForm.IsThisaTitle(const Term : ANSIString) : boolean;
 begin
 	Result := TheMainNoteLister.IsThisATitle(Term);
-end;
+end;  }
 
 procedure TSearchForm.RefreshNotebooks();
 var

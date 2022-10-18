@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 549
+  Left = 405
   Height = 505
-  Top = 240
+  Top = 180
   Width = 695
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -1151,13 +1151,6 @@ object EditBoxForm: TEditBoxForm
     OnKeyUp = KMemo1KeyUp
     OnMouseDown = KMemo1MouseDown
     OnMouseUp = KMemo1MouseUp
-  end
-  object Label1: TLabel
-    Left = 210
-    Height = 21
-    Top = 121
-    Width = 53
-    Caption = 'Label1'
   end
   object PopupMenuText: TPopupMenu
     Left = 232

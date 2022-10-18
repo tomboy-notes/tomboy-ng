@@ -350,7 +350,7 @@ type
     		                            // Returns True if its updated the internal record as indicated,
                                         // will accept either an ID or a filename. Do NOT pass a Notebook ID !}
     function AlterNote(ID, Change : ANSIString; Title : ANSIString = '') : boolean;
-
+                                        { True if the passed LOWERCASE string is a valid note Title }
     function IsThisATitle(const Title : ANSIString) : boolean;
                         		        { Returns the Form this note is open on, Nil if its not open. Take ID or FileName }
     function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
@@ -529,11 +529,11 @@ begin
     {$pop}
 end;
 
-                                                               // ToDo : do someting about TheMainNoteLister below, anything !
+
 // A sort function for TitleSortList
 function SortOnTitle(Item1: Pointer; Item2: Pointer):Integer;  inline;  // BE VERY CAREFULL, usable ONLY by main NoteLister
 var
-   LItem1: SizeInt absolute Item1;
+   LItem1: SizeInt absolute Item1;                             // Superimpose an Int like thing over pointer to avoid warnings
    LItem2: SizeInt absolute Item2;
 begin
     if TheMainNoteLister.NoteList[Litem1]^.TitleLow = TheMainNoteLister.NoteList[Litem2]^.TitleLow then
@@ -2043,7 +2043,7 @@ begin
   	Result := False;
     for Index := NoteList.Count -1 downto 0 do begin
 	//for Index := 0 to NoteList.Count -1 do begin
-        if Title = NoteList.Items[Index]^.Title then begin
+        if Title = NoteList.Items[Index]^.TitleLow then begin
         	Result := True;
             break;
 		end;

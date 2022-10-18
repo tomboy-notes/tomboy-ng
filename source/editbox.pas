@@ -228,10 +228,13 @@ unit EditBox;
     2022/08/28  CheckForLinks() no longer calls SearchForm.StartSearch(); eg 2000 notes faster to
                 work directly off TheNoteLister.NoteList[i]^.TitleLow, 11-20mS compared to 19-41mS
     2022/09/08  Esc can (if set) close current note. #271
+    2022/10/18  Extensive changes to Link system, faster and better behaviour #260 inc
 }
 
 
 {$mode objfpc}{$H+}
+
+{X$define LDEBUG}       // ToDo : Lots of ugly debug output around the Link code, remove when stable
 
 interface
 
@@ -244,6 +247,12 @@ uses
     PrintersDlgs,
     TBUndo;             // experimental ....
 
+type FontLimitedAttrib = record      // Used to save and restore attributes when
+    Styles : TFontStyles;             // a hyperlink is created or unlinked.
+    BackColour : TColor;             // Note we don't do underline here....
+    Size : Integer;
+end;
+
 type
     { TEditBoxForm }
 
@@ -252,7 +261,6 @@ type
         ButtMainTBMenu: TSpeedButton;
         EditFind: TEdit;
         KMemo1: TKMemo;
-        Label1: TLabel;
         LabelFindCount: TLabel;
         LabelFindInfo: TLabel;
         Label2: TLabel;
@@ -377,6 +385,7 @@ type
         procedure TimerHousekeepingTimer(Sender: TObject);
 
     private
+        {$ifdef LDEBUG}TG1, TG2, TG3, TG4 : qword;{$endif}
         Use_Undoer : boolean;   // We allow user to disable Undo system, ONLY set during create.
         Undoer : TUndo_Redo;
         TitleHasChanged : boolean;
@@ -396,10 +405,12 @@ type
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
                                 { If Toggle is true, sets bullets to what its currently not. Otherwise sets to TurnOn}
         procedure BulletControl(const Toggle, TurnOn: boolean);
-                                { Looks between StartS and EndS, marking any http link. Byte, not char indexes.
-                                A weblink has leading and trailing whitespace, starts with http:// or https://
-                                and has a dot and char after the dot. We expect kmemo1 is locked at this stage.}
-        procedure CheckForHTTP(const PText: pchar; const StartS, EndS: longint);
+                                // Gets passed a string containing a copy of one or more kmemo paragraphs, seperated by
+                                // #10. And a offset from the the start of the kmemo to the start of string.
+                                // Will mark up any web addresses it finds that are not already so marked.
+                                // Must start at start of para or space, must have at least one . and end with
+                                // space or newline char (#10). Returns 0 or length, in bytes, of the link
+        procedure CheckForHTTP(const Buff: string; const Offset: integer);
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
@@ -420,18 +431,20 @@ type
         procedure FindNew(IncStartPos: boolean);
         function FindNumbersInString(AStr: string; out AtStart, AtEnd: string): boolean;
         procedure InsertDate();
+                                { Searches Buff for all occurances of Term, checks its surrounded appropriately
+                                and calls MakeLink to mark it up as a local Link. Does NOT look directly at KMemo1 }
+        procedure MakeAllLinks(const Buff: string; const Term: ANSIString; const BlockOffset: integer);
         function ParagraphTextTrunc(): string;
-        function RelativePos(const Term: ANSIString; const MText: PChar;
-            StartAt: integer): integer;
+        function RelativePos(const Term: ANSIString; const MText: PChar; StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
+        function RestoreLimitedAttributes(const BlockNo: TKMemoBlockIndex; var FontAtt: FontLimitedAttrib): boolean;
+        function SaveLimitedAttributes(const BlockNo: TKMemoBlockIndex; var FontAtt: FontLimitedAttrib): boolean;
                                 // This method will, at some stage, return after creating and starting
                                 // a thread that normalises the xml in the list, adds footer and saves.
                                 // The thread keeps going after the method returns doing above and then
                                 // free-ing the List.
         function SaveStringList(const SL: TStringList; Loc: TNoteUpdateRec): boolean;
         function SimpleCalculate(out AStr: string): boolean;
-        // procedure CancelBullet(const BlockNo: longint; const UnderBullet: boolean);
-
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
                                 { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
                                 Http or local links, we need to clear the colour and underline of any text nearby
@@ -442,22 +455,24 @@ type
         procedure DoHousekeeping();
                                 { Returns a UUID suitable for a file name }
         function GetAFilename() : ANSIString;
-        procedure CheckForLinks(const StartScan : longint = 1; EndScan : longint = 0);
+                                { This is entry to manage Links. If FullBody, is a freshly loaded note with no links
+                                so we just scan and insert as necessary. Otherwise, its being called as the user
+                                types, we grab text around current cursor position, remove any invalid links and
+                                then scan and insert any that need be there. In all cases, we honour the use links
+                                setting from Sett. }
+        procedure CheckForLinks(const FullBody: boolean);
                                 { Returns with the title, that is the first line of note, returns False if title is empty }
         function GetTitle(out TheTitle: ANSIString): boolean;
         procedure ImportNote(FileName : string);
         procedure InitiateCalc();
                                 { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
         function LoadSingleNote() : boolean;
-                                { Searches for all occurances of Term in the KMemo text, makes them Links
-                                Does not bother with single char terms. Expects KMemo1 to be already locked.}
-        procedure MakeAllLinks(const PText: PChar; const Term: ANSIString; const StartScan: longint=1; EndScan: longint=0);
-                                { Makes a link at passed position as long as it does not span beyond a block.
-                                And if it does span beyond one block, I let that go through to the keeper.
-                                Making a Hyperlink, deleting the origional text is a very slow process so we
-                                make heroic efforts to avoid having to do so. Index is char count, not byte.
-                                Its a SelectionIndex.  Note we no longer need pass this p the Link, remove ? }
-		procedure MakeLink(const Index, Len: longint);
+                                { Checks that the indicated text falls in all TKMemoTextBlock(s), replaces a link
+                                if new one is longer (greatly favours Web Links!). Exists early if it finds it
+                                does not need to make any changes. Make a new block, TKMemoHypeLink, use saved
+                                text and saved attributes. Expects invalid links to already have been removed.
+                                Does not mess with an existing HTTP link.  Index and Len are char, not byte. }
+		procedure MakeLink(const Index, Len: longint; const Term: string);
                                 { Makes sure the first (and only the first) line is marked as Title
                                 Title should be Blue, Underlined and FontTitle big.
                                 Note that when a new note is loaded from disk, this function is not called,
@@ -468,7 +483,7 @@ type
   		                        We return with IsFirstChar true if we are on the first visible char of a line (not
   		                        necessarily a bullet line). If we return FALSE, passed parameters may not be set. }
 		function NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara: Boolean;
-            	out BlockNo, TrailOffset, LeadOffset: longint): boolean;
+                        out BlockNo, TrailOffset, LeadOffset: longint): boolean;
                                 { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
                                 { A method called by this or other apps to get what we might have selected }
@@ -484,29 +499,29 @@ type
         procedure SetBullet(PB: TKMemoParagraph; Bullet: boolean);
                                 // Advises other apps we can do middle button paste
         procedure SetPrimarySelection;
-                                // Restores block at StartLink to Text, attempts to merge linktext back into both
-                                // the previous or next block if it can.
-                                // There is a problem here. If a link is edited making it invalid but the remainer
-                                // happens to also be a valid link, we don't get back to original if edit is reversed.
+                                { Restores block at StartLink to Text, attempts to merge linktext back into both
+                                the previous or next block if it can.
+                                There is a problem here. If a link is edited making it invalid but the remainer
+                                happens to also be a valid link, we don't get back to original if edit is reversed. }
         function UnlinkBlock(StartBlock: integer): integer;
                                 // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
         function UpdateNote(NRec: TNoteUpdaterec): boolean;
+
     public
-                                // Set by the calling process. FFN inc path
-                                // Carefull, cli has a real global version
-        SingleNoteFileName : string;
+        SingleNoteFileName : string;    // Set by the calling process. FFN inc path, carefull, cli has a real global version
         SingleNoteMode : Boolean;
-        NoteFileName : string;              // Will contain the full note name, path, ID and .note
-        NoteTitle : string;                 // only used during initial opening stage ?
+        NoteFileName : string;          // Will contain the full note name, path, ID and .note
+        NoteTitle : string;             // only used during initial opening stage ?
         Dirty : boolean;
         Verbose : boolean;
-        SearchedTerm : string;  // If not empty, opening is associated with a search, go straight there.
-        // If a new note is a member of Notebook, this holds notebook name until first save.
-        TemplateIs : AnsiString;
+        SearchedTerm : string;          // If not empty, opening is associated with a search, go straight there.
+        HaveSeenOnActivate : boolean;   // Indicates we have run, eg, CheckForLinks at Activate
+
+        TemplateIs : AnsiString;        // If a new note is a member of Notebook, this holds notebook name until first save.
                                 { Will mark this note as ReadOnly and not to be saved because the Sync Process
-                                  has either replaced or deleted this note OR we are using it as an internal viewer.
-                                  Can still read and copy content. Viewer users don't need big ugly yellow warning}
+                                has either replaced or deleted this note OR we are using it as an internal viewer.
+                                Can still read and copy content. Viewer users don't need big ugly yellow warning}
         procedure SetReadOnly(ShowWarning : Boolean = True);
                                 // Public: Call on a already open note if user has followed up a search with a double click
         procedure NewFind(Term: string);
@@ -550,7 +565,7 @@ implementation
 
 {$R *.lfm}
 
-{$define FANCYMAKELINK}         // Simple version faster and perhaps more user friendly ?
+
 
 
 
@@ -585,7 +600,8 @@ const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
 
-
+{$ifdef LDEBUG}var
+  MyLogFile: TextFile;{$endif}
 
 { =============  T   S A V E   T H R E A D   ================== }
 
@@ -1092,21 +1108,22 @@ begin
 end;
 
 procedure TEditBoxForm.FormActivate(Sender: TObject);
+var
+    Tick, Tock : integer;
 begin
-    if Ready then begin               // just possible that a new note was created, check for its link.
-        if KMemo1.Blocks.RealSelLength > 1 then begin
-            //debugln('OnActivate 1, checking for new link, [' + KMemo1.Blocks.SelText + ']');
-            CheckForLinks(KMemo1.Blocks.RealSelStart, KMemo1.Blocks.RealSelEnd);
-            //debugln('OnActivate 2, checking for new link, [' + KMemo1.Blocks.SelText + ']');
-            // ToDo : CheckForLinks clears any preexisting selection, should we restore ?
+    if not HaveSeenOnActivate then begin;
+        Tick := gettickcount64();
+        CheckForLinks(True);
+        Tock := gettickcount64();
+        debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(HaveSeenOnActivate, true));
+        TimerHouseKeeping.Enabled := False;
+        if SingleNoteMode then begin
+            SpeedbuttonSearch.Enabled := False;
+            SpeedButtonLink.Enabled := False;
+            MenuItemSync.Enabled := False;
+            SpeedButtonNotebook.Enabled := False;
         end;
-    end;
-    // should we only do this the first time through ?
-    if SingleNoteMode then begin
-        SpeedbuttonSearch.Enabled := False;
-        SpeedButtonLink.Enabled := False;
-        MenuItemSync.Enabled := False;
-        SpeedButtonNotebook.Enabled := False;
+        HaveSeenOnActivate := True;
     end;
 end;
 
@@ -2015,134 +2032,163 @@ begin
 
 end;
 { -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
+
+{   Kmemo1.blocks.linetext returns a UTF8 (ANSI) string that has
+    newlines recorded as a two byte 194 182 marker. They show up on console
+    etc as ¶ - Thus the string "180°c¶", Length 6 chars and 8 bytes is -
+        1 [1]
+        2 [8]
+        3 [0]
+        4 194
+        5 176         // those two are the temperature symbol, one extra byte
+        6 [c]
+        7 194
+        8 182         // those two are the newline, one extra byte
+}
+
 {
-  Housekeeping may call  and  CheckForLinks(StartScan, EndScan);
-  ClearNearLink(StartScan, EndScan);
-    Locks, unlinks all TKMemoHyperlinks that are not valid Weblinks Unlocks
-    Calls UNLinkBlock()
-        UnLinkBlock deletes the TKMemoHyperLink and puts back a block containing the
-        origional text. But may also try to merge the text into proceeding or
-        following blocks if attributes match.
+  Housekeeping may call CheckForLinks(FullBody);
+  If FullBody, we scan over whold note setting Links where necessary.
+  Else, we grab a small lump of text arround the cursor position, finishing
+  on line boundaries and using its size clear any invalid links in KMemo1.
+  Then we scan that lump of text for anything that looks like a link.
+  Locking for all of this action is done in CheckForLinks().
+
 
   CheckForLinks(StartScan, EndScan);
-        Locks, calls CheckForHTTP(PText, StartScan, httpLen) then loops over all Titles
-        in NoteLister calling MakeAllLinks() for each one. unlocks
+        ClearNearLink(StartScan, EndScan);
+        unlinks all TKMemoHyperlinks that are not valid Weblinks Unlocks
+            Calls UNLinkBlock()
+            UnLinkBlock deletes the TKMemoHyperLink and puts back a block containing the
+            origional text, merging to surrounding text is possible if attributes match.
+            Will copy some text attributes from a link and reappy them to the text
+            after unlinking.
+
+        loops over all Titles in NoteLister calling MakeAllLinks() for each one.
+
+        Calls MakeAllLinks()
+            is called for each Title in NoteLister, it searches for the Title in range
+            and then checks its surrounded by deliminators. If so, calls MakeLink() on it.
+
         Calls CheckForHTTP()
             Scans over range looking for something that starts with http ....
             Makes a link if it finds something valid using MakeLink()
-        Calls MakeAllLinks()
-            is called for each Title in NoteLister, it searches for the Title in range
-            and then checks its surrounded by deliminators. If so, calls MakeLink() in it.
+
+
         Both call MakeLink()
+            Does some sanity tests, might decide the offered local link is longer
+            than an existing one and use it instead. Otherwise it
             exits if there is already a hyperlink starting there, else makes one.
-            Might copy the existing text attributes to the TKMemoHyperlink.
+            Copy the existing text attributes to the TKMemoHyperlink.
 
 
     MyRecipes, release mode, 2000 notes, 2 local links,
-    Clear 72-90ms  Check 147mS - fancyMode, Clear 91ms  Check 147mS non-fancy
-
-    With no existing links Fancy Mode -
-    CheckForLinks Len=12mS Low=10mS https=0mS Local=91mS Unlock=0mS
-    With one existing local link within LinkScanRange (100)
-    CheckForLinks Len=2mS Low=3mS https=0mS Local=79mS Unlock=61mS
+    Clear 91ms  Check 147mS fancy total 140mS
+    New Model, October 2022, 10 or so links at top of MyRecipes,
+    ~100mS if directly affecting a link, 3-5mS otherwise.
 }
 
-{ We pass an char index that might land us in the middle of a block of plain text that
-  extends beyond Len. Thats easy, just mark it up.
-  But that index might point into an existing hyperlink, if its the start of said link
-  and the lengths are the same, all good, leave it alone.
 
-  If the existing link text is longer than the one we are processing, leave it alone.
-
-  Else, we need to 'fix it up'. Remove the existing link, merge both before and after.
-  The merge process will change block numbers but not char index to update BlockNo.
-
-  Test -
-  1. Is it an existing hyperlink ? If so, does beginning and length match, exit.
-  2. Else, does any part of the proposed link overlap with an existing link ?
-        2.1 If so check length, if existing length is longer than proposed, exit.
-        2.2 Else we need to clear the existing link and merge both left and right
-            if possible, that is, if either or both are Text blocks.
-            Maybe check that doing so will get us a enough clear text to make
-            the new link ?
-  3. If we are still here, get a new BlockNumber and Offset and make the link.
-
-  CHANGE
-  If we no longer try to leave valid local links in place, this method can be easier.
-  Any link it finds has been put in by this run, because it was earlier, its bigger
-  and has priority.
-
-}
-
-procedure TEditBoxForm.MakeLink(const Index, Len : longint);
-var
-	Hyperlink, HL: TKMemoHyperlink;
-    TrueLink : string;
-	BlockNo, {BlockNo2,} BlockOffset : longint;
-    {$ifdef FANCYMAKELINK}
-    ItsBold, ItsItalic : boolean;
-    FontSize : integer;
-    {$endif}
+function TEditBoxForm.SaveLimitedAttributes(const BlockNo : TKMemoBlockIndex; var FontAtt : FontLimitedAttrib) : boolean;
 begin
-    // Because the name list we are iteration over is sorted, longest names at the top, we 'prefer' longer matches, see issue #260
-    BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
-(*  This block is about checking an existing link in case it was one left here
-    because it is valid.  But we don't leave any here any more so don't need it.
+    result := Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink')
+           or Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock');
+    if not result then exit;
+    FontAtt.Styles := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style;
+    FontAtt.Size := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size;
+    FontAtt.BackColour := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Brush.Color;
+end;
 
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then begin   // We leave valid hyperlinks in place.
-        if (BlockOffset = 0) and (Len = KMemo1.Blocks.Items[BlockNo].Text.Length)
-            then exit;                                                          // must be same link.
-        if KMemo1.Blocks.Items[BlockNo].Text.Length > Len then exit;            // we prefer longer links
-        UnlinkBlock(BlockNo);                                                   // OK, trash that link
-    end else begin
-        if not KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock') then
-            exit;                                                               // err, must be a para block, how come ?
-        if ((KMemo1.Blocks.Items[BlockNo].Text.Length-BlockOffset) < Len) then  // Messy, maybe we have a trailing link we need replace ?
-        begin
-            BlockNo2 := KMemo1.Blocks.IndexToBlockIndex(Index+Len, BlockOffset);// block at the end
-            if BlockNo + 1 <> BlockNo2 then exit;                               // We cannot handle blocks too far away.
-            if not KMemo1.Blocks.Items[BlockNo2].ClassNameIs('TKMemoHyperlink') // any other sort of block is an error
-                then exit;
-            if KMemo1.Blocks.Items[BlockNo2].Text.Length >  Len then exit;      // stick with the longer link
-            UnlinkBlock(BlockNo2);                                              // we need remove link at BlockNo2
+function TEditBoxForm.RestoreLimitedAttributes(const BlockNo : TKMemoBlockIndex; var FontAtt : FontLimitedAttrib) : boolean;
+begin
+    result := Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink')
+          or Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock');
+    if not result then exit;
+    if fsUnderline in TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style then
+        FontAtt.Styles := FontAtt.Styles + [fsUnderline]
+    else FontAtt.Styles := FontAtt.Styles - [fsUnderline];
+    TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style := FontAtt.Styles;
+    TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Brush.Color := FontAtt.BackColour;
+    TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size := FontAtt.Size;
+end;
+
+
+procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string);
+var
+	Hyperlink : TKMemoHyperlink;
+    TrueLink, AText : string;
+	BlockNoS, BlockNoE, BlockOffset, i : integer;
+    FontAtt : FontLimitedAttrib;
+begin
+
+    if Index = 0 then exit;                                                     // Thats this note's title, skip it !
+    BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Block where proposed link Ends
+    BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // Block where proposed link starts
+    if KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink') then begin
+        AText := lowercase(KMemo1.Blocks.Items[BlockNoS].Text);
+        if AText.StartsWith('http') then exit;                                  // Already checked by Clean...
+        if AText = Term then exit;                                              // Already there
+    end;
+//    debugln('MakeLink Index=' + Index.ToString + ' Len=' + Len.ToString + ' BlockNoS=' + BlockNoS.ToString + ' BlockNoE=' + BlockNoE.ToString);
+//    debugln('MakeLink S=[' + KMemo1.Blocks.Items[BlockNoS].Text + '] E=[' + KMemo1.Blocks.Items[BlockNoE].Text + ']');
+    i := BlockNoS;
+    while i < BlockNoE do begin
+//        debugln('MakeLink a Block Content is [' + KMemo1.Blocks.Items[i].Text + ']');
+        if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin     // is there a link there already ?
+            if KMemo1.Blocks.Items[i].text.StartsWith('http') then exit;        // Leave existing web links alone, already checked.
+            if KMemo1.Blocks.Items[i].text.Length >= Len then exit;             // Leave it alone, is already at least as long
+//            debugln('MakeLink Unlinking ' + KMemo1.Blocks.Items[i].text);
+            UnlinkBlock(i);                                                     // Existing shorter, we will replace
+            BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Sadly, we need to start this loop again
+            BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // and keep iterating until we have clear space
+            i := BlockNoS;
         end;
-    end;   *)
+        if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoParagraph') then exit;     // Thats an ERROR !
+        inc(i);
+    end;
 
-// writeln('MakeLink A      Bold=' + booltostr(fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[3]).TextStyle.Font.Style, True));
-
-    BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);             // We may have moved things around
-    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink') then exit;   // don't mess with ones already there.
-    if ((KMemo1.Blocks.Items[BlockNo].Text.Length-BlockOffset) < Len) then
-        exit;                                                                   // We still don't have room for a link
-    TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNo].Text, BlockOffset+1, Len);
-    {$ifdef FANCYMAKELINK}
-    ItsBold := fsBold in TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style;
-    ItsItalic := fsItalic in TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style;
-    FontSize := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size;
-    {$endif}
-    KMemo1.SelStart:= Index;
-    KMemo1.SelLength:=Len;
-    KMemo1.ClearSelection();
-    BlockNo := KMemo1.SplitAt(Index);
-	Hyperlink := TKMemoHyperlink.Create;
+    SaveLimitedAttributes(BlockNoS, FontAtt);
+    TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // Thats the bit thats in first block, possibly everything
+    if BlockNoE > BlockNoS then begin
+        i := 1;
+        while BlockNoE > (BlockNoS+i) do begin
+            TrueLink := TrueLink + Kmemo1.Blocks.Items[BlockNoS+i].Text;
+            inc(i);
+        end;                                                                    // That will get all of last block's text, probably excessive
+        if UTF8length(TrueLink) > Len then begin                                    // There is content in last blocks text beyond end of link.
+            TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS+i]).Text
+                := utf8copy(Kmemo1.Blocks.Items[BlockNoS+1].Text, Kmemo1.Blocks.Items[BlockNoS+1].Text.Length - UTF8length(TrueLink) - len, 9999);
+            delete(TrueLink, Len, 999);                                         // Get rid of that excess.
+            dec(i);
+            Kmemo1.Blocks.Delete(BlockNoS+1);
+            while i > 1 do begin
+                dec(i);
+                Kmemo1.Blocks.Delete(BlockNoS+1);
+            end;
+        end;
+    end else begin                                                              // All the proposed link was in the BlockNoS
+        BlockNoS := KMemo1.SplitAt(Index);
+        TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text
+                := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Len);
+        if Kmemo1.Blocks.Items[BlockNoS].Text = '' then
+            KMemo1.blocks.Delete(BlockNoS);                                     // Link went to very end of orig block.
+        if Kmemo1.Blocks.Items[BlockNoS-1].Text = '' then begin                 // Link must have started at beginning of orig block
+            KMemo1.blocks.Delete(BlockNoS-1);
+            dec(BlockNoS)
+        end;
+    end;
+    {$ifdef LDEBUG}TG2 := gettickcount64();{$endif}
+    Hyperlink := TKMemoHyperlink.Create;
     Hyperlink.Text := TrueLink;
     Hyperlink.Textstyle.StyleChanged   :=  true;
-	Hyperlink.OnClick := @OnUserClickLink;
-	HL := KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNo);
-    // Maybe setting Bold, italic, size is a waste of time - see discussion in UnLink()
-    {$ifdef FANCYMAKELINK}
-    if ItsBold then
-         HL.TextStyle.Font.Style := HL.TextStyle.Font.Style + [fsBold]
-    else HL.TextStyle.Font.Style := HL.TextStyle.Font.Style - [fsBold];
-    if ItsItalic then
-        HL.TextStyle.Font.Style := HL.TextStyle.Font.Style + [fsItalic]
-    else HL.TextStyle.Font.Style := HL.TextStyle.Font.Style - [fsItalic];
-    HL.TextStyle.Font.Size := FontSize;
-    HL.TextStyle.Font.Color := Sett.TitleColour;
-    {$endif}
-    // Note the colour seems to get set to some standard that TK likes when added.
-//  writeln('MakeLink B      Bold=' + booltostr(fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[3]).TextStyle.Font.Style, True));
+    Hyperlink.OnClick := @OnUserClickLink;
+    {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);
+    RestoreLimitedAttributes(BlockNoS, FontAtt);
+    {$ifdef LDEBUG}debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +']');{$endif}
+    {$ifdef LDEBUG}TG3 := gettickcount64();
+    TG1 := TG1 + (TG3-Tg2);{$endif}
 end;
+
 
 // Starts searching a string at StartAt for Term, returns 1 based offset from start of str if found, 0 if not. Like UTF8Pos(
 function TEditBoxForm.RelativePos(const Term : ANSIString; const MText : PChar; StartAt : integer) : integer;
@@ -2152,173 +2198,200 @@ begin
       Result := Result + StartAt;
 end;
 
-
-procedure TEditBoxForm.MakeAllLinks(const PText : PChar; const Term : ANSIString; const StartScan : longint =1; EndScan : longint = 0);
+procedure TEditBoxForm.MakeAllLinks(const Buff : string; const Term : ANSIString; const BlockOffset : integer);
 var
-	Offset, NumbCR   : longint;
-    {$ifdef WINDOWS}
-    {Ptr, }EndP : PChar;                  // Will generate "not used" warning in Unix
-    {$endif}
+	Offset   : Integer;     // The char position of a search term in Buffer
+    ByteBeforeTerm, ByteAfterTerm : integer;
 begin
-    Offset := RelativePos(Term, PText, StartScan);
+//    if pos('bgc 11', TheMainNoteLister.NoteList[i]^.TitleLow) > 0 then
+//    if Term = 'bgc 11' then
+//        debugln('NewMakeAllLinks found it =========================' + Term);
+
+    Offset := UTF8Pos(Term, Buff);
     while Offset > 0 do begin
-    	NumbCR := 0;
-        {$ifdef WINDOWS}                // compensate for Windows silly two char newlines
-        EndP := PText + Offset;
-        while EndP > PText do begin
-            if EndP^ = #13 then inc(NumbCR);
-            dec(EndP);
+//        debugln('NewMakeAllLinks Acting on Term=' + Term);
+        ByteBeforeTerm := UTF8CodepointToByteIndex(PChar(Buff), length(Buff), Offset)-1;
+        ByteAfterTerm  := UTF8CodepointToByteIndex(PChar(Buff), length(Buff), Offset+length(Term));
+
+        if ((Offset = 1) or (Buff[ByteBeforeTerm] in [' ', #10, ',', '.'])) and
+            (((Offset + length(Term)) = length(Buff)) or (Buff[ByteAfterTerm] in [' ', #10, ',', '.'])) then begin
+//            debugln('NewMakeAllLinks calling MakeLink() when Term is [' + Term + ']');
+            MakeLink(BlockOffset + Offset -1, UTF8length(Term), Term);                // MakeLink takes a Char Index !
+            TimerHouseKeeping.Enabled := False;
         end;
-        {$endif}
-        if (PText[Offset-2] in [' ', #10, #13, ',', '.']) and
-                        (PText[Offset + length(Term) -1] in [' ', #10, #13, ',', '.']) then
-            MakeLink(UTF8Length(PText, Offset) -1 -NumbCR, UTF8length(Term));
-        Offset := RelativePos(Term, PText, Offset + 1);
-        if EndScan > 0 then
-        	if Offset> EndScan then break;
+        Offset := UTF8Pos(Term, Buff, Offset + 1);
     end;
 end;
 
 
-procedure TEditBoxForm.CheckForHTTP(const PText : pchar; const StartS, EndS : longint);
 
-    function ValidWebLength(StartAt : integer) : integer;               // stupid !  Don't pass StartAt, use local vars, cheaper....
-    var
-        I : integer;
+procedure TEditBoxForm.CheckForHTTP(const Buff : string; const Offset : integer);
+var
+    http : integer;
+    Len : integer = 1;
+
+    // Returns the length of the char that b is first byte of
+{    function LengthUTF8Char(b : byte) : integer;
     begin
-        I := 7;                                                         // '7' being length of 'http://'
-        if not(PText[StartAt-2] in [' ', ',', #10, #13]) then exit(0);  // no leading whitespace
-        while PText[StartAt+I] <> '.' do begin
-            if (StartAt + I) > EndS then exit(0);                       // beyond our scan zone before dot
-            if PText[StartAt+I] in [' ', ',', #10, #13] then exit(0);   // hit whitespace before a dot
-            inc(I);
+      case b of
+                0..191   : Result := 1;
+                192..223 : Result := 2;
+                224..239 : Result := 3;
+                240..247 : Result := 4;
+      end;
+    end;   }
+
+
+    function ValidWebLength() : integer;
+    var
+        ADot : boolean = false;
+    begin  // we arrive here with http >= 1
+        Result := 7;
+        if (not((http = 1)
+            or (Buff[http-1] in [' ', ',', #10])))
+                then exit(0);                                            // invalid start
+        while (not(Buff[http+result] in [' ', ',', #10])) do begin       // that might be end of link
+            if (http+result) >= length(Buff) then exit(0);               // invalid end
+            if Buff[http+result] = '.' then ADot := True;
+            inc(result);                                                // next byte
         end;
-        inc(i);
-        if (PText[StartAt+I] in [' ', ',', #10, #13]) then exit(0);     // the dot is at the end !
-        while (not(PText[StartAt+I] in [' ', ',', #10, #13])) do begin
-            if (StartAt + I) > EndS then exit(0);                       // beyond our scan zone before whitespace
-            inc(I);
-        end;
-        if PText[StartAt+I-1] = '.' then
-            Result := I
-        else
-            Result := I+1;
+        if Buff[http+result-1] = '.' then exit(0);                // The dot was at the end.
+        if (result < 13) or (not ADot) then exit(0);
     end;
 
-var
-    http, Offset, NumbCR : integer;
-    Len : integer;
-    {$ifdef WINDOWS}EndP : PChar; {$endif}
 begin
-    OffSet := StartS;
-    http := pos('http', PText+Offset);
-    while (http <> 0) and ((http+Offset) < EndS) do begin
-        if (copy(PText, Offset+http+4, 3) = '://') or (copy(PText, Offset+http+4, 4) = 's://') then begin
-            Len := ValidWebLength(Offset+http);
+    http := pos('http', Buff);                              // note that http is in bytes, '1' means first byte of Buff
+    while (http <> 0) do begin
+        if (UTF8copy(Buff, http, 7) = 'http://') or (copy(Buff, http, 8) = 'https://') then begin
+            Len := ValidWebLength();                        // reads http and Buff
             if Len > 0 then begin
-                NumbCR := 0;
-                {$ifdef WINDOWS}
-                EndP := PText + Offset + http;
-                while EndP > PText do begin
-                    if EndP^ = #13 then inc(NumbCR);
-                    dec(EndP);
-                end;
-                {$endif}
-                MakeLink({copy(PText, Offset+http, Len), } UTF8Length(PText, OffSet + http)-1 -NumbCR, Len);
-//    debugln('CheckForHTTP Index = ' + inttostr(UTF8Length(PText, OffSet + http)-1 -NumbCR) + ' and Len = ' + inttostr(Len));
+//                debugln('CheckForHTTP Calling MakeLink() Offset=' + Offset.Tostring + '+' + (UTF8Length(pchar(Buff), http-1)).ToString + ' Len=' + (UTF8Length(pchar(Buff)+http, Len)).ToString);
+                MakeLink(OffSet + UTF8Length(pchar(Buff), http-1), UTF8Length(pchar(Buff)+http, Len), '');  // must pass char values, not byte
             end;
-            if len > 0 then
         end;
-        inc(Offset, http+1);
-        http := pos('http', PText + Offset);
+        http := UTF8pos('http', Buff, http+Len+1);          // find next one, +1 to ensure moving on
     end;
 end;
 
-// A function used just by the method below to sort list, longest names first.
-function NameLenSort(List: TStringList; Index1: Integer; Index2: Integer) : integer;
-begin
-  if length(List[Index1]) = length(List[Index2]) then result := 0
-  else
-      if length(List[Index1]) < length(List[Index2]) then result := 1
-      else result := -1;
-end;                                                 // ToDo : don't think we need this
 
-// ToDo : see the KMemo test that demonstrates getting all the text in a paragraph, faster !
-
-procedure TEditBoxForm.CheckForLinks(const StartScan : longint =1; EndScan : longint = 0);
+procedure TEditBoxForm.CheckForLinks(const FullBody : boolean);
 var
-    // Searchterm : ANSIstring = '';
-    //SearchTerm : shortstring;
-    Len, httpLen : longint;
-    T0, T1, T2, T3, T4, T5 : qword;
-    pText : pchar;
-    // NoteNameList : TstringList;
+    Content : string = '';
+    BuffOffset, LineNumb : integer;
+    EndScan : Integer = 0;
     i : integer;
-begin
-	if not Ready then exit();
+    {$ifdef LDEBUG}T1, T2, T3, T4, T5 : qword;{$endif}
 
-    // There is a thing called KMemo1.Blocks.SelectableLength but it returns the number of characters, not bytes, much faster though
-    // Note, we don't need Len if only doing http and its not whole note being checked (at startup). So, could save a bit ....
-
-    { We make a stringlist, populate it with all the Titles, then, assuming ShowInternalLink
-    we send a lowercase of each entry to MakeAllLinks (excluding this note title).  21mS-41mS with 2000 notes
-    So, instead, use TheMainNoteLister.NoteList[i] directly in a for loop.
-    }
-
-    // Tick := gettickcount64();
-//    NoteNameList := TStringList.Create;
-//    SearchForm.StartSearch();
-//    while SearchForm.NextNoteTitle(SearchTerm) do
-//        NoteNameList.Add(SearchTerm);
-//    NoteNameList.CustomSort(@NameLenSort);
-
-    T0 := gettickcount64();
-    Len := length(KMemo1.Blocks.text);              // saves 7mS by calling length() only once ! But still 8mS
-    if StartScan >= Len then exit;                  // prevent crash when memo almost empty
-    if EndScan > Len then EndScan := Len;
-    if EndScan = 0 then
-        httpLen := Len
-    else  httpLen := EndScan;
-    Ready := False;
-
-
-
-    KMemo1.Blocks.LockUpdate;
-    T1 := gettickcount64();
-    try
-
-        PText := PChar(lowerCase(KMemo1.Blocks.text));
-        T2 := gettickcount64();
-        if Sett.CheckShowExtLinks.Checked then          // OK, what are we here for ?
-            CheckForHTTP(PText, StartScan, httpLen);
-
-(*        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
-            for SearchTerm in NoteNameList do
-                if SearchTerm <> NoteTitle then begin            // My tests indicate lowercase() has neglible overhead and is UTF8 ok.
-                    //writeln('TEditBoxForm.CheckForLinks ' + SearchTerm);
-                    MakeAllLinks(PText, lowercase(SearchTerm), StartScan, EndScan);
-                end;
-        end;    *)
-        T3 := gettickcount64();
-
-// DumpKMemo('CheckForLinks');       OK
-
-        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
-            for i := 0 to TheMainNoteLister.NoteList.Count-1 do
-                if TheMainNoteLister.NoteList[i]^.TitleLow <> NoteTitle then
-                    MakeAllLinks(PText, TheMainNoteLister.NoteList[i]^.TitleLow, StartScan, EndScan);
-        end;
-        T4 := gettickcount64();
-//         DumpKMemo('CheckForLinks');    WRONG
-    finally
-//        NoteNameList.Free;
-        KMemo1.Blocks.UnLockUpdate;
+    // Puts one para of kMemo, starting at LineNumb, into Content. Ret Starting offset.
+    function GrabPara() : integer;
+    begin
+       Content := '';
+       Result := KMemo1.Blocks.LineStartIndex[LineNumb];
+       while LineNumb < KMemo1.Blocks.LineCount do begin
+           Content := Content + lowercase(Kmemo1.blocks.LineText[LineNumb]);
+           inc(LineNumb);
+           if Content[high(Content)] = #182 then begin          // Line returns with two char line ending
+               delete(Content, High(Content), 1);               // delete the 182
+               Content[High(Content)] := #10;                   // replace the 194
+               break;
+           end;
+       end;
     end;
-    T5 := gettickcount64();
-    debugln('CheckForLinks Len='+ inttostr(T1 - T0) + 'mS Low=' + inttostr(T2 - T1)
-                                + 'mS https=' + inttostr(T3 - T2)
-                                + 'mS Local=' + inttostr(T4 - T3)
-                                + 'mS Unlock='+ inttostr(T5 - T4) + 'mS' );   // 9-14mS, occasional flyer 35ms with 2K test note set
+
+    // Returns the 0 based UTF8 Char index to the start of the passed back St,
+    // So, the char 17 in St is actually char 17 + Return in KMemo, Note that Lines
+    // returns a string with a two char newline, 194 182 we replace that with
+    // a one char #10 to match the KMemo Selection Index.
+    function GrabContent() : integer;
+    var
+        Li : TKMemoLineIndex;
+        TSt : string;
+    begin
+        Li := Kmemo1.blocks.IndexToLineIndex(Kmemo1.Blocks.SelStart);// Thats the line index we are currently on
+        Result := Kmemo1.Blocks.SelStart - Kmemo1.blocks.LineStartIndex[Li];     // How far we are to the right of start of line, CHARACTERS
+        i := -1;
+        while (Li + i) > -1 do begin                                 // Zero is an acceptable line index
+            TSt := Kmemo1.blocks.LineText[LI+i];                     // Get the preceeding text
+            if TST[length(TST)] = #182 then begin                    // Replace the 2 byte Newline marker
+                delete(TSt, length(TST),1);
+                TST[length(TST)] := #10
+            end;
+            Content := lowercase(TSt) + Content;
+            Result := Result + UTF8length(TSt);
+            if Result > LinkScanRange then break;
+            dec(i);
+        end;
+        i := 0;
+        while (Li + i) < KMemo1.blocks.LineCount do begin           // Going forward
+            TSt := Kmemo1.blocks.LineText[LI+i];
+            if TST[length(TST)] = #182 then begin
+                delete(TSt, length(TST),1);
+                TST[length(TST)] := #10
+            end;
+            Content := Content + lowercase(TSt);
+            if (UTF8length(Content) - Result) > LinkScanRange then break;
+            inc(i);
+        end;
+        Result := Kmemo1.Blocks.SelStart - Result;
+        EndScan := UTF8Length(Content) + Result;
+    end;
+
+
+begin
+    {$ifdef LDEBUG}
+    AssignFile(MyLogFile, 'log.txt');
+    rewrite(MyLogFile);
+    TG1 := 0;
+    {$endif}
+	if not Ready then exit();
+    if (FullBody) then begin                // Scan and do links in whole note, no unlinking required
+        LineNumb := 0;
+        while LineNumb < KMemo1.Blocks.LineCount do begin
+            BuffOffset := GrabPara();       // Updates LineNumb, puts a para in Content, rets UTF8 count from start of Kmemo
+            KMemo1.Blocks.LockUpdate;
+            if Sett.ShowIntLinks then
+                for i := 0 to TheMainNoteLister.NoteList.Count-1 do
+                    if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin
+                        if length(Content) > 3 then begin                // Two significent char plus a newline
+                            {$ifdef LDEBUG}writeln(MyLogFile, 'FB ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
+//                            if pos('bgc 11', TheMainNoteLister.NoteList[i]^.TitleLow) > 0 then
+//                                debugln('CheckForLinks found a BGC 11 =========================' + TheMainNoteLister.NoteList[i]^.Title);
+                            MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
+                        end;
+                    end;
+            if Sett.CheckShowExtLinks.Checked then
+                if length(Content) > 12 then
+                    CheckForHTTP(Content, BuffOffset);
+            KMemo1.Blocks.UnLockUpdate;    // we lock and unlock frequenty here, slow but avoids "wind up"
+        end;                               // end of Fullbody Scan
+    end else begin                         // Just scan +/- LinkScanRange of current cursor
+        {$ifdef LDEBUG}T1 := gettickcount64();{$endif}
+        KMemo1.blocks.LockUpdate;
+        BuffOffset := GrabContent();                                    // Also sets EndScan
+        {$ifdef LDEBUG}T2 := gettickcount64();{$endif}
+        ClearNearLink(BuffOffset, EndScan);                             // Parameters in utf8char, not bytes
+        {$ifdef LDEBUG}T3 := gettickcount64();{$endif}
+        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
+            for i := 0 to TheMainNoteLister.NoteList.Count-1 do begin
+                  {$ifdef LDEBUG}writeln(MyLogFile, 'BV ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
+//                if pos('bgc', TheMainNoteLister.NoteList[i]^.TitleLow) > 0 then
+//                    debugln('CheckForLinks found a BGC =========================' + TheMainNoteLister.NoteList[i]^.Title);
+                if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin
+                    MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
+                end;
+            end;
+             TimerHouseKeeping.Enabled := False;
+        end;
+        {$ifdef LDEBUG}T4  := gettickcount64();{$endif}
+        if Sett.CheckShowExtLinks.Checked then
+                CheckForHTTP(Content, BuffOffset);                           // Mark any unmarked web links
+        KMemo1.blocks.UnLockUpdate;
+        {$ifdef LDEBUG}T5  := gettickcount64();
+        debugln('CheckForLinks Timing of MakeLink TG1=' + TG1.tostring + ' ' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
+        {$endif}
+    end;
+
+    {$ifdef LDEBUG}CloseFile(MyLogFile);{$endif}
     Ready := True;
 end;
 
@@ -2328,87 +2401,79 @@ var
     Existing : string;
     ChangedOne : boolean = false;
     Blk : TKMemoTextBlock;
+    FontAtt : FontLimitedAttrib;
 
-    {$ifdef FANCYMAKELINK}
     function CanMergeBlocks(LinkBlock, TextBlock : integer) : boolean;  // Merges two blocks IFF they are same sort, font, size etc
     begin
-        result :=
+        if (KMemo1.Blocks.Items[TextBlock].ClassNameIs('TKMemoTextBlock')
+            or KMemo1.Blocks.Items[TextBlock].ClassNameIs('TKMemoHyperlink'))
+        and (KMemo1.Blocks.Items[LinkBlock].ClassNameIs('TKMemoTextBlock')
+            or KMemo1.Blocks.Items[LinkBlock].ClassNameIs('TKMemoHyperlink'))
+        then
+            result :=
                 ((LinkBlock) < KMemo1.Blocks.count) and
                 ((TextBlock) < KMemo1.Blocks.count) and
-                KMemo1.Blocks.Items[TextBlock].ClassNameIs('TKMemoTextBlock') and
-                KMemo1.Blocks.Items[LinkBlock].ClassNameIs('TKMemoTextBlock') and
                 (TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Size =
                     TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Size) and
                 ((fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Style) =
                     (fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Style))
-    // Must match fontsize, bold, italic
-    end; {$endif}
+         else Result := False;                                                  // ie cannot merge !
+    end;
 
 begin
+    if not KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
+        debugln('ERROR UnLink pointed at "not a Link" ');
+        exit(StartBlock);
+    end;
 
-   Result := StartBlock;
-   {$ifndef FANCYMAKELINK}
-   Existing := KMemo1.Blocks.Items[StartBlock].Text;
-   Kmemo1.Blocks.Delete(StartBlock);
-   KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
-   exit;
-   {$endif}
-   // ToDo : decide just what to do here.
-   {As done here, most code in this method is redundent. A link takes on the attributes
-   of the text to the left or default if start of a line. The other code here would, if
-   allowed, try and merge a link's text when the link becomes invalid and set that text
-   to default. I think taking attributes from left make more sense. It also fractures
-   text in lots of blocks but a reload fixes that. If we opt for this simple model,
-   might also remove some of the code from MakeLink thats tries to override TK's default.
-   David October 2022
-   }
-
-
-   {$ifdef FANCYMAKELINK}
-   //if KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoTextBlock') then begin
+    // In the first two cases here, link text is shown with attributes of block it was merged into
    if CanMergeBlocks(StartBlock, StartBlock-1) then begin
-        Existing := KMemo1.Blocks.Items[StartBlock-1].Text + KMemo1.Blocks.Items[StartBlock].Text;
+        Existing := KMemo1.Blocks.Items[StartBlock].Text;
+        Kmemo1.Blocks.Delete(StartBlock);
         dec(StartBlock);
-        Kmemo1.Blocks.Delete(StartBlock);
-        Kmemo1.Blocks.Delete(StartBlock);
-        KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+        TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).Text := KMemo1.Blocks.Items[StartBlock].Text + Existing;
         ChangedOne := True;
-        dec(Result);                                                            // only necessary for previous
-writeln('TEditBoxForm.UnlinkBlock A cleared block with text = ' + Existing + ' at ' + inttostr(StartBlock));
+        {$ifdef LDEBUG}
+        debugln('UnLinkBlock Merge Left StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
+        {$endif}
    end;
-   //if ((StartBlock+1) < KMemo1.Blocks.Count)                                    // still have one there
-   //             and KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoTextBlock') then begin
+
    if CanMergeBlocks(StartBlock, StartBlock+1) then begin
-        Existing := KMemo1.Blocks.Items[StartBlock].Text + KMemo1.Blocks.Items[StartBlock+1].Text;
+        Existing := KMemo1.Blocks.Items[StartBlock].Text;
         Kmemo1.Blocks.Delete(StartBlock);
-        Kmemo1.Blocks.Delete(StartBlock);
-        KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
-writeln('TEditBoxForm.UnlinkBlock B cleared block with text = ' + Existing + ' at ' + inttostr(StartBlock));
+        TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).Text := Existing + KMemo1.Blocks.Items[StartBlock].Text;
         ChangedOne := True;
+        {$ifdef LDEBUG}
+        debugln('UnLinkBlock Merge Right StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
+        {$endif}
    end;
 
    if not changedOne then begin
         Existing := KMemo1.Blocks.Items[StartBlock].Text;
+        SaveLimitedAttributes(StartBlock, FontAtt);
         Kmemo1.Blocks.Delete(StartBlock);
         Blk := KMemo1.Blocks.AddTextBlock(Existing, StartBlock);
+        RestoreLimitedAttributes(StartBlock, FontAtt);
         Blk.TextStyle.Font.Style := Blk.TextStyle.Font.Style - [fsBold, fsItalic];
         Blk.TextStyle.Font.Size := Sett.FontNormal;
-writeln('TEditBoxForm.UnlinkBlock C cleared block with text = ' + Existing + ' at ' + inttostr(StartBlock));
-   end;    {$endif}
+        {$ifdef LDEBUG}
+        debugln('UnLinkBlock No Merge StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
+        {$endif}
+   end;
+   Result := StartBlock;           // only changed with merge left
 end;
 
-// May 2022 - no longer try and leave valid local links in place.
-procedure TEditBoxForm.ClearNearLink(const StartS, EndS : integer); //CurrentPos : longint);
+
+procedure TEditBoxForm.ClearNearLink(const StartS, EndS : integer); inline;
 var
     Blar, StartBlock, EndBlock : longint;
     LinkText  : ANSIString;
 
-    function ValidWebLink() : boolean;                  // returns true if LinkText is valid web address
+    function ValidWebLink() : boolean;     // returns true if LinkText is valid web address
     var
         DotSpot : integer;
         Str : String;
     begin
-        //writeln('Scanning for web address ' + LinkText);
         if pos(' ', LinkText) > 0 then exit(false);
         if (copy(LinkText,1, 8) <> 'https://') and (copy(LinkText, 1, 7) <> 'http://') then exit(false);
         Str := TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text;
@@ -2421,18 +2486,27 @@ var
         if (DotSpot < 8) or (DotSpot > length(LinkText)-1) then exit(false);
         if LinkText.EndsWith('.') then exit(false);
         result := true;
-        //writeln(' Valid http or https addess');
     end;
 
-
+    function ValidLocalLink() : boolean;
+    begin
+        if SingleNoteMode then exit(False);
+        if not TheMainNoteLister.IsThisaTitle(LinkText) then exit(False);
+        Result :=
+            KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoParagraph')
+                or TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text.EndsWith(' ');
+        Result := Result
+            and (KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoParagraph')
+                or (TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock+1]).Text[1]
+                    in [' ', ',']));
+    end;
 
 begin
     Ready := False;
-    StartBlock := KMemo1.Blocks.IndexToBlockIndex(StartS, Blar);
     EndBlock := KMemo1.Blocks.IndexToBlockIndex(EndS, Blar);
+    StartBlock := KMemo1.Blocks.IndexToBlockIndex(StartS, Blar);
     if StartBlock < 2 then StartBlock := 2;
     if EndBlock > Kmemo1.Blocks.Count then EndBlock := Kmemo1.Blocks.Count;
-    KMemo1.Blocks.LockUpdate;
     try
     while StartBlock < EndBlock do begin
         if TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Size = Sett.FontTitle then begin
@@ -2440,28 +2514,26 @@ begin
             continue;
         end;
         if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
-            LinkText := Kmemo1.Blocks.Items[StartBlock].Text;
-            // if its not a valid link, remove it. But don't check for Title links in SingleNoteMode
-            // don't remove it if its a valid web link  or  ! SingleNotemode and its a valid local link.
-            // No, we now remove all local links in range, too hard to tell where they came from otherwise.
-            if not (ValidWebLink()) then begin
-            //if not (ValidWebLink() or (not SingleNoteMode and SearchForm.IsThisaTitle(LinkText))) then begin
+            LinkText := lowercase(Kmemo1.Blocks.Items[StartBlock].Text);                              // ! trim()
+            // Only if its not a valid link, remove it. But don't check for Local links in SingleNoteMode
+            if not (ValidWebLink() or ValidLocalLink()) then begin
                 StartBlock := UnLinkBlock(StartBlock);
                 if EndBlock > Kmemo1.Blocks.Count then EndBlock := Kmemo1.Blocks.Count;
             end;
         end else begin
             // Must check here that its not been subject to the copying of a links colour and underline
-            // we know its not a link and we know its not title. So, check color ...
-            if TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Color = Sett.TitleColour then begin    // we set links to title colour
-                TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Style
-                    := TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Style - [fsUnderLine];
-                TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Color := Sett.TextColour;
-            end;
+            // we know its not a link and we know its not title. So, if TextBlock, check color ...
+            with TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]) do
+                if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoTextBlock')  // Only an issue with TextBlocks
+                    and (TextStyle.Font.Color = Sett.TitleColour) then begin    // we set links to title colour
+                    TextStyle.Font.Style
+                        := TextStyle.Font.Style - [fsUnderLine];
+                    TextStyle.Font.Color := Sett.TextColour;
+                end;
         end;
         inc(StartBlock);
     end;
     finally
-        KMemo1.Blocks.UnlockUpdate;
         Ready := True;
     end;
 end;
@@ -2506,17 +2578,13 @@ end;
 
 procedure TEditBoxForm.DoHousekeeping();
 var
-    CurserPos, SelLen, StartScan, EndScan, BlockNo, Blar : longint;
+    CurserPos, SelLen, BlockNo, Blar : longint;
     TempTitle : ANSIString;
-    TS1, TS2, TS3, TS4 : qword;           // Temp time stamping to test speed
+    TS1, TS2 {, TS3, TS4} : qword;           // Temp time stamping to test speed
 begin
     if KMemo1.ReadOnly then exit();
     CurserPos := KMemo1.RealSelStart;
     SelLen := KMemo1.RealSelLength;
-    StartScan := CurserPos - LinkScanRange;
-    if StartScan < length(Caption) then StartScan := length(Caption);
-    EndScan := CurserPos + LinkScanRange;
-    if EndScan > length(KMemo1.Text) then EndScan := length(KMemo1.Text);   // Danger - should be KMemo1.Blocks.Text !!!
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
     if ((BlocksInTitle + 10) > BlockNo) then begin
           // We don't check title if user is not close to it.
@@ -2537,28 +2605,14 @@ begin
     end;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
         TS1 := gettickcount64();
-        //KMemo1.blocks.LockUpdate; // Locking here helps, saves 70mS out of 240mS
-  	    ClearNearLink(StartScan, EndScan {CurserPos});
+        CheckForLinks(False);                   // does its own locking
+        TimerHouseKeeping.Enabled := False;
         TS2 := gettickcount64();
-        CheckForLinks(StartScan, EndScan);
-        //KMemo1.blocks.UnLockUpdate;
-        //TimerHouseKeeping.Enabled := False;        // ???
-        TS3 := gettickcount64();
-        debugln('DoHousekeeping Clear ' + inttostr(TS2-TS1) + 'ms  Check ' + inttostr(TS3-TS2) + 'mS');
+        debugln('------------- DoHousekeeping Update Links ' + inttostr(TS2-TS1) + 'ms');
+//        DumpKMemo('Housekeeping');
     end;
     KMemo1.SelStart := CurserPos;
     KMemo1.SelLength := SelLen;
-    //Debugln('Housekeeper called');
-
-
-  { Some notes about timing, 'medium' powered Linux laptop, 20k note.
-    Checks and changes to Title - less than mS
-    ClearNearLinks (none present) - less than mS
-    CheckForLinks (none present) - 180mS, thats mostly used up by MakeLinks()
-    	but length(KMemo1.Blocks.text) needs about 7mS too.
-
-    Can do better !
-  }
 end;
 
 procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
@@ -3251,12 +3305,13 @@ begin
     KMemo1.Blocks.LockUpdate;
     KMemo1.Clear;
     Loader.LoadFile(FileName, KMemo1);                      // 140mS  (197mS GTK2)
-    KMemo1.Blocks.UnlockUpdate;
+    //KMemo1.Blocks.UnlockUpdate;
     Createdate := Loader.CreateDate;
     Ready := true;
     Caption := Loader.Title;
-    if Sett.ShowIntLinks or Sett.CheckShowExtLinks.checked then
-    	CheckForLinks();                     		         // 12mS (14ms GTK2)
+//    if Sett.ShowIntLinks or Sett.CheckShowExtLinks.checked then
+//    	CheckForLinks(True);                  		         // 12mS (14ms GTK2)
+    KMemo1.Blocks.UnlockUpdate;                              // moved down from 6 lines up to cover CheckForLinks
     Left := Loader.X;
     Top := Loader.Y;
     Height := Loader.Height;                                 // 84mS (133mS GTK2) Height and Widt                                      h
