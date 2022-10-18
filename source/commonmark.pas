@@ -2,7 +2,7 @@ unit commonmark;
 
 {$mode objfpc}{$H+}
 
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -39,6 +39,7 @@ unit commonmark;
     2021/08/19  Rewrite ProcessMarkup to use ST.Replace() approach
     2021/09/28  Enabled multilevel bullets
     2021/10/17  Rewrite most of monospace code.
+    2022/10/17  Remove underline tags around Title when exporting, confuses Importer.
 }
 
 interface
@@ -92,17 +93,20 @@ begin
                    StL.LoadFromFile(NotesDir + ID + '.note')
             else exit(False);
         // OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
+debugln('TExportCommon.GetMDcontent 1 Firstline = ' + STL[0]);
         Normaliser := TNoteNormaliser.Create;
+
         Normaliser.NormaliseList(StL);
         Normaliser.Free;
         StL.Delete(0);
         STL.Insert(0, GetTitleFromFFN(NotesDir + ID + '.note', False));
+debugln('TExportCommon.GetMDcontent 2 Firstline = ' + STL[0]);
         RemoveNoteMetaData(STL);
-
+debugln('TExportCommon.GetMDcontent 3 Firstline = ' + STL[0]);
         ProcessHeadings(StL);                                    // Makes Title big too !
-
+debugln('TExportCommon.GetMDcontent 4 Firstline = ' + STL[0]);
         ProcessMarkUp(StL);
-
+debugln('TExportCommon.GetMDcontent 5 Firstline = ' + STL[0]);
 //        ConvertMonoBlocks(STL);
         result := (Stl.Count > 2);
 end;
@@ -216,6 +220,9 @@ var
     PosI, L : integer;
     AddedHeading : Boolean = false;
 begin
+    // The Title will be wrapped with underline tags, upsets import, get rid of them
+    STL[0] := (STL[0]).Replace('<underline>', '');
+    STL[0] := (STL[0]).Replace('</underline>', '');
     // We arrive here with a clean title in first st, lets mark it up as really big.
     StL.Insert(1, '===========');
     repeat

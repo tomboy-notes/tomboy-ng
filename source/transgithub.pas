@@ -1,6 +1,6 @@
 unit transgithub;
 {
-    Copyright (C) 2017-2020 David Bannon
+    Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -69,6 +69,7 @@ HISTORY :
     2021/09/20 - Changed to using JSONTools, tidier, safer, easier to read code.
     2021/09/25 - fixed how notebook lists are stored in RemoteNotes, as JSON array, not JSON data
     2021/09/27 - Implement selective sync.
+    2022/10/18 - Fix markup around readme warning
 }
 
 
@@ -786,7 +787,7 @@ begin
             end;
         end;
         Readme.append('');
-        Readme.append('*** ' + rsMetaDirWarning + ' ***');
+        Readme.append('***' + rsMetaDirWarning + '***');
         Manifest.Append('  }'#10 + '}'#10);
         for PGit in RemoteNotes do                      // Put all the SHAs we know about into RemoteMetaData (for local manifest);
             if PGit^.Sha <> '' then begin

@@ -2,7 +2,7 @@ unit cli;
 
 {$mode objfpc}{$H+}
 
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -11,7 +11,7 @@ unit cli;
     ------------------
 
     This unit is active before the GUI section and may decide GUI is not needed.
-    Please see included License file.
+    Handles command line switches, imports and comms with an existing instance.
 
     History
     2020/06/18  Remove unnecessary debug line.
@@ -20,6 +20,7 @@ unit cli;
     2022/01/13  When importing note, check if FFileName starts with '~'
     2022/04/07  Tidy up options.
     2022/05/03  Add unix username to IPC pipe.
+    2022/10/18  Short switch for import MD is -m
 }
 
 interface
@@ -195,7 +196,7 @@ var
     Importer : TImportNotes;
 begin
     if MD then
-        FFileName := Application.GetOptionValue('t', 'import-md')
+        FFileName := Application.GetOptionValue('m', 'import-md')
     else FFileName := Application.GetOptionValue('t', 'import-txt');
     Importer := TImportNotes.Create;
     try

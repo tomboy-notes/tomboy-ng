@@ -1108,14 +1108,17 @@ begin
 end;
 
 procedure TEditBoxForm.FormActivate(Sender: TObject);
-var
-    Tick, Tock : integer;
+{$ifdef LDEBUG}var
+    Tick, Tock : integer; {$endif}
 begin
-    if not HaveSeenOnActivate then begin;
-        Tick := gettickcount64();
+    if not HaveSeenOnActivate then begin;       // Only the first Activate
+        Ready := False;
+        {$ifdef LDEBUG}Tick := gettickcount64();{$endif}
         CheckForLinks(True);
+        {$ifdef LDEBUG}
         Tock := gettickcount64();
         debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(HaveSeenOnActivate, true));
+        {$endif}
         TimerHouseKeeping.Enabled := False;
         if SingleNoteMode then begin
             SpeedbuttonSearch.Enabled := False;
@@ -1123,7 +1126,8 @@ begin
             MenuItemSync.Enabled := False;
             SpeedButtonNotebook.Enabled := False;
         end;
-        HaveSeenOnActivate := True;
+        HaveSeenOnActivate := True;             // ToDo : a regional that really needs to be localised
+        Ready := True;
     end;
 end;
 
@@ -1768,31 +1772,30 @@ procedure TEditBoxForm.FormShow(Sender: TObject);
 var
     ItsANewNote : boolean = false;
 begin
-    if Ready then exit;                             // its a "re-show" event. Already have a note loaded.
+    if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
+    // Ready := False;                             // But it must be false aready, it was created FALSE
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     {$ifdef LCLGTK2}
-        //  if SingleNoteFileName = '' then begin // note, in singlenotemode it triggers a GTK2 Assertion
-        KMemo1.ExecuteCommand(ecPaste);   // this to deal with a "first copy" issue on Linux.
-        // above line generates a gtk2 assertion but only in single note mode.  I suspect
-        // thats because its a modal form and in normal use, this window is not modal.
-        // If we don't make above call in SNM, we get the same assertion sooner or later, as soon
-        // as we select some text so may as well get it over with. No need to do it in Qt5, Win, Mac
+    KMemo1.ExecuteCommand(ecPaste);   // this to deal with a "first copy" issue on Linux.
+    // above line generates a gtk2 assertion but only in single note mode.  I suspect
+    // thats because its a modal form and in normal use, this window is not modal.
+    // If we don't make above call in SNM, we get the same assertion sooner or later, as soon
+    // as we select some text so may as well get it over with. No need to do it in Qt5, Win, Mac
     {$endif}
     Kmemo1.Clear;
     if SingleNoteMode then
-            ItsANewNote := LoadSingleNote()    // Might not be Tomboy XML format
+            ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
     else
-        if NoteFileName = '' then begin		// might be a new note or a new note from Link
+        if NoteFileName = '' then begin		    // might be a new note or a new note from Link
             if NoteTitle = '' then              // New Note
 			    NoteTitle := NewNoteTitle();
             ItsANewNote := True;
 	    end else begin
             Caption := NoteFileName;
-     	    ImportNote(NoteFileName);		// also sets Caption and Createdate
+     	    ImportNote(NoteFileName);		    // also sets Caption and Createdate
         end;
-    //debugln('OK, back in EditBox.OnShow');
     if ItsANewNote then begin
         left := (screen.Width div 2) - (width div 2);
         top := (screen.Height div 2) - (height div 2);
@@ -1806,14 +1809,12 @@ begin
             Kmemo1.Blocks.DeleteEOL(0);
         KMemo1.Blocks.AddTextBlock(NoteTitle, 0);
 	end;
-    Ready := true;
+
     MarkTitle();
-    KMemo1.SelStart := KMemo1.Text.Length;  // set curser pos to end
+    KMemo1.SelStart := KMemo1.Text.Length;      // set curser pos to end
     KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
-    Dirty := False;
-
-{    if SearchedTerm <> '' then begin
+    {    if SearchedTerm <> '' then begin
         //FindDialog1.FindText:= SearchedTerm;
         EditFind.Text := SearchedTerm;
         FindIt(SearchedTerm, True, False)
@@ -1831,6 +1832,8 @@ begin
     KMemo1.Colors.BkGnd:= Sett.BackGndColour;
     Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
     KMemo1.Blocks.UnLockUpdate;
+    Ready := true;
+    Dirty := False;
 //    if SingleNoteMode then
 //        SearchForm.MoveWindowHere(NoteTitle);
 end;
@@ -1861,7 +1864,7 @@ begin
         ButtMainTBMenu.Enabled := false;
     end;
     //PanelFind.Visible := False;
-    PanelFind.Height := 1;                // That is, hide it for now
+    PanelFind.Height := 1;                      // That is, hide it for now
     PanelFind.Caption := '';
     {$ifdef WINDOWS}PanelFind.Color := Sett.AltColour;{$endif}    // so we see black text, windows cannot change some colours !
     {$ifdef DARWIN}
@@ -1871,9 +1874,6 @@ begin
     SpeedRight.Hint := rsFindNavRightHint;
     SpeedLeft.Hint := rsFindNavLeftHint;
     {$endif}
-(*    EditFind.Hint := {$ifdef DARWIN}        // Maybe a bit too much ?
-                        rsFindNavRightHintMac + ' ' + rsFindNavLeftHint {$else}
-                        rsFindNavRightHint + ' ' + rsFindNavLeftHint{$endif};        *)
     LabelFindCount.caption := '';
     EditFind.Text := rsMenuSearch;
     {$ifdef DARWIN}
@@ -1957,24 +1957,20 @@ end;
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
 var
     BlockNo : longint = 0;
-    //TestSt : ANSIString;
 begin
     Result := False;
     TheTitle := '';
     while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
-	// while Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoTextBlock' do begin
         TheTitle := TheTitle + Kmemo1.Blocks.Items[BlockNo].Text;
        	inc(BlockNo);
-        //TestSt := Kmemo1.Blocks.Items[BlockNo].ClassName;
         if BlockNo >= Kmemo1.Blocks.Count then break;
-    end;                            // Stopped at first TKMemoParagraph if it exists.
+    end;
     if TheTitle <> '' then Result := True;
 end;
 
 procedure TEditBoxForm.MarkTitle();
 var
     BlockNo : integer = 0;
-    //AtTheEnd : Boolean = False;
     EndBlock, blar : integer;
 begin
   	if Not Ready then exit();
@@ -1993,7 +1989,6 @@ begin
             end;
            	inc(BlockNo);
             if BlockNo >= Kmemo1.Blocks.Count then begin
-                //AtTheEnd := True;
                 break;
             end;
        	end;                                // Stopped at first TKMemoParagraph if it exists.
@@ -2003,12 +1998,11 @@ begin
         EndBlock := KMemo1.Blocks.IndexToBlockIndex(KMemo1.Selstart, Blar);
         while (EndBlock < 10) and (EndBlock <  (KMemo1.Blocks.Count -2)) do inc(EndBlock);    // in case user has smeared several lines down.
         while EndBlock > BlocksInTitle do begin
-            if {KMemo1.Blocks.Items[EndBlock].ClassNameIs('TKMemoTextBlock') and }
-                (TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size = Sett.FontTitle) then begin
-                    TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size := Sett.FontNormal;
-                    TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Color := Sett.TextColour;
-                    TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Style := [];
-                end;
+            if (TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size = Sett.FontTitle) then begin
+                TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Size := Sett.FontNormal;
+                TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Color := Sett.TextColour;
+                TKMemoTextBlock(Kmemo1.Blocks.Items[EndBlock]).TextStyle.Font.Style := [];
+            end;
             dec(EndBlock);
         end;
 	finally
@@ -2343,13 +2337,12 @@ begin
     rewrite(MyLogFile);
     TG1 := 0;
     {$endif}
-	if not Ready then exit();
     if (FullBody) then begin                // Scan and do links in whole note, no unlinking required
         LineNumb := 0;
         while LineNumb < KMemo1.Blocks.LineCount do begin
             BuffOffset := GrabPara();       // Updates LineNumb, puts a para in Content, rets UTF8 count from start of Kmemo
             KMemo1.Blocks.LockUpdate;
-            if Sett.ShowIntLinks then
+            if Sett.ShowIntLinks and (not SingleNoteMode) then
                 for i := 0 to TheMainNoteLister.NoteList.Count-1 do
                     if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin
                         if length(Content) > 3 then begin                // Two significent char plus a newline
@@ -2390,9 +2383,7 @@ begin
         debugln('CheckForLinks Timing of MakeLink TG1=' + TG1.tostring + ' ' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
         {$endif}
     end;
-
     {$ifdef LDEBUG}CloseFile(MyLogFile);{$endif}
-    Ready := True;
 end;
 
 
@@ -2580,14 +2571,15 @@ procedure TEditBoxForm.DoHousekeeping();
 var
     CurserPos, SelLen, BlockNo, Blar : longint;
     TempTitle : ANSIString;
-    TS1, TS2 {, TS3, TS4} : qword;           // Temp time stamping to test speed
+    {$ifdef LDEBUG}TS1, TS2  : qword;{$endif}
 begin
     if KMemo1.ReadOnly then exit();
+    Ready := False;
     CurserPos := KMemo1.RealSelStart;
     SelLen := KMemo1.RealSelLength;
     BlockNo := KMemo1.Blocks.IndexToBlockIndex(CurserPos, Blar);
     if ((BlocksInTitle + 10) > BlockNo) then begin
-          // We don't check title if user is not close to it.
+        // We don't check title if user is not close to it.
   	    MarkTitle();
   	    GetTitle(TempTitle);
         if not ((TempTitle = caption) or ('* ' + TempTitle = Caption)) then
@@ -2604,15 +2596,15 @@ begin
   	        exit();
     end;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
-        TS1 := gettickcount64();
+        {$ifdef LDEBUG}TS1 := gettickcount64();{$endif}
         CheckForLinks(False);                   // does its own locking
         TimerHouseKeeping.Enabled := False;
-        TS2 := gettickcount64();
-        debugln('------------- DoHousekeeping Update Links ' + inttostr(TS2-TS1) + 'ms');
-//        DumpKMemo('Housekeeping');
+        {$ifdef LDEBUG}TS2 := gettickcount64();
+        debugln('------------- DoHousekeeping Update Links ' + inttostr(TS2-TS1) + 'ms');{$endif}
     end;
     KMemo1.SelStart := CurserPos;
     KMemo1.SelLength := SelLen;
+    Ready := True;
 end;
 
 procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
@@ -2868,7 +2860,6 @@ end;
 procedure TEditBoxForm.KMemo1Change(Sender: TObject);
 begin
     if not Ready then exit();           // don't do any of this while starting up.
-    //if not Dirty then TimerSave.Enabled := true;
     MarkDirty();
     TimerHouseKeeping.Enabled := False;
     TimerHouseKeeping.Enabled := True;
@@ -3307,7 +3298,7 @@ begin
     Loader.LoadFile(FileName, KMemo1);                      // 140mS  (197mS GTK2)
     //KMemo1.Blocks.UnlockUpdate;
     Createdate := Loader.CreateDate;
-    Ready := true;
+    //Ready := true;
     Caption := Loader.Title;
 //    if Sett.ShowIntLinks or Sett.CheckShowExtLinks.checked then
 //    	CheckForLinks(True);                  		         // 12mS (14ms GTK2)
