@@ -1973,10 +1973,10 @@ var
     BlockNo : integer = 0;
     EndBlock, blar : integer;
 begin
-  	if Not Ready then exit();
+//  	if Not Ready then exit();               // ToDo : what is effect of disabling this ?
     { if there is more than one block, and the first, [0], is a para, delete it.}
     if KMemo1.Blocks.Count <= 2 then exit();	// Don't try to mark title until more blocks.
-    Ready := false;
+//    Ready := false;                           // ToDo : what is effect of disabling this ?
     Kmemo1.Blocks.LockUpdate;
     if Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoParagraph' then
           Kmemo1.Blocks.DeleteEOL(0);
@@ -2007,7 +2007,7 @@ begin
         end;
 	finally
 		KMemo1.Blocks.UnLockUpdate;
-    	Ready := True;
+//    	Ready := True;
 	end;
 end;
 

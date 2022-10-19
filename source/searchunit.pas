@@ -894,7 +894,12 @@ begin
                     end;
         mtAbout :    MainForm.ShowAbout();
         mtSync :     if Sett.ValidSync then Sett.Synchronise()
-                     else showmessage(rsSetupSyncFirst);
+                     else begin
+                         showmessage(rsSetupSyncFirst);
+                         Sett.PageControl1.ActivePage := Sett.TabSync;
+                         Sett.EnsureVisible(true);
+                         Sett.Show;
+                     end;
         mtSettings : begin
                             MoveWindowHere(Sett.Caption);
                             Sett.EnsureVisible(true);
