@@ -93,21 +93,14 @@ begin
                    StL.LoadFromFile(NotesDir + ID + '.note')
             else exit(False);
         // OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
-debugln('TExportCommon.GetMDcontent 1 Firstline = ' + STL[0]);
         Normaliser := TNoteNormaliser.Create;
-
         Normaliser.NormaliseList(StL);
         Normaliser.Free;
         StL.Delete(0);
         STL.Insert(0, GetTitleFromFFN(NotesDir + ID + '.note', False));
-debugln('TExportCommon.GetMDcontent 2 Firstline = ' + STL[0]);
         RemoveNoteMetaData(STL);
-debugln('TExportCommon.GetMDcontent 3 Firstline = ' + STL[0]);
         ProcessHeadings(StL);                                    // Makes Title big too !
-debugln('TExportCommon.GetMDcontent 4 Firstline = ' + STL[0]);
         ProcessMarkUp(StL);
-debugln('TExportCommon.GetMDcontent 5 Firstline = ' + STL[0]);
-//        ConvertMonoBlocks(STL);
         result := (Stl.Count > 2);
 end;
 
@@ -216,14 +209,14 @@ end;
 // This version uses the CommonMark model of noting heading with ---- ===== on line underneath
 procedure TExportCommon.ProcessHeadings(StL : TStringList);
 var
-    i : integer = 1;    // Skip first two lines because they are title and the ==== markup.
+    i : integer = 1;
     PosI, L : integer;
     AddedHeading : Boolean = false;
 begin
     // The Title will be wrapped with underline tags, upsets import, get rid of them
     STL[0] := (STL[0]).Replace('<underline>', '');
     STL[0] := (STL[0]).Replace('</underline>', '');
-    // We arrive here with a clean title in first st, lets mark it up as really big.
+    // We now have a clean title in first st, lets mark it up as really big.
     StL.Insert(1, '===========');
     repeat
         inc(i);
