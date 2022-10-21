@@ -53,7 +53,7 @@ Firstly, consider using the PPA (above). Otherwise, generally, all versions work
 <list><list-item dir="ltr"><list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  Difficult to make work with Qt5.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">20.04 Your choice between  [64bit QT]($$DEB64QT)  which needs the Qt5 libraries or the [64bit]($$DEB64) which needs only a couple of extra things.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">22.04 As above but the QT5 version has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme)</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">22.04 As above but the QT5 version has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme). But the good news is that U22.04 and newer using Gnome now display a System Tray Icon "out of the box".</list-item></list></list-item></list>
 
 On Ubuntu, you can install the appropriate package in one of several way  -
 
@@ -133,8 +133,8 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2022-09-27T15:01:54.5014547+10:00</last-change-date>
-  <last-metadata-change-date>2022-09-27T15:01:54.5014547+10:00</last-metadata-change-date>
+  <last-change-date>2022-10-21T19:36:11.0955123+11:00</last-change-date>
+  <last-metadata-change-date>2022-10-21T19:36:11.0955123+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

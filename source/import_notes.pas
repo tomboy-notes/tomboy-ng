@@ -74,6 +74,7 @@ type
         FirstLineIsTitle : boolean;     // if true, first line of note becomes title, default is filename will become title
         KeepFileName : boolean;         // The note will have same base name as import.
         NoteBook : string;              // Empty is OK, plain text notebook name or JSON array (including [])
+        NewFileName : string;           // Only valid for single file import, will have ID.note of imported note.
         function Execute(): integer;    // you know all you need, go do it.
         // Alt action for this Unit, converts a StringList that contains
         // markdown to a Note, no file i/o happens, note is returned in
@@ -417,7 +418,7 @@ function TImportNotes.ImportFile(FullFileName: string): boolean;
 var
   Content : TStringList;
   GUID : TGUID;
-  NewFileName : string;
+  //NewFileName : string;
   Title : string = '';
   Index : integer = 0;
 begin
@@ -448,6 +449,7 @@ begin
                 if copy(Title, 1, 2) = '## ' then delete(Title, 1, 3);
                 if copy(Title, 1, 2) = '### ' then delete(Title, 1, 4);
             end;
+
             if Title = '' then
                 Title := 'Unknown Title';
             ProcessPlain(Content, Title);
@@ -456,6 +458,7 @@ begin
                 NewFileName := ExtractFileNameOnly(FullFileName) + '.note'
             else NewFileName := copy(GUIDToString(GUID), 2, 36) + '.note';
             Content.SaveToFile(AppendPathDelim(DestinationDir) + NewFileName);
+            //NewSimpleFileName := NewFileName;
         finally
             freeandnil(Content);
         end;

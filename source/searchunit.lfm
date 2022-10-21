@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 555
+  Left = 594
   Height = 401
-  Top = 493
+  Top = 234
   Width = 824
   ActiveControl = EditSearch
   Caption = 'tomboy-ng_Search'
@@ -20,10 +20,12 @@ object SearchForm: TSearchForm
   object EditSearch: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = Owner
+    AnchorSideBottom.Control = ButtonMenu
     AnchorSideBottom.Side = asrBottom
     Left = 126
     Height = 32
-    Top = 3
+    Top = 0
     Width = 222
     Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
@@ -38,18 +40,19 @@ object SearchForm: TSearchForm
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = ButtonMenu
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 0
-    Height = 342
-    Top = 36
+    Height = 345
+    Top = 33
     Width = 824
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 1
     Caption = 'Panel1'
-    ClientHeight = 342
+    ClientHeight = 345
     ClientWidth = 824
     TabOrder = 1
     object Splitter1: TSplitter
@@ -57,7 +60,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 233
-      Height = 340
+      Height = 343
       Top = 1
       Width = 5
       Align = alNone
@@ -87,7 +90,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 1
-      Height = 277
+      Height = 280
       Hint = 'Right Click to manage Notebooks'
       Top = 64
       Width = 232
@@ -126,7 +129,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 241
-      Height = 340
+      Height = 343
       Top = 1
       Width = 582
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -161,14 +164,12 @@ object SearchForm: TSearchForm
   end
   object ButtonMenu: TSpeedButton
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = EditSearch
-    AnchorSideBottom.Control = EditSearch
+    AnchorSideTop.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 3
     Height = 32
-    Top = 3
+    Top = 0
     Width = 120
-    Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 3
     BorderSpacing.Right = 3
     Caption = 'Menu'
@@ -261,12 +262,12 @@ object SearchForm: TSearchForm
     AnchorSideTop.Control = EditSearch
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = EditSearch
+    AnchorSideBottom.Control = ButtonMenu
     AnchorSideBottom.Side = asrBottom
     Left = 699
     Height = 32
     Hint = 'Search Options'
-    Top = 3
+    Top = 0
     Width = 120
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 5
@@ -280,15 +281,22 @@ object SearchForm: TSearchForm
     AnchorSideLeft.Control = EditSearch
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = EditSearch
-    AnchorSideBottom.Control = EditSearch
+    AnchorSideBottom.Control = ButtonMenu
     AnchorSideBottom.Side = asrBottom
     Left = 348
     Height = 32
-    Top = 3
+    Top = 0
     Width = 120
     Anchors = [akTop, akLeft, akBottom]
     Caption = 'Clear'
     OnClick = SpeedButtonClearSearchClick
+  end
+  object SpeedButton1: TSpeedButton
+    Left = 568
+    Height = 22
+    Top = 8
+    Width = 23
+    OnClick = SpeedButton1Click
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344
@@ -328,6 +336,10 @@ object SearchForm: TSearchForm
   object PopupMenuSearchOptions: TPopupMenu
     Left = 450
     Top = 206
+    object MenuItemImportNote: TMenuItem
+      Caption = 'Import File'
+      OnClick = MenuItemImportNoteClick
+    end
     object MenuItemCaseSensitive: TMenuItem
       Caption = 'Case Sensitive'
       OnClick = MenuItemCaseSensitiveClick
@@ -336,5 +348,9 @@ object SearchForm: TSearchForm
       Caption = 'Search While You Type'
       OnClick = MenuItemSWYTClick
     end
+  end
+  object OpenDialogImport: TOpenDialog
+    Left = 346
+    Top = 171
   end
 end

@@ -438,7 +438,8 @@ type
         function RelativePos(const Term: ANSIString; const MText: PChar; StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
         function RestoreLimitedAttributes(const BlockNo: TKMemoBlockIndex; var FontAtt: FontLimitedAttrib): boolean;
-        function SaveLimitedAttributes(const BlockNo: TKMemoBlockIndex; var FontAtt: FontLimitedAttrib): boolean;
+        function SaveLimitedAttributes(const BlockNo: TKMemoBlockIndex; out
+            FontAtt: FontLimitedAttrib): boolean;
                                 // This method will, at some stage, return after creating and starting
                                 // a thread that normalises the xml in the list, adds footer and saves.
                                 // The thread keeps going after the method returns doing above and then
@@ -2083,7 +2084,7 @@ end;
 }
 
 
-function TEditBoxForm.SaveLimitedAttributes(const BlockNo : TKMemoBlockIndex; var FontAtt : FontLimitedAttrib) : boolean;
+function TEditBoxForm.SaveLimitedAttributes(const BlockNo : TKMemoBlockIndex; out FontAtt : FontLimitedAttrib) : boolean;
 begin
     result := Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink')
            or Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock');

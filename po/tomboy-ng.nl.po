@@ -1601,6 +1601,10 @@ msgctxt "tsearchform.menuitemcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 
+#: tsearchform.menuitemimportnote.caption
+msgid "Import File"
+msgstr ""
+
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
 msgstr ""
@@ -1714,6 +1718,11 @@ msgstr ""
 
 #: tsett.checkfindtoggles.caption
 msgid "Find Command Toggles"
+msgstr ""
+
+#: tsett.checkfindtoggles.hint
+msgctxt "tsett.checkfindtoggles.hint"
+msgid "eg Ctrl-F opens and closes Find Window"
 msgstr ""
 
 #: tsett.checkmanynotebooks.caption
@@ -1946,10 +1955,6 @@ msgstr ""
 
 #: tsett.tabdisplay.caption
 msgid "Notes"
-msgstr ""
-
-#: tsett.tabdisplay.hint
-msgid "eg Ctrl-F opens and closes Find Window"
 msgstr ""
 
 #: tsett.tabrecover.caption

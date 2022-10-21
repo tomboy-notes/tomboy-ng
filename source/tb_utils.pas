@@ -51,8 +51,11 @@ unit tb_utils;
 
 interface
 
+
 uses
         Classes, SysUtils {$ifndef TESTRIG}, KMemo {$ifdef Linux}, libnotify{$endif}{$endif};
+
+type    TReindexProcedure = procedure(const St : string; CheckTitleClash : boolean) of object; // Used by CLI to request a reindex if GUI has started.
 
                        // pass 0 to MaxDateStampIndex, various datetime formats
 function TB_DateStamp(Index : integer) : string;
@@ -137,6 +140,10 @@ const
 
 const
   MaxDateStampIndex = 4;            // Zero based index to date/Time Formats
+
+var
+    TheReindexProc :  TReIndexProcedure;     // Set by SearchForm during create.
+
 implementation
 
 uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
@@ -562,8 +569,8 @@ begin
     STL.Insert(0, St);
 end;
 
-
-
+initialization
+TheReindexProc := nil;  // Set by SearchForm during create.
 
 
 end.

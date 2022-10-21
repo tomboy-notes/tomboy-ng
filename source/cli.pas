@@ -21,6 +21,7 @@ unit cli;
     2022/04/07  Tidy up options.
     2022/05/03  Add unix username to IPC pipe.
     2022/10/18  Short switch for import MD is -m
+    2022/10/20  Do Import from this instance with direct call to IndexNewNote().
 }
 
 interface
@@ -29,6 +30,16 @@ uses
     Classes, SysUtils, Dialogs;
 
 function ContinueToGUI() : boolean ;
+                            { Will take offered file name, report some error else checks its a  .note,
+                            saves it to normal repo and requests a running instance (if there is one) to
+                            reindex as necessary. Note that in CLI mode, we do not check for a Title Clash
+                            (because NoteLister may not be running. In GUI mode, existing Title is checked.}
+procedure Import_Note(FFName : string = '');
+                            { Will take offered file name, report error else converts that file to .note,
+                            saves it to normal repo and requests a running instance (if there is one) to
+                            reindex as necessary. Note that in CLI mode, we do not check for a Title Clash
+                            (because NoteLister may not be running. In GUI mode, existing Title is checked.}
+procedure Import_Text_MD_File(MD : boolean; FFName : string = '');
 
 var
     SingleNoteName : string = '';    // other unit will want to know.....
@@ -123,18 +134,20 @@ var
     CommsClient : TSimpleIPCClient;
 begin
     Result := False;
-    try
-        CommsClient  := TSimpleIPCClient.Create(Nil);
-        CommsClient.ServerID:='tomboy-ng' {$ifdef UNIX} + '-' + GetEnvironmentVariable('USER'){$endif}; // on multiuser system, unique
-        if CommsClient.ServerRunning then begin
-            CommsClient.Active := true;
-            CommsClient.SendStringMessage(Msg);
-            CommsClient.Active := false;
-            Result := True;
+//    if TheReindexProc = nil then begin
+        try
+            CommsClient  := TSimpleIPCClient.Create(Nil);
+            CommsClient.ServerID:='tomboy-ng' {$ifdef UNIX} + '-' + GetEnvironmentVariable('USER'){$endif}; // on multiuser system, unique
+            if CommsClient.ServerRunning then begin
+                CommsClient.Active := true;
+                CommsClient.SendStringMessage(Msg);
+                CommsClient.Active := false;
+                Result := True;
+            end;
+        finally
+            freeandnil(CommsClient);
         end;
-    finally
-        freeandnil(CommsClient);
-    end;
+//    end else TheReindexProc();
 end;
 
                         { Returns the absolute notes dir, raises ENoNotesRepoException if it cannot find it }
@@ -153,15 +166,14 @@ begin
          Raise ENoNotesRepoException.create('tomboy-ng does not appear to be configured');
 end;
 
-                        { Will take offered file name, report any errror else checks its a  .note,
-                        saves it to normal repo and requests a running instance (if there is one) to
-                        reindex as necessary. }
-procedure Import_Note;
+procedure Import_Note(FFName : string = '');
 var
     FFileName, Fname : string;
     GUID : TGUID;
 begin
-     FFileName := Application.GetOptionValue('n', 'import-note');
+     if FFName <> '' then
+        FFileName := FFName
+     else FFileName := Application.GetOptionValue('n', 'import-note');
      {$ifdef UNIX}
     if FFileName[1] = '~' then
         FFileName := GetEnvironmentVariable('HOME') + FFileName.Remove(0,1);
@@ -181,23 +193,29 @@ begin
         FName := copy(GUIDToString(GUID), 2, 36) + '.note';
      end;
      // debugln('About to copy ' + FFileName + ' to ' + FName);
-     if CopyFile(FFileName, GetNotesDir() + FName) then
-        CanSendMessage('REINDEX')
-     else debugln('ERROR - failed to copy ' + FFileName + ' to ' + GetNotesDir() + FName);
+     if CopyFile(FFileName, GetNotesDir() + FName) then begin
+        if TheReindexProc = nil then        // Defined in tb_utils, set in SearchUnit.
+            CanSendMessage('REINDEX:' + FName)
+        else TheReindexProc(FName, True);
+     end
+        else debugln('ERROR - failed to copy ' + FFileName + ' to ' + GetNotesDir() + FName);
 end;
 
 
-                        { Will take offered file name, report errror else converts that file to .note,
-                        saves it to normal repo and requests a running instance (if there is one) to
-                        reindex as necessary. }
-procedure Import_Text_MD_File(MD : boolean);
+
+procedure Import_Text_MD_File(MD : boolean; FFName : string = '');
+                        // ToDo : make this a function, ret F on error.
+                        // )
 var
     FFileName : string;
     Importer : TImportNotes;
 begin
-    if MD then
-        FFileName := Application.GetOptionValue('m', 'import-md')
-    else FFileName := Application.GetOptionValue('t', 'import-txt');
+    if FFName <> '' then
+        FFileName := FFName
+    else
+        if MD then
+            FFileName := Application.GetOptionValue('m', 'import-md')
+        else FFileName := Application.GetOptionValue('t', 'import-txt');
     Importer := TImportNotes.Create;
     try
         try
@@ -209,7 +227,12 @@ begin
                 Importer.FirstLineIsTitle := false;
             Importer.ImportName := FFileName;
             if Importer.Execute() = 0 then
-                debugln(Importer.ErrorMsg);
+                debugln(Importer.ErrorMsg)
+            else                                                        // At this stage, we have a valid note in repo but not Indexed.
+                if TheReindexProc = nil then begin                      // Defined in tb_utils, set in SearchUnit.
+                    CanSendMessage('REINDEX:'+ Importer.NewFileName)    // eg REINDEX:48480CC5-EC3E-4AA0-8C83-62886DB291FD.note
+                end
+                else TheReindexProc(Importer.NewFileName, True);        // If TheReindexProc then we have a GUI, show message there.
         except on
             //E: ENoNotesRepoException do begin
             E: Exception do begin
@@ -220,7 +243,7 @@ begin
     finally
         Importer.Free;
     end;
-    CanSendMessage('REINDEX')
+
 end;
 
 function ContinueToGUI() : boolean ;

@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabDisplay
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -107,7 +107,7 @@ object Sett: TSett
         Width = 172
         BorderSpacing.Top = 30
         Caption = 'Autostart at Logon'
-        OnChange = SaveSettings
+        OnChange = CheckAutostartChange
         TabOrder = 3
       end
       object CheckShowSearchAtStart: TCheckBox
@@ -182,7 +182,6 @@ object Sett: TSett
       end
     end
     object TabDisplay: TTabSheet
-      Hint = 'eg Ctrl-F opens and closes Find Window'
       Caption = 'Notes'
       ClientHeight = 457
       ClientWidth = 722
@@ -418,6 +417,7 @@ object Sett: TSett
         Width = 69
         Caption = 'Italics'
         OnChange = SaveSettings
+        ParentShowHint = False
         TabOrder = 10
       end
       object CheckStampSmall: TCheckBox
@@ -433,6 +433,7 @@ object Sett: TSett
         BorderSpacing.Top = 8
         Caption = 'Small'
         OnChange = SaveSettings
+        ParentShowHint = False
         TabOrder = 11
       end
       object CheckStampBold: TCheckBox
@@ -447,6 +448,7 @@ object Sett: TSett
         BorderSpacing.Left = 50
         Caption = 'Bold'
         OnChange = SaveSettings
+        ParentShowHint = False
         TabOrder = 12
       end
       object CheckFindToggles: TCheckBox
@@ -455,6 +457,7 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 32
         Height = 23
+        Hint = 'eg Ctrl-F opens and closes Find Window'
         Top = 384
         Width = 206
         BorderSpacing.Top = 18
@@ -547,7 +550,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 224
+        ClientHeight = 243
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
@@ -581,7 +584,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 548
           Height = 32
-          Top = 182
+          Top = 201
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -599,7 +602,7 @@ object Sett: TSett
           Left = 172
           Height = 23
           Hint = 'Sync, if possible once an hour.'
-          Top = 191
+          Top = 210
           Width = 101
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 30
@@ -641,7 +644,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 15
           Height = 23
-          Top = 191
+          Top = 210
           Width = 127
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Enabled'
@@ -663,7 +666,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 35
+          ClientHeight = 54
           ClientWidth = 483
           TabOrder = 2
           object LabelToken: TLabel

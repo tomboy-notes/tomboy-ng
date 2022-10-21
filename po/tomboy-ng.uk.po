@@ -1537,6 +1537,10 @@ msgctxt "tsearchform.menuitemcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr "Чутливість до регістру"
 
+#: tsearchform.menuitemimportnote.caption
+msgid "Import File"
+msgstr ""
+
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
 msgstr "Керувати нотатками в записнику"
@@ -1651,6 +1655,12 @@ msgstr "Esc закриває нотатку"
 #: tsett.checkfindtoggles.caption
 msgid "Find Command Toggles"
 msgstr "Перемикання команди пошуку"
+
+#: tsett.checkfindtoggles.hint
+#, fuzzy
+msgctxt "tsett.checkfindtoggles.hint"
+msgid "eg Ctrl-F opens and closes Find Window"
+msgstr "напр., Ctrl-F відкриває і закриває вікно пошуку"
 
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
@@ -1883,10 +1893,6 @@ msgstr "Основне"
 #: tsett.tabdisplay.caption
 msgid "Notes"
 msgstr "Нотатки"
-
-#: tsett.tabdisplay.hint
-msgid "eg Ctrl-F opens and closes Find Window"
-msgstr "напр., Ctrl-F відкриває і закриває вікно пошуку"
 
 #: tsett.tabrecover.caption
 msgctxt "tsett.tabrecover.caption"

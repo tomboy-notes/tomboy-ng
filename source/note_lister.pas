@@ -356,7 +356,7 @@ type
     function IsThisNoteOpen(const ID : ANSIString; out TheForm : TForm) : boolean;
                         		        { Tells the list that this note is open, pass NIL to indicate its now closed }
     function ThisNoteIsOpen(const ID: ANSIString; const TheForm: TForm): boolean;
-                        		        { Returns true if it can find a FileName to Match this Title }
+                        		        { Returns true if it can find a FileName (ie ID.note) to Match this Title }
     function FileNameForTitle(const Title: ANSIString; out FileName : ANSIstring): boolean;
     procedure StartSearch();
     function NextNoteTitle(out SearchTerm : ANSIString) : boolean;
@@ -1324,7 +1324,7 @@ end;
 
 procedure TNoteLister.IndexThisNote(const ID: String);
 // While not using threads, this method must init critical section because GetNoteDetails expects it.
-// This is used to index newly download synced notes and newly recovered (from backup) notes.
+// This is used to index imported, newly download synced notes and newly recovered (from backup) notes.
 begin
     //DebugMode := True;
     //debugln('TNoteLister.IndexThisNote');

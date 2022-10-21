@@ -75,6 +75,7 @@ unit Mainunit;
     2021/11/09  Dont consider libayatana unless compiled with > 2.0.12
     2022/05/03  Add unix username to IPC pipe.
     2022/08/10  Added an about Lazarus to splash screen and simplified the About screen.
+    2022/10/20  To Avoid calling IndexNotes() from Import, now function, IndexNewNote()
 
     CommandLine Switches
 
@@ -357,14 +358,21 @@ begin
     // debugln('Here in Main.CommMessageRecieved, a message was received');
     CommsServer .ReadMessage;
     S := CommsServer .StringMessage;
-    case S of
+    if S = 'SHOWSEARCH' then begin
+        SearchForm.Show;
+        SearchForm.MoveWindowHere(SearchForm.Caption);
+    end else
+        if S.StartsWith('REINDEX') then
+            SearchForm.IndexNewNote(copy(S, 9, 100), False)
+        else debugln('TMainForm.CommMessageReceived - invalid message [' + S + ']');
+        // eg REINDEX:48480CC5-EC3E-4AA0-8C83-62886DB291FD.note
+{    case S of
         'SHOWSEARCH' : begin
                     SearchForm.Show;
                     SearchForm.MoveWindowHere(SearchForm.Caption);
                 end;
-        'REINDEX' : SearchForm.IndexNotes();    // if we had the GUID we could call notelister.IndexThisNote .....
-                                                // or make a function that reindexes all notes with a recent CTime, faster ?
-    end;
+        'REINDEX' : SearchForm.IndexNotes();
+    end;  }
 end;
 
 procedure TMainForm.StartIPCServer();

@@ -102,6 +102,7 @@ unit settings;
     2022/01/31  Added a CheckFindToggles to determine if every press of Ctrl-f invokes Find or toggles it on or off.
     2022/03/31  Tidyed up the Github Token controls, now can invoke browser.
     2022/09/02  Removed AutoRefreshSearch checkbox, its the SearchUnit's problem.
+    2022/10/21  CheckAutoStart must call its own method to trigger writing files
 }
 
 {$mode objfpc}{$H+}                    //
@@ -694,11 +695,6 @@ end;
 procedure TSett.FormHide(Sender: TObject);
 begin
     FreeandNil(Spell);
-    //MaskSettingsChanged := True;           May, 2020, why was this here ?
-{    if NeedRefresh then begin
-        SearchForm.IndexNotes();
-        NeedRefresh := False;
-    end;    }
 end;
 
 procedure TSett.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1138,7 +1134,7 @@ begin
     else begin
         WriteConfigFile();
         SyncSettings();
-        SearchForm.IndexNotes();
+        SearchForm.IndexNotes(True);
     end;
 end;
 
@@ -1293,7 +1289,7 @@ begin
             ComboSyncTypeChange(self);
             WriteConfigFile();
             SyncSettings();
-            SearchForm.IndexNotes();
+            SearchForm.IndexNotes(True);
         end else
             NoteDirectory := LabelNotesPath.caption;
 	end;
@@ -1409,7 +1405,7 @@ begin
         // Danger Will Robertson ! We cannot assume LocalConfig has a trailing slash !
         FR.Showmodal;
         if FR.RequiresIndex then
-            SearchForm.IndexNotes();
+            SearchForm.IndexNotes(True);
     finally
         FR.Free;
     end;

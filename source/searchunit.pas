@@ -116,6 +116,7 @@ unit SearchUnit;
     2022/09/08  Two bugs that appear when no notes present
     2022/09/08  Update Notes Found number on small splash screen  #267
     2022/09/13  Tweaks to manage the ListViewNotes sort indicators, must 'Bounce'.
+    2022/10/20  Added an Import menu item to Options.
 }
 
 {$mode objfpc}{$H+}
@@ -144,17 +145,20 @@ type        { TSearchForm }
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
         MenuCreateNoteBook: TMenuItem;
+        MenuItemImportNote: TMenuItem;
         MenuItemCaseSensitive: TMenuItem;
         MenuItemSWYT: TMenuItem;
         MenuItemManageNBook: TMenuItem;
         MenuItem3: TMenuItem;
         MenuRenameNoteBook: TMenuItem;
 		MenuNewNoteFromTemplate: TMenuItem;
+        OpenDialogImport: TOpenDialog;
 		Panel1: TPanel;
         Panel2: TPanel;
         PopupMenuSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
+        SpeedButton1: TSpeedButton;
         SpeedButtonClearSearch: TSpeedButton;
         SpeedSearchOtions: TSpeedButton;
 		Splitter1: TSplitter;
@@ -198,6 +202,7 @@ type        { TSearchForm }
         procedure MenuCreateNoteBookClick(Sender: TObject);
 //        procedure MenuItemAutoRefreshClick(Sender: TObject);
         procedure MenuItemCaseSensitiveClick(Sender: TObject);
+        procedure MenuItemImportNoteClick(Sender: TObject);
         procedure MenuItemManageNBookClick(Sender: TObject);
         procedure MenuItemSWYTClick(Sender: TObject);
         procedure MenuRenameNoteBookClick(Sender: TObject);
@@ -208,9 +213,15 @@ type        { TSearchForm }
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
+        procedure SpeedButton1Click(Sender: TObject);
  //       procedure ButtonRefreshClick(Sender: TObject);
         procedure SpeedButtonClearSearchClick(Sender: TObject);
         procedure SpeedSearchOtionsClick(Sender: TObject);
+                // A proc that is called when a note is added to repo by, eg, an import.
+                // The procedure's address is passed, via tb_utils, to the CLI unit so it
+                // knows to call this direct if its not nil.
+        procedure IndexNewNote(const FFName: string; CheckTitleClash: boolean);
+
     private
         SearchTextLength : integer;     // Previous length of EditSearch text, tells us if term is growing or shrinking
         SearchActive : boolean;         // We have searched for something after most recent SearchClear
@@ -287,8 +298,9 @@ type        { TSearchForm }
         procedure UpdateList(const Title, LastChange, FullFileName: ANSIString; TheForm : TForm);
                             { Reads header in each note in notes directory, updating Search List and
                               the recently used list under the TrayIcon. Downside is time it takes
-                              to index. use UpdateList() if you just have updates. }
-        function IndexNotes() : integer;
+                              to index. use UpdateList() if you just have updates.
+                              ReRunSearch might be necessary, for TheMainNoteLister, if its a re-run.}
+        function IndexNotes(ReRunSearch: boolean = False): integer;
                             { Returns true when passed string is the title of an existing note }
         //function IsThisaTitle(const Term: ANSIString): boolean;
 
@@ -334,7 +346,8 @@ uses MainUnit,      // Opening form, manages startup and Menus
     TomdroidFile,
     LCLVersion,     // used to enable, or not, sort indicators in lcl2.0.8 or later
     NoteBook,
-    tb_utils;
+    tb_utils,
+    cli;            // We call the ImportNote function there.
 
 
 
@@ -395,6 +408,8 @@ begin
 //        end;
     end;
 end;
+
+
 
 (*
 procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
@@ -933,10 +948,10 @@ procedure TSearchForm.IndexAndRefresh(DisplayOnly : boolean = false);
 var
     NB, STerm : string;
 begin
-     If DisplayOnly then begin
-         ListViewNotes.Clear;
-         ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount()
-     end
+    If DisplayOnly then begin
+        ListViewNotes.Clear;
+        ListViewNotes.Items.Count := TheMainNoteLister.NoteIndexCount()
+    end
     else begin
         if EditSearch.text = rsMenuSearch then
              STerm := ''
@@ -1151,27 +1166,48 @@ begin
     hide();
 end;
 
+procedure TSearchForm.SpeedButton1Click(Sender: TObject);  // ToDo : remove this and the button, testing....
+begin
+    IndexNotes(True);
+end;
 
-function TSearchForm.IndexNotes() : integer;
-// var
-	// TS1, TS2 : TTimeStamp;
+procedure TSearchForm.IndexNewNote(const FFName: string; CheckTitleClash : boolean);
+var
+    ExistingFFName : string;
+begin
+    if CheckTitleClash and                                         // Don't test if import initiated by CLI
+        TheMainNoteLister.FileNameForTitle(GetTitleFromFFN(Sett.NoteDirectory+FFName, False), ExistingFFName) then
+            if mrYes = QuestionDlg('Note Exists', 'Overwrite Note with same name ?', mtConfirmation, [mrYes, mrNo], 0) then
+                DeleteNote(Sett.NoteDirectory+ExistingFFName)      // Thats the existing one, user happy to replace
+            else begin                                             // If user responds 'No', then import is cancelled
+                DeleteFileUTF8(Sett.NoteDirectory+FFName);         // The newly created one, not yet indexed.
+                exit;
+            end;
+
+    RefreshNotebooks();
+    TheMainNoteLister.IndexThisNote(FFName);     // Add it to NoteLister
+    IndexAndRefresh();                           // Reruns the current search with new data in NoteList
+    TheMainNoteLister.BuildDateAllIndex();       // Must rebuild it before refreshing menus.
+    RefreshMenus(mkRecentMenu);
+    MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
+end;
+
+function TSearchForm.IndexNotes(ReRunSearch : boolean=False) : integer;     // Calling IndexAndRefresh(); after IndexNotes() seems to fix it .....
 begin                                            // Gets called from other units ....
-    // TS1 := DateTimeToTimeStamp(Now);
-    // if not Sett.HaveConfig then exit(0);      // we assume we always have some sort of config now
     if TheMainNoteLister <> Nil then
        freeandnil(TheMainNoteLister);
     TheMainNoteLister := TNoteLister.Create;
-    //TheMainNoteLister := NoteLister;                // This is how we make the main Note List accessible.
     TheMainNoteLister.DebugMode := Application.HasOption('debug-index');
     TheMainNoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := TheMainNoteLister.IndexNotes();
-//    NoteLister.ClearSearch();                   // This builds the note sorted Indexes in Note_Lister
     UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
     RefreshMenus(mkRecentMenu);
-    // TS2 := DateTimeToTimeStamp(Now);
-	// debugln('TSearchForm.IndexNotes - Indexing took (mS) ' + inttostr(TS2.Time - TS1.Time));          // Dell, 2K notes, 134mS
     MainForm.UpdateNotesFound(Result);      // Says how many notes found and runs over checklist.
     Sett.StartAutoSyncAndSnap();
+    If RerunSearch then begin               // Reruns the current search with new data in NoteList it is
+        IndexAndRefresh();                  // often necessary if we are re-running, eg after change to note repo
+        RefreshNotebooks();
+    end;
 end;
 
 procedure TSearchForm.FormCreate(Sender: TObject);
@@ -1212,6 +1248,7 @@ begin
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
     MenuItemCaseSensitive.checked := Sett.SearchCaseSensitive;
     MenuItemSWYT.checked := Sett.AutoSearchUpdate;
+    MenuItemImportNote.Hint := rsHelpImportFile;         // ToDo : OK, where is ShowHint ?
     {$ifdef LVOWNERDRAW}
     ListViewNotes.OwnerDraw:= True;
     {$ifdef LCLQT5}                 // This because when ownerdrawn, we loose spacing between rows in Qt5, ugly workaround.
@@ -1219,6 +1256,7 @@ begin
     ListViewNotes.Font.Height := round((fd.Height * 72 / SearchForm.Font.PixelsPerInch)) + 4;
     {$endif}
     {$endif}
+    TheReindexProc := @IndexNewNote;
 end;
 
 
@@ -1674,6 +1712,34 @@ procedure TSearchForm.MenuItemCaseSensitiveClick(Sender: TObject);
 begin
     MenuItemCaseSensitive.Checked := not MenuItemCaseSensitive.Checked;
     Sett.SearchCaseSensitive := MenuItemCaseSensitive.Checked;
+end;
+
+procedure TSearchForm.MenuItemImportNoteClick(Sender: TObject);
+begin
+    {$ifdef UNIX}
+    OpenDialogImport.InitialDir :=  GetEnvironmentVariable('HOME');
+    {$endif}
+    {$ifdef WINDOWS}
+    OpenDialogImport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
+    {$endif}
+    OpenDialogImport.Filter := 'Text|*.txt|Markdown|*.md|Note|*.note';
+    OpenDialogImport.Title := rsHelpImportFile;
+    if OpenDialogImport.Execute then begin
+        if TrimFilename(OpenDialogImport.FileName).EndsWith('.note') then
+            import_note(TrimFilename(OpenDialogImport.FileName))
+        else if TrimFilename(OpenDialogImport.FileName).EndsWith('.md') then
+            Import_Text_MD_File(True, TrimFilename(OpenDialogImport.FileName))
+        else if TrimFilename(OpenDialogImport.FileName).EndsWith('.txt') then
+            Import_Text_MD_File(False, TrimFilename(OpenDialogImport.FileName))
+        else showmessage('Cannot import TrimFilename(OpenDialogLibrary.FileName)');
+    end;
+{    OpenDialogLibrary.InitialDir := ExtractFilePath(LabelLibrary.Caption);
+    OpenDialogLibrary.Filter := 'Library|libhunspell*';
+    OpenDialogLibrary.Title := rsSelectLibrary;
+    if OpenDialogLibrary.Execute then begin
+        something := TrimFilename(OpenDialogLibrary.FileName);
+        Import_Text_MD_File(MD : boolean; FFName : string = ''); }
+
 end;
 
 procedure TSearchForm.SpeedSearchOtionsClick(Sender: TObject);

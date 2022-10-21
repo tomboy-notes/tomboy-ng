@@ -64,30 +64,21 @@ If tomboy-ng crashes or does something unexpected, there are a number of command
 
 <bold>Command Line Switches</bold>
 
-   <list><list-item dir="ltr"><monospace>-delay-startn                Delay startup by 2 Seconds to allow OS to settle</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>-l CCode  --lang=CCode       Force Language, supported es, nl</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--debug-log=SOME.LOG         Direct debug output to SOME.LOG.</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>-h --help                    Show this help message and exit.</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--version                    Print version and exit</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--no-splash                  Dont show small status/splash window</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--debug-sync                 Show debug messages during Sync</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--debug-index                Show debug messages while indexing notes</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--debug-spell                Show debug messages while spell setup</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--config-dir=PATH_to_DIR     Create or use an alternative config</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>-o --open-note=PATH_to_NOTE  Open indicated note, switch is optional</monospace></list-item></list>
-
-   <list><list-item dir="ltr"><monospace>--save-exit                  After import single note, save and exit.</monospace></list-item></list>
-
+   <list><list-item dir="ltr"><monospace>--dark-theme</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>-l --lang=CCode               Force Language, en, es, uk, fr, nl</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>-h --help                     Show this help message and exit.</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--version                     Print version and exit</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--no-splash                   Do not show small status/splash window</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--debug-sync                  Show debug messages during Sync</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--debug-index                 Show debug msgs while indexing notes</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--debug-spell                 Show debug messages while spell setup</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--config-dir=PATH_to_DIR      Create or use an alternative config</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--open-note=PATH_to_NOTE      Open indicated note, switch is optional</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--debug-log=SOME.LOG          Direct debug output to SOME.LOG.</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--import-txt=PATH_to_FILE     Import file into Note Repo  also -t</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--import-md=PATH_to_FILE      Import file into Note Repo  also -m</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--import-note=PATH_to_NOTE    Import file into Note Repo  also -n</monospace></list-item></list>
+   <list><list-item dir="ltr"><monospace>--title-fname                 Use Filename as title for import txt &amp; md</monospace></list-item></list>
 
 <bold>Capturing to a file</bold>
 Windows and Mac do not, for this purpose, have a console. But they too  can be told to capture this log info to a file using  another  command  line  switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified. For example a linux user would  -
@@ -115,8 +106,8 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2022-09-11T10:58:34.5869049+10:00</last-change-date>
-  <last-metadata-change-date>2022-09-11T10:58:34.5869049+10:00</last-metadata-change-date>
+  <last-change-date>2022-10-19T21:20:52.1695722+11:00</last-change-date>
+  <last-metadata-change-date>2022-10-19T21:20:52.1695722+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
