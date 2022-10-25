@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.34\n"
-"PO-Revision-Date: 2022-09-22 16:18+0300\n"
+"PO-Revision-Date: 2022-10-23 12:06+0300\n"
 "Last-Translator: Andrij Mizyk <andm1zyk@proton.me>\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -18,11 +18,11 @@ msgstr "Неможливо знайти вираз для виконання"
 
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
-msgstr "нотатки tomboy-ng - міжплатформовість, синхронізація і керування нотатками."
+msgstr "нотатки tomboy-ng - міжплатформове, синхронізоване керування нотатками."
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
-msgstr "Дата збирання"
+msgstr "Дата збірки"
 
 #: mainunit.rsaboutcpu
 msgid "TargetCPU"
@@ -52,7 +52,7 @@ msgstr "Усе готово"
 #: resourcestr.rsallrestored
 msgctxt "resourcestr.rsallrestored"
 msgid "Notes and config files Restored, restart suggested."
-msgstr "Нотатки і файл конфігурації відновлено, пропонується перезапустити."
+msgstr "Нотатки і файл конфігурації відновлено, радимо перезапустити."
 
 #: resourcestr.rsautosnapshotrun
 msgid "Completed autosnapshot run."
@@ -76,7 +76,7 @@ msgstr "Будь ласка, перейдіть у Налаштувати -> В�
 #: resourcestr.rsbadnotesfound2
 msgctxt "resourcestr.rsbadnotesfound2"
 msgid "You should do so to ensure your notes are safe."
-msgstr "Ви повинні зробити це, щоб забезпечити безпеку ваших нотаток."
+msgstr "Ви повинні зробити це, щоб забезпечити безпеку своїх нотаток."
 
 #: resourcestr.rscannotdelete
 msgctxt "resourcestr.rscannotdelete"
@@ -235,11 +235,9 @@ msgid "Import file into Note Repo"
 msgstr "Імпортувати файл у репозиторій нотаток"
 
 #: resourcestr.rshelplang
-#, fuzzy
-#| msgid "Force Language, en, es, fr, nl"
 msgctxt "resourcestr.rshelplang"
 msgid "Force Language, en, es, uk, fr, nl"
-msgstr "Примусово вказати мову, en, es, fr, nl"
+msgstr "Примусово вказати мову, en, es, uk, fr, nl"
 
 #: resourcestr.rshelpnosplash
 msgctxt "resourcestr.rshelpnosplash"
@@ -1539,7 +1537,7 @@ msgstr "Чутливість до регістру"
 
 #: tsearchform.menuitemimportnote.caption
 msgid "Import File"
-msgstr ""
+msgstr "Імпортувати файл"
 
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
@@ -1657,7 +1655,6 @@ msgid "Find Command Toggles"
 msgstr "Перемикання команди пошуку"
 
 #: tsett.checkfindtoggles.hint
-#, fuzzy
 msgctxt "tsett.checkfindtoggles.hint"
 msgid "eg Ctrl-F opens and closes Find Window"
 msgstr "напр., Ctrl-F відкриває і закриває вікно пошуку"
