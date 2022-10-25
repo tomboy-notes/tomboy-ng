@@ -1,19 +1,19 @@
 # Spanish translation for Tomboy-ng.
 # This file is put in the public domain.
-# Roy W. Reese <waterbearer54@gmx.com>, 2018-2021.
+# Roy W. Reese <waterbearer54@gmx.com>, 2018-2022.
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: tomboy-ng v0.34\n"
+"Project-Id-Version: tomboy-ng v0.35\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-11-14 15:00+0100\n"
+"PO-Revision-Date: 2022-10-23 12:36+0200\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
-"MIME-Version: 1.0\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
-"X-Generator: Poedit 2.4.3\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1.1\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -21,7 +21,7 @@ msgstr "No encontró ninguna expresión para calcular"
 
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
-msgstr ""
+msgstr "Notas tomboy-ng - multiplataforma: sincronizar y gestionar notas."
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
@@ -237,14 +237,12 @@ msgstr "Mostrar mensaje de ayuda y salir."
 
 #: resourcestr.rshelpimportfile
 msgid "Import file into Note Repo"
-msgstr ""
+msgstr "Importar archivo al repositario"
 
 #: resourcestr.rshelplang
-#, fuzzy
-#| msgid "Force Language, supported en, es, fr, nl"
 msgctxt "resourcestr.rshelplang"
 msgid "Force Language, en, es, uk, fr, nl"
-msgstr "Forzar idioma. Idiomas suportados: en, es, fr, nl"
+msgstr "Forzar idioma: en, es, fr, nl, uk"
 
 #: resourcestr.rshelpnosplash
 msgctxt "resourcestr.rshelpnosplash"
@@ -263,7 +261,7 @@ msgstr "Abrir nota marcada, parámetro es opcional"
 
 #: resourcestr.rshelptitleisfname
 msgid "Use Filename as title for import txt & md"
-msgstr ""
+msgstr "Usar Nombre de archivo como título al importar txt y md"
 
 #: resourcestr.rshelpversion
 msgctxt "resourcestr.rshelpversion"
@@ -1203,14 +1201,12 @@ msgid "eg MySamsungNote7"
 msgstr "ej., MySamsungNote7"
 
 #: tformtomdroid.label1.caption
-#, fuzzy
-#| msgid "Tomdroid SSH Sync - deprecated, will be dropped soon."
 msgid "Tomdroid SSH Sync - deprecated, will not be in v0.36."
-msgstr "Sincronización Tomdroid SSH - obsoleto, se elimina pronto."
+msgstr "Sincronización Tomdroid SSH - obsoleta: se eliminará de v0.36."
 
 #: tformtomdroid.label1.hint
 msgid "Use GitHub Sync instead. Post issue if you need Tomdroid Sync."
-msgstr ""
+msgstr "Use Sincronización de GitHub. Abra un \"issue\" si necesita Sincronización de Tomdroid."
 
 #: tformtomdroid.label2.caption
 msgid "Select an existing profile (or enter data) "
@@ -1268,14 +1264,12 @@ msgid "Test Run"
 msgstr "Prueba"
 
 #: tformtomdroidfile.label1.caption
-#, fuzzy
-#| msgid "Tomdroid Sync - be aware of limitations !"
 msgid "Tomdroid Sync - deprecated, will not be in v0.36."
-msgstr "Sincronización Tomdroid - ¡dese cuenta de las limitaciones!"
+msgstr "Sincronización Tomdroid SSH - obsoleta: se eliminará de v0.36."
 
 #: tformtomdroidfile.label1.hint
 msgid "Use GitHub Sync instead. Post issue if you need Tomdroid"
-msgstr ""
+msgstr "Use Sincronización de GitHub. Abra un \"issue\" si necesita Sincronización de Tomdroid."
 
 #: tformtomdroidfile.label6.caption
 msgctxt "tformtomdroidfile.label6.caption"
@@ -1522,11 +1516,9 @@ msgid "OK, talking to device. Wait for it ...."
 msgstr "OK, comunicando con el dispositivo. Espere ..."
 
 #: tsearchform.buttonclearfilters.caption
-#, fuzzy
-#| msgid "Clear Filters"
 msgctxt "tsearchform.buttonclearfilters.caption"
 msgid "Clear"
-msgstr "Quitar filtros"
+msgstr "Limpiar"
 
 #: tsearchform.buttonmenu.caption
 msgctxt "tsearchform.buttonmenu.caption"
@@ -1556,11 +1548,11 @@ msgstr "Editar plantilla del cuaderno"
 #: tsearchform.menuitemcasesensitive.caption
 msgctxt "tsearchform.menuitemcasesensitive.caption"
 msgid "Case Sensitive"
-msgstr ""
+msgstr "Sensible a mayúsculas"
 
 #: tsearchform.menuitemimportnote.caption
 msgid "Import File"
-msgstr ""
+msgstr "Importar archivo"
 
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
@@ -1568,7 +1560,7 @@ msgstr "Gestionar las notas en el cuaderno"
 
 #: tsearchform.menuitemswyt.caption
 msgid "Search While You Type"
-msgstr ""
+msgstr "Buscar mientras escriba"
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
@@ -1586,15 +1578,15 @@ msgstr "Cuadernos"
 #: tsearchform.speedbuttonclearsearch.caption
 msgctxt "tsearchform.speedbuttonclearsearch.caption"
 msgid "Clear"
-msgstr ""
+msgstr "Limpiar"
 
 #: tsearchform.speedsearchotions.caption
 msgid "Options"
-msgstr ""
+msgstr "Opciones"
 
 #: tsearchform.speedsearchotions.hint
 msgid "Search Options"
-msgstr ""
+msgstr "Opciones de búsqueda"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
@@ -1671,16 +1663,16 @@ msgstr "Sincronizar cada hora si es posible"
 
 #: tsett.checkescclosesnote.caption
 msgid "Esc Closes Note"
-msgstr ""
+msgstr "ESC cierra la nota"
 
 #: tsett.checkfindtoggles.caption
 msgid "Find Command Toggles"
-msgstr ""
+msgstr "Comando Buscar alterna estado"
 
 #: tsett.checkfindtoggles.hint
 msgctxt "tsett.checkfindtoggles.hint"
 msgid "eg Ctrl-F opens and closes Find Window"
-msgstr ""
+msgstr "ej., Ctrl-F abre y cierre la Ventana de búsqueda"
 
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
@@ -1745,11 +1737,9 @@ msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 
 #: tsett.groupbox4.caption
-#, fuzzy
-#| msgid "  Options  "
 msgctxt "tsett.groupbox4.caption"
 msgid "When a conflict is detected between a local note and remote one :"
-msgstr "  Opciones  "
+msgstr "Al detectar un conflicto entre una nota local y una remota:"
 
 #: tsett.groupbox5.caption
 msgid "Font Size"
@@ -1760,13 +1750,11 @@ msgid "  Sync  "
 msgstr " Sincronizar "
 
 #: tsett.groupboxtoken.caption
-#, fuzzy
 msgctxt "tsett.groupboxtoken.caption"
 msgid "Token"
 msgstr "Autentificador"
 
 #: tsett.groupboxuser.caption
-#, fuzzy
 msgctxt "tsett.groupboxuser.caption"
 msgid "User"
 msgstr "Usuario"
@@ -1843,15 +1831,15 @@ msgstr "Tipo sincronización"
 
 #: tsett.menuitemcopytoken.caption
 msgid "Copy Existing Token"
-msgstr ""
+msgstr "Copiar autentificador actual"
 
 #: tsett.menuitemgettoken.caption
 msgid "Get a Token in your Browser"
-msgstr ""
+msgstr "Obtener un autenticador con el navegador"
 
 #: tsett.menuitempastetoken.caption
 msgid "Paste a New Token"
-msgstr ""
+msgstr "Pegar un autenticador nuevo"
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."
@@ -1905,7 +1893,7 @@ msgstr "Configurar"
 
 #: tsett.speedtokenactions.caption
 msgid "Actions"
-msgstr ""
+msgstr "Acciones"
 
 #: tsett.tabbackup.caption
 msgid "BackUp"
@@ -1933,4 +1921,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-

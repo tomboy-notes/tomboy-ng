@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+<?xml version="1.0" encoding="UTF-8"?>
+<note version="0.3" xmlns="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size">
   <title>Sincronización con tomboy-ng</title>
   
 <text xml:space="preserve"><note-content version="0.1"><underline>Sincronización con tomboy-ng</underline>
 
-<italic>Esto trata de la sincronización de archivos entre equipos con Linux, Windows y Mac. Hay otro documento de ayuda que trata de sincronizar con Tomdroid.</italic>
-
-<italic>Si le interesa en sincronizar a través de Github, que permite tanto la sincronización como acceso a sus notas online desde un navegador, vea https://github.com/tomboy-notes/tomboy-ng/wiki/Github-Sync</italic>
+<italic>Esto trata de la sincronización de archivos entre equipos con Linux, Windows y Mac. Si le interesa en sincronizar a través de Github, que permite tanto la sincronización como acceso a sus notas online desde un navegador, vea https://github.com/tomboy-notes/tomboy-ng/wiki/Github-Sync</italic>
 
 Sincronizar sus notas tomboy-ng (y/o Tomboy) puede ser muy útil. Si lo hace bien, todas las notas en todos sus equipos serán las mismas. Y, además, tiene una estrategia para hacer copias de seguridad de las notas.  ¡Acuérdese que el valor de sincronizar está relacionado con la frecuencia de que lo hace!
 
@@ -14,17 +12,17 @@ tomboy-ng permite  <bold>la sincronización de archivos</bold>. Es decir, que si
 
 <bold>Nuevo a partir de v0.27, Auto-Sincronización</bold>, vea más abajo.
 
-Vale, antes de empezar, ¿guarda <highlight>instantáneas</highlight>?  Si no, ¿¿¿por qué no???
+Vale, antes de empezar, ¿guarda <highlight>instantáneas</highlight> ?  Si no, ¿¿¿por qué no???
 
 <size:large><bold>Un sistema de archivos compartidos</bold></size:large>
-En la práctica, que sepamos, tomboy-ng sincronizará con cualquier sistema de archivos en lo que su administrador de archivos puede navegar. Podría usar Google Drive, Drop Box u otro sistema en la nube. Pero acuérdese que una copia de sus notas estarán en esos servidores y si no está conforme con que se pueden leer allí, tal vez ¡guardarlas allí no es muy buena idea! Puede que quiera compartir un repositorio a través de NFS o SMB. Windows y NFS no representan una buena combinación, pero SMB funciona bien para las tres plataformas. El router que tiene el autor en casa cuenta con una ranura USB detrás y un disco USB enchufado allí que está compartido a través de SMB. Ha funcionado sin fallo durante un par de años. Algunos gestores de archivos de Linux puede ponerle pegas en mostrar los archivos compartidos por SMB o Samba. Puede ser de ayuda de crear un marcador en el gestor de archivos principal, pero incluso si no funciona, asegúrese de tener instalados gvfs y gvfs-fuse y buscar utilizando el diálogo de directorios que abre tomboy-ng donde verá un archivo denominado más o menos: /run/user/1000/gvfs/smb_share...
+En la práctica, que sepamos, tomboy-ng sincronizará con cualquier sistema de archivos en lo que su administrador de archivos puede navegar. Podría usar Google Drive, Drop Box u otro sistema en la nube. Pero acuérdese que una copia de sus notas estarán en esos servidores y si no está conforme con que se pueden leer allí, tal vez ¡guardarlas allí no es muy buena idea! Puede que quiera compartir un repositorio a través de NFS o SMB. Windows y NFS no representan una buena combinación, pero SMB funciona bien para las tres plataformas. El router que tiene el autor en casa cuenta con una ranura USB detrás y un disco USB enchufado allí que está compartido a través de SMB. Ha funcionado sin fallo durante un par de años. Algunos gestores de archivos de Linux puede ponerle pegas en mostrar los archivos compartidos por SMB o Samba. Puede ser de ayuda de crear un marcador en el gestor de archivos principal, pero incluso si no funciona, asegúrese de tener instalados gvfs y gvfs-fuse y buscar utilizando el diálogo de directorios que abre tomboy-ng donde verá un archivo denominado más o menos: /run/user/1000/gvfs/smb_share ...
 
-O incluso podría usar un disco USB y enchufarlo en cualquier equipo que está sincronizando de momento. Vale siempre y cuando tomboy-ng puede leer y escribir allí.
+ O incluso podría usar un disco USB y enchufarlo en cualquier equipo que está sincronizando de momento. Vale siempre y cuando tomboy-ng puede leer y escribir allí.
 
-Una cosa de tener en cuenta: si piensas sincronizar ambos Tomboy y tomboy-ng con el mismo repositorio, Tomboy no es tan flexible con "cualquier sistema de archivos". Investíguelo antes de dedicar mucho tiempo en establecer el sistema.
+Una cosa de tener en cuenta: si piensas sincronizar ambos Tomboy y tomboy-ng con el mismo repositorio, Tomboy no es tan flexible con &quot;cualquier sistema de archivos&quot;. Investíguelo antes de dedicar mucho tiempo en establecer el sistema.
 
 <size:large><bold>Crear un repositorio</bold></size:large>
-Fácil. Puede que sea una buena idea crear un directorio allí en el sitio compartido como "Tomboy-Sync" o lo que quiera. Simplemente hay que decir a tomboy-ng (o Tomboy) donde está el sistema de archivos y lo hará todo. En tomboy-ng, vaya a Preferencias, haga clic en la pestaña de Sincronización, y "Cambiar repositorio". Navegue al directorio que creó antes.  tomboy-ng analizará el directorio y las notas (si las hay) y producirá un informe sobre lo que hará. Si le parece bien, haga clic en "Guardar y Sincronizar". Hecho.
+Fácil. Puede que sea una buena idea crear un directorio allí en el sitio compartido como &quot;Tomboy-Sync&quot; o lo que quiera. Simplemente hay que decir a tomboy-ng (o Tomboy) donde está el sistema de archivos y lo hará todo. En tomboy-ng, vaya a Preferencias, haga clic en la pestaña de Sincronización, y &quot;Cambiar repositorio&quot;. Navegue al directorio que creó antes.  tomboy-ng analizará el directorio y las notas (si las hay) y producirá un informe sobre lo que hará. Si le parece bien, haga clic en &quot;Guardar y Sincronizar&quot;. Hecho.
 
 <size:large><bold>sshfs para sincronizar a través de una red</bold></size:large>
 tomboy-ng puede sincronizarse con cualquier servidor remoto accesible a través de ssh. El desarrollador emplea un plan de hosting barato con un sitio web poco usado y unos cuantos GB de espacio. Es útil porque ¡puedo comunicarme con ello por ssh! Por poder hacerlo así, puedo usar sshfs. Por ejemplo, en Linux, instalaría sshfs y como primer paso conectarme al servidor remoto con ssh y crear un directorio, por ejemplo, TB_Sync. Luego en el equipo local:
@@ -40,14 +38,14 @@ Y re-conectar más tarde para sincronizar de nuevo con
 <monospace>sshfs minombre@servidorremoto.com:TB_Sync TB_Sync [intro]</monospace>
 
 <size:large><bold>Sincronización manual y conflictos</bold></size:large>
-De vez en cuando tiene que hacer clic en la entrada del menú de Sincronización. Un informe breve aparecerá contando lo que ha hecho. Eche un vistazo y cierra el informe. Sin embargo, es casi seguro que llegará un momento en que haya cambiado una nota en más de un equipo después de la última sincronización. Triste, pero inevitable. Ahora, el motor de sincronización no sabe que hacer. Le mostrará una lista de diferencias entre las dos notas y puede elegir usar la versión local o remota. Remota significa la versión en el repositorio de archivos "remoto".
+De vez en cuando tiene que hacer clic en la entrada del menú de Sincronización. Un informe breve aparecerá contando lo que ha hecho. Eche un vistazo y cierra el informe. Sin embargo, es casi seguro que llegará un momento en que haya cambiado una nota en más de un equipo después de la última sincronización. Triste, pero inevitable. Ahora, el motor de sincronización no sabe que hacer. Le mostrará una lista de diferencias entre las dos notas y puede elegir usar la versión local o remota. Remota significa la versión en el repositorio de archivos &quot;remoto&quot;.
 
-Si, incluso después de ver las diferencias entre las dos versiones, no puede elegir, entonces tal vez debería elegir usar la versión remota. De esta manera la versión "local" se copiará a la copia de seguridad y puede recuperarla desde Preferencias--&gt;Copia de Seguridad.
+Si, incluso después de ver las diferencias entre las dos versiones, no puede elegir, entonces tal vez debería elegir usar la versión remota. De esta manera la versión &quot;local&quot; se copiará a la copia de seguridad y puede recuperarla desde Preferencias--&gt;Copia de Seguridad.
 
-Para resolver conflictos, también existen varios botones "hacer todo" que se aplicarán a los demás conflictos en la sincronización. Remota, local, la más nueva, la más vieja, si se siente valiente, haga clic en una.
+Para resolver conflictos, también existen varios botones &quot;hacer todo&quot; que se aplicarán a los demás conflictos en la sincronización. Remota, local, la más nueva, la más vieja, si se siente valiente, haga clic en una.
 
 <size:large><bold>Sincronización automática</bold></size:large>
-Nuevo en v0.27, tomboy-ng sincroniza automáticamente en segundo plano. Obviamente ocurre solamente si tienes el proceso de sincronización configurado y el repositorio está disponible. Preferencias--&gt;Sincronización y marque la casilla. Sincronizará unos 15 segundos después de arrancarse y luego cada hora. Si encuentra un conflictos entre dos versiones de una nota, la ventana normal aparecerá mostrándole las diferencias entre las dos versiones para que puedas decidir. Si no se puede sincronizar porque, quizás ha desconectado el repositorio compartido, una ventana emergerá para avisarle. Puede arreglar el problema y haga clic en "Intentar de Nuevo" o, si hace clic en "Cancelar", no se sincronizará hasta que reinicie tomboy-ng o alterne la opción de Auto-Sincronizar.
+Nuevo en v0.27, tomboy-ng sincroniza automáticamente en segundo plano. Obviamente ocurre solamente si tienes el proceso de sincronización configurado y el repositorio está disponible. Preferencias--&gt;Sincronización y marque la casilla. Sincronizará unos 15 segundos después de arrancarse y luego cada hora. Si encuentra un conflictos entre dos versiones de una nota, la ventana normal aparecerá mostrándole las diferencias entre las dos versiones para que puedas decidir. Si no se puede sincronizar porque, quizás ha desconectado el repositorio compartido, una ventana emergerá para avisarle. Puede arreglar el problema y haga clic en &quot;Intentar de Nuevo&quot; o, si hace clic en &quot;Cancelar&quot;, no se sincronizará hasta que reinicie tomboy-ng o alterne la opción de Auto-Sincronizar.
 
 Si usted, como yo, tiene que asegurarse que todo funcione, puede ver detalles de la sincronización más reciente en la barra de estado de la ventana de Búsqueda.
 
@@ -62,14 +60,14 @@ Segundo, por favor, prueba iniciar tomboy-ng desde la línea de comandos. Mientr
 
 
 </note-content></text>
-  <last-change-date>2021-11-11T16:07:10.4508768+11:00</last-change-date>
-  <last-metadata-change-date>2021-11-11T16:07:10.4508768+11:00</last-metadata-change-date>
+  <last-change-date>2022-09-23T20:46:31.9918428+10:00</last-change-date>
+  <last-metadata-change-date>2022-09-23T20:46:31.9918428+10:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>332</x>
-  <y>30</y>
+  <x>806</x>
+  <y>235</y>
   <open-on-startup>False</open-on-startup>
 </note>

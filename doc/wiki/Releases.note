@@ -49,11 +49,11 @@ For distributions that use .deb packages (but cannot use the PPA), do yourself a
 
 <size:large><bold>Ubuntu</bold></size:large>
 Ubuntu 22.4 has tomboy-ng v0.34 available in its repository but v0.35 is new and shiny.
+
 Firstly, consider using the PPA (above). Otherwise, generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
-<list><list-item dir="ltr"><list><list-item dir="ltr">16.04 Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">18.04 Ubuntu Mate, 18.04 Gnome - please use the GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64).  Difficult to make work with Qt5.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">16.04 and 18.04 (while out of date, we still test with tomboy-ng) Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">20.04 Your choice between  [64bit QT]($$DEB64QT)  which needs the Qt5 libraries or the [64bit]($$DEB64) which needs only a couple of extra things.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">22.04 As above but the QT5 version has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme). But the good news is that U22.04 and newer using Gnome now display a System Tray Icon "out of the box".</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">22.04 and 22.10 As above but the QT5 version has a problem with [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme).</list-item></list></list-item></list>
 
 On Ubuntu, you can install the appropriate package in one of several way  -
 
@@ -62,10 +62,11 @@ On Ubuntu, you can install the appropriate package in one of several way  -
 <list><list-item dir="ltr"><list><list-item dir="ltr">Thirdly, will work on all except U16.04, click on the appropriate link, download and save the file. Use  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -</list-item></list></list-item></list>
 
 Like this -
-<monospace>sudo apt install ./tomboy-ng_0.34-0_amd64.deb [enter]</monospace>
+<monospace>sudo apt install ./tomboy-ng_0.35-0_amd64.deb [enter]</monospace>
 
 <size:large><bold>Linux Mint</bold></size:large>
 LinuxMint 21 has tomboy-ng v0.34 available in its repository but v0.35 is new and shiny.
+
 Firstly, consider using the PPA (Update Manager -&gt; Edit -&gt; Software Sources -&gt; PPAs -&gt; Add =&gt; ppa:d-bannon/ppa-tomboy-ng ).  Otherwise note I have only tested against 20.1 and 21 Cinnamon with GTK2. And it,  [64bit]($$DEB64) worked perfectly.
 Click on the appropriate link from your browser and allow the suggested installer, GDebi, to run the install for you. Linux Mint does report any install errors that happen during this process (unlike some distros!) so its a good approach. Noted that tomboy-ng did not seem to pickup a desktop dark theme but other apps did not either, maybe a VM issue ?
 The LMDE, at time of writing is Debian 11 and should all work fine.
@@ -133,8 +134,8 @@ Users of the official Raspberry Pi OS (previously know as Raspbian) can now down
 
 
 </note-content></text>
-  <last-change-date>2022-10-21T19:36:11.0955123+11:00</last-change-date>
-  <last-metadata-change-date>2022-10-21T19:36:11.0955123+11:00</last-metadata-change-date>
+  <last-change-date>2022-10-21T22:39:16.2706450+11:00</last-change-date>
+  <last-metadata-change-date>2022-10-21T22:39:16.2706450+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
