@@ -1127,7 +1127,7 @@ begin
             MenuItemSync.Enabled := False;
             SpeedButtonNotebook.Enabled := False;
         end;
-        HaveSeenOnActivate := True;             // ToDo : a regional that really needs to be localised
+        HaveSeenOnActivate := True;             // ToDo : a regional, convert to typed const
         Ready := True;
     end;
 end;

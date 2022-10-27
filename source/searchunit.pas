@@ -158,7 +158,6 @@ type        { TSearchForm }
         PopupMenuSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
         ButtonMenu: TSpeedButton;
-        SpeedButton1: TSpeedButton;
         SpeedButtonClearSearch: TSpeedButton;
         SpeedSearchOtions: TSpeedButton;
 		Splitter1: TSplitter;
@@ -213,8 +212,6 @@ type        { TSearchForm }
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
-        procedure SpeedButton1Click(Sender: TObject);
- //       procedure ButtonRefreshClick(Sender: TObject);
         procedure SpeedButtonClearSearchClick(Sender: TObject);
         procedure SpeedSearchOtionsClick(Sender: TObject);
                 // A proc that is called when a note is added to repo by, eg, an import.
@@ -1164,11 +1161,6 @@ procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
     CanClose := False;
     hide();
-end;
-
-procedure TSearchForm.SpeedButton1Click(Sender: TObject);  // ToDo : remove this and the button, testing....
-begin
-    IndexNotes(True);
 end;
 
 procedure TSearchForm.IndexNewNote(const FFName: string; CheckTitleClash : boolean);

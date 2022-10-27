@@ -291,13 +291,6 @@ object SearchForm: TSearchForm
     Caption = 'Clear'
     OnClick = SpeedButtonClearSearchClick
   end
-  object SpeedButton1: TSpeedButton
-    Left = 568
-    Height = 22
-    Top = 8
-    Width = 23
-    OnClick = SpeedButton1Click
-  end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344
     Top = 72
