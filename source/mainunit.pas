@@ -1,5 +1,5 @@
 unit Mainunit;
- {  Copyright (C) 2017-2020 David Bannon
+ {  Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -11,6 +11,7 @@ unit Mainunit;
     enabled), manages some of the command line switches, runs the IPC server to
     communicate with other instances, starts single note mode.
     Makes some decisions about Windows Dark Theme.
+    Manages display of SysTrayIcon (but events, ie clicks, are in SearchUnit).
 
  }
 

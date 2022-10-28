@@ -1,5 +1,5 @@
 unit sync;
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -161,6 +161,7 @@ HISTORY
     2021/08/31  Added sha to TNoteInfo
     2021/09/08  Added progress indicator
     2021/09/27  Selective Sync, possible to have both configured and in use.
+    2022/10/18  When renaming a file, delete target if its exists first, its a windows problem
 }
 
 interface
@@ -1315,8 +1316,10 @@ begin
     { if debugmode then
        debugln('Have written local manifest to ' + FullFileName + '-local'); }
 	if not TestRun then begin
+        if FileExistsUTF8(FullFileName + '-old') then
+           DeleteFileUTF8(FullFileName + '-old');
        renamefileutf8(FullFileName, FullFileName + '-old');
-       renamefileutf8(FullFileName + '-local', FullFileName);
+       renamefileutf8(FullFileName + '-local', FullFileName);      // ToDo : check for errors, Windows rename will not overwrite !
     end;
     result := True;
 end;

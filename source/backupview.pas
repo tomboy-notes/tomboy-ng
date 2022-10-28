@@ -1,6 +1,6 @@
 unit BackupView;
 
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -22,6 +22,7 @@ History
     2019/05/19  Display strings all (?) moved to resourcestrings
     2020/05/11  Restructure to do the backup note display and fiddling here.
     2020/07/25  Tweak layout and select first note if there is one shown in the list.
+    2022/10/18  When renaming a file, delete target if its exists first, its a windows problem
 }
 
 {$mode objfpc}{$H+}
@@ -187,6 +188,8 @@ begin
         exit();
     end;
     if ExistsInRepo then begin
+        if FileExistsUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP') then
+            DeleteFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP');      // A Windows-ism, but does no harm
         if not RenameFileUTF8(Sett.NoteDirectory + FileName, Sett.NoteDirectory + 'Backup'     // Move target note to backup with temp name
                     + PathDelim + FileName + 'TMP') then begin
             showmessage(rsCopyFailed);
@@ -196,6 +199,8 @@ begin
         // Give the a non existing note a new name so that no issues about it being in delete section of Manifest.
         CreateGUID(GUID);
         NewFName := copy(GUIDToString(GUID), 2, 36) + '.note';
+        if FileExistsUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + NewFName) then
+            DeleteFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + NewFName);
         if RenameFile(Sett.NoteDirectory + 'Backup' + PathDelim + Filename,
                 Sett.NoteDirectory + 'Backup' + PathDelim + NewFName) then
             FileName := NewFName
@@ -224,11 +229,14 @@ begin
         end;
         TheMainNoteLister.IndexThisNote(copy(GUIDToString(GUID), 2, 36));       // why GUID, not 'Filename' ?
         // OK, lets deal with the copy of target that we put in backup.
-        If ExistsInRepo then
+        If ExistsInRepo then begin
+            if FileExistsUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then
+                DeleteFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName);
             if not RenameFileUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + FileName + 'TMP',
                     Sett.NoteDirectory + 'Backup' + PathDelim + FileName) then begin
                 showmessage('Failed to move temp backup file');
             end;
+        end;
         //NeedUpDate := True;
     except
         on E: EInOutError do

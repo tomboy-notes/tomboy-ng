@@ -1,6 +1,6 @@
 unit SearchUnit;
 
-{   Copyright (C) 2017-2021 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -490,8 +490,12 @@ begin
     	if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
     		if not CreateDirUTF8(Sett.NoteDirectory + 'Backup') then
             	DebugLn('Failed to make Backup dir, ' + Sett.NoteDirectory + 'Backup');
-    	if not RenameFileUTF8(FullFileName, NewName)
-    		then DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
+        if FileExistsUTF8(NewName) then
+            DeleteFileUTF8(NewName);
+    	if not RenameFileUTF8(FullFileName, NewName) then begin
+    		DebugLn('Failed to move ' + FullFileName + ' to ' + NewName);
+            showmessage('TSearchForm.DeleteNote - failed to rename to ' + NewName);
+        end;
     end;
 
     IndexAndRefresh(False);                                          // ToDo : if Delete updated Index, could be DisplayOnly

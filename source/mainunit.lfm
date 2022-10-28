@@ -259,10 +259,10 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 16
-    Height = 23
+    Height = 25
     Hint = 'You can reverse this from Settings'
-    Top = 256
-    Width = 261
+    Top = 254
+    Width = 262
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14
     BorderSpacing.Bottom = 15

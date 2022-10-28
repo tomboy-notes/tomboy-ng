@@ -1,6 +1,6 @@
 unit RollBack;
 
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -15,6 +15,9 @@ unit RollBack;
     and reopen.  It can toggle, repeatedly switch between.  But if end user
     changes the title, it (obviously) writes a new backup, probably not what
     they want but I cannot determine their intentions.
+
+    HISTORY
+        2022/10/18  When renaming a file, delete target if its exists first, its a windows problem
 }
 
 {$mode objfpc}{$H+}
@@ -115,6 +118,8 @@ var
 begin
     FFName := Sett.NoteDirectory + 'Backup' + PathDelim
                 + copy(ExtractFileNameOnly(NoteFileName), 1, 32) + FileType + '.note';
+    if FileExists(FFName+'-temp') then
+        DeleteFile(FFName+'-temp');
     if not (RenameFile(FFName, FFName+'-temp') and fileexistsUTF8(FFName+'-temp')) then begin
         debugln('ERROR, failed to move : ' + FFName);
         exit;
@@ -123,7 +128,11 @@ begin
     ShownBy.Close;
     // The editBox is a bit slow closing, make sure its disregarded. We did save before opening this form.
     SearchForm.NoteClosing(ExtractFileNameOnly(NoteFileName));                  // Maybe not necessary cos we call UpdateList below ?
+    if FileExistsUTF8(FFName) then
+        DeleteFileUTF8(FFName);
     RenameFileUTF8(NoteFileName, FFName);
+    if FileExistsUTF8(FFName) then
+        DeleteFileUTF8(FFName);
     RenameFileUTF8(FFName+'-temp', NoteFileName);
     LCDStr := GetNoteLastChangeSt(NoteFileName, ErrorStr);                      // Hmm, not checking for errors ?
     SearchForm.UpdateList(Title, LCDStr, NoteFileName, nil);
