@@ -105,6 +105,7 @@ unit Note_Lister;
                 Use either SWYT, Search While You Type, or PressEnter mode. All here in NoteLister
                 SearchUnit.ListView now in ownerdata mode, faster with lots of notes.
                 NoteList now a public var of NoteLister, other units can iterate over it.
+    2022/10/29  Use test, "if TheMainNoteLister = self" to ensure Index are only used by TheMainNoteLister in IndexNotes()
 
 
 }
@@ -1825,7 +1826,9 @@ begin
     NoteBookList.Sort(@NotebookSorter);
     //T3 := gettickcount64();
     //debugln('TNoteLister.IndexNotes() called for ' + WorkingDir + ' count=' + inttostr(NoteList.Count));
-    if TheMainNoteLister <> nil then BuildDateAllIndex();                           // Initialized below, set in Searchform, must be the MAIN notelister
+    if TheMainNoteLister = self then
+        BuildDateAllIndex();
+    //if TheMainNoteLister <> nil then BuildDateAllIndex();                           // Initialized below, set in Searchform, must be the MAIN notelister
     //T4 := gettickcount64();
     //debugln('TNoteLister.IndexNotes read=' + inttostr(T2-T1) + 'mS, NoteBook Sort= ' + inttostr(T3-T2) + ' DateAllIndex=' + inttostr(T4-T3));
 end;

@@ -10,7 +10,7 @@ object FormBackupView: TFormBackupView
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.2.0.2'
   object Memo1: TMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

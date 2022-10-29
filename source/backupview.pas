@@ -22,7 +22,9 @@ History
     2019/05/19  Display strings all (?) moved to resourcestrings
     2020/05/11  Restructure to do the backup note display and fiddling here.
     2020/07/25  Tweak layout and select first note if there is one shown in the list.
-    2022/10/18  When renaming a file, delete target if its exists first, its a windows problem
+    2022/10/28  When renaming a file, delete target if its exists first, its a windows problem
+    2022/10/29  Tweaks to work with revised NoteLister model and to refresh display in SearchForm
+                after a recover.
 }
 
 {$mode objfpc}{$H+}
@@ -175,7 +177,7 @@ var
     NewFName : string;
     GUID : TGUID;
     FileName : string;
-    ExistsInRepo : boolean;
+    ExistsInRepo : boolean;       // Indicates note in question is in main notes dir.
 begin
     FileName := string(ListBox1.Items.Objects[ListBox1.ItemIndex]);
     ExistsInRepo := FileExistsUTF8(Sett.NoteDirectory + FileName);
@@ -196,7 +198,7 @@ begin
             exit;
         end;
     end else begin
-        // Give the a non existing note a new name so that no issues about it being in delete section of Manifest.
+        // Give the a non existing note a new name so that no issues about it being in delete section of Sync Manifest.
         CreateGUID(GUID);
         NewFName := copy(GUIDToString(GUID), 2, 36) + '.note';
         if FileExistsUTF8(Sett.NoteDirectory + 'Backup' + PathDelim + NewFName) then
@@ -208,7 +210,7 @@ begin
           Showmessage(rsRenameFailed + ' ' + FileName);
     end;
     // OK, if to here, user really wants it back, no reason why not.
-    AssignFile(InFile, Sett.NoteDirectory + 'Backup' + PathDelim + Filename);      // We'll copy and update dates at same time, wether exists or not
+    AssignFile(InFile, Sett.NoteDirectory + 'Backup' + PathDelim + Filename);      // We'll copy and update dates at same time, exists or not
     AssignFile(OutFile, Sett.NoteDirectory + Filename);
     try
         try
@@ -243,13 +245,15 @@ begin
             showmessage('File handling error occurred. Details: ' + E.Message);
     end;
      // reindexing triggered from FormClose
-    RefreshBackup(); Memo1.Append(rsRecoverOK);
+    RefreshBackup();
+    Memo1.Append(rsRecoverOK);
 end;
 
 
 procedure TFormBackupView.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
         SearchForm.RefreshMenus(mkRecentMenu);
+        SearchForm.IndexNotes(True);
 end;
 
 

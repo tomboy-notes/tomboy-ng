@@ -142,7 +142,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx6058="True" idx5024="True" idx4056="True" idx4055="True"/>
+              <IgnoredMessages idx6058="True" idx5092="True" idx5024="True" idx4056="True" idx4055="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
@@ -838,9 +838,16 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <CommandLineParams Value="-l es --config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default"/>
+        <Mode0 Name="default">
+          <local>
+            <CommandLineParams Value="-l es --config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+          </local>
+        </Mode0>
       </Modes>
     </RunParams>
     <RequiredPackages Count="3">

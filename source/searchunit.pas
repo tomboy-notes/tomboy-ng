@@ -67,7 +67,7 @@ unit SearchUnit;
     2018/08/18  Can now set search option, Case Sensitive, Any Combination from here.
     2018/08/18  Update Mainform line about notes found whenever IndexNotes() is called.
     2018/11/04  Added ProcessSyncUpdates to keep in memory model in line with on disk and recently used list
-    2018/11/25  Now uses Sync.DeleteFromLocalManifest(), called when a previously synced not is deleted, TEST !
+    2018/11/25  Now uses Sync.DeleteFromLocalManifest(), called when a previously synced note is deleted
     2018/12/29  Small improvements in time to save a file.
     2019/02/01  OpenNote() now assignes a new note to the notebook if one is open (ie ButtonNotebookOptions is enabled)
     2019/02/09  Move autosize stringgrid1 (back?) into UseList()
@@ -117,6 +117,7 @@ unit SearchUnit;
     2022/09/08  Update Notes Found number on small splash screen  #267
     2022/09/13  Tweaks to manage the ListViewNotes sort indicators, must 'Bounce'.
     2022/10/20  Added an Import menu item to Options.
+    2022/10/29  Auto remove Search Prompt from start of search term.
 }
 
 {$mode objfpc}{$H+}
@@ -1015,12 +1016,32 @@ var
     NoteBook : string;
     STL : TStringList;
     Found : integer;
+    Apoint : TPoint;
+    AStr  : string;
     //T1, T2, T3 : qword;
+
+        // Returns the length of the char that b is first byte of
+{    function LengthUTF8Char(b : byte) : integer;
+    begin
+      case b of
+                0..191   : Result := 1;
+                192..223 : Result := 2;
+                224..239 : Result := 3;
+                240..247 : Result := 4;
+      end;
+    end;   }
+
 begin
+    AStr := EditSearch.Text;                // Remove the search prompt if its first part of Text
+    if (Astr.Length > rsMenuSearch.Length) and (AStr.StartsWith(rsMenuSearch)) then begin
+        EditSearch.Text := copy(EditSearch.Text, Length(rsMenuSearch)+1, 10);
+        APoint.X := 1;
+        APoint.Y := 0;
+        EditSearch.CaretPos := APoint;
+    end;
     if (EditSearch.Caption <> '') and (EditSearch.Caption <> rsMenuSearch) then
         SpeedButtonClearSearch.Enabled := True;
     if (not Sett.AutoSearchUpdate) or (not visible) or (length(EditSearch.Text)=1) then exit;
-    //debugln('TSearchForm.EditSearchChange() EditSearch.Text=' + EditSearch.Text);
     STL := TStringList.Create;
     try
         if length(EditSearch.text) = 1 then exit;    // Nothing to see here folks
