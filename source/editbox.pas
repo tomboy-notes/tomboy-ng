@@ -229,6 +229,7 @@ unit EditBox;
                 work directly off TheNoteLister.NoteList[i]^.TitleLow, 11-20mS compared to 19-41mS
     2022/09/08  Esc can (if set) close current note. #271
     2022/10/18  Extensive changes to Link system, faster and better behaviour #260 inc
+    2022/10/30  In MakeLink, capture the colour early, even if risk we don't need it.
 }
 
 
@@ -2119,6 +2120,7 @@ begin
     if Index = 0 then exit;                                                     // Thats this note's title, skip it !
     BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Block where proposed link Ends
     BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // Block where proposed link starts
+    SaveLimitedAttributes(BlockNoS, FontAtt);                                   // Record the existing colours asap !
     if KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink') then begin
         AText := lowercase(KMemo1.Blocks.Items[BlockNoS].Text);
         if AText.StartsWith('http') then exit;                                  // Already checked by Clean...
@@ -2142,7 +2144,7 @@ begin
         inc(i);
     end;
 
-    SaveLimitedAttributes(BlockNoS, FontAtt);
+    //SaveLimitedAttributes(BlockNoS, FontAtt);
     TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // Thats the bit thats in first block, possibly everything
     if BlockNoE > BlockNoS then begin
         i := 1;
@@ -2179,7 +2181,7 @@ begin
     Hyperlink.OnClick := @OnUserClickLink;
     {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);
     RestoreLimitedAttributes(BlockNoS, FontAtt);
-    {$ifdef LDEBUG}debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +']');{$endif}
+    //debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +'] Att Col=' +  ColorToString(FontAtt.BackColour));
     {$ifdef LDEBUG}TG3 := gettickcount64();
     TG1 := TG1 + (TG3-Tg2);{$endif}
 end;
