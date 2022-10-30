@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Building tomboy-ng</title>
+  <title>Building-tomboy-ng</title>
   
-<text xml:space="preserve"><note-content version="0.1"><underline>Building tomboy-ng</underline>
+<text xml:space="preserve"><note-content version="0.1"><underline>Building-tomboy-ng</underline>
 
 <size:small>Don't edit this wiki page, its generated from a note in tomboy-ng's doc dir.</size:small>
 
@@ -11,7 +11,7 @@ This page is about building tomboy-ng from source and contributing to its develo
 Tomboy-ng is built on Linux, Windows or Mac using  -
 <list><list-item dir="ltr">Free Pascal Compiler - https://freepascal.org/ - version 3.2.0 or later.</list-item></list>
 <list><list-item dir="ltr">Lazarus - https://www.lazarus-ide.org/ - version 2.2.0  (earlier versions may have some specific bugs, can be patched but .... Lazarus Fixes or trunk don't need patches either.)</list-item></list>
-<list><list-item dir="ltr">Note that Lazarus 2.2.0 and later can better handle the problems that the Gnome Desktop has with the System Tray Icon.</list-item></list>
+<list><list-item dir="ltr">Note that Lazarus 2.2.0 and later can better handle the problems that the Gnome Desktop has with the System Tray Icon. Strongly recommend Lazarus 2.2.2 or later for Gnome users.</list-item></list>
 <list><list-item dir="ltr">kcontrols - https://bitbucket.org/tomkrysl/kcontrols - current version requires no patches.</list-item></list>
 
 <size:large><bold>Pascal ?</bold></size:large>
@@ -46,11 +46,13 @@ Take the <bold>Windows</bold> Win_Pre{$ver} directory to a windows machine that 
 
 The <bold>Mac</bold> kits are made on a Sierra Mac, again using a script. Requires similar setup to above.
 
+<bold>Packman</bold> kits built on my 21.2-X VM, using the script in scripts dir.
+
 
 
 </note-content></text>
-  <last-change-date>2022-09-10T17:17:15.0639300+10:00</last-change-date>
-  <last-metadata-change-date>2022-09-10T17:17:15.0639300+10:00</last-metadata-change-date>
+  <last-change-date>2022-10-30T11:16:06.3276116+11:00</last-change-date>
+  <last-metadata-change-date>2022-10-30T11:16:06.3276116+11:00</last-metadata-change-date>
   <create-date>2018-12-16T11:14:35.5850000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

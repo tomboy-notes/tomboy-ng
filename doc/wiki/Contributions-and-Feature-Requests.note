@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Contributions and Feature Requests</title>
+  <title>Contributions-and-Feature-Requests</title>
   
-<text xml:space="preserve"><note-content version="0.1"><underline>Contributions and Feature Requests</underline>
+<text xml:space="preserve"><note-content version="0.1"><underline>Contributions-and-Feature-Requests</underline>
 
 
 <size:large><bold>Pull Requests</bold></size:large>
@@ -23,12 +23,6 @@ Here I will mention a number of possible additions and some superficial comments
 <size:large><bold>Encryption</bold></size:large>
 If you sync your notes to some site outside your control, or even just have nosey family members, maybe you need encryped notes ?  The downside might be making searching harder/slower.  Would you want the whole note encrypted or just key words, sentences ?
 
-<size:large><bold>Multi Level Bullets</bold></size:large>
-Done in version 0.34 of tomboy-ng.
-
-<size:large><bold>Import / Export</bold></size:large>
-Do you have a need to import into tomboy-ng or export from tomboy-ng in a particular format ?  I cannot undertake to implement every format out there and most certainly not completely but some are quite possible.  There is a experimental TomboyTools that imports and exports text and Mark Down. And will make man pages as long as you start your note with the appropriate template, easy !
-
 <size:large><bold>Embedded Images</bold></size:large>
 Do you want to have pretty pictures in your notes, if so, what format would you want ?
 
@@ -45,8 +39,8 @@ You know, badly spelt words are somehow highlighted as you type.  I know I have 
 
 
 </note-content></text>
-  <last-change-date>2022-09-10T17:27:09.6606180+10:00</last-change-date>
-  <last-metadata-change-date>2022-09-10T17:27:09.6606180+10:00</last-metadata-change-date>
+  <last-change-date>2022-10-30T11:16:28.5269796+11:00</last-change-date>
+  <last-metadata-change-date>2022-10-30T11:16:28.5269796+11:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

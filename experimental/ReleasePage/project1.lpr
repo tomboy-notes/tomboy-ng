@@ -2,7 +2,8 @@ program project1;
 
 
 { History
-  23/07/2021  Updated name of arm to amrhf
+  23/07/2021  Updated name of arm to armhf
+  2022/10/30  Added Packman package
 }
 
 {$mode objfpc}{$H+}
@@ -167,7 +168,8 @@ begin
                TStringArray.Create('TGZ32',    'tomboy-ng32-',     '.tgz'),
                TStringArray.Create('DMG64',    'tomboy-ng64_',     '.dmg'),
                TStringArray.Create('DMG32',    'tomboy-ng32_',     '.dmg'),
-               TStringArray.Create('EXE',      'tomboy-ng-setup-', '.exe')
+               TStringArray.Create('EXE',      'tomboy-ng-setup-', '.exe'),
+               TStringArray.Create('PAC64',    'tomboy-ng-', '-1-x86_64.pkg.tar.zst')               //  tomboy-ng-0.34-1-x86_64.pkg.tar.zst
                );
 
     scanfile(InFileName, OutFileName);

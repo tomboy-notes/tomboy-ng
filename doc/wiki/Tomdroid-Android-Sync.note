@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>Tomdroid Sync</title>
+  <title>Tomdroid-Android-Sync</title>
   
-<text xml:space="preserve"><note-content version="0.1"><underline>Tomdroid Sync</underline>
+<text xml:space="preserve"><note-content version="0.1"><underline>Tomdroid-Android-Sync</underline>
 
-<bold>WARNING</bold> - I am not aware of anyone using Tomdroid Sync, as I am not particularly proud of it, its clunky to use and perhaps the online note access provided by GitHub Sync makes it unnecessary. So, unless I receive an indication its needed by someone, <bold>Tomdroid Sync may be removed in future versions of tomboy-ng.</bold>
+<highlight><bold>WARNING - I am not aware of anyone using Tomdroid Sync, as I am not particularly proud of it, its clunky to use and perhaps the online note access provided by GitHub Sync makes it unnecessary. So, unless I receive an indication its needed by someone, Tomdroid Sync will be removed in future versions of tomboy-ng.</bold></highlight>
 
 Welcome to tomboy-ng's take on Tomdroid. Please be aware that its an experimental feature in tomboy-ng and its heavily dependent on what Tomdroid itself does. However, the author has been routinely using this model for a couple of weeks now on several different Android devices and so far it seems functional. He would greatly like to hear your experiences.
 
@@ -90,8 +90,8 @@ The Tomdroid interface is still quite fragile and not good at telling us where i
 
 
 </note-content></text>
-  <last-change-date>2021-11-16T22:42:04.7297545+11:00</last-change-date>
-  <last-metadata-change-date>2021-11-16T22:42:04.7297545+11:00</last-metadata-change-date>
+  <last-change-date>2022-10-30T11:18:06.6891666+11:00</last-change-date>
+  <last-metadata-change-date>2022-10-30T11:18:06.6891666+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

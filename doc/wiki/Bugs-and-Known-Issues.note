@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng Bugs and Known Issues</title>
+  <title>Bugs-and-Known-Issues</title>
   
-<text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng Bugs and Known Issues</underline>
+<text xml:space="preserve"><note-content version="0.1"><underline>Bugs-and-Known-Issues</underline>
 
 <size:small>This is the tomboy-ng Known Issues and To-Do list for Github Wiki.  Its generated from a note in the tomboy-ng doc dir, don't edit the wiki directly.</size:small>
 
@@ -29,10 +29,11 @@ Or you could set that generally so it makes all QT apps look the same by, eg, ad
 <monospace>QT_QPA_PLATFORMTHEME=qt5ct</monospace>
 
 <size:large><bold>Dark Theme</bold></size:large>
-At present, seems only GTK2 can pick up its colours from the OS :-(
+At present, seems only GTK2 and to a limited extent, Windows can pick up colours from the OS :-(
 So, its now possible to pass --dark-theme to the application on the command line and you get, sort of, a Dark Theme.  Sadly, some forms in the application are based on components that simply will not play, Settings being a good example. Sorry.
 
 <size:large><bold>QT5 versions and Gnome Desktops</bold></size:large>
+It appears that even Qt5 apps can now use XWayland so much of this is unnecessary, leave it here for now, just in case.
 Almost all Gnome Desktops now use the Wayland Display Manager instead of X (or XCB). QT5 has a plugin that will manage the connection between a QT5 app and Wayland, typically called qtwayland5, you may find it already installed or need to manually install it yourself.  If you run a QT5 app, such as the QT5 version of tomboy-ng, you may see a warning to the effect that its ignoring the request to run under Wayland, if you want it to run under Wayland, do something like -
 
 QT_QPA_PLATFORM=wayland  tomboy-ng [enter]
@@ -106,8 +107,8 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2022-10-19T21:20:52.1695722+11:00</last-change-date>
-  <last-metadata-change-date>2022-10-19T21:20:52.1695722+11:00</last-metadata-change-date>
+  <last-change-date>2022-10-30T11:15:30.8864126+11:00</last-change-date>
+  <last-metadata-change-date>2022-10-30T11:15:30.8864126+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

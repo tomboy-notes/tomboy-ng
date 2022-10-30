@@ -14,13 +14,13 @@ tomboy\-ng \- manage a collection of notes using a simple GUI markup
 tomboy\-ng  [\-h \-\-help] [\-\-debug\-sync]  [\-\-debug\-index] [\-\-debug\-log=LOGFILE] [\-l \-\-lang=CC] [\-\-config\-dir=PATH_to_DIR] [\-o PATH_to_NOTE] [\-\-open\-note=PATH_to_NOTE] [PATH_to_NOTE] [\-t \-\-import\-txt=PATH_to_FILE] [\-m \-\-import\-md=PATH_to_FILE] [\-n \-\-import\-note=PATH_to_NOTE] [\-\-title\-fname]
 
 .SH DESCRIPTION
-tomboy\-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS.  It  is  file  compatible  with  Tomdroid  and  GNote (>=v0.30).  Tomboy\-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs.
+tomboy\-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS.  It  is  file  compatible  with  Tomdroid  and  GNote (>=v0.30).  Tomboy\-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs. It will Sync with a Github account, either all your notes or just ones in the SyncGithub notebook. You can edit notes, from almost any device with a browser in markdown format.
 
 tomboy\-ng has built in systems to take snapshots of your notes for safe keeping, to import and export notes in different formats, spell  checking means to group your notes into "notebooks" for easy management.
 
-Many users will want to have tomboy\-ng start at logon time and leave it running indefinitly. When running, it will put an Icon in the System Tray and you can interact with it via that Icon. However, some Gnome 3 based Linux distros have problems with the System Tray Icon, on such  limited  systems, see the project wiki page mentioned below.
+Many users will want to have tomboy\-ng start at logon time and leave it running indefinitly. When running, it will put an Icon in the System Tray and you can interact with it via that Icon. However, some Gnome 3 based Linux distros have problems initially with the System Tray Icon, on such  limited  systems, see the project wiki page mentioned below.
 
-On  Windows and Mac tomboy\-ng uses native libraries, on Linux, tomboy\-ng comes in both GTK2 and Qt5 version and most systems have almost all the necessary libraries pre installed.
+On  Windows and Mac tomboy\-ng uses native libraries, on Linux, tomboy\-ng comes in both GTK2 and Qt5 version and many systems have almost all the necessary libraries pre installed.
 
 While options below are familiar to Linux users, Mac and Windows users may like to look at some examples further down to see how to use them.
 
@@ -40,7 +40,7 @@ Do not show the small tomboy\-ng splash screen at startup. However, if an error 
 
 .TP
  \-\-lang=CC
-Tomboy\-ng  normally  picks up its language from the OS and does an auto switch. However, its possible to force a language at startup using the two letter language code, ie es for spanish, nl for dutch, fr for French. If you would like to help translate tomboy\-ng, please, please get in touch.
+Tomboy\-ng  normally  picks up its language from the OS and does an auto switch. However, its possible to force a language at startup using the two letter language code, ie es for spanish, nl for dutch, fr for French and uk for Ukranian. If you would like to help translate tomboy\-ng, please, please get in touch.
 
 .TP
 \-c, \-\-config\-dir=PATH_to_DIR
@@ -63,12 +63,12 @@ Import the indicated markdown file into the Note Repository, converting it to no
 Import the indicated Tomboy Note format file into the Note Repository, the note itself is not changed, its just copied in and, if necessary, a GUID style file name is assigned. The last change date of the note is retained.  If another instance of tomboy\-ng is running, its notified of the import.
 
 .TP
-\-title\-fname
+\-\-title\-fname
 Applies only when importing a text or markdown file, determines that the filename will be used as the note title instead of the default first line of the file.
 
 .TP
  \-\-debug\-sync   \-\-debug\-index   \-\-debug\-spell
-Generate a lot of logging information on the console during a sync process, each one relating to a particular field. You can combine or even use all three. Intended for debugging. The debug information is written to the console in Linux and can be captured to a file on all platforms, see below.
+Generate a lot of logging information on the console during a sync, index or spell process, each one relating to a particular field. You can combine or even use all three. Intended for debugging. The debug information is written to the console in Linux and can be captured to a file on all platforms, see below.
 
 .TP
  \-\-debug\-log=LOGFILE
