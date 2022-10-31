@@ -607,7 +607,11 @@ const
 
 { =============  T   S A V E   T H R E A D   ================== }
 
-
+{ Saves the contens of note in a single, seperate thread. It has had TheSL
+already populated with xml note content, it now normalises it adds Footer
+and writes it to disk. It then builds a string containing plain text with kmemo's
+newline replaced with #10. That string is sent to TheMainNoteLister to replace
+existing searchable 'content' for this note.  }
 procedure TSaveThread.Execute;
 var
     Normaliser : TNoteNormaliser;
@@ -615,7 +619,7 @@ var
     FileStream : TFileStream;
 begin
     Normaliser := TNoteNormaliser.Create;
-    Normaliser.NormaliseList(TheSL);
+    Normaliser.NormaliseList(TheSL);               // TheSL belongs to the thread.
     Normaliser.Free;
     TheSL.Add(Footer(TheLoc));
     // TWriteBufStream, TFileStream preferable to BufferedFileStream because of a lighter memory load.
@@ -3367,6 +3371,21 @@ begin
 
 end;
 
+
+// ===================================== S A V I N G ===========================
+
+{ When changes are made to note content, a timer is triggered and extended as user
+types. Sooner or later, the timer demands SaveTheNote() be called. It locks kmemo,
+builds a list of its content using Saver, TBSaveNote (which is badely named, it
+generates the xml to save but does not, itself, save to disk. Unlocks. It calls
+SearchForm.UpdateList() OR if its because we are closing the note and note is
+clean, goes diret to TheMainNoteLister with just an updated LCD. Note, the note
+has not hit the disk yet !
+
+That list is passed to SaveStringList, it makes a new thread that normalises
+content of string list and then writes it to disk.
+}
+
 {$define SAVETHREAD}
 
 function TEditBoxForm.SaveStringList(const SL: TStringList; Loc : TNoteUpdateRec) : boolean;
@@ -3423,14 +3442,17 @@ var
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    // T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
+    NoteContent : string = '';
+    LineNumb   : integer = 0;
+    FName      : string;
+    T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
-    if BusySaving then begin
+    if BusySaving then begin                                      // ToDo : inform user via notifications
 //        ShowMessage('ERROR, unable to save ' + NoteFileName);   // No, don't do that, it stops the process
         exit;
     end;
-    //T1 := gettickcount64();
+    T1 := gettickcount64();
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
@@ -3462,17 +3484,43 @@ begin
         TitleHasChanged := False;
 	end;
     Caption := Title;
-    KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
-    //T2 := GetTickCount64();
+//    KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
+    T2 := GetTickCount64();
     SL := TStringList.Create();
     try
         Saver.ReadKMemo(NoteFileName, Title, KMemo1, SL);       // Puts all the content into the StringList, SL
-        //T3 := GetTickCount64();
+        T3 := GetTickCount64();
+
+        if Sett.AutoSearchUpdate then begin                     // Replace the search Content in note lister
+            while LineNumb < KMemo1.Blocks.LineCount do begin
+                NoteContent := NoteContent + lowercase(Kmemo1.blocks.LineText[LineNumb]);
+                inc(LineNumb);
+                if NoteContent[high(NoteContent)] = #182 then begin          // Line returns with two char line ending
+                    delete(NoteContent, High(NoteContent), 1);               // delete the 182
+                    NoteContent[High(NoteContent)] := #10;                   // replace the 194
+                end;
+                inc(LineNumb);
+            end;
+        end;
+        T4 := GetTickCount64();
     finally
-        KMemo1.Blocks.UnLockUpdate;
+//        KMemo1.Blocks.UnLockUpdate;
         if Saver <> Nil then Saver.Destroy;
         Caption := CleanCaption();
     end;
+
+    if Sett.AutoSearchUpdate then begin
+        LineNumb := 0;
+        FName := ExtractFileName(NoteFileName);
+        while LineNumb < TheMainNoteLister.NoteList.Count do begin
+            if TheMainNoteLister.NoteList[LineNumb]^.ID = FName then begin
+                TheMainNoteLister.NoteList[LineNumb]^.Content := NoteContent;
+                break;
+            end;
+            inc(LineNumb);
+        end;
+    end;
+    T5 := GetTickCount64();
     Loc.Width:=inttostr(Width);
     Loc.Height:=inttostr(Height);
     Loc.X := inttostr(Left);
@@ -3483,17 +3531,19 @@ begin
     loc.CreateDate := CreateDate;
     if Dirty or SingleNoteMode then begin    // In SingeNoteMode, there is no NoteLister, so date is always updated.
         Loc.LastChangeDate:= TB_GetLocalTime();
-        SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // 6mS - 8mS timewasting menu rewrite ??
+        SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // 6mS - 8mS timewasting menu rewrite ??  No usually now
     end else
-        Loc.LastChangeDate := TheMainNoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
+        Loc.LastChangeDate                                                      // Must be closing.
+            := TheMainNoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
 
-    //T4 := GetTickCount64();
+
     if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
-    //T5 := GetTickCount64();
+    T6 := GetTickCount64();
 
-		// T6 := GetTickCount64();
-    {    debugln('Save Note Initial=' + inttostr(T2-T1) + ' ReadMemo=' + inttostr(T3-T2)
-                + ' MenuUpDate=' + Inttostr(T4-T3) + ' Normalise_Save=' + inttostr(T5-T4));     }
+
+    debugln('Save Note Initial=' + inttostr(T2-T1) + ' Saver=' + inttostr(T3-T2)
+                + ' BuildContent=' + Inttostr(T4-T3) + ' ContentToNoteLister=' + inttostr(T5-T4) + ' SendToSaveStringList=' + (T6-T5).tostring);
+    // Save Note Initial=0 Saver=4 BuildContent=7 ContentToNoteLister=0 SendToSaveStringList=1  with locking disabled
     (*
     {$ifdef SAVETHREAD}
     debugln('Total time to save threaded is ' + inttostr(T5-T1));

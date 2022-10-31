@@ -543,7 +543,7 @@ var
     //STL : TStringList;
     //NoteBook : string;
 begin
-    { Called when a note is saved, date is always new, Title may have changed,
+    { Called when a note is (soon to be saved) saved, date is always new, Title may have changed,
     note may be a new one. We always send date to NoteList, maybe update menu,
     maybe rerun the existing search, maybe just update display. In fact, we
     update the display unless note is not shown in ListView.    }

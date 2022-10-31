@@ -1213,14 +1213,14 @@ begin
                     Node := Doc.DocumentElement.FindNode('text');
                     if assigned(Node) then begin
                         {$ifdef TOMBOY_NG}
-                        if Sett.SearchCaseSensitive then                        // Should we have a wrapper ifdef TOMBOY_NG ??
+                        if Sett.SearchCaseSensitive then
                             NoteP^.Content := Node.TextContent
                         else {$endif} NoteP^.Content := lowercase(Node.TextContent);
                     end
                     else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
                 end;
 
-                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
+(*                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
                 else begin
                     Node := Doc.DocumentElement.FindNode('text');
                     if assigned(Node) then begin
@@ -1230,7 +1230,7 @@ begin
                         else {$endif} NoteP^.Content := lowercase(Node.TextContent);
                     end
                     else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
-                end;
+                end;   *)                                                       // Crazy, why this block twice ??
 
                 NoteP^.OpenNote := nil;
                 NoteP^.InSearch := True;
@@ -1329,8 +1329,8 @@ procedure TNoteLister.IndexThisNote(const ID: String);
 begin
     //DebugMode := True;
     //debugln('TNoteLister.IndexThisNote');
-    InitCriticalSection(CriticalSection);
-    GetNoteDetails(WorkingDir, CleanFileName(ID), false, self);
+    InitCriticalSection(CriticalSection);                          // ToDo : how hard would this be to do in background thread ?
+    GetNoteDetails(WorkingDir, CleanFileName(ID), false, self);    // while single call, must setup critical
     DoneCriticalSection(CriticalSection);
     //DebugMode := False;
 end;
@@ -1522,6 +1522,8 @@ function TNoteLister.CheckSearchTerms(const STermList : TStringList; const Index
 var
     St : string;
 begin
+//    if NoteList[index]^.Title = 'tomboy-ng Release Process' then
+//        debugln('TNoteLister.CheckSearchTerms - found tomboy-ng Release Process');
     for St in STermList do begin
         if St = '' then continue;
         if pos(St, NoteList[index]^.Content) = 0 then exit(False);
