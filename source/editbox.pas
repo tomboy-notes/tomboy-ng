@@ -246,7 +246,7 @@ uses
     fpexprpars,         // for calc stuff ;
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
     PrintersDlgs,
-    TBUndo;             // experimental ....
+    TBUndo;
 
 type FontLimitedAttrib = record      // Used to save and restore attributes when
     Styles : TFontStyles;             // a hyperlink is created or unlinked.
@@ -1832,7 +1832,8 @@ begin
     PanelFind.Color := Sett.AltColour;
     Panel1.Color := Sett.AltColour;
     KMemo1.Colors.BkGnd:= Sett.BackGndColour;
-    Kmemo1.Blocks.DefaultTextStyle.Font.Color:=Sett.TextColour;
+    Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
+    Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;
     KMemo1.Blocks.UnLockUpdate;
     Ready := true;
     Dirty := False;
@@ -1866,7 +1867,7 @@ begin
         ButtMainTBMenu.Enabled := false;
     end;
     //PanelFind.Visible := False;
-    PanelFind.Height := 1;                      // That is, hide it for now
+    PanelFind.Height := 1;                      // That is, hide it for now, visible a problem on Mac
     PanelFind.Caption := '';
     {$ifdef WINDOWS}PanelFind.Color := Sett.AltColour;{$endif}    // so we see black text, windows cannot change some colours !
     {$ifdef DARWIN}
@@ -2087,9 +2088,21 @@ end;
 
 function TEditBoxForm.SaveLimitedAttributes(const BlockNo : TKMemoBlockIndex; out FontAtt : FontLimitedAttrib) : boolean;
 begin
+(*    debugln('SaveLimitedAttributes - using block ' + inttostr(BlockNo)
+        + ' color=' + colortostring(TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Brush.Color)
+        + ' FPcolor=' + colortostring(FPcolorToTColor(TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Brush.FPColor)));
+    debugln('SaveLimitedAttributes - Next  block ' + inttostr(BlockNo+1)
+        + ' color=' + colortostring(TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo+1]).TextStyle.Brush.Color)
+        + ' FPcolor=' + colortostring(FPcolorToTColor(TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo+1]).TextStyle.Brush.FPColor)));   *)
+
     result := Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink')
            or Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock');
-    if not result then exit;
+    if not result then begin                                                    // Probably unnecessary ....
+        FontAtt.BackColour := KMemo1.Colors.BkGnd;
+        FontAtt.Size := Sett.FontNormal;
+        FontAtt.Styles := [];
+        debugln('SaveLimitedAttributes - using default values');
+    end;
     FontAtt.Styles := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style;
     FontAtt.Size := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size;
     FontAtt.BackColour := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Brush.Color;
@@ -2106,18 +2119,21 @@ begin
     TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style := FontAtt.Styles;
     TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Brush.Color := FontAtt.BackColour;
     TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size := FontAtt.Size;
+
 end;
 
 
-procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string);
+procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string);              // ToDo : A lot of clean up required
 var
 	Hyperlink : TKMemoHyperlink;
     TrueLink, AText : string;
-	BlockNoS, BlockNoE, BlockOffset, i : integer;
+	BlockNoS, BlockNoE, i : integer;
+    BlockOffset : integer;          // A zero based count of characters ahead of char pointed by Index
     FontAtt : FontLimitedAttrib;
 begin
 
-    if Index = 0 then exit;                                                     // Thats this note's title, skip it !
+    if Index = 0 then exit;         // Thats this note's title, skip it !
+
     BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Block where proposed link Ends
     BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // Block where proposed link starts
     SaveLimitedAttributes(BlockNoS, FontAtt);                                   // Record the existing colours asap !
@@ -2126,15 +2142,15 @@ begin
         if AText.StartsWith('http') then exit;                                  // Already checked by Clean...
         if AText = Term then exit;                                              // Already there
     end;
-//    debugln('MakeLink Index=' + Index.ToString + ' Len=' + Len.ToString + ' BlockNoS=' + BlockNoS.ToString + ' BlockNoE=' + BlockNoE.ToString);
-//    debugln('MakeLink S=[' + KMemo1.Blocks.Items[BlockNoS].Text + '] E=[' + KMemo1.Blocks.Items[BlockNoE].Text + ']');
+    //debugln('MakeLink Index=' + Index.ToString + ' Len=' + Len.ToString + ' BlockNoS=' + BlockNoS.ToString + ' BlockNoE=' + BlockNoE.ToString);
+    //debugln('MakeLink S=[' + KMemo1.Blocks.Items[BlockNoS].Text + '] E=[' + KMemo1.Blocks.Items[BlockNoE].Text + ']');
     i := BlockNoS;
     while i < BlockNoE do begin
-//        debugln('MakeLink a Block Content is [' + KMemo1.Blocks.Items[i].Text + ']');
+        // debugln('MakeLink a Block Content is [' + KMemo1.Blocks.Items[i].Text + ']');
         if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin     // is there a link there already ?
             if KMemo1.Blocks.Items[i].text.StartsWith('http') then exit;        // Leave existing web links alone, already checked.
             if KMemo1.Blocks.Items[i].text.Length >= Len then exit;             // Leave it alone, is already at least as long
-//            debugln('MakeLink Unlinking ' + KMemo1.Blocks.Items[i].text);
+            // debugln('MakeLink Unlinking ' + KMemo1.Blocks.Items[i].text);
             UnlinkBlock(i);                                                     // Existing shorter, we will replace
             BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Sadly, we need to start this loop again
             BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // and keep iterating until we have clear space
@@ -2146,23 +2162,31 @@ begin
 
     //SaveLimitedAttributes(BlockNoS, FontAtt);
     TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // Thats the bit thats in first block, possibly everything
-    if BlockNoE > BlockNoS then begin
-        i := 1;
-        while BlockNoE > (BlockNoS+i) do begin
-            TrueLink := TrueLink + Kmemo1.Blocks.Items[BlockNoS+i].Text;
-            inc(i);
+    // The below might leave a empty block. Messy to delete here but ....
+    if BlockNoE > BlockNoS then begin                                           // Multiple blocks, two or more ....
+        TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text
+            := copy(Kmemo1.Blocks.Items[BlockNoS].Text, 1, UTF8Length(Kmemo1.Blocks.Items[BlockNoS].Text)- UTF8Length(TrueLink));
+        i := 0;
+        while BlockNoE > (BlockNoS+i) do begin                                  // ie two blocks, run loop once
+            TrueLink := TrueLink + Kmemo1.Blocks.Items[BlockNoS+i+1].Text;      // +1 to get next block
+            inc(i);                                                             // i must be > 0 because we are multiblock
         end;                                                                    // That will get all of last block's text, probably excessive
-        if UTF8length(TrueLink) > Len then begin                                    // There is content in last blocks text beyond end of link.
-            TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS+i]).Text
-                := utf8copy(Kmemo1.Blocks.Items[BlockNoS+1].Text, Kmemo1.Blocks.Items[BlockNoS+1].Text.Length - UTF8length(TrueLink) - len, 9999);
-            delete(TrueLink, Len, 999);                                         // Get rid of that excess.
+
+        //debugln('MakeLink - link is split over multiple blocks. [' + TrueLink + ']');
+//        if UTF8length(TrueLink) > Len then begin            // There is content in last blocks text beyond end of link.
+        // The below might leave a empty block. Messy to delete here but ....
+            //debugln('MakeLink - Endblock before [' + Kmemo1.Blocks.Items[BlockNoS+i].Text + '] TrueLink=[' + TrueLink + ']');
+            //debugln('MakeLink Lengths -TrueLink=' + UTF8length(TrueLink).ToString + ' Len=' + Len.ToString + ' Text=' + Kmemo1.Blocks.Items[BlockNoS+i].Text.Length.ToString);
+            TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS+i]).Text               //  BlockNoS+i is last block containing some of link
+                := utf8copy(Kmemo1.Blocks.Items[BlockNoS+i].Text, 1 + Kmemo1.Blocks.Items[BlockNoS+i].Text.Length - UTF8length(TrueLink) + len, 9999);
+            delete(TrueLink, Len+1, 999);                                         // Get rid of that excess, +1 to start deleting after link text
             dec(i);
-            Kmemo1.Blocks.Delete(BlockNoS+1);
             while i > 1 do begin
                 dec(i);
                 Kmemo1.Blocks.Delete(BlockNoS+1);
             end;
-        end;
+//        end else Debugln('SORRY, dont know how to deal with link ending at end of block yet');   // we just let empty block happen, ???
+        inc(BlockNoS);          // Assumes we have left BlockNoS in place, removing trailing text, point to spot after existing value
     end else begin                                                              // All the proposed link was in the BlockNoS
         BlockNoS := KMemo1.SplitAt(Index);
         TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text
@@ -2174,6 +2198,16 @@ begin
             dec(BlockNoS)
         end;
     end;
+    // When we get to here, Link text (and any blocks completely spanned by link text) have been removed
+    // and BlockNoS points to where link need be pushed into. Might have some empty text blocks ....
+(*    AText := 'MakeLink ready to insert [' + TrueLink + ']';
+    if KMemo1.Blocks.Items[BlockNoS-1].ClassNameIs('TKMemoTextBlock') then
+        Atext := AText + ' after [' + KMemo1.Blocks.Items[BlockNoS-1].Text + ']'
+    else Atext := AText + ' after a non text block';
+    if KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoTextBlock') then
+        Atext := AText + ' before [' + KMemo1.Blocks.Items[BlockNoS].Text + ']'
+    else Atext := AText + ' before a non text block';
+    debugln(AText);      *)
     {$ifdef LDEBUG}TG2 := gettickcount64();{$endif}
     Hyperlink := TKMemoHyperlink.Create;
     Hyperlink.Text := TrueLink;
@@ -2181,7 +2215,7 @@ begin
     Hyperlink.OnClick := @OnUserClickLink;
     {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);
     RestoreLimitedAttributes(BlockNoS, FontAtt);
-    //debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +'] Att Col=' +  ColorToString(FontAtt.BackColour));
+    //debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +'] Att Col=' +  ColorToString(FPColortoTColor(FontAtt.FPBackColour)));
     {$ifdef LDEBUG}TG3 := gettickcount64();
     TG1 := TG1 + (TG3-Tg2);{$endif}
 end;
@@ -2408,10 +2442,21 @@ var
                 ((LinkBlock) < KMemo1.Blocks.count) and
                 ((TextBlock) < KMemo1.Blocks.count) and
                 (TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Size =
-                    TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Size) and
+                    TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Size)
+                and
                 ((fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Style) =
                     (fsBold in TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Style))
-         else Result := False;                                                  // ie cannot merge !
+                and
+                ((fsItalic in TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Style) =
+                    (fsItalic in TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Style))
+                and
+                ((fsStrikeOut in TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Font.Style) =
+                    (fsStrikeOut in TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Font.Style))
+                and
+                ( TKMemoTextBlock(KMemo1.Blocks.Items[TextBlock]).TextStyle.Brush.Color
+                    = TKMemoTextBlock(KMemo1.Blocks.Items[LinkBlock]).TextStyle.Brush.Color)
+
+        else Result := False;                                                  // ie cannot merge !
     end;
 
 begin
@@ -2490,9 +2535,13 @@ var
             KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoParagraph')
                 or TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text.EndsWith(' ');
         Result := Result
-            and (KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoParagraph')
-                or (TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock+1]).Text[1]
-                    in [' ', ',']));
+            and (
+                (KMemo1.Blocks.count = StartBlock+1)
+                or
+                (KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoParagraph')
+                or
+                (TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock+1]).Text[1]              // !!!!!!!!!!
+                    in [' ', ',']))  );
     end;
 
 begin

@@ -1,5 +1,5 @@
 unit LoadNote;
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -33,6 +33,8 @@ unit LoadNote;
     2019/07/21  Use Sett.TitleColour;
     2020/05/01  Stop using local replaceAngles(), use tb_utils.RestoreBadXMLChar()
     2021/08/27  Extensive changes to support multilevel bullets, use Tomboy or Conboy model
+    2022/10/31  Force default background colour while loading, it shows up ok without
+                doing it here but blocks do not always report the correct color when asked.
 }
 
 {$mode objfpc}{$H+}
@@ -166,6 +168,7 @@ begin
         FT.Size:= FontSize;
       end;
       TB := KM.Blocks.AddTextBlock(RestoreBadXMLChar(InStr));
+      TB.TextStyle.Brush.Color := Sett.BackGndColour;
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
       if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
