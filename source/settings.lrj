@@ -57,6 +57,7 @@
 {"hash":128648723,"name":"tsett.speedtokenactions.caption","sourcebytes":[65,99,116,105,111,110,115],"value":"Actions"},
 {"hash":379330,"name":"tsett.groupboxuser.caption","sourcebytes":[85,115,101,114],"value":"User"},
 {"hash":226381813,"name":"tsett.editusername.text","sourcebytes":[69,100,105,116,85,115,101,114,78,97,109,101],"value":"EditUserName"},
+{"hash":186325059,"name":"tsett.combosynctype.hint","sourcebytes":[71,105,116,104,117,98,32,111,114,32,70,105,108,101,32,83,121,110,99],"value":"Github or File Sync"},
 {"hash":103494789,"name":"tsett.combosynctype.text","sourcebytes":[67,111,109,98,111,83,121,110,99,84,121,112,101],"value":"ComboSyncType"},
 {"hash":72743781,"name":"tsett.labelsynctype.caption","sourcebytes":[83,121,110,99,32,84,121,112,101],"value":"Sync Type"},
 {"hash":75997376,"name":"tsett.tabbackup.caption","sourcebytes":[66,97,99,107,85,112],"value":"BackUp"},

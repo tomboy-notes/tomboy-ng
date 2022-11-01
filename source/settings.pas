@@ -1190,6 +1190,7 @@ begin
                   'EN' : ComboHelpLanguage.Items.Add('EN - English');
                   'ES' : ComboHelpLanguage.Items.Add('ES - Español');
                   'UK' : ComboHelpLanguage.Items.Add('UK - Українська');
+                  'FR' : ComboHelpLanguage.Items.Add('FR - Français');
               otherwise
                     ComboHelpLanguage.Items.Add(Info.Name);
               end;

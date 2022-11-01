@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.35\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-10-23 12:36+0200\n"
+"PO-Revision-Date: 2022-10-30 12:29+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1082,19 +1082,19 @@ msgstr "Más fácil de leer"
 
 #: tformspell.buttonignore.caption
 msgid "Ignore"
-msgstr "Omitir todas"
+msgstr "Omitir"
 
 #: tformspell.buttonignore.hint
 msgid "Ignore all instances for the run"
-msgstr "Omitir todas las instancias"
+msgstr "Omitir todas"
 
 #: tformspell.buttonskip.caption
 msgid "Skip"
-msgstr "Omitir una vez"
+msgstr "Saltar"
 
 #: tformspell.buttonskip.hint
 msgid "Skip just this instance"
-msgstr "Omitir sola esta instancia"
+msgstr "Saltar esta instancia"
 
 #: tformspell.buttonuseandnextword.caption
 msgid "Use and Next Word"
@@ -1676,7 +1676,7 @@ msgstr "ej., Ctrl-F abre y cierre la Ventana de búsqueda"
 
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
-msgstr "Permitir que una nota aparece en más de un cuaderno."
+msgstr "Permitir enlazar una nota a más de un cuaderno."
 
 #: tsett.checkmanynotebooks.hint
 msgid "This may adversly affect traditional Tomboy, take care."
@@ -1735,6 +1735,10 @@ msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
+
+#: tsett.combosynctype.hint
+msgid "Github or File Sync"
+msgstr ""
 
 #: tsett.groupbox4.caption
 msgctxt "tsett.groupbox4.caption"
@@ -1921,3 +1925,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

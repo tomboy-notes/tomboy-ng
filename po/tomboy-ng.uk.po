@@ -1721,6 +1721,10 @@ msgstr "Викор. Скасувати Повторити (може сповіл
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Закрийте і перевідкрийте нотатку, щоб зміни ввійшли в дію. Викор. Ctrl-Z Ctrl-Y"
 
+#: tsett.combosynctype.hint
+msgid "Github or File Sync"
+msgstr ""
+
 #: tsett.groupbox4.caption
 msgctxt "tsett.groupbox4.caption"
 msgid "When a conflict is detected between a local note and remote one :"

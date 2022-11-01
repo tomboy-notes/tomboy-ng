@@ -405,13 +405,14 @@ type
                                 { Alters the font etc of selected area as indicated }
         procedure AlterFont(const Command : integer; const NewFontSize: integer = 0);
                                 { If Toggle is true, sets bullets to what its currently not. Otherwise sets to TurnOn}
-        procedure BulletControl(const Toggle, TurnOn: boolean);
+        procedure BulletControl(MoreBullet: boolean);
                                 // Gets passed a string containing a copy of one or more kmemo paragraphs, seperated by
                                 // #10. And a offset from the the start of the kmemo to the start of string.
                                 // Will mark up any web addresses it finds that are not already so marked.
                                 // Must start at start of para or space, must have at least one . and end with
                                 // space or newline char (#10). Returns 0 or length, in bytes, of the link
         procedure CheckForHTTP(const Buff: string; const Offset: integer);
+                                { Scans KMemo for bad utf8 characters, seems only used when importing RTF in SNM}
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
@@ -508,7 +509,7 @@ type
         function UnlinkBlock(StartBlock: integer): integer;
                                 // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
-        function UpdateNote(NRec: TNoteUpdaterec): boolean;
+        //function UpdateNote(NRec: TNoteUpdaterec): boolean;
 
     public
         SingleNoteFileName : string;    // Set by the calling process. FFN inc path, carefull, cli has a real global version
@@ -543,9 +544,11 @@ Type
 
   TSaveThread = class(TThread)
   private
-    //fStatusText : string;
-    //procedure ShowStatus;
+
   protected
+                            { Saves the contents of note in a single, seperate thread. It has had TheSL
+                            already populated with xml note content, it now normalises it adds Footer
+                            and writes it to disk. }
     procedure Execute; override;
   public
     TheSL : TStringList;
@@ -554,24 +557,14 @@ Type
   end;
 
 
-
-
-
 var
     EditBoxForm: TEditBoxForm;
     BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
-
-
 
 implementation
 
 {$R *.lfm}
 
-
-
-
-
-{ TEditBoxForm }
 uses
     LazUTF8,
     //LCLType,			// For the MessageBox
@@ -584,13 +577,11 @@ uses
     Spelling,
     NoteBook,
     MainUnit,           // Not needed now for anything other than MainForm.Close()
-//    SyncUtils,          // Just for IDLooksOK()
     K_Prn,              // Custom print unit.
     commonmark,
-    //Markdown,
     Index,              // An Index of current note.
     math,
-    FileUtil, {strutils,} // just for ExtractSimplePath ... ~#1620
+    FileUtil,           // just for ExtractSimplePath ... ~#1620
     LCLIntf,            // OpenUrl()
     TB_Utils,
     Note_Lister,        // so we can get directly to note data.
@@ -607,11 +598,7 @@ const
 
 { =============  T   S A V E   T H R E A D   ================== }
 
-{ Saves the contens of note in a single, seperate thread. It has had TheSL
-already populated with xml note content, it now normalises it adds Footer
-and writes it to disk. It then builds a string containing plain text with kmemo's
-newline replaced with #10. That string is sent to TheMainNoteLister to replace
-existing searchable 'content' for this note.  }
+
 procedure TSaveThread.Execute;
 var
     Normaliser : TNoteNormaliser;
@@ -651,8 +638,9 @@ begin
 end;
 
 
+// =============  U S E R   C L I C K   F U N C T I O N S  =====================
 
-{  ==========  U S E R   C L I C K   F U N C T I O N S  ========= }
+
 procedure TEditBoxForm.SpeedButtonTextClick(Sender: TObject);
 begin
    PopupMenuText.PopUp;
@@ -744,17 +732,18 @@ begin
     FormRollBack.ShowModal;
 end;
 
-procedure TEditBoxForm.BulletControl(const Toggle, TurnOn : boolean);
+
+// ========================= B U L L E T S =====================================
+
+
+// ToDo : when the text of a bullet has markup at the end, that markup is applied to bullet.
+
+procedure TEditBoxForm.BulletControl({const Toggle,} MoreBullet : boolean);
 var
       BlockNo : longint = 1;
       LastBlock,  Blar : longint;
-      BulletOn : boolean = false;
-      FirstPass : boolean = True;
+      PB : TKMemoParagraph;
 begin
-    if not Toggle then begin    // We'll set it all to TurnOn
-        FirstPass := False;     // So its not changed
-        BulletOn := not TurnOn;
-    end;
     if KMemo1.ReadOnly then exit();
     MarkDirty();
     BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
@@ -777,30 +766,239 @@ begin
         if BlockNo >= Kmemo1.Blocks.count then	// no para after block (yet)
             Kmemo1.Blocks.AddParagraph();
         if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-            if FirstPass then begin
-                FirstPass := False;
-                BulletOn := (TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = pnuBullets);
-            end;
-            SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), not BulletOn);
-            // TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering := pnuBullets;
+            // special case, when clearing a bullet, ie already BulletOne and want less. The
+            // ParaBlock has some built in left offset that won't go way. A new block
+            // gets its attributes (inc the offset) from nearby ones.
+            // ToDo : log with TK or patch to provide an optonal parameter to AddParagraph(BlockNo); ??
+(*            if (not MoreBullet)
+            and (TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = BulletOne) then begin
+                KMemo1.Blocks.delete(BlockNo);
+                KMemo1.Blocks.AddParagraph(BlockNo);
+                debugln('BulletControl - Special Case');
+            end else  *)
+                SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), MoreBullet);
         end;
     until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
 end;
 
-procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
-		Shift: TShiftState; X, Y: Integer);
+function TEditBoxForm.NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara : Boolean;
+        								out BlockNo, TrailOffset, LeadOffset : longint ) : boolean;
+	// on medium linux laptop, 20k note this function takes less than a mS
+var
+    PosInBlock, Index, CharCount : longint;
 begin
-    MouseDownPos := KMemo1.CaretPos;    // regional record in case we are doing shift click
-    //debugln('Mousedown ' + dbgs(KMemo1.CaretPos));
-    //{$ifdef LCLCOCOA}
-    if ssCtrl in Shift then PopupMenuRightClick.popup;
-    //{$else}
-	if Button = mbRight then PopupMenuRightClick.PopUp;
-    //{$endif}
+    Under := False;
+    NoBulletPara := False;
+    BlockNo := kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, PosInBlock);
+    if kmemo1.blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+  		Under := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo]).Numbering = pnuBullets);
+        NoBulletPara := not Under;
+    end;
+    Index := 1;
+    CharCount := PosInBlock;
+    while BlockNo >= Index do begin
+	    if kmemo1.blocks.Items[BlockNo-Index].ClassNameIs('TKMemoParagraph') then break;
+  	    CharCount := CharCount + kmemo1.blocks.Items[BlockNo-Index].Text.Length;
+	    inc(Index);
+        // Danger - what if we don't find one going left ?
+    end;
+    if BlockNo < Index then begin
+        Result := False;
+        if Verbose then debugln('Returning False as we appear to be playing in Heading.');
+        exit();
+    end else Leading := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo-Index]).Numbering = pnuBullets);
+    IsFirstChar := (CharCount = 0);
+    LeadOffset := Index;
+    Index := 0;
+    while true do begin
+        // must not call Classnameis with blockno = count
+        if Verbose then
+            debugln('Doing para seek, C=' + inttostr(KMemo1.Blocks.Count) + ' B=' + inttostr(BlockNo) + ' I=' + inttostr(Index));
+        inc(Index);
+        if (BlockNo + Index) >= (Kmemo1.Blocks.Count) then begin
+            if Verbose then debugln('Overrun looking for a para marker.');
+            // means there are no para markers beyond here.  So cannot be TrailingBullet
+            Index := 0;
+            break;
+        end;
+	    if kmemo1.blocks.Items[BlockNo+Index].ClassNameIs('TKMemoParagraph') then break;
+    end;
+    TrailOffset := Index;
+    if TrailOffset > 0 then
+  	    Trailing := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo+Index]).Numbering = pnuBullets)
+    else Trailing := False;
+    Result := (Leading or Under or Trailing);
+    if Verbose then begin
+	    debugln('IsNearBullet -----------------------------------');
+        Debugln('      Result      =' + booltostr(Result, true));
+        Debugln('      Leading     =' + booltostr(Leading, true));
+        Debugln('      Under       =' + booltostr(Under, true));
+        Debugln('      Trailing    =' + booltostr(Trailing, true));
+        Debugln('      IsFirstChar =' + booltostr(IsFirstChar, true));
+        Debugln('      NoBulletPara=' + booltostr(NoBulletPara, true));
+        Debugln('      LeadOffset  =' + inttostr(LeadOffset));
+        Debugln('      TrailOffset =' + inttostr(Trailoffset));
+        Debugln('      BlockNo     =' + inttostr(BlockNo));
+
+    end;
+end;
+
+{
+procedure TEditBoxForm.CancelBullet(const BlockNo : longint; const UnderBullet : boolean);
+begin
+    debugln('Cancel this bullet');
+    if UnderBullet then begin
+            if Kmemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoParagraph') then
+                if TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
+                    SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo]), False);
+    end else
+        if (BlockNo+1) < Kmemo1.Blocks.Count then
+            if Kmemo1.Blocks.Items[BlockNo+1].ClassNameis('TKMemoParagraph') then begin
+                if TKMemoParagraph(KMemo1.Blocks.Items[BlockNo+1]).Numbering = pnuBullets then
+                    SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo+1]), False);
+            end;
+end;
+}
+
+{	To behave like end users expect when pressing BackSpace we have to alter KMemo's way of thinking.
+
+a	If the cursor is at the end of a Bullet Text, KMemo would remove the Bullet
+    Marker, we stop that and remove the last character of the visible string.
+
+b   If the cursor is at the begininng of a Bullet Text we must cancel the bullet (which is at the
+    end of the Text) and not merge this line with one above. We know this is the case if the
+    trailing paragraph marker is bullet AND we are the first char of the first block of the text.
+
+c   If the cursor is on next line after a bullet, on a para marker that is not a bullet and there
+	is no text on that line after the cursor, all we do is delete that para marker.
+
+d   Again, we are on first char of the line after a bullet, this line is not a bullet itself
+	and it has some text after the cursor. We merge that text up to the bullet line above,
+    retaining its bulletness. So, mark trailing para bullet, delete leading.
+
+
+x	A blank line, no bullet between two bullet lines. Use BS line should dissapear.
+    That is, delete para under cursor, move cursor to end line above. This same as c
+
+y   There is nothing after our bullet para marker. So, on an empty bulletline, user presses
+	BS to cancel bullet but that cancels bullet and moves us up to next (bulleted) line.
+    It has to, there is nowhere else to go. Verbose shows this as a case c ????
+
+     	Lead Under Trail First OnPara(not bulleted)
+    a     ?    T     ?    F        remove the last character of the visible string to left.
+    b     ?    F     T    T    F   Cursor at start, cancel bullet, don't merge
+
+    x     T    F     T    T    T   Just delete this para. if Trailing move cursor to end of line above.
+    c     T    F     F    T    T   Just delete this para. if Trailing move cursor to end of line above.
+    y     T    T     F    T    F   Like c but add a para and move down. Not happy .....
+    d     T    F     F    T    F   mark trailing para as bullet, delete leading.
+    e     T    T     T    T    F   must remove Bullet for para under cursor
+
+    Special case where curser is at end of a bullet and there is no para beyond there ?
+    So, its should act as (a) but did, once, act as (d) ?? Needs more testing ......
+}
+
+procedure TEditBoxForm.SetBullet(PB : TKMemoParagraph; Bullet : boolean);
+{var
+   Index : integer;
+   Tick, Tock : qword; }
+begin
+    // KMemo declares a number of Bullets/Paragraph number thingos. We map
+    // BulletOne .. BulletEight to them in tb_utils. Change order/appearance there.
+    // You cannot have different blocks using same bullet (ie pnuBullet,
+    // pnuArrowBullet) with different indent levels. Its a KMemo thing.
+    // The numbers here must match what we use in Loadnote, should be constants too.
+    // Here I set the different bullet indents each and every time they are used.
+    // ToDo : can I initialise the different bullet indents during startup ?
+
+{   case PB.Numbering of
+       pnuNone : debugln('TEditBoxForm.SetBullet pnuNone ' + booltostr(Bullet, True));
+       BulletOne : debugln('TEditBoxForm.SetBullet pnuOne ' + booltostr(Bullet, True));
+       BulletTwo : debugln('TEditBoxForm.SetBullet pnuTwo ' + booltostr(Bullet, True));
+       BulletThree : debugln('TEditBoxForm.SetBullet pnuThree ' + booltostr(Bullet, True));
+       BulletFour : debugln('TEditBoxForm.SetBullet pnuFour ' + booltostr(Bullet, True));
+       BulletFive : debugln('TEditBoxForm.SetBullet pnuFive ' + booltostr(Bullet, True));
+       BulletSix : debugln('TEditBoxForm.SetBullet pnuSix ' + booltostr(Bullet, True));
+   end;      }
+
+   KMemo1.Blocks.lockUpdate;
+    try
+            case PB.Numbering of
+                pnuNone :   if Bullet then begin
+                                PB.Numbering := BulletOne;
+                                PB.NumberingListLevel.FirstIndent:=-20;
+                                PB.NumberingListLevel.LeftIndent := 30;
+                            end;
+                BulletOne : begin
+                                PB.Numbering:=pnuNone;
+                                PB.ParaStyle.NumberingListLevel := -1;
+                                if Bullet then begin
+                                    PB.Numbering := BulletTwo;
+                                    PB.NumberingListLevel.FirstIndent:=-20;
+                                    PB.NumberingListLevel.LeftIndent := 50;
+                                end;
+                            end;
+                BulletTwo : begin
+                                PB.Numbering:=pnuNone;
+                                if Bullet then begin
+                                    PB.Numbering := BulletThree;
+                                    PB.NumberingListLevel.FirstIndent:=-20;
+                                    PB.NumberingListLevel.LeftIndent := 70;
+                                end else PB.Numbering := BulletOne;
+                            end;
+                BulletThree : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletFour;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 90;
+                                    end else PB.Numbering := BulletTwo;
+                              end;
+                BulletFour : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletFive;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 110;
+                                    end else PB.Numbering := BulletThree;
+                             end;
+                BulletFive : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletSix;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 130;
+                                    end else PB.Numbering := BulletFour;
+                             end;
+                BulletSix :  begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletSeven;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 150;
+                                    end else PB.Numbering := BulletFive;
+                             end;
+                BulletSeven : begin
+                                    PB.Numbering:=pnuNone;
+                                    if Bullet then begin
+                                        PB.Numbering := BulletEight;
+                                        PB.NumberingListLevel.FirstIndent:=-20;
+                                        PB.NumberingListLevel.LeftIndent := 170;
+                                    end else PB.Numbering := BulletSix;
+                              end;
+                BulletEight : if not Bullet then begin
+                                        PB.Numbering:=pnuNone;
+                                        PB.Numbering := BulletSeven;
+                              end;
+                end;                // end of case statement
+    finally
+        KMemo1.Blocks.UnlockUpdate;
+    end;
 end;
 
 
-// ------------------  COPY ON SELECTION METHODS for LINUX and Windows ------
+// ===============  COPY ON SELECTION METHODS for LINUX and Windows ============
+
 
 procedure TEditBoxForm.KMemo1MouseUp(Sender: TObject; Button: TMouseButton;
     Shift: TShiftState; X, Y: Integer);
@@ -916,7 +1114,9 @@ begin
             KMemo1.ExecuteCommand(ecRight);        // move cursor
 end;
 
-{ -------------- U S E R   F O N T    C H A N G E S ----------------}
+
+// =================== U S E R   F O N T    C H A N G E S ======================
+
 
 const
  ChangeSize   = 1;     // Used by AlterFont(..) and its friends.
@@ -1054,8 +1254,8 @@ end;
 procedure TEditBoxForm.MenuTextGeneralClick(Sender: TObject);
 begin
     case TMenuItem(sender).Name of
-        'MenuItemBulletRight' : BulletControl(false, True);
-        'MenuItemBulletLeft'  : BulletControl(false, False);
+        'MenuItemBulletRight' : BulletControl(True);
+        'MenuItemBulletLeft'  : BulletControl(False);
         'MenuHighLight'       : AlterFont(ChangeColor);
         'MenuLarge'           : AlterFont(ChangeSize, Sett.FontLarge);  // Note, fonts won't toggle !
         'MenuNormal'          : AlterFont(ChangeSize, Sett.FontNormal);
@@ -1067,16 +1267,6 @@ begin
         'MenuStrikeout'       : AlterFont(ChangeStrikeout);
         'MenuFixedWidth'      : AlterFont(ChangeFixedWidth);
     end;
-end;
-
-procedure TEditBoxForm.PanelFindEnter(Sender: TObject);
-begin
-    EditFind.SetFocus;
-end;
-
-procedure TEditBoxForm.MenuItemEvaluateClick(Sender: TObject);
-begin
-   InitiateCalc();
 end;
 
 procedure TEditBoxForm.MenuItemIndexClick(Sender: TObject);
@@ -1164,6 +1354,11 @@ end;
 }
 
 const SearchPanelHeight = 39;
+
+procedure TEditBoxForm.PanelFindEnter(Sender: TObject);
+begin
+    EditFind.SetFocus;
+end;
 
 procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
 begin
@@ -1613,73 +1808,184 @@ begin
 end;
 
 
-{ - - - H O U S E   K E E P I N G   F U C T I O N S ----- }
+// ============== H O U S E   K E E P I N G   F U C T I O N S ==================
+
+procedure TEditBoxForm.FormCreate(Sender: TObject);
+begin
+    Use_Undoer := Sett.CheckUseUndo.checked;    // Note, user must close and repen if they change this setting
+    if Use_Undoer then
+        Undoer := TUndo_Redo.Create(KMemo1)
+    else Undoer := Nil;
+
+    SingleNoteFileName := MainUnit.SingleNoteFileName();
+    if SingleNoteFileName = '' then
+        SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
+    else begin
+        SingleNoteMode := True;
+        ButtMainTBMenu.Enabled := false;
+    end;
+    //PanelFind.Visible := False;
+    PanelFind.Height := 1;                      // That is, hide it for now, visible a problem on Mac
+    PanelFind.Caption := '';
+    {$ifdef WINDOWS}PanelFind.Color := Sett.AltColour;{$endif}    // so we see black text, windows cannot change some colours !
+    {$ifdef DARWIN}
+    SpeedRight.Hint := rsFindNavRightHintMac;
+    SpeedLeft.Hint := rsFindNavLeftHintMac;
+    {$else}
+    SpeedRight.Hint := rsFindNavRightHint;
+    SpeedLeft.Hint := rsFindNavLeftHint;
+    {$endif}
+    LabelFindCount.caption := '';
+    EditFind.Text := rsMenuSearch;
+    {$ifdef DARWIN}
+    MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
+    MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
+    MenuStrikeout.ShortCut := KeyToShortCut(VK_S, [ssMeta]);
+    MenuHighLight.ShortCut := KeyToShortCut(VK_H, [ssAlt]);
+    MenuFixedWidth.ShortCut:= KeyToShortCut(VK_T, [ssMeta]);
+    MenuUnderline.ShortCut := KeyToShortCut(VK_U, [ssMeta]);
+    MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
+    MenuItemEvaluate.ShortCut := KeyToShortCut(VK_E, [ssMeta]);
+    MenuFindNext.shortcut := KeyToShortCut(VK_G, [ssMeta]);
+    MenuFindPrev.shortcut := KeyToShortCut(VK_G, [ssShift, ssMeta]);
+    {$endif}
+    DeletingThisNote := False;
+end;
+
+
+{	FormShow gets called under a number of conditions Title    Filename       Template
+	- Re-show, everything all loaded.  Ready = true   yes      .              .
+      just exit
+    - New Note                                        no       no             no
+      GetNewTitle(), add CR, CR, Ready, MarkTitle(O),
+      zero dates.
+    - New Note from Template                          no       yes, dispose   yes   R1
+      ImportNote(), null out filename
+    - New Note from Link Button, save immediatly      yes      no             no
+      cp Title to Caption and to KMemo, Ready,
+      MarkTitle().
+    - Existing Note from eg Tray Menu, Searchbox      yes      yes            no    R1
+      ImportNote()
+}
+procedure TEditBoxForm.FormShow(Sender: TObject);
+var
+    ItsANewNote : boolean = false;
+begin
+    if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
+    // Ready := False;                             // But it must be false aready, it was created FALSE
+    PanelReadOnly.Height := 1;
+    TimerSave.Enabled := False;
+    KMemo1.Font.Size := Sett.FontNormal;
+    {$ifdef LCLGTK2}
+    KMemo1.ExecuteCommand(ecPaste);   // this to deal with a "first copy" issue on Linux.
+    // above line generates a gtk2 assertion but only in single note mode.  I suspect
+    // thats because its a modal form and in normal use, this window is not modal.
+    // If we don't make above call in SNM, we get the same assertion sooner or later, as soon
+    // as we select some text so may as well get it over with. No need to do it in Qt5, Win, Mac
+    {$endif}
+    Kmemo1.Clear;
+    if SingleNoteMode then
+            ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
+    else
+        if NoteFileName = '' then begin		    // might be a new note or a new note from Link
+            if NoteTitle = '' then              // New Note
+			    NoteTitle := NewNoteTitle();
+            ItsANewNote := True;
+	    end else begin
+            Caption := NoteFileName;
+     	    ImportNote(NoteFileName);		    // also sets Caption and Createdate
+        end;
+    if ItsANewNote then begin
+        left := (screen.Width div 2) - (width div 2);
+        top := (screen.Height div 2) - (height div 2);
+        CreateDate := '';
+        Caption := NoteTitle;
+    	KMemo1.Blocks.AddParagraph();
+    	KMemo1.Blocks.AddParagraph();
+        if kmemo1.blocks.Items[0].ClassNameIs('TKMemoParagraph') then
+        	Kmemo1.Blocks.DeleteEOL(0);
+        if kmemo1.blocks.Items[0].ClassNameIs('TKMemoTextBlock') then
+            Kmemo1.Blocks.DeleteEOL(0);
+        KMemo1.Blocks.AddTextBlock(NoteTitle, 0);
+	end;
+
+    MarkTitle();
+    KMemo1.SelStart := KMemo1.Text.Length;      // set curser pos to end
+    KMemo1.SelEnd := Kmemo1.Text.Length;
+    KMemo1.SetFocus;
+    {    if SearchedTerm <> '' then begin
+        //FindDialog1.FindText:= SearchedTerm;
+        EditFind.Text := SearchedTerm;
+        FindIt(SearchedTerm, True, False)
+	end else } begin
+        KMemo1.executecommand(ecEditorTop);
+        KMemo1.ExecuteCommand(ecDown);
+    end;
+    KMemo1.Blocks.LockUpdate;
+    {$ifdef windows}
+    // Color:= Sett.textcolour;
+    if Sett.DarkTheme then Color := Sett.BackGndColour;
+    {$endif}
+    PanelFind.Color := Sett.AltColour;
+    Panel1.Color := Sett.AltColour;
+    KMemo1.Colors.BkGnd:= Sett.BackGndColour;
+    Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
+    Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;
+    KMemo1.Blocks.UnLockUpdate;
+    Ready := true;
+    Dirty := False;
+end;
+
+
+    { called when user manually closes this form. }
+procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+    Release;
+end;
+
+procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+    CanClose := True;
+end;
+
+procedure TEditBoxForm.FormDestroy(Sender: TObject);
+begin
+    if Undoer <> Nil then Undoer.free;
+    UnsetPrimarySelection;                                      // tidy up copy on selection.
+    if (length(NoteFileName) = 0) and (not Dirty) then exit;    // A new, unchanged note, no need to save.
+    if not Kmemo1.ReadOnly then
+        if not DeletingThisNote then
+            if (not SingleNoteMode) or Dirty then       // We always save, except in SingleNoteMode (where we save only if dirty)
+                SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
+    SearchForm.NoteClosing(NoteFileName);
+end;
+
+// Make sure position and size is appropriate.
+procedure TEditBoxForm.AdjustFormPosition();
+begin
+    // First of all, deal with zero or neg settings
+    if Top < 20 then Top := 20;
+    if Left < 20 then Left := 20;
+    if Width < 50 then width := 50;
+    if Height < 50 then height := 50;
+    // ensure we don't start with more than two thirds _beyond_ boundaries.
+    // don't seem to need this, on Linux at least, new window is always within screen. Test on Windows/Mac
+    {$ifdef LINUX}exit;{$endif}
+    // Jan 2020, a possible problem in at least single note mode of notes beyond right hand edge of screen. bug #116
+    if (Left + (Width div 3)) > Screen.Width then begin
+        Left := Screen.Width - (Width div 3);
+    end;
+    if (Top + (Height div 3)) > Screen.Height then begin
+        Top := Screen.Height - (Height div 3);
+    end;
+end;
+
 
 procedure TEditBoxForm.TimerSaveTimer(Sender: TObject);
 begin
     TimerSave.Enabled:=False;
 	// showmessage('Time is up');
     SaveTheNote();
-end;
-
-procedure TEditBoxForm.CleanUTF8();
-
-        function BitSet(Value : byte; TheBit : integer) : boolean;      // theBit 0-7
-        begin
-            Result := ((Value shr TheBit) and 1) = 1;
-        end;
-
-        function CleanedUTF8(var TheText : string) : boolean;
-        var cnt : integer = 1;
-            NumbBytes : integer = 0;
-            i : integer;
-        begin
-            Result := false;
-            while Cnt <= TheText.Length do begin
-                if BitSet(byte(TheText[cnt]), 7) then begin
-                    // OK, we have a utf8 code. It will need at least one extra byte, maybe 2 or 3
-                    NumbBytes := 1;
-                    if BitSet(byte(TheText[cnt]), 5) then inc(NumbBytes);
-                    if BitSet(byte(TheText[cnt]), 4) then inc(NumbBytes);
-                    if Cnt + NumbBytes > TheText.Length then begin      // enough bytes remaining ....
-                        delete(TheText, Cnt, 1);
-                        Result := true;
-                        continue;
-                    end;
-                    for i := 1 to NumbBytes do begin            // are they the right sort of bytes ?
-                        if not BitSet(byte(TheText[cnt + i]), 7) then begin
-                            delete(TheText, Cnt, 1);            //
-                            NumbBytes := -1;                    // so the dec below does not skip a char
-                            Result := true;
-                            break;
-                        end;
-                    end;
-                    Cnt := Cnt + NumbBytes;
-                end;
-                inc(cnt);
-            end;
-        end;
-
-var
-    i : integer = 0;
-    AStr : string;
-    TB : TKMemoTextBlock;
-begin
-   KMemo1.blocks.LockUpdate;
-    while i < Kmemo1.blocks.count do begin
-        AStr := Kmemo1.Blocks.Items[i].text;
-        if KMemo1.Blocks.Items[i].ClassNameis('TKMemoTextBlock')
-            or KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin
-                if CleanedUTF8(AStr) then begin
-                    TB := KMemo1.Blocks.AddTextBlock(AStr, i);
-                    TB.TextStyle.Font := TKMemoTextBlock(KMemo1.blocks.Items[i+1]).TextStyle.Font;
-                    TB.TextStyle.Brush := TKMemoTextBlock(KMemo1.blocks.Items[i+1]).TextStyle.Brush;
-                    KMemo1.Blocks.Delete(i+1);
-                end;
-        end;
-        inc(i);
-    end;
-    KMemo1.blocks.UnLockUpdate;
 end;
 
 function TEditBoxForm.LoadSingleNote() : boolean;
@@ -1759,207 +2065,6 @@ begin
     end;
 end;
 
-{	FormShow gets called under a number of conditions Title    Filename       Template
-	- Re-show, everything all loaded.  Ready = true   yes      .              .
-      just exit
-    - New Note                                        no       no             no
-      GetNewTitle(), add CR, CR, Ready, MarkTitle(O),
-      zero dates.
-    - New Note from Template                          no       yes, dispose   yes   R1
-      ImportNote(), null out filename
-    - New Note from Link Button, save immediatly      yes      no             no
-      cp Title to Caption and to KMemo, Ready,
-      MarkTitle().
-    - Existing Note from eg Tray Menu, Searchbox      yes      yes            no    R1
-      ImportNote()
-}
-
-procedure TEditBoxForm.FormShow(Sender: TObject);
-var
-    ItsANewNote : boolean = false;
-begin
-    if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
-    // Ready := False;                             // But it must be false aready, it was created FALSE
-    PanelReadOnly.Height := 1;
-    TimerSave.Enabled := False;
-    KMemo1.Font.Size := Sett.FontNormal;
-    {$ifdef LCLGTK2}
-    KMemo1.ExecuteCommand(ecPaste);   // this to deal with a "first copy" issue on Linux.
-    // above line generates a gtk2 assertion but only in single note mode.  I suspect
-    // thats because its a modal form and in normal use, this window is not modal.
-    // If we don't make above call in SNM, we get the same assertion sooner or later, as soon
-    // as we select some text so may as well get it over with. No need to do it in Qt5, Win, Mac
-    {$endif}
-    Kmemo1.Clear;
-    if SingleNoteMode then
-            ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
-    else
-        if NoteFileName = '' then begin		    // might be a new note or a new note from Link
-            if NoteTitle = '' then              // New Note
-			    NoteTitle := NewNoteTitle();
-            ItsANewNote := True;
-	    end else begin
-            Caption := NoteFileName;
-     	    ImportNote(NoteFileName);		    // also sets Caption and Createdate
-        end;
-    if ItsANewNote then begin
-        left := (screen.Width div 2) - (width div 2);
-        top := (screen.Height div 2) - (height div 2);
-        CreateDate := '';
-        Caption := NoteTitle;
-    	KMemo1.Blocks.AddParagraph();
-    	KMemo1.Blocks.AddParagraph();
-        if kmemo1.blocks.Items[0].ClassNameIs('TKMemoParagraph') then
-        	Kmemo1.Blocks.DeleteEOL(0);
-        if kmemo1.blocks.Items[0].ClassNameIs('TKMemoTextBlock') then
-            Kmemo1.Blocks.DeleteEOL(0);
-        KMemo1.Blocks.AddTextBlock(NoteTitle, 0);
-	end;
-
-    MarkTitle();
-    KMemo1.SelStart := KMemo1.Text.Length;      // set curser pos to end
-    KMemo1.SelEnd := Kmemo1.Text.Length;
-    KMemo1.SetFocus;
-    {    if SearchedTerm <> '' then begin
-        //FindDialog1.FindText:= SearchedTerm;
-        EditFind.Text := SearchedTerm;
-        FindIt(SearchedTerm, True, False)
-	end else } begin
-        KMemo1.executecommand(ecEditorTop);
-        KMemo1.ExecuteCommand(ecDown);
-    end;
-    KMemo1.Blocks.LockUpdate;
-    {$ifdef windows}
-    // Color:= Sett.textcolour;
-    if Sett.DarkTheme then Color := Sett.BackGndColour;
-    {$endif}
-    PanelFind.Color := Sett.AltColour;
-    Panel1.Color := Sett.AltColour;
-    KMemo1.Colors.BkGnd:= Sett.BackGndColour;
-    Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
-    Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;
-    KMemo1.Blocks.UnLockUpdate;
-    Ready := true;
-    Dirty := False;
-//    if SingleNoteMode then
-//        SearchForm.MoveWindowHere(NoteTitle);
-end;
-
-    { called when user manually closes this form. }
-procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-    Release;
-end;
-
-procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-begin
-    CanClose := True;
-end;
-
-procedure TEditBoxForm.FormCreate(Sender: TObject);
-begin
-    Use_Undoer := Sett.CheckUseUndo.checked;    // Note, user must close and repen if they change this setting
-    if Use_Undoer then
-        Undoer := TUndo_Redo.Create(KMemo1)
-    else Undoer := Nil;
-
-    SingleNoteFileName := MainUnit.SingleNoteFileName();
-    if SingleNoteFileName = '' then
-        SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
-    else begin
-        SingleNoteMode := True;
-        ButtMainTBMenu.Enabled := false;
-    end;
-    //PanelFind.Visible := False;
-    PanelFind.Height := 1;                      // That is, hide it for now, visible a problem on Mac
-    PanelFind.Caption := '';
-    {$ifdef WINDOWS}PanelFind.Color := Sett.AltColour;{$endif}    // so we see black text, windows cannot change some colours !
-    {$ifdef DARWIN}
-    SpeedRight.Hint := rsFindNavRightHintMac;
-    SpeedLeft.Hint := rsFindNavLeftHintMac;
-    {$else}
-    SpeedRight.Hint := rsFindNavRightHint;
-    SpeedLeft.Hint := rsFindNavLeftHint;
-    {$endif}
-    LabelFindCount.caption := '';
-    EditFind.Text := rsMenuSearch;
-    {$ifdef DARWIN}
-    MenuBold.ShortCut      := KeyToShortCut(VK_B, [ssMeta]);
-    MenuItalic.ShortCut    := KeyToShortCut(VK_I, [ssMeta]);
-    MenuStrikeout.ShortCut := KeyToShortCut(VK_S, [ssMeta]);
-    MenuHighLight.ShortCut := KeyToShortCut(VK_H, [ssAlt]);
-    MenuFixedWidth.ShortCut:= KeyToShortCut(VK_T, [ssMeta]);
-    MenuUnderline.ShortCut := KeyToShortCut(VK_U, [ssMeta]);
-    MenuItemFind.ShortCut  := KeyToShortCut(VK_F, [ssMeta]);
-    MenuItemEvaluate.ShortCut := KeyToShortCut(VK_E, [ssMeta]);
-    MenuFindNext.shortcut := KeyToShortCut(VK_G, [ssMeta]);
-    MenuFindPrev.shortcut := KeyToShortCut(VK_G, [ssShift, ssMeta]);
-    {$endif}
-    DeletingThisNote := False;
-end;
-
-
-// As UpdateNote does not record Notebook membership, abandon it for now.
-// Maybe come back later and see if it can be patched, its probably quicker.
-// Was only called on a clean note ....
-function TEditBoxForm.UpdateNote(NRec : TNoteUpdaterec) : boolean;
-var
-    InFile, OutFile: TextFile;
-    {NoteDateSt, }InString, TempName : string;
-begin
-  if not fileexists(NRec.FFName) then exit(false);     // if its not there, the note has just been deleted
-  TempName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
-  if not DirectoryExists(TempName) then
-      CreateDir(AppendPathDelim(tempname));
-  TempName := tempName + pathDelim + 'location.note';             //  generate a random name  ??
-  AssignFile(InFile, NRec.FFName);
-  AssignFile(OutFile, TempName);
-  try
-      try
-          Reset(InFile);
-          Rewrite(OutFile);
-          while not eof(InFile) do begin
-              readln(InFile, InString);
-              if (Pos('<cursor-position>', InString) > 0) then break;
-              writeln(OutFile, InString);
-          end;
-          // OK, we are looking atthe part we want to change, ignore infile, we know better.
-          writeln(OutFile, '  <cursor-position>' + NRec.CPos + '</cursor-position>');
-          writeln(OutFile, '  <selection-bound-position>1</selection-bound-position>');
-          writeln(OutFile, '  <width>' + NRec.Width + '</width>');
-          writeln(OutFile, '  <height>' + NRec.height + '</height>');
-          writeln(OutFile, '  <x>' + NRec.X + '</x>');
-          writeln(OutFile, '  <y>' + NRec.Y + '</y>');
-          writeln(OutFile, '  <open-on-startup>' + NRec.OOS + '</open-on-startup>');
-
-          //Must see if this note is in a notebook, if so, record here.
-
-          writeln(OutFile, '</note>');
-      finally
-          CloseFile(OutFile);
-          CloseFile(InFile);
-      end;
-  except
-    on E: EInOutError do begin
-        debugln('File handling error occurred updating clean note location. Details: ' + E.Message);
-        exit(False);
-    end;
-  end;
-  result := CopyFile(TempName, Nrec.FFName);    // wrap this in a Try
-  if result = false then debugln('ERROR moving [' + TempName + '] to [' + NRec.FFName + ']');
-end;
-
-procedure TEditBoxForm.FormDestroy(Sender: TObject);
-begin
-    if Undoer <> Nil then Undoer.free;
-    UnsetPrimarySelection;                                      // tidy up copy on selection.
-    if (length(NoteFileName) = 0) and (not Dirty) then exit;    // A new, unchanged note, no need to save.
-    if not Kmemo1.ReadOnly then
-        if not DeletingThisNote then
-            if (not SingleNoteMode) or Dirty then       // We always save, except in SingleNoteMode (where we save only if dirty)
-                SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
-    SearchForm.NoteClosing(NoteFileName);
-end;
 
 function TEditBoxForm.GetTitle(out TheTitle : ANSIString) : boolean;
 var
@@ -2032,7 +2137,10 @@ begin
     end;
 
 end;
-{ -----------  L I N K    R E L A T E D    F U N C T I O N S  ---------- }
+
+
+// ==============  L I N K    R E L A T E D    F U N C T I O N S  ==============
+
 
 {   Kmemo1.blocks.linetext returns a UTF8 (ANSI) string that has
     newlines recorded as a two byte 194 182 marker. They show up on console
@@ -2623,6 +2731,7 @@ begin
 end;
 
 
+
 procedure TEditBoxForm.DoHousekeeping();
 var
     CurserPos, SelLen, BlockNo, Blar : longint;
@@ -2673,6 +2782,12 @@ end;
 
 
 { ---------------------- C A L C U L A T E    F U N C T I O N S ---------------}
+
+
+procedure TEditBoxForm.MenuItemEvaluateClick(Sender: TObject);
+begin
+   InitiateCalc();
+end;
 
 procedure TEditBoxForm.ExprTan(var Result: TFPExpressionResult;
     const Args: TExprParameterArray);
@@ -2912,6 +3027,23 @@ begin
     exit(AStr <> '');
 end;
 
+
+// ===================== K M E M O   K E Y   S T R O K E S =====================
+
+
+procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
+		Shift: TShiftState; X, Y: Integer);
+begin
+    MouseDownPos := KMemo1.CaretPos;    // regional record in case we are doing shift click
+    //debugln('Mousedown ' + dbgs(KMemo1.CaretPos));
+    //{$ifdef LCLCOCOA}
+    if ssCtrl in Shift then PopupMenuRightClick.popup;
+    //{$else}
+	if Button = mbRight then PopupMenuRightClick.PopUp;
+    //{$endif}
+end;
+
+
 	{ Any change to the note text and this gets called. So, vital it be quick }
 procedure TEditBoxForm.KMemo1Change(Sender: TObject);
 begin
@@ -2921,123 +3053,6 @@ begin
     TimerHouseKeeping.Enabled := True;
     // HouseKeeping is now driven by a timer;
 end;
-
-function TEditBoxForm.NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara : Boolean;
-        								out BlockNo, TrailOffset, LeadOffset : longint ) : boolean;
-	// on medium linux laptop, 20k note this function takes less than a mS
-var
-    PosInBlock, Index, CharCount : longint;
-begin
-    Under := False;
-    NoBulletPara := False;
-    BlockNo := kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, PosInBlock);
-    if kmemo1.blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-  		Under := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo]).Numbering = pnuBullets);
-        NoBulletPara := not Under;
-    end;
-    Index := 1;
-    CharCount := PosInBlock;
-    while BlockNo >= Index do begin
-	    if kmemo1.blocks.Items[BlockNo-Index].ClassNameIs('TKMemoParagraph') then break;
-  	    CharCount := CharCount + kmemo1.blocks.Items[BlockNo-Index].Text.Length;
-	    inc(Index);
-        // Danger - what if we don't find one going left ?
-    end;
-    if BlockNo < Index then begin
-        Result := False;
-        if Verbose then debugln('Returning False as we appear to be playing in Heading.');
-        exit();
-    end else Leading := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo-Index]).Numbering = pnuBullets);
-    IsFirstChar := (CharCount = 0);
-    LeadOffset := Index;
-    Index := 0;
-    while true do begin
-        // must not call Classnameis with blockno = count
-        if Verbose then
-            debugln('Doing para seek, C=' + inttostr(KMemo1.Blocks.Count) + ' B=' + inttostr(BlockNo) + ' I=' + inttostr(Index));
-        inc(Index);
-        if (BlockNo + Index) >= (Kmemo1.Blocks.Count) then begin
-            if Verbose then debugln('Overrun looking for a para marker.');
-            // means there are no para markers beyond here.  So cannot be TrailingBullet
-            Index := 0;
-            break;
-        end;
-	    if kmemo1.blocks.Items[BlockNo+Index].ClassNameIs('TKMemoParagraph') then break;
-    end;
-    TrailOffset := Index;
-    if TrailOffset > 0 then
-  	    Trailing := (TKMemoParagraph(kmemo1.blocks.Items[BlockNo+Index]).Numbering = pnuBullets)
-    else Trailing := False;
-    Result := (Leading or Under or Trailing);
-    if Verbose then begin
-	    debugln('IsNearBullet -----------------------------------');
-        Debugln('      Result      =' + booltostr(Result, true));
-        Debugln('      Leading     =' + booltostr(Leading, true));
-        Debugln('      Under       =' + booltostr(Under, true));
-        Debugln('      Trailing    =' + booltostr(Trailing, true));
-        Debugln('      IsFirstChar =' + booltostr(IsFirstChar, true));
-        Debugln('      NoBulletPara=' + booltostr(NoBulletPara, true));
-        Debugln('      LeadOffset  =' + inttostr(LeadOffset));
-        Debugln('      TrailOffset =' + inttostr(Trailoffset));
-        Debugln('      BlockNo     =' + inttostr(BlockNo));
-
-    end;
-end;
-
-{
-procedure TEditBoxForm.CancelBullet(const BlockNo : longint; const UnderBullet : boolean);
-begin
-    debugln('Cancel this bullet');
-    if UnderBullet then begin
-            if Kmemo1.Blocks.Items[BlockNo].ClassNameis('TKMemoParagraph') then
-                if TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
-                    SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo]), False);
-    end else
-        if (BlockNo+1) < Kmemo1.Blocks.Count then
-            if Kmemo1.Blocks.Items[BlockNo+1].ClassNameis('TKMemoParagraph') then begin
-                if TKMemoParagraph(KMemo1.Blocks.Items[BlockNo+1]).Numbering = pnuBullets then
-                    SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo+1]), False);
-            end;
-end;
-}
-
-{	To behave like end users expect when pressing BackSpace we have to alter KMemo's way of thinking.
-
-a	If the cursor is at the end of a Bullet Text, KMemo would remove the Bullet
-    Marker, we stop that and remove the last character of the visible string.
-
-b   If the cursor is at the begininng of a Bullet Text we must cancel the bullet (which is at the
-    end of the Text) and not merge this line with one above. We know this is the case if the
-    trailing paragraph marker is bullet AND we are the first char of the first block of the text.
-
-c   If the cursor is on next line after a bullet, on a para marker that is not a bullet and there
-	is no text on that line after the cursor, all we do is delete that para marker.
-
-d   Again, we are on first char of the line after a bullet, this line is not a bullet itself
-	and it has some text after the cursor. We merge that text up to the bullet line above,
-    retaining its bulletness. So, mark trailing para bullet, delete leading.
-
-
-x	A blank line, no bullet between two bullet lines. Use BS line should dissapear.
-    That is, delete para under cursor, move cursor to end line above. This same as c
-
-y   There is nothing after our bullet para marker. So, on an empty bulletline, user presses
-	BS to cancel bullet but that cancels bullet and moves us up to next (bulleted) line.
-    It has to, there is nowhere else to go. Verbose shows this as a case c ????
-
-     	Lead Under Trail First OnPara(not bulleted)
-    a     ?    T     ?    F        remove the last character of the visible string to left.
-    b     ?    F     T    T    F   Cursor at start, cancel bullet, don't merge
-
-    x     T    F     T    T    T   Just delete this para. if Trailing move cursor to end of line above.
-    c     T    F     F    T    T   Just delete this para. if Trailing move cursor to end of line above.
-    y     T    T     F    T    F   Like c but add a para and move down. Not happy .....
-    d     T    F     F    T    F   mark trailing para as bullet, delete leading.
-    e     T    T     T    T    F   must remove Bullet for para under cursor
-
-    Special case where curser is at end of a bullet and there is no para beyond there ?
-    So, its should act as (a) but did, once, act as (d) ?? Needs more testing ......
-}
 
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
@@ -3125,8 +3140,8 @@ begin
         case key of
             {$ifdef DARWIN}
             VK_H  : begin AlterFont(ChangeColor); ; Key := 0; end; {$endif}
-            VK_RIGHT : begin BulletControl(False, True); Key := 0; end;
-            VK_LEFT  : begin BulletControl(False, False); Key := 0; end;
+            VK_RIGHT : begin BulletControl(True); Key := 0; end;
+            VK_LEFT  : begin BulletControl(False); Key := 0; end;
             VK_Return :  if (EditFind.Text <> rsMenuSearch) then begin Key := 0; SpeedLeftClick(self); end;
         end;
         exit();
@@ -3229,114 +3244,11 @@ begin
     if Use_Undoer then Undoer.AddKeyUp(Key, Shift);
 end;
 
-procedure TEditBoxForm.SetBullet(PB : TKMemoParagraph; Bullet : boolean);
-{var
-  Index : integer;   }
-  //Tick, Tock : qword;
-begin
-    // KMemo declares a number of Bullets/Paragraph number thingos. We map
-    // BulletOne .. BulletEight to them in tb_utils. Change order/appearance there.
-    // You cannot have different blocks using same bullet (ie pnuBullet,
-    // pnuArrowBullet) with different indent levels. Its a KMemo thing.
-    // The numbers here must match what we use in Loadnote, should be constants too.
-    // Here I set the different bullet indents each and every time they are used.
-    // ToDo : can I initialise the different bullet indents during startup ?
 
-   KMemo1.Blocks.lockUpdate;
-    try
-            case PB.Numbering of
-                pnuNone :   if Bullet then begin
-                                PB.Numbering := BulletOne;
-                                PB.NumberingListLevel.FirstIndent:=-20;
-                                PB.NumberingListLevel.LeftIndent := 30;
-                            end;
-                BulletOne : begin
-                                PB.Numbering:=pnuNone;
-                                if Bullet then begin
-                                    PB.Numbering := BulletTwo;
-                                    PB.NumberingListLevel.FirstIndent:=-20;
-                                    PB.NumberingListLevel.LeftIndent := 50;
-                                end;
-                            end;
-                BulletTwo : begin
-                                PB.Numbering:=pnuNone;
-                                if Bullet then begin
-                                    PB.Numbering := BulletThree;
-                                    PB.NumberingListLevel.FirstIndent:=-20;
-                                    PB.NumberingListLevel.LeftIndent := 70;
-                                end else PB.Numbering := BulletOne;
-                            end;
-                BulletThree : begin
-                                    PB.Numbering:=pnuNone;
-                                    if Bullet then begin
-                                        PB.Numbering := BulletFour;
-                                        PB.NumberingListLevel.FirstIndent:=-20;
-                                        PB.NumberingListLevel.LeftIndent := 90;
-                                    end else PB.Numbering := BulletTwo;
-                              end;
-                BulletFour : begin
-                                    PB.Numbering:=pnuNone;
-                                    if Bullet then begin
-                                        PB.Numbering := BulletFive;
-                                        PB.NumberingListLevel.FirstIndent:=-20;
-                                        PB.NumberingListLevel.LeftIndent := 110;
-                                    end else PB.Numbering := BulletThree;
-                             end;
-                BulletFive : begin
-                                    PB.Numbering:=pnuNone;
-                                    if Bullet then begin
-                                        PB.Numbering := BulletSix;
-                                        PB.NumberingListLevel.FirstIndent:=-20;
-                                        PB.NumberingListLevel.LeftIndent := 130;
-                                    end else PB.Numbering := BulletFour;
-                             end;
-                BulletSix :  begin
-                                    PB.Numbering:=pnuNone;
-                                    if Bullet then begin
-                                        PB.Numbering := BulletSeven;
-                                        PB.NumberingListLevel.FirstIndent:=-20;
-                                        PB.NumberingListLevel.LeftIndent := 150;
-                                    end else PB.Numbering := BulletFive;
-                             end;
-                BulletSeven : begin
-                                    PB.Numbering:=pnuNone;
-                                    if Bullet then begin
-                                        PB.Numbering := BulletEight;
-                                        PB.NumberingListLevel.FirstIndent:=-20;
-                                        PB.NumberingListLevel.LeftIndent := 170;
-                                    end else PB.Numbering := BulletSix;
-                              end;
-                BulletEight : if not Bullet then begin
-                                        PB.Numbering:=pnuNone;
-                                        PB.Numbering := BulletSeven;
-                              end;
-                end;                // end of case statement
-    finally
-        KMemo1.Blocks.UnlockUpdate;
-    end;
-end;
 
-	{ --- I M P O R T I N G   and   E X P O R T I N G    F U N C T I O N S  ---  }
+// ======= I M P O R T I N G   and   E X P O R T I N G    F U N C T I O N S  =======
 
-    // Make sure position and size is appropriate.
-procedure TEditBoxForm.AdjustFormPosition();
-begin
-    // First of all, deal with zero or neg settings
-    if Top < 20 then Top := 20;
-    if Left < 20 then Left := 20;
-    if Width < 50 then width := 50;
-    if Height < 50 then height := 50;
-    // ensure we don't start with more than two thirds _beyond_ boundaries.
-    // don't seem to need this, on Linux at least, new window is always within screen. Test on Windows/Mac
-    {$ifdef LINUX}exit;{$endif}
-    // Jan 2020, a possible problem in at least single note mode of notes beyond right hand edge of screen. bug #116
-    if (Left + (Width div 3)) > Screen.Width then begin
-        Left := Screen.Width - (Width div 3);
-    end;
-    if (Top + (Height div 3)) > Screen.Height then begin
-        Top := Screen.Height - (Height div 3);
-    end;
-end;
+
 
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
@@ -3370,6 +3282,67 @@ begin
     //debugln('Total=' + inttostr(T5 - T1) + 'mS ');
 
 end;
+
+procedure TEditBoxForm.CleanUTF8();
+
+        function BitSet(Value : byte; TheBit : integer) : boolean;      // theBit 0-7
+        begin
+            Result := ((Value shr TheBit) and 1) = 1;
+        end;
+
+        function CleanedUTF8(var TheText : string) : boolean;
+        var cnt : integer = 1;
+            NumbBytes : integer = 0;
+            i : integer;
+        begin
+            Result := false;
+            while Cnt <= TheText.Length do begin
+                if BitSet(byte(TheText[cnt]), 7) then begin
+                    // OK, we have a utf8 code. It will need at least one extra byte, maybe 2 or 3
+                    NumbBytes := 1;
+                    if BitSet(byte(TheText[cnt]), 5) then inc(NumbBytes);
+                    if BitSet(byte(TheText[cnt]), 4) then inc(NumbBytes);
+                    if Cnt + NumbBytes > TheText.Length then begin      // enough bytes remaining ....
+                        delete(TheText, Cnt, 1);
+                        Result := true;
+                        continue;
+                    end;
+                    for i := 1 to NumbBytes do begin            // are they the right sort of bytes ?
+                        if not BitSet(byte(TheText[cnt + i]), 7) then begin
+                            delete(TheText, Cnt, 1);            //
+                            NumbBytes := -1;                    // so the dec below does not skip a char
+                            Result := true;
+                            break;
+                        end;
+                    end;
+                    Cnt := Cnt + NumbBytes;
+                end;
+                inc(cnt);
+            end;
+        end;
+
+var
+    i : integer = 0;
+    AStr : string;
+    TB : TKMemoTextBlock;
+begin
+   KMemo1.blocks.LockUpdate;
+    while i < Kmemo1.blocks.count do begin
+        AStr := Kmemo1.Blocks.Items[i].text;
+        if KMemo1.Blocks.Items[i].ClassNameis('TKMemoTextBlock')
+            or KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin
+                if CleanedUTF8(AStr) then begin
+                    TB := KMemo1.Blocks.AddTextBlock(AStr, i);
+                    TB.TextStyle.Font := TKMemoTextBlock(KMemo1.blocks.Items[i+1]).TextStyle.Font;
+                    TB.TextStyle.Brush := TKMemoTextBlock(KMemo1.blocks.Items[i+1]).TextStyle.Brush;
+                    KMemo1.Blocks.Delete(i+1);
+                end;
+        end;
+        inc(i);
+    end;
+    KMemo1.blocks.UnLockUpdate;
+end;
+
 
 
 // ===================================== S A V I N G ===========================
@@ -3445,14 +3418,14 @@ var
     NoteContent : string = '';
     LineNumb   : integer = 0;
     FName      : string;
-    T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
+    //T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
     if BusySaving then begin                                      // ToDo : inform user via notifications
 //        ShowMessage('ERROR, unable to save ' + NoteFileName);   // No, don't do that, it stops the process
         exit;
     end;
-    T1 := gettickcount64();
+    //T1 := gettickcount64();
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then
@@ -3484,14 +3457,13 @@ begin
         TitleHasChanged := False;
 	end;
     Caption := Title;
-//    KMemo1.Blocks.LockUpdate;                 // to prevent changes during read of kmemo
-    T2 := GetTickCount64();
+    KMemo1.Blocks.LockUpdate;                                   // to prevent changes during read of kmemo
+    //T2 := GetTickCount64();
     SL := TStringList.Create();
     try
         Saver.ReadKMemo(NoteFileName, Title, KMemo1, SL);       // Puts all the content into the StringList, SL
-        T3 := GetTickCount64();
-
-        if Sett.AutoSearchUpdate then begin                     // Replace the search Content in note lister
+        //T3 := GetTickCount64();
+        if Dirty and (not SingleNoteMode) and Sett.AutoSearchUpdate then begin  // SLOW ! Replace the search Content in note lister
             while LineNumb < KMemo1.Blocks.LineCount do begin
                 NoteContent := NoteContent + lowercase(Kmemo1.blocks.LineText[LineNumb]);
                 inc(LineNumb);
@@ -3502,14 +3474,14 @@ begin
                 inc(LineNumb);
             end;
         end;
-        T4 := GetTickCount64();
+        //T4 := GetTickCount64();
     finally
-//        KMemo1.Blocks.UnLockUpdate;
+        KMemo1.Blocks.UnLockUpdate;
         if Saver <> Nil then Saver.Destroy;
         Caption := CleanCaption();
     end;
 
-    if Sett.AutoSearchUpdate then begin
+    if Dirty and (not SingleNoteMode) and Sett.AutoSearchUpdate then begin      // This is quick
         LineNumb := 0;
         FName := ExtractFileName(NoteFileName);
         while LineNumb < TheMainNoteLister.NoteList.Count do begin
@@ -3520,7 +3492,7 @@ begin
             inc(LineNumb);
         end;
     end;
-    T5 := GetTickCount64();
+    //T5 := GetTickCount64();
     Loc.Width:=inttostr(Width);
     Loc.Height:=inttostr(Height);
     Loc.X := inttostr(Left);
@@ -3529,21 +3501,21 @@ begin
     Loc.CPos:='1';
     loc.FFName := NoteFileName;
     loc.CreateDate := CreateDate;
-    if Dirty or SingleNoteMode then begin    // In SingeNoteMode, there is no NoteLister, so date is always updated.
+    if Dirty or SingleNoteMode then begin                       // In SingeNoteMode, there is no NoteLister, so date is always updated.
         Loc.LastChangeDate:= TB_GetLocalTime();
         SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // 6mS - 8mS timewasting menu rewrite ??  No usually now
     end else
-        Loc.LastChangeDate                                                      // Must be closing.
+        Loc.LastChangeDate                                      // Must be closing.
             := TheMainNoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
-
-
     if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
-    T6 := GetTickCount64();
+    //T6 := GetTickCount64();
 
-
-    debugln('Save Note Initial=' + inttostr(T2-T1) + ' Saver=' + inttostr(T3-T2)
-                + ' BuildContent=' + Inttostr(T4-T3) + ' ContentToNoteLister=' + inttostr(T5-T4) + ' SendToSaveStringList=' + (T6-T5).tostring);
-    // Save Note Initial=0 Saver=4 BuildContent=7 ContentToNoteLister=0 SendToSaveStringList=1  with locking disabled
+    //debugln('Save Note Initial=' + inttostr(T2-T1) + ' Saver=' + inttostr(T3-T2)
+    //            + ' BuildContent=' + Inttostr(T4-T3) + ' ContentToNoteLister=' + inttostr(T5-T4) + ' SendToSaveStringList=' + (T6-T5).tostring);
+    // Save Note Initial=0 Saver=4 BuildContent=4 ContentToNoteLister=0 SendToSaveStringList=0  with locking disabled
+    // ToDo : Building search content is pretty slow ??
+    // Move into SaveThread would require passing kmemo there too but thats probably the answer
+    // maybe review the lines approach ? Saver is doing a lot more ....
     (*
     {$ifdef SAVETHREAD}
     debugln('Total time to save threaded is ' + inttostr(T5-T1));
@@ -3568,3 +3540,55 @@ end;
 
 
 end.
+
+// As UpdateNote does not record Notebook membership, abandon it for now.
+// Maybe come back later and see if it can be patched, its probably quicker.
+// Was only called on a clean note ....
+(*
+function TEditBoxForm.UpdateNote(NRec : TNoteUpdaterec) : boolean;
+var
+    InFile, OutFile: TextFile;
+    {NoteDateSt, }InString, TempName : string;
+begin
+  if not fileexists(NRec.FFName) then exit(false);     // if its not there, the note has just been deleted
+  TempName := AppendPathDelim(Sett.NoteDirectory) + 'tmp';
+  if not DirectoryExists(TempName) then
+      CreateDir(AppendPathDelim(tempname));
+  TempName := tempName + pathDelim + 'location.note';             //  generate a random name  ??
+  AssignFile(InFile, NRec.FFName);
+  AssignFile(OutFile, TempName);
+  try
+      try
+          Reset(InFile);
+          Rewrite(OutFile);
+          while not eof(InFile) do begin
+              readln(InFile, InString);
+              if (Pos('<cursor-position>', InString) > 0) then break;
+              writeln(OutFile, InString);
+          end;
+          // OK, we are looking atthe part we want to change, ignore infile, we know better.
+          writeln(OutFile, '  <cursor-position>' + NRec.CPos + '</cursor-position>');
+          writeln(OutFile, '  <selection-bound-position>1</selection-bound-position>');
+          writeln(OutFile, '  <width>' + NRec.Width + '</width>');
+          writeln(OutFile, '  <height>' + NRec.height + '</height>');
+          writeln(OutFile, '  <x>' + NRec.X + '</x>');
+          writeln(OutFile, '  <y>' + NRec.Y + '</y>');
+          writeln(OutFile, '  <open-on-startup>' + NRec.OOS + '</open-on-startup>');
+
+          //Must see if this note is in a notebook, if so, record here.
+
+          writeln(OutFile, '</note>');
+      finally
+          CloseFile(OutFile);
+          CloseFile(InFile);
+      end;
+  except
+    on E: EInOutError do begin
+        debugln('File handling error occurred updating clean note location. Details: ' + E.Message);
+        exit(False);
+    end;
+  end;
+  result := CopyFile(TempName, Nrec.FFName);    // wrap this in a Try
+  if result = false then debugln('ERROR moving [' + TempName + '] to [' + NRec.FFName + ']');
+end;  *)
+

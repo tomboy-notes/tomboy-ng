@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>System Tray on Linux</title>
-  <text xml:space="preserve"><note-content version="0.1"><underline>System Tray on Linux</underline>
+  
+<text xml:space="preserve"><note-content version="0.1"><underline>System Tray on Linux</underline>
 
+The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray, sometimes called the Notification Area.  However, not all Linux Desktop Environments are able to display System Tray Icons, and some that can may not do so by default.
 
-The normal way that  a user interacts with tomboy-ng is via a small yellow icon that appears on the System Tray, sometimes called the Notification Area.  However, not all Linux Desktop Environments are able to display System Tray Icons, and some that can may not do so by default. 
-
-If you can see a <bold>small, yellow icon</bold>, probably on the main panel on your screen, you don't have a problem. If you cannot see it, you are probably using a Desktop that has issues displaying the System Tray, possibly a Gnome Desktop.  
+If you can see a <bold>small, yellow icon</bold>, probably on the main panel on your screen, you don't have a problem. If you cannot see it, you are probably using a Desktop that has issues displaying the System Tray, possibly a Gnome Desktop.
 
 Detailed and hopefully current information on the latest 'tricks' to display a System Tray on recalcitrant systems and even how to use tomboy-ng without a System Tray can be found at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
 
@@ -16,8 +16,8 @@ Support for System Tray on Linux changes quite abruptly sometimes so its often w
 
 
 </note-content></text>
-  <last-change-date>2021-07-20T12:45:17.2379614+10:00</last-change-date>
-  <last-metadata-change-date>2021-07-20T12:45:17.2379614+10:00</last-metadata-change-date>
+  <last-change-date>2022-11-01T09:37:23.3446960+11:00</last-change-date>
+  <last-metadata-change-date>2022-11-01T09:37:23.3446960+11:00</last-metadata-change-date>
   <create-date>2021-01-23T13:48:35.2369237+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

@@ -1769,6 +1769,10 @@ msgstr ""
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr ""
 
+#: tsett.combosynctype.hint
+msgid "Github or File Sync"
+msgstr ""
+
 #: tsett.groupbox4.caption
 #, fuzzy
 #| msgid "  Options  "

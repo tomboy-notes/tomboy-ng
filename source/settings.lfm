@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabDisplay
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -550,7 +550,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 243
+        ClientHeight = 224
         ClientWidth = 710
         ParentColor = False
         TabOrder = 1
@@ -584,7 +584,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 546
           Height = 32
-          Top = 201
+          Top = 182
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -602,7 +602,7 @@ object Sett: TSett
           Left = 173
           Height = 25
           Hint = 'Sync, if possible once an hour.'
-          Top = 208
+          Top = 189
           Width = 102
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 30
@@ -644,7 +644,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 15
           Height = 25
-          Top = 208
+          Top = 189
           Width = 128
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Enabled'
@@ -666,7 +666,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 54
+          ClientHeight = 35
           ClientWidth = 481
           TabOrder = 2
           object LabelToken: TLabel
@@ -734,6 +734,7 @@ object Sett: TSett
         AnchorSideTop.Control = LabelSyncType
         Left = 103
         Height = 31
+        Hint = 'Github or File Sync'
         Top = 15
         Width = 359
         BorderSpacing.Left = 15
@@ -743,6 +744,8 @@ object Sett: TSett
           'Github - free Github account required'
         )
         OnChange = ComboSyncTypeChange
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 2
         Text = 'ComboSyncType'
       end
