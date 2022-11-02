@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <note version="0.3" xmlns="http://beatniksoftware.com/tomboy" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size">
-  <title>Sincronización con tomboy-ng</title>
+  <title>Sincronización de tomboy-ng</title>
   
-<text xml:space="preserve"><note-content version="0.1"><underline>Sincronización con tomboy-ng</underline>
+<text xml:space="preserve"><note-content version="0.1"><underline>Sincronización de tomboy-ng</underline>
 
 <italic>Esto trata de la sincronización de archivos entre equipos con Linux, Windows y Mac. Si le interesa en sincronizar a través de Github, que permite tanto la sincronización como acceso a sus notas online desde un navegador, vea https://github.com/tomboy-notes/tomboy-ng/wiki/Github-Sync</italic>
 
@@ -12,7 +12,7 @@ tomboy-ng permite  <bold>la sincronización de archivos</bold>. Es decir, que si
 
 <bold>Nuevo a partir de v0.27, Auto-Sincronización</bold>, vea más abajo.
 
-Vale, antes de empezar, ¿guarda <highlight>instantáneas</highlight> ?  Si no, ¿¿¿por qué no???
+Vale, antes de empezar, ¿guarda <highlight>instantáneas</highlight>?  Si no, ¿¿¿por qué no???
 
 <size:large><bold>Un sistema de archivos compartidos</bold></size:large>
 En la práctica, que sepamos, tomboy-ng sincronizará con cualquier sistema de archivos en lo que su administrador de archivos puede navegar. Podría usar Google Drive, Drop Box u otro sistema en la nube. Pero acuérdese que una copia de sus notas estarán en esos servidores y si no está conforme con que se pueden leer allí, tal vez ¡guardarlas allí no es muy buena idea! Puede que quiera compartir un repositorio a través de NFS o SMB. Windows y NFS no representan una buena combinación, pero SMB funciona bien para las tres plataformas. El router que tiene el autor en casa cuenta con una ranura USB detrás y un disco USB enchufado allí que está compartido a través de SMB. Ha funcionado sin fallo durante un par de años. Algunos gestores de archivos de Linux puede ponerle pegas en mostrar los archivos compartidos por SMB o Samba. Puede ser de ayuda de crear un marcador en el gestor de archivos principal, pero incluso si no funciona, asegúrese de tener instalados gvfs y gvfs-fuse y buscar utilizando el diálogo de directorios que abre tomboy-ng donde verá un archivo denominado más o menos: /run/user/1000/gvfs/smb_share ...

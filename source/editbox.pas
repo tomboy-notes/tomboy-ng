@@ -2088,7 +2088,7 @@ begin
 //  	if Not Ready then exit();               // ToDo : what is effect of disabling this ?
     { if there is more than one block, and the first, [0], is a para, delete it.}
     if KMemo1.Blocks.Count <= 2 then exit();	// Don't try to mark title until more blocks.
-//    Ready := false;                           // ToDo : what is effect of disabling this ?
+    Ready := false;                           // ToDo : what is effect of disabling this ?
     Kmemo1.Blocks.LockUpdate;
     if Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoParagraph' then
           Kmemo1.Blocks.DeleteEOL(0);
@@ -2119,7 +2119,7 @@ begin
         end;
 	finally
 		KMemo1.Blocks.UnLockUpdate;
-//    	Ready := True;
+    	Ready := True;
 	end;
 end;
 
@@ -2758,6 +2758,7 @@ begin
     if BlockNo < 2 then begin
         if KMemo1.Blocks.Count = 0 then 		// But bad things happen if its really empty !
             KMemo1.Blocks.AddParagraph();
+            Ready := True;
   	        exit();
     end;
     if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
