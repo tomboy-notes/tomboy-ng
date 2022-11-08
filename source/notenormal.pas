@@ -1,5 +1,5 @@
 unit notenormal;
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -10,10 +10,11 @@ unit notenormal;
 
 { A unit to 'normalise' a Tomboy Note, that is ensure tags remain with the para they
   relate to. Makes the xml a lot prettier and, more importantly, heaps easier t parse when exporting.
-  One day, may incorporate into the tomboy-ng saving engine.  Needed by the POT and
+  Now incorporated into the tomboy-ng saving engine.  Needed by the POT and
   CommonMark exporters.
 
-  It recieves a TStringList containing a note (probably directly loaded from disk).
+  It recieves a TStringList containing a note (possibly loaded from disk) probably read
+    from the KMemo and heading for disk.
 
   HISTORY :
     2021/08/19  Bug in RemoveRedundentTags that sometimes ate character after tag pair
@@ -254,6 +255,10 @@ end;
 
 
 procedure TNoteNormaliser.NormaliseList(STL : TStringList);
+// ToDo : look into removing any char < #32 except #10 and #13. Bug #279 indicates
+// loss of a note due to Ctrl-Z appearing in the disk file. No idea how but if we can
+// quickly filter here while saving, good.
+
 var
     TagSize, StIndex : integer;
     TempSt : string;

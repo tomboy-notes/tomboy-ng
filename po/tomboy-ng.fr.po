@@ -17,7 +17,7 @@ msgstr "Impossible de trouver une expression à évaluer"
 
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
-msgstr ""
+msgstr "tomboy-ng - prise de notes multiplateformes avec synchro"
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
@@ -41,7 +41,7 @@ msgstr "Échec de l'indexation des notes."
 
 #: resourcestr.rsaddnotestonotebook
 msgid "Add notes to this Notebook"
-msgstr ""
+msgstr "Ajouter des notes au Carnet"
 
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
@@ -137,11 +137,11 @@ msgstr "OK, %d carnets vérolés supprimés"
 
 #: resourcestr.rsdownloaded
 msgid "Downloaded"
-msgstr ""
+msgstr "Téléchargé"
 
 #: resourcestr.rsdownloadnotes
 msgid "Downloading notes"
-msgstr ""
+msgstr "Téléchargement des notes"
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -165,19 +165,19 @@ msgstr "un disque externe ou encore un quelconque serveur distant avec sshfs"
 
 #: resourcestr.rsfindnavlefthint
 msgid "Backward Find : Shift-F3 or Shift-Ctrl-G"
-msgstr ""
+msgstr "Recherche arrière : Shift-F3 ou Shift-Ctrl-G"
 
 #: resourcestr.rsfindnavlefthintmac
 msgid "Backward Find : Shift-Command-G"
-msgstr ""
+msgstr "Recherche arrière : Shift-Command-G"
 
 #: resourcestr.rsfindnavrighthint
 msgid "Find : F3 or Ctrl-G"
-msgstr ""
+msgstr "Recherche : F3 or Ctrl-G"
 
 #: resourcestr.rsfindnavrighthintmac
 msgid "Find : Command-G"
-msgstr ""
+msgstr "Recherche : Command-G"
 
 #: resourcestr.rsfound
 msgctxt "resourcestr.rsfound"
@@ -186,15 +186,15 @@ msgstr "Trouvé"
 
 #: resourcestr.rsgithubsyncinfo1
 msgid "tomboy-ng can use Github to both sync and display or edit notes"
-msgstr ""
+msgstr "tomboy peut utiliser Github pour sychroniser et afficher/editer les notes"
 
 #: resourcestr.rsgithubsyncinfo2
 msgid "you should read the tomboy-ng wiki page for instructions."
-msgstr ""
+msgstr "Les instructions sont sur le wiki de tomboy-ng"
 
 #: resourcestr.rsgithubtokenexpired
 msgid "Github Token may have expired"
-msgstr ""
+msgstr "Le Token de Github est peut-être expiré"
 
 #: resourcestr.rshelpconfig
 msgctxt "resourcestr.rshelpconfig"
@@ -233,7 +233,7 @@ msgstr "Afficher ce message d'aide et quitter."
 
 #: resourcestr.rshelpimportfile
 msgid "Import file into Note Repo"
-msgstr ""
+msgstr "Impor d'un fichier dans le Repo Note"
 
 #: resourcestr.rshelplang
 #, fuzzy
@@ -261,7 +261,7 @@ msgstr "Ouvrir la note, commutation optionnelle"
 
 #: resourcestr.rshelptitleisfname
 msgid "Use Filename as title for import txt & md"
-msgstr ""
+msgstr "Nom de fichier comme titre pour l'import de txt & md"
 
 #: resourcestr.rshelpversion
 msgctxt "resourcestr.rshelpversion"
@@ -283,7 +283,7 @@ msgstr "Journal de la gestion des notes :"
 
 #: resourcestr.rslookingserverid
 msgid "Looking for ServerID"
-msgstr ""
+msgstr "Recherche du ServerID"
 
 #: resourcestr.rsmenuabout
 msgctxt "resourcestr.rsmenuabout"
@@ -322,7 +322,7 @@ msgstr "Synchronisation"
 
 #: resourcestr.rsmetadirwarning
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
-msgstr ""
+msgstr "Rappel: pour une synchro fiable, ne pas changer les fichiers dans le Meta répertoire"
 
 #: resourcestr.rsmultiplenotebooks
 msgctxt "resourcestr.rsmultiplenotebooks"
@@ -430,7 +430,7 @@ msgstr "Pour terminer presser \"Sauver + Synchro\""
 
 #: resourcestr.rsscanremote
 msgid "Scanning remote files"
-msgstr ""
+msgstr "Scan des fichiers distants"
 
 #: resourcestr.rssearchhint
 msgid "Exact matches for terms between \" \""
@@ -475,7 +475,7 @@ msgstr "non configuré"
 
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
-msgstr ""
+msgstr "Test des crédentiels"
 
 #: resourcestr.rstestingrepo
 msgctxt "resourcestr.rstestingrepo"
@@ -508,15 +508,15 @@ msgstr "Synchro impossible car "
 
 #: resourcestr.rsuploaded
 msgid "Uploaded"
-msgstr ""
+msgstr "Chargé"
 
 #: resourcestr.rsuploading
 msgid "Uploading"
-msgstr ""
+msgstr "Chargement"
 
 #: resourcestr.rswarnnossystray
 msgid "WARNING, your Desktop might not display SysTray"
-msgstr ""
+msgstr "ATTENTION, votre desktop peut ne pas afficher Systray"
 
 #: resourcestr.rswehavesnapshots
 #, object-pascal-format
@@ -642,7 +642,7 @@ msgstr "Menu"
 
 #: teditboxform.editfind.text
 msgid "EditFind"
-msgstr ""
+msgstr "ÉditerRechercher"
 
 #: teditboxform.label2.caption
 msgid "Read Only"
@@ -658,7 +658,7 @@ msgstr "Fermer (puis rouvrir si c'était un téléchargement)"
 
 #: teditboxform.labelfindinfo.caption
 msgid "LabelFindInfo"
-msgstr ""
+msgstr "LabelFindInfo"
 
 #: teditboxform.menubold.caption
 msgctxt "teditboxform.menubold.caption"
@@ -667,12 +667,12 @@ msgstr "Gras"
 
 #: teditboxform.menufindnext.caption
 msgid "Find Next"
-msgstr ""
+msgstr "Suivant"
 
 #: teditboxform.menufindprev.caption
 msgctxt "teditboxform.menufindprev.caption"
 msgid "Find Prev"
-msgstr ""
+msgstr "Précédent"
 
 #: teditboxform.menufixedwidth.caption
 msgid "Fixed Width"
@@ -694,11 +694,11 @@ msgstr "Italique"
 
 #: teditboxform.menuitembulletleft.caption
 msgid "Bullet <<"
-msgstr ""
+msgstr "Puce <<"
 
 #: teditboxform.menuitembulletright.caption
 msgid "Bullet >>"
-msgstr ""
+msgstr "Puce >>"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
@@ -1209,7 +1209,7 @@ msgstr "Attention aux limites de la synchro Tomdroid !"
 
 #: tformtomdroid.label1.hint
 msgid "Use GitHub Sync instead. Post issue if you need Tomdroid Sync."
-msgstr ""
+msgstr "Utiliser GitHub à la place. Poster un cas si besoin de Sync Tomtroid"
 
 #: tformtomdroid.label2.caption
 msgid "Select an existing profile (or enter data) "
@@ -1252,7 +1252,7 @@ msgstr "Rejoindre"
 
 #: tformtomdroidfile.buttonoldssh.caption
 msgid "Use old SSH model"
-msgstr ""
+msgstr "Ancienne version SSH"
 
 #: tformtomdroidfile.buttonsync.caption
 #, fuzzy
@@ -1274,11 +1274,11 @@ msgstr "Exécution test"
 
 #: tformtomdroidfile.label1.caption
 msgid "Tomdroid Sync - deprecated, will not be in v0.36."
-msgstr ""
+msgstr "Sync Tomdroid - obsolete, retiré dès la v0.36"
 
 #: tformtomdroidfile.label1.hint
 msgid "Use GitHub Sync instead. Post issue if you need Tomdroid"
-msgstr ""
+msgstr "Utiliser la Sync GitHub à la place. Ouvrir un cas si besoin de Tomdroid"
 
 #: tformtomdroidfile.label6.caption
 #, fuzzy
@@ -1305,7 +1305,7 @@ msgstr "Menu"
 
 #: tmainform.buttsystrayhelp.caption
 msgid "SysTray Help"
-msgstr ""
+msgstr "Aide Systray"
 
 #: tmainform.caption
 msgid "tomboy-ng"
@@ -1387,7 +1387,7 @@ msgstr "Nouveau carnet"
 
 #: tnotebookpick.tabsetnotes.caption
 msgid "Set Notes"
-msgstr ""
+msgstr "Définir Notes"
 
 #: tomdroid.rscheckingforexistingsync
 msgid "Checking for an existing sync ...."
@@ -1503,7 +1503,7 @@ msgstr "Installer Tomdroid puis configurer/exécuter une synchro"
 
 #: tomdroidfile.rsjoinanyway
 msgid "Forcing a Join may \"recover\" some notes you thought you have deleted."
-msgstr ""
+msgstr "Un Join en force peut \"restituer\" des notes ayant été détruites
 
 #: tomdroidfile.rsnoconnection
 #, fuzzy
@@ -1559,11 +1559,11 @@ msgstr "Recherche tomboy-ng"
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
-msgstr ""
+msgstr "Clic Droit pour gérer les carnets"
 
 #: tsearchform.menucreatenotebook.caption
 msgid "Create new Note Book"
-msgstr ""
+msgstr "Créer un nouveau carnet"
 
 #: tsearchform.menudeletenotebook.caption
 msgid "Delete Notebook"
@@ -1576,19 +1576,19 @@ msgstr "Éditer le modèle du carnet"
 #: tsearchform.menuitemcasesensitive.caption
 msgctxt "tsearchform.menuitemcasesensitive.caption"
 msgid "Case Sensitive"
-msgstr ""
+msgstr "Sensible à la casse"
 
 #: tsearchform.menuitemimportnote.caption
 msgid "Import File"
-msgstr ""
+msgstr "Import Fichier"
 
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Note Book"
-msgstr ""
+msgstr "Gère les notes du carnet"
 
 #: tsearchform.menuitemswyt.caption
 msgid "Search While You Type"
-msgstr ""
+msgstr "Recherche pendant la saisie"
 
 #: tsearchform.menunewnotefromtemplate.caption
 msgid "Create New Note from Template"
@@ -1608,15 +1608,15 @@ msgstr "Carnets"
 #: tsearchform.speedbuttonclearsearch.caption
 msgctxt "tsearchform.speedbuttonclearsearch.caption"
 msgid "Clear"
-msgstr ""
+msgstr "Effacer"
 
 #: tsearchform.speedsearchotions.caption
 msgid "Options"
-msgstr ""
+msgstr "Options"
 
 #: tsearchform.speedsearchotions.hint
 msgid "Search Options"
-msgstr ""
+msgstr "Options de recherche"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"
@@ -1694,16 +1694,16 @@ msgstr "Une synchro par heure si possible."
 
 #: tsett.checkescclosesnote.caption
 msgid "Esc Closes Note"
-msgstr ""
+msgstr "Esc pour fermer la note"
 
 #: tsett.checkfindtoggles.caption
 msgid "Find Command Toggles"
-msgstr ""
+msgstr "Bascule Commande recherche"
 
 #: tsett.checkfindtoggles.hint
 msgctxt "tsett.checkfindtoggles.hint"
 msgid "eg Ctrl-F opens and closes Find Window"
-msgstr ""
+msgstr "ex: Ctrl-F ouvre et ferme la fenêtre de recherche"
 
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
@@ -1715,7 +1715,7 @@ msgstr "Attention, risque d'impact sur le Tomboy traditionnel."
 
 #: tsett.checknotifications.caption
 msgid "Show Notifications"
-msgstr ""
+msgstr "affiche les notifications"
 
 #: tsett.checkshowextlinks.caption
 msgid "Show External  Links"
@@ -1749,7 +1749,7 @@ msgstr "Gras"
 
 #: tsett.checkstampitalics.caption
 msgid "Italics"
-msgstr ""
+msgstr "Italique"
 
 #: tsett.checkstampsmall.caption
 #, fuzzy
@@ -1759,19 +1759,19 @@ msgstr "Police petite"
 
 #: tsett.checksyncenabled.caption
 msgid "Sync Enabled"
-msgstr ""
+msgstr "Synchro active"
 
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
-msgstr ""
+msgstr "Réutiliser annuler (peut ralentir l'édition)"
 
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
-msgstr ""
+msgstr "Fermer puis ouvrir une note pour valider. Utilisez Ctrl-Z Ctrl-Y"
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
-msgstr ""
+msgstr "GitHub ou Synchro fichier"
 
 #: tsett.groupbox4.caption
 #, fuzzy
@@ -1791,12 +1791,12 @@ msgstr " Synchro "
 #: tsett.groupboxtoken.caption
 msgctxt "tsett.groupboxtoken.caption"
 msgid "Token"
-msgstr ""
+msgstr "Jeton"
 
 #: tsett.groupboxuser.caption
 msgctxt "tsett.groupboxuser.caption"
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1827,7 +1827,7 @@ msgstr "snaphots au maximum"
 
 #: tsett.label17.caption
 msgid "Date Stamp Format"
-msgstr ""
+msgstr "Format horodatage"
 
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
@@ -1871,19 +1871,19 @@ msgstr "non configuré"
 
 #: tsett.labelsynctype.caption
 msgid "Sync Type"
-msgstr ""
+msgstr "Typede synchro"
 
 #: tsett.menuitemcopytoken.caption
 msgid "Copy Existing Token"
-msgstr ""
+msgstr "Copie d'un jeton existant"
 
 #: tsett.menuitemgettoken.caption
 msgid "Get a Token in your Browser"
-msgstr ""
+msgstr "Obtenir un jeton dans le navigateur"
 
 #: tsett.menuitempastetoken.caption
 msgid "Paste a New Token"
-msgstr ""
+msgstr "Coller un nouveau jeton"
 
 #: tsett.radioalwaysask.caption
 msgid "Always Ask me what to do."
@@ -1937,7 +1937,7 @@ msgstr "Réglages"
 
 #: tsett.speedtokenactions.caption
 msgid "Actions"
-msgstr ""
+msgstr "Actions"
 
 #: tsett.tabbackup.caption
 msgid "BackUp"
@@ -1965,4 +1965,5 @@ msgstr "Orthographe"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Synchro"
+
 

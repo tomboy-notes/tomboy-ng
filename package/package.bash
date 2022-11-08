@@ -189,6 +189,8 @@ function DebianPackage () {
 		;;
 	"ReleaseRasPi")
 		CTRL_RELEASE="Raspberry Pi release."
+		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin"
+		
 		;;
 	esac
 	chmod 755 BUILD/usr/bin/tomboy-ng

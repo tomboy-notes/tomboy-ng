@@ -12,6 +12,11 @@
 #
 #		 Probably should put license and readme in there too.
 # -------------------------------------------------------------
+
+# History 
+# 2022-11-02  Made allowance for lazconfig not being in $HOME/.* We now assume
+#             instead that ALL Laz installs have a lazarus.cfg with --pcp=
+
 LAZ_FULL_DIR="$1"
 LAZ_DIR=`basename "$LAZ_FULL_DIR"`
 PRODUCT=tomboy-ng
@@ -21,6 +26,7 @@ VERSION=`cat version`
 MANUALS=`cat note-files`
 MSGFMT="/usr/local/Cellar/gettext/0.19.8.1/bin/msgfmt"
 VERSION=`cat version`
+LAZ_PCP=`cat "$LAZ_FULL_DIR"/lazarus.cfg`
 
 if [ -z "$LAZ_DIR" ]; then
 	echo "Usage : $0 /Full/Path/Lazarus/dir"
@@ -39,6 +45,7 @@ if [ ! -f tomboy-ng.iss ]; then
 	exit
 fi
 
+
 function MakeDMG () {
 	if [ "$1" = "carbon" ]; then
 		CPU="i386"
@@ -51,7 +58,10 @@ function MakeDMG () {
 	fi
 	cd ../source
 	rm -f "$PRODUCT"
-	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild   --pcp="$HOME/.$LAZ_DIR" -B --cpu="$CPU" --ws="$1" --build-mode="$REL" --os="darwin" Tomboy_NG.lpi
+
+#	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild   --pcp="$HOME/.$LAZ_DIR" -B --cpu="$CPU" --ws="$1" --build-mode="$REL" --os="darwin" Tomboy_NG.lpi
+	
+	TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild "$LAZ_PCP"   -B --cpu="$CPU" --ws="$1" --build-mode="$REL" --os="darwin" Tomboy_NG.lpi
 	if [ ! -f "$PRODUCT" ]; then
 		echo "------------------------------------"
 		echo "Failed to build ""$BITS"" bit binary"
@@ -91,6 +101,11 @@ function MakeDMG () {
 	rm -f "$PRODUCT""$BITS"_"$VERSION".dmg
 	~/create-dmg-master/create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"
 }
+
+if [ "LAZ_PCP" == "" ]; then
+	echo "Failed to find config file"
+	exit
+fi
 
 rm -f *.dmg
 # MakeDMG "carbon"

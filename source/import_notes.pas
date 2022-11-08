@@ -35,6 +35,7 @@ HISTORY :
     2021/10/18   For some reason I was removing embedded underline xml, now I restore it ??
     2021/12/29   Added a single file name for when importing one file at a time.
     2021/01/13   Unix only check to see if a passed filename starts with an '~', expand if so.
+    2022/11/08   Ensure no xml markup in Title.
 }
 
 {$mode objfpc}{$H+}
@@ -449,7 +450,7 @@ begin
                 if copy(Title, 1, 2) = '## ' then delete(Title, 1, 3);
                 if copy(Title, 1, 2) = '### ' then delete(Title, 1, 4);
             end;
-
+            Title := RemoveXml(Title);
             if Title = '' then
                 Title := 'Unknown Title';
             ProcessPlain(Content, Title);

@@ -330,7 +330,7 @@
       </Item6>
       <Item7 Name="ReleaseRasPi">
         <MacroValues Count="1">
-          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
+          <Macro4 Name="LCLWidgetType" Value="qt5"/>
         </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
@@ -826,9 +826,9 @@
       </Item18>
       <SharedMatrixOptions Count="6">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
-        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseRasPi,ReleaseLin64,ReleaseLin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item3 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
-        <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
+        <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseRasPi" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
       </SharedMatrixOptions>
