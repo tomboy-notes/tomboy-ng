@@ -106,6 +106,7 @@ unit Note_Lister;
                 SearchUnit.ListView now in ownerdata mode, faster with lots of notes.
                 NoteList now a public var of NoteLister, other units can iterate over it.
     2022/10/29  Use test, "if TheMainNoteLister = self" to ensure Index are only used by TheMainNoteLister in IndexNotes()
+    2022/11/09  Trap out a totally bad xml note, reasonably gracefully.
 
 
 }
@@ -1166,7 +1167,8 @@ var
     J : integer;
     PossibleError : string = '';
 begin
-    //debugln('TNoteLister.GetNoteDetails - indexing ' + Dir + FileName);
+//    if FileName[1] = '1' then exit;       // ToDo : remove
+    if DebugMode then debugln('TNoteLister.GetNoteDetails - indexing ' + Dir + FileName);
     if not DontTestName then
         if not IDLooksOK(copy(FileName, 1, 36)) then begin      // In syncutils !!!!
             EnterCriticalSection(CriticalSection);
@@ -1182,8 +1184,24 @@ begin
         new(NoteP);
         NoteP^.IsTemplate := False;
         NoteP^.ID:=FileName;
-        ReadXMLFile(Doc, Dir + FileName);
-  	    try
+        try
+            ReadXMLFile(Doc, Dir + FileName);
+        except on E: EXMLReadError do begin
+                //debugln('GetNoteDetails - XMLReadError ' + E.ErrorMessage);
+                //debugln('GetNoteDetails - Invalid XML in ' + Dir + FileName);
+                EnterCriticalSection(CriticalSection);
+                try
+                    ErrorNotes.Append(FileName + ', ' + E.ErrorMessage);
+                    XMLError := True;
+                finally
+                    LeaveCriticalSection(CriticalSection);
+                end;
+                Doc.Free;
+                Dispose(NoteP);
+                exit;
+            end;
+        end;
+        try
 	        try
 	  	        Node := Doc.DocumentElement.FindNode('title');
                 if not assigned(Node.FirstChild) then
@@ -1789,7 +1807,7 @@ begin
     if DebugMode then debugln('Empty Note and Book Lists created');
     FreeandNil(ErrorNotes);
     ErrorNotes := TStringList.Create;
-    if DebugMode then debugln('Looking for notes in [' + WorkingDir + ']');
+    if DebugMode then debugln('IndexNotes : Looking for notes in [' + WorkingDir + ']');
 
     InitCriticalSection(CriticalSection);                  // +++++++++++
     while Cnt > 0 do begin

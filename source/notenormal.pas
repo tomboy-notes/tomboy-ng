@@ -16,9 +16,12 @@ unit notenormal;
   It recieves a TStringList containing a note (possibly loaded from disk) probably read
     from the KMemo and heading for disk.
 
+  Remember, this code all runs in a thread, don't go sprinkling debugln()s, triggers memory leaks
+
   HISTORY :
     2021/08/19  Bug in RemoveRedundentTags that sometimes ate character after tag pair
     2021/09/21  Added code to convert blocks of monospace to to now have each para wrapped.
+    2022/11/09  Remove any ctrl char (ie < 32) except #10 and #13, don't know its necessary but #279
 
 }
 
@@ -260,10 +263,13 @@ procedure TNoteNormaliser.NormaliseList(STL : TStringList);
 // quickly filter here while saving, good.
 
 var
-    TagSize, StIndex : integer;
+    TagSize, StIndex, ChIndex : integer;
     TempSt : string;
+    ChangedLine : Boolean = false;
+    //Tick, Tock : qword;
 begin
     StIndex := 0;
+    //Tick := gettickcount64();
     while StIndex < StL.Count do begin
         repeat
             TagSize := OnTagAtEnd(StL.Strings[StIndex]);
@@ -289,7 +295,18 @@ begin
     StIndex := StL.Count -1;           // remove any trailing spaces.
     while StIndex > 0 do begin
         TempSt := Stl[StIndex];
-        if TempSt.endswith(' ')  then
+        ChIndex := 1;                  // Issue #279, ctrl-Z characters ending up in file
+        ChangedLine := False;          // ToDo : review the addition of this code, it does appear to work and be safe but ...
+        while ChIndex <= length(TempSt) do begin
+            if (ord(TempSt[ChIndex]) < 32)
+            and (ord(TempSt[ChIndex]) <> 10)
+            and (ord(TempSt[ChIndex]) <> 13) then begin
+                    //debugln('Removing char ' + ord(TempSt[ChIndex]).ToString);   // Carefull, causes memory leak when run in thread
+                    delete(TempSt, ChIndex, 1);
+                    ChangedLine := True;
+            end else inc(ChIndex);
+        end;
+        if TempSt.endswith(' ') or ChangedLine then
             Stl[StIndex] := TempSt.TrimRight;
         dec(StIndex);
 	end;
@@ -304,6 +321,8 @@ begin
 		inc(StIndex);
 	end;
     TidyMonospace(StL);
+    //Tock := gettickcount64();
+    //debugln('TNoteNormaliser.NormaliseList  took ' + inttostr(Tock-Tick) + 'mS');  // triggers memory leaks
 end;
 
 

@@ -450,7 +450,11 @@ var
 		end;
         result := CheckPlugIn(True);
 	end;
-
+    { First we try and find a SysTray Library, libappindicator3 or libayatana-appindicator3.
+    If not available, not much we can do, report and exit;
+    We then try for enabling it using Gnome Extensions, if not available its either not installed or not gnome.
+    If its there but disabled on Gnome we ask user and enable it.
+    }
 begin
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk post 22/05/2021, r65122
     // Does no harm to check here but if its not in Lazarus, its won't be used when needed.
@@ -515,7 +519,7 @@ begin
             exit(CheckGnomeExtras());
         XDisplay := QX11Info_display;
     {$endif}
-    A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);
+    A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);  // gtk2 or non-Gnome Qt5
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
     ForceAppInd := GetEnvironmentVariable('LAZUSEAPPIND');
     if ForceAppInd <> '' then
@@ -526,10 +530,15 @@ begin
     // if we are false here, its probably because its a recent Gnome Desktop or GTK3, no SysTray.
     // However, if libappindicator3 or Ayatana is installed and the Gnome Shell Extension,
     // appindicators is installed and enabled, it will 'probably' be OK.
-    if result = false then
-        Result := CheckGnomeExtras();   // Thats libappindicator3 and an installed and enabled gnome-shell-extension-appindicator
-    end;
-{$endif}
+
+    // Downside of above is we do all the Gnome Tests on non gnome desktops if running GTK3
+    if (pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0)
+        and (result = false) then
+            Result := CheckGnomeExtras()
+            // Thats libappindicator3 and an installed and enabled gnome-shell-extension-appindicator
+        else Result := True;        // Now, that is a hope for the best, GTK3 but non Gnome
+end;
+{$endif}                            // hides CheckForSystemTray() and CheckGnomeExtras() from non Linux
 
 procedure TMainForm.FormShow(Sender: TObject);
 var
@@ -588,7 +597,7 @@ begin
             SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
         until TheMainNoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
-
+    if ButtSysTrayHelp.Visible then debugln('You cannot see me');
 
 end;
 
@@ -668,9 +677,14 @@ begin
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
+var
+    MN : integer;
 begin
-    ButtMenu.Width := (Width div 3);
-    BitBtnHide.Width := (Width div 3);
+    MN := (Width div 3);
+    ButtMenu.Width := MN;
+    BitBtnHide.Width := MN;
+    ButtSysTrayHelp.Left := 2* MN;
+    ButtSysTrayHelp.width := MN;
 end;
 
     // Attempt to detect we are in a dark theme, sets relevent colours.

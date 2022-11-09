@@ -754,6 +754,7 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -767,6 +768,9 @@
             <Verbosity>
               <ShowHints Value="False"/>
             </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
             <CustomOptions Value="-dDisableLCLGIF
 -dDisableLCLJPEG
 -dDisableLCLPNM

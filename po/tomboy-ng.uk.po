@@ -629,6 +629,10 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr "Меню"
 
+#: teditboxform.button1.caption
+msgid "Button1"
+msgstr ""
+
 #: teditboxform.editfind.text
 msgid "EditFind"
 msgstr "ЗмінаПошуку"

@@ -1,5 +1,5 @@
 unit recover;
-{    Copyright (C) 2017-2020 David Bannon
+{    Copyright (C) 2017-2022 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -23,6 +23,7 @@ unit recover;
     2020/07/16  Extensive work to improve 'UI' sanity.
     2020/07/16  cleanup unused constants
     2020/08/21  Improve windows dark theme colours.
+    2022/11/09  Fixed a fail to delete Bad Note, day one bug ?
 }
 
 
@@ -155,7 +156,8 @@ var
 begin
     for I := 1 to StringGridNotes.RowCount-1 do begin     // includes header
         showmessage('Delete ' + StringGridNotes.Cells[0, I]);
-        DeleteFile(NoteDir + StringGridNotes.Cells[0, I] + '.note');
+        DeleteFile(NoteDir + StringGridNotes.Cells[0, I]);
+        Debugln('TFormRecover.ButtonDeleteBadNotesClick  - ' + NoteDir + StringGridNotes.Cells[0, I]);
         inc(Cnt);
     end;
     //showmessage(rsDeletedDamaged_1 + ' ' + inttostr(CNT) + ' ' + rsDeletedDamaged_2 );

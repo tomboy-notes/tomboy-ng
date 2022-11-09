@@ -1,19 +1,19 @@
 object MainForm: TMainForm
-  Left = 563
+  Left = 195
   Height = 294
   Hint = 'If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 240
-  Width = 580
+  Top = 208
+  Width = 565
   Caption = 'tomboy-ng'
   ClientHeight = 294
-  ClientWidth = 580
+  ClientWidth = 565
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.2.0.2'
+  LCLVersion = '2.3.0.0'
   object ImageNotesDirTick: TImage
     AnchorSideTop.Control = LabelNotesFound
     Left = 24
@@ -380,7 +380,7 @@ object MainForm: TMainForm
     Left = 197
     Height = 30
     Top = 2
-    Width = 381
+    Width = 366
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Right = 2
     Caption = 'Quit'
@@ -403,16 +403,15 @@ object MainForm: TMainForm
     TabOrder = 1
   end
   object ButtSysTrayHelp: TBitBtn
-    AnchorSideRight.Control = Owner
+    AnchorSideLeft.Control = ImageAboutLaz
+    AnchorSideTop.Control = Label4
+    AnchorSideRight.Control = BitBtnQuit
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ImageAboutLaz
-    Left = 402
-    Height = 30
-    Top = 117
-    Width = 163
-    Anchors = [akRight, akBottom]
-    BorderSpacing.Right = 15
-    BorderSpacing.Bottom = 14
+    Left = 360
+    Height = 28
+    Top = 124
+    Width = 219
+    Anchors = [akTop]
     Caption = 'SysTray Help'
     OnClick = ButtSysTrayHelpClick
     TabOrder = 4
@@ -422,7 +421,7 @@ object MainForm: TMainForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 375
+    Left = 360
     Height = 128
     Top = 161
     Width = 200

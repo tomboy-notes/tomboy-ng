@@ -742,7 +742,7 @@ procedure TEditBoxForm.BulletControl({const Toggle,} MoreBullet : boolean);
 var
       BlockNo : longint = 1;
       LastBlock,  Blar : longint;
-      PB : TKMemoParagraph;
+      //PB : TKMemoParagraph;
 begin
     if KMemo1.ReadOnly then exit();
     MarkDirty();
@@ -1627,7 +1627,6 @@ begin
     PopupMainTBMenu.Popup;
 end;
 
-
 procedure TEditBoxForm.MenuItemCopyClick(Sender: TObject);
 begin
 	KMemo1.ExecuteCommand(ecCopy);
@@ -2088,7 +2087,7 @@ begin
 //  	if Not Ready then exit();               // ToDo : what is effect of disabling this ?
     { if there is more than one block, and the first, [0], is a para, delete it.}
     if KMemo1.Blocks.Count <= 2 then exit();	// Don't try to mark title until more blocks.
-    Ready := false;                           // ToDo : what is effect of disabling this ?
+    Ready := false;
     Kmemo1.Blocks.LockUpdate;
     if Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoParagraph' then
           Kmemo1.Blocks.DeleteEOL(0);
@@ -3066,7 +3065,11 @@ var
   FirstChar  : boolean; // Cursor is under the first character of a line of text.
   NoBulletPara : boolean = false;
 begin
-    if not Ready then exit();                   // should we drop key on floor ????
+    if not Ready then begin       // Will this help with issue #279
+        if [ssCtrl] = shift then
+            Key := 0;
+        exit();                   // should we drop key on floor ????
+    end;
     // don't let any ctrl char get through the kmemo on mac
     {$ifdef DARWIN}
     if [ssCtrl] = Shift then begin
@@ -3135,6 +3138,9 @@ begin
         Key := 0;    // so we don't get a ctrl key character in the text
         exit();
     end;
+    { Control-Z bug
+    hex 1A, 26 is reported to be getting past above filter and ending up in a note #279.
+    }
 
     // ------------- Alt (or Option in Mac) ------------------
     if [ssAlt] = Shift then begin
@@ -3422,7 +3428,8 @@ var
     //T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
-    if BusySaving then begin                                      // ToDo : inform user via notifications
+    if BusySaving then begin
+        ShowNotification('Alert', 'Failed to Auto Save', 3000);   // inform user via notifications
 //        ShowMessage('ERROR, unable to save ' + NoteFileName);   // No, don't do that, it stops the process
         exit;
     end;

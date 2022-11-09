@@ -640,6 +640,10 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr "Menu"
 
+#: teditboxform.button1.caption
+msgid "Button1"
+msgstr ""
+
 #: teditboxform.editfind.text
 msgid "EditFind"
 msgstr "ÉditerRechercher"
@@ -1503,7 +1507,7 @@ msgstr "Installer Tomdroid puis configurer/exécuter une synchro"
 
 #: tomdroidfile.rsjoinanyway
 msgid "Forcing a Join may \"recover\" some notes you thought you have deleted."
-msgstr "Un Join en force peut \"restituer\" des notes ayant été détruites
+msgstr "Un Join en force peut \"restituer\" des notes ayant été détruite"
 
 #: tomdroidfile.rsnoconnection
 #, fuzzy
@@ -1965,5 +1969,4 @@ msgstr "Orthographe"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Synchro"
-
 
