@@ -47,7 +47,7 @@ function ReplaceToken () {
 }
 
 # ------ It starts here --------------
-
+# $1=dir to work in  $2=Target Distro  [$3=qt5]
 if [ -f "$1""control.template" ]; then
     if [ "$2" != "" ]; then
         if [ "$2" != "help" ]; then

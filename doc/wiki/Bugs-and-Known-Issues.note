@@ -13,20 +13,22 @@ There is some advice about DIY debugging further down this document.
 
 <size:huge><bold>Known Issues</bold></size:huge>
 
-<list><list-item dir="ltr">On some  Macs, when using the in note Find tool, a 'shadow highlight' can appear superimposed over the button bar. It does no harm, disappears when you move the mouse over the button but is unsightly. Its a know upstream problem, https://forum.lazarus.freepascal.org/index.php/topic,53055.0.html .</list-item></list>
-<list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine).</list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">On some  Macs, when using the in note Find tool, a 'shadow highlight' can appear superimposed over the button bar. It does no harm, disappears when you move the mouse over the button but is unsightly. Its a know upstream problem, https://forum.lazarus.freepascal.org/index.php/topic,53055.0.html .</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine).</list-item></list></list-item></list>
 
 
 <size:huge><bold>Specific Things with a Work Around</bold></size:huge>
 
-<size:large><bold>QT5 versions and Dark Theme</bold></size:large>
-On a number of Linux Distros, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but much better to install qt5ct and set what colours you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours, either by adding an environment variable when you start tomboy-ng  -
+<size:large><bold>QT5 versions (and Dark Theme)</bold></size:large>
+On a number of Linux Distros, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but much better to install <bold>qt5ct</bold> and set the colour theme you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours, either by adding an environment variable when you start tomboy-ng  -
 
 <monospace>QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]</monospace>
 
-Or you could set that generally so it makes all QT apps look the same by, eg, adding this to your  /etc/environment file (and logging out and back in again) -
+Better still, make all your Qt5 app have a nice uniform look. Set that var in either /etc/environment (requires root or, simpler in a .xsessionrc file in your home dir.
 
-<monospace>QT_QPA_PLATFORMTHEME=qt5ct</monospace>
+<monospace>cd ; echo "export QT_QPA_PLATFORMTHEME=qt5ct" &gt;&gt; .xsessionrc</monospace>
+
+And logging out and back in again, the qt5ct command has a nice GUI to let you select your look and feel. But don't set qt5ct to gtk2, messes with highlighting found text.
 
 <size:large><bold>Dark Theme</bold></size:large>
 At present, seems only GTK2 and to a limited extent, Windows can pick up colours from the OS :-(
@@ -49,13 +51,13 @@ Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
 
 <size:huge><bold>Long term 'maybe' stuff</bold></size:huge>
 These are things I have no immediate plans to fix, but they might be addressed some time in the future if there is some demand from end users.
-<list><list-item dir="ltr">On Linux GTK2 based versions, using the Compose Key approach to entering accented characters results in a bad character also being inserted. This is a known, upstream issue,  https://bugs.freepascal.org/view.php?id=38454 . Qt5 versions do not have this problem.</list-item></list>
-<list><list-item dir="ltr">Stop house keeping from moving viewport.</list-item></list>
-<list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list>
-<list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.  Windows will not let us set a dark background to buttons, must look at owner draw modes.</list-item></list>
-<list><list-item dir="ltr">Lines starting with an '*' should be auto converted to a Bullet.</list-item></list>
-<list><list-item dir="ltr">Tabs do not work.</list-item></list>
-<list><list-item dir="ltr">Revise controls, at present modelled on Tomboy, we can improve.</list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">On Linux GTK2 based versions, using the Compose Key approach to entering accented characters results in a bad character also being inserted. This is a known, upstream issue,  https://bugs.freepascal.org/view.php?id=38454 . Qt5 versions do not have this problem.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Stop house keeping from moving viewport.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.  Windows will not let us set a dark background to buttons, must look at owner draw modes.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Lines starting with an '*' should be auto converted to a Bullet.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Tabs do not work.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Revise controls, at present modelled on Tomboy, we can improve.</list-item></list></list-item></list>
 
 
 
@@ -65,21 +67,21 @@ If tomboy-ng crashes or does something unexpected, there are a number of command
 
 <bold>Command Line Switches</bold>
 
-   <list><list-item dir="ltr"><monospace>--dark-theme</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>-l --lang=CCode               Force Language, en, es, uk, fr, nl</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>-h --help                     Show this help message and exit.</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--version                     Print version and exit</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--no-splash                   Do not show small status/splash window</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--debug-sync                  Show debug messages during Sync</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--debug-index                 Show debug msgs while indexing notes</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--debug-spell                 Show debug messages while spell setup</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--config-dir=PATH_to_DIR      Create or use an alternative config</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--open-note=PATH_to_NOTE      Open indicated note, switch is optional</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--debug-log=SOME.LOG          Direct debug output to SOME.LOG.</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--import-txt=PATH_to_FILE     Import file into Note Repo  also -t</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--import-md=PATH_to_FILE      Import file into Note Repo  also -m</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--import-note=PATH_to_NOTE    Import file into Note Repo  also -n</monospace></list-item></list>
-   <list><list-item dir="ltr"><monospace>--title-fname                 Use Filename as title for import txt &amp; md</monospace></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--dark-theme</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>-l --lang=CCode               Force Language, en, es, uk, fr, nl</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>-h --help                     Show this help message and exit.</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--version                     Print version and exit</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--no-splash                   Do not show small status/splash window</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--debug-sync                  Show debug messages during Sync</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--debug-index                 Show debug msgs while indexing notes</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--debug-spell                 Show debug messages while spell setup</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--config-dir=PATH_to_DIR      Create or use an alternative config</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--open-note=PATH_to_NOTE      Open indicated note, switch is optional</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--debug-log=SOME.LOG          Direct debug output to SOME.LOG.</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--import-txt=PATH_to_FILE     Import file into Note Repo  also -t</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--import-md=PATH_to_FILE      Import file into Note Repo  also -m</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--import-note=PATH_to_NOTE    Import file into Note Repo  also -n</monospace></list-item></list></list-item></list>
+   <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--title-fname                 Use Filename as title for import txt &amp; md</monospace></list-item></list></list-item></list>
 
 <bold>Capturing to a file</bold>
 Windows and Mac do not, for this purpose, have a console. But they too  can be told to capture this log info to a file using  another  command  line  switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified. For example a linux user would  -
@@ -96,10 +98,10 @@ Windows and Mac do not, for this purpose, have a console. But they too  can be t
 
 <bold>Windows</bold> users should do something like this -
 
-<list><list-item dir="ltr">Right click the startbutton and select "run".  In the field, enter this command line exactly as show (including the inverted commas) -</list-item></list>
-<list><list-item dir="ltr">"C:\Program Files\tomboy-ng\tomboy-ng.exe" --debug-index --debug-log=%userprofile%\Desktop\tomboy-log.txt</list-item></list>
-<list><list-item dir="ltr">Press enter, tomboy-ng should start up normally. Close it.</list-item></list>
-<list><list-item dir="ltr">A file called tomboy-log.txt will have been created on your desktop.</list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Right click the startbutton and select "run".  In the field, enter this command line exactly as show (including the inverted commas) -</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">"C:\Program Files\tomboy-ng\tomboy-ng.exe" --debug-index --debug-log=%userprofile%\Desktop\tomboy-log.txt</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Press enter, tomboy-ng should start up normally. Close it.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">A file called tomboy-log.txt will have been created on your desktop.</list-item></list></list-item></list>
 
 In all cases, you may need to zip that file up to post it on Github. If  you  do intend to post such a log file to (eg) the Tomboy help system, do please check through it first to ensure there is nothing there you don't want the world to see. It may include things like note Titles for example. Note that a debug file will capture very little data unless of the debug switches is also set.
 
@@ -107,8 +109,8 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2022-10-30T11:15:30.8864126+11:00</last-change-date>
-  <last-metadata-change-date>2022-10-30T11:15:30.8864126+11:00</last-metadata-change-date>
+  <last-change-date>2022-11-11T19:47:12.3646180+11:00</last-change-date>
+  <last-metadata-change-date>2022-11-11T19:47:12.3646180+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

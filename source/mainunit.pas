@@ -813,6 +813,8 @@ begin
             + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
             + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
+        {$ifdef LCLQT5} Stg := Stg + #10 + 'QT_QPA_PLATFORMTHEME : ' +
+        GetEnvironmentVariable('QT_QPA_PLATFORMTHEME'); {$endif}
         AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
         AboutFrm.ShowModal;
         AboutFrm.free;

@@ -159,7 +159,7 @@ function MakeOrigFile () {
     mv ./debian "$APP"_"$VER""$DEBVER"/. 
 }
 
-while getopts "hUCl:D:nq" opt; do
+while getopts "hUCl:D:nqQ" opt; do
   case $opt in
     h)
       ShowHelp
@@ -178,6 +178,9 @@ while getopts "hUCl:D:nq" opt; do
 	n)
 	NEWORIG="YES"
 	;;
+	Q)
+	WIDGET="Qt5"
+	;;
     q)
 	WIDGET="Qt5"
 	;;
@@ -192,6 +195,7 @@ echo "---------- laz_bld is $LAZ_BLD"
 echo "---------- CLEAN is $CLEAN"
 echo "---------- UFILES is $UFILES"
 echo "---------- Target is $DISTRO1"
+echo "---------- WIDGET is $WIDGET"
 
 rm -f WHICHFPC WHICHLAZ		# remove any existing semaphore files
 
