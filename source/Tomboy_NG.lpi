@@ -21,12 +21,13 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
-      <ExcludedIdentifiers Count="5">
+      <ExcludedIdentifiers Count="6">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>
         <Item4 Value="Error while parsing text"/>
         <Item5 Value="Root node must be an array or object"/>
+        <Item6 Value="Button1"/>
       </ExcludedIdentifiers>
       <ExcludedOriginals Count="68">
         <Item1 Value="LabelToken"/>

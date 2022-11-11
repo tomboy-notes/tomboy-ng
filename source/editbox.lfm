@@ -14,7 +14,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = KMemo1
@@ -1212,12 +1212,12 @@ object EditBoxForm: TEditBoxForm
       Caption = '-'
     end
     object MenuItemBulletRight: TMenuItem
-      Caption = 'Bullet >>'
+      Caption = 'BullXXXXet +'
       ShortCut = 32807
       OnClick = MenuTextGeneralClick
     end
     object MenuItemBulletLeft: TMenuItem
-      Caption = 'Bullet <<'
+      Caption = 'Bullet -'
       ShortCut = 32805
       OnClick = MenuTextGeneralClick
     end

@@ -630,10 +630,6 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr "Menu"
 
-#: teditboxform.button1.caption
-msgid "Button1"
-msgstr ""
-
 #: teditboxform.editfind.text
 msgid "EditFind"
 msgstr "EditFind"
@@ -687,11 +683,15 @@ msgid "Italic"
 msgstr "Cursief"
 
 #: teditboxform.menuitembulletleft.caption
-msgid "Bullet <<"
+#, fuzzy
+#| msgid "Bullet <<"
+msgid "Bullet -"
 msgstr "Opsommingsteken <<"
 
 #: teditboxform.menuitembulletright.caption
-msgid "Bullet >>"
+#, fuzzy
+#| msgid "Bullet >>"
+msgid "BullXXXXet +"
 msgstr "Opsommingsteken >>"
 
 #: teditboxform.menuitemcopy.caption
