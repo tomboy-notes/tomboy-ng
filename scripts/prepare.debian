@@ -239,9 +239,9 @@ if [ -f tomboy-ng-master.zip ]; then
 	cd "$APP"_"$VER""$DEBVER"	# This is orig tomboy-ng dir made from zip
 	if [ "$WIDGET" = "Qt5" ]; then
 	    touch Qt5			# leave semaphore file
-	    ../mkcontrol.bash debian/ "$DISTRO1" qt5
+	    scripts/mkcontrol.bash debian/ "$DISTRO1" qt5
 	else
-		../mkcontrol.bash debian/ "$DISTRO1"
+		scripts/mkcontrol.bash debian/ "$DISTRO1"
 	fi
 
 	CleanSource

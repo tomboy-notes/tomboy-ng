@@ -28,6 +28,8 @@ The process is download (or extract) tomboy-ng source, remove unnecessary conten
 
 **Debian SRC Build**
 
+Suited for PPA, not good with Debian Source now we make a Qt5 version
+
 The script, build_src_package.bash automates the build test process if you don't want or need to see each step. Just download that script it from your home dir assuming you have a root installed FPC and Lazarus.
 
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/build_src_package.bash
@@ -38,14 +40,14 @@ or, step by step if you have issues -
 
 **Debian SRC Build step by step**
 --------
-(all assuming you are David and using a pre configured VM (see below), DebTestMate0922, rev the release number as required)
+(all assuming you are David and using a pre configured VM (see below), DebTestMate0922, rev the release number as required, it has no effect on product, just a convienance while building)
 
+This, as of Nov 2022, now makes a Qt5 version.
 
-
-    export DebVer="Debv33"
+    export DebVer="34g"
     mkdir "Build""$DebVer"; cd "Build""$DebVer"
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.debian
-    bash ./prepare.debian -D unstable -n
+    bash ./prepare.debian -D unstable -n -q
     cd tomboy-ng [tab]
     debuild -S
     cd .. 
