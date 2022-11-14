@@ -1341,17 +1341,14 @@ begin
     WriteConfigFile();
     SearchForm.UpdateStatusBar(rsAutosnapshotRun);
     if CheckNotifications.Checked then begin
-        {$ifdef LINUX}
+        MainForm.ShowNotification(rsAutosnapshotRun);
+        (* {$ifdef LINUX}
         ShowNotification('tomboy-ng', rsAutosnapshotRun);
-        (*
-        Notifier := TNotifier.Create;
-        Notifier.ShowTheMessage('tomboy-ng', rsAutosnapshotRun);  *)
         {$else}
         MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
         Mainform.TrayIcon.BalloonHint := 'rsAutosnapshotRun';
         Mainform.TrayIcon.ShowBalloonHint;
-        {$endif}
-        // Note, don't free it, it frees itself.
+        {$endif}   *)
     end;
 end;
 

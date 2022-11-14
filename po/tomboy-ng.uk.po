@@ -808,7 +808,7 @@ msgid "Tools - Sync, Export, Spell"
 msgstr "Засоби — Синхронізація, Експортування, Правопис"
 
 #: teditboxform.speedclose.caption
-msgid "blank"
+msgid "        "
 msgstr ""
 
 #: teditboxform.speedrollback.hint

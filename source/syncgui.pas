@@ -134,7 +134,7 @@ implementation
 }
 
 uses LazLogger, SearchUnit, TB_SDiff, Sync,  LCLType, {SyncError,} ResourceStr,
-        {notifier,} Settings{$ifndef Linux}, MainUnit{$else}, tb_utils{$endif};
+        {notifier,} Settings, MainUnit { tb_utils};
 
 {$R *.lfm}
 
@@ -343,6 +343,8 @@ begin
             if not Visible then begin
                 SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
+                    MainForm.ShowNotification(rsAutoSyncNotPossible);
+                    (*
                     {$ifdef linux}
                     ShowNotification('tomboy-ng', rsAutoSyncNotPossible, 6000);
                     (*Notifier := TNotifier.Create;                                           // does not require a 'free'.
@@ -351,7 +353,7 @@ begin
                     MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
                     Mainform.TrayIcon.BalloonHint := rsAutoSyncNotPossible;
                     Mainform.TrayIcon.ShowBalloonHint;
-                    {$endif}
+                    {$endif}  *)
                 end;
                 exit;
             end else begin
@@ -370,13 +372,14 @@ begin
         SyncSummary :=  DisplaySync();
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
         if (not Visible) and Sett.CheckNotifications.Checked then begin
-            {$ifdef LINUX}
+            MainForm.ShowNotification(rsLastSync  + ' ' + SyncSummary);
+            (*  {$ifdef LINUX}
             ShowNotification('tomboy-ng', rsLastSync  + ' ' + SyncSummary);
             {$else}
             MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
             Mainform.TrayIcon.BalloonHint := rsLastSync  + ' ' + SyncSummary;
             Mainform.TrayIcon.ShowBalloonHint;
-            {$endif}
+            {$endif}    *)
         end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

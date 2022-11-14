@@ -818,6 +818,10 @@ msgstr "Fuente: tamaño, negrita, cursiva, etc"
 msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
 
+#: teditboxform.speedclose.caption
+msgid "        "
+msgstr ""
+
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
 msgstr "Volver a la anterior"
@@ -1925,3 +1929,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

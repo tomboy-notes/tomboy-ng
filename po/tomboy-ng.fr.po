@@ -821,7 +821,7 @@ msgid "Tools - Sync, Export, Spell"
 msgstr "Outils - Synchro, Export, Orthographe"
 
 #: teditboxform.speedclose.caption
-msgid "blank"
+msgid "        "
 msgstr ""
 
 #: teditboxform.speedrollback.hint

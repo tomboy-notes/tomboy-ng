@@ -77,6 +77,7 @@ unit Mainunit;
     2022/05/03  Add unix username to IPC pipe.
     2022/08/10  Added an about Lazarus to splash screen and simplified the About screen.
     2022/10/20  To Avoid calling IndexNotes() from Import, now function, IndexNewNote()
+    2022/11/14  ShowNotifications() now cross platform.
 
     CommandLine Switches
 
@@ -178,6 +179,7 @@ type
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
 
+
         procedure StartIPCServer();
         procedure CommMessageReceived(Sender: TObject);
         procedure TestDarkThemeInUse();
@@ -192,6 +194,8 @@ type
         PopupMenuSearch : TPopupMenu;
         PopupMenuTray : TPopupMenu;
         MainTBMenu : TPopupMenu;
+                                    // Cross Platform, Linux libnotify, others TrayIcon Balloon
+        procedure ShowNotification(const Message: string; ShowTime: integer = 3000);
         // Called by the Sett unit when it knows the true config path.
         // procedure SetAltHelpPath(ConfigPath: string);
         procedure ShowAbout();
@@ -245,6 +249,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
     tb_utils, {$ifdef LINUX}LCLVersion,{$endif} LCLIntf,
+    {$ifdef Linux}libnotify, {$endif}
     TomdroidFile {$ifdef windows}, registry{$endif};
 
 function SingleNoteFileName() : string;
@@ -781,6 +786,29 @@ begin
  	if TMenuItem(Sender).Caption <> SearchForm.MenuEmpty then
  		SearchForm.OpenNote(TMenuItem(Sender).Caption);
 end;
+
+
+// Linux only uses libnotify, Win and MacOS work through TrayIcon
+procedure TMainForm.ShowNotification(const Message : string; ShowTime : integer = 3000);
+{$ifdef LINUX}
+var
+    LNotifier : PNotifyNotification;
+begin
+    notify_init(argv[0]);
+    LNotifier := notify_notification_new (pchar('tomboy_ng'), pchar(Message), pchar('dialog-information'));
+    notify_notification_set_timeout(LNotifier, ShowTime);                // figure is mS
+    notify_notification_show (LNotifier, nil);
+    notify_uninit;
+{$else}
+begin
+    TrayIcon.BalloonTitle := 'tomboy-ng';
+    TrayIcon.BalloonHint := 'rsAutosnapshotRun';
+    TrayIcon.BalloonTimeOut := ShowTime;
+    Mainform.TrayIcon.ShowBalloonHint;
+{$endif}
+end;
+
+
 
 RESOURCESTRING
     rsAbout = 'tomboy-ng notes - cross platform, sync and manage notes.';

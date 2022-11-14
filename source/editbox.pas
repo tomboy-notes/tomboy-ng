@@ -3438,7 +3438,7 @@ var
 
 begin
     if BusySaving then begin
-        ShowNotification('Alert', 'Failed to Auto Save', 3000);   // inform user via notifications
+        MainForm.ShowNotification('Failed to Auto Save', 3000);   // inform user via notifications
 //        ShowMessage('ERROR, unable to save ' + NoteFileName);   // No, don't do that, it stops the process
         exit;
     end;

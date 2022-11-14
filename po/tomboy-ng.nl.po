@@ -809,7 +809,7 @@ msgid "Tools - Sync, Export, Spell"
 msgstr "Hulpmiddelen (synchroniseren, exporteren, spellingcontrole)"
 
 #: teditboxform.speedclose.caption
-msgid "blank"
+msgid "        "
 msgstr ""
 
 #: teditboxform.speedrollback.hint

@@ -53,7 +53,7 @@ interface
 
 
 uses
-        Classes, SysUtils {$ifndef TESTRIG}, KMemo {$ifdef Linux}, libnotify{$endif}{$endif};
+        Classes, SysUtils {$ifndef TESTRIG}, KMemo{$endif} ;
 
 type    TReindexProcedure = procedure(const St : string; CheckTitleClash : boolean) of object; // Used by CLI to request a reindex if GUI has started.
 
@@ -113,10 +113,11 @@ function EscapeJSON(St : string) : string;
                         // Removes a NoteBook tag from a note
 function RemoveNoteBookTag(const FullFileName, NB : string) : boolean;
 
+(*            moved to MainUnit, ALL notifications should hit mainform.ShowNotification(Msg, mS=3000)
 {$ifdef Linux}
 // Linux only uses libnotify, Win and MacOS work through TrayIcon
 procedure ShowNotification(const Title, Message : string; ShowTime : integer = 6000);
-{$endif}
+{$endif}   *)
 
 { Returns the name of the config directory (with trailing seperator)  }
 function TB_GetDefaultConfigDir : string;
@@ -151,6 +152,7 @@ uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}   
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
+ (*            moved to MainUnit, ALL notifications should hit mainform.ShowNotification(Msg, mS=3000)
 {$ifdef Linux}
 // Linux only uses libnotify, Win and MacOS work through TrayIcon
 procedure ShowNotification(const Title, Message : string; ShowTime : integer = 6000);
@@ -167,8 +169,7 @@ begin
 begin
 {$endif}
 end;
-
-{$endif}
+{$endif}    *)
 
 { Returns the name of the config directory (with trailing seperator)  }
 function TB_GetDefaultConfigDir : string;
