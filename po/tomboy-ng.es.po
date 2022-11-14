@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.35\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-10-30 12:29+0100\n"
+"PO-Revision-Date: 2022-11-13 10:56+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.2\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -697,16 +697,12 @@ msgid "Italic"
 msgstr "Cursiva"
 
 #: teditboxform.menuitembulletleft.caption
-#, fuzzy
-#| msgid "Bullet <<"
 msgid "Bullet -"
-msgstr "Viñeta <<"
+msgstr "Viñeta -"
 
 #: teditboxform.menuitembulletright.caption
-#, fuzzy
-#| msgid "Bullet >>"
 msgid "BullXXXXet +"
-msgstr "Viñeta >>"
+msgstr "Viñeta +"
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
@@ -821,10 +817,6 @@ msgstr "Fuente: tamaño, negrita, cursiva, etc"
 #: teditboxform.speedbuttontools.hint
 msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
-
-#: teditboxform.speedclose.caption
-msgid "blank"
-msgstr ""
 
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
@@ -1746,7 +1738,7 @@ msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
-msgstr ""
+msgstr "Sincronización Archivos o Github"
 
 #: tsett.groupbox4.caption
 msgctxt "tsett.groupbox4.caption"
@@ -1933,4 +1925,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-

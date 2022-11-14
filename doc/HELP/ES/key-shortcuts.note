@@ -5,8 +5,8 @@
 
 
 <bold>Todas los sistemas</bold></size:large>
-<list><list-item dir="ltr">Alt-FlechaDerecha : Activar viñetas</list-item></list>
-<list><list-item dir="ltr">Alt-FlechaIzquierda : Desactivar viñetas</list-item></list>
+<list><list-item dir="ltr">Alt-FlechaDerecha : Activar viñeta o añadir una con más sangría</list-item></list>
+<list><list-item dir="ltr">Alt-FlechaIzquierda : Desactivar viñeta o reducir la sangría</list-item></list>
 <list><list-item dir="ltr">Ctrl-1 : Fuente pequeña</list-item></list>
 <list><list-item dir="ltr">Ctrl-2 : Fuente normal</list-item></list>
 <list><list-item dir="ltr">Ctrl-3 : Fuente grande</list-item></list>
@@ -22,6 +22,8 @@
 <list><list-item dir="ltr">Ctrl-C : Copiar el texto seleccionado al portapapeles </list-item></list>
 <list><list-item dir="ltr">Ctrl-V : Pegar el contenido del portapapeles en la nota actual</list-item></list>
 <list><list-item dir="ltr">Ctrl-A : Seleccionar todo</list-item></list>
+<list><list-item dir="ltr">Fin or Fn-FlechaDerecha : ir al final del renglón</list-item></list>
+<list><list-item dir="ltr">Fin or Fn-FlechaIzquierda : ir al inicio del renglón</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaDerecha : Mover al principio de la palabra a la derecha</list-item></list>
 <list><list-item dir="ltr">Ctrl-FlechaIzquierda : Mover al principio de la palabra a la izquierda del puntero</list-item></list>
 <list><list-item dir="ltr">Ctrl-Mayús-FlechaIzquierda : extender el texto seleccionado por un carácter hacia la izquierda</list-item></list>
@@ -40,7 +42,7 @@ Fuentes
 <list><list-item dir="ltr">Ctrl-H : Resaltado</list-item></list>
 <list><list-item dir="ltr">Ctrl-E : Calculadora - Vea la nota de ayuda sobre la calculadora</list-item></list>
 Buscar (en una nota)
-<list><list-item dir="ltr">Ctrl-F : Encontrar algo en una nota</list-item></list>
+<list><list-item dir="ltr">Ctrl-F : Buscar algo en una nota</list-item></list>
 <list><list-item dir="ltr">F3 o Ctrl-G : Buscar siguiente instancia</list-item></list>
 <list><list-item dir="ltr">Mayús-F3 o Mayús-Ctrl-G : Buscar instancia anterior</list-item></list><size:large>
 
@@ -67,13 +69,13 @@ Fuentes
 <list><list-item dir="ltr">Cmd-E : Calculadora - Vea nota de ayuda sobre la calculadora.</list-item></list>
 <list><list-item dir="ltr">Opt-H : Resaltado</list-item></list>
 Buscar (en una nota)
-<list><list-item dir="ltr">Cmd-F : Encontrar algo en una nota</list-item></list>
+<list><list-item dir="ltr">Cmd-F : Buscar algo en una nota</list-item></list>
 <list><list-item dir="ltr">Cmd-G : Buscar siguiente instancia</list-item></list>
 <list><list-item dir="ltr">Mayús-Cmd-G : Buscar instancia anterior</list-item></list>
 
 </note-content></text>
-  <last-change-date>2021-07-19T12:17:24.8509318+00:00</last-change-date>
-  <last-metadata-change-date>2021-07-19T12:17:24.8509318+00:00</last-metadata-change-date>
+  <last-change-date>2022-11-11T12:05:08.6697108+11:00</last-change-date>
+  <last-metadata-change-date>2022-11-11T12:05:08.6697108+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
