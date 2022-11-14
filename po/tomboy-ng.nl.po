@@ -808,6 +808,10 @@ msgstr "Tekstgrootte, vetgedrukt, cursief, etc."
 msgid "Tools - Sync, Export, Spell"
 msgstr "Hulpmiddelen (synchroniseren, exporteren, spellingcontrole)"
 
+#: teditboxform.speedclose.caption
+msgid "blank"
+msgstr ""
+
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
 msgstr "Reservekopie herstellen"

@@ -807,6 +807,10 @@ msgstr "Розмір шрифту, грубий, похилий і т.п."
 msgid "Tools - Sync, Export, Spell"
 msgstr "Засоби — Синхронізація, Експортування, Правопис"
 
+#: teditboxform.speedclose.caption
+msgid "blank"
+msgstr ""
+
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
 msgstr "Відкотити"

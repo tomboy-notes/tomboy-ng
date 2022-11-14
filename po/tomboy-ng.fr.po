@@ -820,6 +820,10 @@ msgstr "Formatage du texte"
 msgid "Tools - Sync, Export, Spell"
 msgstr "Outils - Synchro, Export, Orthographe"
 
+#: teditboxform.speedclose.caption
+msgid "blank"
+msgstr ""
+
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
 msgstr "Annuler"

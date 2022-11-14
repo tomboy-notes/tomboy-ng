@@ -792,6 +792,10 @@ msgstr ""
 msgid "Tools - Sync, Export, Spell"
 msgstr ""
 
+#: teditboxform.speedclose.caption
+msgid "blank"
+msgstr ""
+
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
 msgstr ""

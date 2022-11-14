@@ -230,6 +230,7 @@ unit EditBox;
     2022/09/08  Esc can (if set) close current note. #271
     2022/10/18  Extensive changes to Link system, faster and better behaviour #260 inc
     2022/10/30  In MakeLink, capture the colour early, even if risk we don't need it.
+    2022/11/14  Add a Close button cos Qt5 hides to title bar buttons in Showmodal ????
 }
 
 
@@ -310,6 +311,7 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
+        SpeedClose: TSpeedButton;
 		SpeedLeft: TSpeedButton;
 		SpeedRight: TSpeedButton;
         SpeedButtonDelete: TSpeedButton;
@@ -371,6 +373,7 @@ type
         procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
         procedure PanelFindEnter(Sender: TObject);
+        procedure SpeedCloseClick(Sender: TObject);
 		procedure SpeedLeftClick(Sender: TObject);
 		procedure SpeedRightClick(Sender: TObject);
 		procedure SpeedRollBackClick(Sender: TObject);
@@ -587,7 +590,8 @@ uses
     Note_Lister,        // so we can get directly to note data.
     ResourceStr,        // We borrow some search related strings from searchform
     bufstream,
-    notenormal;         // makes the XML look a little prettier
+    notenormal,         // makes the XML look a little prettier
+    LCLStrConsts;       // just for rsMBClose ?
 
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
@@ -1360,6 +1364,11 @@ begin
     EditFind.SetFocus;
 end;
 
+procedure TEditBoxForm.SpeedCloseClick(Sender: TObject);
+begin
+    close;
+end;
+
 procedure TEditBoxForm.MenuFindNextClick(Sender: TObject);
 begin
     SpeedRightClick(Self);
@@ -1815,7 +1824,7 @@ begin
     if Use_Undoer then
         Undoer := TUndo_Redo.Create(KMemo1)
     else Undoer := Nil;
-
+    SpeedClose.Caption := ' ' + copy(rsMBClose, 2, 20) + ' ';    // chop off the initial '&'
     SingleNoteFileName := MainUnit.SingleNoteFileName();
     if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)
