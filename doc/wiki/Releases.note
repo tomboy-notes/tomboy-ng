@@ -111,7 +111,7 @@ Suse is quite pushy about signing rpm packages, more work for me and it means yo
 
 Next, to install tomboy-ng, please click on appropriate link, and if it suggests YaST2: Ruby, allow it to install, it works well.  If you receive an error message, its almost certainly because you have not yet installed the signature file mentioned above. You may prefer to download and use the zypper command -
 
-<monospace>sudo zypper install ~/Downdloads/tomboy-ngQt_0.34-0_amd64.deb [enter]</monospace>
+<monospace>sudo zypper install ~/Downloads/tomboy-ngQt-0.35-2-x86_64.rpm [enter]</monospace>
 
 <size:large><bold>Mageia</bold></size:large>
 Mageia warns you if you try to install a package who's signature it does not recognise. You can tell it not to worry and install anyway or, to put its mind at rest, download [tomboy-ng-GPGKEY]($$GPGKEY)  (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
