@@ -19,7 +19,8 @@ There is some advice about DIY debugging further down this document.
 
 <size:huge><bold>Specific Things with a Work Around</bold></size:huge>
 
-<size:large><bold>QT5 versions (and Dark Theme)</bold></size:large>
+<size:large><bold>QT5 versions</bold></size:large>
+<bold>Dark Theme</bold>
 On a number of Linux Distros, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but much better to install <bold>qt5ct</bold> and set the colour theme you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours, either by adding an environment variable when you start tomboy-ng  -
 
 <monospace>QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]</monospace>
@@ -29,6 +30,8 @@ Better still, make all your Qt5 app have a nice uniform look. Set that var in ei
 <monospace>cd ; echo "export QT_QPA_PLATFORMTHEME=qt5ct" &gt;&gt; .xsessionrc</monospace>
 
 And logging out and back in again, the qt5ct command has a nice GUI to let you select your look and feel. But don't set qt5ct to gtk2, messes with highlighting found text.
+
+<bold>Cancelled Bullets</bold> - When text is bulleted and then converted back to plaintext, it has a small indent that is not removable. It goes away when next the note is loaded and is not show in printed copy but is annoying! Its an upstream issue and its being worked on.
 
 <size:large><bold>Dark Theme</bold></size:large>
 At present, seems only GTK2 and to a limited extent, Windows can pick up colours from the OS :-(
@@ -109,8 +112,8 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2022-11-11T19:47:12.3646180+11:00</last-change-date>
-  <last-metadata-change-date>2022-11-11T19:47:12.3646180+11:00</last-metadata-change-date>
+  <last-change-date>2022-11-15T12:31:01.0666785+11:00</last-change-date>
+  <last-metadata-change-date>2022-11-15T12:31:01.0666785+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

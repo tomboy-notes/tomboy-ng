@@ -372,7 +372,7 @@ begin
         SyncSummary :=  DisplaySync();
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
         if (not Visible) and Sett.CheckNotifications.Checked then begin
-            MainForm.ShowNotification(rsLastSync  + ' ' + SyncSummary);
+            MainForm.ShowNotification(rsLastSync  + ' ' + SyncSummary, 2000);
             (*  {$ifdef LINUX}
             ShowNotification('tomboy-ng', rsLastSync  + ' ' + SyncSummary);
             {$else}
