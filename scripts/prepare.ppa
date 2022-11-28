@@ -8,8 +8,18 @@ set -e
 # For detailed instructions including ready to copy command lines see-
 # https://github.com/tomboy-notes/tomboy-ng/blob/master/prepare.md
 
+# If you submit it to PPA and get an error, or a revision of the packaing
+# is requested, DO NOT DELETE THE WORKING Build* DIR, you need it to generaate 
+# fixes (run prepare.debian again, this time without the -n. Totally different 
+# behaviour !
+
+# Fine to blow it away if its not been uploaded with dput !
+
+# we make, hard wired a Focal 20.04 Qt5 or a Bionic 18.04 GTK2 depending on -q  
+# Made one at a time.
 
 
+# Most of code does not alter the PACKVER, only in PrepExistingOrigFile()
 
 
 # Remember that we don't build a Qt5 for Bionic, its libqt5pas is too old.
@@ -23,24 +33,34 @@ set -e
 #                  Remove some Debian specific things
 #       2021-06-19 cleanup and move how to doc to github
 #       2021-11-12 Now update changelog with whatsnew contents
-#       2022-10-03 Now build for Focal only, 'copy' gtk2 to bionic
+#       2022-11-17 Clearly defined the two modes we might work in, new or repackage
 
 # ---------------------------------------------------------
 
-APP="tomboy-ng"
+DISTROQT5="focal"
+DISTROGTK2="bionic"
+VER="unknown"		# this is what it should be for normal use, gets numb from src !
+# Warning, nasty fudge follows, debugging measure, use with very great care, overrides 
+# version no in source tree for packaging, but does not change the numb hard wired in binary
+# VER="0.35a"
+
+
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
 DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
 DEF_FULLNAME="David Bannon"		# 
 # UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name in Ubuntu PPA !
 
 # Housekeeping stuff, helpers for debugging etc. Set with command line, not here !
-VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run.
 WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
 QT5INNAME=""	# May have content we add to qt5 package name (when -Q) 
-PACKVER="-1"    # -1 is normal, if you have to submit again, must inc.
+PACKVER="-1"    # -1 is normal, do not edit, its inc'ed if no -n.
+NEWORIG="no"	# if set to YES its a release and we create new .orig.tar.gz"
+DISTRO1="$DISTROGTK2"
+APP="tomboy-ng"
+TB_SOURCE="master" # might be, eg, 0.35 etc, valid github tag, set with command line
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
 	# if in user space, because debuild will miss them, makes two files.
@@ -103,20 +123,29 @@ function CleanSource () {
 
 function KControls () {	
 	if [ -e "master.zip" ]; then
-		echo "Note: reusing KControls zip"
+		echo "Note: removing stray master.zip ???"
+		rm -f master.zip
+	fi
+	if [ -e "KControls.zip" ]; then
+		echo "Note: reusing existing KControls."
 	else
 		# wget https://github.com/kryslt/KControls/archive/master.zip   # watch this name does not change.
 		wget https://github.com/davidbannon/KControls/archive/master.zip   # watch this name does not change.
+		mv master.zip KControls.zip
 	fi
-	unzip -q master.zip
+	unzip -q KControls.zip
 	# rm -f master.zip
 	mv KControls-master "$APP"_"$VER""$PACKVER"/kcontrols
 }
 
 function ShowHelp () {
     echo " "
-    echo "Use this script to make Ubuntu PPA (or plain binary), always make .orig"
-    echo "Assumes FPC 3.2.0 in path. Will no longer build with FPC304."
+    echo "Use this script to make Ubuntu PPA (or plain binary), works in two modes -"
+    echo "1. New Release, always make .orig.tar.gz file."
+    echo "2. Repackage Mode, no -n, expects to find the files used for a previous"
+    echo "   sunmission to PPA"
+    echo "So, important that you keep the files from a submission in case of a repack"
+    echo "Assumes FPC 3.2.0 or Later in path. Will no longer build with FPC304."
     echo "Needs Lazarus, <=2.0.10 in root space or specified with -l option."
     echo "Needs devscripts preinstalled and maybe an edit of email address above if"
     echo "it is to be used in the DEB SRC tool chain. Its role there is just to create"
@@ -125,11 +154,11 @@ function ShowHelp () {
     echo "-h   print help message"
     echo "-l   a full path to a viable lazbuild executable, eg also lcl dir is."
     echo "-C   clean out deb files from previous run, debug use only."
+    echo "-t   tomboy-ng source, defaults to master or github tag, eg, 0.35 etc"
     echo "-U   update Makefile and/or buildit.bash,   debug use only."
     echo "-Q   Make a Qt5 version instead of default GTK2"
-    #echo "-q   Make a Qt5 one for a Debian Repo" 
     echo "-p   Pause before creating .orig. to change content, use another term."
-    echo "-D   distro, eg bionic, focal"
+    echo  "-n  Make a new source package, as opposed to repackaging"
     echo ""
     echo "eg  bash ./prepare.bash -Dbionic [-Q] <enter>;  cd tomboy[tab] <enter>"
     echo "    debuild -S <enter>     // check for errors !" 
@@ -140,8 +169,62 @@ function ShowHelp () {
     exit
 }
 
+function PrepExistingOrigFile {
+# Assume we are in a previously used dir, it will have orig and eg tomboy-ng_0.35-1 dir.
+# We are one level down, eg Build35 and can see the orig file and tomboy-ng_0.35-1 dir
+# Rename that dir, -2 ....
+# remove previous *.dsc, .buildinfo, .changes
+# Append an entry to the changelog
+# tell user to fix stuff and rerun debuild -S
+# you achive a similar position by extracting out .orig. with dpkg-source -x ....
+# tomboy-ng_0.35.orig.tar.gz
 
-while getopts "nhpQUCl:D:" opt; do
+echo "in PrepExistingOrigFile APP is $APP"
+
+	EXDIRNAME=`find . -maxdepth 1 -type d -name "tomboy*" `  # there should be only one ....
+echo "in PrepExistingOrigFile 2 APP is $APP"
+    if [ "$VER" == "unknown" ]; then
+	    VER=`cat "$EXDIRNAME"/package/version`
+    fi
+echo "in PrepExistingOrigFile 3 APP is $APP"
+	if [ -f "$APP""_""$VER"".orig.tar.gz" ]; then
+		echo "Orig file present, thats good"
+	else
+echo "in PrepExistingOrigFile 4 APP is $APP_$VER"
+
+		echo "Orig file not present, ""$APP""_""$VER"".orig.tar.gz"
+		echo "Giving up and going home ....."
+		exit
+	fi
+
+	NEWDIRNAME=`echo "$EXDIRNAME" | rev | cut -c2- | rev `   # chop of last char
+	PACKVER=`echo "$EXDIRNAME" | rev | cut -b 1 | rev `      # This is last char
+	((PACKVER=PACKVER+1))                                    # rev it, should test its not > 9
+	NEWDIRNAME="$NEWDIRNAME""$PACKVER"
+	mv $EXDIRNAME $NEWDIRNAME
+	rm -Rf *.dsc *.buildinfo *.changes *.debian.tar.xz
+	if [ "$DEBEMAIL" = "" ]; then
+		DEBEMAIL="$DEF_EMAIL"
+		export DEBEMAIL
+	fi
+	if [ "$DEBFULLNAME" = "" ]; then
+		DEBFULLNAME="$DEF_FULLNAME"
+		export DEBFULLNAME
+	fi
+	VER="$VER""-""$PACKVER"                                 # eg 0.35-2
+	cd "$NEWDIRNAME"
+	pwd
+	dch -v "$VER" -D"$DISTRO1" "$DISTRO2" "Repackage"    
+	cd ..
+	pwd 
+	echo "If no errrors, you should now cd $NEWDIRNAME"
+	echo "Make what ever changes seem appropriate and run  debuild -S; cd .."
+	exit                                                    # My work here is done
+}   # End of function
+
+# --------------- S T A R T S   H E R E -----------------
+
+while getopts "nhpQUCl:D:t:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -158,24 +241,50 @@ while getopts "nhpQUCl:D:" opt; do
     p)
 	PAUSE="YES"
 	;;
-    Q)
-	WIDGET="Qt5"
-	APP="$APP""-qt5"
-#	QT5INNAME="YES"
+	t)
+	TB_SOURCE="$OPTARG"
 	;;
+    Q)
+		WIDGET="Qt5"
+		APP="$APP""-qt5"
+		DISTRO1="$DISTROQT5"
+		;;
     D)
     	DISTRO1="$OPTARG"
-	# DISTRO1="-D""$OPTARG"
-	DISTRO2="--force-distribution"
-	;;
+		# DISTRO1="-D""$OPTARG"
+		DISTRO2="--force-distribution"
+		;;
     n)
-	;;
+		NEWORIG="YES"
+		;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
-      ShowHelp
+      	echo "Invalid option: -$OPTARG" >&2
+      	ShowHelp
       ;;
   esac
 done
+
+ORIGFILE=`find . -maxdepth 1 -name "*.orig.tar.gz" `
+echo "orig file = $ORIGFILE and NEWORIG = $NEWORIG and APP = $APP"
+if [ "$NEWORIG" == "no" ]; then              # if no -n, we always exit here.
+    if [ "$ORIGFILE" == "" ]; then
+        echo "Sorry, this directory does not contain a .orig.tar.gz file and we"
+        echo "cannot work in repackage mode without one, if a new release, -n ?"
+    else
+        PrepExistingOrigFile       
+    fi
+    exit
+fi
+
+if [ "$ORIGFILE" == "" ]; then
+    echo "No orig.tar.gz file found, confirming New Build"
+else
+    echo "An orig.tar.gz was found, you might need it to revise submitted packaging"
+    echo "then blow the dir away and start a New Release, maybe you don't want the -n ?"
+    exit
+fi   
+
+# If to here, its make a new release
 
 echo "---------- laz_bld is $LAZ_BLD"
 echo "---------- CLEAN is $CLEAN"
@@ -183,10 +292,18 @@ echo "---------- UFILES is $UFILES"
 
 rm -f WHICHFPC WHICHLAZ	
 	
-if [ ! -f tomboy-ng-master.zip ]; then
-	echo "---------- Downloading a new tomboy-ng"
-	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
-	mv master.zip tomboy-ng-master.zip
+if [ ! -f tomboy-ng-master.zip ]; then		# We need download TB source
+	echo "---------- Downloading a new tomboy-ng, $TB_SOURCE"
+	if [ "$TB_SOURCE" == "master" ]; then
+		wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
+		mv master.zip tomboy-ng-master.zip
+	else
+		# note, github plays with the file name ???? Some pressure to be consistent with tag names !
+		wget https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v"$TB_SOURCE".zip
+		mv tomboy-ng-"$TB_SOURCE".zip tomboy-ng-master.zip
+		# we download https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v0.35.zip
+		# but end up with tomboy-ng-0.35.zip, note the 'v' disappeared, gee !
+	fi
 fi
 
 if [ -f tomboy-ng-master.zip ]; then
@@ -211,7 +328,14 @@ if [ -f tomboy-ng-master.zip ]; then
 			cp buildit.bash tomboy-ng-master/buildit.bash
 		fi
 	fi
-	VER=`cat tomboy-ng-master/package/version`
+    echo "+++++++++++ UNSET VER = $VER ++++++++++++"	
+    if [ "$VER" == "unknown" ]; then
+	    VER=`cat tomboy-ng-master/package/version`
+    else 
+	echo "==================================================================="
+	echo "=============  WARNING - Hard Wired Version = $VER ================="
+	echo "==================================================================="
+    fi
 	if [ "$CLEAN" = "YES" ]; then
 		echo "---------- Removing existing DEB files"
 		rm -Rf "$APP"_"$VER""$PACKVER"
@@ -229,6 +353,9 @@ if [ -f tomboy-ng-master.zip ]; then
     if [ "$WIDGET" = "Qt5" ]; then
         sed -i 's/tomboy-ng\ /tomboy-ng-qt5\ /g' debian/changelog
     fi
+    
+    echo "------- Calling dch ""$DISTRO1"" and ""$DISTROQT5"
+    
     dch -v "$VER""$PACKVER" -D"$DISTRO1" "$DISTRO2" "Release of new version"
     if [ -f whatsnew ]; then
         echo "---------- Including whatsnew in changelog"
@@ -266,7 +393,8 @@ if [ -f tomboy-ng-master.zip ]; then
 	rm debian/rules.qt5                                     # or that
 	mv ./debian "$APP"_"$VER""$PACKVER"/.                         # put remainder back where it belongs
 
-	echo "If no errrors, you should now cd ""$APP"_"$VER""$PACKVER; debuild -S"
+	echo "If no errrors, you should now cd ""$APP"_"$VER""$PACKVER; debuild -S; cd .."
+	echo "After that, try test-debs.bash and then maybe, dput ....."
 else
 	echo ""
 	echo "   Sorry, I cannot see or get a tomboy-ng-master.zip file. This script can"

@@ -16,13 +16,14 @@
 # Manually add wmctrl to dependencies.
 # 2021/05/15
 # don't add gnome-shell-extension-appindicator to dependencies,
-# it pulls in half of Gnome desktop, on gnome users would hate me.
+# it pulls in half of Gnome desktop, non gnome users would hate me.
 # ====================================================
 
 PROD=tomboy-ng
 VERS=`cat version`
 RDIR="$PROD"-"$VERS"
 
+PACKVER=1	# Starts at '1', rev it if we are repackaging same content
 
 function DoAlien ()  {
 	FILENAME="$PROD"_"$VERS"-0_"$1".deb
@@ -44,7 +45,8 @@ function DoAlien ()  {
 	alien -r -g -v "$FILENAME"
 	# Alien inserts requests the package create / and /usr/bin and
 	# the os does not apprieciate that, not surprisingly.
-	# This removes the %dir /   
+	# This removes the %dir / 
+	sed -i "s/^Release:.*/Release: $PACKVER/' "$RDIR"/"$RDIR"-2.spec  
 	sed -i 's#%dir "/"##' "$RDIR"/"$RDIR"-2.spec
 	# and this removes %dir /usr/bin
 	sed -i 's#%dir "/usr/bin/"##' "$RDIR"/"$RDIR"-2.spec

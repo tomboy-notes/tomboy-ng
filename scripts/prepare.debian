@@ -1,8 +1,17 @@
 #!/bin/bash
+set -e
+
 # copyright David Bannon, 2019, 2020, 2021 use as you see fit, but retain this statement.
 #
 # This stript is useful to prepare the tomboy-ng source tree to make an
 # Debian Source Package
+
+# If you submit it to Debian Mentors and get an error, or a revision of the packaing
+# is requested, DO NOT DELETE THE WORKING Build* DIR, you need it to generate 
+# fixes (run prepare.debian again, this time without the -n. Totally different 
+# behaviour !
+
+# Fine to blow it away if its not been uploaded with dput !
 
 # For detailed instructions including ready to copy command lines see-
 # https://github.com/tomboy-notes/tomboy-ng/blob/master/prepare.md
@@ -18,13 +27,21 @@
 #	2021-02-03 Include enough of first changelog to keep lintian off my back
 #	2021-06-19 Made swichable between GTK2 and Qt5
 #		   Moved Howto docs to github
+#   2022-11-17 Now two seperate behavious, with -n, "new release" we download a new
+#              set of files and generate a new .orig.tar.gz that must be uploaded.
+#              Secondly, without the -n, we assume we are using an existing .orig.
+#              and just repackaging. The Package version number is incremented and
+#              the src dir renamed. Most of the code is skipped.
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
 DEF_EMAIL="tomboy-ng@bannons.id.au"	# This matches cert I use to sign tomboy-ng stuff
 DEF_FULLNAME="David Bannon"		# and this ...
 UBUNTU_FULLNAME="tomboy-ng"		# My stuff up, different cert with different name in Ubuntu PPA !
-DEBVER="-1"				# Package version, not source, starts at 1
+DEBVER="-1"		# Package version, not source, starts at 1, is auto set if repackage mode, don't edit
+NEWORIG="no"    # set to yes if -n on command line
+DISTRO1="unstable"
+TB_SOURCE="master" # might be, eg, 0.35 etc, valid github tag, set with command line
 
 # Housekeeping stuff, helpers for debugging etc. Set with command line, not here !
 VER="unknown"
@@ -64,7 +81,7 @@ function CheckFPC_LAZ () {
 		echo " --- ERROR, no lazbuild found, try -l ? ---"
 		exit 1
 	fi
-}
+}               # End of function
 
 	# Here we remove file that are not needed in the Debian SRC kit.
 function CleanSource () {
@@ -93,7 +110,7 @@ function CleanSource () {
 	chmod 664 doc/HELP/ES/*
 	chmod 664 doc/HELP/FR/*
 
-}
+}         # End of function  
 
 
 function KControls () {	
@@ -106,7 +123,7 @@ function KControls () {
 	unzip -q kcontrols-master.zip
 	# rm -f master.zip
 	mv KControls-master "$APP"_"$VER""$DEBVER"/kcontrols
-}
+}               # End of function
 
 function ShowHelp () {
     echo " "
@@ -122,33 +139,19 @@ function ShowHelp () {
     echo "-h   print help message"
     echo "-l   a path to a viable lazbuild, eg at least where lazbuild and lcl is."
     echo "-C   clean deb files from previous run, exit, debug use only, Unreliable"
-    echo "-D   distro, eg unstable, bullseye"
+    echo "-t   tomboy-ng source, defaults to master or github tag, eg, 0.35 etc"
+    echo "-D   distro, defaults to unstable"
     echo "-n   New orig file, required for fresh release"
-    echo "-q   Make a Qt5 version instead of GTK2"
+    echo "-q   Make a Qt5 version instead of GTK2, ignored in repackage mode."
     echo ""
-    echo "  Typically, new release     bash ./prepare.debian -D unstable -n"
+    echo "  Typically, new release     bash ./prepare.debian -n -q"
     exit
-}
+}          # End of function
 
 function MakeOrigFile () {
     echo "---------- Creating a new .orig file"
     	# Note, when called we are in the unzipped and renamed tomboy-ng dir.
         # We move most of the debian dir out of harms way and tar up the dir.
-	# We have to do this to avoid the dreaded lintian no-debian-changes
-	# The copyright file in there alone does not generate that error ??
-	# But before moving it, we will create a new changelog
-	# cd "$APP"_"$VER""$DEBVER"
-#    rm debian/changelog                     # Must have a new changelog if new orig file
-#    dch "$DISTRO1" "$DISTRO2" --create --package="$APP" --newversion="$VER""$DEBVER" "New Version Release"
-#    dch --append "Please see github for change details"
-#    dch --release "blar"
-    
-#    echo "" >> debian/changelog
-#    echo "tomboy-ng (0.31a-1) unstable; urgency=medium" >> debian/changelog
-#    echo "" >> debian/changelog
-#    echo "  * Initial release. (Closes: #897688)" >> debian/changelog
-#    echo "" >> debian/changelog
-#    echo " -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 18 Dec 2020 22:08:09 +1100" >> debian/changelog
     cd ..
     mv "$APP"_"$VER""$DEBVER"/debian ./debian
     mkdir "$APP"_"$VER""$DEBVER"/debian
@@ -157,9 +160,56 @@ function MakeOrigFile () {
 	# OK, we now have our .orig. file, put most of it back.
     rm -Rf "$APP"_"$VER""$DEBVER"/debian
     mv ./debian "$APP"_"$VER""$DEBVER"/. 
-}
+}            # End of function
 
-while getopts "hUCl:D:nqQ" opt; do
+
+function PrepExistingOrigFile {
+# Assume we are in a previously used dir, it will have orig and eg tomboy-ng_0.35-1 dir.
+# We are one level down, eg Build35 and can see the orig file and tomboy-ng_0.35-1 dir
+# Rename that dir, -2 ....
+# remove previous *.dsc, .buildinfo, .changes
+# Append an entry to the changelog
+# tell user to fix stuff and rerun debuild -S
+# you achive a similar position by extracting out .orig. with dpkg-source -x ....
+# tomboy-ng_0.35.orig.tar.gz
+
+EXDIRNAME=`find . -maxdepth 1 -type d -name "tomboy*" `  # there should be only one ....
+VER=`cat "$EXDIRNAME"/package/version`
+if [ -f "tomboy-ng_""$VER"".orig.tar.gz" ]; then
+    echo "Orig file present, thats good"
+else
+    echo "Orig file not present, ""tomboy-ng_""$VER"".orig.tar.gz"
+    echo "Giving up and going home ....."
+fi
+
+NEWDIRNAME=`echo "$EXDIRNAME" | rev | cut -c2- | rev `   # chop of last char
+PACKVER=`echo "$EXDIRNAME" | rev | cut -b 1 | rev `      # This is last char
+((PACKVER=PACKVER+1))                                    # rev it, should test its not > 9
+NEWDIRNAME="$NEWDIRNAME""$PACKVER"
+mv $EXDIRNAME $NEWDIRNAME
+rm -Rf *.dsc *.buildinfo *.changes *.debian.tar.xz
+if [ "$DEBEMAIL" = "" ]; then
+	DEBEMAIL="$DEF_EMAIL"
+	export DEBEMAIL
+fi
+if [ "$DEBFULLNAME" = "" ]; then
+	DEBFULLNAME="$DEF_FULLNAME"
+	export DEBFULLNAME
+fi
+VER="$VER""-""$PACKVER"                                 # eg 0.35-2
+cd "$NEWDIRNAME"
+pwd
+dch -v "$VER" -D"$DISTRO1" "$DISTRO2" "Repackage"    
+cd ..
+pwd 
+echo "If no errrors, you should now cd $NEWDIRNAME"
+echo "Make what ever changes seem appropriate and run  debuild -S; cd .."
+exit                                                    # My work here is done
+
+}       # End of function
+
+
+while getopts "hUCl:D:nqQt:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -178,6 +228,9 @@ while getopts "hUCl:D:nqQ" opt; do
 	n)
 	NEWORIG="YES"
 	;;
+	t)
+	TB_SOURCE="$OPTARG"
+	;;
 	Q)
 	WIDGET="Qt5"
 	;;
@@ -191,19 +244,54 @@ while getopts "hUCl:D:nqQ" opt; do
   esac
 done
 
+ORIGFILE=`find . -maxdepth 1 -name "*.orig.tar.gz" `
+echo "orig file is $ORIGFILE and NEWORIG is ""$NEWORIG"
+if [ "$NEWORIG" == "no" ]; then              # if no -n, we always exit here.
+    if [ "$ORIGFILE" == "" ]; then
+        echo "Sorry, this directory does not contain a .orig.tar.gz file and we"
+        echo "cannot work in repackage mode without one, if a new release, -n ?"
+	exit
+    else
+        PrepExistingOrigFile       
+    fi
+    exit
+fi
+
+if [ "$ORIGFILE" == "" ]; then
+    echo "No orig.tar.gz file found, confirming New Build"
+else
+    echo "An orig.tar.gz was found, you might need it to revise submitted packaging, drop"
+    echo "the -n. Otherwise blow old files away and start a New Release"
+    exit
+fi   
+
 echo "---------- laz_bld is $LAZ_BLD"
-echo "---------- CLEAN is $CLEAN"
-echo "---------- UFILES is $UFILES"
-echo "---------- Target is $DISTRO1"
-echo "---------- WIDGET is $WIDGET"
+echo "---------- CLEAN   is $CLEAN"
+echo "---------- UFILES  is $UFILES"
+echo "---------- Target  is $DISTRO1"
+echo "---------- WIDGET  is $WIDGET"
+echo "---------- NEWORIG is $NEWORIG"
+echo "---------- DebVer  is $DebVer"
+
 
 rm -f WHICHFPC WHICHLAZ		# remove any existing semaphore files
 
-if [ ! -f tomboy-ng-master.zip ]; then
-	echo "---------- Downloading a new tomboy-ng"
-	wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
-	mv master.zip tomboy-ng-master.zip
+if [ ! -f tomboy-ng-master.zip ]; then		# We need download TB source
+	echo "---------- Downloading a new tomboy-ng, $TB_SOURCE"
+	if [ "$TB_SOURCE" == "master" ]; then
+		wget https://github.com/tomboy-notes/tomboy-ng/archive/master.zip
+		mv master.zip tomboy-ng-master.zip
+	else
+		# note, github plays with the file name ???? Some pressure to be consistent with tag names !
+		wget https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v"$TB_SOURCE".zip
+		mv tomboy-ng-"$TB_SOURCE".zip tomboy-ng-master.zip
+		# we download https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v0.35.zip
+		# but end up with tomboy-ng-0.35.zip, note the 'v' disappeared, gee !
+	fi
 fi
+
+# https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v0.35.zip
+
 
 if [ -f tomboy-ng-master.zip ]; then
 	CheckFPC_LAZ
@@ -220,6 +308,21 @@ if [ -f tomboy-ng-master.zip ]; then
 		rm -Rf "tomboy-ng-master"		# probably not here anyway ....
 	fi
 	unzip -q tomboy-ng-master.zip
+
+	# But, if we are trying to make an old version and renamed the TB source then
+	# the new dir created above might be called something like tomboy-ng-0.34
+	if [ ! -e "tomboy-ng-master" ]; then
+		EXDIRNAME=`find . -maxdepth 1 -type d -name "tomboy-ng-0*" `  # there should be only one, I hope ...
+		echo " --------- mv $EXDIRNAME tomboy-ng-master"
+		mv "$EXDIRNAME" "tomboy-ng-master"
+	fi
+
+	# risky, hacky code follows, versions 0.34 and earlier did not have mkcontrol.bash, slip one in
+	if [ -e "mkcontrol.bash" ]; then
+		echo "-------- WARNING, using local mkcontrol.bash because its here !"
+		cp mkcontrol.bash tomboy-ng-master/scripts/.
+		cp control.template tomboy-ng-master/debian/.
+	fi
 	VER=`cat tomboy-ng-master/package/version`
 	if [ "$CLEAN" = "YES" ]; then
 		rm -Rf "tomboy-ng-master"
@@ -244,11 +347,10 @@ if [ -f tomboy-ng-master.zip ]; then
 		scripts/mkcontrol.bash debian/ "$DISTRO1"
 	fi
 
-	CleanSource
+    # Note : if not NEWORIG, we cannot possibly be here !
 	if [ "$NEWORIG" = "YES" ]; then
+	    CleanSource
 		MakeOrigFile                    # create new .orig (and no longer a new change log)
-#	else				        # This happens below for both new and fix up mode ???
-#		dch -v "$VER""$DEBVER" "$DISTRO1" "$DISTRO2" "Release of new version"    
 	fi
 
 	cd "$APP"_"$VER""$DEBVER"
@@ -276,10 +378,10 @@ else
 	echo ""
 	echo "   Sorry, I cannot see a tomboy-ng-master.zip file. This"
 	echo "   script must be run in a directory containing that file"
-	echo "   (obtained from github) and probably little else."
+	echo "   obtained from github and probably little else."
 	echo "   If you used wget to download tomboy-ng, it will be named master.zip,"
 	echo "   you should rename it tomboy-ng-master.zip to avoid confusion."
-	echo ""
+	echo "-"
 fi
 
 

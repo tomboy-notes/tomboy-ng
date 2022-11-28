@@ -13,6 +13,12 @@ These notes are primarly for my, David's, use and assume that we are using the a
 
 **debhelper version** Debian Bullseye requires 13, building the PPA on U20.04 requires 12 but because we target  U18.04 for GTK2, must be 11 there. The PPA for the Qt5 version is 12 because we target Focal as a starting point (U18.04 will not run Qt5 apps easily). This, and other variations are all covered in the mkcontrol.bash script.
 
+**IMPORTANT**
+======
+While fiddling around, making sure its all going to build, easy to blow away the working dir and start again. BUT, once you have ***submitted something to Mentors or the PPA*** you cannot "start again", a package rebuild must use the original files, the scripts help here but only if you have the original files !
+
+So, do not, delete a failed build from Launchpad, ever ! 
+
 
 **Debian Source**
 ========
@@ -20,89 +26,71 @@ Understand that there are two distinct build processes for making a Deb Src. The
 
 
 
-The other building model is when a build problem is noted, the tomboy-ng source has not changed, just something cleaned up in the build.  Here we take the previous .orig file, extract its contents, make whatever change is necessary and rebuild. The .orig file is not re-uploaded and the resulting package will have -2 or -3, -4 on a really bad day.
+The other building model is when a build problem is noted, the tomboy-ng source has not changed, just something cleaned up in the build.  Here we take the previous .orig file and associated files, ideally safely tucked away, or downloaded .orig. and other files andextract its contents.  Make whatever change is necessary and rebuild. The .orig file is not re-uploaded and the resulting package will have -2 or -3, -4 on a really bad day.
 
 
 
 The process is download (or extract) tomboy-ng source, remove unnecessary content, build the SRC package, copy files to a clean directory, do a test build (that makes the .deb file) and run an pedantic lintian. If thats all satisfactory, we upload to Mentors.
 
-**Debian SRC Build**
-
-Suited for PPA, not good with Debian Source now we make a Qt5 version
-
-The script, build_src_package.bash automates the build test process if you don't want or need to see each step. Just download that script it from your home dir assuming you have a root installed FPC and Lazarus.
-
-    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/build_src_package.bash
-    
-    bash ./build_src_package.bash unstable
-
-or, step by step if you have issues -
 
 **Debian SRC Build step by step**
 --------
-(all assuming you are David and using a pre configured VM (see below), DebTestMate0922, rev the release number as required, it has no effect on product, just a convienance while building)
+(all assuming you are David and using a pre configured VM (see below), DebTestMate0922, rev the release number as required, it has no effect on product, just a convienance while building). The Debian script makes a src package that targets unstable, that name does not change.
 
 This, as of Nov 2022, now makes a Qt5 version.
 
     export DebVer="34g"
     mkdir "Build""$DebVer"; cd "Build""$DebVer"
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.debian
-    bash ./prepare.debian -D unstable -n -q
+    bash ./prepare.debian -n -q
     cd tomboy-ng [tab]
     debuild -S
     cd .. 
-    mkdir ../Test"$DebVer"
-    cp *.xz *.gz *.dsc ../Test"$DebVer"; cd ../Test"$DebVer"
-    dpkg-source -x *.dsc
-    cd tomboy-ng [tab]
-    dpkg-buildpackage -us  -uc; cd ..
-    lintian -IiE --pedantic *.changes
-OK, if everything is OK, go back and and upload it
+    
+OK, if everything is OK, both build VMs have a script, test-debs.bash in ~/bin, run it in the working directory, where, eg, the .orig.tar.gz file is, and it will take the necessary files to a new dir, build the binary deb and run Lintian.
+
+
+If its still all good, go back and and upload the src packages.
 
     cd ../"Build""$DebVer"
-    dput -f mentors *.changes
+    dput  mentors  *.changes
 
+If you don't get a response, did you include 'mentors' in the dput line ?
 
-REMEMBER to feed changlog back to github tree !
+***REMEMBER to feed changlog back to github tree !***
+
 
 
 
 **Launchpad PPA**
 ========
-Is built on a different VM, U2004mQt. A little more complicated because we also build the Qt5 version, changelog needs to be 'adjusted'. There is a script that automates the whole build SRC packages, unpack and build binaries. Again, only suited to building the release (ie, not a rebuild in the case of packaging errors). If you need build by hand, look through the script.
+Is built on a different VM, U2004mQt. A little more complicated because we also build the Qt5 version, changelog needs to be 'adjusted'. There is a script that automates the whole build SRC packages, unpack and build binaries. The PPA script will make a Qt5 Focal package or a GTK2 Bionic package depending on the -Q switch. You need to make both so add a -Q the export var below.
 
+At some time in the future, it will be necessary to adjust those distro names.
 
 
 **PPA build Steps**
 --------
 
-**Option 1 - use test-ppa.bash, auto build and test.**
-
-    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/build_src_package.bash
-    bash  ./build_src_package.bash  focal
-    
- The version number is obtained from the source.
-    
-**Option 2 - do it manually, a problem perhaps ?**
-
     export PPAVer="PPAv33"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
-    bash ./prepare.ppa -D bionic
+    bash ./prepare.ppa   [-Q]
     cd tomboy-ng [tab]
     debuild -S; cd ...
+    
     
 OK, if all looks OK, go back and upload with
 
     dput ppa:d-bannon/ppa-tomboy-ng *.changes
     
-Now, the QT5 version **Important, target focal not bionic**
+Now, the QT5 version Important, we target focal not bionic
 
     cd ..
     export PPAVer="PPAv33QT"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
-    bash ./prepare.ppa -D focal -Q      // the -Q says make a Qt5 version [-Q] 
+    bash ./prepare.ppa  -Q      // the -Q says make a Qt5 version [-Q] 
     cd tomboy-ng [tab]
     debuild -S; cd ..
 OK, if all looks OK, go back and upload
@@ -110,6 +98,17 @@ OK, if all looks OK, go back and upload
     dput ppa:d-bannon/ppa-tomboy-ng *.changes
 
 Did you follow that about versions ?  To target u18.04 we must specify (in control) debhelper 11, in Focal 12, in Bullseye 13.
+
+**Repackaging**
+=======
+Many problems that happen can be fixed with a repackage, you must keep the original files and its easy. In the directory where they are (or where you extract downloaded ones) you again use  one of the prepare.* scripts, leave off the -n and but retaining the **-Q** in the Qt5 ones. The script will find the src working dir, rename it with a newer packaging number, make the all too important addition to the change log and set you on your way.
+
+**PPA: **If you don't have the initial files, .orig.tar.gz, .dsc and .xz then you can download them from Launchpad (even if deleted), use the Package Name Contains filter, left of screen. Then, in a dir with just those three files (and perhapse prepare.ppa) run 
+
+    dpkg -x *.dsc
+
+But that will extract a dir called, eg tomboy-ng-qt5-0.35, **you must add the -1 to that dir name** and then use prepare.ppa as mentioned above.
+
 
 
 **Building just a tomboy-ng Binary**
