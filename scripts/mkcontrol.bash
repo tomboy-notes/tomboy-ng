@@ -21,7 +21,7 @@ function AdjustValues () {
     if [ "$2" == "qt5" ]; then          # Note : we ignore anything else
         DESC="This is the QT5 based version."   
         DEPENDS="libqt5pas1"
-        BUILDDEPENDS="libqt5pas-dev, lcl-qt5" 
+        BUILDDEPENDS="libqt5pas-dev, lcl-qt5, libcairo2-dev, libpango1.0-dev" 
         PACKAGE="tomboy-ng-qt5"         # but reverse that in Debian (don't do yet anyway)     
     fi
     case $1 in

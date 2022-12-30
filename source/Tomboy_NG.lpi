@@ -542,7 +542,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng-qt"/>
+            <Filename Value="tomboy-ng-qt5"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -787,7 +787,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng-qt-64"/>
+            <Filename Value="tomboy-ng-qt5"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -795,7 +795,6 @@
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
-            <TargetCPU Value="x86_64"/>
             <TargetOS Value="linux"/>
             <Optimizations>
               <OptimizationLevel Value="3"/>
@@ -844,13 +843,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
           </local>
         </Mode0>
       </Modes>
@@ -1118,7 +1117,8 @@
       <CompilerMessages>
         <IgnoredMessages idx6058="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dTOMBOY_NG"/>
+      <CustomOptions Value="-sh
+-dTOMBOY_NG"/>
     </Other>
   </CompilerOptions>
 </CONFIG>

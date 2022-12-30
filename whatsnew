@@ -4,4 +4,3 @@ UI tweaks including Ctrl-F toggling, Esc to close note.
 A revised CLI, import, plain text, RTF and Markdown.
 Ctrl-Z (ie Undo) will now revert an errant Date Stamp
 A handful of minor bug fixes.
-(Closes: #997942)

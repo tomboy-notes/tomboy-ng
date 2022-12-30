@@ -229,7 +229,7 @@ cd "$K_DIR"		# WARNING, kcontrols is not part of the github zip file, its added 
 # Here we build just the kmemo.pas part of kcontrols.
 
 mkdir -p "lib/$TARGET"			# this is where kcontrols object files end up.
-rm "lib/$CPU-$OS/kmemo.o"       # make sure we try to build a new one
+rm -f "lib/$CPU-$OS/kmemo.o"    # make sure we try to build a new one, but probably not there.
 
 FPCKOPT=" -B -MObjFPC -Scgi -Cg -O1 -g -gl -l -vewnibq -vh- $EXCLUDEMESSAGES -Fi$K_DIR"
 FPCKUNITS=" -Fu$LAZ_DIR/packager/units/$TARGET -Fu$LAZ_DIR/components/lazutils/lib/$TARGET"

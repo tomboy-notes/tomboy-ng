@@ -32,6 +32,7 @@ set -e
 #              Secondly, without the -n, we assume we are using an existing .orig.
 #              and just repackaging. The Package version number is incremented and
 #              the src dir renamed. Most of the code is skipped.
+#   2022-11-30 Don't try to imcrement pack numb, we don't know it !
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
@@ -49,6 +50,7 @@ LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
 WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
+REPACK_REASON=""    # set with -r, few words about why repackaging necessary
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
 	# if in user space, because debuild will miss them, makes two files.
@@ -142,6 +144,7 @@ function ShowHelp () {
     echo "-t   tomboy-ng source, defaults to master or github tag, eg, 0.35 etc"
     echo "-D   distro, defaults to unstable"
     echo "-n   New orig file, required for fresh release"
+    echo "-r   Reason for repackage, use inverted commas, only if not -n"
     echo "-q   Make a Qt5 version instead of GTK2, ignored in repackage mode."
     echo ""
     echo "  Typically, new release     bash ./prepare.debian -n -q"
@@ -165,6 +168,10 @@ function MakeOrigFile () {
 
 function PrepExistingOrigFile {
 # Assume we are in a previously used dir, it will have orig and eg tomboy-ng_0.35-1 dir.
+# NO, No No it will have   dir, no -1 !
+# So, abandon the code to inc the version, user MUST do it manually.
+# Maybe we should check that it has been done ?  If tomboy-ng_0.35 dir exits, exit !
+
 # We are one level down, eg Build35 and can see the orig file and tomboy-ng_0.35-1 dir
 # Rename that dir, -2 ....
 # remove previous *.dsc, .buildinfo, .changes
@@ -173,8 +180,9 @@ function PrepExistingOrigFile {
 # you achive a similar position by extracting out .orig. with dpkg-source -x ....
 # tomboy-ng_0.35.orig.tar.gz
 
-EXDIRNAME=`find . -maxdepth 1 -type d -name "tomboy*" `  # there should be only one ....
-VER=`cat "$EXDIRNAME"/package/version`
+NEWDIRNAME=`find . -maxdepth 1 -type d -name "tomboy*" `  # there should be only one and it must include a new packaging number
+VER=`cat "$NEWDIRNAME"/package/version`
+
 if [ -f "tomboy-ng_""$VER"".orig.tar.gz" ]; then
     echo "Orig file present, thats good"
 else
@@ -182,11 +190,19 @@ else
     echo "Giving up and going home ....."
 fi
 
-NEWDIRNAME=`echo "$EXDIRNAME" | rev | cut -c2- | rev `   # chop of last char
-PACKVER=`echo "$EXDIRNAME" | rev | cut -b 1 | rev `      # This is last char
-((PACKVER=PACKVER+1))                                    # rev it, should test its not > 9
-NEWDIRNAME="$NEWDIRNAME""$PACKVER"
-mv $EXDIRNAME $NEWDIRNAME
+if [ -d "tomboy-ng-""$VER" ]; then
+	echo "tomboy-ng_""$VER"" exists, you have not added a packaging number, EXITING"
+	exit
+fi
+
+PACKVER=`echo "$NEWDIRNAME" | rev | cut -b 1 | rev `      # This is last char, wrong if user has not rev'ed
+
+#NEWDIRNAME=`echo "$EXDIRNAME" | rev | cut -c2- | rev `   # chop off last char
+#PACKVER=`echo "$EXDIRNAME" | rev | cut -b 1 | rev `      # This is last char
+#((PACKVER=PACKVER+1))                                    # rev it, should test its not > 9
+#NEWDIRNAME="$NEWDIRNAME""$PACKVER"
+#mv $EXDIRNAME $NEWDIRNAME
+
 rm -Rf *.dsc *.buildinfo *.changes *.debian.tar.xz
 if [ "$DEBEMAIL" = "" ]; then
 	DEBEMAIL="$DEF_EMAIL"
@@ -199,17 +215,19 @@ fi
 VER="$VER""-""$PACKVER"                                 # eg 0.35-2
 cd "$NEWDIRNAME"
 pwd
-dch -v "$VER" -D"$DISTRO1" "$DISTRO2" "Repackage"    
+dch -v "$VER" -D"$DISTRO1" "$DISTRO2" "Repackage" 
+if [ -n "$REPACK_REASON" ]; then
+	dch --append "$REPACK_REASON"
+fi   
 cd ..
 pwd 
 echo "If no errrors, you should now cd $NEWDIRNAME"
 echo "Make what ever changes seem appropriate and run  debuild -S; cd .."
 exit                                                    # My work here is done
-
 }       # End of function
 
 
-while getopts "hUCl:D:nqQt:" opt; do
+while getopts "hUCl:D:nqQt:r:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -227,6 +245,9 @@ while getopts "hUCl:D:nqQt:" opt; do
 	;;
 	n)
 	NEWORIG="YES"
+	;;
+	r)
+	REPACK_REASON="$OPTARG"
 	;;
 	t)
 	TB_SOURCE="$OPTARG"

@@ -37,6 +37,9 @@ The process is download (or extract) tomboy-ng source, remove unnecessary conten
 --------
 (all assuming you are David and using a pre configured VM (see below), DebTestMate0922, rev the release number as required, it has no effect on product, just a convienance while building). The Debian script makes a src package that targets unstable, that name does not change.
 
+And, note, the Debian build machines run unstable, not testing ! See the VM Setup section below.
+
+    
 This, as of Nov 2022, now makes a Qt5 version.
 
     export DebVer="34g"
@@ -68,6 +71,7 @@ Is built on a different VM, U2004mQt. A little more complicated because we also 
 
 At some time in the future, it will be necessary to adjust those distro names.
 
+**WARNING - ppa prepare.ppa script is wrong if a package needs to be repackaged, it cannot, itself, increment the package number, must be done manually. See the debian one.**
 
 **PPA build Steps**
 --------
@@ -103,6 +107,24 @@ Did you follow that about versions ?  To target u18.04 we must specify (in contr
 =======
 Many problems that happen can be fixed with a repackage, you must keep the original files and its easy. In the directory where they are (or where you extract downloaded ones) you again use  one of the prepare.* scripts, leave off the -n and but retaining the **-Q** in the Qt5 ones. The script will find the src working dir, rename it with a newer packaging number, make the all too important addition to the change log and set you on your way.
 
+eg, first repackage, from -1 to -2
+
+    mkdir ../Build35-2qt5
+    cp *.gz *.xz *.dsc prepare.debian ../Build35-2qt5
+    cd ../Build35-2qt5
+    dpkg-source -x *.dsc
+    mv tomboy-ng-0.35 tomboy-ng-0.35-2
+    bash ./prepare.debian -q -r "Added new dependencies"
+
+    // Now, make whatever changes are necessary to packaging (not source) and then 
+    // in the tomboy-ng-0.35-2 directory, run -
+
+    debuild -S
+    
+    Test and submit as above, remember, send to mentors (dput defaults to ftp.debian and it gets dropped on the floor).
+    
+
+
 **PPA: **If you don't have the initial files, .orig.tar.gz, .dsc and .xz then you can download them from Launchpad (even if deleted), use the Package Name Contains filter, left of screen. Then, in a dir with just those three files (and perhapse prepare.ppa) run 
 
     dpkg -x *.dsc
@@ -133,6 +155,15 @@ The binary will be in the source/. directory below where you are now standing.
 
 **VM Setup**
 ========
+The machine to at least test the source package for Debian needs to be a current unstable. Further, because on the mentor's machines, apt does not install Recommended, we need to ensure the test machines is the same.
+
+So, take a current VM of Testing, update irs /etc/apt/sources.lst to point to unstable instead of, eg, bookwork. Apt update; apt upgrade.
+Then, add a file, /etc/apt/apt.config that has one line, 
+
+     apt::install-recommends "false";
+    
+May be a good idea to use this machine as the build machine as well, and treat it as temporary. But remember to take a snapshot of the *.gz *.xz and *.dsc files from a sumnitted build and keep, somewhere.
+
 A PGP key is required to upload to Mentors or Launchpad. It lives in ~/.gnupg. 
 
 

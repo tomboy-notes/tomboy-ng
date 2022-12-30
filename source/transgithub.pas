@@ -1300,6 +1300,7 @@ begin
                 case Client.ResponseStatusCode of
                     401 : ErrorString := ErrorString + ' 401 Maybe your Token has expired or password is invalid ??';
                     404 : ErrorString := ErrorString + ' 404 File not found ' + URL;
+                else ErrorString := ErrorString + ' https error no ' + inttostr(Client.ResponseStatusCode);
                 end;
                 exit(SayDebugSafe(ErrorString));
                 end;
