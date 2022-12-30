@@ -231,6 +231,8 @@ unit EditBox;
     2022/10/18  Extensive changes to Link system, faster and better behaviour #260 inc
     2022/10/30  In MakeLink, capture the colour early, even if risk we don't need it.
     2022/11/14  Add a Close button cos Qt5 hides to title bar buttons in Showmodal ????
+    2022/12/30  Moved code that pokes search content into NoteLister down a few blocks so that
+                we can be sure the note has been added to NoteLister first.
 }
 
 
@@ -512,6 +514,7 @@ type
         function UnlinkBlock(StartBlock: integer): integer;
                                 // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
+
         //function UpdateNote(NRec: TNoteUpdaterec): boolean;
 
     public
@@ -3431,9 +3434,10 @@ var
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    NoteContent : string = '';
+    NoteContent : string = '';                       // Might hold a lowercase text version of note for searcing purposes.
     LineNumb   : integer = 0;
     FName      : string;
+    ItsANewNote : boolean = false;
     //T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
@@ -3445,8 +3449,10 @@ begin
     //T1 := gettickcount64();
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
-  	if length(NoteFileName) = 0 then
+  	if length(NoteFileName) = 0 then begin
         NoteFileName := Sett.NoteDirectory + GetAFilename();
+        ItsANewNote := True;
+    end;
     if (not WeAreClosing)
         and (Sett.NoteDirectory = CleanAndExpandDirectory(ExtractFilePath(NoteFileName))) then begin   // Check name of Repo note, not SNM. UTF8 OK
         if not IDLooksOK(ExtractFileNameOnly(NoteFileName)) then
@@ -3488,7 +3494,6 @@ begin
                     delete(NoteContent, High(NoteContent), 1);               // delete the 182
                     NoteContent[High(NoteContent)] := #10;                   // replace the 194
                 end;
-                inc(LineNumb);
             end;
         end;
         //T4 := GetTickCount64();
@@ -3497,18 +3502,8 @@ begin
         if Saver <> Nil then Saver.Destroy;
         Caption := CleanCaption();
     end;
+    // At this stage, a new note does not exist in NoteLister, so, call the Content updater later
 
-    if Dirty and (not SingleNoteMode) and Sett.AutoSearchUpdate then begin      // This is quick
-        LineNumb := 0;
-        FName := ExtractFileName(NoteFileName);
-        while LineNumb < TheMainNoteLister.NoteList.Count do begin
-            if TheMainNoteLister.NoteList[LineNumb]^.ID = FName then begin
-                TheMainNoteLister.NoteList[LineNumb]^.Content := NoteContent;
-                break;
-            end;
-            inc(LineNumb);
-        end;
-    end;
     //T5 := GetTickCount64();
     Loc.Width:=inttostr(Width);
     Loc.Height:=inttostr(Height);
@@ -3524,6 +3519,19 @@ begin
     end else
         Loc.LastChangeDate                                      // Must be closing.
             := TheMainNoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
+    // Dec 2022 - I moved the following block down here to ensure a new note is in note lister before setting content
+    if Dirty and (not SingleNoteMode) and Sett.AutoSearchUpdate then begin      // This is quick,
+        LineNumb := TheMainNoteLister.NoteList.Count -1;                        // start searching at end of list cos thats where new notes live
+        FName := ExtractFileName(NoteFileName);
+        while LineNumb > -1 do begin
+            if TheMainNoteLister.NoteList[LineNumb]^.ID = FName then begin
+                TheMainNoteLister.NoteList[LineNumb]^.Content := NoteContent;
+                break;
+            end;
+            dec(LineNumb);
+        end;
+    end;
+
     if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
     //T6 := GetTickCount64();
 
