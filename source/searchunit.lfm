@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 594
+  Left = 1094
   Height = 401
-  Top = 234
+  Top = 97
   Width = 824
   ActiveControl = EditSearch
   Caption = 'tomboy-ng_Search'
@@ -30,13 +30,11 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
     OnChange = EditSearchChange
-    OnEnter = EditSearchEnter
-    OnExit = EditSearchExit
     OnKeyDown = FormKeyDown
     OnKeyUp = EditSearchKeyUp
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 0
+    TabOrder = 1
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
@@ -54,7 +52,7 @@ object SearchForm: TSearchForm
     Caption = 'Panel1'
     ClientHeight = 345
     ClientWidth = 824
-    TabOrder = 1
+    TabOrder = 0
     object Splitter1: TSplitter
       AnchorSideTop.Control = Panel1
       AnchorSideBottom.Control = Panel1
@@ -79,7 +77,7 @@ object SearchForm: TSearchForm
       Enabled = False
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
-      TabOrder = 2
+      TabOrder = 3
       TabStop = False
     end
     object ListBoxNotebooks: TListBox
@@ -104,7 +102,7 @@ object SearchForm: TSearchForm
       ScrollWidth = 230
       ShowHint = True
       Sorted = True
-      TabOrder = 1
+      TabOrder = 2
       TopIndex = -1
     end
     object Panel2: TPanel
@@ -118,7 +116,7 @@ object SearchForm: TSearchForm
       Width = 232
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Notebooks'
-      TabOrder = 3
+      TabOrder = 4
     end
     object ListViewNotes: TListView
       AnchorSideLeft.Control = Splitter1
@@ -152,7 +150,7 @@ object SearchForm: TSearchForm
       ScrollBars = ssVertical
       SortColumn = 1
       SortType = stText
-      TabOrder = 4
+      TabOrder = 0
       ViewStyle = vsReport
       OnColumnClick = ListViewNotesColumnClick
       OnData = ListViewNotesData

@@ -3437,7 +3437,7 @@ var
     NoteContent : string = '';                       // Might hold a lowercase text version of note for searcing purposes.
     LineNumb   : integer = 0;
     FName      : string;
-    ItsANewNote : boolean = false;
+    //ItsANewNote : boolean = false;
     //T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
@@ -3451,7 +3451,7 @@ begin
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then begin
         NoteFileName := Sett.NoteDirectory + GetAFilename();
-        ItsANewNote := True;
+        //ItsANewNote := True;
     end;
     if (not WeAreClosing)
         and (Sett.NoteDirectory = CleanAndExpandDirectory(ExtractFilePath(NoteFileName))) then begin   // Check name of Repo note, not SNM. UTF8 OK

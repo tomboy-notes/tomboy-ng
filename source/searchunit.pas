@@ -118,6 +118,7 @@ unit SearchUnit;
     2022/09/13  Tweaks to manage the ListViewNotes sort indicators, must 'Bounce'.
     2022/10/20  Added an Import menu item to Options.
     2022/10/29  Auto remove Search Prompt from start of search term.
+    2022/12/31  EditSearch now uses TestHint.
 }
 
 {$mode objfpc}{$H+}
@@ -170,11 +171,11 @@ type        { TSearchForm }
                                       both of the above, refreshes the Notes and Notebooks
                                       with data in Note_Lister. }
   		//procedure ButtonRefreshClick(Sender: TObject);
+        //procedure EditSearchEnter(Sender: TObject);
+		//procedure EditSearchExit(Sender: TObject);
 
 		procedure ButtonClearFiltersClick(Sender: TObject);
         procedure EditSearchChange(Sender: TObject);
-        procedure EditSearchEnter(Sender: TObject);
-		procedure EditSearchExit(Sender: TObject);
         procedure EditSearchKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
                             // called after OnShow.
         procedure FormActivate(Sender: TObject);
@@ -972,20 +973,23 @@ end;
 // --------------- S E A R C H I N G -------------------------------------------
 
 
-procedure TSearchForm.EditSearchExit(Sender: TObject);
+(* procedure TSearchForm.EditSearchExit(Sender: TObject);                          // ToDo : maybe we don't need this ?
 begin
+
+    exit;
+
 {    if (NIndex <> nil) and (not NIndex.Busy) then begin
         NIndex.free;
         NIndex := nil;
         //writeln('TSearchForm.Edit1Exit - Edit1 exit, killing Index');
-    end;       }
+    end;
 	if EditSearch.Text = '' then begin
         EditSearch.Hint:=rsSearchHint;
         EditSearch.Text := rsMenuSearch;
         EditSearch.SelStart := 1;
         EditSearch.SelLength := length(EditSearch.Text);
-    end;
-end;
+    end;   }
+end;   *)
 
 procedure TSearchForm.EditSearchKeyUp(Sender: TObject; var Key: Word;
     Shift: TShiftState);
@@ -1016,8 +1020,8 @@ var
     NoteBook : string;
     STL : TStringList;
     Found : integer;
-    Apoint : TPoint;
-    AStr  : string;
+    //Apoint : TPoint;
+    //AStr  : string;
     //T1, T2, T3 : qword;
 
         // Returns the length of the char that b is first byte of
@@ -1032,27 +1036,27 @@ var
     end;   }
 
 begin
-    AStr := EditSearch.Text;                // Remove the search prompt if its first part of Text
+{    AStr := EditSearch.Text;                // Remove the search prompt if its first part of Text
     if (Astr.Length > rsMenuSearch.Length) and (AStr.StartsWith(rsMenuSearch)) then begin
         EditSearch.Text := copy(EditSearch.Text, Length(rsMenuSearch)+1, 10);
         APoint.X := 1;
         APoint.Y := 0;
         EditSearch.CaretPos := APoint;
-    end;
-    if (EditSearch.Caption <> '') and (EditSearch.Caption <> rsMenuSearch) then
+    end;  }
+    if (EditSearch.Text <> '') and (EditSearch.Text <> rsMenuSearch) then
         SpeedButtonClearSearch.Enabled := True;
     if (not Sett.AutoSearchUpdate) or (not visible) or (length(EditSearch.Text)=1) then exit;
     STL := TStringList.Create;
     try
         if length(EditSearch.text) = 1 then exit;    // Nothing to see here folks
-        if ListBoxNoteBooks.ItemIndex > -1 then
+        if ListBoxNoteBooks.ItemIndex > -1 then      // An notebook selected
             NoteBook := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]
         else NoteBook := '';
         if not ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch)) then  // else we pass an empty list.
             if Sett.SearchCaseSensitive then
                 STL.AddDelimitedtext(EditSearch.Text, ' ', false)
             else STL.AddDelimitedtext(lowercase(EditSearch.Text), ' ', false);
-        if (EditSearch.text = '') then begin   // ie backspacing
+{        if (EditSearch.text = '') then begin   // ie backspacing               // not needed for TextHint model
             EditSearch.text := rsMenuSearch;
             EditSearch.SetFocus;
             EditSearch.SelectAll;
@@ -1061,7 +1065,7 @@ begin
             else
                 Found := TheMainNoteLister.ClearSearch();
             exit;
-        end;
+        end;  }
         if (SearchTextLength > length(EditSearch.text)) then begin              // ie backspacing, decreasing
             Found := TheMainNoteLister.NewSearch(STL, NoteBook);
             SearchActive := True;
@@ -1154,13 +1158,16 @@ Call ListViewNotes.Intems.Count := Found;
 //    end;
 end;
 
-procedure TSearchForm.EditSearchEnter(Sender: TObject);
+(* procedure TSearchForm.EditSearchEnter(Sender: TObject);                         // ToDo : not needed for TextHint model
 // ToDo : this should select the word, 'Search' if user clicks in field but does not ??
 begin
+
+    exit;
+
     if EditSearch.Text = rsMenuSearch then begin
         EditSearch.SelectAll;
     end;
-end;
+end;        *)
 
 procedure TSearchForm.FormDeactivate(Sender: TObject);
 begin
@@ -1179,7 +1186,8 @@ end;
 procedure TSearchForm.FormActivate(Sender: TObject);
 //var tick : qword;
 begin
-    EditSearch.SetFocus;
+    //EditSearch.SetFocus;
+    ListViewNotes.SetFocus;
 end;
 
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1258,7 +1266,7 @@ begin
     ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();        // Builds NoteLister's Index files.
     TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
     EditSearch.Hint:=rsSearchHint;
-    EditSearch.Text := rsMenuSearch;
+    EditSearch.TextHint := rsMenuSearch;
     SpeedButtonClearSearch.Enabled := False;
     EditSearch.SelStart := 1;
     EditSearch.SelLength := length(EditSearch.Text);
@@ -1309,7 +1317,8 @@ begin
     ButtonMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
     {$endif}      // Cocoa issue
-    EditSearch.SetFocus;
+    //EditSearch.SetFocus;
+    ListViewNotes.SetFocus;
 end;
 
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -1564,7 +1573,8 @@ end;
 
 procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
 begin
-    if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender);
+    if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender)
+    else EditSearch.SetFocus;
 end;
 
 procedure TSearchForm.ScaleListView();
@@ -1773,8 +1783,9 @@ end;
 
 procedure TSearchForm.SpeedButtonClearSearchClick(Sender: TObject);
 begin
-    EditSearch.text := rsMenuSearch;
-    EditSearch.SetFocus;
+    EditSearch.text := ''; //rsMenuSearch;
+    //EditSearch.SetFocus;
+    ListViewNotes.SetFocus;
     EditSearch.SelectAll;
     if Sett.AutoSearchUpdate then begin                 // Search While You Type
          ListViewNotes.Clear;
