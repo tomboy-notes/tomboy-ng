@@ -2339,6 +2339,7 @@ begin
     {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);
     RestoreLimitedAttributes(BlockNoS, FontAtt);
     //debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +'] Att Col=' +  ColorToString(FPColortoTColor(FontAtt.FPBackColour)));
+    HyperLink.Textstyle.Font.Color := Sett.LinkColour;
     {$ifdef LDEBUG}TG3 := gettickcount64();
     TG1 := TG1 + (TG3-Tg2);{$endif}
 end;

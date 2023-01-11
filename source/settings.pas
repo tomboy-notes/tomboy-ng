@@ -348,6 +348,7 @@ type
         HiColour : TColor;
         TitleColour : TColor;
         AltColour   : TColor;           // A colour similar to  BackGndColour, alt rows in ListView, buttons in dark mode ?
+        LinkColour  : TColor;
         UsualFont : string;
         FixedFont : string;
         DefaultFixedFont : string;
@@ -915,10 +916,11 @@ begin
         if FixedFont = '' then FixedFont := DefaultFixedFont;
         ButtonFixedFont.Hint := FixedFont;
         BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
-        HiColour :=   StringToColor(Configfile.ReadString('BasicSettings', 'HiColour', '0'));
-        TextColour := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour', '0'));
-        TitleColour :=  StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
-        UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0));
+        HiColour    := StringToColor(Configfile.ReadString('BasicSettings', 'HiColour',    '0'));
+        TextColour  := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour',  '0'));
+        TitleColour := StringToColor(Configfile.ReadString('BasicSettings', 'TitleColour', '0'));
+        LinkColour  := StringToColor(Configfile.ReadString('BasicSettings', 'LinkColour',  '0'));
+        UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0) and (LinkColour = 0));
         // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
         HelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
         SetHelpLanguage();
@@ -1048,11 +1050,13 @@ begin
                 ConfigFile.writestring('BasicSettings', 'HiColour',      ColorToString(HiColour));
                 ConfigFile.writestring('BasicSettings', 'TextColour',    ColorToString(TextColour));
                 ConfigFile.writestring('BasicSettings', 'TitleColour',   ColorToString(TitleColour));
+                ConfigFile.writestring('BasicSettings', 'LinkColour',    ColorToString(LinkColour));
 			end else begin
                 ConfigFile.writestring('BasicSettings', 'BackGndColour', '0');
                 ConfigFile.writestring('BasicSettings', 'HiColour',      '0');
                 ConfigFile.writestring('BasicSettings', 'TextColour',    '0');
                 ConfigFile.writestring('BasicSettings', 'TitleColour',   '0');
+                ConfigFile.writestring('BasicSettings', 'LinkColour',    '0');
 			end;
             if HelpNotesLang <> '' then
                 ConfigFile.writestring('BasicSettings', 'HelpLanguage', HelpNotesLang);
@@ -1149,14 +1153,16 @@ begin
 	if DarkTheme then begin
         //debugln('Its definltly a Dark Theme');
         BackGndColour:= clBlack;        // eg $000000
-        HiColour := clDkGray;
+        HiColour   := clDkGray;
         TextColour := clLtGray;
         TitleColour:= clTeal;
+        LinkColour := clTeal;
     end else begin
         BackGndColour := clCream;
-        HiColour := clYellow;
-        TextColour := clBlack;
+        HiColour    := clYellow;
+        TextColour  := clBlack;
         TitleColour := clBlue;
+        LinkColour  := clBlue;
     end;
 end;
 
@@ -1222,6 +1228,7 @@ begin
     FormColours.CHiBack := HiColour;
     FormColours.CText   := TextColour;
     FormColours.CTitle  := TitleColour;
+    FormColours.CLink   := LinkColour;
     case FormColours.ShowModal of
         mrRetry  :  begin
                         UserSetColours := False;
@@ -1233,7 +1240,8 @@ begin
 	                    HiColour := FormColours.CHiBack;
 	                    TextColour := FormColours.CText;
 	                    TitleColour := FormColours.CTitle;
-                         UserSetColours := True;
+                        LinkColour := FormColours.CLink;
+                        UserSetColours := True;
                         WriteConfigFile();
                     end;
 	end;

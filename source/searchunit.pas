@@ -119,6 +119,7 @@ unit SearchUnit;
     2022/10/20  Added an Import menu item to Options.
     2022/10/29  Auto remove Search Prompt from start of search term.
     2022/12/31  EditSearch now uses TestHint.
+    2023/01/11  Qt5 - ListViewNotesKeyPress now forces keypress to EditSearch
 }
 
 {$mode objfpc}{$H+}
@@ -1319,6 +1320,8 @@ begin
     {$endif}      // Cocoa issue
     //EditSearch.SetFocus;
     ListViewNotes.SetFocus;
+    if ListViewNotes.Items.Count > 0 then
+        ListViewNotes.ItemIndex := 0;
 end;
 
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -1574,7 +1577,13 @@ end;
 procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
 begin
     if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender)
-    else EditSearch.SetFocus;
+    else begin
+        EditSearch.SetFocus();
+        {$ifdef LCLQT5}                 // Qt5 keeps the key in the listview
+        if Sender.ClassName = 'TListView' then
+            EditSearch.Caption := EditSearch.Caption + char(Key);
+        {$endif}
+    end;
 end;
 
 procedure TSearchForm.ScaleListView();
@@ -1589,6 +1598,12 @@ begin
     ListViewNotes.Column[1].Width := Col1width;
     if ListViewNotes.ClientWidth > 100 then
         ListViewNotes.Column[0].Width := ListViewNotes.ClientWidth - Col1width;
+(*    debugln('TSearchForm.ScaleListView Clientwidth=' + inttostr(ListViewNotes.ClientWidth) +#10
+        + ' Col-0=' + inttostr(ListViewNotes.Column[0].Width)+#10
+        + ' Col-1=' + inttostr(ListViewNotes.Column[1].Width)+#10
+        + ' Col-2=' + inttostr(ListViewNotes.Column[2].Width)+#10
+        + ' Text W=' + inttostr(listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:000'))+#10
+        + ' Text QT5=' + inttostr(listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:00000')));   *)
 end;
 
 procedure TSearchForm.BackupNote(const NoteName, PutIntoName : string);

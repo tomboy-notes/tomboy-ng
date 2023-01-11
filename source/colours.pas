@@ -25,6 +25,7 @@ type    { TFormColours }
 		KMemo1: TKMemo;
 		Label1: TLabel;
 		Label2: TLabel;
+        SpeedLinks: TSpeedButton;
 		SpeedTitle: TSpeedButton;
 		SpeedText: TSpeedButton;
 		SpeedBackground: TSpeedButton;
@@ -38,6 +39,7 @@ type    { TFormColours }
 		procedure SpeedCancelClick(Sender: TObject);
 		procedure SpeedDefaultClick(Sender: TObject);
 		procedure SpeedHighlightClick(Sender: TObject);
+        procedure SpeedLinksClick(Sender: TObject);
 		procedure SpeedOKClick(Sender: TObject);
 		procedure SpeedTextClick(Sender: TObject);
 		procedure SpeedTitleClick(Sender: TObject);
@@ -45,7 +47,7 @@ type    { TFormColours }
 		procedure PopulateMemo;
 
     public
-        CTitle, CBack, CText, CHiBack : TColor;
+        CTitle, CBack, CText, CHiBack, CLink : TColor;
 end;
 
 var
@@ -78,6 +80,12 @@ begin
     TB.TextStyle.Font.Size:= 11;
     TB.TextStyle.Font.Color:= CText;
     TB.TextStyle.Brush.Color:= CHiBack;
+    KMemo1.blocks.AddParagraph();
+    TB := KMemo1.Blocks.AddTextBlock('And a Link');
+    TB.TextStyle.Font.Size:=11;
+    TB.TextStyle.Font.UnderLine := True;
+    TB.TextStyle.Font.Color:= CLink;
+    //TB.TextStyle.Brush.Color:= CBack;
     KMemo1.blocks.AddParagraph();
     TB := KMemo1.Blocks.AddTextBlock('More normal Text');
     TB.TextStyle.Font.Size:=11;
@@ -127,6 +135,15 @@ begin
     ColorDialog1.Color := CHiBack;
     if ColorDialog1.Execute then begin
         CHiBack := ColorDialog1.Color;
+        PopulateMemo;
+	end;
+end;
+
+procedure TFormColours.SpeedLinksClick(Sender: TObject);
+begin
+    ColorDialog1.Color := CLink;
+    if ColorDialog1.Execute then begin
+        CLink := ColorDialog1.Color;
         PopulateMemo;
 	end;
 end;

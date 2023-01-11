@@ -8,5 +8,6 @@
 {"hash":234009348,"name":"tformcolours.speedhighlight.caption","sourcebytes":[72,105,103,104,108,105,103,104,116],"value":"Highlight"},
 {"hash":180128884,"name":"tformcolours.speeddefault.caption","sourcebytes":[68,101,102,97,117,108,116],"value":"Default"},
 {"hash":77089212,"name":"tformcolours.speedcancel.caption","sourcebytes":[67,97,110,99,101,108],"value":"Cancel"},
-{"hash":1339,"name":"tformcolours.speedok.caption","sourcebytes":[79,75],"value":"OK"}
+{"hash":1339,"name":"tformcolours.speedok.caption","sourcebytes":[79,75],"value":"OK"},
+{"hash":5440803,"name":"tformcolours.speedlinks.caption","sourcebytes":[76,105,110,107,115],"value":"Links"}
 ]}

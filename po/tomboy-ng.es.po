@@ -896,6 +896,10 @@ msgctxt "tformcolours.speedhighlight.caption"
 msgid "Highlight"
 msgstr "Resaltar"
 
+#: tformcolours.speedlinks.caption
+msgid "Links"
+msgstr ""
+
 #: tformcolours.speedok.caption
 msgctxt "tformcolours.speedok.caption"
 msgid "OK"
