@@ -42,24 +42,37 @@ function DoAlien ()  {
 	fi
 
 	echo "--- RDIR=$RDIR and building for $1 using $FILENAME ---------"
-	alien -r -g -v "$FILENAME"
+	alien -r -g -v -k "$FILENAME"
 	# Alien inserts requests the package create / and /usr/bin and
 	# the os does not apprieciate that, not surprisingly.
 	# This removes the %dir / 
-	sed -i "s/^Release:.*/Release: $PACKVER/' "$RDIR"/"$RDIR"-2.spec  
-	sed -i 's#%dir "/"##' "$RDIR"/"$RDIR"-2.spec
+	sed -i "s/^Release:.*/Release: $PACKVER/" "$RDIR"/"$RDIR"-"$PACKVER".spec  
+	sed -i 's#%dir "/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	# and this removes %dir /usr/bin
-	sed -i 's#%dir "/usr/bin/"##' "$RDIR"/"$RDIR"-2.spec
+	sed -i 's#%dir "/usr/bin/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	sed -i 's#%dir "/usr/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	sed -i 's#%dir "/usr/share/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	sed -i 's#%dir "/usr/share/doc/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	sed -i 's#%dir "/usr/share/icons/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	sed -i 's#%dir "/usr/share/man/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	sed -i 's#%dir "/usr/share/man/man1/"##' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	
+	sed -i '10i Packager: David Bannon <tomboy-ng@bannons.id.au>' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	sed -i '11i URL: https://githup.com/tomboy/tomboy-ng' "$RDIR"/"$RDIR"-"$PACKVER".spec
+
+
+
 	# rpmbuild detects the dependencies but it misses wmctrl due to way its used.
 	# So we add it to the spec file manually, insert as line 5.
-	sed -i '5i Requires: wmctrl ' "$RDIR"/"$RDIR"-2.spec
+	sed -i '5i Requires: wmctrl ' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	# cp -r "$RDIR" "$RDIR"-"$1"
 	cd "$RDIR"
-	rpmbuild --target "$ARCH" --buildroot "$PWD" -bb "$RDIR"-2.spec
+	cp "$RDIR"-"$PACKVER".spec ../../"$RDIR"-"$PACKVER".spec-"$1"
+	rpmbuild --target "$ARCH" --buildroot "$PWD" -bb "$RDIR"-"$PACKVER".spec
 	cd ..
 	# if its a Qt one, rename it so it does not get overwritten subsquently
 	if [ "$1" = amd64Qt ]; then
-		mv "$RDIR"-2."$ARCH".rpm "$PROD"Qt-"$VERS"-2."$ARCH".rpm
+		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"Qt-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
 }
 

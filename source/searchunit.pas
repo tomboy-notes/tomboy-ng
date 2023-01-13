@@ -1050,6 +1050,9 @@ begin
     STL := TStringList.Create;
     try
         if length(EditSearch.text) = 1 then exit;    // Nothing to see here folks
+
+        // debugln('TSearchForm.EditSearchChange Notebooks.ItemIndex = ' + inttostr(ListBoxNoteBooks.ItemIndex));
+
         if ListBoxNoteBooks.ItemIndex > -1 then      // An notebook selected
             NoteBook := ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]
         else NoteBook := '';
@@ -1240,6 +1243,9 @@ procedure TSearchForm.FormCreate(Sender: TObject);
 //var Tick : qword;
 {$ifdef LCLQT5}{$ifdef LVOWNERDRAW}    var  fd: TFontData;{$endif}   {$endif}
 begin
+    {$ifdef LCLQT5}
+    ListBoxNotebooks.TabStop := false;      // ToDo : ugly fix for Qt5 "list item half selected" issue.
+    {$endif}
     SearchTextLength := 0;
     LVSortMode := smRecentUp;           // reflects initial state of ListViewNotes.
       HelpList := Nil;

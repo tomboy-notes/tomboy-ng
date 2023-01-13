@@ -103,7 +103,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
             echo "$PRODUCT"-64.exe
         ;;
         ReleaseQT5)
-            echo "$PRODUCT"-qt-64
+            echo "$PRODUCT"-qt5
         ;;
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
