@@ -60,13 +60,26 @@ function DoAlien ()  {
 	sed -i '10i Packager: David Bannon <tomboy-ng@bannons.id.au>' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	sed -i '11i URL: https://githup.com/tomboy/tomboy-ng' "$RDIR"/"$RDIR"-"$PACKVER".spec
 
+	gunzip "$RDIR"/usr/share/man/man1/tomboy-ng.1.gz
+	bzip2  "$RDIR"/usr/share/man/man1/tomboy-ng.1
+	sed -i "s/tomboy-ng.1.gz/tomboy-ng.1.bz2/" "$RDIR"/"$RDIR"-"$PACKVER".spec
 
+	echo "%changelog" >> "$RDIR"/"$RDIR"-"$PACKVER".spec
+	CHDATE=`date +"%a %b %d %Y"`
+	CHDATE="* $CHDATE David Bannon <tomboy-ng@bannons.id.au> $VERS"-"$PACKVER"
+	echo "$CHDATE" >> "$RDIR"/"$RDIR"-"$PACKVER".spec
+	echo "- Release of package" >> "$RDIR"/"$RDIR"-"$PACKVER".spec
+	while read -r line; do
+		echo -e "- $line" >> "$RDIR"/"$RDIR"-"$PACKVER".spec
+	done <"../whatsnew"
 
 	# rpmbuild detects the dependencies but it misses wmctrl due to way its used.
 	# So we add it to the spec file manually, insert as line 5.
 	sed -i '5i Requires: wmctrl ' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	# cp -r "$RDIR" "$RDIR"-"$1"
 	cd "$RDIR"
+	
+
 	cp "$RDIR"-"$PACKVER".spec ../../"$RDIR"-"$PACKVER".spec-"$1"
 	rpmbuild --target "$ARCH" --buildroot "$PWD" -bb "$RDIR"-"$PACKVER".spec
 	cd ..

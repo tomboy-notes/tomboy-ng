@@ -120,6 +120,7 @@ unit SearchUnit;
     2022/10/29  Auto remove Search Prompt from start of search term.
     2022/12/31  EditSearch now uses TestHint.
     2023/01/11  Qt5 - ListViewNotesKeyPress now forces keypress to EditSearch
+    2023/01/11  Added Windows to above
 }
 
 {$mode objfpc}{$H+}
@@ -1580,14 +1581,15 @@ begin
     {$endif}
 end;
 
-procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
+procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);    // Also services ListBoxNotebooks
 begin
     if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender)
     else begin
         EditSearch.SetFocus();
-        {$ifdef LCLQT5}                 // Qt5 keeps the key in the listview
-        if Sender.ClassName = 'TListView' then
-            EditSearch.Caption := EditSearch.Caption + char(Key);
+        {$if defined(LCLQT5) OR defined(WINDOWS) }                // https://wiki.freepascal.org/$IF
+        if (Sender.ClassName = 'TListView')
+                or (Sender.ClassName = 'TListBox') then           // Qt5 and Windows keeps the key in the listview and ListBox
+            EditSearch.Caption := EditSearch.Caption + char(Key); // Qt fixed in trunk, probably OK in L2.2.6 or L2.4
         {$endif}
     end;
 end;
@@ -1596,7 +1598,7 @@ procedure TSearchForm.ScaleListView();
 var
     Col1Width : integer;
 begin
-    {$ifdef LCLQT5}
+    {$ifdef LCLQT5 }
     Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:00000');    // 00 allow for apparent error in scroll with
     {$else}
      Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:000');
@@ -1676,7 +1678,6 @@ begin
         UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
     end;
 end;
-
 
     // Popup a menu when rightclick a notebook
 procedure TSearchForm.ListBoxNotebooksMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

@@ -96,6 +96,7 @@ object SearchForm: TSearchForm
       ExtendedSelect = False
       ItemHeight = 0
       OnClick = ListBoxNotebooksClick
+      OnKeyPress = ListViewNotesKeyPress
       OnKeyDown = FormKeyDown
       OnMouseUp = ListBoxNotebooksMouseUp
       ParentShowHint = False
