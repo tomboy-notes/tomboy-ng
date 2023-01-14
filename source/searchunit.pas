@@ -1586,11 +1586,12 @@ begin
     if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender)
     else begin
         EditSearch.SetFocus();
-        {$if defined(LCLQT5) OR defined(WINDOWS) }                // https://wiki.freepascal.org/$IF
+        {$ifndef LCLGTK2}
+        // {$if defined(LCLQT5) OR defined(WINDOWS) }                // https://wiki.freepascal.org/$IF
         if (Sender.ClassName = 'TListView')
-                or (Sender.ClassName = 'TListBox') then begin     // Qt5 and Windows keeps the key in the listview and ListBox
-            EditSearch.Caption := EditSearch.Caption + char(Key); // Qt fixed in trunk, probably OK in L2.2.6 or L2.4
-            EditSearch.SelStart:= length(EditSearch.Caption);     // Windows needs this, does no harm with Qt
+                or (Sender.ClassName = 'TListBox') then begin     // Qt5 and Windows keeps the first key in the listview
+            EditSearch.Caption := EditSearch.Caption + char(Key); // and ListBox GTK2 does not but seems thats the anomaly
+            EditSearch.SelStart:= length(EditSearch.Caption);     // Windows needs this, does no harm with Qt at least.
         end;
         {$endif}
     end;
