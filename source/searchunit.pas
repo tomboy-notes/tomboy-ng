@@ -120,7 +120,7 @@ unit SearchUnit;
     2022/10/29  Auto remove Search Prompt from start of search term.
     2022/12/31  EditSearch now uses TestHint.
     2023/01/11  Qt5 - ListViewNotesKeyPress now forces keypress to EditSearch
-    2023/01/11  Added Windows to above
+    2023/01/11  Added Windows to above, BUT Mac cannot do this. So, disable on Mac.
 }
 
 {$mode objfpc}{$H+}
@@ -1191,8 +1191,8 @@ end;
 procedure TSearchForm.FormActivate(Sender: TObject);
 //var tick : qword;
 begin
-    //EditSearch.SetFocus;
-    ListViewNotes.SetFocus;
+    {$ifdef LCLCOCOA} EditSearch.SetFocus;       // On Mac, we cannot do "jump to EditSearch on typing"
+    {$else} ListViewNotes.SetFocus;  {$endif}
 end;
 
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1320,13 +1320,13 @@ begin
     if (ListViewNotes.Column[0].SortIndicator = siNone) then begin
         BounceSortIndicator(1);
     end;
-
-    {$ifdef DARWIN}
+    {$ifdef LCLCOCOA}
     ButtonMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
-    {$endif}      // Cocoa issue
-    //EditSearch.SetFocus;
+    EditSearch.SetFocus;    // Cocoa issue, 'cos we cannot make the "on type, jump to EditSearch" work on Mac
+    {$else}
     ListViewNotes.SetFocus;
+    {$endif}
     if ListViewNotes.Items.Count > 0 then
         ListViewNotes.ItemIndex := 0;
 end;
@@ -1584,17 +1584,27 @@ end;
 procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);    // Also services ListBoxNotebooks
 begin
     if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender)
+    {$ifndef LCLCOCOA}                                            // We cannot do this at all in Cocoa
     else begin
         EditSearch.SetFocus();
-        {$ifndef LCLGTK2}
-        // {$if defined(LCLQT5) OR defined(WINDOWS) }                // https://wiki.freepascal.org/$IF
+        {$if defined(LCLQT5) OR defined(WINDOWS) }                // https://wiki.freepascal.org/$IF
         if (Sender.ClassName = 'TListView')
                 or (Sender.ClassName = 'TListBox') then begin     // Qt5 and Windows keeps the first key in the listview
-            EditSearch.Caption := EditSearch.Caption + char(Key); // and ListBox GTK2 does not but seems thats the anomaly
-            EditSearch.SelStart:= length(EditSearch.Caption);     // Windows needs this, does no harm with Qt at least.
+            EditSearch.Caption  := EditSearch.Caption+char(Key);  // and ListBox GTK2 does not but seems thats the anomaly
+            EditSearch.SelStart := length(EditSearch.Caption);    // Windows needs this, does no harm with Qt at least.
+            EditSearch.SelLength := 0;
         end;
         {$endif}
-    end;
+    end{$endif};
+
+    { This is about moving to the EditSearch if user starts typing. Only from ListView and ListBox.
+      Windows - works but we must poke the trigger keystroke to EditSearch
+                and we then need to move cursor after it.
+      GTK2    - Easy.
+      Cocoa   - Cannot work at all because the EditSearch ignores my effort to mv the cursor
+      Qt5     - Same as Windows
+      Qt6     -
+      GTK3    - }
 end;
 
 procedure TSearchForm.ScaleListView();

@@ -103,6 +103,7 @@ unit settings;
     2022/03/31  Tidyed up the Github Token controls, now can invoke browser.
     2022/09/02  Removed AutoRefreshSearch checkbox, its the SearchUnit's problem.
     2022/10/21  CheckAutoStart must call its own method to trigger writing files
+    2023/01/14  Save Auto Snapshot settings
 }
 
 {$mode objfpc}{$H+}                    //
@@ -1365,6 +1366,7 @@ begin
     if CheckAutoSnapEnabled.Checked then begin
         DoAutoSnapShot();
     end;
+    SaveSettings(self);
 end;
 
 procedure TSett.ButtonManualSnapClick(Sender: TObject);
