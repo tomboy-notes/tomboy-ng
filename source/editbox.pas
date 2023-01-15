@@ -2628,6 +2628,7 @@ end;
 
 
 procedure TEditBoxForm.ClearNearLink(const StartS, EndS : integer); inline;
+// note that kmemo is locked before we get here.
 var
     Blar, StartBlock, EndBlock : longint;
     LinkText  : ANSIString;
@@ -2678,23 +2679,23 @@ begin
     while StartBlock < EndBlock do begin
         if TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).TextStyle.Font.Size = Sett.FontTitle then begin
             inc(StartBlock);
-            continue;
+            continue;                                                           // We are NOT dealing with title here
         end;
         if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
             LinkText := lowercase(Kmemo1.Blocks.Items[StartBlock].Text);                              // ! trim()
-            // Only if its not a valid link, remove it. But don't check for Local links in SingleNoteMode
-            if not (ValidWebLink() or ValidLocalLink()) then begin
+            // Only if its not a valid link, remove it.
+            if not (ValidWebLink() or ValidLocalLink()) then begin              // LocalLinks ignored in SingleNoteMode
                 StartBlock := UnLinkBlock(StartBlock);
                 if EndBlock > Kmemo1.Blocks.Count then EndBlock := Kmemo1.Blocks.Count;
             end;
         end else begin
             // Must check here that its not been subject to the copying of a links colour and underline
             // we know its not a link and we know its not title. So, if TextBlock, check color ...
+            // Note : as of Jan 2023, title and link can be different colours
             with TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]) do
                 if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoTextBlock')  // Only an issue with TextBlocks
-                    and (TextStyle.Font.Color = Sett.TitleColour) then begin    // we set links to title colour
-                    TextStyle.Font.Style
-                        := TextStyle.Font.Style - [fsUnderLine];
+                    and (TextStyle.Font.Color = Sett.LinkColour ) then begin
+                    TextStyle.Font.Style := TextStyle.Font.Style - [fsUnderLine];
                     TextStyle.Font.Color := Sett.TextColour;
                 end;
         end;

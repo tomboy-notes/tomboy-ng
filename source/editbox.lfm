@@ -14,7 +14,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.2.0.2'
+  LCLVersion = '2.3.0.0'
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = KMemo1
@@ -30,6 +30,7 @@ object EditBoxForm: TEditBoxForm
     ClientHeight = 60
     ClientWidth = 695
     Color = clYellow
+    ParentBackground = False
     ParentColor = False
     ParentFont = False
     TabOrder = 1
