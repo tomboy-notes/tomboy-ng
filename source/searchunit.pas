@@ -178,6 +178,7 @@ type        { TSearchForm }
 
 		procedure ButtonClearFiltersClick(Sender: TObject);
         procedure EditSearchChange(Sender: TObject);
+        procedure EditSearchEnter(Sender: TObject);
         procedure EditSearchKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
                             // called after OnShow.
         procedure FormActivate(Sender: TObject);
@@ -224,6 +225,7 @@ type        { TSearchForm }
         procedure IndexNewNote(const FFName: string; CheckTitleClash: boolean);
 
     private
+        MoveFocusChar : char;
         SearchTextLength : integer;     // Previous length of EditSearch text, tells us if term is growing or shrinking
         SearchActive : boolean;         // We have searched for something after most recent SearchClear
 
@@ -1104,6 +1106,10 @@ begin
     end;
 end;
 
+
+
+
+
 procedure TSearchForm.DoSearchEnterPressed();
 var
     // T1, T2, TS3, TS4 : qword;
@@ -1191,8 +1197,8 @@ end;
 procedure TSearchForm.FormActivate(Sender: TObject);
 //var tick : qword;
 begin
-    {$ifdef LCLCOCOA} EditSearch.SetFocus;       // On Mac, we cannot do "jump to EditSearch on typing"
-    {$else} ListViewNotes.SetFocus;  {$endif}
+//    {$ifdef LCLCOCOA} EditSearch.SetFocus;       // On Mac, we cannot do "jump to EditSearch on typing"
+    ListViewNotes.SetFocus;
 end;
 
 procedure TSearchForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -1254,6 +1260,8 @@ begin
     Caption := 'tomboy-ng Search';
     TheMainNoteLister := nil;           // Thats the one in the Note_Lister unit !
     if (SingleNoteFileName <> '') then exit;
+
+    MoveFocusChar := char(0);         // if zero, inactive, if active, it first char in EditSearch;
 
     { ListView Settings }       // make extra column in Object Inspector
     ListViewNotes.ViewStyle:= vsReport;
@@ -1323,10 +1331,10 @@ begin
     {$ifdef LCLCOCOA}
     ButtonMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
-    EditSearch.SetFocus;    // Cocoa issue, 'cos we cannot make the "on type, jump to EditSearch" work on Mac
-    {$else}
-    ListViewNotes.SetFocus;
+//    EditSearch.SetFocus;    // Cocoa issue, 'cos we cannot make the "on type, jump to EditSearch" work on Mac
     {$endif}
+    ListViewNotes.SetFocus;
+//    {$endif}
     if ListViewNotes.Items.Count > 0 then
         ListViewNotes.ItemIndex := 0;
 end;
@@ -1581,30 +1589,27 @@ begin
     {$endif}
 end;
 
-procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);    // Also services ListBoxNotebooks
+procedure TSearchForm.EditSearchEnter(Sender: TObject);
+begin
+    if MoveFocusChar <> char(0) then begin        // listview or listbox put something in there, use it
+        EditSearch.Caption := EditSearch.Caption + MoveFocusChar;
+        MoveFocusChar := char(0);
+        EditSearch.SelStart := length(EditSearch.Caption);    // Windows, Mac needs this, does no harm.
+        EditSearch.SelLength := 0;
+    end;
+end;
+
+procedure TSearchForm.ListViewNotesKeyPress(Sender: TObject; var Key: char);
+    // Also services ListBoxNotebooks
 begin
     if Key = char(ord(VK_RETURN)) then ListViewNotesDblClick(Sender)
-    {$ifndef LCLCOCOA}                                            // We cannot do this at all in Cocoa
     else begin
+        MoveFocusChar := Key;
         EditSearch.SetFocus();
-        {$if defined(LCLQT5) OR defined(WINDOWS) }                // https://wiki.freepascal.org/$IF
-        if (Sender.ClassName = 'TListView')
-                or (Sender.ClassName = 'TListBox') then begin     // Qt5 and Windows keeps the first key in the listview
-            EditSearch.Caption  := EditSearch.Caption+char(Key);  // and ListBox GTK2 does not but seems thats the anomaly
-            EditSearch.SelStart := length(EditSearch.Caption);    // Windows needs this, does no harm with Qt at least.
-            EditSearch.SelLength := 0;
-        end;
-        {$endif}
-    end{$endif};
-
-    { This is about moving to the EditSearch if user starts typing. Only from ListView and ListBox.
-      Windows - works but we must poke the trigger keystroke to EditSearch
-                and we then need to move cursor after it.
-      GTK2    - Easy.
-      Cocoa   - Cannot work at all because the EditSearch ignores my effort to mv the cursor
-      Qt5     - Same as Windows
-      Qt6     -
-      GTK3    - }
+    end;
+    Key := char(0);
+    { Note, the above is to ensure the char typed that triggers move of focus to
+    EditSearch is not lost. GTK2 does not loose it but easier to do it for all.   }
 end;
 
 procedure TSearchForm.ScaleListView();

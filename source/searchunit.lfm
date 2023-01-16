@@ -16,7 +16,7 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object EditSearch: TEdit
     AnchorSideLeft.Control = ButtonMenu
     AnchorSideLeft.Side = asrBottom
@@ -30,6 +30,7 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
     OnChange = EditSearchChange
+    OnEnter = EditSearchEnter
     OnKeyDown = FormKeyDown
     OnKeyUp = EditSearchKeyUp
     ParentShowHint = False
