@@ -28,6 +28,13 @@ Downloads and information for specific platforms further down the page.
 <list><list-item dir="ltr"><list><list-item dir="ltr">A number of minor bug fixes.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">A number of speed up tricks that will help, particularly, users with very large note collections.</list-item></list></list-item></list>
 
+Additionally, minor release 0.35a brings -
+
+<list><list-item dir="ltr"><list><list-item dir="ltr">A fix to a problem where you may have problems searching for content in a new note.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Added ability to set custom colour of a link.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Made the Search Window just a touch more intuitive.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Fixed a but that sometimes might prevent your settings for Auto Snapshot not to be saved.</list-item></list></list-item></list>
+
 
 <size:huge><bold>Installation</bold></size:huge>
 
@@ -137,9 +144,11 @@ ToDo : New Raspberry Pi OS, 32 and 64 bit do not ship with GTK2 preinstalled. So
 
 
 
+
+
 </note-content></text>
-  <last-change-date>2022-11-15T12:22:00.0653277+11:00</last-change-date>
-  <last-metadata-change-date>2022-11-15T12:22:00.0653277+11:00</last-metadata-change-date>
+  <last-change-date>2023-01-15T18:25:56.6539206+11:00</last-change-date>
+  <last-metadata-change-date>2023-01-15T18:25:56.6539206+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
