@@ -865,7 +865,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="39">
+    <Units Count="35">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -951,139 +951,116 @@
         <ResourceBaseClass Value="Form"/>
       </Unit11>
       <Unit12>
-        <Filename Value="tomdroidfile.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormTomdroidFile"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="tomdroidFile"/>
-      </Unit12>
-      <Unit13>
         <Filename Value="index.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormIndex"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Index"/>
-      </Unit13>
-      <Unit14>
+      </Unit12>
+      <Unit13>
         <Filename Value="autostart.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit14>
-      <Unit15>
+      </Unit13>
+      <Unit14>
         <Filename Value="note_lister.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Note_Lister"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="syncutils.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit15>
       <Unit16>
-        <Filename Value="syncutils.pas"/>
+        <Filename Value="sync.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit16>
       <Unit17>
-        <Filename Value="sync.pas"/>
+        <Filename Value="hunspell.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit17>
       <Unit18>
-        <Filename Value="hunspell.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="transandroid.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit19>
-      <Unit20>
         <Filename Value="k_prn.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="K_Prn"/>
-      </Unit20>
-      <Unit21>
+      </Unit18>
+      <Unit19>
         <Filename Value="tb_sdiff.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormSDiff"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TB_SDiff"/>
-      </Unit21>
-      <Unit22>
+      </Unit19>
+      <Unit20>
         <Filename Value="trans.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit22>
-      <Unit23>
+      </Unit20>
+      <Unit21>
         <Filename Value="transfile.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit23>
-      <Unit24>
+      </Unit21>
+      <Unit22>
         <Filename Value="resourcestr.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ResourceStr"/>
-      </Unit24>
-      <Unit25>
+      </Unit22>
+      <Unit23>
         <Filename Value="colours.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormColours"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit25>
-      <Unit26>
+      </Unit23>
+      <Unit24>
         <Filename Value="cli.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit26>
-      <Unit27>
+      </Unit24>
+      <Unit25>
         <Filename Value="libnotify.pas"/>
         <IsPartOfProject Value="True"/>
-      </Unit27>
-      <Unit28>
+      </Unit25>
+      <Unit26>
         <Filename Value="rollback.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormRollBack"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RollBack"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="tb_utils.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="commonmark.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit28>
       <Unit29>
-        <Filename Value="transfileand.pas"/>
+        <Filename Value="tbundo.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit29>
       <Unit30>
-        <Filename Value="tb_utils.pas"/>
+        <Filename Value="hunspell.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit30>
       <Unit31>
-        <Filename Value="tomdroid.pas"/>
+        <Filename Value="notenormal.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormTomdroid"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit31>
       <Unit32>
-        <Filename Value="commonmark.pas"/>
+        <Filename Value="transgithub.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit32>
       <Unit33>
-        <Filename Value="tbundo.pas"/>
+        <Filename Value="import_notes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit33>
       <Unit34>
-        <Filename Value="hunspell.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit34>
-      <Unit35>
-        <Filename Value="notenormal.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit35>
-      <Unit36>
-        <Filename Value="transgithub.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="import_notes.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit37>
-      <Unit38>
         <Filename Value="jsontools.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="JsonTools"/>
-      </Unit38>
+      </Unit34>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

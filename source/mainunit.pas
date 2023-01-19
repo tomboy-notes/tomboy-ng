@@ -172,7 +172,6 @@ type
         procedure ImageAboutLazClick(Sender: TObject);
         procedure LabelErrorClick(Sender: TObject);
         procedure TrayIconClick(Sender: TObject);
-        procedure TrayMenuTomdroidClick(Sender: TObject);
     private
         AboutFrm : TForm;
         //HelpList : TStringList;
@@ -248,9 +247,9 @@ uses LazLogger, LazFileUtils, LazUTF8,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
     Note_Lister, cli,
-    tb_utils, {$ifdef LINUX}LCLVersion,{$endif} LCLIntf,
-    {$ifdef Linux}libnotify, {$endif}
-    TomdroidFile {$ifdef windows}, registry{$endif};
+    tb_utils, {$ifdef LINUX}LCLVersion,{$endif} LCLIntf
+    {$ifdef Linux}, libnotify {$endif}
+    {$ifdef windows}, registry{$endif} ;
 
 function SingleNoteFileName() : string;
 begin
@@ -773,12 +772,6 @@ end;
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
     PopupMenuTray.PopUp();
-end;
-
-procedure TMainForm.TrayMenuTomdroidClick(Sender: TObject);
-begin
-    if FormTomdroidFile.Visible then FormTomdroidFile.BringToFront
-    else FormTomdroidFile.ShowModal;
 end;
 
 procedure TMainForm.RecentMenuClicked(Sender: TObject);

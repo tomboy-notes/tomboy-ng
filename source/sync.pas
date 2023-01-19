@@ -166,7 +166,7 @@ HISTORY
 
 interface
 uses
-    Classes, SysUtils, SyncUtils, Trans, TransFileAnd;
+    Classes, SysUtils, SyncUtils, Trans;
 
 
 type                       { ----------------- T S Y N C --------------------- }
@@ -405,7 +405,7 @@ implementation
 { TSync }
 
 uses laz2_DOM, laz2_XMLRead,
-    TransFile, TransAndroid, TransGithub,
+    TransFile, TransGithub,
     LazLogger, LazFileUtils, FileUtil, Settings, tb_utils;
 
 var
@@ -976,34 +976,17 @@ begin
                         ConfigDir := ConfigDir + SyncTransportName(SyncGithub) + PathDelim;
                         ForceDirectory(ConfigDir);
                       end;
-        SyncAndroid : begin
-                        // debugln('Oh boy ! We have called the android line !');
-                        Transport := TAndSync.Create;
-                        ManPrefix := copy(LocalServerID, 1, 8);     // But in join mode, LocalServerID is empty at this stage ...
-                      end;
-        SyncFileAndroid : begin
-                        // debugln('Oh boy ! We have called the android line !');
-                        Transport := TAndFileTrans.Create;
-                        ManPrefix := copy(Transport.ServerID, 1, 13);     // here, servid is set in TAndFileTrans.create
-                        SyncAddress := Transport.RemoteAddress;
-                      end;
     end;
     Transport.ProgressProcedure := ProgressProcedure;
     Transport.Password := Password;
     Transport.NotesDir := NotesDir;
     Transport.DebugMode := DebugMode;
-    if TransportMode in [SyncAndroid, SyncFileAndroid ] then begin
-        ConfigDir := ConfigDir + 'android' + PathDelim;
-        ForceDirectory(ConfigDir);
-    end;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
     Transport.RemoteAddress:= SyncAddress;                          // happens _before_ Trans.SetTransport
     Result := Transport.SetTransport();                             // in github, this will (re)set Transport.RemoteAddress
-    if TransportMode = SyncFileAndroid then
-       LocalServerID := Transport.ServerID;                         // we need it to find profile
     ErrorString := Transport.ErrorString;
     if DebugMode then begin
-        debugln('Remote address is (n.a. Tomdroid) ' + SyncAddress);
+        debugln('Remote address is ' + SyncAddress);
         debugln('Local Config ' + ConfigDir);
         debugln('Notes dir ' + NotesDir);
 	end;
@@ -1038,16 +1021,12 @@ begin
     if RepoAction = RepoJoin then begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
-        if TransportMode in [ SyncAndroid, SyncFileAndroid ] then
-           Transport.ANewRepo:= True;     // Ugly, but while its technically a 'new' it looks a bit like Join.....
     end;
     Result := Transport.TestTransport(not TestRun);                             // *****************
     if Result <> SyncReady then begin
       ErrorString := Transport.ErrorString;
       exit;
     end;
-    if TransportMode = SyncFileAndroid then         // During a join in SyncFileAndroid, we just set a new serverid on remote dir.
-       ManPrefix := copy(Transport.ServerID, 1, 13);
     if DebugMode then begin
         debugln('CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
                         + '   Local Entries=' + inttostr(LocalMetaData.Count));
@@ -1062,8 +1041,6 @@ begin
 		end;
     if RepoAction = RepoJoin then begin
         LocalServerID := Transport.ServerID;
-        if (TransportMode = SyncAndroid) then
-           ManPrefix := copy(LocalServerID, 1, 8);
     end;
     if Result = SyncReady then
         if not IDLooksOK(Transport.ServerID) then begin
@@ -1110,11 +1087,10 @@ begin
     if not LoadRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
         RepoUse : begin
-                        case TransportMode of
-                            SyncAndroid, SyncFileAndroid : CheckUsingLCD(False);
-                            SyncGithub : TGithubSync(Transport).AssignActions(RemoteMetaData, LocalMetaData, TestRun);
-                        otherwise CheckUsingRev();
-                        end;
+                        if TransportMode = SyncGithub then
+                            TGithubSync(Transport).AssignActions(RemoteMetaData, LocalMetaData, TestRun)
+                        else CheckUsingRev();
+                        // note that the Android sync used to use CheckUsingLCD(False) do we still need it ?
                         CheckRemoteDeletes();
                         CheckLocalDeletes();
                   end;

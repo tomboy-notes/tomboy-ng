@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabDisplay
+    ActivePage = TabBasic
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -108,7 +108,7 @@ object Sett: TSett
         BorderSpacing.Top = 30
         Caption = 'Autostart at Logon'
         OnChange = CheckAutostartChange
-        TabOrder = 3
+        TabOrder = 2
       end
       object CheckShowSearchAtStart: TCheckBox
         AnchorSideLeft.Control = ButtDefaultNoteDir
@@ -120,7 +120,7 @@ object Sett: TSett
         BorderSpacing.Left = 10
         Caption = 'Show Search at Start'
         OnChange = SaveSettings
-        TabOrder = 4
+        TabOrder = 3
       end
       object CheckShowSplash: TCheckBox
         AnchorSideLeft.Control = ButtonSetNotePath
@@ -139,20 +139,7 @@ object Sett: TSett
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
-        TabOrder = 5
-      end
-      object CheckShowTomdroid: TCheckBox
-        AnchorSideLeft.Control = CheckShowSearchAtStart
-        AnchorSideTop.Control = CheckAutostart
-        Left = 380
-        Height = 23
-        Top = 338
-        Width = 306
-        Caption = 'Show Tomdroid Sync (experimental)'
-        OnChange = SaveSettings
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
+        TabOrder = 4
       end
       object CheckNotifications: TCheckBox
         AnchorSideLeft.Control = CheckShowSplash
@@ -167,7 +154,7 @@ object Sett: TSett
         Checked = True
         OnChange = SaveSettings
         State = cbChecked
-        TabOrder = 6
+        TabOrder = 5
       end
       object CheckEscClosesNote: TCheckBox
         AnchorSideLeft.Control = CheckShowSearchAtStart
@@ -178,7 +165,7 @@ object Sett: TSett
         Width = 149
         Caption = 'Esc Closes Note'
         OnChange = SaveSettings
-        TabOrder = 7
+        TabOrder = 6
       end
     end
     object TabDisplay: TTabSheet

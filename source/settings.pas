@@ -172,7 +172,6 @@ type
         CheckShowSplash: TCheckBox;
         CheckShowExtLinks: TCheckBox;
         CheckShowIntLinks: TCheckBox;
-        CheckShowTomdroid: TCheckBox;
         FontDialog1: TFontDialog;
         GroupBox4: TGroupBox;
         GroupBox5: TGroupBox;
@@ -729,7 +728,6 @@ procedure TSett.FormCreate(Sender: TObject);
 var
     i : integer;
 begin
-    CheckShowTomdroid.Hint := 'Will be removed in 0.36 unless you tell me otherwise';
     Caption := 'tomboy-ng Settings';
     AreClosing := false;
     Top := 100;
@@ -750,7 +748,6 @@ begin
     LabelSettingPath.Caption := LocalConfig + 'tomboy-ng.cfg';
     NoteDirectory := Sett.GetDefaultNoteDir;
     labelNotesPath.Caption := NoteDirectory;
-    CheckShowTomdroid.Enabled := {$ifdef LINUX}True{$else}False{$endif};
     CheckConfigAndDirs();                      // write a new, default one if necessary
     CheckSpelling();
     ComboSyncType.ItemIndex := 0;               // Defaults to File
@@ -887,8 +884,6 @@ begin
             ('true' = ConfigFile.readstring('BasicSettings', 'UseUndo', 'true'));
         SearchCaseSensitive :=
             ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
-        CheckShowTomdroid.Checked :=
-            ('true' = Configfile.readstring('BasicSettings', 'ShowTomdroid', 'false'));
         CheckShowSplash.Checked :=
             ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
         CheckAutostart.Checked :=
@@ -1025,7 +1020,6 @@ begin
             Configfile.writestring('BasicSettings', 'CaseSensitive',     MyBoolStr(SearchCaseSensitive));
             ConfigFile.writestring('BasicSettings', 'ShowIntLinks',      MyBoolStr(CheckShowIntLinks.Checked));
             ConfigFile.writestring('BasicSettings', 'ShowExtLinks',      MyBoolStr(CheckShowExtLinks.Checked));
-            ConfigFile.writestring('BasicSettings', 'ShowTomdroid',      MyBoolStr(CheckShowTomdroid.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
             ConfigFile.WriteString('BasicSettings', 'Autostart',         MyBoolStr(CheckAutostart.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSearchAtStart', MyBoolStr(CheckShowSearchAtStart.Checked));

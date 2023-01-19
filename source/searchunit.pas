@@ -134,7 +134,7 @@ uses
 
 
 // These are choices for main popup menus.
-type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtTomdroid, mtSettings, mtMainHelp, mtHelp, mtQuit, mtRecent);
+type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtMainHelp, mtHelp, mtQuit, mtRecent);
 
 // These are the possible kinds of main menu items
 type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
@@ -346,7 +346,6 @@ uses MainUnit,      // Opening form, manages startup and Menus
     LazFileUtils,   // LazFileUtils needed for TrimFileName(), cross platform stuff
     sync,           // because we need it to manhandle local manifest when a file is deleted
     process,        // Linux, we call wmctrl to move note to current workspace
-    TomdroidFile,
     LCLVersion,     // used to enable, or not, sort indicators in lcl2.0.8 or later
     NoteBook,
     tb_utils,
@@ -816,12 +815,7 @@ begin
     if AMenu.Items.Count = 0 then                   // If menu empty, put in seperator
         AddItemMenu(AMenu, '-', mtSep, nil, mkFileMenu);
     AddItemMenu(AMenu, rsMenuQuit, mtQuit,  @FileMenuClicked, mkFileMenu);
-
     AddItemMenu(AMenu, rsMenuHelp, mtMainHelp,  nil, mkFileMenu);
-    {$ifdef LINUX}
-    if Sett.CheckShowTomdroid.Checked then
-        AddItemMenu(AMenu, 'Tomdroid', mtTomdroid,  @FileMenuClicked, mkFileMenu);
-    {$endif}
     AddItemMenu(AMenu, rsMenuSettings, mtSettings, @FileMenuClicked, mkFileMenu);
     AddItemMenu(AMenu, rsMenuSync, mtSync,  @FileMenuClicked, mkFileMenu);
     AddItemMenu(AMenu, rsMenuAbout, mtAbout, @FileMenuClicked, mkFileMenu);
@@ -927,10 +921,7 @@ begin
                             Sett.EnsureVisible(true);
                             Sett.Show;
                      end;
-        {$ifdef LINUX}
-        mtTomdroid : if FormTomdroidFile.Visible then
-                        FormTomdroidFile.BringToFront
-                     else FormTomdroidFile.ShowModal;{$endif}
+
         mtHelp :      begin
                         if HelpNotes.FileNameForTitle(TMenuItem(Sender).Caption, FileName) then
                             {MainForm.}ShowHelpNote(FileName)

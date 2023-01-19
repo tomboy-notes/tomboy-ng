@@ -22,9 +22,9 @@ uses
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
-    Notebook, Spelling, Mainunit, BackupView, recover, tomdroidFile, Index,
-    autostart, hunspell, sync, syncutils, transandroid, ResourceStr, colours,
-    cli, RollBack, commonmark, transfileand, notenormal, transgithub,
+    Notebook, Spelling, Mainunit, BackupView, recover, Index,
+    autostart, hunspell, sync, syncutils, ResourceStr, colours,
+    cli, RollBack, commonmark, notenormal, transgithub,
     import_notes, JsonTools;
 
 {$R *.res}
@@ -41,7 +41,6 @@ begin
         Application.CreateForm(TSett, Sett);
         Application.CreateForm(TSearchForm, SearchForm);
         Application.CreateForm(TFormSync, FormSync);
-        Application.CreateForm(TFormTomdroidFile, FormTomdroidFile);
         Application.CreateForm(TFormColours, FormColours);
         Application.CreateForm(TFormRollBack, FormRollBack);
         Application.Run;

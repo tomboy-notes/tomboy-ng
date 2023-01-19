@@ -29,10 +29,7 @@ uses
     Classes, SysUtils, dateutils, LazLogger;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
-                SyncGitHub,     // sends markdown notes to/from github.
-                SyncAndroid,    // Simple one to one Android Device
-                SyncFileAndroid);   // Android sync using mounted file system
-                //SyncNextCloud,  // Sync to NextCloud using Nextcloud Notes
+                SyncGitHub);     // sends markdown notes to/from github.
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.
@@ -175,8 +172,6 @@ begin
     case TheType of
         SyncFile :        result := 'SyncFile';
         SyncGitHub  :     result := 'SyncGithub';
-        SyncAndroid :     result := 'SyncAndroid';
-        SyncFileAndroid : result := 'SyncFileAndroid';
     end;
 end;
 

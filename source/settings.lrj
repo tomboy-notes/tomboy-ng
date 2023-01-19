@@ -13,7 +13,6 @@
 {"hash":28987956,"name":"tsett.checkshowsearchatstart.caption","sourcebytes":[83,104,111,119,32,83,101,97,114,99,104,32,97,116,32,83,116,97,114,116],"value":"Show Search at Start"},
 {"hash":204462302,"name":"tsett.checkshowsplash.hint","sourcebytes":[65,108,119,97,121,115,32,115,104,111,119,110,32,105,102,32,101,114,114,111,114,32,108,111,97,100,105,110,103,32,110,111,116,101,115,46],"value":"Always shown if error loading notes."},
 {"hash":196767252,"name":"tsett.checkshowsplash.caption","sourcebytes":[83,104,111,119,32,83,112,108,97,115,104,32,97,116,32,83,116,97,114,116],"value":"Show Splash at Start"},
-{"hash":146065017,"name":"tsett.checkshowtomdroid.caption","sourcebytes":[83,104,111,119,32,84,111,109,100,114,111,105,100,32,83,121,110,99,32,40,101,120,112,101,114,105,109,101,110,116,97,108,41],"value":"Show Tomdroid Sync (experimental)"},
 {"hash":192901619,"name":"tsett.checknotifications.caption","sourcebytes":[83,104,111,119,32,78,111,116,105,102,105,99,97,116,105,111,110,115],"value":"Show Notifications"},
 {"hash":153046181,"name":"tsett.checkescclosesnote.caption","sourcebytes":[69,115,99,32,67,108,111,115,101,115,32,78,111,116,101],"value":"Esc Closes Note"},
 {"hash":5597891,"name":"tsett.tabdisplay.caption","sourcebytes":[78,111,116,101,115],"value":"Notes"},
