@@ -1247,9 +1247,9 @@ begin
     FontDialog1.Font.Name := FixedFont;
     FontDialog1.Font.Size := 10;
     FontDialog1.Title := 'Select Fixed Spacing Font';
-    FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
+    FontDialog1.PreviewText:= 'abcdef ABCDEF 012345 iiiii wwwww';
     // showmessage(FixedFont);
-    FontDialog1.Options := FontDialog1.Options + [fdFixedPitchOnly];
+    FontDialog1.Options := [fdEffects, fdFixedPitchOnly ];       // ToDo : this does not show ONLY fixed !
     If FontDialog1.Execute then BEGIN
         FixedFont := FontDialog1.Font.name;
         WriteConfigFile();
@@ -1261,8 +1261,10 @@ procedure TSett.ButtonFontClick(Sender: TObject);
 begin
     FontDialog1.Font.Name := UsualFont;
     FontDialog1.Font.Size := 10;
+
     FontDialog1.Title := 'Select Usual Font';
     FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
+    FontDialog1.Options := [fdEffects];
     If FontDialog1.Execute then BEGIN
         UsualFont := FontDialog1.Font.name;
         WriteConfigFile();
@@ -1677,13 +1679,6 @@ procedure TSett.SaveSettings(Sender: TObject);
 begin
     WriteConfigFile();      // Write to disk
     SyncSettings();
-    if not MaskSettingsChanged then
-        if Sender.ClassNameIs('TCheckBox') then begin
-            if TCheckBox(Sender).Name = 'CheckShowTomdroid' then begin
-                SearchForm.RefreshMenus(mkFileMenu);
-                SearchForm.RefreshMenus(mkHelpMenu);
-            end;
-    end;
 end;
 
 

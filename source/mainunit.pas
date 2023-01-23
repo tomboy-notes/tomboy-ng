@@ -121,14 +121,15 @@ uses
     LCLType, ComCtrls
     {$ifdef LINUX}, x, xlib, process {$endif}             // Relate to testing for SysTray
     {$IFDEF LCLGTK3}, LazGdk3, LazGLib2 {$ENDIF}          // we need declare a GTK3 function that has not yet made it to bindings
+
+
+  , fpimage,
+  fpreadjpeg,
+  fppdf,
+  fpparsettf,
+  fpttf,
+  typinfo
     ;
-
-// These are choices for main and main popup menus.
-// type TMenuTarget = (mtSep=1, mtNewNote, mtSearch, mtAbout=10, mtSync, mtSettings, mtHelp, mtQuit, mtTomdroid, mtRecent);
-
-// These are the possible kinds of main menu items
-// type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu);
-
 
 type
 
@@ -302,7 +303,31 @@ end;
 
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var i : integer;
 begin
+
+    // ToDo : clean up here !!!
+
+(*    gTTFontCache.SearchPath.Add('/usr/share/fonts/');
+    gTTFontCache.BuildFontCache;
+
+    for i := 0 to gTTFontCache.Count -1 do
+     writeln(gTTFontCache.Items[i].FamilyName);        *)
+
+
+
+//    gTTFontCache.SearchPath.Add('/usr/share/fonts');
+//    gTTFontCache.BuildFontCache;
+
+//    for i := 0 to gTTFontCache.Count -1 do
+//          writeln('FONT-' + gTTFontCache.Items[i].FileName);
+
+
+
+
+
+    // ==============================
+
 
     AboutFrm := Nil;
     Randomize;                                      // used by sett.getlocaltime()

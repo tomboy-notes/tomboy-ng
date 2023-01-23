@@ -1264,6 +1264,10 @@ object EditBoxForm: TEditBoxForm
         Caption = 'Export Markdown'
         OnClick = MenuItemExportMarkdownClick
       end
+      object MenuItemExportPDF: TMenuItem
+        Caption = 'Export PDF'
+        OnClick = MenuItemExportPDFClick
+      end
     end
     object MenuItemPrint: TMenuItem
       Caption = 'Print'

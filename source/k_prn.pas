@@ -29,6 +29,8 @@ type
       Size : integer;
       Bold, Italic, NewLine : boolean;
       Colour : TColor;
+      FName : string;                   // PDF only
+      ABullet : TKMemoParaNumbering;    // PDF only
     end;
 
 type
@@ -40,7 +42,8 @@ type
             function Get(Index : Integer) : PWord;
         public
             destructor Destroy; Override;
-            procedure Add(TheWord : ANSIString; S : integer; B, I, NL : boolean; Colour : TColor);
+            procedure Add(TheWord: ANSIString; S: integer; B, I, NL: boolean;
+                Colour: TColor; FName: string = '');
             //function SameStyle(const S1, S2 : integer) : boolean;
             procedure Dump();
             property Items[Index : integer] : PWord read Get; default;
@@ -112,7 +115,8 @@ begin
     inherited Destroy;
 end;
 
-procedure TWordList.Add(TheWord: ANSIString; S: integer; B, I, NL: boolean; Colour : TColor);
+procedure TWordList.Add(TheWord: ANSIString; S: integer; B, I, NL: boolean;
+                    Colour : TColor; FName : string = '');
 var
     PL : PWord;
 begin
@@ -123,15 +127,19 @@ begin
     PL^.Italic:=I;
     PL^.Colour:=Colour;
     PL^.NewLine:= NL;
+    PL^.FName := FName;     // Only used by PDF writer
+    PL^.ABullet := pnuNone; // Only used by PDF writer
     inherited Add(PL);
 end;
 
 procedure TWordList.Dump();
 var I : integer;
 begin
-    {$ifdef UNIX}
+    {$ifdef LINUX}    // usable in linux only
     for I := 0 to Count-1 do
-        writeln('NL=' + booltostr(Items[I]^.NewLine, True) + ' [' + Items[I]^.AWord + ']');  // defined unix only
+        writeln('NL=' + booltostr(Items[I]^.NewLine, True)
+            + ' [' + Items[I]^.AWord + '] f=' + Items[I]^.FName );
+//            + ' Bullet=' + booltostr(Items[I]^.Bullet, True)
     {$endif}
 end;
 

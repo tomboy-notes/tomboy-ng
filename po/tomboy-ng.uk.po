@@ -718,6 +718,10 @@ msgstr "Експортувати"
 msgid "Export Markdown"
 msgstr "Експортувати в Markdown"
 
+#: teditboxform.menuitemexportpdf.caption
+msgid "Export PDF"
+msgstr ""
+
 #: teditboxform.menuitemexportplaintext.caption
 msgid "Export Plain Text"
 msgstr "Експортувати в звичайний текст"
@@ -910,6 +914,10 @@ msgstr "Заголовки в цій нотатці"
 #: tformindex.panel1.caption
 msgid "Single lines, all Huge, Large Bold or Large"
 msgstr "Одинарні рядки, всі великі, довгі грубі або довгі"
+
+#: tformkmemo2pdf.caption
+msgid "FormKMemo2pdf"
+msgstr ""
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
@@ -1142,137 +1150,6 @@ msgstr "Заголовок"
 msgid "Note ID"
 msgstr "ІД нотатки"
 
-#: tformtomdroid.buttonclose.caption
-msgctxt "tformtomdroid.buttonclose.caption"
-msgid "Close"
-msgstr "Закрити"
-
-#: tformtomdroid.buttondelete.caption
-msgid "Delete Profile"
-msgstr "Видалити профіль"
-
-#: tformtomdroid.buttonhelp.caption
-msgctxt "tformtomdroid.buttonhelp.caption"
-msgid "Help"
-msgstr "Довідка"
-
-#: tformtomdroid.buttonjoin.caption
-msgctxt "tformtomdroid.buttonjoin.caption"
-msgid "Join"
-msgstr "Приєднати"
-
-#: tformtomdroid.buttonsaveprofile.caption
-msgid "Save Profile"
-msgstr "Зберегти профіль"
-
-#: tformtomdroid.buttonsync.caption
-msgctxt "tformtomdroid.buttonsync.caption"
-msgid "Sync"
-msgstr "Синхронізація"
-
-#: tformtomdroid.caption
-msgctxt "tformtomdroid.caption"
-msgid "Tomdroid"
-msgstr "Tomdroid"
-
-#: tformtomdroid.checkboxdebugmode.caption
-msgid "Debug Mode"
-msgstr "Режим зневадження"
-
-#: tformtomdroid.checkboxdebugmode.hint
-msgid "writes debug messages to terminal"
-msgstr "пише повідомлення зневадження у термінал"
-
-#: tformtomdroid.checkboxtestrun.caption
-msgctxt "tformtomdroid.checkboxtestrun.caption"
-msgid "Test Run"
-msgstr "Проба запуску"
-
-#: tformtomdroid.checksavepassword.caption
-msgctxt "tformtomdroid.checksavepassword.caption"
-msgid "Save"
-msgstr "Зберегти"
-
-#: tformtomdroid.editprofilename.hint
-msgid "eg MySamsungNote7"
-msgstr "напр., MySamsungNote7"
-
-#: tformtomdroid.label1.caption
-msgid "Tomdroid SSH Sync - deprecated, will not be in v0.36."
-msgstr "Tomdroid SSH Sync - виходить із вжитку, не буде у v0.36."
-
-#: tformtomdroid.label1.hint
-msgid "Use GitHub Sync instead. Post issue if you need Tomdroid Sync."
-msgstr "Викор. GitHub Sync натомість. Опублікуйте проблуему, якщо Вам потрібен Tomdroid Sync."
-
-#: tformtomdroid.label2.caption
-msgid "Select an existing profile (or enter data) "
-msgstr "Виберіть наявний профіль (або введіть дані) "
-
-#: tformtomdroid.label3.caption
-msgid "Profile Name"
-msgstr "Назва профілю"
-
-#: tformtomdroid.label4.caption
-msgid "IP address of device"
-msgstr "IP-адреса пристрою"
-
-#: tformtomdroid.label5.caption
-msgid "SSH Password for device"
-msgstr "SSH-пароль пристрою"
-
-#: tformtomdroid.label6.caption
-msgctxt "tformtomdroid.label6.caption"
-msgid "Upload means from tomboy-ng to Android Device"
-msgstr "Вивантаження означає з tomboy-ng до пристрою Android"
-
-#: tformtomdroidfile.buttonclose.caption
-msgctxt "tformtomdroidfile.buttonclose.caption"
-msgid "Close"
-msgstr "Закрити"
-
-#: tformtomdroidfile.buttonhelp.caption
-msgctxt "tformtomdroidfile.buttonhelp.caption"
-msgid "Help"
-msgstr "Довідка"
-
-#: tformtomdroidfile.buttonjoin.caption
-msgctxt "tformtomdroidfile.buttonjoin.caption"
-msgid "Join"
-msgstr "Приєднати"
-
-#: tformtomdroidfile.buttonoldssh.caption
-msgid "Use old SSH model"
-msgstr "Викор. стару SSH-модель"
-
-#: tformtomdroidfile.buttonsync.caption
-msgctxt "tformtomdroidfile.buttonsync.caption"
-msgid "Sync"
-msgstr "Синхр."
-
-#: tformtomdroidfile.caption
-msgctxt "tformtomdroidfile.caption"
-msgid "Tomdroid"
-msgstr "Tomdroid"
-
-#: tformtomdroidfile.checkboxtestrun.caption
-msgctxt "tformtomdroidfile.checkboxtestrun.caption"
-msgid "Test Run"
-msgstr "Проба запуску"
-
-#: tformtomdroidfile.label1.caption
-msgid "Tomdroid Sync - deprecated, will not be in v0.36."
-msgstr "Tomdroid Sync - виходить із вжитку, не буде у v0.36."
-
-#: tformtomdroidfile.label1.hint
-msgid "Use GitHub Sync instead. Post issue if you need Tomdroid"
-msgstr "Використовуйте синхронізацію GitHub натомість. Опублікуйте проблему, якщо Вам потрібно використовувати Tomdroid"
-
-#: tformtomdroidfile.label6.caption
-msgctxt "tformtomdroidfile.label6.caption"
-msgid "Upload means from tomboy-ng to Android Device"
-msgstr "Вивантаження означає з tomboy-ng на пристрій Android"
-
 #: tmainform.bitbtnhide.caption
 msgid "Hide"
 msgstr "Сховати"
@@ -1368,149 +1245,6 @@ msgstr "Новий записник"
 #: tnotebookpick.tabsetnotes.caption
 msgid "Set Notes"
 msgstr "Вказати нотатки"
-
-#: tomdroid.rscheckingforexistingsync
-msgctxt "tomdroid.rscheckingforexistingsync"
-msgid "Checking for an existing sync ...."
-msgstr "Перевірка наявності синхронізації ...."
-
-#: tomdroid.rsconnectiongood
-msgctxt "tomdroid.rsconnectiongood"
-msgid "Connection is looking Good."
-msgstr "Зʼєднання виглядає Добре."
-
-#: tomdroid.rsfailedtoconnect
-msgctxt "tomdroid.rsfailedtoconnect"
-msgid "Failed to connect."
-msgstr "Не вдалося зʼєднатися."
-
-#: tomdroid.rsfailedtofindconnection_1
-msgctxt "tomdroid.rsfailedtofindconnection_1"
-msgid "Failed to find an existing connection."
-msgstr "Не вдалося знайти наявне зʼєднання."
-
-#: tomdroid.rsfailedtofindconnection_2
-msgctxt "tomdroid.rsfailedtofindconnection_2"
-msgid "If you are sure there should be an existing connection, check settings."
-msgstr "Якщо ви впевнені, що зʼєднання повинно бути, перевірне налаштування."
-
-#: tomdroid.rsfailedtofindconnection_3
-msgctxt "tomdroid.rsfailedtofindconnection_3"
-msgid "Otherwise, try joining a new connection."
-msgstr "В іншому випадку, спробуйте приʼєднати нове зʼєднання."
-
-#: tomdroid.rsfixconnection
-msgctxt "tomdroid.rsfixconnection"
-msgid "If you are sure its there, check settings."
-msgstr "Якщо ви впевнені, що воно є, перевірте налаштування."
-
-#: tomdroid.rshavevalidsync
-msgctxt "tomdroid.rshavevalidsync"
-msgid "Looking Good. Last sync date "
-msgstr "Виглядає добре. Дата останньої синхронізації "
-
-#: tomdroid.rsinstalltomdroid
-msgctxt "tomdroid.rsinstalltomdroid"
-msgid "Install Tomdroid, config filesync, and run a sync"
-msgstr "Встановіть Tomdroid, налаштуйте синхронізацію і запустіть синхронізацію"
-
-#: tomdroid.rsnoconnection
-msgctxt "tomdroid.rsnoconnection"
-msgid "Failed to establish a connection. "
-msgstr "Не вдалося встановити звʼязок."
-
-#: tomdroid.rsnotcorrectprofile
-msgctxt "tomdroid.rsnotcorrectprofile"
-msgid "This is not correct profile for that device"
-msgstr "Це не коректний профіль для цього пристрою"
-
-#: tomdroid.rsnotexistingrepo
-msgctxt "tomdroid.rsnotexistingrepo"
-msgid "That's not an existing Repo, maybe click \"Join\" ?"
-msgstr "Цей репозиторій не існує, можливо клацніть \"Приєднати\" ?"
-
-#: tomdroid.rsnotomdroid
-msgctxt "tomdroid.rsnotomdroid"
-msgid "Unable to find Tomdroid sync dir on that device."
-msgstr "Неможливо знайти каталог синхронізації Tomdroid на цьому пристрої."
-
-#: tomdroid.rsselectprofile
-msgid "Select a profile"
-msgstr "Виберіть профіль"
-
-#: tomdroid.rssetupnewsync
-msgctxt "tomdroid.rssetupnewsync"
-msgid "Setting up a new sync ...."
-msgstr "Налаштування нової синхронізації ...."
-
-#: tomdroid.rstalkingtodevice
-msgctxt "tomdroid.rstalkingtodevice"
-msgid "OK, talking to device. Wait for it ...."
-msgstr "ДОБРЕ, говоримо з пристроєм. Зачекайте ...."
-
-#: tomdroidfile.rsconnectiongood
-msgctxt "tomdroidfile.rsconnectiongood"
-msgid "Connection is looking Good."
-msgstr "Зʼєднання виглядає Добре."
-
-#: tomdroidfile.rsfailedtoconnect
-msgctxt "tomdroidfile.rsfailedtoconnect"
-msgid "Failed to connect."
-msgstr "Не вдалося зʼєднатися."
-
-#: tomdroidfile.rsfailedtofindconnection_2
-msgctxt "tomdroidfile.rsfailedtofindconnection_2"
-msgid "If you are sure there should be an existing connection, check settings."
-msgstr "Якщо ви впевнені, що має бути зʼєднання, перевірте налаштування."
-
-#: tomdroidfile.rsfixconnection
-msgctxt "tomdroidfile.rsfixconnection"
-msgid "If you are sure its there, check settings."
-msgstr "Якщо ви впевнені, що воно є, перевірте налаштування."
-
-#: tomdroidfile.rshavevalidsync
-msgctxt "tomdroidfile.rshavevalidsync"
-msgid "Looking Good. Last sync date "
-msgstr "Виглядає добре. Дата остнньої синхронізації "
-
-#: tomdroidfile.rsinstalltomdroid
-msgctxt "tomdroidfile.rsinstalltomdroid"
-msgid "Install Tomdroid, config filesync, and run a sync"
-msgstr "Встановіть Tomdroid, налаштуйте синхронізацію і запустіть синхронізацію"
-
-#: tomdroidfile.rsjoinanyway
-msgid "Forcing a Join may \"recover\" some notes you thought you have deleted."
-msgstr "Примусове Приєднання може «відновити» деякі нотатки, які були видалені."
-
-#: tomdroidfile.rsnoconnection
-msgctxt "tomdroidfile.rsnoconnection"
-msgid "Failed to establish a connection. "
-msgstr "Не вдалося налагодити зʼєднання. "
-
-#: tomdroidfile.rsnotcorrectprofile
-msgctxt "tomdroidfile.rsnotcorrectprofile"
-msgid "This is not correct profile for that device"
-msgstr "Це не коректний профіль для цього пристрою"
-
-#: tomdroidfile.rsnotexistingrepo
-msgctxt "tomdroidfile.rsnotexistingrepo"
-msgid "That's not an existing Repo, maybe click \"Join\" ?"
-msgstr "Цей репозиторій не існує, можливо клацніть \"Приєднати\" ?"
-
-#: tomdroidfile.rsnotomdroid
-msgctxt "tomdroidfile.rsnotomdroid"
-msgid "Unable to find Tomdroid sync dir on that device."
-msgstr "Неможливо знайти каталог синхронізаціх Tomdroid на цьому пристрої."
-
-#: tomdroidfile.rssetupnewsync
-msgctxt "tomdroidfile.rssetupnewsync"
-msgid "Setting up a new sync ...."
-msgstr "Встановлення нової синхронізації ...."
-
-#: tomdroidfile.rstalking
-msgctxt "tomdroidfile.rstalking"
-msgid "OK, talking to device. Wait for it ...."
-msgstr "ДОБРЕ, говоримо з пристроєм. Зачекайте ...."
 
 #: tsearchform.buttonclearfilters.caption
 msgctxt "tsearchform.buttonclearfilters.caption"
@@ -1702,10 +1436,6 @@ msgstr "Показувати вспливне вікно під час запу�
 #: tsett.checkshowsplash.hint
 msgid "Always shown if error loading notes."
 msgstr "Завжди показується, якщо помилка завантаження нотаток."
-
-#: tsett.checkshowtomdroid.caption
-msgid "Show Tomdroid Sync (experimental)"
-msgstr "Показувати синхронізацію з Tomdroid (експериментальне)"
 
 #: tsett.checkstampbold.caption
 msgctxt "tsett.checkstampbold.caption"

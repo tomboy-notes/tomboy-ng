@@ -33,6 +33,7 @@
 {"hash":110270710,"name":"teditboxform.menuitemexportrtf.caption","sourcebytes":[69,120,112,111,114,116,32,82,84,70],"value":"Export RTF"},
 {"hash":120326628,"name":"teditboxform.menuitemexportplaintext.caption","sourcebytes":[69,120,112,111,114,116,32,80,108,97,105,110,32,84,101,120,116],"value":"Export Plain Text"},
 {"hash":267951902,"name":"teditboxform.menuitemexportmarkdown.caption","sourcebytes":[69,120,112,111,114,116,32,77,97,114,107,100,111,119,110],"value":"Export Markdown"},
+{"hash":110271478,"name":"teditboxform.menuitemexportpdf.caption","sourcebytes":[69,120,112,111,114,116,32,80,68,70],"value":"Export PDF"},
 {"hash":5738580,"name":"teditboxform.menuitemprint.caption","sourcebytes":[80,114,105,110,116],"value":"Print"},
 {"hash":236160955,"name":"teditboxform.menuitemspell.caption","sourcebytes":[83,112,101,108,108,32,67,104,101,99,107],"value":"Spell Check"},
 {"hash":5262024,"name":"teditboxform.menuitemindex.caption","sourcebytes":[73,110,100,101,120],"value":"Index"},

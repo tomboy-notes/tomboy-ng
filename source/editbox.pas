@@ -277,6 +277,7 @@ type
         MenuHuge: TMenuItem;
         MenuItem1: TMenuItem;
 		MenuFindNext: TMenuItem;
+        MenuItemExportPDF: TMenuItem;
         MenuItemBulletRight: TMenuItem;
         MenuItemBulletLeft: TMenuItem;
         MenuItemFindPrev: TMenuItem;
@@ -353,6 +354,7 @@ type
         procedure KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+        procedure MenuItemExportPDFClick(Sender: TObject);
                                 // All the Text menu items go through this event
         procedure MenuTextGeneralClick(Sender: TObject);
 		procedure MenuFindPrevClick(Sender: TObject);
@@ -594,8 +596,8 @@ uses
     ResourceStr,        // We borrow some search related strings from searchform
     bufstream,
     notenormal,         // makes the XML look a little prettier
-    LCLStrConsts;       // just for rsMBClose ?
-
+    LCLStrConsts,       // just for rsMBClose ?
+    KMemo2PDF;
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
@@ -1038,6 +1040,8 @@ begin
       KMemo1.SelEnd := KMemo1.CaretPos;
     end;
 end;
+
+
 
 procedure TEditBoxForm.SetPrimarySelection;
 var
@@ -1681,6 +1685,11 @@ begin
     SaveNoteAs('md');
 end;
 
+procedure TEditBoxForm.MenuItemExportPDFClick(Sender: TObject);
+begin
+    SaveNoteAs('pdf');
+end;
+
 procedure TEditBoxForm.SaveNoteAs(TheExt : string);
 var
     SaveExport : TSaveDialog;
@@ -1721,7 +1730,7 @@ begin
     if SaveExport.Execute then begin
         case TheExt of
             'txt' : KMemo1.SaveToTXT(SaveExport.FileName);
-            'rtf' :  KMemo1.SaveToRTF(SaveExport.FileName);
+            'rtf' : KMemo1.SaveToRTF(SaveExport.FileName);
             'md'  : begin
                     MDContent := TStringList.Create;
                     ExpComm := TExportCommon.Create;
@@ -1737,7 +1746,14 @@ begin
                         ExpComm.Free;
                         MDContent.Free;
                     end;
-            end;
+                    end;
+
+            'pdf' : begin
+                        FormKMemo2PDF.TheKMemo := KMemo1;
+                        FormKMemo2PDF.DefaultFont := sett.UsualFont;
+                        FormKMemo2PDF.Show;
+                        FormKMemo2PDF.BringToFront;
+                    end;
         end;
     end;
     //showmessage(SaveExport.FileName);

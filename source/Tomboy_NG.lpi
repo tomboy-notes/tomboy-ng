@@ -865,7 +865,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="35">
+    <Units Count="36">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1061,6 +1061,13 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="JsonTools"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="kmemo2pdf.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormKMemo2pdf"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit35>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
