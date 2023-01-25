@@ -533,7 +533,7 @@ var
     ForceAppInd : string;
 begin
     Result := False;
-
+    {$ifdef LCLQT6}exit(true);{$endif}
     // Don't test for SysTray under GTK3, will never be there.  One or other AppIndicator
     // is your only chance. And XInternAtom() function SegVs on Gnome DTs so don't try it.
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
@@ -853,6 +853,7 @@ begin
         Stg := rsAbout + #10 + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
         {$ifdef LCLCOCOA} Stg := Stg + ', 64bit Cocoa'; {$endif}
         {$ifdef LCLQT5}   Stg := Stg + ', QT5';         {$endif}
+        {$ifdef LCLQT6}   Stg := Stg + ', QT6';         {$endif}
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
         {$ifdef LCLGTK2}  Stg := Stg + ', GTK2';        {$endif}
         Stg := Stg + #10 + rsAboutBDate + ' ' + {$i %DATE%} + #10

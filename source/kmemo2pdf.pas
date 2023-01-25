@@ -397,7 +397,7 @@ begin
     FontList.Dump();
     // WordList.Dump();
     // This is for later, it does no make fonts available to the PDF
-    gTTFontCache.SearchPath.Add('/usr/share/fonts/');
+    gTTFontCache.SearchPath.Add('/usr/share/fonts/');         // ToDo : this is NOT cross platform
     gTTFontCache.BuildFontCache;
 
     for i := 0 to gTTFontCache.Count -1 do
