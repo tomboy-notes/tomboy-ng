@@ -30,9 +30,18 @@ lib/
 published/
 # *.lrj    apparently needed by the translation system
 /source/tomboy-ng
-/source/tomboy-ng-qt
+/source/tomboy-ng-qt5
+/source/tomboy-ng-64
 tomboy-ng-qt.po
 releasepage
 NoGit/
 # Application bundle for Mac OS
 *.app/
+experimental/NextNotes/
+po/tomboy-ng-64.pot
+po/tomboy-ng-qt-64.pot
+po/tomboy-ng-qt.pot
+po/tomboy-ng-qt5-64.pot
+po/tomboy-ng-qt5.pot
+po/tomboy-ng.fr.po-old
+

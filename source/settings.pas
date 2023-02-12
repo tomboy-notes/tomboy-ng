@@ -1243,28 +1243,39 @@ begin
 end;
 
 procedure TSett.ButtonFixedFontClick(Sender: TObject);
+var
+    ISMono : boolean = false;
 begin
     FontDialog1.Font.Name := FixedFont;
     FontDialog1.Font.Size := 10;
     FontDialog1.Title := 'Select Fixed Spacing Font';
     FontDialog1.PreviewText:= 'abcdef ABCDEF 012345 iiiii wwwww';
     // showmessage(FixedFont);
-    FontDialog1.Options := [fdEffects, fdFixedPitchOnly ];       // ToDo : this does not show ONLY fixed !
+    FontDialog1.Options := [fdEffects, fdFixedPitchOnly, fdNoSimulations, fdTrueTypeOnly];       // ToDo : this does not show ONLY fixed !
     If FontDialog1.Execute then BEGIN
         FixedFont := FontDialog1.Font.name;
         WriteConfigFile();
     end;
     ButtonFixedFont.Hint := FixedFont;
+    Label1.Canvas.Font.Name := FixedFont;
+    {$ifdef LCLGTK3}
+    // Might work on Linux generally ?  No, not on GTK2 ....
+    // https://forum.lazarus.freepascal.org/index.php/topic,20193.msg194575.html
+    IsMono := Label1.Canvas.Font.IsMonoSpace;
+    {$else}
+    IsMono := Label1.Canvas.TextWidth('i') = Label1.Canvas.TextWidth('w');
+    // I once experienced some wierd, unrelated things happening doing this, careful !
+    {$endif}
+    if not IsMono then showmessage('Warning, maybe not a mono spaced font');
 end;
 
 procedure TSett.ButtonFontClick(Sender: TObject);
 begin
     FontDialog1.Font.Name := UsualFont;
     FontDialog1.Font.Size := 10;
-
     FontDialog1.Title := 'Select Usual Font';
     FontDialog1.PreviewText:= 'abcdef ABCDEF 012345';
-    FontDialog1.Options := [fdEffects];
+    FontDialog1.Options := [fdEffects, fdNoSimulations, fdTrueTypeOnly];
     If FontDialog1.Execute then BEGIN
         UsualFont := FontDialog1.Font.name;
         WriteConfigFile();
