@@ -233,6 +233,7 @@ unit EditBox;
     2022/11/14  Add a Close button cos Qt5 hides to title bar buttons in Showmodal ????
     2022/12/30  Moved code that pokes search content into NoteLister down a few blocks so that
                 we can be sure the note has been added to NoteLister first.
+    2023/02/12  Set the default font name from Sett in OnShow(), issue #263
 }
 
 
@@ -1903,6 +1904,7 @@ begin
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
+    KMemo1.Font.Name := Sett.UsualFont;
     {$ifdef LCLGTK2}
     KMemo1.ExecuteCommand(ecPaste);   // this to deal with a "first copy" issue on Linux.
     // above line generates a gtk2 assertion but only in single note mode.  I suspect
