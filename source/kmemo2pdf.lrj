@@ -1,3 +1,5 @@
 {"version":1,"strings":[
-{"hash":124499670,"name":"tformkmemo2pdf.caption","sourcebytes":[70,111,114,109,75,77,101,109,111,50,112,100,102],"value":"FormKMemo2pdf"}
+{"hash":124499670,"name":"tformkmemo2pdf.caption","sourcebytes":[70,111,114,109,75,77,101,109,111,50,112,100,102],"value":"FormKMemo2pdf"},
+{"hash":123401294,"name":"tformkmemo2pdf.checkallowclearmarkup.hint","sourcebytes":[73,102,32,121,111,117,114,32,115,101,108,101,99,116,101,100,32,102,111,110,116,32,100,111,101,115,32,110,111,116,32,104,97,118,101,32,66,111,108,100,32,111,114,32,73,116,97,108,105,99,32,102,105,108,101,115,44,32,116,104,101,32,80,68,70,32,99,97,110,110,111,116,32,115,104,111,119,32,66,111,108,100,32,111,114,32,73,116,97,108,105,99,46],"value":"If your selected font does not have Bold or Italic files, the PDF cannot show Bold or Italic."},
+{"hash":221452704,"name":"tformkmemo2pdf.checkallowclearmarkup.caption","sourcebytes":[65,108,108,111,119,32,116,111,32,67,108,101,97,114,32,77,97,114,107,117,112],"value":"Allow to Clear Markup"}
 ]}

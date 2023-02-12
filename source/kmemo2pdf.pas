@@ -8,14 +8,27 @@ unit kmemo2pdf;
 
     ------------------
 
-	This form will conver an in memory KMemo note to a PDF. At this stage, it requires
-    creating, geting told a few things (The Kmemo, a default font, etc) and call show.
+	This form will convert an in memory KMemo note to a PDF. At this stage, it requires
+    creating, getting told a few things (The Kmemo, a default font, etc) and call show.
 
-    It still needs to offer some options to the user and manage sone file overwriting issues.
+    It still needs to offer some options to the user and manage some file overwriting issues.
 
-    I need to find out where Windows and Mac keep their fonts.
+    I need to confirm we know where Windows and Mac keep their fonts.
 
-    Its probably needs an awful lot of testing ...
+    It probably needs an awful lot of testing ...
+
+    See https://gitlab.com/freepascal.org/fpc/source/-/issues/30116 for issues about fonts !
+    https://forum.lazarus.freepascal.org/index.php/topic,62254.0.html - my question on the topic.
+
+    We have to assume here that fpPDF cannot 'generate' bold or italic from a regular
+    font. So, you must have chosen a font that comes with, at least regular, bold, italic
+    and bold-italic font files. If its "all in one TTF file" you get a warning and
+    any bold or italic will be converted to regular.
+
+    Fonts like DejaVu that have 'Oblique' do not get translated to italic.
+
+    Fonts that mention bold and italic in the Font selection dialog do not necessarily
+    have seperate fint files for bold and italic, they may generate them !
 
 }
 
@@ -45,49 +58,60 @@ type
 
     TFontList = class(TFPList)
         private
+            //DefaultFontName : string;
             function Get(Index : Integer) : PFontRecord;
         public
+            //constructor Create(DFN : string);
             destructor Destroy; Override;
+                            // Adds details of passed font to list if not already present.
             procedure Add(TheFont: ANSIString; Bold, Italic: boolean);
             procedure Dump();
-            // Returns FontIndex of passed font record, -1 is not present;
+                            // Returns FontIndex of passed font record, -1 is not present;
             function Find(TheFont: ANSIString; Bold, Italic, FIndex: boolean): integer;
             property Items[Index : integer] : PFontRecord read Get; default;
     end;
 
-
-
-
 type
-
     { TFormKMemo2pdf }
-
     TFormKMemo2pdf = class(TForm)
         BitBtn1: TBitBtn;
         BitBtn2: TBitBtn;
+        CheckAllowClearMarkup: TCheckBox;
+        Memo1: TMemo;
         procedure BitBtn2Click(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
     private
-        BulletIndent : integer;      // Bullet Indent (not including bullet), zero means no bullet;
-        FontList : TFontList;
-        WordList : TWordList;
-        WordIndex : integer;         // Points to a word in wordlist, must be less than WordList.count
+        BulletIndent : integer;     // Bullet Indent (not including bullet), zero means no bullet;
+        FontList : TFontList;       // A list of all the fonts we will need to print/display the PDF, Initially populated in KMemoRead()
+        WordList : TWordList;       // A list of all the words and their details such as font, size etc. Populated in KMemoRead().
+        WordIndex : integer;        // Points to a word in wordlist, must be less than WordList.count
         FPage: integer;
         FDoc: TPDFDocument;
-        CurrentPage : integer ;      // Starts at zero ?
+        CurrentPage : integer ;     // Starts at zero ?
+                                    // does a non write scan of next block of words returning the necessary Height
+                                    // to push Y down to to provide clearance for any larger text. Do We have to push down
+                                    // by less if first char of the line is higher ? test run is very strange !
+                                    // Return 0 for a blank line (just inc Y by line height, don't run WriteLine)
         function CheckHeight: integer;
-        function GetWordDimentions(const WI: integer; out W: integer; var H: integer;
-            AltText: string = ''): boolean;
+                                    // Returns with width and height in mm of the word in wordlist pointed to by WI
+                                    // If AltText contains anything, it will be used instead of the text in WordList
+                                    // but font and associated settings from WordList will still be used.
+        function GetWordDimentions(const WI: integer; out W: integer; var H: integer; AltText: string = ''): boolean;
+                                    // Builds a WordList based on the KMemo. Each word will have a trailing space if applicable
+                                    // A newline has an empty list item and NewLine true.
         function KMemoRead(): boolean;
         function LoadFonts(): boolean;
         function MakePDF: boolean;
         procedure SaveDocument();
+                                    // Tries to print out a line of words, word by word, at indicated starting point.
+                                    // returns false if there is no more words to print.
         function WriteLine(Page: TPDFPage; XLoc: integer; const Y: integer): boolean;
+                                    // sends a page of text to the Document, returning True when its all done.
         function WritePage(): boolean;
     public
-        TheKMemo : TKMemo;
-        DefaultFont : string;        // name of the default font, used if cannot find indicated one
+        TheKMemo : TKMemo;          // This is the KMemo, set it before showing the form.
+        DefaultFont : string;        // New Text in a KMemo is saved with font='default', only after reload does it have true name
     end;
 
 var
@@ -98,7 +122,6 @@ implementation
 {$R *.lfm}
 
 { TFormKMemo2pdf }
-
 
 const   TopMargin = 15;
         BottomMargin = 10;
@@ -113,6 +136,12 @@ function TFontList.Get(Index: Integer): PFontRecord;
 begin
     Result := PFontRecord(inherited get(Index));
 end;
+
+{constructor TFontList.Create(DFN: string);
+begin
+    inherited Create;
+    DefaultFontName := DFN;
+end; }
 
 destructor TFontList.Destroy;
 var
@@ -141,7 +170,7 @@ end;
 procedure TFontList.Dump();
 var i : integer;
 begin
-  writeln('TFontList.Dump we have ' + count.tostring + ' items');
+  writeln('TFontList.Dump we have ' + count.tostring + ' items ========');
   for i := 0 to count -1 do
     writeln('FONT : ', Items[i]^.FamName, ' B=', booltostr(Items[i]^.Bold, True), ' I=', booltostr(Items[i]^.Italic, True));
 end;
@@ -160,21 +189,30 @@ begin
         end;
 end;
 
-// Returns with width and height in mm of the word in wordlist pointed to by WI
-// If AltText contains anything, it will be used instead of the text in WordList
-// but font and associated settings from WordList will still be used.
 function TFormKMemo2PDF.GetWordDimentions(const WI : integer; out W : integer; var H : integer; AltText : string = '') : boolean;
 var
     CachedFont : TFPFontCacheItem;
     SWidthF, DescenderH : single;
     LocH : integer;
 begin
+    Result := true;
+    //writeln('INFO - TFormKMemo2pdf.GetWordDimentions WI=' + inttostr(WI) + ' and Wordlist.Count=' + inttostr(WordList.count));
     if AltText = '' then
            AltText := WordList[WI]^.AWord;
+    //writeln('INFO - TFormKMemo2pdf.GetWordDimentions looking at ' + WordList[WI]^.AWord + ' Font=' + WordList[WI]^.FName);
     CachedFont := gTTFontCache.Find(WordList[WI]^.FName, WordList[WI]^.Bold, WordList[WI]^.Italic);
     if not Assigned(CachedFont) then  begin
-        writeln('INFO - TFormKMemo2pdf.GetWordDimentions Cannot find Font in Cache : ', WordList[WI]^.FName, ' ', WordList[WI]^.Bold, ' ', WordList[WI]^.Italic);
-        exit(False);
+        //writeln('INFO - TFormKMemo2pdf.GetWordDimentions Cannot find Font in Cache : ', WordList[WI]^.FName, ' ', WordList[WI]^.Bold, ' ', WordList[WI]^.Italic);
+        // We will try a plain version of same font and if that works, change entry in WordList
+        CachedFont := gTTFontCache.Find(WordList[WI]^.FName, False, False);
+        if Assigned(CachedFont) then begin
+            WordList[WI]^.Bold := False;                                        // ToDo : this is very, very ugly must understand fonts better
+            WordList[WI]^.Italic := False;
+        end else begin
+            //writeln('ERROR - TFormKMemo2pdf.GetWordDimentions Cannot find Font in Cache : ', WordList[WI]^.FName, ' Plain Font');
+            memo1.append('ERROR - TFormKMemo2pdf.GetWordDimentions Cannot find Font in Cache : ' + WordList[WI]^.FName + ' Plain Font');
+            exit(False);
+        end;
     end;
     SWidthF := CachedFont.TextWidth(AltText,  WordList[WI]^.Size);
     W := round((SWidthF * 25.4) / gTTFontCache.DPI);
@@ -183,11 +221,6 @@ begin
     if LocH > H then H := LocH;
 end;
 
-(*const //Bullet = '• ';
-      Bullet = '* ';      *)
-
-// Trys to print out a line of words, word by word, at indicated starting point.
-// returns false if there is no more words to print.
 function TFormKMemo2pdf.WriteLine(Page : TPDFPage; XLoc : integer; const Y : integer) : boolean;
 var
     W, H : integer; // word dimensions
@@ -227,11 +260,13 @@ begin
             BulletIndent := 0;
             exit(true);
         end;
-        if not GetWordDimentions(WordIndex, W, H) then exit(False);             // be a font fault most likely
+        if not GetWordDimentions(WordIndex, W, H) then exit(False);             // font fault unlikely, we have already checked this block.
+
         Page.SetFont(   FontList.Find(WordList[WordIndex]^.FName, WordList[WordIndex]^.Bold, WordList[WordIndex]^.Italic, True), WordList[WordIndex]^.Size);
         if (XLoc+W+BulletIndent) > (PageWidth - SideMargin) then exit(true);    // no more on this line.
-        writeln('TFormKMemo2pdf.WriteLine will WriteText T=', WordList[WordIndex]^.AWord, ' F=', WordList[WordIndex]^.FName, ' X=', BulletIndent + XLoc, ' W=', W);
+        //writeln('TFormKMemo2pdf.WriteLine will WriteText T=', WordList[WordIndex]^.AWord, ' F=', WordList[WordIndex]^.FName, ' X=', BulletIndent + XLoc, ' W=', W);
         Page.WriteText(BulletIndent + XLoc, Y, WordList[WordIndex]^.AWord);
+        //writeln('TFormKMemo2pdf.WriteLine wrote word=' + WordList[WordIndex]^.AWord + ' Font=' + WordList[WordIndex]^.FName + ' ' + inttostr(W) + ' ' + inttostr(H));
         XLoc := XLoc+W;
         inc(WordIndex);
     end;
@@ -239,10 +274,6 @@ begin
 end;
 
 
-                                // does a non write scan of next block of words returning the necessary Height
-                                // to push Y down to to provide clearance for any larger text. Do We have to push down
-                                // by less if first char of the line is higher ? test run is very strange !
-                                // Return 0 for a blank line (just inc Y by line height, don't run WriteLine)
 function TFormKMemo2pdf.CheckHeight() : integer;
 var
     W, i, WI : integer; // word dimensions
@@ -262,8 +293,9 @@ begin
         if not GetWordDimentions(WI, W, Result) then begin
             OldFont := WordList[WI]^.FName;
             WordList[WI]^.FName := DefaultFont;                                // We will change it to default font and try again
+
             if not GetWordDimentions(WI, W, Result) then begin
-                Writeln('ERROR - TFormKMemo2pdf.CheckHeight Failed to load the requested font : ', OldFont);
+                memo1.Append('ERROR - TFormKMemo2pdf.CheckHeight Failed to load the requested font : ' + OldFont);
                 exit;
             end;
         end;
@@ -282,39 +314,40 @@ var
     CachedFont : TFPFontCacheItem;
     Suffix : string = '';
 begin
+    Result := True;
     for i := 0 to FontList.Count -1 do begin
-
         //writeln('TFormKMemo2pdf.LoadFonts FontName=', FontList[i]^.FamName);
         Suffix := '';
         CachedFont := gTTFontCache.Find(FontList[i]^.FamName, FontList[i]^.Bold, FontList[i]^.Italic);
         if not Assigned(CachedFont) then begin
-            writeln('INFO - TFormKMemo2pdf.LoadFonts could not find font in cache ', FontList[i]^.FamName);
-            continue;                                                           // We will replace it with default
+           Memo1.Append('WARNING - ' + FontList[i]^.FamName + ' does not have a bold or italic font file.');
+           //writeln('WARNING - TFormKMemo2pdf.LoadFonts could not find font in cache ' + FontList[i]^.FamName + ' ' + booltostr(FontList[i]^.Bold, True) +' ' + booltostr(FontList[i]^.Italic, True));
+           Result := False;
+           continue;                            // will cause problems in GetWordDimensions()  !
         end;
+        // writeln('INFO - TFormKMemo2pdf.LoadFonts DID find font in cache ' + FontList[i]^.FamName + ' ' + booltostr(FontList[i]^.Bold, True) +' ' + booltostr(FontList[i]^.Italic, True));
         if  FontList[i]^.Bold then Suffix := 'B';
         if  FontList[i]^.Italic then Suffix := Suffix + 'I';
         if Suffix <> '' then Suffix := '-' + Suffix;
-
-        FontList[i]^.FontIndex := FDoc.AddFont(CachedFont.FileName, CachedFont.FamilyName + Suffix);
-
+        FontList[i]^.FontIndex := FDoc.AddFont(CachedFont.FileName, CachedFont.FamilyName + Suffix);       // is This  my naming scheme ??
         // FontList[i]^.FontIndex := FDoc.AddFont(gTTFontCache.Items[i].FileName,  gTTFontCache.Items[i].FamilyName + Suffix);
         // writeln('TFormKMemo2pdf.LoadFonts Font=', CachedFont.FamilyName + Suffix, ' FontIndex=',FontList[i]^.FontIndex, ' Family=', FontList[i]^.FamName);
     end;
 end;
 
 
-
-// sends a page of text to the Document, returning True when its all done.
 function TFormKMemo2pdf.WritePage() : boolean;
 var
     X : integer = SideMargin;       // how far we are across the page, left to right, mm
     Y : integer = TopMargin;        // how far we are down the page, top to botton, mm
     Page : TPDFPage;
     i, Yt : integer;
-
-
 begin
     Result := true;
+    if WordList.Count < 1 then begin
+       showmessage('WritePage called with empty word list');
+       exit(false);
+    end;
     // writeln('TFormKMemo2pdf.WritePage starting page ===== ' + inttostr(CurrentPage));
     Page := FDoc.Pages[CurrentPage];
     // writeln('TFormKMemo2pdf.WritePage Fonts loaded for this page -');
@@ -353,17 +386,29 @@ begin
     Include(Opts,poCompressText);
     FDoc.Options := Opts;
     FDoc.StartDocument;
+    if not LoadFonts() then begin
+        if CheckAllowClearMarkUP.Checked then
+             memo1.Append('Warning, your selected fonts may be unsuitable')
+        else begin
+           showmessage('Warning, your selected fonts may be unsuitable');
+           exit(False);                     // check for memory leaks here plaease
+        end;
+    end;
+
     S := FDoc.Sections.AddSection; // we always need at least one section
-    LoadFonts();
+    // ToDo : chase this up one way or another.
+    // If the note has eg bold or italic markup and the user selected font does not
+    // have seperate font files for bold and/or italic, the markup will be ignored
+    // and the user will be shown the following message.
     repeat
-        if CurrentPage > 15 then break;
+        if CurrentPage > 15 then break;      // ToDo : remove me. For testing only.
 
         P := FDoc.Pages.AddPage;
         P.PaperType := ptA4;
         P.UnitOfMeasure := uomMillimeters;
         S.AddPage(P);               // Add the Page to the Section
         inc(CurrentPage);
-    until not WritePage();
+    until not WritePage();                   // This is where page content is created.
     SaveDocument();
 end;
 
@@ -376,7 +421,7 @@ begin
     FDoc.SaveToStream(F);
 //    Writeln('Document used ',FDoc.ObjectCount,' PDF objects/commands');
   except on E: Exception do
-    writeln('ERROR - Failed to save the PDF ' + E.Message);
+    Memo1.Append('ERROR - Failed to save the PDF ' + E.Message);
   end;
   finally
     F.Free;
@@ -387,21 +432,30 @@ procedure TFormKMemo2pdf.BitBtn2Click(Sender: TObject);
 var
     i : integer;
 begin
-    WordList := nil;
+
     CurrentPage := -1;
     If WordList <> nil then
         FreeAndNil(WordList);
-    FontList := TFontList.Create;
+    FontList := TFontList.Create();
     WordList := TWordList.Create;
     KMemoRead();
-    FontList.Dump();
-    // WordList.Dump();
     // This is for later, it does no make fonts available to the PDF
-    gTTFontCache.SearchPath.Add('/usr/share/fonts/');         // ToDo : this is NOT cross platform
+    gTTFontCache.ReadStandardFonts;                             // https://forum.lazarus.freepascal.org/index.php/topic,54280.msg406091.html
+//    gTTFontCache.SearchPath.Add('/usr/share/fonts/');         // ToDo : this is NOT cross platform
     gTTFontCache.BuildFontCache;
 
-    for i := 0 to gTTFontCache.Count -1 do
-     if gTTFontCache.Items[i].FamilyName = 'Ubuntu' then
+//    Memo1.append('TFormKMemo2pdf.BitBtn2Click gTTFontCache has ' + inttostr(gTTFontCache.Count) + ' fonts including - ');
+    for i := 0 to gTTFontCache.Count -1 do                      // ToDo : remove me
+(*     if (gTTFontCache.Items[i].FamilyName = 'Ubuntu') or (gTTFontCache.Items[i].FamilyName = 'Karumbi') then begin
+
+         Memo1.append(gTTFontCache.Items[i].FamilyName
+            + ' - ' + gTTFontCache.Items[i].FileName
+            + ' - ' + gTTFontCache.Items[i].HumanFriendlyName
+            + ' - ' + booltostr(gTTFontCache.Items[i].IsBold, true)
+            + ' - ' + booltostr(gTTFontCache.Items[i].IsItalic, true)
+            + ' - ' + booltostr(gTTFontCache.Items[i].IsFixedWidth, true)
+            + ' - ' + booltostr(gTTFontCache.Items[i].IsRegular, true));
+
          writeln(gTTFontCache.Items[i].FamilyName
             + ' - ' + gTTFontCache.Items[i].FileName
             + ' - ' + gTTFontCache.Items[i].HumanFriendlyName
@@ -410,23 +464,24 @@ begin
             + ' - ' + booltostr(gTTFontCache.Items[i].IsFixedWidth, true)
             + ' - ' + booltostr(gTTFontCache.Items[i].IsRegular, true));
 
-    FDoc := TPDFDocument.Create(Nil);
-    FDoc.FontDirectory := '/usr/share/fonts';            // ToDo : this is NOT cross platform
+     end; *)
 
+
+    FDoc := TPDFDocument.Create(Nil);
+//    FDoc.FontDirectory := '/usr/share/fonts';            // ToDo : this is NOT cross platform
     MakePDF();
     FDoc.Free;
     FreeAndNil(FontList);
     FreeAndNil(WordList);
 end;
 
-// Builds a WordList based on the KMemo. Each word will have a trailing space if applicable
-// A newline has an empty list item and NewLine true.
+
 function TFormKMemo2pdf.KMemoRead() : boolean;
 var
     BlockNo : integer = 0;
     I : integer;
     ExFont : TFont;
-    St : ANSIString = '';
+    AWord : ANSIString = '';
 
         procedure CopyFont(FromFont : TFont);
         begin
@@ -438,16 +493,20 @@ var
         end;
 begin
     ExFont := TFont.Create();
-    for BlockNo := 0 to TheKMemo.Blocks.Count-1 do begin
+    for BlockNo := 0 to TheKMemo.Blocks.Count-1 do begin                                    // For every block
         if not TheKMemo.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
            CopyFont(TKMemoTextBlock(TheKmemo.Blocks.Items[BlockNo]).TextStyle.Font);        // copies to ExFont
-           for I := 0 to TheKMemo.Blocks.Items[BlockNo].WordCount-1 do begin
-               FontList.Add(ExFont.Name, ExFont.Bold, ExFont.Italic);
-               St := TheKMemo.Blocks.Items[BlockNo].Words[I];
-               WordList.Add(St, ExFont.Size, ExFont.Bold, ExFont.Italic, False, ExFont.Color, ExFont.Name);
+           if ExFont.Name = 'default' then begin
+               //writeln('INFO TFormKMemo2pdf.KMemoRead() Reasigning [' + TheKmemo.Blocks.Items[BlockNo].Text + '] to font=' + DefaultFont);
+               ExFont.Name := DefaultFont;
+           end;
+           FontList.Add(ExFont.Name, ExFont.Bold, ExFont.Italic);
+           for I := 0 to TheKMemo.Blocks.Items[BlockNo].WordCount-1 do begin                // For every word in this block
+               AWord := TheKMemo.Blocks.Items[BlockNo].Words[I];
+               WordList.Add(AWord, ExFont.Size, ExFont.Bold, ExFont.Italic, False, ExFont.Color, ExFont.Name);
            end;
         end else begin
-            WordList.Add('', 0, False, False, True, clBlack);   // TKMemoParagraph, thats easy but is it a Bullet
+            WordList.Add('', 0, False, False, True, clBlack);   // TKMemoParagraph, thats easy but is it a Bullet ?
             if (TKMemoParagraph(Thekmemo.blocks.Items[BlockNo]).Numbering <> pnuNone) then begin
                // We want to mark start of bullet, not KMemo's way of marking at the end.
                I := WordList.Count -2;                          // Thats just before the current one
@@ -464,12 +523,11 @@ begin
     FreeandNil(ExFont);
     WordIndex := 0;
     result := (WordList.Count > 1);
-    WordList.Dump();
+    //WordList.Dump();
+    {   (TKMemoParagraph(Thekmemo.blocks.Items[BlockNo]).Numbering = pnuBullets)
+    pnuNone, BulletOne .. BulletEight }
 end;
 
-{   (TKMemoParagraph(Thekmemo.blocks.Items[BlockNo]).Numbering = pnuBullets)
-    pnuNone, BulletOne .. BulletEight
-}
 
 procedure TFormKMemo2pdf.FormCreate(Sender: TObject);
 begin

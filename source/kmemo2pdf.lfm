@@ -1,34 +1,74 @@
 object FormKMemo2pdf: TFormKMemo2pdf
-  Left = 1326
-  Height = 240
-  Top = 585
-  Width = 320
+  Left = 465
+  Height = 461
+  Top = 250
+  Width = 571
   Caption = 'FormKMemo2pdf'
-  ClientHeight = 240
-  ClientWidth = 320
+  ClientHeight = 461
+  ClientWidth = 571
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '2.3.0.0'
   object BitBtn1: TBitBtn
-    Left = 229
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 491
     Height = 30
-    Top = 204
+    Top = 426
     Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
     DefaultCaption = True
     Kind = bkClose
     ModalResult = 11
     TabOrder = 0
   end
   object BitBtn2: TBitBtn
-    Left = 144
+    AnchorSideTop.Control = BitBtn1
+    AnchorSideRight.Control = BitBtn1
+    Left = 414
     Height = 30
-    Top = 204
+    Top = 426
     Width = 75
+    Anchors = [akTop, akRight]
+    BorderSpacing.Right = 2
     Default = True
     DefaultCaption = True
     Kind = bkOK
     ModalResult = 1
     OnClick = BitBtn2Click
     TabOrder = 1
+  end
+  object Memo1: TMemo
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BitBtn1
+    Left = 2
+    Height = 422
+    Top = 2
+    Width = 567
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    BorderSpacing.Right = 2
+    BorderSpacing.Bottom = 2
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 2
+  end
+  object CheckAllowClearMarkup: TCheckBox
+    Left = 8
+    Height = 23
+    Hint = 'If your selected font does not have Bold or Italic files, the PDF cannot show Bold or Italic.'
+    Top = 432
+    Width = 199
+    Caption = 'Allow to Clear Markup'
+    TabOrder = 3
   end
 end
