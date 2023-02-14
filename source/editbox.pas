@@ -1734,27 +1734,30 @@ begin
             'txt' : KMemo1.SaveToTXT(SaveExport.FileName);
             'rtf' : KMemo1.SaveToRTF(SaveExport.FileName);
             'md'  : begin
-                    MDContent := TStringList.Create;
-                    ExpComm := TExportCommon.Create;
-                    try
-                        ExpComm.NotesDir := Sett.NoteDirectory;
-                        if SingleNoteMode then
-                            FName := NoteFileName
-                        else FName := ExtractFileNameOnly(NoteFileName);
-                        if ExpComm.GetMDcontent( FName, MDContent) then
-                            MDContent.SaveToFile(SaveExport.FileName)
-                        else showmessage('Failed to convert to MarkDown');
-                    finally
-                        ExpComm.Free;
-                        MDContent.Free;
+                        MDContent := TStringList.Create;
+                        ExpComm := TExportCommon.Create;
+                        try
+                            ExpComm.NotesDir := Sett.NoteDirectory;
+                            if SingleNoteMode then
+                                FName := NoteFileName
+                            else FName := ExtractFileNameOnly(NoteFileName);
+                            if ExpComm.GetMDcontent( FName, MDContent) then
+                                MDContent.SaveToFile(SaveExport.FileName)
+                            else showmessage('Failed to convert to MarkDown');
+                        finally
+                            ExpComm.Free;
+                            MDContent.Free;
+                        end;
                     end;
-                    end;
-
             'pdf' : begin
                         FormKMemo2PDF.TheKMemo := KMemo1;
                         FormKMemo2PDF.DefaultFont := sett.UsualFont;
-                        FormKMemo2PDF.Show;
-                        FormKMemo2PDF.BringToFront;
+                        FormKMemo2PDF.FFileName := SaveExport.FileName;
+                        FormKMemo2PDF.TheTitle := Caption;
+                        if not FormKMemo2PDF.StartPDF() then begin;
+                            FormKMemo2PDF.Show;
+                            FormKMemo2PDF.BringToFront;
+                        end;
                     end;
         end;
     end;

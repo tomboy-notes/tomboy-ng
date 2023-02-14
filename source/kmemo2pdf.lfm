@@ -26,20 +26,19 @@ object FormKMemo2pdf: TFormKMemo2pdf
     ModalResult = 11
     TabOrder = 0
   end
-  object BitBtn2: TBitBtn
+  object BitBtnProceed: TBitBtn
     AnchorSideTop.Control = BitBtn1
     AnchorSideRight.Control = BitBtn1
-    Left = 414
+    Left = 376
     Height = 30
     Top = 426
-    Width = 75
+    Width = 113
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 2
-    Default = True
     DefaultCaption = True
-    Kind = bkOK
-    ModalResult = 1
-    OnClick = BitBtn2Click
+    Kind = bkRetry
+    ModalResult = 4
+    OnClick = BitBtnProceedClick
     TabOrder = 1
   end
   object Memo1: TMemo
@@ -61,14 +60,5 @@ object FormKMemo2pdf: TFormKMemo2pdf
       'Memo1'
     )
     TabOrder = 2
-  end
-  object CheckAllowClearMarkup: TCheckBox
-    Left = 8
-    Height = 23
-    Hint = 'If your selected font does not have Bold or Italic files, the PDF cannot show Bold or Italic.'
-    Top = 432
-    Width = 199
-    Caption = 'Allow to Clear Markup'
-    TabOrder = 3
   end
 end

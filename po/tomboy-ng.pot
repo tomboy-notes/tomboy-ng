@@ -904,14 +904,6 @@ msgstr ""
 msgid "FormKMemo2pdf"
 msgstr ""
 
-#: tformkmemo2pdf.checkallowclearmarkup.caption
-msgid "Allow to Clear Markup"
-msgstr ""
-
-#: tformkmemo2pdf.checkallowclearmarkup.hint
-msgid "If your selected font does not have Bold or Italic files, the PDF cannot show Bold or Italic."
-msgstr ""
-
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr ""

@@ -1,6 +1,6 @@
 unit kmemo2pdf;
 
-{    Copyright (C) 2017-2023 David Bannon
+{    Copyright (C) 2023 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -28,7 +28,10 @@ unit kmemo2pdf;
     Fonts like DejaVu that have 'Oblique' do not get translated to italic.
 
     Fonts that mention bold and italic in the Font selection dialog do not necessarily
-    have seperate fint files for bold and italic, they may generate them !
+    have seperate font files for bold and italic, they may generate them !  But fpPDF does not.
+
+    History :
+        2023-02-14 Initial Release of this unit.
 
 }
 
@@ -75,13 +78,13 @@ type
     { TFormKMemo2pdf }
     TFormKMemo2pdf = class(TForm)
         BitBtn1: TBitBtn;
-        BitBtn2: TBitBtn;
-        CheckAllowClearMarkup: TCheckBox;
+        BitBtnProceed: TBitBtn;
         Memo1: TMemo;
-        procedure BitBtn2Click(Sender: TObject);
+        procedure BitBtnProceedClick(Sender: TObject);
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
     private
+        AllowNoBoldItalic : boolean;// Allow use of font that does not have its own Bold or Italic font file.
         BulletIndent : integer;     // Bullet Indent (not including bullet), zero means no bullet;
         FontList : TFontList;       // A list of all the fonts we will need to print/display the PDF, Initially populated in KMemoRead()
         WordList : TWordList;       // A list of all the words and their details such as font, size etc. Populated in KMemoRead().
@@ -110,8 +113,15 @@ type
                                     // sends a page of text to the Document, returning True when its all done.
         function WritePage(): boolean;
     public
+
         TheKMemo : TKMemo;          // This is the KMemo, set it before showing the form.
+        TheTitle : string;
+        FFileName : string;         // Full filename including path,
         DefaultFont : string;        // New Text in a KMemo is saved with font='default', only after reload does it have true name
+                            // Public function to initiate the PDF. If it returns False then
+                            // show user the form with some error or advice messages. Its
+                            // going to be a font problem most likely, see header.
+        function StartPDF: boolean;
     end;
 
 var
@@ -320,7 +330,7 @@ begin
         Suffix := '';
         CachedFont := gTTFontCache.Find(FontList[i]^.FamName, FontList[i]^.Bold, FontList[i]^.Italic);
         if not Assigned(CachedFont) then begin
-           Memo1.Append('WARNING - ' + FontList[i]^.FamName + ' does not have a bold or italic font file.');
+           Memo1.Append('Font ' + FontList[i]^.FamName + ' does not have a bold or italic font file.');
            //writeln('WARNING - TFormKMemo2pdf.LoadFonts could not find font in cache ' + FontList[i]^.FamName + ' ' + booltostr(FontList[i]^.Bold, True) +' ' + booltostr(FontList[i]^.Italic, True));
            Result := False;
            continue;                            // will cause problems in GetWordDimensions()  !
@@ -369,13 +379,44 @@ begin
     end;
 end;
 
+
+function TFormKMemo2pdf.StartPDF : boolean;
+var
+    i : integer;
+begin
+    Memo1.Clear;
+    CurrentPage := -1;
+    If WordList <> nil then
+        FreeAndNil(WordList);
+    if FontList <> Nil then
+        FreeAndNil(FontList);
+    FontList := TFontList.Create();
+    WordList := TWordList.Create;
+    FDoc := TPDFDocument.Create(Nil);
+    try
+        KMemoRead();
+        // This is for later, it does no make fonts available to the PDF
+        gTTFontCache.ReadStandardFonts;                             // https://forum.lazarus.freepascal.org/index.php/topic,54280.msg406091.html
+        //    gTTFontCache.SearchPath.Add('/usr/share/fonts/');     // can, possibly, add custom font locations ....
+        gTTFontCache.BuildFontCache;
+        // FDoc := TPDFDocument.Create(Nil);
+        //    FDoc.FontDirectory := '/usr/share/fonts';             // ToDo : this is NOT cross platform
+        Result := MakePDF();                                        // False if we found an issue, probably font related !
+    finally
+        FDoc.Free;
+        FreeAndNil(FontList);
+        FreeAndNil(WordList);
+    end;
+end;
+
+
 function TFormKMemo2pdf.MakePDF : boolean;
 var
   P: TPDFPage;
   S: TPDFSection;
   Opts: TPDFOptions;
 begin
-    FDoc.Infos.Title := 'Get the note title please';
+    FDoc.Infos.Title := TheTitle;
     FDoc.Infos.Author := 'tomboy-ng notes';
     FDoc.Infos.Producer := 'fpGUI Toolkit 1.4.1';
     //Result.Infos.ApplicationName := ApplicationName;
@@ -387,10 +428,12 @@ begin
     FDoc.Options := Opts;
     FDoc.StartDocument;
     if not LoadFonts() then begin
-        if CheckAllowClearMarkUP.Checked then
-             memo1.Append('Warning, your selected fonts may be unsuitable')
-        else begin
+        if not AllowNoBoldItalic then
+             {memo1.Append('Warning, your selected fonts may be unsuitable')
+        else} begin
            showmessage('Warning, your selected fonts may be unsuitable');
+           memo1.Append('Warning, Press Retry to make a PDF without bold or italics');
+           Memo1.Append('or close, select more appropriate fonts from Settings and start again.');
            exit(False);                     // check for memory leaks here plaease
         end;
     end;
@@ -401,7 +444,7 @@ begin
     // have seperate font files for bold and/or italic, the markup will be ignored
     // and the user will be shown the following message.
     repeat
-        if CurrentPage > 15 then break;      // ToDo : remove me. For testing only.
+        //if CurrentPage > 15 then break;      // ToDo : remove me. For testing only.
 
         P := FDoc.Pages.AddPage;
         P.PaperType := ptA4;
@@ -416,7 +459,7 @@ procedure TFormKMemo2pdf.SaveDocument();
 var
     F: TFileStream;
 begin
-  F := TFileStream.Create('test.pdf',fmCreate);
+  F := TFileStream.Create(FFileName, fmCreate);
   try try
     FDoc.SaveToStream(F);
 //    Writeln('Document used ',FDoc.ObjectCount,' PDF objects/commands');
@@ -426,14 +469,18 @@ begin
   finally
     F.Free;
   end;
+   Memo1.Append('INFO Wrote file to ' + FFileName);
 end;
 
-procedure TFormKMemo2pdf.BitBtn2Click(Sender: TObject);
+procedure TFormKMemo2pdf.BitBtnProceedClick(Sender: TObject);                   // ToDo : replace all this with call to StartPDF
 var
     i : integer;
 begin
+    AllowNoBoldItalic := True;
+    StartPDF();
+    exit();
 
-    CurrentPage := -1;
+(*  CurrentPage := -1;
     If WordList <> nil then
         FreeAndNil(WordList);
     FontList := TFontList.Create();
@@ -472,7 +519,7 @@ begin
     MakePDF();
     FDoc.Free;
     FreeAndNil(FontList);
-    FreeAndNil(WordList);
+    FreeAndNil(WordList);               *)
 end;
 
 
@@ -532,12 +579,14 @@ end;
 procedure TFormKMemo2pdf.FormCreate(Sender: TObject);
 begin
     WordList := nil;
+    FontList := nil;
     CurrentPage := -1;
+    Memo1.Clear;
 end;
 
 procedure TFormKMemo2pdf.FormShow(Sender: TObject);
 begin
-
+    AllowNoBoldItalic := False;
 end;
 
 end.
