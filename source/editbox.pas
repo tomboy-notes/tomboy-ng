@@ -234,6 +234,7 @@ unit EditBox;
     2022/12/30  Moved code that pokes search content into NoteLister down a few blocks so that
                 we can be sure the note has been added to NoteLister first.
     2023/02/12  Set the default font name from Sett in OnShow(), issue #263
+    2023/02/14  Fixed bug in column calculater, was ignoring negitive terms.
 }
 
 
@@ -2946,16 +2947,19 @@ begin
     AtEnd := '';
     while AStr[length(AStr)] = ' ' do delete(AStr, Length(AStr), 1); // remove trailing spaces
     while Index <= length(AStr) do begin
-        if AStr[Index] in ['0'..'9', '.'] then AtStart := AtStart + AStr[Index]
+        if AStr[Index] in ['0'..'9', '.', '-'] then
+            AtStart := AtStart + AStr[Index]
         else break;
         inc(Index);
     end;
+    if AtStart = '-' then Atstart := '';   // Just a - is not useful
     Index := length(AStr);
     while Index > 0 do begin
-        if AStr[Index] in ['0'..'9', '.'] then AtEnd :=  AStr[Index] + AtEnd
+        if AStr[Index] in ['0'..'9', '.', '-'] then AtEnd :=  AStr[Index] + AtEnd
         else break;
         dec(Index);
     end;
+    if AtEnd = '-' then AtEnd := '';        // Just a - is not useful
     result := (AtStart <> '') or (AtEnd <> '');
 end;
 
