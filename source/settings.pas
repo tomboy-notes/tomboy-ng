@@ -403,7 +403,6 @@ type
 var
     Sett : TSett;
 
-
 const
                                 // Note we set DarkTheme colors and all HiLight colours in MainUnit   ?? No, we set them here !
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
@@ -432,6 +431,7 @@ uses IniFiles, LazLogger,
     Autostart,
     Colours,
     Clipbrd,
+    tb_symbol,
     ResourceStr;     // only partially so far ....
 
 var
@@ -439,6 +439,10 @@ var
     // Initially the first place we look for dictionaries, later its the path to
     // dictionaries listed in ListBoxDic
      DicPath : AnsiString;
+
+
+
+
 
 procedure TSett.SetFontSizes;
 begin
@@ -869,6 +873,8 @@ end;
 procedure TSett.ReadConfigFile;
 var
    ConfigFile : TINIFile;
+   i : integer;
+   Uch : String[10];
 begin
     // TiniFile does not care it it does not find the config file, just returns default values.
      ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
@@ -953,6 +959,16 @@ begin
         CheckStampSmall.Checked   := Configfile.ReadBool('DateStampSettings', 'Small', False);
         CheckStampBold.Checked    := Configfile.ReadBool('DateStampSettings', 'Bold', False);
         ComboDateFormat.ItemIndex := Configfile.ReadInteger('DateStampSettings', 'Format', 0);
+
+        // ----------------- Symbols ---------------------------------------
+        for i := 0 to high(SymArray) do begin
+                Uch := ConfigFile.readstring('SymbolSettings', 'Symbol_' + inttostr(i), '');
+                if Uch <> '' then
+                    SymArray[i].SymStr := Uch;
+        end;
+        FormSymbol.UpdateSymbols();
+                //ConfigFile.writestring('SymbolSettings', 'Symbol_' + inttostr(i), SymArray[i].SymStr);
+
     finally
         ConfigFile.free;
     end;
@@ -1007,6 +1023,7 @@ end;
 function TSett.WriteConfigFile(IgnoreMask : boolean = false) : boolean;
 var
 	ConfigFile : TINIFile;
+    i : integer;
 begin
     Result := True;
     if MaskSettingsChanged and (not IgnoreMask) then exit();
@@ -1093,6 +1110,10 @@ begin
             configfile.Writebool('DateStampSettings', 'Small',     CheckStampSmall.Checked);
             configfile.Writebool('DateStampSettings', 'Bold',      CheckStampBold.Checked);
             configfile.WriteInteger('DateStampSettings', 'Format', ComboDateFormat.ItemIndex);
+
+            // ----------------- Symbols ---------------------------------------
+            for i := 0 to high(SymArray) do
+                ConfigFile.writestring('SymbolSettings', 'Symbol_' + inttostr(i), SymArray[i].SymStr);
 
         finally
     	    ConfigFile.Free;

@@ -827,7 +827,6 @@ end;
 procedure TSearchForm.MenuRecentItems(AMenu : TPopupMenu);
 var
     i : integer = 1;
-    j : integer;
     //T1, T2, T3, T4 : dword;
     P : Note_Lister.PNote;
     // St : string;
@@ -852,19 +851,6 @@ begin
             AddItemMenu(AMenu, P^.Title, mtRecent,  @RecentMenuClicked, mkRecentMenu)
         else break;
     end;
-
-    exit;
-
-    i := TheMainNoteLister.GetNoteCount;
-    j := i -10;
-    if j < 0 then j := 0;
-    //T3 := gettickcount64();
-    while i > j do begin
-        dec(i);
-        AddItemMenu(AMenu, TheMainNoteLister.GetTitle(i), mtRecent,  @RecentMenuClicked, mkRecentMenu)
-    end;
-    //T4 := gettickcount64();
-    //debugln('TSearchForm.MenuRecentItems ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2) + ' ' + inttostr(T4 - T3));
 end;
 
 procedure TSearchForm.MenuHelpItems(AMenu : TPopupMenu);

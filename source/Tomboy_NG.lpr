@@ -25,7 +25,7 @@ uses
     Notebook, Spelling, Mainunit, BackupView, recover, Index,
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
-    import_notes, JsonTools, kmemo2pdf;
+    import_notes, JsonTools, kmemo2pdf, tb_symbol;
 
 {$R *.res}
 
@@ -38,6 +38,7 @@ begin
 
     if ContinueToGUI then begin
         Application.CreateForm(TMainForm, MainForm);
+        Application.CreateForm(TFormSymbol, FormSymbol);
         Application.CreateForm(TSett, Sett);
         Application.CreateForm(TSearchForm, SearchForm);
         Application.CreateForm(TFormSync, FormSync);

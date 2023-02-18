@@ -682,6 +682,18 @@ msgstr "Enorm"
 msgid "Italic"
 msgstr "Cursief"
 
+#: teditboxform.menuitem4.caption
+msgid "MenuItem4"
+msgstr ""
+
+#: teditboxform.menuitem5.caption
+msgid "MenuItem5"
+msgstr ""
+
+#: teditboxform.menuitem6.caption
+msgid "MenuItem6"
+msgstr ""
+
 #: teditboxform.menuitembulletleft.caption
 #, fuzzy
 #| msgid "Bullet <<"
@@ -1118,6 +1130,38 @@ msgstr "Voorgesteld woord -"
 #: tformspell.labelprompt.caption
 msgid "Click a word to use it."
 msgstr "Klik op een woord om het te gebruiken."
+
+#: tformsymbol.bitbtnrevert.caption
+msgid "Revert"
+msgstr ""
+
+#: tformsymbol.caption
+msgid "FormSymbol"
+msgstr ""
+
+#: tformsymbol.label1.caption
+msgid "Enter the Hexadecimal value for a UTF8 character"
+msgstr ""
+
+#: tformsymbol.label2.caption
+msgid "2, 4, 6 or 8 Hex Characters required."
+msgstr ""
+
+#: tformsymbol.label3.caption
+msgid "See https://www.utf8-chartable.de/unicode-utf8-table.pl"
+msgstr ""
+
+#: tformsymbol.stringgrid1.columns[0].title.caption
+#, fuzzy
+msgctxt "tformsymbol.stringgrid1.columns[0].title.caption"
+msgid "Title"
+msgstr "Titel"
+
+#: tformsymbol.stringgrid1.columns[1].title.caption
+#, fuzzy
+msgctxt "tformsymbol.stringgrid1.columns[1].title.caption"
+msgid "Title"
+msgstr "Titel"
 
 #: tformsync.buttoncancel.caption
 msgctxt "tformsync.buttoncancel.caption"

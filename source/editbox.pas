@@ -279,6 +279,9 @@ type
         MenuHuge: TMenuItem;
         MenuItem1: TMenuItem;
 		MenuFindNext: TMenuItem;
+        MenuItem4: TMenuItem;
+        MenuItem5: TMenuItem;
+        MenuItem6: TMenuItem;
         MenuItemExportPDF: TMenuItem;
         MenuItemBulletRight: TMenuItem;
         MenuItemBulletLeft: TMenuItem;
@@ -312,10 +315,12 @@ type
         PanelFind: TPanel;
         PanelReadOnly: TPanel;
         PopupMainTBMenu: TPopupMenu;
+        PopupMenuSymbols: TPopupMenu;
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
+        SpeedButton1: TSpeedButton;
         SpeedClose: TSpeedButton;
 		SpeedLeft: TSpeedButton;
 		SpeedRight: TSpeedButton;
@@ -379,6 +384,7 @@ type
         procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
         procedure PanelFindEnter(Sender: TObject);
+        procedure SpeedButton1Click(Sender: TObject);
         procedure SpeedCloseClick(Sender: TObject);
 		procedure SpeedLeftClick(Sender: TObject);
 		procedure SpeedRightClick(Sender: TObject);
@@ -407,6 +413,8 @@ type
         BlocksInTitle : integer;
                                 // Set True by the delete button so we don't try and save it.
         DeletingThisNote : boolean;
+        procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
+            mtTag: integer; OC: TNotifyEvent);
         procedure AdjustFormPosition();
                                 { Alters the Font of Block as indicated }
         procedure AlterBlockFont(const FirstBlockNo, BlockNo: longint;
@@ -446,6 +454,7 @@ type
                                 and calls MakeLink to mark it up as a local Link. Does NOT look directly at KMemo1 }
         procedure MakeAllLinks(const Buff: string; const Term: ANSIString; const BlockOffset: integer);
         function ParagraphTextTrunc(): string;
+        procedure PopulateSymbolMenu(AMenu: TPopupMenu);
         function RelativePos(const Term: ANSIString; const MText: PChar; StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
         function RestoreLimitedAttributes(const BlockNo: TKMemoBlockIndex; var FontAtt: FontLimitedAttrib): boolean;
@@ -511,6 +520,7 @@ type
         procedure SetBullet(PB: TKMemoParagraph; Bullet: boolean);
                                 // Advises other apps we can do middle button paste
         procedure SetPrimarySelection;
+        procedure SymbolMenuClicked(Sender: TObject);
                                 { Restores block at StartLink to Text, attempts to merge linktext back into both
                                 the previous or next block if it can.
                                 There is a problem here. If a link is edited making it invalid but the remainer
@@ -599,7 +609,8 @@ uses
     bufstream,
     notenormal,         // makes the XML look a little prettier
     LCLStrConsts,       // just for rsMBClose ?
-    KMemo2PDF;
+    KMemo2PDF,
+    tb_symbol;
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
@@ -1373,6 +1384,7 @@ begin
     EditFind.SetFocus;
 end;
 
+
 procedure TEditBoxForm.SpeedCloseClick(Sender: TObject);
 begin
     close;
@@ -1842,8 +1854,55 @@ end;
 
 // ============== H O U S E   K E E P I N G   F U C T I O N S ==================
 
+procedure TEditBoxForm.SymbolMenuClicked(Sender: TObject);
+begin
+    if (TMenuItem(Sender).Caption = rsMenuSettings) then begin
+        if FormSymbol.ShowModal = mrOK then begin
+            Sett.SaveSettings(self);
+            PopulateSymbolMenu(PopupMenuSymbols);
+            // debugln('Make out we saved the symbols');
+        end;
+    end else begin
+        KMemo1.ExecuteCommand(ecInsertString, pchar(TMenuItem(Sender).Caption));
+        KMemo1.ExecuteCommand(ecRight);
+    end;
+end;
+
+procedure TEditBoxForm.AddItemMenu(TheMenu : TPopupMenu; Item : string; mtTag : integer; OC : TNotifyEvent);
+var
+    MenuItem : TMenuItem;
+begin
+    if Item = '-' then begin
+        TheMenu.Items.AddSeparator;
+        TheMenu.Items.AddSeparator;
+        exit();
+    end;
+    MenuItem := TMenuItem.Create(Self);
+    MenuItem.Tag := ord(mtTag);             // for 'File' entries, this identifies the function to perform.
+    MenuItem.Caption := Item;
+    MenuItem.OnClick := OC;
+    TheMenu.Items.Add(MenuItem);
+end;
+
+procedure TEditBoxForm.PopulateSymbolMenu(AMenu : TPopupMenu);
+var
+    i : integer;
+begin
+   i := AMenu.Items.Count;
+   while i > 0 do begin            // Remove any existing entries first
+       dec(i);
+       AMenu.Items.Delete(i);
+   end;
+   for i := 0 to high(SymArray) do begin
+        AddItemMenu(AMenu, SymArray[i].Sym, i,  @SymbolMenuClicked);
+   end;
+   AddItemMenu(AMenu, '-', -1,  @SymbolMenuClicked);
+   AddItemMenu(AMenu, rsMenuSettings, -1,  @SymbolMenuClicked);
+end;
+
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
+    PopulateSymbolMenu(PopupMenuSymbols);
     Use_Undoer := Sett.CheckUseUndo.checked;    // Note, user must close and repen if they change this setting
     if Use_Undoer then
         Undoer := TUndo_Redo.Create(KMemo1)
@@ -1882,6 +1941,11 @@ begin
     MenuFindPrev.shortcut := KeyToShortCut(VK_G, [ssShift, ssMeta]);
     {$endif}
     DeletingThisNote := False;
+end;
+
+procedure TEditBoxForm.SpeedButton1Click(Sender: TObject);
+begin
+    PopupMenuSymbols.popup;
 end;
 
 

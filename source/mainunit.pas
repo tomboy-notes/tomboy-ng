@@ -303,32 +303,7 @@ end;
 
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var i : integer;
 begin
-
-    // ToDo : clean up here !!!
-
-(*    gTTFontCache.SearchPath.Add('/usr/share/fonts/');
-    gTTFontCache.BuildFontCache;
-
-    for i := 0 to gTTFontCache.Count -1 do
-     writeln(gTTFontCache.Items[i].FamilyName);        *)
-
-
-
-//    gTTFontCache.SearchPath.Add('/usr/share/fonts');
-//    gTTFontCache.BuildFontCache;
-
-//    for i := 0 to gTTFontCache.Count -1 do
-//          writeln('FONT-' + gTTFontCache.Items[i].FileName);
-
-
-
-
-
-    // ==============================
-
-
     AboutFrm := Nil;
     Randomize;                                      // used by sett.getlocaltime()
     //HelpList := Nil;

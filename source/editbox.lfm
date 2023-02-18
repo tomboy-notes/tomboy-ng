@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 585
+  Left = 1018
   Height = 505
-  Top = 357
+  Top = 195
   Width = 695
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -1140,6 +1140,13 @@ object EditBoxForm: TEditBoxForm
       Caption = '        '
       OnClick = SpeedCloseClick
     end
+    object SpeedButton1: TSpeedButton
+      Left = 443
+      Height = 22
+      Top = 15
+      Width = 23
+      OnClick = SpeedButton1Click
+    end
   end
   object KMemo1: TKMemo
     AnchorSideLeft.Control = Owner
@@ -1357,5 +1364,18 @@ object EditBoxForm: TEditBoxForm
   object PopupMainTBMenu: TPopupMenu
     Left = 486
     Top = 252
+  end
+  object PopupMenuSymbols: TPopupMenu
+    Left = 408
+    Top = 48
+    object MenuItem4: TMenuItem
+      Caption = 'MenuItem4'
+    end
+    object MenuItem5: TMenuItem
+      Caption = 'MenuItem5'
+    end
+    object MenuItem6: TMenuItem
+      Caption = 'MenuItem6'
+    end
   end
 end

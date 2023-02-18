@@ -46,5 +46,8 @@
 {"hash":304761,"name":"teditboxform.menuitemcopy.caption","sourcebytes":[67,111,112,121],"value":"Copy"},
 {"hash":5671589,"name":"teditboxform.menuitempaste.caption","sourcebytes":[80,97,115,116,101],"value":"Paste"},
 {"hash":78392485,"name":"teditboxform.menuitemdelete.caption","sourcebytes":[68,101,108,101,116,101],"value":"Delete"},
-{"hash":195288076,"name":"teditboxform.menuitemselectall.caption","sourcebytes":[83,101,108,101,99,116,32,65,108,108],"value":"Select All"}
+{"hash":195288076,"name":"teditboxform.menuitemselectall.caption","sourcebytes":[83,101,108,101,99,116,32,65,108,108],"value":"Select All"},
+{"hash":94435780,"name":"teditboxform.menuitem4.caption","sourcebytes":[77,101,110,117,73,116,101,109,52],"value":"MenuItem4"},
+{"hash":94435781,"name":"teditboxform.menuitem5.caption","sourcebytes":[77,101,110,117,73,116,101,109,53],"value":"MenuItem5"},
+{"hash":94435782,"name":"teditboxform.menuitem6.caption","sourcebytes":[77,101,110,117,73,116,101,109,54],"value":"MenuItem6"}
 ]}
