@@ -137,7 +137,7 @@ But that will extract a dir called, eg tomboy-ng-qt5-0.35, **you must add the -1
 ========
 If all you want is the binary, not building src packages at all, not cross compiling, then don't worry about signing etc, just -
 
-* install FPC (>=3.2.0),  Lazarus (>=2.2.0), libnotify-dev
+* install FPC (>=3.2.2),  Lazarus (>=2.2.4), libnotify-dev
 
 * install libqt5pas-dev if building a QT5 version
 
@@ -162,12 +162,15 @@ Then, add a file, /etc/apt/apt.config that has one line,
 
      apt::install-recommends "false";
     
-May be a good idea to use this machine as the build machine as well, and treat it as temporary. But remember to take a snapshot of the *.gz *.xz and *.dsc files from a sumnitted build and keep, somewhere.
+May be a good idea to use this machine as the build machine as well, and treat it as temporary. But remember to take a snapshot of the *.gz *.xz and *.dsc files from a submitted build and keep, somewhere.
 
 A PGP key is required to upload to Mentors or Launchpad. It lives in ~/.gnupg. 
 
 
     David Bannon <tomboy-ng@bannons.id.au>
+
+
+The two keys should be exported from my dell laptop and imported into the VM using gpg command on both systems.
 
 
 (The 17741.... is the fingerprint)
@@ -179,16 +182,11 @@ On the Launchpad PPA machine, In users home dir, a file called .devscripts.conf 
 DEBSIGN_KEYID=nnnn......   ie, the full key fingerprint.
 
 
-
-I am unsure how, on the Debian VM, the script knows which PGP Key to use.
-
-
-
 Both prepare scripts have hardwired my personal full name and tomboy-ng email address. These will only be used if relevent env vars are empty. Note that they must match whats available in a gpg key. AND if that does not match the Maintainer: entry from control, we get a non maintainer upload warning.
 
 
 
-Debian Bullseye likes debhelper = 13, Ubuntu is still on 12 in control file
+Debian Bullseye likes debhelper = 13, Ubuntu is still on 12 in control file. Debian now (Feb 2023) wants standards 4.6.2 but it changes frequently.
 
 
 
@@ -196,7 +194,7 @@ Debian Bullseye likes debhelper = 13, Ubuntu is still on 12 in control file
 
 devscripts
 
-Lazarus >= 2.0.10, FPC >= 3.2.0
+Lazarus >= 2.2.4, FPC >= 3.2.2
 
 
 

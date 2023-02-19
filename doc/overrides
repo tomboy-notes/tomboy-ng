@@ -8,7 +8,4 @@
 tomboy-ng binary: hardening-no-fortify-functions
 
 
-# This problem exists also in FPC binaries but not in source
-# Perhaps its a UTF8 issue ?
-tomboy-ng: spelling-error-in-binary curren current [usr/bin/tomboy-ng]
 
