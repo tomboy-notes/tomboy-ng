@@ -1123,6 +1123,7 @@
         <Filename Value="tb_symbol.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormSymbol"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit36>
     </Units>
