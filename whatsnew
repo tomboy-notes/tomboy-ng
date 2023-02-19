@@ -1,5 +1,10 @@
-From 0.35 to 0.35a -
+From 0.35 to 0.36 -
+New Feature export as PDF.
+New Feature insert a symbol or accented character.
+Bug fix in column mode of calculator.
+Warn user about setting non mono font.
+All Tomdroid functionality removed.
 A fix for SWYT not finding some text in a brand new note.
-Added ability to set the colour of a link
+Can set colour of a link, more suitable default.
 Use of TextHint to better indicate EditSearch role.
-
+Revised note button colors for better dark theme use.

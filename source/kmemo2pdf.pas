@@ -14,7 +14,6 @@ unit kmemo2pdf;
     will return false. Some messages are shown in the memo ....
 
 
-
     See https://gitlab.com/freepascal.org/fpc/source/-/issues/30116 for issues about fonts !
     https://forum.lazarus.freepascal.org/index.php/topic,62254.0.html - my question on the topic.
 
@@ -24,6 +23,9 @@ unit kmemo2pdf;
     any bold or italic will be converted to regular.
 
     Fonts like DejaVu that have 'Oblique' do not get translated to italic.
+
+    I have had to blacklist certain OpenType fonts, this is really getting rough !
+    Line 396 of fpTTF looks for otf fonts as well as ttf !!!!!
 
     Fonts that mention bold and italic in the Font selection dialog do not necessarily
     have seperate font files for bold and italic, they may generate them !  But fpPDF does not.
@@ -35,7 +37,7 @@ unit kmemo2pdf;
 
 
 
-
+{$define DEBUGMODE}
 
 {$mode ObjFPC}{$H+}
 
@@ -168,7 +170,7 @@ const   TopMargin = 15;
         LineHeight = 6;
         {$ifdef LINUX}
         FontsFixed : array of string = ('Liberation Mono', 'Ubuntu Mono');
-        FontsVariable : array of string = ('Liberation Sans', 'Ubuntu Mono', 'Noto Sans');
+        FontsVariable : array of string = ('Liberation Sans', 'Ubuntu Mono', 'Noto Sans', 'Liberation Serif');
         {$endif}
         {$ifdef WINDOWS}
         FontsFixed : array of string = ('Courier New');
@@ -178,7 +180,10 @@ const   TopMargin = 15;
         FontsFixed : array of string = ('Monaco', 'Menlo','Courier New');
         FontsVariable : array of string = ('Lucida Grande', 'Geneva', 'Arial');
         {$endif}
-
+        FontsBlackList : array of string = ('Cantarell', 'MathJax', 'Nimbus', 'URW');
+        { We can only use true Type Fonts, NOT OpenType !  I cannot find any way to
+        tell the difference, I'd expect gTTFontCache to know but if it does, it
+        won't tell me. So, until I find a better way, I'll blacklist. Not Good. }
 
 
 { TFontList }
@@ -241,7 +246,6 @@ var
 
     procedure InsertIntoList(SubName : string = '');
     begin
-        //writeln('InsertIntoList() SubName=' + SubName + ' TheFont=' + TheFont);
         new(P);
         if SubName <> '' then begin
             P^.FamName := SubName;
@@ -257,18 +261,31 @@ var
         inherited Add(P);
     end;
 
+    function InBlackList : boolean;
+    var Cnt : integer;
+    begin
+        for Cnt := 0 to high(FontsBlackList) do
+            if TheFont = FontsBlackList[Cnt] then
+                exit(True);
+        result := False;
+    end;
+
 begin
     Result := False;
-    if Find(TheFont, Bold, Italic, False) > -1 then
-           Exit(False);    // All good, its already here.
-    if FindOld(TheFont, Bold, Italic, NewName) then
-           exit(True);    // We already have a substitute
-    if FindInFontCache(TheFont, Bold, Italic) then begin
-        InsertIntoList();
-        NewName := TheFont;
-        exit(False);
-    end;
+//    if not InBlackList then begin
+        if Find(TheFont, Bold, Italic, False) > -1 then
+               Exit(False);    // All good, its already here.
+        if FindOld(TheFont, Bold, Italic, NewName) then
+               exit(True);    // We already have a substitute
+        if FindInFontCache(TheFont, Bold, Italic) then begin
+            {$ifdef DEBUGMODE} writeln('Inserting ' + TheFont);{$endif}
+            InsertIntoList();
+            NewName := TheFont;
+            exit(False);
+        end;
+//    end;
     // OK, start guessing then Davo !
+    {$ifdef DEBUGMODE}writeln('Its not in there yet');{$endif}
     SubFont := GetSuitableFont(Bold, Italic, (Pitch = fpFixed));
    if SubFont <> '' then begin
         InsertIntoList(SubFont);
@@ -353,6 +370,7 @@ var
 
     function ExtraIndent(Bull : TKMemoParaNumbering) : integer;
     begin
+        result := 0;
         case Bull of
             pnuNone       : result := 0;         // The bullet is at indicated indent
             BulletOne     : result := 1;         // and the text starts the width of bullet
@@ -389,9 +407,9 @@ begin
         if not GetWordDimentions(WordIndex, W, H) then exit(False);             // font fault unlikely, we have already checked this block.
         Page.SetFont(FontList.Find(WordList[WordIndex]^.FName, WordList[WordIndex]^.Bold, WordList[WordIndex]^.Italic, True), WordList[WordIndex]^.Size);
         if (XLoc+W+BulletIndent) > (PageWidth - SideMargin) then exit(true);    // no more on this line.
-        //writeln('TFormKMemo2pdf.WriteLine will WriteText T=', WordList[WordIndex]^.AWord, ' F=', WordList[WordIndex]^.FName, ' X=', BulletIndent + XLoc, ' W=', W);
+        memo1.Append('TFormKMemo2pdf.WriteLine will WriteText T=' + WordList[WordIndex]^.AWord + ' F=' + WordList[WordIndex]^.FName+ ' X=' {+ inttostr(BulletIndent)} + ' ' + inttostr(XLoc) + ' W='+ inttostr(W));
         Page.WriteText(BulletIndent + XLoc, Y, WordList[WordIndex]^.AWord);
-        // writeln('TFormKMemo2pdf.WriteLine wrote word=' + WordList[WordIndex]^.AWord + ' Font=' + WordList[WordIndex]^.FName + ' ' + inttostr(W) + ' ' + inttostr(H));
+        memo1.Append('TFormKMemo2pdf.WriteLine wrote word=' + WordList[WordIndex]^.AWord + ' Font=' + WordList[WordIndex]^.FName + ' ' + inttostr(W) + ' ' + inttostr(H));
         XLoc := XLoc+W;
         inc(WordIndex);
     end;
@@ -417,10 +435,10 @@ begin
         end;
         if not GetWordDimentions(WI, W, Result) then begin
             OldFont := WordList[WI]^.FName;
+            memo1.Append('WARNING - TFormKMemo2pdf.CheckHeight Failed to initially load the requested font : ' + OldFont);
             WordList[WI]^.FName := DefaultFont;                                // We will change it to default font and try again
-
             if not GetWordDimentions(WI, W, Result) then begin
-                memo1.Append('ERROR - TFormKMemo2pdf.CheckHeight Failed to load the requested font : ' + OldFont);
+                memo1.Append('ERROR - TFormKMemo2pdf.CheckHeight Failed to load the substitute font : ' + WordList[WI]^.FName);
                 exit;
             end;
         end;
@@ -623,6 +641,10 @@ begin
         FreeAndNil(FontList);
         FreeAndNil(WordList);
     end;
+
+    writeln('TFormKMemo2pdf.StartPDF Memo Log -');
+    writeln(Memo1.Text);
+
 end;
 
 
@@ -680,8 +702,10 @@ begin
   try try
     FDoc.SaveToStream(F);
 //    Writeln('Document used ',FDoc.ObjectCount,' PDF objects/commands');
-  except on E: Exception do
-    Memo1.Append('ERROR - Failed to save the PDF ' + E.Message);
+  except on E: Exception do begin
+        Memo1.Append('ERROR - Failed to save the PDF ' + E.Message);
+        show;
+        end;
   end;
   finally
     F.Free;
@@ -805,6 +829,7 @@ begin
     FontList := nil;
     CurrentPage := -1;
     Memo1.Clear;
+    BitBtnProceed.Visible := False;         // ToDo : I really wonder what ?
 end;
 
 procedure TFormKMemo2pdf.FormShow(Sender: TObject);
