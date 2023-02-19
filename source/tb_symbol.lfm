@@ -1,7 +1,7 @@
 object FormSymbol: TFormSymbol
-  Left = 424
+  Left = 192
   Height = 372
-  Top = 306
+  Top = 452
   Width = 685
   Caption = 'FormSymbol'
   ClientHeight = 372
@@ -109,5 +109,8 @@ object FormSymbol: TFormSymbol
     Top = 224
     Width = 449
     Caption = 'See https://www.utf8-chartable.de/unicode-utf8-table.pl'
+    Font.Style = [fsUnderline]
+    ParentFont = False
+    OnClick = Label3Click
   end
 end

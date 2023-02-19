@@ -320,7 +320,7 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
-        SpeedButton1: TSpeedButton;
+        SpeedSymbol: TSpeedButton;
         SpeedClose: TSpeedButton;
 		SpeedLeft: TSpeedButton;
 		SpeedRight: TSpeedButton;
@@ -384,7 +384,7 @@ type
         procedure MenuItemSpellClick(Sender: TObject);
 		procedure MenuItemSyncClick(Sender: TObject);
         procedure PanelFindEnter(Sender: TObject);
-        procedure SpeedButton1Click(Sender: TObject);
+        procedure SpeedSymbolClick(Sender: TObject);
         procedure SpeedCloseClick(Sender: TObject);
 		procedure SpeedLeftClick(Sender: TObject);
 		procedure SpeedRightClick(Sender: TObject);
@@ -1852,7 +1852,7 @@ begin
 end;
 
 
-// ============== H O U S E   K E E P I N G   F U C T I O N S ==================
+// ================================ S Y M B O L S  =============================
 
 procedure TEditBoxForm.SymbolMenuClicked(Sender: TObject);
 begin
@@ -1900,6 +1900,8 @@ begin
    AddItemMenu(AMenu, rsMenuSettings, -1,  @SymbolMenuClicked);
 end;
 
+// ============== H O U S E   K E E P I N G   F U C T I O N S ==================
+
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
     PopulateSymbolMenu(PopupMenuSymbols);
@@ -1943,7 +1945,7 @@ begin
     DeletingThisNote := False;
 end;
 
-procedure TEditBoxForm.SpeedButton1Click(Sender: TObject);
+procedure TEditBoxForm.SpeedSymbolClick(Sender: TObject);
 begin
     PopupMenuSymbols.popup;
 end;

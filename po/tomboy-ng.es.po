@@ -149,6 +149,11 @@ msgstr "Descargadas"
 msgid "Downloading notes"
 msgstr "Descargando notas"
 
+#: resourcestr.rsenterhexvalue
+msgctxt "resourcestr.rsenterhexvalue"
+msgid "Enter the Hexadecimal value for a UTF8 character"
+msgstr ""
+
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
@@ -267,6 +272,10 @@ msgstr "Usar Nombre de archivo como título al importar txt y md"
 msgctxt "resourcestr.rshelpversion"
 msgid "Print version and exit"
 msgstr "Imprimir versión y salir"
+
+#: resourcestr.rshexcharrequired
+msgid "2, 4, 6 or 8 Hex Characters Required"
+msgstr ""
 
 #: resourcestr.rslastchange
 msgctxt "resourcestr.rslastchange"
@@ -514,6 +523,10 @@ msgstr "Subidas"
 #: resourcestr.rsuploading
 msgid "Uploading"
 msgstr "Subiendo"
+
+#: resourcestr.rsutf8charlist
+msgid "Click here to browse to full list"
+msgstr ""
 
 #: resourcestr.rswarnnossystray
 msgid "WARNING, your Desktop might not display SysTray"
@@ -1150,6 +1163,7 @@ msgid "FormSymbol"
 msgstr ""
 
 #: tformsymbol.label1.caption
+msgctxt "tformsymbol.label1.caption"
 msgid "Enter the Hexadecimal value for a UTF8 character"
 msgstr ""
 

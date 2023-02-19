@@ -133,6 +133,11 @@ msgstr ""
 msgid "Downloading notes"
 msgstr ""
 
+#: resourcestr.rsenterhexvalue
+msgctxt "resourcestr.rsenterhexvalue"
+msgid "Enter the Hexadecimal value for a UTF8 character"
+msgstr ""
+
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new notebook name please"
@@ -250,6 +255,10 @@ msgstr ""
 #: resourcestr.rshelpversion
 msgctxt "resourcestr.rshelpversion"
 msgid "Print version and exit"
+msgstr ""
+
+#: resourcestr.rshexcharrequired
+msgid "2, 4, 6 or 8 Hex Characters Required"
 msgstr ""
 
 #: resourcestr.rslastchange
@@ -494,6 +503,10 @@ msgstr ""
 
 #: resourcestr.rsuploading
 msgid "Uploading"
+msgstr ""
+
+#: resourcestr.rsutf8charlist
+msgid "Click here to browse to full list"
 msgstr ""
 
 #: resourcestr.rswarnnossystray
@@ -1124,6 +1137,7 @@ msgid "FormSymbol"
 msgstr ""
 
 #: tformsymbol.label1.caption
+msgctxt "tformsymbol.label1.caption"
 msgid "Enter the Hexadecimal value for a UTF8 character"
 msgstr ""
 

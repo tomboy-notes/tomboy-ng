@@ -9,16 +9,19 @@ unit tb_symbol;
 
     ------------------
 
-    This form A unit that manages a list of extended characters, configurable by the user.
+    This is a unit that manages a list of extended characters, configurable by the user.
 
     a four byte char for testing $F09382BA
+
+    History :
+    2023-02-19 Initial release.
 }
 
 interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
-    Buttons;
+    Buttons, LCLIntf, ResourceStr;
 
 type TUTF8Char = string[4];
 
@@ -40,6 +43,7 @@ type
         procedure BitBtnOKClick(Sender: TObject);
         procedure BitBtnRevertClick(Sender: TObject);
         procedure FormCreate(Sender: TObject);
+        procedure Label3Click(Sender: TObject);
         procedure StringGrid1SetEditText(Sender: TObject; ACol, ARow: Integer;
             const Value: string);
     private
@@ -172,7 +176,9 @@ var
 begin
     for i := 0 to high(SymArray) do begin
         SymArray[i].Sym := StrToUtf8(SymArray[i].SymStr);
+        //writeln('TFormSymbol.UpdateSymbols ' + SymArray[i].Sym);
     end;
+    UpdateGrid();
 end;
 
 procedure TFormSymbol.UpdateGrid();
@@ -191,10 +197,19 @@ procedure TFormSymbol.FormCreate(Sender: TObject);
 
 begin
     // in StringGrid, tick goAlwaysShowEditor, goEditing
+    Label1.Caption := rsEnterHexValue;
+    Label2.caption := rsHexCharRequired;
+    Label3.Caption := 'Click here to browse to full list';
     DefaultSymbolRecArray();
     UpdateGrid();
     BitBtnOk.Enabled := False;
     BitBtnRevert.Enabled := False;
+end;
+
+procedure TFormSymbol.Label3Click(Sender: TObject);
+begin
+    // open the users browser at https://www.utf8-chartable.de/unicode-utf8-table.pl
+    OpenURL('https://www.utf8-chartable.de/unicode-utf8-table.pl');
 end;
 
 procedure TFormSymbol.BitBtnRevertClick(Sender: TObject);

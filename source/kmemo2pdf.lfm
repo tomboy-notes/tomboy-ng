@@ -1,8 +1,9 @@
 object FormKMemo2pdf: TFormKMemo2pdf
-  Left = 465
+  Left = 245
   Height = 461
-  Top = 250
+  Top = 269
   Width = 571
+  ActiveControl = Memo1
   Caption = 'FormKMemo2pdf'
   ClientHeight = 461
   ClientWidth = 571

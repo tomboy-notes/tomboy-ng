@@ -174,6 +174,11 @@ RESOURCESTRING
   rsUpLoaded = 'Uploaded';              // followed by a number
   rsMetaDirWarning = 'Please remember that to ensure a reliable sync, you must not change files in the Meta directory.';
 
+  // tb_symbol
+  rsEnterHexValue = 'Enter the Hexadecimal value for a UTF8 character';
+  rsHexCharRequired = '2, 4, 6 or 8 Hex Characters Required';
+  rsUTF8CharList = 'Click here to browse to full list';
+
 implementation
 
 end.
