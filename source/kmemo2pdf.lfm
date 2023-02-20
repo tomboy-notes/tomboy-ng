@@ -1,10 +1,10 @@
 object FormKMemo2pdf: TFormKMemo2pdf
-  Left = 245
+  Left = 143
   Height = 461
-  Top = 269
+  Top = 213
   Width = 571
   ActiveControl = Memo1
-  Caption = 'FormKMemo2pdf'
+  Caption = 'PDF Issues'
   ClientHeight = 461
   ClientWidth = 571
   OnCreate = FormCreate
@@ -30,12 +30,12 @@ object FormKMemo2pdf: TFormKMemo2pdf
   object BitBtnProceed: TBitBtn
     AnchorSideTop.Control = BitBtn1
     AnchorSideRight.Control = BitBtn1
-    Left = 376
+    Left = 375
     Height = 30
     Top = 426
     Width = 113
     Anchors = [akTop, akRight]
-    BorderSpacing.Right = 2
+    BorderSpacing.Right = 3
     DefaultCaption = True
     Kind = bkRetry
     ModalResult = 4

@@ -15,6 +15,24 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "Impossible de trouver une expression à évaluer"
 
+#: fpttf.rsmissingfontfile
+#, object-pascal-format
+msgid "The font file <%s> can't be found."
+msgstr ""
+
+#: fpttf.rsnofontfilename
+msgid "The FileName property is empty, so we can't load font data."
+msgstr ""
+
+#: fpttf.rsnosearchpathdefined
+msgid "No search path was defined"
+msgstr ""
+
+#: fpttf.serrfontnotfound
+#, object-pascal-format
+msgid "The font <%s> can't be found"
+msgstr ""
+
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
 msgstr "tomboy-ng - prise de notes multiplateformes avec synchro"
@@ -705,18 +723,6 @@ msgstr "Police énorme"
 msgid "Italic"
 msgstr "Italique"
 
-#: teditboxform.menuitem4.caption
-msgid "MenuItem4"
-msgstr ""
-
-#: teditboxform.menuitem5.caption
-msgid "MenuItem5"
-msgstr ""
-
-#: teditboxform.menuitem6.caption
-msgid "MenuItem6"
-msgstr ""
-
 #: teditboxform.menuitembulletleft.caption
 #, fuzzy
 #| msgid "Bullet <<"
@@ -954,7 +960,7 @@ msgid "Single lines, all Huge, Large Bold or Large"
 msgstr "Ligne normale, énorme, ou grand (+gras)"
 
 #: tformkmemo2pdf.caption
-msgid "FormKMemo2pdf"
+msgid "PDF Issues"
 msgstr ""
 
 #: tformrecover.buttondeletebadnotes.caption
@@ -1164,20 +1170,7 @@ msgid "Revert"
 msgstr ""
 
 #: tformsymbol.caption
-msgid "FormSymbol"
-msgstr ""
-
-#: tformsymbol.label1.caption
-msgctxt "tformsymbol.label1.caption"
-msgid "Enter the Hexadecimal value for a UTF8 character"
-msgstr ""
-
-#: tformsymbol.label2.caption
-msgid "2, 4, 6 or 8 Hex Characters required."
-msgstr ""
-
-#: tformsymbol.label3.caption
-msgid "See https://www.utf8-chartable.de/unicode-utf8-table.pl"
+msgid "Symbol"
 msgstr ""
 
 #: tformsymbol.stringgrid1.columns[0].title.caption

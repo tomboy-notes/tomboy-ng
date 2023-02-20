@@ -3,7 +3,7 @@ object FormSymbol: TFormSymbol
   Height = 372
   Top = 452
   Width = 685
-  Caption = 'FormSymbol'
+  Caption = 'Symbol'
   ClientHeight = 372
   ClientWidth = 685
   OnCreate = FormCreate
@@ -93,22 +93,22 @@ object FormSymbol: TFormSymbol
     Left = 184
     Height = 21
     Top = 160
-    Width = 392
-    Caption = 'Enter the Hexadecimal value for a UTF8 character'
+    Width = 53
+    Caption = 'Label1'
   end
   object Label2: TLabel
     Left = 184
     Height = 21
     Top = 192
-    Width = 282
-    Caption = '2, 4, 6 or 8 Hex Characters required.'
+    Width = 53
+    Caption = 'Label2'
   end
   object Label3: TLabel
     Left = 184
     Height = 21
     Top = 224
-    Width = 449
-    Caption = 'See https://www.utf8-chartable.de/unicode-utf8-table.pl'
+    Width = 53
+    Caption = 'Label3'
     Font.Style = [fsUnderline]
     ParentFont = False
     OnClick = Label3Click
