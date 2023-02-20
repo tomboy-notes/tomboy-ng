@@ -37,8 +37,6 @@ unit kmemo2pdf;
 
 
 
-{$define DEBUGMODE}
-
 {$mode ObjFPC}{$H+}
 
 interface
@@ -284,14 +282,13 @@ begin
         if FindOld(TheFont, Bold, Italic, NewName) then
                exit(True);    // We already have a substitute
         if FindInFontCache(TheFont, Bold, Italic) then begin
-            {$ifdef DEBUGMODE} writeln('Inserting ' + TheFont);{$endif}
             InsertIntoList();
             NewName := TheFont;
             exit(False);
         end;
 //    end;
     // OK, start guessing then Davo !
-    {$ifdef DEBUGMODE}writeln('Its not in there yet');{$endif}
+
     SubFont := GetSuitableFont(Bold, Italic, (Pitch = fpFixed));
    if SubFont <> '' then begin
         InsertIntoList(SubFont);
@@ -647,10 +644,6 @@ begin
         FreeAndNil(FontList);
         FreeAndNil(WordList);
     end;
-
-    writeln('TFormKMemo2pdf.StartPDF Memo Log -');
-    writeln(Memo1.Text);
-
 end;
 
 
