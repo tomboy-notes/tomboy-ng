@@ -44,9 +44,14 @@ unit kmemo2pdf;
 interface
 
 uses  {$ifdef unix}cwstring,{$endif}
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-    kmemo, k_prn, fpimage, fppdf, fpparsettf, fpttf, typinfo, tb_utils, KFunctions;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons, fpttf,
+    kmemo, k_prn, fpimage, fppdf, fpparsettf,  typinfo, tb_utils, KFunctions;
 
+{ NOTE: above includes rtl fpttf but I have copied it to source dir, added it to this
+  project and so guzumpted the one in FTP. In there, around line 496, I have commented
+  out the code that loads a otf font, now gTTFontCache reads only TTF.
+  Must look into what this is all about !
+}
 
 type
     PFontRecord=^TFontRecord;
@@ -180,10 +185,11 @@ const   TopMargin = 15;
         FontsFixed : array of string = ('Monaco', 'Menlo','Courier New');
         FontsVariable : array of string = ('Lucida Grande', 'Geneva', 'Arial');
         {$endif}
-        FontsBlackList : array of string = ('Cantarell', 'MathJax', 'Nimbus', 'URW');
+//        FontsBlackList : array of string = ('Cantarell', 'MathJax', 'Nimbus', 'URW');
         { We can only use true Type Fonts, NOT OpenType !  I cannot find any way to
         tell the difference, I'd expect gTTFontCache to know but if it does, it
-        won't tell me. So, until I find a better way, I'll blacklist. Not Good. }
+        won't tell me. So, until I find a better way, I'll blacklist. Not Good.
+        Ugly hack but using a local fpTTY unit, hacked to no look for OTF.}
 
 
 { TFontList }
@@ -261,14 +267,14 @@ var
         inherited Add(P);
     end;
 
-    function InBlackList : boolean;
+{    function InBlackList : boolean;
     var Cnt : integer;
     begin
         for Cnt := 0 to high(FontsBlackList) do
             if TheFont = FontsBlackList[Cnt] then
                 exit(True);
         result := False;
-    end;
+    end;   }
 
 begin
     Result := False;

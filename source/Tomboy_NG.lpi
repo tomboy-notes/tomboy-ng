@@ -916,7 +916,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="37">
+    <Units Count="38">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1126,6 +1126,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit36>
+      <Unit37>
+        <Filename Value="fpttf.pp"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="fpTTF"/>
+      </Unit37>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

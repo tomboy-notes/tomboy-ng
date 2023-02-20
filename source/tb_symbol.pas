@@ -23,7 +23,7 @@ uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, StdCtrls,
     Buttons, LCLIntf, ResourceStr;
 
-type TUTF8Char = string[4];
+type Tutf8Char = string[4];
 
 type TSymbolRec = record
     Sym : TUTF8Char;       // will hold a UTF8 1-4 byte string
