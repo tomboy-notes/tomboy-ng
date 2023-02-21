@@ -21,7 +21,7 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
-      <ExcludedIdentifiers Count="8">
+      <ExcludedIdentifiers Count="6">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>

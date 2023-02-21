@@ -104,6 +104,7 @@ unit settings;
     2022/09/02  Removed AutoRefreshSearch checkbox, its the SearchUnit's problem.
     2022/10/21  CheckAutoStart must call its own method to trigger writing files
     2023/01/14  Save Auto Snapshot settings
+    2023/02/21  Drop Monospace font to last of priority, its not a real font.
 }
 
 {$mode objfpc}{$H+}                    //
@@ -818,8 +819,8 @@ end; *)
 
 function TSett.GetFixedFont() : string;
 var  T : string;
-    FontNames : array[1..7] of string
-      = ('Monospace', 'Monaco', 'Nimbus Mono L', 'Liberation Mono', 'Lucida Console', 'Lucida Sans Typewriter', 'Courier New' );
+    FontNames : array[1..9] of string
+      = ('Ubuntu Mono', 'Monaco', 'Nimbus Mono L', 'Liberation Mono', 'Nimbus Mono PS', 'Lucida Console', 'Lucida Sans Typewriter', 'Courier New',  'Monospace');
     // Add as many new names as you like but set array size.  Chooses the first in the list it finds that works
     // Label does not seem to worry about us playing with its canvas.
 
