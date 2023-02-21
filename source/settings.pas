@@ -820,7 +820,7 @@ end; *)
 function TSett.GetFixedFont() : string;
 var  T : string;
     FontNames : array[1..9] of string
-      = ('Ubuntu Mono', 'Monaco', 'Nimbus Mono L', 'Liberation Mono', 'Nimbus Mono PS', 'Lucida Console', 'Lucida Sans Typewriter', 'Courier New',  'Monospace');
+      = ('Ubuntu Mono', 'Monaco', 'Liberation Mono',  'Nimbus Mono PS', 'Nimbus Mono L', 'Lucida Console', 'Lucida Sans Typewriter', 'Courier New',  'Monospace');
     // Add as many new names as you like but set array size.  Chooses the first in the list it finds that works
     // Label does not seem to worry about us playing with its canvas.
 
