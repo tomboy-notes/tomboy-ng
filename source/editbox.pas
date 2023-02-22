@@ -1711,6 +1711,7 @@ var
     ExpComm   : TExportCommon;
     FName : string;
     SleepCount : integer =0;
+    Form2pdf: TFormKMemo2pdf;
 begin
     if not BusySaving then          // In case a save has just started.
         SaveTheNote();              // This should return quickly, before save thread is finished.
@@ -1762,14 +1763,16 @@ begin
                         end;
                     end;
             'pdf' : begin
-                        FormKMemo2PDF.TheKMemo := KMemo1;
-                        FormKMemo2PDF.DefaultFont := sett.UsualFont;
-                        FormKMemo2PDF.FFileName := SaveExport.FileName;
-                        FormKMemo2PDF.TheTitle := Caption;
-                        if not FormKMemo2PDF.StartPDF() then begin;
-                            FormKMemo2PDF.Show;
-                            FormKMemo2PDF.BringToFront;
+                        Form2pdf := TFormKMemo2pdf.create(self);
+                        Form2PDF.TheKMemo := KMemo1;
+                        Form2PDF.DefaultFont := sett.UsualFont;
+                        Form2PDF.FFileName := SaveExport.FileName;
+                        Form2PDF.TheTitle := Caption;
+                        if not Form2PDF.StartPDF() then begin;
+                            Form2PDF.ShowModal;
+                            Form2PDF.BringToFront;
                         end;
+                        Form2pdf.free;
                     end;
         end;
     end;
@@ -1873,7 +1876,6 @@ var
     MenuItem : TMenuItem;
 begin
     if Item = '-' then begin
-        TheMenu.Items.AddSeparator;
         TheMenu.Items.AddSeparator;
         exit();
     end;

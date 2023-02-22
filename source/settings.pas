@@ -114,7 +114,7 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
-    LCLIntf, Spin{, notifier}, base64;
+    LCLIntf, Spin{, notifier}, base64, fpttf;
 
 // Types;
 
@@ -733,6 +733,7 @@ procedure TSett.FormCreate(Sender: TObject);
 var
     i : integer;
 begin
+    gTTFontCache.ReadStandardFonts;         // needed by PDF export and, at some stage, new font selection window.
     Caption := 'tomboy-ng Settings';
     AreClosing := false;
     Top := 100;

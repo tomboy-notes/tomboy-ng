@@ -37,15 +37,15 @@ begin
     Application.Initialize;
 
     if ContinueToGUI then begin
-        Application.CreateForm(TMainForm, MainForm);
-        Application.CreateForm(TFormSymbol, FormSymbol);
-        Application.CreateForm(TSett, Sett);
-        Application.CreateForm(TSearchForm, SearchForm);
-        Application.CreateForm(TFormSync, FormSync);
-        Application.CreateForm(TFormColours, FormColours);
-        Application.CreateForm(TFormRollBack, FormRollBack);
-        Application.CreateForm(TFormKMemo2pdf, FormKMemo2pdf);
+    Application.CreateForm(TMainForm, MainForm);
+    Application.CreateForm(TFormSymbol, FormSymbol);
+    Application.CreateForm(TSett, Sett);
+    Application.CreateForm(TSearchForm, SearchForm);
+    Application.CreateForm(TFormSync, FormSync);
+    Application.CreateForm(TFormColours, FormColours);
+    Application.CreateForm(TFormRollBack, FormRollBack);
         Application.Run;
     end;
+
 end.
 

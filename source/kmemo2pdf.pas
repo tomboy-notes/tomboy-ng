@@ -209,8 +209,9 @@ constructor TFontList.Create();
 begin
     inherited Create;
     gTTFontCache.ReadStandardFonts;                             // https://forum.lazarus.freepascal.org/index.php/topic,54280.msg406091.html
+    // note, dont call gTTFontCache.ReadStandardFonts here, it must be called only once in the app's life
     //    gTTFontCache.SearchPath.Add('/usr/share/fonts/');     // can, possibly, add custom font locations ???
-    gTTFontCache.BuildFontCache;
+    // gTTFontCache.BuildFontCache;                             // seems this is not needed too.
 end;
 
 destructor TFontList.Destroy;
