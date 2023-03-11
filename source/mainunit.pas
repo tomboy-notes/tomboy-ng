@@ -553,14 +553,17 @@ begin
     {$ifndef LCLGTK2}               // GTK2 seems only one we can be sure is auto colours !
         // We honour --dark-theme for most and if we can guess its dark we'll
         // act accordingly.
-        color := Sett.AltColour;
-        font.color := Sett.TextColour;               // These do not work for Windows, so for just bullseye, just temp....
-        ButtMenu.Color := Sett.AltColour;
-        BitBtnQuit.Color := Sett.AltColour;
-        BitBtnHide.Color := Sett.AltColour;
-        for Lab in [Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
-            TLabel(Lab).Font.Color:= Sett.TextColour;
-        CheckBoxDontShow.Font.color := Sett.TextColour;
+        if not Sett.QtOwnsColours then begin             // If Qt is doing its own colours, let it !
+            color := Sett.AltColour;
+            font.color := Sett.TextColour;               // These do not work for Windows, so for just bullseye, just temp....
+            ButtMenu.Color := Sett.AltColour;
+            BitBtnQuit.Color := Sett.AltColour;
+            BitBtnHide.Color := Sett.AltColour;
+            ButtSysTrayHelp.Color := Sett.AltColour;
+            for Lab in [Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
+                TLabel(Lab).Font.Color:= Sett.TextColour;
+            CheckBoxDontShow.Font.color := Sett.TextColour;
+        end;
     {$endif}
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
@@ -725,13 +728,21 @@ begin
         Sett.DarkTheme := True
     else  begin
         Sett.DarkTheme := false;
-        {$ifdef WINDOWS}
-        Sett.DarkTheme := WinDarkTheme();
-        {$else}
-        // if char 3, 5 and 7 are all 'A' or above, we are not in a DarkTheme
-        Col := hexstr(qword(GetRGBColorResolvingParent()), 8);
-        Sett.DarkTheme := (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A');
+        Sett.QtOwnsColours := False;
+        {$if defined(LCLQt5) or defined(LCLQt6)}
+        if GetEnvironmentVariable('QT_QPA_PLATFORMTHEME') <> '' then
+            Sett.QtOwnsColours := True;            // we don't mess with some colours if Qt is settings its own.
         {$endif}
+//        if not Sett.QtOwnsColours then begin
+            {$ifdef WINDOWS}
+            Sett.DarkTheme := WinDarkTheme();
+            {$else}
+            // if char 3, 5 and 7 are all 'A' or above, we are not in a DarkTheme
+            Col := hexstr(qword(GetRGBColorResolvingParent()), 8);
+            Sett.DarkTheme := (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A');
+            {$endif}
+//        end;
+
     end;
 	Sett.SetColours;
 end;

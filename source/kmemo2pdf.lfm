@@ -1,7 +1,7 @@
 object FormKMemo2pdf: TFormKMemo2pdf
-  Left = 143
+  Left = 80
   Height = 461
-  Top = 213
+  Top = 571
   Width = 571
   ActiveControl = Memo1
   Caption = 'PDF Issues'
@@ -9,7 +9,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
   ClientWidth = 571
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object BitBtn1: TBitBtn
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom

@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 195
+  Left = 452
   Height = 294
   Hint = 'If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 208
+  Top = 304
   Width = 565
   Caption = 'tomboy-ng'
   ClientHeight = 294
@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object ImageNotesDirTick: TImage
     AnchorSideTop.Control = LabelNotesFound
     Left = 24
@@ -259,10 +259,10 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 16
-    Height = 23
+    Height = 25
     Hint = 'You can reverse this from Settings'
-    Top = 256
-    Width = 261
+    Top = 254
+    Width = 262
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14
     BorderSpacing.Bottom = 15

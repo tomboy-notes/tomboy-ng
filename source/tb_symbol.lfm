@@ -1,13 +1,13 @@
 object FormSymbol: TFormSymbol
   Left = 192
   Height = 372
-  Top = 452
+  Top = 453
   Width = 685
   Caption = 'Symbol'
   ClientHeight = 372
   ClientWidth = 685
   OnCreate = FormCreate
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object StringGrid1: TStringGrid
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

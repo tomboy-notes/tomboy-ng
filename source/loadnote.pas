@@ -1,5 +1,5 @@
 unit LoadNote;
-{   Copyright (C) 2017-2022 David Bannon
+{   Copyright (C) 2017-2023 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -7,7 +7,7 @@ unit LoadNote;
 
     ------------------
 
-    This unit is responsible for loading a note into the passed Richmemo. The
+    This unit is responsible for loading a note into the passed Kmemo. The
 	note is expected to be in Tomboy's XML format.
 	Note that the class expects a few things to be passed to it, after creation
 	that it will need before you call LoadNote().
@@ -35,6 +35,7 @@ unit LoadNote;
     2021/08/27  Extensive changes to support multilevel bullets, use Tomboy or Conboy model
     2022/10/31  Force default background colour while loading, it shows up ok without
                 doing it here but blocks do not always report the correct color when asked.
+    2023/03/11  Allow Qt to set Text and Background colour, force Gray for Inactive Background cos Kmemo get it wrong
 }
 
 {$mode objfpc}{$H+}
@@ -42,7 +43,7 @@ unit LoadNote;
 interface
 
 uses
-    Classes, SysUtils, KMemo;
+    Classes, SysUtils, KMemo, Graphics;
 
 
 type
@@ -51,6 +52,8 @@ type
 
  TBLoadNote = class
       private
+         LocalTextColour : TColor;
+         LocalBackGndColour : TColor;
          InContent : boolean;
          FirstTime : boolean;		// Set when first line (Title) is added to KMemo
          Bold : boolean;
@@ -103,7 +106,7 @@ type
 
 implementation
 
-uses Graphics,     		// For some font style defs
+uses      		// For some font style defs
     LazUTF8,
     Settings,			// User settings and some defines across units.
     TB_Utils,
@@ -116,6 +119,14 @@ var
     Blocks : longint = 0;
 begin
   	KM := RM;
+    if Sett.QtOwnsColours then begin
+        LocalBackGndColour := KM.Colors.BkGnd;
+        LocalTextColour := KM.Blocks.DefaultTextStyle.Font.Color;
+        KM.Colors.SelBkGnd := clGray;                 // KMemo does not use all the qt5ct colours you would expect, override
+    end else begin
+        LocalBackGndColour := Sett.BackGndColour;
+        LocalTextColour := Sett.TextColour;
+    end;
     FirstTime := True;
   	fs := TFileStream.Create(Utf8ToAnsi(FileName), fmOpenRead or fmShareDenyNone);
     try
@@ -168,7 +179,7 @@ begin
         FT.Size:= FontSize;
       end;
       TB := KM.Blocks.AddTextBlock(RestoreBadXMLChar(InStr));
-      TB.TextStyle.Brush.Color := Sett.BackGndColour;
+      TB.TextStyle.Brush.Color := LocalBackGndColour;
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
       if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
@@ -178,7 +189,7 @@ begin
       if FixedWidth then FT.Pitch := fpFixed;
       if not FixedWidth then FT.Name := Sett.UsualFont;    // Because 'FixedWidth := false;' does not specify a font to return to
       // if Sett.DarkTheme then Ft.Color:=Sett.DarkTextColour;
-      Ft.Color:=Sett.TextColour;
+      Ft.Color:=LocalTextColour;
       TB.TextStyle.Font := Ft;
       FT.Free;
   end;

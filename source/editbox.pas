@@ -235,6 +235,9 @@ unit EditBox;
                 we can be sure the note has been added to NoteLister first.
     2023/02/12  Set the default font name from Sett in OnShow(), issue #263
     2023/02/14  Fixed bug in column calculater, was ignoring negitive terms.
+    2023/03/11  Allow Qt to set Text and Background colour, force Gray for Inactive
+                background (in LoadNote) cos Kmemo get it wrong
+
 }
 
 
@@ -2027,11 +2030,13 @@ begin
     // Color:= Sett.textcolour;
     if Sett.DarkTheme then Color := Sett.BackGndColour;
     {$endif}
-    PanelFind.Color := Sett.AltColour;
-    Panel1.Color := Sett.AltColour;
-    KMemo1.Colors.BkGnd:= Sett.BackGndColour;
-    Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
-    Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;
+    if not Sett.QtOwnsColours then begin
+        PanelFind.Color := Sett.AltColour;
+        Panel1.Color := Sett.AltColour;
+        KMemo1.Colors.BkGnd:= Sett.BackGndColour;
+        Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
+        Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;
+    end;
     KMemo1.Blocks.UnLockUpdate;
     Ready := true;
     Dirty := False;

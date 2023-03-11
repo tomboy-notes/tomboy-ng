@@ -105,6 +105,8 @@ unit settings;
     2022/10/21  CheckAutoStart must call its own method to trigger writing files
     2023/01/14  Save Auto Snapshot settings
     2023/02/21  Drop Monospace font to last of priority, its not a real font.
+    2023/03/11  Make a bool to indicate Qt is in charge of its colours, eg QT_QPA_PLATFORMTHEME
+
 }
 
 {$mode objfpc}{$H+}                    //
@@ -353,7 +355,8 @@ type
         UsualFont : string;
         FixedFont : string;
         DefaultFixedFont : string;
-        DarkTheme : boolean;
+        DarkTheme : boolean;            // Set by main unit. Used all over the place
+        QtOwnsColours : boolean;        // Qt[5,6] is in charge of its own colours, probably using QT_QPA_PLATFORMTHEME
         DebugModeSpell : boolean;
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;
