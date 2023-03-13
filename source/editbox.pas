@@ -468,6 +468,7 @@ type
                                 // The thread keeps going after the method returns doing above and then
                                 // free-ing the List.
         function SaveStringList(const SL: TStringList; Loc: TNoteUpdateRec): boolean;
+        procedure SetTheColors;
         function SimpleCalculate(out AStr: string): boolean;
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
                                 { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
@@ -1970,6 +1971,27 @@ end;
     - Existing Note from eg Tray Menu, Searchbox      yes      yes            no    R1
       ImportNote()
 }
+
+
+procedure TEditBoxForm.SetTheColors;
+begin
+   KMemo1.Blocks.LockUpdate;
+   {$ifdef windows}
+   // Color:= Sett.textcolour;
+   if Sett.DarkTheme then Color := Sett.BackGndColour;
+   {$endif}
+   PanelFind.Color := Sett.AltColour;
+   Panel1.Color := Sett.AltColour;
+   KMemo1.Colors.SelTextFocused := Sett.TextColour;
+   KMemo1.Colors.SelText := Sett.TextColour;               // when looses focus
+   KMemo1.Colors.BkGnd:= Sett.BackGndColour;
+   KMemo1.Colors.SelBkGnd := Sett.AltBackGndColor;         // Selected backgnd when looses focus
+   KMemo1.Colors.SelBkGndFocused := Sett.AltBackGndColor;  // Selected backgnd with focus
+   Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
+   Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;
+   KMemo1.Blocks.UnLockUpdate;
+end;
+
 procedure TEditBoxForm.FormShow(Sender: TObject);
 var
     ItsANewNote : boolean = false;
@@ -1980,6 +2002,7 @@ begin
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     KMemo1.Font.Name := Sett.UsualFont;
+//    KMemo1.Colors.SelBkGnd := Sett.BackGndColour;
     {$ifdef LCLGTK2}
     KMemo1.ExecuteCommand(ecPaste);   // this to deal with a "first copy" issue on Linux.
     // above line generates a gtk2 assertion but only in single note mode.  I suspect
@@ -1988,6 +2011,9 @@ begin
     // as we select some text so may as well get it over with. No need to do it in Qt5, Win, Mac
     {$endif}
     Kmemo1.Clear;
+//    SetTheColors;
+
+
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
     else
@@ -2025,19 +2051,7 @@ begin
         KMemo1.executecommand(ecEditorTop);
         KMemo1.ExecuteCommand(ecDown);
     end;
-    KMemo1.Blocks.LockUpdate;
-    {$ifdef windows}
-    // Color:= Sett.textcolour;
-    if Sett.DarkTheme then Color := Sett.BackGndColour;
-    {$endif}
-    if not Sett.QtOwnsColours then begin
-        PanelFind.Color := Sett.AltColour;
-        Panel1.Color := Sett.AltColour;
-        KMemo1.Colors.BkGnd:= Sett.BackGndColour;
-        Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
-        Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;
-    end;
-    KMemo1.Blocks.UnLockUpdate;
+    SetTheColors;
     Ready := true;
     Dirty := False;
 end;

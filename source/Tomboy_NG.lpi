@@ -898,24 +898,14 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt --dark-theme"/>
       </local>
-      <environment>
-        <UserOverrides Count="1">
-          <Variable0 Name="QT_QPA_PLATFORMTHEME" Value="qt5ct"/>
-        </UserOverrides>
-      </environment>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt --dark-theme"/>
           </local>
-          <environment>
-            <UserOverrides Count="1">
-              <Variable0 Name="QT_QPA_PLATFORMTHEME" Value="qt5ct"/>
-            </UserOverrides>
-          </environment>
         </Mode0>
       </Modes>
     </RunParams>
@@ -930,7 +920,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="38">
+    <Units Count="39">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1145,6 +1135,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="fpTTF"/>
       </Unit37>
+      <Unit38>
+        <Filename Value="uqt_colors.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uQt_Colors"/>
+      </Unit38>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

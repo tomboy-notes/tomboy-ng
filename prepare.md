@@ -58,6 +58,9 @@ If its still all good, go back and and upload the src packages.
     cd ../"Build""$DebVer"
     dput  mentors  *.changes
 
+Find it at -
+    https://mentors.debian.net/package/tomboy-ng/
+    
 If you don't get a response, did you include 'mentors' in the dput line ?
 
 ***REMEMBER to feed changlog back to github tree !***

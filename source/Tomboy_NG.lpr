@@ -25,7 +25,7 @@ uses
     Notebook, Spelling, Mainunit, BackupView, recover, Index,
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
-    import_notes, JsonTools, kmemo2pdf, tb_symbol, fpTTF;
+    import_notes, JsonTools, kmemo2pdf, tb_symbol, fpTTF, uQt_Colors;
 
 {$R *.res}
 

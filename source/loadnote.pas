@@ -52,8 +52,6 @@ type
 
  TBLoadNote = class
       private
-         LocalTextColour : TColor;
-         LocalBackGndColour : TColor;
          InContent : boolean;
          FirstTime : boolean;		// Set when first line (Title) is added to KMemo
          Bold : boolean;
@@ -119,14 +117,6 @@ var
     Blocks : longint = 0;
 begin
   	KM := RM;
-    if Sett.QtOwnsColours then begin
-        LocalBackGndColour := KM.Colors.BkGnd;
-        LocalTextColour := KM.Blocks.DefaultTextStyle.Font.Color;
-        KM.Colors.SelBkGnd := clGray;                 // KMemo does not use all the qt5ct colours you would expect, override
-    end else begin
-        LocalBackGndColour := Sett.BackGndColour;
-        LocalTextColour := Sett.TextColour;
-    end;
     FirstTime := True;
   	fs := TFileStream.Create(Utf8ToAnsi(FileName), fmOpenRead or fmShareDenyNone);
     try
@@ -179,7 +169,7 @@ begin
         FT.Size:= FontSize;
       end;
       TB := KM.Blocks.AddTextBlock(RestoreBadXMLChar(InStr));
-      TB.TextStyle.Brush.Color := LocalBackGndColour;
+      TB.TextStyle.Brush.Color := Sett.BackGndColour;  //LocalBackGndColour;
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
       if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
@@ -189,7 +179,7 @@ begin
       if FixedWidth then FT.Pitch := fpFixed;
       if not FixedWidth then FT.Name := Sett.UsualFont;    // Because 'FixedWidth := false;' does not specify a font to return to
       // if Sett.DarkTheme then Ft.Color:=Sett.DarkTextColour;
-      Ft.Color:=LocalTextColour;
+      Ft.Color := Sett.TextColour;
       TB.TextStyle.Font := Ft;
       FT.Free;
   end;

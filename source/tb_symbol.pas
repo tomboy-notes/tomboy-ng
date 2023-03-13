@@ -143,6 +143,7 @@ function TFormSymbol.ValidUTF8(UCh : TUTF8Char) : boolean;
             Result := ((byte(Value) shr TheBit) and 1) = 1;
         end;
 begin
+    result := false;
     case length(Uch) of
         0 : exit(false);
         1 : exit(not BitSet(Uch[1], 7));                            //  0xxxxxxx

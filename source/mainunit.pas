@@ -729,10 +729,11 @@ begin
     else  begin
         Sett.DarkTheme := false;
         Sett.QtOwnsColours := False;
-        {$if defined(LCLQt5) or defined(LCLQt6)}
-        if GetEnvironmentVariable('QT_QPA_PLATFORMTHEME') <> '' then
+(*        {$if defined(LCLQt5) or defined(LCLQt6)}
+        if (GetEnvironmentVariable('QT_QPA_PLATFORMTHEME') <> '')
+                or (GetEnvironmentVariable('platformtheme') <> '') then
             Sett.QtOwnsColours := True;            // we don't mess with some colours if Qt is settings its own.
-        {$endif}
+        {$endif}   *)
 //        if not Sett.QtOwnsColours then begin
             {$ifdef WINDOWS}
             Sett.DarkTheme := WinDarkTheme();
