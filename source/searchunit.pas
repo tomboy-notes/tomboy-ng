@@ -23,7 +23,7 @@ unit SearchUnit;
 	current title list.
 	20171005 - Added an ifdef Darwin to RecentNotes() to address a OSX bug that prevented
     the recent file names being updated.
-	2017/10/10 - added a refresh button, need to make it auto but need to look at
+	2017/10/10 - added a refresh ButtonSMenu, need to make it auto but need to look at
 	timing implication for people with very big note sets first.
 
 	2017/10/10 - added the ability to update the stringlist when a new note is
@@ -33,7 +33,7 @@ unit SearchUnit;
 	2017/11/07 - switched over to using NoteLister, need to remove a lot of unused code.
 
 	2017/11/28 - fixed a bug I introduced while restructuring  OpenNote to better
-	handle a note being auto saved. This bug killed the Link button in EditNote
+	handle a note being auto saved. This bug killed the Link ButtonSMenu in EditNote
 	2017/11/29 - check to see if NoteLister is still valid before passing
 	on updates to a Note's status. If we are quiting, it may not be.
 	2017/12/03 Added code to clear Search box when it gets focus. Issue #9
@@ -71,11 +71,11 @@ unit SearchUnit;
     2018/12/29  Small improvements in time to save a file.
     2019/02/01  OpenNote() now assignes a new note to the notebook if one is open (ie ButtonNotebookOptions is enabled)
     2019/02/09  Move autosize stringgrid1 (back?) into UseList()
-    2019/02/16  Clear button now calls UseList() to ensure autosize happens.
+    2019/02/16  Clear ButtonSMenu now calls UseList() to ensure autosize happens.
     2019/03/13  Now pass editbox the searchterm (if any) so it can move cursor to first occurance in note
     2019/04/07  Restructured Main and Popup menus. Untested Win/Mac.
     2019/04/13  Don't call note_lister.GetNotes more than absolutly necessary.
-    2019/04/15  One Clear Filters button to replace Clea and Show All Notes. Checkboxes Mode instead of menu
+    2019/04/15  One Clear Filters ButtonSMenu to replace Clea and Show All Notes. Checkboxes Mode instead of menu
     2019/04/16  Fixed resizing atifacts on stringGrids by turning off 'Flat' property, Linux !
     2019/08/18  Removed AnyCombo and CaseSensitive checkboxes and replaced with SearchOptionsMenu, easier translations
     2019/11/19  When reshowing an open note, bring it to current workspace, Linux only. Test on Wayland !
@@ -88,7 +88,7 @@ unit SearchUnit;
                 Better ctrl of Search Term highlight (but still highlit when makeing form re-visible).
                 Drop Create Date and Filename from Search results string grid.
                 But I still cannot control the little green triangles in stringgrid headings indicating sort.
-    2020/02/01  Do not refresh the string grids automatically, turn on the refresh button for user to do it.
+    2020/02/01  Do not refresh the string grids automatically, turn on the refresh ButtonSMenu for user to do it.
     2020/02/19  hilight selected notebook name.
     2020/03/09  Make sure 'x' (put in by a bug) is not a valid sync repo path.
     2020/05/10  Faster search
@@ -121,6 +121,7 @@ unit SearchUnit;
     2022/12/31  EditSearch now uses TestHint.
     2023/01/11  Qt5 - ListViewNotesKeyPress now forces keypress to EditSearch
     2023/01/11  Added Windows to above, BUT Mac cannot do this. So, disable on Mac.
+    2023/03/17  Darken up Search Window in dark theme.
 }
 
 {$mode objfpc}{$H+}
@@ -142,6 +143,9 @@ type TMenuKind = (mkFileMenu, mkRecentMenu, mkHelpMenu, mkAllMenu);
 
 type        { TSearchForm }
     TSearchForm = class(TForm)
+        BitBtnMenu: TBitBtn;
+        ButtonSearchOptions: TButton;
+      ButtonClearSearch: TButton;
 	    ButtonClearFilters: TButton;
         EditSearch: TEdit;
         ListBoxNotebooks: TListBox;
@@ -161,12 +165,11 @@ type        { TSearchForm }
         Panel2: TPanel;
         PopupMenuSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
-        ButtonMenu: TSpeedButton;
-        SpeedButtonClearSearch: TSpeedButton;
-        SpeedSearchOtions: TSpeedButton;
 		Splitter1: TSplitter;
         StatusBar1: TStatusBar;
         SelectDirectoryDialog1: TSelectDirectoryDialog;
+        procedure BitBtnMenuClick(Sender: TObject);
+        procedure ButtonClearSearchClick(Sender: TObject);
         procedure ButtonMenuClick(Sender: TObject);
                                     { If a search is underway, searches.  Else, if we have
                                       an active notebook filter applied, reapply it. Failing
@@ -177,6 +180,8 @@ type        { TSearchForm }
 		//procedure EditSearchExit(Sender: TObject);
 
 		procedure ButtonClearFiltersClick(Sender: TObject);
+        procedure ButtonSearchOptionsClick(Sender: TObject);
+        procedure ButtonSMenuClick(Sender: TObject);
         procedure EditSearchChange(Sender: TObject);
         procedure EditSearchEnter(Sender: TObject);
         procedure EditSearchKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -192,7 +197,7 @@ type        { TSearchForm }
 		procedure FormShow(Sender: TObject);
         procedure ListBoxNotebooksClick(Sender: TObject);
         procedure ListBoxNotebooksMouseUp(Sender: TObject;
-            Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+            ButtonSMenu: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure ListViewNotesColumnClick(Sender: TObject; Column: TListColumn
             );
         procedure ListViewNotesData(Sender: TObject; Item: TListItem);
@@ -217,8 +222,6 @@ type        { TSearchForm }
           other downloded note ID. Adjusts Note_Lister according and marks any
           note that is currently open as read only. Does not move files around. }
         procedure ProcessSyncUpdates(const DeletedList, DownList: TStringList);
-        procedure SpeedButtonClearSearchClick(Sender: TObject);
-        procedure SpeedSearchOtionsClick(Sender: TObject);
                 // A proc that is called when a note is added to repo by, eg, an import.
                 // The procedure's address is passed, via tb_utils, to the CLI unit so it
                 // knows to call this direct if its not nil.
@@ -255,7 +258,7 @@ type        { TSearchForm }
         procedure MenuListBuilder(MList: TList);
         procedure RecentMenuClicked(Sender: TObject);
                                 // Gets called to refresh the ListViewNotes in cases were we may not do it immediatly
-                                // If ImmediateRefresh, we use the previously recorded NumbToRefresh and clear Button
+                                // If ImmediateRefresh, we use the previously recorded NumbToRefresh and clear ButtonSMenu
                                 // Else re do a new search or clear depending on existing search parameters.
 		procedure IndexAndRefresh(DisplayOnly: boolean = false);
         function RemoveFromHelpList(const FullHelpNoteFileName: string): boolean;
@@ -308,9 +311,9 @@ type        { TSearchForm }
         //function IsThisaTitle(const Term: ANSIString): boolean;
 
                             { Gets called with a title and filename (clicking grid), with just a title
-                            (clicked a note link or recent menu item or Link Button) or nothing
+                            (clicked a note link or recent menu item or Link ButtonSMenu) or nothing
                             (new note). If its just Title but Title does not exist, its Link
-                            Button. DontBackUp says do not make a backup as we opne because we are in
+                            ButtonSMenu. DontBackUp says do not make a backup as we opne because we are in
                             a Roll Back Cycle.}
         procedure OpenNote(NoteTitle: String; FullFileName: string = '';
         				            TemplateIs: AnsiString = ''; BackUp: boolean = True; InSearch : boolean = false) ;
@@ -693,7 +696,7 @@ procedure TSearchForm.CreateMenus();
 begin
     InitialiseHelpFiles();
     PopupTBMainMenu := TPopupMenu.Create(self);      // LCL will dispose because of 'self'
-    ButtonMenu.PopupMenu := PopupTBMainMenu;
+    BitBtnMenu.PopupMenu := PopupTBMainMenu;
     MainForm.MainTBMenu := TPopupMenu.Create(self);
     MainForm.ButtMenu.PopupMenu := MainForm.MainTBMenu;
     // Add any other 'fixed' menu here.
@@ -1025,7 +1028,7 @@ begin
         EditSearch.CaretPos := APoint;
     end;  }
     if (EditSearch.Text <> '') and (EditSearch.Text <> rsMenuSearch) then
-        SpeedButtonClearSearch.Enabled := True;
+        ButtonClearSearch.Enabled := True;
     if (not Sett.AutoSearchUpdate) or (not visible) or (length(EditSearch.Text)=1) then exit;
     STL := TStringList.Create;
     try
@@ -1260,7 +1263,7 @@ begin
     TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
     EditSearch.Hint:=rsSearchHint;
     EditSearch.TextHint := rsMenuSearch;
-    SpeedButtonClearSearch.Enabled := False;
+    ButtonClearSearch.Enabled := False;
     EditSearch.SelStart := 1;
     EditSearch.SelLength := length(EditSearch.Text);
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
@@ -1277,36 +1280,53 @@ begin
     TheReindexProc := @IndexNewNote;
 end;
 
-
-
 procedure TSearchForm.FormShow(Sender: TObject);
+var
+    Butt : TButton;
 begin
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
-//    {$ifdef windows}  // linux apps know how to do this themselves
-    if Sett.DarkTheme then begin                                        // Note - Windows won't let us change button colour anymore.
+(* //    {$ifdef windows}  // gtk2 and qt5 with QT_QPA_PLATFORMTHEME linux apps know how to do this themselves
+//    if Sett.DarkTheme then begin    // Note - Windows won't let us change button colour anymore.
+        Color := Sett.AltColour;                                  // black is 000000, white FFFFFF
+//        Color := clGray;
+        font.Color := Sett.TextColour;                            // Sets children font colour too
+//        ListBoxNotebooks.Color := Sett.AltColour;
+//        ListBoxNotebooks.Font.Color := clWhite;
+
         ListBoxNotebooks.Color := Sett.BackGndColour;
-        ListBoxNoteBooks.Font.Color := Sett.TextColour;
-        EditSearch.Color := Sett.BackGndColour;
-        EditSearch.Font.Color := Sett.TextColour;
-//         color := Sett.HiColour;
-         Color := Sett.BackGndColour;
-         font.color := Sett.TextColour;
-         ListViewNotes.Color :=       clnavy;
-//         ListViewNotes.Font.Color :=  Sett.HiColour;
-         ListViewNotes.Font.Color :=  Sett.BackGndColour;
+//        ListBoxNoteBooks.Font.Color := Sett.TextColour;
+        EditSearch.Color := Sett.AltColour;
+//        EditSearch.Font.Color := Sett.TextColour;
+//         Color := Sett.BackGndColour;                    // OK, this seems to set ListBoxNotes font to Black ?????
+//         font.color := Sett.TextColour;
+//         ListViewNotes.Color :=       clnavy;
+//         ListViewNotes.Font.Color :=  Sett.BackGndColour;
          splitter1.Color:= clnavy;
-    end;
+         ButtonClearFilters.Color := Sett.AltColour; *)      // Does work for Qt5, not for GTK2 (but not needed), Windows ?
+
+     if Sett.DarkThemeSwitch then begin                    // We are not relying on OS to set dark theme, it was --dark-theme
+        Color := Sett.AltColour;                                  // black is 000000, white FFFFFF
+        font.Color := Sett.TextColour;                            // Sets children font colour too
+        ListBoxNotebooks.Color := Sett.BackGndColour;
+        EditSearch.Color := Sett.AltColour;
+        splitter1.Color:= clnavy;
+        for Butt in [ButtonClearFilters, BitBtnMenu, ButtonSearchOptions, ButtonClearSearch ] do
+            Butt.Color := Sett.AltColour;                  // Does work for Qt5, not for GTK2 (but not needed), Windows ?
+     end;
+
+
+//    end;
 //    MenuItemAutoRefresh.Checked := Sett.Autorefresh;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
-    ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
+//    ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
 //    {$endif}
     ListBoxNotebooks.Hint := rsNotebookOptionRight;
     if (ListViewNotes.Column[0].SortIndicator = siNone) then begin
         BounceSortIndicator(1);
     end;
     {$ifdef LCLCOCOA}
-    ButtonMenu.Refresh;
+    ButtonSMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
 //    EditSearch.SetFocus;    // Cocoa issue, 'cos we cannot make the "on type, jump to EditSearch" work on Mac
     {$endif}
@@ -1636,7 +1656,7 @@ end;
 
 { ----------------- NOTEBOOK STUFF -------------------- }
 
-    // This button clears both search term (if any) and restores all notebooks and
+    // This ButtonSMenu clears both search term (if any) and restores all notebooks and
     // displays all available notes.
 procedure TSearchForm.ButtonClearFiltersClick(Sender: TObject);
 begin
@@ -1654,6 +1674,10 @@ begin
         DoSearchEnterPressed();
     UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
+
+
+
+
 
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
 var
@@ -1675,12 +1699,12 @@ begin
 end;
 
     // Popup a menu when rightclick a notebook
-procedure TSearchForm.ListBoxNotebooksMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TSearchForm.ListBoxNotebooksMouseUp(Sender: TObject; ButtonSMenu: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
     HaveItem : boolean;
 begin
     // debugln('TSearchForm.ListBoxNotebooksMouseDown - Selected in listboxnotebook ' + dbgs(ListBoxNotebooks.ItemIndex));
-    if {$ifdef DARWIN} (ssCtrl in Shift) {$ELSE} (Button = mbRight) {$ENDIF}  then begin
+    if {$ifdef DARWIN} (ssCtrl in Shift) {$ELSE} (ButtonSMenu = mbRight) {$ENDIF}  then begin
         HaveItem := (ListBoxNotebooks.ItemIndex > -1);
         PopupMenuNotebook.Items[0].Enabled := HaveItem;
         PopupMenuNotebook.Items[1].Enabled := HaveItem;
@@ -1691,10 +1715,8 @@ begin
     end;
 end;
 
-
-procedure TSearchForm.ButtonMenuClick(Sender: TObject);
+procedure TSearchForm.ButtonSMenuClick(Sender: TObject);
 begin
-    //ShowListIndicator('From Menu');
     PopupTBMainMenu.popup;
 end;
 
@@ -1786,9 +1808,10 @@ begin
 
 end;
 
-procedure TSearchForm.SpeedSearchOtionsClick(Sender: TObject);
+procedure TSearchForm.ButtonSearchOptionsClick(Sender: TObject);
+
 begin
-    PopupMenuSearchOptions.PopUp;
+   PopupMenuSearchOptions.PopUp;
 end;
 
 procedure TSearchForm.MenuItemSWYTClick(Sender: TObject);
@@ -1798,7 +1821,7 @@ begin
     TheMainNoteLister.IndexNotes();
 end;
 
-procedure TSearchForm.SpeedButtonClearSearchClick(Sender: TObject);
+procedure TSearchForm.ButtonClearSearchClick(Sender: TObject);
 begin
     EditSearch.text := ''; //rsMenuSearch;
     //EditSearch.SetFocus;
@@ -1814,7 +1837,17 @@ begin
         DoSearchEnterPressed();
     SearchActive := False;
     UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
-    SpeedButtonClearSearch.Enabled := false;
+    ButtonClearSearch.Enabled := false;
+end;
+
+procedure TSearchForm.BitBtnMenuClick(Sender: TObject);
+begin
+    PopupTBMainMenu.popup;
+end;
+
+procedure TSearchForm.ButtonMenuClick(Sender: TObject);
+begin
+
 end;
 
 

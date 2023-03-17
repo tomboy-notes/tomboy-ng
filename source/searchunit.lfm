@@ -16,17 +16,16 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '2.2.0.2'
   object EditSearch: TEdit
-    AnchorSideLeft.Control = ButtonMenu
+    AnchorSideLeft.Control = BitBtnMenu
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Owner
-    AnchorSideBottom.Control = ButtonMenu
     AnchorSideBottom.Side = asrBottom
-    Left = 126
+    Left = 142
     Height = 32
     Top = 0
-    Width = 222
+    Width = 148
     Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
     OnChange = EditSearchChange
@@ -39,7 +38,6 @@ object SearchForm: TSearchForm
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = ButtonMenu
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -162,16 +160,39 @@ object SearchForm: TSearchForm
       OnKeyPress = ListViewNotesKeyPress
     end
   end
-  object ButtonMenu: TSpeedButton
-    AnchorSideLeft.Control = Owner
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 378
+    Width = 824
+    Panels = <>
+  end
+  object ButtonClearSearch: TButton
+    AnchorSideLeft.Control = EditSearch
+    AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Owner
+    AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
-    Left = 3
+    Left = 292
     Height = 32
     Top = 0
-    Width = 120
-    BorderSpacing.Left = 3
-    BorderSpacing.Right = 3
+    Width = 99
+    Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 2
+    Caption = 'Clear'
+    OnClick = ButtonClearSearchClick
+    TabOrder = 3
+  end
+  object BitBtnMenu: TBitBtn
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideBottom.Control = EditSearch
+    AnchorSideBottom.Side = asrBottom
+    Left = 0
+    Height = 32
+    Top = 0
+    Width = 140
+    Anchors = [akTop, akLeft, akBottom]
     Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
@@ -249,47 +270,23 @@ object SearchForm: TSearchForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    OnClick = ButtonMenuClick
+    OnClick = BitBtnMenuClick
+    TabOrder = 4
   end
-  object StatusBar1: TStatusBar
-    Left = 0
-    Height = 23
-    Top = 378
-    Width = 824
-    Panels = <>
-  end
-  object SpeedSearchOtions: TSpeedButton
-    AnchorSideTop.Control = EditSearch
+  object ButtonSearchOptions: TButton
+    AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = ButtonMenu
+    AnchorSideBottom.Control = EditSearch
     AnchorSideBottom.Side = asrBottom
-    Left = 699
+    Left = 680
     Height = 32
-    Hint = 'Search Options'
     Top = 0
-    Width = 120
-    Anchors = [akTop, akRight, akBottom]
-    BorderSpacing.Right = 5
+    Width = 144
+    Anchors = [akTop, akLeft, akRight, akBottom]
     Caption = 'Options'
-    OnClick = SpeedSearchOtionsClick
-    ShowHint = True
-    ParentShowHint = False
-    PopupMenu = PopupMenuSearchOptions
-  end
-  object SpeedButtonClearSearch: TSpeedButton
-    AnchorSideLeft.Control = EditSearch
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = EditSearch
-    AnchorSideBottom.Control = ButtonMenu
-    AnchorSideBottom.Side = asrBottom
-    Left = 348
-    Height = 32
-    Top = 0
-    Width = 120
-    Anchors = [akTop, akLeft, akBottom]
-    Caption = 'Clear'
-    OnClick = SpeedButtonClearSearchClick
+    OnClick = ButtonSearchOptionsClick
+    TabOrder = 5
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344

@@ -1297,15 +1297,28 @@ msgstr "Новий записник"
 msgid "Set Notes"
 msgstr "Вказати нотатки"
 
+#: tsearchform.bitbtnmenu.caption
+#, fuzzy
+msgctxt "tsearchform.bitbtnmenu.caption"
+msgid "Menu"
+msgstr "Меню"
+
 #: tsearchform.buttonclearfilters.caption
 msgctxt "tsearchform.buttonclearfilters.caption"
 msgid "Clear"
 msgstr "Очистити"
 
-#: tsearchform.buttonmenu.caption
-msgctxt "tsearchform.buttonmenu.caption"
-msgid "Menu"
-msgstr "Меню"
+#: tsearchform.buttonclearsearch.caption
+#, fuzzy
+msgctxt "tsearchform.buttonclearsearch.caption"
+msgid "Clear"
+msgstr "Очистити"
+
+#: tsearchform.buttonsearchoptions.caption
+#, fuzzy
+msgctxt "tsearchform.buttonsearchoptions.caption"
+msgid "Options"
+msgstr "Параметри"
 
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
@@ -1356,19 +1369,6 @@ msgstr "Перейменувати записник"
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Записники"
-
-#: tsearchform.speedbuttonclearsearch.caption
-msgctxt "tsearchform.speedbuttonclearsearch.caption"
-msgid "Clear"
-msgstr "Очистити"
-
-#: tsearchform.speedsearchotions.caption
-msgid "Options"
-msgstr "Параметри"
-
-#: tsearchform.speedsearchotions.hint
-msgid "Search Options"
-msgstr "Параметри пошуку"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"

@@ -1,7 +1,7 @@
 object FormSymbol: TFormSymbol
   Left = 192
   Height = 372
-  Top = 453
+  Top = 452
   Width = 685
   Caption = 'Symbol'
   ClientHeight = 372

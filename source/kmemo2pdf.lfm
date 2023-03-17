@@ -1,7 +1,7 @@
 object FormKMemo2pdf: TFormKMemo2pdf
   Left = 80
   Height = 461
-  Top = 571
+  Top = 570
   Width = 571
   ActiveControl = Memo1
   Caption = 'PDF Issues'

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.35\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2022-11-13 10:56+0100\n"
+"PO-Revision-Date: 2023-03-16 16:59+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -13,29 +13,29 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
-msgstr "No encontró ninguna expresión para calcular"
+msgstr "No encuentra ninguna expresión para calcular"
 
 #: fpttf.rsmissingfontfile
 #, object-pascal-format
 msgid "The font file <%s> can't be found."
-msgstr ""
+msgstr "No encuentra el archivo del fuente <%s>"
 
 #: fpttf.rsnofontfilename
 msgid "The FileName property is empty, so we can't load font data."
-msgstr ""
+msgstr "No podemos cargar la fuente porque la propiedad FileName es vacía."
 
 #: fpttf.rsnosearchpathdefined
 msgid "No search path was defined"
-msgstr ""
+msgstr "Falta la ruta de búsqueda"
 
 #: fpttf.serrfontnotfound
 #, object-pascal-format
 msgid "The font <%s> can't be found"
-msgstr ""
+msgstr "No encuentra la fuente <%s>"
 
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
@@ -59,7 +59,7 @@ msgstr "Versión"
 
 #: mainunit.rsfailedtoindex
 msgid "Failed to index one or more notes."
-msgstr "tomboy-ng no pudo indizar una nota o más."
+msgstr "Fallo en indizar una nota o más."
 
 #: resourcestr.rsaddnotestonotebook
 msgid "Add notes to this Notebook"
@@ -170,7 +170,7 @@ msgstr "Descargando notas"
 #: resourcestr.rsenterhexvalue
 msgctxt "resourcestr.rsenterhexvalue"
 msgid "Enter the Hexadecimal value for a UTF8 character"
-msgstr ""
+msgstr "Escribe el valor hexidecimal para el carácter UTF8"
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -251,7 +251,7 @@ msgstr "Mostrar mensajes de depuración durante Sincronización"
 #: resourcestr.rshelpdelay
 msgctxt "resourcestr.rshelpdelay"
 msgid "Delay startup 2 sec to allow OS to settle"
-msgstr "Retrasar arranque 2 segs para dejar asentarse el SO"
+msgstr "Retrasar el arranque 2 segs para dejar asentarse el SO"
 
 #: resourcestr.rshelphelp
 msgctxt "resourcestr.rshelphelp"
@@ -293,7 +293,7 @@ msgstr "Imprimir versión y salir"
 
 #: resourcestr.rshexcharrequired
 msgid "2, 4, 6 or 8 Hex Characters Required"
-msgstr ""
+msgstr "Hacen falta 2, 4, 6 o 8 carácteres hexadecimal"
 
 #: resourcestr.rslastchange
 msgctxt "resourcestr.rslastchange"
@@ -435,7 +435,7 @@ msgstr "Pulse Cerrar"
 #: resourcestr.rsrecoverok
 msgctxt "resourcestr.rsrecoverok"
 msgid "OK, File recovered."
-msgstr "Archivo recuperado."
+msgstr "OK, archivo recuperado."
 
 #: resourcestr.rsrenamefailed
 msgctxt "resourcestr.rsrenamefailed"
@@ -488,7 +488,7 @@ msgstr "Primero configure el sistema de sincronización"
 #: resourcestr.rssnapshotcreated
 msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
-msgstr "creada. ¿Quiere copiarla en otro sitio?"
+msgstr "creada. ¿Quiere copiarla a otro sitio?"
 
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
@@ -544,7 +544,7 @@ msgstr "Subiendo"
 
 #: resourcestr.rsutf8charlist
 msgid "Click here to browse to full list"
-msgstr ""
+msgstr "Haga clic aquí para ver la lista completa"
 
 #: resourcestr.rswarnnossystray
 msgid "WARNING, your Desktop might not display SysTray"
@@ -629,10 +629,10 @@ msgstr "No hacer nada"
 msgid "Downloads      "
 msgstr "Descargas"
 
-# ¿Editar las notas, la lista, cual?
+# ¿Revisar las notas, la lista, cual?
 #: syncutils.rsedituploads
 msgid "Edit Uploads   "
-msgstr "Notas cambiadas a subir"
+msgstr "Revisar notas subidas"
 
 #: syncutils.rslocaldeletes
 msgid "Local Deletes  "
@@ -660,7 +660,7 @@ msgstr " notas fueron procesadas."
 # ¿Y el sujeto?
 #: syncutils.rsnotrecommend
 msgid "Generally not recommended."
-msgstr "En general, poco aconsejable"
+msgstr "En general, no aconsejable"
 
 #: syncutils.rsremotedeletes
 msgid "Remote Deletes "
@@ -675,9 +675,10 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr "Menú"
 
+# ¿Texto a traducir o un variabe?
 #: teditboxform.editfind.text
 msgid "EditFind"
-msgstr "Término"
+msgstr "RevisarBuscar"
 
 #: teditboxform.label2.caption
 msgid "Read Only"
@@ -762,7 +763,7 @@ msgstr "Exportar Markdown"
 
 #: teditboxform.menuitemexportpdf.caption
 msgid "Export PDF"
-msgstr ""
+msgstr "Exportar PDF"
 
 #: teditboxform.menuitemexportplaintext.caption
 msgid "Export Plain Text"
@@ -859,7 +860,7 @@ msgstr ""
 
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
-msgstr "Volver a la anterior"
+msgstr "Restaurar"
 
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"
@@ -922,9 +923,10 @@ msgctxt "tformcolours.speedcancel.caption"
 msgid "Cancel"
 msgstr "Cancelar"
 
+# Colores "por defecto", pero poco espacio en el botón
 #: tformcolours.speeddefault.caption
 msgid "Default"
-msgstr "Defecto"
+msgstr "Predets."
 
 #: tformcolours.speedhighlight.caption
 msgctxt "tformcolours.speedhighlight.caption"
@@ -933,7 +935,7 @@ msgstr "Resaltar"
 
 #: tformcolours.speedlinks.caption
 msgid "Links"
-msgstr ""
+msgstr "Enlaces"
 
 #: tformcolours.speedok.caption
 msgctxt "tformcolours.speedok.caption"
@@ -959,7 +961,7 @@ msgstr "Líneas únicas, todas Enormes, Grandes-Negritas o Grandes"
 
 #: tformkmemo2pdf.caption
 msgid "PDF Issues"
-msgstr ""
+msgstr "Problemas de PDF"
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
@@ -1083,9 +1085,10 @@ msgstr "Usar Remota"
 msgid "Local"
 msgstr "Local"
 
+# ¿Demasiado largo?
 #: tformsdiff.buttallnewest.caption
 msgid "Newest"
-msgstr "Más reciente"
+msgstr "La más reciente"
 
 #: tformsdiff.buttalloldest.caption
 msgid "Oldest"
@@ -1162,20 +1165,18 @@ msgstr "Haga clic en una palabra."
 
 #: tformsymbol.bitbtnrevert.caption
 msgid "Revert"
-msgstr ""
+msgstr "Deshacer"
 
 #: tformsymbol.caption
 msgid "Symbol"
-msgstr ""
+msgstr "Símbolo"
 
 #: tformsymbol.stringgrid1.columns[0].title.caption
-#, fuzzy
 msgctxt "tformsymbol.stringgrid1.columns[0].title.caption"
 msgid "Title"
 msgstr "Título"
 
 #: tformsymbol.stringgrid1.columns[1].title.caption
-#, fuzzy
 msgctxt "tformsymbol.stringgrid1.columns[1].title.caption"
 msgid "Title"
 msgstr "Título"
@@ -1208,9 +1209,10 @@ msgctxt "tformsync.listviewreport.columns[1].caption"
 msgid "Title"
 msgstr "Título"
 
+# ¿Demasiado largo?
 #: tformsync.listviewreport.columns[2].caption
 msgid "Note ID"
-msgstr "ID nota"
+msgstr "ID de la nota"
 
 #: tmainform.bitbtnhide.caption
 msgid "Hide"
@@ -1232,15 +1234,16 @@ msgstr "Ayuda, SysTray"
 
 #: tmainform.caption
 msgid "tomboy-ng"
-msgstr "Bienvenida a tomboy-ng"
+msgstr "tomboy-ng"
 
 #: tmainform.checkboxdontshow.caption
 msgid "Don't Show for normal startup"
 msgstr "No mostrar al inicio"
 
+# Creo
 #: tmainform.checkboxdontshow.hint
 msgid "You can reverse this from Settings"
-msgstr "You can reverse this from Settings"
+msgstr "Puede invertirlo desde las Preferencias"
 
 #: tmainform.hint
 msgid "If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window."
@@ -1714,4 +1717,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-

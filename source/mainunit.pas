@@ -78,6 +78,7 @@ unit Mainunit;
     2022/08/10  Added an about Lazarus to splash screen and simplified the About screen.
     2022/10/20  To Avoid calling IndexNotes() from Import, now function, IndexNewNote()
     2022/11/14  ShowNotifications() now cross platform.
+    2023/03/17  Provide better support for dark theme, particularly for Qt5 in qt5ct mode
 
     CommandLine Switches
 
@@ -182,6 +183,8 @@ type
 
         procedure StartIPCServer();
         procedure CommMessageReceived(Sender: TObject);
+        // Attempt to detect we are in a dark theme, sets relevent colours, if main form
+        // is dark, then rest of app will be too except for the KMemo.
         procedure TestDarkThemeInUse();
         {$ifdef LINUX}
         function CheckGnomeExtras(): boolean;
@@ -544,27 +547,32 @@ begin
 end;
 {$endif}                            // hides CheckForSystemTray() and CheckGnomeExtras() from non Linux
 
+
+
 procedure TMainForm.FormShow(Sender: TObject);
 var
     NoteID, NoteTitle : string;
-    {$ifndef LCLGTK2}Lab : TLabel; {$endif}
+(*    {$ifndef LCLGTK2} {$endif} *) Lab : TLabel;  Butt : TBitBtn;
 begin
     TestDarkThemeInUse();
-    {$ifndef LCLGTK2}               // GTK2 seems only one we can be sure is auto colours !
+//    {$ifndef LCLGTK2}               // GTK2 seems only one we can be sure is auto colours !
         // We honour --dark-theme for most and if we can guess its dark we'll
         // act accordingly.
-        if not Sett.QtOwnsColours then begin             // If Qt is doing its own colours, let it !
+
+        if Sett.DarkThemeSwitch then begin           // If Qt is doing its own colours, let it !
             color := Sett.AltColour;
-            font.color := Sett.TextColour;               // These do not work for Windows, so for just bullseye, just temp....
-            ButtMenu.Color := Sett.AltColour;
-            BitBtnQuit.Color := Sett.AltColour;
-            BitBtnHide.Color := Sett.AltColour;
-            ButtSysTrayHelp.Color := Sett.AltColour;
+            font.color := Sett.TextColour;               // These do not work for Windows ?
+            for Butt in [ButtMenu, BitBtnQuit, BitBtnHide, ButtSysTrayHelp] do
+                Butt.Color := Sett.AltColour;
+            //ButtMenu.Color := Sett.AltColour;
+            //BitBtnQuit.Color := Sett.AltColour;
+            //BitBtnHide.Color := Sett.AltColour;
+            // ButtSysTrayHelp.Color := Sett.AltColour;
             for Lab in [Label5, LabelNotesFound, Label3, Label4, LabelBadNoteAdvice, LabelError] do
                 TLabel(Lab).Font.Color:= Sett.TextColour;
             CheckBoxDontShow.Font.color := Sett.TextColour;
         end;
-    {$endif}
+//    {$endif}
     if SingleNoteFileName() <> '' then begin      // That reads the global in CLI Unit
         SingleNoteMode(SingleNoteFileName);
         exit;
@@ -694,7 +702,7 @@ begin
     ButtSysTrayHelp.width := MN;
 end;
 
-    // Attempt to detect we are in a dark theme, sets relevent colours.
+
 procedure TMainForm.TestDarkThemeInUse();
 
     {$ifdef WINDOWS}  function WinDarkTheme : boolean;   // we also need to test in High Contrast mode, its not a colour theme.
@@ -724,28 +732,20 @@ var
     {$endif}
 
 begin
-    if Application.HasOption('dark-theme') then // Manual override always wins  !
-        Sett.DarkTheme := True
+    if Application.HasOption('dark-theme') then // Manual override always wins unless its GTK2 (GTK3 ?) !
+        {$ifndef LCLGTK2} Sett.DarkThemeSwitch := True {$endif}
     else  begin
         Sett.DarkTheme := false;
-        Sett.QtOwnsColours := False;
-(*        {$if defined(LCLQt5) or defined(LCLQt6)}
-        if (GetEnvironmentVariable('QT_QPA_PLATFORMTHEME') <> '')
-                or (GetEnvironmentVariable('platformtheme') <> '') then
-            Sett.QtOwnsColours := True;            // we don't mess with some colours if Qt is settings its own.
-        {$endif}   *)
-//        if not Sett.QtOwnsColours then begin
-            {$ifdef WINDOWS}
-            Sett.DarkTheme := WinDarkTheme();
-            {$else}
-            // if char 3, 5 and 7 are all 'A' or above, we are not in a DarkTheme
-            Col := hexstr(qword(GetRGBColorResolvingParent()), 8);
-            Sett.DarkTheme := (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A');
-            {$endif}
-//        end;
-
+        Sett.DarkThemeSwitch := false;
+        {$ifdef WINDOWS}
+        Sett.DarkTheme := WinDarkTheme();
+        {$else}
+        // if char 3, 5 and 7 are all 'A' or above, we are not in a DarkTheme
+        Col := hexstr(qword(GetRGBColorResolvingParent()), 8);
+        Sett.DarkTheme := (Col[3] < 'A') and (Col[5] < 'A') and (Col[7] < 'A');
+        {$endif}
     end;
-	Sett.SetColours;
+    Sett.SetColours;
 end;
 
 { ------------- M E N U   M E T H O D S ----------------}

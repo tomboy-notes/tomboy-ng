@@ -1320,6 +1320,12 @@ msgstr "Nouveau carnet"
 msgid "Set Notes"
 msgstr "Définir Notes"
 
+#: tsearchform.bitbtnmenu.caption
+#, fuzzy
+msgctxt "tsearchform.bitbtnmenu.caption"
+msgid "Menu"
+msgstr "Menu"
+
 #: tsearchform.buttonclearfilters.caption
 #, fuzzy
 #| msgid "Clear Filters"
@@ -1327,10 +1333,17 @@ msgctxt "tsearchform.buttonclearfilters.caption"
 msgid "Clear"
 msgstr "Effacer les filtres"
 
-#: tsearchform.buttonmenu.caption
-msgctxt "tsearchform.buttonmenu.caption"
-msgid "Menu"
-msgstr "Menu"
+#: tsearchform.buttonclearsearch.caption
+#, fuzzy
+msgctxt "tsearchform.buttonclearsearch.caption"
+msgid "Clear"
+msgstr "Effacer"
+
+#: tsearchform.buttonsearchoptions.caption
+#, fuzzy
+msgctxt "tsearchform.buttonsearchoptions.caption"
+msgid "Options"
+msgstr "Options"
 
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
@@ -1383,19 +1396,6 @@ msgstr "Renommer le Carnet"
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Carnets"
-
-#: tsearchform.speedbuttonclearsearch.caption
-msgctxt "tsearchform.speedbuttonclearsearch.caption"
-msgid "Clear"
-msgstr "Effacer"
-
-#: tsearchform.speedsearchotions.caption
-msgid "Options"
-msgstr "Options"
-
-#: tsearchform.speedsearchotions.hint
-msgid "Search Options"
-msgstr "Options de recherche"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"

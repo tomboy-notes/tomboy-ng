@@ -1298,15 +1298,28 @@ msgstr "Nieuw notitieboek"
 msgid "Set Notes"
 msgstr "Notities instellen"
 
+#: tsearchform.bitbtnmenu.caption
+#, fuzzy
+msgctxt "tsearchform.bitbtnmenu.caption"
+msgid "Menu"
+msgstr "Menu"
+
 #: tsearchform.buttonclearfilters.caption
 msgctxt "tsearchform.buttonclearfilters.caption"
 msgid "Clear"
 msgstr "Wissen"
 
-#: tsearchform.buttonmenu.caption
-msgctxt "tsearchform.buttonmenu.caption"
-msgid "Menu"
-msgstr "Menu"
+#: tsearchform.buttonclearsearch.caption
+#, fuzzy
+msgctxt "tsearchform.buttonclearsearch.caption"
+msgid "Clear"
+msgstr "Wissen"
+
+#: tsearchform.buttonsearchoptions.caption
+#, fuzzy
+msgctxt "tsearchform.buttonsearchoptions.caption"
+msgid "Options"
+msgstr "Opties"
 
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
@@ -1357,19 +1370,6 @@ msgstr "Notitieboeknaam wijzigen"
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Notitieboeken"
-
-#: tsearchform.speedbuttonclearsearch.caption
-msgctxt "tsearchform.speedbuttonclearsearch.caption"
-msgid "Clear"
-msgstr "Wissen"
-
-#: tsearchform.speedsearchotions.caption
-msgid "Options"
-msgstr "Opties"
-
-#: tsearchform.speedsearchotions.hint
-msgid "Search Options"
-msgstr "Zoekopties"
 
 #: tsett.buttdefaultnotedir.caption
 msgid "Use Default Notes Location"

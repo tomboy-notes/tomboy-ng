@@ -9,14 +9,14 @@ unit uQt_Colors;
 
     This is a unit, only invoked if using the Qt5 widget set (some mods needed for Qt6)
     that will alter how the app manages colours if (and only IF) the user has the
-     QT_QPA_PLATFORMTHEME=qt5ct in the env. It does NOT respect the -platformtheme switch
-     because one dash means one char switch in POSIX, so, we don't consider
-     -platformtheme qt5ct is a switch. (TApplication does make the commandline
-     available ....)
-     This unit reads the colours that qt6ct wants us to use and passes a subset
-     of them back so that KMemo can use them.
+    QT_QPA_PLATFORMTHEME=qt5ct in the env. It does NOT respect the -platformtheme switch
+    because one dash means one char switch in POSIX, so, we don't consider
+    -platformtheme qt5ct is a switch. (TApplication does make the commandline
+    available Davo ....)
+    This unit reads the colours that qt5ct wants us to use and passes a subset
+    of them back for KMemo to use.
 
-     Note : Unix only, makes some assumptions about paths ....
+    Note : Unix only, makes some assumptions about paths, easy fix ....
 
     History :
     2023-03-13 Initial release.

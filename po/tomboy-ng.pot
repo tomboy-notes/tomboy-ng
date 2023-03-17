@@ -1280,14 +1280,24 @@ msgstr ""
 msgid "Set Notes"
 msgstr ""
 
+#: tsearchform.bitbtnmenu.caption
+msgctxt "tsearchform.bitbtnmenu.caption"
+msgid "Menu"
+msgstr ""
+
 #: tsearchform.buttonclearfilters.caption
 msgctxt "tsearchform.buttonclearfilters.caption"
 msgid "Clear"
 msgstr ""
 
-#: tsearchform.buttonmenu.caption
-msgctxt "tsearchform.buttonmenu.caption"
-msgid "Menu"
+#: tsearchform.buttonclearsearch.caption
+msgctxt "tsearchform.buttonclearsearch.caption"
+msgid "Clear"
+msgstr ""
+
+#: tsearchform.buttonsearchoptions.caption
+msgctxt "tsearchform.buttonsearchoptions.caption"
+msgid "Options"
 msgstr ""
 
 #: tsearchform.caption
@@ -1338,19 +1348,6 @@ msgstr ""
 #: tsearchform.panel2.caption
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
-msgstr ""
-
-#: tsearchform.speedbuttonclearsearch.caption
-msgctxt "tsearchform.speedbuttonclearsearch.caption"
-msgid "Clear"
-msgstr ""
-
-#: tsearchform.speedsearchotions.caption
-msgid "Options"
-msgstr ""
-
-#: tsearchform.speedsearchotions.hint
-msgid "Search Options"
 msgstr ""
 
 #: tsett.buttdefaultnotedir.caption

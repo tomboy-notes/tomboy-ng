@@ -357,8 +357,9 @@ type
         UsualFont : string;
         FixedFont : string;
         DefaultFixedFont : string;
-        DarkTheme : boolean;            // Set by main unit. Used all over the place
-        QtOwnsColours : boolean;        // Qt[5,6] is in charge of its own colours, probably using QT_QPA_PLATFORMTHEME
+        DarkThemeSwitch : boolean;      // Dark Theme because user provided --dark-theme, set in main unit.
+        DarkTheme : boolean;            // Dark Theme because we detected it ourselves. Set by main unit.
+        QtOwnsColours : boolean;        // Qt[5,6] is in charge of its own colours, probably using QT_QPA_PLATFORMTHEME, but not for kmemo
         DebugModeSpell : boolean;
         // Indicates SettingsChanged should not write out a new file cos we are loading from one.
         MaskSettingsChanged : boolean;
@@ -410,7 +411,6 @@ var
     Sett : TSett;
 
 const
-                                // Note we set DarkTheme colors and all HiLight colours in MainUnit   ?? No, we set them here !
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
 
 
@@ -1166,27 +1166,34 @@ begin
     end;
 end;
 
+{ Colors - if its GTK2 or a Qt5 with a QT_QPA_PLATFORMTHEME=[gtk2, qt5ct] then most colors will be right.
+    However, the KMemo might be wrong as its always set to a defult light set, ignoring OS.
+    So, we must always set Sett's colors for, at least, KMemo to use.
+    DarkThemeSwitch tells us to apply the setting to what ever other components we can too.
+    SetColors is called by TMainForm.TestDarkThemeInUse during startup, DarkTheme* may have been set.
+    It tests for a gtk2, qt5 using qt5ct and defers to qt5ct if possible. Otherwise, sets some
+    (hopefully) appropriate colors for either a light or dark theme. These colors
+    are always used for the KMemo and possibly, when DarkThemeSwich is used, for what other
+    screens I can.   }
+
 procedure TSett.SetColours;
 {$ifdef LCLQT5}
 var
     Qt_Colors  : TQt_Colors; {$endif}
 // pink = $EEEEFF, White is $FFFFFF, Black is $000000
 begin
-(*    if DarkTheme then                   // ToDo : must add this to user set colours, sigh .....
-        //AltColour := $282828          // Gray,  BackGround Colour of Alternating rows in some ListViews
-        AltColour := $606060            // A colour that will show both black and white test
-    else AltColour := clDefault;   *)     // it gets used as a background and needs to be a bit near it
-    {$ifdef LCLQT5}
-    Qt_Colors  := TQt_Colors.Create;
+    {$ifdef LCLQT5}                       // First we will try the special Qt5 ways of settings colours
+    // If user has set QT_QPA_PLATFORMTHEME=gtk2 this bit drops through, all components except KMemo are good.
+    Qt_Colors  := TQt_Colors.Create;      // needs some work for qt6
     try
        if Qt_Colors.FoundColors then begin         // Will be false if user not using qt5ct
            BackGndColour:= Qt_Colors_Rec.QColorBackground;
-           HiColour   := Qt_Colors_Rec.QColorHighLight; // QColorBright;  // This is, eg Crtl H type highlighting, no selection !
-           AltColour := Qt_Colors_Rec.QColorLessBright;
+           HiColour   := Qt_Colors_Rec.QColorHighLight+1; // This is, eg Crtl H type highlighting, not selection. +1 to make unique
+           AltColour := Qt_Colors_Rec.QColorLessBright;     // Used for selected Text
            TextColour := Qt_Colors_Rec.QColorText;
            TitleColour:= Qt_Colors_Rec.QColorLink;
            LinkColour := Qt_Colors_Rec.QColorLink;
-           AltBackGndColor := Qt_Colors_Rec.QColorLessBright; // Qt_Colors_Rec.QColorAltBackground;      // Selected background colour
+           AltBackGndColor := Qt_Colors_Rec.QColorLessBright; // Selected background colour
            QtOwnsColours := true;
            exit;
        end;
@@ -1195,24 +1202,25 @@ begin
     end;
     {$endif}
     if UserSetColours then exit;        // will have already been set by config or by colour form.
-	if DarkTheme then begin
-        //debugln('Its definltly a Dark Theme');
-        BackGndColour:= clBlack;        // eg $000000
-        AltColour  := $606060;          // Some panel's background color
-        HiColour   := $600000;          // a dark blue;  This is, eg Crtl H type highlighting, no selection !
-        TextColour := clLtGray;
-        TitleColour:= clTeal;
-        LinkColour := clTeal;
-        AltBackGndColor := clDkGray;    // Selected text, both focused and unfocused
+	if DarkTheme or DarkThemeSwitch then begin
+            BackGndColour:= $303030;        // KMemo Background
+            AltColour  := $606060;          // Some panel's background color
+            HiColour   := $600001;          // a dark blue;  This is, eg Crtl H type highlighting, not selection !
+            TextColour := clWhite;
+            TitleColour:= $B8B800;
+            LinkColour := $B8B801;
+            AltBackGndColor := clGray;     // Selected text, both focused and unfocused
     end else begin
         BackGndColour := clCream;
         AltColour   := clDefault;
-        HiColour    := clYellow;
+        HiColour    := clYellow-1;
         TextColour  := clBlack;
         TitleColour := clBlue;
-        LinkColour  := clBlue;
+        LinkColour  := clBlue+1;       //  One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
         AltBackGndColor := clLtGray;
     end;
+    // if DarkThemeSwitch then color := AltColour;    No, cannot change color of the Tabsheet, looks horrible
+
 end;
 
 procedure TSett.SetHelpLanguage();

@@ -81,7 +81,7 @@ begin
        debugln(rsMachelp1);
        debugln(rsMacHelp2);
        {$endif}
-       debugln('   --dark-theme');
+       debugln('   --dark-theme                  ' + 'Does not work for GTK2');
        debugln('   -l --lang=CCode               ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   -h --help                     ' + rsHelpHelp);
        debugln('   --version                     ' + rsHelpVersion);
