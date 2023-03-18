@@ -106,7 +106,7 @@ unit settings;
     2023/01/14  Save Auto Snapshot settings
     2023/02/21  Drop Monospace font to last of priority, its not a real font.
     2023/03/11  Make a bool to indicate Qt is in charge of its colours, eg QT_QPA_PLATFORMTHEME
-
+    2023/03/18  Ensure AltColour and AltBackGndColor are set to something in user defined scheme
 }
 
 {$mode objfpc}{$H+}                    //
@@ -289,6 +289,8 @@ type
         fExportPath : ANSIString;
         SearchIsCaseSensitive : boolean;
         NextAutoSnapshot : TDateTime;
+                        // Sets some default colours (find better way) and sets Colour Button hint.
+        procedure CheckUserColours;
                         // Looks in expected place for help notes, populate combo and public vars, HelpNotesPath, HelpNotesLang.
         procedure LoadHelpLanguages();
                         // We load settings from confile or, if not available, sensible defaults, save.
@@ -724,6 +726,7 @@ begin
         // user user has 'closed' (ie hide) then Spell was freed.
     MaskSettingsChanged := False;
     Label15.Caption:='';
+    CheckUserColours;
 end;
 
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
@@ -875,6 +878,9 @@ begin
     end;
 end;
 
+
+
+
     // Will read and apply the config file if available, else sets sensible defaults
     // Is only called at startup and assumes the config dir has been checked and
     // LabelSettingPath.Caption contains an appropriate file name.
@@ -925,6 +931,7 @@ begin
         FixedFont := ConfigFile.readstring('BasicSettings', 'FixedFont', DefaultFixedFont);
         if FixedFont = '' then FixedFont := DefaultFixedFont;
         ButtonFixedFont.Hint := FixedFont;
+        // ------------------- C O L O U R S -------------------
         BackGndColour:=   StringToColor(Configfile.ReadString('BasicSettings', 'BackGndColour', '0'));
         HiColour    := StringToColor(Configfile.ReadString('BasicSettings', 'HiColour',    '0'));
         TextColour  := StringToColor(Configfile.ReadString('BasicSettings', 'TextColour',  '0'));
@@ -932,6 +939,7 @@ begin
         LinkColour  := StringToColor(Configfile.ReadString('BasicSettings', 'LinkColour',  '0'));
         UserSetColours := not ((BackGndColour = 0) and (HiColour = 0) and (TextColour = 0) and (TitleColour = 0) and (LinkColour = 0));
         // Note - '0' is a valid colour, black. So, what says its not set is they are all '0';
+        CheckUserColours;
         HelpNotesLang :=  Configfile.ReadString('BasicSettings', 'HelpLanguage', HelpNotesLang);
         SetHelpLanguage();
 
@@ -1302,8 +1310,19 @@ begin
                         WriteConfigFile();
                     end;
 	end;
+    CheckUserColours;
 end;
 
+procedure TSett.CheckUserColours;
+begin
+    if UserSetColours then begin
+        ButtonSetColours.Hint := 'Custom Colours in use';
+        // ToDo : AltBackGndColour may not be appropriate here, wot is ?      And AltColour ????
+        AltBackGndColor := clGray;
+        AltColour := clLtGray;
+    end else
+        ButtonSetColours.Hint := 'Default Colours';
+end;
 procedure TSett.ButtonFixedFontClick(Sender: TObject);
 var
     ISMono : boolean = false;
