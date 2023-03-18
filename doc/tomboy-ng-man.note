@@ -22,7 +22,7 @@
 tomboy-ng - manage a collection of notes using a simple GUI markup
 
 <size:huge>SYNOPSIS</size:huge>
-tomboy-ng  [-h --help] [--debug-sync]  [--debug-index] [--debug-log=LOGFILE] [-l --lang=CC] [--config-dir=PATH_to_DIR] [-o PATH_to_NOTE] [--open-note=PATH_to_NOTE] [PATH_to_NOTE] [-t --import-txt=PATH_to_FILE] [-m --import-md=PATH_to_FILE] [-n --import-note=PATH_to_NOTE] [--title-fname]
+tomboy-ng  [-h --help] [--dark-theme] [--debug-sync]  [--debug-index] [--debug-log=LOGFILE] [-l --lang=CC] [--config-dir=PATH_to_DIR] [-o PATH_to_NOTE] [--open-note=PATH_to_NOTE] [PATH_to_NOTE] [-t --import-txt=PATH_to_FILE] [-m --import-md=PATH_to_FILE] [-n --import-note=PATH_to_NOTE] [--title-fname]
 
 <size:huge>DESCRIPTION</size:huge>
 tomboy-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS.  It  is  file  compatible  with  Tomdroid  and  GNote (&gt;=v0.30).  Tomboy-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs. It will Sync with a Github account, either all your notes or just ones in the SyncGithub notebook. You can edit notes, from almost any device with a browser in markdown format.
@@ -35,6 +35,20 @@ On  Windows and Mac tomboy-ng uses native libraries, on Linux, tomboy-ng comes i
 
 While options below are familiar to Linux users, Mac and Windows users may like to look at some examples further down to see how to use them.
 
+<size:huge>DARK THEME</size:huge>
+The GTK2 version follows the system colour theme. However, the Qt5 version (eg Bookworm and later) requires some instruction from the user. Using the --dark-theme is simplest and probably the least satisfactory approach, the note edit screen is a dark theme, other windows vary. A better Qt5 approach is to set an environment variable that instructs the app to follow the existing (generally gtk2) theme. You may need to install qt5-style-plugins package. Either add the variable ahead of the tomboy-ng command line like this -
+
+QT_QPA_PLATFORMTHEME=gtk2  tomboy-ng
+
+or, a more general solution, applying to all Qt5 apps, add that var to either /etc/environment (requires root or, simpler in a .xsessionrc file in your home dir.
+
+cd ; echo "export QT_QPA_PLATFORMTHEME=gtk2" &gt;&gt; .xsessionrc
+
+Probably need to log out and back in again. A more comprehensive approach is to install the qt5ct package and give your Qt5 applications the same environment variable as above but set to qt5ct (instead of gtk2). This will allow you to choose one of the qt5ct colour themes or alter a copy with colours of your choice. The qt5ct command has a nice GUI.
+
+On Windows, tomboy-ng  will follow the system for Dark Theme but only for the note edit window. Using the --dark-theme switch is not recommended.
+
+On MacOS, tomboy-ng is believed to follow the system theme.
 
 <size:huge>OPTIONS</size:huge>
 -h --help
@@ -42,6 +56,9 @@ Print some help and exit.
 
 -v --version
 Print the tomboy-ng version and exit.
+
+--dark-theme
+Makes the note edit windows a reasonable dark theme (but not the system theme). Other part of the app are not dark. This option may be removed in future releases.
 
 --no-splash
 Do not show the small tomboy-ng splash screen at startup. However, if an error is detected the splash screen is always shown.
@@ -126,14 +143,14 @@ Please send bug reports to the tomboy-ng Github Issues system, see above.
 
 
 </note-content></text>
-  <last-change-date>2022-10-30T10:08:41.8978204+11:00</last-change-date>
-  <last-metadata-change-date>2022-10-30T10:08:41.8978204+11:00</last-metadata-change-date>
+  <last-change-date>2023-03-18T21:25:09.3509432+11:00</last-change-date>
+  <last-metadata-change-date>2023-03-18T21:25:09.3509432+11:00</last-metadata-change-date>
   <create-date>2021-08-01T19:13:24.7238449+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1512</width>
   <height>599</height>
-  <x>324</x>
-  <y>82</y>
+  <x>336</x>
+  <y>255</y>
   <open-on-startup>False</open-on-startup>
 </note>
