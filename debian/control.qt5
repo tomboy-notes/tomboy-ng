@@ -14,6 +14,7 @@ Provides: tomboy-ng
 Architecture: any
 Multi-Arch: foreign
 Depends: libqt5pas1, ${shlibs:Depends}, wmctrl, libnotify-bin, ${misc:Depends}
+Suggests: qt5-style-plugins, qt5ct
 Description: Tomboy Notes rewritten to ease installation and cross platform
  tomboy-ng notes allows easy management of a large or small set of
  notes. Notes can contain a range of font sizes, bold, italic and highlight.
