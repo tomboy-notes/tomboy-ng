@@ -1,13 +1,40 @@
+tomboy-ng (0.36a-1) unstable; urgency=medium
+
+  * Release of new version.
+  * More uniform colors when used with qt5ct.
+  * Man page added info re colors.
+  * Indicator that custom colors being used.
+  * Please see github for further change details.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Sun, 19 Mar 2023 10:08:23 +1100
+
+tomboy-ng (0.36-1) unstable; urgency=medium
+
+  * Release of new version
+  * From 0.35 to 0.36 -
+  * New Feature export as PDF.
+  * New Feature insert a symbol or accented character.
+  * Bug fix in column mode of calculator.
+  * Warn user about setting non mono font.
+  * All Tomdroid functionality removed.
+  * A fix for SWYT not finding some text in a brand new note.
+  * Can set colour of a link, more suitable default.
+  * Use of TextHint to better indicate EditSearch role.
+  * Revised note button colors for better dark theme use.
+  * Please see github for further change details
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 22 Feb 2023 20:45:26 +1100
+
 tomboy-ng (0.35-2) unstable; urgency=medium
 
-  *  Repackage
+  * Repackage
   * Added dependencies
 
  -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 30 Nov 2022 21:26:53 +1100
 
 tomboy-ng (0.35-1) unstable; urgency=medium
 
-  *  Release of new version
+  * Release of new version
   * A better Search all notes and Find in Note capability.
   * A Ukrainian Translation.
   * UI tweaks including Ctrl-F toggling, Esc to close note.
