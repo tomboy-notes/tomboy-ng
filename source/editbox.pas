@@ -238,7 +238,7 @@ unit EditBox;
     2023/03/11  Allow Qt to set Text and Background colour, force Gray for Inactive
                 background (in LoadNote) cos Kmemo get it wrong
     2023/04/08  Get a note's height and width before populating KMemo, saves 200mS on a big note !
-
+    2023/04/09  Keep Find-in-note prompt there unless not found.
 }
 
 
@@ -1515,20 +1515,13 @@ procedure TEditBoxForm.SpeedLeftClick(Sender: TObject);      // think btPrev
 // var   Res : Boolean = false;
 begin
    if (EditFind.Caption = '') or (EditFind.Caption = rsMenuSearch) then exit;
-   LabelFindInfo.Caption := '';
-   if not FindInNoteBack(lowercase(EditFind.Text)) then
-      LabelFindInfo.Caption := rsNotAvailable;
+   if FindInNoteBack(lowercase(EditFind.Text)) then
+        LabelFindInfo.Caption := {$ifdef DARWIN}
+            rsFindNavRightHintMac + ', ' + rsFindNavLeftHintMac
+            {$else}rsFindNavRightHint + ', ' + rsFindNavLeftHint{$endif}
+      else LabelFindInfo.Caption := rsNotAvailable;
     if PanelFind.Height = SearchPanelHeight then
         EditFind.SetFocus;
-
-(*   Res := FindIt(EditFind.Text, KMemo1.SelStart, False, False);
-    if Res then LabelFindInfo.Caption := ''
-    else begin
-        LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
-        NumbFindHits := 0;
-        LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
-    end;
-    KMemo1.setfocus;   *)
 end;
 
 
@@ -1536,29 +1529,22 @@ procedure TEditBoxForm.FindNew(IncStartPos : boolean);
 var Found : boolean;
 begin
     if (EditFind.Caption = '') or (EditFind.Caption = rsMenuSearch) then exit;
-    LabelFindInfo.Caption := '';
     if IncStartPos then
         Found := FindInNote(lowercase(EditFind.Text), 1)
     else Found := FindInNote(lowercase(EditFind.Text), 0);
-    if not Found then
-       LabelFindInfo.Caption := rsNotAvailable;
+    if Found then
+        LabelFindInfo.Caption := {$ifdef DARWIN}
+            rsFindNavRightHintMac + ', ' + rsFindNavLeftHintMac
+            {$else}rsFindNavRightHint + ', ' + rsFindNavLeftHint{$endif}
+      else
+        LabelFindInfo.Caption := rsNotAvailable;
     if PanelFind.Height = SearchPanelHeight then
         EditFind.SetFocus;
 end;
 
 procedure TEditBoxForm.SpeedRightClick(Sender: TObject);    // think btNext
-// var   Res : Boolean = false;
 begin
     FindNew(True);
-
-(*   Res := FindIt(EditFind.Text, KMemo1.SelStart+1, true, False);
-   if Res then LabelFindInfo.Caption := ''
-   else begin
-       LabelFindInfo.Caption := rsNotAvailable;    // perhaps user has deleted the only term in the note ?
-       NumbFindHits := 0;
-       LabelFindCount.caption := '';                       // this is set to data by GetFindHits()
-   end;
-   KMemo1.setfocus;  *)
 end;
 
 function TEditBoxForm.FindInNoteBack(Term : string) : boolean;
@@ -1673,9 +1659,6 @@ begin
     if KMemo1.ReadOnly then exit();
     KMemo1.ExecuteCommand(ecCut);
     MarkDirty();
-    //if not Dirty then TimerSave.Enabled := true;
-    //Dirty := true;
-    //LabelFindInfo.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemDeleteClick(Sender: TObject);
@@ -1684,10 +1667,6 @@ begin
     // KMemo1.ExecuteCommand(ecClearSelection);
     Undoer.AddPasteOrCut(True);
     KMemo1.Blocks.ClearSelection;
-    MarkDirty();
-    //if not Dirty then TimerSave.Enabled := true;
-    //Dirty := true;
-    //LabelFindInfo.Caption := 'd';
 end;
 
 procedure TEditBoxForm.MenuItemExportPlainTextClick(Sender: TObject);
@@ -2203,7 +2182,7 @@ procedure TEditBoxForm.MarkTitle();
 var
     BlockNo : integer = 0;
     EndBlock, blar : integer;
-    Tick, Tock, Tuck : qword;           // ToDo : remove
+//    Tick, Tock, Tuck : qword;           // ToDo : remove
 begin
 //  	if Not Ready then exit();               // ToDo : what is effect of disabling this ?
     { if there is more than one block, and the first, [0], is a para, delete it.}
@@ -2214,7 +2193,7 @@ begin
     if Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoParagraph' then
           Kmemo1.Blocks.DeleteEOL(0);
 	try
-        Tick := GetTickCount64();       // this while loop can take 70mS when loading a big note, 100mS when updating title in a big note
+//        Tick := GetTickCount64();       // this while loop can take 70mS when loading a big note, 100mS when updating title in a big note
         while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
             if Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock') then begin    // just possible its an image, ignore ....
                 TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size := Sett.FontTitle;
@@ -2227,7 +2206,7 @@ begin
                 break;
             end;
        	end;                                // Stopped at first TKMemoParagraph if it exists.
-        Tock := GetTickCount64();
+//        Tock := GetTickCount64();
         BlocksInTitle := BlockNo;
         { Make sure user has not smeared Title charactistics to next line
           Scan back from cursor to end of title, if Title font, reset. }
@@ -2245,8 +2224,8 @@ begin
 		KMemo1.Blocks.UnLockUpdate;
     	Ready := True;
 	end;
-    Tuck := GetTickCount64();
-    debugln('TEditBoxForm.MarkTitle ' + inttostr(Tock - Tick) + '  ' + inttostr(Tuck - Tock) + ' Total=' + inttostr(Tuck - Tick));
+//    Tuck := GetTickCount64();
+//    debugln('TEditBoxForm.MarkTitle ' + inttostr(Tock - Tick) + '  ' + inttostr(Tuck - Tock) + ' Total=' + inttostr(Tuck - Tick));
 end;
 
 // This is a debug method, take care, it uses writeln and will kill Windows !
