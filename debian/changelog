@@ -1,3 +1,10 @@
+tomboy-ng (0.36a-2) unstable; urgency=medium
+
+  * Repackage.
+  * Correct bad changelog.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Mon, 03 Apr 2023 11:08:43 +1000
+
 tomboy-ng (0.36a-1) unstable; urgency=medium
 
   * Release of new version.
@@ -10,8 +17,7 @@ tomboy-ng (0.36a-1) unstable; urgency=medium
 
 tomboy-ng (0.36-1) unstable; urgency=medium
 
-  * Release of new version
-  * From 0.35 to 0.36 -
+  * Release of new version.
   * New Feature export as PDF.
   * New Feature insert a symbol or accented character.
   * Bug fix in column mode of calculator.
@@ -21,20 +27,20 @@ tomboy-ng (0.36-1) unstable; urgency=medium
   * Can set colour of a link, more suitable default.
   * Use of TextHint to better indicate EditSearch role.
   * Revised note button colors for better dark theme use.
-  * Please see github for further change details
+  * Please see github for further change details.
 
  -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 22 Feb 2023 20:45:26 +1100
 
 tomboy-ng (0.35-2) unstable; urgency=medium
 
-  * Repackage
+  *  Repackage
   * Added dependencies
 
  -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 30 Nov 2022 21:26:53 +1100
 
 tomboy-ng (0.35-1) unstable; urgency=medium
 
-  * Release of new version
+  *  Release of new version
   * A better Search all notes and Find in Note capability.
   * A Ukrainian Translation.
   * UI tweaks including Ctrl-F toggling, Esc to close note.

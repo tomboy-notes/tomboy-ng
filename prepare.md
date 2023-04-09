@@ -26,7 +26,7 @@ Understand that there are two distinct build processes for making a Deb Src. The
 
 
 
-The other building model is when a build problem is noted, the tomboy-ng source has not changed, just something cleaned up in the build.  Here we take the previous .orig file and associated files, ideally safely tucked away, or downloaded .orig. and other files andextract its contents.  Make whatever change is necessary and rebuild. The .orig file is not re-uploaded and the resulting package will have -2 or -3, -4 on a really bad day.
+The other building model is when a build problem is noted, the tomboy-ng source has not changed, just something cleaned up in the build.  Here we take the previous .orig file and associated files, ideally safely tucked away, or downloaded .orig. and other files andextract its contents.  Make whatever change is necessary and rebuild. The .orig file is not re-uploaded and the resulting package will have -2 or -3, -4 on a really bad day. See the Repackaging section below for details.
 
 
 
@@ -64,7 +64,7 @@ Find it at -
 If you don't get a response, did you include 'mentors' in the dput line ?
 
 ***REMEMBER to feed changlog back to github tree !***
-
+...after doing the PPA stuff or you must edit the PPA changleog !
 
 
 
@@ -72,20 +72,26 @@ If you don't get a response, did you include 'mentors' in the dput line ?
 ========
 Is built on a different VM, U2004mQt. A little more complicated because we also build the Qt5 version, changelog needs to be 'adjusted'. There is a script that automates the whole build SRC packages, unpack and build binaries. The PPA script will make a Qt5 Focal package or a GTK2 Bionic package depending on the -Q switch. You need to make both so add a -Q the export var below.
 
-At some time in the future, it will be necessary to adjust those distro names.
+At some time in the future, it will be necessary to adjust those distro names. Note with v0.36a, I have stopped building Bionic, 18.04 packages as becoming harder to get current compiler running there. So, gtk2 and Qt5 are built from Focal, 20.04 and will continue that way as long as possible.
 
 **WARNING - ppa prepare.ppa script is wrong if a package needs to be repackaged, it cannot, itself, increment the package number, must be done manually. See the debian one.**
 
 **PPA build Steps**
+
+**Note** that if there are errors in changelog, because, eg, you feed the Debian changlog back before grabbing the PPA version and you have duplicate entries in the changelog, thats a fatal error, not trapped, and will cause a reject from Launchpad (because orig was not included ??). Use -p to pause and edit changlelog. 
+
+
 --------
 
     export PPAVer="PPAv33"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
-    bash ./prepare.ppa   [-Q]
+    bash ./prepare.ppa -n      // -n says new release
     cd tomboy-ng [tab]
     debuild -S; cd ...
     
+  
+ Watch to see the message about *including full source in upload*, else you have a problem !
     
 OK, if all looks OK, go back and upload with
 
@@ -96,8 +102,8 @@ Now, the QT5 version Important, we target focal not bionic
     cd ..
     export PPAVer="PPAv33QT"
     mkdir "Build""$PPAVer"; cd "Build""$PPAVer"
-    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/prepare.ppa
-    bash ./prepare.ppa  -Q      // the -Q says make a Qt5 version [-Q] 
+    wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa
+    bash ./prepare.ppa -n -Q      // the -Q says make a Qt5 version [-Q] 
     cd tomboy-ng [tab]
     debuild -S; cd ..
 OK, if all looks OK, go back and upload

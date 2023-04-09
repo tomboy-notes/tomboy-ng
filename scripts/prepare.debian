@@ -11,7 +11,10 @@ set -e
 # fixes (run prepare.debian again, this time without the -n. Totally different 
 # behaviour !
 
-# Fine to blow it away if its not been uploaded with dput !
+# Fine to blow it away if its not been uploaded with dput ! 
+
+# Possibly fine to blow it away if it has not migrated from Mentors to unstable.
+# But that needs clarification.
 
 # For detailed instructions including ready to copy command lines see-
 # https://github.com/tomboy-notes/tomboy-ng/blob/master/prepare.md
@@ -30,9 +33,9 @@ set -e
 #   2022-11-17 Now two seperate behavious, with -n, "new release" we download a new
 #              set of files and generate a new .orig.tar.gz that must be uploaded.
 #              Secondly, without the -n, we assume we are using an existing .orig.
-#              and just repackaging. The Package version number is incremented and
+#              and just repackaging. The Package version number is manually incremented and
 #              the src dir renamed. Most of the code is skipped.
-#   2022-11-30 Don't try to imcrement pack numb, we don't know it !
+#   2022-11-30 Don't try to imcrement pack numb, must be done manually.
 
 APP="tomboy-ng"
 # These are mine, they are used as defaults if NOT set in env. Ignored unless signing.
@@ -134,7 +137,7 @@ function ShowHelp () {
     echo "Needs Lazarus, <=2.0.10 in root space or specified with -l option."
     echo "Needs devscripts preinstalled and maybe an edit of email address above."
     echo "If doing a tomboy-ng release, provide -n and a new orig file is made."
-    echo "Else, repackaging, needs the .orig file, and current tomboy-ng-master.zip"
+    echo "(Else, repackaging - see the Repackaging section in prepare.md)"
     echo "Will download kcontrols, cleanup and prepare to run debuild -S"
     echo "REMEMBER to feed changlog back to github tree"
     echo "David Bannon, June 2021" 
@@ -168,15 +171,7 @@ function MakeOrigFile () {
 
 function PrepExistingOrigFile {
 # Assume we are in a previously used dir, it will have orig and eg tomboy-ng_0.35-1 dir.
-# NO, No No it will have   dir, no -1 !
-# So, abandon the code to inc the version, user MUST do it manually.
-# Maybe we should check that it has been done ?  If tomboy-ng_0.35 dir exits, exit !
-
-# We are one level down, eg Build35 and can see the orig file and tomboy-ng_0.35-1 dir
-# Rename that dir, -2 ....
-# remove previous *.dsc, .buildinfo, .changes
-# Append an entry to the changelog
-# tell user to fix stuff and rerun debuild -S
+# Read the Repackaging section of prepare.md 
 # you achive a similar position by extracting out .orig. with dpkg-source -x ....
 # tomboy-ng_0.35.orig.tar.gz
 

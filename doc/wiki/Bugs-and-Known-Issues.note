@@ -20,6 +20,10 @@ There is some advice about DIY debugging further down this document.
 <size:huge><bold>Specific Things with a Work Around</bold></size:huge>
 
 <size:large><bold>QT5 versions</bold></size:large>
+
+<bold>Qt5 with earlier Qt5 libraries</bold>
+Can be a problem on some Linux Desktops. Generally, I don't suggest Qt5 version of tomboy-ng with systems that use Qt5 earlier than 5.15. So, using Ubuntu 20.04 (Qt5 is 5.12) is a risk factor. Setting your Qt theme to 'gtk3' on those early Qt5 systems is asking for trouble. I have not tested on systems with Qt5 between 5.12 and 5.15 so your mileage may vary. By time you get to Qt5 5.15, it all just works !
+
 <bold>Dark Theme</bold>
 On a number of Linux Distros, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but much better to install <bold>qt5ct</bold> and set the colour theme you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours, either by adding an environment variable when you start tomboy-ng  -
 
@@ -31,6 +35,7 @@ Better still, make all your Qt5 app have a nice uniform look. Set that var in ei
 
 And logging out and back in again, the qt5ct command has a nice GUI to let you select your look and feel. But don't set qt5ct to gtk2, messes with highlighting found text.
 
+A similar, simpler and perhaps better approach is to tell the Qt5 app to follow the current (probably gtk2) theme on your system. Similar to above, just set QT_QPA_PLATFORMTHEME=gtk2 instead of the above. You may need to install qt5-style-plugins package package if its not already installed.
 <bold>Cancelled Bullets</bold> - When text is bulleted and then converted back to plaintext, it has a small indent that is not removable. It goes away when next the note is loaded and is not show in printed copy but is annoying! Its an upstream issue and its being worked on.
 
 <size:large><bold>Dark Theme</bold></size:large>
@@ -112,14 +117,14 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2022-11-15T12:31:01.0666785+11:00</last-change-date>
-  <last-metadata-change-date>2022-11-15T12:31:01.0666785+11:00</last-metadata-change-date>
+  <last-change-date>2023-04-05T15:04:35.1004151+10:00</last-change-date>
+  <last-metadata-change-date>2023-04-05T15:04:35.1004151+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1211</width>
   <height>626</height>
-  <x>317</x>
-  <y>153</y>
+  <x>131</x>
+  <y>106</y>
   <open-on-startup>False</open-on-startup>
 </note>
