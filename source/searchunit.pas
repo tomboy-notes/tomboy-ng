@@ -1326,7 +1326,7 @@ begin
         BounceSortIndicator(1);
     end;
     {$ifdef LCLCOCOA}
-    ButtonSMenu.Refresh;
+    BitBtnMenu.Refresh;
     ListBoxNotebooks.Hint := rsNotebookOptionCtrl;
 //    EditSearch.SetFocus;    // Cocoa issue, 'cos we cannot make the "on type, jump to EditSearch" work on Mac
     {$endif}

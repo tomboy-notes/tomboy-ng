@@ -16,13 +16,13 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.2.0.2'
+  LCLVersion = '2.3.0.0'
   object EditSearch: TEdit
     AnchorSideLeft.Control = BitBtnMenu
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Owner
-    AnchorSideBottom.Side = asrBottom
-    Left = 142
+    AnchorSideBottom.Control = Panel1
+    Left = 144
     Height = 32
     Top = 0
     Width = 148
@@ -171,9 +171,8 @@ object SearchForm: TSearchForm
     AnchorSideLeft.Control = EditSearch
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = Owner
-    AnchorSideBottom.Control = EditSearch
-    AnchorSideBottom.Side = asrBottom
-    Left = 292
+    AnchorSideBottom.Control = Panel1
+    Left = 294
     Height = 32
     Top = 0
     Width = 99
@@ -186,13 +185,13 @@ object SearchForm: TSearchForm
   object BitBtnMenu: TBitBtn
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
-    AnchorSideBottom.Control = EditSearch
-    AnchorSideBottom.Side = asrBottom
-    Left = 0
+    AnchorSideBottom.Control = Panel1
+    Left = 2
     Height = 32
     Top = 0
     Width = 140
     Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 2
     Caption = 'Menu'
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
@@ -277,13 +276,13 @@ object SearchForm: TSearchForm
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = EditSearch
-    AnchorSideBottom.Side = asrBottom
-    Left = 680
+    AnchorSideBottom.Control = Panel1
+    Left = 678
     Height = 32
     Top = 0
     Width = 144
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Anchors = [akTop, akRight, akBottom]
+    BorderSpacing.Right = 2
     Caption = 'Options'
     OnClick = ButtonSearchOptionsClick
     TabOrder = 5
