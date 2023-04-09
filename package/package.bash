@@ -197,7 +197,13 @@ function DebianPackage () {
 	# -------------------- Changelog -----------------
 	cp ../debian/changelog "$MANUALS_DIR"changelog
 	DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog -v "$VERSION" -D unstable --force-distribution "Release of new version"    
-	DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "Please see github for change details"
+	if [ -f ../whatsnew ]; then
+		echo "----------- Including whatsnew in changelog"
+		while IFS= read -r Line; do
+			DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "$Line"
+		done < ../whatsnew
+	fi
+	DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "Please see github for change details."
 	gzip -9n "$MANUALS_DIR"changelog
     	# -------------------------------- Make control file -------------------------
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
@@ -296,8 +302,10 @@ function MkWinPreInstaller() {
 	    echo "Source: \"lclstrconsts."$CCODE".mo\";     DestDir: \"{app}\\locale\"; Flags: ignoreversion" >> mo.insert
 	done
 	sed '/PUTMOLINESHERE/r mo.insert' "$WIN_DIR"/tomboy-ng.iss.temp > "$WIN_DIR"/tomboy-ng.iss
-	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$WIN_DIR/readme.txt"
-	unix2dos -q "$WIN_DIR/readme.txt"
+	MANWIDTH=70 man -l ../doc/tomboy-ng.1 > "$WIN_DIR/readmeUNIX.txt"
+	awk 'sub("$", "\r")' "$WIN_DIR/readmeUNIX.txt" > "$WIN_DIR/readme.txt"
+	rm "$WIN_DIR/readmeUNIX.txt"
+	# unix2dos -q "$WIN_DIR/readme.txt"    Hmm, unix2dos seems to have dissapeared !
 	echo "----------- Windows installer dir created -----------"
 	rm mo.insert
 	# ls -la "$WIN_DIR"
