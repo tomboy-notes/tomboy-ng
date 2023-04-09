@@ -12,6 +12,8 @@ unit LoadNote;
 	Note that the class expects a few things to be passed to it, after creation
 	that it will need before you call LoadNote().
 
+    Apart from Title and HiLight colours, this unit defers to the preset KMemo Colours.
+
     History -
 	20170928 - showed it how to set the title during loading rather than afterwards.
 	saves about 200mS in a big (20K) file.
@@ -158,18 +160,19 @@ begin
   //debugln('TBLoadNote.AddText bulletlevel=' + inttostr(bulletLevel) + ', BOLD=' + booltostr(Bold, true) + ' and InStr=[' + ']');
   if InStr <> '' then begin
       FT := TFont.Create();
+
       if FirstTime then begin                 // Title
   	    FT.Style := [fsUnderline];
-        //Title := ReplaceAngles(InStr);
         Title := RestoreBadXMLChar(InStr);     // SyncUtils Function
         FT.Size := Sett.FontTitle;
         FT.Color := Sett.TitleColour;
       end else begin
         FT.Style := [];
         FT.Size:= FontSize;
+        FT.Color := Sett.TextColour;
       end;
       TB := KM.Blocks.AddTextBlock(RestoreBadXMLChar(InStr));
-      TB.TextStyle.Brush.Color := Sett.BackGndColour;  //LocalBackGndColour;
+//      TB.TextStyle.Brush.Color := Sett.BackGndColour;  //LocalBackGndColour;
       if Bold then FT.Style := FT.Style + [fsBold];
       if Italic then FT.Style := FT.Style + [fsItalic];
       if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
@@ -179,7 +182,6 @@ begin
       if FixedWidth then FT.Pitch := fpFixed;
       if not FixedWidth then FT.Name := Sett.UsualFont;    // Because 'FixedWidth := false;' does not specify a font to return to
       // if Sett.DarkTheme then Ft.Color:=Sett.DarkTextColour;
-      Ft.Color := Sett.TextColour;
       TB.TextStyle.Font := Ft;
       FT.Free;
   end;
@@ -270,13 +272,13 @@ begin
       '/create-date' : CreateDate := InStr;
       '/x' : X := strtointDef(InStr, 20);
       '/y' : Y := strtointDef(InStr, 20);
-      '/width' : Width := strtointdef(InStr, 300);
-      '/height' : height := strtointdef(InStr, 200);
+//      '/width' : Width := strtointdef(InStr, 300);
+//      '/height' : height := strtointdef(InStr, 200);
        'text', 'note' : ;                             // a block of tags we ignore here.
       'x', 'y', 'title', '/title', '?xml', 'last-change-date', '/last-change-date', 'width', 'height', '/text' : ;
       'create-date', 'cursor-position', '/cursor-position', 'selection-bound-position', '/selection-bound-position' : ;
       'open-on-startup', '/open-on-startup', '/note', 'last-metadata-change-date', '/last-metadata-change-date' : ;
-      'tag', '/tag', 'tags', '/tags', 'link:broken', '/link:broken' : ;
+      'tag', '/tag', 'tags', '/tags', 'link:broken', '/link:broken', '/width',  '/height' : ;
       // Note we do not process AND should not get 'list', '/list', 'list-item', '/list-item' here.
   otherwise debugln('TBLoadNote.ActOnTag ERROR sent an unrecognised tag [' + Buff + ']');
   end;

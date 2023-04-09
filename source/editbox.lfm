@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 75
+  Left = 219
   Height = 505
-  Top = 451
+  Top = 531
   Width = 695
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -14,7 +14,7 @@ object EditBoxForm: TEditBoxForm
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.2.0.2'
+  LCLVersion = '2.3.0.0'
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = KMemo1

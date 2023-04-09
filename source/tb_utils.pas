@@ -97,6 +97,8 @@ function FindInStringList(const StL : TStringList; const FindMe : string) : inte
                         // make it suitable for use as a file name, an empty ret string indicates error
 function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer}): string;
 
+procedure GetHeightWidthOfNote(FFN : string; out NHeight, NWidth : integer);
+
                         // Remove all content up to and including <note-content ...> and all content
                         // including and after </note-content>.  Because we cannot guarantee that these
                         // lines are on their own, we will need to poke into individual lines.
@@ -499,6 +501,31 @@ function SayDebugSafe(st: string) : boolean;
 begin
     {$ifdef LCL}Debugln{$else}writeln{$endif}(St);
     result := false;
+end;
+
+procedure GetHeightWidthOfNote(FFN : string; out NHeight, NWidth : integer);
+var
+    Doc : TXMLDocument;
+    Node : TDOMNode;
+    St : string;
+begin
+    if not FileExists(FFN) then begin
+        SayDebugSafe('ERROR : GetHeightWidthOfNote : File does not exist = '  + FFN);
+        exit();
+	end;
+    NHeight := 300;
+    NWidth := 300;
+	ReadXMLFile(Doc, FFN);
+    try
+        Node := Doc.DocumentElement.FindNode('width');
+        St := Node.FirstChild.NodeValue;
+        NWidth := strtointdef(St, 300);
+        Node := Doc.DocumentElement.FindNode('height');
+        St := Node.FirstChild.NodeValue;
+        NHeight := strtointdef(St, 300);
+    finally
+        Doc.free;
+    end;
 end;
 
 function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer}): string;

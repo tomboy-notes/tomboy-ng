@@ -237,6 +237,7 @@ unit EditBox;
     2023/02/14  Fixed bug in column calculater, was ignoring negitive terms.
     2023/03/11  Allow Qt to set Text and Background colour, force Gray for Inactive
                 background (in LoadNote) cos Kmemo get it wrong
+    2023/04/08  Get a note's height and width before populating KMemo, saves 200mS on a big note !
 
 }
 
@@ -488,6 +489,7 @@ type
         procedure CheckForLinks(const FullBody: boolean);
                                 { Returns with the title, that is the first line of note, returns False if title is empty }
         function GetTitle(out TheTitle: ANSIString): boolean;
+                                { Clears KMemo, sets colors, marks up title and loads the note into KMemo }
         procedure ImportNote(FileName : string);
         procedure InitiateCalc();
                                 { Test the note to see if its Tomboy XML, RTF or Text. Ret .T. if its a new note. }
@@ -1995,9 +1997,11 @@ end;
 procedure TEditBoxForm.FormShow(Sender: TObject);
 var
     ItsANewNote : boolean = false;
+//    Tick, Tock, Tuck : qword;
 begin
     if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
     // Ready := False;                             // But it must be false aready, it was created FALSE
+//    Tick := GetTickCount64();
     PanelReadOnly.Height := 1;
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
@@ -2010,10 +2014,8 @@ begin
     // If we don't make above call in SNM, we get the same assertion sooner or later, as soon
     // as we select some text so may as well get it over with. No need to do it in Qt5, Win, Mac
     {$endif}
-    Kmemo1.Clear;
-//    SetTheColors;
-
-
+    Kmemo1.Clear;      // Note clear and setcolors() will be called again in importNote() but quick ...
+    SetTheColors();
     if SingleNoteMode then
             ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
     else
@@ -2023,7 +2025,7 @@ begin
             ItsANewNote := True;
 	    end else begin
             Caption := NoteFileName;
-     	    ImportNote(NoteFileName);		    // also sets Caption and Createdate
+     	    ImportNote(NoteFileName);		    // also sets Caption and Createdate, clears 260mS
         end;
     if ItsANewNote then begin
         left := (screen.Width div 2) - (width div 2);
@@ -2037,23 +2039,20 @@ begin
         if kmemo1.blocks.Items[0].ClassNameIs('TKMemoTextBlock') then
             Kmemo1.Blocks.DeleteEOL(0);
         KMemo1.Blocks.AddTextBlock(NoteTitle, 0);
+        MarkTitle();
 	end;
+//    Tock := gettickcount64();
+//    MarkTitle();                                // 70mS, ImortNote() does it all now. Not needed for new note
 
-    MarkTitle();
     KMemo1.SelStart := KMemo1.Text.Length;      // set curser pos to end
     KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
-    {    if SearchedTerm <> '' then begin
-        //FindDialog1.FindText:= SearchedTerm;
-        EditFind.Text := SearchedTerm;
-        FindIt(SearchedTerm, True, False)
-	end else } begin
-        KMemo1.executecommand(ecEditorTop);
-        KMemo1.ExecuteCommand(ecDown);
-    end;
-    SetTheColors;
+    KMemo1.executecommand(ecEditorTop);
+    KMemo1.ExecuteCommand(ecDown);
     Ready := true;
     Dirty := False;
+//    Tuck := GetTickCount64();
+//    debugln('TEditBoxForm.FormShow ' + inttostr(Tock - Tick) + '  ' + inttostr(Tuck - Tock) + ' Total=' + inttostr(Tuck - Tick));
 end;
 
 
@@ -2204,26 +2203,31 @@ procedure TEditBoxForm.MarkTitle();
 var
     BlockNo : integer = 0;
     EndBlock, blar : integer;
+    Tick, Tock, Tuck : qword;           // ToDo : remove
 begin
 //  	if Not Ready then exit();               // ToDo : what is effect of disabling this ?
     { if there is more than one block, and the first, [0], is a para, delete it.}
     if KMemo1.Blocks.Count <= 2 then exit();	// Don't try to mark title until more blocks.
     Ready := false;
+
     Kmemo1.Blocks.LockUpdate;
     if Kmemo1.Blocks.Items[BlockNo].ClassName = 'TKMemoParagraph' then
           Kmemo1.Blocks.DeleteEOL(0);
 	try
+        Tick := GetTickCount64();       // this while loop can take 70mS when loading a big note, 100mS when updating title in a big note
         while Kmemo1.Blocks.Items[BlockNo].ClassName <> 'TKMemoParagraph' do begin
             if Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoTextBlock') then begin    // just possible its an image, ignore ....
                 TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size := Sett.FontTitle;
                 TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Color := Sett.TitleColour;
                 TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style := [fsUnderline];
             end;
+
            	inc(BlockNo);
             if BlockNo >= Kmemo1.Blocks.Count then begin
                 break;
             end;
        	end;                                // Stopped at first TKMemoParagraph if it exists.
+        Tock := GetTickCount64();
         BlocksInTitle := BlockNo;
         { Make sure user has not smeared Title charactistics to next line
           Scan back from cursor to end of title, if Title font, reset. }
@@ -2241,6 +2245,8 @@ begin
 		KMemo1.Blocks.UnLockUpdate;
     	Ready := True;
 	end;
+    Tuck := GetTickCount64();
+    debugln('TEditBoxForm.MarkTitle ' + inttostr(Tock - Tick) + '  ' + inttostr(Tuck - Tock) + ' Total=' + inttostr(Tuck - Tick));
 end;
 
 // This is a debug method, take care, it uses writeln and will kill Windows !
@@ -3386,33 +3392,41 @@ end;
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
- 	//T1, T2, T3, T4, T5 : qword;          // Temp time stamping to test speed
+// 	T1, T2, T3, T4, T5 : qword;          // Temp time stamping to test speed
+    W, H : integer;
 begin
     // Timing numbers below using MyRecipes on my Dell linux laptop. For local comparison only !
-    // Note QT5 times quite a lost faster, Loading is slow and so is resizing !  Sept 2022
-    //T1 := gettickcount64();
+    // Note QT5 times quite a lost faster, Loading is slow and so is resizing !  Sept 2022, updated and revised April 2023
+    // Very useful to set default colors and size of form BEFORE loading note.
+//    T1 := gettickcount64();
+    GetHeightWidthOfNote(FileName, H, W);
+    Width := W;
+    Height := H;
     Loader := TBLoadNote.Create();
-    Loader.FontNormal:= Sett.FontNormal;                    // 0mS
+    Loader.FontNormal:= Sett.FontNormal;
     Loader.FontSize:= Sett.FontNormal;
+
     KMemo1.Blocks.LockUpdate;
     KMemo1.Clear;
-    Loader.LoadFile(FileName, KMemo1);                      // 140mS  (197mS GTK2)
-    //KMemo1.Blocks.UnlockUpdate;
+    SetTheColors();
+//    T2 := gettickcount64();
+    Loader.LoadFile(FileName, KMemo1);                      // 100mS GTK2, without locking its all time and a lot of it !
+//    T3 := gettickcount64();
     Createdate := Loader.CreateDate;
     //Ready := true;
     Caption := Loader.Title;
 //    if Sett.ShowIntLinks or Sett.CheckShowExtLinks.checked then
 //    	CheckForLinks(True);                  		         // 12mS (14ms GTK2)
-    KMemo1.Blocks.UnlockUpdate;                              // moved down from 6 lines up to cover CheckForLinks
+    KMemo1.Blocks.UnlockUpdate;                              // 140mS
+//    T4 := gettickcount64();
     Left := Loader.X;
     Top := Loader.Y;
-    Height := Loader.Height;                                 // 84mS (133mS GTK2) Height and Widt                                      h
-    Width := Loader.Width;                                   // AdjustFormPosition() will fix if necessary
     AdjustFormPosition();
     Loader.Free;                                             // 0mS
     TimerHouseKeeping.Enabled := False;     // we have changed note but no housekeeping reqired
-    //debugln('Load Note=' + inttostr(T2 - T1) + 'mS ' + inttostr(T3 - T2) + 'mS ' + inttostr(T4 - T3) + 'mS ' + inttostr(T5 - T4) + 'mS ');
-    //debugln('Total=' + inttostr(T5 - T1) + 'mS ');
+//    T5 := gettickcount64();
+//    debugln('Load Note=' + inttostr(T2 - T1) + 'mS ' + inttostr(T3 - T2) + 'mS ' + inttostr(T4 - T3) + 'mS ' + inttostr(T5 - T4) + 'mS ');
+//    debugln('ImportNote Total=' + inttostr(T5 - T1) + 'mS ');
 
 end;
 
