@@ -25,22 +25,27 @@ There is some advice about DIY debugging further down this document.
 Can be a problem on some Linux Desktops. Generally, I don't suggest Qt5 version of tomboy-ng with systems that use Qt5 earlier than 5.15. So, using Ubuntu 20.04 (Qt5 is 5.12) is a risk factor. Setting your Qt theme to 'gtk3' on those early Qt5 systems is asking for trouble. I have not tested on systems with Qt5 between 5.12 and 5.15 so your mileage may vary. By time you get to Qt5 5.15, it all just works !
 
 <bold>Dark Theme</bold>
-On a number of Linux Distros, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but much better to install <bold>qt5ct</bold> and set the colour theme you like. You will need to set an environment variable that tells Qt apps (including qt5ct itself) that you are using qt5ct colours, either by adding an environment variable when you start tomboy-ng  -
+Generally, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but the results are not great. A much better approach is to use Qt5's theme setting capability, using <bold>QT_QPA_PLATFORMTHEME</bold> env var. The easist approach (on most Linux systems) is set it to your existing gtk2 or gtk3 theme, you will need to install the <bold>qt5-style-plugins</bold> package using your normal package manager, then, start tomboy-ng with the enviournment variable set to either 'gtk2' or 'gtk3'. Small section below on setting the variable.
 
-<monospace>QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]</monospace>
+Another approach is to install the <bold>qt5ct</bold> package from your package manager and set any colour theme you like. Again, you will need to set the same environment variable, this time to 'qt5ct', it tells Qt apps (including qt5ct itself) that you are using qt5ct colours but only works after you have started qt5ct and selected a color scheme.
 
-Better still, make all your Qt5 app have a nice uniform look. Set that var in either /etc/environment (requires root or, simpler in a .xsessionrc file in your home dir.
+<bold>Setting that Enviournment Variable</bold>
+As usual, there are several way to tell a Qt5 app about your desired color scheme, likely settings are 'gtk2', 'gtk3' or 'qt5ct', all done the same ways -
+If just starting tomboy-ng from the command line, maybe just testing, just set the variable before the app name, leaving a space between them -
+$&gt;   <monospace>QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]</monospace>
+
+Better still, make all your Qt5 app have a nice uniform look. Set that var in either /etc/environment (requires root) or, far simpler in a .xsessionrc file in your home dir.
 
 <monospace>cd ; echo "export QT_QPA_PLATFORMTHEME=qt5ct" &gt;&gt; .xsessionrc</monospace>
 
-And logging out and back in again, the qt5ct command has a nice GUI to let you select your look and feel. But don't set qt5ct to gtk2, messes with highlighting found text.
+And logging out and back in again, the qt5ct command has a nice GUI to let you select your look and feel.
 
-A similar, simpler and perhaps better approach is to tell the Qt5 app to follow the current (probably gtk2) theme on your system. Similar to above, just set QT_QPA_PLATFORMTHEME=gtk2 instead of the above. You may need to install qt5-style-plugins package package if its not already installed.
 <bold>Cancelled Bullets</bold> - When text is bulleted and then converted back to plaintext, it has a small indent that is not removable. It goes away when next the note is loaded and is not show in printed copy but is annoying! Its an upstream issue and its being worked on.
 
 <size:large><bold>Dark Theme</bold></size:large>
-At present, seems only GTK2 and to a limited extent, Windows can pick up colours from the OS :-(
-So, its now possible to pass --dark-theme to the application on the command line and you get, sort of, a Dark Theme.  Sadly, some forms in the application are based on components that simply will not play, Settings being a good example. Sorry.
+GTK2 (and Qt5 using tricks mentioned above) do a clean and functional Dark Theme. Windows can pick up Dark from the OS but its not a completely satisfactory solution.
+
+It also possible to pass a --dark-theme switch to the application on the command line and you get, sort of, a Dark Theme.  Sadly, some forms in the application are based on components that simply will not play, Settings being a good example. Sorry.
 
 <size:large><bold>QT5 versions and Gnome Desktops</bold></size:large>
 It appears that even Qt5 apps can now use XWayland so much of this is unnecessary, leave it here for now, just in case.
@@ -51,10 +56,10 @@ QT_QPA_PLATFORM=wayland  tomboy-ng [enter]
 You can do so (if you have qtwayland5 installed) but it seems to make little or no difference and does trigger a couple of warning messages from the QT libraries. So, honestly, don't worry about it.
 
 <size:large><bold>Calc separator</bold></size:large>
-In the calculator, many countries use the comma instead of a period as a decimal separator. Turns out this could be quite a challenge, my apologies to people from locales where this is an issue. https://forum.lazarus.freepascal.org/index.php/topic,56305.msg418384.html#msg418384
+In the calculator, many countries use the comma instead of a period as a decimal separator. Quite difficult to fix, my apologies to people from locales where this is an issue. https://forum.lazarus.freepascal.org/index.php/topic,56305.msg418384.html#msg418384
 
 <size:large><bold>System Tray Issues</bold></size:large>
-Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux
+Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux - generally only a problem for people using the Gnome Desktop.
 
 
 <size:huge><bold>Long term 'maybe' stuff</bold></size:huge>
@@ -117,8 +122,8 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2023-04-05T15:04:35.1004151+10:00</last-change-date>
-  <last-metadata-change-date>2023-04-05T15:04:35.1004151+10:00</last-metadata-change-date>
+  <last-change-date>2023-04-09T17:13:18.6291587+10:00</last-change-date>
+  <last-metadata-change-date>2023-04-09T17:13:18.6291587+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
