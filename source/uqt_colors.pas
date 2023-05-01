@@ -20,6 +20,7 @@ unit uQt_Colors;
 
     History :
     2023-03-13 Initial release.
+    2023-05-01 Handle the possiblity of no qt5ct conf file.
 }
 {$mode ObjFPC}{$H+}
 
@@ -74,8 +75,8 @@ begin
         finally
             ConfigFile.free;
         end;
-    end;
-    if Result = '' then exit;
+    end else Result := '';
+    if Result = '' then exit;             // either no qt5ct.conf file or no color_scheme file found.
     if FileExists(Result) then begin
         ConfigFile :=  TINIFile.Create(Result);
         try

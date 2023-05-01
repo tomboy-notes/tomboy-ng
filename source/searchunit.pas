@@ -1267,6 +1267,8 @@ begin
     EditSearch.SelStart := 1;
     EditSearch.SelLength := length(EditSearch.Text);
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
+    if Mainform.UseTrayMenu then
+        MainForm.TrayIcon.Show;                          // Gnome does not like showing it before menu is populated
     MenuItemCaseSensitive.checked := Sett.SearchCaseSensitive;
     MenuItemSWYT.checked := Sett.AutoSearchUpdate;
     MenuItemImportNote.Hint := rsHelpImportFile;         // ToDo : OK, where is ShowHint ?

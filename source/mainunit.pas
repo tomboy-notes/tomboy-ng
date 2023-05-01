@@ -79,6 +79,7 @@ unit Mainunit;
     2022/10/20  To Avoid calling IndexNotes() from Import, now function, IndexNewNote()
     2022/11/14  ShowNotifications() now cross platform.
     2023/03/17  Provide better support for dark theme, particularly for Qt5 in qt5ct mode
+    2023/04/30  Another Gnome (for 44.0) fix, apparently it does not like an empty menu in the trayicon at show.
 
     CommandLine Switches
 
@@ -320,7 +321,7 @@ begin
     if UseTrayMenu then begin
         PopupMenuTray := TPopupMenu.Create(Self);
         TrayIcon.PopUpMenu := PopupMenuTray;        // SearchForm will populate it when ready
-        TrayIcon.Show;
+//        TrayIcon.Show;                              // Gnome does not like showing it before menu is populated, so, call from SearchForm.create
     end;
     LabelBadNoteAdvice.Caption := '';
 end;

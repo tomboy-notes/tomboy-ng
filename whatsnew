@@ -1,2 +1,4 @@
 Remove dangling anchors believed to cause a rare layout bug.
 Faster note loading for large notes.
+Qt5 can handle a request to use an unconfigured qt5ct.
+Dont show SysTray until menu items added.
