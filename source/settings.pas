@@ -1185,12 +1185,12 @@ end;
     screens I can.   }
 
 procedure TSett.SetColours;
-{$ifdef LCLQT5}
+{$if defined(LCLQT5) or defined(LCLQT6)}
 var
     Qt_Colors  : TQt_Colors; {$endif}
 // pink = $EEEEFF, White is $FFFFFF, Black is $000000
 begin
-    {$ifdef LCLQT5}                       // First we will try the special Qt5 ways of settings colours
+    {$if defined(LCLQT5) or defined(LCLQT6)}                       // First we will try the special Qt5 ways of settings colours
     // If user has set QT_QPA_PLATFORMTHEME=gtk2 this bit drops through, all components except KMemo are good.
     Qt_Colors  := TQt_Colors.Create;      // needs some work for qt6
     try

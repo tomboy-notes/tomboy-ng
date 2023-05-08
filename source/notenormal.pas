@@ -295,7 +295,7 @@ begin
     StIndex := StL.Count -1;           // remove any trailing spaces.
     while StIndex > 0 do begin
         TempSt := Stl[StIndex];
-        ChIndex := 1;                  // Issue #279, ctrl-Z characters ending up in file
+        ChIndex := 1;                  // Issue #279, ctrl-Z characters ending up in file, 5/2023, same user found a ctrl-r, 18 ??
         ChangedLine := False;          // ToDo : review the addition of this code, it does appear to work and be safe but ...
         while ChIndex <= length(TempSt) do begin
             if (ord(TempSt[ChIndex]) < 32)

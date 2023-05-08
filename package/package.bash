@@ -105,6 +105,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseQT5)
             echo "$PRODUCT"-qt5
         ;;
+        ReleaseQT6)
+            echo "$PRODUCT"-qt6
+        ;;        
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
         ;;
@@ -187,6 +190,12 @@ function DebianPackage () {
 		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin"
 		CTRL_RELEASE="Qt5 release."
 		;;
+	"ReleaseQT6")
+		echo "++++++++++ Setting QT6 +++++++++"
+		CTRL_ARCH="amd64"
+		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.14), wmctrl, libnotify-bin"
+		CTRL_RELEASE="Qt6 release."
+		;;		
 	"ReleaseRasPi")
 		CTRL_RELEASE="Raspberry Pi release."
 		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin"
@@ -336,14 +345,14 @@ fi
 echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5 ; 
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5; // ReleaseQt6; Note yet !  Must build elsewhere, bring biary here.
 	do BuildAMode $BIN; 
 done
 
 #if [ "$2" == "LeakCheck" ]; then
 
 rm tom*.deb
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ; 
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQT6; 
 	do DebianPackage $BIN ; 
 done
 

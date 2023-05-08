@@ -104,7 +104,7 @@
         <Item72 Value="FormKMemo2pdf"/>
       </ExcludedOriginals>
     </i18n>
-    <BuildModes Count="19">
+    <BuildModes Count="20">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -175,6 +175,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf3"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
@@ -882,6 +883,44 @@
           </Other>
         </CompilerOptions>
       </Item19>
+      <Item20 Name="ReleaseQt6">
+        <MacroValues Count="1">
+          <Macro7 Name="LCLWidgetType" Value="qt6"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-qt6"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5092="True" idx5024="True" idx4056="True" idx4055="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item20>
       <SharedMatrixOptions Count="7">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
@@ -889,7 +928,7 @@
         <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseRasPi" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
-        <Item7 ID="372825449782" Modes="DebugQt6" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt6"/>
+        <Item7 ID="372825449782" Modes="DebugQt6,ReleaseQt6" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt6"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>

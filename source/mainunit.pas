@@ -518,6 +518,9 @@ begin
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
     // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu < 21.10
 
+    if pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then
+        exit(True);      // So far, every KDE I have tested has a System Tray, no need for these ugly tests !
+
     {$IFnDEF LCLGTK3}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2}XDisplay := gdk_display; {$endif}
@@ -527,6 +530,7 @@ begin
             exit(CheckGnomeExtras());
         XDisplay := QX11Info_display;
     {$endif}
+    // OK, don't call next line in a KDE system .....
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);  // gtk2 or non-Gnome Qt5
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
     ForceAppInd := GetEnvironmentVariable('LAZUSEAPPIND');
@@ -848,7 +852,7 @@ begin
             + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
             + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
-        {$ifdef LCLQT5} Stg := Stg + #10 + 'QT_QPA_PLATFORMTHEME : ' +
+        {$if defined(LCLQT5) or defined(LCLQT6)} Stg := Stg + #10 + 'QT_QPA_PLATFORMTHEME : ' +
         GetEnvironmentVariable('QT_QPA_PLATFORMTHEME'); {$endif}
         AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
         AboutFrm.ShowModal;
