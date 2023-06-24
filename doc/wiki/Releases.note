@@ -87,7 +87,9 @@ Tested on Fedora 36. Generally, on Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64b
 
 
 <size:large><bold>Debian</bold></size:large>
-An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository.However, due to changes to Bullseye after it was added to Debian, that version will have problems if you use a Gnome Desktop. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux . For other Desktops, you can install as you would for other repository applications but the version here is "bigger and better" than 0.32.   <bold>Bookworm</bold> has 0.36b.
+An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository.However, due to changes to Bullseye after it was added to Debian, that version will have problems if you use a Gnome Desktop. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux . For other Desktops, you can install as you would for other repository applications but the version here is "bigger and better" than 0.32.
+
+<bold>Bookworm</bold> has 0.36b and most desktops just work. However, Gnome-Shell may need an extension added, see  https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux and, sadly, Bookworm KDE users need to look in the https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues page for a workaround due to a Wayland issue.
 
 For earlier versions of Debian and distros based on them, (e.g, MX Linux 18.x), you will need to use the [32bit]($$DEB32) or [64bit]($$DEB64) GTK2 version. Stretch does not have the Qt5 Pascal libraries in its repository.  By time you get to Debian 10.4, Qt is, perhaps, a better bet if you are using 64bit. [64bit QT]($$DEB64QT).
 
@@ -143,8 +145,8 @@ ToDo : New Raspberry Pi OS, 32 and 64 bit do not ship with GTK2 preinstalled. So
 
 
 </note-content></text>
-  <last-change-date>2023-05-02T21:22:18.8564311+10:00</last-change-date>
-  <last-metadata-change-date>2023-05-02T21:22:18.8564311+10:00</last-metadata-change-date>
+  <last-change-date>2023-05-09T22:19:24.9538779+10:00</last-change-date>
+  <last-metadata-change-date>2023-05-09T22:19:24.9538779+10:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

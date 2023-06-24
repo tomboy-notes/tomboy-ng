@@ -24,6 +24,16 @@ unit cli;
     2022/10/20  Do Import from this instance with direct call to IndexNewNote().
 }
 
+
+{   Note that for Qt app, the command line can also include a option meant for Qt.
+    See https://doc.qt.io/qt-5/qguiapplication.html#supported-command-line-options
+    It appears that Qt sees such an option before this unit does AND it removes it
+    and also removes anything after it ! But does act on it. Seems both - and -- acceptable -
+        --platformtheme qt5ct
+        -platformtheme qt5ct
+    And an typo in the option value is ignored, use a space as seperator, not '=' !
+}
+
 interface
 
 uses

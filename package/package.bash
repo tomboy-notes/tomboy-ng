@@ -187,14 +187,20 @@ function DebianPackage () {
 	"ReleaseQT5")
 		echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin"
+		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin qt5ct"
 		CTRL_RELEASE="Qt5 release."
+		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
+	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it. 
+	    sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
 		;;
 	"ReleaseQT6")
 		echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.14), wmctrl, libnotify-bin"
+		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.14), wmctrl, libnotify-bin qt5ct"
 		CTRL_RELEASE="Qt6 release."
+		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog
+	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it. 
+	    sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt6ct/" BUILD/usr/share/applications/"$PRODUCT".desktop	
 		;;		
 	"ReleaseRasPi")
 		CTRL_RELEASE="Raspberry Pi release."

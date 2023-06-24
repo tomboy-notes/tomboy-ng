@@ -3371,7 +3371,7 @@ end;
 procedure TEditBoxForm.ImportNote(FileName: string);
 var
     Loader : TBLoadNote;
-// 	T1, T2, T3, T4, T5 : qword;          // Temp time stamping to test speed
+ //	T1, T2, T3, T4, T5 : qword;          // Temp time stamping to test speed
     W, H : integer;
 begin
     // Timing numbers below using MyRecipes on my Dell linux laptop. For local comparison only !
@@ -3406,7 +3406,6 @@ begin
 //    T5 := gettickcount64();
 //    debugln('Load Note=' + inttostr(T2 - T1) + 'mS ' + inttostr(T3 - T2) + 'mS ' + inttostr(T4 - T3) + 'mS ' + inttostr(T5 - T4) + 'mS ');
 //    debugln('ImportNote Total=' + inttostr(T5 - T1) + 'mS ');
-
 end;
 
 procedure TEditBoxForm.CleanUTF8();

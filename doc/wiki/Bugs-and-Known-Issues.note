@@ -15,32 +15,70 @@ There is some advice about DIY debugging further down this document.
 
 <list><list-item dir="ltr"><list><list-item dir="ltr">On some  Macs, when using the in note Find tool, a 'shadow highlight' can appear superimposed over the button bar. It does no harm, disappears when you move the mouse over the button but is unsightly. Its a know upstream problem, https://forum.lazarus.freepascal.org/index.php/topic,53055.0.html .</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">On at least Debian Bookworm KDE (using Wayland) tomboy-n will fail unless its passed an enviournment variable to force use of xcb, see below.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Qt versions do not always pick up System Colours, you need to give the app a hint what colour theme to use, see bleow.</list-item></list></list-item></list>
 
 
 <size:huge><bold>Specific Things with a Work Around</bold></size:huge>
 
-<size:large><bold>QT5 versions</bold></size:large>
+<size:huge><bold>QT5 versions</bold></size:huge>
 
-<bold>Qt5 with earlier Qt5 libraries</bold>
+<size:large><bold>Qt5 with earlier Qt5 libraries</bold></size:large>
 Can be a problem on some Linux Desktops. Generally, I don't suggest Qt5 version of tomboy-ng with systems that use Qt5 earlier than 5.15. So, using Ubuntu 20.04 (Qt5 is 5.12) is a risk factor. Setting your Qt theme to 'gtk3' on those early Qt5 systems is asking for trouble. I have not tested on systems with Qt5 between 5.12 and 5.15 so your mileage may vary. By time you get to Qt5 5.15, it all just works !
 
-<bold>Dark Theme</bold>
-Generally, the QT5 version does not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but the results are not great. A much better approach is to use Qt5's theme setting capability, using <bold>QT_QPA_PLATFORMTHEME</bold> env var. The easist approach (on most Linux systems) is set it to your existing gtk2 or gtk3 theme, you will need to install the <bold>qt5-style-plugins</bold> package using your normal package manager, then, start tomboy-ng with the enviournment variable set to either 'gtk2' or 'gtk3'. Small section below on setting the variable.
+<size:large><bold>Qt5 and Wayland</bold></size:large>
+On some (but not all) Wayland using Desktops, there are still a number of Qt5 problems. This is particularly the case <bold>Debian KDE Bookworm</bold>. The solution is to force the app to use xcb instead of direct to Wayland. Set an environment variable, QT_PLATFORM=xcb and it all works perfectly. Test this from the command line like this
 
-Another approach is to install the <bold>qt5ct</bold> package from your package manager and set any colour theme you like. Again, you will need to set the same environment variable, this time to 'qt5ct', it tells Qt apps (including qt5ct itself) that you are using qt5ct colours but only works after you have started qt5ct and selected a color scheme.
+$&gt; QT_PLATFORM=xcb tomboy-ng [enter]
 
-<bold>Setting that Enviournment Variable</bold>
-As usual, there are several way to tell a Qt5 app about your desired color scheme, likely settings are 'gtk2', 'gtk3' or 'qt5ct', all done the same ways -
-If just starting tomboy-ng from the command line, maybe just testing, just set the variable before the app name, leaving a space between them -
-$&gt;   <monospace>QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]</monospace>
+And if you like the result, set it permently using one of the models described below.
 
-Better still, make all your Qt5 app have a nice uniform look. Set that var in either /etc/environment (requires root) or, far simpler in a .xsessionrc file in your home dir.
+<size:large><bold>Dark Theme</bold></size:large>
+Generally, the QT5 apps do not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but the results are not great. A much better approach is to use Qt5's theme setting capability, using <bold>QT_QPA_PLATFORMTHEME</bold> env var. Some operating systems set this for you, other require you to do it. The easist approach (on most Linux systems) is set it to your existing gtk2 or gtk3 theme, you will need to install the <bold>qt5-style-plugins</bold> package using your normal package manager, then, start tomboy-ng with the enviournment variable set to either 'gtk2' or 'gtk3'. Small section below on setting the variable.
+
+Another approach is to install the <bold>qt5ct</bold> package from your package manager and set any colour theme you like. The qt5ct command has a nice GUI, select 'custom' and choose the theme you want. Again, you will need to set the same environment variable, this time to 'qt5ct', it tells Qt apps (including qt5ct itself) that you are using qt5ct colours but only works after you have started qt5ct and selected a color scheme.
+
+To test it, from the command line, you might do one of (remembering that the THEME setting might be one of 'qt5ct', 'gtk2', gtk3' ) -
+
+$&gt;   QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]
+
+$&gt;   QT_PLATFORM=xcb  QT_QPA_PLATFORMTHEME=qt5ct  tomboy-ng [enter]
+
+<size:large><bold>Setting that Enviournment Variable</bold></size:large>
+So far, we have identified two env vars we may want to set for your Qt5 app. You can set both or one or the other. And there are several ways to do so. You can mix these modes too, setting the colours in .xsessionrc so all apps look the same but setting PLATFORM to xcb only for tomboy-ng.
+
+<bold>In .xsessionrc</bold>
+Set everything, eg, make all your Qt5 app have a nice uniform look. Set that var in either /etc/environment (requires root) or, far simpler in a .xsessionrc file in your home dir.
 
 <monospace>cd ; echo "export QT_QPA_PLATFORMTHEME=qt5ct" &gt;&gt; .xsessionrc</monospace>
 
-And logging out and back in again, the qt5ct command has a nice GUI to let you select your look and feel.
+And logging out and back in again.
 
-<bold>Cancelled Bullets</bold> - When text is bulleted and then converted back to plaintext, it has a small indent that is not removable. It goes away when next the note is loaded and is not show in printed copy but is annoying! Its an upstream issue and its being worked on.
+<bold>For a Specific App</bold>
+Assuming you are opening tomboy-ng from the menu system, the best place to set one or more env vars is in its desktop file. Its usually /usr/share/applications/tomboy-ng.desktop and needs root access to edit it. You will find it has a line that looks like this -
+
+<monospace>Exec=tomboy-ng %f</monospace>
+
+You need to make it look like this (eg) -
+
+<monospace>Exec=QT_PLATFORM=xcb QT_PLATFORMTHEME='gtk2'  tomboy-ng  %f</monospace>
+
+That example shows setting both vars, you can, of course, just set one or the other.
+
+<bold>Using a script</bold>
+Create a 'bin' directory in your home directory (if its not already there) and put a script like this in there -
+
+<monospace>#!/usr/bin/bash</monospace>
+<monospace>QT_QPA_PLATFORM=xcb /usr/bin/tomboy-ng %f</monospace>
+
+Debian nicely adds ~/bin to your PATH (on next login) and the menu system will find the script before it finds the tomboy-ng binary. However, if you have tomboy-ng set to autostart, that happens before the OS fixes up you PATH and autostart will directly try to start the real binary. Solution, edit $HOME/.config/autostart/tomboy-ng.desktop to set an absolute path to the script, the Exec line like this -
+
+<monospace>Exec=/home/YOURNAME/bin/tomboy-ng %f</monospace>
+Assuming your user name is not "YOURNAME", you should substitute your real user name there.
+
+
+<size:large><bold>Cancelled Bullets</bold></size:large>
+When text is bulleted and then converted back to plaintext, it has a small indent that is not removable. It goes away when next the note is loaded and is not show in printed copy but is annoying! Its an upstream issue and its being worked on.
 
 <size:large><bold>Dark Theme</bold></size:large>
 GTK2 (and Qt5 using tricks mentioned above) do a clean and functional Dark Theme. Windows can pick up Dark from the OS but its not a completely satisfactory solution.
@@ -122,14 +160,14 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2023-04-09T17:13:18.6291587+10:00</last-change-date>
-  <last-metadata-change-date>2023-04-09T17:13:18.6291587+10:00</last-metadata-change-date>
+  <last-change-date>2023-05-09T15:18:43.2439021+10:00</last-change-date>
+  <last-metadata-change-date>2023-05-09T15:18:43.2439021+10:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1211</width>
   <height>626</height>
-  <x>131</x>
-  <y>106</y>
+  <x>602</x>
+  <y>77</y>
   <open-on-startup>False</open-on-startup>
 </note>

@@ -35,16 +35,18 @@ On  Windows and Mac tomboy-ng uses native libraries, on Linux, tomboy-ng comes i
 
 While options below are familiar to Linux users, Mac and Windows users may like to look at some examples further down to see how to use them.
 
-<size:huge>DARK THEME</size:huge>
-The GTK2 version follows the system colour theme. However, the Qt5 version (eg Bookworm and later) requires some instruction from the user. Using the --dark-theme is simplest and probably the least satisfactory approach, the note edit screen is a dark theme, other windows vary. A better Qt5 approach is to set an environment variable that instructs the app to follow the existing (generally gtk2) theme. You may need to install qt5-style-plugins package. Either add the variable ahead of the tomboy-ng command line like this -
+<size:huge>COLORS and DARK THEME</size:huge>
+The GTK2 version follows the system colour theme.
 
-QT_QPA_PLATFORMTHEME=gtk2  tomboy-ng
+However, the Qt5 version (eg Bookworm and later) requires some instruction from the user. Using the --dark-theme is the simplest and probably the least satisfactory approach, the note edit screen is a dark theme, other windows vary. Qt5 (and Qt6) versions after 0.36c install qt5ct (or qt6ct) and are installed with a command line parameter that instructs the app to use it. So, control your tomboy-ng colours using qt5ct or qt6ct. You may like to install qt5-style-plugins package. If you start tomboy-ng without the desktop file, perhaps on the command line, it will look for the env variable  QT_QPA_PLATFORMTHEME or you can supply a command line option, --platformtheme qt5ct.
 
-or, a more general solution, applying to all Qt5 apps, add that var to either /etc/environment (requires root or, simpler in a .xsessionrc file in your home dir.
+A more general solution, applying to all Qt5 apps, is to add that var to either /etc/environment (requires root) or, simpler in a .xsessionrc file in your home dir.
 
-cd ; echo "export QT_QPA_PLATFORMTHEME=gtk2" &gt;&gt; .xsessionrc
+cd ; echo "export QT_QPA_PLATFORMTHEME=qt5ct" &gt;&gt; .xsessionrc
 
-Probably need to log out and back in again. A more comprehensive approach is to install the qt5ct package and give your Qt5 applications the same environment variable as above but set to qt5ct (instead of gtk2). This will allow you to choose one of the qt5ct colour themes or alter a copy with colours of your choice. The qt5ct command has a nice GUI.
+Probably need to log out and back in again.
+
+Note that with the Qt versions, setting platformtheme to gtk2 or gtk3 can cause problems, particularly with the SaveDialog (ie when exporting a note) due to an upstream problem.
 
 On Windows, tomboy-ng  will follow the system for Dark Theme but only for the note edit window. Using the --dark-theme switch is not recommended.
 
@@ -90,6 +92,8 @@ Generate a lot of logging information on the console during a sync, index or spe
  --debug-log=LOGFILE
 Direct debug info to a file, this is necessary to see that output on Windows and Mac and sometimes useful on Linux. LOGFILE is a  filename and a (writable) path to that filename. See section below on debugging.
 
+--platformtheme qt5ct
+Use with Qt versions ONLY, will instruct the app to display the colors defined in qt5ct. The qt5ct app has a nice GUI where you can select the colors that suite you.
 
 
 <size:huge>FURTHER HELP</size:huge>
@@ -143,8 +147,8 @@ Please send bug reports to the tomboy-ng Github Issues system, see above.
 
 
 </note-content></text>
-  <last-change-date>2023-03-18T21:25:09.3509432+11:00</last-change-date>
-  <last-metadata-change-date>2023-03-18T21:25:09.3509432+11:00</last-metadata-change-date>
+  <last-change-date>2023-06-24T16:18:48.9758639+10:00</last-change-date>
+  <last-metadata-change-date>2023-06-24T16:18:48.9758639+10:00</last-metadata-change-date>
   <create-date>2021-08-01T19:13:24.7238449+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

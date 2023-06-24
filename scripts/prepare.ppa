@@ -368,6 +368,10 @@ if [ -f tomboy-ng-master.zip ]; then
 	if [ "$WIDGET" = "Qt5" ]; then
 		dch --append "Qt5 version"
 		cp debian/rules.qt5 debian/rules
+		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
+	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
+	    # this changes the desktop file in source tree and is not reversed. 
+	    sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" "glyphs"/"$APP".desktop
 		# cp debian/control.qt5 debian/control
 		# sed  "s/#REPLACEME_QT5/DESTDIR += -qt5/" Makefile > Makefile.temp
 		# mv Makefile.temp Makefile

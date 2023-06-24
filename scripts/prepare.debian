@@ -6,7 +6,7 @@ set -e
 # This stript is useful to prepare the tomboy-ng source tree to make an
 # Debian Source Package
 
-# If you submit it to Debian Mentors and get an error, or a revision of the packaing
+# If you submit it to Debian Mentors and get an error, or a revision of the packaging
 # is requested, DO NOT DELETE THE WORKING Build* DIR, you need it to generate 
 # fixes (run prepare.debian again, this time without the -n. Totally different 
 # behaviour !
@@ -359,6 +359,9 @@ if [ -f tomboy-ng-master.zip ]; then
 	if [ "$WIDGET" = "Qt5" ]; then
 	    touch Qt5			# leave semaphore file
 	    scripts/mkcontrol.bash debian/ "$DISTRO1" qt5
+	    # we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
+	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it. 
+	    sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" "glyphs"/"$APP".desktop
 	else
 		scripts/mkcontrol.bash debian/ "$DISTRO1"
 	fi
