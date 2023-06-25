@@ -27,7 +27,7 @@ While options below are familiar to Linux users, Mac and Windows users may like 
 .SH COLORS and DARK THEME
 The GTK2 version follows the system colour theme.
 
-However, the Qt5 version (eg Bookworm and later) requires some instruction from the user. Using the \-\-dark\-theme is the simplest and probably the least satisfactory approach, the note edit screen is a dark theme, other windows vary. Qt5 (and Qt6) versions after 0.36c install qt5ct (or qt6ct) and are installed with a command line parameter that instructs the app to use it. So, control your tomboy\-ng colours using qt5ct or qt6ct. You may like to install qt5\-style\-plugins package. If you start tomboy\-ng without the desktop file, perhaps on the command line, it will look for the env variable  QT_QPA_PLATFORMTHEME or you can supply a command line option, \-\-platformtheme qt5ct.
+However, the Qt5 version (eg Bookworm and later) requires some instruction from the user. Using the \-\-dark\-theme is the simplest and probably the least satisfactory approach, the note edit screen is a dark theme, other windows vary. Qt5 (and Qt6) versions after 0.36c install qt5ct (or qt6ct) and are installed with a environment variable applying to only tomboy\-ng. So, control your tomboy\-ng colours using qt5ct or qt6ct. You may like to install qt5\-style\-plugins package. If you start tomboy\-ng, perhaps on the command line, it will not see the env variable so either set it yourself, eg QT_QPA_PLATFORMTHEME=qt5ct,  or supply a command line option, \-\-platformtheme qt5ct that does a similar but not quite as complete job.
 
 A more general solution, applying to all Qt5 apps, is to add that var to either /etc/environment (requires root) or, simpler in a .xsessionrc file in your home dir.
 

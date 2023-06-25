@@ -563,7 +563,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 224
+        ClientHeight = 243
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
@@ -597,7 +597,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 548
           Height = 32
-          Top = 182
+          Top = 201
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -615,7 +615,7 @@ object Sett: TSett
           Left = 172
           Height = 23
           Hint = 'Sync, if possible once an hour.'
-          Top = 191
+          Top = 210
           Width = 101
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 30
@@ -657,7 +657,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 15
           Height = 23
-          Top = 191
+          Top = 210
           Width = 127
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Enabled'
@@ -679,7 +679,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 35
+          ClientHeight = 54
           ClientWidth = 483
           TabOrder = 2
           object LabelToken: TLabel

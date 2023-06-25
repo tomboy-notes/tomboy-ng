@@ -1184,12 +1184,16 @@ end;
     are always used for the KMemo and possibly, when DarkThemeSwich is used, for what other
     screens I can.   }
 
+
+{$define DEBUGCOLOUR}
 procedure TSett.SetColours;
 {$if defined(LCLQT5) or defined(LCLQT6)}
 var
     Qt_Colors  : TQt_Colors; {$endif}
 // pink = $EEEEFF, White is $FFFFFF, Black is $000000
 begin
+    {$ifdef DEBUGCOLOUR}writeln('In TSett.SetColours');
+    writeln('QT_QPA_PLATFORMTHEME is ' + GetEnvironmentVariable('QT_QPA_PLATFORMTHEME')); {$endif}
     {$if defined(LCLQT5) or defined(LCLQT6)}                       // First we will try the special Qt5 ways of settings colours
     // If user has set QT_QPA_PLATFORMTHEME=gtk2 this bit drops through, all components except KMemo are good.
     Qt_Colors  := TQt_Colors.Create;      // needs some work for qt6
@@ -1203,6 +1207,7 @@ begin
            LinkColour := Qt_Colors_Rec.QColorLink;
            AltBackGndColor := Qt_Colors_Rec.QColorLessBright; // Selected background colour
            QtOwnsColours := true;
+           {$ifdef DEBUGCOLOUR}writeln('Colors set by qt5ct');{$endif}
            exit;
        end;
     finally
@@ -1210,7 +1215,7 @@ begin
     end;
     {$endif}
     if UserSetColours then exit;        // will have already been set by config or by colour form.
-	if DarkTheme or DarkThemeSwitch then begin
+    if DarkTheme or DarkThemeSwitch then begin
             BackGndColour:= $303030;        // KMemo Background
             AltColour  := $606060;          // Some panel's background color
             HiColour   := $600001;          // a dark blue;  This is, eg Crtl H type highlighting, not selection !
@@ -1218,6 +1223,7 @@ begin
             TitleColour:= $B8B800;
             LinkColour := $B8B801;
             AltBackGndColor := clGray;     // Selected text, both focused and unfocused
+            {$ifdef DEBUGCOLOUR}writeln('Dark Colors set by code');{$endif}
     end else begin
         BackGndColour := clCream;
         AltColour   := clDefault;
@@ -1226,6 +1232,7 @@ begin
         TitleColour := clBlue;
         LinkColour  := clBlue+1;       //  One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
         AltBackGndColor := clLtGray;
+        {$ifdef DEBUGCOLOUR}writeln('Light Colors set by code');{$endif}
     end;
     // if DarkThemeSwitch then color := AltColour;    No, cannot change color of the Tabsheet, looks horrible
 
