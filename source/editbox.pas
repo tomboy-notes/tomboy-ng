@@ -3277,6 +3277,7 @@ begin
         case Key of
             VK_F : SpeedButtonSearchClick(self);                            // Search all notes
             VK_G : if (EditFind.Text <> rsMenuSearch) then SpeedLeftClick(self);
+            VK_Z : if Use_Undoer then Undoer.UnDo;
             {$ifndef DARWIN}
             VK_RIGHT, VK_LEFT : exit;   // KMemo knows how to do this, select word ...
             {$endif}
