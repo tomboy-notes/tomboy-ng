@@ -306,7 +306,7 @@ begin
     if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
     busy := true;
     ListViewReport.Clear;
-    Result := ManualSync;
+    Result := ManualSync();
 end;
 
 procedure TFormSync.FormCreate(Sender: TObject);
@@ -337,9 +337,12 @@ begin
         ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
         Async.UserName := Sett.EditUserName.text;
         Async.SetTransport(TransPort);
+        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to Test Transport.');
+
         if ASync.TestConnection() <> SyncReady then begin
+            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
             if ASync.DebugMode then debugln('Failed testConnection');
-            // in autosync mode, form is not visible, we just send a notify that cannot sync right now.
+            // in autosync mode, form is not visible, we just send a notify that cannot sync right now.and return false
             if not Visible then begin
                 SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
@@ -355,16 +358,17 @@ begin
                     Mainform.TrayIcon.ShowBalloonHint;
                     {$endif}  *)
                 end;
-                exit;
-            end else begin
+                exit(false);
+            end else begin                                                      // busy unset in finally clause
                 //Screen.Cursor := crDefault;
                 showmessage('Unable to sync because ' + ASync.ErrorString);
                 //Screen.Cursor := crHourGlass;
                 FormSync.ModalResult := mrAbort;
-                exit(false);
+                exit(false);                                                    // busy unset in finally clause
             end;
             exit(false);        //redundant ?
         end;
+        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsRunningSync;
         Application.ProcessMessages;
         ASync.TestRun := False;

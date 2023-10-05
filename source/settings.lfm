@@ -1,19 +1,19 @@
 object Sett: TSett
-  Left = 37
+  Left = 712
   Height = 530
-  Top = 426
+  Top = 259
   Width = 726
   BorderIcons = []
   Caption = 'Form Caption'
   ClientHeight = 530
   ClientWidth = 726
+  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabSpell
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 5
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -46,10 +46,10 @@ object Sett: TSett
         Width = 353
         BorderSpacing.Top = 4
         Caption = 'Set Path to Note Files'
-        OnClick = ButtonSetNotePathClick
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
+        OnClick = ButtonSetNotePathClick
       end
       object LabelSettingPath: TLabel
         AnchorSideLeft.Control = Label1
@@ -110,10 +110,10 @@ object Sett: TSett
         BorderSpacing.Left = 10
         BorderSpacing.Right = 7
         Caption = 'Use Default Notes Location'
-        OnClick = ButtDefaultNoteDirClick
         ParentShowHint = False
         ShowHint = True
         TabOrder = 1
+        OnClick = ButtDefaultNoteDirClick
       end
       object CheckAutostart: TCheckBox
         AnchorSideLeft.Control = CheckShowSplash
@@ -125,8 +125,8 @@ object Sett: TSett
         Width = 172
         BorderSpacing.Top = 30
         Caption = 'Autostart at Logon'
-        OnChange = CheckAutostartChange
         TabOrder = 2
+        OnChange = CheckAutostartChange
       end
       object CheckShowSearchAtStart: TCheckBox
         AnchorSideLeft.Control = ButtDefaultNoteDir
@@ -137,8 +137,8 @@ object Sett: TSett
         Width = 185
         BorderSpacing.Left = 10
         Caption = 'Show Search at Start'
-        OnChange = SaveSettings
         TabOrder = 3
+        OnChange = SaveSettings
       end
       object CheckShowSplash: TCheckBox
         AnchorSideLeft.Control = ButtonSetNotePath
@@ -153,11 +153,11 @@ object Sett: TSett
         BorderSpacing.Top = 40
         Caption = 'Show Splash at Start'
         Checked = True
-        OnChange = SaveSettings
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
         TabOrder = 4
+        OnChange = SaveSettings
       end
       object CheckNotifications: TCheckBox
         AnchorSideLeft.Control = CheckShowSplash
@@ -170,9 +170,9 @@ object Sett: TSett
         BorderSpacing.Top = 30
         Caption = 'Show Notifications'
         Checked = True
-        OnChange = SaveSettings
         State = cbChecked
         TabOrder = 5
+        OnChange = SaveSettings
       end
       object CheckEscClosesNote: TCheckBox
         AnchorSideLeft.Control = CheckShowSearchAtStart
@@ -182,8 +182,8 @@ object Sett: TSett
         Top = 284
         Width = 149
         Caption = 'Esc Closes Note'
-        OnChange = SaveSettings
         TabOrder = 6
+        OnChange = SaveSettings
       end
     end
     object TabDisplay: TTabSheet
@@ -211,9 +211,9 @@ object Sett: TSett
           BorderSpacing.Left = 19
           Caption = 'Big'
           Checked = True
-          OnChange = SaveSettings
           TabOrder = 0
           TabStop = True
+          OnChange = SaveSettings
         end
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
@@ -224,8 +224,8 @@ object Sett: TSett
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
-          OnChange = SaveSettings
           TabOrder = 1
+          OnChange = SaveSettings
         end
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
@@ -236,8 +236,8 @@ object Sett: TSett
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
-          OnChange = SaveSettings
           TabOrder = 2
+          OnChange = SaveSettings
         end
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
@@ -248,8 +248,8 @@ object Sett: TSett
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
-          OnChange = SaveSettings
           TabOrder = 3
+          OnChange = SaveSettings
         end
       end
       object CheckShowIntLinks: TCheckBox
@@ -262,8 +262,8 @@ object Sett: TSett
         Width = 176
         BorderSpacing.Top = 20
         Caption = 'Show Internal Links'
-        OnChange = SaveSettings
         TabOrder = 0
+        OnChange = SaveSettings
       end
       object CheckShowExtLinks: TCheckBox
         AnchorSideLeft.Control = GroupBox5
@@ -275,8 +275,8 @@ object Sett: TSett
         Width = 184
         BorderSpacing.Top = 18
         Caption = 'Show External  Links'
-        OnChange = SaveSettings
         TabOrder = 1
+        OnChange = SaveSettings
       end
       object CheckManyNotebooks: TCheckBox
         AnchorSideLeft.Control = GroupBox5
@@ -289,10 +289,10 @@ object Sett: TSett
         Width = 353
         BorderSpacing.Top = 18
         Caption = 'Allow a Note to be in Multiple Notebooks.'
-        OnChange = SaveSettings
         ParentShowHint = False
         ShowHint = True
         TabOrder = 2
+        OnChange = SaveSettings
       end
       object ButtonFont: TButton
         AnchorSideLeft.Control = ComboHelpLanguage
@@ -303,10 +303,10 @@ object Sett: TSett
         Width = 167
         Anchors = [akTop, akLeft, akRight]
         Caption = 'Usual Font'
-        OnClick = ButtonFontClick
         ParentShowHint = False
         ShowHint = True
         TabOrder = 4
+        OnClick = ButtonFontClick
       end
       object ButtonFixedFont: TButton
         AnchorSideLeft.Control = ComboHelpLanguage
@@ -321,10 +321,10 @@ object Sett: TSett
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Top = 17
         Caption = 'Fixed Font'
-        OnClick = ButtonFixedFontClick
         ParentShowHint = False
         ShowHint = True
         TabOrder = 5
+        OnClick = ButtonFixedFontClick
       end
       object ButtonSetColours: TButton
         AnchorSideLeft.Control = ComboHelpLanguage
@@ -337,8 +337,8 @@ object Sett: TSett
         Width = 240
         BorderSpacing.Top = 18
         Caption = 'Set Colours'
-        OnClick = ButtonSetColoursClick
         TabOrder = 3
+        OnClick = ButtonSetColoursClick
       end
       object ComboHelpLanguage: TComboBox
         AnchorSideLeft.Control = ButtonFont
@@ -354,9 +354,9 @@ object Sett: TSett
         AutoSize = False
         BorderSpacing.Right = 30
         ItemHeight = 0
-        OnChange = ComboHelpLanguageChange
         Style = csDropDownList
         TabOrder = 6
+        OnChange = ComboHelpLanguageChange
       end
       object Label10: TLabel
         AnchorSideLeft.Control = ComboHelpLanguage
@@ -382,11 +382,11 @@ object Sett: TSett
         BorderSpacing.Top = 18
         Caption = 'Use Undo Redo (may slow editing)'
         Checked = True
-        OnChange = SaveSettings
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
         TabOrder = 8
+        OnChange = SaveSettings
       end
       object ComboDateFormat: TComboBox
         AnchorSideLeft.Control = ComboHelpLanguage
@@ -402,9 +402,9 @@ object Sett: TSett
         AutoSize = False
         BorderSpacing.Top = 5
         ItemHeight = 0
-        OnChange = SaveSettings
         Style = csDropDownList
         TabOrder = 9
+        OnChange = SaveSettings
       end
       object Label17: TLabel
         AnchorSideLeft.Control = ComboHelpLanguage
@@ -425,9 +425,9 @@ object Sett: TSett
         Top = 298
         Width = 69
         Caption = 'Italics'
-        OnChange = SaveSettings
         ParentShowHint = False
         TabOrder = 10
+        OnChange = SaveSettings
       end
       object CheckStampSmall: TCheckBox
         AnchorSideTop.Control = ComboDateFormat
@@ -441,9 +441,9 @@ object Sett: TSett
         Anchors = [akTop, akRight]
         BorderSpacing.Top = 8
         Caption = 'Small'
-        OnChange = SaveSettings
         ParentShowHint = False
         TabOrder = 11
+        OnChange = SaveSettings
       end
       object CheckStampBold: TCheckBox
         AnchorSideLeft.Control = CheckStampItalics
@@ -456,9 +456,9 @@ object Sett: TSett
         Width = 59
         BorderSpacing.Left = 50
         Caption = 'Bold'
-        OnChange = SaveSettings
         ParentShowHint = False
         TabOrder = 12
+        OnChange = SaveSettings
       end
       object CheckFindToggles: TCheckBox
         AnchorSideLeft.Control = CheckUseUndo
@@ -472,9 +472,9 @@ object Sett: TSett
         BorderSpacing.Top = 18
         Caption = 'Find Command Toggles'
         Checked = True
-        OnChange = SaveSettings
         State = cbChecked
         TabOrder = 13
+        OnChange = SaveSettings
       end
     end
     object TabSync: TTabSheet
@@ -563,7 +563,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 243
+        ClientHeight = 224
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
@@ -596,35 +596,14 @@ object Sett: TSett
           AnchorSideBottom.Control = GroupBoxSync
           AnchorSideBottom.Side = asrBottom
           Left = 548
-          Height = 32
-          Top = 201
+          Height = 28
+          Top = 186
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
           BorderSpacing.Bottom = 10
           Caption = 'Setup'
           OnClick = SpeedSetupSyncClick
-        end
-        object CheckBoxAutoSync: TCheckBox
-          AnchorSideLeft.Control = CheckSyncEnabled
-          AnchorSideLeft.Side = asrBottom
-          AnchorSideTop.Control = SpeedSetupSync
-          AnchorSideRight.Control = SpeedSetupSync
-          AnchorSideBottom.Control = SpeedSetupSync
-          AnchorSideBottom.Side = asrBottom
-          Left = 172
-          Height = 23
-          Hint = 'Sync, if possible once an hour.'
-          Top = 210
-          Width = 101
-          Anchors = [akLeft, akBottom]
-          BorderSpacing.Left = 30
-          BorderSpacing.Right = 50
-          Caption = 'Auto Sync'
-          OnChange = CheckBoxAutoSyncChange
-          ParentShowHint = False
-          ShowHint = True
-          TabOrder = 0
         end
         object LabelSyncInfo1: TLabel
           AnchorSideLeft.Control = GroupBoxSync
@@ -649,21 +628,6 @@ object Sett: TSett
           BorderSpacing.Top = 10
           Caption = 'LabelSyncInfo2'
         end
-        object CheckSyncEnabled: TCheckBox
-          AnchorSideLeft.Control = Label4
-          AnchorSideTop.Control = SpeedSetupSync
-          AnchorSideTop.Side = asrCenter
-          AnchorSideBottom.Control = SpeedSetupSync
-          AnchorSideBottom.Side = asrBottom
-          Left = 15
-          Height = 23
-          Top = 210
-          Width = 127
-          Anchors = [akLeft, akBottom]
-          Caption = 'Sync Enabled'
-          OnChange = CheckSyncEnabledChange
-          TabOrder = 1
-        end
         object GroupBoxToken: TGroupBox
           AnchorSideLeft.Control = GroupBoxUser
           AnchorSideLeft.Side = asrBottom
@@ -679,9 +643,9 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 54
+          ClientHeight = 35
           ClientWidth = 483
-          TabOrder = 2
+          TabOrder = 0
           object LabelToken: TLabel
             AnchorSideLeft.Control = SpeedTokenActions
             AnchorSideLeft.Side = asrBottom
@@ -722,7 +686,7 @@ object Sett: TSett
           Caption = 'User'
           ClientHeight = 35
           ClientWidth = 181
-          TabOrder = 3
+          TabOrder = 1
           object EditUserName: TEdit
             AnchorSideLeft.Control = GroupBoxUser
             AnchorSideTop.Control = GroupBoxUser
@@ -740,6 +704,41 @@ object Sett: TSett
             Text = 'EditUserName'
           end
         end
+        object ComboSyncTiming: TComboBox
+          AnchorSideLeft.Control = LabelSyncTiming
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideBottom.Control = SpeedSetupSync
+          AnchorSideBottom.Side = asrCenter
+          Left = 128
+          Height = 29
+          Top = 185
+          Width = 194
+          Anchors = [akLeft, akBottom]
+          BorderSpacing.Left = 20
+          BorderSpacing.Right = 10
+          ItemHeight = 0
+          Items.Strings = (
+            'Manual'
+            'Hourly'
+            'Daily'
+            'Weekly'
+            'Monthly'
+          )
+          TabOrder = 2
+          Text = 'ComboSyncTiming'
+          OnChange = ComboSyncTimingChange
+        end
+        object LabelSyncTiming: TLabel
+          AnchorSideLeft.Control = LabelSyncInfo1
+          AnchorSideBottom.Control = SpeedSetupSync
+          AnchorSideBottom.Side = asrCenter
+          Left = 15
+          Height = 21
+          Top = 189
+          Width = 93
+          Anchors = [akLeft, akBottom]
+          Caption = 'Sync Timing'
+        end
       end
       object ComboSyncType: TComboBox
         AnchorSideLeft.Control = LabelSyncType
@@ -756,11 +755,11 @@ object Sett: TSett
           'File Sync - local or shared filesystem'
           'Github - free Github account required'
         )
-        OnChange = ComboSyncTypeChange
         ParentShowHint = False
         ShowHint = True
         TabOrder = 2
         Text = 'ComboSyncType'
+        OnChange = ComboSyncTypeChange
       end
       object LabelSyncType: TLabel
         AnchorSideLeft.Control = TabSync
@@ -868,8 +867,8 @@ object Sett: TSett
           BorderSpacing.Right = 7
           BorderSpacing.Bottom = 7
           Caption = 'Show Me'
-          OnClick = ButtonShowBackUpClick
           TabOrder = 0
+          OnClick = ButtonShowBackUpClick
         end
         object Label11: TLabel
           AnchorSideLeft.Control = Panel2
@@ -934,9 +933,9 @@ object Sett: TSett
           BorderSpacing.Top = 33
           MaxValue = 31
           MinValue = 1
-          OnChange = SpinDaysPerSnapshotChange
           TabOrder = 0
           Value = 7
+          OnChange = SpinDaysPerSnapshotChange
         end
         object SpinMaxSnapshots: TSpinEdit
           AnchorSideLeft.Control = Label9
@@ -949,9 +948,9 @@ object Sett: TSett
           BorderSpacing.Top = 11
           MaxValue = 10
           MinValue = 10
-          OnChange = SaveSettings
           TabOrder = 1
           Value = 20
+          OnChange = SaveSettings
         end
         object CheckAutoSnapEnabled: TCheckBox
           AnchorSideTop.Control = SpinDaysPerSnapshot
@@ -961,8 +960,8 @@ object Sett: TSett
           Top = 120
           Width = 177
           Caption = 'Use auto snapshots'
-          OnChange = CheckAutoSnapEnabledChange
           TabOrder = 2
+          OnChange = CheckAutoSnapEnabledChange
         end
         object Label5: TLabel
           AnchorSideTop.Control = SpinDaysPerSnapshot
@@ -999,10 +998,10 @@ object Sett: TSett
           BorderSpacing.Right = 7
           BorderSpacing.Bottom = 8
           Caption = 'Recover Lost Notes'
-          OnClick = ButtonSnapRecoverClick
           ParentShowHint = False
           ShowHint = True
           TabOrder = 3
+          OnClick = ButtonSnapRecoverClick
         end
         object ButtonManualSnap: TButton
           AnchorSideLeft.Control = Panel3
@@ -1017,10 +1016,10 @@ object Sett: TSett
           BorderSpacing.Left = 7
           BorderSpacing.Bottom = 8
           Caption = 'Take a Manual Snapshot'
-          OnClick = ButtonManualSnapClick
           ParentShowHint = False
           ShowHint = True
           TabOrder = 4
+          OnClick = ButtonManualSnapClick
         end
       end
     end
@@ -1122,10 +1121,10 @@ object Sett: TSett
         BorderSpacing.Left = 12
         BorderSpacing.Right = 7
         ItemHeight = 0
-        OnClick = ListBoxDicClick
         ScrollWidth = 456
         TabOrder = 0
         TopIndex = -1
+        OnClick = ListBoxDicClick
       end
       object LabelDicPrompt: TLabel
         AnchorSideRight.Control = ListBoxDic
@@ -1149,8 +1148,8 @@ object Sett: TSett
         Width = 143
         BorderSpacing.Top = 3
         Caption = 'Set Spell Library'
-        OnClick = ButtonSetSpellLibraryClick
         TabOrder = 1
+        OnClick = ButtonSetSpellLibraryClick
       end
       object ButtonSetDictionary: TButton
         AnchorSideLeft.Control = Label13
@@ -1162,8 +1161,8 @@ object Sett: TSett
         Width = 143
         BorderSpacing.Top = 3
         Caption = 'Set Dictionary'
-        OnClick = ButtonSetDictionaryClick
         TabOrder = 2
+        OnClick = ButtonSetDictionaryClick
       end
     end
   end
@@ -1277,8 +1276,8 @@ object Sett: TSett
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    OnClick = SpeedButtTBMenuClick
     PopupMenu = PMenuMain
+    OnClick = SpeedButtTBMenuClick
   end
   object SpeedButHelp: TSpeedButton
     AnchorSideTop.Control = SpeedButHide

@@ -92,6 +92,8 @@ function RestoreBadXMLChar(const Str : AnsiString) : AnsiString;
 function RemoveXml(const St : AnsiString) : AnsiString;
                         // Returns (0-x) index of string that contains passed term, -1 if not present
 function FindInStringList(const StL : TStringList; const FindMe : string) : integer;
+                        // Returns (0-x) index of exact matching string in array.
+function FindInStringArray(const AnArray : array of string; const FindMe : string) : integer;
 
                         // Passed  FFN, thats <path><ID><.note> and returns the Title, munge indicates
                         // make it suitable for use as a file name, an empty ret string indicates error
@@ -495,6 +497,19 @@ begin
         inc(i);
 	end;
 	result := -1;
+end;
+
+
+function FindInStringArray(const AnArray : array of string; const FindMe : string) : integer;
+var
+    i : integer = 0;    // OK, we always start at zero
+begin
+    while i < high(AnArray) do begin
+        if FindMe = AnArray[i] then       // Note, this is an exact match, not a pos() type one.
+            exit(i);
+        inc(i);
+    end;
+    result := -1;
 end;
 
 function SayDebugSafe(st: string) : boolean;

@@ -137,10 +137,9 @@ type
         CheckStampBold: TCheckBox;
         CheckStampItalics: TCheckBox;
         CheckStampSmall: TCheckBox;
-        CheckSyncEnabled: TCheckBox;
 		CheckNotifications: TCheckBox;
         CheckUseUndo: TCheckBox;
-        CheckBoxAutoSync: TCheckBox;
+        ComboSyncTiming: TComboBox;
         ComboDateFormat: TComboBox;
         ComboSyncType: TComboBox;
         ComboHelpLanguage: TComboBox;
@@ -152,6 +151,7 @@ type
         Label11: TLabel;
         Label16: TLabel;
         Label17: TLabel;
+        LabelSyncTiming: TLabel;
         LabelSyncType: TLabel;
         Label5: TLabel;
         Label6: TLabel;
@@ -243,13 +243,14 @@ type
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
-        procedure CheckBoxAutoSyncChange(Sender: TObject);
+//        procedure CheckBoxAutoSyncChange(Sender: TObject);
+        procedure ComboSyncTimingChange(Sender: TObject);
         procedure MenuItemCopyTokenClick(Sender: TObject);
         procedure MenuItemGetTokenClick(Sender: TObject);
         procedure MenuItemPasteTokenClick(Sender: TObject);
                 { Called when ANY of the setting check boxes change so we can save. }
         procedure SaveSettings(Sender: TObject);
-        procedure CheckSyncEnabledChange(Sender: TObject);
+//        procedure CheckSyncEnabledChange(Sender: TObject);
         procedure ComboHelpLanguageChange(Sender: TObject);
         procedure ComboSyncTypeChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -270,14 +271,18 @@ type
         procedure TabBasicResize(Sender: TObject);
         procedure TabRecoverResize(Sender: TObject);
         procedure TabSpellResize(Sender: TObject);
+                        { Called once an hour (maybe each half an hour ?) and might trigger
+                          a Sync or Snapshot depending on settings. }
         procedure TimerAutoSyncTimer(Sender: TObject);
                         // Sets default colours, depending on dark or light theme
                         // Called from MainForm.ShowForm
         procedure SetColours;
 
     private
-        SyncFileEnabled, SyncGithubEnabled: boolean;
+//        SyncFileEnabled, SyncGithubEnabled: boolean;
         SyncFileAuto, SyncGithubAuto: boolean;
+        SyncTimingFileIndex, SyncTimingGithubIndex : integer;   // Holds ComboBox index for each particular sync
+        SyncTimingFileLast, SyncTimingGitHubLast : TDateTime;   // The time the last indicated sync was run (manual or auto).
                         { eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
                         Being non empty indicates it worked sometime, ie is Valid }
         SyncFileRepo : string;
@@ -327,7 +332,8 @@ type
         procedure SetHelpLanguage();
                             // Saves all current settings to disk. Call when any change is made. If unable
                             // to write to disk, returns False, If IgnoreMask, writes even if masked.
-        function WriteConfigFile(IgnoreMask : boolean = false): boolean;
+                            // WriteLstSync is only used just after an auto sync.
+        function WriteConfigFile(IgnoreMask : boolean = false; WriteLastSync : boolean = false): boolean;
 		function fGetValidSync: boolean;
                 // Must be passed either a valid sync repo address, rsSyncNotConfig or ''
         //procedure fSetValidSync(Repo: string);
@@ -386,7 +392,8 @@ type
             contain valid full file names.}
         SpellConfig : boolean;
 
-            { Triggers a Sync, if its not all setup aready and working, user show and error }
+            { Triggers a Sync, if its not all setup aready and working, user is shown error.
+              Called when MainMenu Sync is click if Sett.ValidSync is true. So, a Manual Sync ? }
         procedure Synchronise();
 
         property ValidSync : boolean read fGetValidSync;
@@ -409,8 +416,16 @@ type
         function GetSyncFileRepo() : string;
     end;
 
+{$DEFINE TESTAUTOTIMING}
+
 var
     Sett : TSett;
+    SyncTimingStates : array of string = ('manual', 'hourly', 'daily', 'weekly');  // these are possible auto sync states.
+    {$ifdef TESTAUTOTIMING}
+    SyncTimingFactors : array of real =  (0.0,      (1.0/2400),   0.01,     0.07);   // these are elapsed time for each state to retrigger  100 times faster
+    {$else}
+    SyncTimingFactors : array of real =  (0.0,      (1.0/24),   1.0,     7.0);       // these are elapsed time for each state to retrigger
+    {$endif}
 
 const
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
@@ -421,8 +436,8 @@ implementation
 
 {$R *.lfm}
 
-//{$DEFINE TESTAUTOSNAP}
-{$define DEBUG}
+
+{$.define DEBUG}
 
 { TSett }
 
@@ -442,8 +457,8 @@ uses IniFiles, LazLogger,
     Clipbrd,
     tb_symbol,
     uQt_Colors,
-    ResourceStr;     // only partially so far ....
-
+    ResourceStr,     // only partially so far ....
+    dateutils;       // Managing Sync Timing
 var
     Spell: THunspell;
     // Initially the first place we look for dictionaries, later its the path to
@@ -451,7 +466,8 @@ var
      DicPath : AnsiString;
 
 
-
+const   TooEarlyDate = '1900-01-01T01:01:10';         // An indication its not a real datetime for our purpose
+        EarlyDate = '1971-01-01T00:00:00';            // Something to compare with, later than TooEarlyData
 
 
 procedure TSett.SetFontSizes;
@@ -890,6 +906,27 @@ var
    ConfigFile : TINIFile;
    i : integer;
    Uch : String[10];
+//   SyncTimingSt : string;
+
+   function GetSyncTimingIndex(Key, OldAuto, OldEnabled : string) : integer;
+        var
+            SyncTimingSt : string;
+        begin
+            SyncTimingSt := ConfigFile.readstring('SyncSettings', Key, '');
+            if SyncTimingSt = '' then begin                                     // If blank, maybe user just updated to 0.37+ ?
+                if ('true' = Configfile.ReadString('SyncSettings', OldAuto, 'false'))
+                        and ('true' = Configfile.ReadString('SyncSettings', OldEnabled, 'false'))    then
+                    Result := FindInStringArray(SyncTimingStates, 'hourly')
+                else  Result := 0;                                              // 0 represents 'manual', nothing auto happening
+            end else begin
+                Result := FindInStringArray(SyncTimingStates, SyncTimingSt);    // look for it in state array 0..x
+                if Result < 0 then begin
+                    debugln('ERROR - bad Sync Timing State word in config, SyncSettings:SyncTimingFile:' + SyncTimingSt);
+                    Result := 0;                                                // Manual so nothing happens
+                end;
+            end;
+        end;
+
 begin
     // TiniFile does not care it it does not find the config file, just returns default values.
      ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
@@ -945,21 +982,49 @@ begin
         SetHelpLanguage();
 
         // ------------------  S Y N C   S E T T I N G S --------------------------
+
         case ConfigFile.readstring('SyncSettings', 'SyncOption', 'AlwaysAsk') of
             'AlwaysAsk' : begin SyncOption := AlwaysAsk; RadioAlwaysAsk.Checked := True; end;
             'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
             'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 	    end;
+
+
+
+       SyncTimingFileIndex := GetSyncTimingIndex('SyncTimingFile', 'Autosync', 'FileSyncEnabled');             // this is new in 0.37+
+       SyncTimingGithubIndex := GetSyncTimingIndex('SyncTimingGitHub', 'AutosyncGit',  'GitSyncEnabled');
+
+
+{        if I > -1 then
+            SyncTimingFileIndex := I
+        else SyncTimingFileIndex := 0;                                                                            // 0 means manual, ie no auto
+        I := FindInStringArray(SyncTimingStates, ConfigFile.readstring('SyncSettings', 'SyncTimingGithub', ''));
+        if I > -1 then
+            SyncTimingGithubIndex := I
+        else SyncTimingFileIndex := 0;         }
+
+
+            //ConfigFile.WriteString('SyncSettings', 'SyncTimingFile',  SyncTimingStates[SyncTimingFileIndex]);
+            //ConfigFile.WriteString('SyncSettings', 'SyncTimingGithub', SyncTimingStates[SyncTimingGithubIndex]);
+            //FindInStringArray(const AnArray : array of string; const FindMe : string) : integer;
+
         SyncFileRepo := ConfigFile.readstring('SyncSettings', 'SyncRepo', '');     // that is for file sync
         SyncGithubRepo := ConfigFile.readstring('SyncSettings', 'SyncRepoGithub', '');
-        SyncFileAuto :=    ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));
-        SyncGithubAuto  := ('true' = Configfile.ReadString('SyncSettings', 'AutosyncGit', 'false'));
-        SyncFileEnabled := ('true' = Configfile.ReadString('SyncSettings', 'FileSyncEnabled', 'false'));
-        SyncGithubEnabled :=   ('true' = Configfile.ReadString('SyncSettings', 'GitSyncEnabled', 'false'));
+
+            //ConfigFile.WriteString('SyncSettings', 'SyncTimingFile',  SyncTimingStates[SyncTimingFileIndex]);
+            //ConfigFile.WriteString('SyncSettings', 'SyncTimingGithub', SyncTimingStates[SyncTimingGithubIndex]);
+
+//        SyncFileAuto :=    ('true' = Configfile.ReadString('SyncSettings', 'Autosync', 'false'));                 // not used in 0.37+
+//        SyncGithubAuto  := ('true' = Configfile.ReadString('SyncSettings', 'AutosyncGit', 'false'));              // not used in 0.37+
+//        SyncFileEnabled := ('true' = Configfile.ReadString('SyncSettings', 'FileSyncEnabled', 'false'));            // not used in 0.37+
+//        SyncGithubEnabled :=   ('true' = Configfile.ReadString('SyncSettings', 'GitSyncEnabled', 'false'));         // not used in 0.37+
         LabelToken.caption := DecodeStringBase64(Configfile.ReadString('SyncSettings', 'GHPassword', ''));
         EditUserName.text := Configfile.ReadString('SyncSettings', 'GHUserName', '');
         ComboSyncTypeChange(self);
         // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
+        SyncTimingFileLast := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingFileLast', TooEarlyDate));
+        SyncTimingGitHubLast := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingGitHubLast', TooEarlyDate));
+
 
         // ------------- S P E L L I N G ---------------------------------------
         LabelLibrary.Caption := ConfigFile.readstring('Spelling', 'Library', '');
@@ -1037,7 +1102,7 @@ begin
     if InBool then result := 'true' else result := 'false';
 end;
 
-function TSett.WriteConfigFile(IgnoreMask : boolean = false) : boolean;
+function TSett.WriteConfigFile(IgnoreMask : boolean = false; WriteLastSync : boolean = false) : boolean;
 var
 	ConfigFile : TINIFile;
     i : integer;
@@ -1092,12 +1157,22 @@ begin
 
             // --------- S Y N C    S E T T I N G S ----------------------------
             { Other entries, such as SyncRepoURL, SyncURL, FileSyncRepo, UseFileSync are distractions introduced by a nasty
-            pull request I stupidly let through, ignore them, they will not go away unless manually deleted ! }
+            pull request I stupidly let through, ignore them, they will not go away unless manually deleted !
+            V0.37+ no longer use 'Autosync', 'AutosyncGit', 'FileSyncEnabled', 'GitSyncEnabled'
+            }
 
-	        ConfigFile.WriteString('SyncSettings', 'Autosync',    MyBoolStr(SyncFileAuto));
-            ConfigFile.WriteString('SyncSettings', 'AutosyncGit', MyBoolStr(SyncGithubAuto));
-            ConfigFile.WriteString('SyncSettings', 'FileSyncEnabled', MyBoolStr(SyncFileEnabled));
-            ConfigFile.WriteString('SyncSettings', 'GitSyncEnabled', MyBoolStr(SyncGithubEnabled));
+//	        ConfigFile.WriteString('SyncSettings', 'Autosync',        MyBoolStr(SyncFileAuto));                      // disabled in 0.37+
+//            ConfigFile.WriteString('SyncSettings', 'AutosyncGit',     MyBoolStr(SyncGithubAuto));
+//            ConfigFile.WriteString('SyncSettings', 'FileSyncEnabled', MyBoolStr(SyncFileEnabled));
+//            ConfigFile.WriteString('SyncSettings', 'GitSyncEnabled',  MyBoolStr(SyncGithubEnabled));
+
+
+if WriteLastSync then
+    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to write SyncTiming Index.');
+
+
+            ConfigFile.WriteString('SyncSettings', 'SyncTimingFile',  SyncTimingStates[SyncTimingFileIndex]);
+            ConfigFile.WriteString('SyncSettings', 'SyncTimingGithub', SyncTimingStates[SyncTimingGithubIndex]);
 	        if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
             else if RadioUseLocal.Checked then
@@ -1109,6 +1184,27 @@ begin
             ConfigFile.writestring('SyncSettings', 'SyncRepoGithub', SyncGithubRepo);
             ConfigFile.writestring('SyncSettings', 'GHPassword', EncodeStringBase64(LabelToken.Caption));
             ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
+
+
+
+            if WriteLastSync then begin                                         // only if called from TimerAutoSyncTimer where SyncTimingFileLast and SyncTimingGitHubLast are set.
+                if SyncTimingFileLast > ISO8601ToDate(EarlyDate) then begin  // either may not be set
+                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last File Sync Time.');
+                    ConfigFile.writestring('SyncSettings', 'SyncTimingFileLast', FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingFileLast));
+                end;
+                if SyncTimingGitHubLast > ISO8601ToDate(EarlyDate) then begin  // either may not be set
+                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last GitHub Sync Time.');
+                    ConfigFile.writestring('SyncSettings', 'SyncTimingGitHubLast', FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingGitHubLast));
+                end;
+{               TestSt := FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingFileLast);
+               Writeln('Incoming Datetime is ' + TestSt);
+               SyncTimingGitHubLast :=  ISO8601ToDate(TestSt);
+               Writeln('Converted and back ' + FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingGitHubLast));  }
+            end;
+
+            //
+
+            // SyncTimingFileLast, SyncTimingGitHubLast
 
             // --------- S P E L L     S E T T I N G S ----------------------------
             if SpellConfig then begin
@@ -1415,12 +1511,12 @@ end;
 procedure TSett.DoAutoSnapshot;
 var
    FR : TFormRecover;
-   {$ifdef TESTAUTOSNAP} Tick, Tock : qword;{$endif}
+   {$ifdef TESTAUTOTIMING} Tick, Tock : qword;{$endif}
    //Notifier : TNotifier;
 begin
     if MaskSettingsChanged then
         exit;                   // don't trigger this while GUI is being setup.
-    {$ifdef TESTAUTOSNAP}
+    {$ifdef TESTAUTOTIMING}
     Tick := gettickcount64();
     {$endif}
     FR := TFormRecover.Create(self);
@@ -1434,7 +1530,7 @@ begin
         FR.Free;
     end;
     // do this after snapshot run to ensure we don't queue up a list of calls.
-    {$ifdef TESTAUTOSNAP}
+    {$ifdef TESTAUTOTIMING}
     tock := gettickcount64();
     debugln('DoAutoSnapshot - Finished snapshot, took ' + dbgs(Tock - Tick) + 'mS');
     NextAutoSnapshot := now() + (SpinDaysPerSnapshot.value / (24*60)) ;
@@ -1519,6 +1615,9 @@ end;
 { Note that AutoSync and AutoSnapshot share a timer.  AutoSync runs on each 'tick' of the timer,
   that is, hourly, but autosnapshop looks at NextAutoSnapshot to decide if its time to do its thing.
 }
+
+
+
 { This method manages display of all the controls associated with setting
 up Sync connections. }
 procedure TSett.ComboSyncTypeChange(Sender: TObject);
@@ -1532,35 +1631,39 @@ begin
         0 : begin
                 LabelSyncInfo1.caption := rsFileSyncInfo1;
                 LabelSyncInfo2.caption := rsFileSyncInfo2;
-                CheckBoxAutoSync.Checked := SyncFileAuto;
-                CheckSyncEnabled.Checked := SyncFileEnabled;
+                ComboSyncTiming.Enabled := (SyncFileRepo <> '');
+                //CheckBoxAutoSync.Checked := SyncFileAuto;
+                //CheckSyncEnabled.Checked := SyncFileEnabled;
                 for Ctrl in [GroupBoxToken, GroupBoxUser, LabelToken, EditUserName]
                     do Ctrl.Visible := False;
                 if SyncFileRepo = '' then
                     LabelSyncRepo.Caption  := rsSyncNotConfig
                 else  LabelSyncRepo.Caption := SyncFileRepo;
+                ComboSyncTiming.ItemIndex := SyncTimingFileIndex;
             end;
         1 : begin
                 LabelSyncInfo1.caption := rsGithubSyncInfo1;
                 LabelSyncInfo2.caption := rsGithubSyncInfo2;
-                CheckBoxAutoSync.Checked := SyncGithubAuto;
-                CheckSyncEnabled.Checked := SyncGithubEnabled;
+                ComboSyncTiming.enabled := (SyncGithubRepo <> '');
+                //CheckBoxAutoSync.Checked := SyncGithubAuto;
+                //CheckSyncEnabled.Checked := SyncGithubEnabled;
                 for Ctrl in [GroupBoxToken, GroupBoxUser, LabelToken, EditUserName]
                     do Ctrl.Visible := True;
                 if SyncGithubRepo = '' then
                     LabelSyncRepo.Caption  := rsSyncNotConfig
                 else  LabelSyncRepo.Caption  := SyncGithubRepo;
-               end;
+                ComboSyncTiming.ItemIndex := SyncTimingGithubIndex;
+            end;
     end;
     if (LabelSyncRepo.Caption = rsSyncNotConfig)
     or (LabelSyncRepo.Caption = '') then begin
         SpeedSetUpSync.Caption := rsSetUp;
-        CheckBoxAutoSync.enabled := false;
-        CheckSyncEnabled.enabled := false;
+        //CheckBoxAutoSync.enabled := false;
+        //CheckSyncEnabled.enabled := false;
     end else begin
         SpeedSetUpSync.Caption := rsChangeSync;
-        CheckBoxAutoSync.enabled := true;
-        CheckSyncEnabled.enabled := true;
+        //CheckBoxAutoSync.enabled := true;
+        //CheckSyncEnabled.enabled := true;
     end;
    MaskSettingsChanged := RememberMask;
 end;
@@ -1602,9 +1705,9 @@ begin
             0 : SyncFileRepo := LabelSyncRepo.Caption;
             1 : SyncGithubRepo := LabelSyncRepo.Caption;
         end;
-        CheckSyncEnabled.Checked := True;
+        //CheckSyncEnabled.Checked := True;
         WriteConfigFile();
-        ComboSyncTypeChange(self);          // update button label
+        ComboSyncTypeChange(self);          // update button label, timing combo etc
     end;
 end;
 
@@ -1649,7 +1752,7 @@ begin
      SaveSettings(Sender);
 end;
 
-procedure TSett.CheckSyncEnabledChange(Sender: TObject);
+{procedure TSett.CheckSyncEnabledChange(Sender: TObject);       // ToDo : will not need this in new sync timing control mode.
 begin
     if MAskSettingsChanged then exit;
     case ComboSyncType.ItemIndex of
@@ -1657,9 +1760,9 @@ begin
         1 : SyncGithubEnabled  := CheckSyncEnabled.Checked;
     end;
     SaveSettings(self);
-end;
+end;   }
 
-procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);
+{procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);     // ToDo : will not need this in new sync timing control mode.
 begin
     // debugln('WARNING - CheckBoxAutoSyncChange called');
     if MAskSettingsChanged then exit;                       // Don't trigger timer during setup
@@ -1675,9 +1778,23 @@ begin
     end else
         case ComboSyncType.ItemIndex of
             0 : SyncFileAuto := False;
-            1 : SyncGithubAuto  := True;
+            1 : SyncGithubAuto  := False;                    // ToDo : this should be FALSE ??????? was 'true' ??????????????????????????????????????????????????????????????????????
             otherwise exit;
         end;
+    SaveSettings(Self);
+end;                                }
+
+procedure TSett.ComboSyncTimingChange(Sender: TObject);
+begin
+    if MAskSettingsChanged then exit;               // Don't trigger during setup
+    case ComboSyncType.ItemIndex of
+      0 : begin                                     // File Sync
+            SyncTimingFileIndex := ComboSyncTiming.ItemIndex;   // 0=off, 1=hourly, 2=dayly, 3=weekly, 4=monthly
+          end;
+      1 : begin
+            SyncTimingGithubIndex := ComboSyncTiming.ItemIndex;
+          end;
+    end;
     SaveSettings(Self);
 end;
 
@@ -1690,15 +1807,18 @@ begin
     // Might need to check, somehow, that no threads are still running ?  How ?
     SearchForm.FlushOpenNotes();
     FormSync.SetupSync := False;
-    if SyncFileEnabled then begin
-        FormSync.AnotherSync := SyncGithubEnabled;
+
+
+    if (SyncFileRepo <> '') then begin
+ //   if SyncFileEnabled then begin
+        FormSync.AnotherSync := (SyncGithubRepo <> '');
         FormSync.Transport:=TSyncTransport.SyncFile;
         if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
             FormSync.Show
         else
             FormSync.ShowModal;
     end;
-    if SyncGithubEnabled then begin
+    if (SyncGithubRepo <> '') then begin
         FormSync.AnotherSync := False;
         FormSync.Transport:=TSyncTransport.SyncGithub;
         if FormSync.busy or FormSync.Visible then       // busy should be enough but to be sure ....
@@ -1731,29 +1851,103 @@ begin
             Result := 'File Sync is not configured';
 end;
 
+{ New Ctrl of auto sync for v0.37+
+  Two vars per sync model -
+ SyncTimingFileLast, SyncTimingGitHubLast  : TDataTime
+            being last time that syn was run.
+            Set to TooEarlyDate if nothing in config, otherwise loaded from config at startup.
+
+  SyncTimingFileIndex, SyncTimingGithubIndex  : int,
+            index into array of possible auto sync timing states, 0 is manual or 'off'
+            if an Index is 0, then no auto will take place but manual is possible if a sync is configured.
+            Set from config at startup, if not in config, looks for [Autosync and FileSyncEnabled]
+            and [AutosyncGit and GitSyncEnabled] setting appropriate index to hourly if true.
+  ValidSync : property
+            ret true if one or the other sync appear valid, that is, have a repo set.
+
+  We determine that a sync should be run by anding -
+            (SyncRepo <> '')    eg result := (SyncFileRepo <> '') or (SyncGithubRepo <> '');
+            not busy
+            *Index > 0
+            Now() > (*Last + SyncTimingFactors)   or, perhaps, Now() > (*Last + SyncTimingFactors[Index])
+            where SyncTimingFactors is an array using same index and is time between sync for a particular timing setting
+}
+
 procedure TSett.TimerAutoSyncTimer(Sender: TObject);
+var
+    ASyncRan : boolean = false;
+
+    procedure RunAutoSync(const SyncTimingIndex : integer; var SyncTimingLast : TDateTime; Transport : TSyncTransport);
+    begin
+
+
+        if FormSync.Busy or (SyncTimingIndex = 0)
+                    or (Now() < (SyncTimingLast + SyncTimingFactors[SyncTimingIndex])) then exit;
+        if Transport = SyncFile then
+            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync for File Sync')
+        else
+            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync for GitLab Sync');
+        FormSync.NoteDirectory := Sett.NoteDirectory;
+        FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
+        FormSync.Transport:= Transport;
+        FormSync.SetupSync := False;                                        // That is, we are not, now, trying to setup sync
+        if FormSync.RunSyncHidden() then begin
+            ASyncRan := True;
+            SyncTimingLast := Now();
+        end;
+        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Finished');
+    end;
+
 begin
     // TimerAutoSync.enabled := False;
     TimerAutoSync.Interval:= 60*60*1000;                                    // do it again in one hour
-    {$IFDEF TESTAUTOSNAP}
+    {$IFDEF TESTAUTOTIMING}
     TimerAutoSync.Interval:= 60*1000;
-    debugln('WARNING - TESTAUTOSNAP is defined, timer called, MSC is ' + dbgs(MAskSettingsChanged));
+    //debugln('WARNING - TESTAUTOTIMING is defined, timer called, Mask SC is ' + dbgs(MAskSettingsChanged));
+    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : TESTAUTOTIMING defined, AutoSync x100 faster');
     {$ENDIF}
-    //if  (ValidSync <> '') and CheckBoxAutoSync.checked  and (not FormSync.Busy) then begin
-    if  SyncFileAuto and (SyncFileRepo <> '') and SyncFileEnabled and (not FormSync.Busy) then begin
+
+    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Timer Method called. Now='
+            + FormatDateTime('YYYY-MM-DD hh:mm:ss', now()) + ' Target='
+            + FormatDateTime('YYYY-MM-DD hh:mm:ss', SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex]));
+
+//    if  SyncFileAuto and (SyncFileRepo <> '') and SyncFileEnabled and (not FormSync.Busy) then begin
+
+
+
+
+    if (SyncFileRepo <> '') then
+        RunAutoSync(SyncTimingFileIndex, SyncTimingFileLast, TSyncTransport.SyncFile);
+    if (SyncGitHubRepo <> '') then
+        RunAutoSync(SyncTimingGitHubIndex, SyncTimingGitHubLast, TSyncTransport.SyncGitHub);
+{    if (SyncFileRepo <> '') and (not FormSync.Busy) and (SyncTimingFileIndex > 0)
+                and (Now() > (SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex])) then begin
+        {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Doing Auto File Sync.');{$endif}
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.Transport:=TSyncTransport.SyncFile;
         FormSync.SetupSync := False;                                        // That is, we are not, now, trying to setup sync
-        FormSync.RunSyncHidden()
+        FormSync.RunSyncHidden();
+        SyncTimingFileLast := Now();
+        ASyncRan := True;
     end;
-    if  SyncGithubAuto and (SyncGithubRepo <> '') and SyncGithubEnabled and (not FormSync.Busy) then begin
+//    if  SyncGithubAuto and (SyncGithubRepo <> '') and SyncGithubEnabled and (not FormSync.Busy) then begin
+
+
+    if (SyncGitHubRepo <> '') and (not FormSync.Busy) and (SyncTimingGitHubIndex > 0)
+                and (Now() > (SyncTimingGitHubLast + SyncTimingFactors[SyncTimingGitHubIndex])) then begin
+        {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Doing Auto Github Sync.');{$endif}
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.Transport:=TSyncTransport.SyncGithub;
         FormSync.SetupSync := False;
-        FormSync.RunSyncHidden()
-    end;
+        FormSync.RunSyncHidden();
+        SyncTimingGitHubLast := Now();
+        ASyncRan := True;
+    end;                        }
+
+    if ASyncRan then
+        WriteConfigFile(false, True);                    // WriteConfigFile is called from all over the place, only this call should update last sync times.
 
     // debugln('Now its about ' + DateTimeToStr(now));
     // debugln('Next Snap due ' + DateTimeToStr(NextAutoSnapshot));
