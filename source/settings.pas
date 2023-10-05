@@ -416,7 +416,7 @@ type
         function GetSyncFileRepo() : string;
     end;
 
-{$DEFINE TESTAUTOTIMING}
+{$.DEFINE TESTAUTOTIMING}
 
 var
     Sett : TSett;

@@ -286,6 +286,7 @@ type
         MenuItem4: TMenuItem;
         MenuItem5: TMenuItem;
         MenuItem6: TMenuItem;
+        MenuItemCopyPlain: TMenuItem;
         MenuItemExportPDF: TMenuItem;
         MenuItemBulletRight: TMenuItem;
         MenuItemBulletLeft: TMenuItem;
@@ -366,6 +367,7 @@ type
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure MenuItemExportPDFClick(Sender: TObject);
+        procedure MenuItemCopyPlainClick(Sender: TObject);
                                 // All the Text menu items go through this event
         procedure MenuTextGeneralClick(Sender: TObject);
 		procedure MenuFindPrevClick(Sender: TObject);
@@ -1687,6 +1689,11 @@ end;
 procedure TEditBoxForm.MenuItemExportPDFClick(Sender: TObject);
 begin
     SaveNoteAs('pdf');
+end;
+
+procedure TEditBoxForm.MenuItemCopyPlainClick(Sender: TObject);
+begin
+    Clipboard.AsText := KMemo1.Blocks.SelText;
 end;
 
 procedure TEditBoxForm.SaveNoteAs(TheExt : string);

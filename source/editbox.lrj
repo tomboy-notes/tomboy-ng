@@ -44,6 +44,7 @@
 {"hash":73741766,"name":"teditboxform.menufindprev.caption","sourcebytes":[70,105,110,100,32,80,114,101,118],"value":"Find Prev"},
 {"hash":19140,"name":"teditboxform.menuitemcut.caption","sourcebytes":[67,117,116],"value":"Cut"},
 {"hash":304761,"name":"teditboxform.menuitemcopy.caption","sourcebytes":[67,111,112,121],"value":"Copy"},
+{"hash":190022030,"name":"teditboxform.menuitemcopyplain.caption","sourcebytes":[67,111,112,121,32,80,108,97,105,110],"value":"Copy Plain"},
 {"hash":5671589,"name":"teditboxform.menuitempaste.caption","sourcebytes":[80,97,115,116,101],"value":"Paste"},
 {"hash":78392485,"name":"teditboxform.menuitemdelete.caption","sourcebytes":[68,101,108,101,116,101],"value":"Delete"},
 {"hash":195288076,"name":"teditboxform.menuitemselectall.caption","sourcebytes":[83,101,108,101,99,116,32,65,108,108],"value":"Select All"},

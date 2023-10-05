@@ -1,20 +1,20 @@
 object EditBoxForm: TEditBoxForm
-  Left = 219
+  Left = 463
   Height = 505
-  Top = 531
+  Top = 258
   Width = 695
   Caption = 'EditBoxForm'
   ClientHeight = 505
   ClientWidth = 695
   Constraints.MinHeight = 200
   Constraints.MinWidth = 200
+  LCLVersion = '3.99.0.0'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
   object PanelReadOnly: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = KMemo1
@@ -80,14 +80,14 @@ object EditBoxForm: TEditBoxForm
       Height = 29
       Top = 5
       Width = 136
-      OnChange = EditFindChange
-      OnEnter = EditFindEnter
-      OnExit = EditFindExit
-      OnKeyDown = EditFindKeyDown
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0
       Text = 'EditFind'
+      OnChange = EditFindChange
+      OnEnter = EditFindEnter
+      OnExit = EditFindExit
+      OnKeyDown = EditFindKeyDown
     end
     object LabelFindInfo: TLabel
       AnchorSideLeft.Control = LabelFindCount
@@ -203,9 +203,9 @@ object EditBoxForm: TEditBoxForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      OnClick = SpeedLeftClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedLeftClick
     end
     object SpeedRight: TSpeedButton
       AnchorSideLeft.Control = SpeedLeft
@@ -294,9 +294,9 @@ object EditBoxForm: TEditBoxForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      OnClick = SpeedRightClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedRightClick
     end
     object BitBtnCloseFind: TBitBtn
       AnchorSideTop.Control = PanelFind
@@ -343,8 +343,8 @@ object EditBoxForm: TEditBoxForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      OnClick = BitBtnCloseFindClick
       TabOrder = 1
+      OnClick = BitBtnCloseFindClick
     end
   end
   object Panel1: TPanel
@@ -445,10 +445,10 @@ object EditBoxForm: TEditBoxForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      OnClick = SpeedButtonNotebookClick
       ShowCaption = False
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedButtonNotebookClick
     end
     object SpeedRollBack: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonNotebook
@@ -535,10 +535,10 @@ object EditBoxForm: TEditBoxForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      OnClick = SpeedRollBackClick
       ShowCaption = False
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedRollBackClick
     end
     object SpeedButtonDelete: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonTools
@@ -625,9 +625,9 @@ object EditBoxForm: TEditBoxForm
         0003D8A7001AD2AA0033D2AA0033D6AD0019AAAA0003FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      OnClick = SpeedButtonDeleteClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedButtonDeleteClick
     end
     object SpeedButtonTools: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonText
@@ -714,9 +714,9 @@ object EditBoxForm: TEditBoxForm
         0062FFFFFF00FFFFFF00FFFFFF00FFFFFF00D3A90062D4AB0088D2AD0022FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      OnClick = SpeedButtonToolsClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedButtonToolsClick
     end
     object SpeedButtonText: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonLink
@@ -803,9 +803,9 @@ object EditBoxForm: TEditBoxForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      OnClick = SpeedButtonTextClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedButtonTextClick
     end
     object SpeedButtonLink: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonSearch
@@ -892,9 +892,9 @@ object EditBoxForm: TEditBoxForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      OnClick = SpeedButtonLinkClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedButtonLinkClick
     end
     object SpeedButtonSearch: TSpeedButton
       AnchorSideLeft.Control = ButtMainTBMenu
@@ -981,9 +981,9 @@ object EditBoxForm: TEditBoxForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
-      OnClick = SpeedButtonSearchClick
       ShowHint = True
       ParentShowHint = False
+      OnClick = SpeedButtonSearchClick
     end
     object ButtMainTBMenu: TSpeedButton
       AnchorSideLeft.Control = Panel1
@@ -1072,8 +1072,8 @@ object EditBoxForm: TEditBoxForm
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000000000000000000000000000000000000000000
       }
-      OnClick = ButtMainTBMenuClick
       PopupMenu = PopupMainTBMenu
+      OnClick = ButtMainTBMenuClick
     end
     object SpeedClose: TSpeedButton
       AnchorSideTop.Control = Panel1
@@ -1359,6 +1359,10 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Copy'
       OnClick = MenuItemCopyClick
     end
+    object MenuItemCopyPlain: TMenuItem
+      Caption = 'Copy Plain'
+      OnClick = MenuItemCopyPlainClick
+    end
     object MenuItemPaste: TMenuItem
       Caption = 'Paste'
       OnClick = MenuItemPasteClick
@@ -1381,6 +1385,7 @@ object EditBoxForm: TEditBoxForm
   object TaskDialogDelete: TTaskDialog
     Buttons = <>
     RadioButtons = <>
+    QueryItemIndex = 0
     Left = 80
     Top = 280
   end
