@@ -1166,10 +1166,10 @@ begin
 //            ConfigFile.WriteString('SyncSettings', 'FileSyncEnabled', MyBoolStr(SyncFileEnabled));
 //            ConfigFile.WriteString('SyncSettings', 'GitSyncEnabled',  MyBoolStr(SyncGithubEnabled));
 
-
+{$IFDEF TESTAUTOTIMING}
 if WriteLastSync then
     debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to write SyncTiming Index.');
-
+{$endif}
 
             ConfigFile.WriteString('SyncSettings', 'SyncTimingFile',  SyncTimingStates[SyncTimingFileIndex]);
             ConfigFile.WriteString('SyncSettings', 'SyncTimingGithub', SyncTimingStates[SyncTimingGithubIndex]);
@@ -1184,16 +1184,17 @@ if WriteLastSync then
             ConfigFile.writestring('SyncSettings', 'SyncRepoGithub', SyncGithubRepo);
             ConfigFile.writestring('SyncSettings', 'GHPassword', EncodeStringBase64(LabelToken.Caption));
             ConfigFile.writestring('SyncSettings', 'GHUserName', EditUserName.text);
-
-
-
             if WriteLastSync then begin                                         // only if called from TimerAutoSyncTimer where SyncTimingFileLast and SyncTimingGitHubLast are set.
                 if SyncTimingFileLast > ISO8601ToDate(EarlyDate) then begin  // either may not be set
+                    {$IFDEF TESTAUTOTIMING}
                     debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last File Sync Time.');
+                    {$endif}
                     ConfigFile.writestring('SyncSettings', 'SyncTimingFileLast', FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingFileLast));
                 end;
                 if SyncTimingGitHubLast > ISO8601ToDate(EarlyDate) then begin  // either may not be set
+                    {$IFDEF TESTAUTOTIMING}
                     debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last GitHub Sync Time.');
+                    {$endif}
                     ConfigFile.writestring('SyncSettings', 'SyncTimingGitHubLast', FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingGitHubLast));
                 end;
 {               TestSt := FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingFileLast);
@@ -1795,6 +1796,7 @@ begin
             SyncTimingGithubIndex := ComboSyncTiming.ItemIndex;
           end;
     end;
+    TimerAutoSyncTimer(self);
     SaveSettings(Self);
 end;
 
@@ -1879,14 +1881,14 @@ var
 
     procedure RunAutoSync(const SyncTimingIndex : integer; var SyncTimingLast : TDateTime; Transport : TSyncTransport);
     begin
-
-
         if FormSync.Busy or (SyncTimingIndex = 0)
                     or (Now() < (SyncTimingLast + SyncTimingFactors[SyncTimingIndex])) then exit;
+        {$IFDEF TESTAUTOTIMING}
         if Transport = SyncFile then
             debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync for File Sync')
         else
             debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync for GitLab Sync');
+        {$endif}
         FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.Transport:= Transport;
@@ -1895,7 +1897,9 @@ var
             ASyncRan := True;
             SyncTimingLast := Now();
         end;
+        {$IFDEF TESTAUTOTIMING}
         debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Finished');
+        {$endif}
     end;
 
 begin
@@ -1905,12 +1909,10 @@ begin
     TimerAutoSync.Interval:= 60*1000;
     //debugln('WARNING - TESTAUTOTIMING is defined, timer called, Mask SC is ' + dbgs(MAskSettingsChanged));
     debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : TESTAUTOTIMING defined, AutoSync x100 faster');
-    {$ENDIF}
-
     debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Timer Method called. Now='
             + FormatDateTime('YYYY-MM-DD hh:mm:ss', now()) + ' Target='
             + FormatDateTime('YYYY-MM-DD hh:mm:ss', SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex]));
-
+     {$ENDIF}
 //    if  SyncFileAuto and (SyncFileRepo <> '') and SyncFileEnabled and (not FormSync.Busy) then begin
 
 

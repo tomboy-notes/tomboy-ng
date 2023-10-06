@@ -337,7 +337,7 @@ begin
         ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
         Async.UserName := Sett.EditUserName.text;
         Async.SetTransport(TransPort);
-        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to Test Transport.');
+        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to Test Transport.');
 
         if ASync.TestConnection() <> SyncReady then begin
             debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
@@ -368,7 +368,7 @@ begin
             end;
             exit(false);        //redundant ?
         end;
-        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
+        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsRunningSync;
         Application.ProcessMessages;
         ASync.TestRun := False;
