@@ -1382,13 +1382,6 @@ object EditBoxForm: TEditBoxForm
     Left = 368
     Top = 280
   end
-  object TaskDialogDelete: TTaskDialog
-    Buttons = <>
-    RadioButtons = <>
-    QueryItemIndex = 0
-    Left = 80
-    Top = 280
-  end
   object TimerHousekeeping: TTimer
     OnTimer = TimerHousekeepingTimer
     Left = 376

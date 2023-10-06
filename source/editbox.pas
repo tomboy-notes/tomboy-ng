@@ -336,7 +336,7 @@ type
         SpeedButtonText: TSpeedButton;
         SpeedButtonTools: TSpeedButton;
         SpeedRollBack: TSpeedButton;
-		TaskDialogDelete: TTaskDialog;
+//		TaskDialogDelete: TTaskDialog;           just why was this here ?  Messes with Windows
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
         procedure BitBtnCloseFindClick(Sender: TObject);
