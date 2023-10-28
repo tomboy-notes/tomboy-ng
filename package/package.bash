@@ -197,7 +197,7 @@ function DebianPackage () {
 	"ReleaseQT6")
 		echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.14), wmctrl, libnotify-bin qt5ct"
+		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.14), wmctrl, libnotify-bin, qt6ct"
 		CTRL_RELEASE="Qt6 release."
 		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog
 	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it. 
@@ -378,5 +378,7 @@ fakeroot bash ./mk_rpm.sh
 echo "OK, we will now sign the RPMs - david, use the longer passphrase !"
 for i in `ls -b *.rpm`; do rpm --addsign "$i"; echo "Signed $i"; done
 ls -l *.rpm *.deb "$WIN_DIR"/*.exe
+
+echo "WARNING - we still force QT apps to use qt*ct, is that still necessary ????????"
 
 

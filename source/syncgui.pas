@@ -237,7 +237,7 @@ begin
     Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
     Application.ProcessMessages;
     ASync.TestRun := True;
-    if ASync.StartSync() then begin
+    if ASync.GetSyncData() and ASync.UseSyncData() then begin  // ToDo : am I dealing with TestRun correctly ?
         DisplaySync();
         ShowReport();
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
@@ -300,13 +300,22 @@ begin
     LocalTimer.Enabled := True;
 end;
 
-function TFormSync.RunSyncHidden(): boolean;
+function TFormSync.RunSyncHidden(): boolean;          // ToDo : this is now done in Settings, remove ???
 begin
     //debugln('In RunSyncHidden');
     if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
     busy := true;
     ListViewReport.Clear;
-    Result := ManualSync();
+    // Result := ManualSync();
+    ASync := TSync.Create;
+    try
+        ASync.AutoSetUp(Transport);             // ToDo : must determine what mode of Sync we are running in.
+        ASync.GetSyncData();
+        ASync.UseSyncData();
+    finally
+        ASync.Free;
+        Busy := False;
+    end;
 end;
 
 procedure TFormSync.FormCreate(Sender: TObject);
@@ -337,8 +346,7 @@ begin
         ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
         Async.UserName := Sett.EditUserName.text;
         Async.SetTransport(TransPort);
-        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to Test Transport.');
-
+//debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
         if ASync.TestConnection() <> SyncReady then begin
             debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
             if ASync.DebugMode then debugln('Failed testConnection');
@@ -347,16 +355,6 @@ begin
                 SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
                     MainForm.ShowNotification(rsAutoSyncNotPossible);
-                    (*
-                    {$ifdef linux}
-                    ShowNotification('tomboy-ng', rsAutoSyncNotPossible, 6000);
-                    (*Notifier := TNotifier.Create;                                           // does not require a 'free'.
-                    Notifier.ShowTheMessage('tomboy-ng', rsAutoSyncNotPossible, 6000); *)    // 12 seconds
-                    {$else}
-                    MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
-                    Mainform.TrayIcon.BalloonHint := rsAutoSyncNotPossible;
-                    Mainform.TrayIcon.ShowBalloonHint;
-                    {$endif}  *)
                 end;
                 exit(false);
             end else begin                                                      // busy unset in finally clause
@@ -368,22 +366,16 @@ begin
             end;
             exit(false);        //redundant ?
         end;
-        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
+//debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsRunningSync;
         Application.ProcessMessages;
         ASync.TestRun := False;
-        ASync.StartSync();
+        if ASync.GetSyncData() and ASync.UseSyncData() then;   // ToDo : should I evaluate separetly ?
+
         SyncSummary :=  DisplaySync();
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
         if (not Visible) and Sett.CheckNotifications.Checked then begin
             MainForm.ShowNotification(rsLastSync  + ' ' + SyncSummary, 2000);
-            (*  {$ifdef LINUX}
-            ShowNotification('tomboy-ng', rsLastSync  + ' ' + SyncSummary);
-            {$else}
-            MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
-            Mainform.TrayIcon.BalloonHint := rsLastSync  + ' ' + SyncSummary;
-            Mainform.TrayIcon.ShowBalloonHint;
-            {$endif}    *)
         end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -484,7 +476,7 @@ begin
     ButtonSave.Enabled := False;
     Application.ProcessMessages;
     ASync.TestRun := False;
-    if ASync.StartSync() then begin
+    if ASync.GetSyncData() and ASync.UseSyncData() then begin  // ToDo : should I evaluate separetly ?
         SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();

@@ -6,11 +6,11 @@ object FormSync: TFormSync
   Caption = 'Sync'
   ClientHeight = 418
   ClientWidth = 699
+  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -81,8 +81,8 @@ object FormSync: TFormSync
       Width = 150
       Anchors = [akTop, akLeft, akBottom]
       Caption = 'Cancel'
-      OnClick = ButtonCancelClick
       TabOrder = 0
+      OnClick = ButtonCancelClick
     end
     object ButtonClose: TButton
       AnchorSideLeft.Control = ButtonCancel
@@ -96,8 +96,8 @@ object FormSync: TFormSync
       Width = 150
       Anchors = [akTop, akLeft, akBottom]
       Caption = 'Close'
-      OnClick = ButtonCloseClick
       TabOrder = 1
+      OnClick = ButtonCloseClick
     end
     object ButtonSave: TButton
       AnchorSideLeft.Control = ButtonClose
@@ -111,8 +111,8 @@ object FormSync: TFormSync
       Width = 150
       Anchors = [akTop, akLeft, akBottom]
       Caption = 'Save and Sync'
-      OnClick = ButtonSaveClick
       TabOrder = 2
+      OnClick = ButtonSaveClick
     end
   end
   object Panel3: TPanel

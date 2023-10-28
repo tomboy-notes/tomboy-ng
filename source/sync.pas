@@ -162,11 +162,12 @@ HISTORY
     2021/09/08  Added progress indicator
     2021/09/27  Selective Sync, possible to have both configured and in use.
     2022/10/18  When renaming a file, delete target if its exists first, its a windows problem
+    2023/10/28  Restructure some of Auto Sync to allow multithreading, does not use SyncGUI
 }
 
 interface
 uses
-    Classes, SysUtils, SyncUtils, Trans;
+    Classes, SysUtils, SyncUtils, Trans, LCLIntf;
 
 
 type                       { ----------------- T S Y N C --------------------- }
@@ -176,6 +177,11 @@ type                       { ----------------- T S Y N C --------------------- }
   TSync = class
 
   private
+            // Indicates that use of this class, currently, is multithreaded.
+            // In particular, StartSync() will call Synchronize() and tell it to
+            // check upcoming downloads, marking any matching notes as readonly.
+            // Its set in AutoSync() only.
+        Threaded : boolean;
 
             // Generally an empty string but in Android/Tomdroid something we prefix
             // to local manifest file name to indicate which connection it relates to.
@@ -210,6 +216,7 @@ type                       { ----------------- T S Y N C --------------------- }
             { Returns the title of given note, prefers the local version but if
               it does not exist, then "downloads" remote one }
       function GetNoteTitle(const ID : ANSIString; const Rev : integer): ANSIString;
+
       // function IDLooksOK(const ID: string): boolean;
 
             { Looks at a clash and determines if its an up or down depending on
@@ -324,7 +331,7 @@ type                       { ----------------- T S Y N C --------------------- }
             { A method to call when we can advise a GUI of progress through sync }
         ProgressProcedure : TProgressProcedure;
 
-                // A URL or directory with trailing delim.
+                // A URL or directory with trailing delim. Get from Settings.
         SyncAddress : string;
                 // Revision number the client is currently on
         CurrRev : integer;
@@ -347,6 +354,8 @@ type                       { ----------------- T S Y N C --------------------- }
         RemoteMetaData : TNoteInfoList;
                 // Data obtained from Local Manifest. Represents notes previously synced. Might be empty.....
         LocalMetaData : TNoteInfoList;
+                // Used in Threaded mode to lock any open notes that are about to be overwritten by a sync download.
+        Procedure AdjustNoteList();
 
         procedure FSetConfigDir(Dir : string);
         property ConfigDir : string read FConfigDir write FSetConfigDir;
@@ -388,12 +397,18 @@ type                       { ----------------- T S Y N C --------------------- }
               do something first, setup new connect, consult user etc.}
         function TestConnection() : TSyncAvailable;
 
-            { Do actual sync, but if TestRun=True just report on what you'd do.
-              Assumes a Transport has been selected and remote address is set.
+            { Does the actual moving of files around, depends on a successful GetSyncData()
+              before hand. TestRun=True just report on what you'd do.
+              Assumes a Transport has been selected and remote address is set.  }
+      function UseSyncData: boolean;
+            { Populates the Sync data structures with info about what files need to be
+              moved where. Does no data moving (thats done by UseSyncData())
               We must already be a member of this sync, ie, its remote ID is recorded
-              in our local manifest. }
-      function StartSync() : boolean;
-
+              in our local manifest. TestRun=True just report on what you'd do.}
+      function GetSyncData(): boolean;
+            { Shortcut setup for background run, still needs GetSyncData() and
+              UseSyncData() to be called aftwards. Able to be run in a background thread. }
+      function AutoSetUp(Mode: TSyncTransport): boolean;
       constructor Create();
 
       destructor Destroy(); override;
@@ -406,7 +421,8 @@ implementation
 
 uses laz2_DOM, laz2_XMLRead,
     TransFile, TransGithub,
-    LazLogger, LazFileUtils, FileUtil, Settings, tb_utils;
+    LazLogger, LazFileUtils, FileUtil, Settings, tb_utils,
+    SearchUnit;                    // here because we call SearchForm.ProcessSyncUpdates()
 
 var
     Transport : TTomboyTrans;
@@ -953,6 +969,8 @@ begin
 end;
 
 
+
+
 { =================  S T A R T   U P   M E T H O D S ============== }
 
 function TSync.SetTransport(Mode: TSyncTransport) : TSyncAvailable;
@@ -1074,11 +1092,10 @@ begin
     // We do not load remote metadata when creating a new repo !
 end;
 
-                        { ---------- The Lets Do it Function ------------- }
+                        { ---------- The Lets Do it Functions ------------- }
 
-function TSync.StartSync(): boolean;
-var
-    NewRev : boolean = false;
+//function TSync.StartSync(): boolean;
+function TSync.GetSyncData() : boolean;
     // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
     Result := True;
@@ -1129,6 +1146,18 @@ begin
         DisplayNoteInfo(RemoteMetaData, 'NoteMetaData after ProcessClashes');
     // ====================== Set an exit here to do no-write tests  exit(false);
 
+end;
+
+
+
+//  ToDo : SyncInThread requires us to call AdjustNoteList() from here so any downloaded and open notes are locked.
+//    if Threaded then
+//        Synchronize(@AdjustNoteList);
+
+function TSync.UseSyncData() : boolean;
+var
+    NewRev : boolean = false;
+begin
     if not DoDownLoads() then exit(SayDebugSafe('TSync.StartSync - failed DoDownLoads'));
     if TransPortMode <> SyncGitHub then
        if not WriteRemoteManifest(NewRev) then exit(SayDebugSafe('TSync.StartSync - failed early WriteRemoteManifest'));
@@ -1154,6 +1183,49 @@ begin
     Result := True;
 end;
 
+procedure TSync.AdjustNoteList();
+// Another version of this exists in SyncGUI, maybe merge ?
+var
+    DeletedList, DownList : TStringList;
+    Index : integer;
+begin
+    DeletedList := TStringList.Create;
+    DownList := TStringList.Create;
+ 	with RemoteMetaData do begin
+		for Index := 0 to Count -1 do begin
+            if Items[Index]^.Action = SyDeleteLocal then
+                DeletedList.Add(Items[Index]^.ID);
+            if Items[Index]^.Action = SyDownload then
+                DownList.Add(Items[Index]^.ID);
+        end;
+    end;
+    if (DeletedList.Count > 0) or (DownList.Count > 0) then
+        SearchForm.ProcessSyncUpdates(DeletedList, DownList);
+    FreeandNil(DeletedList);
+    FreeandNil(DownList);
+end;
+
+
+function TSync.AutoSetUp(Mode : TSyncTransport) : boolean;
+{ we must have set, after creation and before calling this -
+    debugmode
+    NotesDir
+    ConfigDir
+    Password
+    UserName  }
+begin
+    Threaded := True;
+    RepoAction:= RepoUse;
+    SetTransport(Mode);
+    //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
+    if TestConnection() <> SyncReady then begin
+        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
+        exit(false);
+    end;
+    TestRun := False;
+    Result := True;
+    // PostMessage(sett.Handle, WM_SYNCBLOCKFINISHED,  2, 0);    // ThreadTest
+end;
 
 // ------------------  M A N I F E S T    R E L A T E D  -----------------------
 

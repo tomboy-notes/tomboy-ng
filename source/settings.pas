@@ -107,6 +107,7 @@ unit settings;
     2023/02/21  Drop Monospace font to last of priority, its not a real font.
     2023/03/11  Make a bool to indicate Qt is in charge of its colours, eg QT_QPA_PLATFORMTHEME
     2023/03/18  Ensure AltColour and AltBackGndColor are set to something in user defined scheme
+    2023/10/28  Restructure some of Auto Sync to allow multithreading, does not use SyncGUI
 }
 
 {$mode objfpc}{$H+}                    //
@@ -116,12 +117,18 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
-    LCLIntf, Spin{, notifier}, base64, fpttf;
+    LCLIntf, Spin{, notifier}, base64, fpttf,
+    LMessages;
 
 // Types;
 
 type TSyncOption = (AlwaysAsk, UseServer, UseLocal); 	// Relating to sync clash pref in config file
 
+
+const
+        WM_SYNCMESSAGES    = LM_USER + 2100;          // These are used by the auto sync to update user
+        WM_SYNCNOTPOSSIBLE = LM_USER + 2101;
+        WM_SYNCFINISHED    = LM_USER + 2102;
 type
 
     { TSett }
@@ -294,6 +301,11 @@ type
         fExportPath : ANSIString;
         SearchIsCaseSensitive : boolean;
         NextAutoSnapshot : TDateTime;
+                        // Recieves messages from the auto sync system, updates searchform status bar
+                        // and, if enabled, notifications.
+        procedure HandlePostMessage(var Msg: TLMessage); message WM_SYNCMESSAGES;    // ThreadTest
+
+
                         // Sets some default colours (find better way) and sets Colour Button hint.
         procedure CheckUserColours;
                         // Looks in expected place for help notes, populate combo and public vars, HelpNotesPath, HelpNotesLang.
@@ -392,18 +404,16 @@ type
             contain valid full file names.}
         SpellConfig : boolean;
 
-            { Triggers a Sync, if its not all setup aready and working, user is shown error.
+            { Triggers a Manual Sync, if its not all setup aready and working, user is shown error.
               Called when MainMenu Sync is click if Sett.ValidSync is true. So, a Manual Sync ? }
         procedure Synchronise();
 
         property ValidSync : boolean read fGetValidSync;
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
-
                             // Property that triggers write of config when set, reads, sets
         property AutoRefresh : boolean read fGetAutoRefresh write fSetAutoRefresh;
                             // Property SWYT - search while you type
         property AutoSearchUpdate : boolean read fgetAutoSearchUpdate write fSetAutoSearchUpdate;
-
                             // Does not appear to be implemented
         property ExportPath : ANSIString Read fExportPath write fExportPath;
                             // Called after notes are indexed (from SearchUnit), will start auto timer tha
@@ -416,11 +426,11 @@ type
         function GetSyncFileRepo() : string;
     end;
 
-{$.DEFINE TESTAUTOTIMING}
+{x$DEFINE TESTAUTOTIMING}
 
 var
     Sett : TSett;
-    SyncTimingStates : array of string = ('manual', 'hourly', 'daily', 'weekly');  // these are possible auto sync states.
+    SyncTimingStates : array of string = ('manual', 'hourly', 'daily', 'weekly');    // these are possible auto sync states.
     {$ifdef TESTAUTOTIMING}
     SyncTimingFactors : array of real =  (0.0,      (1.0/2400),   0.01,     0.07);   // these are elapsed time for each state to retrigger  100 times faster
     {$else}
@@ -437,7 +447,7 @@ implementation
 {$R *.lfm}
 
 
-{$.define DEBUG}
+{x$define DEBUG}
 
 { TSett }
 
@@ -447,6 +457,7 @@ uses IniFiles, LazLogger,
     SearchUnit,		// So we can call IndexNotes() after altering Notes Dir
     syncGUI,
     syncutils,
+    Sync,           // in autosync mode, we talk direct to Sync
     tb_utils,
     recover,        // Recover lost or damaged files
     mainunit,       // so we can call ShowHelpNote()
@@ -1024,6 +1035,10 @@ begin
         // remember that an old config file might contain stuff about Filesync, nextcloud, random rubbish .....
         SyncTimingFileLast := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingFileLast', TooEarlyDate));
         SyncTimingGitHubLast := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingGitHubLast', TooEarlyDate));
+        {$IFDEF TESTAUTOTIMING}
+        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%},
+            'SyncTimingFileIndex=' + inttostr(SyncTimingFileIndex) + ' SyncTimingGithubIndex=' + inttostr(SyncTimingGithubIndex), '');
+        {$endif}
 
 
         // ------------- S P E L L I N G ---------------------------------------
@@ -1167,8 +1182,8 @@ begin
 //            ConfigFile.WriteString('SyncSettings', 'GitSyncEnabled',  MyBoolStr(SyncGithubEnabled));
 
 {$IFDEF TESTAUTOTIMING}
-if WriteLastSync then
-    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to write SyncTiming Index.');
+//if WriteLastSync then
+//    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'About to write SyncTiming Index.');
 {$endif}
 
             ConfigFile.WriteString('SyncSettings', 'SyncTimingFile',  SyncTimingStates[SyncTimingFileIndex]);
@@ -1187,13 +1202,13 @@ if WriteLastSync then
             if WriteLastSync then begin                                         // only if called from TimerAutoSyncTimer where SyncTimingFileLast and SyncTimingGitHubLast are set.
                 if SyncTimingFileLast > ISO8601ToDate(EarlyDate) then begin  // either may not be set
                     {$IFDEF TESTAUTOTIMING}
-                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last File Sync Time.');
+//                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last File Sync Time.');
                     {$endif}
                     ConfigFile.writestring('SyncSettings', 'SyncTimingFileLast', FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingFileLast));
                 end;
                 if SyncTimingGitHubLast > ISO8601ToDate(EarlyDate) then begin  // either may not be set
                     {$IFDEF TESTAUTOTIMING}
-                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last GitHub Sync Time.');
+//                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Writing last GitHub Sync Time.');
                     {$endif}
                     ConfigFile.writestring('SyncSettings', 'SyncTimingGitHubLast', FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingGitHubLast));
                 end;
@@ -1332,6 +1347,22 @@ begin
     end;
     // if DarkThemeSwitch then color := AltColour;    No, cannot change color of the Tabsheet, looks horrible
 
+end;
+
+procedure TSett.HandlePostMessage(var Msg: TLMessage);
+var
+    St : string;
+begin
+//    debugln('TSett.HandlePostMessage ' + 'Message from Sync Thread');
+    case Msg.wParam of
+        WM_SYNCFINISHED    : St := rsLastSync + ' OK';
+        WM_SYNCNOTPOSSIBLE : St := rsAutoSyncNotPossible;
+    else
+        St := rsSyncError;
+    end;
+    if CheckNotifications.Checked then
+        MainForm.ShowNotification(St, 2000);
+    SearchForm.UpdateStatusBar(St + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now));
 end;
 
 procedure TSett.SetHelpLanguage();
@@ -1878,9 +1909,21 @@ end;
 procedure TSett.TimerAutoSyncTimer(Sender: TObject);
 var
     ASyncRan : boolean = false;
+    ASync : TSync;
 
     procedure RunAutoSync(const SyncTimingIndex : integer; var SyncTimingLast : TDateTime; Transport : TSyncTransport);
+    var
+       {$IFDEF TESTAUTOTIMING}St : string;{$endif}
+       OutComeMessage : longint = WM_SYNCFINISHED;    // WM_SYNCBLOCKFINISHED, WM_SYNCNOTPOSSIBLE,
     begin
+        {$IFDEF TESTAUTOTIMING}
+        if Transport = SyncFile then
+            St := 'FileSync : ' + FormatDateTime('YYYY-MM-DD hh:mm', SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex])
+        else
+           St := 'GitHubSync : ' + FormatDateTime('YYYY-MM-DD hh:mm', SyncTimingGitHubLast + SyncTimingFactors[SyncTimingGitHubIndex]);
+        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync ? Now='
+            + FormatDateTime('YYYY-MM-DD hh:mm', now()) + ' Target:' + St);
+        {$endif}
         if FormSync.Busy or (SyncTimingIndex = 0)
                     or (Now() < (SyncTimingLast + SyncTimingFactors[SyncTimingIndex])) then exit;
         {$IFDEF TESTAUTOTIMING}
@@ -1889,17 +1932,44 @@ var
         else
             debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync for GitLab Sync');
         {$endif}
-        FormSync.NoteDirectory := Sett.NoteDirectory;
+        // ToDo : make this next bit run in background thread.
+        ASync := TSync.Create;
+        try
+            ASync.NotesDir := Sett.NoteDirectory;
+            ASync.debugmode := Application.HasOption('s', 'debug-sync');
+            ASync.ConfigDir := AppendPathDelim(Sett.LocalConfig);
+            ASync.Password := Sett.LabelToken.Caption;
+            ASync.UserName := Sett.EditUserName.text;
+            if ASync.AutoSetUp(Transport) then begin                        // Might fail if network or shared drive not available
+                if not ASync.GetSyncData() then exit;                       // in practise, allways returns true.
+                ASync.AdjustNoteList();                                     // Mark open notes read only if also being downloaded/deleted
+                if ASync.UseSyncData() then                                 // No real error checking here, if problem, do manual sync
+                    {$IFDEF TESTAUTOTIMING}
+                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Auto Sync Finished OK')
+                    else
+                    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Auto Sync Returned False !!!')
+                    {$endif};
+            end else OutComeMessage := WM_SYNCNOTPOSSIBLE;
+        finally
+            ASync.Free;
+            PostMessage(sett.Handle, WM_SYNCMESSAGES,  OutComeMessage, 0);
+        end;
+
+(*        FormSync.NoteDirectory := Sett.NoteDirectory;
         FormSync.LocalConfig := AppendPathDelim(Sett.LocalConfig);
         FormSync.Transport:= Transport;
         FormSync.SetupSync := False;                                        // That is, we are not, now, trying to setup sync
         if FormSync.RunSyncHidden() then begin
             ASyncRan := True;
             SyncTimingLast := Now();
-        end;
-        {$IFDEF TESTAUTOTIMING}
-        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Finished');
-        {$endif}
+            {$IFDEF TESTAUTOTIMING}
+            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Finished OK');
+            {$endif}
+        end
+            {$IFDEF TESTAUTOTIMING}
+            else
+            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Returned False !!!')
+            {$endif}  ;   *)
     end;
 
 begin
@@ -1909,9 +1979,9 @@ begin
     TimerAutoSync.Interval:= 60*1000;
     //debugln('WARNING - TESTAUTOTIMING is defined, timer called, Mask SC is ' + dbgs(MAskSettingsChanged));
     debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : TESTAUTOTIMING defined, AutoSync x100 faster');
-    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Timer Method called. Now='
+(*    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : AutoSync Timer Method called. Now='
             + FormatDateTime('YYYY-MM-DD hh:mm:ss', now()) + ' Target='
-            + FormatDateTime('YYYY-MM-DD hh:mm:ss', SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex]));
+            + FormatDateTime('YYYY-MM-DD hh:mm:ss', SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex])); *)
      {$ENDIF}
 //    if  SyncFileAuto and (SyncFileRepo <> '') and SyncFileEnabled and (not FormSync.Busy) then begin
 
@@ -1922,7 +1992,7 @@ begin
         RunAutoSync(SyncTimingFileIndex, SyncTimingFileLast, TSyncTransport.SyncFile);
     if (SyncGitHubRepo <> '') then
         RunAutoSync(SyncTimingGitHubIndex, SyncTimingGitHubLast, TSyncTransport.SyncGitHub);
-{    if (SyncFileRepo <> '') and (not FormSync.Busy) and (SyncTimingFileIndex > 0)
+(*    if (SyncFileRepo <> '') and (not FormSync.Busy) and (SyncTimingFileIndex > 0)
                 and (Now() > (SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex])) then begin
         {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Doing Auto File Sync.');{$endif}
         FormSync.NoteDirectory := Sett.NoteDirectory;
@@ -1946,7 +2016,7 @@ begin
         FormSync.RunSyncHidden();
         SyncTimingGitHubLast := Now();
         ASyncRan := True;
-    end;                        }
+    end;                        *)
 
     if ASyncRan then
         WriteConfigFile(false, True);                    // WriteConfigFile is called from all over the place, only this call should update last sync times.

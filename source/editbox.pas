@@ -3586,7 +3586,7 @@ begin
         TemplateIs := '';
     end;
     Saver := TBSaveNote.Create();
-    Saver.CreateDate := CreateDate;
+    Saver.CreateDate := CreateDate;                             // Misnamed now, does not save, just puts xml into SL
     if not GetTitle(Title) then exit();
     // If title has changed, we make a backup copy.
     if TitleHasChanged then begin

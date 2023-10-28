@@ -243,23 +243,22 @@ begin
                     exit(False);
                 end;
             // OK, now copy the file.
-
             if UsingRightRevisionPath(RemoteAddress, DownLoads.Items[i]^.Rev) then
                 FullFilename := GetRevisionDirPath(RemoteAddress, DownLoads.Items[i]^.Rev
                         , Downloads.Items[I]^.ID)
             else
                 FullFilename := RemoteAddress + '0' + pathdelim + inttostr(DownLoads.Items[i]^.Rev)   // Ugly Hack
                         + pathdelim + Downloads.Items[I]^.ID + '.note';
-            if DebugMode then debugln('Will download ' +  FullFilename);
-            if not CopyFile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note')
-            then begin
-                    ErrorString := 'Failed to copy ' + Downloads.Items[I]^.ID + '.note';
-                    exit(False);
+            if DebugMode then
+                debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
+                                , 'Will download - CopyFile(' + FullFileName + ', ' + NotesDir + Downloads.Items[I]^.ID + '.note'+ ')');
+            if not CopyFile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note') then begin
+                ErrorString := 'Failed to copy ' + Downloads.Items[I]^.ID + '.note';
+                exit(False);
             end;
             inc(DownCount);
             if (DownCount mod 10 = 0) then
                 if ProgressProcedure <> nil then ProgressProcedure(rsDownLoaded + ' ' + inttostr(DownCount) + ' notes');
-
         end;
     end;
     result := True;
