@@ -192,7 +192,7 @@ function DebianPackage () {
 	"ReleaseQT5")
 		echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin, qt5ct"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin, qt5ct"
 		CTRL_RELEASE="Qt5 release."
 		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
