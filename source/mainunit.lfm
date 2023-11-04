@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.0.0.2'
   object ImageNotesDirTick: TImage
     AnchorSideTop.Control = LabelNotesFound
     Left = 24
@@ -267,8 +267,8 @@ object MainForm: TMainForm
     BorderSpacing.Top = 14
     BorderSpacing.Bottom = 15
     Caption = 'Don''t Show for normal startup'
-    OnChange = CheckBoxDontShowChange
     TabOrder = 3
+    OnChange = CheckBoxDontShowChange
   end
   object ButtMenu: TBitBtn
     AnchorSideLeft.Control = Owner

@@ -788,7 +788,11 @@ end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
+    {$ifdef LINUX}
+    showmessage('Please Right Click TrayIcon on this System');           // I suspect that this works ONLY if using old, traditonal Tray or, perhaps KDE ?
+    {$else}
     PopupMenuTray.PopUp();
+    {$endif}                                                                    // This might be useful on non-linux, unsure ....
 end;
 
 procedure TMainForm.RecentMenuClicked(Sender: TObject);

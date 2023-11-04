@@ -40,6 +40,8 @@ if [ -z "$LAZ_DIR" ]; then
 	echo "eg    : $0 /home/dbannon/bin/Lazarus/laz_2_2_rc2"
 	echo "or"
 	echo "      : $0 clean"
+	echo "      : $0 qt6only      // to package an existing binary in ../source"
+	echo "      : $0 raspionly    // to package an existing binary in ../source"
 	exit
 fi
 
@@ -84,6 +86,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseRasPi)
             echo "armhf"
         ;;
+	ReleaseQT6)
+	    echo "amd64Qt6"
+	;;
     esac
 }
 
@@ -197,7 +202,7 @@ function DebianPackage () {
 	"ReleaseQT6")
 		echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.14), wmctrl, libnotify-bin, qt6ct"
+		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
 		CTRL_RELEASE="Qt6 release."
 		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog
 	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it. 
@@ -327,20 +332,31 @@ function MkWinPreInstaller() {
 	# ls -la "$WIN_DIR"
 }
 
-# ------- OK, lets find Laz Config ---------------------------------
+
+if [ $1 == "qt6only" ]; then	# this is wrong ? cannot find laz provided language files ?
+    DebianPackage ReleaseQT6
+    exit;
+fi
+
+if [ $1 == "raspionly" ]; then
+    DebianPackage ReleaseRasPi
+    exit;
+fi
+
+	# ------- OK, lets find Laz Config ---------------------------------
 
 # It all starts here
 if [ -f "$LAZ_FULL_DIR"/lazarus.cfg ]; then
 	# Assume if we have a cfg, it specifies pcp ?? Will fail otherwise
-    LAZ_CONFIG=`grep -i pcp "$LAZ_FULL_DIR"/lazarus.cfg`
+    	LAZ_CONFIG=`grep -i pcp "$LAZ_FULL_DIR"/lazarus.cfg`
 else
-    if [ -d "$HOME/.Laz_$LAZ_DIR" ]; then     # try my way of naming config first
-	    LAZ_CONFIG="$HOME/.Laz_$LAZ_DIR";
-    else
-	    echo "------ Testing for the .Laz config $HOME------"
-	    if [ -d "$HOME/.$LAZ_DIR" ]; then
-		    LAZ_CONFIG="$HOME/.$LAZ_DIR";
-	    fi
+if [ -d "$HOME/.Laz_$LAZ_DIR" ]; then     # try my way of naming config first
+    LAZ_CONFIG="$HOME/.Laz_$LAZ_DIR";
+else
+    echo "------ Testing for the .Laz config $HOME------"
+    if [ -d "$HOME/.$LAZ_DIR" ]; then
+        LAZ_CONFIG="$HOME/.$LAZ_DIR";
+        fi
     fi
 fi
 
@@ -360,6 +376,9 @@ done
 
 #if [ "$2" == "LeakCheck" ]; then
 
+
+
+
 rm tom*.deb
 for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQT6; # this expects we have put a prepared qt6 binary in source dir.
 	do DebianPackage $BIN ; 
@@ -378,7 +397,5 @@ fakeroot bash ./mk_rpm.sh
 echo "OK, we will now sign the RPMs - david, use the longer passphrase !"
 for i in `ls -b *.rpm`; do rpm --addsign "$i"; echo "Signed $i"; done
 ls -l *.rpm *.deb "$WIN_DIR"/*.exe
-
-echo "WARNING - we still force QT apps to use qt*ct, is that still necessary ????????"
 
 
