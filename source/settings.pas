@@ -1962,11 +1962,6 @@ begin
     else
         St := rsSyncError;
     end;
-
-//    debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'Msg : ' + St);
-
-
-
     case Msg.wParam of
         WM_SYNCFINISHED, WM_SYNCNOTPOSSIBLE, WM_SYNCTIMEOUT, WM_SYNCERROR, WM_SYNCCLASH : begin   // The Sync Group
             if CheckNotifications.Checked then
@@ -2041,7 +2036,7 @@ var
     end;
 
 begin
-    debugln('TSett.TimerAutoSyncTimer #' + {$I %LINE%} +  ' Called ' + FormatDateTime('YYYY-MM-DD hh:mm', now()));
+    // debugln('TSett.TimerAutoSyncTimer #' + {$I %LINE%} +  ' Called ' + FormatDateTime('YYYY-MM-DD hh:mm', now()));
     TimerAutoSync.Interval:= 10*60*1000;                                    // check again in 10 minutes
     {$IFDEF TESTAUTOTIMING}
     TimerAutoSync.Interval:= 60*1000;

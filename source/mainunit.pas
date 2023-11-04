@@ -177,6 +177,7 @@ type
         procedure TrayIconClick(Sender: TObject);
     private
         AboutFrm : TForm;
+        NoLeftClickOnTrayIcon : boolean;    // Is false for everyone except KDE.
         //HelpList : TStringList;
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
@@ -512,15 +513,16 @@ var
     ForceAppInd : string;
 begin
     Result := False;
-    {$ifdef LCLQT6}exit(true);{$endif}
     // Don't test for SysTray under GTK3, will never be there.  One or other AppIndicator
     // is your only chance. And XInternAtom() function SegVs on Gnome DTs so don't try it.
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
     // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu < 21.10
 
-    if pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then
-        exit(True);      // So far, every KDE I have tested has a System Tray, no need for these ugly tests !
-
+    if pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then begin
+        NoLeftClickOnTrayIcon := True;      // That will get all KDE and penalise X11 users, sorry !
+        exit(True);      // So far, every KDE I have tested has a System Tray, but works badley under wayland in 2023 at least.
+    end;
+    {$ifdef LCLQT6}exit(true);{$endif}
     {$IFnDEF LCLGTK3}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2}XDisplay := gdk_display; {$endif}
@@ -788,11 +790,11 @@ end;
 
 procedure TMainForm.TrayIconClick(Sender: TObject);
 begin
-    {$ifdef LINUX}
-    showmessage('Please Right Click TrayIcon on this System');           // I suspect that this works ONLY if using old, traditonal Tray or, perhaps KDE ?
-    {$else}
-    PopupMenuTray.PopUp();
-    {$endif}                                                                    // This might be useful on non-linux, unsure ....
+    if not NoLeftClickOnTrayIcon then                       // At present, only KDE DE, does sweep up x11 users too !
+        PopupMenuTray.PopUp()
+    else
+        if Sett.CheckNotifications.Checked  then
+            ShowNotification('Please Right Click TrayIcon on this System', 2000);
 end;
 
 procedure TMainForm.RecentMenuClicked(Sender: TObject);
