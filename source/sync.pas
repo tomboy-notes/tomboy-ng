@@ -217,6 +217,8 @@ type                       { ----------------- T S Y N C --------------------- }
               it does not exist, then "downloads" remote one }
       function GetNoteTitle(const ID : ANSIString; const Rev : integer): ANSIString;
 
+
+
       // function IDLooksOK(const ID: string): boolean;
 
             { Looks at a clash and determines if its an up or down depending on
@@ -261,7 +263,7 @@ type                       { ----------------- T S Y N C --------------------- }
 
             { Searches list for any clashes, refering each one to user. Done after
               list is filled out in case we want to ask user for general instrucions }
-      procedure ProcessClashes();
+      function ProcessClashes: boolean;
 
         // Checks if local note exists, optionally returning with its last change date.
       function LocalNoteExists(const ID : string; out CDate: string; GetDate: boolean=false): Boolean;
@@ -323,9 +325,9 @@ type                       { ----------------- T S Y N C --------------------- }
               config file. }
         LocalServerID : string;
 
-          { the calling process must pass a function address to this var. It will
-            be called if the sync process finds a sync class where both copies
-            of a note have changed since last sync.}
+          { The calling process must pass a function address to this var except in
+          Auto Sync mode (when its nil). It will be called if the sync process finds
+          a sync class where both copies of a note have changed since last sync.}
         ProceedFunction : TProceedFunction;
 
             { A method to call when we can advise a GUI of progress through sync }
@@ -356,7 +358,8 @@ type                       { ----------------- T S Y N C --------------------- }
         LocalMetaData : TNoteInfoList;
                 // Used in Threaded mode to lock any open notes that are about to be overwritten by a sync download.
         Procedure AdjustNoteList();
-
+                { returns the number of changes this sync run made. }
+        function ReportChanges(): integer;
         procedure FSetConfigDir(Dir : string);
         property ConfigDir : string read FConfigDir write FSetConfigDir;
 
@@ -430,6 +433,7 @@ var
 constructor TSync.Create();
 begin
     ProgressProcedure := Nil;
+    ProceedFunction := Nil;
     RemoteMetaData := TNoteInfoList.Create;
     LocalMetaData := TNoteInfoList.Create;
     Transport := nil;
@@ -547,7 +551,7 @@ begin
     end;
 end;
 
-procedure TSync.ProcessClashes();
+function TSync.ProcessClashes() : boolean;
 var
     Index : integer;
     RemoteNote : string;
@@ -556,6 +560,7 @@ begin
         //debugln('TSync.ProcessClashes checking note number ' + inttostr(Index) + ' id=' + RemoteMetaData.Items[Index]^.ID);
         with RemoteMetaData.Items[Index]^ do begin
             if Action = SyClash then begin
+                if ProceedFunction = Nil then exit(False);                      // In autosync, we cannot have a ProceedFunction !
                 RemoteNote := Transport.DownLoadNote(ID, Rev);
                 debugln('TSync.ProcessClashes - Resolving clash with ' + RemoteNote);
                 if ProceedAction = SyUnSet then begin       // let user decide
@@ -595,6 +600,30 @@ begin
             SyError : inc(Errors);
 		end;
     end;
+end;
+
+{$define DEBUGAUTOSYNC}
+function TSync.ReportChanges() : integer;
+var
+    Index : integer;
+    St : string;
+begin
+    result := 0;
+    if (RemoteMetaData =  nil) then begin
+        debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'BUT REMOTEMETADATA is NIL.');
+        exit(0);
+    end;
+    {$ifdef DEBUGAUTOSYNC}
+    debugln('------- AutoSync Run ' +  FormatDateTime('YYYY-MM-DD hh:mm', now()) + '  TSync.ReportChanges  -------');
+    {$endif}
+    for Index := 0 to RemoteMetaData.Count -1 do
+        if RemoteMetaData.Items[Index]^.Action in [SyUpLoadNew, SyUpLoadEdit, SyDownLoad, SyDeleteLocal, SyDeleteRemote]
+            then begin
+               inc(result);
+               {$ifdef DEBUGAUTOSYNC}
+               debugln(RemoteMetaData.Items[Index]^.Title + '  ' + RemoteMetaData.ActionName(RemoteMetaData.Items[Index]^.Action));
+               {$endif}
+            end;
 end;
 
 function TSync.CheckMetaData(): boolean;
@@ -1140,12 +1169,10 @@ begin
         exit();
     end;
 
-    ProcessClashes();
+    result := ProcessClashes();       // Will be false if in AutoSync mode AND we have a clash.
 
     if DebugMode then
         DisplayNoteInfo(RemoteMetaData, 'NoteMetaData after ProcessClashes');
-    // ====================== Set an exit here to do no-write tests  exit(false);
-
 end;
 
 

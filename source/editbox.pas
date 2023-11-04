@@ -419,8 +419,8 @@ type
         BlocksInTitle : integer;
                                 // Set True by the delete button so we don't try and save it.
         DeletingThisNote : boolean;
-        procedure AddItemMenu(TheMenu: TPopupMenu; Item: string;
-            mtTag: integer; OC: TNotifyEvent);
+
+        procedure AddItemMenu(TheMenu: TPopupMenu; Item: string; mtTag: integer; OC: TNotifyEvent);
         procedure AdjustFormPosition();
                                 { Alters the Font of Block as indicated }
         procedure AlterBlockFont(const FirstBlockNo, BlockNo: longint;
@@ -634,7 +634,20 @@ var
     Normaliser : TNoteNormaliser;
     WBufStream : TWriteBufStream;
     FileStream : TFileStream;
+    SleepCnt : integer = 0;
 begin
+    // Debugln('TSaveThread.Execute >>> start thread to save : ' + TheLoc.FFName);
+    while (LockSyncingNow or LockSavingNow) do begin          // declared and mostly used in Settings
+        sleep(200);
+        inc(SleepCnt);
+        if SleepCnt > Sleeps then begin
+            PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVETIMEOUT, 0);    // ToDo : if this ever happens, we should mark note as dirty again !  How ?
+            BusySaving := False;
+            Debugln('TSaveThread.Execute - ERROR, failed to get Save Lock, Filename : ' + TheLoc.FFName);
+            exit;
+        end;
+    end;
+    LockSavingNow := True;
     Normaliser := TNoteNormaliser.Create;
     Normaliser.NormaliseList(TheSL);               // TheSL belongs to the thread.
     Normaliser.Free;
@@ -647,18 +660,22 @@ begin
         try
             TheSL.SaveToStream(WBufStream);
         except on E:Exception do begin
-                              Debugln('ERROR, failed to save note : ' + E.Message);
+                              Debugln('TSaveThread.Execute - ERROR, failed to save note : ' + E.Message);
                               WBufStream.Free;
                               FileStream.Free;
                               TheSL.Free;
+                              PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEERROR, 0);   // Will release Lock
+                              exit;
                           end;
         end;
     finally
         WBufStream.Free;
         FileStream.Free;
         TheSL.Free;
+        BusySaving := False;
     end;
-    BusySaving := False;
+    PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEFINISHED, 0);             // Hmm, no error reporting happening here ?
+    // Debugln('TSaveThread.Execute >>> End of Thread : ' + TheLoc.FFName);
 end;
 
 constructor TSaveThread.Create(CreateSuspended: boolean);
@@ -2896,6 +2913,7 @@ end;
 
 
 
+
 { ---------------------- C A L C U L A T E    F U N C T I O N S ---------------}
 
 
@@ -3561,6 +3579,7 @@ begin
         exit;
     end;
     //T1 := gettickcount64();
+    //debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'At start, dirty=' + booltostr(Dirty, true));
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
   	if length(NoteFileName) = 0 then begin
@@ -3647,6 +3666,11 @@ begin
     end;
 
     if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
+
+    //debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'At end, dirty=' + booltostr(Dirty, true));
+
+
+
     //T6 := GetTickCount64();
 
     //debugln('Save Note Initial=' + inttostr(T2-T1) + ' Saver=' + inttostr(T3-T2)
