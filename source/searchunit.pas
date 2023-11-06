@@ -289,7 +289,7 @@ type        { TSearchForm }
         procedure BackupNote(const NoteName, PutIntoName: string);
                             // Public procedure to show the help note named (without path info)
         procedure ShowHelpNote(HelpNoteName: string);
-        procedure UpdateStatusBar(SyncSt : string);
+        procedure UpdateStatusBar(I: integer; SyncSt: string);
         {Just a service provided to NoteBook.pas, refresh the list of notebooks after adding or removing one}
         procedure RefreshNotebooks();
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
@@ -534,10 +534,10 @@ begin
     end;
 end;
 
-procedure TSearchForm.UpdateStatusBar(SyncSt: string);
+procedure TSearchForm.UpdateStatusBar(I : integer; SyncSt: string);
 begin
-    //StatusBar1.Panels[0].Text:= SyncSt;
-    StatusBar1.SimpleText:= SyncSt;
+    //StatusBar1.SimpleText:= SyncSt;
+    StatusBar1.Panels.Items[I].Text := SyncSt;
 end;
 
 procedure TSearchForm.UpdateList(const Title, LastChange, FullFileName : ANSIString; TheForm : TForm );
@@ -1079,7 +1079,7 @@ begin
             ListViewNotes.Items.Count := Found;
             ListViewNotes.EndUpdate;
             //T2 := GetTickCount64();
-            UpdateStatusBar(inttostr(Found) + ' ' + rsNotes);
+            UpdateStatusBar(0, inttostr(Found) + ' ' + rsNotes);
         end;
 
         //debugln('TSearchForm.EditSearchChange() LV Refresh =' + inttostr(T2-T1) + 'mS and ');
@@ -1113,7 +1113,7 @@ begin
             TheMainNoteLister.LoadContentForPressEnter();                       // Loading 2K notes, 8.6Meg, RSS 43Meg to 51Meg
             ListViewNotes.Clear;
             ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook);  // In SWYT, 52Meg  BUT  v.34c = 42meg
-            UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
+            UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 //        end;
     finally
         STL.free;
@@ -1216,7 +1216,7 @@ begin                                            // Gets called from other units
     TheMainNoteLister.DebugMode := Application.HasOption('debug-index');
     TheMainNoteLister.WorkingDir:=Sett.NoteDirectory;
     Result := TheMainNoteLister.IndexNotes();
-    UpdateStatusBar(inttostr(Result) + ' ' + rsNotes);
+    UpdateStatusBar(0, inttostr(Result) + ' ' + rsNotes);
     RefreshMenus(mkRecentMenu);
     MainForm.UpdateNotesFound(Result);      // Says how many notes found and runs over checklist.
     Sett.StartAutoSyncAndSnap();
@@ -1674,7 +1674,7 @@ begin
             ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(EditSearch.Text, '');
     end else
         DoSearchEnterPressed();
-    UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
+    UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
 
 
@@ -1696,7 +1696,7 @@ begin
         ListViewNotes.Items.Count :=
             TheMainNoteLister.NewSearch(STL, ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
         STL.Free;
-        UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
+        UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
     end;
 end;
 
@@ -1838,7 +1838,7 @@ begin
     end else
         DoSearchEnterPressed();
     SearchActive := False;
-    UpdateStatusBar(inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
+    UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
     ButtonClearSearch.Enabled := false;
 end;
 

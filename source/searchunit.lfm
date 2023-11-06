@@ -16,7 +16,7 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.0.0.2'
   object EditSearch: TEdit
     AnchorSideLeft.Control = BitBtnMenu
     AnchorSideLeft.Side = asrBottom
@@ -28,13 +28,13 @@ object SearchForm: TSearchForm
     Width = 148
     Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
     OnChange = EditSearchChange
     OnEnter = EditSearchEnter
     OnKeyDown = FormKeyDown
     OnKeyUp = EditSearchKeyUp
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 1
   end
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
@@ -74,10 +74,10 @@ object SearchForm: TSearchForm
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Clear'
       Enabled = False
-      OnClick = ButtonClearFiltersClick
-      OnKeyDown = FormKeyDown
       TabOrder = 3
       TabStop = False
+      OnClick = ButtonClearFiltersClick
+      OnKeyDown = FormKeyDown
     end
     object ListBoxNotebooks: TListBox
       AnchorSideLeft.Control = ButtonClearFilters
@@ -94,16 +94,16 @@ object SearchForm: TSearchForm
       Anchors = [akTop, akLeft, akRight, akBottom]
       ExtendedSelect = False
       ItemHeight = 0
-      OnClick = ListBoxNotebooksClick
-      OnKeyPress = ListViewNotesKeyPress
-      OnKeyDown = FormKeyDown
-      OnMouseUp = ListBoxNotebooksMouseUp
       ParentShowHint = False
       ScrollWidth = 230
       ShowHint = True
       Sorted = True
       TabOrder = 2
       TopIndex = -1
+      OnClick = ListBoxNotebooksClick
+      OnKeyPress = ListViewNotesKeyPress
+      OnKeyDown = FormKeyDown
+      OnMouseUp = ListBoxNotebooksMouseUp
     end
     object Panel2: TPanel
       AnchorSideLeft.Control = ButtonClearFilters
@@ -165,7 +165,15 @@ object SearchForm: TSearchForm
     Height = 23
     Top = 378
     Width = 824
-    Panels = <>
+    Panels = <    
+      item
+        Width = 200
+      end    
+      item
+        Alignment = taRightJustify
+        Width = 500
+      end>
+    SimplePanel = False
   end
   object ButtonClearSearch: TButton
     AnchorSideLeft.Control = EditSearch
@@ -179,8 +187,8 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
     Caption = 'Clear'
-    OnClick = ButtonClearSearchClick
     TabOrder = 3
+    OnClick = ButtonClearSearchClick
   end
   object BitBtnMenu: TBitBtn
     AnchorSideLeft.Control = Owner
@@ -284,8 +292,8 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akRight, akBottom]
     BorderSpacing.Right = 2
     Caption = 'Options'
-    OnClick = ButtonSearchOptionsClick
     TabOrder = 5
+    OnClick = ButtonSearchOptionsClick
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344

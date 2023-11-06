@@ -491,7 +491,7 @@ implementation
 {$R *.lfm}
 
 
-{x$define DEBUG}
+{$define DEBUG}
 
 { TSett }
 
@@ -1608,7 +1608,7 @@ begin
     NextAutoSnapshot := now() + SpinDaysPerSnapshot.value;
     {$endif}
     WriteConfigFile();
-    SearchForm.UpdateStatusBar(rsAutosnapshotRun);
+    SearchForm.UpdateStatusBar(1, rsAutosnapshotRun);               // ToDo : should snapshots have own status panel ?
     if CheckNotifications.Checked then begin
         MainForm.ShowNotification(rsAutosnapshotRun);
         (* {$ifdef LINUX}
@@ -1958,7 +1958,6 @@ begin
         WM_SAVEERROR       : St := 'ERROR, failed to save note';
         WM_SAVETIMEOUT     : St := 'ERROR Save timeout waiting for lock';
         WM_SAVEFINISHED    : St := 'Save completed';
-
     else
         St := rsSyncError;
     end;
@@ -1970,7 +1969,7 @@ begin
             if Msg.WParam = WM_SYNCCLASH then                                 // Clashes in AutoSync are problematic, don't start another Sync.
                 ShowMessage(rsSyncClash + lineEnding + rsSyncClashAdvice)
             else StartSyncThread();                                           // Check for another outstanding sync.
-            SearchForm.UpdateStatusBar(St + ', ' + FormatDateTime('YYYY-MM-DD hh:mm', now));
+            SearchForm.UpdateStatusBar(1, St + ', ' + FormatDateTime('YYYY-MM-DD hh:mm', now));
             if Msg.wParam = WM_SYNCFINISHED then                              // We only update the timestamp in the config file after a successful sync, so, if unsuccessful, will happen on next startup
                 WriteConfigFile(false, True);                                 // WriteConfigFile is called from all over the place, only this call should update last sync times.
         end;
@@ -2011,20 +2010,26 @@ procedure TSett.TimerAutoSyncTimer(Sender: TObject);
 var
     ASyncRan : boolean = false;
 //    ASync : TSync;
+    St : string;
 
     procedure RunAutoSync(const SyncTimingIndex : integer; var SyncTimingLast : TDateTime; Transport : TSyncTransport);
     {$IFDEF TESTAUTOTIMING}var
        St : string;{$endif}
     begin
-        {$IFDEF TESTAUTOTIMING}
+        if (SyncTimingIndex = 0) then exit;     // don't do ones set to Manual
+        // {$IFDEF TESTAUTOTIMING}
+        {$ifdef debug}
         if Transport = SyncFile then
             St := 'FileSync : ' + FormatDateTime('YYYY-MM-DD hh:mm', SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex])
         else
            St := 'GitHubSync : ' + FormatDateTime('YYYY-MM-DD hh:mm', SyncTimingGitHubLast + SyncTimingFactors[SyncTimingGitHubIndex]);
         debugln('TSett.TimerAutoSyncTimer : AutoSync ? Now=' + FormatDateTime('YYYY-MM-DD hh:mm', now()) + ' Target:' + St);
         {$endif}
-        if (SyncTimingIndex = 0)
-                    or (Now() < (SyncTimingLast + SyncTimingFactors[SyncTimingIndex])) then exit;
+
+
+        {$ifNdef debug}                         // ie, if debug, run sync every time 10 minutes happens, disregard SyncTimingFactors
+        if (Now() < (SyncTimingLast + SyncTimingFactors[SyncTimingIndex])) then exit;   // exit if time is not yet ripe.
+        {$endif}
         {$IFDEF TESTAUTOTIMING}
             debugln('TSett.TimerAutoSyncTimer : ' + St + ' Needs Sync');
         {$endif}
@@ -2098,7 +2103,9 @@ begin
         if Transport = SyncFile then                                    // Clear the one we are dealing with
             WantFileSync := False
         else WantGitHubSync := False;
-
+        {$ifdef DEBUG}
+        debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Starting Sync Thread.');  // ToDo : remove
+        {$endif}
         ASync.NotesDir := Sett.NoteDirectory;
         ASync.debugmode := Application.HasOption('s', 'debug-sync');
         ASync.ConfigDir := AppendPathDelim(Sett.LocalConfig);
@@ -2106,9 +2113,17 @@ begin
         ASync.UserName := Sett.EditUserName.text;
         if ASync.AutoSetUp(Transport) then begin                        // Might fail if network or shared drive not available
             if not ASync.GetSyncData() then begin                       // A sync clash, we cannot resolve in Auto Sync Mode
-                PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SYNCCLASH, 0);
+                PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SYNCCLASH, 0);    // goes to TSett.HandlePostMessage, shows a popup message
+                OutComeMessage := WM_SYNCNOTPOSSIBLE;                   // might sent a notification too
+                {$ifdef DEBUG}
+                debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Acting on Sync Clash');  // ToDo : remove
+                {$endif}
+
                 exit;
             end;
+            {$ifdef DEBUG}
+            debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Proceeding with Auto Sync');  // ToDo : remove
+            {$endif}
             Synchronize(@(ASync.AdjustNoteList));                       // Mark open notes read only if also being downloaded/deleted
             Changes := ASync.ReportChanges();
             if ASync.UseSyncData() then                                 // No real error checking here, if problem, do manual sync
@@ -2126,6 +2141,9 @@ begin
         PostMessage(sett.Handle, WM_SYNCMESSAGES,  OutComeMessage, Changes);
         //debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'ASync.ReportChanges says ' + inttostr(Changes));
         Sleep(500);                                                    // Allow a pending Save to grab the locks.
+        {$ifdef DEBUG}
+        debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Laving Sync Thread gracefully');  // ToDo : remove
+        {$endif}
     end;
     // debugln('TSyncThread.Execute : +++ Exiting');
 end;

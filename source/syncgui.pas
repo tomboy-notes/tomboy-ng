@@ -352,7 +352,7 @@ begin
             if ASync.DebugMode then debugln('Failed testConnection');
             // in autosync mode, form is not visible, we just send a notify that cannot sync right now.and return false
             if not Visible then begin
-                SearchForm.UpdateStatusBar(rsAutoSyncNotPossible);
+                SearchForm.UpdateStatusBar(1, rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
                     MainForm.ShowNotification(rsAutoSyncNotPossible);
                 end;
@@ -373,7 +373,7 @@ begin
         if ASync.GetSyncData() and ASync.UseSyncData() then;   // ToDo : should I evaluate separetly ?
 
         SyncSummary :=  DisplaySync();
-        SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
+        SearchForm.UpdateStatusBar(1, rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + SyncSummary);
         if (not Visible) and Sett.CheckNotifications.Checked then begin
             MainForm.ShowNotification(rsLastSync  + ' ' + SyncSummary, 2000);
         end;
@@ -477,7 +477,7 @@ begin
     Application.ProcessMessages;
     ASync.TestRun := False;
     if ASync.GetSyncData() and ASync.UseSyncData() then begin  // ToDo : should I evaluate separetly ?
-        SearchForm.UpdateStatusBar(rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
+        SearchForm.UpdateStatusBar(1, rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;
