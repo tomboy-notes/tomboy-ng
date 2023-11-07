@@ -775,6 +775,7 @@ end;
 
 procedure TMainForm.BitBtnQuitClick(Sender: TObject);
 begin
+    Sett.CloseNowPlease();  // might delay exiting app up to 5 seconds while it finishes Sync.
     MainForm.Close;
 end;
 

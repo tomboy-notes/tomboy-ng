@@ -144,8 +144,8 @@ type
     { TSett }
 
     TSett = class(TForm)
-        ButtDefaultNoteDir: TButton;
         ButtonManualSnap: TButton;
+        ButtonSetNotePath: TButton;
         ButtonShowBackUp: TButton;
         ButtonSnapRecover: TButton;
         CheckAutoSnapEnabled: TCheckBox;
@@ -161,6 +161,7 @@ type
         ComboSyncType: TComboBox;
         ComboHelpLanguage: TComboBox;
         EditUserName: TEdit;
+        GroupNotesPath: TGroupBox;
         GroupBoxUser: TGroupBox;
         GroupBoxToken: TGroupBox;
         GroupBoxSync: TGroupBox;
@@ -185,7 +186,6 @@ type
         ButtonSetSpellLibrary: TButton;
         ButtonSetDictionary: TButton;
 
-        ButtonSetNotePath: TButton;
         CheckAutoStart : TCheckBox;
         CheckManyNotebooks: TCheckBox;
         CheckShowSearchAtStart: TCheckBox;
@@ -224,6 +224,9 @@ type
         PMenuMain: TPopupMenu;
         PopupMenuTokenActions: TPopupMenu;
         RadioAlwaysAsk: TRadioButton;
+        RadioChoose: TRadioButton;
+        RadioTomboyDefault: TRadioButton;
+        RadioTomboyNGDefault: TRadioButton;
         RadioFontHuge: TRadioButton;
         RadioFontBig: TRadioButton;
         RadioFontMedium: TRadioButton;
@@ -247,7 +250,6 @@ type
         TabDisplay: TTabSheet;
         TimerAutoSync: TTimer;
 
-        procedure ButtDefaultNoteDirClick(Sender: TObject);
         procedure ButtonSetColoursClick(Sender: TObject);
         procedure ButtonFixedFontClick(Sender: TObject);
         procedure ButtonFontClick(Sender: TObject);
@@ -260,14 +262,13 @@ type
         procedure ButtonSnapRecoverClick(Sender: TObject);
         procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
-//        procedure CheckBoxAutoSyncChange(Sender: TObject);
         procedure ComboSyncTimingChange(Sender: TObject);
         procedure MenuItemCopyTokenClick(Sender: TObject);
         procedure MenuItemGetTokenClick(Sender: TObject);
         procedure MenuItemPasteTokenClick(Sender: TObject);
+        procedure RadioNotePathChange(Sender: TObject);
                 { Called when ANY of the setting check boxes change so we can save. }
         procedure SaveSettings(Sender: TObject);
-//        procedure CheckSyncEnabledChange(Sender: TObject);
         procedure ComboHelpLanguageChange(Sender: TObject);
         procedure ComboSyncTypeChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -298,8 +299,6 @@ type
     private
 
 
-//        SyncFileEnabled, SyncGithubEnabled: boolean;
-        SyncFileAuto, SyncGithubAuto: boolean;
         SyncTimingFileIndex, SyncTimingGithubIndex : integer;   // Holds ComboBox index for each particular sync
         SyncTimingFileLast, SyncTimingGitHubLast : TDateTime;   // The time the last indicated sync was run (manual or auto).
                         { eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
@@ -315,7 +314,10 @@ type
         NextAutoSnapshot : TDateTime;
                         // Recieves messages from the auto sync system, updates searchform status bar
                         // and, if enabled, notifications.
+
+        function DidCleanAndLockSync(): boolean;
         procedure HandlePostMessage(var Msg: TLMessage); message WM_SYNCMESSAGES;    // ThreadTest
+        procedure SetNotePath(const NewNotePath: string);
 
                         // Checks WantFileSync, WantGitHubSync if both false, exits. Otherwise it deals with one off them,
                         // mark that one false, create a thread and execute().
@@ -333,7 +335,7 @@ type
                         // Ret true and displays on screen if passed Full name is a usable dictonary
                         // sets SpellConfig and triggers a config save if successful
         function CheckDictionary(const FullDicName : string): boolean;
-        // Checks and/or makes indicatd dir, warns user if not there and writable.
+                        // Checks and/or makes indicatd dir, warns user if not there and writable.
         function CheckDirectory(DirPath: string): boolean;
                         // Returns the number of files that could be dictionaries in indicated directory
         function CheckForDic(const DictPath: ANSIString): integer;
@@ -349,7 +351,7 @@ type
         //function GetDefaultConfigDir: string;
 
                             // Returns the default place to store notes. It may not be present.
-        function GetDefaultNoteDir: string;
+        function GetDefaultNoteDir(OldTomboy: boolean = false): string;
                             // Has a list of possible fixed font names, returns the first that 'works'.
         function GetFixedFont(): string;
         function MyBoolStr(const InBool: boolean) : string;
@@ -373,7 +375,7 @@ type
 
         procedure fSetAutoSearchUpdate(ASU : boolean);  // sets and then triggers config write
         function  fGetAutoSearchUpdate(): boolean;      // just set AutoSearchUpdateVar
-
+                  	        // Make public things agree with internal ones.
 		procedure SyncSettings;
         function fGetCaseSensitive : boolean;
         procedure fSetCaseSensitive(IsIt : boolean);
@@ -397,7 +399,8 @@ type
         DarkTheme : boolean;            // Dark Theme because we detected it ourselves. Set by main unit.
         QtOwnsColours : boolean;        // Qt[5,6] is in charge of its own colours, probably using QT_QPA_PLATFORMTHEME, but not for kmemo
         DebugModeSpell : boolean;
-        // Indicates SettingsChanged should not write out a new file cos we are loading from one.
+        // Indicates SettingsChanged should not write out a new config file or
+        // react to changes to Radio buttones ect because we are loading config.
         MaskSettingsChanged : boolean;
         AllowClose : Boolean;           // review need for this
         // Indicates we should re-index notes when form hides
@@ -419,10 +422,13 @@ type
             { Indicates Spell is configured and LabelLibrary and LabelDic should
             contain valid full file names.}
         SpellConfig : boolean;
-            { Triggers a Manual Sync, if its not all setup aready and working, user is shown error.
-              Called when MainMenu Sync is click if Sett.ValidSync is true. So, a Manual Sync ? }
+                            // Checks to ensure no threads are running. Will hold
+                            // up an App exits for up to 5 seconds.
+        procedure CloseNowPlease();
+                            // Triggers a Manual Sync, if its not all setup aready and working, user is shown error.
+                            //  Called when MainMenu Sync is click if Sett.ValidSync is true. So, a Manual Sync ?
         procedure Synchronise();
-
+                            // True is at least one Sync Model has valid config.
         property ValidSync : boolean read fGetValidSync;
         property SearchCaseSensitive : boolean read fGetCaseSensitive write fSetCaseSensitive;
                             // Property that triggers write of config when set, reads, sets
@@ -481,9 +487,11 @@ var
                         // and SyncingLockNow set in TSyncThread.Execute and unset in HandlePostMessage()
     LockSyncingNow, LockSavingNow : boolean;
 
+
+
 const
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
-    Sleeps = 100;               // How many times we allow Sync Thread to sleep waiting for a lock.
+    Sleeps = 200;               // How many times we allow Sync Thread to sleep waiting for a lock.
 
 
 implementation
@@ -491,7 +499,7 @@ implementation
 {$R *.lfm}
 
 
-{$define DEBUG}
+{X$define DEBUG}
 
 { TSett }
 
@@ -523,7 +531,8 @@ var
                  // when StartSyncThread() is called, neither, one or both may be set. Set in
                  // TimerAutoSyncTimer() and unset just before when StartSyncThread() launches a thread;
     WantFileSync, WantGitHubSync : boolean;
-
+    ThreadCount : integer = 0;                        // A count of any threads we use, only useful to prevent early close of app.
+    StopAllThreads : boolean = false;                 // Only happens at shutdown time.
 
 const   TooEarlyDate = '1900-01-01T01:01:10';         // An indication its not a real datetime for our purpose
         EarlyDate = '1971-01-01T00:00:00';            // Something to compare with, later than TooEarlyData
@@ -562,7 +571,7 @@ begin
 
 end;
 
-	{ Make public things agree with internal ones. }
+
 procedure TSett.SyncSettings;
 begin
 	if NoteDirectory <> '' then begin
@@ -573,6 +582,12 @@ begin
         else if RadioUseLocal.Checked then SyncOption := UseLocal
         else if RadioUseServer.Checked then SyncOption := UseServer;
 	end;
+    if NoteDirectory = GetDefaultNoteDir() then
+        RadioTomboyNGDefault.Checked := True
+    else
+       if NoteDirectory = GetDefaultNoteDir(True) then
+           RadioTomboyDefault.Checked := True
+       else RadioChoose.Checked := True;
 end;
 
 // -------------------------------- Search Settings ----------------------------
@@ -590,7 +605,7 @@ end;
 
 procedure TSett.PageControl1Change(Sender: TObject);
 begin
-	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+//	if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
     Label15.Caption := '';
     SpeedButHelp.Visible := (PageControl1.TabIndex = 2);    // Only show for Sync Tab
 end;
@@ -807,11 +822,38 @@ end;
 
 // We only really close when told by RTSearch that The Exit Menu choice from TrayIcon was clicked.
 procedure TSett.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+
 begin
-	if AllowClose then begin
+    CloseAction := caHide;          // We don't really close Settings except at app end, see OnCloseQuery;
+    (* Note this is not called when the app is closing, nor is OnCloseQuery *)
+(*	if AllowClose then begin
     	CloseAction := caFree;
         SearchForm.Close;
-	end else CloseAction := caHide;
+	end else CloseAction := caHide;   *)
+
+end;
+
+
+procedure TSett.CloseNowPlease();
+var
+    WaitCount : integer = 0;
+begin
+    {$ifdef debug}debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
+            , 'Close Request from MainUnit');  {$endif}
+    StopAllThreads := True;
+    while ThreadCount > 0 do begin
+//        MainForm.ShowNotification('WARNING tomboy-ng is still Syncing', 2000);
+//        {$ifdef debug}debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
+//            , 'WARNING, blocking a close while syncing ??');  {$endif}
+        inc(WaitCount);
+        if WaitCount > 100 then begin                // Thats five seconds. Seems a lot .....
+            MainForm.ShowNotification('ERROR tomboy-ng is still Syncing, forced exit !', 2000);
+            debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
+            , 'WARNING, tomboy-ng forced to close but it was still syncing ??');
+            break;
+        end;
+        sleep(100);
+    end;
 end;
 
 procedure TSett.FormCreate(Sender: TObject);
@@ -1051,12 +1093,8 @@ begin
             'UseLocal'  : begin SyncOption := UseLocal;  RadioUseLocal.Checked  := True; end;
             'UseServer' : begin SyncOption := UseServer; RadioUseServer.Checked := True; end;
 	    end;
-
-
-
        SyncTimingFileIndex := GetSyncTimingIndex('SyncTimingFile', 'Autosync', 'FileSyncEnabled');             // this is new in 0.37+
        SyncTimingGithubIndex := GetSyncTimingIndex('SyncTimingGitHub', 'AutosyncGit',  'GitSyncEnabled');
-
 
 {        if I > -1 then
             SyncTimingFileIndex := I
@@ -1129,7 +1167,7 @@ procedure TSett.CheckConfigAndDirs;
 //    ConfigFile : TINIFile;
 begin
     CheckDirectory(LocalConfig);        // so its created if needed, shows message on error.
-    ReadConfigFile();   // will ensure sensible default config even if file is not present.
+    ReadConfigFile();                   // will ensure sensible default config even if file is not present.
     if LabelSettingPath.Caption = 'LabelSettingPath' then
             showmessage('WARNING, TSett.CheckConfigFile - writing config before setting filename')
     else if not fileexists(LabelSettingPath.Caption) then        // must be first run
@@ -1307,7 +1345,7 @@ begin
     // debugln('just wrote a settings file out');
 end;
 
-function TSett.GetDefaultNoteDir : string;
+function TSett.GetDefaultNoteDir(OldTomboy : boolean = false) : string;
 begin
     {$IFDEF UNIX}
     Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
@@ -1320,14 +1358,16 @@ begin
     Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
     if not DirectoryExistsUTF8(Result) then
         Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Notes/';
+    // Note we ignore the possibility of Mac having an old Tomboy install.
     {$ENDIF}
     {$IFDEF WINDOWS}
     Result := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
     // %APPDATA%\Tomboy\notes\
     {$ENDIF}
+    if OldTomBoy then Result := Result.Replace('tomboy-ng', 'tomboy', [rfReplaceAll]);
 end;
 
-procedure TSett.ButtDefaultNoteDirClick(Sender: TObject);
+(* procedure TSett.ButtDefaultNoteDirClick(Sender: TObject);
 begin
     NoteDirectory := GetDefaultNoteDir();
     if not CheckDirectory(NoteDirectory) then
@@ -1336,6 +1376,106 @@ begin
         WriteConfigFile();
         SyncSettings();
         SearchForm.IndexNotes(True);
+    end;
+end;   *)
+
+                // Called when ever any NotesDir Radiobutton changed.
+procedure TSett.RadioNotePathChange(Sender: TObject);
+var
+    APath : string;
+begin
+    if MaskSettingsChanged then exit;
+    if not DidCleanAndLockSync() then exit;        // Also flush notes
+    case TRadioButton(Sender).Name of
+         'RadioTomboyNGDefault' :
+            begin
+                ButtonSetNotePath.enabled := False;
+                APath := GetDefaultNoteDir();
+                SetNotePath(APath);
+            end;
+         'RadioTomboyDefault' :
+            begin
+                ButtonSetNotePath.enabled := False;
+                APath :=  GetDefaultNoteDir();
+                APath := NoteDirectory.Replace('tomboy-ng', 'tomboy', [rfReplaceAll]);
+                SetNotePath(APath);
+            end;
+         'RadioChoose' :
+            begin
+                ButtonSetNotePath.enabled := True;
+                exit;                                   // don't, at this stage, check dir
+            end;
+    end;
+    LockSyncingNow  := False;
+
+end;
+
+function TSett.DidCleanAndLockSync() : boolean;
+begin
+    if ValidSync then
+        if mrCancel = QuestionDlg('WARNING', 'This will remove your Sync Settings'
+            , mtConfirmation, [mrOK, mrCancel], 0) then
+                exit(false);
+    SearchForm.FlushOpenNotes();
+    While LockSyncingNow do begin            // Must wait until a sync is finished.
+        if mrCancel =  QuestionDlg('Sync In Progress', 'Try Again ?'
+            , mtConfirmation, [mrOK, mrCancel], 0) then
+                exit(False);
+    end;
+    LockSyncingNow  := True;
+    SyncFileRepo := '';                      // Must disable Sync if note dir changes, all sync history blown away.
+    SyncGithubRepo := '';
+    result := true;
+end;
+
+
+RESOURCESTRING
+    rsDirHasNoNotes = 'That directory does not contain any notes. That is OK, if I can make my own there.';
+
+// Tests the passed path as a potential notes dir, if OK, sets it and indexes
+// any notes. Does not change NotesDirectory if passed one is unsuitable
+procedure TSett.SetNotePath(const NewNotePath : string);
+var
+    Info : TSearchRec;
+begin
+    if CheckDirectory(NoteDirectory) then begin
+        NoteDirectory := NewNotePath;
+        LabelNotesPath.caption := NoteDirectory;
+        if not FindFirst(NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then
+           showmessage(rsDirHasNoNotes);
+        FindClose(Info);
+        WriteConfigFile();
+        SearchForm.IndexNotes(True);
+    end;
+end;
+
+{ Allow user to point to what they want to call their notes dir. If there
+  are no notes there, pops up a warning and proceeds. }
+procedure TSett.ButtonSetNotePathClick(Sender: TObject);
+var
+//    Info : TSearchRec;
+    APath : string;
+begin
+    if not DidCleanAndLockSync() then exit;        // Also flush notes
+    if SelectDirectoryDialog1.Execute then begin
+	    APath := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
+        SetNotePath(APath);
+
+(*        if CheckDirectory(NoteDirectory) then begin
+            if not FindFirst(NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
+               showmessage(rsDirHasNoNotes);
+	        end;
+            FindClose(Info);
+            CheckShowIntLinks.enabled := true;        // Why is this here ????
+            // CheckReadOnly.enabled := true;
+            // SyncFileAuto := False;
+            // SyncGithubAuto := False;
+            ComboSyncTypeChange(self);
+            WriteConfigFile();
+            SyncSettings();
+            SearchForm.IndexNotes(True);
+        end else
+            NoteDirectory := LabelNotesPath.caption;     *)
     end;
 end;
 
@@ -1536,34 +1676,9 @@ begin
     ButtonFont.Hint := UsualFont;
 end;
 
-RESOURCESTRING
-    rsDirHasNoNotes = 'That directory does not contain any notes. That is OK, if I can make my own there.';
 
-	{ Allow user to point to what they want to call their notes dir. If there
-      are no notes there, pops up a warning and proceeds. }
-procedure TSett.ButtonSetNotePathClick(Sender: TObject);
-var
-    Info : TSearchRec;
-begin
-	if SelectDirectoryDialog1.Execute then begin
-		NoteDirectory := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
-        if CheckDirectory(NoteDirectory) then begin
-            if not FindFirst(NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
-               showmessage(rsDirHasNoNotes);
-		    end;
-            FindClose(Info);
-            CheckShowIntLinks.enabled := true;
-            // CheckReadOnly.enabled := true;
-            SyncFileAuto :=False;
-            SyncGithubAuto :=False;
-            ComboSyncTypeChange(self);
-            WriteConfigFile();
-            SyncSettings();
-            SearchForm.IndexNotes(True);
-        end else
-            NoteDirectory := LabelNotesPath.caption;
-	end;
-end;
+
+
 
 { --------------------- S N A P S H O T S ------------------- }
 { Totally unvalidated rule of thumb -
@@ -1744,7 +1859,7 @@ var
    SyncType : integer;
 begin
     {  Used by both File and Github sync }
-    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
+//    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
 
     FormSync.NoteDirectory := NoteDirectory;
     FormSync.LocalConfig := LocalConfig;
@@ -1948,7 +2063,9 @@ procedure TSett.HandlePostMessage(var Msg: TLMessage);
 var
     St : string;
 begin
-//    debugln('TSett.HandlePostMessage ' + 'Message from Sync Thread');
+    // We cannot trigger a SaveThread from here because we don't know which EditBox wants one.
+    // Sadly, if two Syncs are configured, we will trigger second one  as soon as the first is finished
+    // thats tough on the saveThread but they must not run concurrently.
     case Msg.wParam of
         WM_SYNCFINISHED    : St := rsLastSync + ' Changes ' + inttostr(Msg.LParam);
         WM_SYNCNOTPOSSIBLE : St := rsAutoSyncNotPossible;
@@ -1968,7 +2085,7 @@ begin
             LockSyncingNow := False;
             if Msg.WParam = WM_SYNCCLASH then                                 // Clashes in AutoSync are problematic, don't start another Sync.
                 ShowMessage(rsSyncClash + lineEnding + rsSyncClashAdvice)
-            else StartSyncThread();                                           // Check for another outstanding sync.
+            else if not StopAllThreads then StartSyncThread();                 // Check for another outstanding sync.
             SearchForm.UpdateStatusBar(1, St + ', ' + FormatDateTime('YYYY-MM-DD hh:mm', now));
             if Msg.wParam = WM_SYNCFINISHED then                              // We only update the timestamp in the config file after a successful sync, so, if unsuccessful, will happen on next startup
                 WriteConfigFile(false, True);                                 // WriteConfigFile is called from all over the place, only this call should update last sync times.
@@ -2010,7 +2127,7 @@ procedure TSett.TimerAutoSyncTimer(Sender: TObject);
 var
     ASyncRan : boolean = false;
 //    ASync : TSync;
-    St : string;
+//    St : string;
 
     procedure RunAutoSync(const SyncTimingIndex : integer; var SyncTimingLast : TDateTime; Transport : TSyncTransport);
     {$IFDEF TESTAUTOTIMING}var
@@ -2081,31 +2198,41 @@ end;
 procedure TSyncThread.Execute;
 var
    ASync : TSync;
-   OutComeMessage : longint;
+   OutComeMessage : longint = WM_SYNCNOTPOSSIBLE;
    sleepcnt : integer = 0;
    Changes : integer = 0;
 begin
     // debugln('TSyncThread.Execute : +++ Starting (with delay)');
-    while (LockSyncingNow or LockSavingNow) do begin
-          sleep(1000);
-          inc(SleepCnt);
-          if SleepCnt > Sleeps then begin
+    if StopAllThreads then exit;
+    sleep(300);                                        // Might let SaveThread sneak in.
+    if StopAllThreads then exit;
+    inc(ThreadCount);
+    while (LockSyncingNow or LockSavingNow) do begin   // Wait until we can get a lock
+        if StopAllThreads then begin                   // App is exiting, lets get out of here.
+            dec(ThreadCount);
+            exit;
+        end;
+        sleep(300);
+        inc(SleepCnt);
+        if SleepCnt > Sleeps then begin
               PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SYNCTIMEOUT, 0);
+              dec(ThreadCount);
               exit;
-          end;
-          // debugln('TSyncThread.Execute : LockSyncNow=' + booltostr(LockSyncingNow, true) + ' LockSavingNow=' + booltostr(LockSavingNow, True));
+        end;
+        // debugln('TSyncThread.Execute : LockSyncNow=' + booltostr(LockSyncingNow, true) + ' LockSavingNow=' + booltostr(LockSavingNow, True));
     end;
-    LockSyncingNow := True;
-    // debugln('TSyncThread.Execute : +++ Has Lock');
-    // sleep(5000);   // force slow sync to test other things
+    LockSyncingNow := True;                             // OK, we have a lock !
     ASync := TSync.Create;
     try
+        if StopAllThreads then                          // Finally will dec threadcount and Postmessage will release LockSyncingNow
+            exit;
         if Transport = SyncFile then                                    // Clear the one we are dealing with
             WantFileSync := False
         else WantGitHubSync := False;
         {$ifdef DEBUG}
         debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Starting Sync Thread.');  // ToDo : remove
         {$endif}
+
         ASync.NotesDir := Sett.NoteDirectory;
         ASync.debugmode := Application.HasOption('s', 'debug-sync');
         ASync.ConfigDir := AppendPathDelim(Sett.LocalConfig);
@@ -2113,19 +2240,24 @@ begin
         ASync.UserName := Sett.EditUserName.text;
         if ASync.AutoSetUp(Transport) then begin                        // Might fail if network or shared drive not available
             if not ASync.GetSyncData() then begin                       // A sync clash, we cannot resolve in Auto Sync Mode
-                PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SYNCCLASH, 0);    // goes to TSett.HandlePostMessage, shows a popup message
-                OutComeMessage := WM_SYNCNOTPOSSIBLE;                   // might sent a notification too
+                // PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SYNCCLASH, 0);    // goes to TSett.HandlePostMessage, shows a popup message
+                OutComeMessage := WM_SYNCCLASH;                         // Triggers popup message, might send a notification too
                 {$ifdef DEBUG}
                 debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Acting on Sync Clash');  // ToDo : remove
                 {$endif}
-
-                exit;
+                exit;                                                   // Finally will deal with it
             end;
+            if StopAllThreads then exit;
             {$ifdef DEBUG}
             debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Proceeding with Auto Sync');  // ToDo : remove
             {$endif}
             Synchronize(@(ASync.AdjustNoteList));                       // Mark open notes read only if also being downloaded/deleted
+            {$ifdef DEBUG}
+            debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : After Synchronize, will UseData');  // ToDo : remove
+            {$endif}
+
             Changes := ASync.ReportChanges();
+            if StopAllThreads then exit;
             if ASync.UseSyncData() then                                 // No real error checking here, if problem, do manual sync
 (*                {$IFDEF TESTAUTOTIMING}
                 debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Auto Sync Finished OK')
@@ -2134,18 +2266,15 @@ begin
                 {$endif}  *)
                 ;
             OutComeMessage := WM_SYNCFINISHED;
-
+            {$ifdef DEBUG}
+            debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Finished Thread syncing');  // ToDo : remove
+            {$endif}
         end else OutComeMessage := WM_SYNCNOTPOSSIBLE;
     finally
         ASync.Free;
-        PostMessage(sett.Handle, WM_SYNCMESSAGES,  OutComeMessage, Changes);
-        //debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'ASync.ReportChanges says ' + inttostr(Changes));
-        Sleep(500);                                                    // Allow a pending Save to grab the locks.
-        {$ifdef DEBUG}
-        debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Laving Sync Thread gracefully');  // ToDo : remove
-        {$endif}
+        PostMessage(sett.Handle, WM_SYNCMESSAGES,  OutComeMessage, Changes);    // goes to TSett.HandlePostMessage, might shows a popup message
+        dec(ThreadCount);           // ThreadCount is all about keeping app running if Close is requested.
     end;
-    // debugln('TSyncThread.Execute : +++ Exiting');
 end;
 
 constructor TSyncThread.Create(CreateSuspended: boolean);

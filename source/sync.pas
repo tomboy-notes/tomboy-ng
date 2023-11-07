@@ -606,7 +606,7 @@ end;
 function TSync.ReportChanges() : integer;
 var
     Index : integer;
-    St : string;
+//    St : string;
 begin
     result := 0;
     if (RemoteMetaData =  nil) then begin

@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 681
+  Left = 951
   Height = 530
-  Top = 289
+  Top = 225
   Width = 726
   BorderIcons = []
   Caption = 'Form Caption'
@@ -35,22 +35,6 @@ object Sett: TSett
       ClientHeight = 457
       ClientWidth = 722
       OnResize = TabBasicResize
-      object ButtonSetNotePath: TButton
-        AnchorSideLeft.Control = Label1
-        AnchorSideTop.Control = LabelNotesPath
-        AnchorSideTop.Side = asrBottom
-        Left = 7
-        Height = 48
-        Hint = 'If you have notes somewhere else'
-        Top = 143
-        Width = 353
-        BorderSpacing.Top = 4
-        Caption = 'Set Path to Note Files'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = ButtonSetNotePathClick
-      end
       object LabelSettingPath: TLabel
         AnchorSideLeft.Control = Label1
         AnchorSideTop.Control = Label1
@@ -68,7 +52,7 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 7
         Height = 21
-        Top = 118
+        Top = 109
         Width = 127
         BorderSpacing.Top = 3
         Caption = 'LabelNotesPath'
@@ -90,88 +74,67 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 7
         Height = 21
-        Top = 94
+        Top = 85
         Width = 297
-        BorderSpacing.Top = 34
+        BorderSpacing.Top = 25
         Caption = 'Notes will be looked for and saved in :'
-      end
-      object ButtDefaultNoteDir: TButton
-        AnchorSideLeft.Control = ButtonSetNotePath
-        AnchorSideLeft.Side = asrBottom
-        AnchorSideTop.Control = ButtonSetNotePath
-        AnchorSideRight.Control = TabBasic
-        AnchorSideRight.Side = asrBottom
-        Left = 370
-        Height = 48
-        Hint = 'Will work for many new users'
-        Top = 143
-        Width = 345
-        Anchors = [akTop, akLeft, akRight]
-        BorderSpacing.Left = 10
-        BorderSpacing.Right = 7
-        Caption = 'Use Default Notes Location'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = ButtDefaultNoteDirClick
       end
       object CheckAutostart: TCheckBox
         AnchorSideLeft.Control = CheckShowSplash
         AnchorSideTop.Control = CheckNotifications
         AnchorSideTop.Side = asrBottom
-        Left = 17
+        Left = 20
         Height = 23
-        Top = 337
+        Top = 379
         Width = 172
-        BorderSpacing.Top = 30
+        BorderSpacing.Top = 25
         Caption = 'Autostart at Logon'
-        TabOrder = 2
+        TabOrder = 0
         OnChange = CheckAutostartChange
       end
       object CheckShowSearchAtStart: TCheckBox
-        AnchorSideLeft.Control = ButtDefaultNoteDir
         AnchorSideTop.Control = CheckShowSplash
         Left = 380
         Height = 23
-        Top = 231
+        Top = 283
         Width = 185
         BorderSpacing.Left = 10
         Caption = 'Show Search at Start'
-        TabOrder = 3
+        TabOrder = 1
         OnChange = SaveSettings
       end
       object CheckShowSplash: TCheckBox
-        AnchorSideLeft.Control = ButtonSetNotePath
-        AnchorSideTop.Control = ButtonSetNotePath
+        AnchorSideLeft.Control = GroupNotesPath
+        AnchorSideTop.Control = GroupNotesPath
         AnchorSideTop.Side = asrBottom
-        Left = 17
+        Left = 20
         Height = 23
         Hint = 'Always shown if error loading notes.'
-        Top = 231
+        Top = 283
         Width = 183
         BorderSpacing.Left = 10
-        BorderSpacing.Top = 40
+        BorderSpacing.Top = 35
         Caption = 'Show Splash at Start'
         Checked = True
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
-        TabOrder = 4
+        TabOrder = 2
         OnChange = SaveSettings
       end
       object CheckNotifications: TCheckBox
         AnchorSideLeft.Control = CheckShowSplash
         AnchorSideTop.Control = CheckShowSplash
         AnchorSideTop.Side = asrBottom
-        Left = 17
+        Left = 20
         Height = 23
-        Top = 284
+        Top = 331
         Width = 170
-        BorderSpacing.Top = 30
+        BorderSpacing.Top = 25
         Caption = 'Show Notifications'
         Checked = True
         State = cbChecked
-        TabOrder = 5
+        TabOrder = 3
         OnChange = SaveSettings
       end
       object CheckEscClosesNote: TCheckBox
@@ -179,11 +142,88 @@ object Sett: TSett
         AnchorSideTop.Control = CheckNotifications
         Left = 380
         Height = 23
-        Top = 284
+        Top = 331
         Width = 149
         Caption = 'Esc Closes Note'
-        TabOrder = 6
+        TabOrder = 4
         OnChange = SaveSettings
+      end
+      object GroupNotesPath: TGroupBox
+        AnchorSideLeft.Control = TabBasic
+        AnchorSideTop.Control = LabelNotesPath
+        AnchorSideRight.Control = TabBasic
+        AnchorSideRight.Side = asrBottom
+        Left = 10
+        Height = 104
+        Top = 144
+        Width = 702
+        Anchors = [akTop, akLeft, akRight]
+        BorderSpacing.Left = 10
+        BorderSpacing.Top = 35
+        BorderSpacing.Right = 10
+        Caption = 'Notes Path'
+        ClientHeight = 81
+        ClientWidth = 698
+        TabOrder = 5
+        object RadioChoose: TRadioButton
+          AnchorSideLeft.Control = ButtonSetNotePath
+          AnchorSideTop.Control = RadioTomboyNGDefault
+          AnchorSideTop.Side = asrCenter
+          Left = 456
+          Height = 23
+          Top = 8
+          Width = 82
+          Caption = 'Choose'
+          TabOrder = 0
+          OnClick = RadioNotePathChange
+        end
+        object RadioTomboyDefault: TRadioButton
+          AnchorSideLeft.Control = RadioTomboyNGDefault
+          AnchorSideTop.Control = RadioTomboyNGDefault
+          AnchorSideTop.Side = asrBottom
+          Left = 10
+          Height = 23
+          Top = 41
+          Width = 183
+          BorderSpacing.Top = 10
+          Caption = 'Old Tomboy Default'
+          TabOrder = 1
+          OnClick = RadioNotePathChange
+        end
+        object RadioTomboyNGDefault: TRadioButton
+          AnchorSideLeft.Control = GroupNotesPath
+          Left = 10
+          Height = 23
+          Top = 8
+          Width = 178
+          BorderSpacing.Left = 10
+          Caption = 'tomboy-ng Default'
+          Checked = True
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 3
+          TabStop = True
+          OnClick = RadioNotePathChange
+        end
+        object ButtonSetNotePath: TButton
+          AnchorSideTop.Control = RadioTomboyDefault
+          AnchorSideTop.Side = asrCenter
+          AnchorSideRight.Control = GroupNotesPath
+          AnchorSideRight.Side = asrBottom
+          Left = 456
+          Height = 32
+          Hint = 'If you have notes somewhere else'
+          Top = 36
+          Width = 232
+          Anchors = [akTop, akRight]
+          BorderSpacing.Top = 4
+          BorderSpacing.Right = 10
+          Caption = 'Set Path to Note Files'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 2
+          OnClick = ButtonSetNotePathClick
+        end
       end
     end
     object TabDisplay: TTabSheet

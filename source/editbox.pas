@@ -638,7 +638,7 @@ var
 begin
     // Debugln('TSaveThread.Execute >>> start thread to save : ' + TheLoc.FFName);
     while (LockSyncingNow or LockSavingNow) do begin          // declared and mostly used in Settings
-        sleep(200);
+        sleep(100);
         inc(SleepCnt);
         if SleepCnt > Sleeps then begin
             PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVETIMEOUT, 0);    // ToDo : if this ever happens, we should mark note as dirty again !  How ?
