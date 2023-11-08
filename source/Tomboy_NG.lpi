@@ -104,7 +104,7 @@
         <Item72 Value="FormKMemo2pdf"/>
       </ExcludedOriginals>
     </i18n>
-    <BuildModes Count="20">
+    <BuildModes Count="21">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -380,7 +380,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng"/>
+            <Filename Value="tomboy-ng-x86_64"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -396,6 +396,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -921,12 +922,58 @@
           </Other>
         </CompilerOptions>
       </Item20>
+      <Item21 Name="CocoaArmRelease">
+        <MacroValues Count="1">
+          <Macro5 Name="LCLWidgetType" Value="cocoa"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-aarch64"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="aarch64"/>
+            <TargetOS Value="darwin"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+            <CompilerPath Value="/usr/local/bin/fpc"/>
+          </Other>
+        </CompilerOptions>
+      </Item21>
       <SharedMatrixOptions Count="7">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item3 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
         <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseRasPi" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
-        <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
+        <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease,CocoaArmRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
         <Item7 ID="372825449782" Modes="DebugQt6,ReleaseQt6" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt6"/>
       </SharedMatrixOptions>
@@ -936,16 +983,9 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
-      </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
-        <Mode0 Name="default">
-          <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
-          </local>
-        </Mode0>
+        <Mode0 Name="default"/>
       </Modes>
     </RunParams>
     <RequiredPackages Count="3">
