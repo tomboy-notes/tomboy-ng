@@ -19,8 +19,12 @@
 #             instead that ALL Laz installs have a lazarus.cfg with --pcp=
 # 2023-11-08  Work in progress, added packageonly and path changes to get it
 #             working on the Mac Mini (brew things now in path).
-#             Not tested doing a compile first, does not yet do the Universal binary.
-
+#             Not tested doing a compile first, does make the Universal binary
+#	      as long as the two individual binaries exist in ../source
+#
+# WARNING - as packageonly is not being told where Lazarus is, it cannot find
+#	    Lazarus's premade language files.
+	      
 LAZ_FULL_DIR="$1"
 LAZ_DIR=`basename "$LAZ_FULL_DIR"`
 PRODUCT=tomboy-ng
@@ -66,10 +70,10 @@ function MakeDMG () {
 		BITS="64"
 		REL="CocoaRelease"
 	fi
+	cd ../source
+	rm -f "$PRODUCT"	# we are building a new one, either with fpc or lipo
 
 	if [ "$PACKAGEONLY" == 'false' ]; then
-	    cd ../source
-	    rm -f "$PRODUCT"
 
 #	    TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild   --pcp="$HOME/.$LAZ_DIR" -B --cpu="$CPU" --ws="$1" --build-mode="$REL" --os="darwin" Tomboy_NG.lpi
 	
@@ -80,8 +84,12 @@ function MakeDMG () {
 		echo "------------------------------------"
 		exit
 	    fi
-	    cd ../package
+	else		# ie, package only mode
+	    lipo -create -output tomboy-ng tomboy-ng-x86_64 tomboy-ng-aarch64
 	fi
+	strip "$PRODUCT"
+	cd ../package
+
 	# -------- Packaging starts here --------
 	rm -Rf $WORK
 	mkdir -p $CONTENTS
