@@ -312,10 +312,12 @@ type
         fExportPath : ANSIString;
         SearchIsCaseSensitive : boolean;
         NextAutoSnapshot : TDateTime;
+
+                        // Clears any Sync we have configured. Only proceeds if lock is available
+                        // but DOES NOT grab that lock because it has trashed the Sync anyway.
+        function DidCleanAndLockSync(): boolean;
                         // Recieves messages from the auto sync system, updates searchform status bar
                         // and, if enabled, notifications.
-
-        function DidCleanAndLockSync(): boolean;
         procedure HandlePostMessage(var Msg: TLMessage); message WM_SYNCMESSAGES;    // ThreadTest
         procedure SetNotePath(const NewNotePath: string);
 
@@ -862,6 +864,7 @@ var
 begin
     gTTFontCache.ReadStandardFonts;         // needed by PDF export and, at some stage, new font selection window.
     Caption := 'tomboy-ng Settings';
+    ButtonSetNotePath.Enabled := False;
     AreClosing := false;
     Top := 100;
     Left := 300;
@@ -1406,9 +1409,8 @@ begin
                 exit;                                   // don't, at this stage, check dir
             end;
     end;
-    LockSyncingNow  := False;
-
 end;
+
 
 function TSett.DidCleanAndLockSync() : boolean;
 begin
@@ -1422,7 +1424,7 @@ begin
             , mtConfirmation, [mrOK, mrCancel], 0) then
                 exit(False);
     end;
-    LockSyncingNow  := True;
+//    LockSyncingNow  := True;
     SyncFileRepo := '';                      // Must disable Sync if note dir changes, all sync history blown away.
     SyncGithubRepo := '';
     result := true;
@@ -1477,6 +1479,7 @@ begin
         end else
             NoteDirectory := LabelNotesPath.caption;     *)
     end;
+
 end;
 
 { Colors - if its GTK2 or a Qt5 with a QT_QPA_PLATFORMTHEME=[gtk2, qt5ct] then most colors will be right.

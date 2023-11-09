@@ -237,14 +237,15 @@ begin
     Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
     Application.ProcessMessages;
     ASync.TestRun := True;
-    if ASync.GetSyncData() and ASync.UseSyncData() then begin  // ToDo : am I dealing with TestRun correctly ?
+    ASync.GetSyncData();                    // does not return anything interesting here. Does in Auto mode however.
+//    if  ASync.UseSyncData() then begin  // ToDo : am I dealing with TestRun correctly ?
         DisplaySync();
         ShowReport();
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
         Label2.Caption := rsSaveAndSync;
         ButtonSave.Enabled := True;
-    end  else
-        Showmessage(rsSyncError + ' ' + ASync.ErrorString);
+//    end  else
+//        Showmessage(rsSyncError + ' ' + ASync.ErrorString);
     ButtonCancel.Enabled := True;
 end;
 
@@ -412,8 +413,8 @@ begin
     end;
     if (DeletedList.Count > 0) or (DownList.Count > 0) then
         SearchForm.ProcessSyncUpdates(DeletedList, DownList);
-   FreeandNil(DeletedList);
-   FreeandNil(DownList);
+    FreeandNil(DeletedList);
+    FreeandNil(DownList);
 end;
 
 procedure TFormSync.AddLVItem(Act, Title, ID : string);
