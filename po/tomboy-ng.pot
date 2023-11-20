@@ -472,6 +472,14 @@ msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
 msgstr ""
 
+#: resourcestr.rssyncclash
+msgid "A Sync Clash has occured"
+msgstr ""
+
+#: resourcestr.rssyncclashadvice
+msgid "Run the Sync from Main Menu to resolve"
+msgstr ""
+
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
 msgid "A Sync Error occurred"
@@ -711,6 +719,10 @@ msgstr ""
 
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
+msgstr ""
+
+#: teditboxform.menuitemcopyplain.caption
+msgid "Copy Plain"
 msgstr ""
 
 #: teditboxform.menuitemcut.caption
@@ -1350,14 +1362,6 @@ msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr ""
 
-#: tsett.buttdefaultnotedir.caption
-msgid "Use Default Notes Location"
-msgstr ""
-
-#: tsett.buttdefaultnotedir.hint
-msgid "Will work for many new users"
-msgstr ""
-
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
 msgstr ""
@@ -1413,14 +1417,6 @@ msgstr ""
 
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
-msgstr ""
-
-#: tsett.checkboxautosync.caption
-msgid "Auto Sync"
-msgstr ""
-
-#: tsett.checkboxautosync.hint
-msgid "Sync, if possible once an hour."
 msgstr ""
 
 #: tsett.checkescclosesnote.caption
@@ -1482,16 +1478,16 @@ msgctxt "tsett.checkstampsmall.caption"
 msgid "Small"
 msgstr ""
 
-#: tsett.checksyncenabled.caption
-msgid "Sync Enabled"
-msgstr ""
-
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr ""
 
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
+msgstr ""
+
+#: tsett.combosynctiming.text
+msgid "ComboSyncTiming"
 msgstr ""
 
 #: tsett.combosynctype.hint
@@ -1519,6 +1515,10 @@ msgstr ""
 #: tsett.groupboxuser.caption
 msgctxt "tsett.groupboxuser.caption"
 msgid "User"
+msgstr ""
+
+#: tsett.groupnotespath.caption
+msgid "Notes Path"
 msgstr ""
 
 #: tsett.label1.caption
@@ -1586,6 +1586,10 @@ msgctxt "tsett.labelsyncrepo.caption"
 msgid "not configured"
 msgstr ""
 
+#: tsett.labelsynctiming.caption
+msgid "Sync Timing"
+msgstr ""
+
 #: tsett.labelsynctype.caption
 msgid "Sync Type"
 msgstr ""
@@ -1606,6 +1610,10 @@ msgstr ""
 msgid "Always Ask me what to do."
 msgstr ""
 
+#: tsett.radiochoose.caption
+msgid "Choose"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr ""
@@ -1622,6 +1630,14 @@ msgstr ""
 #: tsett.radiofontsmall.caption
 msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
+msgstr ""
+
+#: tsett.radiotomboydefault.caption
+msgid "Old Tomboy Default"
+msgstr ""
+
+#: tsett.radiotomboyngdefault.caption
+msgid "tomboy-ng Default"
 msgstr ""
 
 #: tsett.radiouselocal.caption

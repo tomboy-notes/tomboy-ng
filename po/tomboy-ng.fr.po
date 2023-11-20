@@ -488,6 +488,14 @@ msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
 msgstr "créé, faire une autre copie ailleurs ?"
 
+#: resourcestr.rssyncclash
+msgid "A Sync Clash has occured"
+msgstr ""
+
+#: resourcestr.rssyncclashadvice
+msgid "Run the Sync from Main Menu to resolve"
+msgstr ""
+
 #: resourcestr.rssyncerror
 #, fuzzy
 #| msgid "A Sync Error occured"
@@ -738,6 +746,10 @@ msgstr "Puce >>"
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
 msgstr "Copier"
+
+#: teditboxform.menuitemcopyplain.caption
+msgid "Copy Plain"
+msgstr ""
 
 #: teditboxform.menuitemcut.caption
 msgid "Cut"
@@ -1397,14 +1409,6 @@ msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Carnets"
 
-#: tsett.buttdefaultnotedir.caption
-msgid "Use Default Notes Location"
-msgstr "Emplacement par défaut"
-
-#: tsett.buttdefaultnotedir.hint
-msgid "Will work for many new users"
-msgstr "Fonctionnera en multi-utilisateurs"
-
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
 msgstr "Police fixe"
@@ -1462,14 +1466,6 @@ msgstr "snapshot automatique"
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
 msgstr "Ouvrir au démarrage"
-
-#: tsett.checkboxautosync.caption
-msgid "Auto Sync"
-msgstr "Synchro auto"
-
-#: tsett.checkboxautosync.hint
-msgid "Sync, if possible once an hour."
-msgstr "Une synchro par heure si possible."
 
 #: tsett.checkescclosesnote.caption
 msgid "Esc Closes Note"
@@ -1532,10 +1528,6 @@ msgctxt "tsett.checkstampsmall.caption"
 msgid "Small"
 msgstr "Police petite"
 
-#: tsett.checksyncenabled.caption
-msgid "Sync Enabled"
-msgstr "Synchro active"
-
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr "Réutiliser annuler (peut ralentir l'édition)"
@@ -1543,6 +1535,10 @@ msgstr "Réutiliser annuler (peut ralentir l'édition)"
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Fermer puis ouvrir une note pour valider. Utilisez Ctrl-Z Ctrl-Y"
+
+#: tsett.combosynctiming.text
+msgid "ComboSyncTiming"
+msgstr ""
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
@@ -1572,6 +1568,10 @@ msgstr "Jeton"
 msgctxt "tsett.groupboxuser.caption"
 msgid "User"
 msgstr "Utilisateur"
+
+#: tsett.groupnotespath.caption
+msgid "Notes Path"
+msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1644,6 +1644,10 @@ msgctxt "tsett.labelsyncrepo.caption"
 msgid "not configured"
 msgstr "non configuré"
 
+#: tsett.labelsynctiming.caption
+msgid "Sync Timing"
+msgstr ""
+
 #: tsett.labelsynctype.caption
 msgid "Sync Type"
 msgstr "Typede synchro"
@@ -1664,6 +1668,10 @@ msgstr "Coller un nouveau jeton"
 msgid "Always Ask me what to do."
 msgstr "Demander quoi faire à chaque fois."
 
+#: tsett.radiochoose.caption
+msgid "Choose"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Police grande"
@@ -1681,6 +1689,14 @@ msgstr "Police moyenne"
 msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
 msgstr "Police petite"
+
+#: tsett.radiotomboydefault.caption
+msgid "Old Tomboy Default"
+msgstr ""
+
+#: tsett.radiotomboyngdefault.caption
+msgid "tomboy-ng Default"
+msgstr ""
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."

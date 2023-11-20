@@ -86,7 +86,10 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseRasPi)
             echo "armhf"
         ;;
-	ReleaseQT6)
+        ReleaseRasPi64)
+            echo "arm64"
+        ;;
+       	ReleaseQT6)
 	    echo "amd64Qt6"
 	;;
     esac
@@ -115,6 +118,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ;;        
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
+        ;;
+       ReleaseRasPi)
+            echo "$PRODUCT"-arm64
         ;;
     esac
 }
@@ -209,11 +215,13 @@ function DebianPackage () {
 	    sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt6ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop	
 		;;		
 	"ReleaseRasPi")
-		CTRL_RELEASE="Raspberry Pi release."
-		CTRL_DEPENDS="libqt5pas1, libc6 (>= 2.14), wmctrl, libnotify-bin"
-		
+		CTRL_RELEASE="Raspberry Pi 32bit release."
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin"		
 		;;
-	esac
+	"ReleaseRasPi64")
+		CTRL_RELEASE="Raspberry Pi 64bit release."
+		;;
+    esac
 	chmod 755 BUILD/usr/bin/tomboy-ng
 	# -------------------- Changelog -----------------
 	cp ../debian/changelog "$MANUALS_DIR"changelog
@@ -377,10 +385,11 @@ done
 #if [ "$2" == "LeakCheck" ]; then
 
 
-
+# Note we can package ReleaseQT6 ReleaseRasPi64 but not build them, so, build
+# elsewhere and put binaries in ../source. tomboy-ng-qt6 tomboy-ng-arm64
 
 rm tom*.deb
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQT6; # this expects we have put a prepared qt6 binary in source dir.
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQT6 ReleaseRasPi64; # this expects we have put a prepared qt6 binary in source dir.
 	do DebianPackage $BIN ; 
 done
 

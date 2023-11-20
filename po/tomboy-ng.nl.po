@@ -484,6 +484,14 @@ msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
 msgstr "Aangemaakt. Wilt u ergens een kopie opslaan?"
 
+#: resourcestr.rssyncclash
+msgid "A Sync Clash has occured"
+msgstr ""
+
+#: resourcestr.rssyncclashadvice
+msgid "Run the Sync from Main Menu to resolve"
+msgstr ""
+
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
 msgid "A Sync Error occurred"
@@ -728,6 +736,10 @@ msgstr "Opsommingsteken >>"
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
 msgstr "Kopiëren"
+
+#: teditboxform.menuitemcopyplain.caption
+msgid "Copy Plain"
+msgstr ""
 
 #: teditboxform.menuitemcut.caption
 msgid "Cut"
@@ -1371,14 +1383,6 @@ msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Notitieboeken"
 
-#: tsett.buttdefaultnotedir.caption
-msgid "Use Default Notes Location"
-msgstr "Standaard notitielocatie gebruiken"
-
-#: tsett.buttdefaultnotedir.hint
-msgid "Will work for many new users"
-msgstr "Aanbevolen voor de meeste gebruikers"
-
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
 msgstr "Vastebreedtelettertype"
@@ -1435,14 +1439,6 @@ msgstr "Automatische reservekopieën maken"
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
 msgstr "Automatisch opstarten"
-
-#: tsett.checkboxautosync.caption
-msgid "Auto Sync"
-msgstr "Automatisch synchroniseren"
-
-#: tsett.checkboxautosync.hint
-msgid "Sync, if possible once an hour."
-msgstr "Synchroniseren ieder uur (indien mogelijk)."
 
 #: tsett.checkescclosesnote.caption
 msgid "Esc Closes Note"
@@ -1503,10 +1499,6 @@ msgctxt "tsett.checkstampsmall.caption"
 msgid "Small"
 msgstr "Klein"
 
-#: tsett.checksyncenabled.caption
-msgid "Sync Enabled"
-msgstr "Synchronisatie is ingeschakeld"
-
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr "Ongedaan maken/Opnieuw uitvoeren gebruiken (kan vertragend werken)"
@@ -1514,6 +1506,10 @@ msgstr "Ongedaan maken/Opnieuw uitvoeren gebruiken (kan vertragend werken)"
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Ctrl+Z en Ctrl+Y. Sluit en heropen de notitie om toe te passen."
+
+#: tsett.combosynctiming.text
+msgid "ComboSyncTiming"
+msgstr ""
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
@@ -1541,6 +1537,10 @@ msgstr "Toegangssleutel"
 msgctxt "tsett.groupboxuser.caption"
 msgid "User"
 msgstr "Gebruiker"
+
+#: tsett.groupnotespath.caption
+msgid "Notes Path"
+msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1607,6 +1607,10 @@ msgctxt "tsett.labelsyncrepo.caption"
 msgid "not configured"
 msgstr "niet ingesteld"
 
+#: tsett.labelsynctiming.caption
+msgid "Sync Timing"
+msgstr ""
+
 #: tsett.labelsynctype.caption
 msgid "Sync Type"
 msgstr "Synchronisatietype"
@@ -1627,6 +1631,10 @@ msgstr "Plak de nieuwe sleutel"
 msgid "Always Ask me what to do."
 msgstr "Altijd om een actie vragen"
 
+#: tsett.radiochoose.caption
+msgid "Choose"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Groot"
@@ -1644,6 +1652,14 @@ msgstr "Gemiddeld"
 msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
 msgstr "Klein"
+
+#: tsett.radiotomboydefault.caption
+msgid "Old Tomboy Default"
+msgstr ""
+
+#: tsett.radiotomboyngdefault.caption
+msgid "tomboy-ng Default"
+msgstr ""
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."

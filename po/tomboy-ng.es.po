@@ -490,6 +490,14 @@ msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
 msgstr "creada. ¿Quiere copiarla a otro sitio?"
 
+#: resourcestr.rssyncclash
+msgid "A Sync Clash has occured"
+msgstr ""
+
+#: resourcestr.rssyncclashadvice
+msgid "Run the Sync from Main Menu to resolve"
+msgstr ""
+
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
 msgid "A Sync Error occurred"
@@ -739,6 +747,10 @@ msgstr "Viñeta +"
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
 msgstr "Copiar"
+
+#: teditboxform.menuitemcopyplain.caption
+msgid "Copy Plain"
+msgstr ""
 
 #: teditboxform.menuitemcut.caption
 msgid "Cut"
@@ -1311,15 +1323,28 @@ msgstr "Cuaderno nuevo"
 msgid "Set Notes"
 msgstr "Establecer notas"
 
+#: tsearchform.bitbtnmenu.caption
+#, fuzzy
+msgctxt "tsearchform.bitbtnmenu.caption"
+msgid "Menu"
+msgstr "Menú"
+
 #: tsearchform.buttonclearfilters.caption
 msgctxt "tsearchform.buttonclearfilters.caption"
 msgid "Clear"
 msgstr "Limpiar"
 
-#: tsearchform.buttonmenu.caption
-msgctxt "tsearchform.buttonmenu.caption"
-msgid "Menu"
-msgstr "Menú"
+#: tsearchform.buttonclearsearch.caption
+#, fuzzy
+msgctxt "tsearchform.buttonclearsearch.caption"
+msgid "Clear"
+msgstr "Limpiar"
+
+#: tsearchform.buttonsearchoptions.caption
+#, fuzzy
+msgctxt "tsearchform.buttonsearchoptions.caption"
+msgid "Options"
+msgstr "Opciones"
 
 #: tsearchform.caption
 msgid "tomboy-ng_Search"
@@ -1370,27 +1395,6 @@ msgstr "Renombrar cuaderno"
 msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Cuadernos"
-
-#: tsearchform.speedbuttonclearsearch.caption
-msgctxt "tsearchform.speedbuttonclearsearch.caption"
-msgid "Clear"
-msgstr "Limpiar"
-
-#: tsearchform.speedsearchotions.caption
-msgid "Options"
-msgstr "Opciones"
-
-#: tsearchform.speedsearchotions.hint
-msgid "Search Options"
-msgstr "Opciones de búsqueda"
-
-#: tsett.buttdefaultnotedir.caption
-msgid "Use Default Notes Location"
-msgstr "Usar Ubicación Predeterminada"
-
-#: tsett.buttdefaultnotedir.hint
-msgid "Will work for many new users"
-msgstr "Funcionará para muchos usuarios nuevos"
 
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
@@ -1448,14 +1452,6 @@ msgstr "Use instantáneas automáticas"
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
 msgstr "Ejecutar al iniciar sesión"
-
-#: tsett.checkboxautosync.caption
-msgid "Auto Sync"
-msgstr "Sincronización automática"
-
-#: tsett.checkboxautosync.hint
-msgid "Sync, if possible once an hour."
-msgstr "Sincronizar cada hora si es posible"
 
 #: tsett.checkescclosesnote.caption
 msgid "Esc Closes Note"
@@ -1516,10 +1512,6 @@ msgctxt "tsett.checkstampsmall.caption"
 msgid "Small"
 msgstr "Pequeña"
 
-#: tsett.checksyncenabled.caption
-msgid "Sync Enabled"
-msgstr "Sincronización habilitada"
-
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
@@ -1527,6 +1519,10 @@ msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
+
+#: tsett.combosynctiming.text
+msgid "ComboSyncTiming"
+msgstr ""
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
@@ -1554,6 +1550,10 @@ msgstr "Autentificador"
 msgctxt "tsett.groupboxuser.caption"
 msgid "User"
 msgstr "Usuario"
+
+#: tsett.groupnotespath.caption
+msgid "Notes Path"
+msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1620,6 +1620,10 @@ msgctxt "tsett.labelsyncrepo.caption"
 msgid "not configured"
 msgstr "sin configurar"
 
+#: tsett.labelsynctiming.caption
+msgid "Sync Timing"
+msgstr ""
+
 # ¿Se puede ser más corto? ¿como solamente tipo?
 #: tsett.labelsynctype.caption
 msgid "Sync Type"
@@ -1641,6 +1645,10 @@ msgstr "Pegar un autenticador nuevo"
 msgid "Always Ask me what to do."
 msgstr "Siempre preguntarme que hacer."
 
+#: tsett.radiochoose.caption
+msgid "Choose"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Grande"
@@ -1658,6 +1666,14 @@ msgstr "Media"
 msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
 msgstr "Pequeña"
+
+#: tsett.radiotomboydefault.caption
+msgid "Old Tomboy Default"
+msgstr ""
+
+#: tsett.radiotomboyngdefault.caption
+msgid "tomboy-ng Default"
+msgstr ""
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
@@ -1717,3 +1733,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

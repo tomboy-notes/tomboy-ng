@@ -483,6 +483,14 @@ msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
 msgstr "створено, бажаєте скопіювати деінде ?"
 
+#: resourcestr.rssyncclash
+msgid "A Sync Clash has occured"
+msgstr ""
+
+#: resourcestr.rssyncclashadvice
+msgid "Run the Sync from Main Menu to resolve"
+msgstr ""
+
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
 msgid "A Sync Error occurred"
@@ -727,6 +735,10 @@ msgstr "Список >>"
 #: teditboxform.menuitemcopy.caption
 msgid "Copy"
 msgstr "Копіювати"
+
+#: teditboxform.menuitemcopyplain.caption
+msgid "Copy Plain"
+msgstr ""
 
 #: teditboxform.menuitemcut.caption
 msgid "Cut"
@@ -1370,14 +1382,6 @@ msgctxt "tsearchform.panel2.caption"
 msgid "Notebooks"
 msgstr "Записники"
 
-#: tsett.buttdefaultnotedir.caption
-msgid "Use Default Notes Location"
-msgstr "Викор. типове розташування нотаток"
-
-#: tsett.buttdefaultnotedir.hint
-msgid "Will work for many new users"
-msgstr "Працює для більшості нових користувачів"
-
 #: tsett.buttonfixedfont.caption
 msgid "Fixed Font"
 msgstr "Фіксований шрифт"
@@ -1434,14 +1438,6 @@ msgstr "Використовувати автозрізи"
 #: tsett.checkautostart.caption
 msgid "Autostart at Logon"
 msgstr "Автозапуск під час входу в систему"
-
-#: tsett.checkboxautosync.caption
-msgid "Auto Sync"
-msgstr "Автосинхронізація"
-
-#: tsett.checkboxautosync.hint
-msgid "Sync, if possible once an hour."
-msgstr "Синхронізувати, по можливості, раз на годину."
 
 #: tsett.checkescclosesnote.caption
 msgid "Esc Closes Note"
@@ -1502,10 +1498,6 @@ msgctxt "tsett.checkstampsmall.caption"
 msgid "Small"
 msgstr "Малий"
 
-#: tsett.checksyncenabled.caption
-msgid "Sync Enabled"
-msgstr "Синхронізацію дозволено"
-
 #: tsett.checkuseundo.caption
 msgid "Use Undo Redo (may slow editing)"
 msgstr "Викор. Скасувати Повторити (може сповільнити редагування)"
@@ -1513,6 +1505,10 @@ msgstr "Викор. Скасувати Повторити (може сповіл
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Закрийте і перевідкрийте нотатку, щоб зміни ввійшли в дію. Викор. Ctrl-Z Ctrl-Y"
+
+#: tsett.combosynctiming.text
+msgid "ComboSyncTiming"
+msgstr ""
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
@@ -1540,6 +1536,10 @@ msgstr "Токен"
 msgctxt "tsett.groupboxuser.caption"
 msgid "User"
 msgstr "Користувач"
+
+#: tsett.groupnotespath.caption
+msgid "Notes Path"
+msgstr ""
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1606,6 +1606,10 @@ msgctxt "tsett.labelsyncrepo.caption"
 msgid "not configured"
 msgstr "не налаштовано"
 
+#: tsett.labelsynctiming.caption
+msgid "Sync Timing"
+msgstr ""
+
 #: tsett.labelsynctype.caption
 msgid "Sync Type"
 msgstr "Тип синхронізації"
@@ -1626,6 +1630,10 @@ msgstr "Вставити новий токен"
 msgid "Always Ask me what to do."
 msgstr "Завжди запитувати мене, що робити."
 
+#: tsett.radiochoose.caption
+msgid "Choose"
+msgstr ""
+
 #: tsett.radiofontbig.caption
 msgid "Big"
 msgstr "Великий"
@@ -1643,6 +1651,14 @@ msgstr "Середній"
 msgctxt "tsett.radiofontsmall.caption"
 msgid "Small"
 msgstr "Малий"
+
+#: tsett.radiotomboydefault.caption
+msgid "Old Tomboy Default"
+msgstr ""
+
+#: tsett.radiotomboyngdefault.caption
+msgid "tomboy-ng Default"
+msgstr ""
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."

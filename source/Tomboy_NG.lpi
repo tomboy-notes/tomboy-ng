@@ -104,7 +104,7 @@
         <Item72 Value="FormKMemo2pdf"/>
       </ExcludedOriginals>
     </i18n>
-    <BuildModes Count="21">
+    <BuildModes Count="22">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -373,7 +373,46 @@
           </Other>
         </CompilerOptions>
       </Item7>
-      <Item8 Name="CocoaRelease">
+      <Item8 Name="ReleaseRasPi64">
+        <MacroValues Count="1">
+          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-arm64"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetCPU Value="aarch64"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5024="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item8>
+      <Item9 Name="CocoaRelease">
         <MacroValues Count="1">
           <Macro5 Name="LCLWidgetType" Value="cocoa"/>
         </MacroValues>
@@ -417,8 +456,8 @@
             <CompilerPath Value="/usr/local/bin/ppcx64"/>
           </Other>
         </CompilerOptions>
-      </Item8>
-      <Item9 Name="CocoaDebug">
+      </Item9>
+      <Item10 Name="CocoaDebug">
         <MacroValues Count="1">
           <Macro5 Name="LCLWidgetType" Value="cocoa"/>
         </MacroValues>
@@ -451,8 +490,8 @@
             <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
-      </Item9>
-      <Item10 Name="CarbonDebug">
+      </Item10>
+      <Item11 Name="CarbonDebug">
         <MacroValues Count="1">
           <Macro6 Name="LCLWidgetType" Value="carbon"/>
         </MacroValues>
@@ -500,8 +539,8 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item10>
-      <Item11 Name="CarbonRelease">
+      </Item11>
+      <Item12 Name="CarbonRelease">
         <MacroValues Count="1">
           <Macro6 Name="LCLWidgetType" Value="carbon"/>
         </MacroValues>
@@ -540,8 +579,8 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item11>
-      <Item12 Name="QT5Debug">
+      </Item12>
+      <Item13 Name="QT5Debug">
         <MacroValues Count="1">
           <Macro4 Name="LCLWidgetType" Value="qt5"/>
         </MacroValues>
@@ -583,8 +622,8 @@
 -dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item12>
-      <Item13 Name="LeakCheckWin64">
+      </Item13>
+      <Item14 Name="LeakCheckWin64">
         <MacroValues Count="1">
           <Macro1 Name="LCLWidgetType" Value="win32"/>
         </MacroValues>
@@ -624,8 +663,8 @@
             <CompilerPath Value="/usr/bin/ppcrossx64"/>
           </Other>
         </CompilerOptions>
-      </Item13>
-      <Item14 Name="LeakCheckWin32">
+      </Item14>
+      <Item15 Name="LeakCheckWin32">
         <MacroValues Count="1">
           <Macro1 Name="LCLWidgetType" Value="win32"/>
         </MacroValues>
@@ -662,8 +701,8 @@
             <CompilerPath Value="/usr/bin/fpc"/>
           </Other>
         </CompilerOptions>
-      </Item14>
-      <Item15 Name="LeakCheckLin32">
+      </Item15>
+      <Item16 Name="LeakCheckLin32">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -701,8 +740,8 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item15>
-      <Item16 Name="LeakCheckLin64">
+      </Item16>
+      <Item17 Name="LeakCheckLin64">
         <MacroValues Count="1">
           <Macro2 Name="LCLWidgetType" Value="gtk2"/>
         </MacroValues>
@@ -742,8 +781,8 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item16>
-      <Item17 Name="GTK3">
+      </Item17>
+      <Item18 Name="GTK3">
         <MacroValues Count="1">
           <Macro3 Name="LCLWidgetType" Value="gtk3"/>
         </MacroValues>
@@ -785,8 +824,8 @@
 -dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item17>
-      <Item18 Name="ReleaseQT5">
+      </Item18>
+      <Item19 Name="ReleaseQT5">
         <MacroValues Count="1">
           <Macro4 Name="LCLWidgetType" Value="qt5"/>
         </MacroValues>
@@ -833,8 +872,8 @@
 -dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item18>
-      <Item19 Name="DebugQt6">
+      </Item19>
+      <Item20 Name="DebugQt6">
         <MacroValues Count="1">
           <Macro7 Name="LCLWidgetType" Value="qt6"/>
         </MacroValues>
@@ -883,8 +922,8 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item19>
-      <Item20 Name="ReleaseQt6">
+      </Item20>
+      <Item21 Name="ReleaseQt6">
         <MacroValues Count="1">
           <Macro7 Name="LCLWidgetType" Value="qt6"/>
         </MacroValues>
@@ -921,8 +960,8 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item20>
-      <Item21 Name="CocoaArmRelease">
+      </Item21>
+      <Item22 Name="CocoaArmRelease">
         <MacroValues Count="1">
           <Macro5 Name="LCLWidgetType" Value="cocoa"/>
         </MacroValues>
@@ -967,10 +1006,10 @@
             <CompilerPath Value="/usr/local/bin/fpc"/>
           </Other>
         </CompilerOptions>
-      </Item21>
+      </Item22>
       <SharedMatrixOptions Count="7">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
-        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32,ReleaseRasPi64" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item3 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
         <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseRasPi" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease,CocoaArmRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
