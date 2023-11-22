@@ -73,7 +73,7 @@ function LookForBinary () {
 }
 
 function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch ReleaseLin64)
-    case $1 in              # Only useful in debian packaging
+    case $1 in              # Only useful in debian packaging, used in package name
         ReleaseLin64)
             echo "amd64"
         ;;
@@ -90,8 +90,11 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
             echo "arm64"
         ;;
        	ReleaseQT6)
-	    echo "amd64Qt6"
-	;;
+	        echo "amd64Qt6"
+	    ;;
+	    ReleaseLin32Qt5)
+	        echo "i386Qt5"
+	    ;;
     esac
 }
 
@@ -103,6 +106,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ;;
         ReleaseLin32)
             echo "$PRODUCT"-32
+        ;;
+        ReleaseLin32Qt5)
+            echo "$PRODUCT"-32-qt5
         ;;
         ReleaseWin32)
             echo "$PRODUCT"-32.exe
@@ -119,7 +125,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
         ;;
-       ReleaseRasPi)
+       ReleaseRasPi64)
             echo "$PRODUCT"-arm64
         ;;
     esac
@@ -138,6 +144,7 @@ function BuildAMode () {
     if [ ! -f "$BIN" ]; then
 	    echo "----- $1 ERROR failed to build $BIN ---------"
 	    echo "$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
+	    ERROR="$ERROR ; error $BIN was not made."
 	   exit
     fi	 
     cd ../package
@@ -165,11 +172,11 @@ function DebianTemplate () {        # the common to all versions things
 	# and /usr/share/locale/es/LC_MESSAGES/lclstrconsts.mo for Linux 
 	mkdir -p BUILD/usr/share/locale
 	for i in `ls -b ../po/*.??.po`; do		# Deal with each country code in turn
-	        # echo "Name is $i"
+	        #echo "Name is $i"
 	        BASENAME=`basename -s.po "$i"`
-	        # echo "BASENAME is $BASENAME"
+	        #echo "BASENAME is $BASENAME"
 	        CCODE=`echo "$BASENAME" | cut -d '.' -f2`
-	        # echo "CCode is $CCODE"
+	        #echo "CCode is $CCODE"
 	        mkdir -p BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES
 	        BASENAME=`basename -s."$CCODE" "$BASENAME"`
 		msgfmt -o BUILD/usr/share/locale/"$CCODE"/LC_MESSAGES/"$BASENAME".mo "$i"
@@ -185,10 +192,16 @@ function DebianTemplate () {        # the common to all versions things
 
 	# gets called with the Lazarus Build Mode name for each one we are packaging ...
 function DebianPackage () {
+	echo "--------- Packaging $1 ----------"
     rm -Rf BUILD
     DebianTemplate
     ARCH=$(ModeParamArch "$1")
     BIN=$(ModeParamBin "$1")
+    if [ ! -f ../source/"$BIN" ]; then
+    	echo "--------- WARNING $BIN not present in ../source BIN=[$BIN] and Mode=[$1] and ARCH=[$ARCH] ----------------"
+    	ERROR="$ERROR ; $BIN not present"
+    	return 1
+    fi
     CTRL_ARCH=$ARCH
 	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl, libnotify-bin"
 	CTRL_RELEASE="GTK2 release."
@@ -196,7 +209,7 @@ function DebianPackage () {
 	# ----------- Some Special Cases ----------------
 	case "$1" in
 	"ReleaseQT5")
-		echo "++++++++++ Setting QT5 +++++++++"
+		# echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
 		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin, qt5ct"
 		CTRL_RELEASE="Qt5 release."
@@ -205,8 +218,20 @@ function DebianPackage () {
 	    sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
 	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
 		;;
+
+	"ReleaseLin32Qt5")
+		# echo "++++++++++ Setting Lin 32 QT5 +++++++++"
+		CTRL_ARCH="i386"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin" # , qt5ct" Nov 2023, remove dep on qt5ct for laz rc2 and later 
+		CTRL_RELEASE="32bit Qt5 release."
+		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
+	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
+	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
+	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
+		;;
+
 	"ReleaseQT6")
-		echo "++++++++++ Setting QT6 +++++++++"
+		# echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
 		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
 		CTRL_RELEASE="Qt6 release."
@@ -223,16 +248,22 @@ function DebianPackage () {
 		;;
     esac
 	chmod 755 BUILD/usr/bin/tomboy-ng
+	
 	# -------------------- Changelog -----------------
-	cp ../debian/changelog "$MANUALS_DIR"changelog
-	DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog -v "$VERSION" -D unstable --force-distribution "Release of new version"    
-	if [ -f ../whatsnew ]; then
-		echo "----------- Including whatsnew in changelog"
-		while IFS= read -r Line; do
-			DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "$Line"
-		done < ../whatsnew
-	fi
-	DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "Please see github for change details."
+	if [ -f changelog ]; then
+	    cp changelog "$MANUALS_DIR"changelog
+	else
+	    cp ../debian/changelog "$MANUALS_DIR"changelog
+	    DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog -v "$VERSION" -D unstable --force-distribution "Release of new version"    
+	    if [ -f ../whatsnew ]; then
+		    echo "----------- Including whatsnew in changelog"
+		    while IFS= read -r Line; do
+			    DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "$Line"
+		    done < ../whatsnew
+		fi
+		DEBEMAIL="David Bannon <tomboy-ng@bannons.id.au>" dch --changelog "$MANUALS_DIR"changelog --append "Please see github for change details."
+	    cp "$MANUALS_DIR"changelog .	             # use this for subsquent ones.
+	fi	
 	gzip -9n "$MANUALS_DIR"changelog
     	# -------------------------------- Make control file -------------------------
 	echo "Package: $PRODUCT" > BUILD/DEBIAN/control
@@ -253,6 +284,9 @@ function DebianPackage () {
 	
 	chmod -R g-w BUILD
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_"$ARCH".deb"
+  	
+  	echo " ---------- finished packaging " "$PRODUCT""_$VERSION-0_"$ARCH".deb"
+  	
 	# --------------------------------- Clean up -----------
 #	rm -Rf BUILD
 }
@@ -315,7 +349,7 @@ function MkWinPreInstaller() {
 	mkdir "$WIN_DIR/HELP_DIR"
 	cp -R ../doc/HELP "$WIN_DIR/HELP_DIR/."
 	# " -------- WRITE mo files --------"
-	msgfmt -o "$WIN_DIR"/"$PRODUCT".mo ../po/"$PRODUCT".po
+	# msgfmt -o "$WIN_DIR"/"$PRODUCT".mo ../po/"$PRODUCT".po          # Hmm, why was this here ? 2023-11-22
 	# Source: "tomboy-ng.mo";     DestDir: "{app}\locale"; Flags: ignoreversion
 	# echo "Source: \""$PRODUCT".mo\";     DestDir: \"{app}\\locale\"; Flags: ignoreversion" > mo.insert
 	# above line commented Feb 2022, don't need tomboy-ng.mo in any package 
@@ -378,6 +412,8 @@ echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 # Note: because we must build Qt6 on later that U20.04 and for all others, we must build on U20.04
 # due to the libc issue, we cannot build our qt6 one all at the same time.
 
+rm -f changelog		# we build a new one from ../debian/changelog and ../whatsnew each run
+
 for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5; # ReleaseQt6; Note yet !  Must build elsewhere, bring biary here.
 	do BuildAMode $BIN; 
 done
@@ -385,11 +421,17 @@ done
 #if [ "$2" == "LeakCheck" ]; then
 
 
-# Note we can package ReleaseQT6 ReleaseRasPi64 but not build them, so, build
-# elsewhere and put binaries in ../source. tomboy-ng-qt6 tomboy-ng-arm64
+# Note we can package ReleaseQT6 ReleaseRasPi64 ReleaseLin32Qt5 but not build them, so, build
+# elsewhere and put binaries in ../source. tomboy-ng-qt6 tomboy-ng-arm64 tomboy-ng-32-qt5
 
 rm tom*.deb
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQT6 ReleaseRasPi64; # this expects we have put a prepared qt6 binary in source dir.
+
+# Next line assumes some binaries, compiled elsewhere, have been put in the ../source directory
+# tomboy-ng-32-qt5 (ReleaseLin32Qt5)
+# tomboy-ng-qt6    (ReleaseQt6)
+# tomboy-ng-arm64  (ReleaseRasPi64)
+
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQT6 ReleaseRasPi64 ReleaseLin32Qt5; # Always package ReleaseLin64 first to update changelog once
 	do DebianPackage $BIN ; 
 done
 
@@ -406,5 +448,7 @@ fakeroot bash ./mk_rpm.sh
 echo "OK, we will now sign the RPMs - david, use the longer passphrase !"
 for i in `ls -b *.rpm`; do rpm --addsign "$i"; echo "Signed $i"; done
 ls -l *.rpm *.deb "$WIN_DIR"/*.exe
+
+echo "ERROR REPORT = $ERROR"
 
 
