@@ -13,9 +13,4 @@ tomboy-ng source: debian-watch-file-is-missing
 # re-enabled as an override for v0.35, why ? Sigh ....
 tomboy-ng source: very-long-line-length-in-source-file
 
-# Upstream issues (Lazarus, Qt5) make it necessary to tell
-# this app to use qt5ct, that means setting an env var 
-# that Lintian seems to thinkis the command. When 
-# Lazarus 3.0 is available, remove this.
-tomboy-ng source: desktop-command-not-in-package
  
