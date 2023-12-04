@@ -73,7 +73,7 @@ RESOURCESTRING
   rsLookingatNotes = 'Looking at notes ....';
   rsSaveAndSync = 'Press Save and Sync if this looks OK';
   rsSyncError = 'A Sync Error occurred';
-  rsSyncClash = 'A Sync Clash has occured';
+  rsSyncClash = 'A Sync Clash has occurred';
   rsSyncClashAdvice = 'Run the Sync from Main Menu to resolve';
   rsLastSync = 'Last Sync';     // Followed by a date and simplified sync report
   rsFileSyncInfo1 = 'tomboy-ng uses File Sync to sync to eg DropBox, Google Drive, a USB drive';

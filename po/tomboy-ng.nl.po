@@ -485,7 +485,7 @@ msgid "created, do you want to copy it elsewhere ?"
 msgstr "Aangemaakt. Wilt u ergens een kopie opslaan?"
 
 #: resourcestr.rssyncclash
-msgid "A Sync Clash has occured"
+msgid "A Sync Clash has occurred"
 msgstr ""
 
 #: resourcestr.rssyncclashadvice

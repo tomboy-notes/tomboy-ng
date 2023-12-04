@@ -491,7 +491,7 @@ msgid "created, do you want to copy it elsewhere ?"
 msgstr "creada. ¿Quiere copiarla a otro sitio?"
 
 #: resourcestr.rssyncclash
-msgid "A Sync Clash has occured"
+msgid "A Sync Clash has occurred"
 msgstr ""
 
 #: resourcestr.rssyncclashadvice

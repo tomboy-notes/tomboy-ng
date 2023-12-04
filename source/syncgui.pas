@@ -79,7 +79,7 @@ type
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
                 procedure FormCreate(Sender: TObject);
-                function RunSyncHidden() : boolean;
+//                function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
 				procedure ButtonCloseClick(Sender: TObject);
     			procedure ButtonSaveClick(Sender: TObject);
@@ -301,7 +301,7 @@ begin
     LocalTimer.Enabled := True;
 end;
 
-function TFormSync.RunSyncHidden(): boolean;          // ToDo : this is now done in Settings, remove ???
+(* function TFormSync.RunSyncHidden(): boolean;          // ToDo : this is now done in Settings, remove ???
 begin
     //debugln('In RunSyncHidden');
     if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
@@ -317,7 +317,7 @@ begin
         ASync.Free;
         Busy := False;
     end;
-end;
+end; *)
 
 procedure TFormSync.FormCreate(Sender: TObject);
 begin

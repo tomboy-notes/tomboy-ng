@@ -11,7 +11,10 @@ unit Mainunit;
     enabled), manages some of the command line switches, runs the IPC server to
     communicate with other instances, starts single note mode.
     Makes some decisions about Windows Dark Theme.
+
     Manages display of SysTrayIcon (but events, ie clicks, are in SearchUnit).
+    Possible sensible to move the TrayIcon and its popupMenu to Search Unit,
+    then have a single method responsible for creating and setting it up.
 
  }
 
@@ -138,7 +141,7 @@ type
     { TMainForm }
 
     TMainForm = class(TForm)
-        ApplicationProperties1: TApplicationProperties;
+//        ApplicationProperties1: TApplicationProperties;      commented out 2023/12/03,no idea why its here, removed from form too
 		ButtSysTrayHelp: TBitBtn;
 		BitBtnHide: TBitBtn;
 		BitBtnQuit: TBitBtn;
@@ -196,27 +199,21 @@ type
         {$endif}
     public
         UseTrayMenu : boolean;
-        PopupMenuSearch : TPopupMenu;
+        PopupMenuSearch : TPopupMenu;       // we create these dynamically
         PopupMenuTray : TPopupMenu;
         MainTBMenu : TPopupMenu;
-                                    // Cross Platform, Linux libnotify, others TrayIcon Balloon
+                                // Cross Platform, Linux libnotify, others TrayIcon Balloon
         procedure ShowNotification(const Message: string; ShowTime: integer = 3000);
-        // Called by the Sett unit when it knows the true config path.
-        // procedure SetAltHelpPath(ConfigPath: string);
+                                // Called by the Sett unit when it knows the true config path.
+                                // procedure SetAltHelpPath(ConfigPath: string);
+
         procedure ShowAbout();
-            // Ret path to where help notes are, either default English or Non-English
-        // function ActualHelpNotesPath() : string;
-            // This procedure responds to ALL recent note menu clicks !
-        procedure RecentMenuClicked(Sender: TObject);
-            { Displays the indicated help note, eg recover.note, in Read Only, Single Note Mode
-              First tries the AltHelpPath, then HelpPath}
-        //procedure ShowHelpNote(HelpNoteName: string);
-            { Updates status data on MainForm, tick list }
+                                { Updates status data on MainForm, tick list }
         procedure UpdateNotesFound(Numb: integer);
-        { Opens a note in single note mode. Pass a full file name, a bool that closes whole app
-        on exit and one that indicates ReadOnly mode. }
+                                { Opens a note in single note mode. Pass a full file name, a bool that closes whole app
+                                on exit and one that indicates ReadOnly mode. }
         procedure SingleNoteMode(FullFileName: string; const CloseOnExit, ViewerMode : boolean);
-        { Shortcut to SingleNoteMode(Fullfilename, True, False) }
+                                { Shortcut to SingleNoteMode(Fullfilename, True, False) }
         procedure SingleNoteMode(FullFileName: string);
     end;
 
@@ -798,11 +795,11 @@ begin
             ShowNotification('Please Right Click TrayIcon on this System', 2000);
 end;
 
-procedure TMainForm.RecentMenuClicked(Sender: TObject);
+{procedure TMainForm.RecentMenuClicked(Sender: TObject);
 begin
  	if TMenuItem(Sender).Caption <> SearchForm.MenuEmpty then
  		SearchForm.OpenNote(TMenuItem(Sender).Caption);
-end;
+end;  }
 
 
 // Linux only uses libnotify, Win and MacOS work through TrayIcon

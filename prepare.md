@@ -201,11 +201,11 @@ Debian Bullseye likes debhelper = 13, Ubuntu is still on 12 in control file. Deb
 
 **Install** 
 
-devscripts
+devscripts libqt5pas-dev lcl-qt5 libnotify-dev
 
 Lazarus >= 2.2.4, FPC >= 3.2.2
 
-
+test-deb.bash into ~/bin/. from tb scripts dir.
 
 Debian  need a config file, .dput.cf in $HOME that points to mentors, see mentors website. https://mentors.debian.net  The Launchpad PPA VM does not seem to have that, we put destination address in the dput command line.  The Debian file looks like -
 

@@ -170,14 +170,11 @@ type        { TSearchForm }
         SelectDirectoryDialog1: TSelectDirectoryDialog;
         procedure BitBtnMenuClick(Sender: TObject);
         procedure ButtonClearSearchClick(Sender: TObject);
-        procedure ButtonMenuClick(Sender: TObject);
+
                                     { If a search is underway, searches.  Else, if we have
                                       an active notebook filter applied, reapply it. Failing
                                       both of the above, refreshes the Notes and Notebooks
                                       with data in Note_Lister. }
-  		//procedure ButtonRefreshClick(Sender: TObject);
-        //procedure EditSearchEnter(Sender: TObject);
-		//procedure EditSearchExit(Sender: TObject);
 
 		procedure ButtonClearFiltersClick(Sender: TObject);
         procedure ButtonSearchOptionsClick(Sender: TObject);
@@ -1254,10 +1251,10 @@ begin
 
 //    ListViewNotes.AutoSortIndicator := false;
     ListViewNotes.Column[1].SortIndicator := siAscending;
-    ListViewNotes.AutoWidthLastColumn:= True;         // ToDo : but Qt5 in OwnerData mode demands columns of extra data, eg Filename
+    ListViewNotes.AutoWidthLastColumn:= True;     // ToDo : but Qt5 in OwnerData mode demands columns of extra data, eg Filename
     ListViewNotes.ReadOnly := True;
-    CreateMenus();                                  // We must build an initial menu BEFORE indexing notes...
-    IndexNotes();                                   // Messy but IndexNotes calls Refresh Menu and thats necessary
+    CreateMenus();                                // We must build an initial menu BEFORE indexing notes...
+    IndexNotes();                                 // Messy but IndexNotes calls Refresh Menu and thats necessary
     ListViewNotes.Items.clear;
     ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();        // Builds NoteLister's Index files.
     TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
@@ -1268,7 +1265,15 @@ begin
     EditSearch.SelLength := length(EditSearch.Text);
     RefreshMenus(mkAllMenu);    // IndexNotes->UseList has already called RefreshMenus(mkRecentMenu) and Qt5 does not like it.
     if Mainform.UseTrayMenu then
-        MainForm.TrayIcon.Show;                          // Gnome does not like showing it before menu is populated
+        try
+            MainForm.TrayIcon.Show;               // Gnome does not like showing it before menu is populated
+        except on E: EAccessViolation do begin    // this appears to be a problem on 32bit linux. see https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/40629
+            debugln('ERROR : ' + E.Message);
+            debugln('TSearchForm.FormCreate - AV in libayatana, try forcing Traditional System Tray.');
+            // debugln('Try restarting the app with "--useappind=no" on command line');
+            showmessage('ERROR see help note "System Tray on Linux"');
+            end;
+        end;
     MenuItemCaseSensitive.checked := Sett.SearchCaseSensitive;
     MenuItemSWYT.checked := Sett.AutoSearchUpdate;
     MenuItemImportNote.Hint := rsHelpImportFile;         // ToDo : OK, where is ShowHint ?
@@ -1288,26 +1293,7 @@ var
 begin
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
-(* //    {$ifdef windows}  // gtk2 and qt5 with QT_QPA_PLATFORMTHEME linux apps know how to do this themselves
-//    if Sett.DarkTheme then begin    // Note - Windows won't let us change button colour anymore.
-        Color := Sett.AltColour;                                  // black is 000000, white FFFFFF
-//        Color := clGray;
-        font.Color := Sett.TextColour;                            // Sets children font colour too
-//        ListBoxNotebooks.Color := Sett.AltColour;
-//        ListBoxNotebooks.Font.Color := clWhite;
-
-        ListBoxNotebooks.Color := Sett.BackGndColour;
-//        ListBoxNoteBooks.Font.Color := Sett.TextColour;
-        EditSearch.Color := Sett.AltColour;
-//        EditSearch.Font.Color := Sett.TextColour;
-//         Color := Sett.BackGndColour;                    // OK, this seems to set ListBoxNotes font to Black ?????
-//         font.color := Sett.TextColour;
-//         ListViewNotes.Color :=       clnavy;
-//         ListViewNotes.Font.Color :=  Sett.BackGndColour;
-         splitter1.Color:= clnavy;
-         ButtonClearFilters.Color := Sett.AltColour; *)      // Does work for Qt5, not for GTK2 (but not needed), Windows ?
-
-     if Sett.DarkThemeSwitch then begin                    // We are not relying on OS to set dark theme, it was --dark-theme
+    if Sett.DarkThemeSwitch then begin                    // We are not relying on OS to set dark theme, it was --dark-theme
         Color := Sett.AltColour;                                  // black is 000000, white FFFFFF
         font.Color := Sett.TextColour;                            // Sets children font colour too
         ListBoxNotebooks.Color := Sett.BackGndColour;
@@ -1316,13 +1302,7 @@ begin
         for Butt in [ButtonClearFilters, BitBtnMenu, ButtonSearchOptions, ButtonClearSearch ] do
             Butt.Color := Sett.AltColour;                  // Does work for Qt5, not for GTK2 (but not needed), Windows ?
      end;
-
-
-//    end;
-//    MenuItemAutoRefresh.Checked := Sett.Autorefresh;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
-//    ListViewNotes.Font.Color := ListBoxNotebooks.Font.Color;
-//    {$endif}
     ListBoxNotebooks.Hint := rsNotebookOptionRight;
     if (ListViewNotes.Column[0].SortIndicator = siNone) then begin
         BounceSortIndicator(1);
@@ -1677,10 +1657,6 @@ begin
     UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 end;
 
-
-
-
-
 procedure TSearchForm.ListBoxNotebooksClick(Sender: TObject);
 var
     STL : TStringList;
@@ -1766,15 +1742,6 @@ begin
 end;
 
 // ---------------------- S E A R C H   O P T I O N S --------------------------
-(*
-procedure TSearchForm.MenuItemAutoRefreshClick(Sender: TObject);
-begin
-    MenuItemAutoRefresh.Checked := not MenuItemAutoRefresh.Checked;
-    Sett.AutoRefresh := MenuItemAutoRefresh.Checked;
-
-{    if  Sett.AutoRefresh then SpeedSearchOtions.hint := 'Auto Refresh'     // Warning, these hits are duplicated in OnShow event.
-    else SpeedSearchOtions.hint := 'Manual Refresh';     }
-end;     *)
 
 procedure TSearchForm.MenuItemCaseSensitiveClick(Sender: TObject);
 begin
@@ -1801,13 +1768,6 @@ begin
             Import_Text_MD_File(False, TrimFilename(OpenDialogImport.FileName))
         else showmessage('Cannot import TrimFilename(OpenDialogLibrary.FileName)');
     end;
-{    OpenDialogLibrary.InitialDir := ExtractFilePath(LabelLibrary.Caption);
-    OpenDialogLibrary.Filter := 'Library|libhunspell*';
-    OpenDialogLibrary.Title := rsSelectLibrary;
-    if OpenDialogLibrary.Execute then begin
-        something := TrimFilename(OpenDialogLibrary.FileName);
-        Import_Text_MD_File(MD : boolean; FFName : string = ''); }
-
 end;
 
 procedure TSearchForm.ButtonSearchOptionsClick(Sender: TObject);
@@ -1845,11 +1805,6 @@ end;
 procedure TSearchForm.BitBtnMenuClick(Sender: TObject);
 begin
     PopupTBMainMenu.popup;
-end;
-
-procedure TSearchForm.ButtonMenuClick(Sender: TObject);
-begin
-
 end;
 
 

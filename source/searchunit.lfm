@@ -1,12 +1,13 @@
 object SearchForm: TSearchForm
-  Left = 621
+  Left = 709
   Height = 401
-  Top = 127
+  Top = 171
   Width = 824
   ActiveControl = EditSearch
   Caption = 'tomboy-ng_Search'
   ClientHeight = 401
   ClientWidth = 824
+  LCLVersion = '3.99.0.0'
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -16,7 +17,6 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '3.0.0.2'
   object EditSearch: TEdit
     AnchorSideLeft.Control = BitBtnMenu
     AnchorSideLeft.Side = asrBottom
@@ -277,8 +277,8 @@ object SearchForm: TSearchForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    OnClick = BitBtnMenuClick
     TabOrder = 4
+    OnClick = BitBtnMenuClick
   end
   object ButtonSearchOptions: TButton
     AnchorSideTop.Control = Owner

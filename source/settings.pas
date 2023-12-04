@@ -627,10 +627,6 @@ begin
     PMenuMain.Popup;
 end;
 
-
-
-
-
 procedure TSett.TabBasicResize(Sender: TObject);
 begin
     buttonSetNotePath.Width := (TabBasic.Width div 2) - 12;
@@ -2114,7 +2110,7 @@ begin
     SearchForm.FlushOpenNotes();
     SyncThread := TSyncThread.Create(True);
     SyncThread.NotesDir := NoteDirectory;
-    SyncThread.debugmode := Application.HasOption('s', 'debug-sync');   // ToDo : simplify
+    SyncThread.debugmode := Application.HasOption('s', 'debug-sync');
     SyncThread.ConfigDir := AppendPathDelim(Sett.LocalConfig);
     SyncThread.Password := Sett.LabelToken.Caption;
     SyncThread.UserName := Sett.EditUserName.text;

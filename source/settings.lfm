@@ -7,13 +7,13 @@ object Sett: TSett
   Caption = 'Form Caption'
   ClientHeight = 530
   ClientWidth = 726
+  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '3.0.0.2'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -603,7 +603,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 224
+        ClientHeight = 243
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
@@ -637,7 +637,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 548
           Height = 28
-          Top = 186
+          Top = 205
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -683,7 +683,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 35
+          ClientHeight = 54
           ClientWidth = 483
           TabOrder = 0
           object LabelToken: TLabel
@@ -751,7 +751,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrCenter
           Left = 128
           Height = 29
-          Top = 185
+          Top = 204
           Width = 194
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 20
@@ -774,7 +774,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrCenter
           Left = 15
           Height = 21
-          Top = 189
+          Top = 208
           Width = 93
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Timing'
@@ -973,9 +973,9 @@ object Sett: TSett
           BorderSpacing.Top = 33
           MaxValue = 31
           MinValue = 1
-          OnChange = SpinDaysPerSnapshotChange
           TabOrder = 0
           Value = 7
+          OnChange = SpinDaysPerSnapshotChange
         end
         object SpinMaxSnapshots: TSpinEdit
           AnchorSideLeft.Control = Label9
@@ -988,9 +988,9 @@ object Sett: TSett
           BorderSpacing.Top = 11
           MaxValue = 10
           MinValue = 10
-          OnChange = SaveSettings
           TabOrder = 1
           Value = 20
+          OnChange = SaveSettings
         end
         object CheckAutoSnapEnabled: TCheckBox
           AnchorSideTop.Control = SpinDaysPerSnapshot
@@ -1316,8 +1316,8 @@ object Sett: TSett
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    OnClick = SpeedButtTBMenuClick
     PopupMenu = PMenuMain
+    OnClick = SpeedButtTBMenuClick
   end
   object SpeedButHelp: TSpeedButton
     AnchorSideTop.Control = SpeedButHide
