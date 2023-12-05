@@ -7,10 +7,5 @@
 # are enabled but Fortify Source functions is not.
 tomboy-ng binary: hardening-no-fortify-functions
 
-# Upstream issues (Lazarus, Qt5) make it necessary to tell
-# this app to use qt5ct, that means setting an env var 
-# that Lintian seems to thinkis the command. When 
-# Lazarus 3.0 is available, remove this.
-tomboy-ng: desktop-command-not-in-package
 
 

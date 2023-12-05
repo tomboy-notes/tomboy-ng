@@ -361,7 +361,8 @@ if [ -f tomboy-ng-master.zip ]; then
 	    scripts/mkcontrol.bash debian/ "$DISTRO1" qt5
 	    # we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
 	    #sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" "glyphs"/"$APP".desktop
-	    sed -i "s/Exec=tomboy-ng %f/Exec=QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" "glyphs"/"$APP".desktop
+	    # sed -i "s/Exec=tomboy-ng %f/Exec=QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" "glyphs"/"$APP".desktop
+	    # NO, we don't. Bug is not present in L226 or L300, only intermediate ones.
 	else
 		scripts/mkcontrol.bash debian/ "$DISTRO1"
 	fi
