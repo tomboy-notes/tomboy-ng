@@ -107,6 +107,9 @@ begin
        debugln('   --import-md=PATH_to_FILE      ' + rsHelpImportFile + '  also -m');
        debugln('   --import-note=PATH_to_NOTE    ' + rsHelpImportFile + '  also -n');
        debugln('   --title-fname                 ' + rsHelpTitleISFName);
+       {$ifdef LCLgtk2}
+       debugln('   --useappind=yes|no            ' + 'Force particular TrayIcon');
+       {$endif}
        result := true;
     end;
 end;
@@ -275,6 +278,7 @@ begin
         Import_Note();
         exit(False);
     end;
+    // Note that the useappind option is processed in the LPR file.
 
     if HaveCMDParam() then
          if SingleNoteName = '' then
@@ -292,7 +296,7 @@ initialization
         'debug-sync', 'debug-index', 'debug-spell',
         'config-dir:', 'open-note:', 'save-exit',      // -o for open also legal. save-exit is legecy
         'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
-        'title-fname', 'gnome3');                      // -g and gnome3 is legal but legacy, ignored.
+        'title-fname', 'gnome3', 'useappind:');        // -g and gnome3 is legal but legacy, ignored.
 
 end.
 
