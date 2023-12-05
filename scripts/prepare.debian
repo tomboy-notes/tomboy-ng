@@ -333,6 +333,8 @@ if [ -f tomboy-ng-master.zip ]; then
 		mv "$EXDIRNAME" "tomboy-ng-master"
 	fi
 
+
+
 	# risky, hacky code follows, versions 0.34 and earlier did not have mkcontrol.bash, slip one in
 	if [ -e "mkcontrol.bash" ]; then
 		echo "-------- WARNING, using local mkcontrol.bash because its here !"
@@ -355,6 +357,13 @@ if [ -f tomboy-ng-master.zip ]; then
 	fi
 	mv "tomboy-ng-master" "$APP"_"$VER""$DEBVER"
 	KControls
+	
+	echo -----------------------------------------------------------------------
+	echo     Disabling use of UseAppIndVar because probably still using Laz226
+	echo -----------------------------------------------------------------------
+	sed -i "s/define APPINDPATCH/ignore/" "$APP"_"$VER""$DEBVER"/source/Tomboy_NG.lpr
+	// Remove the above line when Debian moves to Laz300
+	
 	cd "$APP"_"$VER""$DEBVER"	# This is orig tomboy-ng dir made from zip
 	if [ "$WIDGET" = "Qt5" ]; then
 	    touch Qt5			# leave semaphore file
