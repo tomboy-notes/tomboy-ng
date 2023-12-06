@@ -211,11 +211,11 @@ function DebianPackage () {
 	"ReleaseQT5")
 		# echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin, qt5ct"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin"
 		CTRL_RELEASE="Qt5 release."
-		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
+		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog - no longer !
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
-	    sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
+	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
 	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
 		;;
 
@@ -235,9 +235,9 @@ function DebianPackage () {
 		CTRL_ARCH="amd64"
 		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
 		CTRL_RELEASE="Qt6 release."
-		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog
+		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog, no, not using Laz300
 	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it. 
-	    sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt6ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop	
+	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt6ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop	
 		;;		
 	"ReleaseRasPi")
 		CTRL_RELEASE="Raspberry Pi 32bit release."

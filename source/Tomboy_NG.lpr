@@ -14,7 +14,11 @@ program Tomboy_NG;
 {$mode objfpc}{$H+}
 
 {$define TOMBOY_NG}
+
+                      // 3.00.00.00
+// {$if (lcl_fullversion >= 3000000) }
 {$define APPINDPATCH}   // ToDo : this should depend on version of Lazarus
+// {$endif}
 
 uses
     {$DEFINE UseCThreads}
