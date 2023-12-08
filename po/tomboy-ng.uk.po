@@ -501,6 +501,14 @@ msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr "не налаштовано"
 
+#: resourcestr.rssynctypefile
+msgid "File Sync - local or shared filesystem"
+msgstr ""
+
+#: resourcestr.rssynctypegithub
+msgid "Github - free Github account required"
+msgstr ""
+
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
 msgstr "Тестування облікових даних"
@@ -855,8 +863,10 @@ msgid "Tools - Sync, Export, Spell"
 msgstr "Засоби — Синхронізація, Експортування, Правопис"
 
 #: teditboxform.speedclose.caption
-msgid "        "
-msgstr ""
+#, fuzzy
+msgctxt "teditboxform.speedclose.caption"
+msgid "Close"
+msgstr "Закрити"
 
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"

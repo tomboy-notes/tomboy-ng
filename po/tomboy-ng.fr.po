@@ -508,6 +508,14 @@ msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr "non configuré"
 
+#: resourcestr.rssynctypefile
+msgid "File Sync - local or shared filesystem"
+msgstr ""
+
+#: resourcestr.rssynctypegithub
+msgid "Github - free Github account required"
+msgstr ""
+
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
 msgstr "Test des crédentiels"
@@ -868,8 +876,10 @@ msgid "Tools - Sync, Export, Spell"
 msgstr "Outils - Synchro, Export, Orthographe"
 
 #: teditboxform.speedclose.caption
-msgid "        "
-msgstr ""
+#, fuzzy
+msgctxt "teditboxform.speedclose.caption"
+msgid "Close"
+msgstr "Fermer"
 
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"

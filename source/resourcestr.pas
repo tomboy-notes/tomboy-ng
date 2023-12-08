@@ -92,6 +92,8 @@ RESOURCESTRING
   rsSnapshotCreated = 'created, do you want to copy it elsewhere ?';      // refers to a just taken snapshot
   rsErrorCopyFile = 'Failed to copy file, does destination dir exist ?';
   rsAutoSyncNotPossible = 'Auto sync not possible right now';               // Auto sync is configured but cannot proceed, probably because drive is not available
+  rsSyncTypeFile = 'File Sync - local or shared filesystem';
+  rsSyncTypeGitHub = 'Github - free Github account required';
 
   // BackUpView
 

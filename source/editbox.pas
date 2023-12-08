@@ -1920,7 +1920,7 @@ begin
     if Use_Undoer then
         Undoer := TUndo_Redo.Create(KMemo1)
     else Undoer := Nil;
-    SpeedClose.Caption := ' ' + copy(rsMBClose, 2, 20) + ' ';    // chop off the initial '&'
+//    SpeedClose.Caption := ' ' + copy(rsMBClose, 2, 20) + ' ';    // chop off the initial '&'
     SingleNoteFileName := MainUnit.SingleNoteFileName();
     if SingleNoteFileName = '' then
         SearchForm.RefreshMenus(mkAllMenu, PopupMainTBMenu)

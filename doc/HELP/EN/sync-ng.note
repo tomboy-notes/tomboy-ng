@@ -15,27 +15,19 @@ tomboy-ng supports  <bold>file sync</bold>. That is, it syncs to a shared file s
 OK, before we start, are you keeping <highlight>snapshots</highlight> ?  If not, why not ???
 
 <size:large><bold>A shared Filesystem</bold></size:large>
-In practise, tomboy-ng will sync to any (?) file system that your file manager can browse. You could use Google Drive, Drop Box or any such system. Don't forget a copy of  your notes will live on their server so if you are unhappy at them being read there, maybe that not a great idea! You may want to setup a NFS or SMB share. Windows and NFS is not a great mix but SMB works well for all three platforms. The author's home network router has a USB slot at the back, a USB Disk Key plugged in there is distributed via SMB. Been working flawlessly for a couple of years. Some Linux File Managers can be reluctant to show you the SMB or Samba shares, it can help to make them a book mark in your main File Manager but if even that does not work, ensure you have gvfs and gvfs-fuse installed and browse using the directory dialog that tomboy-ng pops up to somewhere like /run/user/1000/gvfs/smb_share .....
+In practise, tomboy-ng will sync to any (?) file system that your file manager can browse. You could use Google Drive, Drop Box or any such system. Don't forget a copy of  your notes will live on their server so if you are unhappy at them being read there, maybe that is not a great idea! You may want to setup a NFS or SMB share. Windows and NFS is not a great mix but SMB works well for all three platforms. The author's home network router has a USB slot at the back, a USB Disk Key plugged in there is distributed via SMB. Been working flawlessly for a couple of years. Some Linux File Managers can be reluctant to show you the SMB or Samba shares, it can help to make them a book mark in your main File Manager but if even that does not work, ensure you have gvfs and gvfs-fuse installed and browse using the directory dialog that tomboy-ng pops up to somewhere like /run/user/1000/gvfs/smb_share .....
 
  Or you could even just use a USB Disk Key and plug it into which ever machine you are syncing at the time. As long as tomboy-ng can read and write there, good.
 
 One thing to note, if you plan to sync both Tomboy and tomboy-ng with the same repository, Tomboy is not quite so happy with "any shared filesystem", check it before investing too much time.
 
 <size:large><bold>Setting Up A Repository</bold></size:large>
-Easy, might be a good idea to create a directory there such as Tomboy-Sync or whatever,  tomboy-ng (or Tomboy) just needs be told where the filesystem is and it will do the rest. In tomboy-ng, click Settings, Sync Tab, click "Change File Sync Repo". Browse to the directory you created.  tomboy-ng will have a look at the directory and your existing notes (if any) and will generate a report about what it will do. If that looks OK, click "Save and Sync". Done.
+Easy, might be a good idea to create a directory there such as Tomboy-Sync or whatever,  tomboy-ng just needs be told where the filesystem is and it will do the rest. In tomboy-ng, click Settings, Sync Tab. Set Sync Type to "File Sync ..." and click "Change File Sync Repo". Browse to the directory you created.  tomboy-ng will have a look at the directory and your existing notes (if any) and will generate a report about what it will do. If that looks OK, click "Save and Sync". Done.
 
 <size:large><bold>sshfs to do network sync</bold></size:large>
-tomboy-ng can sync quite happily to any remote server that you have ssh access to. The author has a cut price hosting plan with a much neglected website and a few gig of diskspace. Its useful because I can ssh into it ! So, if I can ssh to it, I can use sshfs with it. For example, on a linux machine, I would install sshfs then, initially ssh to this remote server and create a directory called eg TB_Sync, then back on my local machine-
+tomboy-ng can sync quite happily to any remote server that you have ssh access to. The author has a cut price hosting plan with a much neglected website and a few gig of diskspace. Its useful because I can ssh into it ! So, if I can ssh to it, I can use sshfs with it. For example, on a linux machine, I would install sshfs then, initially ssh to this remote server and create a directory called eg TB_Sync, then back on my local machine make a local directory as a mount point and use sshfs to mount the remote share on that point. In tomboy-ng, "Change Sync Repo" and browse to that mount point.
 
 <monospace>cd; mkdir TB_Sync; sshfs myname@remoteserver.com:TB_Sync TB_Sync [enter]</monospace>
-
-Fire up tomboy-ng and set its sync repo to ~/TB_Sync and its done. Disconnect that shared directory with -
-
-<monospace>fusermount -uz TB_Sync [enter]</monospace>
-
-And reconnect later on, to sync again, with
-
-<monospace>sshfs myname@remoteserver.com TB_SYNC [enter]</monospace>
 
 <size:large><bold>Manual Syncing and Clashes</bold></size:large>
 From time to time, you need to click the Sync menu entry. A short report will pop up telling what it has done, have a look and close. However, there will almost certainly come a time when you have changed a particular note on more than one machine since your last Sync. Sad but inevitable. Now, the Sync engine does not know what to do. It will show you a list of the differences between the two notes and you can choose to use the Local or Remote version. Remote being the 'remote' file repository.
@@ -45,29 +37,23 @@ If, even after seeing the differences between the two versions, you still cannot
 Note, when resolving clashes, there are also several "do all" buttons that will be applied to the remainder of this sync run. Remote, Local, newest, oldest, if you feel brave, click one.
 
 <size:large><bold>Automatic Syncing</bold></size:large>
-New on v0.27, tomboy-ng does automatic, behind the scenes syncing. Obviously only if you have setup sync and the necessary shared file system is available. Settings-&gt;Sync and tick the box. It will sync about 15 seconds after startup and then hourly. If it encounters a note clash, the usual window will still popup showing the differences between the two notes allowing you to decide. If it cannot sync, because, perhaps, you have disconnected the shared drive, again a popup windows will advise you, you can either fix the problem and press Retry or, if you press Cancel, syncing will not be attempted again until you either restart tomboy-ng or 'bounce' the Auto Sync setting.
+New on v0.27, tomboy-ng does automatic, behind the scenes syncing. Obviously only if you have setup sync and the necessary shared file system is available. Settings-&gt;Sync and tick the box. It will sync about 15 seconds after startup and then as often as you have set. If it encounters a note clash, the usual window will still popup showing the differences between the two notes allowing you to decide. If it cannot sync, because, perhaps, you have disconnected the shared drive, again a popup windows will advise you, you can either fix the problem and press Retry or, if you press Cancel, syncing will not be attempted again until you either restart tomboy-ng or 'bounce' the Auto Sync setting.
 
 If you are like me and need constant reassurance that things are working, you can see details of most recent sync in the Search Window's status bar.
 
 <size:large><bold>Rejoining a Repository</bold></size:large>
-Tomboy would struggle when you had occasion to re-join a repo you have used in the past. It would spot a whole lot of notes with the same ID but not have the repository data to know how to handle them, they would all be labelled as clashes. To solve this, tomboy-ng looks at the last change date, accurate to the micro second and decides that two notes with the same ID and the same last change date should be assumed to be identical. Its a pretty good bet. Now, this process can be a bit slow so we keep additional data in the remote manifest. However, if you use Tomboy in the same repo, it will drop that extra data and re-joining a repo will be slow. Not usually a problem ...
-
-<size:large><bold>When Something Goes Wrong.</bold></size:large>
-Honestly, I have tested the new sync engine to death. But we all know the problem with developers testing their own code. So, yep, it might all go wrong !
-Firstly, are you keeping snapshots ?  If not, why not ???
-Secondly, please try starting tomboy-ng from the command line. While its running, anything it does not like is reported to your console. If that does not show you anything revealing, try stopping and adding <monospace>--debug-sync</monospace> to the command line. If you have a problem, please report it to either github or the Tomboy mailing list, we really want to know !
-
+Tomboy would struggle when you had occasion to re-join a repo you have used in the past. It would spot a whole lot of notes with the same ID but not have the repository data to know how to handle them, they would all be labelled as clashes. To solve this, tomboy-ng looks at the last change date, accurate to the micro second and decides that two notes with the same ID and the same last change date should be assumed to be identical. Its a pretty good bet. Now, this process can be a bit slow so we keep additional data in the remote manifest. However, if you use Tomboy in the same repo, it will drop that extra data and re-joining a repo will be slow. Not a problem, just slower.
 
 
 </note-content></text>
-  <last-change-date>2022-09-23T20:46:31.9918428+10:00</last-change-date>
-  <last-metadata-change-date>2022-09-23T20:46:31.9918428+10:00</last-metadata-change-date>
+  <last-change-date>2023-12-06T17:46:15.9245866+11:00</last-change-date>
+  <last-metadata-change-date>2023-12-06T17:46:15.9245866+11:00</last-metadata-change-date>
   <create-date>2000-01-01T10:00:00.0000000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>806</x>
-  <y>235</y>
+  <x>181</x>
+  <y>165</y>
   <open-on-startup>False</open-on-startup>
 </note>

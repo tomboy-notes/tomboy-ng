@@ -865,6 +865,9 @@ begin
     Top := 100;
     Left := 300;
     LoadHelpLanguages();
+    ComboSyncType.Items.Clear;
+    ComboSyncType.Items.Add(rsSyncTypeFile);
+    ComboSyncType.Items.Add(rsSyncTypeGitHub);
     ComboDateFormat.Items.Clear;
     for i := 0 to MaxDateStampIndex do
         ComboDateFormat.Items.add(TB_DateStamp(i));

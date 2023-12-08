@@ -1,11 +1,11 @@
 # Spanish translation for Tomboy-ng.
 # This file is put in the public domain.
-# Roy W. Reese <waterbearer54@gmx.com>, 2018-2022.
+# Roy W. Reese <waterbearer54@gmx.com>, 2018-2023.
 msgid ""
 msgstr ""
-"Project-Id-Version: tomboy-ng v0.35\n"
+"Project-Id-Version: tomboy-ng v0.37\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-03-16 16:59+0100\n"
+"PO-Revision-Date: 2023-12-06 09:23+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.4.1\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -492,11 +492,11 @@ msgstr "creada. ¿Quiere copiarla a otro sitio?"
 
 #: resourcestr.rssyncclash
 msgid "A Sync Clash has occurred"
-msgstr ""
+msgstr "Conflicto en sincronización"
 
 #: resourcestr.rssyncclashadvice
 msgid "Run the Sync from Main Menu to resolve"
-msgstr ""
+msgstr "Sincronice desde el Menú Principal para resolverlo"
 
 #: resourcestr.rssyncerror
 msgctxt "resourcestr.rssyncerror"
@@ -507,6 +507,14 @@ msgstr "Error de sincronización"
 msgctxt "resourcestr.rssyncnotconfig"
 msgid "not configured"
 msgstr "sin configurar"
+
+#: resourcestr.rssynctypefile
+msgid "File Sync - local or shared filesystem"
+msgstr ""
+
+#: resourcestr.rssynctypegithub
+msgid "Github - free Github account required"
+msgstr ""
 
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
@@ -750,7 +758,7 @@ msgstr "Copiar"
 
 #: teditboxform.menuitemcopyplain.caption
 msgid "Copy Plain"
-msgstr ""
+msgstr "Copiar sin formato"
 
 #: teditboxform.menuitemcut.caption
 msgid "Cut"
@@ -867,8 +875,11 @@ msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
 
 #: teditboxform.speedclose.caption
-msgid "        "
-msgstr ""
+#, fuzzy
+#| msgid "        "
+msgctxt "teditboxform.speedclose.caption"
+msgid "Close"
+msgstr "        "
 
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
@@ -1324,7 +1335,6 @@ msgid "Set Notes"
 msgstr "Establecer notas"
 
 #: tsearchform.bitbtnmenu.caption
-#, fuzzy
 msgctxt "tsearchform.bitbtnmenu.caption"
 msgid "Menu"
 msgstr "Menú"
@@ -1335,13 +1345,11 @@ msgid "Clear"
 msgstr "Limpiar"
 
 #: tsearchform.buttonclearsearch.caption
-#, fuzzy
 msgctxt "tsearchform.buttonclearsearch.caption"
 msgid "Clear"
 msgstr "Limpiar"
 
 #: tsearchform.buttonsearchoptions.caption
-#, fuzzy
 msgctxt "tsearchform.buttonsearchoptions.caption"
 msgid "Options"
 msgstr "Opciones"
@@ -1522,7 +1530,7 @@ msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 
 #: tsett.combosynctiming.text
 msgid "ComboSyncTiming"
-msgstr ""
+msgstr "ComboSyncTiming"
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
@@ -1553,7 +1561,7 @@ msgstr "Usuario"
 
 #: tsett.groupnotespath.caption
 msgid "Notes Path"
-msgstr ""
+msgstr "Ruta a las notas"
 
 #: tsett.label1.caption
 msgid "Settings will be saved in :"
@@ -1622,7 +1630,7 @@ msgstr "sin configurar"
 
 #: tsett.labelsynctiming.caption
 msgid "Sync Timing"
-msgstr ""
+msgstr "Programación"
 
 # ¿Se puede ser más corto? ¿como solamente tipo?
 #: tsett.labelsynctype.caption
@@ -1647,7 +1655,7 @@ msgstr "Siempre preguntarme que hacer."
 
 #: tsett.radiochoose.caption
 msgid "Choose"
-msgstr ""
+msgstr "Elegir"
 
 #: tsett.radiofontbig.caption
 msgid "Big"
@@ -1669,11 +1677,11 @@ msgstr "Pequeña"
 
 #: tsett.radiotomboydefault.caption
 msgid "Old Tomboy Default"
-msgstr ""
+msgstr "Predeterminada antiguo Tomboy"
 
 #: tsett.radiotomboyngdefault.caption
 msgid "tomboy-ng Default"
-msgstr ""
+msgstr "Predeterminada tomboy-ng"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."
