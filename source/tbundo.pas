@@ -16,6 +16,7 @@ unit tbundo;
     KControls - https://github.com/kryslt/KControls
 
     History : 2021-12-18  AddTextInsert is sometimes required to save any selected text.
+        2023-12-11 Do not move SelectionIndex while KMemo is locked.
 }
 
 { A unit to provide storage for undo / redo of the text in the tb-ng kmemo.
@@ -92,7 +93,7 @@ unit tbundo;
 {$mode ObjFPC}{$H+}
 
 
-// {$DEFINE DEBUG_UNDO}    // Warning, debug uses writeln, don't use on Windows !
+{x$DEFINE DEBUG_UNDO}    // Warning, debug uses writeln, don't use on Windows !
 
 interface
 
@@ -181,7 +182,10 @@ TUndo_Redo = class
         function ReDo : boolean;
         constructor Create(KM: TKMemo);
                                         // Public : For debug purposes only, don't leave for release.
-        {$IFDEF DEBUG_UNDO} procedure Report();{$endif}
+        {$IFDEF DEBUG_UNDO}
+        procedure Report();
+        procedure DumpTheKMemo(WhereFrom : string);
+        {$endif}
 
 end;
 
@@ -226,7 +230,10 @@ begin
     // 4. Any one of the above, but with something selected.  What ever is selected
     //    goes away and is replaced with nothing or the key if its 1. above.
     // 5. New - Also from a markup change, called just before the markup is applied.
+    {$IFDEF DEBUG_UNDO}
+    writeln('TUndo_Redo.RecordInital');   // only ifdef DEBUG_UNDO
 
+    {$endif}
     Overwritten := GetSelectedRTF();
     OverwrittenLen := TheKMemo.RealSelLength;
     if OverwrittenLen = 0 then begin                 // OK, nothing selected then.
@@ -376,22 +383,30 @@ procedure TUndo_Redo.InsertIntoKMemo(loc : integer; St : string);
 var
     AStream: TMemoryStream;
 begin
+    {$IFDEF DEBUG_UNDO}
+    DumpTheKMemo('in TUndo_Redo.InsertIntoKMemo before Insert');
+    {$ENDIF}
     if copy(St, 1, 11) = '{\rtf1\ansi' then begin
         AStream := TMemoryStream.Create;
         try
             AStream.Write(St[1], St.length);
             AStream.Seek(0, soFromBeginning);
             TheKMemo.LoadFromRTFStream(AStream, Loc);
-            TheKMemo.SelStart := loc;
             // ToDo : should restore cursor to end of any new text, but how long is that .... ?
         finally
             AStream.Free;
+            {$IFDEF DEBUG_UNDO}
+            DumpTheKMemo('in TUndo_Redo.InsertIntoKMemo After Insert');
+            {$endif}
         end;
     end else begin
         TheKMemo.ActiveBlocks.InsertPlainText(Loc, St);
         TheKMemo.SelStart := loc + length(St);
     end;
-    TheKMemo.SelLength := 0;       // So nothing is accidently selected
+    {$IFDEF DEBUG_UNDO}
+    DumpTheKMemo('in TUndo_Redo.InsertIntoKMemo End Insert');
+    {$ENDIF}
+    // Leave moving the SelectionIndex around until AFTER releasing the Locks !
 end;
 
 function TUndo_Redo.UnDo: boolean;
@@ -399,6 +414,9 @@ var
   Target : integer;
 begin
     if not CanUnDo() then exit(False);
+    {$IFDEF DEBUG_UNDO}
+    DumpTheKMemo('in TUndo_Redo.UnDo Start ');
+    {$endif}
     Target := NextChange;
     if Target > 0 then dec(Target)
     else Target :=  MaxChange -1;
@@ -426,9 +444,14 @@ begin
         finally
             Thekmemo.Blocks.UnLockUpdate;
         end;
+
+        TheKMemo.SelLength := 0;
+        TheKMemo.SelStart := StartSelIndex;
+
     end;
     {$IFDEF DEBUG_UNDO}
-    Report();
+    DumpTheKMemo('in TUndo_Redo.UnDo Start ');
+//    Report();
     {$endif}
 end;
 
@@ -460,7 +483,8 @@ begin
         end;
     end;
     {$IFDEF DEBUG_UNDO}
-    Report();  {$ENDIF}
+    //Report();
+    {$ENDIF}
 end;
 
 
@@ -503,6 +527,18 @@ begin
     writeln('Current : ' + inttostr(CurrentCR.StartSelIndex) + ' [' + CurrentCR.ExistData   // only ifdef DEBUG_UNDO
             + '] - [' + CurrentCR.NewData + ']');
     writeln('--------------------------------');                // only ifdef DEBUG_UNDO
+end;
+
+ // This is a debug method, take care, it uses writeln and will kill Windows !
+procedure TUndo_Redo.DumpTheKMemo(WhereFrom : string);
+var
+    i : integer;
+begin
+    Writeln('============ TEditBoxForm.DumpKMemo from ' + WhereFrom);
+    writeln('============ BlockCount=', TheKMemo.Blocks.Count);
+    writeln('============ EndBlock Index=', integer(TheKMemo.Blocks.Lines.Items[TheKMemo.Blocks.Lines.Count-1].EndBlock));
+    for i := 0 to TheKmemo.Blocks.Count-1 do
+        writeln(Inttostr(i) + ' ' + TheKMemo.Blocks.Items[i].ClassName + ' = ' + TheKMemo.Blocks.Items[i].Text);
 end;
 {$endif}
 
