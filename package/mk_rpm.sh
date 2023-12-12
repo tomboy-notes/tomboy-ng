@@ -26,7 +26,7 @@ RDIR="$PROD"-"$VERS"
 PACKVER=1	# Starts at '1', rev it if we are repackaging same content
 
 function DoAlien ()  {
-	FILENAME="$PROD"_"$VERS"-0_"$1".deb
+	FILENAME="$PROD"_"$VERS"-0_"$1".deb     # this is the input deb file
 	ARCH="$1"
 	rm -Rf "$RDIR"
 	# Note, debs have a dash after initial version number, RPM an underscore
@@ -38,7 +38,7 @@ function DoAlien ()  {
 		ARCH=x86_64
 	fi
 	if [ "$1" = i386 ]; then
-		ARCH=x86
+		ARCH=i686          # that is used in the output RPM
 	fi
 
 	echo "--- RDIR=$RDIR and building for $1 using $FILENAME ---------"
