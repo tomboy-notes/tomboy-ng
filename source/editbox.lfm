@@ -1267,7 +1267,7 @@ object EditBoxForm: TEditBoxForm
       Caption = '-'
     end
     object MenuItemBulletRight: TMenuItem
-      Caption = 'BullXXXXet +'
+      Caption = 'Bullet +'
       ShortCut = 32807
       OnClick = MenuTextGeneralClick
     end

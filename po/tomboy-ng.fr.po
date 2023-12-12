@@ -748,7 +748,7 @@ msgstr "Puce <<"
 #: teditboxform.menuitembulletright.caption
 #, fuzzy
 #| msgid "Bullet >>"
-msgid "BullXXXXet +"
+msgid "Bullet +"
 msgstr "Puce >>"
 
 #: teditboxform.menuitemcopy.caption

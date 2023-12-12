@@ -749,7 +749,9 @@ msgid "Bullet -"
 msgstr "Viñeta -"
 
 #: teditboxform.menuitembulletright.caption
-msgid "BullXXXXet +"
+#, fuzzy
+#| msgid "BullXXXXet +"
+msgid "Bullet +"
 msgstr "Viñeta +"
 
 #: teditboxform.menuitemcopy.caption

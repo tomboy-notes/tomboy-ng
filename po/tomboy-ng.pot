@@ -722,7 +722,7 @@ msgid "Bullet -"
 msgstr ""
 
 #: teditboxform.menuitembulletright.caption
-msgid "BullXXXXet +"
+msgid "Bullet +"
 msgstr ""
 
 #: teditboxform.menuitemcopy.caption

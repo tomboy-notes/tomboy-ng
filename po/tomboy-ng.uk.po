@@ -737,7 +737,7 @@ msgstr "Список <<"
 #: teditboxform.menuitembulletright.caption
 #, fuzzy
 #| msgid "Bullet >>"
-msgid "BullXXXXet +"
+msgid "Bullet +"
 msgstr "Список >>"
 
 #: teditboxform.menuitemcopy.caption

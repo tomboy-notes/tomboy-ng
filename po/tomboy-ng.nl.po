@@ -738,7 +738,7 @@ msgstr "Opsommingsteken <<"
 #: teditboxform.menuitembulletright.caption
 #, fuzzy
 #| msgid "Bullet >>"
-msgid "BullXXXXet +"
+msgid "Bullet +"
 msgstr "Opsommingsteken >>"
 
 #: teditboxform.menuitemcopy.caption
