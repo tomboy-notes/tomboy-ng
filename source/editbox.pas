@@ -3238,6 +3238,10 @@ begin
             key := 0;
             if (EditFind.Text <> rsMenuSearch) then SpeedLeftClick(self);
        end;
+       if (Key = VK_RETURN) then begin                    // Shift-Enter, intended to do so paragraph things but messes badly with bullets. #305
+          Key := 0;
+          exit();
+       end;
     end;
     {$endif}
 
