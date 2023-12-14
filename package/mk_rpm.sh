@@ -17,6 +17,9 @@
 # 2021/05/15
 # don't add gnome-shell-extension-appindicator to dependencies,
 # it pulls in half of Gnome desktop, non gnome users would hate me.
+# 2023-12-13
+# Force a Minium libqt5pas of 1.2.15, this will need constant attention.
+# Add a qt5 amd64 rpm
 # ====================================================
 
 PROD=tomboy-ng
@@ -30,11 +33,14 @@ function DoAlien ()  {
 	ARCH="$1"
 	rm -Rf "$RDIR"
 	# Note, debs have a dash after initial version number, RPM an underscore
-	if [ "$1" = amd64Qt ]; then
+	if [ "$1" = amd64Qt5 ]; then
 	#	FILENAME="tomboy-ngQt_0.24b-0_amd64.deb"
 		ARCH=x86_64
 	fi
-	if [ "$1" = amd64 ]; then
+	if [ "$1" = amd64Qt6 ]; then
+		ARCH=x86_64
+	fi
+	if [ "$1" = amd64 ]; then               # the gtk2 version
 		ARCH=x86_64
 	fi
 	if [ "$1" = i386 ]; then
@@ -43,7 +49,7 @@ function DoAlien ()  {
 
 	echo "--- RDIR=$RDIR and building for $1 using $FILENAME ---------"
 	alien -r -g -v -k "$FILENAME"
-	# Alien inserts requests the package create / and /usr/bin and
+	# Alien requests the package create / and /usr/bin and
 	# the os does not apprieciate that, not surprisingly.
 	# This removes the %dir / 
 	sed -i "s/^Release:.*/Release: $PACKVER/" "$RDIR"/"$RDIR"-"$PACKVER".spec  
@@ -59,10 +65,14 @@ function DoAlien ()  {
 	
 	sed -i '10i Packager: David Bannon <tomboy-ng@bannons.id.au>' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	sed -i '11i URL: https://githup.com/tomboy/tomboy-ng' "$RDIR"/"$RDIR"-"$PACKVER".spec
-
+	echo "------------ Setting Minium libqt5pas to 1.2.15 ---------------------------
+	sed -i '12i Requires: libqt5pas >= 1.2.15' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	gunzip "$RDIR"/usr/share/man/man1/tomboy-ng.1.gz
 	bzip2  "$RDIR"/usr/share/man/man1/tomboy-ng.1
 	sed -i "s/tomboy-ng.1.gz/tomboy-ng.1.bz2/" "$RDIR"/"$RDIR"-"$PACKVER".spec
+
+
+cp "$RDIR"/"$RDIR"-"$PACKVER".spec "$1".spec
 
 	echo "%changelog" >> "$RDIR"/"$RDIR"-"$PACKVER".spec
 	CHDATE=`date +"%a %b %d %Y"`
@@ -83,15 +93,19 @@ function DoAlien ()  {
 	cp "$RDIR"-"$PACKVER".spec ../../"$RDIR"-"$PACKVER".spec-"$1"
 	rpmbuild --target "$ARCH" --buildroot "$PWD" -bb "$RDIR"-"$PACKVER".spec
 	cd ..
-	# if its a Qt one, rename it so it does not get overwritten subsquently
-	if [ "$1" = amd64Qt ]; then
-		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"Qt-"$VERS"-"$PACKVER"."$ARCH".rpm
+	# if its a Qt5 one, rename it so it does not get overwritten subsquently
+	if [ "$1" = amd64Qt5 ]; then
+		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"Qt5-"$VERS"-"$PACKVER"."$ARCH".rpm
+	fi
+	if [ "$1" = amd64Qt6 ]; then
+		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"Qt6-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
 }
 
 rm -f tom*.rpm
 # Must do the "non std" ones first, else have overwrite problems
-DoAlien "amd64Qt"
+DoAlien "amd64Qt5"
+DoAlien "amd64Qt6"
 DoAlien "i386"
 DoAlien "amd64"
 chown "$SUDO_USER" *.rpm

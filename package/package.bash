@@ -81,7 +81,7 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
             echo "i386"
         ;;
         ReleaseQT5)
-            echo "amd64Qt"
+            echo "amd64Qt5"
         ;;
         ReleaseRasPi)
             echo "armhf"
@@ -90,11 +90,11 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
             echo "arm64"
         ;;
        	ReleaseQT6)
-	        echo "amd64Qt6"
-	    ;;
-	    ReleaseLin32Qt5)
-	        echo "i386Qt5"
-	    ;;
+	    echo "amd64Qt6"
+	;;
+	ReleaseLin32Qt5)
+	    echo "i386Qt5"
+	;;
     esac
 }
 
@@ -233,7 +233,7 @@ function DebianPackage () {
 	"ReleaseQT6")
 		# echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt6pas6, libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
+		CTRL_DEPENDS="libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
 		CTRL_RELEASE="Qt6 release."
 		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog, no, not using Laz300
 	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it. 
