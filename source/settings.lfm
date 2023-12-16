@@ -84,9 +84,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckNotifications
         AnchorSideTop.Side = asrBottom
         Left = 20
-        Height = 23
-        Top = 379
-        Width = 172
+        Height = 25
+        Top = 383
+        Width = 173
         BorderSpacing.Top = 25
         Caption = 'Autostart at Logon'
         TabOrder = 0
@@ -95,9 +95,9 @@ object Sett: TSett
       object CheckShowSearchAtStart: TCheckBox
         AnchorSideTop.Control = CheckShowSplash
         Left = 380
-        Height = 23
+        Height = 25
         Top = 283
-        Width = 185
+        Width = 186
         BorderSpacing.Left = 10
         Caption = 'Show Search at Start'
         TabOrder = 1
@@ -108,10 +108,10 @@ object Sett: TSett
         AnchorSideTop.Control = GroupNotesPath
         AnchorSideTop.Side = asrBottom
         Left = 20
-        Height = 23
+        Height = 25
         Hint = 'Always shown if error loading notes.'
         Top = 283
-        Width = 183
+        Width = 184
         BorderSpacing.Left = 10
         BorderSpacing.Top = 35
         Caption = 'Show Splash at Start'
@@ -127,9 +127,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowSplash
         AnchorSideTop.Side = asrBottom
         Left = 20
-        Height = 23
-        Top = 331
-        Width = 170
+        Height = 25
+        Top = 333
+        Width = 171
         BorderSpacing.Top = 25
         Caption = 'Show Notifications'
         Checked = True
@@ -141,9 +141,9 @@ object Sett: TSett
         AnchorSideLeft.Control = CheckShowSearchAtStart
         AnchorSideTop.Control = CheckNotifications
         Left = 380
-        Height = 23
-        Top = 331
-        Width = 149
+        Height = 25
+        Top = 333
+        Width = 150
         Caption = 'Esc Closes Note'
         TabOrder = 4
         OnChange = SaveSettings
@@ -170,9 +170,9 @@ object Sett: TSett
           AnchorSideTop.Control = RadioTomboyNGDefault
           AnchorSideTop.Side = asrCenter
           Left = 454
-          Height = 23
+          Height = 25
           Top = 8
-          Width = 82
+          Width = 83
           Caption = 'Choose'
           TabOrder = 0
           OnClick = RadioNotePathChange
@@ -182,9 +182,9 @@ object Sett: TSett
           AnchorSideTop.Control = RadioTomboyNGDefault
           AnchorSideTop.Side = asrBottom
           Left = 10
-          Height = 23
-          Top = 41
-          Width = 183
+          Height = 25
+          Top = 43
+          Width = 184
           BorderSpacing.Top = 10
           Caption = 'Old Tomboy Default'
           TabOrder = 1
@@ -193,9 +193,9 @@ object Sett: TSett
         object RadioTomboyNGDefault: TRadioButton
           AnchorSideLeft.Control = GroupNotesPath
           Left = 10
-          Height = 23
+          Height = 25
           Top = 8
-          Width = 173
+          Width = 174
           BorderSpacing.Left = 10
           Caption = 'tomboy-ng Default'
           Checked = True
@@ -213,7 +213,7 @@ object Sett: TSett
           Left = 454
           Height = 32
           Hint = 'If you have notes somewhere else'
-          Top = 36
+          Top = 39
           Width = 232
           Anchors = [akTop, akRight]
           BorderSpacing.Top = 4
@@ -244,9 +244,9 @@ object Sett: TSett
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 53
-          Width = 48
+          Height = 25
+          Top = 52
+          Width = 49
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Big'
@@ -258,9 +258,9 @@ object Sett: TSett
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 89
-          Width = 87
+          Height = 25
+          Top = 88
+          Width = 88
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
@@ -270,9 +270,9 @@ object Sett: TSett
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 125
-          Width = 66
+          Height = 25
+          Top = 124
+          Width = 67
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
@@ -282,9 +282,9 @@ object Sett: TSett
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 23
-          Top = 18
-          Width = 65
+          Height = 25
+          Top = 17
+          Width = 66
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
@@ -297,9 +297,9 @@ object Sett: TSett
         AnchorSideTop.Control = GroupBox5
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
+        Height = 25
         Top = 220
-        Width = 176
+        Width = 177
         BorderSpacing.Top = 20
         Caption = 'Show Internal Links'
         TabOrder = 0
@@ -310,9 +310,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowIntLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
-        Top = 261
-        Width = 184
+        Height = 25
+        Top = 263
+        Width = 185
         BorderSpacing.Top = 18
         Caption = 'Show External  Links'
         TabOrder = 1
@@ -323,10 +323,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowExtLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
+        Height = 25
         Hint = 'This may adversly affect traditional Tomboy, take care.'
-        Top = 302
-        Width = 353
+        Top = 306
+        Width = 354
         BorderSpacing.Top = 18
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         ParentShowHint = False
@@ -373,7 +373,7 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         Left = 402
         Height = 32
-        Top = 384
+        Top = 392
         Width = 240
         BorderSpacing.Top = 18
         Caption = 'Set Colours'
@@ -415,10 +415,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckManyNotebooks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
+        Height = 25
         Hint = 'Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y'
-        Top = 343
-        Width = 292
+        Top = 349
+        Width = 293
         BorderSpacing.Top = 18
         Caption = 'Use Undo Redo (may slow editing)'
         Checked = True
@@ -461,9 +461,9 @@ object Sett: TSett
         AnchorSideLeft.Control = ComboDateFormat
         AnchorSideTop.Control = CheckStampSmall
         Left = 402
-        Height = 23
+        Height = 25
         Top = 298
-        Width = 69
+        Width = 70
         Caption = 'Italics'
         ParentShowHint = False
         TabOrder = 10
@@ -474,10 +474,10 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         AnchorSideRight.Control = ComboDateFormat
         AnchorSideRight.Side = asrBottom
-        Left = 624
-        Height = 23
+        Left = 623
+        Height = 25
         Top = 298
-        Width = 66
+        Width = 67
         Anchors = [akTop, akRight]
         BorderSpacing.Top = 8
         Caption = 'Small'
@@ -490,10 +490,10 @@ object Sett: TSett
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = CheckStampItalics
         AnchorSideRight.Control = CheckStampSmall
-        Left = 521
-        Height = 23
+        Left = 522
+        Height = 25
         Top = 298
-        Width = 59
+        Width = 60
         BorderSpacing.Left = 50
         Caption = 'Bold'
         ParentShowHint = False
@@ -505,10 +505,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckUseUndo
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 23
+        Height = 25
         Hint = 'eg Ctrl-F opens and closes Find Window'
-        Top = 384
-        Width = 206
+        Top = 392
+        Width = 207
         BorderSpacing.Top = 18
         Caption = 'Find Command Toggles'
         Checked = True
@@ -549,7 +549,7 @@ object Sett: TSett
           Left = 15
           Height = 25
           Top = 15
-          Width = 236
+          Width = 234
           BorderSpacing.Left = 15
           BorderSpacing.Top = 15
           Caption = 'Always Ask me what to do.'
@@ -564,7 +564,7 @@ object Sett: TSett
           Left = 15
           Height = 25
           Top = 55
-          Width = 365
+          Width = 363
           BorderSpacing.Top = 15
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
@@ -576,7 +576,7 @@ object Sett: TSett
           Left = 15
           Height = 25
           Top = 95
-          Width = 350
+          Width = 348
           BorderSpacing.Top = 15
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
@@ -996,9 +996,9 @@ object Sett: TSett
           AnchorSideTop.Control = SpinDaysPerSnapshot
           AnchorSideTop.Side = asrCenter
           Left = 344
-          Height = 23
-          Top = 120
-          Width = 177
+          Height = 25
+          Top = 119
+          Width = 178
           Caption = 'Use auto snapshots'
           TabOrder = 2
           OnChange = CheckAutoSnapEnabledChange

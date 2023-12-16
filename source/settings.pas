@@ -475,7 +475,7 @@ Type
     Constructor Create(CreateSuspended : boolean);
   end;
 
-{x$DEFINE TESTAUTOTIMING}
+{x$DEFINE TESTAUTOTIMING}        // Makes auto sync faster and very vocal
 
 var
     Sett : TSett;

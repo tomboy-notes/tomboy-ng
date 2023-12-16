@@ -163,6 +163,7 @@ HISTORY
     2021/09/27  Selective Sync, possible to have both configured and in use.
     2022/10/18  When renaming a file, delete target if its exists first, its a windows problem
     2023/10/28  Restructure some of Auto Sync to allow multithreading, does not use SyncGUI
+    2023/12/16  Nasty bug where ProcessClashes() return value was not set.
 }
 
 interface
@@ -556,6 +557,7 @@ var
     Index : integer;
     RemoteNote : string;
 begin
+    Result := True;         // Will be false if we have a Sync Clash and in AutoSync Mode
     for Index := 0 to RemoteMetaData.Count -1 do begin
         //debugln('TSync.ProcessClashes checking note number ' + inttostr(Index) + ' id=' + RemoteMetaData.Items[Index]^.ID);
         with RemoteMetaData.Items[Index]^ do begin
@@ -602,7 +604,7 @@ begin
     end;
 end;
 
-{$define DEBUGAUTOSYNC}
+{x$define DEBUGAUTOSYNC}
 function TSync.ReportChanges() : integer;
 var
     Index : integer;
