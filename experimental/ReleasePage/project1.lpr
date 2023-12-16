@@ -43,7 +43,7 @@ const
 var
   Packs : TStringArrayArray;
   ErrorCount : integer;
-  Version : string;
+  Version : string = '';
 
 function MatchMarker(const Marker : string) : string;
 var
@@ -122,6 +122,28 @@ var
     InFileName : string = '';
     OutFileName : string = '';
 begin
+    Packs := TStringArrayArray.Create(
+               TStringArray.Create('DEB64',    'tomboy-ng_',       '-0_amd64.deb'),
+               TStringArray.Create('DEB32',    'tomboy-ng_',       '-0_i386.deb'),
+               TStringArray.Create('DEB32QT5', 'tomboy-ng_',       '-0_i386Qt5.deb'),
+               TStringArray.Create('DEB64QT',  'tomboy-ng_',       '-0_amd64Q5t.deb'),
+               TStringArray.Create('DEB64QT6',  'tomboy-ng_',       '-0_amd64Qt6.deb'),
+               TStringArray.Create('DEB32ARM', 'tomboy-ng_',       '-0_armhf.deb'),
+               TStringArray.Create('DEB64ARM',    'tomboy-ng_',       '-0_arm64.deb'),
+               TStringArray.Create('RPM64',    'tomboy-ng-',       '-1.x86_64.rpm'),
+               TStringArray.Create('RPM32',    'tomboy-ng-',       '-1.i686.rpm'),
+               TStringArray.Create('RPM64QT',  'tomboy-ngQt5-',     '-1.x86_64.rpm'),
+               TStringArray.Create('RPM64QT6', 'tomboy-ngQt6-',     '-1.x86_64.rpm'),
+               TStringArray.Create('TGZ64',    'tomboy-ng-',       '.tgz'),
+               TStringArray.Create('TGZ32',    'tomboy-ng32-',     '.tgz'),
+               TStringArray.Create('DMG64',    'tomboy-ng64_',     '.dmg'),
+   //          TStringArray.Create('DMG32',    'tomboy-ng32_',     '.dmg'),
+               TStringArray.Create('EXE',      'tomboy-ng-setup-', '.exe'),
+               TStringArray.Create('PAC64',    'tomboy-ng-', '-1-x86_64.pkg.tar.zst')               //  tomboy-ng-0.34-1-x86_64.pkg.tar.zst
+               );
+
+    writeln('Length of Packs is ', Length(Packs));
+
     // quick check parameters
     ErrorMsg:=CheckOptions('h', 'help infile: outfile: verstr:');
     if ErrorMsg<>'' then begin
@@ -130,18 +152,19 @@ begin
         Exit;
     end;
 
-    // parse parameters
-    if HasOption('h', 'help') then begin
-        WriteHelp;
-        Terminate;
-        Exit;
-    end;
+
     if HasOption('verstr') then
         Version := GetOptionValue('verstr')
     else begin
         WriteHelp();
         Terminate;
         exit;
+    end;
+
+    if HasOption('h', 'help') then begin
+        WriteHelp;
+        Terminate;
+        Exit;
     end;
 
     if HasOption('infile') then
@@ -155,22 +178,6 @@ begin
         OutFileName := GetOptionValue('outfile');
 
     ErrorCount := 0;
-
-    Packs := TStringArrayArray.Create(
-               TStringArray.Create('DEB64',    'tomboy-ng_',       '-0_amd64.deb'),
-               TStringArray.Create('DEB32',    'tomboy-ng_',       '-0_i386.deb'),
-               TStringArray.Create('DEB64QT',  'tomboy-ng_',       '-0_amd64Qt.deb'),
-               TStringArray.Create('DEB32ARM', 'tomboy-ng_',       '-0_armhf.deb'),
-               TStringArray.Create('RPM64',    'tomboy-ng-',       '-1.x86_64.rpm'),
-               TStringArray.Create('RPM32',    'tomboy-ng-',       '-1.x86.rpm'),
-               TStringArray.Create('RPM64QT',  'tomboy-ngQt-',     '-1.x86_64.rpm'),
-               TStringArray.Create('TGZ64',    'tomboy-ng-',       '.tgz'),
-               TStringArray.Create('TGZ32',    'tomboy-ng32-',     '.tgz'),
-               TStringArray.Create('DMG64',    'tomboy-ng64_',     '.dmg'),
-               TStringArray.Create('DMG32',    'tomboy-ng32_',     '.dmg'),
-               TStringArray.Create('EXE',      'tomboy-ng-setup-', '.exe'),
-               TStringArray.Create('PAC64',    'tomboy-ng-', '-1-x86_64.pkg.tar.zst')               //  tomboy-ng-0.34-1-x86_64.pkg.tar.zst
-               );
 
     scanfile(InFileName, OutFileName);
     if ErrorCount > 0 then
@@ -194,14 +201,20 @@ end;
 procedure TMyApplication.WriteHelp;
 var
     I : integer =0;
+    St : string;
 begin
     { add your help code here }
     writeln('Usage: ', ExeName, ' -h');
     writeln('       --verstr=Ver.Str             Required eg 0.26');
     writeln('       --infile=Template            Required eg Releases.template');
     writeln('       --outfile=OutFile            eg Releases.md');
+    if Version = '' then
+        writeln('Add verstr to show known tokens and their associated filenames')
+    else
     while I < Length(Packs) do begin
-        writeln('   $$' + Packs[i][0]);
+        St := '   $$' + Packs[i][0];
+        while length(St) < 15 do St := St + ' ';
+        writeln(St + Packs[i][1] + Version + Packs[i][2]);
         inc(i);
     end;
 end;
