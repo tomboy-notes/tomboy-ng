@@ -558,6 +558,7 @@
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
             <TargetCPU Value="x86_64"/>
+            <TargetOS Value="darwin"/>
             <Optimizations>
               <OptimizationLevel Value="3"/>
             </Optimizations>
@@ -583,7 +584,7 @@
               <IgnoredMessages idx6058="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dTOMBOY_NG"/>
-            <CompilerPath Value="/usr/local/bin/ppcx64"/>
+            <CompilerPath Value="/usr/local/bin/fpc"/>
           </Other>
         </CompilerOptions>
       </Item12>

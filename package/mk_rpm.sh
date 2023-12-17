@@ -47,6 +47,11 @@ function DoAlien ()  {
 		ARCH=i686          # that is used in the output RPM
 	fi
 
+	if [ ! -f "$FILENAME" ]; then
+		echo "=========== ERROR $FILENAME does not exist ================"
+		return
+	fi
+
 	echo "--- RDIR=$RDIR and building for $1 using $FILENAME ---------"
 	alien -r -g -v -k "$FILENAME"
 	# Alien requests the package create / and /usr/bin and
@@ -65,8 +70,10 @@ function DoAlien ()  {
 	
 	sed -i '10i Packager: David Bannon <tomboy-ng@bannons.id.au>' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	sed -i '11i URL: https://githup.com/tomboy/tomboy-ng' "$RDIR"/"$RDIR"-"$PACKVER".spec
-	echo "------------ Setting Minium libqt5pas to 1.2.15 ---------------------------
-	sed -i '12i Requires: libqt5pas >= 1.2.15' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	if [ "$1" = amd64Qt5 ]; then
+	    echo "------------ Setting Minium libqt5pas to 1.2.15 ---------------------------"
+	    sed -i '12i Requires: libqt5pas >= 1.2.15' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	fi
 	gunzip "$RDIR"/usr/share/man/man1/tomboy-ng.1.gz
 	bzip2  "$RDIR"/usr/share/man/man1/tomboy-ng.1
 	sed -i "s/tomboy-ng.1.gz/tomboy-ng.1.bz2/" "$RDIR"/"$RDIR"-"$PACKVER".spec
