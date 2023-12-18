@@ -175,7 +175,6 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf3"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
@@ -272,7 +271,6 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <Options>
@@ -566,7 +564,6 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -686,7 +683,6 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <LinkSmart Value="True"/>

@@ -15,11 +15,6 @@ program Tomboy_NG;
 
 {$define TOMBOY_NG}
 
-                      // 3.00.00.00
-// {$if (lcl_fullversion >= 3000000) }
-{$define APPINDPATCH}   // ToDo : this should depend on version of Lazarus
-// {$endif}
-
 uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
@@ -31,18 +26,23 @@ uses
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
     import_notes, JsonTools, kmemo2pdf, tb_symbol, fpTTF, uQt_Colors
-    {$ifdef APPINDPATCH} {$ifdef LCLGTK2}
-    , unitywsctrls
-    {$endif} {$endif};
+    , LazVersion
+    {$ifdef LCLGTK2}
+    , unitywsctrls          // only safe to use in gtk2, use it if we need it or not
+    {$endif};
 
 {$R *.res}
+
+{$if defined(LCLGTK2) and (laz_major = 3) }        // defined in LazVersion unit
+{$define APPINDPATCH}                               // Note: IDE greys incorrectly
+{$endif}
 
 
 // ----------------------------------------------------------------------------
 //   This about reading the command line and env for instructions re TrayIcon
 //   It applies to ONLY gtk2 and Lazarus >= 3.0.0 (confirm that) !
 // ----------------------------------------------------------------------------
-{$ifdef APPINDPATCH} {$ifdef LCLGTK2}
+{$ifdef APPINDPATCH}
  function GetUseAppInd() : UnityWSCtrls.TUseAppIndInstruction;
  var
     EnvVar : string;
@@ -61,7 +61,7 @@ uses
         Result := UseAppIndNo;
     end;
 end;
-{$endif} {$endif}
+{$endif}
 
 
 begin
@@ -72,7 +72,7 @@ begin
 
     if ContinueToGUI then begin
 
-        {$ifdef APPINDPATCH} {$ifdef LCLGTK2 }
+        {$ifdef APPINDPATCH}
         {$ifdef CPUi386}             // Note: unless Ayatana fix their problem, no option for Gnome users
                                     // https://github.com/AyatanaIndicators/libayatana-appindicator/issues/76
         UnityWSCtrls.GlobalUseAppInd := UnityWSCtrls.UseAppIndNo;     // 32bit must be a 'no'.
@@ -80,7 +80,7 @@ begin
         debugln('You may over rule that with --useappind=yes to see what happens.');
         {$endif}
         UnityWSCtrls.GlobalUseAppInd := GetUseAppInd();   // Set before creating TrayIcon
-        {$endif}  {$endif}
+        {$endif}
 
         Application.CreateForm(TMainForm, MainForm);
         Application.CreateForm(TFormSymbol, FormSymbol);
