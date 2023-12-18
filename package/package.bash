@@ -26,8 +26,8 @@ WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
 MANUALS=`cat note-files`
 
-BUILDOPTS=" -B --quiet --quiet"
-# BUILDOPTS=" -B --verbose"
+# BUILDOPTS=" -B --quiet --quiet"
+BUILDOPTS=" -B --verbose"
 BUILDDATE=`date -R`
 LPI="Tomboy_NG.lpi"
 LAZ_FULL_DIR="$1"
@@ -36,12 +36,11 @@ WIN_DIR=WinPre_"$VERSION"
 LEAKCHECK="NO"
 
 if [ -z "$LAZ_DIR" ]; then
-	echo "Usage : $0 /Full/Path/Lazarus/dir"
-	echo "eg    : $0 /home/dbannon/bin/Lazarus/laz_2_2_rc2"
+    echo "Need a full path to configured Lazarus dir, add a build mode to just compile a binary"
+	echo "Usage : $0 /Full/Path/Lazarus/dir [ReleaseQT6|ReleaseRasPi64|ReleaseLin32Qt5|default]"
+	echo "eg    : $0 /home/dbannon/bin/Lazarus/lazarus-fixes_3_0"
 	echo "or"
 	echo "      : $0 clean"
-	echo "      : $0 qt6only      // to package an existing binary in ../source"
-	echo "      : $0 raspionly    // to package an existing binary in ../source"
 	exit
 fi
 
@@ -101,6 +100,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
 
 function ModeParamBin () { # expects to be called like   BIN=$(ModeParam ReleaseWin64)
     case $1 in
+    	Default)
+    		echo "$PRODUCT"
+    	;;
         ReleaseLin64)
             echo "$PRODUCT"-64
         ;;
@@ -108,6 +110,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
             echo "$PRODUCT"-32
         ;;
         ReleaseLin32Qt5)
+        
             echo "$PRODUCT"-32-qt5
         ;;
         ReleaseWin32)
@@ -141,13 +144,39 @@ function BuildAMode () {
     #CMD="TOMBOY_NG_VER=$VERSION $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
     #echo "CMD is $CMD"
     TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" "$LPI"
-    if [ ! -f "$BIN" ]; then
-	    echo "----- $1 ERROR failed to build $BIN ---------"
+    if [ -f "$BIN" ]; then
+		echo "----------------- Have compiled $BIN ---------------------"
+    else
+	    echo "==============  $1 ERROR failed to build $BIN ================="
 	    echo "$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
 	    ERROR="$ERROR ; error $BIN was not made."
 	   exit
     fi	 
     cd ../package
+}
+
+function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $1 here), does NOT return
+	# Only, at present, doing the ones we cannot build in default Build VM, but could do all I guess.
+   case $1 in 
+   		Default)
+   			BuildAMode "$1"
+   			exit
+   		;;             
+        ReleaseRasPi64)
+            BuildAMode "$1"
+            exit
+        ;;
+        ReleaseQT6)	
+             BuildAMode "$1"
+            exit
+        ;;
+        ReleaseLin32Qt5)
+             BuildAMode "$1"
+            exit
+        ;;       
+   esac
+   echo " ============ ERROR unknown build mode as second parameter $1 ============="
+   exit
 }
 
 
@@ -375,16 +404,6 @@ function MkWinPreInstaller() {
 }
 
 
-if [ $1 == "qt6only" ]; then	# this is wrong ? cannot find laz provided language files ?
-    DebianPackage ReleaseQT6
-    exit;
-fi
-
-if [ $1 == "raspionly" ]; then
-    DebianPackage ReleaseRasPi
-    exit;
-fi
-
 	# ------- OK, lets find Laz Config ---------------------------------
 
 # It all starts here
@@ -409,16 +428,21 @@ fi
 
 echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 
+
+
 # Note: because we must build Qt6 on later that U20.04 and for all others, we must build on U20.04
 # due to the libc issue, we cannot build our qt6 one all at the same time.
 
 rm -f changelog		# we build a new one from ../debian/changelog and ../whatsnew each run
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5; # ReleaseQt6; Note yet !  Must build elsewhere, bring biary here.
+if [ "$1" != "" ]; then
+	JustMakeBinary "$2"       # Does not return.
+fi 
+
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5; # ReleaseQt6 etc, not yet !  Must build elsewhere, bring biary here.
 	do BuildAMode $BIN; 
 done
 
-#if [ "$2" == "LeakCheck" ]; then
 
 
 # Note we can package ReleaseQT6 ReleaseRasPi64 ReleaseLin32Qt5 but not build them, so, build

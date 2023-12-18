@@ -1342,8 +1342,8 @@
       <CompilerMessages>
         <IgnoredMessages idx6058="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-sh
--dTOMBOY_NG"/>
+      <CustomOptions Value="-dTOMBOY_NG"/>
+      <CompilerPath Value="fpc"/>
     </Other>
   </CompilerOptions>
 </CONFIG>
