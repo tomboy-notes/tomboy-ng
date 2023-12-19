@@ -435,7 +435,7 @@ echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 
 rm -f changelog		# we build a new one from ../debian/changelog and ../whatsnew each run
 
-if [ "$1" != "" ]; then
+if [ "$2" != "" ]; then
 	JustMakeBinary "$2"       # Does not return.
 fi 
 

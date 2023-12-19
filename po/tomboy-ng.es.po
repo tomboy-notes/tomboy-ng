@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.37\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-12-06 09:23+0100\n"
+"PO-Revision-Date: 2023-12-16 11:20+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -510,11 +510,11 @@ msgstr "sin configurar"
 
 #: resourcestr.rssynctypefile
 msgid "File Sync - local or shared filesystem"
-msgstr ""
+msgstr "Archivo - sistema de archivos local/compartido"
 
 #: resourcestr.rssynctypegithub
 msgid "Github - free Github account required"
-msgstr ""
+msgstr "Github - cuenta gratis de Github requerida"
 
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
@@ -749,8 +749,6 @@ msgid "Bullet -"
 msgstr "Viñeta -"
 
 #: teditboxform.menuitembulletright.caption
-#, fuzzy
-#| msgid "BullXXXXet +"
 msgid "Bullet +"
 msgstr "Viñeta +"
 
@@ -877,11 +875,9 @@ msgid "Tools - Sync, Export, Spell"
 msgstr "Herramientas - Sincronizar, Exportar, Ortografía"
 
 #: teditboxform.speedclose.caption
-#, fuzzy
-#| msgid "        "
 msgctxt "teditboxform.speedclose.caption"
 msgid "Close"
-msgstr "        "
+msgstr "Cerrar"
 
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
@@ -1743,4 +1739,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-
