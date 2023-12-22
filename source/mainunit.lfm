@@ -7,13 +7,13 @@ object MainForm: TMainForm
   Caption = 'tomboy-ng'
   ClientHeight = 294
   ClientWidth = 565
-  LCLVersion = '3.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
+  LCLVersion = '3.0.0.3'
   object ImageNotesDirTick: TImage
     AnchorSideTop.Control = LabelNotesFound
     Left = 24
@@ -259,10 +259,10 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 16
-    Height = 23
+    Height = 25
     Hint = 'You can reverse this from Settings'
-    Top = 256
-    Width = 261
+    Top = 254
+    Width = 262
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14
     BorderSpacing.Bottom = 15
@@ -356,8 +356,8 @@ object MainForm: TMainForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    TabOrder = 0
     OnClick = ButtMenuClick
+    TabOrder = 0
   end
   object LabelBadNoteAdvice: TLabel
     AnchorSideTop.Control = LabelError
@@ -384,8 +384,8 @@ object MainForm: TMainForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Right = 2
     Caption = 'Quit'
-    TabOrder = 2
     OnClick = BitBtnQuitClick
+    TabOrder = 2
   end
   object BitBtnHide: TBitBtn
     AnchorSideLeft.Control = ButtMenu
@@ -399,8 +399,8 @@ object MainForm: TMainForm
     Width = 75
     Anchors = [akTop, akLeft, akBottom]
     Caption = 'Hide'
-    TabOrder = 1
     OnClick = BitBtnHideClick
+    TabOrder = 1
   end
   object ButtSysTrayHelp: TBitBtn
     AnchorSideLeft.Control = ImageAboutLaz
@@ -413,8 +413,8 @@ object MainForm: TMainForm
     Width = 219
     Anchors = [akTop]
     Caption = 'SysTray Help'
-    TabOrder = 4
     OnClick = ButtSysTrayHelpClick
+    TabOrder = 4
   end
   object ImageAboutLaz: TImage
     AnchorSideRight.Control = Owner
@@ -429,6 +429,7 @@ object MainForm: TMainForm
     AutoSize = True
     BorderSpacing.Right = 5
     BorderSpacing.Bottom = 5
+    OnClick = ImageAboutLazClick
     Picture.Data = {
       07545069786D617044DA00002F2A2058504D202A2F0A73746174696320636861
       72202A206C617A617275735F61626F75745F6C6F676F5F78706D5B5D203D207B
@@ -2178,7 +2179,6 @@ object MainForm: TMainForm
       2E202E202E202E202E202E202E202E202E202E202E202E202E202E202E202E20
       2E202E202E202E202E202E20227D3B0A
     }
-    OnClick = ImageAboutLazClick
   end
   object TrayIcon: TTrayIcon
     Icon.Data = {

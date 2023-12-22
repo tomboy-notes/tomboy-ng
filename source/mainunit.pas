@@ -249,7 +249,7 @@ uses LazLogger, LazFileUtils, LazUTF8,
     Clipbrd,
     {$endif}   // Stop linux clearing clipboard on app exit.
     Editbox,    // Used only in SingleNoteMode
-    Note_Lister, cli,
+    Note_Lister, cli, LazVersion,
     tb_utils, {$ifdef LINUX}LCLVersion,{$endif} LCLIntf
     {$ifdef Linux}, libnotify {$endif}
     {$ifdef windows}, registry{$endif} ;
@@ -852,12 +852,15 @@ begin
         {$ifdef LCLQT6}   Stg := Stg + ', QT6';         {$endif}
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
         {$ifdef LCLGTK2}  Stg := Stg + ', GTK2';        {$endif}
-        Stg := Stg + #10 + rsAboutBDate + ' ' + {$i %DATE%} + #10
+        Stg := Stg + #10 + rsAboutBDate + ' ' + {$i %DATE%}
+            + '  (Laz ' + inttostr(laz_major) +'.' + inttostr(laz_minor) + '.' + inttostr(laz_release) + ')'
+            + #10
             + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
             + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
         {$if defined(LCLQT5) or defined(LCLQT6)} Stg := Stg + #10 + 'QT_QPA_PLATFORMTHEME : ' +
         GetEnvironmentVariable('QT_QPA_PLATFORMTHEME'); {$endif}
+        Stg := Stg + #10 + 'https://github.com/tomboy-notes/tomboy-ng';
         AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
         AboutFrm.ShowModal;
         AboutFrm.free;
