@@ -26,7 +26,7 @@ uses
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
     import_notes, JsonTools, kmemo2pdf, tb_symbol, fpTTF, uQt_Colors
-    , LazVersion
+    , LazVersion, Backlinks
     {$ifdef LCLGTK2}
     , unitywsctrls          // only safe to use in gtk2, use it if we need it or not
     {$endif};
@@ -65,8 +65,8 @@ end;
 
 
 begin
-    Application.Scaled := True;
-    Application.Title := 'tomboy-ng';
+    Application.Scaled:=True;
+    Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
 
@@ -81,14 +81,13 @@ begin
         {$endif}
         UnityWSCtrls.GlobalUseAppInd := GetUseAppInd();   // Set before creating TrayIcon
         {$endif}
-
-        Application.CreateForm(TMainForm, MainForm);
-        Application.CreateForm(TFormSymbol, FormSymbol);
-        Application.CreateForm(TSett, Sett);
-        Application.CreateForm(TSearchForm, SearchForm);
-        Application.CreateForm(TFormSync, FormSync);
-        Application.CreateForm(TFormColours, FormColours);
-        Application.CreateForm(TFormRollBack, FormRollBack);
+Application.CreateForm(TMainForm, MainForm);
+Application.CreateForm(TFormSymbol, FormSymbol);
+Application.CreateForm(TSett, Sett);
+Application.CreateForm(TSearchForm, SearchForm);
+Application.CreateForm(TFormSync, FormSync);
+Application.CreateForm(TFormColours, FormColours);
+Application.CreateForm(TFormRollBack, FormRollBack);
         Application.Run;
     end;
 

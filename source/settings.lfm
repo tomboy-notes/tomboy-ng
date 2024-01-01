@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 956
+  Left = 736
   Height = 530
-  Top = 270
+  Top = 259
   Width = 726
   BorderIcons = []
   Caption = 'Form Caption'
@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '3.0.0.2'
+  LCLVersion = '3.0.0.3'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner

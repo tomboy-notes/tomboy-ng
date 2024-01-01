@@ -17,18 +17,19 @@ Downloads and information for specific platforms further down the page.
 * [Linux Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Linux)
 
 <size:huge><bold>Release Notes</bold></size:huge>
-<list><list-item dir="ltr"><list><list-item dir="ltr">'c' bugfix for Gnome Desktop in Ubuntu 23.04 with Gnome 44.0, System Tray Menu not working.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">'c' bugfix when Qt5 user asks to use an unconfigured qt5ct.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">'b' Faster loading of large notes.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">'b' better use of colours, especially for dark themes when using qt5.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">New Feature - export as PDF.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">New Feature - insert a symbol or accented character.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">General improvements when using dark theme, especially for Qt5, see man page.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Bug fix in column mode of calculator.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Warn user about setting non mono font when mono expected.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">All Tomdroid functionality removed.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">A fix for SWYT not finding some text in a brand new note.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Can set colour of a link, more suitable default.</list-item></list></list-item></list>
+
+<list><list-item dir="ltr">Qt5 and Qt6 now use native dialogs. But must use new libqt5pas or libqt6pas libraries.</list-item></list>
+<list><list-item dir="ltr">Auto Sync now runs in background thread.</list-item></list>
+<list><list-item dir="ltr">User Selectable Auto Sync Timing.</list-item></list>
+<list><list-item dir="ltr">New Note Directory Selector.</list-item></list>
+<list><list-item dir="ltr">Can copy a note in plain text.</list-item></list>
+<list><list-item dir="ltr">Extra Build modes, Qt5_32bit, Qt6 rpm, Mac Universal, x86_64 &amp; arm64 (ie Apple Silicon)</list-item></list>
+<list><list-item dir="ltr">Bug Fixes : Spelling error in Bullet Menu; Undo bug; drop Shift-Enter key press; revised name for 32bit RPMs</list-item></list>
+
+<bold>Qt5 and Qt6 users MUST install a new libqt5pas1 or libqt6pas6 libraries, your distro version is almost certainly not suitable any more. Get the new libraries from the links below and install them before or at the same time as you install tomboy-ng</bold>
+
+https://github.com/davidbannon/libqt5pas/releases
+https://github.com/davidbannon/libqt6pas/releases
 
 <size:huge><bold>Installation</bold></size:huge>
 
@@ -69,7 +70,7 @@ Ubuntu 22.04 has tomboy-ng v0.34 available in its repository but v0.37 is new an
 Firstly, consider using the PPA (above). Otherwise, generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
 <list><list-item dir="ltr"><list><list-item dir="ltr">16.04 and 18.04 (while out of date, we still test with tomboy-ng) Use GTK2 version[32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">20.04  the GTK2 [64bit]($$DEB64) version which needs only a couple of extra things and is probably a better choice than the Qt5  [64bit QT]($$DEB64QT) version which needs the Qt5 libraries</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">22.04 and beyond, I suggest the the Qt5 [64bit QT]($$DEB64QT) version or Qt6 [64bit QT]($$DEB64QT6) version. The GTK2 [64bit]($$DEB64) version is probably OK too as long as you are not useing Gnome.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">22.04 and beyond, I suggest the the Qt5 [64bit QT]($$DEB64QT) version or Qt6 [64bit QT]($$DEB64QT6) version. The GTK2 [64bit]($$DEB64) version is probably OK too as long as you are not using Gnome.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.</list-item></list></list-item></list>
 
 On Ubuntu, you can install the appropriate package in one of several way  -
@@ -115,7 +116,7 @@ sudo pacman -U ./tomboy-ng-0.36c-1-x86_64.pkg.tar.zst
 
 
 <size:large><bold>OpenSuse</bold></size:large>
-Generally use the  [Qt5 64bit]($$RPM64QT) version or  [Qt5 64bit]($$RPM64QT6) and look at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if you are using Gnome . Other Desktops should be OK with [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64). Almost all the necessary libraries seem to be pre installed in either case. If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.
+Generally use the  [Qt5 64bit]($$RPM64QT) version or  [Qt6 64bit]($$RPM64QT6) and look at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if you are using Gnome . Other Desktops should be OK with [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64). Almost all the necessary libraries seem to be pre installed in either case. If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.
 
 Suse is quite pushy about signing rpm packages, more work for me and it means you need to import the <bold>PGP signature</bold> I have used. So, please download [tomboy-ng-GPG-KEY]($$GPGKEY) (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
 
@@ -155,15 +156,16 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 
+
 </note-content></text>
-  <last-change-date>2023-12-22T12:03:41.9434121+11:00</last-change-date>
-  <last-metadata-change-date>2023-12-22T12:03:41.9434121+11:00</last-metadata-change-date>
+  <last-change-date>2023-12-22T18:27:56.6966865+11:00</last-change-date>
+  <last-metadata-change-date>2023-12-22T18:27:56.6966865+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>773</width>
   <height>800</height>
-  <x>1036</x>
-  <y>139</y>
+  <x>716</x>
+  <y>60</y>
   <open-on-startup>False</open-on-startup>
 </note>

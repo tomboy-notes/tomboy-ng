@@ -239,12 +239,13 @@ unit EditBox;
                 background (in LoadNote) cos Kmemo get it wrong
     2023/04/08  Get a note's height and width before populating KMemo, saves 200mS on a big note !
     2023/04/09  Keep Find-in-note prompt there unless not found.
+    2023/12/30  Added ability to display Back Links (Links button with nothing selected)
 }
 
 
 {$mode objfpc}{$H+}
 
-{X$define LDEBUG}       // ToDo : Lots of ugly debug output around the Link code, remove when stable
+{.$define LDEBUG}       // ToDo : Lots of ugly debug output around the Link code, remove when stable
 
 interface
 
@@ -618,7 +619,8 @@ uses
     notenormal,         // makes the XML look a little prettier
     LCLStrConsts,       // just for rsMBClose ?
     KMemo2PDF,
-    tb_symbol;
+    tb_symbol,
+    Backlinks;
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
@@ -726,6 +728,9 @@ procedure TEditBoxForm.SpeedButtonLinkClick(Sender: TObject);
 var
     ThisTitle : ANSIString;
     Index : integer;
+    BackLinks : TFormBackLinks;
+    Stl : TStringList;
+    BackTitle : string = '';
     //NBArray : TStringArray;
 begin
     if KMemo1.ReadOnly then exit();
@@ -739,13 +744,27 @@ begin
             if ThisTitle[Index] < ' ' then delete(ThisTitle, Index, 1);
             dec(Index);
 		end;
-		// showmessage('[' + KMemo1.SelText +']' + LineEnding + '[' + ThisTitle + ']' );
-        // Note : There was code here that called SearchForm.NoteLister.GetNotebooks - no idea why ?? April 2022
         if UTF8Length(ThisTitle) > 1 then begin
             SearchForm.OpenNote(ThisTitle);
             KMemo1Change(self);
 		end;
-	end;
+    end else begin            // Nothing selected, so show backlinks
+        BackLinks := TFormBackLinks.Create(self);
+        Stl := TStringList.Create;
+        try
+            TheMainNoteLister.SearchContent(lowercase(NoteTitle), Stl);
+            BackLinks.BackList := Stl;
+            BackLinks.BackTitle := @BackTitle;
+            BackLinks.Left := Left + SpeedButtonLink.Left;
+            BackLinks.Top := Top + SpeedButtonLink.Height;
+            BackLinks.ShowModal;
+        finally
+            Stl.Free;
+            BackLinks.Free;
+        end;
+        if BackTitle <> '' then
+                SearchForm.OpenNote(BackTitle,'','',True, True, NoteTitle);
+    end;
 end;
 
 procedure TEditBoxForm.SpeedButtonNotebookClick(Sender: TObject);
@@ -1352,15 +1371,17 @@ begin
 	end;
 end;
 
+{.$define TDEBUG}
 procedure TEditBoxForm.FormActivate(Sender: TObject);
-{$ifdef LDEBUG}var
+var {$ifdef TDEBUG}
     Tick, Tock : integer; {$endif}
+    RememberSelIndex, RememberSelLen : integer;
 begin
     if not HaveSeenOnActivate then begin;       // Only the first Activate
         Ready := False;
-        {$ifdef LDEBUG}Tick := gettickcount64();{$endif}
+        {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
         CheckForLinks(True);
-        {$ifdef LDEBUG}
+        {$ifdef TDEBUG}
         Tock := gettickcount64();
         debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(HaveSeenOnActivate, true));
         {$endif}
@@ -1409,7 +1430,6 @@ begin
     EditFind.SetFocus;
 end;
 
-
 procedure TEditBoxForm.SpeedCloseClick(Sender: TObject);
 begin
     close;
@@ -1429,6 +1449,8 @@ procedure TEditBoxForm.NewFind(Term : string);      // Public, called from Searc
 begin
     EditFind.Text := Term;
     FindInNote(Term, 0);                            // If we don't find it, no warning !
+//    KMemo1.ExecuteCommand(ecDown);
+//    KMemo1.ExecuteCommand(ecDown);
 end;
 
 procedure TEditBoxForm.MenuItemFindClick(Sender: TObject);
@@ -1634,6 +1656,10 @@ begin
         if KMemo1.Blocks[IndexBlock].ClassNameIs('TKMemoParagraph') and (SearchString <> '') then begin                        // ****
             Found := UTF8Pos(Term, SearchString);           // 1 based
             if Found > 0 then begin
+                Kmemo1.SelStart := StartingCursor + Offsets + Found -1;
+                Kmemo1.SelLength := UTF8Length(Term);
+                KMemo1.ExecuteCommand(ecDown);
+                KMemo1.ExecuteCommand(ecDown);
                 Kmemo1.SelStart := StartingCursor + Offsets + Found -1;
                 Kmemo1.SelLength := UTF8Length(Term);
                 //exit(Kmemo1.SelStart <> StartingCursor);    // False if its the same one we started on !
@@ -2020,7 +2046,7 @@ begin
     Kmemo1.Clear;      // Note clear and setcolors() will be called again in importNote() but quick ...
     SetTheColors();
     if SingleNoteMode then
-            ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
+        ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
     else
         if NoteFileName = '' then begin		    // might be a new note or a new note from Link
             if NoteTitle = '' then              // New Note
@@ -2048,12 +2074,15 @@ begin
 //    MarkTitle();                                // 70mS, ImortNote() does it all now. Not needed for new note
 
     KMemo1.SelStart := KMemo1.Text.Length;      // set curser pos to end
-    KMemo1.SelEnd := Kmemo1.Text.Length;
+    KMemo1.SelEnd := Kmemo1.Text.Length;        // ToDo : why do we do this ?
     KMemo1.SetFocus;
     KMemo1.executecommand(ecEditorTop);
     KMemo1.ExecuteCommand(ecDown);
     Ready := true;
     Dirty := False;
+
+    writeln('TEditBoxForm.FormShow 4 SelIndex = ', Kmemo1.SelStart);
+
 //    Tuck := GetTickCount64();
 //    debugln('TEditBoxForm.FormShow ' + inttostr(Tock - Tick) + '  ' + inttostr(Tuck - Tock) + ' Total=' + inttostr(Tuck - Tick));
 end;
@@ -2553,7 +2582,7 @@ var
     BuffOffset, LineNumb : integer;
     EndScan : Integer = 0;
     i : integer;
-    {$ifdef LDEBUG}T1, T2, T3, T4, T5 : qword;{$endif}
+    {$ifdef TDEBUG}T0, T1, T2, T3, T4, T5 : qword;{$endif}
 
     // Puts one para of kMemo, starting at LineNumb, into Content. Ret Starting offset.
     function GrabPara() : integer;
@@ -2611,6 +2640,8 @@ var
 
 
 begin
+    // ToDo : this method is far too slow, must get to bottom of List Index out of bounds and move locks
+    // It takes a second with quite a small note.
     {$ifdef LDEBUG}
     AssignFile(MyLogFile, 'log.txt');
     rewrite(MyLogFile);
@@ -2618,6 +2649,8 @@ begin
     {$endif}
     if (FullBody) then begin                // Scan and do links in whole note, no unlinking required
         LineNumb := 0;
+        {$ifdef TDEBUG}T0 := gettickcount64();{$endif}
+//        KMemo1.Blocks.LockUpdate;
         while LineNumb < KMemo1.Blocks.LineCount do begin
             BuffOffset := GrabPara();       // Updates LineNumb, puts a para in Content, rets UTF8 count from start of Kmemo
             KMemo1.Blocks.LockUpdate;
@@ -2626,8 +2659,6 @@ begin
                     if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin
                         if length(Content) > 3 then begin                // Two significent char plus a newline
                             {$ifdef LDEBUG}writeln(MyLogFile, 'FB ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
-//                            if pos('bgc 11', TheMainNoteLister.NoteList[i]^.TitleLow) > 0 then
-//                                debugln('CheckForLinks found a BGC 11 =========================' + TheMainNoteLister.NoteList[i]^.Title);
                             MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
                         end;
                     end;
@@ -2636,13 +2667,15 @@ begin
                     CheckForHTTP(Content, BuffOffset);
             KMemo1.Blocks.UnLockUpdate;    // we lock and unlock frequenty here, slow but avoids "wind up"
         end;                               // end of Fullbody Scan
+//        KMemo1.Blocks.UnLockUpdate;
+        {$ifdef TDEBUG}T1 := gettickcount64();{$endif}
     end else begin                         // Just scan +/- LinkScanRange of current cursor
-        {$ifdef LDEBUG}T1 := gettickcount64();{$endif}
+        {$ifdef TDEBUG}T1 := gettickcount64();{$endif}
         KMemo1.blocks.LockUpdate;
         BuffOffset := GrabContent();                                    // Also sets EndScan
-        {$ifdef LDEBUG}T2 := gettickcount64();{$endif}
+        {$ifdef TDEBUG}T2 := gettickcount64();{$endif}
         ClearNearLink(BuffOffset, EndScan);                             // Parameters in utf8char, not bytes
-        {$ifdef LDEBUG}T3 := gettickcount64();{$endif}
+        {$ifdef TDEBUG}T3 := gettickcount64();{$endif}
         if Sett.ShowIntLinks and (not SingleNoteMode) then begin
             for i := 0 to TheMainNoteLister.NoteList.Count-1 do begin
                   {$ifdef LDEBUG}writeln(MyLogFile, 'BV ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
@@ -2654,14 +2687,15 @@ begin
             end;
              TimerHouseKeeping.Enabled := False;
         end;
-        {$ifdef LDEBUG}T4  := gettickcount64();{$endif}
+        {$ifdef TDEBUG}T4  := gettickcount64();{$endif}
         if Sett.CheckShowExtLinks.Checked then
                 CheckForHTTP(Content, BuffOffset);                           // Mark any unmarked web links
         KMemo1.blocks.UnLockUpdate;
-        {$ifdef LDEBUG}T5  := gettickcount64();
-        debugln('CheckForLinks Timing of MakeLink TG1=' + TG1.tostring + ' ' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
-        {$endif}
     end;
+    {$ifdef TDEBUG}T5  := gettickcount64();
+    debugln('CheckForLinks Timing T1=' + (T1-T0).tostring + ' ' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
+    {$endif}
+
     {$ifdef LDEBUG}CloseFile(MyLogFile);{$endif}
 end;
 

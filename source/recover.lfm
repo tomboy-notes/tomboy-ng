@@ -1,7 +1,7 @@
 object FormRecover: TFormRecover
-  Left = 616
+  Left = 228
   Height = 561
-  Top = 187
+  Top = 227
   Width = 758
   Caption = 'FormRecover'
   ClientHeight = 561
@@ -9,7 +9,7 @@ object FormRecover: TFormRecover
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.3.0.0'
+  LCLVersion = '3.0.0.3'
   object Label1: TLabel
     Left = 8
     Height = 21
@@ -34,13 +34,13 @@ object FormRecover: TFormRecover
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
     ItemHeight = 0
-    OnClick = ListBoxSnapshotsClick
-    OnDblClick = ListBoxSnapshotsDblClick
     ParentShowHint = False
     ScrollWidth = 276
     ShowHint = True
     TabOrder = 0
     TopIndex = -1
+    OnClick = ListBoxSnapshotsClick
+    OnDblClick = ListBoxSnapshotsDblClick
   end
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
@@ -96,10 +96,10 @@ object FormRecover: TFormRecover
         AutoSize = True
         BorderSpacing.Right = 2
         Caption = 'Take a manual Snapshot'
-        OnClick = ButtonMakeSafetySnapClick
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
+        OnClick = ButtonMakeSafetySnapClick
       end
       object ButtonSnapHelp: TButton
         AnchorSideTop.Control = TabSheetIntro
@@ -116,8 +116,8 @@ object FormRecover: TFormRecover
         BorderSpacing.Top = 2
         BorderSpacing.Right = 2
         Caption = 'Snapshot Help'
-        OnClick = ButtonSnapHelpClick
         TabOrder = 1
+        OnClick = ButtonSnapHelpClick
       end
     end
     object TabSheetBadNotes: TTabSheet
@@ -145,8 +145,8 @@ object FormRecover: TFormRecover
         AutoSize = True
         BorderSpacing.Right = 2
         Caption = 'Delete Bad Notes'
-        OnClick = ButtonDeleteBadNotesClick
         TabOrder = 0
+        OnClick = ButtonDeleteBadNotesClick
       end
       object LabelNoteErrors: TLabel
         Left = 8
@@ -238,8 +238,8 @@ object FormRecover: TFormRecover
         BorderSpacing.Top = 2
         BorderSpacing.Right = 2
         Caption = 'Recover'
-        OnClick = ButtonRecoverSnapClick
         TabOrder = 0
+        OnClick = ButtonRecoverSnapClick
       end
       object Label12: TLabel
         Left = 8

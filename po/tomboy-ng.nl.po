@@ -873,6 +873,14 @@ msgstr "Sluiten"
 msgid "Roll Back"
 msgstr "Reservekopie herstellen"
 
+#: tformbacklinks.caption
+msgid "Linked to this note"
+msgstr ""
+
+#: tformbacklinks.label1.caption
+msgid "No other notes link here."
+msgstr ""
+
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"
 msgid "Delete"

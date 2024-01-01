@@ -883,6 +883,14 @@ msgstr "Cerrar"
 msgid "Roll Back"
 msgstr "Restaurar"
 
+#: tformbacklinks.caption
+msgid "Linked to this note"
+msgstr ""
+
+#: tformbacklinks.label1.caption
+msgid "No other notes link here."
+msgstr ""
+
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"
 msgid "Delete"
@@ -1739,3 +1747,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

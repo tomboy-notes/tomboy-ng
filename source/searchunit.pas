@@ -313,7 +313,7 @@ type        { TSearchForm }
                             ButtonSMenu. DontBackUp says do not make a backup as we opne because we are in
                             a Roll Back Cycle.}
         procedure OpenNote(NoteTitle: String; FullFileName: string = '';
-        				            TemplateIs: AnsiString = ''; BackUp: boolean = True; InSearch : boolean = false) ;
+            TemplateIs: AnsiString=''; BackUp: boolean=True; InSearch: boolean=false; STerm : string='');
         { Returns True if it put next Note Title into SearchTerm }
         //function NextNoteTitle(out SearchTerm : string) : boolean;
         { Initialises search of note titles, prior to calling NextNoteTitle() }
@@ -1386,7 +1386,7 @@ begin
 end;
 
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
-                            TemplateIs: AnsiString; BackUp: boolean; InSearch: boolean);
+        TemplateIs: AnsiString; BackUp: boolean; InSearch: boolean; STerm : string);
 // Everything except the first parameter is optional, take care !
 // Might be called with no Title (NewNote) or a Title with or without a Filename
 // When called from EditBox, we may pass a Notebook Name, if its a new note that
@@ -1415,7 +1415,9 @@ begin
                 MoveWindowHere(TheForm.Caption);
                 TheForm.EnsureVisible(true);
                 if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
-                     TEditBoxForm(TheForm).NewFind(EditSearch.Text);
+                    if STerm = '' then
+                        TEditBoxForm(TheForm).NewFind(EditSearch.Text)
+                    else TEditBoxForm(TheForm).NewFind(STerm);
                 exit();
 			except on  EAccessViolation do
             	DebugLn('Tried to re show a closed note, that is OK');
@@ -1437,7 +1439,10 @@ begin
     EBox.Show;
     // if we have a NoteFileName at this stage, we just opened an existing note.
     if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
-        EBox.NewFind(EditSearch.Text);
+        if STerm = '' then
+            EBox.NewFind(EditSearch.Text)
+        else
+            EBox.NewFind(Sterm);
     if (NoteFileName <> '') and BackUp  then
         BackupNote(NoteFileName, 'opn');
     EBox.Dirty := False;

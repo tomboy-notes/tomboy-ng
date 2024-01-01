@@ -239,6 +239,7 @@ type
                                 // Does require CriticalSection to be setup before calling.
                                 // If note turns out to be a template, don't add it to main note list
                                 // but still call Notebook.add to ensure its mentioned in notebook list.
+                                // We might store Content and it may. or may not be all lower case.
     procedure GetNoteDetails(const Dir, FileName: ANSIString; DontTestName: boolean; TheLister : TNoteLister);
 
                                 // Inserts a new item into the ViewList, always Title, DateSt, FileName
@@ -248,6 +249,7 @@ type
                                   just try to add missing bits, if that does not work, we replace the LCD with
                                   current, and known good date.}
 	procedure RewriteBadChangeDate(const Dir, FileName, LCD: ANSIString);
+
 
 
 
@@ -268,7 +270,11 @@ type
                                         { The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
-
+                                        // Puts name of any note that contains (case insensitive) the passed string into
+                                        // the passed stringlist. Does nothing to do with sorting, order etc.
+                                        // Used to get backlinks.
+                                        // ToDo : At present, assumes all content loaded.
+    procedure SearchContent(const St: string; Stl: TstringList);
     procedure DumpNoteBookList(WhereFrom: String);
 
                                         { Returns true if there is a notebook of the passed title }
@@ -1739,6 +1745,18 @@ begin
     EnterDateSearchIndex.sort(@SortOnDate);
     EnterTitleSearchIndex.sort(@SortOnTitle);
 	result := EnterDateSearchIndex.Count;
+end;
+
+
+procedure TNoteLister.SearchContent(const St : string; Stl : TstringList);
+var
+    i : integer;
+begin
+    for i := 0 to NoteList.Count -1 do begin
+        if St <> lowercase(NoteList.Items[i]^.Title) then
+            if Pos(St, lowercase(NoteList.Items[i]^.Content)) > 0 then
+                Stl.Add(NoteList.Items[i]^.Title);
+    end;
 end;
 
 procedure TNoteLister.AddNote(const FileName, Title, LastChange : ANSIString);
