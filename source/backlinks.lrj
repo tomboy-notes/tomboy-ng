@@ -1,0 +1,4 @@
+{"version":1,"strings":[
+{"hash":81999685,"name":"tformbacklinks.caption","sourcebytes":[76,105,110,107,101,100,32,116,111,32,116,104,105,115,32,110,111,116,101],"value":"Linked to this note"},
+{"hash":141286446,"name":"tformbacklinks.label1.caption","sourcebytes":[78,111,32,111,116,104,101,114,32,110,111,116,101,115,32,108,105,110,107,32,104,101,114,101,46],"value":"No other notes link here."}
+]}

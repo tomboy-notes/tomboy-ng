@@ -1,0 +1,61 @@
+object FormBackLinks: TFormBackLinks
+  Left = 472
+  Height = 279
+  Top = 411
+  Width = 298
+  Caption = 'Linked to this note'
+  ClientHeight = 279
+  ClientWidth = 298
+  OnShow = FormShow
+  LCLVersion = '3.0.0.3'
+  object ListBox1: TListBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Label1
+    Left = 5
+    Height = 213
+    Top = 5
+    Width = 288
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
+    ItemHeight = 0
+    TabOrder = 0
+    TopIndex = -1
+    OnClick = ListBox1Click
+  end
+  object BitBtn1: TBitBtn
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 140
+    Height = 30
+    Top = 244
+    Width = 153
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
+    Cancel = True
+    DefaultCaption = True
+    Kind = bkCancel
+    ModalResult = 2
+    TabOrder = 1
+  end
+  object Label1: TLabel
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = BitBtn1
+    Left = 96
+    Height = 21
+    Top = 223
+    Width = 197
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 5
+    Caption = 'No other notes link here.'
+  end
+end

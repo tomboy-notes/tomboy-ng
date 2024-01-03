@@ -231,7 +231,7 @@ type
     function CheckSearchTerms(const STermList: TStringList; const Index: integer): boolean;
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
-    procedure DumpNoteNoteList(WhereFrom: string);
+
 
    	//procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
 
@@ -270,6 +270,7 @@ type
                                         { The directory, with trailing seperator, that the notes are in }
    	WorkingDir : ANSIString;
    	SearchIndex : integer;
+    procedure DumpNoteNoteList(WhereFrom: string);
                                         // Puts name of any note that contains (case insensitive) the passed string into
                                         // the passed stringlist. Does nothing to do with sorting, order etc.
                                         // Used to get backlinks.
@@ -1749,13 +1750,38 @@ end;
 
 
 procedure TNoteLister.SearchContent(const St : string; Stl : TstringList);
+// St is Title of note asking for search. We seach all note's content for St but it must surrounded by suitable deliminators
+// Hard to see this method used for anything else
 var
-    i : integer;
+    i, TitleL, Offset, FoundIndex, CLen : integer;
+    Title : string;
 begin
+    TitleL := length(St);
     for i := 0 to NoteList.Count -1 do begin
-        if St <> lowercase(NoteList.Items[i]^.Title) then
-            if Pos(St, lowercase(NoteList.Items[i]^.Content)) > 0 then
-                Stl.Add(NoteList.Items[i]^.Title);
+        Title := NoteList.Items[i]^.TitleLow;
+        if St = Title then
+            Continue;
+        CLen := length(NoteList.Items[i]^.Content);
+        FoundIndex := 0;
+        Offset := 0;
+        while ((Offset+TitleL) < CLen) and (FoundIndex > -1) do begin           // loop over Content, break out if found a hit or got to end
+            FoundIndex := (lowercase(NoteList.Items[i]^.Content)).IndexOf(St, Offset);                      // Zero base result. -1 if not present
+            if FoundIndex > -1 then begin                                       // FoundIndex cannot be zero, that would be title, checked above
+//                debugln('TNoteLister.SearchContent target=' + copy(NoteList.Items[i]^.Content, FoundIndex+1, TitleL));
+//                debugln('FoundIndex=' + inttostr(FoundIndex) + ' CLen=' + inttostr(CLen));
+//                debugln('ch-before=' + (NoteList.Items[i]^.Content)[FoundIndex]);
+//                debugln('ch-after=' + (NoteList.Items[i]^.Content)[FoundIndex+TitleL+1]);
+                if  ((NoteList.Items[i]^.Content)[FoundIndex] in [' ', #10, ',', '.'])                      // char before potential target
+                    and (((FoundIndex+TitleL) = CLen)                                                       // nothing in note after link content
+                    or  ((NoteList.Items[i]^.Content)[FoundIndex+TitleL+1] in [#10, ' ', ',', '.'])) then   // char after potential target
+                        begin
+                            Stl.Add(NoteList.Items[i]^.Title);
+                            FoundIndex := -1;           // force our way out of inner loop
+                            continue;                   // On to the next title
+                        end;
+            end;                                        // Nothing to see here folks.
+            OffSet := Offset + FoundIndex + 1;          // +1 to move past just tested one
+        end;
     end;
 end;
 
@@ -1771,6 +1797,7 @@ begin
     NoteP^.CreateDate := LastChange; {copy(LastChange, 1, 19); }
     //NoteP^.CreateDate[11] := ' ';
     NoteP^.Title:= Title;
+    NoteP^.TitleLow:= lowercase(Title);
     NoteP^.OpenNote := nil;
     NoteList.Add(NoteP);
     // We don't need to re-sort here, the new note is added at the end, and our

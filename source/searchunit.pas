@@ -248,6 +248,7 @@ type        { TSearchForm }
 
         procedure InitialiseHelpFiles();
         function MakeNoteFromTemplate(const Template: String): string;
+
                                 // clears then Inserts file items in all main menus, note also removes help items ....
         procedure MenuFileItems(AMenu: TPopupMenu);
         procedure MenuHelpItems(AMenu: TPopupMenu);
@@ -275,6 +276,12 @@ type        { TSearchForm }
         //AllowClose : boolean;
 //        NoteLister : TNoteLister;
         NoteDirectory : string;
+                            { Public : Called from EditBox when it saves a new note. If that
+                            new note was created by a New Link request, its necessary to mark
+                            that text as a Link. Note int marks only the potential links near
+                            the cursor at that time.
+                            }
+        procedure MarkLinkOnOpenNotes();
                             { Tells all open notes to save their contents. Used,
                             eg before we run a sync to ensure recently changed content
                             is considered by the (File based) sync engine.}
@@ -418,6 +425,19 @@ procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
 begin
    DelayedRefresh(True);
 end;   *)
+
+procedure TSearchForm.MarkLinkOnOpenNotes();
+var
+    AForm : TForm;
+begin
+    if assigned(TheMainNoteLister) then begin
+        AForm := TheMainNoteLister.FindFirstOpenNote();
+        while AForm <> Nil do begin
+            TEditBoxForm(AForm).CheckForLinks(False);
+            AForm := TheMainNoteLister.FindNextOpenNote();
+        end;
+    end;
+end;
 
 procedure TSearchForm.FlushOpenNotes();
 var
@@ -1433,16 +1453,27 @@ begin
             TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
 	EBox := TEditBoxForm.Create(Application);
     EBox.SearchedTerm := '';
+
+    // We will do this search after the note has settled dowm
+    if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
+        if STerm = '' then
+            EBox.SearchedTerm := EditSearch.Text
+        else
+            EBox.SearchedTerm := Sterm;
+
+
     EBox.NoteTitle:= NoteTitle;
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
     EBox.Show;
     // if we have a NoteFileName at this stage, we just opened an existing note.
-    if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
+
+    {    if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
         if STerm = '' then
             EBox.NewFind(EditSearch.Text)
         else
-            EBox.NewFind(Sterm);
+            EBox.NewFind(Sterm);         }
+
     if (NoteFileName <> '') and BackUp  then
         BackupNote(NoteFileName, 'opn');
     EBox.Dirty := False;
