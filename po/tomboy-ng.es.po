@@ -855,7 +855,9 @@ msgid "Delete this note"
 msgstr "Eliminar esta nota"
 
 #: teditboxform.speedbuttonlink.hint
-msgid "Link highlighted text to a new note"
+#, fuzzy
+#| msgid "Link highlighted text to a new note"
+msgid "Create new linked note (text selected) or display back links."
 msgstr "Vincular texto resaltado a una nota nueva"
 
 #: teditboxform.speedbuttonnotebook.hint
@@ -882,6 +884,10 @@ msgstr "Cerrar"
 #: teditboxform.speedrollback.hint
 msgid "Roll Back"
 msgstr "Restaurar"
+
+#: teditboxform.speedsymbol.hint
+msgid "Insert extended character or symbol"
+msgstr ""
 
 #: tformbacklinks.caption
 msgid "Linked to this note"

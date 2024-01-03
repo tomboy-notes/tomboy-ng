@@ -813,7 +813,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideTop.Control = Panel1
       Left = 143
       Height = 38
-      Hint = 'Link highlighted text to a new note'
+      Hint = 'Create new linked note (text selected) or display back links.'
       Top = 1
       Width = 38
       Glyph.Data = {
@@ -1098,6 +1098,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideBottom.Side = asrBottom
       Left = 371
       Height = 38
+      Hint = 'Insert extended character or symbol'
       Top = 1
       Width = 38
       Anchors = [akTop, akLeft, akBottom]
@@ -1178,6 +1179,8 @@ object EditBoxForm: TEditBoxForm
         FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
       }
       OnClick = SpeedSymbolClick
+      ShowHint = True
+      ParentShowHint = False
     end
   end
   object KMemo1: TKMemo
