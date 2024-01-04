@@ -1248,7 +1248,7 @@ begin
     SetTransport(Mode);
     //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
     if TestConnection() <> SyncReady then begin
-        debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
+        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
         exit(false);
     end;
     TestRun := False;

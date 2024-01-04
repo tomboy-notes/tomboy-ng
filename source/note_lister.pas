@@ -1762,10 +1762,11 @@ begin
         if St = Title then
             Continue;
         CLen := length(NoteList.Items[i]^.Content);
-        FoundIndex := 0;
+        FoundIndex := 0;                                                        // ToDo : Done but confirm - NoteContent is always lowercase, don't bother to lowercase() it here.
         Offset := 0;
         while ((Offset+TitleL) < CLen) and (FoundIndex > -1) do begin           // loop over Content, break out if found a hit or got to end
-            FoundIndex := (lowercase(NoteList.Items[i]^.Content)).IndexOf(St, Offset);                      // Zero base result. -1 if not present
+//            FoundIndex := (lowercase(NoteList.Items[i]^.Content)).IndexOf(St, Offset);                      // Zero base result. -1 if not present
+            FoundIndex := (NoteList.Items[i]^.Content).IndexOf(St, Offset);                      // Zero base result. -1 if not present
             if FoundIndex > -1 then begin                                       // FoundIndex cannot be zero, that would be title, checked above
 //                debugln('TNoteLister.SearchContent target=' + copy(NoteList.Items[i]^.Content, FoundIndex+1, TitleL));
 //                debugln('FoundIndex=' + inttostr(FoundIndex) + ' CLen=' + inttostr(CLen));
@@ -2077,8 +2078,10 @@ begin
         if Title = NoteList.Items[i]^.Title then begin  // Its just a LCD update, update DateSearchIndex and advise a re-Display
             ReRunSearch := False;
             result := UpdateIndex(DateSearchIndex);     // False if not currently DateSearchIndex, its not being displayed anyway
-        end else                                        // Ah, a new title, must rerun search.
+        end else begin                                  // Ah, a new title, must rerun search.
             NoteList.Items[i]^.Title := Title;
+            NoteList.Items[i]^.TitleLow := lowercase(Title);
+        end;
         UpdateIndex(DateAllIndex);                      // Always update DateAllIndex, its not done by Search methods
     end;
 end;
@@ -2091,9 +2094,11 @@ begin
     for Index := NoteList.Count -1 downto 0 do begin
     //for Index := 0 to NoteList.Count -1 do begin
         if CleanFilename(ID) = NoteList.Items[Index]^.ID then begin
-        	if Title <> '' then
+        	if Title <> '' then begin
             	NoteList.Items[Index]^.Title := Title;
-        	if Change <> '' then begin
+                NoteList.Items[Index]^.TitleLow := lowercase(Title);
+            end;
+            if Change <> '' then begin
                 NoteList.Items[Index]^.LastChange := Change;  {copy(Change, 1, 19);}
                 // check if note is already at the bottom of the list, don't need to re-sort.
 (*                if (Index < (NoteList.Count -1)) then

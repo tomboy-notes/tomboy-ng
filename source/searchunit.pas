@@ -1414,7 +1414,7 @@ procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
 // note while a notebook is selected in SeachForm will assign the notebook to note.
 
 // If we choose NewNoteFromTemplate TemplateIs is NOT set because we create the note
-// and pass its filename into here. It already has its templale associated.
+// and pass its filename into here. It already has its template associated.
 var
     EBox : TEditBoxForm;
     NoteFileName : string;
@@ -1437,7 +1437,7 @@ begin
                 if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
                     if STerm = '' then
                         TEditBoxForm(TheForm).NewFind(EditSearch.Text)
-                    else TEditBoxForm(TheForm).NewFind(STerm);
+                    else TEditBoxForm(TheForm).NewFind(STerm);                  // ToDo : this does not select the target note's link correctly. (BackLink mode ?)
                 exit();
 			except on  EAccessViolation do
             	DebugLn('Tried to re show a closed note, that is OK');

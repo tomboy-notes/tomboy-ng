@@ -3640,7 +3640,7 @@ begin
         NoteFileName := Sett.NoteDirectory + GetAFilename();
         ItsANewNote := True;
     end;
-    if (not WeAreClosing)
+    if (not WeAreClosing)                                                       // just checking for valid ID here
         and (Sett.NoteDirectory = CleanAndExpandDirectory(ExtractFilePath(NoteFileName))) then begin   // Check name of Repo note, not SNM. UTF8 OK
         if not IDLooksOK(ExtractFileNameOnly(NoteFileName)) then
             if mrYes = QuestionDlg('Invalid GUID', 'Give this note a new GUID Filename (recommended) ?', mtConfirmation, [mrYes, mrNo], 0) then begin
@@ -3701,6 +3701,7 @@ begin
     if Dirty or SingleNoteMode then begin                       // In SingeNoteMode, there is no NoteLister, so date is always updated.
         Loc.LastChangeDate:= TB_GetLocalTime();                 // Next line makes a partial entry for a new note.
         SearchForm.UpdateList(CleanCaption(), Loc.LastChangeDate, NoteFileName, self);     // 6mS - 8mS timewasting menu rewrite ??  No usually now
+        //debugln('TEditBoxForm.SaveTheNote - called  SearchForm.UpdateList with ' + CleanCaption());
     end else
         Loc.LastChangeDate                                      // Must be closing.
             := TheMainNoteLister.GetLastChangeDate(ExtractFileNameOnly(NoteFileName));
@@ -3717,6 +3718,7 @@ begin
             end;
             dec(LineNumb);
         end;
+        if LineNumb = -1 then debugln('TEditBoxForm.SaveTheNote did not find note in notelister to insert content into. ' + NoteTitle);
     end;
     if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
 
