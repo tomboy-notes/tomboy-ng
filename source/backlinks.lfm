@@ -2,10 +2,10 @@ object FormBackLinks: TFormBackLinks
   Left = 472
   Height = 279
   Top = 411
-  Width = 298
+  Width = 354
   Caption = 'Linked to this note'
   ClientHeight = 279
-  ClientWidth = 298
+  ClientWidth = 354
   OnShow = FormShow
   LCLVersion = '3.0.0.3'
   object ListBox1: TListBox
@@ -17,7 +17,7 @@ object FormBackLinks: TFormBackLinks
     Left = 5
     Height = 213
     Top = 5
-    Width = 288
+    Width = 344
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Left = 5
     BorderSpacing.Top = 5
@@ -33,7 +33,7 @@ object FormBackLinks: TFormBackLinks
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 140
+    Left = 196
     Height = 30
     Top = 244
     Width = 153
@@ -50,7 +50,7 @@ object FormBackLinks: TFormBackLinks
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = BitBtn1
-    Left = 96
+    Left = 152
     Height = 21
     Top = 223
     Width = 197

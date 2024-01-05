@@ -1,3 +1,23 @@
+tomboy-ng (0.37-1) unstable; urgency=medium
+
+  *  Release of new version.
+  * Addition build targets, RasPi-amd64, Mac-amd64, i366-qt5, Qt6.
+  * Revised note dir selection.
+  * No left click on trayicon for KDE, wayland issue.
+  * Auto Sync now in background thread.
+  * Option to copy in plain text.
+  * Fix for Debian bug 1046360.
+  * Don't show trayicon until it has a menu item, fix Gnome 44 issue.
+  * Force Qt5 to use qt5ct because of upstream bad dialogs, Lazarus 3
+    will fix.
+  * Remove dangling anchors believed to cause a rare layout bug.
+  * Faster note loading for large notes.
+  * Qt5 can handle a request to use an unconfigured qt5ct.
+  * Do not show SysTray until menu items added.
+  * Please see github for further change details.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 05 Jan 2024 09:38:45 +1100
+
 tomboy-ng (0.36a-2) unstable; urgency=medium
 
   * Repackage.

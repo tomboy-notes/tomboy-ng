@@ -95,8 +95,12 @@ Generate a lot of logging information on the console during a sync, index or spe
 Direct debug info to a file, this is necessary to see that output on Windows and Mac and sometimes useful on Linux. LOGFILE is a  filename and a (writable) path to that filename. See section below on debugging.
 
 .TP
+\-\-useappind=yes|no
+Only for Linux using gtk2 version. Will override tomboy\-ng decision about how to try to display the System Tray Icon, its here to help with difficult systems that cannot seem to display that icon using the normal approach.
+
+.TP
 \-\-platformtheme qt5ct
-Use with Qt versions ONLY, will instruct the app to display the colors defined in qt5ct. The qt5ct app has a nice GUI where you can select the colors that suite you.
+Use with Qt versions ONLY, will instruct the app to display the colors defined in qt5ct. The qt5ct app has a nice GUI where you can select the colors that suite you. Some other Qt specific options may also work using a similar syntax. Note there is not an '=' sigh between the switch and its parameter.
 
 
 .SH FURTHER HELP

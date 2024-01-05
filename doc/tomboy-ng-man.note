@@ -92,8 +92,11 @@ Generate a lot of logging information on the console during a sync, index or spe
  --debug-log=LOGFILE
 Direct debug info to a file, this is necessary to see that output on Windows and Mac and sometimes useful on Linux. LOGFILE is a  filename and a (writable) path to that filename. See section below on debugging.
 
+--useappind=yes|no
+Only for Linux using gtk2 version. Will override tomboy-ng decision about how to try to display the System Tray Icon, its here to help with difficult systems that cannot seem to display that icon using the normal approach.
+
 --platformtheme qt5ct
-Use with Qt versions ONLY, will instruct the app to display the colors defined in qt5ct. The qt5ct app has a nice GUI where you can select the colors that suite you.
+Use with Qt versions ONLY, will instruct the app to display the colors defined in qt5ct. The qt5ct app has a nice GUI where you can select the colors that suite you. Some other Qt specific options may also work using a similar syntax. Note there is not an '=' sigh between the switch and its parameter.
 
 
 <size:huge>FURTHER HELP</size:huge>
@@ -147,8 +150,8 @@ Please send bug reports to the tomboy-ng Github Issues system, see above.
 
 
 </note-content></text>
-  <last-change-date>2023-06-25T20:31:04.6015364+10:00</last-change-date>
-  <last-metadata-change-date>2023-06-25T20:31:04.6015364+10:00</last-metadata-change-date>
+  <last-change-date>2024-01-05T12:47:58.5017273+11:00</last-change-date>
+  <last-metadata-change-date>2024-01-05T12:47:58.5017273+11:00</last-metadata-change-date>
   <create-date>2021-08-01T19:13:24.7238449+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

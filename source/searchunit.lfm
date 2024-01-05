@@ -1,12 +1,12 @@
 object SearchForm: TSearchForm
-  Left = 709
+  Left = 466
   Height = 401
-  Top = 171
-  Width = 513
+  Top = 347
+  Width = 794
   ActiveControl = EditSearch
   Caption = 'tomboy-ng_Search'
   ClientHeight = 401
-  ClientWidth = 513
+  ClientWidth = 794
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -30,7 +30,7 @@ object SearchForm: TSearchForm
     BorderSpacing.Left = 2
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 1
+    TabOrder = 3
     OnChange = EditSearchChange
     OnEnter = EditSearchEnter
     OnKeyDown = FormKeyDown
@@ -45,18 +45,18 @@ object SearchForm: TSearchForm
     Left = 0
     Height = 345
     Top = 33
-    Width = 513
+    Width = 794
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 1
     Caption = 'Panel1'
     ClientHeight = 345
-    ClientWidth = 513
+    ClientWidth = 794
     TabOrder = 0
     object Splitter1: TSplitter
       AnchorSideTop.Control = Panel1
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
-      Left = 144
+      Left = 224
       Height = 343
       Top = 1
       Width = 5
@@ -70,12 +70,11 @@ object SearchForm: TSearchForm
       Left = 1
       Height = 32
       Top = 1
-      Width = 143
+      Width = 223
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Clear'
       Enabled = False
-      TabOrder = 3
-      TabStop = False
+      TabOrder = 2
       OnClick = ButtonClearFiltersClick
       OnKeyDown = FormKeyDown
     end
@@ -90,7 +89,7 @@ object SearchForm: TSearchForm
       Height = 280
       Hint = 'Right Click to manage Notebooks'
       Top = 64
-      Width = 143
+      Width = 223
       Anchors = [akTop, akLeft, akRight, akBottom]
       ExtendedSelect = False
       ItemHeight = 0
@@ -98,7 +97,7 @@ object SearchForm: TSearchForm
       ScrollWidth = 230
       ShowHint = True
       Sorted = True
-      TabOrder = 2
+      TabOrder = 3
       TopIndex = -1
       OnClick = ListBoxNotebooksClick
       OnKeyPress = ListViewNotesKeyPress
@@ -113,7 +112,7 @@ object SearchForm: TSearchForm
       Left = 1
       Height = 31
       Top = 33
-      Width = 143
+      Width = 223
       Anchors = [akTop, akLeft, akRight]
       Caption = 'Notebooks'
       TabOrder = 4
@@ -126,10 +125,10 @@ object SearchForm: TSearchForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
-      Left = 152
+      Left = 232
       Height = 343
       Top = 1
-      Width = 360
+      Width = 561
       Anchors = [akTop, akLeft, akRight, akBottom]
       AutoSortIndicator = True
       AutoWidthLastColumn = True
@@ -164,7 +163,7 @@ object SearchForm: TSearchForm
     Left = 0
     Height = 23
     Top = 378
-    Width = 513
+    Width = 794
     Panels = <    
       item
         Width = 200
@@ -187,7 +186,7 @@ object SearchForm: TSearchForm
     Anchors = [akTop, akLeft, akBottom]
     BorderSpacing.Left = 2
     Caption = 'Clear'
-    TabOrder = 3
+    TabOrder = 4
     OnClick = ButtonClearSearchClick
   end
   object BitBtnMenu: TBitBtn
@@ -278,14 +277,14 @@ object SearchForm: TSearchForm
       0000000000000000000000000000000000000000000000000000
     }
     OnClick = BitBtnMenuClick
-    TabOrder = 4
+    TabOrder = 1
   end
   object ButtonSearchOptions: TButton
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Panel1
-    Left = 367
+    Left = 648
     Height = 32
     Top = 0
     Width = 144

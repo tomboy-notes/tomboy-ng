@@ -813,7 +813,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideTop.Control = Panel1
       Left = 143
       Height = 38
-      Hint = 'Create new linked note (text selected) or display back links.'
+      Hint = 'Create new linked note (text selected) or display Backlinks.'
       Top = 1
       Width = 38
       Glyph.Data = {

@@ -2655,7 +2655,9 @@ var
   *  Wrapping just MakeAllLinks with lock/unlock - 3 seconds
   *  Embedding lock/unlock in relevent parts of MakeLink - 3 seconds.
   Sigh ......
+
 }
+// ToDo : there might be a utf8 bug in MakeLink or below. Having a link to a note title with uft8 seems erratic
 // ToDo : Must write a whole new method to do that initial linking.
 begin
     // ToDo : this method is far too slow, must get to bottom of List Index out of bounds and move locks

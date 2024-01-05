@@ -27,6 +27,12 @@ From the <bold>search form</bold>, you can -
 <list><list-item dir="ltr"><list><list-item dir="ltr">can sync your notes to a common file store so they are accessible from multiple machines (Linux, Windows or Mac).</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">does not share well. If you just put your notes on a shared drive (without using sync) be desperately careful that you don't have more than one tomboy-ng or Tomboy running at the same time. Bad things happen.</list-item></list></list-item></list>
 
+<bold>Linking</bold>
+A major feature of Tomboy and its descendants is the automatic linking between notes. If you type the Title of an existing note, the words will become hyperlinks and a click will open that other note. Similarly, if you select some text and click the Links button, a new note with that Title and linked to from your existing note, appears. New in v0.38, clicking the Links button with nothing selected will display a clickable list of the notes linked to this one, Backlinks.
+
+In a similar manner, text that tomboy-ng thinks might be a web link is marked as a hyper link, a click will open your browser. Both forms of hyperlinks can be turned off in the settings window.
+
+
 
 <size:large><bold>Command Line Switches.</bold></size:large>
 
@@ -63,6 +69,12 @@ Import a text, markdown or note file into your default Note Repo, an existing in
 <bold>--title-fname</bold>
 Applies only when importing a file into your Notes Repository (but when importing a Note), filename as title instead of the first line of the file.
 
+<bold>--useappind=yes|no</bold>
+Only for Linux using gtk2 version. Will override tomboy-ng decision about how to try to display the System Tray Icon, its here to help with difficult systems that cannot seem to display that icon using the normal approach.
+
+<bold>--platformtheme qt5ct</bold>
+Use with Qt versions ONLY, will instruct the app to display the colors defined in qt5ct. The qt5ct app has a nice GUI where you can select the colors that suite you. Some other Qt specific options may also work using a similar syntax. Note there is not an '=' sigh between the switch and its parameter.
+
 <size:large><bold>Mac Things</bold></size:large>
 Mac user require a slightly more complicated command line when using any of these command line switches. For example a Mac command line to generate a sync debug log would be -
 
@@ -75,14 +87,14 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2022-09-23T21:50:34.9978267+10:00</last-change-date>
-  <last-metadata-change-date>2022-09-23T21:50:34.9978267+10:00</last-metadata-change-date>
+  <last-change-date>2024-01-05T12:49:22.5012394+11:00</last-change-date>
+  <last-metadata-change-date>2024-01-05T12:49:22.5012394+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1000</width>
   <height>626</height>
-  <x>653</x>
-  <y>290</y>
+  <x>703</x>
+  <y>33</y>
   <open-on-startup>False</open-on-startup>
 </note>

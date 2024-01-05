@@ -388,7 +388,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	if [ -f whatsnew ]; then
 	    echo "---------- Including whatsnew in changelog"
 	    while IFS= read -r Line; do
-		dch --append "$Line"
+		dch --append " $Line"
 	    done < whatsnew
 	fi
 	dch --append "Please see github for further change details."
