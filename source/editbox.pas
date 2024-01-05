@@ -2410,11 +2410,14 @@ var
     FontAtt : FontLimitedAttrib;
 begin
 
-    //writeln('TEditBoxForm.MakeLink top of method=', Index, ' and ', Len);
+//    Debugln('TEditBoxForm.MakeLink top of method=', Index.tostring, ' and ', Len.tostring);
 
     if Index = 0 then exit;         // Thats this note's title, skip it !
     BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Block where proposed link Ends
     BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // Block where proposed link starts
+
+//    debugln('[' + KMemo1.Blocks.Items[BlockNoS].Text +'] [' + KMemo1.Blocks.Items[BlockNoE].Text + ']');
+
     SaveLimitedAttributes(BlockNoS, FontAtt);                                   // Record the existing colours asap !
     if KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink') then begin
         AText := lowercase(KMemo1.Blocks.Items[BlockNoS].Text);
@@ -2436,9 +2439,11 @@ begin
             BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // and keep iterating until we have clear space
             i := BlockNoS;
         end;
-        if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoParagraph') then exit;     // Thats an ERROR !
+        if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoParagraph') then begin     // Thats an ERROR !
+            debugln('MakeLink exiting cos its a TKMemopara term=' + Term);
 
-
+            exit;
+        end;
         inc(i);
     end;
 
@@ -2469,6 +2474,7 @@ begin
             end;
 //        end else Debugln('SORRY, dont know how to deal with link ending at end of block yet');   // we just let empty block happen, ???
         inc(BlockNoS);          // Assumes we have left BlockNoS in place, removing trailing text, point to spot after existing value
+//        debugln('TEditBoxForm.MakeLink 1 TrueLink =' + TrueLink);                 // ToDo : remove
     end else begin                                                              // All the proposed link was in the BlockNoS
         BlockNoS := KMemo1.SplitAt(Index);
         TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text
@@ -2479,6 +2485,7 @@ begin
             KMemo1.blocks.Delete(BlockNoS-1);
             dec(BlockNoS)
         end;
+//        debugln('TEditBoxForm.MakeLink 2 TrueLink =' + TrueLink);                 // ToDo : remove
     end;
     // When we get to here, Link text (and any blocks completely spanned by link text) have been removed
     // and BlockNoS points to where link need be pushed into. Might have some empty text blocks ....
@@ -2488,8 +2495,8 @@ begin
     else Atext := AText + ' after a non text block';
     if KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoTextBlock') then
         Atext := AText + ' before [' + KMemo1.Blocks.Items[BlockNoS].Text + ']'
-    else Atext := AText + ' before a non text block';
-    debugln(AText);      *)
+    else Atext := AText + ' before a non text block';  *)
+//    debugln('TEditBoxForm.MakeLink 3 TrueLink =' + TrueLink);                     // ToDo : remove
     {$ifdef LDEBUG}TG2 := gettickcount64();{$endif}
     Hyperlink := TKMemoHyperlink.Create;
     Hyperlink.Text := TrueLink;
@@ -2497,7 +2504,7 @@ begin
     Hyperlink.OnClick := @OnUserClickLink;
     {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);
     RestoreLimitedAttributes(BlockNoS, FontAtt);
-    //debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +'] Att Col=' +  ColorToString(FPColortoTColor(FontAtt.FPBackColour)));
+    // debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +'] Att Col=' +  ColorToString(FPColortoTColor(FontAtt.FPBackColour)));
     HyperLink.Textstyle.Font.Color := Sett.LinkColour;
     {$ifdef LDEBUG}TG3 := gettickcount64();
     TG1 := TG1 + (TG3-Tg2);{$endif}
@@ -2519,7 +2526,6 @@ var
     ByteBeforeTerm, ByteAfterTerm : integer;
     ASelStart, ASelLength : integer;
 begin
-
 //    if pos('bgc 11', TheMainNoteLister.NoteList[i]^.TitleLow) > 0 then
 //    if Term = 'bgc 11' then
 //        debugln('NewMakeAllLinks found it =========================' + Term);
@@ -2528,8 +2534,18 @@ begin
 //        debugln('NewMakeAllLinks Acting on Term=' + Term);
         ByteBeforeTerm := UTF8CodepointToByteIndex(PChar(Buff), length(Buff), Offset)-1;
         ByteAfterTerm  := UTF8CodepointToByteIndex(PChar(Buff), length(Buff), Offset+length(Term));
+
+//        if BlockOffset = 5237 then begin
+//            debugln('We found 5237, Off+Term=' + (Offset + length(Term)).tostring + ' and len(buff)=' + length(Buff).tostring);
+
         if ((Offset = 1) or (Buff[ByteBeforeTerm] in [' ', #10, ',', '.'])) and
-            (((Offset + length(Term)) = length(Buff)) or (Buff[ByteAfterTerm] in [' ', #10, ',', '.'])) then begin
+            (((Offset + length(Term)) > length(Buff)) or (Buff[ByteAfterTerm] in [' ', #10, ',', '.'])) then begin
+
+//                debugln('MakeAllLinks ---------------------------------');
+//                debugln(Buff);
+//                debugln('----');
+
+
             MakeLink(BlockOffset + Offset -1, UTF8length(Term), Term);                // MakeLink takes a Char Index !
             TimerHouseKeeping.Enabled := False;
         end;
@@ -2585,15 +2601,16 @@ begin
     end;
 end;
 
-{.$define TDEBUG}
+{$define TDEBUG}
 
 procedure TEditBoxForm.CheckForLinks(const FullBody : boolean);
 var
     Content : string = '';
-    BuffOffset, LineNumb : integer;
+    BuffOffset, LineNumb, BlockNo : integer;
     EndScan : Integer = 0;
     i : integer;
     {$ifdef TDEBUG}T0, T1, T2, T3, T4, T5 : qword;{$endif}
+
 
     // Puts one para of kMemo, starting at LineNumb, into Content. Ret Starting offset.
     function GrabPara() : integer;
@@ -2602,7 +2619,8 @@ var
        Result := KMemo1.Blocks.LineStartIndex[LineNumb];
        while LineNumb < KMemo1.Blocks.LineCount do begin
            Content := Content + lowercase(Kmemo1.blocks.LineText[LineNumb]);
-           inc(LineNumb);
+           dec(LineNumb);
+           //inc(LineNumb);
            if Content[high(Content)] = #182 then begin          // Line returns with two char line ending
                delete(Content, High(Content), 1);               // delete the 182
                Content[High(Content)] := #10;                   // replace the 194
@@ -2649,6 +2667,29 @@ var
         EndScan := UTF8Length(Content) + Result;
     end;
 
+    function GetPrevPara(const Bk :integer) : integer;
+    var
+        Index : integer;
+    begin
+//        if BK < 10 then
+//            debugln('Less than ten');
+        Index := Bk;
+        Content := '';
+        while not KMemo1.Blocks[Index].ClassNameIs('TKMemoParagraph') do begin
+            dec(Index);
+            if Index <= 0 then break;
+        end;
+        Result := Index;
+        // OK, here, BK is either Para or we have reached the very beginning.
+        while Index <= Bk do begin
+            if (Index > -1) and (not KMemo1.Blocks[Index].ClassNameIs('TKMemoParagraph')) then
+                Content := Content + lowercase(KMemo1.Blocks[Index].Text);
+            inc(Index);
+        end;
+        Content := Content + #10;
+    end;
+
+
 { At present, in Fullbody mode, I lock and unlock for every para in the kmemo. Thats slow. Making Debs.
   About 1 sec on my test note. But one lock/unlock around loop triggers a problem in KMemo.  Alts -
   *  No Locking - 6 seconds
@@ -2668,10 +2709,37 @@ begin
     TG1 := 0;
     {$endif}
     if (FullBody) then begin                // Scan and do links in whole note, no unlinking required
-        LineNumb := 0;
+        LineNumb := KMemo1.Blocks.LineCount -1;
         {$ifdef TDEBUG}T0 := gettickcount64();{$endif}
-        while LineNumb < KMemo1.Blocks.LineCount do begin
-            KMemo1.Blocks.LockUpdate;
+        { We iterate over the KMemo, loading a line, checking it for Links and hyperlinks, then do next line }
+
+        KMemo1.Blocks.LockUpdate;
+        BlockNo := GetPrevPara(KMemo1.Blocks.Count -1);
+        while BlockNo > 0 do begin
+            BlockNo := GetPrevPara(BlockNo-1);
+            // At this point, BlockNo points to Par marker before our text.
+//            debugln('BlockNo=' + (BlockNo+1).ToString + '  ' + Content);
+            if BlockNo >= 0 then
+//                debugln('Char index=' + inttostr(KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1])));
+
+                BuffOffSet := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1]);
+                for i := 0 to TheMainNoteLister.NoteList.Count-1 do             // for each title in main list
+                    if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin   // don't link to self
+                        if length(Content) > 3 then begin                // Two significent char plus a newline
+                            {$ifdef LDEBUG}writeln(MyLogFile, 'FB ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
+                            MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
+                        end;
+                    end;
+                // OK, lets do HTTPS then.
+                if Sett.CheckShowExtLinks.Checked then
+                if length(Content) > 12 then
+                    CheckForHTTP(Content, BuffOffset);
+        end;
+
+(*
+//        while LineNumb < KMemo1.Blocks.LineCount do begin
+        while LineNumb > -1 do begin
+//            KMemo1.Blocks.LockUpdate;
             BuffOffset := GrabPara();       // Updates LineNumb, puts a para in Content, rets UTF8 count from start of Kmemo
             if Sett.ShowIntLinks and (not SingleNoteMode) then
                 for i := 0 to TheMainNoteLister.NoteList.Count-1 do             // for each title in main list
@@ -2681,11 +2749,13 @@ begin
                             MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
                         end;
                     end;
-            if Sett.CheckShowExtLinks.Checked then
+(*            if Sett.CheckShowExtLinks.Checked then
                 if length(Content) > 12 then
-                    CheckForHTTP(Content, BuffOffset);
-            KMemo1.Blocks.UnLockUpdate;    // we lock and unlock frequenty here, slow but avoids "wind up"
-        end;                               // end of Fullbody Scan
+                    CheckForHTTP(Content, BuffOffset);  *)
+//            KMemo1.Blocks.UnLockUpdate;    // we lock and unlock frequenty here, slow but avoids "wind up"
+        end;                               // end of Fullbody Scan   *)
+        KMemo1.Blocks.UnLockUpdate;
+
         {$ifdef TDEBUG}T1 := gettickcount64();
         debugln('CheckForLinks Timing T1=' + (T1-T0).tostring);
         {$endif}
@@ -2711,7 +2781,7 @@ begin
                 CheckForHTTP(Content, BuffOffset);                           // Mark any unmarked web links
         KMemo1.blocks.UnLockUpdate;
         {$ifdef TDEBUG}T5  := gettickcount64();
-        debugln('CheckForLinks Timing T1=' + (T1-T0).tostring + ' ' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
+//        debugln('CheckForLinks Timing T1=' + (T1-T0).tostring + ' ' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
         {$endif}
     end;
 
