@@ -857,7 +857,7 @@ msgstr "Eliminar esta nota"
 #: teditboxform.speedbuttonlink.hint
 #, fuzzy
 #| msgid "Link highlighted text to a new note"
-msgid "Create new linked note (text selected) or display back links."
+msgid "Create new linked note (text selected) or display Backlinks."
 msgstr "Vincular texto resaltado a una nota nueva"
 
 #: teditboxform.speedbuttonnotebook.hint

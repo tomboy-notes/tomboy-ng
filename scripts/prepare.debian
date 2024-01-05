@@ -391,7 +391,7 @@ if [ -f tomboy-ng-master.zip ]; then
 		dch --append " $Line"
 	    done < whatsnew
 	fi
-	dch --append "Please see github for further change details."
+	dch --append " Please see github for further change details."
 
 	#cp debian/control.debian debian/control			# thats the GTK2 version
 	#if [ "$WIDGET" = "Qt5" ]; then

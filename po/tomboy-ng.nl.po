@@ -846,7 +846,7 @@ msgstr "Notitie verwijderen"
 #: teditboxform.speedbuttonlink.hint
 #, fuzzy
 #| msgid "Link highlighted text to a new note"
-msgid "Create new linked note (text selected) or display back links."
+msgid "Create new linked note (text selected) or display Backlinks."
 msgstr "Gemarkeerde tekst koppelen aan nieuwe notitie"
 
 #: teditboxform.speedbuttonnotebook.hint
