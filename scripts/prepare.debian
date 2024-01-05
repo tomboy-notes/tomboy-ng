@@ -358,11 +358,11 @@ if [ -f tomboy-ng-master.zip ]; then
 	mv "tomboy-ng-master" "$APP"_"$VER""$DEBVER"
 	KControls
 	
-	echo -----------------------------------------------------------------------
-	echo     Disabling use of UseAppIndVar because probably still using Laz226
-	echo -----------------------------------------------------------------------
-	sed -i "s/define APPINDPATCH/ignore/" "$APP"_"$VER""$DEBVER"/source/Tomboy_NG.lpr
-	// Remove the above line when Debian moves to Laz300
+	#echo -----------------------------------------------------------------------
+	#echo     Disabling use of UseAppIndVar because probably still using Laz226
+	#echo -----------------------------------------------------------------------
+	#sed -i "s/define APPINDPATCH/ignore/" "$APP"_"$VER""$DEBVER"/source/Tomboy_NG.lpr
+	# Remove the above line when Debian moves to Laz300
 	
 	cd "$APP"_"$VER""$DEBVER"	# This is orig tomboy-ng dir made from zip
 	if [ "$WIDGET" = "Qt5" ]; then
