@@ -2379,7 +2379,7 @@ begin
         FontAtt.BackColour := KMemo1.Colors.BkGnd;
         FontAtt.Size := Sett.FontNormal;
         FontAtt.Styles := [];
-        debugln('SaveLimitedAttributes - using default values');
+        // debugln('SaveLimitedAttributes - using default values');
     end;
     FontAtt.Styles := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Style;
     FontAtt.Size := TKMemoTextBlock(kmemo1.Blocks.Items[BlockNo]).TextStyle.Font.Size;
@@ -2601,7 +2601,7 @@ begin
     end;
 end;
 
-{$define TDEBUG}
+{.$define TDEBUG}
 
 procedure TEditBoxForm.CheckForLinks(const FullBody : boolean);
 var
