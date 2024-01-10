@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.37\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2023-12-16 11:20+0100\n"
+"PO-Revision-Date: 2024-01-08 14:57+0100\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.1\n"
+"X-Generator: Poedit 3.4.2\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -855,10 +855,8 @@ msgid "Delete this note"
 msgstr "Eliminar esta nota"
 
 #: teditboxform.speedbuttonlink.hint
-#, fuzzy
-#| msgid "Link highlighted text to a new note"
 msgid "Create new linked note (text selected) or display Backlinks."
-msgstr "Vincular texto resaltado a una nota nueva"
+msgstr "Crear nueva nota vinculada (texto seleccionado) o mostrar enlaces recibidas,"
 
 #: teditboxform.speedbuttonnotebook.hint
 msgid "Manage Notebooks"
@@ -887,15 +885,15 @@ msgstr "Restaurar"
 
 #: teditboxform.speedsymbol.hint
 msgid "Insert extended character or symbol"
-msgstr ""
+msgstr "Insertar carácter extendido o símbolo"
 
 #: tformbacklinks.caption
 msgid "Linked to this note"
-msgstr ""
+msgstr "Vinculada(s) a esta nota"
 
 #: tformbacklinks.label1.caption
 msgid "No other notes link here."
-msgstr ""
+msgstr "Ninguna nota vinculada aquí."
 
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"
