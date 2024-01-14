@@ -361,7 +361,7 @@ msgid "A newer version exists in main repo"
 msgstr "Новіша версія існує в основному репозиторії"
 
 #: resourcestr.rsnoothernotes
-msgid "No other notes link to here"
+msgid "No other notes link to this one"
 msgstr ""
 
 #: resourcestr.rsnotavailable
@@ -406,7 +406,7 @@ msgid "Notes in Snapshot"
 msgstr "Нотаток у зрізі"
 
 #: resourcestr.rsnoteslinked
-msgid "Notes that link to here"
+msgid "Notes that link to this one"
 msgstr ""
 
 #: resourcestr.rsnotpresent
