@@ -367,6 +367,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Hay una versión más nueva en el repositorio principal"
 
+#: resourcestr.rsnoothernotes
+msgid "No other notes link to here"
+msgstr ""
+
 #: resourcestr.rsnotavailable
 msgid "Not Available"
 msgstr "No disponible"
@@ -406,6 +410,10 @@ msgstr "Nota(s) eliminada(s)"
 #: resourcestr.rsnotesinsnap
 msgid "Notes in Snapshot"
 msgstr "Notas en instantánea"
+
+#: resourcestr.rsnoteslinked
+msgid "Notes that link to here"
+msgstr ""
 
 #: resourcestr.rsnotpresent
 msgctxt "resourcestr.rsnotpresent"
@@ -708,6 +716,10 @@ msgstr "Esta nota ha sido cambiado por el proceso de sincronizar."
 msgid "Please close it (and re-open if it was a download)"
 msgstr "Por favor, cierrela (y reabrirla si fue descargada)"
 
+#: teditboxform.labelbacklinks.caption
+msgid "label1"
+msgstr ""
+
 #: teditboxform.labelfindinfo.caption
 msgid "LabelFindInfo"
 msgstr "BuscarInfo"
@@ -850,6 +862,10 @@ msgstr "Tachado"
 msgid "Underline"
 msgstr "Subrayado"
 
+#: teditboxform.panelbacklinks.caption
+msgid "PanelBackLinks"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr "Eliminar esta nota"
@@ -886,14 +902,6 @@ msgstr "Restaurar"
 #: teditboxform.speedsymbol.hint
 msgid "Insert extended character or symbol"
 msgstr "Insertar carácter extendido o símbolo"
-
-#: tformbacklinks.caption
-msgid "Linked to this note"
-msgstr "Vinculada(s) a esta nota"
-
-#: tformbacklinks.label1.caption
-msgid "No other notes link here."
-msgstr "Ninguna nota vinculada aquí."
 
 #: tformbackupview.buttondelete.caption
 msgctxt "tformbackupview.buttondelete.caption"

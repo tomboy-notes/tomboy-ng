@@ -360,6 +360,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Новіша версія існує в основному репозиторії"
 
+#: resourcestr.rsnoothernotes
+msgid "No other notes link to here"
+msgstr ""
+
 #: resourcestr.rsnotavailable
 msgid "Not Available"
 msgstr "Не доступно"
@@ -400,6 +404,10 @@ msgstr "Нотатку або нотатки видалено"
 msgctxt "resourcestr.rsnotesinsnap"
 msgid "Notes in Snapshot"
 msgstr "Нотаток у зрізі"
+
+#: resourcestr.rsnoteslinked
+msgid "Notes that link to here"
+msgstr ""
 
 #: resourcestr.rsnotpresent
 msgctxt "resourcestr.rsnotpresent"
@@ -692,6 +700,10 @@ msgstr "Цю нотатку змінено процесом синхроніза
 msgid "Please close it (and re-open if it was a download)"
 msgstr "Закрийте це (і відкрийте ще раз, коли воно завантажеться)"
 
+#: teditboxform.labelbacklinks.caption
+msgid "label1"
+msgstr ""
+
 #: teditboxform.labelfindinfo.caption
 msgid "LabelFindInfo"
 msgstr "ПозначкаПошукІнформації"
@@ -838,6 +850,10 @@ msgstr "Закреслений"
 msgid "Underline"
 msgstr "Підкреслений"
 
+#: teditboxform.panelbacklinks.caption
+msgid "PanelBackLinks"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr "Видалити цю нотатку"
@@ -876,14 +892,6 @@ msgstr "Відкотити"
 
 #: teditboxform.speedsymbol.hint
 msgid "Insert extended character or symbol"
-msgstr ""
-
-#: tformbacklinks.caption
-msgid "Linked to this note"
-msgstr ""
-
-#: tformbacklinks.label1.caption
-msgid "No other notes link here."
 msgstr ""
 
 #: tformbackupview.buttondelete.caption

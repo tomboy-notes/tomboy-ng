@@ -349,6 +349,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr ""
 
+#: resourcestr.rsnoothernotes
+msgid "No other notes link to here"
+msgstr ""
+
 #: resourcestr.rsnotavailable
 msgid "Not Available"
 msgstr ""
@@ -388,6 +392,10 @@ msgstr ""
 #: resourcestr.rsnotesinsnap
 msgctxt "resourcestr.rsnotesinsnap"
 msgid "Notes in Snapshot"
+msgstr ""
+
+#: resourcestr.rsnoteslinked
+msgid "Notes that link to here"
 msgstr ""
 
 #: resourcestr.rsnotpresent
@@ -681,6 +689,10 @@ msgstr ""
 msgid "Please close it (and re-open if it was a download)"
 msgstr ""
 
+#: teditboxform.labelbacklinks.caption
+msgid "label1"
+msgstr ""
+
 #: teditboxform.labelfindinfo.caption
 msgid "LabelFindInfo"
 msgstr ""
@@ -823,6 +835,10 @@ msgstr ""
 msgid "Underline"
 msgstr ""
 
+#: teditboxform.panelbacklinks.caption
+msgid "PanelBackLinks"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr ""
@@ -858,14 +874,6 @@ msgstr ""
 
 #: teditboxform.speedsymbol.hint
 msgid "Insert extended character or symbol"
-msgstr ""
-
-#: tformbacklinks.caption
-msgid "Linked to this note"
-msgstr ""
-
-#: tformbacklinks.label1.caption
-msgid "No other notes link here."
 msgstr ""
 
 #: tformbackupview.buttondelete.caption

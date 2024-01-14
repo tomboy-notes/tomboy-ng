@@ -361,6 +361,10 @@ msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
 msgstr "Er is een nieuwere versie aanwezig in de hoofdrepo"
 
+#: resourcestr.rsnoothernotes
+msgid "No other notes link to here"
+msgstr ""
+
 #: resourcestr.rsnotavailable
 msgid "Not Available"
 msgstr "Niet beschikbaar"
@@ -401,6 +405,10 @@ msgstr "Notitie(s) verwijderd"
 msgctxt "resourcestr.rsnotesinsnap"
 msgid "Notes in Snapshot"
 msgstr "Notities in reservekopie"
+
+#: resourcestr.rsnoteslinked
+msgid "Notes that link to here"
+msgstr ""
 
 #: resourcestr.rsnotpresent
 msgctxt "resourcestr.rsnotpresent"
@@ -693,6 +701,10 @@ msgstr "Deze notitie is tijdens het synchroniseren gewijzigd"
 msgid "Please close it (and re-open if it was a download)"
 msgstr "Sluit het venster (en heropen het als het een download betrof)"
 
+#: teditboxform.labelbacklinks.caption
+msgid "label1"
+msgstr ""
+
 #: teditboxform.labelfindinfo.caption
 msgid "LabelFindInfo"
 msgstr "LabelFindInfo"
@@ -839,6 +851,10 @@ msgstr "Doorhalen"
 msgid "Underline"
 msgstr "Onderstrepen"
 
+#: teditboxform.panelbacklinks.caption
+msgid "PanelBackLinks"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr "Notitie verwijderen"
@@ -877,14 +893,6 @@ msgstr "Reservekopie herstellen"
 
 #: teditboxform.speedsymbol.hint
 msgid "Insert extended character or symbol"
-msgstr ""
-
-#: tformbacklinks.caption
-msgid "Linked to this note"
-msgstr ""
-
-#: tformbacklinks.label1.caption
-msgid "No other notes link here."
 msgstr ""
 
 #: tformbackupview.buttondelete.caption
