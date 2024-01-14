@@ -268,15 +268,18 @@ type
     { TEditBoxForm }
 
     TEditBoxForm = class(TForm)
+        BitBtnBackLinks: TBitBtn;
         BitBtnCloseFind: TBitBtn;
         ButtMainTBMenu: TSpeedButton;
         EditFind: TEdit;
         KMemo1: TKMemo;
+        LabelBackLinks: TLabel;
         LabelFindCount: TLabel;
         LabelFindInfo: TLabel;
         Label2: TLabel;
         Label3: TLabel;
         Label4: TLabel;
+        ListBoxBackLinks: TListBox;
         MenuBold: TMenuItem;
 		MenuFindPrev: TMenuItem;
         MenuItalic: TMenuItem;
@@ -318,6 +321,7 @@ type
         MenuUnderline: TMenuItem;
         MenuStrikeout: TMenuItem;
         Panel1: TPanel;
+        PanelBackLinks: TPanel;
         PanelFind: TPanel;
         PanelReadOnly: TPanel;
         PopupMainTBMenu: TPopupMenu;
@@ -340,6 +344,7 @@ type
 //		TaskDialogDelete: TTaskDialog;           just why was this here ?  Messes with Windows
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
+        procedure BitBtnBackLinksClick(Sender: TObject);
         procedure BitBtnCloseFindClick(Sender: TObject);
         procedure ButtMainTBMenuClick(Sender: TObject);
         procedure EditFindChange(Sender: TObject);
@@ -367,6 +372,7 @@ type
         procedure KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+        procedure ListBoxBackLinksClick(Sender: TObject);
         procedure MenuItemExportPDFClick(Sender: TObject);
         procedure MenuItemCopyPlainClick(Sender: TObject);
                                 // All the Text menu items go through this event
@@ -473,6 +479,7 @@ type
                                 // free-ing the List.
         function SaveStringList(const SL: TStringList; Loc: TNoteUpdateRec): boolean;
         procedure SetTheColors;
+        procedure ShowBackLinks();
         function SimpleCalculate(out AStr: string): boolean;
 		procedure ClearLinks(const StartScan : longint =0; EndScan : longint = 0);
                                 { Looks around current block looking for link blocks. If invalid, 'unlinks' them.
@@ -620,8 +627,9 @@ uses
     notenormal,         // makes the XML look a little prettier
     LCLStrConsts,       // just for rsMBClose ?
     KMemo2PDF,
-    tb_symbol,
-    Backlinks;
+    tb_symbol;
+//    Backlinks {$ifdef LCLQT5}, qt5 {$endif};
+
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
      							// this value for any links that need adjusting.
@@ -725,16 +733,54 @@ begin
    end;
 end;
 
+procedure TEditBoxForm.BitBtnBackLinksClick(Sender: TObject);
+begin
+    PanelBackLinks.Visible := False;
+end;
+
+procedure TEditBoxForm.ListBoxBackLinksClick(Sender: TObject);
+begin
+    if (ListBoxBackLinks.ItemIndex >= 0) and (ListBoxBackLinks.ItemIndex < ListBoxBackLinks.Count) then begin
+        if (ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex] <> 'Cancel')
+            and (ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex] <> 'Notes that Link to here')  then
+                SearchForm.OpenNote(ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex]
+                    ,'','',True, True, ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex]);
+        PanelBackLinks.Visible := False;
+    end;
+end;
+
+procedure TEditBoxForm.ShowBackLinks();
+var
+    //BackLinks : TFormBackLinks;
+    Stl : TStringList;
+    //BackTitle : string = '';
+begin
+    if not Sett. AutoSearchUpdate then begin
+       showmessage('Back Links only available in Search While You Type mode');
+       exit;
+    end;
+    Stl := TStringList.Create;
+    try
+        TheMainNoteLister.SearchContent(lowercase(NoteTitle), Stl);
+        if Stl.Count > 0 then
+            LabelBackLinks.Caption := rsNotesLinked
+        else LabelBackLinks.Caption := rsNoOtherNotes;
+        PanelBackLinks.Visible := True;
+        PanelBackLinks.BringToFront;
+        ListBoxBackLinks.Items := Stl;
+   finally
+        Stl.Free;
+   end;
+end;
+
 procedure TEditBoxForm.SpeedButtonLinkClick(Sender: TObject);
 var
     ThisTitle : ANSIString;
     Index : integer;
-    BackLinks : TFormBackLinks;
-    Stl : TStringList;
-    BackTitle : string = '';
-    //NBArray : TStringArray;
 begin
-   //debugln('TEditBoxForm.SpeedButtonLinkClick called');
+    { May be called with some text selected in which case it will try and create a
+    new note with that title. If nothing selected, it populates and shows the
+    BackLinks panel. A click on an item there will open that (backlinked) note. }
     if KMemo1.ReadOnly then exit();
     if KMemo1.Blocks.RealSelLength > 1 then begin
          // ToDo : we should force a legal link here. eg, if no whitespace abound it, it will make a new note but text will not be linked.
@@ -752,28 +798,7 @@ begin
             SearchForm.OpenNote(ThisTitle);
             KMemo1Change(self);
 		end;
-    end else begin            // Nothing selected, so show backlinks ?
-        if not Sett. AutoSearchUpdate then begin
-            showmessage('Back Links only available in Search While You Type mode');
-            exit;
-        end;
-        BackLinks := TFormBackLinks.Create(self);
-        Stl := TStringList.Create;
-        try
-            TheMainNoteLister.SearchContent(lowercase(NoteTitle), Stl);
-            BackLinks.BackList := Stl;
-            BackLinks.BackTitle := @BackTitle;
-            BackLinks.Left := Left + SpeedButtonLink.Left;
-            BackLinks.Top := Top + SpeedButtonLink.Height;
-            //debugln('TEditBoxForm.SpeedButtonLinkClick form set to T=' + (Top + SpeedButtonLink.Height).ToString + ' L=' + (Left + SpeedButtonLink.Left).tostring);
-            BackLinks.ShowModal;
-        finally
-            Stl.Free;
-            BackLinks.Free;
-        end;
-        if BackTitle <> '' then
-                SearchForm.OpenNote(BackTitle,'','',True, True, NoteTitle);
-    end;
+    end else ShowBackLinks;
 end;
 
 procedure TEditBoxForm.SpeedButtonNotebookClick(Sender: TObject);
@@ -1106,8 +1131,6 @@ begin
       KMemo1.SelEnd := KMemo1.CaretPos;
     end;
 end;
-
-
 
 procedure TEditBoxForm.SetPrimarySelection;
 var
@@ -2087,7 +2110,7 @@ begin
     KMemo1.ExecuteCommand(ecDown);
     Ready := true;
     Dirty := False;
-
+    PanelBackLinks.Visible := false;
 //    writeln('TEditBoxForm.FormShow 4 SelIndex = ', Kmemo1.SelStart);
 
 //    Tuck := GetTickCount64();

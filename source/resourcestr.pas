@@ -165,6 +165,8 @@ RESOURCESTRING
   rsFindNavLeftHint = 'Backward Find : Shift-F3 or Shift-Ctrl-G';
   rsFindNavRightHintMac = 'Find : Command-G';
   rsFindNavLeftHintMac = 'Backward Find : Shift-Command-G';
+  rsNoOtherNotes = 'No other notes link to here';
+  rsNotesLinked = 'Notes that link to here';
 
   // github sync - I would like to use some of these in other syncs too.
 

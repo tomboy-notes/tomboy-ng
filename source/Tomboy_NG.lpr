@@ -26,7 +26,7 @@ uses
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
     import_notes, JsonTools, kmemo2pdf, tb_symbol, fpTTF, uQt_Colors
-    , LazVersion, Backlinks
+    , LazVersion
     {$ifdef LCLGTK2}
     , unitywsctrls          // only safe to use in gtk2, use it if we need it or not
     {$endif};

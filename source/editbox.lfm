@@ -1,11 +1,11 @@
 object EditBoxForm: TEditBoxForm
-  Left = 747
+  Left = 871
   Height = 505
-  Top = 320
-  Width = 695
+  Top = 343
+  Width = 784
   Caption = 'EditBoxForm'
   ClientHeight = 505
-  ClientWidth = 695
+  ClientWidth = 784
   Constraints.MinHeight = 200
   Constraints.MinWidth = 200
   OnActivate = FormActivate
@@ -25,10 +25,10 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 60
     Top = 406
-    Width = 695
+    Width = 784
     Anchors = [akLeft, akRight, akBottom]
     ClientHeight = 60
-    ClientWidth = 695
+    ClientWidth = 784
     Color = clYellow
     ParentBackground = False
     ParentColor = False
@@ -68,11 +68,11 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 39
     Top = 466
-    Width = 695
+    Width = 784
     Anchors = [akLeft, akRight, akBottom]
     BevelInner = bvLowered
     ClientHeight = 39
-    ClientWidth = 695
+    ClientWidth = 784
     TabOrder = 2
     OnEnter = PanelFindEnter
     object EditFind: TEdit
@@ -302,7 +302,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideTop.Control = PanelFind
       AnchorSideRight.Control = PanelFind
       AnchorSideRight.Side = asrBottom
-      Left = 671
+      Left = 760
       Height = 22
       Top = 2
       Width = 22
@@ -355,10 +355,10 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 40
     Top = 0
-    Width = 695
+    Width = 784
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 40
-    ClientWidth = 695
+    ClientWidth = 784
     TabOrder = 3
     object SpeedButtonNotebook: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonDelete
@@ -1081,7 +1081,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
-      Left = 646
+      Left = 735
       Height = 38
       Top = 1
       Width = 48
@@ -1193,7 +1193,7 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 366
     Top = 40
-    Width = 695
+    Width = 784
     Anchors = [akTop, akLeft, akRight, akBottom]
     ContentPadding.Left = 5
     ContentPadding.Top = 5
@@ -1210,9 +1210,75 @@ object EditBoxForm: TEditBoxForm
     OnMouseDown = KMemo1MouseDown
     OnMouseUp = KMemo1MouseUp
   end
+  object PanelBackLinks: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 2
+    Height = 234
+    Top = 2
+    Width = 258
+    BorderSpacing.Left = 2
+    BorderSpacing.Top = 2
+    Caption = 'PanelBackLinks'
+    ClientHeight = 234
+    ClientWidth = 258
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 4
+    Visible = False
+    object ListBoxBackLinks: TListBox
+      AnchorSideLeft.Control = PanelBackLinks
+      AnchorSideTop.Control = PanelBackLinks
+      AnchorSideRight.Control = PanelBackLinks
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = BitBtnBackLinks
+      Left = 1
+      Height = 165
+      Top = 31
+      Width = 256
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BorderSpacing.Top = 30
+      ItemHeight = 0
+      TabOrder = 0
+      TopIndex = -1
+      OnClick = ListBoxBackLinksClick
+    end
+    object BitBtnBackLinks: TBitBtn
+      AnchorSideRight.Control = PanelBackLinks
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PanelBackLinks
+      AnchorSideBottom.Side = asrBottom
+      Left = 152
+      Height = 37
+      Top = 196
+      Width = 105
+      Anchors = [akRight, akBottom]
+      Cancel = True
+      DefaultCaption = True
+      Kind = bkCancel
+      OnClick = BitBtnBackLinksClick
+      TabOrder = 1
+    end
+    object LabelBackLinks: TLabel
+      AnchorSideLeft.Control = PanelBackLinks
+      AnchorSideTop.Control = PanelBackLinks
+      AnchorSideRight.Control = PanelBackLinks
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = BitBtnBackLinks
+      Left = 11
+      Height = 21
+      Top = 4
+      Width = 241
+      Anchors = [akLeft, akRight]
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 3
+      BorderSpacing.Right = 5
+      Caption = 'label1'
+    end
+  end
   object PopupMenuText: TPopupMenu
-    Left = 232
-    Top = 200
+    Left = 256
+    Top = 264
     object MenuBold: TMenuItem
       Caption = 'Bold'
       ShortCut = 16450
@@ -1334,8 +1400,8 @@ object EditBoxForm: TEditBoxForm
     end
   end
   object PopupMenuRightClick: TPopupMenu
-    Left = 80
-    Top = 200
+    Left = 88
+    Top = 264
     object MenuItemFind: TMenuItem
       Caption = 'Find in this Note'
       ShortCut = 16454

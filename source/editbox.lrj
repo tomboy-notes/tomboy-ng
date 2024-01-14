@@ -16,6 +16,8 @@
 {"hash":343125,"name":"teditboxform.buttmaintbmenu.caption","sourcebytes":[77,101,110,117],"value":"Menu"},
 {"hash":4863637,"name":"teditboxform.speedclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"},
 {"hash":134277820,"name":"teditboxform.speedsymbol.hint","sourcebytes":[73,110,115,101,114,116,32,101,120,116,101,110,100,101,100,32,99,104,97,114,97,99,116,101,114,32,111,114,32,115,121,109,98,111,108],"value":"Insert extended character or symbol"},
+{"hash":30345779,"name":"teditboxform.panelbacklinks.caption","sourcebytes":[80,97,110,101,108,66,97,99,107,76,105,110,107,115],"value":"PanelBackLinks"},
+{"hash":120032241,"name":"teditboxform.labelbacklinks.caption","sourcebytes":[108,97,98,101,108,49],"value":"label1"},
 {"hash":300580,"name":"teditboxform.menubold.caption","sourcebytes":[66,111,108,100],"value":"Bold"},
 {"hash":84574963,"name":"teditboxform.menuitalic.caption","sourcebytes":[73,116,97,108,105,99],"value":"Italic"},
 {"hash":151125108,"name":"teditboxform.menustrikeout.caption","sourcebytes":[83,116,114,105,107,101,111,117,116],"value":"Strikeout"},

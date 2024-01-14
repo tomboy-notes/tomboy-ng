@@ -1086,7 +1086,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="39">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1306,14 +1306,6 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="uQt_Colors"/>
       </Unit38>
-      <Unit39>
-        <Filename Value="backlinks.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormBackLinks"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="Backlinks"/>
-      </Unit39>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
