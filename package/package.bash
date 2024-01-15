@@ -232,7 +232,7 @@ function DebianPackage () {
     	return 1
     fi
     CTRL_ARCH=$ARCH
-	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libcanberra-gtk-module, wmctrl, libnotify-bin"
+	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), wmctrl, libnotify-bin"
 	CTRL_RELEASE="GTK2 release."
 	cp $SOURCE_DIR/$BIN BUILD/usr/bin/$PRODUCT
 	# ----------- Some Special Cases ----------------

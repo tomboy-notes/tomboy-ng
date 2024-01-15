@@ -859,7 +859,9 @@ begin
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
             + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
         {$if defined(LCLQT5) or defined(LCLQT6)} Stg := Stg + #10 + 'QT_QPA_PLATFORMTHEME : ' +
-        GetEnvironmentVariable('QT_QPA_PLATFORMTHEME'); {$endif}
+        GetEnvironmentVariable('QT_QPA_PLATFORMTHEME')
+        + #10 + 'QT_QPA_PLAFORM : ' + GetEnvironmentVariable('QT_QPA_PLATFORM');
+        {$endif}
         Stg := Stg + #10 + 'https://github.com/tomboy-notes/tomboy-ng';
         AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
         AboutFrm.ShowModal;
