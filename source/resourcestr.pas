@@ -32,10 +32,10 @@ RESOURCESTRING
 
   rsMultipleNoteBooks = 'Settings allow multiple Notebooks';
   rsOneNoteBook = 'Settings allow only one Notebook';
-  rsSetTheNotebooks = 'Set the notebooks this note is a member of';
+  rsSetTheNotebooks = 'Set the Notebooks this note is a member of';
   rsChangeNameofNotebook = 'Change the name of this Notebook';
   rsNumbNotesAffected = 'This will affect %d notes';                 // %d replaced by integer, 0 to big number
-  rsEnterNewNotebook = 'Enter a new notebook name please';
+  rsEnterNewNotebook = 'Enter a new Notebook name please';
   rsNotebookOptionRight = 'Right click for Notebook Options';       // Windows, Linux
   rsNotebookOptionCtrl = 'Ctrl click for Notebook Options';           // Mac
   rsAddNotesToNotebook = 'Add notes to this Notebook';
@@ -67,8 +67,8 @@ RESOURCESTRING
   rsRunningSync = 'Running Sync';
   rsAllDone = 'All Done';
   rsPressClose = 'Press Close';
-  rsTestingRepo = 'Testing Repo ....';
-  rsCreateNewRepo = 'Create a new Repo ?';
+  rsTestingRepo = 'Testing Repository ....';
+  rsCreateNewRepo = 'Create a new Repository ?';
   rsUnableToProceed = 'Unable to proceed because';
   rsLookingatNotes = 'Looking at notes ....';
   rsSaveAndSync = 'Press Save and Sync if this looks OK';
@@ -85,7 +85,7 @@ RESOURCESTRING
 // Settings but only part ...
 
   //rsChangeNetSync = 'Change Net Sync Repo';          // These are labels on the button used to set sync repo
-  rsChangeSync = 'Change Sync Repo';
+  rsChangeSync = 'Change Sync Repository';
   rsSyncNotConfig = 'not configured';               // means that the file of net sync is not configured yet.
   rsSetUp = 'Setup';                                // means configure something, eg, one of the Sync modules.
   rsAutosnapshotRun='Completed autosnapshot run.';  // Message on status bar after an AutoSnapshot run.
@@ -102,7 +102,7 @@ RESOURCESTRING
   rsCannotDelete = 'Cannot delete ';
 
   rsOverwriteNote = 'Overwrite newer version of that note';
-  rsNoteAlreadyInRepo = 'Note already in Repo';
+  rsNoteAlreadyInRepo = 'Note already in Repository';
   rsNoteOpen = 'You have that note open, please close and try again';
   rsCopyFailed = 'Copying orig to Backup directory failed';
   rsRenameFailed = 'ERROR, could not rename Backup File ';
@@ -127,7 +127,7 @@ RESOURCESTRING
     rsHelpDebugSpell = 'Show debug messages while spell setup';
     rsHelpConfig = 'Create or use an alternative config';
     rsHelpSingleNote = 'Open indicated note, switch is optional';
-    rsHelpImportFile = 'Import file into Note Repo';
+    rsHelpImportFile = 'Import file into Note Directory';
     rsHelpSaveExit = 'After import single note, save & exit';
     rsHelpTitleIsFName = 'Use Filename as title for import txt & md';
 

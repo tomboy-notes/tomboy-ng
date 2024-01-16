@@ -111,7 +111,9 @@ msgid "Change the name of this Notebook"
 msgstr "Змінити назву цього записника"
 
 #: resourcestr.rschangesync
-msgid "Change Sync Repo"
+#, fuzzy
+#| msgid "Change Sync Repo"
+msgid "Change Sync Repository"
 msgstr "Змінити синхронізацію репозиторію"
 
 #: resourcestr.rsclickbadnote
@@ -134,8 +136,10 @@ msgid "Copying orig to Backup directory failed"
 msgstr "Не вдалося скопіювати оригінал до каталогу резервних копій"
 
 #: resourcestr.rscreatenewrepo
+#, fuzzy
+#| msgid "Create a new Repo ?"
 msgctxt "resourcestr.rscreatenewrepo"
-msgid "Create a new Repo ?"
+msgid "Create a new Repository ?"
 msgstr "Створити новий репозиторій?"
 
 #: resourcestr.rsdeleteandreplace_1
@@ -168,8 +172,10 @@ msgid "Enter the Hexadecimal value for a UTF8 character"
 msgstr ""
 
 #: resourcestr.rsenternewnotebook
+#, fuzzy
+#| msgid "Enter a new notebook name please"
 msgctxt "resourcestr.rsenternewnotebook"
-msgid "Enter a new notebook name please"
+msgid "Enter a new Notebook name please"
 msgstr "Уведіть назву нового записника, будь ласка"
 
 #: resourcestr.rserrorcopyfile
@@ -254,7 +260,9 @@ msgid "Show this help message and exit."
 msgstr "Показати це повідомлення довідки і вийти."
 
 #: resourcestr.rshelpimportfile
-msgid "Import file into Note Repo"
+#, fuzzy
+#| msgid "Import file into Note Repo"
+msgid "Import file into Note Directory"
 msgstr "Імпортувати файл у репозиторій нотаток"
 
 #: resourcestr.rshelplang
@@ -369,8 +377,10 @@ msgid "Not Available"
 msgstr "Не доступно"
 
 #: resourcestr.rsnotealreadyinrepo
+#, fuzzy
+#| msgid "Note already in Repo"
 msgctxt "resourcestr.rsnotealreadyinrepo"
-msgid "Note already in Repo"
+msgid "Note already in Repository"
 msgstr "Нотатка вже в репозиторії"
 
 #: resourcestr.rsnotebookoptionctrl
@@ -467,8 +477,10 @@ msgid "Exact matches for terms between \" \""
 msgstr "Точні збіги термінів між \" \""
 
 #: resourcestr.rssetthenotebooks
+#, fuzzy
+#| msgid "Set the notebooks this note is a member of"
 msgctxt "resourcestr.rssetthenotebooks"
-msgid "Set the notebooks this note is a member of"
+msgid "Set the Notebooks this note is a member of"
 msgstr "Вкажіть записник, частиною якого є ця нотатка"
 
 #: resourcestr.rssetup
@@ -522,8 +534,10 @@ msgid "Testing Credentials"
 msgstr "Тестування облікових даних"
 
 #: resourcestr.rstestingrepo
+#, fuzzy
+#| msgid "Testing Repo ...."
 msgctxt "resourcestr.rstestingrepo"
-msgid "Testing Repo ...."
+msgid "Testing Repository ...."
 msgstr "Тестування репозиторію ...."
 
 #: resourcestr.rstestingsync
@@ -700,14 +714,6 @@ msgstr "Цю нотатку змінено процесом синхроніза
 msgid "Please close it (and re-open if it was a download)"
 msgstr "Закрийте це (і відкрийте ще раз, коли воно завантажеться)"
 
-#: teditboxform.labelbacklinks.caption
-msgid "label1"
-msgstr ""
-
-#: teditboxform.labelfindinfo.caption
-msgid "LabelFindInfo"
-msgstr "ПозначкаПошукІнформації"
-
 #: teditboxform.menubold.caption
 msgctxt "teditboxform.menubold.caption"
 msgid "Bold"
@@ -849,10 +855,6 @@ msgstr "Закреслений"
 #: teditboxform.menuunderline.caption
 msgid "Underline"
 msgstr "Підкреслений"
-
-#: teditboxform.panelbacklinks.caption
-msgid "PanelBackLinks"
-msgstr ""
 
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
@@ -1305,12 +1307,20 @@ msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr "Гаразд"
 
+#: tnotebookpick.caption
+#, fuzzy
+msgctxt "tnotebookpick.caption"
+msgid "Notebooks"
+msgstr "Записники"
+
 #: tnotebookpick.label4.caption
 msgid "Name of the New Notebook"
 msgstr "Назва нового записника"
 
 #: tnotebookpick.label5.caption
-msgid "Press OK and we will make the Note Book AND add this note to it."
+#, fuzzy
+#| msgid "Press OK and we will make the Note Book AND add this note to it."
+msgid "Press OK and we will make the Notebook AND add this note to it."
 msgstr "Натисніть Гаразд і ми створимо записник і додамо в нього цю нотатку."
 
 #: tnotebookpick.label6.caption
@@ -1322,7 +1332,9 @@ msgid "New Name"
 msgstr "Нова назва"
 
 #: tnotebookpick.label9.caption
-msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+#, fuzzy
+#| msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+msgid "If you sync and are not absolutely sure it is up to date, Cancel now !"
 msgstr "Якщо ви синхронізуєте і не впевнені, що він оновлений, Скасуйте негайно !"
 
 #: tnotebookpick.tabchangename.caption
@@ -1373,7 +1385,9 @@ msgid "Right Click to manage Notebooks"
 msgstr "Праве клацання для керування записниками"
 
 #: tsearchform.menucreatenotebook.caption
-msgid "Create new Note Book"
+#, fuzzy
+#| msgid "Create new Note Book"
+msgid "Create new Notebook"
 msgstr "Створити новий записник"
 
 #: tsearchform.menudeletenotebook.caption
@@ -1394,7 +1408,9 @@ msgid "Import File"
 msgstr "Імпортувати файл"
 
 #: tsearchform.menuitemmanagenbook.caption
-msgid "Manage Notes in Note Book"
+#, fuzzy
+#| msgid "Manage Notes in Note Book"
+msgid "Manage Notes in Notebook"
 msgstr "Керувати нотатками в записнику"
 
 #: tsearchform.menuitemswyt.caption
@@ -1406,7 +1422,9 @@ msgid "Create New Note from Template"
 msgstr "Створити нову нотатку зі шаблону"
 
 #: tsearchform.menurenamenotebook.caption
-msgid "Rename NoteBook"
+#, fuzzy
+#| msgid "Rename NoteBook"
+msgid "Rename Notebook"
 msgstr "Перейменувати записник"
 
 #: tsearchform.panel2.caption
@@ -1472,7 +1490,9 @@ msgid "Autostart at Logon"
 msgstr "Автозапуск під час входу в систему"
 
 #: tsett.checkescclosesnote.caption
-msgid "Esc Closes Note"
+#, fuzzy
+#| msgid "Esc Closes Note"
+msgid "ESC Closes Note"
 msgstr "Esc закриває нотатку"
 
 #: tsett.checkfindtoggles.caption
@@ -1497,7 +1517,9 @@ msgid "Show Notifications"
 msgstr "Показувати сповіщення"
 
 #: tsett.checkshowextlinks.caption
-msgid "Show External  Links"
+#, fuzzy
+#| msgid "Show External  Links"
+msgid "Show External Links"
 msgstr "Показувати зовнішні посилання"
 
 #: tsett.checkshowintlinks.caption

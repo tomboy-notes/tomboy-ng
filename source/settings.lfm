@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabBasic
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -143,8 +143,8 @@ object Sett: TSett
         Left = 380
         Height = 25
         Top = 333
-        Width = 150
-        Caption = 'Esc Closes Note'
+        Width = 154
+        Caption = 'ESC Closes Note'
         TabOrder = 4
         OnChange = SaveSettings
       end
@@ -312,9 +312,9 @@ object Sett: TSett
         Left = 32
         Height = 25
         Top = 263
-        Width = 185
+        Width = 181
         BorderSpacing.Top = 18
-        Caption = 'Show External  Links'
+        Caption = 'Show External Links'
         TabOrder = 1
         OnChange = SaveSettings
       end
@@ -603,7 +603,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 224
+        ClientHeight = 243
         ClientWidth = 710
         ParentColor = False
         TabOrder = 1
@@ -637,7 +637,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 546
           Height = 28
-          Top = 186
+          Top = 205
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -683,7 +683,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 35
+          ClientHeight = 54
           ClientWidth = 481
           TabOrder = 0
           object LabelToken: TLabel
@@ -751,7 +751,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrCenter
           Left = 128
           Height = 31
-          Top = 184
+          Top = 203
           Width = 194
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 20
@@ -774,7 +774,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrCenter
           Left = 15
           Height = 21
-          Top = 189
+          Top = 208
           Width = 93
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Timing'

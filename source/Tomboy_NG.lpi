@@ -21,15 +21,18 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
-      <ExcludedIdentifiers Count="6">
+      <ExcludedIdentifiers Count="9">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>
         <Item4 Value="Error while parsing text"/>
         <Item5 Value="Root node must be an array or object"/>
         <Item6 Value="Button1"/>
+        <Item7 Value="label1"/>
+        <Item8 Value="LabelFindInfo"/>
+        <Item9 Value="PanelBackLinks"/>
       </ExcludedIdentifiers>
-      <ExcludedOriginals Count="72">
+      <ExcludedOriginals Count="75">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>
@@ -102,6 +105,9 @@
         <Item70 Value="MenuItem5"/>
         <Item71 Value="MenuItem6"/>
         <Item72 Value="FormKMemo2pdf"/>
+        <Item73 Value="label1"/>
+        <Item74 Value="LabelFindInfo"/>
+        <Item75 Value="PanelBackLinks"/>
       </ExcludedOriginals>
     </i18n>
     <BuildModes Count="23">

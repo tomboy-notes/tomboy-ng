@@ -113,7 +113,9 @@ msgid "Change the name of this Notebook"
 msgstr "Cambiar el nombre de este cuaderno"
 
 #: resourcestr.rschangesync
-msgid "Change Sync Repo"
+#, fuzzy
+#| msgid "Change Sync Repo"
+msgid "Change Sync Repository"
 msgstr "Cambiar repositorio de sincronización"
 
 #: resourcestr.rsclickbadnote
@@ -137,8 +139,10 @@ msgid "Copying orig to Backup directory failed"
 msgstr "No se copió al directorio de copias de seguridad"
 
 #: resourcestr.rscreatenewrepo
+#, fuzzy
+#| msgid "Create a new Repo ?"
 msgctxt "resourcestr.rscreatenewrepo"
-msgid "Create a new Repo ?"
+msgid "Create a new Repository ?"
 msgstr "¿Crear un repositorio nuevo?"
 
 #: resourcestr.rsdeleteandreplace_1
@@ -173,8 +177,10 @@ msgid "Enter the Hexadecimal value for a UTF8 character"
 msgstr "Escribe el valor hexidecimal para el carácter UTF8"
 
 #: resourcestr.rsenternewnotebook
+#, fuzzy
+#| msgid "Enter a new notebook name please"
 msgctxt "resourcestr.rsenternewnotebook"
-msgid "Enter a new notebook name please"
+msgid "Enter a new Notebook name please"
 msgstr "Introduzca un nuevo nombre de cuaderno, por favor"
 
 #: resourcestr.rserrorcopyfile
@@ -259,7 +265,9 @@ msgid "Show this help message and exit."
 msgstr "Mostrar mensaje de ayuda y salir."
 
 #: resourcestr.rshelpimportfile
-msgid "Import file into Note Repo"
+#, fuzzy
+#| msgid "Import file into Note Repo"
+msgid "Import file into Note Directory"
 msgstr "Importar archivo al repositario"
 
 #: resourcestr.rshelplang
@@ -376,8 +384,10 @@ msgid "Not Available"
 msgstr "No disponible"
 
 #: resourcestr.rsnotealreadyinrepo
+#, fuzzy
+#| msgid "Note already in Repo"
 msgctxt "resourcestr.rsnotealreadyinrepo"
-msgid "Note already in Repo"
+msgid "Note already in Repository"
 msgstr "Ya está en el repositorio"
 
 #: resourcestr.rsnotebookoptionctrl
@@ -474,8 +484,10 @@ msgid "Exact matches for terms between \" \""
 msgstr "Búsqueda exacta para términos entre \" \""
 
 #: resourcestr.rssetthenotebooks
+#, fuzzy
+#| msgid "Set the notebooks this note is a member of"
 msgctxt "resourcestr.rssetthenotebooks"
-msgid "Set the notebooks this note is a member of"
+msgid "Set the Notebooks this note is a member of"
 msgstr "Establezca los cuadernos a cuales pertenece esta nota"
 
 #: resourcestr.rssetup
@@ -529,8 +541,10 @@ msgid "Testing Credentials"
 msgstr "Probando credenciales"
 
 #: resourcestr.rstestingrepo
+#, fuzzy
+#| msgid "Testing Repo ...."
 msgctxt "resourcestr.rstestingrepo"
-msgid "Testing Repo ...."
+msgid "Testing Repository ...."
 msgstr "Probando repositorio ..."
 
 #: resourcestr.rstestingsync
@@ -716,14 +730,6 @@ msgstr "Esta nota ha sido cambiado por el proceso de sincronizar."
 msgid "Please close it (and re-open if it was a download)"
 msgstr "Por favor, cierrela (y reabrirla si fue descargada)"
 
-#: teditboxform.labelbacklinks.caption
-msgid "label1"
-msgstr ""
-
-#: teditboxform.labelfindinfo.caption
-msgid "LabelFindInfo"
-msgstr "BuscarInfo"
-
 #: teditboxform.menubold.caption
 msgctxt "teditboxform.menubold.caption"
 msgid "Bold"
@@ -861,10 +867,6 @@ msgstr "Tachado"
 #: teditboxform.menuunderline.caption
 msgid "Underline"
 msgstr "Subrayado"
-
-#: teditboxform.panelbacklinks.caption
-msgid "PanelBackLinks"
-msgstr ""
 
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
@@ -1316,12 +1318,20 @@ msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr "OK"
 
+#: tnotebookpick.caption
+#, fuzzy
+msgctxt "tnotebookpick.caption"
+msgid "Notebooks"
+msgstr "Cuadernos"
+
 #: tnotebookpick.label4.caption
 msgid "Name of the New Notebook"
 msgstr "Nombre del cuaderno nuevo"
 
 #: tnotebookpick.label5.caption
-msgid "Press OK and we will make the Note Book AND add this note to it."
+#, fuzzy
+#| msgid "Press OK and we will make the Note Book AND add this note to it."
+msgid "Press OK and we will make the Notebook AND add this note to it."
 msgstr "Pulse OK y crearemos el cuaderno y añadiremos esta nota a ello."
 
 #: tnotebookpick.label6.caption
@@ -1333,7 +1343,9 @@ msgid "New Name"
 msgstr "Nuevo nombre"
 
 #: tnotebookpick.label9.caption
-msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+#, fuzzy
+#| msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+msgid "If you sync and are not absolutely sure it is up to date, Cancel now !"
 msgstr "Si no está seguro que todo está al día, cancele la sincronización ¡ahora!"
 
 #: tnotebookpick.tabchangename.caption
@@ -1381,7 +1393,9 @@ msgid "Right Click to manage Notebooks"
 msgstr "Clic derecho para gestionar cuadernos"
 
 #: tsearchform.menucreatenotebook.caption
-msgid "Create new Note Book"
+#, fuzzy
+#| msgid "Create new Note Book"
+msgid "Create new Notebook"
 msgstr "Crear cuaderno nuevo"
 
 #: tsearchform.menudeletenotebook.caption
@@ -1402,7 +1416,9 @@ msgid "Import File"
 msgstr "Importar archivo"
 
 #: tsearchform.menuitemmanagenbook.caption
-msgid "Manage Notes in Note Book"
+#, fuzzy
+#| msgid "Manage Notes in Note Book"
+msgid "Manage Notes in Notebook"
 msgstr "Gestionar las notas en el cuaderno"
 
 #: tsearchform.menuitemswyt.caption
@@ -1414,7 +1430,9 @@ msgid "Create New Note from Template"
 msgstr "Crear nota nueva desde una plantilla"
 
 #: tsearchform.menurenamenotebook.caption
-msgid "Rename NoteBook"
+#, fuzzy
+#| msgid "Rename NoteBook"
+msgid "Rename Notebook"
 msgstr "Renombrar cuaderno"
 
 #: tsearchform.panel2.caption
@@ -1480,7 +1498,9 @@ msgid "Autostart at Logon"
 msgstr "Ejecutar al iniciar sesión"
 
 #: tsett.checkescclosesnote.caption
-msgid "Esc Closes Note"
+#, fuzzy
+#| msgid "Esc Closes Note"
+msgid "ESC Closes Note"
 msgstr "ESC cierra la nota"
 
 #: tsett.checkfindtoggles.caption
@@ -1505,7 +1525,9 @@ msgid "Show Notifications"
 msgstr "Mostrar Notificaciones"
 
 #: tsett.checkshowextlinks.caption
-msgid "Show External  Links"
+#, fuzzy
+#| msgid "Show External  Links"
+msgid "Show External Links"
 msgstr "Mostrar Enlaces Externos"
 
 #: tsett.checkshowintlinks.caption

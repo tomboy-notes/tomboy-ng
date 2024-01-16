@@ -67,7 +67,7 @@ object FormBackupView: TFormBackupView
       AnchorSideBottom.Side = asrBottom
       Left = 101
       Height = 27
-      Hint = 'Restore this note to main repo'
+      Hint = 'Restore this note to main directory'
       Top = 1
       Width = 100
       Anchors = [akTop, akLeft, akBottom]

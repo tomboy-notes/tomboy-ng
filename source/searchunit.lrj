@@ -9,10 +9,10 @@
 {"hash":108725763,"name":"tsearchform.buttonsearchoptions.caption","sourcebytes":[79,112,116,105,111,110,115],"value":"Options"},
 {"hash":89337013,"name":"tsearchform.menueditnotebooktemplate.caption","sourcebytes":[69,100,105,116,32,78,111,116,101,98,111,111,107,32,84,101,109,112,108,97,116,101],"value":"Edit Notebook Template"},
 {"hash":73518027,"name":"tsearchform.menudeletenotebook.caption","sourcebytes":[68,101,108,101,116,101,32,78,111,116,101,98,111,111,107],"value":"Delete Notebook"},
-{"hash":36354507,"name":"tsearchform.menurenamenotebook.caption","sourcebytes":[82,101,110,97,109,101,32,78,111,116,101,66,111,111,107],"value":"Rename NoteBook"},
+{"hash":36223435,"name":"tsearchform.menurenamenotebook.caption","sourcebytes":[82,101,110,97,109,101,32,78,111,116,101,98,111,111,107],"value":"Rename Notebook"},
 {"hash":173784437,"name":"tsearchform.menunewnotefromtemplate.caption","sourcebytes":[67,114,101,97,116,101,32,78,101,119,32,78,111,116,101,32,102,114,111,109,32,84,101,109,112,108,97,116,101],"value":"Create New Note from Template"},
-{"hash":71709771,"name":"tsearchform.menuitemmanagenbook.caption","sourcebytes":[77,97,110,97,103,101,32,78,111,116,101,115,32,105,110,32,78,111,116,101,32,66,111,111,107],"value":"Manage Notes in Note Book"},
-{"hash":101027563,"name":"tsearchform.menucreatenotebook.caption","sourcebytes":[67,114,101,97,116,101,32,110,101,119,32,78,111,116,101,32,66,111,111,107],"value":"Create new Note Book"},
+{"hash":21545019,"name":"tsearchform.menuitemmanagenbook.caption","sourcebytes":[77,97,110,97,103,101,32,78,111,116,101,115,32,105,110,32,78,111,116,101,98,111,111,107],"value":"Manage Notes in Notebook"},
+{"hash":191671259,"name":"tsearchform.menucreatenotebook.caption","sourcebytes":[67,114,101,97,116,101,32,110,101,119,32,78,111,116,101,98,111,111,107],"value":"Create new Notebook"},
 {"hash":154437957,"name":"tsearchform.menuitemimportnote.caption","sourcebytes":[73,109,112,111,114,116,32,70,105,108,101],"value":"Import File"},
 {"hash":219680245,"name":"tsearchform.menuitemcasesensitive.caption","sourcebytes":[67,97,115,101,32,83,101,110,115,105,116,105,118,101],"value":"Case Sensitive"},
 {"hash":16665029,"name":"tsearchform.menuitemswyt.caption","sourcebytes":[83,101,97,114,99,104,32,87,104,105,108,101,32,89,111,117,32,84,121,112,101],"value":"Search While You Type"}

@@ -310,7 +310,7 @@ object SearchForm: TSearchForm
       OnClick = MenuDeleteNotebookClick
     end
     object MenuRenameNoteBook: TMenuItem
-      Caption = 'Rename NoteBook'
+      Caption = 'Rename Notebook'
       OnClick = MenuRenameNoteBookClick
     end
     object MenuNewNoteFromTemplate: TMenuItem
@@ -318,14 +318,14 @@ object SearchForm: TSearchForm
       OnClick = MenuNewNoteFromTemplateClick
     end
     object MenuItemManageNBook: TMenuItem
-      Caption = 'Manage Notes in Note Book'
+      Caption = 'Manage Notes in Notebook'
       OnClick = MenuItemManageNBookClick
     end
     object MenuItem3: TMenuItem
       Caption = '-'
     end
     object MenuCreateNoteBook: TMenuItem
-      Caption = 'Create new Note Book'
+      Caption = 'Create new Notebook'
       OnClick = MenuCreateNoteBookClick
     end
   end

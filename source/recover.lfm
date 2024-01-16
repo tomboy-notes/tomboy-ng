@@ -89,7 +89,7 @@ object FormRecover: TFormRecover
         AnchorSideBottom.Side = asrBottom
         Left = 421
         Height = 33
-        Hint = 'Take a initial snapshot of your notes and config. Overwritten each time.'
+        Hint = 'Take a snapshot of your notes and config. Overwritten each time.'
         Top = 132
         Width = 201
         Anchors = [akTop, akRight, akBottom]

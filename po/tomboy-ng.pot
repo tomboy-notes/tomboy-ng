@@ -100,7 +100,7 @@ msgid "Change the name of this Notebook"
 msgstr ""
 
 #: resourcestr.rschangesync
-msgid "Change Sync Repo"
+msgid "Change Sync Repository"
 msgstr ""
 
 #: resourcestr.rsclickbadnote
@@ -124,7 +124,7 @@ msgstr ""
 
 #: resourcestr.rscreatenewrepo
 msgctxt "resourcestr.rscreatenewrepo"
-msgid "Create a new Repo ?"
+msgid "Create a new Repository ?"
 msgstr ""
 
 #: resourcestr.rsdeleteandreplace_1
@@ -158,7 +158,7 @@ msgstr ""
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
-msgid "Enter a new notebook name please"
+msgid "Enter a new Notebook name please"
 msgstr ""
 
 #: resourcestr.rserrorcopyfile
@@ -243,7 +243,7 @@ msgid "Show this help message and exit."
 msgstr ""
 
 #: resourcestr.rshelpimportfile
-msgid "Import file into Note Repo"
+msgid "Import file into Note Directory"
 msgstr ""
 
 #: resourcestr.rshelplang
@@ -359,7 +359,7 @@ msgstr ""
 
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
-msgid "Note already in Repo"
+msgid "Note already in Repository"
 msgstr ""
 
 #: resourcestr.rsnotebookoptionctrl
@@ -457,7 +457,7 @@ msgstr ""
 
 #: resourcestr.rssetthenotebooks
 msgctxt "resourcestr.rssetthenotebooks"
-msgid "Set the notebooks this note is a member of"
+msgid "Set the Notebooks this note is a member of"
 msgstr ""
 
 #: resourcestr.rssetup
@@ -512,7 +512,7 @@ msgstr ""
 
 #: resourcestr.rstestingrepo
 msgctxt "resourcestr.rstestingrepo"
-msgid "Testing Repo ...."
+msgid "Testing Repository ...."
 msgstr ""
 
 #: resourcestr.rstestingsync
@@ -689,14 +689,6 @@ msgstr ""
 msgid "Please close it (and re-open if it was a download)"
 msgstr ""
 
-#: teditboxform.labelbacklinks.caption
-msgid "label1"
-msgstr ""
-
-#: teditboxform.labelfindinfo.caption
-msgid "LabelFindInfo"
-msgstr ""
-
 #: teditboxform.menubold.caption
 msgctxt "teditboxform.menubold.caption"
 msgid "Bold"
@@ -833,10 +825,6 @@ msgstr ""
 
 #: teditboxform.menuunderline.caption
 msgid "Underline"
-msgstr ""
-
-#: teditboxform.panelbacklinks.caption
-msgid "PanelBackLinks"
 msgstr ""
 
 #: teditboxform.speedbuttondelete.hint
@@ -1285,12 +1273,17 @@ msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr ""
 
+#: tnotebookpick.caption
+msgctxt "tnotebookpick.caption"
+msgid "Notebooks"
+msgstr ""
+
 #: tnotebookpick.label4.caption
 msgid "Name of the New Notebook"
 msgstr ""
 
 #: tnotebookpick.label5.caption
-msgid "Press OK and we will make the Note Book AND add this note to it."
+msgid "Press OK and we will make the Notebook AND add this note to it."
 msgstr ""
 
 #: tnotebookpick.label6.caption
@@ -1302,7 +1295,7 @@ msgid "New Name"
 msgstr ""
 
 #: tnotebookpick.label9.caption
-msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+msgid "If you sync and are not absolutely sure it is up to date, Cancel now !"
 msgstr ""
 
 #: tnotebookpick.tabchangename.caption
@@ -1350,7 +1343,7 @@ msgid "Right Click to manage Notebooks"
 msgstr ""
 
 #: tsearchform.menucreatenotebook.caption
-msgid "Create new Note Book"
+msgid "Create new Notebook"
 msgstr ""
 
 #: tsearchform.menudeletenotebook.caption
@@ -1371,7 +1364,7 @@ msgid "Import File"
 msgstr ""
 
 #: tsearchform.menuitemmanagenbook.caption
-msgid "Manage Notes in Note Book"
+msgid "Manage Notes in Notebook"
 msgstr ""
 
 #: tsearchform.menuitemswyt.caption
@@ -1383,7 +1376,7 @@ msgid "Create New Note from Template"
 msgstr ""
 
 #: tsearchform.menurenamenotebook.caption
-msgid "Rename NoteBook"
+msgid "Rename Notebook"
 msgstr ""
 
 #: tsearchform.panel2.caption
@@ -1449,7 +1442,7 @@ msgid "Autostart at Logon"
 msgstr ""
 
 #: tsett.checkescclosesnote.caption
-msgid "Esc Closes Note"
+msgid "ESC Closes Note"
 msgstr ""
 
 #: tsett.checkfindtoggles.caption
@@ -1474,7 +1467,7 @@ msgid "Show Notifications"
 msgstr ""
 
 #: tsett.checkshowextlinks.caption
-msgid "Show External  Links"
+msgid "Show External Links"
 msgstr ""
 
 #: tsett.checkshowintlinks.caption

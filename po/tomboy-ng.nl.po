@@ -112,7 +112,9 @@ msgid "Change the name of this Notebook"
 msgstr "Wijzig de naam van dit notitieboek"
 
 #: resourcestr.rschangesync
-msgid "Change Sync Repo"
+#, fuzzy
+#| msgid "Change Sync Repo"
+msgid "Change Sync Repository"
 msgstr "Synchronisatierepo aanpassen"
 
 #: resourcestr.rsclickbadnote
@@ -135,8 +137,10 @@ msgid "Copying orig to Backup directory failed"
 msgstr "Kan origineel niet kopiëren naar reservekopiemap"
 
 #: resourcestr.rscreatenewrepo
+#, fuzzy
+#| msgid "Create a new Repo ?"
 msgctxt "resourcestr.rscreatenewrepo"
-msgid "Create a new Repo ?"
+msgid "Create a new Repository ?"
 msgstr "Wilt u een nieuwe repo aanmaken?"
 
 #: resourcestr.rsdeleteandreplace_1
@@ -169,8 +173,10 @@ msgid "Enter the Hexadecimal value for a UTF8 character"
 msgstr ""
 
 #: resourcestr.rsenternewnotebook
+#, fuzzy
+#| msgid "Enter a new notebook name please"
 msgctxt "resourcestr.rsenternewnotebook"
-msgid "Enter a new notebook name please"
+msgid "Enter a new Notebook name please"
 msgstr "Voer een nieuwe naam in voor het notitieboek"
 
 #: resourcestr.rserrorcopyfile
@@ -255,7 +261,9 @@ msgid "Show this help message and exit."
 msgstr "Toon dit hulpbericht en sluit af."
 
 #: resourcestr.rshelpimportfile
-msgid "Import file into Note Repo"
+#, fuzzy
+#| msgid "Import file into Note Repo"
+msgid "Import file into Note Directory"
 msgstr "Bestand importeren naar repo"
 
 #: resourcestr.rshelplang
@@ -370,8 +378,10 @@ msgid "Not Available"
 msgstr "Niet beschikbaar"
 
 #: resourcestr.rsnotealreadyinrepo
+#, fuzzy
+#| msgid "Note already in Repo"
 msgctxt "resourcestr.rsnotealreadyinrepo"
-msgid "Note already in Repo"
+msgid "Note already in Repository"
 msgstr "Deze notitie bestaat al"
 
 #: resourcestr.rsnotebookoptionctrl
@@ -468,8 +478,10 @@ msgid "Exact matches for terms between \" \""
 msgstr "Exacte overeenkomsten voor zoekopdrachten tussen \" \""
 
 #: resourcestr.rssetthenotebooks
+#, fuzzy
+#| msgid "Set the notebooks this note is a member of"
 msgctxt "resourcestr.rssetthenotebooks"
-msgid "Set the notebooks this note is a member of"
+msgid "Set the Notebooks this note is a member of"
 msgstr "Stel in in welke notitieboeken deze notitie moet worden geplaatst"
 
 #: resourcestr.rssetup
@@ -523,8 +535,10 @@ msgid "Testing Credentials"
 msgstr "Bezig met verifiëren van inloggegevens…"
 
 #: resourcestr.rstestingrepo
+#, fuzzy
+#| msgid "Testing Repo ...."
 msgctxt "resourcestr.rstestingrepo"
-msgid "Testing Repo ...."
+msgid "Testing Repository ...."
 msgstr "Bezig met testen van repo…"
 
 #: resourcestr.rstestingsync
@@ -701,14 +715,6 @@ msgstr "Deze notitie is tijdens het synchroniseren gewijzigd"
 msgid "Please close it (and re-open if it was a download)"
 msgstr "Sluit het venster (en heropen het als het een download betrof)"
 
-#: teditboxform.labelbacklinks.caption
-msgid "label1"
-msgstr ""
-
-#: teditboxform.labelfindinfo.caption
-msgid "LabelFindInfo"
-msgstr "LabelFindInfo"
-
 #: teditboxform.menubold.caption
 msgctxt "teditboxform.menubold.caption"
 msgid "Bold"
@@ -850,10 +856,6 @@ msgstr "Doorhalen"
 #: teditboxform.menuunderline.caption
 msgid "Underline"
 msgstr "Onderstrepen"
-
-#: teditboxform.panelbacklinks.caption
-msgid "PanelBackLinks"
-msgstr ""
 
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
@@ -1306,12 +1308,20 @@ msgctxt "tnotebookpick.buttonok.caption"
 msgid "OK"
 msgstr "Oké"
 
+#: tnotebookpick.caption
+#, fuzzy
+msgctxt "tnotebookpick.caption"
+msgid "Notebooks"
+msgstr "Notitieboeken"
+
 #: tnotebookpick.label4.caption
 msgid "Name of the New Notebook"
 msgstr "Naam van nieuw notitieboek"
 
 #: tnotebookpick.label5.caption
-msgid "Press OK and we will make the Note Book AND add this note to it."
+#, fuzzy
+#| msgid "Press OK and we will make the Note Book AND add this note to it."
+msgid "Press OK and we will make the Notebook AND add this note to it."
 msgstr "Klik op oké om het notitieboek aan te maken én deze notitie er aan toe te voegen."
 
 #: tnotebookpick.label6.caption
@@ -1323,7 +1333,9 @@ msgid "New Name"
 msgstr "Nieuwe naam"
 
 #: tnotebookpick.label9.caption
-msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+#, fuzzy
+#| msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
+msgid "If you sync and are not absolutely sure it is up to date, Cancel now !"
 msgstr "Let op: als u gebruikmaakt van synchronisatie en twijfelt over de bijwerkdatum, breek het proces dan nu af!"
 
 #: tnotebookpick.tabchangename.caption
@@ -1374,7 +1386,9 @@ msgid "Right Click to manage Notebooks"
 msgstr "Klik rechts om notitieboeken te beheren"
 
 #: tsearchform.menucreatenotebook.caption
-msgid "Create new Note Book"
+#, fuzzy
+#| msgid "Create new Note Book"
+msgid "Create new Notebook"
 msgstr "Nieuw notitieboek"
 
 #: tsearchform.menudeletenotebook.caption
@@ -1395,7 +1409,9 @@ msgid "Import File"
 msgstr "Bestand importeren"
 
 #: tsearchform.menuitemmanagenbook.caption
-msgid "Manage Notes in Note Book"
+#, fuzzy
+#| msgid "Manage Notes in Note Book"
+msgid "Manage Notes in Notebook"
 msgstr "Notities in notitieboek beheren"
 
 #: tsearchform.menuitemswyt.caption
@@ -1407,7 +1423,9 @@ msgid "Create New Note from Template"
 msgstr "Nieuwe notitie uit sjabloon"
 
 #: tsearchform.menurenamenotebook.caption
-msgid "Rename NoteBook"
+#, fuzzy
+#| msgid "Rename NoteBook"
+msgid "Rename Notebook"
 msgstr "Notitieboeknaam wijzigen"
 
 #: tsearchform.panel2.caption
@@ -1473,7 +1491,9 @@ msgid "Autostart at Logon"
 msgstr "Automatisch opstarten"
 
 #: tsett.checkescclosesnote.caption
-msgid "Esc Closes Note"
+#, fuzzy
+#| msgid "Esc Closes Note"
+msgid "ESC Closes Note"
 msgstr "Notities sluiten met Esc-toets"
 
 #: tsett.checkfindtoggles.caption
@@ -1498,7 +1518,9 @@ msgid "Show Notifications"
 msgstr "Meldingen tonen"
 
 #: tsett.checkshowextlinks.caption
-msgid "Show External  Links"
+#, fuzzy
+#| msgid "Show External  Links"
+msgid "Show External Links"
 msgstr "Externe links tonen"
 
 #: tsett.checkshowintlinks.caption
