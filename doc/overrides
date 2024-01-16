@@ -7,5 +7,10 @@
 # are enabled but Fortify Source functions is not.
 tomboy-ng binary: hardening-no-fortify-functions
 
-
+# Its necessary to use xcb because Wayland does not yet
+# support a window reporting its screen coordinates nor
+# opening a window in a particular place.
+# Therefore, we set an env in the Exec command. 
+# The actual command does follow the env setting.
+desktop-command-not-in-package
 
