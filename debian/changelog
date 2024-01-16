@@ -1,3 +1,15 @@
+tomboy-ng (0.38-1) unstable; urgency=medium
+
+  *  Release of new version.
+  *  Display backlinks (click Links button with no text selected). Note
+    that the window that displays the BackLinks may be incorrectly
+    located in Gnome based systems. An upstream fix is expected.
+  *  Several minor bug fixes (links to new notes, hints).
+  *  Closes: Bug#1046360 Fails to build source after successful build.
+  *  Please see github for further change details.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 10 Jan 2024 12:04:29 +1100
+
 tomboy-ng (0.37-1) unstable; urgency=medium
 
   *  Release of new version.
