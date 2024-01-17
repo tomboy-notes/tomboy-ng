@@ -45,6 +45,7 @@ else
     if [ -z "$LAZ_DIR" ]; then
 	echo "Usage : $0 /Full/Path/Lazarus/dir"
 	echo "eg    : $0 \$HOME/bin/lazarus/fixes_2_0"
+	echo "eg    : $0 \$HOME/Desktop/Lazarus/lazarus_3_0"
 	exit
     fi
 

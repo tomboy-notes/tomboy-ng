@@ -1219,9 +1219,11 @@ object EditBoxForm: TEditBoxForm
     Width = 258
     BorderSpacing.Left = 2
     BorderSpacing.Top = 2
+    BevelColor = clMenu
     Caption = 'PanelBackLinks'
     ClientHeight = 234
     ClientWidth = 258
+    Color = clMenu
     ParentBackground = False
     ParentColor = False
     TabOrder = 4

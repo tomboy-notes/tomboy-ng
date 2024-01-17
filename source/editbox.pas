@@ -240,6 +240,7 @@ unit EditBox;
     2023/04/08  Get a note's height and width before populating KMemo, saves 200mS on a big note !
     2023/04/09  Keep Find-in-note prompt there unless not found.
     2023/12/30  Added ability to display Back Links (Links button with nothing selected)
+    2024/01/17  Altered the colour of Backlinks Panel to clMenu AFTER building all except MacOS and Packman
 }
 
 
