@@ -2699,6 +2699,7 @@ var
     end;
 
 begin
+    if SingleNoteMode then exit;
     {$ifdef LDEBUG}
     AssignFile(MyLogFile, 'log.txt');
     rewrite(MyLogFile);
@@ -2989,7 +2990,7 @@ begin
             Ready := True;
   	        exit();
     end;
-    if Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked then begin
+    if (not SingleNoteMode) and (Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked) then begin
         {$ifdef LDEBUG}TS1 := gettickcount64();{$endif}
         CheckForLinks(False);                   // does its own locking
         TimerHouseKeeping.Enabled := False;

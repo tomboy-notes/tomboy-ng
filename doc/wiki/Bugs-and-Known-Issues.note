@@ -16,20 +16,28 @@ There is some advice about DIY debugging further down this document.
 <list><list-item dir="ltr"><list><list-item dir="ltr">On some  older Macs, when using the in note Find tool, a 'shadow highlight' can appear superimposed over the button bar. It does no harm, disappears when you move the mouse over the button but is unsightly. Its a know upstream problem, https://forum.lazarus.freepascal.org/index.php/topic,53055.0.html .</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine).</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Qt versions do not always pick up System Colours, you need to give the app a hint what colour theme to use, see below.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Some Linux systems using Wayland to not bring an open note to the forground when another note's link to it is clicked.</list-item></list></list-item></list>
 
 
 <size:huge><bold>Specific Things with a Work Around</bold></size:huge>
 
-<size:huge><bold>QT5 versions</bold></size:huge>
+<size:huge><bold>QT5 and Qt6 versions</bold></size:huge>
 
-<size:large><bold>Qt5 with earlier Qt5 libraries</bold></size:large>
-Can be a problem on some Linux Desktops. Generally, I don't suggest Qt5 version of tomboy-ng with systems that use Qt5 earlier than 5.15. So, using Ubuntu 20.04 (Qt5 is 5.12) is a risk factor. Setting your Qt theme to 'gtk3' on those early Qt5 systems is asking for trouble. I have not tested on systems with Qt5 between 5.12 and 5.15 so your mileage may vary. By time you get to Qt5 5.15, it all just works !
+<size:large><bold>Qt5 and Qt6 libraries</bold></size:large>
+All FPC/Lazarus applications using Qt5 need to use libqt5pas library. A new version of that library was released in late 2023 and it has substantial improvements and is, therefore used with this release of tomboy-ng. Your distribution of Linux will probably not have a suitably up to date library yet. So, you MUST manually install the library yourself from -
+
+https://github.com/davidbannon/libqt5pas/releases
+https://github.com/davidbannon/libqt6pas/releases
+
+Establishing colours can be a problem on some Linux Desktops. If you are lucky, your desktop will already have suitable setting for all Qt apps in place, if not, you may need to do it yourself using the QT_QPA_PLATFORMTHEME Enviournment variable. See the Dark Theme heading below.
 
 <size:large><bold>Qt5 and Wayland</bold></size:large>
 If you launch tomboy-ng from the console on a Wayland using system, you see a number of harmless messages coming from the Qt libraries. Just ignore them.
 
+Setting an Enviournment variable, QT_QPA_PLATFORM=xcb will tell a Qt app to try and use libxcb instead of Wayland, in many ways, that might be a good idea.
+
 <size:large><bold>Dark Theme</bold></size:large>
-Sometimes, QT5 apps do not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but the results are not great. A much better approach is to use Qt5's theme setting capability, using <bold>QT_QPA_PLATFORMTHEME</bold> env var. Some operating systems set this for you, other require you to do it. The easist approach (on most Linux systems) is set it to your existing gtk2 or gtk3 theme, you will need to install the <bold>qt5-style-plugins</bold> package using your normal package manager, then, start tomboy-ng with the enviournment variable set to either 'gtk2' or 'gtk3'. Small section below on setting the variable.
+Sometimes, QT5 apps do not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but the results are not great. A much better approach is to use Qt5's theme setting capability, using <bold>QT_QPA_PLATFORMTHEME</bold> env var. Some operating systems set this for you, other require you to do it. The easiest approach (on most Linux systems) is set it to your existing gtk2 or gtk3 theme, you will need to install the <bold>qt5-style-plugins</bold> package using your normal package manager, then, start tomboy-ng with the Enviournment variable set to either 'gtk2' or 'gtk3'. Small section below on setting the variable.
 
 Another approach is to install the <bold>qt5ct</bold> package from your package manager and set any colour theme you like. The qt5ct command has a nice GUI, select 'custom' and choose the theme you want. Again, you will need to set the same environment variable, this time to 'qt5ct', it tells Qt apps (including qt5ct itself) that you are using qt5ct colours but only works after you have started qt5ct and selected a color scheme.
 
@@ -56,7 +64,7 @@ Assuming you are opening tomboy-ng from the menu system, the best place to set o
 
 You need to make it look like this (eg) -
 
-<monospace>Exec=QT_PLATFORM=xcb QT_PLATFORMTHEME='gtk2'  tomboy-ng  %f</monospace>
+<monospace>Exec=env QT_PLATFORM=xcb QT_PLATFORMTHEME='gtk2'  tomboy-ng  %f</monospace>
 
 That example shows setting both vars, you can, of course, just set one or the other.
 
@@ -90,8 +98,6 @@ In the calculator, many countries use the comma instead of a period as a decimal
 <size:huge><bold>Long term 'maybe' stuff</bold></size:huge>
 These are things I have no immediate plans to fix, but they might be addressed some time in the future if there is some demand from end users.
 <list><list-item dir="ltr"><list><list-item dir="ltr">On Linux GTK2 based versions, using the Compose Key approach to entering accented characters results in a bad character also being inserted. This is a known, upstream issue,  https://bugs.freepascal.org/view.php?id=38454 . Qt5 versions do not have this problem.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Stop house keeping from moving viewport.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Restoring cursor position on note load.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.  Windows will not let us set a dark background to button.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Lines starting with an '*' should be auto converted to a Bullet.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Tabs do not work and probably never will.</list-item></list></list-item></list>
@@ -106,7 +112,7 @@ On some (but not all) Wayland using Desktops, there are still a few Qt5 problems
 
 $&gt; QT_PLATFORM=xcb tomboy-ng [enter]
 
-And if you like the result, set it permently, see Setting that Enviournment Variable
+And if you like the result, set it permanently, see Setting that Environment Variable
 
 <size:large><bold>QT5 (or Qt6) versions and Gnome Desktops</bold></size:large>
 It appears that even Qt5 apps can now use XWayland so much of this is unnecessary, leave it here for now, just in case.
@@ -140,7 +146,7 @@ If tomboy-ng crashes or does something unexpected, there are a number of command
 <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--useappind=[yes|no]           Ctrl use of AppInd (ie TrayIcon) on Linux</monospace></list-item></list></list-item></list>
 
 <bold>Capturing to a file</bold>
-Windows and Mac do not, for this purpose, have a console. But they too  can be told to capture this log info to a file using  another  command  line  switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified. For example a linux user would  -
+Windows and Mac do not, for this purpose, have a console. But they too  can be told to capture this log info to a file using  another  command  line  switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified. For example a Linux user would  -
 
        set tomboy-ng_debuglog=c:\%userprofile%\debug.txt
 
@@ -165,14 +171,14 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2023-12-22T09:25:50.9279222+11:00</last-change-date>
-  <last-metadata-change-date>2023-12-22T09:25:50.9279222+11:00</last-metadata-change-date>
+  <last-change-date>2024-01-18T11:26:57.6138232+11:00</last-change-date>
+  <last-metadata-change-date>2024-01-18T11:26:57.6138232+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1211</width>
   <height>626</height>
-  <x>137</x>
-  <y>230</y>
+  <x>701</x>
+  <y>198</y>
   <open-on-startup>False</open-on-startup>
 </note>
