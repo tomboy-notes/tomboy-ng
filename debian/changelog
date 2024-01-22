@@ -1,3 +1,13 @@
+tomboy-ng (0.39-1) unstable; urgency=medium
+
+  *  Release of new version.
+  *  Fix to UTF8 bug in note title affecting links.
+  *  Avoid Wayland, it cannot bring a window to foreground, report on
+     position.
+  *  Please see github for further change details.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Tue, 16 Jan 2024 21:52:29 +1100
+
 tomboy-ng (0.38-1) unstable; urgency=medium
 
   *  Release of new version.

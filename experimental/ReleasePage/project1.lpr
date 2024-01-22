@@ -126,7 +126,7 @@ begin
                TStringArray.Create('DEB64',    'tomboy-ng_',       '-0_amd64.deb'),
                TStringArray.Create('DEB32',    'tomboy-ng_',       '-0_i386.deb'),
                TStringArray.Create('DEB32QT5', 'tomboy-ng_',       '-0_i386Qt5.deb'),
-               TStringArray.Create('DEB64QT',  'tomboy-ng_',       '-0_amd64Q5t.deb'),
+               TStringArray.Create('DEB64QT',  'tomboy-ng_',       '-0_amd64Qt5.deb'),
                TStringArray.Create('DEB64QT6',  'tomboy-ng_',       '-0_amd64Qt6.deb'),
                TStringArray.Create('DEB32ARM', 'tomboy-ng_',       '-0_armhf.deb'),
                TStringArray.Create('DEB64ARM',    'tomboy-ng_',       '-0_arm64.deb'),

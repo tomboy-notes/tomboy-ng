@@ -67,7 +67,7 @@ Ubuntu and derivative users (of 64bit U18.04 and U20.04 to U22.04) can use a PPA
 For GTK based distributions that use .deb packages (but cannot use the PPA), do yourself a favour, install Gdebi before you start. But it will require a lot of gtk2 libraries you might otherwise not need.
 
 <size:large><bold>Ubuntu</bold></size:large>
-Ubuntu 22.04 has tomboy-ng v0.34 available in its repository but v0.39 is new and shiny. I hope 0.37 will be in Ubuntu 24.04
+Ubuntu 22.04 has tomboy-ng v0.34 available in its repository but v0.39 is new and shiny. I hope 0.39 will be in Ubuntu 24.04
 
 Generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
 <list><list-item dir="ltr"><list><list-item dir="ltr">16.04 and 18.04 (while out of date, we still test with tomboy-ng) Use GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list></list-item></list>
@@ -98,7 +98,7 @@ To install, please click on appropriate link, download and save, then use the yu
 
 
 <size:large><bold>Debian</bold></size:large>
-An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository and 0.36c in Bookworm. Sadly, changes were made to Bullseye after it was added to Debian, that version will have problems if you use a Gnome Desktop. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux . For other Desktops, you can install as you would for other repository applications but the version here is "bigger and better". Both Bullseye (11) and Bookworm (12) benefit from manually installing the latest release from here, I recommend the gtk2 type for simplicity.  [32bit]($$DEB32) or [64bit]($$DEB64) .  Also available is the  Qt5 [64bit QT]($$DEB64QT) version or Qt6 [64bit QT]($$DEB64QT6) type.
+An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository and 0.36c in Bookworm. Sadly, changes were made to Bullseye after it was added to Debian, that version will have problems if you use a Gnome Desktop. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux . For other Desktops, you can install as you would for other repository applications but the version here is "bigger and better". Both Bullseye (11) and Bookworm (12) benefit from manually installing the latest release from here, I recommend the gtk2 type for simplicity, debs : [32bit]($$DEB32) or [64bit]($$DEB64) .  Also available is the  Qt5 [64bit QT]($$DEB64QT) version or Qt6 [64bit QT]($$DEB64QT6) type.
 
 I recommend downloading the file and using the apt command (note the full path to the filename, you must explicitly state the location of the file, else apt will look in its own repositories).
 
@@ -161,8 +161,8 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2024-01-18T11:28:56.5465015+11:00</last-change-date>
-  <last-metadata-change-date>2024-01-18T11:28:56.5465015+11:00</last-metadata-change-date>
+  <last-change-date>2024-01-18T13:35:00.0383495+11:00</last-change-date>
+  <last-metadata-change-date>2024-01-18T13:35:00.0383495+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
