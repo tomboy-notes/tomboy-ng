@@ -38,6 +38,7 @@ unit LoadNote;
     2022/10/31  Force default background colour while loading, it shows up ok without
                 doing it here but blocks do not always report the correct color when asked.
     2023/03/11  Allow Qt to set Text and Background colour, force Gray for Inactive Background cos Kmemo get it wrong
+    2024/01/23  Added support for Indent
 }
 
 {$mode objfpc}{$H+}
@@ -62,6 +63,7 @@ type
          Underline : boolean;
          Strikeout : boolean;
          FixedWidth : boolean;
+         Indent : boolean;
          //InBullet, BulletOwing : boolean;
          BulletLevel : integer;
          InStr : ANSIString;
@@ -69,6 +71,7 @@ type
                             { Is passed an XML tag content, such as bold or /italics and sets up
                             the regional vars so that AddText knows how to markup the next block}
          procedure ActOnTag(buff: string);
+         procedure AddIndentBullets(PB: TKMemoParagraph);
 
                             { This procedure writes note content to the KMemo in EditBox. It relies on
                             the Global constants (in the Settings Unit) to tell it about style, and
@@ -154,101 +157,110 @@ var
     TB : TKMemoTextBlock ;
     //T1, T2 : qword;
 begin
-  if not InContent then exit;
-  if (InStr = '') and (not AddPara) then exit;
-  // if to here, we have content to flush or a new para has been requested.
-  //debugln('TBLoadNote.AddText bulletlevel=' + inttostr(bulletLevel) + ', BOLD=' + booltostr(Bold, true) + ' and InStr=[' + ']');
-  if InStr <> '' then begin
-      FT := TFont.Create();
-
-      if FirstTime then begin                 // Title
-  	    FT.Style := [fsUnderline];
-        Title := RestoreBadXMLChar(InStr);     // SyncUtils Function
-        FT.Size := Sett.FontTitle;
-        FT.Color := Sett.TitleColour;
-      end else begin
-        FT.Style := [];
-        FT.Size:= FontSize;
-        FT.Color := Sett.TextColour;
-      end;
-      TB := KM.Blocks.AddTextBlock(RestoreBadXMLChar(InStr));
-//      TB.TextStyle.Brush.Color := Sett.BackGndColour;  //LocalBackGndColour;
-      if Bold then FT.Style := FT.Style + [fsBold];
-      if Italic then FT.Style := FT.Style + [fsItalic];
-      if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
-      if Underline then FT.Style := Ft.Style + [fsUnderline];
-      if Strikeout then FT.Style := Ft.Style + [fsStrikeout];
-      if FixedWidth then FT.Name := Sett.FixedFont;
-      if FixedWidth then FT.Pitch := fpFixed;
-      if not FixedWidth then FT.Name := Sett.UsualFont;    // Because 'FixedWidth := false;' does not specify a font to return to
-      // if Sett.DarkTheme then Ft.Color:=Sett.DarkTextColour;
-      TB.TextStyle.Font := Ft;
-      FT.Free;
-  end;
-  InStr := '';
-  if AddPara then begin
-  	    PB := KM.Blocks.AddParagraph;
-        if BulletLevel > 0 then begin
-            {$if declared(pnuCircleBullets)}         // Note IDE assumes true, versions of KControls earlier than Late August 2021 are FALSE
-            case BulletLevel of
-                1 : begin
-                      //debugln('AddText - BulletLevel One');
-                      PB.Numbering:=BulletOne;
-                      PB.NumberingListLevel.FirstIndent:=-20;      // Ahh ! some magic numbers ?
-                      PB.NumberingListLevel.LeftIndent := 30;      // Note, these numbers need match SettBullet() in editbox
-                    end;
-                2 :   begin
-                        //debugln('AddText - BulletLevel Two');
-                        PB.Numbering:=pnuNone;
-                        PB.Numbering := BulletTwo;
-                        PB.NumberingListLevel.FirstIndent:=-20;
-                        PB.NumberingListLevel.LeftIndent := 50;
-                    end;
-                3 : begin
-                        PB.Numbering:=pnuNone;
-                        PB.Numbering := BulletThree;
-                        PB.NumberingListLevel.FirstIndent:=-20;
-                        PB.NumberingListLevel.LeftIndent := 70;
-                    end;
-                4 : begin
-                        PB.Numbering:=pnuNone;
-                        PB.Numbering := BulletFour;
-                        PB.NumberingListLevel.FirstIndent:=-20;
-                        PB.NumberingListLevel.LeftIndent := 90;
-                    end;
-                 5 : begin
-                        PB.Numbering:=pnuNone;
-                        PB.Numbering := BulletFive;
-                        PB.NumberingListLevel.FirstIndent:=-20;
-                        PB.NumberingListLevel.LeftIndent := 110;
-                    end;
-                 6,7,8,9 : begin
-                        PB.Numbering:=pnuNone;
-                        PB.Numbering := BulletSix;
-                        PB.NumberingListLevel.FirstIndent:=-20;
-                        PB.NumberingListLevel.LeftIndent := 130;
-                    end;
-                otherwise
-                    debugln('LoadNote.AddText - BulletLevel otherwise, ' + inttostr(BulletLevel));                                     // we just stop at 4
-            end;
-            BulletLevel := 0;
-            {$else}
-            PB.Numbering := pnuBullets;
-            PB.NumberingListLevel.FirstIndent := -20;    // Note, these numbers need match SettBullet() in editbox
-            PB.NumberingListLevel.LeftIndent := 30;
-            {$endif}
+    if not InContent then exit;
+    if (InStr = '') and (not AddPara) then exit;
+    // if to here, we have content to flush or a new para has been requested.
+    //debugln('TBLoadNote.AddText bulletlevel=' + inttostr(bulletLevel) + ', BOLD=' + booltostr(Bold, true) + ' and InStr=[' + ']');
+    if InStr <> '' then begin
+        FT := TFont.Create();
+        if FirstTime then begin                 // Title
+            FT.Style := [fsUnderline];
+            Title := RestoreBadXMLChar(InStr);     // SyncUtils Function
+            FT.Size := Sett.FontTitle;
+            FT.Color := Sett.TitleColour;
+        end else begin
+            FT.Style := [];
+            FT.Size:= FontSize;
+            FT.Color := Sett.TextColour;
         end;
+        TB := KM.Blocks.AddTextBlock(RestoreBadXMLChar(InStr));
+        //      TB.TextStyle.Brush.Color := Sett.BackGndColour;  //LocalBackGndColour;
+        if Bold then FT.Style := FT.Style + [fsBold];
+        if Italic then FT.Style := FT.Style + [fsItalic];
+        if HighLight then TB.TextStyle.Brush.Color := Sett.HiColour;
+        if Underline then FT.Style := Ft.Style + [fsUnderline];
+        if Strikeout then FT.Style := Ft.Style + [fsStrikeout];
+        if FixedWidth then FT.Name := Sett.FixedFont;
+        if FixedWidth then FT.Pitch := fpFixed;
+        if not FixedWidth then FT.Name := Sett.UsualFont;    // Because 'FixedWidth := false;' does not specify a font to return to
+        // if Sett.DarkTheme then Ft.Color:=Sett.DarkTextColour;
+        TB.TextStyle.Font := Ft;
+        FT.Free;
     end;
-  if FirstTime then begin
-      FirstTime := false;
-      KM.Blocks.DeleteEOL(0);
+    InStr := '';
+    if AddPara then begin
+        PB := KM.Blocks.AddParagraph;
+        if not FirstTime then
+            AddIndentBullets(PB);                       // only does stuff if necessary
+        if FirstTime then begin
+            FirstTime := false;
+            KM.Blocks.DeleteEOL(0);
+        end;
   end;
 end;
 
+procedure TBLoadNote.AddIndentBullets(PB : TKMemoParagraph);
+begin
+    {$if declared(pnuCircleBullets)}         // Note IDE assumes true, versions of KControls earlier than Late August 2021 are FALSE
+    if BulletLevel > 0 then begin
+        case BulletLevel of
+        1 : begin
+              //debugln('AddText - BulletLevel One');
+              PB.Numbering:=BulletOne;
+              PB.NumberingListLevel.FirstIndent:=-20;      // Ahh ! some magic numbers ?
+              PB.NumberingListLevel.LeftIndent := 30;      // Note, these numbers need match SettBullet() in editbox
+            end;
+        2 :   begin
+                //debugln('AddText - BulletLevel Two');
+                PB.Numbering:=pnuNone;
+                PB.Numbering := BulletTwo;
+                PB.NumberingListLevel.FirstIndent:=-20;
+                PB.NumberingListLevel.LeftIndent := 50;
+            end;
+        3 : begin
+                PB.Numbering:=pnuNone;
+                PB.Numbering := BulletThree;
+                PB.NumberingListLevel.FirstIndent:=-20;
+                PB.NumberingListLevel.LeftIndent := 70;
+            end;
+        4 : begin
+                PB.Numbering:=pnuNone;
+                PB.Numbering := BulletFour;
+                PB.NumberingListLevel.FirstIndent:=-20;
+                PB.NumberingListLevel.LeftIndent := 90;
+            end;
+         5 : begin
+                PB.Numbering:=pnuNone;
+                PB.Numbering := BulletFive;
+                PB.NumberingListLevel.FirstIndent:=-20;
+                PB.NumberingListLevel.LeftIndent := 110;
+            end;
+         6,7,8,9 : begin
+                PB.Numbering:=pnuNone;
+                PB.Numbering := BulletSix;
+                PB.NumberingListLevel.FirstIndent:=-20;
+                PB.NumberingListLevel.LeftIndent := 130;
+            end;
+        otherwise
+            debugln('LoadNote.AddText - BulletLevel otherwise, ' + inttostr(BulletLevel));                                     // we just stop at 4
+        end;
+        BulletLevel := 0;
+        {$else}
+        PB.Numbering := pnuBullets;
+        PB.NumberingListLevel.FirstIndent := -20;    // Note, these numbers need match SettBullet() in editbox
+        PB.NumberingListLevel.LeftIndent := 30;
+        {$endif}
+    end else
+        if Indent then begin                                                      // end of processing Bullet
+            PB.ParaStyle.LeftPadding := IndentWidth;
+            Indent := False;
+        end;
+end;
 
 procedure TBLoadNote.ActOnTag(buff : string);
 begin
   case Buff of
+      'indent' : Indent := true;
       'note-content' : InContent := true;
       '/note-content' : InContent := false;
       'bold' : Bold := True;
@@ -278,7 +290,7 @@ begin
       'x', 'y', 'title', '/title', '?xml', 'last-change-date', '/last-change-date', 'width', 'height', '/text' : ;
       'create-date', 'cursor-position', '/cursor-position', 'selection-bound-position', '/selection-bound-position' : ;
       'open-on-startup', '/open-on-startup', '/note', 'last-metadata-change-date', '/last-metadata-change-date' : ;
-      'tag', '/tag', 'tags', '/tags', 'link:broken', '/link:broken', '/width',  '/height' : ;
+      'tag', '/tag', 'tags', '/tags', 'link:broken', '/link:broken', '/width',  '/height', '/indent' : ;
       // Note we do not process AND should not get 'list', '/list', 'list-item', '/list-item' here.
   otherwise debugln('TBLoadNote.ActOnTag ERROR sent an unrecognised tag [' + Buff + ']');
   end;
@@ -324,7 +336,6 @@ var
                 i : integer = 1;
                 ATag : string = '';
             begin
-               // debugln('++++++++++ LstSt2KMemo : ' + St);
                 InStr := '';
                 BulletLevel := ListCount;
                 while i <= St.length do begin
@@ -339,7 +350,6 @@ var
                             exit;
                         end;
                         AddText(False);
-                        //debugln('call ActOnTag with ' + ATag);
                         ActOnTag(ATag);
                         ATag := '';
                         inc(i);
@@ -351,7 +361,6 @@ var
                 AddText(True);
                 BulletLevel := 0;
                 St := '';
-                //debugln('++++++++++ Leaving LstSt2KMemo : ' + St);
             end;
 
 begin
@@ -395,7 +404,6 @@ begin
                 end else fs.Seek(-1, fsFromCurrent);  // note #10, not #13 poke it back and run away !
             end;
          end;
-         //debugln('----------- We have just left ReadList ---------');
     end;
 end;
 
@@ -405,7 +413,6 @@ var
     Buff : String;
     Ch : char = ' ';
 begin
-    //Addtext(False);    // Write the text we have so far with existing params
     Buff := '';   // now, lets set new params or get other data
     while fs.Position < fs.Size do begin
         fs.read(Ch, 1);

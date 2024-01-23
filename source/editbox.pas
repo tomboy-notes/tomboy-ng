@@ -241,6 +241,7 @@ unit EditBox;
     2023/04/09  Keep Find-in-note prompt there unless not found.
     2023/12/30  Added ability to display Back Links (Links button with nothing selected)
     2024/01/17  Altered the colour of Backlinks Panel to clMenu AFTER building all except MacOS and Packman
+    2024/01/23  More or less finished rewrite of Bullet code, addition of indent. Needs testing.
 }
 
 
@@ -2239,9 +2240,6 @@ var
     ItsANewNote : boolean = false;
 //    Tick, Tock, Tuck : qword;
 begin
-
-    Verbose := True;
-
     if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
     // Ready := False;                             // But it must be false aready, it was created FALSE
 //    Tick := GetTickCount64();
@@ -3522,7 +3520,7 @@ var
         if (LocIndex = 0)                                                       // this part only applies if first char of block
             and (TKMemoParagraph(KMemo1.Blocks[ABlockNo-1]).ParaStyle.LeftPadding > 0)
             and (TKMemoParagraph(KMemo1.Blocks[ABlockNo-1]).Numbering = pnuNone) then
-                TKMemoParagraph(ABlock).ParaStyle.LeftPadding := 50             // BS will go through to keeper
+                TKMemoParagraph(ABlock).ParaStyle.LeftPadding := IndentWidth;   // BS will go through to kmemo who will do merge
     end;
 
 begin
@@ -3645,7 +3643,7 @@ begin
             ABlock := Kmemo1.Blocks.GetNearestParagraphBlock(ABlockNo);
             if (ABlock <> Nil) {and ABlock.ClassNameIs('TKMemoParagraph') }     // Might be nil if no para marker at end of content
                 and (TKMemoParagraph(ABlock).Numbering = pnuNone) then          // Don't mix Indent with Bullets
-                    TKMemoParagraph(ABlock).ParaStyle.LeftPadding := 50;        // seems about right, maybe should depend on font ?
+                    TKMemoParagraph(ABlock).ParaStyle.LeftPadding := IndentWidth;
             Key := 0;                                                           // Don't let go through to KMemo
             MarkDirty();
             exit;
@@ -3889,7 +3887,7 @@ types. Sooner or later, the timer demands SaveTheNote() be called. It locks kmem
 builds a list of its content using Saver, TBSaveNote (which is badely named, it
 generates the xml to save but does not, itself, save to disk. Unlocks. It calls
 SearchForm.UpdateList() OR if its because we are closing the note and note is
-clean, goes diret to TheMainNoteLister with just an updated LCD. Note, the note
+clean, goes direct to TheMainNoteLister with just an updated LCD. Note, the note
 has not hit the disk yet !
 
 That list is passed to SaveStringList, it makes a new thread that normalises

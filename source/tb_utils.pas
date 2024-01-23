@@ -145,6 +145,7 @@ const
 
 const
   MaxDateStampIndex = 4;            // Zero based index to date/Time Formats
+  IndentWidth = 50;                 // Width of indent, used in LoadNote and EditBox
 
 var
     TheReindexProc :  TReIndexProcedure;     // Set by SearchForm during create.

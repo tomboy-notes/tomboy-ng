@@ -68,6 +68,7 @@ unit SaveNote;
     2021/10/15  Serious change, now terminate font size changes at end of line where necessary
                 vastly better xml.
     2021/11/04  SaveNewTemplate now gets a current date stamp.
+    2024/01/23  Added support for Indent
 }
 
 {$mode objfpc}{$H+}
@@ -90,8 +91,7 @@ type TNoteUpdateRec = record
      FFName : string;           // path, ID and .note, not used in Single Note Mode
      LastChangeDate : string;   // if '', its a content save, generate a new timestamp
      CreateDate : string;       // if its '', its a new note, use LastChangeDate
-     ErrorStr : string;         // '' if all OK, not used everywhere....
-     //  remove the field ErrorStr - why ???
+     ErrorStr : string;         // '' if all OK, only used with Windows due to writing bug
 end;
 
 
@@ -127,7 +127,10 @@ type
                     Absolutly vital that tag order be observed, crossed ove r tgas are a very bad thing.}
             function AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
 			function BlockAttributes(Bk: TKMemoBlock): AnsiString;
-			procedure BulletList(Level: TKMemoParaNumbering; var Buff: ANSIString);
+                                    { Takes an existing parsed string and wraps it in the necessary bullet
+                                    tags but has to resolve any pending formatting tags first and restore
+                                    then afterwards. Its horrible. If you are debugging this, sorry.  }
+            procedure BulletList(Level: TKMemoParaNumbering; var Buff: ANSIString);
             procedure CopyLastFontAttr();
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
 
@@ -207,7 +210,7 @@ begin
     // Important that we keep the tag order consistent. Good xml requires no cross over
     // tags. If the note is to be readable by Tomboy, must comply. (EditBox does not care)
     // Tag order -
-    // List, Bold, Italics HiLite Underline Strikeout Monospace Fontsize
+    // List|Indend, Bold, Italics HiLite Underline Strikeout Monospace Fontsize
     // Processing Order is the reverese -
     // ListOff BoldOff ItalicsOff HiLiteOff UnderOff StrikeOff MonoOff FontSize MonoSpace Strikeout Underline HiLite Ital Bold List
 
@@ -390,16 +393,13 @@ end;
     Result := Buff;
 end;
 
-	{ This function takes an existing parsed string and wraps it in the necessary
-      bullet tags but has to resolve any pending formatting tags first and restore
-      then afterwards. Its horrible. If you are debugging this, I am truly sorry.
-    }
+
     // ListOff BoldOff ItalicsOff HiLiteOff FontSize HiLite Ital Bold List
 
 procedure TBSaveNote.BulletList(Level : TKMemoParaNumbering; var Buff : ANSIString);
 var
    StartStartSt, StartEndSt, EndStartSt, EndEndSt : ANSIString;
-   iLevel : integer;
+   iLevel : integer = 0;
 begin
 	//writeln('Status Bold=', Bold=True, ' PBold=', PrevBold=True, ' High=', HiLight=True, ' PHigh=', PrevHiLight=True);
     StartStartSt := '';
@@ -465,27 +465,31 @@ begin
         EndEndSt := SetFontXML(FSize, True) + EndEndSt;
 	end;
 
-    // writeLn('Buff at Start [' + Buff + ']');
-    // writeln('StartStart    [' + StartStartSt + ']');
-    // writeln('StartEnd      [' + StartEndSt + ']');
-    // writeln('EndStart      [' + EndStartSt + ']');
-    // writeln('EndEnd        [' + EndEndSt + ']');
+    {writeLn('Buff at Start [' + Buff + ']');
+    writeln('StartStart    [' + StartStartSt + ']');
+    writeln('StartEnd      [' + StartEndSt + ']');
+    writeln('EndStart      [' + EndStartSt + ']');
+    writeln('EndEnd        [' + EndEndSt + ']');        }
 
     Buff := StartEndSt + Buff + EndStartSt;
-    case Level of
-        BulletOne   : iLevel := 1;
-        BulletTwo   : iLevel := 2;
-        BulletThree : iLevel := 3;
-        BulletFour  : iLevel := 4;
-        BulletFive  : iLevel := 5;
-        BulletSix   : iLevel := 6;
-        BulletSeven : iLevel := 7;
-        BulletEight : iLevel := 8;
-        otherwise iLevel := 8;
-    end;
-    while iLevel > 0 do begin
-        Buff := '<list><list-item dir="ltr">' + Buff + '</list-item></list>';
-        dec(iLevel);
+    if Level = pnuNone then
+         Buff := '<indent>' + Buff + '</indent>'           // Indent is only ever the one level.
+    else begin                                             // OK, do the bullet stuff
+        case Level of
+            BulletOne   : iLevel := 1;
+            BulletTwo   : iLevel := 2;
+            BulletThree : iLevel := 3;
+            BulletFour  : iLevel := 4;
+            BulletFive  : iLevel := 5;
+            BulletSix   : iLevel := 6;
+            BulletSeven : iLevel := 7;
+            BulletEight : iLevel := 8;
+            otherwise iLevel := 8;
+        end;
+        while iLevel > 0 do begin
+            Buff := '<list><list-item dir="ltr">' + Buff + '</list-item></list>';
+            dec(iLevel);
+        end;
     end;
     Buff := StartStartSt + Buff + EndEndSt;
 
@@ -618,7 +622,10 @@ var
                 if BlockNo >= KM1.Blocks.Count then break;
 
                 if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering <> pnuNone then
-                     BulletList(TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering, Buff);
+                     BulletList(TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering, Buff)
+                else
+                    if TKMemoParagraph(KM1.Blocks.Items[BlockNo]).ParaStyle.LeftPadding > 0 then
+                         BulletList(pnuNone, Buff);                             // Indent
 
                 {if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
                      BulletList(Buff);    }
