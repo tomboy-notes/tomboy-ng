@@ -250,8 +250,8 @@ begin
         PB.NumberingListLevel.FirstIndent := -20;    // Note, these numbers need match SettBullet() in editbox
         PB.NumberingListLevel.LeftIndent := 30;
         {$endif}
-    end else
-        if Indent then begin                                                      // end of processing Bullet
+    end else                                                                    // end of processing Bullet
+        if Indent then begin
             PB.ParaStyle.LeftPadding := IndentWidth;
             Indent := False;
         end;

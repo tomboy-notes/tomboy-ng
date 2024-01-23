@@ -522,7 +522,7 @@ uses IniFiles, LazLogger,
     Clipbrd,
     tb_symbol,
     syncGUI,
-    uQt_Colors,
+    {$if defined(LCLQT5) or defined(LCLQT6)} uQt_Colors, {$endif}
     ResourceStr,     // only partially so far ....
     dateutils;       // Managing Sync Timing
 var
@@ -537,7 +537,7 @@ var
     StopAllThreads : boolean = false;                 // Only happens at shutdown time.
 
 const   TooEarlyDate = '1900-01-01T01:01:10';         // An indication its not a real datetime for our purpose
-        EarlyDate = '1971-01-01T00:00:00';            // Something to compare with, later than TooEarlyData
+        EarlyDate = '1971-01-01T00:00:00';            // Something to compare with, later than TooEarlyDate
 
 
 procedure TSett.SetFontSizes;

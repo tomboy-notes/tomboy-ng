@@ -520,8 +520,8 @@ type
   		                        on a Para Marker thats a Bullet and/or either Leading or Trailing Para is a Bullet.
   		                        We return with IsFirstChar true if we are on the first visible char of a line (not
   		                        necessarily a bullet line). If we return FALSE, passed parameters may not be set. }
-		function NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara: Boolean;
-                        out BlockNo, TrailOffset, LeadOffset: longint): boolean;
+//		function NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara: Boolean;
+//                        out BlockNo, TrailOffset, LeadOffset: longint): boolean;
                                 { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
                                 { A method called by this or other apps to get what we might have selected }
@@ -601,7 +601,6 @@ Type
     Constructor Create(CreateSuspended : boolean);
   end;
 
-
 var
     EditBoxForm: TEditBoxForm;
     BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
@@ -633,10 +632,9 @@ uses
     ResourceStr,        // We borrow some search related strings from searchform
     bufstream,
     notenormal,         // makes the XML look a little prettier
-    LCLStrConsts,       // just for rsMBClose ?
+//    LCLStrConsts,       // just for rsMBClose ?
     KMemo2PDF,
     tb_symbol;
-//    Backlinks {$ifdef LCLQT5}, qt5 {$endif};
 
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
@@ -868,59 +866,11 @@ begin
         FirstParaBlockNo := Kmemo1.Blocks.GetNearestParagraphBlockIndex(FirstParaBlockNo);
         if FirstParaBlockNo < 0 then break;
     end;
-
-    exit;
-
-
-
-(*         Remove all this when we are sure its covered.
-
-    //EndParaBlock := Kmemo1.Blocks.GetNearestParagraphBlock(BlockNo);
-    if LastParaBlockNo = FirstParaBlockNo then
-        debugln('--------------- BulletControl Equal') else debugln('------------------BulletControl NOT Equal');
-
-
-
-    BlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelStart, Blar);
-    LastBlock := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.RealSelEnd, Blar);
-
-
-
-    if (BlockNo = LastBlock) and (BlockNo > 1) and
-        KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-        dec(LastBlock);
-        dec(BlockNo);
-    end;
-    // Don't change any trailing empty lines.
-    while KMemo1.Blocks.Items[LastBlock].ClassNameIs('TKMemoParagraph') do
-        if LastBlock > BlockNo then dec(LastBlock)
-        else break;
-
-    // OK, we are now in a TextBlock, possibly both start and end there. Must mark
-    // next para as numb and then all subsquent ones until we do the one after end.
-    repeat
-        inc(BlockNo);
-        if BlockNo >= Kmemo1.Blocks.count then	// no para after block (yet)
-            Kmemo1.Blocks.AddParagraph();
-        if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-            // special case, when clearing a bullet, ie already BulletOne and want less. The
-            // ParaBlock has some built in left offset that won't go way. A new block
-            // gets its attributes (inc the offset) from nearby ones.
-            // ToDo : log with TK or patch to provide an optonal parameter to AddParagraph(BlockNo); ??
-(*            if (not MoreBullet)
-            and (TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]).Numbering = BulletOne) then begin
-                KMemo1.Blocks.delete(BlockNo);
-                KMemo1.Blocks.AddParagraph(BlockNo);
-                debugln('BulletControl - Special Case');
-            end else  *)
-                SetBullet(TKMemoParagraph(KMemo1.Blocks.Items[BlockNo]), MoreBullet);
-        end;
-    until (BlockNo > LastBlock) and KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');    *)
 end;
 
 function TEditBoxForm.BackSpaceBullet() : boolean;
 var
-    BlockNo, PosInBlock, Index, CharCount : longint;
+    BlockNo, PosInBlock : longint;
     ParaBlockNo : integer = -1;
     IsBulletPara : boolean = false;                 // The para the cursor is in.
 begin
@@ -950,7 +900,7 @@ begin
 end;
 
 
-
+(*
 function TEditBoxForm.NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara : Boolean;            // ToDo : No longer needed ?
         								out BlockNo, TrailOffset, LeadOffset : longint ) : boolean;
 	// on medium linux laptop, 20k note this function takes less than a mS
@@ -1054,7 +1004,7 @@ begin
         Debugln('      BlockNo     =' + inttostr(BlockNo));
 
     end;
-end;
+end;                  *)
 
 {
 procedure TEditBoxForm.CancelBullet(const BlockNo : longint; const UnderBullet : boolean);
@@ -2738,7 +2688,7 @@ procedure TEditBoxForm.MakeAllLinks(const Buff : string; const Term : ANSIString
 var
 	Offset   : Integer;     // The char position of a search term in Buffer
     ByteBeforeTerm, ByteAfterTerm : integer;
-    ASelStart, ASelLength, i : integer;
+//    ASelStart, ASelLength, i : integer;
 begin
 //    if pos('bgc 11', TheMainNoteLister.NoteList[i]^.TitleLow) > 0 then
 //    if Term = 'bgc 11' then
@@ -2752,7 +2702,7 @@ begin
         if ((Offset = 1) or (Buff[ByteBeforeTerm] in [' ', #10, ',', '.'])) and
             (((Offset + length(Term)) >= length(Buff))                          // Line ends at end of link term
                 or (Buff[ByteAfterTerm] in [' ', #10, ',', '.'])) then begin    // a suitable seperator at end of link term
-            MakeLink(BlockOffset + Offset -1, UTF8length(Term), Term);                // MakeLink takes a Char Index !
+            MakeLink(BlockOffset + Offset -1, UTF8length(Term), Term);          // MakeLink takes a Char Index !
             TimerHouseKeeping.Enabled := False;
         end;
         Offset := UTF8Pos(Term, Buff, Offset + 1);
@@ -2871,12 +2821,12 @@ var
         EndScan := UTF8Length(Content) + Result;
     end;
 
+    // Puts all the content of the para before Bk into Content string.
+    // Lowercases it and terminates with a #10 char.
     function GetPrevPara(const Bk :integer) : integer;
     var
         Index : integer;
     begin
-//        if BK < 10 then
-//            debugln('Less than ten');
         Index := Bk;
         Content := '';
         while not KMemo1.Blocks[Index].ClassNameIs('TKMemoParagraph') do begin
@@ -2910,22 +2860,24 @@ begin
         while BlockNo > 0 do begin
             BlockNo := GetPrevPara(BlockNo-1);
             // At this point, BlockNo points to Par marker before our text.
-//            debugln('BlockNo=' + (BlockNo+1).ToString + '  ' + Content);
-            if BlockNo >= 0 then
-//                debugln('Char index=' + inttostr(KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1])));
+//          if BlockNo >= 0 then
+            // ToDo : above suspect line, part of a debug sys ???? Has been active and accidently
+            // acting on the "BuffOffSet := " line below since I reversed the direction of scanning
+            // for links. I am reasonably sure it should NOT be active.
+//          debugln('Char index=' + inttostr(KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1])));
 
-                BuffOffSet := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1]);
-                for i := 0 to TheMainNoteLister.NoteList.Count-1 do             // for each title in main list
-                    if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin   // don't link to self
-                        if length(Content) > 3 then begin                // Two significent char plus a newline
-                            {$ifdef LDEBUG}writeln(MyLogFile, 'FB ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
-                            MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
-                        end;
+            BuffOffSet := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1]);
+            for i := 0 to TheMainNoteLister.NoteList.Count-1 do             // for each title in main list
+                if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin   // don't link to self
+                    if length(Content) > 3 then begin                // Two significent char plus a newline
+                        {$ifdef LDEBUG}writeln(MyLogFile, 'FB ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
+                        MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
                     end;
-                // OK, lets do HTTPS then.
-                if Sett.CheckShowExtLinks.Checked then
-                if length(Content) > 12 then
-                    CheckForHTTP(Content, BuffOffset);
+                end;
+            // OK, lets do HTTPS then.
+            if Sett.CheckShowExtLinks.Checked then
+            if length(Content) > 12 then
+            CheckForHTTP(Content, BuffOffset);
         end;
         KMemo1.Blocks.UnLockUpdate;
 
@@ -3486,37 +3438,36 @@ end;
 
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  ABlock : TKMemoBlock; // experimental use for indent
-  ABlockNo, LocIndex : integer;  // experimental use for indent
-  (*TrailOffset,
-  BlockNo,              // Will hold block number cursor is under.
-  LeadOffset  : longint;
-  LeadingBullet,        // The para immediatly previous to cursor is a bullet
-  UnderBullet,          // We are under a Para and its a Bullet
-  TrailingBullet,       // We are under Text but the block behind us is a Bullet.
-  FirstChar  : boolean; // Cursor is under the first character of a line of text.
-  NoBulletPara : boolean = false;     *)
+  ABlock : TKMemoBlock;
+  ABlockNo, LocIndex : integer;
 
-    // ret T if called with cursor on first char of indented para, called on a
-    // BS keystroke (cursor on first char of block) or Shift Tab (anywherein block)
+    // ret T if it used the BS to remove an Indent. Will also 'prepare' a non-indented
+    // para to be merged, by KMemo, with a previous indented one. AnyPosInPara
+    // means we were called by Shift-Tab meaning Cursor does not need be on first char.
     function RemoveIndent(AnyPosInPara : boolean = false) : boolean;
     var
         ABlock : TKMemoBlock;
         ABlockNo, LocIndex : integer;
     begin
         Result := False;
-        ABlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.Blocks.RealSelStart, LocIndex);
+        ABlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.Blocks.RealSelStart, LocIndex);  // LocIndex not certain to be in left most block.
         if ABlockNo < 2 then exit;
+        if not AnyPosInPara                                                     // AnyPosInPara means being on first char does not matter
+            and (not KMemo1.Blocks[ABlockNo-1].ClassNameIs('TKMemoParagraph')) then exit;   // was not first block in para.
         ABlock := Nil;
         ABlock := Kmemo1.Blocks.GetNearestParagraphBlock(ABlockNo);             // Gets the following one, not the nearest !
         if ABlock = Nil then exit;
         if TKMemoParagraph(ABlock).Numbering <> pnuNone then exit;              // Bullets are not my job
+
+        // deal with a backspace from first char of an indented para.
         if (TKMemoParagraph(ABlock).ParaStyle.LeftPadding > 0)                  // Has padding, might be Indent
-                        and (AnyPosInPara or (LocIndex = 0)) then begin         // and char position OK, must delete indent
+            and (not KMemo1.Blocks[ABlockNo].ClassNameIs('TKMemoParagraph'))    //
+            and (AnyPosInPara or (LocIndex = 0)) then begin                     // and char position OK, must delete indent
                 TKMemoParagraph(ABlock).ParaStyle.LeftPadding := 0;
                 exit(true);
         end;
-        // if Previous paragraph is indented we want the merged para to have same Indent as previous
+
+        // Deal a para being merged with a previous, indented one. Just indent current one and let KMemo handle it.
         if (LocIndex = 0)                                                       // this part only applies if first char of block
             and (TKMemoParagraph(KMemo1.Blocks[ABlockNo-1]).ParaStyle.LeftPadding > 0)
             and (TKMemoParagraph(KMemo1.Blocks[ABlockNo-1]).Numbering = pnuNone) then
@@ -3671,95 +3622,12 @@ begin
     // ToDo : fix problem of merge into indented paragraph
 
     if Verbose then debugln('Dealing with a BS');
-
     if BackSpaceBullet() then begin
         Key := 0;
         MarkDirty();
         exit;
     end;
-
     if Verbose then debugln('Letting BS go through to KMemo');
-
-    exit;
-
-    (*         Remove all this once we are sure we have all of it covered
-
-
-
-
-
-
-    // Mac users don't have a del key, they use a backspace key thats labled 'delete'. Sigh...
-    if KMemo1.Blocks.RealSelEnd > KMemo1.Blocks.RealSelStart then
-        exit();
-
-
-
-    if not NearABulletPoint(LeadingBullet, UnderBullet, TrailingBullet, FirstChar, NoBulletPara,
-    				BlockNo, TrailOffset, LeadOffset) then exit();
-    if (not FirstChar) and (not UnderBullet) then
-        exit();
-
-    // We do have to act, don't pass key on.              <<< review this
-    Key := 0;
-    Ready := False;
-    MarkDirty();
-
-    if Verbose then debugln('Dealing with a BS in Bullet country');
-
-    // KMemo1.Blocks.LockUpdate;  Do not lock because we move the cursor down here.
-
-
-    	if UnderBullet and (not FirstChar) then begin   // case a - I suspect not needed anymore because we cannot select para marker.
-            KMemo1.ExecuteCommand(ecDeleteLastChar);
-            if Verbose then debugln('Case a');
-            Ready := True;
-            exit();
-        end;
-
-        // ------------ C A S E   B -----------------
-
-
-
-        // anything remaining must have FirstChar
-        if TrailingBullet and (not NoBulletPara) then begin	// case b
-            if Verbose then debugln('Case b or e');
-            if UnderBullet then  						// case e
-              	TrailOffset := 0;
-            if kmemo1.blocks.Items[BlockNo+TrailOffset].ClassNameIs('TKMemoParagraph') then
-                SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]), False)
-            	// TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]).Numbering := pnuNone
-            else DebugLn('ERROR - this case b block should be a para');
-            Ready := True;
-            exit();
-        end;
-        // anything remaining is outside bullet list, looking in. Except if Trailing is set...
-        if  kmemo1.blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-            KMemo1.Blocks.Delete(BlockNo);		// delete this blank line.
-            if TrailingBullet then begin
-            	KMemo1.ExecuteCommand(ecUp);
-            	KMemo1.ExecuteCommand(ecLineEnd);
-                if Verbose then debugln('Case x');
-			end else begin
-            	if UnderBullet then begin				// this test is wrong, real test is are we at end of text ?
-                    if Verbose then DebugLn('Case y');
-                    KMemo1.Blocks.AddParagraph();		// Maybe only need add that if at end of text, NearABulletPoint() could tell us ?
-                    KMemo1.ExecuteCommand(ecDown);
-                end else
-            		if Verbose then debugln('Case c');
-            end;
-        end else begin				// merge the current line into bullet above.
-            if kmemo1.blocks.Items[BlockNo+TrailOffset].ClassNameIs('TKMemoParagraph') then
-                SetBullet(TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]), True)
-            	// TKMemoParagraph(kmemo1.blocks.Items[BlockNo+TrailOffset]).Numbering := pnuBullets;
-            else DebugLn('ERROR - this case d block should be a para');
-            if  kmemo1.blocks.Items[BlockNo-Leadoffset].ClassNameIs('TKMemoParagraph') then begin
-            	KMemo1.Blocks.Delete(BlockNo-LeadOffset);
-            	if Verbose then debugln('Case d');
-        	end;
-    	end;
-    Ready := True;         *)
-    // most of the intevention paths through this method take ~180mS on medium powered linux laptop
 end;
 
 procedure TEditBoxForm.KMemo1KeyPress(Sender: TObject; var Key: char);
