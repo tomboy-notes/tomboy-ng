@@ -44,12 +44,12 @@ function ContinueToGUI() : boolean ;
                             saves it to normal repo and requests a running instance (if there is one) to
                             reindex as necessary. Note that in CLI mode, we do not check for a Title Clash
                             (because NoteLister may not be running. In GUI mode, existing Title is checked.}
-procedure Import_Note(FFName : string = '');
+function Import_Note(FFName : string = '') : string;
                             { Will take offered file name, report error else converts that file to .note,
                             saves it to normal repo and requests a running instance (if there is one) to
                             reindex as necessary. Note that in CLI mode, we do not check for a Title Clash
                             (because NoteLister may not be running. In GUI mode, existing Title is checked.}
-procedure Import_Text_MD_File(MD : boolean; FFName : string = '');
+function Import_Text_MD_File(MD : boolean; FFName : string = '') : string;
 
 var
     SingleNoteName : string = '';    // other unit will want to know.....
@@ -179,11 +179,12 @@ begin
          Raise ENoNotesRepoException.create('tomboy-ng does not appear to be configured');
 end;
 
-procedure Import_Note(FFName : string = '');
+function Import_Note(FFName : string = '') : string;
 var
     FFileName, Fname : string;
     GUID : TGUID;
 begin
+     Result := '';
      if FFName <> '' then
         FFileName := FFName
      else FFileName := Application.GetOptionValue('n', 'import-note');
@@ -192,11 +193,13 @@ begin
         FFileName := GetEnvironmentVariable('HOME') + FFileName.Remove(0,1);
     {$endif}
      if not FileExists(FFileName) then begin
-         debugln('Error, request to import nonexisting file : ' + FFileName);
+         Result := 'Error, request to import nonexisting file : ' + FFileName;
+         debugln(Result);
          exit;
      end;
      if GetTitleFromFFN(FFileName, false) = '' then begin
-         debugln('Error, request to import invalid Note file : ' + FFileName);
+         Result := 'Error, request to import invalid Note file : ' + FFileName;
+         debugln(Result);
          exit;
      end;
      if IDLooksOK(ExtractFileNameOnly(FFileName)) then
@@ -211,18 +214,23 @@ begin
             CanSendMessage('REINDEX:' + FName)
         else TheReindexProc(FName, True);
      end
-        else debugln('ERROR - failed to copy ' + FFileName + ' to ' + GetNotesDir() + FName);
+        else begin
+            Result := 'ERROR - failed to copy ' + FFileName + ' to ' + GetNotesDir() + FName;
+            debugln(Result);
+        end;
 end;
 
 
 
-procedure Import_Text_MD_File(MD : boolean; FFName : string = '');
-                        // ToDo : make this a function, ret F on error.
-                        // )
+function Import_Text_MD_File(MD : boolean; FFName : string = '') : string;
+    // May generate an error but reports it to commad line so, OK ?
+    // but is also called from SearchUnit, so who sees that error then ?
+    //
 var
     FFileName : string;
     Importer : TImportNotes;
 begin
+    result := '';                   // Anything here is an error message
     if FFName <> '' then
         FFileName := FFName
     else
@@ -249,6 +257,7 @@ begin
         except on
             //E: ENoNotesRepoException do begin
             E: Exception do begin
+                            Result := E.Message;                        // SearchUnit will look at that.
                             debugln(E.Message);
                             exit;
                         end;

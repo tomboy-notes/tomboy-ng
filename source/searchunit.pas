@@ -1786,6 +1786,8 @@ begin
 end;
 
 procedure TSearchForm.MenuItemImportNoteClick(Sender: TObject);
+var
+    ImportError : string = '';
 begin
     {$ifdef UNIX}
     OpenDialogImport.InitialDir :=  GetEnvironmentVariable('HOME');
@@ -1797,13 +1799,15 @@ begin
     OpenDialogImport.Title := rsHelpImportFile;
     if OpenDialogImport.Execute then begin
         if TrimFilename(OpenDialogImport.FileName).EndsWith('.note') then
-            import_note(TrimFilename(OpenDialogImport.FileName))
+            ImportError := import_note(TrimFilename(OpenDialogImport.FileName))
         else if TrimFilename(OpenDialogImport.FileName).EndsWith('.md') then
-            Import_Text_MD_File(True, TrimFilename(OpenDialogImport.FileName))
+            ImportError := Import_Text_MD_File(True, TrimFilename(OpenDialogImport.FileName))
         else if TrimFilename(OpenDialogImport.FileName).EndsWith('.txt') then
-            Import_Text_MD_File(False, TrimFilename(OpenDialogImport.FileName))
-        else showmessage('Cannot import TrimFilename(OpenDialogLibrary.FileName)');
+            ImportError := Import_Text_MD_File(False, TrimFilename(OpenDialogImport.FileName))
+        else ImportError := 'Cannot import TrimFilename(OpenDialogLibrary.FileName)';
     end;
+    if ImportError <> '' then
+        showmessage('Cannot import TrimFilename(OpenDialogLibrary.FileName)');
 end;
 
 procedure TSearchForm.ButtonSearchOptionsClick(Sender: TObject);
