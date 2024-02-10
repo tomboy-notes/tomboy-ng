@@ -109,6 +109,7 @@ unit settings;
     2023/03/18  Ensure AltColour and AltBackGndColor are set to something in user defined scheme
     2023/10/28  Restructure some of Auto Sync to allow multithreading, does not use SyncGUI
     2023/10/29  Multithreaded sync appears to work.
+    2024/02/05  Altered the AltColour to be clDefault under a dark theme, experimental !!
 }
 
 {$mode objfpc}{$H+}                    //
@@ -1489,7 +1490,12 @@ end;
     It tests for a gtk2, qt5 using qt5ct and defers to qt5ct if possible. Otherwise, sets some
     (hopefully) appropriate colors for either a light or dark theme. These colors
     are always used for the KMemo and possibly, when DarkThemeSwich is used, for what other
-    screens I can.   }
+    screens I can.
+    White is 00ffffff and black 00000000. BBGGRR
+    Colours like clDefault put digits to the far left, are not numerically compatible.
+    }
+
+
 
 procedure TSett.SetColours;
 {$if defined(LCLQT5) or defined(LCLQT6)}
@@ -1522,7 +1528,8 @@ begin
     if UserSetColours then exit;        // will have already been set by config or by colour form.
     if DarkTheme or DarkThemeSwitch then begin
             BackGndColour:= $303030;        // KMemo Background
-            AltColour  := $606060;          // Some panel's background color
+            AltColour  := BackGndColour + $141414;  // Some panel's background color
+            //AltColour  := $606060;
             HiColour   := $600001;          // a dark blue;  This is, eg Crtl H type highlighting, not selection !
             TextColour := clWhite;
             TitleColour:= $B8B800;
@@ -1535,12 +1542,11 @@ begin
         HiColour    := clYellow-1;
         TextColour  := clBlack;
         TitleColour := clBlue;
-        LinkColour  := clBlue+1;       //  One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
+        LinkColour  := clBlue+1;            //  One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
         AltBackGndColor := clLtGray;
         {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Light Colors set by code.');{$endif}
     end;
     // if DarkThemeSwitch then color := AltColour;    No, cannot change color of the Tabsheet, looks horrible
-
 end;
 
 

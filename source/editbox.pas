@@ -242,6 +242,7 @@ unit EditBox;
     2023/12/30  Added ability to display Back Links (Links button with nothing selected)
     2024/01/17  Altered the colour of Backlinks Panel to clMenu AFTER building all except MacOS and Packman
     2024/01/23  More or less finished rewrite of Bullet code, addition of indent. Needs testing.
+    2024/02/05  Set the yellow read only warning panel to height = 0 instead of 1. This will need cross platform testing !
 }
 
 
@@ -2193,7 +2194,7 @@ begin
     if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
     // Ready := False;                             // But it must be false aready, it was created FALSE
 //    Tick := GetTickCount64();
-    PanelReadOnly.Height := 1;
+    PanelReadOnly.Height := 0;                  // '1' is visible as a yellow line in dark theme
     TimerSave.Enabled := False;
     KMemo1.Font.Size := Sett.FontNormal;
     KMemo1.Font.Name := Sett.UsualFont;

@@ -195,7 +195,7 @@ object Sett: TSett
           Left = 10
           Height = 25
           Top = 8
-          Width = 179
+          Width = 174
           BorderSpacing.Left = 10
           Caption = 'tomboy-ng Default'
           Checked = True
