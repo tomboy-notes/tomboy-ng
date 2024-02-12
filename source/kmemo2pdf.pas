@@ -720,47 +720,6 @@ begin
     AllowNoBoldItalic := True;
     StartPDF();
     exit();
-
-(*  CurrentPage := -1;
-    If WordList <> nil then
-        FreeAndNil(WordList);
-    FontList := TFontList.Create();
-    WordList := TWordList.Create;
-    KMemoRead();
-    // This is for later, it does no make fonts available to the PDF
-    gTTFontCache.ReadStandardFonts;                             // https://forum.lazarus.freepascal.org/index.php/topic,54280.msg406091.html
-//    gTTFontCache.SearchPath.Add('/usr/share/fonts/');         // ToDo : this is NOT cross platform
-    gTTFontCache.BuildFontCache;
-
-//    Memo1.append('TFormKMemo2pdf.BitBtn2Click gTTFontCache has ' + inttostr(gTTFontCache.Count) + ' fonts including - ');
-    for i := 0 to gTTFontCache.Count -1 do                      // ToDo : remove me
-     if (gTTFontCache.Items[i].FamilyName = 'Ubuntu') or (gTTFontCache.Items[i].FamilyName = 'Karumbi') then begin
-
-         Memo1.append(gTTFontCache.Items[i].FamilyName
-            + ' - ' + gTTFontCache.Items[i].FileName
-            + ' - ' + gTTFontCache.Items[i].HumanFriendlyName
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsBold, true)
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsItalic, true)
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsFixedWidth, true)
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsRegular, true));
-
-         writeln(gTTFontCache.Items[i].FamilyName
-            + ' - ' + gTTFontCache.Items[i].FileName
-            + ' - ' + gTTFontCache.Items[i].HumanFriendlyName
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsBold, true)
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsItalic, true)
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsFixedWidth, true)
-            + ' - ' + booltostr(gTTFontCache.Items[i].IsRegular, true));
-
-     end;
-
-
-    FDoc := TPDFDocument.Create(Nil);
-//    FDoc.FontDirectory := '/usr/share/fonts';            // ToDo : this is NOT cross platform
-    MakePDF();
-    FDoc.Free;
-    FreeAndNil(FontList);
-    FreeAndNil(WordList);               *)
 end;
 
 

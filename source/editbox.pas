@@ -559,7 +559,7 @@ type
         Dirty : boolean;
         Verbose : boolean;
         SearchedTerm : string;          // If not empty, opening is associated with a search, go straight there.
-        HaveSeenOnActivate : boolean;   // Indicates we have run, eg, CheckForLinks at Activate
+        // HaveSeenOnActivate : boolean;   // Indicates we have run, eg, CheckForLinks at Activate
 
         TemplateIs : AnsiString;        // If a new note is a member of Notebook, this holds notebook name until first save.
                                 { Public : Will mark this note as ReadOnly and not to be saved because the Sync Process
@@ -1537,14 +1537,15 @@ end;
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 {$ifdef TDEBUG}var
     Tick, Tock : integer; {$endif}
+const AlreadyCalled: boolean = False;           // Typed Constant, remembered ....
 begin
-    if not HaveSeenOnActivate then begin;       // Only the first Activate
+    if not AlreadyCalled then begin;
         Ready := False;
         {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
         CheckForLinks(True);
         {$ifdef TDEBUG}
         Tock := gettickcount64();
-        debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(HaveSeenOnActivate, true));
+        debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(AlreadyCalled, true));
         {$endif}
         if SearchedTerm <> '' then               // We must do search after CheckForLinks
             NewFind(SearchedTerm);
@@ -1555,7 +1556,7 @@ begin
             MenuItemSync.Enabled := False;
             SpeedButtonNotebook.Enabled := False;
         end;
-        HaveSeenOnActivate := True;             // ToDo : a regional, convert to typed const
+        AlreadyCalled := True;
         Ready := True;
     end;
 end;
@@ -2237,7 +2238,7 @@ begin
 //    MarkTitle();                                // 70mS, ImortNote() does it all now. Not needed for new note
 
     KMemo1.SelStart := KMemo1.Text.Length;      // set curser pos to end
-    KMemo1.SelEnd := Kmemo1.Text.Length;        // ToDo : why do we do this ?
+    KMemo1.SelEnd := Kmemo1.Text.Length;
     KMemo1.SetFocus;
     KMemo1.executecommand(ecEditorTop);
     KMemo1.ExecuteCommand(ecDown);

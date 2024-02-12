@@ -1296,7 +1296,7 @@ begin
         end;
     MenuItemCaseSensitive.checked := Sett.SearchCaseSensitive;
     MenuItemSWYT.checked := Sett.AutoSearchUpdate;
-    MenuItemImportNote.Hint := rsHelpImportFile;         // ToDo : OK, where is ShowHint ?
+    MenuItemImportNote.Hint := rsHelpImportFile;         // Hint shows on StatusBar
     {$ifdef LVOWNERDRAW}
     ListViewNotes.OwnerDraw:= True;
     {$ifdef LCLQT5}                 // This because when ownerdrawn, we loose spacing between rows in Qt5, ugly workaround.

@@ -1354,7 +1354,7 @@ procedure TNoteLister.IndexThisNote(const ID: String);
 begin
     //DebugMode := True;
     //debugln('TNoteLister.IndexThisNote');
-    InitCriticalSection(CriticalSection);                          // ToDo : how hard would this be to do in background thread ?
+    InitCriticalSection(CriticalSection);                          // could be done in background thread but rarely called
     GetNoteDetails(WorkingDir, CleanFileName(ID), false, self);    // while single call, must setup critical
     DoneCriticalSection(CriticalSection);
     //DebugMode := False;

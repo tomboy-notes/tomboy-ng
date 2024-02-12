@@ -164,6 +164,7 @@ object SearchForm: TSearchForm
     Height = 23
     Top = 378
     Width = 794
+    AutoHint = True
     Panels = <    
       item
         Width = 200
