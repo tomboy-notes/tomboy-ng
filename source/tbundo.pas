@@ -1,9 +1,10 @@
 unit tbundo;
 
-{   Copyright (C) 2021 David Bannon
+{   Copyright (C) 2017-2024 David Bannon
+
     License:
-    This code is licensed under BSD 3-Clause Clear License, see file License.txt
-    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+    This code is licensed under MIT License, see the file License.txt
+    or https://spdx.org/licenses/MIT.html  SPDX short identifier: MIT
     ------------------
 
     A FPC/Lazarus Unit to providing a Text Only undo/redo facility to KMemo.

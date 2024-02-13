@@ -1,10 +1,10 @@
 unit EditBox;
 
-{   Copyright (C) 2017-2021 David Bannon
+{   Copyright (C) 2017-2024 David Bannon
 
     License:
-    This code is licensed under BSD 3-Clause Clear License, see file License.txt
-    or https://spdx.org/licenses/BSD-3-Clause-Clear.html.
+    This code is licensed under MIT License, see the file License.txt
+    or https://spdx.org/licenses/MIT.html  SPDX short identifier: MIT
 }
 
 {	This form represents one note being read or edited. It keeps its note in
