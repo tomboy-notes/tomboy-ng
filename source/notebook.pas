@@ -82,7 +82,7 @@ type
 				procedure ButtonOKClick(Sender: TObject);
                 procedure CheckListBox1ItemClick(Sender: TObject; Index: integer);
                 procedure EditNewNotebookKeyDown(Sender: TObject;
-                    var Key: Word; Shift: TShiftState);
+                    var Key: Word; {%H-}Shift: TShiftState);
                 procedure EditNewNotebookNameEditingDone(Sender: TObject);
                 procedure FormShow(Sender: TObject);
                 procedure SetupForAddNotes();

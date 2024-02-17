@@ -27,8 +27,8 @@ type
 
   TAutoStartCtrl = class
     Private
-        procedure AutoOff(AppName : string);            // don't need appname Linux or windows, maybe MacOS ?
-        procedure AutoOn(AppName: string);
+        procedure AutoOff({%H-}AppName : string);            // don't need appname Linux or windows, maybe MacOS ?
+        procedure AutoOn({%H-}AppName: string);
         {$ifdef WINDOWS}
         function WindowsDirectory(CSIDL : integer): string;
         {$endif}

@@ -17,7 +17,7 @@ unit transfile;
 }
 
 {$mode objfpc}{$H+}
-
+{$WARN 5024 off : Parameter "$1" not used}
 interface
 
 uses

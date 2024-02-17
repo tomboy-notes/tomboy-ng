@@ -169,7 +169,7 @@ type
         procedure ButtonDismissClick(Sender: TObject);
 		procedure ButtSysTrayHelpClick(Sender: TObject);
         procedure CheckBoxDontShowChange(Sender: TObject);
-        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormClose(Sender: TObject; var {%H-}CloseAction: TCloseAction);
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

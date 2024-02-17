@@ -508,6 +508,10 @@ msgctxt "resourcestr.rssnapshotcreated"
 msgid "created, do you want to copy it elsewhere ?"
 msgstr "créé, faire une autre copie ailleurs ?"
 
+#: resourcestr.rsstrictthemecolors
+msgid "Use only the (Qt) theme colors for Editing Notes"
+msgstr ""
+
 #: resourcestr.rssyncclash
 msgid "A Sync Clash has occurred"
 msgstr ""

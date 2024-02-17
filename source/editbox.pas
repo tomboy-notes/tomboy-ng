@@ -356,7 +356,7 @@ type
         procedure EditFindKeyDown(Sender: TObject; var Key: Word;
             Shift: TShiftState);
         procedure FormActivate(Sender: TObject);
-        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormClose(Sender: TObject; var {%H-}CloseAction: TCloseAction);
         procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
         procedure FormCreate(Sender: TObject);
 		procedure FormDestroy(Sender: TObject);
@@ -373,7 +373,7 @@ type
 		procedure KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
         procedure KMemo1KeyPress(Sender: TObject; var Key: char);
         procedure KMemo1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+		procedure KMemo1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; {%H-}X, Y: Integer);
         procedure KMemo1MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure ListBoxBackLinksClick(Sender: TObject);
         procedure MenuItemExportPDFClick(Sender: TObject);
@@ -2175,8 +2175,10 @@ begin
    // Color:= Sett.textcolour;
    if Sett.DarkTheme then Color := Sett.BackGndColour;
    {$endif}
-   PanelFind.Color := Sett.AltColour;
-   Panel1.Color := Sett.AltColour;
+   if Sett.DarkThemeSwitch then begin
+       PanelFind.Color := Sett.AltColour;
+       Panel1.Color := Sett.AltColour;
+   end;
    KMemo1.Colors.SelTextFocused := Sett.TextColour;
    KMemo1.Colors.SelText := Sett.TextColour;               // when looses focus
    KMemo1.Colors.BkGnd:= Sett.BackGndColour;

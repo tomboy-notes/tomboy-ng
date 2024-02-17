@@ -119,9 +119,9 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
-    LCLIntf, Spin{, notifier}, base64, fpttf,
-    LMessages,
-    syncutils;
+    LCLIntf, Spin{, notifier}, base64, fpttf, LMessages, syncutils
+    {$ifdef LCLQT5}, qt5{$endif}
+    {$ifdef LCLQT6}, qt6{$endif} ;
 
 // Types;
 
@@ -1482,12 +1482,14 @@ begin
 
 end;
 
-{ Colors - if its GTK2 or a Qt5 with a QT_QPA_PLATFORMTHEME=[gtk2, qt5ct] then most colors will be right.
-    However, the KMemo might be wrong as its always set to a defult light set, ignoring OS.
-    So, we must always set Sett's colors for, at least, KMemo to use.
-    DarkThemeSwitch tells us to apply the setting to what ever other components we can too.
-    SetColors is called by TMainForm.TestDarkThemeInUse during startup, DarkTheme* may have been set.
-    It tests for a gtk2, qt5 using qt5ct and defers to qt5ct if possible. Otherwise, sets some
+{ Colors - most colors will be right, as set instructed by the OS. However, the
+    KMemo will be wrong as its always set to a defult light set, ignoring OS. So,
+    we must always set Sett's colors for, at least, KMemo to use.
+    DarkThemeSwitch also tells us to apply the setting to what ever other components
+    we can too. SetColors is called by TMainForm.TestDarkThemeInUse during startup,
+    DarkTheme* may have been set.
+    For qt we read the Qt palette and try to use what we need but unless --strict-theme
+    is set, we override most of them. Otherwise, sets some
     (hopefully) appropriate colors for either a light or dark theme. These colors
     are always used for the KMemo and possibly, when DarkThemeSwich is used, for what other
     screens I can.
@@ -1496,59 +1498,116 @@ end;
     }
 
 
+// These colours are used mainly in KMemo (and when --dark-theme is used).
+const
+        LIGHT_HiColour       = clYellow-1;                // important that HiColour not coincide with other colours
+        LIGHT_BackGndColour  = clCream;
+        LIGHT_AltBackGndColour= TColor($B0B0B0);
+        LIGHT_TitleColour    = clBlue;
+        LIGHT_LinkColour     = clBlue+1;                  // One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
+        DARK_HiColour        = TColor($000081);           // important that HiColour not coincide with other colours
+        DARK_BackGndColour   = TColor($303030);
+        DARK_AltBackGndColour= TColor($707070);
+        DARK_TitleColour     = TColor($E08800);
+        DARK_LinkColour      = TColor($E08801);           // One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
 
-procedure TSett.SetColours;
+
+
+
 {$if defined(LCLQT5) or defined(LCLQT6)}
-var
-    Qt_Colors  : TQt_Colors; {$endif}
+procedure TSett.SetColours;
     // pink = $EEEEFF, White is $FFFFFF, Black is $000000
-begin
-    {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ',
-                   'QT_QPA_PLATFORMTHEME is ' + GetEnvironmentVariable('QT_QPA_PLATFORMTHEME')); {$endif}
-    {$if defined(LCLQT5) or defined(LCLQT6)}                       // First we will try the special Qt5 ways of settings colours
-    // If user has set QT_QPA_PLATFORMTHEME=gtk2 this bit drops through, all components except KMemo are good.
-    Qt_Colors  := TQt_Colors.Create;      // needs some work for qt6
-    try
-       if Qt_Colors.FoundColors then begin         // Will be false if user not using qt5ct
-           BackGndColour:= Qt_Colors_Rec.QColorBackground;
-           HiColour   := Qt_Colors_Rec.QColorHighLight+1; // This is, eg Crtl H type highlighting, not selection. +1 to make unique
-           AltColour := Qt_Colors_Rec.QColorLessBright;     // Used for selected Text
-           TextColour := Qt_Colors_Rec.QColorText;
-           TitleColour:= Qt_Colors_Rec.QColorLink;
-           LinkColour := Qt_Colors_Rec.QColorLink;
-           AltBackGndColor := Qt_Colors_Rec.QColorLessBright; // Selected background colour
-           QtOwnsColours := true;
-           {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Colors set by qt5ct.');{$endif}
-           exit;
-       end;
-    finally
-        Qt_Colors.Free;
+
+    function GetQTColor(ColorName: string): TColor;
+    var
+        PaletteH : QPaletteH;
+        ABrush : QBrushH;
+        APQColor : PQColor;
+    begin
+        PaletteH := QPalette_Create;          // https://doc.qt.io/qt-5/qpalette.html
+        QGuiApplication_palette(PaletteH);    // if not created, triggers a SegV   https://doc.qt.io/qt-5/qguiapplication.html
+        case ColorName of
+            'Window'          : ABrush := QPalette_Window(PaletteH);            // A general background color.
+            'WindowText'      : ABrush := QPalette_WindowText(PaletteH);        // A general foreground color.
+            'Base'            : ABrush := QPalette_Base(PaletteH);              // background color for text entry widgets, combobox.  It is usually white or another light color.
+            'AlternateBase'   : ABrush := QPalette_AlternateBase(PaletteH);     // Used as the alternate background color in views with alternating row colors
+            'ToolTipBase'     : ABrush := QPalette_ToolTipBase(PaletteH);       // Used as the background color for QToolTip, from inactive set
+            'ToolTipText'     : ABrush := QPalette_ToolTipText(PaletteH);       // Used as the foreground color for QToolTip, from inactive set
+            //'PlaceholderText' : ABrush := QPalette_PlaceholderText(PaletteH); // was introduced in Qt5.12, we don't support
+            'Text'            : ABrush := QPalette_Text(PaletteH);              // The foreground color used with Base. This is usually the same as the WindowText, in which case it must provide good contrast with Window and Base.
+            'Button'          : ABrush := QPalette_Button(PaletteH);            // The general button background color, can be different from Window as some styles require a different background color for buttons.
+            'ButtonText'      : ABrush := QPalette_ButtonText(PaletteH);        // A foreground color used with the Button color.
+            'BrightText'      : ABrush := QPalette_BrightText(PaletteH);        // Color that is very different from WindowText, and contrasts well with e.g. Dark
+            'Highlight'       : ABrush := QPalette_Highlight(PaletteH);         // A color to indicate a selected item or the current item
+            'HighlightedText' : ABrush := QPalette_HighlightedText(PaletteH);   // A text color that contrasts with Highlight.
+            'Link'            : ABrush := QPalette_Link(PaletteH);              // A text color used for unvisited hyperlinks. By default, the link color is Qt::blue.
+            'LinkVisited'     : ABrush := QPalette_LinkVisited(PaletteH);       // A text color used for already visited hyperlinks. By default, the linkvisited color is Qt::magenta.
+            //    'Accent'          : ABrush := QPalette_Accent(PaletteH);      // function should be there Qt6 > 6.6
+        else
+            begin ABrush := QPalette_Window(PaletteH); showmessage('Invalid color detected'); end;
+        end;
+        APQColor := QBrush_color(ABrush);
+        Result := RGBtoColor(APQColor^.r div 256, APQColor^.g div 256, APQColor^.b div 256);
+        QPalette_destroy(PaletteH);
     end;
-    {$endif}
-    if UserSetColours then exit;        // will have already been set by config or by colour form.
+
+begin
+    // First we will try the special Qt5 ways of settings colours
+    BackGndColour:= GetQTColor('Base');               // eg KMemo Background colour
+    HiColour   :=   GetQTColor('LinkVisited');        // This is, eg Crtl H type highlighting, not selection. +1 to make unique
+    AltColour :=    GetQTColor('Window');             // for panels around kmemo, must be near BackGndColour
+    TextColour :=   GetQTColor('Text');
+    TitleColour:=   GetQTColor('Link');               // we set title and link to same colour
+    LinkColour :=   GetQTColor('Link');               //
+    AltBackGndColor := GetQTColor('Highlight');       // background colour of selected text
+
+    if not Application.HasOption('strict-theme') then begin
+        writeln('Override theme colours for KMemo.');
+        // Here I override the Qt Theme to provide some key traditional Tomboy colours
+        if DarkTheme then begin
+            //        BackGndColour := ??             // Leave it as it is.
+            HiColour        := DARK_HiColour;         // important that HiColour not coincide with other colours
+            AltBackGndColor := DARK_AltBackGndColour;
+            TitleColour     := DARK_TitleColour;
+            LinkColour      := DARK_LinkColour;       // One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
+        end else begin
+            HiColour        := LIGHT_HiColour;        // important that HiColour not coincide with other colours
+            BackGndColour   := LIGHT_BackGndColour;
+            AltBackGndColor := LIGHT_AltBackGndColour;
+            TitleColour     := LIGHT_TitleColour;
+            LinkColour      := LIGHT_LinkColour;      //  One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
+       end;
+   end;
+   QtOwnsColours := true;
+   debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Colors set to Qt Theme.');
+end;
+{$else}                            // else of {$if defined(LCLQT5) or defined(LCLQT6)}
+
+procedure TSett.SetColours;        // This one applies to all widget sets except Qt5/6
+begin
+    if UserSetColours then exit;                        // will have already been set by config or by colour form.
     if DarkTheme or DarkThemeSwitch then begin
-            BackGndColour:= $303030;        // KMemo Background
-            AltColour  := BackGndColour + $141414;  // Some panel's background color
-            //AltColour  := $606060;
-            HiColour   := $600001;          // a dark blue;  This is, eg Crtl H type highlighting, not selection !
-            TextColour := clWhite;
-            TitleColour:= $B8B800;
-            LinkColour := $B8B801;
-            AltBackGndColor := clGray;     // Selected text, both focused and unfocused
-            {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Dark Colors set by code.');{$endif}
+        BackGndColour   := DARK_BackGndColour ;         // KMemo Background
+        AltColour       := BackGndColour + $141414;     // Some panel's background color
+        HiColour        := DARK_HiColour ;              // a dark blue;  This is, eg Crtl H type highlighting, not selection !
+        TextColour      := clWhite;
+        TitleColour     := DARK_TitleColour ;
+        LinkColour      := DARK_LinkColour ;
+        AltBackGndColor := DARK_AltBackGndColour;       // Selected text, both focused and unfocused
+        {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Dark Colors set by code.');{$endif}
     end else begin
-        BackGndColour := clCream;
-        AltColour   := clDefault;
-        HiColour    := clYellow-1;
-        TextColour  := clBlack;
-        TitleColour := clBlue;
-        LinkColour  := clBlue+1;            //  One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
-        AltBackGndColor := clLtGray;
+        AltColour     := clDefault;
+        BackGndColour := LIGHT_BackGndColour ;
+        TextColour    := clBlack;
+        HiColour      := LIGHT_HiColour ;
+        TitleColour   := LIGHT_TitleColour ;
+        LinkColour    := LIGHT_LinkColour ;               //  One unit of red, no one will notice, but don't subtract 1 from xxxx00  or add 1 to xxxxFF
+        AltBackGndColor := LIGHT_AltBackGndColour;
         {$ifdef DEBUG} debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Light Colors set by code.');{$endif}
     end;
     // if DarkThemeSwitch then color := AltColour;    No, cannot change color of the Tabsheet, looks horrible
 end;
-
+{$endif}          // end of {$if defined(LCLQT5) or defined(LCLQT6)}
 
 
 procedure TSett.SetHelpLanguage();

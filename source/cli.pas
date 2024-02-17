@@ -110,6 +110,9 @@ begin
        {$ifdef LCLgtk2}
        debugln('   --useappind=yes|no            ' + 'Force particular TrayIcon');
        {$endif}
+       {$if defined(LCLQT5) or defined(LCLQt6)}
+       debugln('   --strict-theme                ' + rsStrictThemeColors);
+       {$endif}
        result := true;
     end;
 end;
@@ -305,7 +308,8 @@ initialization
         'debug-sync', 'debug-index', 'debug-spell',
         'config-dir:', 'open-note:', 'save-exit',      // -o for open also legal. save-exit is legecy
         'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
-        'title-fname', 'gnome3', 'useappind:');        // -g and gnome3 is legal but legacy, ignored.
+        'title-fname', 'gnome3', 'useappind:',        // -g and gnome3 is legal but legacy, ignored.
+        'strict-theme');                              // Strict-theme applies to only Qt versions
 
 end.
 
