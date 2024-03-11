@@ -1,3 +1,4 @@
-Fix to UTF8 bug in note title affecting links.
-Avoid Wayland, it cannot bring a window to foreground, report on position.
+Revised Bullet control system.
+Revised Color setting system for Qt5 and Qt6
+Tab key now indents paragraph, not compatible with old Tomboy.
 

@@ -14,80 +14,107 @@ There is some advice about DIY debugging further down this document.
 <size:huge><bold>Known Issues</bold></size:huge>
 
 <list><list-item dir="ltr"><list><list-item dir="ltr">On some  older Macs, when using the in note Find tool, a 'shadow highlight' can appear superimposed over the button bar. It does no harm, disappears when you move the mouse over the button but is unsightly. Its a know upstream problem, https://forum.lazarus.freepascal.org/index.php/topic,53055.0.html .</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility to share them with other machines (or even the same multiboot machine).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Do not set your notes directory to be on a network share.  Please keep your notes on a local disk and use the sync facility (aimed at the network share) to share them with other machines (or even the same multiboot machine).</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Qt versions do not always pick up System Colours, you need to give the app a hint what colour theme to use, see below.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Some Linux systems using Wayland to not bring an open note to the forground when another note's link to it is clicked.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Some Linux systems using Wayland to not bring an open note to the foreground when another note's link to it is clicked.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Some Linux Desktops using Wayland do not report or set window positions correctly. Turn Wayland off and they work perfectly.</list-item></list></list-item></list>
 
 
-<size:huge><bold>Specific Things with a Work Around</bold></size:huge>
 
-<size:huge><bold>QT5 and Qt6 versions</bold></size:huge>
-
-<size:large><bold>Qt5 and Qt6 libraries</bold></size:large>
-All FPC/Lazarus applications using Qt5 need to use libqt5pas library. A new version of that library was released in late 2023 and it has substantial improvements and is, therefore used with this release of tomboy-ng. Your distribution of Linux will probably not have a suitably up to date library yet. So, you MUST manually install the library yourself from -
+<size:huge><bold>Qt5 and Qt6 libraries</bold></size:huge>
+All FPC/Lazarus applications using Qt5 need to use libqt5pas library. A new version of that library was released in late 2023 and it has substantial improvements and is, therefore used with this release of tomboy-ng. Your distribution of Linux will probably not have a suitably up to date library yet (know exceptions : Debian Trixie and Ubuntu 24.04). So, you MUST manually install the library yourself from -
 
 https://github.com/davidbannon/libqt5pas/releases
 https://github.com/davidbannon/libqt6pas/releases
 
-Establishing colours can be a problem on some Linux Desktops. If you are lucky, your desktop will already have suitable setting for all Qt apps in place, if not, you may need to do it yourself using the QT_QPA_PLATFORMTHEME Enviournment variable. See the Dark Theme heading below.
+Establishing colours can be a problem on some Linux Desktops. If you are lucky, your desktop will already have suitable setting for all Qt apps in place, if not, you may need to do it yourself using the QT_QPA_PLATFORMTHEME Environment variable. See the Dark Theme heading below.
 
-<size:large><bold>Qt5 and Wayland</bold></size:large>
-If you launch tomboy-ng from the console on a Wayland using system, you see a number of harmless messages coming from the Qt libraries. Just ignore them.
 
-Setting an Enviournment variable, QT_QPA_PLATFORM=xcb will tell a Qt app to try and use libxcb instead of Wayland, in many ways, that might be a good idea.
+<size:huge><bold>Dark Theme</bold></size:huge>
 
-<size:large><bold>Dark Theme</bold></size:large>
-Sometimes, QT5 apps do not pick up the Dark Theme from the operating system. You can pass the executable a --dark-theme switch but the results are not great. A much better approach is to use Qt5's theme setting capability, using <bold>QT_QPA_PLATFORMTHEME</bold> env var. Some operating systems set this for you, other require you to do it. The easiest approach (on most Linux systems) is set it to your existing gtk2 or gtk3 theme, you will need to install the <bold>qt5-style-plugins</bold> package using your normal package manager, then, start tomboy-ng with the Enviournment variable set to either 'gtk2' or 'gtk3'. Small section below on setting the variable.
+<size:huge><bold>Themes, colors and settings.</bold></size:huge>
+Ideally, your tomboy-ng should display itself using the color theme you have chosen so all your apps look similar. Its not, however, always perfect and varies by Platform and Widgetset.
 
-Another approach is to install the <bold>qt5ct</bold> package from your package manager and set any colour theme you like. The qt5ct command has a nice GUI, select 'custom' and choose the theme you want. Again, you will need to set the same environment variable, this time to 'qt5ct', it tells Qt apps (including qt5ct itself) that you are using qt5ct colours but only works after you have started qt5ct and selected a color scheme.
+<size:large><bold>Qt5 and Qt6</bold></size:large>
+Generally Qt5 and Qt6 need to be told to follow your desktop theme. That is done by passing the app a setting telling it where to look for a theme, it can be environment variable or a command line switch. Just which one depends your Linux Distribution (ie Debian, Ubuntu, Fedora etc) and Desktop (ie Gnome, KDE Plasma, Xfce etc). Another setting is available if your Desktop uses Wayland and corrects many of its problems.
 
-To test it, from the command line, you might do one of (remembering that the THEME setting might be one of 'qt5ct', 'gtk2', gtk3' ) -
+<bold>platformtheme</bold>
+On recent Gnome Desktops, the setting is '<bold>gnome</bold>' and you must install <bold>qgnomeplatform-qt5</bold>. On most other Linux systems, set the platform theme to <bold>'gtk2</bold>' and ensure <bold>qt5-style-plugins</bold> is installed. A setting of 'gtk3' is also possible depending on the theme you use. platformtheme can be set with a system wide environment variable (see below), an environment variable provided on the command line or a command line option. There is also an application, <bold>qt5ct</bold>, installable on most Linux systems that provides a couple of independent themes rather than using gtk2 or gnome ones, install the app and pass platformtheme a setting of 'qt5ct'. A command line might look like one of the following -
 
-$&gt;   QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng [enter]
+<monospace>$&gt;  QT_QPA_PLATFORMTHEME=gtk2  /usr/bin/tomboy-ng %f</monospace>
 
-$&gt;   QT_PLATFORM=xcb  QT_QPA_PLATFORMTHEME=qt5ct  tomboy-ng [enter]
+<monospace>$&gt;  /usr/bin/tomboy-ng -platformtheme gnome</monospace>
 
-<size:large><bold>Setting that Enviournment Variable</bold></size:large>
-So far, we have identified two env vars we may want to set for your Qt5 app. You can set both or one or the other. And there are several ways to do so. You can mix these modes too, setting the colours in .xsessionrc so all apps look the same but setting PLATFORM to xcb only for tomboy-ng.
+<monospace>$&gt;  /usr/bin/tomboy-ng -platformtheme qt5ct</monospace>
 
-<bold>In .xsessionrc</bold>
-Set everything, eg, make all your Qt5 app have a nice uniform look. Set that var in either /etc/environment (requires root) or, far simpler in a .xsessionrc file in your home dir.
+Note the Qt command line option format does not comply with the posix/gnu standard, so, if you are also providing command line options to tomboy-ng, put them AFTER the Qt option set.
 
-<monospace>cd ; echo "export QT_QPA_PLATFORMTHEME=qt5ct" &gt;&gt; .xsessionrc</monospace>
+<bold>platform</bold>
+Systems using Wayland often provide some disappointing results, some can be mitigated telling the app to use the xcb library, a useful trick at least until more of Wayland works as it should (you can also choose to use XOrg instead of Wayland from your loging screen, bliss!). And, obviously, all these setting can be combined. So, maybe -
 
-And logging out and back in again.
+<monospace>$&gt;  QT_QPA_PLATFORMTHEME=gtk2 QT_QPA_PLATFORM=xcb /usr/bin/tomboy-ng %f</monospace>
+
+<monospace>$&gt;  /usr/bin/tomboy-ng -platformtheme gnome -platform xcb</monospace>
+
+<monospace>$&gt;  /usr/bin/tomboy-ng -platformtheme qt5ct -platform xcb</monospace>
+
+<list><list-item dir="ltr">I have not found a Wayland using system that did not benefit from bypassing Wayland like this.</list-item></list>
+<list><list-item dir="ltr">On the subject of Themes, QT versions of tomboy-ng now read your Qt theme colors but override some for specific Tomboy reasons. You can prevent that override and stick to only themes colors by adding --strict-theme.</list-item></list>
+<list><list-item dir="ltr">Generally all Qt apps support https://doc.qt.io/qt-5/qguiapplication.html#supported-command-line-options</list-item></list>
+
+<size:large><bold>Setting that Environment Variable</bold></size:large>
+For Linux: If you choose to set an Environment Variable there are a few ways to do so, depending on your system. Neither require root access. Again, these are general examples, use the correct 'setting' for you particular model.
+
+<bold>In ~/.xsessionrc</bold>
+Does not work under Wayland, OK under Xfce, Mate etc. Install qt5-style-plugins. Turn Wayland off and it works in Gnome too!
+
+<monospace>cd ; echo "export QT_QPA_PLATFORMTHEME=gtk2" &gt;&gt; .xsessionrc</monospace>
+
+<bold>In ~/.config/environment.d/qt.conf</bold>
+Use this with Gnome with Wayland, the file name is not important but I think it needs to end in .conf . Install qgnomeplatform-qt5.
+
+<monospace>cd</monospace>
+<monospace>mkdir .config/environment.d/</monospace>
+<monospace>echo "QT_QPA_PLATFORMTHEME=gnome" &gt;&gt; .config/environment.d/qt.conf</monospace>
+
+In either case, log out and back in again.
+
 
 <bold>For a Specific App</bold>
 Assuming you are opening tomboy-ng from the menu system, the best place to set one or more env vars is in its desktop file. Its usually /usr/share/applications/tomboy-ng.desktop and needs root access to edit it. You will find it has a line that looks like this -
 
 <monospace>Exec=tomboy-ng %f</monospace>
 
-You need to make it look like this (eg) -
+You need to make it look like one of these (eg) -
 
 <monospace>Exec=env QT_PLATFORM=xcb QT_PLATFORMTHEME='gtk2'  tomboy-ng  %f</monospace>
+<monospace>Exec=tomboy-ng -platformtheme gtk2 -platform xcb %f</monospace>
 
-That example shows setting both vars, you can, of course, just set one or the other.
+That example shows setting both vars, you can, of course, just set one or the other. A Gnome user might do
+
+Exec=env QT_PLATFORMTHEME='gnome'  tomboy-ng  %f
 
 <bold>Using a script</bold>
 Create a 'bin' directory in your home directory (if its not already there) and put a script like this in there -
 
 <monospace>#!/usr/bin/bash</monospace>
-<monospace>QT_QPA_PLATFORM=xcb /usr/bin/tomboy-ng %f</monospace>
+<monospace>QT_QPA_PLATFORM=xcb  QT_QPA_PLATFORMTHEME=gnome  /usr/bin/tomboy-ng %f</monospace>
 
 Debian nicely adds ~/bin to your PATH (on next login) and the menu system will find the script before it finds the tomboy-ng binary. However, if you have tomboy-ng set to autostart, that happens before the OS fixes up you PATH and autostart will directly try to start the real binary. Solution, edit $HOME/.config/autostart/tomboy-ng.desktop to set an absolute path to the script, the Exec line like this -
 
 <monospace>Exec=/home/YOURNAME/bin/tomboy-ng %f</monospace>
 Assuming your user name is not "YOURNAME", you should substitute your real user name there.
 
+<size:large><bold>gtk2</bold></size:large>
+Generally, gtk2 versions of tomboy-ng follows the systems colors pretty well.
+
+<size:large><bold>Windows, MacOS</bold></size:large>
+Later  systems have some Dark oand other themes. tomboy-ng does its best to comply here but it appears Microsoft are still experimenting in this space.
+
+<size:huge><bold>Other Know Issues with Fixes</bold></size:huge>
 
 <size:large><bold>Cancelled Bullets</bold></size:large>
 When text is bulleted and then converted back to plaintext, it has a small indent that is not removable. It goes away when next the note is loaded and is not show in printed copy but is annoying! Its an upstream issue and its being worked on.
-
-<size:large><bold>Dark Theme</bold></size:large>
-GTK2 (and Qt5 using tricks mentioned above) do a clean and functional Dark Theme. Windows can pick up Dark from the OS but its not a completely satisfactory solution.
-
-It also possible to pass a --dark-theme switch to the application on the command line and you get, sort of, a Dark Theme.  Sadly, some forms in the application are based on components that simply will not play, Settings being a good example. Sorry.
-
 
 <size:large><bold>System Tray Issues</bold></size:large>
 Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux - generally only a problem for people using the Gnome Desktop
@@ -97,30 +124,10 @@ In the calculator, many countries use the comma instead of a period as a decimal
 
 <size:huge><bold>Long term 'maybe' stuff</bold></size:huge>
 These are things I have no immediate plans to fix, but they might be addressed some time in the future if there is some demand from end users.
-<list><list-item dir="ltr"><list><list-item dir="ltr">On Linux GTK2 based versions, using the Compose Key approach to entering accented characters results in a bad character also being inserted. This is a known, upstream issue,  https://bugs.freepascal.org/view.php?id=38454 . Qt5 versions do not have this problem.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Dark theme is less than perfect on Windows and unknown on Mac.  Windows will not let us set a dark background to button.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">On Linux GTK2 based versions, using the Compose Key approach to entering accented characters results in a bad character also being inserted. This is a known, upstream issue,  https://bugs.freepascal.org/view.php?id=38454 . <bold>Qt5</bold> versions do not have this problem.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Lines starting with an '*' should be auto converted to a Bullet.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Tabs do not work and probably never will.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">The Tab key now (&gt;=0.40) now cause a one level indent in that paragraph. Its only one level and is unlikely to be further developed. Note that this behaviour is not compatible with old Tomboy, a note saved in Tomboy will not retain a previous indent.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Revise controls, at present modelled on Tomboy, we can improve.</list-item></list></list-item></list>
-
-
-<size:huge><bold>Legacy Fixes</bold></size:huge>
-<bold>Notes, kept in case needed but generally do not apply anymore.</bold>
-
-<size:large><bold>Qt and KDE Desktop Issues</bold></size:large>
-On some (but not all) Wayland using Desktops, there are still a few Qt5 problems. This is particularly the case <bold>Debian KDE Bookworm</bold>. The solution is to force the app to use xcb instead of direct to Wayland. Set an environment variable, QT_PLATFORM=xcb and it all works perfectly. Test this from the command line like this
-
-$&gt; QT_PLATFORM=xcb tomboy-ng [enter]
-
-And if you like the result, set it permanently, see Setting that Environment Variable
-
-<size:large><bold>QT5 (or Qt6) versions and Gnome Desktops</bold></size:large>
-It appears that even Qt5 apps can now use XWayland so much of this is unnecessary, leave it here for now, just in case.
-Almost all Gnome Desktops now use the Wayland Display Manager instead of X (or XCB). QT5 has a plugin that will manage the connection between a QT5 app and Wayland, typically called qtwayland5, you may find it already installed or need to manually install it yourself.  If you run a QT5 app, such as the QT5 version of tomboy-ng, you may see a warning to the effect that its ignoring the request to run under Wayland, if you want it to run under Wayland, do something like -
-
-QT_QPA_PLATFORM=wayland  tomboy-ng [enter]
-
-You can do so (if you have qtwayland5 installed) but it seems to make little or no difference and does trigger a couple of warning messages from the QT libraries. So, honestly, don't worry about it.
 
 <size:huge><bold>Debugging</bold></size:huge>
 If you have problems with the application, or wish to make a feature request, please report via the github tomboy-ng issues facility.
@@ -144,6 +151,7 @@ If tomboy-ng crashes or does something unexpected, there are a number of command
    <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--import-note=PATH_to_NOTE    Import file into Note Repo  also -n</monospace></list-item></list></list-item></list>
    <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--title-fname                 Use Filename as title for import txt &amp; md</monospace></list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--useappind=[yes|no]           Ctrl use of AppInd (ie TrayIcon) on Linux</monospace></list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr"><monospace>--strict-theme                 (Qt Only) use only colors found in the Qt theme.</monospace></list-item></list></list-item></list>
 
 <bold>Capturing to a file</bold>
 Windows and Mac do not, for this purpose, have a console. But they too  can be told to capture this log info to a file using  another  command  line  switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified. For example a Linux user would  -
@@ -171,14 +179,14 @@ In all cases, you may need to zip that file up to post it on Github. If  you  do
 
 
 </note-content></text>
-  <last-change-date>2024-01-18T11:26:57.6138232+11:00</last-change-date>
-  <last-metadata-change-date>2024-01-18T11:26:57.6138232+11:00</last-metadata-change-date>
+  <last-change-date>2024-02-20T17:15:24.9745095+11:00</last-change-date>
+  <last-metadata-change-date>2024-02-20T17:15:24.9745095+11:00</last-metadata-change-date>
   <create-date>2018-06-23T12:35:30.7960000+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1211</width>
   <height>626</height>
-  <x>701</x>
-  <y>198</y>
+  <x>329</x>
+  <y>139</y>
   <open-on-startup>False</open-on-startup>
 </note>

@@ -258,10 +258,6 @@ end;
 
 
 procedure TNoteNormaliser.NormaliseList(STL : TStringList);
-// ToDo : look into removing any char < #32 except #10 and #13. Bug #279 indicates
-// loss of a note due to Ctrl-Z appearing in the disk file. No idea how but if we can
-// quickly filter here while saving, good.
-
 var
     TagSize, StIndex, ChIndex : integer;
     TempSt : string;
@@ -285,7 +281,7 @@ begin
         inc(StIndex);
 	end;
     StIndex := StL.Count -1;           // start at bottom and work up
-    while StIndex > 0 do begin      // we don't care about the first line.
+    while StIndex > 0 do begin         // we don't care about the first line.
         repeat
             TagSize := OffTagAtStart(StL.strings[StIndex]);
             if TagSize > 0 then MoveTagUp(StL, StIndex, TagSize);
@@ -296,7 +292,7 @@ begin
     while StIndex > 0 do begin
         TempSt := Stl[StIndex];
         ChIndex := 1;                  // Issue #279, ctrl-Z characters ending up in file, 5/2023, same user found a ctrl-r, 18 ??
-        ChangedLine := False;          // ToDo : review the addition of this code, it does appear to work and be safe but ...
+        ChangedLine := False;          // Not a UTF8 issue, no byte in a multibyte UTF8 'set' can be lower than 128
         while ChIndex <= length(TempSt) do begin
             if (ord(TempSt[ChIndex]) < 32)
             and (ord(TempSt[ChIndex]) <> 10)

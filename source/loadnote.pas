@@ -128,7 +128,7 @@ begin
        while fs.Position < fs.Size do begin
          fs.read(ch, 1);
          if Ch = #13 then fs.read(ch, 1);   // drop #13 on floor. Silly Windows double newline.
-         if Ch = #9 then Ch := ' ';         // ToDo : this is temp cludge, KMemo cannot handle tabs, they
+         if Ch = #9 then Ch := ' ';         // Tabs, as characters, are not allowed.
                                             // come in via pasted text, better fix during the paste process.
                                             // This might mess with UTF8 ??
          if (Ch = '<') or (Ch < ' ') then begin     // start of tag or ctrl char

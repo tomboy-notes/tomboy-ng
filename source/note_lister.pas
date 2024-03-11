@@ -1483,7 +1483,7 @@ begin
     result := 0;
     //T2 := GetTickCount64();
     while result < DateSearchIndex.count do begin
-        if not CheckSearchTerms(STermList, DateSearchIndex[result]) then        // ToDo : value to be had in seperate threads ?
+        if not CheckSearchTerms(STermList, DateSearchIndex[result]) then
             DateSearchIndex.Delete(result)
         else inc(result);
     end;
@@ -1628,11 +1628,11 @@ begin
     else Result := OnlySTerm();
 
 //    TitleSearchIndex.pack();                                    // Causes an unidentified crash after GTK loop resumes....
-//    DateSearchIndex.pack();
+//    DateSearchIndex.pack();                                     // Pack removes nil pointers in list. I don't think we have any.
 
     //T3 := GetTickCount64();
-    TitleSearchIndex.sort(@SortOnTitle);                          // ToDo : running each sort in its own thread ?
-    //T4 := GetTickCount64();
+    TitleSearchIndex.sort(@SortOnTitle);                          // Note : running each sort in its own thread ?  Only two
+    //T4 := GetTickCount64();                                     // and we have to wait here until they end anyway, I think not.
     DateSearchIndex.sort(@SortOnDate);
 
     //T5 := GetTickCount64();
@@ -1750,28 +1750,23 @@ end;
 
 
 procedure TNoteLister.SearchContent(const St : string; Stl : TstringList);
-// St is Title of note asking for search. We seach all note's content for St but it must surrounded by suitable deliminators
-// Hard to see this method used for anything else
+// St is Title of note asking for search. We seach all note's content for St but it must
+// surrounded by suitable deliminators. Hard to see this method used for anything else
 var
     i, TitleL, Offset, FoundIndex, CLen : integer;
     Title : string;
 begin
     TitleL := length(St);
-    for i := 0 to NoteList.Count -1 do begin
+    for i := 0 to NoteList.Count -1 do begin                                    // Loop over whole notelist
         Title := NoteList.Items[i]^.TitleLow;
         if St = Title then
             Continue;
         CLen := length(NoteList.Items[i]^.Content);
-        FoundIndex := 0;                                                        // ToDo : Done but confirm - NoteContent is always lowercase, don't bother to lowercase() it here.
-        Offset := 0;
+        FoundIndex := 0;                                                        // Note : NoteContent is NOT always lowercase, do need to lowercase() it here.
+        Offset := 0;                                                            // Could check Sett.SearchCaseSensitive but seems fast enough at present.
         while ((Offset+TitleL) < CLen) and (FoundIndex > -1) do begin           // loop over Content, break out if found a hit or got to end
-//            FoundIndex := (lowercase(NoteList.Items[i]^.Content)).IndexOf(St, Offset);                      // Zero base result. -1 if not present
-            FoundIndex := (NoteList.Items[i]^.Content).IndexOf(St, Offset);                      // Zero base result. -1 if not present
+            FoundIndex := (lowercase(NoteList.Items[i]^.Content)).IndexOf(St, Offset);                      // Zero base result. -1 if not present
             if FoundIndex > -1 then begin                                       // FoundIndex cannot be zero, that would be title, checked above
-//                debugln('TNoteLister.SearchContent target=' + copy(NoteList.Items[i]^.Content, FoundIndex+1, TitleL));
-//                debugln('FoundIndex=' + inttostr(FoundIndex) + ' CLen=' + inttostr(CLen));
-//                debugln('ch-before=' + (NoteList.Items[i]^.Content)[FoundIndex]);
-//                debugln('ch-after=' + (NoteList.Items[i]^.Content)[FoundIndex+TitleL+1]);
                 if  ((NoteList.Items[i]^.Content)[FoundIndex] in [' ', #10, ',', '.'])                      // char before potential target
                     and (((FoundIndex+TitleL) = CLen)                                                       // nothing in note after link content
                     or  ((NoteList.Items[i]^.Content)[FoundIndex+TitleL+1] in [#10, ' ', ',', '.'])) then   // char after potential target

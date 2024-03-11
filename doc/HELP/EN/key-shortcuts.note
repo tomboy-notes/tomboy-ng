@@ -34,7 +34,7 @@
 <list><list-item dir="ltr">Control-Y : Redo</list-item></list>
 <list><list-item dir="ltr">Control-F4 : Close current note window</list-item></list>
 <list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
-<list><list-item dir="ltr">Control-L : Create a link note from selected text</list-item></list>
+<list><list-item dir="ltr">Control-L : Create a link note from selected text, or display Backlinks</list-item></list>
 <list><list-item dir="ltr">Alt-F4 : Close current note window (not all Linux desktops allow this)</list-item></list>
 <bold>Fonts</bold>
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
@@ -83,8 +83,8 @@ Find (in a note)
 
 
 </note-content></text>
-  <last-change-date>2022-11-11T12:05:08.6697108+11:00</last-change-date>
-  <last-metadata-change-date>2022-11-11T12:05:08.6697108+11:00</last-metadata-change-date>
+  <last-change-date>2024-02-18T19:51:37.5395453+11:00</last-change-date>
+  <last-metadata-change-date>2024-02-18T19:51:37.5395453+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

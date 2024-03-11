@@ -549,6 +549,7 @@ begin
                         exit(SyUploadEdit)
                       else
                         exit(SyDownLoad);
+        else;
     end;
 end;
 

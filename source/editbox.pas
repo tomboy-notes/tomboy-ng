@@ -791,11 +791,13 @@ begin
     if KMemo1.ReadOnly then exit();
     if KMemo1.Blocks.RealSelLength > 1 then begin
          // ToDo : we should force a legal link here. eg, if no whitespace abound it, it will make a new note but text will not be linked.
-         // so, if necessary, force a space between ajoining text ?
+         // so, if necessary, force a space between ajoining text ?  But is that what the end user expects ?
+         // or should we refuse to make a link where the term does not qualify ?
         ThisTitle := KMemo1.SelText;
          // Titles must not start or end with space or contain low characters
-        while ThisTitle[1] = ' ' do UTF8Delete(ThisTitle, 1, 1);
-        while ThisTitle[UTF8Length(ThisTitle)] = ' ' do UTF8Delete(ThisTitle, UTF8Length(ThisTitle), 1);
+        ThisTitle := trim(ThisTitle);
+//        while ThisTitle[1] = ' ' do UTF8Delete(ThisTitle, 1, 1);
+//        while ThisTitle[UTF8Length(ThisTitle)] = ' ' do UTF8Delete(ThisTitle, UTF8Length(ThisTitle), 1);
         Index := Length(ThisTitle);
         while Index > 0 do begin
             if ThisTitle[Index] < ' ' then delete(ThisTitle, Index, 1);
@@ -1690,7 +1692,7 @@ begin
                     Key := 0;
                     if Sett.CheckFindToggles.checked then begin
                         MenuItemFindClick(Sender);
-                        KMemo1.SetFocus;                       // ToDo : check this logic
+                        KMemo1.SetFocus;
                     end;
                     exit;
                 end;
@@ -2576,7 +2578,7 @@ end;
 procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string);              // ToDo : A lot of clean up required
 // Note : the HTTP check does not pass the Term, gives an empty string instead !!!!
 var
-    TermByteLen : integer;       // Might be same as Len (http) or longer if link contains UTF8
+    TermByteLen : integer;          // Might be same as Len (http) or longer if link contains UTF8
 	Hyperlink : TKMemoHyperlink;
     TrueLink, AText : string;
 	BlockNoS, BlockNoE, i : integer;
@@ -2586,35 +2588,26 @@ begin
     if Term = '' then
         TermByteLen := Len
     else TermByteLen := length(Term);
-//    Debugln('TEditBoxForm.MakeLink 0 Index=', Index.tostring, ' Len=', Len.tostring, ' term=[' + Term + ']');
     if Index = 0 then exit;         // Thats this note's title, skip it !
     BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Block where proposed link Ends
     BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // Block where proposed link starts
-
-    //debugln('[' + KMemo1.Blocks.Items[BlockNoS].Text +'] [' + KMemo1.Blocks.Items[BlockNoE].Text + ']');
-
     SaveLimitedAttributes(BlockNoS, FontAtt);                                   // Record the existing colours asap !
     if KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink') then begin
         AText := lowercase(KMemo1.Blocks.Items[BlockNoS].Text);
         if AText.StartsWith('http') then exit;                                  // Already checked by Clean...
         if AText = Term then exit;                                              // Already there
     end;
-//debugln('MakeLink Index=' + Index.ToString + ' Len=' + Len.ToString + ' BlockNoS=' + BlockNoS.ToString + ' BlockNoE=' + BlockNoE.ToString);
-//debugln('MakeLink S=[' + KMemo1.Blocks.Items[BlockNoS].Text + '] E=[' + KMemo1.Blocks.Items[BlockNoE].Text + ']');
     i := BlockNoS;
     while i < BlockNoE do begin
-// debugln('MakeLink in loop,  Block Content is [' + KMemo1.Blocks.Items[i].Text + ']');
         if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin     // is there a link there already ?
             if KMemo1.Blocks.Items[i].text.StartsWith('http') then exit;        // Leave existing web links alone, already checked.
             if KMemo1.Blocks.Items[i].text.Length >= Len then exit;             // Leave it alone, is already at least as long
-            // debugln('MakeLink Unlinking ' + KMemo1.Blocks.Items[i].text);
             UnlinkBlock(i);                                                     // Existing shorter, we will replace
             BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Sadly, we need to start this loop again
             BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // and keep iterating until we have clear space
             i := BlockNoS;
         end;
         if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoParagraph') then begin     // Thats an ERROR !
-//            debugln('MakeLink exiting cos its a TKMemopara term=' + Term);
             exit;
         end;
         inc(i);
@@ -2630,25 +2623,19 @@ begin
             TrueLink := TrueLink + Kmemo1.Blocks.Items[BlockNoS+i+1].Text;      // +1 to get next block
             inc(i);                                                             // i must be > 0 because we are multiblock
         end;                                                                    // That will get all of last block's text, probably excessive
-
-        //debugln('MakeLink - link is split over multiple blocks. [' + TrueLink + ']');
-
         // The below might leave a empty block. Messy to delete here but ....
-            TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS+i]).Text               //  BlockNoS+i is last block containing some of link
-                := utf8copy(Kmemo1.Blocks.Items[BlockNoS+i].Text, 1 + Kmemo1.Blocks.Items[BlockNoS+i].Text.Length - UTF8length(TrueLink) + len, 9999);
-            delete(TrueLink, Len+1, 999);                                         // Get rid of that excess, +1 to start deleting after link text
+        TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS+i]).Text               //  BlockNoS+i is last block containing some of link
+            := utf8copy(Kmemo1.Blocks.Items[BlockNoS+i].Text, 1 + Kmemo1.Blocks.Items[BlockNoS+i].Text.Length - UTF8length(TrueLink) + len, 9999);
+        delete(TrueLink, Len+1, 999);                                         // Get rid of that excess, +1 to start deleting after link text
+        dec(i);
+        while i > 1 do begin
             dec(i);
-            while i > 1 do begin
-                dec(i);
-                Kmemo1.Blocks.Delete(BlockNoS+1);
-            end;
+            Kmemo1.Blocks.Delete(BlockNoS+1);
+        end;
         inc(BlockNoS);          // Assumes we have left BlockNoS in place, removing trailing text, point to spot after existing value
     end else begin                                                              // All the proposed link was in the BlockNoS
         BlockNoS := KMemo1.SplitAt(Index);
-//        debugln('TEditBoxForm.MakeLink 1 BlockNoS.Text =[' + KMemo1.Blocks.Items[BlockNoS].Text + '] = '+ inttostr(length(Term)));                 // ToDo : remove
-//        debugln('Len=' + inttostr(Len));
-        { Chop of everything after the required Text. But len is a char count, not a byte count.
-        }
+        // Chop of everything after the required Text. But len is a char count, not a byte count.
         TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text                     // remove content after the link
                 //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Len);
                 := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, TermByteLen);    // bytes !
@@ -2659,11 +2646,9 @@ begin
             KMemo1.blocks.Delete(BlockNoS-1);
             dec(BlockNoS)
         end;
-//        debugln('TEditBoxForm.MakeLink 2 BlockNoS.Text after trimming [' + KMemo1.Blocks.Items[BlockNoS].Text + ']');                 // ToDo : remove
     end;
     // When we get to here, Link text (and any blocks completely spanned by link text) have been removed
     // and BlockNoS points to where link need be pushed into. Might have some empty text blocks ....
-//    debugln('TEditBoxForm.MakeLink 3 TrueLink =' + TrueLink);                     // ToDo : remove
     {$ifdef LDEBUG}TG2 := gettickcount64();{$endif}
     Hyperlink := TKMemoHyperlink.Create;
     Hyperlink.Text := TrueLink;
@@ -2671,9 +2656,7 @@ begin
     Hyperlink.OnClick := @OnUserClickLink;
     {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);
     RestoreLimitedAttributes(BlockNoS, FontAtt);
-    // debugln('MakeLink MADELINK BlockNoS=' + BlockNoS.Tostring + ' Text=[' + TrueLink +'] Att Col=' +  ColorToString(FPColortoTColor(FontAtt.FPBackColour)));
     HyperLink.Textstyle.Font.Color := Sett.LinkColour;
-//    debugln('TEditBoxForm.MakeLink 4 H.Text =' + Hyperlink.Text);                     // ToDo : remove
     {$ifdef LDEBUG}TG3 := gettickcount64();
     TG1 := TG1 + (TG3-Tg2);{$endif}
 end;
@@ -2762,6 +2745,7 @@ begin
 end;
 
 procedure TEditBoxForm.CheckForLinks(const FullBody : boolean);
+//{$define TDEBUG}
 var
     Content : string = '';
     BuffOffset, LineNumb, BlockNo : integer;
@@ -2906,11 +2890,12 @@ begin
         {$ifdef TDEBUG}T4  := gettickcount64();{$endif}
         if Sett.CheckShowExtLinks.Checked then
                 CheckForHTTP(Content, BuffOffset);                           // Mark any unmarked web links
-        KMemo1.blocks.UnLockUpdate;                                          // ToDo : unlock can take 100ms when making a new Link in edit mode.
+        KMemo1.blocks.UnLockUpdate;                                          // can take tens of mS, 100mS in a 50k note
         {$ifdef TDEBUG}T5  := gettickcount64();
         debugln('CheckForLinks Timing T1=' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
         {$endif}
     end;
+    //{$undef TDEBUG}
     {$ifdef LDEBUG}CloseFile(MyLogFile);{$endif}
 end;
 
