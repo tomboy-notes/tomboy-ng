@@ -1562,7 +1562,7 @@ begin
     AltBackGndColor := GetQTColor('Highlight');       // background colour of selected text
 
     if not Application.HasOption('strict-theme') then begin
-        writeln('Override theme colours for KMemo.');
+        //writeln('Override theme colours for KMemo.');
         // Here I override the Qt Theme to provide some key traditional Tomboy colours
         if DarkTheme then begin
             //        BackGndColour := ??             // Leave it as it is.
@@ -1579,7 +1579,7 @@ begin
        end;
    end;
    QtOwnsColours := true;
-   debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Colors set to Qt Theme.');
+   //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Colors set to Qt Theme.');
 end;
 {$else}                            // else of {$if defined(LCLQT5) or defined(LCLQT6)}
 

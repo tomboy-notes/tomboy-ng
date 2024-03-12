@@ -130,11 +130,12 @@ uses
 
   , fpimage,
   fpreadjpeg,
-  fppdf,
-  fpparsettf,
-  fpttf,
-  typinfo
-    ;
+(*  {$ifdef VER3_2_2}     // thats FPC. Note also must deal with fptty listed in Project Inspector.
+  fppdf,                // And if the compile process finds fpttf.pp in source dir, it decides to use that one anyway.
+  fpttf,                // If (the patched) fpttf.pp is present in source dir, it will be used, else the FPC one rules.
+  {$endif}
+  fpparsettf, *)
+  typinfo;
 
 type
 
@@ -162,7 +163,7 @@ type
         LabelNotesFound: TLabel;
         TrayIcon: TTrayIcon;
 		procedure BitBtnHideClick(Sender: TObject);
-  procedure BitBtnQuitClick(Sender: TObject);
+        procedure BitBtnQuitClick(Sender: TObject);
         procedure ButtMenuClick(Sender: TObject);
         procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
@@ -184,7 +185,6 @@ type
         //HelpList : TStringList;
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
-
 
         procedure StartIPCServer();
         procedure CommMessageReceived(Sender: TObject);
@@ -234,7 +234,6 @@ implementation
 {$R *.lfm}
 
 { TMainForm }
-
 
 uses LazLogger, LazFileUtils, LazUTF8,
     settings, ResourceStr,
@@ -754,7 +753,6 @@ end;
 
 { ------------- M E N U   M E T H O D S ----------------}
 
-
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
     Sett.Show();
@@ -826,9 +824,6 @@ end;
 
 RESOURCESTRING
     rsAbout = 'tomboy-ng notes - cross platform, sync and manage notes.';
-    // rsAbout1 = 'This is tomboy-ng, a rewrite of Tomboy Notes using Lazarus';
-    // rsAbout2 = 'and FPC. While its ready for production';
-    // rsAbout3 = 'use, you still need to be careful and have good backups.';
     rsAboutVer = 'Version';
     rsAboutBDate = 'Build date';
     rsAboutCPU = 'TargetCPU';
@@ -838,6 +833,13 @@ RESOURCESTRING
 procedure TMainForm.ShowAbout();
 var
         Stg : string;
+    function GetFPC() : string;
+    begin
+        Result := '';
+        {$ifdef Ver3_2_2} result := ' FPC 3.2.2'; {$endif}
+        {$ifdef Ver3_2_3} result := ' FPC 3.2.3'; {$endif}
+        {$ifdef Ver3_3_1} result := ' FPC 3.3.1'; {$endif}
+    end;
 begin
         if AboutFrm <> Nil then begin
             AboutFrm.Show;
@@ -853,7 +855,8 @@ begin
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
         {$ifdef LCLGTK2}  Stg := Stg + ', GTK2';        {$endif}
         Stg := Stg + #10 + rsAboutBDate + ' ' + {$i %DATE%}
-            + '  (Laz ' + inttostr(laz_major) +'.' + inttostr(laz_minor) + '.' + inttostr(laz_release) + ')'
+            + '  (Laz ' + inttostr(laz_major) +'.' + inttostr(laz_minor) + '.' + inttostr(laz_release)
+            + GetFPC() +')'
             + #10
             + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}

@@ -1319,8 +1319,9 @@ begin
         ListBoxNotebooks.Color := Sett.BackGndColour;
         EditSearch.Color := Sett.AltColour;
         splitter1.Color:= clnavy;
-        for Butt in [ButtonClearFilters, BitBtnMenu, ButtonSearchOptions, ButtonClearSearch ] do
+        for Butt in [ButtonClearFilters, ButtonSearchOptions, ButtonClearSearch ] do
             Butt.Color := Sett.AltColour;                  // Does work for Qt5, not for GTK2 (but not needed), Windows ?
+        BitBtnMenu.Color := Sett.AltColour;
      end;
     ListViewNotes.Color := ListBoxNoteBooks.Color;
     ListBoxNotebooks.Hint := rsNotebookOptionRight;

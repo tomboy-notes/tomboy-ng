@@ -14,9 +14,11 @@ Provides: tomboy-ng
 Architecture: any
 Multi-Arch: foreign
 Depends: libqt5pas1, ${shlibs:Depends}, wmctrl, libnotify-bin, qt5ct, ${misc:Depends}
-Suggests: qt5-style-plugins
-Description: Tomboy Notes rewritten to ease installation and cross platform
- tomboy-ng notes allows easy management of a large or small set of
- notes. Notes can contain a range of font sizes, bold, italic and highlight.
+Suggests: qt5-style-plugins, qgnomeplatform-qt5
+Description: Tomboy Notes rewritten for easy installation and cross platform.
+ Tomboy-ng notes allows easy management of any number of notes. Notes can 
+ contain a range of font sizes, bold, italic and highlight. Auto links between
+ notes (bi-directional) and notes can be organised into NoteBooks. 
  Available for Linux, Windows amd Mac and easy sync between them.
- This is the Qt5 based version, use qt5ct to manage colors.
+ This is the Qt5 based version. See the tomboy-ng wiki for info
+ relating to color themes, and, if you use Gnome, the System Tray.

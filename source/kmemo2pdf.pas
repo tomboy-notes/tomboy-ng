@@ -13,26 +13,52 @@ unit kmemo2pdf;
     The form itself is not shown unless something has gone wrong, in which case StartPDF
     will return false. Some messages are shown in the memo ....
 
+    NOTE: - ABANDONED - above includes rtl fpttf but I have copied it to source dir, added it to this
+       project and so guzumpted the one in FTP. In there, around line 396, I have commented
+       out the code that loads a otf font, now gTTFontCache reads only TTF.
+       Must look into what this is all about !
+
+    New approach to fonts. I now, in ReadKMemo, force all fonts to be Helvetica or
+    Courier, or thier marked up variations. These are some of the 14 internal Adobe
+    fonts. That is, ones that don't have to be embedded. However, the FontCache quite rightly
+    notes I don't have either installed and replaces them Liberation Sans and Liberation Mono.
+
+    However, no sign of the "empty PDF" problem I experience when using .otf fonts. Maybe
+    th Cache only offers TTF as substitutes ???
+
+    Need lots of testing.
+
+
 
     See https://gitlab.com/freepascal.org/fpc/source/-/issues/30116 for issues about fonts !
     https://forum.lazarus.freepascal.org/index.php/topic,62254.0.html - my question on the topic.
-
-    We have to assume here that fpPDF cannot 'generate' bold or italic from a regular
-    font. So, you must have chosen a font that comes with, at least regular, bold, italic
-    and bold-italic font files. If its "all in one TTF file" you get a warning and
-    any bold or italic will be converted to regular.
-
-    Fonts like DejaVu that have 'Oblique' do not get translated to italic.
-
-    I have had to blacklist certain OpenType fonts, this is really getting rough !
-    Line 396 of fpTTF looks for otf fonts as well as ttf !!!!!
 
     Fonts that mention bold and italic in the Font selection dialog do not necessarily
     have seperate font files for bold and italic, they may generate them !  But fpPDF does not.
 
     History :
         2023-02-14 Initial Release of this unit.
+        2024-03-12 Use force fonts to Helvetica or Courier, seems to work evn when not present.
 
+
+    The standard 14 PDF fonts – that can be referenced by name in a PDF document – are:
+
+        Times-Roman
+        Times-Bold
+        Time-Italic
+        Time-BoldItalic
+        Courier
+        Courier
+        Courier-Bold
+        Courier-Oblique
+        Helvetica
+        Helvetica-Bold
+        Helvetica-Oblique
+        Helvetica-BoldOblique
+        Symbol
+        ZapfDingbats
+
+    I suspect my pdf font issues will go away if I use ONLY these fonts.
 }
 
 
@@ -45,11 +71,7 @@ uses  {$ifdef unix}cwstring,{$endif}
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons, fpttf,
     kmemo, k_prn, fpimage, fppdf, fpparsettf,  typinfo, tb_utils, KFunctions;
 
-{ NOTE: above includes rtl fpttf but I have copied it to source dir, added it to this
-  project and so guzumpted the one in FTP. In there, around line 496, I have commented
-  out the code that loads a otf font, now gTTFontCache reads only TTF.
-  Must look into what this is all about !
-}
+
 
 type
     PFontRecord=^TFontRecord;
@@ -183,12 +205,6 @@ const   TopMargin = 15;
         FontsFixed : array of string = ('Monaco', 'Menlo','Courier New');
         FontsVariable : array of string = ('Lucida Grande', 'Geneva', 'Arial');
         {$endif}
-//        FontsBlackList : array of string = ('Cantarell', 'MathJax', 'Nimbus', 'URW');
-        { We can only use true Type Fonts, NOT OpenType !  I cannot find any way to
-        tell the difference, I'd expect gTTFontCache to know but if it does, it
-        won't tell me. So, until I find a better way, I'll blacklist. Not Good.
-        Ugly hack but using a local fpTTY unit, hacked to no look for OTF.}
-
 
 { TFontList }
 
@@ -242,7 +258,6 @@ begin
     result := '';
 end;
 
-
 function TFontList.Add(const TheFont: ANSIString; const Bold, Italic: boolean;
                                         Pitch : TFontPitch; var NewName : string) : boolean;
 var
@@ -266,41 +281,30 @@ var
         inherited Add(P);
     end;
 
-{    function InBlackList : boolean;
-    var Cnt : integer;
-    begin
-        for Cnt := 0 to high(FontsBlackList) do
-            if TheFont = FontsBlackList[Cnt] then
-                exit(True);
-        result := False;
-    end;   }
-
 begin
     Result := False;
-//    if not InBlackList then begin
-        if Find(TheFont, Bold, Italic, False) > -1 then
-               Exit(False);    // All good, its already here.
-        if FindOld(TheFont, Bold, Italic, NewName) then
-               exit(True);    // We already have a substitute
-        if FindInFontCache(TheFont, Bold, Italic) then begin
-            InsertIntoList();
-            NewName := TheFont;
-            exit(False);
-        end;
-//    end;
-    // OK, start guessing then Davo !
+    if Find(TheFont, Bold, Italic, False) > -1 then
+           Exit(False);    // All good, its already here.
+    if FindOld(TheFont, Bold, Italic, NewName) then
+           exit(True);    // We already have a substitute
+    if FindInFontCache(TheFont, Bold, Italic) then begin
+        InsertIntoList();
+        NewName := TheFont;
+//        writeln('TFontList.Add has added ', NewName, ' replacing ', TheFont);
+        exit(False);
+    end;
 
-    SubFont := GetSuitableFont(Bold, Italic, (Pitch = fpFixed));
+   SubFont := GetSuitableFont(Bold, Italic, (Pitch = fpFixed));
    if SubFont <> '' then begin
         InsertIntoList(SubFont);
         NewName := SubFont;
+//        writeln('TFontList.Add has substituted ', SubFont, ' for ', TheFont);
         exit(True);
    end;
    showmessage('ERROR - Cannot find a sunstitute font for ' + TheFont + Bold.ToString(True) + Italic.ToString(True));
-   //memo1.Append('ERROR - Cannot find a substitute font for ' + TheFont + Bold.ToString(True) + Italic.ToString(True));
 end;
 
-procedure TFontList.Dump();
+procedure TFontList.Dump();         // WARNING, uses writeln
 var i : integer;
 begin
   writeln('TFontList.Dump we have ' + count.tostring + ' items ========');
@@ -411,6 +415,7 @@ begin
         if not GetWordDimentions(WordIndex, W, H) then exit(False);             // font fault unlikely, we have already checked this block.
         Page.SetFont(FontList.Find(WordList[WordIndex]^.FName, WordList[WordIndex]^.Bold, WordList[WordIndex]^.Italic, True), WordList[WordIndex]^.Size);
         if (XLoc+W+BulletIndent) > (PageWidth - SideMargin) then exit(true);    // no more on this line.
+        //writeln('TFormKMemo2pdf.WriteLine will WriteText T=' + WordList[WordIndex]^.AWord + ' F=' + WordList[WordIndex]^.FName+ ' X=' {+ inttostr(BulletIndent)} + ' ' + inttostr(XLoc) + ' W='+ inttostr(W));
         memo1.Append('TFormKMemo2pdf.WriteLine will WriteText T=' + WordList[WordIndex]^.AWord + ' F=' + WordList[WordIndex]^.FName+ ' X=' {+ inttostr(BulletIndent)} + ' ' + inttostr(XLoc) + ' W='+ inttostr(W));
         Page.WriteText(BulletIndent + XLoc, Y, WordList[WordIndex]^.AWord);
         memo1.Append('TFormKMemo2pdf.WriteLine wrote word=' + WordList[WordIndex]^.AWord + ' Font=' + WordList[WordIndex]^.FName + ' ' + inttostr(W) + ' ' + inttostr(H));
@@ -586,23 +591,6 @@ begin
             WordList[i]^.FName := GoodFName;
 end;
 
-(*function TFormKMemo2pdf.ChangedFont() : boolean;
-var
-    BadFontName, GoodFontName : string;
-begin
-    GoodFontName := 'Liberation Sans';                           // ToDo : this sets both prop and fixed to prop
-    if not TestForGoodFonts(GoodFontName) then begin
-        Memo1.Append('TFormKMemo2pdf.ChangedFont Cannot find a usable FONT !');
-        exit(False);
-    end;
-    result := False;
-    BadFontName := TestForGoodFonts();
-    if BadFontName <> '' then begin
-        Result := True;
-        UpdateWordList(BadFontName, GoodFontName);
-        Memo1.Append('Changing ' + BadFontName + ' to ' + GoodFontName);
-    end;
-end;       *)
 
 function TFormKMemo2pdf.StartPDF : boolean;
 {var
@@ -619,27 +607,7 @@ begin
     FDoc := TPDFDocument.Create(Nil);
     try
         KMemoRead();
-
-        //FontList.Dump();
-        //WordList.Dump();
-        //TestForGoodFonts();
-
-        // This is for later, it does no make fonts available to the PDF
-        //gTTFontCache.ReadStandardFonts;                             // https://forum.lazarus.freepascal.org/index.php/topic,54280.msg406091.html
-        //    gTTFontCache.SearchPath.Add('/usr/share/fonts/');       // can, possibly, add custom font locations ....
-        //gTTFontCache.BuildFontCache;
-        // FDoc := TPDFDocument.Create(Nil);
-        //    FDoc.FontDirectory := '/usr/share/fonts';               // ToDo : this is NOT cross platform
-        // OK, now we test the FontList against the limited list of available fonts in gTTFontCache
-
-(*        if not ChangedFont() then                                   // We try twice because may need to change both normal and monospaced
-            if not ChangedFont() then begin
-                memo1.Append('ERROR, cannot find a suitable font to use');
-                BitBtnProceed.enabled := False;
-            end;     *)
-
-        Result := MakePDF();                                          // False if we found an issue, probably font related !
-
+        Result := MakePDF();          // False if we found an issue, probably font related !
     finally
         FDoc.Free;
         FreeAndNil(FontList);
@@ -713,9 +681,7 @@ begin
    Memo1.Append('INFO Wrote file to ' + FFileName);
 end;
 
-procedure TFormKMemo2pdf.BitBtnProceedClick(Sender: TObject);                   // ToDo : replace all this with call to StartPDF
-{var
-    i : integer; }
+procedure TFormKMemo2pdf.BitBtnProceedClick(Sender: TObject);        // ToDo : replace all this with call to StartPDF
 begin
     AllowNoBoldItalic := True;
     StartPDF();
@@ -730,6 +696,26 @@ var
     ExFont : TFont;
     AWord : ANSIString = '';
     AFontName : string;
+
+        procedure ReMapFont();      // Force the use of only the Adobe inbuilt fonts.
+        begin                       // If they are not available, FontCache will give something suitable ?
+        if (ExFont.Pitch = fpFixed) then begin
+            ExFont.Name := 'Courier';
+            if ExFont.Bold then
+                ExFont.Name := 'Courier-Bold'   // Note, no Courier bold and Italic.
+            else if ExFont.Italic then
+                ExFont.Name := 'Courier-Oblique';
+            exit;
+        end;
+        ExFont.Name := 'Helvetica';
+        if not (ExFont.Bold or ExFont.Italic) then exit;
+        if ExFont.Bold and ExFont.Italic then
+            ExFont.Name := 'Helvetica-BoldOblique'
+        else if ExFont.Bold then
+                ExFont.Name := 'Helvetica-Bold'
+             else
+               ExFont.Name := 'Helvetica-Oblique'   // must be italic if we are here
+        end;
 
         procedure CopyFont(FromFont : TFont);
         begin
@@ -750,9 +736,12 @@ begin
                ExFont.Name := DefaultFont;
            end;
            // writeln('INFO TFormKMemo2pdf.KMemoRead() [' + TheKMemo.Blocks.Items[BlockNo].Text + '] ' + booltostr(ExFont.Pitch = fpFixed, true));
+
+           RemapFont();
            AFontName := ExFont.Name; // we might need to change this in next line.
            //writeln('INFO TFormKMemo2pdf.KMemoRead() fontname before=' + AFontName + ' [' + TheKMemo.Blocks.Items[BlockNo].Text + ']');
-           FontList.Add(ExFont.Name, ExFont.Bold, ExFont.Italic, ExFont.Pitch, AFontName);
+
+            FontList.Add(ExFont.Name, ExFont.Bold, ExFont.Italic, ExFont.Pitch, AFontName);
            // writeln('INFO TFormKMemo2pdf.KMemoRead() fontname after=' + AFontName);
            for I := 0 to TheKMemo.Blocks.Items[BlockNo].WordCount-1 do begin                // For every word in this block
                AWord := TheKMemo.Blocks.Items[BlockNo].Words[I];

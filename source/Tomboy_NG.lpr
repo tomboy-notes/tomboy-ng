@@ -26,7 +26,7 @@ uses
     Notebook, Spelling, Mainunit, BackupView, recover, Index,
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
-    import_notes, JsonTools, kmemo2pdf, tb_symbol, fpTTF, LazVersion
+    import_notes, JsonTools, kmemo2pdf, tb_symbol, LazVersion
     {$ifdef LCLGTK2}
     , unitywsctrls          // only safe to use in gtk2, use it if we need it or not
     {$endif};
@@ -65,8 +65,8 @@ end;
 
 
 begin
-    Application.Scaled:=True;
-    Application.Title:='tomboy-ng';
+    Application.Scaled := True;
+    Application.Title := 'tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
 
