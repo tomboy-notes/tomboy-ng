@@ -202,9 +202,7 @@
 -dDisableLCLJPEG
 -dDisableLCLPNM
 -dDisableLCLTIFF
--dTOMBOY_NG
-
--vwilq"/>
+-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item3>
