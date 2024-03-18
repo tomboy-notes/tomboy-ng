@@ -317,7 +317,7 @@ type        { TSearchForm }
                             { Gets called with a title and filename (clicking grid), with just a title
                             (clicked a note link or recent menu item or Link ButtonSMenu) or nothing
                             (new note). If its just Title but Title does not exist, its Link
-                            ButtonSMenu. DontBackUp says do not make a backup as we opne because we are in
+                            ButtonSMenu. DontBackUp says do not make a backup as we open because we are in
                             a Roll Back Cycle.}
         procedure OpenNote(NoteTitle: String; FullFileName: string = '';
             TemplateIs: AnsiString=''; BackUp: boolean=True; InSearch: boolean=false; STerm : string='');

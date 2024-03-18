@@ -243,6 +243,7 @@ unit EditBox;
     2024/01/17  Altered the colour of Backlinks Panel to clMenu AFTER building all except MacOS and Packman
     2024/01/23  More or less finished rewrite of Bullet code, addition of indent. Needs testing.
     2024/02/05  Set the yellow read only warning panel to height = 0 instead of 1. This will need cross platform testing !
+    2024/03/18  FormActivate code to run once depended on a typed constant, wrong, they are shared over all instances.
 }
 
 
@@ -559,7 +560,7 @@ type
         Dirty : boolean;
         Verbose : boolean;
         SearchedTerm : string;          // If not empty, opening is associated with a search, go straight there.
-        // HaveSeenOnActivate : boolean;   // Indicates we have run, eg, CheckForLinks at Activate
+        HaveSeenOnActivate : boolean;   // Indicates we have run, eg, CheckForLinks at Activate
 
         TemplateIs : AnsiString;        // If a new note is a member of Notebook, this holds notebook name until first save.
                                 { Public : Will mark this note as ReadOnly and not to be saved because the Sync Process
@@ -1539,15 +1540,16 @@ end;
 procedure TEditBoxForm.FormActivate(Sender: TObject);
 {$ifdef TDEBUG}var
     Tick, Tock : integer; {$endif}
-const AlreadyCalled: boolean = False;           // Typed Constant, remembered ....
+// const AlreadyCalled: boolean = False;           // Typed Constant, remembered but shared with all instances !
 begin
-    if not AlreadyCalled then begin;
+    writeln('TEditBoxForm.FormActivate AlreadyCalled is ', booltostr(HaveSeenOnActivate, True));
+    if not HaveSeenOnActivate then begin;
         Ready := False;
         {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
         CheckForLinks(True);
         {$ifdef TDEBUG}
         Tock := gettickcount64();
-        debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(AlreadyCalled, true));
+        debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(HaveSeenOnActivate, true));
         {$endif}
         if SearchedTerm <> '' then               // We must do search after CheckForLinks
             NewFind(SearchedTerm);
@@ -1558,7 +1560,7 @@ begin
             MenuItemSync.Enabled := False;
             SpeedButtonNotebook.Enabled := False;
         end;
-        AlreadyCalled := True;
+        HaveSeenOnActivate := True;
         Ready := True;
     end;
 end;
