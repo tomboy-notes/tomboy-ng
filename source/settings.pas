@@ -859,7 +859,7 @@ procedure TSett.FormCreate(Sender: TObject);
 var
     i : integer;
 begin
-    gTTFontCache.ReadStandardFonts;         // needed by PDF export and, at some stage, new font selection window.
+    // gTTFontCache.ReadStandardFonts;         // we do this in Kmemo2PDR now.
     Caption := 'tomboy-ng Settings';
     ButtonSetNotePath.Enabled := False;
     AreClosing := false;
