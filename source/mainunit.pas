@@ -514,7 +514,8 @@ begin
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
     // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu < 21.10
 
-    if pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then begin
+    if (pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 )
+            and (not Application.HasOption('kde-leftclick')) then begin
         NoLeftClickOnTrayIcon := True;      // That will get all KDE and penalise X11 users, sorry !
         exit(True);      // So far, every KDE I have tested has a System Tray, but works badley under wayland in 2023 at least.
     end;

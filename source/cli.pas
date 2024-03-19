@@ -309,7 +309,7 @@ initialization
         'config-dir:', 'open-note:', 'save-exit',      // -o for open also legal. save-exit is legecy
         'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
         'title-fname', 'gnome3', 'useappind:',        // -g and gnome3 is legal but legacy, ignored.
-        'strict-theme');                              // Strict-theme applies to only Qt versions
-
+        'strict-theme',                                 // Strict-theme applies to only Qt versions
+        'kde-leftclick');                             // overrule wayland decision to use only right click
 end.
 
