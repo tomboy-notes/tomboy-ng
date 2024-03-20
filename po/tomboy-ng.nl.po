@@ -17,24 +17,6 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "Geen te evalueren uitdrukking aangetroffen"
 
-#: fpttf.rsmissingfontfile
-#, object-pascal-format
-msgid "The font file <%s> can't be found."
-msgstr ""
-
-#: fpttf.rsnofontfilename
-msgid "The FileName property is empty, so we can't load font data."
-msgstr ""
-
-#: fpttf.rsnosearchpathdefined
-msgid "No search path was defined"
-msgstr ""
-
-#: fpttf.serrfontnotfound
-#, object-pascal-format
-msgid "The font <%s> can't be found"
-msgstr ""
-
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
 msgstr "tomboy-ng-notities - platform-onafhankelijk, met synchronisatie en beheermogelijkheden."

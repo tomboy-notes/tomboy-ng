@@ -244,6 +244,7 @@ unit EditBox;
     2024/01/23  More or less finished rewrite of Bullet code, addition of indent. Needs testing.
     2024/02/05  Set the yellow read only warning panel to height = 0 instead of 1. This will need cross platform testing !
     2024/03/18  FormActivate code run once depended on a typed constant, wrong, they are shared over all instances.
+    2024/03/19  Altered MakeLink to accept byte as Len, added File Link capability.
 }
 
 
@@ -471,6 +472,7 @@ type
         procedure FindNew(IncStartPos: boolean);
         function FindNumbersInString(AStr: string; out AtStart, AtEnd: string): boolean;
         procedure InsertDate();
+        function IsFileLink(LinkText: string): boolean;
                                 { Searches Buff for all occurances of Term, checks its surrounded appropriately
                                 and calls MakeLink to mark it up as a local Link. Does NOT look directly at KMemo1 }
         procedure MakeAllLinks(const Buff: string; const Term: ANSIString; const BlockOffset: integer);
@@ -511,7 +513,7 @@ type
                                 if new one is longer (greatly favours Web Links!). Exists early if it finds it
                                 does not need to make any changes. Make a new block, TKMemoHypeLink, use saved
                                 text and saved attributes. Expects invalid links to already have been removed.
-                                Does not mess with an existing HTTP link.  Index and Len are char, not byte. }
+                                Does not mess with an existing HTTP link.  Index is Char, Len in bytes. }
 		procedure MakeLink(const Index, Len: longint; const Term: string);
                                 { Makes sure the first (and only the first) line is marked as Title
                                 Title should be Blue, Underlined and FontTitle big.
@@ -1542,7 +1544,7 @@ procedure TEditBoxForm.FormActivate(Sender: TObject);
     Tick, Tock : integer; {$endif}
 // const AlreadyCalled: boolean = False;           // Typed Constant, remembered but shared with all instances !
 begin
-    writeln('TEditBoxForm.FormActivate AlreadyCalled is ', booltostr(HaveSeenOnActivate, True));
+    // writeln('TEditBoxForm.FormActivate AlreadyCalled is ', booltostr(HaveSeenOnActivate, True));
     if not HaveSeenOnActivate then begin;
         Ready := False;
         {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
@@ -2614,8 +2616,8 @@ begin
         end;
         inc(i);
     end;
-
-    TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // Thats the bit thats in first block, possibly everything
+    TrueLink := copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // copy Len BYTES !
+//    TrueLink := utf8copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // Thats the bit thats in first block, possibly everything
     // The below might leave a empty block. Messy to delete here but ....
     if BlockNoE > BlockNoS then begin                                           // Multiple blocks, two or more ....
         TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text
@@ -2640,7 +2642,10 @@ begin
         // Chop of everything after the required Text. But len is a char count, not a byte count.
         TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text                     // remove content after the link
                 //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Len);
-                := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, TermByteLen);    // bytes !
+                //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, TermByteLen);    // bytes  ?
+                := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Length(TrueLink));    // NO, bytes !
+
+        // writeln('TEditBoxForm.MakeLink len=' + inttostr(length(TrueLink)) + ' Ulen=' + inttostr(UTF8Length(TrueLink)) + ' LINK=[' + TrueLink + ']');
 
         if Kmemo1.Blocks.Items[BlockNoS].Text = '' then
             KMemo1.blocks.Delete(BlockNoS);                                     // Link went to very end of orig block.
@@ -2691,7 +2696,7 @@ begin
         if ((Offset = 1) or (Buff[ByteBeforeTerm] in [' ', #10, ',', '.'])) and
             (((Offset + length(Term)) >= length(Buff))                          // Line ends at end of link term
                 or (Buff[ByteAfterTerm] in [' ', #10, ',', '.'])) then begin    // a suitable seperator at end of link term
-            MakeLink(BlockOffset + Offset -1, UTF8length(Term), Term);          // MakeLink takes a Char Index !
+            MakeLink(BlockOffset + Offset -1, length(Term), Term);          // MakeLink takes a Char Index and a byte Len
             TimerHouseKeeping.Enabled := False;
         end;
         Offset := UTF8Pos(Term, Buff, Offset + 1);
@@ -2700,8 +2705,9 @@ end;
 
 procedure TEditBoxForm.CheckForHTTP(const Buff : string; const Offset : integer);
 var
-    http : integer;
+    http, FileLink : integer;
     Len : integer = 1;
+    LinkText : string;
 
     // Returns the length of the char that b is first byte of
 {    function LengthUTF8Char(b : byte) : integer;
@@ -2722,28 +2728,68 @@ var
         Result := 7;
         if (not((http = 1)
             or (Buff[http-1] in [' ', ',', #10])))
-                then exit(0);                                            // invalid start
-        while (not(Buff[http+result] in [' ', ',', #10])) do begin       // that might be end of link
-            if (http+result) >= length(Buff) then exit(0);               // invalid end
+                then exit(0);                                     // invalid start
+        while (not(Buff[http+result] in [' ', ',', #10])) do begin // that might be end of link
+            if (http+result) >= length(Buff) then exit(0);        // invalid end
             if Buff[http+result] = '.' then ADot := True;
-            inc(result);                                                // next byte
+            inc(result);                                          // next byte
         end;
         if Buff[http+result-1] = '.' then exit(0);                // The dot was at the end.
         if (result < 13) or (not ADot) then exit(0);
     end;
 
+    function FindNextFileLink() : integer;                        // Also sets Len, does not count leading space
+    begin
+        Len := 1;                                                 // At this stage, a count of valid bytes in the link
+        Result := Buff.IndexOf(' /', FileLink);                   // Remember, zero based !
+        if Result = -1 then
+            Result := Buff.IndexOf(' \', FileLink);
+        if Result = -1 then begin
+            Result := Buff.IndexOf(' ~\', FileLink);
+            Len := 2;
+        end;
+        if Result = -1 then
+            Result := Buff.IndexOf(' ~/', FileLink);
+        if Result = -1 then begin
+            Len := 0;
+            exit;
+        end;
+        // Result now points (zero based) to the space. We don't mark up unless we have one or more char after token, then whitespace or eol
+        // If Result is zero, the space is at start of line. Len tells us how much to add to start searching.
+        while not (Buff[Result+1+len] in [' ', #10]) do begin     // whitespace or newline
+            if (result+1+len) >= length(Buff) then begin          // overrun
+                Len := 0;
+                exit;
+            end;
+            inc(Len);
+        end;
+        dec(Len);                                           // because we included the trailing white space
+        if (Len < 3) then                                   // eg ~/a and /a are OK
+            Len := 0;                                       // Too short, throw it away.
+    end;
+
 begin
+    // First check for web addresses
     http := pos('http', Buff);                              // note that http is in bytes, '1' means first byte of Buff
     while (http <> 0) do begin
         if (UTF8copy(Buff, http, 7) = 'http://') or (copy(Buff, http, 8) = 'https://') then begin
             Len := ValidWebLength();                        // reads http and Buff
             if Len > 0 then begin
 //                debugln('CheckForHTTP Calling MakeLink() Offset=' + Offset.Tostring + '+' + (UTF8Length(pchar(Buff), http-1)).ToString + ' Len=' + (UTF8Length(pchar(Buff)+http, Len)).ToString);
-                MakeLink(OffSet + UTF8Length(pchar(Buff), http-1), UTF8Length(pchar(Buff)+http, Len), '');  // must pass char values, not byte
+                MakeLink(OffSet + UTF8Length(pchar(Buff), http-1), len, '');  // must pass char values, not byte
             end;
         end;
         http := UTF8pos('http', Buff, http+Len+1);          // find next one, +1 to ensure moving on
     end;
+    // Then check for local file links (note leading space) ' /', ' \', ' ~/', ' ~\'
+    FileLink := 0;           // start searching from start of this para, but zero based this time !
+    repeat
+        FileLink := FindNextFileLink()+1; // skip the leading space
+        if Len > 0 then begin                             // +1 because we detected a string starting with a space
+            LinkText := copy(Buff, FileLink+1, Len);      // all in bytes, not char
+            MakeLink(Offset + UTF8Length(pchar(Buff), FileLink), len, '');      // 1st Param is Char count, Len is bytes
+        end;
+    until Len < 1;
 end;
 
 procedure TEditBoxForm.CheckForLinks(const FullBody : boolean);
@@ -2857,17 +2903,17 @@ begin
 //          debugln('Char index=' + inttostr(KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1])));
 
             BuffOffSet := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1]);
-            for i := 0 to TheMainNoteLister.NoteList.Count-1 do             // for each title in main list
-                if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin   // don't link to self
-                    if length(Content) > 3 then begin                // Two significent char plus a newline
+            for i := 0 to TheMainNoteLister.NoteList.Count-1 do                 // for each title in main list
+                if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin // don't link to self
+                    if length(Content) > 3 then begin                           // Two significent char plus a newline
                         {$ifdef LDEBUG}writeln(MyLogFile, 'FB ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
                         MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
                     end;
                 end;
             // OK, lets do HTTPS then.
             if Sett.CheckShowExtLinks.Checked then
-            if length(Content) > 12 then
-            CheckForHTTP(Content, BuffOffset);
+            if length(Content) > 3 then                  // This used to be 12 before we started doing file links.
+                CheckForHTTP(Content, BuffOffset);
         end;
         KMemo1.Blocks.UnLockUpdate;
 
@@ -2877,12 +2923,12 @@ begin
     end else begin                         // Just scan +/- LinkScanRange of current cursor, Edit Mode
         {$ifdef TDEBUG}T1 := gettickcount64();{$endif}
         KMemo1.blocks.LockUpdate;
-        BuffOffset := GrabContent();                                    // Also sets EndScan
+        BuffOffset := GrabContent();                                         // Also sets EndScan
         {$ifdef TDEBUG}T2 := gettickcount64();{$endif}
-        ClearNearLink(BuffOffset, EndScan);                             // Parameters in utf8char, not bytes
+        ClearNearLink(BuffOffset, EndScan);                                  // Parameters in utf8char, not bytes
         {$ifdef TDEBUG}T3 := gettickcount64();{$endif}
         if Sett.ShowIntLinks and (not SingleNoteMode) then begin
-            for i := 0 to TheMainNoteLister.NoteList.Count-1 do begin   // For each note title in the main list.
+            for i := 0 to TheMainNoteLister.NoteList.Count-1 do begin        // For each note title in the main list.
                   {$ifdef LDEBUG}writeln(MyLogFile, 'BV ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
                 if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then
                     MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
@@ -3088,13 +3134,39 @@ begin
     Ready := True;
 end;
 
+function TEditBoxForm.IsFileLink(LinkText : string) : boolean;
+var
+    Msg : string;
+begin
+    result := True;
+    if LinkText[1] = '~' then           // No shell expansion happening here !
+        LinkText := GetEnvironmentVariableUTF8('HOME') + LinkText.Remove(0, 1);
+    if FileExists(LinkText) or DirectoryExists(LinkText) then begin
+        // debugln('TEditBoxForm.IsFileLink - Opening File [' + LinkText + ']');
+        if OpenDocument(LinkText) then
+            exit;
+    end;
+    Msg := 'Cannot open a file : ' + LinkText;
+    if IDYES = Application.MessageBox('Open a note with that name ?'
+                ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
+        result := False;
+end;
+
 procedure TEditBoxForm.OnUserClickLink(sender : TObject);
 begin
     if (copy(TKMemoHyperlink(Sender).Text, 1, 7) = 'http://') or
-        (copy(TKMemoHyperlink(Sender).Text, 1, 8) = 'https://') then
-            OpenUrl(TKMemoHyperlink(Sender).Text)
-    else
-	    SearchForm.OpenNote(TKMemoHyperlink(Sender).Text);
+        (copy(TKMemoHyperlink(Sender).Text, 1, 8) = 'https://') then begin
+            OpenUrl(TKMemoHyperlink(Sender).Text);
+        exit;
+    end;
+
+    debugln(' Passed link text is [', TKMemoHyperlink(Sender).Text, ']');
+
+    if TKMemoHyperlink(Sender).Text[1] in ['~', '/', '\'] then begin    // Maybe file link ?
+        if IsFileLink(TKMemoHyperlink(Sender).Text) then
+            exit;                                                                                                                              // is invalid will go on to open a new note ???
+    end;
+	SearchForm.OpenNote(TKMemoHyperlink(Sender).Text);
 end;
 
 

@@ -19,24 +19,6 @@ msgstr ""
 msgid "Unable to find an expression to evaluate"
 msgstr "Ninguna expresión encontrada para calcular"
 
-#: fpttf.rsmissingfontfile
-#, object-pascal-format
-msgid "The font file <%s> can't be found."
-msgstr "Archivo de la fuente <%s> no encontrado."
-
-#: fpttf.rsnofontfilename
-msgid "The FileName property is empty, so we can't load font data."
-msgstr "No podemos cargar la fuente porque la propiedad FileName está vacía."
-
-#: fpttf.rsnosearchpathdefined
-msgid "No search path was defined"
-msgstr "Falta la ruta de búsqueda"
-
-#: fpttf.serrfontnotfound
-#, object-pascal-format
-msgid "The font <%s> can't be found"
-msgstr "La fuente <%s> no encontrada"
-
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
 msgstr "Notas tomboy-ng - multiplataforma: sincronizar y gestionar notas."
