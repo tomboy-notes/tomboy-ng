@@ -245,6 +245,7 @@ unit EditBox;
     2024/02/05  Set the yellow read only warning panel to height = 0 instead of 1. This will need cross platform testing !
     2024/03/18  FormActivate code run once depended on a typed constant, wrong, they are shared over all instances.
     2024/03/19  Altered MakeLink to accept byte as Len, added File Link capability.
+    2024/03/20  Close the backlinks 'window' before triggering the other note.
 }
 
 
@@ -752,10 +753,12 @@ procedure TEditBoxForm.ListBoxBackLinksClick(Sender: TObject);
 begin
     if (ListBoxBackLinks.ItemIndex >= 0) and (ListBoxBackLinks.ItemIndex < ListBoxBackLinks.Count) then begin
         if (ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex] <> 'Cancel')
-            and (ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex] <> 'Notes that Link to here')  then
+            and (ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex] <> 'Notes that Link to here')  then begin
+                PanelBackLinks.Visible := False;
                 SearchForm.OpenNote(ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex]
-                    ,'','',True, True, ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex]);
-        PanelBackLinks.Visible := False;
+                    ,'','',True, True, CleanCaption() );
+                    // ,'','',True, True, ListBoxBackLinks.Items[ListBoxBackLinks.ItemIndex]);
+        end else
     end;
 end;
 
@@ -3159,9 +3162,7 @@ begin
             OpenUrl(TKMemoHyperlink(Sender).Text);
         exit;
     end;
-
-    debugln(' Passed link text is [', TKMemoHyperlink(Sender).Text, ']');
-
+    //debugln(' Passed link text is [', TKMemoHyperlink(Sender).Text, ']');
     if TKMemoHyperlink(Sender).Text[1] in ['~', '/', '\'] then begin    // Maybe file link ?
         if IsFileLink(TKMemoHyperlink(Sender).Text) then
             exit;                                                                                                                              // is invalid will go on to open a new note ???

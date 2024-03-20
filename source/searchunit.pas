@@ -1438,12 +1438,12 @@ begin
                 if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
                     if STerm = '' then
                         TEditBoxForm(TheForm).NewFind(EditSearch.Text)
-                    else TEditBoxForm(TheForm).NewFind(STerm);                  // ToDo : this does not select the target note's link correctly. (BackLink mode ?)
+                    else TEditBoxForm(TheForm).NewFind(STerm);
                 exit();
 			except on  EAccessViolation do
             	DebugLn('Tried to re show a closed note, that is OK');
+                // We catch the exception and proceed .... but it should never happen.
 			end;
-            // We catch the exception and proceed .... but it should never happen.
         end;
     end;
     // if to here, we need open a new window. If Filename blank, its a new note
@@ -1454,15 +1454,12 @@ begin
             TemplateIs := ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex];
 	EBox := TEditBoxForm.Create(Application);
     EBox.SearchedTerm := '';
-
     // We will do this search after the note has settled dowm
     if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
         if STerm = '' then
             EBox.SearchedTerm := EditSearch.Text
         else
             EBox.SearchedTerm := Sterm;
-
-
     EBox.NoteTitle:= NoteTitle;
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
