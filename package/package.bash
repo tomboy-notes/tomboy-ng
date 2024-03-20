@@ -367,7 +367,7 @@ function MkWinPreInstaller() {
 	# cp ../../DLL/* "$WIN_DIR"/.
 	cp ../../DLL/libhunspell.dll "$WIN_DIR/."
 	cp ../../DLL/libhunspell.license "$WIN_DIR/."
-	cp ../COPYING "$WIN_DIR/."
+	cp ../doc/Windows.license "$WIN_DIR/COPYING"
 	cp AfterInstall.txt "$WIN_DIR/."
 	sed "s/MyAppVersion \"REPLACEME\"/MyAppVersion \"$VERSION\"/" tomboy-ng.iss > "$WIN_DIR/tomboy-ng.iss.temp"
 	# mkdir -p "$WIN_DIR/HELP/EN"

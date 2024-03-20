@@ -31,6 +31,7 @@ type
       Colour : TColor;
       FName : string;                   // PDF only
       ABullet : TKMemoParaNumbering;    // PDF only
+      Fixed : boolean;                  // PDEF only
     end;
 
 type
@@ -43,7 +44,7 @@ type
         public
             destructor Destroy; Override;
             procedure Add(TheWord: ANSIString; S: integer; B, I, NL: boolean;
-                Colour: TColor; FName: string = '');
+                Colour: TColor; FName: string = ''; Fixed: boolean = false);
             //function SameStyle(const S1, S2 : integer) : boolean;
             procedure Dump();
             property Items[Index : integer] : PWord read Get; default;
@@ -116,7 +117,7 @@ begin
 end;
 
 procedure TWordList.Add(TheWord: ANSIString; S: integer; B, I, NL: boolean;
-                    Colour : TColor; FName : string = '');
+                    Colour : TColor; FName : string = ''; Fixed : boolean = false);
 var
     PL : PWord;
 begin
@@ -129,6 +130,7 @@ begin
     PL^.NewLine:= NL;
     PL^.FName := FName;     // Only used by PDF writer
     PL^.ABullet := pnuNone; // Only used by PDF writer
+    Pl^.Fixed := Fixed;     // Only used by PDF write
     inherited Add(PL);
 end;
 

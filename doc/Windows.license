@@ -1,4 +1,7 @@
-Please see the file debian/copyright for license details.
+tomboy-ng is open source software. Its mostly covered under the MIT License.
+
+Copyright (c) 2017-2024 David Bannon
+All rights reserved.
 
 Note that the following addition license terms apply to the hunspell 
 DLL supplied with Windows (but is not shipped with the other platform's

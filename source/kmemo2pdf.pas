@@ -64,15 +64,15 @@ unit kmemo2pdf;
 
     The standard 14 PDF fonts – that can be referenced by name in a PDF document – are:
 
-        Times-Roman
+        Times-Roman                  Microsoft have Times New Roman, is that the same ?
         Times-Bold
         Time-Italic
         Time-BoldItalic
-        Courier
+        Courier                      Microsoft have Courier New, Linux Liberation Mono or FreeMono ??
         Courier
         Courier-Bold
         Courier-Oblique
-        Helvetica
+        Helvetica                      // Helvetica is no longer shipped with Windows
         Helvetica-Bold
         Helvetica-Oblique
         Helvetica-BoldOblique
@@ -143,7 +143,8 @@ type
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
     private
-        UseLocalFontInfo : boolean; // Says Adobe font info available in cache, no mapping required.
+        TestFontProp, TestFontMono : string; // Are the fonts we use to calculate layout, but don't really use.
+ //       UseLocalFontInfo : boolean; // Says Adobe font info available in cache, no mapping required.
         AllowNoBoldItalic : boolean;// Allow use of font that does not have its own Bold or Italic font file.
         BulletIndent : integer;     // Bullet Indent (not including bullet), zero means no bullet;
 //        FontList : TFontList;       // A list of all the fonts we will need to print/display the PDF, Initially populated in KMemoRead()
@@ -158,13 +159,14 @@ type
                                     // Return 0 for a blank line (just inc Y by line height, don't run WriteLine)
                                     // This function is not being used !
 //        function ChangedFont(): boolean;
-                                    // Returns the index into Font array AND Doc font list of the indicated font.
-                                    // Use only family name, ie Liberation Sans, Courier etc.
+
+                                    // Returns the index into Adobe Font array. Only works for Helveticia and
+                                    // Courier. Use only family name, ie Helveticia, Courier.
         function AdobeIndex(FName: string; Bold, Italic: boolean): integer;
                                     // Checks height of line to be rendered, so that base line can accomodate.
         function CheckHeight: integer;
-                                    // Returns true if we have named font in our cache.
-        function FontInCache(FName: string): boolean;
+                                    // Returns true if we have named local font in our cache.
+        function FontInCache(FName: string; Bold, Italic: boolean): boolean;
                                     // Returns with width and height in mm of the word in wordlist pointed to by WI
                                     // If AltText contains anything, it will be used instead of the text in WordList
                                     // but font and associated settings from WordList will still be used.
@@ -173,9 +175,14 @@ type
                                     // A newline has an empty list item and NewLine true. Tries to register a suitable
                                     // font for each word but it may get told by FontList.Add() to use another font.
         function KMemoRead(): boolean;
+
                                     { Checks all fonts in FontList for necessary bold and Italic varients and allocates
                                     a FontIndex that will be used during PDF writing. Returns False if no suitable
                                     font files exist (hopefully, issue was dealt with before we got here). }
+
+                                    { Loads only the official adobe fonts into the document. Here we use
+                                    only Helveticia and Courier. But we might be measuring using a local
+                                    font, that local font is NOT loaded into the PDF }
         function LoadFonts(): boolean;
                                     // Generates the PDF, might return False if it finds the available fonts
                                     // do not include a needed bold or italic version, user invited to proceed
@@ -231,10 +238,10 @@ const   TopMargin = 15;
                 //, 'Times-Roman'
                 //, 'Times-Bold', 'Times-Italic', 'Times-BoldItalic', 'Symbol', 'ZapfDingbats');
 
-(*        {$ifdef LINUX}
-        FontsFixed : array of string = ('Liberation Mono', 'Ubuntu Mono');
-        FontsVariable : array of string = ('Liberation Sans', 'Ubuntu Mono', 'Noto Sans', 'Liberation Serif');
-        {$endif}
+//        {$ifdef LINUX}
+        FontsFixed : array of string = ('Courier', 'Liberation Mono', 'Courier New');   // possibly locally installed, compatible with Adobe Courier
+        FontsVariable : array of string = ('Helvetica', 'Liberation Sans', 'Arial');    // possibly locally installed, compatible with Adobe Helvetica
+(*        {$endif}
         {$ifdef WINDOWS}
         FontsFixed : array of string = ('Courier New');
         FontsVariable : array of string = ('Arial', 'Calibri', 'Segoe UI');
@@ -374,12 +381,7 @@ begin
     Result := False;
 end;                               *)
 
-function TFormKMemo2PDF.FontInCache(FName : string) : boolean;
-var CachedFont : TFPFontCacheItem;
-begin
-    CachedFont := gTTFontCache.Find(FName, false, false);
-    Result := assigned(CachedFont);
-end;
+
 
 function TFormKMemo2PDF.GetWordDimentions(const WI : integer; out W : integer; var H : integer; AltText : string = '') : boolean;
 var
@@ -389,13 +391,13 @@ var
     TestFontName : string;
 
 begin
-    if UseLocalFontInfo then
-        TestFontName := WordList[WI]^.FName
-    else begin
-        if WordList[WI]^.FName = 'Helvetica' then   // Assumes we ONLY have Helvetica and Courier in Word List!
-            TestFontName := 'Liberation Sans'
-        else TestFontName := 'Liberation Mono';
-    end;
+//    if UseLocalFontInfo then
+//        TestFontName := WordList[WI]^.FName
+//    else begin
+        if WordList[WI]^.Fixed then   // Assumes we ONLY have Helvetica and Courier in Word List!
+            TestFontName := TestFontMono
+        else TestFontName := TestFontProp;
+//    end;
     Result := true;
     //writeln('INFO - TFormKMemo2pdf.GetWordDimentions WI=' + inttostr(WI) + ' and Wordlist.Count=' + inttostr(WordList.count));
     if AltText = '' then
@@ -466,9 +468,9 @@ begin
         Page.SetFont(AdobeIndex(WordList[WordIndex]^.FName, WordList[WordIndex]^.Bold, WordList[WordIndex]^.Italic), WordList[WordIndex]^.Size);
         if (XLoc+W+BulletIndent) > (PageWidth - SideMargin) then exit(true);    // no more on this line.
         //writeln('TFormKMemo2pdf.WriteLine will write T=' + WordList[WordIndex]^.AWord + ' F=' + WordList[WordIndex]^.FName+ ' X=' {+ inttostr(BulletIndent)} + ' ' + inttostr(XLoc) + ' W='+ inttostr(W));
-        memo1.Append('TFormKMemo2pdf.WriteLine will WriteText T=' + WordList[WordIndex]^.AWord + ' F=' + WordList[WordIndex]^.FName+ ' X=' {+ inttostr(BulletIndent)} + ' ' + inttostr(XLoc) + ' W='+ inttostr(W));
+//        memo1.Append('TFormKMemo2pdf.WriteLine will WriteText T=' + WordList[WordIndex]^.AWord + ' F=' + WordList[WordIndex]^.FName+ ' X=' {+ inttostr(BulletIndent)} + ' ' + inttostr(XLoc) + ' W='+ inttostr(W));
         Page.WriteText(BulletIndent + XLoc, Y, WordList[WordIndex]^.AWord);
-        memo1.Append('TFormKMemo2pdf.WriteLine wrote word=' + WordList[WordIndex]^.AWord + ' Font=' + WordList[WordIndex]^.FName + ' ' + inttostr(W) + ' ' + inttostr(H));
+//        memo1.Append('TFormKMemo2pdf.WriteLine wrote word=' + WordList[WordIndex]^.AWord + ' Font=' + WordList[WordIndex]^.FName + ' ' + inttostr(W) + ' ' + inttostr(H));
         XLoc := XLoc+W;
         inc(WordIndex);
     end;
@@ -492,7 +494,7 @@ begin
             //BulletIndent := 0;
             exit;
         end;
-        if not GetWordDimentions(WI, W, Result) then begin
+        if not GetWordDimentions(WI, W, Result) then begin      // this should never happen, it knows to measure with a know local font now.
             OldFont := WordList[WI]^.FName;
             memo1.Append('WARNING - TFormKMemo2pdf.CheckHeight Failed to initially load the requested font : ' + OldFont);
             WordList[WI]^.FName := DefaultFont;                                // We will change it to default font and try again
@@ -516,7 +518,18 @@ end;
   Helvetica, Helvetica-Bold, Helvetica-Oblique, Helvetica-BoldOblique,
   Times-Roman, Times-Bold, Times-Italic, Times-BoldItalic,
   Symbol, ZapfDingbats
+
+  But Windows does not have any of these ?? I wonder how similar the names can be ?
+
+
 }
+
+function TFormKMemo2PDF.FontInCache(FName : string; Bold, Italic : boolean) : boolean;
+var CachedFont : TFPFontCacheItem;
+begin
+    CachedFont := gTTFontCache.Find(FName, Bold, Italic);
+    Result := assigned(CachedFont);
+end;
 
 function TFormKMemo2pdf.AdobeIndex(FName : string; Bold, Italic : boolean) : integer;
 begin
@@ -530,7 +543,8 @@ begin
         inc(Result);
     end;
     if Result >= high(AdobeFonts) then result := -1;
-//    if Result < 0 then writeln('TFormKMemo2pdf.AdobeIndex failed to find ', FName, ' in Adobe Font Array'); // ToDo : fix safety
+    if Result < 0 then
+           ShowMessage('TFormKMemo2pdf.AdobeIndex failed to find ' + FName + ' in Adobe Font Array'); // ToDo : fix safety
 end;
 
 function TFormKMemo2pdf.LoadFonts() : boolean;
@@ -622,8 +636,8 @@ end;                       *)
 
 
 function TFormKMemo2pdf.StartPDF : boolean;     // return false and user is shown the memo with error messages
-{var
-    i : integer;  }
+var
+    i : integer;
 begin
     Memo1.Clear;
     CurrentPage := -1;
@@ -632,15 +646,39 @@ begin
 (*    if FontList <> Nil then
         FreeAndNil(FontList);
     FontList := TFontList.Create();  *)
-    WordList := TWordList.Create;
-    FDoc := TPDFDocument.Create(Nil);
-    UseLocalFontInfo := FontInCache('Helvetica');
-    if (not UseLocalFontInfo) and (not FontInCache('Liberation Sans')) then begin         // ToDo : wot about Mac ?
+
+    TestFontMono := '';
+    TestFontProp := '';
+
+    for I := 0 to high(FontsFixed) do
+        if FontInCache(FontsFixed[i], false, false)
+            and FontInCache(FontsFixed[i], True, false)
+            and FontInCache(FontsFixed[i], false, True)
+            and FontInCache(FontsFixed[i], True, True) then begin
+                TestFontMono := FontsFixed[i];
+                break;
+            end;
+    for I := 0 to high(FontsVariable) do
+        if FontInCache(FontsVariable[i], false, false)
+            and FontInCache(FontsVariable[i], True, false)
+            and FontInCache(FontsVariable[i], false, True)
+            and FontInCache(FontsVariable[i], True, True) then begin
+                TestFontProp := FontsVariable[i];
+                break;
+            end;
+
+
+//    UseLocalFontInfo := FontInCache('Helvetica', false, false);
+//    if (not UseLocalFontInfo) and (not FontInCache(TestFontProp, false, false)) then begin         // ToDo : wot about Mac ?
+    if TestFontMono.IsEmpty or TestFontProp.IsEmpty then begin
         Memo1.Append('ERROR - cannot find suitable fonts to use. Please install');
         Memo1.Append('the Adobe Standard fonts, Courier and Helvetica or the open');
         Memo1.Append('source Liberation Sans and Liberation Mono');
         exit(false);                    // neither the formal Adobe fonts nor known substitutes found.
     end;
+
+    WordList := TWordList.Create;
+    FDoc := TPDFDocument.Create(Nil);
     try
         KMemoRead();
         Result := MakePDF();            // False if we found an issue, probably font related !
@@ -730,26 +768,6 @@ var
     AWord : ANSIString = '';
     AFontName : string;
 
-        procedure ReMapFont();      // Force the use of only the Adobe inbuilt fonts.
-        begin                       // Even if they are not available.
-        if (ExFont.Pitch = fpFixed) then begin
-            ExFont.Name := 'Courier';           // Note, just "Courier", bold and Italic stored elsewhere
-(*            if ExFont.Bold then
-                ExFont.Name := 'Courier-Bold'   // Note, no Courier bold and Italic.
-            else if ExFont.Italic then
-                ExFont.Name := 'Courier-Oblique';     *)
-            exit;
-        end;
-        ExFont.Name := 'Helvetica';
-(*        if not (ExFont.Bold or ExFont.Italic) then exit;
-        if ExFont.Bold and ExFont.Italic then
-            ExFont.Name := 'Helvetica-BoldOblique'
-        else if ExFont.Bold then
-                ExFont.Name := 'Helvetica-Bold'
-             else
-               ExFont.Name := 'Helvetica-Oblique'   // must be italic if we are here     *)
-        end;
-
         procedure CopyFont(FromFont : TFont);
         begin
             ExFont.Bold := FromFont.Bold;
@@ -764,7 +782,12 @@ begin
     for BlockNo := 0 to TheKMemo.Blocks.Count-1 do begin                                    // For every block
         if not TheKMemo.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
            CopyFont(TKMemoTextBlock(TheKmemo.Blocks.Items[BlockNo]).TextStyle.Font);        // copies to ExFont
-           if ExFont.Name = 'default' then begin
+           if ExFont.Pitch = fpFixed then
+               ExFont.Name := 'Courier'                                                     // just Courier, std Adobe
+           else ExFont.Name := 'Helvetica';                                                 // just Helvetica, std Adobe
+
+
+ (*          if ExFont.Name = 'default' then begin
                //writeln('INFO TFormKMemo2pdf.KMemoRead() Reasigning [' + TheKmemo.Blocks.Items[BlockNo].Text + '] to font=' + DefaultFont);
                ExFont.Name := DefaultFont;
            end;
@@ -775,10 +798,10 @@ begin
            //writeln('INFO TFormKMemo2pdf.KMemoRead() fontname before=' + AFontName + ' [' + TheKMemo.Blocks.Items[BlockNo].Text + ']');
 
 //            FontList.Add(ExFont.Name, ExFont.Bold, ExFont.Italic, ExFont.Pitch, AFontName);                    // new model does not use fontlist
-           // writeln('INFO TFormKMemo2pdf.KMemoRead() fontname after=' + AFontName);
+           // writeln('INFO TFormKMemo2pdf.KMemoRead() fontname after=' + AFontName);                          *)
            for I := 0 to TheKMemo.Blocks.Items[BlockNo].WordCount-1 do begin                // For every word in this block
                AWord := TheKMemo.Blocks.Items[BlockNo].Words[I];
-               WordList.Add(AWord, ExFont.Size, ExFont.Bold, ExFont.Italic, False, ExFont.Color, AFontName);
+               WordList.Add(AWord, ExFont.Size, ExFont.Bold, ExFont.Italic, False, ExFont.Color, ExFont.Name, (ExFont.Pitch = fpFixed));
            end;
         end else begin
             WordList.Add('', 0, False, False, True, clBlack);   // TKMemoParagraph, thats easy but is it a Bullet ?

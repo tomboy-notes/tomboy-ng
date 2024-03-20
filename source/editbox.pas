@@ -2585,16 +2585,16 @@ end;
 procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string);              // ToDo : A lot of clean up required
 // Note : the HTTP check does not pass the Term, gives an empty string instead !!!!
 var
-    TermByteLen : integer;          // Might be same as Len (http) or longer if link contains UTF8
+//    TermByteLen : integer;          // Might be same as Len (http) or longer if link contains UTF8
 	Hyperlink : TKMemoHyperlink;
     TrueLink, AText : string;
 	BlockNoS, BlockNoE, i : integer;
     BlockOffset : integer;          // A zero based count of characters ahead of char pointed by Index
     FontAtt : FontLimitedAttrib;
 begin
-    if Term = '' then
-        TermByteLen := Len
-    else TermByteLen := length(Term);
+//    if Term = '' then
+//        TermByteLen := Len
+//    else TermByteLen := length(Term);
     if Index = 0 then exit;         // Thats this note's title, skip it !
     BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Block where proposed link Ends
     BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // Block where proposed link starts
@@ -2710,7 +2710,7 @@ procedure TEditBoxForm.CheckForHTTP(const Buff : string; const Offset : integer)
 var
     http, FileLink : integer;
     Len : integer = 1;
-    LinkText : string;
+//    LinkText : string;
 
     // Returns the length of the char that b is first byte of
 {    function LengthUTF8Char(b : byte) : integer;
@@ -2789,7 +2789,7 @@ begin
     repeat
         FileLink := FindNextFileLink()+1; // skip the leading space
         if Len > 0 then begin                             // +1 because we detected a string starting with a space
-            LinkText := copy(Buff, FileLink+1, Len);      // all in bytes, not char
+//            LinkText := copy(Buff, FileLink+1, Len);      // all in bytes, not char
             MakeLink(Offset + UTF8Length(pchar(Buff), FileLink), len, '');      // 1st Param is Char count, Len is bytes
         end;
     until Len < 1;
