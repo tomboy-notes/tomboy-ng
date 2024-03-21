@@ -37,6 +37,7 @@ function AdjustValues () {
             ;;
         "unstable")                     # ie Debian, as set above
             PACKAGE="tomboy-ng"         # in case its a Debian QT5 build, always tomboy-ng in Debian
+            DEPENDS="libqt5pas1, libssl-dev"  # Ugly hack necessary until next FPC release.
             ;;
     esac
 }

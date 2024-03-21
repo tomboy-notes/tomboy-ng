@@ -24,6 +24,16 @@
 #
 # WARNING - as packageonly is not being told where Lazarus is, it cannot find
 #	    Lazarus's premade language files.
+
+FPC_PATH="$HOME"/fpcupdeluxe/fpc/bin/x86_64-darwin        # Thats Fixes from fpcupdeluxe, last rebuild March 2024
+
+if [ "$OLD_PATH" == "" ]; then
+    export PATH="$FPC_PATH":"$PATH"
+else
+    export PATH="$FPC_PATH":"$OLD_PATH"
+fi
+
+
 	      
 LAZ_FULL_DIR="$1"
 LAZ_DIR=`basename "$LAZ_FULL_DIR"`
@@ -121,7 +131,7 @@ function MakeDMG () {
 	cp ../glyphs/tomboy-ng.icns "$CONTENTS/Resources/."
 	# for i in $MANUALS; do
 	#	cp ../doc/"$i" "$CONTENTS/Resources/.";
-	# done;
+	# dmk_dmg.bashone;
 	cp -R ../doc/HELP "$CONTENTS/Resources/."
 	mkdir "$CONTENTS/MacOS/locale"
 	for i in `ls -b ../po/*.??.po`; do
@@ -139,7 +149,7 @@ function MakeDMG () {
 	# ~/create-dmg-master/create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"
 	create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"
 }
-
+mk_dmg.bash
 if [ "$PACKAGEONLY" == "false" ]; then
     if [ "LAZ_PCP" == "" ]; then
 	echo "Failed to find config file"
