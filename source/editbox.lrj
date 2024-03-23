@@ -53,5 +53,6 @@
 {"hash":195288076,"name":"teditboxform.menuitemselectall.caption","sourcebytes":[83,101,108,101,99,116,32,65,108,108],"value":"Select All"},
 {"hash":94435780,"name":"teditboxform.menuitem4.caption","sourcebytes":[77,101,110,117,73,116,101,109,52],"value":"MenuItem4"},
 {"hash":94435781,"name":"teditboxform.menuitem5.caption","sourcebytes":[77,101,110,117,73,116,101,109,53],"value":"MenuItem5"},
-{"hash":94435782,"name":"teditboxform.menuitem6.caption","sourcebytes":[77,101,110,117,73,116,101,109,54],"value":"MenuItem6"}
+{"hash":94435782,"name":"teditboxform.menuitem6.caption","sourcebytes":[77,101,110,117,73,116,101,109,54],"value":"MenuItem6"},
+{"hash":75148209,"name":"teditboxform.opendialogfilelink.title","sourcebytes":[70,105,110,100,32,97,32,102,105,108,101,32,98,117,116,32,114,101,109,101,109,98,101,114,44,32,105,116,32,119,105,108,108,32,110,111,116,32,98,101,32,99,104,101,99,107,101,100,32,33],"value":"Find a file but remember, it will not be checked !"}
 ]}

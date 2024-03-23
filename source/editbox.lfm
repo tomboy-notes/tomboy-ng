@@ -1460,7 +1460,7 @@ object EditBoxForm: TEditBoxForm
   end
   object PrintDialog1: TPrintDialog
     Left = 496
-    Top = 119
+    Top = 128
   end
   object PopupMainTBMenu: TPopupMenu
     Left = 486
@@ -1478,5 +1478,10 @@ object EditBoxForm: TEditBoxForm
     object MenuItem6: TMenuItem
       Caption = 'MenuItem6'
     end
+  end
+  object OpenDialogFileLink: TOpenDialog
+    Title = 'Find a file but remember, it will not be checked !'
+    Left = 552
+    Top = 48
   end
 end
