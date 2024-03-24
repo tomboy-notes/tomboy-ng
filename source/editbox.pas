@@ -3233,25 +3233,25 @@ var
     BlockOffset, BlockNoS : integer;
     AFileName, HomeDir : string;
 begin
-  result := True;
-  HomeDir := GetEnvironmentVariableUTF8('HOME');
-  OpenDialogFileLink.InitialDir := HomeDir;
-  if OpenDialogFileLink.Execute then
+    result := True;
+    HomeDir := GetEnvironmentVariableUTF8('HOME');
+    OpenDialogFileLink.InitialDir := HomeDir;
+    if OpenDialogFileLink.Execute then
         AFileName := TrimFilename(OpenDialogFileLink.FileName)
-  else
+    else
         exit;
-  if copy(AFileName, 1, length(HomeDir)) = HomeDir then begin
-      AFileName := AFileName.Remove(0, Length(HomeDir));
+    if copy(AFileName, 1, length(HomeDir)) = HomeDir then begin
+        AFileName := AFileName.Remove(0, Length(HomeDir));
         if AFileName[1] in ['/', '\'] then
             AFileName := AFileName.Remove(0,1);
-  end;
-  if CurrCursor = 0 then
+    end;
+    if CurrCursor = 0 then
     CurrCursor := Kmemo1.blocks.RealSelStart;
-//    Index := Kmemo1.blocks.RealSelStart       // Thats either in the link block or one after it.
-//  else Index := CurrCursor;
-   BlockNoS := KMemo1.Blocks.IndexToBlockIndex(CurrCursor, BlockOffset);
-   if not (KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink')
-       and (KMemo1.Blocks.Items[BlockNoS].Text = FileLinkToken)) then begin
+    //    Index := Kmemo1.blocks.RealSelStart       // Thats either in the link block or one after it.
+    //  else Index := CurrCursor;
+    BlockNoS := KMemo1.Blocks.IndexToBlockIndex(CurrCursor, BlockOffset);
+    if not (KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink')
+        and (KMemo1.Blocks.Items[BlockNoS].Text = FileLinkToken)) then begin
             debugln( 'TEditBoxForm.BuildFileLink BK=' + BlockNoS.ToString + ' Index=' + CurrCursor.ToString);
             BlockNoS := KMemo1.Blocks.IndexToBlockIndex(CurrCursor-1, BlockOffset);  // This block probably not necessary
             if not (KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink')
@@ -3261,11 +3261,10 @@ begin
                     showmessage('TEditBoxForm.BuildFileLink - Sorry, lost the plot');
                     exit(false);
                 end;
-   end;
-   KMemo1.Blocks.Items[BlockNoS].InsertString(AFileName);
-   KMemo1.SelStart := CurrCursor + Length(AFileName) + 2;    // ToDo : fix this, something wrong
-   KMemo1.SelEnd := KMemo1.SelStart;
-
+    end;
+    KMemo1.Blocks.Items[BlockNoS].InsertString('"' + AFileName + '"');
+    KMemo1.SelStart := CurrCursor + Length(AFileName) + 4;    // ToDo : fix this, something wrong
+    KMemo1.SelEnd := KMemo1.SelStart;
 end;
 
 (*       then begin
@@ -3277,16 +3276,15 @@ end;                                                             *)
 
 function TEditBoxForm.OpenFileLink(LinkText : string) : boolean;
 var
-    //Msg : string;
     TokenLen : integer;
     i : integer;
+    Msg : string;
 begin
     result := True;
     TokenLen := length(FileLinkToken);
     LinkText := LinkText.Remove(0, TokenLen);
     if LinkText = '' then begin
         BuildFileLink();                                // a click somewhere IN link, easy to find
-        //showmessage('Empty Link.');                   // ToDo : a place holder for file dialog
         exit;
     end;
     if LinkText[1] = '"' then begin                  // wrapping a link with a space
@@ -3306,9 +3304,16 @@ begin
         LinkText := appendPathDelim(GetEnvironmentVariableUTF8('HOME')) + LinkText;
     if not (FileExists(LinkText) or DirectoryExists(LinkText)) then begin
         showmessage('File does not exist : ' + LinkText);
-    end else
+    end else begin
+        if FileIsExecutable(LinkText) then begin
+            Msg := 'Link is an executable file.';
+            if IDYES <> Application.MessageBox('Open an executable ?'
+                    ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
+                exit;
+        end;
         if not OpenDocument(LinkText) then
              showmessage('Sorry, cannot open ' + LinkText);
+   end;
    { This ultimatly, on Linux at least, ends up with a call the TProcessUTF8.execute from
    UTF8Process.pas, procedure RunCmdFromPath(const ProgramFilename, CmdLineParameters: string);
    and that calls xdg-open passing name of file to open. If xdg-open cannot find something
@@ -3318,13 +3323,14 @@ begin
    In my case, passing a sqlite file as a parameter (and nothing available to open an sqlite
    file) results in a silent failure.
    }
+end;
 
  //   FindFilenameOfCmd()
 (*    Msg := 'Cannot open a file : ' + LinkText;
     if IDYES = Application.MessageBox('Open a note with that name ?'
                 ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
-        result := False;      *)
-end;
+        result := False;
+end;                    *)
 
 procedure TEditBoxForm.OnUserClickLink(sender : TObject);
 begin
