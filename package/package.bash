@@ -12,6 +12,9 @@
 # ----------------------------------------------------------------------------
 # Typical usage -
 #          ./package_debian.sh $HOME"/lazarus/laz-200 <LeakCheck>
+           
+#  add one of [ReleaseRasPi64, ReleaseQt6, ReleaseLin32Qt5 ] after laz path
+#  to build just that binary, no packaging done.
 
 # Note we assume laz config has same name as Laz directory, ie .laz-200
 # ----------------------------------------------------------------------------
@@ -166,7 +169,7 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
             BuildAMode "$1"
             exit
         ;;
-        ReleaseQT6)	
+        ReleaseQt6)	
              BuildAMode "$1"
             exit
         ;;

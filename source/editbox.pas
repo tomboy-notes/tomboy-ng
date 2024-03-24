@@ -814,7 +814,7 @@ var
                 TextLen := UTF8Length(KMemo1.Blocks.Items[BlockNo].Text);
                 KMemo1.SelStart := KMemo1.Blocks.SelStart + TextLen - BlockOffset;
                 KMemo1.SelEnd := KMemo1.SelStart;
-                debugln('TEditBoxForm.SpeedButtonLinkClick cursor BK=' + BlockNo.tostring + ' Cu=' + CurrCursor.tostring);
+//                debugln('TEditBoxForm.SpeedButtonLinkClick cursor BK=' + BlockNo.tostring + ' Cu=' + CurrCursor.tostring);
                 BuildFileLink(CurrCursor);
                 Result := True;
                 exit;
