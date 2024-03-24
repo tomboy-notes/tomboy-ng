@@ -246,6 +246,7 @@ unit EditBox;
     2024/03/18  FormActivate code run once depended on a typed constant, wrong, they are shared over all instances.
     2024/03/19  Altered MakeLink to accept byte as Len, added File Link capability.
     2024/03/20  Close the backlinks 'window' before triggering the other note.
+    2024/03/24  FileLink in a basic form
 }
 
 
@@ -445,7 +446,11 @@ type
                                 // Must deal with a BS when on ch 0 of a Bullet para (reduce bullet) or, if preceeding
                                 // para is already a bullet, we ensure merged para is same bullet level.
         function BackSpaceBullet(): boolean;
-        function BuildFileLink(): boolean;
+                                // Builds a FileLink at the current cursor position. Possibly because am empty link
+                                // was clicked, or because the user typed file:// and (leaving cursor at end of that
+                                // token) and clicked the Link button. So, cursor may be at end of a token or in the
+                                // middle of one. If CurrCursor is zero, the click was in middle, easy to find.
+        function BuildFileLink(CurrCursor: integer = 0): boolean;
                                 // Will increase (MoreBullet=True) or decrease bullet level.
         procedure BulletControl(MoreBullet: boolean);
                                 // Gets passed a string containing a copy of one or more kmemo paragraphs, seperated by
@@ -809,7 +814,8 @@ var
                 TextLen := UTF8Length(KMemo1.Blocks.Items[BlockNo].Text);
                 KMemo1.SelStart := KMemo1.Blocks.SelStart + TextLen - BlockOffset;
                 KMemo1.SelEnd := KMemo1.SelStart;
-                BuildFileLink();
+                debugln('TEditBoxForm.SpeedButtonLinkClick cursor BK=' + BlockNo.tostring + ' Cu=' + CurrCursor.tostring);
+                BuildFileLink(CurrCursor);
                 Result := True;
                 exit;
            end;
@@ -2632,7 +2638,7 @@ var
 	BlockNoS, BlockNoE, i : integer;
     BlockOffset : integer;          // A zero based count of characters ahead of char pointed by Index
     FontAtt : FontLimitedAttrib;
-    Test : string;
+    //Test : string;
     ULen : integer;                 // Length, in Char, of Link Text
 begin
     // DumpKMemo('TEditBoxForm.MakeLink START');
@@ -2695,13 +2701,13 @@ begin
                 //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Len);
                 //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, TermByteLen);    // bytes  ?
                 := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Length(TrueLink));    // NO, bytes !
-        Test :=  TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text;
+//        Test :=  TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text;
         if Kmemo1.Blocks.Items[BlockNoS].Text = '' then
             KMemo1.blocks.Delete(BlockNoS);                                     // Link went to very end of orig block.
         if Kmemo1.Blocks.Items[BlockNoS-1].Text = '' then begin                 // Link must have started at beginning of orig block
             KMemo1.blocks.Delete(BlockNoS-1);
             dec(BlockNoS);
-            Test :=  TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text;
+//            Test :=  TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text;
         end;
     end;
     // When we get to here, Link text (and any blocks completely spanned by link text) have been removed
@@ -3220,45 +3226,47 @@ begin
     Ready := True;
 end;
 
-// Builds a FileLink at the current cursor position. Possibly because am empty link
-// was clicked, or because the user typed file:// and (leaving cursor at end of that
-// token) clicked the Link button. So, cursor may be at end of a token or in the
-// middle of one.
 
-function TEditBoxForm.BuildFileLink() : boolean;
+
+function TEditBoxForm.BuildFileLink(CurrCursor : integer = 0) : boolean;
 var
-    Index, BlockOffset, BlockNoS : integer;
+    BlockOffset, BlockNoS : integer;
     AFileName, HomeDir : string;
 begin
-
+  result := True;
   HomeDir := GetEnvironmentVariableUTF8('HOME');
   OpenDialogFileLink.InitialDir := HomeDir;
   if OpenDialogFileLink.Execute then
         AFileName := TrimFilename(OpenDialogFileLink.FileName)
   else
         exit;
-
   if copy(AFileName, 1, length(HomeDir)) = HomeDir then begin
       AFileName := AFileName.Remove(0, Length(HomeDir));
         if AFileName[1] in ['/', '\'] then
             AFileName := AFileName.Remove(0,1);
   end;
-
-
-   Index := Kmemo1.blocks.RealSelStart;       // Thats either in the link block or one after it.
-   BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);
+  if CurrCursor = 0 then
+    CurrCursor := Kmemo1.blocks.RealSelStart;
+//    Index := Kmemo1.blocks.RealSelStart       // Thats either in the link block or one after it.
+//  else Index := CurrCursor;
+   BlockNoS := KMemo1.Blocks.IndexToBlockIndex(CurrCursor, BlockOffset);
    if not (KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink')
        and (KMemo1.Blocks.Items[BlockNoS].Text = FileLinkToken)) then begin
-            if BlockNoS > 1 then
-                dec(BlockNoS);
+            debugln( 'TEditBoxForm.BuildFileLink BK=' + BlockNoS.ToString + ' Index=' + CurrCursor.ToString);
+            BlockNoS := KMemo1.Blocks.IndexToBlockIndex(CurrCursor-1, BlockOffset);  // This block probably not necessary
             if not (KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink')
                 and (KMemo1.Blocks.Items[BlockNoS].Text = FileLinkToken)) then begin
-                    showmessage('Sorry, lost the plot');
-                    exit;
+                    // debugln( 'TEditBoxForm.BuildFileLink BK=' + BlockNoS.ToString + ' Index=' + CurrCursor.ToString);
+                    //dumpKmemo('Failed to find link');
+                    showmessage('TEditBoxForm.BuildFileLink - Sorry, lost the plot');
+                    exit(false);
                 end;
    end;
    KMemo1.Blocks.Items[BlockNoS].InsertString(AFileName);
-  end;
+   KMemo1.SelStart := CurrCursor + Length(AFileName) + 2;    // ToDo : fix this, something wrong
+   KMemo1.SelEnd := KMemo1.SelStart;
+
+end;
 
 (*       then begin
        KMemo1.Blocks.Items[BlockNoS].InsertString('hello');
@@ -3269,7 +3277,7 @@ end;                                                             *)
 
 function TEditBoxForm.OpenFileLink(LinkText : string) : boolean;
 var
-    Msg : string;
+    //Msg : string;
     TokenLen : integer;
     i : integer;
 begin
@@ -3277,7 +3285,7 @@ begin
     TokenLen := length(FileLinkToken);
     LinkText := LinkText.Remove(0, TokenLen);
     if LinkText = '' then begin
-        BuildFileLink();
+        BuildFileLink();                                // a click somewhere IN link, easy to find
         //showmessage('Empty Link.');                   // ToDo : a place holder for file dialog
         exit;
     end;

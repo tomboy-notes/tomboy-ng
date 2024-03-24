@@ -842,6 +842,10 @@ msgstr "Закреслений"
 msgid "Underline"
 msgstr "Підкреслений"
 
+#: teditboxform.opendialogfilelink.title
+msgid "Find a file but remember, it will not be checked !"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr "Видалити цю нотатку"

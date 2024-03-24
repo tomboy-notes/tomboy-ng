@@ -2,5 +2,5 @@ Revised Bullet control system.
 Revised Color setting system for Qt5 and Qt6
 Tab key now indents paragraph, not compatible with old Tomboy.
 Revised PDF export, embedded fonts.
-Draft "file link" capability. Subject to revision.
+Draft "file link" capability. Just type file:// then either click the link button, press Ctrl-L or continue typing a path and file name. Subject to revision.
 Support for openssl 3.0 (compile with fpc323, require dev pkg on Debian)

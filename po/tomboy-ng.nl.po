@@ -843,6 +843,10 @@ msgstr "Doorhalen"
 msgid "Underline"
 msgstr "Onderstrepen"
 
+#: teditboxform.opendialogfilelink.title
+msgid "Find a file but remember, it will not be checked !"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr "Notitie verwijderen"

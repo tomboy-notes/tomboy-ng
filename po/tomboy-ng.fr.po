@@ -855,6 +855,10 @@ msgstr "Barré"
 msgid "Underline"
 msgstr "Souligné"
 
+#: teditboxform.opendialogfilelink.title
+msgid "Find a file but remember, it will not be checked !"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr "Supprimer la note"
