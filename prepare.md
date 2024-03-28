@@ -166,8 +166,8 @@ The binary will be in the source/. directory below where you are now standing.
 ========
 The machine to at least test the source package for Debian needs to be a current unstable. Further, because on the mentor's machines, apt does not install Recommended, we need to ensure the test machines is the same.
 
-So, take a current VM of Testing, update irs /etc/apt/sources.lst to point to unstable instead of, eg, bookwork. Apt update; apt upgrade.
-Then, add a file, /etc/apt/apt.config that has one line, 
+So, take a current VM of Testing, update irs /etc/apt/sources.list to point to unstable instead of, eg, bookwork. Apt update; apt upgrade.
+Then, add a file, /etc/apt/apt.conf.d/99norecommend that has one line, 
 
      apt::install-recommends "false";
     
@@ -201,9 +201,8 @@ Debian Bullseye likes debhelper = 13, Ubuntu is still on 12 in control file. Deb
 
 **Install** 
 
-devscripts libqt5pas-dev lcl-qt5 libnotify-dev
+devscripts libqt5pas-dev lcl-qt5 libnotify-dev lazarus fpc libdistro-info-perl build-essential debhelper-compat lintian
 
-Lazarus >= 2.2.4, FPC >= 3.2.2
 
 test-deb.bash into ~/bin/. from tb scripts dir.
 

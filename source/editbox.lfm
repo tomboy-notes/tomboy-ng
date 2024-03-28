@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 505
+  Left = 415
   Height = 505
-  Top = 188
+  Top = 451
   Width = 784
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -1445,6 +1445,18 @@ object EditBoxForm: TEditBoxForm
     object MenuItemSelectAll: TMenuItem
       Caption = 'Select All'
       OnClick = MenuItemSelectAllClick
+    end
+    object Separator1: TMenuItem
+      Caption = '-'
+    end
+    object MenuItemInsertFileLink: TMenuItem
+      Caption = 'Insert File Link'
+    end
+    object MenuItemInsertDirLink: TMenuItem
+      Caption = 'MenuItemInsertDirLink'
+    end
+    object MenuItemSelectLink: TMenuItem
+      Caption = 'Select Link'
     end
   end
   object TimerSave: TTimer

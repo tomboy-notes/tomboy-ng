@@ -297,6 +297,9 @@ type
         MenuItem4: TMenuItem;
         MenuItem5: TMenuItem;
         MenuItem6: TMenuItem;
+        MenuItemInsertFileLink: TMenuItem;
+        MenuItemInsertDirLink: TMenuItem;
+        MenuItemSelectLink: TMenuItem;
         MenuItemCopyPlain: TMenuItem;
         MenuItemExportPDF: TMenuItem;
         MenuItemBulletRight: TMenuItem;
@@ -338,6 +341,7 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
+        Separator1: TMenuItem;
         SpeedSymbol: TSpeedButton;
         SpeedClose: TSpeedButton;
 		SpeedLeft: TSpeedButton;
@@ -463,6 +467,7 @@ type
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
+        procedure DoRightClickMenu();
         procedure DumpKMemo(WhereFrom: string);
         function ExitError(MSG: string): boolean;
         procedure ExprTan(var Result: TFPExpressionResult; const Args: TExprParameterArray);
@@ -534,6 +539,7 @@ type
   		                        necessarily a bullet line). If we return FALSE, passed parameters may not be set. }
 //		function NearABulletPoint(out Leading, Under, Trailing, IsFirstChar, NoBulletPara: Boolean;
 //                        out BlockNo, TrailOffset, LeadOffset: longint): boolean;
+
                                 { Responds when user clicks on a hyperlink }
 		procedure OnUserClickLink(sender: TObject);
                                 { A method called by this or other apps to get what we might have selected }
@@ -559,8 +565,19 @@ type
         function UnlinkBlock(StartBlock: integer): integer;
                                 // Cancels any indication we can do middle button paste 'cos nothing is selected
         procedure UnsetPrimarySelection;
-
-        //function UpdateNote(NRec: TNoteUpdaterec): boolean;
+                                // Tells us where we are with respect inserting or selecting links.
+                                // Returns T if we can insert a link at the current cursor position.
+                                // and sets OnPara or Start of Para if appropriate.
+                                // If either set, then we must be on a space and probably will need to split a
+                                // block to insert a link.
+                                // [prev block ] --- might be part of next line too.
+                                // [some text][ more text][P]
+                                //  |            |  |   |  ^--- We are on a para,
+                                //  |            |  |   ^-------Last char of a block (length = Offset+1), if next bk para then WhiteRight=T
+                                //  |            |  ^------------On a space, mid block, WhiteLeft=F. WhiteRight=T, if Hypa Left the LinkLeft=T
+                                //  |            ^---------------In text, no link allowed but if block is Hypa then InLink=T
+                                //  ^----------------------------Offset=0, if Bk before is para, WhiteLeft=T, else look at last char prev block
+        function CanInsertFileLink(out SoP, OnPara, InLink: boolean): boolean;
 
     public
         SingleNoteFileName : string;    // Set by the calling process. FFN inc path, carefull, cli has a real global version
@@ -2592,6 +2609,41 @@ end;
 }
 
 
+
+function TEditBoxForm.CanInsertFileLink(out SoP, OnPara, InLink  : boolean) : boolean;
+var Offset, BlockNo, Index : integer;
+begin
+    Result := False;
+    InLink:=False; SoP:=False; OnPara:=False;
+    Index := Kmemo1.blocks.RealSelStart;
+    BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, Offset);
+    if BlockNo < 2 then exit(False);                           // In Title, don't play here.
+    if KMemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
+        OnPara := True;
+        exit(True);
+    end;
+    InLink := Kmemo1.Blocks.Items[BlockNo].ClassNameIs('TKMemoHyperlink');
+    if InLink then exit(false);
+    if (Offset = 0) and KMemo1.Blocks.Items[BlockNo-1].ClassNameIs('TKMemoParagraph') then begin
+        SoP := True;
+        exit(True);
+    end;
+    if  KMemo1.Blocks.Items[BlockNo].Text[Offset+1] = ' ' then exit(True);
+    // Hmm, what about if we are to right of a space ? Bad luck !
+end;
+
+procedure TEditBoxForm.DoRightClickMenu();
+var SoP, OnPara, InLink, CanInsert : boolean;
+begin
+    CanInsert := CanInsertFileLink(SoP, OnPara, InLink);
+    debugln('DoRightClickMenu() CanInsert=' + booltostr(CanInsert, True) + ' Sop=' + booltostr(Sop, True)
+        + ' OnPara=' + booltostr(OnPara, True) + ' InLink=' + booltostr(InLink, True));
+    MenuItemInsertFileLink.Enabled := CanInsert;
+    MenuItemInsertDirLink.Enabled  := CanInsert;
+    MenuItemSelectLink.enabled := InLink;
+    PopupMenuRightClick.popup
+end;
+
 function TEditBoxForm.SaveLimitedAttributes(const BlockNo : TKMemoBlockIndex; out FontAtt : FontLimitedAttrib) : boolean;
 begin
 (*    debugln('SaveLimitedAttributes - using block ' + inttostr(BlockNo)
@@ -3305,16 +3357,50 @@ begin
     if not (FileExists(LinkText) or DirectoryExists(LinkText)) then begin
         showmessage('File does not exist : ' + LinkText);
     end else begin
+        {$ifndef WINDOWS}
+        // 'Executable on Windows is a dogs breakfast. https://forum.lazarus.freepascal.org/index.php/topic,24615.0.html
         if FileIsExecutable(LinkText) then begin
             Msg := 'Link is an executable file.';
             if IDYES <> Application.MessageBox('Open an executable ?'
                     ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
                 exit;
         end;
+        {$endif}
         if not OpenDocument(LinkText) then
              showmessage('Sorry, cannot open ' + LinkText);
    end;
-   { This ultimatly, on Linux at least, ends up with a call the TProcessUTF8.execute from
+   { Two problems here.
+        1. Windows has no idea about a file being executable. Best we can do is look
+        at extension, but the file might be quoted here without an extension, so must
+        test for its existance with known ececutable extensions.
+
+        PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH
+
+        {$ifdef windows}
+        var
+          S: String;
+        begin
+          S := GetEnvironmentVariable('PATHEXT');
+          if S = '' then
+            //PATHTEXT env. variable doesn't exist
+            Result := FileIsExecutable(AFileName)
+          else
+            //Add the ";" at the end of "PATHTEXT", so i can search the exact file's ext
+            Result := Pos(UpperCase(ExtractFileExt(AFilename) + ';'), UpperCase(S) + ';') > 0;
+        end;
+
+        need to do two things, Does the passed file have an extension listed in PATHEXT ?
+        if so, assume its executable. If not, maybe the user has typed in a known
+        executable name, as such, they may not have even known about the extension.
+        So, test for a version of it with one of the extensions added. If it exists
+        with one of the extensions it is 'probably' executable.
+
+        2. On Linux (at least), Lazarus does not check the exit status of the executable used to
+        launch. Its down in LazUTF8, needs to raise exception if OS cannot find
+        something to open a file.
+        Hmm, I wonder if windows even has a exit code ?
+
+   This ultimatly, on Linux at least, ends up with a call the TProcessUTF8.execute from
    UTF8Process.pas, procedure RunCmdFromPath(const ProgramFilename, CmdLineParameters: string);
    and that calls xdg-open passing name of file to open. If xdg-open cannot find something
    to open the passed file, it returns a error status of 4 ("the action failed"). In either
@@ -3665,9 +3751,9 @@ begin
     MouseDownPos := KMemo1.CaretPos;    // regional record in case we are doing shift click
     //debugln('Mousedown ' + dbgs(KMemo1.CaretPos));
     //{$ifdef LCLCOCOA}
-    if ssCtrl in Shift then PopupMenuRightClick.popup;
+    if ssCtrl in Shift then DoRightClickMenu();
     //{$else}
-	if Button = mbRight then PopupMenuRightClick.PopUp;
+	if Button = mbRight then DoRightClickMenu();
     //{$endif}
 end;
 
@@ -3795,6 +3881,7 @@ begin
             VK_Z : if Use_Undoer then Undoer.UnDo;                                     // Note : Ctrl-Z does not go through to KMemo
             VK_Y : if Use_Undoer then Undoer.Redo;                                     // Note : Ctrl-Y does not go through to KMemo
             VK_D : InsertDate();
+            VK_M : begin Key := 0; DoRightClickMenu; end;
             VK_N : SearchForm.OpenNote('');
             VK_E : InitiateCalc();
             VK_F4 : close;                      // close just this note, normal saving will take place
