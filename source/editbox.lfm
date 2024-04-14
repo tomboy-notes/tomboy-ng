@@ -1204,6 +1204,7 @@ object EditBoxForm: TEditBoxForm
     TabOrder = 0
     Visible = True
     OnChange = KMemo1Change
+    OnClick = KMemo1Click
     OnKeyDown = KMemo1KeyDown
     OnKeyPress = KMemo1KeyPress
     OnKeyUp = KMemo1KeyUp
@@ -1451,12 +1452,15 @@ object EditBoxForm: TEditBoxForm
     end
     object MenuItemInsertFileLink: TMenuItem
       Caption = 'Insert File Link'
+      OnClick = MenuItemFileLinkClick
     end
     object MenuItemInsertDirLink: TMenuItem
-      Caption = 'MenuItemInsertDirLink'
+      Caption = 'Insert Directory Link'
+      OnClick = MenuItemFileLinkClick
     end
     object MenuItemSelectLink: TMenuItem
       Caption = 'Select Link'
+      OnClick = MenuItemFileLinkClick
     end
   end
   object TimerSave: TTimer
@@ -1493,7 +1497,12 @@ object EditBoxForm: TEditBoxForm
   end
   object OpenDialogFileLink: TOpenDialog
     Title = 'Find a file but remember, it will not be checked !'
+    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
     Left = 552
     Top = 48
+  end
+  object SelectDirectoryForLink: TSelectDirectoryDialog
+    Left = 653
+    Top = 75
   end
 end

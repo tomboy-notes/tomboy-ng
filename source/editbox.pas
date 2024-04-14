@@ -247,6 +247,7 @@ unit EditBox;
     2024/03/19  Altered MakeLink to accept byte as Len, added File Link capability.
     2024/03/20  Close the backlinks 'window' before triggering the other note.
     2024/03/24  FileLink in a basic form
+    2024/04/14  Extensive rewrite about Links, especially FileLink, remove click on "file://".
 }
 
 
@@ -266,10 +267,19 @@ uses
     TBUndo;
 
 type FontLimitedAttrib = record      // Used to save and restore attributes when
-    Styles : TFontStyles;             // a hyperlink is created or unlinked.
+    Styles : TFontStyles;            // a hyperlink is created or unlinked.
     BackColour : TColor;             // Note we don't do underline here....
     Size : Integer;
 end;
+
+
+type TiLActionRec = record                     // a record used to describe how we insert a file link.
+                    LeadingSpace : boolean;
+                    TrailingSpace : boolean;
+                    NewTextBlock  : boolean;   // we must insert new text block before indicated one
+                    BlockNo : integer;         // this block to act on.
+                    Offset : integer;          // pos in text to insert at
+                    end;
 
 type
     { TEditBoxForm }
@@ -341,6 +351,7 @@ type
         PopupMenuTools: TPopupMenu;
         PopupMenuText: TPopupMenu;
         PrintDialog1: TPrintDialog;
+        SelectDirectoryForLink: TSelectDirectoryDialog;
         Separator1: TMenuItem;
         SpeedSymbol: TSpeedButton;
         SpeedClose: TSpeedButton;
@@ -376,6 +387,7 @@ type
                                 also set, here we discard file name and make a new one. }
         procedure FormShow(Sender: TObject);
         procedure KMemo1Change(Sender: TObject);
+        procedure KMemo1Click(Sender: TObject);
         	                    { Watchs for  backspace affecting a bullet point, and whole lot of ctrl, shift, alt
                                 combinations. For things we let KMemo handle, just exit, for things we handle
                                 must set key to 0 after doing so. }
@@ -387,6 +399,7 @@ type
         procedure ListBoxBackLinksClick(Sender: TObject);
         procedure MenuItemExportPDFClick(Sender: TObject);
         procedure MenuItemCopyPlainClick(Sender: TObject);
+        procedure MenuItemFileLinkClick(Sender: TObject);
                                 // All the Text menu items go through this event
         procedure MenuTextGeneralClick(Sender: TObject);
 		procedure MenuFindPrevClick(Sender: TObject);
@@ -450,11 +463,14 @@ type
                                 // Must deal with a BS when on ch 0 of a Bullet para (reduce bullet) or, if preceeding
                                 // para is already a bullet, we ensure merged para is same bullet level.
         function BackSpaceBullet(): boolean;
-                                // Builds a FileLink at the current cursor position. Possibly because am empty link
-                                // was clicked, or because the user typed file:// and (leaving cursor at end of that
-                                // token) and clicked the Link button. So, cursor may be at end of a token or in the
-                                // middle of one. If CurrCursor is zero, the click was in middle, easy to find.
-        function BuildFileLink(CurrCursor: integer = 0): boolean;
+                                // Called when right click menu responds to InsertFileLink or InsertDirLink
+                                // Builds a FileLink at the current cursor position.
+                                // If a new link (ie CharNo not 0), the resulting link will always
+                                // start at indicated position and we provide the FileLinkToken and whitespace left and
+                                // right if necessary, we just manipulate text in that block.
+                                // We will just insert necessary text, housekeeping will markup the actual link.
+        function BuildFileLink(ItsFile: Boolean; CharNo: integer = 0): boolean;
+
                                 // Will increase (MoreBullet=True) or decrease bullet level.
         procedure BulletControl(MoreBullet: boolean);
                                 // Gets passed a string containing a copy of one or more kmemo paragraphs, seperated by
@@ -467,6 +483,10 @@ type
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
         function ComplexCalculate(out AStr: string): boolean;
+                                // Displays the right click menu after determining
+                                // what should be enabled and what not. Key is where
+                                // "current position" is, a right click will have
+                                // moved the cursor if nothing was selected.
         procedure DoRightClickMenu();
         procedure DumpKMemo(WhereFrom: string);
         function ExitError(MSG: string): boolean;
@@ -484,6 +504,8 @@ type
                                 because user is typing and existing match might still be viable }
         procedure FindNew(IncStartPos: boolean);
         function FindNumbersInString(AStr: string; out AtStart, AtEnd: string): boolean;
+        procedure GetBlockIndexes(Index: integer; out FirstChar, blkLen: integer
+            );
         procedure InsertDate();
         function OpenFileLink(LinkText: string): boolean;
                                 { Searches Buff for all occurances of Term, checks its surrounded appropriately
@@ -527,7 +549,8 @@ type
                                 does not need to make any changes. Make a new block, TKMemoHypeLink, use saved
                                 text and saved attributes. Expects invalid links to already have been removed.
                                 Does not mess with an existing HTTP link.  Index is Char, Len in bytes. }
-		procedure MakeLink(const Index, Len: longint; const Term: string);
+		procedure MakeLink(const Index, Len: longint; const Term: string;
+            InsertMode: boolean = false);
                                 { Makes sure the first (and only the first) line is marked as Title
                                 Title should be Blue, Underlined and FontTitle big.
                                 Note that when a new note is loaded from disk, this function is not called,
@@ -558,6 +581,9 @@ type
                                 // Advises other apps we can do middle button paste
         procedure SetPrimarySelection;
         procedure SymbolMenuClicked(Sender: TObject);
+                                // returns the type insert action we must do, and passes back advice about leading
+                                // and trailing space, need for a new block. Reports only, does not act.
+        function TestLinkInsert(IndexNo: integer; out ILA: TiLActionRec): boolean;
                                 { Restores block at StartLink to Text, attempts to merge linktext back into both
                                 the previous or next block if it can.
                                 There is a problem here. If a link is edited making it invalid but the remainer
@@ -819,8 +845,8 @@ var
     ThisTitle : ANSIString;
     Index : integer;
 
-
-    function SetupFileLink(CurrCursor : integer) : boolean;
+//  Abandon the click on "file://" model for now. Too complicated to explain IMHO
+(*    function SetupFileLink(CurrCursor : integer) : boolean;
     var BlockNo, BlockOffset, TextLen : integer;
     begin
        Result := False;
@@ -831,19 +857,19 @@ var
                 TextLen := UTF8Length(KMemo1.Blocks.Items[BlockNo].Text);
                 KMemo1.SelStart := KMemo1.Blocks.SelStart + TextLen - BlockOffset;
                 KMemo1.SelEnd := KMemo1.SelStart;
-//                debugln('TEditBoxForm.SpeedButtonLinkClick cursor BK=' + BlockNo.tostring + ' Cu=' + CurrCursor.tostring);
-                BuildFileLink(CurrCursor);
+                debugln('TEditBoxForm.SpeedButtonLinkClick cursor BK=' + BlockNo.tostring + ' Cu=' + CurrCursor.tostring);
+                BuildFileLink(True, '', CurrCursor);           // default here is file. Only way to get dir is right click menu.
                 Result := True;
                 exit;
            end;
        end;
-    end;
+    end;        *)
 
 begin
     { May be called with some text selected in which case it will try and create a
     new note with that title. If nothing selected, it populates and shows the
-    BackLinks panel. A click on an item there will open that (backlinked) note.
-    New in v0.40, a click while cursor is near an (empty?) filelink open file dialog.}
+    BackLinks panel. A click on an item there will open that (backlinked) note. }
+
 
     if KMemo1.ReadOnly then exit();
     if KMemo1.Blocks.RealSelLength > 1 then begin
@@ -865,8 +891,8 @@ begin
             KMemo1Change(self);
 		end;
     end else begin
-        if not (SetUpFileLink(KMemo1.Blocks.SelStart)
-                    or SetUpFileLink(KMemo1.Blocks.SelStart-1)) then
+//        if not (SetUpFileLink(KMemo1.Blocks.SelStart)
+//                    or SetUpFileLink(KMemo1.Blocks.SelStart-1)) then
         ShowBackLinks;
     end;
 end;
@@ -1302,27 +1328,27 @@ var
     LinePos : TKmemoLinePosition; {$endif}
 begin
     {$IFNDEF DARWIN}
-    if Button = mbMiddle then begin
-      Point := TPoint.Create(X, Y); // X and Y are pixels, not char positions !
-      LinePos := eolEnd;
-      while X > 0 do begin          // we might be right of the eol marker.
+    if Button = mbMiddle then begin            // middle button or primary paste
+        Point := TPoint.Create(X, Y);          // X and Y are pixels, not char positions !
+        LinePos := eolEnd;
+        while X > 0 do begin                   // we might be right of the eol marker.
             KMemo1.PointToIndex(Point, true, true, LinePos);
             if LinePos = eolInside then break;
             dec(Point.X);
-      end;
-      PrimaryPaste(KMemo1.PointToIndex(Point, true, true, LinePos));
-      exit();
+        end;
+        PrimaryPaste(KMemo1.PointToIndex(Point, true, true, LinePos));
+        exit();
     end;
-    if KMemo1.SelAvail and
+    if KMemo1.SelAvail and                     // if not paste, better update primary
         (Kmemo1.Blocks.SelLength <> 0) then
             SetPrimarySelection()
         else
             UnsetPrimarySelection();
     {$endif}
-    if (Button = mbLeft) and ([ssShift] = Shift) then begin
-      //debugln('Start ' + dbgs(MouseDownPos) + ' to ' + dbgs(KMemo1.CaretPos));
-      KMemo1.SelStart := MouseDownPos;
-      KMemo1.SelEnd := KMemo1.CaretPos;
+    if (Button = mbLeft) and ([ssShift] = Shift) then begin  // select from existing pos to clicked pos
+        //debugln('Start ' + dbgs(MouseDownPos) + ' to ' + dbgs(KMemo1.CaretPos));
+        KMemo1.SelStart := MouseDownPos;
+        KMemo1.SelEnd := KMemo1.CaretPos;
     end;
 end;
 
@@ -2517,11 +2543,15 @@ var
     i, x : integer;
     S : string;
 begin
-    Debugln('TEditBoxForm.DumpKMemo from ' + WhereFrom);
+    Debugln('  TEditBoxForm.DumpKMemo from ' + WhereFrom);
     for i := 0 to Kmemo1.Blocks.Count-1 do begin
-        S := inttostr(i) + ' ';
+        S := '  ' + inttostr(i) + ' ';
         if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoTextBlock') then begin
             S := S + 'text : ' + KMemo1.Blocks.Items[i].Text;
+            S := S + ' ';
+            if fsUnderline in TKMemoTextBlock(KMemo1.Blocks[i]).TextStyle.Font.Style then
+                S := S + 'u '
+            else S := S + '  ';
             for x := 1 to length( KMemo1.Blocks.Items[i].Text) do
                 S := S + ' ' + inttostr(ord(KMemo1.Blocks.Items[i].Text[x]));
         end;
@@ -2609,6 +2639,231 @@ end;
 }
 
 
+// --------- F I L E and D I R E C T O R Y  L I N K  related methods -----------
+
+
+function TEditBoxForm.TestLinkInsert(IndexNo : integer; out ILA : TiLActionRec) : boolean;
+var
+    BlockOffset, LeftBlockNo : integer;          // LeadingSpace, trailingSpace, NewTextBlock, BlockNo, Offset
+begin
+    ILA.BlockNo := KMemo1.Blocks.IndexToBlockIndex(IndexNo, ILA.Offset);
+    if ILA.BlockNo < 2 then begin
+        ILA.BlockNo := -1;
+        exit(False);
+    end;
+    ILA.NewTextBlock := false;
+    LeftBlockNo := KMemo1.Blocks.IndexToBlockIndex(IndexNo-1, BlockOffset);
+
+    debugln('TEditBoxForm.TestLinkInsert Block is ' + KMemo1.blocks[ILA.BlockNo].ClassName + ' and ' + KMemo1.blocks[ILA.BlockNo-1].ClassName);
+
+    if KMemo1.blocks[ILA.BlockNo].ClassNameIs('TKMemoTextBlock') then begin
+
+        if KMemo1.blocks[ILA.BlockNo].Text.IsEmpty  then                             // ToDo : test this
+            debugln('TEditBoxForm.TestLinkInsert WARNING empty text block ' + dbgs(ILA.BlockNo));
+
+//        debugln('tBoxForm.TestLinkInsert ch=[' + KMemo1.blocks[ILA.BlockNo].Text[ILA.Offset+1] + '] -1=['
+//                + KMemo1.blocks[ILA.BlockNo].Text[ILA.Offset] + ']');         // warning, this debug unhappy at end if file
+
+        ILA.TrailingSpace := (KMemo1.blocks[ILA.BlockNo].Text[ILA.Offset+1] <> ' ');   // byte op, BUT WHAT ABOUT AN EMPTY BLOCK ???
+        if (ILA.Offset = 0) then begin                                               // we must look at previous block
+            if KMemo1.blocks[LeftBlockNo].ClassNameIs('TKMemoParagraph') then begin
+                ILA.LeadingSpace := false;                                           // on first char of a para
+                exit(True);
+            end else begin
+                ILA.LeadingSpace := not KMemo1.blocks[LeftBlockNo].Text.EndsWith(' ');  // ASSUMES ITS TEXT - WHAT IF ITS HYPER ?
+                exit(True);
+            end;
+        end else begin
+            ILA.LeadingSpace := (KMemo1.blocks[ILA.BlockNo].Text[ILA.Offset] <> ' ');   // byte op
+            exit(True);
+        end;
+    end;                                                                                // end of "if TKMemoTextBlock"
+    // we are on a non-text block, 'TKMemoParagraph' or 'TKMemoHyperLink'
+    if KMemo1.blocks[ILA.BlockNo].ClassNameIs('TKMemoParagraph') then begin
+        // if there is text block to left, append to it, if not, new block
+        if KMemo1.blocks[LeftBlockNo].ClassNameIs('TKMemoTextBlock') then begin         // text block to left.
+            ILA.LeadingSpace := not KMemo1.blocks[LeftBlockNo].Text.EndsWith(' ');
+            ILA.TrailingSpace := False;
+            ILA.Offset := length(KMemo1.blocks[LeftBlockNo].Text);
+            ILA.BlockNo := LeftBlockNo;
+            debugln('TEditBoxForm.TestLinkInsert ' + KMemo1.blocks[LeftBlockNo].ClassName);
+            exit(True);
+        end;
+        if KMemo1.blocks[LeftBlockNo].ClassNameIs('TKMemoHyperLink') then begin         // Hyper block to left always add space
+            ILA.LeadingSpace := true;
+            ILA.TrailingSpace := True;
+            ILA.NewTextBlock := True;
+            exit(True);
+        end;
+        if KMemo1.blocks[LeftBlockNo].ClassNameIs('TKMemoParagraph') then begin         // Para block to left must insert text block
+            ILA.LeadingSpace := false;
+            ILA.TrailingSpace := false;
+            ILA.NewTextBlock := true;
+            exit(True);
+        end;
+    end;                                                                                // end of "if TKMemoParagraph"
+    Result := False;
+    // Now, I want to know if char at CurrCursor and at CurrCursor-1 is whitespace.
+    // that is space or newline. Cannot use KMemo1.text[CurrCursor] cos CurrCursor is char count, not byte.
+    // Possibilities -
+    // 1. We are in a .text and offset is > 0, easy we look directly.
+    // 2. We are in a .text and offset = 0, must look at previous block. Insert at beginning.
+    // 3. We are on a para block and previous block is text, we'll append to previous block
+    // 4. We are on para block and previous is also a Para, must insert new text block before it.
+end;
+
+// --- revised, deals only with new links !!!!!!!!
+function TEditBoxForm.BuildFileLink(ItsFile : Boolean; CharNo: integer = 0): boolean;
+var
+    AFileName, HomeDir : string;
+    Blk : TKMemoTextBlock;
+    ILR : TiLActionRec;
+begin
+    result := True;
+    if CharNo = 0 then
+        CharNo := Kmemo1.RealSelStart;
+    HomeDir := GetEnvironmentVariableUTF8('HOME');
+    if ItsFile then begin                           // its either File or Directory
+        OpenDialogFileLink.InitialDir := HomeDir;
+        if not OpenDialogFileLink.Execute then
+            exit;
+        AFileName := TrimFilename(OpenDialogFileLink.FileName)
+    end else begin
+        SelectDirectoryForLink.InitialDir := HomeDir;
+        if not SelectDirectoryForLink.execute then
+           exit;
+        AFileName := TrimFileName(SelectDirectoryForLink.FileName);
+    end;
+    if copy(AFileName, 1, length(HomeDir)) = HomeDir then begin
+        AFileName := AFileName.Remove(0, Length(HomeDir));
+        if AFileName[1] in ['/', '\'] then
+            AFileName := AFileName.Remove(0,1);
+    end;
+    if TestLinkInsert(CharNo, ILR) then begin
+        AFileName := FileLinkToken + '"' + AFileName + '"';       // we always add inverted double commas here ...
+        if ILR.LeadingSpace then AFileName := ' ' + AFileName;
+        if ILR.TrailingSpace then AFileName := AFileName + ' ';
+//        debugln('TEditBoxForm.BuildFileLink before  text=[' + KMemo1.Blocks[ILR.BlockNo].Text + ']');
+        if ILR.NewTextBlock then begin
+          Blk := KMemo1.Blocks.AddTextBlock(AFileName, ILR.BlockNo);
+          Blk.TextStyle.Font.Underline := False;
+//          debugln('TEditBoxForm.BuildFileLink - insert block');
+        end else begin
+            KMemo1.Blocks[ILR.BlockNo].InsertString(AFileName, ILR.Offset);
+        end;
+//        debugln('TEditBoxForm.BuildFileLink after  text=[' + KMemo1.Blocks[ILR.BlockNo].Text + ']');
+        KMemo1.SelStart := KMemo1.SelStart + utf8length(AFileName);
+        KMemo1.SelLength := 0;
+        MarkDirty();
+//        DumpKMemo('BuildFileLink Inserted=[' + AFileName + ']');
+    end;
+end;
+
+function TEditBoxForm.OpenFileLink(LinkText : string) : boolean;
+var
+    i : integer;
+    Msg : string;
+begin
+    result := True;
+    if LinkText.StartsWith(FileLinkToken) then
+        LinkText := LinkText.Remove(0, FileLinkTokenLen);
+    if (length(LinkText) > FileLinkTokenLen) and (LinkText[1] = '"') then begin // wrapping a link with a space
+        LinkText := LinkText.Remove(0, 1);                                      // Lazarus code will re-wrap the text later in process
+        i := LinkText.IndexOf('"', 0);
+        if i = -1 then begin
+            showmessage('Badly formed link : ' + LinkText);
+            exit;
+        end;
+        LinkText := LinkText.Remove(i, 99);          // remove second ", and anything after it too ?
+    end;
+    if LinkText = '' then begin                      // Must have contained only "" ?
+        showmessage('Empty Link');
+        exit;
+    end;
+    if not (LinkText[1] in ['\', '/']) then          // Relative path if first char after token is not a slash
+        LinkText := appendPathDelim(GetEnvironmentVariableUTF8('HOME')) + LinkText;
+    if not (FileExists(LinkText) or DirectoryExists(LinkText)) then begin
+        showmessage('File does not exist : ' + LinkText);
+    end else begin
+        // ToDo : test, as below for Windows, for executable file.
+        {$ifndef WINDOWS}
+        // 'Executable on Windows is a dogs breakfast. https://forum.lazarus.freepascal.org/index.php/topic,24615.0.html
+        if FileIsExecutable(LinkText) then begin
+            Msg := 'Link is an executable file.';
+            if IDYES <> Application.MessageBox('Open an executable ?'
+                    ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
+                exit;
+        end;
+        {$endif}
+        if not OpenDocument(LinkText) then
+             showmessage('Sorry, cannot open ' + LinkText);
+   end;
+end;
+
+(*  Two problems here.
+        1. Windows has no idea about a file being executable. Best we can do is look
+        at extension, but the file might be quoted here without an extension, so must
+        test for its existance with known ececutable extensions.
+
+        PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH
+
+        {$ifdef windows}
+        var
+          S: String;
+        begin
+          S := GetEnvironmentVariable('PATHEXT');
+          if S = '' then
+            //PATHTEXT env. variable doesn't exist
+            Result := FileIsExecutable(AFileName)
+          else
+            //Add the ";" at the end of "PATHTEXT", so i can search the exact file's ext
+            Result := Pos(UpperCase(ExtractFileExt(AFilename) + ';'), UpperCase(S) + ';') > 0;
+        end;
+
+        need to do two things, Does the passed file have an extension listed in PATHEXT ?
+        if so, assume its executable. If not, maybe the user has typed in a known
+        executable name, as such, they may not have even known about the extension.
+        So, test for a version of it with one of the extensions added. If it exists
+        with one of the extensions it is 'probably' executable.
+
+        2. On Linux (at least), Lazarus does not check the exit status of the executable used to
+        launch. Its down in LazUTF8, needs to raise exception if OS cannot find
+        something to open a file.
+        Hmm, I wonder if windows even has a exit code ?
+
+   This ultimatly, on Linux at least, ends up with a call the TProcessUTF8.execute from
+   UTF8Process.pas, procedure RunCmdFromPath(const ProgramFilename, CmdLineParameters: string);
+   and that calls xdg-open passing name of file to open. If xdg-open cannot find something
+   to open the passed file, it returns a error status of 4 ("the action failed"). In either
+   case xdg-open exits immediatly so that exit status is available. But its not checked and no
+   indication of an error is passed back up to calling system.
+   In my case, passing a sqlite file as a parameter (and nothing available to open an sqlite
+   file) results in a silent failure.
+   *)
+
+// returns with the index of first char and text length for block that Index appears in.
+// All are in char, not bytes.
+procedure TEditBoxForm.GetBlockIndexes(Index : integer; out FirstChar, blkLen : integer);
+var BlockNo, Offset : integer;
+begin
+   BlockNo := KMemo1.Blocks.IndexToBlockIndex(Index, Offset);
+   FirstChar := Index - Offset;
+   BlkLen := UTF8Length(KMemo1.Blocks.Items[BlockNo].Text);
+end;
+
+procedure TEditBoxForm.MenuItemFileLinkClick(Sender: TObject);
+var SelStart, SelLen : integer;
+begin
+    case TMenuItem(sender).Name of
+        'MenuItemInsertDirLink' : BuildFileLink(False);
+        'MenuItemInsertFileLink' : BuildFileLink(True);
+        'MenuItemSelectLink' : begin
+               GetBlockIndexes(KMemo1.RealSelStart, SelStart, SelLen);
+               KMemo1.SelStart := SelStart;
+               KMemo1.SelLength := SelLen;
+        end;
+    end;
+end;
 
 function TEditBoxForm.CanInsertFileLink(out SoP, OnPara, InLink  : boolean) : boolean;
 var Offset, BlockNo, Index : integer;
@@ -2643,6 +2898,9 @@ begin
     MenuItemSelectLink.enabled := InLink;
     PopupMenuRightClick.popup
 end;
+
+
+// ----------------------- G E N E R A L   L I N K  M E T H O D S --------------
 
 function TEditBoxForm.SaveLimitedAttributes(const BlockNo : TKMemoBlockIndex; out FontAtt : FontLimitedAttrib) : boolean;
 begin
@@ -2681,19 +2939,17 @@ begin
 end;
 
 
-procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string);              // ToDo : A lot of clean up required
+procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string; InsertMode : boolean=false);              // ToDo : A lot of clean up required
 // Note : the HTTP check does not pass the Term, gives an empty string instead !!!!
 var
-//    TermByteLen : integer;          // Might be same as Len (http) or longer if link contains UTF8
 	Hyperlink : TKMemoHyperlink;
     TrueLink, AText : string;
 	BlockNoS, BlockNoE, i : integer;
     BlockOffset : integer;          // A zero based count of characters ahead of char pointed by Index
     FontAtt : FontLimitedAttrib;
-    //Test : string;
     ULen : integer;                 // Length, in Char, of Link Text
 begin
-    // DumpKMemo('TEditBoxForm.MakeLink START');
+    //DumpKMemo('TEditBoxForm.MakeLink START term=' + Term + ' vvvvvvvvv');
     if Term <> '' then              // We must use UTF8 number to calculate BlockNoE
         ULen := UTF8Length(Term)
     else ULen := Len;               // But with http, it does not matter, no UTF8 in web addresses !
@@ -2709,23 +2965,24 @@ begin
         if AText = Term then exit;                                              // Already there
     end;
     i := BlockNoS;
-    while i < BlockNoE do begin
-        if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin     // is there a link there already ?
-            if KMemo1.Blocks.Items[i].text.StartsWith('http') then exit;        // Leave existing web links alone, already checked.
-            if KMemo1.Blocks.Items[i].text.Length >= Len then exit;             // Leave it alone, is already at least as long
-            UnlinkBlock(i);                                                     // Existing shorter, we will replace
-            //debugln('TEditBoxForm.MakeLink Unlinked ' + i.tostring);
-            BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Sadly, we need to start this loop again
-            BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // and keep iterating until we have clear space
-            i := BlockNoS;
+        while i <= BlockNoE do begin
+            if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoHyperlink') then begin     // is there a link there already ?
+                if KMemo1.Blocks.Items[i].text.StartsWith('http') then exit;        // Leave existing web links alone, already checked.
+                if KMemo1.Blocks.Items[i].text.Length >= Len then exit;             // Leave it alone, is already at least as long
+                UnlinkBlock(i);                                                     // Existing shorter, we will replace
+                //debugln('TEditBoxForm.MakeLink Unlinked ' + i.tostring);
+                BlockNoE := KMemo1.Blocks.IndexToBlockIndex(Index+Len-1, BlockOffset);      // Sadly, we need to start this loop again
+                BlockNoS := KMemo1.Blocks.IndexToBlockIndex(Index, BlockOffset);            // and keep iterating until we have clear space
+                i := BlockNoS;
+            end;
+            if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoParagraph') then begin     // Thats an ERROR !
+                //debugln('TEditBoxForm.MakeLink exiting early !!!!');
+                exit;
+            end;
+            inc(i);
         end;
-        if KMemo1.Blocks.Items[i].ClassNameIs('TKMemoParagraph') then begin     // Thats an ERROR !
-            //debugln('TEditBoxForm.MakeLink exiting early !!!!');
-            exit;
-        end;
-        inc(i);
-    end;
-    TrueLink := copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // copy Len BYTES !
+        TrueLink := copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // copy Len BYTES !
+
     // The below might leave a empty block. Messy to delete here but ....
     if BlockNoE > BlockNoS then begin                                           // Multiple blocks, two or more ....
         TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text
@@ -2749,7 +3006,14 @@ begin
     end else begin                                                              // All the proposed link was in the BlockNoS
         BlockNoS := KMemo1.SplitAt(Index);
         // Chop of everything after the required Text. But len is a char count, not a byte count.
-        TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text                     // remove content after the link
+
+        // Note : we will stop Makelink from doing insert.
+
+{        if InsertMode then begin
+            if not Kmemo1.Blocks.Items[BlockNoS-1].ClassNameIs('TKMemoParagraph') then   // want a space to left of new link unless its a Para.
+                TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS-1]).Text                    // The Hyperlink
+                    := TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS-1]).Text + ' '       // block is inserted between BlockNos-1 and BlockNoS
+        end else} TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text                     // remove content after the link
                 //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Len);
                 //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, TermByteLen);    // bytes  ?
                 := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Length(TrueLink));    // NO, bytes !
@@ -2769,12 +3033,12 @@ begin
     Hyperlink.Text := TrueLink;
     Hyperlink.Textstyle.StyleChanged   :=  true;
     Hyperlink.OnClick := @OnUserClickLink;
-    {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);
+    {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);   // BlockNoS points to the block cut from the chain and attached to the link block.
     RestoreLimitedAttributes(BlockNoS, FontAtt);
     HyperLink.Textstyle.Font.Color := Sett.LinkColour;
     {$ifdef LDEBUG}TG3 := gettickcount64();
     TG1 := TG1 + (TG3-Tg2);{$endif}
-//    DumpKMemo('TEditBoxForm.MakeLink END');
+    // DumpKMemo('TEditBoxForm.MakeLink END term=' + Term + ' ^^^^^^^^^^');
 end;
 
 
@@ -2791,11 +3055,7 @@ procedure TEditBoxForm.MakeAllLinks(const Buff : string; const Term : ANSIString
 var
 	Offset   : Integer;     // The char position of a search term in Buffer
     ByteBeforeTerm, ByteAfterTerm : integer;
-//    ASelStart, ASelLength, i : integer;
 begin
-//    if pos('bgc 11', TheMainNoteLister.NoteList[i]^.TitleLow) > 0 then
-//    if Term = 'bgc 11' then
-//        debugln('NewMakeAllLinks found it =========================' + Term);
     Offset := UTF8Pos(Term, Buff);
     while Offset > 0 do begin                                                   // will be zero when UTF8Pos() fails to find term
 //        debugln('NewMakeAllLinks Acting on Term=' + Term);
@@ -2902,6 +3162,7 @@ begin
         FileLink := FindNextFileLink();
         if Len > 0 then begin
             LinkText := copy(Buff, FileLink+1, Len);      // all in bytes, not char
+//            debugln('TEditBoxForm.CheckForHTTP FILELinkText=[' + LinkText + '] len=' + dbgs(Len));
             MakeLink(Offset + UTF8Length(pchar(Buff), FileLink), len, LinkText);      // 1st Param is Char count, Len is bytes
         end;
         inc(FileLink);
@@ -3035,7 +3296,7 @@ begin
         {$ifdef TDEBUG}T0 := gettickcount64();{$endif}
         { We iterate over the KMemo, loading a line, checking it for Links and hyperlinks, then do next line }
 
-//        KMemo1.Blocks.LockUpdate;         // ToDo : restore
+        KMemo1.Blocks.LockUpdate;
         BlockNo := GetPrevPara(KMemo1.Blocks.Count -1);
         while BlockNo > 0 do begin
             BlockNo := GetPrevPara(BlockNo-1);
@@ -3050,7 +3311,6 @@ begin
             for i := 0 to TheMainNoteLister.NoteList.Count-1 do                 // for each title in main list
                 if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin // don't link to self
                     if length(Content) > 3 then begin                           // Two significent char plus a newline
-                        {$ifdef LDEBUG}writeln(MyLogFile, 'FB ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
                         MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
                     end;
                 end;
@@ -3059,7 +3319,7 @@ begin
             if length(Content) > 3 then                  // This used to be 12 before we started doing file links.
                 CheckForHTTP(Content, BuffOffset);
         end;
-//        KMemo1.Blocks.UnLockUpdate;         // ToDo : restore
+        KMemo1.Blocks.UnLockUpdate;
 
         {$ifdef TDEBUG}T1 := gettickcount64();
         debugln('CheckForLinks Timing T1=' + (T1-T0).tostring);
@@ -3081,7 +3341,7 @@ begin
         end;
         {$ifdef TDEBUG}T4  := gettickcount64();{$endif}
         if Sett.CheckShowExtLinks.Checked then
-                CheckForHTTP(Content, BuffOffset);                           // Mark any unmarked web links
+                CheckForHTTP(Content, BuffOffset);                           // Mark any unmarked web or file links
         KMemo1.blocks.UnLockUpdate;                                          // can take tens of mS, 100mS in a 50k note
         {$ifdef TDEBUG}T5  := gettickcount64();
         debugln('CheckForLinks Timing T1=' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
@@ -3092,7 +3352,7 @@ begin
 end;
 
 
-function TEditBoxForm.UnlinkBlock(StartBlock : integer) : integer;
+function TEditBoxForm.UnlinkBlock(StartBlock : integer) : integer;    // WRONG - ??  MUST NOT MERGE A HYPERLINK BLOCK ?????
 var
     Existing : string;
     ChangedOne : boolean = false;
@@ -3101,6 +3361,16 @@ var
 
     function CanMergeBlocks(LinkBlock, TextBlock : integer) : boolean;  // Merges two blocks IFF they are same sort, font, size etc
     begin
+        // Dont merge if Right block starts with file:// and is Link block
+        if TextBlock > LinkBlock then begin
+            if KMemo1.Blocks.Items[TextBlock].ClassNameIs('TKMemoHyperlink')
+                and KMemo1.Blocks[TextBlock].Text.StartsWith(FileLinkToken) then
+                    exit(False);
+        end else
+            if KMemo1.Blocks.Items[LinkBlock].ClassNameIs('TKMemoHyperlink')
+                and KMemo1.Blocks[LinkBlock].Text.StartsWith(FileLinkToken) then
+                    exit(False);
+
         if (KMemo1.Blocks.Items[TextBlock].ClassNameIs('TKMemoTextBlock')
             or KMemo1.Blocks.Items[TextBlock].ClassNameIs('TKMemoHyperlink'))
         and (KMemo1.Blocks.Items[LinkBlock].ClassNameIs('TKMemoTextBlock')
@@ -3140,9 +3410,7 @@ begin
         dec(StartBlock);
         TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).Text := KMemo1.Blocks.Items[StartBlock].Text + Existing;
         ChangedOne := True;
-        {$ifdef LDEBUG}
-        debugln('UnLinkBlock Merge Left StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
-        {$endif}
+//        debugln('UnLinkBlock Merge Left StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
    end;
 
    if CanMergeBlocks(StartBlock, StartBlock+1) then begin
@@ -3150,9 +3418,7 @@ begin
         Kmemo1.Blocks.Delete(StartBlock);
         TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock]).Text := Existing + KMemo1.Blocks.Items[StartBlock].Text;
         ChangedOne := True;
-        {$ifdef LDEBUG}
-        debugln('UnLinkBlock Merge Right StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
-        {$endif}
+//        debugln('UnLinkBlock Merge Right StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
    end;
 
    if not changedOne then begin
@@ -3163,9 +3429,7 @@ begin
         RestoreLimitedAttributes(StartBlock, FontAtt);
         Blk.TextStyle.Font.Style := Blk.TextStyle.Font.Style - [fsBold, fsItalic];
         Blk.TextStyle.Font.Size := Sett.FontNormal;
-        {$ifdef LDEBUG}
-        debugln('UnLinkBlock No Merge StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
-        {$endif}
+//        debugln('UnLinkBlock No Merge StartBlock=' + StartBlock.Tostring + ' Existing=' + Existing);
    end;
    Result := StartBlock;           // only changed with merge left
 end;
@@ -3177,18 +3441,13 @@ var
     Blar, StartBlock, EndBlock : longint;
     LinkText  : ANSIString;
 
-    function ValidWebLink() : boolean;     // returns true if LinkText is valid web address
+    function ValidWebLink() : boolean;     // returns true if LinkText looks like valid web address
     var
         DotSpot : integer;
-        Str : String;
+//        Str : String;
     begin
         if pos(' ', LinkText) > 0 then exit(false);
         if (copy(LinkText,1, 8) <> 'https://') and (copy(LinkText, 1, 7) <> 'http://') then exit(false);
-        Str := TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text;
-        if (KMemo1.Blocks.Items[StartBlock-1].ClassName <> 'TKMemoParagraph') and
-            not Str.EndsText(' ', Str) then exit(false);
-        if (KMemo1.Blocks.Items[StartBlock+1].ClassName <> 'TKMemoParagraph') and
-            (not TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock+1]).Text.StartsWith(' ')) then exit(false);
         DotSpot := pos('.', LinkText);
         if DotSpot = 0 then exit(false);
         if (DotSpot < 8) or (DotSpot > length(LinkText)-1) then exit(false);
@@ -3196,12 +3455,31 @@ var
         result := true;
     end;
 
+    // Returns true if LinkText looks like a valid file link. A valid file link
+    // may be just FileLinkToken or start with it. No spaces unless wrapped in "
+    function ValidFileLink() : boolean;
+    begin
+        Result := False;
+        if LinkText = FileLinkToken then exit(True);
+        if FileLinkTokenLen > length(LinkText) then begin
+            if LinkText[FileLinkTokenLen+1] = '"' then begin    // Wrapped Link, spaces allowed
+                if (length(LinkText) > (FileLinkTokenLen+2))
+                    and LinkText.EndsWith('"') then
+                    exit(True);
+            end else begin                                      // NonWrapped, no spaces !
+                if pos(' ', LinkText) > 0 then exit(False);
+                exit(length(LinkText) > (FileLinkTokenLen+2));  // Token + 1 byte at least.
+            end;
+
+        end;
+    end;
+
     function ValidLocalLink() : boolean;
     begin
-        if SingleNoteMode then exit(False);
         if not TheMainNoteLister.IsThisaTitle(LinkText) then exit(False);
-        Result :=
-            KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoParagraph')
+        Result := true;
+
+{            KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoParagraph')
                 or TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text.EndsWith(' ');
         Result := Result
             and (
@@ -3210,10 +3488,28 @@ var
                 (KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoParagraph')
                 or
                 (TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock+1]).Text[1]              // !!!!!!!!!!
-                    in [' ', ',']))  );
+                    in [' ', ',']))  );     }
     end;
 
+    // Any link must start after a newline or a space, end before a space, comma or newline
+    function InvalidWhiteSpace() : Boolean;                     // ret True if invalid
+    begin
+        if SingleNoteMode then exit(True);                      // no links in Single mode, always invalid
+        Result := not (
+            (KMemo1.Blocks.Items[StartBlock-1].ClassNameIs('TKMemoParagraph')
+                or TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock-1]).Text.EndsWith(' ') )
+            and (
+            (KMemo1.Blocks.count = StartBlock+1)
+            or
+            (KMemo1.Blocks.Items[StartBlock+1].ClassNameIs('TKMemoParagraph')
+            or
+            (TKMemoTextBlock(KMemo1.Blocks.Items[StartBlock+1]).Text[1]
+                in [' ', ',']))) );
+    end;
+
+
 begin
+    debugln('TEditBoxForm.ClearNearLink blk ' + dbgs(StartS) + ' to ' + dbgs(Ends));
     Ready := False;
     EndBlock := KMemo1.Blocks.IndexToBlockIndex(EndS, Blar);
     StartBlock := KMemo1.Blocks.IndexToBlockIndex(StartS, Blar);
@@ -3227,10 +3523,13 @@ begin
         end;
         if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
             LinkText := lowercase(Kmemo1.Blocks.Items[StartBlock].Text);                              // ! trim()
+            debugln('TEditBoxForm.ClearNearLink considering link : ' + LinkText);
+
             // Only if its not a valid link, remove it.
-            if not (ValidWebLink() or ValidLocalLink()) then begin              // LocalLinks ignored in SingleNoteMode
+            if InvalidWhiteSpace or (not (ValidWebLink() or ValidLocalLink() or ValidFileLink())) then begin              // LocalLinks ignored in SingleNoteMode
                 StartBlock := UnLinkBlock(StartBlock);
                 if EndBlock > Kmemo1.Blocks.Count then EndBlock := Kmemo1.Blocks.Count;
+                debugln('TEditBoxForm.ClearNearLink remove link : ' + LinkText);
             end;
         end else begin
             // Must check here that its not been subject to the copying of a links colour and underline
@@ -3247,6 +3546,7 @@ begin
     end;
     finally
         Ready := True;
+        // DumpKMemo('Finished ClearNearLink');
     end;
 end;
 
@@ -3280,136 +3580,6 @@ end;
 
 
 
-function TEditBoxForm.BuildFileLink(CurrCursor : integer = 0) : boolean;
-var
-    BlockOffset, BlockNoS : integer;
-    AFileName, HomeDir : string;
-begin
-    result := True;
-    HomeDir := GetEnvironmentVariableUTF8('HOME');
-    OpenDialogFileLink.InitialDir := HomeDir;
-    if OpenDialogFileLink.Execute then
-        AFileName := TrimFilename(OpenDialogFileLink.FileName)
-    else
-        exit;
-    if copy(AFileName, 1, length(HomeDir)) = HomeDir then begin
-        AFileName := AFileName.Remove(0, Length(HomeDir));
-        if AFileName[1] in ['/', '\'] then
-            AFileName := AFileName.Remove(0,1);
-    end;
-    if CurrCursor = 0 then
-    CurrCursor := Kmemo1.blocks.RealSelStart;
-    //    Index := Kmemo1.blocks.RealSelStart       // Thats either in the link block or one after it.
-    //  else Index := CurrCursor;
-    BlockNoS := KMemo1.Blocks.IndexToBlockIndex(CurrCursor, BlockOffset);
-    if not (KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink')
-        and (KMemo1.Blocks.Items[BlockNoS].Text = FileLinkToken)) then begin
-            debugln( 'TEditBoxForm.BuildFileLink BK=' + BlockNoS.ToString + ' Index=' + CurrCursor.ToString);
-            BlockNoS := KMemo1.Blocks.IndexToBlockIndex(CurrCursor-1, BlockOffset);  // This block probably not necessary
-            if not (KMemo1.Blocks.Items[BlockNoS].ClassNameIs('TKMemoHyperLink')
-                and (KMemo1.Blocks.Items[BlockNoS].Text = FileLinkToken)) then begin
-                    // debugln( 'TEditBoxForm.BuildFileLink BK=' + BlockNoS.ToString + ' Index=' + CurrCursor.ToString);
-                    //dumpKmemo('Failed to find link');
-                    showmessage('TEditBoxForm.BuildFileLink - Sorry, lost the plot');
-                    exit(false);
-                end;
-    end;
-    KMemo1.Blocks.Items[BlockNoS].InsertString('"' + AFileName + '"');
-    KMemo1.SelStart := CurrCursor + Length(AFileName) + 4;    // ToDo : fix this, something wrong
-    KMemo1.SelEnd := KMemo1.SelStart;
-end;
-
-(*       then begin
-       KMemo1.Blocks.Items[BlockNoS].InsertString('hello');
-       //KMemo1.Blocks.Items[BlockNoS].Text := KMemo1.Blocks.Items[BlockNoS].Text + 'hello';
-       showmessage(KMemo1.Blocks.Items[BlockNoS].Text)
-   end else showmessage(KMemo1.Blocks.Items[BlockNoS].Text);
-end;                                                             *)
-
-function TEditBoxForm.OpenFileLink(LinkText : string) : boolean;
-var
-    TokenLen : integer;
-    i : integer;
-    Msg : string;
-begin
-    result := True;
-    TokenLen := length(FileLinkToken);
-    LinkText := LinkText.Remove(0, TokenLen);
-    if LinkText = '' then begin
-        BuildFileLink();                                // a click somewhere IN link, easy to find
-        exit;
-    end;
-    if LinkText[1] = '"' then begin                  // wrapping a link with a space
-        LinkText := LinkText.Remove(0, 1);           // Lazarus code will re-wrap the text later in process
-        i := LinkText.IndexOf('"', 0);
-        if i = -1 then begin
-            showmessage('Badly formed link : ' + LinkText);
-            exit;
-        end;
-        LinkText := LinkText.Remove(i, 99);                      // remove second ", and anything after it too ?
-    end;
-    if LinkText = '' then begin                      // Must have contained only "" ?
-        showmessage('Empty Link');
-        exit;
-    end;
-    if not (LinkText[1] in ['\', '/']) then         // Relative path if first char after token is not a slash
-        LinkText := appendPathDelim(GetEnvironmentVariableUTF8('HOME')) + LinkText;
-    if not (FileExists(LinkText) or DirectoryExists(LinkText)) then begin
-        showmessage('File does not exist : ' + LinkText);
-    end else begin
-        {$ifndef WINDOWS}
-        // 'Executable on Windows is a dogs breakfast. https://forum.lazarus.freepascal.org/index.php/topic,24615.0.html
-        if FileIsExecutable(LinkText) then begin
-            Msg := 'Link is an executable file.';
-            if IDYES <> Application.MessageBox('Open an executable ?'
-                    ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
-                exit;
-        end;
-        {$endif}
-        if not OpenDocument(LinkText) then
-             showmessage('Sorry, cannot open ' + LinkText);
-   end;
-   { Two problems here.
-        1. Windows has no idea about a file being executable. Best we can do is look
-        at extension, but the file might be quoted here without an extension, so must
-        test for its existance with known ececutable extensions.
-
-        PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH
-
-        {$ifdef windows}
-        var
-          S: String;
-        begin
-          S := GetEnvironmentVariable('PATHEXT');
-          if S = '' then
-            //PATHTEXT env. variable doesn't exist
-            Result := FileIsExecutable(AFileName)
-          else
-            //Add the ";" at the end of "PATHTEXT", so i can search the exact file's ext
-            Result := Pos(UpperCase(ExtractFileExt(AFilename) + ';'), UpperCase(S) + ';') > 0;
-        end;
-
-        need to do two things, Does the passed file have an extension listed in PATHEXT ?
-        if so, assume its executable. If not, maybe the user has typed in a known
-        executable name, as such, they may not have even known about the extension.
-        So, test for a version of it with one of the extensions added. If it exists
-        with one of the extensions it is 'probably' executable.
-
-        2. On Linux (at least), Lazarus does not check the exit status of the executable used to
-        launch. Its down in LazUTF8, needs to raise exception if OS cannot find
-        something to open a file.
-        Hmm, I wonder if windows even has a exit code ?
-
-   This ultimatly, on Linux at least, ends up with a call the TProcessUTF8.execute from
-   UTF8Process.pas, procedure RunCmdFromPath(const ProgramFilename, CmdLineParameters: string);
-   and that calls xdg-open passing name of file to open. If xdg-open cannot find something
-   to open the passed file, it returns a error status of 4 ("the action failed"). In either
-   case xdg-open exits immediatly so that exit status is available. But its not checked and no
-   indication of an error is passed back up to calling system.
-   In my case, passing a sqlite file as a parameter (and nothing available to open an sqlite
-   file) results in a silent failure.
-   }
-end;
 
  //   FindFilenameOfCmd()
 (*    Msg := 'Cannot open a file : ' + LinkText;
@@ -3747,14 +3917,38 @@ end;
 
 procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
 		Shift: TShiftState; X, Y: Integer);
+
+    function GetClickedIndex() : integer;     // A selection index for clicked position, only used for right click
+    var P : TPoint; LinePos : TKmemoLinePosition;
+    begin
+        //P := ClientToScreen(Point(X, Y));
+        P := Point(x, y);
+        LinePos := eolEnd;
+        while P.X > 0 do begin                   // we might be right of the eol marker.
+              KMemo1.PointToIndex(P, true, true, LinePos);
+              if LinePos = eolInside then break;
+              dec(P.X);                        // move P.x to left until we are inside a line (or zero)
+        end;
+        Result := KMemo1.PointToIndex(P, true, true, LinePos);
+//        debugln('KMemo1Mousedown GetClickedIndex returning ' + dbgs(Result) + ' x=' + dbgs(X)
+//                + ' y=' + dbgs(y) + ' xs=' + dbgs(P.x) + ' ys=' + dbgs(P.y));
+    end;
+
 begin
-    MouseDownPos := KMemo1.CaretPos;    // regional record in case we are doing shift click
-    //debugln('Mousedown ' + dbgs(KMemo1.CaretPos));
-    //{$ifdef LCLCOCOA}
-    if ssCtrl in Shift then DoRightClickMenu();
-    //{$else}
-	if Button = mbRight then DoRightClickMenu();
-    //{$endif}
+    MouseDownPos := KMemo1.CaretPos;    // regional record in case we are doing shift click, KMemo1.MouseUp()
+    if (ssCtrl in Shift) or (Button = mbRight) then begin
+        if KMemo1.SelLength = 0 then begin
+            //GetClickedIndex();
+            KMemo1.SelStart := GetClickedIndex();
+            KMemo1.SelLength := 0;
+            //debugln('Mousedown ' + dbgs(KMemo1.CaretPos) + ' New Position=' + inttostr(KMemo1.SelStart));
+        end;
+        DoRightClickMenu();
+    end;
+{   Rule - if something is selected, then we assume that the popup menu is to work on
+           that selected text. But if nothing is selected then we should assume the
+           user intends the action to be where they have clicked and we move the cursor
+           there. If we move index, set sellength to zero. }
 end;
 
 
@@ -3766,6 +3960,11 @@ begin
     TimerHouseKeeping.Enabled := False;
     TimerHouseKeeping.Enabled := True;
     // HouseKeeping is now driven by a timer;
+end;
+
+procedure TEditBoxForm.KMemo1Click(Sender: TObject);
+begin
+//   debugln('Mouseclick ' + inttostr(kmemo1.RealSelStart));
 end;
 
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

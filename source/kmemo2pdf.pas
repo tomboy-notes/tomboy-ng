@@ -579,8 +579,8 @@ var
     I : integer;
     ExFont : TFont;
     AWord : ANSIString = '';
-    AFontName : string;
-    MyBold, MyItalic : boolean;
+{    AFontName : string;
+    MyBold, MyItalic : boolean;  }
 
         procedure CopyFont(FromFont : TFont);
         begin
@@ -597,8 +597,8 @@ begin
         if not TheKMemo.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
            CopyFont(TKMemoTextBlock(TheKmemo.Blocks.Items[BlockNo]).TextStyle.Font);        // copies to ExFont
            if ExFont.Pitch = fpFixed then begin                                 // Then we add (if necessary) font to FontList
-              MyBold := ExFont.Bold;
-              MyItalic := ExFont.Italic;
+//              MyBold := ExFont.Bold;
+//              MyItalic := ExFont.Italic;
 
               ExFont.Name := TestFontMono;
                if not FontList.Add(TestFontMono, ExFont.Bold, ExFont.Italic, True) then begin

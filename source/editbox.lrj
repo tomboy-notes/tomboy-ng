@@ -52,7 +52,7 @@
 {"hash":78392485,"name":"teditboxform.menuitemdelete.caption","sourcebytes":[68,101,108,101,116,101],"value":"Delete"},
 {"hash":195288076,"name":"teditboxform.menuitemselectall.caption","sourcebytes":[83,101,108,101,99,116,32,65,108,108],"value":"Select All"},
 {"hash":250111803,"name":"teditboxform.menuiteminsertfilelink.caption","sourcebytes":[73,110,115,101,114,116,32,70,105,108,101,32,76,105,110,107],"value":"Insert File Link"},
-{"hash":50339867,"name":"teditboxform.menuiteminsertdirlink.caption","sourcebytes":[77,101,110,117,73,116,101,109,73,110,115,101,114,116,68,105,114,76,105,110,107],"value":"MenuItemInsertDirLink"},
+{"hash":16224299,"name":"teditboxform.menuiteminsertdirlink.caption","sourcebytes":[73,110,115,101,114,116,32,68,105,114,101,99,116,111,114,121,32,76,105,110,107],"value":"Insert Directory Link"},
 {"hash":171896571,"name":"teditboxform.menuitemselectlink.caption","sourcebytes":[83,101,108,101,99,116,32,76,105,110,107],"value":"Select Link"},
 {"hash":94435780,"name":"teditboxform.menuitem4.caption","sourcebytes":[77,101,110,117,73,116,101,109,52],"value":"MenuItem4"},
 {"hash":94435781,"name":"teditboxform.menuitem5.caption","sourcebytes":[77,101,110,117,73,116,101,109,53],"value":"MenuItem5"},

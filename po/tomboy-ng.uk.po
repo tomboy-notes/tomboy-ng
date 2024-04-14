@@ -793,6 +793,14 @@ msgstr "Шукати в цій нотатці"
 msgid "Index"
 msgstr "Індекс"
 
+#: teditboxform.menuiteminsertdirlink.caption
+msgid "Insert Directory Link"
+msgstr ""
+
+#: teditboxform.menuiteminsertfilelink.caption
+msgid "Insert File Link"
+msgstr ""
+
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
 msgstr "Вставити"
@@ -804,6 +812,10 @@ msgstr "Друкувати"
 #: teditboxform.menuitemselectall.caption
 msgid "Select All"
 msgstr "Вибрати все"
+
+#: teditboxform.menuitemselectlink.caption
+msgid "Select Link"
+msgstr ""
 
 #: teditboxform.menuitemsettings.caption
 msgctxt "teditboxform.menuitemsettings.caption"

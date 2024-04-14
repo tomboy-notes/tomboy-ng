@@ -764,6 +764,14 @@ msgstr ""
 msgid "Index"
 msgstr ""
 
+#: teditboxform.menuiteminsertdirlink.caption
+msgid "Insert Directory Link"
+msgstr ""
+
+#: teditboxform.menuiteminsertfilelink.caption
+msgid "Insert File Link"
+msgstr ""
+
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
 msgstr ""
@@ -774,6 +782,10 @@ msgstr ""
 
 #: teditboxform.menuitemselectall.caption
 msgid "Select All"
+msgstr ""
+
+#: teditboxform.menuitemselectlink.caption
+msgid "Select Link"
 msgstr ""
 
 #: teditboxform.menuitemsettings.caption

@@ -794,6 +794,14 @@ msgstr "Notitie doorzoeken"
 msgid "Index"
 msgstr "Index"
 
+#: teditboxform.menuiteminsertdirlink.caption
+msgid "Insert Directory Link"
+msgstr ""
+
+#: teditboxform.menuiteminsertfilelink.caption
+msgid "Insert File Link"
+msgstr ""
+
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
 msgstr "Plakken"
@@ -805,6 +813,10 @@ msgstr "Afdrukken"
 #: teditboxform.menuitemselectall.caption
 msgid "Select All"
 msgstr "Alles selecteren"
+
+#: teditboxform.menuitemselectlink.caption
+msgid "Select Link"
+msgstr ""
 
 #: teditboxform.menuitemsettings.caption
 msgctxt "teditboxform.menuitemsettings.caption"

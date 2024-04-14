@@ -69,6 +69,7 @@ unit SaveNote;
                 vastly better xml.
     2021/11/04  SaveNewTemplate now gets a current date stamp.
     2024/01/23  Added support for Indent
+    2024/04/14  Stop underline appearing with text from a hyperlink block, evualate !
 }
 
 {$mode objfpc}{$H+}
@@ -125,7 +126,9 @@ type
                     tags accordingly. Special case when CloseOnly is true, we terminate all active styles
                     and reactivate them (NoteNormal will move the reactivated tags to next line later).
                     Absolutly vital that tag order be observed, crossed ove r tgas are a very bad thing.}
-            function AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
+            function AddTag(const FT: TKMemoTextBlock; var Buff: ANSIString;
+                CloseOnly: boolean = False; IsLink: boolean = false
+    ): ANSIString;
 			function BlockAttributes(Bk: TKMemoBlock): AnsiString;
                                     { Takes an existing parsed string and wraps it in the necessary bullet
                                     tags but has to resolve any pending formatting tags first and restore
@@ -203,7 +206,7 @@ begin
 end;
 
 
-function TBSaveNote.AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False) : ANSIString;
+function TBSaveNote.AddTag(const FT : TKMemoTextBlock; var Buff : ANSIString; CloseOnly : boolean = False; IsLink : boolean = false) : ANSIString;
 {var
    TestVar : Boolean;}
 begin
@@ -240,8 +243,11 @@ begin
         HiLight := false;
     end;
 
-    // When Underline turns OFF
-    if (Underline and (not (fsUnderline in FT.TextStyle.Font.Style))) then begin
+    // When Underline turns OFF, if link, we always turn underline off
+
+    if (IsLink and Underline)
+    or
+    (Underline and (not (fsUnderline in FT.TextStyle.Font.Style))) then begin
           if Bold then Buff := Buff + '</bold>';
           if Italics then Buff := Buff + '</italic>';
           if HiLight then Buff := Buff + '</highlight>';
@@ -570,7 +576,7 @@ var
    BlockNo : integer = 0;
    Block : TKMemoBlock;
    NextBlock : integer;
-   // BlankFont : TFont;
+   ExistingUnderline : boolean = false;
  begin
     KM := KM1;
     FSize := Sett.FontNormal;
@@ -606,10 +612,12 @@ var
                          if Block.Text.Length > 0 then begin
                         	AddTag(TKMemoTextBlock(Block), Buff);
                         	Buff := Buff + RemoveBadXMLCharacters(Block.Text);
+                            // we might need this if following block is hyperlink
+//                            ExistingUnderline := fsUnderline in TKMemoHyperlink(Block).TextStyle.Font.Style;
 						 end;
 					end;
                     if Block.ClassNameIs('TKMemoHyperlink') then begin
-                        AddTag(TKMemoHyperlink(Block), Buff);
+                        AddTag(TKMemoHyperlink(Block), Buff, False, True);
                         Buff := Buff + RemoveBadXMLCharacters(Block.Text);
                     end;
                     //debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(Block));

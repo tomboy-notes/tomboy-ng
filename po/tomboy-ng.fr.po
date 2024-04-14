@@ -804,6 +804,14 @@ msgstr "Chercher dans la note"
 msgid "Index"
 msgstr "Index"
 
+#: teditboxform.menuiteminsertdirlink.caption
+msgid "Insert Directory Link"
+msgstr ""
+
+#: teditboxform.menuiteminsertfilelink.caption
+msgid "Insert File Link"
+msgstr ""
+
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
 msgstr "Coller"
@@ -815,6 +823,10 @@ msgstr "Imprimer"
 #: teditboxform.menuitemselectall.caption
 msgid "Select All"
 msgstr "Tout sélectionner"
+
+#: teditboxform.menuitemselectlink.caption
+msgid "Select Link"
+msgstr ""
 
 #: teditboxform.menuitemsettings.caption
 msgctxt "teditboxform.menuitemsettings.caption"
