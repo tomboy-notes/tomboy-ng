@@ -35,6 +35,8 @@
 <list><list-item dir="ltr">Control-F4 : Close current note window</list-item></list>
 <list><list-item dir="ltr">Control-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Control-L : Create a link note from selected text, or display Backlinks</list-item></list>
+<list><list-item dir="ltr">Alt-F : insert a file link</list-item></list>
+<list><list-item dir="ltr">Alt-D : insert a directory link</list-item></list>
 <list><list-item dir="ltr">Alt-F4 : Close current note window (not all Linux desktops allow this)</list-item></list>
 <bold>Fonts</bold>
 <list><list-item dir="ltr">Control-B : Bold</list-item></list>
@@ -43,10 +45,12 @@
 <list><list-item dir="ltr">Control-U : Underline</list-item></list>
 <list><list-item dir="ltr">Control-H : Highlight</list-item></list>
 <list><list-item dir="ltr">Control-E : Expression calculator - see Calculator help note</list-item></list>
-<bold>Find (in a note)</bold>
+<bold>Find</bold>
 <list><list-item dir="ltr">Control-F : Find something in a Note</list-item></list>
 <list><list-item dir="ltr">F3 or Ctrl-G : Next in-note Find</list-item></list>
 <list><list-item dir="ltr">Shift-F3 or Shift-Ctrl-G : Previous in-note Find</list-item></list>
+<list><list-item dir="ltr">Control-Shift-Find : Find something in any note</list-item></list>
+
 
 
 
@@ -64,17 +68,20 @@
 <list><list-item dir="ltr">Command-D : Insert date time string, YYYY-MM-DD hh:mm:ss</list-item></list>
 <list><list-item dir="ltr">Option-Shift-LeftArrow : extend selection one word to left</list-item></list>
 <list><list-item dir="ltr">Option-Shift-RightArrow : extend selection one word to right</list-item></list>
-Fonts
+<list><list-item dir="ltr">Option-F : insert file link  (tbc)</list-item></list>
+<list><list-item dir="ltr">Option-D : insert directory link (tbc)</list-item></list>
+<bold>Fonts</bold>
 <list><list-item dir="ltr">Command-B : Bold</list-item></list>
 <list><list-item dir="ltr">Command-I : Italics</list-item></list>
 <list><list-item dir="ltr">Command-S : Strikeout</list-item></list>
 <list><list-item dir="ltr">Command-U : Underline</list-item></list>
 <list><list-item dir="ltr">Command-E : Expression calculator - see Calculator help note</list-item></list>
 <list><list-item dir="ltr">Option-H : Highlight</list-item></list>
-Find (in a note)
+<bold>Find</bold>
 <list><list-item dir="ltr">Command-F : Find something in a Note</list-item></list>
 <list><list-item dir="ltr">Command-G : Next in-note Find</list-item></list>
 <list><list-item dir="ltr">Shift-Command-G : Previous in-note Find</list-item></list>
+<list><list-item dir="ltr">Shift-Command-F : Find something in any note (tbc)</list-item></list>
 
 
 
@@ -83,8 +90,8 @@ Find (in a note)
 
 
 </note-content></text>
-  <last-change-date>2024-02-18T19:51:37.5395453+11:00</last-change-date>
-  <last-metadata-change-date>2024-02-18T19:51:37.5395453+11:00</last-metadata-change-date>
+  <last-change-date>2024-04-15T15:58:56.3270821+10:00</last-change-date>
+  <last-metadata-change-date>2024-04-15T15:58:56.3270821+10:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

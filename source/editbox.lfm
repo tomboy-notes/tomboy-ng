@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 415
+  Left = 536
   Height = 505
-  Top = 451
+  Top = 548
   Width = 784
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -1361,6 +1361,21 @@ object EditBoxForm: TEditBoxForm
       Caption = 'Settings'
       OnClick = MenuItemSettingsClick
     end
+    object MenuItemToolsLinks: TMenuItem
+      Caption = 'Links'
+      object MenuItemToolsInsertFileLink: TMenuItem
+        Caption = 'Insert File Link'
+        OnClick = MenuItemToolsLinksClick
+      end
+      object MenuItemToolsInsertDirLink: TMenuItem
+        Caption = 'Insert Dir Link'
+        OnClick = MenuItemToolsLinksClick
+      end
+      object MenuItemToolsBackLinks: TMenuItem
+        Caption = 'Show Back Links'
+        OnClick = MenuItemToolsLinksClick
+      end
+    end
     object MenuItemExport: TMenuItem
       Caption = 'Export'
       object MenuItemExportRTF: TMenuItem
@@ -1502,6 +1517,7 @@ object EditBoxForm: TEditBoxForm
     Top = 48
   end
   object SelectDirectoryForLink: TSelectDirectoryDialog
+    Title = 'Select Directory but remember it will not be checked !'
     Left = 653
     Top = 75
   end

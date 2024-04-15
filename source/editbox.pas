@@ -304,9 +304,13 @@ type
         MenuHuge: TMenuItem;
         MenuItem1: TMenuItem;
 		MenuFindNext: TMenuItem;
+        MenuItemToolsBackLinks: TMenuItem;
         MenuItem4: TMenuItem;
         MenuItem5: TMenuItem;
         MenuItem6: TMenuItem;
+        MenuItemToolsLinks: TMenuItem;
+        MenuItemToolsInsertFileLink: TMenuItem;
+        MenuItemToolsInsertDirLink: TMenuItem;
         MenuItemInsertFileLink: TMenuItem;
         MenuItemInsertDirLink: TMenuItem;
         MenuItemSelectLink: TMenuItem;
@@ -400,6 +404,7 @@ type
         procedure MenuItemExportPDFClick(Sender: TObject);
         procedure MenuItemCopyPlainClick(Sender: TObject);
         procedure MenuItemFileLinkClick(Sender: TObject);
+        procedure MenuItemToolsLinksClick(Sender: TObject);
                                 // All the Text menu items go through this event
         procedure MenuTextGeneralClick(Sender: TObject);
 		procedure MenuFindPrevClick(Sender: TObject);
@@ -770,7 +775,13 @@ begin
 end;
 
 procedure TEditBoxForm.SpeedButtonToolsClick(Sender: TObject);
+var SoP, OnPara, InLink, CanInsert : boolean;
 begin
+    CanInsert := CanInsertFileLink(SoP, OnPara, InLink);
+//    debugln('DoRightClickMenu() CanInsert=' + booltostr(CanInsert, True) + ' Sop=' + booltostr(Sop, True)
+//        + ' OnPara=' + booltostr(OnPara, True) + ' InLink=' + booltostr(InLink, True));
+    MenuItemToolsInsertFileLink.Enabled := CanInsert;
+    MenuItemToolsInsertDirLink.Enabled  := CanInsert;
    PopupMenuTools.PopUp;
 end;
 
@@ -822,7 +833,7 @@ var
     Stl : TStringList;
     //BackTitle : string = '';
 begin
-    if not Sett. AutoSearchUpdate then begin
+    if not Sett.AutoSearchUpdate then begin
        showmessage('Back Links only available in Search While You Type mode');
        exit;
     end;
@@ -2784,16 +2795,16 @@ begin
     result := True;
     if LinkText.StartsWith(FileLinkToken) then
         LinkText := LinkText.Remove(0, FileLinkTokenLen);
-    if (length(LinkText) > FileLinkTokenLen) and (LinkText[1] = '"') then begin // wrapping a link with a space
-        LinkText := LinkText.Remove(0, 1);                                      // Lazarus code will re-wrap the text later in process
+    if (LinkText <> '') then begin                            // wrapping a link with a space
+        LinkText := LinkText.Remove(0, 1);                    // Lazarus code will re-wrap the text later in process
         i := LinkText.IndexOf('"', 0);
         if i = -1 then begin
             showmessage('Badly formed link : ' + LinkText);
             exit;
         end;
-        LinkText := LinkText.Remove(i, 99);          // remove second ", and anything after it too ?
+        LinkText := LinkText.Remove(i, 99);                   // remove second ", and anything after it too ?
     end;
-    if LinkText = '' then begin                      // Must have contained only "" ?
+    if LinkText = '' then begin                               // Must have contained only "" ?
         showmessage('Empty Link');
         exit;
     end;
@@ -2863,6 +2874,15 @@ begin
     end;
 end;
 
+procedure TEditBoxForm.MenuItemToolsLinksClick(Sender: TObject);
+begin
+    case TMenuItem(sender).Name of
+        'MenuItemToolsInsertDirLink'  : BuildFileLink(False);
+        'MenuItemToolsInsertFileLink' : BuildFileLink(True);
+        'MenuItemToolsBackLinks'      : ShowBackLinks();
+    end;
+end;
+
 function TEditBoxForm.CanInsertFileLink(out SoP, OnPara, InLink  : boolean) : boolean;
 var Offset, BlockNo, Index : integer;
 begin
@@ -2889,8 +2909,8 @@ procedure TEditBoxForm.DoRightClickMenu();
 var SoP, OnPara, InLink, CanInsert : boolean;
 begin
     CanInsert := CanInsertFileLink(SoP, OnPara, InLink);
-    debugln('DoRightClickMenu() CanInsert=' + booltostr(CanInsert, True) + ' Sop=' + booltostr(Sop, True)
-        + ' OnPara=' + booltostr(OnPara, True) + ' InLink=' + booltostr(InLink, True));
+//    debugln('DoRightClickMenu() CanInsert=' + booltostr(CanInsert, True) + ' Sop=' + booltostr(Sop, True)
+//        + ' OnPara=' + booltostr(OnPara, True) + ' InLink=' + booltostr(InLink, True));
     MenuItemInsertFileLink.Enabled := CanInsert;
     MenuItemInsertDirLink.Enabled  := CanInsert;
     MenuItemSelectLink.enabled := InLink;
@@ -4095,10 +4115,12 @@ begin
     if [ssAlt] = Shift then begin
         case key of
             {$ifdef DARWIN}
-            VK_H  : begin AlterFont(ChangeColor); ; Key := 0; end; {$endif}
-            VK_RIGHT : begin BulletControl(True); Key := 0; end;
-            VK_LEFT  : begin BulletControl(False); Key := 0; end;
+            VK_H      : begin AlterFont(ChangeColor); ; Key := 0; end; {$endif}
+            VK_RIGHT  : begin BulletControl(True); Key := 0; end;
+            VK_LEFT   : begin BulletControl(False); Key := 0; end;
             VK_Return :  if (EditFind.Text <> rsMenuSearch) then begin Key := 0; SpeedLeftClick(self); end;
+            VK_D      : begin BuildFileLink(False); Key := 0; end;
+            VK_F      : begin BuildFileLink(True); Key := 0; end;
         end;
         exit();
     end;

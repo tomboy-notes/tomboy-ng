@@ -799,6 +799,7 @@ msgid "Insert Directory Link"
 msgstr ""
 
 #: teditboxform.menuiteminsertfilelink.caption
+msgctxt "teditboxform.menuiteminsertfilelink.caption"
 msgid "Insert File Link"
 msgstr ""
 
@@ -830,6 +831,24 @@ msgstr "Spellingcontrole"
 #: teditboxform.menuitemsync.caption
 msgid "Synchronize"
 msgstr "Synchroniseren"
+
+#: teditboxform.menuitemtoolsbacklinks.caption
+msgid "Show Back Links"
+msgstr ""
+
+#: teditboxform.menuitemtoolsinsertdirlink.caption
+msgid "Insert Dir Link"
+msgstr ""
+
+#: teditboxform.menuitemtoolsinsertfilelink.caption
+msgctxt "teditboxform.menuitemtoolsinsertfilelink.caption"
+msgid "Insert File Link"
+msgstr ""
+
+#: teditboxform.menuitemtoolslinks.caption
+msgctxt "teditboxform.menuitemtoolslinks.caption"
+msgid "Links"
+msgstr ""
 
 #: teditboxform.menularge.caption
 msgid "Large Font"
@@ -970,6 +989,7 @@ msgid "Highlight"
 msgstr "Markeren"
 
 #: tformcolours.speedlinks.caption
+msgctxt "tformcolours.speedlinks.caption"
 msgid "Links"
 msgstr ""
 
