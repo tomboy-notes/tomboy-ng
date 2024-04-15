@@ -2763,6 +2763,23 @@ function TEditBoxForm.OpenFileLink(LinkText : string) : boolean;
 var
     i : integer;
     Msg : string;
+    {$ifdef WINDOWS}        // in Windows, any file is potentially executable, we'll test by extension
+    function WindowsFileIsExecutable() : boolean;                          // True if file has extension mentioned in PATHEXT
+    var WinExeExt, Extension : string;
+    begin
+        WinExeExt := GetEnvironmentVariable('PATHEXT');
+        // WinExeExt := '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH';   // just for testing purposes !!!!
+        if WinExeExt = '' then
+            exit(false);        // var not set, we will not test or warn for executable
+        WinExeExt := WinExeExt + ';';
+        Extension := ExtractFileExt(LinkText);
+        if Extension = '' then
+            exit(False);        // Again, not enough info, will not test or warn for executable
+        Extension := uppercase(Extension) + ';';
+        Result := (pos(Extension, WinExeExt) <> 0);
+    end;
+    {$endif}
+
 begin
     result := True;
     if LinkText.StartsWith(FileLinkToken) then
@@ -2785,46 +2802,27 @@ begin
     if not (FileExists(LinkText) or DirectoryExists(LinkText)) then begin
         showmessage('File does not exist : ' + LinkText);
     end else begin
-        // ToDo : test, as below for Windows, for executable file.
-        {$ifndef WINDOWS}
+        {$ifdef WINDOWS}
         // 'Executable on Windows is a dogs breakfast. https://forum.lazarus.freepascal.org/index.php/topic,24615.0.html
+        if WindowsFileIsExecutable() then begin
+        {$else}
         if FileIsExecutable(LinkText) then begin
-            Msg := 'Link is an executable file.';
-            if IDYES <> Application.MessageBox('Open an executable ?'
-                    ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
-                exit;
-        end;
-        {$endif}
+         {$endif}
+             Msg := 'Link is an executable file.';
+             if IDYES <> Application.MessageBox('Open an executable ?'
+                     ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
+                 exit;
+         end;
         if not OpenDocument(LinkText) then
              showmessage('Sorry, cannot open ' + LinkText);
    end;
 end;
 
+    // ToDo : look at issues below, #2 particulary important, no error if OS cannot open link
 (*  Two problems here.
         1. Windows has no idea about a file being executable. Best we can do is look
-        at extension, but the file might be quoted here without an extension, so must
-        test for its existance with known ececutable extensions.
-
-        PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH
-
-        {$ifdef windows}
-        var
-          S: String;
-        begin
-          S := GetEnvironmentVariable('PATHEXT');
-          if S = '' then
-            //PATHTEXT env. variable doesn't exist
-            Result := FileIsExecutable(AFileName)
-          else
-            //Add the ";" at the end of "PATHTEXT", so i can search the exact file's ext
-            Result := Pos(UpperCase(ExtractFileExt(AFilename) + ';'), UpperCase(S) + ';') > 0;
-        end;
-
-        need to do two things, Does the passed file have an extension listed in PATHEXT ?
-        if so, assume its executable. If not, maybe the user has typed in a known
-        executable name, as such, they may not have even known about the extension.
-        So, test for a version of it with one of the extensions added. If it exists
-        with one of the extensions it is 'probably' executable.
+        at extension (if present), but the file might be quoted here without an extension,
+        so quite error prone. Given Windows habit of hiding extensions, what else can we do ?
 
         2. On Linux (at least), Lazarus does not check the exit status of the executable used to
         launch. Its down in LazUTF8, needs to raise exception if OS cannot find
