@@ -890,6 +890,10 @@ msgstr "Souligné"
 msgid "Find a file but remember, it will not be checked !"
 msgstr ""
 
+#: teditboxform.selectdirectoryforlink.title
+msgid "Select Directory but remember it will not be checked !"
+msgstr ""
+
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
 msgstr "Supprimer la note"

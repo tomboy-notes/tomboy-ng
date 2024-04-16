@@ -3527,7 +3527,7 @@ var
 
 
 begin
-    debugln('TEditBoxForm.ClearNearLink blk ' + dbgs(StartS) + ' to ' + dbgs(Ends));
+//    debugln('TEditBoxForm.ClearNearLink blk ' + dbgs(StartS) + ' to ' + dbgs(Ends));
     Ready := False;
     EndBlock := KMemo1.Blocks.IndexToBlockIndex(EndS, Blar);
     StartBlock := KMemo1.Blocks.IndexToBlockIndex(StartS, Blar);
@@ -3541,13 +3541,13 @@ begin
         end;
         if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
             LinkText := lowercase(Kmemo1.Blocks.Items[StartBlock].Text);                              // ! trim()
-            debugln('TEditBoxForm.ClearNearLink considering link : ' + LinkText);
+//            debugln('TEditBoxForm.ClearNearLink considering link : ' + LinkText);
 
             // Only if its not a valid link, remove it.
             if InvalidWhiteSpace or (not (ValidWebLink() or ValidLocalLink() or ValidFileLink())) then begin              // LocalLinks ignored in SingleNoteMode
                 StartBlock := UnLinkBlock(StartBlock);
                 if EndBlock > Kmemo1.Blocks.Count then EndBlock := Kmemo1.Blocks.Count;
-                debugln('TEditBoxForm.ClearNearLink remove link : ' + LinkText);
+//                debugln('TEditBoxForm.ClearNearLink remove link : ' + LinkText);
             end;
         end else begin
             // Must check here that its not been subject to the copying of a links colour and underline

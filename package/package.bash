@@ -29,8 +29,8 @@ WHOAMI="David Bannon <tomboy-ng@bannons.id.au>"
 MANUALS_DIR="BUILD/usr/share/doc/$PRODUCT/"
 MANUALS=`cat note-files`
 
-# BUILDOPTS=" -B --quiet --quiet"
-BUILDOPTS=" -B --verbose"
+BUILDOPTS=" -B --quiet --quiet"
+# BUILDOPTS=" -B --verbose"
 BUILDDATE=`date -R`
 LPI="Tomboy_NG.lpi"
 LAZ_FULL_DIR="$1"
@@ -125,7 +125,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseQT5)
             echo "$PRODUCT"-qt5
         ;;
-        ReleaseQT6)
+        ReleaseQt6)
             echo "$PRODUCT"-qt6
         ;;        
         ReleaseRasPi)
