@@ -40,7 +40,7 @@ LEAKCHECK="NO"
 
 if [ -z "$LAZ_DIR" ]; then
     echo "Need a full path to configured Lazarus dir, add a build mode to just compile a binary"
-	echo "Usage : $0 /Full/Path/Lazarus/dir [ReleaseQT6|ReleaseRasPi64|ReleaseLin32Qt5|default]"
+	echo "Usage : $0 /Full/Path/Lazarus/dir [ReleaseQt6|ReleaseRasPi64|ReleaseLin32Qt5|default]"
 	echo "eg    : $0 /home/dbannon/bin/Lazarus/lazarus-fixes_3_0"
 	echo "or"
 	echo "      : $0 clean"
@@ -91,7 +91,7 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseRasPi64)
             echo "arm64"
         ;;
-       	ReleaseQT6)
+       	ReleaseQt6)
 	    echo "amd64Qt6"
 	;;
 	ReleaseLin32Qt5)
@@ -262,7 +262,7 @@ function DebianPackage () {
 	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
 		;;
 
-	"ReleaseQT6")
+	"ReleaseQt6")
 		# echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
 		CTRL_DEPENDS="libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
@@ -448,7 +448,7 @@ done
 
 
 
-# Note we can package ReleaseQT6 ReleaseRasPi64 ReleaseLin32Qt5 but not build them, so, build
+# Note we can package ReleaseQt6 ReleaseRasPi64 ReleaseLin32Qt5 but not build them, so, build
 # elsewhere and put binaries in ../source. tomboy-ng-qt6 tomboy-ng-arm64 tomboy-ng-32-qt5
 
 rm tom*.deb
@@ -458,7 +458,7 @@ rm tom*.deb
 # tomboy-ng-qt6    (ReleaseQt6)
 # tomboy-ng-arm64  (ReleaseRasPi64)
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQT6 ReleaseRasPi64 ReleaseLin32Qt5; # Always package ReleaseLin64 first to update changelog once
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseLin32Qt5; # Always package ReleaseLin64 first to update changelog once
 	do DebianPackage $BIN ; 
 done
 

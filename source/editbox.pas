@@ -2665,7 +2665,7 @@ begin
     ILA.NewTextBlock := false;
     LeftBlockNo := KMemo1.Blocks.IndexToBlockIndex(IndexNo-1, BlockOffset);
 
-    debugln('TEditBoxForm.TestLinkInsert Block is ' + KMemo1.blocks[ILA.BlockNo].ClassName + ' and ' + KMemo1.blocks[ILA.BlockNo-1].ClassName);
+//    debugln('TEditBoxForm.TestLinkInsert Block is ' + KMemo1.blocks[ILA.BlockNo].ClassName + ' and ' + KMemo1.blocks[ILA.BlockNo-1].ClassName);
 
     if KMemo1.blocks[ILA.BlockNo].ClassNameIs('TKMemoTextBlock') then begin
 
@@ -2697,7 +2697,7 @@ begin
             ILA.TrailingSpace := False;
             ILA.Offset := length(KMemo1.blocks[LeftBlockNo].Text);
             ILA.BlockNo := LeftBlockNo;
-            debugln('TEditBoxForm.TestLinkInsert ' + KMemo1.blocks[LeftBlockNo].ClassName);
+//            debugln('TEditBoxForm.TestLinkInsert ' + KMemo1.blocks[LeftBlockNo].ClassName);
             exit(True);
         end;
         if KMemo1.blocks[LeftBlockNo].ClassNameIs('TKMemoHyperLink') then begin         // Hyper block to left always add space
