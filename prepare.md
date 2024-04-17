@@ -166,12 +166,17 @@ The binary will be in the source/. directory below where you are now standing.
 ========
 The machine to at least test the source package for Debian needs to be a current unstable. Further, because on the mentor's machines, apt does not install Recommended, we need to ensure the test machines is the same.
 
-So, take a current VM of Testing, update irs /etc/apt/sources.list to point to unstable instead of, eg, bookwork. Apt update; apt upgrade.
-Then, add a file, /etc/apt/apt.conf.d/99norecommend that has one line, 
+So, take a current VM of Testing, update its /etc/apt/sources.list to point to unstable instead of, eg, bookworm. Apt update; apt full-upgrade.
+So, first, add a file, /etc/apt/apt.conf.d/99norecommend that has one line, 
 
      apt::install-recommends "false";
-    
-May be a good idea to use this machine as the build machine as well, and treat it as temporary. But remember to take a snapshot of the *.gz *.xz and *.dsc files from a submitted build and keep, somewhere.
+
+Edit /etc/apt/sources.list so that only two lines are active, there is no security or updates and point to 'unstable' instead of eg trixie.
+
+    apt update
+    apt full-upgrade
+
+Use this machine as the build machine as well. But remember to take a snapshot of the *.gz *.xz and *.dsc files from a submitted build and keep, somewhere.
 
 A PGP key is required to upload to Mentors or Launchpad. It lives in ~/.gnupg. 
 
