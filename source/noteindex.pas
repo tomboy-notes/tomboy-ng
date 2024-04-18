@@ -2,8 +2,7 @@ unit NoteIndex;
 {   Copyright (C) 2017-2021 David Bannon
 
     License:
-    This code is licensed under BSD 3-Clause Clear License, see file License.txt
-    or https://spdx.org/licenses/BSD-3-Clause-Clear.html
+    This code is licensed under the MIT license, see file LICENSE.txt
 
     ------------------
 
