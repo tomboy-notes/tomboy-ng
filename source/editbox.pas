@@ -2733,7 +2733,11 @@ begin
     result := True;
     if CharNo = 0 then
         CharNo := Kmemo1.RealSelStart;
+    {$ifdef WINDOWS}                                   // ToDo : make this a property from settings, we call it from all over the place
     HomeDir := GetEnvironmentVariableUTF8('HOME');
+    {$else}
+    HomeDir := GetEnvironmentVariableUTF8('HOMEPATH');
+    {$endif}
     if ItsFile then begin                           // its either File or Directory
         OpenDialogFileLink.InitialDir := HomeDir;
         if not OpenDialogFileLink.Execute then
@@ -2804,7 +2808,7 @@ begin
         LinkText := LinkText.Remove(0, 1);                    // Lazarus code will re-wrap the text later in process
         i := LinkText.IndexOf('"', 0);                        // Must have a second "
         if i = -1 then begin
-            showmessage('Badly formed link : ' + LinkText);
+            showmessage('Badly formed link : '#10 + LinkText);
             exit;
         end;
         LinkText := LinkText.Remove(i, 99);                   // remove second " and anything after it too
@@ -2813,25 +2817,34 @@ begin
         showmessage('Empty Link');
         exit;
     end;
-    if not (LinkText[1] in ['\', '/']) then          // Relative path if first char after token is not a slash
+    if not (LinkText[1] in ['\', '/']) then begin         // Relative path if first char after token is not a slash
+        {$ifdef WINDOWS}                                  // it might still be an absolute path, starts with eg c:\ ?
+        if (length(LinkText) < 4)                         // too short
+            or (LinkText[2] <> ':') then                  // not a drive specifier, not much of a test but its windows !
+                LinkText := appendPathDelim(GetEnvironmentVariableUTF8('HOMEPATH')) + LinkText;
+        {$else}
         LinkText := appendPathDelim(GetEnvironmentVariableUTF8('HOME')) + LinkText;
+        {$endif}
+    end;
     if not (FileExists(LinkText) or DirectoryExists(LinkText)) then begin
-        showmessage('File does not exist : ' + LinkText);
-    end else begin
+        showmessage('File does not exist : '#10 + LinkText);
+        exit;
+    end;
+
         {$ifdef WINDOWS}
-        // 'Executable on Windows is a dogs breakfast. https://forum.lazarus.freepascal.org/index.php/topic,24615.0.html
+        // 'Executable' on Windows is a dogs breakfast. https://forum.lazarus.freepascal.org/index.php/topic,24615.0.html
         if WindowsFileIsExecutable() then begin
         {$else}
         if FileIsExecutable(LinkText) then begin
-         {$endif}
+        {$endif}
              Msg := 'Link is an executable file.';
              if IDYES <> Application.MessageBox('Open an executable ?'
                      ,pchar(Msg) , MB_ICONQUESTION + MB_YESNO) then
                  exit;
          end;
         if not OpenDocument(LinkText) then
-             showmessage('Sorry, cannot open ' + LinkText);
-   end;
+             showmessage('Sorry, cannot open '#10 + LinkText);
+
 end;
 
     // ToDo : look at issues below, #2 particulary important, no error if OS cannot open link

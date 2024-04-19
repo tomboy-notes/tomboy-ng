@@ -69,7 +69,7 @@ unit SaveNote;
                 vastly better xml.
     2021/11/04  SaveNewTemplate now gets a current date stamp.
     2024/01/23  Added support for Indent
-    2024/04/14  Stop underline appearing with text from a hyperlink block, evualate !
+    2024/04/14  Stop underline appearing with text from a hyperlink block
 }
 
 {$mode objfpc}{$H+}
@@ -576,7 +576,7 @@ var
    BlockNo : integer = 0;
    Block : TKMemoBlock;
    NextBlock : integer;
-   ExistingUnderline : boolean = false;
+   //ExistingUnderline : boolean = false;
  begin
     KM := KM1;
     FSize := Sett.FontNormal;
