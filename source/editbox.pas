@@ -2794,17 +2794,22 @@ var
 begin
     result := True;
     if LinkText.StartsWith(FileLinkToken) then
-        LinkText := LinkText.Remove(0, FileLinkTokenLen);
-    if (LinkText <> '') then begin                            // wrapping a link with a space
+        LinkText := LinkText.Remove(0, FileLinkTokenLen)
+    else exit;                                                // thats an error, should not happen.
+    if (LinkText = '') or (LinkText = '""') then begin
+        showmessage(' Empty Link ');
+        exit;
+    end;                                                      // OK, we know its not empty, but does it use " ?
+    if (LinkText[1] = '"') then begin                         // Ah, wrapped in ".."
         LinkText := LinkText.Remove(0, 1);                    // Lazarus code will re-wrap the text later in process
-        i := LinkText.IndexOf('"', 0);
+        i := LinkText.IndexOf('"', 0);                        // Must have a second "
         if i = -1 then begin
             showmessage('Badly formed link : ' + LinkText);
             exit;
         end;
-        LinkText := LinkText.Remove(i, 99);                   // remove second ", and anything after it too ?
+        LinkText := LinkText.Remove(i, 99);                   // remove second " and anything after it too
     end;
-    if LinkText = '' then begin                               // Must have contained only "" ?
+    if LinkText = '' then begin                               // Probably redundant .....
         showmessage('Empty Link');
         exit;
     end;

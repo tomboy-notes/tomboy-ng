@@ -112,6 +112,7 @@ begin
        {$endif}
        {$if defined(LCLQT5) or defined(LCLQt6)}
        debugln('   --strict-theme                ' + rsStrictThemeColors);
+       debugln('   --kde-leftclick               ' + 'KDE Only, allow left click in SysTray');
        {$endif}
        result := true;
     end;
