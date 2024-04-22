@@ -1787,12 +1787,7 @@ procedure TSearchForm.MenuItemImportNoteClick(Sender: TObject);
 var
     ImportError : string = '';
 begin
-    {$ifdef UNIX}
-    OpenDialogImport.InitialDir :=  GetEnvironmentVariable('HOME');
-    {$endif}
-    {$ifdef WINDOWS}
-    OpenDialogImport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
-    {$endif}
+    OpenDialogImport.InitialDir := Sett.HomeDir;
     OpenDialogImport.Filter := 'Text|*.txt|Markdown|*.md|Note|*.note';
     OpenDialogImport.Title := rsHelpImportFile;
     if OpenDialogImport.Execute then begin

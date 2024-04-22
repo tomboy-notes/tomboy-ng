@@ -186,11 +186,11 @@ begin
         {$ifdef DARWIN}
         // First we try the right place, if there use it, else try unix place, if
         // its not there, go back to right place.
-        Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Config';
+        Result := GetEnvironmentVariableUTF8('HOME') + '/Library/Application Support/Tomboy-ng/Config';
         if not DirectoryExistsUTF8(Result) then begin
             Result := GetAppConfigDirUTF8(False);
             if not DirectoryExistsUTF8(Result) then  // must be new install, put in right place
-                Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Config';
+                Result := GetEnvironmentVariableUTF8('HOME') + '/Library/Application Support/Tomboy-ng/Config';
         end;
         {$else}
         Result := GetAppConfigDirUTF8(False);

@@ -119,7 +119,7 @@ interface
 uses
     Classes, SysUtils, {FileUtil,} Forms, Controls, Graphics, Dialogs, StdCtrls,
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
-    LCLIntf, Spin{, notifier}, base64, fpttf, LMessages, syncutils
+    LCLIntf, Spin{, notifier}, base64, fpttf, LMessages, syncutils, LazUTF8
     {$ifdef LCLQT5}, qt5{$endif}
     {$ifdef LCLQT6}, qt6{$endif} ;
 
@@ -299,7 +299,7 @@ type
 
     private
 
-
+        TheHomeDir : string;
         SyncTimingFileIndex, SyncTimingGithubIndex : integer;   // Holds ComboBox index for each particular sync
         SyncTimingFileLast, SyncTimingGitHubLast : TDateTime;   // The time the last indicated sync was run (manual or auto).
                         { eg  /run/user/1000/gvfs/smb-share=greybox,share=store2/TB_Sync/
@@ -381,6 +381,7 @@ type
                   	        // Make public things agree with internal ones.
 		procedure SyncSettings;
         function fGetCaseSensitive : boolean;
+        function fHomeDir : string;
         procedure fSetCaseSensitive(IsIt : boolean);
         //function ZipDate: string;
 
@@ -440,7 +441,11 @@ type
         property AutoSearchUpdate : boolean read fgetAutoSearchUpdate write fSetAutoSearchUpdate;
                             // Does not appear to be implemented
         property ExportPath : ANSIString Read fExportPath write fExportPath;
-                            // Called after notes are indexed (from SearchUnit), will start auto timer tha
+
+                            // Returns users home dir.
+        property HomeDir : String Read fHomeDir;
+
+                            // Called after notes are indexed (from SearchUnit), will start auto timer that
                             // controls both AutoSync and AutoSnap. Does nothing in SingleNoteMode.
         procedure StartAutoSyncAndSnap();
                             // Public : Returns the SyncFileRepo unless its empty, in which case its
@@ -597,6 +602,17 @@ end;
 function TSett.fGetCaseSensitive : boolean;
 begin
     result := SearchIsCaseSensitive;
+end;
+
+function TSett.fHomeDir: string;
+begin
+    if TheHomeDir = '' then
+        {$ifdef WINDOWS}
+        TheHomeDir := GetEnvironmentVariableUTF8('HOMEPATH');
+        {$else}
+        TheHomeDir := GetEnvironmentVariableUTF8('HOME');
+        {$endif}
+    result := TheHomeDir;
 end;
 
 procedure TSett.fSetCaseSensitive(IsIt : boolean);
@@ -1325,20 +1341,20 @@ end;
 function TSett.GetDefaultNoteDir(OldTomboy : boolean = false) : string;
 begin
     {$IFDEF UNIX}
-    Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
+    Result := Sett.HomeDir + '/.local/share/tomboy-ng/';
     {$ENDIF}
     {$IFDEF DARWIN}
     // try the correct place first, if not there, lets try the old, wrong place
     // if at neither, we go back to correct place.
-    Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Notes/';
+    Result := Sett.HomeDir + '/Library/Application Support/Tomboy-ng/Notes/';
     if DirectoryExistsUTF8(Result) then exit;
-    Result := GetEnvironmentVariable('HOME') + '/.local/share/tomboy-ng/';
+    Result := Sett.HomeDir + '/.local/share/tomboy-ng/';
     if not DirectoryExistsUTF8(Result) then
-        Result := GetEnvironmentVariable('HOME') + '/Library/Application Support/Tomboy-ng/Notes/';
+        Result := Sett.HomeDir + '/Library/Application Support/Tomboy-ng/Notes/';
     // Note we ignore the possibility of Mac having an old Tomboy install.
     {$ENDIF}
     {$IFDEF WINDOWS}
-    Result := GetEnvironmentVariable('APPDATA') + '\tomboy-ng\notes\';
+    Result := Sett.HomeDir + '\tomboy-ng\notes\';
     // %APPDATA%\Tomboy\notes\
     {$ENDIF}
     if OldTomBoy then Result := Result.Replace('tomboy-ng', 'tomboy', [rfReplaceAll]);

@@ -2031,12 +2031,7 @@ begin
         if SingleNoteMode then
             SaveExport.InitialDir := ExtractFilePath(SingleNoteFileName)
         else begin
-            {$ifdef UNIX}
-            SaveExport.InitialDir :=  GetEnvironmentVariable('HOME');
-            {$endif}
-            {$ifdef WINDOWS}
-            SaveExport.InitialDir :=  GetEnvironmentVariable('HOMEPATH');
-            {$endif}
+            SaveExport.InitialDir := Sett.HomeDir;
         end;
     end;
     //debugln('TEditBoxForm.SaveNoteAs Filename 1 = ' + CleanCaption());
@@ -2726,31 +2721,33 @@ end;
 // --- revised, deals only with new links !!!!!!!!
 function TEditBoxForm.BuildFileLink(ItsFile : Boolean; CharNo: integer = 0): boolean;
 var
-    AFileName, HomeDir : string;
+    AFileName{, HomeDir} : string;
     Blk : TKMemoTextBlock;
     ILR : TiLActionRec;
 begin
     result := True;
     if CharNo = 0 then
         CharNo := Kmemo1.RealSelStart;
-    {$ifdef WINDOWS}                                   // ToDo : make this a property from settings, we call it from all over the place
-    HomeDir := GetEnvironmentVariableUTF8('HOME');
-    {$else}
+
+(*    {$ifdef WINDOWS}                                   // ToDo : make this a property from settings, we call it from all over the place
     HomeDir := GetEnvironmentVariableUTF8('HOMEPATH');
-    {$endif}
+    {$else}
+    HomeDir := GetEnvironmentVariableUTF8('HOME');
+    {$endif}       *)
+
     if ItsFile then begin                           // its either File or Directory
-        OpenDialogFileLink.InitialDir := HomeDir;
+        OpenDialogFileLink.InitialDir := Sett.HomeDir;
         if not OpenDialogFileLink.Execute then
             exit;
         AFileName := TrimFilename(OpenDialogFileLink.FileName)
     end else begin
-        SelectDirectoryForLink.InitialDir := HomeDir;
+        SelectDirectoryForLink.InitialDir := Sett.HomeDir;
         if not SelectDirectoryForLink.execute then
            exit;
         AFileName := TrimFileName(SelectDirectoryForLink.FileName);
     end;
-    if copy(AFileName, 1, length(HomeDir)) = HomeDir then begin
-        AFileName := AFileName.Remove(0, Length(HomeDir));
+    if copy(AFileName, 1, length(Sett.HomeDir)) = Sett.HomeDir then begin
+        AFileName := AFileName.Remove(0, Length(Sett.HomeDir));
         if AFileName[1] in ['/', '\'] then
             AFileName := AFileName.Remove(0,1);
     end;
@@ -2821,9 +2818,9 @@ begin
         {$ifdef WINDOWS}                                  // it might still be an absolute path, starts with eg c:\ ?
         if (length(LinkText) < 4)                         // too short
             or (LinkText[2] <> ':') then                  // not a drive specifier, not much of a test but its windows !
-                LinkText := appendPathDelim(GetEnvironmentVariableUTF8('HOMEPATH')) + LinkText;
+                LinkText := Sett.HomeDir + LinkText;
         {$else}
-        LinkText := appendPathDelim(GetEnvironmentVariableUTF8('HOME')) + LinkText;
+        LinkText := Sett.HomeDir + LinkText;
         {$endif}
     end;
     if not (FileExists(LinkText) or DirectoryExists(LinkText)) then begin

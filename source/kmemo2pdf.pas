@@ -603,13 +603,13 @@ begin
               ExFont.Name := TestFontMono;
                if not FontList.Add(TestFontMono, ExFont.Bold, ExFont.Italic, True) then begin
                    showmessage('Font is missing Bold or Italic ' + TestFontMono);
-                   exit;                                                                    // here we assume if regular font exists, so to marked up ??
+                   exit(false);                                                 // here we assume if regular font exists, so to marked up ??
                end;
            end else begin
                 ExFont.Name := TestFontProp;
                 if not FontList.Add(TestFontProp, ExFont.Bold, ExFont.Italic, False) then begin
                    showmessage('Font is missing Bold or Italic ' + TestFontProp);
-                   exit;
+                   exit(false);
                 end;
            end;
            for I := 0 to TheKMemo.Blocks.Items[BlockNo].WordCount-1 do begin                // For every word in this block

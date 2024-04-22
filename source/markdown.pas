@@ -1,6 +1,8 @@
 unit markdown;
 {   Copyright (C) 2017-2020 David Bannon
 
+    NOTE : no longer used in tomboy-ng
+
     License:
     This code is licensed under the MIT License, see file LICENSE.txt
 
