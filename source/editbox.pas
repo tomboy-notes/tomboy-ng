@@ -2036,7 +2036,7 @@ begin
     end;
     //debugln('TEditBoxForm.SaveNoteAs Filename 1 = ' + CleanCaption());
     //debugln('TEditBoxForm.SaveNoteAs Filename 2 = ' + TB_MakeFileName(CleanCaption()));
-    SaveExport.Filename := TB_MakeFileName(CleanCaption());
+    SaveExport.Filename := TB_MakeFileName(CleanCaption()) + '.' + TheExt;
     if SaveExport.Execute then begin
         case TheExt of
             'txt' : KMemo1.SaveToTXT(SaveExport.FileName);
