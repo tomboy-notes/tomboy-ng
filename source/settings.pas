@@ -442,7 +442,7 @@ type
                             // Does not appear to be implemented
         property ExportPath : ANSIString Read fExportPath write fExportPath;
 
-                            // Returns users home dir.
+                            // Returns users home dir inc trailing slash
         property HomeDir : String Read fHomeDir;
 
                             // Called after notes are indexed (from SearchUnit), will start auto timer that
@@ -608,9 +608,9 @@ function TSett.fHomeDir: string;
 begin
     if TheHomeDir = '' then
         {$ifdef WINDOWS}
-        TheHomeDir := GetEnvironmentVariableUTF8('HOMEPATH');
+        TheHomeDir := appendPathDelim(GetEnvironmentVariableUTF8('HOMEPATH'));
         {$else}
-        TheHomeDir := GetEnvironmentVariableUTF8('HOME');
+        TheHomeDir := appendPathDelim(GetEnvironmentVariableUTF8('HOME'));
         {$endif}
     result := TheHomeDir;
 end;
@@ -1341,20 +1341,20 @@ end;
 function TSett.GetDefaultNoteDir(OldTomboy : boolean = false) : string;
 begin
     {$IFDEF UNIX}
-    Result := Sett.HomeDir + '/.local/share/tomboy-ng/';
+    Result := Sett.HomeDir + '.local/share/tomboy-ng/';
     {$ENDIF}
     {$IFDEF DARWIN}
     // try the correct place first, if not there, lets try the old, wrong place
     // if at neither, we go back to correct place.
-    Result := Sett.HomeDir + '/Library/Application Support/Tomboy-ng/Notes/';
+    Result := Sett.HomeDir + 'Library/Application Support/Tomboy-ng/Notes/';
     if DirectoryExistsUTF8(Result) then exit;
-    Result := Sett.HomeDir + '/.local/share/tomboy-ng/';
+    Result := Sett.HomeDir + '.local/share/tomboy-ng/';
     if not DirectoryExistsUTF8(Result) then
-        Result := Sett.HomeDir + '/Library/Application Support/Tomboy-ng/Notes/';
+        Result := Sett.HomeDir + 'Library/Application Support/Tomboy-ng/Notes/';
     // Note we ignore the possibility of Mac having an old Tomboy install.
     {$ENDIF}
     {$IFDEF WINDOWS}
-    Result := Sett.HomeDir + '\tomboy-ng\notes\';
+    Result := Sett.HomeDir + 'tomboy-ng\notes\';
     // %APPDATA%\Tomboy\notes\
     {$ENDIF}
     if OldTomBoy then Result := Result.Replace('tomboy-ng', 'tomboy', [rfReplaceAll]);

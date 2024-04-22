@@ -470,8 +470,8 @@ type
         function BackSpaceBullet(): boolean;
                                 // Called when right click menu responds to InsertFileLink or InsertDirLink
                                 // Builds a FileLink at the current cursor position.
-                                // If a new link (ie CharNo not 0), the resulting link will always
-                                // start at indicated position and we provide the FileLinkToken and whitespace left and
+                                // Always a new link, the resulting link will always start at indicated
+                                // position and we provide the FileLinkToken and whitespace left and
                                 // right if necessary, we just manipulate text in that block.
                                 // We will just insert necessary text, housekeeping will markup the actual link.
         function BuildFileLink(ItsFile: Boolean; CharNo: integer = 0): boolean;
@@ -509,9 +509,9 @@ type
                                 because user is typing and existing match might still be viable }
         procedure FindNew(IncStartPos: boolean);
         function FindNumbersInString(AStr: string; out AtStart, AtEnd: string): boolean;
-        procedure GetBlockIndexes(Index: integer; out FirstChar, blkLen: integer
-            );
+        procedure GetBlockIndexes(Index: integer; out FirstChar, blkLen: integer);
         procedure InsertDate();
+                                // Does its thing when user clicks a file://something file or dir link.
         function OpenFileLink(LinkText: string): boolean;
                                 { Searches Buff for all occurances of Term, checks its surrounded appropriately
                                 and calls MakeLink to mark it up as a local Link. Does NOT look directly at KMemo1 }
@@ -2728,13 +2728,6 @@ begin
     result := True;
     if CharNo = 0 then
         CharNo := Kmemo1.RealSelStart;
-
-(*    {$ifdef WINDOWS}                                   // ToDo : make this a property from settings, we call it from all over the place
-    HomeDir := GetEnvironmentVariableUTF8('HOMEPATH');
-    {$else}
-    HomeDir := GetEnvironmentVariableUTF8('HOME');
-    {$endif}       *)
-
     if ItsFile then begin                           // its either File or Directory
         OpenDialogFileLink.InitialDir := Sett.HomeDir;
         if not OpenDialogFileLink.Execute then
@@ -2746,9 +2739,9 @@ begin
            exit;
         AFileName := TrimFileName(SelectDirectoryForLink.FileName);
     end;
-    if copy(AFileName, 1, length(Sett.HomeDir)) = Sett.HomeDir then begin
-        AFileName := AFileName.Remove(0, Length(Sett.HomeDir));
-        if AFileName[1] in ['/', '\'] then
+    if copy(AFileName, 1, length(Sett.HomeDir)) = Sett.HomeDir then begin       // is it absolute ?
+        AFileName := AFileName.Remove(0, Length(Sett.HomeDir));                 // make it relative, cleaner for user to see.
+        if AFileName[1] in ['/', '\'] then                                      // don't think this is possible any more ??
             AFileName := AFileName.Remove(0,1);
     end;
     if TestLinkInsert(CharNo, ILR) then begin
@@ -2770,6 +2763,7 @@ begin
 //        DumpKMemo('BuildFileLink Inserted=[' + AFileName + ']');
     end;
 end;
+
 
 function TEditBoxForm.OpenFileLink(LinkText : string) : boolean;
 var
@@ -2814,6 +2808,14 @@ begin
         showmessage('Empty Link');
         exit;
     end;
+
+    { its not an absolute path (and therefore needs $HOME) if it does not start with a slash or eg c:/
+
+    So, prepend $HOME if it does not start with either a slash or ?:  !
+    }
+
+
+    // Is it an absolute path, if not, prepend $HOME
     if not (LinkText[1] in ['\', '/']) then begin         // Relative path if first char after token is not a slash
         {$ifdef WINDOWS}                                  // it might still be an absolute path, starts with eg c:\ ?
         if (length(LinkText) < 4)                         // too short
