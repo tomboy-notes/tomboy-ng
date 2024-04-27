@@ -1,12 +1,15 @@
 #!/bin/bash
 # ------------------------------------------------------------
-#
 # A script to generate Mac's tomboy-ng dmg files
-
-# Typical Usage : bash ./mk_dmg.bash $HOME/bin/lazarus/fixes_2_0
+# Typical Usage : bash ./mk_dmg.bash $HOME/Desktop/Lazarus/lazarus_3_0
 #                 bash ./mk_dmg.bash packageonly
   
-# Note we assume config is named same as lazarus dir, ie .laz-200 
+# For mac at least, set project specific Compiler Path to $(CompPath)
+# that will then use local Laz setting in Preferences->Env->Compiler Executable
+# which, at present is set to fpcup....fpc.sh
+# note that the config, as read by lazbuild, will remember that and
+# ignore path once set. 
+# Note we assume laz config is named same as lazarus dir 
 #
 # Depends (heavily) on https://github.com/andreyvit/create-dmg
 # which must be installed.
@@ -24,16 +27,25 @@
 #
 # WARNING - as packageonly is not being told where Lazarus is, it cannot find
 #	    Lazarus's premade language files.
+# March 24  Extended to build the full universal binary
+# 2024-04-27 Notes about getting compiler path right. Still have not built
+#            rtl fcl for AARCH64 from bin/FPC/fpc.3.2.3 so use fpcupdeluxe
+#
+# Normally, if not going through a script like this, FPC path is added in .bashrc
+# but remember, component path is overridden by hardwired paths in laz config
 
+#FPC_PATH="$HOME"/bin/FPC/fpc-3.3.1/bin        # Thats the FPC built from main March 2024
+#FPC_PATH="$HOME"/Pico2/fpc/bin/x86_64-linux   # Thats Michael's compiler, older version of main.
+#FPC_PATH="$HOME"/bin/FPC/fpc-3.2.2/bin        # Thats the default, released FPC
+#FPC_PATH="$HOME"/bin/FPC/fpc-3.2.3/bin        # Thats Fixes, last rebuild March 2024
 FPC_PATH="$HOME"/fpcupdeluxe/fpc/bin/x86_64-darwin        # Thats Fixes from fpcupdeluxe, last rebuild March 2024
 
+# If started from system menu, OLD_PATH is not set and fpc has not been added to path.
 if [ "$OLD_PATH" == "" ]; then
     export PATH="$FPC_PATH":"$PATH"
 else
     export PATH="$FPC_PATH":"$OLD_PATH"
 fi
-
-
 	      
 LAZ_FULL_DIR="$1"
 LAZ_DIR=`basename "$LAZ_FULL_DIR"`
@@ -149,7 +161,7 @@ function MakeDMG () {
 	# ~/create-dmg-master/create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"
 	create-dmg --volname "$PRODUCT""$BITS" --volicon "../glyphs/vol.icns" "$PRODUCT""$BITS"_"$VERSION".dmg "./$WORK/"
 }
-mk_dmg.bash
+# mk_dmg.bash   WTF ?
 if [ "$PACKAGEONLY" == "false" ]; then
     if [ "LAZ_PCP" == "" ]; then
 	echo "Failed to find config file"

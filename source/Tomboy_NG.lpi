@@ -585,7 +585,6 @@
               <IgnoredMessages idx6058="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dTOMBOY_NG"/>
-            <CompilerPath Value="/usr/local/bin/fpc"/>
           </Other>
         </CompilerOptions>
       </Item12>
@@ -704,7 +703,6 @@
               <IgnoredMessages idx6058="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dTOMBOY_NG"/>
-            <CompilerPath Value="/usr/local/bin/fpc"/>
           </Other>
         </CompilerOptions>
       </Item15>

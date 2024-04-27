@@ -153,7 +153,7 @@ var
 implementation
 
 uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
-        laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, Forms;
+        laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, Forms, LazUTF8;
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
