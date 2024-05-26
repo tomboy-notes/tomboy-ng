@@ -1966,7 +1966,7 @@ end;
 
 procedure TSett.MenuItemPasteTokenClick(Sender: TObject);
 begin
-    LabelToken.Caption := Clipboard.AsText;
+    LabelToken.Caption := trim(Clipboard.AsText);
     SaveSettings(self);
     LabelToken.Hint := '';
 end;
