@@ -67,6 +67,7 @@ TExportCommon = class
 
     public
         DebugMode : boolean;
+        ErrorMsg : string;
         NotesDir : string;       // dir were we expect to find our TB notes
 
                         // Takes a note ID (no extension) or a FFN inc path and .note
@@ -92,13 +93,18 @@ begin
             if FileExists(NotesDir + ID + '.note') then
                    StL.LoadFromFile(NotesDir + ID + '.note')
             else exit(False);
-        // OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
+        //  OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
         Normaliser := TNoteNormaliser.Create;
         Normaliser.NormaliseList(StL);
         Normaliser.Free;
         StL.Delete(0);
         STL.Insert(0, GetTitleFromFFN(NotesDir + ID + '.note', False));
         RemoveNoteMetaData(STL);
+        if StL.Count = 0 then begin
+            ErrorMsg := 'ERROR : invalid note content [' + GetTitleFromFFN(NotesDir + ID + '.note', False) + '] : ' + NotesDir + ID + '.note';
+            debugln(ErrorMsg);
+            exit(False);
+        end;
         ProcessHeadings(StL);                                    // Makes Title big too !
         ProcessMarkUp(StL);
         result := (Stl.Count > 2);

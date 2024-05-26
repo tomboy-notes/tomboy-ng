@@ -1933,7 +1933,7 @@ begin
             FormSync.Transport:=TSyncTransport.SyncFile;
             // The Sync unit will get the remote dir from SyncFileRepo
           end;
-      1 : begin
+      1 : begin                                     // Gihub Sync
             if FileExists(LocalConfig + SyncTransportName(SyncGithub) + PathDelim + 'manifest.xml')
             and (mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0)) then exit;
             FormSync.Transport:=TSyncTransport.SyncGithub;
@@ -2252,7 +2252,7 @@ end;
 
 { TSyncThread }
 
-procedure TSyncThread.Execute;
+procedure TSyncThread.Execute;              // This is applicable to background auto sync.
 var
    ASync : TSync;
    OutComeMessage : longint = WM_SYNCNOTPOSSIBLE;

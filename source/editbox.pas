@@ -2051,7 +2051,7 @@ begin
                             else FName := ExtractFileNameOnly(NoteFileName);
                             if ExpComm.GetMDcontent( FName, MDContent) then
                                 MDContent.SaveToFile(SaveExport.FileName)
-                            else showmessage('Failed to convert to MarkDown');
+                            else showmessage('Failed to convert to MarkDown ' + ExpComm.ErrorMsg);
                         finally
                             ExpComm.Free;
                             MDContent.Free;

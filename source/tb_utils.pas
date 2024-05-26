@@ -107,6 +107,7 @@ procedure GetHeightWidthOfNote(FFN : string; out NHeight, NWidth : integer);
                         // Maybe tolerant of gnote format.
 procedure RemoveNoteMetaData(STL : TStringList);
 
+                        // Uses debugln if LCL in use, always returns false (for use as a ret code).
 function SayDebugSafe(st: string) : boolean;
 
 function TB_ReplaceFile(const SourceFile, DestFile : string) : boolean;
@@ -590,6 +591,11 @@ var
 begin
     // First, the trailing end.
     Index := FindInStringList(StL, '</note-content>');       // this is the line its on but we may have content on the same line
+    if Index < 0 then begin                                  // May 2024, Martin sent me two notes without a </note-content> tag, they have <note-content version="0.1" />
+        debugln('ERROR, note does not have a </note-content> tag.');
+        StL.Clear;
+        exit;
+    end;
     St := Stl[Index];
     CutOff := pos('</note-content>', St);
     if CutOff <> 1 then begin

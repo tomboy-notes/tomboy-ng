@@ -213,18 +213,18 @@ var
 begin
     freeandnil(ASync);
     ASync := TSync.Create;
-    Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsTestingRepo;
+    Label1.Caption   :=  SyncTransportName(Transport) + ' ' + rsTestingRepo;
     Application.ProcessMessages;
     ASync.ProceedFunction:= @Proceed;
-    ASync.DebugMode := Application.HasOption('s', 'debug-sync');
-    ASync.NotesDir:= NoteDirectory;
-    ASync.ConfigDir := LocalConfig;
+    ASync.DebugMode  := Application.HasOption('s', 'debug-sync');
+    ASync.NotesDir   := NoteDirectory;
+    ASync.ConfigDir  := LocalConfig;
     ASync.ProgressProcedure := @SyncProgress;
-    ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
-    Async.UserName := Sett.EditUserName.text;
-    ASync.RepoAction:=RepoJoin;
+    ASync.Password   := Sett.LabelToken.Caption;              // better find a better way to do this Davo
+    Async.UserName   := Sett.EditUserName.text;
+    ASync.RepoAction := RepoJoin;
     Async.SetTransport(TransPort);
-    SyncAvail := ASync.TestConnection();
+    SyncAvail        := ASync.TestConnection();
     if SyncAvail = SyncNoRemoteRepo then
         if mrYes = QuestionDlg('Advice', rsCreateNewRepo, mtConfirmation, [mrYes, mrNo], 0) then begin
             ASync.RepoAction:=RepoNew;
@@ -264,7 +264,7 @@ end;
 procedure TFormSync.FormShow(Sender: TObject);
 begin
     if Application.HasOption('debug-sync') then
-        debugln('TFormSync.FormShow ');
+        debugln(#10#10' ============= TFormSync.FormShow =============');
     Busy := True;
     LabelProgress.Caption := '';
     Left := 55 + random(55);
@@ -331,6 +331,7 @@ var
     //SyncState : TSyncAvailable = SyncNotYet;
     //Notifier : TNotifier;
     SyncSummary : string;
+    SyncAvail : TSyncAvailable;
 begin
     Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsTestingSync;
     Application.ProcessMessages;
@@ -348,8 +349,10 @@ begin
         Async.UserName := Sett.EditUserName.text;
         Async.SetTransport(TransPort);
 //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
-        if ASync.TestConnection() <> SyncReady then begin
-            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
+        SyncAvail := ASync.TestConnection();
+        if SyncAvail <> SyncReady then begin
+            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : '
+                    , 'Test Transport Failed, ' + SyncAvailableString(SyncAvail));
             if ASync.DebugMode then debugln('Failed testConnection');
             // in autosync mode, form is not visible, we just send a notify that cannot sync right now.and return false
             if not Visible then begin
@@ -362,7 +365,12 @@ begin
                 //Screen.Cursor := crDefault;
                 showmessage('Unable to sync because ' + ASync.ErrorString);
                 //Screen.Cursor := crHourGlass;
-                FormSync.ModalResult := mrAbort;
+//                if AnotherSync then
+                    FormSync.ModalResult := mrAbort;
+{                else begin
+                    Label2.Caption := rsPressClose;
+                    ButtonClose.Enabled := True;
+                end;  }
                 exit(false);                                                    // busy unset in finally clause
             end;
             exit(false);        //redundant ?

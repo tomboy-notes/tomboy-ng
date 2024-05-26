@@ -305,8 +305,9 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+    debugln('');                             // this initialises lazlogger for the whole app, don't let it happen in a thread !
     AboutFrm := Nil;
-    Randomize;                                      // used by sett.getlocaltime()
+    Randomize;                               // used by sett.getlocaltime()
     //HelpList := Nil;
     UseTrayMenu := true;
     if SingleNoteFileName() = '' then
@@ -318,7 +319,7 @@ begin
     if UseTrayMenu then begin
         PopupMenuTray := TPopupMenu.Create(Self);
         TrayIcon.PopUpMenu := PopupMenuTray;        // SearchForm will populate it when ready
-//        TrayIcon.Show;                              // Gnome does not like showing it before menu is populated, so, call from SearchForm.create
+//        TrayIcon.Show;                            // Gnome does not like showing it before menu is populated, so, call from SearchForm.create
     end;
     LabelBadNoteAdvice.Caption := '';
 end;

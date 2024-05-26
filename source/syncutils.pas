@@ -144,6 +144,9 @@ function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) :
 
 function SyncTransportName(TheType : TSyncTransport) : string;
 
+                        // Returns Text describing passed TSyncAvailable
+function SyncAvailableString(Msg : TSyncAvailable) : string;
+
 RESOURCESTRING
   rsNewUploads = 'New Uploads    ';
   rsEditUploads = 'Edit Uploads   ';
@@ -172,6 +175,26 @@ begin
     case TheType of
         SyncFile :        result := 'SyncFile';
         SyncGitHub  :     result := 'SyncGithub';
+    end;
+end;
+
+function SyncAvailableString(Msg: TSyncAvailable): string;
+begin
+    Result := 'Unidentified Sync Error';
+    case Msg of
+        SyncNotYet : Result := 'SyncNotYet : Initial state';
+        SyncReady : Result := 'SyncReady : We are ready to sync, looks good to go';
+        SyncNoLocal : Result := 'SyncNoLocal : We dont have a local manifest, only an error if config thinks there should be one';
+        SyncNoRemoteMan : Result := 'SyncNoRemoteMan : No remote manifest, an uninitialized repo perhaps ?';
+        SyncNoRemoteRepo : Result := 'SyncNoRemoteRepo : Filesystem is OK but does not look like a repo, maybe no serverID ?';
+        SyncBadRemote : Result := 'SyncBadRemote : Has either Manifest or "0" dir but not both.';
+        SyncNoRemoteDir : Result := 'SyncNoRemoteDir : Perhaps sync device or shared drive is not mounted ?';
+        SyncNoRemoteWrite : Result := 'SyncNoRemoteWrite : no write permission, do not proceed!';
+        SyncMismatch : Result := 'SyncMismatch : Its a repo, Captain, but not as we know it';
+        SyncXMLError : Result := 'SyncXMLError : Housten, we have an XML error in a manifest !';
+        SyncBadError : Result := 'SyncBadError : Some other unexpected error, must NOT proceed';
+        SyncNetworkError : Result := 'SyncNetworkError : Remote server/device not responding';
+        SyncCredentialError : Result := 'SyncCredentialError :  Unsuitable user:password provided';
     end;
 end;
 

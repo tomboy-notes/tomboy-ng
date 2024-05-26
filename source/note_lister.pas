@@ -590,15 +590,17 @@ end;
 
 // ToDo : much of the work here is done in GetNoteDetails, maybe it belongs in this Type ?
 
+{$Xdefine FORCE_SINGLE_INDEX_THREAD}
+
 constructor TIndexThread.Create(CreateSuspended : boolean);
 begin
     inherited Create(CreateSuspended);
     FreeOnTerminate := True;
 end;
 
-procedure TIndexThread.Execute;
-var
-      Ch : char;
+procedure TIndexThread.Execute;           // Might be only thread running or one of four.
+var                                       // This tread will index all notes starting with Ch
+      Ch : char;                          // The thread will clean up itself when terminated.
 
   procedure FindNoteFile(Mask : string);
   var
@@ -615,11 +617,15 @@ var
   end;
 
 begin
+    {$ifdef FORCE_SINGLE_INDEX_THREAD}
+       FindNoteFile('*.note');
+    {$else}
     if OneThread then
         FindNoteFile('*.note')
     else
         for ch in StartsWith do
             FindNoteFile(Ch + '*.note');
+    {$endif}
     InterLockedIncrement(TheLister.FinishedThreads);
 end;
 
@@ -887,11 +893,16 @@ function TNoteLister.GetNotesInNoteBook(out NBIDList : TStringList; const NBName
 var
     NB : PNoteBook;
 begin
+    // debugln('TNoteLister.GetNotesInNoteBook - 1 - NBName=[' + NBName + '] and NBIDList nil=' + booltostr(NBIDList=nil, true));
     Result := True;
     NB := NoteBookList.FindNoteBook(NBName);
     if NB <> Nil then
         NBIDList := NB^.Notes
-    else Result := False;
+    else begin
+        Result := False;
+        NBIDList := nil;
+    end;
+    // debugln('TNoteLister.GetNotesInNoteBook - 2 - NBName=[' + NBName + '] and NBIDList nil=' + booltostr(NBIDList=nil, true));
 end;
 
 function TNoteLister.AlterNoteBook(const OldName, NewName : string) : boolean;
@@ -1174,6 +1185,7 @@ var
     J : integer;
     PossibleError : string = '';
 begin
+    // writeln('TNoteLister.GetNoteDetails Start');    // debugln gets confused by threading ?
 //    if FileName[1] = '1' then exit;       // ToDo : remove
     if DebugMode then debugln('TNoteLister.GetNoteDetails - indexing ' + Dir + FileName);
     if not DontTestName then
@@ -1232,9 +1244,9 @@ begin
 					end else
                         break;
 				    until false;          }
-
                 if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
                 else begin
+                    NoteP^.Content := '';
                     Node := Doc.DocumentElement.FindNode('text');
                     if assigned(Node) then begin
                         {$ifdef TOMBOY_NG}
@@ -1242,26 +1254,36 @@ begin
                             NoteP^.Content := Node.TextContent
                         else {$endif} NoteP^.Content := lowercase(Node.TextContent);
                     end
-                    else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
+                    else begin
+                        EnterCriticalSection(CriticalSection);
+                        {$ifdef LINUX}
+                        writeln('WRITELN - TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
+                        {$endif}
+                        TheLister.ErrorNotes.Append(FileName + ', Unable to find text block');
+                        freeandnil(Doc);
+                        dispose(NoteP);
+                        LeaveCriticalSection(CriticalSection);
+                    end;
+                    if NoteP^.Content = '' then begin
+                        EnterCriticalSection(CriticalSection);
+                        {$ifdef LINUX}                           // Don't use debugln, unhappy inside a thread.
+                        debugln('WRITELN - TNoteLister.GetNoteDetails ERROR, note has no content : Filename : ' + FileName);
+                        {$endif}
+                        XMLError := True;
+                        TheLister.ErrorNotes.Append(FileName + ', This note has no content');
+                        freeandnil(Doc);
+                        dispose(NoteP);
+                        LeaveCriticalSection(CriticalSection);
+                        exit();
+                        { A completely empty note is an error, we auto insert a newline on a real note so, if empty, something has gone wrong }
+                    end;
                 end;
-
-(*                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
-                else begin
-                    Node := Doc.DocumentElement.FindNode('text');
-                    if assigned(Node) then begin
-                        {$ifdef TOMBOY_NG}
-                        if Sett.SearchCaseSensitive then                        // Should we have a wrapper ifdef TOMBOY_NG ??
-                            NoteP^.Content := Node.TextContent
-                        else {$endif} NoteP^.Content := lowercase(Node.TextContent);
-                    end
-                    else debugln('TNoteLister.GetNoteDetails ======== ERROR unable to find text in ' + FileName);
-                end;   *)                                                       // Crazy, why this block twice ??
 
                 NoteP^.OpenNote := nil;
                 NoteP^.InSearch := True;
                 Node := Doc.DocumentElement.FindNode('create-date');
                 if not assigned(Node.FirstChild) then
-                    PossibleError := 'XML ERROR, blank create-date';   // Catch it as an EObjectException further down
+                    PossibleError := 'XML ERROR, blank create-date';    // Catch it as an EObjectException further down
                 NoteP^.CreateDate := Node.FirstChild.NodeValue;
                 try                                                     // this because GNote leaves out 'open-on-startup' !
                     Node := Doc.DocumentElement.FindNode('open-on-startup');
@@ -1320,8 +1342,8 @@ begin
             		    on E: EAccessViolation do begin                         // I don't think we see this happen, but just in case
                             EnterCriticalSection(CriticalSection);
                             try
-                                DebugLn('Access Violation ' + E.Message);
-                                Debugln('Offending File ' + Dir + FileName);
+//                                DebugLn('Access Violation ' + E.Message);
+//                                Debugln('Offending File ' + Dir + FileName);
                                 XMLError := True;
                                 dispose(NoteP);
                                 TheLister.ErrorNotes.Append(FileName + ', ' + E.Message);
@@ -1851,6 +1873,12 @@ begin
     if DebugMode then debugln('IndexNotes : Looking for notes in [' + WorkingDir + ']');
 
     InitCriticalSection(CriticalSection);                  // +++++++++++
+    {$ifdef FORCE_SINGLE_INDEX_THREAD}                     // This is a testing thing.
+    Cnt := 1;
+    FinishedThreads := 3;
+    debugln('TNoteLister.IndexNotes running one thread mode');
+    {$endif}
+//    debugln('');                                           // This may be necessary to initialise logger BEFORE going multithread
     while Cnt > 0 do begin
         //debugln('Making thread ' + inttostr(Cnt));
         IndexThread := TIndexThread.Create(True);          // Threads clean themselves up.
@@ -1876,7 +1904,11 @@ begin
     end;
     while FinishedThreads < 4 do sleep(1);       // ToDo : some sort of 'its taken too long ..."
     DoneCriticalSection(CriticalSection);                  // ++++++++++++
-
+    if ErrorNotes.Count > 0 then begin
+        debugln('TNoteLister.IndexNotes One or more notes have error.');
+        debugln(ErrorNotes.Text);
+        debugln('-------------------------------------------');
+    end;
     if DebugMode then begin
         debugLn('Finished indexing notes');
         DumpNoteNoteList('TNoteLister.IndexNotes');

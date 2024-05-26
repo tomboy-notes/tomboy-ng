@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabDisplay
+    ActivePage = TabSync
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -603,7 +603,7 @@ object Sett: TSett
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 243
+        ClientHeight = 226
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
@@ -637,7 +637,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 548
           Height = 28
-          Top = 205
+          Top = 188
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -683,7 +683,7 @@ object Sett: TSett
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 54
+          ClientHeight = 37
           ClientWidth = 483
           TabOrder = 0
           object LabelToken: TLabel
@@ -751,7 +751,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrCenter
           Left = 113
           Height = 29
-          Top = 204
+          Top = 187
           Width = 194
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 20
@@ -774,7 +774,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrCenter
           Left = 15
           Height = 19
-          Top = 209
+          Top = 192
           Width = 78
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Timing'

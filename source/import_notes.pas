@@ -77,9 +77,9 @@ type
         NoteBook : string;              // Empty is OK, plain text notebook name or JSON array (including [])
         NewFileName : string;           // Only valid for single file import, will have ID.note of imported note.
         function Execute(): integer;    // you know all you need, go do it.
-        // Alt action for this Unit, converts a StringList that contains
-        // markdown to a Note, no file i/o happens, note is returned in
-        // the same stringlist. If LCD, CDate are '' then defaults are used.
+                                // Alt action for this Unit, converts a StringList that contains
+                                // markdown to a Note, no file i/o happens, note is returned in
+                                // the same stringlist. If LCD, CDate are '' then defaults are used.
         function MDtoNote(Content: TStringList; const LCD, CDate: string): boolean;
         constructor Create;
         destructor Destroy; override;
@@ -366,6 +366,7 @@ var
     DropNewLine : boolean = True;
 begin
     Result := True;
+    debugln('TImportNotes.MarkUpMarkDown - importing [' + Cont[0] + ']');
     while Index < Cont.Count do begin
         St := Cont.Strings[Index];
         if (St = '') then begin

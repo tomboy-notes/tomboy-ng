@@ -140,7 +140,7 @@ that way, we get an updated Last-Sync-Date and possibly updated revnumber. If we
 changed any files, then RevNo is the one we found in RemoteManifest. So, we must step
 through the write stack.
 
-We make a half harted attempt to restore normality if we get to local manifest stage and somehow fail to write it out.
+We make a half hearted attempt to restore normality if we get to local manifest stage and somehow fail to write it out.
 -----------------------------------------------------------------------------------
 
 HISTORY
@@ -164,6 +164,7 @@ HISTORY
     2022/10/18  When renaming a file, delete target if its exists first, its a windows problem
     2023/10/28  Restructure some of Auto Sync to allow multithreading, does not use SyncGUI
     2023/12/16  Nasty bug where ProcessClashes() return value was not set.
+    2024/05/08  extensive rework of debugging code, esp GitHub related
 }
 
 interface
@@ -353,7 +354,8 @@ type                       { ----------------- T S Y N C --------------------- }
                 // A reason why something failed.
         ErrorString : string;
                     { Data about notes in remote manifest, this list ultimatly holds the actions
-                      to be taked when the the actual sync process really runs. }
+                      to be taked when the the actual sync process really runs. Is used to create
+                      manifests and generate user report after a sync.}
         RemoteMetaData : TNoteInfoList;
                 // Data obtained from Local Manifest. Represents notes previously synced. Might be empty.....
         LocalMetaData : TNoteInfoList;
@@ -379,7 +381,7 @@ type                       { ----------------- T S Y N C --------------------- }
                             this method and free. }
         function DeleteFromLocalManifest(ID: ANSIString) : boolean;
 
-                            { Reports on contents of a created and filled list }
+                            { Reports on contents of a created and filled list in SyncGUI }
 	    procedure ReportMetaData(out UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors: integer);
 
                             { Selects a Trans layer, adjusts config dir,
@@ -396,7 +398,7 @@ type                       { ----------------- T S Y N C --------------------- }
               SyncNoRemoteRepo, SyncBadRemote, SyncMismatch. Checks if the connecton
               looks viable, either (fileSync) it has right files there and write access
               OR (NetSync) network answers somehow (?). Reads local manifest if
-              RepoAction=RepoUse and compares ts serverID with one found by
+              RepoAction=RepoUse and compares its serverID with one found by
               Trans.testConnection. SyncReady means we can proceed to StartSync, else must
               do something first, setup new connect, consult user etc.}
         function TestConnection() : TSyncAvailable;
@@ -637,7 +639,7 @@ begin
     ErrorString := '';
     for Index := 0 to RemoteMetaData.Count -1 do begin
         if RemoteMetaData[Index]^.Action = SyUnSet then begin
-            Debugln('ERROR note not assigned ' + RemoteMetaData[Index]^.ID + ' '
+            Debugln('TSync.CheckMetaData - ERROR note not assigned ' + RemoteMetaData[Index]^.ID + ' '
                    + RemoteMetaData.ActionName(RemoteMetaData[Index]^.Action) + '  '
                    + RemoteMetaData[Index]^.LastChange + '  '
                    + RemoteMetaData[Index]^.Title );
@@ -651,7 +653,7 @@ begin
         end else begin
             if RemoteMetaData[Index]^.Title = '' then
                 RemoteMetaData[Index]^.Title := GetNoteTitle(RemoteMetaData[Index]^.ID, RemoteMetaData[Index]^.Rev);
-            Debugln('ERROR - invalid ID detected when CheckMetaData [' + RemoteMetaData[Index]^.ID + ']');
+            Debugln('TSync.CheckMetaData - ERROR - invalid ID detected : [' + RemoteMetaData[Index]^.ID + ']');
             RemoteMetaData[Index]^.Action := SyError;
             ErrorString := 'ERROR - invalid ID detected when CheckMetaData [' + RemoteMetaData[Index]^.ID + ']';
         end;
@@ -966,8 +968,10 @@ var
     Uploads : TstringList;
     Index : integer;
 begin
-    if DebugMode then
-        debugln('Doing uploads and Remote ServerRev is ' + inttostr(Transport.RemoteServerRev));
+    if DebugMode then begin
+        debugln('TSync.DoUploads() - Doing uploads and Remote ServerRev is ' + inttostr(Transport.RemoteServerRev));
+        debugln('TSync.DoUploads() - We have ' + RemoteMetaData.Count.ToString + ' notes to consider');
+    end;
     try
         Uploads := TstringList.Create;
         for Index := 0 to RemoteMetaData.Count -1 do begin
@@ -976,6 +980,7 @@ begin
                RemoteMetaData.Items[Index]^.Rev := Transport.RemoteServerRev + 1;
 			end;
 		end;
+        if DebugMode then debugln('TSync.DoUploads() - We have ' + Uploads.Count.ToString + ' notes to upload');
         if not TestRun then
            if not Transport.UploadNotes(Uploads) then begin
               ErrorString := Transport.ErrorString;
@@ -1075,6 +1080,8 @@ begin
     Result := Transport.TestTransport(not TestRun);                             // *****************
     if Result <> SyncReady then begin
       ErrorString := Transport.ErrorString;
+      // We get the next line evert time we start a new sync repo because we always try a join first.  Not helpful.
+      // debugln('TSync.TestConnection() : failed Transport.TestTransport, maybe a new connection ? ' + SyncAvailableString(Result));
       exit;
     end;
     if DebugMode then begin
@@ -1092,13 +1099,15 @@ begin
     if RepoAction = RepoJoin then begin
         LocalServerID := Transport.ServerID;
     end;
-    if Result = SyncReady then
+    if Result = SyncReady then begin
         if not IDLooksOK(Transport.ServerID) then begin
             ErrorString := 'An invalid serverID detected [' + Transport.ServerID + ']';
             debugln('ERROR - completed TestConnection but ServerID is invalid ['
                     + Transport.ServerID + ']');
             Result :=  SyncBadError;
         end;
+    end  else
+        debugln('TSync.TestConnection() : dont have SyncReady at end of method, ' + SyncAvailableString(Result));
 end;
 
 function TSync.LoadRepoData(ForceLCD : boolean): boolean;
@@ -1152,7 +1161,7 @@ begin
                         end;
         RepoNew : begin
                         freeandNil(RemoteMetaData);
-                        RemoteMetaData := TNoteInfoList.Create;             // clean out the list abd start again
+                        RemoteMetaData := TNoteInfoList.Create;             // clean out the list and start again
                         if TransportMode = SyncGithub then
                             TGithubSync(Transport).AssignActions(RemoteMetaData, LocalMetaData, TestRun)
                   end
@@ -1165,7 +1174,7 @@ begin
     //DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData before  CheckMetaData()');
     CheckMetaData();
 
-    if DebugMode then DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData after CheckMetaData()');
+//    if DebugMode then DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData after CheckMetaData()');
 
     if TestRun then begin
         if ProgressProcedure <> nil then ProgressProcedure('Finished Test Run');
@@ -1174,8 +1183,8 @@ begin
 
     result := ProcessClashes();       // Will be false if in AutoSync mode AND we have a clash.
 
-    if DebugMode then
-        DisplayNoteInfo(RemoteMetaData, 'NoteMetaData after ProcessClashes');
+//    if DebugMode then
+//        DisplayNoteInfo(RemoteMetaData, 'NoteMetaData after ProcessClashes');
 end;
 
 
@@ -1188,11 +1197,18 @@ function TSync.UseSyncData() : boolean;
 var
     NewRev : boolean = false;
 begin
+    if DebugMode then debugln('TSync.UseSyncData - started actual sync, is github=' + booltostr(TransPortMode=SyncGitHub, true));
     if not DoDownLoads() then exit(SayDebugSafe('TSync.StartSync - failed DoDownLoads'));
     if TransPortMode <> SyncGitHub then
        if not WriteRemoteManifest(NewRev) then exit(SayDebugSafe('TSync.StartSync - failed early WriteRemoteManifest'));
     if not DoDeletes() then exit(SayDebugSafe('TSync.StartSync - failed DoDeletes'));
     if not DoUploads() then exit(SayDebugSafe('TSync.StartSync - failed DoUploads'));
+
+    // If DoUpLoads fails mid list, then some notes will have been uploaded and some not.
+    // So, we SHOULD continue on to update manifests.
+    // So, when DoUpLoads fails to upload a note (eg a Markdown failure, temp network error)
+    // it should continue to try the reminder and remove the failed entry from its list
+
     if not DoDeleteLocal() then exit(SayDebugSafe('TSync.StartSync - failed DoDeleteLocal'));
     if TransportMode = SyncGithub then
         if not Transport.DoRemoteManifest('', RemoteMetaData) then exit(SayDebugSafe('TSync.StartSync - failed late WriteRemoteManifest'));

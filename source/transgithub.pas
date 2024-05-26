@@ -70,6 +70,7 @@ HISTORY :
     2021/09/25 - fixed how notebook lists are stored in RemoteNotes, as JSON array, not JSON data
     2021/09/27 - Implement selective sync.
     2022/10/18 - Fix markup around readme warning
+    2024/05/08 - extensive rework of debugging code, retry download if it fails.
 }
 
 
@@ -94,7 +95,7 @@ type
             FName : string;     // eg README.txt, Meta/serverid, Notes/<guid>.md
             Sha   : string;     // The SHA, we always have this.
             Title : string;     // Last known note title.
-            LCDate: string;     // The Last Change Date of the note. Always can get that.
+            LCDate: string;     // The Last Change Date of the note. Always can get that. (In RemoteNotes blank indicates an upload failure)
             CDate : string;     // The create Date, we may not know it if its a new note.
             Format : TFileFormat;       // How the file is saved at github, md only at present
             Notebooks : string; // empty OK, else [] or ["notebook1", "notebook2"] etc. Only needed for SyDownLoad
@@ -175,6 +176,7 @@ type
                             // This method may set ErrorMessage, it might need resetting afterwards.
                             // The two optional parameter must be used together and extract one header value.
         function Downloader(URL: string; out SomeString: String; const Header: string =''): boolean;
+        function DownloaderSafe(URL: string; out SomeString: String; const Header: string=''): boolean;
 
         //procedure DumpJSON(const St: string; WhereFrom: string = '');
 
@@ -329,7 +331,7 @@ const
   BaseURL='https://api.github.com/';
   RNotesDir='Notes/';
   RMetaDir='Meta/';
-  RemoteRepoName='tb_notes';
+  RemoteRepoName : string ='tb_notes';         // Set EnvVar, eg TB_GITHUB_REPO="tb_alt" to change
   {$ifdef TESTRIG}
   NotesDir='/home/dbannon/Pascal/GithubAPI/notes/';
   UserName='davidbannon';
@@ -489,7 +491,7 @@ begin
         end;
         inc(i);
     end;
-    debugln('TGitNoteList.FNameExists WARNING ? did not find ID=[' + FName +']');
+    //debugln('TGitNoteList.FNameExists WARNING ? did not find ID=[' + FName +']');
     result := False;
 end;
 
@@ -513,52 +515,63 @@ end;
 
 // ---------------- P U B L I C   M E T H O D S  ie from Trans -----------------
 
-
+{$define DEBUGghs}
 
 function TGitHubSync.TestTransport(const WriteNewServerID: boolean): TSyncAvailable;
 {  If we initially fail to find offered user account, try defunkt so we can tell if
-   its a network error or username one.  }
+   its a network error or username one.}
 var
    St : string;
 begin
     Result := SyncNotYet;
     ErrorString := '';
-    {$ifdef DEBUG}
-    debugln('TGithubSync.TestTransport - WriteNewServerID is ', booltostr(WriteNewServerID, true));
-    {$endif}
+    if DebugMode then
+        debugln('TGithubSync.TestTransport - WriteNewServerID is ', booltostr(WriteNewServerID, true));
     if ANewRepo and WriteNewServerID then           // Will fail ? if repo already exists.
         MakeRemoteRepo();
     if RemoteNotes <> Nil then RemoteNotes.Free;
     RemoteNotes := TGitNoteList.Create();
     if ProgressProcedure <> nil then ProgressProcedure(rsTestingCredentials);
-    //debugln('TGithubSync.TestTransport - about to get auth-token-expire');
-    //debugln('URL=' + BaseURL + 'users/' + UserName);
-    if DownLoader(BaseURL + 'users/' + UserName, ST,
+    if DebugMode then begin
+        debugln('TGithubSync.TestTransport - about to get auth-token-expire');
+        debugln('URL=' + BaseURL + 'users/' + UserName);
+    end;
+    if DownLoaderSafe(BaseURL + 'users/' + UserName, ST,
                         'github-authentication-token-expiration') then begin
         // So, does nominated user account exist ?
-        if ExtractJSONField(ST, 'login') = UserName then begin     // "A" valid username
+        if DebugMode then debugln('TGithubSync.TestTransport - Downloader got token-exp data, good');
+        ErrorString := ExtractJSONField(ST, 'login');
+        if ErrorString = UserName then begin     // "A" valid username
+            ErrorString := '';
             TokenExpires := HeaderOut;
-            //SayDebugSafe('Confirmed login OK');
+            if DebugMode then debugln('TGithubSync.TestTransport - Confirmed account exists');
             if TokenExpires = '' then begin
                 ErrorString := 'Username exists but Token Failure';
                 exit(SyncCredentialError);              // Token failure
             end;
             // If to here, we have a valid username and a valid Password but don't know if they work together
             if ProgressProcedure <> nil then progressProcedure(rsLookingServerID);
+
+            // ToDo : here we get the serverID but it might not be there, later we call ScanRemoteRepo ...
             ServerID := GetServerId();
-            //debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
+            if DebugMode and (not ANewRepo) then
+                debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
             if ServerID = '' then begin
                 ErrorString := 'Failed to get a ServerID, does Token have Repo Scope ?';
                 exit(SyncNoRemoteRepo)
-            end
-            else begin
+            end else begin
                 if ProgressProcedure <> nil then progressProcedure(rsScanRemote);
-                if not ScanRemoteRepo() then exit(SyncBadRemote);               // puts only remote filenames and sha in RemoteNotes
+                if not ScanRemoteRepo() then begin
+                    debugln('TGithubSync.TestTransport - Failed to Scan the Remote Repo');
+                    exit(SyncBadRemote);               // puts only remote filenames and sha in RemoteNotes
+                end;
                 if (not ReadRemoteManifest()) then begin
-                        if (not ANewRepo) and (not WriteNewServerID) then       // do not expect a remote manifest in ANewRepo mode.
+                        if (not ANewRepo) and (not WriteNewServerID) then begin      // do not expect a remote manifest in ANewRepo mode.
                             // But if we have had an aborted New process, might mave serverid but no manifest
+                            if DebugMode then
+                                debugln('TGithubSync.TestTransport - Remote Repo does not have a Remote Manifest');
                             exit(SyncNoRemoteMan)
-                        else ANewRepo := True;
+                        end else ANewRepo := True;
                 end;
                 // we MUST detect here where a user is trying to add SelectiveSync to an existing non-selective repo = ERROR.
                 // If remote is already selective, thats OK, it stays that way. If the remote is not selective but readable,
@@ -568,7 +581,7 @@ begin
                 {  I have two vars, SelectiveSync will hold name of selective NB RemoteManifest has one set. Even if
                    local system does not have that NB (and therefore has no notes suitable). Else its empty.
                    Secondly, we have SelectiveNotebookIDs, a pointer to the local selective NB's list of notes.
-                   If there is no local selective NB, then SelectiveNotebookIDs is nil. And we should skip
+                   If there is no local selective NB, then SelectiveNotebookIDs is nil (so don't poke it). And we should skip
                    all local files.
                    If the remote repo is not selective but local one is, thats an ERROR.  The exception being if
                    the remote repo is being constructed, has serverID perhaps but no remotemanifest, ANewRepo is true,
@@ -580,32 +593,56 @@ begin
                and (SelectiveSync = '') and (not ANewRepo) then begin
                    ErrorString := 'Local is Selective, remote is NOT';
                    SayDebugSafe(ErrorString + ' probably need build a new remote repo, please read documentation');
-                    exit(SyncMismatch)
+                   exit(SyncMismatch)
                end;
-               if (SelectiveSync = '') and  assigned(SelectiveNotebookIDs) then      // Use local 'cos its a new repo.
+               if (SelectiveSync = '') and  assigned(SelectiveNotebookIDs) then begin     // Use local 'cos its a new repo.
                    SelectiveSync := SyncTransportName(SyncGithub);
+                   // debugln('TGitHubSync.TestTransport - setting SelectiveSync to : ' + SelectiveSync);
+               end;
 
-               {$ifdef DEBUG}
-                debugln('TGitHubSync.TestTransport SelectiveSync=' + SelectiveSync);
-                if not assigned(SelectiveNotebookIDs) then
-                    debugln('TGitHubSync.TestTransport SelectiveNotebookIDs not assigned.');
-                {$endif}
+               if DebugMode then begin
+                    debugln('TGitHubSync.TestTransport SelectiveSync=' + SelectiveSync);
+                    if not assigned(SelectiveNotebookIDs) then
+                        debugln('TGitHubSync.TestTransport SelectiveNotebookIDs not assigned.');
+                end;
                 Result := SyncReady;
                 if ProgressProcedure <> nil then ProgressProcedure('TestTransport Happy, SelectiveSync=' + SelectiveSync);
+                if DebugMode then begin
+                    debugln('TGitHubSync.TestTransport SelectiveSync is OK');
+                    if not assigned(SelectiveNotebookIDs) then
+                        debugln('TGitHubSync.TestTransport SelectiveNotebookIDs not assigned.');
+                end;
             end;
-        end else SayDebugSafe('TGithubSync.TestTransport - Spoke to Github but did not confirm login');
-    end else begin
-        if DownLoader(BaseURL + 'users/defunkt', ST) then begin
+        end else begin
+            if DebugMode then begin
+                DebugLn('TGithubSync.TestTransport - JSON : Github did not confirm "login"');
+                debugln('Start bad JSON [' + St + '] End bad JSON');
+                Result := SyncBadError;
+            end;
+        end;
+    end
+    else begin                                                              // OK, we are not getting through, why not ?
+        debugln('TGitHubSync.TestTransport : Failed to speak to github as the user ' + UserName
+                + ', network or credentials error ?, ' + St);
+        if St = 'Fatal' then exit(SyncNetworkError);                        // Downloader has said it all !
+        if DownLoaderSafe(BaseURL + 'users/defunkt', ST) then begin                 // try a known good user
             ErrorString := ErrorString + ' Username is not valid : ' + UserName;
+            debugln('TGitHubSync.TestTransport : But can speak to github as user defunkt.');
             exit(SyncCredentialError);
         end
-        else begin
+        else begin                                                              // but known good user worked, must be the token we are using
+            debugln('TGitHubSync.TestTransport : But can speak to github, probably bad token, '
+                    + SyncAvailableString(SyncCredentialError));
             // here probably because of a bad token, lets rewrite the error message
             if pos('401', ErrorString) > 0 then
-                ErrorString := '  ' + rsGithubTokenExpired;
-            exit(SyncNetworkError);
+                ErrorString := ErrorString + ' ' + rsGithubTokenExpired;
+            exit(SyncNetworkError);                                             // Hmm, NetWorkError ? more like credentials  ???
         end;
     end;
+    {$ifdef DEBUGghs} if DebugMode then
+        debugln('TGitHubSync.TestTransport : at end of method returning : '
+            + SyncAvailableString(Result));
+    {$endif}
 end;
 
 function TGitHubSync.SetTransport(): TSyncAvailable;
@@ -731,18 +768,29 @@ begin
     if ProgressProcedure <> nil then
                 ProgressProcedure(rsUpLoading + ' ' + inttostr(Uploads.Count));
     for St in Uploads do begin
-        if not SendNote(St) then exit(false);
+        if not SendNote(St) then begin
+            RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', '');       // an empty LCD means we failed to upload note.
+            continue;
+            //exit(false);       // possibly a network or markdown error ?
+            // ToDo : see below
+            { exit is wrong, one bad upload should NOT abort process because that
+              would prevent the manifest from being updated.
+              Must check how local manifest is created ......
+            }
+
+        end;
         inc(NoteCount);
         if NoteCount mod 5 = 0 then
             if ProgressProcedure <> nil then
                 ProgressProcedure(rsUpLoaded + ' ' + inttostr(NoteCount) + ' notes');
         RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', TheMainNoteLister.GetLastChangeDate(St));
-        // ToDo : that has hardwired assumpltion about markdown
+        // ToDo : that has hardwired assumption about markdown
     end;
     result := true;
 end;
 
 function TGitHubSync.DoRemoteManifest(const RemoteManifest: string; MetaData: TNoteInfoList): boolean;
+// Note that MetsData is the RemoteMetaData data structure from sync, changes here reflected in local manifest, report
 var
     P : PNoteInfo;      // an item from RemoteMetaData
     PGit : PGitNote;    // an item from local data structure, RemoteNotes
@@ -764,6 +812,11 @@ begin
                 PGit := RemoteNotes.Find(P^.ID);
                 if PGit = nil then
                     exit(SayDebugSafe('TGitHubSync.DoRemoteManifest - ERROR, failed to find ID from RemoteMetaData in RemoteNotes'));
+                if PGit^.LCDate = '' then begin                        // That means the note failed to upload
+                    P^.Action := SyError;                              // stop appearing in local manifest.
+                    debugln('TGitHubSync.DoRemoteManifest - omitting ', PGit^.Title, ' from remote manifest, readme');
+                    continue;                                           // does not appear in remote [Manifest, Readme]
+                end;
                 Readme.Append('* [' + P^.Title + '](' + ContentsURL(False) + PGit^.FName + ')');
                 if P^.Action = SyDownload then
                     NoteBooks := PGit^.Notebooks
@@ -836,6 +889,9 @@ begin
        // if I can be sure it really does sort the (NoteLister's) list with SelectiveNotebookIDs.sorted := true.
        // Calling SelectiveNotebookIDs.Sort does not seem to work ??
         // we know we can safely poke at SelectiveNotebookIDs if SelectiveSync is not empty.
+
+       // debugln('TGitHubSync.MergeNotesFromNoteLister looking at ' + NLister^.Title);
+
        if (SelectiveSync <> '') and (FindInStringList(SelectiveNotebookIDs, NLister^.ID) < 0)
            then continue;
        // Look for items in NoteLister that do not currently exist in RemoteMetaData. If we find one,
@@ -913,9 +969,7 @@ begin
             {$endif}
         end
         else begin                                                              // OK, it exists at both ends, now we need to look closely.
-
             //debugln('TGithubSync.AssignActions - Possibe clash LMData.LastSyncDate UTC= ' +  FormatDateTime('YYYY MM DD : hh:mm', LMData.LastSyncDate ));
-
             if  LMData.LastSyncDate < 1.0 then begin                                 // Not valid
                 // if LastSyncDate is 0.0, a Join. An ID that exists at both ends is a clash. No local manifest to help here.
                 // But we have one more trick.  If the remote note has a valid LCDate in RemoteNotes, it came from a -ng
@@ -932,8 +986,9 @@ begin
                         > LMData.LastSyncDate then RemRec^.Action := SyUploadEdit;  // changed since last sync ? Upload it !
                 if  LocRec = Nil then begin                                     // ?? If it exists at both ends we must have uploaded it ??
                     dispose(RemRec);
-                    ErrorString := 'TGitHubSync.AssignActions ERROR, ID not found in LocalMetaData, might need to force a Join.';
+                    ErrorString := 'TGitHubSync.AssignActions ERROR, ID not found in LocalMetaData, might need to force a Join : ' + PGIT^.FName;
                     exit(SayDebugSafe(ErrorString));
+                    // SayDebugSafe(ErrorString)
                 end else if PGit^.Sha <> LocRec^.Sha then begin                 // Ah, its been changed remotely
                     if RemRec^.Action = SyUnset then begin
                         //debugln('TGithubSync.AssignActions setting ' + RemRec^.ID + ' to Download #2');
@@ -1022,7 +1077,7 @@ begin
     Result := '';
     // This call brings back an array, '[one-record]', note its not the Contents URL !
     URL := BaseURL + 'repos/' + UserName + '/' + RemoteRepoName + '/';
-    if DownLoader(URL + 'commits?path=' + FFName + '&per_page=1&page=1', ST) then begin
+    if DownLoaderSafe(URL + 'commits?path=' + FFName + '&per_page=1&page=1', ST) then begin
         if St[1] = '[' then begin
             delete(St, 1, 1);
         end else SayDebugSafe('GitHub.GetNoteLCD - Error, failed to remove  from array');
@@ -1041,13 +1096,23 @@ var
     STL : TStringList;
     CM  : TExportCommon;
 begin
+    if DebugMode then
+                debugln('TGitHubSync.SendNote - going to upload note, ID=' + ID
+                    + ' : [' + TheMainNoteLister.GetTitle(ID) + ']');
     STL := TStringList.Create;
     CM := TExportCommon.Create;
     try
         CM.NotesDir := NotesDir;
         CM.GetMDcontent(ID, STL);
-        if STL.Count < 1 then exit(False);
+        if STL.Count < 1 then begin
+            // if DebugMode then
+            debugln('TGitHubSync.SendNote - ERROR, failed to convert to markdown, ID=' + ID);
+            debugln(CM.ErrorMsg);
+            exit(False);
+        end;
         Result := SendFile(RNotesDir + ID + '.md', STL);
+        if (not Result) and DebugMode then
+                debugln('TGitHubSync.SendNote - ERROR, failed to upload note, ID=' + ID);
     finally
         CM.Free;
         STL.Free;
@@ -1069,6 +1134,8 @@ begin
                     + EncodeStringBase64(STL.Text) + '" }';
     end;
     Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
+    if DebugMode and (not Result) then
+        DebugLn('TGitHubSync.SendFile - Failed to send file filename=' + RemoteFName + ' Error=' + ErrorString);
 end;
 
 function TGitHubSync.MakeRemoteRepo(): boolean;
@@ -1116,7 +1183,7 @@ var
     begin
         Result := True;
         if (Dir <> '') and (not RemoteNotes.FNameExists(Dir, Sha)) then exit;
-        if Downloader(ContentsURL(True) + Dir, ST) then begin  // St now contains a full dir listing as JSON array
+        if DownloaderSafe(ContentsURL(True) + Dir, ST) then begin  // St now contains a full dir listing as JSON array
             Node := TJsonNode.Create;
             try
                 if Node.TryParse(St) then begin
@@ -1146,6 +1213,10 @@ begin
     ProgressProcedure := nil;           // It gets passed after create.
     RemoteNotes := Nil;
     SelectiveNotebookIDs := nil;
+    if GetEnvironmentVariableUTF8('TB_GITHUB_REPO') <> '' then begin
+        RemoteRepoName := GetEnvironmentVariableUTF8('TB_GITHUB_REPO');
+        debugln('TGitHubSync.Create() - Github repo renamed as ' + RemoteRepoName);
+    end;
 end;
 
 destructor TGitHubSync.Destroy;
@@ -1174,7 +1245,7 @@ begin
 // TEST THIS !!!!
         end;
 
-        if not Downloader(ContentsURL(True) + '/' + RNotesDir + NoteID + '.md', ST) then
+        if not DownloaderSafe(ContentsURL(True) + '/' + RNotesDir + NoteID + '.md', ST) then
             exit(SayDebugSafe('TGithubSync.DownloadANote ERROR, failed to download note : ' + NoteID));
         {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote downloaded OK ' + NoteID);{$endif}
         NoteSTL := TStringList.Create;
@@ -1211,8 +1282,8 @@ var
    PGit : PGitNote;
 begin
     if RemoteNotes.Find(RMetaDir + 'manifest.json') = nil then
-        exit(SayDebugSafe('Remote manifest not present, maybe a new repo ?'));
-    if not Downloader(ContentsURL(True) + '/' + RMetaDir + 'manifest.json', ST) then
+        exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest : Remote manifest not present, maybe a new repo ?'));
+    if not DownloaderSafe(ContentsURL(True) + '/' + RMetaDir + 'manifest.json', ST) then
         exit(SayDebugSafe('GitHub.ReadRemoteMainfest : Failed to read the remote manifest file'));
     {$ifdef DEBUG}
     RemoteNotes.DumpList('TGithubSync.ReadRemoteManifest - Before ReadRemoteManifest');
@@ -1222,8 +1293,10 @@ begin
         // content is in the "content" field, Base64 encoded.
         if not Node.TryParse(DecodeStringBase64(ExtractJSONField(ST, 'content'))) then
             exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON : ' + ST));
-        if Node.Exists('selectivesync') then
+        if Node.Exists('selectivesync') then begin
             SelectiveSync := Node.Find('selectivesync').AsString;
+            //debugln('TGitHubSync.ReadRemoteManifest - setting SelectiveSync to : ' + SelectiveSync);
+        end;
         NotesNode := Node.Find('notes');
         if NotesNode = nil then
             exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON, notes not present : ' + ST));
@@ -1258,19 +1331,33 @@ var
    St : string;
 begin
     Result := '';
-    if Downloader(ContentsURL(True) + '/' + RMetaDir + 'serverid', ST) then
+    if DownloaderSafe(ContentsURL(True) + '/' + RMetaDir + 'serverid', ST) then
         Result := DecodeStringBase64(self.ExtractJSONField(ST, 'content'));
     Result := Result.Replace(#10, '');
     Result := Result.Replace(#13, '');
     //debugln('TGithubSync.GetServerId = [' + Result + ']');
 end;
 
-function TGitHubSync.Downloader(URL: string; out SomeString: String;
-    const Header: string): boolean;
+
+function TGitHubSync.DownloaderSafe(URL: string; out SomeString: String; const Header: string=''): boolean;
+begin
+    if Downloader(URL, SomeString, Header) then exit(True);
+    if DebugMode then
+                DebugLn(#10'TGithubSync.DownloaderSafe - download failed, try again....');
+    sleep(100);
+    if Downloader(URL, SomeString, Header) then exit(True);
+    if pos('serverid', ErrorString) = 0 then begin          // if just serverid, its probably just a new repo.
+        DebugLn('TGithubSync.DownloaderSafe - ERROR - download second try failed, give up....'#10);
+        DebugLn('TGithubSync.DownloaderSafe - ERROR - but maybe new repo ? maybe github rate ? ' + ErrorString);
+    end;
+    exit(False);
+end;
+
+function TGitHubSync.Downloader(URL: string; out SomeString: String; const Header: string): boolean;
 var
     Client: TFPHttpClient;
-begin
 
+begin
     //InitSSLInterface;
     // curl -i -u $GH_USER https://api.github.com/repos/davidbannon/libappindicator3/contents/README.note
     Client := TFPHttpClient.Create(nil);
@@ -1285,23 +1372,29 @@ begin
             SomeString := Client.Get(URL);
         except
             on E: ESocketError do begin
-                ErrorString := 'Github.Downloader ' + E.Message;
+                ErrorString := 'TGithubSync.Downloader - SocketError ' + E.Message     // eg failed dns, timeout etc
+                    + ' ResultCode ' + inttostr(Client.ResponseStatusCode);
+                SomeString := 'Fatal';
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: EInOutError do begin
-                ErrorString := 'Github Downloader - InOutError ' + E.Message;
+                ErrorString := 'TGithubSync Downloader - InOutError ' + E.Message;
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: ESSL do begin
-                ErrorString := 'Github.Downloader -SSLError ' + E.Message;
+                ErrorString := 'TGithubSync.Downloader - SSLError ' + E.Message;         // eg openssl problem, maybe FPC cannot work with libopenssl
+                SomeString := 'Fatal';
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: Exception do begin
-                ErrorString := 'GitHub.Downloader Exception ' + E.Message + ' downloading ' + URL;
+                ErrorString := 'TGitHubSync.Downloader Exception ' + E.Message + ' downloading ' + URL;
                 case Client.ResponseStatusCode of
                     401 : ErrorString := ErrorString + ' 401 Maybe your Token has expired or password is invalid ??';
-                    404 : ErrorString := ErrorString + ' 404 File not found ' + URL;
-                else ErrorString := ErrorString + ' https error no ' + inttostr(Client.ResponseStatusCode);
+                    404 : if URL.EndsWith('serverid') then
+                                ErrorString := 'TGitHubSync.Downloader : ServerID not found (OK in New Sync)'
+                          else ErrorString := ErrorString + ' 404 File not found ' + URL;
+                    403, 409 : ErrorString := ErrorString + ' 403 Maybe github rate exceeded ? ';
+                    else ErrorString := ErrorString + ' https error no ' + inttostr(Client.ResponseStatusCode);
                 end;
                 exit(SayDebugSafe(ErrorString));
                 end;
@@ -1386,18 +1479,18 @@ begin
     Node := TJsonNode.Create;
     ANode := Node;                  // Don't change Node, free will not be able to find it.
     try
-        if not Node.TryParse(data) then exit('Failed to parse data');
+        if not Node.TryParse(data) then exit('Failed to parse JSON data');
         if Level1 <> '' then
             ANode := ANode.Find(Level1);
             if ANode = nil then
-                exit('ERROR - field not found 1 : ' + Level1);
+                exit('JSON ERROR - field not found 1 : ' + Level1);
         if Level2 <> '' then
             ANode := ANode.Find(Level2);
             if ANode = nil then
-                exit('ERROR - field not found 2 : ' + Level2);
+                exit('JSON ERROR - field not found 2 : ' + Level2);
         ANode := ANode.Find(Field);
         if ANode = nil then
-            result := 'ERROR - field not found 3 : ' + Field
+            result := 'JSON ERROR - field not found 3 : ' + Field
         else result := ANode.AsString;
     finally
         Node.Free;
