@@ -480,10 +480,11 @@ type
         procedure BulletControl(MoreBullet: boolean);
                                 // Gets passed a string containing a copy of one or more kmemo paragraphs, seperated by
                                 // #10. And a offset from the the start of the kmemo to the start of string.
-                                // Will mark up any web addresses it finds that are not already so marked.
-                                // Must start at start of para or space, must have at least one . and end with
+                                // Will mark up any web or file addresses it finds that are not already so marked.
+                                // Http must start at start of para or space, must have at least one . and end with
                                 // space or newline char (#10). Returns 0 or length, in bytes, of the link
-        procedure CheckForHTTP(const Buff: string; const Offset: integer);
+                                // File links must start with file://
+        procedure CheckForExtLinks(const Buff: string; const Offset: integer);
                                 { Scans KMemo for bad utf8 characters, seems only used when importing RTF in SNM}
         procedure CleanUTF8();
         function ColumnCalculate(out AStr: string): boolean;
@@ -2664,7 +2665,7 @@ begin
 
     if KMemo1.blocks[ILA.BlockNo].ClassNameIs('TKMemoTextBlock') then begin
 
-        if KMemo1.blocks[ILA.BlockNo].Text.IsEmpty  then                             // ToDo : test this
+        if KMemo1.blocks[ILA.BlockNo].Text.IsEmpty  then                             // untested
             debugln('TEditBoxForm.TestLinkInsert WARNING empty text block ' + dbgs(ILA.BlockNo));
 
 //        debugln('tBoxForm.TestLinkInsert ch=[' + KMemo1.blocks[ILA.BlockNo].Text[ILA.Offset+1] + '] -1=['
@@ -2974,7 +2975,7 @@ begin
 end;
 
 
-procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string; InsertMode : boolean=false);              // ToDo : A lot of clean up required
+procedure TEditBoxForm.MakeLink(const Index, Len : longint; const Term : string; InsertMode : boolean=false);
 // Note : the HTTP check does not pass the Term, gives an empty string instead !!!!
 var
 	Hyperlink : TKMemoHyperlink;
@@ -3042,16 +3043,9 @@ begin
         BlockNoS := KMemo1.SplitAt(Index);
         // Chop of everything after the required Text. But len is a char count, not a byte count.
 
-        // Note : we will stop Makelink from doing insert.
-
-{        if InsertMode then begin
-            if not Kmemo1.Blocks.Items[BlockNoS-1].ClassNameIs('TKMemoParagraph') then   // want a space to left of new link unless its a Para.
-                TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS-1]).Text                    // The Hyperlink
-                    := TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS-1]).Text + ' '       // block is inserted between BlockNos-1 and BlockNoS
-        end else} TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text                     // remove content after the link
-                //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Len);
-                //:= string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, TermByteLen);    // bytes  ?
-                := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Length(TrueLink));    // NO, bytes !
+        // Note : Makelink no longer does insert.
+        TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text                     // remove content after the link
+                := string(Kmemo1.Blocks.Items[BlockNoS].Text).Remove(0, Length(TrueLink));    // bytes !
 //        Test :=  TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text;
         if Kmemo1.Blocks.Items[BlockNoS].Text = '' then
             KMemo1.blocks.Delete(BlockNoS);                                     // Link went to very end of orig block.
@@ -3109,7 +3103,7 @@ end;
 
 
 
-procedure TEditBoxForm.CheckForHTTP(const Buff : string; const Offset : integer);
+procedure TEditBoxForm.CheckForExtLinks(const Buff : string; const Offset : integer);
 var
     http, FileLink : integer;
     Len : integer = 1;
@@ -3352,7 +3346,7 @@ begin
             // OK, lets do HTTPS then.
             if Sett.CheckShowExtLinks.Checked then
             if length(Content) > 3 then                  // This used to be 12 before we started doing file links.
-                CheckForHTTP(Content, BuffOffset);
+                CheckForExtLinks(Content, BuffOffset);
         end;
         KMemo1.Blocks.UnLockUpdate;
 
@@ -3376,7 +3370,7 @@ begin
         end;
         {$ifdef TDEBUG}T4  := gettickcount64();{$endif}
         if Sett.CheckShowExtLinks.Checked then
-                CheckForHTTP(Content, BuffOffset);                           // Mark any unmarked web or file links
+                CheckForExtLinks(Content, BuffOffset);                           // Mark any unmarked web or file links
         KMemo1.blocks.UnLockUpdate;                                          // can take tens of mS, 100mS in a 50k note
         {$ifdef TDEBUG}T5  := gettickcount64();
         debugln('CheckForLinks Timing T1=' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');

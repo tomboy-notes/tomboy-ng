@@ -191,7 +191,7 @@ type
    { SortList - Type for DateSortList and TitleSortList, indexes into NoteList }
 
    TSortList = class(TList)    // Provides a "revised index" into NoteList, sorted on either date or title
-   private
+   private                     // ToDo : TFPList is supposed to be a bit faster.
     	function Get(Index: integer): integer;
     public
         destructor Destroy; override;

@@ -22,6 +22,7 @@ unit cli;
     2022/05/03  Add unix username to IPC pipe.
     2022/10/18  Short switch for import MD is -m
     2022/10/20  Do Import from this instance with direct call to IndexNewNote().
+    2024/06/01  Changed cli switch --kde-leftclick to allow-leftclick as useful in gnome too.
 }
 
 
@@ -112,7 +113,7 @@ begin
        {$endif}
        {$if defined(LCLQT5) or defined(LCLQt6)}
        debugln('   --strict-theme                ' + rsStrictThemeColors);
-       debugln('   --kde-leftclick               ' + 'KDE Only, allow left click in SysTray');
+       debugln('   --allow-leftclick             ' + 'Wayland Issue, allow left click in SysTray');
        {$endif}
        result := true;
     end;
@@ -311,6 +312,6 @@ initialization
         'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
         'title-fname', 'gnome3', 'useappind:',        // -g and gnome3 is legal but legacy, ignored.
         'strict-theme',                                 // Strict-theme applies to only Qt versions
-        'kde-leftclick');                             // overrule wayland decision to use only right click
+        'allow-leftclick');                             // overrule wayland decision to use only right click
 end.
 

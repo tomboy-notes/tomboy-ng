@@ -83,6 +83,9 @@ unit Mainunit;
     2022/11/14  ShowNotifications() now cross platform.
     2023/03/17  Provide better support for dark theme, particularly for Qt5 in qt5ct mode
     2023/04/30  Another Gnome (for 44.0) fix, apparently it does not like an empty menu in the trayicon at show.
+    2024/06/01  Dont show menu from TMainForm.TrayIconClick() on Wayland-Gnome as it generats a second
+                menu when using -plaform xcb (qt5/6). Slightly different that the related KDE issue.
+                Also, only prevent left click on WAYLAND KDE now, sensible KDEs will work OK
 
     CommandLine Switches
 
@@ -182,7 +185,7 @@ type
     private
         AboutFrm : TForm;
         NoLeftClickOnTrayIcon : boolean;    // Is false for everyone except KDE.
-        //HelpList : TStringList;
+        UglyGnome : boolean;
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
 
@@ -318,7 +321,7 @@ begin
     {$endif}
     if UseTrayMenu then begin
         PopupMenuTray := TPopupMenu.Create(Self);
-        TrayIcon.PopUpMenu := PopupMenuTray;        // SearchForm will populate it when ready
+          TrayIcon.PopUpMenu := PopupMenuTray;      // SearchForm will populate it when ready
 //        TrayIcon.Show;                            // Gnome does not like showing it before menu is populated, so, call from SearchForm.create
     end;
     LabelBadNoteAdvice.Caption := '';
@@ -510,14 +513,25 @@ var
     ForceAppInd : string;
 begin
     Result := False;
+    if (pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0) then
+        UglyGnome := True;
     // Don't test for SysTray under GTK3, will never be there.  One or other AppIndicator
     // is your only chance. And XInternAtom() function SegVs on Gnome DTs so don't try it.
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
     // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu < 21.10
 
-    if (pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 )
-            and (not Application.HasOption('kde-leftclick')) then begin
-        NoLeftClickOnTrayIcon := True;      // That will get all KDE and penalise X11 users, sorry !
+    // Instead of forcing a right click on system tray for just KDE systems, I will have to
+    // for ALL Wayland using system. Its only necessary on gnome using wayland if qt has -platform xcb
+    // but it appears thats now going to have to be, always, the case, as without xcb we find
+    // wayland stops user copy n pasting to other apps.
+
+    if (GetEnvironmentVariable('WAYLAND_DISPLAY') <> '')                   // I believe that this is reliable
+        and (not Application.HasOption('allow-leftclick')) then
+            NoLeftClickOnTrayIcon := True;
+
+    if (pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 ) then begin
+//            and (not Application.HasOption('kde-leftclick')) then begin
+//        NoLeftClickOnTrayIcon := True;      // That will get all KDE and penalise X11 users, sorry !
         exit(True);      // So far, every KDE I have tested has a System Tray, but works badley under wayland in 2023 at least.
     end;
     {$ifdef LCLQT6}exit(true);{$endif}
@@ -544,11 +558,10 @@ begin
     // appindicators is installed and enabled, it will 'probably' be OK.
 
     // Downside of above is we do all the Gnome Tests on non gnome desktops if running GTK3
-    if (pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0)
-        and (result = false) then
+    if UglyGnome and (result = false) then
             Result := CheckGnomeExtras()
             // Thats libappindicator3 and an installed and enabled gnome-shell-extension-appindicator
-        else Result := True;        // Now, that is a hope for the best, GTK3 but non Gnome
+     else Result := True;        // Now, that is a hope for the best, GTK3 but non Gnome
 end;
 {$endif}                            // hides CheckForSystemTray() and CheckGnomeExtras() from non Linux
 
@@ -786,13 +799,15 @@ begin
     {$endif}
 end;
 
-procedure TMainForm.TrayIconClick(Sender: TObject);
+procedure TMainForm.TrayIconClick(Sender: TObject);   // left click on most systems
 begin
     if not NoLeftClickOnTrayIcon then                       // At present, only KDE DE, does sweep up x11 users too !
         PopupMenuTray.PopUp()
     else
-        if Sett.CheckNotifications.Checked  then
-            ShowNotification('Please Right Click TrayIcon on this System', 2000);
+        if (not UglyGnome) and Sett.CheckNotifications.Checked  then
+            ShowNotification('Please Right Click TrayIcon on Wayland Systems', 2000);
+    // I need to do this on Wayland using systems, KDE and xcb using Gnome else we get a two menus !
+    // but on Gnome with -platform xcb the left still works ?? So, don't send msg
 end;
 
 {procedure TMainForm.RecentMenuClicked(Sender: TObject);
@@ -816,7 +831,7 @@ begin
 {$else}
 begin
     TrayIcon.BalloonTitle := 'tomboy-ng';
-    TrayIcon.BalloonHint := 'rsAutosnapshotRun';
+    TrayIcon.BalloonHint := rsAutosnapshotRun;
     TrayIcon.BalloonTimeOut := ShowTime;
     Mainform.TrayIcon.ShowBalloonHint;
 {$endif}

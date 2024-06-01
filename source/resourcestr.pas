@@ -130,7 +130,7 @@ RESOURCESTRING
     rsHelpImportFile = 'Import file into Note Directory';
     rsHelpSaveExit = 'After import single note, save & exit';
     rsHelpTitleIsFName = 'Use Filename as title for import txt & md';
-    rsStrictThemeColors = 'Use only the (Qt) theme colors for Editing Notes';
+    rsStrictThemeColors = 'Use only (Qt) theme colors for Editing Notes';
 
     // Mainunit
 

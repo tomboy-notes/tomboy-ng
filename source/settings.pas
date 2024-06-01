@@ -1783,13 +1783,6 @@ begin
     SearchForm.UpdateStatusBar(1, rsAutosnapshotRun);               // ToDo : should snapshots have own status panel ?
     if CheckNotifications.Checked then begin
         MainForm.ShowNotification(rsAutosnapshotRun);
-        (* {$ifdef LINUX}
-        ShowNotification('tomboy-ng', rsAutosnapshotRun);
-        {$else}
-        MainForm.TrayIcon.BalloonTitle := 'tomboy-ng';
-        Mainform.TrayIcon.BalloonHint := 'rsAutosnapshotRun';
-        Mainform.TrayIcon.ShowBalloonHint;
-        {$endif}   *)
     end;
 end;
 
