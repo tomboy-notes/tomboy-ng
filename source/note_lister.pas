@@ -590,8 +590,6 @@ end;
 
 // ToDo : much of the work here is done in GetNoteDetails, maybe it belongs in this Type ?
 
-{$Xdefine FORCE_SINGLE_INDEX_THREAD}
-
 constructor TIndexThread.Create(CreateSuspended : boolean);
 begin
     inherited Create(CreateSuspended);

@@ -111,7 +111,8 @@ begin
        {$ifdef LCLgtk2}
        debugln('   --useappind=yes|no            ' + 'Force particular TrayIcon');
        {$endif}
-       {$if defined(LCLQT5) or defined(LCLQt6)}
+       {$ifdef LINUX}
+       // {$if defined(LCLQT5) or defined(LCLQt6)}
        debugln('   --strict-theme                ' + rsStrictThemeColors);
        debugln('   --allow-leftclick             ' + 'Wayland Issue, allow left click in SysTray');
        {$endif}

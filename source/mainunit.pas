@@ -529,11 +529,10 @@ begin
         and (not Application.HasOption('allow-leftclick')) then
             NoLeftClickOnTrayIcon := True;
 
-    if (pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 ) then begin
-//            and (not Application.HasOption('kde-leftclick')) then begin
-//        NoLeftClickOnTrayIcon := True;      // That will get all KDE and penalise X11 users, sorry !
-        exit(True);      // So far, every KDE I have tested has a System Tray, but works badley under wayland in 2023 at least.
-    end;
+    if (pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 ) then
+        exit(True);
+        // So far, every KDE I have tested has a SysTray, but some work badley with left click
+        // under wayland in 2023, Deb 13 KDE does not need this but too hard to tell reliably
     {$ifdef LCLQT6}exit(true);{$endif}
     {$IFnDEF LCLGTK3}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
@@ -543,7 +542,7 @@ begin
         if pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then
             exit(CheckGnomeExtras());
         XDisplay := QX11Info_display;
-    {$endif}
+    {$endif LCLQT5}
     // OK, don't call next line in a KDE system .....
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);  // gtk2 or non-Gnome Qt5
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
@@ -552,7 +551,7 @@ begin
             debugln('Tradition Systray Available = ' + booltostr(result, True));
 //    if ForceAppInd = 'YES' then
 //            result := false;
-    {$ENDIF}
+    {$ENDIF LCLGTK3}
     // if we are false here, its probably because its a recent Gnome Desktop or GTK3, no SysTray.
     // However, if libappindicator3 or Ayatana is installed and the Gnome Shell Extension,
     // appindicators is installed and enabled, it will 'probably' be OK.

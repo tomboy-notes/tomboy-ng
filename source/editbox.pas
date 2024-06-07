@@ -248,6 +248,7 @@ unit EditBox;
     2024/03/20  Close the backlinks 'window' before triggering the other note.
     2024/03/24  FileLink in a basic form
     2024/04/14  Extensive rewrite about Links, especially FileLink, remove click on "file://".
+    2024/06/07  UTF8 bug, where missed UTF8 char ahead of file link.
 }
 
 
@@ -2985,7 +2986,7 @@ var
     FontAtt : FontLimitedAttrib;
     ULen : integer;                 // Length, in Char, of Link Text
 begin
-    //DumpKMemo('TEditBoxForm.MakeLink START term=' + Term + ' vvvvvvvvv');
+    //DumpKMemo('TEditBoxForm.MakeLink START term=' + Term + ' vvvvvvvvv');       // ToDo : comment
     if Term <> '' then              // We must use UTF8 number to calculate BlockNoE
         ULen := UTF8Length(Term)
     else ULen := Len;               // But with http, it does not matter, no UTF8 in web addresses !
@@ -3017,8 +3018,12 @@ begin
             end;
             inc(i);
         end;
-        TrueLink := copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // copy Len BYTES !
-
+    { BlockOffset is number of char (not bytes) before we start linking. So, '0' says link starts at left edge.
+      KMemo gives us a Char count (not bytes)
+      So, we copy the leading, not to be linked string of char, and get the byte length.
+    }
+    BlockOffset := length(UTF8Copy(Kmemo1.Blocks.Items[BlockNoS].Text, 1, BlockOffset));
+    TrueLink := copy(Kmemo1.Blocks.Items[BlockNoS].Text, BlockOffset+1, Len);   // copy Len BYTES ! Add 1 because copy() is one based.
     // The below might leave a empty block. Messy to delete here but ....
     if BlockNoE > BlockNoS then begin                                           // Multiple blocks, two or more ....
         TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS]).Text
@@ -3029,9 +3034,9 @@ begin
             inc(i);                                                             // i must be > 0 because we are multiblock
         end;                                                                    // That will get all of last block's text, probably excessive
         // The below might leave a empty block. Messy to delete here but ....
-        TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS+i]).Text               //  BlockNoS+i is last block containing some of link
+        TKMemoTextBlock(Kmemo1.Blocks.Items[BlockNoS+i]).Text                   //  BlockNoS+i is last block containing some of link
             := utf8copy(Kmemo1.Blocks.Items[BlockNoS+i].Text, 1 + Kmemo1.Blocks.Items[BlockNoS+i].Text.Length - UTF8length(TrueLink) + len, 9999);
-        delete(TrueLink, Len+1, 999);                                         // Get rid of that excess, +1 to start deleting after link text
+        delete(TrueLink, Len+1, 999);                                           // Get rid of that excess, +1 to start deleting after link text
         dec(i);
         while i > 1 do begin
             dec(i);
@@ -3058,8 +3063,10 @@ begin
     // When we get to here, Link text (and any blocks completely spanned by link text) have been removed
     // and BlockNoS points to where link need be pushed into. Might have some empty text blocks ....
     {$ifdef LDEBUG}TG2 := gettickcount64();{$endif}
+    //debugln('TEditBoxForm.MakeLink() 1 BlockNoS=' + dbgs(BlockNoS) + ' TrueLink=[' + TrueLink + ']');   // ToDo : comment
     Hyperlink := TKMemoHyperlink.Create;
     Hyperlink.Text := TrueLink;
+    //debugln('TEditBoxForm.MakeLink() 2 BlockNoS=' + dbgs(BlockNoS) + ' Link=[' + Hyperlink.Text + ']');   // ToDo : comment
     Hyperlink.Textstyle.StyleChanged   :=  true;
     Hyperlink.OnClick := @OnUserClickLink;
     {HL := }KMemo1.Blocks.AddHyperlink(Hyperlink, BlockNoS);   // BlockNoS points to the block cut from the chain and attached to the link block.
@@ -3067,7 +3074,7 @@ begin
     HyperLink.Textstyle.Font.Color := Sett.LinkColour;
     {$ifdef LDEBUG}TG3 := gettickcount64();
     TG1 := TG1 + (TG3-Tg2);{$endif}
-    // DumpKMemo('TEditBoxForm.MakeLink END term=' + Term + ' ^^^^^^^^^^');
+    //DumpKMemo('TEditBoxForm.MakeLink END term=' + Term + ' ^^^^^^^^^^');
 end;
 
 
@@ -3191,7 +3198,7 @@ begin
         FileLink := FindNextFileLink();
         if Len > 0 then begin
             LinkText := copy(Buff, FileLink+1, Len);      // all in bytes, not char
-//            debugln('TEditBoxForm.CheckForHTTP FILELinkText=[' + LinkText + '] len=' + dbgs(Len));
+            //debugln(#10'TEditBoxForm.CheckForHTTP FILELinkText=[' + LinkText + '] len=' + dbgs(Len)); // ToDo : comment
             MakeLink(Offset + UTF8Length(pchar(Buff), FileLink), len, LinkText);      // 1st Param is Char count, Len is bytes
         end;
         inc(FileLink);

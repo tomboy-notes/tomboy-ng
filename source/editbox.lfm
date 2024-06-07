@@ -1467,10 +1467,12 @@ object EditBoxForm: TEditBoxForm
     end
     object MenuItemInsertFileLink: TMenuItem
       Caption = 'Insert File Link'
+      ShortCut = 32836
       OnClick = MenuItemFileLinkClick
     end
     object MenuItemInsertDirLink: TMenuItem
       Caption = 'Insert Directory Link'
+      ShortCut = 32836
       OnClick = MenuItemFileLinkClick
     end
     object MenuItemSelectLink: TMenuItem
