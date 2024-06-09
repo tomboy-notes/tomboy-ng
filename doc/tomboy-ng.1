@@ -14,28 +14,28 @@ tomboy\-ng \- manage a collection of notes using a simple GUI markup
 tomboy\-ng  [\-h \-\-help] [\-\-dark\-theme] [\-\-debug\-sync]  [\-\-debug\-index] [\-\-debug\-log=LOGFILE] [\-l \-\-lang=CC] [\-\-config\-dir=PATH_to_DIR] [\-o PATH_to_NOTE] [\-\-open\-note=PATH_to_NOTE] [PATH_to_NOTE] [\-t \-\-import\-txt=PATH_to_FILE] [\-m \-\-import\-md=PATH_to_FILE] [\-n \-\-import\-note=PATH_to_NOTE] [\-\-title\-fname]
 
 .SH DESCRIPTION
-tomboy\-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS.  It  is  file  compatible  with  Tomdroid  and  GNote (>=v0.30).  Tomboy\-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs. It will Sync with a Github account, either all your notes or just ones in the SyncGithub notebook. You can edit notes, from almost any device with a browser in markdown format.
+tomboy\-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS.  It  is  file  compatible  with  Tomdroid  and  GNote (>=v0.30).  Tomboy\-ng notes support Bold, Italic, Strikethrough, Highlight and Underline in four sizes. It will sync notes with other systems using Tomboy's File Sync model and to remote servers using sshfs. It will Sync with a Github account, either all your notes or just ones in the SyncGithub notebook. On Github, you can edit notes, from almost any device with a browser in markdown format.
+
+New in v0.40, embed links to any file or directory that your OS knows how to open.
 
 tomboy\-ng has built in systems to take snapshots of your notes for safe keeping, to import and export notes in different formats, spell  checking means to group your notes into "notebooks" for easy management.
 
 Many users will want to have tomboy\-ng start at logon time and leave it running indefinitly. When running, it will put an Icon in the System Tray and you can interact with it via that Icon. However, some Gnome 3 based Linux distros have problems initially with the System Tray Icon, on such  limited  systems, see the project wiki page mentioned below.
 
-On  Windows and Mac tomboy\-ng uses native libraries, on Linux, tomboy\-ng comes in both GTK2 and Qt5 version and many systems have almost all the necessary libraries pre installed.
+On  Windows and Mac tomboy\-ng uses native libraries, on Linux, tomboy\-ng comes in both GTK2, Qt5 and Qt6 versions and many systems have almost all the necessary libraries pre installed.
 
 While options below are familiar to Linux users, Mac and Windows users may like to look at some examples further down to see how to use them.
 
 .SH COLORS and DARK THEME
 The GTK2 version follows the system colour theme.
 
-However, the Qt5 version (eg Bookworm and later) requires some instruction from the user. Using the \-\-dark\-theme is the simplest and probably the least satisfactory approach, the note edit screen is a dark theme, other windows vary. Qt5 (and Qt6) versions after 0.36c install qt5ct (or qt6ct) and are installed with a environment variable applying to only tomboy\-ng. So, control your tomboy\-ng colours using qt5ct or qt6ct. You may like to install qt5\-style\-plugins package. If you start tomboy\-ng, perhaps on the command line, it will not see the env variable so either set it yourself, eg QT_QPA_PLATFORMTHEME=qt5ct,  or supply a command line option, \-\-platformtheme qt5ct that does a similar but not quite as complete job.
+However, the Qt5 version (eg Bookworm and later) requires some instruction from the user. Using the \-\-dark\-theme is the simplest and probably the least satisfactory approach, the note edit screen is a dark theme, other windows vary. Qt5 (and Qt6) versions after 0.36c work well with qt5ct (or qt6ct) and then require an environment variable to tell tomboy\-ng to consult qt5ct or qt6ct. Older Linux systems may work better with qt5\-style\-plugins package. If you start tomboy\-ng, perhaps on the command line, it will not see the env variable so either set it yourself, eg QT_QPA_PLATFORMTHEME=qt5ct,  or supply a command line option, \-\-platformtheme qt5ct that does a similar but not quite as complete job.  Newer systems may accept a setting of =gnome or =gtk2
 
 A more general solution, applying to all Qt5 apps, is to add that var to either /etc/environment (requires root) or, simpler in a .xsessionrc file in your home dir.
 
 cd ; echo "export QT_QPA_PLATFORMTHEME=qt5ct" >> .xsessionrc
 
 Probably need to log out and back in again.
-
-Note that with the Qt versions, setting platformtheme to gtk2 or gtk3 can cause problems, particularly with the SaveDialog (ie when exporting a note) due to an upstream problem.
 
 On Windows, tomboy\-ng  will follow the system for Dark Theme but only for the note edit window. Using the \-\-dark\-theme switch is not recommended.
 
@@ -99,14 +99,38 @@ Direct debug info to a file, this is necessary to see that output on Windows and
 Only for Linux using gtk2 version. Will override tomboy\-ng decision about how to try to display the System Tray Icon, its here to help with difficult systems that cannot seem to display that icon using the normal approach.
 
 .TP
-\-\-platformtheme qt5ct
+\-\-platformtheme qt5ct|gnome|gtk2
 Use with Qt versions ONLY, will instruct the app to display the colors defined in qt5ct. The qt5ct app has a nice GUI where you can select the colors that suite you. Some other Qt specific options may also work using a similar syntax. Note there is not an '=' sigh between the switch and its parameter.
 
+.TP
+\-\-allow\-leftclick
+Some Wayland using systems do not respond well to a left click on the tray icon, so its disabled on know offenders by default. Try a test with this switch, you may be able to restore the familiar left click on your system. Applies only to Linux.
+
+.TP
+\-\-strict\-theme
+Use only Qt theme colors for Editing Notes, as the note edit window needs more distinct colors than many themes provide, tomboy\-ng defaults to using a few extra colors. Disable this behaviour with this switch. Applies only to Qt5 and Qt6
+
+.TP
+\-platform xcb
+As many current Wayland using Linux systems have multiple problems, this setting should be used to use the much more mature libxcb instead.  Problems it fixes include the inability to bring an open note to the foreground when clicked, inability to copy text from a note to an external application and inability to restore a note to its previous position. Applicable Qt5/6 only. Note different syntax to other options, that is because this option goes direct to the Qt Framework and is not seen by tomboy\-ng. Setting an environment variable, QT_QPA_PLATFORM=xcb has the same effect.
+
+.TP
+\-platformtheme gnome|gtk2|qt5ct|qt6ct
+Qt application can be told where you want the app to look for its color theme. The external apps, qt5ct and qt6ct will let you establish your own colors, 'gnome' will use the existing gnome theme if you have qgnomeplatform\-qt5  also installed. The 'gtk2' setting works with some older systems and appropriate themes installed. Not all systems will work with all these options, you may need to experiment to some degree.  Note different syntax to other options, that is because this option goes direct to the Qt Framework and is not seen by tomboy\-ng. Setting an environment variable, QT_QPA_PLATFORMTHEME=gnome has the same effect.
+
+.SH ENVIRONMENT VARIABLES
+The tomboy\-ng Qt apps take note of  QT_QPA_PLATFORMTHEME and QT_QPA_PLATFORM and, as unlike from setting command line options, the setting can be seen in tomboy\-ng's About window.
+
+All tomboy\-ng versions also recognises eg TB_GITHUB_REPO=tb_alt which will use an alternative name for your GitHub repository. This is strictly for testing and debugging purposes and its strongly recommended you don't use this unless you are sure of what you are doing.
+
+As mentioned under Debugging, tomboy\-ng recognises an environment variable  tomboy\-ng_debuglog to redirect its debug output to a file. eg
+
+set tomboy\-ng_debuglog=c:\\%userprofile%\\debug.txt
 
 .SH FURTHER HELP
 tomboy\-ng comes bundled with several read only notes that provide help on topics such as keyboard short cuts, setting up a sync system, using the built in calculator and keeping your notes safe.
 
-The project's wiki also has extensive information available.  https://github.com/tomboy\-notes/tomboy\-ng/wiki
+The project's wiki also has extensive information available.  https://github.com/tomboy\-notes/tomboy\-ng/wiki for detailed information on using both file and github sync, spell checking, working with (and even without) the System Tray.
 
 .SH DEBUGGING
 tomboy\-ng generally does not write debug output unless something has gone wrong but it does accepts a couple of debug switches as noted above. They will cause detailed progress reports relating to their section of the application to be written to the console. However, Windows and Mac do not, for this purpose, have a console. But can be told to capture this log info to a file using another  command line switch or by setting an env variable that specifies a file name. Please ensure you have permission to write to the location specified.
@@ -142,14 +166,9 @@ https://github.com/tomboy\-notes/tomboy\-ng
 
 There you will find several wiki pages going into far more detail than here.
 
-You may also be interested in TomboyTools, an addition application that allows inport and export in a range of formats. This man pages was built using TomboyTools. https://github.com/davidbannon/TomboyTools
+You may also be interested in TomboyTools, an addition application that allows inport and export in a range of formats. This man pages was built from a tomboy\-ng note using TomboyTools. https://github.com/davidbannon/TomboyTools
 
 .SH BUGS
 Please send bug reports to the tomboy\-ng Github Issues system, see above.
-
-
-
-
-
 
 
