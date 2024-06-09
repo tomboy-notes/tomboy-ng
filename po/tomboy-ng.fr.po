@@ -48,6 +48,10 @@ msgctxt "resourcestr.rsalldone"
 msgid "All Done"
 msgstr "Terminé"
 
+#: resourcestr.rsallowleftclick
+msgid "If Wayland, allow leftclick in SysTray"
+msgstr ""
+
 #: resourcestr.rsallrestored
 msgctxt "resourcestr.rsallrestored"
 msgid "Notes and config files Restored, restart suggested."
@@ -76,6 +80,10 @@ msgstr "SVP utiliser Réglages -> Récup -> Récup des notes"
 msgctxt "resourcestr.rsbadnotesfound2"
 msgid "You should do so to ensure your notes are safe."
 msgstr "Faites-le pour garantir des notes bien sauvegardées."
+
+#: resourcestr.rsbypasswayland
+msgid "Bypass Wayland on Qt5/6"
+msgstr ""
 
 #: resourcestr.rscannotdelete
 msgctxt "resourcestr.rscannotdelete"
@@ -426,6 +434,10 @@ msgctxt "resourcestr.rsoverwritenote"
 msgid "Overwrite newer version of that note"
 msgstr "Écrase la note avec la nouvelle version"
 
+#: resourcestr.rsparticularsystray
+msgid "Force particular TrayIcon"
+msgstr ""
+
 #: resourcestr.rspressclose
 msgctxt "resourcestr.rspressclose"
 msgid "Press Close"
@@ -463,6 +475,10 @@ msgstr "Scan des fichiers distants"
 msgid "Exact matches for terms between \" \""
 msgstr "Correspondance exacte si placé entre \"\""
 
+#: resourcestr.rsselectcolors
+msgid "Select desired color set, see wiki"
+msgstr ""
+
 #: resourcestr.rssetthenotebooks
 #, fuzzy
 #| msgid "Set the notebooks this note is a member of"
@@ -491,7 +507,7 @@ msgid "created, do you want to copy it elsewhere ?"
 msgstr "créé, faire une autre copie ailleurs ?"
 
 #: resourcestr.rsstrictthemecolors
-msgid "Use only (Qt) theme colors for Editing Notes"
+msgid "Use only Qt theme colors for Editing Notes"
 msgstr ""
 
 #: resourcestr.rssyncclash

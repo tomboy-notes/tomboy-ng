@@ -109,12 +109,15 @@ begin
        debugln('   --import-note=PATH_to_NOTE    ' + rsHelpImportFile + '  also -n');
        debugln('   --title-fname                 ' + rsHelpTitleISFName);
        {$ifdef LCLgtk2}
-       debugln('   --useappind=yes|no            ' + 'Force particular TrayIcon');
+       debugln('   --useappind=yes|no            ' + rsParticularSysTray);
        {$endif}
        {$ifdef LINUX}
-       // {$if defined(LCLQT5) or defined(LCLQt6)}
+       debugln('   --allow-leftclick             ' + rsAllowLeftClick);
+       {$endif}
+       {$if defined(LCLQT5) or defined(LCLQt6)}
        debugln('   --strict-theme                ' + rsStrictThemeColors);
-       debugln('   --allow-leftclick             ' + 'Wayland Issue, allow left click in SysTray');
+       debugln('   -platform xcb                 ' + rsBypassWayland);
+       debugln('   -platformtheme gnome|gtk2|qt5ct|qt6ct  ' + rsSelectColors);
        {$endif}
        result := true;
     end;

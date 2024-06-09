@@ -113,24 +113,28 @@ RESOURCESTRING
   // CLI -- these are command line help lines that appear when user adds --help
   {$ifdef DARWIN}
     rsMacHelp1 = 'eg   open tomboy-ng.app';
-    rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|.note';
+    rsMacHelp2 = 'eg   open tomboy-ng.app --args -o Note.txt|note';
     {$endif}
-    rsHelpDelay = 'Delay startup 2 sec to allow OS to settle';
-    rsHelpLang = 'Force Language, en, es, uk, fr, nl';
-    rsHelpDebug = 'Direct debug output to SOME.LOG.';
-    rsHelpHelp = 'Show this help message and exit.';
-    rsHelpVersion = 'Print version and exit';
-    //rsHelpRedHat = 'Deprecated';                                // No longer important,
-    rsHelpNoSplash = 'Do not show small status/splash window';
-    rsHelpDebugSync = 'Show debug messages during Sync';
+    rsHelpDelay =      'Delay startup 2 sec to allow OS to settle';
+    rsHelpLang =       'Force Language, en, es, uk, fr, nl';
+    rsHelpDebug =      'Direct debug output to SOME.LOG file';
+    rsHelpHelp =       'Show this help message and exit';
+    rsHelpVersion =    'Print version and exit';
+    rsHelpNoSplash =   'Do not show small status/splash window';
+    rsHelpDebugSync =  'Show debug messages during Sync';
     rsHelpDebugIndex = 'Show debug msgs while indexing notes';
     rsHelpDebugSpell = 'Show debug messages while spell setup';
-    rsHelpConfig = 'Create or use an alternative config';
+    rsHelpConfig =     'Create or use an alternative config';
     rsHelpSingleNote = 'Open indicated note, switch is optional';
-    rsHelpImportFile = 'Import file into Note Directory';
-    rsHelpSaveExit = 'After import single note, save & exit';
-    rsHelpTitleIsFName = 'Use Filename as title for import txt & md';
-    rsStrictThemeColors = 'Use only (Qt) theme colors for Editing Notes';
+    rsHelpImportFile =    'Import file into Note Directory';
+    rsHelpSaveExit =      'After import single note, save & exit';
+    rsHelpTitleIsFName =  'Use Filename as title for import txt & md';
+    rsStrictThemeColors = 'Use only Qt theme colors for Editing Notes';     // Qt5/6 only
+    rsBypassWayland =     'Bypass Wayland on Qt5/6';                            // Qt5/6 only
+    rsSelectColors =      'Select desired color set, see wiki';                  // Qt5/6 only
+    rsAllowLeftClick =    'If Wayland, allow leftclick in SysTray';            // Linux only
+    rsParticularSysTray = 'Force particular TrayIcon';                      // gtk2 only
+
 
     // Mainunit
 
