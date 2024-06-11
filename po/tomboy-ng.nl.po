@@ -221,8 +221,10 @@ msgid "Create or use an alternative config"
 msgstr "Alternatieve configuratie aanmaken of gebruiken"
 
 #: resourcestr.rshelpdebug
+#, fuzzy
+#| msgid "Direct debug output to SOME.LOG."
 msgctxt "resourcestr.rshelpdebug"
-msgid "Direct debug output to SOME.LOG."
+msgid "Direct debug output to SOME.LOG file"
 msgstr "Foutopsporingsuitvoer vastleggen in SOME.LOG."
 
 #: resourcestr.rshelpdebugindex
@@ -246,8 +248,10 @@ msgid "Delay startup 2 sec to allow OS to settle"
 msgstr "Opstarten met 2 sec. vertragen i.v.m. opstart van systeemdiensten"
 
 #: resourcestr.rshelphelp
+#, fuzzy
+#| msgid "Show this help message and exit."
 msgctxt "resourcestr.rshelphelp"
-msgid "Show this help message and exit."
+msgid "Show this help message and exit"
 msgstr "Toon dit hulpbericht en sluit af."
 
 #: resourcestr.rshelpimportfile
@@ -649,27 +653,39 @@ msgid "Change existing sync connection ?"
 msgstr "Wilt u de bestaande synchronisatieverbinding aanpassen?"
 
 #: syncutils.rsclashes
-msgid "Clashes        "
+#, fuzzy
+#| msgid "Clashes        "
+msgid "Clashes"
 msgstr "Conflicten        "
 
 #: syncutils.rsdonothing
-msgid "Do Nothing     "
+#, fuzzy
+#| msgid "Do Nothing     "
+msgid "Do Nothing"
 msgstr "Niets doen     "
 
 #: syncutils.rsdownloads
-msgid "Downloads      "
+#, fuzzy
+#| msgid "Downloads      "
+msgid "Downloads"
 msgstr "Downloads      "
 
 #: syncutils.rsedituploads
-msgid "Edit Uploads   "
+#, fuzzy
+#| msgid "Edit Uploads   "
+msgid "Edit Uploads"
 msgstr "Uploads aanpassen   "
 
 #: syncutils.rslocaldeletes
-msgid "Local Deletes  "
+#, fuzzy
+#| msgid "Local Deletes  "
+msgid "Local Deletes"
 msgstr "Lokale prullenbak  "
 
 #: syncutils.rsnewuploads
-msgid "New Uploads    "
+#, fuzzy
+#| msgid "New Uploads    "
+msgid "New Uploads"
 msgstr "Nieuwe uploads    "
 
 #: syncutils.rsnextbitslow
@@ -684,16 +700,16 @@ msgstr "Geen synchronisatie benodigd. Maak meer notities :-)"
 msgid " notes were dealt with."
 msgstr " notities behandeld."
 
-#: syncutils.rsnotrecommend
-msgid "Generally not recommended."
-msgstr "Meestal niet aanbevolen."
-
 #: syncutils.rsremotedeletes
-msgid "Remote Deletes "
+#, fuzzy
+#| msgid "Remote Deletes "
+msgid "Remote Deletes"
 msgstr "Externe prullenbak"
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see console log) "
+#, fuzzy
+#| msgid "ERRORS (see console log) "
+msgid "ERRORS (see console log)"
 msgstr "FOUTMELDINGEN (zie terminaluitvoer) "
 
 #: teditboxform.buttmaintbmenu.caption
@@ -1683,7 +1699,9 @@ msgid "Backup files are made when you delete a note or the sync system"
 msgstr "Reservekopieën worden automatisch gemaakt zodra u een notitie verwijderd of als"
 
 #: tsett.label7.caption
-msgid "is about to overwrite one. "
+#, fuzzy
+#| msgid "is about to overwrite one. "
+msgid "is about to overwrite one."
 msgstr "de synchronisatie een oudere versie overschrijft. "
 
 #: tsett.label8.caption

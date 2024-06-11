@@ -381,7 +381,7 @@ begin
                 RefreshNotebooks();
             end else begin
                 MarkNoteReadOnly(DeletedList.Strings[Index]);
-                TheMainNoteLister.DeleteNote(DeletedList.Strings[Index]);       // dont call this, wont do Indexes
+                TheMainNoteLister.DeleteNote(DeletedList.Strings[Index]);       // do not call this, wont do Indexes
             end;
         end;
         for Index := 0 to DownList.Count -1 do begin                            // Downloaded notes

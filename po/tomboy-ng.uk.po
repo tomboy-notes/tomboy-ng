@@ -220,8 +220,10 @@ msgid "Create or use an alternative config"
 msgstr "Створити або використовувати конфіґ"
 
 #: resourcestr.rshelpdebug
+#, fuzzy
+#| msgid "Direct debug output to SOME.LOG."
 msgctxt "resourcestr.rshelpdebug"
-msgid "Direct debug output to SOME.LOG."
+msgid "Direct debug output to SOME.LOG file"
 msgstr "Пряме виведення зневадження у SOME.LOG."
 
 #: resourcestr.rshelpdebugindex
@@ -245,8 +247,10 @@ msgid "Delay startup 2 sec to allow OS to settle"
 msgstr "Затримати запуск на 2 сек., щоб дозволити ОС запуститися"
 
 #: resourcestr.rshelphelp
+#, fuzzy
+#| msgid "Show this help message and exit."
 msgctxt "resourcestr.rshelphelp"
-msgid "Show this help message and exit."
+msgid "Show this help message and exit"
 msgstr "Показати це повідомлення довідки і вийти."
 
 #: resourcestr.rshelpimportfile
@@ -648,27 +652,39 @@ msgid "Change existing sync connection ?"
 msgstr "Змінити наявне зʼєднання синхронізації ?"
 
 #: syncutils.rsclashes
-msgid "Clashes        "
+#, fuzzy
+#| msgid "Clashes        "
+msgid "Clashes"
 msgstr "Зіткнення      "
 
 #: syncutils.rsdonothing
-msgid "Do Nothing     "
+#, fuzzy
+#| msgid "Do Nothing     "
+msgid "Do Nothing"
 msgstr "Нічого не робити"
 
 #: syncutils.rsdownloads
-msgid "Downloads      "
+#, fuzzy
+#| msgid "Downloads      "
+msgid "Downloads"
 msgstr "Завантаження   "
 
 #: syncutils.rsedituploads
-msgid "Edit Uploads   "
+#, fuzzy
+#| msgid "Edit Uploads   "
+msgid "Edit Uploads"
 msgstr "Змінити вивантаження"
 
 #: syncutils.rslocaldeletes
-msgid "Local Deletes  "
+#, fuzzy
+#| msgid "Local Deletes  "
+msgid "Local Deletes"
 msgstr "Локальні видалення"
 
 #: syncutils.rsnewuploads
-msgid "New Uploads    "
+#, fuzzy
+#| msgid "New Uploads    "
+msgid "New Uploads"
 msgstr "Нові вивантаження"
 
 #: syncutils.rsnextbitslow
@@ -683,16 +699,16 @@ msgstr "Нема нотаток для синхронізації. Пишіть 
 msgid " notes were dealt with."
 msgstr " нотаток опрацьовано."
 
-#: syncutils.rsnotrecommend
-msgid "Generally not recommended."
-msgstr "Загалом не рекомендується."
-
 #: syncutils.rsremotedeletes
-msgid "Remote Deletes "
+#, fuzzy
+#| msgid "Remote Deletes "
+msgid "Remote Deletes"
 msgstr "Віддалені видалення "
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see console log) "
+#, fuzzy
+#| msgid "ERRORS (see console log) "
+msgid "ERRORS (see console log)"
 msgstr "ПОМИЛКИ (дивіться журнал консолі)"
 
 #: teditboxform.buttmaintbmenu.caption
@@ -1682,7 +1698,9 @@ msgid "Backup files are made when you delete a note or the sync system"
 msgstr "Файли резервних копій створюються коли Ви видаляєте нотатку або синхронізуєте систему"
 
 #: tsett.label7.caption
-msgid "is about to overwrite one. "
+#, fuzzy
+#| msgid "is about to overwrite one. "
+msgid "is about to overwrite one."
 msgstr "це перезапише одну."
 
 #: tsett.label8.caption

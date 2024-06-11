@@ -24,10 +24,10 @@ object Sett: TSett
     Height = 488
     Top = 0
     Width = 726
-    ActivePage = TabSync
+    ActivePage = TabRecover
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 4
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
@@ -879,9 +879,9 @@ object Sett: TSett
           Left = 31
           Height = 19
           Top = 74
-          Width = 167
+          Width = 164
           BorderSpacing.Top = 10
-          Caption = 'is about to overwrite one. '
+          Caption = 'is about to overwrite one.'
         end
         object Label8: TLabel
           AnchorSideLeft.Control = Label11

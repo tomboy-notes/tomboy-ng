@@ -23,7 +23,7 @@ type
     private
 
     public
-        BackList : TStringList; // dont free, belongs to EditBox
+        BackList : TStringList; // do not free, belongs to EditBox
         BackTitle : PString;
     end;
 

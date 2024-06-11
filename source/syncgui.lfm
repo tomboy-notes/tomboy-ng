@@ -146,9 +146,11 @@ object FormSync: TFormSync
       Width = 304
       Align = alRight
       Anchors = [akTop, akLeft, akRight, akBottom]
+      Font.Pitch = fpFixed
       Lines.Strings = (
         'Memo1'
       )
+      ParentFont = False
       TabOrder = 0
     end
     object Splitter3: TSplitter

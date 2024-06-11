@@ -204,7 +204,7 @@ msgstr ""
 
 #: resourcestr.rshelpdebug
 msgctxt "resourcestr.rshelpdebug"
-msgid "Direct debug output to SOME.LOG."
+msgid "Direct debug output to SOME.LOG file"
 msgstr ""
 
 #: resourcestr.rshelpdebugindex
@@ -229,7 +229,7 @@ msgstr ""
 
 #: resourcestr.rshelphelp
 msgctxt "resourcestr.rshelphelp"
-msgid "Show this help message and exit."
+msgid "Show this help message and exit"
 msgstr ""
 
 #: resourcestr.rshelpimportfile
@@ -623,27 +623,27 @@ msgid "Change existing sync connection ?"
 msgstr ""
 
 #: syncutils.rsclashes
-msgid "Clashes        "
+msgid "Clashes"
 msgstr ""
 
 #: syncutils.rsdonothing
-msgid "Do Nothing     "
+msgid "Do Nothing"
 msgstr ""
 
 #: syncutils.rsdownloads
-msgid "Downloads      "
+msgid "Downloads"
 msgstr ""
 
 #: syncutils.rsedituploads
-msgid "Edit Uploads   "
+msgid "Edit Uploads"
 msgstr ""
 
 #: syncutils.rslocaldeletes
-msgid "Local Deletes  "
+msgid "Local Deletes"
 msgstr ""
 
 #: syncutils.rsnewuploads
-msgid "New Uploads    "
+msgid "New Uploads"
 msgstr ""
 
 #: syncutils.rsnextbitslow
@@ -658,16 +658,12 @@ msgstr ""
 msgid " notes were dealt with."
 msgstr ""
 
-#: syncutils.rsnotrecommend
-msgid "Generally not recommended."
-msgstr ""
-
 #: syncutils.rsremotedeletes
-msgid "Remote Deletes "
+msgid "Remote Deletes"
 msgstr ""
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see console log) "
+msgid "ERRORS (see console log)"
 msgstr ""
 
 #: teditboxform.buttmaintbmenu.caption
@@ -1630,7 +1626,7 @@ msgid "Backup files are made when you delete a note or the sync system"
 msgstr ""
 
 #: tsett.label7.caption
-msgid "is about to overwrite one. "
+msgid "is about to overwrite one."
 msgstr ""
 
 #: tsett.label8.caption

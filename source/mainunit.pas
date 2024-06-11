@@ -497,11 +497,11 @@ begin
             if CheckPlugIn(False)  then begin      // Ah, its there but not enabled
                 debugln('SysTray Plugin for Gnome detected but not enabled');
                 // Offer to enable it for user ??
-                if IDYES = Application.MessageBox('Enable gnome-shell-extension-appindictor ?',
+                if IDYES = Application.MessageBox('tomboy-ng : Enable gnome-shell-extension-appindictor ?   .',
     			        'The SysTray extension is installed but not enabled',
        			        MB_ICONQUESTION + MB_YESNO) then
                         Result := EnablePlugIn();
-                if Result then showmessage('Enabled, please restart tomboy-ng')
+                if Result then showmessage( 'Enabled, please restart tomboy-ng')
                 else showmessage('Sorry, failed to enable plugin');
             end else debugln('SysTray Plugin for Gnome not present');
 end;
@@ -630,6 +630,7 @@ begin
         until TheMainNoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
     if ButtSysTrayHelp.Visible then debugln('You cannot see me');
+    if ButtSysTrayHelp.Visible then debugln('On Gnome, install gnome-shell-extension-appindicator, logout, logon and start tomboy-ng again, "yes" to prompt.');
 
 end;
 

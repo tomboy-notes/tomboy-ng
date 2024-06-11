@@ -191,17 +191,32 @@ end;
 function TFormSync.DisplaySync(): string;
 var
     UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
+    procedure Publish(Msg : string; Numb : integer);
+    begin
+        while length(Msg) < 15 do Msg := Msg + ' ';
+        Memo1.Append(Msg + inttostr(UpNew));
+    end;
+
 begin
+    Memo1.Font.Name := Sett.FixedFont;
     ASync.ReportMetaData(UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors);
-    Memo1.Append(rsNewUploads + inttostr(UpNew));
-    Memo1.Append(rsEditUploads + inttostr(UpEdit));
-    Memo1.Append(rsDownloads + inttostr(Down));
-    Memo1.Append(rsLocalDeletes + inttostr(DelLoc));
-    Memo1.Append(rsRemoteDeletes + inttostr(DelRem));
-    Memo1.Append(rsClashes + inttostr(Clash));
-    Memo1.Append(rsDoNothing + inttostr(DoNothing));
+    Publish(rsNewUploads, UpNew);
+    Publish(rsEditUploads, UpEdit);
+    Publish(rsDownloads, Down);
+    Publish(rsLocalDeletes, DelLoc);
+    Publish(rsRemoteDeletes, DelRem);
+    Publish(rsClashes, Clash);
+    Publish(rsDoNothing, DoNothing);
+//    Memo1.Append(rsNewUploads + inttostr(UpNew));
+//    Memo1.Append(rsEditUploads + inttostr(UpEdit));
+//    Memo1.Append(rsDownloads + inttostr(Down));
+//    Memo1.Append(rsLocalDeletes + inttostr(DelLoc));
+//    Memo1.Append(rsRemoteDeletes + inttostr(DelRem));
+//    Memo1.Append(rsClashes + inttostr(Clash));
+//    Memo1.Append(rsDoNothing + inttostr(DoNothing));
     if Errors > 0 then
-        Memo1.Append(rsSyncERRORS + inttostr(Errors));
+        Publish(rsSyncERRORS, Errors);
+//        Memo1.Append(rsSyncERRORS + inttostr(Errors));
     result := 'Uploads=' + inttostr(UpNew+UpEdit) + ' downloads=' + inttostr(Down) + ' deletes=' + inttostr(DelLoc + DelRem);
     // debugln('Display Sync called, DoNothings is ' + inttostr(DoNothing));
 end;

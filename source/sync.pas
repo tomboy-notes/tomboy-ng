@@ -1107,7 +1107,7 @@ begin
             Result :=  SyncBadError;
         end;
     end  else
-        debugln('TSync.TestConnection() : dont have SyncReady at end of method, ' + SyncAvailableString(Result));
+        debugln('TSync.TestConnection() : do not have SyncReady at end of method, ' + SyncAvailableString(Result));
 end;
 
 function TSync.LoadRepoData(ForceLCD : boolean): boolean;

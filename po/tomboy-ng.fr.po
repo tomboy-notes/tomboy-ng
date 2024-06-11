@@ -221,8 +221,10 @@ msgid "Create or use an alternative config"
 msgstr "Créer ou utiliser une config alternative"
 
 #: resourcestr.rshelpdebug
+#, fuzzy
+#| msgid "Direct debug output to SOME.LOG."
 msgctxt "resourcestr.rshelpdebug"
-msgid "Direct debug output to SOME.LOG."
+msgid "Direct debug output to SOME.LOG file"
 msgstr "Debug direct dans SOME.LOG."
 
 #: resourcestr.rshelpdebugindex
@@ -246,8 +248,10 @@ msgid "Delay startup 2 sec to allow OS to settle"
 msgstr "2 sec. de pause pour que l'OS s'installe"
 
 #: resourcestr.rshelphelp
+#, fuzzy
+#| msgid "Show this help message and exit."
 msgctxt "resourcestr.rshelphelp"
-msgid "Show this help message and exit."
+msgid "Show this help message and exit"
 msgstr "Afficher ce message d'aide et quitter."
 
 #: resourcestr.rshelpimportfile
@@ -657,27 +661,39 @@ msgid "Change existing sync connection ?"
 msgstr "Changer la connexion synchro existante ?"
 
 #: syncutils.rsclashes
-msgid "Clashes        "
+#, fuzzy
+#| msgid "Clashes        "
+msgid "Clashes"
 msgstr "Nbre de collisions = "
 
 #: syncutils.rsdonothing
-msgid "Do Nothing     "
+#, fuzzy
+#| msgid "Do Nothing     "
+msgid "Do Nothing"
 msgstr "Nbre de notes sans action = "
 
 #: syncutils.rsdownloads
-msgid "Downloads      "
+#, fuzzy
+#| msgid "Downloads      "
+msgid "Downloads"
 msgstr "Nbre de downloads = "
 
 #: syncutils.rsedituploads
-msgid "Edit Uploads   "
+#, fuzzy
+#| msgid "Edit Uploads   "
+msgid "Edit Uploads"
 msgstr "Nbre d'uploads modifiés = "
 
 #: syncutils.rslocaldeletes
-msgid "Local Deletes  "
+#, fuzzy
+#| msgid "Local Deletes  "
+msgid "Local Deletes"
 msgstr "Nbre de suppressions locales = "
 
 #: syncutils.rsnewuploads
-msgid "New Uploads    "
+#, fuzzy
+#| msgid "New Uploads    "
+msgid "New Uploads"
 msgstr "Nbre de nouveaux uploads = "
 
 #: syncutils.rsnextbitslow
@@ -692,18 +708,16 @@ msgstr "Pas de synchro requise pour l'instant."
 msgid " notes were dealt with."
 msgstr " notes ont été traitées."
 
-#: syncutils.rsnotrecommend
-msgid "Generally not recommended."
-msgstr "Plutôt déconseillé."
-
 #: syncutils.rsremotedeletes
-msgid "Remote Deletes "
+#, fuzzy
+#| msgid "Remote Deletes "
+msgid "Remote Deletes"
 msgstr "Nbre d'effacements distants = "
 
 #: syncutils.rssyncerrors
 #, fuzzy
 #| msgid "ERRORS (see consol log) "
-msgid "ERRORS (see console log) "
+msgid "ERRORS (see console log)"
 msgstr "Nbre d'erreurs (cf. log console) = "
 
 #: teditboxform.buttmaintbmenu.caption
@@ -1713,7 +1727,9 @@ msgid "Backup files are made when you delete a note or the sync system"
 msgstr "Une sauvegarde est réalisé quand une note est effacée"
 
 #: tsett.label7.caption
-msgid "is about to overwrite one. "
+#, fuzzy
+#| msgid "is about to overwrite one. "
+msgid "is about to overwrite one."
 msgstr "manuellement ou par une synchronisation."
 
 #: tsett.label8.caption

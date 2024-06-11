@@ -148,19 +148,19 @@ function SyncTransportName(TheType : TSyncTransport) : string;
 function SyncAvailableString(Msg : TSyncAvailable) : string;
 
 RESOURCESTRING
-  rsNewUploads = 'New Uploads    ';
-  rsEditUploads = 'Edit Uploads   ';
-  rsDownloads = 'Downloads      ';
-  rsLocalDeletes = 'Local Deletes  ';
-  rsRemoteDeletes = 'Remote Deletes ';
-  rsClashes = 'Clashes        ';
-  rsDoNothing = 'Do Nothing     ';
-  rsSyncERRORS = 'ERRORS (see console log) ';
+  rsNewUploads = 'New Uploads';
+  rsEditUploads = 'Edit Uploads';
+  rsDownloads = 'Downloads';
+  rsLocalDeletes = 'Local Deletes';
+  rsRemoteDeletes = 'Remote Deletes';
+  rsClashes = 'Clashes';
+  rsDoNothing = 'Do Nothing';
+  rsSyncERRORS = 'ERRORS (see console log)';
 
   rsNoNotesNeededSync = 'No notes needed syncing. You need to write more.';
   rsNotesWereDealt = ' notes were dealt with.';
   rsChangeExistingSync = 'Change existing sync connection ?';
-  rsNotRecommend = 'Generally not recommended.';
+//  rsNotRecommend = 'Generally not recommended.';                  // not used ?
   rsNextBitSlow = 'Next bit can be a bit slow, please wait';
 
 
@@ -184,7 +184,7 @@ begin
     case Msg of
         SyncNotYet : Result := 'SyncNotYet : Initial state';
         SyncReady : Result := 'SyncReady : We are ready to sync, looks good to go';
-        SyncNoLocal : Result := 'SyncNoLocal : We dont have a local manifest, only an error if config thinks there should be one';
+        SyncNoLocal : Result := 'SyncNoLocal : We do not have a local manifest, only an error if config thinks there should be one';
         SyncNoRemoteMan : Result := 'SyncNoRemoteMan : No remote manifest, an uninitialized repo perhaps ?';
         SyncNoRemoteRepo : Result := 'SyncNoRemoteRepo : Filesystem is OK but does not look like a repo, maybe no serverID ?';
         SyncBadRemote : Result := 'SyncBadRemote : Has either Manifest or "0" dir but not both.';

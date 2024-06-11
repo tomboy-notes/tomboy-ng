@@ -225,8 +225,10 @@ msgid "Create or use an alternative config"
 msgstr "Crear o usar una configuración alternativa"
 
 #: resourcestr.rshelpdebug
+#, fuzzy
+#| msgid "Direct debug output to SOME.LOG."
 msgctxt "resourcestr.rshelpdebug"
-msgid "Direct debug output to SOME.LOG."
+msgid "Direct debug output to SOME.LOG file"
 msgstr "Enviar salida de depuración a SOME.LOG."
 
 #: resourcestr.rshelpdebugindex
@@ -250,8 +252,10 @@ msgid "Delay startup 2 sec to allow OS to settle"
 msgstr "Retrasar el arranque 2 segs para dejar asentarse el SO"
 
 #: resourcestr.rshelphelp
+#, fuzzy
+#| msgid "Show this help message and exit."
 msgctxt "resourcestr.rshelphelp"
-msgid "Show this help message and exit."
+msgid "Show this help message and exit"
 msgstr "Mostrar mensaje de ayuda y salir."
 
 #: resourcestr.rshelpimportfile
@@ -657,30 +661,42 @@ msgid "Change existing sync connection ?"
 msgstr "¿Cambiar conexión de sincronización actual?"
 
 #: syncutils.rsclashes
-msgid "Clashes        "
+#, fuzzy
+#| msgid "Clashes        "
+msgid "Clashes"
 msgstr "Conflictos"
 
 #: syncutils.rsdonothing
-msgid "Do Nothing     "
+#, fuzzy
+#| msgid "Do Nothing     "
+msgid "Do Nothing"
 msgstr "No hacer nada"
 
 #: syncutils.rsdownloads
-msgid "Downloads      "
+#, fuzzy
+#| msgid "Downloads      "
+msgid "Downloads"
 msgstr "Descargas"
 
 # ¿Revisar las notas, la lista, cual?
 #: syncutils.rsedituploads
-msgid "Edit Uploads   "
+#, fuzzy
+#| msgid "Edit Uploads   "
+msgid "Edit Uploads"
 msgstr "Revisar notas subidas"
 
 # ¿Revisar?
 #: syncutils.rslocaldeletes
-msgid "Local Deletes  "
+#, fuzzy
+#| msgid "Local Deletes  "
+msgid "Local Deletes"
 msgstr "Notas locales borradas "
 
 # Revisar
 #: syncutils.rsnewuploads
-msgid "New Uploads    "
+#, fuzzy
+#| msgid "New Uploads    "
+msgid "New Uploads"
 msgstr "Nuevas notas para subir"
 
 #: syncutils.rsnextbitslow
@@ -697,18 +713,17 @@ msgstr "No hay notas sin sincronizar. Tiene que escribir otras."
 msgid " notes were dealt with."
 msgstr " notas fueron procesadas."
 
-# ¿Y el sujeto?
-#: syncutils.rsnotrecommend
-msgid "Generally not recommended."
-msgstr "En general, no aconsejable"
-
 # ¿Revisar?
 #: syncutils.rsremotedeletes
-msgid "Remote Deletes "
+#, fuzzy
+#| msgid "Remote Deletes "
+msgid "Remote Deletes"
 msgstr "Notas remotas borradas "
 
 #: syncutils.rssyncerrors
-msgid "ERRORS (see console log) "
+#, fuzzy
+#| msgid "ERRORS (see console log) "
+msgid "ERRORS (see console log)"
 msgstr "ERRORES: vea registro en el terminal"
 
 #: teditboxform.buttmaintbmenu.caption
@@ -1694,7 +1709,9 @@ msgid "Backup files are made when you delete a note or the sync system"
 msgstr "Se crean copias de seguridad cuando se borra una nota o el sistema de sincronización"
 
 #: tsett.label7.caption
-msgid "is about to overwrite one. "
+#, fuzzy
+#| msgid "is about to overwrite one. "
+msgid "is about to overwrite one."
 msgstr "está a punto de sobreescribir una."
 
 #: tsett.label8.caption

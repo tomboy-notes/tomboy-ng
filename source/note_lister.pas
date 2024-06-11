@@ -1595,7 +1595,7 @@ end;
 
 function TNoteLister.NewSearch(STermList : TstringList; NoteBook: string): integer;
 var
-    NBStrL : TStringList = nil;        // gets set to a pre-existing list, dont create or free !
+    NBStrL : TStringList = nil;        // gets set to a pre-existing list, do not create or free !
     //T1, T2, T3, T4, T5 : qword;
     // St : string;
 
