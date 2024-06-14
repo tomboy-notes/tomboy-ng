@@ -32,7 +32,7 @@
         <Item8 Value="LabelFindInfo"/>
         <Item9 Value="PanelBackLinks"/>
       </ExcludedIdentifiers>
-      <ExcludedOriginals Count="75">
+      <ExcludedOriginals Count="76">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>
@@ -108,6 +108,7 @@
         <Item73 Value="label1"/>
         <Item74 Value="LabelFindInfo"/>
         <Item75 Value="PanelBackLinks"/>
+        <Item76 Value="EditFind"/>
       </ExcludedOriginals>
     </i18n>
     <BuildModes Count="23">

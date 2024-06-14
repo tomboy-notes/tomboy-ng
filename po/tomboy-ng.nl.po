@@ -293,6 +293,16 @@ msgstr "Toon de versie en sluit af"
 msgid "2, 4, 6 or 8 Hex Characters Required"
 msgstr ""
 
+#: resourcestr.rsinsertdirlink
+msgctxt "resourcestr.rsinsertdirlink"
+msgid "Insert Directory Link"
+msgstr ""
+
+#: resourcestr.rsinsertfilelink
+msgctxt "resourcestr.rsinsertfilelink"
+msgid "Insert File Link"
+msgstr ""
+
 #: resourcestr.rslastchange
 msgid "Last Change"
 msgstr "Recentste wijziging"
@@ -717,10 +727,6 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr "Menu"
 
-#: teditboxform.editfind.text
-msgid "EditFind"
-msgstr "EditFind"
-
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr "Alleen-lezen"
@@ -826,10 +832,6 @@ msgstr "Notitie doorzoeken"
 msgid "Index"
 msgstr "Index"
 
-#: teditboxform.menuiteminsertdirlink.caption
-msgid "Insert Directory Link"
-msgstr ""
-
 #: teditboxform.menuiteminsertfilelink.caption
 msgctxt "teditboxform.menuiteminsertfilelink.caption"
 msgid "Insert File Link"
@@ -847,10 +849,6 @@ msgstr "Afdrukken"
 msgid "Select All"
 msgstr "Alles selecteren"
 
-#: teditboxform.menuitemselectlink.caption
-msgid "Select Link"
-msgstr ""
-
 #: teditboxform.menuitemsettings.caption
 msgctxt "teditboxform.menuitemsettings.caption"
 msgid "Settings"
@@ -866,15 +864,6 @@ msgstr "Synchroniseren"
 
 #: teditboxform.menuitemtoolsbacklinks.caption
 msgid "Show Back Links"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertdirlink.caption
-msgid "Insert Dir Link"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertfilelink.caption
-msgctxt "teditboxform.menuitemtoolsinsertfilelink.caption"
-msgid "Insert File Link"
 msgstr ""
 
 #: teditboxform.menuitemtoolslinks.caption
@@ -1436,7 +1425,9 @@ msgid "Options"
 msgstr "Opties"
 
 #: tsearchform.caption
-msgid "tomboy-ng_Search"
+#, fuzzy
+#| msgid "tomboy-ng_Search"
+msgid "tomboy-ng Search"
 msgstr "tomboy-ng_Zoeken"
 
 #: tsearchform.listboxnotebooks.hint

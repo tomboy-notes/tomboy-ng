@@ -1527,17 +1527,18 @@ begin
     DateAllIndex.sort(@SortOnDate);
 end;
 
+{$define PROFILEINDEX}
+
 { This should ret the number of items, not the zero based index of the last item.
 So, if we do '0', one pass, it should ret 1
 If the list is empty, ret 0;
-
 }
 function TNoteLister.ClearSearch(): integer;
 var
     i : integer;
-    //T1, T2, T3, T4, T5, T6 : qword;
+    {$ifdef PROFILEINDEX} T1, T2, T3, T4, T5, T6 : qword; {$endif}
 begin
-    //T1 := GetTickCount64();
+    {$ifdef PROFILEINDEX}T1 := GetTickCount64();{$endif}
     //DumpNoteNoteList('Called from ClearSearch');
     result := 0;
     if TitleSearchIndex = nil then TitleSearchIndex := TSortList.Create
@@ -1551,15 +1552,15 @@ begin
             inc(Result);
         end;
     end;
-    //T2 := GetTickCount64();
-    TitleSearchIndex.sort(@SortOnTitle);
-    //T3 := GetTickCount64();
+    {$ifdef PROFILEINDEX}T2 := GetTickCount64();{$endif}
+    TitleSearchIndex.sort(@SortOnTitle);                     // My 2017 Dell, 1mS, 2K notes
+    {$ifdef PROFILEINDEX}T3 := GetTickCount64();{$endif}
     DateSearchIndex.sort(@SortOnDate);           // Ends up with the most recent at the bottom of list
-    //T4 := GetTickCount64();
-{    debugln('TNoteLister.ClearSearch() build=' + inttostr(T2-T1)
+    {$ifdef PROFILEINDEX}T4 := GetTickCount64();{$endif}     // My 2017 Dell, < 1mS, 2K notes
+    {$ifdef PROFILEINDEX}debugln('TNoteLister.ClearSearch() build=' + inttostr(T2-T1)
                 + 'mS Tsort=' + inttostr(T3-T2) + 'mS DSort=' + inttostr(T4-T3) );
     debugln('Top ' + ' ' + NoteList[TitleSearchIndex[0]]^.LastChange);
-    debugln('Bot ' + ' ' + NoteList[TitleSearchIndex[TitleSearchIndex.Count-1]]^.LastChange);  }
+    debugln('Bot ' + ' ' + NoteList[TitleSearchIndex[TitleSearchIndex.Count-1]]^.LastChange);  {$endif}
     // debugln('TNoteLister.ClearSearch() returning ' + inttostr(REsult) + ' and ' + inttostr(NoteList.Count));
 end;
 

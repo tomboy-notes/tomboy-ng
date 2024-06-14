@@ -292,6 +292,16 @@ msgstr "Показати версію і вийти"
 msgid "2, 4, 6 or 8 Hex Characters Required"
 msgstr ""
 
+#: resourcestr.rsinsertdirlink
+msgctxt "resourcestr.rsinsertdirlink"
+msgid "Insert Directory Link"
+msgstr ""
+
+#: resourcestr.rsinsertfilelink
+msgctxt "resourcestr.rsinsertfilelink"
+msgid "Insert File Link"
+msgstr ""
+
 #: resourcestr.rslastchange
 msgid "Last Change"
 msgstr "Востаннє змінено"
@@ -716,10 +726,6 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr "Меню"
 
-#: teditboxform.editfind.text
-msgid "EditFind"
-msgstr "ЗмінаПошуку"
-
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr "Лише для читання"
@@ -825,10 +831,6 @@ msgstr "Шукати в цій нотатці"
 msgid "Index"
 msgstr "Індекс"
 
-#: teditboxform.menuiteminsertdirlink.caption
-msgid "Insert Directory Link"
-msgstr ""
-
 #: teditboxform.menuiteminsertfilelink.caption
 msgctxt "teditboxform.menuiteminsertfilelink.caption"
 msgid "Insert File Link"
@@ -846,10 +848,6 @@ msgstr "Друкувати"
 msgid "Select All"
 msgstr "Вибрати все"
 
-#: teditboxform.menuitemselectlink.caption
-msgid "Select Link"
-msgstr ""
-
 #: teditboxform.menuitemsettings.caption
 msgctxt "teditboxform.menuitemsettings.caption"
 msgid "Settings"
@@ -865,15 +863,6 @@ msgstr "Синхронізувати"
 
 #: teditboxform.menuitemtoolsbacklinks.caption
 msgid "Show Back Links"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertdirlink.caption
-msgid "Insert Dir Link"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertfilelink.caption
-msgctxt "teditboxform.menuitemtoolsinsertfilelink.caption"
-msgid "Insert File Link"
 msgstr ""
 
 #: teditboxform.menuitemtoolslinks.caption
@@ -1435,7 +1424,9 @@ msgid "Options"
 msgstr "Параметри"
 
 #: tsearchform.caption
-msgid "tomboy-ng_Search"
+#, fuzzy
+#| msgid "tomboy-ng_Search"
+msgid "tomboy-ng Search"
 msgstr "tomboy-ng_Пошук"
 
 #: tsearchform.listboxnotebooks.hint

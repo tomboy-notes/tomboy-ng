@@ -172,6 +172,8 @@ RESOURCESTRING
   rsFindNavLeftHintMac = 'Backward Find : Shift-Command-G';
   rsNoOtherNotes = 'No other notes link to this one';
   rsNotesLinked = 'Notes that link to this one';
+  rsInsertDirLink = 'Insert Directory Link';
+  rsInsertFileLink = 'Insert File Link';
 
   // github sync - I would like to use some of these in other syncs too.
 

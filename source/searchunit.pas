@@ -1254,7 +1254,7 @@ begin
     LVSortMode := smRecentUp;           // reflects initial state of ListViewNotes.
       HelpList := Nil;
     //Tick := GetTickCount64();
-    Caption := 'tomboy-ng Search';
+    // Caption := 'tomboy-ng Search';
     TheMainNoteLister := nil;           // Thats the one in the Note_Lister unit !
     if (SingleNoteFileName <> '') then exit;
 

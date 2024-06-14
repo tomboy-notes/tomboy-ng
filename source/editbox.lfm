@@ -1,7 +1,7 @@
 object EditBoxForm: TEditBoxForm
-  Left = 536
+  Left = 921
   Height = 505
-  Top = 518
+  Top = 516
   Width = 784
   Caption = 'EditBoxForm'
   ClientHeight = 505
@@ -1364,11 +1364,9 @@ object EditBoxForm: TEditBoxForm
     object MenuItemToolsLinks: TMenuItem
       Caption = 'Links'
       object MenuItemToolsInsertFileLink: TMenuItem
-        Caption = 'Insert File Link'
         OnClick = MenuItemToolsLinksClick
       end
       object MenuItemToolsInsertDirLink: TMenuItem
-        Caption = 'Insert Dir Link'
         OnClick = MenuItemToolsLinksClick
       end
       object MenuItemToolsBackLinks: TMenuItem
@@ -1471,12 +1469,10 @@ object EditBoxForm: TEditBoxForm
       OnClick = MenuItemFileLinkClick
     end
     object MenuItemInsertDirLink: TMenuItem
-      Caption = 'Insert Directory Link'
       ShortCut = 32836
       OnClick = MenuItemFileLinkClick
     end
     object MenuItemSelectLink: TMenuItem
-      Caption = 'Select Link'
       OnClick = MenuItemFileLinkClick
     end
   end

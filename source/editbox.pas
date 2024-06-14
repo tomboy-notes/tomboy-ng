@@ -2203,6 +2203,11 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
+    MenuItemInsertDirLink.Caption := rsInsertDirLink;           // This to stop duplicates in .po files
+    MenuItemInsertFileLink.Caption := rsInsertFileLink;
+    MenuItemToolsInsertDirLink.Caption := rsInsertDirLink;
+    MenuItemToolsInsertFileLink.Caption := rsInsertFileLink;
+
     PopulateSymbolMenu(PopupMenuSymbols);
     Use_Undoer := Sett.CheckUseUndo.checked;    // Note, user must close and repen if they change this setting
     if Use_Undoer then

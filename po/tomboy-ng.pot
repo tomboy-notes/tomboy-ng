@@ -269,6 +269,16 @@ msgstr ""
 msgid "2, 4, 6 or 8 Hex Characters Required"
 msgstr ""
 
+#: resourcestr.rsinsertdirlink
+msgctxt "resourcestr.rsinsertdirlink"
+msgid "Insert Directory Link"
+msgstr ""
+
+#: resourcestr.rsinsertfilelink
+msgctxt "resourcestr.rsinsertfilelink"
+msgid "Insert File Link"
+msgstr ""
+
 #: resourcestr.rslastchange
 msgid "Last Change"
 msgstr ""
@@ -671,10 +681,6 @@ msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr ""
 
-#: teditboxform.editfind.text
-msgid "EditFind"
-msgstr ""
-
 #: teditboxform.label2.caption
 msgid "Read Only"
 msgstr ""
@@ -776,10 +782,6 @@ msgstr ""
 msgid "Index"
 msgstr ""
 
-#: teditboxform.menuiteminsertdirlink.caption
-msgid "Insert Directory Link"
-msgstr ""
-
 #: teditboxform.menuiteminsertfilelink.caption
 msgctxt "teditboxform.menuiteminsertfilelink.caption"
 msgid "Insert File Link"
@@ -797,10 +799,6 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
-#: teditboxform.menuitemselectlink.caption
-msgid "Select Link"
-msgstr ""
-
 #: teditboxform.menuitemsettings.caption
 msgctxt "teditboxform.menuitemsettings.caption"
 msgid "Settings"
@@ -816,15 +814,6 @@ msgstr ""
 
 #: teditboxform.menuitemtoolsbacklinks.caption
 msgid "Show Back Links"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertdirlink.caption
-msgid "Insert Dir Link"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertfilelink.caption
-msgctxt "teditboxform.menuitemtoolsinsertfilelink.caption"
-msgid "Insert File Link"
 msgstr ""
 
 #: teditboxform.menuitemtoolslinks.caption
@@ -1373,7 +1362,7 @@ msgid "Options"
 msgstr ""
 
 #: tsearchform.caption
-msgid "tomboy-ng_Search"
+msgid "tomboy-ng Search"
 msgstr ""
 
 #: tsearchform.listboxnotebooks.hint

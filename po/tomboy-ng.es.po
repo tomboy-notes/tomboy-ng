@@ -3,17 +3,17 @@
 # Roy W. Reese <waterbearer54@gmx.com>, 2018-2024.
 msgid ""
 msgstr ""
-"Project-Id-Version: tomboy-ng v0.39\n"
+"Project-Id-Version: tomboy-ng v0.40\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-01-15 09:27+0100\n"
-"Last-Translator: RWR\n"
+"PO-Revision-Date: 2024-06-13 11:42+0200\n"
+"Last-Translator: Roy W. Reese <waterbearer54@gmx.com>\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -21,7 +21,7 @@ msgstr "Ninguna expresión encontrada para calcular"
 
 #: mainunit.rsabout
 msgid "tomboy-ng notes - cross platform, sync and manage notes."
-msgstr "Notas tomboy-ng - multiplataforma: sincronizar y gestionar notas."
+msgstr "Notas tomboy-ng - multiplataforma: sincronizar y gestionar notas"
 
 #: mainunit.rsaboutbdate
 msgid "Build date"
@@ -54,7 +54,7 @@ msgstr "Todo hecho"
 
 #: resourcestr.rsallowleftclick
 msgid "If Wayland, allow leftclick in SysTray"
-msgstr ""
+msgstr "Si Wayland, permita clic izquierdo en Bandeja del Sistema"
 
 #: resourcestr.rsallrestored
 msgctxt "resourcestr.rsallrestored"
@@ -86,7 +86,7 @@ msgstr "Debería hacerlo para salvaguardar sus notas."
 
 #: resourcestr.rsbypasswayland
 msgid "Bypass Wayland on Qt5/6"
-msgstr ""
+msgstr "Evite Wayland con Qt5/6."
 
 #: resourcestr.rscannotdelete
 msgctxt "resourcestr.rscannotdelete"
@@ -103,8 +103,6 @@ msgid "Change the name of this Notebook"
 msgstr "Cambiar el nombre de este cuaderno"
 
 #: resourcestr.rschangesync
-#, fuzzy
-#| msgid "Change Sync Repo"
 msgid "Change Sync Repository"
 msgstr "Cambiar repositorio de sincronización"
 
@@ -129,8 +127,6 @@ msgid "Copying orig to Backup directory failed"
 msgstr "Fallo en copiar al directorio de copias de seguridad"
 
 #: resourcestr.rscreatenewrepo
-#, fuzzy
-#| msgid "Create a new Repo ?"
 msgctxt "resourcestr.rscreatenewrepo"
 msgid "Create a new Repository ?"
 msgstr "¿Crear un repositorio nuevo?"
@@ -167,8 +163,6 @@ msgid "Enter the Hexadecimal value for a UTF8 character"
 msgstr "Escribe el valor hexidecimal para el carácter UTF8"
 
 #: resourcestr.rsenternewnotebook
-#, fuzzy
-#| msgid "Enter a new notebook name please"
 msgctxt "resourcestr.rsenternewnotebook"
 msgid "Enter a new Notebook name please"
 msgstr "Introduzca un nuevo nombre de cuaderno, por favor"
@@ -225,11 +219,9 @@ msgid "Create or use an alternative config"
 msgstr "Crear o usar una configuración alternativa"
 
 #: resourcestr.rshelpdebug
-#, fuzzy
-#| msgid "Direct debug output to SOME.LOG."
 msgctxt "resourcestr.rshelpdebug"
 msgid "Direct debug output to SOME.LOG file"
-msgstr "Enviar salida de depuración a SOME.LOG."
+msgstr "Enviar salida de depuración al archivo SOME.LOG"
 
 #: resourcestr.rshelpdebugindex
 msgctxt "resourcestr.rshelpdebugindex"
@@ -252,15 +244,11 @@ msgid "Delay startup 2 sec to allow OS to settle"
 msgstr "Retrasar el arranque 2 segs para dejar asentarse el SO"
 
 #: resourcestr.rshelphelp
-#, fuzzy
-#| msgid "Show this help message and exit."
 msgctxt "resourcestr.rshelphelp"
 msgid "Show this help message and exit"
-msgstr "Mostrar mensaje de ayuda y salir."
+msgstr "Mostrar el mensaje de ayuda y salir"
 
 #: resourcestr.rshelpimportfile
-#, fuzzy
-#| msgid "Import file into Note Repo"
 msgid "Import file into Note Directory"
 msgstr "Importar archivo al repositario"
 
@@ -296,6 +284,18 @@ msgstr "Imprimir versión y salir"
 #: resourcestr.rshexcharrequired
 msgid "2, 4, 6 or 8 Hex Characters Required"
 msgstr "Hacen falta 2, 4, 6 o 8 carácteres hexadecimal"
+
+#: resourcestr.rsinsertdirlink
+#, fuzzy
+msgctxt "resourcestr.rsinsertdirlink"
+msgid "Insert Directory Link"
+msgstr "Insertar enlace del directorio"
+
+#: resourcestr.rsinsertfilelink
+#, fuzzy
+msgctxt "resourcestr.rsinsertfilelink"
+msgid "Insert File Link"
+msgstr "Insertar enlace del archivo"
 
 #: resourcestr.rslastchange
 msgctxt "resourcestr.rslastchange"
@@ -378,11 +378,9 @@ msgid "Not Available"
 msgstr "No disponible"
 
 #: resourcestr.rsnotealreadyinrepo
-#, fuzzy
-#| msgid "Note already in Repo"
 msgctxt "resourcestr.rsnotealreadyinrepo"
 msgid "Note already in Repository"
-msgstr "Ya está en el repositorio"
+msgstr "La nota ya está en el repositorio"
 
 #: resourcestr.rsnotebookoptionctrl
 msgid "Ctrl click for Notebook Options"
@@ -441,7 +439,7 @@ msgstr "Sobrescribir la versión más nueva de la nota"
 
 #: resourcestr.rsparticularsystray
 msgid "Force particular TrayIcon"
-msgstr ""
+msgstr "Forzar un icono de bandeja concreto"
 
 #: resourcestr.rspressclose
 msgctxt "resourcestr.rspressclose"
@@ -483,14 +481,12 @@ msgstr "Búsqueda exacta para términos entre \" \""
 
 #: resourcestr.rsselectcolors
 msgid "Select desired color set, see wiki"
-msgstr ""
+msgstr "Seleccione el conjunto de colores. Vea wiki."
 
 #: resourcestr.rssetthenotebooks
-#, fuzzy
-#| msgid "Set the notebooks this note is a member of"
 msgctxt "resourcestr.rssetthenotebooks"
 msgid "Set the Notebooks this note is a member of"
-msgstr "Establezca los cuadernos a cuales pertenece esta nota"
+msgstr "Establezca los cuadernos de esta nota"
 
 #: resourcestr.rssetup
 msgctxt "resourcestr.rssetup"
@@ -513,8 +509,9 @@ msgid "created, do you want to copy it elsewhere ?"
 msgstr "creada. ¿Quiere copiarla a otro sitio?"
 
 #: resourcestr.rsstrictthemecolors
+#, fuzzy
 msgid "Use only Qt theme colors for Editing Notes"
-msgstr ""
+msgstr "Usar sólo el tema Qt para editar las notas"
 
 #: resourcestr.rssyncclash
 msgid "A Sync Clash has occurred"
@@ -547,8 +544,6 @@ msgid "Testing Credentials"
 msgstr "Probando credenciales"
 
 #: resourcestr.rstestingrepo
-#, fuzzy
-#| msgid "Testing Repo ...."
 msgctxt "resourcestr.rstestingrepo"
 msgid "Testing Repository ...."
 msgstr "Probando repositorio ..."
@@ -661,38 +656,27 @@ msgid "Change existing sync connection ?"
 msgstr "¿Cambiar conexión de sincronización actual?"
 
 #: syncutils.rsclashes
-#, fuzzy
-#| msgid "Clashes        "
 msgid "Clashes"
 msgstr "Conflictos"
 
 #: syncutils.rsdonothing
-#, fuzzy
-#| msgid "Do Nothing     "
 msgid "Do Nothing"
 msgstr "No hacer nada"
 
 #: syncutils.rsdownloads
-#, fuzzy
-#| msgid "Downloads      "
 msgid "Downloads"
 msgstr "Descargas"
 
-# ¿Revisar las notas, la lista, cual?
 #: syncutils.rsedituploads
-#, fuzzy
-#| msgid "Edit Uploads   "
 msgid "Edit Uploads"
-msgstr "Revisar notas subidas"
+msgstr "Editar notas subidas"
 
-# ¿Revisar?
+# Eliminadas o para eliminar
 #: syncutils.rslocaldeletes
-#, fuzzy
-#| msgid "Local Deletes  "
 msgid "Local Deletes"
-msgstr "Notas locales borradas "
+msgstr "Notas locales eliminadas"
 
-# Revisar
+# Para subir o Subidas
 #: syncutils.rsnewuploads
 #, fuzzy
 #| msgid "New Uploads    "
@@ -701,7 +685,7 @@ msgstr "Nuevas notas para subir"
 
 #: syncutils.rsnextbitslow
 msgid "Next bit can be a bit slow, please wait"
-msgstr "El próximo paso se puede tardar. Espere por favor."
+msgstr "El próximo paso se puede tardar, espere por favor"
 
 #: syncutils.rsnonotesneededsync
 msgid "No notes needed syncing. You need to write more."
@@ -715,26 +699,17 @@ msgstr " notas fueron procesadas."
 
 # ¿Revisar?
 #: syncutils.rsremotedeletes
-#, fuzzy
-#| msgid "Remote Deletes "
 msgid "Remote Deletes"
-msgstr "Notas remotas borradas "
+msgstr "Notas remotas borradas"
 
 #: syncutils.rssyncerrors
-#, fuzzy
-#| msgid "ERRORS (see console log) "
 msgid "ERRORS (see console log)"
-msgstr "ERRORES: vea registro en el terminal"
+msgstr "ERRORES (vea registro en el terminal)"
 
 #: teditboxform.buttmaintbmenu.caption
 msgctxt "teditboxform.buttmaintbmenu.caption"
 msgid "Menu"
 msgstr "Menú"
-
-# ¿Texto a traducir o un variabe?
-#: teditboxform.editfind.text
-msgid "EditFind"
-msgstr "RevisarBuscar"
 
 #: teditboxform.label2.caption
 msgid "Read Only"
@@ -742,7 +717,7 @@ msgstr "Sólo lectura"
 
 #: teditboxform.label3.caption
 msgid "This note has been changed by the Sync Process"
-msgstr "Esta nota ha sido cambiado por el proceso de sincronizar."
+msgstr "Esta nota ha sido cambiado por el proceso de sincronizar"
 
 #: teditboxform.label4.caption
 msgid "Please close it (and re-open if it was a download)"
@@ -837,14 +812,10 @@ msgstr "Buscar en esta nota"
 msgid "Index"
 msgstr "Indizar"
 
-#: teditboxform.menuiteminsertdirlink.caption
-msgid "Insert Directory Link"
-msgstr ""
-
 #: teditboxform.menuiteminsertfilelink.caption
 msgctxt "teditboxform.menuiteminsertfilelink.caption"
 msgid "Insert File Link"
-msgstr ""
+msgstr "Insertar enlace del archivo"
 
 #: teditboxform.menuitempaste.caption
 msgid "Paste"
@@ -857,10 +828,6 @@ msgstr "Imprimir"
 #: teditboxform.menuitemselectall.caption
 msgid "Select All"
 msgstr "Seleccionar todo"
-
-#: teditboxform.menuitemselectlink.caption
-msgid "Select Link"
-msgstr ""
 
 #: teditboxform.menuitemsettings.caption
 msgctxt "teditboxform.menuitemsettings.caption"
@@ -877,19 +844,9 @@ msgstr "Sincronizar"
 
 #: teditboxform.menuitemtoolsbacklinks.caption
 msgid "Show Back Links"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertdirlink.caption
-msgid "Insert Dir Link"
-msgstr ""
-
-#: teditboxform.menuitemtoolsinsertfilelink.caption
-msgctxt "teditboxform.menuitemtoolsinsertfilelink.caption"
-msgid "Insert File Link"
-msgstr ""
+msgstr "Muestra enlaces recibidos"
 
 #: teditboxform.menuitemtoolslinks.caption
-#, fuzzy
 msgctxt "teditboxform.menuitemtoolslinks.caption"
 msgid "Links"
 msgstr "Enlaces"
@@ -920,11 +877,11 @@ msgstr "Subrayado"
 
 #: teditboxform.opendialogfilelink.title
 msgid "Find a file but remember, it will not be checked !"
-msgstr ""
+msgstr "Buscar archivo, pero acuérdese que ¡no será verificado!"
 
 #: teditboxform.selectdirectoryforlink.title
 msgid "Select Directory but remember it will not be checked !"
-msgstr ""
+msgstr "Seleccione directorio, pero acuérdese que ¡no será verificado!"
 
 #: teditboxform.speedbuttondelete.hint
 msgid "Delete this note"
@@ -932,7 +889,7 @@ msgstr "Eliminar esta nota"
 
 #: teditboxform.speedbuttonlink.hint
 msgid "Create new linked note (text selected) or display Backlinks."
-msgstr "Crear nueva nota vinculada (texto seleccionado) o mostrar enlaces recibidas,"
+msgstr "Crear nueva nota vinculada (texto seleccionado) o mostrar enlaces recibidas."
 
 #: teditboxform.speedbuttonnotebook.hint
 msgid "Manage Notebooks"
@@ -1005,7 +962,7 @@ msgstr "Ver, recuperar o elimina copias de seguridad"
 
 #: tformbackupview.listbox1.hint
 msgid "Use Ctrl or Shift to select multiple entries"
-msgstr "Seleccione entradas múltiples con Ctrl o Mayús "
+msgstr "Seleccione entradas múltiples con Ctrl o Mayús"
 
 #: tformcolours.label1.caption
 msgid "Sample"
@@ -1028,7 +985,7 @@ msgstr "Cancelar"
 # Colores "por defecto", pero poco espacio en el botón
 #: tformcolours.speeddefault.caption
 msgid "Default"
-msgstr "Predetos."
+msgstr "Por defecto"
 
 #: tformcolours.speedhighlight.caption
 msgctxt "tformcolours.speedhighlight.caption"
@@ -1101,7 +1058,7 @@ msgstr "Haga clic en una instantánea para ver los contenidos."
 
 #: tformrecover.label15.caption
 msgid "Click an available snapshot, click Recover"
-msgstr "Haga clic en una instantánea, luego en Recuperar."
+msgstr "Haga clic en una instantánea, luego en Recuperar"
 
 #: tformrecover.label16.caption
 msgid "You may chose to view, copy and paste into a new note."
@@ -1379,7 +1336,6 @@ msgid "OK"
 msgstr "OK"
 
 #: tnotebookpick.caption
-#, fuzzy
 msgctxt "tnotebookpick.caption"
 msgid "Notebooks"
 msgstr "Cuadernos"
@@ -1389,8 +1345,6 @@ msgid "Name of the New Notebook"
 msgstr "Nombre del cuaderno nuevo"
 
 #: tnotebookpick.label5.caption
-#, fuzzy
-#| msgid "Press OK and we will make the Note Book AND add this note to it."
 msgid "Press OK and we will make the Notebook AND add this note to it."
 msgstr "Pulse OK y crearemos el cuaderno y añadiremos esta nota a ello."
 
@@ -1403,8 +1357,6 @@ msgid "New Name"
 msgstr "Nuevo nombre"
 
 #: tnotebookpick.label9.caption
-#, fuzzy
-#| msgid "If you sync and are not absolutely sure its up to date, Cancel now !"
 msgid "If you sync and are not absolutely sure it is up to date, Cancel now !"
 msgstr "Si no está seguro que todo está al día, cancele la sincronización ¡ahora!"
 
@@ -1445,7 +1397,9 @@ msgid "Options"
 msgstr "Opciones"
 
 #: tsearchform.caption
-msgid "tomboy-ng_Search"
+#, fuzzy
+#| msgid "tomboy-ng_Search"
+msgid "tomboy-ng Search"
 msgstr "Búsqueda de tombo-ng"
 
 #: tsearchform.listboxnotebooks.hint
@@ -1453,8 +1407,6 @@ msgid "Right Click to manage Notebooks"
 msgstr "Clic derecho para gestionar cuadernos"
 
 #: tsearchform.menucreatenotebook.caption
-#, fuzzy
-#| msgid "Create new Note Book"
 msgid "Create new Notebook"
 msgstr "Crear cuaderno nuevo"
 
@@ -1476,8 +1428,6 @@ msgid "Import File"
 msgstr "Importar archivo"
 
 #: tsearchform.menuitemmanagenbook.caption
-#, fuzzy
-#| msgid "Manage Notes in Note Book"
 msgid "Manage Notes in Notebook"
 msgstr "Gestionar las notas del cuaderno"
 
@@ -1490,8 +1440,6 @@ msgid "Create New Note from Template"
 msgstr "Crear nota nueva desde una plantilla"
 
 #: tsearchform.menurenamenotebook.caption
-#, fuzzy
-#| msgid "Rename NoteBook"
 msgid "Rename Notebook"
 msgstr "Renombrar cuaderno"
 
@@ -1558,8 +1506,6 @@ msgid "Autostart at Logon"
 msgstr "Ejecutar al iniciar sesión"
 
 #: tsett.checkescclosesnote.caption
-#, fuzzy
-#| msgid "Esc Closes Note"
 msgid "ESC Closes Note"
 msgstr "ESC cierra la nota"
 
@@ -1586,10 +1532,8 @@ msgid "Show Notifications"
 msgstr "Mostrar Notificaciones"
 
 #: tsett.checkshowextlinks.caption
-#, fuzzy
-#| msgid "Show External  Links"
 msgid "Show External Links"
-msgstr "Mostrar Enlaces Externos"
+msgstr "Mostrar enlaces externos"
 
 #: tsett.checkshowintlinks.caption
 msgid "Show Internal Links"
@@ -1698,7 +1642,7 @@ msgstr "Se buscarán y se guardarám las notas en:"
 
 #: tsett.label4.caption
 msgid "Repo : "
-msgstr "Repositorio:"
+msgstr "Repositorio: "
 
 #: tsett.label5.caption
 msgid "Days per snapshot"
@@ -1709,8 +1653,6 @@ msgid "Backup files are made when you delete a note or the sync system"
 msgstr "Se crean copias de seguridad cuando se borra una nota o el sistema de sincronización"
 
 #: tsett.label7.caption
-#, fuzzy
-#| msgid "is about to overwrite one. "
 msgid "is about to overwrite one."
 msgstr "está a punto de sobreescribir una."
 

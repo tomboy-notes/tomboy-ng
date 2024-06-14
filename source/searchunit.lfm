@@ -4,7 +4,7 @@ object SearchForm: TSearchForm
   Top = 347
   Width = 794
   ActiveControl = EditSearch
-  Caption = 'tomboy-ng_Search'
+  Caption = 'tomboy-ng Search'
   ClientHeight = 401
   ClientWidth = 794
   OnActivate = FormActivate

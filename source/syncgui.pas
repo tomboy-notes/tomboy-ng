@@ -194,7 +194,7 @@ var
     procedure Publish(Msg : string; Numb : integer);
     begin
         while length(Msg) < 15 do Msg := Msg + ' ';
-        Memo1.Append(Msg + inttostr(UpNew));
+        Memo1.Append(Msg + inttostr(Numb));
     end;
 
 begin
