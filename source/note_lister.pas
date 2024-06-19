@@ -1527,7 +1527,7 @@ begin
     DateAllIndex.sort(@SortOnDate);
 end;
 
-{$define PROFILEINDEX}
+{x$define PROFILEINDEX}
 
 { This should ret the number of items, not the zero based index of the last item.
 So, if we do '0', one pass, it should ret 1
