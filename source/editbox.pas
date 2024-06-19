@@ -1645,7 +1645,7 @@ begin
     if not HaveSeenOnActivate then begin;
         Ready := False;
         {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
-        CheckForLinks(True);
+        if Sett.ShowIntLinks then CheckForLinks(True);
         {$ifdef TDEBUG}
         Tock := gettickcount64();
         debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(HaveSeenOnActivate, true));
@@ -3332,7 +3332,7 @@ begin
     rewrite(MyLogFile);
     TG1 := 0;
     {$endif}
-    if (FullBody) then begin                // Scan and do links in whole note, no unlinking required
+    if (FullBody) then begin                        // Initial Scan and do links in whole note, no unlinking required
         LineNumb := KMemo1.Blocks.LineCount -1;
         {$ifdef TDEBUG}T0 := gettickcount64();{$endif}
         { We iterate over the KMemo, loading a line, checking it for Links and hyperlinks, then do next line }
@@ -3365,14 +3365,14 @@ begin
         {$ifdef TDEBUG}T1 := gettickcount64();
         debugln('CheckForLinks Timing T1=' + (T1-T0).tostring);
         {$endif}
-    end else begin                         // Just scan +/- LinkScanRange of current cursor, Edit Mode
+    end else begin                                      // Just scan +/- LinkScanRange of current cursor, Edit Mode
         {$ifdef TDEBUG}T1 := gettickcount64();{$endif}
         KMemo1.blocks.LockUpdate;
         BuffOffset := GrabContent();                                         // Also sets EndScan
         {$ifdef TDEBUG}T2 := gettickcount64();{$endif}
         ClearNearLink(BuffOffset, EndScan);                                  // Parameters in utf8char, not bytes
         {$ifdef TDEBUG}T3 := gettickcount64();{$endif}
-        if Sett.ShowIntLinks and (not SingleNoteMode) then begin
+        if Sett.ShowIntLinks and (not SingleNoteMode) then begin             // draw internal links
             for i := 0 to TheMainNoteLister.NoteList.Count-1 do begin        // For each note title in the main list.
                   {$ifdef LDEBUG}writeln(MyLogFile, 'BV ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
                 if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then
@@ -3517,6 +3517,7 @@ var
 
     function ValidLocalLink() : boolean;
     begin
+        if not Sett.ShowIntLinks then exit(False);
         if not TheMainNoteLister.IsThisaTitle(LinkText) then exit(False);
         Result := true;
 
@@ -3562,9 +3563,9 @@ begin
             inc(StartBlock);
             continue;                                                           // We are NOT dealing with title here
         end;
-        if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin
-            LinkText := lowercase(Kmemo1.Blocks.Items[StartBlock].Text);                              // ! trim()
-//            debugln('TEditBoxForm.ClearNearLink considering link : ' + LinkText);
+        if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin         // Find any hyperlink
+            LinkText := lowercase(Kmemo1.Blocks.Items[StartBlock].Text);                     // ! trim()
+            debugln('TEditBoxForm.ClearNearLink considering link : ' + LinkText);
 
             // Only if its not a valid link, remove it.
             if InvalidWhiteSpace or (not (ValidWebLink() or ValidLocalLink() or ValidFileLink())) then begin              // LocalLinks ignored in SingleNoteMode
@@ -3681,10 +3682,10 @@ begin
             Ready := True;
   	        exit();
     end;
-    if (not SingleNoteMode) and (Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked) then begin
+    if (not SingleNoteMode) {and (Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked)} then begin
         {$ifdef LDEBUG}TS1 := gettickcount64();{$endif}
         CheckForLinks(False);                   // does its own locking
-        TimerHouseKeeping.Enabled := False;
+        TimerHouseKeeping.Enabled := False;                                     // ToDo : why don't we disable in every run through ??
         {$ifdef LDEBUG}TS2 := gettickcount64();
         debugln('------------- DoHousekeeping Update Links ' + inttostr(TS2-TS1) + 'ms');{$endif}
     end;

@@ -193,8 +193,8 @@ var
     UpNew, UpEdit, Down, DelLoc, DelRem, Clash, DoNothing, Errors : integer;
     procedure Publish(Msg : string; Numb : integer);
     begin
-        while length(Msg) < 15 do Msg := Msg + ' ';
-        Memo1.Append(Msg + inttostr(Numb));
+        while length(Msg) < 18 do Msg := Msg + ' ';
+        Memo1.Append(Msg + ' ' + inttostr(Numb));
     end;
 
 begin
