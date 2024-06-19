@@ -4,7 +4,7 @@
   
 <text xml:space="preserve"><note-content version="0.1"><underline>Ayuda de tomboy-ng</underline>
 
-Tomboy-ng es una refundición del querido programa Notas Tomboy. Funciona en Linux, Windows y MacOS. Es compatible con los archivos de Tomboy y GNote. Tomboy-ng notas permiten letras <bold>Negritas</bold>, <italic>Cursivas</italic>, Tachadas, <highlight>Resaltadas</highlight> y <underline>Subrayadas</underline> en cuatro tamaños, <size:small>pequeña</size:small>, normal, <size:large>grande</size:large> y <size:huge><highlight>enorme</highlight></size:huge>.
+Tomboy-ng es una refundición del querido programa Notas Tomboy. Funciona en Linux, Windows y MacOS. Es compatible con los archivos de Tomboy y GNote. Tomboy-ng notas permiten letras <bold>Negritas</bold>, <italic>Cursivas</italic>, Tachadas, <highlight>Resaltadas</highlight> y <underline>Subrayadas</underline> en cuatro tamaños, <size:small>pequeña</size:small>, normal, <size:large>grande</size:large> y <size:huge><highlight>enorme</highlight></size:huge>. Notas pueden incluir hiperenlaces a otras notas, páginas web o cualquier archivo o directorio (que se puede leer) en su sistema.
 
 Puede sincronizar las notas con otros sistemas utilizando el modelo de sincronización de Tomboy y/o una sincronización por red usando GitHub. GitHub le permite leer o editar sus notas online desde un navegador.
 
@@ -27,6 +27,15 @@ Desde la <bold>ventana de búsqueda</bold>, puede:
 <list><list-item dir="ltr"><list><list-item dir="ltr">puede sincronizar sus notas con un almacén de archivos común para que estén disponibles de equipos múltiples (Linux, Windows o Mac).</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">no comparte bien. Si guarda sus notas en un disco compartido (sin usar sincronización), tenga muchísimo cuidado de no tener más de una instancia de tomboy-ng o Tomboy ejecutándose al mismo tiempo. Ocurren cosas malas.</list-item></list></list-item></list>
 
+<bold>Enlaces</bold>
+Una característica destacada de Tomboy y sus sucesores es la creación automática de <bold>enlaces entre notas</bold>. Si escribe el título de una nota que existe, las palabras se hacen un hiperenlace y haciendo clic en ellas abrirá la otra nota. Asimismo, si selecciona unas palabras y hace clic en el botón "Enlaces", crea una nota nueva con ese título vinculado a la primera. Nuevo en v0.38: hacer clic en el botón "Enlaces" sin seleccionar nada produce un listado de enlaces activos a notas vinculadas a la nota en que está, o sea, un listado de los <bold>enlaces recibidos.</bold>
+
+Nuevo en 0.40, <bold>Enlaces a archivos</bold>. Utilice el Menú de clic derecho para seleccionar un enlace a un archivo o directorio (atajos Alt-F, Alt D, respectivamente) para abrir un diálogo donde puedes seleccionar el archivo o directorio deseado. O, si sabe el nombre y ruta completos, escriba file:// seguido inmediatamente por la ruta y el nombre del archivo, ej., file://Imagenes/Navidad.jpeg. Si la ruta o el nombre del archivo contiene un espacio, pongalos entre comillas, ej., file://"Imagenes/Navidad 2023.jpeg". Windows use una barra invertida como separador, pero las que están al principio del URL tienen que ser como el ejemplo (y como las direcciones de la web). La ruta debería ser relativa a su directorio de inicio, al menos que ponga  una barra al principio, ej., un usuario de Windows puede tener un enlace de archivo como este: file://"c:\Documentos\mi prueba.txt".
+
+Este método depende de cómo/con que programa su sistema operativo (SO) abre un archivo concreto, entonces debería asegurarse de poder abrir ese tipo de archivo antes de ponerlo en una nota. En mi caso, una instalación nueva de Debian, Firefox quiso abrir archivos tipo ".log", ¡lo que hacia muy mal! Tome nota que tomboy-ng no puede probar los enlaces. Simplemente los abre (o por lo meno los intenta abrir).
+
+Asimismo, algo de texto que parece ser un enlace al internet, aparece como un hiperenlace que, al hacer clic, su navegador abrirá (si existe). Se puede desactivar los hiperenlaces a través de la pestaña de "Notas" en Preferencias.
+
 
 <size:large><bold>Parámetros de la línea de comandos.</bold></size:large>
 
@@ -45,7 +54,6 @@ Imprimir el número de versión y salir.
 <bold>--config-dir=PATH_to_DIR</bold>
 Crear o usar una configuración alternativa. Principalmente una opción para pruebas, pero útil si, por ejemplo, quiere tener dos (o más) grupos de notas independientes (pero no concurrentes).
 
-
  <bold>--debug-sync       --debug-index       ---debug-spell</bold>
 Mostrar lo que pasa durante una sincronización, indización o revisión ortográfica. Útil para depuración. Estos parámetros escribirán al terminal informes de progreso detallados con relación a las funciones respectivas de la aplicación. Sin embargo, Windows no tiene un terminal con este fin.  Sin embargo, se puede dirigir esta información a un archivo de registro usando otro parámetro de la línea de comandos o estableciendo un variable ENV que especifica un nombre de archivo. Asegúrese, por favor, que tenga el permiso para escribir a la ubicación dada. Por ejemplo, desde el botón de inicio, haga clic en ejecutar y teclee:
 
@@ -63,6 +71,24 @@ Al importar un archivo de texto, markdown o note al repositario de notas por def
 <bold>--title-fname</bold>
 tomboy-ng usa el nombre de archivo como título de la nota solamente al importar a repositorio de notas un archivo que no sea de tipo .note.
 
+<bold>--useappind=yes|no</bold>
+Sólo para Linux usando la versión gtk2. Cambiará la manera en que tomboy-ng intenta mostrar el icono de la bandeja de sistema. Es para ayudar con sistemas que no llegan a mostrar el icono usando el método por defecto.
+
+<bold>--platformtheme qt5ct</bold>
+Sólo para la versión Qt. Hará que la aplicación muestra los colores definidos en qt5ct. La aplicación qt5ct tiene una interfaz gráfica donde puede selecciona los colores que le parezcan apropiados. Puede que algunas ajustes más de Qt funcionen con un sintaxis parecido. Toma nota que no hay '=' entre el comando y su parámetro.
+
+<bold>--allow-leftclick</bold>
+Sólo para sistemas Linux de Wayland. Dado que algunas instalaciones de KDE (y posiblemente Gnome) no funcionan del todo bien con Wayland, el icono de la bandeja de sistema se activa con un clic derecho. Puede restablecer el uso más familiar del clic izquierdo con este parámetro, pero puede que no le guste el resultado.
+
+<bold>--strict-theme</bold>
+Sólo para las versiones Qt5 y Qt6. Es para usar sólo los colores del tema Qt para editar notas. Dado que la ventana de editar necesita más colores de los que están disponibles en muchos temas, tomboy-ng use algunos colores extra por defecto. Este parámetro anula el comportamiento predeterminado de tomboy-ng.
+
+<bold>-platform xcb</bold>
+Sólo para Qt5/6. Dado que el estado actual de Wayland en sistemas de Linux no ha madurado del todo, este parámetro le permite usar el probado libxcb. Arregla problemas como no poder traer una nota abierta al primer plano con un clic, no poder copiar texto de una nota a otra aplicación y no poder abrir una nota en el lugar donde estaba antes. Toma nota del sintaxis distinto. Este parámetro afecta el Qt Framework de manera directa en vez de tomboy-ng. Establecer un variable de entorno, <monospace>QPA_PLATFORM=xcb,</monospace> tiene el mismo efecto.
+
+ <bold>-platformtheme gnome | gtk2 | qt5ct | qt6ct</bold>
+Sólo para versiones de Qt5/6. Se puede indicar a una aplicación Qt donde buscar su tema de color. Las aplicaciones qt5ct y qt6ct le permiten establecer sus propios colores y 'gnome' usará el tema de Gnome si tiene instalado gnomeplatform-qt5. El parámetro 'gtk2' funciona con algunos sistemas viejos si tienen los temas apropiados instalados. No todos los sistemas funcionarán con estos parámetros. Puede que tenga que experimentar un poco. Toma nota del sintaxis distinto. Este parámetro afecta el Qt Framework de manera directa en vez de tomboy-ng. Establecer un variable de entorno, <monospace>QT_QPA_PLATFORMTHEME=gnome,</monospace> tiene el mismo efecto.
+
 <size:large><bold>Cosas de Mac</bold></size:large>
 Usuarios de Mac necesitan una línea de comandos un poco más complicada al usar cualquier de estos parámetros. Por ejemplo, una línea de comandos para generar un registro de depuración de una sincronización sería:
 
@@ -75,8 +101,8 @@ open tomboy-ng/tomboy-ng.app --args -o $PWD/doc/tomboy-ng.note
 
 
 </note-content></text>
-  <last-change-date>2022-10-23T12:21:45.7101642+02:00</last-change-date>
-  <last-metadata-change-date>2022-10-23T12:21:45.7101642+02:00</last-metadata-change-date>
+  <last-change-date>2024-06-14T10:19:31.8069640+02:00</last-change-date>
+  <last-metadata-change-date>2024-06-14T10:19:31.8069640+02:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

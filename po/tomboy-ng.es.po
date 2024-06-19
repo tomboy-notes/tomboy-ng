@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.40\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-06-13 11:42+0200\n"
+"PO-Revision-Date: 2024-06-14 14:08+0200\n"
 "Last-Translator: Roy W. Reese <waterbearer54@gmx.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -47,10 +47,11 @@ msgstr "Fallo en indizar una nota o más."
 msgid "Add notes to this Notebook"
 msgstr "Añadir notas al cuaderno"
 
+# e.g., SyncFile all done.
 #: resourcestr.rsalldone
 msgctxt "resourcestr.rsalldone"
 msgid "All Done"
-msgstr "Todo hecho"
+msgstr "Terminado"
 
 #: resourcestr.rsallowleftclick
 msgid "If Wayland, allow leftclick in SysTray"
@@ -86,7 +87,7 @@ msgstr "Debería hacerlo para salvaguardar sus notas."
 
 #: resourcestr.rsbypasswayland
 msgid "Bypass Wayland on Qt5/6"
-msgstr "Evite Wayland con Qt5/6."
+msgstr "Evite Wayland con Qt5/6"
 
 #: resourcestr.rscannotdelete
 msgctxt "resourcestr.rscannotdelete"
@@ -265,7 +266,7 @@ msgstr "No mostrar ventana de estado/bienvenida"
 #: resourcestr.rshelpsaveexit
 msgctxt "resourcestr.rshelpsaveexit"
 msgid "After import single note, save & exit"
-msgstr "Después de importar una sola nota, guardar y salir."
+msgstr "Después de importar una sola nota, guardar y salir"
 
 #: resourcestr.rshelpsinglenote
 msgctxt "resourcestr.rshelpsinglenote"
@@ -286,16 +287,14 @@ msgid "2, 4, 6 or 8 Hex Characters Required"
 msgstr "Hacen falta 2, 4, 6 o 8 carácteres hexadecimal"
 
 #: resourcestr.rsinsertdirlink
-#, fuzzy
 msgctxt "resourcestr.rsinsertdirlink"
 msgid "Insert Directory Link"
-msgstr "Insertar enlace del directorio"
+msgstr "Insertar enlace de directorio"
 
 #: resourcestr.rsinsertfilelink
-#, fuzzy
 msgctxt "resourcestr.rsinsertfilelink"
 msgid "Insert File Link"
-msgstr "Insertar enlace del archivo"
+msgstr "Insertar enlace de archivo"
 
 #: resourcestr.rslastchange
 msgctxt "resourcestr.rslastchange"
@@ -425,7 +424,7 @@ msgstr "No está en el repositorio principal"
 #: resourcestr.rsnumbnotesaffected
 #, object-pascal-format
 msgid "This will affect %d notes"
-msgstr "Esto afectará %d notas."
+msgstr "Esto afectará %d notas"
 
 #: resourcestr.rsonenotebook
 msgctxt "resourcestr.rsonenotebook"
@@ -509,7 +508,6 @@ msgid "created, do you want to copy it elsewhere ?"
 msgstr "creada. ¿Quiere copiarla a otro sitio?"
 
 #: resourcestr.rsstrictthemecolors
-#, fuzzy
 msgid "Use only Qt theme colors for Editing Notes"
 msgstr "Usar sólo el tema Qt para editar las notas"
 
@@ -663,25 +661,25 @@ msgstr "Conflictos"
 msgid "Do Nothing"
 msgstr "No hacer nada"
 
+# Aparece en en una lista en SyncReport
 #: syncutils.rsdownloads
 msgid "Downloads"
 msgstr "Descargas"
 
+# Aparece en en una lista en SyncReport
 #: syncutils.rsedituploads
 msgid "Edit Uploads"
-msgstr "Editar notas subidas"
+msgstr "Editadas subidas"
 
-# Eliminadas o para eliminar
+# Aparece en en una lista en SyncReport
 #: syncutils.rslocaldeletes
 msgid "Local Deletes"
-msgstr "Notas locales eliminadas"
+msgstr "Locales eliminadas"
 
-# Para subir o Subidas
+# Aparece en en una lista en SyncReport
 #: syncutils.rsnewuploads
-#, fuzzy
-#| msgid "New Uploads    "
 msgid "New Uploads"
-msgstr "Nuevas notas para subir"
+msgstr "Nuevas subidas"
 
 #: syncutils.rsnextbitslow
 msgid "Next bit can be a bit slow, please wait"
@@ -697,10 +695,10 @@ msgstr "No hay notas sin sincronizar. Tiene que escribir otras."
 msgid " notes were dealt with."
 msgstr " notas fueron procesadas."
 
-# ¿Revisar?
+# Aparece en en una lista en SyncReport
 #: syncutils.rsremotedeletes
 msgid "Remote Deletes"
-msgstr "Notas remotas borradas"
+msgstr "Remotas eliminadas"
 
 #: syncutils.rssyncerrors
 msgid "ERRORS (see console log)"
@@ -1509,15 +1507,15 @@ msgstr "Ejecutar al iniciar sesión"
 msgid "ESC Closes Note"
 msgstr "ESC cierra la nota"
 
-# Creo
+# Its the label for a tickbox. Some people liked the idea of repeated presses of the find command (Ctrl-F) should toggle the find pane on and off.
 #: tsett.checkfindtoggles.caption
 msgid "Find Command Toggles"
-msgstr "Buscar conmutadores"
+msgstr "Alternar commando \"Buscar\" en una nota"
 
 #: tsett.checkfindtoggles.hint
 msgctxt "tsett.checkfindtoggles.hint"
 msgid "eg Ctrl-F opens and closes Find Window"
-msgstr "ej., Ctrl-F abre y cierre la ventana de búsqueda"
+msgstr "ej., Ctrl-F abre/cierre la caja de búsqueda"
 
 #: tsett.checkmanynotebooks.caption
 msgid "Allow a Note to be in Multiple Notebooks."
@@ -1786,4 +1784,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-
