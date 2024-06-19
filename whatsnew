@@ -8,3 +8,4 @@ Better debug capability when using GitHub Sync.
 Fix to ensure Gnome is happy with Qt5/6 using -platform xcb
 Rename --kde-leftclick to --allow-leftclick because now useful under Gnome too.
 Updates to man page and command line help.
+Closes #1061429 - On Wayland Systems, must use xcb
