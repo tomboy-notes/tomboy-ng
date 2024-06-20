@@ -3565,7 +3565,7 @@ begin
         end;
         if KMemo1.Blocks.Items[StartBlock].ClassNameIs('TKMemoHyperlink') then begin         // Find any hyperlink
             LinkText := lowercase(Kmemo1.Blocks.Items[StartBlock].Text);                     // ! trim()
-            debugln('TEditBoxForm.ClearNearLink considering link : ' + LinkText);
+//            debugln('TEditBoxForm.ClearNearLink considering link : ' + LinkText);
 
             // Only if its not a valid link, remove it.
             if InvalidWhiteSpace or (not (ValidWebLink() or ValidLocalLink() or ValidFileLink())) then begin              // LocalLinks ignored in SingleNoteMode
