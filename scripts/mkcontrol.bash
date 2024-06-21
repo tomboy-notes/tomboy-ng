@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+# Usage : mkcontrol.bash [bionic focal unstable] [qt5 qt6]
+
 # A small script to replace critical parameters in control.template
 # With every target release/distro requiring a different control
 # file, this is an attempt to concentrate all the variation into
@@ -20,11 +22,17 @@ DEPENDS="libgtk2.0-0 (>= 2.6), libcanberra-gtk-module"
 BUILDDEPENDS="libgtk2.0-dev"
 
 function AdjustValues () {
-    if [ "$2" == "qt5" ]; then          # Note : we ignore anything else
+    if [ "$2" == "qt5" ]; then          # Note : we ignore anything other than qt5 and qt6
         DESC="This is the QT5 based version."   
         DEPENDS="libqt5pas1"
         BUILDDEPENDS="libqt5pas-dev, lcl-qt5, libcairo2-dev, libpango1.0-dev" 
         PACKAGE="tomboy-ng-qt5"         # but reverse that in Debian (don't do yet anyway)     
+    fi
+     if [ "$2" == "qt6" ]; then
+        DESC="This is the QT6 based version."
+        DEPENDS="libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
+        BUILDDEPENDS="libqt6pas6-dev, lcl-qt6, libcairo2-dev, libpango1.0-dev"
+        PACKAGE="tomboy-ng-qt6"         # but reverse that in Debian (don't do yet anyway)
     fi
     case $1 in
         "bionic")

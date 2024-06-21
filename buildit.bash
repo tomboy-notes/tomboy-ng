@@ -3,6 +3,8 @@
 #
 # A script to build tomboy-ng from source without using the Lazarus GUI
 #
+# For all the talk about lazbuild, we don't actually use it, just want to know where it is.
+
 # tomboy-ng depends directly on fpc, lazbuild, lcl and kcontrols.  Because the 
 # package based install of fpc/lazarus is quite different to the popular
 # installs in user space, we need to allow for both. debuild does not pass the
@@ -74,6 +76,7 @@ function ShowHelp () {
     echo "-h   print help message"
     echo "-c   specify CPU, default is $HOSTTYPE - supported x86_64, i386, arm"
     echo "-Q   build a Qt5 version (default gtk2)"
+    echo "-T   build a Qt6 version"
     echo "When used in SRC DEB toolchain, set -c (if necessary) options in the Makefile."
     echo ""
     exit 1
@@ -142,10 +145,13 @@ function CheckLazBuild () {
 }
 
 		# We default to GTK2 but if a file is left in working dir called
-		# Qt5 then we build that. Note a -q does the same thing.
+		# Qt5 or Qt6 then we build that. Note a -q does the same thing for qt5.
 function CheckForQt5 () {
 	if [ -f "Qt5" ]; then
 		WIDGET="qt5"
+	fi
+	if [ -f "Qt6" ]; then
+	    WIDGET="qt6"
 	fi
 }
 
@@ -164,6 +170,9 @@ while getopts "hQc:" opt; do
     Q)
 	WIDGET="qt5"
 	;;
+	T)
+	WIDGET="qt6"
+	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -175,7 +184,7 @@ if [ "$CPU" = "i686" ]; then
     CPU="i386"
 fi
 
-if [ "$CPU" = "powerpc64le" ]; then	# power does not like intel switches !
+if [ "$CPU" = "powerpc64le" ]; then	   # power does not like intel switches !
 	FPCHARD=" "	
 fi
 

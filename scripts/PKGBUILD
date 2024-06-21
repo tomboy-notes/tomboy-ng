@@ -1,4 +1,10 @@
 # This file is used to build a pacman usable gtk2 package for tomboy-ng
+# Usage : 
+# export VER=0.40         # or, if you prefer, VER=master
+# mkdir $VER; cd $VER
+# wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD
+# export NEW_PATH="/home/dbannon/bin/FPC/fpc-3.2.3/bin:/home/dbannon/bin/Lazarus/lazarus_3_4"
+# PATH="$NEW_PATH":"$PATH" makepkg --skipinteg
 
 # Requirments : sudo pacman -S base-devel fpc lazarus-gtk2 unzip
 #
@@ -9,8 +15,13 @@
 #		version as "master" but tomboy-ng still reports the 
 # 		version according to the version file.
 #
-# Usage : VER=0.34 makepkg --skipinteg 
-#         VER=master makepkg --skipinteg 
+# Usage (eg) : 
+# export VER=0.40         # or, if you prefer, VER=master
+# mkdir $VER; cd $VER
+# wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD
+# export NEW_PATH="/home/dbannon/bin/FPC/fpc-3.2.3/bin:/home/dbannon/bin/Lazarus/lazarus_3_4"
+# PATH="$NEW_PATH":"$PATH" makepkg --skipinteg
+
 # 
 # Install
 # 	sudo pacman -U ./tomboy-ng-master-1-x86_64.pkg.tar.zst
@@ -26,7 +37,7 @@
 # maybe for tagged releases, certainly not for master.
 # So, passing the version number on the command line will not work unless
 # we skip the checksum check. And it really is pretty useless anyway.
-# Deal with this when and if its every important.
+# Deal with this when and if its ever important.
 
 pkgname=tomboy-ng
 pkgver="$VER"			# Remember to set VER when calling makepkg
