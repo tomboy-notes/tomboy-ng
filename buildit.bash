@@ -147,12 +147,14 @@ function CheckLazBuild () {
 		# We default to GTK2 but if a file is left in working dir called
 		# Qt5 or Qt6 then we build that. Note a -q does the same thing for qt5.
 function CheckForQt5 () {
+	echo "----------- Looking for widget semophore in $PWD"
 	if [ -f "Qt5" ]; then
 		WIDGET="qt5"
 	fi
 	if [ -f "Qt6" ]; then
 	    WIDGET="qt6"
 	fi
+	echo "----------- Using Widget Set $WIDGET"
 }
 
 # ------------ It all starts here ---------------------
@@ -273,6 +275,7 @@ echo "OK, we seem to have both Lazarus LCL and KControls available : "
 echo "kcontrols = $K_DIR"
 echo "Lazarus   = $LAZ_DIR"
 echo "Compiler  = $COMPILER"
+echo "Widget    = $WIDGET"
 echo "CPU type  = $CPU"
 echo "tb-ng Ver = $VERSION"
 echo "Hardening = $FPCHARD"

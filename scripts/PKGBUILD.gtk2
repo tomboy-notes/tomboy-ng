@@ -1,4 +1,10 @@
 # This file is used to build a pacman usable gtk2 package for tomboy-ng
+# Usage : 
+# export VER=0.40         # or, if you prefer, VER=master
+# mkdir $VER; cd $VER
+# wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD
+# export NEW_PATH="/home/dbannon/bin/FPC/fpc-3.2.3/bin:/home/dbannon/bin/Lazarus/lazarus_3_4"
+# PATH="$NEW_PATH":"$PATH" makepkg --skipinteg
 
 # Requirments : sudo pacman -S base-devel fpc lazarus-gtk2 unzip
 #
@@ -9,8 +15,13 @@
 #		version as "master" but tomboy-ng still reports the 
 # 		version according to the version file.
 #
-# Usage : VER=0.34 makepkg --skipinteg 
-#         VER=master makepkg --skipinteg 
+# Usage (eg) : 
+# export VER=0.40         # or, if you prefer, VER=master
+# mkdir $VER; cd $VER
+# wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD
+# export NEW_PATH="/home/dbannon/bin/FPC/fpc-3.2.3/bin:/home/dbannon/bin/Lazarus/lazarus_3_4"
+# PATH="$NEW_PATH":"$PATH" makepkg --skipinteg
+
 # 
 # Install
 # 	sudo pacman -U ./tomboy-ng-master-1-x86_64.pkg.tar.zst
@@ -26,18 +37,17 @@
 # maybe for tagged releases, certainly not for master.
 # So, passing the version number on the command line will not work unless
 # we skip the checksum check. And it really is pretty useless anyway.
-# Deal with this when and if its every important.
+# Deal with this when and if its ever important.
 
 pkgname=tomboy-ng
 pkgver="$VER"			# Remember to set VER when calling makepkg
 pkgrel=1			# inc this if releasing a re-package of same ver
 pkgdesc="Manage a large or small set of notes with a range of fonts and markup."
-arch=('i686' 'x86_64' 'aarchhf' 'aarch64')
+arch=('x86_64')
 url="https://github.com/tomboy-notes/tomboy-ng"
 license=('MIT' 'BSD' 'GPL2' 'LGPL3')
-depends=('qt6pas>=6.2.7' 'wmctrl')
-makedepends=('fpc>=3.2.2' 'lazarus-gtk2')
-optdepends=('gnome-shell-extension-appindicator: May need to display Systray Icon with Gnome Desktop')
+depends=('gtk2' 'wmctrl')
+makedepends=('fpc' 'lazarus-gtk2')
 provides=('tomboy-ng')
 
 #	we want to get the taged release version, could also target master
@@ -67,17 +77,15 @@ echo "========= source ========"
 echo "$source"
 echo "========================="
 
-noextract=('master.zip')    # leave kcontrols alone, I'll deal with it.
+noextract=('master.zip')	# leave kcontrols alone, I'll deal with it.
 
 prepare() {
 	cd "$pkgname-$pkgver"
-	touch Qt6           # A semophore to buildit.bash we want a Qt6 version
 	unzip ../kc-master.zip
 	mv KControls-master kcontrols
 }
 
 build() {
-	# cp ../buildit.bash tomboy-ng-master/buildit.bash
 	cd "$pkgname-$pkgver"
 	# ./configure --prefix=/usr
 	make
