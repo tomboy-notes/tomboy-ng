@@ -14,8 +14,7 @@ PACKAGE="tomboy-ng"         # note, in debian QT5 its still called tomboy-ng
 FPCVER=">=3.2.2"
 LAZVER=">=2.2.2"
 DEBHVER="=13"
-# STDVER="4.7.0"              # updated due to advice on debian package tracker, Apr 2024
-STDVER="4.6.2"              # June 2024, all that Lintian v2.117.0 knows about ?
+STDVER="4.7.0"              # updated due to advice on debian package tracker, Apr 2024
                             # https://www.debian.org/doc/debian-policy/upgrading-checklist.html says 4.7.0
 DESC="This is the GTK2 based version."
 DEPENDS="libgtk2.0-0 (>= 2.6), libcanberra-gtk-module"
