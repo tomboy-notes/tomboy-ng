@@ -798,7 +798,7 @@ var
 begin
     if KMemo1.ReadOnly then exit();
     St := CleanCaption();
-   if IDYES = Application.MessageBox('Delete this Note', PChar(St),
+    if IDYES = Application.MessageBox('Delete this Note', PChar(St),
    									MB_ICONQUESTION + MB_YESNO) then begin
 		TimerSave.Enabled := False;
         if SingleNoteMode then
@@ -808,8 +808,18 @@ begin
         Dirty := False;
         DeletingThisNote := True;
 		Close;
-   end;
+    end;
 end;
+{ When a note is deleted, a number of different paths may happen -
+  If the note is already listed in a notebook because it was created from notebook
+  template, it may not yet be in TNoteLister.NoteList. Thats an issue #312
+  - SearchForm.DeleteNote(NoteFileName);
+    - remove from sync lists
+    - TheMainNoteLister.DeleteNote(ShortFileName);
+    - back it up
+    - index and refresh
+    (i appears I don't remove a note ID from the NotebookList ???
+}
 
 procedure TEditBoxForm.BitBtnBackLinksClick(Sender: TObject);
 begin

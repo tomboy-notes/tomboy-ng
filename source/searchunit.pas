@@ -510,6 +510,7 @@ begin
         // ButtonClearFiltersClick(self);
         RefreshNoteBooks();
     end else begin
+        TheMainNoteLister.RemoveNoteFromNoteBooks(ShortFileName);
 		TheMainNoteLister.DeleteNote(ShortFileName);                          // Remove from NoteList
      	NewName := Sett.NoteDirectory + 'Backup' + PathDelim + ShortFileName + '.note';
     	if not DirectoryExists(Sett.NoteDirectory + 'Backup') then
@@ -545,7 +546,8 @@ var
 begin
     Index := ListBoxNotebooks.ItemIndex;
     TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
-    if Index > -1 then begin
+    if (Index > -1) and (Index <  ListBoxNotebooks.Count) then begin
+        //debugln('TSearchForm.RefreshNotebooks - I='+inttostr(Index) + 'LBC=' + inttostr(ListBoxNotebooks.Count));
          ListBoxNotebooks.ItemIndex := Index;
          ListBoxNotebooksClick(self);
     end;
@@ -1750,6 +1752,7 @@ var
     NewNoteBookName : string = '';
     i : integer = 0;
 begin
+    debugln('TSearchForm.MenuCreateNoteBook NBCount S = ' + inttostr(TheMainNoteLister.NotebookCount()) );
     NotebookPick := TNotebookPick.Create(Application);
     NotebookPick.TheMode := nbMakeNewNoteBook;
     NotebookPick.FullFileName := '';
@@ -1761,6 +1764,7 @@ begin
         NewNotebookName := NotebookPick.NBName;
     NotebookPick.Free;
     ButtonClearFilters.Click;
+    RefreshNotebooks();                  // ??
     if  NewNoteBookName <> '' then begin
         while i < ListBoxNoteBooks.Count do begin
             if ListBoxNoteBooks.Items[i] = NewNoteBookName then
@@ -1773,6 +1777,7 @@ begin
         end else
             debugln('TSearchForm.MenuCreateNoteBookClick - failed to find the new NotebookName');
     end;
+    debugln('TSearchForm.MenuCreateNoteBook NBCount E = ' + inttostr(TheMainNoteLister.NotebookCount()) );
 end;
 
 // ---------------------- S E A R C H   O P T I O N S --------------------------
@@ -1885,8 +1890,9 @@ procedure TSearchForm.MenuDeleteNotebookClick(Sender: TObject);
 begin
     if IDYES = Application.MessageBox('Delete this Notebook',
     			PChar(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]),
-       			MB_ICONQUESTION + MB_YESNO) then
-		DeleteNote(Sett.NoteDirectory + TheMainNoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]));
+       			MB_ICONQUESTION + MB_YESNO) then begin
+ 		DeleteNote(Sett.NoteDirectory + TheMainNoteLister.NotebookTemplateID(ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]));
+    end;
 end;
 
 procedure TSearchForm.MenuNewNoteFromTemplateClick(Sender: TObject);

@@ -242,6 +242,8 @@ type
                                 // We might store Content and it may. or may not be all lower case.
     procedure GetNoteDetails(const Dir, FileName: ANSIString; DontTestName: boolean; TheLister : TNoteLister);
 
+
+
                                 // Inserts a new item into the ViewList, always Title, DateSt, FileName
 //    function NewLVItem(const LView: TListView; const Title, DateSt, FileName: string): TListItem;
 
@@ -294,6 +296,9 @@ type
     function GetNote(Index: integer; mode : TLVSortMode): PNote;
                                         { Loads a TListView with note title, LCD and ID}
     //procedure LoadListView(const LView: TListView; const SearchMode: boolean);
+
+    // ----------------- N O T E   B O O K   M E T H O D S ---------------------
+
                                         { Changes the name associated with a Notebook in the internal data structure }
     function AlterNoteBook(const OldName, NewName: string): boolean;
                                         { Returns a multiline string to use in writing a notes notebook membership,
@@ -308,16 +313,6 @@ type
     function GetTitle(Index: integer): string;
                                         { Returns the title for a given ID or Filename }
     function GetTitle(const ID: String): string;
-                                        { Returns the number of items in the list }
-//    function Count(): integer;
-
-                                        { Returns the LastChangeDate string for ID in the Notes list, empty string
-                                        if not found (empty string is its a notebook) }
-    function GetLastChangeDate(const ID: String): string;
-                                        { Adds details of note of passed to NoteList }
-    procedure IndexThisNote(const ID : String);
-                                        { Returns T is ID in current list, takes 36 char GUID or simple file name }
-    function IsIDPresent(ID : string) : boolean;
                                         { Removes the Notebook entry with ID=Template from Notebook datastructure }
     procedure DeleteNoteBookwithID(FileorID : AnsiString);
                                         { Returns True if passed string is the ID or short Filename of a Template }
@@ -328,6 +323,8 @@ type
                                         { Sets the passed Notebooks as 'parents' of the passed note. Any pre existing membership
                                           will be cancelled. The list can contain zero to  many notebooks. }
     procedure SetNotebookMembership(const ID: ansistring; const MemberList: TStringList);
+
+    procedure RemoveNoteFromNoteBooks(NoteID: string);
                                         { If ID is empty, always returns false, puts all Notebook names in NBArray. If ID is not
                                           empty, list is filtered for only notebooks that have that ID  and returns True iff the
                                           passed ID is that of a Template.  A Notebook Template will have only one Notebook name in
@@ -343,6 +340,17 @@ type
                                           we should only show Notebooks that have one or more notes mentioned in SearchNoteList. Call after
                                           GetNotes(Term) }
     procedure LoadListNotebooks(const NotebookItems: TStrings; SearchListOnly: boolean);
+
+
+
+                                        { Returns the LastChangeDate string for ID in the Notes list, empty string
+                                        if not found (empty string is its a notebook) }
+    function GetLastChangeDate(const ID: String): string;
+                                        { Adds details of note of passed to NoteList }
+    procedure IndexThisNote(const ID : String);
+                                        { Returns T is ID in current list, takes 36 char GUID or simple file name }
+    function IsIDPresent(ID : string) : boolean;
+
                                         { Adds a note to main list, ie when user creates a new note }
     procedure AddNote(const FileName, Title, LastChange : ANSIString);
                                         { Read the metadata from all the notes into internal data structure,
@@ -891,6 +899,10 @@ function TNoteLister.GetNotesInNoteBook(out NBIDList : TStringList; const NBName
 var
     NB : PNoteBook;
 begin
+
+    { It appears this returns the ID of a note that was added to this notebook
+    but, maybe, not saved, not added to main TnoteLister yet ?  #312
+    }
     // debugln('TNoteLister.GetNotesInNoteBook - 1 - NBName=[' + NBName + '] and NBIDList nil=' + booltostr(NBIDList=nil, true));
     Result := True;
     NB := NoteBookList.FindNoteBook(NBName);
@@ -1009,6 +1021,24 @@ var
     NBArray : TStringArray;
 begin
     Result := GetNotebooks(NBArray, CleanFileName(FileOrID));
+end;
+
+// Removes all mention of a particular note from the whole NoteBookList
+// Useful when a note is being deleted. Pass just ID or Filename.
+// No problems if ID is not present anywhere.
+procedure TNoteLister.RemoveNoteFromNoteBooks(NoteID : string);
+var
+    Index, BookIndex : integer;
+begin
+    if not NoteID.EndsWith('.note') then     // accept just ID or FileName
+        NoteID := NoteID + '.note';
+    for Index := 0 to NotebookList.Count - 1 do begin                   // Check every notebook
+        if NoteBookList[Index]^.Notes <> nil then begin
+            BookIndex := NoteBookList[Index]^.Notes.IndexOf(NoteID);
+            if BookIndex > -1 then                                      // working directly with NoteBookList entry here.
+                NoteBookList[Index]^.Notes.Delete(BookIndex);
+        end;
+    end;
 end;
 
 procedure TNoteLister.SetNotebookMembership(const ID : ansistring; const MemberList : TStringList);
@@ -1607,6 +1637,7 @@ var
         result := 0;
         j:= 0;
         if GetNotesInNoteBook(NBStrL, NoteBook) then begin         // check each line in NBStrL for this note instance
+            //writeln('SearchNoteBook NB=' + NoteBook + ' NBStrL.text=[' + NBStrL.Text + ']');
             while j < NBStrL.Count do begin
                 if NoteList.FindID(i, NBStrL[j]) then begin        // this the time consuming part. 4mS 2000 notes
                     if CheckSearchTerms(STermList, i) then begin
