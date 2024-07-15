@@ -1,3 +1,27 @@
+tomboy-ng (0.40-1) unstable; urgency=medium
+
+  *  Release of new version.
+  * Revised Bullet control system.
+  * Revised Color setting system for Qt5 and Qt6.
+  * Tab key now indents paragraph, not compatible with old Tomboy.
+    Subject to revision.
+  * Revised PDF export, embedded fonts.
+  * Draft "file link" capability. Just type file://Path_to_a_file, use
+    the Right Click Menu or Alt-F or Alt-D to insert file or directory
+    link interactivly. Will open any file your systems knows how to
+    open.
+  * Support for openssl 3.0 (compile with fpc323, require dev pkg on
+    Debian).
+  * Better debug capability when using GitHub Sync.
+  * Fix to ensure Gnome is happy with Qt5/6 using -platform xcb.
+  * Rename --kde-leftclick to --allow-leftclick because now useful under
+    Gnome too.
+  * Updates to man page and command line help.
+  * Closes: #1061429 - On Wayland Systems, must use xcb.
+  * Please see github for further change details.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Sat, 29 Jun 2024 16:44:10 +1000
+
 tomboy-ng (0.39-1) unstable; urgency=medium
 
   *  Release of new version.

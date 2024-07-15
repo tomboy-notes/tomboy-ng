@@ -206,7 +206,7 @@ Debian Bullseye likes debhelper = 13, Ubuntu is still on 12 in control file. Deb
 
 **Install** 
 
-devscripts libqt5pas-dev lcl-qt5 libnotify-dev lazarus fpc libdistro-info-perl build-essential debhelper-compat lintian
+devscripts dput libqt5pas-dev lcl-qt5 libnotify-dev lazarus fpc libdistro-info-perl build-essential debhelper-compat lintian libfontconfig-dev  (until its fixed in fpc)
 
 
 test-deb.bash into ~/bin/. from tb scripts dir.
