@@ -16,6 +16,8 @@ unit Notebook;
     This form is created dynamically and shown modal, the user can only open one
     at a time. If shown non-modal, there is a danger form will get lost ....
 
+    See the doc for Modes below for details
+
     History -
     2018/01/30 -replaced the function that cancels previous Notebook selection when
                 a new one is made (if settings so demand). This one works on Macs
@@ -45,11 +47,16 @@ uses
 type NotebookMode = (
                             // Changing name of a notebook, need Name in ....
         nbChangeName,       // Open in TabChangeName, hide all others. Call from Search
+
                             // Set the Notebooks a note is in, need FullFileName, Title. Call from
-        nbSetNoteBooks,     // the note itself. Open in TabExisting, also show TabNewNoteBook, hide others
+                            // the note itself. Open in TabExisting, also show TabNewNoteBook, hide others
+                            // This unit does not update file directly in this mode but does update
+        nbSetNoteBooks,     // the NoteLister. So, if called from elsewhere, must take steps to update file.
+
                             // Make a new NoteBook,
         nbMakeNewNoteBook,  // Open in TabNewNoteBook, also show but disable TabSetNotes, hide others
-                               // Set the notes that are a member of this noteook, need NBName
+
+                               // Set the notes that are a member of this notebook, need NBName
         nbSetNotesInNoteBook   // Open in TabSetNotes, hide all others
         );
 
@@ -163,7 +170,7 @@ begin
     Label3.Caption := rsChangeNameofNotebook;
     Label7.Caption := Title;
     if not TheMainNoteLister.GetNotesInNoteBook(NBIDList, Title) then
-        debugln('ERROR - Notebook.pas #152 No member notes found');
+        debugln('TNoteBookPick.SetupForChange ERROR - Notebook.pas #152 No member notes found');
     Label1.Caption := format(rsNumbNotesAffected, [NBIDList.Count]);
     EditNewNotebookName.SetFocus;
 end;
@@ -261,7 +268,7 @@ begin
     ButtonOK.Click;
 end;
 
-function TNoteBookPick.RewriteWithNewNotebookName(FileName : string) : boolean;
+function TNoteBookPick.RewriteWithNewNotebookName(FileName : string) : boolean; // ToDo : replace this fun with tb_utils.ReplaceNoteBookTags()
 var
     InFile, OutFile: TextFile;
     {NoteDateSt, }InString, TempName, NextSeekString : string;
@@ -432,7 +439,7 @@ begin
     TheMainNoteLister.AlterNotebook(Title, NewName);
     for IDstr in NBIDList do begin
         if TheMainNoteLister.IsThisNoteOpen(IDStr, OpenForm) then
-            TEditBoxForm(OpenForm).Dirty:= true
+            TEditBoxForm(OpenForm).MarkDirty
         else RewriteWithNewNotebookName(IDstr);
     end;
     // OK, now change template ......
@@ -499,7 +506,7 @@ var
     Dummy : TForm;
 begin
     TheMainNoteLister.GetNotesInNoteBook(STL, NBName);               // Might set STL to nil
-    for Index := 0 to CheckListAddNotes.Count -1 do begin        // A list of note Titles
+    for Index := 0 to CheckListAddNotes.Count -1 do begin            // A list of note Titles
         // So, of the IDs in STL, does one of them have a title to match the one in CheckListAddNotes[Index] ?
         InNoteList := False;
         i := 0;
@@ -515,14 +522,14 @@ begin
         if InNoteList and InCheckList  then continue;
         if not (InNoteList or InCheckList) then continue;
         // OK, some action is required
-         FName := string(CheckListAddNotes.Items.Objects[Index]);               // Thats the short file name, ID.note
+        FName := string(CheckListAddNotes.Items.Objects[Index]);                // Thats the short file name, ID.note
         if InNoteList and (not InCheckList) then begin                          // remove tag from note and notelister
             STL.Delete(i);                                                      // Remove the NoteLister entry
-            RemoveNoteBookTag(Sett.NoteDirectory+FName, NBName);
+            RemoveNoteBookTag(Sett.NoteDirectory+FName, NBName);                // Remove NB tag from note file
         end;
         if (not InNoteList) and InCheckList then begin                          // add tag to note and notelister
-            TheMainNoteLister.AddNoteBook(FName, NBName, false);                    // Update internal data view
-            if not TheMainNoteLister.IsThisNoteOpen(FName, Dummy) then              // update on disk files
+            TheMainNoteLister.AddNoteBook(FName, NBName, false);                // Update internal data view
+            if not TheMainNoteLister.IsThisNoteOpen(FName, Dummy) then          // update on disk files
                 InsertNoteBookTag(Sett.NoteDirectory+FName, NBName);
         end;
     end;
@@ -579,7 +586,7 @@ begin
 
         nbMakeNewNoteBook : if not MakeNewNoteBook then exit;                   // Exit if invalid NB name
 
-        nbSetNotesInNoteBook : AdjustNBookNotes;                                // Make file/notelister agree with user selctions
+        nbSetNotesInNoteBook : AdjustNBookNotes;                                // Make file/notelister agree with user selections
 
         nbChangeName : if EditNewNotebookName.Text <> '' then
                             if not ChangeNoteBookName(EditNewNotebookName.Text) then exit;

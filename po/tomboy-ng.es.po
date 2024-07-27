@@ -824,6 +824,7 @@ msgid "Print"
 msgstr "Imprimir"
 
 #: teditboxform.menuitemselectall.caption
+msgctxt "teditboxform.menuitemselectall.caption"
 msgid "Select All"
 msgstr "Seleccionar todo"
 
@@ -1421,6 +1422,10 @@ msgctxt "tsearchform.menuitemcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr "Sensible a mayúsculas"
 
+#: tsearchform.menuitemdeleteselected.caption
+msgid "Delete Selected Notes"
+msgstr ""
+
 #: tsearchform.menuitemimportnote.caption
 msgid "Import File"
 msgstr "Importar archivo"
@@ -1428,6 +1433,24 @@ msgstr "Importar archivo"
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Notebook"
 msgstr "Gestionar las notas del cuaderno"
+
+#: tsearchform.menuitemnotebookmembership.caption
+msgid "Note Book Membership"
+msgstr ""
+
+#: tsearchform.menuitemopenselected.caption
+msgid "Open Selected Notes"
+msgstr ""
+
+#: tsearchform.menuitemselectall.caption
+#, fuzzy
+msgctxt "tsearchform.menuitemselectall.caption"
+msgid "Select All"
+msgstr "Seleccionar todo"
+
+#: tsearchform.menuitemselectnone.caption
+msgid "Select None"
+msgstr ""
 
 #: tsearchform.menuitemswyt.caption
 msgid "Search While You Type"
@@ -1784,3 +1807,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

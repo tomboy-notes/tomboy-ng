@@ -845,6 +845,7 @@ msgid "Print"
 msgstr "Друкувати"
 
 #: teditboxform.menuitemselectall.caption
+msgctxt "teditboxform.menuitemselectall.caption"
 msgid "Select All"
 msgstr "Вибрати все"
 
@@ -1452,6 +1453,10 @@ msgctxt "tsearchform.menuitemcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr "Чутливість до регістру"
 
+#: tsearchform.menuitemdeleteselected.caption
+msgid "Delete Selected Notes"
+msgstr ""
+
 #: tsearchform.menuitemimportnote.caption
 msgid "Import File"
 msgstr "Імпортувати файл"
@@ -1461,6 +1466,24 @@ msgstr "Імпортувати файл"
 #| msgid "Manage Notes in Note Book"
 msgid "Manage Notes in Notebook"
 msgstr "Керувати нотатками в записнику"
+
+#: tsearchform.menuitemnotebookmembership.caption
+msgid "Note Book Membership"
+msgstr ""
+
+#: tsearchform.menuitemopenselected.caption
+msgid "Open Selected Notes"
+msgstr ""
+
+#: tsearchform.menuitemselectall.caption
+#, fuzzy
+msgctxt "tsearchform.menuitemselectall.caption"
+msgid "Select All"
+msgstr "Вибрати все"
+
+#: tsearchform.menuitemselectnone.caption
+msgid "Select None"
+msgstr ""
 
 #: tsearchform.menuitemswyt.caption
 msgid "Search While You Type"

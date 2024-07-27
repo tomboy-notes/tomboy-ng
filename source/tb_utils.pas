@@ -118,13 +118,12 @@ function EscapeJSON(St : string) : string;
                         // Removes a NoteBook tag from a note
 function RemoveNoteBookTag(const FullFileName, NB : string) : boolean;
 
-(*            moved to MainUnit, ALL notifications should hit mainform.ShowNotification(Msg, mS=3000)
-{$ifdef Linux}
-// Linux only uses libnotify, Win and MacOS work through TrayIcon
-procedure ShowNotification(const Title, Message : string; ShowTime : integer = 6000);
-{$endif}   *)
+                        { Rewrites a (not open) note file so Note_Lister's view of it's Notebook
+                          membership is applied. Takes a FullFileName, path, ID and extension.
+                          Updates metadate and last change date too.}
+function ReplaceNoteBookTags(const FullFileName : string) : boolean;
 
-{ Returns the name of the config directory (with trailing seperator)  }
+                        { Returns the name of the config directory (with trailing seperator)  }
 function TB_GetDefaultConfigDir : string;
 
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
@@ -154,7 +153,8 @@ var
 implementation
 
 uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
-        laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, Forms, LazUTF8;
+        laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, Forms, LazUTF8,
+        Note_Lister;                                                            // only used by RemoveNoteBookTags
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
@@ -228,6 +228,52 @@ begin
                 + FullFileName+ '-temp to ' + FullFileName);
 end;
 
+
+{ Next function assumes that Last Change Dates are on single lines each and that
+  Notebook tags, if present, follow the </y> tag. Possibly risky.  }
+
+function ReplaceNoteBookTags(const FullFileName : string) : boolean;
+var
+    InFile, OutFile: TextFile;
+    InString : string;
+begin
+    AssignFile(InFile, FullFileName);
+    AssignFile(OutFile, FullFileName + '-temp');
+    Reset(InFile);
+    Rewrite(OutFile);
+    while not eof(InFile) do begin
+         readln(InFile, InString);
+         if pos('<last-change-date>', InString) > 0 then
+             InString := '  <last-change-date>'
+                         + TB_GetLocalTime() + '</last-change-date>';
+         if pos('<last-metadata-change-date>', InString) > 0 then
+             InString := '  <last-metadata-change-date>'
+                         + TB_GetLocalTime() + '</last-metadata-change-date>';
+         writeln(OutFile, InString);
+         if pos('</y>', InString) > 0 then begin                                // Last tag before Notebook, get new tags
+            write(OutFile, TheMainNoteLister.NoteBookTags(ExtractFileNameOnly(FullFileName)+'.note'));    // func already has #10 at end
+            readln(InFile, InString);                                           // discard tags from InFile
+            while (pos('<tags>', InString) > 0) or (pos('</tags>', InString) > 0)
+                    or (pos('<tag>', InString) > 0) do                          // ToDo : should beware of premature EOF
+                readln(InFile, InString);
+            if InString <> '' then writeln(OutFile, InString);                  // write the tag that broke us out of loop
+         end;
+    end;
+    CloseFile(OutFile);
+    CloseFile(InFile);
+    Result := TB_ReplaceFile(FullFileName + '-temp', FullFileName);
+    if not Result then
+        debugln('ERROR, ReplaceNoteBookTags failed to mv '
+                + FullFileName+ '-temp to ' + FullFileName);
+end;
+
+{ XML around notebook tags looks like this -
+        <y>471</y>
+        <tags>                                                // may not be present if no notebook membership
+          <tag>system:notebook:stuff &amp; stuff</tag>        // 0 or more lines like this
+        </tags>                                               // ..
+        <open-on-startup>False</open-on-startup>
+}
 
 function TB_ReplaceFile(const SourceFile, DestFile : string) : boolean;
 begin

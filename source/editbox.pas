@@ -580,7 +580,7 @@ type
         function NewNoteTitle() : ANSIString;
                                 { Saves the note as text or rtf, consulting user about path and file name }
         procedure SaveNoteAs(TheExt: string);
-        procedure MarkDirty();
+
         function CleanCaption() : ANSIString;
                                 // Ratchets up or down the passed Paragraph's Bullet level. Bullet=T means increase level.
         procedure SetBullet(PB: TKMemoParagraph; Bullet: boolean;
@@ -622,7 +622,12 @@ type
         SearchedTerm : string;          // If not empty, opening is associated with a search, go straight there.
         HaveSeenOnActivate : boolean;   // Indicates we have run, eg, CheckForLinks at Activate
 
-        TemplateIs : AnsiString;        // If a new note is a member of Notebook, this holds notebook name until first save.
+                                // If a new note is a member of Notebook, this holds notebook name until first save.
+        TemplateIs : AnsiString;
+
+                                // Public : Declares note needs saving and starts timer.
+        procedure MarkDirty();
+
                                 { Public : Will mark this note as ReadOnly and not to be saved because the Sync Process
                                 has either replaced or deleted this note OR we are using it as an internal viewer.
                                 Can still read and copy content. Viewer users don't need big ugly yellow warning}
@@ -696,7 +701,7 @@ uses
     notenormal,         // makes the XML look a little prettier
 //    LCLStrConsts,       // just for rsMBClose ?
     KMemo2PDF,
-    tb_symbol;
+    tb_symbol{, libfontconfig};
 
 const
         LinkScanRange = 100;	// when the user changes a Note, we search +/- around
@@ -2070,6 +2075,7 @@ begin
                         end;
                     end;
             'pdf' : begin
+                        // LoadFontConfigLib('libfontconfig.so.1',false);
                         Form2pdf := TFormKMemo2pdf.create(self);
                         Form2PDF.TheKMemo := KMemo1;
                         Form2PDF.DefaultFont := sett.UsualFont;
@@ -4564,7 +4570,7 @@ begin
               if (Pos('<cursor-position>', InString) > 0) then break;
               writeln(OutFile, InString);
           end;
-          // OK, we are looking atthe part we want to change, ignore infile, we know better.
+          // OK, we are looking at the part we want to change, ignore infile, we know better.
           writeln(OutFile, '  <cursor-position>' + NRec.CPos + '</cursor-position>');
           writeln(OutFile, '  <selection-bound-position>1</selection-bound-position>');
           writeln(OutFile, '  <width>' + NRec.Width + '</width>');

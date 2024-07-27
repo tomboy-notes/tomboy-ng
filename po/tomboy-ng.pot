@@ -796,6 +796,7 @@ msgid "Print"
 msgstr ""
 
 #: teditboxform.menuitemselectall.caption
+msgctxt "teditboxform.menuitemselectall.caption"
 msgid "Select All"
 msgstr ""
 
@@ -1386,12 +1387,33 @@ msgctxt "tsearchform.menuitemcasesensitive.caption"
 msgid "Case Sensitive"
 msgstr ""
 
+#: tsearchform.menuitemdeleteselected.caption
+msgid "Delete Selected Notes"
+msgstr ""
+
 #: tsearchform.menuitemimportnote.caption
 msgid "Import File"
 msgstr ""
 
 #: tsearchform.menuitemmanagenbook.caption
 msgid "Manage Notes in Notebook"
+msgstr ""
+
+#: tsearchform.menuitemnotebookmembership.caption
+msgid "Note Book Membership"
+msgstr ""
+
+#: tsearchform.menuitemopenselected.caption
+msgid "Open Selected Notes"
+msgstr ""
+
+#: tsearchform.menuitemselectall.caption
+msgctxt "tsearchform.menuitemselectall.caption"
+msgid "Select All"
+msgstr ""
+
+#: tsearchform.menuitemselectnone.caption
+msgid "Select None"
 msgstr ""
 
 #: tsearchform.menuitemswyt.caption

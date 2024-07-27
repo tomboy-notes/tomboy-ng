@@ -153,6 +153,11 @@ type        { TSearchForm }
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
         MenuCreateNoteBook: TMenuItem;
+        MenuItemNoteBookMembership: TMenuItem;
+        MenuItemSelectAll: TMenuItem;
+        MenuItemSelectNone: TMenuItem;
+        MenuItemOpenSelected: TMenuItem;
+        MenuItemDeleteSelected: TMenuItem;
         MenuItemImportNote: TMenuItem;
         MenuItemCaseSensitive: TMenuItem;
         MenuItemSWYT: TMenuItem;
@@ -163,6 +168,7 @@ type        { TSearchForm }
         OpenDialogImport: TOpenDialog;
 		Panel1: TPanel;
         Panel2: TPanel;
+        PopupMenuListOptions: TPopupMenu;
         PopupMenuSearchOptions: TPopupMenu;
 		PopupMenuNotebook: TPopupMenu;
 		Splitter1: TSplitter;
@@ -195,21 +201,26 @@ type        { TSearchForm }
         procedure ListBoxNotebooksClick(Sender: TObject);
         procedure ListBoxNotebooksMouseUp(Sender: TObject;
             ButtonSMenu: TMouseButton; Shift: TShiftState; X, Y: Integer);
-        procedure ListViewNotesColumnClick(Sender: TObject; Column: TListColumn
-            );
+        procedure ListViewNotesColumnClick(Sender: TObject; Column: TListColumn);
         procedure ListViewNotesData(Sender: TObject; Item: TListItem);
         procedure ListViewNotesDblClick(Sender: TObject);
 		procedure ListViewNotesDrawItem(Sender: TCustomListView;
 				AItem: TListItem; ARect: TRect; AState: TOwnerDrawState);
 
         procedure ListViewNotesKeyPress(Sender: TObject; var Key: char);
+        procedure ListViewNotesMouseDown(Sender: TObject; Button: TMouseButton;
+            Shift: TShiftState; X, Y: Integer);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuCreateNoteBookClick(Sender: TObject);
-//        procedure MenuItemAutoRefreshClick(Sender: TObject);
+        procedure MenuItemDeleteSelectedClick(Sender: TObject);
+        procedure MenuItemNoteBookMembershipClick(Sender: TObject);
+        procedure MenuItemOpenSelectedClick(Sender: TObject);
         procedure MenuItemCaseSensitiveClick(Sender: TObject);
         procedure MenuItemImportNoteClick(Sender: TObject);
         procedure MenuItemManageNBookClick(Sender: TObject);
+        procedure MenuItemSelectAllClick(Sender: TObject);
+        procedure MenuItemSelectNoneClick(Sender: TObject);
         procedure MenuItemSWYTClick(Sender: TObject);
         procedure MenuRenameNoteBookClick(Sender: TObject);
                         // Rather than opening an empty note we copy the template.
@@ -363,7 +374,9 @@ uses MainUnit,      // Opening form, manages startup and Menus
 
 { TSearchForm }
 
-
+var
+    // an array of note ID.note selected when user right clicked Notes ListView
+    NoteListRightClickSel : TStringArray = ();
 
 { -------------   FUNCTIONS  THAT  PROVIDE  SERVICES  TO  OTHER   UNITS  ------------ }
 
@@ -417,14 +430,6 @@ begin
 //        end;
     end;
 end;
-
-
-
-(*
-procedure TSearchForm.ButtonRefreshClick(Sender: TObject);
-begin
-   DelayedRefresh(True);
-end;   *)
 
 procedure TSearchForm.MarkLinkOnOpenNotes();
 var
@@ -1569,16 +1574,35 @@ procedure TSearchForm.ListViewNotesDblClick(Sender: TObject);
 var
     NoteTitle : ANSIstring;
     FullFileName : string;
+    Itm : TListItem;
+    //T1, T2, T3, T4, T5 : qword;
 begin
     if  ListViewNotes.Selected = nil then exit;         // White space below notes ....
-    NoteTitle := ListViewNotes.Selected.Caption;
-    FullFileName :=  Sett.NoteDirectory + ListViewNotes.Selected.SubItems[1];
+    // it seems we cannot trust ListViewNotes.Selected to point to correct
+    // item. Maybe because I have switched to Multiselect Mode ?
+    // but it only shows up after clicking Notebook filter and back ?
+    // As a temp measure, I'll check here.
+    //T1 := GetTickCount64();
+    for Itm in ListViewNotes.Items do                   // measure time for 2k notes, 20mS max
+        if Itm.Selected then begin
+            FullFileName := Sett.NoteDirectory + Itm.SubItems[1];
+            NoteTitle := Itm.caption;
+            break;                                      // Only the first selected in this case
+        end;
+    //T2 := GetTickCount64();
+    //debugln('TSearchForm.ListViewNotesDblClick() ' + inttostr(T2-T1) + 'mS ');
+    // NoteTitle := ListViewNotes.Selected.Caption;
+    // FullFileName :=  Sett.NoteDirectory + ListViewNotes.Selected.SubItems[1];
+
+    if NoteTitle <> ListViewNotes.Selected.Caption then
+        debugln('WARNING TSearchForm.ListViewNotesDblClick 1=', NoteTitle, ' 2=', ListViewNotes.Selected.Caption);
   	if not FileExistsUTF8(FullFileName) then begin
       	showmessage('Cannot open ' + FullFileName);
       	exit();
   	end;
-  	if length(NoteTitle) > 0 then OpenNote(NoteTitle, FullFileName, '', True,
-                            ((EditSearch.Text <> '') and (EditSearch.Text <> rsMenuSearch) and Visible));
+  	if length(NoteTitle) > 0 then
+        OpenNote(NoteTitle, FullFileName, '', True
+            , ((EditSearch.Text <> '') and (EditSearch.Text <> rsMenuSearch) and Visible));
 end;
 
 procedure TSearchForm.ListViewNotesDrawItem(Sender: TCustomListView;
@@ -1626,6 +1650,107 @@ begin
     { Note, the above is to ensure the char typed that triggers move of focus to
     EditSearch is not lost. GTK2 does not loose it but easier to do it for all.   }
 end;
+
+
+// ---------- R I G H T   C L I C K   M E N U  on  N O T E S  L I S T   --------
+
+
+procedure TSearchForm.ListViewNotesMouseDown(Sender: TObject;
+    Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+          // rules for what menu items to show
+    Val : array of boolean;
+    Itm : TListItem;
+
+    procedure SetupRightClickMenu;
+    begin
+        MenuItemOpenSelected.Enabled       := Val[0];
+        MenuItemDeleteSelected.Enabled     := Val[1];
+        MenuItemNoteBookMembership.Enabled := Val[2];
+        MenuItemSelectAll.Enabled          := Val[3];
+        MenuItemSelectNone.Enabled         := Val[4];
+    end;
+
+begin
+    if Button = mbRight then begin
+        NoteListRightClickSel := [];                // clear it
+        for Itm in ListViewNotes.Items do begin
+              if Itm.Selected then begin
+                  //debugln('ListViewNotesMouseDown Selected ' + Itm.Caption {+ ' ' + Itm.SubItems[1]});
+                  insert({Sett.NoteDirectory +} Itm.SubItems[1], NoteListRightClickSel, 0);     // save the selected ID.note
+              end;
+        end;
+        if ListViewNotes.SelCount = 0 then Val := [false, false, false, true, false]
+        else if ListViewNotes.SelCount = 1 then Val := [true, true, true, true, true]
+        else Val := [true, true, false, true, true];        // more than one selected
+        SetupRightClickMenu;
+//        debugln('We have selected = ' + inttostr(ListViewNotes.SelCount));
+        PopupMenuListOptions.PopUp;
+    end;
+end;
+
+procedure TSearchForm.MenuItemDeleteSelectedClick(Sender: TObject);
+var
+    St : string;
+begin
+    if MessageDlg('Warning', 'Do you wish to delete '                     // ToDo : i18n
+        + inttostr(length(NoteListRightClickSel)) + ' notes ?'
+            , mtConfirmation, [mbYes, mbNo],0) = mrYes then begin
+        ListViewNotes.BeginUpdate;
+        for St in NoteListRightClickSel do
+                DeleteNote(Sett.NoteDirectory + St);
+                // debugln('TSearchForm.MenuItemDeleteSelectedClick Not deleting '
+                //    + TheMainNoteLister.GetTitle(St));
+        ListViewNotes.EndUpdate;
+    end;
+end;
+
+procedure TSearchForm.MenuItemOpenSelectedClick(Sender: TObject);
+var
+    St : string;
+begin
+    // we assume that if the user has seen the menuitem, there must one or more selections
+    ListViewNotes.BeginUpdate;
+    for St in NoteListRightClickSel do
+            OpenNote(TheMainNoteLister.GetTitle(St), Sett.NoteDirectory + St);
+    ListViewNotes.EndUpdate;
+end;
+
+procedure TSearchForm.MenuItemNoteBookMembershipClick(Sender: TObject);
+var
+    NotebookPick : TNotebookPick;
+    AForm : TForm;
+begin
+    if length(NoteListRightClickSel) <> 1 then exit;        // permit only exactly one note selected.
+    NotebookPick := TNotebookPick.Create(Application);
+    NotebookPick.TheMode := nbSetNoteBooks;
+    NotebookPick.FullFileName := Sett.NoteDirectory + NoteListRightClickSel[0];
+    NotebookPick.Title := TheMainNoteLister.GetTitle(NoteListRightClickSel[0]);
+    NotebookPick.ChangeMode := False;
+    NotebookPick.Top := Top;
+    NotebookPick.Left := Left;
+    if mrOK = NotebookPick.ShowModal then begin             // Note may be open (mark dirty) or not (alter file directly)
+        if TheMainNoteLister.IsThisNoteOpen(NoteListRightClickSel[0], AForm) then
+            TEditBoxForm(AForm).MarkDirty
+        else
+            ReplaceNoteBookTags(Sett.NoteDirectory + NoteListRightClickSel[0]);
+    end;
+    NotebookPick.Free;
+end;
+
+procedure TSearchForm.MenuItemSelectAllClick(Sender: TObject);
+begin
+   ListViewNotes.SelectAll;
+end;
+
+procedure TSearchForm.MenuItemSelectNoneClick(Sender: TObject);
+begin
+   ListViewNotes.ClearSelection;
+end;
+
+
+// ----------------------------------------
+
 
 procedure TSearchForm.ScaleListView();
 var
@@ -1729,6 +1854,7 @@ begin
     end;
 end;
 
+
 procedure TSearchForm.ButtonSMenuClick(Sender: TObject);
 begin
     PopupTBMainMenu.popup;
@@ -1752,7 +1878,7 @@ var
     NewNoteBookName : string = '';
     i : integer = 0;
 begin
-    debugln('TSearchForm.MenuCreateNoteBook NBCount S = ' + inttostr(TheMainNoteLister.NotebookCount()) );
+    // debugln('TSearchForm.MenuCreateNoteBook NBCount S = ' + inttostr(TheMainNoteLister.NotebookCount()) );
     NotebookPick := TNotebookPick.Create(Application);
     NotebookPick.TheMode := nbMakeNewNoteBook;
     NotebookPick.FullFileName := '';
@@ -1777,8 +1903,10 @@ begin
         end else
             debugln('TSearchForm.MenuCreateNoteBookClick - failed to find the new NotebookName');
     end;
-    debugln('TSearchForm.MenuCreateNoteBook NBCount E = ' + inttostr(TheMainNoteLister.NotebookCount()) );
+    // debugln('TSearchForm.MenuCreateNoteBook NBCount E = ' + inttostr(TheMainNoteLister.NotebookCount()) );
 end;
+
+
 
 // ---------------------- S E A R C H   O P T I O N S --------------------------
 
@@ -1866,6 +1994,8 @@ begin
     ListBoxNotebooksClick(Sender);
     // ButtonClearFilters.Click;       // ToDo : this should select the new Notebook if one made
 end;
+
+
 
 
 procedure TSearchForm.MenuRenameNoteBookClick(Sender: TObject);

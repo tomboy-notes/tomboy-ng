@@ -302,7 +302,8 @@ type
                                         { Changes the name associated with a Notebook in the internal data structure }
     function AlterNoteBook(const OldName, NewName: string): boolean;
                                         { Returns a multiline string to use in writing a notes notebook membership,
-                                          knows how to do a template too. String has special XML chars 'escaped'
+                                          knows how to do a template too. String has special XML chars 'escaped'.
+                                          Includes the <tags> tags but returns empty string if no NB membership.
                                           This function expects to be passed an ID + '.note'. }
     function NoteBookTags(const NoteID: string): ANSIString;
                                         { Returns true if it has returned with a pointer to a list with one or more Note Fnames
@@ -329,7 +330,7 @@ type
                                           empty, list is filtered for only notebooks that have that ID  and returns True iff the
                                           passed ID is that of a Template.  A Notebook Template will have only one Notebook name in
                                           its Tags and that will be added to strlist. The StartHere template won't have a Notebook
-                                          Name and therefore wont get mixed up here ???? }
+                                          Name and therefore wont get mixed up here ???? Expects ID.note }
     function GetNotebooks(out NBArray: TStringArray; const ID: ANSIString): boolean;
                                         { Rets a (JSON array like, escaped) string of Notebook names that this note is a member of.
                                         It returns an empty array if the note has no notebooks or cannot be found.
@@ -341,7 +342,7 @@ type
                                           GetNotes(Term) }
     procedure LoadListNotebooks(const NotebookItems: TStrings; SearchListOnly: boolean);
 
-
+    // ---------------------------------
 
                                         { Returns the LastChangeDate string for ID in the Notes list, empty string
                                         if not found (empty string is its a notebook) }

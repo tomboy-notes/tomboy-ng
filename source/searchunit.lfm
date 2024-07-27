@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 492
+  Left = 178
   Height = 401
-  Top = 578
+  Top = 612
   Width = 794
   ActiveControl = EditSearch
   Caption = 'tomboy-ng Search'
@@ -143,6 +143,7 @@ object SearchForm: TSearchForm
           Width = 1
         end>
       HideSelection = False
+      MultiSelect = True
       ParentShowHint = False
       ReadOnly = True
       RowSelect = True
@@ -157,6 +158,7 @@ object SearchForm: TSearchForm
       OnDrawItem = ListViewNotesDrawItem
       OnKeyDown = FormKeyDown
       OnKeyPress = ListViewNotesKeyPress
+      OnMouseDown = ListViewNotesMouseDown
     end
   end
   object StatusBar1: TStatusBar
@@ -349,5 +351,29 @@ object SearchForm: TSearchForm
   object OpenDialogImport: TOpenDialog
     Left = 346
     Top = 171
+  end
+  object PopupMenuListOptions: TPopupMenu
+    Left = 600
+    Top = 180
+    object MenuItemOpenSelected: TMenuItem
+      Caption = 'Open Selected Notes'
+      OnClick = MenuItemOpenSelectedClick
+    end
+    object MenuItemDeleteSelected: TMenuItem
+      Caption = 'Delete Selected Notes'
+      OnClick = MenuItemDeleteSelectedClick
+    end
+    object MenuItemNoteBookMembership: TMenuItem
+      Caption = 'Note Book Membership'
+      OnClick = MenuItemNoteBookMembershipClick
+    end
+    object MenuItemSelectAll: TMenuItem
+      Caption = 'Select All'
+      OnClick = MenuItemSelectAllClick
+    end
+    object MenuItemSelectNone: TMenuItem
+      Caption = 'Select None'
+      OnClick = MenuItemSelectNoneClick
+    end
   end
 end

@@ -856,6 +856,7 @@ var
         {$ifdef Ver3_2_2} result := ' FPC 3.2.2'; {$endif}
         {$ifdef Ver3_2_3} result := ' FPC 3.2.3'; {$endif}
         {$ifdef Ver3_3_1} result := ' FPC 3.3.1'; {$endif}
+        {$ifdef Ver3_2_4} result := ' FPC 3.2.4'; {$endif}
     end;
 begin
         if AboutFrm <> Nil then begin
