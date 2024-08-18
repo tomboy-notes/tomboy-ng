@@ -366,7 +366,7 @@ var
     DropNewLine : boolean = True;
 begin
     Result := True;
-    debugln('TImportNotes.MarkUpMarkDown - importing [' + Cont[0] + ']');
+    //debugln('TImportNotes.MarkUpMarkDown - importing [' + Cont[0] + ']');
     while Index < Cont.Count do begin
         St := Cont.Strings[Index];
         if (St = '') then begin

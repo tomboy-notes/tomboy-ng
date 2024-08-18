@@ -1,7 +1,7 @@
 object NoteBookPick: TNoteBookPick
-  Left = 1201
+  Left = 687
   Height = 436
-  Top = 361
+  Top = 187
   Width = 604
   Anchors = []
   Caption = 'Notebooks'

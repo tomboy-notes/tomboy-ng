@@ -567,7 +567,7 @@ begin
     SL := TStringList.Create;                                           // That is TabExisting
     try
         for Index := 0 to CheckListBox1.Count -1 do
-        if CheckListBox1.Checked[Index] then SL.Add(CheckListBox1.Items[Index]);
+            if CheckListBox1.Checked[Index] then SL.Add(CheckListBox1.Items[Index]);
         TheMainNoteLister.SetNotebookMembership(ExtractFileNameOnly(FullFileName) + '.note', SL);
     finally
         Sl.Free;
