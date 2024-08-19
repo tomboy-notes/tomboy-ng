@@ -232,9 +232,6 @@ type
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
 
-
-   	//procedure GetNoteDetails(const Dir, FileName: ANSIString; {const TermList: TStringList;} DontTestName: boolean=false);
-
                                 // Indexes one note. Always multithread mode but sometimes its only one thread.
                                 // Does require CriticalSection to be setup before calling.
                                 // If note turns out to be a template, don't add it to main note list
@@ -347,7 +344,7 @@ type
                                         { Returns the LastChangeDate string for ID in the Notes list, empty string
                                         if not found (empty string is its a notebook) }
     function GetLastChangeDate(const ID: String): string;
-                                        { Adds details of note of passed to NoteList }
+                                        { Adds details of odd note to NoteList, does NOT update Indexes. }
     procedure IndexThisNote(const ID : String);
                                         { Returns T is ID in current list, takes 36 char GUID or simple file name }
     function IsIDPresent(ID : string) : boolean;
@@ -406,7 +403,8 @@ type
                                         we may update Indexes, return false if nothing needs to be done, if True
                                         we will refresh displayed list or, if ReRunSearch is true, we'll re-run the
                                         current search, thus updating Search Indexes. We always update DateAllIndex.}
-    function AlterOrAddNote(out ReRunSearch: boolean; const FFName, LCD, Title: string): boolean;
+    function AlterOrAddNote(out ReRunSearch : boolean; const FFName, LCD,
+        Title : string) : boolean;
 
 
     // New Search methods
@@ -1273,7 +1271,7 @@ begin
 					end else
                         break;
 				    until false;          }
-                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''             // silly to record content for, eg, help notes.
+                if DontTestName or (not Sett.AutoSearchUpdate) then NoteP^.Content := ''       // silly to record content for, eg, help notes.
                 else begin
                     NoteP^.Content := '';
                     Node := Doc.DocumentElement.FindNode('text');
@@ -1407,6 +1405,7 @@ begin
     //debugln('TNoteLister.IndexThisNote');
     InitCriticalSection(CriticalSection);                          // could be done in background thread but rarely called
     GetNoteDetails(WorkingDir, CleanFileName(ID), false, self);    // while single call, must setup critical
+    // this should trigger a regeneration of Index Lists, otherwise,
     DoneCriticalSection(CriticalSection);
     //DebugMode := False;
 end;
@@ -1874,7 +1873,9 @@ begin
         smRecentUp    : result := NoteList[DateSearchIndex[DateSearchIndex.Count - Index -1]];
         smAATitleUp   : result := NoteList[TitleSearchIndex[Index]];
         smAATitleDown : result := NoteList[TitleSearchIndex[TitleSearchIndex.Count - Index -1]];
-        smAllRecentUp : result := NoteList[DateAllIndex[DateAllIndex.Count - Index -1]];
+        smAllRecentUp :
+                result := NoteList[DateAllIndex[DateAllIndex.Count - Index -1]];
+
     end;
 end;
 
@@ -2060,8 +2061,11 @@ end;
   We pass an Out Var, that will be false if the something is just update display
   and True if its a full rerun of search.  ReRunSearch : boolean.
 
-  This function first looks for the note ID in NoteList, if its there, update LCD
-  and then look to see if its in Title has changed. If it has, rebuild DateAllIndex
+  This function first looks for the note ID in NoteList, if its there, and
+  JustIndex is true, its probably a note just added by IndexThisNote(), has
+  and appropriate entry in NoteList so just needs DateAllIndex updated.
+  If JustIndex is false we should update LCD and then look
+  to see if its in Title has changed. If it has, rebuild DateAllIndex
   and return True. SearchUnit will trigger a repeat search.
 
   If its just a LCD job, we look to see if its mentioned in DateSearchIndex, if
@@ -2078,7 +2082,7 @@ end;
   New Note               T    T      Add to NoteList (still might not be displayed but too hard to tell)
 
 }
-
+            // Note that FFname is always needed, LCD and Title note needed if JustIndex is true
 function TNoteLister.AlterOrAddNote(out ReRunSearch : boolean; const FFName, LCD, Title : string) : boolean;
 var
     ID : string;
@@ -2122,11 +2126,6 @@ begin
         if ID = NoteList.Items[i]^.ID then break;       // Found it
         inc(i);
     end;
-
- (*   while ID <> NoteList.Items[i]^.ID do begin        // ToDo : can this cannot handle empty list?
-        inc(i);
-    end;         *)
-
     if i = NoteList.count then begin                    // Drop through, must be a new note.
         AddNote(ID, Title, LCD);                        // Add to NoteList
         DateAllIndex.Add(NoteList.Count -1);            // Added at the end of DateAllIndex, most recent.
@@ -2140,8 +2139,8 @@ begin
             NoteList.Items[i]^.Title := Title;
             NoteList.Items[i]^.TitleLow := lowercase(Title);
         end;
-        UpdateIndex(DateAllIndex);                      // Always update DateAllIndex, its not done by Search methods
     end;
+    UpdateIndex(DateAllIndex);                      // Always update DateAllIndex, its not done by Search methods
 end;
 
 function TNoteLister.AlterNote(ID, Change: ANSIString; Title: ANSIString): boolean;

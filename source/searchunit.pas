@@ -258,6 +258,7 @@ type        { TSearchForm }
         procedure FileMenuClicked(Sender: TObject);
 
         procedure InitialiseHelpFiles();
+                                // Copy Template to a new name removing the <tag>system:template</tag> and setting a Title
         function MakeNoteFromTemplate(const Template: String): string;
 
                                 // clears then Inserts file items in all main menus, note also removes help items ....
@@ -1669,6 +1670,10 @@ var
         MenuItemNoteBookMembership.Enabled := Val[2];
         MenuItemSelectAll.Enabled          := Val[3];
         MenuItemSelectNone.Enabled         := Val[4];
+        {$ifdef LCLGTK2}                              // GTK2 resets a select all when you release the mouse.
+        MenuItemSelectAll.Visible := false;
+        MenuItemSelectNone.Visible := false;
+        {$endif}
     end;
 
 begin
@@ -1676,15 +1681,13 @@ begin
         NoteListRightClickSel := [];                // clear it
         for Itm in ListViewNotes.Items do begin
               if Itm.Selected then begin
-                  //debugln('ListViewNotesMouseDown Selected ' + Itm.Caption {+ ' ' + Itm.SubItems[1]});
-                  insert({Sett.NoteDirectory +} Itm.SubItems[1], NoteListRightClickSel, 0);     // save the selected ID.note
+                  insert(Itm.SubItems[1], NoteListRightClickSel, 0);     // save the selected ID.note
               end;
         end;
         if ListViewNotes.SelCount = 0 then Val := [false, false, false, true, false]
         else if ListViewNotes.SelCount = 1 then Val := [true, true, true, true, true]
         else Val := [true, true, false, true, true];        // more than one selected
         SetupRightClickMenu;
-//        debugln('We have selected = ' + inttostr(ListViewNotes.SelCount));
         PopupMenuListOptions.PopUp;
     end;
 end;
@@ -1757,7 +1760,7 @@ var
     Col1Width : integer;
 begin
     {$ifdef LCLQT5 }
-    Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:00000');    // 00 allow for apparent error in scroll with
+    Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:00000');    // 00 allow for apparent error in scroll width
     {$else}
      Col1width := listviewnotes.Canvas.Font.GetTextWidth('2020-06-02 12:30:000');
     {$endif}
@@ -2033,12 +2036,11 @@ begin
         '', '');
 end;
 
-// Copy Template to a new name removing the <tag>system:template</tag> and setting a Title
+
 function TSearchForm.MakeNoteFromTemplate(const Template : String) : string;
 var
     InFile, OutFile: TextFile;
     InString : String;
-    //Start, Finish : integer;
     GUID : TGUID;
     RandBit, NewGUID : string;
 begin
@@ -2069,8 +2071,13 @@ begin
             CloseFile(OutFile);
             CloseFile(InFile);
         end;
-        TheMainNoteLister.IndexThisNote(NewGUID);
+        TheMainNoteLister.IndexThisNote(NewGUID);       // AAAAAH this does not refresh the indexes, particularly 'All'
         result := GetTitleFromFFN(Sett.NoteDirectory + NewGUID + '.note', false);
+        IndexAndRefresh();                                                // Reruns the current search with new data in NoteList
+        TheMainNoteLister.BuildDateAllIndex();                            // Must rebuild it before refreshing menus.
+        RefreshMenus(mkRecentMenu);
+        MainForm.UpdateNotesFound(TheMainNoteLister.NoteList.Count);
+
     except
         on E: EInOutError do begin
                 debugln('File handling error occurred making new note from template. Details: ' + E.Message);

@@ -1,7 +1,7 @@
 object FormSync: TFormSync
-  Left = 825
+  Left = 389
   Height = 418
-  Top = 260
+  Top = 299
   Width = 699
   Caption = 'Sync'
   ClientHeight = 418
@@ -10,7 +10,7 @@ object FormSync: TFormSync
   OnCreate = FormCreate
   OnHide = FormHide
   OnShow = FormShow
-  LCLVersion = '3.0.0.3'
+  LCLVersion = '3.4.0.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -37,19 +37,19 @@ object FormSync: TFormSync
     end
     object Label2: TLabel
       Left = 35
-      Height = 19
+      Height = 20
       Top = 56
-      Width = 43
+      Width = 45
       Caption = 'Label2'
     end
     object LabelProgress: TLabel
       AnchorSideTop.Control = Label1
       AnchorSideRight.Control = Panel1
       AnchorSideRight.Side = asrBottom
-      Left = 592
-      Height = 19
+      Left = 588
+      Height = 20
       Top = 24
-      Width = 94
+      Width = 98
       Anchors = [akTop, akRight]
       BorderSpacing.Right = 12
       Caption = 'LabelProgress'
@@ -185,12 +185,12 @@ object FormSync: TFormSync
         item
           AutoSize = True
           Caption = 'Action'
-          Width = 49
+          Width = 53
         end      
         item
           AutoSize = True
           Caption = 'Title'
-          Width = 37
+          Width = 39
         end      
         item
           Caption = 'Note ID'
