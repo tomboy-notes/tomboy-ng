@@ -2061,12 +2061,10 @@ end;
   We pass an Out Var, that will be false if the something is just update display
   and True if its a full rerun of search.  ReRunSearch : boolean.
 
-  This function first looks for the note ID in NoteList, if its there, and
-  JustIndex is true, its probably a note just added by IndexThisNote(), has
-  and appropriate entry in NoteList so just needs DateAllIndex updated.
-  If JustIndex is false we should update LCD and then look
-  to see if its in Title has changed. If it has, rebuild DateAllIndex
-  and return True. SearchUnit will trigger a repeat search.
+  This function first looks for the note ID in NoteList, if its there,
+  we should update LCD and then look to see if its in Title has changed.
+  If it has, rebuild DateAllIndex and return True. SearchUnit will trigger a
+  repeat search.
 
   If its just a LCD job, we look to see if its mentioned in DateSearchIndex, if
   not, ret false. Its its there, ret true and set ReRunSearch to False.
@@ -2087,7 +2085,6 @@ function TNoteLister.AlterOrAddNote(out ReRunSearch : boolean; const FFName, LCD
 var
     ID : string;
     i : integer = 0;                   // Is an index into NoteList
-//    PresentInIndex : boolean = false;
 
     // If it finds the i entry in Index, moves it to last entry, that being most recent.
     function UpdateIndex(TheIndex : TSortList) : boolean;    // i is an index to NoteList

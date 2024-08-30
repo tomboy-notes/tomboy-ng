@@ -1583,6 +1583,10 @@ begin
     // item. Maybe because I have switched to Multiselect Mode ?
     // but it only shows up after clicking Notebook filter and back ?
     // As a temp measure, I'll check here.
+    // From time to time, I see the warning below, cannot reproduce it. Might relate
+    // to just after a note has been deleted. The for loop below definitly returns
+    // the correct note all the time, ListViewNotes.Selected sometimes the wrong one,
+    // possibly the first note in the list. Going to leave it like this, 20 Aug, 2024
     //T1 := GetTickCount64();
     for Itm in ListViewNotes.Items do                   // measure time for 2k notes, 20mS max
         if Itm.Selected then begin
