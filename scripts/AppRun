@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+# An AppImage script that replaces the symlink linuxdeploys uses to point to binary 
+export QT_QPA_PLATFORM=xcb 
+exec $APPDIR/usr/bin/tomboy-ng $@

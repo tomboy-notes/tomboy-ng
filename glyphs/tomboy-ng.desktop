@@ -15,7 +15,7 @@ GenericName[es]=Tomador de apuntes
 GenericName[fr]=Application de prise de notes
 GenericName[nl]=Notities maken
 Exec=env QT_QPA_PLATFORM=xcb tomboy-ng %f
-Icon=/usr/share/icons/hicolor/256x256/apps/tomboy-ng.png
+Icon=tomboy-ng
 Terminal=false
 Type=Application
 Categories=GNOME;Utility

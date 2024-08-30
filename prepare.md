@@ -146,21 +146,25 @@ But that will extract a dir called, eg tomboy-ng-qt5-0.35, **you must add the -1
 ========
 If all you want is the binary, not building src packages at all, not cross compiling, then don't worry about signing etc, just -
 
-* install FPC (>=3.2.2),  Lazarus (>=2.2.4), libnotify-dev
+* install FPC (>=3.2.2),  Lazarus (>=3.4), libnotify-dev
 
 * install libqt5pas-dev if building a QT5 version
 
 * `wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa`
 
-* `bash ./prepare.ppa [-Q]`      // the -Q says make a Qt5 version please.
+* `bash ./prepare.ppa [-Q]`      // the -Q says make a Qt5 version please, see the script's help for more options, particularly if you are (sensibly) using a Lazarus built from source.
 
 * `cd tomboy-ng[tab] [enter]`
 
 * `bash ./buildit.bash`
 
-The binary will be in the source/. directory below where you are now standing.
+* `make install`
 
+* Or, if you prefer, `make PREFIX=\some\other\dir install ` to install in a non standard place.
 
+If you just want the binary, skip the install step. The binary will be in the source/. directory below where you are now standing.
+
+Note that building and installing this way is not regularly tested but should work ....
 
 **VM Setup**
 ========

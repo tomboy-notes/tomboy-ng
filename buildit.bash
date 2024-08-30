@@ -160,7 +160,7 @@ function CheckForQt5 () {
 # ------------ It all starts here ---------------------
 
 
-while getopts "hQc:" opt; do
+while getopts "hQTc:" opt; do
   case $opt in
     h)
       ShowHelp

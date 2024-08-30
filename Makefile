@@ -26,7 +26,7 @@ INSTALL_PROGRAM = $(INSTALL) -c -m 0755
 INSTALL_DATA    = $(INSTALL) -c -m 0644
 CP = cp -R
 # ----- Language translation files, just add 2 letter code here -----
-LANGUAGES = es fr nl
+LANGUAGES = es fr nl uk
 MKDIRLANG = test -d $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES
 CPLANG = msgfmt -o $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES/tomboy-ng.mo po/tomboy-ng.$(LANG).po
 
@@ -36,7 +36,6 @@ tomboy-ngx86_64:
 	bash ./buildit.bash
 	$(info ========== We have compiled [${PROGRAM_NAME}])
 	# $(info ========== $$BIN_DIR is [${BIN_DIR}])
-	
 
 
 clean:
@@ -47,6 +46,7 @@ clean:
 	$(RM)		$(OUTFILES)
 	$(RM)		source/Tomboy_NG source/tomboy-ng
 	$(RM)		kcontrols/package/kcontrols/KControls.log
+	$(RM)		$(APPDIR)
 	# clean is pretty useless here, any change to tree upsets debuild and apparently
 	# kcontrols changes some src file during package build. So, refresh !
 
@@ -58,9 +58,11 @@ install: installdirs
 	$(CP)			doc/overrides		$(DESTDIR)$(SHARE_DIR)/lintian/overrides/tomboy-ng
 	$(CP)			glyphs/icons		$(DESTDIR)$(SHARE_DIR)/
 	$(INSTALL_DATA)	glyphs/tomboy-ng.desktop	$(DESTDIR)$(SHARE_DIR)/applications/tomboy-ng.desktop
-	$(foreach LANG, $(LANGUAGES), $(CPLANG);)		
+	$(foreach LANG, $(LANGUAGES), $(CPLANG);)
+#	$(CP)	$(APPDIR)/usr/share/icons/hicolor/256x256/apps/tomboy-ng.png $(APPDIR)/usr/share/icons/hicolor/256x256/apps/tomboy-ng.png.png		
 
 installdirs:
+	test -d $(PREFIX) || $(MKDIR) $(PREFIX)
 	test -d $(DESTDIR)$(BIN_DIR) || $(MKDIR) $(DESTDIR)$(BIN_DIR)
 	test -d $(DESTDIR)$(MAN_DIR) || $(MKDIR) $(DESTDIR)$(MAN_DIR)
 	test -d $(DESTDIR)$(DOC_DIR) || $(MKDIR) $(DESTDIR)$(DOC_DIR)
@@ -68,5 +70,11 @@ installdirs:
 	test -d $(DESTDIR)/share/lintian/overrides || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/lintian/overrides
 	$(foreach LANG, $(LANGUAGES), $(MKDIRLANG);)
 
+#set_appimage_dir:			# just here to set PREFIX 
+#	$(eval PREFIX = $(APPDIR)/usr)	
+#	echo "set PREFIX to " $(PREFIX)
 
+#appimage: set_appimage_dir install 
+
+appimage: tomboy-ngx86_64 install
 
