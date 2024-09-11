@@ -63,8 +63,8 @@ EXCLUDEMESSAGE=" -vm6058,2005,5027 "	# cut down on compiler noise
 # 6058 - note about things not being inlined
 # 5027 - var not used
 # 2005 - level 2 comment
-FPCHARD=" -Cg  -k-pie -k-znow "
-AUTODOWNLOAD=FALSE			# downloading large file, use -d to allow it
+FPCHARD=" -Cg  -k-pie -k-znow "   # might get cancelled with a NOHARDENING semaphore file.
+AUTODOWNLOAD=FALSE			      # downloading large file, use -d to allow it
 
 # ------------------------ Some functions ------------------------
 
@@ -77,6 +77,7 @@ function ShowHelp () {
     echo "-c   specify CPU, default is $HOSTTYPE - supported x86_64, i386, arm"
     echo "-Q   build a Qt5 version (default gtk2)"
     echo "-T   build a Qt6 version"
+    echo "-n   no hardening, not for Debian build"
     echo "When used in SRC DEB toolchain, set -c (if necessary) options in the Makefile."
     echo ""
     exit 1
@@ -146,6 +147,7 @@ function CheckLazBuild () {
 
 		# We default to GTK2 but if a file is left in working dir called
 		# Qt5 or Qt6 then we build that. Note a -q does the same thing for qt5.
+		# We also check for a NOHARDENING semaphore here. Cannot use it in AppImage
 function CheckForQt5 () {
 	echo "----------- Looking for widget semophore in $PWD"
 	if [ -f "Qt5" ]; then
@@ -154,6 +156,9 @@ function CheckForQt5 () {
 	if [ -f "Qt6" ]; then
 	    WIDGET="qt6"
 	fi
+	if [ -f "NOHARDENING" ]; then
+            FPCHARD=""
+        fi	    
 	echo "----------- Using Widget Set $WIDGET"
 }
 
@@ -172,7 +177,7 @@ while getopts "hQTc:" opt; do
     Q)
 	WIDGET="qt5"
 	;;
-	T)
+    T)
 	WIDGET="qt6"
 	;;
     \?)
@@ -337,9 +342,9 @@ echo "$RUNIT"
 TOMBOY_NG_VER="$VERSION" $RUNIT 1>>tomboy-ng.log
 
 if [ ! -e "$PROJ" ]; then
-    echo "======================== ERROR, COMPILE FAILED source/tomboy-ng.log ====="
-    cat tomboy-ng.log
-    echo "=========================================================== END of LOG =="
+    echo "======== ERROR, COMPILE FAILED see source/tomboy-ng.log ====="
+#    cat tomboy-ng.log
+#    echo "=========================================================== END of LOG =="
     exit 1
 else
 	cp "$PROJ" "tomboy-ng"

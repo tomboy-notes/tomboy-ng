@@ -67,6 +67,9 @@ else
 	touch Qt5
 fi
 
+# And a semaphore to ensure we don't apply Hardening, has a problem in older OS.
+touch NOHARDENING
+
 if [ "$APPDIR" == "" ]; then	# OK, so I am a coward !
 	echo "ERROR, var APPDIR is empty, disaster is on your door step, exiting.."
 	exit

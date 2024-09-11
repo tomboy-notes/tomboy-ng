@@ -67,6 +67,28 @@ If you don't get a response, did you include 'mentors' in the dput line ?
 ...after doing the PPA stuff or you must edit the PPA changleog !
 
 
+**AppImage**
+========
+Its also possible to build a AppImage using the scripts here and the open source linuxdeploy tools.
+
+**Needed :**
+* Linux box with FPC323 or later, Lazarus 3.4 or later.
+* All necessary libraries and tools to build the tomboy-ng of your choice, ie Qt5 or Qt6 libraries etc.
+* linuxdeploy and linuxdeploy-plugin-qt available from https://github.com/linuxdeploy
+
+**Process**
+* mkdir AppImage
+* cd AppImage
+* wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.debian
+bash ./prepare.debian -n -q -l /home/dbannon/bin/Lazarus/lazarus_3_4/lazbuild
+* cd tom<tab>
+* bash scripts/mkappimage.bash -w Qt6
+* mv tomboy-ng-x86_64.AppImage tomboy-ng-x86_64-Qt6.AppImage
+* bash scripts/mkappimage.bash -w Qt5
+* mv tomboy-ng-x86_64.AppImage tomboy-ng-x86_64-Qt5.AppImage 
+
+Resulting bundles are about 35Meg each.
+
 
 **Launchpad PPA**
 ========
