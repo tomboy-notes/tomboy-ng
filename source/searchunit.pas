@@ -311,7 +311,7 @@ type        { TSearchForm }
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
         // that Menu, else applies WhichSection to all know Main TB Menus.
         procedure RefreshMenus(WhichSection: TMenuKind; AMenu: TPopupMenu=nil);
-        function MoveWindowHere(WTitle: string): boolean;
+        procedure MoveWindowHere(Frm : TForm);
          	{ Puts the names of recently used notes in the indicated menu, removes esisting ones first. }
         procedure MenuRecentItems(AMenu : TPopupMenu);
        	                    { Call this so NoteLister no longer thinks of this as a Open note }
@@ -368,6 +368,7 @@ uses MainUnit,      // Opening form, manages startup and Menus
     LCLVersion,     // used to enable, or not, sort indicators in lcl2.0.8 or later
     NoteBook,
     tb_utils,
+    {$ifdef LINUX}MvXWindow,{$endif}   // to move an XWindow (under linux) between workspaces
     cli;            // We call the ImportNote function there.
 
 
@@ -683,9 +684,10 @@ begin
                 try
                     TheForm := TEditBoxForm(HelpList.Objects[Index]);
                     debugln('Attempting a reshow of ' + HelpNoteName);
+                    {$ifdef LINUX}TheForm.Hide;{$endif}             // Might be on another Linux Workspace.
           	        TheForm.Show;
-                    SearchForm.MoveWindowHere(TheForm.Caption);
-                    TheForm.EnsureVisible(true);
+                    SearchForm.MoveWindowHere(TheForm);
+                    //TheForm.EnsureVisible(true);
                     exit;
 				except on E: Exception do {showmessage(E.Message)};
                 // If user had this help page open but then closed it entry is still in
@@ -914,8 +916,8 @@ begin
         mtSearch :  if Sett.NoteDirectory = '' then
                             showmessage(rsSetupNotesDirFirst)
                     else begin
-
-                            MoveWindowHere(Caption);
+                            //{$ifdef Linux}Hide;{$endif}     // Might be on another linux workspace
+                            MoveWindowHere(self);
                             //Tick := Gettickcount64();
                             EnsureVisible(true);
                             //Tock := Gettickcount64();
@@ -931,8 +933,9 @@ begin
                          Sett.Show;
                      end;
         mtSettings : begin
-                            MoveWindowHere(Sett.Caption);
-                            Sett.EnsureVisible(true);
+                            // {$ifdef LINUX}Sett.Hide;{$endif}
+                            MoveWindowHere(Sett);
+                            //Sett.EnsureVisible(true);
                             Sett.Show;
                      end;
 
@@ -1387,8 +1390,21 @@ begin
     end;
 end;
 
-function TSearchForm.MoveWindowHere(WTitle: string): boolean;
-{$ifdef LINUX}
+procedure TSearchForm.MoveWindowHere(Frm : TForm);
+begin
+    {$ifdef LINUX}               // On Linux, the target form may be in another workspace
+    if not mvxwindow.MvXWinWorkSpace(Frm.Caption) then
+    begin                        // Normally, this seems highly unlikely ! Maybe Enlightenment DE ?
+        Frm.Hide;
+        Frm.show;                // This produces a noticable flicker if the form is already visible
+    end;
+    {$else}
+    Frm.EnsureVisible(True);     // All that is necessary in a non-workspace system
+    {$endif}
+end;
+
+(*
+{$ifdef LINUX}                   // discard this when happy with MvXWindow model.
 var
     AProcess: TProcess;
     List : TStringList = nil;    {$endif}
@@ -1412,7 +1428,7 @@ begin
     List.Free;
     AProcess.Free;
     {$endif}
-end;
+end;         *)
 
 procedure TSearchForm.OpenNote(NoteTitle: String; FullFileName: string;
         TemplateIs: AnsiString; BackUp: boolean; InSearch: boolean; STerm : string);
@@ -1440,9 +1456,9 @@ begin
         if TheMainNoteLister.IsThisNoteOpen(NoteFileName, TheForm) then begin          // Note is already open
             // if user opened and then closed, we won't know we cannot re-show
             try
-            	TheForm.Show;
-                MoveWindowHere(TheForm.Caption);
-                TheForm.EnsureVisible(true);
+                MoveWindowHere(TheForm);
+
+//                TheForm.EnsureVisible(true);
                 if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
                     if STerm = '' then
                         TEditBoxForm(TheForm).NewFind(EditSearch.Text)

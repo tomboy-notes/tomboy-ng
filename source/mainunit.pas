@@ -369,8 +369,9 @@ begin
     CommsServer .ReadMessage;
     S := CommsServer .StringMessage;
     if S = 'SHOWSEARCH' then begin
+        {$ifdef LINUX}SearchForm.Hide;{$endif}  // Form may be open in another workspace, bring it here.
         SearchForm.Show;
-        SearchForm.MoveWindowHere(SearchForm.Caption);
+        //SearchForm.MoveWindowHere(SearchForm.Caption);
     end else
         if S.StartsWith('REINDEX') then
             SearchForm.IndexNewNote(copy(S, 9, 100), False)

@@ -1618,8 +1618,14 @@ var
     Info : TSearchRec;
 begin
     {$ifdef WINDOWS}HelpNotesPath := AppendPathDelim(ExtractFileDir(Application.ExeName)) + 'HELP' + PathDelim;{$endif}
-    {$ifdef LINUX}  HelpNotesPath := '/usr/share/tomboy-ng/HELP/';    {$endif}
+
     {$ifdef DARWIN} HelpNotesPath := ExtractFileDir(ExtractFileDir(Application.ExeName))+'/Resources/HELP/';{$endif}
+    {$ifdef LINUX}
+        if GetEnvironmentVariable('APPDIR') <> '' then                                          // Are we running as an AppImage ?
+            HelpNotesPath := GetEnvironmentVariable('APPDIR') + '/usr/share/tomboy-ng/HELP/'
+        else HelpNotesPath := '/usr/share/tomboy-ng/HELP/';
+    {$endif}
+
     HelpNotesLang:= '';
     ComboHelpLanguage.enabled := False;
     ComboHelpLanguage.Items.Clear;

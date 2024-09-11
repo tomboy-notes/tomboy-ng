@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '3.0.0.3'
+  LCLVersion = '3.4.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -32,7 +32,7 @@ object Sett: TSett
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       Caption = 'Basic'
-      ClientHeight = 459
+      ClientHeight = 458
       ClientWidth = 722
       OnResize = TabBasicResize
       object LabelSettingPath: TLabel
@@ -40,9 +40,9 @@ object Sett: TSett
         AnchorSideTop.Control = Label1
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 19
-        Top = 37
-        Width = 111
+        Height = 20
+        Top = 38
+        Width = 120
         BorderSpacing.Top = 3
         Caption = 'LabelSettingPath'
       end
@@ -51,9 +51,9 @@ object Sett: TSett
         AnchorSideTop.Control = Label2
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 19
-        Top = 103
-        Width = 104
+        Height = 20
+        Top = 106
+        Width = 111
         BorderSpacing.Top = 3
         Caption = 'LabelNotesPath'
       end
@@ -61,9 +61,9 @@ object Sett: TSett
         AnchorSideLeft.Control = TabBasic
         AnchorSideTop.Control = TabBasic
         Left = 7
-        Height = 19
+        Height = 20
         Top = 15
-        Width = 161
+        Width = 177
         BorderSpacing.Left = 7
         BorderSpacing.Top = 15
         Caption = 'Settings will be saved in :'
@@ -73,9 +73,9 @@ object Sett: TSett
         AnchorSideTop.Control = LabelSettingPath
         AnchorSideTop.Side = asrBottom
         Left = 7
-        Height = 19
-        Top = 81
-        Width = 242
+        Height = 20
+        Top = 83
+        Width = 266
         BorderSpacing.Top = 25
         Caption = 'Notes will be looked for and saved in :'
       end
@@ -84,9 +84,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckNotifications
         AnchorSideTop.Side = asrBottom
         Left = 20
-        Height = 21
-        Top = 369
-        Width = 142
+        Height = 22
+        Top = 374
+        Width = 156
         BorderSpacing.Top = 25
         Caption = 'Autostart at Logon'
         TabOrder = 0
@@ -95,9 +95,9 @@ object Sett: TSett
       object CheckShowSearchAtStart: TCheckBox
         AnchorSideTop.Control = CheckShowSplash
         Left = 380
-        Height = 21
-        Top = 277
-        Width = 157
+        Height = 22
+        Top = 280
+        Width = 171
         BorderSpacing.Left = 10
         Caption = 'Show Search at Start'
         TabOrder = 1
@@ -108,10 +108,10 @@ object Sett: TSett
         AnchorSideTop.Control = GroupNotesPath
         AnchorSideTop.Side = asrBottom
         Left = 20
-        Height = 21
+        Height = 22
         Hint = 'Always shown if error loading notes.'
-        Top = 277
-        Width = 155
+        Top = 280
+        Width = 170
         BorderSpacing.Left = 10
         BorderSpacing.Top = 35
         Caption = 'Show Splash at Start'
@@ -127,9 +127,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowSplash
         AnchorSideTop.Side = asrBottom
         Left = 20
-        Height = 21
-        Top = 323
-        Width = 145
+        Height = 22
+        Top = 327
+        Width = 157
         BorderSpacing.Top = 25
         Caption = 'Show Notifications'
         Checked = True
@@ -141,9 +141,9 @@ object Sett: TSett
         AnchorSideLeft.Control = CheckShowSearchAtStart
         AnchorSideTop.Control = CheckNotifications
         Left = 380
-        Height = 21
-        Top = 323
-        Width = 130
+        Height = 22
+        Top = 327
+        Width = 139
         Caption = 'ESC Closes Note'
         TabOrder = 4
         OnChange = SaveSettings
@@ -155,14 +155,14 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         Left = 10
         Height = 104
-        Top = 138
+        Top = 141
         Width = 702
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Left = 10
         BorderSpacing.Top = 35
         BorderSpacing.Right = 10
         Caption = 'Notes Path'
-        ClientHeight = 83
+        ClientHeight = 82
         ClientWidth = 698
         TabOrder = 5
         object RadioChoose: TRadioButton
@@ -170,9 +170,9 @@ object Sett: TSett
           AnchorSideTop.Control = RadioTomboyNGDefault
           AnchorSideTop.Side = asrCenter
           Left = 456
-          Height = 21
+          Height = 22
           Top = 8
-          Width = 71
+          Width = 75
           Caption = 'Choose'
           TabOrder = 0
           OnClick = RadioNotePathChange
@@ -182,9 +182,9 @@ object Sett: TSett
           AnchorSideTop.Control = RadioTomboyNGDefault
           AnchorSideTop.Side = asrBottom
           Left = 10
-          Height = 21
-          Top = 39
-          Width = 152
+          Height = 22
+          Top = 40
+          Width = 165
           BorderSpacing.Top = 10
           Caption = 'Old Tomboy Default'
           TabOrder = 1
@@ -193,9 +193,9 @@ object Sett: TSett
         object RadioTomboyNGDefault: TRadioButton
           AnchorSideLeft.Control = GroupNotesPath
           Left = 10
-          Height = 21
+          Height = 22
           Top = 8
-          Width = 145
+          Width = 158
           BorderSpacing.Left = 10
           Caption = 'tomboy-ng Default'
           Checked = True
@@ -213,7 +213,7 @@ object Sett: TSett
           Left = 456
           Height = 32
           Hint = 'If you have notes somewhere else'
-          Top = 33
+          Top = 35
           Width = 232
           Anchors = [akTop, akRight]
           BorderSpacing.Top = 4
@@ -228,7 +228,7 @@ object Sett: TSett
     end
     object TabDisplay: TTabSheet
       Caption = 'Notes'
-      ClientHeight = 459
+      ClientHeight = 458
       ClientWidth = 722
       ParentShowHint = False
       ShowHint = True
@@ -238,15 +238,15 @@ object Sett: TSett
         Top = 24
         Width = 264
         Caption = 'Font Size'
-        ClientHeight = 155
+        ClientHeight = 154
         ClientWidth = 260
         TabOrder = 7
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 55
-          Width = 44
+          Height = 22
+          Top = 54
+          Width = 46
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Big'
@@ -258,9 +258,9 @@ object Sett: TSett
         object RadioFontMedium: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 91
-          Width = 77
+          Height = 22
+          Top = 89
+          Width = 81
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Medium'
@@ -270,9 +270,9 @@ object Sett: TSett
         object RadioFontSmall: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 128
-          Width = 60
+          Height = 22
+          Top = 126
+          Width = 62
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Small'
@@ -282,9 +282,9 @@ object Sett: TSett
         object RadioFontHuge: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
-          Height = 21
-          Top = 19
-          Width = 58
+          Height = 22
+          Top = 18
+          Width = 61
           Anchors = [akLeft]
           BorderSpacing.Left = 19
           Caption = 'Huge'
@@ -297,9 +297,9 @@ object Sett: TSett
         AnchorSideTop.Control = GroupBox5
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
+        Height = 22
         Top = 220
-        Width = 148
+        Width = 161
         BorderSpacing.Top = 20
         Caption = 'Show Internal Links'
         TabOrder = 0
@@ -310,9 +310,9 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowIntLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
-        Top = 259
-        Width = 152
+        Height = 22
+        Top = 260
+        Width = 165
         BorderSpacing.Top = 18
         Caption = 'Show External Links'
         TabOrder = 1
@@ -323,10 +323,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowExtLinks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
+        Height = 22
         Hint = 'This may adversly affect traditional Tomboy, take care.'
-        Top = 298
-        Width = 289
+        Top = 300
+        Width = 318
         BorderSpacing.Top = 18
         Caption = 'Allow a Note to be in Multiple Notebooks.'
         ParentShowHint = False
@@ -373,7 +373,7 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         Left = 404
         Height = 32
-        Top = 376
+        Top = 380
         Width = 240
         BorderSpacing.Top = 18
         Caption = 'Set Colours'
@@ -404,9 +404,9 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         AnchorSideBottom.Control = ComboHelpLanguage
         Left = 404
-        Height = 19
-        Top = 148
-        Width = 139
+        Height = 20
+        Top = 147
+        Width = 151
         Anchors = [akLeft, akBottom]
         BorderSpacing.Bottom = 1
         Caption = 'Help Notes Language'
@@ -415,10 +415,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckManyNotebooks
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
+        Height = 22
         Hint = 'Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y'
-        Top = 337
-        Width = 241
+        Top = 340
+        Width = 265
         BorderSpacing.Top = 18
         Caption = 'Use Undo Redo (may slow editing)'
         Checked = True
@@ -436,7 +436,7 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         Left = 404
         Height = 32
-        Top = 256
+        Top = 257
         Width = 288
         Anchors = [akTop, akLeft, akRight]
         AutoSize = False
@@ -451,9 +451,9 @@ object Sett: TSett
         AnchorSideTop.Control = ComboHelpLanguage
         AnchorSideTop.Side = asrBottom
         Left = 404
-        Height = 19
+        Height = 20
         Top = 232
-        Width = 127
+        Width = 139
         BorderSpacing.Top = 32
         Caption = 'Date Stamp Format'
       end
@@ -461,9 +461,9 @@ object Sett: TSett
         AnchorSideLeft.Control = ComboDateFormat
         AnchorSideTop.Control = CheckStampSmall
         Left = 404
-        Height = 21
-        Top = 296
-        Width = 62
+        Height = 22
+        Top = 297
+        Width = 63
         Caption = 'Italics'
         ParentShowHint = False
         TabOrder = 10
@@ -474,10 +474,10 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         AnchorSideRight.Control = ComboDateFormat
         AnchorSideRight.Side = asrBottom
-        Left = 632
-        Height = 21
-        Top = 296
-        Width = 60
+        Left = 630
+        Height = 22
+        Top = 297
+        Width = 62
         Anchors = [akTop, akRight]
         BorderSpacing.Top = 8
         Caption = 'Small'
@@ -490,10 +490,10 @@ object Sett: TSett
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = CheckStampItalics
         AnchorSideRight.Control = CheckStampSmall
-        Left = 516
-        Height = 21
-        Top = 296
-        Width = 52
+        Left = 517
+        Height = 22
+        Top = 297
+        Width = 55
         BorderSpacing.Left = 50
         Caption = 'Bold'
         ParentShowHint = False
@@ -505,10 +505,10 @@ object Sett: TSett
         AnchorSideTop.Control = CheckUseUndo
         AnchorSideTop.Side = asrBottom
         Left = 32
-        Height = 21
+        Height = 22
         Hint = 'eg Ctrl-F opens and closes Find Window'
-        Top = 376
-        Width = 175
+        Top = 380
+        Width = 190
         BorderSpacing.Top = 18
         Caption = 'Find Command Toggles'
         Checked = True
@@ -519,7 +519,7 @@ object Sett: TSett
     end
     object TabSync: TTabSheet
       Caption = 'Sync'
-      ClientHeight = 459
+      ClientHeight = 458
       ClientWidth = 722
       object GroupBox4: TGroupBox
         AnchorSideLeft.Control = TabSync
@@ -530,8 +530,8 @@ object Sett: TSett
         AnchorSideBottom.Control = TabSync
         AnchorSideBottom.Side = asrBottom
         Left = 3
-        Height = 154
-        Top = 302
+        Height = 152
+        Top = 303
         Width = 716
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 3
@@ -539,7 +539,7 @@ object Sett: TSett
         BorderSpacing.Right = 3
         BorderSpacing.Bottom = 3
         Caption = 'When a conflict is detected between a local note and remote one :'
-        ClientHeight = 133
+        ClientHeight = 130
         ClientWidth = 712
         ParentColor = False
         TabOrder = 0
@@ -547,9 +547,9 @@ object Sett: TSett
           AnchorSideLeft.Control = GroupBox4
           AnchorSideTop.Control = GroupBox4
           Left = 15
-          Height = 21
+          Height = 22
           Top = 15
-          Width = 193
+          Width = 213
           BorderSpacing.Left = 15
           BorderSpacing.Top = 15
           Caption = 'Always Ask me what to do.'
@@ -562,9 +562,9 @@ object Sett: TSett
           AnchorSideTop.Control = RadioAlwaysAsk
           AnchorSideTop.Side = asrBottom
           Left = 15
-          Height = 21
-          Top = 51
-          Width = 301
+          Height = 22
+          Top = 52
+          Width = 325
           BorderSpacing.Top = 15
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
@@ -574,9 +574,9 @@ object Sett: TSett
           AnchorSideTop.Control = RadioUseLocal
           AnchorSideTop.Side = asrBottom
           Left = 15
-          Height = 21
-          Top = 87
-          Width = 289
+          Height = 22
+          Top = 89
+          Width = 311
           BorderSpacing.Top = 15
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
@@ -596,14 +596,14 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         Left = 3
         Height = 247
-        Top = 49
+        Top = 50
         Width = 716
         Anchors = [akTop, akLeft, akRight]
         BorderSpacing.Left = 3
         BorderSpacing.Top = 15
         BorderSpacing.Right = 3
         Caption = '  Sync  '
-        ClientHeight = 226
+        ClientHeight = 243
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
@@ -612,9 +612,9 @@ object Sett: TSett
           AnchorSideTop.Control = LabelSyncInfo2
           AnchorSideTop.Side = asrBottom
           Left = 15
-          Height = 19
-          Top = 81
-          Width = 43
+          Height = 20
+          Top = 83
+          Width = 48
           BorderSpacing.Left = 15
           BorderSpacing.Top = 18
           Caption = 'Repo : '
@@ -623,10 +623,10 @@ object Sett: TSett
           AnchorSideLeft.Control = Label4
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Label4
-          Left = 59
-          Height = 19
-          Top = 81
-          Width = 94
+          Left = 64
+          Height = 20
+          Top = 83
+          Width = 103
           BorderSpacing.Left = 1
           Caption = 'not configured'
         end
@@ -637,7 +637,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 548
           Height = 28
-          Top = 188
+          Top = 205
           Width = 154
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 10
@@ -649,9 +649,9 @@ object Sett: TSett
           AnchorSideLeft.Control = GroupBoxSync
           AnchorSideTop.Control = GroupBoxSync
           Left = 15
-          Height = 19
+          Height = 20
           Top = 15
-          Width = 96
+          Width = 104
           BorderSpacing.Left = 15
           BorderSpacing.Top = 15
           Caption = 'LabelSyncInfo1'
@@ -661,9 +661,9 @@ object Sett: TSett
           AnchorSideTop.Control = LabelSyncInfo1
           AnchorSideTop.Side = asrBottom
           Left = 15
-          Height = 19
-          Top = 44
-          Width = 98
+          Height = 20
+          Top = 45
+          Width = 105
           BorderSpacing.Left = 15
           BorderSpacing.Top = 10
           Caption = 'LabelSyncInfo2'
@@ -677,13 +677,13 @@ object Sett: TSett
           AnchorSideRight.Side = asrBottom
           Left = 215
           Height = 58
-          Top = 105
+          Top = 108
           Width = 487
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Left = 15
           BorderSpacing.Top = 5
           Caption = 'Token'
-          ClientHeight = 37
+          ClientHeight = 54
           ClientWidth = 483
           TabOrder = 0
           object LabelToken: TLabel
@@ -693,9 +693,9 @@ object Sett: TSett
             AnchorSideTop.Side = asrCenter
             AnchorSideBottom.Side = asrCenter
             Left = 106
-            Height = 19
-            Top = 8
-            Width = 74
+            Height = 20
+            Top = 7
+            Width = 80
             BorderSpacing.Left = 5
             Caption = 'LabelToken'
             ParentShowHint = False
@@ -720,11 +720,11 @@ object Sett: TSett
           AnchorSideTop.Side = asrBottom
           Left = 15
           Height = 58
-          Top = 105
+          Top = 108
           Width = 185
           BorderSpacing.Top = 5
           Caption = 'User'
-          ClientHeight = 37
+          ClientHeight = 36
           ClientWidth = 181
           TabOrder = 1
           object EditUserName: TEdit
@@ -735,8 +735,8 @@ object Sett: TSett
             AnchorSideRight.Side = asrBottom
             AnchorSideBottom.Side = asrCenter
             Left = 5
-            Height = 29
-            Top = 4
+            Height = 30
+            Top = 3
             Width = 154
             BorderSpacing.Left = 5
             BorderSpacing.Right = 10
@@ -749,9 +749,9 @@ object Sett: TSett
           AnchorSideLeft.Side = asrBottom
           AnchorSideBottom.Control = SpeedSetupSync
           AnchorSideBottom.Side = asrCenter
-          Left = 113
-          Height = 29
-          Top = 187
+          Left = 121
+          Height = 30
+          Top = 204
           Width = 194
           Anchors = [akLeft, akBottom]
           BorderSpacing.Left = 20
@@ -773,9 +773,9 @@ object Sett: TSett
           AnchorSideBottom.Control = SpeedSetupSync
           AnchorSideBottom.Side = asrCenter
           Left = 15
-          Height = 19
-          Top = 192
-          Width = 78
+          Height = 20
+          Top = 209
+          Width = 86
           Anchors = [akLeft, akBottom]
           Caption = 'Sync Timing'
         end
@@ -784,8 +784,8 @@ object Sett: TSett
         AnchorSideLeft.Control = LabelSyncType
         AnchorSideLeft.Side = asrBottom
         AnchorSideTop.Control = LabelSyncType
-        Left = 89
-        Height = 29
+        Left = 96
+        Height = 30
         Hint = 'Github or File Sync'
         Top = 15
         Width = 359
@@ -805,9 +805,9 @@ object Sett: TSett
         AnchorSideLeft.Control = TabSync
         AnchorSideTop.Control = TabSync
         Left = 10
-        Height = 19
+        Height = 20
         Top = 15
-        Width = 64
+        Width = 71
         BorderSpacing.Left = 10
         BorderSpacing.Top = 15
         Caption = 'Sync Type'
@@ -815,7 +815,7 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 459
+      ClientHeight = 458
       ClientWidth = 722
       Enabled = False
       TabVisible = False
@@ -827,7 +827,7 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 459
+        Height = 458
         Top = 0
         Width = 722
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -837,7 +837,7 @@ object Sett: TSett
     object TabRecover: TTabSheet
       BorderWidth = 1
       Caption = 'Recover'
-      ClientHeight = 459
+      ClientHeight = 458
       ClientWidth = 722
       OnResize = TabRecoverResize
       object Panel2: TPanel
@@ -849,7 +849,7 @@ object Sett: TSett
         AnchorSideBottom.Control = TabRecover
         AnchorSideBottom.Side = asrBottom
         Left = 1
-        Height = 193
+        Height = 192
         Top = 265
         Width = 720
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -858,7 +858,7 @@ object Sett: TSett
         BorderSpacing.Right = 1
         BorderSpacing.Bottom = 1
         BevelInner = bvLowered
-        ClientHeight = 193
+        ClientHeight = 192
         ClientWidth = 720
         TabOrder = 0
         object Label6: TLabel
@@ -866,9 +866,9 @@ object Sett: TSett
           AnchorSideTop.Control = Label11
           AnchorSideTop.Side = asrBottom
           Left = 31
-          Height = 19
-          Top = 45
-          Width = 417
+          Height = 20
+          Top = 46
+          Width = 455
           BorderSpacing.Top = 10
           Caption = 'Backup files are made when you delete a note or the sync system'
         end
@@ -877,9 +877,9 @@ object Sett: TSett
           AnchorSideTop.Control = Label6
           AnchorSideTop.Side = asrBottom
           Left = 31
-          Height = 19
-          Top = 74
-          Width = 164
+          Height = 20
+          Top = 76
+          Width = 181
           BorderSpacing.Top = 10
           Caption = 'is about to overwrite one.'
         end
@@ -888,9 +888,9 @@ object Sett: TSett
           AnchorSideTop.Control = Label7
           AnchorSideTop.Side = asrBottom
           Left = 31
-          Height = 19
-          Top = 103
-          Width = 383
+          Height = 20
+          Top = 106
+          Width = 418
           BorderSpacing.Top = 10
           Caption = 'They remain, forever, unless you do something about them.'
         end
@@ -901,7 +901,7 @@ object Sett: TSett
           AnchorSideBottom.Side = asrBottom
           Left = 602
           Height = 40
-          Top = 144
+          Top = 143
           Width = 109
           Anchors = [akRight, akBottom]
           BorderSpacing.Right = 7
@@ -914,9 +914,9 @@ object Sett: TSett
           AnchorSideLeft.Control = Panel2
           AnchorSideTop.Control = Panel2
           Left = 31
-          Height = 19
+          Height = 20
           Top = 16
-          Width = 85
+          Width = 92
           BorderSpacing.Left = 29
           BorderSpacing.Top = 14
           Caption = 'Backup Files'
@@ -942,9 +942,9 @@ object Sett: TSett
           AnchorSideLeft.Control = Panel3
           AnchorSideTop.Control = Panel3
           Left = 32
-          Height = 19
+          Height = 20
           Top = 26
-          Width = 337
+          Width = 359
           BorderSpacing.Left = 30
           BorderSpacing.Top = 24
           Caption = 'A snaphot is a copy of your current note directory.'
@@ -956,9 +956,9 @@ object Sett: TSett
           AnchorSideTop.Control = Label9
           AnchorSideTop.Side = asrBottom
           Left = 32
-          Height = 19
-          Top = 61
-          Width = 53
+          Height = 20
+          Top = 62
+          Width = 58
           BorderSpacing.Top = 16
           Caption = 'Snap dir'
         end
@@ -967,8 +967,8 @@ object Sett: TSett
           AnchorSideTop.Control = LabelSnapDir
           AnchorSideTop.Side = asrBottom
           Left = 32
-          Height = 29
-          Top = 113
+          Height = 30
+          Top = 115
           Width = 76
           BorderSpacing.Top = 33
           MaxValue = 31
@@ -982,8 +982,8 @@ object Sett: TSett
           AnchorSideTop.Control = SpinDaysPerSnapshot
           AnchorSideTop.Side = asrBottom
           Left = 32
-          Height = 29
-          Top = 153
+          Height = 30
+          Top = 156
           Width = 76
           BorderSpacing.Top = 11
           MaxValue = 10
@@ -996,9 +996,9 @@ object Sett: TSett
           AnchorSideTop.Control = SpinDaysPerSnapshot
           AnchorSideTop.Side = asrCenter
           Left = 344
-          Height = 21
-          Top = 117
-          Width = 149
+          Height = 22
+          Top = 119
+          Width = 160
           Caption = 'Use auto snapshots'
           TabOrder = 2
           OnChange = CheckAutoSnapEnabledChange
@@ -1007,18 +1007,18 @@ object Sett: TSett
           AnchorSideTop.Control = SpinDaysPerSnapshot
           AnchorSideTop.Side = asrCenter
           Left = 131
-          Height = 19
-          Top = 118
-          Width = 119
+          Height = 20
+          Top = 120
+          Width = 129
           Caption = 'Days per snapshot'
         end
         object Label16: TLabel
           AnchorSideTop.Control = SpinMaxSnapshots
           AnchorSideTop.Side = asrCenter
           Left = 131
-          Height = 19
-          Top = 158
-          Width = 205
+          Height = 20
+          Top = 161
+          Width = 223
           Caption = 'Maximum number of snapshots'
         end
         object ButtonSnapRecover: TButton
@@ -1065,16 +1065,16 @@ object Sett: TSett
     end
     object TabSpell: TTabSheet
       Caption = 'Spell'
-      ClientHeight = 459
+      ClientHeight = 458
       ClientWidth = 722
       OnResize = TabSpellResize
       object Label13: TLabel
         AnchorSideLeft.Control = TabSpell
         AnchorSideTop.Control = TabSpell
         Left = 10
-        Height = 19
+        Height = 20
         Top = 13
-        Width = 305
+        Width = 328
         BorderSpacing.Left = 10
         BorderSpacing.Top = 13
         Caption = 'Spell Check requires the Hunspell Libraries and'
@@ -1084,9 +1084,9 @@ object Sett: TSett
         AnchorSideTop.Control = Label13
         AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 19
-        Top = 42
-        Width = 254
+        Height = 20
+        Top = 43
+        Width = 274
         BorderSpacing.Top = 10
         Caption = 'an appropriate Hunspell Dictionary set.'
       end
@@ -1095,9 +1095,9 @@ object Sett: TSett
         AnchorSideTop.Control = ButtonSetDictionary
         AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 19
-        Top = 350
-        Width = 70
+        Height = 20
+        Top = 356
+        Width = 73
         BorderSpacing.Top = 20
         Caption = 'LabelError'
       end
@@ -1106,9 +1106,9 @@ object Sett: TSett
         AnchorSideTop.Control = Label14
         AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 19
-        Top = 89
-        Width = 122
+        Height = 20
+        Top = 91
+        Width = 131
         BorderSpacing.Top = 28
         Caption = 'LabelLibraryStatus'
       end
@@ -1117,9 +1117,9 @@ object Sett: TSett
         AnchorSideTop.Control = ButtonSetSpellLibrary
         AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 19
-        Top = 241
-        Width = 97
+        Height = 20
+        Top = 245
+        Width = 104
         BorderSpacing.Top = 63
         Caption = 'LabelDicStatus'
       end
@@ -1128,9 +1128,9 @@ object Sett: TSett
         AnchorSideTop.Control = LabelLibraryStatus
         AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 19
-        Top = 116
-        Width = 81
+        Height = 20
+        Top = 119
+        Width = 86
         BorderSpacing.Top = 8
         Caption = 'LabelLibrary'
       end
@@ -1139,9 +1139,9 @@ object Sett: TSett
         AnchorSideTop.Control = LabelDicStatus
         AnchorSideTop.Side = asrBottom
         Left = 10
-        Height = 19
-        Top = 268
-        Width = 56
+        Height = 20
+        Top = 273
+        Width = 59
         BorderSpacing.Top = 8
         Caption = 'LabelDic'
       end
@@ -1154,8 +1154,8 @@ object Sett: TSett
         AnchorSideBottom.Control = ButtonSetDictionary
         AnchorSideBottom.Side = asrBottom
         Left = 165
-        Height = 192
-        Top = 138
+        Height = 194
+        Top = 142
         Width = 550
         Anchors = [akTop, akLeft, akRight, akBottom]
         BorderSpacing.Left = 12
@@ -1170,10 +1170,10 @@ object Sett: TSett
         AnchorSideRight.Control = ListBoxDic
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ListBoxDic
-        Left = 610
-        Height = 19
-        Top = 112
-        Width = 105
+        Left = 603
+        Height = 20
+        Top = 115
+        Width = 112
         Anchors = [akRight, akBottom]
         BorderSpacing.Bottom = 7
         Caption = 'LabelDicPrompt'
@@ -1184,7 +1184,7 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 10
         Height = 40
-        Top = 138
+        Top = 142
         Width = 143
         BorderSpacing.Top = 3
         Caption = 'Set Spell Library'
@@ -1197,7 +1197,7 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 10
         Height = 40
-        Top = 290
+        Top = 296
         Width = 143
         BorderSpacing.Top = 3
         Caption = 'Set Dictionary'
@@ -1209,9 +1209,9 @@ object Sett: TSett
   object Label15: TLabel
     AnchorSideBottom.Side = asrBottom
     Left = 24
-    Height = 19
-    Top = 502
-    Width = 49
+    Height = 20
+    Top = 501
+    Width = 53
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
     Caption = 'Label15'
