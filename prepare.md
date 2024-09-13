@@ -80,7 +80,7 @@ Its also possible to build a AppImage using the scripts here and the open source
 * mkdir AppImage
 * cd AppImage
 * wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.debian
-bash ./prepare.debian -n -q -l /home/dbannon/bin/Lazarus/lazarus_3_4/lazbuild
+* bash ./prepare.debian -n -q -l /home/dbannon/bin/Lazarus/lazarus_3_4/lazbuild
 * cd tom<tab>
 * bash scripts/mkappimage.bash -w Qt6
 * mv tomboy-ng-x86_64.AppImage tomboy-ng-x86_64-Qt6.AppImage

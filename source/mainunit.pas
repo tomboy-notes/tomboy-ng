@@ -469,7 +469,7 @@ begin
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk post 22/05/2021, r65122
     // Does no harm to check here but if its not in Lazarus, its won't be used when needed.
     result := false;
-    {$ifndef LCLQT5}                      // It appears QT5 can talk direct to gnome-shell-extension-appindicator ??
+    {$ifdef LCLGTK2}  // It appears QT5 can talk direct to gnome-shell-extension-appindicator ??
     H := LoadLibrary('libappindicator3.so.1');
     if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) and (H = NilHandle) then
         debugln('===== libappindicator3 is not present');
@@ -534,15 +534,16 @@ begin
         exit(True);
         // So far, every KDE I have tested has a SysTray, but some work badley with left click
         // under wayland in 2023, Deb 13 KDE does not need this but too hard to tell reliably
-    {$ifdef LCLQT6}exit(true);{$endif}
+//    {$ifdef LCLQT6}exit(true);{$endif}                 // Sept '24, noted that Qt6 also has SysTray issues on Gnome, why was this here ?
     {$IFnDEF LCLGTK3}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2}XDisplay := gdk_display; {$endif}
-    {$ifdef LCLQT5}
+    {$if defined(LCLQT5) OR defined(LCLQT6)}
         // If using Gnome and QT5, cannot safely test for a SysTray, we'll guess....
         if pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then
             exit(CheckGnomeExtras());
-        XDisplay := QX11Info_display;
+        // XDisplay := QX11Info_display;           // thats Qt5 only
+        XDisplay := xlib.XOpenDisplay(nil);        // that should be any x11 based ...
     {$endif LCLQT5}
     // OK, don't call next line in a KDE system .....
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);  // gtk2 or non-Gnome Qt5

@@ -933,10 +933,12 @@ begin
                          Sett.Show;
                      end;
         mtSettings : begin
-                            // {$ifdef LINUX}Sett.Hide;{$endif}
-                            MoveWindowHere(Sett);
+                            // {$ifdef LINUX}Sett.Hide;{$endif
+                            if Sett.Visible then
+                                MoveWindowHere(Sett)
+                            else Sett.Show;
                             //Sett.EnsureVisible(true);
-                            Sett.Show;
+
                      end;
 
         mtHelp :      begin
