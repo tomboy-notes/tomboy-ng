@@ -80,6 +80,7 @@ RESOURCESTRING
   rsFileSyncInfo2 = 'or uses a remote server over the internet with sshfs';
   rsGithubSyncInfo1 = 'tomboy-ng can use Github to both sync and display or edit notes';
   rsGithubSyncInfo2 = 'you should read the tomboy-ng wiki page for instructions.';
+  rsNetworkNotAvailable = 'Network not available';
 
 
 // Settings but only part ...

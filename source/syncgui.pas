@@ -238,7 +238,11 @@ begin
     ASync.Password   := Sett.LabelToken.Caption;              // better find a better way to do this Davo
     Async.UserName   := Sett.EditUserName.text;
     ASync.RepoAction := RepoJoin;
-    Async.SetTransport(TransPort);
+
+    if (Async.SetTransport(TransPort) = SyncNetworkError) then begin
+        showmessage(rsUnableToProceed + ' ' + rsNetworkNotAvailable);
+        ModalResult := mrCancel;
+    end;
     SyncAvail        := ASync.TestConnection();
     if SyncAvail = SyncNoRemoteRepo then
         if mrYes = QuestionDlg('Advice', rsCreateNewRepo, mtConfirmation, [mrYes, mrNo], 0) then begin
@@ -362,7 +366,22 @@ begin
         ASync.RepoAction:= RepoUse;
         ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
         Async.UserName := Sett.EditUserName.text;
-        Async.SetTransport(TransPort);
+
+        if Async.SetTransport(TransPort) = SyncNetworkError then begin
+            if not Visible then begin
+                SearchForm.UpdateStatusBar(1, rsAutoSyncNotPossible);
+                if Sett.CheckNotifications.checked then begin
+                    MainForm.ShowNotification(rsAutoSyncNotPossible);
+                end;
+                exit(false);
+            end else begin                                                      // busy unset in finally clause
+                showmessage('Unable to sync because ' + ASync.ErrorString);
+                FormSync.ModalResult := mrAbort;
+                exit(false);                                                    // busy unset in finally clause
+            end;
+        end;
+
+
 //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
         SyncAvail := ASync.TestConnection();
         if SyncAvail <> SyncReady then begin

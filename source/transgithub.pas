@@ -71,6 +71,11 @@ HISTORY :
     2021/09/27 - Implement selective sync.
     2022/10/18 - Fix markup around readme warning
     2024/05/08 - extensive rework of debugging code, retry download if it fails.
+    2024/09/15 - After noting a catistrophic fail to sync that appeared to be related to a fail to
+                 resolve api.github.com and observing my network is currently very flakey, a
+                 number of tweeks to make more resiliant. 1) Before starting aGHSync, I try to
+                 resolve (as an exercise) the hostnames. 2) Extend the downloader timeouts,
+                 Client.ConnectTimeout := 8000; was 3000; Client.IOTimeout := 4000; was 0;
 }
 
 
@@ -113,12 +118,14 @@ TGitNoteList = class(TFPList)
         procedure InsertData(const FName, Field, Data: string);
 
      public
+
          constructor Create();
          destructor Destroy; override;
                             // Adds an item, found in the remote dir scan JSON, to the
                             // RemoteNotes list, does NOT check for duplicates. Only gets
                             // Name (that is, FileName maybe with dir prepended) and sha.
          //function AddJItem(jItm: TJSONData; Prefix: string): boolean;
+
 
                             // Adds a new item to List, Notes and files in Meta require prefix added before being passed here
          procedure AddNewItem(const FName, Sha: string);
@@ -234,7 +241,7 @@ type
   public
         //UserName : string;
         //RemoteRepoName : string;                // eg tb_test, tb_notes
-
+        FailedToResolveIPs : boolean;      // says we failed to resolve (unused) IPs for github. Don't proceed.
         TokenExpires : string;                  // Will have token expire date after TestTransport()
         {$ifdef TESTRIG}                        // These are all defined in trans, need to provide them is in TestRig mode
         RemoteServerRev : integer;
@@ -324,7 +331,8 @@ uses
     fphttpclient, httpprotocol, base64,
     LazUTF8, LazFileUtils, fpopenssl, ssockets, {ssockets,} DateUtils, fileutil,
     CommonMark, import_notes,
-    Note_Lister, TB_Utils, jsontools, ResourceStr;
+    Note_Lister, TB_Utils, jsontools, ResourceStr,
+    resolve;                // because I am playing with eg gethostbyname()
 
 const
   GitBaseURL='https://github.com/';
@@ -369,7 +377,7 @@ begin
     end;
 end;
 
-constructor TGitNoteList.Create();
+constructor TGitNoteList.Create();   { uses resolve unit }
 begin
      inherited Create;
 end;
@@ -517,7 +525,8 @@ end;
 
 {$define DEBUGghs}
 
-function TGitHubSync.TestTransport(const WriteNewServerID: boolean): TSyncAvailable;
+function TGithubSync.TestTransport(const WriteNewServerID : boolean
+    ) : TSyncAvailable;
 {  If we initially fail to find offered user account, try defunkt so we can tell if
    its a network error or username one.}
 var
@@ -645,7 +654,7 @@ begin
     {$endif}
 end;
 
-function TGitHubSync.SetTransport(): TSyncAvailable;
+function TGithubSync.SetTransport : TSyncAvailable;
 begin
     if DebugMode then saydebugSafe('TGithubSync.SetTransport - called');
     if not directoryexists(NotesDir + TempDir) then
@@ -665,7 +674,7 @@ begin
     RemoteAddress := GitBaseURL + UserName + '/' + RemoteRepoName;
 end;
 
-function TGitHubSync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
+function TGithubSync.DownloadNotes(const DownLoads : TNoteInfoList) : boolean;
 var
     I : integer;
     DownCount : integer = 0;
@@ -707,8 +716,8 @@ begin
     end;
 end;
 
-function TGitHubSync.DeleteNote(const ID: string; const ExistRev: integer
-    ): boolean;
+function TGithubSync.DeleteNote(const ID : string; const ExistRev : integer
+    ) : boolean;
 //   https://docs.github.com/en/rest/reference/repos#delete-a-file
 var
     Response : TStringList;
@@ -750,14 +759,14 @@ begin
     end;
 end;
 
-function TGitHubSync.GetRemoteNotes(const NoteMeta: TNoteInfoList;
-    const GetLCD: boolean): boolean;
+function TGithubSync.GetRemoteNotes(const NoteMeta : TNoteInfoList;
+    const GetLCD : boolean) : boolean;
 begin
     if (RemoteNotes = Nil) or (NoteMeta = Nil) then exit(SayDebugSafe('TGitHubSync.GetRemoteNotes ERROR getRemoteNotes called with nil list'));
     result := True;
 end;
 
-function TGitHubSync.UploadNotes(const Uploads: TStringList): boolean;
+function TGithubSync.UploadNotes(const Uploads : TStringList) : boolean;
 var
     St : string;
     NoteCount : integer = 0;
@@ -789,7 +798,8 @@ begin
     result := true;
 end;
 
-function TGitHubSync.DoRemoteManifest(const RemoteManifest: string; MetaData: TNoteInfoList): boolean;
+function TGithubSync.DoRemoteManifest(const RemoteManifest : string;
+    MetaData : TNoteInfoList) : boolean;
 // Note that MetsData is the RemoteMetaData data structure from sync, changes here reflected in local manifest, report
 var
     P : PNoteInfo;      // an item from RemoteMetaData
@@ -858,7 +868,8 @@ begin
     end;
 end;
 
-function TGitHubSync.DownLoadNote(const ID: string; const RevNo: Integer): string;
+function TGithubSync.DownLoadNote(const ID : string; const RevNo : Integer
+    ) : string;
 begin
    if DownloadANote(ID, NotesDir + TempDir + ID + '.note') then
        Result := NotesDir + TempDir + ID + '.note'
@@ -872,7 +883,8 @@ end;
 const Seconds5 = 0.00005;          // Very roughly, 5 seconds
 
 
-function TGitHubSync.MergeNotesFromNoteLister(RMData : TNoteInfoList; TestRun: boolean) : boolean;
+function TGithubSync.MergeNotesFromNoteLister(RMData : TNoteInfoList;
+    TestRun : boolean) : boolean;
 var
     PGit : PGitNote;
     RemRec: PNoteInfo;
@@ -925,7 +937,8 @@ begin
    Result := true;
 end;
 
-function TGitHubSync.AssignActions(RMData, LMData: TNoteInfoList; TestRun: boolean): boolean;
+function TGithubSync.AssignActions(RMData, LMData : TNoteInfoList;
+    TestRun : boolean) : boolean;
 var
     PGit : PGitNote;
     RemRec, LocRec : PNoteInfo;
@@ -1056,7 +1069,7 @@ begin
     {$endif}
 end;
 
-procedure TGitHubSync.Test();
+procedure TGithubSync.Test;
 var ST : string;
 begin
    if Downloader(ContentsURL(True)+'/'+RNotesDir, ST) then begin   // Github appears to be happy with Notes and Notes/   ?
@@ -1069,7 +1082,7 @@ end;
 
 // ====================  P R I V A T E   M E T H O D S =========================
 
-function TGitHubSync.GetNoteLCD(FFName : string) : string;
+function TGithubSync.GetNoteLCD(FFName : string) : string;
 var
    St : string;
    URL : string;
@@ -1088,10 +1101,10 @@ begin
         if (Result = '') or (Result[1] = 'E') then                  // E for ERROR
             SayDebugSafe('TGitHubSync.GetNoteLCD ERROR failed to find commit date in JSON ' + St
                 + ' for file ' + FFName);
-     end;
+     end else SayDebugSafe('GitHub.GetNoteLCD - Error, failed to get LCD for ' + FFName);
 end;
 
-function TGitHubSync.SendNote(ID: string): boolean;
+function TGithubSync.SendNote(ID : string) : boolean;
 var
     STL : TStringList;
     CM  : TExportCommon;
@@ -1119,10 +1132,11 @@ begin
     end;
 end;
 
-function TGitHubSync.SendFile(RemoteFName: string; STL: TstringList): boolean;      // Public only in test mode
+function TGithubSync.SendFile(RemoteFName : string; STL : TstringList) : boolean;      // Public only in test mode
 var
     Sha : string = '';
     BodyStr : string;
+    Cnt : integer = -1;
 begin
     if RemoteNotes = nil then exit(false);
     if RemoteNotes.FNameExists(RemoteFName, Sha) and (Sha <> '') then begin         // Existing file mode
@@ -1134,11 +1148,18 @@ begin
                     + EncodeStringBase64(STL.Text) + '" }';
     end;
     Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
+    while not Result do begin
+        inc(cnt);
+        DebugLn('TGitHubSync.SendFile - NOTICE, retry no.', Cnt.ToString, ' : Failed to send file filename=' + RemoteFName + ' Error=' + ErrorString);
+        if Cnt > 3 then break;
+        sleep(100*Cnt*Cnt*Cnt);         // 0, 100, 800, 6400 mS
+        Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
+    end;
     if DebugMode and (not Result) then
         DebugLn('TGitHubSync.SendFile - Failed to send file filename=' + RemoteFName + ' Error=' + ErrorString);
 end;
 
-function TGitHubSync.MakeRemoteRepo(): boolean;
+function TGithubSync.MakeRemoteRepo : boolean;
 var
     GUID : TGUID;
     STL: TstringList;
@@ -1174,7 +1195,7 @@ begin
 end;
 
 
-function TGitHubSync.ScanRemoteRepo(): boolean;
+function TGithubSync.ScanRemoteRepo : boolean;
 var
     Node, ANode : TJsonNode;
     St, Sha : string;
@@ -1208,7 +1229,24 @@ begin
 
 end;
 
-constructor TGitHubSync.Create();
+(*
+procedure TForm1.FormShow(Sender : TObject);
+var
+    Host : THostResolver;
+begin
+    Host := THostResolver.Create(nil);
+    if Host.NameLookup('api.github.com') then
+        writeln(Host.AddressAsString)
+    else writeln('not found');
+    host.Free;
+end;  *)
+
+const MaxTriesAtIP = 4;
+
+constructor TGithubSync.Create;
+var
+    Host : THostResolver;
+    Cnt : integer = -1;
 begin
     ProgressProcedure := nil;           // It gets passed after create.
     RemoteNotes := Nil;
@@ -1217,15 +1255,46 @@ begin
         RemoteRepoName := GetEnvironmentVariableUTF8('TB_GITHUB_REPO');
         debugln('TGitHubSync.Create() - Github repo renamed as ' + RemoteRepoName);
     end;
+    // here we poke the dns wrt github in hope of clearing a path.
+
+    Host := THostResolver.Create(nil);
+    while not Host.NameLookup('api.github.com') do begin
+        inc(Cnt);
+        if Cnt > MaxTriesAtIP then break;
+        sleep(100*Cnt*Cnt*Cnt);             // 0, 100, 800, 6400 mS
+        debugln('TGithubSync.Create - retesting IP for api.github.com');
+    end;
+    if Cnt > MaxTriesAtIP then begin
+        FailedToResolveIPs := true;
+        exit;
+    end;
+    Cnt := 0;
+    while not Host.NameLookup('github.com') do begin
+        inc(Cnt);
+        if Cnt > MaxTriesAtIP  then break;
+        sleep(100*Cnt*Cnt*Cnt);             // 0, 100, 800, 6400 mS
+        debugln('TGithubSync.Create - retesting IP for github.com');
+    end;
+    if Cnt > MaxTriesAtIP then
+        FailedToResolveIPs := true;
+    Host.Free;
+
+    //FailedToResolveIPs := true;                   // ToDo : remove me
+
+    if FailedToResolveIPs then begin
+        ErrorString := rsNetworkNotAvailable;
+        debugln('TGithubSync.Create ---- failed when testing IP address');
+    end;
 end;
 
-destructor TGitHubSync.Destroy;
+destructor TGithubSync.Destroy;
 begin
     if RemoteNotes <> Nil then RemoteNotes.Free;
     inherited Destroy;
 end;
 
-function TGitHubSync.DownloadANote(const NoteID: string; FFName: string): boolean;
+function TGithubSync.DownloadANote(const NoteID : string; FFName : string
+    ) : boolean;
 var
     NoteSTL : TStringList;
     St  : string;
@@ -1275,7 +1344,7 @@ begin
     {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote finished');{$endif}
 end;
 
-function TGitHubSync.ReadRemoteManifest(): boolean;
+function TGithubSync.ReadRemoteManifest : boolean;
 var
    St : string;
    Node, ANode, NotesNode : TJsonNode;
@@ -1326,34 +1395,54 @@ begin
     {$endif}
 end;
 
-function TGitHubSync.GetServerId(): string;
+function TGithubSync.GetServerId : string;
 var
    St : string;
 begin
     Result := '';
     if DownloaderSafe(ContentsURL(True) + '/' + RMetaDir + 'serverid', ST) then
-        Result := DecodeStringBase64(self.ExtractJSONField(ST, 'content'));
+        Result := DecodeStringBase64(self.ExtractJSONField(ST, 'content'))
+    else DebugLn('TGithubSync.GetServerID - NOTICE - failed to download serverid file');
     Result := Result.Replace(#10, '');
     Result := Result.Replace(#13, '');
     //debugln('TGithubSync.GetServerId = [' + Result + ']');
 end;
 
 
-function TGitHubSync.DownloaderSafe(URL: string; out SomeString: String; const Header: string=''): boolean;
+function TGithubSync.DownloaderSafe(URL : string; out SomeString : String; const Header : string) : boolean;
+var Cnt : integer = -1;
 begin
+    Result := Downloader(URL, SomeString, Header);
+    while not result do begin
+        inc(Cnt);
+        if Cnt > 3 then break;
+        sleep(100*Cnt*Cnt*Cnt);
+        DebugLn(#10'TGithubSync.DownloaderSafe - NOTICE retry no.' + Cnt.tostring + ' download failed ' + URL);
+        Result := Downloader(URL, SomeString, Header);
+    end;
+    if not result then
+        DebugLn('TGithubSync.DownloaderSafe - ERROR - download failed ! ' + ErrorString);
+
+
+{
+
     if Downloader(URL, SomeString, Header) then exit(True);
     if DebugMode then
                 DebugLn(#10'TGithubSync.DownloaderSafe - download failed, try again....');
     sleep(100);
     if Downloader(URL, SomeString, Header) then exit(True);
+    sleep(4000);
+    if Downloader(URL, SomeString, Header) then exit(True);
     if pos('serverid', ErrorString) = 0 then begin          // if just serverid, its probably just a new repo.
-        DebugLn('TGithubSync.DownloaderSafe - ERROR - download second try failed, give up....'#10);
+        DebugLn('TGithubSync.DownloaderSafe - ERROR - download third try failed, give up....'#10);
         DebugLn('TGithubSync.DownloaderSafe - ERROR - but maybe new repo ? maybe github rate ? ' + ErrorString);
+        DebugLn('TGithubSync.DownloaderSafe - URL was ' + URL);
     end;
-    exit(False);
+    exit(False);  }
 end;
 
-function TGitHubSync.Downloader(URL: string; out SomeString: String; const Header: string): boolean;
+function TGithubSync.Downloader(URL : string; out SomeString : String;
+    const Header : string) : boolean;
 var
     Client: TFPHttpClient;
 
@@ -1362,17 +1451,19 @@ begin
     // curl -i -u $GH_USER https://api.github.com/repos/davidbannon/libappindicator3/contents/README.note
     Client := TFPHttpClient.Create(nil);
     Client.UserName := UserName;
-    Client.Password := Password; // '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';
+    Client.Password := Password; // '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';     eg a github token
     Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
     Client.AddHeader('Content-Type','application/json; charset=UTF-8');
     Client.AllowRedirect := true;
+    Client.ConnectTimeout := 8000;      // mS ?  was 3000, I find initial response from github very slow ....
+    Client.IOTimeout := 4000;           // mS ? was 0
     SomeString := '';
     try
         try
             SomeString := Client.Get(URL);
         except
             on E: ESocketError do begin
-                ErrorString := 'TGithubSync.Downloader - SocketError ' + E.Message     // eg failed dns, timeout etc
+                ErrorString := 'TGithubSync.Downloader - NOTICE - SocketError ' + E.Message     // eg failed dns, timeout etc
                     + ' ResultCode ' + inttostr(Client.ResponseStatusCode);
                 SomeString := 'Fatal';
                 exit(SayDebugSafe(ErrorString));
@@ -1409,11 +1500,11 @@ begin
     finally
         Client.Free;
     end;
-    result := true;
+    result := true;          // debugln('TGithubSync.Downloader returned true');
 end;
 
-function TGitHubSync.SendData(const URL, BodyJSt: String; Put: boolean;
-    FName: string): boolean;
+function TGithubSync.SendData(const URL, BodyJSt : String; Put : boolean;
+    FName : string) : boolean;
 var
     Client: TFPHttpClient;
     Response : TStringStream;
@@ -1458,7 +1549,7 @@ begin
 end;
 
 
-function TGitHubSync.ContentsURL(API: boolean): string;
+function TGithubSync.ContentsURL(API : boolean) : string;
 begin
     if API then
         Result := BaseURL + 'repos/' + UserName + '/' + RemoteRepoName + '/contents'
@@ -1471,7 +1562,8 @@ end;
 
 // Returns content asociated with Field at either toplevel or if there are up to
 // two level names, that field down up to two fields down. Level1 is upper ....
-function TGitHubSync.ExtractJSONField(const data, Field : string; Level1 : string = ''; Level2 : string = '') : string;
+function TGithubSync.ExtractJSONField(const data, Field : string;
+    Level1 : string; Level2 : string) : string;
 var
     Node, ANode : TJsonNode;
 begin

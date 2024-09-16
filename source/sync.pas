@@ -20,7 +20,8 @@ unit sync;
 
   	ASync := TSync.Create();
     ASync.SetTransport(TransP);         // possible value defined in SyncUtils, SyncFile, SyncNextCloud, SyncAndroid
-	ASync.DebugMode:=True;
+                                        // test for IPOK() with GitHubSync
+    ASync.DebugMode:=True;
 	ASync.TestRun := ? ;
 	ASync.ProceedFunction:=@Proceed;    // A higher level function that can resolve clashes
 	ASync.NotesDir:= ?;
@@ -1026,6 +1027,11 @@ begin
 	                  end;
         SyncGitHub :  begin
                         Transport := TGithubSync.Create;
+                        if TGitHubSync(Transport).FailedToResolveIPs then begin
+                            ErrorString := Transport.ErrorString;
+                            debugln('TSync.SetTransport ErrorString is '+ ErrorString);
+                            exit(SyncNetworkError);
+                        end;
                         Transport.Password := Password;
                         Transport.Username := UserName;
                         ConfigDir := ConfigDir + SyncTransportName(SyncGithub) + PathDelim;
@@ -1080,7 +1086,7 @@ begin
     Result := Transport.TestTransport(not TestRun);                             // *****************
     if Result <> SyncReady then begin
       ErrorString := Transport.ErrorString;
-      // We get the next line evert time we start a new sync repo because we always try a join first.  Not helpful.
+      // We get the next line every time we start a new sync repo because we always try a join first.  Not helpful.
       // debugln('TSync.TestConnection() : failed Transport.TestTransport, maybe a new connection ? ' + SyncAvailableString(Result));
       exit;
     end;
