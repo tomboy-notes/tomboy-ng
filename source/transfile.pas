@@ -46,7 +46,7 @@ type
         function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; override;
         function DownLoadNote(const ID : string; const RevNo : Integer) : string; Override;
         // function SetRemoteRepo(ManFile : string = '') : boolean; override;
-        constructor Create();
+        constructor Create(PP : TProgressProcedure = nil);
   end;
 
 
@@ -177,6 +177,7 @@ begin
     		if assigned(NodeList) then begin
         		for j := 0 to NodeList.Count-1 do begin
                     new(NoteInfo);
+                    NoteInfo^.ForceUpload := false;
                     NoteInfo^.Action:=SyUnset;
                     Node := NodeList.Item[j].Attributes.GetNamedItem('id');
                     NoteInfo^.ID := Node.NodeValue;									// ID does not contain '.note';
@@ -336,9 +337,9 @@ begin
     if not FileExists(Result) then debugln('transfile -> Download() Unable to locate file ' + inttostr(RevNo) + ' ' + ID);
 end;
 
-constructor TFileSync.Create();
+constructor TFileSync.Create(PP : TProgressProcedure = nil);
 begin
-    ProgressProcedure := nil;
+    ProgressProcedure := PP;
 end;
 
 end.

@@ -110,7 +110,7 @@ var
     ChildWinArray : PPWindow;
 begin
     result := False;
-    if (XFetchName(Disp, WinID, @WinName) = 1) and (Caption = WinName) then begin
+    if (XFetchName(Disp, WinID, @WinName) = 1) and (Caption = {%H-}WinName) then begin
         if FoundWinID = 0 then
             FoundWinID := WinID;            // only set it in successful recurse
         exit(True);

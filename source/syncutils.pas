@@ -40,6 +40,7 @@ type TSyncAction=(SyUnset,      // initial state, should not be like this at end
                 SyDeleteRemote, // Marked as having been deleted locally, so remove from server.
                 SyClash,        // Edited both locally and remotly, policy or user must decide.
                 SyError,
+                SyNetError,     // And upload failed, probably a transit network problem
                 SyAllRemote,    // Clash Decision - Use remote note for all subsquent clashes
                 SyAllLocal,     // Clash Decision - Use local note for all subsquent clashes
                 SyAllNewest,    // Clash Decision - Use newest note for all subsquent clashes
@@ -57,8 +58,8 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncMismatch,       // Its a repo, Captain, but not as we know it.
                     SyncXMLError,       // Housten, we have an XML error in a manifest !
                     SyncBadError,       // Some other error, must NOT proceed.
-                    SyncNetworkError,   // Remove server/device not responding
-		    SyncCredentialError); // Unsuitable user:password 
+                    SyncNetworkError,
+		            SyncCredentialError);       // Unsuitable user:password
 
 type TRepoAction = (
                 RepoJoin,               // Join (and use) an existing Repo
@@ -78,6 +79,7 @@ type
         Deleted: Boolean;
         SID : longint;              // Short ID, clumbsy alt to the GUID/UUID we should use
         Action : TSyncAction;
+        ForceUpload : boolean;      // this item, when true, should be marked force-upload in local manifest, transit net failure
         Title : ANSIString;
         Sha : ANSIString;           // The sha of an uploaded note. Stored in local manifest, Github mode.
     end;

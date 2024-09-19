@@ -771,6 +771,7 @@ begin
                 PNote^.LastChange:=LocLCD;
                 PNote^.Action:= SyUpLoadNew;                // Note, we may overrule that in CheckRemoteDeletes()
                 PNote^.Sha := '';
+                PNote^.ForceUpload := false;
                 RemoteMetaData.Add(PNote);
             end;
         until FindNext(Info) <> 0;
@@ -806,6 +807,7 @@ begin
                 PNote^.Title := LocalMetaData.Items[Index]^.Title;                    // I think we know title, useful debug info here....
                 PNote^.Action := SyDeleteLocal;                                       // Was deleted elsewhere, do same here.
                 PNote^.Sha := '';
+                PNote^.ForceUpload := False;
                 RemoteMetaData.Add(PNote);
                 inc(Count);
             end else begin
@@ -839,6 +841,7 @@ begin
 	                    Pnote^.LastChange:=CDate;
 	                    PNote^.Action:=SyUploadNew;
                         PNote^.sha := '';
+                        PNote^.ForceUpload := false;
                         RemoteMetaData.Add(PNote);
                         inc(CountNew);
 				end else Debugln('Failed to find lastchangedate in ' + Info.Name);
@@ -1023,10 +1026,10 @@ begin
     case Mode of
         SyncFile :    begin
                         SyncAddress := AppendPathDelim(Sett.GetSyncFileRepo());
-                        Transport := TFileSync.Create;
+                        Transport := TFileSync.Create(ProgressProcedure);
 	                  end;
         SyncGitHub :  begin
-                        Transport := TGithubSync.Create;
+                        Transport := TGithubSync.Create(ProgressProcedure);
                         if TGitHubSync(Transport).FailedToResolveIPs then begin
                             ErrorString := Transport.ErrorString;
                             debugln('TSync.SetTransport ErrorString is '+ ErrorString);
@@ -1038,7 +1041,7 @@ begin
                         ForceDirectory(ConfigDir);
                       end;
     end;
-    Transport.ProgressProcedure := ProgressProcedure;
+//    Transport.ProgressProcedure := ProgressProcedure;
     Transport.Password := Password;
     Transport.NotesDir := NotesDir;
     Transport.DebugMode := DebugMode;
@@ -1455,6 +1458,8 @@ begin
                         write(OutFile, inttostr(RemoteMetaData[Index]^.Rev) + '" ');
                         if RemoteMetaData[Index]^.Sha <> '' then
                            write(Outfile, 'sha="' + RemoteMetaData[Index]^.Sha + '" ');
+                        if RemoteMetaData[Index]^.ForceUpload then
+                           write(Outfile, 'force-upload="yes" ');               // we failed to upload this note this time, next time better ?
                         writeln(Outfile, '/>');
 					end;
 				end;
@@ -1470,8 +1475,12 @@ begin
 	  end;
 	end;
     // if to here, copy the file over top of existing local manifest
-	if not TestRun then
-       copyfile(ConfigDir + ManPrefix + 'manifest.xml-local', ConfigDir + ManPrefix + 'manifest.xml');
+	if not TestRun then begin
+        if fileexists(ConfigDir + ManPrefix + 'manifest.xml-old') then
+           deletefile(ConfigDir + ManPrefix + 'manifest.xml-old');
+        renamefile(ConfigDir + ManPrefix + 'manifest.xml', ConfigDir + ManPrefix + 'manifest.xml-old');
+        copyfile(ConfigDir + ManPrefix + 'manifest.xml-local', ConfigDir + ManPrefix + 'manifest.xml');
+    end;
     if debugmode then
        debugln('Have written local manifest to ' + ConfigDir + ManPrefix + 'manifest.xml-local');
 end;
@@ -1480,9 +1489,9 @@ function TSync.ReadLocalManifest(const FullFileName : string = '') : boolean;
 var
     Doc : TXMLDocument;
     NodeList : TDOMNodeList;
-    Node, NodeSha : TDOMNode;
+    Node, ANode : TDOMNode;
     j : integer;
-    NoteInfoP : PNoteInfo;
+    NoteInfoP : PNoteInfo;                  // pointer to the record we will shove into LocalMetaDAta
     RevStr, ServerID, ManifestFile : string;
 begin
     Result := true;
@@ -1554,11 +1563,14 @@ begin
                    new(NoteInfoP);
                    NoteInfoP^.ID := NodeList.Item[j].Attributes.GetNamedItem('guid').NodeValue;
                    NoteInfoP^.Rev := strtoint(NodeList.Item[j].Attributes.GetNamedItem('latest-revision').NodeValue);
-                   NodeSha := NodeList.Item[j].Attributes.GetNamedItem('sha');
-                   if NodeSha = nil then
+                   ANode := NodeList.Item[j].Attributes.GetNamedItem('sha');
+                   if ANode = nil then                                                  // only possible in Github sync
                         NoteInfoP^.Sha := ''
-                   else  NoteInfoP^.Sha := NodeSha.NodeValue;
+                   else  NoteInfoP^.Sha := ANode.NodeValue;
+                   ANode := NodeList.Item[j].Attributes.GetNamedItem('force-upload');
+                   NoteInfoP^.ForceUpload := (ANode <> Nil);                            // only possible in Github sync
                    NoteInfoP^.Deleted := False;
+                   //debugln('TSync.ReadLocalManifest ID=' + NoteInfoP^.ID + ' is forceupload ' + booltostr(NoteInfoP^.ForceUpload, true));
                    LocalMetaData.Add(NoteInfoP);
 			   end;
             NodeList := Doc.DocumentElement.FindNode('note-deletions').ChildNodes;
@@ -1569,6 +1581,7 @@ begin
                    NoteInfoP^.Title := NodeList.Item[j].Attributes.GetNamedItem('title').NodeValue;
                    NoteInfoP^.Deleted := True;
                    NoteInfoP^.Sha := '';
+                   NoteInfoP^.ForceUpload := false;
                    LocalMetaData.Add(NoteInfoP);
    			   end;
 		finally

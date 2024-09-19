@@ -49,9 +49,9 @@ ASync.StartSync
 Calls CheckRemoteDeletes and CheckLocalDeletes that further refines Actions in RemoteMetaData
 based on information from LocalManifest.
 Asks the user to resolve any clashes
-Calls DoDownloads, DoDeletes and DoUpLoads which call Transport to do actual file work.
+Calls DoDownloads, DoDeletes and DoUpLoads which call Transport to do actual remote file work.
 Calls DoDeletesLocal.
-Calls Transport.DoRemoteManifest to write and upload a remote manifest.
+Calls Transport.DoRemoteManifest to write and upload a remote manifest, based on data from TSync.RemoteMetaData list.
 Calls WriteLocalManifest
 
 Easy Peasy !
@@ -59,11 +59,58 @@ Easy Peasy !
 The above glosses over error handling and, importantly, how data such as last change dates
 is shuffled around to ensure its in RemoteNotes when we write out remote manifests.
 
+AssignActions()
+--------------
+We decide a note needs uploading because its main-notelister entry is later than the last
+sync date as recorded in local manifest. New, Sept 2024, or because its local mainfest
+says 'PleaseUploadThisNote' - a message put there during last sync when upload failed.          ?? No, not good. trashing the previous SHA means a certain down too
+
+We decide a note needs downloading because its remote SHA (obtained from gitlab) does
+not match the SHA in the local manifest as recorded at previous sync.
+If both, we have a clash, if neither, its a do nothing.
+(Also have to deal with new notes and deleted notes...)
+
 Downloading a Note.
+-------------------
 RemoteNotes will already know CData and Notebooks from reading remote manifest.
 DownLoadANote will write a temp file in Note format. It first calls Downloader() which
-returns with a string containg note content as JSON Base64 encoded. We decode and
+returns with a string containing note content as JSON Base64 encoded. We decode and
 drop into s stringlist. We pass that to Importer thats converts to xml.
+Download (and uploads) will be retried up to 5 times if necessary.
+
+Uploading a Note, that fails
+----------------------------
+If an upload fails, previously, we'd leave it out of new manifests. WRONG.
+Must ensure any note in repo is mentioned in both manifests (but ensure uploading next time).
+The remote manifest entry should have original LCD and the SHA we got from github and
+put in RemoteNotes.
+The local manifest needs its SHA set to the string constant UPLOADNOTE instead of a SHA.
+
+What happens is RemoteNotes holds the existing SHA of a note, when a new one is uploaded
+to overwrite it, the SHA in RemoteNotes is updated (down in SendData()) to the new github
+iff upload is succssful. If unsucessful, leave it as it is (the note on github has not
+changed) but set RemoteNotes item.SyncState to FAILEDUPLOAD, a str constant.
+
+Next action is in DoRemoteManifest, it will spot the FAILEDUPLOAD msg, will use the
+RemoteNotes item.SHA for remote manifest then change it to UPLOADNOTE so that text
+appears in the local manifest.
+
+
+
+
+
+Manifests
+---------
+There are two manifests, local and remote.  The local has a global LastSyncDate and a SHA
+for each Note under its control. The remote lists a title, CreateData, LastChangeDate, SHA,
+format and a list of notebooks for each note in the repo.
+
+Local Manifest is built, mainly (especially SHA), from TSync.RemoteMetaData relying on appropriate
+data being put in there by TGithubSync.
+
+Remote Manifest is made with data from TSync.TRemoteMetaData (from remote manifest) and
+TGithubSync.RemoteNotes (based on data from github). SHA and LCD from RemoteNotes.
+
 
 HISTORY :
     2021/09/20 - Changed to using JSONTools, tidier, safer, easier to read code.
@@ -104,6 +151,7 @@ type
             CDate : string;     // The create Date, we may not know it if its a new note.
             Format : TFileFormat;       // How the file is saved at github, md only at present
             Notebooks : string; // empty OK, else [] or ["notebook1", "notebook2"] etc. Only needed for SyDownLoad
+            SyncState : string; // Generally '' but might be 'failedupload' a failed upload, set in UpLoadNotes()
       end;
 
 type
@@ -176,7 +224,7 @@ type
         SelectiveNotebookIDs : TstringList;  // May contain FNames of notes that are members of SelectiveSync notebook. Do not create or free.
 
         HeaderOut : string;             // Very ugly global to get optional value back from Downloader
-                                        // ToDo : do better than this Davo
+
 
                             // A general purpose downloader, results in JSON, if downloading a file we need
                             // to pass the Strings through ExtractContent() to do JSON and base64 stuff.
@@ -201,7 +249,8 @@ type
 
                             // Reads the (json) remote manifest, adding cdate, format and Notebooks to RemoteNotes.
                             // Assumes RemoteNotes is created, comms tested. Ret false if cannot find remote
-                            //  manifest.  All a best effort approach, a github created note will not be listed.
+                            // manifest.  All a best effort approach, a github created note will not be listed.
+                            // The LCD is also set if the remote note has not been altered since last sync.
         function ReadRemoteManifest(): boolean;
                             // Generic Putting / Posting Method. Put = False means Post. If an FName is provided
                             // then its a file upload, record the sha in RemoteNotes.
@@ -219,6 +268,7 @@ type
                             // Creates a file at remote using contents of List. RemoteFName may be
                             // something like Meta/serverid for example. Checks RemoteNotes to see if
                             // file already exists and does update node if it does. No dir is defaulted to.
+                            // Makes multiple attempts to send if we get a network fail.
         function SendFile(RemoteFName: string; STL: TstringList): boolean;
 
                             // Makes a new remote repo if it does not exist, if called when repo
@@ -230,6 +280,7 @@ type
         function SendNote(ID: string): boolean;
                             // Scans the top level of the repo and then Notes and Meta recording in me and
                             // RemoteNotes the filename and sha for every remote file it finds.
+                            // Calls SendFile() which makes multiple attemps to send if network fails.
         function ScanRemoteRepo() : boolean;
 
                             // Returns true if it has written temp file named ID.note-temp in Note format in the
@@ -264,7 +315,7 @@ type
         RemoteServerRev : integer;  { The current Server Rev, before we upload. Is set with a successful  TestTransport call. }
         *)
 
-        constructor Create();
+        constructor Create(PP : TProgressProcedure = nil);
         destructor Destroy; override;
 
         // --------------- Methods required to be here by Trans ----------------
@@ -335,6 +386,9 @@ uses
     resolve;                // because I am playing with eg gethostbyname()
 
 const
+  UPLOADNOTE = 'PleaseUploadThisNote';  // Left in the local manfest item.sha when this note is still waiting to be uploaded.
+  FAILEDUPLOAD='failedupload';          // left in TGitNote item.SyncState to indicate UploadNotes() failed on this note
+  MaxNetTries = 5;                      // number of re-tries when a net operation fails
   GitBaseURL='https://github.com/';
   BaseURL='https://api.github.com/';
   RNotesDir='Notes/';
@@ -404,6 +458,7 @@ begin
     PNote^.Format := ffNone;
     PNote^.Notebooks := '';
     PNote^.sha := Sha;
+    PNote^.syncstate := '';
     add(PNote);
 end;
 
@@ -425,6 +480,7 @@ begin
         inc(i);
     end;                    // OK, must be a new entry
     new(PNote);
+    PNote^.SyncState := '';
     PNote^.FName := FName;
     PNote^.Sha := Sha;
     PNote^.Title := '';
@@ -448,6 +504,7 @@ begin
                 'cdate'     : p^.CDate     := Data;
 //              'format'    : p^.Format    := Data;
                 'notebooks' : p^.Notebooks := Data;
+                'syncstate' : p^.SyncState := Data;
             otherwise SayDebugSafe('TGitNoteList.InserData(s,s,s) asked to insert into nonexisting field : ' + Field);
             end;
             exit;
@@ -477,7 +534,8 @@ begin
             if Items[i]^.CDate = '' then
                 Items[i]^.CDate := TheMainNoteLister.GetLastChangeDate(extractFileName(GitRec.FName));
             // Leave LCDate as it is, we may fix it with a download later. For now, its not useful.
-            // We could get the commit date (a zulu date) but not sure its worthwhile at this stage.
+            // We could get the github commit date (a zulu date) but not sure its worthwhile at this stage.
+            Items[i]^.SyncState := '';
             exit;
         end;
         inc(i);
@@ -560,8 +618,6 @@ begin
             end;
             // If to here, we have a valid username and a valid Password but don't know if they work together
             if ProgressProcedure <> nil then progressProcedure(rsLookingServerID);
-
-            // ToDo : here we get the serverID but it might not be there, later we call ScanRemoteRepo ...
             ServerID := GetServerId();
             if DebugMode and (not ANewRepo) then
                 debugln('TGithubSync.TestTransport : serverID is ' + ServerID);
@@ -576,7 +632,7 @@ begin
                 end;
                 if (not ReadRemoteManifest()) then begin
                         if (not ANewRepo) and (not WriteNewServerID) then begin      // do not expect a remote manifest in ANewRepo mode.
-                            // But if we have had an aborted New process, might mave serverid but no manifest
+                            // But if we have had an aborted New process, might have serverid but no manifest
                             if DebugMode then
                                 debugln('TGithubSync.TestTransport - Remote Repo does not have a Remote Manifest');
                             exit(SyncNoRemoteMan)
@@ -777,17 +833,12 @@ begin
     if ProgressProcedure <> nil then
                 ProgressProcedure(rsUpLoading + ' ' + inttostr(Uploads.Count));
     for St in Uploads do begin
-        if not SendNote(St) then begin
-            RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', '');       // an empty LCD means we failed to upload note.
-            continue;
-            //exit(false);       // possibly a network or markdown error ?
-            // ToDo : see below
-            { exit is wrong, one bad upload should NOT abort process because that
-              would prevent the manifest from being updated.
-              Must check how local manifest is created ......
-            }
-
-        end;
+        if not SendNote(St) then begin                                          // that will make multiple tries at sending if necessary
+            RemoteNotes.InsertData(RNotesDir + St + '.md', 'syncstate', FAILEDUPLOAD);
+            debugln('TGithubSync.UploadNotes - An upload failed, we will mark it to try again next sync');
+            continue;                                                           // continue so we don't update LCD
+        end else
+            RemoteNotes.InsertData(RNotesDir + St + '.md', 'syncstate', '');
         inc(NoteCount);
         if NoteCount mod 5 = 0 then
             if ProgressProcedure <> nil then
@@ -798,8 +849,7 @@ begin
     result := true;
 end;
 
-function TGithubSync.DoRemoteManifest(const RemoteManifest : string;
-    MetaData : TNoteInfoList) : boolean;
+function TGithubSync.DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList) : boolean;
 // Note that MetsData is the RemoteMetaData data structure from sync, changes here reflected in local manifest, report
 var
     P : PNoteInfo;      // an item from RemoteMetaData
@@ -816,29 +866,26 @@ begin
     Manifest.Append('{' + #10'  "selectivesync" : "' + EscapeJSON(SelectiveSync) + '",'#10' "notes" : {');
     try
         if MetaData = nil then exit(SayDebugSafe('TGithubSync.DoRemoteManifest ERROR, passed a nil metadata list'));
-        for P in MetaData do begin
+        for P in MetaData do begin                                              // iterate over TSync.RemoteMetaData
             if P^.Action in [ SyNothing, SyUploadNew, SyUploadEdit, SyDownload, SyClash ] then begin  // SyClash ? I don't think so .....
-                // These notes will be the ones that end up on GitHub after we finish.
+                // These notes will be the ones that are now up on GitHub.
                 PGit := RemoteNotes.Find(P^.ID);
                 if PGit = nil then
                     exit(SayDebugSafe('TGitHubSync.DoRemoteManifest - ERROR, failed to find ID from RemoteMetaData in RemoteNotes'));
-                if PGit^.LCDate = '' then begin                        // That means the note failed to upload
-                    P^.Action := SyError;                              // stop appearing in local manifest.
-                    debugln('TGitHubSync.DoRemoteManifest - omitting ', PGit^.Title, ' from remote manifest, readme');
-                    continue;                                           // does not appear in remote [Manifest, Readme]
-                end;
+                // if PGit^.LCDate = '' then begin                     // That means the note failed to upload, was set by UploadNote
                 Readme.Append('* [' + P^.Title + '](' + ContentsURL(False) + PGit^.FName + ')');
-                if P^.Action = SyDownload then
+                if P^.Action = SyDownload then                                  // P^ comes from MetaData,  TSync.TRemoteMetaData from remote manifest.
                     NoteBooks := PGit^.Notebooks
                 else
                     NoteBooks := TheMainNoteLister.NotebookJArray(P^.ID + '.note');
-                Manifest.Append('    "' + P^.ID + '" : {'#10
+                Manifest.Append('    "' + P^.ID + '" : {'#10                    // this is remote manifest in the making
                         + '      "title" : "'  + EscapeJSON(P^.Title) + '",'#10
                         + '      "cdate" : "'  + P^.CreateDate + '",'#10
-                        + '      "lcdate" : "' + PGit^.LCDate + '",'#10
+                        + '      "lcdate" : "' + PGit^.LCDate + '",'#10         // PGit^ comes from TGithubSync.RemoteNotes, based on data from github
                         + '      "sha" : "'    + PGit^.Sha + '", '#10
                         + '      "format" : "md",'#10
-                        + '      "notebooks" : '+ NoteBooks + #10 + '    },');   // should be empty string or eg ["one", "two"]
+                        + '      "notebooks" : '+ NoteBooks + #10 + '    },');  // should be empty string or eg ["one", "two"]
+                P^.ForceUpload := (PGit^.SyncState = FAILEDUPLOAD);             // so local manifest knows to signal next sync force-upload
             end;
         end;
         // Remove that annoying trailing comma from last block
@@ -860,7 +907,7 @@ begin
                     P^.Sha := PGit^.Sha;
             end;
         if not SendFile(RMetaDir + 'manifest.json', Manifest) then SayDebugSafe('TGitHubSync.DoRemoteManifest ERROR, failed to write remote manifest');
-        if not SendFile('README.md', Readme) then SayDebugSafe('TGitHubSync.DoRemoteManifest ERROR, failed to write remote README');
+        if not SendFile('README.md', Readme) then SayDebugSafe('TGitHubSync.DoRemoteManifest ERROR, failed to write remote README.md');
         result := true;
     finally
         Manifest.Free;
@@ -919,6 +966,7 @@ begin
                PGit^.CDate := NLister^.CreateDate;
                PGit^.LCDate := NLister^.LastChange;
                PGit^.Format := ffMarkDown;
+               PGit^.SyncState := '';
                RemoteNotes.Add(PGit);
            end;
            new(RemRec);
@@ -928,6 +976,7 @@ begin
            RemRec^.Sha := '';
            RemRec^.Title := NLister^.Title;
            RemRec^.Action := SyUploadNew;
+           RemRec^.ForceUpload := False;
            RemRec^.Deleted := False;
            RemRec^.Rev := 0;
            RemRec^.SID := 0;
@@ -937,17 +986,17 @@ begin
    Result := true;
 end;
 
-function TGithubSync.AssignActions(RMData, LMData : TNoteInfoList;
-    TestRun : boolean) : boolean;
+function TGithubSync.AssignActions(RMData, LMData : TNoteInfoList; TestRun : boolean) : boolean;
 var
-    PGit : PGitNote;
-    RemRec, LocRec : PNoteInfo;
+    PGit : PGitNote;               // A pointer to an item in TGithubSync.RemoteNotes, initially filled from Github file data
+    RemRec : PNoteInfo;            // A pointer to an item in TSync.RemoteMetaData, initially filled from remote manifest
+    LocRec : PNoteInfo;            // A pointer to an item in TSync.LocalMetaData, initially filled from local manifest
     I : integer;
     //NLister : PNote;
     pNBook: PNoteBook;
     LCDate, CDate : string;
 begin
-    // RMData should be empty, LMData will be empty if its a Join.
+    // RMData should be empty, LMData will be empty if its a Join, LMData derived from local manifest.
     Result := True;
     {$ifdef DEBUG}
     debugln('==================================================================');
@@ -972,6 +1021,7 @@ begin
         if RemRec^.Title = '' then
             RemRec^.Title := TheMainNoteLister.GetNotebookName(RemRec^.ID);         // Maybe its a template ?
         RemRec^.Action := SyUnset;
+        RemRec^.ForceUpload := False;                                           // becomes True if a subsquent up fails
         if RemRec^.Title = '' then begin                                        // Not in Notelister, must be new or locally deleted
             //debugln('TGithubSync.AssignActions setting ' + RemRec^.ID + ' to Download #1');
             RemRec^.Action := SyDownLoad;                                       // May get changed to SyDeleteRemote
@@ -996,23 +1046,22 @@ begin
             end
             else begin                                                          // Normal sync, we have a local manifest.
                 if  (TB_GetGMTFromStr(TheMainNoteLister.GetLastChangeDate(RemRec^.ID)) - Seconds5)
-                        > LMData.LastSyncDate then RemRec^.Action := SyUploadEdit;  // changed since last sync ? Upload it !
+                            > LMData.LastSyncDate then
+                    RemRec^.Action := SyUploadEdit;                             // changed since last sync ? Upload it !
                 if  LocRec = Nil then begin                                     // ?? If it exists at both ends we must have uploaded it ??
                     dispose(RemRec);
                     ErrorString := 'TGitHubSync.AssignActions ERROR, ID not found in LocalMetaData, might need to force a Join : ' + PGIT^.FName;
                     exit(SayDebugSafe(ErrorString));
-                    // SayDebugSafe(ErrorString)
-                end else if PGit^.Sha <> LocRec^.Sha then begin                 // Ah, its been changed remotely
-                    if RemRec^.Action = SyUnset then begin
-                        //debugln('TGithubSync.AssignActions setting ' + RemRec^.ID + ' to Download #2');
-                        //debugln('PGit^.Sha=' + PGit^.Sha + ' and  LocRec^.Sha=' + LocRec^.Sha);
-                        RemRec^.Action := SyDownLoad                            // Good, only remotely
-                    end
-                    else begin
-                        RemRec^.Action := SyClash;                             // There is a problem to solve elsewhere.
-                        //debugln('TGitHubSync.AssignActions - assigning clash');
-                        //debugln('sha from remote=' + PGit^.Sha + ' and local=' + LocRec^.Sha);
-                    end;
+                end;
+                if LocRec^.ForceUpload then begin
+                    RemRec^.Action := SyUploadEdit;                             // upload failed in previous sync, we'll try again
+                    debugln('TGitHubSync.AssignActions ' + PGit^.FName + ' is forceupload ! A previous sync failed, we will try again.');
+                end;
+                if PGit^.Sha <> LocRec^.Sha then begin                          // Ah, its been changed remotely
+                    if RemRec^.Action = SyUnset then
+                         RemRec^.Action := SyDownLoad                           // Good, only remotely
+                    else                                                        // Oh, already set to SyUploadEdit about 20 lines up
+                        RemRec^.Action := SyClash;                              // There is a problem to solve elsewhere.
                 end;
             end;
              //debugln('TGithubSync.AssignActions - Possibe clash becomes ' + RMData.ActionName(RemRec^.Action));
@@ -1047,6 +1096,7 @@ begin
                 PGit^.CDate := CDate;
                 PGit^.LCDate := LCDate;
                 PGit^.Format := ffMarkDown;
+                PGit^.SyncState := '';
                 RemoteNotes.Add(PGit);
             end;
             new(RemRec);
@@ -1056,6 +1106,7 @@ begin
             RemRec^.Sha := '';
             RemRec^.Title := pNBook^.Name;
             RemRec^.Action := SyUploadNew;
+            RemRec^.ForceUpload := false;
             RemRec^.Deleted := False;
             RemRec^.Rev := 0;
             RemRec^.SID := 0;
@@ -1136,41 +1187,62 @@ function TGithubSync.SendFile(RemoteFName : string; STL : TstringList) : boolean
 var
     Sha : string = '';
     BodyStr : string;
-    Cnt : integer = -1;
+    Cnt : integer = 0;
 begin
     if RemoteNotes = nil then exit(false);
     if RemoteNotes.FNameExists(RemoteFName, Sha) and (Sha <> '') then begin         // Existing file mode
         BodyStr :=  '{ "message": "update upload", "sha" : "' + Sha
                     + '", "content": "' + EncodeStringBase64(STL.Text) + '" }';
-        if Sha = '' then exit(False);
+        if Sha = '' then exit(False);                                           // Hmm, why and what happens if it does ?
     end else begin                                      // New file mode
         BodyStr :=  '{ "message": "initial upload", "content": "'
                     + EncodeStringBase64(STL.Text) + '" }';
     end;
-    Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
-    while not Result do begin
-        inc(cnt);
-        DebugLn('TGitHubSync.SendFile - NOTICE, retry no.', Cnt.ToString, ' : Failed to send file filename=' + RemoteFName + ' Error=' + ErrorString);
-        if Cnt > 3 then break;
-        sleep(100*Cnt*Cnt*Cnt);         // 0, 100, 800, 6400 mS
+    Result := False;
+    repeat
+
+        if pos('1D65A2EC-3C63-4732-8F9E-73E2A4544BC5', RemoteFName) > 0 then
+            ErrorString := '  ***** fakeing upload failure *****'
+        else
+
         Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
-    end;
+        if Result then break;
+        if ProgressProcedure <> nil then
+                ProgressProcedure('Upload problem retrying ' + inttostr(cnt));
+        sleep(100*Cnt*Cnt*Cnt);         // 0, 100, 800, 2700, 6400 mS
+        inc(Cnt);
+        DebugLn('TGitHubSync.SendFile - NOTICE, retry no.', Cnt.ToString
+                , ' : Failed to send file filename=' + RemoteFName + ' Error=' + ErrorString);
+    until Cnt = MaxNetTries;
     if DebugMode and (not Result) then
-        DebugLn('TGitHubSync.SendFile - Failed to send file filename=' + RemoteFName + ' Error=' + ErrorString);
+        DebugLn('TGitHubSync.SendFile - ERROR - Failed to send file filename=' + RemoteFName + ' Error=' + ErrorString);
 end;
 
 function TGithubSync.MakeRemoteRepo : boolean;
 var
     GUID : TGUID;
     STL: TstringList;
+    Cnt : integer = 0;
 begin
     // https://docs.github.com/en/rest/reference/repos#create-a-repository-for-the-authenticated-user
     {$ifdef DEBUG}
     SayDebugSafe('TGitHubSync.MakeRemoteRepo called');
     {$endif}
-    Result := SendData(BaseURL + 'user/repos',
-        '{ "name": "' + RemoteRepoName + '", "auto_init": true, "private": true" }',
-        False);
+
+    repeat
+        // eg { "name": "tb_notes", "auto_init": true, "private": true" }    ????  excess " there ?  // ToDo : check double inverted comma use
+        Result := SendData(BaseURL + 'user/repos',
+            '{ "name": "' + RemoteRepoName + '", "auto_init": true, "private": true" }', False);
+        if Result then break;
+        sleep(100*Cnt*Cnt*Cnt);     // 0, 100, 800, 2700 mS   (not doing 6400 because user is staring at screen here.
+        inc(Cnt);
+        if ProgressProcedure <> nil then
+                ProgressProcedure('Network problem retrying ' + inttostr(cnt));
+        SayDebugSafe('TGitHubSync.MakeRemoteRepo NOTICE retry = No.' + Cnt.ToString + ' failed to create github repo.');
+    until Cnt = (MaxNetTries-1);
+
+//    Result := SendData(BaseURL + 'user/repos',
+//        '{ "name": "' + RemoteRepoName + '", "auto_init": true, "private": true" }', False);
     if (not Result) and (GetServerId() <> '') then exit(false);
 
     {$ifdef DEBUG}
@@ -1183,7 +1255,7 @@ begin
         ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
         STL.Add(ServerID);
         Result := SendFile(RMetaDir + 'serverid', STL);         // Now, RemoteNotes does not exist at this stage !!
-        // URL=https://api.github.com/repos/davidbannon/tb_test/contents/Meta/serverid
+        // eg URL=https://api.github.com/repos/davidbannon/tb_test/contents/Meta/serverid
     finally
         STL.Free;
     end;
@@ -1241,49 +1313,54 @@ begin
     host.Free;
 end;  *)
 
-const MaxTriesAtIP = 4;
 
-constructor TGithubSync.Create;
+
+constructor TGithubSync.Create(PP : TProgressProcedure = nil);
 var
     Host : THostResolver;
-    Cnt : integer = -1;
+    Cnt : integer = 0;
 begin
-    ProgressProcedure := nil;           // It gets passed after create.
+    ProgressProcedure := PP;           // It gets passed after create.    WHY ?
     RemoteNotes := Nil;
     SelectiveNotebookIDs := nil;
     if GetEnvironmentVariableUTF8('TB_GITHUB_REPO') <> '' then begin
         RemoteRepoName := GetEnvironmentVariableUTF8('TB_GITHUB_REPO');
         debugln('TGitHubSync.Create() - Github repo renamed as ' + RemoteRepoName);
     end;
+
     // here we poke the dns wrt github in hope of clearing a path.
 
     Host := THostResolver.Create(nil);
-    while not Host.NameLookup('api.github.com') do begin
-        inc(Cnt);
-        if Cnt > MaxTriesAtIP then break;
-        sleep(100*Cnt*Cnt*Cnt);             // 0, 100, 800, 6400 mS
-        debugln('TGithubSync.Create - retesting IP for api.github.com');
-    end;
-    if Cnt > MaxTriesAtIP then begin
-        FailedToResolveIPs := true;
-        exit;
-    end;
-    Cnt := 0;
-    while not Host.NameLookup('github.com') do begin
-        inc(Cnt);
-        if Cnt > MaxTriesAtIP  then break;
-        sleep(100*Cnt*Cnt*Cnt);             // 0, 100, 800, 6400 mS
-        debugln('TGithubSync.Create - retesting IP for github.com');
-    end;
-    if Cnt > MaxTriesAtIP then
-        FailedToResolveIPs := true;
-    Host.Free;
-
-    //FailedToResolveIPs := true;                   // ToDo : remove me
-
-    if FailedToResolveIPs then begin
-        ErrorString := rsNetworkNotAvailable;
-        debugln('TGithubSync.Create ---- failed when testing IP address');
+    try
+        repeat                                                    // check api.github.com first
+            if Host.NameLookup('api.github.com') then break;      // discard result, just want to know its possible
+            sleep(100*Cnt*Cnt*Cnt);                               // 0, 100, 800, 2700, 6400 mS
+            inc(Cnt);
+            if ProgressProcedure <> nil then
+                ProgressProcedure('Network problem retrying ' + inttostr(cnt));
+            debugln('TGithubSync.Create - retesting IP for api.github.com retry no.'+Cnt.Tostring);
+        until Cnt = MaxNetTries;
+        if Cnt = MaxNetTries then
+            FailedToResolveIPs := true;
+        if not FailedToResolveIPs then begin                      // if still ok, try for github.com
+            Cnt := 0;
+            repeat
+                if Host.NameLookup('github.com') then break;      // ToDo : no progress report here, it is necessary !
+                sleep(100*Cnt*Cnt*Cnt);                           // 0, 100, 800, 2700, 6400 mS
+                inc(Cnt);
+                if ProgressProcedure <> nil then
+                    ProgressProcedure('Network problem retrying ' + inttostr(cnt));
+                debugln('TGithubSync.Create - retesting IP for github.com retry no.'+Cnt.Tostring);
+            until Cnt = MaxNetTries;
+            if Cnt = MaxNetTries then
+                FailedToResolveIPs := true;
+        end;
+    finally
+        Host.Free;
+        if FailedToResolveIPs then begin
+            ErrorString := rsNetworkNotAvailable;
+            debugln('TGithubSync.Create ---- ERROR failed when testing IP address');
+        end;
     end;
 end;
 
@@ -1346,9 +1423,9 @@ end;
 
 function TGithubSync.ReadRemoteManifest : boolean;
 var
-   St : string;
-   Node, ANode, NotesNode : TJsonNode;
-   PGit : PGitNote;
+    St : string;
+    Node, ANode, NotesNode : TJsonNode;
+    PGit : PGitNote;
 begin
     if RemoteNotes.Find(RMetaDir + 'manifest.json') = nil then
         exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest : Remote manifest not present, maybe a new repo ?'));
@@ -1372,7 +1449,7 @@ begin
         for ANode in NotesNode do begin
             if ANode.Exists('title') and ANode.exists('lcdate') and ANode.Exists('cdate')
                     and ANode.Exists('format') and ANode.Exists('sha') and ANode.Exists('notebooks') then begin
-                PGit := RemoteNotes.Find(ANode.Name);                           // note, we pass an ID withoout path, Find adds Path internally
+                PGit := RemoteNotes.Find(ANode.Name);                           // note, we pass an ID with out path, Find adds Path internally
                 if PGit = nil then
                     exit(SayDebugSafe('TGitHubSync.ReadRemoteManifest ERROR invalid JSON, FName not present in RemoteNotes : ' + ANode.AsString));
                 //PGit^.FName := ANode.Name;
@@ -1381,9 +1458,9 @@ begin
                 if ANode.Find('format').AsString = 'md' then
                     PGit^.Format := ffMarkDown
                 else PGit^.Format := ffEncrypt;
-                if PGit^.Sha = ANode.Find('sha').AsString then
-                    PGit^.LCDate := ANode.Find('lcdate').AsString;
-                PGit^.Notebooks := ANode.Find('notebooks').AsJSON.Remove(0,12);  // "notebooks" : ["Notebook1","Notebook2", "Notebook3"]
+                if PGit^.Sha = ANode.Find('sha').AsString then                  // That is, if note is unchanged.
+                    PGit^.LCDate := ANode.Find('lcdate').AsString;              // PGit points to a RemoteNotes record. ANode looks to the downloaded manifest.
+                PGit^.Notebooks := ANode.Find('notebooks').AsJSON.Remove(0,12); // "notebooks" : ["Notebook1","Notebook2", "Notebook3"]
                 // PGit^.Notebooks := ANode.Find('notebooks').AsArray.AsJson;
              end;
         end;
@@ -1410,35 +1487,20 @@ end;
 
 
 function TGithubSync.DownloaderSafe(URL : string; out SomeString : String; const Header : string) : boolean;
-var Cnt : integer = -1;
+var Cnt : integer = 0;
 begin
-    Result := Downloader(URL, SomeString, Header);
-    while not result do begin
-        inc(Cnt);
-        if Cnt > 3 then break;
-        sleep(100*Cnt*Cnt*Cnt);
-        DebugLn(#10'TGithubSync.DownloaderSafe - NOTICE retry no.' + Cnt.tostring + ' download failed ' + URL);
+    repeat
         Result := Downloader(URL, SomeString, Header);
-    end;
+        if Result then break;
+
+        sleep(100*Cnt*Cnt*Cnt);        // 0, 100, 800, 2700, 6400
+        if ProgressProcedure <> nil then
+            ProgressProcedure('Download problem retrying ' + inttostr(cnt));
+        inc(Cnt);
+        DebugLn(#10'TGithubSync.DownloaderSafe - NOTICE retry no.' + Cnt.tostring + ' download failed ' + URL);
+    until cnt = MaxNetTries;
     if not result then
         DebugLn('TGithubSync.DownloaderSafe - ERROR - download failed ! ' + ErrorString);
-
-
-{
-
-    if Downloader(URL, SomeString, Header) then exit(True);
-    if DebugMode then
-                DebugLn(#10'TGithubSync.DownloaderSafe - download failed, try again....');
-    sleep(100);
-    if Downloader(URL, SomeString, Header) then exit(True);
-    sleep(4000);
-    if Downloader(URL, SomeString, Header) then exit(True);
-    if pos('serverid', ErrorString) = 0 then begin          // if just serverid, its probably just a new repo.
-        DebugLn('TGithubSync.DownloaderSafe - ERROR - download third try failed, give up....'#10);
-        DebugLn('TGithubSync.DownloaderSafe - ERROR - but maybe new repo ? maybe github rate ? ' + ErrorString);
-        DebugLn('TGithubSync.DownloaderSafe - URL was ' + URL);
-    end;
-    exit(False);  }
 end;
 
 function TGithubSync.Downloader(URL : string; out SomeString : String;
@@ -1503,8 +1565,7 @@ begin
     result := true;          // debugln('TGithubSync.Downloader returned true');
 end;
 
-function TGithubSync.SendData(const URL, BodyJSt : String; Put : boolean;
-    FName : string) : boolean;
+function TGithubSync.SendData(const URL, BodyJSt : String; Put : boolean; FName : string) : boolean;
 var
     Client: TFPHttpClient;
     Response : TStringStream;
@@ -1525,9 +1586,9 @@ begin
             if Put then begin
                 client.Put(URL, Response);
                 //DumpJSON(Response.DataString, 'SendData just after PUT');
-                if FName <> '' then            // if FName is provided, is uploading a file
-                //    RemoteNotes.Add(FName, ExtractJSONField(Response.DataString, 'sha', 0));
-                    RemoteNotes.Add(FName, ExtractJSONField(Response.DataString, 'sha', 'content'));
+                if (FName <> '')                                                // if FName is provided, is uploading a file
+                        and (Client.ResponseStatusCode = 200) or (Client.ResponseStatusCode = 201) then
+                    RemoteNotes.Add(FName, ExtractJSONField(Response.DataString, 'sha', 'content'));      // if put failed, don't update SHA
             end else
                 client.Post(URL, Response);  // don't use FormPost, it messes with the Content-Type value
             if (Client.ResponseStatusCode = 200) or (Client.ResponseStatusCode = 201) then
@@ -1547,7 +1608,11 @@ begin
         Response.Free;
     end;
 end;
-
+// ToDo : investigate
+{GitHub.SendData : Post ret 409
+Conflict
+TGitHubSync.SendFile - NOTICE, retry no.1 : Failed to send file filename=README.md Error=
+}
 
 function TGithubSync.ContentsURL(API : boolean) : string;
 begin
