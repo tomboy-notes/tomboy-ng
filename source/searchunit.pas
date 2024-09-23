@@ -1708,20 +1708,27 @@ end;
 
 procedure TSearchForm.MenuItemDeleteSelectedClick(Sender: TObject);
 var
-    St : string;
+    St, Msg : string;
+    OpenNotes : integer = 0;
+    AForm : TForm;
 begin
-    if MessageDlg('Warning', 'Do you wish to delete '                     // ToDo : i18n
-        + inttostr(length(NoteListRightClickSel)) + ' notes ?'
-            , mtConfirmation, [mbYes, mbNo],0) = mrYes then begin
+    MSG := format(rsQuestionDeleteNotes, [length(NoteListRightClickSel)]);
+    for St in NoteListRightClickSel do
+        if TheMainNoteLister.IsThisNoteOpen(St, AForm) then inc(OpenNotes);
+    if OpenNotes > 0 then
+        Msg := Msg + #10 + format(rsQuestionDeleteOpenNotes, [OpenNotes]);
+    if MessageDlg('Warning', Msg, mtConfirmation, [mbYes, mbNo],0) = mrYes then begin
         ListViewNotes.BeginUpdate;
-        for St in NoteListRightClickSel do
-                DeleteNote(Sett.NoteDirectory + St);
-                // debugln('TSearchForm.MenuItemDeleteSelectedClick Not deleting '
-                //    + TheMainNoteLister.GetTitle(St));
+        for St in NoteListRightClickSel do begin
+            if TheMainNoteLister.IsThisNoteOpen(St, AForm) then
+                AForm.Close;                                                    // Force close any open notes on hit list
+            DeleteNote(Sett.NoteDirectory + St);
+            // debugln('TSearchForm.MenuItemDeleteSelectedClick Not deleting '
+            //    + TheMainNoteLister.GetTitle(St));
+        end;
         ListViewNotes.EndUpdate;
     end;
 end;
-
 
 procedure TSearchForm.MenuItemOpenSelectedClick(Sender: TObject);
 var

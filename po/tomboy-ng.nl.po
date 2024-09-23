@@ -368,6 +368,10 @@ msgstr "Er is ondersteuning voor meerdere notitieboeken"
 msgid "Name"
 msgstr "Naam"
 
+#: resourcestr.rsnetworknotavailable
+msgid "Network not available"
+msgstr ""
+
 #: resourcestr.rsnewerversionexits
 msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
@@ -1054,7 +1058,9 @@ msgid "Take a manual Snapshot"
 msgstr "Reservekopie maken"
 
 #: tformrecover.buttonmakesafetysnap.hint
-msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+#, fuzzy
+#| msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+msgid "Take a snapshot of your notes and config. Overwritten each time."
 msgstr "Maak een reservekopie van uw notities en instellingen. Let op: deze wordt telkens overschreven."
 
 #: tformrecover.buttonrecoversnap.caption
@@ -1431,6 +1437,11 @@ msgstr "Opties"
 msgid "tomboy-ng Search"
 msgstr "tomboy-ng_Zoeken"
 
+#: tsearchform.labelsearchtitle.caption
+msgctxt "tsearchform.labelsearchtitle.caption"
+msgid "Search on title only"
+msgstr ""
+
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
 msgstr "Klik rechts om notitieboeken te beheren"
@@ -1474,6 +1485,11 @@ msgstr ""
 
 #: tsearchform.menuitemopenselected.caption
 msgid "Open Selected Notes"
+msgstr ""
+
+#: tsearchform.menuitemsearchtitleonly.caption
+msgctxt "tsearchform.menuitemsearchtitleonly.caption"
+msgid "Search on title only"
 msgstr ""
 
 #: tsearchform.menuitemselectall.caption

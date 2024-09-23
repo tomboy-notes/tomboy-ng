@@ -367,6 +367,10 @@ msgstr "Налаштування дозволяють багато записн�
 msgid "Name"
 msgstr "Назва"
 
+#: resourcestr.rsnetworknotavailable
+msgid "Network not available"
+msgstr ""
+
 #: resourcestr.rsnewerversionexits
 msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
@@ -1053,7 +1057,9 @@ msgid "Take a manual Snapshot"
 msgstr "Зробити зріз вручну"
 
 #: tformrecover.buttonmakesafetysnap.hint
-msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+#, fuzzy
+#| msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+msgid "Take a snapshot of your notes and config. Overwritten each time."
 msgstr "Зробити початковий зріз ваших нотаток і налаштувань. Щоразу перезаписується."
 
 #: tformrecover.buttonrecoversnap.caption
@@ -1430,6 +1436,11 @@ msgstr "Параметри"
 msgid "tomboy-ng Search"
 msgstr "tomboy-ng_Пошук"
 
+#: tsearchform.labelsearchtitle.caption
+msgctxt "tsearchform.labelsearchtitle.caption"
+msgid "Search on title only"
+msgstr ""
+
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
 msgstr "Праве клацання для керування записниками"
@@ -1473,6 +1484,11 @@ msgstr ""
 
 #: tsearchform.menuitemopenselected.caption
 msgid "Open Selected Notes"
+msgstr ""
+
+#: tsearchform.menuitemsearchtitleonly.caption
+msgctxt "tsearchform.menuitemsearchtitleonly.caption"
+msgid "Search on title only"
 msgstr ""
 
 #: tsearchform.menuitemselectall.caption

@@ -57,7 +57,8 @@ RESOURCESTRING
   rsSetupSyncFirst = 'Please config sync system first';
   rsCannotFindNote = 'ERROR, cannot find ';                    // is followed by a filename
   rsSearchHint = 'Exact matches for terms between " "';
-
+  rsQuestionDeleteNotes='Do you wish to delete %d notes ?';    // insert a number (of notes)
+  rsQuestionDeleteOpenNotes='Including %d open notes ?';       // insert a number (of notes)
 
 // SyncGUI
   rsTestingSync = 'Testing Sync';

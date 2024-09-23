@@ -344,6 +344,10 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+#: resourcestr.rsnetworknotavailable
+msgid "Network not available"
+msgstr ""
+
 #: resourcestr.rsnewerversionexits
 msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
@@ -1001,7 +1005,7 @@ msgid "Take a manual Snapshot"
 msgstr ""
 
 #: tformrecover.buttonmakesafetysnap.hint
-msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+msgid "Take a snapshot of your notes and config. Overwritten each time."
 msgstr ""
 
 #: tformrecover.buttonrecoversnap.caption
@@ -1366,6 +1370,11 @@ msgstr ""
 msgid "tomboy-ng Search"
 msgstr ""
 
+#: tsearchform.labelsearchtitle.caption
+msgctxt "tsearchform.labelsearchtitle.caption"
+msgid "Search on title only"
+msgstr ""
+
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
 msgstr ""
@@ -1405,6 +1414,11 @@ msgstr ""
 
 #: tsearchform.menuitemopenselected.caption
 msgid "Open Selected Notes"
+msgstr ""
+
+#: tsearchform.menuitemsearchtitleonly.caption
+msgctxt "tsearchform.menuitemsearchtitleonly.caption"
+msgid "Search on title only"
 msgstr ""
 
 #: tsearchform.menuitemselectall.caption

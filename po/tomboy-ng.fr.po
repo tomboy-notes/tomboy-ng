@@ -372,6 +372,10 @@ msgstr "L'option multi carnets est active"
 msgid "Name"
 msgstr "Nom de la note"
 
+#: resourcestr.rsnetworknotavailable
+msgid "Network not available"
+msgstr ""
+
 #: resourcestr.rsnewerversionexits
 msgctxt "resourcestr.rsnewerversionexits"
 msgid "A newer version exists in main repo"
@@ -1064,7 +1068,9 @@ msgid "Take a manual Snapshot"
 msgstr "Prendre un snapshot"
 
 #: tformrecover.buttonmakesafetysnap.hint
-msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+#, fuzzy
+#| msgid "Take a initial snapshot of your notes and config. Overwritten each time."
+msgid "Take a snapshot of your notes and config. Overwritten each time."
 msgstr "1er snapshot des notes & config puis remplacement à chaque màj."
 
 #: tformrecover.buttonrecoversnap.caption
@@ -1451,6 +1457,11 @@ msgstr "Options"
 msgid "tomboy-ng Search"
 msgstr "Recherche tomboy-ng"
 
+#: tsearchform.labelsearchtitle.caption
+msgctxt "tsearchform.labelsearchtitle.caption"
+msgid "Search on title only"
+msgstr ""
+
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
 msgstr "Clic Droit pour gérer les carnets"
@@ -1494,6 +1505,11 @@ msgstr ""
 
 #: tsearchform.menuitemopenselected.caption
 msgid "Open Selected Notes"
+msgstr ""
+
+#: tsearchform.menuitemsearchtitleonly.caption
+msgctxt "tsearchform.menuitemsearchtitleonly.caption"
+msgid "Search on title only"
 msgstr ""
 
 #: tsearchform.menuitemselectall.caption
