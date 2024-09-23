@@ -426,6 +426,7 @@ type
             { Indicates Spell is configured and LabelLibrary and LabelDic should
             contain valid full file names.}
         SpellConfig : boolean;
+        SearchOnTitleOnly : boolean;
                             // Checks to ensure no threads are running. Will hold
                             // up an App exits for up to 5 seconds.
         procedure CloseNowPlease();
@@ -1040,6 +1041,8 @@ begin
             ('true' = ConfigFile.readstring('BasicSettings', 'UseUndo', 'true'));
         SearchCaseSensitive :=
             ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
+        SearchOnTitleOnly :=
+            ('true' = Configfile.readstring('BasicSettings', 'SearchOnTitle', 'false'));
         CheckShowSplash.Checked :=
             ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
         CheckAutostart.Checked :=
@@ -1215,6 +1218,7 @@ begin
             ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
             Configfile.writestring('BasicSettings', 'ManyNotebooks',     MyBoolStr(CheckManyNoteBooks.checked));
             Configfile.writestring('BasicSettings', 'CaseSensitive',     MyBoolStr(SearchCaseSensitive));
+            Configfile.writestring('BasicSettings', 'SearchOnTitle',     MyBoolStr(SearchForm.MenuItemSearchTitleOnly.Checked));
             ConfigFile.writestring('BasicSettings', 'ShowIntLinks',      MyBoolStr(CheckShowIntLinks.Checked));
             ConfigFile.writestring('BasicSettings', 'ShowExtLinks',      MyBoolStr(CheckShowExtLinks.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));

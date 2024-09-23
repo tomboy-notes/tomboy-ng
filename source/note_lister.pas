@@ -228,7 +228,8 @@ type
     NoteBookList : TNoteBookList;
                                 // Passed a StringList containing 0 to n strings. Returns False if any (non empty)
                                 // string is not present in NoteList[index]^.Content. True if all present or list empty.
-    function CheckSearchTerms(const STermList: TStringList; const Index: integer): boolean;
+    function CheckSearchTerms(const STermList : TStringList; const Index : integer;
+        TitleOnly : boolean) : boolean;
                                 { Returns a simple note file name, accepts simple filename or ID }
     function CleanFileName(const FileOrID: AnsiString): ANSIString;
 
@@ -413,7 +414,7 @@ type
                                         // of found items. Rewrites note indexes with only reference to Notes that pass test.
                                         // Does not do anything about Notebook, it may, or may not be already applied.
                                         // Calling process should trigger a redraw of Display.
-    function RefineSearch(STermList: TstringList): integer;
+    function RefineSearch(STermList: TstringList; TitleOnly : boolean): integer;
                                         // Clears any search, returns number of notes represented in list (not inc Templates)
                                         // Rewrites NoteIndexes using all Notes
                                         // Calling process should trigger a redraw of Display.
@@ -422,11 +423,11 @@ type
                                         // Triggers a new search, may have STerm or Notebook or both, rets number of found items.
                                          // Rebuilds and sorts DateSortIndex and TitleSortIndex.
                                          // Calling process should trigger a redraw of Display.
-    function NewSearch(STerm: string; NoteBook: string): integer;
+    function NewSearch(STerm : string; NoteBook : string; TitleOnly : boolean) : integer;
                                         // Triggers a new search, may have STerm or Notebook or both, rets number of found items.
                                         // Rebuilds and sorts DateSortIndex and TitleSortIndex.
                                         // Calling process should trigger a redraw of Display.
-    function NewSearch(STermList: TstringList; NoteBook: string): integer;
+    function NewSearch(STermList: TstringList; NoteBook: string; TitleOnly : boolean): integer;
                                         // Returns the number of notes still active in SWYT, Search While You Type. Its
                                         // the number in NoteList or less. 0 is possible.
     function NoteIndexCount() : integer;
@@ -1516,7 +1517,12 @@ end;
 
 // ----------------- Search Related Methods -----------------------------------
 
-function TNoteLister.RefineSearch(STermList: TstringList): integer;
+{ The two indexes are sorted by title or date. We iterate over both removing any
+  entry that points to note that does not have a match for search term(s). Then the
+  listview is redrawn using the rebuilt index.
+}
+
+function TNoteLister.RefineSearch(STermList: TstringList; TitleOnly : boolean): integer;
 //var
 //    T1, T2, T3, T4, T5 : qword;
 begin
@@ -1526,14 +1532,14 @@ begin
     result := 0;
     // Iterate over the Index, for each entry, the value stored is the index into NoteList
     while result < TitleSearchIndex.Count do begin
-        if not CheckSearchTerms(STermList, TitleSearchIndex[result]) then
+        if not CheckSearchTerms(STermList, TitleSearchIndex[result], TitleOnly) then
             TitleSearchIndex.Delete(result)
         else inc(result);
     end;
     result := 0;
     //T2 := GetTickCount64();
     while result < DateSearchIndex.count do begin
-        if not CheckSearchTerms(STermList, DateSearchIndex[result]) then
+        if not CheckSearchTerms(STermList, DateSearchIndex[result], TitleOnly) then
             DateSearchIndex.Delete(result)
         else inc(result);
     end;
@@ -1594,7 +1600,7 @@ begin
     // debugln('TNoteLister.ClearSearch() returning ' + inttostr(REsult) + ' and ' + inttostr(NoteList.Count));
 end;
 
-function TNoteLister.CheckSearchTerms(const STermList : TStringList; const Index : integer) : boolean; inline;
+function TNoteLister.CheckSearchTerms(const STermList : TStringList; const Index : integer; TitleOnly : boolean) : boolean; inline;
 var
     St : string;
 begin
@@ -1602,13 +1608,16 @@ begin
 //        debugln('TNoteLister.CheckSearchTerms - found tomboy-ng Release Process');
     for St in STermList do begin
         if St = '' then continue;
-        if pos(St, NoteList[index]^.Content) = 0 then exit(False);
+        if TitleOnly then begin
+             if pos(St, lowercase(NoteList[index]^.Title)) = 0 then exit(False)
+        end
+        else if pos(St, NoteList[index]^.Content) = 0 then exit(False);
     end;
     result := true;
 end;
+// OK, above is where we decide to search on note title instead of note content.
 
-
-function TNoteLister.NewSearch(STerm : string; NoteBook: string): integer;
+function TNoteLister.NewSearch(STerm : string; NoteBook: string; TitleOnly : boolean): integer;
 var
     STL : TStringList;
 begin
@@ -1617,14 +1626,14 @@ begin
         if Sett.SearchCaseSensitive then
             STL.AddDelimitedtext(STerm, ' ', false)
         else STL.AddDelimitedtext(lowercase(STerm), ' ', false);
-    result := NewSearch(STL, NoteBook);
+    result := NewSearch(STL, NoteBook, TitleOnly);
     STL.Free;
 end;
 
 { NewSearch can be called in three modes -
   Just STermList, Just a Notebook, or Both. Not neither.     }
 
-function TNoteLister.NewSearch(STermList : TstringList; NoteBook: string): integer;
+function TNoteLister.NewSearch(STermList : TstringList; NoteBook: string; TitleOnly : boolean): integer;
 var
     NBStrL : TStringList = nil;        // gets set to a pre-existing list, do not create or free !
     //T1, T2, T3, T4, T5 : qword;
@@ -1640,7 +1649,7 @@ var
             //writeln('SearchNoteBook NB=' + NoteBook + ' NBStrL.text=[' + NBStrL.Text + ']');
             while j < NBStrL.Count do begin
                 if NoteList.FindID(i, NBStrL[j]) then begin        // this the time consuming part. 4mS 2000 notes
-                    if CheckSearchTerms(STermList, i) then begin
+                    if CheckSearchTerms(STermList, i, TitleOnly) then begin
                         TitleSearchIndex.add(i);
                         DateSearchIndex.Add(i);
                         inc(Result);
@@ -1657,7 +1666,7 @@ var
     begin
         result := 0;;
         for ii := 0 to NoteList.Count-1 do begin
-            if not CheckSearchTerms(STermList, ii) then continue;
+            if not CheckSearchTerms(STermList, ii, TitleOnly) then continue;
             if not NoteList[ii]^.IsTemplate then begin
                 TitleSearchIndex.add(ii);
                 DateSearchIndex.Add(ii);
@@ -1669,7 +1678,7 @@ var
 
 begin
     // debugln('TNoteLister.NewSearch() STerm=' + STermList.Text + ' >> ' + NoteBook);
-    //T1 := GetTickCount64();
+    // T1 := GetTickCount64();
     TitleSearchIndex.Clear;
     DateSearchIndex.Clear;
     TitleSearchIndex.Capacity := NoteList.Count;

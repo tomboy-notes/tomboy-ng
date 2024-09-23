@@ -193,7 +193,7 @@ const   TopMargin = 15;
         // These two arrays contain fonts that I know are suitable for this use. We use
         // the first one found on the given system. Add more here but read notes above.
         FontsFixed : array of string = ('Liberation Mono', 'Courier New', 'Courier');
-        FontsVariable : array of string = ('Liberation Sans', 'Lucida Grande', 'Arial', 'Helvetica');
+        FontsVariable : array of string = ({'Simsun-ExtB',} 'Liberation Sans', 'Lucida Grande', 'Arial', 'Helvetica');
 
 //        FontsFixed : array of string = ('Monaco', 'Menlo','Courier New');      // Darwin
 //        FontsVariable : array of string = ('Lucida Grande', 'Geneva', 'Arial');  // Darwin

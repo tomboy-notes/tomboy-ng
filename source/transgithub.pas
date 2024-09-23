@@ -62,8 +62,8 @@ is shuffled around to ensure its in RemoteNotes when we write out remote manifes
 AssignActions()
 --------------
 We decide a note needs uploading because its main-notelister entry is later than the last
-sync date as recorded in local manifest. New, Sept 2024, or because its local mainfest
-says 'PleaseUploadThisNote' - a message put there during last sync when upload failed.          ?? No, not good. trashing the previous SHA means a certain down too
+sync date as recorded in local manifest. OR because the new attribute, force-upload="yes"
+is present.
 
 We decide a note needs downloading because its remote SHA (obtained from gitlab) does
 not match the SHA in the local manifest as recorded at previous sync.
@@ -80,24 +80,19 @@ Download (and uploads) will be retried up to 5 times if necessary.
 
 Uploading a Note, that fails
 ----------------------------
-If an upload fails, previously, we'd leave it out of new manifests. WRONG.
 Must ensure any note in repo is mentioned in both manifests (but ensure uploading next time).
 The remote manifest entry should have original LCD and the SHA we got from github and
 put in RemoteNotes.
-The local manifest needs its SHA set to the string constant UPLOADNOTE instead of a SHA.
+The local manifest needs its SHA left as is and a new attribute, force-upload="yes".
 
 What happens is RemoteNotes holds the existing SHA of a note, when a new one is uploaded
 to overwrite it, the SHA in RemoteNotes is updated (down in SendData()) to the new github
 iff upload is succssful. If unsucessful, leave it as it is (the note on github has not
 changed) but set RemoteNotes item.SyncState to FAILEDUPLOAD, a str constant.
 
-Next action is in DoRemoteManifest, it will spot the FAILEDUPLOAD msg, will use the
-RemoteNotes item.SHA for remote manifest then change it to UPLOADNOTE so that text
-appears in the local manifest.
-
-
-
-
+Next action is in DoRemoteManifest, it will spot the FAILEDUPLOAD msg, and set the
+TSync.RemoteMetaData item.forceupload to true. Then, WriteLocalManifest will see that
+and put the neecessary extra attribute in, force-upload="yes" in the local mainfest.
 
 Manifests
 ---------
@@ -105,7 +100,7 @@ There are two manifests, local and remote.  The local has a global LastSyncDate 
 for each Note under its control. The remote lists a title, CreateData, LastChangeDate, SHA,
 format and a list of notebooks for each note in the repo.
 
-Local Manifest is built, mainly (especially SHA), from TSync.RemoteMetaData relying on appropriate
+Local Manifest is built, mainly, from TSync.RemoteMetaData relying on appropriate
 data being put in there by TGithubSync.
 
 Remote Manifest is made with data from TSync.TRemoteMetaData (from remote manifest) and
@@ -123,6 +118,8 @@ HISTORY :
                  number of tweeks to make more resiliant. 1) Before starting aGHSync, I try to
                  resolve (as an exercise) the hostnames. 2) Extend the downloader timeouts,
                  Client.ConnectTimeout := 8000; was 3000; Client.IOTimeout := 4000; was 0;
+    2024/09/19   Ensure, after a transit network failure, that a note that failed to upload
+                 is still mentioned in the manifests, else it looks like a delete.
 }
 
 

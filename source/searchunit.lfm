@@ -1,7 +1,7 @@
 object SearchForm: TSearchForm
-  Left = 178
+  Left = 257
   Height = 401
-  Top = 612
+  Top = 403
   Width = 794
   ActiveControl = EditSearch
   Caption = 'tomboy-ng Search'
@@ -297,6 +297,18 @@ object SearchForm: TSearchForm
     TabOrder = 5
     OnClick = ButtonSearchOptionsClick
   end
+  object LabelSearchTitle: TLabel
+    AnchorSideRight.Control = ButtonSearchOptions
+    AnchorSideBottom.Control = ButtonSearchOptions
+    AnchorSideBottom.Side = asrCenter
+    Left = 503
+    Height = 20
+    Top = 6
+    Width = 135
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 10
+    Caption = 'Search on title only'
+  end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 344
     Top = 72
@@ -346,6 +358,10 @@ object SearchForm: TSearchForm
     object MenuItemSWYT: TMenuItem
       Caption = 'Search While You Type'
       OnClick = MenuItemSWYTClick
+    end
+    object MenuItemSearchTitleOnly: TMenuItem
+      Caption = 'Search on title only'
+      OnClick = MenuItemSearchTitleOnlyClick
     end
   end
   object OpenDialogImport: TOpenDialog

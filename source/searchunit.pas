@@ -148,11 +148,13 @@ type        { TSearchForm }
       ButtonClearSearch: TButton;
 	    ButtonClearFilters: TButton;
         EditSearch: TEdit;
+        LabelSearchTitle : TLabel;
         ListBoxNotebooks: TListBox;
         ListViewNotes: TListView;
 		MenuEditNotebookTemplate: TMenuItem;
 		MenuDeleteNotebook: TMenuItem;
         MenuCreateNoteBook: TMenuItem;
+        MenuItemSearchTitleOnly : TMenuItem;
         MenuItemNoteBookMembership: TMenuItem;
         MenuItemSelectAll: TMenuItem;
         MenuItemSelectNone: TMenuItem;
@@ -219,6 +221,7 @@ type        { TSearchForm }
         procedure MenuItemCaseSensitiveClick(Sender: TObject);
         procedure MenuItemImportNoteClick(Sender: TObject);
         procedure MenuItemManageNBookClick(Sender: TObject);
+        procedure MenuItemSearchTitleOnlyClick(Sender : TObject);
         procedure MenuItemSelectAllClick(Sender: TObject);
         procedure MenuItemSelectNoneClick(Sender: TObject);
         procedure MenuItemSWYTClick(Sender: TObject);
@@ -979,7 +982,8 @@ begin
         ListViewNotes.Items.Count := 0;
         if STerm.IsEmpty and NB.IsEmpty then
              ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
-        else ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STerm, NB);
+        else ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STerm, NB,
+                MenuItemSearchTitleOnly.Checked);
     end;
 end;
 
@@ -1028,7 +1032,8 @@ end;
 }
 
 
-// Only used in Progressive Search mode, SWYT
+// Only used in Progressive Search mode, SWYT and Form is visible, length of search
+// term is > 1 char.
 procedure TSearchForm.EditSearchChange(Sender: TObject);
 var
     NoteBook : string;
@@ -1050,19 +1055,12 @@ var
     end;   }
 
 begin
-{    AStr := EditSearch.Text;                // Remove the search prompt if its first part of Text
-    if (Astr.Length > rsMenuSearch.Length) and (AStr.StartsWith(rsMenuSearch)) then begin
-        EditSearch.Text := copy(EditSearch.Text, Length(rsMenuSearch)+1, 10);
-        APoint.X := 1;
-        APoint.Y := 0;
-        EditSearch.CaretPos := APoint;
-    end;  }
     if (EditSearch.Text <> '') and (EditSearch.Text <> rsMenuSearch) then
         ButtonClearSearch.Enabled := True;
     if (not Sett.AutoSearchUpdate) or (not visible) or (length(EditSearch.Text)=1) then exit;
     STL := TStringList.Create;
     try
-        if length(EditSearch.text) = 1 then exit;    // Nothing to see here folks
+//        if length(EditSearch.text) = 1 then exit;    // Nothing to see here folks -- Redundant Line ???
 
         // debugln('TSearchForm.EditSearchChange Notebooks.ItemIndex = ' + inttostr(ListBoxNoteBooks.ItemIndex));
 
@@ -1072,26 +1070,18 @@ begin
         if not ((EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch)) then  // else we pass an empty list.
             if Sett.SearchCaseSensitive then
                 STL.AddDelimitedtext(EditSearch.Text, ' ', false)
-            else STL.AddDelimitedtext(lowercase(EditSearch.Text), ' ', false);
-{        if (EditSearch.text = '') then begin   // ie backspacing               // not needed for TextHint model
-            EditSearch.text := rsMenuSearch;
-            EditSearch.SetFocus;
-            EditSearch.SelectAll;
-            if ListBoxNoteBooks.ItemIndex > -1 then
-                Found := TheMainNoteLister.NewSearch(STL, NoteBook)
-            else
-                Found := TheMainNoteLister.ClearSearch();
-            exit;
-        end;  }
-        if (SearchTextLength > length(EditSearch.text)) then begin              // ie backspacing, decreasing
-            Found := TheMainNoteLister.NewSearch(STL, NoteBook);
+            else STL.AddDelimitedtext(lowercase(EditSearch.Text), ' ', false);  // build list with terms grouped with "" on one line each
+        if (SearchTextLength > length(EditSearch.text))                         // ie backspacing, decreasing
+                    or ((SearchTextLength = length(EditSearch.text))            // search term has not changed
+                        and (not MenuItemSearchTitleOnly.checked)) then begin   // user has changed SearchOnTitleOnly setting to Content
+            Found := TheMainNoteLister.NewSearch(STL, NoteBook, MenuItemSearchTitleOnly.Checked);
             SearchActive := True;
         end else begin                                                          // must have added a char.
             if SearchActive then
-                Found := TheMainNoteLister.RefineSearch(STL)
+                Found := TheMainNoteLister.RefineSearch(STL, MenuItemSearchTitleOnly.Checked)
             else begin
                 // debugln('TSearchForm.EditSearchChange  NEWSEARCH CALLED');
-                Found := TheMainNoteLister.NewSearch(STL, NoteBook);
+                Found := TheMainNoteLister.NewSearch(STL, NoteBook, MenuItemSearchTitleOnly.Checked);
                 SearchActive := True;
             end;
         end;
@@ -1142,7 +1132,7 @@ begin
 //        if (STL.Count > 0) or (Notebook <> '') then begin
             TheMainNoteLister.LoadContentForPressEnter();                       // Loading 2K notes, 8.6Meg, RSS 43Meg to 51Meg
             ListViewNotes.Clear;
-            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook);  // In SWYT, 52Meg  BUT  v.34c = 42meg
+            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(STL, NoteBook, MenuItemSearchTitleOnly.Checked);  // In SWYT, 52Meg  BUT  v.34c = 42meg
             UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
 //        end;
     finally
@@ -1308,6 +1298,8 @@ begin
             end;
         end;
     MenuItemCaseSensitive.checked := Sett.SearchCaseSensitive;
+    MenuItemSearchTitleOnly.Checked := Sett.SearchOnTitleOnly;
+    LabelSearchTitle.Visible := MenuItemSearchTitleOnly.Checked;
     MenuItemSWYT.checked := Sett.AutoSearchUpdate;
     MenuItemImportNote.Hint := rsHelpImportFile;         // Hint shows on StatusBar
     {$ifdef LVOWNERDRAW}
@@ -1730,6 +1722,7 @@ begin
     end;
 end;
 
+
 procedure TSearchForm.MenuItemOpenSelectedClick(Sender: TObject);
 var
     St : string;
@@ -1837,7 +1830,8 @@ begin
         if (EditSearch.Text = '') or (EditSearch.Text = rsMenuSearch) then      // ie, no search term
             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
         else
-            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(EditSearch.Text, '');
+            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch(EditSearch.Text, '',
+                    MenuItemSearchTitleOnly.Checked);
     end else
         DoSearchEnterPressed();
     UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
@@ -1856,7 +1850,7 @@ begin
             STL.AddDelimitedtext(EditSearch.Text, ' ', false);                  // else we pass an empty list.
         ListViewNotes.Clear;
         ListViewNotes.Items.Count :=
-            TheMainNoteLister.NewSearch(STL, ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex]);
+            TheMainNoteLister.NewSearch(STL, ListBoxNotebooks.Items[ListBoxNotebooks.ItemIndex], MenuItemSearchTitleOnly.Checked);
         STL.Free;
         UpdateStatusBar(0, inttostr(ListViewNotes.Items.Count) + ' ' + rsNotes);
     end;
@@ -1974,6 +1968,19 @@ begin
     TheMainNoteLister.IndexNotes();
 end;
 
+procedure TSearchForm.MenuItemSearchTitleOnlyClick(Sender : TObject);
+begin
+    MenuItemSearchTitleOnly.Checked := not MenuItemSearchTitleOnly.Checked;
+    LabelSearchTitle.Visible := MenuItemSearchTitleOnly.Checked;
+    if SearchActive then EditSearchChange(Sender);
+    // No, if changing from TitleOnly to Content, need to re-run the search using
+    // existing search term in edit box and notebook filter (if applicible).
+    // Notebook filter is not affected by swap, so if if no active search term,
+    // do nothing. But if we have a search term (>2char) and we are switching form
+    // Title to content (ie expect more 'hits') RefineSearch() is NOT enough
+    Sett.SaveSettings(sender);
+end;
+
 procedure TSearchForm.ButtonClearSearchClick(Sender: TObject);
 begin
     EditSearch.text := ''; //rsMenuSearch;
@@ -1985,7 +1992,7 @@ begin
         if ListBoxNoteBooks.ItemIndex < 0 then          // ie, no Notebook selected
             ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch()
         else
-            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex]);
+            ListViewNotes.Items.Count := TheMainNoteLister.NewSearch('', ListBoxNotebooks.Items[ListBoxNoteBooks.ItemIndex], MenuItemSearchTitleOnly.Checked);
     end else
         DoSearchEnterPressed();
     SearchActive := False;
@@ -2019,6 +2026,7 @@ begin
     ListBoxNotebooksClick(Sender);
     // ButtonClearFilters.Click;       // ToDo : this should select the new Notebook if one made
 end;
+
 
 
 

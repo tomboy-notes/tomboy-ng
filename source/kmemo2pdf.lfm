@@ -9,7 +9,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
   ClientWidth = 571
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '3.0.0.3'
+  LCLVersion = '3.4.0.0'
   object BitBtn1: TBitBtn
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
