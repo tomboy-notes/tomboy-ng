@@ -26,12 +26,20 @@ unit kmemo2pdf;
     Clean up.
 
     Note -
-    -*- This model should work with any TTF fonts, but possibly ony ones that have seperate
+    -*- This model should work with any TTF fonts, but possibly only ones that have seperate
         font files for each 'style' such as bold, italic.
     -*- I found I had to give each font loaded into doc a different name as well as its
         full file name. But that name is not interesting after that ?  Strange.
     -*- Using the standard formal Adobe fonts (and a local equivilent for sizing) is
         a bit simpler and makes for smaller files but cannot handle UTF8 chars.
+
+    * We cannot handle .otf, OpenType Fonts, the cache loads them but when wrapping up the
+      doc, it will crash with an exception worried about unable to load font metrics.
+    * We canno handle Chinese Characters
+    * We cannot handle .ttc, collections of (.otf?) fonts.
+    * I should allow selection of at least Letter size paper.
+    * Should I allow user to select the font to use ? Check filename is .ttf ?
+    * Note that if we end up using a font without Bold or Italics, the fpPDF can fake it.
 
     Need lots of testing.
 
@@ -48,7 +56,7 @@ unit kmemo2pdf;
     History :
         2023-02-14 Initial Release of this unit.
         2024-03-12 Use force fonts to Helvetica or Courier, seems to work evn when not present.
-
+        2024-09-26 Unproductive investigation into Chinese fonts, added a couple of Windows proportional.
 
     The standard 14 PDF fonts – that can be referenced by name in a PDF document – are:
 
@@ -67,7 +75,7 @@ unit kmemo2pdf;
         Symbol
         ZapfDingbats
 
-    Pretty useless however !
+    Pretty useless however, very poor UTF8 character support in particular.
 }
 
 
@@ -77,8 +85,9 @@ unit kmemo2pdf;
 interface
 
 uses  {$ifdef unix}cwstring,{$endif}
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons, fpttf,
-    kmemo, k_prn, fpimage, fppdf, fpparsettf,  typinfo, tb_utils, KFunctions;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
+    LCLProc, fpttf, kmemo, k_prn, fpimage, fppdf, fpparsettf, typinfo, tb_utils,
+    KFunctions;
 
 
 
@@ -105,8 +114,8 @@ type                                 // TFontList not used but might be if I rev
             constructor Create();
             destructor Destroy; Override;
                             { Passed font family name and it returns false if its unusable. If
-                              true, its added  along with extra data to fontlist.
-                             }
+                              true, its added  along with extra data to fontlist. Checks against
+                              the font cache, does not, yet, add the font to the document.  }
             function Add(const TheFont: ANSIString; const Bold, Italic: boolean; Fixed: Boolean): boolean;
             procedure Dump();
                             // Returns FontIndex of passed font record, -1 is not present;
@@ -118,11 +127,28 @@ type
     { TFormKMemo2pdf }
     TFormKMemo2pdf = class(TForm)
         BitBtn1: TBitBtn;
+        BitBtnHelp : TBitBtn;
         BitBtnProceed: TBitBtn;
+        ComboMono : TComboBox;
+        ComboProp : TComboBox;
+        GroupBox1 : TGroupBox;
+        GroupBox2 : TGroupBox;
+        Label1 : TLabel;
+        Label2 : TLabel;
+        LabelPropNotFound : TLabel;
+        LabelMonoNotFound : TLabel;
         Memo1: TMemo;
+        RadioA4 : TRadioButton;
+        RadioLetter : TRadioButton;
+        RadioDefault : TRadioButton;
+        RadioUserDefined : TRadioButton;
+        procedure BitBtnHelpClick(Sender : TObject);
         procedure BitBtnProceedClick(Sender: TObject);
+        procedure ComboPropEditingDone(Sender : TObject);
+        procedure FormActivate(Sender : TObject);
         procedure FormCreate(Sender: TObject);
         procedure FormShow(Sender: TObject);
+        procedure RadioDefaultChange(Sender : TObject);
     private
         TestFontProp, TestFontMono : string; // Are the fonts we use to calculate layout, but don't really use.
         AllowNoBoldItalic : boolean;// Allow use of font that does not have its own Bold or Italic font file.
@@ -152,6 +178,7 @@ type
                                     // anyway (without font tricks). However, thats now unlikely as we will
                                     // have already changed to a "know good" font. Hopefully.
         function MakePDF: boolean;
+        procedure RefreshForm;
         procedure SaveDocument();
                                     // Tries to print out a line of words, word by word, at indicated starting point.
                                     // returns false if there is no more words to print.
@@ -159,7 +186,7 @@ type
                                     // sends a page of text to the Document, returning True when its all done.
         function WritePage(): boolean;
     public
-
+        ParentLeft, ParentTop : integer;
         TheKMemo : TKMemo;          // This is the KMemo, set it before showing the form.
         TheTitle : string;
         FFileName : string;         // Full filename including path,
@@ -168,6 +195,7 @@ type
                             // show user the form with some error or advice messages. Its
                             // going to be a font problem most likely, see header.
         function StartPDF: boolean;
+
     end;
 
 
@@ -177,27 +205,30 @@ var
 
 implementation
 
+uses LCLIntf;
+
 {$R *.lfm}
 
 
 
 { TFormKMemo2pdf }
 
-const   TopMargin = 15;
-        BottomMargin = 10;
-        SideMargin = 15;
-        PageHeight = 297;
-        PageWidth = 210;
-        LineHeight = 6;
+const   TopMargin    =  15;
+        BottomMargin =  10;
+        SideMargin   =  15;
+        PageHeight   = 297;                  // Hmm, we assume A4 page here don't we ?
+        PageWidth    = 210;
+        LineHeight   =   6;
 
         // These two arrays contain fonts that I know are suitable for this use. We use
         // the first one found on the given system. Add more here but read notes above.
-        FontsFixed : array of string = ('Liberation Mono', 'Courier New', 'Courier');
-        FontsVariable : array of string = ({'Simsun-ExtB',} 'Liberation Sans', 'Lucida Grande', 'Arial', 'Helvetica');
+        FontsFixed : array of string = ('Liberation Mono', 'Courier New', 'Courier');  // Linux, Windows/MacOS, Adobe
+        FontsVariable : array of string = ( 'Liberation Sans', 'Lucida Grande',        // Linux, MacOS
+                    'Bahnschrift', 'Lucinda Sans Unicode', 'Arial', 'Helvetica');      // Windows, Windows, Adobe, Adobe
 
-//        FontsFixed : array of string = ('Monaco', 'Menlo','Courier New');      // Darwin
+//        FontsFixed : array of string = ('Monaco', 'Menlo','Courier New');        // Darwin
 //        FontsVariable : array of string = ('Lucida Grande', 'Geneva', 'Arial');  // Darwin
-
+//        'Simsun-ExtB' is a SC Windows font that does show some Latin char but no Chinese one !
 
 { ------------------------------ TFontList ------------------------------------}
 
@@ -406,7 +437,6 @@ begin
     result := false;    // no more to do.
 end;
 
-
 function TFormKMemo2pdf.CheckHeight() : integer;
 var
     W, i, WI : integer;     // word dimensions
@@ -469,49 +499,75 @@ begin
     end;
 end;
 
+procedure TFormKMemo2pdf.RefreshForm;
+begin
+    ComboMono.Text := trim(ComboMono.Text);
+    ComboProp.Enabled := RadioUserDefined.Checked;
+    ComboMono.Enabled := RadioUserDefined.Checked;
+    ComboProp.Text := trim(ComboProp.Text);
+(*    if RadioDefault.Checked then begin            // Hmm....
+        EditProp.Text := '';
+        EditMono.Text := '';
+    end; *)
+           // load font names previously saved in config, if its there, blank otherwise.
+    StartPDF();
+end;
+
 function TFormKMemo2pdf.StartPDF : boolean;     // return false and user is shown the memo with error messages
-var
-    i : integer;
+
+    // in default font mode check for both fonts from the arrays. If User mode we check
+    // the user provided font name unless its blank in which case, use appropriate array.
+    // Checks for the basic font, we don't know, yet, if we have or need bold/italic
+    procedure SetTheFont(IsProp : boolean);
+    var i : integer;
+    begin
+        if IsProp then begin                                               // Prop or variable spaced fonts
+            if RadioDefault.Checked or (ComboProp.Text = '') then begin   // use ones from array
+                for I := 0 to high(FontsVariable) do
+                    if FontList.Add(FontsVariable[i], false, False, True) then begin
+                        TestFontProp := FontsVariable[i];
+                        ComboProp.Text := FontsVariable[i];
+                        break;
+                    end;
+            end else
+                if FontList.Add(trim(ComboProp.Text), false, false, False) then
+                    TestFontProp := trim(ComboProp.Text);
+        end else begin                                                          // doing monspace
+            if RadioDefault.Checked or (ComboMono.Text = '') then begin         // using arrays
+                for I := 0 to high(FontsFixed) do
+                    if FontList.Add(FontsFixed[i], false, False, True) then begin
+                        TestFontMono := FontsFixed[i];
+                        ComboMono.Text := FontsFixed[i];
+                        break;
+                    end;
+            end else                                                            // Using user request
+                if FontList.Add(ComboMono.Text, false, False, True) then
+                    TestFontMono := ComboMono.Text;
+        end;
+    end;
 
 begin
-    Memo1.Clear;
+    Result := False;
+    BitBtnProceed.Enabled := False;
     CurrentPage := -1;
     If WordList <> nil then
         FreeAndNil(WordList);
     if FontList <> Nil then
         FreeAndNil(FontList);
     FontList := TFontList.Create();
-
     TestFontMono := '';
     TestFontProp := '';
-
-     for I := 0 to high(FontsFixed) do
-         if FontList.Add(FontsFixed[i], false, False, True) then begin
-            TestFontMono := FontsFixed[i];
-            break;
-         end;
-     for I := 0 to high(FontsVariable) do
-         if FontList.Add(FontsVariable[i], false, false, False) then begin
-            TestFontProp := FontsVariable[i];
-            break;
-         end;
+//    Memo1.Append('Checking for available fonts');
+    SetTheFont(True);            // Prop
+    SetTheFont(False);           // Mono
+    LabelMonoNotFound.Visible := TestFontMono = '';
+    LabelPropNotFound.Visible := TestFontProp = '';
     if TestFontMono.IsEmpty or TestFontProp.IsEmpty then begin
-        Memo1.Append('ERROR - cannot find suitable fonts to use. Please install');
-        Memo1.Append('the Adobe Standard fonts, Courier and Helvetica or the open');
-        Memo1.Append('source Liberation Sans and Liberation Mono or FreeType');
-        showmessage('Unable to find suitable fonts.');
+        // Memo1.Append('ERROR - cannot find suitable font, please Help.');
         exit(false);
     end;
-    WordList := TWordList.Create;
-    FDoc := TPDFDocument.Create(Nil);
-    try
-        KMemoRead();
-        Result := MakePDF();            // False if we found an issue, probably font related !
-    finally
-        FDoc.Free;
-        FreeAndNil(WordList);
-        FreeAndNil(FontList);
-    end;
+    BitBtnProceed.Enabled := True;
+    Result := True;
 end;
 
 
@@ -528,10 +584,10 @@ begin
     //Result.Infos.ApplicationName := ApplicationName;
     FDoc.Infos.CreationDate := Now;
     Opts := [poPageOriginAtTop];
-    Include(Opts, poSubsetFont);
+//    Include(Opts, poSubsetFont);     // do not assert poSubsetFont, messes with Chinese fonts
     Include(Opts, poCompressFonts);
     Include(Opts,poCompressText);
-    FDoc.Options := Opts;
+    FDoc.Options := Opts;              // poNoEmbeddedFonts not asserted, embedded by default
     FDoc.StartDocument;
     if FontList.Count > 0 then
            FontList.LoadFonts(FDoc);
@@ -539,7 +595,9 @@ begin
     S := FDoc.Sections.AddSection; // we always need at least one section
     repeat
         P := FDoc.Pages.AddPage;
-        P.PaperType := ptA4;
+        if RadioA4.Checked then
+            P.PaperType := ptA4
+        else P.PaperType := ptLetter;
         P.UnitOfMeasure := uomMillimeters;
         S.AddPage(P);                       // Add the Page to the Section
         inc(CurrentPage);
@@ -554,24 +612,54 @@ begin
   F := TFileStream.Create(FFileName, fmCreate);
   try try
     FDoc.SaveToStream(F);
-  except on E: Exception do begin
-        Memo1.Append('ERROR - Failed to save the PDF ' + E.Message);
-        show;
-        end;
+  except on E: Exception do
+        ShowMessage('ERROR - Failed to save the PDF ' + E.Message);
   end;
   finally
     F.Free;
   end;
-   Memo1.Append('INFO Wrote file to ' + FFileName);
 end;
 
-procedure TFormKMemo2pdf.BitBtnProceedClick(Sender: TObject);        // ToDo : replace all this with call to StartPDF
+procedure TFormKMemo2pdf.BitBtnProceedClick(Sender: TObject);
 begin
-    AllowNoBoldItalic := True;
-    StartPDF();
-    exit();
+    if not StartPDF() then exit;        // It is possible to jump here without triggering a StartPDF()
+    WordList := TWordList.Create;       // regional
+    FDoc := TPDFDocument.Create(Nil);   // regional
+    try
+        KMemoRead();
+        if not MakePDF() then            // False if we found an issue, probably font related !
+            ShowMessage('An error occured making the PDF');
+    finally
+        FDoc.Free;
+        FreeAndNil(WordList);
+        FreeAndNil(FontList);
+    end;
 end;
 
+procedure TFormKMemo2pdf.BitBtnHelpClick(Sender : TObject);
+begin
+    OpenURL('https://github.com/tomboy-notes/tomboy-ng/wiki/PDF-Fonts');
+end;
+
+procedure TFormKMemo2pdf.ComboPropEditingDone(Sender : TObject);
+begin
+   RefreshForm();
+end;
+
+procedure TFormKMemo2pdf.FormActivate(Sender : TObject);
+begin
+    Left := ParentLeft div 2;   // This is apparently necessary in Qt with Modal forms ??
+    Top := ParentTop div 2;
+    AllowNoBoldItalic := True;
+    RefreshForm();              // will call startPDF, test fonts
+    Memo1.Clear;
+    Memo1.Append('If characters in your PDF do not appear as expected you');
+    Memo1.Append('may need to set a language specific font. tomboy-ng''s ');
+    Memo1.Append('libraries cannot work with all fonts, you must supply a');
+    Memo1.Append('font that is in a .ttf or .otf file. A .ttc font file will');
+    Memo1.Append('not work. Press the Help Button.');
+    Memo1.Append('');
+end;
 
 function TFormKMemo2pdf.KMemoRead() : boolean;
 var
@@ -579,8 +667,7 @@ var
     I : integer;
     ExFont : TFont;
     AWord : ANSIString = '';
-{    AFontName : string;
-    MyBold, MyItalic : boolean;  }
+    FailedBoldItalics : boolean = false;
 
         procedure CopyFont(FromFont : TFont);
         begin
@@ -594,28 +681,26 @@ var
 begin
     ExFont := TFont.Create();
     for BlockNo := 0 to TheKMemo.Blocks.Count-1 do begin                                    // For every block
-        if not TheKMemo.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin
-           CopyFont(TKMemoTextBlock(TheKmemo.Blocks.Items[BlockNo]).TextStyle.Font);        // copies to ExFont
-           if ExFont.Pitch = fpFixed then begin                                 // Then we add (if necessary) font to FontList
-//              MyBold := ExFont.Bold;
-//              MyItalic := ExFont.Italic;
-
-              ExFont.Name := TestFontMono;
-               if not FontList.Add(TestFontMono, ExFont.Bold, ExFont.Italic, True) then begin
-                   showmessage('Font is missing Bold or Italic ' + TestFontMono);
-                   exit(false);                                                 // here we assume if regular font exists, so to marked up ??
-               end;
-           end else begin
-                ExFont.Name := TestFontProp;
-                if not FontList.Add(TestFontProp, ExFont.Bold, ExFont.Italic, False) then begin
-                   showmessage('Font is missing Bold or Italic ' + TestFontProp);
-                   exit(false);
+        if not TheKMemo.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph') then begin     // A text block of some sort
+            CopyFont(TKMemoTextBlock(TheKmemo.Blocks.Items[BlockNo]).TextStyle.Font);       // copies to ExFont from KMemo
+            if ExFont.Pitch = fpFixed then begin                                // Then we add (if necessary) font to FontList
+                ExFont.Name := TestFontMono;
+                // if FontList fails to find the exact combo,
+                if not FontList.Add(TestFontMono, ExFont.Bold, ExFont.Italic, True) then begin
+                    FailedBoldItalics := True;
+                    DebugLn(TestFontMono + ' is missing Bold or Italic ');      // we keep 'printing' but without the markup
                 end;
-           end;
-           for I := 0 to TheKMemo.Blocks.Items[BlockNo].WordCount-1 do begin                // For every word in this block
-               AWord := TheKMemo.Blocks.Items[BlockNo].Words[I];
-               WordList.Add(AWord, ExFont.Size, ExFont.Bold, ExFont.Italic, False, ExFont.Color, ExFont.Name, (ExFont.Pitch = fpFixed));
-           end;
+            end else begin
+                ExFont.Name := TestFontProp;                                    // must be Prop font
+                if not FontList.Add(TestFontProp, ExFont.Bold, ExFont.Italic, False) then begin
+                    FailedBoldItalics := True;
+                    DebugLn(TestFontProp + ' is missing Bold or Italic ');
+                end;
+            end;
+            for I := 0 to TheKMemo.Blocks.Items[BlockNo].WordCount-1 do begin   // For every word in this block, all same font
+                AWord := TheKMemo.Blocks.Items[BlockNo].Words[I];
+                WordList.Add(AWord, ExFont.Size, ExFont.Bold, ExFont.Italic, False, ExFont.Color, ExFont.Name, (ExFont.Pitch = fpFixed));
+            end;
         end else begin
             WordList.Add('', 0, False, False, True, clBlack);   // TKMemoParagraph, thats easy but is it a Bullet ?
             if (TKMemoParagraph(Thekmemo.blocks.Items[BlockNo]).Numbering <> pnuNone) then begin
@@ -634,24 +719,33 @@ begin
     FreeandNil(ExFont);
     WordIndex := 0;
     result := (WordList.Count > 1);
+    if FailedBoldItalics then begin             // only happens if content requires one of them and it is unavailable
+        Memo1.Append('Note : Font is missing Bold or Italic ');
+        Memo1.Append('Press Help Button for info on installing more.');
+        Memo1.Append('Delaying a few seconds while you see this message ...');
+        Application.ProcessMessages;
+        sleep(10000);
+    end;
 //    WordList.Dump();
 end;
 
-
 const HaveReadFonts : boolean = false;
+        // Using this model, if a run finds the necessary fonts but they become
+        // unavailable for a later run (but tomboy-ng is not restarted) then an
+        // unhandled exception occurs.  Hmm ......
 
 procedure TFormKMemo2pdf.FormCreate(Sender: TObject);
 begin
     WordList := nil;
 //    FontList := nil;
     CurrentPage := -1;
-    Memo1.Clear;
-    BitBtnProceed.Visible := False;         // ToDo : I really wonder what ?
+    BitBtnProceed.Enabled := False;
     if not HaveReadFonts then begin
        {$if defined(CPU32) and defined(LINUX)}
        gTTFontCache.SearchPath.Add('/usr/share/fonts/');  // Avoids a problem noted on 32bit linux where
        gTTFontCache.BuildFontCache;                       // libfontconfig returns a nil pointer to font.cfg file
        {$else}
+//       gTTFontCache.SearchPath.Add('./');               // Also look for fonts where binary lives ?
        gTTFontCache.ReadStandardFonts;
        {$endif}
        HaveReadFonts := True;
@@ -660,7 +754,12 @@ end;
 
 procedure TFormKMemo2pdf.FormShow(Sender: TObject);
 begin
-    AllowNoBoldItalic := False;
+
+end;
+
+procedure TFormKMemo2pdf.RadioDefaultChange(Sender : TObject);
+begin
+    RefreshForm();
 end;
 
 end.

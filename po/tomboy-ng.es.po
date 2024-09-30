@@ -449,6 +449,16 @@ msgctxt "resourcestr.rspressclose"
 msgid "Press Close"
 msgstr "Pulse Cerrar"
 
+#: resourcestr.rsquestiondeletenotes
+#, object-pascal-format
+msgid "Do you wish to delete %d notes ?"
+msgstr ""
+
+#: resourcestr.rsquestiondeleteopennotes
+#, object-pascal-format
+msgid "Including %d open notes ?"
+msgstr ""
+
 #: resourcestr.rsrecoverok
 msgctxt "resourcestr.rsrecoverok"
 msgid "OK, File recovered."
@@ -1021,10 +1031,6 @@ msgstr "Cabecera de esta nota"
 #: tformindex.panel1.caption
 msgid "Single lines, all Huge, Large Bold or Large"
 msgstr "Líneas únicas, todas Enormes, Grandes-Negritas o Grandes"
-
-#: tformkmemo2pdf.caption
-msgid "PDF Issues"
-msgstr "Problemas PDF"
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"

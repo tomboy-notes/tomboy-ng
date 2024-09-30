@@ -1,12 +1,13 @@
 object FormKMemo2pdf: TFormKMemo2pdf
-  Left = 80
+  Left = 528
   Height = 461
-  Top = 562
+  Top = 141
   Width = 571
   ActiveControl = Memo1
-  Caption = 'PDF Issues'
+  Caption = 'tomboy-ng PDF setup'
   ClientHeight = 461
   ClientWidth = 571
+  OnActivate = FormActivate
   OnCreate = FormCreate
   OnShow = FormShow
   LCLVersion = '3.4.0.0'
@@ -15,51 +16,260 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 491
+    Left = 451
     Height = 30
     Top = 426
-    Width = 75
+    Width = 115
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 5
     BorderSpacing.Bottom = 5
+    Cancel = True
     DefaultCaption = True
-    Kind = bkClose
-    ModalResult = 11
-    TabOrder = 0
+    Kind = bkCancel
+    ModalResult = 2
+    TabOrder = 3
   end
   object BitBtnProceed: TBitBtn
     AnchorSideTop.Control = BitBtn1
     AnchorSideRight.Control = BitBtn1
-    Left = 375
+    Left = 333
     Height = 30
     Top = 426
-    Width = 113
+    Width = 115
     Anchors = [akTop, akRight]
     BorderSpacing.Right = 3
+    Default = True
     DefaultCaption = True
-    Kind = bkRetry
-    ModalResult = 4
+    Kind = bkOK
+    ModalResult = 1
     OnClick = BitBtnProceedClick
-    TabOrder = 1
+    TabOrder = 2
   end
   object Memo1: TMemo
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
-    AnchorSideBottom.Control = BitBtn1
-    Left = 2
-    Height = 422
-    Top = 2
-    Width = 567
+    AnchorSideBottom.Control = GroupBox1
+    Left = 5
+    Height = 219
+    Top = 5
+    Width = 561
     Anchors = [akTop, akLeft, akRight, akBottom]
-    BorderSpacing.Left = 2
-    BorderSpacing.Top = 2
-    BorderSpacing.Right = 2
-    BorderSpacing.Bottom = 2
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 15
     Lines.Strings = (
       'Memo1'
     )
-    TabOrder = 2
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 0
+    TabStop = False
+  end
+  object GroupBox1: TGroupBox
+    AnchorSideLeft.Control = GroupBox2
+    AnchorSideBottom.Control = GroupBox2
+    Left = 32
+    Height = 93
+    Top = 239
+    Width = 169
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Bottom = 15
+    Caption = 'PDF Fonts'
+    ClientHeight = 71
+    ClientWidth = 165
+    TabOrder = 7
+    object RadioDefault: TRadioButton
+      AnchorSideLeft.Control = GroupBox1
+      AnchorSideTop.Control = GroupBox1
+      Left = 10
+      Height = 22
+      Hint = 'Standard fonts that work for many people.'
+      Top = 5
+      Width = 118
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 5
+      Caption = 'Default Fonts'
+      Checked = True
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      TabStop = True
+      OnChange = RadioDefaultChange
+    end
+    object RadioUserDefined: TRadioButton
+      AnchorSideLeft.Control = GroupBox1
+      AnchorSideTop.Control = RadioDefault
+      AnchorSideTop.Side = asrBottom
+      Left = 10
+      Height = 22
+      Hint = 'Enter Font Name of fonts you have.'
+      Top = 32
+      Width = 113
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 5
+      Caption = 'User Defined'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+    end
+  end
+  object Label1: TLabel
+    AnchorSideLeft.Control = ComboMono
+    AnchorSideBottom.Control = ComboProp
+    Left = 226
+    Height = 20
+    Top = 264
+    Width = 88
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Bottom = 2
+    Caption = 'Proportional'
+  end
+  object Label2: TLabel
+    AnchorSideLeft.Control = ComboMono
+    AnchorSideBottom.Control = ComboMono
+    Left = 226
+    Height = 20
+    Top = 326
+    Width = 89
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Bottom = 1
+    Caption = 'Monospaced'
+  end
+  object GroupBox2: TGroupBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 32
+    Height = 99
+    Top = 347
+    Width = 169
+    Anchors = [akBottom]
+    BorderSpacing.Left = 15
+    BorderSpacing.Bottom = 15
+    Caption = 'Paper Size'
+    ClientHeight = 77
+    ClientWidth = 165
+    TabOrder = 6
+    object RadioA4: TRadioButton
+      AnchorSideLeft.Control = GroupBox2
+      AnchorSideTop.Control = GroupBox2
+      Left = 10
+      Height = 22
+      Top = 5
+      Width = 87
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 5
+      Caption = 'A4 Paper'
+      Checked = True
+      TabOrder = 0
+      TabStop = True
+    end
+    object RadioLetter: TRadioButton
+      AnchorSideLeft.Control = GroupBox2
+      AnchorSideTop.Control = RadioA4
+      AnchorSideTop.Side = asrBottom
+      Left = 10
+      Height = 22
+      Top = 32
+      Width = 109
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 5
+      Caption = 'Letter Paper'
+      TabOrder = 1
+    end
+  end
+  object ComboProp: TComboBox
+    AnchorSideLeft.Control = ComboMono
+    AnchorSideBottom.Control = Label2
+    Left = 226
+    Height = 30
+    Top = 286
+    Width = 224
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Bottom = 10
+    ItemHeight = 0
+    Items.Strings = (
+      'SimKai'
+      'Noto Sans CJK SC'
+      'Noto Serif CJK SC'
+      'FangSong'
+    )
+    TabOrder = 4
+    Text = 'ComboProp'
+    OnEditingDone = ComboPropEditingDone
+  end
+  object ComboMono: TComboBox
+    AnchorSideLeft.Control = GroupBox2
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = GroupBox2
+    Left = 226
+    Height = 30
+    Top = 347
+    Width = 224
+    BorderSpacing.Left = 25
+    ItemHeight = 0
+    Items.Strings = (
+      'Noto Sans Mono CJK SC'
+    )
+    TabOrder = 5
+    Text = 'ComboMono'
+    OnEditingDone = ComboPropEditingDone
+  end
+  object LabelPropNotFound: TLabel
+    AnchorSideLeft.Control = ComboMono
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideBottom.Control = ComboProp
+    AnchorSideBottom.Side = asrCenter
+    Left = 465
+    Height = 20
+    Hint = 'Press the Help Button'
+    Top = 291
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 15
+    Caption = 'Not Found'
+    Font.Style = [fsBold]
+    ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
+  end
+  object LabelMonoNotFound: TLabel
+    AnchorSideLeft.Control = ComboMono
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideBottom.Control = ComboMono
+    AnchorSideBottom.Side = asrCenter
+    Left = 465
+    Height = 20
+    Hint = 'Press the Help Button'
+    Top = 352
+    Width = 75
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Left = 15
+    Caption = 'Not Found'
+    Font.Style = [fsBold]
+    ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
+  end
+  object BitBtnHelp: TBitBtn
+    AnchorSideRight.Control = BitBtnProceed
+    AnchorSideBottom.Control = BitBtnProceed
+    AnchorSideBottom.Side = asrCenter
+    Left = 218
+    Height = 30
+    Hint = 'Will open your Web Browser'
+    Top = 426
+    Width = 115
+    Anchors = [akRight, akBottom]
+    DefaultCaption = True
+    Kind = bkHelp
+    OnClick = BitBtnHelpClick
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
+    TabStop = False
   end
 end

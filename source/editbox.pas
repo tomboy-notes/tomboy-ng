@@ -2028,7 +2028,7 @@ var
     ExpComm   : TExportCommon;
     FName : string;
     SleepCount : integer =0;
-    Form2pdf: TFormKMemo2pdf;
+    Form2pdf: TFormKMemo2pdf = nil;
 begin
     if not BusySaving then          // In case a save has just started.
         SaveTheNote();              // This should return quickly, before save thread is finished.
@@ -2077,19 +2077,17 @@ begin
             'pdf' : begin
                         // LoadFontConfigLib('libfontconfig.so.1',false);
                         Form2pdf := TFormKMemo2pdf.create(self);
+                        Form2pdf.ParentLeft := Left;        // Qt needs it done this way ???
+                        Form2pdf.ParentTop := Top;
                         Form2PDF.TheKMemo := KMemo1;
                         Form2PDF.DefaultFont := sett.UsualFont;
                         Form2PDF.FFileName := SaveExport.FileName;
                         Form2PDF.TheTitle := Caption;
-                        if not Form2PDF.StartPDF() then begin;
-                            Form2PDF.ShowModal;
-                            Form2PDF.BringToFront;
-                        end;
+                        Form2PDF.ShowModal;
                         Form2pdf.free;
                     end;
         end;
     end;
-    //showmessage(SaveExport.FileName);
     SaveExport.Free;
 end;
 
