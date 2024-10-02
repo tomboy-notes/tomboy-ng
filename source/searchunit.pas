@@ -1609,8 +1609,9 @@ begin
     // NoteTitle := ListViewNotes.Selected.Caption;
     // FullFileName :=  Sett.NoteDirectory + ListViewNotes.Selected.SubItems[1];
 
-    if NoteTitle <> ListViewNotes.Selected.Caption then
-        debugln('WARNING TSearchForm.ListViewNotesDblClick 1=', NoteTitle, ' 2=', ListViewNotes.Selected.Caption);
+// This has continued to happen, the for loop model is reliable, stick with it !  Oct 2024
+//    if NoteTitle <> ListViewNotes.Selected.Caption then
+//        debugln('WARNING TSearchForm.ListViewNotesDblClick 1=', NoteTitle, ' 2=', ListViewNotes.Selected.Caption);
   	if not FileExistsUTF8(FullFileName) then begin
       	showmessage('Cannot open ' + FullFileName);
       	exit();
@@ -1719,13 +1720,14 @@ begin
         Msg := Msg + #10 + format(rsQuestionDeleteOpenNotes, [OpenNotes]);
     if MessageDlg('Warning', Msg, mtConfirmation, [mbYes, mbNo],0) = mrYes then begin
         ListViewNotes.BeginUpdate;
-        for St in NoteListRightClickSel do begin
-            if TheMainNoteLister.IsThisNoteOpen(St, AForm) then
-                AForm.Close;                                                    // Force close any open notes on hit list
-            DeleteNote(Sett.NoteDirectory + St);
-            // debugln('TSearchForm.MenuItemDeleteSelectedClick Not deleting '
-            //    + TheMainNoteLister.GetTitle(St));
+        if OpenNotes > 0 then begin                                // This will slow down a big delete IFF one is open
+            for St in NoteListRightClickSel do
+                if TheMainNoteLister.IsThisNoteOpen(St, AForm) then
+                    AForm.Close;                                   // Force close any open notes on hit list
+            sleep(50);                                             // give then time to close, maybe a save is in progress
         end;
+        for St in NoteListRightClickSel do
+            DeleteNote(Sett.NoteDirectory + St);
         ListViewNotes.EndUpdate;
     end;
 end;

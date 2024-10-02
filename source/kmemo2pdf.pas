@@ -225,7 +225,8 @@ const   TopMargin    =  15;
         FontsFixed : array of string = ('Liberation Mono', 'Courier New', 'Courier');  // Linux, Windows/MacOS, Adobe
         FontsVariable : array of string = ( 'Liberation Sans', 'Lucida Grande',        // Linux, MacOS
                     'Bahnschrift', 'Lucinda Sans Unicode', 'Arial', 'Helvetica');      // Windows, Windows, Adobe, Adobe
-
+//      Note: Names of other, potentially interesting fonts are specified in the
+//      ObjectInspector->ComboProp, ComboMono->Items.
 //        FontsFixed : array of string = ('Monaco', 'Menlo','Courier New');        // Darwin
 //        FontsVariable : array of string = ('Lucida Grande', 'Geneva', 'Arial');  // Darwin
 //        'Simsun-ExtB' is a SC Windows font that does show some Latin char but no Chinese one !
@@ -735,6 +736,9 @@ const HaveReadFonts : boolean = false;
         // unhandled exception occurs.  Hmm ......
 
 procedure TFormKMemo2pdf.FormCreate(Sender: TObject);
+{$ifdef TestSize}var
+    CachedFont : TFPFontCacheItem;
+    DescenderH : single; {$endif}
 begin
     WordList := nil;
 //    FontList := nil;
@@ -750,6 +754,12 @@ begin
        {$endif}
        HaveReadFonts := True;
     end;
+    {$ifdef TestSize}
+    CachedFont := gTTFontCache.Find('Noto Sans CJK SC', False, False);  // Bold and Italic are booleans
+    if Assigned(CachedFont) then begin
+        writeln('Width of ABC in a PDF at 12pt is ', CachedFont.TextWidth('ABC',  24));
+        writeln('Height of above is ', CachedFont.TextHeight('ABC', 24, DescenderH))
+    end else writeln('Sorry, don''t seem to have that font.'); {$endif}
 end;
 
 procedure TFormKMemo2pdf.FormShow(Sender: TObject);
