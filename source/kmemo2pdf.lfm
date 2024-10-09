@@ -1,7 +1,7 @@
 object FormKMemo2pdf: TFormKMemo2pdf
-  Left = 528
+  Left = 526
   Height = 461
-  Top = 141
+  Top = 297
   Width = 571
   ActiveControl = Memo1
   Caption = 'tomboy-ng PDF setup'
@@ -10,7 +10,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
   OnActivate = FormActivate
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object BitBtn1: TBitBtn
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
@@ -52,7 +52,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = GroupBox1
     Left = 5
-    Height = 219
+    Height = 166
     Top = 5
     Width = 561
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -70,15 +70,15 @@ object FormKMemo2pdf: TFormKMemo2pdf
   end
   object GroupBox1: TGroupBox
     AnchorSideLeft.Control = GroupBox2
-    AnchorSideBottom.Control = GroupBox2
-    Left = 32
-    Height = 93
-    Top = 239
+    AnchorSideBottom.Control = GroupBox3
+    Left = 15
+    Height = 85
+    Top = 186
     Width = 169
     Anchors = [akLeft, akBottom]
-    BorderSpacing.Bottom = 15
+    BorderSpacing.Bottom = 5
     Caption = 'PDF Fonts'
-    ClientHeight = 71
+    ClientHeight = 63
     ClientWidth = 165
     TabOrder = 7
     object RadioDefault: TRadioButton
@@ -106,10 +106,10 @@ object FormKMemo2pdf: TFormKMemo2pdf
       Left = 10
       Height = 22
       Hint = 'Enter Font Name of fonts you have.'
-      Top = 32
+      Top = 30
       Width = 113
       BorderSpacing.Left = 10
-      BorderSpacing.Top = 5
+      BorderSpacing.Top = 3
       Caption = 'User Defined'
       ParentShowHint = False
       ShowHint = True
@@ -119,9 +119,9 @@ object FormKMemo2pdf: TFormKMemo2pdf
   object Label1: TLabel
     AnchorSideLeft.Control = ComboMono
     AnchorSideBottom.Control = ComboProp
-    Left = 226
+    Left = 209
     Height = 20
-    Top = 264
+    Top = 193
     Width = 88
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 2
@@ -130,9 +130,9 @@ object FormKMemo2pdf: TFormKMemo2pdf
   object Label2: TLabel
     AnchorSideLeft.Control = ComboMono
     AnchorSideBottom.Control = ComboMono
-    Left = 226
+    Left = 209
     Height = 20
-    Top = 326
+    Top = 255
     Width = 89
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 1
@@ -142,15 +142,15 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideLeft.Control = Owner
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 32
-    Height = 99
-    Top = 347
+    Left = 15
+    Height = 85
+    Top = 366
     Width = 169
-    Anchors = [akBottom]
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 15
-    BorderSpacing.Bottom = 15
+    BorderSpacing.Bottom = 10
     Caption = 'Paper Size'
-    ClientHeight = 77
+    ClientHeight = 63
     ClientWidth = 165
     TabOrder = 6
     object RadioA4: TRadioButton
@@ -184,9 +184,9 @@ object FormKMemo2pdf: TFormKMemo2pdf
   object ComboProp: TComboBox
     AnchorSideLeft.Control = ComboMono
     AnchorSideBottom.Control = Label2
-    Left = 226
+    Left = 209
     Height = 30
-    Top = 286
+    Top = 215
     Width = 224
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 10
@@ -202,12 +202,12 @@ object FormKMemo2pdf: TFormKMemo2pdf
     OnEditingDone = ComboPropEditingDone
   end
   object ComboMono: TComboBox
-    AnchorSideLeft.Control = GroupBox2
+    AnchorSideLeft.Control = GroupBox3
     AnchorSideLeft.Side = asrBottom
-    AnchorSideTop.Control = GroupBox2
-    Left = 226
+    AnchorSideTop.Control = GroupBox3
+    Left = 209
     Height = 30
-    Top = 347
+    Top = 276
     Width = 224
     BorderSpacing.Left = 25
     ItemHeight = 0
@@ -223,10 +223,10 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideLeft.Side = asrBottom
     AnchorSideBottom.Control = ComboProp
     AnchorSideBottom.Side = asrCenter
-    Left = 465
+    Left = 448
     Height = 20
     Hint = 'Press the Help Button'
-    Top = 291
+    Top = 220
     Width = 75
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 15
@@ -241,10 +241,10 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideLeft.Side = asrBottom
     AnchorSideBottom.Control = ComboMono
     AnchorSideBottom.Side = asrCenter
-    Left = 465
+    Left = 448
     Height = 20
     Hint = 'Press the Help Button'
-    Top = 352
+    Top = 281
     Width = 75
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 15
@@ -271,5 +271,54 @@ object FormKMemo2pdf: TFormKMemo2pdf
     ShowHint = True
     TabOrder = 1
     TabStop = False
+  end
+  object GroupBox3: TGroupBox
+    AnchorSideLeft.Control = GroupBox2
+    AnchorSideRight.Control = GroupBox2
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = GroupBox2
+    Left = 15
+    Height = 85
+    Top = 276
+    Width = 169
+    Anchors = [akLeft, akRight, akBottom]
+    BorderSpacing.Bottom = 5
+    Caption = 'Simulate Fonts'
+    ClientHeight = 63
+    ClientWidth = 165
+    TabOrder = 8
+    object RadioSimYes: TRadioButton
+      AnchorSideLeft.Control = GroupBox3
+      AnchorSideTop.Control = GroupBox3
+      Left = 10
+      Height = 22
+      Top = 5
+      Width = 136
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 5
+      Caption = 'Yes, if necessary'
+      Checked = True
+      TabOrder = 0
+    end
+    object RadioSimNo: TRadioButton
+      AnchorSideLeft.Control = GroupBox3
+      AnchorSideTop.Control = RadioSimYes
+      AnchorSideTop.Side = asrBottom
+      Left = 10
+      Height = 22
+      Top = 30
+      Width = 88
+      BorderSpacing.Left = 10
+      BorderSpacing.Top = 3
+      Caption = 'No, Safer'
+      TabOrder = 1
+    end
+  end
+  object Label3: TLabel
+    Left = 209
+    Height = 20
+    Top = 328
+    Width = 313
+    Caption = 'Note : settings not saved in this, pre-release.'
   end
 end
