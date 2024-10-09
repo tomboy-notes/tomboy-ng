@@ -314,8 +314,10 @@ type        { TSearchForm }
         // Fills in the Main TB popup menus. If AMenu is provided does an mkAllMenu on
         // that Menu, else applies WhichSection to all know Main TB Menus.
         procedure RefreshMenus(WhichSection: TMenuKind; AMenu: TPopupMenu=nil);
+                            { Public method to move passed form to this workspace on Linux or,
+                            other OS, to just bring it to the front. }
         procedure MoveWindowHere(Frm : TForm);
-         	{ Puts the names of recently used notes in the indicated menu, removes esisting ones first. }
+         	                { Puts the names of recently used notes in the indicated menu, removes esisting ones first. }
         procedure MenuRecentItems(AMenu : TPopupMenu);
        	                    { Call this so NoteLister no longer thinks of this as a Open note }
         procedure NoteClosing(const ID: AnsiString);
@@ -919,12 +921,11 @@ begin
         mtSearch :  if Sett.NoteDirectory = '' then
                             showmessage(rsSetupNotesDirFirst)
                     else begin
-                            //{$ifdef Linux}Hide;{$endif}     // Might be on another linux workspace
+
                             MoveWindowHere(self);
                             //Tick := Gettickcount64();
-                            EnsureVisible(true);
+                            // EnsureVisible(true);
                             //Tock := Gettickcount64();
-                            Show;
                             //debugln('SearchForm - FileMenuClicked ' + dbgs(Tock - Tick) + 'ms  ' + dbgs(GetTickCount64() - Tock) + 'mS');
                     end;
         mtAbout :    MainForm.ShowAbout();
@@ -1250,6 +1251,7 @@ procedure TSearchForm.FormCreate(Sender: TObject);
 //var Tick : qword;
 {$ifdef LCLQT5}{$ifdef LVOWNERDRAW}    var  fd: TFontData;{$endif}   {$endif}
 begin
+    Caption := 'tomboy-ng Search';
     {$ifdef LCLQT5}
     ListBoxNotebooks.TabStop := false;      // ToDo : ugly fix for Qt5 "list item half selected" issue.
     {$endif}
@@ -1386,8 +1388,10 @@ end;
 
 procedure TSearchForm.MoveWindowHere(Frm : TForm);
 begin
+    if Frm = Nil then exit;
+    if not Frm.Visible then Frm.Show;
     {$ifdef LINUX}               // On Linux, the target form may be in another workspace
-    if not mvxwindow.MvXWinWorkSpace(Frm.Caption) then
+    if not mvxwindow.MvXWinWorkSpace(Frm.Caption) then                  // drops message to console if fails
     begin                        // Normally, this seems highly unlikely ! Maybe Enlightenment DE ?
         Frm.Hide;
         Frm.show;                // This produces a noticable flicker if the form is already visible
@@ -1722,9 +1726,11 @@ begin
         ListViewNotes.BeginUpdate;
         if OpenNotes > 0 then begin                                // This will slow down a big delete IFF one is open
             for St in NoteListRightClickSel do
-                if TheMainNoteLister.IsThisNoteOpen(St, AForm) then
+                if TheMainNoteLister.IsThisNoteOpen(St, AForm) then begin
+                    TEditBoxForm(AForm).DeletingThisNote := True;
                     AForm.Close;                                   // Force close any open notes on hit list
-            sleep(50);                                             // give then time to close, maybe a save is in progress
+                end;
+            sleep(20);                                            // give them time to close, maybe a save is in progress
         end;
         for St in NoteListRightClickSel do
             DeleteNote(Sett.NoteDirectory + St);

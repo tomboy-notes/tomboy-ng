@@ -1055,6 +1055,98 @@ msgstr "Kop in van deze notitie"
 msgid "Single lines, all Huge, Large Bold or Large"
 msgstr "Losse regels, groot, alles groot, groot en vetgedrukt"
 
+#: tformkmemo2pdf.bitbtnhelp.hint
+msgid "Will open your Web Browser"
+msgstr ""
+
+#: tformkmemo2pdf.caption
+msgid "tomboy-ng PDF setup"
+msgstr ""
+
+#: tformkmemo2pdf.combomono.text
+msgid "ComboMono"
+msgstr ""
+
+#: tformkmemo2pdf.comboprop.text
+msgid "ComboProp"
+msgstr ""
+
+#: tformkmemo2pdf.groupbox1.caption
+msgid "PDF Fonts"
+msgstr ""
+
+#: tformkmemo2pdf.groupbox2.caption
+msgid "Paper Size"
+msgstr ""
+
+#: tformkmemo2pdf.groupbox3.caption
+msgid "Simulate Fonts"
+msgstr ""
+
+#: tformkmemo2pdf.label1.caption
+msgid "Proportional"
+msgstr ""
+
+#: tformkmemo2pdf.label2.caption
+msgid "Monospaced"
+msgstr ""
+
+#: tformkmemo2pdf.label3.caption
+msgid "Note : settings not saved in this, pre-release."
+msgstr ""
+
+#: tformkmemo2pdf.labelmononotfound.caption
+msgctxt "tformkmemo2pdf.labelmononotfound.caption"
+msgid "Not Found"
+msgstr ""
+
+#: tformkmemo2pdf.labelmononotfound.hint
+msgctxt "tformkmemo2pdf.labelmononotfound.hint"
+msgid "Press the Help Button"
+msgstr ""
+
+#: tformkmemo2pdf.labelpropnotfound.caption
+msgctxt "tformkmemo2pdf.labelpropnotfound.caption"
+msgid "Not Found"
+msgstr ""
+
+#: tformkmemo2pdf.labelpropnotfound.hint
+msgctxt "tformkmemo2pdf.labelpropnotfound.hint"
+msgid "Press the Help Button"
+msgstr ""
+
+#: tformkmemo2pdf.radioa4.caption
+msgid "A4 Paper"
+msgstr ""
+
+#: tformkmemo2pdf.radiodefault.caption
+msgid "Default Fonts"
+msgstr ""
+
+#: tformkmemo2pdf.radiodefault.hint
+msgid "Standard fonts that work for many people."
+msgstr ""
+
+#: tformkmemo2pdf.radioletter.caption
+msgid "Letter Paper"
+msgstr ""
+
+#: tformkmemo2pdf.radiosimno.caption
+msgid "No, Safer"
+msgstr ""
+
+#: tformkmemo2pdf.radiosimyes.caption
+msgid "Yes, if necessary"
+msgstr ""
+
+#: tformkmemo2pdf.radiouserdefined.caption
+msgid "User Defined"
+msgstr ""
+
+#: tformkmemo2pdf.radiouserdefined.hint
+msgid "Enter Font Name of fonts you have."
+msgstr ""
+
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
 msgstr "Beschadigde notities verwijderen"
@@ -1440,7 +1532,8 @@ msgstr "Opties"
 #: tsearchform.caption
 #, fuzzy
 #| msgid "tomboy-ng_Search"
-msgid "tomboy-ng Search"
+msgctxt "tsearchform.caption"
+msgid "Search"
 msgstr "tomboy-ng_Zoeken"
 
 #: tsearchform.labelsearchtitle.caption

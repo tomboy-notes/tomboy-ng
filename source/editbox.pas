@@ -249,6 +249,7 @@ unit EditBox;
     2024/03/24  FileLink in a basic form
     2024/04/14  Extensive rewrite about Links, especially FileLink, remove click on "file://".
     2024/06/07  UTF8 bug, where missed UTF8 char ahead of file link.
+    2024/10/05  Made DeletingThisNote public so SearchForm can delete an Open note.
 }
 
 
@@ -455,8 +456,6 @@ type
         Ready : boolean;
                                 { To save us checking the title if user is well beyond it }
         BlocksInTitle : integer;
-                                // Set True by the delete button so we don't try and save it.
-        DeletingThisNote : boolean;
 
         procedure AddItemMenu(TheMenu: TPopupMenu; Item: string; mtTag: integer; OC: TNotifyEvent);
         procedure AdjustFormPosition();
@@ -625,7 +624,10 @@ type
                                 // If a new note is a member of Notebook, this holds notebook name until first save.
         TemplateIs : AnsiString;
 
-                                // Public : Declares note needs saving and starts timer.
+                                 // Set True by the delete button so we don't try and save it. Or set from
+                                 // SearchForm because, again, we are deleting this note, no point in saving
+        DeletingThisNote : boolean;
+                               // Public : Declares note needs saving and starts timer.
         procedure MarkDirty();
 
                                 { Public : Will mark this note as ReadOnly and not to be saved because the Sync Process

@@ -1,46 +1,22 @@
 unit mvxwindow;
 
-{ A small unit that wil move a window between Linux Workspaces using X11 }
-
-
-{$mode ObjFPC}{$H+}
-
-interface
-
-uses
-  x, xlib, xatom, unix, ctypes, sysutils;
-
-type TXWinInfo = record
-    XWinID : qword;
-    WorkS : integer;         // not implemented yet, needs a XGetWindowProperty() call
-    CurrentWorkS : integer;
-    ErrorMsg : string;
-end;
-
-function XWindowInformation(Caption : string; out Info : TXWinInfo) : boolean;
-
-function MvXWinWorkSpace(Caption : string; WorkS : integer = -1) : boolean;
-
-var
-    MvXWinError : string = '';    // contains an error msg if above returns false.
-
-const MvXWinVerNumb = '1.01';     //  release Sept 9, 2024
-
-implementation
-
-{ Notes :
-
-    Copyright (C) 2024 David Bannon <dbannon@internode.on.net>
+{ Copyright (C) 2024 David Bannon
 
     License:
-    This code is licensed under MIT License, see
-    https://spdx.org/licenses/MIT.html  SPDX short identifier: MIT
+    This code is licensed under MIT License, see the file License.txt
+    or https://spdx.org/licenses/MIT.html  SPDX short identifier: MIT
 
-    Alternativly, your choice, it is released under the GNU General Public License,
-    either version 2 of the License, or (at your option) any later version.
+  A small unit that will move a window between Linux Workspaces using X11
+  Only applicable in Linux, has some writeln()s so care if porting to
+  Windows. Would seem unlikely...
 
-    Uses, in some part, the C code for wmctrl as a template. See refs below.
-    wmctrl was authored by Tomas Styblo <tripie@cpan.org> and released under GPL 2
+  Does not work on a pure (ie without using xcb) Wayland system.
+
+  Does not work in an Enlightenment Desktop system.
+
+
+
+Notes :
 
     A small unit to move a Window between Linux Workspaces (or "Virtual Desktops").
     You pass the windows Title or Caption and it will be moved to the current
@@ -66,7 +42,7 @@ implementation
 
     Mate :  All Good.
 
-    Enlightenment : Fails. Generates a AV (caught in this unit) when readining the
+    Enlightenment : Fails. Generates a AV (caught in this unit) when reading the
             xwindows list trying to match Caption to a WindowID. On an old Enlightenment
             running om an equally old Mageia. Does not crash app but does not behave
             as expected.
@@ -97,6 +73,33 @@ implementation
     Workspaces are usually numbered 0-3 inclusivly but are presented in user
     menus as being 1-4. Requests for an invalid workspace are ignored.
 }
+
+{$mode ObjFPC}{$H+}
+
+interface
+
+uses
+  x, xlib, xatom, unix, ctypes, sysutils;
+
+type TXWinInfo = record
+    XWinID : qword;
+    WorkS : integer;         // not implemented yet, needs a XGetWindowProperty() call
+    CurrentWorkS : integer;
+    ErrorMsg : string;
+end;
+
+function XWindowInformation(Caption : string; out Info : TXWinInfo) : boolean;
+
+function MvXWinWorkSpace(Caption : string; WorkS : integer = -1) : boolean;
+
+var
+    MvXWinError : string = '';    // contains an error msg if above returns false.
+
+const MvXWinVerNumb = '1.01';     //  release Sept 9, 2024
+
+implementation
+
+
 
 
             // Recursive function to drill down to window with matching caption.
@@ -204,19 +207,19 @@ begin
             WinID := 0;
             if not FindWindowCaption(Caption, Disp, RootWin, WinID) or (WinID = 0) then begin
                 MvXWinError := 'ERROR - Failed to find that Window !';
-                writeln('Failed to find that Window !');
+                writeln('MvXWinError - Failed to find that Window [', Caption, ']');
                 XCloseDisplay(Disp);
                 exit(false);
             end;
             // writeln('MvXWinWorkSpace : WinID is 0x', WinID.ToHexString(8));
             if not Client_Msg(Disp, WinID, '_NET_WM_DESKTOP', qword(WorkS)) then begin   // note, no guaranteee mmsg works !
-                MvXWinError := 'ERROR - Failed to send Window Move Message !';
-                writeln('Failed to Window Move Message');
+                MvXWinError := 'ERROR - Failed to send Window-Move Message !';
+                writeln('Failed to send Window-Move Message');
             end else begin
                 sleep(20);                   // wmctrl uses 100mS, on my system, works fine with just 1mS ??
                 if not client_msg(Disp, WinID, '_NET_ACTIVE_WINDOW', 0) then begin
                     MvXWinError := 'ERROR - Failed to send Window Activate Message';
-                    writeln('Failed to send Window Activate Message');
+                    writeln('MvXWinError - Failed to send Window Activate Message');
                 end  else
                     XMapRaised(Disp, winID);
             end;

@@ -1,10 +1,10 @@
 object SearchForm: TSearchForm
-  Left = 257
+  Left = 824
   Height = 401
-  Top = 403
+  Top = 490
   Width = 794
   ActiveControl = EditSearch
-  Caption = 'tomboy-ng Search'
+  Caption = 'Search'
   ClientHeight = 401
   ClientWidth = 794
   OnActivate = FormActivate
@@ -16,7 +16,7 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object EditSearch: TEdit
     AnchorSideLeft.Control = BitBtnMenu
     AnchorSideLeft.Side = asrBottom

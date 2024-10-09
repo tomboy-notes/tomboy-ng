@@ -370,20 +370,13 @@ begin
     S := CommsServer .StringMessage;
     if S = 'SHOWSEARCH' then begin
         {$ifdef LINUX}SearchForm.Hide;{$endif}  // Form may be open in another workspace, bring it here.
-        SearchForm.Show;
+        SearchForm.Show;                        // this creates a notable flicker, might be necessary
         //SearchForm.MoveWindowHere(SearchForm.Caption);
     end else
         if S.StartsWith('REINDEX') then
             SearchForm.IndexNewNote(copy(S, 9, 100), False)
         else debugln('TMainForm.CommMessageReceived - invalid message [' + S + ']');
         // eg REINDEX:48480CC5-EC3E-4AA0-8C83-62886DB291FD.note
-{    case S of
-        'SHOWSEARCH' : begin
-                    SearchForm.Show;
-                    SearchForm.MoveWindowHere(SearchForm.Caption);
-                end;
-        'REINDEX' : SearchForm.IndexNotes();
-    end;  }
 end;
 
 procedure TMainForm.StartIPCServer();
@@ -875,7 +868,7 @@ begin
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
         {$ifdef LCLGTK2}  Stg := Stg + ', GTK2';        {$endif}
         Stg := Stg + #10 + rsAboutBDate + ' ' + {$i %DATE%}
-            + '  (Laz ' + inttostr(laz_major) +'.' + inttostr(laz_minor) + '.' + inttostr(laz_release)
+            + '  (Laz ' + inttostr(laz_major) +'.' + inttostr(laz_minor){ + '.' + inttostr(laz_release)}
             + GetFPC() +')'
             + #10
             + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
