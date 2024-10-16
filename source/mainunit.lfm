@@ -8,6 +8,7 @@ object MainForm: TMainForm
   ClientHeight = 294
   ClientWidth = 565
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown

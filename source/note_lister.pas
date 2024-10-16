@@ -389,9 +389,9 @@ type
                                           not find a) the Entry in NotebookList or b) the entry had a blank template. }
     function NotebookTemplateID(const NotebookName : ANSIString) : AnsiString;
                                         { Returns the Form of first open note and sets internal pointer to it, Nil if none found }
-    function FindFirstOpenNote(): TForm;
+    function FindFirstOpenNote(out OpenIndex : integer) : TForm;
                                         { Call after FindFirstOpenNote(), it will return the next one or Nil if no more found }
-    function FindNextOpenNote() : TForm;
+    function FindNextOpenNote(out NoteIndex : integer) : TForm;
                                         { Returns the ID of first note that should be opened on startup internal pointer
                                           (which is same interger as FindFirstOpenNate) to it, '' if none found }
     function FindFirstOOSNote(out NTitle, NID: ANSIstring): boolean;
@@ -1462,27 +1462,33 @@ begin
             exit(True);
 end;
 
-function TNoteLister.FindFirstOpenNote(): TForm;
+function TNoteLister.FindFirstOpenNote(out OpenIndex : integer): TForm;
 begin
     OpenNoteIndex:=0;
     while OpenNoteIndex < NoteList.Count do
-        if NoteList.Items[OpenNoteIndex]^.OpenNote <> nil then
+        if NoteList.Items[OpenNoteIndex]^.OpenNote <> nil then begin
+            OpenIndex := OpenNoteIndex;
             exit(NoteList.Items[OpenNoteIndex]^.OpenNote)
-        else inc(OpenNoteIndex);
+        end else inc(OpenNoteIndex);
     result := nil;
     OpenNoteIndex := -1;
+    OpenIndex := OpenNoteIndex;
 end;
 
-function TNoteLister.FindNextOpenNote(): TForm;
+function TNoteLister.FindNextOpenNote(out NoteIndex : integer): TForm;
 begin
     if OpenNoteIndex < 0 then exit(Nil);
     inc(OpenNoteIndex);
-    while OpenNoteIndex < NoteList.Count do
-        if NoteList.Items[OpenNoteIndex]^.OpenNote <> nil then
+    while OpenNoteIndex < NoteList.Count do begin
+        if NoteList.Items[OpenNoteIndex]^.OpenNote <> nil then begin
+            NoteIndex := OpenNoteIndex;
             exit(NoteList.Items[OpenNoteIndex]^.OpenNote)
+        end
         else inc(OpenNoteIndex);
+    end;
     result := nil;
     OpenNoteIndex := -1;
+    NoteIndex := OpenNoteIndex;
 end;
 
 function TNoteLister.FindFirstOOSNote(out NTitle, NID : ANSIstring): boolean;

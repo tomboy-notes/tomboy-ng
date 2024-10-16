@@ -13,7 +13,7 @@ object Sett: TSett
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object PageControl1: TPageControl
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -195,7 +195,7 @@ object Sett: TSett
           Left = 10
           Height = 22
           Top = 8
-          Width = 162
+          Width = 158
           BorderSpacing.Left = 10
           Caption = 'tomboy-ng Default'
           Checked = True

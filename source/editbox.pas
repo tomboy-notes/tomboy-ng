@@ -250,6 +250,7 @@ unit EditBox;
     2024/04/14  Extensive rewrite about Links, especially FileLink, remove click on "file://".
     2024/06/07  UTF8 bug, where missed UTF8 char ahead of file link.
     2024/10/05  Made DeletingThisNote public so SearchForm can delete an Open note.
+    2024/10/16  Fixed the way that Save on Quit works, no contention !
 }
 
 
@@ -621,7 +622,10 @@ type
         SearchedTerm : string;          // If not empty, opening is associated with a search, go straight there.
         HaveSeenOnActivate : boolean;   // Indicates we have run, eg, CheckForLinks at Activate
 
-                                // If a new note is a member of Notebook, this holds notebook name until first save.
+
+        BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
+
+                                    // If a new note is a member of Notebook, this holds notebook name until first save.
         TemplateIs : AnsiString;
 
                                  // Set True by the delete button so we don't try and save it. Or set from
@@ -665,6 +669,8 @@ Type
                             and writes it to disk. }
     procedure Execute; override;
   public
+    //Title : string;             // for debugging purposes, remove ???
+    TheForm : TEditBoxForm;
     TheSL : TStringList;
     TheLoc : TNoteUpdateRec;    // defined in SaveNote
     Constructor Create(CreateSuspended : boolean);
@@ -672,7 +678,7 @@ Type
 
 var
     EditBoxForm: TEditBoxForm;
-    BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
+//    BusySaving : boolean;       // Indicates that the thread that saves the note has not, yet exited.
 
 implementation
 
@@ -726,18 +732,20 @@ var
     FileStream : TFileStream;
     SleepCnt : integer = 0;
 begin
-    // Debugln('TSaveThread.Execute >>> start thread to save : ' + TheLoc.FFName);
     while (LockSyncingNow or LockSavingNow) do begin          // declared and mostly used in Settings
         sleep(100);
         inc(SleepCnt);
         if SleepCnt > Sleeps then begin
             PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVETIMEOUT, 0);    // ToDo : if this ever happens, we should mark note as dirty again !  How ?
-            BusySaving := False;
-            Debugln('TSaveThread.Execute - ERROR, failed to get Save Lock, Filename : ' + TheLoc.FFName);
+            TheForm.BusySaving := False;
+            {$ifdef LINUX}                                   // writeln seems more reliable from a thread than debugln ?
+            writeln('TSaveThread.Execute --- ERROR ---, failed to get Save Lock, Filename : ' + TheLoc.FFName + ' - ', TheForm.Caption) ;
+            {$endif}
             exit;
         end;
     end;
     LockSavingNow := True;
+//    debugln('TSaveThread.Execute Started ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + TheForm.Caption); // ToDo : remove me
     Normaliser := TNoteNormaliser.Create;
     Normaliser.NormaliseList(TheSL);               // TheSL belongs to the thread.
     Normaliser.Free;
@@ -750,22 +758,29 @@ begin
         try
             TheSL.SaveToStream(WBufStream);
         except on E:Exception do begin
-                              Debugln('TSaveThread.Execute - ERROR, failed to save note : ' + E.Message);
-                              WBufStream.Free;
-                              FileStream.Free;
-                              TheSL.Free;
-                              PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEERROR, 0);   // Will release Lock
-                              exit;
+                            {$ifdef LINUX}
+                            writeln('TSaveThread.Execute ---- ERROR ---, failed to save : ' , TheForm.Caption) ;
+                            writeln('            FileName : '+ TheLoc.FFName + ' - ', E.Message);
+                            {$else}
+                            debugln('TSaveThread.Execute --- ERROR ---, failed to save : ' , TheForm.Caption) ;
+                            debugln('            FileName : '+ TheLoc.FFName + ' - ', E.Message);
+                            {$endif}
+                             WBufStream.Free;
+                             FileStream.Free;
+                             TheSL.Free;
+                             PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEERROR, 0);   // Will release Lock
+                             exit;
                           end;
         end;
     finally
         WBufStream.Free;
         FileStream.Free;
         TheSL.Free;
-        BusySaving := False;
+        if not Sett.AreClosing then
+            TheForm.BusySaving := False;       // Only necessary if not closing, maybe dangerous if closing.
+//        debugln('TSaveThread.Execute Finished ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + TheForm.Caption); // ToDo : remove me
     end;
     PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEFINISHED, 0);             // Hmm, no error reporting happening here ?
-    // Debugln('TSaveThread.Execute >>> End of Thread : ' + TheLoc.FFName);
 end;
 
 constructor TSaveThread.Create(CreateSuspended: boolean);
@@ -2376,16 +2391,19 @@ end;
     { called when user manually closes this form. }
 procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+//    debugln('TEditBoxForm.FormClose called ' + DateTimeToStr(Now) + ' form=' + Caption); // ToDo : remove me
     Release;
 end;
 
 procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
+//    debugln('TEditBoxForm.FormCloseQuery called ' + DateTimeToStr(Now) + ' form=' + Caption); // ToDo : remove me
     CanClose := True;
 end;
 
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
 begin
+//    debugln('TEditBoxForm.FormDestroy called ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
     if Undoer <> Nil then Undoer.free;
     UnsetPrimarySelection;                                      // tidy up copy on selection.
     if (length(NoteFileName) = 0) and (not Dirty) then exit;    // A new, unchanged note, no need to save.
@@ -2393,7 +2411,10 @@ begin
         if not DeletingThisNote then
             if (not SingleNoteMode) or Dirty then       // We always save, except in SingleNoteMode (where we save only if dirty)
                 SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
+//    debugln('TEditBoxForm.FormDestroy marking Nil ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
     SearchForm.NoteClosing(NoteFileName);
+    Application.ProcessMessages;
+//    debugln('TEditBoxForm.FormDestroy finished ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
 end;
 
 // Make sure position and size is appropriate.
@@ -4373,6 +4394,8 @@ begin
     TheSaveThread := TSaveThread.Create(true);
     TheSaveThread.TheLoc := Loc;
     TheSaveThread.TheSL := Sl;
+    //TheSaveThread.Title := Caption;        // better to use TheForm (as long as its still exists??)
+    TheSaveThread.TheForm := self;
     TheSaveThread.Start;
     // It will clean up after itself.
     {$else}
@@ -4410,15 +4433,17 @@ var
     SL : TStringList;
     OldFileName : string ='';
     Loc : TNoteUpdateRec;
-    NoteContent : string = '';                       // Might hold a lowercase text version of note for searcing purposes.
+    NoteContent : string = '';                       // Might hold a lowercase text version of note for searching purposes.
     LineNumb   : integer = 0;
     FName      : string;
     ItsANewNote : boolean = false;
     //T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
+
     //TheMainNoteLister.DumpNoteNoteList('TEditBoxForm.SaveTheNote ' + NoteTitle);
     if BusySaving then begin
+        debugln('TEditBoxForm.SaveTheNote declined because BusySaving ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption);
         MainForm.ShowNotification('Failed to Auto Save', 3000);   // inform user via notifications
         exit;
     end;

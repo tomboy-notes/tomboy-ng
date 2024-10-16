@@ -383,7 +383,7 @@ uses
     resolve;                // because I am playing with eg gethostbyname()
 
 const
-  UPLOADNOTE = 'PleaseUploadThisNote';  // Left in the local manfest item.sha when this note is still waiting to be uploaded.
+//  UPLOADNOTE = 'PleaseUploadThisNote';  // Left in the local manfest item.sha when this note is still waiting to be uploaded.
   FAILEDUPLOAD='failedupload';          // left in TGitNote item.SyncState to indicate UploadNotes() failed on this note
   MaxNetTries = 5;                      // number of re-tries when a net operation fails
   GitBaseURL='https://github.com/';

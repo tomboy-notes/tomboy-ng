@@ -110,6 +110,7 @@ unit settings;
     2023/10/28  Restructure some of Auto Sync to allow multithreading, does not use SyncGUI
     2023/10/29  Multithreaded sync appears to work.
     2024/02/05  Altered the AltColour to be clDefault under a dark theme, experimental !!
+    2024/10/16  Fixed the way that Save on Quit works, no contention !
 }
 
 {$mode objfpc}{$H+}                    //
@@ -494,8 +495,9 @@ var
     {$endif}
                         // only one or the other can be set. SavingLockNow set and unset in EditBox
                         // and SyncingLockNow set in TSyncThread.Execute and unset in HandlePostMessage()
-    LockSyncingNow, LockSavingNow : boolean;
-
+    LockSyncingNow : boolean;
+    LockSavingNow : boolean;                    // Set by EditBox SaveThread, unset by TSett.HandlePostMessage
+    NotesSavedAtClose : integer;                // A count of concurrent notes being saved at close
 
 
 const
@@ -877,6 +879,7 @@ var
     i : integer;
 begin
     // gTTFontCache.ReadStandardFonts;         // we do this in Kmemo2PDR now.
+    NotesSavedAtClose := 0;                    // Inc'ed in Main FormClose, dec'ed when a note save finshes (at close time)
     Caption := 'tomboy-ng Settings';
     ButtonSetNotePath.Enabled := False;
     AreClosing := false;
@@ -2151,11 +2154,14 @@ begin
                 WriteConfigFile(false, True);                                 // WriteConfigFile is called from all over the place, only this call should update last sync times.
         end;
         WM_SAVEERROR, WM_SAVETIMEOUT, WM_SAVEFINISHED : begin                 // The Save Group
+//            debugln('TSett.HandlePostMessage SAVE-POST-MESSAGE ' + FormatDateTime('hh:nn:ss.zzz', Now())); // ToDo : remove me
             LockSavingNow := false;
+            if AreClosing then
+                dec(NotesSavedAtClose);
             if (Msg.wParam <> WM_SAVEFINISHED)  then begin                    // No notification necessary for good save
                 if CheckNotifications.Checked  then
                     MainForm.ShowNotification(St, 2000);
-                Debugln('ERROR, failed to save note');
+                Debugln(St);                                                  // Sadley, difficult to get note title here !
             end;
         end;
     end;

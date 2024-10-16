@@ -1069,7 +1069,7 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
       </local>
       <environment>
         <UserOverrides Count="2">
@@ -1081,7 +1081,7 @@
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
           </local>
           <environment>
             <UserOverrides Count="2">

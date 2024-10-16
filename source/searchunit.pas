@@ -122,6 +122,7 @@ unit SearchUnit;
     2023/01/11  Qt5 - ListViewNotesKeyPress now forces keypress to EditSearch
     2023/01/11  Added Windows to above, BUT Mac cannot do this. So, disable on Mac.
     2023/03/17  Darken up Search Window in dark theme.
+    2024/10/16  Fixed the way that Save on Quit works, no contention !
 }
 
 {$mode objfpc}{$H+}
@@ -441,12 +442,13 @@ end;
 procedure TSearchForm.MarkLinkOnOpenNotes();
 var
     AForm : TForm;
+    Blar : integer;
 begin
     if assigned(TheMainNoteLister) then begin
-        AForm := TheMainNoteLister.FindFirstOpenNote();
+        AForm := TheMainNoteLister.FindFirstOpenNote(Blar);
         while AForm <> Nil do begin
             TEditBoxForm(AForm).CheckForLinks(False);
-            AForm := TheMainNoteLister.FindNextOpenNote();
+            AForm := TheMainNoteLister.FindNextOpenNote(Blar);
         end;
     end;
 end;
@@ -454,13 +456,14 @@ end;
 procedure TSearchForm.FlushOpenNotes();
 var
     AForm : TForm;
+    Blar : integer;
 begin
     if assigned(TheMainNoteLister) then begin
-      AForm := TheMainNoteLister.FindFirstOpenNote();
+      AForm := TheMainNoteLister.FindFirstOpenNote(Blar);
       while AForm <> Nil do begin
           if TEditBoxForm(AForm).dirty then
               TEditBoxForm(AForm).SaveTheNote();
-          AForm := TheMainNoteLister.FindNextOpenNote();
+          AForm := TheMainNoteLister.FindNextOpenNote(Blar);
       end;
     end;
 end;
@@ -738,12 +741,13 @@ end;
 procedure TSearchForm.MenuListBuilder(MList : TList);
 var
     AForm : TForm;
+    Blar : integer;
 begin
     if assigned(TheMainNoteLister) then begin
-      AForm := TheMainNoteLister.FindFirstOpenNote();
+      AForm := TheMainNoteLister.FindFirstOpenNote(Blar);
       while AForm <> Nil do begin
           MList.Add(TEditBoxForm(AForm).PopupMainTBMenu);
-          AForm := TheMainNoteLister.FindNextOpenNote();
+          AForm := TheMainNoteLister.FindNextOpenNote(Blar);
       end;
     end;
     if assigned(PopupTBMainMenu) then

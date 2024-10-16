@@ -86,6 +86,7 @@ unit Mainunit;
     2024/06/01  Dont show menu from TMainForm.TrayIconClick() on Wayland-Gnome as it generats a second
                 menu when using -plaform xcb (qt5/6). Slightly different that the related KDE issue.
                 Also, only prevent left click on WAYLAND KDE now, sensible KDEs will work OK
+    2024/10/16  Fixed the way that Save on Quit works, no contention !
 
     CommandLine Switches
 
@@ -174,6 +175,7 @@ type
 		procedure ButtSysTrayHelpClick(Sender: TObject);
         procedure CheckBoxDontShowChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var {%H-}CloseAction: TCloseAction);
+        procedure FormCloseQuery(Sender : TObject; var CanClose : Boolean);
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
         procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -327,38 +329,71 @@ begin
     LabelBadNoteAdvice.Caption := '';
 end;
 
-procedure TMainForm.FormDestroy(Sender: TObject);
+{ -------------- Close process -----------------
+    First, FormCloseQuery is called, it can but rarely should prevent closure.
+    Next, FormClose is called.
+    Finally, when any pending work, perhaps setup by above, FormDestroy is called
+}
+
+procedure TMainForm.FormCloseQuery(Sender : TObject; var CanClose : Boolean);
+var
+    AForm : TForm;
+    NoteIndex : integer;
+    aPNote : PNote;
 begin
-    freeandnil(CommsServer);
- //   freeandnil(HelpNotes);
-    //if HelpList <> Nil then writeln('Help List has ' + inttostr(HelpList.Count));
-    // freeandnil(HelpList);
+    Sett.AreClosing:=True;
+    if assigned(TheMainNoteLister) then begin
+      AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
+      while AForm <> Nil do begin
+          inc(NotesSavedAtClose);
+          AForm.close;
+          Application.ProcessMessages;                        // flush each closure as we go.
+          aPNote := TheMainNoteLister.GetNote(NoteIndex);
+          // Wait here until either the form becomes nil or we can read its BusySaving as true;
+          // Its most likely that progress here is dependent of form becoming Nil ! But not certain ....
+          while (aPNote^.OpenNote <> Nil) and (not TEditBoxForm(aPNote^.OpenNote).BusySaving) do
+                Sleep(2);
+
+(*          while (TheMainNoteLister.NoteList.Items[NoteIndex]^.OpenNote <> nil)                            // just ugly ....
+                and (not  TEditBoxForm(TheMainNoteLister.NoteList.Items[NoteIndex]^.OpenNote).BusySaving)
+                    do sleep(2);   *)
+
+          sleep(2);                                                 // Long enough for EditBox to launch a save thread ??
+          AForm := TheMainNoteLister.FindNextOpenNote(NoteIndex);
+      end;
+    end;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
-  {$ifdef LCLGTK2}
-  c: PGtkClipboard;
-  t: string;
-  {$endif}
-  // OutFile : TextFile;
-  AForm : TForm;
+    {$ifdef LCLGTK2}
+    c: PGtkClipboard;
+    t: string;
+    {$endif}
+    QuitDelay : integer = 0;
 begin
-    //debugln('TMainForm.FormClose - at user request');           // ToDo : remove this
+    Application.ProcessMessages;                   // seems necessary to ensure we count all closed notes.
     {$ifdef LCLGTK2}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     t := Clipboard.AsText;
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
     {$endif}
-    Sett.AreClosing:=True;
-    if assigned(TheMainNoteLister) then begin
-      AForm := TheMainNoteLister.FindFirstOpenNote();
-      while AForm <> Nil do begin
-          AForm.close;
-          AForm := TheMainNoteLister.FindNextOpenNote();
-      end;
+    while NotesSavedAtClose > 0 do begin          // Wait while any pending note saves happen
+        sleep(20);                                // In practise, should never happen ??
+        inc(QuitDelay);
+        if QuitDelay > 500 then begin
+          showmessage('ERROR, delayed note saving, Unsaved='+ inttostr(NotesSavedAtClose));
+          break;
+        end;
     end;
+    if QuitDelay > 0 then
+        debugln('TMainForm.FormClose Warning saving delay ' + inttostr(QuitDelay*20) + 'mS');
+end;
+
+procedure TMainForm.FormDestroy(Sender: TObject);
+begin
+    freeandnil(CommsServer);
 end;
 
 procedure TMainForm.CommMessageReceived(Sender : TObject);

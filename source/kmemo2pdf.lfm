@@ -299,6 +299,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
       Caption = 'Yes, if necessary'
       Checked = True
       TabOrder = 0
+      TabStop = True
     end
     object RadioSimNo: TRadioButton
       AnchorSideLeft.Control = GroupBox3

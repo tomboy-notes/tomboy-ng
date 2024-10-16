@@ -625,7 +625,7 @@ function TFormKMemo2pdf.StartPDF : boolean;     // return false and user is show
         if IsProp then begin                                               // Prop or variable spaced fonts
             if RadioDefault.Checked or (ComboProp.Text = '') then begin   // use ones from array
                 for I := 0 to high(FontsVariable) do
-                    if FontList.Add(FontsVariable[i], false, False, False) then begin      // ToDo : gasp ! Fixed = True ?????
+                    if FontList.Add(FontsVariable[i], false, False, False) then begin
                         TestFontProp := FontsVariable[i];
                         ComboProp.Text := FontsVariable[i];
                         break;
