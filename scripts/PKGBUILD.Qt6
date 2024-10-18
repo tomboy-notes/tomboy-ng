@@ -35,8 +35,8 @@ pkgdesc="Manage a large or small set of notes with a range of fonts and markup."
 arch=('i686' 'x86_64' 'aarchhf' 'aarch64')
 url="https://github.com/tomboy-notes/tomboy-ng"
 license=('MIT' 'BSD' 'GPL2' 'LGPL3')
-depends=('qt6pas>=6.2.7' 'wmctrl')
-makedepends=('fpc>=3.2.2' 'lazarus-gtk2')
+depends=('qt6pas>=6.2.7')
+# makedepends=('fpc>=3.2.2' 'lazarus-gtk2')
 optdepends=('gnome-shell-extension-appindicator: May need to display Systray Icon with Gnome Desktop')
 provides=('tomboy-ng')
 

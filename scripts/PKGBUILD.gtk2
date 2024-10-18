@@ -46,8 +46,9 @@ pkgdesc="Manage a large or small set of notes with a range of fonts and markup."
 arch=('x86_64')
 url="https://github.com/tomboy-notes/tomboy-ng"
 license=('MIT' 'BSD' 'GPL2' 'LGPL3')
-depends=('gtk2' 'wmctrl')
-makedepends=('fpc' 'lazarus-gtk2')
+# Note that Arch systems don't have seperate -dev packages.
+depends=('gtk2')
+# makedepends=('fpc' 'lazarus-gtk2')
 provides=('tomboy-ng')
 
 #	we want to get the taged release version, could also target master
