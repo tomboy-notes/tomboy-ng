@@ -518,7 +518,11 @@ begin
             + ' ', booltostr(WordList[WordIndex]^.Bold, True) + ' ' + booltostr(WordList[WordIndex]^.Italic, True)
             + ' [' + WordList[WordIndex]^.AWord + '] ' + booltostr(SimBold, True) + ' ' + booltostr(SimItalics, True));
         {$endif}
+        {$if (FPC_FULLVERSION<30203)}            // We cannot set Sim* in FPC322, 30203 is fixes, 3.2.3 (-rc2).
+        Page.SetFont( FontIndex, WordList[WordIndex]^.Size);
+        {$else}
         Page.SetFont( FontIndex, WordList[WordIndex]^.Size, SimBold, SimItalics);
+        {$endif}
         if (XLoc+W+BulletIndent) > (PageWidth - SideMargin) then exit(true);    // no more on this line.
         Page.WriteText(BulletIndent + XLoc, Y, WordList[WordIndex]^.AWord);
 //        memo1.Append('TFormKMemo2pdf.WriteLine wrote word=' + WordList[WordIndex]^.AWord + ' Font=' + WordList[WordIndex]^.FName + ' ' + inttostr(W) + ' ' + inttostr(H));
@@ -863,7 +867,7 @@ begin
        gTTFontCache.SearchPath.Add('/usr/share/fonts/');  // Avoids a problem noted on 32bit linux where
        gTTFontCache.BuildFontCache;                       // libfontconfig returns a nil pointer to font.cfg file
        {$else}
-//       gTTFontCache.SearchPath.Add('./');               // Also look for fonts where binary lives ?
+//       gTTFontCache.SearchPath.Add('./');               // Also look for fonts in current directory ?
        gTTFontCache.ReadStandardFonts;
        {$endif}
        HaveReadFonts := True;
@@ -874,7 +878,11 @@ begin
         writeln('Width of ABC in a PDF at 12pt is ', CachedFont.TextWidth('ABC',  24));
         writeln('Height of above is ', CachedFont.TextHeight('ABC', 24, DescenderH))
     end else writeln('Sorry, don''t seem to have that font.'); {$endif}
+    {$if (FPC_FULLVERSION<30203)}            // We cannot set Sim* in FPC322, 30203 is fixes, 3.2.3 (-rc2).
+    GroupBox3.Enabled := False;
+    {$endif}
 end;
+
 
 procedure TFormKMemo2pdf.FormShow(Sender: TObject);
 begin
