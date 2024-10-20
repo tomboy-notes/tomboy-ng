@@ -1304,7 +1304,7 @@ begin
             end;
         end;
     MenuItemCaseSensitive.checked := Sett.SearchCaseSensitive;
-    MenuItemSearchTitleOnly.Checked := Sett.SearchOnTitleOnly;
+    MenuItemSearchTitleOnly.Checked := Sett.SearchTitleOnly;
     LabelSearchTitle.Visible := MenuItemSearchTitleOnly.Checked;
     MenuItemSWYT.checked := Sett.AutoSearchUpdate;
     MenuItemImportNote.Hint := rsHelpImportFile;         // Hint shows on StatusBar
@@ -1997,7 +1997,8 @@ begin
     // Notebook filter is not affected by swap, so if if no active search term,
     // do nothing. But if we have a search term (>2char) and we are switching form
     // Title to content (ie expect more 'hits') RefineSearch() is NOT enough
-    Sett.SaveSettings(sender);
+    Sett.SearchTitleOnly := MenuItemSearchTitleOnly.Checked;
+    // Sett.SaveSettings(sender);
 end;
 
 procedure TSearchForm.ButtonClearSearchClick(Sender: TObject);

@@ -122,7 +122,7 @@ uses
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
     LCLIntf, Spin{, notifier}, base64, fpttf, LMessages, syncutils, LazUTF8
     {$ifdef LCLQT5}, qt5{$endif}
-    {$ifdef LCLQT6}, qt6{$endif} ;
+    {$ifdef LCLQT6}, qt6{$endif} , Types;
 
 // Types;
 
@@ -299,7 +299,7 @@ type
         procedure SetColours;
 
     private
-
+        fSearchTitleOnly : boolean;             // memory for property SearchTitleOnly
         TheHomeDir : string;
         SyncTimingFileIndex, SyncTimingGithubIndex : integer;   // Holds ComboBox index for each particular sync
         SyncTimingFileLast, SyncTimingGitHubLast : TDateTime;   // The time the last indicated sync was run (manual or auto).
@@ -385,6 +385,7 @@ type
         function fHomeDir : string;
         procedure fSetCaseSensitive(IsIt : boolean);
         //function ZipDate: string;
+        procedure fSetSearchTitleOnly(ItIs : boolean);
 
     public
         HelpNotesPath : string;         // expected path to help note directories for this OS
@@ -427,7 +428,7 @@ type
             { Indicates Spell is configured and LabelLibrary and LabelDic should
             contain valid full file names.}
         SpellConfig : boolean;
-        SearchOnTitleOnly : boolean;
+//        SearchOnTitleOnly : boolean;
                             // Checks to ensure no threads are running. Will hold
                             // up an App exits for up to 5 seconds.
         procedure CloseNowPlease();
@@ -443,6 +444,8 @@ type
         property AutoSearchUpdate : boolean read fgetAutoSearchUpdate write fSetAutoSearchUpdate;
                             // Does not appear to be implemented
         property ExportPath : ANSIString Read fExportPath write fExportPath;
+
+        property SearchTitleOnly : boolean read fSearchTitleOnly write fSetSearchTitleOnly;
 
                             // Returns users home dir inc trailing slash
         property HomeDir : String Read fHomeDir;
@@ -621,6 +624,13 @@ end;
 procedure TSett.fSetCaseSensitive(IsIt : boolean);
 begin
     SearchIsCaseSensitive := IsIt;
+    if Not MaskSettingsChanged then
+        WriteConfigFile();
+end;
+
+procedure TSett.fSetSearchTitleOnly(ItIs : boolean);
+begin
+    fSearchTitleOnly := ItIs;
     if Not MaskSettingsChanged then
         WriteConfigFile();
 end;
@@ -879,6 +889,7 @@ var
     i : integer;
 begin
     // gTTFontCache.ReadStandardFonts;         // we do this in Kmemo2PDR now.
+    fSearchTitleOnly := False;
     NotesSavedAtClose := 0;                    // Inc'ed in Main FormClose, dec'ed when a note save finshes (at close time)
     Caption := 'tomboy-ng Settings';
     ButtonSetNotePath.Enabled := False;
@@ -1044,7 +1055,7 @@ begin
             ('true' = ConfigFile.readstring('BasicSettings', 'UseUndo', 'true'));
         SearchCaseSensitive :=
             ('true' = Configfile.readstring('BasicSettings', 'CaseSensitive', 'false'));
-        SearchOnTitleOnly :=
+        SearchTitleOnly :=
             ('true' = Configfile.readstring('BasicSettings', 'SearchOnTitle', 'false'));
         CheckShowSplash.Checked :=
             ('true' = Configfile.ReadString('BasicSettings', 'ShowSplash', 'true'));
@@ -1207,6 +1218,7 @@ begin
 end;
 
 function TSett.WriteConfigFile(IgnoreMask : boolean = false; WriteLastSync : boolean = false) : boolean;
+// Warning, this gets called before Sett is created with a new installation.
 var
 	ConfigFile : TINIFile;
     i : integer;
@@ -1221,7 +1233,7 @@ begin
             ConfigFile.writestring('BasicSettings', 'NotesPath', NoteDirectory);
             Configfile.writestring('BasicSettings', 'ManyNotebooks',     MyBoolStr(CheckManyNoteBooks.checked));
             Configfile.writestring('BasicSettings', 'CaseSensitive',     MyBoolStr(SearchCaseSensitive));
-            Configfile.writestring('BasicSettings', 'SearchOnTitle',     MyBoolStr(SearchForm.MenuItemSearchTitleOnly.Checked));
+            Configfile.writestring('BasicSettings', 'SearchOnTitle',     MyBoolStr(SearchTitleOnly));
             ConfigFile.writestring('BasicSettings', 'ShowIntLinks',      MyBoolStr(CheckShowIntLinks.Checked));
             ConfigFile.writestring('BasicSettings', 'ShowExtLinks',      MyBoolStr(CheckShowExtLinks.Checked));
             ConfigFile.WriteString('BasicSettings', 'ShowSplash',        MyBoolStr(CheckShowSplash.Checked));
@@ -1456,27 +1468,12 @@ var
     APath : string;
 begin
     if not DidCleanAndLockSync() then exit;        // Also flush notes
+    SelectDirectoryDialog1.InitialDir := LabelNotesPath.Caption;
     if SelectDirectoryDialog1.Execute then begin
 	    APath := TrimFilename(SelectDirectoryDialog1.FileName + PathDelim);
         SetNotePath(APath);
-
-(*        if CheckDirectory(NoteDirectory) then begin
-            if not FindFirst(NoteDirectory + '*.note', faAnyFile and faDirectory, Info)=0 then begin
-               showmessage(rsDirHasNoNotes);
-	        end;
-            FindClose(Info);
-            CheckShowIntLinks.enabled := true;        // Why is this here ????
-            // CheckReadOnly.enabled := true;
-            // SyncFileAuto := False;
-            // SyncGithubAuto := False;
-            ComboSyncTypeChange(self);
-            WriteConfigFile();
-            SyncSettings();
-            SearchForm.IndexNotes(True);
-        end else
-            NoteDirectory := LabelNotesPath.caption;     *)
     end;
-
+    SelectDirectoryDialog1.InitialDir := '';
 end;
 
 { Colors - most colors will be right, as set instructed by the OS. However, the

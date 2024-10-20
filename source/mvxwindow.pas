@@ -206,8 +206,8 @@ begin
                 WorkS := CurrentWorkSpace(Disp, RootWin);
             WinID := 0;
             if not FindWindowCaption(Caption, Disp, RootWin, WinID) or (WinID = 0) then begin
-                MvXWinError := 'ERROR - Failed to find that Window !';
-                writeln('MvXWinError - Failed to find that Window [', Caption, ']');
+                MvXWinError := 'Info - Failed to find that Window !';
+                writeln('MvXWin Info - Failed to find that Window [', Caption, ']');
                 XCloseDisplay(Disp);
                 exit(false);
             end;

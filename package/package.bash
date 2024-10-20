@@ -433,8 +433,7 @@ echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
 
 
 
-# Note: because we must build Qt6 on later that U20.04 and for all others, we must build on U20.04
-# due to the libc issue, we cannot build our qt6 one all at the same time.
+# Note: as of Oct 2024, we can build our Qt6 one here and now too.
 
 rm -f changelog		# we build a new one from ../debian/changelog and ../whatsnew each run
 
@@ -442,7 +441,7 @@ if [ "$2" != "" ]; then
 	JustMakeBinary "$2"       # Does not return.
 fi 
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5; # ReleaseQt6 etc, not yet !  Must build elsewhere, bring biary here.
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5 ReleaseQt6; 
 	do BuildAMode $BIN; 
 done
 
