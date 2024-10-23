@@ -91,8 +91,8 @@ cp "$RDIR"/"$RDIR"-"$PACKVER".spec "$1".spec
 	done <"../whatsnew"
 
 	# rpmbuild detects the dependencies but it misses wmctrl due to way its used.
-	# So we add it to the spec file manually, insert as line 5.
-	sed -i '5i Requires: wmctrl ' "$RDIR"/"$RDIR"-"$PACKVER".spec
+	# So we add it to the spec file manually, insert as line 5. BUT, don't need it any more
+	# sed -i '5i Requires: wmctrl ' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	# cp -r "$RDIR" "$RDIR"-"$1"
 	cd "$RDIR"
 	

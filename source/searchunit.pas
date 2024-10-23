@@ -1405,7 +1405,7 @@ begin
     {$endif}
 end;
 
-(*
+(*                               // old code that used wmctrl, now hit X directly
 {$ifdef LINUX}                   // discard this when happy with MvXWindow model.
 var
     AProcess: TProcess;

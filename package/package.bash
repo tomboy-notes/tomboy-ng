@@ -235,7 +235,7 @@ function DebianPackage () {
     	return 1
     fi
     CTRL_ARCH=$ARCH
-	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), wmctrl, libnotify-bin"
+	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libnotify-bin"
 	CTRL_RELEASE="GTK2 release."
 	cp $SOURCE_DIR/$BIN BUILD/usr/bin/$PRODUCT
 	# ----------- Some Special Cases ----------------
@@ -243,7 +243,7 @@ function DebianPackage () {
 	"ReleaseQT5")
 		# echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin"
 		CTRL_RELEASE="Qt5 release."
 		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog - no longer !
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
@@ -254,7 +254,7 @@ function DebianPackage () {
 	"ReleaseLin32Qt5")
 		# echo "++++++++++ Setting Lin 32 QT5 +++++++++"
 		CTRL_ARCH="i386"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin" # , qt5ct" Nov 2023, remove dep on qt5ct for laz rc2 and later 
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin" # , qt5ct" Nov 2023, remove dep on qt5ct for laz rc2 and later 
 		CTRL_RELEASE="32bit Qt5 release."
 		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
@@ -265,7 +265,7 @@ function DebianPackage () {
 	"ReleaseQt6")
 		# echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
+		CTRL_DEPENDS="libc6 (>= 2.34), libnotify-bin, libqt6pas6 (>= 6.2.7)"
 		CTRL_RELEASE="Qt6 release."
 		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog, no, not using Laz300
 	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it. 
@@ -273,7 +273,7 @@ function DebianPackage () {
 		;;		
 	"ReleaseRasPi")
 		CTRL_RELEASE="Raspberry Pi 32bit release."
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), wmctrl, libnotify-bin"		
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin"		
 		;;
 	"ReleaseRasPi64")
 		CTRL_RELEASE="Raspberry Pi 64bit release."
@@ -333,8 +333,8 @@ function WriteZipReadMe () {
 	echo "* Language other than English" >> "$RM"
 	echo "* tomboy-ng help files" >> "$RM"
 	echo "* Ability to have tomboy-ng set itself to autostart" >> "$RM"
-	echo "Dependencies include libgtk2.0-0, libcanberra-gtk-module, libnotify, wmctrl." >> "$RM"
-	echo "  or, in the Qt5 version, libqt5pas1, libnotify, wmctrl" >> $RM
+	echo "Dependencies include libgtk2.0-0, libcanberra-gtk-module, libnotify." >> "$RM"
+	echo "  or, in the Qt5 version, libqt5pas1, libnotify" >> $RM
 	echo "If you need help, please post specific question to tomboy-ng github issues." >> "$RM"
 }
 

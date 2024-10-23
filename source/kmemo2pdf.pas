@@ -743,7 +743,7 @@ begin
     try
         KMemoRead();
         if not MakePDF() then            // False if we found an issue, probably font related !
-            ShowMessage('An error occured making the PDF');
+            ShowMessage('An error occurred making the PDF');
 
     finally
         FDoc.Free;

@@ -13,7 +13,7 @@ Package: tomboy-ng
 Provides: tomboy-ng
 Architecture: any
 Multi-Arch: foreign
-Depends: libqt5pas1, ${shlibs:Depends}, wmctrl, libnotify-bin, qt5ct, ${misc:Depends}
+Depends: libqt5pas1, ${shlibs:Depends}, libnotify-bin, qt5ct, ${misc:Depends}
 Suggests: qt5-style-plugins, qgnomeplatform-qt5
 Description: Tomboy Notes rewritten for easy installation and cross platform.
  Tomboy-ng notes allows easy management of any number of notes. Notes can 

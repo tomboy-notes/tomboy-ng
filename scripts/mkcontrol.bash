@@ -29,7 +29,7 @@ function AdjustValues () {
     fi
      if [ "$2" == "qt6" ]; then
         DESC="This is the QT6 based version."
-        DEPENDS="libc6 (>= 2.34), wmctrl, libnotify-bin, libqt6pas6 (>= 6.2.7)"
+        DEPENDS="libc6 (>= 2.34), libnotify-bin, libqt6pas6 (>= 6.2.7)"
         BUILDDEPENDS="libqt6pas6-dev, lcl-qt6, libcairo2-dev, libpango1.0-dev"
         PACKAGE="tomboy-ng-qt6"         # but reverse that in Debian (don't do yet anyway)
     fi

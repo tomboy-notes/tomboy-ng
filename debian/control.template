@@ -13,7 +13,7 @@ Package: %PACKAGE%
 Provides: tomboy-ng
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, %DEPENDS%, wmctrl, libnotify-bin, ${misc:Depends}
+Depends: ${shlibs:Depends}, %DEPENDS%, libnotify-bin, ${misc:Depends}
 Suggests: libayatana-appindicator3-1
 Description: Tomboy Notes rewritten to ease installation and cross platform
  tomboy-ng notes allows easy management of a large or small set of
