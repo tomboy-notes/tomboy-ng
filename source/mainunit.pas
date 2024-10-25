@@ -877,9 +877,15 @@ RESOURCESTRING
     rsAboutOperatingSystem = 'OS';
 
 
+const Source_Date  = {$i SOURCE_DATE};   // read the file if it exists, a preformated date, eg '2024/10/25'
+      Compile_Date = {$i %DATE%};        // else we fall back to compile date
+                                         // $> date +\'%y/%m/%d\' > SOURCE_DATE <enter>
+
 procedure TMainForm.ShowAbout();
 var
         Stg : string;
+        TheDate : string;
+
     function GetFPC() : string;
     begin
         Result := '';
@@ -895,6 +901,9 @@ begin
             exit;
 		end;
 
+        if Source_Date <> '' then TheDate := Source_Date
+        else TheDate := Compile_Date;
+
 //		Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
         Stg := rsAbout + #10 + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
         {$ifdef LCLCOCOA} Stg := Stg + ', 64bit Cocoa'; {$endif}
@@ -902,7 +911,7 @@ begin
         {$ifdef LCLQT6}   Stg := Stg + ', QT6';         {$endif}
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
         {$ifdef LCLGTK2}  Stg := Stg + ', GTK2';        {$endif}
-        Stg := Stg + #10 + rsAboutBDate + ' ' + {$i %DATE%}
+        Stg := Stg + #10 + rsAboutBDate + ' ' + TheDate { {$i %DATE%} }
             + '  (Laz ' + inttostr(laz_major) +'.' + inttostr(laz_minor){ + '.' + inttostr(laz_release)}
             + GetFPC() +')'
             + #10

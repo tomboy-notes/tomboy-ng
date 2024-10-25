@@ -143,7 +143,7 @@ function ShowHelp () {
     echo "David Bannon, Aug 2024" 
     echo "-h   print this help message"
     echo "-l   a full path to lazbuild (inc 'lazbuild'), as part of a Lazarus install."
-    echo "-C   clean deb files from previous run, exit, debug use only, unreliable"
+    echo "-C   clean ALL output files from previous run, REMOVES .orig file !"
     echo "-t   tomboy-ng source, defaults to master or github tag, eg, 0.35 etc"
     echo "-D   distro, defaults to unstable"
     echo "-n   New orig file, required for fresh release"
@@ -231,7 +231,9 @@ while getopts "hUCl:D:nqQt:r:" opt; do
 	LAZ_BLD="$OPTARG"
 	;;
     C)
-	CLEAN="YES"
+	# CLEAN="YES"
+	rm -Rf "$APP""_"*		# note the underscore !
+	exit
 	;;
     D)
     DISTRO1="$OPTARG"
@@ -304,6 +306,8 @@ if [ ! -f tomboy-ng-master.zip ]; then		# We need download TB source
 		# we download https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v0.35.zip
 		# but end up with tomboy-ng-0.35.zip, note the 'v' disappeared, gee !
 	fi
+else
+	echo "Reusing existing tomboy-ng zip"
 fi
 
 # https://github.com/tomboy-notes/tomboy-ng/archive/refs/tags/v0.35.zip
@@ -333,8 +337,6 @@ if [ -f tomboy-ng-master.zip ]; then
 		mv "$EXDIRNAME" "tomboy-ng-master"
 	fi
 
-
-
 	# risky, hacky code follows, versions 0.34 and earlier did not have mkcontrol.bash, slip one in
 	if [ -e "mkcontrol.bash" ]; then
 		echo "-------- WARNING, using local mkcontrol.bash because its here !"
@@ -342,19 +344,6 @@ if [ -f tomboy-ng-master.zip ]; then
 		cp control.template tomboy-ng-master/debian/.
 	fi
 	VER=`cat tomboy-ng-master/package/version`
-	if [ "$CLEAN" = "YES" ]; then
-		rm -Rf "tomboy-ng-master"
-		echo "---------- Removing existing DEB files"
-		rm -Rf "$APP"_"$VER"-?
-		rm -f "tomboy-ng_$VER-"?_source.buildinfo
-		rm -f "tomboy-ng_$VER-"?_source.changes
-       		rm -f "tomboy-ng_$VER-"?_amd64.deb
- 		rm -f "tomboy-ng_$VER-"?.debian.tar.xz
-		rm -f "tomboy-ng_$VER-"?.dsc
-		rm -f "tomboy-ng_$VER.orig.tar.gz"
-		# echo "Like a coward, not removing .orig file, tomboy-ng_$VER.orig.tar.gz"
-		exit
-	fi
 	mv "tomboy-ng-master" "$APP"_"$VER""$DEBVER"
 	KControls
 	
@@ -379,6 +368,8 @@ if [ -f tomboy-ng-master.zip ]; then
     # Note : if not NEWORIG, we cannot possibly be here !
 	if [ "$NEWORIG" = "YES" ]; then
 	    CleanSource
+		date +\'%Y/%m/%d\' > source/SOURCE_DATE      # thats to provide a reproducable date
+
 		MakeOrigFile                    # create new .orig (and no longer a new change log)
 	fi
 
