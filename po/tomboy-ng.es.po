@@ -3,9 +3,9 @@
 # Roy W. Reese <waterbearer54@gmx.com>, 2018-2024.
 msgid ""
 msgstr ""
-"Project-Id-Version: tomboy-ng v0.40\n"
+"Project-Id-Version: tomboy-ng v0.40b\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-06-14 14:08+0200\n"
+"PO-Revision-Date: 2024-10-23 18:48+0200\n"
 "Last-Translator: Roy W. Reese <waterbearer54@gmx.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.5\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -159,9 +159,10 @@ msgid "Downloading notes"
 msgstr "Descargando notas"
 
 #: resourcestr.rsenterhexvalue
+#, fuzzy
 msgctxt "resourcestr.rsenterhexvalue"
 msgid "Enter the Hexadecimal value for a UTF8 character"
-msgstr "Escribe el valor hexidecimal para el carácter UTF8"
+msgstr "Introduzca el valor hexidecimal para el carácter UTF8"
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -363,9 +364,11 @@ msgctxt "resourcestr.rsname"
 msgid "Name"
 msgstr "Nombre"
 
+# ¿?
 #: resourcestr.rsnetworknotavailable
+#, fuzzy
 msgid "Network not available"
-msgstr ""
+msgstr "La red no está disponible"
 
 #: resourcestr.rsnewerversionexits
 msgctxt "resourcestr.rsnewerversionexits"
@@ -450,14 +453,14 @@ msgid "Press Close"
 msgstr "Pulse Cerrar"
 
 #: resourcestr.rsquestiondeletenotes
-#, object-pascal-format
+#, object-pascal-format, fuzzy
 msgid "Do you wish to delete %d notes ?"
-msgstr ""
+msgstr "¿Quiere eliminar %d notas?"
 
 #: resourcestr.rsquestiondeleteopennotes
-#, object-pascal-format
+#, object-pascal-format, fuzzy
 msgid "Including %d open notes ?"
-msgstr ""
+msgstr "¿incluso las %d notas abiertas?"
 
 #: resourcestr.rsrecoverok
 msgctxt "resourcestr.rsrecoverok"
@@ -995,7 +998,7 @@ msgctxt "tformcolours.speedcancel.caption"
 msgid "Cancel"
 msgstr "Cancelar"
 
-# Colores "por defecto", pero poco espacio en el botón
+# Colores "por defecto", pero poco espacio en el botón; más corto que predeterminado
 #: tformcolours.speeddefault.caption
 msgid "Default"
 msgstr "Por defecto"
@@ -1033,96 +1036,109 @@ msgid "Single lines, all Huge, Large Bold or Large"
 msgstr "Líneas únicas, todas Enormes, Grandes-Negritas o Grandes"
 
 #: tformkmemo2pdf.bitbtnhelp.hint
+#, fuzzy
 msgid "Will open your Web Browser"
-msgstr ""
+msgstr "Se abrirá en su navegador."
 
 #: tformkmemo2pdf.caption
+#, fuzzy
 msgid "tomboy-ng PDF setup"
-msgstr ""
-
-#: tformkmemo2pdf.combomono.text
-msgid "ComboMono"
-msgstr ""
-
-#: tformkmemo2pdf.comboprop.text
-msgid "ComboProp"
-msgstr ""
+msgstr "Ajustes PDF de tomboy-ng"
 
 #: tformkmemo2pdf.groupbox1.caption
+#, fuzzy
 msgid "PDF Fonts"
-msgstr ""
+msgstr "Fuentes PDF"
 
 #: tformkmemo2pdf.groupbox2.caption
+#, fuzzy
 msgid "Paper Size"
-msgstr ""
+msgstr "Tamaño de papel"
 
 #: tformkmemo2pdf.groupbox3.caption
+#, fuzzy
 msgid "Simulate Fonts"
-msgstr ""
+msgstr "Simular fuentes"
 
 #: tformkmemo2pdf.label1.caption
+#, fuzzy
 msgid "Proportional"
-msgstr ""
+msgstr "Proporcional"
 
 #: tformkmemo2pdf.label2.caption
+#, fuzzy
 msgid "Monospaced"
-msgstr ""
+msgstr "Monoespaciada"
 
 #: tformkmemo2pdf.label3.caption
+#, fuzzy
 msgid "Note : settings not saved in this, pre-release."
-msgstr ""
+msgstr "Toma nota: ajustes no guardados en esta versión preliminar."
 
+# ¿Habla de la fuente?
 #: tformkmemo2pdf.labelmononotfound.caption
+#, fuzzy
 msgctxt "tformkmemo2pdf.labelmononotfound.caption"
 msgid "Not Found"
-msgstr ""
+msgstr "No encontrada"
 
 #: tformkmemo2pdf.labelmononotfound.hint
+#, fuzzy
 msgctxt "tformkmemo2pdf.labelmononotfound.hint"
 msgid "Press the Help Button"
-msgstr ""
+msgstr "Pulse botón de Ayuda"
 
 #: tformkmemo2pdf.labelpropnotfound.caption
+#, fuzzy
 msgctxt "tformkmemo2pdf.labelpropnotfound.caption"
 msgid "Not Found"
-msgstr ""
+msgstr "No encontrada"
 
 #: tformkmemo2pdf.labelpropnotfound.hint
+#, fuzzy
 msgctxt "tformkmemo2pdf.labelpropnotfound.hint"
 msgid "Press the Help Button"
-msgstr ""
+msgstr "Pulse botón de Ayuda"
 
 #: tformkmemo2pdf.radioa4.caption
+#, fuzzy
 msgid "A4 Paper"
-msgstr ""
+msgstr "Hoja A4"
 
 #: tformkmemo2pdf.radiodefault.caption
+#, fuzzy
 msgid "Default Fonts"
-msgstr ""
+msgstr "Fuentes predeterminadas"
 
 #: tformkmemo2pdf.radiodefault.hint
+#, fuzzy
 msgid "Standard fonts that work for many people."
-msgstr ""
+msgstr "Fuentes estándares que sirven a mucha gente."
 
 #: tformkmemo2pdf.radioletter.caption
+#, fuzzy
 msgid "Letter Paper"
-msgstr ""
+msgstr "Hoja carta"
 
 #: tformkmemo2pdf.radiosimno.caption
+#, fuzzy
 msgid "No, Safer"
-msgstr ""
+msgstr "No, respuesta más segura"
 
 #: tformkmemo2pdf.radiosimyes.caption
+#, fuzzy
 msgid "Yes, if necessary"
-msgstr ""
+msgstr "Sí, si hace falta"
 
 #: tformkmemo2pdf.radiouserdefined.caption
+#, fuzzy
 msgid "User Defined"
-msgstr ""
+msgstr "Especificado por el usuario"
 
 #: tformkmemo2pdf.radiouserdefined.hint
+#, fuzzy
 msgid "Enter Font Name of fonts you have."
-msgstr ""
+msgstr "Introduzca el nombre de las fuentes instaladas."
 
 #: tformrecover.buttondeletebadnotes.caption
 msgid "Delete Bad Notes"
@@ -1468,11 +1484,15 @@ msgid "Change Notebook Name"
 msgstr "Cambiar nombre del cuaderno"
 
 #: tnotebookpick.tabexisting.caption
-msgid "Existing Note Books"
+#, fuzzy
+#| msgid "Existing Note Books"
+msgid "Existing Notebooks"
 msgstr "Cuadernos actuales"
 
 #: tnotebookpick.tabnewnotebook.caption
-msgid "New Note Book"
+#, fuzzy
+#| msgid "New Note Book"
+msgid "New Notebook"
 msgstr "Cuaderno nuevo"
 
 #: tnotebookpick.tabsetnotes.caption
@@ -1501,15 +1521,15 @@ msgstr "Opciones"
 
 #: tsearchform.caption
 #, fuzzy
-#| msgid "tomboy-ng_Search"
 msgctxt "tsearchform.caption"
 msgid "Search"
-msgstr "Búsqueda de tombo-ng"
+msgstr "Buscar"
 
 #: tsearchform.labelsearchtitle.caption
+#, fuzzy
 msgctxt "tsearchform.labelsearchtitle.caption"
 msgid "Search on title only"
-msgstr ""
+msgstr "Buscar sólo en título"
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
@@ -1533,8 +1553,9 @@ msgid "Case Sensitive"
 msgstr "Sensible a mayúsculas"
 
 #: tsearchform.menuitemdeleteselected.caption
+#, fuzzy
 msgid "Delete Selected Notes"
-msgstr ""
+msgstr "Eliminar notas seleccionadas"
 
 #: tsearchform.menuitemimportnote.caption
 msgid "Import File"
@@ -1545,27 +1566,31 @@ msgid "Manage Notes in Notebook"
 msgstr "Gestionar las notas del cuaderno"
 
 #: tsearchform.menuitemnotebookmembership.caption
-msgid "Note Book Membership"
-msgstr ""
+#, fuzzy
+#| msgid "Note Book Membership"
+msgid "Notebook Membership"
+msgstr "Cuaderno asociado"
 
 #: tsearchform.menuitemopenselected.caption
+#, fuzzy
 msgid "Open Selected Notes"
-msgstr ""
+msgstr "Abrir notas seleccionadas"
 
 #: tsearchform.menuitemsearchtitleonly.caption
+#, fuzzy
 msgctxt "tsearchform.menuitemsearchtitleonly.caption"
 msgid "Search on title only"
-msgstr ""
+msgstr "Buscar sólo en título"
 
 #: tsearchform.menuitemselectall.caption
-#, fuzzy
 msgctxt "tsearchform.menuitemselectall.caption"
 msgid "Select All"
-msgstr "Seleccionar todo"
+msgstr "Seleccionar todas"
 
 #: tsearchform.menuitemselectnone.caption
+#, fuzzy
 msgid "Select None"
-msgstr ""
+msgstr "Seleccionar ninguna"
 
 #: tsearchform.menuitemswyt.caption
 msgid "Search While You Type"
@@ -1784,9 +1809,11 @@ msgstr "Repositorio: "
 msgid "Days per snapshot"
 msgstr "Días por instantánea"
 
+# Hay que corregir el ingles
 #: tsett.label6.caption
+#, fuzzy
 msgid "Backup files are made when you delete a note or the sync system"
-msgstr "Se crean copias de seguridad cuando se borra una nota o el sistema de sincronización"
+msgstr "Se crean copias de seguridad cuando se elimina una nota o sincronizar el sistema"
 
 #: tsett.label7.caption
 msgid "is about to overwrite one."
@@ -1857,12 +1884,14 @@ msgid "Small"
 msgstr "Pequeña"
 
 #: tsett.radiotomboydefault.caption
+#, fuzzy
 msgid "Old Tomboy Default"
-msgstr "Predeterminado antiguo de Tomboy"
+msgstr "Predeterminada del antiguo Tomboy"
 
 #: tsett.radiotomboyngdefault.caption
+#, fuzzy
 msgid "tomboy-ng Default"
-msgstr "Predeterminado tomboy-ng"
+msgstr "Predeterminada de tomboy-ng"
 
 #: tsett.radiouselocal.caption
 msgid "Use Local Note and Overwrite Server Note."

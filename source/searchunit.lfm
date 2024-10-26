@@ -380,7 +380,7 @@ object SearchForm: TSearchForm
       OnClick = MenuItemDeleteSelectedClick
     end
     object MenuItemNoteBookMembership: TMenuItem
-      Caption = 'Note Book Membership'
+      Caption = 'Notebook Membership'
       OnClick = MenuItemNoteBookMembershipClick
     end
     object MenuItemSelectAll: TMenuItem

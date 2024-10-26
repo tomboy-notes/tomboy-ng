@@ -1,14 +1,14 @@
 object NoteBookPick: TNoteBookPick
-  Left = 687
+  Left = 603
   Height = 436
-  Top = 187
+  Top = 231
   Width = 604
   Anchors = []
   Caption = 'Notebooks'
   ClientHeight = 436
   ClientWidth = 604
   OnShow = FormShow
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -100,12 +100,12 @@ object NoteBookPick: TNoteBookPick
     Height = 303
     Top = 72
     Width = 604
-    ActivePage = TabExisting
+    ActivePage = TabNewNoteBook
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 3
     object TabExisting: TTabSheet
-      Caption = 'Existing Note Books'
+      Caption = 'Existing Notebooks'
       ClientHeight = 273
       ClientWidth = 600
       object CheckListBox1: TCheckListBox
@@ -127,7 +127,7 @@ object NoteBookPick: TNoteBookPick
       end
     end
     object TabNewNoteBook: TTabSheet
-      Caption = 'New Note Book'
+      Caption = 'New Notebook'
       ClientHeight = 273
       ClientWidth = 600
       OnShow = TabNewNoteBookShow

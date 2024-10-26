@@ -1063,14 +1063,6 @@ msgstr ""
 msgid "tomboy-ng PDF setup"
 msgstr ""
 
-#: tformkmemo2pdf.combomono.text
-msgid "ComboMono"
-msgstr ""
-
-#: tformkmemo2pdf.comboprop.text
-msgid "ComboProp"
-msgstr ""
-
 #: tformkmemo2pdf.groupbox1.caption
 msgid "PDF Fonts"
 msgstr ""
@@ -1495,11 +1487,15 @@ msgid "Change Notebook Name"
 msgstr "Notitieboeknaam wijzigen"
 
 #: tnotebookpick.tabexisting.caption
-msgid "Existing Note Books"
+#, fuzzy
+#| msgid "Existing Note Books"
+msgid "Existing Notebooks"
 msgstr "Bestaande notitieboeken"
 
 #: tnotebookpick.tabnewnotebook.caption
-msgid "New Note Book"
+#, fuzzy
+#| msgid "New Note Book"
+msgid "New Notebook"
 msgstr "Nieuw notitieboek"
 
 #: tnotebookpick.tabsetnotes.caption
@@ -1579,7 +1575,7 @@ msgid "Manage Notes in Notebook"
 msgstr "Notities in notitieboek beheren"
 
 #: tsearchform.menuitemnotebookmembership.caption
-msgid "Note Book Membership"
+msgid "Notebook Membership"
 msgstr ""
 
 #: tsearchform.menuitemopenselected.caption
