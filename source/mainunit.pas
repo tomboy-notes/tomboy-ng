@@ -353,12 +353,7 @@ begin
           // Its most likely that progress here is dependent of form becoming Nil ! But not certain ....
           while (aPNote^.OpenNote <> Nil) and (not TEditBoxForm(aPNote^.OpenNote).BusySaving) do
                 Sleep(2);
-
-(*          while (TheMainNoteLister.NoteList.Items[NoteIndex]^.OpenNote <> nil)                            // just ugly ....
-                and (not  TEditBoxForm(TheMainNoteLister.NoteList.Items[NoteIndex]^.OpenNote).BusySaving)
-                    do sleep(2);   *)
-
-          sleep(2);                                                 // Long enough for EditBox to launch a save thread ??
+          sleep(2);                                           // Long enough for EditBox to launch a save thread ??
           AForm := TheMainNoteLister.FindNextOpenNote(NoteIndex);
       end;
     end;
@@ -868,7 +863,6 @@ begin
 end;
 
 
-
 RESOURCESTRING
     rsAbout = 'tomboy-ng notes - cross platform, sync and manage notes.';
     rsAboutVer = 'Version';
@@ -876,51 +870,39 @@ RESOURCESTRING
     rsAboutCPU = 'TargetCPU';
     rsAboutOperatingSystem = 'OS';
 
-
-const Source_Date  = {$i SOURCE_DATE};   // read the file if it exists, a preformated date, eg '2024/10/25'
-      Compile_Date = {$i %DATE%};        // else we fall back to compile date
-                                         // $> date +\'%y/%m/%d\' > SOURCE_DATE <enter>
-
 procedure TMainForm.ShowAbout();
 var
         Stg : string;
         TheDate : string;
-
-    function GetFPC() : string;
-    begin
-        Result := '';
-        {$ifdef Ver3_2_2} result := ' FPC 3.2.2'; {$endif}
-        {$ifdef Ver3_2_3} result := ' FPC 3.2.3'; {$endif}
-        {$ifdef Ver3_3_1} result := ' FPC 3.3.1'; {$endif}
-        {$ifdef Ver3_2_4} result := ' FPC 3.2.4'; {$endif}
-    end;
 begin
         if AboutFrm <> Nil then begin
             AboutFrm.Show;
             AboutFrm.EnsureVisible();
             exit;
 		end;
-
-        if Source_Date <> '' then TheDate := Source_Date
-        else TheDate := Compile_Date;
-
-//		Stg := rsAbout1 + #10 + rsAbout2 + #10 + rsAbout3 + #10
+        // This is about Debian's quest for repeatability, may contain eg '2024/10/25' or ''
+        // The file MUST exist and contain either a date stamp or just two single inverted commas
+        // $> date +\'%Y/%m/%d\' > SOURCE_DATE   or  $> echo "''" > SOURCE_DATE
+        // The '' one exists in git, gets overwritten when making Deb SRC package.
+        TheDate := {$i SOURCE_DATE};                                            // use source date
+        if TheDate = '' then TheDate := {$i %DATE%};                            // use compile date
+        // https://wiki.freepascal.org/$include - note %XXX% is only env var, XXX is file or envvar.
         Stg := rsAbout + #10 + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
         {$ifdef LCLCOCOA} Stg := Stg + ', 64bit Cocoa'; {$endif}
         {$ifdef LCLQT5}   Stg := Stg + ', QT5';         {$endif}
         {$ifdef LCLQT6}   Stg := Stg + ', QT6';         {$endif}
         {$ifdef LCLGTK3}  Stg := Stg + ', GTK3';        {$endif}
         {$ifdef LCLGTK2}  Stg := Stg + ', GTK2';        {$endif}
-        Stg := Stg + #10 + rsAboutBDate + ' ' + TheDate { {$i %DATE%} }
+        Stg := Stg + #10 + rsAboutBDate + ' ' + TheDate
             + '  (Laz ' + inttostr(laz_major) +'.' + inttostr(laz_minor){ + '.' + inttostr(laz_release)}
-            + GetFPC() +')'
-            + #10
+            + ' FPC ' + {$include %FPCVersion%} + ')' + #10
             + rsAboutCPU + ' ' + {$i %FPCTARGETCPU%} + '  '
             + rsAboutOperatingSystem + ' ' + {$i %FPCTARGETOS%}
             + ' ' + GetEnvironmentVariable('XDG_CURRENT_DESKTOP');
-        {$if defined(LCLQT5) or defined(LCLQT6)} Stg := Stg + #10 + 'QT_QPA_PLATFORMTHEME : ' +
-        GetEnvironmentVariable('QT_QPA_PLATFORMTHEME')
-        + #10 + 'QT_QPA_PLAFORM : ' + GetEnvironmentVariable('QT_QPA_PLATFORM');
+        {$if defined(LCLQT5) or defined(LCLQT6)}
+            Stg := Stg + #10 + 'QT_QPA_PLATFORMTHEME : '
+            + GetEnvironmentVariable('QT_QPA_PLATFORMTHEME')
+            + #10 + 'QT_QPA_PLAFORM : ' + GetEnvironmentVariable('QT_QPA_PLATFORM');
         {$endif}
         Stg := Stg + #10 + 'https://github.com/tomboy-notes/tomboy-ng';
         AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
