@@ -121,7 +121,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideBottom.Control = ComboProp
     Left = 209
     Height = 20
-    Top = 193
+    Top = 238
     Width = 88
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 2
@@ -132,7 +132,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideBottom.Control = ComboMono
     Left = 209
     Height = 20
-    Top = 255
+    Top = 300
     Width = 89
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 1
@@ -186,7 +186,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideBottom.Control = Label2
     Left = 209
     Height = 30
-    Top = 215
+    Top = 260
     Width = 224
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 10
@@ -205,11 +205,14 @@ object FormKMemo2pdf: TFormKMemo2pdf
     AnchorSideLeft.Control = GroupBox3
     AnchorSideLeft.Side = asrBottom
     AnchorSideTop.Control = GroupBox3
+    AnchorSideBottom.Control = Label3
     Left = 209
     Height = 30
-    Top = 276
+    Top = 321
     Width = 224
+    Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 25
+    BorderSpacing.Bottom = 25
     ItemHeight = 0
     Items.Strings = (
       'Noto Sans Mono CJK SC'
@@ -226,7 +229,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
     Left = 448
     Height = 20
     Hint = 'Press the Help Button'
-    Top = 220
+    Top = 265
     Width = 75
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 15
@@ -244,7 +247,7 @@ object FormKMemo2pdf: TFormKMemo2pdf
     Left = 448
     Height = 20
     Hint = 'Press the Help Button'
-    Top = 281
+    Top = 326
     Width = 75
     Anchors = [akLeft, akBottom]
     BorderSpacing.Left = 15
@@ -316,10 +319,25 @@ object FormKMemo2pdf: TFormKMemo2pdf
     end
   end
   object Label3: TLabel
+    AnchorSideLeft.Control = ComboMono
+    AnchorSideBottom.Control = BitBtn1
     Left = 209
     Height = 20
-    Top = 328
-    Width = 313
-    Caption = 'Note : settings not saved in this, pre-release.'
+    Top = 376
+    Width = 323
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Bottom = 30
+    Caption = 'Note : these settings not saved, ask if you like.'
+  end
+  object LabelYouCanChange: TLabel
+    AnchorSideLeft.Control = ComboMono
+    AnchorSideBottom.Control = Label1
+    Left = 209
+    Height = 20
+    Top = 203
+    Width = 263
+    Anchors = [akLeft, akBottom]
+    BorderSpacing.Bottom = 15
+    Caption = 'Change fields below to font you want'
   end
 end

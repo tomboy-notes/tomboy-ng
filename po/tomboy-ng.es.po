@@ -3,9 +3,9 @@
 # Roy W. Reese <waterbearer54@gmx.com>, 2018-2024.
 msgid ""
 msgstr ""
-"Project-Id-Version: tomboy-ng v0.40b\n"
+"Project-Id-Version: tomboy-ng v0.41\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-10-23 18:48+0200\n"
+"PO-Revision-Date: 2024-10-26 22:14+0200\n"
 "Last-Translator: Roy W. Reese <waterbearer54@gmx.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -159,10 +159,9 @@ msgid "Downloading notes"
 msgstr "Descargando notas"
 
 #: resourcestr.rsenterhexvalue
-#, fuzzy
 msgctxt "resourcestr.rsenterhexvalue"
 msgid "Enter the Hexadecimal value for a UTF8 character"
-msgstr "Introduzca el valor hexidecimal para el carácter UTF8"
+msgstr "Introduzca el valor hexadecimal de un carácter UTF8"
 
 #: resourcestr.rsenternewnotebook
 msgctxt "resourcestr.rsenternewnotebook"
@@ -366,9 +365,8 @@ msgstr "Nombre"
 
 # ¿?
 #: resourcestr.rsnetworknotavailable
-#, fuzzy
 msgid "Network not available"
-msgstr "La red no está disponible"
+msgstr "El internet no está disponible"
 
 #: resourcestr.rsnewerversionexits
 msgctxt "resourcestr.rsnewerversionexits"
@@ -453,12 +451,13 @@ msgid "Press Close"
 msgstr "Pulse Cerrar"
 
 #: resourcestr.rsquestiondeletenotes
-#, object-pascal-format, fuzzy
+#, object-pascal-format
 msgid "Do you wish to delete %d notes ?"
 msgstr "¿Quiere eliminar %d notas?"
 
+# Debería permiir singular?
 #: resourcestr.rsquestiondeleteopennotes
-#, object-pascal-format, fuzzy
+#, object-pascal-format
 msgid "Including %d open notes ?"
 msgstr "¿incluso las %d notas abiertas?"
 
@@ -1036,107 +1035,95 @@ msgid "Single lines, all Huge, Large Bold or Large"
 msgstr "Líneas únicas, todas Enormes, Grandes-Negritas o Grandes"
 
 #: tformkmemo2pdf.bitbtnhelp.hint
-#, fuzzy
 msgid "Will open your Web Browser"
 msgstr "Se abrirá en su navegador."
 
 #: tformkmemo2pdf.caption
-#, fuzzy
 msgid "tomboy-ng PDF setup"
 msgstr "Ajustes PDF de tomboy-ng"
 
 #: tformkmemo2pdf.groupbox1.caption
-#, fuzzy
 msgid "PDF Fonts"
 msgstr "Fuentes PDF"
 
 #: tformkmemo2pdf.groupbox2.caption
-#, fuzzy
 msgid "Paper Size"
-msgstr "Tamaño de papel"
+msgstr "Tamaño del papel"
 
 #: tformkmemo2pdf.groupbox3.caption
-#, fuzzy
 msgid "Simulate Fonts"
 msgstr "Simular fuentes"
 
 #: tformkmemo2pdf.label1.caption
-#, fuzzy
 msgid "Proportional"
 msgstr "Proporcional"
 
 #: tformkmemo2pdf.label2.caption
-#, fuzzy
 msgid "Monospaced"
 msgstr "Monoespaciada"
 
 #: tformkmemo2pdf.label3.caption
 #, fuzzy
-msgid "Note : settings not saved in this, pre-release."
+#| msgid "Note : settings not saved in this, pre-release."
+msgid "Note : these settings not saved, ask if you like."
 msgstr "Toma nota: ajustes no guardados en esta versión preliminar."
 
 # ¿Habla de la fuente?
 #: tformkmemo2pdf.labelmononotfound.caption
-#, fuzzy
 msgctxt "tformkmemo2pdf.labelmononotfound.caption"
 msgid "Not Found"
 msgstr "No encontrada"
 
 #: tformkmemo2pdf.labelmononotfound.hint
-#, fuzzy
 msgctxt "tformkmemo2pdf.labelmononotfound.hint"
 msgid "Press the Help Button"
-msgstr "Pulse botón de Ayuda"
+msgstr "Pulse Ayuda"
 
 #: tformkmemo2pdf.labelpropnotfound.caption
-#, fuzzy
 msgctxt "tformkmemo2pdf.labelpropnotfound.caption"
 msgid "Not Found"
 msgstr "No encontrada"
 
 #: tformkmemo2pdf.labelpropnotfound.hint
-#, fuzzy
 msgctxt "tformkmemo2pdf.labelpropnotfound.hint"
 msgid "Press the Help Button"
-msgstr "Pulse botón de Ayuda"
+msgstr "Pulse Ayuda"
+
+#: tformkmemo2pdf.labelyoucanchange.caption
+msgid "Change fields below to font you want"
+msgstr ""
 
 #: tformkmemo2pdf.radioa4.caption
-#, fuzzy
 msgid "A4 Paper"
-msgstr "Hoja A4"
+msgstr "A4"
 
+# Etiqueta de la caja: Fuentes PDF
 #: tformkmemo2pdf.radiodefault.caption
-#, fuzzy
 msgid "Default Fonts"
-msgstr "Fuentes predeterminadas"
+msgstr "Predeterminadas"
 
 #: tformkmemo2pdf.radiodefault.hint
-#, fuzzy
 msgid "Standard fonts that work for many people."
-msgstr "Fuentes estándares que sirven a mucha gente."
+msgstr "Fuentes estándares que sirven para mucha gente."
 
 #: tformkmemo2pdf.radioletter.caption
-#, fuzzy
 msgid "Letter Paper"
 msgstr "Hoja carta"
 
 #: tformkmemo2pdf.radiosimno.caption
-#, fuzzy
 msgid "No, Safer"
-msgstr "No, respuesta más segura"
+msgstr "No, más segura"
 
 #: tformkmemo2pdf.radiosimyes.caption
-#, fuzzy
 msgid "Yes, if necessary"
 msgstr "Sí, si hace falta"
 
+# Etiqueta de la caja: Fuentes PDF
 #: tformkmemo2pdf.radiouserdefined.caption
-#, fuzzy
 msgid "User Defined"
-msgstr "Especificado por el usuario"
+msgstr "A seleccionar"
 
 #: tformkmemo2pdf.radiouserdefined.hint
-#, fuzzy
 msgid "Enter Font Name of fonts you have."
 msgstr "Introduzca el nombre de las fuentes instaladas."
 
@@ -1149,8 +1136,6 @@ msgid "Take a manual Snapshot"
 msgstr "Hacer una instantánea manual"
 
 #: tformrecover.buttonmakesafetysnap.hint
-#, fuzzy
-#| msgid "Take a initial snapshot of your notes and config. Overwritten each time."
 msgid "Take a snapshot of your notes and config. Overwritten each time."
 msgstr "Haga una instantánea de sus notas y configuración. Sobrescrita cada vez."
 
@@ -1484,14 +1469,10 @@ msgid "Change Notebook Name"
 msgstr "Cambiar nombre del cuaderno"
 
 #: tnotebookpick.tabexisting.caption
-#, fuzzy
-#| msgid "Existing Note Books"
 msgid "Existing Notebooks"
 msgstr "Cuadernos actuales"
 
 #: tnotebookpick.tabnewnotebook.caption
-#, fuzzy
-#| msgid "New Note Book"
 msgid "New Notebook"
 msgstr "Cuaderno nuevo"
 
@@ -1520,16 +1501,14 @@ msgid "Options"
 msgstr "Opciones"
 
 #: tsearchform.caption
-#, fuzzy
 msgctxt "tsearchform.caption"
 msgid "Search"
 msgstr "Buscar"
 
 #: tsearchform.labelsearchtitle.caption
-#, fuzzy
 msgctxt "tsearchform.labelsearchtitle.caption"
 msgid "Search on title only"
-msgstr "Buscar sólo en título"
+msgstr "Buscar sólo en los títulos"
 
 #: tsearchform.listboxnotebooks.hint
 msgid "Right Click to manage Notebooks"
@@ -1553,7 +1532,6 @@ msgid "Case Sensitive"
 msgstr "Sensible a mayúsculas"
 
 #: tsearchform.menuitemdeleteselected.caption
-#, fuzzy
 msgid "Delete Selected Notes"
 msgstr "Eliminar notas seleccionadas"
 
@@ -1566,21 +1544,17 @@ msgid "Manage Notes in Notebook"
 msgstr "Gestionar las notas del cuaderno"
 
 #: tsearchform.menuitemnotebookmembership.caption
-#, fuzzy
-#| msgid "Note Book Membership"
 msgid "Notebook Membership"
-msgstr "Cuaderno asociado"
+msgstr "Cuaderno(s) asociado(s)"
 
 #: tsearchform.menuitemopenselected.caption
-#, fuzzy
 msgid "Open Selected Notes"
 msgstr "Abrir notas seleccionadas"
 
 #: tsearchform.menuitemsearchtitleonly.caption
-#, fuzzy
 msgctxt "tsearchform.menuitemsearchtitleonly.caption"
 msgid "Search on title only"
-msgstr "Buscar sólo en título"
+msgstr "Buscar sólo en los títulos"
 
 #: tsearchform.menuitemselectall.caption
 msgctxt "tsearchform.menuitemselectall.caption"
@@ -1588,7 +1562,6 @@ msgid "Select All"
 msgstr "Seleccionar todas"
 
 #: tsearchform.menuitemselectnone.caption
-#, fuzzy
 msgid "Select None"
 msgstr "Seleccionar ninguna"
 
@@ -1734,10 +1707,6 @@ msgstr "Usar Deshacer-Rehacer (podría ralentizar redacción)"
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 
-#: tsett.combosynctiming.text
-msgid "ComboSyncTiming"
-msgstr "ComboSyncTiming"
-
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"
 msgstr "Sincronización de Archivos o Github"
@@ -1799,7 +1768,7 @@ msgstr "Formato del sello con la fecha"
 
 #: tsett.label2.caption
 msgid "Notes will be looked for and saved in :"
-msgstr "Se buscarán y se guardarám las notas en:"
+msgstr "Se buscarán y se guardarán las notas en:"
 
 #: tsett.label4.caption
 msgid "Repo : "
@@ -1811,7 +1780,6 @@ msgstr "Días por instantánea"
 
 # Hay que corregir el ingles
 #: tsett.label6.caption
-#, fuzzy
 msgid "Backup files are made when you delete a note or the sync system"
 msgstr "Se crean copias de seguridad cuando se elimina una nota o sincronizar el sistema"
 
@@ -1884,12 +1852,10 @@ msgid "Small"
 msgstr "Pequeña"
 
 #: tsett.radiotomboydefault.caption
-#, fuzzy
 msgid "Old Tomboy Default"
 msgstr "Predeterminada del antiguo Tomboy"
 
 #: tsett.radiotomboyngdefault.caption
-#, fuzzy
 msgid "tomboy-ng Default"
 msgstr "Predeterminada de tomboy-ng"
 

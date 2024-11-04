@@ -20,5 +20,6 @@
 {"hash":117541043,"name":"tformkmemo2pdf.groupbox3.caption","sourcebytes":[83,105,109,117,108,97,116,101,32,70,111,110,116,115],"value":"Simulate Fonts"},
 {"hash":258812361,"name":"tformkmemo2pdf.radiosimyes.caption","sourcebytes":[89,101,115,44,32,105,102,32,110,101,99,101,115,115,97,114,121],"value":"Yes, if necessary"},
 {"hash":240724434,"name":"tformkmemo2pdf.radiosimno.caption","sourcebytes":[78,111,44,32,83,97,102,101,114],"value":"No, Safer"},
-{"hash":173674030,"name":"tformkmemo2pdf.label3.caption","sourcebytes":[78,111,116,101,32,58,32,115,101,116,116,105,110,103,115,32,110,111,116,32,115,97,118,101,100,32,105,110,32,116,104,105,115,44,32,112,114,101,45,114,101,108,101,97,115,101,46],"value":"Note : settings not saved in this, pre-release."}
+{"hash":13168958,"name":"tformkmemo2pdf.label3.caption","sourcebytes":[78,111,116,101,32,58,32,116,104,101,115,101,32,115,101,116,116,105,110,103,115,32,110,111,116,32,115,97,118,101,100,44,32,97,115,107,32,105,102,32,121,111,117,32,108,105,107,101,46],"value":"Note : these settings not saved, ask if you like."},
+{"hash":83955412,"name":"tformkmemo2pdf.labelyoucanchange.caption","sourcebytes":[67,104,97,110,103,101,32,102,105,101,108,100,115,32,98,101,108,111,119,32,116,111,32,102,111,110,116,32,121,111,117,32,119,97,110,116],"value":"Change fields below to font you want"}
 ]}

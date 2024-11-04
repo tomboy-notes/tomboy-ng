@@ -1094,7 +1094,7 @@ msgid "Monospaced"
 msgstr ""
 
 #: tformkmemo2pdf.label3.caption
-msgid "Note : settings not saved in this, pre-release."
+msgid "Note : these settings not saved, ask if you like."
 msgstr ""
 
 #: tformkmemo2pdf.labelmononotfound.caption
@@ -1115,6 +1115,10 @@ msgstr ""
 #: tformkmemo2pdf.labelpropnotfound.hint
 msgctxt "tformkmemo2pdf.labelpropnotfound.hint"
 msgid "Press the Help Button"
+msgstr ""
+
+#: tformkmemo2pdf.labelyoucanchange.caption
+msgid "Change fields below to font you want"
 msgstr ""
 
 #: tformkmemo2pdf.radioa4.caption
@@ -1766,10 +1770,6 @@ msgstr "Réutiliser annuler (peut ralentir l'édition)"
 #: tsett.checkuseundo.hint
 msgid "Close and reopen a note to take effect. Use Ctrl-Z Ctrl-Y"
 msgstr "Fermer puis ouvrir une note pour valider. Utilisez Ctrl-Z Ctrl-Y"
-
-#: tsett.combosynctiming.text
-msgid "ComboSyncTiming"
-msgstr ""
 
 #: tsett.combosynctype.hint
 msgid "Github or File Sync"

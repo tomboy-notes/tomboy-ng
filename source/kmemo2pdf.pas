@@ -148,6 +148,7 @@ type
         Label1 : TLabel;
         Label2 : TLabel;
         Label3 : TLabel;
+        LabelYouCanChange : TLabel;
         LabelPropNotFound : TLabel;
         LabelMonoNotFound : TLabel;
         Memo1: TMemo;
@@ -607,6 +608,7 @@ begin
     ComboProp.Enabled := RadioUserDefined.Checked;
     ComboMono.Enabled := RadioUserDefined.Checked;
     ComboProp.Text := trim(ComboProp.Text);
+    LabelYouCanChange.Visible := RadioUserDefined.Checked;
     if ((pos('.ttf', lowercase(ComboProp.Text)) > 0) or (pos('.otf', lowercase(ComboProp.Text)) > 0)) then begin
         TempName := GetCachedFontFromFile(ComboProp.Text);
         if TempName <> '' then ComboProp.Text := TempName;                      // if it failed, we will pick up in StartPDF
@@ -881,6 +883,7 @@ begin
     {$if (FPC_FULLVERSION<30203)}            // We cannot set Sim* in FPC322, 30203 is fixes, 3.2.3 (-rc2).
     GroupBox3.Enabled := False;
     {$endif}
+    LabelYouCanChange.Visible := False;
 end;
 
 
@@ -893,6 +896,7 @@ procedure TFormKMemo2pdf.RadioDefaultChange(Sender : TObject);
 begin
     RefreshForm();
 end;
+
 
 end.
 

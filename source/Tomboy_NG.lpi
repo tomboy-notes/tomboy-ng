@@ -32,7 +32,7 @@
         <Item8 Value="LabelFindInfo"/>
         <Item9 Value="PanelBackLinks"/>
       </ExcludedIdentifiers>
-      <ExcludedOriginals Count="78">
+      <ExcludedOriginals Count="80">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>
@@ -111,6 +111,8 @@
         <Item76 Value="EditFind"/>
         <Item77 Value="ComboMono"/>
         <Item78 Value="ComboProp"/>
+        <Item79 Value="LabelYouCanChange"/>
+        <Item80 Value="ComboSyncTiming"/>
       </ExcludedOriginals>
     </i18n>
     <BuildModes Count="23">
@@ -1348,7 +1350,6 @@
         <IgnoredMessages idx6058="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dTOMBOY_NG"/>
-      <CompilerPath Value="fpc"/>
     </Other>
   </CompilerOptions>
 </CONFIG>

@@ -50,22 +50,25 @@ If you use a <bold>dark theme</bold> with the QT5 version you should also read t
 
 As a general rule, the gtk2 version is your best bet on older operating systems, newer ones, should use the Qt5 or Qt6 ones. The Qt5 and especially the Qt6 may require a few more libraries at install time but they are mostly libraries other apps will want anyway.
 
+<bold>NEW in v0.41</bold>, Linux users running x86_64 hardware can, if they choose, download an AppImage based on [Qt5](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt5.AppImage) or [Qt6](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt6.AppImage). While I am not totally convinced about this sort of packaging, the <bold>AppImage</bold> is open, unobtrusive and requires no further "run time environment". Download the file, mark it executable and run it. Certainly good for a test !
+
 <size:large><bold>Linux Qt5 and Qt6 Libraries</bold></size:large>
 New in 0.37, is the need to install a new, non-standard, libqt5pas or libqt6pas library. If using the Qt5 or Qt6 tomboy-ng of 0.37 or later, you MUST install special libraries until the distros catch up. They are at
 
 https://github.com/davidbannon/libqt5pas/releases 64bit Intel or AMD users want  libqt5pas-2.15-3.x86_64.rpm or  libqt5pas1_2.15-1_amd64.deb
 https://github.com/davidbannon/libqt6pas/releases 64bit Intel or AMD users want libqt6pas6-6.2.7-2.x86_64.rpm or libqt6pas6_6.2.7-1_amd64.deb
 
-Download the appropriate library (for your system and for the type of tomboy-ng you intend to use) and install it before or during the tomboy-ng install.
+At the last check, Ubuntu 24.04, 24.10, Debian Trixie and any Arch based distro do not need these manually loaded libraries. Download the appropriate library (for your system and for the type of tomboy-ng you intend to use) and install it before or during the tomboy-ng install.
 
 
 <size:large><bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
-Ubuntu and derivative users (of 64bit U18.04 and U20.04 to U22.04) can use a PPA to install and update this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/Ubuntu/ppa-tomboy-ng for details. Available a few days after release here. New in version 0.37, the PPA will not be updating the Qt5 versions until the distros have caught up with the new LibQt5Pas library. So, it will be gtk2 only and that works badly with Gnome. Sorry, not anything I can do other than suggest a manual install.
+Sadly, I am finding the effort of maintaining the tomboy-ng PPA just a bit too much. I have not given up yet but it is way out of date right now. Please consider downloading from here.
+<size:small>Ubuntu and derivative users (of 64bit U18.04 and U20.04 to U24.04) can use a PPA to install and update this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/Ubuntu/ppa-tomboy-ng for details. Available a few days after release here. New in version 0.37, the PPA will not be updating the Qt5 versions until the distros have caught up with the new LibQt5Pas library. So, it will be gtk2 only and that works badly with Gnome. Sorry, not anything I can do other than suggest a manual install.</size:small>
 
-For GTK based distributions that use .deb packages (but cannot use the PPA), do yourself a favour, install Gdebi before you start. But it will require a lot of gtk2 libraries you might otherwise not need.
+For GTK based distributions that use .deb packages, do yourself a favour, install Gdebi before you start. But it will require a lot of gtk2 libraries you might otherwise not need.
 
 <size:large><bold>Ubuntu</bold></size:large>
-Ubuntu 24.04 has tomboy-ng v0.39 but v0.40 fixes some bugs and has new features.
+Ubuntu 24.04 has tomboy-ng v0.39 but v0.41 fixes some important bugs and has a few new minor features.
 
 Generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
 <list><list-item dir="ltr"><list><list-item dir="ltr">16.04 and 18.04 (while out of date, we still test with tomboy-ng) Use GTK2 version [32bit]($$DEB32) or [64bit]($$DEB64). Will not work with QT5.</list-item></list></list-item></list>
@@ -81,23 +84,23 @@ On Ubuntu, you can install the appropriate package in one of several way  -
 <list><list-item dir="ltr"><list><list-item dir="ltr">Thirdly, will work on all except U16.04, click on the appropriate link, download and save the file. Use  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -</list-item></list></list-item></list>
 
 Like this -
-<monospace>sudo apt install ./tomboy-ng_0.40-0_amd64.deb [enter]</monospace>
+<monospace>sudo apt install ./tomboy-ng_0.41-0_amd64.deb [enter]</monospace>
 
 <size:large><bold>Linux Mint</bold></size:large>
 Pretty much the same as Ubuntu
 
 <size:large><bold>Fedora</bold></size:large>
-Tested on Fedora 36, 37, 38, 39 and 40beta. Generally, earlier Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. Newer versions should use Qt5 [64bit QT]($$RPM64QT) version or Qt6 [64bit QT]($$RPM64QT6) version. If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.
+Tested on Fedora 38, 39 and 40. Generally, earlier Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. Newer versions should use Qt5 [64bit QT]($$RPM64QT) version or Qt6 [64bit QT]($$RPM64QT6) version. If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.
 
 To install, please click on appropriate link, download and save, then use the yum or dnf command, eg -
 
-<monospace>sudo yum localinstall ./tomboy-ng-0.40-0.x86_64.rpm [enter]</monospace>
+<monospace>sudo yum localinstall ./tomboy-ng-0.41-0.x86_64.rpm [enter]</monospace>
 
 <bold>Fedora's default install is based on Gnome</bold> and  recent Gnome versions block the System Tray icon. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux .  Other flavours of Fedora (eg  <bold>Plasma, Cinnamon, XFce</bold>) all seem happy to display the System Tray Icon.
 
 
 <size:large><bold>Debian</bold></size:large>
-An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository and 0.36c in Bookworm. <bold>Trixie</bold> will have v0.40 shortly and does already have a correct libQt5Pas library. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if using Gnome. Both Bullseye (11) and Bookworm (12) benefit from manually installing the latest release from here, I recommend the gtk2 type for simplicity, debs : [32bit]($$DEB32) or [64bit]($$DEB64) .  Also available is the  Qt5 [64bit QT]($$DEB64QT) version or Qt6 [64bit QT]($$DEB64QT6) type.
+An older version of tomboy-ng, v0.32 is available in the Debian <bold>Bullseye</bold> repository and 0.36c in Bookworm. <bold>Trixie</bold> will have v0.41 shortly and does already have a correct libQt5Pas library. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if using Gnome. Both Bullseye (11) and Bookworm (12) benefit from manually installing the latest release from here, I recommend the gtk2 type for simplicity, debs : [32bit]($$DEB32) or [64bit]($$DEB64) .  Also available is the  Qt5 [64bit QT]($$DEB64QT) version or Qt6 [64bit QT]($$DEB64QT6) type.
 
 I recommend downloading the file and using the apt command (note the full path to the filename, you must explicitly state the location of the file, else apt will look in its own repositories).
 
@@ -156,14 +159,14 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2024-06-20T13:03:04.3409342+10:00</last-change-date>
-  <last-metadata-change-date>2024-06-20T13:03:04.3409342+10:00</last-metadata-change-date>
+  <last-change-date>2024-10-29T21:55:11.6947554+11:00</last-change-date>
+  <last-metadata-change-date>2024-10-29T21:55:11.6947554+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>1012</width>
+  <width>1347</width>
   <height>800</height>
-  <x>123</x>
-  <y>224</y>
+  <x>329</x>
+  <y>105</y>
   <open-on-startup>False</open-on-startup>
 </note>
