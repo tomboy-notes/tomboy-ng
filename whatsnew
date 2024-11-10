@@ -5,4 +5,5 @@ Warn Gnome and Qt6 users of Systray Issues.
 AppImage, Linux
 Remove dependency on wmctrl, Linux.
 Add multiselect and right click menu to Search Right Click, inc 2 later fixes.
-A fix for bug where several notes being saved at Quit App.
+A fix for bug triggered when several notes are needing a save at quit time.
+A fix for Debian reproducibly issue.

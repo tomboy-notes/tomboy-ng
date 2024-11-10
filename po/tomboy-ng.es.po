@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.41\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-10-26 22:14+0200\n"
+"PO-Revision-Date: 2024-11-04 13:11+0100\n"
 "Last-Translator: Roy W. Reese <waterbearer54@gmx.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -1036,7 +1036,7 @@ msgstr "Líneas únicas, todas Enormes, Grandes-Negritas o Grandes"
 
 #: tformkmemo2pdf.bitbtnhelp.hint
 msgid "Will open your Web Browser"
-msgstr "Se abrirá en su navegador."
+msgstr "Se abrirá en el navegador."
 
 #: tformkmemo2pdf.caption
 msgid "tomboy-ng PDF setup"
@@ -1063,10 +1063,8 @@ msgid "Monospaced"
 msgstr "Monoespaciada"
 
 #: tformkmemo2pdf.label3.caption
-#, fuzzy
-#| msgid "Note : settings not saved in this, pre-release."
 msgid "Note : these settings not saved, ask if you like."
-msgstr "Toma nota: ajustes no guardados en esta versión preliminar."
+msgstr "Los ajustes no se guardan Si quiere, pídalo al desarrolador."
 
 # ¿Habla de la fuente?
 #: tformkmemo2pdf.labelmononotfound.caption
@@ -1091,7 +1089,7 @@ msgstr "Pulse Ayuda"
 
 #: tformkmemo2pdf.labelyoucanchange.caption
 msgid "Change fields below to font you want"
-msgstr ""
+msgstr "Cambie abajo a la fuente que desee."
 
 #: tformkmemo2pdf.radioa4.caption
 msgid "A4 Paper"
