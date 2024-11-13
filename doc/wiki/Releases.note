@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
-  <title>tomboy-ng v0.40 Release Page</title>
+  <title>tomboy-ng v0.41 Release Page</title>
   
-<text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.40 Release Page</underline>
+<text xml:space="preserve"><note-content version="0.1"><underline>tomboy-ng v0.41 Release Page</underline>
 
 <size:small>Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
@@ -18,25 +18,29 @@ Downloads and information for specific platforms further down the page.
 
 <size:huge><bold>Release Notes</bold></size:huge>
 
-<list><list-item dir="ltr"><list><list-item dir="ltr">New - File Links, much the same way that you can embed a link to a web site, you can now embed a link to a file or directory on your local computer. Maybe a link to an image or PDF document for example. Syntax is just a URL, eg file://Pictures/myphoto.jpeg - any file your operating system knows how to open. You can press Alt-F or Alt-D to get a dialog to select a File or Directory. Or use the menus.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Support for OpenSSL3.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Improved PDF export.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Linux - Qt5 and Qt6 will require new libQt5Pas or libQt6Pas libraries unless you are using newly released OS such as Debian Trixie or Ubuntu24.04 which have current libQt5Pas (no one seems to have libQt6Pas yet). See below.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Linux Qt5 version now prefers use of libxcb rather than Wayland. This is mainly due to incomplete features in Wayland itself. Its expected that when Wayland complies with its own spec, this constraint can be removed. While the default install ensure this is automatic (using a "desktop" file), if you start tomboy-ng from the command line you MUST add <monospace>-platform xcb</monospace> or use a launcher that observes the desktop file, eg <monospace>gtk-launch tomboy-ng</monospace> .</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Linux Gnome systems, fixes to try and make usable under Wayland despite its missing features.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Linux altered command line switch that attempt to work around deficiencies in Wayland, --allow-leftclick; --useappind=yes|no</list-item></list></list-item></list>
+While this release is mainly a bug fix one, there are somenew features -
 
-<bold>Qt5 and Qt6 users probably MUST install a new libqt5pas1 or libqt6pas6 library, your distro version is almost certainly not suitable yet. Get the new libraries from the links below and install them before or at the same time as you install tomboy-ng</bold>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Search using Title only or full note content (Search Form, Options).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Improved flexibility when making PDF, particularly significant for Chinese text users who can select an appropriate font for their own needs.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Its now possible to open or delete multiple notes and to manage a note's notebook membership from the Search window with a right-click.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">The addition of AppImage packages, Linux only. These self contained packages do not need installation, can be downloaded, set executable and run directly. While larger than a normal install that make no system level changes and may be useful if you just want to evaulate tomboy-ng or use a feature in a one-off situation. Available in Qt5 or Qt6, 64bit linux only.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr"></list-item></list></list-item></list>
+Bug fixes -
+<list><list-item dir="ltr"><list><list-item dir="ltr">A bug that could cause a crash if a note was deleted, within a notebook, if no content had been added.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">If tomboy-ng was closed immediatly after new content was added to a note, it could have been lost.</list-item></list></list-item></list>
+
+
+<bold>Qt5 and Qt6 users may need to install a new libqt5pas1 or libqt6pas6 library, your distro version may be out of date unless you are using Fedora 41, Ubuntu 24.04, 24.10, any Arch system or Debian Trixie. Other Linux systems should get the new libraries from the links below and install them before or at the same time as you install tomboy-ng. (New libraries are not needed if you choose the GTK2 version.)</bold>
 
 https://github.com/davidbannon/libqt5pas/releases
 https://github.com/davidbannon/libqt6pas/releases
 
 <size:huge><bold>Installation</bold></size:huge>
 
-tomboy-ng is available for Linux, Mac and Windows. For Debian derivatives (Ubuntu, Mint, Neon etc), tomboy-ng is available from the normal repositories (note, v0.35 and later will be Qt5 based). However, usually newer releases are available here.  Others, please see your operating system below -
+tomboy-ng is available for Linux, Mac and Windows. Some Linux Distributions have tomboy-ng in its repositories but newer releases are usually available here.
 
 <size:large><bold>Windows</bold></size:large>
-Tested on 32bit Windows Vista and 64bit Windows 11.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes. Depending on your build of Win11, you may need to go through a process of clicking the More Info link and Run Anyway, possibly through several stages.
+Tested on 32bit Windows Vista and 64bit Windows 10 and 11.  Windows users should download the Windows Installer, $$EXE, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes. Depending on your build of Win11, you may need to go through a process of clicking the More Info link and Run Anyway, possibly through several stages.
 
 <size:large><bold>MacOS</bold></size:large>
 Tested and built on an Intel based Mac Monterey but Apple Silicon (aka aarch64) is now also directly supported. Use ($$DMG64). Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. Because I don't pay a fee to Apple, first time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open".
@@ -53,12 +57,12 @@ As a general rule, the gtk2 version is your best bet on older operating systems,
 <bold>NEW in v0.41</bold>, Linux users running x86_64 hardware can, if they choose, download an AppImage based on [Qt5](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt5.AppImage) or [Qt6](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt6.AppImage). While I am not totally convinced about this sort of packaging, the <bold>AppImage</bold> is open, unobtrusive and requires no further "run time environment". Download the file, mark it executable and run it. Certainly good for a test !
 
 <size:large><bold>Linux Qt5 and Qt6 Libraries</bold></size:large>
-New in 0.37, is the need to install a new, non-standard, libqt5pas or libqt6pas library. If using the Qt5 or Qt6 tomboy-ng of 0.37 or later, you MUST install special libraries until the distros catch up. They are at
+New in 0.37, is the need to install a new, non-standard, libqt5pas or libqt6pas library. If using the Qt5 or Qt6 tomboy-ng of 0.37 or later, you MUST install special libraries unless your distro has caught up. At the last check, Fedora 41, Ubuntu 24.04, 24.10, Debian Trixie and any Arch based distro do not need these manually loaded libraries. They are at
 
 https://github.com/davidbannon/libqt5pas/releases 64bit Intel or AMD users want  libqt5pas-2.15-3.x86_64.rpm or  libqt5pas1_2.15-1_amd64.deb
 https://github.com/davidbannon/libqt6pas/releases 64bit Intel or AMD users want libqt6pas6-6.2.7-2.x86_64.rpm or libqt6pas6_6.2.7-1_amd64.deb
 
-At the last check, Ubuntu 24.04, 24.10, Debian Trixie and any Arch based distro do not need these manually loaded libraries. Download the appropriate library (for your system and for the type of tomboy-ng you intend to use) and install it before or during the tomboy-ng install.
+Download the appropriate library (for your system and for the type of tomboy-ng you intend to use) and install it before or during the tomboy-ng install.
 
 
 <size:large><bold>PPA using distros, Ubuntu, Linux Mint etc</bold></size:large>
@@ -90,7 +94,7 @@ Like this -
 Pretty much the same as Ubuntu
 
 <size:large><bold>Fedora</bold></size:large>
-Tested on Fedora 38, 39 and 40. Generally, earlier Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. Newer versions should use Qt5 [64bit QT]($$RPM64QT) version or Qt6 [64bit QT]($$RPM64QT6) version. If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.
+Tested on Fedora 38, 39, 40 and 41. Generally, earlier Fedora the [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64) version is recommended. Newer versions should use Qt5 [64bit QT]($$RPM64QT) version or Qt6 [64bit QT]($$RPM64QT6) version. If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.
 
 To install, please click on appropriate link, download and save, then use the yum or dnf command, eg -
 
@@ -111,13 +115,13 @@ If you wish to sync to a SMB: network share, open that connection before configu
 
 
 <size:large><bold>Arch and Manjaro</bold></size:large>
-And other Linux Distributions that use the Arch, Pacman package system. This is new and therefore relatively untested but does look OK. I have made only a [GTK 64bit]($$PAC64) version at this stage, could make other combinations if needed. Click the link, choose download and install with this command from ~/Downloads -
+And other Linux Distributions that use the Arch, Pacman package system. I have made only a [GTK 64bit]($$PAC64) version at this stage, could make other combinations if needed. Click the link, choose download and install with this command from ~/Downloads -
 
-sudo pacman -U ./tomboy-ng-0.40-1-x86_64.pkg.tar.zst
+sudo pacman -U ./tomboy-ng-0.41-1-x86_64.pkg.tar.zst
 
 
 <size:large><bold>OpenSuse</bold></size:large>
-Generally use the  [Qt5 64bit]($$RPM64QT) version or  [Qt6 64bit]($$RPM64QT6) and look at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if you are using Gnome . Other Desktops should be OK with [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64). Almost all the necessary libraries seem to be pre installed in either case. If using <bold>Qt5 or Qt6</bold>, see the "Linux Qt5 and Qt6 Libraries" section above.
+Generally use the  [Qt5 64bit]($$RPM64QT) version or  [Qt6 64bit]($$RPM64QT6) and look at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if you are using Gnome. Other Desktops should be OK with [GTK2 32bit]($$RPM32) or [GTK2 64bit]($$RPM64). Almost all the necessary libraries seem to be pre installed in either case. If using <bold>Qt5 or Qt6</bold>, see the "Linux Qt5 and Qt6 Libraries" section above.
 
 Suse is quite pushy about signing rpm packages, more work for me and it means you need to import the <bold>PGP signature</bold> I have used. So, please download [tomboy-ng-GPG-KEY]($$GPGKEY) (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
 
@@ -159,8 +163,8 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2024-10-29T21:55:11.6947554+11:00</last-change-date>
-  <last-metadata-change-date>2024-10-29T21:55:11.6947554+11:00</last-metadata-change-date>
+  <last-change-date>2024-11-13T20:32:34.5225860+11:00</last-change-date>
+  <last-metadata-change-date>2024-11-13T20:32:34.5225860+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

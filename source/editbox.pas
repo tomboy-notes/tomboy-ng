@@ -614,7 +614,7 @@ type
 
     public
         SingleNoteFileName : string;    // Set by the calling process. FFN inc path, carefull, cli has a real global version
-        SingleNoteMode : Boolean;
+        SingleNoteMode : Boolean;       // Set true if a MainUnit.SingleNoteFileName is provided, in Create()
         NoteFileName : string;          // Will contain the full note name, path, ID and .note
         NoteTitle : string;             // only used during initial opening stage ?
         Dirty : boolean;
@@ -2345,9 +2345,11 @@ begin
     {$endif}
     Kmemo1.Clear;      // Note clear and setcolors() will be called again in importNote() but quick ...
     SetTheColors();
-    if SingleNoteMode then
-        ItsANewNote := LoadSingleNote()     // Might not be Tomboy XML format
-    else
+    if SingleNoteMode then begin
+        ItsANewNote := LoadSingleNote();     // Might not be Tomboy XML format
+        if ItsANewNote then
+           NoteTitle := ExtractFileNameOnly(NoteFileName);  // remove path and extension
+    end else
         if NoteFileName = '' then begin		    // might be a new note or a new note from Link
             if NoteTitle = '' then              // New Note
 			    NoteTitle := NewNoteTitle();
@@ -2413,7 +2415,9 @@ begin
                 SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
 //    debugln('TEditBoxForm.FormDestroy marking Nil ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
     SearchForm.NoteClosing(NoteFileName);
-    Application.ProcessMessages;
+    // In single note mode, form is modal, don't call Application.ProcessMessage at this stage
+    if not SingleNoteMode then
+        Application.ProcessMessages;
 //    debugln('TEditBoxForm.FormDestroy finished ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
 end;
 
