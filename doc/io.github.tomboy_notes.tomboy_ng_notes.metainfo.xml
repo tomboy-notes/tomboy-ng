@@ -6,7 +6,7 @@
   <summary>Cross Platform Notes app with a range of markup, group notes into notebooks, search, embed links to other notes, http or any file or directory</summary>
   
   <metadata_license>MIT</metadata_license>
-  <project_license>MIT</project_license>
+  <project_license>MIT OR BSD-3-Clause-Clear OR LGPL-3.0+ OR GPL-2.0-only</project_license>
   
   <description>
     <p>
@@ -20,7 +20,7 @@
   <launchable type="desktop-id">tomboy-ng.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboy-ng_screens.png</image>
+      <image>https://github.com/tomboy-notes/tomboy-ng/blob/master/doc/gallery/tomboy-ng_screens.png?raw=true</image>
     </screenshot>
   </screenshots>
 </component>
