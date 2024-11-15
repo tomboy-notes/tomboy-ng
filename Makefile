@@ -14,6 +14,7 @@ PROGRAM_NAME=tomboy-ng
 MAN_DIR = $(PREFIX)/share/man/man1
 SHARE_DIR = $(PREFIX)/share
 DOC_DIR = $(SHARE_DIR)/$(PROGRAM_NAME)
+METAINFOFILE=io.github.tomboy_notes.tomboy_ng_notes.metainfo.xml
 # ---- Help Notes, it just replicates existing dir/note structure.
 HELP_DIR = $(DOC_DIR)/HELP
 RM      = rm -f
@@ -56,6 +57,7 @@ install: installdirs
 	$(INSTALL_DATA)		doc/tomboy-ng.1 	$(DESTDIR)$(MAN_DIR)/$(PROGRAM_NAME).1
 	$(CP)			doc/HELP		$(DESTDIR)$(HELP_DIR)/
 	$(CP)			doc/overrides		$(DESTDIR)$(SHARE_DIR)/lintian/overrides/tomboy-ng
+	$(CP)           doc/$(METAINFOFILE) $(PREFIX)$(SHARE_DIR)/metainfo/$(METAINFOFILE)
 	$(CP)			glyphs/icons		$(DESTDIR)$(SHARE_DIR)/
 	$(INSTALL_DATA)	glyphs/tomboy-ng.desktop	$(DESTDIR)$(SHARE_DIR)/applications/tomboy-ng.desktop
 	$(foreach LANG, $(LANGUAGES), $(CPLANG);)
@@ -63,6 +65,7 @@ install: installdirs
 
 installdirs:
 	test -d $(PREFIX) || $(MKDIR) $(PREFIX)
+	test -d $(PREFIX)$(SHARE_DIR)/metainfo || $(MKDIR) $(PREFIX)$(SHARE_DIR)/metainfo
 	test -d $(DESTDIR)$(BIN_DIR) || $(MKDIR) $(DESTDIR)$(BIN_DIR)
 	test -d $(DESTDIR)$(MAN_DIR) || $(MKDIR) $(DESTDIR)$(MAN_DIR)
 	test -d $(DESTDIR)$(DOC_DIR) || $(MKDIR) $(DESTDIR)$(DOC_DIR)

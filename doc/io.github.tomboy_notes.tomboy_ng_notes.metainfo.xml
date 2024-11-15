@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.tomboy_notes.tomboy_ng_notes</id>
+  
+  <name>tomboy-ng Notes</name>
+  <summary>Cross Platform Notes app with a range of markup, group notes into notebooks, search, embed links to other notes, http or any file or directory</summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  
+  <description>
+    <p>
+      A note taking app that works and synchronizes between Linux, Windows and MacOS. It will also Sync to a private Github repository allowing access to any device with a browser. It features a rich text markup, printing, spell check, backup and snapshot capability. Undo and Redo. Import and export (plain text, RFT, MarkDown). It has Tomboy&apos;s automatic linking between notes, searching abilities, NoteBooks and a similar interface. Change a note&apos;s title by just editing the title in the edit window.
+    </p>
+    <p>
+      Importantly, tomboy-ng has no awkward dependencies and so is an easy and lightweight install. Linux users can choose GTK2, Qt5 or Qt6 versions and install from deb, rpm or pacman packages, including some 32bit combinations. AppImage packages are also available. A single Windows installer will provide a 32bit or 64bit application. A single MacOS installer will provide a Intel or ARM (aarch64) application.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">tomboy-ng.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/xypd/tomboy-ng/blob/master/doc/gallery/tomboy-ng_screens.png</image>
+    </screenshot>
+  </screenshots>
+</component>
