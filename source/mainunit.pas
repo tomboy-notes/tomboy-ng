@@ -169,7 +169,7 @@ type
 		procedure BitBtnHideClick(Sender: TObject);
         procedure BitBtnQuitClick(Sender: TObject);
         procedure ButtMenuClick(Sender: TObject);
-        procedure ButtonCloseClick(Sender: TObject);
+//        procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
 		procedure ButtSysTrayHelpClick(Sender: TObject);
@@ -367,13 +367,14 @@ var
     {$endif}
     QuitDelay : integer = 0;
 begin
-    Application.ProcessMessages;                   // seems necessary to ensure we count all closed notes.
+    Application.ProcessMessages;                  // seems necessary to ensure we count all closed notes.
     {$ifdef LCLGTK2}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
     t := Clipboard.AsText;
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
     {$endif}
+
     while NotesSavedAtClose > 0 do begin          // Wait while any pending note saves happen
         sleep(20);                                // In practise, should never happen ??
         inc(QuitDelay);
@@ -796,11 +797,6 @@ end;
 procedure TMainForm.ButtonConfigClick(Sender: TObject);
 begin
     Sett.Show();
-end;
-
-procedure TMainForm.ButtonCloseClick(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm.ButtMenuClick(Sender: TObject);

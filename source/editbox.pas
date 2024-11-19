@@ -348,7 +348,7 @@ type
         MenuUnderline: TMenuItem;
         MenuStrikeout: TMenuItem;
         OpenDialogFileLink: TOpenDialog;
-        Panel1: TPanel;
+        PanelButtons: TPanel;
         PanelBackLinks: TPanel;
         PanelFind: TPanel;
         PanelReadOnly: TPanel;
@@ -520,6 +520,8 @@ type
         procedure MakeAllLinks(const Buff: string; const Term: ANSIString; const BlockOffset: integer);
         function ParagraphTextTrunc(): string;
         procedure PopulateSymbolMenu(AMenu: TPopupMenu);
+        procedure QuestionToken(MDContent : TStringList; NoteFName,
+            NoteSaveName : string);
         function RelativePos(const Term: ANSIString; const MText: PChar; StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
         function RestoreLimitedAttributes(const BlockNo: TKMemoBlockIndex; var FontAtt: FontLimitedAttrib): boolean;
@@ -2038,6 +2040,77 @@ begin
     Clipboard.AsText := KMemo1.Blocks.SelText;
 end;
 
+    // Called if MDContent appears to have one of more possible tokens.
+    // Looks to see if it can find a <title>.tokens file, if so, askes user
+    // if they want to use it. If yes, does subsitutions.      -- no questioned asked at present !
+    // We look for the token file in three places -
+    // 1. Where SingleNote mode file is located. FileName.tokens
+    // 2. In note repo, ID.tokens
+    // 3. Where destination (ie output) file will be, <note_title>.tokens (with spaces converted to underscore)
+
+procedure TEditBoxForm.QuestionToken(MDContent : TStringList; NoteFName, NoteSaveName : string);
+var
+    Tokens : TStringList;
+    TokensFName, AToken, NewText, St, AName : string;
+    MDIndex : integer = 0;
+    TokIndex : integer = 0;
+
+    function DoTokens() : boolean;   // resolve any tokens in passed string
+    // Looks at content in St, if necessary, changes it returning True.
+    begin
+        Result := false;
+        TokIndex := 0;
+        while FindToken(St, TokIndex, AToken) do begin
+//           WRITELN('DoToken found possible token : ' + AToken);
+           NewText := Tokens.Values[AToken];
+           if NewText = '' then begin
+               debugln('Note : TEditBoxForm.QuestionToken did not match token : ' + AToken);
+           end else  begin
+//               WRITELN('TEditBoxForm.QuestionToken replacing ', AToken, ' with ', NewText);
+               St := St.Replace(AToken, NewText, []);
+               Result := True;
+//               debugln('Now looks like ' + St);
+           end;
+        end;
+    end;
+
+begin
+//    TokensFName := CleanCaption() + '.tokens';
+    TokensFName := ChangeFileExt(NoteFName, '.tokens');  // that should cover single note mode
+    if not FileExists(TokensFName) then begin
+        debugln('Note : TEditBoxForm.QuestionToken did not find token file : ', TokensFName);
+        TokensFName := ExtractFilePath(NoteSaveName) + TB_MakeFileName(CleanCaption()) + '.tokens';
+        if not FileExists(TokensFName) then begin
+            debugln('Note : TEditBoxForm.QuestionToken did not find token file : ', TokensFName);
+            exit;
+        end;
+    end;
+    debugln('Note : TEditBoxForm.QuestionToken is using token file : ', TokensFName);
+    // if to here, TokensFName has name of real file.
+    Tokens := TStringList.Create;
+    try
+        Tokens.LoadFromFile(TokensFName);
+        while MDIndex < Tokens.Count do begin       // Resolved nested Tokens
+            AName := Tokens.Names[MDIndex];
+            if AName <> '' then begin
+                St := Tokens.Values[AName];
+                if DoTokens() then
+                    Tokens.Values[AName] := St;;
+            end;
+            inc(MDIndex);
+        end;
+        MDIndex := 0;
+        while MDIndex < MDContent.Count do begin
+            St := MDContent[MDIndex];
+            if DoTokens() then
+                MDContent[MDIndex] := St;
+             inc(MDIndex);
+        end;
+    finally
+        Tokens.Free;
+    end;
+end;
+
 procedure TEditBoxForm.SaveNoteAs(TheExt : string);
 var
     SaveExport : TSaveDialog;
@@ -2083,9 +2156,11 @@ begin
                             if SingleNoteMode then
                                 FName := NoteFileName
                             else FName := ExtractFileNameOnly(NoteFileName);
-                            if ExpComm.GetMDcontent( FName, MDContent) then
+                            if ExpComm.GetMDcontent( FName, MDContent) then begin
+                                if ExpComm.HasToken then
+                                    QuestionToken(MDContent, FName, SaveExport.FileName);
                                 MDContent.SaveToFile(SaveExport.FileName)
-                            else showmessage('Failed to convert to MarkDown ' + ExpComm.ErrorMsg);
+                            end else showmessage('Failed to convert to MarkDown ' + ExpComm.ErrorMsg);
                         finally
                             ExpComm.Free;
                             MDContent.Free;
@@ -2311,12 +2386,12 @@ begin
    {$endif}
    if Sett.DarkThemeSwitch then begin
        PanelFind.Color := Sett.AltColour;
-       Panel1.Color := Sett.AltColour;
+       PanelButtons.Color := Sett.AltColour;
    end;
    KMemo1.Colors.SelTextFocused := Sett.TextColour;
    KMemo1.Colors.SelText := Sett.TextColour;               // when looses focus
    KMemo1.Colors.BkGnd:= Sett.BackGndColour;
-   KMemo1.Colors.SelBkGnd := Sett.AltBackGndColor;         // Selected backgnd when looses focus
+   KMemo1.Colors.SelBkGnd := Sett.AltBackGndColor;         // Selected backgnd when loses focus
    KMemo1.Colors.SelBkGndFocused := Sett.AltBackGndColor;  // Selected backgnd with focus
    Kmemo1.Blocks.DefaultTextStyle.Font.Color  := Sett.TextColour;
    Kmemo1.Blocks.DefaultTextStyle.Brush.Color := Sett.BackGndColour;

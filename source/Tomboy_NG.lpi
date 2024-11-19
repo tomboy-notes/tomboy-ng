@@ -1073,7 +1073,7 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="Releases.note"/>
+        <CommandLineParams Value="/home/dbannon/Pascal/tomboy-ng/doc/wiki/Download_Release.note"/>
       </local>
       <environment>
         <UserOverrides Count="2">
@@ -1085,7 +1085,7 @@
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="Releases.note"/>
+            <CommandLineParams Value="/home/dbannon/Pascal/tomboy-ng/doc/wiki/Download_Release.note"/>
           </local>
           <environment>
             <UserOverrides Count="2">

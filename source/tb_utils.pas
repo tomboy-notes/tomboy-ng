@@ -130,6 +130,8 @@ function TB_GetDefaultConfigDir : string;
 // Using them requires that we 'use' kmemo here. If not use'd, will still compile.
 // Each one MUST resolve to a different value in KMemo, do not overload.
 
+function FindToken(const St : string; var Where : integer; out Tok : string ) : boolean;
+
 {$if declared(pnuCircleBullets)}      // Defined in KMemo in later versions (mid to late 2021)
 const
   BulletOne   = pnuTriangleBullets;
@@ -176,6 +178,71 @@ begin
 {$endif}
 end;
 {$endif}    *)
+
+  // A token is a piece of text sourounded by $$..$$ that contains ONLY upper case Latin
+  // characters or numerals. No spaces, puncation marks, no UTF8, no newlines.
+function FindToken(const St : string; var Where : integer; out Tok : string ) : boolean;
+var
+      Len : integer = 3;
+      StartAt : integer;
+begin
+    result := false;
+    while ((Where+6) < length(St)) do begin  // drop through (false) of find a token (true)
+        Len := 3;
+        Where := St.IndexOf('$$', Where);
+        if Where = -1 then begin             // no (more) tokens to find in this line
+            Where := 0;
+            exit(false);
+        end else begin                       // is it a token then ?
+            while (Where+Len <= length(St)) and (St[Len+Where] in ['A'..'Z', '0'..'9']) do    // all we allow in a token
+                inc(Len);
+            if (Where+Len+1 <= length(St))
+            and (St[Where+Len] = '$')
+            and (St[Where+Len+1] = '$') then begin
+                inc(Len);                             // skip over second trailing $
+                if Len > 7 then begin                 // $$ plus minimum 4 char plus $$, that is a hit.
+                    Tok := copy(St, Where+1, Len);    // copy is one based
+                    inc(Where, 3);                    // ready to continue searching
+                    exit(true);
+                end else // else we do it again iff there is more string to search
+                    inc(Where);
+            end;
+        end;           // we may have found a $$ but failed one of the tests, keep checking
+        inc(Where);
+    end;
+end;
+
+
+
+(* function FindToken(const St : string; var Where : integer; out Tok : string ) : boolean;
+var
+      Len : integer = 3;
+      StartAt : integer;
+begin
+      result := false;
+      while ((Where+6) < length(St)) do begin  // drop through (false) of find a token (true)
+          Len := 3;
+          Where := St.IndexOf('$$', Where);
+          if Where = -1 then begin             // no (more) tokens to find in this line
+              Where := 0;
+              exit(false);
+          end else begin
+              if (Where = 0) or (St[Where] in [' ', ',', ';']) then begin
+                  while (Where+Len <= length(St)) and (St[Len+Where] in ['A'..'Z', '0'..'9']) do begin
+                      inc(Len);
+                  end;
+                  dec(Len);                             // because we overrun
+                  if Len > 5 then begin                 // $$ plus minimum 4 char, that is a hit.
+                      Tok := copy(St, Where+1, Len);    // copy is one based
+                      inc(Where, 3);                    // ready to continue searching
+                      exit(true);
+                  end else // else we do it again iff there is more string to search
+                      inc(Where);
+              end;
+          end;           // we may have found a $$ but failed one of the tests, keep checking
+          inc(Where);
+      end;
+end;         *)
 
 { Returns the name of the config directory (with trailing seperator)  }
 function TB_GetDefaultConfigDir : string;

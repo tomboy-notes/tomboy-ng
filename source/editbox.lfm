@@ -347,7 +347,7 @@ object EditBoxForm: TEditBoxForm
       TabOrder = 1
     end
   end
-  object Panel1: TPanel
+  object PanelButtons: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
     AnchorSideRight.Control = Owner
@@ -363,7 +363,7 @@ object EditBoxForm: TEditBoxForm
     object SpeedButtonNotebook: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonDelete
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
       Left = 295
       Height = 38
       Hint = 'Manage Notebooks'
@@ -453,7 +453,7 @@ object EditBoxForm: TEditBoxForm
     object SpeedRollBack: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonNotebook
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
       Left = 333
       Height = 38
       Hint = 'Roll Back'
@@ -543,7 +543,7 @@ object EditBoxForm: TEditBoxForm
     object SpeedButtonDelete: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonTools
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
       Left = 257
       Height = 38
       Hint = 'Delete this note'
@@ -632,7 +632,7 @@ object EditBoxForm: TEditBoxForm
     object SpeedButtonTools: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonText
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
       Left = 219
       Height = 38
       Hint = 'Tools - Sync, Export, Spell'
@@ -721,7 +721,7 @@ object EditBoxForm: TEditBoxForm
     object SpeedButtonText: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonLink
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
       Left = 181
       Height = 38
       Hint = 'Font size, bold, italics etc'
@@ -810,7 +810,7 @@ object EditBoxForm: TEditBoxForm
     object SpeedButtonLink: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonSearch
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
       Left = 143
       Height = 38
       Hint = 'Create new linked note (text selected) or display Backlinks.'
@@ -899,7 +899,7 @@ object EditBoxForm: TEditBoxForm
     object SpeedButtonSearch: TSpeedButton
       AnchorSideLeft.Control = ButtMainTBMenu
       AnchorSideLeft.Side = asrBottom
-      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
       Left = 105
       Height = 38
       Hint = 'Search All Notes Ctrl-Shift-F'
@@ -986,8 +986,8 @@ object EditBoxForm: TEditBoxForm
       ParentShowHint = False
     end
     object ButtMainTBMenu: TSpeedButton
-      AnchorSideLeft.Control = Panel1
-      AnchorSideTop.Control = Panel1
+      AnchorSideLeft.Control = PanelButtons
+      AnchorSideTop.Control = PanelButtons
       AnchorSideBottom.Control = SpeedButtonSearch
       AnchorSideBottom.Side = asrBottom
       Left = 1
@@ -1076,10 +1076,10 @@ object EditBoxForm: TEditBoxForm
       PopupMenu = PopupMainTBMenu
     end
     object SpeedClose: TSpeedButton
-      AnchorSideTop.Control = Panel1
-      AnchorSideRight.Control = Panel1
+      AnchorSideTop.Control = PanelButtons
+      AnchorSideRight.Control = PanelButtons
       AnchorSideRight.Side = asrBottom
-      AnchorSideBottom.Control = Panel1
+      AnchorSideBottom.Control = PanelButtons
       AnchorSideBottom.Side = asrBottom
       Left = 741
       Height = 38
@@ -1185,7 +1185,7 @@ object EditBoxForm: TEditBoxForm
   end
   object KMemo1: TKMemo
     AnchorSideLeft.Control = Owner
-    AnchorSideTop.Control = Panel1
+    AnchorSideTop.Control = PanelButtons
     AnchorSideTop.Side = asrBottom
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom

@@ -1,0 +1,314 @@
+Download_Release
+===========
+
+
+
+**tomboy-ng v0.41 Release Page**
+========
+
+
+<sub>Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</sub>
+
+
+
+**WARNING:** if you used File Sync, previous to v0.34 and have not upgraded since, you must go into Settings->Sync>FileSync and tick the Enable box. Its a new setting and I cannot tell if you have it unticked because its new or because you want it unticked !
+
+
+
+Downloads and information for specific platforms further down the page.
+
+
+
+**Index**
+========
+* [Release Notes](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Release-Notes)
+
+* [Windows Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Windows)
+
+* [MacOS Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#MacOS)
+
+* [Linux Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Linux)
+
+
+
+**Release Notes**
+========
+
+
+While this release is mainly a bug fix one, there are somenew features -
+
+
+
+   * Search using Title only or full note content (Search Form, Options).
+
+   * Improved flexibility when making PDF, particularly significant for Chinese text users who can select an appropriate font for their own needs.
+
+   * Its now possible to open or delete multiple notes and to manage a note's notebook membership from the Search window with a right-click.
+
+   * The addition of AppImage packages, Linux only. These self contained packages do not need installation, can be downloaded, set executable and run directly. While larger than a normal install that make no system level changes and may be useful if you just want to evaulate tomboy-ng or use a feature in a one-off situation. Available in Qt5 or Qt6, 64bit linux only.
+
+Bug fixes -
+
+   * A bug that could cause a crash if a note was deleted, within a notebook, if no content had been added.
+
+   * If tomboy-ng was closed immediatly after new content was added to a note, it could have been lost.
+
+
+
+
+
+**Qt5 and Qt6 users may need to install a new libqt5pas1 or libqt6pas6 library, your distro version may be out of date unless you are using Fedora 41, Ubuntu 24.04, 24.10, any Arch system or Debian Trixie. Other Linux systems should get the new libraries from the links below and install them before or at the same time as you install tomboy-ng. (New libraries are not needed if you choose the GTK2 version.)**
+
+
+
+https://github.com/davidbannon/libqt5pas/releases
+
+https://github.com/davidbannon/libqt6pas/releases
+
+
+
+**Installation**
+========
+
+
+tomboy-ng is available for Linux, Mac and Windows. Some Linux Distributions have tomboy-ng in its repositories but newer releases are usually available here.
+
+
+
+**Windows**
+--------
+Tested on 32bit Windows Vista and 64bit Windows 10 and 11.  Windows users should download the Windows Installer, https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-setup-0.41.exe, it works for both 32 and 64bit installs.  Windows Defender will (quite rightly) tell you it stopped an unrecognised app, warning its risky. Click "More Info" and you will see a "Run Anyway". Now you will be asked if you want to allow an unknown publisher (me!) to change your device. If you do, click yes. Depending on your build of Win11, you may need to go through a process of clicking the More Info link and Run Anyway, possibly through several stages.
+
+
+
+**MacOS**
+--------
+Tested and built on an Intel based Mac Monterey but Apple Silicon (aka aarch64) is now also directly supported. Use (https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng64_0.41.dmg). Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. Because I don't pay a fee to Apple, first time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open".
+
+
+
+This is a "Universal Package", will install on both Intel based and ARM64 based systems.
+
+
+
+**Linux**
+========
+Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 v. Qt6 to cater for, its not easy ! The Qt5 version requires Qt5.12 (preferably Qt5.15) or later and 64bit. The GTK version, needs GTK2, pre installed on most Distros at present.
+
+
+
+If you use a **dark theme** with the QT5 version you should also read the man page (man tomboy-ng <enter>) or  [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme).
+
+
+
+As a general rule, the gtk2 version is your best bet on older operating systems, newer ones, should use the Qt5 or Qt6 ones. The Qt5 and especially the Qt6 may require a few more libraries at install time but they are mostly libraries other apps will want anyway.
+
+
+
+**NEW in v0.41**, Linux users running x86_64 hardware can, if they choose, download an AppImage based on [Qt5](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt5.AppImage) or [Qt6](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt6.AppImage). While I am not totally convinced about this sort of packaging, the **AppImage** is open, unobtrusive and requires no further "run time environment". Download the file, mark it executable and run it. Certainly good for a test !
+
+
+
+**Linux Qt5 and Qt6 Libraries**
+--------
+New in 0.37, is the need to install a new, non-standard, libqt5pas or libqt6pas library. If using the Qt5 or Qt6 tomboy-ng of 0.37 or later, you MUST install special libraries unless your distro has caught up. At the last check, Fedora 41, Ubuntu 24.04, 24.10, Debian Trixie and any Arch based distro do not need these manually loaded libraries. They are at
+
+
+
+https://github.com/davidbannon/libqt5pas/releases 64bit Intel or AMD users want  libqt5pas-2.15-3.x86_64.rpm or  libqt5pas1_2.15-1_amd64.deb
+
+https://github.com/davidbannon/libqt6pas/releases 64bit Intel or AMD users want libqt6pas6-6.2.7-2.x86_64.rpm or libqt6pas6_6.2.7-1_amd64.deb
+
+
+
+Download the appropriate library (for your system and for the type of tomboy-ng you intend to use) and install it before or during the tomboy-ng install.
+
+
+
+
+
+**PPA using distros, Ubuntu, Linux Mint etc**
+--------
+Sadly, I am finding the effort of maintaining the tomboy-ng PPA just a bit too much. I have not given up yet but it is way out of date right now. Please consider downloading from here.
+
+<sub>Ubuntu and derivative users (of 64bit U18.04 and U20.04 to U24.04) can use a PPA to install and update this and subsequent releases of tomboy-ng.  Please see https://launchpad.net/~d-bannon/+archive/Ubuntu/ppa-tomboy-ng for details. Available a few days after release here. New in version 0.37, the PPA will not be updating the Qt5 versions until the distros have caught up with the new LibQt5Pas library. So, it will be gtk2 only and that works badly with Gnome. Sorry, not anything I can do other than suggest a manual install.</sub>
+
+
+
+For GTK based distributions that use .deb packages, do yourself a favour, install Gdebi before you start. But it will require a lot of gtk2 libraries you might otherwise not need.
+
+
+
+**Ubuntu**
+--------
+Ubuntu 24.04 has tomboy-ng v0.39 but v0.41 fixes some important bugs and has a few new minor features.
+
+
+
+Generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
+
+   * 16.04 and 18.04 (while out of date, we still test with tomboy-ng) Use GTK2 version [32bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_i386.deb) or [64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64.deb). Will not work with QT5.
+
+   * 20.04  the GTK2 [64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64.deb) version which needs only a couple of extra things and is probably a better choice than the Qt5  [64bit QT](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64Qt5.deb) version which needs the Qt5 libraries
+
+   * 22.04 and beyond, I suggest the the Qt5 [64bit QT](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64Qt5.deb) version or Qt6 [64bit QT](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64Qt6.deb) version. The GTK2 [64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64.deb) version is probably OK too as long as you are not using Gnome.
+
+   * If using **Qt5 or Qt6**, see the "Linux Qt5 and Qt6 Libraries" section above.
+
+   * 24.04 does have the correct libQt5Pas in its repository (but not libQt6Pas).
+
+
+
+On Ubuntu, you can install the appropriate package in one of several way  -
+
+
+
+   * **Recommended, install gdebi first**.  Its available from your normal repos and is easy and reliable. Then download the appropriate tomboy-ng package, your browser will direct it to Gdebi. Strongly recommended for U16.04.
+
+   * Depending on your version, you may be able to download and get directed to another tool to install, perhaps Software Installer, it probably will not work.
+
+   * Thirdly, will work on all except U16.04, click on the appropriate link, download and save the file. Use  the following apt command (note the './' in front of the filename, you must explicitly state the location of the file, else apt will look in its own repositories). Adjust the deb name for your specific downloaded file -
+
+
+
+Like this -
+
+    sudo apt install ./tomboy-ng_0.41-0_amd64.deb [enter]
+
+
+**Linux Mint**
+--------
+Pretty much the same as Ubuntu
+
+
+
+**Fedora**
+--------
+Tested on Fedora 38, 39, 40 and 41. Generally, earlier Fedora the [GTK2 32bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-0.41-1.i686.rpm) or [GTK2 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-0.41-1.x86_64.rpm) version is recommended. Newer versions should use Qt5 [64bit QT](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ngQt5-0.41-1.x86_64.rpm) version or Qt6 [64bit QT](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ngQt6-0.41-1.x86_64.rpm) version. If using Qt5 or Qt6, see the "Linux Qt5 and Qt6 Libraries" section above.
+
+
+
+To install, please click on appropriate link, download and save, then use the yum or dnf command, eg -
+
+
+
+    sudo yum localinstall ./tomboy-ng-0.41-0.x86_64.rpm [enter]
+
+
+**Fedora's default install is based on Gnome** and  recent Gnome versions block the System Tray icon. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux .  Other flavours of Fedora (eg  **Plasma, Cinnamon, XFce**) all seem happy to display the System Tray Icon.
+
+
+
+
+
+**Debian**
+--------
+An older version of tomboy-ng, v0.32 is available in the Debian **Bullseye** repository and 0.36c in Bookworm. **Trixie** will have v0.41 shortly and does already have a correct libQt5Pas library. Please see https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if using Gnome. Both Bullseye (11) and Bookworm (12) benefit from manually installing the latest release from here, I recommend the gtk2 type for simplicity, debs : [32bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_i386.deb) or [64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64.deb) .  Also available is the  Qt5 [64bit QT](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64Qt5.deb) version or Qt6 [64bit QT](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng_0.41-0_amd64Qt6.deb) type.
+
+
+
+I recommend downloading the file and using the apt command (note the full path to the filename, you must explicitly state the location of the file, else apt will look in its own repositories).
+
+
+
+    cd ~/Downloads
+    sudo apt install ./tomboy-ng_0.41-0_amd64.deb [enter]    -- note the Qt5 version has a slightly different file name.
+
+
+If you wish to sync to a SMB: network share, open that connection before configuring tomboy-ng sync. If you cannot see it in the File Dialog, you probably will need to install gvfs and gvfs-fuse (but bookworm seems to have them preinstalled, good).
+
+
+
+
+
+**Arch and Manjaro**
+--------
+And other Linux Distributions that use the Arch, Pacman package system. I have made only a [GTK 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng-0.40-1-x86_64.pkg.tar.zst) version and, recommended, a [Qt6 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng-0.40-1-Qt6-x86_64.pkg.tar.zst] at this stage, could make other combinations if needed. Click the link, choose download and install with this command from ~/Downloads -
+
+
+
+sudo pacman -U ./tomboy-ng-0.41-1-x86_64.pkg.tar.zst
+
+
+
+
+
+**OpenSuse**
+--------
+Generally use the  [Qt5 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ngQt5-0.41-1.x86_64.rpm) version or  [Qt6 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ngQt6-0.41-1.x86_64.rpm) and look at https://github.com/tomboy-notes/tomboy-ng/wiki/System-Tray-on-Linux if you are using Gnome. Other Desktops should be OK with [GTK2 32bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-0.41-1.i686.rpm) or [GTK2 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-0.41-1.x86_64.rpm). Almost all the necessary libraries seem to be pre installed in either case. If using **Qt5 or Qt6**, see the "Linux Qt5 and Qt6 Libraries" section above.
+
+
+
+Suse is quite pushy about signing rpm packages, more work for me and it means you need to import the **PGP signature** I have used. So, please download [tomboy-ng-GPG-KEY](https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/package/tomboy-ng-GPG-KEY) (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
+
+
+
+    sudo rpm --import tomboy-ng-GPG-KEY [enter]
+
+
+Next, to install tomboy-ng, please click on appropriate link, and if it suggests YaST2: Ruby, allow it to install, it works well.  If you receive an error message, its almost certainly because you have not yet installed the signature file mentioned above. You may prefer to download and use the zypper command -
+
+
+
+    sudo zypper install ~/Downloads/tomboy-ngQt-0.41-1-x86_64.rpm [enter]
+
+
+**Mageia**
+--------
+Mageia warns you if you try to install a package who's signature it does not recognise. You can tell it not to worry and install anyway or, to put its mind at rest, download [tomboy-ng-GPGKEY](https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/package/tomboy-ng-GPG-KEY)  (you may need to right click and choose "Save Link as") and run this command in the directory you downloaded to, note this is only necessary once -
+
+
+
+    sudo rpm --import tomboy-ng-GPG-KEY [enter]
+
+
+Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-0.41-1.i686.rpm) , [GTK2 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-0.41-1.x86_64.rpm) ,  [Qt5 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ngQt5-0.41-1.x86_64.rpm) or  [Qt6 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ngQt6-0.41-1.x86_64.rpm) and allow Software Installer to install it for you but I found it occasionally generated an error that you don't get to see ! Try it by all means but if you don't find your tomboy-ng installed or upgraded, then revert to old fashioned way, download the file, save it, and use a command a bit like this -
+
+
+
+    sudo -c "yum localinstall ./tomboy-ng-0.41-1.x86_64.rpm" [enter]
+
+
+   * **Mate, XFCE, KDE (ie Plasma) and Cinnamon** work fine.
+
+   * **Mageia with Enlightenment**  is probably better with the gtk2 or Qt5 version.
+
+   * **Mageia Gnome,** its likely that the comments relating to Fedora Gnome above apply but have not been tested.
+
+
+
+To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.  Using the **Qt5 version on Mageia** is possible if you replace its very dated version of lib64qt6pas1 with the appropriate one from https://github.com/davidbannon/libqt5pas/releases.
+
+
+
+**Raspberry PI**
+--------
+Users of the official Raspberry Pi OS (previously know as Raspbian) can now download a deb and install it using the apt commands mentioned above.
+
+
+
+If your Operating System is 32bit download [Qt5 32bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng_0.41-0_armhf.deb)
+
+If your Operating System is a 64bit download [gtk2 64bit](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng_0.41-0_arm64.deb)
+
+
+
+I have not made Raspberry Pi rpms, seems few users.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

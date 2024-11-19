@@ -69,7 +69,10 @@ TExportCommon = class
         DebugMode : boolean;
         ErrorMsg : string;
         NotesDir : string;       // dir were we expect to find our TB notes
-
+        // A token is $$STRING where STRING is one of more latin uppercase letters, numbers
+        // or tokens. eg $$MYTOKEN, $$ATOKEN$$MYTOKEN, $$BLAR27
+        // Minium of 4 char and surrounded by newline, space, comma (but NOT lower case)
+        HasToken : boolean;
                         // Takes a note ID (no extension) or a FFN inc path and .note
                         // and fills out the passed StringList that must have been created)
                         // with a commonmark version of the note.
@@ -86,11 +89,14 @@ uses LazFileUtils{$ifdef LCL}, lazlogger {$endif}, laz2_DOM, laz2_XMLRead, noten
 function TExportCommon.GetMDcontent(ID : string; STL : TStringList): boolean;
 var
     Normaliser : TNoteNormaliser;
+    Single : boolean = false;
 begin
-        if FileExists(ID) then
-                StL.LoadFromFile(ID)
+        if FileExists(ID) then begin          // eg, single note mode
+                StL.LoadFromFile(ID);
+                Single := True;
+        end
         else
-            if FileExists(NotesDir + ID + '.note') then
+            if FileExists(NotesDir + ID + '.note') then      // eg in notes repo
                    StL.LoadFromFile(NotesDir + ID + '.note')
             else exit(False);
         //  OK, now first line contains the title but some lines may have tags wrong side of \n, so Normalise
@@ -98,7 +104,10 @@ begin
         Normaliser.NormaliseList(StL);
         Normaliser.Free;
         StL.Delete(0);
-        STL.Insert(0, GetTitleFromFFN(NotesDir + ID + '.note', False));
+        if Single then
+             STL.Insert(0, GetTitleFromFFN(ID, False))
+        else
+             STL.Insert(0, GetTitleFromFFN(NotesDir + ID + '.note', False));
         RemoveNoteMetaData(STL);
         if StL.Count = 0 then begin
             ErrorMsg := 'ERROR : invalid note content [' + GetTitleFromFFN(NotesDir + ID + '.note', False) + '] : ' + NotesDir + ID + '.note';
@@ -323,11 +332,15 @@ begin
     end
 end;
 
+
+
 procedure TExportCommon.ProcessMarkUp(StL : TStringList);
 var
     StIndex : integer;
     TempSt: string;
     DeleteNext : boolean = false;       // no blank lines following Monospace
+    Token : string;  // found token, not used in this method
+    Where : integer; // index to a found token, not used in this method
 begin
     StIndex := -1;
     while StIndex < StL.Count -1 do begin
@@ -340,6 +353,18 @@ begin
         end;
         if (length(StL.Strings[StIndex]) < 2) then continue;     // no room for a tag in there.
         TempSt := StL.Strings[StIndex];
+
+        Where := 0;
+        if not HasToken then         // we only want to know if there is one or more in the doc.
+            if FindToken(TempSt, Where, Token) then begin
+                HasToken := True;
+                // debugln('Document has at least one token');
+            end;
+
+{        while FindToken(TempSt, Where, Token) do begin
+            writeln('Line contains token [' + token + ']');
+        end;  }
+
         DeleteNext := ConvertMono(TempSt);
         TempSt := TempSt.Replace('<bold>', '**', [rfReplaceAll]);
         TempSt := TempSt.Replace('</bold>', '**', [rfReplaceAll]);

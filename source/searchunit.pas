@@ -955,6 +955,11 @@ begin
                         else showMessage(rsCannotFindNote + TMenuItem(Sender).Caption);
                     end;
         mtQuit :      MainForm.close;
+        // WARNING: TMenuItem.Destroy with LCLRefCount>0. Hint: Maybe the component is processing an event?
+        // WARNING: TPanel.Destroy with LCLRefCount>0. Hint: Maybe the component is processing an event?
+        // ToDo : on gtk2, a Quit call from an edit box generates a Warning about the
+        // panel and TMenuItem (that the user just used) still having a refcount.
+        // maybe use a timer to allow the events to finish and the timer triggers the close ?
     end;
 end;
 

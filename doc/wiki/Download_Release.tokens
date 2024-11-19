@@ -1,0 +1,16 @@
+$$VERSION$$=0.41
+$$WEXE$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng-setup-$$VERSION$$.exe
+$$DMG64$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng64_$$VERSION$$.dmg
+$$DEB32$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng_$$VERSION$$-0_i386.deb
+$$DEB64$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng_$$VERSION$$-0_amd64.deb
+$$DEB64QT$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng_$$VERSION$$-0_amd64Qt5.deb
+$$DEB64QT6$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng_$$VERSION$$-0_amd64Qt6.deb
+$$RPM32$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng-$$VERSION$$-1.i686.rpm
+$$RPM64$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng-$$VERSION$$-1.x86_64.rpm
+$$RPM64QT$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ngQt5-$$VERSION$$-1.x86_64.rpm
+$$RPM64QT6$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ngQt6-$$VERSION$$-1.x86_64.rpm
+$$DEB32ARM$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng_$$VERSION$$-0_armhf.deb
+$$DEB64ARM$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng_$$VERSION$$-0_arm64.deb
+$$PAC64$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng-0.40-1-x86_64.pkg.tar.zst
+$$PAC64QT6$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.40/tomboy-ng-0.40-1-Qt6-x86_64.pkg.tar.zst
+$$GPGKEY$$=https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/package/tomboy-ng-GPG-KEY
