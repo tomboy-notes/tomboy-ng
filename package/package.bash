@@ -91,9 +91,12 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseRasPi64)
             echo "arm64"
         ;;
+        ReleaseRasPi64Qt5)
+            echo "arm64Qt5"
+        ;;
        	ReleaseQt6)
 	    echo "amd64Qt6"
-	;;
+	    ;;
 	ReleaseLin32Qt5)
 	    echo "i386Qt5"
 	;;
@@ -134,6 +137,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
        ReleaseRasPi64)
             echo "$PRODUCT"-arm64
         ;;
+       ReleaseRasPi64Qt5)
+            echo "$PRODUCT"-arm64-qt5
+        ;; 
     esac
 }
 
@@ -176,7 +182,11 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
         ReleaseLin32Qt5)
              BuildAMode "$1"
             exit
-        ;;       
+        ;; 
+        ReleaseRasPi64Qt5)
+            BuildAMode "$1"
+            exit
+        ;;      
    esac
    echo " ============ ERROR unknown build mode as second parameter $1 ============="
    exit
@@ -223,8 +233,9 @@ function DebianTemplate () {        # the common to all versions things
 }
 
 	# gets called with the Lazarus Build Mode name for each one we are packaging ...
+	# not all binaries will have been build here is some errors can be expected
 function DebianPackage () {
-	echo "--------- Packaging $1 ----------"
+	echo "-----Packaging $1 "
     rm -Rf BUILD
     DebianTemplate
     ARCH=$(ModeParamArch "$1")
@@ -252,10 +263,6 @@ function DebianPackage () {
 		;;
 
 	"ReleaseLin32Qt5")
-		# echo "++++++++++ Setting Lin 32 QT5 +++++++++"
-		CTRL_ARCH="i386"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin" # , qt5ct" Nov 2023, remove dep on qt5ct for laz rc2 and later 
-		CTRL_RELEASE="32bit Qt5 release."
 		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
 	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
@@ -277,6 +284,11 @@ function DebianPackage () {
 		;;
 	"ReleaseRasPi64")
 		CTRL_RELEASE="Raspberry Pi 64bit release."
+		;;
+	"ReleaseRasPi64Qt5")
+		CTRL_ARCH="amd64"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin"
+		CTRL_RELEASE="aarch64 Qt5 release."	    
 		;;
     esac
 	chmod 755 BUILD/usr/bin/tomboy-ng
@@ -315,9 +327,10 @@ function DebianPackage () {
 	echo " Please report your experiences." >> BUILD/DEBIAN/control
 	
 	chmod -R g-w BUILD
+
   	fakeroot dpkg-deb -b BUILD/. "$PRODUCT""_$VERSION-0_"$ARCH".deb"
   	
-  	echo " ---------- finished packaging " "$PRODUCT""_$VERSION-0_"$ARCH".deb"
+  	echo " ----- finished packaging " "$PRODUCT""_$VERSION-0_"$ARCH".deb"
   	
 	# --------------------------------- Clean up -----------
 #	rm -Rf BUILD
@@ -441,6 +454,7 @@ if [ "$2" != "" ]; then
 	JustMakeBinary "$2"       # Does not return.
 fi 
 
+
 for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5 ReleaseQt6; 
 	do BuildAMode $BIN; 
 done
@@ -454,11 +468,12 @@ rm tom*.deb
 
 # Next line assumes some binaries, compiled elsewhere, have been put in the ../source directory
 # tomboy-ng-32-qt5 (ReleaseLin32Qt5)
-# tomboy-ng-qt6    (ReleaseQt6)
 # tomboy-ng-arm64  (ReleaseRasPi64)
+# tomboy-ng-arm64-qt5 (ReleaseRasPi64Qt5)
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseLin32Qt5; # Always package ReleaseLin64 first to update changelog once
-	do DebianPackage $BIN ; 
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5; # Always package ReleaseLin64 first to update changelog once
+	do 
+		DebianPackage $BIN ; 
 done
 
 rm tom*.tgz
