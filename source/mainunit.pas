@@ -375,6 +375,8 @@ begin
     gtk_clipboard_store(c);
     {$endif}
 
+//  Abandon this model, now save open notes sequentially, something unstable in thread at app close !
+//  ToDo : consider removing this and associated code. Unnecessarily complicated now we save sequentially at app close
     while NotesSavedAtClose > 0 do begin          // Wait while any pending note saves happen
         sleep(20);                                // In practise, should never happen ??
         inc(QuitDelay);

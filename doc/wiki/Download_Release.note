@@ -8,8 +8,6 @@
 
 <size:small>Don't edit this file, its generated from Releases.note in doc dir, converted to md and processed by releasepage tool.</size:small>
 
-<bold>WARNING:</bold> if you used File Sync, previous to v0.34 and have not upgraded since, you must go into Settings-&gt;Sync&gt;FileSync and tick the Enable box. Its a new setting and I cannot tell if you have it unticked because its new or because you want it unticked !
-
 Downloads and information for specific platforms further down the page.
 
 <size:huge><bold>Index</bold></size:huge>
@@ -164,8 +162,8 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2024-11-19T20:46:13.9318517+11:00</last-change-date>
-  <last-metadata-change-date>2024-11-19T20:46:13.9318517+11:00</last-metadata-change-date>
+  <last-change-date>2024-11-19T21:49:07.4098764+11:00</last-change-date>
+  <last-metadata-change-date>2024-11-19T21:49:07.4098764+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

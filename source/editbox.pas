@@ -531,7 +531,8 @@ type
                                 // a thread that normalises the xml in the list, adds footer and saves.
                                 // The thread keeps going after the method returns doing above and then
                                 // free-ing the List.
-        function SaveStringList(const SL: TStringList; Loc: TNoteUpdateRec): boolean;
+        function SaveStringList(const SL : TStringList; Loc : TNoteUpdateRec;
+            WeAreClosing : boolean) : boolean;
         procedure SetTheColors;
         procedure ShowBackLinks();
         function SimpleCalculate(out AStr: string): boolean;
@@ -2043,10 +2044,7 @@ end;
     // Called if MDContent appears to have one of more possible tokens.
     // Looks to see if it can find a <title>.tokens file, if so, askes user
     // if they want to use it. If yes, does subsitutions.      -- no questioned asked at present !
-    // We look for the token file in three places -
-    // 1. Where SingleNote mode file is located. FileName.tokens
-    // 2. In note repo, ID.tokens
-    // 3. Where destination (ie output) file will be, <note_title>.tokens (with spaces converted to underscore)
+    // See function FindToken() for better docs.
 
 procedure TEditBoxForm.QuestionToken(MDContent : TStringList; NoteFName, NoteSaveName : string);
 var
@@ -4456,53 +4454,57 @@ content of string list and then writes it to disk.
 
 {$define SAVETHREAD}
 
-function TEditBoxForm.SaveStringList(const SL: TStringList; Loc : TNoteUpdateRec) : boolean;
+function TEditBoxForm.SaveStringList(const SL: TStringList; Loc : TNoteUpdateRec; WeAreClosing : boolean) : boolean;
 var
-    {$ifdef SAVETHREAD}
+//    {$ifdef SAVETHREAD}
     TheSaveThread : TSaveThread;
-    {$else}
+//    {$else}
     Normaliser : TNoteNormaliser;
     WBufStream : TWriteBufStream;
     FileStream : TFileStream;
-    {$ENDIF}
+//    {$ENDIF}
 begin
     if BusySaving then exit(False);
     BusySaving := True;
     Result := True;
-    {$ifdef SAVETHREAD}
-    TheSaveThread := TSaveThread.Create(true);
-    TheSaveThread.TheLoc := Loc;
-    TheSaveThread.TheSL := Sl;
-    //TheSaveThread.Title := Caption;        // better to use TheForm (as long as its still exists??)
-    TheSaveThread.TheForm := self;
-    TheSaveThread.Start;
-    // It will clean up after itself.
-    {$else}
-    Normaliser := TNoteNormaliser.Create;
-    Normaliser.NormaliseList(SL);
-    Normaliser.Free;
-    SL.Add(Footer(Loc));
-    // TWriteBufStream, TFileStream preferable to BufferedFileStream because of a lighter memory load.
-    FileStream := TFileStream.Create(Loc.FFName, fmCreate);
-    //FileStream := TFileStream.Create('/home/dbannon/savethread.note', fmCreate);
-    WBufStream := TWriteBufStream.Create(FileStream, 4096);             // 4K seems about right on Linux.
-    try
-      try
-          SL.SaveToStream(WBufStream);
-      except on E:Exception do begin
-                              Debugln('ERROR, failed to save note : ' + E.Message);
-                              WBufStream.Free;
-                              FileStream.Free;
-                              SL.Free;
-                          end;
-      end;
-    finally
-      WBufStream.Free;
-      FileStream.Free;
-      SL.Free;
+    // {$ifdef SAVETHREAD}
+    if not WeAreClosing then begin
+        TheSaveThread := TSaveThread.Create(true);
+        TheSaveThread.TheLoc := Loc;
+        TheSaveThread.TheSL := Sl;
+        //TheSaveThread.Title := Caption;        // better to use TheForm (as long as its still exists??)
+        TheSaveThread.TheForm := self;
+        TheSaveThread.Start;
+        // It will clean up after itself.
+    end else begin                               // When app is closing, we don't save in a thread, seems unreliable !
+        // {$else}
+        Normaliser := TNoteNormaliser.Create;
+        Normaliser.NormaliseList(SL);
+        Normaliser.Free;
+        SL.Add(Footer(Loc));
+        // TWriteBufStream, TFileStream preferable to BufferedFileStream because of a lighter memory load.
+        FileStream := TFileStream.Create(Loc.FFName, fmCreate);
+        //FileStream := TFileStream.Create('/home/dbannon/savethread.note', fmCreate);
+        WBufStream := TWriteBufStream.Create(FileStream, 4096);             // 4K seems about right on Linux.
+        try
+          try
+              SL.SaveToStream(WBufStream);
+          except on E:Exception do begin
+                                  Debugln('ERROR, failed to save note : ' + E.Message);
+                                  WBufStream.Free;
+                                  FileStream.Free;
+                                  SL.Free;
+                              end;
+          end;
+        finally
+          WBufStream.Free;
+          FileStream.Free;
+          SL.Free;                  // note : this was created in calling process !
+          PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEFINISHED, 0);   // Will release Lock
+        end;
+        BusySaving := False;
     end;
-    BusySaving := False;
-    {$ENDIF}
+    // {$ENDIF}
 end;
 
 procedure TEditBoxForm.SaveTheNote(WeAreClosing : boolean = False);
@@ -4613,7 +4615,7 @@ begin
         end;
         if LineNumb = -1 then debugln('TEditBoxForm.SaveTheNote did not find note in notelister to insert content into. ' + NoteTitle);
     end;
-    if SaveStringList(SL, Loc) then Dirty := False;             // Note, thats not a guaranteed good save,
+    if SaveStringList(SL, Loc, WeAreClosing) then Dirty := False;             // Note, thats not a guaranteed good save,
 
     //debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'At end, dirty=' + booltostr(Dirty, true));
     //T6 := GetTickCount64();

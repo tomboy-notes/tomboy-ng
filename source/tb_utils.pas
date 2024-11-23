@@ -179,12 +179,20 @@ begin
 end;
 {$endif}    *)
 
+  // At present, v0.41, tokens only work with markdown export, could work with other exports ?
   // A token is a piece of text sourounded by $$..$$ that contains ONLY upper case Latin
   // characters or numerals. No spaces, puncation marks, no UTF8, no newlines.
+  // The file format, plain text, is <token>=<replacement>.  Lines with out an '='
+  // have no effect and, could, concievably be comments.
+  // We look for the token file in three places -
+    // 1. Where SingleNote mode file is located. FileName.tokens
+    // 2. In note repo, ID.tokens
+    // 3. Where destination (ie output) file will be, <note_title>.tokens (with spaces converted to underscore)
+
 function FindToken(const St : string; var Where : integer; out Tok : string ) : boolean;
 var
       Len : integer = 3;
-      StartAt : integer;
+//      StartAt : integer;
 begin
     result := false;
     while ((Where+6) < length(St)) do begin  // drop through (false) of find a token (true)
