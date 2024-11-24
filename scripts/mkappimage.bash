@@ -96,6 +96,9 @@ sed "s/env QT_QPA_PLATFORM=xcb //" "$APPDIR"/usr/share/applications/tomboy-ng.de
 # mv glyphs/tomboy-ng.desktop-new glyphs/tomboy-ng.desktop 
 mv "$APPDIR"/usr/share/applications/tomboy-ng.desktop-new "$APPDIR"/usr/share/applications/tomboy-ng.desktop 
 
+# AppImage insists on the Desktop file being named with RDNS, seems happy with this -
+ln -s usr/share/applications/tomboy-ng.desktop "$APPDIR"/io.github.tomboy_notes.tomboy_ng_notes.desktop
+
 # QMAKE=/usr/bin/qmake6  "$LDEPLOY" --appdir "$APPDIR" --plugin qt --output appimage
 QMAKE="$QMAKE6"  "$LDEPLOY" --appdir "$APPDIR" --plugin qt --output appimage
 

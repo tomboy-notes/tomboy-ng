@@ -14,7 +14,9 @@ PROGRAM_NAME=tomboy-ng
 MAN_DIR = $(PREFIX)/share/man/man1
 SHARE_DIR = $(PREFIX)/share
 DOC_DIR = $(SHARE_DIR)/$(PROGRAM_NAME)
+# Debian and AppImage have seperate meta data file names ! Here I copy both, AppImage is happy ....
 METAINFOFILE=io.github.tomboy_notes.tomboy_ng_notes.metainfo.xml
+METAAPPIMAGE=io.github.tomboy_notes.tomboy_ng_notes.appdata.xml
 # ---- Help Notes, it just replicates existing dir/note structure.
 HELP_DIR = $(DOC_DIR)/HELP
 RM      = rm -f
@@ -57,7 +59,8 @@ install: installdirs
 	$(INSTALL_DATA)		doc/tomboy-ng.1 	$(DESTDIR)$(MAN_DIR)/$(PROGRAM_NAME).1
 	$(CP)			doc/HELP		$(DESTDIR)$(HELP_DIR)/
 	$(CP)			doc/overrides		$(DESTDIR)$(SHARE_DIR)/lintian/overrides/tomboy-ng
-	$(CP)           doc/$(METAINFOFILE) $(PREFIX)$(SHARE_DIR)/metainfo/$(METAINFOFILE)
+	$(CP)           doc/$(METAINFOFILE) $(DESTDIR)$(SHARE_DIR)/metainfo/$(METAINFOFILE)
+	$(CP)           doc/$(METAINFOFILE) $(DESTDIR)$(SHARE_DIR)/metainfo/$(METAAPPIMAGE)
 	$(CP)			glyphs/icons		$(DESTDIR)$(SHARE_DIR)/
 	$(INSTALL_DATA)	glyphs/tomboy-ng.desktop	$(DESTDIR)$(SHARE_DIR)/applications/tomboy-ng.desktop
 	$(foreach LANG, $(LANGUAGES), $(CPLANG);)
@@ -69,6 +72,7 @@ installdirs:
 	test -d $(DESTDIR)$(BIN_DIR) || $(MKDIR) $(DESTDIR)$(BIN_DIR)
 	test -d $(DESTDIR)$(MAN_DIR) || $(MKDIR) $(DESTDIR)$(MAN_DIR)
 	test -d $(DESTDIR)$(DOC_DIR) || $(MKDIR) $(DESTDIR)$(DOC_DIR)
+	test -d $(DESTDIR)$(SHARE_DIR)/metainfo || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/metainfo
 	test -d $(DESTDIR)/share/applications || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/applications
 	test -d $(DESTDIR)/share/lintian/overrides || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/lintian/overrides
 	$(foreach LANG, $(LANGUAGES), $(MKDIRLANG);)
