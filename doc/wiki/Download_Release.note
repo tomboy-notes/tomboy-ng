@@ -18,7 +18,7 @@ Downloads and information for specific platforms further down the page.
 
 <size:huge><bold>Release Notes</bold></size:huge>
 
-While this release is mainly a bug fix one, there are somenew features -
+While this release is mainly a bug fix one, there are some new features -
 
 <list><list-item dir="ltr"><list><list-item dir="ltr">Search using Title only or full note content (Search Form, Options).</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Improved flexibility when making PDF, particularly significant for Chinese text users who can select an appropriate font for their own needs.</list-item></list></list-item></list>
@@ -29,7 +29,7 @@ Bug fixes -
 <list><list-item dir="ltr"><list><list-item dir="ltr">If tomboy-ng was closed immediatly after new content was added to a note, it could have been lost.</list-item></list></list-item></list>
 
 
-<bold>Qt5 and Qt6 users may need to install a new libqt5pas1 or libqt6pas6 library, your distro version may be out of date unless you are using Fedora 41, Ubuntu 24.04, 24.10, any Arch system or Debian Trixie. Other Linux systems should get the new libraries from the links below and install them before or at the same time as you install tomboy-ng. (New libraries are not needed if you choose the GTK2 version.)</bold>
+<bold>Qt5 and Qt6 users may need to install a new libqt5pas1 or libqt6pas6 library, your distro version may be out of date unless you are using eg Fedora 41, Ubuntu 24.04, 24.10, any Arch system or Debian Trixie. Other Linux systems should get the new libraries from the links below and install them before or at the same time as you install tomboy-ng. (New libraries are not needed if you choose the GTK2 version.)</bold>
 
 https://github.com/davidbannon/libqt5pas/releases
 https://github.com/davidbannon/libqt6pas/releases
@@ -146,10 +146,10 @@ Then, you can just click on the appropriate tomboy rpm link  [GTK2 32bit]($$RPM3
 To install, please download and save the file, then use the rpm command, note that rpm seems to require you to uninstall a previous version, doing so will not remove notes or config.  Using the <bold>Qt5 version on Mageia</bold> is possible if you replace its very dated version of lib64qt6pas1 with the appropriate one from https://github.com/davidbannon/libqt5pas/releases.
 
 <size:large><bold>Raspberry PI</bold></size:large>
-Users of the official Raspberry Pi OS (previously know as Raspbian) can now download a deb and install it using the apt commands mentioned above.
+Users of the official Raspberry Pi OS (previously know as Raspbian) or, better still, other deb based Linux Distros made for Raspberry Pi, can now download a deb and install it using the apt commands mentioned above.
 
 If your Operating System is 32bit download [Qt5 32bit]($$DEB32ARM$$)
-If your Operating System is a 64bit download [gtk2 64bit]($$DEB64ARM$$)
+If your Operating System is a 64bit download [gtk2 64bit]($$DEB64ARM$$) or, recommended,  [Qt5 64bit]($$DEB64ARMQT5$$) I note that the official RasPi OS is using Wayland (even though its desktop is XFCe), the Qt5 version of tomboy-ng works least badly there. These problems do not exists in other Linux distributions.
 
 I have not made Raspberry Pi rpms, seems few users.
 
@@ -162,8 +162,8 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2024-11-19T21:49:07.4098764+11:00</last-change-date>
-  <last-metadata-change-date>2024-11-19T21:49:07.4098764+11:00</last-metadata-change-date>
+  <last-change-date>2024-11-24T14:23:22.9099786+11:00</last-change-date>
+  <last-metadata-change-date>2024-11-24T14:23:22.9099786+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
