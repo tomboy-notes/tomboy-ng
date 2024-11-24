@@ -149,6 +149,7 @@ function ShowHelp () {
     echo "-n   New orig file, required for fresh release"
     echo "-r   Reason for repackage, use inverted commas, only if not -n"
     echo "-q   Make a Qt5 version instead of GTK2, ignored in repackage mode."
+    echo "-p   Pause before creating Orig, make changes in annother terminal."
     echo ""
     echo "  Typically, new release     bash ./prepare.debian -n -q"
     exit
@@ -222,7 +223,7 @@ exit                                                    # My work here is done
 }       # End of function
 
 
-while getopts "hUCl:D:nqQt:r:" opt; do
+while getopts "hUCl:D:nqQt:r:p" opt; do
   case $opt in
     h)
       ShowHelp
@@ -255,6 +256,9 @@ while getopts "hUCl:D:nqQt:r:" opt; do
     q)
 	WIDGET="Qt5"
 	;;
+    p)
+	PAUSE="YES"
+        ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -364,6 +368,11 @@ if [ -f tomboy-ng-master.zip ]; then
 	else
 		scripts/mkcontrol.bash debian/ "$DISTRO1"
 	fi
+
+        if [ "$PAUSE" = "YES" ]; then
+		read -p "Edit things in another terminal, press Enter here."
+	fi
+
 
     # Note : if not NEWORIG, we cannot possibly be here !
 	if [ "$NEWORIG" = "YES" ]; then

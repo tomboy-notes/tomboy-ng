@@ -3,10 +3,10 @@
   <id>io.github.tomboy_notes.tomboy_ng_notes</id>
   
   <name>tomboy-ng Notes</name>
-  <summary>Cross Platform Notes app with a range of markup, group notes into notebooks, search, embed links to other notes, http or any file or directory</summary>
+  <summary>Cross Platform Notes app with a range of markup, links and sync</summary>
   
-  <metadata_license>MIT-License</metadata_license>
-  <project_license>MIT-License OR BSD-3-Clause-Clear OR LGPL-3.0+ OR GPL-2.0-only</project_license>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT OR BSD-3-Clause-Clear OR LGPL-3.0+ OR GPL-2.0-only</project_license>
   
   <description>
     <p>
@@ -16,7 +16,7 @@
       Importantly, tomboy-ng has no awkward dependencies and so is an easy and lightweight install. Linux users can choose GTK2, Qt5 or Qt6 versions and install from deb, rpm or pacman packages, including some 32bit combinations. AppImage packages are also available. A single Windows installer will provide a 32bit or 64bit application. A single MacOS installer will provide a Intel or ARM (aarch64) application.
     </p>
   </description>
-  
+ <url type="homepage">https://github.com/tomboy-notes/tomboy-ng</url>
   <launchable type="desktop-id">tomboy-ng.desktop</launchable>
   <screenshots>
     <screenshot type="default">
