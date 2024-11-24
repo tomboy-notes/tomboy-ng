@@ -68,7 +68,7 @@ install: installdirs
 
 installdirs:
 	test -d $(PREFIX) || $(MKDIR) $(PREFIX)
-	test -d $(PREFIX)$(SHARE_DIR)/metainfo || $(MKDIR) $(PREFIX)$(SHARE_DIR)/metainfo
+	test -d $(DESTDIR)$(SHARE_DIR)/metainfo || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/metainfo
 	test -d $(DESTDIR)$(BIN_DIR) || $(MKDIR) $(DESTDIR)$(BIN_DIR)
 	test -d $(DESTDIR)$(MAN_DIR) || $(MKDIR) $(DESTDIR)$(MAN_DIR)
 	test -d $(DESTDIR)$(DOC_DIR) || $(MKDIR) $(DESTDIR)$(DOC_DIR)
