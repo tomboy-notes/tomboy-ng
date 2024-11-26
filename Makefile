@@ -67,7 +67,7 @@ install: installdirs
 #	$(CP)	$(APPDIR)/usr/share/icons/hicolor/256x256/apps/tomboy-ng.png $(APPDIR)/usr/share/icons/hicolor/256x256/apps/tomboy-ng.png.png		
 
 installdirs:
-	test -d $(PREFIX) || $(MKDIR) $(PREFIX)
+#	test -d $(DESTDIR) || $(MKDIR) $(DESTDIR)
 	test -d $(DESTDIR)$(SHARE_DIR)/metainfo || $(MKDIR) $(DESTDIR)$(SHARE_DIR)/metainfo
 	test -d $(DESTDIR)$(BIN_DIR) || $(MKDIR) $(DESTDIR)$(BIN_DIR)
 	test -d $(DESTDIR)$(MAN_DIR) || $(MKDIR) $(DESTDIR)$(MAN_DIR)

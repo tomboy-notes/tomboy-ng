@@ -259,7 +259,7 @@ w have both FPC and Lazarus as non package installs, required removal of them as
     mkdir $VER; cd $VER
     wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD.gtk2
     wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD.Qt6
-    copy PKGBUILD.gtk2 PKGBUILD
+    cp PKGBUILD.gtk2 PKGBUILD
     makepkg --skipinteg
     mv ... ...gtk2...
     copy PKGBUILD.Qt6 PKGBUILD
