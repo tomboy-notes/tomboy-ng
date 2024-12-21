@@ -607,7 +607,7 @@ begin
         ErrorString := ExtractJSONField(ST, 'login');
         if ErrorString = UserName then begin     // "A" valid username
             ErrorString := '';
-            TokenExpires := HeaderOut;
+            TokenExpires := HeaderOut; // value of header  'github-authentication-token-expiration' from call to DownLoaderSafe above  
             if DebugMode then debugln('TGithubSync.TestTransport - Confirmed account exists');
             if TokenExpires = '' then begin
                 ErrorString := 'Username exists but Token Failure';
@@ -1551,6 +1551,7 @@ begin
         end;
         with Client.ResponseHeaders do begin
             if Header <> '' then begin
+	        // IndexOfName is case-insensitive
                 if IndexOfName(Header) <> -1 then
                     HeaderOut := ValueFromIndex[IndexOfName(Header)]
                 else HeaderOut := '';
