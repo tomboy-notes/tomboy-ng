@@ -114,7 +114,7 @@ If you wish to sync to a SMB: network share, open that connection before configu
 
 
 <size:large><bold>Arch and Manjaro</bold></size:large>
-And other Linux Distributions that use the Arch, Pacman package system. I have made only a [GTK 64bit]($$PAC64$$) version and, recommended, a [Qt6 64bit]($$PAC64QT6$$] at this stage, could make other combinations if needed. Click the link, choose download and install with this command from ~/Downloads -
+And other Linux Distributions that use the Arch, Pacman package system. I have made only a [GTK 64bit]($$PAC64$$) version and, recommended, a [Qt6 64bit]($$PAC64QT6$$) at this stage, could make other combinations if needed. Click the link, choose download and install with this command from ~/Downloads -
 
 sudo pacman -U ./tomboy-ng-$$VERSION$$-1-x86_64.pkg.tar.zst
 
@@ -162,8 +162,8 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2024-11-24T14:23:22.9099786+11:00</last-change-date>
-  <last-metadata-change-date>2024-11-24T14:23:22.9099786+11:00</last-metadata-change-date>
+  <last-change-date>2024-11-26T17:17:20.6169161+11:00</last-change-date>
+  <last-metadata-change-date>2024-11-26T17:17:20.6169161+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

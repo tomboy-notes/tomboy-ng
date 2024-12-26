@@ -70,9 +70,13 @@ unit SaveNote;
     2021/11/04  SaveNewTemplate now gets a current date stamp.
     2024/01/23  Added support for Indent
     2024/04/14  Stop underline appearing with text from a hyperlink block
+    2024/12/24  Altered Indent to work (a little) like Tomboy, embedded Tab #9 char at start line
 }
 
 {$mode objfpc}{$H+}
+
+{X$DEFINE DEBUGMODE}         // think we will do away with Indent, its seriously messy.
+                            // This define exists in EditBox, SaveNote, LoadNote
 
 interface
 
@@ -126,6 +130,7 @@ type
                     tags accordingly. Special case when CloseOnly is true, we terminate all active styles
                     and reactivate them (NoteNormal will move the reactivated tags to next line later).
                     Absolutly vital that tag order be observed, crossed ove r tgas are a very bad thing.}
+            procedure AddIndent(BlkNo : integer; var Buf : string);
             function AddTag(const FT: TKMemoTextBlock; var Buff: ANSIString;
                 CloseOnly: boolean = False; IsLink: boolean = false
     ): ANSIString;
@@ -478,9 +483,11 @@ begin
     writeln('EndEnd        [' + EndEndSt + ']');        }
 
     Buff := StartEndSt + Buff + EndStartSt;
+(*    {$ifdef DOINDENT}
     if Level = pnuNone then
          Buff := '<indent>' + Buff + '</indent>'           // Indent is only ever the one level.
-    else begin                                             // OK, do the bullet stuff
+    else{$endif}                                 *)
+    begin                                            // OK, do the bullet stuff
         case Level of
             BulletOne   : iLevel := 1;
             BulletTwo   : iLevel := 2;
@@ -567,6 +574,21 @@ begin
     PrevFSize := FSize;
 end;
 
+procedure TBSaveNote.AddIndent(BlkNo : integer; var Buf : string);
+var Indents : integer;
+begin
+   if KM.Blocks[BlkNo].ClassNameIs('TKMemoParagraph') then begin
+        if TKMemoParagraph(KM.Blocks[BlkNo]).ParaStyle.LeftPadding <> 0 then begin
+            Indents := TKMemoParagraph(KM.Blocks[BlkNo]).ParaStyle.LeftPadding;
+            while Indents > 0 do begin
+                Buf := #9 + Buf;
+                dec(Indents, IndentWidth);
+            end;
+            {$ifdef DEBUGMODE}writeln('TBSaveNote.AddIndent Buf=', Buf, ']');{$endif}
+        end;
+   end else debugln('TBSaveNote.AddIndent - Warning, passed a non para block no');
+end;
+
     // NEW : if passed a created StringList, we write to the list rather than to the
     // Memory Buffer. Still need to deal with Header and Footer in a line by line mode.
 procedure TBSaveNote.ReadKMemo(FileName : ANSIString; Title : string; KM1 : TKMemo; STL : TStringList = nil);
@@ -633,7 +655,7 @@ var
                      BulletList(TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering, Buff)
                 else
                     if TKMemoParagraph(KM1.Blocks.Items[BlockNo]).ParaStyle.LeftPadding > 0 then
-                         BulletList(pnuNone, Buff);                             // Indent
+                         AddIndent(BlockNo, Buff);                              // Indent
 
                 {if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering = pnuBullets then
                      BulletList(Buff);    }
@@ -656,6 +678,7 @@ var
                     Buff := Buff + LineEnding;
                     OutStream.Write(Buff[1], length(Buff))
                 end else STL.Add(Buff);
+                {$ifdef DEBUGMODE}writeln('TBSaveNote.ReadKMemo Buff=[', Buff, ']');{$endif}
                 Buff := '';
                 // debugln('Block=' + inttostr(BlockNo) + ' ' +BlockAttributes(KM1.Blocks.Items[BlockNo]));
                 inc(BlockNo);

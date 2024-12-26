@@ -251,6 +251,7 @@ unit EditBox;
     2024/06/07  UTF8 bug, where missed UTF8 char ahead of file link.
     2024/10/05  Made DeletingThisNote public so SearchForm can delete an Open note.
     2024/10/16  Fixed the way that Save on Quit works, no contention !
+    2024/12/24  Altered Indent to work (a little) like Tomboy, embedded Tab #9 char at start line
 }
 
 
@@ -4123,14 +4124,51 @@ begin
 //   debugln('Mouseclick ' + inttostr(kmemo1.RealSelStart));
 end;
 
+
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
-  ABlock : TKMemoBlock;
-  ABlockNo, LocIndex : integer;
+  ABlock : TKMemoParagraph;
+  ABlockNo : integer;
 
-    // ret T if it used the BS to remove an Indent. Will also 'prepare' a non-indented
-    // para to be merged, by KMemo, with a previous indented one. AnyPosInPara
-    // means we were called by Shift-Tab meaning Cursor does not need be on first char.
+                // returns the para block that controls text the cursor is on right now
+        function GetParagraphBlock(NotTitle : boolean) : TKMemoParagraph;
+        var
+            ABlockNo : integer = -1;
+            LocIndex : integer;
+        begin
+            ABlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.Blocks.RealSelStart, LocIndex);
+            if (ABlockNo < 1) and NotTitle then
+                exit(Nil);                                                      // Dont mess with title
+            if KMemo1.Blocks[ABlockNo].ClassNameIs('TKMemoParagraph') then      // if Ablockno is a para, use it, else we look for one further on
+                 Result := TKMemoParagraph(KMemo1.Blocks[ABlockNo])             // works if cursor is just beyond last char in line
+            else Result := Kmemo1.Blocks.GetNearestParagraphBlock(ABlockNo);    // Gets the following one, not the 'nearest' !
+        end;
+
+ (*       function GetParagraphIndex(NotTitle : boolean) : integer;
+        var
+            LocIndex : integer;
+        begin
+            result := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.Blocks.RealSelStart, LocIndex);
+            if (result < 1) and NotTitle then
+                exit(-1);
+            if not KMemo1.Blocks[Result].ClassNameIs('TKMemoParagraph') then
+                Result := Kmemo1.Blocks.GetNearestParagraphBlockIndex(result);
+        end;     *)
+
+       procedure IndentControl(IncreaseIndent : Boolean);                      // Note : at present, only one indent can be set
+        begin
+            ABlock := GetParagraphBlock(True);
+            if ABlock <> nil then                                               // if zero cannot be a bullet nor indent
+                if (ABlock.ParaStyle.LeftPadding = 0) then                      // ToDo : one day, multilevel indent ??
+                    ABlock.ParaStyle.LeftPadding := IndentWidth;                // if left padding is set, don't do bullet
+            Key := 0;
+            exit();
+        end;
+
+                // ret T if it used the BS to remove an Indent. Will also 'prepare' a non-indented
+                // para to be merged, by KMemo, with a previous indented one. AnyPosInPara
+                // means we were called by Shift-Tab meaning Cursor does not need be on first char,
+                // it could be on first to just after the last.
     function RemoveIndent(AnyPosInPara : boolean = false) : boolean;
     var
         ABlock : TKMemoBlock;
@@ -4139,27 +4177,44 @@ var
         Result := False;
         ABlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.Blocks.RealSelStart, LocIndex);  // LocIndex not certain to be in left most block.
         if ABlockNo < 2 then exit;
+
         if not AnyPosInPara                                                     // AnyPosInPara means being on first char does not matter
-            and (not KMemo1.Blocks[ABlockNo-1].ClassNameIs('TKMemoParagraph')) then exit;   // was not first block in para.
+            and (not KMemo1.Blocks[ABlockNo-1].ClassNameIs('TKMemoParagraph')) then exit;   // was not first block in para so BS not removing indent
         ABlock := Nil;
-        ABlock := Kmemo1.Blocks.GetNearestParagraphBlock(ABlockNo);             // Gets the following one, not the nearest !
+
+        if KMemo1.Blocks[ABlockNo].ClassNameIs('TKMemoParagraph') then          // if Ablockno is a para, use it, else we look for one further on
+            ABlock := KMemo1.Blocks[ABlockNo]
+        else ABlock := Kmemo1.Blocks.GetNearestParagraphBlock(ABlockNo);        // Gets the following one, not the 'nearest' !
         if ABlock = Nil then exit;
-        if TKMemoParagraph(ABlock).Numbering <> pnuNone then exit;              // Bullets are not my job
+
+        if TKMemoParagraph(ABlock).Numbering <> pnuNone then begin              // Its a bullet. We reduce bullet or Indent
+            if AnyPosInPara then BulletControl(False);                          // don't do this here if called as part of BS keystroke
+            exit;
+        end;
 
         // deal with a backspace from first char of an indented para.
         if (TKMemoParagraph(ABlock).ParaStyle.LeftPadding > 0)                  // Has padding, might be Indent
-            and (not KMemo1.Blocks[ABlockNo].ClassNameIs('TKMemoParagraph'))    //
+//            and (not KMemo1.Blocks[ABlockNo].ClassNameIs('TKMemoParagraph'))    //                                // ??????????????
             and (AnyPosInPara or (LocIndex = 0)) then begin                     // and char position OK, must delete indent
                 TKMemoParagraph(ABlock).ParaStyle.LeftPadding := 0;
+                writeln('RemoveIndent() left padding set to 0');
                 exit(true);
         end;
 
         // Deal a para being merged with a previous, indented one. Just indent current one and let KMemo handle it.
+
+//        if (LocIndex = 0)
+//            and KMemo1.Blocks[ABlockNo-1].ClassNameIs('TKMemoParagraph')
+
         if (LocIndex = 0)                                                       // this part only applies if first char of block
+            and KMemo1.Blocks[ABlockNo-1].ClassNameIs('TKMemoParagraph')
             and (TKMemoParagraph(KMemo1.Blocks[ABlockNo-1]).ParaStyle.LeftPadding > 0)
             and (TKMemoParagraph(KMemo1.Blocks[ABlockNo-1]).Numbering = pnuNone) then
                 TKMemoParagraph(ABlock).ParaStyle.LeftPadding := IndentWidth;   // BS will go through to kmemo who will do merge
     end;
+
+
+
 
 begin
     if not Ready then begin       // Will this help with issue #279
@@ -4180,7 +4235,7 @@ begin
         exit;
     end;
     if ([ssAlt, ssShift] = Shift) and ((Key = VK_RIGHT) or (Key = VK_LEFT)) then exit; // KMemo - extend selection one word left or right
-    {$endif}
+    {$endif DARWIN}
 
     if (Key = VK_ESCAPE) and Sett.CheckEscClosesNote.Checked then close;        // Will do normal save stuff first.
 
@@ -4203,7 +4258,7 @@ begin
           Key := 0;
           exit();
        end;
-       if (Key = VK_TAB) then begin
+       if (Key = VK_TAB) then begin                       // Shift-Tab, maybe anywhere in a line, first to last char.
             RemoveIndent(True);
             Key := 0;
             exit();
@@ -4239,6 +4294,7 @@ begin
             VK_M : begin Key := 0; DoRightClickMenu; end;
             VK_N : SearchForm.OpenNote('');
             VK_E : InitiateCalc();
+            VK_TAB : IndentControl(True);
             VK_F4 : close;                      // close just this note, normal saving will take place
             VK_C, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_INSERT : exit;
         end;
@@ -4277,26 +4333,23 @@ begin
        exit();
     end;
 
-    if Key = VK_TAB then begin                                            // A Tab insets paragraph
-        ABlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.Blocks.RealSelStart, LocIndex);
-        if ABlockNo > 1 then begin                                          // don't mess with title
-            ABlock := Nil;
-            ABlock := Kmemo1.Blocks.GetNearestParagraphBlock(ABlockNo);
-            if (ABlock <> Nil) {and ABlock.ClassNameIs('TKMemoParagraph') }     // Might be nil if no para marker at end of content
-                and (TKMemoParagraph(ABlock).Numbering = pnuNone) then          // Don't mix Indent with Bullets
-                    TKMemoParagraph(ABlock).ParaStyle.LeftPadding := IndentWidth;
-            Key := 0;                                                           // Don't let go through to KMemo
-            MarkDirty();
-            exit;
-        end;
+    if Key = VK_TAB then begin                                                  // A Tab insets paragraph
+        // Tab key sets a bullet or extends that bullet further right.
+        // Maybe, one day it will also extend Insert too.
+        ABlock := GetParagraphBlock(True);
+        if ABlock <> nil then
+            if (ABlock.ParaStyle.LeftPadding = 0) or (ABlock.Numbering <> pnuNone) then     // ToDo : one day, multilevel indent ??
+                BulletControl(True);                                      // if left padding is set, don't do bullet
+        Key := 0;
+        exit();
     end;
 
     if Key = VK_F3 then begin
         key := 0;
         if (EditFind.Text <> rsMenuSearch) then SpeedRightClick(self);
     end;
-    if Key <> 8 then exit();            // ======== We are watching for a BS on a Bullet OR Indent Marker ========
-    if RemoveIndent() then begin
+    if Key <> 8 then exit();            // ======== We are watching for a BS on a Bullet  ========
+    if RemoveIndent(False) then begin
         if Verbose then debugln('Removed an Indent.');
         Key := 0;
         MarkDirty();

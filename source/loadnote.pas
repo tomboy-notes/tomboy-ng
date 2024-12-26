@@ -39,6 +39,7 @@ unit LoadNote;
                 doing it here but blocks do not always report the correct color when asked.
     2023/03/11  Allow Qt to set Text and Background colour, force Gray for Inactive Background cos Kmemo get it wrong
     2024/01/23  Added support for Indent
+    2024/12/24  Altered Indent to work (a little) like Tomboy, embedded Tab #9 char at start line
 }
 
 {$mode objfpc}{$H+}
@@ -63,7 +64,10 @@ type
          Underline : boolean;
          Strikeout : boolean;
          FixedWidth : boolean;
+         TabCount : integer;
+(*         {$ifdef DOINDENT}
          Indent : boolean;
+         {$endif}   *)
          //InBullet, BulletOwing : boolean;
          BulletLevel : integer;
          InStr : ANSIString;
@@ -79,7 +83,7 @@ type
                             vars (ie Bold, Strikeout) tell it about the active styles at present. This
                             method adds one textblock (or possibly parablock) from InStr to the kmemo.
                             It gets called when LoadFile() encounters a newline or the start of a Tag.}
-         procedure AddText(AddPara : Boolean);
+         procedure AddText(AddPara : Boolean; Tabs : integer = 0);
 
                              { called when ReadTag encounters a <list>, process through to corresponding </list>
                              including any intermediat <list></list> pairs. Ignores any newlines in content during
@@ -115,11 +119,18 @@ uses      		// For some font style defs
     TB_Utils,
     LazLogger;
 
+{$define DEBUGMODE}
+
+// if the first InStr character after a paragraph block is a tab, set inset.
+// drop tab that appear elsewhere on the floor.
+
 procedure TBLoadNote.LoadFile(FileName : ANSIString; RM : TKMemo);
 var
   	fs : TFileStream;
     ch : char = ' ';
     Blocks : longint = 0;
+    AcceptTab : boolean = false;        // only true after a para, before anything else is added to InStr
+
 begin
   	KM := RM;
     FirstTime := True;
@@ -128,20 +139,34 @@ begin
        while fs.Position < fs.Size do begin
          fs.read(ch, 1);
          if Ch = #13 then fs.read(ch, 1);   // drop #13 on floor. Silly Windows double newline.
-         if Ch = #9 then Ch := ' ';         // Tabs, as characters, are not allowed.
+         if (Ch = #9) then
+             if AcceptTab then begin
+                 inc(TabCount);              // Will use that to create para indent
+                 {$ifdef DEBUGMODE}writeln('TBLoadNote.LoadFile - loaded a tab with Indent');{$endif}
+                 continue;
+             end
+             else Ch := ' ';                 // convert to space, we only take leading Tabs seriously !
+
+
+//         if Ch = #9 then Ch := ' ';       // Tabs, as characters, are not allowed.
                                             // come in via pasted text, better fix during the paste process.
                                             // This might mess with UTF8 ??
          if (Ch = '<') or (Ch < ' ') then begin     // start of tag or ctrl char
-             if (Ch < ' ') then             // thats a newline (other ctrl ? drop on floor)
-                 	AddText(True)           // flush through to kMemo, new paragraph
+             if (Ch < ' ') then begin        // thats a newline (other ctrl ? drop on floor)
+                 	AddText(True, TabCount); // flush through to kMemo, new paragraph
+                    TabCount := 0;
+                    AcceptTab := True;
+             end
              else begin
                  AddText(false);            // flush through to kmemo
                  ReadTag(fs);               // deals with _only_ tag unless its a list tag !
              end;
              inc(Blocks);
              InStr := '';                   // AddText does that ???? Maybe not in every case ?
-          end else
+          end else begin
                 InStr := InStr + ch;
+                if AcceptTab then AcceptTab := false;
+          end;
         end;
     finally
         FreeAndNil(fs);
@@ -150,7 +175,7 @@ begin
 end;
 
 
-procedure TBLoadNote.AddText(AddPara : Boolean);
+procedure TBLoadNote.AddText(AddPara : Boolean; Tabs : integer = 0);
 var
     FT : TFont;
     PB : TKMemoParagraph;
@@ -191,7 +216,13 @@ begin
     if AddPara then begin
         PB := KM.Blocks.AddParagraph;
         if not FirstTime then
-            AddIndentBullets(PB);                       // only does stuff if necessary
+            if Tabs > 0 then begin
+                {$ifdef DEBUGMODE}writeln('TBLoadNote.AddText - recorded tabs into kmemo');{$endif}
+                PB.ParaStyle.LeftPadding := Tabs * IndentWidth;
+                BulletLevel := 0;                                   // Maybe a legacy note has both Indent AND Bullet ???
+            end
+            else
+                AddIndentBullets(PB);                               // only does stuff if necessary
         if FirstTime then begin
             FirstTime := false;
             KM.Blocks.DeleteEOL(0);
@@ -250,17 +281,19 @@ begin
         PB.NumberingListLevel.FirstIndent := -20;    // Note, these numbers need match SettBullet() in editbox
         PB.NumberingListLevel.LeftIndent := 30;
         {$endif}
-    end else                                                                    // end of processing Bullet
+    end
+(*    else                                                   // we don't indent like this anymore
         if Indent then begin
             PB.ParaStyle.LeftPadding := IndentWidth;
             Indent := False;
-        end;
+        end   *)
+    ;
 end;
 
 procedure TBLoadNote.ActOnTag(buff : string);
 begin
   case Buff of
-      'indent' : Indent := true;
+       'indent' : TabCount := 1;            // legacy, whould come from a 0.40 to 0.41 version -ng
       'note-content' : InContent := true;
       '/note-content' : InContent := false;
       'bold' : Bold := True;

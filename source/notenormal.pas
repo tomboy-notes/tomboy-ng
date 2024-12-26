@@ -22,6 +22,7 @@ unit notenormal;
     2021/08/19  Bug in RemoveRedundentTags that sometimes ate character after tag pair
     2021/09/21  Added code to convert blocks of monospace to to now have each para wrapped.
     2022/11/09  Remove any ctrl char (ie < 32) except #10 and #13, don't know its necessary but #279
+    2024/12/26  Added Tab, #9 to allowed list. Should only allow at the start of line but seems OK
 
 }
 
@@ -295,6 +296,7 @@ begin
         ChangedLine := False;          // Not a UTF8 issue, no byte in a multibyte UTF8 'set' can be lower than 128
         while ChIndex <= length(TempSt) do begin
             if (ord(TempSt[ChIndex]) < 32)
+            and (ord(TempSt[ChIndex]) <> 9)         // Tab, we now have to allow Tabs in the text, only interested in ones at start of line.
             and (ord(TempSt[ChIndex]) <> 10)
             and (ord(TempSt[ChIndex]) <> 13) then begin
                     //debugln('Removing char ' + ord(TempSt[ChIndex]).ToString);   // Carefull, causes memory leak when run in thread

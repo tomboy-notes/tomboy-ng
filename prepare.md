@@ -251,21 +251,22 @@ Debian  need a config file, .dput.cf in $HOME that points to mentors, see mentor
 
 Pacman
 ======
-w have both FPC and Lazarus as non package installs, required removal of them as makedependencies. Both must be added to PATH
+We have both FPC and Lazarus as non package installs now, required removal of them as makedependencies. Both must be added to PATH
 
+So, on a clean (in my case Endeavour) machine, install gtk2 and qt6pas
 
-
-    export VER=0.40b
+    sudo pacmand -S gtk2 qt6pas
+    [eg]export VER=0.40b
     mkdir $VER; cd $VER
     wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD.gtk2
     wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD.Qt6
-    cp PKGBUILD.gtk2 PKGBUILD
+    cp PKGBUILD.Qt6 PKGBUILD
     makepkg --skipinteg
-    mv ... ...gtk2...
-    copy PKGBUILD.Qt6 PKGBUILD
+    [eg] mv tomboy-ng-0.41-1-x86_64.pkg.tar.zst tomboy-ng-0.41-1-Qt6-x86_64.pkg.tar.zst 
+    copy PKGBUILD.gtk2 PKGBUILD
     makepkg --skipinteg
-    mv ... ...Qt6...
-
+    
+The gtk2 version does not have a widget identifier. 
 
 note that makepkg needs to see $VER too.
 

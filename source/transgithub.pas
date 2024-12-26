@@ -607,10 +607,10 @@ begin
         ErrorString := ExtractJSONField(ST, 'login');
         if ErrorString = UserName then begin     // "A" valid username
             ErrorString := '';
-            TokenExpires := HeaderOut;
+            TokenExpires := HeaderOut;           // this was set in DownLoader to returned header item matching "github-authentication-token-expiration"
             if DebugMode then debugln('TGithubSync.TestTransport - Confirmed account exists');
             if TokenExpires = '' then begin
-                ErrorString := 'Username exists but Token Failure';
+                ErrorString := 'Username exists but Token Failure';             // we did not get back an expiry date from DownLoader()
                 exit(SyncCredentialError);              // Token failure
             end;
             // If to here, we have a valid username and a valid Password but don't know if they work together
@@ -1198,9 +1198,9 @@ begin
     Result := False;
     repeat
 
-        if pos('1D65A2EC-3C63-4732-8F9E-73E2A4544BC5', RemoteFName) > 0 then
+{        if pos('1D65A2EC-3C63-4732-8F9E-73E2A4544BC5', RemoteFName) > 0 then
             ErrorString := '  ***** fakeing upload failure *****'
-        else
+        else    }
 
         Result := SendData(ContentsURL(True) + '/' + RemoteFName, BodyStr, true, RemoteFName);
         if Result then break;
@@ -1551,9 +1551,24 @@ begin
         end;
         with Client.ResponseHeaders do begin
             if Header <> '' then begin
-                if IndexOfName(Header) <> -1 then
-                    HeaderOut := ValueFromIndex[IndexOfName(Header)]
-                else HeaderOut := '';
+
+                // if the required header is not found, we will look for another known one, X-RateLimit-Remaining
+                // if that is there set HeaderOut to 'unavailable' (that will appear in Sync Report) but if
+                // the second one fails, set HeaderOut to '' and that will abort sync
+
+                if DebugMode then debugln('TGithubSync.Downloader - looking for a response header, ' + Header);    // added post 0.41
+                if DebugMode then begin
+                    debugln('-------------------------------------');
+                    debugln(Client.ResponseHeaders.Text);
+                    debugln('-------------------------------------');
+                end;
+                if IndexOfName(Header) = -1 then
+                    if IndexOfname('X-RateLimit-Remaining') = -1 then begin
+                        HeaderOut := '';                              // that will abort sync, we cannot have a valid header.
+                        debugln('WARNING TGithubSync.Downloader failed to get valid header back from github');
+                    end else HeaderOut := 'unavailable'               // Sync will proceed, token may not have an expiry date set, user's choice
+                else
+                    HeaderOut := ValueFromIndex[IndexOfName(Header)]; // we found a valid expiry date.
             end;
         end;
     finally

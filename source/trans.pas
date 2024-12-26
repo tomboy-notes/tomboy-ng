@@ -28,7 +28,7 @@ type
 
   { TTomboyTrans }
 
-  TTomboyTrans = class      // An abstract class, parent of eg FileTrans and Githun Trans
+  TTomboyTrans = class      // An abstract class, parent of eg FileTrans and Github Trans
     private
 
     public

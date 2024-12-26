@@ -32,7 +32,8 @@ unit cli;
     and also removes anything after it ! But does act on it. Seems both - and -- acceptable -
         --platformtheme qt5ct
         -platformtheme qt5ct
-    And an typo in the option value is ignored, use a space as seperator, not '=' !
+    And a typo in the option value is ignored.
+    Use a space as seperator, not '=' !
 }
 
 interface
@@ -54,6 +55,7 @@ function Import_Text_MD_File(MD : boolean; FFName : string = '') : string;
 
 var
     SingleNoteName : string = '';    // other unit will want to know.....
+    OpenNewNotePlease : boolean = false;
 
 
 const Version_string  = {$I %TOMBOY_NG_VER};
@@ -72,7 +74,7 @@ var
     LongOpts : TStringArray;          // See initialization section
 
 const
-    ShortOpts = 'hgo:l:vt:m:n:';  // help gnome3 open lang ver import-[txt md note]
+    ShortOpts = 'hgo:l:vt:m:n:c';  // help gnome3 open lang ver import-[txt md note]
 
                 { If something on commandline means don't proceed, ret True }
 function CommandLineError(inCommingError : string = '') : boolean;
@@ -95,6 +97,7 @@ begin
        debugln('   --dark-theme                  ' + 'Does not work for GTK2');
        debugln('   -l --lang=CCode               ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   -h --help                     ' + rsHelpHelp);
+       debugln('   -c                            ' + 'Create new note');   // ToDo : make rsHelpCreate
        debugln('   --version                     ' + rsHelpVersion);
        debugln('   --no-splash                   ' + rsHelpNoSplash);
        debugln('   --debug-sync                  ' + rsHelpDebugSync);
@@ -277,6 +280,9 @@ begin
 
 end;
 
+    // Looks to see if user just wants some command line activity, returns
+    // false if GUI is not needed.
+
 function ContinueToGUI() : boolean ;
 begin
     if CommandLineError() then exit(False);
@@ -296,14 +302,21 @@ begin
         Import_Note();
         exit(False);
     end;
+    if Application.HasOption('c', 'create-note') then begin
+       if CanSendMessage('CREATENOTE') then
+            exit(false)                 // no GUI needed, just tell existing one to open a new note
+       else
+           OpenNewNotePlease := True;   // mainunit FormShow() will look there to see if it got a new note request at startup
+    end;                                // applies only when user uses -c and -ng is not already running
+
     // Note that the useappind option is processed in the LPR file.
 
-    if HaveCMDParam() then
+    if HaveCMDParam() then              // Only command line parameter is filename of a Single Note
          if SingleNoteName = '' then
             exit(False)                 // thats an error, more than one parameter
-         else exit(True);               // proceed in SNM
+         else exit(True);               // proceed in SNM, we set its File Name further up.
     // Looks like a normal startup
-    if CanSendMessage('SHOWSEARCH') then exit(False);
+    if CanSendMessage('SHOWSEARCH') then exit(False);     // will fail if -ng is not already running.
     Result := true;
 end;
 
@@ -314,8 +327,9 @@ initialization
         'debug-sync', 'debug-index', 'debug-spell',
         'config-dir:', 'open-note:', 'save-exit',      // -o for open also legal. save-exit is legecy
         'import-txt:', 'import-md:', 'import-note:',   // -t, -m -n respectivly
-        'title-fname', 'gnome3', 'useappind:',        // -g and gnome3 is legal but legacy, ignored.
-        'strict-theme',                                 // Strict-theme applies to only Qt versions
-        'allow-leftclick');                             // overrule wayland decision to use only right click
+        'title-fname', 'gnome3', 'useappind:',         // -g and gnome3 is legal but legacy, ignored.
+        'strict-theme',                                // Strict-theme applies to only Qt versions
+        'allow-leftclick',                             // overrule wayland decision to use only right click
+        'create-note');                                // create a new note (-ng open or not), added post 0.41
 end.
 

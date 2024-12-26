@@ -395,7 +395,7 @@ begin
 end;
 
 procedure TMainForm.CommMessageReceived(Sender : TObject);
-Var
+Var                                                                             // CREATENOTE - REINDEX: - SHOWSEARCH
     S : String;
 begin
     // debugln('Here in Main.CommMessageRecieved, a message was received');
@@ -406,10 +406,13 @@ begin
         SearchForm.Show;                        // this creates a notable flicker, might be necessary
         //SearchForm.MoveWindowHere(SearchForm.Caption);
     end else
-        if S.StartsWith('REINDEX') then
-            SearchForm.IndexNewNote(copy(S, 9, 100), False)
-        else debugln('TMainForm.CommMessageReceived - invalid message [' + S + ']');
-        // eg REINDEX:48480CC5-EC3E-4AA0-8C83-62886DB291FD.note
+        if S = 'CREATENOTE' then begin
+            SearchForm.OpenNote('');             // create new note
+        end else
+            if S.StartsWith('REINDEX') then
+                SearchForm.IndexNewNote(copy(S, 9, 100), False)
+            else debugln('TMainForm.CommMessageReceived - invalid message [' + S + ']');
+            // eg REINDEX:48480CC5-EC3E-4AA0-8C83-62886DB291FD.note
 end;
 
 procedure TMainForm.StartIPCServer();
@@ -659,7 +662,10 @@ begin
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
     if ButtSysTrayHelp.Visible then debugln('You cannot see me');
     if ButtSysTrayHelp.Visible then debugln('On Gnome, install gnome-shell-extension-appindicator, logout, logon and start tomboy-ng again, "yes" to prompt.');
-
+    if OpenNewNotePlease then begin
+        OpenNewNotePlease := False;
+        SearchForm.OpenNote('');
+    end;
 end;
 
 procedure TMainForm.ImageAboutLazClick(Sender: TObject);

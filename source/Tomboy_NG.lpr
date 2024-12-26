@@ -70,11 +70,11 @@ begin
     RequireDerivedFormResource:=True;
     Application.Initialize;
 
-    if ContinueToGUI then begin
+    if ContinueToGUI() then begin    // This is in the CLI.pas, command line activity that may be all thats needed.
 
         {$ifdef APPINDPATCH}
         {$ifdef CPUi386}             // Note: unless Ayatana fix their problem, no option for Gnome users
-                                    // https://github.com/AyatanaIndicators/libayatana-appindicator/issues/76
+                                     // https://github.com/AyatanaIndicators/libayatana-appindicator/issues/76
         UnityWSCtrls.GlobalUseAppInd := UnityWSCtrls.UseAppIndNo;     // 32bit must be a 'no'.
         debugln('Tomboy_NG.lpr : Deciding to set UseAppInd to no to prevent AV.');
         debugln('You may over rule that with --useappind=yes to see what happens.');
