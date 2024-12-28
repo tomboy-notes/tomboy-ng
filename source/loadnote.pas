@@ -119,7 +119,7 @@ uses      		// For some font style defs
     TB_Utils,
     LazLogger;
 
-{$define DEBUGMODE}
+{x$define DEBUGMODE}
 
 // if the first InStr character after a paragraph block is a tab, set inset.
 // drop tab that appear elsewhere on the floor.

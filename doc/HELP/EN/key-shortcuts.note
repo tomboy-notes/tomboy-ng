@@ -15,6 +15,9 @@
 <list><list-item dir="ltr">Shift-RightArrow : extend selection one char to right</list-item></list>
 <list><list-item dir="ltr">Shift-LeftArrow : extend selection one char to left</list-item></list>
 <list><list-item dir="ltr">Shift-Click : Select text between existing position and clicked position</list-item></list>
+<list><list-item dir="ltr">Tab : Make a bullet or extend existing Bullet or Paragraph Indent</list-item></list>
+<list><list-item dir="ltr">Shift-Tab : reduce existing Bullet or Paragraph Indent</list-item></list>
+<list><list-item dir="ltr">Control-Tab : Make or extend the Paragraph Indent</list-item></list>
 
 
 <size:large><bold>Windows / Linux</bold></size:large>
@@ -50,8 +53,6 @@
 <list><list-item dir="ltr">F3 or Ctrl-G : Next in-note Find</list-item></list>
 <list><list-item dir="ltr">Shift-F3 or Shift-Ctrl-G : Previous in-note Find</list-item></list>
 <list><list-item dir="ltr">Control-Shift-Find : Find something in any note</list-item></list>
-
-
 
 
 <size:large><bold>Mac</bold></size:large>
@@ -90,8 +91,8 @@
 
 
 </note-content></text>
-  <last-change-date>2024-04-15T15:58:56.3270821+10:00</last-change-date>
-  <last-metadata-change-date>2024-04-15T15:58:56.3270821+10:00</last-metadata-change-date>
+  <last-change-date>2024-12-27T22:47:00.1593446+11:00</last-change-date>
+  <last-metadata-change-date>2024-12-27T22:47:00.1593446+11:00</last-metadata-change-date>
   <create-date>2018-12-06T21:38:38.0650000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
