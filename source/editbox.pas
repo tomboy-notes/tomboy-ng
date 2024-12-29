@@ -4236,23 +4236,26 @@ var
 
     // Deals with both Bullets and Indents, ensures bullet/indent charactistics from upper line applies
     // when two lines are merged using the delete key. User has pressed Del and we are at End of Line.
-    function DeleteAtEOL() : boolean;
+    function DeleteAtEOL(InTitle : boolean) : boolean;
     var
         ABlock   : TKMemoParagraph;
         ABlockNo, LocIndex : integer;
     begin
         Result := False;
-        // debugln('DeleteAtEOL() starting');
         ABlockNo := Kmemo1.Blocks.IndexToBlockIndex(KMemo1.Blocks.RealSelStart, LocIndex);   // the para block on upper line
         ABlock := Kmemo1.Blocks.GetNearestParagraphBlock(ABlockNo + 1);                      // the para block on lower line
         if ABlock <> Nil then
             if ABlock.ClassNameIs('TKMemoParagraph') then begin
-                // debugln('DeleteAtEOL() ABlock', inttostr(ABlock.ParaStyle.LeftPadding), ' ABlockNo', inttostr(TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Parastyle.LeftPadding));
-                ABlock.Numbering := TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Numbering;
-                ABlock.ParaStyle.LeftPadding := TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Parastyle.LeftPadding;
-                // debugln('DeleteAtEOL() ABlock', inttostr(ABlock.ParaStyle.LeftPadding), ' ABlockNo', inttostr(TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Parastyle.LeftPadding));
-                if TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Numbering = pnuNone then
-                     ABlock.ParaStyle.FirstIndent := 0;                         // clear any possible bullet residue - is this necessary elsewhere ?
+                if InTitle then begin                                          // sucking it up into title, no nothing !
+                    ABlock.Numbering := pnuNone;
+                    ABlock.ParaStyle.LeftPadding := 0;
+                    ABlock.ParaStyle.FirstIndent := 0;                         // clear any possible bullet residue - is this necessary elsewhere ?
+                 end else begin
+                    ABlock.Numbering := TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Numbering;
+                    ABlock.ParaStyle.LeftPadding := TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Parastyle.LeftPadding;
+                    if TKMemoParagraph(KMemo1.Blocks[ABlockNo]).Numbering = pnuNone then
+                         ABlock.ParaStyle.FirstIndent := 0;                    // clear any possible bullet residue - is this necessary elsewhere ?
+                end;
                 Result := True;
             end else debugln('DeleteAtEOL() ABlock is not Para');
     end;
@@ -4280,9 +4283,11 @@ begin
 
     if (Key = VK_ESCAPE) and Sett.CheckEscClosesNote.Checked then close;      // Will do normal save stuff first.
 
-    if (Key = VK_DELETE) and AtEndOfLine() and (not CaretInTitle()) then begin
+    if (Key = VK_DELETE) and AtEndOfLine()  then begin
             // debugln('Detected DELETE and end of line');                       // and its end of line and this line is bullet or indent ......
-            if DeleteAtEOL() then MarkDirty();
+            if not CaretInTitle() then begin
+                if DeleteAtEOL(False) then MarkDirty();
+            end else if DeleteAtEOL(True) then MarkDirty();
             exit();                                                           // let Delete go through to KMemo
     end;
     // Record this event in the Undoer if its ssShift or empty set, rest are ctrl, meta etc ....
