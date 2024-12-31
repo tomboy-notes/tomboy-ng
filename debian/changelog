@@ -1,3 +1,23 @@
+tomboy-ng (0.41) unstable; urgency=medium
+
+  * Release of new version
+  * Updates to PDF maker, especially Chinese capabilities. User can
+    select font.
+  * Fix to github sync handling transit net failures better.
+  * Sort recover notes.
+  * Warn Gnome and Qt6 users of Systray Issues.
+  * AppImage, Linux
+  * Remove dependency on wmctrl, Linux.
+  * Add multiselect and right click menu to Search Right Click, inc 2
+    later fixes.
+  * A fix for bug triggered when several notes are needing a save at
+    quit time.
+  * A fix for Debian reproducibly issue.
+  * Repackage -1 for arm64 only because of glibc issue
+  * Please see github for change details.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 11 Dec 2024 22:32:47 +1100
+
 tomboy-ng (0.40-1) unstable; urgency=medium
 
   *  Release of new version.
