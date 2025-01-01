@@ -4274,11 +4274,18 @@ begin
              VK_2 : AlterFont(ChangeSize, Sett.FontNormal);
              VK_3 : AlterFont(ChangeSize, Sett.FontLarge);
              VK_4 : AlterFont(ChangeSize, Sett.FontHuge);
+             VK_TAB : begin if not CaretInTitle() then IndentControl(True); Key := 0; end;    // Mac ???
         end;
         Key := 0;
         exit;
     end;
     if ([ssAlt, ssShift] = Shift) and ((Key = VK_RIGHT) or (Key = VK_LEFT)) then exit; // KMemo - extend selection one word left or right
+    if ([ssShift] = shift) and (Key = VK_TAB) then begin
+        if not CaretInTitle() then
+              IndentControl(False);
+        Key := 0;
+        exit();
+     end;
     {$endif DARWIN}
 
     if (Key = VK_ESCAPE) and Sett.CheckEscClosesNote.Checked then close;      // Will do normal save stuff first.
@@ -4294,6 +4301,8 @@ begin
 
     if Use_Undoer and (([ssShift] = Shift) or ([] = Shift)) then              // while we pass presses like this to undoer, not all are
         Undoer.RecordInitial(Key);                                            // used, onKeyPress must follow and it gets only text type keys.
+
+
 
 
     {$ifndef DARWIN}
@@ -4318,7 +4327,7 @@ begin
     end;
     {$endif}
 
-    // -------------- Control ------------------
+    // -------------- Control (Command on Mac) ------------------
     if {$ifdef Darwin}[ssMeta] = Shift {$else}[ssCtrl] = Shift{$endif} then begin
         case key of
             VK_Return, VK_G :  begin
@@ -4346,7 +4355,7 @@ begin
             VK_M : begin Key := 0; DoRightClickMenu; end;
             VK_N : SearchForm.OpenNote('');
             VK_E : InitiateCalc();
-            VK_TAB : begin if not CaretInTitle() then IndentControl(True); Key := 0; end;
+            VK_TAB : begin if not CaretInTitle() then IndentControl(True); Key := 0; end;  // On Mac, OS hijacks sequence for its own use.
             VK_F4 : close;                      // close just this note, normal saving will take place
             VK_C, VK_A, VK_HOME, VK_END, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_PRIOR, VK_NEXT, VK_INSERT : exit;
         end;
