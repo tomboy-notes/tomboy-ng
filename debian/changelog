@@ -1,4 +1,4 @@
-tomboy-ng (0.41) unstable; urgency=medium
+tomboy-ng (0.41-1) unstable; urgency=medium
 
   * Release of new version
   * Updates to PDF maker, especially Chinese capabilities. User can
