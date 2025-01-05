@@ -6,6 +6,8 @@
 
 Tomboy-ng is a rewrite of the much loved Tomboy Notes. It runs on Linux, Windows and MacOS. Is file compatible with Tomboy and GNote. Tomboy-ng notes support <bold>Bold</bold>, <italic>Italic</italic>, Strike-through, <highlight>Highlight</highlight> and <underline>Underline</underline> in  four sizes, <size:small>small</size:small>, normal, <size:large>large</size:large> and <size:huge><highlight>huge</highlight></size:huge>. Notes can include hyperlinks to other notes, web pages or any (readable) file or directory on your system.
 
+Multilevel Bullets (Alt - left or right Arrow) and paragraph inset (Ctrl-Tab), either can be extended (Tab) or reduced (Shift-Tab).
+
 It can sync notes with other systems using Tomboy's File Sync model and / or a network based sync to Github. The latter allows you to read or edit you notes on line from a browser.
 
 Many users will want to have tomboy-ng start at logon time, it will put an Icon in the System Tray and you can  interact with it via that Icon. However, to ensure we support some difficult platforms, a small window or splash screen is also opened, it can be dismissed if you see the system tray icon (or on some Gnome 3 systems, you have added it to your dock as a favourite).  You can set that small splash screen to not open unless a bad note is detected at startup.
@@ -24,7 +26,7 @@ From the <bold>search form</bold>, you can -
 <list><list-item dir="ltr"><list><list-item dir="ltr">allows you to change a notes's title by directly editing the actual title in the note window.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">automatically makes backup copies when you delete a note, if you need to know a note is really gone, go to Settings-&gt;Backup.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">has facilities to make snapshots of your notes from time to time, please use it!</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">can sync your notes to a common file store so they are accessible from multiple machines (Linux, Windows or Mac).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">can sync your notes to a common file store so they are accessible from multiple machines (Linux, Windows or Mac), see https://github.com/tomboy-notes/tomboy-ng/wiki/File-Sync-with-tomboy-ng Or sync, possibly only selected notes to your GitHub account, https://github.com/tomboy-notes/tomboy-ng/wiki/Github-Sync</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">does not share well. If you just put your notes on a shared drive (without using sync) be desperately careful that you don't have more than one tomboy-ng or Tomboy running at the same time. Bad things happen.</list-item></list></list-item></list>
 
 <bold>Linking</bold>
@@ -34,6 +36,7 @@ New in 0.40, <bold>File Links</bold>. Use the Right Click Menu to select either 
 
 This system relies on your Operating System's view of how to open a particular file, good idea to be sure it can open the type of file concerned before using it in a Note. In my case, new install of Debian, Firefox wanted to open .log files and does so very, very badly. Note that tomboy-ng cannot test these sort of links, it shows them in good faith.
 
+<bold>Web Links</bold>
 In a similar manner, text that tomboy-ng thinks might be a web link is marked as a hyper link, a click will open your browser. Both forms of hyperlinks can be turned off in the settings window.
 
 
@@ -60,6 +63,9 @@ Create or use an alternative config. Mainly a testing feature but useful if you 
 Show what is happening during either sync, index or spell. Useful for debugging. They will write detailed progress reports relating  to their section of the application to the console. However, Windows does not, for this purpose, have a  console.  But  it  can  be  told  to capture this log info to a file using another command line switch or by setting an env  variable that specifies a file name. Please ensure you have permission to write to the location specified. For example, from the start button, click run and type  -
 
 <monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace>
+
+<bold>-c</bold>
+Create new note. If tomboy-ng is not already running, start it up. This might be useful if you set an Operating System hot key to get that new note going even if you cannot see tomboy-ng.
 
 <bold>--open-note=PATH_and_Name_to_NOTE</bold>
 Open  a  note in  single note mode. In this mode, a separate process runs, it does not have access to the normal notes location, nor sync but can read, display, write back to or export a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
@@ -103,8 +109,8 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2024-06-09T18:22:20.9353611+10:00</last-change-date>
-  <last-metadata-change-date>2024-06-09T18:22:20.9353611+10:00</last-metadata-change-date>
+  <last-change-date>2025-01-05T10:31:28.0799242+11:00</last-change-date>
+  <last-metadata-change-date>2025-01-05T10:31:28.0799242+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>

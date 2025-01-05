@@ -330,6 +330,7 @@ initialization
         'title-fname', 'gnome3', 'useappind:',         // -g and gnome3 is legal but legacy, ignored.
         'strict-theme',                                // Strict-theme applies to only Qt versions
         'allow-leftclick',                             // overrule wayland decision to use only right click
-        'create-note');                                // create a new note (-ng open or not), added post 0.41
+        'create-note',                                 // create a new note (-ng open or not), added post 0.41
+        'disableaccurateframe');                       // possible read by LCL to stop an annoying little window in RasPiOS
 end.
 
