@@ -15,6 +15,9 @@
 <list><list-item dir="ltr">Mayús-FlechaDerecha : extender el texto seleccionado por un carácter hacia la derecha</list-item></list>
 <list><list-item dir="ltr">Mayús-FlechaIzquierda : extender el texto seleccionado por un carácter hacia la izquierda</list-item></list>
 <list><list-item dir="ltr">Mayús-Clic : Seleccionar texto entre posición actual y posición del clic</list-item></list>
+<list><list-item dir="ltr">Tab : Crear una viñeta o alargar la sangría de una viñeta o un párrafo</list-item></list>
+<list><list-item dir="ltr">Mayús-Tab : reducir la viñeta o la sangría del párrafo</list-item></list>
+<list><list-item dir="ltr">Ctrl-Tab : Crear o alargar la sangría del párrafo</list-item></list>
 
 
 <size:large><bold>Windows / Linux</bold></size:large>

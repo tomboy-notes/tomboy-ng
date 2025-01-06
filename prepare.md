@@ -174,7 +174,7 @@ If all you want is the binary, not building src packages at all, not cross compi
 
 * `wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.ppa`
 
-* `bash ./prepare.ppa [-Q]`      // the -Q says make a Qt5 version please, see the script's help for more options, particularly if you are (sensibly) using a Lazarus built from source.
+* `bash ./prepare.ppa [-q]`      // the -q says make a Qt5 version please, see the script's help for more options, particularly if you are (sensibly) using a Lazarus built from source.
 
 * `cd tomboy-ng[tab] [enter]`
 

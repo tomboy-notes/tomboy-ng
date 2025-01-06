@@ -6,6 +6,8 @@
 
 Tomboy-ng es una refundición del querido programa Notas Tomboy. Funciona en Linux, Windows y MacOS. Es compatible con los archivos de Tomboy y GNote. Tomboy-ng notas permiten letras <bold>Negritas</bold>, <italic>Cursivas</italic>, Tachadas, <highlight>Resaltadas</highlight> y <underline>Subrayadas</underline> en cuatro tamaños, <size:small>pequeña</size:small>, normal, <size:large>grande</size:large> y <size:huge><highlight>enorme</highlight></size:huge>. Notas pueden incluir hiperenlaces a otras notas, páginas web o cualquier archivo o directorio (que se puede leer) en su sistema.
 
+Viñetas multiniveles (Alt - Alt-FlechaDerecha/Izquiera) y sangrías (Ctrl-Tab) y ambas se pueden ser alargadas (Tab) o reducidas (Mayús-Tab).
+
 Puede sincronizar las notas con otros sistemas utilizando el modelo de sincronización de Tomboy y/o una sincronización por red usando GitHub. GitHub le permite leer o editar sus notas online desde un navegador.
 
 Muchos usuarios querrán tener tomboy-ng iniciarse al acceder al SO. La aplicación pondrá un icono en la bandeja de sistema que se puede usar para interactuar con ella. Sin embargo, para asegurar que tenemos soporte para algunas plataformas difíciles, se abre una pequeña ventana también que se puede despachar si ve el icono en la bandeja de sistema (o en algunos sistemas de Gnome 3, la ha añadido a su dock como favorito).  Puede elegir no mostrar la ventana pequeña al menos que no haya una nota corrompida al iniciar.
@@ -24,17 +26,19 @@ Desde la <bold>ventana de búsqueda</bold>, puede:
 <list><list-item dir="ltr"><list><list-item dir="ltr">le permite cambiar el título de una nota en la ventana de la nota.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">hace copias de seguridad de notas eliminadas. Si necesita saber que una nota se ha eliminado de verdad, vaya a Preferencias--&gt;Copia de Seguridad.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">tiene funciones para hacer instantáneas de sus notas de vez en cuando. ¡Utilícelo, por favor!</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">puede sincronizar sus notas con un almacén de archivos común para que estén disponibles de equipos múltiples (Linux, Windows o Mac).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">puede sincronizar sus notas con un almacén de archivos común para que estén disponibles de equipos múltiples (Linux, Windows o Mac). Vea https://github.com/tomboy-notes/tomboy-ng/wiki/File-Sync-with-tomboy-ng o sólo notas seleccionadas a su cuenta GitHub, https://github.com/tomboy-notes/tomboy-ng/wiki/Github-Sync.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">no comparte bien. Si guarda sus notas en un disco compartido (sin usar sincronización), tenga muchísimo cuidado de no tener más de una instancia de tomboy-ng o Tomboy ejecutándose al mismo tiempo. Ocurren cosas malas.</list-item></list></list-item></list>
 
-<bold>Enlaces</bold>
-Una característica destacada de Tomboy y sus sucesores es la creación automática de <bold>enlaces entre notas</bold>. Si escribe el título de una nota que existe, las palabras se hacen un hiperenlace y haciendo clic en ellas abrirá la otra nota. Asimismo, si selecciona unas palabras y hace clic en el botón "Enlaces", crea una nota nueva con ese título vinculado a la primera. Nuevo en v0.38: hacer clic en el botón "Enlaces" sin seleccionar nada produce un listado de enlaces activos a notas vinculadas a la nota en que está, o sea, un listado de los <bold>enlaces recibidos.</bold>
+<bold>Enlaces: notas, archivos, páginas web</bold>
+Una característica destacada de Tomboy y sus sucesores es la creación automática de <underline>enlaces entre notas</underline>. Si escribe el título de una nota que existe, las palabras se hacen un hiperenlace y haciendo clic en ellas abrirá la otra nota. Asimismo, si selecciona unas palabras y hace clic en el botón "Enlaces", crea una nota nueva con ese título vinculado a la primera. Nuevo en v0.38: hacer clic en el botón "Enlaces" sin seleccionar nada produce un listado de enlaces activos a notas vinculadas a la nota en que está, o sea, un listado de los <bold>enlaces recibidos.</bold>
 
-Nuevo en 0.40, <bold>Enlaces a archivos</bold>. Utilice el Menú de clic derecho para seleccionar un enlace a un archivo o directorio (atajos Alt-F, Alt D, respectivamente) para abrir un diálogo donde puedes seleccionar el archivo o directorio deseado. O, si sabe el nombre y ruta completos, escriba file:// seguido inmediatamente por la ruta y el nombre del archivo, ej., file://Imagenes/Navidad.jpeg. Si la ruta o el nombre del archivo contiene un espacio, pongalos entre comillas, ej., file://"Imagenes/Navidad 2023.jpeg". Windows use una barra invertida como separador, pero las que están al principio del URL tienen que ser como el ejemplo (y como las direcciones de la web). La ruta debería ser relativa a su directorio de inicio, al menos que ponga  una barra al principio, ej., un usuario de Windows puede tener un enlace de archivo como este: file://"c:\Documentos\mi prueba.txt".
+Nuevo en 0.40, <underline>Enlaces a archivos</underline>. Utilice el Menú de clic derecho para seleccionar un enlace a un archivo o directorio (atajos Alt-F, Alt D, respectivamente) para abrir un diálogo donde puedes seleccionar el archivo o directorio deseado. O, si sabe el nombre y ruta completos, escriba file:// seguido inmediatamente por la ruta y el nombre del archivo, ej., file://Imagenes/Navidad.jpeg. Si la ruta o el nombre del archivo contiene un espacio, pongalos entre comillas, ej., file://"Imagenes/Navidad 2023.jpeg". Windows use una barra invertida como separador, pero las que están al principio del URL tienen que ser como el ejemplo (y como las direcciones de la web). La ruta debería ser relativa a su directorio de inicio, al menos que ponga  una barra al principio, ej., un usuario de Windows puede tener un enlace de archivo como este: file://"c:\Documentos\mi prueba.txt".
 
 Este método depende de cómo/con que programa su sistema operativo (SO) abre un archivo concreto, entonces debería asegurarse de poder abrir ese tipo de archivo antes de ponerlo en una nota. En mi caso, una instalación nueva de Debian, Firefox quiso abrir archivos tipo ".log", ¡lo que hacia muy mal! Tome nota que tomboy-ng no puede probar los enlaces. Simplemente los abre (o por lo meno los intenta abrir).
 
-Asimismo, algo de texto que parece ser un enlace al internet, aparece como un hiperenlace que, al hacer clic, su navegador abrirá (si existe). Se puede desactivar los hiperenlaces a través de la pestaña de "Notas" en Preferencias.
+Asimismo, algo de texto que parece ser un <underline>enlace al internet</underline>, aparece como un hiperenlace que, al hacer clic, su navegador abrirá (si existe).
+
+Se puede desactivar los hiperenlaces a través de la pestaña de "Notas" en Preferencias.
 
 
 <size:large><bold>Parámetros de la línea de comandos.</bold></size:large>
@@ -54,10 +58,13 @@ Imprimir el número de versión y salir.
 <bold>--config-dir=PATH_to_DIR</bold>
 Crear o usar una configuración alternativa. Principalmente una opción para pruebas, pero útil si, por ejemplo, quiere tener dos (o más) grupos de notas independientes (pero no concurrentes).
 
- <bold>--debug-sync       --debug-index       ---debug-spell</bold>
+<bold>--debug-sync       --debug-index       --debug-spell</bold>
 Mostrar lo que pasa durante una sincronización, indización o revisión ortográfica. Útil para depuración. Estos parámetros escribirán al terminal informes de progreso detallados con relación a las funciones respectivas de la aplicación. Sin embargo, Windows no tiene un terminal con este fin.  Sin embargo, se puede dirigir esta información a un archivo de registro usando otro parámetro de la línea de comandos o estableciendo un variable ENV que especifica un nombre de archivo. Asegúrese, por favor, que tenga el permiso para escribir a la ubicación dada. Por ejemplo, desde el botón de inicio, haga clic en ejecutar y teclee:
 
 <monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace>
+
+<bold>-c</bold>
+Crear una nota nueva. Si tomboy-ng no se está ejecutando, abralo con este parámetro para ir directamente a la creación de una nota nueva. Puede que sea útil si crea un atajo de teclado en el sistema operativo para abrir una nota nueva aun cuando no vea tomboy-ng.
 
 <bold>--open-note=PATH_and_Name_to_NOTE</bold>
 Abrir una nota en el modo de nota simple. En este modo, un proceso independiente se ejecuta que no tiene acceso a la ubicación usual de las notas ni a la sincronización, pero que se puede leer, visualizar y escribir o exportar una sola nota.  Si el nombre de la nota no existe, se crea una nueva. Si el nombre de la nota especifica un archivo de texto plano o rtf, los contenidos del archivo serán importados a una nota nueva y la nota tendrá el nombre especificado en la línea de comandos, pero con la extensión .note.  En este modo la nota se queda en la ubicación donde estaba (o, para notas nuevas, donde se especifica en la línea de comandos). No se traslada a la ubicación de las notas tomboy-ng, no se sincroniza, ni se busca con tomboy-ng en el modo normal. Téngase en cuenta que el parámetro (-o o --open-note) es opcional; tomboy-ng some.note funciona también.
@@ -101,12 +108,12 @@ open tomboy-ng/tomboy-ng.app --args -o $PWD/doc/tomboy-ng.note
 
 
 </note-content></text>
-  <last-change-date>2024-06-14T10:19:31.8069640+02:00</last-change-date>
-  <last-metadata-change-date>2024-06-14T10:19:31.8069640+02:00</last-metadata-change-date>
+  <last-change-date>2025-01-06T11:29:04.4390218+11:00</last-change-date>
+  <last-metadata-change-date>2025-01-06T11:29:04.4390218+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>695</width>
+  <width>1012</width>
   <height>505</height>
   <x>479</x>
   <y>58</y>

@@ -1,9 +1,8 @@
-Updates to PDF maker, especially Chinese capabilities. User can select font.
-Fix to github sync handling transit net failures better.
-Sort recover notes.
-Warn Gnome and Qt6 users of Systray Issues.
-AppImage, Linux
-Remove dependency on wmctrl, Linux.
-Add multiselect and right click menu to Search Right Click, inc 2 later fixes.
-A fix for bug triggered when several notes are needing a save at quit time.
-A fix for Debian reproducibly issue.
+Allow --disableaccurateform switch for RasPiOS.
+Tab key now creates Bullet or extends Bullet or Indent.
+Shift-Tab to reduce Bullet or Indent.
+Ctrl-Tab to create Indent.
+Indent now more compatible with original Tomboy.
+Keep Bullet and Indent out of title.
+Github Sync now allows token with expiry date.
+CLI option, -c, to create new note, eg with OS Hot Key.
