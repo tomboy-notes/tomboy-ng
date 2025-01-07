@@ -122,6 +122,7 @@ RESOURCESTRING
     rsHelpDebug =      'Direct debug output to SOME.LOG file';
     rsHelpHelp =       'Show this help message and exit';
     rsHelpVersion =    'Print version and exit';
+    rsHelpCreateNew =  'Create new note';
     rsHelpNoSplash =   'Do not show small status/splash window';
     rsHelpDebugSync =  'Show debug messages during Sync';
     rsHelpDebugIndex = 'Show debug msgs while indexing notes';

@@ -202,6 +202,10 @@ msgctxt "resourcestr.rshelpconfig"
 msgid "Create or use an alternative config"
 msgstr ""
 
+#: resourcestr.rshelpcreatenew
+msgid "Create new note"
+msgstr ""
+
 #: resourcestr.rshelpdebug
 msgctxt "resourcestr.rshelpdebug"
 msgid "Direct debug output to SOME.LOG file"

@@ -69,7 +69,8 @@ Show what is happening during either sync, index or spell. Useful for debugging.
 Create new note. If tomboy-ng is not already running, start it. This might be useful if you want to set an Operating System Hot Key to create a new note.
 
 <bold>--open-note=PATH_and_Name_to_NOTE</bold>
-Open  a  note in  single note mode. In this mode, a separate process runs, it does not have access to the normal notes location, nor sync but can read, display, write back to or export a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional, "tomboy-ng some.note" will works as well.
+Open  a  note in  single note mode. In this mode, a separate process runs, it does not have access to the normal notes location, nor sync but can read, display, write back to or export a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional. For example,
+"tomboy-ng some.note" will create or open "some.note" in the current directory.
 
 <bold>--save-exit</bold>
 Works only with the single note mode, will import (.note, .rtf, plain text) the file, convert to .note format (and note standard filename format) and save in the configured notes directory. Useful in scripting.
@@ -95,8 +96,8 @@ Use  only  Qt  theme  colors for Editing Notes, as the note edit window needs mo
 <bold>-platform xcb</bold>
  As many current Wayland using Linux systems have multiple  problems,  this  setting  should be used to use the much more mature libxcb instead.  Problems it  fixes  include  the  inability  to bring  an open note to the foreground when clicked, inability to  copy text from a note to an external application  and  inability to  restore  a  note  to its previous position. Applicable Qt5/6  only. Note different syntax to other options,  that  is  because this  option  goes direct to the Qt Framework and is not seen by tomboy-ng. Setting an environment variable,  <monospace>QPA_PLATFORM=xcb</monospace> has the same effect.
 
- <bold>-platformtheme gnome | gtk2 | qt5ct | qt6ct</bold>
- Qt  application  can  be told where you want the app to look for its color theme. The external apps, qt5ct and qt6ct will let you  establish  your  own colors, 'gnome' will use the existing gnome theme if you have gnomeplatform-qt5  also installed. The 'gtk2' setting works with some older systems and appropriate themes installed. Not all systems will work with all these  options,  you  may need to experiment to some degree.  Note different syntax to other options, that is because this option goes direct to the Qt Framework  and  is not seen by tomboy-ng. Setting an environment variable, <monospace>QT_QPA_PLATFORMTHEME=gnome</monospace> has the same effect.
+<bold>-platformtheme gnome | gtk2 | qt5ct | qt6ct</bold>
+Qt  application  can  be told where you want the app to look for its color theme. The external apps, qt5ct and qt6ct will let you  establish  your  own colors, 'gnome' will use the existing gnome theme if you have gnomeplatform-qt5  also installed. The 'gtk2' setting works with some older systems and appropriate themes installed. Not all systems will work with all these  options,  you  may need to experiment to some degree.  Note different syntax to other options, that is because this option goes direct to the Qt Framework  and  is not seen by tomboy-ng. Setting an environment variable, <monospace>QT_QPA_PLATFORMTHEME=gnome</monospace> has the same effect.
 
 <size:large><bold>Mac Things</bold></size:large>
 Mac user require a slightly more complicated command line when using any of these command line switches. For example a Mac command line to generate a sync debug log would be -
@@ -110,14 +111,14 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2025-01-06T11:39:12.8949427+11:00</last-change-date>
-  <last-metadata-change-date>2025-01-06T11:39:12.8949427+11:00</last-metadata-change-date>
+  <last-change-date>2025-01-07T10:05:13.3030977+11:00</last-change-date>
+  <last-metadata-change-date>2025-01-07T10:05:13.3030977+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>1125</width>
+  <width>1246</width>
   <height>626</height>
-  <x>514</x>
-  <y>355</y>
+  <x>610</x>
+  <y>122</y>
   <open-on-startup>False</open-on-startup>
 </note>

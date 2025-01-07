@@ -97,7 +97,7 @@ begin
        debugln('   --dark-theme                  ' + 'Does not work for GTK2');
        debugln('   -l --lang=CCode               ' + rsHelpLang);    // syntax depends on bugfix https://bugs.freepascal.org/view.php?id=35432
        debugln('   -h --help                     ' + rsHelpHelp);
-       debugln('   -c                            ' + 'Create new note');   // ToDo : make rsHelpCreate
+       debugln('   -c                            ' + rsHelpCreateNew);
        debugln('   --version                     ' + rsHelpVersion);
        debugln('   --no-splash                   ' + rsHelpNoSplash);
        debugln('   --debug-sync                  ' + rsHelpDebugSync);
