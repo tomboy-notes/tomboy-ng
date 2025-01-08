@@ -32,13 +32,11 @@ From the <bold>search form</bold>, you can -
 <bold>Linking</bold>
 A major feature of Tomboy and its descendants is the automatic <bold>linking between notes</bold>. If you type the Title of an existing note, the words will become hyperlinks and a click will open that other note. Similarly, if you select some text and click the Links button, a new note with that Title and linked to from your existing note, appears. New in v0.38, clicking the Links button with nothing selected will display a clickable list of the notes linked to this one, <bold>Backlinks.</bold>
 
-New in 0.40, <bold>File Links</bold>. Use the Right Click Menu to select either a File or Directory link (or Alt-F or Alt-D) for a dialog where you select the file or directory in question. Or, if you know the full name and path, type file:// and that path and file name, eg file://Pictures/xmas.jpeg . If the file name or path contains a space, wrap it in double inverted commas. Windows use the other slash as a file seperator but the ones at the start of the URL must be as shown (much like a web addesss). The path should be relative to your home directory unless you start it with a slash, eg a Windows user may have a link like this file://"c:\my test.txt"
-
-New in 0.40, <bold>File Links</bold>. Use the Right Click Menu to select either a File or Directory link (or Alt-F or Alt-D) for a dialog where you select the file or directory in question. Or, if you know the full name and path, type file:// and that path and file name, eg file://Pictures/xmas.jpeg . If the file name or path contains a space, wrap it in double inverted commas. Windows use the other slash as a file seperator but the ones at the start of the URL must be as shown (much like a web addesss). The path should be relative to your home directory unless you start it with a slash, eg a Windows user may have a link like this file://"c:\my test.txt"
+New in 0.40, <bold>File Links</bold>. Use the Right Click Menu to select either a File or Directory link (or Alt-F or Alt-D) for a dialog where you select the file or directory in question. Or, if you know the full name and path, type file:// and that path and file name, eg file://Pictures/xmas.jpeg . If the file name or path contains a space, wrap it in double inverted commas. Windows uses the other slash as a file separator but the ones at the start of the URL must be as shown (much like a web addesss). The path should be relative to your home directory unless you start it with a slash, eg a Windows user may have a link like this file://"c:\my test.txt"
 
 This system relies on your Operating System's view of how to open a particular file, good idea to be sure it can open the type of file concerned before using it in a Note. In my case, new install of Debian, Firefox wanted to open .log files and does so very, very badly. Note that tomboy-ng cannot test these sort of links, it shows them in good faith.
 
-<bold>Web Links,</bold> In a similar manner, text that tomboy-ng thinks might be a web link is marked as a hyper link, a click will open your browser. Both forms of hyperlinks can be turned off in the settings window.
+<bold>Web Links.</bold> In a similar manner, text that tomboy-ng thinks might be a web link is marked as a hyper link, a click will open your browser. Both forms of hyperlinks can be turned off in the settings window.
 
 
 
@@ -111,14 +109,14 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2025-01-07T10:05:13.3030977+11:00</last-change-date>
-  <last-metadata-change-date>2025-01-07T10:05:13.3030977+11:00</last-metadata-change-date>
+  <last-change-date>2025-01-08T20:34:23.4240155+11:00</last-change-date>
+  <last-metadata-change-date>2025-01-08T20:34:23.4240155+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1246</width>
   <height>626</height>
-  <x>610</x>
-  <y>122</y>
+  <x>668</x>
+  <y>31</y>
   <open-on-startup>False</open-on-startup>
 </note>

@@ -1,12 +1,12 @@
 # Spanish translation for Tomboy-ng.
 # This file is put in the public domain.
-# Roy W. Reese <waterbearer54@gmx.com>, 2018-2024.
+# Roy W. Reese <waterbearer54@gmx.com>, 2018-2025.
 msgid ""
 msgstr ""
-"Project-Id-Version: tomboy-ng v0.41\n"
+"Project-Id-Version: tomboy-ng v0.42\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-11-04 13:11+0100\n"
-"Last-Translator: Roy W. Reese <waterbearer54@gmx.com>\n"
+"PO-Revision-Date: 2025-01-07 16:36+0100\n"
+"Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -221,7 +221,7 @@ msgstr "Crear o usar una configuración alternativa"
 
 #: resourcestr.rshelpcreatenew
 msgid "Create new note"
-msgstr ""
+msgstr "Crear una nota nueva"
 
 #: resourcestr.rshelpdebug
 msgctxt "resourcestr.rshelpdebug"
@@ -1919,4 +1919,3 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
-
