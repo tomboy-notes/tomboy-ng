@@ -64,7 +64,7 @@ Show what is happening during either sync, index or spell. Useful for debugging.
 <monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace>
 
 <bold>-c</bold>
-Create new note. If tomboy-ng is not already running, start it. This might be useful if you want to set an Operating System Hot Key to create a new note.
+This is designed for users who want to make an operating system hotkey to create a new note window directly. Using this for a hotkey will start tomboy-ng if it is not running.
 
 <bold>--open-note=PATH_and_Name_to_NOTE</bold>
 Open  a  note in  single note mode. In this mode, a separate process runs, it does not have access to the normal notes location, nor sync but can read, display, write back to or export a stand alone note.  If  the  note name  does  not  exist, a new note is created. If the note name specifies a plain text file or a rtf file,  the contents of that file will be imported into a new note and that note will be named as specified on the command line but with an extension of ".note".  In this mode, the note remains in its existing location, it is not moved to the tomboy-ng notes location, it is not synced, nor searched by tomboy-ng in its normal mode. Note that the switch (-o or --open-note) is optional. For example,
@@ -109,8 +109,8 @@ open tomboy-ng/tomboy-ng.app --args "-o" "$PWD/doc/tomboy-ng.note"
 
 
 </note-content></text>
-  <last-change-date>2025-01-08T20:34:23.4240155+11:00</last-change-date>
-  <last-metadata-change-date>2025-01-08T20:34:23.4240155+11:00</last-metadata-change-date>
+  <last-change-date>2025-01-11T17:24:01.5594918+11:00</last-change-date>
+  <last-metadata-change-date>2025-01-11T17:24:01.5594918+11:00</last-metadata-change-date>
   <create-date>2018-11-07T16:01:06.6550000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
