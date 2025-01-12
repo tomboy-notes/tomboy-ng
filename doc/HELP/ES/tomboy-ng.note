@@ -64,7 +64,7 @@ Mostrar lo que pasa durante una sincronización, indización o revisión ortogr�
 <monospace>tomboy-ng  --debug-log=c:\debug.txt  --debug-sync</monospace>
 
 <bold>-c</bold>
-Crear una nota nueva. Si tomboy-ng no se está ejecutando, inicielo. Puede que este parámetro sea útil para añadir un ir directamente a la creación de una nota nueva. Puede que sea útil para un atajo de teclado del sistema operativo para crear una nota nueva.
+Crear una nota nueva. Un parámetro diseñado para usuarios que quieren crear un atajo de teclado del sistema operativo que abre directamente una ventana para una nota nueva. El atajo lanzará a tomboy-ng si no se está ejecutando.
 
 <bold>--open-note=PATH_and_Name_to_NOTE</bold>
 Abrir una nota en el modo de nota simple. En este modo, un proceso independiente se ejecuta que no tiene acceso a la ubicación usual de las notas ni a la sincronización, pero que se puede leer, visualizar y escribir o exportar una sola nota.  Si el nombre de la nota no existe, se crea una nueva. Si el nombre de la nota especifica un archivo de texto plano o rtf, los contenidos del archivo serán importados a una nota nueva y la nota tendrá el nombre especificado en la línea de comandos, pero con la extensión .note.  En este modo la nota se queda en la ubicación donde estaba (o, para notas nuevas, donde se especifica en la línea de comandos). No se traslada a la ubicación de las notas tomboy-ng, no se sincroniza, ni se busca con tomboy-ng en el modo normal. El parámetro (-o o --open-note) es opcional. Por ejemplo, "tomboy-ng some.note" creará o abrirá "some.note" en el directorio actual.
