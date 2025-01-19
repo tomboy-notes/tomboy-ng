@@ -392,6 +392,7 @@ if [ -f tomboy-ng-master.zip ]; then
 	    done < whatsnew
 	fi
 	dch --append "Please see github for further change details."
+	sed -i "s/  \*  Release of new version./  * Release of new version./" debian/changelog
 
 	#cp debian/control.debian debian/control			# thats the GTK2 version
 	#if [ "$WIDGET" = "Qt5" ]; then

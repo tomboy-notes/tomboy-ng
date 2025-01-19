@@ -1,6 +1,6 @@
 Building Debian or PPA source packages.
 ===========
-Also, AppImages, Pacman packages ....
+**Also, AppImages, Pacman packages ....**
 
 
 This document is about building the source packages that are uploaded to either Debian Mentors or Launchpad PPA. With tomboy-ng, we use scripts (in the scripts dir) to do the initial setup prior to building and then instructions here to complete the processes. In all cases, we upload a source package, it must build on their remote system.
@@ -255,14 +255,16 @@ We have both FPC and Lazarus as non package installs now, required removal of th
 
 So, on a clean (in my case Endeavour) machine, install gtk2 and qt6pas
 
-    sudo pacmand -S gtk2 qt6pas
+    sudo pacman -S gtk2 qt6pas
+
     [eg]export VER=0.40b
     mkdir $VER; cd $VER
     wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD.gtk2
     wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD.Qt6
     cp PKGBUILD.Qt6 PKGBUILD
     makepkg --skipinteg
-    [eg] mv tomboy-ng-0.41-1-x86_64.pkg.tar.zst tomboy-ng-0.41-1-Qt6-x86_64.pkg.tar.zst 
+    [eg] mv tomboy-ng-0.41-1-x86_64.pkg.tar.zst tomboy-ng-0.41-1-Qt6-x86_64.pkg.tar.zst
+    rm -Rf src pkg
     copy PKGBUILD.gtk2 PKGBUILD
     makepkg --skipinteg
     

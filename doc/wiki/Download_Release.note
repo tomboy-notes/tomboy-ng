@@ -11,22 +11,24 @@
 Downloads and information for specific platforms further down the page.
 
 <size:huge><bold>Index</bold></size:huge>
-* [Release Notes](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Release-Notes)
-* [Windows Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Windows)
-* [MacOS Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#MacOS)
-* [Linux Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Linux)
+<list><list-item dir="ltr"><list><list-item dir="ltr">[Release Notes](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Release-Notes)</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">[Windows Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Windows)</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">[MacOS Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#MacOS)</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">[Linux Downloads](https://github.com/tomboy-notes/tomboy-ng/wiki/Download_Release#Linux)</list-item></list></list-item></list>
 
 <size:huge><bold>Release Notes</bold></size:huge>
 
-While this release is mainly a bug fix one, there are some new features -
+<list><list-item dir="ltr"><list><list-item dir="ltr">Allow --disableaccurateform switch for RasPiOS, this will prevent a small, non-responsive window appearing when you start tomboy-ng. Why ?  Ask the RasPiOS developers.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Tab key now creates Bullet or extends an existing Bullet (or extends an existing Indent).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Shift-Tab to reduce Bullet or Indent.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Ctrl-Tab to create Indent (but only one paragraph at a time).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Indent now more compatible with original Tomboy. You can now open an note from the old Tomboy and indents at the start of a paragraph will appear as intended. However, indents (ie tabs) in the middle of a paragraph will not, eg, create columns of text.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Github Sync now allows tokens without an expiry date.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">New command line option, -c, to create new note, eg with Operating System Hot Key.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Linux Qt5 and Qt6 packages require their respective libQtxPas libraries. Most older Linux distributions have out of date versions of these libraries, the known exceptions being Ubuntu 24.04, 24.10, Debian Trixie, Fedora  41+ and up to date Arch based systems. See below for where to get current libraries -</list-item></list></list-item></list>
 
-<list><list-item dir="ltr"><list><list-item dir="ltr">Search using Title only or full note content (Search Form, Options).</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Improved flexibility when making PDF, particularly significant for Chinese text users who can select an appropriate font for their own needs.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Its now possible to open or delete multiple notes and to manage a note's notebook membership from the Search window with a right-click.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">The addition of AppImage packages, Linux only. These self contained packages do not need installation, can be downloaded, set executable and run directly. While larger than a normal install that make no system level changes and may be useful if you just want to evaulate tomboy-ng or use a feature in a one-off situation. Available in Qt5 or Qt6, 64bit linux only.</list-item></list></list-item></list>
-Bug fixes -
-<list><list-item dir="ltr"><list><list-item dir="ltr">A bug that could cause a crash if a note was deleted, within a notebook, if no content had been added.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">If tomboy-ng was closed immediatly after new content was added to a note, it could have been lost.</list-item></list></list-item></list>
+https://github.com/davidbannon/libqt5pas/releases
+https://github.com/davidbannon/libqt6pas/releases
 
 
 <bold>Qt5 and Qt6 users may need to install a new libqt5pas1 or libqt6pas6 library, your distro version may be out of date unless you are using eg Fedora 41, Ubuntu 24.04, 24.10, any Arch system or Debian Trixie. Other Linux systems should get the new libraries from the links below and install them before or at the same time as you install tomboy-ng. (New libraries are not needed if you choose the GTK2 version.)</bold>
@@ -49,17 +51,30 @@ This is a "Universal Package", will install on both Intel based and ARM64 based 
 <size:huge><bold>Linux</bold></size:huge>
 Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 v. Qt6 to cater for, its not easy ! The Qt5 version requires Qt5.12 (preferably Qt5.15) or later and 64bit. The GTK version, needs GTK2, pre installed on most Distros at present.
 
+<size:large><bold>AppImage</bold></size:large>
+I now provide two AppImage files that can be downloaded directly, marked as executable and, possibly run directly without any further install.  There are a few things to note -
+<list><list-item dir="ltr">Will work on Linux Distros as old as Ubuntu 20.04. The Qt5 version will work in Debian Bullseye but not the Qt6 version.</list-item></list>
+<list><list-item dir="ltr">Like all AppImages, the download will need to be marked executable, the download process removes that attribute.</list-item></list>
+     <monospace>$&gt;chmod u+x tomboy-ng--x86_64-Qt5.AppImage &lt;enter&gt;</monospace>
+<list><list-item dir="ltr">These packages were built on an **Ubuntu 20.04** system (and therefore contains libraries from U20.04) and are not guaranteed to work on significantly older systems. I note the the Qt5 version works fine on **Debian 11 Bullseye** but the Qt6 one does not.</list-item></list>
+<list><list-item dir="ltr">Both packages are around 35Meg</list-item></list>
+<list><list-item dir="ltr">On newer Ubuntu systems, the app may fail to start with a message mentioning fuse, a library to allow user level file system mounting. (Ubuntu of course have their own bundling system, Snaps.)  The necessary library is easily added</list-item></list>
+     <monospace>$&gt;sudo apt install install libfuse2t64 &lt;enter&gt;</monospace>
+<list><list-item dir="ltr">Argon (and reportedly other OpenSUSE systems) also need fuse, install with</list-item></list>
+     <monospace>$&gt; sudo zypper install fuse libfuse2 &lt;enter&gt;</monospace>
+<list><list-item dir="ltr">Your feedback about the use of AppImage would be appreciated.</list-item></list>
+
+Note  : The pacman package is, of necessity, built on a system that used glibc v2.36 or later and the binary will not work on systems running glibc less than v2.34. In a pacman world I expect this not to be a problem but if I'm wrong, please let me know.
+
 If you use a <bold>dark theme</bold> with the QT5 version you should also read the man page (man tomboy-ng &lt;enter&gt;) or  [Dark Theme](https://github.com/tomboy-notes/tomboy-ng/wiki/Bugs-and-Known-Issues#QT5-versions-and-Dark-Theme).
 
 As a general rule, the gtk2 version is your best bet on older operating systems, newer ones, should use the Qt5 or Qt6 ones. The Qt5 and especially the Qt6 may require a few more libraries at install time but they are mostly libraries other apps will want anyway.
 
-<bold>NEW in v0.41</bold>, Linux users running x86_64 hardware can, if they choose, download an AppImage based on [Qt5](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt5.AppImage) or [Qt6](https://github.com/tomboy-notes/tomboy-ng/releases/download/v0.41/tomboy-ng-x86_64-Qt6.AppImage). While I am not totally convinced about this sort of packaging, the <bold>AppImage</bold> is open, unobtrusive and requires no further "run time environment". Download the file, mark it executable and run it. Certainly good for a test !
-
 <size:large><bold>Linux Qt5 and Qt6 Libraries</bold></size:large>
 New in 0.37, is the need to install a new, non-standard, libqt5pas or libqt6pas library. If using the Qt5 or Qt6 tomboy-ng of 0.37 or later, you MUST install special libraries unless your distro has caught up. At the last check, Fedora 41, Ubuntu 24.04, 24.10, Debian Trixie and any Arch based distro do not need these manually loaded libraries. They are at
 
-https://github.com/davidbannon/libqt5pas/releases 64bit Intel or AMD users want  libqt5pas-2.15-3.x86_64.rpm or  libqt5pas1_2.15-1_amd64.deb
-https://github.com/davidbannon/libqt6pas/releases 64bit Intel or AMD users want libqt6pas6-6.2.7-2.x86_64.rpm or libqt6pas6_6.2.7-1_amd64.deb
+https://github.com/davidbannon/libqt5pas/releases  - 64bit Intel or AMD users want  libqt5pas-2.15-3.x86_64.rpm or  libqt5pas1_2.15-1_amd64.deb
+https://github.com/davidbannon/libqt6pas/releases - 64bit Intel or AMD users want libqt6pas6-6.2.7-2.x86_64.rpm or libqt6pas6_6.2.7-1_amd64.deb
 
 Download the appropriate library (for your system and for the type of tomboy-ng you intend to use) and install it before or during the tomboy-ng install.
 
@@ -71,7 +86,7 @@ Sadly, I am finding the effort of maintaining the tomboy-ng PPA just a bit too m
 For GTK based distributions that use .deb packages, do yourself a favour, install Gdebi before you start. But it will require a lot of gtk2 libraries you might otherwise not need.
 
 <size:large><bold>Ubuntu</bold></size:large>
-Ubuntu 24.04 has tomboy-ng v0.39 but v0.41 fixes some important bugs and has a few new minor features.
+Ubuntu 24.04 has tomboy-ng v0.39 but v0.42 fixes some important bugs and has a few new minor features.
 
 Generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
 <list><list-item dir="ltr"><list><list-item dir="ltr">16.04 and 18.04 (while out of date, we still test with tomboy-ng) Use GTK2 version [32bit]($$DEB32$$) or [64bit]($$DEB64$$). Will not work with QT5.</list-item></list></list-item></list>
@@ -149,7 +164,10 @@ To install, please download and save the file, then use the rpm command, note th
 Users of the official Raspberry Pi OS (previously know as Raspbian) or, better still, other deb based Linux Distros made for Raspberry Pi, can now download a deb and install it using the apt commands mentioned above.
 
 If your Operating System is 32bit download [Qt5 32bit]($$DEB32ARM$$)
-If your Operating System is a 64bit download [gtk2 64bit]($$DEB64ARM$$) or, recommended,  [Qt5 64bit]($$DEB64ARMQT5$$) I note that the official RasPi OS is using Wayland (even though its desktop is XFCe), the Qt5 version of tomboy-ng works least badly there. These problems do not exists in other Linux distributions.
+If your Operating System is a 64bit download [gtk2 64bit]($$DEB64ARM$$) or, recommended,  [Qt5 64bit]($$DEB64ARMQT5$$) I note that the official RasPi OS is using Wayland (even though its desktop is XFCe), the Qt5 version of tomboy-ng works least badly there. You should start tomboy-ng with the new command line option -
+<monospace>$&gt; tombot-ng --disableaccurateform &lt;enter&gt;</monospace>
+
+These problems do not exists in other Linux distributions.
 
 I have not made Raspberry Pi rpms, seems few users.
 
@@ -162,14 +180,14 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2024-11-26T17:17:20.6169161+11:00</last-change-date>
-  <last-metadata-change-date>2024-11-26T17:17:20.6169161+11:00</last-metadata-change-date>
+  <last-change-date>2025-01-14T17:56:37.3027401+11:00</last-change-date>
+  <last-metadata-change-date>2025-01-14T17:56:37.3027401+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1139</width>
   <height>800</height>
-  <x>113</x>
-  <y>72</y>
+  <x>673</x>
+  <y>108</y>
   <open-on-startup>False</open-on-startup>
 </note>

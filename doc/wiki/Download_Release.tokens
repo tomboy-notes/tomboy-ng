@@ -1,4 +1,4 @@
-$$VERSION$$=0.41
+$$VERSION$$=0.42
 $$WEXE$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng-setup-$$VERSION$$.exe
 $$DMG64$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng64_$$VERSION$$.dmg
 $$DEB32$$=https://github.com/tomboy-notes/tomboy-ng/releases/download/v$$VERSION$$/tomboy-ng_$$VERSION$$-0_i386.deb
