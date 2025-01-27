@@ -1,6 +1,21 @@
+tomboy-ng (0.42-1) unstable; urgency=medium
+
+  *  Release of new version.
+  * Allow --disableaccurateform switch for RasPiOS.
+  * Tab key now creates Bullet or extends Bullet or Indent.
+  * Shift-Tab to reduce Bullet or Indent.
+  * Ctrl-Tab to create Indent.
+  * Indent now more compatible with original Tomboy.
+  * Keep Bullet and Indent out of title.
+  * Github Sync now allows token with expiry date.
+  * CLI option, -c, to create new note, eg with OS Hot Key.
+  * Please see github for further change details.
+
+ -- David Bannon <tomboy-ng@bannons.id.au>  Fri, 17 Jan 2025 12:36:00 +1100
+
 tomboy-ng (0.41-1) unstable; urgency=medium
 
-  * Release of new version.
+  * Release of new version
   * Updates to PDF maker, especially Chinese capabilities. User can
     select font.
   * Fix to github sync handling transit net failures better.
@@ -20,7 +35,7 @@ tomboy-ng (0.41-1) unstable; urgency=medium
 
 tomboy-ng (0.40-1) unstable; urgency=medium
 
-  * Release of new version.
+  *  Release of new version.
   * Revised Bullet control system.
   * Revised Color setting system for Qt5 and Qt6.
   * Tab key now indents paragraph, not compatible with old Tomboy.
@@ -44,29 +59,29 @@ tomboy-ng (0.40-1) unstable; urgency=medium
 
 tomboy-ng (0.39-1) unstable; urgency=medium
 
-  * Release of new version.
-  * Fix to UTF8 bug in note title affecting links.
-  * Avoid Wayland, it cannot bring a window to foreground, report on
-    position.
-  * Please see github for further change details.
+  *  Release of new version.
+  *  Fix to UTF8 bug in note title affecting links.
+  *  Avoid Wayland, it cannot bring a window to foreground, report on
+     position.
+  *  Please see github for further change details.
 
  -- David Bannon <tomboy-ng@bannons.id.au>  Tue, 16 Jan 2024 21:52:29 +1100
 
 tomboy-ng (0.38-1) unstable; urgency=medium
 
-  * Release of new version.
-  * Display backlinks (click Links button with no text selected). Note
+  *  Release of new version.
+  *  Display backlinks (click Links button with no text selected). Note
     that the window that displays the BackLinks may be incorrectly
     located in Gnome based systems. An upstream fix is expected.
-  * Several minor bug fixes (links to new notes, hints).
-  * Closes: Bug#1046360 Fails to build source after successful build.
-  * Please see github for further change details.
+  *  Several minor bug fixes (links to new notes, hints).
+  *  Closes: Bug#1046360 Fails to build source after successful build.
+  *  Please see github for further change details.
 
  -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 10 Jan 2024 12:04:29 +1100
 
 tomboy-ng (0.37-1) unstable; urgency=medium
 
-  * Release of new version.
+  *  Release of new version.
   * Addition build targets, RasPi-amd64, Mac-amd64, i366-qt5, Qt6.
   * Revised note dir selection.
   * No left click on trayicon for KDE, wayland issue.
@@ -119,14 +134,14 @@ tomboy-ng (0.36-1) unstable; urgency=medium
 
 tomboy-ng (0.35-2) unstable; urgency=medium
 
-  * Repackage
+  *  Repackage
   * Added dependencies
 
  -- David Bannon <tomboy-ng@bannons.id.au>  Wed, 30 Nov 2022 21:26:53 +1100
 
 tomboy-ng (0.35-1) unstable; urgency=medium
 
-  * Release of new version
+  *  Release of new version
   * A better Search all notes and Find in Note capability.
   * A Ukrainian Translation.
   * UI tweaks including Ctrl-F toggling, Esc to close note.

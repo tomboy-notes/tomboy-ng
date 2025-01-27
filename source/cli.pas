@@ -39,7 +39,7 @@ unit cli;
 interface
 
 uses
-    Classes, SysUtils, Dialogs;
+    LazLogger, Classes, SysUtils, Dialogs ;
 
 function ContinueToGUI() : boolean ;
                             { Will take offered file name, report some error else checks its a  .note,
@@ -64,7 +64,7 @@ implementation
 
 
 
-uses Forms, LCLProc, LazFileUtils, FileUtil, ResourceStr, simpleipc, IniFiles,
+uses Forms, {LCLProc,} LazFileUtils, FileUtil, ResourceStr, simpleipc, IniFiles,
     import_notes, tb_utils;
 
 type

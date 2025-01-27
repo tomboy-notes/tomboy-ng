@@ -263,12 +263,12 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-    StdCtrls, Buttons, kmemo, LazLogger, clipbrd, lcltype,
+    StdCtrls, Buttons, kmemo, clipbrd, lcltype,
     ComCtrls,           // required up here for copy on selection stuff.
     fpexprpars,         // for calc stuff ;
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
     PrintersDlgs,
-    TBUndo;
+    TBUndo, LazLogger;
 
 type FontLimitedAttrib = record      // Used to save and restore attributes when
     Styles : TFontStyles;            // a hyperlink is created or unlinked.
