@@ -22,7 +22,9 @@ HELP_DIR = $(DOC_DIR)/HELP
 RM      = rm -f
 RMDIR	= rm -Rf
 MKDIR   = mkdir -p
-OUTFILES = ../*.deb ../*.build ../*.xz ../*.dsc ../*.buildinfo ../*.changes kcontrols/source/tomboy-ng.log source/tomboy-ng.log
+# OUTFILES = ../*.deb ../*.build ../*.xz ../*.dsc ../*.buildinfo ../*.changes kcontrols/source/tomboy-ng.log source/tomboy-ng.log
+# No ! dont remove deb files, Debian Reproducability testing calls clean or realclean and then complains they are missing !
+OUTFILES = kcontrols/source/tomboy-ng.log source/tomboy-ng.log
 CLEANDIR = kcontrols/packages/kcontrols/lib source/lib kcontrols/source/lib
 INSTALL = install
 INSTALL_PROGRAM = $(INSTALL) -c -m 0755
@@ -35,14 +37,14 @@ CPLANG = msgfmt -o $(DESTDIR)$(SHARE_DIR)/locale/$(LANG)/LC_MESSAGES/tomboy-ng.m
 
 
 
-tomboy-ngx86_64: 
+tomboy-ng: 
 	bash ./buildit.bash
 	$(info ========== We have compiled [${PROGRAM_NAME}])
-	# $(info ========== $$BIN_DIR is [${BIN_DIR}])
+#	$(info ========== $$BIN_DIR is [${BIN_DIR}])
 
 
 clean:
-	rm -Rf 		debian/tomboy-ng
+	$(RMDIR)	debian/tomboy-ng
 	$(RM)		debian/debhelper-build-stamp
 	$(RM)		debian/tomboy-ng.substvars
 	$(RMDIR)	$(CLEANDIR)
@@ -50,8 +52,8 @@ clean:
 	$(RM)		source/Tomboy_NG source/tomboy-ng
 	$(RM)		kcontrols/package/kcontrols/KControls.log
 	$(RM)		$(APPDIR)
-	# clean is pretty useless here, any change to tree upsets debuild and apparently
-	# kcontrols changes some src file during package build. So, refresh !
+#	clean is pretty useless when building debs, any change to tree upsets debuild and 
+#	apparently kcontrols changes some src file during package build. So, refresh !
 
 install: installdirs
 	$(info ========== Installing ....)
@@ -83,5 +85,5 @@ installdirs:
 
 #appimage: set_appimage_dir install 
 
-appimage: tomboy-ngx86_64 install
+appimage: tomboy-ng install
 
