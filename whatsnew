@@ -1,8 +1,1 @@
-Allow --disableaccurateform switch for RasPiOS.
-Tab key now creates Bullet or extends Bullet or Indent.
-Shift-Tab to reduce Bullet or Indent.
-Ctrl-Tab to create Indent.
-Indent now more compatible with original Tomboy.
-Keep Bullet and Indent out of title.
-Github Sync now allows token with expiry date.
-CLI option, -c, to create new note, eg with OS Hot Key.
+Closes: #985946 - FTBFS on ppc64el (actually fixed some time ago)
