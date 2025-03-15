@@ -46,10 +46,12 @@ Tested on 32bit Windows Vista and 64bit Windows 10 and 11.  Windows users should
 <size:large><bold>MacOS</bold></size:large>
 Tested and built on an Intel based Mac Monterey but Apple Silicon (aka aarch64) is now also directly supported. Use ($$DMG64$$). Install by double clicking the .dmg file and drag the tomboy-ng icon into the nearby Applications Folder. Because I don't pay a fee to Apple, first time users will need to control click (that is, hold the Control Key down and click) the tomboy-ng icon in Applications and select "Open".
 
+On macOS 15 and later, it has become even harder to launch non-codesigned installers and applications. Here's an explanation of what you have to do: https://www.idownloadblog.com/2024/08/07/apple-macos-sequoia-gatekeeper-change-install-unsigned-apps-mac/ . I'd like to point out that a malware writer, who stands to make a lot of money from his project, is quite likely to pay Apple a signing fee. On the other hand, I make no money from this project and cannot justify paying an arbitrary fee to Apple.
+
 This is a "Universal Package", will install on both Intel based and ARM64 based systems.
 
 <size:huge><bold>Linux</bold></size:huge>
-Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 v. Qt6 to cater for, its not easy ! The Qt5 version requires Qt5.12 (preferably Qt5.15) or later and 64bit. The GTK version, needs GTK2, pre installed on most Distros at present.
+Linux users need to be a bit careful about which version they download. With quite a range of Distributions,  Desktops, 32bit and 64bit and GTK2 v. Qt5 v. Qt6 to cater for, its not easy ! The Qt5 version requires Qt5.12 (preferably Qt5.15) or later and 64bit. The GTK version, needs GTK2, pre installed on many Distros at present.
 
 <size:large><bold>AppImage</bold></size:large>
 I now provide two AppImage files that can be downloaded directly, marked as executable and, possibly run directly without any further install.  There are a few things to note -
@@ -180,14 +182,14 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2025-01-14T17:56:37.3027401+11:00</last-change-date>
-  <last-metadata-change-date>2025-01-14T17:56:37.3027401+11:00</last-metadata-change-date>
+  <last-change-date>2025-03-10T12:00:45.4933035+11:00</last-change-date>
+  <last-metadata-change-date>2025-03-10T12:00:45.4933035+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>1139</width>
+  <width>1270</width>
   <height>800</height>
-  <x>673</x>
-  <y>108</y>
+  <x>206</x>
+  <y>54</y>
   <open-on-startup>False</open-on-startup>
 </note>

@@ -1,5 +1,5 @@
 # This file is used to build a pacman usable gtk2 package for tomboy-ng
-# Usage : 
+# Usage (eg): 
 # export VER=0.40         # or, if you prefer, VER=master
 # mkdir $VER; cd $VER
 # wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD
@@ -15,13 +15,6 @@
 #		version as "master" but tomboy-ng still reports the 
 # 		version according to the version file.
 #
-# Usage (eg) : 
-# export VER=0.40         # or, if you prefer, VER=master
-# mkdir $VER; cd $VER
-# wget https://github.com/tomboy-notes/tomboy-ng/raw/master/scripts/PKGBUILD
-# export NEW_PATH="/home/dbannon/bin/FPC/fpc-3.2.3/bin:/home/dbannon/bin/Lazarus/lazarus_3_4"
-# PATH="$NEW_PATH":"$PATH" makepkg --skipinteg
-
 # 
 # Install
 # 	sudo pacman -U ./tomboy-ng-master-1-x86_64.pkg.tar.zst
@@ -41,7 +34,7 @@
 
 pkgname=tomboy-ng
 pkgver="$VER"			# Remember to set VER when calling makepkg
-pkgrel=1			# inc this if releasing a re-package of same ver
+pkgrel=1			    # inc this if releasing a re-package of same ver
 pkgdesc="Manage a large or small set of notes with a range of fonts and markup."
 arch=('x86_64')
 url="https://github.com/tomboy-notes/tomboy-ng"

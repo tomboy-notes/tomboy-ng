@@ -987,6 +987,12 @@
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
           </CodeGeneration>
           <Linking>
             <Debugging>
@@ -1120,13 +1126,19 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
       </local>
+      <environment>
+        <UserOverrides Count="2">
+          <Variable0 Name="QT_QPA_PLATFORMTHEME" Value="gtk2"/>
+          <Variable1 Name="TB_GITHUB_REPO" Value="tb_alt"/>
+        </UserOverrides>
+      </environment>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-small"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
           </local>
           <environment>
             <UserOverrides Count="2">
@@ -1148,7 +1160,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="37">
+    <Units Count="38">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1358,6 +1370,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit36>
+      <Unit37>
+        <Filename Value="mvxwindow.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit37>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -1388,7 +1404,7 @@
     </Linking>
     <Other>
       <CompilerMessages>
-        <IgnoredMessages idx6058="True"/>
+        <IgnoredMessages idx6058="True" idx5024="True"/>
       </CompilerMessages>
       <CustomOptions Value="-dTOMBOY_NG"/>
     </Other>
