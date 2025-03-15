@@ -225,7 +225,7 @@ var
 
 implementation
 
-uses LCLIntf;
+uses LazLogger, LCLIntf;
 
 {$R *.lfm}
 

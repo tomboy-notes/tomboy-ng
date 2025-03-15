@@ -509,7 +509,7 @@ var
 begin
     // debugln('DeleteNote ' + FullFileName);
     ShortFileName := ExtractFileNameOnly(FullFileName);      // an ID
-    LocalMan := TSync.Create;
+    LocalMan := TSync.Create;                                // we use TSync to get access to the Sync Manifests, no netwrk traffic
     LocalMan.DebugMode:=false;
     LocalMan.ConfigDir:= Sett.LocalConfig;
     LocalMan.NotesDir:= Sett.NoteDirectory;

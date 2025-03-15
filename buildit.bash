@@ -211,7 +211,7 @@ fi
 #case $FPCVERSION in
 #	3.0.4)
 #		echo "Compiler reported [$FPCVERSION]"
-#		echo "FPC 3.0.4 is no longer suppoted by tomboy-ng ..."
+#		echo "FPC 3.0.4 is no longer supported by tomboy-ng ..."
 #		exit 1
 #		# EXCLUDEMESSAGE=" -vm2005,5027 "         
 #	;;

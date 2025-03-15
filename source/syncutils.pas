@@ -59,6 +59,7 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncXMLError,       // Housten, we have an XML error in a manifest !
                     SyncBadError,       // Some other error, must NOT proceed.
                     SyncNetworkError,
+                    SyncOpenSSLError,   // Either OpenSSL is unavailable or too old
 		            SyncCredentialError);       // Unsuitable user:password
 
 type TRepoAction = (

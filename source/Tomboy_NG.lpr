@@ -16,17 +16,22 @@ program Tomboy_NG;
 
 {$define TOMBOY_NG}
 
+
 uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
-    cmem, cthreads,
+
+    // works correctly but codetools always shows 'greyed out'
+    {$if not declared(UseHeapTrace)}cmem, {$endIf}               // TRons's trick, nice !
+
+    cthreads,
     {$ENDIF}{$ENDIF}
     Interfaces, // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, Index,
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
-    import_notes, JsonTools, kmemo2pdf, tb_symbol, LazVersion
+    import_notes, JsonTools, kmemo2pdf, tb_symbol, mvxwindow, LazVersion
     {$ifdef LCLGTK2}
     , unitywsctrls          // only safe to use in gtk2, use it if we need it or not
     {$endif};
@@ -34,7 +39,7 @@ uses
 {$R *.res}
 
 {$if defined(LCLGTK2) and (laz_major = 3) }        // defined in LazVersion unit
-{$define APPINDPATCH}                               // Note: IDE greys incorrectly
+{$define APPINDPATCH}                              // Note: CodeTools greys incorrectly, miss reading (laz_major = 3)
 {$endif}
 
 
@@ -65,8 +70,8 @@ end;
 
 
 begin
-    Application.Scaled := True;
-    Application.Title := 'tomboy-ng';
+  Application.Scaled:=True;
+  Application.Title:='tomboy-ng';
     RequireDerivedFormResource:=True;
     Application.Initialize;
 

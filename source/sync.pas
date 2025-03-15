@@ -13,10 +13,15 @@ unit sync;
 
 { How to use this Unit -
 
+    This unit is used by : SearchUnit but only for access to local manifest file;
+    Settings where its run, in a thread, to do auto sync; SyncGUI where it runs in
+    min thread interactivly. At all levels, msgs might be dropped to console
+    but only in SyncGUI can we show the user a msg.
+
     Syncutils will probably be needed in Interface Uses
     Sync in implementation of Uses.
 
-  if we belive we have an existion Repo accessible -
+  if we believe we have an existing Repo accessible -
 
   	ASync := TSync.Create();
     ASync.SetTransport(TransP);         // possible value defined in SyncUtils, SyncFile, SyncNextCloud, SyncAndroid
@@ -45,7 +50,7 @@ unit sync;
 Operation of this unit -
 
 Fistly, this unit depends on on the Trans unit, a virtual unit of which the TransFile
-has been implemented and TransNet partially. Further Transport layers should be easily
+and TransGitHub have been implemented. Further Transport layers should be easily
 made.
 
 Two seperate approaches are needed. In both cases we build a list of all the notes we

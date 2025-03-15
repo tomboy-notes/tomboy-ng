@@ -534,7 +534,7 @@ uses IniFiles, LazLogger,
     Clipbrd,
     tb_symbol,
     syncGUI,
-    {$if defined(LCLQT5) or defined(LCLQT6)} uQt_Colors, {$endif}
+//    {$if defined(LCLQT5) or defined(LCLQT6)} uQt_Colors, {$endif}
     ResourceStr,     // only partially so far ....
     dateutils;       // Managing Sync Timing
 var

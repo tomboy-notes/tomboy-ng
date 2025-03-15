@@ -17,3 +17,4 @@ desktop-command-not-in-package
 # FPC has a known bug on ppc64el that prevents hardening.
 # https://gitlab.com/freepascal.org/fpc/source/-/issues/39451
 tomboy-ng [ppc64el] binary: hardening-no-pie
+

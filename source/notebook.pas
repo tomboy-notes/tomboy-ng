@@ -32,6 +32,7 @@ unit Notebook;
     2020/08/10  In Windows, SetFocus was setting ModalRes to 1, so, would immediatly close ??
     2021/11/04  Extensive changes to support new Notebook management model from SearchForm
     2021/12/26  MakeNewNoteBook may have returned random bool.
+    2025/02/25  Removed LCLProc to stop it handling debugln()
 }
 
 
@@ -128,7 +129,7 @@ implementation
 
 { TNoteBookPick }
 
-uses SearchUnit, LazFileUtils, LCLProc, LCLType, Settings, SaveNote, EditBox,
+uses LazLogger, SearchUnit, LazFileUtils, {LCLProc,} LCLType, Settings, SaveNote, EditBox,
     resourcestr, tb_utils, note_lister
         {$ifdef WINDOWS}, SyncUtils{$endif};    // SafeWindowsDelete
 
@@ -170,7 +171,7 @@ begin
     Label3.Caption := rsChangeNameofNotebook;
     Label7.Caption := Title;
     if not TheMainNoteLister.GetNotesInNoteBook(NBIDList, Title) then
-        debugln('TNoteBookPick.SetupForChange ERROR - Notebook.pas #152 No member notes found');
+        {DebugLogger.}debugln('TNoteBookPick.SetupForChange ERROR - Notebook.pas #152 No member notes found');
     Label1.Caption := format(rsNumbNotesAffected, [NBIDList.Count]);
     EditNewNotebookName.SetFocus;
 end;
