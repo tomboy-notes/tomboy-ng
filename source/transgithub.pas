@@ -583,9 +583,10 @@ end;
 function TGithubSync.TestTransport(const WriteNewServerID : boolean
     ) : TSyncAvailable;
 {  If we initially fail to find offered user account, try defunkt so we can tell if
-   its a network error or username one.}
+   its a network error or username one. defunkt does not require a valid token.}
 var
-   St : string;
+   St : string;       // gets back json on a good download, some error message on a bad one.
+
 begin
     Result := SyncNotYet;
     ErrorString := '';
@@ -601,7 +602,7 @@ begin
         debugln('URL=' + BaseURL + 'users/' + UserName);
     end;
     if DownLoaderSafe(BaseURL + 'users/' + UserName, ST,
-                        'github-authentication-token-expiration') then begin
+                        'github-authentication-token-expiration') then begin    // fail because eg failed to initialise opnessl ......
         // So, does nominated user account exist ?
         if DebugMode then debugln('TGithubSync.TestTransport - Downloader got token-exp data, good');
         ErrorString := ExtractJSONField(ST, 'login');
@@ -683,16 +684,33 @@ begin
             end;
         end;
     end
-    else begin                                                              // OK, we are not getting through, why not ?
+
+    // A number of Downloader Errors are possible, check msg in St for "no point in further tests" ones.
+    //  'Failed to initialise OpenSSL' - Either not finding OpenSSL or finding a very old one.
+    //  'Failed to work with OpenSSL'  - Maybe an unsuitable OpenSSL found ? Clarify, comes from an ESSL exception
+
+    // We will test for them here and raise an exception to be caught up in ????
+
+    else begin                                                                  // OK, we are not getting through, why not ?
+         if St = 'Failed to initialise OpenSSL' then begin
+             debugln('TGitHubSync.TestTransport - cannot initialise OpenSSL, please check');
+             debugln('   that you have current and available OpenSSL libraries.');
+             exit(SyncOpenSSLError);
+         end;
+         if St = 'Failed to work with OpenSSL' then begin
+            debugln('TGitHubSync.TestTransport : cannot work with these OpenSSL Libraries');
+            exit(SyncOpenSSLError);
+        end;
+        // OK, if to here, maybe further tests might clarify the situation.
         debugln('TGitHubSync.TestTransport : Failed to speak to github as the user ' + UserName
                 + ', network or credentials error ?, ' + St);
-        if St = 'Fatal' then exit(SyncNetworkError);                        // Downloader has said it all !
-        if DownLoaderSafe(BaseURL + 'users/defunkt', ST) then begin                 // try a known good user
+
+        if DownLoaderSafe(BaseURL + 'users/defunkt', ST) then begin             // try a known good user
             ErrorString := ErrorString + ' Username is not valid : ' + UserName;
             debugln('TGitHubSync.TestTransport : But can speak to github as user defunkt.');
+            debugln('    Looks a lot like a credentials error, please check user name and token');
             exit(SyncCredentialError);
-        end
-        else begin                                                              // but known good user worked, must be the token we are using
+        end else begin                                                          // but known good user worked, must be the token we are using
             debugln('TGitHubSync.TestTransport : But can speak to github, probably bad token, '
                     + SyncAvailableString(SyncCredentialError));
             // here probably because of a bad token, lets rewrite the error message
@@ -1317,12 +1335,15 @@ var
     Host : THostResolver;
     Cnt : integer = 0;
 begin
+
+
+
     ProgressProcedure := PP;           // It gets passed after create.    WHY ?
     RemoteNotes := Nil;
     SelectiveNotebookIDs := nil;
     if GetEnvironmentVariableUTF8('TB_GITHUB_REPO') <> '' then begin
         RemoteRepoName := GetEnvironmentVariableUTF8('TB_GITHUB_REPO');
-        debugln('TGitHubSync.Create() - Github repo renamed as ' + RemoteRepoName);
+        debugln('TGitHubSync.Create() - Github repo renamed as ' + RemoteRepoName + ' because env TB_GITHUB_REPO is set.');
     end;
 
     // here we poke the dns wrt github in hope of clearing a path.
@@ -1498,6 +1519,7 @@ begin
     until cnt = MaxNetTries;
     if not result then
         DebugLn('TGithubSync.DownloaderSafe - ERROR - download failed ! ' + ErrorString);
+        // ToDo : This should raise an exception.
 end;
 
 function TGithubSync.Downloader(URL : string; out SomeString : String;
@@ -1529,11 +1551,13 @@ begin
                 end;
             on E: EInOutError do begin
                 ErrorString := 'TGithubSync Downloader - InOutError ' + E.Message;
+                // might generate "TGithubSync Downloader - InOutError Could not initialize OpenSSL library"
+                SomeString := 'Failed to initialise OpenSSL';           // is error message translated ?
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: ESSL do begin
                 ErrorString := 'TGithubSync.Downloader - SSLError ' + E.Message;         // eg openssl problem, maybe FPC cannot work with libopenssl
-                SomeString := 'Fatal';
+                SomeString := 'Failed to work with OpenSSL';
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: Exception do begin
