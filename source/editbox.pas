@@ -1713,6 +1713,7 @@ begin
     // writeln('TEditBoxForm.FormActivate AlreadyCalled is ', booltostr(HaveSeenOnActivate, True));
     if not HaveSeenOnActivate then begin;
         Ready := False;
+        {$ifdef LCLGTK3}debugln('TEditBoxForm.FormActivate');{$endif}
         {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
         if Sett.ShowIntLinks then CheckForLinks(True);
         {$ifdef TDEBUG}
@@ -1730,6 +1731,7 @@ begin
         end;
         HaveSeenOnActivate := True;
         Ready := True;
+        {$ifdef LCLGTK3}debugln('TEditBoxForm.FormActivate finished');{$endif}
     end;
 end;
 
@@ -2435,6 +2437,7 @@ var
     ItsANewNote : boolean = false;
 //    Tick, Tock, Tuck : qword;
 begin
+     {$ifdef LCLGTK3}debugln('TEditBoxForm.FormShow started');{$endif}
     if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
     // Ready := False;                             // But it must be false aready, it was created FALSE
 //    Tick := GetTickCount64();
@@ -2490,6 +2493,7 @@ begin
     Ready := true;
     Dirty := False;
     PanelBackLinks.Visible := false;
+    {$ifdef LCLGTK3}debugln('TEditBoxForm.FormShow finished');{$endif}
 //    writeln('TEditBoxForm.FormShow 4 SelIndex = ', Kmemo1.SelStart);
 
 //    Tuck := GetTickCount64();
@@ -3806,7 +3810,7 @@ var
     TempTitle : ANSIString;
     {$ifdef LDEBUG}TS1, TS2  : qword;{$endif}
 begin
-
+    {$ifdef LCLGTK3}debugln('TEditBoxForm.DoHousekeeping');{$endif}
     if KMemo1.ReadOnly then exit();
     Ready := False;
     CurserPos := KMemo1.RealSelStart;
@@ -3840,6 +3844,7 @@ begin
     KMemo1.SelStart := CurserPos;
     KMemo1.SelLength := SelLen;
     Ready := True;
+    {$ifdef LCLGTK3}debugln('TEditBoxForm.DoHousekeeping done');{$endif}
 end;
 
 procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
@@ -4261,6 +4266,7 @@ var
     end;
 
 begin
+    {$ifdef LCLGTK3}debugln('TEditBoxForm.KMemo1KeyDown Key = ' + inttostr(Key));{$endif}
     if not Ready then begin       // Will this help with issue #279  ?
         if [ssCtrl] = shift then
             Key := 0;
@@ -4394,7 +4400,8 @@ begin
        exit();
     end;
 
-    if Key = VK_TAB then begin    // Tab key sets a bullet or extends that bullet or Indent further right.                                              // A Tab insets paragraph
+    if Key = VK_TAB then begin    // Tab key sets a bullet or extends that bullet or Indent further right.
+       {$ifdef LCLGTK3}debugln('TEditBoxForm.KMemo1KeyDown Key = Tab');{$endif}
        if not CaretInTitle() then begin
            ABlock := GetParagraphBlock();
            if ABlock <> nil then

@@ -432,7 +432,7 @@ resourcestring
 function TMainForm.CheckGnomeExtras() : boolean;
 
 var
-    {$ifndef LCLQT5}H : TLibHandle;{$endif}
+    {$ifdef LCLGTK2}H : TLibHandle;{$endif}         // should hide for gtk3, Qt6 too. So, gtk2 only ?
     MayBeNotGnome : boolean = false;
     PlugInName : string = '';           // holds name if CheckPlugIn found it.
 
@@ -515,7 +515,7 @@ begin
 	end else if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) then
          debugln('===== We have an AppIndicator Library');
 	unloadLibrary(H);
-    {$endif}                            // end of if not QT5
+    {$endif not lclgtk2}                            // end of if not QT5
     Result := CheckPlugIn(True);
     if not Result then
         if MaybeNotGnome then
@@ -537,10 +537,11 @@ begin
 end;
 
 function TMainForm.CheckForSysTray() : boolean;
+{$ifndef LCLGTK3}
 var
     A : TAtom;
     XDisplay: PDisplay;
-    ForceAppInd : string;
+    ForceAppInd : string; {$endif LCLGTK3}
 begin
     Result := False;
     if (pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0) then
@@ -573,7 +574,7 @@ begin
             exit(CheckGnomeExtras());
         // XDisplay := QX11Info_display;           // thats Qt5 only
         XDisplay := xlib.XOpenDisplay(nil);        // that should be any x11 based ...
-    {$endif LCLQT5}
+    {$endif LCLQT5 or qt6}
     // OK, don't call next line in a KDE system .....
     A := XInternAtom(XDisplay, '_NET_SYSTEM_TRAY_S0', False);  // gtk2 or non-Gnome Qt5
     result := (XGetSelectionOwner(XDisplay, A) <> 0);
@@ -582,7 +583,7 @@ begin
             debugln('Tradition Systray Available = ' + booltostr(result, True));
 //    if ForceAppInd = 'YES' then
 //            result := false;
-    {$ENDIF LCLGTK3}
+    {$ENDIF not LCLGTK3}
     // if we are false here, its probably because its a recent Gnome Desktop or GTK3, no SysTray.
     // However, if libappindicator3 or Ayatana is installed and the Gnome Shell Extension,
     // appindicators is installed and enabled, it will 'probably' be OK.
