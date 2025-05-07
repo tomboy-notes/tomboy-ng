@@ -644,7 +644,7 @@ begin
     end else begin
         LabelError.Caption := '';
         if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then
-            ButtonDismissClick(Self);
+            ButtonDismissClick(Self);        // this is just hide() except (?) on MacOS
     end;
 
     (* if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
@@ -703,7 +703,7 @@ begin
      ImageSyncCross.Visible := not ImageSyncTick.Visible;
 end;
 
-procedure TMainForm.ButtonDismissClick(Sender: TObject);
+procedure TMainForm.ButtonDismissClick(Sender: TObject);       // Note, ButtonDismiss does not exist anymore, test MacOS for hide and remove this ....
 begin
     {$ifdef LCLCOCOA}            // ToDo : is this still necessary ? Or can Cocoa hide like other systems ?
     width := 0;
