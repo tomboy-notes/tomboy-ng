@@ -1494,7 +1494,9 @@ begin
     EBox.NoteTitle:= NoteTitle;
     EBox.NoteFileName := NoteFileName;
     Ebox.TemplateIs := TemplateIs;
+    {$ifdef LCLGTK3}debugln('TSearchForm.OpenNote opening ', NoteTitle);{$endif}
     EBox.Show;
+    {$ifdef LCLGTK3}debugln('TSearchForm.OpenNote opened ', NoteTitle);{$endif}
     // if we have a NoteFileName at this stage, we just opened an existing note.
 
     {    if (NoteFileName <> '') and (NoteTitle <> '') and (InSearch) then
@@ -1507,6 +1509,7 @@ begin
         BackupNote(NoteFileName, 'opn');
     EBox.Dirty := False;
     TheMainNoteLister.ThisNoteIsOpen(NoteFileName, EBox);
+    {$ifdef LCLGTK3}debugln('TSearchForm.OpenNote finished open of ', NoteTitle);{$endif}
 end;
 
 // ----------------------------- ListView Things -------------------------------

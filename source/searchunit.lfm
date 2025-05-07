@@ -7,6 +7,7 @@ object SearchForm: TSearchForm
   Caption = 'Search'
   ClientHeight = 401
   ClientWidth = 794
+  LCLVersion = '4.99.0.0'
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -16,7 +17,6 @@ object SearchForm: TSearchForm
   OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
-  LCLVersion = '3.6.0.0'
   object EditSearch: TEdit
     AnchorSideLeft.Control = BitBtnMenu
     AnchorSideLeft.Side = asrBottom
@@ -279,8 +279,8 @@ object SearchForm: TSearchForm
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000
     }
-    OnClick = BitBtnMenuClick
     TabOrder = 1
+    OnClick = BitBtnMenuClick
   end
   object ButtonSearchOptions: TButton
     AnchorSideTop.Control = Owner
