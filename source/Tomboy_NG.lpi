@@ -1128,12 +1128,6 @@
       <local>
         <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-alt"/>
       </local>
-      <environment>
-        <UserOverrides Count="2">
-          <Variable0 Name="QT_QPA_PLATFORMTHEME" Value="gtk2"/>
-          <Variable1 Name="TB_GITHUB_REPO" Value="tb_alt"/>
-        </UserOverrides>
-      </environment>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
