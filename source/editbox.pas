@@ -2555,6 +2555,7 @@ end;
 
 procedure TEditBoxForm.TimerSaveTimer(Sender: TObject);
 begin
+    {$ifdef LCLGTK3}debugln('TEditBoxForm.timerSaveTimer');{$endif}
     TimerSave.Enabled:=False;
 	// showmessage('Time is up');
     SaveTheNote();
@@ -3849,6 +3850,7 @@ end;
 
 procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
 begin
+    {$ifdef LCLGTK3}debugln('TEditBoxForm.TimeHousekeeping');{$endif}
     TimerHouseKeeping.Enabled := False;
     DoHouseKeeping();
 end;
@@ -4162,6 +4164,7 @@ begin
 //   debugln('Mouseclick ' + inttostr(kmemo1.RealSelStart));
 end;
 
+
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
     ABlock : TKMemoParagraph;
@@ -4272,6 +4275,18 @@ begin
             Key := 0;
         exit();
     end;
+
+    if (Key = VK_BACK) then begin                // BackSpace sanity checks, deal with Github issue #331 ?
+        debugln('TEditBox.KMemo1KeyDown - BS Pre - SelStart=', inttostr(KMemo1.SelStart), ' and SelEnd=', inttostr(KMemo1.SelEnd));
+        if KMemo1.SelLength <> 0 then               // Treat as Delete if something selected.
+            Key := VK_Delete
+        else                                     // Nothing selected
+            if (KMemo1.SelStart = 0) then begin  // and at start of doc, do nothing.
+                Key := 0;
+                exit();
+            end;                                 // continue with no changes if something to remove
+    end;
+
     // don't let any ctrl char get through the kmemo on mac
     {$ifdef DARWIN}
     if [ssCtrl] = Shift then begin
@@ -4416,7 +4431,8 @@ begin
         key := 0;
         if (EditFind.Text <> rsMenuSearch) then SpeedRightClick(self);
     end;
-    if (Key <> 8) or (not AtStartOfLine()) then                     // only interested in a BS at start of line now
+
+    if (Key <> 8) or (not AtStartOfLine()) then                     // VK_BACK, only interested in a BS at start of line now
         exit();                                                     // KMemo will deal with everything else
     if Verbose then debugln('Dealing with a BS at start of line, might be Bullet or Indent');
 
