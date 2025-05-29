@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script>
+async function sendData() {
+  // Construct a FormData instance
+  const formData = new FormData();
+  // Add a text field
+  formData.append("name", "Pomegranate");
+  formData.append("msg", "This was sent by davo");
+  formData.append("noteData", quill.getSemanticHTML(0));
+
+/*
+  // Add a file
+  const selection = await window.showOpenFilePicker();
+  if (selection.length > 0) {
+    const file = await selection[0].getFile();
+    formData.append("file", file);
+  }     */
+
+  try {
+    const response = await fetch("http://localhost:8080/POST", {
+      method: "POST",
+      // Set the FormData instance as the request body
+      body: formData,
+    });
+    console.log(await response.json());
+  } catch (e) { console.error(e); }
+}
+
+const toolbarOptions = [
+  ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+  ['blockquote', 'code-block'],
+  ['link'],
+  [{ 'list': 'bullet' }],
+  [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+  [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+  [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+  ['clean']                                         // remove formatting button
+];
+
+</script>
+
+</head>
+<body>
+<!-- Include stylesheet -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+<!-- Create the editor container -->
+<div id="editor">
+<h1>Cape York Cruise</h1>
+<p></p>
+<p></p>
+<p>See the Trips directory file://</p>
+<p>Taxi booked through 131008, Bendigo Taxis, for 10:30am Friday 29th.</p>
+<p></p>
+<p><b>Cape York Cruise 2024</b></p>
+<p>Total Bill $41,400, 8K deposit paid by Davo</p>
+<p>less $250 booking on line; 10% rebook bonus=$4,140; 5% Silver=$2,070 =&gt;</p>
+<p>250</p>
+<p>4140</p>
+<p>2070</p>
+<p></p>
+<p>41400</p>
+<p>-6460</p>
+<p>34940 total cost of cruise</p>
+<p></p>
+<p>34940</p>
+<p>-8000 deposit</p>
+<p>26940</p>
+<p></p>
+<p>No, $26,617</p>
+<p></p>
+<p>$6617 - KTF2YRBBY5 from ME, Receipt number 3XY92MRD3PWKFG4Q</p>
+<p>$20000 - from CBA, both late December 12th, 2023</p>
+<p></p>
+<p>QF1410 • Fri 29 Mar 2024 • 12:35 - 14:30 Bendigo to Sydney</p>
+<p>QF926 • Fri 29 Mar 2024 • 15:35 - 17:40 Sydney to Cairns</p>
+<p></p>
+<p>34940 coral total, after discount</p>
+<p>948 bendigo cairns Qantus</p>
+<p>5624 Darwin Melbourne Qantus</p>
+<p>41512/2=20756.000 50/50 share.</p>
+<p></p>
+<p>Still to account for hotel bills.</p>
+<p></p>
+<p></p>
+<p>Pullman Cairns International 29th, 30th</p>
+<p></p>
+<p>Coral Discoverer 32/3/2024 at 4:00pm</p>
+<p></p>
+<p>Disembark 11/4/2024 8:30am</p>
+<p></p>
+<p><del>Original</del></p>
+<ul><li><del>Depart Darwin April 11th, Sydney, depart 13:10, lands Sydney 17:50</del></li>
+<li><del>Depart Sydney 19:15. land Melbourne 20:50</del></li>
+<p></ul></p>
+<p>Current</p>
+<ul><li>Booking Ref 5RQLP6</li>
+<li>Depart QF841 Darwin April 11th, Sydney, depart 13:20, lands Sydney 18:05</li>
+<li>Depart QF491 Sydney 19:30. land Melbourne 21:05</li>
+<p></ul></p>
+<p>Stay at Holiday Inn Express, Lt Collins</p>
+<p></p>
+<p>insurance, medibank private. Compreensive, evac, cruise etc $743.</p>
+
+  <p><br /></p>
+</div>
+
+
+
+<!--  <p>Hello World!</p>
+  <p>Some initial <strong>bold</strong> text</p>
+  <p><br /></p>
+</div> -->
+
+
+
+<!-- Include the Quill library -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+<!-- Initialize Quill editor -->
+<script>
+  const quill = new Quill('#editor', {
+    modules: { toolbar: toolbarOptions },
+    theme: 'snow'
+  });
+</script>
+
+<button type="button" onclick="sendData()">Post</button>
+
+
+</body>
+</html>

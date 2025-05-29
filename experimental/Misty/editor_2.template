@@ -1,0 +1,36 @@
+  
+//try {
+    const response = await fetch("http://localhost:8080/post", {
+      method: "POST",
+      // Set the FormData instance as the request body
+      body: formData,
+    });
+//    console.log(await response.json());
+//  } catch (e) { console.error(e); }
+//	.then(response => response.json())
+//	.then(data => console.log(data))
+//	.catch(error => console.error(error));
+}
+
+
+const toolbarOptions = [
+  ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+  ['blockquote', 'code-block'],
+  ['link'],
+  [{ 'list': 'bullet' }],
+  [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+  [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+  [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+  ['clean']                                         // remove formatting button
+];
+
+</script>
+
+</head>
+<body>
+<h2>!!INSERT NOTE TITLE!!</h2>
+<!-- Include stylesheet -->
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+<!-- Create the editor container -->
+<div id="editor">

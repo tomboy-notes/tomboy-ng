@@ -40,6 +40,7 @@ unit LoadNote;
     2023/03/11  Allow Qt to set Text and Background colour, force Gray for Inactive Background cos Kmemo get it wrong
     2024/01/23  Added support for Indent
     2024/12/24  Altered Indent to work (a little) like Tomboy, embedded Tab #9 char at start line
+    2025/05/28  When a list starts after text content on a line, shove a newline after that test.
 }
 
 {$mode objfpc}{$H+}
@@ -185,7 +186,8 @@ begin
     if not InContent then exit;
     if (InStr = '') and (not AddPara) then exit;
     // if to here, we have content to flush or a new para has been requested.
-    //debugln('TBLoadNote.AddText bulletlevel=' + inttostr(bulletLevel) + ', BOLD=' + booltostr(Bold, true) + ' and InStr=[' + ']');
+    // debugln('TBLoadNote.AddText InStr=[' + InStr + ']');
+    // debugln('TBLoadNote.AddText bulletlevel=' + inttostr(bulletLevel) + ', BOLD=' + booltostr(Bold, true) + ' and InStr=[' + ']');
     if InStr <> '' then begin
         FT := TFont.Create();
         if FirstTime then begin                 // Title
@@ -399,7 +401,11 @@ var
 begin
     if (InStr <> '') or (BulletLevel <> 0) then debugln('--------------- Bugger --------------');
     // Find the next tag, should always be list-item, ignore anything between
-    //debugln('----------- We have just entered ReadList ---------');
+    // debugln('----------- We have just entered ReadList ---------');
+    // if we get to here and the last block in kmemo is NOT a para block, then we must
+    // push a para block to ensure the list starts on a newline. gnote
+    if not KM.blocks[km.Blocks.Count-1].ClassNameIs('TKMemoParagraph') then
+        AddText(True);
     try
         if FindNextTag(False) and (Buff='list-item') then
             // Anything up to next list related tag is content.

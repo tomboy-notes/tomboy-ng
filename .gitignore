@@ -38,6 +38,9 @@ NoGit/
 # Application bundle for Mac OS
 *.app/
 experimental/NextNotes/
+experimental/Misty/webserver
+experimental/Misty/Content.note
+experimental/Misty/Content.html
 po/tomboy-ng-64.pot
 po/tomboy-ng-qt-64.pot
 po/tomboy-ng-qt.pot

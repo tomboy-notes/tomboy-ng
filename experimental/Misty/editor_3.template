@@ -1,0 +1,22 @@
+
+</div>    
+<!-- that closes the "create editor container" --> 
+
+
+
+<!-- Include the Quill library -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+<!-- Initialize Quill editor -->
+<script>
+  const quill = new Quill('#editor', {
+    modules: { toolbar: toolbarOptions },
+    theme: 'snow'
+  });
+</script>
+
+<button type="button" onclick="sendData()">Post</button>
+
+
+</body>
+</html>

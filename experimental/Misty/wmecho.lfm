@@ -1,0 +1,9 @@
+object EchoModule: TEchoModule
+  OldCreateOrder = False
+  OnRequest = EchoModuleRequest
+  CreateSession = False
+  Height = 282
+  HorizontalOffset = 153
+  VerticalOffset = 411
+  Width = 316
+end

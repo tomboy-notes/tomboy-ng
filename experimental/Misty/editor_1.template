@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script>
+async function sendData() {
+  // Construct a FormData instance
+  const formData = new FormData();
+  // Add a text field
+  formData.append("name", "Pomegranate");
+  formData.append("msg", "This was sent by davo");
+  formData.append("noteData", quill.getSemanticHTML(0));
+
