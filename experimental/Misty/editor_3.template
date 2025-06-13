@@ -15,8 +15,9 @@
   });
 </script>
 
-<button type="button" onclick="sendData()">Post</button>
+<script>
+ quill.on('text-change', (delta, oldDelta, source) => {
+	document.getElementById("IDstatus").innerHTML = 'Un saved';
+ });
 
-
-</body>
-</html>
+</script>

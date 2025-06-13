@@ -1,10 +1,17 @@
   
 //try {
-    const response = await fetch("http://localhost:8080/post", {
+    //const response = await fetch("http://localhost:8080/post", {
+    const response = await fetch("post", {
       method: "POST",
       // Set the FormData instance as the request body
       body: formData,
     });
+	// alert(response.status);
+	if (response.status == 200) { 
+		document.getElementById("IDstatus").innerHTML = 'Saved';
+    } else {
+		document.getElementById("IDstatus").innerHTML = 'Error ' + response.status;
+	}
 //    console.log(await response.json());
 //  } catch (e) { console.error(e); }
 //	.then(response => response.json())

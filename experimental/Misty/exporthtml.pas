@@ -152,7 +152,7 @@ var
             '<monospace>', '<code>',   '</monospace>', '</code>',
             {$ifdef FOR_QUILL}
             '<list>', '<ul>',          '</list>', '</ul>',
-            '<list-item dir="ltr">', '<li>',   '</list-item dir="ltr">',  '</li>'
+            '<list-item dir="ltr">', '<li>',   '</list-item>',  '</li>'
             {$else}
             // '<list><list-item dir="ltr">','<li>',  '</list-item></list>','</li>',
             // '<list-item dir="ltr">','<li>',  '</list-item>','</li>'

@@ -55,9 +55,10 @@ Var
   Serv : TMistyHTTPServer;
   ExitNow : boolean;           // A semaphore set when ctrl-C received
   ErrorSt : string = '';       // Check this before exiting with an error
+  ServerHome : string;
 
 const
-    ServerHome = '/home/dbannon/Pascal/tb-web/Misty/home/';
+
     Editor_1 : string = '<html>';
     Editor_2 : string = '';
     Editor_3 : string = '</html>';
@@ -175,54 +176,32 @@ var
   V, St : string;
   Convert : THTML2Note;
 begin
-  writeln('DoCommandPost');
-  AReq.HandleGetOnPost := True;
-  //for V in AReq.ContentFields do
-  //      writeln('DoCommandPost Value=', V);
-
-  //AResp.Content := 'thanks';
-  // SaveString(AReq.ContentFields.Values['noteData'], Serv.BaseDir + 'temp' + PathDelim + 'something.html');
-
-  Convert := THTML2Note.Create;
-  Convert.NoteFName := AReq.ContentFields.Values['noteFName'];                  // that should be an existing note in ~/home
-  // Convert.LoadHTML('26D6EDFD-B518-472A-985B-AEF0B266D00F.note.html');        // its in working dir, just testing
-  Convert.InStr := AReq.ContentFields.Values['noteData'];                       // thats an edited note in html format
-  Convert.Convert();                                                            // Convert back to TB note format
-  // writeln('DoCommandPost - about to save '  + Convert.NoteFName);
-  Convert.SaveNote(Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName);
-  Convert.Free;
-//  SaveString(AReq.ContentFields.Values['noteData'], Serv.BaseDir + 'temp' + PathDelim
-//        + AReq.ContentFields.Values['noteFName'] + '.html');
-  // Above needs to convert html to xml and overwrite note, update manifest NOT just save it to a file.
-  // DoCommandListNotes(AReq, Aresp); // ToDo : this does not work
-
-
-  St := '<html><body><h2>OK</h2></p>' + 'this is something back' + '</p></body></html>' + #10;
-  CheckMimeLoaded();
-  AResp.ContentType:=MimeTypes.GetMimeType('html');
-  AResp.ContentLength := length(St);
-  AResp.Content := St;
-  SaveString(St, Serv.BaseDir + 'temp' + PathDelim + 'LastResp.html');
-  AResp.SendContent;
-  // writeln('DoCommandPost finished');
-  exit;
-
-
-
-
-  LName := AReq.ContentFields.Values['name'];            // match name="Aname" below, not ID
-  writeln('We are in DoCommandPost and LName=', LNAme);   // Not because method is POST, because we put it in URL
-  if LName = '' then
-    with AResp.Contents do begin
-      Add('<form action="' + AReq.URI + '" method="POST"');
-      Add('<label for="Aname">Please tell me your name:</label>');
-      Add('<input type="text" name="name" id="myname" />');         //
-      Add('<input type="submit" value="Send" />');
-      Add('</form>');
-    end
-  else
-    // we don't want this for our normal POST (when it works) but must set return message somehow
-    AResp.Content := 'Hello, ' + LName + '!';   // OK, something in AReq.ContentFields.Values['Name'] ?
+    // Resp.Code - 298 : cannot find orig note;  296 : convert html2note error;  295 : file i/o error;  200 : OK
+    // 200 is OK, anything betwen 201-299 is, between you and me, an error reported to user on the Edit page.
+    AResp.Code := 200;       // this appears to be response.status that the JS sendData() gets, must be 200 - 299
+    AReq.HandleGetOnPost := True;
+    Convert := THTML2Note.Create;
+    Convert.NoteFName := AReq.ContentFields.Values['noteFName'];                  // that should be an existing note in ~/home
+    Convert.InStr := AReq.ContentFields.Values['noteData'];                       // thats an edited note in html format
+    if not Convert.Convert() then begin                                           // Convert back to TB note format
+        AResp.Code := 296;
+        St := '<p>Failed to convert note</p>';
+    end else
+        if not Convert.SaveNote(Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName) then begin
+            writeln('TMistyHTTPServer.DoCommandPost - error dealing with ' + Convert.NoteFName);
+            AResp.Code := 295;
+            St := '<p>Failed to save note</p>';
+        end else begin
+            writeln('TMistyHTTPServer.DoCommandPost - write ' + Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName);
+            St := '<p>All Good</p>';
+        end;
+    Convert.Free;
+    CheckMimeLoaded();
+    AResp.ContentType:=MimeTypes.GetMimeType('html');
+    AResp.ContentLength := length(St);
+    AResp.content := St;
+    // SaveString(St, Serv.BaseDir + 'temp' + PathDelim + 'LastResp.html');
+    AResp.SendContent;
 end;
 
 
@@ -270,11 +249,11 @@ var
 begin
     writeln('TMistyHTTPServer.DoCommandListNotes');
     STL := TStringList.Create();
-    STL.Insert(0, '<html><body><h1>File List</h1>');
+    STL.Insert(0, '<!DOCTYPE html><body><h1>File List</h1>');
     Stl.Add('<table>');
     If FindFirst (ServerHome + '*.note',faAnyFile, Info)=0 then begin
-        Stl.Add('<tr>');
         repeat
+            Stl.Add('<tr>');
             if (Info.Name = '.') or (Info.Name = '..') then continue;
             if (Info.Attr and faDirectory) = faDirectory then continue;
             Stl.add('<td>' + inttostr(Info.size) + '</td><td><a href="'+ Info.Name + '">' + Info.Name + '</a></td>');
@@ -315,47 +294,30 @@ begin
             exit;
         end;
 
-{        writeln('-----------------------------');
-        writeln('EditorTop = ' + EditorTop);
-        writeln('-----------------------------');
-        writeln('EditBottom = ' + EditorBottom);
-        writeln('-----------------------------');
-        writeln('TMistyHTTPServer.DoCommandEdit Content=' +  STL.Text );
-        writeln('-----------------------------');
-        writeln('TMistyHTTPServer.DoCommandEdit File=' + ServerHome + copy(FName, 1, 36) + 'html');   }
 //        SaveString(Editor_1 + Editor_2 + STL.Text + Editor_3, ServerHome + copy(FName, 1, 36) + '.html');
 
         St := Editor_1 + '  formData.append("noteFName", "' + FName + '");' + #10
                                   + '  formData.append("noteTitle", "unknown");'
-                       + Editor_2.Replace('!!INSERT NOTE TITLE!!', HTML.Title) + STL.Text + Editor_3;
+                       + Editor_2.Replace('!!INSERT NOTE TITLE!!', HTML.Title) + STL.Text
+                       + Editor_3
+                       + ' <table style="width:100%"><tr>'
+                       + '<th style="width:10%"><button type="button" onclick="sendData()">Save</button></th>'
+                       + '<th style="width:10%"><p id="IDstatus">_____</p></th>'
+                       + '<th style="width:80%"><p><a href="LISTNOTES">Main Note List</a></p></th>'
+                       + '</tr></table> '
+                       + '</body></html>';
 
-CheckMimeLoaded;
-AResp.ContentType:=MimeTypes.GetMimeType('html');
-AResp.ContentLength := length(St);
-AResp.Content := St;
-
-{        AResp.Content := Editor_1 + '  formData.append("noteFName", "' + FName + '");' + #10
-                                  + '  formData.append("noteTitle", "unknown");'
-                       + Editor_2 + STL.Text + Editor_3;     }
-
-        SaveString(St, Serv.BaseDir + 'temp' + PathDelim + 'LastEdit.html');
-        writeln('TMistyHTTPServer.DoCommandEdit - response prepared');
+        CheckMimeLoaded;
+        AResp.ContentType:=MimeTypes.GetMimeType('html');
+        AResp.ContentLength := length(St);
+        AResp.Content := St;
+        SaveString(St, Serv.BaseDir + 'temp' + PathDelim + 'LastEdit.html');    // ToDo : remove
+        writeln('TMistyHTTPServer.DoCommandEdit - response prepared');          // ToDo : remove
         AResp.SendContent;
-
-//         AResp.Content := Editor_1 + Editor_2 + STL.Text + Editor_3;
-//        writeln('MistyHTTPServer.DoCommandEdit +++++++++++++++++++++++++++');
-//        writeln( AResp.Content);
-//        writeln('MistyHTTPServer.DoCommandEdit ---------------------------');
-        finally
+    finally
         if HTML <> Nil then HTML.Free;
         if STL <> Nil then STL.Free;
     end;
-
-
-
-    // AResp.Content := '<html><body><h2>OK</h2></p>' + 'Looking at ' + FName + '</p></body></html>';
-    // OK, now we have to convert that note to HTML, clean off the header and footer
-    // insert into into quill html template.
 end;
 
                 // override the fphttpserver version, called for every request.
@@ -367,32 +329,6 @@ Var
   F : TFileStream;
   FN : String;
   Cmd : string;
-
-    // Looks at URL, if it can make it work by adding an index.html or a '/' (ie dir) does so,
-    // returns True. If it returns false, nothing we can do, missing file or dir.
- {   function CheckURL() : boolean;
-    begin
-            Result := True;
-            if (length(FN)>0) and (FN[1]='/') then
-                Delete(FN,1,1);
-            DoDirSeparators(FN);       // Make a path contain appropiate seperators.
-            if FileExists(BaseDir + FN) then begin
-                FN:=BaseDir+FN;
-                exit(true);            // user has entered a usable filename
-            end;
-            if FileExists(BaseDir + FN + 'index.html') then begin
-                FN:=BaseDir+FN + 'index.html';
-                exit(true);            // a dir that does contain an index.html
-            end;
-            if DirectoryExists(BaseDir+FN) then begin
-                FN := MyAppendPathDelim(BaseDir+FN);
-                if FileExists(FN + 'index.html') then
-                    FN := FN + 'index.html';
-                exit(True);
-            end;
-            // If to here, user must have put an invalid file or dir in URL
-            result := False;
-    end;    }
 
 begin
     // Here we decide just what this particular call is. We pass ctrl to a procedure
@@ -430,17 +366,7 @@ begin
            finally
                    F.Free;
            end;
-
-
-            (* if LoadFromFile(Serv.BaseDir + 'quill.html', Cmd) then begin
-                CheckMimeLoaded;
-                AResponse.ContentType:=MimeTypes.GetMimeType('html');
-                Writeln('Serving file: Reported Mime type: ',AResponse.ContentType);
-                AResponse.Content := Cmd;
-                AResponse.SendContent;
-                SaveString(AResponse.Content, Serv.BaseDir + 'LastTest.html');
-            end else writeln('TMistyHTTPServer.HandleRequest cannot load quill.html');   *)
-            writeln('TMistyHTTPServer.HandleRequest - we are done here');
+            writeln('TMistyHTTPServer.HandleRequest - we are done here');       // ToDo : remove
         end
     else begin
         writeln(' ARequest.URL = ', ARequest.URL);
@@ -448,51 +374,6 @@ begin
         AResponse.Content := '<html><body><h2>ERROR</h2></p>' + 'I have no idea what you mean.' + '</p></body></html>';
         AResponse.Code := 404;
     end;
-
-{    ARequest.HandleGetOnPost := False;          // ????
-    if pos('POST', ARequest.HeaderLine) > 0 then begin
-        writeln('POST received, count=', ARequest.ContentFields.count);
-    end;
-    writeln('Command=' + ARequest.CommandLine + ' and HeaderLine=' + ARequest.HeaderLine + ' and CF.Count=', ARequest.ContentFields.Count);
-
-    // in our case here, its possibly a POST, if so, Count > 0. Check Name
-    if ARequest.Files.Count > 0 then writeln('Someone sent us a file.');        // ? not used, its a data post
-    if ARequest.ContentFields.count > 0 then begin                              // A POST with data ?
-        DoCommandPost(ARequest, AResponse);
-        exit;
-    end;
-
-
-    FN:=ARequest.Url;
-    if DoCommands(ARequest, AResponse) then exit;
-//    writeln('TTestHTTPServer.HandleRequest : User requested ', FN);
-    if not CheckURL() then begin
-        AResponse.Code:=404;                       // ToDo : this does not work
-        writeln('TTestHTTPServer.HandleRequest : File or Dir not found [', FN, ']');
-        AResponse.Content := '<html><body><h2>ERROR 404, File or Dir not found</h2></p>' + FN + '</p></body></html>';
-        AResponse.SendContent;
-        exit;            ;
-    end;
-    // Here, we believe we can help the user, either with a file or a dir list.
-    if (length(FN) = 0) or (FN[length(FN)] = PathDelim) then begin            // trailing Sep says is just a dir.
-//        Writeln('No file to serve, will do file list, FN=[', FN, ']');
-        GenerateFileList(FN, AResponse);
-        exit;
-    end;
-    // If to here, we seem to have a file to serve, do so !
-    // writeln(' TTestHTTPServer.HandleRequest and file exists.');
-    F:=TFileStream.Create(FN,fmOpenRead);
-    try
-        CheckMimeLoaded;
-        AResponse.ContentType:=MimeTypes.GetMimeType(ExtractFileExt(FN));
-//        Writeln('Serving file: "',Fn,'". Reported Mime type: ',AResponse.ContentType);
-        AResponse.ContentLength:=F.Size;
-        AResponse.ContentStream:=F;
-        AResponse.SendContent;
-        AResponse.ContentStream:=Nil;
-    finally
-        F.Free;
-    end;    }
 end;
 
 procedure HandleSigInt(aSignal: LongInt); cdecl;
@@ -561,10 +442,10 @@ begin
                 writeln('Usage ', ExtractFileName(ParamStr(0)), ' [BaseDir] [Port]');
                 exit;
             end;
-            if (ParamStr(1) = '-t') then begin           // This is just a test, remove this block some time.
+{            if (ParamStr(1) = '-t') then begin           // This is just a test, remove this block some time.
                TestConvert2HTML(ServerHome + ParamStr(2));
                exit;
-            end;
+            end;    }
             Serv.BaseDir:=ParamStr(1);
         end;
         if ParamCount > 1 then
@@ -573,6 +454,7 @@ begin
         Serv.AcceptIdleTimeout:=1000;
         Serv.OnAcceptIdle:=@Serv.DoIdle;
         writeln(ParamStr(0), ' starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port);
+        ServerHome := Serv.BaseDir + '/home/';
         Serv.Active:=True;
         // from time to time, a exception relating to POST is raised and apparently dealt with
         // internally. But if running under the debugger in the IDE you get told about it.

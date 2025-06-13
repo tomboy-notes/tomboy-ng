@@ -2,6 +2,18 @@
 <html lang="en">
 <head>
 
+<!--	
+<script>
+	async function cancelEdit() {
+		var req = new XMLHttpRequest();
+		req.open('GET', 'http://localhost:8080/LISTNOTES', false);
+		req.send(null);
+		if(req.status == 200)
+			alert('Status is 200  ' + req.responseText);
+		document.querySelector('html').innerHTML = req.responseText;
+	}
+</script> -->
+
 <script>
 async function sendData() {
   // Construct a FormData instance
