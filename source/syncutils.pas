@@ -29,7 +29,8 @@ uses
     Classes, SysUtils, dateutils, LazLogger;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
-                SyncGitHub);     // sends markdown notes to/from github.
+                SyncGitHub,     // sends markdown notes to/from github.
+                SyncMisty);     // Using the Misty Web Server
 
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.
@@ -67,7 +68,13 @@ type TRepoAction = (
                 RepoNew,                // Create (and use) a new repo in presumably a blank dir
                 RepoUse,                // Go ahead and use this repo to sync
                 RepoForce,              // Force join or create, even if existing credentuals don't work
-                RepoTest);              // Just have a look, maybe call SetTransport ?    
+                RepoTest);              // Just have a look, maybe call SetTransport ?
+
+type TContentType = (                   // the type of data we might ask a web downloader to get for us.
+            ctText,                     // just plain text (utf8 ?)
+            ctXML,                      // XML content, such as a note
+            ctJSON,                     // JSON, much loved in GIThub
+            ctHTML);                    // HTML, not sure if this us needed.
 
 type
   	PNoteInfo=^TNoteInfo;
@@ -178,6 +185,7 @@ begin
     case TheType of
         SyncFile :        result := 'SyncFile';
         SyncGitHub  :     result := 'SyncGithub';
+        SyncMisty   :     result := 'SyncMisty';
     end;
 end;
 

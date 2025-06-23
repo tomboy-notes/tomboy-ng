@@ -49,6 +49,7 @@ unit tb_utils;
 
 {$mode objfpc}{$H+}
 
+
 interface
 
 
@@ -156,8 +157,8 @@ var
 implementation
 
 uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}           // We call a ReReadLocalTime();
-        laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, Forms, LazUTF8,
-        Note_Lister;                                                            // only used by RemoveNoteBookTags
+        laz2_DOM, laz2_XMLRead, FileUtil, LazFileUtils, Forms, LazUTF8
+        {$ifndef TESTRIG}, Note_Lister {$endif};                                                            // only used by RemoveNoteBookTags
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
@@ -327,7 +328,9 @@ begin
                          + TB_GetLocalTime() + '</last-metadata-change-date>';
          writeln(OutFile, InString);
          if pos('</y>', InString) > 0 then begin                                // Last tag before Notebook, get new tags
+            {$ifndef TESTRIG}
             write(OutFile, TheMainNoteLister.NoteBookTags(ExtractFileNameOnly(FullFileName)+'.note'));    // func already has #10 at end
+            {$endif}
             readln(InFile, InString);                                           // discard tags from InFile
             while (pos('<tags>', InString) > 0) or (pos('</tags>', InString) > 0)
                     or (pos('<tag>', InString) > 0) do                          // ToDo : should beware of premature EOF

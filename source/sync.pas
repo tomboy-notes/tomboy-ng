@@ -11,6 +11,7 @@ unit sync;
 
 {$mode objfpc}{$H+}
 
+
 { How to use this Unit -
 
     This unit is used by : SearchUnit but only for access to local manifest file;
@@ -24,7 +25,7 @@ unit sync;
   if we believe we have an existing Repo accessible -
 
   	ASync := TSync.Create();
-    ASync.SetTransport(TransP);         // possible value defined in SyncUtils, SyncFile, SyncNextCloud, SyncAndroid
+    ASync.SetTransport(TransP);         // possible value defined in SyncUtils, SyncFile, SyncMisty (!SyncNextCloud, !Sync
                                         // test for IPOK() with GitHubSync
     ASync.DebugMode:=True;
 	ASync.TestRun := ? ;
@@ -432,9 +433,21 @@ implementation
 { TSync }
 
 uses laz2_DOM, laz2_XMLRead,
-    TransFile, TransGithub,
-    LazLogger, LazFileUtils, FileUtil, Settings, tb_utils,
-    SearchUnit;                    // here because we call SearchForm.ProcessSyncUpdates()
+    TransFile,
+    {$ifndef TESTRIG}       // too hard to make this work needing note_lister ! For now ...
+    TransGithub,
+    {$endif}
+    transmisty,
+    LazLogger, LazFileUtils, FileUtil,
+    {$ifndef TESTRIG}
+    Settings,
+    SearchUnit,
+    {$endif}
+    tb_utils;                    // here because we call SearchForm.ProcessSyncUpdates()
+
+{$ifdef TESTRIG}
+const TestRigSyncFileRepo = '/run/user/1000/gvfs/smb-share:server=greybox.local,share=store/TB_Sync-alt/';
+{$endif}
 
 var
     Transport : TTomboyTrans;
@@ -1003,10 +1016,11 @@ end;
 
 function TSync.FGetTokenExpire(): string;
 begin
+    {$ifndef TESTRIG}                              // github sync not working in test rig yet
     if assigned(Transport)
         and (Transport is TGitHubSync) then
         Result := TGitHubSync(Transport).TokenExpires
-    else Result := 'not applicable';                       // should never happen
+    else {$endif}Result := 'not applicable';                       // should never happen
 end;
 
 function TSync.FGetTransRemoteAddress(): string;
@@ -1029,10 +1043,21 @@ begin
     ErrorString := '';
     FreeAndNil(Transport);
     case Mode of
-        SyncFile :    begin
+        SyncFile : begin
+                        {$ifndef TESTRIG}
                         SyncAddress := AppendPathDelim(Sett.GetSyncFileRepo());
+                        {$endif}
                         Transport := TFileSync.Create(ProgressProcedure);
-	                  end;
+
+	               end;
+
+        SyncMisty : begin
+                        Transport := TMistySync.Create(ProgressProcedure);
+                        ConfigDir := ConfigDir + SyncTransportName(SyncGithub) + PathDelim;
+                        ForceDirectory(ConfigDir);
+                    end;
+
+        {$ifndef TESTRIG}
         SyncGitHub :  begin
                         Transport := TGithubSync.Create(ProgressProcedure);
                         if TGitHubSync(Transport).FailedToResolveIPs then begin
@@ -1045,6 +1070,7 @@ begin
                         ConfigDir := ConfigDir + SyncTransportName(SyncGithub) + PathDelim;
                         ForceDirectory(ConfigDir);
                       end;
+        {$endif}
     end;
 //    Transport.ProgressProcedure := ProgressProcedure;
     Transport.Password := Password;
@@ -1091,7 +1117,9 @@ begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
     end;
-    Result := Transport.TestTransport(not TestRun);                             // *****************
+    if TransMode = SyncMisty then TMistySync(Transport).RMetaData := RemoteMetaData;  // Misty needs access to this mid TestTransport
+    Result := Transport.TestTransport(not TestRun);                                   // In Misty, this will also do ReadRemoteManifest
+
     if Result <> SyncReady then begin
       ErrorString := Transport.ErrorString;
       // We get the next line every time we start a new sync repo because we always try a join first.  Not helpful.
@@ -1126,6 +1154,7 @@ end;
 
 function TSync.LoadRepoData(ForceLCD : boolean): boolean;
 begin
+    if TransportMode = SyncMisty then exit;             // dont need this in Misty, TestTransport does it. In Misty, always have LCD
     if ProgressProcedure <> nil then ProgressProcedure('Load Remote Repo');
     Result := True;
     FreeAndNil(RemoteMetaData);
@@ -1159,16 +1188,18 @@ begin
     if not LoadRepoData(False) then exit(False);     // don't get LCD until we know we need it.
     case RepoAction of
         RepoUse : begin
+                        {$ifndef TESTRIG}
                         if TransportMode = SyncGithub then
                             TGithubSync(Transport).AssignActions(RemoteMetaData, LocalMetaData, TestRun)
-                        else CheckUsingRev();
+                        else {$endif} CheckUsingRev();
                         // note that the Android sync used to use CheckUsingLCD(False) do we still need it ?
                         CheckRemoteDeletes();
                         CheckLocalDeletes();
                   end;
-        RepoJoin :  if TransportMode = SyncGithub then
+        RepoJoin :  {$ifndef TESTRIG}
+                    if TransportMode = SyncGithub then
                         TGithubSync(Transport).AssignActions(RemoteMetaData, LocalMetaData, TestRun)
-                    else                                                    // Github will always have a LCD but not usable for this purpose.
+                    else {$endif}                                           // Github will always have a LCD but not usable for this purpose.
                         if not CheckUsingLCD(True) then begin               // at least 1 possible clash
                             LoadRepoData(True);                             // start again, getting LCD this time
                             CheckUsingLCD(False);
@@ -1176,8 +1207,10 @@ begin
         RepoNew : begin
                         freeandNil(RemoteMetaData);
                         RemoteMetaData := TNoteInfoList.Create;             // clean out the list and start again
+                        {$ifndef TESTRIG}
                         if TransportMode = SyncGithub then
                             TGithubSync(Transport).AssignActions(RemoteMetaData, LocalMetaData, TestRun)
+                        {$endif}
                   end
     end;
 
@@ -1259,8 +1292,10 @@ begin
                 DownList.Add(Items[Index]^.ID);
         end;
     end;
+    {$ifndef TESTRIG}                                         // this relates to recording in note_lister. NOT in testRig
     if (DeletedList.Count > 0) or (DownList.Count > 0) then
         SearchForm.ProcessSyncUpdates(DeletedList, DownList);
+    {$endif}
     FreeandNil(DeletedList);
     FreeandNil(DownList);
 end;

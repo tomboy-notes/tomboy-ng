@@ -85,7 +85,7 @@ type
              necessary directories first. }
         function UploadNotes(const Uploads : TStringList) : boolean; virtual; abstract;
 
-            { Tells Trans to deal with with remote mainfest. This is the trigger
+            { Tells Trans to deal with remote mainfest. This is the trigger
               for a new revision on the server, the server must now do whatever
               it needs to accomodate the new new revision, some new or update
               notes will be sent to it a bit later. New RevNo will be RemoteServerRev plus 1 }
