@@ -1,6 +1,15 @@
 unit html2note;
 
-{
+{   Part of the tomboy-ng Misty project.
+
+   Converts HTML versions of a note back to the tomboy-ng XML format.
+
+    Copyright (C) 2017-2025 David Bannon
+
+    License:
+    This code is licensed under MIT License, see the file License.txt
+    or https://spdx.org/licenses/MIT.html  SPDX short identifier: MIT
+
 https://quilljs.com/docs/formats
 multilevel bullets are implemented as an indented list, needs testing.
 Still need to address highlight (any color, we will disable that.

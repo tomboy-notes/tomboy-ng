@@ -1,19 +1,49 @@
 program webserver;
 
-{ License
+{   Part of the tomboy-ng Misty project.
 
+    Provides a set of web services that allows tomboy-ng to sync remotely
+    and allows end user to access synced notes from  browser.
+    Very much under development.
+
+    Copyright (C) 2017-2025 David Bannon
+
+    License:
+    This code is licensed under MIT License, see the file License.txt
+    or https://spdx.org/licenses/MIT.html  SPDX short identifier: MIT
 }
 
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+}   {$ifdef windows}{$apptype console}{$endif}
 {$define UseCThreads}
+
+{   Revision - we the current Revision number in memory at all time. At startup we read
+    it from the manifestif preset, set to -1 otherwise.  When a Sync sends us a new or
+    updated note, we place it in Revision + 1 and do not update Revision until a new
+    manifest is sent. That new manifest will provide us with new current revision, which
+    should always be Revision + 1, log error otherwise ?
+
+    Similarly, theclient will start with -1, all notes uploaded will assume that
+    +1 until it posts the new manifest. The manifest is always written in the client.
+
+    A note is saved in ServerHome + (Rev+1) + $ID.note
+
+    We don't delete notes, just don't list them in the updated manifest.
+
+    When a note is "quill edited", the save process will same following above rule
+    and then immediatly increment Revision.
+
+
+}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
+  ssync_utils,    // data sync utils based on tomboy-ng code
   sysutils, Classes, fphttpserver, fpmimetypes, wmecho, exporthtml, httpdefs,
   BaseUnix,       // for Signal Names  Hmm, windows ?  No idea !
-  html2note;
+  html2note,
+  LazLogger, LazFileUtils;      // does that introduce a LCL dependency ?
 
 
 
@@ -29,12 +59,29 @@ Type
 //    FCount : Integer;
     FMimeLoaded : Boolean;
     FMimeTypesFile: String;
-    procedure DoCommandPost(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+    Revision : integer;           // The last used Revision number, new sync +1. Inc when savng new manifest.
 
+                        // Sync - Upload a file from the users PC tomboy-ng process. Not from a browser.
+                        // This is invoked if AReq.Files.count > 0. Means a note or mainfest has been sent.
+                        // Note will be saved in ServerHome using revision based directory structure
+                        // Note commented out test code to trigger uploadfrom browser.
+                        // Will return to client 200 on success or 422 on fail to save (permission, disk space).
     procedure DoCommandUpload(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+                        // Sync - This might be called to send a note - /DOWNLOAD/$ID.note
+                        // or, still an xml file, the manifest - /MANIFEST back to client -ng
     procedure DoCommandDownload(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+
+                        // Interactive, user has requested to see a list of clickable notes.
     procedure DoCommandListNotes(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+                        // Interactive. When a web user has clicked on a note, bundles up the note in HTML
+                        // format adds code to involve quill and applies the three Editor_? templates.
+                        // This start of Edit process.
     procedure DoCommandEdit(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+                        // Interactve. A web user has sent back an edited Quill note. Convert back to
+                        // note format and save it. Everything that arrives here does need
+                        // to be saved ?  Need more validation.
+    procedure DoCommandAcceptEdit(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+
     procedure GenerateFileList(FFName: string; AResp: TFPHTTPConnectionResponse);
     function MyAppendPathDelim(APath: string): string;
     procedure SetBaseDir(const AValue: String);
@@ -51,15 +98,17 @@ Type
 
   end;
 
+
 Var
   Serv : TMistyHTTPServer;
   ExitNow : boolean;           // A semaphore set when ctrl-C received
   ErrorSt : string = '';       // Check this before exiting with an error
   ServerHome : string;
+  DebugMode : boolean = false;
 
 const
 
-    Editor_1 : string = '<html>';
+    Editor_1 : string = '<html>';    // placeholders, load real content at run time
     Editor_2 : string = '';
     Editor_3 : string = '</html>';
 
@@ -69,8 +118,6 @@ procedure SaveString(InString, OutFilePath: string);
 var
     F: TextFile;
 begin
-//    writeln('SaveString InS=', InString);
-//    writeln('SaveString Path=', OutFilePath);
     AssignFile(F, OutFilePath);
     try
         ReWrite(F);
@@ -166,14 +213,11 @@ begin
     AResp.SendContent;
 end;
 
-        // A web user has sent back a edited Quill note. Convert back to note
-        // format and save it. We that everything that arrives here does need
-        // to be saved.
-procedure TMistyHTTPServer.DoCommandPost(AReq  : TFPHTTPConnectionRequest ;
+
+procedure TMistyHTTPServer.DoCommandAcceptEdit(AReq  : TFPHTTPConnectionRequest ;
                                              AResp : TFPHTTPConnectionResponse);
 var
-  LName: String;
-  V, St : string;
+  St : string;
   Convert : THTML2Note;
 begin
     // Resp.Code - 298 : cannot find orig note;  296 : convert html2note error;  295 : file i/o error;  200 : OK
@@ -188,11 +232,11 @@ begin
         St := '<p>Failed to convert note</p>';
     end else
         if not Convert.SaveNote(Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName) then begin
-            writeln('TMistyHTTPServer.DoCommandPost - error dealing with ' + Convert.NoteFName);
+            debugln('TMistyHTTPServer.DoCommandPost - ERROR dealing with ' + Convert.NoteFName);
             AResp.Code := 295;
             St := '<p>Failed to save note</p>';
         end else begin
-            writeln('TMistyHTTPServer.DoCommandPost - write ' + Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName);
+            if DebugMode then debugln('TMistyHTTPServer.DoCommandPost - write ' + Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName);
             St := '<p>All Good</p>';
         end;
     Convert.Free;
@@ -205,41 +249,99 @@ begin
 end;
 
 
-        // Upload a file from the users PC, ie during a tomboy-ng sync process.
+
 procedure TMistyHTTPServer.DoCommandUpload(AReq  : TFPHTTPConnectionRequest ;
-                                         AResp : TFPHTTPConnectionResponse);   // this is also a POST
+                                           AResp : TFPHTTPConnectionResponse);   // this is also a POST
 var
     f: TUploadedFile;
     Sts : TstringList;
     SaveFileName : string = '/tmp/';
 begin
-    if AReq.Files.count = 0 then
+    if DebugMode then debugln('DoCommandUpload ' + AReq.URL);
+    (*
+    if AReq.Files.count = 0 then        // then we are not trying to upload, just get an upload prompt. Not needed in Misty
         with AResp.Contents do begin
             Add('<form id="form" action="' + AReq.URI + '" method="POST" enctype="multipart/form-data">');
             Add('<label for="name">Drag n drop or click to add file:</label>');
             Add('<input type="file" name="input" />');
             Add('<input type="submit" value="Send" />');
         Add('</form>');
-    end else begin                      // the secret here is that AReq.Files.count > 0 ! So, must be a file coming.
-        f := AReq.Files[0];
-        SaveFileName := SaveFileName + F.FileName;
+    end else begin             *)         // the secret here is that AReq.Files.count > 0 ! So, must be a file coming.
+        f := AReq.Files[0];               // here we assume only one file has been sent. Hope thats safe.
+        SaveFileName := GetRevisionDirPath(ServerHome, Revision + 1);
         Sts := TStringList.Create;
-        Sts.LoadFromStream(F.Stream);
-        Sts.SaveToFile(SaveFileName);
-        if FileExists(SaveFileName) then
-            AResp.Contents.Add('<html><body><h2>OK</h2></p>' + f.FileName +  ' was uploaded (I think).' + '</p></body></html>')
-        else
-            AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'file was not uploaded.' + '</p></body></html>');
-        Sts.Free;
-    end;
+        try
+            Sts.LoadFromStream(F.Stream);
+            if DirectoryExists(SaveFileName) or ForceDirectoriesUTF8(SaveFileName) then begin
+                if F.FileName.Endswith('-remote') then
+                    SaveFileName := SaveFileName + 'manifest.xml'
+                else SaveFileName := SaveFileName + F.FileName;
+                Sts.SaveToFile(SaveFileName);                  // Save notes and a copy of manifest in Rev dir
+                if F.FileName.Endswith('-remote') then         // Save main manifest in home
+                     Sts.SaveToFile(ServerHome + 'manifest.xml');
+            end;
+            if FileExists(SaveFileName) then begin
+                AResp.Contents.Add('<html><body><h2>OK</h2></p>' + f.FileName +  ' was uploaded.' + '</p></body></html>');
+            end else begin
+                AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'file was not uploaded.' + '</p></body></html>');
+                debugln('DoCommandUpload ERROR [' + SaveFileName + '] NOT saved.');
+                AResp.Code := 422;
+            end;
+            AResp.SendResponse;
+        finally
+            Sts.Free;
+        end;
 end;
 
 
 procedure TMistyHTTPServer.DoCommandDownload(AReq: TFPHTTPConnectionRequest;
                                              AResp: TFPHTTPConnectionResponse);
+var STL : TStringList;
+//    St  : string;
+    FName : string;
+    PNote : PNoteInfo = nil;
 begin
 
+    // MetaData.DumpList('in DoCommandDownload');
+    if DebugMode then debugln('TMistyHTTPServer.DoCommandDownload ' + AReq.URL);
+    AResp.ContentType := 'application/text';                     // in case we have to return an error message
+    STL := TStringList.Create;
+    try
+        if FileExists(ServerHome + 'manifest.xml') then begin        // can only help here if we have a manifest.
+            if pos('MANIFEST', AReq.URL) > 0 then
+                FName := ServerHome + 'manifest.xml'
+            else begin
+                FName := copy(AReq.URL, 11, 100);                   // should be just $ID.note It arrives here as /DOWNLOAD/$ID.note
+                // Insert here code relating to file version number as obtained from manifest
+                PNote := MetaData.FindID(copy(FName, 1, 36));
+                if PNote <> Nil then                                // if nil, FileExists test below will get and report it
+                    FName := GetRevisionDirPath(ServerHome, PNote^.Rev, FName)
+                else debugln('TMistyHTTPServer.DoCommandDownload, ERROR failed to find ' + FName + ' in MetaData');
+            end;
+            // debugln('TMistyHTTPServer.DoCommandDownload FName is ' + FName);
+            if FileExists(FName) then begin
+                STL.LoadFromFile(FName);
+                AResp.ContentType := 'application/xml';
+                AResp.code := 200;
+            end else begin
+                AResp.ContentType := 'application/text';                // hmm, client will be expecting XML
+                AResp.code := 404;
+                Stl.Add('Cannot find that file ' + FName);
+                debugln('TMistyHTTPServer.DoCommandDownload ' + Stl.Text);
+            end;
+        end else begin
+            AResp.code := 404;
+            Stl.Add('Cannot serve files without manifest');
+            debugln('TMistyHTTPServer.DoCommandDownload - ' + Stl.Text);
+        end;
+        AResp.ContentLength := length(STL.Text);
+        AResp.Content := STL.Text;
+    finally
+        Stl.free;
+    end;
+    AResp.SendContent;
 end;
+
 
 procedure TMistyHTTPServer.DoCommandListNotes(AReq: TFPHTTPConnectionRequest;
                                               AResp: TFPHTTPConnectionResponse);
@@ -247,7 +349,7 @@ var
     STL : tstringlist;
     Info : TSearchRec;
 begin
-    writeln('TMistyHTTPServer.DoCommandListNotes');
+    if DebugMode then debugln('TMistyHTTPServer.DoCommandListNotes');
     STL := TStringList.Create();
     STL.Insert(0, '<!DOCTYPE html><body><h1>File List</h1>');
     Stl.Add('<table>');
@@ -266,11 +368,9 @@ begin
     AResp.Content := StL.Text;
     STL.Free;
     AResp.SendContent;
-
 end;
 
-        // Called when a web user has clicked on a note, bundles up the note in HTML format
-        // adds code to involve quill and applies the three Editor_? templates.
+
 procedure TMistyHTTPServer.DoCommandEdit(AReq: TFPHTTPConnectionRequest;
     AResp: TFPHTTPConnectionResponse);
 var
@@ -280,7 +380,7 @@ var
     St : string;
 begin
     FName := copy(AReq.URL, 2, 100);                                            // ToDo : better checking that file is available and is a note
-    writeln('MistyHTTPServer.DoCommandEdit looking ' + FName);
+    if DebugMode then debugln('MistyHTTPServer.DoCommandEdit wants to edit ' + FName);
     HTML := TExportHTML.Create();
     HTML.NotesDir:= ServerHome;
 //    HTML.OutDir := AppendPathDelim(DestDir);
@@ -289,7 +389,7 @@ begin
     try
         HTML.ExportContent(ServerHome + FName, STL);                                         // ToDo : some error checking please.
         if Stl.Count < 2 then begin
-            writeln('TMistyHTTPServer.DoCommandEdit failed to convert note to HTML : ' + FName);
+            debugln('TMistyHTTPServer.DoCommandEdit ERROR failed to convert note to HTML : ' + FName);
             AResp.Content := '<html><body><h2>ERROR</h2></p>' + 'empty string list returned' + '</p></body></html>';
             exit;
         end;
@@ -311,8 +411,8 @@ begin
         AResp.ContentType:=MimeTypes.GetMimeType('html');
         AResp.ContentLength := length(St);
         AResp.Content := St;
-        SaveString(St, Serv.BaseDir + 'temp' + PathDelim + 'LastEdit.html');    // ToDo : remove
-        writeln('TMistyHTTPServer.DoCommandEdit - response prepared');          // ToDo : remove
+        // SaveString(St, Serv.BaseDir + 'temp' + PathDelim + 'LastEdit.html');
+        if DebugMode then debugln('TMistyHTTPServer.DoCommandEdit - response prepared');
         AResp.SendContent;
     finally
         if HTML <> Nil then HTML.Free;
@@ -327,29 +427,34 @@ procedure TMistyHTTPServer.HandleRequest(var ARequest: TFPHTTPConnectionRequest;
                                         var AResponse: TFPHTTPConnectionResponse);
 Var
   F : TFileStream;
-  FN : String;
-  Cmd : string;
+  FN : String;                      // ToDo : must refactor this method, its a dogs breakfast !
 
 begin
+    AResponse.Code := 200;          // Default, we return a HTML text error message and 200 if we cannot work out what to do.
+
     // Here we decide just what this particular call is. We pass ctrl to a procedure
-    // that handles each type of call. I  all cases, we assume that procedure all that is necessary.
-    ARequest.HandleGetOnPost := True;
-    writeln('TMistyHTTPServer.HandleRequest URL=', ARequest.URL);
+    // that handles each type of call. In  all cases, we assume that procedure all that is necessary.
+    ARequest.HandleGetOnPost := True;                                           // ?
+    writeln('TMistyHTTPServer.HandleRequest URL=', ARequest.URL, ' FileCount=', ARequest.Files.Count, ' FieldCount=', ARequest.ContentFields.Count);
 
     if ARequest.Files.Count > 0 then                                            // Fileupload ?
         DoCommandUpLoad(ARequest, AResponse)
-    else                                     // Content Update, data back from Quill webpage, an edited note.
-    if ARequest.ContentFields.Count > 1 then // > 0 would work too !
-        DoCommandPost(ARequest, AResponse)
+    else                                                  // Content Update, data back from Quill webpage, an edited note.
+    if ARequest.ContentFields.Count > 1 then              // > 0 would work too, but better checks necessary
+        DoCommandAcceptEdit(ARequest, AResponse)
     else
-    if ARequest.URL = '/LISTNOTES' then       // List notes, user wants to browse list of notes
+    if ARequest.URL = '/LISTNOTES' then                   // List notes, user wants to browse list of notes
         DoCommandListNotes(ARequest, AResponse)
     else
-    if copy(ARequest.URL, 1, 8) = '/DOWNLOAD' then // TB client wants to download a note from repo        "8" ???
+    if copy(ARequest.URL, 1, 9) = '/DOWNLOAD' then        // TB client wants to download a note from repo
         DoCommandDownLoad(ARequest, AResponse)
     else
-    if copy(ARequest.URL, length(ARequest.URL)-4, 5) = '.note' then  // Send a note in quill editor
-        DoCommandEdit(ARequest, AResponse)
+    if copy(ARequest.URL, 1, 9) = '/MANIFEST' then        // TB client wants the manifest, same as above
+        DoCommandDownLoad(ARequest, AResponse)
+    else
+
+    if copy(ARequest.URL, length(ARequest.URL)-4, 5) = '.note' then  // Send a note to quill editor
+        DoCommandEdit(ARequest, AResponse)                           // just note name (and .note"), no path required
     else
         if ARequest.URL = '/quill.html' then begin
             writeln('TMistyHTTPServer.HandleRequest In TEST mode');
@@ -368,13 +473,15 @@ begin
            end;
             writeln('TMistyHTTPServer.HandleRequest - we are done here');       // ToDo : remove
         end
-    else begin
+    else begin                                                                  // his is a special case, no command, instruction, data in URL, its working but non-functional
         writeln(' ARequest.URL = ', ARequest.URL);
         writeln(copy(ARequest.URL, length(ARequest.URL)-4, 5));
         AResponse.Content := '<html><body><h2>ERROR</h2></p>' + 'I have no idea what you mean.' + '</p></body></html>';
-        AResponse.Code := 404;
+
     end;
 end;
+
+
 
 procedure HandleSigInt(aSignal: LongInt); cdecl;
 begin
@@ -387,28 +494,9 @@ begin
     ExitNow := True;            // Watched by the Idle method
 end;
 
-
-procedure TestConvert2HTML(FFName : string);       // This is just a test, remove this block some time.
-var HTML : TExportHTML = Nil;
-    STL : TStringList = Nil;
+                                // Refactor to accept proper command line parameters.
 begin
-    writeln('Off line test mode');
-    if FileExists(FFName) then writeln('Have found ' + FFName);
-    HTML := TExportHTML.Create();
-    HTML.NotesDir:= ServerHome;
-    STL := TStringList.Create();
-    try
-        HTML.ExportContent(FFName, STL);
-        STL.SaveToFile('Converted.html');
-    finally
-        STL.Free;
-        HTML.Free;
-    end;
-end;
-
-
-
-begin
+    MetaData := nil;        // to be sure, to be sure
     if FpSignal(SigInt, @HandleSigInt) = signalhandler(SIG_ERR) then begin
         Writeln('Failed to install signal error: ', fpGetErrno);
         exit;
@@ -432,7 +520,6 @@ begin
             writeln('Failed to load editor_3.template : ' + ErrorSt);
             exit;
         end;
-
         {$ifdef unix}
         Serv.MimeTypesFile:='/etc/mime.types';
         {$endif}
@@ -442,10 +529,6 @@ begin
                 writeln('Usage ', ExtractFileName(ParamStr(0)), ' [BaseDir] [Port]');
                 exit;
             end;
-{            if (ParamStr(1) = '-t') then begin           // This is just a test, remove this block some time.
-               TestConvert2HTML(ServerHome + ParamStr(2));
-               exit;
-            end;    }
             Serv.BaseDir:=ParamStr(1);
         end;
         if ParamCount > 1 then
@@ -453,12 +536,20 @@ begin
         Serv.Threaded:=False;
         Serv.AcceptIdleTimeout:=1000;
         Serv.OnAcceptIdle:=@Serv.DoIdle;
-        writeln(ParamStr(0), ' starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port);
         ServerHome := Serv.BaseDir + '/home/';
+        if ReadManifest(MetaData, ServerHome + 'manifest.xml', ErrorSt) then
+            Serv.Revision := MetaData.LastRev
+        else
+            Serv.Revision := -1;                    // Thats OK, its a new install.
+
+        debugln(ParamStr(0), ' starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port.tostring);
+        debugln('Revision=', Serv.Revision.tostring);
+        if MetaData <> nil then debugln('ServerID=', MetaData.ServerID);        // only shown after first manifest.
         Serv.Active:=True;
         // from time to time, a exception relating to POST is raised and apparently dealt with
-        // internally. But if running under the debugger in the IDE you get told about it.
+        // internally in httpserver. But if running under the debugger in the IDE you get told about it.
     finally
+        if MetaData <> nil then MetaData.free;
         Serv.Free;
     end;
 end.

@@ -15,6 +15,7 @@
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
     </General>
+    <LazDoc Paths="docs"/>
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
@@ -36,7 +37,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="webserver.pas"/>
         <IsPartOfProject Value="True"/>
@@ -54,6 +55,10 @@
         <Filename Value="exporthtml.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="ssync_utils.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

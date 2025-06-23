@@ -2,7 +2,7 @@ unit exporthtml;
 
 {$mode objfpc}{$H+}
 
-{   Copyright (C) 2017-2020 David Bannon
+{   Copyright (C) 2017-2025 David Bannon
 
     License:
     This code is licensed under BSD 3-Clause Clear License, see file License.txt
@@ -126,8 +126,6 @@ TExportHTML = class
         constructor Create();
 
 end;
-
-
 
 
 implementation
