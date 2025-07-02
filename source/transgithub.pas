@@ -742,6 +742,11 @@ begin
         SayDebugSafe('Cannot use dir : ' + NotesDir + TempDir);
         exit(SyncBadError);
     end;
+    if (UserName = '') or (Password = '') then begin
+        ErrorString := 'TGithubSync.SetTransport - Missing Credentials ' + UserName + '-' + Password;
+        debugln(ErrorString);
+        exit(SyncCredentialError);
+    end;
     RemoteAddress := GitBaseURL + UserName + '/' + RemoteRepoName;
 end;
 
@@ -1539,6 +1544,9 @@ begin
     Client.ConnectTimeout := 8000;      // mS ?  was 3000, I find initial response from github very slow ....
     Client.IOTimeout := 4000;           // mS ? was 0
     SomeString := '';
+
+    // debugln('TGithubSync.Downloader ----------------- User is [', UserName, ']');
+
     try
         try
             SomeString := Client.Get(URL);

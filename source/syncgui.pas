@@ -7,6 +7,15 @@ unit SyncGUI;
 
     ------------------
 
+    Provides the two manual way a user cantrigger a Sync.
+    1. In a Join, from the Settings->Sync, user has initiated a Join. Will attempt
+       to make that Join only. If successful, the credentials and RemoteAddress
+       is poked into SyncInfo array by the Sett.SpeedSetupSyncClick() method that
+       called it.
+    2. In a "go do a sync", user clicks Synchronise from Main Menu which calls
+       the Synchronise() methodin Settings. I will do all configured Syncs (not
+       in a thread) howig user results.
+
 }
 
 {	History
@@ -110,6 +119,7 @@ type
                 procedure SyncProgress(const St: string);
 
 		public
+                RemoteAddress : string;     // Passed from Sett when creating or joining a new repo
                 Busy : boolean; // indicates that there is some sort of sync in process now.
                 AnotherSync : boolean;  // After this (manual) sync, we have another one (ie github)
                 Transport : TSyncTransPort;
@@ -235,10 +245,11 @@ begin
     ASync.NotesDir   := NoteDirectory;
     ASync.ConfigDir  := LocalConfig;
     ASync.ProgressProcedure := @SyncProgress;
-    ASync.Password   := Sett.LabelToken.Caption;              // better find a better way to do this Davo
-    Async.UserName   := Sett.EditUserName.text;
+    ASync.Password   := Sett.LabelToken.Caption;              // must come from for, not poked into SyncInfo yet
+    Async.UserName   := Sett.EditUserName.text;               // as above
     ASync.RepoAction := RepoJoin;
-
+    ASync.SyncAddress := RemoteAddress;                       // because this must have come from Sett, it will have given us this address, join only !
+debugln('TFormSync.JoinSync RemoteAddress = ' + RemoteAddress);
     if (Async.SetTransport(TransPort) = SyncNetworkError) then begin
         showmessage(rsUnableToProceed + ' ' + rsNetworkNotAvailable);
         ModalResult := mrCancel;
@@ -364,10 +375,12 @@ begin
 	    ASync.NotesDir:= NoteDirectory;
 	    ASync.ConfigDir := LocalConfig;
         ASync.RepoAction:= RepoUse;
-        ASync.Password := Sett.LabelToken.Caption;              // better find a better way to do this Davo
-        Async.UserName := Sett.EditUserName.text;
+        ASync.Password := Sett.SyncInfo[ord(Transport)].PW;
+        Async.UserName := Sett.SyncInfo[ord(Transport)].User;
 
-        if Async.SetTransport(TransPort) = SyncNetworkError then begin
+        if ASync.DebugMode then debugln('TFormSync.ManualSync - U=' + Async.UserName + ' - ' + ' P=' + ASync.Password);
+
+        if Async.SetTransport(TransPort) in [SyncNetworkError, SyncCredentialError] then begin
             if not Visible then begin
                 SearchForm.UpdateStatusBar(1, rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
@@ -527,26 +540,30 @@ end;
     // This only ever happens during a Join, RepoAction will still be 'join'.
 procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
+    // Sett.DumpSyncInfo('Before processing JoinSave');
     Label2.Caption:=rsNextBitSlow;
     Label1.Caption :=  SyncTransportName(Transport) + ' ' + 'First Time Sync';
     Memo1.Clear;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
     Application.ProcessMessages;
-    ASync.TestRun := False;
-    if ASync.GetSyncData() and ASync.UseSyncData() then begin  // ToDo : should I evaluate separetly ?
+    ASync.TestRun := False;                                                     // other existing ASync setting will be OK
+    // I have valid data in RemoteMetaData, just reuse it
+    if {ASync.GetSyncData() and}  ASync.UseSyncData(True) then begin              // 'True' to call ProcesClashes in UseSyncData
         SearchForm.UpdateStatusBar(1, rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();
         Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;
         Label2.Caption := rsPressClose;
         if ASync.TransMode = SyncGithub then begin
-            Sett.LabelSyncRepo.Caption := ASync.GetTransRemoteAddress;   // this relies on Sett being in Github mode, during a Join, should be ....
+            // Because the RemoteAddress is built down in TransGithub, need following
+            Sett.EditRepo.Text := ASync.GetTransRemoteAddress;   // this relies on Sett being in Github mode, during a Join, must be ....
             Sett.LabelToken.Hint := 'Expires ' + ASync.TokenExpire;
         end;
     end  else
         Showmessage(rsSyncError + ASync.ErrorString);
     ButtonClose.Enabled := True;
+    // Sett.DumpSyncInfo('After processing JoinSave');
 end;
 
 end.

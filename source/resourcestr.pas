@@ -81,6 +81,8 @@ RESOURCESTRING
   rsFileSyncInfo2 = 'or uses a remote server over the internet with sshfs';
   rsGithubSyncInfo1 = 'tomboy-ng can use Github to both sync and display or edit notes';
   rsGithubSyncInfo2 = 'you should read the tomboy-ng wiki page for instructions.';
+  rsMistySyncInfo1 = 'tomboy-ng can sync to a network server called Misty, sync and edit notes';
+  rsMistySyncInfo2 = 'you should read the tomboy-ng wiki page for instructions.';
   rsNetworkNotAvailable = 'Network not available';
 
 
@@ -96,6 +98,7 @@ RESOURCESTRING
   rsAutoSyncNotPossible = 'Auto sync not possible right now';               // Auto sync is configured but cannot proceed, probably because drive is not available
   rsSyncTypeFile = 'File Sync - local or shared filesystem';
   rsSyncTypeGitHub = 'Github - free Github account required';
+  rsSyncTypeMisty  = 'Misty - Misty server required';
 
   // BackUpView
 

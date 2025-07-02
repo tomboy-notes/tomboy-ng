@@ -413,7 +413,7 @@ type                       { ----------------- T S Y N C --------------------- }
             { Does the actual moving of files around, depends on a successful GetSyncData()
               before hand. TestRun=True just report on what you'd do.
               Assumes a Transport has been selected and remote address is set.  }
-      function UseSyncData: boolean;
+      function UseSyncData(DoClash: boolean = false): boolean;
             { Populates the Sync data structures with info about what files need to be
               moved where. Does no data moving (thats done by UseSyncData())
               We must already be a member of this sync, ie, its remote ID is recorded
@@ -472,11 +472,26 @@ end;
 function TSync.DeleteFromLocalManifest(ID: ANSIString) : boolean;
 var
     FullFileName : string;
-    Info : TSearchRec;
+    i : integer;
 begin
-    FullFileName := ConfigDir + 'manifest.xml';
-    if FileExists(FullFileName) then
-        if not DeleteFromThisManifest(FullFileName, ID) then begin
+    for i := 0 to high(Sett.SyncInfo) do
+        if Sett.SyncInfo[i].RemoteAddress <> '' then begin                      // empty RemoteAddress says not configured
+           FullFileName := ConfigDir;
+           if i = ord(SyncFile) then
+               FullFileName :=  FullFileName + 'manifest.xml'
+           else FullFileName :=  FullFileName + Sett.SyncInfo[i].DisplayName + PathDelim + 'manifest.xml';
+           if FileExists(FullFileName) then
+               if not DeleteFromThisManifest(FullFileName, ID) then begin
+                          debugln('TSync.DeleteFromLocalManifest - ERROR - failed to delete ' + ID + ' from ' + FullFileName);
+                          exit(False);
+               end
+           else if DebugMode then
+                debugln('TSync.DeleteFromLocalManifest - ERROR - Sync appears configured but cannot find ' + FullFileName);
+        end;                                                                    // Else that sync not configured, thats OK
+end;
+
+
+(*        if not DeleteFromThisManifest(FullFileName, ID) then begin
            debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
             // Note - not finding the manifest file is not an error, just unsynced.
             exit(False);
@@ -507,7 +522,7 @@ begin
     end else if DebugMode then
        debugln('DeleteFromLocalManifest - cannot find ' + ConfigDir + 'android');
     exit(True);
-end;
+end;              *)
 
 
 function TSync.LocalNoteExists(const ID : string; out CDate : string; GetDate : boolean = false) : Boolean;
@@ -581,12 +596,12 @@ var
 begin
     Result := True;         // Will be false if we have a Sync Clash and in AutoSync Mode
     for Index := 0 to RemoteMetaData.Count -1 do begin
-        //debugln('TSync.ProcessClashes checking note number ' + inttostr(Index) + ' id=' + RemoteMetaData.Items[Index]^.ID);
+        // debugln('TSync.ProcessClashes checking note number ' + inttostr(Index) + ' id=' + RemoteMetaData.Items[Index]^.ID);
         with RemoteMetaData.Items[Index]^ do begin
             if Action = SyClash then begin
                 if ProceedFunction = Nil then exit(False);                      // In autosync, we cannot have a ProceedFunction !
                 RemoteNote := Transport.DownLoadNote(ID, Rev);
-                debugln('TSync.ProcessClashes - Resolving clash with ' + RemoteNote);
+                // debugln('TSync.ProcessClashes - Resolving clash with ' + RemoteNote);
                 if ProceedAction = SyUnSet then begin       // let user decide
                     Action := ProceedWith(ID, RemoteNote, RemoteMetaData.Items[Index]^.Title);
                     if Action in [SyAllOldest, SyAllNewest, SyAllLocal, SyAllRemote] then
@@ -600,7 +615,7 @@ begin
                 if  LastChange <> '' then
                     LastChangeGMT := TB_GetGMTFromStr(LastChange)
                 else
-                    debugln('ERROR, Failed to get LCD from local ' + ID + ' --- ' + ErrorString);
+                    debugln('TSync.ProcessClashes - ERROR, Failed to get LCD from local ' + ID + ' --- ' + ErrorString);
             end;
         end;
     end;
@@ -723,7 +738,8 @@ begin
         St := ' ' + inttostr(Meta.Items[i]^.Rev);
         while length(St) < 5 do St := St + ' ';
         // St := Meta.ActionName(Meta.Items[i]^.Action);
-        debugln('ID=' + copy(Meta.Items[I]^.ID, 1, 9)  + St + Meta.ActionName(Meta.Items[i]^.Action)
+        // debugln('ID=' + copy(Meta.Items[I]^.ID, 1, 9)  + St + Meta.ActionName(Meta.Items[i]^.Action)
+        debugln('ID=' + Meta.Items[I]^.ID  + St + Meta.ActionName(Meta.Items[i]^.Action)
                 + '   ' + Meta.Items[I]^.Title + '  sha=' + copy(Meta.Items[I]^.Sha, 1, 9));
         debugln('          CDate=' + Meta.Items[i]^.CreateDate + ' LCDate=' + Meta.Items[i]^.LastChange);
     end;
@@ -1045,15 +1061,19 @@ begin
     case Mode of
         SyncFile : begin
                         {$ifndef TESTRIG}
-                        SyncAddress := AppendPathDelim(Sett.GetSyncFileRepo());
+                        //SyncAddress := AppendPathDelim(Sett.GetSyncFileRepo());
+                        if SyncAddress = '' then                                // It may have been provided by settings in a new setup
+                            SyncAddress := Sett.SyncInfo[ord(SyncFile)].RemoteAddress;
                         {$endif}
                         Transport := TFileSync.Create(ProgressProcedure);
-
 	               end;
 
         SyncMisty : begin
+                        if SyncAddress = '' then
+                            SyncAddress := Sett.SyncInfo[ord(SyncMisty)].RemoteAddress;
                         Transport := TMistySync.Create(ProgressProcedure);
-                        ConfigDir := ConfigDir + SyncTransportName(SyncGithub) + PathDelim;
+                        // ConfigDir := ConfigDir + SyncTransportName(SyncMisty) + PathDelim;
+                        ConfigDir := ConfigDir + Sett.SyncInfo[ord(SyncMisty)].DisplayName + PathDelim;
                         ForceDirectory(ConfigDir);
                     end;
 
@@ -1084,6 +1104,7 @@ begin
         debugln('Remote address is ' + SyncAddress);
         debugln('Local Config ' + ConfigDir);
         debugln('Notes dir ' + NotesDir);
+        debugln('SetTransport ErrorString : ' + ErrorString);
 	end;
 end;
 
@@ -1182,6 +1203,9 @@ end;
 function TSync.GetSyncData() : boolean;
     // Tick1, Tick2, Tick3, Tick4 : Dword;
 begin
+
+    // DisplayNoteInfo(RemoteMetaData, 'Remote - At start of GetSyncData');
+
     Result := True;
     if ProgressProcedure <> nil then ProgressProcedure('Starting Sync');
     // TestRun := True;
@@ -1223,15 +1247,14 @@ begin
 
 //    if DebugMode then DisplayNoteInfo(RemoteMetaData, 'RemoteMetaData after CheckMetaData()');
 
+// DisplayNoteInfo(RemoteMetaData, 'Remote - At end of TSync.GetSyncData');
+
+
     if TestRun then begin
         if ProgressProcedure <> nil then ProgressProcedure('Finished Test Run');
         exit();
     end;
-
     result := ProcessClashes();       // Will be false if in AutoSync mode AND we have a clash.
-
-//    if DebugMode then
-//        DisplayNoteInfo(RemoteMetaData, 'NoteMetaData after ProcessClashes');
 end;
 
 
@@ -1240,15 +1263,19 @@ end;
 //    if Threaded then
 //        Synchronize(@AdjustNoteList);
 
-function TSync.UseSyncData() : boolean;
+function TSync.UseSyncData(DoClash : boolean=false) : boolean;
 var
     NewRev : boolean = false;
 begin
+    if DoClash then ProcessClashes();                    // When called during a Join that ran in TestOnly mode GetSyncData skps this
     if DebugMode then debugln('TSync.UseSyncData - started actual sync, is github=' + booltostr(TransPortMode=SyncGitHub, true));
     if not DoDownLoads() then exit(SayDebugSafe('TSync.StartSync - failed DoDownLoads'));
     if TransPortMode <> SyncGitHub then
        if not WriteRemoteManifest(NewRev) then exit(SayDebugSafe('TSync.StartSync - failed early WriteRemoteManifest'));
     if not DoDeletes() then exit(SayDebugSafe('TSync.StartSync - failed DoDeletes'));
+
+    //DisplayNoteInfo(RemoteMetaData, 'Remote - Before DoUpLoads in UseSyncData');
+
     if not DoUploads() then exit(SayDebugSafe('TSync.StartSync - failed DoUploads'));
 
     // If DoUpLoads fails mid list, then some notes will have been uploaded and some not.
@@ -1541,6 +1568,7 @@ begin
     if FullFileName = '' then begin         // get a FFN when using this unit to edit local man after a file delete
         ManifestFile := ConfigDir + ManPrefix + 'manifest.xml';
         if not FileExists(ManifestFile) then begin
+            if DebugMode then debugln('TSync.ReadLocalManifest did not find Local Manifest [' + ManifestFile + '], assuming new sync ' + SyncTransportName(TransMode) + ' ?');
             LocalLastSyncDateSt := '';
             CurrRev := 0;
             exit(True);                 // Its not an error, just never synced before

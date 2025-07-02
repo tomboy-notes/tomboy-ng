@@ -32,6 +32,27 @@ type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like sm
                 SyncGitHub,     // sends markdown notes to/from github.
                 SyncMisty);     // Using the Misty Web Server
 
+
+type
+   TSyncInfoRec = record
+       DisplayName     : string;          // Title of particlar sync system, eg SyncFile, SyncGithub, SyncMisty
+       DisplayHeading  : string;          // Multiword description of this sync
+       DisplayInfo1    : string;          // Lines of info about this sync to appear on form
+       DisplayInfo2    : string;          // Lines of info about this sync to appear on form
+       EnumType        : TSyncTransport;  // eg SyncFile, SyncGithub, SyncMisty, store in ord(EnumType) order
+       RemoteAddress   : string;          // A file directory, URL etc
+       User            : string;          // A user name (for credentials)
+       PW              : string;          // eg Token password, PIN
+       LastSync        : TDateTime;       // When was last sync for this one
+       SyncTimingIndex : integer;         // 0..3 being manual, hour, day, week
+       NeedSync        : boolean;         // Set by TSett.TimerAutoSyncTimer and used/reset in TSyncThread.Execute
+//       Enabled         : boolean;       // Configured or not
+   end;
+
+
+type TSyncInfo = array[0..Ord(High(TSyncTransport))] of TSyncInfoRec;
+type PTSyncInfo=^TSyncInfo;
+
 type TSyncAction=(SyUnset,      // initial state, should not be like this at end.
                 SyNothing,      // This note, previously sync'ed has not changed.
                 SyUploadNew,    // This a new local note, upload it.
@@ -157,6 +178,9 @@ function SyncTransportName(TheType : TSyncTransport) : string;
                         // Returns Text describing passed TSyncAvailable
 function SyncAvailableString(Msg : TSyncAvailable) : string;
 
+                        // returns index of a Sync that is pending, -1 if none marked NeedSync
+function HavePendingSync(SInfo : PTSyncInfo) : integer;
+
 RESOURCESTRING
   rsNewUploads = 'New Uploads';
   rsEditUploads = 'Edit Uploads';
@@ -179,7 +203,15 @@ implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, tb_utils;
 
-function SyncTransportName(TheType : TSyncTransport) : string;
+function HavePendingSync(SInfo : PTSyncInfo) : integer;    // ToDo : confirm that this is being passed as ref.
+var i : integer;
+begin
+    for i := 0 to high(SInfo^) do
+        if SInfo^[i].NeedSync then exit(i);               // 0..n
+    Result := -1;                                         // that is, no Sync pending
+end;
+
+function SyncTransportName(TheType : TSyncTransport) : string;        // Maybe lose this when SyncInfo all works
 begin
     Result := '';
     case TheType of

@@ -149,7 +149,7 @@ begin
             on E: ESocketError do begin
                 ErrorString := 'TMistySync.Downloader - SocketError ' + E.Message     // eg failed dns, timeout etc
                     + ' ResultCode ' + inttostr(Client.ResponseStatusCode);
-                SomeString := 'Fatal, is server availale ?';
+                SomeString := 'Fatal, is server available ?';
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: EInOutError do begin
@@ -218,8 +218,11 @@ function TMistySync.SetTransport(): TSyncAvailable;
 var SomeString : string;
 begin
     // SetTransport();
-   RemoteAddress := AppendPathDelim(RemoteAddress);
-   if Downloader('http://localhost:8080',  SomeString, ctHTML) then    // all we care about is the 200 status Downloader found
+
+    if DebugMode then DebugLn('TMistySync.SetTransport RemoteAddress = ' + RemoteAddress);
+
+   RemoteAddress := AppendPathDelim(RemoteAddress);                             // ToDo : NOT WINDOWS COMPATIBLE
+   if Downloader(RemoteAddress,  SomeString, ctHTML) then    // all we care about is the 200 status Downloader found
         Result := SyncReady                                            // OR maybe create a repo code goies here ?
    else Result := SyncNetworkError;
 
@@ -333,7 +336,7 @@ begin
         ManifestStream.Free;
 	end;
     if Result = True then begin
-    	if debugmode then Debugln('Transfile.ReadRemoteManifest - read OK');
+    	if debugmode then Debugln('TMistySync.ReadRemoteManifest - read OK');
     end else begin
         DebugLn('TMistySync.ReadRemoteManifest - We failed to read the remote manifest file ', RemoteAddress + 'manifest.xml');
         debugln(ErrorString);
@@ -386,6 +389,7 @@ begin
                     exit(False);
                 end;
             // OK, now download the file.
+            if DebugMode then DebugLn('DownloadNotes() - downloading ' + Downloads.Items[I]^.ID + '.note');
             if DownloaderSafe(RemoteAddress+'/DOWNLOAD/' + Downloads.Items[I]^.ID + '.note', NoteString, ctXML) then begin
                 if pos('<note version=', NoteString) > 0 then
                     SaveString(NoteString, NotesDir + Downloads.Items[I]^.ID + '.note')
@@ -405,6 +409,7 @@ function TMistySync.DeleteNote(const ID: string; const ExistRev : integer ): boo
 begin
     // I think all that happens is deleted note is not listed in remote manifest
     // and that is done. But other thansport modes might need to do something here
+    if DebugMode then DebugLn('TMistySync.DeleteNote() - nothing to do here');
   result := True;
 end;
 
@@ -427,6 +432,7 @@ end;
 
 function TMistySync.DoRemoteManifest(const RemoteManifest: string; MetaData : TNoteInfoList = nil): boolean;
 begin
+    if DebugMode then DebugLn('TMistySync.DoRemoteManifest uploading Remote Manifest');
     result := Uploader(RemoteAddress, RemoteManifest);
 end;
 
@@ -436,7 +442,11 @@ begin
     // we don't need no stinking RevNo
     // The server will sort that out, just ask for the $ID.note
     Result := '';
-    if DownloaderSafe(RemoteAddress + ID + 'note', NoteString, ctXML) then begin
+    if DownloaderSafe(RemoteAddress + 'DOWNLOAD/' + ID + '.note', NoteString, ctXML) then begin
+        if pos('<note version=', NoteString) < 1 then begin
+            debugln('TMistySync.DownloadNote - Error detected in note, NOT Synced ' + NotesDir + ID + '.note for clash processing');
+            exit('');
+        end;
         if not DirectoryExists(NotesDir + TempDir) then
             ForceDirectoriesUTF8(NotesDir + TempDir);      // We already know we can write in NotesDir
         Result := NotesDir + TempDir + ID + '.note';
