@@ -652,14 +652,16 @@ begin
                    REMEMBER -  SelectiveNotebookIDs might be nil !
                }
 
-               if TheMainNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, SyncTransportName(SyncGithub))
+               if TheMainNoteLister.GetNotesInNoteBook(SelectiveNotebookIDs, TSyncTransport(SyncGithub).ToString)
                and (SelectiveSync = '') and (not ANewRepo) then begin
                    ErrorString := 'Local is Selective, remote is NOT';
                    SayDebugSafe(ErrorString + ' probably need build a new remote repo, please read documentation');
                    exit(SyncMismatch)
                end;
                if (SelectiveSync = '') and  assigned(SelectiveNotebookIDs) then begin     // Use local 'cos its a new repo.
-                   SelectiveSync := SyncTransportName(SyncGithub);
+                   SelectiveSync := SyncGithub.ToString;
+                   // SelectiveSync := TSyncTransport(SyncGithub).ToString;
+                   // SelectiveSync := SyncTransportName(SyncGithub);
                    // debugln('TGitHubSync.TestTransport - setting SelectiveSync to : ' + SelectiveSync);
                end;
 
@@ -864,7 +866,7 @@ begin
             if ProgressProcedure <> nil then
                 ProgressProcedure(rsUpLoaded + ' ' + inttostr(NoteCount) + ' notes');
         RemoteNotes.InsertData(RNotesDir + St + '.md', 'lcdate', TheMainNoteLister.GetLastChangeDate(St));
-        // ToDo : that has hardwired assumption about markdown
+        // Note : that has hardwired assumption about markdown
     end;
     result := true;
 end;
@@ -980,7 +982,7 @@ begin
        if RMData.FindID(extractfilenameonly(NLister^.ID)) = nil then begin
            if not TestRun then begin
                new(PGit);
-               PGit^.FName := RNotesDir + extractfilenameonly(NLister^.ID) + '.md';                     // ToDo : Careful, assumes markdown
+               PGit^.FName := RNotesDir + extractfilenameonly(NLister^.ID) + '.md';                     // Note : Careful, assumes markdown
                PGit^.Sha := '';
                PGit^.Notebooks := '';
                PGit^.CDate := NLister^.CreateDate;
@@ -1110,7 +1112,7 @@ begin
                 exit(SayDebugSafe('Failed to find dates in template ' + pNBook^.Template));
             if not TestRun then begin
                 new(PGit);
-                PGit^.FName := RNotesDir + extractfilenameonly(pNBook^.Template) + '.md';               // ToDo : Careful, assumes markdown
+                PGit^.FName := RNotesDir + extractfilenameonly(pNBook^.Template) + '.md';               // Note : Careful, assumes markdown
                 PGit^.Sha := '';
                 PGit^.Notebooks := '';
                 PGit^.CDate := CDate;
@@ -1406,7 +1408,7 @@ begin
     Result := True;
     {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote');{$endif}
     try
-        PGit := RemoteNotes.Find(RNotesDir + NoteID + '.md');      // ToDo : assumes markdown
+        PGit := RemoteNotes.Find(RNotesDir + NoteID + '.md');      // Note : assumes markdown
         if PGit = nil then exit(SayDebugSafe('TGithubSync.DownloadANote - ERROR, cannot find ID in RemoteNotes = ' + RNotesDir + NoteID + '.md'));
         if PGit^.LCDate = '' then begin                                 // maybe because note was edited in github and remote manifest LCD was unusable
             PGit^.LCDate := GetNoteLCD(PGit^.FName);

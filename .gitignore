@@ -48,4 +48,5 @@ po/tomboy-ng-qt5-64.pot
 po/tomboy-ng-qt5.pot
 po/tomboy-ng.fr.po-old
 source/ppas.sh
-
+po/tomboy-ng-qt6.pot
+source/tomboy-ng-qt6

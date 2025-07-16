@@ -6,7 +6,8 @@ object FormSync: TFormSync
   Caption = 'Sync'
   ClientHeight = 418
   ClientWidth = 699
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.1.0.0'
+  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnHide = FormHide

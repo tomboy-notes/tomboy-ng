@@ -1,13 +1,13 @@
 object Sett: TSett
-  Left = 817
+  Left = 140
   Height = 530
-  Top = 221
+  Top = 287
   Width = 726
   BorderIcons = []
   Caption = 'Form Caption'
   ClientHeight = 530
   ClientWidth = 726
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.1.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -607,6 +607,7 @@ object Sett: TSett
         ClientWidth = 712
         ParentColor = False
         TabOrder = 1
+        OnClick = GroupBoxSyncClick
         object Label4: TLabel
           AnchorSideLeft.Control = GroupBoxSync
           AnchorSideTop.Control = LabelSyncInfo2
@@ -675,21 +676,6 @@ object Sett: TSett
           ClientHeight = 36
           ClientWidth = 483
           TabOrder = 0
-          object LabelToken: TLabel
-            AnchorSideLeft.Control = SpeedTokenActions
-            AnchorSideLeft.Side = asrBottom
-            AnchorSideTop.Control = SpeedTokenActions
-            AnchorSideTop.Side = asrCenter
-            AnchorSideBottom.Side = asrCenter
-            Left = 106
-            Height = 20
-            Top = 7
-            Width = 80
-            BorderSpacing.Left = 5
-            Caption = 'LabelToken'
-            ParentShowHint = False
-            ShowHint = True
-          end
           object SpeedTokenActions: TSpeedButton
             AnchorSideLeft.Control = GroupBoxToken
             AnchorSideTop.Control = GroupBoxToken
@@ -701,6 +687,21 @@ object Sett: TSett
             BorderSpacing.Top = 3
             Caption = 'Actions'
             OnClick = SpeedTokenActionsClick
+          end
+          object EditPW: TEdit
+            AnchorSideLeft.Control = SpeedTokenActions
+            AnchorSideLeft.Side = asrBottom
+            AnchorSideTop.Control = SpeedTokenActions
+            AnchorSideRight.Control = GroupBoxToken
+            AnchorSideRight.Side = asrBottom
+            Left = 101
+            Height = 30
+            Top = 3
+            Width = 373
+            Anchors = [akTop, akLeft, akRight]
+            BorderSpacing.Right = 9
+            TabOrder = 0
+            Text = 'EditPW'
           end
         end
         object GroupBoxUser: TGroupBox

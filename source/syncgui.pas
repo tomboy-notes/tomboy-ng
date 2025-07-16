@@ -7,14 +7,17 @@ unit SyncGUI;
 
     ------------------
 
-    Provides the two manual way a user cantrigger a Sync.
+    Provides the two manual way a user can trigger a Sync.
     1. In a Join, from the Settings->Sync, user has initiated a Join. Will attempt
        to make that Join only. If successful, the credentials and RemoteAddress
        is poked into SyncInfo array by the Sett.SpeedSetupSyncClick() method that
        called it.
+
     2. In a "go do a sync", user clicks Synchronise from Main Menu which calls
-       the Synchronise() methodin Settings. I will do all configured Syncs (not
-       in a thread) howig user results.
+       the Synchronise() method in Settings. It will do all configured Syncs (not
+       in a thread) showing user results.
+
+    3. (Autosync mode is NOT done from here. Its threaded and managed from Settings.)
 
 }
 
@@ -87,6 +90,7 @@ type
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
+                procedure FormActivate(Sender: TObject);
                 procedure FormCreate(Sender: TObject);
 //                function RunSyncHidden() : boolean;
 				procedure ButtonCancelClick(Sender: TObject);
@@ -98,12 +102,12 @@ type
                   error is fatal or, if True, walk user through process. }
 				procedure FormShow(Sender: TObject);
 		private
-                FormShown : boolean;
-                LocalTimer : TTimer;
+                // FormShown : boolean;                    // todo : remove ?
+                // LocalTimer : TTimer;
 
                 procedure AddLVItem(Act, Title, ID: string);
                 procedure AdjustNoteList();
-                procedure AfterShown(Sender : TObject);
+ //               procedure AfterShown(Sender : TObject);
                     // Display a summary of sync actions to user.
                 function DisplaySync(): string;
                     { Called when user wants to join a (possibly uninitialised) Repo,
@@ -119,9 +123,10 @@ type
                 procedure SyncProgress(const St: string);
 
 		public
+                ReadyToRun : boolean;       // Set to true when sync is setup, don't run for an uncover event.
                 RemoteAddress : string;     // Passed from Sett when creating or joining a new repo
                 Busy : boolean; // indicates that there is some sort of sync in process now.
-                AnotherSync : boolean;  // After this (manual) sync, we have another one (ie github)
+//                AnotherSync : boolean;  // After this (manual) sync, we have another one (ie github)      // ToDo : remove ?
                 Transport : TSyncTransPort;
                 UserName, Password : string;    // For those thatnsports that need such things.
                 LocalConfig, NoteDirectory : ANSIString;
@@ -179,15 +184,18 @@ end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+
+    debugln('TFormSync.FormClose called');
+
 	FreeandNil(ASync);
     Busy := False;
 end;
 
 procedure TFormSync.FormHide(Sender: TObject);
 begin
-    if LocalTimer = Nil then exit();
+(*    if LocalTimer = Nil then exit();
     LocalTimer.Free;
-    LocalTimer := nil;
+    LocalTimer := nil;   *)
 end;
 
 procedure TFormSync.SyncProgress(const St: string);
@@ -238,40 +246,48 @@ var
 begin
     freeandnil(ASync);
     ASync := TSync.Create;
-    Label1.Caption   :=  SyncTransportName(Transport) + ' ' + rsTestingRepo;
+    Label1.Caption   :=  Transport.ToString + ' ' + rsTestingRepo;
+    // Label1.Caption   :=  SyncTransportName(Transport) + ' ' + rsTestingRepo;
     Application.ProcessMessages;
     ASync.ProceedFunction:= @Proceed;
     ASync.DebugMode  := Application.HasOption('s', 'debug-sync');
     ASync.NotesDir   := NoteDirectory;
     ASync.ConfigDir  := LocalConfig;
     ASync.ProgressProcedure := @SyncProgress;
-    ASync.Password   := Sett.LabelToken.Caption;              // must come from for, not poked into SyncInfo yet
+    ASync.Password   := Sett.EditPW.Text;              // must come from form, not poked into SyncInfo yet
     Async.UserName   := Sett.EditUserName.text;               // as above
     ASync.RepoAction := RepoJoin;
     ASync.SyncAddress := RemoteAddress;                       // because this must have come from Sett, it will have given us this address, join only !
-debugln('TFormSync.JoinSync RemoteAddress = ' + RemoteAddress);
-    if (Async.SetTransport(TransPort) = SyncNetworkError) then begin
+// debugln('TFormSync.JoinSync RemoteAddress = ' + RemoteAddress);
+
+    if (Async.SetTransport(TransPort) = SyncNetworkError) then begin            // What about an SSL error ?
+        debugln('TFormSync.JoinSync FAILED in SetTransport, network or remote server not available ?');
         showmessage(rsUnableToProceed + ' ' + rsNetworkNotAvailable);
-        ModalResult := mrCancel;
+        close;                      // close the form sending back (SyncNetworkError) mrCancel
+        exit;                       // The 'close' does not happen until procedure exits !!
     end;
-    SyncAvail        := ASync.TestConnection();
+    SyncAvail := ASync.TestConnection();
     if SyncAvail = SyncNoRemoteRepo then
         if mrYes = QuestionDlg('Advice', rsCreateNewRepo, mtConfirmation, [mrYes, mrNo], 0) then begin
             ASync.RepoAction:=RepoNew;
             SyncAvail := ASync.TestConnection();
         end;
-    if SyncAvail <> SyncReady then begin
+
+    if SyncAvail <> SyncReady then begin           // This is the catch all for other errors
+        debugln('TFormSync.JoinSync FAILED:' + inttostr(ord(SyncAvail)) + ' ' + ASync.ErrorString);
         showmessage(rsUnableToProceed + ' ' + ASync.ErrorString);
-        ModalResult := mrCancel;
+        Close;
+        exit;
     end;
-    Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
+
+    Label1.Caption :=  Transport.ToString + ' ' + rsLookingatNotes;
     Application.ProcessMessages;
     ASync.TestRun := True;
     ASync.GetSyncData();                    // does not return anything interesting here. Does in Auto mode however.
 //    if  ASync.UseSyncData() then begin  // ToDo : am I dealing with TestRun correctly ?
         DisplaySync();
         ShowReport();
-        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsLookingatNotes;
+        Label1.Caption :=  Transport.ToString + ' ' + rsLookingatNotes;
         Label2.Caption := rsSaveAndSync;
         ButtonSave.Enabled := True;
 //    end  else
@@ -279,17 +295,32 @@ debugln('TFormSync.JoinSync RemoteAddress = ' + RemoteAddress);
     ButtonCancel.Enabled := True;
 end;
 
-procedure TFormSync.AfterShown(Sender : TObject);
+(*
+procedure TFormSync.AfterShown(Sender : TObject);        // ToDo : remove this ????
 begin
-    LocalTimer.Enabled := False;             // Don't want to hear from you again
+    // LocalTimer.Enabled := False;             // Don't want to hear from you again
     if SetUpSync then begin
         JoinSync();
     end else
         ManualSync();
-end;
+end;    *)
 
-//RESOURCESTRING
-//  rsPleaseWait = 'Please wait a minute or two ...';
+procedure TFormSync.FormActivate(Sender: TObject);
+begin
+    if ReadyToRun then begin
+         ReadyToRun := False;
+         Label2.Caption := rsNextBitSlow;
+         Memo1.Clear;
+         ListViewReport.Clear;
+         ButtonSave.Enabled := False;
+         ButtonClose.Enabled := False;
+         ButtonCancel.Enabled := False;
+         if SetUpSync then begin
+            JoinSync();
+         end else
+            ManualSync();
+    end;
+end;
 
 procedure TFormSync.FormShow(Sender: TObject);
 begin
@@ -299,13 +330,7 @@ begin
     LabelProgress.Caption := '';
     Left := 55 + random(55);
     Top := 55 + random(55);
-    FormShown := False;
-    Label2.Caption := rsNextBitSlow;
-    Memo1.Clear;
-    ListViewReport.Clear;
-    ButtonSave.Enabled := False;
-    ButtonClose.Enabled := False;
-    ButtonCancel.Enabled := False;
+//    FormShown := False;
     {$ifdef windows}  // linux apps know how to do this themselves
     if Sett.DarkTheme then begin
          // Sett.BackGndColour;  Sett.TextColour;
@@ -325,35 +350,18 @@ begin
     end;
     {$endif}
     // We call a timer to get out of OnShow so ProcessMessages works as expected
-    LocalTimer := TTimer.Create(Nil);
+(*    LocalTimer := TTimer.Create(Nil);
     LocalTimer.OnTimer:= @AfterShown;
     LocalTimer.Interval:=500;
-    LocalTimer.Enabled := True;
+    LocalTimer.Enabled := True;   *)
 end;
-
-(* function TFormSync.RunSyncHidden(): boolean;          // ToDo : this is now done in Settings, remove ???
-begin
-    //debugln('In RunSyncHidden');
-    if SetUpSync then exit(False);      // should never call this in setup mode but to be sure ...
-    busy := true;
-    ListViewReport.Clear;
-    // Result := ManualSync();
-    ASync := TSync.Create;
-    try
-        ASync.AutoSetUp(Transport);             // ToDo : must determine what mode of Sync we are running in.
-        ASync.GetSyncData();
-        ASync.UseSyncData();
-    finally
-        ASync.Free;
-        Busy := False;
-    end;
-end; *)
 
 procedure TFormSync.FormCreate(Sender: TObject);
 begin
     UserName := '';
     Password := '';
 end;
+
 
         // User is only allowed to press Close when this is finished.
 function TFormSync.ManualSync : boolean;
@@ -363,12 +371,13 @@ var
     SyncSummary : string;
     SyncAvail : TSyncAvailable;
 begin
-    Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsTestingSync;
+    Label1.Caption :=  Transport.ToString + ' ' + rsTestingSync;
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
         //Screen.Cursor := crHourGlass;
         //sleep(1000);
+        ASync.LocalServerID := '';
         ASync.ProceedFunction := @Proceed;
         ASync.ProgressProcedure := @SyncProgress;
         ASync.DebugMode := Application.HasOption('s', 'debug-sync');
@@ -438,7 +447,7 @@ begin
             exit(false);        //redundant ?
         end;
 //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
-        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsRunningSync;
+        Label1.Caption :=  Transport.ToString + ' ' + rsRunningSync;
         Application.ProcessMessages;
         ASync.TestRun := False;
         if ASync.GetSyncData() and ASync.UseSyncData() then;   // ToDo : should I evaluate separetly ?
@@ -450,13 +459,13 @@ begin
         end;
         ShowReport();
         AdjustNoteList();                              // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;
+        Label1.Caption :=  Transport.ToString + ' ' + rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
-        if AnotherSync then begin
+(*        if AnotherSync then begin
             ButtonClose.Hint := 'proceed to next sync';
             ButtonClose.ShowHint := True;
-        end else
+        end else                                 *)
             ButtonClose.ShowHint := False;
         Result := True;
     finally
@@ -518,7 +527,7 @@ begin
 	else Memo1.Append(inttostr(ASync.RemoteMetaData.Count) + rsNotesWereDealt);
     if ASync.TransMode = SyncGitHub then begin
         Memo1.Append('Token expires : ' + ASync.TokenExpire);
-        Sett.LabelToken.Hint := 'Expires ' + ASync.TokenExpire;
+        Sett.EditPW.Hint := 'Expires ' + ASync.TokenExpire;
     end;
     {$IFDEF DARWIN}     // Apparently ListView.columns[n].autosize does not work in Mac, this is rough but better then nothing.
     ListViewReport.Columns[0].Width := listviewReport.Canvas.Font.GetTextWidth('upload edit ');
@@ -542,7 +551,7 @@ procedure TFormSync.ButtonSaveClick(Sender: TObject);
 begin
     // Sett.DumpSyncInfo('Before processing JoinSave');
     Label2.Caption:=rsNextBitSlow;
-    Label1.Caption :=  SyncTransportName(Transport) + ' ' + 'First Time Sync';
+    Label1.Caption :=  Transport.ToString + ' ' + 'First Time Sync';
     Memo1.Clear;
     ButtonCancel.Enabled := False;
     ButtonSave.Enabled := False;
@@ -553,12 +562,12 @@ begin
         SearchForm.UpdateStatusBar(1, rsLastSync + ' ' + FormatDateTime('YYYY-MM-DD hh:mm', now)  + ' ' + DisplaySync());
         ShowReport();
         AdjustNoteList();
-        Label1.Caption :=  SyncTransportName(Transport) + ' ' + rsAllDone;
+        Label1.Caption :=  Transport.ToString + ' ' + rsAllDone;
         Label2.Caption := rsPressClose;
         if ASync.TransMode = SyncGithub then begin
             // Because the RemoteAddress is built down in TransGithub, need following
             Sett.EditRepo.Text := ASync.GetTransRemoteAddress;   // this relies on Sett being in Github mode, during a Join, must be ....
-            Sett.LabelToken.Hint := 'Expires ' + ASync.TokenExpire;
+            Sett.EditPW.Hint := 'Expires ' + ASync.TokenExpire;
         end;
     end  else
         Showmessage(rsSyncError + ASync.ErrorString);

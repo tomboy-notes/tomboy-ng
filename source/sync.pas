@@ -34,7 +34,7 @@ unit sync;
 	ASync.ConfigDir := ?;
 	ASync.SyncAddress := ?;
     ASync.RepoAction:= RepoUse;         // RepoUse says its all there, ready to go.
-	Async.SetMode(SyncFile);            // SyncFile, SyncNextRuby ....
+	Async.SetMode(SyncFile);            // SyncFile, SyncGithub, SyncMisty....
     SyncReady <> ASync.TestConnection() then    // something bad happened, SyncReady only
                                                 // acceptable answer. Check ErrorString
 
@@ -291,8 +291,8 @@ type                       { ----------------- T S Y N C --------------------- }
               don't rev number and don't mention new notes in local manifest. Should
               never write entries in the DeletedNotes section.  This function is called at
               the end of a normal file sync, another one is used when updating (with deletes)
-              an existing manifest. Key diff is ability to inc rev no and (unnecessary)
-              writing of a failsafe version if things go wrong.  Merge at some stage.
+              an existing manifest. Key diff is ability to inc rev no and
+              writing of a failsafe version if things go wrong.  Merge at some stage ?
               }
       function WriteLocalManifest(const WriteOK, NewRev : boolean) : boolean;
 
@@ -367,6 +367,7 @@ type                       { ----------------- T S Y N C --------------------- }
                 // Data obtained from Local Manifest. Represents notes previously synced. Might be empty.....
         LocalMetaData : TNoteInfoList;
                 // Used in Threaded mode to lock any open notes that are about to be overwritten by a sync download.
+                // Is called from the Thread.Execute method in Settings.
         Procedure AdjustNoteList();
                 { returns the number of changes this sync run made. }
         function ReportChanges(): integer;
@@ -488,6 +489,7 @@ begin
            else if DebugMode then
                 debugln('TSync.DeleteFromLocalManifest - ERROR - Sync appears configured but cannot find ' + FullFileName);
         end;                                                                    // Else that sync not configured, thats OK
+    result := True;
 end;
 
 
@@ -1072,7 +1074,6 @@ begin
                         if SyncAddress = '' then
                             SyncAddress := Sett.SyncInfo[ord(SyncMisty)].RemoteAddress;
                         Transport := TMistySync.Create(ProgressProcedure);
-                        // ConfigDir := ConfigDir + SyncTransportName(SyncMisty) + PathDelim;
                         ConfigDir := ConfigDir + Sett.SyncInfo[ord(SyncMisty)].DisplayName + PathDelim;
                         ForceDirectory(ConfigDir);
                     end;
@@ -1087,7 +1088,7 @@ begin
                         end;
                         Transport.Password := Password;
                         Transport.Username := UserName;
-                        ConfigDir := ConfigDir + SyncTransportName(SyncGithub) + PathDelim;
+                        ConfigDir := ConfigDir + SyncGithub.ToString + PathDelim;
                         ForceDirectory(ConfigDir);
                       end;
         {$endif}
@@ -1138,7 +1139,8 @@ begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
     end;
-    if TransMode = SyncMisty then TMistySync(Transport).RMetaData := RemoteMetaData;  // Misty needs access to this mid TestTransport
+    if TransMode = SyncMisty then
+       TMistySync(Transport).RMetaData := RemoteMetaData;     // Misty needs access to this mid TestTransport
     Result := Transport.TestTransport(not TestRun);                                   // In Misty, this will also do ReadRemoteManifest
 
     if Result <> SyncReady then begin
@@ -1175,7 +1177,7 @@ end;
 
 function TSync.LoadRepoData(ForceLCD : boolean): boolean;
 begin
-    if TransportMode = SyncMisty then exit;             // dont need this in Misty, TestTransport does it. In Misty, always have LCD
+    if TransportMode = SyncMisty then exit(true);         // dont need this in Misty, TestTransport does it. In Misty, always have LCD
     if ProgressProcedure <> nil then ProgressProcedure('Load Remote Repo');
     Result := True;
     FreeAndNil(RemoteMetaData);
@@ -1257,12 +1259,6 @@ begin
     result := ProcessClashes();       // Will be false if in AutoSync mode AND we have a clash.
 end;
 
-
-
-//  ToDo : SyncInThread requires us to call AdjustNoteList() from here so any downloaded and open notes are locked.
-//    if Threaded then
-//        Synchronize(@AdjustNoteList);
-
 function TSync.UseSyncData(DoClash : boolean=false) : boolean;
 var
     NewRev : boolean = false;
@@ -1338,7 +1334,8 @@ function TSync.AutoSetUp(Mode : TSyncTransport) : boolean;
 begin
     Threaded := True;
     RepoAction:= RepoUse;
-    SetTransport(Mode);
+    if SyncReady <> SetTransport(Mode) then
+        exit(False);
     //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
     if TestConnection() <> SyncReady then begin
         //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Test Transport Failed.');
@@ -1509,32 +1506,32 @@ begin
     if WriteOK and NewRev then IncRev := 1 else IncRev := 0;
     AssignFile(OutFile, ConfigDir + ManPrefix + 'manifest.xml-local');  // ManPrefix is '' for most Modes.
     try
-	        try
-		        Rewrite(OutFile);
-                writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
-                writeln(Outfile, '<manifest xmlns="http://beatniksoftware.com/tomboy">');
-                writeln(OutFile, '  <last-sync-date>' + TB_GetLocalTime + '</last-sync-date>');
-                write(OutFile, '  <last-sync-rev>"' + inttostr(Transport.RemoteServerRev + IncRev));
-                writeln(OutFile, '"</last-sync-rev>');
-                writeln(OutFile, '  <server-id>"' + Transport.ServerID + '"</server-id>');
-                writeln(OutFile, '  <note-revisions>');
-		        for Index := 0 to RemoteMetaData.Count - 1 do begin
-                    if RemoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
-                        if (not WriteOK) and (RemoteMetaData[Index]^.Action = SyUpLoadNew) then continue;
-                        write(Outfile, '    <note guid="' + RemoteMetaData[Index]^.ID + '" latest-revision="');
-                        write(OutFile, inttostr(RemoteMetaData[Index]^.Rev) + '" ');
-                        if RemoteMetaData[Index]^.Sha <> '' then
-                           write(Outfile, 'sha="' + RemoteMetaData[Index]^.Sha + '" ');
-                        if RemoteMetaData[Index]^.ForceUpload then
-                           write(Outfile, 'force-upload="yes" ');               // we failed to upload this note this time, next time better ?
-                        writeln(Outfile, '/>');
-					end;
+	    try
+		    Rewrite(OutFile);
+            writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
+            writeln(Outfile, '<manifest xmlns="http://beatniksoftware.com/tomboy">');
+            writeln(OutFile, '  <last-sync-date>' + TB_GetLocalTime + '</last-sync-date>');
+            write(OutFile, '  <last-sync-rev>"' + inttostr(Transport.RemoteServerRev + IncRev));
+            writeln(OutFile, '"</last-sync-rev>');
+            writeln(OutFile, '  <server-id>"' + Transport.ServerID + '"</server-id>');
+            writeln(OutFile, '  <note-revisions>');
+		    for Index := 0 to RemoteMetaData.Count - 1 do begin
+                if RemoteMetaData[Index]^.Action in [SyUploadNew, SyUpLoadEdit, SyDownLoad, SyNothing] then begin
+                    if (not WriteOK) and (RemoteMetaData[Index]^.Action = SyUpLoadNew) then continue;
+                    write(Outfile, '    <note guid="' + RemoteMetaData[Index]^.ID + '" latest-revision="');
+                    write(OutFile, inttostr(RemoteMetaData[Index]^.Rev) + '" ');
+                    if RemoteMetaData[Index]^.Sha <> '' then
+                       write(Outfile, 'sha="' + RemoteMetaData[Index]^.Sha + '" ');
+                    if RemoteMetaData[Index]^.ForceUpload then
+                       write(Outfile, 'force-upload="yes" ');               // we failed to upload this note this time, next time better ?
+                    writeln(Outfile, '/>');
 				end;
-                writeln(OutFile, '  </note-revisions>'#10'  <note-deletions>');
-                writeln(OutFile, '  </note-deletions>'#10'</manifest>');
-		    finally
-	            CloseFile(OutFile);
-		    end;
+			end;
+            writeln(OutFile, '  </note-revisions>'#10'  <note-deletions>');
+            writeln(OutFile, '  </note-deletions>'#10'</manifest>');
+		finally
+	        CloseFile(OutFile);
+		end;
     except
       on E: EInOutError do begin
           Debugln('File handling error occurred. Details: ' + E.Message);
@@ -1549,7 +1546,7 @@ begin
         copyfile(ConfigDir + ManPrefix + 'manifest.xml-local', ConfigDir + ManPrefix + 'manifest.xml');
     end;
     if debugmode then
-       debugln('Have written local manifest to ' + ConfigDir + ManPrefix + 'manifest.xml-local');
+       debugln('Have written local manifest to [' + ConfigDir + '] [' + ManPrefix + '] [' + 'manifest.xml]');
 end;
 
 function TSync.ReadLocalManifest(const FullFileName : string = '') : boolean;
@@ -1568,7 +1565,9 @@ begin
     if FullFileName = '' then begin         // get a FFN when using this unit to edit local man after a file delete
         ManifestFile := ConfigDir + ManPrefix + 'manifest.xml';
         if not FileExists(ManifestFile) then begin
-            if DebugMode then debugln('TSync.ReadLocalManifest did not find Local Manifest [' + ManifestFile + '], assuming new sync ' + SyncTransportName(TransMode) + ' ?');
+            if DebugMode then debugln('TSync.ReadLocalManifest did not find Local Manifest ['
+                + ManifestFile + '], assuming new sync ' + TransMode.ToString + ' ?');
+                // + ManifestFile + '], assuming new sync ' + SyncTransportName(TransMode) + ' ?');
             LocalLastSyncDateSt := '';
             CurrRev := 0;
             exit(True);                 // Its not an error, just never synced before

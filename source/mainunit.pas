@@ -16,13 +16,18 @@ unit Mainunit;
     Possible sensible to move the TrayIcon and its popupMenu to Search Unit,
     then have a single method responsible for creating and setting it up.
 
+    System Tray Icon, in Lazarus 4.0 and posibly beyond a bug has appeared that
+    messes with some PNG mage files used, eg for SysTray and Application Icon.
+    I converted the 48x48 png to .ico that works OK.
+    https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/41750
+
  }
 
 {$mode objfpc}{$H+}
 
 {   HISTORY
     2018/05/12  Extensive changes - MainUnit is now just that. This is not the same
-                unit that used this name previously!
+                unit that used this name previously!              https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/41750
     2018/05/19  Control if we allow opening window to be dismissed and show TrayIcon
                 and MainMenu.
     2018/05/20  Alterations to way we startup, wrt mainform status report.
@@ -165,7 +170,7 @@ type
         Label4: TLabel;
         Label5: TLabel;
         LabelNotesFound: TLabel;
-        TrayIcon: TTrayIcon;
+        TrayIcon: TTrayIcon;                     // See note above for details of Icon
 		procedure BitBtnHideClick(Sender: TObject);
         procedure BitBtnQuitClick(Sender: TObject);
         procedure ButtMenuClick(Sender: TObject);

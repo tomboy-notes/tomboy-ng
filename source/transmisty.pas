@@ -96,6 +96,8 @@ const MaxNetTries = 3;
       TempDir='Temp/';  // usually off NotesDir, a dir to save temp downloaded files to.
 
 
+// ToDo : some of following have much in common with githubsync, merge ?
+
 function TMistySync.DownloaderSafe(URL : string; out SomeString : String; const ConType : TContentType; const Header : string = '') : boolean;
 var Cnt : integer = 0;
 begin
@@ -213,17 +215,21 @@ end;
 // =================== I n h e r i t e d   M e t h o d s  ======================
 // -----------------------------------------------------------------------------
 
+function AppendSlash(const URL : string) : string;
+begin
+    if URL.endswith('/') then
+         Result := URL
+    else Result := URL + '/';
+end;
 
 function TMistySync.SetTransport(): TSyncAvailable;
 var SomeString : string;
 begin
     // SetTransport();
-
-    if DebugMode then DebugLn('TMistySync.SetTransport RemoteAddress = ' + RemoteAddress);
-
-   RemoteAddress := AppendPathDelim(RemoteAddress);                             // ToDo : NOT WINDOWS COMPATIBLE
+   if DebugMode then DebugLn('TMistySync.SetTransport RemoteAddress = ' + RemoteAddress);
+   RemoteAddress := AppendSlash(RemoteAddress);
    if Downloader(RemoteAddress,  SomeString, ctHTML) then    // all we care about is the 200 status Downloader found
-        Result := SyncReady                                            // OR maybe create a repo code goies here ?
+        Result := SyncReady                                            // OR maybe create a repo code goes here ?
    else Result := SyncNetworkError;
 
 // following are some tests used during development, clean it out !

@@ -22,16 +22,21 @@ unit syncutils;
     2021/09/27  Added function to return text name for TSyncTransport Type
 }
 {$mode objfpc}{$H+}
-
+{$modeswitch TypeHelpers}
 interface
 
 uses
-    Classes, SysUtils, dateutils, LazLogger;
+    Classes, SysUtils, dateutils, LazLogger, typInfo;
 
 type TSyncTransport=(SyncFile,  // Sync to locally available dir, things like smb: mount, google drive etc
-                SyncGitHub,     // sends markdown notes to/from github.
+                SyncGithub,     // sends markdown notes to/from github.
                 SyncMisty);     // Using the Misty Web Server
+type TTransportHelper = type Helper for TSyncTransport
+        function ToString:String;
+    end;
 
+
+// uses typeInfo;   GetEnumName(TypeInfo(TSyncTransport),Ord(i))
 
 type
    TSyncInfoRec = record
@@ -173,7 +178,7 @@ function GetNoteLastChangeSt(const FullFileName : string; out Error : string; CD
                           if it has initial problems, returns F and sets ErrorMsg if fails.}
 function SafeWindowsDelete(const FullFileName : string; var ErrorMsg : string) : boolean;
 
-function SyncTransportName(TheType : TSyncTransport) : string;
+// function SyncTransportName(TheType : TSyncTransport) : string;
 
                         // Returns Text describing passed TSyncAvailable
 function SyncAvailableString(Msg : TSyncAvailable) : string;
@@ -203,6 +208,11 @@ implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, tb_utils;
 
+function TTransportHelper.ToString:String;
+begin
+    Result := GetEnumName(TypeInfo(TSyncTransport), ord(self))
+end;
+
 function HavePendingSync(SInfo : PTSyncInfo) : integer;    // ToDo : confirm that this is being passed as ref.
 var i : integer;
 begin
@@ -211,7 +221,9 @@ begin
     Result := -1;                                         // that is, no Sync pending
 end;
 
-function SyncTransportName(TheType : TSyncTransport) : string;        // Maybe lose this when SyncInfo all works
+                           // I have replaced this with the TSyncTransport.helper but triggers FPC internal error.
+                           // #504 sync.pas and 663 transgithub.pas
+(* function SyncTransportName(TheType : TSyncTransport) : string;        // Maybe lose this when SyncInfo all works
 begin
     Result := '';
     case TheType of
@@ -219,7 +231,7 @@ begin
         SyncGitHub  :     result := 'SyncGithub';
         SyncMisty   :     result := 'SyncMisty';
     end;
-end;
+end; *)
 
 function SyncAvailableString(Msg: TSyncAvailable): string;
 begin
