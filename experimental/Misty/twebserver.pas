@@ -48,6 +48,7 @@ uses
   LazLogger, LazFileUtils;      // does that introduce a LCL dependency ?
 
 
+type TFileStatus = (fsOK, fsNoNote, fsNoEntry, fsNoManifest);
 
 Type
 
@@ -84,9 +85,17 @@ Type
                         // to be saved ?  Need more validation.
     procedure DoCommandAcceptEdit(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
 
-    procedure GenerateFileList(FFName: string; AResp: TFPHTTPConnectionResponse);
+    //procedure GenerateFileList(FFName: string; AResp: TFPHTTPConnectionResponse);
+    function GetFullFileName(FName: string; var FFName: string): TFileStatus;
     function MyAppendPathDelim(APath: string): string;
     procedure SetBaseDir(const AValue: String);
+                        // Writes a new manifest when a user initiated web edit of a note is returned
+                        // to the server. Most data derived from  MetaData but not Revision. Normally
+                        // written into the curret Rev directory and then copied to serverhome. Only
+                        // changes would be Revision, note rev and note LCD. Second and Third line of manifest -
+                        // <sync revision="1" server-id="53576166-6C50-4FB6-9AAB-CDC289D084CC">
+                        // <note id="88299c65-8858-44d0-9fa2-e78ca77749ba" rev="0" last-change-date="2020-02-19T02:41:48.0510000+00:00" />
+    function WriteNewManifest(FFName : string) : boolean;
   Protected
     Procedure DoIdle(Sender : TObject);
     procedure CheckMimeLoaded;
@@ -105,8 +114,11 @@ Type
 var
     Serv : TMistyHTTPServer;
     ExitNow : boolean;           // A semaphore set when ctrl-C received
+    DebugMode : boolean;
 
 implementation
+
+uses FileUtil;
 
 
 Var
@@ -114,7 +126,7 @@ Var
 
   ErrorSt : string = '';       // Check this before exiting with an error
   ServerHome : string;
-  DebugMode : boolean = True;
+  // DebugMode : boolean = True;
 
 const
 
@@ -173,6 +185,41 @@ begin
     FBaseDir:=IncludeTrailingPathDelimiter(FBaseDir);
 end;
 
+function TMistyHTTPServer.WriteNewManifest(FFName: string): boolean;
+var
+    OutFile: TextFile;
+    FPath : string;
+    PNote : PNoteInfo;
+begin
+    FPath := ExtractFileDir(FFName);
+    if not (DirectoryExists(FPath) or ForceDirectory(FPath)) then exit(False);
+    AssignFile(OutFile, FFName);
+    try
+	    try
+		    Rewrite(OutFile);
+            writeln(OutFile, '<?xml version="1.0" encoding="utf-8"?>');
+            writeln(OutFile, '<sync revision="' + Revision.ToString + '" server-id="' + MetaData.ServerID + '">');
+            for PNote in MetaData do
+                writeln(OutFile, '  <note id="' + PNote^.ID + '" rev="' + PNote^.Rev.ToString + '" last-change-date="' + PNote^.LastChange + '" />');
+            writeln(OutFile, '</sync>');
+		finally
+	        CloseFile(OutFile);
+		end;
+    except
+      on E: EInOutError do begin
+          Debugln('File handling error occurred. Details: ' + E.Message);
+          exit(false);
+	  end;
+	end;
+    // if to here, copy the file over top of existing main local manifest
+    if fileexists(FFName) then                                                  // ToDo : and if it does not exist ?
+        CopyFile(FFName, ServerHome + 'manifest.xml');                          // Note : Requires LazUtils/FileUtils !
+    if debugmode then
+       debugln('Have written server manifest to [' + FFName  + '] [' + ServerHome + 'manifest.xml' + ']');
+    Result := True;
+end;
+
+
 procedure TMistyHTTPServer.DoIdle(Sender: TObject);
 begin
   // Writeln('Idle, waiting for connections');
@@ -197,6 +244,7 @@ begin
     else Result := APath;
 end;
 
+(*
 procedure TMistyHTTPServer.GenerateFileList(FFName : string; AResp : TFPHTTPConnectionResponse);   // doppy, this should be a stream ....
 var
     STL : tstringlist;
@@ -223,35 +271,63 @@ begin
     AResp.Content := StL.Text;
     STL.Free;
     AResp.SendContent;
-end;
+end; *)
 
+
+{ we must first check file looks like a note, then determine a suitable Rev based
+dir to save it too. Update the mainfest with a) the new rev number and LCD for that note
+and b) the new rev number. Then, c) inc the server rev number. Second and third lines
+<sync revision="1" server-id="53576166-6C50-4FB6-9AAB-CDC289D084CC">
+  <note id="88299c65-8858-44d0-9fa2-e78ca77749ba" rev="0" last-change-date="2020-02-19T02:41:48.0510000+00:00" />
+
+
+So, change the rev number and LCD of the note in MetaData
+}
 
 procedure TMistyHTTPServer.DoCommandAcceptEdit(AReq  : TFPHTTPConnectionRequest ;
                                              AResp : TFPHTTPConnectionResponse);
 var
   St : string;
   Convert : THTML2Note;
+  PNote : PNoteInfo;
 begin
     // Resp.Code - 298 : cannot find orig note;  296 : convert html2note error;  295 : file i/o error;  200 : OK
     // 200 is OK, anything betwen 201-299 is, between you and me, an error reported to user on the Edit page.
     AResp.Code := 200;       // this appears to be response.status that the JS sendData() gets, must be 200 - 299
     if DebugMode then DebugLn('TMistyHTTPServer.DoCommandAcceptEdit()');
     AReq.HandleGetOnPost := True;
+    PNote := MetaData.FindID(ExtractFileName(AReq.ContentFields.Values['noteFName']));
+    if PNote = nil then begin                                                   // note, we use it further down
+        debugln('TMistyHTTPServer.DoCommandAcceptEdit - ERROR note not present : ' + AReq.ContentFields.Values['noteFName']);
+        exit;
+    end;
     Convert := THTML2Note.Create;
-    Convert.NoteFName := AReq.ContentFields.Values['noteFName'];                  // that should be an existing note in ~/home
-    Convert.InStr := AReq.ContentFields.Values['noteData'];                       // thats an edited note in html format
-    if not Convert.Convert() then begin                                           // Convert back to TB note format
+    Convert.NoteFFName := GetRevisionDirPath(ServerHome, PNote^.Rev, PNote^.ID);
+    Convert.InStr := AReq.ContentFields.Values['noteData'];                     // thats an edited note in html format
+    if not Convert.Convert() then begin                                         // Convert back to TB note format
         AResp.Code := 296;
         St := '<p>Failed to convert note</p>';
-    end else
-        if not Convert.SaveNote(Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName) then begin
-            debugln('TMistyHTTPServer.DoCommandPost - ERROR dealing with ' + Convert.NoteFName);
+        debugln('TMistyHTTPServer.DoCommandAcceptEdit - ERROR - Failed to convert html to note' + Convert.NoteFFName);
+        SaveString(AReq.ContentFields.Values['noteData'], ServerHome + 'failed2convert.html');
+    end else begin // Converted back to .note OK
+        writeln('converted 0K');
+        if not Convert.SaveNote(ServerHome, Convert.NoteFFName, Revision) then begin             // $ID.note
+            debugln('TMistyHTTPServer.DoCommandAcceptEdit - ERROR dealing with ' + Convert.NoteFFName);
             AResp.Code := 295;
             St := '<p>Failed to save note</p>';
         end else begin
-            if DebugMode then debugln('TMistyHTTPServer.DoCommandPost - write ' + Serv.BaseDir + 'temp' + PathDelim + Convert.NoteFName);
-            St := '<p>All Good</p>';
+            if DebugMode then debugln('TMistyHTTPServer.DoCommandAcceptEdit - write ' + Convert.NoteFFName);
+            St := '<p>All Good</p>';                                            // OK, now Rev Revision and save manifest
+            PNote^.LastChange := Convert.DateSt;
+            inc(PNote^.Rev);
+            inc(Revision);                                                      // note : we are not using MetaData.LastRev (except at startup)
+            if not WriteNewManifest(GetRevisionDirPath(ServerHome, Revision) + 'manifest.xml') then // writes both manifests
+                debugln('TMistyHTTPServer.DoCommandAcceptEdit - ERROR - Failed to write manifest')
+            else
+                if DebugMode then
+                    debugln('TMistyHTTPServer.DoCommandAcceptEdit - wrote new mainfest');
         end;
+    end;
     Convert.Free;
     CheckMimeLoaded();
     AResp.ContentType:=MimeTypes.GetMimeType('html');
@@ -281,21 +357,24 @@ begin
         Add('</form>');
     end else begin             *)         // the secret here is that AReq.Files.count > 0 ! So, must be a file coming.
         f := AReq.Files[0];               // here we assume only one file has been sent. Hope thats safe.
-        SaveFileName := GetRevisionDirPath(ServerHome, Revision + 1);
+        SaveFileName := GetRevisionDirPath(ServerHome, Revision + 1);           // path to save dir, need for note or manifest copy
         Sts := TStringList.Create;
         try
             Sts.LoadFromStream(F.Stream);
             if DirectoryExists(SaveFileName) or ForceDirectoriesUTF8(SaveFileName) then begin
-                if F.FileName.Endswith('-remote') then
-                    SaveFileName := SaveFileName + 'manifest.xml'
-                else SaveFileName := SaveFileName + F.FileName;
-                Sts.SaveToFile(SaveFileName);                  // Save notes and a copy of manifest in Rev dir
-                if F.FileName.Endswith('-remote') then         // Save main manifest in home
-                     Sts.SaveToFile(ServerHome + 'manifest.xml');
+                if F.FileName.Endswith('-remote') then begin                    // manifest
+                    SaveFileName := SaveFileName + 'manifest.xml';              // thats the copy of manifest
+                    Sts.SaveToFile(ServerHome + 'manifest.xml');                // thats the main one, assume here we can always save it ??
+                    inc(Revision);                                              // now points to ones we have just saved.
+                end else                                                        // Its a note.
+                    SaveFileName := SaveFileName + F.FileName;
+                Sts.SaveToFile(SaveFileName);                                   // Save note or copy of manifest in Rev dir
             end;
             if FileExists(SaveFileName) then begin
+                if DebugMode then debugln('DoCommandUpload just saved ' + SaveFileName);
                 AResp.Contents.Add('<html><body><h2>OK</h2></p>' + f.FileName +  ' was uploaded.' + '</p></body></html>');
             end else begin
+                debugln('DoCommandUpload ERROR - failed to save ' + SaveFileName);
                 AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'file was not uploaded.' + '</p></body></html>');
                 debugln('DoCommandUpload ERROR [' + SaveFileName + '] NOT saved.');
                 AResp.Code := 422;
@@ -307,13 +386,35 @@ begin
 end;
 
 
+
+{ Passed note name and returns with the full local pathname to that note. Returns
+fsOK if note found or other TFileStatus errors, takes ID or FName (inc .note) }
+function TMistyHTTPServer.GetFullFileName(FName: string; var FFName: string): TFileStatus;
+var
+    PNote : PNoteInfo = nil;
+begin
+    if FileExists(ServerHome + 'manifest.xml') then begin        // can only help here if we have a manifest.
+       PNote := MetaData.FindID(copy(FName, 1, 36));
+       if PNote <> Nil then                                      // if nil, FileExists test below will get and report it
+           FFName := GetRevisionDirPath(ServerHome, PNote^.Rev, FName)
+       else
+           exit(fsNoEntry);
+       if FileExists(FFName) then
+            exit(fsOK)
+       else
+            exit(fsNoNote);
+    end else
+        Result := fsNoManifest;
+end;
+
+
 procedure TMistyHTTPServer.DoCommandDownload(AReq: TFPHTTPConnectionRequest;
                                              AResp: TFPHTTPConnectionResponse);
 var STL : TStringList;
 //    St  : string;
     FName : string;
     PNote : PNoteInfo = nil;
-begin
+begin                                                                           // ToDo : this should use GetFullFileName()
 
     // MetaData.DumpList('in DoCommandDownload');
     if DebugMode then debugln('TMistyHTTPServer.DoCommandDownload ' + AReq.URL);
@@ -362,27 +463,23 @@ end;
 procedure TMistyHTTPServer.DoCommandListNotes(AReq: TFPHTTPConnectionRequest;
                                               AResp: TFPHTTPConnectionResponse);
 var
+    PNote : PNoteInfo = nil;
     STL : tstringlist;
-    Info : TSearchRec;
 begin
     if DebugMode then debugln('TMistyHTTPServer.DoCommandListNotes');
     STL := TStringList.Create();
     STL.Insert(0, '<!DOCTYPE html><body><h1>File List</h1>');
     Stl.Add('<table>');
-    If FindFirst (ServerHome + '*.note',faAnyFile, Info)=0 then begin
-        repeat
+    for PNote in MetaData do begin
             Stl.Add('<tr>');
-            if (Info.Name = '.') or (Info.Name = '..') then continue;
-            if (Info.Attr and faDirectory) = faDirectory then continue;
-            Stl.add('<td>' + inttostr(Info.size) + '</td><td><a href="'+ Info.Name + '">' + Info.Name + '</a></td>');
+            Stl.add('<td><a href="'+ PNote^.ID + '.note' + '">'
+                    + GetTitleFromFFN(ServerHome, PNote^.Rev, PNote^.ID) + '</a></td>');
             Stl.add('</tr>');
-        until FindNext(info) <> 0;
     end;
     Stl.add('</table>');
-    FindClose(Info);
     Stl.Add('</body></html>');
     AResp.Content := StL.Text;
-    STL.Free;
+    STL.Free;                                                                   // ToDo : html ?
     AResp.SendContent;
 end;
 
@@ -394,8 +491,14 @@ var
     HTML : TExportHTML = Nil;
     STL : TStringList = Nil;
     St : string;
+    PNote : PNoteInfo = nil;
 begin
     FName := copy(AReq.URL, 2, 100);                                            // ToDo : better checking that file is available and is a note
+    if FName.EndsWith('.note') then FName := FName.Remove(36, 5);               // check I have those numbers correct. Just ID now
+    PNote := MetaData.FindID(copy(FName, 1, 36));
+    if PNote <> Nil then                                // if nil, FileExists test below will get and report it
+        FName := GetRevisionDirPath(ServerHome, PNote^.Rev, FName)
+    else debugln('TMistyHTTPServer.DoCommandEdit, ERROR failed to find ' + FName + ' in MetaData');     // ToDo : better error handling
     if DebugMode then debugln('MistyHTTPServer.DoCommandEdit wants to edit ' + FName);
     HTML := TExportHTML.Create();
     HTML.NotesDir:= ServerHome;
@@ -403,7 +506,7 @@ begin
 //    HTML.FollowLinks := False;
     STL := TStringList.Create();
     try
-        HTML.ExportContent(ServerHome + FName, STL);                                         // ToDo : some error checking please.
+        HTML.ExportContent(FName, STL);                                         // ToDo : some error checking please.
         if Stl.Count < 2 then begin
             debugln('TMistyHTTPServer.DoCommandEdit ERROR failed to convert note to HTML : ' + FName);
             AResp.Content := '<html><body><h2>ERROR</h2></p>' + 'empty string list returned' + '</p></body></html>';
@@ -436,6 +539,19 @@ begin
     end;
 end;
 
+{  Content in URL after the server:8080/ bit
+    (nothing) a short hml error message and 'error' code 200
+    (nothing but ARequest.ContentFields.Count > 0) - We are sending back an edit from Quill
+    (nothing but ARequest.Files.Count > 0) - its a file upload.
+    /LISTNOTES             - dislays a html formatted list of notes, click to edit
+    /DOWNLOAD/$NOTEID.note - client wants to download ndicated note
+    /MANIFEST              - client wants to download the manifest,
+    /$NOTEID.note          - User has clicked a LISTNOTES entry, send it back wrapped up in Quill
+    /
+
+
+
+}
                 // override the fphttpserver version, called for every request.
                 // we will ty and help if we can. If a dir, list dir contents,
                 // if its a filename, display it, if a command, we'll obey !
@@ -475,7 +591,7 @@ begin
     if copy(ARequest.URL, length(ARequest.URL)-4, 5) = '.note' then  // Send a note to quill editor
         DoCommandEdit(ARequest, AResponse)                           // just note name (and .note"), no path required
     else
-        if ARequest.URL = '/quill.html' then begin
+        if ARequest.URL = '/quill.html' then begin                   // ToDo : remove this block ?
             writeln('TMistyHTTPServer.HandleRequest In TEST mode');
             FN := Serv.BaseDir + 'quill.html';
             F:=TFileStream.Create(FN, fmOpenRead);
@@ -492,7 +608,7 @@ begin
            end;
             writeln('TMistyHTTPServer.HandleRequest - we are done here');       // ToDo : remove
         end
-    else begin                                                                  // his is a special case, no command, instruction, data in URL, its working but non-functional
+    else begin                                                                  // this is a special case, no command, instruction, data in URL, its working but non-functional
         writeln(' ARequest.URL = ', ARequest.URL);
         writeln(copy(ARequest.URL, length(ARequest.URL)-4, 5));
         AResponse.Content := '<html><body><h2>ERROR</h2></p>' + 'I have no idea what you mean.' + '</p></body></html>';
@@ -504,6 +620,9 @@ end;
 procedure TMistyHTTPServer.Startup;
 begin
     MetaData := nil;        // to be sure, to be sure
+    LoadFromFile('editor_1.template', Editor_1);
+    LoadFromFile('editor_2.template', Editor_2);
+    LoadFromFile('editor_3.template', Editor_3);
     try
         {$ifdef unix}
         Serv.MimeTypesFile:='/etc/mime.types';
@@ -518,7 +637,8 @@ begin
             Serv.Revision := -1;                    // Thats OK, its a new install.
         debugln(ParamStr(0), ' starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port.tostring);
         debugln('Revision=', Serv.Revision.tostring);
-        if MetaData <> nil then debugln('ServerID=', MetaData.ServerID);        // only shown after first manifest.
+        if MetaData <> nil then debugln('ServerID=', MetaData.ServerID        // only shown after first manifest.
+                + ' Found notes = ', MetaData.Count.ToString);
         Serv.Active:=True;                                                      // does not return until Serv is terminated
         // from time to time, an exception relating to POST is raised and apparently dealt with
         // internally in httpserver. But if running under the debugger in the IDE you get told about it.

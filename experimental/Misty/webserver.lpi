@@ -28,13 +28,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="-p 8080 -H /home/dbannon/Pascal/tomboy-ng/experimental/Misty"/>
+        <CommandLineParams Value="-p 8080 -H /home/dbannon/Pascal/tomboy-ng/experimental/Misty -d"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="-p 8080 -H /home/dbannon/Pascal/tomboy-ng/experimental/Misty"/>
+            <CommandLineParams Value="-p 8080 -H /home/dbannon/Pascal/tomboy-ng/experimental/Misty -d"/>
           </local>
         </Mode0>
       </Modes>

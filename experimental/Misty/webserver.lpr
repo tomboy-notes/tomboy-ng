@@ -41,7 +41,7 @@ begin
         HomeDir := AppendPathDelim(GetOptionValue('H', 'home'));
         for i := 0 to high(ReqFiles) do
             if not FileExists(HomeDir + ReqFiles[i]) then begin
-                writeln('ERROR, cnnot see ' + HomeDir + ReqFiles[i]);
+                writeln('ERROR, cnnot see ' + HomeDir + ReqFiles[i]);           // ToDo : windows ?
                 exit;
             end;
     end else begin
@@ -70,7 +70,7 @@ var
     ErrorMsg: String;
 begin
     // quick check parameters
-    ErrorMsg := CheckOptions('hp:H:s', 'help port home ssl');
+    ErrorMsg := CheckOptions('hp:H:sd', 'help port home ssl');
     if ErrorMsg <> '' then begin
         ShowException(Exception.Create(ErrorMsg));
         Terminate;
@@ -83,6 +83,8 @@ begin
         Terminate;
         Exit;
     end;
+    if HasOption('d', 'debug') then
+        DebugMode := True;
 
     BuildServer();
 
@@ -138,7 +140,7 @@ begin
         Writeln('Failed to install signal error: ', fpGetErrno);
         exit;
     end;
-
+    DebugMode := False;
     Application := TMyApplication.Create(nil);
     Application.Title := 'My Application';
     Application.Run;

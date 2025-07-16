@@ -63,10 +63,11 @@ type                                // from syncutils
         ServerID : string;              // Partially implemented, don't rely yet ....
         LastSyncDateSt : string;        // Partially implemented, don't rely yet ....
         LastSyncDate : TDateTime;       // Partially implemented, don't rely yet ....
-        LastRev : integer;              // Partially implemented, don't rely yet ....
+        LastRev : integer;              // used only to initialise Revision at startup
         destructor Destroy; override;
         function Add(ANote : PNoteInfo) : integer;
-        function FindID(const ID : ANSIString) : PNoteInfo;
+        // returns a TNoteInfo pointer to note entry with passed ID or ID.note. Nil if not found.
+        function FindID(ID: ANSIString): PNoteInfo;
         function ActionName(Act : TSyncAction) : string;
         procedure DumpList(const Wherefrom : string);
         property Items[Index: integer]: PNoteInfo read Get; default;
@@ -77,8 +78,10 @@ type                                // from syncutils
                     // Returns False and sets EString if manifest present but contains error.
                     // this is based on transmisty unit;
 function ReadManifest(var RMetaData : TNoteInfoList; const FFName : string; var EString : string) : boolean;
+                    // Returns a string being FFName of a note, accept ID as empty (for creating dir),
+                    // as an ID or as ID.note.  If anything in ID, always returns with the .note at end
 function GetRevisionDirPath(ServerPath: string; Rev: integer; NoteID : string = ''): string;
-
+function GetTitleFromFFN(ServerPath: string; Rev : integer; ID: string): string;
 var
     MetaData : TNoteInfoList;     // GLOBAL, list, built from manifest with details of notes.
 
@@ -92,11 +95,12 @@ begin
 end;
 
 { This will be quite slow with a big list notes, consider an AVLTree ? }
-function TNoteInfoList.FindID(const ID: ANSIString): PNoteInfo;
+function TNoteInfoList.FindID(ID: ANSIString): PNoteInfo;
 var
     Index : longint;
 begin
     Result := Nil;
+    if ID.EndsWith('.note') then ID := copy(ID, 1, 36);
     for Index := 0 to Count-1 do begin
         if Items[Index]^.ID = ID then begin
             Result := Items[Index];
@@ -164,7 +168,28 @@ function TNoteInfoList.Get(Index: integer): PNoteInfo;
 begin
     Result := PNoteInfo(inherited get(Index));
 end;
+
 { ---------------- End of TNoteInfoList ---------------- }
+
+
+
+function GetTitleFromFFN(ServerPath: string; Rev : integer; ID: string): string;
+var
+     Doc : TXMLDocument;
+     Node : TDOMNode;
+     FFName : string;
+begin
+     FFName := GetRevisionDirPath(ServerPath, Rev, ID);
+     if not FileExists(FFName) then
+         exit('');
+     ReadXMLFile(Doc, FFName);
+     try
+         Node := Doc.DocumentElement.FindNode('title');
+         result := Node.FirstChild.NodeValue;
+     finally
+         Doc.free;
+     end;
+end;
 
 
 function GetRevisionDirPath(ServerPath: string; Rev: integer; NoteID : string = ''): string;
@@ -217,7 +242,7 @@ begin
             ReadXMLFile(Doc, FFName);
             // 2nd line of server looks like this <sync revision="498" server-id="C20866A3-9D6D-415C-964A-2485E031D1A4">
             RMetaData.ServerID := Doc.DocumentElement.GetAttribute('server-id');
-            RMetaData.LastRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));
+            RMetaData.LastRev := strtoint(Doc.DocumentElement.GetAttribute('revision'));  // used only to initialise Revision at startup
     		NodeList := Doc.DocumentElement.ChildNodes;
     		if assigned(NodeList) then begin
         		for j := 0 to NodeList.Count-1 do begin
@@ -225,7 +250,7 @@ begin
                     NoteInfo^.ForceUpload := false;
                     NoteInfo^.Action:=SyUnset;
                     Node := NodeList.Item[j].Attributes.GetNamedItem('id');
-                    NoteInfo^.ID := Node.NodeValue;									// ID does not contain '.note';
+                    NoteInfo^.ID := Node.NodeValue;                             // ID does not contain '.note';
 					Node := NodeList.Item[j].Attributes.GetNamedItem('rev');
                     NoteInfo^.Rev := strtoint(Node.NodeValue);                      // what happens if its empty ?
                     Node := NodeList.Item[j].Attributes.GetNamedItem('last-change-date');

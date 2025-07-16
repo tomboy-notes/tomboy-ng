@@ -32,9 +32,12 @@ type
     public
       InStr : string;
       ErrorString : string;
-      NoteFName : string;             // {UID}.note, supplied from calling method (except in test mode)
+      NoteFFName : string;             // {UID}.note, supplied from calling method (except in test mode)
+      DateSt : string;
+      constructor Create();
+      destructor Destroy; override;
       function Convert() : boolean;
-      function SaveNote(FFName : string) : boolean;
+      function SaveNote(const ServHome, FName: string; Rev: integer): boolean;
       function LoadHTML(FFName : string) : boolean;   // This is used in test mode where we load content from a file
     private
 
@@ -46,7 +49,8 @@ end;
 
 implementation
 
-uses Unix;
+uses Unix, ssync_utils,
+    LazFileUtils;       // For ForceDirectory
 
 function FindInStringList(const StL : TStringList; const FindMe : string) : integer;
 var
@@ -89,25 +93,31 @@ end;
 
 { THTML2Note }
 
+constructor THTML2Note.Create();
+begin
+    inherited Create;
+    writeln('THTML2Note.Create created');
+end;
+
+destructor THTML2Note.Destroy;
+begin
+    inherited Destroy;
+end;
+
 function THTML2Note.Convert(): boolean;    // ToDo : my test setup has a note title at top of document, maybe from note->html ?
 begin
-
     InStr := InStr.Replace('&nbsp;', ' ', [rfReplaceAll]);    // space
     InStr := InStr.Replace('&quot;', '"', [rfReplaceAll]);    // double inverted comma
     InStr := InStr.Replace('&#39;', '''', [rfReplaceAll]);    // single inverted comma - let encoded angle brackets go through ....
     InStr := InStr.Replace('<p>', '', [rfReplaceAll]);
     InStr := InStr.Replace('</p>', #10, [rfReplaceAll]);
-
-    SaveNote('Content.html');                                                    // ToDo : remove this !
-
     InStr := InStr.Replace('<s>',  '<strikeout>', [rfReplaceAll]);
     InStr := InStr.Replace('</s>', '</strikeout>', [rfReplaceAll]);
     InStr := InStr.Replace('<u>',  '<underline>', [rfReplaceAll]);
     InStr := InStr.Replace('</u>', '</underline>', [rfReplaceAll]);
-//    SaveNote('st1.txt');
     RemoveATag();
     FixLists();
-    // ToDo : still need to deal with highlight .....
+                                                                          // ToDo : still need to deal with highlight .....
     InStr := InStr.Replace('<strong>', '<bold>', [rfReplaceAll]);
     InStr := InStr.Replace('</strong>', '</bold>', [rfReplaceAll]);
     InStr := InStr.Replace('<em>', '<italic>', [rfReplaceAll]);
@@ -118,19 +128,27 @@ begin
     InStr := InStr.Replace('</h2>', '</size:huge', [rfReplaceAll]);      // ToDo : must check what <h?> note->html generates.
     AddHeaderFooter();
     result := (ErrorString = '');
-    //writeln('THTML2Note.Convert - finished conversion, ErrorString is ' + ErrorString);
-    SaveNote('Content.note');                                                   // ToDo : remove this !
 end;
 
-function THTML2Note.SaveNote(FFName: string): boolean;
-var OutFile: TextFile;
+
+// Returns true if it has created a new directory and saved the file in the Rev Dir
+// False if dir already exists, cannot be created or file cannot be saved
+function THTML2Note.SaveNote(const ServHome, FName: string; Rev : integer): boolean;     // FName is a Full File Name, with PATH !
+var
+    OutFile: TextFile;
+    DirName : string;
 begin
     // writeln('THTML2Note.SaveNote - saving ' + FFName);
-    AssignFile(OutFile, FFName);
-    rewrite(OutFile);
-    write(OutFile, InStr);
-    CloseFile(OutFile);
-    result := true;
+    DirName := GetRevisionDirPath(ServHome, Rev+1);
+    if DirectoryExists(DirName) then exit(False);                               // Must be new dir !
+    if ForceDirectory(DirName) and DirectoryExists(DirName) then begin
+        DirName := AppendPathDelim(DirName) + extractFileName(FName);
+        AssignFile(OutFile, DirName);                                           // We must create a new revision !
+        rewrite(OutFile);
+        write(OutFile, InStr);
+        CloseFile(OutFile);
+    end;
+    Result := FileExists(DirName);
 end;
 
 function THTML2Note.LoadHTML(FFName: string): boolean;    // maybe just for testing ??
@@ -140,7 +158,7 @@ begin
     Reset(InFile);
     readln(InFile, InStr);      // assumes no newlines ?
     CloseFile(InFile);
-    NoteFName := copy(FFName, 1, 41);
+    NoteFFName := copy(FFName, 1, 41);
     result := true;
 end;
 
@@ -195,31 +213,34 @@ end;
 function THTML2Note.GetHeaderFooter(var Header, Footer: string): boolean;
 var STL : TStringList;
     Index, i : integer;
-    DateSt : string;
+    // DateSt : string;
 begin
     STL := TStringList.Create;
     try
-        STL.LoadFromFile('home/' + NoteFName);
+        // here we get the header and footer from the existing, unedited note and
+        // change (Title, ??) and LCD.
+        STL.LoadFromFile(NoteFFName);                                  // ToDo : its not there, use rev based dir structure !
         Index := FindInStringList(STL, '<text xml:space="preserve">');
         if Index < 0 then begin
-            ErrorString := 'Failed to find header in ' + NoteFName;
+            ErrorString := 'Failed to find header in ' + NoteFFName;
+            writeln('THTML2Note.GetHeaderFooter - ERROR - ', ErrorString);      // ToDo : Wndows ?
             exit(false);
         end;
-        for i := 0 to Index do
+        for i := 0 to Index do                                                  // ToDo : assumes note has been normalised, won't work, eg, for GNote
             if i = 0 then
                 Header := STL[i]
             else
                 Header := Header + #10 + STL[i];
         Header := Header + #10;
-        DateSt := TB_GetLocalTime;
+        DateSt := TB_GetLocalTime;                                              // A Regional because calling process will want it too !
         Footer := Footer + #10 + '  <last-change-date>' + DateSt + '</last-change-date>';
         Footer := Footer + #10 + '  <last-metadata-change-date>' + DateSt + '</last-metadata-change-date>';
         Index := FindInStringList(STL, '<create-date>');
         if Index < 0 then begin
-            ErrorString := 'Failed to find footer in ' + NoteFName;
+            ErrorString := 'Failed to find footer in ' + NoteFFName;
             exit(false);
         end;
-        for i := Index to STL.Count-1 do
+        for i := Index to STL.Count-1 do                                        // Copy remainder of the footer.
             Footer := Footer + #10 + STL[i];
         Footer := Footer + #10
     finally
