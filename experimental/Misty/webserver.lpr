@@ -1,5 +1,5 @@
 program webserver;
-
+{$ifdef WINDOWS} {$apptype console} {$endif}
 {$mode objfpc}{$H+}
 
 uses
@@ -8,7 +8,8 @@ uses
     {$ENDIF}
     Classes, SysUtils, CustApp,
     BaseUnix,                     // for Signal Names  Hmm, windows ?  No idea !
-    TWebserver, LazFileUtils
+    TWebserver, {LazFileUtils}
+    ssync_utils
     { you can add units after this };
 
 type
@@ -38,7 +39,7 @@ var i : integer;
     HomeDir : string;
 begin
     if HasOption('H', 'Home') then begin
-        HomeDir := AppendPathDelim(GetOptionValue('H', 'home'));
+        HomeDir := MyAppendPathDelim(GetOptionValue('H', 'home'));
         for i := 0 to high(ReqFiles) do
             if not FileExists(HomeDir + ReqFiles[i]) then begin
                 writeln('ERROR, cnnot see ' + HomeDir + ReqFiles[i]);           // ToDo : windows ?

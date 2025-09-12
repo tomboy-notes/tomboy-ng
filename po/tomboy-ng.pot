@@ -190,6 +190,7 @@ msgid "tomboy-ng can use Github to both sync and display or edit notes"
 msgstr ""
 
 #: resourcestr.rsgithubsyncinfo2
+msgctxt "resourcestr.rsgithubsyncinfo2"
 msgid "you should read the tomboy-ng wiki page for instructions."
 msgstr ""
 
@@ -337,6 +338,15 @@ msgstr ""
 
 #: resourcestr.rsmetadirwarning
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
+msgstr ""
+
+#: resourcestr.rsmistysyncinfo1
+msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
+msgstr ""
+
+#: resourcestr.rsmistysyncinfo2
+msgctxt "resourcestr.rsmistysyncinfo2"
+msgid "you should read the tomboy-ng wiki page for instructions."
 msgstr ""
 
 #: resourcestr.rsmultiplenotebooks
@@ -534,6 +544,10 @@ msgstr ""
 
 #: resourcestr.rssynctypegithub
 msgid "Github - free Github account required"
+msgstr ""
+
+#: resourcestr.rssynctypemisty
+msgid "Misty - Misty server required"
 msgstr ""
 
 #: resourcestr.rstestingcredentials
@@ -1674,6 +1688,14 @@ msgstr ""
 msgid "Github or File Sync"
 msgstr ""
 
+#: tsett.editpw.text
+msgid "EditPW"
+msgstr ""
+
+#: tsett.editrepo.text
+msgid "EditRepo"
+msgstr ""
+
 #: tsett.groupbox4.caption
 msgctxt "tsett.groupbox4.caption"
 msgid "When a conflict is detected between a local note and remote one :"
@@ -1759,11 +1781,6 @@ msgstr ""
 
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
-msgstr ""
-
-#: tsett.labelsyncrepo.caption
-msgctxt "tsett.labelsyncrepo.caption"
-msgid "not configured"
 msgstr ""
 
 #: tsett.labelsynctiming.caption

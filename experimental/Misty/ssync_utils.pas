@@ -11,6 +11,13 @@ unit ssync_utils;
     License:
     This code is licensed under MIT License, see the file License.txt
     or https://spdx.org/licenses/MIT.html  SPDX short identifier: MIT
+
+    Really intended to be built using the Lazarus IDE it can also be built
+    from the command ine with -
+    $> ~/bin/Lazarus/lazarus-fixes_4/lazbuild ./webserver.lpr
+    But there is, sadly, unavoidable dependenies on laz2_dom* so on LCL so
+    you need a Lazarus install anyway !
+
 }
 
 {$mode ObjFPC}{$H+}
@@ -78,14 +85,28 @@ type                                // from syncutils
                     // Returns False and sets EString if manifest present but contains error.
                     // this is based on transmisty unit;
 function ReadManifest(var RMetaData : TNoteInfoList; const FFName : string; var EString : string) : boolean;
+
                     // Returns a string being FFName of a note, accept ID as empty (for creating dir),
                     // as an ID or as ID.note.  If anything in ID, always returns with the .note at end
 function GetRevisionDirPath(ServerPath: string; Rev: integer; NoteID : string = ''): string;
+
 function GetTitleFromFFN(ServerPath: string; Rev : integer; ID: string): string;
+
+function MyAppendPathDelim(APath : string) : string;
+
 var
     MetaData : TNoteInfoList;     // GLOBAL, list, built from manifest with details of notes.
 
 implementation
+
+
+function MyAppendPathDelim(APath : string) : string;    // here to avoid use lazfileutils
+begin
+    if APath[length(APath)] <> PathDelim then
+        Result := APath + PathDelim
+    else Result := APath;
+end;
+
 
 { ----------------  TNoteInfoList ---------------- }
 
@@ -222,23 +243,19 @@ end;
 
 function ReadManifest(var RMetaData : TNoteInfoList; const FFName : string; var EString : string) : boolean;
 var
-    ManifestSt : string;
     Doc : TXMLDocument;
     NodeList : TDOMNodeList;
     Node : TDOMNode;
     NoteInfo : PNoteInfo;
     j : integer;
-    //ManifestStream : TStringStream;
 begin
     EString := '';
     if not FileExists(FFNAme) then exit(false);
     if RMetaData <> Nil then FreeAndNil(RMetaData);
     RMetaData := TNoteInfoList.Create;
-    // ReadRemoteManifest(const NoteMeta: TNoteInfoList)
     Result := true;
     try
     	try
-    		//ManifestStream := TStringStream.create(ManifestSt);
             ReadXMLFile(Doc, FFName);
             // 2nd line of server looks like this <sync revision="498" server-id="C20866A3-9D6D-415C-964A-2485E031D1A4">
             RMetaData.ServerID := Doc.DocumentElement.GetAttribute('server-id');
@@ -254,10 +271,8 @@ begin
 					Node := NodeList.Item[j].Attributes.GetNamedItem('rev');
                     NoteInfo^.Rev := strtoint(Node.NodeValue);                      // what happens if its empty ?
                     Node := NodeList.Item[j].Attributes.GetNamedItem('last-change-date');
-                    // if assigned(node) then                                   // We can assume all manifest entries do have a LCD here.
+                    if assigned(node) then                                   // We can assume all manifest entries must have a LCD here.
                     NoteInfo^.LastChange:=Node.NodeValue;
-                    //if NoteInfo^.LastChange <> '' then
-                    //    NoteInfo^.LastChangeGMT := TB_GetGMTFromStr(NoteInfo^.LastChange);
                     RMetaData.Add(NoteInfo);
                 end;
 		    end;

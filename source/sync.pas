@@ -128,18 +128,21 @@ CheckNewNotes() looks in Notes dir for any notes there that are not yet listed i
             NoteMetaData (which, is, of course empty at this stage). These notes are
             UploadNew. Call the General Write Behavour Block if not a TestRun.
 
-General Write Behavour
-----------------------
+General Write Behavour   function TSync.UseSyncData(DoClash)
+------------------------------------------------------------
 applies for all three cases above. Some methods are not relevent in some modes,
 they just return true when they detect that themselves.)
-ProcessClashes()
+ProcessClashes() if required (fail in auto mode)
 DoDownLoads()
-WriteRemoteManifest()   - writes out a local copy of remote manifest to be used later.
-    We always write it (except in TestRun) but only call Transport to deal with it
-    if we have notes changing.
+WriteRemoteManifest() (File and Misty ONLY) writes out a local copy of remote manifest
+    and if we have uploads or remote deletes, pushes it up (File and Misty only).
+    Uses the rev from Trans + 1, does NOT alter trans's rev. Note this all happens
+    before pushing files or deletes up, server may see it as trigger for new rev.
 DoDeletes() - Deletes from remote server. In current file implementation, does nothing.
 DoUploads()
 DoDeleteLocal()
+DoRemoteManifest (GithubSync ONY) instead of the call to WriteRemoteManifest() above.
+    This causs transgithub to generate manifest and readme.md and push the up.
 WriteLocalManifest()
 
 Note, we want to write a new local manifest even if there are no note changes taking place,
@@ -1280,6 +1283,7 @@ begin
     // it should continue to try the reminder and remove the failed entry from its list
 
     if not DoDeleteLocal() then exit(SayDebugSafe('TSync.StartSync - failed DoDeleteLocal'));
+
     if TransportMode = SyncGithub then
         if not Transport.DoRemoteManifest('', RemoteMetaData) then exit(SayDebugSafe('TSync.StartSync - failed late WriteRemoteManifest'));
     if not WriteLocalManifest(true, NewRev) then
@@ -1356,7 +1360,7 @@ var
     Index : integer;
     NewRevString : string;
 begin
-    if DebugMode then debugln('Ready to do remote Manifest');
+    if DebugMode then debugln('Ready to write remote Manifest (locally)');
     if not IDLooksOK(Transport.ServerID) then exit(false);        // already checked but ....
     result := true;
     NewRev := False;
@@ -1546,7 +1550,7 @@ begin
         copyfile(ConfigDir + ManPrefix + 'manifest.xml-local', ConfigDir + ManPrefix + 'manifest.xml');
     end;
     if debugmode then
-       debugln('Have written local manifest to [' + ConfigDir + '] [' + ManPrefix + '] [' + 'manifest.xml]');
+       debugln('TSync.WriteLocalManifest - Have written local manifest to [' + ConfigDir + '] [' + ManPrefix + '] [' + 'manifest.xml]');
 end;
 
 function TSync.ReadLocalManifest(const FullFileName : string = '') : boolean;

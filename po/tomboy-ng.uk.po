@@ -207,6 +207,7 @@ msgid "tomboy-ng can use Github to both sync and display or edit notes"
 msgstr "tomboy-ng може використовувати Github для показу і синхронізації, та для редагування нотаток"
 
 #: resourcestr.rsgithubsyncinfo2
+msgctxt "resourcestr.rsgithubsyncinfo2"
 msgid "you should read the tomboy-ng wiki page for instructions."
 msgstr "прочитайте сторінки вікі tomboy-ng для інструкцій."
 
@@ -361,6 +362,16 @@ msgstr "Синхронізувати"
 #: resourcestr.rsmetadirwarning
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr "Памʼятайте, що для забезпечення надійної синхронізації не можна змінювати файли в каталозі Meta."
+
+#: resourcestr.rsmistysyncinfo1
+msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
+msgstr ""
+
+#: resourcestr.rsmistysyncinfo2
+#, fuzzy
+msgctxt "resourcestr.rsmistysyncinfo2"
+msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr "прочитайте сторінки вікі tomboy-ng для інструкцій."
 
 #: resourcestr.rsmultiplenotebooks
 msgctxt "resourcestr.rsmultiplenotebooks"
@@ -561,6 +572,10 @@ msgstr ""
 
 #: resourcestr.rssynctypegithub
 msgid "Github - free Github account required"
+msgstr ""
+
+#: resourcestr.rssynctypemisty
+msgid "Misty - Misty server required"
 msgstr ""
 
 #: resourcestr.rstestingcredentials
@@ -1755,6 +1770,14 @@ msgstr "Закрийте і перевідкрийте нотатку, щоб з
 msgid "Github or File Sync"
 msgstr ""
 
+#: tsett.editpw.text
+msgid "EditPW"
+msgstr ""
+
+#: tsett.editrepo.text
+msgid "EditRepo"
+msgstr ""
+
 #: tsett.groupbox4.caption
 msgctxt "tsett.groupbox4.caption"
 msgid "When a conflict is detected between a local note and remote one :"
@@ -1843,11 +1866,6 @@ msgstr "Зріз — це копія вашого поточного катал�
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Каталог шматків"
-
-#: tsett.labelsyncrepo.caption
-msgctxt "tsett.labelsyncrepo.caption"
-msgid "not configured"
-msgstr "не налаштовано"
 
 #: tsett.labelsynctiming.caption
 msgid "Sync Timing"

@@ -402,7 +402,7 @@ type
 
         HelpNotesPath : string;         // expected path to help note directories for this OS
         HelpNotesLang : string;         // either two char code or ''
-        AreClosing : boolean;           // False until set true by mainUnit FormClose.
+        AreClosing : boolean;           // False until set true by mainUnit FormClose or cli HandleSig
         BackGndColour : TColor;
         AltBackGndColor : TColor;       // When selected Text looses focus
         TextColour : TColor;
@@ -556,11 +556,9 @@ var
                 // Initially the first place we look for dictionaries, later its the path to
                 // dictionaries listed in ListBoxDic
     DicPath : AnsiString;
-                 // when StartSyncThread() is called, neither, one or both may be set. Set in
-                 // TimerAutoSyncTimer() and unset just before when StartSyncThread() launches a thread;
-    // WantFileSync, WantGitHubSync : boolean;
     ThreadCount : integer = 0;                        // A count of any threads we use, only useful to prevent early close of app.
     StopAllThreads : boolean = false;                 // Only happens at shutdown time.
+    DebugSync : boolean = false;                      // We might set it in FormCreate
 
 const   TooEarlyDate = '1900-01-01T01:01:10';         // An indication its not a real datetime for our purpose
         EarlyDate = '1971-01-01T00:00:00';            // Something to compare with, later than TooEarlyDate
@@ -894,15 +892,17 @@ procedure TSett.CloseNowPlease();
 var
     WaitCount : integer = 0;
 begin
-    {$ifdef debug}debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
-            , 'Close Request from MainUnit');  {$endif}
+    {$ifdef debug}
+    debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
+            , 'Close Request from MainUnit');
+    {$endif}
     StopAllThreads := True;
     while ThreadCount > 0 do begin
 //        MainForm.ShowNotification('WARNING tomboy-ng is still Syncing', 2000);
 //        {$ifdef debug}debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
 //            , 'WARNING, blocking a close while syncing ??');  {$endif}
         inc(WaitCount);
-        if WaitCount > 100 then begin                // Thats five seconds. Seems a lot .....
+        if WaitCount > 100 then begin                // Thats ten seconds. Seems a lot .....
             MainForm.ShowNotification('ERROR tomboy-ng is still Syncing, forced exit !', 2000);
             debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : '
             , 'WARNING, tomboy-ng forced to close but it was still syncing ??');
@@ -916,6 +916,7 @@ procedure TSett.FormCreate(Sender: TObject);
 var
     i : integer;
 begin
+    DebugSync := Application.HasOption('s', 'debug-sync');
     // gTTFontCache.ReadStandardFonts;         // we do this in Kmemo2PDR now.
     fSearchTitleOnly := False;
     NotesSavedAtClose := 0;                    // Inc'ed in Main FormClose, dec'ed when a note save finshes (at close time)
@@ -1219,7 +1220,7 @@ begin
 
 {Last}  SyncInfo[ord(SyncFile)].LastSync   := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingFileLast', TooEarlyDate));
         SyncInfo[ord(SyncGitHub)].LastSync := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingGitHubLast', TooEarlyDate));
-        SyncInfo[ord(SyncMisty)].LastSync  := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingMistyHubLast', TooEarlyDate));
+        SyncInfo[ord(SyncMisty)].LastSync  := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingMistyLast', TooEarlyDate));
 
 {User}  SyncInfo[ord(SyncFile)].User   := '';
         SyncInfo[ord(SyncGitHub)].User := Configfile.ReadString('SyncSettings', 'GHUserName', '');
@@ -2008,9 +2009,8 @@ var
    SyncType : integer;
    ManifestFile : string;
 begin
-    {  Used by both File and Github sync }
+    {  Used by all Sync types }
 //    if NoteDirectory = '' then ButtDefaultNoteDirClick(self);
-
     FormSync.NoteDirectory := NoteDirectory;
     FormSync.LocalConfig := LocalConfig;
     FormSync.SetupSync := True;
@@ -2033,9 +2033,6 @@ begin
             FormSync.RemoteAddress := trim(EditRepo.Text);
           end;
       1 : begin                                     // Gihub Sync
-            //if FileExists(LocalConfig + SyncTransportName(SyncGithub) + PathDelim + 'manifest.xml')
-            //and (mrYes <> QuestionDlg('Warning', rsChangeExistingSync, mtConfirmation, [mrYes, mrNo], 0)) then exit;
-            //FormSync.Transport:=TSyncTransport.SyncGithub;
             FormSync.Password := EditPW.Text;
             FormSync.UserName := EditUserName.text;
             // SyncGUI will update LabelSyncRepo.Caption if successful.
@@ -2087,9 +2084,6 @@ begin
     Result := false;
     for i := 0 to high(SyncInfo) do
         if SyncInfo[i].RemoteAddress <> '' then result := true;
-
-//    result := (SyncFileRepo <> '') or (SyncGithubRepo <> '')
-//    {$ifdef DOMISTY} or (SyncMistyRepo <> '') {$endif} ;
 end;
 
 procedure TSett.CheckAutostartChange(Sender: TObject);
@@ -2105,52 +2099,10 @@ begin
      SaveSettings(Sender);
 end;
 
-{procedure TSett.CheckSyncEnabledChange(Sender: TObject);       // ToDo : will not need this in new sync timing control mode.
-begin
-    if MAskSettingsChanged then exit;
-    case ComboSyncType.ItemIndex of
-        0 : SyncFileEnabled := CheckSyncEnabled.Checked;
-        1 : SyncGithubEnabled  := CheckSyncEnabled.Checked;
-    end;
-    SaveSettings(self);
-end;   }
-
-{procedure TSett.CheckBoxAutoSyncChange(Sender: TObject);     // ToDo : will not need this in new sync timing control mode.
-begin
-    // debugln('WARNING - CheckBoxAutoSyncChange called');
-    if MAskSettingsChanged then exit;                       // Don't trigger timer during setup
-    if CheckBoxAutoSync.Checked then begin
-        case ComboSyncType.ItemIndex of
-            0 : SyncFileAuto := True;
-            1 : SyncGithubAuto  := True;
-            otherwise exit;
-        end;
-        TimerAutoSync.Enabled := false;
-        TimerAutoSync.Interval:= 1000;                      // wait a second, then sync. AutoSnap will also be checked.
-        TimerAutoSync.Enabled := true;
-    end else
-        case ComboSyncType.ItemIndex of
-            0 : SyncFileAuto := False;
-            1 : SyncGithubAuto  := False;                    // ToDo : this should be FALSE ??????? was 'true' ??????????????????????????????????????????????????????????????????????
-            otherwise exit;
-        end;
-    SaveSettings(Self);
-end;                                }
-
 procedure TSett.ComboSyncTimingChange(Sender: TObject);
 begin
     if MAskSettingsChanged then exit;               // Don't trigger during setup
     SyncInfo[ComboSyncType.ItemIndex].SyncTimingIndex := ComboSyncTiming.ItemIndex;   // 0=off, 1=hourly, 2=dayly, 3=weekly, 4=monthly
-
-(*    case ComboSyncType.ItemIndex of
-      0 : begin       // File Sync
-            SyncInfo[ItemIndex].SyncTimingIndex := ComboSyncTiming.ItemIndex;   // 0=off, 1=hourly, 2=dayly, 3=weekly, 4=monthly
-            SyncTimingFileIndex :=
-          end;
-      1 : begin
-            SyncTimingGithubIndex := ComboSyncTiming.ItemIndex;
-          end;
-    end;      *)
     TimerAutoSyncTimer(self);
     SaveSettings(Self);
     ComboSyncTiming.LockRealizeBounds;
@@ -2205,48 +2157,6 @@ begin
         // does something if NextAutoSnapshot is > now(), while AutoSync always runs on timer if enabled.
     end;
 end;
-
-{ At present, this responds with Repo for FileSync, it needs to be smarter and tell
-  us the repo of the selected sync type.   Maybe a file path, maybe a URL.
-  This is a poor substitute to a proper SyncInfo data type holding info about
-  all known syncs.
-}
-
-(* function TSett.GetSyncFileRepo(): string;          // ToDo : SyncInfo, I don't think this is used anyore
-begin
-    if SyncFileRepo <> '' then
-        Result := SyncFileRepo
-    else
-        if (ComboSyncType.ItemIndex = 0)
-                    and (LabelSyncRepo.Caption <> rsSyncNotConfig)
-                    and (LabelSyncRepo.Caption <> '') then
-            result := LabelSyncRepo.Caption
-        else
-            Result := 'File Sync is not configured';
-end; *)
-
-{ New Ctrl of auto sync for v0.37+
-  Two vars per sync model -
- SyncTimingFileLast, SyncTimingGitHubLast  : TDataTime
-            being last time that syn was run.
-            Set to TooEarlyDate if nothing in config, otherwise loaded from config at startup.
-
-  SyncTimingFileIndex, SyncTimingGithubIndex  : int,
-            index into array of possible auto sync timing states, 0 is manual or 'off'
-            if an Index is 0, then no auto will take place but manual is possible if a sync is configured.
-            Set from config at startup, if not in config, looks for [Autosync and FileSyncEnabled]
-            and [AutosyncGit and GitSyncEnabled] setting appropriate index to hourly if true.
-  ValidSync : property
-            ret true if one or the other sync appear valid, that is, have a repo set.
-
-  We determine that a sync should be run by anding -
-            (SyncRepo <> '')    eg result := (SyncFileRepo <> '') or (SyncGithubRepo <> '');
-            not busy
-            *Index > 0
-            Now() > (*Last + SyncTimingFactors)   or, perhaps, Now() > (*Last + SyncTimingFactors[Index])
-            where SyncTimingFactors is an array using same index and is time between sync for a particular timing setting
-}
-
 
 procedure TSett.HandlePostMessage(var Msg: TLMessage);
 var
@@ -2310,101 +2220,48 @@ begin
 //    SyncIndex := HavePendingSync(@SyncInfo);                  // ToDo : does this need to be a stand alone functin ?
 //    if SyncIndex = -1 then exit;                              // exit if no Syncs pending.
     if LockSyncingNow then exit;                                // Just checking why would it happen anyway ?
-//    if not (WantFileSync or WantGitHubSync) then exit;        // Nothing to see here folks, move along
-    //
-
-    while not SyncInfo[SyncIndex].NeedSync do begin             // Lets try and find one to do
+    while not SyncInfo[SyncIndex].NeedSync do begin             // These were set in TimerAutoSyncTimer()
         inc(SyncIndex);
         if SyncIndex > ord(high(SyncInfo)) then exit;           // No more to do, lets go home.
     end;                                                        // NeedSync is cleared in the thread.Execute method
-
-    debugln('TSett.StartSyncThread : about to start sync with transport ' + TSyncTransport(SyncIndex).ToString );
+    if DebugSync then begin
+        debugln('');
+        debugln('---------------- A U T O    S Y N C -------------------');
+        debugln('TSett.StartSyncThread : about to start sync with transport ' + TSyncTransport(SyncIndex).ToString );
+    end;
     SearchForm.FlushOpenNotes();
     SyncThread := TSyncThread.Create(True);
-(*    SyncThread.NotesDir  := NoteDirectory;
-    SyncThread.debugmode := Application.HasOption('s', 'debug-sync');
-    SyncThread.ConfigDir := AppendPathDelim(Sett.LocalConfig);
-    SyncThread.Password  := SyncInfo[SyncIndex].PW;              // might be blank with some sync
-    SyncThread.UserName  := SyncInfo[SyncIndex].User;     *)
     SyncThread.Transport := TSyncTransport(SyncIndex);           // Thread.Execute can find what it needs from that
-
-(*    SyncThread.Password  := Sett.LabelToken.Caption;
-    SyncThread.UserName  := Sett.EditUserName.text;
-    if WantFileSync then
-        SyncThread.Transport := TSyncTransport.SyncFile
-    else SyncThread.Transport := TSyncTransport.SyncGitHub;    *)
     SyncThread.Start();            // Thread will clean up after it self, Starts TSyncThread.execute !
 end;
-
-
 
 procedure TSett.TimerAutoSyncTimer(Sender: TObject);
 var
     ASyncRun : boolean = false;
     i : integer;
-//    ASync : TSync;
-//    St : string;
-
-(*    procedure RunAutoSync(const SyncTimingIndex : integer; var SyncTimingLast : TDateTime; Transport : TSyncTransport);        // ToDo : remove this ??
-    {$IFDEF TESTAUTOTIMING}var
-       St : string;{$endif}
-    begin
-        if (SyncTimingIndex = 0) then exit;     // don't do ones set to Manual
-        // {$IFDEF TESTAUTOTIMING}
-        {$ifdef debug}
-        if Transport = SyncFile then
-            St := 'FileSync : ' + FormatDateTime('YYYY-MM-DD hh:mm', SyncTimingFileLast + SyncTimingFactors[SyncTimingFileIndex])
-        else
-           St := 'GitHubSync : ' + FormatDateTime('YYYY-MM-DD hh:mm', SyncTimingGitHubLast + SyncTimingFactors[SyncTimingGitHubIndex]);
-        debugln('TSett.TimerAutoSyncTimer : AutoSync ? Now=' + FormatDateTime('YYYY-MM-DD hh:mm', now()) + ' Target:' + St);
-        {$endif}
-
-
-        {$ifNdef debug}                         // ie, if debug, run sync every time 10 minutes happens, disregard SyncTimingFactors
-        if (Now() < (SyncTimingLast + SyncTimingFactors[SyncTimingIndex])) then exit;   // exit if time is not yet ripe.
-                                                // compare now() to SyncTimingLast plus an hour, day or week
-        {$endif}
-        {$IFDEF TESTAUTOTIMING}
-            debugln('TSett.TimerAutoSyncTimer : ' + St + ' Needs Sync');
-        {$endif}
-        case Transport of
-            SyncFile : begin WantFileSync := true; SyncTimingFileLast := Now(); end;
-            SyncGitHub : begin WantGitHubSync := true; SyncTimingGitHubLast := Now(); end;
-        end;
-        ASyncRan := True;
-    end;      *)
-
 begin
     // debugln('TSett.TimerAutoSyncTimer #' + {$I %LINE%} +  ' Called ' + FormatDateTime('YYYY-MM-DD hh:mm', now()));
     {$IFDEF TESTAUTOTIMING}
-     TimerAutoSync.Interval:= 60*1000;                                      // check again in 1 minutes
+     TimerAutoSync.Interval:= 3*60*1000;                                        // check again in 3 minutes
     {$else}
-    TimerAutoSync.Interval:= 10*60*1000;                                    // check again in 10 minutes
+    TimerAutoSync.Interval:= 10*60*1000;                                        // check again in 10 minutes
     {$endif}
+     if DebugSync then
+         debugln ('------- Sync Timer ',DateTimeToStr(Now), ' --------');
     for i := 0 to high(SyncInfo) do begin
-        if (SyncInfo[i].RemoteAddress <> '')                                // dont bother !
-            and (SyncInfo[i].SyncTimingIndex > 0)                           // 0 being manual
+        if (SyncInfo[i].RemoteAddress <> '')                                    // dont bother !
+            and (SyncInfo[i].SyncTimingIndex > 0)                               // 0 being manual
             and (now() > SyncInfo[i].LastSync + SyncTimingFactors[SyncInfo[i].SyncTimingIndex])
             then begin
                  ASyncRun := True;
                  SyncInfo[i].NeedSync := True;
+                 if DebugSync then
+                     debugln('TSett.TimerAutoSyncTimer ' + TSyncTransport(i).ToString + ' needs sync');
             end;
     end;
-
-(*    {$IFDEF TESTAUTOTIMING}
-    TimerAutoSync.Interval:= 60*1000;
-    debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : TESTAUTOTIMING defined, AutoSync x100 faster');
-    {$ENDIF}
-    end;
-    if FormSync.Busy then exit;                                             // No Auto Sync during manual Sync !
-    if (SyncFileRepo <> '') then
-        RunAutoSync(SyncTimingFileIndex, SyncTimingFileLast, TSyncTransport.SyncFile);        // Might update the time stamp
-    if (SyncGitHubRepo <> '') then
-        RunAutoSync(SyncTimingGitHubIndex, SyncTimingGitHubLast, TSyncTransport.SyncGitHub);  // Might update the time stamp  *)
-
     if ASyncRun then
         StartSyncThread();                                 // will write the timestamp to config file IF sync successful.
-                                                           // and then sen a msg that triggers a a restart until all processed.
+                                                           // and then send a msg that triggers a a restart until all processed.
     if CheckAutoSnapEnabled.Checked and (NextAutoSnapshot < now()) then
         DoAutoSnapshot;
 end;
@@ -2467,16 +2324,12 @@ begin
             exit;
         Sett.SyncInfo[ord(Transport)].NeedSync := False;  // Clear the one we are dealing with, even if it fails later on.
                                                           // No locking with SyncInfo, sync threads run sequentially.
-
-//        if Transport = SyncFile then
-//            WantFileSync := False
-//        else WantGitHubSync := False;
         {$ifdef DEBUG}
         debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Starting Sync Thread.');  // ToDo : remove
         {$endif}
 
         ASync.NotesDir := Sett.NoteDirectory;
-        ASync.debugmode := Application.HasOption('s', 'debug-sync');
+        ASync.debugmode := DebugSync;
         ASync.ConfigDir := AppendPathDelim(Sett.LocalConfig);
         ASync.Password := Sett.SyncInfo[ord(Transport)].PW;
         ASync.UserName := Sett.SyncInfo[ord(Transport)].User;
@@ -2514,7 +2367,10 @@ begin
             {$ifdef DEBUG}
             debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : Finished Thread syncing');  // ToDo : remove
             {$endif}
-        end else OutComeMessage := WM_SYNCNOTPOSSIBLE;
+        end else begin
+            OutComeMessage := WM_SYNCNOTPOSSIBLE;
+            if ASync.DebugMode then debugln('TSyncThread.Execute Sync ' + Transport.ToString + ' cannot run right now');
+        end;
     finally
         ASync.Free;
         PostMessage(sett.Handle, WM_SYNCMESSAGES,  OutComeMessage, Changes);    // goes to TSett.HandlePostMessage, might shows a popup message

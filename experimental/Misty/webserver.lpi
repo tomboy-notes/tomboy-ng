@@ -44,7 +44,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="webserver.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -71,6 +71,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TWebserver"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="html2note.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

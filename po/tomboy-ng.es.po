@@ -207,6 +207,7 @@ msgid "tomboy-ng can use Github to both sync and display or edit notes"
 msgstr "tomboy-ng puede usar Github para sincronizar, mostrar o editar notas"
 
 #: resourcestr.rsgithubsyncinfo2
+msgctxt "resourcestr.rsgithubsyncinfo2"
 msgid "you should read the tomboy-ng wiki page for instructions."
 msgstr "debería leer las instrucciones en la wiki de tomboy-ng."
 
@@ -356,6 +357,16 @@ msgstr "Sincronizar"
 #: resourcestr.rsmetadirwarning
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr "Recuerde que para tener una sincronización fiable, no deba cambiar archivos en el directorio Meta."
+
+#: resourcestr.rsmistysyncinfo1
+msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
+msgstr ""
+
+#: resourcestr.rsmistysyncinfo2
+#, fuzzy
+msgctxt "resourcestr.rsmistysyncinfo2"
+msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr "debería leer las instrucciones en la wiki de tomboy-ng."
 
 #: resourcestr.rsmultiplenotebooks
 msgctxt "resourcestr.rsmultiplenotebooks"
@@ -556,6 +567,10 @@ msgstr "Archivo - sistema de archivos local/compartido"
 #: resourcestr.rssynctypegithub
 msgid "Github - free Github account required"
 msgstr "Github - cuenta gratis de Github requerida"
+
+#: resourcestr.rssynctypemisty
+msgid "Misty - Misty server required"
+msgstr ""
 
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
@@ -1713,6 +1728,14 @@ msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 msgid "Github or File Sync"
 msgstr "Sincronización de Archivos o Github"
 
+#: tsett.editpw.text
+msgid "EditPW"
+msgstr ""
+
+#: tsett.editrepo.text
+msgid "EditRepo"
+msgstr ""
+
 #: tsett.groupbox4.caption
 msgctxt "tsett.groupbox4.caption"
 msgid "When a conflict is detected between a local note and remote one :"
@@ -1800,11 +1823,6 @@ msgstr "Una instantánea es una copia de sus notas actuales."
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Directorio, instantáneas"
-
-#: tsett.labelsyncrepo.caption
-msgctxt "tsett.labelsyncrepo.caption"
-msgid "not configured"
-msgstr "sin configurar"
 
 #: tsett.labelsynctiming.caption
 msgid "Sync Timing"
@@ -1919,3 +1937,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

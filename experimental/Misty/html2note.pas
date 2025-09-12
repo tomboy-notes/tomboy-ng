@@ -32,11 +32,15 @@ type
     public
       InStr : string;
       ErrorString : string;
-      NoteFFName : string;             // {UID}.note, supplied from calling method (except in test mode)
+                          // {UID}.note, supplied from calling method (except in test mode)
+                          // needed to get header an footer information.
+      NoteFFName : string;
       DateSt : string;
       constructor Create();
       destructor Destroy; override;
       function Convert() : boolean;
+                                // Returns true if it has created a new directory and saved the file in the Rev Dir
+                                // False if dir already exists, cannot be created or file cannot be saved
       function SaveNote(const ServHome, FName: string; Rev: integer): boolean;
       function LoadHTML(FFName : string) : boolean;   // This is used in test mode where we load content from a file
     private
@@ -49,8 +53,8 @@ end;
 
 implementation
 
-uses Unix, ssync_utils,
-    LazFileUtils;       // For ForceDirectory
+uses Unix, ssync_utils, LazFileUtils;
+    //LazFileUtils;       // For ForceDirectory
 
 function FindInStringList(const StL : TStringList; const FindMe : string) : integer;
 var
@@ -96,11 +100,12 @@ end;
 constructor THTML2Note.Create();
 begin
     inherited Create;
-    writeln('THTML2Note.Create created');
+
 end;
 
 destructor THTML2Note.Destroy;
 begin
+
     inherited Destroy;
 end;
 
@@ -131,8 +136,7 @@ begin
 end;
 
 
-// Returns true if it has created a new directory and saved the file in the Rev Dir
-// False if dir already exists, cannot be created or file cannot be saved
+
 function THTML2Note.SaveNote(const ServHome, FName: string; Rev : integer): boolean;     // FName is a Full File Name, with PATH !
 var
     OutFile: TextFile;
@@ -142,7 +146,7 @@ begin
     DirName := GetRevisionDirPath(ServHome, Rev+1);
     if DirectoryExists(DirName) then exit(False);                               // Must be new dir !
     if ForceDirectory(DirName) and DirectoryExists(DirName) then begin
-        DirName := AppendPathDelim(DirName) + extractFileName(FName);
+        DirName := MyAppendPathDelim(DirName) + extractFileName(FName);
         AssignFile(OutFile, DirName);                                           // We must create a new revision !
         rewrite(OutFile);
         write(OutFile, InStr);
@@ -194,7 +198,7 @@ begin
     InStr := InStr.Replace('</list>', '</list>'+#10, [rfReplaceAll]);  // ????
 //    InStr := InStr.Replace('<list>', #10+'<list>', [rfReplaceAll]);             // always start a list on newline
                                                                                 // ToDo : maybe not the first item in a block, ? extra blank line sometimes
-end;
+end;                                                                            // OK, some times this is necessary !
 
 procedure THTML2Note.AddHeaderFooter();
 var Header : string = '';
@@ -219,11 +223,11 @@ begin
     try
         // here we get the header and footer from the existing, unedited note and
         // change (Title, ??) and LCD.
-        STL.LoadFromFile(NoteFFName);                                  // ToDo : its not there, use rev based dir structure !
+        STL.LoadFromFile(NoteFFName);
         Index := FindInStringList(STL, '<text xml:space="preserve">');
         if Index < 0 then begin
             ErrorString := 'Failed to find header in ' + NoteFFName;
-            writeln('THTML2Note.GetHeaderFooter - ERROR - ', ErrorString);      // ToDo : Wndows ?
+            writeln('THTML2Note.GetHeaderFooter - ERROR - ', ErrorString);
             exit(false);
         end;
         for i := 0 to Index do                                                  // ToDo : assumes note has been normalised, won't work, eg, for GNote

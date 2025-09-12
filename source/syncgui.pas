@@ -387,7 +387,8 @@ begin
         ASync.Password := Sett.SyncInfo[ord(Transport)].PW;
         Async.UserName := Sett.SyncInfo[ord(Transport)].User;
 
-        if ASync.DebugMode then debugln('TFormSync.ManualSync - U=' + Async.UserName + ' - ' + ' P=' + ASync.Password);
+        if ASync.DebugMode then
+            debugln('TFormSync.ManualSync - U=' + Async.UserName + ' - ' + ' P=' + copy(ASync.Password, 1, 8) + '...');
 
         if Async.SetTransport(TransPort) in [SyncNetworkError, SyncCredentialError] then begin
             if not Visible then begin

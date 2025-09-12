@@ -609,7 +609,7 @@ begin
         if ErrorString = UserName then begin     // "A" valid username
             ErrorString := '';
             TokenExpires := HeaderOut;           // this was set in DownLoader to returned header item matching "github-authentication-token-expiration"
-            if DebugMode then debugln('TGithubSync.TestTransport - Confirmed account exists');
+            if DebugMode then debugln('TGithubSync.TestTransport - Confirmed account exists, token=', TokenExpires);
             if TokenExpires = '' then begin
                 ErrorString := 'Username exists but Token Failure';             // we did not get back an expiry date from DownLoader()
                 exit(SyncCredentialError);              // Token failure
@@ -1298,7 +1298,10 @@ var
     begin
         Result := True;
         if (Dir <> '') and (not RemoteNotes.FNameExists(Dir, Sha)) then exit;
-        if DownloaderSafe(ContentsURL(True) + Dir, ST) then begin  // St now contains a full dir listing as JSON array
+        if DebugMode then
+            debugln('TGithubSync.ScanRemoteRepo requesting ' + ContentsURL(True) + '/' + Dir);
+        // Aug 2025, below line has not had the '/' since sept 2021 ??  How has it been working ?
+        if DownloaderSafe(ContentsURL(True) + '/' + Dir, ST) then begin  // St now contains a full dir listing as JSON array
             Node := TJsonNode.Create;
             try
                 if Node.TryParse(St) then begin
@@ -1591,11 +1594,11 @@ begin
                 // the second one fails, set HeaderOut to '' and that will abort sync
 
                 if DebugMode then debugln('TGithubSync.Downloader - looking for a response header, ' + Header);    // added post 0.41
-                if DebugMode then begin
+                { if DebugMode then begin
                     debugln('-------------------------------------');
                     debugln(Client.ResponseHeaders.Text);
                     debugln('-------------------------------------');
-                end;
+                end; }
                 if IndexOfName(Header) = -1 then
                     if IndexOfname('X-RateLimit-Remaining') = -1 then begin
                         HeaderOut := '';                              // that will abort sync, we cannot have a valid header.

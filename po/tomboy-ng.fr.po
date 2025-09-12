@@ -208,6 +208,7 @@ msgid "tomboy-ng can use Github to both sync and display or edit notes"
 msgstr "tomboy peut utiliser Github pour sychroniser et afficher/editer les notes"
 
 #: resourcestr.rsgithubsyncinfo2
+msgctxt "resourcestr.rsgithubsyncinfo2"
 msgid "you should read the tomboy-ng wiki page for instructions."
 msgstr "Les instructions sont sur le wiki de tomboy-ng"
 
@@ -366,6 +367,16 @@ msgstr "Synchronisation"
 #: resourcestr.rsmetadirwarning
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr "Rappel: pour une synchro fiable, ne pas changer les fichiers dans le Meta répertoire"
+
+#: resourcestr.rsmistysyncinfo1
+msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
+msgstr ""
+
+#: resourcestr.rsmistysyncinfo2
+#, fuzzy
+msgctxt "resourcestr.rsmistysyncinfo2"
+msgid "you should read the tomboy-ng wiki page for instructions."
+msgstr "Les instructions sont sur le wiki de tomboy-ng"
 
 #: resourcestr.rsmultiplenotebooks
 msgctxt "resourcestr.rsmultiplenotebooks"
@@ -568,6 +579,10 @@ msgstr ""
 
 #: resourcestr.rssynctypegithub
 msgid "Github - free Github account required"
+msgstr ""
+
+#: resourcestr.rssynctypemisty
+msgid "Misty - Misty server required"
 msgstr ""
 
 #: resourcestr.rstestingcredentials
@@ -1779,6 +1794,14 @@ msgstr "Fermer puis ouvrir une note pour valider. Utilisez Ctrl-Z Ctrl-Y"
 msgid "Github or File Sync"
 msgstr "GitHub ou Synchro fichier"
 
+#: tsett.editpw.text
+msgid "EditPW"
+msgstr ""
+
+#: tsett.editrepo.text
+msgid "EditRepo"
+msgstr ""
+
 #: tsett.groupbox4.caption
 #, fuzzy
 #| msgid "  Options  "
@@ -1874,12 +1897,6 @@ msgstr "Un snapshot est une copie en l'état du répertoire des notes"
 #: tsett.labelsnapdir.caption
 msgid "Snap dir"
 msgstr "Répertoire des snap"
-
-#: tsett.labelsyncrepo.caption
-#, fuzzy
-msgctxt "tsett.labelsyncrepo.caption"
-msgid "not configured"
-msgstr "non configuré"
 
 #: tsett.labelsynctiming.caption
 msgid "Sync Timing"

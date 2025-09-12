@@ -127,6 +127,8 @@ function ReplaceNoteBookTags(const FullFileName : string) : boolean;
                         { Returns the name of the config directory (with trailing seperator)  }
 function TB_GetDefaultConfigDir : string;
 
+procedure MyLog(content : string; InitFile : boolean = false);    // a temp method to debug actions at OS shutdown
+
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
 // Using them requires that we 'use' kmemo here. If not use'd, will still compile.
 // Each one MUST resolve to a different value in KMemo, do not overload.
@@ -180,6 +182,19 @@ begin
 {$endif}
 end;
 {$endif}    *)
+
+procedure MyLog(content : string; InitFile : boolean = false);    // a temp method to debug actions at OS shutdown
+var T : TextFile;
+begin
+    assignFile(T, '/home/dbannon/tomboy.log');
+    if InitFile then
+        rewrite(T)              // create or clear
+    else append(T);
+    writeln(T, FormatDateTime('hh:nn:ss.zzz', now()) + '  ' + Content);
+    flush(T);
+//    writeln(DateTimetoStr(now()) + '  ' + Content);      // do not write to console when shutting down !
+    closeFile(T);
+end;
 
   // At present, v0.41, tokens only work with markdown export, could work with other exports ?
   // A token is a piece of text sourounded by $$..$$ that contains ONLY upper case Latin

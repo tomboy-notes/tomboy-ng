@@ -47,7 +47,10 @@ type
                         { The current server ID. Is set with a successful TestTransport call. }
         ServerID : string;
                         { The current Server Rev, before we upload. Is set with a successful
-                        TestTransport call. }
+                        TestTransport call, needed for writing manifests. 'This upload' will
+                        be one greater if it happens. Does not alter during Sync. Most times
+                        this is the same Rev as the most recently synced notes. In Misty
+                        the server knows this number, inc's on manifest and uses it directly. }
         RemoteServerRev : integer;
                         { A method to call when we can advise a GUI of progress through sync }
         ProgressProcedure : TProgressProcedure;
@@ -88,7 +91,9 @@ type
             { Tells Trans to deal with remote mainfest. This is the trigger
               for a new revision on the server, the server must now do whatever
               it needs to accomodate the new new revision, some new or update
-              notes will be sent to it a bit later. New RevNo will be RemoteServerRev plus 1 }
+              notes will be sent to it a bit later. New RevNo will be RemoteServerRev plus 1
+              File and Misty really just push the already created manifest up.
+              Github generates new manifest and readme.md first then pushes.}
         function DoRemoteManifest(const RemoteManifest : string; MetaData : TNoteInfoList = nil) : boolean; virtual; abstract;
             { Returns a full file name (inc path) to a (copy?) of indicated server
               version of a note. File sync will return just full path and name to the

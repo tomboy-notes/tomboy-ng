@@ -130,7 +130,7 @@ end;
 
 implementation
                                                                                 // ToDo : Note Normalise is disabled !
-uses {tb_utils, tt_utils, LazFileUtils } {$ifdef LCL} lazlogger, {$endif} laz2_DOM, laz2_XMLRead, {notenormal,} FileUtil;
+uses {$ifdef LCL} lazlogger, {$endif} laz2_DOM, laz2_XMLRead, FileUtil;
 
 const TagMax = 44;           // We must not access TagList[TagMax] !
 
@@ -149,7 +149,7 @@ var
             '<highlight>', '<mark>',   '</highlight>', '</mark>',
             '<monospace>', '<code>',   '</monospace>', '</code>',
             {$ifdef FOR_QUILL}
-            '<list>', '<ul>',          '</list>', '</ul>',
+            '<list>',                '<ul>',   '</list>',       '</ul>',
             '<list-item dir="ltr">', '<li>',   '</list-item>',  '</li>'
             {$else}
             // '<list><list-item dir="ltr">','<li>',  '</list-item></list>','</li>',

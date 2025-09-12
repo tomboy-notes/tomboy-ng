@@ -1,13 +1,13 @@
 object SearchForm: TSearchForm
-  Left = 824
+  Left = 172
   Height = 401
-  Top = 490
+  Top = 388
   Width = 794
   ActiveControl = EditSearch
   Caption = 'Search'
   ClientHeight = 401
   ClientWidth = 794
-  LCLVersion = '4.99.0.0'
+  LCLVersion = '4.1.0.0'
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate

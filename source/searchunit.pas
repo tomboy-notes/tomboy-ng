@@ -471,8 +471,8 @@ end;
 
 procedure TSearchForm.NoteClosing(const ID : AnsiString);
 begin
-    if TheMainNoteLister <> nil then         // else we are quitting the app !
-    	if not TheMainNoteLister.ThisNoteIsOpen(ID, nil) then
+    if TheMainNoteLister <> nil then                              // else we are quitting the app !
+    	if not TheMainNoteLister.ThisNoteIsOpen(ID, nil) then     // this marks note as not open
             // maybe its a help note ?
             RemoveFromHelpList(ID);
 end;
@@ -955,7 +955,9 @@ begin
                             {MainForm.}ShowHelpNote(FileName)
                         else showMessage(rsCannotFindNote + TMenuItem(Sender).Caption);
                     end;
-        mtQuit :      MainForm.close;
+    //    mtQuit :      MainForm.close;
+        mtQuit :      MainForm.BitBtnQuitClick(self);                           // ensure we go via path that stops sync threads
+
         // WARNING: TMenuItem.Destroy with LCLRefCount>0. Hint: Maybe the component is processing an event?
         // WARNING: TPanel.Destroy with LCLRefCount>0. Hint: Maybe the component is processing an event?
         // ToDo : on gtk2, a Quit call from an edit box generates a Warning about the
@@ -1351,9 +1353,12 @@ begin
 //    EditSearch.SetFocus;    // Cocoa issue, 'cos we cannot make the "on type, jump to EditSearch" work on Mac
     {$endif}
     ListViewNotes.SetFocus;
-//    {$endif}
     if ListViewNotes.Items.Count > 0 then
-        ListViewNotes.ItemIndex := 0;
+// #891 of ll/widgetset/wscomctrls.pp  class procedure TWSCustomListView.UpdateMultiSelList(const ALV: TCustomListView; AItem: TListItem; Add: Boolean);
+        ListViewNotes.ItemIndex := 0;     // ToDo : this triggers a small memory leak if the Search Screen is shown.
+                                          // if I comment out these 2 lines, same thing happens if user selects a line in the listview
+                                          // It requires the ListView to be in Multiselect mode, a .create in above function
+                                          // does not get called if not multiselect.
 end;
 
 procedure TSearchForm.FormKeyDown(Sender: TObject; var Key: Word;
@@ -1363,7 +1368,7 @@ begin
         if key = ord('N') then begin OpenNote(''); Key := 0; exit(); end;
         if key = VK_Q then begin
             // debugln('TSearchForm.FormKeyDown - Quitting because of a Ctrl-Q');
-            MainForm.Close();
+            MainForm.BitBtnQuitClick(self);
         end;
     end;
 end;
@@ -1694,6 +1699,7 @@ var
           // rules for what menu items to show
     Val : array of boolean;
     Itm : TListItem;
+//    Tick, Tock : qword;
 
     procedure SetupRightClickMenu;
     begin
@@ -1709,13 +1715,33 @@ var
     end;
 
 begin
+    // ToDo : This is unfair to Windows (with lots of notes). TListVew.GetNextItem is very fast
+    // in Windows, slow, iterates over whole dataset, on Linux and MacOS.
+    // If https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/41798 is accepted, use it instead.
     if Button = mbRight then begin
         NoteListRightClickSel := [];                // clear it
-        for Itm in ListViewNotes.Items do begin
-              if Itm.Selected then begin
-                  insert(Itm.SubItems[1], NoteListRightClickSel, 0);     // save the selected ID.note
-              end;
+//        Tick := gettickcount64();
+
+(*        Itm := ListViewNotes.GetNextSelected();        // this requires the unapproved  GetNextSelected(), much faster
+        while Itm <> nil do begin
+            insert(Itm.SubItems[1], NoteListRightClickSel, 0);
+            Itm := ListViewNotes.GetNextSelected(Itm.Index);
+        end; *)
+
+        // shortcut here ? If SelCount = 0 skip next, if = 1 then insert Selected.
+        case ListViewNotes.SelCount of
+            0 : ;
+            1 : insert(ListViewNotes.Selected.SubItems[1], NoteListRightClickSel, 0);
+        otherwise
+              for Itm in ListViewNotes.Items do      // 2000 notes, 20mS - 50mS
+                  if Itm.Selected then
+                      insert(Itm.SubItems[1], NoteListRightClickSel, 0);     // save the selected ID.note
+                      // above is insert into array, despite what Codetools thinks.
         end;
+
+
+//        Tock := gettickcount64();
+//debugln('TSearchForm.ListViewNotesMouseDown checked for selected ' + inttostr(Tock - Tick) + 'mS');
         if ListViewNotes.SelCount = 0 then Val := [false, false, false, true, false]
         else if ListViewNotes.SelCount = 1 then Val := [true, true, true, true, true]
         else Val := [true, true, false, true, true];        // more than one selected
